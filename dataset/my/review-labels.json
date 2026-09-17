@@ -1,16 +1,37 @@
 {
   "counts": {
-    "commented": 388,
-    "labelled": 1506,
-    "negative": 364,
-    "positive": 979,
-    "proposed": 257,
+    "commented": 390,
+    "deleting": 0,
+    "labelled": 1575,
+    "negative": 380,
+    "positive": 1030,
+    "proposed": 239,
     "reassigned": 0,
-    "unusable": 118,
-    "variant": 45,
-    "wine_notes": 79
+    "unusable": 119,
+    "variant": 46,
+    "wine_notes": 80
   },
   "labels": {
+    "a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135": {
+      "01_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:32:28+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:32:29+0300"
+      }
+    },
+    "a-gordienko-m-nikolaev-sira-nuvo-krasnoe-suhoe-115": {
+      "01_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:32:33+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:32:32+0300"
+      }
+    },
     "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12": {
       "01_conf095.jpg": {
         "label": "positive",
@@ -71,12 +92,26 @@
       "01_conf095.jpg": {
         "label": "negative",
         "ts": "2026-09-15T15:19:34+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T18:27:13+0300"
       }
     },
     "abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135": {
       "01_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-15T15:19:47+0300"
+      }
+    },
+    "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105": {
+      "01_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:33:08+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:33:08+0300"
       }
     },
     "abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13": {
@@ -442,7 +477,7 @@
     "abrau-dyurso-pino-nuar-krasnoe-suhoe-125": {
       "01_conf095.jpg": {
         "label": "positive",
-        "ts": "2026-09-15T17:27:28+0300"
+        "ts": "2026-09-17T17:38:36+0300"
       },
       "01_conf095_moved2.jpg": {
         "comment": "до переноса в abrau-dyurso-pino-nuar-krasnoe-suhoe-125 был в abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
@@ -537,6 +572,10 @@
       "03_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-15T16:36:17+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:14:47+0300"
       }
     },
     "abrau-dyurso-russkoe-igristoe-polusladkoe-shardone-beloe-12": {
@@ -597,43 +636,58 @@
         "label": "positive",
         "ts": "2026-09-16T05:46:39+0300"
       },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:15:01+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:15:02+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:15:03+0300"
+      },
       "05_agent.jpg": {
         "by": "hunter-02",
         "comment": "Whole bottle standing on a table in front of tinsel, from an irecommend review. Front label matches the catalogue bottle: black diamond reading RUSSKOE IGRISTOE / s 1870 g. / RUSSKIY VINNYY DOM / ABRAU-DYURSO / POLUSUKHOE with the imperial eagle, black textured neck foil with the gold 1870, gold ribbon collar with the round seal. I read the sweetness word as POLUSUKHOE and not POLUSLADKOE, which is the sibling wine in this same slice.",
         "confidence": 0.95,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://irecommend.ru/content/pozhalui-pervoe-polusukhoe-shampanskoe-kotoroe-mne-realno-ponravilos",
-        "ts": "2026-09-16T00:25:52+0300"
+        "ts": "2026-09-17T23:15:04+0300"
       },
       "06_agent.jpg": {
         "by": "hunter-02",
         "comment": "Bottle held in a hand, close view of the front label, from an irecommend review. The diamond reads RUSSKOE IGRISTOE / 1870 / ABRAU-DYURSO / POLUSUKHOE with the imperial eagle, and the gold ribbon collar is the same as on the catalogue bottle. Sweetness word checked: POLUSUKHOE, not POLUSLADKOE.",
         "confidence": 0.94,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://irecommend.ru/content/pozhalui-odno-iz-luchshikh-igristykh-vin-po-ne-zaoblachnoi-tsene-abrau-dyurso-polusukhoe-bel",
-        "ts": "2026-09-16T00:25:52+0300"
+        "ts": "2026-09-17T23:15:05+0300"
       },
       "07_agent.jpg": {
         "by": "hunter-02",
         "comment": "Whole bottle with an empty flute and a New Year arrangement, from an irecommend review. Diamond label RUSSKOE IGRISTOE / 1870 / ABRAU-DYURSO / POLUSUKHOE with the imperial eagle, black neck foil with the gold 1870 and the gold ribbon collar - the same front label as the catalogue bottle.",
         "confidence": 0.93,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://irecommend.ru/content/chestno-ozhidala-khudshego-no-na-novogodnii-stol-vse-ravno-ne-postavlyu-igristoe-vino-abrau",
-        "ts": "2026-09-16T00:25:53+0300"
+        "ts": "2026-09-17T23:15:05+0300"
       },
       "08_agent.jpg": {
         "by": "hunter-02",
-        "comment": "Opened bottle lying next to a filled glass and the cork, from an irecommend review. The diamond label reads RUSSKOE IGRISTOE / 1870 / ABRAU-DYURSO / POLUSUKHOE and the collar with the round seal matches the catalogue bottle. Slightly lower confidence because the bottle is tilted and the capsule is already removed.",
         "confidence": 0.92,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://irecommend.ru/content/pozhalui-pervoe-polusukhoe-shampanskoe-kotoroe-mne-realno-ponravilos",
-        "ts": "2026-09-16T00:25:53+0300"
+        "ts": "2026-09-17T23:15:07+0300"
       }
     },
     "abrau-dyurso-shardone-beloe-suhoe-12": {
       "01_conf095.png": {
-        "label": "positive",
-        "ts": "2026-09-15T22:31:54+0300"
+        "label": "unusable",
+        "ts": "2026-09-17T23:15:10+0300"
       },
       "02_conf095.jpg": {
         "label": "positive",
@@ -642,6 +696,10 @@
       "03_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-15T22:31:51+0300"
+      },
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:15:27+0300"
       }
     },
     "abrau-dyurso-shardone-beloe-suhoe-13": {
@@ -806,15 +864,16 @@
     "agora-kaberne-sovinon": {
       "01_conf090.jpg": {
         "label": "negative",
-        "ts": "2026-09-15T17:27:34+0300"
+        "ts": "2026-09-17T17:37:38+0300"
       },
       "02_agent.jpg": {
         "by": "cigar-r02",
         "comment": "WATERMARK cigarpro.ru | variant: older AGORA label generation, the cream top band with the chariot crest, AGORA / КРЫМ / КАБЕРНЕ / КРАСНОЕ СУХОЕ / ВЫДЕРЖАНО В ДУБЕ, gold capsule, and the mosaic sailing-boat artwork moved to the LOWER half of the label. The catalogue render is the current generation: the same mosaic artwork fills the UPPER half, a gold vertical AGORA band sits on it, and a black bottom band carries CABERNET SAUVIGNON / RED DRY WINE plus the round ЗГУ seal. Compared: the mosaic artwork, the AGORA chariot crest, the grape (Каберне / Cabernet Sauvignon), красное сухое, выдержано в дубе. Bounding-box correlation against the catalogue render is -0.16, so this is cigarpro's own photograph. The AGORA Chardonnay on the same shop shows the current generation, which confirms that this Каберне shot is the earlier one. Only one image on this product page, 282x1080 px.",
         "confidence": 0.85,
+        "label": "variant",
         "proposed": "variant",
         "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/agora/rossiyskoe-vino-agora-kaberne-rossiyskoe-vino-agora-kaberne/",
-        "ts": "2026-09-16T12:41:11+0300"
+        "ts": "2026-09-17T17:37:53+0300"
       }
     },
     "agora-muskat": {
@@ -1013,6 +1072,19 @@
         "ts": "2026-09-16T07:14:02+0300"
       }
     },
+    "agora-rosa-viva-cabernet-franc": {
+      "02_manual.jpg": {
+        "comment": "до переноса в agora-rosa-viva-cabernet-franc был в agora-rosa-viva-cabernet-sauvignon-shiraz",
+        "moved_from": "agora-rosa-viva-cabernet-sauvignon-shiraz",
+        "ts": "2026-09-17T23:35:58+0300"
+      }
+    },
+    "agora-rosa-viva-cabernet-sauvignon-shiraz": {
+      "01_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-17T23:34:43+0300"
+      }
+    },
     "agora-saperavi": {
       "01_conf095.jpg": {
         "label": "positive",
@@ -1061,6 +1133,10 @@
       "01_conf095.jpg": {
         "label": "negative",
         "ts": "2026-09-15T21:19:24+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T17:56:20+0300"
       }
     },
     "agora-winery-cuvee-pino-gridzhio-shardone-bryut-beloe-125": {
@@ -1077,6 +1153,10 @@
       "01_conf095.jpg": {
         "label": "negative",
         "ts": "2026-09-15T21:20:02+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T17:59:52+0300"
       }
     },
     "agora-yachting-pinot-grigio": {
@@ -2369,29 +2449,36 @@
       }
     },
     "belmas-winery-syrah-katya-sira-krasnoe-suhoe-125": {
+      "01_conf095.jpg": {
+        "label": "unusable",
+        "ts": "2026-09-17T18:38:06+0300"
+      },
       "02_agent.jpg": {
         "by": "hunter-07",
         "comment": "Belmas Katya SYRAH, clean studio shot on white, full bottle. It matches every field of this record (Сира, красное, 12.5, Севастополь; the shop back-label photo from the same listing reads ВИНО СУХОЕ КРАСНОЕ «СИРА БЕЛЬМАС», ГОД УРОЖАЯ 2022, СПИРТ 12,5%). WARNING: it does NOT match the bottle image stored at bottle_path for this slug, which is the Katya RIESLING (tall flute bottle, white wine, RIESLING on the label). See my wine note. Confidence held at 0.82 for that reason.",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://www.alcoplaza.ru/photo_it/photo124035.jpeg",
-        "ts": "2026-09-16T09:30:11+0300"
+        "ts": "2026-09-17T18:38:12+0300"
       },
       "03_agent.jpg": {
         "by": "hunter-07",
         "comment": "Real user photograph from Vivino of the Belmas Katya SYRAH; the small type reads SYRAH and 12.5% VOL. Same caveat as my other proposal on this slug: it matches the record fields (Сира, красное, 12.5) but not the stored bottle image, which is the Katya Riesling. See my wine note.",
         "confidence": 0.8,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://www.vivino.com/belmas-katya-syrah/w/12100768",
-        "ts": "2026-09-16T09:30:01+0300"
+        "ts": "2026-09-17T18:38:15+0300"
       },
       "04_agent.webp": {
         "by": "hunter-07",
         "comment": "Belmas Katya SYRAH 2022, clean studio shot on white, full bottle, from a shop listing. Matches this record's fields (Сира, красное, 12.5, Севастополь). Same caveat as my other two proposals on this slug: the bottle image stored at bottle_path is the Katya Riesling, not this Syrah. See my wine note.",
         "confidence": 0.8,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://winestyle.ru/products/Belmas-Katya-Syrah-2022.html",
-        "ts": "2026-09-16T04:32:59+0300"
+        "ts": "2026-09-17T18:38:17+0300"
       }
     },
     "bryut-beloe-zolotaya-balka": {
@@ -2939,25 +3026,28 @@
         "by": "hunter-09",
         "comment": "Real-world photo: the bottle standing on a wooden counter in a wine shop, shelves out of focus behind it. Tall slim clear-glass bottle with the copper GRAND DESSERT capsule and the CT medallion, and the dusty-rose label with the gold triangle lattice reading CHATEAU TAMAGNE / RESERVE / GRAND DESSERT / NECTAR / 2021 / nektar desertnyy vyderzhannyy - line for line the catalogue bottle. Checked it is the Nectar and not the Muscat or Traminer Grand Dessert, which carry other colours.",
         "confidence": 0.93,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.cru.ru/wine/russia/chateau-tamagne-reserve-grand-desert-2021-05/",
-        "ts": "2026-09-16T04:32:28+0300"
+        "ts": "2026-09-17T19:06:23+0300"
       },
       "03_agent.webp": {
         "by": "hunter-09",
         "comment": "Photograph of the real 0.5 l bottle on white (the excise strip is visible on the right edge). Same label as the catalogue bottle: gold triangle lattice, CHATEAU TAMAGNE / RESERVE, GRAND DESSERT, NECTAR, 2021, and the two Russian lines. Copper capsule with GRAND DESSERT and the CT medallion.",
         "confidence": 0.9,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.cru.ru/wine/russia/chateau-tamagne-reserve-grand-desert-2021-05/",
-        "ts": "2026-09-16T04:32:28+0300"
+        "ts": "2026-09-17T19:06:25+0300"
       },
       "04_agent.png": {
         "by": "hunter-09",
         "comment": "Producer studio shot of the same 2021 bottle on the Kuban-Vino site. Same lattice label and copper capsule as the catalogue bottle. Different crop and different lighting from the catalogue render, so it is a separate image, but the reviewer should confirm it is not treated as a duplicate of the catalogue photo.",
         "confidence": 0.85,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://kuban-vino.ru/catalog/chateau-tamagne/rossiyskoe-kreplenoe-likernoe-vino-s-zgu-kuban-tamanskiy-poluostrov-desertnoe-vyderzhannoe-nektar-gr/",
-        "ts": "2026-09-16T04:32:28+0300"
+        "ts": "2026-09-17T19:06:26+0300"
       },
       "05_agent.jpg": {
         "by": "hunter-09",
@@ -3027,9 +3117,10 @@
         "by": "hunter-09",
         "comment": "Photograph of the real 0.75 l sparkling bottle on white (the excise strip is visible on the left). Front label is the catalogue label: white rectangle, Chateau TAMAGNE, the brown square-in-square logo, SELECT, BLANC BRUT. Sparkling bottle with a mushroom cork under gold foil. The catalogue bottle is the 0.2 l format with pewter foil, so the foil colour and the size differ, the label does not. This is the sparkling Select Blanc Brut, not the still Select Blanc that the four photos already in this slug show.",
         "confidence": 0.9,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.cru.ru/champagne-and-sparkling/russia/chateau-tamagne-select-blanc-0-75l/",
-        "ts": "2026-09-16T04:32:48+0300"
+        "ts": "2026-09-17T19:07:00+0300"
       },
       "06_agent.jpg": {
         "by": "hunter-09",
@@ -6068,10 +6159,84 @@
         "ts": "2026-09-15T18:14:57+0300"
       }
     },
+    "kuban-vino-aristov-byanko-shardone-beloe-suhoe-13": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:35+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:39+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:40+0300"
+      }
+    },
+    "kuban-vino-aristov-kaberne-sovinon-krasnoe-suhoe-13": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:42+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:44+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:45+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:46+0300"
+      }
+    },
     "kuban-vino-aristov-kyuve-aleksandr-millezimato-shardone-beloe-ekstra-bryut-12": {
       "01_conf095.jpg": {
         "label": "negative",
         "ts": "2026-09-16T15:50:43+0300"
+      }
+    },
+    "kuban-vino-aristov-risling-beloe-suhoe-115": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:53+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:55+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:56+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:37:57+0300"
+      }
+    },
+    "kuban-vino-aristov-rosso-polusladkoe-saperavi-krasnoe-13": {
+      "04_conf090.jpg": {
+        "label": "negative",
+        "ts": "2026-09-17T19:38:05+0300"
+      }
+    },
+    "kuban-vino-aristov-sandzhoveze-krasnoe-suhoe-13": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:38:19+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:40:01+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:38:21+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:38:22+0300"
       }
     },
     "kuban-vino-aristov-verde-muskat-beloe-polusuhoe-11": {
@@ -6342,6 +6507,12 @@
         "ts": "2026-09-16T15:50:53+0300"
       }
     },
+    "lefkadiya-krasnoe": {
+      "01_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-17T19:40:37+0300"
+      }
+    },
     "legato-legato-sovinon-blan-beloe-suhoe-125": {
       "01_conf095.jpg": {
         "label": "positive",
@@ -6365,29 +6536,36 @@
       }
     },
     "loco-cimbali-kaberne-sovinon-krasnoe-suhoe-146": {
+      "01_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-17T19:41:39+0300"
+      },
       "02_agent.webp": {
         "by": "cigar-04",
         "comment": "WATERMARK cigarpro.ru | studio shot on white. Right wine and right producer: back label of the same page reads ROSSIYSKOE VINO s ZGU 'Krym' suhoe krasnoe 'LOKO CHIMBALI KABERNE SOVINON', premialnoe vino sozdano vinodelom Olegom Repinym, OOO Agrofirma 'Zolotaya Balka', Sevastopol, izgotovleno dlya Loco Cimbali Winery. Generation: this bottle is the BALAKLAVA / 2021 / LOCO CIMBALI / CABERNET SAUVIGNON / Repin signature / RESERVE label, orange-red capsule with the Repin signature printed on it and NO shoulder medallion. The catalogue render is the earlier BARRIQUE / 2020 / LOCO CIMBALI / CABERNET SAUVIGNON / Repin signature / REPIN label, plain dark red capsule and a gold oval SEVASTOPOL 2020 shoulder medallion. Back label of this page reads god urozhaya 2021, ALK 14,3% OB.; the slug says 14.6. Bounding-box correlation against the catalogue render = 0.69, so it is not the same asset.",
         "confidence": 0.85,
+        "label": "negative",
         "proposed": "variant",
         "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/balaklava/balaklava-loco-cimbali/",
-        "ts": "2026-09-16T06:43:32+0300"
+        "ts": "2026-09-17T19:41:43+0300"
       },
       "03_agent.webp": {
         "by": "cigar-04",
         "comment": "WATERMARK cigarpro.ru | the bottle in a real scene, wooden counter and shop shelves behind. Same bottle as the studio shot of the same product page. Generation: this bottle is the BALAKLAVA / 2021 / LOCO CIMBALI / CABERNET SAUVIGNON / Repin signature / RESERVE label, orange-red capsule with the Repin signature printed on it and NO shoulder medallion. The catalogue render is the earlier BARRIQUE / 2020 / LOCO CIMBALI / CABERNET SAUVIGNON / Repin signature / REPIN label, plain dark red capsule and a gold oval SEVASTOPOL 2020 shoulder medallion. Back label of this page reads god urozhaya 2021, ALK 14,3% OB.; the slug says 14.6.",
         "confidence": 0.85,
+        "label": "negative",
         "proposed": "variant",
         "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/balaklava/balaklava-loco-cimbali/",
-        "ts": "2026-09-16T06:43:32+0300"
+        "ts": "2026-09-17T19:41:44+0300"
       },
       "04_agent.webp": {
         "by": "cigar-04",
         "comment": "WATERMARK cigarpro.ru | close shot of the bottle in the shop scene; the front label is readable: BALAKLAVA / 2021 / LOCO CIMBALI / CABERNET SAUVIGNON / Repin / RESERVE. Generation: this bottle is the BALAKLAVA / 2021 / LOCO CIMBALI / CABERNET SAUVIGNON / Repin signature / RESERVE label, orange-red capsule with the Repin signature printed on it and NO shoulder medallion. The catalogue render is the earlier BARRIQUE / 2020 / LOCO CIMBALI / CABERNET SAUVIGNON / Repin signature / REPIN label, plain dark red capsule and a gold oval SEVASTOPOL 2020 shoulder medallion. Back label of this page reads god urozhaya 2021, ALK 14,3% OB.; the slug says 14.6.",
         "confidence": 0.85,
+        "label": "negative",
         "proposed": "variant",
         "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/balaklava/balaklava-loco-cimbali/",
-        "ts": "2026-09-16T06:43:32+0300"
+        "ts": "2026-09-17T19:41:51+0300"
       },
       "05_agent.webp": {
         "by": "cigar-04",
@@ -7590,29 +7768,65 @@
       }
     },
     "shardone-2": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T20:10:38+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T20:10:43+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T20:10:44+0300"
+      },
       "04_agent.webp": {
         "by": "cigar-r04",
         "comment": "WATERMARK cigarpro.ru | bottle in a real scene on wood with a shop shelf behind. White ГАЛИЦКИЙ ★ ГАЛИЦКИЙ / ШАРДОНЕ / КРАСНАЯ ГОРКА / ЗАПАДНЫЙ СКЛОН ЛЫСОЙ ГОРЫ label, white capsule with the GG monogram, burgundy-shaped bottle, all as in the catalogue render. DIFFERENT HARVEST: this bottle is СЕДЬМОЙ УРОЖАЙ 2024, the render is ВОСЬМОЙ УРОЖАЙ 2025. The design is the same generation and the record holds no vintage field, so I propose positive; downgrade to variant if the harvest line must match. The product page holds no studio shot on white, so the render duplicate check does not apply.",
         "confidence": 0.9,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/galitskiy-and-galitskiy/krasnaia-gorka-chardonnay/",
-        "ts": "2026-09-16T12:50:51+0300"
+        "ts": "2026-09-17T20:10:46+0300"
       },
       "05_agent.webp": {
         "by": "cigar-r04",
         "comment": "WATERMARK cigarpro.ru | close shot of the upper bottle. ГАЛИЦКИЙ ★ ГАЛИЦКИЙ, ШАРДОНЕ, СЕДЬМОЙ УРОЖАЙ, КРАСНАЯ ГОРКА, ЗАПАДНЫЙ СКЛОН ЛЫСОЙ ГОРЫ and 2024 are all readable. Same wine and same label design as the catalogue render, one harvest earlier (render = ВОСЬМОЙ УРОЖАЙ 2025).",
         "confidence": 0.9,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/galitskiy-and-galitskiy/krasnaia-gorka-chardonnay/",
-        "ts": "2026-09-16T12:50:51+0300"
+        "ts": "2026-09-17T20:10:47+0300"
       },
       "06_agent.webp": {
         "by": "cigar-r04",
         "comment": "WATERMARK cigarpro.ru | back label of the same bottle. It reads РОССИЙСКОЕ ВИНО С ЗГУ «КУБАНЬ» СУХОЕ БЕЛОЕ «ШАРДОНЕ КРАСНАЯ ГОРКА», из винограда сорта Шардоне, год урожая 2024, ООО «Русский Терруар», 0,75 л, 13,0 % об. It names the wine of this slug; the harvest is 2024 against 2025 on the render.",
         "confidence": 0.88,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/galitskiy-and-galitskiy/krasnaia-gorka-chardonnay/",
-        "ts": "2026-09-16T12:50:52+0300"
+        "ts": "2026-09-17T20:10:50+0300"
+      },
+      "07_manual.jpg": {
+        "comment": "Это сложный негативный случай\n\n«Шардоне Акация — шестой урожай 2023» — не то же самое вино, что обычное «Шардоне — третий урожай 2020». Это родственные, но разные кюве.",
+        "label": "negative",
+        "ts": "2026-09-17T20:10:33+0300"
+      }
+    },
+    "shardone-akacziya": {
+      "01_conf095.jpg": {
+        "comment": "обычна «Шардоне — третий урожай 2020» это не то же самое вино, что «Шардоне Акация — шестой урожай 2023»",
+        "label": "negative",
+        "ts": "2026-09-17T20:00:05+0300"
+      },
+      "02_conf090.jpg": {
+        "comment": "обычна «Шардоне — третий урожай 2020» это не то же самое вино, что «Шардоне Акация — шестой урожай 2023»",
+        "label": "negative",
+        "ts": "2026-09-17T20:00:16+0300"
+      },
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T19:59:06+0300"
       }
     },
     "shardone-rezerv": {
@@ -9666,12 +9880,6 @@
         "ts": "2026-09-15T18:04:30+0300"
       }
     },
-    "vinodelnya-uzunov-bunt-tsitronnyy-magaracha-beloe-suhoe-139": {
-      "01_conf095.jpg": {
-        "label": "unusable",
-        "ts": "2026-09-15T18:04:34+0300"
-      }
-    },
     "vinodelnya-uzunov-mono-kaberne-sovinon-krasnoe-suhoe-139": {
       "01_conf100.jpg": {
         "label": "positive",
@@ -10026,11 +10234,6 @@
         "label": "positive",
         "ts": "2026-09-15T21:58:20+0300"
       },
-      "03_conf095_moved2.jpg": {
-        "comment": "до переноса в vysokij-bereg-risling-zelenaya-seriya-2 был в vysokij-bereg-risling-zelenaya-seriya-1",
-        "moved_from": "vysokij-bereg-risling-zelenaya-seriya-1",
-        "ts": "2026-09-15T22:28:40+0300"
-      },
       "04_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-15T21:58:21+0300"
@@ -10130,6 +10333,14 @@
       "01_conf100.jpg": {
         "label": "positive",
         "ts": "2026-09-16T23:18:21+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:04:44+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:04:46+0300"
       }
     },
     "zolotaya-balka-zb-frizzante-semi-dry-rose-risling-rozovoe-polusuhoe-10": {
@@ -10150,6 +10361,14 @@
       "01_conf100.jpg": {
         "label": "positive",
         "ts": "2026-09-16T23:18:13+0300"
+      },
+      "02_conf098.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:04:37+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:04:38+0300"
       }
     },
     "zolotaya-balka-zb-wine-riesling-risling-beloe-polusuhoe-115": {
@@ -10173,20 +10392,50 @@
       }
     },
     "zolotoe-pole-kaffa-malbek-krasnoe-suhoe-125": {
-      "01_conf095.jpg": {
-        "label": "negative",
-        "ts": "2026-09-16T23:18:00+0300"
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T17:52:13+0300"
+      }
+    },
+    "zolotoe-pole-kaffa-moskato-dzhallo-moskato-dzhallo-beloe-suhoe-135": {
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T17:50:34+0300"
       }
     },
     "zolotoe-pole-kaffa-saperavi-krasnoe-suhoe-14": {
       "01_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-16T23:17:45+0300"
+      },
+      "02_manual.jpg": {
+        "label": "negative",
+        "ts": "2026-09-17T17:32:11+0300"
+      },
+      "04_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-17T17:35:24+0300"
+      },
+      "06_manual.jpg": {
+        "label": "negative",
+        "ts": "2026-09-17T17:35:26+0300"
+      },
+      "07_manual.jpg": {
+        "label": "negative",
+        "ts": "2026-09-17T17:35:27+0300"
+      },
+      "08_manual.jpg": {
+        "label": "negative",
+        "ts": "2026-09-17T17:35:29+0300"
+      },
+      "09_manual.jpg": {
+        "label": "negative",
+        "ts": "2026-09-17T17:35:31+0300"
       }
     }
   },
   "note": "Manual labels for the photos of svoe-vino-testset/my. The key of an entry is the slug, then the photo file name. label 'positive': the photo shows the wine of this slug. label 'negative': the photo shows a different wine, and the photo stays in the set as a negative sample of this slug. label 'unusable': the photo is not usable at all and does not belong in the set. label 'variant': the photo shows this wine in another bottle, such as another vintage or another package design. A photo with no entry is not reviewed yet. Field 'reassign_to' names the slug that the photo belongs to; scripts/09_apply_moves.py moves the file. Field 'comment' holds a free text note of the reviewer about this photo and this slug. The map 'wines' holds one free text note about a whole wine, keyed by the slug.",
-  "updated": "2026-09-17T00:49:53+0300",
+  "updated": "2026-09-17T23:36:35+0300",
   "version": 2,
   "wines": {
     "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12": {
@@ -10456,6 +10705,10 @@
     "orlov_merlo": {
       "comment": "cigar-r04 2026-09-16 (cigarpro.ru): nothing to propose. cigarpro sells no Винодельня Орлова / Орловъ wine; the sitemap of 44461 products holds one orlov entry only, a cognac Граф Орлов. CATALOGUE DEFECT: the grapes field of this slug says Совиньон Блан, while the name, the description and the bottle render all say a red Мерло (label Орловъ, 2022, Мерло, вино сухое красное, спирт 12,7 %). The name-match script used the wrong grape, so all six candidates it offered were Совиньон Блан wines of other producers.",
       "ts": "2026-09-16T12:55:17+0300"
+    },
+    "shardone-akacziya": {
+      "comment": "Слово «Акация» означает не аромат акации, а использование бочек из древесины венгерской акации.",
+      "ts": "2026-09-17T19:57:12+0300"
     },
     "shato-pino-dichkaberne-fran-krasnoe-suhoe-14": {
       "comment": "cigar-r04 2026-09-16 (cigarpro.ru): nothing to propose. cigarpro carries 49 Шато Пино products, none of them the #ДИЧЬ line; the grape section /drinks/wine/russian-wines/kaberne-fran/ (129 products) holds no Шато Пино entry either. The catalogue bottle is the comic-art #ДИЧЬ label with the red screaming figure at a turntable, КАБЕРНЕ ФРАН on the left edge, 2020, red capsule. The nearest cigarpro product is Chateau Pinot Grand Reserve Cabernet Franc, a different line with a different label, so it was not proposed. The six matcher candidates were Cabernet Franc wines of other producers.",
