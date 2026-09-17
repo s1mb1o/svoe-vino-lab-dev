@@ -1,0 +1,16 @@
+# The photo set. 491 MB of pictures. It does not belong in git.
+dataset/my/photo/
+
+# The work directory: the state database, the raw downloads, the logs, the trash.
+# Every file here is rebuilt by the pipeline.
+work/
+
+# Python
+__pycache__/
+*.pyc
+
+# Backups and temporary files
+*.bak
+*.tmp
+
+.DS_Store

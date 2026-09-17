@@ -1,0 +1,27 @@
+# Configuration of the svoe-vino testset builder.
+# The scripts read this file through `scripts/common.py`.
+
+# Root directory of the workspace.
+# Every relative path in this file is resolved against this directory.
+# An absolute path in this file stays as it is.
+rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
+
+# Catalogue of the vino-svoe.ru wines, one JSON record per line.
+catalog_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl
+
+# Photo set. One directory per wine slug.
+photo_dir: svoe-vino-testset/dataset/my/photo
+
+# Excluded slugs. The photos of an excluded slug MUST NOT be used for benchmarking.
+# The review tool writes this file.
+excluded_slugs_file: svoe-vino-testset/dataset/my/excluded-slugs.json
+
+# A deleted photo is moved here, not unlinked.
+trash_dir: svoe-vino-testset/work/trash
+
+# Labels of the review tool. The tool writes this file at every click.
+label_file: svoe-vino-testset/dataset/my/review-labels.json
+
+# Variant groups. `scripts/08_variants.py` writes this file.
+variant_groups_file: svoe-vino-testset/dataset/my/variant-groups.json
+

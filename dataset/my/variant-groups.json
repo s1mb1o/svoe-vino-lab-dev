@@ -1,0 +1,454 @@
+{
+  "version": 1,
+  "updated": "2026-09-15T20:04:35+0300",
+  "note": "Groups of wine slugs that hold the same wine in another bottle: another vintage, another alcohol value, or another package design. A group is built from a metadata step (same producer and same name in catalog.jsonl) and from an image step (cosine similarity of SigLIP2 embeddings of the catalogue bottle photos). The review tool places the rows of one group next to each other and gives them one background colour.",
+  "method": {
+    "metadata": "same producer and same name",
+    "image": null
+  },
+  "counts": {
+    "wines": 814,
+    "groups": 28,
+    "slugs_in_groups": 63,
+    "metadata_pairs": 35,
+    "image_pairs": 0
+  },
+  "groups": [
+    {
+      "id": "g001",
+      "slugs": [
+        "alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+        "alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14",
+        "alma-valley-solntse-vozduh-vinograd-shardone-beloe-polusuhoe-13",
+        "alma-valley-solntse-vozduh-vinograd-sira-shiraz-krasnoe-polusuhoe-135",
+        "alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12"
+      ],
+      "producer": "Alma Valley",
+      "name": "Солнце, воздух, виноград"
+    },
+    {
+      "id": "g002",
+      "slugs": [
+        "derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11",
+        "derbent-vino-di-kaspiko-rkatsiteli-beloe-polusladkoe-11",
+        "derbent-vino-di-kaspiko-shardone-beloe-bryut-105-125",
+        "derbent-vino-di-kaspiko-shardone-beloe-polusladkoe-105-125"
+      ],
+      "producer": "Дербент Вино",
+      "name": "Ди Каспико"
+    },
+    {
+      "id": "g003",
+      "slugs": [
+        "derbent-vino-endemy-shardone-beloe-bryut-105-125",
+        "derbent-vino-endemy-shardone-beloe-suhoe-13",
+        "vino-suhoe-beloe-endemy-shardone"
+      ],
+      "producer": "Дербент Вино",
+      "name": "Эндемы Шардоне"
+    },
+    {
+      "id": "g004",
+      "slugs": [
+        "vysokij-bereg-risling-zelenaya-seriya",
+        "vysokij-bereg-risling-zelenaya-seriya-1",
+        "vysokij-bereg-risling-zelenaya-seriya-2"
+      ],
+      "producer": "Кубань-Вино",
+      "name": "Высокий берег Рислинг. Зеленая серия"
+    },
+    {
+      "id": "g005",
+      "slugs": [
+        "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+        "abrau-dyurso-pino-nuar-krasnoe-suhoe-125"
+      ],
+      "producer": "Абрау-Дюрсо",
+      "name": "Пино Нуар"
+    },
+    {
+      "id": "g006",
+      "slugs": [
+        "abrau-dyurso-risling-beloe-suhoe-12",
+        "abrau-dyurso-risling-beloe-suhoe-13"
+      ],
+      "producer": "Абрау-Дюрсо",
+      "name": "Рислинг"
+    },
+    {
+      "id": "g007",
+      "slugs": [
+        "abrau-dyurso-shardone-beloe-suhoe-12",
+        "abrau-dyurso-shardone-beloe-suhoe-13"
+      ],
+      "producer": "Абрау-Дюрсо",
+      "name": "Шардоне"
+    },
+    {
+      "id": "g008",
+      "slugs": [
+        "alma-valley-merlo-rezerv-krasnoe-suhoe-14",
+        "alma-valley-merlo-rezerv-krasnoe-suhoe-15"
+      ],
+      "producer": "Alma Valley",
+      "name": "Мерло Резерв"
+    },
+    {
+      "id": "g009",
+      "slugs": [
+        "alma-valley-pino-nuar-beloe-ekstra-bryut-115",
+        "alma-valley-pino-nuar-krasnoe-suhoe-13"
+      ],
+      "producer": "Alma Valley",
+      "name": "Пино Нуар"
+    },
+    {
+      "id": "g010",
+      "slugs": [
+        "alma-valley-shardone-rezerv-beloe-suhoe-135",
+        "alma-valley-shardone-rezerv-beloe-suhoe-14"
+      ],
+      "producer": "Alma Valley",
+      "name": "Шардоне Резерв"
+    },
+    {
+      "id": "g011",
+      "slugs": [
+        "derbent-vino-endemy-sovinon-beloe-bryut-105-125",
+        "vino-suhoe-beloe-endemy-sovinon"
+      ],
+      "producer": "Дербент Вино",
+      "name": "Эндемы Совиньон"
+    },
+    {
+      "id": "g012",
+      "slugs": [
+        "domaine-lipko-white-blend-muskat-beloe-polusuhoe-12",
+        "domaine-lipko-white-blend-tsitronnyy-magaracha-beloe-suhoe-115"
+      ],
+      "producer": "Domaine Lipko",
+      "name": "White Blend"
+    },
+    {
+      "id": "g013",
+      "slugs": [
+        "esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-12",
+        "esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-135"
+      ],
+      "producer": "ESSE",
+      "name": "Brut Zero Dosage"
+    },
+    {
+      "id": "g014",
+      "slugs": [
+        "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-115",
+        "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-13"
+      ],
+      "producer": "ESSE",
+      "name": "Rose Cuvee Prestige"
+    },
+    {
+      "id": "g015",
+      "slugs": [
+        "fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13",
+        "fanagoriya-velvet-season-risling-beloe-sladkoe-12"
+      ],
+      "producer": "Фанагория",
+      "name": "Velvet Season"
+    },
+    {
+      "id": "g016",
+      "slugs": [
+        "golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125",
+        "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143"
+      ],
+      "producer": "Golubitskoe Estate",
+      "name": "Каберне Совиньон Резерв"
+    },
+    {
+      "id": "g017",
+      "slugs": [
+        "loco-cimbali-oranzh-muskat-belyy-beloe-suhoe-129",
+        "loco-cimbali-oranzh-muskat-oranzhevoe-suhoe-127"
+      ],
+      "producer": "Loco Cimbali",
+      "name": "Оранж"
+    },
+    {
+      "id": "g018",
+      "slugs": [
+        "loco-cimbali-risling-beloe-suhoe-125",
+        "loco-cimbali-risling-risling-reynskiy-beloe-suhoe-13"
+      ],
+      "producer": "Loco Cimbali",
+      "name": "Рислинг"
+    },
+    {
+      "id": "g019",
+      "slugs": [
+        "molodoe-shato-taman",
+        "molodoe-shato-taman-1"
+      ],
+      "producer": "Кубань-Вино",
+      "name": "Молодое. Шато Тамань"
+    },
+    {
+      "id": "g020",
+      "slugs": [
+        "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-risling-125",
+        "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-shardone-13"
+      ],
+      "producer": "Новый Свет. Дом шампанских вин",
+      "name": "Российское шампанское коллекционное полусухое белое «Новый Свет»"
+    },
+    {
+      "id": "g021",
+      "slugs": [
+        "privat",
+        "solnechnaya-dolina-privat-kaberne-sovinon-krasnoe-sladkoe-155"
+      ],
+      "producer": "Солнечная долина",
+      "name": "Приват"
+    },
+    {
+      "id": "g022",
+      "slugs": [
+        "shato-taman-bryut",
+        "shato-taman-bryut-1"
+      ],
+      "producer": "Кубань-Вино",
+      "name": "Шато Тамань Брют"
+    },
+    {
+      "id": "g023",
+      "slugs": [
+        "shato-taman-grape-dance",
+        "shato-taman-grape-dance-1"
+      ],
+      "producer": "Кубань-Вино",
+      "name": "Шато Тамань. GRAPE DANCE"
+    },
+    {
+      "id": "g024",
+      "slugs": [
+        "sober-bash-kaberne-fran-krasnoe-suhoe-13",
+        "sober-bash-kaberne-fran-rozovoe-suhoe-12"
+      ],
+      "producer": "Собер Баш",
+      "name": "Каберне Фран"
+    },
+    {
+      "id": "g025",
+      "slugs": [
+        "villa-sofiya-sovinon-blan-beloe-suhoe-123",
+        "villa-sofiya-sovinon-blan-beloe-suhoe-14"
+      ],
+      "producer": "Вилла София",
+      "name": "Совиньон Блан"
+    },
+    {
+      "id": "g026",
+      "slugs": [
+        "vinodelnya-krinitsa-ester-muskat-beloe-suhoe-128",
+        "vinodelnya-krinitsa-ester-muskat-belyy-beloe-suhoe-12"
+      ],
+      "producer": "Криница",
+      "name": "Эстер"
+    },
+    {
+      "id": "g027",
+      "slugs": [
+        "vinodelnya-myshako-marselan-krasnoe-suhoe-143",
+        "vinodelnya-myshako-marselan-krasnoe-suhoe-144"
+      ],
+      "producer": "Мысхако",
+      "name": "Марселан"
+    },
+    {
+      "id": "g028",
+      "slugs": [
+        "vinodelnya-myshako-shardone-beloe-suhoe-123",
+        "vinodelnya-myshako-shardone-beloe-suhoe-145"
+      ],
+      "producer": "Мысхако",
+      "name": "Шардоне"
+    }
+  ],
+  "pairs": [
+    {
+      "a": "abrau-dyurso-pino-nuar-krasnoe-suhoe-12",
+      "b": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125",
+      "by": "metadata"
+    },
+    {
+      "a": "abrau-dyurso-risling-beloe-suhoe-12",
+      "b": "abrau-dyurso-risling-beloe-suhoe-13",
+      "by": "metadata"
+    },
+    {
+      "a": "abrau-dyurso-shardone-beloe-suhoe-12",
+      "b": "abrau-dyurso-shardone-beloe-suhoe-13",
+      "by": "metadata"
+    },
+    {
+      "a": "alma-valley-merlo-rezerv-krasnoe-suhoe-14",
+      "b": "alma-valley-merlo-rezerv-krasnoe-suhoe-15",
+      "by": "metadata"
+    },
+    {
+      "a": "alma-valley-pino-nuar-beloe-ekstra-bryut-115",
+      "b": "alma-valley-pino-nuar-krasnoe-suhoe-13",
+      "by": "metadata"
+    },
+    {
+      "a": "alma-valley-shardone-rezerv-beloe-suhoe-135",
+      "b": "alma-valley-shardone-rezerv-beloe-suhoe-14",
+      "by": "metadata"
+    },
+    {
+      "a": "alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+      "b": "alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14",
+      "by": "metadata"
+    },
+    {
+      "a": "alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+      "b": "alma-valley-solntse-vozduh-vinograd-shardone-beloe-polusuhoe-13",
+      "by": "metadata"
+    },
+    {
+      "a": "alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+      "b": "alma-valley-solntse-vozduh-vinograd-sira-shiraz-krasnoe-polusuhoe-135",
+      "by": "metadata"
+    },
+    {
+      "a": "alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+      "b": "alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12",
+      "by": "metadata"
+    },
+    {
+      "a": "derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11",
+      "b": "derbent-vino-di-kaspiko-rkatsiteli-beloe-polusladkoe-11",
+      "by": "metadata"
+    },
+    {
+      "a": "derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11",
+      "b": "derbent-vino-di-kaspiko-shardone-beloe-bryut-105-125",
+      "by": "metadata"
+    },
+    {
+      "a": "derbent-vino-di-kaspiko-merlo-krasnoe-polusladkoe-11",
+      "b": "derbent-vino-di-kaspiko-shardone-beloe-polusladkoe-105-125",
+      "by": "metadata"
+    },
+    {
+      "a": "derbent-vino-endemy-shardone-beloe-bryut-105-125",
+      "b": "derbent-vino-endemy-shardone-beloe-suhoe-13",
+      "by": "metadata"
+    },
+    {
+      "a": "derbent-vino-endemy-shardone-beloe-bryut-105-125",
+      "b": "vino-suhoe-beloe-endemy-shardone",
+      "by": "metadata"
+    },
+    {
+      "a": "derbent-vino-endemy-sovinon-beloe-bryut-105-125",
+      "b": "vino-suhoe-beloe-endemy-sovinon",
+      "by": "metadata"
+    },
+    {
+      "a": "domaine-lipko-white-blend-muskat-beloe-polusuhoe-12",
+      "b": "domaine-lipko-white-blend-tsitronnyy-magaracha-beloe-suhoe-115",
+      "by": "metadata"
+    },
+    {
+      "a": "esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-12",
+      "b": "esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-135",
+      "by": "metadata"
+    },
+    {
+      "a": "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-115",
+      "b": "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-13",
+      "by": "metadata"
+    },
+    {
+      "a": "fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13",
+      "b": "fanagoriya-velvet-season-risling-beloe-sladkoe-12",
+      "by": "metadata"
+    },
+    {
+      "a": "golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125",
+      "b": "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143",
+      "by": "metadata"
+    },
+    {
+      "a": "loco-cimbali-oranzh-muskat-belyy-beloe-suhoe-129",
+      "b": "loco-cimbali-oranzh-muskat-oranzhevoe-suhoe-127",
+      "by": "metadata"
+    },
+    {
+      "a": "loco-cimbali-risling-beloe-suhoe-125",
+      "b": "loco-cimbali-risling-risling-reynskiy-beloe-suhoe-13",
+      "by": "metadata"
+    },
+    {
+      "a": "molodoe-shato-taman",
+      "b": "molodoe-shato-taman-1",
+      "by": "metadata"
+    },
+    {
+      "a": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-risling-125",
+      "b": "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-shardone-13",
+      "by": "metadata"
+    },
+    {
+      "a": "privat",
+      "b": "solnechnaya-dolina-privat-kaberne-sovinon-krasnoe-sladkoe-155",
+      "by": "metadata"
+    },
+    {
+      "a": "shato-taman-bryut",
+      "b": "shato-taman-bryut-1",
+      "by": "metadata"
+    },
+    {
+      "a": "shato-taman-grape-dance",
+      "b": "shato-taman-grape-dance-1",
+      "by": "metadata"
+    },
+    {
+      "a": "sober-bash-kaberne-fran-krasnoe-suhoe-13",
+      "b": "sober-bash-kaberne-fran-rozovoe-suhoe-12",
+      "by": "metadata"
+    },
+    {
+      "a": "villa-sofiya-sovinon-blan-beloe-suhoe-123",
+      "b": "villa-sofiya-sovinon-blan-beloe-suhoe-14",
+      "by": "metadata"
+    },
+    {
+      "a": "vinodelnya-krinitsa-ester-muskat-beloe-suhoe-128",
+      "b": "vinodelnya-krinitsa-ester-muskat-belyy-beloe-suhoe-12",
+      "by": "metadata"
+    },
+    {
+      "a": "vinodelnya-myshako-marselan-krasnoe-suhoe-143",
+      "b": "vinodelnya-myshako-marselan-krasnoe-suhoe-144",
+      "by": "metadata"
+    },
+    {
+      "a": "vinodelnya-myshako-shardone-beloe-suhoe-123",
+      "b": "vinodelnya-myshako-shardone-beloe-suhoe-145",
+      "by": "metadata"
+    },
+    {
+      "a": "vysokij-bereg-risling-zelenaya-seriya",
+      "b": "vysokij-bereg-risling-zelenaya-seriya-1",
+      "by": "metadata"
+    },
+    {
+      "a": "vysokij-bereg-risling-zelenaya-seriya",
+      "b": "vysokij-bereg-risling-zelenaya-seriya-2",
+      "by": "metadata"
+    }
+  ]
+}

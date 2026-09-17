@@ -1,0 +1,552 @@
+# ChangeLog
+
+## 2026-09-17
+
+### Added
+- `excluded-slugs.json` names the wine slugs that are out of the benchmark. Each entry
+  holds the slug, a `reason`, and a timestamp. Some cards of the catalogue hold an
+  error, most often a wrong bottle photo. The bottle photo is the reference of the
+  benchmark, so a wrong reference shifts the metrics. The photos of an excluded slug
+  MUST NOT be used for benchmarking.
+- `config.yaml` key `excluded_slugs_file` names the file.
+- `docs/excluded-slugs.md` states the purpose, the format, the rules, and the duty of a
+  consumer of the file.
+- `scripts/review_server.py`: an `Exclude` button under the bottle photo of every row.
+  The button asks for the reason and writes the file at once. An excluded row is red.
+  The button of an excluded row reads `Excluded` and puts the slug back after a
+  confirmation.
+- `scripts/review_server.py`: the control `Slugs` in the header bar. The values are
+  `all`, `included`, and `excluded`.
+- `scripts/review_server.py`: the route `POST /api/exclude` with the body
+  `{slug, excluded, reason}`. An exclusion without a reason is refused.
+- The agent API states the exclusion: `GET /api/v1/wines` leaves an excluded wine out
+  unless `include_excluded=1`, `GET /api/v1/wine/<slug>` holds `excluded` and
+  `exclude_reason`, and `GET /api/v1/stats` holds `excluded_wines` and
+  `excluded_photos`.
+- `config.yaml` now holds the configuration of the project. It defines `rootdir`, the root
+  directory of the workspace, and `catalog_file`, the path to `catalog.jsonl`. A relative
+  value of the configuration is resolved against `rootdir`.
+- `scripts/common.py` reads `config.yaml` at import. It exports `CONFIG`, `ROOTDIR`,
+  `CATALOG_FILE`, `PHOTO_DIR`, `TRASH_DIR`, `LABEL_FILE`, `VARIANT_GROUPS_FILE`,
+  `EXCLUDED_SLUGS_FILE`, and the helpers `rootpath(path)`, `config_path(key, default)`,
+  and `print_config()`. An absent key gives the earlier default path.
+- `scripts/review_server.py` prints the configuration and the work directory at start.
+  A path that does not exist gets the mark `(absent)`.
+
+- `../SVOE-VINO-ISSUES.md` in the workspace root. It is the consolidated register of every
+  known defect of the «Своё Вино» catalogue and of this test set. It joins five earlier
+  sources: `docs/catalogue-defects.md`, `ResearchLog.md`, `work/hunt/results/*.json`,
+  `svoe-wino-hackaton/docs/research/`, and the `catalog-quality.md` / `catalog-twins.md` /
+  `letters/02-platform-catalog-defects.md` documents of the hackathon repository.
+
+### Removed
+- The configuration key `embedding_cache_file` and the file
+  `derived/bottle-embeddings.json`. The matching of a picture against the photo set is
+  the work of an external application now.
+- `scripts/review_server.py`: the route `POST /api/v1/search-by-image`, the helpers
+  `load_embeddings`, `embed_one`, and `top_k_by_vector`, the constant `GX10`, and the
+  field `embedding_index` of `GET /api/v1/stats`. The route needed the embedding cache
+  and cannot answer without it.
+- `scripts/08_variants.py`: the embedding cache and the option `--no-cache`. The image
+  step embeds the bottle photos at every run now. `--no-image` skips the step.
+- `scripts/common.py`: the constant `EMB_CACHE_FILE`.
+
+### Changed
+- `scripts/review_server.py` takes every path from `config.yaml`: the catalogue, the photo
+  set, the trash directory, the label file, the embedding cache, and the variant groups.
+  No path is hard-coded in the script now.
+- `scripts/08_variants.py` takes the same four paths from `config.yaml`. The script writes
+  the variant groups and the embedding cache that the review tool reads, so both scripts
+  MUST use one value for each file.
+- `common.OUT` is now `common.PHOTO_DIR`. The value does not change with the default
+  configuration.
+- `scripts/review_server.py` now needs `PyYAML`, because it imports `scripts/common.py`.
+
+### Found
+- New D4 metadata defects, found by a field cross-check of `catalog.jsonl` on 2026-09-17.
+  **Every one of the 7 «Два Петра» cards carries `grapes = Саперави` and
+  `category = Красное`**, although four of them name a white variety and describe a straw
+  colour. `perovskih_aligote`, `uva-vallis-risling`,
+  `vinodelnya-myshako-quintessence-reserve-risling-krasnoe-suhoe-131`,
+  `vinodelnya-myshako-oranzhevoe-iz-belogo-gevyurtstraminer-krasnoe-suhoe-142`,
+  `vinodelnya-zhakov-rkatsiteli-eskeyp-krasnoe-suhoe-119` and
+  `agrolayn-heritage-dg-skin-contact-rkatsiteli-rkatsiteli-krasnoe-suhoe-12` also carry
+  `category = Красное` against a white or an orange wine. 10 rosé cards carry a colour text
+  that describes a red or a straw-yellow wine; those are candidates, not confirmed defects.
+- Slug-namespace collisions. 10 slug families are only a grape name or a colour word, so the
+  producer is not in the slug and a `-1` / `-2` counter is the only separator. `merlo`
+  (Галицкий и Галицкий) and `merlo-1` (Mantra Estate) also share one photo file.
+- The slug naming convention is not uniform. 36 slugs use underscores instead of hyphens,
+  all from five producers: Усадьба Перовских, Denisov Winery, Два Петра, JD winery,
+  Винодельня Орлова.
+- Three test-set slugs are absent from the 2026-09-15 catalogue dump:
+  `chateau-tamagne-select-blanc-brut-svo-yo-vino`,
+  `vinodelnya-uzunov-bunt-tsitronnyy-magaracha-beloe-suhoe-139`,
+  `vinodelnya-uzunov-roze-kaberne-sovinon-rozovoe-ekstra-bryut-127`.
+- Re-measured on the 2026-09-15 dump: 34 shared-photo groups over 69 cards, and 70 groups
+  over 154 cards that share one producer and one name. The earlier figures, 25 / 50 and
+  64 / 141, came from an older snapshot and a different normalisation.
+
+## 2026-09-16
+
+### Added
+- Agent photo hunt, batch 1. Six agents worked wines 1-48 of the `needs_positive`
+  queue and wrote **87 proposals**, **29 wine notes**, and **102 photo comments**.
+  Photos went from 2025 to 2112. No label was written: every result is a proposal
+  for the reviewer.
+- `work/hunt/` holds the state of the hunt. `queue.json` is the frozen 570-wine
+  queue. `progress.json` records which slug went to which agent in which batch.
+  `slices/` holds the per-agent input. `results/` holds the per-agent output.
+  A later batch reads `progress.json` and does not repeat a wine.
+
+### Added
+- Agent photo hunt, batch 2. Six agents worked wines 49-96 of the `needs_positive`
+  queue under `work/hunt/POLICY.md` and wrote **155 proposals**. Every one of the 48
+  wines got at least one proposal, and 46 of 48 reached the target of 3.
+- `work/hunt/POLICY.md`. The project owner set it on 2026-09-16. It OVERRIDES the
+  matching rules of the `wine-hunt` skill. A photo of the right wine in an older
+  label design is now proposed as `variant`. A clean studio shot on a white
+  background is now acceptable. A lineup shot, a label-only crop, and brand lifestyle
+  photography are now forbidden.
+- `docs/catalogue-defects.md`. It collects every catalogue defect and wrong photo that
+  the hunt found, grouped by the decision each one needs.
+- Per-agent scratchpads at `work/hunt/scratch/<agent>/`. They fix the collision of
+  batch 1.
+
+### The cigarpro.ru run
+- `cigarpro.ru` added as a photo source on the owner's instruction. Its Russian wines
+  section holds **2042 products**, each with about five of its own photographs.
+  `work/hunt/cigarpro/harvest_index.py` walked all 69 listing pages;
+  `work/hunt/cigarpro/match.py` paired the products with the wines that need a
+  positive. **483 of the 548** such wines have at least one cigarpro candidate.
+- Batch 1 gave 12 agents a slice of 72 wines. Every one of the 72 held **no proposal at
+  all**: they are the residue that the search-engine hunts and the irecommend run could
+  not fill. **51 of the 72 now hold a proposal**; 21 stay empty.
+- **146 cigarpro proposals** were written: 81 `positive` and 60 `variant` still pending,
+  plus 5 that the reviewer has already confirmed as `positive`. 86 of them are back
+  labels.
+- Every cigarpro image carries a `CIGARPRO.RU` watermark over the label, on every size.
+  The owner accepts it on the condition that each proposal is marked. An audit agent
+  checked all 141 pending cigarpro proposals: **141 of 141** begin with the exact
+  marker `WATERMARK cigarpro.ru | `, **141 of 141** name a cigarpro product page in
+  `source_url`, and **141 of 141** carry a confidence from 0.80 to 0.95. No defect.
+- A session rate limit killed the whole first cigarpro run part-way. 86 proposals had
+  already reached the server; no agent had written its results file. The remaining work
+  was recomputed from `review-labels.json` and finished by a resumable workflow.
+  `work/hunt/cigarpro/HOWTO.md` now tells an agent to write its results file after the
+  first wine.
+
+### The irecommend run
+- Five agents worked the 33 wines that batches 1 and 2 left short of 3 proposals.
+  irecommend held a matching product for **2 of the 33**. The 521 wall was not hiding
+  anything: irecommend indexes a producer's mass-market SKU, not the reserve, limited,
+  kosher or single-vineyard bottle. 13 proposals came out of the run, and 10 of those
+  came from other sites. Detail and the screening rule for a later run are in
+  `ResearchLog.md`.
+
+### Result of both batches
+- **242 proposals over 78 wines**: 202 `positive` and 40 `variant`. 96 of the 570
+  wines of the queue were worked; 474 remain. 55 wine notes and 257 photo comments.
+  The agent totals reconcile exactly with `review-labels.json`.
+- Batch 2 produced 155 proposals against 87 in batch 1, from the same number of
+  agents and wines. Two causes: the `variant` rule recovered photos that batch 1
+  discarded, and batch 2 started with the source list, the rate limits and the traps
+  that batch 1 had to find for itself.
+
+### Added
+- Right-click Delete in the review page. A right-click on a candidate photo, in the
+  table or on the large image, opens a menu with one item. The item MARKS the photo;
+  it does not touch the file. The existing "apply" button now carries out the pending
+  deletions together with the pending moves, behind one dialog that states each
+  consequence apart. A deletion MOVES the file to `work/trash/<slug>/` and drops the
+  whole entry. A photo that carries both a `delete` and a `reassign_to` is deleted and
+  is not moved. New route `POST /api/mark-delete`; new field `delete` on a photo
+  entry; new count `deleting`.
+- `derived/bottles-fixed/` in `svoe-wino-hackaton`, with a README. It holds bottle
+  photos fetched by hand for the wines that the official upload dump does not carry.
+  The dated snapshot under `sources/` MUST stay as received, so a fetched file does
+  not go into it.
+
+### Fixed
+- `fanagoriya-fanagoriya-hey-bey-shardone-beloe-suhoe-13` had no catalogue bottle
+  (`local_path: null`, `match: "none"`). The bottle photo was fetched from the
+  `og:image` of its `vino-svoe.ru` page, 406x1500 webp, and stored in
+  `derived/bottles-fixed/`. `derived/catalog.jsonl` now points at it with
+  `match: "manual"` and a `manual_bottle` record of the source. **A rebuild of
+  `catalog.jsonl` drops this repair**, because `build_catalog.py` has no override step.
+- The `del` pill hid the comment badge. Both sat at `top: 4px; right: 4px`, and the
+  pill has the higher `z-index`, so a photo that carried a comment showed no comment
+  badge exactly when the reviewer was about to delete the comment with the photo. The
+  badge now moves aside, and the pill no longer takes the pointer. Found by an
+  adversarial review of the diff; 22 agents raised findings and this one alone
+  survived refutation.
+- `docs/API.md` said the `url` of a proposal MUST be `http` or `https`. A `data:` URL
+  has always worked and is the way every agent proposes a picture from a blocked host.
+  The document now states it.
+- `docs/catalogue-defects.md` section D was misread by an agent as "the renders look
+  the same". The wording now separates the renders, which ARE separable, from the
+  candidate photos, which usually are not.
+
+### Changed
+- Top-up pass run with `06_topup.py --need 3 --redownload`. It reopened **1632**
+  wines that hold fewer than 3 accepted photos and freed 6120 retryable candidates.
+  The driver runs again with `--per-wine 40 --top 16`, deeper than the first pass.
+- The stalled first pipeline pass was resumed. It had stopped mid stage 2 on
+  2026-09-15 at 02:39. `GPU_TASKS.md` said "running" and was wrong; the entry is
+  corrected.
+
+### Found
+- `aligote-avtorskoe` and `aligote-avtorskoe-vino` share one `bottle_path`. They are
+  one wine in two catalogue rows.
+- `alma-valley-pino-nuar-beloe-ekstra-bryut-115` holds two unlabelled photos,
+  `01_conf095.jpg` and `02_conf095.jpg`, that show the still red Pinot Noir 2020.
+  They are a different wine and SHOULD be labelled negative.
+- The render of `alma-valley-shardone-rezerv-beloe-suhoe-14` is a 2020 bottle whose
+  label reads 13,0 %, not 14.
+- The label of `abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12` reads
+  `CHARDONNAY / SAUVIGNON BLANC`; the slug names only `shardone`.
+- `alma-valley-merlo-rezerv` `-14` and `-15` cannot be told apart in a photo unless
+  the bottom label line is readable. Two agents reached this result on their own.
+- One proposal is known to be wrong and cannot be withdrawn by its author:
+  `aratti-muskat-belyj-polusuhoe` `02_agent.jpg`. Read the photo comment.
+- `porusski.me` does not send its intermediate certificate, so `POST /api/v1/propose`
+  cannot fetch it. A different CA bundle does not help. The `data:` URL path is the
+  general answer. `review_server.py` needs no change. Details in `ResearchLog.md`.
+
+### Added
+- `scripts/bench_vlm_models.py`. It compares vision models on the stage 4 identity
+  task with the production prompt of `04_verify.py` and the manual labels of
+  `review-labels.json` as the ground truth. The sample is stratified and
+  deterministic. The run is resumable: a finished call is not repeated.
+- `scripts/bench_vlm_score.py`. It scores the benchmark output for two decision
+  rules, `same_wine` and the production rule `accept`, and reports latency and
+  token cost. The `unusable` stratum is scored apart from the main measure.
+- `work/vlm_bench.jsonl` and `work/vlm_bench_report.md`. The raw answers and the
+  scored report of the first run: 4 models, 300 pairs, 1200 calls, 0 errors.
+- A ResearchLog entry with the result: `qwen3.7-flash`, `qwen3.8-flash`, and
+  `qwen3.8-max` have the same accuracy on this task, but not the same error
+  profile and not the same cost.
+
+## 2026-09-15
+
+### Added
+- An HTTP API under `/api/v1/` for an agent: `GET stats`, `GET wines` with the
+  filters `all`, `unlabelled`, `needs_positive`, `has_proposal`,
+  `fully_labelled`, `in_variant_group`, `GET wine/<slug>`,
+  `GET wine/<slug>/photos?label=...`, `POST propose`, and
+  `POST search-by-image`. Every picture is named by an absolute path, so an
+  agent reads the bytes with its own file tool.
+- The status `proposed`. An agent writes a proposal, not a label: the photo lands
+  as `NN_agent.<ext>` and the entry holds `proposed`, `by`, `confidence`, and
+  `source_url`. A proposal is not counted in `labelled`. The card has a dashed
+  border and a tag with the confidence, and the filter `holds a photo proposed by
+  an agent` lists them. The reviewer answers with the keys `1` to `4`.
+- `docs/API.md` with every route, every field, and the rule of the proposals.
+- The skill `wine-hunt` in `.claude/skills/wine-hunt/` with the working
+  instructions of the agent: the queries, the checks against the variant group,
+  the confidence floor of 0.8, and what the agent MUST NOT do.
+- `scripts/08_variants.py`. It finds the wine slugs that hold the same wine in
+  another bottle and writes `derived/variant-groups.json`. Two steps: the same
+  producer and the same name in `catalog.jsonl`, then the cosine similarity of
+  SigLIP2 embeddings of the catalogue bottle photos. The metadata step gives 28
+  groups over 63 wines of `my/`.
+- `scripts/09_apply_moves.py`. It moves the photos that the review tool marked for
+  another slug. A report run is the default; `--apply` moves the files. The script
+  is safe to run twice, and a name that is taken gets a `_moved2` suffix.
+- `scripts/review_server.py`. A manual review tool for the `my/` photo set.
+  It starts a local HTTP server on port 8154 and opens a browser.
+  The page shows one table row per wine. Column 1 holds the catalogue bottle photo
+  of the wine from the strapi dump. The next column holds the candidate photos of
+  `my/<slug>/`. Each candidate photo has a "V" button and an "X" button.
+  "V" means the photo shows this bottle. "X" means it does not.
+  A second click on the same button clears the verdict.
+  Every click is written to `review-verdicts.json` at once. The file is read again
+  at the next start. The tool has eleven sort orders, nine filters, and a text search.
+  A click on a photo opens it at full size.
+  The tool uses the Python standard library only. It needs no install step.
+- `SMOKE_TESTS.md` with the manual test cases of the review tool.
+
+- Five-stage pipeline that builds a real-world photo test set for all 2,018 wines
+  in the `vino-svoe.ru` dump: `scripts/01_search.py` … `scripts/05_report.py`,
+  driven by `scripts/run_pipeline.py`.
+- `scripts/common.py` with the SQLite state schema, the studio-host deny list,
+  the user-generated-content host list, and the gx10 request helpers.
+- `README.md` that describes the set, the pipeline, and the reports.
+
+### Notes
+- The review tool reads the slug-to-bottle-photo map from
+  `../svoe-wino-hackaton/derived/catalog.jsonl`. That file is written by
+  `../svoe-wino-hackaton/scripts/build_catalog.py`.
+- The tool does not test that a bottle photo file is present at start.
+  The strapi `uploads` directory holds about 15,800 files on an external volume.
+  One `stat` call there costs a large fraction of a second, so 811 calls block
+  the start for minutes. The browser requests each bottle photo only when the row
+  scrolls into view. `/img/bottle` answers 404 when the file is absent.
+- Current size of the review job: 814 wines and 1,892 candidate photos.
+  4 wines have no catalogue bottle photo. 3 of them are absent from
+  `catalog.jsonl`. 1 has no `upload_file`.
+
+### Changed
+- The wine column holds a text field for a note about the whole wine. It is one
+  line high until it holds a text, and opens while it is used. The text is saved
+  after a pause of 700 ms and when the cursor leaves the field, through
+  `POST /api/wine-comment`. The table is not drawn again while the note is saved,
+  so the cursor stays in the field.
+- A note about a wine is stored in the new top level map `wines` of
+  `review-labels.json`, keyed by the slug. It is apart from the labels, because
+  it states something about the wine and not about one photo. The count
+  `wine_notes` is new, and `prune_state` drops the note of a wine that `my/` no
+  longer holds.
+- A picture dragged from another browser tab is accepted, on a row of a wine or
+  beside the table. Such a drag carries an address, not a file, so the page reads
+  `text/uri-list`, the `src` of an `<img>` in `text/html`, or plain text, and the
+  server fetches the address through `POST /api/fetch-image`. A `data:` address is
+  decoded without a request.
+- The media type of an added picture comes from the first bytes of the file, not
+  from the `Content-Type` of the host. A real case: `api.vino-svoe.ru` answers a
+  WebP picture with no `Content-Type`, and the first version refused it.
+  The same test now also repairs a wrong type from the file manager.
+- The fetch refuses an address that is not `http` or `https`, and an address whose
+  host resolves to a loopback, private, link-local, reserved, or multicast
+  address, so a dragged link cannot reach a service of this machine or of the
+  local network. The request carries a browser user agent string.
+- A file dropped beside the table opens a dialog that asks for the wine, so a photo
+  can be added to a named slug without a search for its row. The dialog offers
+  five wines with their bottle photo for what is typed, over the slug, the name,
+  and the producer. It names only the wines that already have a directory in
+  `my/`. A hint at the bottom of the window states both ways to drop.
+- Fixed: the edit that added the move dialog cut too wide a slice of the page
+  script and removed `applyMoves` and every drag and drop handler. The build
+  between 21:05 and 21:20 had no drag and drop. The handlers are back, and the
+  check after each edit now counts all 23 handlers of the page.
+- A photo with a comment carries a round badge in the top right corner of its
+  card. The pointer over the badge opens a panel with the whole text. The panel
+  keeps the line breaks and scrolls when the text is long, so a comment that
+  states a move is readable. Before this, the comment was the `title` of the
+  card: the browser tooltip was slow, cut the text, and dropped the line breaks.
+- The header states `N moves pending` with an `apply` button whenever a move is
+  recorded and the file is not moved yet. The button asks for a confirmation,
+  moves the files through `POST /api/apply-moves`, and rebuilds the table from
+  the answer. Before this, a recorded move was visible only through a filter or
+  through a run of the script, so it was easy to forget.
+- A moved photo loses its label, because the label judged the photo against the
+  old wine. The comment is kept, and one line is put in front of it:
+  `до переноса в <new> был в <old> с таким комментарием:`. The entry gets
+  `moved_from` and loses `reassign_to`, so a second run moves nothing.
+  The entry travels to the key of the target slug and of the new file name.
+- The move logic lives in `review_server.py` as `plan_moves`, `perform_moves`,
+  and `move_note`. `scripts/09_apply_moves.py` imports the module and calls the
+  same functions, so the button and the script act the same way.
+- The move question is a dialog, not a `prompt`. The dialog offers the five wines
+  that the photo most likely belongs to, each with its catalogue bottle photo,
+  name, and producer. `GET /api/suggest` ranks them: a member of the variant
+  group first, then the same producer, then a shared word of the name, then the
+  same grape and the same category. A field below still takes any slug.
+- An image file dropped on the row of a wine is added to `my/<slug>/` through
+  `POST /api/upload`. The name is `<next number>_manual.<extension>`, so a photo
+  added by hand is easy to tell apart and sorts after the photos that the
+  pipeline found. A file is at most 20 MB and MUST be JPEG, PNG, WebP, GIF, or
+  BMP. The row is outlined while a file is over it.
+- The rank of a photo is read with `RANK_RE` (`^(\\d+)_`) instead of the full
+  `NAME_RE`, so a `_manual` photo sorts by its number and not at the end.
+- The large view holds a comment panel at the right. The panel takes a free text
+  comment about one photo and one wine slug. The text is saved as it is typed,
+  after a pause of 600 ms, and a move to another photo or a close of the view
+  flushes the pending text first. `POST /api/comment` is the route, the field is
+  `comment`, and `count_state` answers a `commented` count. A comment is at most
+  4000 characters.
+- A photo with a comment carries a coloured bar at the left of its card, and the
+  comment is the tooltip of the card. The row states `N noted`. The filter
+  `holds a comment` is new.
+- The keys of the large view do not act while the cursor is in a field. `Esc`
+  leaves the field, and a second `Esc` closes the view. Without this rule a `1`
+  inside a comment would label the photo.
+- A click in the comment panel no longer closes the large view. Only a click on
+  the background closes it.
+- The review tool holds a fourth label, `variant`, on the key `4`: this wine in
+  another bottle, such as another vintage or another package design. The reason:
+  the catalogue holds one slug per bottle, not one slug per wine, so a photo of
+  the right wine in the wrong bottle fits neither `positive` nor `negative`.
+- The rows of one variant group stand next to each other, whatever the sort, and
+  share one background colour. Two colours are used in turn, so two groups next
+  to each other stay apart. The filter `has a similar wine (variant group)` shows
+  only the wines of a group.
+- A `copy` button next to the slug puts the slug on the clipboard. It falls back
+  to a hidden text field when the clipboard API is not available, because the
+  tool runs over plain HTTP on the loopback address.
+- A photo can be moved to another wine slug. The `move` button under the photo and
+  the `m` key in the large view ask for the target slug, and the field completes
+  from the 2,103 catalogue slugs. The tool writes `reassign_to` into the label
+  file and does NOT move the file. `scripts/09_apply_moves.py` moves the files
+  later, on one command. A moved card carries a dashed outline.
+- A photo entry can hold a `label`, a `reassign_to`, or both. Clearing one field
+  no longer drops the other. The entry is removed only when no field is left.
+- `POST /api/reassign` is new. `count_state` answers a `reassigned` count.
+  `GET /api/rows` answers the variant groups and the list of catalogue slugs.
+- The review tool labels a photo with one of three labels instead of two verdicts:
+  `positive`, `negative`, and `unusable`. The reason: a `negative` photo is a
+  wanted result, not waste. The set needs negative samples, so a photo that shows
+  a different wine stays in the set as a negative sample of its slug. The earlier
+  `no` verdict read as a rejection, and the card was dimmed like waste.
+  `unusable` is now the only label that takes a photo out of the set: no bottle,
+  unreadable, or a duplicate. A `negative` card has its own blue colour and is not
+  dimmed. Only an `unusable` card is dimmed.
+  The keys are `1` positive, `2` negative, `3` unusable.
+- The label file is `review-labels.json`. It was `review-verdicts.json`. The top
+  key is `labels`, the entry field is `label`, and the value is one of the three
+  label names. `version` is 2. The counts are `positive`, `negative`, `unusable`,
+  and `labelled`. The old name and the old values held no data, so no migration
+  was needed.
+- The API routes are `POST /api/label` and `POST /api/labels`. The body field is
+  `label`. `GET /api/rows` and `GET /api/state` answer with the key `labels`.
+- The sort orders and the filters follow the three labels: `unlabelled first`,
+  `positive count`, `negative count`, `unusable count`, `has a negative sample`,
+  `has an unusable photo`, and so on.
+- The large view writes its place into the address of the page as
+  `#<slug>/<photo file name>`. Such an address can be sent to another person. The
+  tool opens the large view at that photo when the address is opened, and clears
+  the filter and the search when the wine is not in the current view. The address
+  is written with `replaceState`, so the arrow keys do not fill the history.
+- The large view of the review tool holds the keyboard. `Right` and `Left` go to the
+  next and the previous photo of the wine on screen. `Down` and `Up` go to the next
+  and the previous wine, at its first photo. `1` confirms the photo and `2` rejects
+  it; the same key again clears the verdict. `Esc` closes the view.
+  The keys follow the order that the table shows, so the sort and the filter also
+  control the keyboard pass. The table scrolls to the wine on screen, so the place
+  is held when the view closes.
+- The large view states the verdict of the photo on screen in a badge at the top:
+  `confirmed V`, `rejected X`, or `not reviewed`. The caption under the candidate
+  photo states the place in the wine and the review progress of the wine.
+- A click on the catalogue bottle in the table opens the large view at the first
+  photo of that wine. The first version showed the bottle alone, and the arrow keys
+  had nothing to move through.
+- `setVerdict` takes a slug and a file name. It took a card element before. The
+  large view has no card, so both the button of the table and the key of the large
+  view now call the same function.
+- The two images of the large view stay next to each other in the middle of the
+  screen. The first version gave each image half of the width, so a wide monitor
+  pushed the catalogue bottle and the candidate photo to opposite edges and the
+  two labels were far apart. Each figure now shrinks to the width of its own
+  image. The caption is held out of the width of the figure, so a long wine name
+  wraps instead of moving the images apart.
+- The large view of the review tool shows two images side by side: the catalogue
+  bottle at the left, the candidate photo at the right. The first version showed the
+  candidate photo alone, so the operator had to hold the label in memory while the
+  large view covered the table. Each image has a caption. A click on a large image
+  keeps the view open. A click on the background closes it, and so does `Esc`.
+  A click on the catalogue bottle in the table shows that bottle alone.
+- Stage 4 uses a stricter prompt. The first prompt accepted a photo that showed only the
+  producer brand. A back-label close-up of a different Agora wine passed as a match.
+  The new prompt requires the front label of that exact wine and rejects a back label,
+  a cork, a box, a glass, or another wine of the same producer.
+  It adds the field `front_label`. Acceptance now needs
+  `same_wine=true`, `studio=false`, and `front_label=true`.
+  On a 6-case probe the new prompt kept every true match and removed the false match.
+- Stage 2 downloads through one flat task queue over many wines. The first version ran one
+  wine at a time, so one slow host stalled a whole wine and throughput fell to 0.8 images/s.
+  The flat queue reaches 5 to 8 images/s.
+- Stage 2 rewrites `irecommend.ru` image URLs to the CDN mirror `cdn-irec.r-99.com`.
+  Direct requests answered HTTP 521 for 1,585 of 1,585 tries. The mirror answered every try.
+  A per-host limit of 12 requests in flight keeps the mirror stable.
+- The driver takes `--stages`. Stages 2 and 3 run in one process, stage 4 in another.
+  llama-swap on gx10 holds `siglip2` and `qwen3-vl-32b` at the same time, so the two
+  processes do not make the host swap models.
+
+### Measurements
+- Stage 1 search: about 960 wines/h at one Yandex query per 1.3 s.
+- Stage 2 download: 3,287 of 3,677 candidates fetched for 200 wines in 9.8 min.
+- Stage 3 embed: 19 images/s including the border-whiteness measure.
+- Stage 4 verify: 1.32 s per pair at 12 concurrent requests, about 340 wines/h.
+  12 workers gave almost no gain over 6 workers, so the GPU is the limit.
+- A smaller VLM input (320 px instead of 448 px) gave no speed gain and lower agreement.
+- One call carrying 5 candidates cost 35 s and agreed with the pairwise verdicts
+  on only 90% of cases. Pairwise verification with concurrency is both faster and more exact.
+- Acceptance does not fall with the similarity rank: rank 1 accepted 59%, rank 8 accepted 42%.
+  Verifying only the top 4 candidates would lose wines that reach 3 photos at ranks 5 to 8.
+
+### Findings
+- The official Svoe Vino API exposes `POST /v1/wines/search-by-photo`.
+  The Swagger document is at `https://api.vino-svoe.ru/docs`
+  and the specification at `https://api.vino-svoe.ru/docs/swagger-ui-init.js`.
+  The endpoint needs no token. It is the baseline recognizer, not ground truth.
+- DuckDuckGo image search rate-limits this host after a few dozen queries and answers 403.
+  Yandex Images answers about 30 results per query and stayed available at one query per 1.3 s.
+- SigLIP2 similarity alone is not a decision rule. A supermarket shelf photo of unrelated
+  Spanish wines scored 0.55 against the reference bottle. The vision model rejected it at 0.95.
+- SigLIP2 batching on gx10: one image per request costs 7.9 s with model load,
+  a batch of 32 costs 30 ms per image.
+- `qwen3-vl-32b` pairwise verification costs about 8 s per pair when it writes a reason,
+  and about 0.6 s per pair with `max_tokens=120` and 4 concurrent requests.
+
+### Incidents
+- The volume `/Volumes/T7_2TB` reached 100% with 254 MB free during stage 2.
+  The cause is not this project: the volume held 1.8 TB before the run and this project
+  used 1.5 GB. `work/raw` and `work/thumbs` now live on `/Volumes/Storage`
+  and are reached through symbolic links, so the project keeps its paths.
+  The database stores absolute paths and the links keep them valid.
+- Moving `work/raw` while stage 4 was running closed 333 wines with no check.
+  Stage 4 read `os.path.exists()` on files that were in transit, found none, and marked
+  each wine verified with zero verdicts. 314 of them had usable candidates.
+  Stage 4 now separates the two cases: a wine with no candidate is closed, a wine whose
+  candidate files are missing is skipped and stays open. The 314 wines were reopened.
+
+### Result on the first 102 fully checked wines
+- 55 wines (54%) have at least 1 real-world photo.
+- 32 wines (31%) have at least 3.
+- 215 photos accepted out of 854 checked, so the vision model rejects about 75%
+  of what the search engines return. The search noise is the reason, not the filter.
+
+### Cross-check against the official recognizer
+- `scripts/07_api_check.py` sends every accepted photo to
+  `POST https://api.vino-svoe.ru/v1/wines/search-by-photo` and records the rank of the
+  expected slug in `candidates.api_rank`. 0 means the slug was not in the answer.
+- On 200 accepted photos the official recognizer returned the expected slug
+  at rank 1 for 28% and inside the top 5 for 66%.
+- A visual check of 12 photos that the recognizer missed found that most are correct
+  photos of the right wine that are simply hard: a steep angle, a close-up of part of the
+  label, or several bottles in one scene. One of them reads "MUSCAT BLACK AGORA",
+  which is the target wine.
+- The acceptance rule was therefore left as it is. `api_rank` is reported per photo as a
+  difficulty label: a photo the baseline already handles, or a photo that it misses.
+- A minority of accepted photos show only the producer brand on a neck label or a cork.
+  These stay in the set and are visible in the report for manual removal.
+
+## 2026-09-15 — final result
+
+### The set
+- 2,018 wines searched. 128,483 candidate images found, 117,660 of them on
+  user-generated-content hosts. 33,068 images downloaded.
+- 25,172 pairwise vision checks made. 2,163 photos accepted. Acceptance rate 8.6%.
+- 844 wines (42%) have at least 1 real-world photo. 386 wines (19%) have 3 or more.
+  1,174 wines (58%) have none.
+- `my/` holds 844 directories and 2,016 photos, at most 4 per wine, 308 MB.
+
+### Why 3 photos per wine was not reached
+- The limit is the corpus, not the filter. A search for a small Russian producer returns
+  images of other wines of the same grape, other wines of the same producer, or shop
+  stock photos. The vision model rejects them correctly.
+- The deep pass proves the point. It made about 15,000 extra checks at depth 20 and added
+  only 73 wines to the group with 3 photos.
+
+### Cross-check with the official recognizer
+- 1,974 accepted photos were sent to `POST /v1/wines/search-by-photo`.
+- The expected slug came back at rank 1 for 888 photos (45%) and inside the top 5
+  for 1,455 photos (74%).
+- The 26% that the recognizer misses are mostly correct photos that are hard:
+  a steep angle, a close-up of part of the label, or several bottles in one scene.
+
+### Verification backends
+- Three vision backends ran in parallel with work-stealing:
+  `qwen3-vl-32b` on gx10 (6,497 calls), `qwen3.8-flash` on the qwencloud token-plan
+  endpoint (9,075 calls), and `qwen3.7-flash` on dashscope-intl (2,538 calls).
+- Both cloud models were checked against 24 pairs already judged by `qwen3-vl-32b`.
+  Agreement was 24/24 for each, and every answer parsed as JSON.
+- The `candidates.vlm_model` column records the backend for each verdict.
+- The qwencloud endpoint throttles above 8 concurrent requests. At 16 workers the cost
+  per call tripled. 8 workers is the setting.
+- Adding the cloud backends raised the rate from 320 to about 800 wines/h.
+
+### Remaining material
+- 86,071 candidate images were found by search and never downloaded. Working through
+  them would take about a day. The yield curve of the deep pass suggests it would add
+  roughly 50 to 100 wines to the group with 3 photos.
