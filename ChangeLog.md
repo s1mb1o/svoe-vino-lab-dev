@@ -3,6 +3,245 @@
 ## 2026-09-17
 
 ### Added
+- The progress line of `scripts/match_run.py` now states the time of the last chunk of 25
+  photos, the elapsed time of the run, and the ETA. The ETA uses the rate of the whole run.
+  The line reads `  25/1387  chunk 12.3s  elapsed 0:00:12  ETA 0:11:05`.
+- The table can now show a catalogue card that has no directory in `my/`. Such a card has no
+  candidate photo, so it is a gap of the photo set. 1,262 of the 2,103 catalogue cards are such
+  a gap. These rows stay out of the default list, and a filter that asks about the catalogue
+  brings them in: `no candidate photos`, and the five `catalogue photo:` filters. The same
+  rule holds in the agent API, where the filter `no_candidate_photos` is new.
+  A catalogue-only row carries the mark `catalogue only`, a muted background, and the text
+  `no directory my/<slug>`. It holds no label state, and the counters of the review set do not
+  count it. The add, move, and open paths keep to the rows that have a directory.
+- The bottle column states how the catalogue established that photo. The badge under the
+  photo reads `from site`, `by name`, `by hand`, or `no photo`, and its colour follows the
+  confidence of the match. The tooltip states the method, the confidence, the number of
+  candidates for the CSV photo name, the source page, the time of the check, and the note.
+  An old catalogue without the field `image_match` gets the badge `method unknown`.
+- A card whose photo is shared with another card carries the mark `shared ×N`. The tooltip
+  names the other slugs and states that those cards cannot be separated by the image.
+- A wine whose catalogue photo is unresolved shows `no photo / unresolved` in place of the
+  picture. The tool does not show a placeholder that looks like a photo.
+- Five filters of the bottle photo: `unresolved`, `by name only (assumed)`, `confirmed by the
+  site`, `set by hand`, and `shared with another card`. The same five values work in the agent
+  API as `image_unresolved`, `image_assumed`, `image_confirmed`, `image_manual`, and
+  `image_shared`.
+  The field comes from the catalogue build of `svoe-wino-hackaton`. Read
+  `svoe-wino-hackaton/docs/plans/01_photo-join-repair.md`.
+
+### Fixed
+- The sideboard covered the right end of the header. The panel stands over the page at
+  the right edge, and the header is sticky over the whole width, so the header now keeps
+  the same room free. No control of the header is covered now.
+
+### Added
+- The tag `variant group of N` on a row is a button. A click lists that group alone,
+  and a click on the tag of the group that is shown lists every wine again. While a
+  group is shown, the chip `variant group <id> of N ×` stands in the header beside the
+  other controls and takes the group away. The chip sits there, and not in the count
+  line, because the header is where a reviewer looks for the filter that is on. The
+  count line names the group as well. The click clears
+  the search, `Show` and `Slugs`, so every member of the group reaches the screen; the
+  sort is kept, because the rows of one group stand together in every sort order. The
+  group travels in the address as `?group=g0NN`, so the view can be reloaded and sent.
+  An unknown group id is dropped, as an unknown value of a select is.
+
+### Changed
+- The line under the bottle photo that states how the catalogue established that photo
+  (`by name`, `from site`, `by hand`, `no photo`) carries no border and no background
+  any more. It is a statement, not a control, and a box of the same width as `Exclude`
+  and `Group` right below it made it read as a third button. The colour of the text
+  alone now carries the confidence, and `assumed` moved from grey to amber, because
+  grey is the colour of the two buttons below.
+
+### Added
+- The `Group` button under the bottle photo joins one wine to the variant group of
+  another wine. The tool writes one pair to the new file `manual-groups.json`, which
+  `config.yaml` names under `manual_groups_file`. `scripts/08_variants.py` never
+  writes that file, so a new run of the script keeps every pair made by hand.
+  `load_variants()` now builds a group as a connected component over the generated
+  groups and these pairs. A component that holds a generated group keeps that id; a
+  component of manual pairs alone gets an id `m<NNN>`. With no manual pairs the
+  loader gives the same 28 groups over the same 63 wines as before.
+- `POST /api/group` takes `{slug, target}`. Two wines that are in no group make a new
+  group. A wine that is in no group joins the group of the other wine, in either
+  direction. Two wines that are each already in a group are refused with HTTP 409 and
+  both group ids, because one pair cannot undo a merge of two groups. Two wines of one
+  group answer HTTP 200 with `changed: false`. The answer carries the rebuilt rows and
+  groups, so the table redraws at once.
+- The search and the three selects of the table stand in the address:
+  `?q=`, `?filter=`, `?sort=` and `?slugs=`. A control at its default value is left
+  out, so a plain view keeps a plain address. The address is read once at start. An
+  unknown value of a select is dropped. The fragment keeps its own job, the open
+  photo, so `/?q=shardone#<slug>/<file>` states both.
+
+- The right-click menu of a photo holds `Copy Image`, `Copy Image URL` and `Download`
+  above the delete entry. `Download` saves the picture through a `download` link. The
+  address is same-origin, so no tab opens. The saved name is `<slug>__<file>`, because
+  most wines hold a file named `01_conf095.jpg` and the plain name would collide in the
+  download folder. The menu closes at the click, because the browser states the
+  download itself. `Copy Image` puts the picture itself on the clipboard. A JPEG or a WEBP
+  goes through a canvas first, because the clipboard accepts `image/png` in every browser.
+  `ClipboardItem` receives the promise of the picture, not the picture, so Safari keeps
+  the permission of the click while the fetch runs. `Copy Image URL` puts the full address
+  on the clipboard. The entry states `copied` or `failed` for 700 ms, then the menu closes.
+  Both entries work in the table and in the large view, because both already report the
+  photo under the pointer.
+- A `copy` button stands next to the name of a wine. It puts the name on the clipboard.
+  A wine without a name carries no button.
+- `copySlug` is now `copyFromButton`. The function always copied the `data-copy` value of
+  the button, and the name states that now.
+
+- The sideboard hides and shows: the button `sideboard` in the header, the key `s`, and
+  the `×` in the head of the panel. The button states the number of the held photos while
+  the panel is hidden. The choice is kept in the browser and holds over a reload. A drag
+  of a photo card shows the panel again, because the photo needs a target on the screen.
+  While the panel is hidden, the page uses the whole width.
+
+### Added
+- `scripts/match_run.py --from-run <run>`: the repeat of a run. It asks the backend only
+  about the photos that failed in an earlier run. `--rerun-depth K` states how many
+  candidates count as an answer: 1 repeats every photo that was not correct at rank 1,
+  and 10 repeats every photo whose true slug was not in the first 10. A negative photo
+  is repeated when its own slug DID come back inside K. A failed request is always
+  repeated.
+- A repeated photo keeps the `query_id` of the earlier run, and its row in
+  `results.jsonl` carries `previous` with the earlier rank, outcome, and answer. The two
+  files join on `query_id`.
+- `metrics.json` of a repeat run carries a `subset` block with `recovered_at_1`,
+  `recovered_at_depth`, and `still_failing`, and states that its shares cover the
+  repeated photos only. `run.json` states the rule in `based_on`, and `summary.md`
+  states it in the first paragraph.
+- The page `/runs` marks a repeat run with the tag `repeat d<K>`, puts the warning above
+  the cards, and states under each photo what the earlier run answered.
+
+### Added
+- The metrics that `svoe-wino-hackaton/docs/task-10-specification.pdf` asks for:
+  `match_share` with its target of 90 to 100 percent (section 7.1), `f1_at_1` and
+  `f1_at_5` with their precision and recall (section 2.3), `within_sla_share` against
+  the 3000 ms of section 2, `near_duplicate_confusion` for the wrong answers inside the
+  variant group of the true wine, which the specification names as the main source of
+  the errors, and `score_margin`, the gap between the first and the second candidate,
+  for the correct answers and for the wrong answers apart.
+- The page `/runs` shows these five measures in the first row of the cards, with the
+  match share and the SLA in green when they reach the target and in red when they do
+  not.
+- The page `/runs` sorts. A click on a column of the table of the runs sorts by it; a
+  second click turns the order around. The control `Sort` orders the photo rows by the
+  most wrong first, by the rank of the true slug, by the score, by the latency, or by
+  the path. The order of the photos is made by the server before the paging, so it
+  holds over the whole run.
+- `GET /api/run` takes `sort`. An unknown value is refused.
+- The table of the runs holds the new columns: the match share, F1@1, F1@5, and the
+  share inside the SLA.
+
+### Added
+- `scripts/match_run.py`: the match runner. It sends every annotated photo to one
+  backend and writes one directory per run under `runs_dir`. The directory holds
+  `run.json`, `queries.tsv`, `queries.jsonl`, `predictions.jsonl`, `results.jsonl`,
+  `metrics.json`, and `summary.md`.
+- `predictions.jsonl` carries the exact fields of the organizers. `queries.tsv` carries
+  their manifest columns, so `participant_test.sh` runs against the same set. Both were
+  checked against the harness of the organizers: 299 rows, no difference.
+- `scripts/match_backends.py`: the backends. One HTTP class sends the photo as
+  `multipart/form-data` and reads every answer shape seen so far. A header value
+  `env:NAME` comes from the environment, so no token stands in a file.
+- `backends.yaml`: the definitions of the backends. The first two are the contract of
+  the jury and the official vino-svoe recognizer.
+- `config.yaml` keys `backends_file` and `runs_dir`.
+- `scripts/review_server.py`: the page `/runs`. It holds the table of the runs, the
+  metrics of the selected run with two rank histograms, and one row per photo with the
+  candidates that came back. The expected wine carries a green border; the wine that a
+  negative photo MUST NOT match carries a red border. New routes: `GET /runs`,
+  `GET /api/runs`, and `GET /api/run`.
+- `docs/match-runner.md`: the format of `runs/`, of `backends.yaml`, and of every metric.
+- `docs/plans/01_match-runner.md`: the plan of this work.
+
+### Changed
+- `scripts/review_server.py`: the colour variables of the page stand in one constant,
+  `THEME_CSS`. The page of the review and the page of the runs use it.
+- `scripts/review_server.py`: both pages hold the same navigation at the top right of
+  the header. `Review` opens `/`, and `Runs` opens `/runs`. The link of the current
+  page carries the class `on`. On the page of the runs this navigation replaces the
+  link `back to the photo review` that stood in the title.
+
+### Changed
+- `scripts/review_server.py`: a photo added by drag and drop no longer draws the
+  table again. The page brought the whole table up to date with `render`, so a wine
+  that no longer matched the filter left the table at once. Under the filter `no
+  candidate photos (catalogue gap)` the row went away as soon as its first photo
+  landed. The new function `refreshRow` draws the cards, the photo count, and the
+  mark of that one row where it stands. A reload of the page filters again.
+- `scripts/review_server.py`: the new function `cardsHtml` builds the card strip of
+  one row. `render` uses it for every row, and `refreshRow` uses it for one row.
+
+### Fixed
+- `scripts/review_server.py`: a drop of a picture on the row of a wine with no
+  candidate photo was refused with `unknown wine slug`. `_known_slug` asked for a
+  directory in `my/`, and a catalogue card with no candidate photo holds none. The
+  test now accepts a slug of the catalogue too, and `_store_image` makes the
+  directory. The wine then leaves the catalogue-only rows and enters the review set:
+  `_store_image` builds its row with the new function `build_row` and puts it in
+  `_rows`, and the page drops the mark `catalog_only`.
+  The same refusal hit `POST /api/fetch-image`, `POST /api/wine-comment` and
+  `POST /api/exclude`, which use the same test. All four take a catalogue slug now.
+- `scripts/review_server.py`: the new function `build_row` builds the row of one
+  directory. `build_rows` uses it for every directory, so one shape serves both.
+- `scripts/review_server.py`: a click on the catalogue bottle of a wine with no
+  candidate photo did nothing. `showLightbox` left the function when the wine held
+  no photo, so the filter `no candidate photos (catalogue gap)` had no large view at
+  all. The large view now opens with the catalogue bottle alone. The candidate
+  figure stays hidden and the badge states `no candidate photo for this wine`. The
+  keys `1` to `4` and `m` do nothing, and the comment field is closed, because both
+  belong to a photo. A wine with neither a photo nor a bottle does not open, and
+  `Down` and `Up` step over it.
+- `scripts/review_server.py`: the address `#<slug>` opens a wine that holds no
+  candidate photo. `openFromHash` needed a `/` in the address, and it looked for the
+  wine in the review rows alone. A catalogue-only wine is not a review row and the
+  filter `all` leaves it out, so the function now reads every row and chooses the
+  filter `nophotos` for such a wine.
+
+### Added
+- `backends.yaml` key `workers`: how many requests a backend takes at the same time.
+  `official-api` holds `workers: 4` and `organizers` holds `workers: 1`. The command
+  `python3 scripts/match_run.py --backend official-api` now sends 4 requests at once
+  without an option. `--workers N` still wins over the key. `--workers` has no fixed
+  default any more: the key of the backend decides, and 1 is the last default.
+  The runner states the count and its source, for example
+  `requests at the same time: 4`, and the source of the value after it.
+  `run.json` records the value that ran, under `options.workers`.
+  The value 4 comes from a measurement. Read `ResearchLog.md`.
+- `scripts/review_server.py`: the sideboard, a panel at the right of the review page.
+  A photo card is dragged to the panel and waits there. A drag from the panel to a
+  wine row records the move with `POST /api/reassign`, the route that the button
+  `move` already uses. A drop on the row of the source wine, and the button
+  `put back`, return the photo to its wine. The move machinery does not change:
+  `apply` moves the file and drops the label, as it does for every move.
+  The sideboard holds its list in the browser tab alone. A reload empties it and the
+  server never learns about it. `apply` states nothing about a photo that waits in
+  the sideboard with no target.
+- `docs/plans/02_sideboard.md`: the plan of this work and the decisions of the owner.
+
+### Added
+- `scripts/match_run.py` states two rules of the query set on the console. The line
+  `variant photos:` states the effect of `--variants`: how many variant photos stay
+  out with `off`, or how many enter the set and which slug counts as a true match
+  with `strict` and with `group`. The line `excluded slugs:` states how many slugs
+  `excluded-slugs.json` holds and how many photos stay out because of them. The
+  runner prints the second line also when the count is 0.
+
+### Fixed
+- `scripts/review_server.py`: the review page showed an empty list. The constant `PAGE`
+  was one raw string. The change that made `THEME_CSS` cut `PAGE` into two parts. The
+  second part lost the prefix `r`, so Python read it as a normal string. Every `\n` in a
+  JavaScript string literal became a true newline. A JavaScript string literal MUST NOT
+  hold a true newline, so the browser refused the whole script and drew no row. The
+  second part carries the prefix `r` again. This also repairs the CSS escape `\2014` and
+  the escaped quotation marks of the exclude prompt, and it removes the `SyntaxWarning`
+  for `\s` at import. `PAGE_RUNS` is a normal string by design and does not change.
+
+### Added
 - `excluded-slugs.json` names the wine slugs that are out of the benchmark. Each entry
   holds the slug, a `reason`, and a timestamp. Some cards of the catalogue hold an
   error, most often a wrong bottle photo. The bottle photo is the reference of the

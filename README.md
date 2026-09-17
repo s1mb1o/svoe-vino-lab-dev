@@ -7,7 +7,10 @@ Test data for the Svoe Vino wine scanner.
 - `scripts/` holds the five pipeline stages and the driver.
 - `work/` holds the state database, the downloaded candidates, and the logs. It is disposable.
 - `config.yaml` holds the paths that point out of this project.
+- `backends.yaml` defines the match backends.
+- `runs/` holds one directory per match run. It is the history of the measurements.
 - `excluded-slugs.json` names the slugs that are out of the benchmark.
+- `manual-groups.json` names the variant pairs that a reviewer made by hand.
 
 ## Configuration
 
@@ -21,7 +24,10 @@ Test data for the Svoe Vino wine scanner.
 | `trash_dir` | `TRASH_DIR` | A deleted photo is moved here, not unlinked. |
 | `label_file` | `LABEL_FILE` | Labels of the review tool. |
 | `variant_groups_file` | `VARIANT_GROUPS_FILE` | Variant groups. `scripts/08_variants.py` writes this file. |
+| `manual_groups_file` | `MANUAL_GROUPS_FILE` | Variant pairs made by hand in the review tool. `scripts/08_variants.py` never writes this file. |
 | `excluded_slugs_file` | `EXCLUDED_SLUGS_FILE` | Excluded slugs. The photos of an excluded slug are not used for benchmarking. |
+| `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
+| `runs_dir` | `RUNS_DIR` | One directory per match run. |
 
 ```yaml
 rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
@@ -30,7 +36,10 @@ photo_dir: svoe-vino-testset/dataset/my/photo
 trash_dir: svoe-vino-testset/work/trash
 label_file: svoe-vino-testset/dataset/my/review-labels.json
 variant_groups_file: svoe-vino-testset/dataset/my/variant-groups.json
+manual_groups_file: svoe-vino-testset/dataset/my/manual-groups.json
 excluded_slugs_file: svoe-vino-testset/dataset/my/excluded-slugs.json
+backends_file: svoe-vino-testset/backends.yaml
+runs_dir: svoe-vino-testset/runs
 ```
 
 An absolute value stays as it is. An absent key gives the earlier default path.
@@ -223,6 +232,26 @@ stand next to each other, whatever the sort, and share one background colour. Th
 filter `has a similar wine (variant group)` shows only the wines of a group.
 A wine with no group keeps the normal background.
 
+#### Grouping two wines by hand
+
+The generated groups miss a pair whose producer or name differs in the catalogue.
+The `Group` button under the bottle photo joins the wine to another wine. The
+button states the size of the group that the wine is in now.
+
+The tool writes one pair to the file that `manual_groups_file` names. A group is a
+connected component over the generated groups and these pairs, so:
+
+- Two wines that are in no group make a new group. Its id starts with `m`.
+- A wine that is in no group joins the group of the wine you name. The generated id
+  of that group is kept.
+- Two wines that are **each already in a group** are refused, with the two group ids
+  in the message. A merge of two groups is a larger decision, and one pair cannot
+  undo it. Take one wine out of its group first, by hand in the file.
+- A pair that names two wines of one group changes nothing and says so.
+
+`scripts/08_variants.py` never writes `manual_groups_file`, so a new run of the
+script keeps every pair made by hand.
+
 A perceptual hash was tried first and was dropped: a bottle photo is mostly bottle,
 so the hash of the silhouette hides the label. Read `ResearchLog.md` for the numbers.
 
@@ -243,6 +272,36 @@ catalogue bottle photo, its name, and its producer. The order is:
 A click on a row records the move. A field below takes any of the 2,103 catalogue
 slugs, with completion. `clear the move` removes a recorded move. `Esc` and `cancel`
 close the dialog and change nothing.
+
+#### The sideboard
+
+The panel at the right of the page is the sideboard. It is a second way to move a
+photo, for the case where the target wine is not yet known.
+
+1. Drag the card of a photo to the panel. The photo leaves the row of its wine and
+   waits in the panel. Nothing is sent to the server.
+2. Scroll to another wine and drag the card to its row. The tool records the move,
+   exactly as the `move` button does.
+3. A drop on the row of the wine that the photo comes from puts the photo back.
+   The button `put back` on the card does the same.
+
+A card that stands in a wine row may also be dragged straight to another wine row.
+The rule is the same for every card.
+
+**Hide it or show it.** The button `sideboard` at the right of the header hides the
+panel and shows it again, and so does the key `s` and the `×` in the head of the
+panel. The button always states how many photos the panel holds, so a photo is not
+forgotten while the panel is hidden. The choice is kept in the browser and holds
+over a reload. A drag of a photo card shows the panel again by itself, because the
+photo needs a target on the screen.
+
+While the panel is shown, the header and the table keep the room free at the right
+edge. While it is hidden, the page uses the whole width.
+
+The sideboard lives in the browser tab. A reload empties it, a second tab does not
+see it, and the server never learns about it. A photo in the sideboard keeps its
+label until a target is chosen and `apply` runs. `apply` carries out the recorded
+moves and states nothing about a photo that still waits in the sideboard.
 
 #### The move is recorded, not performed
 
@@ -290,8 +349,21 @@ the page:
   click on one adds the files and scrolls the table to that wine. The field also
   completes from the slugs of `my/`.
 
-The dialog names only the wines that already have a directory in `my/`, because the
-tool adds a photo to an existing wine and does not create a wine.
+The table is NOT drawn again after a drop. Only the row of the wine is brought up to
+date: its cards, its photo count, and its mark. A row therefore stays where it is,
+also when it no longer matches the selected filter. Under the filter `no candidate
+photos (catalogue gap)` the wine would leave the table as soon as its first photo
+lands, and the next row would jump under the pointer. Reload the page to filter
+again.
+
+A drop on a row works for every wine of the table, also for a wine with no candidate
+photo. Such a wine is a card of the catalogue with no directory in `my/`. The write
+makes the directory, and the wine becomes a wine of the review set: it leaves the
+filter `no candidate photos (catalogue gap)` and enters the counters.
+
+The dialog for a drop beside the table names only the wines that already have a
+directory in `my/`. To give a first photo to a wine of the catalogue, drop the file
+on its row.
 
 #### From another browser tab
 
@@ -327,6 +399,14 @@ side by side: the catalogue bottle at the left, the candidate photo at the right
 The two images stay next to each other in the middle, also on a wide monitor.
 A click on the catalogue bottle in the table opens the same view at the first photo.
 A click on a large image does not close the view.
+
+A wine with no candidate photo opens too. The view then shows the catalogue bottle
+alone, the candidate side stays empty, and the badge states `no candidate photo for
+this wine`. This is the state of every wine of the filter `no candidate photos
+(catalogue gap)`. The keys `1` to `4` and `m` do nothing there, because there is no
+photo to label and no photo to move. The comment field is closed for the same
+reason: a comment belongs to a photo. A wine with neither a candidate photo nor a
+catalogue bottle does not open, and `Down` and `Up` step over it.
 A click on the background closes the view. `Esc` also closes it.
 
 The large view holds the keyboard. The keys are:
@@ -436,6 +516,61 @@ excluded row is red. The control `Slugs` filters the table to `all`, `included`,
 `excluded`.
 
 Read `docs/excluded-slugs.md` for the format of the file and for the rule of a consumer.
+
+## The match runner
+
+`scripts/match_run.py` sends every annotated photo to one recognizer and writes the
+answer into `runs/<UTC time>-<backend>/`. One directory is one run, so two backends or
+two versions of one backend are compared side by side.
+
+```bash
+python3 scripts/match_run.py --list-backends
+python3 scripts/match_run.py --backend official-api
+python3 scripts/match_run.py --backend organizers --limit 50 --label smoke
+python3 scripts/match_run.py --dry-run          # build the manifests, call nothing
+
+# repeat only what failed in an earlier run
+python3 scripts/match_run.py --backend my-service --from-run runs/<run id>
+python3 scripts/match_run.py --backend my-service --from-run runs/<run id> --rerun-depth 10
+```
+
+`--from-run` asks the backend only about the photos that failed before, so the answer to
+"did the change help?" costs one request per failure instead of one per photo.
+`--rerun-depth K` states how many candidates count as an answer: 1 repeats every photo
+that was not correct at rank 1, and 10 repeats every photo whose true slug was not in the
+first 10. The shares of such a run cover the repeated photos only, and every file of the
+run states it.
+
+The query set holds 979 `positive` photos and 364 `negative` photos. A `positive` photo
+is correct when the recognizer answers with its slug. A `negative` photo shows a
+different wine, so the recognizer is wrong when that slug stands at rank 1. `variant`
+photos stay out unless `--variants` asks for them. A photo of an excluded slug never
+enters the set.
+
+The run directory holds `predictions.jsonl` in the exact format of the organizers, so
+the same run serves as the submission. It also holds `results.jsonl` with every
+candidate and its score, `metrics.json` with R@1, R@5, R@10, the rank histogram, and the
+negative outcomes, and `summary.md` for a human.
+
+`backends.yaml` defines a backend. A token MUST NOT stand in that file: a header value
+`env:NAME` is read from the environment.
+
+The navigation at the top right of the header holds `Review` for `/` and `Runs` for
+`/runs`. Both pages hold it.
+
+The metrics follow the specification of the task: the share of the matches against its
+target of 90 to 100 percent, the F1 of the top-1 and of the top-5 cards, the share of
+the answers inside the SLA of 3 seconds, the gap between the first and the second
+candidate, and the near-duplicate errors, which the specification names as the main
+source of the mistakes.
+
+The review tool shows the runs at `http://127.0.0.1:8154/runs`: the table of the runs,
+the metrics of the selected run, and one row per photo with the candidates that came
+back. A click on a column sorts the runs; the control `Sort` orders the photos, for
+example the most wrong first. The expected wine carries a green border, and the wine that a negative photo MUST
+NOT match carries a red one.
+
+Read `docs/match-runner.md` for every file, every field, and every option.
 
 ## The agent API
 

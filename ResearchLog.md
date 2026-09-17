@@ -2,6 +2,66 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-17 — the official API takes parallel requests; 4 at once is the best rate
+
+Question: can `scripts/match_run.py --backend official-api` send several requests at
+once, and does `api.vino-svoe.ru` answer with throttling or with a ban?
+
+Method. Two parts.
+
+1. The runner against a local mock that sleeps 1 s per request. The mock counts how many
+   requests it holds at the same time. This states whether `--workers` reaches the
+   server, without any traffic to the official API.
+2. The official API from `cloudzy-ams` (104.194.134.114, Amsterdam), not from this Mac.
+   The intermediate host carries the risk of a block. 12 photos, sent three times: one at
+   a time, 4 at once, 8 at once, with a pause of 5 s between the parts. 36 requests in
+   total. The request is the same `multipart/form-data` that `match_backends.py` builds.
+
+### The runner
+
+| `--workers` | Wall time, 8 photos | Peak requests at the server |
+|---|---|---|
+| 1 | 8.2 s | 1 |
+| 4 | 2.2 s | 4 |
+| 8 | 1.2 s | 8 |
+
+`HttpMultipartBackend.ask()` holds no mutable state, so the threads do not interfere.
+`pool.map` gives the answers in the order of the query set, so `predictions.jsonl` and
+`results.jsonl` keep that order at every worker count.
+
+Ctrl+C stops a parallel run at once: the iterator of `Executor.map` cancels the futures
+that did not start. A run of 40 photos with 4 workers ended 0.2 s after the signal and
+still wrote `metrics.json` and `summary.md`. Because the answers are read in order, a
+few answered photos that wait behind a slower photo are lost on the stop.
+
+### The official API
+
+| Part | Requests at once | Wall time | Median latency | Fastest | Slowest | Status |
+|---|---|---|---|---|---|---|
+| A | 1 | 28.4 s | 2377 ms | 724 ms | 4539 ms | 201 x 12 |
+| B | 4 | 8.8 s | 2075 ms | 865 ms | 3861 ms | 201 x 12 |
+| C | 8 | 6.1 s | 3198 ms | 2264 ms | 4788 ms | 201 x 12 |
+
+Findings.
+
+1. No throttling and no ban. All 36 requests answered 201. No answer carried
+   `Retry-After` and no answer carried a rate-limit header. Every answer held candidates.
+2. 4 requests at once cost nothing. The wall time fell by 3.2x and the median latency
+   did not rise. The server answers these in parallel.
+3. 8 requests at once meets a queue. The wall time fell by 4.7x, but the median latency
+   rose from 2377 ms to 3198 ms, about 35 percent. The fastest answer rose from 724 ms to
+   2264 ms, which is the mark of a queue in front of a limited pool.
+4. The API answers 201, not 200. The runner does not test for 200, so this does not
+   matter to it.
+
+Rule: use `--workers 4` for a sweep. Use `--workers 1` for a run whose latency is
+compared with the jury harness, because `metrics.json` then sets
+`latency_ms.comparable` to `false`.
+
+Limit of this probe: 36 requests in about 45 seconds. A rate limit over a longer window,
+a daily quota, and a ban that needs more requests are NOT excluded. A full run is 1343
+requests and was not made.
+
 ## 2026-09-17 — latency of the back-label call: the local 9B wins by 60x when thinking is off
 
 Question: how fast does each vision model see that `04_manual.webp` of

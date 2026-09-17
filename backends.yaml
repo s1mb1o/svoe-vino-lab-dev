@@ -1,0 +1,89 @@
+# Match backends of `scripts/match_run.py`.
+#
+# One entry defines one recognizer. `--backend <id>` selects it.
+# Read `docs/match-runner.md` for the meaning of every key.
+#
+# A backend takes one photo as multipart/form-data and answers one slug or a
+# ranked list of slugs.
+#
+# NEVER write a token in this file. A header value "env:NAME" is read from the
+# environment variable NAME at start.
+
+backends:
+
+  - id: organizers
+    label: The contract of the jury harness
+    url: http://127.0.0.1:8080/v1/eval/predict
+    field: image            # the name of the multipart field that holds the image
+    response: auto          # auto | slug-object | slug-array | candidates
+    timeout_s: 10           # the jury harness runs curl with --max-time 10
+    top_k: 1                # the contract answers Top-1 only
+    workers: 1              # the jury harness sends one request at a time
+
+  - id: official-api
+    label: Official vino-svoe recognizer (the baseline to beat)
+    url: https://api.vino-svoe.ru/v1/wines/search-by-photo
+    field: image
+    response: auto
+    query: { limit: 10 }    # the query string that asks for a ranked list
+    top_k: 10
+    timeout_s: 40
+    # How many requests this server takes at the same time. Measured on
+    # 2026-09-17 from cloudzy-ams with 36 requests: at 4 at once the wall time
+    # fell by 3.2x and the median latency did not rise. At 8 at once the wall
+    # time fell by 4.7x, and the median latency rose by 35 percent, from 2377 ms
+    # to 3198 ms, because the requests wait in a queue. No answer stated
+    # throttling and no answer was refused at either rate. Read `ResearchLog.md`.
+    # The value 8 buys the shorter wall time and pays the longer latency. Use
+    # `--workers 4` for the rate that costs no latency, and `--workers 1` for a
+    # run whose latency is compared with the jury harness.
+    workers: 8
+    headers: {}             # a value "env:NAME" reads the environment variable NAME
+
+  - id: svoe-vino-matcher
+    label: Our recognizer, svoe-vino-matcher
+    url: http://127.0.0.1:8158/v1/eval/predict
+    field: image
+    response: auto
+    query: { limit: 10 }    # limit>1 makes the server answer a ranked list
+    top_k: 10
+    timeout_s: 30
+    workers: 1              # one embedding model, one request at a time
+    headers: {}
+
+  - id: svm-gateway-siglip2
+    label: svoe-vino-matcher pipeline gateway-siglip2
+    url: http://127.0.0.1:8158/v1/pipelines/gateway-siglip2/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-ensemble-gateway-only
+    label: svoe-vino-matcher pipeline ensemble-gateway-only
+    url: http://127.0.0.1:8158/v1/pipelines/ensemble-gateway-only/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-siglip2-448
+    label: svoe-vino-matcher pipeline siglip2-448
+    url: http://127.0.0.1:8158/v1/pipelines/siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+
+
+

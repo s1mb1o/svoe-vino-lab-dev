@@ -25,3 +25,14 @@ label_file: svoe-vino-testset/dataset/my/review-labels.json
 # Variant groups. `scripts/08_variants.py` writes this file.
 variant_groups_file: svoe-vino-testset/dataset/my/variant-groups.json
 
+# Manual variant pairs. The review tool writes this file, and
+# `scripts/08_variants.py` never touches it, so a new run of that script keeps
+# the pairs that a reviewer joined by hand.
+manual_groups_file: svoe-vino-testset/dataset/my/manual-groups.json
+
+# Match backends. `scripts/match_run.py` reads this file.
+backends_file: svoe-vino-testset/backends.yaml
+
+# One directory per match run. The directory holds the history of the runs.
+runs_dir: svoe-vino-testset/runs
+

@@ -11,6 +11,28 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 |---|---|---|
 | 1 | Start the tool | The log states first the configuration: the path of `config.yaml`, `rootdir`, every configured path, and the work directory. It then states the wine count, the photo count, the loaded label count by label, and the URL. The start takes a few seconds, not minutes. |
 | 2 | `curl -s -o /dev/null -w "%{http_code}" $H/` | `200` |
+| 2a | Open `$H/` and look at the top right of the header | The navigation holds `Review` and `Runs`. `Review` is the marked link. A click on `Runs` opens `/runs`. |
+| 2b | Drag a photo card to the sideboard at the right | The card leaves the row of its wine and stands in the panel. The counter beside `Sideboard` rises. No request is sent. |
+| 2c | Drag the card from the sideboard to the row of another wine | The card stands again in the row of its own wine, with a dashed outline. Its button reads `→ <the target slug>`. The header states one more pending move. |
+| 2d | Drag a held card to the row of the wine it comes from | The card stands again in that row. No move is recorded. |
+| 2e | Press `put back` on a held card | The same result as case 2d. |
+| 2f | Hold a photo, then reload the page | The sideboard is empty and the photo stands in its wine row. The sideboard lives in the browser tab alone. |
+| 2g | Hold a photo with no target, then press `apply` | The recorded moves and the deletions are carried out. The held photo is not touched and `apply` states nothing about it. |
+| 2h | Press the button `sideboard` in the header | The panel goes away. The table and the header use the whole width. |
+| 2i | Press the button again, or the key `s` | The panel comes back. The header keeps the room free and no control of the header is covered. |
+| 2j | Hold a photo, hide the panel | The button `sideboard` still states the count. |
+| 2k | Hide the panel, then reload the page | The panel stays hidden. The choice is kept in the browser. |
+| 2l | Hide the panel, then drag a photo card | The panel comes back by itself, because the photo needs a target on the screen. |
+| 2m | Press `s` while the cursor stands in the search field | The letter is typed. The panel does not move. |
+| 2n | Set the filter to `no candidate photos (catalogue gap)` and click the catalogue bottle of a row | The large view opens. It shows the bottle alone. The badge states `no candidate photo for this wine`. The comment field is closed. |
+| 2o | Press `1`, `2`, `3`, `4` and `m` in that view | Nothing changes and no dialog opens. |
+| 2p | Press `Down` and `Up` in that view | The view moves to the next and the previous wine of the filter. |
+| 2q | Copy the address of that view and open it again | The same wine opens, with the filter `no candidate photos (catalogue gap)`. |
+| 2r | Drop an image file on the row of a wine with no candidate photo | The photo is added. No message of refusal appears. The directory `my/<slug>/` is made. |
+| 2s | Look at that row after the drop | It holds one card. It leaves the filter `no candidate photos (catalogue gap)` and it stands under the filter `all wines`. |
+| 2t | Open `$H/?filter=nophotos` and drop an image on a row | The row stays in the table and keeps its place. The table is not drawn again and no other row moves. |
+| 2u | Look at that row after the drop | It holds the new card, the line states `1 photo(s)`, and the text about the gap of the photo set is gone. |
+| 2v | Select another filter and select `no candidate photos (catalogue gap)` again | The wine is gone from the list, because the filter runs again. A reload of the page does the same. |
 | 3 | `curl -s $H/api/rows` | JSON with 814 rows and 1,892 photos. Each row has `slug`, `name`, `producer`, `photos`, `min_conf`, `has_bottle`. |
 | 4 | Open the page in a browser | One row per wine. The bottle photo is at the left. The candidate photos are at the right. Every photo has three buttons: `V`, `N`, and `x`. |
 | 5 | Scroll the page | Photos load as the rows come into view. The page stays responsive. |
@@ -129,6 +151,43 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 101 | Empty the field | The note is removed and `wine_notes` falls by one. |
 | 102 | Type `1` in the field | The character is written. No photo is labelled. |
 | 103 | Sort or filter the table while a note is saved | The note is not lost. |
+| 104 | Right-click a photo in the table | The menu holds `Copy Image`, `Copy Image URL`, `Download`, a line, and `Delete`. |
+| 105 | Click `Copy Image` | The entry reads `copied` and the menu closes. A paste into an image editor shows the photo. |
+| 106 | Click `Copy Image URL` | The entry reads `copied`. The clipboard holds `http://127.0.0.1:8154/img/photo?slug=...&file=...`. |
+| 107 | Open the large view and right-click the candidate photo | The same menu opens with the same two entries. |
+| 108 | Paste the copied address into another tab | The photo opens. |
+| 109 | Click `copy` next to the name of a wine | The button reads `copied` for a moment. The clipboard holds the name, not the slug. |
+| 110 | Look at a wine without a name | The line reads `unknown name` and carries no `copy` button. |
+| 111 | Type `shardone` in `Find` | The address becomes `/?q=shardone`. |
+| 112 | Reload that address | The field holds `shardone` and the table is filtered. |
+| 113 | Set `Show` and `Sort` too | The address holds `q`, `filter` and `sort`. A control at its default is left out. |
+| 114 | Empty the search | `q` leaves the address. |
+| 115 | Open a photo while a search is active | The address holds both, `/?q=shardone#<slug>/<file>`. |
+| 116 | Open `/?filter=nope` | The select stays at `all`. An unknown value is dropped. |
+| 117 | Click `Group` under the bottle of a wine that is in no group | The dialog opens and states `in no group yet`. |
+| 118 | Name a second wine that is in no group | Both rows stand next to each other in one colour. The group id starts with `m`. |
+| 119 | Click `Group` on a third wine and name one of the two | The third wine joins the same group. The button reads `Group 3`. |
+| 120 | Click `Group` on a wine of a generated group and name a wine that is in no group | The named wine joins the generated group. The id `g0NN` is kept. |
+| 121 | Try to group two wines that are each already in a group | The dialog states both group ids and that a merge is not allowed. Nothing is written. |
+| 122 | Group two wines that are already in one group | The dialog states `the two wines are already in one group`. Nothing is written. |
+| 123 | Look at `manual-groups.json` | It holds one record per pair, with `a`, `b` and `ts`. |
+| 124 | Run `python3 scripts/08_variants.py --no-image`, then reload the tool | Every pair made by hand is still in place. |
+| 125 | Press Esc while the group dialog is open | The dialog closes. No pair is written. |
+| 126 | Click `Download` in the menu of a photo | The menu closes and the browser saves the file. No tab opens. |
+| 127 | Look at the saved file | Its name is `<slug>__<file>`, for example `abrau-dyurso-...__01_conf095.jpg`. |
+| 128 | Download a photo of two different wines that hold the same file name | The two files stand apart in the download folder, because each name carries its slug. |
+| 129 | Open the large view and click `Download` on the candidate photo | The same file is saved. |
+| 130 | Click the tag `variant group of N` on a row | Only the wines of that group are listed. The count line names the group. |
+| 131 | Look at the address | It holds `?group=g0NN`. |
+| 132 | Reload that address | The same group alone is listed. |
+| 133 | Look at the header while a group is shown | A chip `variant group <id> of N ×` stands beside `Find`. A plain view carries no chip. |
+| 133a | Click that chip | Every wine is listed again and `group` leaves the address. |
+| 133b | Click the tag `variant group of N` of the group you are already in | Every wine is listed again. The tag switches the group off. |
+| 134 | Type a search, then click the tag of a group | The search field is cleared, so every member of the group reaches the screen. |
+| 135 | Open `/?group=nope` | Every wine is listed. An unknown group id is dropped. |
+| 136 | Type a search while a group is shown | The chip stays in the header. The address holds `q` and `group`. |
+| 137 | Look at the `by name` line under a bottle | It carries no border and no background. It reads as a statement, not as a third button beside `Exclude` and `Group`. |
+| 138 | Compare the four confidence states | `confirmed` is green, `assumed` is amber, `by hand` is blue, `no photo` is red. The text colour alone states it. |
 
 ## The agent API — `/api/v1/`
 
@@ -179,3 +238,71 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | E12 | `curl -s "$H/api/v1/stats"` after E2 | `excluded_wines` and `excluded_photos` are not zero. |
 | E13 | Stop the tool and start it again | The log states the number of the excluded slugs and of their photos. The rows are red again. |
 | E14 | An excluded wine that is also in a variant group | The red colour wins over the colour of the group. |
+
+## The match runner — `scripts/match_run.py`
+
+| # | Case | Expected result |
+|---|---|---|
+| M1 | `python3 scripts/match_run.py --list-backends` | Every backend of `backends.yaml` with its URL. |
+| M2 | `python3 scripts/match_run.py --dry-run` | `query set: 1343 photos (negative 364, positive 979)`. The directory holds `run.json`, `queries.tsv`, and `queries.jsonl`, and nothing else. |
+| M2a | `python3 scripts/match_run.py --dry-run` | The line `variant photos: 45 left out (--variants off)` and the line `excluded slugs: 0 in excluded-slugs.json; 0 photos left out` follow the query set. |
+| M2b | `python3 scripts/match_run.py --dry-run --variants group` | `query set: 1388 photos (negative 364, positive 979, variant 45)`. The line `variant photos: 45 in the set; every slug of the variant group counts as a true match (--variants group)` follows. |
+| M2h | `python3 scripts/match_run.py --backend official-api --dry-run` | The line `requests at the same time: 4`, and the source named after it as the key `workers` of the backend official-api. |
+| M2i | `python3 scripts/match_run.py --backend official-api --dry-run --workers 1` | The line `requests at the same time: 1 (--workers)`. The command line wins over the key. |
+| M2j | `python3 scripts/match_run.py --backend organizers --dry-run` | The line `requests at the same time: 1 (the default)`. |
+| M3 | The header of `queries.tsv` | Exactly `query_id<TAB>image_path`. |
+| M4 | A stub backend that always answers one slug S | R@1 equals the count of the positives of S divided by 979. The negatives of S count as `false_match_at_1`. Every other negative counts as `other_slug_at_1`, NOT as a success. |
+| M5 | The same stub through `participant_test.sh --manifest runs/<id>/queries.tsv --images-dir dataset/my/photo` | Their `predictions.jsonl` and ours hold the same `query_id`, `image_path`, `image_sha256`, and `predicted_slug` for every row. |
+| M6 | A stub that answers a ranked list with the true slug at rank 3 | `rank_histogram` holds the count under the key `3`. R@1 is smaller than R@5. |
+| M7 | The same run with `--negative-strict` | The negatives whose slug stands deeper in the list move from `other_slug_at_1` to `false_match_in_top_k`. |
+| M8 | A backend with `top_k: 1` | `recall_at_5` and `recall_at_10` are `null`, never `0`. |
+| M9 | A backend that does not answer | Every row holds `error`, `predicted_slug` is `null`, and the run finishes. |
+| M10 | `--backend nope` | The error names every known backend. |
+| M11 | A backend with `headers: {X: env:NOT_SET}` | The run refuses to start and names the environment variable. |
+| M12 | `run.json` of a backend that holds a header | The header name stays, the value is `(redacted)`. |
+| M13 | Stop a run with Ctrl+C | `predictions.jsonl` and `results.jsonl` hold the rows that were already answered. |
+
+## The repeat of a run — `--from-run`
+
+| # | Case | Expected result |
+|---|---|---|
+| P1 | `--from-run <run> --dry-run` | The console states how many photos of the earlier run failed at depth 1, how many passed, and how many photos of the set were not in that run. |
+| P2 | The same with `--rerun-depth 10` | Fewer positive photos and more negative photos than at depth 1. The rule is the same from both sides: a positive photo MUST be inside 10, a negative photo MUST NOT. |
+| P3 | `--from-run <run> --only positive --rerun-depth 10` | Only the positive photos that were not in the first 10. |
+| P4 | Repeat a run with the same backend | `recovered_at_1` is 0 and `still_failing` equals the number of the repeated photos. |
+| P5 | Repeat with a backend that answers better | `recovered_at_1` is the number of the photos that stand at rank 1 now. |
+| P6 | A row of `results.jsonl` of a repeat run | It holds `previous` with the earlier rank and outcome. |
+| P7 | The `query_id` of a repeated photo | It equals the `query_id` of the same photo in the earlier run. The ids are not contiguous. |
+| P8 | The name of the directory | It holds `repeat-d<K>`. |
+| P9 | `--from-run` on a run whose photos all passed | `nothing to repeat`, and no directory of a run is written. |
+| P10 | `--from-run /nowhere` | `no results.jsonl in the earlier run`. |
+| P11 | `--rerun-depth 0` | The run refuses to start. |
+| P12 | The page `/runs` on a repeat run | The tag `repeat d<K>` in the table, the warning above the cards, and a `before:` line under every photo. |
+
+## The page of the runs — `/runs`
+
+| # | Case | Expected result |
+|---|---|---|
+| R1 | Open `http://127.0.0.1:8154/runs` | The table of the runs, the newest first. The newest run with metrics opens by itself. |
+| R1a | Look at the top right of the header | The navigation holds `Review` and `Runs`. `Runs` is the marked link. A click on `Review` opens `/`. |
+| R2 | Click another run | The metrics and the photos change. The address holds the run id after `#`. |
+| R3 | Reload the page with the `#` in the address | The same run opens. |
+| R4 | Look at a row of a positive photo that was matched | The candidate of the true slug carries a green border. |
+| R5 | Look at a row whose true slug never came back | A dashed green card stands at the front of the strip and states the expected wine. |
+| R6 | Look at a row of a negative photo that matched | The candidate with the slug of the photo carries a red border. |
+| R7 | Set the filter to `positive: the true slug is at rank 2 or deeper` | Only those photos are listed. The count line states how many. |
+| R8 | Set the filter to `negative: the slug came back at rank 1` | Only the false matches are listed. |
+| R9 | Press `load more` | The next 100 photos are added under the present ones. |
+| R10 | Click a photo or a bottle | The large view opens. `Esc` closes it. |
+| R11 | Click the column `match share` of the table of the runs | The runs stand by the match share, the smallest first. The header carries an arrow. |
+| R12 | Click the same column again | The order turns around. |
+| R13 | Click `started` | The newest run stands first. |
+| R14 | Set `Sort` to `the most wrong first` | A false match of a negative photo stands first, then the photos whose true slug never came back. |
+| R15 | Set `Sort` to `the rank of the true slug` | The photos with rank 1 stand first. The photos whose true slug never came back stand last. |
+| R16 | Set `Sort` to `the slowest answer first`, then press `load more` | The order holds over the whole run, not over the 100 rows on the screen. |
+| R17 | `GET /api/run?id=<run>&sort=nope` | The error names every accepted value. |
+| R18 | Look at the first row of the cards | Match share, F1 top-1, F1 top-5, the share inside 3000 ms, the near-duplicate errors, and the false matches. |
+| R19 | A run whose match share reaches 90% | The card is green. Below 90% it is red. |
+| R20 | A run of a backend with `top_k: 1` | `F1 top-5` shows a dash, never a number. |
+| R11 | `GET /api/run?id=../../etc` | `bad run id`. |
+| R12 | `GET /api/run?id=nope` | `unknown run`. |

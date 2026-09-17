@@ -56,7 +56,9 @@ IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}
 LABELS = ("positive", "negative", "unusable", "variant")
 COMMENT_MAX = 4000
 VARIANTS_FILE = common.VARIANT_GROUPS_FILE
+MANUAL_GROUPS_FILE = common.MANUAL_GROUPS_FILE
 EXCLUDED_FILE = common.EXCLUDED_SLUGS_FILE
+RUNS_DIR = common.RUNS_DIR
 EXCLUDE_REASON_MAX = 1000
 NAME_RE = re.compile(r"^(\d+)_conf(\d+)\.")
 RANK_RE = re.compile(r"^(\d+)_")
@@ -98,31 +100,148 @@ def load_catalog():
     return out
 
 
+MANUAL_GROUPS_NOTE = (
+    "Pairs of wine slugs that a reviewer joined by hand in the review tool. "
+    "`scripts/08_variants.py` never writes this file, so a new run of that script "
+    "keeps these pairs. `load_variants()` reads this file together with the "
+    "generated groups of `variant-groups.json` and joins the two sets. A pair "
+    "adds its two slugs to one group."
+)
+
+
+def load_manual_pairs():
+    """Return the pairs that a reviewer joined by hand, as a list of records.
+
+    A missing file gives an empty list. A broken file gives an empty list and a
+    warning, so the tool still starts.
+    """
+    if not os.path.exists(MANUAL_GROUPS_FILE):
+        return []
+    try:
+        with open(MANUAL_GROUPS_FILE, encoding="utf-8") as f:
+            blob = json.load(f)
+    except (OSError, ValueError) as exc:
+        print(f"warning: cannot read {MANUAL_GROUPS_FILE}: {exc}", file=sys.stderr)
+        return []
+    out = []
+    for p in blob.get("pairs") or []:
+        a, b = (p.get("a") or "").strip(), (p.get("b") or "").strip()
+        if a and b and a != b:
+            out.append({"a": a, "b": b, "ts": p.get("ts") or ""})
+    return out
+
+
+def save_manual_pairs(pairs):
+    """Write the file of the manual pairs. The write is atomic."""
+    payload = {
+        "version": 1,
+        "updated": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "note": MANUAL_GROUPS_NOTE,
+        "count": len(pairs),
+        "pairs": pairs,
+    }
+    tmp = MANUAL_GROUPS_FILE + ".tmp"
+    os.makedirs(os.path.dirname(MANUAL_GROUPS_FILE) or ".", exist_ok=True)
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2, sort_keys=True)
+        f.write("\n")
+    os.replace(tmp, MANUAL_GROUPS_FILE)
+
+
 def load_variants():
     """Return slug -> group id, and group id -> the record of the group.
 
-    `scripts/08_variants.py` writes the file. A missing file gives empty maps,
-    and the tool then shows every wine as a row of its own.
+    Two sources join here. `scripts/08_variants.py` writes the groups of
+    `variant-groups.json`. The review tool writes the pairs of
+    `manual-groups.json`. A group is a connected component over both sources, so
+    a manual pair that names a slug of a generated group adds the other slug to
+    that group.
+
+    A component that holds a generated group keeps the id of that group. A
+    component built from manual pairs alone gets an id `m<NNN>`, numbered by the
+    first slug of the component, so the id does not move between two starts.
+
+    A missing `variant-groups.json` is not an error. The tool then shows the
+    manual groups alone, and every other wine as a row of its own.
     """
-    if not os.path.exists(VARIANTS_FILE):
+    raw_groups = []
+    if os.path.exists(VARIANTS_FILE):
+        try:
+            with open(VARIANTS_FILE, encoding="utf-8") as f:
+                blob = json.load(f)
+        except (OSError, ValueError) as exc:
+            print(f"warning: cannot read {VARIANTS_FILE}: {exc}", file=sys.stderr)
+            blob = {}
+        for g in blob.get("groups", []):
+            gid = g.get("id")
+            members = g.get("slugs") or []
+            if not gid or len(members) < 2:
+                continue
+            raw_groups.append((gid, list(members), g.get("producer", ""),
+                               g.get("name", "")))
+    else:
         print(f"note: no variant groups: {VARIANTS_FILE}", file=sys.stderr)
+
+    pairs = load_manual_pairs()
+    if not raw_groups and not pairs:
         return {}, {}
-    try:
-        with open(VARIANTS_FILE, encoding="utf-8") as f:
-            blob = json.load(f)
-    except (OSError, ValueError) as exc:
-        print(f"warning: cannot read {VARIANTS_FILE}: {exc}", file=sys.stderr)
-        return {}, {}
+
+    # The order in which a slug is first seen. It fixes the order of the members
+    # of a group and the number of a manual group.
+    order = {}
+    for _gid, members, _pr, _nm in raw_groups:
+        for sl in members:
+            order.setdefault(sl, len(order))
+    for p in pairs:
+        for sl in (p["a"], p["b"]):
+            order.setdefault(sl, len(order))
+
+    parent = {sl: sl for sl in order}
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(x, y):
+        rx, ry = find(x), find(y)
+        if rx != ry:
+            parent[rx] = ry
+
+    for _gid, members, _pr, _nm in raw_groups:
+        for sl in members[1:]:
+            union(members[0], sl)
+    for p in pairs:
+        union(p["a"], p["b"])
+
+    # The generated group whose id and labels the component keeps. Two generated
+    # groups never land in one component through the tool, because `/api/group`
+    # refuses that write. A hand-edited file can still do it, and then the first
+    # generated group of the component gives the id.
+    label = {}
+    for gid, members, pr, nm in raw_groups:
+        root = find(members[0])
+        label.setdefault(root, (gid, pr, nm))
+
+    buckets = {}
+    for sl in sorted(order, key=order.get):
+        buckets.setdefault(find(sl), []).append(sl)
+
     by_slug, groups = {}, {}
-    for g in blob.get("groups", []):
-        gid = g.get("id")
-        members = g.get("slugs") or []
-        if not gid or len(members) < 2:
+    n = 0
+    for root in sorted(buckets, key=lambda r: order[buckets[r][0]]):
+        members = buckets[root]
+        if len(members) < 2:
             continue
-        groups[gid] = {"id": gid, "slugs": members,
-                       "producer": g.get("producer", ""), "name": g.get("name", "")}
-        for s in members:
-            by_slug[s] = gid
+        if root in label:
+            gid, pr, nm = label[root]
+        else:
+            n += 1
+            gid, pr, nm = "m%03d" % n, "", ""
+        groups[gid] = {"id": gid, "slugs": members, "producer": pr, "name": nm}
+        for sl in members:
+            by_slug[sl] = gid
     return by_slug, groups
 
 
@@ -160,35 +279,89 @@ def build_rows(catalog, group_of=None):
         d = os.path.join(MY, slug)
         if slug.startswith(".") or not os.path.isdir(d):
             continue
-        rec = catalog.get(slug) or {}
-        bottle = rec.get("local_path")
-        photos = []
-        for fn in scan_photos(slug):
-            m = NAME_RE.match(fn)
-            photos.append(
-                {
-                    "file": fn,
-                    "conf": int(m.group(2)) if m else None,
-                }
-            )
-        confs = [p["conf"] for p in photos if p["conf"] is not None]
-        rows.append(
+        rows.append(build_row(slug, catalog, group_of))
+    return rows
+
+
+def build_row(slug, catalog, group_of=None):
+    """Build the row of one directory of `my/`.
+
+    `build_rows` uses it for every directory. The upload uses it for a wine that
+    gets its first photo now, so the new row matches the rows of the first scan.
+    """
+    group_of = group_of or {}
+    rec = catalog.get(slug) or {}
+    bottle = rec.get("local_path")
+    photos = []
+    for fn in scan_photos(slug):
+        m = NAME_RE.match(fn)
+        photos.append(
             {
-                "slug": slug,
-                "name": rec.get("name") or "",
-                "producer": rec.get("producer") or "",
-                "category": rec.get("category") or "",
-                "color": rec.get("color") or "",
-                "region": rec.get("region") or "",
-                "grapes": rec.get("grapes") or "",
-                "page_url": rec.get("page_url") or "",
-                "in_catalog": bool(rec),
-                "has_bottle": bool(bottle),
-                "group": group_of.get(slug),
-                "photos": photos,
-                "min_conf": min(confs) if confs else None,
+                "file": fn,
+                "conf": int(m.group(2)) if m else None,
             }
         )
+    confs = [p["conf"] for p in photos if p["conf"] is not None]
+    return (
+        {
+            "slug": slug,
+            "name": rec.get("name") or "",
+            "producer": rec.get("producer") or "",
+            "category": rec.get("category") or "",
+            "color": rec.get("color") or "",
+            "region": rec.get("region") or "",
+            "grapes": rec.get("grapes") or "",
+            "page_url": rec.get("page_url") or "",
+            "in_catalog": bool(rec),
+            "has_bottle": bool(bottle),
+            # How the catalogue established this bottle photo. The build
+            # writes it. See svoe-wino-hackaton/docs/plans/01_photo-join-repair.md.
+            "image_match": rec.get("image_match") or {},
+            "group": group_of.get(slug),
+            "photos": photos,
+            "min_conf": min(confs) if confs else None,
+        }
+    )
+
+
+def catalog_only_rows(catalog, review_slugs, groups=None):
+    """Return one row per catalogue card that has no directory in `my/`.
+
+    The review table is built from `my/`, so a catalogue card with no candidate
+    photo has no row. Such a card is a gap of the photo set, and a gap is worth
+    seeing. The row carries the catalogue fields, an empty photo list, and the
+    mark `catalog_only`.
+
+    These rows are not part of `_rows`. They never reach `prune_state`, the
+    label state, or the counters of the review set. The client shows them only
+    when the selected filter asks for them.
+    """
+    group_of = {}
+    for gid, g in (groups or {}).items():
+        for slug in g.get("slugs", []):
+            group_of[slug] = gid
+    rows = []
+    for slug in sorted(catalog):
+        if slug in review_slugs:
+            continue
+        rec = catalog[slug]
+        rows.append({
+            "slug": slug,
+            "name": rec.get("name") or "",
+            "producer": rec.get("producer") or "",
+            "category": rec.get("category") or "",
+            "color": rec.get("color") or "",
+            "region": rec.get("region") or "",
+            "grapes": rec.get("grapes") or "",
+            "page_url": rec.get("page_url") or "",
+            "in_catalog": True,
+            "has_bottle": bool(rec.get("local_path")),
+            "image_match": rec.get("image_match") or {},
+            "group": group_of.get(slug),
+            "photos": [],
+            "min_conf": None,
+            "catalog_only": True,
+        })
     return rows
 
 
@@ -348,7 +521,16 @@ def count_state():
 
 
 API_FILTERS = ("all", "unlabelled", "needs_positive", "has_proposal",
-               "fully_labelled", "in_variant_group")
+               "fully_labelled", "in_variant_group",
+               "image_unresolved", "image_assumed", "image_confirmed",
+               "image_manual", "image_shared", "no_candidate_photos")
+
+# A catalogue card with no directory in `my/` has no candidate photo. Such a
+# card is not part of the review set, so it stays out of the default list. These
+# filters ask about the catalogue itself, so each one pulls those cards in.
+CATALOG_SCOPE_FILTERS = frozenset((
+    "no_candidate_photos", "image_unresolved", "image_assumed",
+    "image_confirmed", "image_manual", "image_shared"))
 
 
 def api_filter(view, mode):
@@ -362,6 +544,19 @@ def api_filter(view, mode):
         return view["photos_total"] > 0 and view["unlabelled"] == 0
     if mode == "in_variant_group":
         return bool(view["variant_group"])
+    im = view.get("image_match") or {}
+    if mode == "image_unresolved":
+        return im.get("method") == "unresolved"
+    if mode == "image_assumed":
+        return im.get("confidence") == "assumed"
+    if mode == "image_confirmed":
+        return im.get("confidence") == "confirmed"
+    if mode == "image_manual":
+        return im.get("method") == "manual"
+    if mode == "image_shared":
+        return bool(im.get("shared_with"))
+    if mode == "no_candidate_photos":
+        return view["photos_total"] == 0
     return True
 
 
@@ -411,6 +606,8 @@ def wine_view(row, catalog, groups, full=False):
         "bottle_path": rec.get("local_path"),
         "bottle_url": ("/img/bottle?slug=" + urllib.parse.quote(row["slug"])
                        if row["has_bottle"] else None),
+        "image_match": row.get("image_match") or {},
+        "catalog_only": bool(row.get("catalog_only")),
         "photos_total": len(row["photos"]),
         "labels": counts,
         "labelled": labelled,
@@ -716,6 +913,172 @@ def perform_deletes(planned, gone, labels):
     return deleted, failed
 
 
+# ------------------------------------------------------------------- the runs
+
+
+def run_dirs():
+    """Return the id of every run directory, the newest first."""
+    if not os.path.isdir(RUNS_DIR):
+        return []
+    out = []
+    for name in os.listdir(RUNS_DIR):
+        if name.startswith(".") or not os.path.isdir(os.path.join(RUNS_DIR, name)):
+            continue
+        out.append(name)
+    return sorted(out, reverse=True)
+
+
+def run_path(run_id, name):
+    """Return the path of one file of one run, or None.
+
+    The function refuses a run id that holds a path separator or a parent
+    reference, and a path that leaves `RUNS_DIR`.
+    """
+    if not run_id or os.path.basename(run_id) != run_id:
+        return None
+    base = os.path.realpath(RUNS_DIR)
+    path = os.path.realpath(os.path.join(base, run_id, name))
+    if not (path == base or path.startswith(base + os.sep)):
+        return None
+    return path
+
+
+def run_head(run_id):
+    """Return the short record of one run for the table of the runs."""
+    meta = _read_json(run_path(run_id, "run.json")) or {}
+    met = _read_json(run_path(run_id, "metrics.json")) or {}
+    pos = met.get("positive") or {}
+    neg = met.get("negative") or {}
+    return {
+        "id": run_id,
+        "backend": (met.get("backend") or (meta.get("options") or {}).get("backend")
+                    or "—"),
+        "label": ((meta.get("backend") or {}) or {}).get("label", ""),
+        "started": meta.get("started") or "",
+        "finished": meta.get("finished") or "",
+        "dry_run": bool((meta.get("options") or {}).get("dry_run")),
+        "queries": (met.get("queries") or {}).get("total",
+                                                  (meta.get("query_set") or {}).get("total")),
+        "positive": pos.get("n"),
+        "negative": neg.get("n"),
+        "recall_at_1": pos.get("recall_at_1"),
+        "match_share": pos.get("match_share", pos.get("recall_at_1")),
+        "f1_at_1": ((pos.get("f1_at_1") or {}) or {}).get("f1"),
+        "f1_at_5": ((pos.get("f1_at_5") or {}) or {}).get("f1"),
+        "near_duplicate_confusion": pos.get("near_duplicate_confusion"),
+        "within_sla_share": (met.get("latency_ms") or {}).get("within_sla_share"),
+        "sla_ms": (met.get("latency_ms") or {}).get("sla_ms"),
+        "recall_at_5": pos.get("recall_at_5"),
+        "recall_at_10": pos.get("recall_at_10"),
+        "false_match_at_1": neg.get("false_match_at_1"),
+        "latency_median": (met.get("latency_ms") or {}).get("median"),
+        "has_metrics": bool(met),
+        "subset": met.get("subset") or None,
+    }
+
+
+def _read_json(path):
+    if not path or not os.path.exists(path):
+        return None
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+# The orders that `/runs` offers for the photo rows. `manifest` is the order of
+# `queries.tsv`, which is the order that the backend answered in.
+ROW_SORTS = ("manifest", "worst", "rank", "latency_desc", "latency_asc",
+             "score_desc", "score_asc", "path")
+
+
+def _row_sort_key(rec, mode):
+    """Return the sort key of one row for the order `mode`."""
+    rank = rec.get("rank_of_truth")
+    top = (rec.get("candidates") or [None])[0]
+    score = (top or {}).get("score")
+    lat = rec.get("latency_ms")
+    path = rec.get("image_path") or ""
+    if mode == "path":
+        return (path,)
+    if mode == "rank":
+        # rank 1 first, then deeper, then the rows whose true slug never came back
+        return (0, rank) if rank else (1, 0)
+    if mode == "worst":
+        # the most wrong first: a false match, then an absent truth, then a deep rank
+        if rec.get("outcome") == "false_match_at_1":
+            return (0, 0, path)
+        if rec.get("label") in ("positive", "variant"):
+            if rank is None:
+                return (1, 0, path)
+            if rank > 1:
+                return (2, -rank, path)
+            return (4, 0, path)
+        return (3, 0, path)
+    if mode in ("latency_desc", "latency_asc"):
+        value = -1 if lat is None else lat
+        return (-value,) if mode == "latency_desc" else (value,)
+    if mode in ("score_desc", "score_asc"):
+        # a row with no score stands last in both orders
+        if score is None:
+            return (1, 0.0)
+        return (0, -score) if mode == "score_desc" else (0, score)
+    return (rec.get("query_id") or "",)
+
+
+def run_rows(run_id, mode="all", query="", limit=200, offset=0, sort="manifest"):
+    """Return the rows of `results.jsonl` that the filter keeps, in the asked order."""
+    path = run_path(run_id, "results.jsonl")
+    if not path or not os.path.exists(path):
+        return [], 0
+    query = (query or "").strip().lower()
+    kept = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                continue
+            if not _row_matches(rec, mode):
+                continue
+            if query and query not in (rec.get("image_path", "") + " " +
+                                       (rec.get("predicted_slug") or "")).lower():
+                continue
+            kept.append(rec)
+    total = len(kept)
+    if sort and sort != "manifest" and sort in ROW_SORTS:
+        kept.sort(key=lambda rec: _row_sort_key(rec, sort))
+    return kept[offset:offset + limit], total
+
+
+def _row_matches(rec, mode):
+    label, rank = rec.get("label"), rec.get("rank_of_truth")
+    outcome = rec.get("outcome")
+    if mode in ("all", ""):
+        return True
+    if mode == "error":
+        return bool(rec.get("error"))
+    if mode == "hit":
+        return label in ("positive", "variant") and rank == 1
+    if mode == "miss":
+        return label in ("positive", "variant") and rank != 1
+    if mode == "near":          # the truth is in the list but not at rank 1
+        return label in ("positive", "variant") and rank is not None and rank > 1
+    if mode == "absent":        # the truth never appeared
+        return label in ("positive", "variant") and rank is None
+    if mode == "false_match":
+        return label == "negative" and outcome == "false_match_at_1"
+    if mode == "negative_in_topk":
+        return label == "negative" and rank is not None
+    if mode == "negative":
+        return label == "negative"
+    return True
+
+
 # ---------------------------------------------------------------- HTTP handler
 
 
@@ -780,7 +1143,10 @@ class Handler(BaseHTTPRequestHandler):
             )
         elif route == "/api/rows":
             with _lock:
-                self._json(200, {"rows": _rows, "labels": _state["labels"],
+                have = {r["slug"] for r in _rows}
+                extra = catalog_only_rows(getattr(self.server, "catalog", {}), have,
+                                          getattr(self.server, "groups", {}))
+                self._json(200, {"rows": _rows + extra, "labels": _state["labels"],
                                  "wines": _state["wines"],
                                  "excluded": _excluded,
                                  "groups": getattr(self.server, "groups", {}),
@@ -789,6 +1155,13 @@ class Handler(BaseHTTPRequestHandler):
             with _lock:
                 self._json(200, {"labels": _state["labels"], "wines": _state["wines"],
                                  "excluded": _excluded, "counts": count_state()})
+        elif route == "/runs":
+            self._send(200, PAGE_RUNS, "text/html; charset=utf-8",
+                       {"Cache-Control": "no-store"})
+        elif route == "/api/runs":
+            self._json(200, {"runs": [run_head(r) for r in run_dirs()]})
+        elif route == "/api/run":
+            self._run_view(query)
         elif route == "/api/reload":
             self._reload()
         elif route == "/api/suggest":
@@ -834,6 +1207,8 @@ class Handler(BaseHTTPRequestHandler):
             self._set_comment(body)
         elif route == "/api/wine-comment":
             self._set_wine_comment(body)
+        elif route == "/api/group":
+            self._group(body)
         elif route == "/api/exclude":
             self._set_excluded(body)
         elif route == "/api/mark-delete":
@@ -851,15 +1226,105 @@ class Handler(BaseHTTPRequestHandler):
 
     # -- route bodies
 
-    def _reload(self):
+    def _run_view(self, query):
+        """Answer the metrics and the filtered rows of one run."""
+        run_id = (query.get("id") or [""])[0]
+        if not run_path(run_id, "run.json"):
+            self._json(400, {"error": "bad run id"})
+            return
+        if run_id not in run_dirs():
+            self._json(404, {"error": "unknown run"})
+            return
+        mode = (query.get("filter") or ["all"])[0]
+        text = (query.get("q") or [""])[0]
+        try:
+            limit = max(1, min(int((query.get("limit") or ["200"])[0]), 1000))
+            offset = max(0, int((query.get("offset") or ["0"])[0]))
+        except ValueError:
+            self._json(400, {"error": "limit and offset MUST be numbers"})
+            return
+        sort = (query.get("sort") or ["manifest"])[0]
+        if sort not in ROW_SORTS:
+            self._json(400, {"error": "sort MUST be one of %s" % ", ".join(ROW_SORTS)})
+            return
+        rows, total = run_rows(run_id, mode, text, limit, offset, sort)
+        self._json(200, {
+            "run": _read_json(run_path(run_id, "run.json")) or {},
+            "metrics": _read_json(run_path(run_id, "metrics.json")) or {},
+            "head": run_head(run_id),
+            "filter": mode, "sort": sort,
+            "total": total, "offset": offset, "limit": limit,
+            "rows": rows,
+        })
+
+    def _rebuild_rows(self):
+        """Read the groups again, build the rows again, and answer both."""
         global _rows
         group_of, groups = load_variants()
         self.server.groups = groups
         rows = build_rows(getattr(self.server, "catalog", {}), group_of)
         with _lock:
             _rows = rows
-            self._json(200, {"rows": _rows, "labels": _state["labels"],
+        return rows, groups
+
+    def _reload(self):
+        rows, _groups = self._rebuild_rows()
+        with _lock:
+            self._json(200, {"rows": rows, "labels": _state["labels"],
                              "wines": _state["wines"], "excluded": _excluded})
+
+    def _group(self, body):
+        """Join two wines into one variant group.
+
+        The write is one pair in `manual-groups.json`. A group is a connected
+        component over the generated groups and these pairs, so a wine that is in
+        no group takes the group of the other wine.
+
+        Two wines that are already in two groups are refused. A merge of two
+        groups is a larger decision than this button states, and it cannot be
+        undone by taking one pair away.
+        """
+        slug = (body.get("slug") or "").strip()
+        target = (body.get("target") or "").strip()
+        catalog = getattr(self.server, "catalog", {})
+        if not slug or not target:
+            self._json(400, {"error": "slug and target are required"})
+            return
+        if slug == target:
+            self._json(400, {"error": "a wine cannot be grouped with itself"})
+            return
+        if slug not in catalog:
+            self._json(400, {"error": "unknown slug: %s" % slug})
+            return
+        if target not in catalog:
+            self._json(400, {"error": "unknown target slug: %s" % target})
+            return
+        groups = getattr(self.server, "groups", {})
+        gof = {sl: g["id"] for g in groups.values() for sl in g["slugs"]}
+        ga, gb = gof.get(slug), gof.get(target)
+        if ga and ga == gb:
+            self._json(200, {"ok": True, "changed": False, "group": ga,
+                             "note": "the two wines are already in one group"})
+            return
+        if ga and gb:
+            self._json(409, {"error":
+                "both wines are already in a group: %s holds %d wines, %s holds "
+                "%d. A merge of two groups is not allowed here." % (
+                    ga, len(groups[ga]["slugs"]), gb, len(groups[gb]["slugs"]))})
+            return
+        pairs = load_manual_pairs()
+        if not any({p["a"], p["b"]} == {slug, target} for p in pairs):
+            pairs.append({"a": slug, "b": target,
+                          "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z")})
+            save_manual_pairs(pairs)
+        rows, groups = self._rebuild_rows()
+        gid = next((g["id"] for g in groups.values() if slug in g["slugs"]), None)
+        with _lock:
+            self._json(200, {"ok": True, "changed": True, "group": gid,
+                             "rows": rows, "labels": _state["labels"],
+                             "wines": _state["wines"], "excluded": _excluded,
+                             "groups": groups,
+                             "slugs": sorted(catalog)})
 
     def _bottle_path(self, slug):
         rec = getattr(self.server, "catalog", {}).get(slug) or {}
@@ -1107,7 +1572,11 @@ class Handler(BaseHTTPRequestHandler):
             keep_excluded = (query.get("include_excluded") or ["0"])[0] in (
                 "1", "true", "yes")
             with _lock:
-                rows = [wine_view(r, catalog, groups) for r in _rows]
+                src = list(_rows)
+                if mode in CATALOG_SCOPE_FILTERS:
+                    src += catalog_only_rows(catalog, {r["slug"] for r in _rows},
+                                             groups)
+                rows = [wine_view(r, catalog, groups) for r in src]
             if not keep_excluded:
                 rows = [w for w in rows if not w["excluded"]]
             rows = [w for w in rows if api_filter(w, mode)]
@@ -1254,6 +1723,8 @@ class Handler(BaseHTTPRequestHandler):
 
         with _lock:
             d = os.path.join(MY, slug)
+            # A catalogue wine that gets its first photo has no directory yet.
+            os.makedirs(d, exist_ok=True)
             ranks = [int(m.group(1)) for m in
                      (RANK_RE.match(f) for f in os.listdir(d)) if m]
             fn = free_name(d, "%02d_%s%s" % (max(ranks, default=0) + 1, tag, ext))
@@ -1267,17 +1738,35 @@ class Handler(BaseHTTPRequestHandler):
                     os.unlink(tmp)
                 raise
             row = next((r for r in _rows if r["slug"] == slug), None)
-            if row is not None:
+            if row is None:
+                # The wine held no photo until now, so it was a catalogue-only row
+                # and not a row of the review set. It is a review wine from now on.
+                groups = getattr(self.server, "groups", {})
+                group_of = {sl: g["id"] for g in groups.values()
+                            for sl in g["slugs"]}
+                row = build_row(slug, getattr(self.server, "catalog", {}), group_of)
+                _rows.append(row)
+                _rows.sort(key=lambda r: r["slug"])
+            else:
                 row["photos"] = [
                     {"file": f, "conf": int(NAME_RE.match(f).group(2))
                      if NAME_RE.match(f) else None}
                     for f in scan_photos(slug)
                 ]
-            return fn, (row["photos"] if row else [])
+            return fn, row["photos"]
 
     def _known_slug(self, slug):
-        return os.path.basename(slug) == slug and os.path.isdir(
-            os.path.join(MY, slug))
+        """Is this a wine of this tool?
+
+        A directory in `my/` is one. A card of the catalogue is one too, although
+        it holds no directory yet: a catalogue card with no candidate photo is a
+        row of the table, and a picture MAY be dropped on it. The directory is
+        made by the write.
+        """
+        if os.path.basename(slug) != slug or not slug or slug.startswith("."):
+            return False
+        return (os.path.isdir(os.path.join(MY, slug))
+                or slug in getattr(self.server, "catalog", {}))
 
     def _upload(self, query):
         """Take one dropped file and add it to the photos of one wine."""
@@ -1354,14 +1843,7 @@ class Handler(BaseHTTPRequestHandler):
 
 # ---------------------------------------------------------------------- page
 
-PAGE = r"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Svoe Vino photo review</title>
-<style>
-:root {
+THEME_CSS = """:root {
   color-scheme: light dark;
   --bg: #f6f6f4;
   --panel: #ffffff;
@@ -1408,7 +1890,18 @@ PAGE = r"""<!doctype html>
     --shadow: 0 1px 2px rgba(0,0,0,.5);
   }
 }
-* { box-sizing: border-box; }
+"""
+
+
+
+PAGE = r"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino photo review</title>
+<style>
+""" + THEME_CSS + r"""* { box-sizing: border-box; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
   font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -1420,6 +1913,16 @@ header {
 }
 h1 { font-size: 15px; margin: 0 0 8px; font-weight: 650; letter-spacing: .01em; }
 h1 .sub { color: var(--muted); font-weight: 400; }
+.head-top { display: flex; align-items: baseline; gap: 14px; }
+.head-top h1 { margin-right: auto; }
+.nav { display: flex; gap: 6px; flex: none; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
 .bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
 .bar label { color: var(--muted); font-size: 12px; display: flex; gap: 5px; align-items: center; }
 select, input[type=search] {
@@ -1438,6 +1941,23 @@ input[type=search] { min-width: 210px; }
 .tag.unu { color: var(--unu); background: var(--unu-bg); border-color: transparent; }
 .tag.var { color: var(--var); background: var(--var-bg); border-color: transparent; }
 .tag.grp { color: var(--accent); border-color: var(--accent); }
+/* The tag `variant group of N` is a button: it shows the group alone. */
+button.tag {
+  font: inherit; font-size: 11px; line-height: 1.35; cursor: pointer;
+  background: none; padding: 1px 6px;
+}
+button.tag.grp:hover { background: var(--accent); color: var(--panel); }
+/* The table shows one variant group. The chip states it and takes it away. It
+   stands with the other controls in the header, because that is where a reviewer
+   looks for the filter that is on. */
+#grp-clear {
+  border: 1px solid var(--accent); background: none; color: var(--accent);
+  border-radius: 999px; font: inherit; font-size: 12px; line-height: 1.2;
+  padding: 3px 10px; cursor: pointer; white-space: nowrap;
+}
+#grp-clear:hover { background: var(--accent); color: var(--panel); }
+#grp-clear[hidden] { display: none; }
+#grp-clear b { font-variant-numeric: tabular-nums; }
 #pending { display: flex; align-items: center; gap: 6px; font-size: 12px; }
 #pending[hidden] { display: none; }
 #pending b { color: var(--accent); }
@@ -1450,7 +1970,60 @@ input[type=search] { min-width: 210px; }
 tr.drop td { box-shadow: inset 0 0 0 2px var(--accent); }
 tr.busy { opacity: .6; }
 
-main { padding: 12px 16px 64px; }
+main { padding: 12px 16px 64px; padding-right: 244px; }
+/* The sideboard stands over the page at the right edge. The header is sticky and
+   spans the whole width, so it MUST keep the same room free; without it the
+   sideboard covers the progress of the header. */
+header { padding-right: 244px; }
+body.side-off #side { display: none; }
+body.side-off main, body.side-off header { padding-right: 16px; }
+#side-toggle {
+  font: inherit; font-size: 11px; padding: 3px 9px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+}
+#side-toggle:hover { border-color: var(--accent); color: var(--text); }
+#side-toggle.on { color: var(--accent); border-color: var(--accent); }
+#side-toggle b { font-variant-numeric: tabular-nums; }
+#side-hide {
+  float: right; font: inherit; font-size: 12px; line-height: 1; padding: 2px 6px;
+  border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--muted); cursor: pointer;
+}
+#side-hide:hover { border-color: var(--accent); color: var(--text); }
+/* The sideboard: a holding area for the photos that wait for another wine. The
+   list lives in the browser only. A reload empties it. */
+#side {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 228px; z-index: 20;
+  display: flex; flex-direction: column;
+  background: var(--panel); border-left: 1px solid var(--line);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, .06);
+}
+#side .side-head {
+  padding: 10px 12px 8px; border-bottom: 1px solid var(--line);
+  font-size: 13px; font-weight: 650;
+}
+#side .side-head .n { color: var(--accent); }
+#side .side-help { color: var(--muted); font-size: 11px; font-weight: 400; margin-top: 4px; }
+#held { flex: 1; overflow-y: auto; padding: 10px; display: flex;
+        flex-direction: column; gap: 8px; }
+#held .empty { color: var(--muted); font-size: 12px; text-align: center; padding: 18px 6px; }
+#side.over { background: var(--panel-2); }
+#side.over #held { outline: 2px dashed var(--accent); outline-offset: -6px; border-radius: 8px; }
+.held-card { width: 100%; }
+.held-card .from {
+  font-size: 10px; color: var(--muted); word-break: break-all; margin-top: 4px;
+}
+.held-card .back {
+  width: 100%; margin-top: 4px; font-size: 11px;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; cursor: pointer;
+}
+.held-card .back:hover { border-color: var(--accent); }
+/* A row that is ready to take the dragged photo. */
+tr.photo-drop > td { background: var(--panel-2) !important; }
+tr.photo-drop { outline: 2px dashed var(--accent); outline-offset: -2px; }
+.card.dragging { opacity: .4; }
 table { border-collapse: separate; border-spacing: 0; width: 100%; }
 tbody tr { background: var(--panel); }
 /* The rows of one variant group stand next to each other and share a colour.
@@ -1473,6 +2046,33 @@ td.wine { width: 320px; min-width: 300px; }
 .bottle.missing { display: flex; align-items: center; justify-content: center;
   color: var(--muted); font-size: 11px; text-align: center; }
 .bottle-col { display: flex; flex-direction: column; gap: 5px; min-width: 84px; }
+/* A catalogue card with no directory in `my/`. It carries no review work. */
+tbody tr.cat-only { background: var(--panel-2); }
+tbody tr.cat-only .meta .nm::after {
+  content: "catalogue only"; margin-left: 8px; font-weight: 600; font-size: 10px;
+  letter-spacing: .02em; color: var(--muted); border: 1px solid var(--line);
+  border-radius: 999px; padding: 1px 6px; vertical-align: middle;
+}
+/* The badge states how the catalogue established this bottle photo. */
+/* How the catalogue established the bottle photo. This is a statement, not a
+   control, so it carries no border and no panel background. `Exclude` and
+   `Group` stand right below it in the same column, and a box of the same width
+   made the statement read as a third button. The colour of the text alone now
+   carries the confidence. */
+.imatch {
+  width: 84px; box-sizing: border-box; text-align: center; cursor: help;
+  font-size: 10px; line-height: 1.3; font-weight: 650; letter-spacing: .02em;
+  border: 0; padding: 1px 3px; background: none; color: var(--muted);
+}
+.imatch.confirmed { color: var(--pos); }
+.imatch.assumed   { color: var(--var); }
+.imatch.manual    { color: var(--neg); }
+.imatch.none      { color: var(--exc); }
+.ishared {
+  width: 84px; box-sizing: border-box; text-align: center; cursor: help;
+  font-size: 10px; line-height: 1.3; color: var(--var); background: var(--var-bg);
+  border: 1px solid var(--var); border-radius: 6px; padding: 1px 3px;
+}
 .excl-btn {
   width: 84px; border: 1px solid var(--line); background: var(--panel-2);
   color: var(--muted); border-radius: 6px; font: inherit; font-size: 11px;
@@ -1487,6 +2087,20 @@ td.wine { width: 320px; min-width: 300px; }
   width: 84px; color: var(--exc); font-size: 11px; line-height: 1.25;
   word-break: break-word;
 }
+/* The button that joins this wine to the variant group of another wine. */
+.grp-btn {
+  width: 84px; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--muted); border-radius: 6px; font: inherit; font-size: 11px;
+  line-height: 1.2; padding: 3px 4px; cursor: pointer;
+}
+.grp-btn:hover { border-color: var(--accent); color: var(--text); }
+.grp-btn.on { border-color: var(--accent); color: var(--accent); font-weight: 650; }
+.grp-btn.saving { border-style: dashed; }
+#gp { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none;
+      align-items: center; justify-content: center; z-index: 60; padding: 20px; }
+#gp.open { display: flex; }
+.gp-err { font-size: 11px; color: var(--exc); overflow-wrap: anywhere; }
+.gp-err:empty { display: none; }
 .meta { min-width: 0; }
 .meta .nm { font-weight: 650; }
 .meta .pr { color: var(--text); }
@@ -1496,6 +2110,7 @@ td.wine { width: 320px; min-width: 300px; }
   border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
   border-radius: 4px; font: inherit; font-size: 10px; line-height: 1.2;
   padding: 1px 4px; margin-left: 4px; cursor: pointer; vertical-align: baseline;
+  font-weight: 400;
 }
 .copy:hover { border-color: var(--accent); color: var(--text); }
 .copy.done { color: var(--pos); border-color: var(--pos); }
@@ -1549,6 +2164,8 @@ td.wine { width: 320px; min-width: 300px; }
 }
 .ctxmenu button:hover { background: var(--line); }
 .ctxmenu button.danger { color: var(--neg); }
+.ctxmenu button.done { color: var(--pos); }
+.ctxmenu .ctx-sep { height: 1px; background: var(--line); margin: 4px 0; }
 .ctxmenu .ctx-head {
   padding: 4px 10px 6px; color: var(--muted); font-size: 11px;
   border-bottom: 1px solid var(--line); margin-bottom: 4px;
@@ -1752,7 +2369,10 @@ body.dragging::after {
 </head>
 <body>
 <header>
-  <h1>Svoe Vino photo review <span class="sub" id="head-sub"></span></h1>
+  <div class="head-top">
+    <h1>Svoe Vino photo review <span class="sub" id="head-sub"></span></h1>
+    <nav class="nav"><a class="on" href="/">Review</a><a href="/runs">Runs</a></nav>
+  </div>
   <div class="bar">
     <label>Sort
       <select id="sort">
@@ -1784,6 +2404,12 @@ body.dragging::after {
         <option value="has_unu">has an unusable photo</option>
         <option value="has_var">has a different-design photo</option>
         <option value="grouped">has a similar wine (variant group)</option>
+        <option value="nophotos">no candidate photos (catalogue gap)</option>
+        <option value="img_none">catalogue photo: unresolved</option>
+        <option value="img_assumed">catalogue photo: by name only (assumed)</option>
+        <option value="img_confirmed">catalogue photo: confirmed by the site</option>
+        <option value="img_manual">catalogue photo: set by hand</option>
+        <option value="img_shared">catalogue photo: shared with another card</option>
         <option value="moved">holds a photo moved to another slug</option>
         <option value="noted">holds a comment</option>
         <option value="proposal">holds a photo proposed by an agent</option>
@@ -1798,10 +2424,15 @@ body.dragging::after {
       </select>
     </label>
     <label>Find <input id="q" type="search" placeholder="slug, name, producer, region"></label>
+    <button id="grp-clear" type="button" hidden
+            title="the table shows one variant group; click to show every wine again"
+            >variant group <b id="grp-clear-id"></b> &times;</button>
     <div class="progress">
       <span id="pending" hidden></span>
       <span id="stat"></span>
       <span class="meter"><i id="meter"></i></span>
+      <button id="side-toggle" type="button"
+              title="show or hide the sideboard (key s)">sideboard <b id="side-n">0</b></button>
     </div>
   </div>
 </header>
@@ -1809,6 +2440,15 @@ body.dragging::after {
   <p id="count"></p>
   <table><tbody id="rows"></tbody></table>
 </main>
+<aside id="side">
+  <div class="side-head"><button id="side-hide" type="button"
+        title="hide the sideboard (key s)">&times;</button>Sideboard
+    <span class="n" id="held-n">0</span>
+    <div class="side-help">Drag a photo here to hold it. Drag it to a wine
+      row to move it there. The move runs when you press apply.</div>
+  </div>
+  <div id="held"></div>
+</aside>
 <datalist id="slug-list"></datalist>
 <datalist id="my-slug-list"></datalist>
 <div id="ad">
@@ -1847,6 +2487,27 @@ body.dragging::after {
     </div>
   </div>
 </div>
+<div id="gp">
+  <div class="mv-box">
+    <div class="mv-h">Group this wine with another wine</div>
+    <div class="mv-ctx" id="gp-ctx"></div>
+    <div class="mv-sub">One group holds the same wine in another bottle: another
+      vintage, another alcohol value, or another package design. The wine that is
+      in no group joins the group of the wine you name. Two wines that are each
+      already in a group cannot be joined here.</div>
+    <div class="mv-list" id="gp-list"></div>
+    <label class="mv-any">Wine slug
+      <input id="gp-input" list="slug-list" autocomplete="off" spellcheck="false"
+             placeholder="start typing a slug">
+    </label>
+    <div class="gp-err" id="gp-err"></div>
+    <div class="mv-foot">
+      <span style="flex:1"></span>
+      <button id="gp-cancel" type="button">cancel</button>
+      <button id="gp-ok" type="button" class="primary">group</button>
+    </div>
+  </div>
+</div>
 <div id="lb">
   <div id="lb-status"></div>
   <div class="lb-inner">
@@ -1869,11 +2530,16 @@ body.dragging::after {
   <div class="hint"><span id="lb-pos"></span>
     &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
     <b>1</b> positive &middot; <b>2</b> negative &middot; <b>3</b> unusable &middot;
-    <b>4</b> other design &middot; <b>m</b> move &middot; right-click delete &middot; Esc close</div>
+    <b>4</b> other design &middot; <b>m</b> move &middot; <b>s</b> sideboard &middot;
+    right-click delete &middot; Esc close</div>
 </div>
 <div id="ctxmenu" class="ctxmenu" hidden></div>
 <script>
 let ROWS = [], V = {}, TOTAL = 0;
+/* `ROWS` also holds the catalogue cards that have no candidate photo. They are
+   not review work, so every counter of the review set uses this number. */
+function reviewRows() { return ROWS.filter(r => !r.catalog_only); }
+function reviewCount() { return reviewRows().length; }
 let VIEW = [];        // the rows as the table shows them now: filtered and sorted
 let W = {};           // slug -> { comment, ts }: one note about a whole wine
 /* slug -> { reason, ts }. An excluded slug holds an error, most often a wrong
@@ -1882,6 +2548,11 @@ let EXC = {};
 let GROUPS = {};      // group id -> { id, slugs, producer, name }
 let SLUGS = [];       // every catalogue slug, for the move field
 let LB = null;        // the place of the large view: { wine: index in VIEW, photo: index }
+/* The sideboard. [{slug, file}] of the photos that the reviewer holds for a move.
+   The list lives in this tab only: the server never learns about it and a reload
+   empties it. A held photo keeps its label until a target is chosen and `apply`
+   runs; `apply` then drops the label, as it does for every move. */
+let HELD = [];
 
 const $ = s => document.querySelector(s);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
@@ -1918,6 +2589,8 @@ function wineNote(slug) {
   return (W[slug] && W[slug].comment) || "";
 }
 function isExcluded(slug) { return !!EXC[slug]; }
+/* The variant group of one row, or null. */
+function grpOf(r) { return (r.group && GROUPS[r.group]) || null; }
 function excludeReason(slug) { return (EXC[slug] && EXC[slug].reason) || ""; }
 function proposalOf(slug, file) {
   const r = V[slug] && V[slug][file];
@@ -1941,6 +2614,76 @@ function tally(row) {
   return t;
 }
 
+/* ---- the sideboard: shown or hidden ----
+   The sideboard stands over the right edge of the page. The reviewer hides it to
+   get the whole width back. The choice is kept in the browser, so it holds over a
+   reload. A photo that the sideboard holds is NOT lost while it is hidden: the
+   count stays on the button of the header. */
+const SIDE_KEY = "svt.sideboard";
+
+function sideShown() { return !document.body.classList.contains("side-off"); }
+
+function setSide(on, remember) {
+  document.body.classList.toggle("side-off", !on);
+  $("#side-toggle").classList.toggle("on", on);
+  $("#side-toggle").title = (on ? "hide" : "show") + " the sideboard (key s)";
+  if (remember !== false) {
+    try { localStorage.setItem(SIDE_KEY, on ? "1" : "0"); } catch (e) { /* private mode */ }
+  }
+}
+
+function initSide() {
+  let want = null;
+  try { want = localStorage.getItem(SIDE_KEY); } catch (e) { /* private mode */ }
+  setSide(want !== "0", false);       // the sideboard is shown until it is hidden
+}
+
+$("#side-toggle").addEventListener("click", () => setSide(!sideShown()));
+$("#side-hide").addEventListener("click", () => setSide(false));
+
+/* ---- the sideboard ---- */
+
+function isHeld(slug, file) {
+  return HELD.some(h => h.slug === slug && h.file === file);
+}
+
+function hold(slug, file) {
+  if (!isHeld(slug, file)) HELD.push({ slug, file });
+  render();
+}
+
+function unhold(slug, file) {
+  HELD = HELD.filter(h => !(h.slug === slug && h.file === file));
+}
+
+/* Drop every held photo that the server no longer reports. A move that was carried
+   out, a deletion, and a reload of the rows all end a photo. */
+function pruneHeld() {
+  const live = new Set();
+  for (const r of ROWS) for (const p of r.photos) live.add(r.slug + "/" + p.file);
+  HELD = HELD.filter(h => live.has(h.slug + "/" + h.file));
+}
+
+function renderHeld() {
+  $("#held-n").textContent = HELD.length;
+  $("#side-n").textContent = HELD.length;   // the button states it while hidden too
+  if (!HELD.length) {
+    $("#held").innerHTML = '<div class="empty">empty</div>';
+    return;
+  }
+  $("#held").innerHTML = HELD.map(h => {
+    const src = `/img/photo?slug=${encodeURIComponent(h.slug)}&file=${encodeURIComponent(h.file)}`;
+    const l = labelOf(h.slug, h.file);
+    return `<div class="card held-card ${SHORT[l] || ""}" draggable="true"
+                 data-slug="${esc(h.slug)}" data-file="${esc(h.file)}">
+      <img loading="lazy" draggable="false" src="${src}" alt="" data-full="${src}">
+      <div class="from" title="the wine this photo comes from">${esc(h.slug)}</div>
+      <button class="back" type="button" data-back="1"
+              title="put this photo back in its wine">put back</button>
+      </div>`;
+  }).join("");
+}
+
 /* The short label counts of one wine, for the row and for the header. */
 function rowTags(t) {
   return (t.positive ? `<span class="tag pos">${t.positive} pos</span> ` : "") +
@@ -1952,7 +2695,45 @@ function rowTags(t) {
          (t.prop ? `<span class="tag var">${t.prop} proposed</span>` : "");
 }
 
+/* State how the catalogue established the bottle photo of one row.
+
+   `image_match` comes from the catalogue build. An old catalogue has no such
+   field, and then the badge states that the method is not recorded. */
+const IMATCH_LABEL = {
+  "csv-name-unique": "by name",
+  "live-og-image": "from site",
+  "manual": "by hand",
+  "unresolved": "no photo",
+};
+function imatchBadge(im) {
+  if (!im || !im.method) {
+    return `<div class="imatch" title="${esc("this catalogue records no match method")
+      }">method<br>unknown</div>`;
+  }
+  const cls = im.confidence === "confirmed" ? "confirmed"
+            : im.confidence === "assumed" ? "assumed"
+            : im.method === "manual" ? "manual" : "none";
+  const tip = [
+    "method: " + im.method,
+    "confidence: " + (im.confidence || "-"),
+    "candidates for the CSV photo name: " + (im.candidates === undefined ? "-" : im.candidates),
+    im.source ? "source: " + im.source : "",
+    im.checked_at ? "checked: " + im.checked_at : "",
+    im.note ? "note: " + im.note : "",
+  ].filter(Boolean).join("\n");
+  return `<div class="imatch ${cls}" title="${esc(tip)}">${
+    IMATCH_LABEL[im.method] || im.method}</div>`;
+}
+
+/* A catalogue card with no directory in `my/` carries `catalog_only`. It has no
+   candidate photo, so it is not part of the review work and stays out of the
+   default list. These filters ask about the catalogue itself, so each one shows
+   those cards. */
+const CATALOG_SCOPE_FILTERS = new Set([
+  "nophotos", "img_none", "img_assumed", "img_confirmed", "img_manual", "img_shared"]);
+
 function matchFilter(row, mode) {
+  if (row.catalog_only && !CATALOG_SCOPE_FILTERS.has(mode)) return false;
   const t = tally(row);
   switch (mode) {
     case "todo": return t.labelled < t.total;
@@ -1969,6 +2750,12 @@ function matchFilter(row, mode) {
     case "noted": return t.noted > 0;
     case "proposal": return t.prop > 0;
     case "nobottle": return !row.has_bottle;
+    case "nophotos": return row.photos.length === 0;
+    case "img_none": return (row.image_match || {}).method === "unresolved";
+    case "img_assumed": return (row.image_match || {}).confidence === "assumed";
+    case "img_confirmed": return (row.image_match || {}).confidence === "confirmed";
+    case "img_manual": return (row.image_match || {}).method === "manual";
+    case "img_shared": return ((row.image_match || {}).shared_with || []).length > 0;
     default: return true;
   }
 }
@@ -2043,6 +2830,45 @@ function sortRows(rows, mode) {
   return out;
 }
 
+/* The card strip of one row.
+
+   `render` draws it for every row. A photo added by drag and drop draws it again
+   for its own row alone, so the table is not filtered again and no row moves
+   under the pointer. */
+function cardsHtml(r) {
+  // A photo in the sideboard leaves its row. `tally` is not touched, so the
+  // counts of the row still state what the server holds.
+  const shown = r.photos.filter(p => !isHeld(r.slug, p.file));
+  if (!shown.length) {
+    return `<span class="empty">${
+        r.catalog_only ? "no directory my/" + esc(r.slug)
+                       + " \u2014 this card is a gap of the photo set"
+        : r.photos.length ? "every photo is in the sideboard" : "no photos"}</span>`;
+  }
+  return shown.map(p => {
+      const l = labelOf(r.slug, p.file), mv = movedTo(r.slug, p.file);
+      const note = commentOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
+      const dl = deleteMarked(r.slug, p.file);
+      const src = `/img/photo?slug=${encodeURIComponent(r.slug)}&file=${encodeURIComponent(p.file)}`;
+      return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${note ? "noted" : ""}
+                   ${pr ? "prop" : ""} ${dl ? "del" : ""}" draggable="true"
+                   data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
+        ${dl ? `<span class="del-tag" title="marked for deletion; press apply to move it to work/trash/">del</span>` : ""}
+        ${pr ? `<span class="prop-tag" title="${esc(pr.by || "agent")} proposes ${
+          esc(pr.proposed)}${pr.source_url ? "\nfrom " + esc(pr.source_url) : ""}">${
+          esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
+        ${noteBadge(note)}
+        <img loading="lazy" draggable="false" src="${src}" alt="" data-full="${src}">
+        <div class="cap"><span>${esc(p.file.split("_")[0] || "")}</span>
+          <span>${p.conf === null ? "" : "conf " + p.conf}</span></div>
+        <div class="btns">${labelButtons(l)}</div>
+        <button class="move ${mv ? "on" : ""}" data-move="1"
+                title="move this photo to another wine slug">${
+          mv ? "\u2192 " + esc(mv) : "\u2192 move"}</button>
+        </div>`;
+  }).join("");
+}
+
 function render() {
   const mode = $("#sort").value, filt = $("#filter").value;
   const sel = $("#slugsel").value;
@@ -2054,6 +2880,7 @@ function render() {
     rows = rows.filter(r => (r.slug + " " + r.name + " " + r.producer + " " +
       r.region + " " + r.grapes).toLowerCase().includes(q));
   }
+  if (GROUP_FILTER) rows = rows.filter(r => r.group === GROUP_FILTER);
   rows = clusterGroups(sortRows(rows, mode));
   VIEW = rows;            // the arrow keys follow this order
 
@@ -2066,53 +2893,54 @@ function render() {
 
   const html = rows.map(r => {
     const t = tally(r);
+    const im = r.image_match || {};
+    const noPhoto = im.method === "unresolved"
+      ? "no photo<br>unresolved"
+      : (r.in_catalog ? "no bottle<br>photo" : "not in<br>catalogue");
     const img = r.has_bottle
       ? `<img class="bottle" loading="lazy" src="/img/bottle?slug=${encodeURIComponent(r.slug)}"
              alt="" data-full="/img/bottle?slug=${encodeURIComponent(r.slug)}">`
-      : `<div class="bottle missing">${r.in_catalog ? "no bottle<br>photo" : "not in<br>catalogue"}</div>`;
+      : `<div class="bottle missing">${noPhoto}</div>`;
+    const badge = imatchBadge(im);
+    const shared = (im.shared_with || []).length
+      ? `<div class="ishared" title="${esc("the same file is on: " + im.shared_with.join(", ")
+          + "\nthese cards cannot be separated by the image")}">shared ×${
+          im.shared_with.length + 1}</div>`
+      : "";
     const ex = isExcluded(r.slug), why = excludeReason(r.slug);
-    const bottle = `<div class="bottle-col">${img}
+    const bottle = `<div class="bottle-col">${img}${badge}${shared}
       <button class="excl-btn ${ex ? "on" : ""}" data-excl="${esc(r.slug)}"
         title="${ex ? "excluded: " + esc(why) + "\nclick to include this slug again"
                     : "exclude this slug from the benchmark; its photos are then not used"}">${
         ex ? "Excluded" : "Exclude"}</button>
       ${ex && why ? `<div class="excl-why" title="${esc(why)}">${esc(why)}</div>` : ""}
+      <button class="grp-btn ${grpOf(r) ? "on" : ""}" data-group="${esc(r.slug)}"
+        title="${grpOf(r)
+          ? "in variant group " + esc(grpOf(r).id) + " of " + grpOf(r).slugs.length +
+            " wines\nclick to add another wine to this group"
+          : "group this wine with another wine of the same label"}">${
+        grpOf(r) ? "Group " + grpOf(r).slugs.length : "Group"}</button>
       </div>`;
-    const cards = r.photos.length ? r.photos.map(p => {
-      const l = labelOf(r.slug, p.file), mv = movedTo(r.slug, p.file);
-      const note = commentOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
-      const dl = deleteMarked(r.slug, p.file);
-      const src = `/img/photo?slug=${encodeURIComponent(r.slug)}&file=${encodeURIComponent(p.file)}`;
-      return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${note ? "noted" : ""}
-                   ${pr ? "prop" : ""} ${dl ? "del" : ""}"
-                   data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
-        ${dl ? `<span class="del-tag" title="marked for deletion; press apply to move it to work/trash/">del</span>` : ""}
-        ${pr ? `<span class="prop-tag" title="${esc(pr.by || "agent")} proposes ${
-          esc(pr.proposed)}${pr.source_url ? "\nfrom " + esc(pr.source_url) : ""}">${
-          esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
-        ${noteBadge(note)}
-        <img loading="lazy" src="${src}" alt="" data-full="${src}">
-        <div class="cap"><span>${esc(p.file.split("_")[0] || "")}</span>
-          <span>${p.conf === null ? "" : "conf " + p.conf}</span></div>
-        <div class="btns">${labelButtons(l)}</div>
-        <button class="move ${mv ? "on" : ""}" data-move="1"
-                title="move this photo to another wine slug">${
-          mv ? "\u2192 " + esc(mv) : "\u2192 move"}</button>
-        </div>`;
-    }).join("") : `<span class="empty">no photos</span>`;
+    const cards = cardsHtml(r);
 
     const grp = r.group ? GROUPS[r.group] : null;
     return `<tr data-slug="${esc(r.slug)}" class="${r.group ? gclass.get(r.group) : ""} ${
-      ex ? "excl" : ""}">
+      ex ? "excl" : ""} ${r.catalog_only ? "cat-only" : ""}">
       <td class="wine"><div class="wine-inner">${bottle}<div class="meta">
-        <div class="nm">${esc(r.name) || "<span class='empty'>unknown name</span>"}</div>
+        <div class="nm">${esc(r.name) || "<span class='empty'>unknown name</span>"}${
+          r.name ? `<button class="copy" data-copy="${esc(r.name)}"
+             title="copy the name to the clipboard">copy</button>` : ""}</div>
         <div class="pr">${esc(r.producer)}</div>
         <div class="sm">${esc(r.category)}${r.region ? " &middot; " + esc(r.region) : ""}</div>
         <div class="sm">${esc(r.grapes)}</div>
         <div class="sm">${esc(r.slug)}<button class="copy" data-copy="${esc(r.slug)}"
              title="copy the slug to the clipboard">copy</button></div>
-        ${grp ? `<div class="sm"><span class="tag grp">variant group of ${
-          grp.slugs.length}</span></div>` : ""}
+        ${grp ? `<div class="sm"><button class="tag grp" type="button"
+          data-grp-show="${esc(grp.id)}"
+          title="${GROUP_FILTER === grp.id
+            ? "show every wine again"
+            : "show only the " + grp.slugs.length + " wines of this variant group"}">${
+          ""}variant group of ${grp.slugs.length}</button></div>` : ""}
         <div class="sm">${t.total} photo(s)
           ${rowTags(t)}</div>
         ${r.page_url ? `<div class="sm"><a href="${esc(r.page_url)}" target="_blank" rel="noopener">site page</a></div>` : ""}
@@ -2124,8 +2952,14 @@ function render() {
   }).join("");
 
   $("#rows").innerHTML = html;
-  $("#count").textContent = `${rows.length} of ${ROWS.length} wines shown`;
+  const gf = GROUP_FILTER && GROUPS[GROUP_FILTER];
+  $("#grp-clear").hidden = !gf;
+  if (gf) $("#grp-clear-id").textContent = `${gf.id} of ${gf.slugs.length}`;
+  $("#count").textContent = `${rows.length} of ${reviewCount()} wines shown` +
+    (gf ? ` \u00b7 variant group ${gf.id}` : "");
+  renderHeld();
   stats();
+  writeViewToUrl();
 }
 
 function stats() {
@@ -2140,7 +2974,7 @@ function stats() {
   const labelled = all.positive + all.negative + all.unusable + all.variant;
   $("#stat").innerHTML = `labelled <b>${labelled}</b>/<b>${TOTAL}</b> photos &middot; ` +
     rowTags({ ...all, total: TOTAL }) + ` &middot; ` +
-    `<b>${doneWines}</b>/<b>${ROWS.length}</b> wines done`;
+    `<b>${doneWines}</b>/<b>${reviewCount()}</b> wines done`;
   $("#meter").style.width = TOTAL ? (100 * labelled / TOTAL).toFixed(1) + "%" : "0";
 
   let pending = 0, pendingDel = 0;
@@ -2227,6 +3061,9 @@ function bottleItem(r) {
 
 function candItem(r, pi) {
   const p = r.photos[pi];
+  // A wine with no candidate photo shows the catalogue bottle alone. `fillFig`
+  // hides a figure that gets no item.
+  if (!p) return null;
   const t = tally(r);
   return {
     src: `/img/photo?slug=${encodeURIComponent(r.slug)}&file=${encodeURIComponent(p.file)}`,
@@ -2246,6 +3083,11 @@ function renderLbStatus() {
   const el = $("#lb-status");
   if (!LB) { el.textContent = ""; el.className = ""; return; }
   const r = VIEW[LB.wine], p = r.photos[LB.photo];
+  if (!p) {
+    el.textContent = "no candidate photo for this wine";
+    el.className = "none";
+    return;
+  }
   const l = labelOf(r.slug, p.file);
   const mv = movedTo(r.slug, p.file), pr = proposalOf(r.slug, p.file);
   el.textContent = (l === "positive" ? "positive \u2014 this wine"
@@ -2264,8 +3106,11 @@ function renderLbStatus() {
 function showLightbox(wi, pi) {
   if (wi < 0 || wi >= VIEW.length) return;
   const r = VIEW[wi];
-  if (!r.photos.length) return;
-  pi = Math.max(0, Math.min(pi, r.photos.length - 1));
+  // A wine with no candidate photo still opens: the catalogue bottle is worth the
+  // large view, and the filter `nophotos` shows exactly these wines. A wine with
+  // neither a bottle nor a candidate photo holds nothing to show.
+  if (!r.photos.length && !r.has_bottle) return;
+  pi = r.photos.length ? Math.max(0, Math.min(pi, r.photos.length - 1)) : 0;
   LB = { wine: wi, photo: pi };
 
   fillFig("#lb-ref", bottleItem(r));
@@ -2273,7 +3118,7 @@ function showLightbox(wi, pi) {
   renderLbStatus();
   $("#lb-pos").textContent =
     `wine ${wi + 1} of ${VIEW.length} — ${r.slug} · `;
-  setHash(`${r.slug}/${r.photos[pi].file}`);
+  setHash(r.photos.length ? `${r.slug}/${r.photos[pi].file}` : r.slug);
   loadComment(r, pi);
   $("#lb").classList.add("open");
 
@@ -2282,11 +3127,13 @@ function showLightbox(wi, pi) {
   if (tr) tr.scrollIntoView({ block: "center" });
 }
 
-/* Move to the previous or the next wine. A wine with no photo is stepped over. */
+/* Move to the previous or the next wine. A wine that holds neither a candidate
+   photo nor a catalogue bottle is stepped over: it has nothing to show. */
 function stepWine(step) {
   if (!LB) return;
   let i = LB.wine + step;
-  while (i >= 0 && i < VIEW.length && !VIEW[i].photos.length) i += step;
+  while (i >= 0 && i < VIEW.length
+         && !VIEW[i].photos.length && !VIEW[i].has_bottle) i += step;
   if (i < 0 || i >= VIEW.length) return;
   showLightbox(i, 0);
 }
@@ -2299,7 +3146,7 @@ function closeLightbox() {
   setHash("");
 }
 
-async function copySlug(btn) {
+async function copyFromButton(btn) {
   const text = btn.dataset.copy;
   try {
     await navigator.clipboard.writeText(text);
@@ -2345,8 +3192,9 @@ async function applyMoves(btn) {
     return;
   }
   ROWS = out.rows; V = out.labels || {}; W = out.wines || W;
+  pruneHeld();
   TOTAL = ROWS.reduce((k, r) => k + r.photos.length, 0);
-  $("#head-sub").textContent = `${ROWS.length} wines, ${TOTAL} candidate photos`;
+  $("#head-sub").textContent = `${reviewCount()} wines, ${TOTAL} candidate photos`;
   render();
   const deleted = out.deleted || [], delFailed = out.delete_failed || [];
   const lines = out.moved.map(m => `${m.from}/${m.file} -> ${m.to}/${m.as}`);
@@ -2393,12 +3241,101 @@ function hideCtxMenu() {
   m.innerHTML = "";
 }
 
+/* The address of one photo, as the table and the large view already build it. */
+function photoSrc(slug, file) {
+  return `/img/photo?slug=${encodeURIComponent(slug)}&file=${encodeURIComponent(file)}`;
+}
+
+/* Put text on the clipboard. The clipboard API needs a secure context. The
+   address `127.0.0.1` is one. The fallback covers a page opened over a plain
+   host name, where the API is absent. */
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } finally { ta.remove(); }
+    return ok;
+  }
+}
+
+/* Read one photo and answer it as PNG. Every browser accepts `image/png` on the
+   clipboard. A JPEG and a WEBP go through a canvas first. */
+async function photoAsPng(src) {
+  const res = await fetch(src);
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const blob = await res.blob();
+  if (blob.type === "image/png") return blob;
+  const bmp = await createImageBitmap(blob);
+  const cv = document.createElement("canvas");
+  cv.width = bmp.width; cv.height = bmp.height;
+  cv.getContext("2d").drawImage(bmp, 0, 0);
+  bmp.close();
+  return await new Promise((ok, bad) =>
+    cv.toBlob(b => b ? ok(b) : bad(new Error("the canvas is empty")), "image/png"));
+}
+
+/* Copy the picture itself. `ClipboardItem` receives the promise, not the blob.
+   Safari drops the permission of the click while the fetch runs, and the promise
+   form keeps it. */
+async function copyImage(slug, file, btn) {
+  if (!navigator.clipboard || !window.ClipboardItem) {
+    ctxDone(btn, "no clipboard"); return;
+  }
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({ "image/png": photoAsPng(photoSrc(slug, file)) }),
+    ]);
+    ctxDone(btn, "copied");
+  } catch (e) {
+    ctxDone(btn, "failed");
+  }
+}
+
+/* Save the picture as a file. The address is same-origin, so the `download`
+   attribute names the file and the browser saves it without opening a tab. The
+   name carries the slug, because most wines hold a file named `01_conf095.jpg`
+   and the plain name would collide in the download folder. */
+function downloadImage(slug, file) {
+  const a = document.createElement("a");
+  a.href = photoSrc(slug, file);
+  a.download = `${slug}__${file}`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+/* Copy the full address of the picture, so another tab can open it. */
+async function copyImageUrl(slug, file, btn) {
+  const url = new URL(photoSrc(slug, file), location.href).href;
+  ctxDone(btn, (await copyText(url)) ? "copied" : "failed");
+}
+
+/* State the result on the menu entry, then close the menu. */
+function ctxDone(btn, text) {
+  const old = btn.textContent;
+  btn.textContent = text;
+  btn.classList.add("done");
+  setTimeout(() => {
+    btn.textContent = old;
+    btn.classList.remove("done");
+    hideCtxMenu();
+  }, 700);
+}
+
 /* Show the menu for one photo at the pointer. */
 function showCtxMenu(x, y, slug, file) {
   const m = $("#ctxmenu");
   const marked = deleteMarked(slug, file);
   m.innerHTML =
     `<div class="ctx-head">${esc(file)}</div>` +
+    `<button type="button" data-act="copy-image">Copy Image</button>` +
+    `<button type="button" data-act="copy-url">Copy Image URL</button>` +
+    `<button type="button" data-act="download">Download</button>` +
+    `<div class="ctx-sep"></div>` +
     (marked
       ? `<button type="button" data-act="undelete">Keep this photo</button>`
       : `<button type="button" class="danger" data-act="delete">Delete</button>`);
@@ -2437,6 +3374,10 @@ document.addEventListener("click", ev => {
   const m = $("#ctxmenu");
   const slug = m.dataset.slug, file = m.dataset.file;
   const act = item.dataset.act;
+  // A copy keeps the menu open until `ctxDone` has stated the result.
+  if (act === "copy-image") { copyImage(slug, file, item); return; }
+  if (act === "copy-url") { copyImageUrl(slug, file, item); return; }
+  if (act === "download") { hideCtxMenu(); downloadImage(slug, file); return; }
   hideCtxMenu();
   if (act === "delete") markDelete(slug, file, true);
   else if (act === "undelete") markDelete(slug, file, false);
@@ -2459,6 +3400,9 @@ const URL_TYPES = ["text/uri-list", "text/html", "text/plain"];
 function hasDrop(ev) {
   if (!ev.dataTransfer) return false;
   const t = [...ev.dataTransfer.types];
+  // A card of this page. Some browsers add `text/plain` to every drag, so the
+  // test for the card MUST come first.
+  if (t.includes(PHOTO_TYPE)) return false;
   return t.includes("Files") || URL_TYPES.some(x => t.includes(x));
 }
 
@@ -2475,6 +3419,116 @@ function urlOfDrop(dt) {
 }
 function rowOfEvent(ev) {
   return (ev.target.closest && ev.target.closest("tr[data-slug]")) || null;
+}
+
+/* ---- the drag of a photo card ----
+
+   The card carries the type `application/x-photo`. A picture dragged from another
+   tab carries `Files` or a URL type, so the two paths never meet. The value is
+   readable on `drop` only; `dragover` can read the type list alone. */
+const PHOTO_TYPE = "application/x-photo";
+let DRAG = null;        // { slug, file } while a card of this page is in the air
+
+function hasPhoto(ev) {
+  return !!ev.dataTransfer && [...ev.dataTransfer.types].includes(PHOTO_TYPE);
+}
+
+document.addEventListener("dragstart", ev => {
+  const card = ev.target.closest && ev.target.closest(".card[data-file]");
+  if (!card) return;
+  DRAG = { slug: card.dataset.slug, file: card.dataset.file };
+  if (!sideShown()) setSide(true);      // the drop target MUST be on the screen
+  ev.dataTransfer.setData(PHOTO_TYPE, JSON.stringify(DRAG));
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+});
+document.addEventListener("dragend", ev => {
+  DRAG = null;
+  document.querySelectorAll(".card.dragging")
+    .forEach(c => c.classList.remove("dragging"));
+  document.querySelectorAll("tr.photo-drop")
+    .forEach(x => x.classList.remove("photo-drop"));
+  $("#side").classList.remove("over");
+});
+
+/* The sideboard takes a card and holds it. Nothing is sent to the server. */
+$("#side").addEventListener("dragover", ev => {
+  if (!hasPhoto(ev)) return;
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = "move";
+  $("#side").classList.add("over");
+});
+$("#side").addEventListener("dragleave", ev => {
+  if (!$("#side").contains(ev.relatedTarget)) $("#side").classList.remove("over");
+});
+$("#side").addEventListener("drop", ev => {
+  if (!hasPhoto(ev)) return;
+  ev.preventDefault();
+  $("#side").classList.remove("over");
+  const d = readPhoto(ev);
+  if (d) hold(d.slug, d.file);
+});
+
+/* A wine row takes a card and records the move. */
+document.addEventListener("dragover", ev => {
+  if (!hasPhoto(ev)) return;
+  const tr = rowOfEvent(ev);
+  if (!tr) return;
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = "move";
+  if (!tr.classList.contains("photo-drop")) {
+    document.querySelectorAll("tr.photo-drop")
+      .forEach(x => x.classList.remove("photo-drop"));
+    tr.classList.add("photo-drop");
+  }
+});
+document.addEventListener("dragleave", ev => {
+  if (!hasPhoto(ev)) return;
+  const tr = rowOfEvent(ev);
+  if (tr && !tr.contains(ev.relatedTarget)) tr.classList.remove("photo-drop");
+});
+document.addEventListener("drop", async ev => {
+  if (!hasPhoto(ev)) return;
+  const tr = rowOfEvent(ev);
+  if (!tr) return;
+  ev.preventDefault();
+  tr.classList.remove("photo-drop");
+  const d = readPhoto(ev);
+  if (!d) return;
+  const to = tr.dataset.slug;
+  if (to === d.slug) {          // back on its own wine: the gesture "put it back"
+    unhold(d.slug, d.file);
+    render();
+    return;
+  }
+  await moveTo(d.slug, d.file, to);
+});
+
+function readPhoto(ev) {
+  try {
+    const raw = ev.dataTransfer.getData(PHOTO_TYPE);
+    if (raw) return JSON.parse(raw);
+  } catch (e) { /* fall back on the value that `dragstart` kept */ }
+  return DRAG;
+}
+
+/* Record the target of one photo. The file is not moved: `apply` moves it and
+   drops the label, because the label judged the old pair. */
+async function moveTo(slug, file, to) {
+  try {
+    const res = await fetch("/api/reassign", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, file, to }),
+    });
+    const out = await res.json();
+    if (!res.ok) throw new Error(out.error || res.status);
+    (V[slug] = V[slug] || {})[file] =
+      { ...((V[slug] || {})[file] || {}), reassign_to: to };
+    unhold(slug, file);
+    render();
+  } catch (e) {
+    alert("the move was not recorded: " + e.message);
+  }
 }
 
 /* A file dropped anywhere else on the page MUST NOT make the browser open the
@@ -2546,7 +3600,7 @@ function closeWine() {
 function adSuggest() {
   const q = $("#ad-input").value.trim().toLowerCase();
   if (q.length < 2) { $("#ad-list").innerHTML = ""; return; }
-  const hits = ROWS.filter(r =>
+  const hits = reviewRows().filter(r =>
     (r.slug + " " + r.name + " " + r.producer).toLowerCase().includes(q)).slice(0, 5);
   $("#ad-list").innerHTML = hits.map(r => `
     <button class="mv-item" data-slug="${esc(r.slug)}">
@@ -2560,7 +3614,7 @@ function adSuggest() {
 
 async function addToWine(slug) {
   if (!slug) { alert("Name the wine slug."); return; }
-  if (!ROWS.some(r => r.slug === slug)) {
+  if (!reviewRows().some(r => r.slug === slug)) {
     alert(`No directory my/${slug}. Pick a wine from the list.`);
     return;
   }
@@ -2597,7 +3651,9 @@ async function addPhotos(slug, files, tr, url) {
       const out = await res.json();
       if (!res.ok) throw new Error(out.error || res.status);
       const row = ROWS.find(r => r.slug === slug);
-      if (row) row.photos = out.photos;
+      // The wine now holds a photo, so it is a review wine and no longer a
+      // catalogue-only row. The filters and the counters MUST see it as one.
+      if (row) { row.photos = out.photos; row.catalog_only = false; }
       added.push(out.file);
     } catch (e) {
       alert(`cannot fetch the picture:\n${url}\n\n${e.message}`);
@@ -2611,7 +3667,9 @@ async function addPhotos(slug, files, tr, url) {
       const out = await res.json();
       if (!res.ok) throw new Error(out.error || res.status);
       const row = ROWS.find(r => r.slug === slug);
-      if (row) row.photos = out.photos;
+      // The wine now holds a photo, so it is a review wine and no longer a
+      // catalogue-only row. The filters and the counters MUST see it as one.
+      if (row) { row.photos = out.photos; row.catalog_only = false; }
       added.push(out.file);
     } catch (e) {
       alert(`cannot add ${f.name}: ${e.message}`);
@@ -2620,9 +3678,29 @@ async function addPhotos(slug, files, tr, url) {
   if (tr) tr.classList.remove("busy");
   if (added.length) {
     TOTAL = ROWS.reduce((k, r) => k + r.photos.length, 0);
-    $("#head-sub").textContent = `${ROWS.length} wines, ${TOTAL} candidate photos`;
-    render();
+    $("#head-sub").textContent = `${reviewCount()} wines, ${TOTAL} candidate photos`;
+    // The table is NOT drawn again. A wine that no longer matches the filter
+    // would leave the table at once: under `no candidate photos (catalogue gap)`
+    // the row would go away as soon as the first photo lands on it. The row is
+    // brought up to date where it stands. A reload of the page filters again.
+    refreshRow(slug);
   }
+}
+
+/* Draw the cards and the counts of one row again, without a `render`. */
+function refreshRow(slug) {
+  const row = ROWS.find(r => r.slug === slug);
+  const el = [...$("#rows").children].find(x => x.dataset.slug === slug);
+  if (!row || !el) return;
+  const strip = el.querySelector(".cards");
+  if (strip) strip.innerHTML = cardsHtml(row);
+  // The wine holds a photo now, so it is no longer a gap of the photo set.
+  el.classList.remove("cat-only");
+  const t = tally(row);
+  const tgt = [...el.querySelectorAll(".meta .sm")]
+    .find(x => x.textContent.includes("photo(s)"));
+  if (tgt) tgt.innerHTML = `${t.total} photo(s) ` + rowTags(t);
+  stats();
 }
 
 /* ---- the move dialog ----
@@ -2702,6 +3780,120 @@ $("#mv-cancel").addEventListener("click", closeMove);
 $("#mv").addEventListener("click", ev => { if (ev.target.id === "mv") closeMove(); });
 $("#mv-input").addEventListener("keydown", ev => {
   if (ev.key === "Enter") { ev.preventDefault(); commitMove($("#mv-input").value.trim()); }
+});
+
+/* ---- the variant group of a whole wine ----
+
+   The server keeps the hand-made pairs in `manual-groups.json` and joins them
+   with the groups that `scripts/08_variants.py` generates. A wine that is in no
+   group joins the group of the wine that the reviewer names. Two wines that are
+   each already in a group are refused by the server, and the reason is stated in
+   the dialog. */
+let GP_AT = null;                       // the slug that the dialog acts on
+
+/* Show only the wines of one variant group, or every wine again. The search and
+   the two other filters are cleared, so every member of the group reaches the
+   screen. The sort is kept, because the rows of one group stand together in
+   every sort order. */
+function showGroup(gid) {
+  const want = GROUPS[gid] ? gid : "";
+  if (want === GROUP_FILTER) return;
+  GROUP_FILTER = want;
+  if (want) {
+    $("#q").value = "";
+    $("#filter").value = "all";
+    $("#slugsel").value = "all";
+  }
+  render();
+  if (want) window.scrollTo({ top: 0 });
+}
+
+function closeGroup() { $("#gp").classList.remove("open"); GP_AT = null; }
+
+async function askGroup(slug) {
+  if (!slug) return;
+  GP_AT = slug;
+  const r = ROWS.find(x => x.slug === slug), g = r ? grpOf(r) : null;
+  $("#gp-ctx").textContent = g
+    ? `${slug}\nin group ${g.id} of ${g.slugs.length} wines: ` +
+      g.slugs.filter(x => x !== slug).join(", ")
+    : `${slug}\nin no group yet`;
+  $("#gp-err").textContent = "";
+  $("#gp-input").value = "";
+  $("#gp-list").innerHTML = `<div class="mv-sub">loading...</div>`;
+  $("#gp").classList.add("open");
+  $("#gp-input").focus();
+
+  let targets = [];
+  try {
+    const res = await fetch(`/api/suggest?slug=${encodeURIComponent(slug)}`);
+    targets = (await res.json()).targets || [];
+  } catch (e) { /* the field still takes any slug */ }
+  if (GP_AT !== slug) return;
+  targets = targets.filter(t => !g || !g.slugs.includes(t.slug));
+  $("#gp-list").innerHTML = targets.length ? targets.map(t => `
+    <button class="mv-item" data-slug="${esc(t.slug)}">
+      ${t.has_bottle
+        ? `<img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(t.slug)}" alt="">`
+        : `<span class="no-img"></span>`}
+      <span class="t">
+        <b>${esc(t.name) || esc(t.slug)}</b>${t.in_group
+          ? ` <span class="tag grp">variant group</span>` : ""}
+        <div>${esc(t.producer)}${t.category ? " &middot; " + esc(t.category) : ""}</div>
+        <div>${esc(t.slug)}</div>
+      </span>
+    </button>`).join("") : `<div class="mv-sub">no near match; type a slug below</div>`;
+}
+
+async function commitGroup(target) {
+  const slug = GP_AT;
+  if (!slug) return;
+  if (!target) { $("#gp-err").textContent = "name a wine slug"; return; }
+  $("#gp-err").textContent = "";
+  $("#gp-ok").classList.add("saving");
+  let out = {}, res;
+  try {
+    res = await fetch("/api/group", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, target }),
+    });
+    try { out = await res.json(); } catch (e) { out = {}; }
+  } catch (e) {
+    $("#gp-ok").classList.remove("saving");
+    $("#gp-err").textContent = "the server did not answer";
+    return;
+  }
+  $("#gp-ok").classList.remove("saving");
+  if (!res.ok) {
+    $("#gp-err").textContent = out.error || ("group failed: " + res.status);
+    return;
+  }
+  if (out.changed === false) {
+    $("#gp-err").textContent = out.note || "nothing changed";
+    return;
+  }
+  // The server answers the rebuilt rows, because a group changes the order of
+  // the table and the colour of the block.
+  if (out.rows) {
+    ROWS = out.rows;
+    GROUPS = out.groups || GROUPS;
+    V = out.labels || V;
+    W = out.wines || W;
+    EXC = out.excluded || EXC;
+  }
+  closeGroup();
+  render();
+}
+
+$("#gp-list").addEventListener("click", ev => {
+  const item = ev.target.closest(".mv-item");
+  if (item) commitGroup(item.dataset.slug);
+});
+$("#gp-ok").addEventListener("click", () => commitGroup($("#gp-input").value.trim()));
+$("#gp-cancel").addEventListener("click", closeGroup);
+$("#gp").addEventListener("click", ev => { if (ev.target.id === "gp") closeGroup(); });
+$("#gp-input").addEventListener("keydown", ev => {
+  if (ev.key === "Enter") { ev.preventDefault(); commitGroup($("#gp-input").value.trim()); }
 });
 
 /* ---- the note about a whole wine ----
@@ -2850,6 +4042,14 @@ function flushComment() {
 function loadComment(r, pi) {
   flushComment();
   const p = r.photos[pi];
+  $("#cmt").disabled = !p;
+  if (!p) {
+    CMT_AT = null;
+    $("#cmt").value = "";
+    $("#cmt-ctx").textContent = `${r.slug} \u2014 no candidate photo`;
+    cmtState("", "");
+    return;
+  }
   CMT_AT = { slug: r.slug, file: p.file };
   $("#cmt").value = commentOf(r.slug, p.file);
   $("#cmt-ctx").textContent = `${r.slug} / ${p.file}`;
@@ -2873,6 +4073,53 @@ $("#cmt-clear").addEventListener("click", () => {
 });
 window.addEventListener("beforeunload", flushComment);
 
+/* The view of the table lives in the query string: the search and the three
+   selects. The fragment keeps its own job, the open photo, so an address can
+   state both. A control at its default value is left out, so a plain view keeps
+   a plain address. */
+const VIEW_PARAMS = [
+  ["q", "#q", ""],
+  ["filter", "#filter", "all"],
+  ["sort", "#sort", "slug"],
+  ["slugs", "#slugsel", "all"],
+];
+
+/* One variant group, or "" for every wine. It has no control of its own: the
+   tag `variant group of N` on a row switches it on, and the count line switches
+   it off. It travels in the query string beside the controls. */
+let GROUP_FILTER = "";
+
+/* Write the controls into the query string. The fragment is kept as it is. */
+function writeViewToUrl() {
+  const p = new URLSearchParams();
+  for (const [key, sel, dflt] of VIEW_PARAMS) {
+    const v = $(sel).value.trim();
+    if (v && v !== dflt) p.set(key, v);
+  }
+  if (GROUP_FILTER) p.set("group", GROUP_FILTER);
+  const qs = p.toString();
+  const want = location.pathname + (qs ? "?" + qs : "") + location.hash;
+  if (want === location.pathname + location.search + location.hash) return;
+  history.replaceState(null, "", want);
+}
+
+/* Set the controls from the query string. It runs once, before the first draw.
+   An unknown value of a select is dropped, so a hand-typed address cannot put a
+   select into a state that its options do not hold. */
+function readViewFromUrl() {
+  const p = new URLSearchParams(location.search);
+  for (const [key, sel, dflt] of VIEW_PARAMS) {
+    if (!p.has(key)) continue;
+    const el = $(sel), v = p.get(key);
+    if (el.tagName === "SELECT" &&
+        ![...el.options].some(o => o.value === v)) continue;
+    el.value = v;
+  }
+  // An unknown group id is dropped, as an unknown value of a select is.
+  const gid = p.get("group") || "";
+  GROUP_FILTER = GROUPS[gid] ? gid : "";
+}
+
 /* The address of the photo on screen is `#<slug>/<file name>`. The address is
    written with `replaceState`, so the arrow keys do not fill the history. */
 let HASH_SELF = "";
@@ -2887,13 +4134,18 @@ function setHash(frag) {
    when the wine is not in the current view, so a pasted address always opens. */
 function openFromHash() {
   const raw = location.hash.replace(/^#\/?/, "");
+  if (!raw) return false;
   const cut = raw.indexOf("/");
-  if (cut < 0) return false;
-  const slug = decodeURIComponent(raw.slice(0, cut));
-  const file = decodeURIComponent(raw.slice(cut + 1));
-  if (!ROWS.some(r => r.slug === slug)) return false;
+  // `#<slug>` alone opens a wine that holds no candidate photo.
+  const slug = decodeURIComponent(cut < 0 ? raw : raw.slice(0, cut));
+  const file = cut < 0 ? "" : decodeURIComponent(raw.slice(cut + 1));
+  // A catalogue-only wine is a row of the catalogue that never entered the review
+  // set. The filter `all` leaves it out, so the address needs the scope that
+  // shows it. Every such wine holds no candidate photo.
+  const row = ROWS.find(r => r.slug === slug);
+  if (!row) return false;
   if (!VIEW.some(r => r.slug === slug)) {
-    $("#filter").value = "all";
+    $("#filter").value = row.catalog_only ? "nophotos" : "all";
     $("#q").value = "";
     render();
   }
@@ -2913,13 +4165,32 @@ document.addEventListener("click", ev => {
   if (ev.target.id === "apply") { applyMoves(ev.target); return; }
 
   const copy = ev.target.closest(".copy");
-  if (copy) { copySlug(copy); return; }
+  if (copy) { copyFromButton(copy); return; }
+
+  if (ev.target.id === "grp-clear") { showGroup(""); return; }
+
+  const gshow = ev.target.closest("[data-grp-show]");
+  if (gshow) {                       // the same tag again shows every wine
+    showGroup(gshow.dataset.grpShow === GROUP_FILTER ? "" : gshow.dataset.grpShow);
+    return;
+  }
+
+  const gpb = ev.target.closest(".grp-btn");
+  if (gpb) { askGroup(gpb.dataset.group); return; }
 
   const exb = ev.target.closest(".excl-btn");
   if (exb) { toggleExclude(exb); return; }
 
   const move = ev.target.closest(".move");
   if (move) { askMove(move.closest(".card")); return; }
+
+  const back = ev.target.closest("[data-back]");
+  if (back) {
+    const c = back.closest(".card");
+    unhold(c.dataset.slug, c.dataset.file);
+    render();
+    return;
+  }
 
   const btn = ev.target.closest(".btns button");
   if (btn) {
@@ -2953,6 +4224,7 @@ document.addEventListener("keydown", ev => {
   if (tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT") {
     if (ev.key === "Escape") {
       if ($("#ad").classList.contains("open")) closeWine();
+      else if ($("#gp").classList.contains("open")) closeGroup();
       else if ($("#mv").classList.contains("open")) closeMove();
       else ev.target.blur();
       ev.stopPropagation();
@@ -2962,12 +4234,19 @@ document.addEventListener("keydown", ev => {
   if (ev.key === "Escape") {
     if (!$("#ctxmenu").hidden) hideCtxMenu();
     else if ($("#ad").classList.contains("open")) closeWine();
+    else if ($("#gp").classList.contains("open")) closeGroup();
     else if ($("#mv").classList.contains("open")) closeMove();
     else closeLightbox();
     return;
   }
-  if ($("#mv").classList.contains("open") || $("#ad").classList.contains("open")) {
+  if ($("#mv").classList.contains("open") || $("#ad").classList.contains("open")
+      || $("#gp").classList.contains("open")) {
     return;                                          // a dialog takes the keys
+  }
+  if ((ev.key === "s" || ev.key === "S") && !ev.metaKey && !ev.ctrlKey && !ev.altKey) {
+    ev.preventDefault();
+    setSide(!sideShown());
+    return;
   }
   if (!LB || !$("#lb").classList.contains("open")) return;
   if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
@@ -2977,17 +4256,20 @@ document.addEventListener("keydown", ev => {
   if (wstep !== undefined) { ev.preventDefault(); stepWine(wstep); return; }
   // "1" positive, "2" negative sample, "3" unusable, "4" this wine other design.
   // The same key again clears the label. "m" moves the photo to another slug.
+  // A wine with no candidate photo holds nothing to label and nothing to move.
+  const lbPhoto = (VIEW[LB.wine].photos || [])[LB.photo];
   if (ev.key === "m" || ev.key === "M") {
     ev.preventDefault();
+    if (!lbPhoto) return;
     const r = VIEW[LB.wine];
-    askMove(cardOf(r.slug, r.photos[LB.photo].file), r.slug, r.photos[LB.photo].file);
+    askMove(cardOf(r.slug, lbPhoto.file), r.slug, lbPhoto.file);
     return;
   }
   const want = KEY_OF[ev.key];
   if (want) {
     ev.preventDefault();
-    const r = VIEW[LB.wine];
-    setLabel(r.slug, r.photos[LB.photo].file, want);
+    if (!lbPhoto) return;
+    setLabel(VIEW[LB.wine].slug, lbPhoto.file, want);
   }
 });
 for (const id of ["#sort", "#filter", "#slugsel"]) {
@@ -3003,11 +4285,458 @@ $("#q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(render
   GROUPS = data.groups || {}; SLUGS = data.slugs || [];
   $("#slug-list").innerHTML = SLUGS.map(x => `<option value="${esc(x)}">`).join("");
   $("#my-slug-list").innerHTML =
-    ROWS.map(r => `<option value="${esc(r.slug)}">`).join("");
+    reviewRows().map(r => `<option value="${esc(r.slug)}">`).join("");
+  initSide();
   TOTAL = ROWS.reduce((n, r) => n + r.photos.length, 0);
-  $("#head-sub").textContent = `${ROWS.length} wines, ${TOTAL} candidate photos`;
+  $("#head-sub").textContent = `${reviewCount()} wines, ${TOTAL} candidate photos`;
+  readViewFromUrl();
   render();
   openFromHash();
+})();
+</script>
+</body>
+</html>
+"""
+
+
+# ------------------------------------------------------------ the page of the runs
+
+
+PAGE_RUNS = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino match runs</title>
+<style>
+""" + THEME_CSS + """
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: 10px 16px; box-shadow: var(--shadow);
+}
+h1 { font-size: 15px; margin: 0 0 8px; font-weight: 650; }
+h1 .sub { color: var(--muted); font-weight: 400; }
+.head-top { display: flex; align-items: baseline; gap: 14px; }
+.head-top h1 { margin-right: auto; }
+.nav { display: flex; gap: 6px; flex: none; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+h2 { font-size: 13px; margin: 18px 0 8px; font-weight: 650; }
+a { color: var(--accent); }
+main { padding: 12px 16px 64px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.bar label { color: var(--muted); font-size: 12px; display: flex; gap: 5px; align-items: center; }
+select, input[type=search] {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 7px; font: inherit; font-size: 13px;
+}
+input[type=search] { min-width: 210px; }
+button {
+  font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+  cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+table { border-collapse: separate; border-spacing: 0; width: 100%; }
+th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600;
+     padding: 6px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 8px 10px; vertical-align: top; }
+tbody tr { background: var(--panel); }
+tbody tr + tr td { border-top: 1px solid var(--line); }
+#runs th[data-k] { cursor: pointer; user-select: none; }
+#runs th[data-k]:hover { color: var(--text); }
+#runs th.sorted { color: var(--accent); }
+#runs th[data-k]::after { content: attr(data-dir); font-size: 9px; margin-left: 3px; }
+#met .note { margin: 8px 0 10px; }
+#met .warn { margin: 0 0 10px; padding: 7px 10px; border-radius: 6px;
+             background: var(--var-bg); color: var(--text);
+             border: 1px solid var(--var); }
+.was { color: var(--var); }
+#runs tbody tr { cursor: pointer; }
+#runs tbody tr:hover { background: var(--panel-2); }
+#runs tbody tr.on { background: var(--grp-a); }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.muted { color: var(--muted); }
+.empty { color: var(--muted); font-style: italic; }
+.tag { padding: 1px 6px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); }
+.tag.pos { color: var(--pos); background: var(--pos-bg); border-color: transparent; }
+.tag.neg { color: var(--neg); background: var(--neg-bg); border-color: transparent; }
+.tag.var { color: var(--var); background: var(--var-bg); border-color: transparent; }
+.tag.bad { color: #fff; background: var(--exc); border-color: transparent; }
+.tag.ok { color: var(--pos); border-color: var(--pos); }
+.tag.dry { color: var(--muted); }
+
+/* the metric cards */
+.cards { display: flex; flex-wrap: wrap; gap: 10px; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 12px; min-width: 116px;
+}
+.card .k { color: var(--muted); font-size: 11px; }
+.card .v { font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.card.bad .v { color: var(--exc); }
+.card.good .v { color: var(--pos); }
+
+/* the histogram of the rank of the true slug */
+.hist { display: flex; gap: 6px; align-items: flex-end; height: 74px; margin-top: 4px; }
+.hist .col { display: flex; flex-direction: column; justify-content: flex-end;
+             align-items: center; gap: 3px; min-width: 42px; }
+.hist .bar-i { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 2px; }
+.hist .col.absent .bar-i { background: var(--exc); }
+.hist .lab { font-size: 10px; color: var(--muted); }
+.hist .cnt { font-size: 11px; font-variant-numeric: tabular-nums; }
+
+/* one result row */
+.qcell { width: 190px; min-width: 190px; }
+.qphoto {
+  width: 170px; height: 170px; object-fit: contain; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 6px; padding: 3px;
+}
+.strip { display: flex; gap: 8px; flex-wrap: wrap; }
+.cand {
+  width: 104px; background: var(--panel-2); border: 2px solid transparent;
+  border-radius: 8px; padding: 5px;
+}
+.cand.truth { border-color: var(--pos); background: var(--pos-bg); }
+.cand.forbidden { border-color: var(--exc); background: var(--exc-bg); }
+.cand.missing { border-style: dashed; border-color: var(--pos); background: transparent; }
+.cand img, .cand .nobottle {
+  width: 92px; height: 116px; object-fit: contain; display: block;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+}
+.cand .nobottle { display: flex; align-items: center; justify-content: center;
+                  color: var(--muted); font-size: 10px; text-align: center; }
+.cand .r { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cand .sl { font-size: 10px; word-break: break-all; line-height: 1.25; margin-top: 2px; }
+.sm { font-size: 12px; color: var(--muted); word-break: break-all; }
+#more { margin-top: 12px; }
+#lb { position: fixed; inset: 0; background: rgba(0,0,0,.82); display: none;
+      align-items: center; justify-content: center; z-index: 50; }
+#lb.on { display: flex; }
+#lb img { max-width: 92vw; max-height: 92vh; object-fit: contain; }
+</style>
+</head>
+<body>
+<header>
+  <div class="head-top">
+    <h1>Match runs <span class="sub" id="head-sub"></span></h1>
+    <nav class="nav"><a href="/">Review</a><a class="on" href="/runs">Runs</a></nav>
+  </div>
+  <div class="bar">
+    <label>Show
+      <select id="filter">
+        <option value="all">every photo</option>
+        <option value="miss">positive: the true slug is not at rank 1</option>
+        <option value="near">positive: the true slug is at rank 2 or deeper</option>
+        <option value="absent">positive: the true slug never came back</option>
+        <option value="hit">positive: correct at rank 1</option>
+        <option value="false_match">negative: the slug came back at rank 1</option>
+        <option value="negative_in_topk">negative: the slug is anywhere in the list</option>
+        <option value="negative">every negative photo</option>
+        <option value="error">the request failed</option>
+      </select>
+    </label>
+    <label>Sort
+      <select id="sort">
+        <option value="manifest">the order of the run</option>
+        <option value="worst">the most wrong first</option>
+        <option value="rank">the rank of the true slug</option>
+        <option value="score_desc">the score of the answer, highest first</option>
+        <option value="score_asc">the score of the answer, lowest first</option>
+        <option value="latency_desc">the slowest answer first</option>
+        <option value="latency_asc">the fastest answer first</option>
+        <option value="path">the photo path, A-Z</option>
+      </select>
+    </label>
+    <label>Find <input id="q" type="search" placeholder="slug or predicted slug"></label>
+    <span class="muted" id="count"></span>
+  </div>
+</header>
+<main>
+  <h2>Runs</h2>
+  <p class="sm">Click a column to sort. Click it again to turn the order around.</p>
+  <table id="runs"><thead><tr>
+    <th data-k="id">run</th>
+    <th data-k="backend">backend</th>
+    <th data-k="started">started</th>
+    <th data-k="queries" class="num">queries</th>
+    <th data-k="match_share" class="num">match share</th>
+    <th data-k="f1_at_1" class="num">F1@1</th>
+    <th data-k="f1_at_5" class="num">F1@5</th>
+    <th data-k="recall_at_5" class="num">R@5</th>
+    <th data-k="false_match_at_1" class="num">false match @1</th>
+    <th data-k="within_sla_share" class="num">within SLA</th>
+    <th data-k="latency_median" class="num">median ms</th>
+  </tr></thead><tbody id="runs-body"></tbody></table>
+
+  <div id="detail" hidden>
+    <h2 id="det-h">Metrics</h2>
+    <div class="cards" id="met"></div>
+    <div id="hists"></div>
+    <h2>Photos</h2>
+    <table id="res"><thead><tr>
+      <th class="qcell">matched image</th>
+      <th>candidates, the highest score first</th>
+    </tr></thead><tbody id="res-body"></tbody></table>
+    <button id="more" hidden>load more</button>
+  </div>
+</main>
+<div id="lb"><img alt=""></div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pct = v => v === null || v === undefined ? "\\u2014" : (100 * v).toFixed(1) + "%";
+const numOr = v => v === null || v === undefined ? "\\u2014" : v;
+
+let RUNS = [], CUR = null, OFFSET = 0, TOTAL = 0;
+/* The order of the table of the runs. The newest run stands first at the start. */
+let RSORT = { key: "id", dir: -1 };
+const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var" };
+
+/* ---- the table of the runs ---- */
+function sortedRuns() {
+  const k = RSORT.key, dir = RSORT.dir;
+  return RUNS.slice().sort((a, b) => {
+    let x = a[k], y = b[k];
+    // a run with no value for this column stands last, whatever the direction
+    const nx = x === null || x === undefined, ny = y === null || y === undefined;
+    if (nx && ny) return String(a.id).localeCompare(String(b.id)) * -1;
+    if (nx) return 1;
+    if (ny) return -1;
+    if (typeof x === "number" && typeof y === "number") return (x - y) * dir;
+    return String(x).localeCompare(String(y)) * dir;
+  });
+}
+
+function renderRuns() {
+  $("#runs-body").innerHTML = sortedRuns().map(r => `
+    <tr data-id="${esc(r.id)}" class="${CUR === r.id ? "on" : ""}">
+      <td>${esc(r.id)} ${r.dry_run ? '<span class="tag dry">dry run</span>' : ""}
+        ${r.subset ? `<span class="tag var" title="a repeat of ${esc(r.subset.based_on)} at depth ${r.subset.rerun_depth}">repeat d${r.subset.rerun_depth}</span>` : ""}</td>
+      <td>${esc(r.backend)}</td>
+      <td class="sm">${esc((r.started || "").replace("T", " ").slice(0, 19))}</td>
+      <td class="num">${numOr(r.queries)}</td>
+      <td class="num">${pct(r.match_share)}</td>
+      <td class="num">${r.f1_at_1 === null || r.f1_at_1 === undefined ? "\u2014" : r.f1_at_1.toFixed(3)}</td>
+      <td class="num">${r.f1_at_5 === null || r.f1_at_5 === undefined ? "\u2014" : r.f1_at_5.toFixed(3)}</td>
+      <td class="num">${pct(r.recall_at_5)}</td>
+      <td class="num">${numOr(r.false_match_at_1)}</td>
+      <td class="num">${pct(r.within_sla_share)}</td>
+      <td class="num">${numOr(r.latency_median)}</td>
+    </tr>`).join("");
+  for (const th of document.querySelectorAll("#runs th[data-k]")) {
+    const on = th.dataset.k === RSORT.key;
+    th.classList.toggle("sorted", on);
+    th.dataset.dir = on ? (RSORT.dir > 0 ? "\u25b2" : "\u25bc") : "";
+  }
+  $("#head-sub").textContent = `${RUNS.length} run(s)`;
+}
+
+/* ---- the metrics of one run ---- */
+function card(k, v, cls) {
+  return `<div class="card ${cls || ""}"><div class="k">${esc(k)}</div>
+          <div class="v">${v}</div></div>`;
+}
+
+function histogram(title, hist, note) {
+  const order = ["1", "2", "3", "4-10", ">10", "absent"];
+  const keys = order.filter(k => hist && hist[k] !== undefined);
+  if (!keys.length) return "";
+  const max = Math.max(...keys.map(k => hist[k]));
+  const cols = keys.map(k => `
+    <div class="col ${k === "absent" ? "absent" : ""}">
+      <div class="cnt">${hist[k]}</div>
+      <div class="bar-i" style="height:${Math.round(60 * hist[k] / max)}px"></div>
+      <div class="lab">${esc(k)}</div>
+    </div>`).join("");
+  return `<h2>${esc(title)}</h2><div class="sm">${esc(note || "")}</div>
+          <div class="hist">${cols}</div>`;
+}
+
+function renderMetrics(met, head) {
+  const pos = met.positive || {}, neg = met.negative || {}, lat = met.latency_ms || {};
+  const dash = "\\u2014";
+  const f1 = b => b && b.f1 !== null && b.f1 !== undefined ? b.f1.toFixed(3) : dash;
+  const fix = v => v === null || v === undefined ? dash : v.toFixed(3);
+  const share = pos.match_share === undefined ? pos.recall_at_1 : pos.match_share;
+  const target = pos.target_match_share || 0.9;
+  const margin = pos.score_margin || {};
+  const sla = lat.sla_ms || 3000;
+  /* The first row holds the numbers that the specification of the task names:
+     the share of the matches with its target of 90 to 100 percent, the F1 of the
+     top-1 and of the top-5 cards, the answer inside the SLA of 3 seconds, and the
+     near-duplicate errors, which the specification calls the main source of the
+     errors. */
+  const spec = [
+    card("match share", pct(share),
+         share === null || share === undefined ? "" : (share >= target ? "good" : "bad")),
+    card("F1 top-1", f1(pos.f1_at_1)),
+    card("F1 top-5", f1(pos.f1_at_5)),
+    card("within " + sla + " ms", pct(lat.within_sla_share),
+         lat.within_sla_share === null || lat.within_sla_share === undefined ? ""
+         : (lat.within_sla_share >= 0.9 ? "good" : "bad")),
+    card("near-duplicate errors", numOr(pos.near_duplicate_confusion), "bad"),
+    card("false match @1", numOr(neg.false_match_at_1), "bad"),
+  ];
+  const rest = [
+    card("R@1", pct(pos.recall_at_1)),
+    card("R@5", pct(pos.recall_at_5)),
+    card("R@10", pct(pos.recall_at_10)),
+    card("MRR", fix(pos.mrr)),
+    card("score gap, correct", fix(margin.correct_median)),
+    card("score gap, wrong", fix(margin.wrong_median)),
+    card("positive photos", numOr(pos.n)),
+    card("negative photos", numOr(neg.n)),
+    card("median ms", numOr(lat.median)),
+    card("errors", (pos.errors || 0) + (neg.errors || 0)),
+  ];
+  const sub = met.subset;
+  const subNote = !sub ? "" :
+    '<div class="sm warn">A repeat run. It holds the ' + sub.n + ' photo(s) of <b>' +
+    esc(sub.based_on) + '</b> that failed at depth ' + sub.rerun_depth + ', out of ' +
+    sub.photos_in_earlier_run + '. The shares below cover those photos only; they are ' +
+    'NOT the shares of the whole set. Correct at rank 1 now: <b>' + sub.recovered_at_1 +
+    '</b>. Inside the depth now: <b>' + sub.recovered_at_depth + '</b>. Still failing: <b>' +
+    sub.still_failing + '</b>.</div>';
+  $("#met").innerHTML = subNote +
+    '<div class="cards">' + spec.join("") + '</div>' +
+    '<div class="sm note">The task asks for a match share of 90 to 100 percent, an ' +
+    'answer inside ' + sla + ' ms, and a noticeable gap between the first and the ' +
+    'second candidate. A near-duplicate error answers a wine of the same variant ' +
+    'group as the true one.</div>' +
+    '<div class="cards">' + rest.join("") + '</div>';
+  const k = met.top_k || 1;
+  $("#hists").innerHTML =
+    histogram("How far from R@1 (positive photos)", pos.rank_histogram,
+      "The rank of the true slug in the answer. `absent` means that the true slug never came back.") +
+    histogram("Where the slug of a negative photo landed", neg.slug_rank_histogram,
+      "A negative photo shows a different wine. Only rank 1 is a proven error; " +
+      "deeper ranks are a diagnostic. Scored to top-" + k + ".");
+  $("#det-h").textContent = "Metrics of " + (head.id || "");
+  $("#detail").hidden = false;
+}
+
+/* ---- one photo and its candidates ---- */
+function candCard(c, truth, forbidden) {
+  const isTruth = truth.includes(c.slug);
+  const isBad = forbidden && c.slug === forbidden;
+  const score = c.score === null || c.score === undefined ? "" : c.score.toFixed(3);
+  return `<div class="cand ${isTruth ? "truth" : ""} ${isBad ? "forbidden" : ""}">
+    <img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(c.slug)}"
+         alt="" data-full="/img/bottle?slug=${encodeURIComponent(c.slug)}"
+         onerror="this.replaceWith(Object.assign(document.createElement('div'),
+                  {className:'nobottle',textContent:'no bottle photo'}))">
+    <div class="r"><span>#${c.rank}</span><span>${score}</span></div>
+    <div class="sl">${esc(c.slug)}</div></div>`;
+}
+
+function rowHtml(r) {
+  const cut = r.image_path.lastIndexOf("/");
+  const slug = r.image_path.slice(0, cut), file = r.image_path.slice(cut + 1);
+  const src = `/img/photo?slug=${encodeURIComponent(slug)}&file=${encodeURIComponent(file)}`;
+  const truth = r.truth || [];
+  const forbidden = r.label === "negative" ? r.slug : null;
+  const found = (r.candidates || []).some(c => truth.includes(c.slug));
+  let strip = "";
+  if (truth.length && !found) {          // the expected wine, which never came back
+    strip += `<div class="cand truth missing">
+      <img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(truth[0])}" alt=""
+           data-full="/img/bottle?slug=${encodeURIComponent(truth[0])}"
+           onerror="this.replaceWith(Object.assign(document.createElement('div'),
+                    {className:'nobottle',textContent:'no bottle photo'}))">
+      <div class="r"><span>expected</span><span>\\u2014</span></div>
+      <div class="sl">${esc(truth[0])}</div></div>`;
+  }
+  strip += (r.candidates || []).map(c => candCard(c, truth, forbidden)).join("");
+  if (!strip) strip = `<span class="empty">${esc(r.error || "no candidate came back")}</span>`;
+
+  const tag = LABEL_TAG[r.label] || "";
+  const rank = r.rank_of_truth ? `rank ${r.rank_of_truth}` : "not in the list";
+  const bad = (r.label === "negative" && r.outcome === "false_match_at_1") ||
+              (r.label !== "negative" && r.rank_of_truth !== 1);
+  return `<tr>
+    <td class="qcell">
+      <img class="qphoto" loading="lazy" src="${src}" alt="" data-full="${src}">
+      <div class="sm"><span class="tag ${tag}">${esc(r.label)}</span>
+        <span class="tag ${bad ? "bad" : "ok"}">${esc(r.outcome || "")}</span></div>
+      <div class="sm">${esc(slug)}</div>
+      <div class="sm">${esc(file)} &middot; ${esc(rank)} &middot; ${numOr(r.latency_ms)} ms</div>
+      ${r.previous ? `<div class="sm was">before: ${
+        r.previous.rank_of_truth ? "rank " + r.previous.rank_of_truth : "not in the list"
+        } &middot; ${esc(r.previous.outcome || "")}</div>` : ""}
+      ${r.error ? `<div class="sm" style="color:var(--exc)">${esc(r.error)}</div>` : ""}
+    </td>
+    <td><div class="strip">${strip}</div></td></tr>`;
+}
+
+/* ---- loading ---- */
+async function loadRun(id, append) {
+  CUR = id;
+  if (!append) { OFFSET = 0; $("#res-body").innerHTML = ""; }
+  const url = `/api/run?id=${encodeURIComponent(id)}&filter=${$("#filter").value}` +
+              `&sort=${$("#sort").value}` +
+              `&q=${encodeURIComponent($("#q").value.trim())}&offset=${OFFSET}&limit=100`;
+  const data = await (await fetch(url)).json();
+  if (data.error) { alert(data.error); return; }
+  TOTAL = data.total;
+  if (!append) renderMetrics(data.metrics || {}, data.head || {});
+  $("#res-body").insertAdjacentHTML("beforeend", (data.rows || []).map(rowHtml).join(""));
+  OFFSET += (data.rows || []).length;
+  $("#count").textContent = `${OFFSET} of ${TOTAL} photo(s) shown`;
+  $("#more").hidden = OFFSET >= TOTAL;
+  renderRuns();
+  location.hash = encodeURIComponent(id);
+}
+
+$("#runs-body").addEventListener("click", ev => {
+  const tr = ev.target.closest("tr[data-id]");
+  if (tr) loadRun(tr.dataset.id, false);
+});
+$("#more").addEventListener("click", () => loadRun(CUR, true));
+$("#filter").addEventListener("change", () => CUR && loadRun(CUR, false));
+$("#sort").addEventListener("change", () => CUR && loadRun(CUR, false));
+document.querySelector("#runs thead").addEventListener("click", ev => {
+  const th = ev.target.closest("th[data-k]");
+  if (!th) return;
+  const key = th.dataset.k;
+  // the same column turns the order around; another column starts at its own end
+  const down = (key === "id" || key === "started" || key === "backend") ? -1 : 1;
+  RSORT = { key, dir: RSORT.key === key ? -RSORT.dir : down };
+  renderRuns();
+});
+let t = null;
+$("#q").addEventListener("input", () => {
+  clearTimeout(t);
+  t = setTimeout(() => CUR && loadRun(CUR, false), 250);
+});
+document.addEventListener("click", ev => {
+  const img = ev.target.closest("img[data-full]");
+  if (img) { $("#lb img").src = img.dataset.full; $("#lb").classList.add("on"); return; }
+  if (ev.target.closest("#lb")) $("#lb").classList.remove("on");
+});
+document.addEventListener("keydown", ev => {
+  if (ev.key === "Escape") $("#lb").classList.remove("on");
+});
+
+(async function init() {
+  RUNS = (await (await fetch("/api/runs")).json()).runs || [];
+  renderRuns();
+  const want = decodeURIComponent((location.hash || "").slice(1));
+  const first = RUNS.find(r => r.id === want) ||
+                RUNS.find(r => r.has_metrics && !r.dry_run);
+  if (first) loadRun(first.id, false);
 })();
 </script>
 </body>

@@ -50,9 +50,20 @@ LABEL_FILE = config_path("label_file", os.path.join(ROOT, "review-labels.json"))
 VARIANT_GROUPS_FILE = config_path(
     "variant_groups_file", os.path.join(ROOT, "derived", "variant-groups.json"))
 
+# Manual variant pairs. The review tool writes this file. `scripts/08_variants.py`
+# never writes it, so a new run of that script keeps the hand-made pairs.
+MANUAL_GROUPS_FILE = config_path(
+    "manual_groups_file", os.path.join(ROOT, "my", "manual-groups.json"))
+
 # Excluded slugs. The photos of an excluded slug MUST NOT be used for benchmarking.
 EXCLUDED_SLUGS_FILE = config_path(
     "excluded_slugs_file", os.path.join(ROOT, "excluded-slugs.json"))
+
+# Match backends. `scripts/match_run.py` reads this file.
+BACKENDS_FILE = config_path("backends_file", os.path.join(ROOT, "backends.yaml"))
+
+# One directory per match run.
+RUNS_DIR = config_path("runs_dir", os.path.join(ROOT, "runs"))
 
 # Every configured path, in the order of the report that a script prints at start.
 CONFIG_PATHS = (
@@ -61,7 +72,10 @@ CONFIG_PATHS = (
     ("trash_dir", TRASH_DIR),
     ("label_file", LABEL_FILE),
     ("variant_groups_file", VARIANT_GROUPS_FILE),
+    ("manual_groups_file", MANUAL_GROUPS_FILE),
     ("excluded_slugs_file", EXCLUDED_SLUGS_FILE),
+    ("backends_file", BACKENDS_FILE),
+    ("runs_dir", RUNS_DIR),
 )
 
 

@@ -14,3 +14,7 @@ __pycache__/
 *.tmp
 
 .DS_Store
+
+# One directory per match run. `scripts/match_run.py` writes it. The output is
+# rebuilt by a new run and does not belong in git.
+runs/
