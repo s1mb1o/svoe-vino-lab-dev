@@ -1,5 +1,5 @@
 {
-  "count": 2,
+  "count": 3,
   "excluded": {
     "belmas-winery-syrah-katya-sira-krasnoe-suhoe-125": {
       "reason": "Виноград указан Syrah Katya, но по факту картинка от Riesling",
@@ -8,9 +8,13 @@
     "chateau-tamagne-select-blanc-brut": {
       "reason": "В качестве изображения указана бутылка мини-формат Château Tamagne Select Blanc Brut. Другого slug для данного вина отсутствует",
       "ts": "2026-09-17T19:15:44+0300"
+    },
+    "derbent-vino-endemy-saperavi-krasnoe-suhoe-13": {
+      "reason": "wrong bottle photo in the catalogue",
+      "ts": "2026-09-18T00:58:55+0300"
     }
   },
   "note": "Excluded slugs of svoe-vino-testset. The key of an entry is the wine slug. Field 'reason' states why the slug is excluded. Field 'ts' holds the time of the exclusion. The photos of an excluded slug MUST NOT be used for benchmarking. A slug that is not in this file is included. Purpose: some slugs of the catalogue hold an error, most often a wrong bottle photo. A wrong bottle photo shifts the metrics, because the reference of the slug does not show the wine. Such a slug is excluded instead of corrected, so the benchmark stays comparable.",
-  "updated": "2026-09-17T19:15:44+0300",
+  "updated": "2026-09-18T00:58:55+0300",
   "version": 1
 }
