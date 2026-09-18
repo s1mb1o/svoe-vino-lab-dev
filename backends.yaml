@@ -84,6 +84,47 @@ backends:
     workers: 1
     headers: {}
 
+  - id: svm-barcode-siglip2-448
+    label: svoe-vino-matcher pipeline barcode-siglip2-448
+    url: http://127.0.0.1:8158/v1/pipelines/barcode-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
 
+  - id: svm-text-siglip2-448
+    label: svoe-vino-matcher pipeline text-siglip2-448
+    url: http://127.0.0.1:8158/v1/pipelines/text-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
 
+  - id: svm-rerank-siglip2-448
+    label: svoe-vino-matcher pipeline rerank-siglip2-448
+    url: http://127.0.0.1:8158/v1/pipelines/rerank-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-ocr-siglip2-448
+    label: svoe-vino-matcher pipeline ocr-siglip2-448
+    url: http://127.0.0.1:8158/v1/pipelines/ocr-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
 

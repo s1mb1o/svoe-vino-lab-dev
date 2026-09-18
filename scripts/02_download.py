@@ -148,6 +148,7 @@ WRITE_LOCK = threading.Lock()
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0, help="number of wines")
+    ap.add_argument("--skip", type=int, default=0, help="skip the first N pending wines")
     ap.add_argument("--per-wine", type=int, default=24)
     ap.add_argument("--per-page", type=int, default=3, help="max images from one source page")
     ap.add_argument("--workers", type=int, default=16)
@@ -159,6 +160,8 @@ def main():
     wines = [dict(zip(("slug", "title", "producer"), r)) for r in conn.execute(
         "SELECT w.slug,w.title,w.producer FROM wines w"
         " WHERE w.searched=1 AND w.downloaded=0 ORDER BY w.slug")]
+    if args.skip:
+        wines = wines[args.skip:]
     if args.limit:
         wines = wines[:args.limit]
     log("wines to download: %d" % len(wines))
@@ -199,21 +202,42 @@ def main():
 
     results = []
     if tasks:
+        # Write in slices, so a stop (timeout, Ctrl-C) keeps the work that is done.
+        # A wine is marked downloaded=1 only when every task of it is written.
+        from collections import Counter
+        need = Counter(s for s, _ in tasks)
+        have_done = Counter()
+        pending = []
+
+        def flush(final=False):
+            with WRITE_LOCK:
+                if pending:
+                    conn.executemany(
+                        "UPDATE candidates SET dl_status=?,local_path=?,sha256=?,width=?,height=?,bytes=?"
+                        " WHERE id=?",
+                        [(r[1], r[2], r[3], r[4], r[5], r[6], r[0]) for r in pending])
+                    pending.clear()
+                for slug in plan:
+                    if final or (need.get(slug) and have_done[slug] >= need[slug]) \
+                            or not need.get(slug):
+                        if conn.execute("SELECT downloaded FROM wines WHERE slug=?",
+                                        (slug,)).fetchone()[0]:
+                            continue
+                        conn.execute(
+                            "UPDATE candidates SET dl_status='dup' WHERE slug=? AND dl_status='ok'"
+                            " AND id NOT IN (SELECT MIN(id) FROM candidates WHERE slug=? AND dl_status='ok'"
+                            "                GROUP BY sha256)", (slug, slug))
+                        conn.execute("UPDATE wines SET downloaded=1 WHERE slug=?", (slug,))
+                conn.commit()
+
         with ThreadPoolExecutor(args.workers) as ex:
-            results = list(ex.map(work, tasks))
-    with WRITE_LOCK:
-        if results:
-            conn.executemany(
-                "UPDATE candidates SET dl_status=?,local_path=?,sha256=?,width=?,height=?,bytes=?"
-                " WHERE id=?",
-                [(r[1], r[2], r[3], r[4], r[5], r[6], r[0]) for r in results])
-        for slug in plan:
-            conn.execute(
-                "UPDATE candidates SET dl_status='dup' WHERE slug=? AND dl_status='ok'"
-                " AND id NOT IN (SELECT MIN(id) FROM candidates WHERE slug=? AND dl_status='ok'"
-                "                GROUP BY sha256)", (slug, slug))
-            conn.execute("UPDATE wines SET downloaded=1 WHERE slug=?", (slug,))
-        conn.commit()
+            for i, r in enumerate(ex.map(work, tasks)):
+                results.append(r)
+                pending.append(r)
+                have_done[tasks[i][0]] += 1
+                if len(pending) >= 400:
+                    flush()
+        flush(final=True)
     ok = sum(1 for r in results if r[1] == "ok")
     log("fetched ok=%d of %d" % (ok, len(results)))
     log("stage 2 done in %.1f min" % ((time.time() - t0) / 60))
