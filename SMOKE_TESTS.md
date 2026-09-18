@@ -33,6 +33,10 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 2t | Open `$H/?filter=nophotos` and drop an image on a row | The row stays in the table and keeps its place. The table is not drawn again and no other row moves. |
 | 2u | Look at that row after the drop | It holds the new card, the line states `1 photo(s)`, and the text about the gap of the photo set is gone. |
 | 2v | Select another filter and select `no candidate photos (catalogue gap)` again | The wine is gone from the list, because the filter runs again. A reload of the page does the same. |
+| 2w | Search `cotes du don` with the filter `no candidate photos (catalogue gap)` | One row: `Цимлянский чёрный Côtes du Don`. The accent of the text is not typed. |
+| 2x | Search `don cotes`, then `cotes du don tsimlyanskiy` | The same row. The order of the words does not matter and the words may stand apart in the text. |
+| 2y | Search `chardonay` | The wines whose name holds `Chardonnay`. One letter is missing from the query. |
+| 2z | Search `cimlyanskiy`, then `tsimlyanskiy`, then `czimlyanskoe` | Each query finds the wines of the others. The slugs write the letter `ц` in three ways. |
 | 3 | `curl -s $H/api/rows` | JSON with 814 rows and 1,892 photos. Each row has `slug`, `name`, `producer`, `photos`, `min_conf`, `has_bottle`. |
 | 4 | Open the page in a browser | One row per wine. The bottle photo is at the left. The candidate photos are at the right. Every photo has three buttons: `V`, `N`, and `x`. |
 | 5 | Scroll the page | Photos load as the rows come into view. The page stays responsive. |
@@ -188,6 +192,39 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 136 | Type a search while a group is shown | The chip stays in the header. The address holds `q` and `group`. |
 | 137 | Look at the `by name` line under a bottle | It carries no border and no background. It reads as a statement, not as a third button beside `Exclude` and `Group`. |
 | 138 | Compare the four confidence states | `confirmed` is green, `assumed` is amber, `by hand` is blue, `no photo` is red. The text colour alone states it. |
+| 139 | Look under a photo card | Two buttons stand there: `→ move` and `⧉ copy`. |
+| 140 | Click `copy` under a photo | The move dialog opens with the head `Copy this photo to another wine`. The buttons read `copy` and `clear the copy`. The suggestions are the suggestions of the move. |
+| 141 | Choose a target in that dialog | The card gets a dotted outline and the button reads `⧉ <slug>`. `review-labels.json` holds `copy_to`. The label of the photo is NOT lost. |
+| 142 | Look at the header after that | It states `1 copy pending` with an `apply` button. The row states `1 copied`. |
+| 143 | Click `copy` again and press `clear the copy` | The outline and the `copy_to` field are gone. The label of the photo stays. |
+| 144 | Press `c` in the large view | The copy dialog opens for the photo on screen. `m` still opens the move dialog. |
+| 145 | POST `/api/copy` with the slug of the photo itself | `{"error": "the target slug is the slug of the photo"}`. |
+| 146 | POST `/api/copy` with a slug that does not exist | `{"error": "unknown target slug: ..."}`. Nothing is written. |
+| 147 | Record a copy, then press `apply` and confirm | The warning names the copies first, then the moves. The file is written into the target wine. The source photo stays in its own wine, with its label. |
+| 148 | Look at the copy in the target wine | It carries no label. Its comment reads `копия фотографии из <source slug>`. The entry holds `copied_from`. |
+| 149 | Press `apply` a second time | Nothing is copied again. `copy_to` was dropped when the file was written. |
+| 150 | Copy a photo to a wine that already holds a file of that name | The copy is named `<stem>_copy2.<ext>`. The report states the rename. |
+| 151 | Record a copy and a move on one photo, then press `apply` | Both are carried out. The copy is made first, so the copy holds the picture and the source directory no longer does. |
+| 152 | Record a copy, then mark the same photo for deletion, then press `apply` | The photo is deleted and is not copied. |
+| 153 | Run `python3 scripts/09_apply_moves.py` | It states the recorded copies and the recorded moves, then `report only`. No file is touched. |
+| 154 | Run it with `--apply` | The copies run before the moves. The report states how many files were copied and how many were moved. |
+| 155 | Press `validate` in the header | A dialog opens with one line per check. Every check is on. The line states what the check reads and what it cannot find. |
+| 156 | Take every check off and press `run` | The dialog states `choose at least one check` and stays open. |
+| 157 | Press `run` with one check on | The button reads `checking...`. After a few seconds the dialog closes, the filter goes to `failed a check`, and the button `validate` is marked. |
+| 158 | Look at the count line | It states how many findings were made, in how many wines, how many photos were read, and how long the run took. |
+| 159 | Look at a wine in that view | Every reported photo carries a red outline and a pill at the top left. The pill states how many wines share the picture. |
+| 160 | Point at the pill | The tooltip states the defect and names the other wine and the other file. |
+| 161 | Look at a pair of wines of one variant group | The pill also reads `same group`. |
+| 162 | Label a photo while that view is shown | The table does not change. The view holds until the filter is changed. |
+| 163 | Change the filter, then set it back to `failed a check` | The same wines are shown again. The result lives in the tab. |
+| 164 | Reload the page and set the filter to `failed a check` | The table is empty and the count line states `no check was run yet; press validate`. |
+| 165 | `curl -s $H/api/checks` | `{"checks": [{"id": "shared_positive", "title": ..., "help": ...}]}`. No `run` field. |
+| 166 | POST `/api/validate` with `{"checks": ["nope"]}` | `{"error": "unknown check: nope. The known checks are shared_positive"}`. |
+| 167 | POST `/api/validate` with `{"checks": []}` | `{"error": "no check was chosen"}`. |
+| 168 | POST `/api/validate` with no body | Every check runs. |
+| 169 | Compare `review-labels.json` before and after a run | The file is not touched. A check only reads. |
+| 170 | Mark one photo `positive` in two wines that hold the same picture, then run the check | Both wines are reported, and both photos are marked. |
+| 171 | Make one of the two `negative`, then run the check again | The pair is no longer reported. |
 
 ## The agent API — `/api/v1/`
 
@@ -208,6 +245,21 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | A13 | Press `1` on a proposed photo | It holds a label now, and `counts.labelled` grows. |
 | A16 | `POST /api/v1/propose` with a local address | The address is refused, as in test 92. |
 | A17 | `POST /api/v1/search-by-image` | `unknown API path`. The matching is the work of an external application. |
+
+## The OpenAPI document — `docs/openapi.yaml`
+
+| # | Case | Expected result |
+|---|---|---|
+| O1 | `curl -s $H/openapi.yaml \| head -3` | The first line is `openapi: 3.1.0`. The media type is `application/yaml`. |
+| O2 | `curl -s $H/openapi.json \| python3 -m json.tool \| head -3` | Valid JSON. The title is `Svoe Vino photo review API`. |
+| O3 | Compare `/openapi.yaml` and `/openapi.json` | The two answer the same document. |
+| O4 | Open `$H/docs` in a browser | Swagger UI lists every route, grouped by the tags `agent`, `images`, `spec`, `page`, and `runs`. |
+| O5 | Set the operating system to the dark theme and reload `$H/docs` | The page is dark. The text stays readable. |
+| O6 | Press `Try it out` on `GET /api/v1/stats` in `$H/docs` | The call answers `200` with the counters of the running tool. |
+| O7 | Move `docs/openapi.yaml` away and call `/openapi.json` | `404` and `docs/openapi.yaml is not present`. Put the file back. |
+| O8 | Break `docs/openapi.yaml` with a syntax error and call `/openapi.json` | `500` and `cannot read the document`. `/openapi.yaml` still answers `200`, because it does not parse the file. Put the file back. |
+| O9 | Validate the document with `openapi-spec-validator` | No error. Run it after every change of a route. |
+| O10 | Change a route of the server | `docs/openapi.yaml` states the change in the same commit. The document is written by hand. |
 
 ## Configuration — `config.yaml`
 

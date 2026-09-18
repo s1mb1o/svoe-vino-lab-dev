@@ -1,0 +1,2029 @@
+openapi: 3.1.0
+
+info:
+  title: Svoe Vino photo review API
+  version: "1.0.0"
+  summary: The HTTP contract of scripts/review_server.py.
+  description: |
+    `scripts/review_server.py` serves the photo review tool of the Svoe Vino test set.
+    It answers three groups of routes.
+
+    1. `/api/v1/` is the agent API. It is stable. An agent reads the wines and writes a
+       proposal through it. Read `docs/API.md` for the prose contract.
+    2. `/img/` serves one picture. A browser uses it. An agent SHOULD read the field
+       `path` of a photo and open the file with its own file tool.
+    3. `/api/` without `v1` serves the review page and the runs page. These routes
+       follow the page. They MAY change when the page changes.
+
+    Start the server:
+
+    ```bash
+    python3 scripts/review_server.py --no-browser      # http://127.0.0.1:8154
+    ```
+
+    The server binds `127.0.0.1` and has no authentication. It MUST NOT be published.
+
+    ## The rule of the proposals
+
+    An agent MUST NOT write a label. A label is the decision of the reviewer. An agent
+    writes a proposal with `POST /api/v1/propose`. The photo lands in `my/<slug>/` as
+    `NN_agent.<ext>` and its entry holds `proposed`, `by`, `confidence`, and
+    `source_url`. A proposal is not counted in `labelled`. The reviewer confirms it
+    later on the page.
+
+    ## Concurrency
+
+    Every write goes through this one server, which holds one lock. A write of an agent
+    and a click of the reviewer cannot overwrite one another.
+  license:
+    name: Not stated
+    identifier: LicenseRef-not-stated
+
+servers:
+  - url: http://127.0.0.1:8154
+    description: The local review server. The port comes from `--port`, default 8154.
+
+tags:
+  - name: agent
+    description: The stable API for an agent. Under `/api/v1/`.
+  - name: images
+    description: One picture, for a browser.
+  - name: spec
+    description: This document, as served by the tool.
+  - name: page
+    description: |
+      The routes of the review page. An agent MAY use them, but SHOULD prefer the
+      routes under `/api/v1/`. They MAY change when the page changes.
+  - name: runs
+    description: The routes of the runs page, which reads the output of a match run.
+
+paths:
+
+  # ------------------------------------------------------------------ agent API
+
+  /api/v1/stats:
+    get:
+      tags: [agent]
+      operationId: getStats
+      summary: Read the counters of the whole photo set.
+      responses:
+        "200":
+          description: The counters.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Stats" }
+
+  /api/v1/wines:
+    get:
+      tags: [agent]
+      operationId: listWines
+      summary: List the wines with their properties and their photo counts.
+      description: |
+        The list answers one page of the wines that the filter keeps. `total` counts
+        every wine that the filter keeps, not the length of `wines`.
+
+        The order is the order of the slug.
+
+        An excluded wine is out of the benchmark, so the list leaves it out. An agent
+        MUST NOT hunt photos for such a wine. Read `docs/excluded-slugs.md`.
+
+        Six filters also bring in the catalogue cards that hold no directory in `my/`:
+        `no_candidate_photos`, `image_unresolved`, `image_assumed`, `image_confirmed`,
+        `image_manual`, and `image_shared`. Such a wine carries `catalog_only: true`
+        and an empty `labels` count. `GET /api/v1/wine/{slug}` does NOT answer for it.
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          description: |
+            `needs_positive` is the work list of an agent: the wines with no confirmed
+            photo.
+          schema:
+            $ref: "#/components/schemas/WineFilter"
+        - name: q
+          in: query
+          required: false
+          description: |
+            A part of the slug, of the name, or of the producer. The comparison ignores
+            the case. An empty value keeps every wine.
+          schema: { type: string }
+          example: gordienko
+        - name: limit
+          in: query
+          required: false
+          description: |
+            The page size. A value below 1 or above 500 is clamped to the range.
+
+            A value that is not a number aborts the connection and answers nothing.
+            Read the section `Known defects` of `docs/API.md`.
+          schema: { type: integer, minimum: 1, maximum: 500, default: 50 }
+        - name: offset
+          in: query
+          required: false
+          description: The number of wines to skip. A negative value is clamped to 0.
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: include_excluded
+          in: query
+          required: false
+          description: |
+            `1`, `true`, or `yes` also lists the excluded wines. Every other value,
+            and the absence of the parameter, leaves them out.
+          schema: { type: string, enum: ["1", "true", "yes"] }
+      responses:
+        "200":
+          description: One page of the wines.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WineList" }
+
+  /api/v1/wine/{slug}:
+    get:
+      tags: [agent]
+      operationId: getWine
+      summary: Read one wine with its candidate photos.
+      description: |
+        The answer is the record of `GET /api/v1/wines` with the field `photos` added.
+
+        The route answers only for a wine that holds a directory in `my/`. A catalogue
+        card with no candidate photo answers 404, although `GET /api/v1/wines` lists it
+        under a catalogue filter.
+
+        An excluded wine answers 200 here. Read the field `excluded` before a decision.
+      parameters:
+        - $ref: "#/components/parameters/SlugPath"
+      responses:
+        "200":
+          description: The wine with its photos.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WineDetail" }
+        "404":
+          $ref: "#/components/responses/UnknownWine"
+
+  /api/v1/wine/{slug}/photos:
+    get:
+      tags: [agent]
+      operationId: getWinePhotos
+      summary: Read the candidate photos of one wine.
+      parameters:
+        - $ref: "#/components/parameters/SlugPath"
+        - name: label
+          in: query
+          required: false
+          description: |
+            Keep only the photos that carry this label. Leave the parameter out, or
+            send an empty value, for every photo. A photo that carries no label has
+            `label: null` and no value of this parameter keeps it.
+          schema: { $ref: "#/components/schemas/Label" }
+      responses:
+        "200":
+          description: The photos that the filter keeps.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [slug, photos]
+                properties:
+                  slug: { type: string }
+                  photos:
+                    type: array
+                    items: { $ref: "#/components/schemas/Photo" }
+        "404":
+          $ref: "#/components/responses/UnknownWine"
+
+  /api/v1/propose:
+    post:
+      tags: [agent]
+      operationId: proposePhoto
+      summary: Add a candidate photo with a score, a source address, and a comment.
+      description: |
+        The server fetches the address, stores the picture in `my/<slug>/` as
+        `NN_agent.<ext>`, and writes the proposal. The stored entry holds `proposed`,
+        `by`, `confidence`, `source_url`, `comment`, and `ts`. It holds no `label`.
+
+        The media type is read from the first bytes of the file. The server does not
+        trust the address and does not trust the header of the remote server. Only
+        `image/jpeg`, `image/png`, `image/webp`, `image/gif`, and `image/bmp` are
+        stored. The picture MUST NOT be larger than 20971520 bytes.
+
+        An `http` or `https` address MUST NOT resolve to a loopback, private,
+        link-local, reserved, or multicast address.
+
+        A `data:` URL is the way to propose a picture from a host that the server
+        cannot fetch: a host that blocks this machine, or a host that omits its
+        intermediate certificate. Fetch the bytes, then send
+        `"url": "data:image/jpeg;base64,<base64>"`. This also proves that the stored
+        file is the file the agent judged. Keep the page address in `source_url`,
+        because `url` then holds the data URI and not an address.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProposeRequest" }
+            examples:
+              remote:
+                summary: A picture that the server fetches
+                value:
+                  slug: agora-risling
+                  url: https://otzovik.com/photo.jpg
+                  proposed: positive
+                  confidence: 0.91
+                  source_url: https://otzovik.com/review_1234.html
+                  comment: the label and the capsule match the catalogue bottle
+                  by: claude-code
+              inline:
+                summary: A picture that the agent fetched itself
+                value:
+                  slug: agora-risling
+                  url: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ...
+                  proposed: positive
+                  confidence: 0.78
+                  source_url: https://example.com/page.html
+                  by: claude-code
+      responses:
+        "200":
+          description: The picture is stored and the proposal is written.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProposeResult" }
+        "400":
+          description: |
+            The request is refused, or the picture cannot be fetched or stored. The
+            field `error` states the reason. The picture is not stored.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+              examples:
+                unknown_slug:   { value: { error: unknown wine slug } }
+                bad_label:      { value: { error: "proposed MUST be one of positive, negative, unusable, variant" } }
+                no_url:         { value: { error: no url } }
+                bad_confidence: { value: { error: confidence MUST be between 0 and 1 } }
+                local_address:  { value: { error: "the address points at a local host: 127.0.0.1" } }
+                not_a_picture:  { value: { error: "the address does not answer with a picture (server said text/html)" } }
+
+  # --------------------------------------------------------------------- images
+
+  /img/bottle:
+    get:
+      tags: [images]
+      operationId: getBottleImage
+      summary: Read the catalogue bottle picture of one wine.
+      description: |
+        The picture that the catalogue holds for this wine. An agent SHOULD read the
+        field `bottle_path` and open the file instead.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Picture"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
+  /img/photo:
+    get:
+      tags: [images]
+      operationId: getCandidatePhoto
+      summary: Read one candidate photo of one wine.
+      description: |
+        An agent SHOULD read the field `path` of the photo and open the file instead.
+
+        The server refuses a name that holds a path separator or a parent reference,
+        and a path that leaves `my/`.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: file
+          in: query
+          required: true
+          description: The file name of the photo, as `GET /api/v1/wine/{slug}` states it.
+          schema: { type: string }
+          example: 02_agent.jpg
+      responses:
+        "200":
+          $ref: "#/components/responses/Picture"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
+  # ----------------------------------------------------------------------- spec
+
+  /openapi.yaml:
+    get:
+      tags: [spec]
+      operationId: getOpenapiYaml
+      summary: Read this document, in YAML.
+      responses:
+        "200":
+          description: The document.
+          content:
+            application/yaml:
+              schema: { type: string }
+
+  /openapi.json:
+    get:
+      tags: [spec]
+      operationId: getOpenapiJson
+      summary: Read this document, in JSON.
+      description: |
+        The same document as `/openapi.yaml`, converted to JSON.
+      responses:
+        "200":
+          description: The document.
+          content:
+            application/json:
+              schema: { type: object }
+        "404":
+          description: '`docs/openapi.yaml` is not present beside the script.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          description: The document is present but cannot be read or parsed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /docs:
+    get:
+      tags: [spec]
+      operationId: getDocsPage
+      summary: Read this document in a browser, with Swagger UI.
+      description: |
+        The page loads Swagger UI from a CDN and reads `/openapi.yaml`. The page needs
+        an internet connection. It follows the theme of the operating system.
+      responses:
+        "200":
+          description: The HTML page.
+          content:
+            text/html:
+              schema: { type: string }
+
+  # ------------------------------------------------------------- the review page
+
+  /:
+    get:
+      tags: [page]
+      operationId: getReviewPage
+      summary: Read the review page.
+      responses:
+        "200":
+          description: The HTML page.
+          content:
+            text/html:
+              schema: { type: string }
+
+  /api/rows:
+    get:
+      tags: [page]
+      operationId: getRows
+      summary: Read every row, the whole label state, and the variant groups.
+      description: |
+        The answer holds the whole state of the tool. The page reads it once at the
+        start. It is large: about 2500 photos and 850 wines.
+
+        `rows` holds the wines that have a directory in `my/`, then the catalogue cards
+        that have none. A catalogue card carries `catalog_only: true`.
+
+        An agent SHOULD read `GET /api/v1/wines` instead, which pages and filters.
+      responses:
+        "200":
+          description: The whole state.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RowsBundle" }
+
+  /api/state:
+    get:
+      tags: [page]
+      operationId: getState
+      summary: Read the label state and the counters, without the rows.
+      responses:
+        "200":
+          description: The state.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [labels, wines, excluded, counts]
+                properties:
+                  labels: { $ref: "#/components/schemas/LabelState" }
+                  wines: { $ref: "#/components/schemas/WineNotes" }
+                  excluded: { $ref: "#/components/schemas/ExcludedMap" }
+                  counts: { $ref: "#/components/schemas/Counts" }
+
+  /api/reload:
+    get:
+      tags: [page]
+      operationId: reload
+      summary: Read the directory `my/` again and build the rows again.
+      description: |
+        Use this route after a script wrote into `my/` behind the server. The route
+        also reads the variant groups again. It writes nothing.
+      responses:
+        "200":
+          description: The new rows and the label state.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [rows, labels, wines, excluded]
+                properties:
+                  rows:
+                    type: array
+                    items: { $ref: "#/components/schemas/Row" }
+                  labels: { $ref: "#/components/schemas/LabelState" }
+                  wines: { $ref: "#/components/schemas/WineNotes" }
+                  excluded: { $ref: "#/components/schemas/ExcludedMap" }
+
+  /api/suggest:
+    get:
+      tags: [page]
+      operationId: suggestTargets
+      summary: Name the wines that a photo of this wine most likely belongs to.
+      description: |
+        The photos of one producer look alike, and a search result often shows the
+        right wine in the wrong bottle. The order is: a member of the variant group of
+        this wine, then the same producer, then a wine whose name shares words. The
+        route answers at most 5 wines.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200":
+          description: The suggested wines, best first.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [slug, targets]
+                properties:
+                  slug: { type: string }
+                  targets:
+                    type: array
+                    items: { $ref: "#/components/schemas/SuggestTarget" }
+
+  /api/upload:
+    post:
+      tags: [page]
+      operationId: uploadPhoto
+      summary: Store one picture from the bytes of the request body.
+      description: |
+        The body is the picture itself, not a form. The media type is read from the
+        first bytes of the body. The route writes no label, no score, and no comment.
+
+        An agent SHOULD use `POST /api/v1/propose` with a `data:` URL instead, because
+        that route records the score, the source address, and the comment.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: name
+          in: query
+          required: false
+          description: |
+            The original file name. The server reads the extension from it. An absent
+            or unknown extension is taken from the media type of the bytes.
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          image/jpeg: { schema: { type: string, format: binary } }
+          image/png:  { schema: { type: string, format: binary } }
+          image/webp: { schema: { type: string, format: binary } }
+          image/gif:  { schema: { type: string, format: binary } }
+          image/bmp:  { schema: { type: string, format: binary } }
+      responses:
+        "200":
+          description: The picture is stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, slug, file, photos]
+                properties:
+                  ok: { type: boolean, const: true }
+                  slug: { type: string }
+                  file: { type: string, examples: ["03_manual.jpg"] }
+                  photos:
+                    type: array
+                    items: { $ref: "#/components/schemas/RowPhoto" }
+        "400":
+          description: |
+            The slug is unknown, the body is empty, the body is larger than 20971520
+            bytes, or the bytes are not a picture.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/fetch-image:
+    post:
+      tags: [page]
+      operationId: fetchImage
+      summary: Fetch one picture from an address and store it, without a proposal.
+      description: |
+        The page uses this route when a picture is dragged from another browser tab.
+        The browser cannot read the bytes of another site, so the server fetches them.
+
+        The rules of the address are the rules of `POST /api/v1/propose`.
+
+        The route writes no score and no comment. An agent SHOULD use
+        `POST /api/v1/propose` instead.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, url]
+              properties:
+                slug: { type: string }
+                url: { type: string, description: An http, https, or data URL. }
+      responses:
+        "200":
+          description: The picture is stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, slug, file, photos, url]
+                properties:
+                  ok: { type: boolean, const: true }
+                  slug: { type: string }
+                  file: { type: string }
+                  photos:
+                    type: array
+                    items: { $ref: "#/components/schemas/RowPhoto" }
+                  url: { type: string, description: The address that was fetched. }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/label:
+    post:
+      tags: [page]
+      operationId: setLabel
+      summary: Write the label of one photo, or clear it.
+      description: |
+        The label is the decision of the reviewer. An agent MUST NOT call this route.
+        An agent writes `POST /api/v1/propose`.
+
+        An empty `label`, or `null`, clears the label. Clearing the label keeps the
+        other fields of the entry, for example `comment` and `reassign_to`. The entry
+        is removed when no field is left.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, file]
+              properties:
+                slug: { type: string }
+                file: { type: string }
+                label:
+                  oneOf:
+                    - { $ref: "#/components/schemas/Label" }
+                    - { type: "null" }
+                    - { type: string, const: "" }
+                  description: The new label, or an empty value to clear it.
+      responses:
+        "200":
+          $ref: "#/components/responses/OkCounts"
+        "400":
+          $ref: "#/components/responses/UnknownPhoto"
+
+  /api/labels:
+    post:
+      tags: [page]
+      operationId: setManyLabels
+      summary: Write the label of many photos in one request.
+      description: |
+        An item that names no known photo is skipped, and `skipped` counts it. The
+        other items are written. The whole list is written under one lock and is saved
+        once.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required: [slug, file]
+                    properties:
+                      slug: { type: string }
+                      file: { type: string }
+                      label:
+                        oneOf:
+                          - { $ref: "#/components/schemas/Label" }
+                          - { type: "null" }
+                          - { type: string, const: "" }
+      responses:
+        "200":
+          description: The labels are written.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, counts, skipped]
+                properties:
+                  ok: { type: boolean, const: true }
+                  counts: { $ref: "#/components/schemas/Counts" }
+                  skipped:
+                    type: integer
+                    description: The number of items that named no known photo.
+        "400":
+          description: '`items` is not a list, or a label is not a known label.'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/comment:
+    post:
+      tags: [page]
+      operationId: setPhotoComment
+      summary: Write a note about one photo, or clear it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, file]
+              properties:
+                slug: { type: string }
+                file: { type: string }
+                text:
+                  type: string
+                  maxLength: 4000
+                  description: The note. An empty value clears it.
+      responses:
+        "200":
+          $ref: "#/components/responses/OkCounts"
+        "400":
+          $ref: "#/components/responses/UnknownPhoto"
+
+  /api/wine-comment:
+    post:
+      tags: [page]
+      operationId: setWineComment
+      summary: Write a note about one whole wine, or clear it.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug]
+              properties:
+                slug: { type: string }
+                text:
+                  type: string
+                  maxLength: 4000
+                  description: The note. An empty value clears it.
+      responses:
+        "200":
+          $ref: "#/components/responses/OkCounts"
+        "400":
+          description: The slug is unknown, or the note is longer than 4000 characters.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/reassign:
+    post:
+      tags: [page]
+      operationId: reassignPhoto
+      summary: Record that one photo belongs to another wine.
+      description: |
+        The route records the target. It does not move the file. `POST /api/apply-moves`
+        moves every recorded photo later, on one command.
+
+        An empty `to` takes the record away.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, file]
+              properties:
+                slug: { type: string }
+                file: { type: string }
+                to:
+                  type: string
+                  description: |
+                    The slug that the photo belongs to. It MUST be a known slug and it
+                    MUST NOT be the slug of the photo. An empty value clears the record.
+      responses:
+        "200":
+          $ref: "#/components/responses/OkCounts"
+        "400":
+          description: |
+            The photo is unknown, the target slug is unknown, or the target slug is the
+            slug of the photo.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/checks:
+    get:
+      tags: [page]
+      operationId: listChecks
+      summary: The checks that `POST /api/validate` can run.
+      description: |
+        The page draws one line per check in its dialog, so a new check on the server
+        reaches the dialog without a change of the page.
+      responses:
+        "200":
+          description: The checks.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [checks]
+                properties:
+                  checks:
+                    type: array
+                    items: { $ref: "#/components/schemas/Check" }
+
+  /api/validate:
+    post:
+      tags: [page]
+      operationId: validateSet
+      summary: Run the chosen checks over the whole photo set.
+      description: |
+        A check reads the photo set and the labels and reports the places where the set
+        states two things that cannot both be true. The route only reads. It writes no
+        file and no label.
+
+        `shared_positive` reads every candidate photo, 2,543 files on the set of today,
+        and takes about 2.5 seconds. The result is not cached.
+
+        An absent `checks` runs every check.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                checks:
+                  type: array
+                  description: |
+                    The ids of the checks to run, from `GET /api/checks`. An absent
+                    field runs every check. An empty list is refused.
+                  items: { type: string }
+      responses:
+        "200":
+          description: The run is done.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ValidateResult" }
+        "400":
+          description: |
+            `checks` is not a list of strings, is empty, or names an unknown check.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/copy:
+    post:
+      tags: [page]
+      operationId: copyPhoto
+      summary: Record that one photo shows another wine as well.
+      description: |
+        One picture can show two wines: the same label on two bottles of a variant
+        group. The route records that. It does not copy the file, and it does not take
+        the photo away from its own wine: the photo keeps its slug, its label, and its
+        comment. `POST /api/apply-moves` writes the copy later, on one command.
+
+        The copy is a new candidate photo of the target wine. It carries no label,
+        because a label judges one photo against one wine. Its comment names the wine
+        it came from, and the field `copied_from` records that wine.
+
+        An empty `to` takes the record away.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, file]
+              properties:
+                slug: { type: string }
+                file: { type: string }
+                to:
+                  type: string
+                  description: |
+                    The slug that the photo shows as well. It MUST be a known slug and
+                    it MUST NOT be the slug of the photo. An empty value clears the
+                    record.
+      responses:
+        "200":
+          $ref: "#/components/responses/OkCounts"
+        "400":
+          description: |
+            The photo is unknown, the target slug is unknown, or the target slug is the
+            slug of the photo.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/mark-delete:
+    post:
+      tags: [page]
+      operationId: markDelete
+      summary: Mark one photo for deletion, or take the mark away.
+      description: |
+        The route does not touch the file. `POST /api/apply-moves` moves every marked
+        photo into `work/trash/` later, on one command.
+
+        A photo that carries both a target and a delete mark is deleted and is not moved.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, file]
+              properties:
+                slug: { type: string }
+                file: { type: string }
+                delete:
+                  type: boolean
+                  default: true
+                  description: '`false` takes the mark away.'
+      responses:
+        "200":
+          description: The mark is written.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, slug, file, delete, counts]
+                properties:
+                  ok: { type: boolean, const: true }
+                  slug: { type: string }
+                  file: { type: string }
+                  delete: { type: boolean }
+                  counts: { $ref: "#/components/schemas/Counts" }
+        "400":
+          $ref: "#/components/responses/UnknownPhoto"
+
+  /api/apply-moves:
+    post:
+      tags: [page]
+      operationId: applyMoves
+      summary: Carry out every recorded copy, every recorded move, and every deletion.
+      description: |
+        This route touches the files on the disk. It copies every photo that holds
+        `copy_to`, it moves every photo that holds `reassign_to`, and it moves every
+        marked photo into `work/trash/`. It then builds the rows again.
+
+        The three actions run in that order, because a move takes the source file away
+        and a copy reads it.
+
+        A copy that is done no longer holds `copy_to`, so a second call does not write
+        the file again.
+
+        The request body is not read. Send an empty object.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200":
+          description: The work is done.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApplyMovesResult" }
+        "500":
+          description: A file could not be moved or deleted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/exclude:
+    post:
+      tags: [page]
+      operationId: setExcluded
+      summary: Take one wine out of the benchmark, or bring it back.
+      description: |
+        The photos of an excluded wine MUST NOT be used for benchmarking. Most often
+        the catalogue card holds a wrong bottle photo. Read `docs/excluded-slugs.md`.
+
+        A reason is needed to exclude a wine. No reason is needed to bring it back.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug]
+              properties:
+                slug: { type: string }
+                excluded:
+                  type: boolean
+                  default: true
+                  description: '`false` brings the wine back into the benchmark.'
+                reason:
+                  type: string
+                  maxLength: 1000
+                  description: |
+                    Why the wine is out. It is required when `excluded` is true.
+      responses:
+        "200":
+          description: The exclusion is written.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, slug, excluded, entry, count]
+                properties:
+                  ok: { type: boolean, const: true }
+                  slug: { type: string }
+                  excluded: { type: boolean }
+                  entry:
+                    oneOf:
+                      - { $ref: "#/components/schemas/ExcludedEntry" }
+                      - { type: "null" }
+                    description: The new entry, or null when the wine came back.
+                  count:
+                    type: integer
+                    description: The number of excluded wines after the write.
+        "400":
+          description: |
+            The slug is unknown, the reason is longer than 1000 characters, or the
+            request excludes a wine and states no reason.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/group:
+    post:
+      tags: [page]
+      operationId: groupWines
+      summary: Join two wines into one variant group.
+      description: |
+        Two wines of one variant group hold the same wine in another bottle. Their
+        photos differ only in a small detail.
+
+        The write is one pair. A group is a connected component over the generated
+        groups and these pairs, so a wine that is in no group takes the group of the
+        other wine.
+
+        Two wines that are already in two different groups are refused with 409. A
+        merge of two groups is a larger decision than this route states, and it cannot
+        be undone by taking one pair away.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, target]
+              properties:
+                slug: { type: string }
+                target: { type: string }
+      responses:
+        "200":
+          description: |
+            The pair is written, or the two wines were already in one group. Read
+            `changed`. When `changed` is false, the answer holds no `rows`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GroupResult" }
+        "400":
+          description: |
+            A slug is missing, a slug is unknown, or the two slugs are the same.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: Both wines are already in a group, and the groups differ.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # --------------------------------------------------------------- the runs page
+
+  /runs:
+    get:
+      tags: [runs]
+      operationId: getRunsPage
+      summary: Read the runs page.
+      responses:
+        "200":
+          description: The HTML page.
+          content:
+            text/html:
+              schema: { type: string }
+
+  /api/runs:
+    get:
+      tags: [runs]
+      operationId: listRuns
+      summary: List every match run with its headline metrics.
+      responses:
+        "200":
+          description: The runs.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [runs]
+                properties:
+                  runs:
+                    type: array
+                    items: { $ref: "#/components/schemas/RunHead" }
+
+  /api/run:
+    get:
+      tags: [runs]
+      operationId: getRun
+      summary: Read the metrics and the result rows of one run.
+      description: |
+        The rows come from `results.jsonl` of the run. The shape of one row follows the
+        match runner, not this server. Read `docs/match-runner.md`.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: The identifier of the run, as `GET /api/runs` states it.
+          schema: { type: string }
+        - name: filter
+          in: query
+          required: false
+          schema: { $ref: "#/components/schemas/RunRowFilter" }
+        - name: q
+          in: query
+          required: false
+          description: |
+            A part of `image_path` or of `predicted_slug`. The comparison ignores the
+            case.
+          schema: { type: string }
+        - name: sort
+          in: query
+          required: false
+          description: '`manifest` is the order that the backend answered in.'
+          schema: { $ref: "#/components/schemas/RunRowSort" }
+        - name: limit
+          in: query
+          required: false
+          description: A value below 1 or above 1000 is clamped to the range.
+          schema: { type: integer, minimum: 1, maximum: 1000, default: 200 }
+        - name: offset
+          in: query
+          required: false
+          schema: { type: integer, minimum: 0, default: 0 }
+      responses:
+        "200":
+          description: The run.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RunView" }
+        "400":
+          description: |
+            The identifier is not a valid run identifier, `limit` or `offset` is not a
+            number, or `sort` is not a known order.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: No run holds this identifier.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+components:
+
+  parameters:
+
+    SlugPath:
+      name: slug
+      in: path
+      required: true
+      description: The slug of the wine.
+      schema: { type: string }
+      example: agora-risling
+
+    SlugQuery:
+      name: slug
+      in: query
+      required: true
+      description: The slug of the wine.
+      schema: { type: string }
+      example: agora-risling
+
+  responses:
+
+    OkCounts:
+      description: The write is done.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [ok, counts]
+            properties:
+              ok: { type: boolean, const: true }
+              counts: { $ref: "#/components/schemas/Counts" }
+
+    UnknownWine:
+      description: No wine of the review set holds this slug.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: unknown wine slug }
+
+    UnknownPhoto:
+      description: |
+        The slug and the file name do not name a photo that is present in `my/`.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: unknown photo }
+
+    BadRequest:
+      description: The request is refused. The field `error` states the reason.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+    NotFoundText:
+      description: |
+        The file is not present. The body is the text `not found`, not JSON. The two
+        routes under `/img/` answer an error as plain text.
+      content:
+        text/plain:
+          schema: { type: string, const: not found }
+
+    Picture:
+      description: |
+        The picture. The media type follows the extension of the file. The answer holds
+        `Cache-Control: public, max-age=86400`.
+      content:
+        image/jpeg: { schema: { type: string, format: binary } }
+        image/png:  { schema: { type: string, format: binary } }
+        image/webp: { schema: { type: string, format: binary } }
+        image/gif:  { schema: { type: string, format: binary } }
+        image/bmp:  { schema: { type: string, format: binary } }
+
+  schemas:
+
+    Error:
+      type: object
+      description: Every error of a JSON route holds this shape.
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: Why the request was refused.
+
+    Label:
+      type: string
+      description: |
+        The judgement of one photo.
+
+        `positive`: the photo shows this wine.
+        `negative`: the photo shows another wine.
+        `unusable`: the photo cannot be judged, for example a render or a collage.
+        `variant`: the photo shows the same wine in another bottle.
+      enum: [positive, negative, unusable, variant]
+
+    WineFilter:
+      type: string
+      default: all
+      description: |
+        `all`: every wine.
+        `unlabelled`: at least one photo has no label.
+        `needs_positive`: no photo carries `positive`. This is the work list of an agent.
+        `has_proposal`: at least one photo holds a proposal that is not yet labelled.
+        `fully_labelled`: the wine holds photos and every photo carries a label.
+        `in_variant_group`: the wine is in a variant group.
+        `no_candidate_photos`: the wine holds no candidate photo.
+        `image_unresolved`: the catalogue bottle photo is not resolved.
+        `image_assumed`: the catalogue bottle photo is assumed, not confirmed.
+        `image_confirmed`: the catalogue bottle photo is confirmed.
+        `image_manual`: the catalogue bottle photo was matched by hand.
+        `image_shared`: the catalogue bottle photo is shared with another wine.
+
+        The last six filters also bring in the catalogue cards that hold no directory
+        in `my/`.
+      enum:
+        - all
+        - unlabelled
+        - needs_positive
+        - has_proposal
+        - fully_labelled
+        - in_variant_group
+        - no_candidate_photos
+        - image_unresolved
+        - image_assumed
+        - image_confirmed
+        - image_manual
+        - image_shared
+
+    Counts:
+      type: object
+      description: The counters of the whole review set.
+      required:
+        [positive, negative, unusable, variant, labelled, reassigned, copied,
+         deleting, commented, proposed, wine_notes]
+      properties:
+        positive: { type: integer }
+        negative: { type: integer }
+        unusable: { type: integer }
+        variant: { type: integer }
+        labelled:
+          type: integer
+          description: The sum of the four label counts.
+        reassigned:
+          type: integer
+          description: The photos that hold a target and are not yet moved.
+        copied:
+          type: integer
+          description: The photos that hold a copy target and are not yet copied.
+        deleting:
+          type: integer
+          description: The photos that are marked for deletion and are not yet deleted.
+        commented:
+          type: integer
+          description: The photos that hold a comment.
+        proposed:
+          type: integer
+          description: |
+            The photos that hold a proposal and carry no label. A proposal that the
+            reviewer has confirmed is not counted here.
+        wine_notes:
+          type: integer
+          description: The wines that hold a note.
+
+    LabelCounts:
+      type: object
+      description: The photos of one wine, counted by label.
+      required: [positive, negative, unusable, variant]
+      properties:
+        positive: { type: integer }
+        negative: { type: integer }
+        unusable: { type: integer }
+        variant: { type: integer }
+
+    Stats:
+      type: object
+      required:
+        [wines, photos, excluded_wines, excluded_photos, counts, variant_groups]
+      properties:
+        wines:
+          type: integer
+          description: The wines that hold a directory in `my/`.
+        photos:
+          type: integer
+          description: The candidate photos of those wines.
+        excluded_wines:
+          type: integer
+          description: How many of `wines` are out of the benchmark.
+        excluded_photos:
+          type: integer
+          description: The candidate photos of the excluded wines.
+        counts: { $ref: "#/components/schemas/Counts" }
+        variant_groups: { type: integer }
+      examples:
+        - wines: 852
+          photos: 2512
+          excluded_wines: 2
+          excluded_photos: 12
+          counts:
+            positive: 1030
+            negative: 380
+            unusable: 119
+            variant: 46
+            labelled: 1575
+            reassigned: 0
+            copied: 0
+            deleting: 0
+            commented: 390
+            proposed: 239
+            wine_notes: 80
+          variant_groups: 28
+
+    ImageMatch:
+      type: object
+      description: |
+        How the catalogue established the bottle photo of this wine. An old catalogue
+        that holds no such record answers an empty object.
+      properties:
+        file:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            The file name of the bottle photo. It is null when the catalogue found no
+            photo for this wine.
+        method:
+          type: string
+          description: |
+            How the photo was found. The page knows four values.
+
+            `csv-name-unique`: the name in the CSV matched exactly one file.
+            `live-og-image`: the photo came from the page of the wine on the site.
+            `manual`: a person matched the photo by hand.
+            `unresolved`: no photo was found.
+
+            The field is not an enumeration. An older catalogue MAY hold another value,
+            which the page shows as `method unknown`.
+        confidence:
+          type: string
+          description: |
+            `confirmed`: the match was checked.
+            `assumed`: the match was not checked.
+            `none`: no photo was found.
+        source:
+          type: string
+          description: The page that the photo comes from.
+        checked_at:
+          type: string
+          description: When the match was checked.
+        candidates:
+          type: integer
+          description: How many files carried the name of the CSV.
+        shared_with:
+          type: array
+          description: |
+            The other slugs that hold this same photo. Those cards cannot be separated
+            by the image.
+          items: { type: string }
+        note: { type: string }
+
+    VariantGroupRef:
+      type: object
+      description: |
+        The other wines of the variant group of this wine. Read it before a decision:
+        the photos of two variants differ only in a small detail.
+      required: [id, siblings]
+      properties:
+        id: { type: string, examples: ["g001"] }
+        siblings:
+          type: array
+          items:
+            type: object
+            required: [slug, name, bottle_path, bottle_url]
+            properties:
+              slug: { type: string }
+              name: { type: string }
+              bottle_path:
+                oneOf: [{ type: string }, { type: "null" }]
+                description: The absolute path of the bottle photo on this machine.
+              bottle_url: { type: string }
+
+    Wine:
+      type: object
+      description: One wine, with its properties and its photo counts.
+      required:
+        [slug, name, producer, category, color, region, grapes, page_url,
+         description, in_catalog, bottle_path, bottle_url, image_match,
+         catalog_only, photos_total, labels, labelled, unlabelled, proposed,
+         wine_note, excluded, exclude_reason, variant_group]
+      properties:
+        slug:
+          type: string
+          description: The identifier of the wine. It is the last part of `page_url`.
+        name:
+          type: string
+          description: The name of the wine, as the catalogue states it.
+        producer:
+          type: string
+          description: The winery.
+        category:
+          type: string
+          description: For example `Красное` or `Белое`.
+        color: { type: string }
+        region: { type: string }
+        grapes: { type: string }
+        page_url:
+          type: string
+          description: The page of the wine on the site of the catalogue.
+        description:
+          type: string
+          description: The tasting note of the catalogue. It is empty when none is known.
+        in_catalog:
+          type: boolean
+          description: Whether a catalogue card holds this slug.
+        bottle_path:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            The absolute path of the catalogue bottle photo on this machine. An agent
+            SHOULD read this file instead of `GET /img/bottle`.
+        bottle_url:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            The address of the catalogue bottle photo, or null when the wine holds no
+            bottle photo.
+        image_match: { $ref: "#/components/schemas/ImageMatch" }
+        catalog_only:
+          type: boolean
+          description: |
+            True when the wine is a catalogue card that holds no directory in `my/`.
+            Such a wine holds no candidate photo and no label state.
+            `GET /api/v1/wine/{slug}` does NOT answer for it.
+        photos_total:
+          type: integer
+          description: The number of candidate photos of this wine.
+        labels: { $ref: "#/components/schemas/LabelCounts" }
+        labelled:
+          type: integer
+          description: The sum of the four counts of `labels`.
+        unlabelled:
+          type: integer
+          description: '`photos_total` less `labelled`.'
+        proposed:
+          type: integer
+          description: |
+            The candidate photos that hold a proposal of an agent and carry no label.
+        wine_note:
+          type: string
+          description: The note about this wine. It is empty when none was written.
+        excluded:
+          type: boolean
+          description: |
+            True when the photos of this wine are NOT used for benchmarking. An agent
+            MUST NOT hunt photos for such a wine.
+        exclude_reason:
+          type: string
+          description: |
+            Why the wine is out of the benchmark, most often a wrong bottle photo.
+        variant_group:
+          oneOf:
+            - { $ref: "#/components/schemas/VariantGroupRef" }
+            - { type: "null" }
+
+    WineDetail:
+      allOf:
+        - { $ref: "#/components/schemas/Wine" }
+        - type: object
+          required: [photos]
+          properties:
+            photos:
+              type: array
+              items: { $ref: "#/components/schemas/Photo" }
+
+    WineList:
+      type: object
+      required: [total, offset, limit, wines]
+      properties:
+        total:
+          type: integer
+          description: |
+            Every wine that the filter keeps, not the length of `wines`. Use it to page.
+        offset: { type: integer }
+        limit: { type: integer }
+        wines:
+          type: array
+          items: { $ref: "#/components/schemas/Wine" }
+
+    Photo:
+      type: object
+      description: |
+        One candidate photo of one wine, with everything that is known about it.
+      required:
+        [file, path, url, conf, label, proposed, by, confidence, source_url,
+         comment, reassign_to, moved_from, copy_to, copied_from]
+      properties:
+        file:
+          type: string
+          description: |
+            The file name in `my/<slug>/`. The name starts with a rank. The suffix
+            states where the photo comes from: `_agent` for a proposal of an agent,
+            `_manual` for a photo added by hand, `_confNN` for a photo of the pipeline.
+          examples: ["02_agent.jpg"]
+        path:
+          type: string
+          description: |
+            The absolute path of the photo on this machine. An agent reads the picture
+            from this path with its own file tool. The bytes do not travel through the
+            API.
+        url:
+          type: string
+          description: The address of the picture, for a browser.
+        conf:
+          oneOf: [{ type: integer }, { type: "null" }]
+          description: |
+            The confidence that the search pipeline stated, from 0 to 100, read from
+            the file name. It is null for a photo that the pipeline did not add. It is
+            NOT the confidence of an agent, which is `confidence`.
+        label:
+          oneOf:
+            - { $ref: "#/components/schemas/Label" }
+            - { type: "null" }
+          description: The decision of the reviewer, or null when none was made.
+        proposed:
+          oneOf:
+            - { $ref: "#/components/schemas/Label" }
+            - { type: "null" }
+          description: |
+            The judgement that an agent proposed, or null. A photo where `proposed` is
+            set and `label` is null waits for the reviewer.
+        by:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: Which agent wrote the proposal.
+        confidence:
+          oneOf: [{ type: number, minimum: 0, maximum: 1 }, { type: "null" }]
+          description: The confidence of the agent, from 0 to 1.
+        source_url:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: The page that the photo comes from.
+        comment:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: The note about this photo, at most 4000 characters.
+        reassign_to:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            The slug that this photo belongs to. The file is not moved until
+            `POST /api/apply-moves` runs.
+        moved_from:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: The slug that this photo was moved from.
+        copy_to:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            A slug that this photo shows as well. The file is not copied until
+            `POST /api/apply-moves` runs. The photo stays in its own wine.
+        copied_from:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: The slug that this photo was copied from.
+
+    RowPhoto:
+      type: object
+      description: |
+        The short form of one photo. `GET /api/rows`, `POST /api/v1/propose`,
+        `POST /api/upload`, and `POST /api/fetch-image` answer this form. It holds no
+        label state. Read `GET /api/v1/wine/{slug}` for the full form.
+      required: [file, conf]
+      properties:
+        file: { type: string }
+        conf:
+          oneOf: [{ type: integer }, { type: "null" }]
+
+    ProposeRequest:
+      type: object
+      required: [slug, url]
+      properties:
+        slug:
+          type: string
+          description: |
+            The wine that the photo belongs to. A catalogue card with no directory in
+            `my/` is allowed: the write makes the directory.
+        url:
+          type: string
+          description: |
+            The address of the picture. It MUST be `http`, `https`, or a `data:` URL.
+        proposed:
+          allOf: [{ $ref: "#/components/schemas/Label" }]
+          default: positive
+          description: The judgement of the agent.
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0
+          description: |
+            How sure the agent is. It is stored with 4 decimal places. It is NOT the
+            field `conf` of a photo of the pipeline.
+        source_url:
+          type: string
+          description: |
+            The page that the picture comes from. It defaults to `url`. Send the page
+            address here when `url` holds a `data:` URL.
+        comment:
+          type: string
+          maxLength: 4000
+          description: |
+            Why the agent judged the photo this way. A longer text is cut at 4000
+            characters.
+        by:
+          type: string
+          default: agent
+          description: The name of the agent.
+
+    ProposeResult:
+      type: object
+      required: [ok, slug, file, photos, counts]
+      properties:
+        ok: { type: boolean, const: true }
+        slug: { type: string }
+        file:
+          type: string
+          description: The name of the stored file.
+          examples: ["07_agent.jpg"]
+        photos:
+          type: array
+          description: |
+            Every candidate photo of the wine after the write, in the short form. It
+            holds no label state.
+          items: { $ref: "#/components/schemas/RowPhoto" }
+        counts: { $ref: "#/components/schemas/Counts" }
+
+    Row:
+      type: object
+      description: |
+        One row of the review page. It is not the record of `GET /api/v1/wines`: a row
+        holds `has_bottle` and `min_conf` and holds no label count, because the page
+        counts the labels itself from `labels`.
+      required:
+        [slug, name, producer, category, color, region, grapes, page_url,
+         in_catalog, has_bottle, image_match, group, photos, min_conf]
+      properties:
+        slug: { type: string }
+        name: { type: string }
+        producer: { type: string }
+        category: { type: string }
+        color: { type: string }
+        region: { type: string }
+        grapes: { type: string }
+        page_url: { type: string }
+        in_catalog: { type: boolean }
+        has_bottle:
+          type: boolean
+          description: Whether the catalogue holds a bottle photo for this wine.
+        image_match: { $ref: "#/components/schemas/ImageMatch" }
+        group:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: The identifier of the variant group, or null.
+        photos:
+          type: array
+          items: { $ref: "#/components/schemas/RowPhoto" }
+        min_conf:
+          oneOf: [{ type: integer }, { type: "null" }]
+          description: The lowest `conf` of the photos of this row.
+        catalog_only:
+          type: boolean
+          description: |
+            Present and true only on a catalogue card that holds no directory in `my/`.
+            Such a row is not part of the review set and holds no label state.
+
+    Group:
+      type: object
+      description: One variant group.
+      required: [id, slugs, producer, name]
+      properties:
+        id: { type: string, examples: ["g001"] }
+        slugs:
+          type: array
+          description: Every wine of the group, this wine included.
+          items: { type: string }
+        producer: { type: string }
+        name: { type: string }
+
+    LabelEntry:
+      type: object
+      description: |
+        The stored state of one photo. A field that was never written is absent, not
+        null. The entry is removed when no field is left.
+      properties:
+        label: { $ref: "#/components/schemas/Label" }
+        proposed: { $ref: "#/components/schemas/Label" }
+        by: { type: string }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        source_url: { type: string }
+        comment: { type: string, maxLength: 4000 }
+        reassign_to: { type: string }
+        copy_to: { type: string }
+        delete:
+          type: boolean
+          const: true
+          description: The photo is marked for deletion. The field is absent when not.
+        moved_from: { type: string }
+        copied_from: { type: string }
+        ts:
+          type: string
+          description: |
+            When the entry was last written, as `%Y-%m-%dT%H:%M:%S%z`, for example
+            `2026-09-17T20:46:14+0300`.
+
+    LabelState:
+      type: object
+      description: The label state, as `slug` to `file name` to entry.
+      additionalProperties:
+        type: object
+        additionalProperties: { $ref: "#/components/schemas/LabelEntry" }
+
+    WineNotes:
+      type: object
+      description: The notes about whole wines, as `slug` to note.
+      additionalProperties:
+        type: object
+        properties:
+          comment: { type: string }
+          ts: { type: string }
+
+    ExcludedEntry:
+      type: object
+      required: [reason, ts]
+      properties:
+        reason: { type: string, maxLength: 1000 }
+        ts: { type: string }
+
+    ExcludedMap:
+      type: object
+      description: The excluded wines, as `slug` to entry.
+      additionalProperties: { $ref: "#/components/schemas/ExcludedEntry" }
+
+    RowsBundle:
+      type: object
+      required: [rows, labels, wines, excluded, groups, slugs]
+      properties:
+        rows:
+          type: array
+          description: |
+            The wines that hold a directory in `my/`, then the catalogue cards that
+            hold none.
+          items: { $ref: "#/components/schemas/Row" }
+        labels: { $ref: "#/components/schemas/LabelState" }
+        wines: { $ref: "#/components/schemas/WineNotes" }
+        excluded: { $ref: "#/components/schemas/ExcludedMap" }
+        groups:
+          type: object
+          description: Every variant group, as identifier to group.
+          additionalProperties: { $ref: "#/components/schemas/Group" }
+        slugs:
+          type: array
+          description: Every slug of the catalogue, in order.
+          items: { type: string }
+
+    SuggestTarget:
+      type: object
+      required: [slug, name, producer, category, has_bottle, in_group, score]
+      properties:
+        slug: { type: string }
+        name: { type: string }
+        producer: { type: string }
+        category: { type: string }
+        has_bottle: { type: boolean }
+        in_group:
+          type: boolean
+          description: Whether this wine is in the variant group of the asked wine.
+        score:
+          type: integer
+          description: |
+            How well this wine fits. A higher number is a better fit. The scale has no
+            unit and is only used to order the list.
+
+    GroupResult:
+      type: object
+      required: [ok, changed, group]
+      properties:
+        ok: { type: boolean, const: true }
+        changed:
+          type: boolean
+          description: |
+            False when the two wines were already in one group. The answer then holds
+            `note` and no `rows`.
+        group:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: The identifier of the group after the write.
+        note:
+          type: string
+          description: Present only when `changed` is false.
+        rows:
+          type: array
+          description: Present only when `changed` is true.
+          items: { $ref: "#/components/schemas/Row" }
+        labels: { $ref: "#/components/schemas/LabelState" }
+        wines: { $ref: "#/components/schemas/WineNotes" }
+        excluded: { $ref: "#/components/schemas/ExcludedMap" }
+        groups:
+          type: object
+          additionalProperties: { $ref: "#/components/schemas/Group" }
+        slugs:
+          type: array
+          items: { type: string }
+
+    Check:
+      type: object
+      description: One check that the server can run over the photo set.
+      required: [id, title, help]
+      properties:
+        id:
+          type: string
+          description: The value to send in `checks` of `POST /api/validate`.
+        title:
+          type: string
+          description: One line for the dialog.
+        help:
+          type: string
+          description: What the check reads, what it reports, and what it cannot find.
+
+    Finding:
+      type: object
+      description: |
+        One defect that a check found. `photos` names the photos of the defect, and a
+        later check MAY name whole wines in `slugs` instead. The page builds the list of
+        failing wines from both fields, so a new check needs no change of the page.
+      required: [check, why]
+      properties:
+        check: { type: string, description: The id of the check that found it. }
+        why: { type: string, description: One line that states the defect. }
+        photos:
+          type: array
+          items:
+            type: object
+            required: [slug, file]
+            properties:
+              slug: { type: string }
+              file: { type: string }
+        slugs:
+          type: array
+          description: Wines that the finding names without naming a photo.
+          items: { type: string }
+        same_group:
+          type: boolean
+          description: |
+            `shared_positive` only. True when every wine of the finding is in one
+            variant group, which is the same wine in two bottles.
+        group:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: The id of that variant group, or null.
+        digest:
+          type: string
+          description: |
+            `shared_positive` only. The SHA-256 of the picture, in hexadecimal.
+
+    ValidateResult:
+      type: object
+      required: [ok, ran, wines, photos, seconds, findings, slugs]
+      properties:
+        ok: { type: boolean, const: true }
+        ran:
+          type: array
+          description: The checks that were run, in the order of the request.
+          items: { type: string }
+        wines: { type: integer, description: The wines that were read. }
+        photos: { type: integer, description: The candidate photos that were read. }
+        seconds: { type: number, description: How long the run took. }
+        findings:
+          type: array
+          items: { $ref: "#/components/schemas/Finding" }
+        slugs:
+          type: array
+          description: Every wine that at least one finding names, sorted.
+          items: { type: string }
+
+    ApplyMovesResult:
+      type: object
+      required:
+        [ok, moved, already_done, failed, copied, copy_failed, renamed, deleted,
+         delete_failed, delete_gone, rows, labels, counts]
+      properties:
+        ok: { type: boolean, const: true }
+        moved:
+          type: array
+          description: The photos that were moved.
+          items:
+            type: object
+            properties:
+              from: { type: string, description: The slug that held the photo. }
+              file: { type: string }
+              to: { type: string, description: The slug that holds it now. }
+              as: { type: string, description: The file name in the target directory. }
+        already_done:
+          type: integer
+          description: The records whose photo was already in the target directory.
+        failed:
+          type: array
+          items:
+            type: object
+            properties:
+              from: { type: string }
+              file: { type: string }
+              to: { type: string }
+              why: { type: string }
+        copied:
+          type: array
+          description: The photos that were copied. The source photo did not change.
+          items:
+            type: object
+            properties:
+              from: { type: string, description: The slug that holds the photo. }
+              file: { type: string }
+              to: { type: string, description: The slug that got the copy. }
+              as: { type: string, description: The file name in the target directory. }
+        copy_failed:
+          type: array
+          items:
+            type: object
+            properties:
+              from: { type: string }
+              file: { type: string }
+              to: { type: string }
+              why: { type: string }
+        renamed:
+          type: array
+          description: |
+            The files that were renamed, because the target name was taken. A moved
+            file takes the tag `_moved2`, a copied file the tag `_copy2`.
+          items:
+            type: object
+            properties:
+              from: { type: string }
+              to: { type: string }
+        deleted:
+          type: array
+          items:
+            type: object
+            properties:
+              slug: { type: string }
+              file: { type: string }
+              to: { type: string, description: The path in `work/trash/`. }
+        delete_failed:
+          type: array
+          items:
+            type: object
+            properties:
+              slug: { type: string }
+              file: { type: string }
+              why: { type: string }
+        delete_gone:
+          type: integer
+          description: The marked photos that were already absent.
+        rows:
+          type: array
+          items: { $ref: "#/components/schemas/Row" }
+        labels: { $ref: "#/components/schemas/LabelState" }
+        counts: { $ref: "#/components/schemas/Counts" }
+
+    RunRowFilter:
+      type: string
+      default: all
+      description: |
+        `all`: every row.
+        `error`: the backend answered an error.
+        `hit`: the truth stands at rank 1.
+        `miss`: the truth does not stand at rank 1.
+        `near`: the truth is in the list, but not at rank 1.
+        `absent`: the truth never appeared.
+        `false_match`: a negative photo matched a wine at rank 1.
+        `negative_in_topk`: a negative photo appeared in the list.
+        `negative`: every negative photo.
+      enum:
+        [all, error, hit, miss, near, absent, false_match, negative_in_topk, negative]
+
+    RunRowSort:
+      type: string
+      default: manifest
+      description: '`manifest` is the order of `queries.tsv`.'
+      enum:
+        [manifest, worst, rank, latency_desc, latency_asc, score_desc, score_asc, path]
+
+    RunHead:
+      type: object
+      description: |
+        The short record of one run. A field is null when the run wrote no metrics.
+      required: [id, has_metrics]
+      properties:
+        id: { type: string }
+        backend: { type: string }
+        label: { type: string }
+        started: { type: string }
+        finished: { type: string }
+        dry_run: { type: boolean }
+        queries: { oneOf: [{ type: integer }, { type: "null" }] }
+        positive: { oneOf: [{ type: integer }, { type: "null" }] }
+        negative: { oneOf: [{ type: integer }, { type: "null" }] }
+        recall_at_1: { oneOf: [{ type: number }, { type: "null" }] }
+        recall_at_5: { oneOf: [{ type: number }, { type: "null" }] }
+        recall_at_10: { oneOf: [{ type: number }, { type: "null" }] }
+        match_share: { oneOf: [{ type: number }, { type: "null" }] }
+        f1_at_1: { oneOf: [{ type: number }, { type: "null" }] }
+        f1_at_5: { oneOf: [{ type: number }, { type: "null" }] }
+        near_duplicate_confusion: { oneOf: [{ type: number }, { type: "null" }] }
+        false_match_at_1: { oneOf: [{ type: number }, { type: "null" }] }
+        within_sla_share: { oneOf: [{ type: number }, { type: "null" }] }
+        sla_ms: { oneOf: [{ type: number }, { type: "null" }] }
+        latency_median: { oneOf: [{ type: number }, { type: "null" }] }
+        has_metrics:
+          type: boolean
+          description: Whether the run wrote `metrics.json`.
+        subset:
+          oneOf: [{ type: string }, { type: "null" }]
+
+    RunView:
+      type: object
+      required: [run, metrics, head, filter, sort, total, offset, limit, rows]
+      properties:
+        run:
+          type: object
+          description: '`run.json` of the run. Its shape follows the match runner.'
+        metrics:
+          type: object
+          description: '`metrics.json` of the run. Its shape follows the match runner.'
+        head: { $ref: "#/components/schemas/RunHead" }
+        filter: { $ref: "#/components/schemas/RunRowFilter" }
+        sort: { $ref: "#/components/schemas/RunRowSort" }
+        total:
+          type: integer
+          description: Every row that the filter keeps, not the length of `rows`.
+        offset: { type: integer }
+        limit: { type: integer }
+        rows:
+          type: array
+          description: |
+            One page of the rows of `results.jsonl`. The shape of one row follows the
+            match runner. Read `docs/match-runner.md`.
+          items: { type: object }

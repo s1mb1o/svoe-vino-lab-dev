@@ -1,5 +1,143 @@
 # ChangeLog
 
+## 2026-09-18
+
+### Added
+- The button `validate` in the header checks the photo set for defects. It opens a
+  dialog with one line per check, the reviewer chooses the checks, and the table then
+  shows only the wines that fail at least one check. That view holds until the filter
+  is changed. A check only reads: it writes no file and no label.
+- The first check is `shared_positive`. It reads every candidate photo, compares the
+  bytes, and reports a picture that carries the label `positive` under two or more
+  slugs. One picture cannot show two wines, so such a pair is a defect: either one
+  label is wrong, or the two catalogue cards are one wine. A pair of wines that are in
+  one variant group is reported too and carries `same_group`, because the group itself
+  may be wrong. A re-encoded copy of the same picture has other bytes and is not found.
+  On the set of today the check reports 52 pictures across 56 wines, 14 of them
+  inside one variant group.
+- Every reported photo carries a red outline and a pill at the top left. The pill
+  states how many wines share the picture, and its tooltip names the other wine and
+  the other file. The count line states the findings, the photos read, and the seconds.
+- The checks live in one registry, `CHECKS` in `scripts/review_server.py`. To add a
+  check, write `check_<name>(rows, labels, groups)` and name it in the registry. A
+  finding MUST hold `check` and `why`, and it SHOULD hold `photos` or `slugs`. The
+  route builds the failing wines from those two fields and the dialog reads
+  `GET /api/checks`, so a new check needs no change of the page.
+- `GET /api/checks` answers the checks that the server offers.
+  `POST /api/validate` takes `{checks: [id]}` and answers
+  `{ok, ran, wines, photos, seconds, findings, slugs}`. An absent `checks` runs every
+  check. An empty list, a value that is not a list of strings, and an unknown id are
+  each refused with `400`.
+- One run reads the 2,543 candidate photos in about 2.5 seconds, so the result is
+  not cached. The lock is held only long enough to take the rows and the labels, so a
+  label of the reviewer is not blocked while a check runs.
+- A photo can now be copied to a second wine slug. One picture sometimes shows two
+  wines: the same label stands on two bottles of a variant group, and the photo is a
+  true photo of both. A move is wrong there, because a move takes the photo away from
+  the first wine. The card holds a `⧉ copy` button under the `→ move` button, and
+  the key `c` in the large view opens the same dialog in copy mode.
+- The copy is recorded, not performed, exactly as a move is. The target is written to
+  `review-labels.json` as the field `copy_to`, the card gets a dotted outline, and the
+  header states `N copies pending`. The button `apply` and
+  `python3 scripts/09_apply_moves.py --apply` carry the copies out.
+- The copies run before the moves, because a move takes the source file away. A photo
+  can hold a copy and a move at the same time. A `delete` mark drops both.
+- The source photo does not change. It keeps its slug, its label, and its comment.
+  The copy is a new candidate photo of the target wine. It carries no label, because a
+  label judges one photo against one wine. Its comment is one line,
+  `копия фотографии из <source slug>`, and its entry holds `copied_from`.
+  `copy_to` is dropped when the file is written, so a second run copies nothing.
+- `POST /api/copy` takes `{slug, file, to}` and answers `{ok, counts}`. It refuses an
+  unknown photo, an unknown target, and the slug of the photo itself, each with `400`.
+  An empty `to` clears the record.
+- `POST /api/apply-moves` answers `copied` and `copy_failed` beside `moved` and
+  `failed`. The counter `copied` was added to the counts of the review set. The photo
+  record of `GET /api/v1/wine/<slug>` holds `copy_to` and `copied_from`.
+- `free_name` takes the tag of the action, so a name that is taken in the target
+  directory gets `_copy2` for a copy and keeps `_moved2` for a move.
+- `docs/API.md`, `docs/openapi.yaml`, `README.md`, and `SMOKE_TESTS.md` state the two
+  new features, the four new routes, the new fields, and 33 new test cases
+  (139 to 171).
+
+- `docs/openapi.yaml` states the whole HTTP contract of `scripts/review_server.py` in
+  OpenAPI 3.1. It covers all 32 routes, not only the 7 routes under `/api/v1/`: the
+  routes of the review page, the routes of the runs page, the two picture routes, and
+  the three document routes. It holds 33 schemas. The document is written by hand.
+  It is not generated from the code, so a change of a route MUST change the document
+  in the same commit.
+- The server serves the document. `GET /openapi.yaml` answers the file as it is
+  written. `GET /openapi.json` answers the same document converted to JSON.
+  `GET /docs` shows
+  the document in a browser with Swagger UI, pinned to version 5.33.0 from the CDN.
+  The page follows the theme of the operating system. Swagger UI ships no dark theme,
+  so the dark form turns the light theme around with a CSS filter.
+- `docs/API.md` now states the contract of the routes of the page. Those 11 write
+  routes and 6 read routes had no written contract before: the file named 6 of them in
+  a table of one line each. The new text states the body, the answer, and the errors of
+  each one, the shared rules of a stored picture, and the table of the status codes.
+
+### Fixed
+- `README.md` stated that the page has fourteen filters. It has twenty-two. The number
+  was already wrong before the filter `failed a check` was added.
+- `docs/API.md` stated that the error status `502` means that the embedding service
+  failed and that `503` means that the index is absent. The server holds no embedding
+  service and no index, and it never answers `502`. The file now states the five
+  status codes that the server does answer: `400`, `404`, `409`, and `500`.
+- `docs/API.md` named 6 values of the parameter `filter` of `GET /api/v1/wines`. The
+  route accepts 12. The 6 that were missing are `no_candidate_photos`,
+  `image_unresolved`, `image_assumed`, `image_confirmed`, `image_manual`, and
+  `image_shared`.
+- `docs/API.md` stated that `GET /api/v1/wine/<slug>` adds `description` to the record.
+  The record of `GET /api/v1/wines` already holds `description`. The detail route adds
+  `photos` alone.
+- `docs/API.md` did not state that the field `photos` of the answer of
+  `POST /api/v1/propose` holds the short form `{file, conf}` and no label state.
+
+### Changed
+- `scripts/02_download.py` writes its results to the database in slices of 400 instead
+  of once at the end. A stop, a timeout, or `Ctrl-C` now keeps the work that is done.
+  A wine is marked `downloaded=1` only when every task of that wine is written, so a
+  wine is never half recorded as complete.
+- `scripts/02_download.py` takes `--skip N`, which drops the first N pending wines. It
+  allows a second run to start where a first run is still working.
+- `backends.yaml` holds four more backends of the svoe-vino-matcher service on port
+  8158: the pipelines `barcode-siglip2-448`, `text-siglip2-448`, `rerank-siglip2-448`,
+  and `ocr-siglip2-448`. Each asks for 10 results with a 60 second timeout.
+
+### Known defects, now written down
+- `GET /api/v1/wines` does not check that `limit` and `offset` are numbers.
+  `?limit=abc` raises inside the handler and the server closes the connection with no
+  answer. `GET /api/run` does check and answers `400`. The defect is recorded in
+  `docs/API.md`. The code is not changed.
+- `GET /api/v1/wine/<slug>` answers `404` for a catalogue card that holds no directory
+  in `my/`, although `GET /api/v1/wines` lists that card under a catalogue filter.
+
+### Verified
+- The document validates against the OpenAPI 3.1 schema.
+- Every documented read route was checked against the running server with a JSON
+  Schema validator: `/api/rows` with all 2106 rows, `/api/state`, `/api/v1/stats`,
+  `/api/runs`, `/api/run`, `/api/suggest`, `/api/v1/wines` under three filters, and
+  `/api/v1/wine/<slug>` for all 85 wines that hold a proposal. No mismatch is left.
+- The check found one mismatch, which is corrected: `image_match.file` is null for a
+  wine whose catalogue photo is unresolved. The document stated a string.
+- The photo copy and the checks were driven end to end against a server that runs on
+  a temporary photo set, not against the working set: 43 cases on the routes and 42
+  cases in a headless browser, all passing. They cover the refusals of `POST /api/copy`
+  and `POST /api/validate`, the order copy-move-delete, the `_copy2` rename, a second
+  `apply` that copies nothing, a `delete` that drops a copy, the dialog in both modes,
+  the key `c`, the mark on a reported card, and the view that holds until the filter
+  changes. The new routes were NOT put through the JSON Schema validator; that tool is
+  not installed on this machine.
+- `check_shared_positive` was run once against the working set. It reads the 2,543
+  candidate photos in 2.5 seconds and reports 52 pictures across 56 wines, 14 of them
+  inside one variant group.
+- 13 refusal paths were checked: the 7 refusals of `POST /api/v1/propose`, and the
+  refusals of `/api/label`, `/api/comment`, `/api/exclude`, `/api/group`,
+  `/api/labels`, and an unknown route. Each answers the documented status and the
+  documented shape.
+- The write paths that store a picture were NOT called, because a test instance shares
+  the directory `my/` with the running tool. Their contract comes from the code.
+
 ## 2026-09-17
 
 ### Added
@@ -165,6 +303,18 @@
   the header. `Review` opens `/`, and `Runs` opens `/runs`. The link of the current
   page carries the class `on`. On the page of the runs this navigation replaces the
   link `back to the photo review` that stood in the title.
+
+### Added
+- `scripts/review_server.py`: the text search of the review page reads a query that
+  is not written exactly as the text. It folds the accents, so `cotes` finds
+  `Côtes du Don`. It takes the query apart into words and asks for each word on its
+  own, so `don cotes` and `cotes du don tsimlyanskiy` find the same wine. A word of
+  four letters or more also meets a word that stands one letter away from it, so
+  `chardonay` finds `Chardonnay`. A word in Cyrillic is looked for in its Latin form
+  as well, and a canonical form puts the spellings of the slugs together, so
+  `cimlyanskiy`, `tsimlyanskiy`, and `czimlyanskoe` find each other.
+  The words of a row are built once and kept on the row. A query of three words over
+  2106 rows needs about 7 ms.
 
 ### Changed
 - `scripts/review_server.py`: a photo added by drag and drop no longer draws the

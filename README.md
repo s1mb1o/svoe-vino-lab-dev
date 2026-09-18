@@ -158,11 +158,36 @@ The buttons stand in the order of the keys `1`, `2`, `3`, `4`.
 The same button again clears the label.
 A `copy` button next to the slug puts the slug on the clipboard.
 A `move` button under a photo sends the photo to another wine slug.
+A `copy` button under a photo gives the photo to another wine slug as well,
+and leaves the photo where it is.
 
-The page has thirteen sort orders, fourteen filters, and a text search.
+The page has thirteen sort orders, twenty-two filters, and a text search.
 Sort by `unlabelled first` to continue an unfinished pass.
 Sort by `confidence, lowest first` to check the weakest evidence first.
 Filter by `has no positive photo` to find the wines that still need a good photo.
+
+#### The text search
+
+The search reads the slug, the name, the producer, the region, and the grapes. It
+takes the query apart into words and asks for each word on its own, so the order of
+the words does not matter. Four rules make a word meet the text:
+
+1. A word of the text holds the word of the query. `vivandie` finds `Vivandiere`.
+2. The accents are folded on both sides. `cotes` finds `Côtes du Don`.
+3. A word of four letters or more also meets a word of the text that stands one
+   letter away from it. `chardonay` finds `Chardonnay`.
+4. A word in Cyrillic is looked for in its Latin form as well, because the slug is
+   Latin. The canonical form puts the spellings of the slugs together, so
+   `cimlyanskiy`, `tsimlyanskiy`, and `czimlyanskoe` find each other.
+
+The transliteration was checked against the catalogue on 2026-09-17. Of the Cyrillic
+words of the wine names, 96.0 percent stand in the slug exactly as the table writes
+them, and the rules above reach 1.6 percent more. The rest do not match, because the
+slugs do not follow one rule; `b-yu-rne` for `Бюрнье` is an example.
+
+The search does NOT open a scope of its own. A catalogue card that holds no
+candidate photo stays out of the table under most filters, also when it meets the
+query. Select `no candidate photos (catalogue gap)` to search those cards.
 
 ### The note about a wine
 
@@ -333,6 +358,92 @@ The **comment** is kept, and one line is put in front of it:
 A photo with no comment gets the first line alone. The entry also gets the field
 `moved_from`, and `reassign_to` is dropped, so a second run moves nothing.
 A file name that is taken in the target directory gets a `_moved2` suffix.
+
+### Copying a photo to a second wine slug
+
+One picture sometimes shows two wines. The same label stands on two bottles of a
+variant group, and the photo is a true photo of both. A move is then wrong, because
+a move takes the photo away from the first wine. The `copy` button under the photo,
+and the `c` key in the large view, open the same dialog in copy mode.
+
+The dialog is the dialog of the move, with the same five suggestions and the same
+field for any slug. `clear the copy` removes a recorded copy.
+
+#### The copy is recorded, not performed
+
+The tool does NOT copy the file when the copy is recorded. The target is written to
+the label file as `copy_to`, and the card gets a dotted outline. The header then
+states `N copies pending` with an `apply` button. The same `apply` button, and the
+same script, carry out the copies, the moves, and the deletions:
+
+```bash
+python3 scripts/09_apply_moves.py            # report only
+python3 scripts/09_apply_moves.py --apply    # move and copy the files
+```
+
+The copies run before the moves, because a move takes the source file away.
+
+#### What a copy does to the annotation
+
+The source photo does NOT change. It keeps its slug, its label, and its comment.
+The field `copy_to` is dropped when the copy is written, so a second run copies
+nothing.
+
+The copy is a new candidate photo of the target wine. It carries **no label**,
+because a label judges one photo against one wine, and the wine is another one now.
+The copy MUST be reviewed against its new wine. Its comment is one line:
+
+```
+копия фотографии из <source slug>
+```
+
+The entry of the copy also gets the field `copied_from`. The copy keeps the file
+name of the source, which holds the confidence value of the source wine. That value
+says nothing about the target wine. A file name that is taken in the target
+directory gets a `_copy2` suffix.
+
+A photo that carries both a copy and a `delete` mark is deleted and is not copied.
+
+### Validating the photo set
+
+The button `validate` in the header opens a dialog with one line per check. Choose
+the checks and press `run`. A check only reads. It writes no file and no label.
+
+The table then shows only the wines that fail at least one check, and it holds that
+view until you change the filter. The count line states how many findings were made
+and how long the run took. Every photo that a check reports carries a red outline and
+a pill at the top left; the pill states how many wines share the picture, and its
+tooltip names the other wine and the other file.
+
+The result lives in the browser tab. A reload empties it, and the filter
+`failed a check` then shows nothing until a new run.
+
+#### The checks
+
+| id | What it reports |
+|---|---|
+| `shared_positive` | One picture that carries the label `positive` under two or more slugs. |
+
+`shared_positive` reads every candidate photo and compares the bytes. One picture
+cannot show two wines, so such a pair is a defect of the set: either one label is
+wrong, or the two catalogue cards are one wine. A pair of wines that are in one
+variant group is reported too, and the pill states `same group`, because a variant
+group is the same wine in two bottles and the group itself may be wrong.
+
+A re-encoded copy or a resized copy of the same picture has other bytes, and this
+check does not find it.
+
+One run reads the 2,543 candidate photos, about 510 MB, and takes about 2.5 seconds.
+The result is not cached. The lock is held only long enough to take the rows and the labels, so
+a label of the reviewer is not blocked while a check runs.
+
+#### Adding a check
+
+The checks live in `scripts/review_server.py`, above `plan_deletes`. Write a function
+`check_<name>(rows, labels, groups)` that answers a list of findings, and name it in
+`CHECKS` with an `id`, a `title`, and a `help` text. A finding MUST hold `check` and
+`why`, and it SHOULD hold `photos` (a list of `{slug, file}`) or `slugs`. The dialog
+reads `GET /api/checks`, so a new check reaches the page with no change of the page.
 
 ### Adding a photo by drag and drop
 
@@ -576,6 +687,10 @@ Read `docs/match-runner.md` for every file, every field, and every option.
 
 `scripts/review_server.py` answers an HTTP API under `/api/v1/` for an agent, such as
 Claude Code. Read `docs/API.md` for every route and every field.
+
+`docs/openapi.yaml` holds the same contract in machine-readable form, for every route
+of the server. Open `http://127.0.0.1:8154/docs` in a browser to read it, or fetch
+`/openapi.yaml` or `/openapi.json` to feed a client generator.
 
 The idea: an agent walks the wines that hold no confirmed photo, searches the web for
 a real-world photo, checks it against the catalogue bottle, and writes a **proposal**.

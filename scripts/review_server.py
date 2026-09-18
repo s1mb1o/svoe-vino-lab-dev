@@ -24,6 +24,7 @@ Run:
 """
 import argparse
 import base64
+import hashlib
 import html
 import ipaddress
 import json
@@ -39,6 +40,8 @@ import urllib.parse
 import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import common  # noqa: E402
@@ -59,6 +62,12 @@ VARIANTS_FILE = common.VARIANT_GROUPS_FILE
 MANUAL_GROUPS_FILE = common.MANUAL_GROUPS_FILE
 EXCLUDED_FILE = common.EXCLUDED_SLUGS_FILE
 RUNS_DIR = common.RUNS_DIR
+# The OpenAPI document of this server. `/openapi.yaml`, `/openapi.json`, and
+# `/docs` read it. It is written by hand; it is not generated from the code.
+SPEC_FILE = os.path.join(ROOT, "docs", "openapi.yaml")
+# The version of Swagger UI that `/docs` loads from the CDN. It is pinned, so
+# a new release of Swagger UI cannot change the page without a commit here.
+SWAGGER_UI = "5.33.0"
 EXCLUDE_REASON_MAX = 1000
 NAME_RE = re.compile(r"^(\d+)_conf(\d+)\.")
 RANK_RE = re.compile(r"^(\d+)_")
@@ -478,6 +487,9 @@ def save_state():
             "A photo with no entry is not reviewed yet. "
             "Field 'reassign_to' names the slug that the photo belongs to; "
             "scripts/09_apply_moves.py moves the file. "
+            "Field 'copy_to' names a slug that the photo ALSO belongs to; the same "
+            "script copies the file and leaves the source photo where it is. "
+            "The copy carries no label and one comment that names the source slug. "
             "Field 'comment' holds a free text note of the reviewer about this "
             "photo and this slug. The map 'wines' holds one free text note about a "
             "whole wine, keyed by the slug."
@@ -496,7 +508,7 @@ def save_state():
 
 def count_state():
     counts = {k: 0 for k in LABELS}
-    reassigned = commented = deleting = 0
+    reassigned = copied = commented = deleting = 0
     for photos in _state["labels"].values():
         for entry in photos.values():
             label = entry.get("label")
@@ -504,12 +516,15 @@ def count_state():
                 counts[label] += 1
             if entry.get("reassign_to"):
                 reassigned += 1
+            if entry.get("copy_to"):
+                copied += 1
             if entry.get("delete"):
                 deleting += 1
             if entry.get("comment"):
                 commented += 1
     counts["labelled"] = sum(counts[k] for k in LABELS)
     counts["reassigned"] = reassigned
+    counts["copied"] = copied
     counts["deleting"] = deleting
     counts["commented"] = commented
     counts["proposed"] = sum(
@@ -580,6 +595,8 @@ def photo_view(slug, photo, catalog):
         "comment": entry.get("comment"),
         "reassign_to": entry.get("reassign_to"),
         "moved_from": entry.get("moved_from"),
+        "copy_to": entry.get("copy_to"),
+        "copied_from": entry.get("copied_from"),
     }
 
 
@@ -825,15 +842,20 @@ def plan_moves(labels):
     return planned, done, bad
 
 
-def free_name(directory, name):
-    """Return a file name that is not taken in the directory."""
+def free_name(directory, name, tag="moved"):
+    """Return a file name that is not taken in the directory.
+
+    `tag` names the action that brings the file here, so the new name states why
+    it is not the name of the source file: `_moved2` for a move, `_copy2` for a
+    copy.
+    """
     if not os.path.exists(os.path.join(directory, name)):
         return name
     stem, ext = os.path.splitext(name)
     n = 2
-    while os.path.exists(os.path.join(directory, "%s_moved%d%s" % (stem, n, ext))):
+    while os.path.exists(os.path.join(directory, "%s_%s%d%s" % (stem, tag, n, ext))):
         n += 1
-    return "%s_moved%d%s" % (stem, n, ext)
+    return "%s_%s%d%s" % (stem, tag, n, ext)
 
 
 def perform_moves(planned, labels):
@@ -863,6 +885,173 @@ def perform_moves(planned, labels):
         labels.setdefault(to, {})[name] = new_entry
         moved.append((slug, fn, to, name))
     return moved, renamed
+
+
+# ----------------------------------------------------------------- the copies
+
+
+def copy_note(old_slug):
+    """Return the comment of a copied photo.
+
+    One photo can show two wines: the same label on two bottles of a variant
+    group. A copy states that. The copy carries no label and no comment of the
+    source photo, because both judged the source photo against the source wine.
+    The one line states where the picture came from.
+    """
+    return "копия фотографии из %s" % old_slug
+
+
+def plan_copies(labels):
+    """Return (planned, bad) for every recorded `copy_to`.
+
+    `planned` holds (slug, file, to, src, dst_dir). `bad` holds the copies that
+    cannot be made. A copy has no `done` state, because the source file stays
+    where it is. `perform_copies` clears `copy_to` when the file is written, so
+    a second run finds nothing to do.
+    """
+    planned, bad = [], []
+    for slug, photos in sorted(labels.items()):
+        for fn, entry in sorted(photos.items()):
+            to = (entry or {}).get("copy_to")
+            if not to:
+                continue
+            if (entry or {}).get("delete"):
+                # The reviewer asked for both. Deletion wins; the copy is dropped.
+                continue
+            src = os.path.join(MY, slug, fn)
+            dst_dir = os.path.join(MY, to)
+            if os.path.basename(to) != to:
+                bad.append((slug, fn, to, "the target slug holds a path separator"))
+            elif not os.path.exists(src):
+                bad.append((slug, fn, to, "the source file is gone"))
+            else:
+                planned.append((slug, fn, to, src, dst_dir))
+    return planned, bad
+
+
+def perform_copies(planned, labels):
+    """Copy the files. The source photo, its label, and its comment stay.
+
+    The copy is a new candidate photo of the target wine. It carries no label,
+    because a label judges one photo against one wine, and the wine is another
+    one now. Its comment is the line of `copy_note`, and the field `copied_from`
+    names the source slug. The field `copy_to` of the source entry is cleared,
+    so a second run does not write the file again.
+
+    The copy keeps the file name of the source, which holds the confidence value
+    of the source wine. That value says nothing about the target wine. The name
+    gets the tag `_copy2` only when the name is already taken in the target.
+    The caller MUST hold `_lock`.
+    """
+    copied, renamed = [], []
+    for slug, fn, to, src, dst_dir in planned:
+        os.makedirs(dst_dir, exist_ok=True)
+        name = free_name(dst_dir, fn, tag="copy")
+        shutil.copy2(src, os.path.join(dst_dir, name))
+        if name != fn:
+            renamed.append((fn, name))
+
+        entry = (labels.get(slug) or {}).get(fn) or {}
+        entry.pop("copy_to", None)
+        if entry.keys() <= {"ts"}:
+            (labels.get(slug) or {}).pop(fn, None)
+            if not labels.get(slug):
+                labels.pop(slug, None)
+        labels.setdefault(to, {})[name] = {
+            "comment": copy_note(slug),
+            "copied_from": slug,
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+        copied.append((slug, fn, to, name))
+    return copied, renamed
+
+
+# ----------------------------------------------------------------- the checks
+#
+# A check reads the photo set and the labels and reports the places where the set
+# states two things that cannot both be true. A check never writes. The reviewer
+# chooses the checks in a dialog and the table then shows the wines that fail.
+#
+# To add a check: write a function `check_<name>(rows, labels, groups)` that
+# answers a list of findings, and name it in `CHECKS`. A finding MUST hold `check`
+# and `why`, and it SHOULD hold `photos` (a list of `{slug, file}`) or `slugs`
+# (a list of slugs). The route builds the list of failing wines from those two
+# fields, so a new check needs no change of the page.
+
+
+def photo_digests(rows):
+    """Return sha256 -> [(slug, file)] over every candidate photo of `rows`.
+
+    The whole set is about 2,500 files and 510 MB, and one pass takes about 2.5
+    seconds on the SSD. The result is not cached: a cache would have to follow
+    every write of every file, and the pass is short enough to run on demand.
+    A file that cannot be read is left out, not reported.
+    """
+    by_digest = {}
+    for row in rows:
+        for photo in row["photos"]:
+            path = os.path.join(MY, row["slug"], photo["file"])
+            try:
+                with open(path, "rb") as fh:
+                    digest = hashlib.sha256(fh.read()).hexdigest()
+            except OSError:
+                continue
+            by_digest.setdefault(digest, []).append((row["slug"], photo["file"]))
+    return by_digest
+
+
+def check_shared_positive(rows, labels, groups):
+    """Find one picture that carries the label `positive` for two or more wines.
+
+    The label `positive` states that the picture shows this wine. One picture
+    cannot show two wines, so two such labels on one picture are a defect of the
+    set. Either one label is wrong, or the two catalogue cards are one wine.
+
+    Two wines of one variant group are the same wine in two bottles. Such a pair
+    is reported too, and the finding carries `same_group`, because the reviewer
+    decides whether the group is right.
+
+    Two pictures count as one picture when their bytes are equal. A re-encoded
+    copy or a resized copy of the same picture has another digest, and this check
+    does not find it.
+    """
+    group_of = {}
+    for gid, group in (groups or {}).items():
+        for slug in group.get("slugs", []):
+            group_of[slug] = gid
+    findings = []
+    for digest, items in sorted(photo_digests(rows).items()):
+        hit = sorted((slug, fn) for slug, fn in items
+                     if ((labels.get(slug) or {}).get(fn) or {}).get("label")
+                     == "positive")
+        slugs = sorted({slug for slug, _ in hit})
+        if len(slugs) < 2:
+            continue
+        gids = {group_of.get(slug) for slug in slugs}
+        same_group = len(gids) == 1 and None not in gids
+        findings.append({
+            "check": "shared_positive",
+            "why": "one picture is `positive` for %d wines" % len(slugs),
+            "same_group": same_group,
+            "group": sorted(gids)[0] if same_group else None,
+            "digest": digest,
+            "photos": [{"slug": slug, "file": fn} for slug, fn in hit],
+        })
+    return findings
+
+
+CHECKS = (
+    {
+        "id": "shared_positive",
+        "title": "one picture is positive for two wines",
+        "help": ("Read every candidate photo and compare the bytes. A picture that "
+                 "carries the label positive under two or more slugs is a defect: one "
+                 "picture cannot show two wines. A pair inside one variant group is "
+                 "reported too and is marked as such. A re-encoded copy of the same "
+                 "picture has other bytes and is not found."),
+        "run": check_shared_positive,
+    },
+)
 
 
 def plan_deletes(labels):
@@ -1151,6 +1340,9 @@ class Handler(BaseHTTPRequestHandler):
                                  "excluded": _excluded,
                                  "groups": getattr(self.server, "groups", {}),
                                  "slugs": sorted(self.server.catalog)})
+        elif route == "/api/checks":
+            self._json(200, {"checks": [
+                {k: c[k] for k in ("id", "title", "help")} for c in CHECKS]})
         elif route == "/api/state":
             with _lock:
                 self._json(200, {"labels": _state["labels"], "wines": _state["wines"],
@@ -1158,6 +1350,13 @@ class Handler(BaseHTTPRequestHandler):
         elif route == "/runs":
             self._send(200, PAGE_RUNS, "text/html; charset=utf-8",
                        {"Cache-Control": "no-store"})
+        elif route == "/docs":
+            self._send(200, PAGE_DOCS, "text/html; charset=utf-8",
+                       {"Cache-Control": "no-store"})
+        elif route == "/openapi.yaml":
+            self._spec_yaml()
+        elif route == "/openapi.json":
+            self._spec_json()
         elif route == "/api/runs":
             self._json(200, {"runs": [run_head(r) for r in run_dirs()]})
         elif route == "/api/run":
@@ -1203,6 +1402,10 @@ class Handler(BaseHTTPRequestHandler):
             self._set_label(body)
         elif route == "/api/reassign":
             self._set_reassign(body)
+        elif route == "/api/copy":
+            self._set_copy(body)
+        elif route == "/api/validate":
+            self._validate(body)
         elif route == "/api/comment":
             self._set_comment(body)
         elif route == "/api/wine-comment":
@@ -1225,6 +1428,38 @@ class Handler(BaseHTTPRequestHandler):
             self._json(404, {"error": "unknown route"})
 
     # -- route bodies
+
+    def _spec_yaml(self):
+        """Answer the OpenAPI document as it is written, in YAML."""
+        if not os.path.isfile(SPEC_FILE):
+            self._json(404, {"error": "docs/openapi.yaml is not present"})
+            return
+        try:
+            with open(SPEC_FILE, "rb") as f:
+                body = f.read()
+        except OSError as exc:
+            self._json(500, {"error": "cannot read the document: %s" % exc})
+            return
+        self._send(200, body, "application/yaml; charset=utf-8",
+                   {"Cache-Control": "no-store"})
+
+    def _spec_json(self):
+        """Answer the OpenAPI document as JSON.
+
+        The document is written in YAML, because the descriptions are long. Most
+        tools ask for JSON, so this route converts it. PyYAML is always present: the
+        tool reads `config.yaml` with it and cannot start without it.
+        """
+        if not os.path.isfile(SPEC_FILE):
+            self._json(404, {"error": "docs/openapi.yaml is not present"})
+            return
+        try:
+            with open(SPEC_FILE, encoding="utf-8") as f:
+                spec = yaml.safe_load(f)
+        except (OSError, ValueError, yaml.YAMLError) as exc:
+            self._json(500, {"error": "cannot read the document: %s" % exc})
+            return
+        self._json(200, spec)
 
     def _run_view(self, query):
         """Answer the metrics and the filtered rows of one run."""
@@ -1389,6 +1624,20 @@ class Handler(BaseHTTPRequestHandler):
             raise ValueError("the target slug is the slug of the photo")
         self._entry(slug, fn, "reassign_to", to)
 
+    def _apply_copy(self, slug, fn, to):
+        """Record that the photo is a photo of another slug too.
+
+        The source photo stays where it is, with its label and its comment. The
+        file is not copied here. `POST /api/apply-moves` and
+        `scripts/09_apply_moves.py` copy it later, on one command.
+        """
+        if to and to not in self.server.catalog and not os.path.isdir(
+                os.path.join(MY, os.path.basename(to))):
+            raise ValueError("unknown target slug: %s" % to)
+        if to == slug:
+            raise ValueError("the target slug is the slug of the photo")
+        self._entry(slug, fn, "copy_to", to)
+
     def _apply_delete(self, slug, fn, on):
         """Mark or unmark one photo for deletion. The file is not touched here.
 
@@ -1543,6 +1792,67 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._json(200, {"ok": True, "counts": counts})
 
+    def _set_copy(self, body):
+        slug = body.get("slug") or ""
+        fn = body.get("file") or ""
+        to = (body.get("to") or "").strip()
+        if not self._photo_path(slug, fn):
+            self._json(400, {"error": "unknown photo"})
+            return
+        try:
+            with _lock:
+                self._apply_copy(slug, fn, to)
+                save_state()
+                counts = count_state()
+        except (ValueError, OSError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {"ok": True, "counts": counts})
+
+    def _validate(self, body):
+        """Run the chosen checks and answer the findings and the failing wines.
+
+        The checks read the files of the whole photo set, which takes about three
+        seconds. The lock is held only long enough to take the rows and the labels,
+        so a label of the reviewer is not blocked while a check runs.
+        """
+        want = body.get("checks")
+        known = {c["id"]: c for c in CHECKS}
+        if want is None:
+            want = list(known)
+        if not isinstance(want, list) or not all(isinstance(x, str) for x in want):
+            self._json(400, {"error": "checks MUST be a list of check ids"})
+            return
+        if not want:
+            self._json(400, {"error": "no check was chosen"})
+            return
+        unknown = sorted({x for x in want if x not in known})
+        if unknown:
+            self._json(400, {"error": "unknown check: %s. The known checks are %s"
+                             % (", ".join(unknown), ", ".join(sorted(known)))})
+            return
+
+        started = time.time()
+        with _lock:
+            rows = list(_rows)
+            labels = {slug: dict(photos)
+                      for slug, photos in _state["labels"].items()}
+        groups = getattr(self.server, "groups", {})
+        findings = []
+        for cid in want:
+            findings.extend(known[cid]["run"](rows, labels, groups))
+        slugs = sorted({p["slug"] for f in findings for p in f.get("photos", ())}
+                       | {x for f in findings for x in f.get("slugs", ())})
+        self._json(200, {
+            "ok": True,
+            "ran": want,
+            "wines": len(rows),
+            "photos": sum(len(r["photos"]) for r in rows),
+            "seconds": round(time.time() - started, 2),
+            "findings": findings,
+            "slugs": slugs,
+        })
+
     # ---- the API for an agent -------------------------------------------
 
     def _api_get(self, tail, query):
@@ -1667,17 +1977,23 @@ class Handler(BaseHTTPRequestHandler):
                          "photos": photos, "counts": counts})
 
     def _apply_moves(self):
-        """Move every recorded photo, delete every marked photo, rebuild the rows.
+        """Copy, move, and delete every marked photo, then rebuild the rows.
 
-        The two actions run on one command, because the page offers one button.
+        The three actions run on one command, because the page offers one button.
+        They run in this order, because a move takes the source file away and a
+        copy reads it: copy, move, delete.
         A photo that carries both a `reassign_to` and a `delete` is deleted and is
-        not moved; `plan_moves` drops it.
+        not moved; `plan_moves` drops it. A `delete` drops a `copy_to` in the same
+        way.
         """
         global _rows
         try:
             with _lock:
+                cp_planned, cp_bad = plan_copies(_state["labels"])
+                copied, cp_renamed = perform_copies(cp_planned, _state["labels"])
                 planned, done, bad = plan_moves(_state["labels"])
                 moved, renamed = perform_moves(planned, _state["labels"])
+                renamed = cp_renamed + renamed
                 del_planned, del_gone = plan_deletes(_state["labels"])
                 deleted, del_failed = perform_deletes(
                     del_planned, del_gone, _state["labels"])
@@ -1700,6 +2016,10 @@ class Handler(BaseHTTPRequestHandler):
                 "already_done": len(done),
                 "failed": [{"from": a, "file": b, "to": c, "why": w}
                            for a, b, c, w in bad],
+                "copied": [{"from": a, "file": b, "to": c, "as": d}
+                           for a, b, c, d in copied],
+                "copy_failed": [{"from": a, "file": b, "to": c, "why": w}
+                                for a, b, c, w in cp_bad],
                 "renamed": [{"from": a, "to": b} for a, b in renamed],
                 "deleted": [{"slug": a, "file": b, "to": c}
                             for a, b, c in deleted],
@@ -1893,6 +2213,59 @@ THEME_CSS = """:root {
 """
 
 
+# The page that shows the OpenAPI document. It loads Swagger UI from a CDN, so it
+# needs an internet connection. The tool itself does not.
+PAGE_DOCS = r"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino review API</title>
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@__V__/swagger-ui.css">
+<style>
+:root { color-scheme: light dark; }
+body { margin: 0; background: #f6f6f4; }
+.swagger-ui .topbar { display: none; }
+#nav {
+  font: 14px/1.4 system-ui, sans-serif;
+  padding: 10px 20px; border-bottom: 1px solid #d8d8d2;
+}
+#nav a { color: #6b4a7a; margin-right: 14px; }
+@media (prefers-color-scheme: dark) {
+  body { background: #15151a; }
+  #nav { border-color: #34343f; }
+  #nav a { color: #b28ec8; }
+  /* Swagger UI ships no dark theme. The filter turns the light theme around. The
+     code blocks are dark already, so a second filter turns those back. */
+  #swagger-ui { filter: invert(88%) hue-rotate(180deg); }
+  #swagger-ui .microlight { filter: invert(100%) hue-rotate(180deg); }
+}
+</style>
+</head>
+<body>
+<div id="nav"><a href="/">Review</a><a href="/runs">Runs</a><a
+  href="/openapi.yaml">openapi.yaml</a><a href="/openapi.json">openapi.json</a></div>
+<div id="swagger-ui"></div>
+<script crossorigin
+  src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@__V__/swagger-ui-bundle.js">
+</script>
+<script>
+window.onload = function () {
+  window.ui = SwaggerUIBundle({
+    url: "/openapi.yaml",
+    dom_id: "#swagger-ui",
+    deepLinking: true,
+    tryItOutEnabled: true,
+    docExpansion: "list",
+    defaultModelsExpandDepth: 0
+  });
+};
+</script>
+</body>
+</html>
+""".replace("__V__", SWAGGER_UI)
+
 
 PAGE = r"""<!doctype html>
 <html lang="en">
@@ -1977,6 +2350,13 @@ main { padding: 12px 16px 64px; padding-right: 244px; }
 header { padding-right: 244px; }
 body.side-off #side { display: none; }
 body.side-off main, body.side-off header { padding-right: 16px; }
+#validate {
+  font: inherit; font-size: 12px; padding: 3px 10px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+  cursor: pointer;
+}
+#validate:hover { border-color: var(--exc); color: var(--text); }
+#validate.on { border-color: var(--exc); color: var(--exc); }
 #side-toggle {
   font: inherit; font-size: 11px; padding: 3px 9px; border-radius: 6px;
   border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
@@ -2137,6 +2517,35 @@ tbody tr.cat-only .meta .nm::after {
 .card.unu { border-color: var(--unu); background: var(--unu-bg); opacity: .55; }
 .card.var { border-color: var(--var); background: var(--var-bg); }
 .card.moved { outline: 2px dashed var(--accent); outline-offset: 2px; }
+/* A card that is copied to another wine. The file is written by "apply"; this
+   photo stays where it is, with its label. */
+.card.copied { outline: 2px dotted var(--var); outline-offset: 2px; }
+/* A card that a check reports. The last run of `validate` marked it. */
+.card.bad { outline: 2px solid var(--exc); outline-offset: 2px; }
+/* The pill of a check sits at the top left, where the pill of a proposal sits.
+   The two never meet: a proposal is shown only for a photo with no label, and
+   every check reported here reads a label. */
+.bad-tag {
+  position: absolute; top: 4px; left: 4px; z-index: 3;
+  background: var(--exc); color: #fff; border-radius: 999px;
+  font-size: 9px; line-height: 1; padding: 3px 7px; font-weight: 700;
+  pointer-events: none;
+}
+/* The dialog of `validate`. One row per check, with its own explanation. */
+#vd { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none;
+      align-items: center; justify-content: center; z-index: 80; padding: 20px; }
+#vd.open { display: flex; }
+.vd-item {
+  display: flex; gap: 10px; align-items: flex-start; width: 100%;
+  padding: 10px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--panel-2); cursor: pointer; text-align: left;
+}
+.vd-item + .vd-item { margin-top: 8px; }
+.vd-item:hover { border-color: var(--accent); }
+.vd-item input { margin-top: 2px; }
+.vd-item b { font-size: 13px; }
+.vd-item div { color: var(--muted); font-size: 12px; margin-top: 3px; }
+#vd-note { color: var(--exc); font-size: 12px; }
 /* A card marked for deletion. The file is still on disk until "apply" is pressed. */
 .card.del { outline: 2px solid var(--neg); outline-offset: 2px; opacity: .45; }
 .card.del img { filter: grayscale(1); }
@@ -2197,13 +2606,14 @@ tbody tr.cat-only .meta .nm::after {
 .btns button.on.neg { background: var(--neg); border-color: var(--neg); color: #fff; }
 .btns button.on.unu { background: var(--unu); border-color: var(--unu); color: #fff; }
 .btns button.on.var { background: var(--var); border-color: var(--var); color: #fff; }
-.move {
+.move, .cpy {
   margin-top: 5px; width: 100%; padding: 4px 0; font: inherit; font-size: 11px;
   border-radius: 6px; border: 1px solid var(--line); background: var(--panel);
   color: var(--muted); cursor: pointer;
 }
-.move:hover { border-color: var(--accent); color: var(--text); }
+.move:hover, .cpy:hover { border-color: var(--accent); color: var(--text); }
 .move.on { border-color: var(--accent); color: var(--accent); }
+.cpy.on { border-color: var(--var); color: var(--var); }
 .empty { color: var(--muted); font-style: italic; }
 #count { color: var(--muted); font-size: 12px; margin: 0 0 8px; }
 #ad { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none;
@@ -2414,6 +2824,7 @@ body.dragging::after {
         <option value="noted">holds a comment</option>
         <option value="proposal">holds a photo proposed by an agent</option>
         <option value="nobottle">no catalogue bottle photo</option>
+        <option value="failed">failed a check (press validate first)</option>
       </select>
     </label>
     <label>Slugs
@@ -2431,6 +2842,8 @@ body.dragging::after {
       <span id="pending" hidden></span>
       <span id="stat"></span>
       <span class="meter"><i id="meter"></i></span>
+      <button id="validate" type="button"
+              title="check the photo set for defects">validate</button>
       <button id="side-toggle" type="button"
               title="show or hide the sideboard (key s)">sideboard <b id="side-n">0</b></button>
     </div>
@@ -2471,7 +2884,7 @@ body.dragging::after {
 </div>
 <div id="mv">
   <div class="mv-box">
-    <div class="mv-h">Move this photo to another wine</div>
+    <div class="mv-h" id="mv-h">Move this photo to another wine</div>
     <div class="mv-ctx" id="mv-ctx"></div>
     <div class="mv-sub">Best matches. A wine of the variant group or of the same
       producer comes first.</div>
@@ -2484,6 +2897,21 @@ body.dragging::after {
       <span style="flex:1"></span>
       <button id="mv-cancel" type="button">cancel</button>
       <button id="mv-ok" type="button" class="primary">move</button>
+    </div>
+  </div>
+</div>
+<div id="vd">
+  <div class="mv-box">
+    <div class="mv-h">Validate the photo set</div>
+    <div class="mv-sub">Choose the checks to run. A check only reads; it changes
+      nothing. The table then shows the wines that fail at least one check, and it
+      holds that view until you change the filter.</div>
+    <div class="mv-list" id="vd-list"></div>
+    <div class="mv-foot">
+      <span id="vd-note"></span>
+      <span style="flex:1"></span>
+      <button id="vd-cancel" type="button">cancel</button>
+      <button id="vd-ok" type="button" class="primary">run</button>
     </div>
   </div>
 </div>
@@ -2524,13 +2952,14 @@ body.dragging::after {
       <button id="cmt-clear" type="button">clear</button>
     </div>
     <div class="side-note">The text is saved as you type. The keys 1-4, the arrows
-      and <b>m</b> do not act while the cursor is in the field. Press Esc once to
+      and <b>m</b>, <b>c</b> do not act while the cursor is in the field. Press Esc once to
       leave the field, and Esc again to close the view.</div>
   </aside>
   <div class="hint"><span id="lb-pos"></span>
     &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
     <b>1</b> positive &middot; <b>2</b> negative &middot; <b>3</b> unusable &middot;
-    <b>4</b> other design &middot; <b>m</b> move &middot; <b>s</b> sideboard &middot;
+    <b>4</b> other design &middot; <b>m</b> move &middot; <b>c</b> copy &middot;
+    <b>s</b> sideboard &middot;
     right-click delete &middot; Esc close</div>
 </div>
 <div id="ctxmenu" class="ctxmenu" hidden></div>
@@ -2553,6 +2982,15 @@ let LB = null;        // the place of the large view: { wine: index in VIEW, pho
    empties it. A held photo keeps its label until a target is chosen and `apply`
    runs; `apply` then drops the label, as it does for every move. */
 let HELD = [];
+/* The result of the last run of `validate`. It lives in this tab: the server
+   never keeps it and a reload empties it. `FAILED` maps a slug to the findings
+   that name it, and the filter `failed a check` shows exactly those wines.
+   `FAILED_PHOTO` maps "<slug>\n<file>" to the finding, so the card of the photo
+   that a check reports can be marked. */
+let CHECKS = [];
+let FAILED = null;
+let FAILED_PHOTO = new Map();
+let FAILED_INFO = "";
 
 const $ = s => document.querySelector(s);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
@@ -2579,6 +3017,12 @@ function movedTo(slug, file) {
   const r = V[slug] && V[slug][file];
   return r ? r.reassign_to || null : null;
 }
+/* The slug that this photo is copied to, or null. A copy leaves the photo here:
+   one picture can show two wines of one variant group. */
+function copiedTo(slug, file) {
+  const r = V[slug] && V[slug][file];
+  return r ? r.copy_to || null : null;
+}
 /* True when the photo is marked for deletion. The file is still on disk: the
    mark becomes a move into `work/trash/` only when "apply" is pressed. */
 function deleteMarked(slug, file) {
@@ -2601,12 +3045,13 @@ function commentOf(slug, file) {
   return (r && r.comment) || "";
 }
 function tally(row) {
-  const t = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0, noted: 0,
-              prop: 0, total: row.photos.length };
+  const t = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0,
+              copied: 0, noted: 0, prop: 0, total: row.photos.length };
   for (const p of row.photos) {
     const l = labelOf(row.slug, p.file);
     if (l in SHORT) t[l]++;
     if (movedTo(row.slug, p.file)) t.moved++;
+    if (copiedTo(row.slug, p.file)) t.copied++;
     if (commentOf(row.slug, p.file)) t.noted++;
     if (proposalOf(row.slug, p.file)) t.prop++;
   }
@@ -2691,6 +3136,7 @@ function rowTags(t) {
          (t.negative ? `<span class="tag neg">${t.negative} neg</span> ` : "") +
          (t.unusable ? `<span class="tag unu">${t.unusable} unusable</span> ` : "") +
          (t.moved ? `<span class="tag grp">${t.moved} moved</span> ` : "") +
+         (t.copied ? `<span class="tag var">${t.copied} copied</span> ` : "") +
          (t.noted ? `<span class="tag grp">${t.noted} noted</span> ` : "") +
          (t.prop ? `<span class="tag var">${t.prop} proposed</span>` : "");
 }
@@ -2751,6 +3197,9 @@ function matchFilter(row, mode) {
     case "proposal": return t.prop > 0;
     case "nobottle": return !row.has_bottle;
     case "nophotos": return row.photos.length === 0;
+    // The wines that the last run of `validate` reported. With no run, the table
+    // is empty and the count line states that.
+    case "failed": return !!(FAILED && FAILED[row.slug]);
     case "img_none": return (row.image_match || {}).method === "unresolved";
     case "img_assumed": return (row.image_match || {}).confidence === "assumed";
     case "img_confirmed": return (row.image_match || {}).confidence === "confirmed";
@@ -2830,6 +3279,112 @@ function sortRows(rows, mode) {
   return out;
 }
 
+/* ---- the search ----
+
+   A plain substring over the text of a row fails three ways in this catalogue.
+   An accent: `Cotes` does not stand in `Côtes`. The order: `don cotes` does not
+   stand in `Côtes du Don`. A small difference of spelling between the name and
+   the slug: the slug of `Цимлянский` reads `tsimlyanskiy`, and a reader types
+   `cimlyanskiy`.
+
+   The search therefore folds the accents, takes the query apart into words, and
+   asks for each word on its own, in any order. A word of four letters or more
+   also matches a word of the text that stands one letter away from it. A word in
+   Cyrillic is looked for in its Latin form too, because the slug is Latin.
+
+   The table was checked against the catalogue on 2026-09-17: of the Cyrillic
+   words of the wine names, 96.0 percent stand in the slug as the table writes
+   them, 1.7 percent stand one letter away, and 2.3 percent do not match, because
+   the slugs do not follow one rule (`czimlyanskoe` beside `tsimlyanskiy`). */
+const TRANSLIT = {
+  "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "yo",
+  "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+  "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+  "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sch",
+  "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+};
+// A word shorter than this MUST match without the one-letter rule. Three letters
+// stand one letter away from too many other three-letter words.
+const FUZZY_MIN = 4;
+
+/* Lower case, and take the accents away. `NFD` takes `й` and `ё` apart as well,
+   and the filter of the marks would then lose them, so both are put aside. */
+function foldText(s) {
+  s = (s || "").toLowerCase().replace(/ё/g, "\x01").replace(/й/g, "\x02");
+  s = s.normalize("NFD").replace(/\p{Mn}+/gu, "");
+  return s.replace(/\x01/g, "ё").replace(/\x02/g, "й");
+}
+
+function translit(s) {
+  let out = "";
+  for (const c of s) out += (c in TRANSLIT) ? TRANSLIT[c] : c;
+  return out;
+}
+
+function wordsOf(s) {
+  return foldText(s).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+}
+
+/* The slugs of the catalogue do not follow one rule. The letter `ц` stands as
+   `ts` in `tsimlyanskiy` and as `cz` in `czimlyanskoe`, and a reader writes `c`.
+   The ending of `чёрный` stands as `chyornyy` and as `chernyj`. The canonical
+   form puts these spellings together, so one of them finds the others. It is
+   used beside the plain word, never in its place. */
+function canonWord(w) {
+  return w.replace(/cz|ts/g, "c").replace(/kh/g, "h")
+          .replace(/yo/g, "e").replace(/j/g, "y");
+}
+
+/* The words of one row, folded, and the same words in the canonical form. Both
+   lists are built once and kept on the row. */
+function rowWords(r) {
+  if (!r.__words) {
+    r.__words = [...new Set(wordsOf(
+      [r.slug, r.name, r.producer, r.region, r.grapes].join(" ")))];
+    r.__canon = [...new Set(r.__words.map(w => canonWord(translit(w))))];
+  }
+  return r.__words;
+}
+
+function rowCanon(r) {
+  rowWords(r);
+  return r.__canon;
+}
+
+/* Do the two words differ by one letter at most? One insertion, one deletion,
+   or one replacement. */
+function within1(a, b) {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  if (a.length > b.length) { const t = a; a = b; b = t; }
+  let i = 0;
+  while (i < a.length && a[i] === b[i]) i++;
+  if (a.length === b.length) return a.slice(i + 1) === b.slice(i + 1);
+  return a.slice(i) === b.slice(i + 1);
+}
+
+/* One entry per word of the query: the forms to look for, and the canonical
+   form. A word in Cyrillic carries its Latin form as well, because the slug is
+   Latin. */
+function queryTerms(q) {
+  return wordsOf(q).map(w => {
+    const t = translit(w);
+    return { forms: t === w ? [w] : [w, t], canon: canonWord(t) };
+  });
+}
+
+/* Every word of the query MUST stand somewhere in the row. The order does not
+   matter. A word stands in the row when a word of the row holds it, when it is
+   one letter away from a word of the row, or when the canonical forms meet. */
+function matchQuery(r, terms) {
+  const ws = rowWords(r), cs = rowCanon(r);
+  return terms.every(t =>
+    t.forms.some(f => ws.some(w => w.includes(f))
+                   || (f.length >= FUZZY_MIN && ws.some(w => within1(f, w))))
+    || (t.canon.length >= FUZZY_MIN
+        && cs.some(w => w.includes(t.canon) || within1(t.canon, w))));
+}
+
 /* The card strip of one row.
 
    `render` draws it for every row. A photo added by drag and drop draws it again
@@ -2847,10 +3402,13 @@ function cardsHtml(r) {
   }
   return shown.map(p => {
       const l = labelOf(r.slug, p.file), mv = movedTo(r.slug, p.file);
+      const cp = copiedTo(r.slug, p.file);
+      const bad = FAILED_PHOTO.get(r.slug + "\n" + p.file) || null;
       const note = commentOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
       const dl = deleteMarked(r.slug, p.file);
       const src = `/img/photo?slug=${encodeURIComponent(r.slug)}&file=${encodeURIComponent(p.file)}`;
-      return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${note ? "noted" : ""}
+      return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${
+                     cp ? "copied" : ""} ${bad ? "bad" : ""} ${note ? "noted" : ""}
                    ${pr ? "prop" : ""} ${dl ? "del" : ""}" draggable="true"
                    data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
         ${dl ? `<span class="del-tag" title="marked for deletion; press apply to move it to work/trash/">del</span>` : ""}
@@ -2858,6 +3416,9 @@ function cardsHtml(r) {
           esc(pr.proposed)}${pr.source_url ? "\nfrom " + esc(pr.source_url) : ""}">${
           esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
         ${noteBadge(note)}
+        ${bad ? `<span class="bad-tag" title="${esc(badTitle(bad, r.slug))}">${
+          bad.same_group ? "same group" : ""} ${
+          (bad.photos || []).length} wines</span>` : ""}
         <img loading="lazy" draggable="false" src="${src}" alt="" data-full="${src}">
         <div class="cap"><span>${esc(p.file.split("_")[0] || "")}</span>
           <span>${p.conf === null ? "" : "conf " + p.conf}</span></div>
@@ -2865,6 +3426,9 @@ function cardsHtml(r) {
         <button class="move ${mv ? "on" : ""}" data-move="1"
                 title="move this photo to another wine slug">${
           mv ? "\u2192 " + esc(mv) : "\u2192 move"}</button>
+        <button class="cpy ${cp ? "on" : ""}" data-cpy="1"
+                title="copy this photo to another wine slug; this photo stays here">${
+          cp ? "\u29c9 " + esc(cp) : "\u29c9 copy"}</button>
         </div>`;
   }).join("");
 }
@@ -2872,14 +3436,11 @@ function cardsHtml(r) {
 function render() {
   const mode = $("#sort").value, filt = $("#filter").value;
   const sel = $("#slugsel").value;
-  const q = $("#q").value.trim().toLowerCase();
+  const terms = queryTerms($("#q").value);
   let rows = ROWS.filter(r => matchFilter(r, filt));
   if (sel === "excluded") rows = rows.filter(r => isExcluded(r.slug));
   else if (sel === "included") rows = rows.filter(r => !isExcluded(r.slug));
-  if (q) {
-    rows = rows.filter(r => (r.slug + " " + r.name + " " + r.producer + " " +
-      r.region + " " + r.grapes).toLowerCase().includes(q));
-  }
+  if (terms.length) rows = rows.filter(r => matchQuery(r, terms));
   if (GROUP_FILTER) rows = rows.filter(r => r.group === GROUP_FILTER);
   rows = clusterGroups(sortRows(rows, mode));
   VIEW = rows;            // the arrow keys follow this order
@@ -2956,7 +3517,10 @@ function render() {
   $("#grp-clear").hidden = !gf;
   if (gf) $("#grp-clear-id").textContent = `${gf.id} of ${gf.slugs.length}`;
   $("#count").textContent = `${rows.length} of ${reviewCount()} wines shown` +
-    (gf ? ` \u00b7 variant group ${gf.id}` : "");
+    (gf ? ` \u00b7 variant group ${gf.id}` : "") +
+    (filt === "failed"
+      ? " \u00b7 " + (FAILED ? FAILED_INFO : "no check was run yet; press validate")
+      : "");
   renderHeld();
   stats();
   writeViewToUrl();
@@ -2972,25 +3536,37 @@ function stats() {
     if (t.total && t.labelled === t.total) doneWines++;
   }
   const labelled = all.positive + all.negative + all.unusable + all.variant;
+  // How far the photo set reaches over the catalogue. `wines done` counts the
+  // labelling of the wines that hold candidate photos; this one counts the wines
+  // that hold a photo at all. A catalogue card with no photo is a gap of the set,
+  // and the filter `no candidate photos (catalogue gap)` lists exactly those.
+  const withPhoto = ROWS.filter(r => r.in_catalog && r.photos.length).length;
   $("#stat").innerHTML = `labelled <b>${labelled}</b>/<b>${TOTAL}</b> photos &middot; ` +
     rowTags({ ...all, total: TOTAL }) + ` &middot; ` +
-    `<b>${doneWines}</b>/<b>${reviewCount()}</b> wines done`;
+    `<b>${doneWines}</b>/<b>${reviewCount()}</b> wines done` +
+    (SLUGS.length
+      ? ` &middot; <b>${withPhoto}</b>/<b>${SLUGS.length}</b> catalogue wines`
+        + ` <span class="muted">with a photo</span>`
+      : "");
   $("#meter").style.width = TOTAL ? (100 * labelled / TOTAL).toFixed(1) + "%" : "0";
 
-  let pending = 0, pendingDel = 0;
+  let pending = 0, pendingCopy = 0, pendingDel = 0;
   for (const photos of Object.values(V)) {
     for (const e of Object.values(photos)) {
-      if (e.delete) pendingDel++;          // a deletion drops the move
-      else if (e.reassign_to) pending++;
+      // A deletion drops the move and the copy of the same photo.
+      if (e.delete) { pendingDel++; continue; }
+      if (e.reassign_to) pending++;
+      if (e.copy_to) pendingCopy++;
     }
   }
   const box = $("#pending");
-  box.hidden = pending === 0 && pendingDel === 0;
+  box.hidden = pending === 0 && pendingCopy === 0 && pendingDel === 0;
   if (!box.hidden) {
     const parts = [];
     if (pending) parts.push(`<b>${pending}</b> move${pending > 1 ? "s" : ""}`);
+    if (pendingCopy) parts.push(`<b>${pendingCopy}</b> cop${pendingCopy > 1 ? "ies" : "y"}`);
     if (pendingDel) parts.push(`<b>${pendingDel}</b> deletion${pendingDel > 1 ? "s" : ""}`);
-    box.innerHTML = parts.join(" and ") + ` pending ` +
+    box.innerHTML = parts.join(", ") + ` pending ` +
       `<button id="apply" type="button" title="carry out the pending work now">apply</button>`;
   }
 }
@@ -3090,13 +3666,15 @@ function renderLbStatus() {
   }
   const l = labelOf(r.slug, p.file);
   const mv = movedTo(r.slug, p.file), pr = proposalOf(r.slug, p.file);
+  const cp = copiedTo(r.slug, p.file);
   el.textContent = (l === "positive" ? "positive \u2014 this wine"
                  : l === "negative" ? "negative sample \u2014 a different wine"
                  : l === "unusable" ? "unusable \u2014 not in the set"
                  : l === "variant" ? "this wine, different design"
                  : pr ? `${pr.by || "agent"} proposes ${pr.proposed} (${
                      Math.round((pr.confidence || 0) * 100)}%)`
-                 : "not labelled") + (mv ? "  \u2192 " + mv : "");
+                 : "not labelled") + (mv ? "  \u2192 " + mv : "")
+                 + (cp ? "  \u29c9 " + cp : "");
   el.className = SHORT[l] || (pr ? "var" : "none");
 }
 
@@ -3160,17 +3738,23 @@ async function copyFromButton(btn) {
   setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); }, 900);
 }
 
-/* Move every recorded photo now. The server moves the files, drops the label of
-   each moved photo, keeps its comment with a line that states where it was, and
-   answers the rebuilt rows. */
+/* Carry out every recorded copy, move and deletion now. The server writes the
+   files, drops the label of each moved photo, keeps its comment with a line that
+   states where it was, and answers the rebuilt rows. */
 async function applyMoves(btn) {
-  let nMove = 0, nDel = 0;
+  let nMove = 0, nCopy = 0, nDel = 0;
   for (const photos of Object.values(V)) {
     for (const e of Object.values(photos)) {
-      if (e.delete) nDel++; else if (e.reassign_to) nMove++;
+      if (e.delete) { nDel++; continue; }
+      if (e.reassign_to) nMove++;
+      if (e.copy_to) nCopy++;
     }
   }
   const warn = [];
+  if (nCopy) warn.push(
+    `Copy ${nCopy} photo(s) to their target wine. This photo stays where it is, ` +
+    `with its label. The copy carries no label, so it must be reviewed against ` +
+    `the target wine. Its comment names the wine it came from.`);
   if (nMove) warn.push(
     `Move ${nMove} photo(s) to their target wine. Each moved photo loses its ` +
     `label and must be reviewed again. Its comment is kept and states where ` +
@@ -3197,12 +3781,19 @@ async function applyMoves(btn) {
   $("#head-sub").textContent = `${reviewCount()} wines, ${TOTAL} candidate photos`;
   render();
   const deleted = out.deleted || [], delFailed = out.delete_failed || [];
+  const copied = out.copied || [], copyFailed = out.copy_failed || [];
   const lines = out.moved.map(m => `${m.from}/${m.file} -> ${m.to}/${m.as}`);
   const fails = out.failed.map(f => `! ${f.from}/${f.file} -> ${f.to}: ${f.why}`);
+  const cps = copied.map(c => `${c.from}/${c.file} => ${c.to}/${c.as}`);
+  const cfails = copyFailed.map(c => `! ${c.from}/${c.file} => ${c.to}: ${c.why}`);
   const dels = deleted.map(d => `${d.slug}/${d.file} -> trash`);
   const dfails = delFailed.map(d => `! ${d.slug}/${d.file}: ${d.why}`);
   const report = [];
+  if (copied.length || cfails.length) {
+    report.push(`copied ${copied.length} photo(s)`, ...cps, ...cfails);
+  }
   if (out.moved.length || fails.length) {
+    if (report.length) report.push("");
     report.push(`moved ${out.moved.length} photo(s)`, ...lines, ...fails);
   }
   if (deleted.length || dfails.length) {
@@ -3703,20 +4294,31 @@ function refreshRow(slug) {
   stats();
 }
 
-/* ---- the move dialog ----
-   The dialog offers the five wines that the photo most likely belongs to, with
-   their catalogue bottle photo, and takes any other slug in a field.
-   The file is not moved here. The target is written to the label file, and the
-   button `apply` in the header moves the files. */
-let MV_AT = null;
+/* ---- the move dialog and the copy dialog ----
+   One dialog serves both actions. It offers the five wines that the photo most
+   likely belongs to, with their catalogue bottle photo, and takes any other slug
+   in a field.
+   No file is touched here. The target is written to the label file, and the
+   button `apply` in the header moves or copies the files.
 
-async function askMove(card, slugArg, fileArg) {
+   A move states that the photo belongs to another wine: the photo leaves this
+   wine. A copy states that the photo shows two wines, which happens when one
+   label is on two bottles of a variant group: the photo stays here, with its
+   label, and the target wine gets its own file. */
+let MV_AT = null;      // { slug, file, mode }, where mode is "move" or "copy"
+
+async function askMove(card, slugArg, fileArg, modeArg) {
   const slug = card ? card.dataset.slug : slugArg;
   const file = card ? card.dataset.file : fileArg;
   if (!slug || !file) return;
-  MV_AT = { slug, file };
-  const cur = movedTo(slug, file) || "";
+  const mode = modeArg === "copy" ? "copy" : "move";
+  MV_AT = { slug, file, mode };
+  const cur = (mode === "copy" ? copiedTo(slug, file) : movedTo(slug, file)) || "";
 
+  $("#mv-h").textContent = mode === "copy"
+    ? "Copy this photo to another wine" : "Move this photo to another wine";
+  $("#mv-ok").textContent = mode;
+  $("#mv-clear").textContent = "clear the " + mode;
   $("#mv-ctx").textContent = `now: ${slug} / ${file}`;
   $("#mv-input").value = cur;
   $("#mv-list").innerHTML = `<div class="mv-sub">loading...</div>`;
@@ -3728,7 +4330,8 @@ async function askMove(card, slugArg, fileArg) {
     const res = await fetch(`/api/suggest?slug=${encodeURIComponent(slug)}`);
     targets = (await res.json()).targets || [];
   } catch (e) { /* the field still takes any slug */ }
-  if (!MV_AT || MV_AT.slug !== slug || MV_AT.file !== file) return;
+  if (!MV_AT || MV_AT.slug !== slug || MV_AT.file !== file
+      || MV_AT.mode !== mode) return;
 
   $("#mv-list").innerHTML = targets.length ? targets.map(t => `
     <button class="mv-item ${t.slug === cur ? "sel" : ""}" data-slug="${esc(t.slug)}">
@@ -3746,20 +4349,25 @@ async function askMove(card, slugArg, fileArg) {
 
 function closeMove() { $("#mv").classList.remove("open"); MV_AT = null; }
 
+/* Write the target of the open dialog, or clear it when `to` is empty. The mode
+   of the dialog chooses the route and the field: a move writes `reassign_to`,
+   a copy writes `copy_to`. A photo can hold both. */
 async function commitMove(to) {
   const at = MV_AT;
   if (!at) return;
-  const res = await fetch("/api/reassign", {
+  const copy = at.mode === "copy";
+  const field = copy ? "copy_to" : "reassign_to";
+  const res = await fetch(copy ? "/api/copy" : "/api/reassign", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ slug: at.slug, file: at.file, to }),
   });
   const out = await res.json();
-  if (!res.ok) { alert("move failed: " + (out.error || res.status)); return; }
+  if (!res.ok) { alert(at.mode + " failed: " + (out.error || res.status)); return; }
   if (to) {
     (V[at.slug] = V[at.slug] || {})[at.file] =
-      { ...((V[at.slug] || {})[at.file] || {}), reassign_to: to };
+      { ...((V[at.slug] || {})[at.file] || {}), [field]: to };
   } else if (V[at.slug] && V[at.slug][at.file]) {
-    delete V[at.slug][at.file].reassign_to;
+    delete V[at.slug][at.file][field];
     if (!Object.keys(V[at.slug][at.file]).filter(k => k !== "ts").length) {
       delete V[at.slug][at.file];
       if (!Object.keys(V[at.slug]).length) delete V[at.slug];
@@ -3781,6 +4389,96 @@ $("#mv").addEventListener("click", ev => { if (ev.target.id === "mv") closeMove(
 $("#mv-input").addEventListener("keydown", ev => {
   if (ev.key === "Enter") { ev.preventDefault(); commitMove($("#mv-input").value.trim()); }
 });
+
+/* ---- validate ----
+   A check reads the photo set and reports the places where the set states two
+   things that cannot both be true. The server holds the list of checks, so a new
+   check reaches this dialog without a change of the page.
+   A check never writes. The result lives in this tab alone. */
+
+function badTitle(f, slug) {
+  const others = (f.photos || []).filter(p => p.slug !== slug)
+    .map(p => p.slug + " / " + p.file);
+  return f.why
+    + (f.same_group ? "\nboth wines are in the variant group " + f.group : "")
+    + (others.length ? "\nthe same picture is here:\n" + others.join("\n") : "");
+}
+
+/* Take the answer of `/api/validate` and build the two lookups of the page. */
+function setFailed(out) {
+  FAILED = {};
+  FAILED_PHOTO = new Map();
+  const findings = out.findings || [];
+  for (const f of findings) {
+    for (const p of f.photos || []) {
+      (FAILED[p.slug] = FAILED[p.slug] || []).push(f);
+      FAILED_PHOTO.set(p.slug + "\n" + p.file, f);
+    }
+    for (const x of f.slugs || []) (FAILED[x] = FAILED[x] || []).push(f);
+  }
+  const n = (out.slugs || []).length;
+  FAILED_INFO = findings.length
+    ? `${findings.length} finding(s) in ${n} wine(s) \u2014 ${out.photos} photo(s) ` +
+      `read in ${out.seconds}s`
+    : `no defect found \u2014 ${out.photos} photo(s) read in ${out.seconds}s`;
+}
+
+async function askValidate() {
+  $("#vd-note").textContent = "";
+  $("#vd").classList.add("open");
+  if (!CHECKS.length) {
+    $("#vd-list").innerHTML = `<div class="mv-sub">loading...</div>`;
+    try {
+      CHECKS = (await (await fetch("/api/checks")).json()).checks || [];
+    } catch (e) { CHECKS = []; }
+  }
+  $("#vd-list").innerHTML = CHECKS.length ? CHECKS.map(c => `
+    <label class="vd-item">
+      <input type="checkbox" data-check="${esc(c.id)}" checked>
+      <span class="t"><b>${esc(c.title)}</b><div>${esc(c.help)}</div></span>
+    </label>`).join("") : `<div class="mv-sub">the server offers no check</div>`;
+}
+
+function closeValidate() { $("#vd").classList.remove("open"); }
+
+/* Run the chosen checks. The whole photo set is read, which takes a few seconds,
+   so the button states that the work runs. */
+async function runValidate() {
+  const want = [...document.querySelectorAll("#vd-list input[data-check]")]
+    .filter(x => x.checked).map(x => x.dataset.check);
+  if (!want.length) { $("#vd-note").textContent = "choose at least one check"; return; }
+  const btn = $("#vd-ok");
+  btn.disabled = true;
+  btn.textContent = "checking...";
+  $("#vd-note").textContent = "";
+  let out = {};
+  try {
+    const res = await fetch("/api/validate", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ checks: want }),
+    });
+    out = await res.json();
+    if (!res.ok) throw new Error(out.error || res.status);
+  } catch (e) {
+    $("#vd-note").textContent = "failed: " + e.message;
+    btn.disabled = false;
+    btn.textContent = "run";
+    return;
+  }
+  btn.disabled = false;
+  btn.textContent = "run";
+  setFailed(out);
+  closeValidate();
+  // The table holds this view until the reviewer changes the filter.
+  $("#filter").value = "failed";
+  $("#validate").classList.add("on");
+  render();
+}
+
+$("#validate").addEventListener("click", askValidate);
+$("#vd-ok").addEventListener("click", runValidate);
+$("#vd-cancel").addEventListener("click", closeValidate);
+$("#vd").addEventListener("click", ev => { if (ev.target.id === "vd") closeValidate(); });
 
 /* ---- the variant group of a whole wine ----
 
@@ -4184,6 +4882,10 @@ document.addEventListener("click", ev => {
   const move = ev.target.closest(".move");
   if (move) { askMove(move.closest(".card")); return; }
 
+  // `.cpy`, not `.copy`: `.copy` is the button that writes a name to the clipboard.
+  const cpyb = ev.target.closest(".cpy");
+  if (cpyb) { askMove(cpyb.closest(".card"), null, null, "copy"); return; }
+
   const back = ev.target.closest("[data-back]");
   if (back) {
     const c = back.closest(".card");
@@ -4233,6 +4935,7 @@ document.addEventListener("keydown", ev => {
   }
   if (ev.key === "Escape") {
     if (!$("#ctxmenu").hidden) hideCtxMenu();
+    else if ($("#vd").classList.contains("open")) closeValidate();
     else if ($("#ad").classList.contains("open")) closeWine();
     else if ($("#gp").classList.contains("open")) closeGroup();
     else if ($("#mv").classList.contains("open")) closeMove();
@@ -4240,7 +4943,7 @@ document.addEventListener("keydown", ev => {
     return;
   }
   if ($("#mv").classList.contains("open") || $("#ad").classList.contains("open")
-      || $("#gp").classList.contains("open")) {
+      || $("#gp").classList.contains("open") || $("#vd").classList.contains("open")) {
     return;                                          // a dialog takes the keys
   }
   if ((ev.key === "s" || ev.key === "S") && !ev.metaKey && !ev.ctrlKey && !ev.altKey) {
@@ -4255,14 +4958,16 @@ document.addEventListener("keydown", ev => {
   const wstep = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
   if (wstep !== undefined) { ev.preventDefault(); stepWine(wstep); return; }
   // "1" positive, "2" negative sample, "3" unusable, "4" this wine other design.
-  // The same key again clears the label. "m" moves the photo to another slug.
+  // The same key again clears the label. "m" moves the photo to another slug,
+  // "c" copies it to another slug and leaves this one where it is.
   // A wine with no candidate photo holds nothing to label and nothing to move.
   const lbPhoto = (VIEW[LB.wine].photos || [])[LB.photo];
-  if (ev.key === "m" || ev.key === "M") {
+  const askKey = { m: "move", M: "move", c: "copy", C: "copy" }[ev.key];
+  if (askKey) {
     ev.preventDefault();
     if (!lbPhoto) return;
     const r = VIEW[LB.wine];
-    askMove(cardOf(r.slug, lbPhoto.file), r.slug, lbPhoto.file);
+    askMove(cardOf(r.slug, lbPhoto.file), r.slug, lbPhoto.file, askKey);
     return;
   }
   const want = KEY_OF[ev.key];
@@ -4275,6 +4980,10 @@ document.addEventListener("keydown", ev => {
 for (const id of ["#sort", "#filter", "#slugsel"]) {
   $(id).addEventListener("change", render);
 }
+// The button is marked only while the table shows the wines that a check reported.
+$("#filter").addEventListener("change", () => {
+  $("#validate").classList.toggle("on", $("#filter").value === "failed" && !!FAILED);
+});
 let t = null;
 $("#q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(render, 180); });
 

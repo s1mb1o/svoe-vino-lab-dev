@@ -9,6 +9,18 @@ The server MUST be running:
 python3 scripts/review_server.py --no-browser      # http://127.0.0.1:8154
 ```
 
+`docs/openapi.yaml` holds the same contract in machine-readable form. It covers every
+route of the server, not only `/api/v1/`. The running server serves it:
+
+| Route | Answer |
+|---|---|
+| `GET /openapi.yaml` | the document, as it is written |
+| `GET /openapi.json` | the same document, converted to JSON |
+| `GET /docs` | the document in a browser, with Swagger UI |
+
+The document is written by hand. It is not generated from the code. A change of a
+route MUST change `docs/openapi.yaml` in the same commit.
+
 Every write goes through this one server, so a write of the agent and a click of the
 reviewer cannot overwrite one another.
 
@@ -41,7 +53,7 @@ the benchmark. Read `docs/excluded-slugs.md`.
 
 | Parameter | Meaning |
 |---|---|
-| `filter` | `all`, `unlabelled`, `needs_positive`, `has_proposal`, `fully_labelled`, `in_variant_group` |
+| `filter` | `all`, `unlabelled`, `needs_positive`, `has_proposal`, `fully_labelled`, `in_variant_group`, `no_candidate_photos`, `image_unresolved`, `image_assumed`, `image_confirmed`, `image_manual`, `image_shared` |
 | `q` | a part of the slug, the name, or the producer |
 | `limit` | 1 to 500, default 50 |
 | `offset` | default 0 |
@@ -65,7 +77,8 @@ hunt photos for such a wine. Read `docs/excluded-slugs.md`.
 
 ### `GET /api/v1/wine/<slug>`
 
-The same record with `description` and with `photos`. Each photo holds:
+The same record with `photos` added. `description` is already in the record of
+`GET /api/v1/wines`. Each photo holds:
 
 ```json
 { "file": "01_conf095.jpg",
@@ -73,7 +86,8 @@ The same record with `description` and with `photos`. Each photo holds:
   "url": "/img/photo?slug=<slug>&file=01_conf095.jpg",
   "conf": 95, "label": "positive", "proposed": null, "by": null,
   "confidence": null, "source_url": null, "comment": null,
-  "reassign_to": null, "moved_from": null }
+  "reassign_to": null, "moved_from": null,
+  "copy_to": null, "copied_from": null }
 ```
 
 `path` is an absolute path on this machine. An agent reads the picture from the path
@@ -123,23 +137,154 @@ field then holds the data URI and not an address.
 Answer: `{ "ok": true, "slug": ..., "file": "07_agent.jpg", "photos": [...],
 "counts": {...} }`.
 
-## The other routes
+`photos` holds the short form of every photo of the wine: `{"file": ..., "conf": ...}`.
+It holds no label state. Read `GET /api/v1/wine/<slug>` for the full form.
 
-These belong to the page, and an agent MAY use them:
+## The routes of the page
 
-| Route | Work |
-|---|---|
-| `POST /api/label` | `{slug, file, label}`; the decision of the reviewer |
-| `POST /api/comment` | `{slug, file, text}`; a note about one photo |
-| `POST /api/wine-comment` | `{slug, text}`; a note about a whole wine |
-| `POST /api/reassign` | `{slug, file, to}`; record that a photo belongs to another slug |
-| `POST /api/fetch-image` | `{slug, url}`; add a picture without a proposal |
-| `GET /api/reload` | read `my/` again after the pipeline wrote it |
+These routes serve the review page and the runs page. An agent MAY use them. They
+follow the page, so they MAY change when the page changes. The routes under `/api/v1/`
+do not change in this way.
 
-An agent SHOULD use `/api/v1/propose` and NOT `/api/label`.
+An agent SHOULD use `POST /api/v1/propose` and MUST NOT use `POST /api/label`. A label
+is the decision of the reviewer.
+
+Every route in this section answers `application/json`.
+
+### Read
+
+#### `GET /api/rows`
+
+The whole state in one answer: `{rows, labels, wines, excluded, groups, slugs}`. The
+page reads it once at the start. It is large, about 2500 photos and 850 wines.
+
+`rows` holds first the wines that have a directory in `my/`, then the catalogue cards
+that have none. A catalogue card carries `catalog_only: true`.
+
+A row is not the record of `GET /api/v1/wines`. A row holds `has_bottle` and
+`min_conf`, and it holds no label count, because the page counts the labels itself
+from `labels`.
+
+An agent SHOULD use `GET /api/v1/wines`, which pages and filters.
+
+#### `GET /api/state`
+
+`{labels, wines, excluded, counts}`. The same state without the rows.
+
+`labels` maps a slug to a file name to an entry. An entry holds only the fields that
+were written: `label`, `proposed`, `by`, `confidence`, `source_url`, `comment`,
+`reassign_to`, `copy_to`, `delete`, `moved_from`, `copied_from`, and `ts`. A field that was never written is
+absent, not null. The entry is removed when no field is left.
+
+#### `GET /api/checks`
+
+`{checks: [{id, title, help}]}`. The checks that `POST /api/validate` can run. The
+page draws one line per check in its dialog, so a new check needs no change of the
+page.
+
+#### `GET /api/reload`
+
+Read the directory `my/` again, read the variant groups again, and build the rows
+again. Answer: `{rows, labels, wines, excluded}`. Use it after a script wrote into
+`my/` behind the server. The route writes nothing.
+
+#### `GET /api/suggest?slug=<slug>`
+
+`{slug, targets}`. The wines that a photo of this wine most likely belongs to, best
+first, at most 5. The photos of one producer look alike, and a search result often
+shows the right wine in the wrong bottle.
+
+The order is: a member of the variant group of this wine, then the same producer, then
+a wine whose name shares words. Each target holds `{slug, name, producer, category,
+has_bottle, in_group, score}`. `score` has no unit. It only orders the list.
+
+#### `GET /api/runs` and `GET /api/run?id=<id>`
+
+The match runs. `GET /api/runs` answers `{runs: [...]}` with the headline metrics of
+each run. `GET /api/run` answers `{run, metrics, head, filter, sort, total, offset,
+limit, rows}` for one run.
+
+`GET /api/run` takes `id` (required), `filter`, `q`, `sort`, `limit` (1 to 1000,
+default 200), and `offset`. `filter` is one of `all`, `error`, `hit`, `miss`, `near`,
+`absent`, `false_match`, `negative_in_topk`, `negative`. `sort` is one of `manifest`,
+`worst`, `rank`, `latency_desc`, `latency_asc`, `score_desc`, `score_asc`, `path`.
+`manifest` is the order that the backend answered in.
+
+The shape of one row follows the match runner, not this server. Read
+`docs/match-runner.md`.
+
+Errors: `400` for a bad identifier, a bad number, or an unknown order. `404` when no
+run holds the identifier.
+
+### Write
+
+Each of these routes answers `{"ok": true, "counts": {...}}` unless the table states
+another answer. `counts` is the counter set of the whole review set.
+
+| Route | Body | Answer and rules |
+|---|---|---|
+| `POST /api/label` | `{slug, file, label}` | The decision of the reviewer. An empty `label`, or `null`, clears it. Clearing the label keeps the other fields of the entry. `400` `unknown photo`. |
+| `POST /api/labels` | `{items: [{slug, file, label}]}` | Many labels in one request. Answers `{ok, counts, skipped}`. An item that names no known photo is skipped and counted in `skipped`. The whole list is written under one lock and saved once. `400` when `items` is not a list. |
+| `POST /api/comment` | `{slug, file, text}` | A note about one photo, at most 4000 characters. An empty `text` clears it. `400` `unknown photo`. |
+| `POST /api/wine-comment` | `{slug, text}` | A note about a whole wine, at most 4000 characters. An empty `text` clears it. `400` for an unknown slug or a longer note. |
+| `POST /api/reassign` | `{slug, file, to}` | Record that the photo belongs to `to`. The file is NOT moved. `POST /api/apply-moves` moves it later. An empty `to` clears the record. `400` when the target is unknown or is the slug of the photo. |
+| `POST /api/copy` | `{slug, file, to}` | Record that the photo shows the wine `to` as well. The file is NOT copied, and the photo stays in its own wine with its label. `POST /api/apply-moves` copies it later. An empty `to` clears the record. `400` when the target is unknown or is the slug of the photo. |
+| `POST /api/mark-delete` | `{slug, file, delete}` | Mark the photo for deletion, or take the mark away. `delete` defaults to true. The file is NOT touched. Answers `{ok, slug, file, delete, counts}`. `400` `unknown photo`. |
+| `POST /api/apply-moves` | `{}` | Carry out every recorded copy, every recorded move, and every deletion, in that order. A move takes the source file away, so the copies MUST run first. This route touches the files. A deleted photo is moved into `work/trash/`, not unlinked. A photo that holds both a target and a delete mark is deleted, and is neither moved nor copied. A copy that is done no longer holds `copy_to`, so a second call does not write the file again. Answers `{ok, moved, already_done, failed, copied, copy_failed, renamed, deleted, delete_failed, delete_gone, rows, labels, counts}`. `500` when a file cannot be written. |
+| `POST /api/validate` | `{checks: [id]}` | Run the named checks over the whole photo set and answer the defects. The route only reads. An absent `checks` runs every check. Answers `{ok, ran, wines, photos, seconds, findings, slugs}`. `findings` holds one record per defect, with `check`, `why`, and `photos` (a list of `{slug, file}`). `slugs` holds every wine that at least one finding names, sorted. `400` when `checks` is not a list of strings, is empty, or names an unknown check. |
+| `POST /api/exclude` | `{slug, excluded, reason}` | Take one wine out of the benchmark, or bring it back. `excluded` defaults to true. A reason is required to exclude, at most 1000 characters. Answers `{ok, slug, excluded, entry, count}`. Read `docs/excluded-slugs.md`. |
+| `POST /api/group` | `{slug, target}` | Join two wines into one variant group. The write is one pair. A wine that is in no group takes the group of the other wine. Answers `{ok, changed, group, ...}`; when `changed` is true the answer also holds `rows`, `labels`, `wines`, `excluded`, `groups`, and `slugs`. `409` when both wines are already in two different groups: a merge of two groups cannot be undone by taking one pair away. |
+| `POST /api/upload?slug=<slug>&name=<file>` | the picture bytes | The body is the picture itself, not a form. The route writes no label, no score, and no comment. Answers `{ok, slug, file, photos}`. An agent SHOULD use `POST /api/v1/propose` with a `data:` URL instead. |
+| `POST /api/fetch-image` | `{slug, url}` | Fetch one picture from an address and store it, without a proposal. The rules of the address are the rules of `POST /api/v1/propose`. Answers `{ok, slug, file, photos, url}`. An agent SHOULD use `POST /api/v1/propose` instead. |
+
+### The rules of a picture
+
+`POST /api/v1/propose`, `POST /api/upload`, and `POST /api/fetch-image` store a
+picture. The three routes keep the same rules.
+
+1. The media type is read from the first bytes of the file. The server does not trust
+   the address and does not trust the header of the remote server.
+2. Only `image/jpeg`, `image/png`, `image/webp`, `image/gif`, and `image/bmp` are
+   stored.
+3. The picture MUST NOT be larger than 20971520 bytes.
+4. An address MUST be `http`, `https`, or a `data:` URL.
+5. An `http` or `https` address MUST NOT resolve to a loopback, private, link-local,
+   reserved, or multicast address.
+6. The stored name is `NN_<tag>.<ext>`. `NN` is the next free rank. The tag is `agent`
+   for `POST /api/v1/propose` and `manual` for the other two routes.
 
 ## Errors
 
-Every error answers a JSON object with one field `error`. The status is `400` for a
-bad request, `404` for an unknown wine or route, `502` when the embedding service
-fails, and `503` when the index is absent.
+Every error of a JSON route answers an object with one field `error`. The field states
+why the request was refused.
+
+| Status | Meaning |
+|---|---|
+| `400` | The request is refused. This is also the status when a picture cannot be fetched or stored. |
+| `404` | An unknown wine, an unknown run, or an unknown route. |
+| `409` | Both wines of `POST /api/group` are already in two different groups. |
+| `500` | A file could not be read, moved, or deleted. |
+
+The server never answers `502` and never answers `503`.
+
+The two routes under `/img/` are the exception. They answer the plain text `not found`
+with status `404`, not JSON.
+
+## Known defects
+
+#### The checks
+
+| id | What it reports |
+|---|---|
+| `shared_positive` | One picture that carries the label `positive` under two or more slugs. One picture cannot show two wines, so one of the labels is wrong, or the two catalogue cards are one wine. Two photos count as one picture when their bytes are equal; a re-encoded or resized copy is not found. A pair of wines that are in one variant group is reported too, and the finding carries `same_group: true` and the group id. |
+
+A run of `shared_positive` reads every candidate photo, 2,543 files on the set of
+today, and takes about 2.5 seconds. The result is not cached.
+
+1. `GET /api/v1/wines` does not check that `limit` and `offset` are numbers.
+   `?limit=abc` raises inside the handler, and the server closes the connection
+   without an answer. A client reads this as a connection reset, not as an error.
+   `GET /api/run` does check, and answers `400`.
+2. `GET /api/v1/wine/<slug>` answers `404` for a catalogue card that holds no
+   directory in `my/`, although `GET /api/v1/wines` lists that card under a catalogue
+   filter. There is no route that reads one catalogue-only wine.
