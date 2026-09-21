@@ -1,6 +1,46 @@
 {
-  "count": 3,
+  "count": 14,
   "excluded": {
+    "abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12": {
+      "reason": "wrong bottle photo in the catalogue",
+      "ts": "2026-09-19T20:41:14+0300"
+    },
+    "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-12": {
+      "reason": "conflicts with abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-125",
+      "ts": "2026-09-19T18:46:28+0300"
+    },
+    "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-125": {
+      "reason": "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-12",
+      "ts": "2026-09-19T18:46:31+0300"
+    },
+    "abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-115": {
+      "reason": "duplicates https://vino-svoe.ru/wines/abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-125",
+      "ts": "2026-09-21T13:50:59+0300"
+    },
+    "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut": {
+      "reason": "wrong bottle photo in the catalogue",
+      "ts": "2026-09-21T14:13:10+0300"
+    },
+    "abrau-dyurso-victor-dravigny-brut-shardone-beloe-bryut-12": {
+      "reason": "зфпу 404",
+      "ts": "2026-09-21T14:32:59+0300"
+    },
+    "agrolayn-heritage-dg-skin-contact-rkatsiteli-rkatsiteli-krasnoe-suhoe-12": {
+      "reason": "Вот эти правильные\n1. https://vino-svoe.ru/wines/agrolayn-heritage-dg-skin-contact-red-saperavi-krasnoe-suhoe-13\n2. https://vino-svoe.ru/wines/agrolayn-heritage-dg-skin-contact-rkatsiteli-rkatsiteli-beloe-suhoe-12\n\nА вот следующий неправильный\n3. https://vino-svoe.ru/wines/agrolayn-heritage-dg-skin-contact-rkatsiteli-rkatsiteli-krasnoe-suhoe-12\n- Название как у #2: Heritage DG Skin contact Rkatsiteli\n- Виноград как у #2: Ркацители\n- Этикетка с годом как у #1",
+      "ts": "2026-09-18T15:39:49+0300"
+    },
+    "agrolayn-mountain-eagle-traminer-traminer-beloe-suhoe-12": {
+      "reason": "wrong bottle photo in the catalogue",
+      "ts": "2026-09-19T08:21:38+0300"
+    },
+    "aligote-avtorskoe-vino": {
+      "reason": "wrong bottle photo in the catalogue",
+      "ts": "2026-09-19T22:31:10+0300"
+    },
+    "aligote-barrel-2025": {
+      "reason": "wrong bottle photo in the catalogue",
+      "ts": "2026-09-19T22:32:36+0300"
+    },
     "belmas-winery-syrah-katya-sira-krasnoe-suhoe-125": {
       "reason": "Виноград указан Syrah Katya, но по факту картинка от Riesling",
       "ts": "2026-09-17T18:41:40+0300"
@@ -12,9 +52,13 @@
     "derbent-vino-endemy-saperavi-krasnoe-suhoe-13": {
       "reason": "wrong bottle photo in the catalogue",
       "ts": "2026-09-18T00:58:55+0300"
+    },
+    "zhemchuzhnaya-9-merlo-kaberne-sovinon": {
+      "reason": "svoe-vino excluded slug",
+      "ts": "2026-09-21T13:36:03+0300"
     }
   },
   "note": "Excluded slugs of svoe-vino-testset. The key of an entry is the wine slug. Field 'reason' states why the slug is excluded. Field 'ts' holds the time of the exclusion. The photos of an excluded slug MUST NOT be used for benchmarking. A slug that is not in this file is included. Purpose: some slugs of the catalogue hold an error, most often a wrong bottle photo. A wrong bottle photo shifts the metrics, because the reference of the slug does not show the wine. Such a slug is excluded instead of corrected, so the benchmark stays comparable.",
-  "updated": "2026-09-18T00:58:55+0300",
+  "updated": "2026-09-21T14:32:59+0300",
   "version": 1
 }

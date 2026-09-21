@@ -1,0 +1,13 @@
+{
+  "count": 1,
+  "note": "Pairs of wine slugs that a reviewer joined by hand in the review tool. `scripts/08_variants.py` never writes this file, so a new run of that script keeps these pairs. `load_variants()` reads this file together with the generated groups of `variant-groups.json` and joins the two sets. A pair adds its two slugs to one group.",
+  "pairs": [
+    {
+      "a": "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut",
+      "b": "abrau-dyurso-imperatorskoe-bryut-shardone-beloe-12",
+      "ts": "2026-09-21T14:13:25+0300"
+    }
+  ],
+  "updated": "2026-09-21T14:13:25+0300",
+  "version": 1
+}
