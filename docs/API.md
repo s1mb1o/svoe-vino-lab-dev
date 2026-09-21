@@ -206,12 +206,21 @@ limit, rows}` for one run.
 
 `GET /api/run` takes `id` (required), `filter`, `q`, `sort`, `limit` (1 to 1000,
 default 200), and `offset`. `filter` is one of `all`, `error`, `hit`, `miss`, `near`,
-`absent`, `false_match`, `negative_in_topk`, `negative`. `sort` is one of `manifest`,
-`worst`, `rank`, `latency_desc`, `latency_asc`, `score_desc`, `score_asc`, `path`.
-`manifest` is the order that the backend answered in.
+`absent`, `rank_2_5`, `after_5`, `after_10`, `false_match`, `negative_in_topk`, `negative`,
+`negative_above_positive`, `twin_conflict`. `sort` is one of `manifest`, `worst`, `rank`, `latency_desc`,
+`latency_asc`, `score_desc`, `score_asc`, `path`. `manifest` is the order that the
+backend answered in.
 
 The shape of one row follows the match runner, not this server. Read
 `docs/match-runner.md`.
+
+One field is added by this server and is not in `results.jsonl`: `twin`. It names the
+true wine of a negative photo, which the server reads from a byte-equal `positive` photo
+of the same run. It holds `slugs`, `rank`, `forbidden_rank`, `verdict` (`above`, `below`,
+`no_forbidden`, `absent`, or `null`), `conflict`, and `conflict_slugs`. The filter
+`negative_above_positive` keeps the rows whose `verdict` is `below`. The filter
+`twin_conflict` keeps the rows whose `conflict` is true, which is a defect of the photo
+set. Read `docs/match-runner.md`.
 
 Errors: `400` for a bad identifier, a bad number, or an unknown order. `404` when no
 run holds the identifier.
@@ -278,8 +287,39 @@ with status `404`, not JSON.
 |---|---|
 | `shared_positive` | One picture that carries the label `positive` under two or more slugs. One picture cannot show two wines, so one of the labels is wrong, or the two catalogue cards are one wine. Two photos count as one picture when their bytes are equal; a re-encoded or resized copy is not found. A pair of wines that are in one variant group is reported too, and the finding carries `same_group: true` and the group id. |
 
+| `photo_too_small` | One photo whose long side is under 256 pixels. The matcher runs SigLIP2 with an input of 448 by 448 pixels, so such a photo holds less than the half of that input. The check reads the long side, because a photo of a bottle is tall and narrow and its short side is small even when the photo is good. The finding carries `width`, `height`, `long_side`, and `tag`, the text of the pill. |
+| `photo_below_model_input` | One photo whose long side is 256 to 447 pixels. The matcher stretches it up to its input. The photo is usable and carries less detail than the model can read. A photo with a long side under 256 pixels is reported by `photo_too_small` only, so the two lists never hold the same photo. |
+| `candidate_is_catalog_photo` | One candidate photo that is the catalogue bottle photo of the SAME wine. The set holds real-world photos only, and the bottle photo is a studio render, so such a photo makes the benchmark easier than reality. The check never compares across wines. Two pictures count as duplicates when the bytes are equal, and also when the content is equal and the size differs: each picture is composited on white, converted to grey, cropped to the bounding box of the bottle, and resized to 32 by 32, and the measure is the mean absolute difference of the 1,024 values, on the scale 0 to 255, with the threshold 10.0. A photo marked `unusable` and a photo marked for deletion stay out, and a wine with no catalogue bottle photo is not checked. The finding carries `same_bytes`, `difference`, and `tag`, the text of the pill. |
+| `catalog_photo_twin` | Two wines whose CATALOGUE bottle photo is the same picture, or nearly the same. The matcher cannot separate two such wines by the image, and one of the two cards names the wrong bottle. The check reads no candidate photo of `my/`, so a label does not change its result, and it covers the whole catalogue, including a card that has no directory in `my/`. Each picture is composited on white and cropped to the bounding box of the bottle; a grey 32 by 32 signature then names the near pairs of all 2,189,278 pairs, and a COLOUR 128 by 128 signature measures those pairs alone. The second stage is needed: under the grey signature two DIFFERENT wines of one producer line measure as little as 0.09 of 255, which is the band of a true duplicate. A finding reports the whole cluster and carries `slugs`, `bottle`, `same_picture`, `same_bytes`, `distance`, and `tag`. It carries no `photos`. The tag `same pic` means the distance is under 0.05 and the cards carry one picture, which is a defect; the tag `twin` means the distance is 0.05 to 1.0 and the pictures are different photographs of a bottle that looks nearly the same, which is not a defect by itself and is a candidate for a variant group. |
+
 A run of `shared_positive` reads every candidate photo, 2,543 files on the set of
 today, and takes about 2.5 seconds. The result is not cached.
+
+`photo_too_small` and `photo_below_model_input` read the header of every photo that is
+not marked `unusable` and not marked for deletion, 3,832 files on the set of today, in
+about 2.8 seconds. They read the size, not the pixels. On the set of today they report
+0 photos and 44 photos.
+
+`candidate_is_catalog_photo` reads the pixels of every candidate photo and of every
+catalogue bottle photo, about 6,000 files on the set of today, in about 50 seconds. It
+decodes in 8 threads. On the set of 2026-09-18, 304 of the 4,112 pairs are under the
+threshold and 0 of them have equal bytes; the check reports 282 photos in 241 wines,
+because it leaves out the photos that are already marked `unusable` or marked for
+deletion.
+
+`catalog_photo_twin` reads the pixels of every catalogue bottle photo, 2,093 files on
+the catalogue of 2026-09-17, in about 43 seconds. It decodes in 8 threads and needs
+numpy; without numpy one finding states that and the server does not fail. On that
+catalogue it reports 70 findings over 162 wines: 27 clusters with the tag `same pic`
+over 55 wines, and 43 clusters with the tag `twin`. Every `same pic` cluster of that
+catalogue is byte-identical. The badge of this check sits under the bottle photo of the
+row, not on a card, because the finding names no photo of `my/`.
+
+The check has two limits. The measure has no sharp edge between the two classes, so a
+copy over the threshold is not reported and the check misses it. The check also
+composites a transparent picture on WHITE, so a render that was flattened on another
+colour is not found. `ResearchLog.md` holds the measurement and the choice of the
+threshold.
 
 1. `GET /api/v1/wines` does not check that `limit` and `offset` are numbers.
    `?limit=abc` raises inside the handler, and the server closes the connection

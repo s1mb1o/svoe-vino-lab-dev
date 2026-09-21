@@ -10,6 +10,12 @@ Run:
     python3 scripts/match_run.py --backend organizers --limit 50
     python3 scripts/match_run.py --backend official-api --dry-run
 
+`--photos-dir DIR` replaces the photo set of the project with a plain directory
+of photos. Such a directory holds no ground truth, so the run records the answer
+of the backend and states no correctness:
+
+    python3 scripts/match_run.py --backend svm-siglip2-448 --photos-dir ~/photos
+
 The run directory holds:
 
     run.json          what ran: the backend, the options, the counts
@@ -19,6 +25,10 @@ The run directory holds:
     results.jsonl     the full record of every photo, with every candidate
     metrics.json      the aggregate
     summary.md        the same numbers for a human
+
+A photo of `--photos-dir` carries the label `unlabelled`. It holds no true slug,
+so the run reports the candidates, the latency, and the errors, and it reports no
+share and no recall.
 
 A `positive` photo shows the wine of its slug. A `negative` photo shows a
 different wine, so the backend is wrong when it answers with that slug at rank 1.
@@ -42,6 +52,8 @@ import common  # noqa: E402
 import match_backends  # noqa: E402
 
 LABELS_IN_SET = ("positive", "negative", "variant")
+# The label of a photo of `--photos-dir`. The directory holds no ground truth.
+UNLABELLED = "unlabelled"
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}
 
 
@@ -130,6 +142,41 @@ def build_queries(variants="off", only="all"):
                 "truth": truth if label in ("positive", "variant") else [],
             })
 
+    rows.sort(key=lambda r: r["image_path"])
+    for i, row in enumerate(rows, 1):
+        row["query_id"] = "q-%06d" % i
+    return rows, skipped
+
+
+def build_dir_queries(photos_dir):
+    """Return the query rows of a plain directory of photos.
+
+    The directory holds no ground truth. Every row carries the label
+    `unlabelled`, an empty truth, and an empty slug. The walk is recursive, and
+    `image_path` is the path of the file against the directory.
+    """
+    root = os.path.abspath(os.path.expanduser(photos_dir))
+    if not os.path.isdir(root):
+        sys.exit("error: --photos-dir is not a directory: %s" % root)
+    rows = []
+    skipped = collections.Counter()
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if not d.startswith("."))
+        for fname in sorted(filenames):
+            if fname.startswith("."):
+                skipped["hidden file"] += 1
+                continue
+            if os.path.splitext(fname)[1].lower() not in IMAGE_EXT:
+                skipped["not an image"] += 1
+                continue
+            path = os.path.join(dirpath, fname)
+            rows.append({
+                "image_path": os.path.relpath(path, root),
+                "abs_path": path,
+                "slug": "",
+                "label": UNLABELLED,
+                "truth": [],
+            })
     rows.sort(key=lambda r: r["image_path"])
     for i, row in enumerate(rows, 1):
         row["query_id"] = "q-%06d" % i
@@ -233,6 +280,12 @@ def judge(row, candidates, negative_strict):
     top1 = ranked[0] if ranked else None
     out = {"predicted_slug": top1, "rank_of_truth": None, "outcome": None}
 
+    if row["label"] == UNLABELLED:
+        # The photo holds no true slug. The run records what came back. Neither
+        # a success nor an error can be stated.
+        out["outcome"] = "no_answer" if top1 is None else "answered"
+        return out
+
     if row["label"] == "negative":
         if top1 is None:
             out["outcome"] = "no_answer"
@@ -286,6 +339,7 @@ def metrics_of(results, backend, top_k, negative_strict, wall_s, workers,
     groups = groups or {}
     pos = [r for r in results if r["label"] in ("positive", "variant")]
     neg = [r for r in results if r["label"] == "negative"]
+    unl = [r for r in results if r["label"] == UNLABELLED]
     has_scores = any(c.get("score") is not None
                      for r in results for c in r["candidates"])
 
@@ -336,6 +390,16 @@ def metrics_of(results, backend, top_k, negative_strict, wall_s, workers,
                 near_dup += 1
                 break
 
+    # The answer of an unlabelled photo carries no verdict. Its top score and the
+    # gap to the second candidate are the only signals of the confidence.
+    unl_top, unl_gap = [], []
+    for r in unl:
+        cands = r["candidates"]
+        if cands and cands[0].get("score") is not None:
+            unl_top.append(cands[0]["score"])
+            if len(cands) > 1 and cands[1].get("score") is not None:
+                unl_gap.append(cands[0]["score"] - cands[1]["score"])
+
     within_sla = [r for r in results if r["latency_ms"] is not None
                   and r["latency_ms"] <= SLA_MS]
 
@@ -359,6 +423,17 @@ def metrics_of(results, backend, top_k, negative_strict, wall_s, workers,
             "positive": sum(1 for r in results if r["label"] == "positive"),
             "negative": len(neg),
             "variant": sum(1 for r in results if r["label"] == "variant"),
+            "unlabelled": len(unl),
+        },
+        # A run of `--photos-dir`. The photos hold no ground truth, so this block
+        # holds the counts that do not need one, and every share above is empty.
+        "unlabelled": None if not unl else {
+            "n": len(unl),
+            "answered": sum(1 for r in unl if r["predicted_slug"]),
+            "no_answer": sum(1 for r in unl if r["outcome"] == "no_answer"),
+            "errors": sum(1 for r in unl if r["error"]),
+            "top_score_median": round(statistics.median(unl_top), 4) if unl_top else None,
+            "score_margin_median": round(statistics.median(unl_gap), 4) if unl_gap else None,
         },
         "positive": {
             "n": len(pos),
@@ -458,7 +533,66 @@ def git_commit():
         return None
 
 
+def write_summary_unlabelled(path, meta, met):
+    """Write the summary of a run of `--photos-dir`.
+
+    The photos hold no ground truth, so the file states no share and no recall.
+    It states what ran, what came back, and how long it took. A person reads the
+    answers at the page `/runs` of `scripts/review_server.py`.
+    """
+    unl = met["unlabelled"]
+    lat = met["latency_ms"]
+
+    def num(value, fmt="%s"):
+        return "\u2014" if value is None else fmt % value
+
+    lines = [
+        "# Run %s" % meta["run_id"],
+        "",
+        "**A run of a plain directory.** The photos hold no ground truth. This run",
+        "records the answer of the backend. It states no correctness, no share, and",
+        "no recall.",
+        "",
+        "| Field | Value |",
+        "|---|---|",
+        "| Backend | `%s` \u2014 %s |" % (meta["backend"]["id"],
+                                          meta["backend"].get("label", "")),
+        "| Photos directory | `%s` |" % (meta["options"] or {}).get("photos_dir", ""),
+        "| Started | %s |" % meta["started"],
+        "| Photos | %d |" % unl["n"],
+        "| Top-k asked | %d |" % met["top_k"],
+        "| Scores returned | %s |" % ("yes" if met["has_scores"] else "no"),
+        "| Wall time | %s s |" % met["wall_s"],
+        "",
+        "## The answers",
+        "",
+        "| Measure | Value |",
+        "|---|---|",
+        "| Photos with a candidate | %d |" % unl["answered"],
+        "| Photos with no candidate | %d |" % unl["no_answer"],
+        "| Errors | %d |" % unl["errors"],
+        "| Median top score | %s |" % num(unl["top_score_median"], "%.4f"),
+        "| Median gap, first to second | %s |" % num(unl["score_margin_median"], "%.4f"),
+        "",
+        "The top score and the gap are the only signals of the confidence here. A",
+        "high score is not a proof of a correct answer. A person MUST read the",
+        "photos at `/runs` to judge the answers.",
+        "",
+        "## Latency",
+        "",
+        "median %s ms, p95 %s ms, max %s ms. Comparable to the jury harness: %s." % (
+            num(lat["median"]), num(lat["p95"]), num(lat["max"]),
+            "yes" if lat["comparable"] else "no, the run used several workers"),
+        "",
+    ]
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lines))
+
+
 def write_summary(path, meta, met):
+    if met.get("unlabelled"):
+        write_summary_unlabelled(path, meta, met)
+        return
     pos, neg = met["positive"], met["negative"]
 
     def pct(value):
@@ -555,6 +689,11 @@ def main():
     ap.add_argument("--backend", help="the id of a backend of backends.yaml")
     ap.add_argument("--list-backends", action="store_true")
     ap.add_argument("--limit", type=int, default=0, help="stop after N photos")
+    ap.add_argument("--photos-dir", default="", metavar="DIR",
+                    help="match the photos of this directory instead of the photo "
+                         "set of the project. The directory holds no ground truth, "
+                         "so the run records the candidates and states no "
+                         "correctness. The walk is recursive")
     ap.add_argument("--only", choices=("all", "positive", "negative"), default="all")
     ap.add_argument("--variants", choices=("off", "strict", "group"), default="off",
                     help="take the variant photos into the set (default: off)")
@@ -585,7 +724,19 @@ def main():
         return
 
     common.print_config()
-    rows, skipped = build_queries(variants=args.variants, only=args.only)
+
+    if args.photos_dir:
+        for name, value, default in (("--from-run", args.from_run, ""),
+                                     ("--only", args.only, "all"),
+                                     ("--variants", args.variants, "off")):
+            if value != default:
+                sys.exit("error: %s needs the photo set of the project. It cannot "
+                         "be used with --photos-dir." % name)
+        rows, skipped = build_dir_queries(args.photos_dir)
+        photos_dir = os.path.abspath(os.path.expanduser(args.photos_dir))
+    else:
+        photos_dir = ""
+        rows, skipped = build_queries(variants=args.variants, only=args.only)
 
     parent = None
     if args.from_run:
@@ -613,15 +764,22 @@ def main():
                      % (parent, args.rerun_depth))
         sys.exit("error: the query set is empty")
     counts = collections.Counter(r["label"] for r in rows)
+    if photos_dir:
+        print("photos directory: %s" % photos_dir)
     print("query set: %d photos (%s)" % (
         len(rows), ", ".join("%s %d" % (k, counts[k]) for k in sorted(counts))))
     if skipped:
         print("left out: %s" % ", ".join(
             "%s %d" % (k, v) for k, v in sorted(skipped.items())))
+    if photos_dir:
+        print("no ground truth: the run records the candidates and states no "
+              "correctness")
 
     # State the rule for the variant photos and the count of the excluded slugs.
     # Both change the query set, and neither is visible in the counts above.
-    if args.variants == "off":
+    if photos_dir:
+        pass                               # a plain directory knows no variant
+    elif args.variants == "off":
         print("variant photos: %d left out (--variants off)" % skipped["variant"])
     elif args.variants == "strict":
         print("variant photos: %d in the set; only the slug of the photo counts as\n"
@@ -629,10 +787,11 @@ def main():
     else:
         print("variant photos: %d in the set; every slug of the variant group counts\n"
               "                as a true match (--variants group)" % counts["variant"])
-    excluded = load_excluded()
-    print("excluded slugs: %d in %s; %d photos left out"
-          % (len(excluded), os.path.basename(common.EXCLUDED_SLUGS_FILE),
-             skipped["excluded slug"]))
+    if not photos_dir:
+        excluded = load_excluded()
+        print("excluded slugs: %d in %s; %d photos left out"
+              % (len(excluded), os.path.basename(common.EXCLUDED_SLUGS_FILE),
+                 skipped["excluded slug"]))
 
     backend = None
     if not args.dry_run:
@@ -664,7 +823,11 @@ def main():
 
     stamp = time.strftime("%Y-%m-%dT%H%M%SZ", time.gmtime())
     repeat = ("repeat-d%d" % args.rerun_depth) if parent else ""
-    name = "-".join(x for x in (stamp, args.backend or "dry-run", repeat, args.label) if x)
+    # `dir` marks a run with no ground truth in the name of the directory, so the
+    # table of the runs at `/runs` states the kind of the run at first sight.
+    kind = "dir" if photos_dir else ""
+    name = "-".join(x for x in (stamp, args.backend or "dry-run", kind, repeat,
+                                args.label) if x)
     run_dir = os.path.join(common.RUNS_DIR, name)
     os.makedirs(run_dir, exist_ok=True)
     print("run directory: %s" % run_dir)
@@ -692,6 +855,8 @@ def main():
             "backend": args.backend, "limit": args.limit, "only": args.only,
             "variants": args.variants, "negative_strict": args.negative_strict,
             "workers": workers, "dry_run": args.dry_run,
+            # The page `/runs` reads this path to serve the photos of the run.
+            "photos_dir": photos_dir,
         },
         "backend": match_backends.redact(backend.spec) if backend else None,
         "config": {key: value for key, value in common.CONFIG_PATHS},
@@ -801,6 +966,20 @@ def main():
     with open(os.path.join(run_dir, "metrics.json"), "w", encoding="utf-8") as fh:
         json.dump(met, fh, ensure_ascii=False, indent=2, sort_keys=True)
     write_summary(os.path.join(run_dir, "summary.md"), meta, met)
+
+    if met.get("unlabelled"):
+        unl = met["unlabelled"]
+        print("")
+        print("no ground truth: %d photo(s), %d with a candidate, %d with none, "
+              "%d error(s)" % (unl["n"], unl["answered"], unl["no_answer"],
+                               unl["errors"]))
+        print("median top score %s, median gap to the second candidate %s" % (
+            unl["top_score_median"], unl["score_margin_median"]))
+        print("latency: median %s ms, p95 %s ms" % (
+            met["latency_ms"]["median"], met["latency_ms"]["p95"]))
+        print("written: %s" % run_dir)
+        print("read the answers at http://127.0.0.1:8154/runs")
+        return
 
     pos, neg = met["positive"], met["negative"]
     print("")

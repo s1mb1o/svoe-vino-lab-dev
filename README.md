@@ -51,7 +51,7 @@ at start:
 ```
 configuration: .../svoe-vino-testset/config.yaml
   rootdir              : /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
-  catalog_file         : .../svoe-wino-hackaton/derived/catalog.jsonl
+  catalog_file         : .../svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl
   photo_dir            : .../svoe-vino-testset/my
   ...
 work directory: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
@@ -165,6 +165,12 @@ The page has thirteen sort orders, twenty-two filters, and a text search.
 Sort by `unlabelled first` to continue an unfinished pass.
 Sort by `confidence, lowest first` to check the weakest evidence first.
 Filter by `has no positive photo` to find the wines that still need a good photo.
+
+The button `export CSV` downloads the current table view in its current order.
+The export uses the selected filter, slug scope, search text, sort order, and variant
+group scope. One CSV record describes one candidate photo. A wine with no candidate
+photo has one record with empty photo fields. The file contains UTF-8 text and protects
+text values from spreadsheet formula execution.
 
 #### The text search
 
@@ -415,6 +421,12 @@ and how long the run took. Every photo that a check reports carries a red outlin
 a pill at the top left; the pill states how many wines share the picture, and its
 tooltip names the other wine and the other file.
 
+`catalog_photo_twin` reports the CATALOGUE photo of a wine and not a candidate photo,
+so its finding marks no card. It draws a badge under the bottle photo in the first
+column instead. The badge states the tag and the size of the cluster, for example
+`same pic ×2`, and its tooltip states the measured distance and names the other wines of
+the cluster.
+
 The result lives in the browser tab. A reload empties it, and the filter
 `failed a check` then shows nothing until a new run.
 
@@ -423,6 +435,10 @@ The result lives in the browser tab. A reload empties it, and the filter
 | id | What it reports |
 |---|---|
 | `shared_positive` | One picture that carries the label `positive` under two or more slugs. |
+| `photo_too_small` | One photo whose long side is under 256 pixels. |
+| `photo_below_model_input` | One photo whose long side is 256 to 447 pixels. |
+| `candidate_is_catalog_photo` | One candidate photo that is the catalogue bottle photo of the same wine. |
+| `catalog_photo_twin` | Two wines whose CATALOGUE bottle photo is the same picture, or nearly the same. |
 
 `shared_positive` reads every candidate photo and compares the bytes. One picture
 cannot show two wines, so such a pair is a defect of the set: either one label is
@@ -433,17 +449,112 @@ group is the same wine in two bottles and the group itself may be wrong.
 A re-encoded copy or a resized copy of the same picture has other bytes, and this
 check does not find it.
 
+`photo_too_small` and `photo_below_model_input` read the size of every photo that is
+not marked `unusable` and not marked for deletion. The matcher runs SigLIP2 with an
+input of 448 by 448 pixels, and the preprocessor stretches the whole picture into that
+square; it does not keep the aspect ratio and it does not crop.
+
+The two checks read the LONG side of the photo. A photo of a bottle is tall and narrow,
+so its short side is small even when the photo is correct: the bottle itself is narrow,
+and a wider frame would only hold more background. The long side measures how much of
+the picture belongs to the bottle. The short side reported 65 photos of the set of
+today against 0 for the long side, and 52 of them were tall product shots such as 142
+by 600 pixels.
+
+A photo with a long side under 448 is stretched up and holds no more detail than it
+had. A photo with a long side under 256 holds less than the half of the input, and the
+text of the label is then too small for the text step and for the OCR step. The pill of
+such a photo states its size, for example `280x280`. The two checks never report the
+same photo: the band under 256 belongs to the first check alone.
+
 One run reads the 2,543 candidate photos, about 510 MB, and takes about 2.5 seconds.
 The result is not cached. The lock is held only long enough to take the rows and the labels, so
 a label of the reviewer is not blocked while a check runs.
 
+`candidate_is_catalog_photo` finds a studio render that leaked into the candidate set.
+The set holds real-world photos only. The catalogue bottle photo of a wine is a studio
+render, and a candidate photo that is that render makes the benchmark easier than
+reality: the matcher reads its own catalogue picture back.
+
+The check compares every candidate photo with the bottle photo of the SAME wine. It
+never compares across wines. A wine with no catalogue bottle photo is not checked. A
+photo marked `unusable` and a photo marked for deletion stay out.
+
+Two pictures count as duplicates when the bytes are equal, and also when the content is
+equal and the size differs. The second case reduces each picture to one signature: the
+check composites the picture on white, converts it to grey, crops it to the bounding box
+of the bottle, and resizes that box to 32 by 32. The measure is the mean absolute
+difference of the 1,024 values, on the scale 0 to 255, and the threshold is 10.0.
+
+The crop is the step that finds a copy with another white margin. Without it the same
+picture measures as much as 119, because the catalogue render and the copy on a shop page
+are cut differently. The crop variant put 304 of the 4,112 pairs of the set of
+2026-09-18 under the threshold, against 143 for the plain variant. The check itself
+reports 282 photos in 241 wines, because it leaves out the photos that are already
+marked `unusable` or marked for deletion.
+
+A made copy of one bottle photo measured as follows: half size as JPEG 0.28, quarter
+size as PNG 0.35, the same size at JPEG quality 70 0.18, and a wider white margin 0.12.
+
+`catalog_photo_twin` compares the CATALOGUE bottle photo of every wine with the
+catalogue bottle photo of every other wine. It reads no candidate photo of `my/`, so a
+label and a candidate photo do not change its result. Two wines that carry one picture
+are a defect of the catalogue: the matcher cannot separate them by the image, and one of
+the two cards names the wrong bottle.
+
+The check reads the whole catalogue, including a card that has no directory in `my/`.
+The filter `failed a check` shows such a card, so both halves of a cluster reach the
+table. On the catalogue of 2026-09-17 the check reads 2,093 cards, which is 2,189,278
+pairs.
+
+The compare runs in two stages. Stage one reads the grey 32 by 32 signature of
+`candidate_is_catalog_photo` for every picture and measures every pair with numpy in
+about 3 seconds; it names the pairs under 3.0 of 255. Stage two reads a COLOUR 128 by
+128 signature of the named pictures alone and measures again in about 8 seconds. The
+whole run takes about 43 seconds.
+
+Stage two is needed. The grey 32 by 32 signature holds no colour and no text of the
+label, so two DIFFERENT wines of one producer line measure as little as 0.09 of 255
+under it, which is the band of a true duplicate. Under the colour 128 by 128 signature a
+true duplicate measures 0.00 and the nearest different picture measures 0.18. The
+measurement is in `ResearchLog.md`.
+
+A finding reports the whole cluster and not the pair. Three wines that carry one picture
+give one finding of three slugs. A finding carries one of two tags:
+
+| tag | distance | What it means |
+|---|---|---|
+| `same pic` | under 0.05 | The two cards carry one picture. This is a defect. |
+| `twin` | 0.05 to 1.0 | The two pictures are different photographs of a bottle that looks nearly the same. This is not a defect by itself. |
+
+A `twin` cluster is a producer line: 8 wines of `fanagoriya-primum-alveus`, 6 of
+`chteau-le-grand-vostock ... reserve`. The reviewer judges such a cluster, and the pair
+is a candidate for a variant group. The badge of `same pic` takes the colour of a defect
+and the badge of `twin` takes the colour of a variant.
+
+On the catalogue of 2026-09-17 the check reports 70 findings over 162 wines: 27 clusters
+with the tag `same pic` over 55 wines, and 43 clusters with the tag `twin`.
+
+The check needs numpy. Without it one finding states that numpy is not installed, and
+the server does not fail.
+
+The check has two limits. The measure has no sharp edge between the two classes, so a
+copy over the threshold is not reported and the check misses it. The check also
+composites a transparent picture on WHITE, so a render that was flattened on another
+colour measures far over the threshold and is not found. A shop page nearly always uses
+white. `ResearchLog.md` holds the measurement and the choice of the threshold.
+
+The run reads the pixels of about 6,000 files and takes about 50 seconds. The older
+checks take about 3 seconds. The check decodes in 8 threads.
+
 #### Adding a check
 
 The checks live in `scripts/review_server.py`, above `plan_deletes`. Write a function
-`check_<name>(rows, labels, groups)` that answers a list of findings, and name it in
-`CHECKS` with an `id`, a `title`, and a `help` text. A finding MUST hold `check` and
-`why`, and it SHOULD hold `photos` (a list of `{slug, file}`) or `slugs`. The dialog
-reads `GET /api/checks`, so a new check reaches the page with no change of the page.
+`check_<name>(rows, labels, groups, catalog)` that answers a list of findings, and name
+it in `CHECKS` with an `id`, a `title`, and a `help` text. A finding MUST hold `check`
+and `why`, and it SHOULD hold `photos` (a list of `{slug, file}`) or `slugs`. It MAY
+hold `tag`, the text of the pill. The dialog reads `GET /api/checks`, so a new check
+reaches the page with no change of the page.
 
 ### Adding a photo by drag and drop
 
@@ -606,8 +717,8 @@ The tool reads the file again at the next start, so a pass can stop and continue
 A label whose photo is no longer in `my/` is dropped at start.
 
 The tool reads the slug-to-bottle-photo map from the file that `catalog_file` names in
-`config.yaml`. The default value is `svoe-wino-hackaton/derived/catalog.jsonl`.
-`../svoe-wino-hackaton/scripts/build_catalog.py` writes that file.
+`config.yaml`. The default value is
+`svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl`.
 4 of the 814 wines have no catalogue bottle photo. The row states the reason.
 
 The tool uses the Python standard library and `PyYAML`. `PyYAML` reads `config.yaml`.
@@ -643,7 +754,18 @@ python3 scripts/match_run.py --dry-run          # build the manifests, call noth
 # repeat only what failed in an earlier run
 python3 scripts/match_run.py --backend my-service --from-run runs/<run id>
 python3 scripts/match_run.py --backend my-service --from-run runs/<run id> --rerun-depth 10
+
+# a plain directory of photos, with no ground truth
+python3 scripts/match_run.py --backend svm-siglip2-448 --photos-dir ~/Downloads/photos
 ```
+
+`--photos-dir DIR` replaces the query set with the image files of one directory. The walk
+is recursive. Such a directory holds no ground truth, so every photo carries the label
+`unlabelled`, the run states no correctness, and every share of `metrics.json` is empty.
+The run records the candidates, the scores, the latency, and the errors. The page `/runs`
+shows the photos and the answers, and it names the counts that need no truth. Use the
+mode to see what a backend answers for photos that the project holds no label for.
+`--photos-dir` MUST NOT be used with `--from-run`, `--only`, or `--variants`.
 
 `--from-run` asks the backend only about the photos that failed before, so the answer to
 "did the change help?" costs one request per failure instead of one per photo.
@@ -679,7 +801,11 @@ The review tool shows the runs at `http://127.0.0.1:8154/runs`: the table of the
 the metrics of the selected run, and one row per photo with the candidates that came
 back. A click on a column sorts the runs; the control `Sort` orders the photos, for
 example the most wrong first. The expected wine carries a green border, and the wine that a negative photo MUST
-NOT match carries a red one.
+NOT match carries a red one. A dashed green border marks the true wine of a negative
+photo, which the server reads from a byte-equal `positive` photo of the same run. The
+filter `negative_above_positive` selects the negative photos whose forbidden wine stands
+above that true wine, and the filter `twin_conflict` selects the photos that a defect of
+the set marks.
 
 Read `docs/match-runner.md` for every file, every field, and every option.
 

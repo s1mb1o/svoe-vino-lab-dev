@@ -50,6 +50,8 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 12 | Change the sort to `confidence, lowest first` | The wine with the lowest `conf` value in its file names comes first. |
 | 13 | Change the filter to `has no positive photo` | Every listed wine holds no green card. The count line states how many wines are shown. |
 | 13a | Change the filter to `has a negative sample` | Every listed wine holds at least one blue card. |
+| 13b | Set a filter, slug scope, search, and sort. Press `export CSV`. | One CSV file downloads. It contains only the wines in the table, in the table order. It records the active view settings. Each candidate photo has one record. A wine with no candidate photo has one record with empty photo fields. |
+| 13c | Open the exported file in a spreadsheet. | Cyrillic text is correct. A comma, quote, or line break in a note stays in one cell. Text that starts with `=`, `+`, `-`, or `@` does not run as a formula. |
 | 14 | Type a producer name in the search field | Only the matching wines stay. The search covers slug, name, producer, region, and grape. |
 | 15 | Click a candidate photo | The large view opens. The catalogue bottle is at the left. The candidate photo is at the right. Each image has a caption. |
 | 15a | Click one of the two large images | The view stays open. |
@@ -218,13 +220,47 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 162 | Label a photo while that view is shown | The table does not change. The view holds until the filter is changed. |
 | 163 | Change the filter, then set it back to `failed a check` | The same wines are shown again. The result lives in the tab. |
 | 164 | Reload the page and set the filter to `failed a check` | The table is empty and the count line states `no check was run yet; press validate`. |
-| 165 | `curl -s $H/api/checks` | `{"checks": [{"id": "shared_positive", "title": ..., "help": ...}]}`. No `run` field. |
-| 166 | POST `/api/validate` with `{"checks": ["nope"]}` | `{"error": "unknown check: nope. The known checks are shared_positive"}`. |
+| 165 | `curl -s $H/api/checks` | Five checks: `shared_positive`, `photo_too_small`, `photo_below_model_input`, `candidate_is_catalog_photo`, `catalog_photo_twin`, each with `title` and `help`. No `run` field. |
+| 166 | POST `/api/validate` with `{"checks": ["nope"]}` | `{"error": "unknown check: nope. The known checks are candidate_is_catalog_photo, catalog_photo_twin, photo_below_model_input, photo_too_small, shared_positive"}`. |
 | 167 | POST `/api/validate` with `{"checks": []}` | `{"error": "no check was chosen"}`. |
 | 168 | POST `/api/validate` with no body | Every check runs. |
 | 169 | Compare `review-labels.json` before and after a run | The file is not touched. A check only reads. |
 | 170 | Mark one photo `positive` in two wines that hold the same picture, then run the check | Both wines are reported, and both photos are marked. |
 | 171 | Make one of the two `negative`, then run the check again | The pair is no longer reported. |
+| 172 | Run `photo_too_small` alone | Every reported photo has a long side under 256 px. The pill states the size, for example `280x280`. The tooltip states the size and the threshold. On the set of today the list is empty. |
+| 173 | Run `photo_below_model_input` alone | Every reported photo has a long side of 256 to 447 px. A tall product shot such as 142 by 600 px is not reported. |
+| 174 | Run both size checks together | No photo is in both lists. The count line adds the two counts. |
+| 175 | Mark a small photo `unusable`, then run the check again | The photo is no longer reported. |
+| 176 | Look at a photo that a size check reports | The finding holds `width`, `height`, `long_side`, and `tag`. A tall product shot such as 142 by 600 pixels is NOT reported. |
+| 177 | Run the size checks with no Pillow in the environment | One finding states that Pillow is not installed. The server does not fail. |
+| 178 | Run `candidate_is_catalog_photo` alone | The run takes about 50 seconds. On the set of 2026-09-18 it reports 282 photos in 241 wines. |
+| 179 | Look at a photo that this check reports | The pill reads `catalogue render`. The tooltip states the difference of the two signatures and the threshold `10.0`. |
+| 180 | Compare the reported photo with the bottle photo in column 1 | The two show the same picture. The size or the encoding may differ. |
+| 181 | Look at the finding of a reported photo | It holds `same_bytes`, `difference`, and `tag`. `difference` is under `10.0`, and it is `0` when `same_bytes` is true. |
+| 182 | Copy a catalogue bottle photo into `my/<slug>/` of its own wine, then run the check | The copy is reported with `same_bytes: true` and `difference: 0`. |
+| 183 | Save that copy at half the size as JPEG, then run the check again | The copy is reported with `same_bytes: false` and `difference` about `0.3`. |
+| 184 | Save it again at a quarter of the size as PNG, at the same size at JPEG quality 70, and with a wider white margin | Every one is reported. The measured values are `0.35`, `0.18`, and `0.12`. |
+| 185 | Copy the bottle photo of a DIFFERENT wine into `my/<slug>/` | It is NOT reported. The check never compares across wines. |
+| 186 | Flatten a transparent bottle photo on BLACK and copy it in | It is NOT reported. This is a known limit: the check composites on white. |
+| 187 | Mark a reported photo `unusable`, then run the check again | The photo is no longer reported. |
+| 188 | Run the check on a wine with no catalogue bottle photo | The wine is never reported. The check needs a bottle photo to compare against. |
+| 189 | Compare `review-labels.json` before and after the run | The file is not touched. The check only reads. |
+| 190 | Run `candidate_is_catalog_photo` with no Pillow in the environment | One finding states that Pillow is not installed. The server does not fail. |
+| 191 | Run `catalog_photo_twin` alone | The run takes about 43 seconds. On the catalogue of 2026-09-17 it reports 70 findings over 162 wines. |
+| 192 | Count the tags of the findings | 27 findings carry `same pic` and 43 carry `twin`. The 27 cover 55 wines. |
+| 193 | Look at a wine that the check reports | A badge sits under the bottle photo in column 1, not on a card. It reads the tag and the size of the cluster, for example `same pic ×2`. |
+| 194 | Hover the badge | The tooltip states the measured distance and the limit, and it names the other wines of the cluster. |
+| 195 | Open the row of each wine of a `same pic` cluster | The bottle photo in column 1 is the same picture in every row. |
+| 196 | Look at the finding of a `same pic` cluster | It holds `slugs`, `bottle: true`, `same_picture: true`, `same_bytes`, `distance` under `0.05`, and `tag: "same pic"`. It holds no `photos`. |
+| 197 | Look at the finding of a `twin` cluster | `same_picture` is false, `distance` is from `0.05` to `1.0`, and `tag` is `twin`. The badge takes the colour of a variant, not of a defect. |
+| 198 | Open the row of each wine of a `twin` cluster | The bottle photos are different pictures of a bottle that looks nearly the same. They are one producer line. |
+| 199 | Find a cluster of more than two wines | One finding holds every slug of it. The pairs are not reported one by one. `fanagoriya-primum-alveus` gives a cluster of 8. |
+| 200 | Look for a card that has no directory in `my/` among the reported wines | Such a card is shown; the strip states `no directory my/<slug>`. The filter `failed a check` admits a catalogue-only card. |
+| 201 | Label a candidate photo of a reported wine, then run the check again | The result does not change. The check reads the catalogue photo alone. |
+| 202 | Mark every candidate photo of a reported wine `unusable`, then run the check again | The wine is still reported. The check does not read a candidate photo. |
+| 203 | Compare `review-labels.json` before and after the run | The file is not touched. The check only reads. |
+| 204 | Run `catalog_photo_twin` with no numpy in the environment | One finding states that numpy is not installed. The server does not fail. |
+| 205 | Run `catalog_photo_twin` with no Pillow in the environment | One finding states that Pillow is not installed. The server does not fail. |
 
 ## The agent API — `/api/v1/`
 
@@ -313,6 +349,12 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | M11 | A backend with `headers: {X: env:NOT_SET}` | The run refuses to start and names the environment variable. |
 | M12 | `run.json` of a backend that holds a header | The header name stays, the value is `(redacted)`. |
 | M13 | Stop a run with Ctrl+C | `predictions.jsonl` and `results.jsonl` hold the rows that were already answered. |
+| M14 | `python3 scripts/match_run.py --photos-dir <a directory of photos> --dry-run` | The line `photos directory: <the absolute path>`, then `query set: N photos (unlabelled N)`, then `no ground truth: the run records the candidates and states no correctness`. No line about the variant photos and no line about the excluded slugs. |
+| M15 | The same with a directory that holds subdirectories and one file that is not an image | The walk is recursive. `image_path` of `queries.jsonl` holds the path against the directory. The line `left out:` names `not an image`. |
+| M16 | `--photos-dir DIR` with `--only positive`, or with `--variants group`, or with `--from-run <run>` | The runner stops. The error names the option and states that it needs the photo set of the project. |
+| M17 | `python3 scripts/match_run.py --backend <a backend> --photos-dir DIR --limit 5` | The name of the run directory holds `dir`. `run.json` holds `options.photos_dir`. Every row of `results.jsonl` holds `label: "unlabelled"`, `slug: ""`, `truth: []`, `rank_of_truth: null`, and the outcome `answered` or `no_answer`. |
+| M18 | `metrics.json` of that run | Every share is `null`. The block `unlabelled` holds `n`, `answered`, `no_answer`, `errors`, `top_score_median`, and `score_margin_median`. The block `latency_ms` holds the usual numbers. |
+| M19 | `summary.md` of that run | It states `A run of a plain directory`, names the directory, and holds no share and no recall. |
 
 ## The repeat of a run — `--from-run`
 
@@ -346,6 +388,10 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | R8 | Set the filter to `negative: the slug came back at rank 1` | Only the false matches are listed. |
 | R9 | Press `load more` | The next 100 photos are added under the present ones. |
 | R10 | Click a photo or a bottle | The large view opens. `Esc` closes it. |
+| R11 | Open a run made with `--photos-dir` | A note above the cards states `A run of a plain directory`, with the photo count, the count with a candidate, the count with none, the errors, the median top score, and the median gap. Every share card holds a dash. |
+| R12 | Look at a row of that run | The photo is shown. The tag reads `unlabelled` and the second tag reads `answered`. The line under the photo holds the path of the file, `no ground truth`, and the latency. No candidate carries a green or a red border. |
+| R13 | Rename or move the photos directory, then open that run again | The rows stay, and every photo shows the broken-image mark. The answers are still readable. |
+| R14 | `curl -s -o /dev/null -w "%{http_code}" "$H/img/runphoto?id=<run>&file=../../../etc/hosts"` | `404`. The route serves no file outside the directory of the run. |
 | R11 | Click the column `match share` of the table of the runs | The runs stand by the match share, the smallest first. The header carries an arrow. |
 | R12 | Click the same column again | The order turns around. |
 | R13 | Click `started` | The newest run stands first. |
@@ -356,5 +402,17 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | R18 | Look at the first row of the cards | Match share, F1 top-1, F1 top-5, the share inside 3000 ms, the near-duplicate errors, and the false matches. |
 | R19 | A run whose match share reaches 90% | The card is green. Below 90% it is red. |
 | R20 | A run of a backend with `top_k: 1` | `F1 top-5` shows a dash, never a number. |
+| R21 | Look at a row of a negative photo whose photo is also `positive` for another wine | The candidate of that other wine carries a dashed green border. The left column states `true wine: <slug>`, its rank, and the rank of the forbidden slug. |
+| R22 | Look at such a row where the true wine stands above the forbidden wine | The row carries no tag `negative_above_positive`. |
+| R23 | Set the filter to `negative: the wrong wine stands above the true wine` | Only the rows whose forbidden wine stands above the true wine are listed. Each carries the red tag `negative_above_positive`. |
+| R24 | Look at a row whose true wine never came back | A dashed green card stands after the last candidate, set apart by a gap, and states `true wine`. |
+| R25 | Set the filter to `set defect: one photo is positive for two wines` | The rows of the photos that two positive slugs share are listed, with every label. Each carries the red tag `twin_conflict`. |
+| R26 | `GET /api/run?id=<run>&filter=negative_above_positive` | Every row holds `twin.verdict` `below`. |
+| R27 | Open a run made before this feature | The marks are there. The field `twin` is added when the run is read, not when it is written. |
+| R28 | Set the filter to `positive: the true slug is not in the top 5` | Only the photos whose true slug stands at rank 6 or deeper, or never came back, are listed. |
+| R29 | Compare the counts of `not in the top 5` and `the true slug never came back` | The first count is never smaller than the second. |
+| R30 | A backend with `top_k: 5` | `not in the top 10` and `not in the top 5` hold the same rows, because no candidate stands deeper than 5. |
+| R31 | Set the filter to `positive: the true slug is at rank 2 to 5` | Only the photos whose true slug came back at rank 2, 3, 4, or 5 are listed. A photo whose true slug never came back is not listed. |
+| R32 | Add the counts of `correct at rank 1`, `rank 2 to 5`, and `not in the top 5` | The sum equals the count of the positive photos of the run. |
 | R11 | `GET /api/run?id=../../etc` | `bad run id`. |
 | R12 | `GET /api/run?id=nope` | `unknown run`. |

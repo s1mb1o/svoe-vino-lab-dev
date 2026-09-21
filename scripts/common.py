@@ -35,7 +35,8 @@ def config_path(key, default):
 # Catalogue of the vino-svoe.ru wines, one JSON record per line.
 CATALOG_FILE = config_path(
     "catalog_file",
-    os.path.join(os.path.dirname(ROOT), "svoe-wino-hackaton", "derived", "catalog.jsonl"))
+    os.path.join(os.path.dirname(ROOT), "svoe-wino-hackaton", "dataset", "derived",
+                 "official-2026-09-17", "catalog.jsonl"))
 
 # Photo set. One directory per wine slug.
 PHOTO_DIR = config_path("photo_dir", os.path.join(ROOT, "my"))

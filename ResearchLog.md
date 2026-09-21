@@ -2,6 +2,202 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-19 — a grey 32 by 32 signature cannot compare two wines; colour and 128 px can
+
+Question: how does the review tool find two wines whose CATALOGUE bottle photo is the
+same picture? Such a pair is a defect of the catalogue: the matcher cannot separate the
+two wines by the image, and one of the two cards names the wrong bottle.
+
+The catalogue of 2026-09-17 holds 2,103 cards, and 2,093 of them have a bottle photo on
+disk. That is 2,189,278 pairs. A full compare at full resolution is not possible in the
+time of a check, so the compare needs a signature.
+
+### The grey 32 by 32 signature is not enough
+
+The first attempt reused `photo_signature`, which the check `candidate_is_catalog_photo`
+already uses: composite on white, convert to grey, crop to the bounding box of the
+bottle, resize to 32 by 32. With numpy the 2.19 million pairs measure in 3.4 seconds.
+
+The result looked wrong. 227 pairs measured under 1.0 of 255, and 931 measured under
+6.0. Eight of the closest pairs were read by eye against the pictures themselves:
+
+| pair | measured | what the pictures show |
+|---|---|---|
+| `abrau-...-bayanshira` / `abrau-...-madrasa` | 0.00 | one picture, under a white wine and a red wine |
+| `agora-yachting-cabernet-sauvignon` / `agora-yachting-sauvignon` | 0.00 | one picture, and its label reads `SAUVIGNON` |
+| `chateau-le-grand-vostock-krasnostop-rezerv` / `shato-ay-danil-grenash` | 0.00 | one picture, under two different producers; the label reads `ГРЕНАШ` |
+| `method-classic-kokur` / `pino-nuar-2025` | 0.00 | one picture; the label reads `ПИНО НУАР` |
+| `katharon-katharon-kaberne-fran` / `katharon-katharon-merlo` | 0.12 | TWO pictures of one bottle design; the label text differs |
+| `fanagoriya-brule-cabernet-franc` / `fanagoriya-brule-muscat-ottonel` | 0.14 | TWO pictures; one is a rosé and the other is a dark green bottle |
+
+The two populations overlap. A true duplicate measures 0.00 and a different picture
+measures 0.09. The reason is the signature itself: 32 by 32 grey holds no colour and no
+text of the label. Two wines of one producer line share the bottle shape and the label
+layout, and the signature keeps nothing else. The measure is real; it answers a question
+that is not the question asked.
+
+### Colour and 128 pixels separate the two populations
+
+Four signatures were measured against six hand-checked duplicates and five hand-checked
+different pictures. The crop and the composite on white are the same in all four.
+
+| signature | largest value of a duplicate | smallest value of a different picture |
+|---|---|---|
+| 32 by 32 grey | 0.00 | 0.09 |
+| 64 by 64 grey | 0.00 | 0.11 |
+| 64 by 64 colour | 0.00 | 0.12 |
+| 128 by 128 colour | 0.00 | 0.18 |
+
+Every duplicate measures exactly 0.00 at every resolution, and the gap to the nearest
+different picture grows with the resolution and with the colour. 128 by 128 colour gives
+the widest gap and is the choice.
+
+A 128 by 128 colour signature is 49,152 bytes against 1,024 bytes. All 2.19 million
+pairs at that size are about 107 billion operations, which is too slow. The check
+therefore runs in two stages: the grey signature names the near pairs of the whole
+catalogue in 3.4 seconds, and the colour signature measures those pairs alone in 7.5
+seconds. The coarse cut is 3.0 of 255, which is far above the 0.5 band where the two
+populations of the grey signature lie, so the cut loses nothing.
+
+### The duplicates of this catalogue are all byte-identical
+
+The 504 pairs under the coarse cut were measured again with the colour signature:
+
+| colour distance | pairs | of which byte-identical |
+|---|---|---|
+| exactly 0.000 | 29 | 29 |
+| 0.001 to 0.100 | 1 | 0 |
+| 0.100 to 0.500 | 17 | 0 |
+| 0.500 to 1.000 | 70 | 0 |
+| 1.000 to 5.000 | 357 | 0 |
+
+Every pair that is one picture is byte-identical, and the next pair measures 0.069. This
+catalogue holds no resized copy and no re-encoded copy of a bottle photo, unlike `my/`,
+where `candidate_is_catalog_photo` finds such copies. A SHA-256 alone would find all 29
+pairs of today. The signature is kept because it does not depend on that property: a
+later import of the catalogue may hold a resized copy, and a SHA-256 would miss it.
+
+### The two tags
+
+The cliff between 0.000 and 0.069 carries a meaning, and the check reports both sides of
+it with a different tag.
+
+`same pic` is a distance under 0.05. The two cards carry one picture. This is a defect.
+On the catalogue of today it is 27 clusters over 55 wines.
+
+`twin` is a distance from 0.05 to 1.0. The two pictures are different photographs of a
+bottle that looks nearly the same. On the catalogue of today it is 43 clusters, and they
+are producer lines: 8 wines of `fanagoriya-primum-alveus`, 6 of
+`chteau-le-grand-vostock ... reserve`, 5 of `fanagoriya-brule`. This is not a defect by
+itself. The reviewer judges it, and the pair is a candidate for a variant group.
+
+### The cluster, not the pair
+
+Three wines that carry one picture give three pairs. The check joins the pairs with a
+union-find and reports one cluster of three. The reviewer reads the whole cluster from
+any one of its rows, and the count of the findings then states the number of defects and
+not the number of pairs.
+
+## 2026-09-18 — a crop to the bottle finds twice as many catalogue renders in `my/`
+
+Question: how does the review tool find a candidate photo in `my/<slug>/` that is the
+catalogue bottle photo of the same wine? The set MUST hold real-world photos only. The
+requirement names two cases: the bytes are equal, and the content is equal but the size
+differs.
+
+The first case is a SHA-256 of the two files. The second case needs the pixels, because
+a resized copy, a re-encoded copy, and a copy with another white margin all hold other
+bytes.
+
+Method. Each picture is reduced to one signature: composite on white, convert to grey,
+resize to 32 by 32. The measure of two signatures is the mean absolute difference (MAD)
+of the 1,024 values, on the scale 0 to 255. The measure ran over the whole set of
+2026-09-18: 1,853 wines, 4,112 pairs of one candidate photo and one catalogue bottle
+photo. 66 pairs were then compared by eye across the whole range of the measure.
+
+### Result 1 — no candidate photo is byte-equal to its catalogue bottle photo
+
+0 of the 4,112 pairs have equal bytes. The byte case alone finds nothing on this set.
+Every leaked render came in through a re-encode or a resize. The check MUST read the
+pixels; a digest is not enough.
+
+### Result 2 — a crop to the bottle is the step that makes the measure work
+
+Two variants of the signature were measured.
+
+| Variant | Pairs under MAD 10 | First false pair seen |
+|---|---|---|
+| Plain: grey, resize to 32 by 32 | 143 | MAD 12.5 |
+| Crop: grey, crop to the content, resize to 32 by 32 | 304 | MAD about 16 |
+
+The crop takes the bounding box of every pixel that is more than 18 grey values under
+white, and resizes that box. It removes the white margin and the aspect ratio from the
+measure.
+
+The plain variant misses a copy that carries another margin. Measured cases: the same
+picture scored MAD 119.9 (`aya-organic-wine-viney`), 114.8 (`vinodelnya-vedernikov-ve`),
+93.7 (`agrolayn-mountain-eagle`), and 71.1 (`villa-sofiya-merlo-kaber`) in the plain
+variant, against 6.1, 2.0, 0.8, and 2.6 in the crop variant. A margin is common, because
+the catalogue render and the copy on a shop page are cut differently.
+
+### Result 3 — the threshold
+
+The samples of the crop variant, by eye:
+
+| Band | Sampled | Result |
+|---|---|---|
+| MAD under 6 | 21 pairs | every pair is the same picture |
+| MAD 6 to 11 | 18 pairs | every pair is the same picture |
+| MAD 11 to 19 | 18 pairs | mixed; clear false pairs from about 16 |
+| MAD 19 to 30 | 9 pairs | mostly different wines |
+
+The threshold is set to 10.0, one step under the first uncertain case. On the set of
+2026-09-18, 304 of the 4,112 pairs are under the threshold. The measurement pass read
+every pair. The check in the tool leaves out a photo that is already marked `unusable` or
+marked for deletion, so it reports 282 photos in 241 wines. 23 of the reported photos
+carry the label `positive`, which makes them defects of the benchmark, not only of the
+set.
+
+A copy over the threshold is not reported. The check misses it. The measure has no sharp
+edge between the two classes, so no threshold reports every copy and no false pair.
+
+### Result 4 — the forms of a copy that the check finds
+
+A made copy of one catalogue bottle photo, 260 by 1000 pixels with an alpha channel:
+
+| Copy | Measure | Found |
+|---|---|---|
+| The same file | 0 (equal bytes) | yes |
+| Half size, JPEG quality 82 | 0.28 | yes |
+| Quarter size, PNG | 0.35 | yes |
+| The same size, JPEG quality 70 | 0.18 | yes |
+| The same picture with a wider white margin | 0.12 | yes |
+| The same picture flattened on BLACK | over the threshold | no |
+
+The last row is the second limit of the check. The check composites a transparent picture
+on WHITE. A render that was flattened on another colour measures far over the threshold.
+A shop page nearly always uses white, so this case is rare.
+
+### Result 5 — the cost of the run
+
+The check reads the pixels of every candidate photo and of every catalogue bottle photo,
+about 6,000 files. Pillow releases the interpreter lock while it decodes, so threads
+help.
+
+| Pass | Time |
+|---|---|
+| One thread | about 120 s |
+| Eight threads | about 50 s to 73 s |
+
+`Image.draft("RGB", (512, 512))` lets a JPEG decode at a reduced scale and saves about a
+third of the time. The other formats ignore the call. The result is not cached: a cache
+would have to follow every write of every file.
+
+The catalogue volume itself is fast. A read of 10 bottle photos takes 6 ms, and
+`os.listdir` over the 15,803 files of the strapi `uploads` directory takes 13 ms. The
+cost of the run is the decoding, not the disk.
+
+
 ## 2026-09-17 — the official API takes parallel requests; 4 at once is the best rate
 
 Question: can `scripts/match_run.py --backend official-api` send several requests at

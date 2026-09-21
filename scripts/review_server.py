@@ -26,6 +26,7 @@ import argparse
 import base64
 import hashlib
 import html
+import io
 import ipaddress
 import json
 import mimetypes
@@ -39,6 +40,7 @@ import time
 import urllib.parse
 import urllib.request
 import webbrowser
+from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import yaml
@@ -972,8 +974,8 @@ def perform_copies(planned, labels):
 # states two things that cannot both be true. A check never writes. The reviewer
 # chooses the checks in a dialog and the table then shows the wines that fail.
 #
-# To add a check: write a function `check_<name>(rows, labels, groups)` that
-# answers a list of findings, and name it in `CHECKS`. A finding MUST hold `check`
+# To add a check: write a function `check_<name>(rows, labels, groups, catalog)`
+# that answers a list of findings, and name it in `CHECKS`. A finding MUST hold `check`
 # and `why`, and it SHOULD hold `photos` (a list of `{slug, file}`) or `slugs`
 # (a list of slugs). The route builds the list of failing wines from those two
 # fields, so a new check needs no change of the page.
@@ -1000,7 +1002,7 @@ def photo_digests(rows):
     return by_digest
 
 
-def check_shared_positive(rows, labels, groups):
+def check_shared_positive(rows, labels, groups, catalog):
     """Find one picture that carries the label `positive` for two or more wines.
 
     The label `positive` states that the picture shows this wine. One picture
@@ -1040,6 +1042,473 @@ def check_shared_positive(rows, labels, groups):
     return findings
 
 
+# The matcher runs SigLIP2 with an input of 448 by 448 pixels. The preprocessor
+# stretches the whole picture into that square. It does not keep the aspect ratio,
+# and it does not crop. `SiglipImageProcessor` calls `resize(image, size=(448, 448))`
+# in one step; `preprocessor_config.json` of `google/siglip2-so400m-patch14-384`
+# holds `size` alone and no `crop_size`.
+#
+# The check reads the LONG side of the picture, not the short side. A photo of a
+# bottle is tall and narrow, so its short side is small even when the photo is good:
+# the bottle itself is narrow, and a wider frame would only hold more background.
+# The long side measures how much of the picture belongs to the bottle. Over the
+# 3,832 photos that the check reads today the short side matches 65 photos and the
+# long side matches 0; 52 of the 65 are tall product shots such as 142 by 600
+# pixels, which are correct photos.
+#
+# A picture with a long side under 448 is stretched up and holds no more detail than
+# it had. A picture with a long side under 256 is below the half of that input, and
+# the text of the label is then too small for the text step and for the OCR step of
+# the pipeline.
+#
+# The downloader already refuses a picture with a side under `MIN_SIDE` (200), see
+# `scripts/02_download.py`. A smaller picture in the set came in before that rule or
+# by hand, so the set MUST be checked as well.
+MODEL_INPUT_PX = 448
+TOO_SMALL_PX = 256
+
+
+def photo_sizes(rows, labels):
+    """Return [(slug, file, width, height)] for the photos that a check reads.
+
+    The label `unusable` stays out: such a photo is already out of the set. Every
+    other photo is read, with a label and without one, because the size decides
+    whether the photo can carry a label at all.
+
+    `Image.open` reads the header of the file, not the pixels, so the pass over the
+    whole set takes well under a second.
+    """
+    from PIL import Image
+    out = []
+    for row in rows:
+        for photo in row["photos"]:
+            entry = (labels.get(row["slug"]) or {}).get(photo["file"]) or {}
+            if entry.get("label") == "unusable" or entry.get("delete"):
+                continue
+            path = os.path.join(MY, row["slug"], photo["file"])
+            try:
+                with Image.open(path) as im:
+                    width, height = im.size
+            except (OSError, ValueError):
+                continue
+            out.append((row["slug"], photo["file"], width, height))
+    return out
+
+
+def _size_findings(rows, labels, check, low, high):
+    """Report every photo whose long side is at least `low` and under `high`."""
+    try:
+        sizes = photo_sizes(rows, labels)
+    except ImportError:
+        return [{"check": check, "why": "Pillow is not installed, so the size of a "
+                                        "picture cannot be read", "photos": []}]
+    findings = []
+    for slug, fname, width, height in sizes:
+        long_side = max(width, height)
+        if not (low <= long_side < high):
+            continue
+        findings.append({
+            "check": check,
+            "why": "the photo is %d by %d pixels; the long side %d is under %d"
+                   % (width, height, long_side, high),
+            "tag": "%dx%d" % (width, height),
+            "width": width,
+            "height": height,
+            "long_side": long_side,
+            "photos": [{"slug": slug, "file": fname}],
+        })
+    findings.sort(key=lambda f: (f["long_side"], f["photos"][0]["slug"]))
+    return findings
+
+
+def check_photo_too_small(rows, labels, groups, catalog):
+    """Find a photo whose long side is under 256 pixels.
+
+    Such a photo holds less than the half of the input of the matcher. The model
+    stretches it up and reads no detail that the file does not hold. The text of the
+    label is then too small for the text step and for the OCR step.
+    """
+    return _size_findings(rows, labels, "photo_too_small", 0, TOO_SMALL_PX)
+
+
+def check_photo_below_model_input(rows, labels, groups, catalog):
+    """Find a photo whose long side is 256 to 447 pixels.
+
+    The matcher stretches such a photo up to its input of 448 by 448 pixels. The
+    photo is usable, and it carries less detail than the model can read.
+
+    A photo under 256 pixels is reported by `photo_too_small` only, so the two lists
+    never hold the same photo.
+    """
+    return _size_findings(rows, labels, "photo_below_model_input",
+                          TOO_SMALL_PX, MODEL_INPUT_PX)
+
+
+# --------------------------------------- the catalogue render in the candidates
+#
+# `my/` holds real-world photos only. The catalogue bottle photo of a wine is a
+# studio render, and stage 5 keeps such a render out of the set. A render that
+# reaches the candidate set anyway makes the benchmark easier than reality: the
+# matcher then reads its own catalogue picture back, and it scores a match that no
+# camera earned.
+#
+# The check compares every candidate photo of a wine with the catalogue bottle
+# photo of THAT wine. It does not compare across wines.
+#
+# Two pictures count as duplicates when the bytes are equal, or when the content is
+# equal and the size differs. The second case needs the pixels: a resized copy, a
+# re-encoded copy, and a copy with another white margin all hold other bytes.
+#
+# The check reduces each picture to one signature. It composites the picture on
+# white, converts it to grey, crops it to the bounding box of what is not
+# background, and resizes that box to 32 by 32. The crop is the step that makes the
+# signature independent of the margin and of the aspect ratio. The measure of two
+# signatures is the mean absolute difference of the 1,024 values, on the scale 0 to
+# 255. A value of 0 means that the two pictures are equal after the reduction.
+#
+# The threshold comes from a measurement of the set on 2026-09-18, 4,112 pairs of
+# one candidate photo and one catalogue bottle photo. 66 pairs were compared by eye
+# across the whole range. Every sampled pair under the measure 11 was the same
+# picture, and clear false pairs start at about 16. The threshold 10 is set one step
+# under the first uncertain case. On the set of that day the check reports 304 of
+# the 4,112 pairs. A copy whose measure is over the threshold is not reported; the
+# check misses it. The measurement is in `ResearchLog.md`.
+#
+# The crop matters: without it the same picture in another margin measures as much
+# as 119. The plain measure found 143 of the same 4,112 pairs against 304 here.
+#
+# Measured on a made copy of one bottle photo: half size as JPEG 0.28, quarter size as
+# PNG 0.35, the same size at JPEG quality 70 0.18, and a wider white margin 0.12.
+#
+# Limit: the check composites a transparent picture on WHITE. A render that was
+# flattened on another colour measures far over the threshold, and the check does not
+# find it. A shop page nearly always uses white.
+SIGN_PX = 32
+# A grey value this far under white counts as content, not as background.
+SIGN_BG = 18
+# A box under this size is not a bottle. Such a picture keeps its full frame.
+SIGN_MIN_BOX = 8
+DUPLICATE_MAD = 10.0
+# Pillow releases the interpreter lock while it decodes, so threads help. Eight
+# threads read the 4,112 files of the set in about 70 seconds against about 120
+# seconds in one thread.
+SIGN_WORKERS = 8
+
+
+def photo_signature(path):
+    """Return `(sha256, signature)` of one picture, or None.
+
+    The file is read once. The digest answers the case `same bytes`, and the
+    signature answers the case `same content, other size`. A file that cannot be
+    read or cannot be decoded gives None, and the caller leaves it out.
+    """
+    from PIL import Image, ImageChops
+    try:
+        with open(path, "rb") as fh:
+            raw = fh.read()
+    except OSError:
+        return None
+    try:
+        with Image.open(io.BytesIO(raw)) as im:
+            # A JPEG decodes at a reduced scale. The other formats ignore this call.
+            im.draft("RGB", (512, 512))
+            im = im.convert("RGBA")
+            flat = Image.new("RGBA", im.size, (255, 255, 255, 255))
+            flat.alpha_composite(im)
+            grey = flat.convert("L")
+            mask = ImageChops.invert(grey).point(
+                lambda v: 255 if v > SIGN_BG else 0)
+            box = mask.getbbox()
+            if (box and box[2] - box[0] >= SIGN_MIN_BOX
+                    and box[3] - box[1] >= SIGN_MIN_BOX):
+                grey = grey.crop(box)
+            grey = grey.resize((SIGN_PX, SIGN_PX), Image.BILINEAR)
+            return hashlib.sha256(raw).hexdigest(), grey.tobytes()
+    except (OSError, ValueError, TypeError):
+        return None
+
+
+def signature_mad(one, two):
+    """Return the mean absolute difference of two signatures, from 0 to 255."""
+    return sum(abs(a - b) for a, b in zip(one, two)) / float(len(one))
+
+
+def check_candidate_is_catalog_photo(rows, labels, groups, catalog):
+    """Find a candidate photo that is the catalogue bottle photo of the same wine.
+
+    The set holds real-world photos only, so such a photo is a defect: the matcher
+    would read its own catalogue picture back. The photo is a candidate for the
+    label `unusable`.
+
+    A photo marked `unusable` and a photo marked for deletion stay out, as in the
+    size checks: such a photo is already out of the set.
+
+    A wine with no catalogue bottle photo is not checked.
+    """
+    try:
+        from PIL import Image  # noqa: F401
+    except ImportError:
+        return [{"check": "candidate_is_catalog_photo",
+                 "why": "Pillow is not installed, so the pixels of a picture "
+                        "cannot be read", "photos": []}]
+    jobs = []
+    for row in rows:
+        bottle = (catalog.get(row["slug"]) or {}).get("local_path")
+        if not bottle:
+            continue
+        for photo in row["photos"]:
+            entry = (labels.get(row["slug"]) or {}).get(photo["file"]) or {}
+            if entry.get("label") == "unusable" or entry.get("delete"):
+                continue
+            jobs.append((row["slug"], photo["file"],
+                         os.path.join(MY, row["slug"], photo["file"]), bottle))
+    if not jobs:
+        return []
+    # One read per file. A bottle photo is named by every candidate of its wine,
+    # and the set holds it once.
+    paths = sorted({job[2] for job in jobs} | {job[3] for job in jobs})
+    with ThreadPoolExecutor(SIGN_WORKERS) as pool:
+        signs = dict(zip(paths, pool.map(photo_signature, paths)))
+    findings = []
+    for slug, fname, photo_path, bottle_path in jobs:
+        cand = signs.get(photo_path)
+        bott = signs.get(bottle_path)
+        if cand is None or bott is None:
+            continue
+        if cand[0] == bott[0]:
+            mad = 0.0
+            why = ("the photo is the catalogue bottle photo of this wine; "
+                   "the bytes are equal")
+        else:
+            mad = signature_mad(cand[1], bott[1])
+            if mad >= DUPLICATE_MAD:
+                continue
+            why = ("the photo is the catalogue bottle photo of this wine in "
+                   "another size or another encoding; the difference of the two "
+                   "signatures is %.1f of 255, and the threshold is %.1f"
+                   % (mad, DUPLICATE_MAD))
+        findings.append({
+            "check": "candidate_is_catalog_photo",
+            "why": why,
+            "same_bytes": cand[0] == bott[0],
+            "difference": round(mad, 2),
+            "tag": "catalogue render",
+            "photos": [{"slug": slug, "file": fname}],
+        })
+    findings.sort(key=lambda f: (f["difference"], f["photos"][0]["slug"]))
+    return findings
+
+
+# The bottle photo of two wines.
+#
+# `check_catalog_photo_twin` compares the CATALOGUE bottle photo of one wine with
+# the catalogue bottle photo of every other wine. It does not read a candidate
+# photo. Two wines that carry one picture are a defect of the catalogue: the
+# matcher cannot separate them by the image, and one of the two cards names the
+# wrong bottle.
+#
+# The check runs in two stages, because the full compare of 2,093 pictures is
+# 2,189,278 pairs.
+#
+# Stage one reads the grey 32 by 32 signature of `photo_signature` for every
+# picture and compares every pair with numpy. It takes about 3 seconds. That
+# signature is coarse: it holds no colour and it holds no text of the label, so
+# two DIFFERENT wines of one producer line fall under 0.5 of 255. Stage one
+# therefore does not decide; it only names the pairs that stage two reads.
+#
+# Stage two reads a colour 128 by 128 signature of the named pictures alone and
+# measures again. Over the catalogue of 2026-09-17 the two populations separate
+# with a wide gap: 29 pairs measure exactly 0.00, and every one of them is
+# byte-identical; the next pair measures 0.069. The gap carries the meaning of
+# the two tags below.
+TWIN_PX = 128
+TWIN_COARSE_MAD = 3.0
+TWIN_MAD = 1.0
+TWIN_SAME_MAD = 0.05
+# 32 rows at a time hold the difference block at about 137 MB.
+TWIN_CHUNK = 32
+
+
+def bottle_fine_signature(path):
+    """Return the colour signature of one bottle photo, or None.
+
+    The crop is the crop of `photo_signature`: the picture is flattened on white,
+    and the box of the bottle is cut out of it. The result keeps the colour and a
+    higher resolution, so the text of the label and the colour of the wine reach
+    the compare. `photo_signature` throws both away.
+    """
+    from PIL import Image, ImageChops
+    try:
+        with open(path, "rb") as fh:
+            raw = fh.read()
+    except OSError:
+        return None
+    try:
+        with Image.open(io.BytesIO(raw)) as im:
+            im.draft("RGB", (512, 512))
+            im = im.convert("RGBA")
+            flat = Image.new("RGBA", im.size, (255, 255, 255, 255))
+            flat.alpha_composite(im)
+            grey = flat.convert("L")
+            mask = ImageChops.invert(grey).point(
+                lambda v: 255 if v > SIGN_BG else 0)
+            box = mask.getbbox()
+            colour = flat.convert("RGB")
+            if (box and box[2] - box[0] >= SIGN_MIN_BOX
+                    and box[3] - box[1] >= SIGN_MIN_BOX):
+                colour = colour.crop(box)
+            return colour.resize((TWIN_PX, TWIN_PX), Image.BILINEAR).tobytes()
+    except (OSError, ValueError, TypeError):
+        return None
+
+
+def _twin_pairs(slugs, signs):
+    """Return [(a, b)] for every pair of `slugs` under `TWIN_COARSE_MAD`.
+
+    `signs` holds the grey signature of each slug in the order of `slugs`. The
+    compare runs on the upper triangle alone, so a pair is answered once.
+    """
+    import numpy as np
+    matrix = np.frombuffer(b"".join(signs), dtype=np.uint8)
+    matrix = matrix.reshape(len(slugs), -1).astype(np.int16)
+    out = []
+    for start in range(0, len(slugs), TWIN_CHUNK):
+        block = matrix[start:start + TWIN_CHUNK]
+        dist = np.abs(block[:, None, :] - matrix[None, :, :]).mean(axis=2)
+        for row in range(block.shape[0]):
+            dist[row, :start + row + 1] = 999.0
+        for row, col in np.argwhere(dist < TWIN_COARSE_MAD):
+            out.append((slugs[start + row], slugs[col]))
+    return out
+
+
+def _twin_clusters(edges):
+    """Join the pairs of `edges` into clusters and return a list of slug lists.
+
+    Two wines that carry one picture, and a third wine that carries the same
+    picture, form one cluster of three. The reviewer reads the whole cluster at
+    once, so the check reports the cluster and not the three pairs.
+    """
+    parent = {}
+
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for a, b in edges:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+    out = {}
+    for slug in parent:
+        out.setdefault(find(slug), []).append(slug)
+    return [sorted(v) for v in out.values()]
+
+
+def check_catalog_photo_twin(rows, labels, groups, catalog):
+    """Find two wines whose CATALOGUE bottle photo is the same or nearly the same.
+
+    The check reads the catalogue photo alone. A candidate photo of `my/` is not
+    read and does not change the result.
+
+    A finding carries the whole cluster in `slugs`, the largest distance inside
+    the cluster in `distance`, and one of two tags:
+
+    `same pic`  the distance is under 0.05. The two cards carry one picture. The
+                matcher cannot separate the two wines by the image, and one card
+                names the wrong bottle. This is a defect.
+    `twin`      the distance is from 0.05 to 1.0. The two pictures are different
+                photographs of a bottle that looks nearly the same, as two wines
+                of one producer line do. This is not a defect by itself, and the
+                pair is a candidate for a variant group.
+    """
+    try:
+        from PIL import Image  # noqa: F401
+    except ImportError:
+        return [{"check": "catalog_photo_twin", "bottle": True,
+                 "why": "Pillow is not installed, so the pixels of a picture "
+                        "cannot be read", "slugs": []}]
+    try:
+        import numpy  # noqa: F401
+    except ImportError:
+        return [{"check": "catalog_photo_twin", "bottle": True,
+                 "why": "numpy is not installed, so the full compare of the "
+                        "catalogue cannot run", "slugs": []}]
+
+    known = {}
+    for slug in sorted(catalog):
+        path = (catalog.get(slug) or {}).get("local_path")
+        if path and os.path.isfile(path):
+            known[slug] = path
+    if len(known) < 2:
+        return []
+
+    # One read per distinct file. Several cards may name one file on disk.
+    paths = sorted(set(known.values()))
+    with ThreadPoolExecutor(SIGN_WORKERS) as pool:
+        coarse = dict(zip(paths, pool.map(photo_signature, paths)))
+    slugs = [s for s in sorted(known) if coarse.get(known[s]) is not None]
+    if len(slugs) < 2:
+        return []
+    digest = {s: coarse[known[s]][0] for s in slugs}
+    edges = _twin_pairs(slugs, [coarse[known[s]][1] for s in slugs])
+    if not edges:
+        return []
+
+    want = sorted({s for pair in edges for s in pair})
+    fine_paths = sorted({known[s] for s in want})
+    with ThreadPoolExecutor(SIGN_WORKERS) as pool:
+        fine = dict(zip(fine_paths, pool.map(bottle_fine_signature, fine_paths)))
+    measured = {}
+    keep = []
+    for a, b in edges:
+        one, two = fine.get(known[a]), fine.get(known[b])
+        if one is None or two is None:
+            continue
+        mad = 0.0 if known[a] == known[b] else signature_mad(one, two)
+        if mad >= TWIN_MAD:
+            continue
+        measured[(a, b)] = mad
+        keep.append((a, b))
+    if not keep:
+        return []
+
+    findings = []
+    for cluster in _twin_clusters(keep):
+        inside = [mad for (a, b), mad in measured.items()
+                  if a in cluster and b in cluster]
+        worst = max(inside) if inside else 0.0
+        same = worst < TWIN_SAME_MAD
+        equal = len({digest[s] for s in cluster}) == 1
+        if same:
+            why = ("the catalogue bottle photo of %d wines is one picture%s; the "
+                   "difference of the signatures is %.2f of 255, and the limit of "
+                   "one picture is %.2f"
+                   % (len(cluster), "; the bytes are equal" if equal else "",
+                      worst, TWIN_SAME_MAD))
+        else:
+            why = ("the catalogue bottle photo of %d wines is nearly the same "
+                   "picture; the difference of the signatures is %.2f of 255, and "
+                   "the limit of the check is %.2f. Two wines of one producer line "
+                   "look like this and are not a defect by themselves."
+                   % (len(cluster), worst, TWIN_MAD))
+        findings.append({
+            "check": "catalog_photo_twin",
+            "why": why,
+            "bottle": True,
+            "same_picture": same,
+            "same_bytes": equal,
+            "distance": round(worst, 3),
+            "tag": "same pic" if same else "twin",
+            "slugs": cluster,
+        })
+    findings.sort(key=lambda f: (f["distance"], f["slugs"][0]))
+    return findings
+
+
 CHECKS = (
     {
         "id": "shared_positive",
@@ -1050,6 +1519,72 @@ CHECKS = (
                  "reported too and is marked as such. A re-encoded copy of the same "
                  "picture has other bytes and is not found."),
         "run": check_shared_positive,
+    },
+    {
+        "id": "photo_too_small",
+        "title": "the photo is too small (long side under 256 px)",
+        "help": ("Read the size of every photo that is not marked unusable. The "
+                 "check reads the long side, because a photo of a bottle is tall "
+                 "and narrow and its short side is small even when the photo is "
+                 "good. The matcher runs SigLIP2 with an input of 448 by 448 "
+                 "pixels, so a photo with a long side under 256 holds less than "
+                 "the half of that input. The model stretches it up and reads no "
+                 "detail that the file does not hold, and the text of the label is "
+                 "too small for the text step and for the OCR step. Such a photo "
+                 "is a candidate for the label unusable."),
+        "run": check_photo_too_small,
+    },
+    {
+        "id": "photo_below_model_input",
+        "title": "the photo is smaller than the input of the matcher (long side 256 to 447 px)",
+        "help": ("The same size read, for the band above. The matcher stretches such "
+                 "a photo up to its input of 448 by 448 pixels. The photo is usable "
+                 "and it carries less detail than the model can read. A photo with a "
+                 "long side under 256 pixels is reported by the check above and is "
+                 "not repeated here, so the two lists never hold the same photo."),
+        "run": check_photo_below_model_input,
+    },
+    {
+        "id": "candidate_is_catalog_photo",
+        "title": "the candidate photo is the catalogue bottle photo of the wine",
+        "help": ("The set holds real-world photos only, and the catalogue bottle "
+                 "photo of a wine is a studio render. A candidate photo that is "
+                 "that render makes the benchmark easier than reality: the matcher "
+                 "reads its own catalogue picture back. The check compares every "
+                 "candidate photo with the bottle photo of the SAME wine, never "
+                 "with the bottle photo of another wine. Two pictures count as "
+                 "duplicates when the bytes are equal, and also when the content is "
+                 "equal and the size differs: the check crops each picture to the "
+                 "bottle, reduces it to a grey 32 by 32 square, and compares the "
+                 "1,024 values. A resized copy, a re-encoded copy, and a copy with "
+                 "another white margin are all found. A render that was flattened on "
+                 "a colour other than white is NOT found. A photo marked unusable and "
+                 "a photo marked for deletion stay out. The run reads the pixels of "
+                 "every photo and takes about 50 seconds."),
+        "run": check_candidate_is_catalog_photo,
+    },
+    {
+        "id": "catalog_photo_twin",
+        "title": "two wines carry the same catalogue bottle photo",
+        "help": ("Compare the CATALOGUE bottle photo of every wine with the "
+                 "catalogue bottle photo of every other wine. A candidate photo "
+                 "of my/ is not read by this check. Two wines that carry one "
+                 "picture are a defect of the catalogue: the matcher cannot "
+                 "separate them by the image, and one of the two cards names the "
+                 "wrong bottle. The whole catalogue is read, including a card "
+                 "that has no candidate photo yet. The compare runs in two "
+                 "stages: a grey 32 by 32 signature names the near pairs of all "
+                 "2.2 million pairs, and a colour 128 by 128 signature then "
+                 "measures those pairs alone. A finding reports the whole "
+                 "cluster and carries one of two tags. `same pic` means the "
+                 "distance is under 0.05 and the two cards carry one picture; "
+                 "this is a defect. `twin` means the distance is from 0.05 to "
+                 "1.0 and the two pictures are different photographs of a bottle "
+                 "that looks nearly the same, as two wines of one producer line "
+                 "do; this is not a defect by itself and the pair is a candidate "
+                 "for a variant group. The run reads the pixels of every "
+                 "catalogue photo and takes about 40 seconds."),
+        "run": check_catalog_photo_twin,
     },
 )
 
@@ -1216,12 +1751,146 @@ def _row_sort_key(rec, mode):
     return (rec.get("query_id") or "",)
 
 
+# ------------------------------------------------------- the twin of a photo
+#
+# One photo file can stand in the set two times: `positive` for the wine that it
+# shows, and `negative` for a wine that it does not show. The two rows hold the
+# same `image_sha256`, because the bytes are equal. So a negative row can borrow
+# the true slug of the photo from its positive twin, and the answer of the
+# backend can be read in full: the true wine SHOULD stand above the wine that the
+# negative label forbids.
+#
+# The index reads one run only. A photo whose twin was not in the run has no twin
+# here. This keeps the report a report of that run and of nothing else.
+
+_TWIN_CACHE = {}
+
+
+def twin_index(run_id):
+    """Return `image_sha256` -> {"positive": [slug...], "negative": [slug...]}.
+
+    The lists hold the distinct slugs of the rows of this run whose photo holds
+    these exact bytes. The label `variant` is left out: it groups the wine in
+    another bottle and states no truth about the photo.
+
+    The result is cached by the size and the time of `results.jsonl`. A run file
+    does not change after the run, so the cache never goes stale.
+    """
+    path = run_path(run_id, "results.jsonl")
+    if not path or not os.path.exists(path):
+        return {}
+    try:
+        st = os.stat(path)
+    except OSError:
+        return {}
+    key = (path, st.st_mtime_ns, st.st_size)
+    hit = _TWIN_CACHE.get(run_id)
+    if hit and hit[0] == key:
+        return hit[1]
+    index = {}
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                continue
+            sha, slug, label = (rec.get("image_sha256"), rec.get("slug"),
+                                rec.get("label"))
+            if not sha or not slug or label not in ("positive", "negative"):
+                continue
+            slot = index.setdefault(sha, {"positive": set(), "negative": set()})
+            slot[label].add(slug)
+    for slot in index.values():
+        slot["positive"] = sorted(slot["positive"])
+        slot["negative"] = sorted(slot["negative"])
+    _TWIN_CACHE.clear()
+    _TWIN_CACHE[run_id] = (key, index)
+    return index
+
+
+def first_rank(candidates, slug):
+    """Return the first rank of `slug` in `candidates`, or None.
+
+    A backend MAY answer one slug two times. The first place is the place that
+    counts, which is the rule of `judge()` in `scripts/match_run.py`.
+    """
+    best = None
+    for cand in candidates or ():
+        if cand.get("slug") != slug:
+            continue
+        rank = cand.get("rank")
+        if rank is None:
+            continue
+        if best is None or rank < best:
+            best = rank
+    return best
+
+
+def add_twin(rec, index):
+    """Add the field `twin` to one row of a run. Return the row.
+
+    `twin` holds:
+
+        slugs           the slugs that the positive twin of this photo names,
+                        without the slug of this row
+        rank            the first rank of the best of those slugs, or null
+        forbidden_rank  the first rank of the slug of this row, or null. The row
+                        MUST be negative; that slug is the wrong answer
+        verdict         `above`   the true wine stands above the forbidden wine
+                        `below`   the forbidden wine stands above the true wine
+                        `no_forbidden` the forbidden wine never came back
+                        `absent`  the true wine never came back
+                        null      this row has no positive twin, or is not negative
+        conflict        the set states two things that cannot both be true
+        conflict_slugs  the slugs of that contradiction
+
+    A photo can be positive for one wine only. Two positive slugs on one photo, or
+    the same slug both positive and negative, is a defect of the set, not a result
+    of the run. The field `conflict` marks it so the reviewer can repair the set.
+    """
+    rec["twin"] = None
+    slot = index.get(rec.get("image_sha256") or "")
+    if not slot:
+        return rec
+    positive, negative = slot["positive"], slot["negative"]
+    both = sorted(set(positive) & set(negative))
+    conflict = len(positive) > 1 or bool(both)
+    slugs = [s for s in positive if s != rec.get("slug")]
+    twin = {
+        "slugs": slugs,
+        "rank": None,
+        "forbidden_rank": None,
+        "verdict": None,
+        "conflict": conflict,
+        "conflict_slugs": {"positive": positive, "both": both} if conflict else None,
+    }
+    if rec.get("label") == "negative" and slugs:
+        ranks = [r for r in (first_rank(rec.get("candidates"), s) for s in slugs)
+                 if r is not None]
+        twin["rank"] = min(ranks) if ranks else None
+        twin["forbidden_rank"] = first_rank(rec.get("candidates"), rec.get("slug"))
+        if twin["rank"] is None:
+            twin["verdict"] = "absent"
+        elif twin["forbidden_rank"] is None:
+            twin["verdict"] = "no_forbidden"
+        elif twin["rank"] < twin["forbidden_rank"]:
+            twin["verdict"] = "above"
+        else:
+            twin["verdict"] = "below"
+    rec["twin"] = twin
+    return rec
+
+
 def run_rows(run_id, mode="all", query="", limit=200, offset=0, sort="manifest"):
     """Return the rows of `results.jsonl` that the filter keeps, in the asked order."""
     path = run_path(run_id, "results.jsonl")
     if not path or not os.path.exists(path):
         return [], 0
     query = (query or "").strip().lower()
+    index = twin_index(run_id)
     kept = []
     with open(path, encoding="utf-8") as f:
         for line in f:
@@ -1232,6 +1901,7 @@ def run_rows(run_id, mode="all", query="", limit=200, offset=0, sort="manifest")
                 rec = json.loads(line)
             except ValueError:
                 continue
+            add_twin(rec, index)
             if not _row_matches(rec, mode):
                 continue
             if query and query not in (rec.get("image_path", "") + " " +
@@ -1245,6 +1915,11 @@ def run_rows(run_id, mode="all", query="", limit=200, offset=0, sort="manifest")
 
 
 def _row_matches(rec, mode):
+    """Answer whether the row passes the filter `mode`.
+
+    The modes `negative_above_positive` and `twin_conflict` read the field `twin`,
+    which `add_twin` writes. `run_rows` adds it before this call.
+    """
     label, rank = rec.get("label"), rec.get("rank_of_truth")
     outcome = rec.get("outcome")
     if mode in ("all", ""):
@@ -1259,12 +1934,27 @@ def _row_matches(rec, mode):
         return label in ("positive", "variant") and rank is not None and rank > 1
     if mode == "absent":        # the truth never appeared
         return label in ("positive", "variant") and rank is None
+    if mode == "rank_2_5":      # the truth is in the list, at rank 2 to 5
+        return (label in ("positive", "variant") and rank is not None
+                and 2 <= rank <= 5)
+    # `after_5` and `after_10` read "not in R@5" and "not in R@10". A truth that
+    # never came back counts as a failure at every depth, which is the rule of
+    # `failed_before()` in `scripts/match_run.py`.
+    if mode == "after_5":
+        return label in ("positive", "variant") and (rank is None or rank > 5)
+    if mode == "after_10":
+        return label in ("positive", "variant") and (rank is None or rank > 10)
     if mode == "false_match":
         return label == "negative" and outcome == "false_match_at_1"
     if mode == "negative_in_topk":
         return label == "negative" and rank is not None
     if mode == "negative":
         return label == "negative"
+    twin = rec.get("twin") or {}
+    if mode == "negative_above_positive":
+        return label == "negative" and twin.get("verdict") == "below"
+    if mode == "twin_conflict":
+        return bool(twin.get("conflict"))
     return True
 
 
@@ -1379,6 +2069,10 @@ class Handler(BaseHTTPRequestHandler):
             slug = (query.get("slug") or [""])[0]
             fn = (query.get("file") or [""])[0]
             self._file(self._photo_path(slug, fn))
+        elif route == "/img/runphoto":
+            run_id = (query.get("id") or [""])[0]
+            fn = (query.get("file") or [""])[0]
+            self._file(self._run_photo_path(run_id, fn))
         else:
             self._send(404, "not found", "text/plain; charset=utf-8")
 
@@ -1564,6 +2258,29 @@ class Handler(BaseHTTPRequestHandler):
     def _bottle_path(self, slug):
         rec = getattr(self.server, "catalog", {}).get(slug) or {}
         return rec.get("local_path")
+
+    def _run_photo_path(self, run_id, rel):
+        """Return the path of one photo of a run of a plain directory, or None.
+
+        `scripts/match_run.py --photos-dir DIR` matches the photos of a directory
+        that stands outside `my/`. The run records that directory in `run.json`,
+        in the field `options.photos_dir`, and `results.jsonl` holds the path of
+        each photo against it.
+
+        The function refuses a run id that holds a path separator, a run that
+        names no directory, and a path that leaves that directory.
+        """
+        if not rel:
+            return None
+        meta = _read_json(run_path(run_id, "run.json")) or {}
+        base = ((meta.get("options") or {}).get("photos_dir") or "").strip()
+        if not base:
+            return None
+        base = os.path.realpath(base)
+        path = os.path.realpath(os.path.join(base, rel))
+        if not path.startswith(base + os.sep):
+            return None
+        return path if os.path.isfile(path) else None
 
     def _photo_path(self, slug, fn):
         """Return the path of one candidate photo, or None.
@@ -1812,9 +2529,10 @@ class Handler(BaseHTTPRequestHandler):
     def _validate(self, body):
         """Run the chosen checks and answer the findings and the failing wines.
 
-        The checks read the files of the whole photo set, which takes about three
-        seconds. The lock is held only long enough to take the rows and the labels,
-        so a label of the reviewer is not blocked while a check runs.
+        The checks read the files of the whole photo set. A size check takes about
+        three seconds, and `candidate_is_catalog_photo` reads the pixels and takes
+        about 70 seconds. The lock is held only long enough to take the rows and the
+        labels, so a label of the reviewer is not blocked while a check runs.
         """
         want = body.get("checks")
         known = {c["id"]: c for c in CHECKS}
@@ -1838,9 +2556,10 @@ class Handler(BaseHTTPRequestHandler):
             labels = {slug: dict(photos)
                       for slug, photos in _state["labels"].items()}
         groups = getattr(self.server, "groups", {})
+        catalog = getattr(self.server, "catalog", {})
         findings = []
         for cid in want:
-            findings.extend(known[cid]["run"](rows, labels, groups))
+            findings.extend(known[cid]["run"](rows, labels, groups, catalog))
         slugs = sorted({p["slug"] for f in findings for p in f.get("photos", ())}
                        | {x for f in findings for x in f.get("slugs", ())})
         self._json(200, {
@@ -2365,6 +3084,12 @@ body.side-off main, body.side-off header { padding-right: 16px; }
 #side-toggle:hover { border-color: var(--accent); color: var(--text); }
 #side-toggle.on { color: var(--accent); border-color: var(--accent); }
 #side-toggle b { font-variant-numeric: tabular-nums; }
+#export-csv {
+  font: inherit; font-size: 11px; padding: 3px 9px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+}
+#export-csv:hover { border-color: var(--accent); color: var(--text); }
 #side-hide {
   float: right; font: inherit; font-size: 12px; line-height: 1; padding: 2px 6px;
   border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2);
@@ -2453,6 +3178,17 @@ tbody tr.cat-only .meta .nm::after {
   font-size: 10px; line-height: 1.3; color: var(--var); background: var(--var-bg);
   border: 1px solid var(--var); border-radius: 6px; padding: 1px 3px;
 }
+/* The badge of the check `catalog_photo_twin`. `same pic` states that the two
+   cards carry one picture, which is a defect, and it takes the colour of a
+   defect. `twin` states that the two pictures only look alike, which the
+   reviewer judges, and it takes the colour of a variant. */
+.itwin {
+  width: 84px; box-sizing: border-box; text-align: center; cursor: help;
+  font-size: 10px; line-height: 1.3; font-weight: 700; color: var(--var);
+  background: var(--var-bg); border: 1px solid var(--var); border-radius: 6px;
+  padding: 1px 3px;
+}
+.itwin.same { color: var(--exc); background: var(--exc-bg); border-color: var(--exc); }
 .excl-btn {
   width: 84px; border: 1px solid var(--line); background: var(--panel-2);
   color: var(--muted); border-radius: 6px; font: inherit; font-size: 11px;
@@ -2491,6 +3227,9 @@ tbody tr.cat-only .meta .nm::after {
   border-radius: 4px; font: inherit; font-size: 10px; line-height: 1.2;
   padding: 1px 4px; margin-left: 4px; cursor: pointer; vertical-align: baseline;
   font-weight: 400;
+  /* The label of this button must stay out of a text selection. A selection of
+     the name or of the slug is often pasted into a search field. */
+  -webkit-user-select: none; user-select: none;
 }
 .copy:hover { border-color: var(--accent); color: var(--text); }
 .copy.done { color: var(--pos); border-color: var(--pos); }
@@ -2844,6 +3583,8 @@ body.dragging::after {
       <span class="meter"><i id="meter"></i></span>
       <button id="validate" type="button"
               title="check the photo set for defects">validate</button>
+      <button id="export-csv" type="button"
+              title="download the wines in the current table view">export CSV</button>
       <button id="side-toggle" type="button"
               title="show or hide the sideboard (key s)">sideboard <b id="side-n">0</b></button>
     </div>
@@ -3171,12 +3912,38 @@ function imatchBadge(im) {
     IMATCH_LABEL[im.method] || im.method}</div>`;
 }
 
+/* The badge of `catalog_photo_twin`, under the bottle photo of the row.
+
+   That check reports the CATALOGUE photo, not a candidate photo, so its finding
+   carries `slugs` and no `photos` and it cannot reach the badge of a card. The
+   badge names the size of the cluster, and the tooltip names the other wines of
+   it, so the whole cluster is read from any one of its rows. A row with no such
+   finding draws nothing. */
+function twinBadge(slug) {
+  const f = ((FAILED && FAILED[slug]) || []).find(x => x.bottle && x.slugs);
+  if (!f) return "";
+  const others = f.slugs.filter(s => s !== slug);
+  const lead = f.same_picture ? "the same picture is on:"
+                             : "a picture that looks nearly the same is on:";
+  const tip = [
+    f.why,
+    others.length ? lead + "\n" + others.join("\n") : "",
+  ].filter(Boolean).join("\n");
+  return `<div class="itwin${f.same_picture ? " same" : ""}" title="${esc(tip)}">${
+    esc(f.tag)} \u00d7${f.slugs.length}</div>`;
+}
+
 /* A catalogue card with no directory in `my/` carries `catalog_only`. It has no
    candidate photo, so it is not part of the review work and stays out of the
    default list. These filters ask about the catalogue itself, so each one shows
    those cards. */
 const CATALOG_SCOPE_FILTERS = new Set([
-  "nophotos", "img_none", "img_assumed", "img_confirmed", "img_manual", "img_shared"]);
+  "nophotos", "img_none", "img_assumed", "img_confirmed", "img_manual", "img_shared",
+  // `catalog_photo_twin` reads the whole catalogue, so it can report a card that
+  // has no directory in `my/`. Such a card MUST reach the table, or the other
+  // half of the cluster is not visible. The other checks read `my/` alone and
+  // never report such a card, so this entry changes nothing for them.
+  "failed"]);
 
 function matchFilter(row, mode) {
   if (row.catalog_only && !CATALOG_SCOPE_FILTERS.has(mode)) return false;
@@ -3277,6 +4044,95 @@ function sortRows(rows, mode) {
     default: out.sort(bySlug);
   }
   return out;
+}
+
+/* ---- export of the current table view ----
+
+   The browser owns the exact view. It can include a text search, a slug scope,
+   one variant group, and the result of `validate`, which lives in this tab only.
+   Export `VIEW` instead of asking the server to rebuild a similar list.
+
+   One CSV record describes one candidate photo. A wine with no candidate photo
+   gets one record with empty photo fields, so a catalogue-gap filter does not
+   produce an empty file. Wine fields and counts repeat for each candidate photo.
+   This flat shape lets a spreadsheet filter photos without parsing a JSON cell. */
+function csvCell(value) {
+  if (value === null || value === undefined) value = "";
+  else if (typeof value === "boolean") value = value ? "true" : "false";
+  else if (typeof value === "number") value = String(value);
+  else {
+    value = String(value);
+    // Stop a note, name, or other text from becoming a formula when a spreadsheet
+    // opens the file. The apostrophe is the standard visible-value guard.
+    if (/^[\t\r\n ]*[=+\-@]/.test(value)) value = "'" + value;
+  }
+  return `"${String(value).replace(/"/g, '""')}"`;
+}
+
+function currentViewCsv() {
+  const columns = [
+    "wine_position", "photo_position", "filter", "slug_scope", "search", "sort",
+    "variant_group_scope", "slug", "name", "producer", "category", "color",
+    "region", "grapes", "in_catalog", "catalog_only", "has_bottle",
+    "image_match_method", "image_match_confidence", "image_shared_with",
+    "variant_group", "excluded", "exclusion_reason", "photo_count",
+    "labelled_count", "unlabelled_count", "positive_count", "negative_count",
+    "unusable_count", "variant_count", "moved_count", "copied_count",
+    "noted_count", "proposed_count", "min_confidence", "wine_note", "page_url",
+    "failed_checks", "photo_file", "photo_confidence", "photo_label",
+    "photo_comment", "photo_reassign_to", "photo_copy_to", "photo_delete",
+    "photo_proposed", "photo_proposed_by", "photo_proposal_confidence",
+    "photo_source_url", "photo_url",
+  ];
+  const view = {
+    filter: $("#filter").value,
+    slug_scope: $("#slugsel").value,
+    search: $("#q").value.trim(),
+    sort: $("#sort").value,
+    variant_group_scope: GROUP_FILTER,
+  };
+  const lines = [columns.map(csvCell).join(",")];
+  VIEW.forEach((r, wineIndex) => {
+    const t = tally(r), im = r.image_match || {};
+    const photos = r.photos.length ? r.photos : [null];
+    const failed = [...new Set(((FAILED && FAILED[r.slug]) || [])
+      .map(f => f.check).filter(Boolean))].join("; ");
+    photos.forEach((p, photoIndex) => {
+      const entry = p ? ((V[r.slug] || {})[p.file] || {}) : {};
+      const proposal = p ? proposalOf(r.slug, p.file) : null;
+      const values = [
+        wineIndex + 1, p ? photoIndex + 1 : "", view.filter, view.slug_scope,
+        view.search, view.sort, view.variant_group_scope, r.slug, r.name, r.producer,
+        r.category, r.color, r.region, r.grapes, r.in_catalog, !!r.catalog_only,
+        r.has_bottle, im.method, im.confidence, (im.shared_with || []).join("; "),
+        r.group || "", isExcluded(r.slug), excludeReason(r.slug), t.total, t.labelled,
+        t.total - t.labelled, t.positive, t.negative, t.unusable, t.variant, t.moved,
+        t.copied, t.noted, t.prop, r.min_conf, wineNote(r.slug), r.page_url, failed,
+        p ? p.file : "", p ? p.conf : "", entry.label || "", entry.comment || "",
+        entry.reassign_to || "", entry.copy_to || "", p ? !!entry.delete : "",
+        proposal ? proposal.proposed || "" : "", proposal ? proposal.by || "" : "",
+        proposal ? proposal.confidence ?? "" : "",
+        proposal ? proposal.source_url || "" : "",
+        p ? new URL(photoSrc(r.slug, p.file), location.href).href : "",
+      ];
+      lines.push(values.map(csvCell).join(","));
+    });
+  });
+  return lines.join("\r\n") + "\r\n";
+}
+
+function exportCurrentViewCsv() {
+  // A byte-order mark makes spreadsheet programs detect the Cyrillic text as UTF-8.
+  const blob = new Blob(["\ufeff", currentViewCsv()], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `svoe-vino-review-${$("#filter").value}-${VIEW.length}-wines-${date}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 /* ---- the search ----
@@ -3417,8 +4273,8 @@ function cardsHtml(r) {
           esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
         ${noteBadge(note)}
         ${bad ? `<span class="bad-tag" title="${esc(badTitle(bad, r.slug))}">${
-          bad.same_group ? "same group" : ""} ${
-          (bad.photos || []).length} wines</span>` : ""}
+          bad.tag ? esc(bad.tag) : (bad.same_group ? "same group" : "") + " " +
+          (bad.photos || []).length + " wines"}</span>` : ""}
         <img loading="lazy" draggable="false" src="${src}" alt="" data-full="${src}">
         <div class="cap"><span>${esc(p.file.split("_")[0] || "")}</span>
           <span>${p.conf === null ? "" : "conf " + p.conf}</span></div>
@@ -3469,7 +4325,7 @@ function render() {
           im.shared_with.length + 1}</div>`
       : "";
     const ex = isExcluded(r.slug), why = excludeReason(r.slug);
-    const bottle = `<div class="bottle-col">${img}${badge}${shared}
+    const bottle = `<div class="bottle-col">${img}${badge}${shared}${twinBadge(r.slug)}
       <button class="excl-btn ${ex ? "on" : ""}" data-excl="${esc(r.slug)}"
         title="${ex ? "excluded: " + esc(why) + "\nclick to include this slug again"
                     : "exclude this slug from the benchmark; its photos are then not used"}">${
@@ -3484,13 +4340,16 @@ function render() {
       </div>`;
     const cards = cardsHtml(r);
 
+    /* The copy button of the name gives the brand and the name in one string,
+       because a search needs both. */
+    const fullName = [r.producer, r.name].filter(Boolean).join(" ");
     const grp = r.group ? GROUPS[r.group] : null;
     return `<tr data-slug="${esc(r.slug)}" class="${r.group ? gclass.get(r.group) : ""} ${
       ex ? "excl" : ""} ${r.catalog_only ? "cat-only" : ""}">
       <td class="wine"><div class="wine-inner">${bottle}<div class="meta">
         <div class="nm">${esc(r.name) || "<span class='empty'>unknown name</span>"}${
-          r.name ? `<button class="copy" data-copy="${esc(r.name)}"
-             title="copy the name to the clipboard">copy</button>` : ""}</div>
+          r.name ? `<button class="copy" data-copy="${esc(fullName)}"
+             title="copy the brand and the name to the clipboard">copy</button>` : ""}</div>
         <div class="pr">${esc(r.producer)}</div>
         <div class="sm">${esc(r.category)}${r.region ? " &middot; " + esc(r.region) : ""}</div>
         <div class="sm">${esc(r.grapes)}</div>
@@ -3521,6 +4380,7 @@ function render() {
     (filt === "failed"
       ? " \u00b7 " + (FAILED ? FAILED_INFO : "no check was run yet; press validate")
       : "");
+  $("#export-csv").title = `download ${rows.length} shown wine(s) in this order`;
   renderHeld();
   stats();
   writeViewToUrl();
@@ -4984,6 +5844,7 @@ for (const id of ["#sort", "#filter", "#slugsel"]) {
 $("#filter").addEventListener("change", () => {
   $("#validate").classList.toggle("on", $("#filter").value === "failed" && !!FAILED);
 });
+$("#export-csv").addEventListener("click", exportCurrentViewCsv);
 let t = null;
 $("#q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(render, 180); });
 
@@ -5082,6 +5943,7 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .tag.pos { color: var(--pos); background: var(--pos-bg); border-color: transparent; }
 .tag.neg { color: var(--neg); background: var(--neg-bg); border-color: transparent; }
 .tag.var { color: var(--var); background: var(--var-bg); border-color: transparent; }
+.tag.unl { color: var(--muted); }
 .tag.bad { color: #fff; background: var(--exc); border-color: transparent; }
 .tag.ok { color: var(--pos); border-color: var(--pos); }
 .tag.dry { color: var(--muted); }
@@ -5120,6 +5982,10 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .cand.truth { border-color: var(--pos); background: var(--pos-bg); }
 .cand.forbidden { border-color: var(--exc); background: var(--exc-bg); }
 .cand.missing { border-style: dashed; border-color: var(--pos); background: transparent; }
+/* the true wine of a negative photo, which a byte-equal positive photo names */
+.cand.twin { border-style: dashed; border-color: var(--pos); background: var(--pos-bg); }
+.cand.twin.missing { background: transparent; }
+.cand.apart { margin-left: 26px; }
 .cand img, .cand .nobottle {
   width: 92px; height: 116px; object-fit: contain; display: block;
   background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
@@ -5148,11 +6014,16 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
         <option value="all">every photo</option>
         <option value="miss">positive: the true slug is not at rank 1</option>
         <option value="near">positive: the true slug is at rank 2 or deeper</option>
+        <option value="rank_2_5">positive: the true slug is at rank 2 to 5</option>
+        <option value="after_5">positive: the true slug is not in the top 5</option>
+        <option value="after_10">positive: the true slug is not in the top 10</option>
         <option value="absent">positive: the true slug never came back</option>
         <option value="hit">positive: correct at rank 1</option>
         <option value="false_match">negative: the slug came back at rank 1</option>
         <option value="negative_in_topk">negative: the slug is anywhere in the list</option>
         <option value="negative">every negative photo</option>
+        <option value="negative_above_positive">negative: the wrong wine stands above the true wine</option>
+        <option value="twin_conflict">set defect: one photo is positive for two wines</option>
         <option value="error">the request failed</option>
       </select>
     </label>
@@ -5212,7 +6083,8 @@ const numOr = v => v === null || v === undefined ? "\\u2014" : v;
 let RUNS = [], CUR = null, OFFSET = 0, TOTAL = 0;
 /* The order of the table of the runs. The newest run stands first at the start. */
 let RSORT = { key: "id", dir: -1 };
-const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var" };
+const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var",
+                    unlabelled: "unl" };
 
 /* ---- the table of the runs ---- */
 function sortedRuns() {
@@ -5311,6 +6183,16 @@ function renderMetrics(met, head) {
     card("median ms", numOr(lat.median)),
     card("errors", (pos.errors || 0) + (neg.errors || 0)),
   ];
+  /* A run with no ground truth. Every share above is empty, and the note says
+     why, so that a reader does not take a dash for a failure. */
+  const unlB = met.unlabelled;
+  const unlNote = !unlB ? "" :
+    '<div class="sm warn">A run of a plain directory. The photos hold no ground ' +
+    'truth, so every share is empty. ' + unlB.n + ' photo(s), ' + unlB.answered +
+    ' with a candidate, ' + unlB.no_answer + ' with none, ' + unlB.errors +
+    ' error(s). Median top score: ' + fix(unlB.top_score_median) +
+    '. Median gap to the second candidate: ' + fix(unlB.score_margin_median) +
+    '.</div>';
   const sub = met.subset;
   const subNote = !sub ? "" :
     '<div class="sm warn">A repeat run. It holds the ' + sub.n + ' photo(s) of <b>' +
@@ -5319,7 +6201,7 @@ function renderMetrics(met, head) {
     'NOT the shares of the whole set. Correct at rank 1 now: <b>' + sub.recovered_at_1 +
     '</b>. Inside the depth now: <b>' + sub.recovered_at_depth + '</b>. Still failing: <b>' +
     sub.still_failing + '</b>.</div>';
-  $("#met").innerHTML = subNote +
+  $("#met").innerHTML = unlNote + subNote +
     '<div class="cards">' + spec.join("") + '</div>' +
     '<div class="sm note">The task asks for a match share of 90 to 100 percent, an ' +
     'answer inside ' + sla + ' ms, and a noticeable gap between the first and the ' +
@@ -5337,12 +6219,19 @@ function renderMetrics(met, head) {
   $("#detail").hidden = false;
 }
 
-/* ---- one photo and its candidates ---- */
-function candCard(c, truth, forbidden) {
+/* ---- one photo and its candidates ----
+
+   A negative photo states one wine that the photo does NOT show. When a byte-equal
+   photo stands in the same run as `positive` for another wine, that wine is the
+   true wine of the photo. The true wine gets a dashed green frame and the wrong
+   wine keeps the red frame. The true wine SHOULD stand above the wrong wine. */
+function candCard(c, truth, forbidden, twins) {
   const isTruth = truth.includes(c.slug);
   const isBad = forbidden && c.slug === forbidden;
+  const isTwin = !isBad && twins.includes(c.slug);
   const score = c.score === null || c.score === undefined ? "" : c.score.toFixed(3);
-  return `<div class="cand ${isTruth ? "truth" : ""} ${isBad ? "forbidden" : ""}">
+  return `<div class="cand ${isTruth ? "truth" : ""} ${isBad ? "forbidden" : ""} ${
+      isTwin ? "twin" : ""}">
     <img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(c.slug)}"
          alt="" data-full="/img/bottle?slug=${encodeURIComponent(c.slug)}"
          onerror="this.replaceWith(Object.assign(document.createElement('div'),
@@ -5351,12 +6240,31 @@ function candCard(c, truth, forbidden) {
     <div class="sl">${esc(c.slug)}</div></div>`;
 }
 
+function twinGhost(slug, apart) {
+  return `<div class="cand twin missing ${apart ? "apart" : ""}">
+    <img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(slug)}" alt=""
+         data-full="/img/bottle?slug=${encodeURIComponent(slug)}"
+         onerror="this.replaceWith(Object.assign(document.createElement('div'),
+                  {className:'nobottle',textContent:'no bottle photo'}))">
+    <div class="r"><span>true wine</span><span>&mdash;</span></div>
+    <div class="sl">${esc(slug)}</div></div>`;
+}
+
 function rowHtml(r) {
+  /* A run of `--photos-dir` holds photos with no ground truth. Their path is the
+     path against that directory, not `<slug>/<file>`, and only `/img/runphoto`
+     serves them, because `/img/photo` never leaves `my/`. */
+  const unl = r.label === "unlabelled";
   const cut = r.image_path.lastIndexOf("/");
-  const slug = r.image_path.slice(0, cut), file = r.image_path.slice(cut + 1);
-  const src = `/img/photo?slug=${encodeURIComponent(slug)}&file=${encodeURIComponent(file)}`;
+  const slug = unl ? "" : r.image_path.slice(0, cut);
+  const file = cut < 0 ? r.image_path : r.image_path.slice(cut + 1);
+  const src = unl
+    ? `/img/runphoto?id=${encodeURIComponent(CUR)}&file=${encodeURIComponent(r.image_path)}`
+    : `/img/photo?slug=${encodeURIComponent(slug)}&file=${encodeURIComponent(file)}`;
   const truth = r.truth || [];
   const forbidden = r.label === "negative" ? r.slug : null;
+  const twin = r.twin || {};
+  const twins = r.label === "negative" ? (twin.slugs || []) : [];
   const found = (r.candidates || []).some(c => truth.includes(c.slug));
   let strip = "";
   if (truth.length && !found) {          // the expected wine, which never came back
@@ -5368,20 +6276,37 @@ function rowHtml(r) {
       <div class="r"><span>expected</span><span>\\u2014</span></div>
       <div class="sl">${esc(truth[0])}</div></div>`;
   }
-  strip += (r.candidates || []).map(c => candCard(c, truth, forbidden)).join("");
+  strip += (r.candidates || []).map(c => candCard(c, truth, forbidden, twins)).join("");
+  // the true wine of a negative photo, which never came back. It stands after the
+  // answer, apart from it, because it holds no rank in the answer.
+  const gone = twins.filter(s => !(r.candidates || []).some(c => c.slug === s));
+  strip += gone.map((s, i) => twinGhost(s, i === 0)).join("");
   if (!strip) strip = `<span class="empty">${esc(r.error || "no candidate came back")}</span>`;
 
   const tag = LABEL_TAG[r.label] || "";
-  const rank = r.rank_of_truth ? `rank ${r.rank_of_truth}` : "not in the list";
-  const bad = (r.label === "negative" && r.outcome === "false_match_at_1") ||
-              (r.label !== "negative" && r.rank_of_truth !== 1);
+  const rank = unl ? "no ground truth"
+             : (r.rank_of_truth ? `rank ${r.rank_of_truth}` : "not in the list");
+  /* No answer of an unlabelled photo is wrong, because no answer is known. */
+  const bad = !unl && ((r.label === "negative" && r.outcome === "false_match_at_1") ||
+                       (r.label !== "negative" && r.rank_of_truth !== 1));
   return `<tr>
     <td class="qcell">
-      <img class="qphoto" loading="lazy" src="${src}" alt="" data-full="${src}">
+      <img class="qphoto" loading="lazy" src="${src}" alt="" data-full="${src}"
+           onload="const b = this.closest('td').querySelector('.qres');
+                   if (b) b.textContent = ' \u00b7 ' + this.naturalWidth + ' \u00d7 '
+                                          + this.naturalHeight;">
       <div class="sm"><span class="tag ${tag}">${esc(r.label)}</span>
-        <span class="tag ${bad ? "bad" : "ok"}">${esc(r.outcome || "")}</span></div>
-      <div class="sm">${esc(slug)}</div>
-      <div class="sm">${esc(file)} &middot; ${esc(rank)} &middot; ${numOr(r.latency_ms)} ms</div>
+        <span class="tag ${bad ? "bad" : "ok"}">${esc(r.outcome || "")}</span>${
+        twin.verdict === "below"
+          ? ` <span class="tag bad">negative_above_positive</span>` : ""}${
+        twin.conflict ? ` <span class="tag bad">twin_conflict</span>` : ""}</div>
+      ${unl ? "" : `<div class="sm">${esc(slug)}</div>`}
+      <div class="sm">${esc(unl ? r.image_path : file)} &middot; ${esc(rank)} &middot; ${numOr(r.latency_ms)} ms<span
+        class="qres"></span></div>
+      ${twins.length ? `<div class="sm">true wine: ${esc(twins.join(", "))} &middot; ${
+        twin.rank ? "rank " + twin.rank : "not in the list"}${
+        twin.forbidden_rank ? " &middot; this slug: rank " + twin.forbidden_rank : ""
+        }</div>` : ""}
       ${r.previous ? `<div class="sm was">before: ${
         r.previous.rank_of_truth ? "rank " + r.previous.rank_of_truth : "not in the list"
         } &middot; ${esc(r.previous.outcome || "")}</div>` : ""}

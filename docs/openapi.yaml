@@ -279,6 +279,39 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundText"
 
+  /img/runphoto:
+    get:
+      tags: [images]
+      operationId: getRunPhoto
+      summary: Read one photo of a run of a plain directory.
+      description: |
+        `scripts/match_run.py --photos-dir DIR` matches the photos of a directory that
+        stands outside `my/`. The run records that directory in `run.json`, in the field
+        `options.photos_dir`. This route serves one photo of that directory.
+
+        The server refuses a run id that holds a path separator, a run that names no
+        directory, and a path that leaves that directory.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: The id of the run, which is the name of its directory.
+          schema: { type: string }
+          example: 2026-09-21T114536Z-svm-siglip2-448-dir-smoke
+        - name: file
+          in: query
+          required: true
+          description: |
+            The path of the photo against the directory, as `image_path` of
+            `results.jsonl` states it.
+          schema: { type: string }
+          example: bottle-01.webp
+      responses:
+        "200":
+          $ref: "#/components/responses/Picture"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
   /img/photo:
     get:
       tags: [images]
@@ -757,6 +790,35 @@ paths:
 
         `shared_positive` reads every candidate photo, 2,543 files on the set of today,
         and takes about 2.5 seconds. The result is not cached.
+
+        `photo_too_small` and `photo_below_model_input` read the header of every photo
+        that is not marked `unusable` and not marked for deletion, 3,832 files on the
+        set of today, in about 2.8 seconds. They report a long side under 256 pixels
+        and a long side of 256 to 447 pixels, against the input of 448 by 448 pixels of
+        the matcher. The long side is read, because a photo of a bottle is tall and
+        narrow and its short side is small even when the photo is good. The two never
+        report the same photo.
+
+        `candidate_is_catalog_photo` reads the pixels of every candidate photo and of
+        every catalogue bottle photo, about 6,000 files on the set of today, in about
+        50 seconds. It reports a candidate photo that is the catalogue bottle photo of
+        the SAME wine. It never compares across wines. Two pictures count as duplicates
+        when the bytes are equal, and also when the content is equal and the size
+        differs. A photo marked `unusable` and a photo marked for deletion stay out,
+        and a wine with no catalogue bottle photo is not checked.
+
+        `catalog_photo_twin` reads the pixels of every CATALOGUE bottle photo, 2,093
+        files on the catalogue of today, in about 43 seconds. It compares the catalogue
+        bottle photo of every wine with the catalogue bottle photo of every other wine,
+        which is 2,189,278 pairs. It reads no candidate photo of `my/`, so a label does
+        not change its result, and it covers the whole catalogue, including a card that
+        has no directory in `my/`. The compare runs in two stages: a grey 32 by 32
+        signature names the near pairs of all the pairs, and a colour 128 by 128
+        signature then measures those pairs alone. A finding reports the whole cluster
+        and carries `slugs` and no `photos`. The tag `same pic` means the two cards
+        carry one picture, which is a defect; the tag `twin` means the two pictures are
+        different photographs of a bottle that looks nearly the same, which is not a
+        defect by itself. The check needs numpy.
 
         An absent `checks` runs every check.
       requestBody:
@@ -1844,6 +1906,60 @@ components:
           type: string
           description: |
             `shared_positive` only. The SHA-256 of the picture, in hexadecimal.
+        tag:
+          type: string
+          description: |
+            The text of the pill on the card of the photo, when the check states one.
+            `photo_too_small` and `photo_below_model_input` state the size, for
+            example `225x300`. `candidate_is_catalog_photo` states `catalogue render`.
+            `catalog_photo_twin` states `same pic` or `twin`, and its text goes to the
+            badge under the bottle photo of the row and not to a card.
+            Without this field the page states the count of the wines of the finding.
+        width:
+          type: integer
+          description: The size check only. The width of the photo in pixels.
+        height:
+          type: integer
+          description: The size check only. The height of the photo in pixels.
+        long_side:
+          type: integer
+          description: The size check only. The larger of `width` and `height`.
+        same_bytes:
+          type: boolean
+          description: |
+            `candidate_is_catalog_photo` and `catalog_photo_twin`. For
+            `candidate_is_catalog_photo`, true when the candidate photo and the
+            catalogue bottle photo hold the same bytes. For `catalog_photo_twin`, true
+            when every wine of the cluster names one file content. False when the
+            content is the same and the size or the encoding differs.
+        difference:
+          type: number
+          description: |
+            `candidate_is_catalog_photo` only. The mean absolute difference of the two
+            signatures, on the scale 0 to 255. A signature is the picture composited on
+            white, converted to grey, cropped to the bounding box of the bottle, and
+            resized to 32 by 32. The threshold is 10.0, and equal bytes give 0.
+        bottle:
+          type: boolean
+          description: |
+            `catalog_photo_twin` only, and always true. The finding reports the
+            CATALOGUE bottle photo of the wines of `slugs` and not a candidate photo of
+            `my/`. The page draws the badge under the bottle photo of the row.
+        same_picture:
+          type: boolean
+          description: |
+            `catalog_photo_twin` only. True when `distance` is under 0.05 and the cards
+            of the cluster carry one picture, which is a defect of the catalogue. False
+            when the pictures only look nearly the same, as two wines of one producer
+            line do, which the reviewer judges.
+        distance:
+          type: number
+          description: |
+            `catalog_photo_twin` only. The largest mean absolute difference inside the
+            cluster, on the scale 0 to 255, measured on a COLOUR 128 by 128 signature.
+            The signature is the picture composited on white, cropped to the bounding
+            box of the bottle, and resized to 128 by 128 in RGB. The limit of the check
+            is 1.0, and the limit of one picture is 0.05.
 
     ValidateResult:
       type: object
@@ -1958,11 +2074,20 @@ components:
         `miss`: the truth does not stand at rank 1.
         `near`: the truth is in the list, but not at rank 1.
         `absent`: the truth never appeared.
+        `rank_2_5`: the truth is in the list, at rank 2 to 5.
+        `after_5`: the truth is not in the top 5. A truth that never came back is in.
+        `after_10`: the truth is not in the top 10. A truth that never came back is in.
         `false_match`: a negative photo matched a wine at rank 1.
         `negative_in_topk`: a negative photo appeared in the list.
         `negative`: every negative photo.
+        `negative_above_positive`: the wine that a negative photo forbids stands above
+        the true wine of that photo. The true wine comes from a byte-equal `positive`
+        photo of the same run.
+        `twin_conflict`: a defect of the photo set. One photo is `positive` for two
+        wines, or one photo is both `positive` and `negative` for one wine.
       enum:
-        [all, error, hit, miss, near, absent, false_match, negative_in_topk, negative]
+        [all, error, hit, miss, near, absent, rank_2_5, after_5, after_10, false_match,
+         negative_in_topk, negative, negative_above_positive, twin_conflict]
 
     RunRowSort:
       type: string

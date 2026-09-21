@@ -128,3 +128,41 @@ backends:
     workers: 1
     headers: {}
 
+  - id: svm-official-api
+    label: svoe-vino-matcher pipeline official-api
+    url: http://127.0.0.1:8158/v1/pipelines/official-api/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 4
+    headers: {}
+
+
+  # The vision-language cross-encoders. They score 20 pairs for each query, so
+  # one query costs seconds, not milliseconds. The timeout is generous on
+  # purpose: a timeout here would be recorded as a wrong answer and would
+  # understate the model. Keep `workers: 1`; the server holds one GPU model and
+  # concurrent requests only queue.
+  - id: svm-vlmrerank-2b-siglip2-448
+    label: svoe-vino-matcher pipeline vlmrerank-2b-siglip2-448
+    url: http://127.0.0.1:8158/v1/pipelines/vlmrerank-2b-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 180
+    workers: 1
+    headers: {}
+
+  - id: svm-vlmrerank-8b-siglip2-448
+    label: svoe-vino-matcher pipeline vlmrerank-8b-siglip2-448
+    url: http://127.0.0.1:8158/v1/pipelines/vlmrerank-8b-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 300
+    workers: 1
+    headers: {}

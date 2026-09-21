@@ -10,6 +10,7 @@ python3 scripts/match_run.py --list-backends
 python3 scripts/match_run.py --backend official-api
 python3 scripts/match_run.py --backend organizers --limit 50 --label smoke
 python3 scripts/match_run.py --dry-run
+python3 scripts/match_run.py --backend svm-siglip2-448 --photos-dir ~/photos
 ```
 
 The review tool shows the runs at `http://127.0.0.1:8154/runs`.
@@ -41,6 +42,47 @@ the counts of the query set:
 
 The order is `sorted(image_path)`, so `query_id` is stable between two runs of the same
 set. `image_path` is `<slug>/<file>`, relative to `photo_dir`.
+
+## A plain directory of photos
+
+`--photos-dir DIR` replaces the query set with the image files of one directory. Use it
+to see what a backend answers for photos that the project holds no label for.
+
+```bash
+python3 scripts/match_run.py --backend svm-siglip2-448 --photos-dir ~/Downloads/photos
+python3 scripts/match_run.py --backend official-api --photos-dir ~/photos --limit 20
+```
+
+The walk is recursive. A file enters the set when its extension is one of `.jpg`,
+`.jpeg`, `.png`, `.webp`, `.gif`, or `.bmp`. A hidden file and a hidden directory stay
+out. The order is `sorted(image_path)`, and `image_path` is the path of the file against
+`DIR`.
+
+Such a directory holds **no ground truth**. Every row carries:
+
+| Field | Value |
+|---|---|
+| `label` | `unlabelled` |
+| `slug` | `""` |
+| `truth` | `[]` |
+| `outcome` | `answered` when a candidate came back, `no_answer` when none did |
+| `rank_of_truth` | `null`, always |
+
+So the run states no correctness. `metrics.json` holds every share as `null`, and the
+block `unlabelled` holds the counts that need no truth: `n`, `answered`, `no_answer`,
+`errors`, `top_score_median`, and `score_margin_median`. `summary.md` holds a shorter
+form for a person. The latency numbers are the same numbers as in any other run.
+
+A high top score is not a proof of a correct answer. A person MUST read the photos at
+`/runs` to judge the answers.
+
+`--photos-dir` MUST NOT be used with `--from-run`, `--only`, or `--variants`. Each of
+these three needs the labels of the project. The runner refuses the combination.
+
+The name of the run directory carries the mark `dir`, for example
+`2026-09-21T114536Z-svm-siglip2-448-dir-smoke`. `run.json` holds the directory in
+`options.photos_dir`. The page `/runs` reads that field to serve the photos, so the
+directory MUST stay in place while a person reads the run.
 
 ## The repeat of a run
 
@@ -294,17 +336,82 @@ The page holds three parts:
    right, the highest score first. Each candidate shows the catalogue bottle photo of its
    slug, its rank, and its score.
 
+### A run of a plain directory
+
+A run of `--photos-dir` holds no ground truth. The page states it above the cards: it
+names the photo count, the count with a candidate, the count with none, the errors, the
+median top score, and the median gap to the second candidate. Every share stands as a
+dash, because no share can be computed. A dash here is not a failure of the backend.
+
+No candidate carries a green or a red border in such a run, because no slug is expected
+and no slug is forbidden. The photo comes from `/img/runphoto?id=<run>&file=<path>`,
+which reads `options.photos_dir` of `run.json`. `/img/photo` never leaves `my/`, so it
+cannot serve these photos. The photos MUST stay in that directory while a person reads
+the run.
+
+The filter of the page keeps `all`. Every other filter selects by a label or by a rank,
+so it keeps no row of such a run. The order `score_desc` is the useful one: the answers
+that the backend is most sure of stand first.
+
 The colours of a candidate:
 
 | Border | Meaning |
 |---|---|
 | Green | The expected slug. A dashed green card at the front of the strip states that the expected wine never came back. |
 | Red | The slug of a negative photo: the wine that the answer MUST NOT hold. |
+| Dashed green | The true wine of a negative photo. Read the next section. |
 | None | Any other candidate. |
 
 The filter of the page selects what to look at: every photo, the misses, the photos whose
-true slug stands at rank 2 or deeper, the photos whose true slug never came back, the
-false matches of the negative photos, or the failed requests.
+true slug stands at rank 2 or deeper, the photos whose true slug stands at rank 2 to 5,
+the photos whose true slug is not in the top 5 or not in the top 10, the photos whose true slug never came back, the false matches of the
+negative photos, the negative photos whose wrong wine stands above the true wine, the
+photos that a defect of the set marks, or the failed requests.
+
+The filters `after_5` and `after_10` read "not in R@5" and "not in R@10": a true slug that
+never came back is in, because it counts as a failure at every depth. That is the rule of
+`failed_before()`, which `--from-run` and `--rerun-depth` use. The filter `near` keeps the
+older reading and leaves such a photo out. The filter `rank_2_5` keeps the reading of
+`near` as well: it holds the photos whose true slug came back at rank 2 to 5, which is the
+band that R@5 wins and R@1 loses.
+
+### The true wine of a negative photo
+
+A negative photo states one wine that the photo does NOT show. It states no wine that the
+photo does show, so `outcome` alone cannot say whether the answer was good.
+
+One photo file often stands in the set two times: `positive` for the wine that it shows,
+and `negative` for a wine that it does not show. The two rows hold the same
+`image_sha256`, because the bytes are equal. The server reads that pair and gives the
+negative row the slug of its positive twin. The page then marks the true wine with a
+**dashed green** frame, and the run can be read in full: the true wine SHOULD stand above
+the wine that the negative label forbids.
+
+The comparison uses the first rank of a slug, which is the rule of `judge()`.
+
+| `twin.verdict` | Meaning |
+|---|---|
+| `above` | The true wine stands above the forbidden wine. The answer is good. |
+| `below` | The forbidden wine stands above the true wine. **The error.** The row carries the tag `negative_above_positive` and the filter of the same name selects it. |
+| `no_forbidden` | The forbidden wine never came back. Nothing contradicts the true wine. |
+| `absent` | The true wine never came back. A dashed green card stands after the answer, apart from it. |
+| `null` | The photo has no positive twin in this run. |
+
+The index reads one run only. A photo whose twin was not in that run gets no twin here.
+A run made with `--only negative` or with a small `--limit` therefore shows fewer twins
+than the whole set holds. The label `variant` is left out of the index: it groups the same
+wine in another bottle and states no truth about the photo.
+
+**The defect of the set.** One photo can be `positive` for one wine only. Two positive
+slugs on one photo, or the same slug both `positive` and `negative`, is a defect of the
+set. The field `twin.conflict` marks the rows of such a photo, the row carries the tag
+`twin_conflict`, and the filter of the same name selects them, so the reviewer can repair
+the set by hand. Until the set is repaired, the page marks every true wine of the group
+with the dashed green frame. The check `shared_positive` of the review page finds the same
+defect over the whole photo set, not over one run.
+
+The field `twin` is added by the server when it reads a run. It is not written to
+`results.jsonl`, so an old run gets the marks as well.
 
 **The order of the runs.** A click on a column of the table of the runs sorts by that
 column. A second click on the same column turns the order around. The run, the time, and
@@ -365,6 +472,7 @@ A score is read from `score`, `confidence`, `similarity`, `sim`, or `probability
 | `--backend <id>` | The backend. Required, except with `--dry-run`. |
 | `--list-backends` | Print every backend of `backends.yaml` and stop. |
 | `--limit N` | Stop after N photos. Use it for a trial run. |
+| `--photos-dir DIR` | Match the image files of this directory instead of the photo set of the project. The walk is recursive. The directory holds no ground truth, so the run states no correctness. Not allowed with `--from-run`, `--only`, or `--variants`. |
 | `--only positive\|negative\|all` | Take one kind of photo only. |
 | `--variants off\|strict\|group` | Take the variant photos into the set. `strict` accepts the own slug; `group` also accepts a slug of the variant group. The default is `off`. |
 | `--negative-strict` | Count the slug anywhere in the top-k as a false match. |
