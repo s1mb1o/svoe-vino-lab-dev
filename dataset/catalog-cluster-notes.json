@@ -1,0 +1,15 @@
+{
+ "version": 1,
+ "note": "Notes of the reviewer about the catalogue clusters. The review tool writes this file, and no script writes it. A note keeps the slugs of its cluster at the time of writing. It belongs to the current cluster that shares the most slugs with it.",
+ "notes": [
+  {
+   "slugs": [
+    "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+    "vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+    "vinodelnya-vedernikov-fantom-7030-krasnostop-zolotovskiy-krasnoe-suhoe-15"
+   ],
+   "text": "pay attention to numbers in bottom left corner of bottle (30/70), (50/50), (70/30)",
+   "updated_at": "2026-09-23T22:28:14+0300"
+  }
+ ]
+}

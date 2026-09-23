@@ -31,6 +31,7 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `bottle_label_box_dir` | `BOTTLE_LABEL_BOX_DIR` | Box crops of the same labels, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
 | `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
 | `clusters` | `CLUSTERS`, `CLUSTERS_FILE` | The settings of `scripts/10_clusters.py` and the path of the cluster file. See [Catalogue clusters](#catalogue-clusters). |
+| `cluster_rules` | `cluster_rules.CFG` | The VLM, the picture sizes, the rules file, and the notes file of `scripts/11_cluster_rules.py`. See [Label rules of the clusters](#label-rules-of-the-clusters). |
 
 ### The keys of one dataset
 
@@ -473,7 +474,80 @@ key, such as `Cmd`, opens the image in a new tab instead.
 
 `/clusters#<slug>` opens the cluster of that card. The cluster id, such as `c013`, is
 not stable between two builds, so the address names a card and not an id. The page
-reads the file at each load, so a new build needs no restart. The page writes nothing.
+reads the file at each load, so a new build needs no restart. The page writes only the
+note of a cluster and the rule of a cluster. See the next section.
+
+### Label rules of the clusters
+
+A label rule tells the cards of one cluster apart. The re-rank kind `cluster_rules` of
+`svoe-vino-matcher` reads the rules: when the rank-1 card and another card of its
+cluster stand in the first 5 positions, the VLM reads the label of the query photo
+with the rule of that cluster. Read `docs/plans/05_cluster-label-rules.md` for the
+decisions and the measurements.
+
+`scripts/11_cluster_rules.py` builds the rules in two stages:
+
+```bash
+python3 scripts/11_cluster_rules.py
+python3 scripts/11_cluster_rules.py --stage describe
+python3 scripts/11_cluster_rules.py --cluster vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145
+python3 scripts/11_cluster_rules.py --dry-run
+```
+
+| Stage | One VLM call for | Input | Answer |
+|---|---|---|---|
+| 1, `describe` | each card of a cluster | the catalogue picture of the review tool, scaled to a long side of 2048 pixels; no card data | the label description: the texts and the numbers with their place, the vintage, the colours, the design, the marks, the bottle |
+| 2, `rules` | each cluster | the pictures of all cards (long side 768), the card data, the label descriptions, and the note of the reviewer | the difference sheet (questions with the expected answer of each card), the rule text, and the groups that no feature separates |
+
+The VLM is `qwen3.5-9b` on the gx10 gateway, with thinking off. One description takes
+about 15 seconds; one rule about 10 to 30 seconds. The script does only the work that
+is not current, so a stopped run resumes. A small catalogue photo is scaled UP for
+stage 1: at 312 x 1000 pixels the model read «урож. 2024» as 2021.
+
+The code checks the sheet and sets the mode of the rule:
+
+| Mode | Meaning |
+|---|---|
+| `sheet` | At least one question separates two cards. The re-rank asks the questions about the query photo. |
+| `verdict` | No question separates two cards, and the rule text is not empty. The VLM reads the rule text and names the card. |
+| `none` | No difference was found. The re-rank does not act. |
+
+The code enforces two rules of the prompt. A question about a bottle number, such as
+«Бут. №» or «Тираж», is never used: the number changes from bottle to bottle. A
+question about the alcohol value is used only when no other question separates the
+cards: the value changes between vintages.
+
+Two files hold the results:
+
+| File | Writer | Content |
+|---|---|---|
+| `dataset/catalog-cluster-rules.json` | `scripts/11_cluster_rules.py` and the review tool | the label descriptions by slug, and the cluster rules by cluster key |
+| `dataset/catalog-cluster-notes.json` | the review tool only | the notes of the reviewer |
+
+The cluster key is the SHA-1 of the sorted slugs of a cluster, 12 hex digits. A note
+keeps the slugs of its cluster. It belongs to the current cluster that shares the most
+slugs with it, so a note survives a new build of the clusters. A rule is `current`
+while its slugs, its card data, its descriptions, its note, and its prompt stay the
+same; else it is `stale`. A lock file keeps two writers of the rules file apart.
+
+The page `/clusters` shows a `Label rule` block in each cluster: the mode, the status,
+the text about the differences, the sheet as a table with one column for each card,
+and the rule text. A struck question is not used; its tooltip gives the reason. Each
+card holds its `label description`. The filter `Rule` selects a mode, a status, or the
+clusters with a note.
+
+The note editor stands under the rule. `Save note` stores the note. The note does not
+change the rule by itself: `Rebuild rule` saves the note, describes the cards that
+have no current description, and asks the VLM for the rule again. It takes about 5 to
+30 seconds, and one build runs at a time. The prompt tells the VLM that the note is a
+correct fact. Example for the «Фантом» cluster: the note «pay attention to numbers in
+bottom left corner of bottle (30/70), (50/50), (70/30)» gave the question about the
+bottom left corner with the answers 30/70, 50/50, and 70/30.
+
+`scripts/cluster_rules_report.py <run>` reports one run of the backend
+`svm-label-gw-cluster-rules` against its base run. It also replays the run over the
+clusters that exist without the `confusion` signal, because that signal comes from
+match runs over the same test photos.
 
 ### Moving a photo to another wine slug
 
@@ -1169,7 +1243,9 @@ the metrics of the selected run, and one row per photo with the candidates that 
 back. A click on a column sorts the runs; the control `Sort` orders the photos, for
 example the most wrong first. The expected wine carries a green border, and the wine that a negative photo MUST
 NOT match carries a red one. A dashed green border marks the true wine of a negative
-photo, which the server reads from a byte-equal `positive` photo of the same run. The
+photo, which the server reads from a byte-equal `positive` photo of the same run. Two or
+more candidates that stand next to each other and belong to one catalogue cluster share
+one frame in the accent colour. The
 filter `negative_above_positive` selects the negative photos whose forbidden wine stands
 above that true wine, and the filter `twin_conflict` selects the photos that a defect of
 the set marks.

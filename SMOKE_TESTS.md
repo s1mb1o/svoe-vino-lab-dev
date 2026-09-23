@@ -549,6 +549,9 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | R50 | Compare that run with `svm-siglip2-448` in the page | The two detail headers state two different build dates, so the reader can see the runs read different vectors. |
 | R51 | Pin an index the server does not offer | The run still starts, and `embeddings.reason` states that the pipeline does not offer that index. |
 | R52 | Pin an index on a backend whose pipeline owns none | `embeddings.reason` states that the pipeline owns no index. The server answers 400 for every photo. |
+| R53 | Open run `2026-09-23T084340Z-svm-label-gw-difference-hardcase-guard` and find the photo `abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13/01_conf095.jpg` | One frame in the accent colour holds the candidates #1, #2, and #3. Its tooltip reads `cluster c013 · mixed · 4 cards`. Candidate #6 `abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125` is in the same cluster but gets no frame, because #4 and #5 stand between. |
+| R54 | Look at a row where one cluster card stands alone between cards of other clusters | That card gets no frame. |
+| R55 | Rename `dataset/catalog-clusters.json`, then reload `/runs` | The page shows no cluster frame. Everything else works. |
 
 ## The catalogue clusters — `scripts/10_clusters.py` and `/clusters`
 
@@ -573,7 +576,7 @@ Read `docs/plans/04_catalog-clusters.md` for the rules.
 | C15 | Build the file again while the tool runs, then reload `/clusters` | The new build time shows. No restart is needed. |
 | C16 | Open `/clusters` in the dark system theme and in the light system theme | Both themes are readable. A label crop stands on white in the dark theme. |
 | C17 | Open `/clusters` at a width of 375 px | The page has no horizontal scroll. A link table scrolls inside its own box. |
-| C18 | `curl -s $H/api/clusters` | `exists: true`, `clusters`, `counts`, `inputs`, `settings`, and one record in `cards` for each card of a cluster. The route writes nothing. |
+| C18 | `curl -s $H/api/clusters` | `exists: true`, `clusters`, `counts`, `inputs`, `settings`, `rules`, and one record in `cards` for each card of a cluster. The route writes nothing. |
 | C19 | Click the bottle of a card | The large view opens that picture on white. The caption names the card and states `image <i> of <n> · <cluster id> · cluster <k> of <m>`. The picture in the page carries an outline. |
 | C20 | Press `Right` until the last image of the cluster, then press `Right` again | The view moves over the cards first, then over the confused photos. The last image holds, and the button `›` is dimmed. |
 | C21 | Press `Left` at the first image | The first image holds, and the button `‹` is dimmed. |
@@ -585,3 +588,25 @@ Read `docs/plans/04_catalog-clusters.md` for the rules.
 | C27 | Change a filter while the view is open | The view closes, because the blocks are drawn again. |
 | C28 | `Cmd`-click a bottle | The picture opens in a new tab, and the large view does not open. |
 | C29 | Step fast with `Right` over the confused photos | The caption never stands under the picture of the step before. The old picture is hidden until the new one is loaded. |
+
+## The label rules of the clusters — `scripts/11_cluster_rules.py` and `/clusters`
+
+Read `docs/plans/05_cluster-label-rules.md` for the rules. The cases L3, L9 and L10
+call the VLM on gx10 and wait for its single slot.
+
+| # | Case | Expected result |
+|---|---|---|
+| L1 | Run `python3 scripts/11_cluster_rules.py --dry-run` | The log states the clusters, the cards, the notes, the model with `thinking False`, and the counts of the descriptions and the rules that are not current. No VLM call is made. |
+| L2 | Run `python3 scripts/11_cluster_rules.py --cluster no-such-slug` | The script stops with `in no cluster: no-such-slug`. |
+| L3 | Run it with `--cluster vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145` twice | The first run describes the cards that are not current and builds one rule. The second run makes no VLM call: every description and the rule are current. |
+| L4 | `curl -s $H/api/clusters` and find the cluster of `vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145` | The cluster holds `key`, `notes`, `rule`, and `rule_status`. The rule holds a valid question with the answers `30/70`, `50/50`, and `70/30`. Each card record holds `description`. The top field `rules` names the two files and the model. |
+| L5 | Open `$H/clusters#vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145` | The block `Label rule` shows the mode `difference sheet`, the status `current`, the text of the differences, the sheet with one column for each card, and the rule text. A question about the alcohol value is struck; its tooltip gives the reason. |
+| L6 | Click `label description` under a card | The description opens: the texts with their place, the numbers, the vintage, the colours, the design, the marks, and the bottle. A list reads as a comma list, not as JSON. |
+| L7 | Type a note, click `Save note` | The status line reads `saved <time>`. `dataset/catalog-cluster-notes.json` holds the note with the slugs of the cluster. The status of the rule becomes `stale`. |
+| L8 | Clear the text, click `Save note` | The note is gone from the file. The status of the rule is `current` again when no other input changed. |
+| L9 | Click `Rebuild rule` | The line reads `building the rule… (5 to 30 s)` and both buttons are dimmed. The block is drawn again with a new build time and the status `current`. An unsaved note is saved first. |
+| L10 | Click `Rebuild rule` in a second tab while the first build runs | The second tab reads `failed: another rule is being built; try again soon`. |
+| L11 | `curl -s -X POST $H/api/cluster-note -d '{"slugs":["abrau-dyurso-pino-nuar-krasnoe-suhoe-12"],"text":"x"}'` | `400` `these slugs are not the slugs of one cluster`. |
+| L12 | Set `Rule` to `with a note` | Only the clusters with a note are listed. `stale` lists the clusters whose inputs changed after the build. |
+| L13 | Open `/clusters` in the dark system theme and in the light system theme | The block `Label rule`, the sheet, and the note editor are readable in both themes. |
+| L14 | Run `python3 scripts/cluster_rules_report.py runs/<a run of svm-label-gw-cluster-rules>` | The report states the metrics against the base run, the wins and the losses with the exact McNemar test, the table by mode, the replay without the `confusion` signal, the «Фантом» photos, the table of the score gaps, and the latency. It writes `cluster-rules-report.md` and `.json` into the run directory. |

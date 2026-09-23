@@ -2,6 +2,51 @@
 
 ## 2026-09-23
 
+### Label rules for the catalogue clusters
+
+Plan: `docs/plans/05_cluster-label-rules.md`.
+
+- New stage `scripts/11_cluster_rules.py` with the module `scripts/cluster_rules.py`.
+  Stage 1 asks the VLM `qwen3.5-9b` (thinking off) to describe the label of each card
+  of each cluster. Stage 2 asks where the labels of one cluster differ, and writes the
+  cluster rule: a difference sheet of questions with the expected answer of each card,
+  and a rule text. The note of the reviewer goes into stage 2. The code drops a question
+  about a bottle number, and a question about the alcohol value when another question
+  separates the cards.
+- New files `dataset/catalog-cluster-rules.json` (the descriptions and the rules) and
+  `dataset/catalog-cluster-notes.json` (the notes of the reviewer).
+- New block `cluster_rules` of `config.yaml`.
+- `.gitignore` ignores the lock files `*.lock` next to the two new JSON files.
+- `GET /api/clusters` adds `key`, `notes`, `rule` and `rule_status` to each cluster,
+  the label description to each card, and the field `rules`.
+- New routes `POST /api/cluster-note` and `POST /api/cluster-rule`.
+- The page `/clusters` shows a `Label rule` block in each cluster, with the sheet, the
+  rule text, the note editor, and the buttons `Save note` and `Rebuild rule`. Each card
+  shows its `label description`. New filter `Rule`.
+- The note of the «Фантом» cluster is stored: «pay attention to numbers in bottom left
+  corner of bottle (30/70), (50/50), (70/30)».
+- `match_backends.parse_answer` keeps the field `explain` of a candidate.
+- New backend `svm-label-gw-cluster-rules` in `backends.yaml`: the pipeline
+  `cluster-rules-difference-gateway` of `svoe-vino-matcher` on port 8164, with
+  `explain=1`.
+- New script `scripts/cluster_rules_report.py`: the report of one run against its base,
+  with a replay over the clusters without the `confusion` signal.
+- `config.yaml` names the indexes of 2026-09-23 for the clusters: `gateway-6e12e149fe`
+  and `gateway-b57810da3d`. The new build of `dataset/catalog-clusters.json` holds the
+  same 255 clusters and the same links as the build of 2026-09-22. The old file is
+  kept as `work/catalog-clusters.2026-09-22T231210.json`.
+- `docs/API.md`, `docs/openapi.yaml`, `README.md`, `SMOKE_TESTS.md` (L1 to L14) and
+  `ResearchLog.md` describe the change.
+
+### The cluster frame of the page `/runs`
+
+- Two or more candidates that stand next to each other in the strip and belong to one
+  catalogue cluster now share one frame in the accent colour. The tooltip of the frame
+  names the cluster id, the kind, and the size. A cluster card that stands apart from
+  the others gets no frame.
+- The page reads `GET /api/clusters` once at start. When the cluster file is missing
+  or the request fails, the page shows no frame and works as before.
+
 ### Backend for the hard cases
 
 - New backend `svm-label-gw-difference` in `backends.yaml`. It asks the pipeline
@@ -29,6 +74,11 @@
 - New backends `svm-siglip2-448-bordered` and `svm-siglip2-448-cropped`. Each one pins
   the index file of `siglip2-448`, so the two pictures of the catalogue are compared on
   one server with no restart.
+- New backends `svm-crop-ab-bordered-<pipeline>` and `svm-crop-ab-cropped-<pipeline>` for
+  seven pipelines. The `bordered` entries ask a temporary baseline server on 8165, which
+  was stopped after the runs of 2026-09-23, so they answer nothing now. The runs are
+  `runs/2026-09-23T0*-svm-crop-ab-*`. The result is in `svoe-vino-matcher/ResearchLog.md`,
+  entry "The cropped catalogue pictures in seven more pipelines".
 
 ## 2026-09-22
 

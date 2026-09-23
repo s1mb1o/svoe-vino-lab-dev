@@ -248,6 +248,15 @@ One link holds `{a, b, by, name, photo, label, a_as_b, b_as_a, photos}`. `by` na
 the signals that passed. `photo` and `label` hold the cosine also when that signal did
 not pass. `id` is not stable between two builds.
 
+Each cluster also holds `key`, `notes`, `rule`, and `rule_status`, and each card record
+holds `description`, `description_error`, and `description_built_at`. These come from
+the two files of `scripts/11_cluster_rules.py`. `key` is the SHA-1 of the sorted slugs,
+12 hex digits. `rule` holds `{mode, differences, questions, rule, indistinguishable,
+note, built_at, ms, error, max_side}`. `mode` is `sheet`, `verdict`, or `none`.
+`rule_status` is `none`, `error`, `stale`, or `current`. A note holds `{text,
+updated_at, slugs, members_changed}`. The top field `rules` holds the paths of the two
+files, the model, and `busy`. Read `docs/plans/05_cluster-label-rules.md`.
+
 The route reads the file at each request, so a new build needs no restart. When the
 file is absent, the answer is `200` with `exists: false` and `hint`. Errors: `500` when
 the file cannot be read as JSON.
@@ -271,6 +280,8 @@ another answer. `counts` is the counter set of the whole review set.
 | `POST /api/exclude` | `{slug, excluded, reason}` | Take one wine out of the benchmark, or bring it back. `excluded` defaults to true. A reason is required to exclude, at most 1000 characters. Answers `{ok, slug, excluded, entry, count}`. Read `docs/excluded-slugs.md`. |
 | `POST /api/group` | `{slug, target}` | Join two wines into one variant group. The write is one pair. A wine that is in no group takes the group of the other wine. Answers `{ok, changed, group, ...}`; when `changed` is true the answer also holds `rows`, `labels`, `wines`, `excluded`, `groups`, and `slugs`. `409` when both wines are already in two different groups: a merge of two groups cannot be undone by taking one pair away. |
 | `POST /api/upload?slug=<slug>&name=<file>` | the picture bytes | The body is the picture itself, not a form. The route writes no label, no score, and no comment. Answers `{ok, slug, file, photos}`. An agent SHOULD use `POST /api/v1/propose` with a `data:` URL instead. |
+| `POST /api/cluster-note` | `{slugs, text}` | The note of one catalogue cluster, at most 4000 characters. `slugs` MUST be the slugs of one current cluster. An empty `text` clears the note. The note replaces every note of that cluster, and the rule stays `stale` until its next build. Answers `{ok, note}`. `400` when the slugs are not the slugs of one cluster. |
+| `POST /api/cluster-rule` | `{slug}` | Build the label rule of the cluster of `slug` again: first the label descriptions that are not current, then the rule with the note. The route calls the VLM and takes about 5 to 30 seconds. One build runs at a time. Answers `{ok, descriptions_built, mode, error}`. `400` when the slug is in no cluster. `409` when another build runs. |
 | `POST /api/fetch-image` | `{slug, url}` | Fetch one picture from an address and store it, without a proposal. The rules of the address are the rules of `POST /api/v1/propose`. Answers `{ok, slug, file, photos, url}`. An agent SHOULD use `POST /api/v1/propose` instead. |
 
 ### The rules of a picture

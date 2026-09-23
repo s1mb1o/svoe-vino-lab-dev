@@ -60,7 +60,8 @@ tags:
     description: |
       The routes of the clusters page. It reads the file that `scripts/10_clusters.py`
       writes. A cluster is a group of catalogue cards that the matcher confuses, or can
-      confuse.
+      confuse. Each cluster also holds its label rule and the note of the reviewer.
+      Read `docs/plans/05_cluster-label-rules.md`.
 
 paths:
 
@@ -1304,8 +1305,11 @@ paths:
       description: |
         The route reads the file that the key `clusters.file` of `config.yaml` names, at
         each request. A new build of `scripts/10_clusters.py` needs no restart. The
-        route adds `cards`, which holds the label counts of the dataset in use. The
-        route writes nothing. Read `docs/plans/04_catalog-clusters.md`.
+        route adds `cards`, which holds the label counts of the dataset in use and the
+        label description of each card. Each cluster also holds its key, its notes,
+        its rule, and the status of the rule, from the two files of
+        `scripts/11_cluster_rules.py`. The route writes nothing. Read
+        `docs/plans/04_catalog-clusters.md` and `docs/plans/05_cluster-label-rules.md`.
       responses:
         "200":
           description: |
@@ -1316,6 +1320,104 @@ paths:
               schema: { $ref: "#/components/schemas/ClusterView" }
         "500":
           description: The file cannot be read as JSON.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/cluster-note:
+    post:
+      tags: [clusters]
+      operationId: setClusterNote
+      summary: Store or clear the note of one cluster.
+      description: |
+        `slugs` MUST be the slugs of one current cluster, in any order. An empty
+        `text` clears the note. The route replaces every note of that cluster, so the
+        cluster keeps one note with its current slugs. The note goes into the rule at
+        the next build of that rule; the rule becomes `stale` until then. At most 4000
+        characters. Only this route writes `dataset/catalog-cluster-notes.json`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slugs, text]
+              properties:
+                slugs:
+                  type: array
+                  items: { type: string }
+                text: { type: string, maxLength: 4000 }
+      responses:
+        "200":
+          description: The note is stored, or cleared when `note` is null.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, note]
+                properties:
+                  ok: { type: boolean, const: true }
+                  note:
+                    oneOf: [{ $ref: "#/components/schemas/ClusterNote" }, { type: "null" }]
+        "400":
+          description: |
+            `slugs` is not a list of strings, the slugs are not the slugs of one
+            cluster, or the note is too long.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/cluster-rule:
+    post:
+      tags: [clusters]
+      operationId: buildClusterRule
+      summary: Build the label rule of one cluster again.
+      description: |
+        The route describes each card of the cluster whose label description is not
+        current, then asks the VLM for the rule of the cluster with its note. It calls
+        the VLM of `cluster_rules` in `config.yaml` and takes about 5 to 30 seconds.
+        One build runs at a time. The route writes `dataset/catalog-cluster-rules.json`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug]
+              properties:
+                slug:
+                  type: string
+                  description: The slug of one card of the cluster.
+      responses:
+        "200":
+          description: |
+            The build is done. `error` is not null when the VLM failed or gave no JSON;
+            the rule then holds the error and the re-rank does not use it.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, descriptions_built, mode]
+                properties:
+                  ok: { type: boolean, const: true }
+                  descriptions_built:
+                    type: integer
+                    description: The label descriptions that the route built first.
+                  mode: { type: string, enum: [sheet, verdict, none] }
+                  error:
+                    oneOf: [{ type: string }, { type: "null" }]
+        "400":
+          description: The slug is in no cluster.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: Another rule is being built.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          description: A file cannot be read or written.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
@@ -2462,6 +2564,12 @@ components:
           type: object
           description: One record for each card of a cluster, by slug.
           additionalProperties: { $ref: "#/components/schemas/ClusterCard" }
+        rules:
+          type: object
+          description: |
+            The facts of the two files of `scripts/11_cluster_rules.py`: `rules_file`,
+            `notes_file`, `updated_at`, `model`, `thinking`, and `busy` (a rule is being
+            built). `error` when a file cannot be read.
 
     Cluster:
       type: object
@@ -2495,6 +2603,83 @@ components:
         links:
           type: array
           items: { $ref: "#/components/schemas/ClusterLink" }
+        key:
+          type: string
+          description: The SHA-1 of the sorted slugs, 12 hex digits. The rules file uses it.
+        rule:
+          oneOf: [{ $ref: "#/components/schemas/ClusterRule" }, { type: "null" }]
+        rule_status:
+          type: string
+          enum: [none, error, stale, current]
+          description: |
+            `none`: no rule was built. `error`: the last build failed. `stale`: the
+            slugs, the card data, a description, the note, or the prompt changed after
+            the build. `current`: none of these changed.
+        notes:
+          type: array
+          description: The notes of the reviewer that belong to this cluster.
+          items: { $ref: "#/components/schemas/ClusterNote" }
+
+    ClusterRule:
+      type: object
+      description: The answer of stage 2 of `scripts/11_cluster_rules.py`, as the code checked it.
+      properties:
+        mode:
+          type: string
+          enum: [sheet, verdict, none]
+          description: |
+            `sheet`: at least one question separates two cards. `verdict`: no question
+            does, and the rule text is not empty. `none`: no difference was found.
+        differences: { type: string }
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string, example: q1 }
+              question: { type: string }
+              answers:
+                type: object
+                description: The expected answer of each card, by slug. Null when the card does not show the feature.
+                additionalProperties:
+                  oneOf: [{ type: string }, { type: "null" }]
+              kind:
+                type: string
+                enum: [feature, alcohol, serial]
+              valid:
+                type: boolean
+                description: |
+                  Whether the re-rank asks this question. A `serial` question is never
+                  valid. An `alcohol` question is valid only when no `feature` question is.
+        rule: { type: string }
+        indistinguishable:
+          type: array
+          description: The groups of cards that no feature separates, by slug.
+          items:
+            type: array
+            items: { type: string }
+        note:
+          type: string
+          description: The note text that the build used.
+        built_at: { type: string }
+        ms: { type: integer }
+        max_side: { type: integer }
+        error:
+          oneOf: [{ type: string }, { type: "null" }]
+
+    ClusterNote:
+      type: object
+      required: [slugs, text]
+      properties:
+        slugs:
+          type: array
+          description: The slugs of the cluster when the note was written.
+          items: { type: string }
+        text: { type: string }
+        updated_at: { type: string }
+        members_changed:
+          type: boolean
+          description: Only in `GET /api/clusters`. The cluster holds other slugs now.
 
     ClusterLink:
       type: object
@@ -2556,3 +2741,13 @@ components:
             variant: { type: integer }
             unusable: { type: integer }
             unlabelled: { type: integer }
+        description:
+          oneOf: [{ type: object }, { type: "null" }]
+          description: |
+            The label description of stage 1 of `scripts/11_cluster_rules.py`, as the
+            VLM wrote it: `texts`, `numbers`, `vintage`, `colours`, `design`, `marks`,
+            and `bottle`. Null when no description was built.
+        description_error:
+          oneOf: [{ type: string }, { type: "null" }]
+        description_built_at:
+          oneOf: [{ type: string }, { type: "null" }]

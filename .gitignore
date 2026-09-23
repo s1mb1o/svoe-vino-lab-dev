@@ -22,3 +22,7 @@ __pycache__/
 # One directory per match run. `scripts/match_run.py` writes it. The output is
 # rebuilt by a new run and does not belong in git.
 runs/
+
+# The lock file next to a shared JSON file. `scripts/cluster_rules.py` makes it
+# to serialise writes. It holds no data.
+*.lock

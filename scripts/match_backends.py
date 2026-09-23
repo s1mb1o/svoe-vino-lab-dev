@@ -128,9 +128,14 @@ def parse_answer(body, shape="auto"):
         slug = _slug_of(rec)
         if not slug:
             continue
-        out.append({"slug": slug,
-                    "score": _score_of(rec) if isinstance(rec, dict) else None,
-                    "rank": len(out) + 1})
+        item = {"slug": slug,
+                "score": _score_of(rec) if isinstance(rec, dict) else None,
+                "rank": len(out) + 1}
+        # The reason of a re-rank, when the backend was asked with `explain=1`.
+        # The report of a re-rank reads it from results.jsonl.
+        if isinstance(rec, dict) and rec.get("explain") is not None:
+            item["explain"] = rec["explain"]
+        out.append(item)
     if not out:
         raise ValueError("the answer holds no slug")
     return out

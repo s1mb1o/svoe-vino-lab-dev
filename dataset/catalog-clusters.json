@@ -1,6 +1,6 @@
 {
  "version": 1,
- "built_at": "2026-09-22T23:12:10+0300",
+ "built_at": "2026-09-23T21:46:37+0300",
  "note": "Clusters of catalogue cards that the matcher confuses, or can confuse. scripts/10_clusters.py writes this file, and the page /clusters of the review tool shows it. Read docs/plans/04_catalog-clusters.md.",
  "settings": {
   "signals": [
@@ -16,22 +16,22 @@
  "inputs": {
   "catalog_file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl",
   "photo_index": {
-   "file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-matcher/index/gateway-ad42b0653c.npz",
-   "index_id": "gateway-ad42b0653c",
+   "file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-matcher/index/gateway-6e12e149fe.npz",
+   "index_id": "gateway-6e12e149fe",
    "pipeline": "gateway-siglip2",
    "source": "photo",
-   "built_at": "2026-09-22T17:43:20+0300",
+   "built_at": "2026-09-23T15:07:06+0300",
    "vectors": 2093,
    "cards": 2093,
    "dropped_non_finite": 0,
    "dropped_unknown_slugs": 0
   },
   "label_index": {
-   "file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-matcher/index/gateway-877e0dd4a8.npz",
-   "index_id": "gateway-877e0dd4a8",
+   "file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-matcher/index/gateway-b57810da3d.npz",
+   "index_id": "gateway-b57810da3d",
    "pipeline": "gateway-siglip2-label",
    "source": "label",
-   "built_at": "2026-09-22T20:11:00+0300",
+   "built_at": "2026-09-23T15:08:34+0300",
    "vectors": 2092,
    "cards": 2092,
    "dropped_non_finite": 0,
@@ -3023,8 +3023,8 @@
       "label"
      ],
      "name": null,
-     "photo": 0.9497,
-     "label": 0.9522,
+     "photo": 0.9499,
+     "label": 0.9524,
      "a_as_b": 0,
      "b_as_a": 0,
      "photos": []
@@ -3036,8 +3036,8 @@
       "name"
      ],
      "name": "same",
-     "photo": 0.8733,
-     "label": 0.872,
+     "photo": 0.8743,
+     "label": 0.8723,
      "a_as_b": 0,
      "b_as_a": 0,
      "photos": []
@@ -6490,8 +6490,8 @@
       "label"
      ],
      "name": null,
-     "photo": 0.9151,
-     "label": 0.9612,
+     "photo": 0.9227,
+     "label": 0.9605,
      "a_as_b": 1,
      "b_as_a": 0,
      "photos": [
@@ -8334,8 +8334,8 @@
       "name"
      ],
      "name": "same",
-     "photo": 0.9226,
-     "label": 0.9488,
+     "photo": 0.9197,
+     "label": 0.9474,
      "a_as_b": 0,
      "b_as_a": 0,
      "photos": []

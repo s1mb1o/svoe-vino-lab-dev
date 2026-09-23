@@ -50,6 +50,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import cluster_rules  # noqa: E402
 import common  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -125,6 +126,9 @@ UPLOAD_TYPES = {
 }
 
 _lock = threading.Lock()
+# One build of a cluster rule at a time. The VLM has one slot, and a build takes
+# about 5 to 30 seconds. `POST /api/cluster-rule` holds it.
+_rule_lock = threading.Lock()
 _state = {"labels": {}, "wines": {}}
 _rows = []
 # slug -> the path of a corrected catalogue photo. `common.PATCH_DIR` holds the
@@ -2296,7 +2300,22 @@ def _row_matches(rec, mode):
         return label == "negative" and twin.get("verdict") == "below"
     if mode == "twin_conflict":
         return bool(twin.get("conflict"))
+    # The cluster rule step of `svoe-vino-matcher` writes one `explain` record with
+    # `kind: cluster_rules` into each card that it touched. Read
+    # `docs/plans/05_cluster-label-rules.md`.
+    if mode in ("rule_acted", "rule_changed"):
+        step = rule_step(rec)
+        return step is not None and (mode == "rule_acted" or bool(step.get("changed")))
     return True
+
+
+def rule_step(rec):
+    """The `explain` record of the cluster rule step of one row, or None."""
+    for cand in rec.get("candidates") or ():
+        step = cand.get("explain")
+        if isinstance(step, dict) and step.get("kind") == "cluster_rules":
+            return step
+    return None
 
 
 # ---------------------------------------------------------------- HTTP handler
@@ -2504,6 +2523,10 @@ class Handler(BaseHTTPRequestHandler):
             self._apply_moves(body)
         elif route == "/api/fetch-image":
             self._fetch(body)
+        elif route == "/api/cluster-note":
+            self._set_cluster_note(body)
+        elif route == "/api/cluster-rule":
+            self._build_cluster_rule(body)
         elif route.startswith("/api/v1/"):
             self._api_post(route[len("/api/v1/"):], body)
         elif route == "/api/labels":
@@ -2549,8 +2572,10 @@ class Handler(BaseHTTPRequestHandler):
         """Answer the cluster file of `scripts/10_clusters.py` and one record per card.
 
         The route reads the file at each request, so a new build needs no restart.
-        A card record holds the label counts of the dataset in use. The route writes
-        nothing.
+        A card record holds the label counts of the dataset in use and the label
+        description of `scripts/11_cluster_rules.py`. Each cluster holds its notes,
+        its rule, and the status of the rule. Read
+        `docs/plans/05_cluster-label-rules.md`. The route writes nothing.
         """
         path = common.CLUSTERS_FILE
         if not os.path.isfile(path):
@@ -2592,8 +2617,108 @@ class Handler(BaseHTTPRequestHandler):
                         "excluded": slug in _excluded,
                         "photos": counts,
                     }
+        clusters, rules = self._with_rules(data.get("clusters") or [], cards, catalog)
         self._json(200, {"exists": True, "file": path, "dataset": common.DATASET,
-                         **data, "cards": cards})
+                         **data, "clusters": clusters, "cards": cards, "rules": rules})
+
+    def _with_rules(self, clusters, cards, catalog):
+        """Add the notes, the rule and its status to each cluster, and the label
+        description to each card. Answer the clusters and the facts of the files."""
+        try:
+            data = cluster_rules.load_rules()
+            notes = cluster_rules.assign_notes(clusters, cluster_rules.load_notes())
+        except (OSError, ValueError) as exc:
+            return clusters, {"error": "cannot read the rules or the notes: %s" % exc}
+        for slug, card in cards.items():
+            rec = data["cards"].get(slug) or {}
+            card["description"] = rec.get("description")
+            card["description_error"] = rec.get("error")
+            card["description_built_at"] = rec.get("built_at")
+        out = []
+        for c in clusters:
+            key = cluster_rules.cluster_key(c["slugs"])
+            own = notes.get(key, [])
+            rule = data["clusters"].get(key)
+            sha = cluster_rules.rule_inputs_sha(c["slugs"], catalog, data["cards"],
+                                                cluster_rules.note_text(own))
+            members = set(c["slugs"])
+            shown = None
+            if rule:
+                shown = {k: rule.get(k) for k in (
+                    "mode", "differences", "questions", "rule", "indistinguishable",
+                    "note", "built_at", "ms", "error", "max_side")}
+            out.append({**c, "key": key, "rule": shown,
+                        "rule_status": cluster_rules.rule_status(rule, sha),
+                        "notes": [{"text": n["text"], "updated_at": n.get("updated_at"),
+                                   "slugs": n["slugs"],
+                                   "members_changed": set(n["slugs"]) != members}
+                                  for n in own]})
+        facts = {"rules_file": cluster_rules.RULES_FILE,
+                 "notes_file": cluster_rules.NOTES_FILE,
+                 "updated_at": data.get("updated_at"), "model": cluster_rules.MODEL,
+                 "thinking": cluster_rules.THINKING,
+                 "busy": _rule_lock.locked()}
+        return out, facts
+
+    def _set_cluster_note(self, body):
+        """Store or clear the note of one cluster. Body: `{slugs, text}`.
+
+        `slugs` MUST be the slugs of one current cluster. An empty text clears the
+        note. The note goes into the rule at the next build of that rule.
+        """
+        slugs = body.get("slugs")
+        text = body.get("text")
+        text = text.strip() if isinstance(text, str) else ""
+        if not isinstance(slugs, list) or not all(isinstance(s, str) for s in slugs):
+            self._json(400, {"error": "slugs MUST be a list of slugs"})
+            return
+        if len(text) > COMMENT_MAX:
+            self._json(400, {"error": "the note is longer than %d characters" % COMMENT_MAX})
+            return
+        clusters = cluster_rules.load_clusters()
+        if not any(sorted(c["slugs"]) == sorted(slugs) for c in clusters):
+            self._json(400, {"error": "these slugs are not the slugs of one cluster; "
+                                      "load the page again"})
+            return
+        try:
+            note = cluster_rules.set_note(slugs, text, clusters)
+        except OSError as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {"ok": True, "note": note})
+
+    def _build_cluster_rule(self, body):
+        """Build the rule of one cluster again. Body: `{slug}` of one of its cards.
+
+        The route first describes each card whose description is not current, then
+        asks the VLM for the rule. One build runs at a time; a second request gets
+        HTTP 409. It takes about 5 to 30 seconds.
+        """
+        slug = body.get("slug") or ""
+        clusters = cluster_rules.load_clusters()
+        cluster = next((c for c in clusters if slug in c["slugs"]), None)
+        if cluster is None:
+            self._json(400, {"error": "this slug is in no cluster"})
+            return
+        if not _rule_lock.acquire(blocking=False):
+            self._json(409, {"error": "another rule is being built; try again soon"})
+            return
+        catalog = getattr(self.server, "catalog", {})
+        try:
+            builder = cluster_rules.Builder(catalog, lambda s: bottle_path(s, catalog),
+                                            log=lambda *a: print(*a, file=sys.stderr))
+            calls = builder.describe_cards(cluster["slugs"])
+            notes = cluster_rules.assign_notes(clusters, cluster_rules.load_notes())
+            rule, _ = builder.build(cluster["slugs"],
+                                    notes.get(cluster_rules.cluster_key(cluster["slugs"]), []),
+                                    force=True)
+        except (OSError, ValueError) as exc:
+            self._json(500, {"error": "cannot build the rule: %s" % exc})
+            return
+        finally:
+            _rule_lock.release()
+        self._json(200, {"ok": True, "descriptions_built": calls,
+                         "error": rule.get("error"), "mode": rule.get("mode")})
 
     def _run_view(self, query):
         """Answer the metrics and the filtered rows of one run."""
@@ -6798,6 +6923,21 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .cand.twin { border-style: dashed; border-color: var(--pos); background: var(--pos-bg); }
 .cand.twin.missing { background: transparent; }
 .cand.apart { margin-left: 26px; }
+/* candidates that stand next to each other and belong to one catalogue cluster */
+.clgrp { display: flex; flex-wrap: wrap; gap: 8px; padding: 3px;
+         border: 2px solid var(--accent); border-radius: 11px; }
+/* the answer of the VLM rule step, under the frame of the top cluster */
+.clcol { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.vlm {
+  max-width: 470px; font-size: 12px; line-height: 1.4; background: var(--panel-2);
+  border: 1px solid var(--accent); border-radius: 8px; padding: 6px 9px;
+}
+.vlm .vh { font-weight: 650; }
+.vlm .q { margin-top: 3px; }
+.vlm .a { font-weight: 650; color: var(--accent); }
+.vlm .sc, .vlm .mv, .vlm .src { margin-top: 3px; color: var(--muted); }
+.vlm .sc b, .vlm .mv b { color: var(--text); font-weight: 600; }
+.vlm .err { margin-top: 3px; color: var(--exc); }
 .cand img, .cand .nobottle {
   width: 92px; height: 116px; object-fit: contain; display: block;
   background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
@@ -6839,6 +6979,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
         <option value="no_match_answered">no match: the backend answered a card anyway</option>
         <option value="negative_above_positive">negative: the wrong wine stands above the true wine</option>
         <option value="twin_conflict">set defect: one photo is positive for two wines</option>
+        <option value="rule_acted">rule step: the VLM answered for the top cluster</option>
+        <option value="rule_changed">rule step: the VLM answer changed the order</option>
         <option value="error">the request failed</option>
       </select>
     </label>
@@ -6902,6 +7044,11 @@ let RUNS = [], CUR = null, OFFSET = 0, TOTAL = 0;
    `/api/patched` and every candidate image asks this set. */
 let PATCHED = new Set();
 const isPatched = slug => PATCHED.has(slug);
+/* The catalogue cluster of each slug, from `/api/clusters`. A slug stands in one
+   cluster at most. */
+let CLUSTER = {};
+/* The card names of `/api/clusters`, by slug, for the box of the rule step. */
+let CARDNAME = {};
 /* The order of the table of the runs. The newest run stands first at the start. */
 let RSORT = { key: "id", dir: -1 };
 const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var",
@@ -7083,6 +7230,81 @@ function candCard(c, truth, forbidden, twins) {
     <div class="sl">${esc(c.slug)}</div></div>`;
 }
 
+/* Two or more candidates that stand next to each other and belong to one catalogue
+   cluster share one frame. A cluster card that stands apart from the others gets no
+   frame. */
+function candStrip(cands, truth, forbidden, twins, vlm) {
+  let html = "";
+  for (let i = 0; i < cands.length;) {
+    const cl = CLUSTER[cands[i].slug];
+    let j = i + 1;
+    while (cl && j < cands.length && CLUSTER[cands[j].slug] === cl) j++;
+    const cards = cands.slice(i, j).map(c => candCard(c, truth, forbidden, twins)).join("");
+    const group = j - i < 2 ? cards
+      : `<div class="clgrp" title="cluster ${esc(cl.id)} &middot; ${esc(cl.kind)} &middot; ${
+          cl.size} cards">${cards}</div>`;
+    // The rule step acts on the cluster of rank 1, so its box stands under that group.
+    html += i === 0 && vlm ? `<div class="clcol">${group}${vlm}</div>` : group;
+    i = j;
+  }
+  return html;
+}
+
+/* ---- the VLM rule step ----
+
+   The cluster rule step of `svoe-vino-matcher` writes one `explain` record with
+   `kind: cluster_rules` into each card that it touched: the cluster, the mode, the
+   window, the answer of the VLM, the score of each card, and the base rank. A run
+   that did not record the questions takes their text from the current rule of the
+   cluster, and the box states that. */
+function ruleStep(r) {
+  for (const c of r.candidates || []) {
+    const e = c.explain;
+    if (e && e.kind === "cluster_rules") return e;
+  }
+  return null;
+}
+
+const RULE_MODE = { sheet: "difference sheet", verdict: "verdict rule" };
+
+function vlmHtml(e, cands) {
+  const win = e.window || [];
+  const cl = CLUSTER[win[0]] || {};
+  const rule = cl.rule || {};
+  const name = s => esc(CARDNAME[s] || s);
+  const when = e.cached ? "from the cache" : `${((e.ms || 0) / 1000).toFixed(1)} s`;
+  let body = "";
+  if (e.error) {
+    body = `<div class="err">no answer: ${esc(e.error)}. The base order stays.</div>`;
+  } else if (e.mode === "sheet") {
+    const ans = e.answers || {};
+    const asked = e.questions || (rule.questions || []).filter(q => q.valid);
+    body = asked.map(q => `<div class="q">${esc(q.id)} ${esc(q.question)} &rarr; <span
+      class="a">${esc(ans[q.id] == null ? "no answer" : ans[q.id])}</span></div>`).join("");
+    body += Object.keys(ans).filter(k => !asked.some(q => q.id === k))
+      .map(k => `<div class="q">${esc(k)} &rarr; <span class="a">${esc(ans[k])}</span></div>`)
+      .join("");
+    const sc = e.scores || {};
+    body += `<div class="sc">scores: ${win.map(s => `<b>${name(s)}</b> ${
+      (sc[s] || 0) > 0 ? "+" : ""}${sc[s] || 0}`).join(" &middot; ")}</div>`;
+    if (!e.questions) {
+      body += `<div class="src">The run holds the answers only; the question text comes
+        from the current rule of the cluster.</div>`;
+    }
+  } else {
+    body = `<div class="q">answer &rarr; <span class="a">${esc(JSON.stringify(e.answer || {}))}</span>${
+      e.chosen ? " = <b>" + name(e.chosen) + "</b>" : ""}</div>`;
+  }
+  const top = cands[0] || {};
+  const was = top.explain && top.explain.base_rank;
+  const moved = e.changed
+    ? `the answer moved <b>${name(top.slug)}</b> from #${was || "?"} to #1`
+    : "the base order stays";
+  return `<div class="vlm"><div class="vh">VLM &middot; ${esc(RULE_MODE[e.mode] || e.mode)}
+    &middot; ${esc(cl.id || e.cluster)} &middot; ${when}</div>${body}
+    <div class="mv">${moved}</div></div>`;
+}
+
 function twinGhost(slug, apart) {
   return `<div class="cand twin missing ${apart ? "apart" : ""}">
     ${picHtml(`<img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(slug)}" alt=""
@@ -7121,7 +7343,9 @@ function rowHtml(r) {
       <div class="r"><span>expected</span><span>\\u2014</span></div>
       <div class="sl">${esc(truth[0])}</div></div>`;
   }
-  strip += (r.candidates || []).map(c => candCard(c, truth, forbidden, twins)).join("");
+  const step = ruleStep(r);
+  strip += candStrip(r.candidates || [], truth, forbidden, twins,
+                     step ? vlmHtml(step, r.candidates || []) : "");
   // the true wine of a negative photo, which never came back. It stands after the
   // answer, apart from it, because it holds no rank in the answer.
   const gone = twins.filter(s => !(r.candidates || []).some(c => c.slug === s));
@@ -7269,6 +7493,12 @@ document.addEventListener("keydown", ev => {
   try {
     PATCHED = new Set((await (await fetch("/api/patched")).json()).slugs || []);
   } catch (e) { /* the mark is a hint; its absence MUST NOT stop the page */ }
+  try {
+    const cls = await (await fetch("/api/clusters")).json();
+    for (const cl of cls.clusters || [])
+      for (const s of cl.slugs || []) CLUSTER[s] = cl;
+    for (const [s, k] of Object.entries(cls.cards || {})) CARDNAME[s] = k.name || s;
+  } catch (e) { /* the frame is a hint; its absence MUST NOT stop the page */ }
   RUNS = (await (await fetch("/api/runs")).json()).runs || [];
   renderRuns();
   const want = decodeURIComponent((location.hash || "").slice(1));
@@ -7283,9 +7513,12 @@ document.addEventListener("keydown", ev => {
 
 
 # The page of the catalogue clusters. It reads `GET /api/clusters`, which answers the
-# file of `scripts/10_clusters.py`, and it writes nothing. A cluster is a group of
-# catalogue cards that the matcher confuses, or can confuse. Read
-# `docs/plans/04_catalog-clusters.md`.
+# file of `scripts/10_clusters.py`. A cluster is a group of catalogue cards that the
+# matcher confuses, or can confuse. Read `docs/plans/04_catalog-clusters.md`.
+#
+# Each cluster also shows its label rule and the note of the reviewer. The page
+# writes the note with `POST /api/cluster-note` and builds one rule again with
+# `POST /api/cluster-rule`. Read `docs/plans/05_cluster-label-rules.md`.
 PAGE_CLUSTERS = r"""<!doctype html>
 <html lang="en">
 <head>
@@ -7449,6 +7682,53 @@ img.lb-cur { outline: 2px solid var(--accent); outline-offset: 1px; }
 }
 #lb .hint b { color: #e9e9ee; }
 
+/* the label rule of a cluster */
+.rule {
+  margin: 10px 0 2px; padding: 8px 10px; border: 1px solid var(--line);
+  border-radius: 8px; background: var(--panel-2);
+}
+.rule-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+.rule-head b { font-size: 13px; }
+.rule p { margin: 6px 0; font-size: 13px; }
+.tag.m-sheet { color: var(--pos); background: var(--pos-bg); }
+.tag.m-verdict { color: var(--var); background: var(--var-bg); }
+.tag.m-none, .tag.m-missing {
+  color: var(--muted); background: var(--panel); border: 1px solid var(--line);
+}
+.st { font-size: 11px; font-weight: 600; }
+.st.current { color: var(--pos); }
+.st.stale { color: var(--exc); }
+.st.error { color: var(--neg); }
+.st.none { color: var(--muted); }
+table.sheet { border-collapse: collapse; font-size: 12px; margin: 4px 0; }
+table.sheet th, table.sheet td {
+  padding: 3px 8px; border-bottom: 1px solid var(--line); text-align: left;
+  vertical-align: top;
+}
+table.sheet th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+table.sheet tr:last-child td { border-bottom: 0; }
+table.sheet tr.off td { color: var(--muted); text-decoration: line-through; }
+table.sheet td.nul { color: var(--muted); }
+.note-box { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.note-box textarea {
+  width: 100%; min-height: 44px; resize: vertical; font: inherit; font-size: 13px;
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 5px 7px;
+}
+.note-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.btn {
+  font: inherit; font-size: 12px; font-weight: 600; color: var(--text);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 3px 10px; cursor: pointer;
+}
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn:disabled { opacity: .5; cursor: default; }
+.warn { color: var(--exc); font-size: 12px; }
+.mem details.desc { margin-top: 4px; font-size: 11px; }
+.mem details.desc summary { cursor: pointer; color: var(--accent); }
+.mem .desc div { margin-top: 3px; line-height: 1.3; overflow-wrap: anywhere; }
+.mem .desc b { color: var(--muted); font-weight: 600; }
+
 @media (max-width: 600px) {
   .mem { width: calc(50% - 5px); }
   .mem img, .mem .nobottle { width: 100%; height: 160px; }
@@ -7504,6 +7784,18 @@ img.lb-cur { outline: 2px solid var(--accent); outline-offset: 1px; }
         <option value="label">label</option>
       </select>
     </label>
+    <label>Rule
+      <select id="rule">
+        <option value="">any rule</option>
+        <option value="sheet">difference sheet</option>
+        <option value="verdict">verdict rule</option>
+        <option value="none">no difference found</option>
+        <option value="missing">not built</option>
+        <option value="stale">stale</option>
+        <option value="error">failed</option>
+        <option value="note">with a note</option>
+      </select>
+    </label>
     <label>Find <input id="q" type="search" placeholder="slug, name, or producer"></label>
     <span class="muted" id="count"></span>
   </div>
@@ -7553,12 +7845,22 @@ function matches(c, q) {
   });
 }
 
+/* The rule filter: a mode, a status, or `note`. */
+function ruleMatches(c, rf) {
+  if (!rf) return true;
+  if (rf === "note") return (c.notes || []).length > 0;
+  if (rf === "missing") return c.rule_status === "none";
+  if (rf === "stale" || rf === "error") return c.rule_status === rf;
+  return !!c.rule && !c.rule.error && c.rule.mode === rf;
+}
+
 /* The clusters that the controls select, in the selected order. */
 function view() {
   const kind = $("#kind").value, sig = $("#signal").value, size = +$("#size").value;
   const q = $("#q").value.trim().toLowerCase();
   const list = DATA.clusters.filter(c => (!kind || c.kind === kind)
-    && (!sig || c.signals.includes(sig)) && c.size >= size && matches(c, q));
+    && (!sig || c.signals.includes(sig)) && c.size >= size && matches(c, q)
+    && ruleMatches(c, $("#rule").value));
   const order = {
     confusions: (a, b) => b.confusions - a.confusions || b.size - a.size,
     size: (a, b) => b.size - a.size || b.confusions - a.confusions,
@@ -7602,6 +7904,92 @@ function memberHtml(slug, no, img) {
     <div class="ph">${photoCounts(k)}${k.excluded ? ' · <span class="x">excluded</span>' : ""}</div>
     <div class="lk"><a href="/#${encodeURIComponent(slug)}">review</a>${k.page_url
       ? `<a href="${esc(k.page_url)}" target="_blank" rel="noopener">vino-svoe.ru</a>` : ""}</div>
+    ${descHtml(k)}
+  </div>`;
+}
+
+/* The label description of stage 1: what the VLM saw on the catalogue photo. */
+function descHtml(k) {
+  if (k.description_error) {
+    return `<div class="warn" title="${esc(k.description_error)}">no label description</div>`;
+  }
+  const d = k.description;
+  if (!d || typeof d !== "object") return "";
+  // A list reads as a comma list, and an object as `key: value` pairs.
+  const plain = v => v == null ? "" : Array.isArray(v) ? v.map(plain).filter(Boolean).join(", ")
+    : typeof v === "object" ? Object.entries(v).map(([k, x]) => `${k}: ${plain(x)}`).join("; ")
+    : String(v);
+  const val = v => esc(plain(v));
+  const texts = (d.texts || []).filter(t => t && t.text).map(t => `${esc(t.text)}${
+    t.where ? ` <span class="muted">(${esc(t.where)})</span>` : ""}`).join(" · ");
+  const numbers = (d.numbers || []).filter(n => n && n.value != null)
+    .map(n => esc(n.value)).join(" · ");
+  const rows = [["texts", texts], ["numbers", numbers], ["vintage", val(d.vintage)],
+    ["colours", val(d.colours)], ["design", val(d.design)], ["marks", val(d.marks)],
+    ["bottle", val(d.bottle)]].filter(r => r[1]);
+  return `<details class="desc"><summary>label description</summary>${
+    rows.map(r => `<div><b>${r[0]}</b> ${r[1]}</div>`).join("")}</details>`;
+}
+
+const MODE_TEXT = { sheet: "difference sheet", verdict: "verdict rule",
+                    none: "no difference found" };
+const STATUS_TEXT = { current: "current", stale: "stale: an input changed, build it again",
+                      error: "the last build failed", none: "not built" };
+const UNUSED = { serial: "a number that changes from bottle to bottle",
+                 alcohol: "the alcohol value, and another question separates the cards",
+                 feature: "no two cards give different answers" };
+/* The unsaved text of a note editor, by cluster key. A new render keeps it. */
+const DRAFTS = {};
+
+/* The label rule of stage 2, and the note of the reviewer. */
+function ruleHtml(c, no) {
+  const r = c.rule, st = c.rule_status || "none";
+  const ok = r && !r.error;
+  const tag = ok ? `<span class="tag m-${esc(r.mode)}">${esc(MODE_TEXT[r.mode] || r.mode)}</span>`
+    : `<span class="tag m-missing">${r ? "failed" : "no rule"}</span>`;
+  const when = r && r.built_at ? `<span class="muted">built ${esc(r.built_at)}${
+    r.ms ? ` · ${(r.ms / 1000).toFixed(1)} s` : ""}</span>` : "";
+  let body = r && r.error ? `<p class="warn">${esc(r.error)}</p>` : "";
+  if (ok) {
+    if (r.differences) body += `<p>${esc(r.differences)}</p>`;
+    const qs = r.questions || [];
+    if (qs.length) {
+      body += `<div class="links-wrap"><table class="sheet"><thead><tr><th>question</th>${
+        c.slugs.map(s => `<th title="${esc(s)}">#${no[s]}</th>`).join("")}</tr></thead><tbody>${
+        qs.map(q => `<tr class="${q.valid ? "" : "off"}" title="${esc(q.valid
+          ? "the re-rank asks this question" : "not used: " + (UNUSED[q.kind] || UNUSED.feature))}">
+          <td>${esc(q.id)} ${esc(q.question)}</td>${c.slugs.map(s => q.answers[s] == null
+            ? `<td class="nul">—</td>` : `<td>${esc(q.answers[s])}</td>`).join("")}</tr>`).join("")
+      }</tbody></table></div>`;
+    }
+    if (r.rule) body += `<p><b>Rule:</b> ${esc(r.rule)}</p>`;
+    if ((r.indistinguishable || []).length) {
+      body += `<p class="muted">No feature separates ${r.indistinguishable
+        .map(g => g.map(s => "#" + no[s]).join(" and ")).join("; ")}.</p>`;
+    }
+  }
+  const notes = c.notes || [];
+  const saved = notes.length ? `saved ${esc(notes[notes.length - 1].updated_at || "")}` : "";
+  const text = DRAFTS[c.key] !== undefined ? DRAFTS[c.key] : notes.map(n => n.text).join("\n");
+  return `<div class="rule" data-key="${esc(c.key)}">
+    <div class="rule-head"><b>Label rule</b>${tag}
+      <span class="st ${esc(st)}">${esc(STATUS_TEXT[st] || st)}</span>${when}
+      <button class="btn" data-act="rebuild" title="save the note, describe the labels that
+        have no current description, then ask the VLM for the rule again (5 to 30 s)">Rebuild rule</button>
+      <span class="muted" data-role="msg"></span></div>
+    ${body}
+    <div class="note-box">
+      <label class="muted" for="note-${esc(c.key)}">Note of the reviewer. The next build
+        of the rule reads it as a correct fact.</label>
+      <textarea id="note-${esc(c.key)}" data-act="note"
+        placeholder="for example: the numbers in the bottom left corner tell the cards apart">${
+        esc(text)}</textarea>
+      <div class="note-row"><button class="btn" data-act="save-note">Save note</button>
+        <span class="muted" data-role="note-msg">${saved}</span>
+        ${notes.some(n => n.members_changed)
+          ? `<span class="warn">The cards of this cluster changed after the note was written.</span>`
+          : ""}</div>
+    </div>
   </div>`;
 }
 
@@ -7648,6 +8036,7 @@ function clusterHtml(c, img) {
       ${c.confusions ? `<span class="muted">${c.confusions} confused photo(s)</span>` : ""}
     </div>
     <div class="members">${c.slugs.map(s => memberHtml(s, no[s], img)).join("")}</div>
+    ${ruleHtml(c, no)}
     <div class="links-wrap"><table class="links"><thead><tr>
       <th>card</th><th>card</th><th>passed</th><th>name</th>
       <th class="num">photo</th><th class="num">label</th>
@@ -7671,6 +8060,7 @@ function render() {
 
 function aboutHtml() {
   const s = DATA.settings || {}, i = DATA.inputs || {}, n = DATA.counts || {};
+  const rr = DATA.rules || {};
   const links = n.links || {};
   const index = x => x
     ? `<code>${esc(x.file.split("/").pop())}</code>, ${x.cards} cards, built ${esc(x.built_at || "?")}`
@@ -7697,7 +8087,17 @@ function aboutHtml() {
     is bold when that signal passed.</p>
   <p>The file <code>${esc(DATA.file)}</code> was built ${esc(DATA.built_at)}. Build it
     again with <code>python3 scripts/10_clusters.py</code>. This page reads the file at
-    each load.</p>`;
+    each load.</p>
+  <p>A <b>label rule</b> tells the cards of one cluster apart.
+    <code>scripts/11_cluster_rules.py</code> asks the VLM <code>${esc(rr.model)}</code>
+    (thinking ${rr.thinking ? "on" : "off"}) to describe the label of each card, and then
+    to find where the labels differ. A <b>difference sheet</b> holds questions about the
+    label and the expected answer of each card; the re-rank asks these questions about
+    the query photo. A struck question is not used. A <b>verdict rule</b> is a rule
+    text; the VLM names the card itself. The note of the reviewer goes into the next
+    build of the rule. Files: <code>${esc(rr.rules_file)}</code> and
+    <code>${esc(rr.notes_file)}</code>, updated ${esc(rr.updated_at || "never")}.
+    ${rr.error ? `<span class="warn">${esc(rr.error)}</span>` : ""}</p>`;
 }
 
 /* `#<slug>` opens the cluster of that card. The controls are cleared when they hide
@@ -7711,7 +8111,7 @@ function openFromHash() {
     return;
   }
   if (!view().includes(c)) {
-    $("#kind").value = $("#signal").value = $("#q").value = "";
+    $("#kind").value = $("#signal").value = $("#q").value = $("#rule").value = "";
     $("#size").value = "2";
     render();
   }
@@ -7837,6 +8237,70 @@ document.addEventListener("keydown", ev => {
   if (rstep !== undefined) { ev.preventDefault(); stepLbRow(rstep); }
 });
 
+async function postJson(url, body) {
+  const res = await fetch(url, { method: "POST", body: JSON.stringify(body),
+                                 headers: { "Content-Type": "application/json" } });
+  let data = {};
+  try { data = await res.json(); } catch (e) { /* no body */ }
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+/* Read the clusters again and draw one cluster block again. The other blocks stay,
+   so the page keeps its place. */
+async function refresh(key) {
+  const res = await fetch("/api/clusters");
+  const d = await res.json();
+  if (!res.ok || !d.exists) throw new Error(d.error || `HTTP ${res.status}`);
+  DATA = d;
+  CARDS = d.cards || {};
+  const c = DATA.clusters.find(x => x.key === key);
+  const old = c && document.getElementById("cl-" + c.id);
+  if (!old) { render(); return; }
+  const tmp = document.createElement("div");
+  tmp.innerHTML = clusterHtml(c, $("#img").value);
+  old.replaceWith(tmp.firstElementChild);
+}
+
+async function saveNote(box, c) {
+  const text = box.querySelector("textarea").value;
+  await postJson("/api/cluster-note", { slugs: c.slugs, text });
+  delete DRAFTS[c.key];
+}
+
+document.addEventListener("input", ev => {
+  const t = ev.target.closest && ev.target.closest("textarea[data-act=note]");
+  if (t) DRAFTS[t.closest(".rule").dataset.key] = t.value;
+});
+
+document.addEventListener("click", async ev => {
+  const btn = ev.target.closest("#list .rule button[data-act]");
+  if (!btn) return;
+  const box = btn.closest(".rule"), key = box.dataset.key;
+  const c = DATA.clusters.find(x => x.key === key);
+  if (!c) return;
+  const msg = box.querySelector(btn.dataset.act === "save-note"
+    ? "[data-role=note-msg]" : "[data-role=msg]");
+  box.querySelectorAll("button").forEach(b => { b.disabled = true; });
+  try {
+    if (btn.dataset.act === "save-note") {
+      msg.textContent = "saving…";
+      await saveNote(box, c);
+    } else {
+      if (DRAFTS[key] !== undefined) {
+        msg.textContent = "saving the note…";
+        await saveNote(box, c);
+      }
+      msg.textContent = "building the rule… (5 to 30 s)";
+      await postJson("/api/cluster-rule", { slug: c.slugs[0] });
+    }
+    await refresh(key);
+  } catch (e) {
+    msg.textContent = "failed: " + e.message;
+    box.querySelectorAll("button").forEach(b => { b.disabled = false; });
+  }
+});
+
 let TYPING = 0;
 (async function init() {
   let res;
@@ -7862,7 +8326,7 @@ let TYPING = 0;
   $("#head-sub").textContent =
     `${DATA.clusters.length} clusters · built ${DATA.built_at || "?"}`;
   $("#about-body").innerHTML = aboutHtml();
-  for (const id of ["#kind", "#signal", "#size", "#sort", "#img"]) {
+  for (const id of ["#kind", "#signal", "#size", "#sort", "#img", "#rule"]) {
     $(id).addEventListener("change", render);
   }
   $("#q").addEventListener("input", () => {

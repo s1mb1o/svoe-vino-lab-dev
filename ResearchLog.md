@@ -2,6 +2,94 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-23 — label rules: the partial benchmark with 3 rules
+
+Status: measured. Run `runs/2026-09-23T193559Z-svm-label-gw-cluster-rules-partial-3-rules`,
+2,181 photos, against the base run `2026-09-23T121203Z-svm-label-gw-difference-alpha-patches`.
+Only 3 clusters held a rule: «Фантом» (c054), Abrau-Durso Pinot Noir (c013), and
+Fanagoria Primum Alveus. The report is `cluster-rules-report.md` in the run directory.
+
+| Metric | Base | Re-rank |
+|---|---:|---:|
+| R@1 of 1,600 positives | 0.8156 | 0.8175 |
+| MRR | 0.8833 | 0.8849 |
+| Negatives rejected | 0.8262 | 0.8279 |
+
+- The step acted on 35 photos. Positives: 6 wins, 3 losses, exact McNemar p 0.508. No
+  VLM call failed.
+- «Фантом»: 4 of 17 positive photos right in the base, 9 with the rule of the note.
+- c013: 0 wins, 2 losses. Two causes:
+  1. The vintage question expects no year for `abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13`,
+     2023, 2023, and 2024. The test photos show 2019, 2020, and 2022, which no card
+     holds. With the score «a different answer gives -1», an unseen year counts against
+     every card with a year, so the card with no year wins. The test labels put such a
+     bottle on the 2023 card.
+  2. The question «Does the label contain the text 'ГРК'?» comes from a description
+     and gets random answers.
+- Latency: median 2,977 ms where the step acted, 244 ms elsewhere. The VLM call alone:
+  median 2,390 ms.
+
+A candidate change of the score, found by looking at these losses and therefore
+post hoc: an answer that equals the expected answer of no card gives no evidence. The
+full run records every answer, so the report can replay this score without a new call.
+
+## 2026-09-23 — label rules for the catalogue clusters: the probes
+
+Status: measured on a few cards and photos. The benchmark follows in the next entry.
+Plan: `docs/plans/05_cluster-label-rules.md`.
+
+The VLM is `qwen3.5-9b` on the llama-swap gateway of gx10: llama.cpp, Q4_K_M weights,
+1 slot, a context of 32,768 tokens, about 37 tokens/s. It is pinned and resident, and
+the enrichment worker of `drink-atlas-enrichment` uses the same slot.
+
+| Probe | Result |
+|---|---|
+| One label description, thinking on | 28.3 s, 966 completion tokens, of which about 2,900 characters of reasoning |
+| The same with `chat_template_kwargs.enable_thinking: false` | 3.0 s, 100 completion tokens |
+| A WebP data URL | HTTP 400. A PNG data URL works. |
+| `response_format: {"type": "json_object"}`, two pictures in one message | valid JSON, 2.8 s |
+| The full stage 1 prompt at the native size of the photo | 7 to 10 s for one card |
+| The full stage 1 prompt at a long side of 2048 pixels | 11 to 24 s for one card; about 19 s on average in the batch |
+| One question of the sheet about a query crop | 1.0 to 2.2 s |
+
+Small print. The catalogue photo of «Фантом 30/70» has 264 x 1000 pixels, and its
+ratio box is about 15 pixels wide. No probe read the ratio from a catalogue photo:
+the model read `100`, then `25` and `100`, in the box. At 312 x 1000 pixels the model
+read «урож. 2024» of `abrau-dyurso-pino-nuar-krasnoe-suhoe-125` as `2021`, and «ФАНТОМ»
+of `...-7030-...` as `PHANTOM`. At a long side of 2048 pixels it read both right. Stage 1
+therefore scales every picture to a long side of 2048, UP or down.
+
+The first rules. Three clusters were built three times while the prompt changed:
+
+- «Фантом» (3 cards). With the note of the reviewer, the question about the bottom
+  left corner holds 30/70, 50/50 and 70/30. Without the rule «the descriptions can
+  hold errors», the model made a second question from the false `PHANTOM`. That
+  question would cancel the right one at query time. The model also asked for the
+  alcohol value, which differs by 0.1 to 0.3 points; the code now drops such a
+  question when another question separates the cards.
+- Abrau-Durso Pinot Noir (4 cards). The vintage question is right: none, 2023, 2023,
+  2024. The model also asked for «Бут. №», a bottle number that changes from bottle to
+  bottle; the code now drops such a question. The model did NOT use «ПИНО НУАР»
+  against «КАБЕРНЕ СОВИНЬОН», and it named the two cards indistinguishable. The OCR
+  words of the base pipeline separate these two cards already, and a tie keeps the base
+  order, so this miss costs no new error.
+- Fanagoria Primum Alveus (9 cards). Four questions: a Roman numeral, the vintage, the
+  name line, the colour of the capsule. The vintages come from the card names.
+
+A smoke test through the served pipeline on four «Фантом» photos: two photos of 30/70
+moved from rank 3 and rank 2 to rank 1; one photo of 70/30 stayed at rank 1; one photo
+of 50/50 stayed wrong, because the model answered `other` for the ratio and `Purple`
+for the colour of the box.
+
+The ceiling and the leakage, measured on the run
+`2026-09-23T121203Z-svm-label-gw-difference-alpha-patches` (R@1 0.8156):
+
+- 179 of the 295 misses hold the true card in the cluster of the answer.
+- 48 links of the cluster file hold the `confusion` signal alone. 60 of the 179 misses
+  need such a link, so 119 remain without the `confusion` signal.
+- With a window of 5, the step acts on 906 of 2,181 queries; with a window of 2, on
+  766. Of the 636 positive queries in the window of 5, 436 are right already.
+
 ## 2026-09-23 — the positive photos of Primum Alveus Brut 2014 show the vintage 2017
 
 Status: observation. No label was changed. The owner decides about the labels.
@@ -92,8 +180,9 @@ and `rskrf` with 1 connection.
   `external merge  Disk: 6760kB`, and kept 1 row. `work_mem` is 4 MB.
 - The cost of one lookup grows with the count of stored cards of the provider.
 - At 08:38, `work_mem` of the core cluster was raised to 16 MB. After that, the pool wrote no
-  temporary file in 10 s. The 2026-09-23 entry of `drink-atlas-core/ResearchLog.md` has the details
-  and a proposed fix of the query.
+  temporary file in 10 s. The 2026-09-23 entry of `drink-atlas-core/ResearchLog.md` has the details.
+  The fix of the query was applied in the Core code on the same day. Core serves it since its
+  restart at 09:27.
 - The test suite of `drink-atlas-core` ran at the same time in another session. Its
   upgrade tests call `CREATE DATABASE` and `DROP DATABASE`. The PostgreSQL log showed a
   checkpoint `immediate force wait` every 30 to 60 s. Each checkpoint took 5 to 10 s. The

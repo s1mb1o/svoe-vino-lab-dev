@@ -74,16 +74,38 @@ backends_file: svoe-vino-testset/backends.yaml
 #
 # `runs` names match runs of the default dataset. A positive photo of card A that a
 # run answered as card B at rank 1 joins the two cards.
+#
+# The two indexes of 2026-09-23 are the indexes of the run
+# `2026-09-23T121203Z-svm-label-gw-difference-alpha-patches`. Read
+# `docs/plans/05_cluster-label-rules.md`.
 clusters:
   file: svoe-vino-testset/dataset/catalog-clusters.json
-  photo_index: svoe-vino-matcher/index/gateway-ad42b0653c.npz
-  label_index: svoe-vino-matcher/index/gateway-877e0dd4a8.npz
+  photo_index: svoe-vino-matcher/index/gateway-6e12e149fe.npz
+  label_index: svoe-vino-matcher/index/gateway-b57810da3d.npz
   photo_threshold: 0.95
   label_threshold: 0.95
   min_confusions: 2
   runs:
     - 2026-09-22T084237Z-svm-siglip2-448
     - 2026-09-18T195710Z-svm-vlmrerank-8b-siglip2-448-bench
+
+# Label rules of the catalogue clusters. `scripts/11_cluster_rules.py` asks the VLM
+# to describe the label of each card of a cluster, and then to write the rule that
+# tells the cards of the cluster apart. The review tool writes `notes_file` and shows
+# both files on `/clusters`. The re-rank of `svoe-vino-matcher` reads `rules_file`.
+# Read `docs/plans/05_cluster-label-rules.md`.
+#
+# The model is a thinking model. `thinking: false` answers in about 3 s instead of
+# about 28 s for one label description.
+cluster_rules:
+  rules_file: svoe-vino-testset/dataset/catalog-cluster-rules.json
+  notes_file: svoe-vino-testset/dataset/catalog-cluster-notes.json
+  url: http://192.168.86.14:18081/v1/chat/completions
+  model: qwen3.5-9b
+  thinking: false
+  describe_side: 2048
+  rules_max_side: 768
+  timeout_s: 300
 
 # One entry per photo set. Each entry MUST hold a `name`, and the names MUST
 # differ. One entry MUST carry the name `default`.
