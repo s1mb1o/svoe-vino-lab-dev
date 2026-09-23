@@ -1,5 +1,9 @@
-# The photo set. 491 MB of pictures. It does not belong in git.
-dataset/my/photo/
+# The photo set of every dataset. 491 MB of pictures. It does not belong in git.
+dataset/*/photo/
+
+# A deleted photo is moved here, not unlinked. The directory holds pictures, so
+# it does not belong in git either.
+dataset/*/trash/
 
 # The work directory: the state database, the raw downloads, the logs, the trash.
 # Every file here is rebuilt by the pipeline.

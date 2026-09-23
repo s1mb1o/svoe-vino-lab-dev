@@ -1,0 +1,1116 @@
+{
+  "counts": {
+    "commented": 80,
+    "copied": 0,
+    "deleting": 0,
+    "labelled": 100,
+    "negative": 21,
+    "no_match": 0,
+    "no_match_pending": 7,
+    "positive": 60,
+    "proposed": 0,
+    "reassigned": 7,
+    "unusable": 15,
+    "variant": 4,
+    "wine_notes": 0
+  },
+  "labels": {
+    "abrau-dyurso-russkoe-igristoe-polusuhoe-rozovoe-pino-nuar-12": {
+      "96.45_02-09-2026_14-19-06.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8442, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.844184
+        },
+        "ts": "2026-09-21T15:53:53+0300"
+      }
+    },
+    "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut": {
+      "96.11_22-08-2026_21-29-20.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.6660, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.666013
+        },
+        "reassign_to": "__null__",
+        "ts": "2026-09-22T00:07:04+0300"
+      },
+      "96.42_22-08-2026_21-29-43.webp": {
+        "comment": "до переноса в abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut был в abrau-dyurso-russkoe-igristoe-polusuhoe-rozovoe-pino-nuar-12 с таким комментарием:\nдо переноса в abrau-dyurso-russkoe-igristoe-polusuhoe-rozovoe-pino-nuar-12 был в abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut с таким комментарием:\nположен сюда автоматически: ответ ранга 1, score 0.6866, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "moved_from": "abrau-dyurso-russkoe-igristoe-polusuhoe-rozovoe-pino-nuar-12",
+        "reassign_to": "__null__",
+        "ts": "2026-09-22T00:07:06+0300"
+      }
+    },
+    "alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14": {
+      "94.8_01-09-2026_10-10-02.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7046, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.704582
+        },
+        "reassign_to": "__null__",
+        "ts": "2026-09-22T00:07:14+0300"
+      }
+    },
+    "alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12": {
+      "92.99_02-09-2026_04-20-19.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.6973, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.697314
+        },
+        "reassign_to": "__null__",
+        "ts": "2026-09-22T00:07:21+0300"
+      }
+    },
+    "aratti-kaberne-po-belomu-1": {
+      "95.2_05-09-2026_13-54-13.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8032, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.803242
+        },
+        "ts": "2026-09-21T15:55:03+0300"
+      },
+      "96.31_09-09-2026_19-29-01.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7517, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.751686
+        },
+        "ts": "2026-09-21T16:14:42+0300"
+      }
+    },
+    "aratti-kaberne-sovinon-2020-krasnoe-suhoe": {
+      "92.6_07-09-2026_11-04-40.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8235, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.823541
+        },
+        "ts": "2026-09-21T15:55:08+0300"
+      },
+      "92.96_19-08-2026_21-07-12.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.797851
+        },
+        "ts": "2026-09-21T16:14:15+0300"
+      }
+    },
+    "aratti-kaberne-sovinon-2021-krasnoe-suhoe": {
+      "91.07_20-08-2026_18-37-46.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8495, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.849465
+        },
+        "ts": "2026-09-21T15:55:10+0300"
+      }
+    },
+    "aya-organic-wine-vineyards-purity-in-syrah-sira-rozovoe-suhoe-132": {
+      "87.81_09-09-2026_17-16-36.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7044, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.704414
+        },
+        "reassign_to": "__null__",
+        "ts": "2026-09-22T00:07:23+0300"
+      }
+    },
+    "balaklava-muskat": {
+      "96.61_28-08-2026_09-16-27.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8072, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.807245
+        },
+        "ts": "2026-09-21T15:55:18+0300"
+      }
+    },
+    "belaya-lvicza": {
+      "92.21_19-08-2026_18-57-31.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7943, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.794268
+        },
+        "ts": "2026-09-21T15:55:23+0300"
+      }
+    },
+    "bukovinka": {
+      "96.31_21-08-2026_17-24-55.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8374, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.837382
+        },
+        "ts": "2026-09-21T16:14:22+0300"
+      },
+      "96.78_25-08-2026_18-04-42.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7438, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.743837
+        },
+        "ts": "2026-09-21T16:14:24+0300"
+      }
+    },
+    "caperavi-avtorskoe-vino": {
+      "97.02_29-08-2026_18-49-02.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7994, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.799364
+        },
+        "reassign_to": "__null__",
+        "ts": "2026-09-22T00:07:27+0300"
+      }
+    },
+    "czitronnyj-magaracha": {
+      "96.45_19-08-2026_19-35-28.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7598, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.759784
+        },
+        "ts": "2026-09-21T15:55:56+0300"
+      },
+      "96.98_19-08-2026_19-05-06.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8081, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.808111
+        },
+        "ts": "2026-09-21T15:56:34+0300"
+      }
+    },
+    "czitronnyj-magaracha-sovinon-blan": {
+      "88.38_20-08-2026_18-32-58.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8154, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.815382
+        },
+        "ts": "2026-09-21T15:56:37+0300"
+      },
+      "94.7_25-08-2026_15-52-07.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.821182
+        },
+        "ts": "2026-09-21T16:14:45+0300"
+      }
+    },
+    "denisov-winery-risling-beloe-suhoe-115": {
+      "96.54_04-09-2026_19-30-52.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7156, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.715585
+        },
+        "ts": "2026-09-21T15:57:03+0300"
+      }
+    },
+    "denisov-winery-sovinon-blan-beloe-suhoe-115": {
+      "92.94_21-08-2026_19-37-08.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7120, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "variant",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.71205
+        },
+        "ts": "2026-09-21T16:17:21+0300"
+      },
+      "94.94_05-09-2026_15-04-50.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7521, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.\n\n\nв 2022 году была черная этикетка\nhttps://www.alcoplaza.ru/Wine/vino-denisov-sovinon-blan-2022-god-075-beloe-suhoe",
+        "label": "variant",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.752127
+        },
+        "ts": "2026-09-21T16:17:22+0300"
+      },
+      "95.8_19-08-2026_20-47-59.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7500, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "variant",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.750016
+        },
+        "ts": "2026-09-21T16:17:22+0300"
+      },
+      "96.29_21-08-2026_19-39-02.webp": {
+        "label": "variant",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.753577
+        },
+        "ts": "2026-09-21T16:17:24+0300"
+      }
+    },
+    "denisov_barynya_kurmyshi": {
+      "95.76_23-08-2026_18-19-43.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8114, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.81142
+        },
+        "ts": "2026-09-21T15:56:40+0300"
+      }
+    },
+    "denisov_pazori_risling": {
+      "94.55_02-09-2026_16-53-08.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7396, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.739591
+        },
+        "ts": "2026-09-21T15:56:44+0300"
+      }
+    },
+    "denisov_pet_nat_rubin": {
+      "93.43_05-09-2026_13-34-45.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7527, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.752717
+        },
+        "ts": "2026-09-21T15:56:47+0300"
+      }
+    },
+    "denisov_rubin_klaret_krasnaya_strelka": {
+      "48.98_02-09-2026_18-34-15.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7774, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.777374
+        },
+        "ts": "2026-09-21T15:56:50+0300"
+      },
+      "96.96_05-09-2026_19-02-01.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7746, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.77461
+        },
+        "ts": "2026-09-21T16:14:49+0300"
+      }
+    },
+    "derbent-vino-desono-kaberne-sovinon-krasnoe-suhoe-125": {
+      "94.72_21-08-2026_15-41-48.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.803608
+        },
+        "ts": "2026-09-21T15:57:51+0300"
+      }
+    },
+    "fanagoriya-alveus-ultra-cuvee-brut-shardone-beloe-bryut-12": {
+      "93.95_05-09-2026_15-29-36.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7240, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.\n\nЕсть отдельный Orange Брют\nhttps://www.fanagoria.ru/collection/alveus-ultra-cuvee/alveus-ultra-cuvee-orange-brut",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.724001
+        },
+        "ts": "2026-09-21T16:35:43+0300"
+      },
+      "95.19_05-09-2026_15-32-06.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7075, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.707465
+        },
+        "ts": "2026-09-21T16:35:44+0300"
+      },
+      "95.35_05-09-2026_15-29-53.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7104, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.710438
+        },
+        "ts": "2026-09-21T16:35:45+0300"
+      },
+      "97.08_05-09-2026_15-30-50.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.6904, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.690447
+        },
+        "ts": "2026-09-21T16:35:46+0300"
+      }
+    },
+    "fanagoriya-formula-q-saperavi-krasnoe-suhoe-135": {
+      "70.45_04-09-2026_13-35-37.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7887, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.788734
+        },
+        "ts": "2026-09-21T16:00:13+0300"
+      }
+    },
+    "fanagoriya-ona-skazala-da-beloe-polusladkoe": {
+      "96.3_08-09-2026_10-53-14.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.6973, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.697338
+        },
+        "reassign_to": "__null__",
+        "ts": "2026-09-22T00:07:36+0300"
+      }
+    },
+    "fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13": {
+      "68.81_05-09-2026_15-46-31.webp": {
+        "comment": "до переноса в fanagoriya-velvet-season-muskat-ottonel-beloe-sladkoe-13 был в soyuz-vino-soyuz-vino-muskat-beloe-polusladkoe-11 с таким комментарием:\nположен сюда автоматически: ответ ранга 1, score 0.7077, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "moved_from": "soyuz-vino-soyuz-vino-muskat-beloe-polusladkoe-11",
+        "ts": "2026-09-21T16:55:45+0300"
+      }
+    },
+    "fanagoriya-zelyonoe-vino-risling-tsitronnyy-magaracha-beloe-polusuhoe-11": {
+      "95.03_04-09-2026_11-39-35.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8023, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.802295
+        },
+        "ts": "2026-09-21T16:00:28+0300"
+      },
+      "95.88_02-09-2026_14-41-59.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8046, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.804602
+        },
+        "ts": "2026-09-21T16:17:46+0300"
+      },
+      "96.58_05-09-2026_16-05-04.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7863, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.786317
+        },
+        "ts": "2026-09-21T16:17:47+0300"
+      },
+      "96.62_07-09-2026_18-12-27.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8093, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.809259
+        },
+        "ts": "2026-09-21T16:17:48+0300"
+      }
+    },
+    "golubitskoe-estate-chardonnay": {
+      "93.97_28-08-2026_16-02-48.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8479, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.847911
+        },
+        "ts": "2026-09-21T16:00:32+0300"
+      }
+    },
+    "golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137": {
+      "96.07_28-08-2026_16-10-06.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8518, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.851794
+        },
+        "ts": "2026-09-21T16:00:36+0300"
+      }
+    },
+    "golubitskoe-estate-merlo-krasnoe-suhoe-135": {
+      "96.08_28-08-2026_16-29-50.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8505, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.850475
+        },
+        "ts": "2026-09-21T16:00:38+0300"
+      }
+    },
+    "golubitskoe-estate-noble-selection-red-blend-kaberne-sovinon-krasnoe-suhoe-136": {
+      "93.31_05-09-2026_13-39-37.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8035, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.803496
+        },
+        "ts": "2026-09-21T16:00:42+0300"
+      }
+    },
+    "golubitskoe-estate-winery-series-pino-nuar-rozovoe-suhoe-115": {
+      "95.17_29-08-2026_11-06-42.webp": {
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.80568
+        },
+        "ts": "2026-09-21T16:02:57+0300"
+      }
+    },
+    "golubitskoe-estate-winery-series-roze-blend-kaberne-sovinon-rozovoe-suhoe-117": {
+      "96.77_24-08-2026_14-10-46.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7647, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.764729
+        },
+        "ts": "2026-09-21T16:37:46+0300"
+      }
+    },
+    "inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135": {
+      "90.5_02-09-2026_10-32-11.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.6770, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.676959
+        },
+        "ts": "2026-09-21T16:37:59+0300"
+      }
+    },
+    "inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12": {
+      "88.2_05-09-2026_16-29-06.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7019, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.701894
+        },
+        "ts": "2026-09-21T16:38:06+0300"
+      }
+    },
+    "kaberne-sovinon-1": {
+      "96.65_02-09-2026_12-08-51.webp": {
+        "label": "unusable",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.754338
+        },
+        "ts": "2026-09-21T16:38:03+0300"
+      }
+    },
+    "khrustaleva-76-muscat-bryut-beloe": {
+      "95.07_01-09-2026_16-15-35.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7401, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.74009
+        },
+        "ts": "2026-09-21T16:05:39+0300"
+      }
+    },
+    "massandra-muskat-belyy-yuzhnoberezhnyy-beloe-sladkoe-16": {
+      "87.88_28-08-2026_16-56-20.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7913, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.791335
+        },
+        "ts": "2026-09-21T16:05:50+0300"
+      }
+    },
+    "novyj-svet-polusladkoe": {
+      "96.55_30-08-2026_19-34-31.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7884, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.788417
+        },
+        "ts": "2026-09-21T16:06:01+0300"
+      }
+    },
+    "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-bryut-beloe-novyy-svet-yubileynoe-risling-13": {
+      "96.2_28-08-2026_19-25-29.webp": {
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.732406
+        },
+        "ts": "2026-09-21T16:10:05+0300"
+      }
+    },
+    "oleg": {
+      "96.79_20-08-2026_17-48-31.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7879, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.787936
+        },
+        "ts": "2026-09-21T16:06:09+0300"
+      },
+      "96.83_20-08-2026_17-48-13.webp": {
+        "comment": "до переноса в oleg был в bukovinka",
+        "label": "positive",
+        "moved_from": "bukovinka",
+        "ts": "2026-09-21T19:50:41+0300"
+      }
+    },
+    "orlov_merlo": {
+      "96.67_27-08-2026_17-47-05.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.6598, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.659833
+        },
+        "ts": "2026-09-21T16:06:12+0300"
+      }
+    },
+    "orlov_sauvignon_blan": {
+      "95.32_02-09-2026_12-09-23.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7211, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.721135
+        },
+        "ts": "2026-09-21T16:06:22+0300"
+      },
+      "96.44_05-09-2026_15-33-59.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7307, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.73072
+        },
+        "ts": "2026-09-21T16:38:54+0300"
+      },
+      "96.8_25-08-2026_22-20-38.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7330, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.732951
+        },
+        "ts": "2026-09-21T16:38:55+0300"
+      },
+      "97.23_05-09-2026_15-34-36.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7355, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.735512
+        },
+        "ts": "2026-09-21T16:38:56+0300"
+      }
+    },
+    "perovskih_polusuhoe_krasnoe": {
+      "96.66_22-08-2026_20-44-40.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8207, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.820724
+        },
+        "ts": "2026-09-21T16:06:24+0300"
+      }
+    },
+    "pobeda": {
+      "87.09_22-08-2026_20-57-16.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.834271
+        },
+        "ts": "2026-09-21T16:10:12+0300"
+      }
+    },
+    "pozdnij-sbor-krasnoe": {
+      "96.76_07-09-2026_14-57-04.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.768345
+        },
+        "ts": "2026-09-21T16:10:15+0300"
+      }
+    },
+    "relikta-relikta-sira-kaberne-fran-krasnoe-suhoe-13": {
+      "87.54_03-09-2026_13-27-53.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.760026
+        },
+        "ts": "2026-09-21T16:10:16+0300"
+      }
+    },
+    "roze-2": {
+      "95.8_19-08-2026_19-33-23.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8178, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.817785
+        },
+        "ts": "2026-09-21T16:09:36+0300"
+      },
+      "96.13_19-08-2026_19-33-10.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8180, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.817969
+        },
+        "ts": "2026-09-21T16:09:37+0300"
+      },
+      "96.15_22-08-2026_20-56-09.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.813816
+        },
+        "ts": "2026-09-21T16:09:38+0300"
+      }
+    },
+    "rozovoe-polusladkoe": {
+      "1.73_06-09-2026_14-54-06.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7096, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.709601
+        },
+        "ts": "2026-09-21T16:09:33+0300"
+      },
+      "96.53_03-09-2026_16-39-17.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7053, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.705296
+        },
+        "ts": "2026-09-21T16:39:32+0300"
+      }
+    },
+    "rozovoe-zoloto": {
+      "89.65_19-08-2026_19-48-39.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7896, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.78962
+        },
+        "ts": "2026-09-21T16:09:31+0300"
+      }
+    },
+    "rubin-golodrigi": {
+      "94.02_24-08-2026_17-46-57.webp": {
+        "comment": "до переноса в rubin-golodrigi был в bukovinka с таким комментарием:\nположен сюда автоматически: ответ ранга 1, score 0.7800, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "moved_from": "bukovinka",
+        "ts": "2026-09-21T19:50:47+0300"
+      },
+      "95.63_24-08-2026_17-47-43.webp": {
+        "label": "positive",
+        "moved_from": "bukovinka",
+        "ts": "2026-09-21T19:50:50+0300"
+      }
+    },
+    "shato-pino-aligote-rkatsiteli-beloe-suhoe-12": {
+      "2.69_27-08-2026_14-29-00.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7319, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.731933
+        },
+        "ts": "2026-09-21T16:09:29+0300"
+      },
+      "72.97_09-09-2026_19-38-57.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7505, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.750467
+        },
+        "ts": "2026-09-21T16:39:58+0300"
+      },
+      "94.83_27-08-2026_14-29-28.webp": {
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.729642
+        },
+        "ts": "2026-09-21T16:39:59+0300"
+      }
+    },
+    "skalistyj-bereg-shepot-czvetov": {
+      "82.33_27-08-2026_10-03-52.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8121, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.812119
+        },
+        "ts": "2026-09-21T16:09:25+0300"
+      }
+    },
+    "usadba-divnomorskoe-yuzhnyy-les-merlo-krasnoe-suhoe-137": {
+      "96.05_28-08-2026_09-14-57.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8015, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.801452
+        },
+        "ts": "2026-09-21T16:09:06+0300"
+      },
+      "96.2_28-08-2026_09-13-27.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8040, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.804003
+        },
+        "ts": "2026-09-21T16:19:09+0300"
+      },
+      "96.3_28-08-2026_09-12-56.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7762, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.776246
+        },
+        "ts": "2026-09-21T16:19:09+0300"
+      },
+      "96.7_28-08-2026_13-50-21.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.807986
+        },
+        "ts": "2026-09-21T16:19:10+0300"
+      }
+    },
+    "usadba-mezyb-shishka-kupazh-5-kaberne-sovinon-rozovoe-suhoe-133": {
+      "96.74_28-08-2026_13-52-26.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.817186
+        },
+        "ts": "2026-09-21T16:09:04+0300"
+      }
+    },
+    "usadba-mezyb-shishka-pino-nuar-rozovoe-suhoe-115": {
+      "41.8_22-08-2026_20-56-40.webp": {
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.730175
+        },
+        "ts": "2026-09-21T16:09:01+0300"
+      }
+    },
+    "usadba-mezyb-usadba-mezyb-merlo-krasnoe-suhoe-15": {
+      "91.43_02-09-2026_12-08-50.webp": {
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.74783
+        },
+        "ts": "2026-09-21T16:08:56+0300"
+      }
+    },
+    "uva-vallis-risling": {
+      "95.75_02-09-2026_14-47-49.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8175, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.817532
+        },
+        "ts": "2026-09-21T16:08:50+0300"
+      }
+    },
+    "valeriy-zaharin-bastardo-kefesiya-avtohtonnoe-vino-kryma-bastardo-magarachskiy-krasnoe-suhoe-115": {
+      "96.64_26-08-2026_16-52-37.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8079, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.807919
+        },
+        "ts": "2026-09-21T16:08:46+0300"
+      }
+    },
+    "vinodelnya-uzunov-nrav-krasnostop-zolotovskiy-krasnoe-suhoe-132": {
+      "94.43_05-09-2026_15-29-25.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.6527, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.652748
+        },
+        "ts": "2026-09-21T16:08:40+0300"
+      },
+      "95.29_21-08-2026_17-24-49.webp": {
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.725311
+        },
+        "ts": "2026-09-21T16:08:43+0300"
+      }
+    },
+    "vinodelnya-uzunov-shardone-rezerv-beloe-suhoe-135": {
+      "87.6_20-08-2026_19-56-56.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7631, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.763095
+        },
+        "ts": "2026-09-21T16:08:36+0300"
+      }
+    },
+    "vinodelnya-vedernikov-vedernikov-dolina-dona-krasnoe-suhoe-kaberne-sovinon-125": {
+      "96.79_28-08-2026_22-05-22.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7683, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "negative",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.768305
+        },
+        "ts": "2026-09-21T16:08:33+0300"
+      }
+    },
+    "winemaker-selection": {
+      "95.36_28-08-2026_17-09-04.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.7911, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.791058
+        },
+        "ts": "2026-09-21T16:07:51+0300"
+      }
+    },
+    "zakat-denisov-vajneri": {
+      "93.68_19-08-2026_20-44-28.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8323, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.832339
+        },
+        "ts": "2026-09-21T16:07:45+0300"
+      },
+      "93.84_02-09-2026_17-13-04.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.844286
+        },
+        "ts": "2026-09-21T16:07:47+0300"
+      }
+    },
+    "zhemchuzhnaya-9-aligote-czitron": {
+      "84.73_07-09-2026_11-07-51.webp": {
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.783763
+        },
+        "ts": "2026-09-21T16:07:41+0300"
+      }
+    },
+    "zhemchuzhnaya-9-czitron-shardone-1": {
+      "95.24_19-08-2026_20-00-22.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8238, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.823782
+        },
+        "ts": "2026-09-21T16:07:38+0300"
+      },
+      "96.08_22-08-2026_15-12-27.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8166, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.816562
+        },
+        "ts": "2026-09-21T16:07:39+0300"
+      }
+    },
+    "zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-1": {
+      "96.27_20-08-2026_16-26-30.webp": {
+        "comment": "положен сюда автоматически: ответ ранга 1, score 0.8273, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "prefilled_from": {
+          "rank": 1,
+          "run_id": "2026-09-21T114905Z-svm-siglip2-448-dir-realphoto",
+          "score": 0.827269
+        },
+        "ts": "2026-09-21T16:06:46+0300"
+      }
+    },
+    "zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-2": {
+      "94.97_02-09-2026_19-01-48.webp": {
+        "comment": "до переноса в zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-2 был в zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-1 с таким комментарием:\nположен сюда автоматически: ответ ранга 1, score 0.8355, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "moved_from": "zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-1",
+        "ts": "2026-09-21T19:50:54+0300"
+      },
+      "95.49_05-09-2026_15-34-51.webp": {
+        "comment": "до переноса в zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-2 был в zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-1 с таким комментарием:\nположен сюда автоматически: ответ ранга 1, score 0.8116, прогон 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. Это не метка. Проверьте фото.",
+        "label": "positive",
+        "moved_from": "zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-1",
+        "ts": "2026-09-21T19:50:57+0300"
+      }
+    }
+  },
+  "note": "Manual labels for the photos of svoe-vino-testset/my. The key of an entry is the slug, then the photo file name. label 'positive': the photo shows the wine of this slug. label 'negative': the photo shows a different wine, and the photo stays in the set as a negative sample of this slug. label 'unusable': the photo is not usable at all and does not belong in the set. label 'variant': the photo shows this wine in another bottle, such as another vintage or another package design. A photo with no entry is not reviewed yet. The slug '__null__' is the virtual NULL wine. A photo under that slug matches NO card of the catalogue. The place is the statement, so such a photo needs no label; 'positive' confirms it and 'unusable' takes the photo out of the set. Field 'reassign_to' names the slug that the photo belongs to; scripts/09_apply_moves.py moves the file. Field 'copy_to' names a slug that the photo ALSO belongs to; the same script copies the file and leaves the source photo where it is. The copy carries no label and one comment that names the source slug. Field 'comment' holds a free text note of the reviewer about this photo and this slug. The map 'wines' holds one free text note about a whole wine, keyed by the slug.",
+  "updated": "2026-09-22T00:07:36+0300",
+  "version": 2,
+  "wines": {}
+}

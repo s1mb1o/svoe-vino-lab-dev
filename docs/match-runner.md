@@ -17,8 +17,11 @@ The review tool shows the runs at `http://127.0.0.1:8154/runs`.
 
 ## The query set
 
-The set is built from the files that `config.yaml` names: `label_file`, `photo_dir`,
-`excluded_slugs_file`, and `variant_groups_file`.
+The set is built from the files that the dataset of `config.yaml` names: `label_file`,
+`photo_dir`, `excluded_slugs_file`, and `variant_groups_file`. `--dataset <name>`
+chooses the dataset; the default is the one named `default`. Each dataset holds its own
+`runs_dir`, so the runs of one dataset never stand in the table of another. `run.json`
+records the dataset in `options.dataset`.
 
 | Label | Count on 2026-09-17 | In the set | Truth |
 |---|---|---|---|
@@ -27,8 +30,16 @@ The set is built from the files that `config.yaml` names: `label_file`, `photo_d
 | `variant` | 45 | only with `--variants` | the slug, or its variant group |
 | `unusable` | 118 | no | — |
 | no label (an agent proposal) | 264 | no | — |
+| `no_match` | the files of `photo_dir/__null__/` | yes | none; the answer MUST be no answer |
 
 A photo of an excluded slug never enters the set. Read `docs/excluded-slugs.md`.
+
+A `no_match` photo comes from the directory `__null__`, the virtual NULL wine of the
+review tool. No card of the catalogue shows that wine. The directory is the statement,
+so the photo needs no label of its own; it stays out only when it carries `unusable`,
+when it is marked for deletion, or when `__null__` stands in `excluded-slugs.json`.
+`--only no_match` runs these photos alone, and `--only positive` and `--only negative`
+leave them out.
 
 The runner states two of these rules on the console, because neither is visible in
 the counts of the query set:
@@ -259,7 +270,8 @@ get two chances.
   "top_k": 10,
   "has_scores": true,
   "negative_strict": false,
-  "queries": { "total": 1343, "positive": 979, "negative": 364, "variant": 0 },
+  "queries": { "total": 1343, "positive": 979, "negative": 364, "variant": 0,
+               "no_match": 0 },
   "positive": {
     "n": 979, "recall_at_1": 0.61, "recall_at_5": 0.74, "recall_at_10": 0.78,
     "mrr": 0.66, "no_answer": 12, "errors": 3,
@@ -270,6 +282,10 @@ get two chances.
     "other_slug_at_1": 340, "no_answer": 6, "errors": 1,
     "slug_rank_histogram": { "1": 18, "2": 12, "4-10": 14, "absent": 320 },
     "false_match_scores": { "median": 0.71, "max": 0.88 }
+  },
+  "no_match": {
+    "n": 24, "rejected": 9, "false_match_at_1": 15, "rejection_rate": 0.375,
+    "errors": 0, "false_match_scores": { "median": 0.58, "max": 0.74 }
   },
   "latency_ms": { "median": 842, "p95": 1930, "max": 4100, "comparable": true },
   "wall_s": 1180
@@ -288,6 +304,11 @@ computes each one, and the page shows them in the first row of the cards.
 | `latency_ms.within_sla`, `within_sla_share` | section 2 | "Целевое время ответа (SLA) — до 3 секунд". `sla_ms` holds the limit of 3000 ms. |
 | `positive.near_duplicate_confusion` | section 2 | "много near-duplicates... Именно они главный источник ошибок". The count of the wrong answers whose slug stands in the variant group of the true wine. The count uses `variant-groups.json` whatever `--variants` says. |
 | `positive.score_margin` | section 2 | "отрыв между 1-м и 2-м результатом должен быть ощутимым". The median difference between the score of the first and of the second candidate, for the correct answers and for the wrong answers apart. A wrong answer with a large margin is a confident error, which is the worst kind. |
+
+The block `no_match` is `null` when the set holds no such photo. `rejection_rate` is
+`rejected / n`: the share of the photos that the backend refused, which is the only
+correct outcome for them. `false_match_scores` holds the score that a wrong answer
+reached. A threshold that MUST refuse these photos stands above `max`.
 
 Rules that a reader MUST know:
 
@@ -470,6 +491,7 @@ A score is read from `score`, `confidence`, `similarity`, `sim`, or `probability
 | Option | Meaning |
 |---|---|
 | `--backend <id>` | The backend. Required, except with `--dry-run`. |
+| `--dataset <name>` | The dataset of `config.yaml` to match against. The default is the dataset named `default`. An unknown name stops the runner and names every dataset of the file. |
 | `--list-backends` | Print every backend of `backends.yaml` and stop. |
 | `--limit N` | Stop after N photos. Use it for a trial run. |
 | `--photos-dir DIR` | Match the image files of this directory instead of the photo set of the project. The walk is recursive. The directory holds no ground truth, so the run states no correctness. Not allowed with `--from-run`, `--only`, or `--variants`. |

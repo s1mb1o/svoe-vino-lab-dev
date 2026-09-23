@@ -10,6 +10,9 @@ Run:
     python3 scripts/match_run.py --backend organizers --limit 50
     python3 scripts/match_run.py --backend official-api --dry-run
 
+`--dataset NAME` chooses one dataset of `config.yaml`. The default is the dataset
+named `default`.
+
 `--photos-dir DIR` replaces the photo set of the project with a plain directory
 of photos. Such a directory holds no ground truth, so the run records the answer
 of the backend and states no correctness:
@@ -34,9 +37,15 @@ A `positive` photo shows the wine of its slug. A `negative` photo shows a
 different wine, so the backend is wrong when it answers with that slug at rank 1.
 A `variant` photo shows the wine in another bottle and stays out of the set
 unless `--variants` asks for it.
+
+A photo of the directory `__null__` carries the label `no_match`. No card of the
+catalogue shows that wine, so the photo is a rejection case: the correct answer
+is no answer, and every answered slug is a false match. The review tool writes
+these photos; see `docs/plans/03_null-image.md`.
 """
 import argparse
 import collections
+import datetime as dt
 import concurrent.futures
 import hashlib
 import json
@@ -54,6 +63,12 @@ import match_backends  # noqa: E402
 LABELS_IN_SET = ("positive", "negative", "variant")
 # The label of a photo of `--photos-dir`. The directory holds no ground truth.
 UNLABELLED = "unlabelled"
+# The virtual NULL wine of the review tool. `<photo_dir>/__null__/` holds the
+# photos that match NO card of the catalogue. The place is the statement, so such
+# a photo needs no label. It is a rejection case: the backend MUST answer nothing,
+# and any answered slug is a false match.
+NULL_SLUG = "__null__"
+NO_MATCH = "no_match"
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}
 
 
@@ -101,6 +116,10 @@ def build_queries(variants="off", only="all"):
     is present. A photo stays out when its slug is excluded, when the label is
     `unusable`, when the entry is an agent proposal with no label, or when the
     entry is marked for deletion.
+
+    A photo of `__null__` enters the set with the label `no_match` and no truth.
+    It needs no label of its own: the directory is the statement. `build_null_rows`
+    reads it.
     """
     labels = (load_json(common.LABEL_FILE, {}) or {}).get("labels") or {}
     excluded = load_excluded()
@@ -111,6 +130,10 @@ def build_queries(variants="off", only="all"):
     for slug in sorted(labels):
         if slug in excluded:
             skipped["excluded slug"] += len(labels[slug])
+            continue
+        # The NULL wine is read from its directory, not from the labels, because
+        # a photo there needs no label. `build_null_rows` does it below.
+        if slug == NULL_SLUG:
             continue
         for fname in sorted(labels[slug]):
             entry = labels[slug][fname] or {}
@@ -142,10 +165,54 @@ def build_queries(variants="off", only="all"):
                 "truth": truth if label in ("positive", "variant") else [],
             })
 
+    # The photos of the NULL wine. `--only positive` and `--only negative` ask for
+    # one label of the wine photos, so they take these rows away as well.
+    if only in ("all", NO_MATCH):
+        rows += build_null_rows(labels, excluded, skipped)
+
     rows.sort(key=lambda r: r["image_path"])
     for i, row in enumerate(rows, 1):
         row["query_id"] = "q-%06d" % i
     return rows, skipped
+
+
+def build_null_rows(labels, excluded, skipped):
+    """Return the query rows of the virtual NULL wine.
+
+    `<photo_dir>/__null__/` holds the photos that match no card of the catalogue.
+    The directory is the statement, so a photo there needs no label. A photo stays
+    out when the label is `unusable`, when the entry is marked for deletion, or
+    when `__null__` stands in `excluded-slugs.json`.
+
+    Every row carries the label `no_match`, the slug `__null__`, and an empty
+    truth. `judge` scores it as a rejection case.
+    """
+    root = os.path.join(common.PHOTO_DIR, NULL_SLUG)
+    if not os.path.isdir(root):
+        return []
+    names = [fn for fn in sorted(os.listdir(root))
+             if not fn.startswith(".")
+             and os.path.splitext(fn)[1].lower() in IMAGE_EXT]
+    if NULL_SLUG in excluded:
+        skipped["excluded slug"] += len(names)
+        return []
+    rows = []
+    for fname in names:
+        entry = (labels.get(NULL_SLUG) or {}).get(fname) or {}
+        if entry.get("label") == "unusable":
+            skipped["unusable"] += 1
+            continue
+        if entry.get("delete"):
+            skipped["marked for deletion"] += 1
+            continue
+        rows.append({
+            "image_path": "%s/%s" % (NULL_SLUG, fname),
+            "abs_path": os.path.join(root, fname),
+            "slug": NULL_SLUG,
+            "label": NO_MATCH,
+            "truth": [],
+        })
+    return rows
 
 
 def build_dir_queries(photos_dir):
@@ -270,6 +337,10 @@ def judge(row, candidates, negative_strict):
     negative photo carries no positive truth: the reviewer stated that the photo
     is NOT this wine and did not state which wine it is. So only one outcome is
     a proven error, and no outcome is a proven success.
+
+    A `no_match` photo is the opposite case: the reviewer stated that NO card of
+    the catalogue shows this wine. No answer is the only correct outcome, and
+    every answer is a proven error.
     """
     ranked = []
     seen = set()
@@ -284,6 +355,14 @@ def judge(row, candidates, negative_strict):
         # The photo holds no true slug. The run records what came back. Neither
         # a success nor an error can be stated.
         out["outcome"] = "no_answer" if top1 is None else "answered"
+        return out
+
+    if row["label"] == NO_MATCH:
+        # No card of the catalogue shows this wine. The correct answer is no
+        # answer. Every slug that comes back at rank 1 is a false match, and the
+        # backend MUST have abstained. The depth does not matter: a card deeper
+        # in the list is wrong in the same way, and the interface shows rank 1.
+        out["outcome"] = "no_answer" if top1 is None else "false_match_at_1"
         return out
 
     if row["label"] == "negative":
@@ -340,6 +419,7 @@ def metrics_of(results, backend, top_k, negative_strict, wall_s, workers,
     pos = [r for r in results if r["label"] in ("positive", "variant")]
     neg = [r for r in results if r["label"] == "negative"]
     unl = [r for r in results if r["label"] == UNLABELLED]
+    nom = [r for r in results if r["label"] == NO_MATCH]
     has_scores = any(c.get("score") is not None
                      for r in results for c in r["candidates"])
 
@@ -411,6 +491,11 @@ def metrics_of(results, backend, top_k, negative_strict, wall_s, workers,
     false_scores = [r["candidates"][0]["score"] for r in neg
                     if r["outcome"] == "false_match_at_1" and r["candidates"]
                     and r["candidates"][0].get("score") is not None]
+    # The score that a backend gave to a card while no card was right. A
+    # threshold that refuses these photos MUST stand above this value.
+    no_match_scores = [r["candidates"][0]["score"] for r in nom
+                       if r["outcome"] == "false_match_at_1" and r["candidates"]
+                       and r["candidates"][0].get("score") is not None]
 
     out = {
         "run_id": None,
@@ -424,6 +509,7 @@ def metrics_of(results, backend, top_k, negative_strict, wall_s, workers,
             "negative": len(neg),
             "variant": sum(1 for r in results if r["label"] == "variant"),
             "unlabelled": len(unl),
+            "no_match": len(nom),
         },
         # A run of `--photos-dir`. The photos hold no ground truth, so this block
         # holds the counts that do not need one, and every share above is empty.
@@ -456,6 +542,22 @@ def metrics_of(results, backend, top_k, negative_strict, wall_s, workers,
             "no_answer": sum(1 for r in pos if r["outcome"] == "no_answer"),
             "errors": sum(1 for r in pos if r["error"]),
             "rank_histogram": histogram(pos),
+        },
+        # The photos that match no card of the catalogue. The backend MUST answer
+        # nothing. `rejection_rate` is the share of these photos that it refused.
+        "no_match": None if not nom else {
+            "n": len(nom),
+            "rejected": sum(1 for r in nom if r["outcome"] == "no_answer"),
+            "false_match_at_1": sum(1 for r in nom
+                                    if r["outcome"] == "false_match_at_1"),
+            "rejection_rate": round(
+                sum(1 for r in nom if r["outcome"] == "no_answer") / len(nom), 4),
+            "errors": sum(1 for r in nom if r["error"]),
+            "false_match_scores": {
+                "median": round(statistics.median(no_match_scores), 4)
+                          if no_match_scores else None,
+                "max": round(max(no_match_scores), 4) if no_match_scores else None,
+            },
         },
         "negative": {
             "n": len(neg),
@@ -531,6 +633,129 @@ def git_commit():
         return out.stdout.strip() or None
     except Exception:  # noqa: BLE001
         return None
+
+
+# The pipeline kinds of svoe-vino-matcher that own no index. Each names the
+# pipeline it sits on, under one of these keys, so the walk below reaches the
+# `embed` pipeline that holds the vectors.
+EMBED_REF_KEYS = ("embed", "base")
+
+
+def embeddings_of(backend, timeout_s=10):
+    """Ask the backend when the embeddings it answers with were last built.
+
+    A run states which vectors produced it. Without this, two runs of the same
+    backend id are indistinguishable although a rebuild moved every vector
+    between them.
+
+    The answer is always a dictionary, never a bare timestamp or a blank. When
+    the age cannot be read, `built_at` is None and `reason` says why, because
+    "the backend reports no index" and "the probe failed" MUST NOT look the
+    same. A `kind: remote` backend, such as the official recognizer, owns no
+    index and is the ordinary case of an unknown age, not a fault.
+    """
+    if backend is None or not getattr(backend, "url", ""):
+        return {"built_at": None, "reason": "the run has no HTTP backend"}
+
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+
+    parts = urllib.parse.urlsplit(backend.url)
+    base = "%s://%s" % (parts.scheme, parts.netloc)
+    # `/v1/pipelines/<name>/predict` names the pipeline. `/v1/eval/predict`
+    # does not, and answers with the default pipeline of the server.
+    segments = [s for s in parts.path.split("/") if s]
+    wanted = ""
+    if len(segments) >= 3 and segments[:2] == ["v1", "pipelines"]:
+        wanted = segments[2]
+    query = urllib.parse.parse_qs(parts.query or "")
+    if query.get("pipeline"):
+        wanted = query["pipeline"][0]
+
+    try:
+        req = urllib.request.Request(base + "/v1/info",
+                                     headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+            info = json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        return {"built_at": None,
+                "reason": "%s/v1/info did not answer: %s" % (base, exc)}
+
+    by_name = {p.get("name"): p for p in (info.get("pipelines") or [])
+               if isinstance(p, dict)}
+    if not wanted:
+        wanted = info.get("default_pipeline") or ""
+    if wanted not in by_name:
+        return {"built_at": None,
+                "reason": "the server does not report a pipeline `%s`" % wanted}
+
+    # The backend MAY pin another index with `?index=`. The run then answered
+    # from THAT file, so the age of the pipeline's own index would be the wrong
+    # provenance: two runs that read different vectors would record the same
+    # age. `available_indexes` of the pipeline carries the build time of every
+    # file the server offers.
+    pinned = (query.get("index") or query.get("index_file") or [""])[0].strip()
+    if pinned:
+        entry = by_name[wanted]
+        if not entry.get("supports_index_override"):
+            return {"built_at": None, "pipeline": wanted, "index_file": pinned,
+                    "reason": "the backend pins index `%s` but pipeline `%s` "
+                              "owns no index" % (pinned, wanted)}
+        stem = pinned[:-4] if pinned.endswith(".npz") else pinned
+        for item in (entry.get("available_indexes") or []):
+            name = str(item.get("index_file") or "")
+            if name[:-4] != stem and name != stem:
+                continue
+            stamp = item.get("built_at_unix")
+            out = {"index_file": name, "built_at_unix": stamp, "source": "meta",
+                   "pipeline": wanted, "pinned_by_backend": True}
+            out["built_at"] = (
+                dt.datetime.fromtimestamp(stamp).astimezone().isoformat(
+                    timespec="seconds") if stamp else None)
+            if stamp is None:
+                out["source"] = None
+                out["reason"] = "`%s` has no build time in its sidecar" % name
+            return out
+        return {"built_at": None, "pipeline": wanted, "index_file": pinned,
+                "reason": "the backend pins index `%s`, which pipeline `%s` "
+                          "does not offer" % (pinned, wanted)}
+
+    # Walk from the answering pipeline to the one that owns the index. An
+    # ensemble reads several, so it reports every member instead of one age.
+    seen, name = [], wanted
+    while name and name not in seen:
+        seen.append(name)
+        entry = by_name.get(name) or {}
+        if entry.get("embeddings"):
+            out = dict(entry["embeddings"])
+            out["pipeline"] = name
+            if name != wanted:
+                out["answering_pipeline"] = wanted
+            return out
+        if entry.get("members"):
+            members = []
+            for m in entry["members"]:
+                ref = (m or {}).get("pipeline")
+                block = (by_name.get(ref) or {}).get("embeddings")
+                if block:
+                    members.append({**block, "pipeline": ref,
+                                    "weight": (m or {}).get("weight")})
+            if members:
+                return {"built_at": None, "pipeline": wanted,
+                        "reason": "an ensemble reads the index of every member",
+                        "members": members}
+        nxt = ""
+        for key in EMBED_REF_KEYS:
+            ref = entry.get(key)
+            if isinstance(ref, dict):
+                ref = ref.get("pipeline")
+            if ref:
+                nxt = str(ref)
+                break
+        name = nxt
+    return {"built_at": None, "pipeline": wanted,
+            "reason": "pipeline `%s` reports no index" % wanted}
 
 
 def write_summary_unlabelled(path, meta, met):
@@ -623,9 +848,10 @@ def write_summary(path, meta, met):
         "|---|---|",
         "| Backend | `%s` — %s |" % (meta["backend"]["id"], meta["backend"].get("label", "")),
         "| Started | %s |" % meta["started"],
-        "| Queries | %d (positive %d, negative %d, variant %d) |" % (
+        "| Queries | %d (positive %d, negative %d, variant %d, no match %d) |" % (
             met["queries"]["total"], met["queries"]["positive"],
-            met["queries"]["negative"], met["queries"]["variant"]),
+            met["queries"]["negative"], met["queries"]["variant"],
+            met["queries"].get("no_match", 0)),
         "| Top-k asked | %d |" % met["top_k"],
         "| Scores returned | %s |" % ("yes" if met["has_scores"] else "no"),
         "| Wall time | %s s |" % met["wall_s"],
@@ -665,6 +891,35 @@ def write_summary(path, meta, met):
         "The slug appeared anywhere in the top-%d for %d of %d negative photos."
         % (met["top_k"], neg["false_match_in_top_k"], neg["n"]),
         "",
+    ]
+    nom = met.get("no_match")
+    if nom:
+        lines += [
+            "## Photos with no match in the catalogue",
+            "",
+            "A reviewer put these photos under the NULL wine: no card of the",
+            "catalogue shows that wine. No answer is the only correct outcome, and",
+            "every answered card is a false match.",
+            "",
+            "| Measure | Value |",
+            "|---|---|",
+            "| n | %d |" % nom["n"],
+            "| Refused (correct) | %d |" % nom["rejected"],
+            "| Rejection rate | %s |" % pct(nom["rejection_rate"]),
+            "| False match at rank 1 | %d |" % nom["false_match_at_1"],
+            "| Errors | %d |" % nom["errors"],
+            "",
+        ]
+        if nom["false_match_scores"]["max"] is not None:
+            lines += [
+                "The score of a false match here reached %s at most, and %s in the"
+                % (nom["false_match_scores"]["max"],
+                   nom["false_match_scores"]["median"]),
+                "median. A threshold that refuses these photos MUST stand above that",
+                "value.",
+                "",
+            ]
+    lines += [
         "## Latency",
         "",
         "Within the SLA of %s ms: %s of the photos." % (
@@ -694,7 +949,10 @@ def main():
                          "set of the project. The directory holds no ground truth, "
                          "so the run records the candidates and states no "
                          "correctness. The walk is recursive")
-    ap.add_argument("--only", choices=("all", "positive", "negative"), default="all")
+    ap.add_argument("--only", choices=("all", "positive", "negative", "no_match"),
+                    default="all",
+                    help="run one label alone. `no_match` runs the photos of the "
+                         "NULL wine, which match no card of the catalogue")
     ap.add_argument("--variants", choices=("off", "strict", "group"), default="off",
                     help="take the variant photos into the set (default: off)")
     ap.add_argument("--negative-strict", action="store_true",
@@ -711,10 +969,19 @@ def main():
                          "1 repeats every photo that was not correct at rank 1. "
                          "10 repeats every photo that was not in the first 10. "
                          "The default is 1.")
+    ap.add_argument("--dataset", default="", metavar="NAME",
+                    help="the dataset of `config.yaml` to match against. The "
+                         "default is the dataset named `default`")
     ap.add_argument("--label", default="", help="a word for the run directory name")
     ap.add_argument("--dry-run", action="store_true",
                     help="build the query set and the manifests, call nothing")
     args = ap.parse_args()
+
+    # The dataset MUST be chosen before any path of `common` is read.
+    try:
+        common.select_dataset(args.dataset or None)
+    except common.ConfigError as exc:
+        sys.exit("error: %s" % exc)
 
     if args.list_backends:
         specs = match_backends.load_backends(common.BACKENDS_FILE)
@@ -852,6 +1119,7 @@ def main():
         "started": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "git_commit": git_commit(),
         "options": {
+            "dataset": common.DATASET,
             "backend": args.backend, "limit": args.limit, "only": args.only,
             "variants": args.variants, "negative_strict": args.negative_strict,
             "workers": workers, "dry_run": args.dry_run,
@@ -859,6 +1127,10 @@ def main():
             "photos_dir": photos_dir,
         },
         "backend": match_backends.redact(backend.spec) if backend else None,
+        # When the vectors this run was answered with were last built. Read
+        # from the backend at creation, so the run keeps the age even after a
+        # later rebuild moves the index.
+        "embeddings": embeddings_of(backend),
         "config": {key: value for key, value in common.CONFIG_PATHS},
         "query_set": {"total": len(rows), **{k: counts[k] for k in sorted(counts)}},
         "left_out": dict(skipped),

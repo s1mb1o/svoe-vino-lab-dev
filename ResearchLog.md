@@ -2,6 +2,221 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-23 — the positive photos of Primum Alveus Brut 2014 show the vintage 2017
+
+Status: observation. No label was changed. The owner decides about the labels.
+
+- `dataset/my/review-labels.json` marks four photos of
+  `fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12` as `positive`:
+  `02_manual.webp` to `05_manual.webp`. The time stamps are 2026-09-18 07:49:39 to
+  07:49:43. `01_conf090.jpg` is `negative`.
+- Each of the four photos shows the vintage 2017:
+  - The front label on `02_manual.webp`, `03_manual.webp`, and `05_manual.webp` prints
+    «2017» and the numeral `VII`.
+  - `04_manual.webp` shows the back label. It prints «ГОД УРОЖАЯ – 2017».
+- The catalogue picture of the 2014 card prints «2014» and the numeral `V`. The
+  catalogue picture of `fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12`
+  prints «2017» and the numeral `VI`.
+- Run `2026-09-23T050800Z-svm-label-gw-ensemble-hardcase-base` puts the 2017 card at
+  rank 1 for `02_manual.webp` (q-000999) and `05_manual.webp` (q-001002). The run counts
+  both answers as misses. The 2014 card is at rank 5.
+- If the four labels are wrong, R@1 is too low for this group. A vintage rule that
+  selects the 2017 card for these photos is then counted as an error.
+
+## 2026-09-23 — the start of the review tool waits on a loaded T7 drive
+
+Symptom: `python3 scripts/review_server.py` printed the configuration report. Then it
+printed nothing for more than 45 s. The process did not hang. At 87 s after the start,
+it listened on `127.0.0.1:8154` and answered HTTP 200.
+
+### Where the time goes
+
+A `sample` of the process at about 45 s after the start put 2,654 of 2,660 samples in
+`stat()`. The process state was `U`, which is a wait for the disk. The process had used
+0.19 s of CPU time.
+
+Before the first line after the report, the start path calls `stat()` 8,152 times on
+`/Volumes/T7_2TB`:
+
+| Step | Call | Count |
+|---|---|---:|
+| `common.load_patches` | `os.path.isfile()` for each picture of `patch_dir` | 15 |
+| `common.load_bottle_labels` | `os.path.isfile()` for each picture of `bottle_cropped_dir` | 2,093 |
+| `common.load_bottle_labels` | `os.path.isfile()` for each picture of `bottle_label_dir` | 2,092 |
+| `common.load_bottle_labels` | `os.path.isfile()` for each picture of `bottle_label_box_dir` | 2,092 |
+| `build_rows` | `os.path.isdir()` for each wine directory of `photo_dir` | 1,860 |
+
+`build_rows` also calls `os.listdir()` one time for each wine directory, through
+`scan_photos`.
+
+With a warm cache, all start steps took 2.8 s together. The directory steps took 0.12 s
+of that time. So the cost comes from the cold metadata on the drive, not from the code.
+
+### A cold `stat()` waits for the drive
+
+One disk read brings the metadata of several files into the cache. So most cold `stat()`
+calls return at once, and some calls wait for the disk. Two tests on 2026-09-23:
+
+- 200 cold files of `svoe-wino-hackaton/dataset/derived/official-2026-09-17/labels-cache`:
+  0.78 s in total. The slowest call took 349 ms.
+- 1,297 cold files of `frap-public-small/objects/images`: 30.2 s in total. This is 23 ms
+  for each call on average.
+
+Cause: other jobs loaded the same drive. `iostat` showed about 20 MB/s and 100 to 400
+transfers per second on `disk6`, the physical T7 disk, without a pause. These jobs used
+the drive at that time:
+
+- The PostgreSQL server of `drink-atlas-core`. Its data directory
+  `drink-atlas-core/.runtime/postgres` is on the T7 drive. Five sessions were in `COMMIT`
+  in state `U`.
+- Two `scripts/fill_references_parallel.py` jobs of `drink-atlas-enrichment`, for the
+  providers `lenta` and `rskrf`.
+- `scripts/match_run.py` of this project, started by a night A/B script of another
+  session.
+
+### What the `drink-atlas-core` database does
+
+A second check at about 08:20 found the source of the core load. The six database
+sessions belong to the core API server (`drink_atlas_core.cli serve --port 8156`). Its
+HTTP clients are the two `fill_references_parallel.py` jobs: `lenta` with 9 connections
+and `rskrf` with 1 connection.
+
+- The database reads from memory. In 10 s it read 2.3 GB of pages from shared buffers
+  and 0.1 MB from the operating system.
+- The database writes temporary files. Two measurements of 10 s gave 94.7 MB and
+  148.2 MB of temporary files. The WAL of the core sessions was less than 0.1 MB in 10 s.
+- The cause is the card lookup `barcode_references.card()` of `drink-atlas-core`. The
+  fill job calls it for each GTIN through `GET /v1/barcode-references/{gtin}`. The
+  subquery `NEWEST_CARD` reads all cards of the provider and sorts them before the GTIN
+  filter. For `lenta`, one lookup read 10,581 rows, sorted them with
+  `external merge  Disk: 6760kB`, and kept 1 row. `work_mem` is 4 MB.
+- The cost of one lookup grows with the count of stored cards of the provider.
+- At 08:38, `work_mem` of the core cluster was raised to 16 MB. After that, the pool wrote no
+  temporary file in 10 s. The 2026-09-23 entry of `drink-atlas-core/ResearchLog.md` has the details
+  and a proposed fix of the query.
+- The test suite of `drink-atlas-core` ran at the same time in another session. Its
+  upgrade tests call `CREATE DATABASE` and `DROP DATABASE`. The PostgreSQL log showed a
+  checkpoint `immediate force wait` every 30 to 60 s. Each checkpoint took 5 to 10 s. The
+  tests are the most likely cause of these checkpoints.
+
+### `os.scandir()` needs no `stat()` for the file type
+
+On APFS, the directory listing carries the file type. `DirEntry.is_file()` and
+`DirEntry.is_dir()` read that type, so they need no `stat()` for a regular file or for a
+directory. For a symbolic link, they call `stat()` on the target, as `os.path.isfile()`
+does. Test on the 1,297 cold files of `frap-public-small/objects/images`:
+
+| Call | Time |
+|---|---:|
+| `os.scandir()` and `DirEntry.is_file()` for each entry | 0.001 s |
+| `os.path.isfile()` for each entry, after that | 30.2 s |
+
+### Consequences
+
+- While such jobs run, a start on a cold cache can take minutes. The tool prints no line
+  during the scans, so the start looks like a hang.
+- `/api/reload` calls the same loaders and `build_rows`. A reload has the same cost.
+- `scripts/03_embed.py` and `scripts/08_variants.py` call `common.load_patches` and
+  `common.load_cropped_bottles` at import. They pay the same cost at start.
+- The entry of 2026-09-15 states that `my/` is cheap. That statement was true for 814
+  directories on a drive without load. It is not true for 1,860 directories on a loaded
+  drive.
+- `os.scandir()` can remove all 8,152 `stat()` calls. The `os.listdir()` call of
+  `scan_photos` still opens each wine directory. So a cold start still reads the metadata
+  of 1,860 directories.
+
+## 2026-09-22 — catalogue clusters: a photo finds a label line, and one confusion chains a range
+
+Question: which signals join two catalogue cards into one cluster for a later re-rank
+step, and with which defaults? The tool is `scripts/10_clusters.py`. The plan is
+`docs/plans/04_catalog-clusters.md`. Every number below is over the whole catalogue of
+2,103 cards. The vectors are the SigLIP 2 gateway indexes of `svoe-vino-matcher`:
+`gateway-ad42b0653c` for the photo (2,093 cards) and `gateway-877e0dd4a8` for the label
+crop (2,092 cards).
+
+### A photo similarity finds a label line, not a wine
+
+The three Abrau-Durso Pinot Noir cards are one wine. The photo cosines:
+
+| Pair | Photo cosine | Label cosine |
+|---|---:|---:|
+| `-125` and `abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13` | 0.977 | 0.911 |
+| `-12` and `-125` | 0.879 | 0.893 |
+| `-12` and `-13` | 0.878 | 0.915 |
+
+The nearest photos of `-12` are the Chardonnay `abrau-dyurso-shardone-beloe-suhoe-13`
+(0.898) and the Cabernet Sauvignon `abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125`
+(0.890). Both come before its own siblings. The line «Русский винный дом» holds one
+label design for every grape, and the catalogue photo of `-12` has another colour than
+the photos of its siblings. A threshold low enough to join `-12` to its siblings joins
+the whole line first.
+
+A photo threshold alone, as connected components:
+
+| Photo cosine | Pairs | Same producer | Clusters | Cards | Largest |
+|---|---:|---:|---:|---:|---:|
+| 0.99 | 36 | 35 | 34 | 69 | 3 |
+| 0.97 | 102 | 101 | 80 | 173 | 4 |
+| 0.95 | 223 | 221 | 153 | 343 | 7 |
+| 0.93 | 492 | 490 | 242 | 618 | 14 |
+| 0.90 | 1,126 | 1,123 | 330 | 1,029 | 20 |
+| 0.85 | 3,268 | 3,242 | 305 | 1,574 | 64 |
+
+The label crop gives a similar curve: 260 pairs at 0.95, largest cluster 10. So the
+two image signals stay at 0.95, and the `name` signal joins the cards of one wine.
+
+### The name signal needs the grapes
+
+The key is the producer, the name without the producer words, and the category. The
+exact producer and name give 69 groups and miss `-13`, whose name is
+«Абрау-Дюрсо Пино Нуар». The normalised key finds all three Pinot Noir cards.
+
+32 of the 107 name pairs held different grapes. 15 of them are different wines of one
+line: the line «Иноходец» of «Вина Арпачина» holds one card for each grape
+(Алиготе, Кумшацкий, Пухляковский, Сибирьковый) under one name. The other 17 are one
+wine whose cards list the grapes in two ways, such as «Рислинг» against «Рислинг
+Рейнский», or a main grape against the whole blend. The rule: the grapes of one card
+MUST be a subset of the grapes of the other card, or one field MUST be empty. It keeps
+92 name pairs.
+
+### One confusion chains a range together
+
+The confusions come from the runs `2026-09-22T084237Z-svm-siglip2-448` (326 wrong
+answers at rank 1, 0 stale) and `2026-09-18T195710Z-svm-vlmrerank-8b-siglip2-448-bench`
+(184 wrong answers, 4 stale). A stale answer is a photo that the current label file no
+longer marks `positive` in the folder of its card.
+
+All four signals, with the grape rule:
+
+| Least confusions for a link | Confusion links | Clusters | Cards | Largest |
+|---|---:|---:|---:|---:|
+| 1 | 274 | 262 | 771 | 38 |
+| **2** | **100** | **255** | **630** | **10** |
+| 3 | 47 | 243 | 588 | 10 |
+| no confusion signal | 0 | 232 | 562 | 10 |
+
+With 1 photo, the Pinot Noir cards stand in a cluster of 21 Abrau-Durso cards:
+sparkling wines, the «Императорское» line, the Riesling, the Chardonnay. A single
+confused photo is weak evidence, and some are label errors of the test set. With 2
+photos the largest cluster is the same as with no confusions at all, and 100 links
+stay. The default is 2.
+
+With the default, the Pinot Noir cluster holds 4 cards: the three Pinot Noir cards and
+the Cabernet Sauvignon `-125`. Two positive photos of `-12` were answered as that
+Cabernet. Its label crop is blue-grey, as the catalogue photo of `-12` is.
+
+### The result with the defaults
+
+255 clusters over 630 cards. 53 `same-wine`, 22 `mixed`, 180 `look-alike`. Sizes: 194
+of 2 cards, 31 of 3, 18 of 4, 5 of 5, 2 of 6, 3 of 7, 1 of 9, 1 of 10.
+
+5 clusters cross a producer. Two of them hold a photo pair: Château Le Grand Vostock
+against Шато Ай-Даниль at cosine 1.000, which is the known shared picture of the
+catalogue, and Loco Cimbali against Золотая Балка «Blanc de Neige» at 0.958. The other
+three hold confusions alone.
+
+The script reads the vectors and needs no service. One run takes under a second.
+
 ## 2026-09-19 — a grey 32 by 32 signature cannot compare two wines; colour and 128 px can
 
 Question: how does the review tool find two wines whose CATALOGUE bottle photo is the

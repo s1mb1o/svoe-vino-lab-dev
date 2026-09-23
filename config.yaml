@@ -1,5 +1,13 @@
 # Configuration of the svoe-vino testset builder.
 # The scripts read this file through `scripts/common.py`.
+#
+# The file holds two parts. The keys at the top are the same for every dataset.
+# The key `dataset` holds one entry per photo set, and each entry holds the files
+# and the directories of that photo set alone.
+#
+# `scripts/review_server.py` and `scripts/match_run.py` take `--dataset <name>`.
+# Without that option they use the dataset named `default`. Every other script
+# uses `default` too.
 
 # Root directory of the workspace.
 # Every relative path in this file is resolved against this directory.
@@ -7,32 +15,106 @@
 rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
 
 # Catalogue of the vino-svoe.ru wines, one JSON record per line.
+# Every dataset reads the same catalogue.
 catalog_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl
 
-# Photo set. One directory per wine slug.
-photo_dir: svoe-vino-testset/dataset/my/photo
+# Corrected catalogue photos, one file per wine slug: `<wine_slug>.<extension>`.
+# `bukovinka.webp` is the corrected photo of the card `bukovinka`.
+# Some cards of «Свое вино» carry a poor photo, and some carry the photo of a
+# DIFFERENT wine. A patch REPLACES the catalogue photo of that slug everywhere
+# this tool shows a bottle, and the review table marks the image `patched`.
+# The catalogue file is never rewritten; the patch is a layer above it.
+# `svoe-vino-matcher/config.yaml` reads the same directory and indexes the
+# patch in place of the catalogue photo.
+# Take the key away to show the official photos alone.
+patch_dir: svoe-wino-hackaton/dataset/patched-official-2026-09-17
 
-# Excluded slugs. The photos of an excluded slug MUST NOT be used for benchmarking.
-# The review tool writes this file.
-excluded_slugs_file: svoe-vino-testset/dataset/my/excluded-slugs.json
+# Cropped catalogue photos, one file per wine slug: `<wine_slug>.png`.
+# `svoe-wino-hackaton/scripts/build_cropped.py` cuts the empty border away from
+# the catalogue photo, or from the patch when the wine has one. The border is
+# transparent on most photos, and white on a photo with no alpha channel.
+#
+# Every view of this tool shows the crop in place of the catalogue photo. The
+# stages `03_embed.py` and `08_variants.py` embed the crop as the reference.
+# A wine with no crop keeps its patch or its catalogue photo. A patch that
+# changed after its crop wins over the crop, until the crops are built again.
+# `svoe-vino-matcher/config.yaml` indexes the same directory as `dataset.image_dir`.
+# Take the key away to show the photos with their border.
+bottle_cropped_dir: svoe-wino-hackaton/dataset/derived/official-2026-09-17/cropped
 
-# A deleted photo is moved here, not unlinked.
-trash_dir: svoe-vino-testset/work/trash
-
-# Labels of the review tool. The tool writes this file at every click.
-label_file: svoe-vino-testset/dataset/my/review-labels.json
-
-# Variant groups. `scripts/08_variants.py` writes this file.
-variant_groups_file: svoe-vino-testset/dataset/my/variant-groups.json
-
-# Manual variant pairs. The review tool writes this file, and
-# `scripts/08_variants.py` never touches it, so a new run of that script keeps
-# the pairs that a reviewer joined by hand.
-manual_groups_file: svoe-vino-testset/dataset/my/manual-groups.json
+# Label crops of the catalogue bottle photo, one file per wine slug:
+# `<wine_slug>.png`. `svoe-wino-hackaton/scripts/build_labels.py` cuts the label
+# out of the catalogue photo with SAM3, and cuts it out of the patch when the
+# wine has one.
+#
+# A label crop does NOT replace the catalogue photo. A patch replaces a wrong
+# photo; a label crop is a second view of the same photo. The review tool holds
+# a selector `package / label / label box` and shows the package when a wine has
+# no crop.
+#
+# `bottle_label_dir` holds the label as RGBA. The alpha channel is the mask.
+# `bottle_label_box_dir` holds the bounding box crop alone, as RGB.
+# Take the two keys away to take the selector out of the review tool.
+#
+# The key `label_file` of a dataset is a different thing. It holds the labels
+# that the reviewer gives to a photo.
+bottle_label_dir: svoe-wino-hackaton/dataset/derived/official-2026-09-17/labels
+bottle_label_box_dir: svoe-wino-hackaton/dataset/derived/official-2026-09-17/labels-box
 
 # Match backends. `scripts/match_run.py` reads this file.
 backends_file: svoe-vino-testset/backends.yaml
 
-# One directory per match run. The directory holds the history of the runs.
-runs_dir: svoe-vino-testset/runs
+# Catalogue clusters: groups of catalogue cards that the matcher confuses, or can
+# confuse. `scripts/10_clusters.py` writes `file`. The page `/clusters` of the review
+# tool reads it. Read `docs/plans/04_catalog-clusters.md`.
+#
+# `photo_index` and `label_index` are SigLIP 2 indexes of `svoe-vino-matcher`. The
+# script reads their vectors and calls no service. The name of an index file holds a
+# digest, so a rebuild of the index writes a NEW file name. Set the new name here.
+#
+# `runs` names match runs of the default dataset. A positive photo of card A that a
+# run answered as card B at rank 1 joins the two cards.
+clusters:
+  file: svoe-vino-testset/dataset/catalog-clusters.json
+  photo_index: svoe-vino-matcher/index/gateway-ad42b0653c.npz
+  label_index: svoe-vino-matcher/index/gateway-877e0dd4a8.npz
+  photo_threshold: 0.95
+  label_threshold: 0.95
+  min_confusions: 2
+  runs:
+    - 2026-09-22T084237Z-svm-siglip2-448
+    - 2026-09-18T195710Z-svm-vlmrerank-8b-siglip2-448-bench
 
+# One entry per photo set. Each entry MUST hold a `name`, and the names MUST
+# differ. One entry MUST carry the name `default`.
+#
+# An entry holds these keys alone:
+#   photo_dir            the photos, one directory per wine slug
+#   trash_dir            a deleted photo is moved here, not unlinked
+#   label_file           the labels of the review tool
+#   variant_groups_file  the variant groups that `scripts/08_variants.py` writes
+#   manual_groups_file   the variant pairs that a reviewer joined by hand
+#   excluded_slugs_file  the slugs that are out of the benchmark
+#   runs_dir             one directory per match run
+dataset:
+  - name: default
+    photo_dir: svoe-vino-testset/dataset/my/photo
+    trash_dir: svoe-vino-testset/dataset/my/trash
+    label_file: svoe-vino-testset/dataset/my/review-labels.json
+    variant_groups_file: svoe-vino-testset/dataset/my/variant-groups.json
+    manual_groups_file: svoe-vino-testset/dataset/my/manual-groups.json
+    excluded_slugs_file: svoe-vino-testset/dataset/my/excluded-slugs.json
+    runs_dir: svoe-vino-testset/runs
+
+  # The official test photos. 100 real-world photos with no ground truth. Each one
+  # lies in the directory of the wine that the recognizer answered at rank 1 in the
+  # run 2026-09-21T114905Z-svm-siglip2-448-dir-realphoto. A place is not a label:
+  # every photo holds a comment that states this, and a person MUST judge it.
+  - name: official-real-photos
+    photo_dir: svoe-vino-testset/dataset/official-real-photos/photo
+    trash_dir: svoe-vino-testset/dataset/official-real-photos/trash
+    label_file: svoe-vino-testset/dataset/official-real-photos/review-labels.json
+    variant_groups_file: svoe-vino-testset/dataset/official-real-photos/variant-groups.json
+    manual_groups_file: svoe-vino-testset/dataset/official-real-photos/manual-groups.json
+    excluded_slugs_file: svoe-vino-testset/dataset/official-real-photos/excluded-slugs.json
+    runs_dir: svoe-vino-testset/dataset/official-real-photos/runs

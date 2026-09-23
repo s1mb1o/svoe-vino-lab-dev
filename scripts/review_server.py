@@ -18,9 +18,13 @@ A photo with no label is not reviewed yet.
 Every click is written to `review-labels.json` at once.
 The file is read again at the next start.
 
+`config.yaml` holds one entry per dataset under the key `dataset`. `--dataset NAME`
+chooses one. Without the option the tool uses the dataset named `default`.
+
 Run:
     python3 scripts/review_server.py
     python3 scripts/review_server.py --port 8154 --no-browser
+    python3 scripts/review_server.py --dataset second
 """
 import argparse
 import base64
@@ -50,20 +54,56 @@ import common  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Every path comes from `config.yaml`. Read the file for the meaning of each key.
-MY = common.PHOTO_DIR
-# A deleted photo is moved here, not unlinked. The reviewer can get it back.
-TRASH = common.TRASH_DIR
-LABEL_FILE = common.LABEL_FILE
-CATALOG = common.CATALOG_FILE
+# `bind_paths` sets them all. It runs here, and it runs again when `--dataset`
+# names another dataset, because these names are read all over this file.
+MY = TRASH = LABEL_FILE = CATALOG = PATCH_DIR = BOTTLE_CROPPED_DIR = None
+BOTTLE_LABEL_DIR = BOTTLE_LABEL_BOX_DIR = None
+VARIANTS_FILE = MANUAL_GROUPS_FILE = EXCLUDED_FILE = RUNS_DIR = None
+
+
+def bind_paths():
+    """Take every path of this file from the dataset that `common` holds now."""
+    global MY, TRASH, LABEL_FILE, CATALOG, PATCH_DIR, BOTTLE_CROPPED_DIR
+    global BOTTLE_LABEL_DIR, BOTTLE_LABEL_BOX_DIR
+    global VARIANTS_FILE, MANUAL_GROUPS_FILE, EXCLUDED_FILE, RUNS_DIR
+    MY = common.PHOTO_DIR
+    # A deleted photo is moved here, not unlinked. The reviewer can get it back.
+    TRASH = common.TRASH_DIR
+    LABEL_FILE = common.LABEL_FILE
+    CATALOG = common.CATALOG_FILE
+    # Corrected catalogue photos. Every dataset reads the same directory.
+    PATCH_DIR = common.PATCH_DIR
+    # The catalogue photos without their empty border. Every dataset reads the
+    # same directory. An unset key shows the photos with their border.
+    BOTTLE_CROPPED_DIR = common.BOTTLE_CROPPED_DIR
+    # The label crops of the catalogue photos. Every dataset reads the same two
+    # directories. An unset key takes the selector out of the page.
+    BOTTLE_LABEL_DIR = common.BOTTLE_LABEL_DIR
+    BOTTLE_LABEL_BOX_DIR = common.BOTTLE_LABEL_BOX_DIR
+    VARIANTS_FILE = common.VARIANT_GROUPS_FILE
+    MANUAL_GROUPS_FILE = common.MANUAL_GROUPS_FILE
+    EXCLUDED_FILE = common.EXCLUDED_SLUGS_FILE
+    RUNS_DIR = common.RUNS_DIR
+
+
+bind_paths()
 DEFAULT_PORT = 8154
 
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}
 LABELS = ("positive", "negative", "unusable", "variant")
+# The virtual wine that collects the photos that match NO card of the catalogue.
+# It is a reserved slug, not a card. `<photo_dir>/__null__/` holds its photos, and
+# the table draws one row for it with a placeholder in place of a bottle photo.
+# A photo that lies there carries one statement: no card of the catalogue shows
+# this wine. The place IS the statement; no label is needed for it.
+# `scripts/match_run.py` reads such a photo as a rejection case.
+NULL_SLUG = "__null__"
+NULL_NAME = "NULL \u2014 no match in the catalogue"
+# The labels that a photo of the NULL wine MAY carry. `positive` confirms the
+# statement of the place. `negative` and `variant` judge a photo against a wine,
+# and NULL is not a wine.
+NULL_LABELS = ("positive", "unusable")
 COMMENT_MAX = 4000
-VARIANTS_FILE = common.VARIANT_GROUPS_FILE
-MANUAL_GROUPS_FILE = common.MANUAL_GROUPS_FILE
-EXCLUDED_FILE = common.EXCLUDED_SLUGS_FILE
-RUNS_DIR = common.RUNS_DIR
 # The OpenAPI document of this server. `/openapi.yaml`, `/openapi.json`, and
 # `/docs` read it. It is written by hand; it is not generated from the code.
 SPEC_FILE = os.path.join(ROOT, "docs", "openapi.yaml")
@@ -87,6 +127,26 @@ UPLOAD_TYPES = {
 _lock = threading.Lock()
 _state = {"labels": {}, "wines": {}}
 _rows = []
+# slug -> the path of a corrected catalogue photo. `common.PATCH_DIR` holds the
+# files. A patch REPLACES the catalogue photo of that slug: `/img/bottle` serves
+# it, and every view marks the image `patched`. `load_patches` fills this map at
+# start and at every `/api/reload`, so a new patch file needs no restart.
+_patches = {}
+# slug -> the path of the cropped catalogue photo. `common.BOTTLE_CROPPED_DIR`
+# holds the files. A crop is the patch or the catalogue photo with its empty
+# border cut away, so it holds the same picture. `bottle_path` answers the crop
+# first. The mark `patched` does not change: it still states that the picture
+# comes from a patch. `load_crops` fills this map at start and at every
+# `/api/reload`.
+_crops = {}
+# slug -> the path of a label crop. `common.BOTTLE_LABEL_DIR` and
+# `common.BOTTLE_LABEL_BOX_DIR` hold the files. A label crop does NOT replace the
+# catalogue photo, unlike a patch: it is the label of the SAME photo, cut out
+# with SAM3. `/img/bottle?slug=<slug>&kind=label` serves it, and the page holds a
+# selector for the three kinds. A wine with no crop keeps its package picture.
+# `load_label_crops` fills both maps at start and at every `/api/reload`.
+_labels = {}
+_label_boxes = {}
 # slug -> {"reason": str, "ts": str}. The photos of such a slug are out of the
 # benchmark. `excluded-slugs.json` holds the map.
 _excluded = {}
@@ -109,6 +169,87 @@ def load_catalog():
             rec = json.loads(line)
             out[rec["slug"]] = rec
     return out
+
+
+def load_patches():
+    """Read `patch_dir` again and answer slug -> corrected catalogue photo.
+
+    A broken `patch_dir` MUST NOT stop the tool, because the patches are a
+    correction of the catalogue and not the work of the reviewer. The function
+    prints the error and answers an empty map.
+    """
+    try:
+        return common.load_patches()
+    except common.ConfigError as exc:
+        print("warning: %s" % exc, file=sys.stderr)
+        return {}
+
+
+def load_crops():
+    """Read `bottle_cropped_dir` again and answer slug -> cropped catalogue photo.
+
+    A broken directory MUST NOT stop the tool, for the reason of `load_patches`.
+    The function prints the error and answers an empty map, so the page shows
+    the photos with their border.
+    """
+    try:
+        return common.load_cropped_bottles()
+    except common.ConfigError as exc:
+        print("warning: %s" % exc, file=sys.stderr)
+        return {}
+
+
+def bottle_path(slug, catalog):
+    """Return the catalogue bottle photo of `slug`, or None.
+
+    `common.catalogue_picture` states the rule: the crop, then the patch, then
+    the photo of the catalogue record. A patch is a correction of that record,
+    so no view may show the photo it corrects.
+    """
+    return common.catalogue_picture(slug, catalog.get(slug), _crops, _patches)
+
+
+# The three kinds of picture that `/img/bottle` serves. `package` is the
+# catalogue photo, or the patch of that photo. `label` is the label cut out of
+# that picture, as RGBA with the mask in the alpha channel. `labelbox` is the
+# bounding box of the label alone, as RGB.
+IMAGE_KINDS = ("package", "label", "labelbox")
+
+
+def load_label_crops():
+    """Read both label directories again and answer the two maps.
+
+    A broken directory MUST NOT stop the tool. The label crops are a view of the
+    catalogue photo and not the work of the reviewer. The function prints the
+    error and answers an empty map for that directory.
+    """
+    out = []
+    for path in (BOTTLE_LABEL_DIR, BOTTLE_LABEL_BOX_DIR):
+        try:
+            out.append(common.load_bottle_labels(path))
+        except common.ConfigError as exc:
+            print("warning: %s" % exc, file=sys.stderr)
+            out.append({})
+    return out[0], out[1]
+
+
+def label_path(slug, kind):
+    """Return the label crop of `slug` for `kind`, or None for another kind."""
+    if kind == "label":
+        return _labels.get(slug)
+    if kind == "labelbox":
+        return _label_boxes.get(slug)
+    return None
+
+
+def picture_path(slug, catalog, kind="package"):
+    """Return the file that the page shows for `slug` and `kind`.
+
+    A wine with no crop of that kind falls back to its package picture, so the
+    table never holds a hole. The row states `has_label` and `has_label_box`, so
+    the page can mark such a picture.
+    """
+    return label_path(slug, kind) or bottle_path(slug, catalog)
 
 
 MANUAL_GROUPS_NOTE = (
@@ -274,6 +415,25 @@ def scan_photos(slug):
     return sorted(names, key=key)
 
 
+def scan_inbox():
+    """Return the image files that lie directly in `my/`, not in a wine directory.
+
+    Such a file belongs to no wine yet. The review page shows it in the sideboard.
+    The reviewer drags it to the wine that it shows, and `apply` moves the file
+    into the directory of that wine.
+    """
+    names = []
+    for fn in sorted(os.listdir(MY)):
+        if fn.startswith("."):
+            continue
+        if os.path.splitext(fn)[1].lower() not in IMAGE_EXT:
+            continue
+        if os.path.isdir(os.path.join(MY, fn)):
+            continue
+        names.append(fn)
+    return names
+
+
 def build_rows(catalog, group_of=None):
     """Build one row per directory in `my/`.
 
@@ -290,7 +450,12 @@ def build_rows(catalog, group_of=None):
         d = os.path.join(MY, slug)
         if slug.startswith(".") or not os.path.isdir(d):
             continue
+        # The NULL wine is not a card of the catalogue. `null_row` builds it, and
+        # it is built whether the directory is present or not.
+        if slug == NULL_SLUG:
+            continue
         rows.append(build_row(slug, catalog, group_of))
+    rows.append(null_row())
     return rows
 
 
@@ -302,7 +467,7 @@ def build_row(slug, catalog, group_of=None):
     """
     group_of = group_of or {}
     rec = catalog.get(slug) or {}
-    bottle = rec.get("local_path")
+    bottle = bottle_path(slug, catalog)
     photos = []
     for fn in scan_photos(slug):
         m = NAME_RE.match(fn)
@@ -325,6 +490,14 @@ def build_row(slug, catalog, group_of=None):
             "page_url": rec.get("page_url") or "",
             "in_catalog": bool(rec),
             "has_bottle": bool(bottle),
+            # The bottle photo is a correction from `patch_dir`, not the photo
+            # of the catalogue record. Every view marks such an image `patched`.
+            "patched": slug in _patches,
+            # A label crop of this wine is present. The page shows the package
+            # and marks the picture when the wine has no crop of the kind that
+            # the selector asks for.
+            "has_label": slug in _labels,
+            "has_label_box": slug in _label_boxes,
             # How the catalogue established this bottle photo. The build
             # writes it. See svoe-wino-hackaton/docs/plans/01_photo-join-repair.md.
             "image_match": rec.get("image_match") or {},
@@ -333,6 +506,43 @@ def build_row(slug, catalog, group_of=None):
             "min_conf": min(confs) if confs else None,
         }
     )
+
+
+def null_row():
+    """Return the row of the virtual NULL wine.
+
+    The row is present even when `<photo_dir>/__null__/` is not, because the table
+    MUST always offer the drop target. `perform_moves` makes the directory when
+    the first photo goes there.
+
+    The row carries no catalogue record, no bottle photo, and no variant group. It
+    carries `null_row`, and every view uses that field to draw it apart.
+    """
+    photos = []
+    if os.path.isdir(os.path.join(MY, NULL_SLUG)):
+        for fn in scan_photos(NULL_SLUG):
+            m = NAME_RE.match(fn)
+            photos.append({"file": fn, "conf": int(m.group(2)) if m else None})
+    return {
+        "slug": NULL_SLUG,
+        "name": NULL_NAME,
+        "producer": "",
+        "category": "",
+        "color": "",
+        "region": "",
+        "grapes": "",
+        "page_url": "",
+        "in_catalog": False,
+        "has_bottle": False,
+        "patched": False,
+        "has_label": False,
+        "has_label_box": False,
+        "image_match": {},
+        "group": None,
+        "photos": photos,
+        "min_conf": None,
+        "null_row": True,
+    }
 
 
 def catalog_only_rows(catalog, review_slugs, groups=None):
@@ -366,7 +576,10 @@ def catalog_only_rows(catalog, review_slugs, groups=None):
             "grapes": rec.get("grapes") or "",
             "page_url": rec.get("page_url") or "",
             "in_catalog": True,
-            "has_bottle": bool(rec.get("local_path")),
+            "has_bottle": bool(bottle_path(slug, catalog)),
+            "patched": slug in _patches,
+            "has_label": slug in _labels,
+            "has_label_box": slug in _label_boxes,
             "image_match": rec.get("image_match") or {},
             "group": group_of.get(slug),
             "photos": [],
@@ -379,13 +592,13 @@ def catalog_only_rows(catalog, review_slugs, groups=None):
 def load_state():
     """Read `review-labels.json`. A missing or broken file gives empty state."""
     if not os.path.exists(LABEL_FILE):
-        return {"labels": {}}
+        return {"labels": {}, "wines": {}}
     try:
         with open(LABEL_FILE, encoding="utf-8") as f:
             data = json.load(f)
     except (OSError, ValueError) as exc:
         print(f"warning: cannot read {LABEL_FILE}: {exc}", file=sys.stderr)
-        return {"labels": {}}
+        return {"labels": {}, "wines": {}}
     labels = data.get("labels")
     if not isinstance(labels, dict):
         labels = {}
@@ -487,6 +700,10 @@ def save_state():
             "the set. label 'variant': the photo shows this wine in another bottle, "
             "such as another vintage or another package design. "
             "A photo with no entry is not reviewed yet. "
+            "The slug '__null__' is the virtual NULL wine. A photo under that "
+            "slug matches NO card of the catalogue. The place is the statement, "
+            "so such a photo needs no label; 'positive' confirms it and "
+            "'unusable' takes the photo out of the set. "
             "Field 'reassign_to' names the slug that the photo belongs to; "
             "scripts/09_apply_moves.py moves the file. "
             "Field 'copy_to' names a slug that the photo ALSO belongs to; the same "
@@ -534,6 +751,13 @@ def count_state():
         if e.get("proposed") and not e.get("label"))
     counts["wine_notes"] = sum(
         1 for w in _state["wines"].values() if (w or {}).get("comment"))
+    # The photos that lie under the NULL wine: they match no card of the
+    # catalogue. `no_match_pending` counts the photos that a reviewer sent there
+    # and that `apply` has not moved yet.
+    counts["no_match"] = sum(len(r["photos"]) for r in _rows if r.get("null_row"))
+    counts["no_match_pending"] = sum(
+        1 for photos in _state["labels"].values() for e in photos.values()
+        if e.get("reassign_to") == NULL_SLUG)
     return counts
 
 
@@ -622,11 +846,23 @@ def wine_view(row, catalog, groups, full=False):
         "page_url": row["page_url"],
         "description": rec.get("description", ""),
         "in_catalog": row["in_catalog"],
-        "bottle_path": rec.get("local_path"),
+        # The file that `/img/bottle` serves. It is the patch when the wine has
+        # one, and the photo of the catalogue record otherwise.
+        "bottle_path": bottle_path(row["slug"], catalog),
         "bottle_url": ("/img/bottle?slug=" + urllib.parse.quote(row["slug"])
                        if row["has_bottle"] else None),
+        "patched": bool(row.get("patched")),
+        # The label cut out of the picture that `bottle_path` names. A wine with
+        # no crop answers None here, and `/img/bottle?kind=label` falls back to
+        # the package picture of that wine.
+        "label_path": label_path(row["slug"], "label"),
+        "label_box_path": label_path(row["slug"], "labelbox"),
+        "has_label": bool(row.get("has_label")),
+        "has_label_box": bool(row.get("has_label_box")),
         "image_match": row.get("image_match") or {},
         "catalog_only": bool(row.get("catalog_only")),
+        # The virtual NULL wine. Its photos match no card of the catalogue.
+        "null_row": bool(row.get("null_row")),
         "photos_total": len(row["photos"]),
         "labels": counts,
         "labelled": labelled,
@@ -645,7 +881,10 @@ def wine_view(row, catalog, groups, full=False):
             "siblings": [
                 {"slug": x,
                  "name": (catalog.get(x) or {}).get("name", ""),
-                 "bottle_path": (catalog.get(x) or {}).get("local_path"),
+                 "bottle_path": bottle_path(x, catalog),
+                 "patched": x in _patches,
+                 "has_label": x in _labels,
+                 "has_label_box": x in _label_boxes,
                  "bottle_url": "/img/bottle?slug=" + urllib.parse.quote(x)}
                 for x in siblings
             ],
@@ -793,9 +1032,27 @@ def suggest_targets(slug, catalog, group_of, groups, limit=5):
             "name": r.get("name") or "",
             "producer": r.get("producer") or "",
             "category": r.get("category") or "",
-            "has_bottle": bool(r.get("local_path")),
+            "has_bottle": bool(bottle_path(other, catalog)),
+            "has_label": other in _labels,
+            "has_label_box": other in _label_boxes,
+            "patched": other in _patches,
             "in_group": other in members,
             "score": -neg,
+        })
+    # The NULL wine stands last, after the wines that the photo may show. It is
+    # always offered: a photo that shows no card of the catalogue belongs there,
+    # and the dialog MUST NOT ask the reviewer to type a reserved slug.
+    if slug != NULL_SLUG:
+        out.append({
+            "slug": NULL_SLUG,
+            "name": NULL_NAME,
+            "producer": "no card of the catalogue shows this wine",
+            "category": "",
+            "has_bottle": False,
+            "patched": False,
+            "in_group": False,
+            "null_row": True,
+            "score": 0,
         })
     return out
 
@@ -809,7 +1066,10 @@ def move_note(old_slug, new_slug, comment):
     The comment is kept and gets one line in front of it that states where the
     photo was and where it went. The label is not kept: it judged the old pair.
     """
-    head = "до переноса в %s был в %s" % (new_slug, old_slug)
+    if new_slug == NULL_SLUG:
+        head = "перенесён в NULL из %s: в каталоге нет подходящей карточки" % old_slug
+    else:
+        head = "до переноса в %s был в %s" % (new_slug, old_slug)
     if comment:
         return head + " с таким комментарием:\n" + comment
     return head
@@ -886,6 +1146,76 @@ def perform_moves(planned, labels):
         }
         labels.setdefault(to, {})[name] = new_entry
         moved.append((slug, fn, to, name))
+    return moved, renamed
+
+
+# ------------------------------------------------------------- the inbox of `my/`
+
+
+def inbox_note(new_slug):
+    """Return the comment of a photo that comes from the inbox.
+
+    The photo carries no label, because no reviewer has judged it against a wine
+    yet. The comment states where it comes from.
+    """
+    if new_slug == NULL_SLUG:
+        return ("перенесён в NULL из входящих my/: в каталоге нет подходящей "
+                "карточки")
+    return "\u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0451\u043d \u0432 %s \u0438\u0437 \u0432\u0445\u043e\u0434\u044f\u0449\u0438\u0445 my/" % new_slug
+
+
+def plan_inbox_moves(pairs, catalog):
+    """Return (planned, bad) for the moves that the sideboard asks for.
+
+    `pairs` holds `{"file": <name>, "to": <slug>}`. A pair is refused when a name
+    holds a path separator, when the target is not a slug of the catalogue, when
+    the source file is not in the inbox, or when the same file is named twice.
+
+    `planned` holds (file, to, src, dst_dir). The caller MUST hold `_lock`.
+    """
+    planned, bad, seen = [], [], set()
+    for pair in pairs:
+        fn = (pair or {}).get("file") or ""
+        to = (pair or {}).get("to") or ""
+        if not fn or not to:
+            bad.append((fn, to, "the file and the target slug are both required"))
+        elif os.path.basename(fn) != fn or os.path.basename(to) != to:
+            bad.append((fn, to, "a name holds a path separator"))
+        elif fn in seen:
+            bad.append((fn, to, "the file is named twice"))
+        elif to not in catalog and to != NULL_SLUG:
+            bad.append((fn, to, "the target is not a slug of the catalogue"))
+        else:
+            src = os.path.join(MY, fn)
+            if not os.path.isfile(src):
+                bad.append((fn, to, "the file is not in the inbox"))
+            else:
+                seen.add(fn)
+                planned.append((fn, to, src, os.path.join(MY, to)))
+    return planned, bad
+
+
+def perform_inbox_moves(planned, labels):
+    """Move each file of the inbox into the directory of its wine.
+
+    The file keeps its name. A name that is taken in the target gets the suffix
+    of `free_name`. The photo gets a new entry with the comment of `inbox_note`
+    and no label: no reviewer has judged it against this wine yet.
+    The caller MUST hold `_lock`.
+    """
+    moved, renamed = [], []
+    for fn, to, src, dst_dir in planned:
+        os.makedirs(dst_dir, exist_ok=True)
+        name = free_name(dst_dir, fn)
+        shutil.move(src, os.path.join(dst_dir, name))
+        if name != fn:
+            renamed.append((fn, name))
+        labels.setdefault(to, {})[name] = {
+            "comment": inbox_note(to),
+            "moved_from": "my/",
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
+        moved.append((fn, to, name))
     return moved, renamed
 
 
@@ -1609,7 +1939,7 @@ def plan_deletes(labels):
 
 
 def perform_deletes(planned, gone, labels):
-    """Move each planned photo into `work/trash/<slug>/` and drop its entry.
+    """Move each planned photo into `my/trash/<slug>/` and drop its entry.
 
     The photo is NOT unlinked. It is moved, so a wrong decision can be undone by
     hand. The entry is dropped in full: the file no longer sits in `my/`, so a
@@ -1698,6 +2028,11 @@ def run_head(run_id):
         "latency_median": (met.get("latency_ms") or {}).get("median"),
         "has_metrics": bool(met),
         "subset": met.get("subset") or None,
+        # When the vectors that answered this run were last built.
+        # `scripts/match_run.py` reads it from the backend at run creation. A
+        # run made before that key existed has None, which the page prints as
+        # "not recorded" rather than as an empty cell.
+        "embeddings": meta.get("embeddings"),
     }
 
 
@@ -1944,6 +2279,12 @@ def _row_matches(rec, mode):
         return label in ("positive", "variant") and (rank is None or rank > 5)
     if mode == "after_10":
         return label in ("positive", "variant") and (rank is None or rank > 10)
+    # A `no_match` photo matches no card of the catalogue. The correct answer is
+    # no answer, so every answer is a false match.
+    if mode == "no_match":
+        return label == "no_match"
+    if mode == "no_match_answered":
+        return label == "no_match" and outcome == "false_match_at_1"
     if mode == "false_match":
         return label == "negative" and outcome == "false_match_at_1"
     if mode == "negative_in_topk":
@@ -1996,9 +2337,36 @@ class Handler(BaseHTTPRequestHandler):
             {"Cache-Control": "no-store"},
         )
 
-    def _file(self, path, cache=True):
+    def _file(self, path, cache=True, revalidate=False):
+        """Answer with the file of `path`.
+
+        `revalidate` is for a URL whose file can change behind a stable name.
+        The bottle of a slug is such a file: a patch REPLACES it, and the URL
+        `/img/bottle?slug=<slug>` stays the same. Such an answer carries an
+        `ETag` and `Cache-Control: no-cache`. `no-cache` does not stop the
+        cache. It stops the use of a cached copy without a question to the
+        server. The browser asks with `If-None-Match` and gets `304` while the
+        file is the same, and the new file in the first answer after a patch.
+
+        Without this header a new patch stays invisible for 24 hours, because
+        `max-age=86400` lets the browser answer from its own cache and the URL
+        gives it no reason to ask again.
+        """
         if not path or not os.path.isfile(path):
             self._send(404, "not found", "text/plain; charset=utf-8")
+            return
+        etag = None
+        if revalidate:
+            try:
+                st = os.stat(path)
+                etag = '"%x-%x"' % (int(st.st_mtime), st.st_size)
+            except OSError:
+                etag = None
+        if etag and self.headers.get("If-None-Match") == etag:
+            self.send_response(304)
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("ETag", etag)
+            self.end_headers()
             return
         try:
             with open(path, "rb") as f:
@@ -2006,7 +2374,11 @@ class Handler(BaseHTTPRequestHandler):
         except OSError as exc:
             self._send(500, f"cannot read: {exc}", "text/plain; charset=utf-8")
             return
-        extra = {"Cache-Control": "public, max-age=86400" if cache else "no-store"}
+        if etag:
+            extra = {"Cache-Control": "no-cache", "ETag": etag}
+        else:
+            extra = {"Cache-Control":
+                     "public, max-age=86400" if cache else "no-store"}
         self._send(200, body, guess_type(path), extra)
 
     # -- routes
@@ -2028,8 +2400,14 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(200, {"rows": _rows + extra, "labels": _state["labels"],
                                  "wines": _state["wines"],
                                  "excluded": _excluded,
+                                 "inbox": scan_inbox(),
                                  "groups": getattr(self.server, "groups", {}),
                                  "slugs": sorted(self.server.catalog)})
+        elif route == "/api/patched":
+            # The slugs whose catalogue photo comes from `patch_dir`. The runs
+            # page holds a slug alone, not a row, so it reads this list to mark
+            # a candidate image `patched`.
+            self._json(200, {"dir": PATCH_DIR or "", "slugs": sorted(_patches)})
         elif route == "/api/checks":
             self._json(200, {"checks": [
                 {k: c[k] for k in ("id", "title", "help")} for c in CHECKS]})
@@ -2040,6 +2418,11 @@ class Handler(BaseHTTPRequestHandler):
         elif route == "/runs":
             self._send(200, PAGE_RUNS, "text/html; charset=utf-8",
                        {"Cache-Control": "no-store"})
+        elif route == "/clusters":
+            self._send(200, PAGE_CLUSTERS, "text/html; charset=utf-8",
+                       {"Cache-Control": "no-store"})
+        elif route == "/api/clusters":
+            self._clusters_view()
         elif route == "/docs":
             self._send(200, PAGE_DOCS, "text/html; charset=utf-8",
                        {"Cache-Control": "no-store"})
@@ -2063,12 +2446,19 @@ class Handler(BaseHTTPRequestHandler):
         elif route.startswith("/api/v1/"):
             self._api_get(route[len("/api/v1/"):], query)
         elif route == "/img/bottle":
+            # A patch can replace this file while the URL stays the same.
+            # `kind` selects the package picture, the label crop, or the box
+            # crop. A wine with no crop of that kind answers with its package
+            # picture, so a view never holds a hole.
             slug = (query.get("slug") or [""])[0]
-            self._file(self._bottle_path(slug))
+            kind = (query.get("kind") or ["package"])[0]
+            self._file(self._picture_path(slug, kind), revalidate=True)
         elif route == "/img/photo":
             slug = (query.get("slug") or [""])[0]
             fn = (query.get("file") or [""])[0]
             self._file(self._photo_path(slug, fn))
+        elif route == "/img/inbox":
+            self._file(self._inbox_path((query.get("file") or [""])[0]))
         elif route == "/img/runphoto":
             run_id = (query.get("id") or [""])[0]
             fn = (query.get("file") or [""])[0]
@@ -2111,7 +2501,7 @@ class Handler(BaseHTTPRequestHandler):
         elif route == "/api/mark-delete":
             self._set_delete(body)
         elif route == "/api/apply-moves":
-            self._apply_moves()
+            self._apply_moves(body)
         elif route == "/api/fetch-image":
             self._fetch(body)
         elif route.startswith("/api/v1/"):
@@ -2155,6 +2545,56 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._json(200, spec)
 
+    def _clusters_view(self):
+        """Answer the cluster file of `scripts/10_clusters.py` and one record per card.
+
+        The route reads the file at each request, so a new build needs no restart.
+        A card record holds the label counts of the dataset in use. The route writes
+        nothing.
+        """
+        path = common.CLUSTERS_FILE
+        if not os.path.isfile(path):
+            self._json(200, {"exists": False, "file": path, "clusters": [],
+                             "cards": {}, "hint": "python3 scripts/10_clusters.py"})
+            return
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+        except (OSError, ValueError) as exc:
+            self._json(500, {"error": "cannot read %s: %s" % (path, exc)})
+            return
+        catalog = getattr(self.server, "catalog", {})
+        with _lock:
+            rows = {r["slug"]: r for r in _rows}
+            labels = _state["labels"]
+            cards = {}
+            for cluster in data.get("clusters") or []:
+                for slug in cluster.get("slugs") or []:
+                    if slug in cards:
+                        continue
+                    rec = catalog.get(slug) or {}
+                    row = rows.get(slug)
+                    counts = {"positive": 0, "negative": 0, "variant": 0,
+                              "unusable": 0, "unlabelled": 0}
+                    for p in (row or {}).get("photos", []):
+                        label = ((labels.get(slug) or {}).get(p["file"]) or {}).get("label")
+                        counts[label if label in counts else "unlabelled"] += 1
+                    cards[slug] = {
+                        "name": rec.get("name") or "",
+                        "producer": rec.get("producer") or "",
+                        "category": rec.get("category") or "",
+                        "grapes": rec.get("grapes") or "",
+                        "page_url": rec.get("page_url") or "",
+                        "in_catalog": bool(rec),
+                        "patched": slug in _patches,
+                        "has_label": slug in _labels,
+                        "in_review": row is not None,
+                        "excluded": slug in _excluded,
+                        "photos": counts,
+                    }
+        self._json(200, {"exists": True, "file": path, "dataset": common.DATASET,
+                         **data, "cards": cards})
+
     def _run_view(self, query):
         """Answer the metrics and the filtered rows of one run."""
         run_id = (query.get("id") or [""])[0]
@@ -2188,7 +2628,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def _rebuild_rows(self):
         """Read the groups again, build the rows again, and answer both."""
-        global _rows
+        global _rows, _patches, _crops, _labels, _label_boxes
+        # A patch file that was added while the tool ran is read here, so the
+        # reviewer needs no restart to see the corrected photo. A label crop and
+        # a cropped photo that a new build wrote are read here for the same reason.
+        _patches = load_patches()
+        _crops = load_crops()
+        _labels, _label_boxes = load_label_crops()
         group_of, groups = load_variants()
         self.server.groups = groups
         rows = build_rows(getattr(self.server, "catalog", {}), group_of)
@@ -2200,7 +2646,8 @@ class Handler(BaseHTTPRequestHandler):
         rows, _groups = self._rebuild_rows()
         with _lock:
             self._json(200, {"rows": rows, "labels": _state["labels"],
-                             "wines": _state["wines"], "excluded": _excluded})
+                             "wines": _state["wines"], "excluded": _excluded,
+                             "inbox": scan_inbox()})
 
     def _group(self, body):
         """Join two wines into one variant group.
@@ -2256,8 +2703,24 @@ class Handler(BaseHTTPRequestHandler):
                              "slugs": sorted(catalog)})
 
     def _bottle_path(self, slug):
-        rec = getattr(self.server, "catalog", {}).get(slug) or {}
-        return rec.get("local_path")
+        return bottle_path(slug, getattr(self.server, "catalog", {}))
+
+    def _picture_path(self, slug, kind):
+        """The file of one slug for one kind. An unknown kind gives the package."""
+        if kind not in IMAGE_KINDS:
+            kind = "package"
+        return picture_path(slug, getattr(self.server, "catalog", {}), kind)
+
+    def _inbox_path(self, fn):
+        """Return the path of one file of the inbox of `my/`, or None.
+
+        The function refuses a name that holds a path separator or a parent
+        reference, a name that is a directory, and a file that is not present.
+        """
+        if not fn or os.path.basename(fn) != fn:
+            return None
+        path = os.path.join(MY, fn)
+        return path if os.path.isfile(path) else None
 
     def _run_photo_path(self, run_id, rel):
         """Return the path of one photo of a run of a plain directory, or None.
@@ -2327,6 +2790,13 @@ class Handler(BaseHTTPRequestHandler):
             raise ValueError(
                 "label MUST be one of %s, or empty" % ", ".join(repr(x) for x in LABELS)
             )
+        # A photo of the NULL wine is already judged by its place: it shows no
+        # card of the catalogue. `positive` confirms that, and `unusable` takes
+        # the photo out of the set. The other two labels judge a photo against a
+        # wine, and NULL is not a wine.
+        if slug == NULL_SLUG and label and label not in NULL_LABELS:
+            raise ValueError(
+                "a photo of the NULL wine takes %s alone" % " or ".join(NULL_LABELS))
         self._entry(slug, fn, "label", label)
 
     def _apply_reassign(self, slug, fn, to):
@@ -2334,8 +2804,10 @@ class Handler(BaseHTTPRequestHandler):
 
         `scripts/09_apply_moves.py` moves the files later, on one command.
         """
-        if to and to not in self.server.catalog and not os.path.isdir(
-                os.path.join(MY, os.path.basename(to))):
+        # The NULL wine is a target although the catalogue does not hold it and
+        # its directory may not be made yet.
+        if (to and to != NULL_SLUG and to not in self.server.catalog
+                and not os.path.isdir(os.path.join(MY, os.path.basename(to)))):
             raise ValueError("unknown target slug: %s" % to)
         if to == slug:
             raise ValueError("the target slug is the slug of the photo")
@@ -2348,6 +2820,11 @@ class Handler(BaseHTTPRequestHandler):
         file is not copied here. `POST /api/apply-moves` and
         `scripts/09_apply_moves.py` copy it later, on one command.
         """
+        # A copy states that the photo shows a SECOND wine. NULL is not a wine,
+        # so a copy to NULL states nothing. A photo that shows no card of the
+        # catalogue is moved there, not copied there.
+        if to == NULL_SLUG:
+            raise ValueError("a photo cannot be copied to the NULL wine; move it")
         if to and to not in self.server.catalog and not os.path.isdir(
                 os.path.join(MY, os.path.basename(to))):
             raise ValueError("unknown target slug: %s" % to)
@@ -2358,7 +2835,7 @@ class Handler(BaseHTTPRequestHandler):
     def _apply_delete(self, slug, fn, on):
         """Mark or unmark one photo for deletion. The file is not touched here.
 
-        `_apply_moves` moves every marked photo into `work/trash/` later, on one
+        `_apply_moves` moves every marked photo into `my/trash/` later, on one
         command. The caller MUST hold `_lock`.
         """
         self._entry(slug, fn, "delete", True if on else None)
@@ -2581,9 +3058,14 @@ class Handler(BaseHTTPRequestHandler):
 
         if tail == "stats":
             with _lock:
+                work = [r for r in _rows if not r.get("null_row")]
                 self._json(200, {
-                    "wines": len(_rows),
-                    "photos": sum(len(r["photos"]) for r in _rows),
+                    "wines": len(work),
+                    "photos": sum(len(r["photos"]) for r in work),
+                    # The photos that match no card of the catalogue. They are no
+                    # labelling work, so they stand apart from `photos`.
+                    "no_match_photos": sum(len(r["photos"]) for r in _rows
+                                           if r.get("null_row")),
                     "excluded_wines": sum(1 for r in _rows if r["slug"] in _excluded),
                     "excluded_photos": sum(len(r["photos"]) for r in _rows
                                            if r["slug"] in _excluded),
@@ -2601,7 +3083,10 @@ class Handler(BaseHTTPRequestHandler):
             keep_excluded = (query.get("include_excluded") or ["0"])[0] in (
                 "1", "true", "yes")
             with _lock:
-                src = list(_rows)
+                # The NULL wine is no card of the catalogue and holds no labelling
+                # work, so it stays out of the queues of an agent.
+                # `GET /api/v1/wine/__null__` still answers.
+                src = [r for r in _rows if not r.get("null_row")]
                 if mode in CATALOG_SCOPE_FILTERS:
                     src += catalog_only_rows(catalog, {r["slug"] for r in _rows},
                                              groups)
@@ -2653,6 +3138,10 @@ class Handler(BaseHTTPRequestHandler):
         if not self._known_slug(slug):
             self._json(400, {"error": "unknown wine slug"})
             return
+        if slug == NULL_SLUG:
+            self._json(400, {"error": "the NULL wine takes no proposal; a reviewer "
+                                      "moves a photo there"})
+            return
         if proposed not in LABELS:
             self._json(400, {"error": "proposed MUST be one of %s"
                                       % ", ".join(LABELS)})
@@ -2695,12 +3184,18 @@ class Handler(BaseHTTPRequestHandler):
         self._json(200, {"ok": True, "slug": slug, "file": fn,
                          "photos": photos, "counts": counts})
 
-    def _apply_moves(self):
+    def _apply_moves(self, body=None):
         """Copy, move, and delete every marked photo, then rebuild the rows.
 
         The three actions run on one command, because the page offers one button.
         They run in this order, because a move takes the source file away and a
         copy reads it: copy, move, delete.
+
+        The body MAY hold `inbox`: a list of `{"file": <name>, "to": <slug>}`.
+        Each pair moves one file of the inbox of `my/` into the directory of that
+        wine. The sideboard holds these pairs in the browser alone, so they come
+        with the request and not from the label file. They run last, after the
+        photos that already belong to a wine.
         A photo that carries both a `reassign_to` and a `delete` is deleted and is
         not moved; `plan_moves` drops it. A `delete` drops a `copy_to` in the same
         way.
@@ -2716,6 +3211,12 @@ class Handler(BaseHTTPRequestHandler):
                 del_planned, del_gone = plan_deletes(_state["labels"])
                 deleted, del_failed = perform_deletes(
                     del_planned, del_gone, _state["labels"])
+                in_planned, in_bad = plan_inbox_moves(
+                    ((body or {}).get("inbox") or []),
+                    getattr(self.server, "catalog", {}))
+                in_moved, in_renamed = perform_inbox_moves(
+                    in_planned, _state["labels"])
+                renamed = renamed + in_renamed
                 save_state()
                 counts = count_state()
         except (OSError, ValueError) as exc:
@@ -2745,6 +3246,10 @@ class Handler(BaseHTTPRequestHandler):
                 "delete_failed": [{"slug": a, "file": b, "why": w}
                                   for a, b, w in del_failed],
                 "delete_gone": len(del_gone),
+                "inbox_moved": [{"file": a, "to": b, "as": c} for a, b, c in in_moved],
+                "inbox_failed": [{"file": a, "to": b, "why": w}
+                                 for a, b, w in in_bad],
+                "inbox": scan_inbox(),
                 "rows": _rows, "labels": _state["labels"], "counts": counts,
             })
 
@@ -2804,7 +3309,8 @@ class Handler(BaseHTTPRequestHandler):
         """
         if os.path.basename(slug) != slug or not slug or slug.startswith("."):
             return False
-        return (os.path.isdir(os.path.join(MY, slug))
+        return (slug == NULL_SLUG
+                or os.path.isdir(os.path.join(MY, slug))
                 or slug in getattr(self.server, "catalog", {}))
 
     def _upload(self, query):
@@ -2931,6 +3437,64 @@ THEME_CSS = """:root {
 }
 """
 
+# The mark of a corrected catalogue photo. The review page and the runs page both
+# show catalogue bottles, so the rule and the helper stand once here and are
+# joined into each page. The colour is the colour of a variant, `--var`, in both
+# the light and the dark palette.
+PATCH_CSS = """
+/* A catalogue photo that comes from `patch_dir` and not from the catalogue
+   record. The mark sits ON the image, in the top right corner, because it
+   states something about the picture and not about the wine. */
+.pic { position: relative; display: block; line-height: 0; }
+.pic > .patched {
+  position: absolute; top: 3px; right: 3px; z-index: 1; pointer-events: none;
+  font: 700 9px/1.25 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--var);
+  background: var(--var-bg); border: 1px solid var(--var);
+  border-radius: 4px; padding: 0 3px;
+}
+/* A label crop is RGBA and its alpha channel holds the mask. The page puts such
+   a picture on white, so a white label edge stays visible in the dark theme. */
+.pic img.onwhite, figure img.onwhite { background: #fff; }
+/* The picture selector asks for a label crop, and this wine has none. The page
+   shows the package picture and marks it. The mark sits in the BOTTOM right
+   corner, so it stands beside the `patched` mark and not over it. */
+.pic > .nolabel {
+  position: absolute; bottom: 3px; right: 3px; z-index: 1; pointer-events: none;
+  font: 700 9px/1.25 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--muted);
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 4px; padding: 0 3px;
+}
+/* The pickers show a 34 px thumbnail. The word does not fit there, so the mark
+   is a dot of the same colour. The tooltip still states what it means. */
+.mv-item .pic { flex: none; }
+.mv-item .pic > .patched {
+  top: 1px; right: 1px; width: 9px; height: 9px; padding: 0;
+  border-radius: 50%; font-size: 0; overflow: hidden;
+}
+.mv-item .pic > .nolabel {
+  bottom: 1px; right: 1px; width: 9px; height: 9px; padding: 0;
+  border-radius: 50%; font-size: 0; overflow: hidden;
+}
+"""
+
+# `picHtml` puts one <img> in a positioned box, because an absolute mark needs a
+# positioned parent. Every catalogue bottle passes through it.
+PATCH_JS = """
+const PATCH_TIP = "patched: this catalogue photo is a correction from patch_dir."
+  + " The photo of the catalogue record is not used for this wine.";
+const NOLABEL_TIP = "no label crop for this wine, so the package picture is shown."
+  + " svoe-wino-hackaton/scripts/build_labels.py writes the crops.";
+/* `noLabel` is optional. The runs page passes two arguments and gets the old
+   behaviour. */
+function picHtml(imgHtml, patched, noLabel) {
+  return `<div class="pic">${imgHtml}${
+    patched ? `<span class="patched" title="${PATCH_TIP}">patched</span>` : ""}${
+    noLabel ? `<span class="nolabel" title="${NOLABEL_TIP}">no label</span>` : ""}</div>`;
+}
+"""
+
 
 # The page that shows the OpenAPI document. It loads Swagger UI from a CDN, so it
 # needs an internet connection. The tool itself does not.
@@ -2964,7 +3528,7 @@ body { margin: 0; background: #f6f6f4; }
 </head>
 <body>
 <div id="nav"><a href="/">Review</a><a href="/runs">Runs</a><a
-  href="/openapi.yaml">openapi.yaml</a><a href="/openapi.json">openapi.json</a></div>
+  href="/clusters">Clusters</a><a href="/openapi.yaml">openapi.yaml</a><a href="/openapi.json">openapi.json</a></div>
 <div id="swagger-ui"></div>
 <script crossorigin
   src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@__V__/swagger-ui-bundle.js">
@@ -2993,7 +3557,7 @@ PAGE = r"""<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Svoe Vino photo review</title>
 <style>
-""" + THEME_CSS + r"""* { box-sizing: border-box; }
+""" + THEME_CSS + PATCH_CSS + r"""* { box-sizing: border-box; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
   font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -3125,6 +3689,12 @@ body.side-off main, body.side-off header { padding-right: 16px; }
   border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; cursor: pointer;
 }
 .held-card .back:hover { border-color: var(--accent); }
+/* A photo of the inbox: a file that lies directly in `my/` and belongs to no
+   wine yet. The frame states that it is not a photo of any wine. */
+.inbox-card { outline: 1px dashed var(--muted); outline-offset: 2px; }
+.inbox-card.targeted { outline-color: var(--accent); }
+.inbox-card .to { font-size: 10px; color: var(--accent); word-break: break-all;
+                  margin-top: 2px; }
 /* A row that is ready to take the dragged photo. */
 tr.photo-drop > td { background: var(--panel-2) !important; }
 tr.photo-drop { outline: 2px dashed var(--accent); outline-offset: -2px; }
@@ -3150,6 +3720,14 @@ td.wine { width: 320px; min-width: 300px; }
 }
 .bottle.missing { display: flex; align-items: center; justify-content: center;
   color: var(--muted); font-size: 11px; text-align: center; }
+/* The virtual NULL wine. It carries no bottle photo, because it is no wine: it
+   collects the photos that match no card of the catalogue. */
+.bottle.null-bottle { display: flex; align-items: center; justify-content: center;
+  border-style: dashed; border-width: 2px; background: transparent;
+  color: var(--muted); font-size: 18px; font-weight: 700; letter-spacing: .04em; }
+tbody tr.null-row { background: var(--panel-2); }
+tbody tr.null-row .meta .nm { color: var(--muted); }
+tbody tr.null-row.photo-drop { outline: 2px solid var(--pos); }
 .bottle-col { display: flex; flex-direction: column; gap: 5px; min-width: 84px; }
 /* A catalogue card with no directory in `my/`. It carries no review work. */
 tbody tr.cat-only { background: var(--panel-2); }
@@ -3520,7 +4098,8 @@ body.dragging::after {
 <header>
   <div class="head-top">
     <h1>Svoe Vino photo review <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a class="on" href="/">Review</a><a href="/runs">Runs</a></nav>
+    <nav class="nav"><a class="on" href="/">Review</a><a href="/runs">Runs</a><a
+      href="/clusters">Clusters</a></nav>
   </div>
   <div class="bar">
     <label>Sort
@@ -3564,6 +4143,8 @@ body.dragging::after {
         <option value="proposal">holds a photo proposed by an agent</option>
         <option value="nobottle">no catalogue bottle photo</option>
         <option value="failed">failed a check (press validate first)</option>
+        <option value="excluded">excluded from the benchmark</option>
+        <option value="included">included in the benchmark</option>
       </select>
     </label>
     <label>Slugs
@@ -3571,6 +4152,17 @@ body.dragging::after {
         <option value="all">all</option>
         <option value="included">included</option>
         <option value="excluded">excluded</option>
+      </select>
+    </label>
+    <label id="imgkind-wrap" hidden>Image
+      <select id="imgkind" title="Which picture of the wine the table shows.
+`package` is the catalogue photo, or its patch.
+`label` is the label cut out of that photo with SAM3.
+`label box` is the bounding box of the label alone.
+A wine with no crop keeps its package picture and carries the mark `no label`.">
+        <option value="package">package</option>
+        <option value="label">label</option>
+        <option value="labelbox">label box</option>
       </select>
     </label>
     <label>Find <input id="q" type="search" placeholder="slug, name, producer, region"></label>
@@ -3599,7 +4191,9 @@ body.dragging::after {
         title="hide the sideboard (key s)">&times;</button>Sideboard
     <span class="n" id="held-n">0</span>
     <div class="side-help">Drag a photo here to hold it. Drag it to a wine
-      row to move it there. The move runs when you press apply.</div>
+      row to move it there. The move runs when you press apply.
+      A photo that lies directly in <b>my/</b> stands here from the start, with a
+      dashed frame. It belongs to no wine yet.</div>
   </div>
   <div id="held"></div>
 </aside>
@@ -3699,17 +4293,51 @@ body.dragging::after {
   <div class="hint"><span id="lb-pos"></span>
     &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
     <b>1</b> positive &middot; <b>2</b> negative &middot; <b>3</b> unusable &middot;
-    <b>4</b> other design &middot; <b>m</b> move &middot; <b>c</b> copy &middot;
+    <b>4</b> other design &middot; <b>0</b> no match (NULL) &middot;
+    <b>m</b> move &middot; <b>c</b> copy &middot;
     <b>s</b> sideboard &middot;
     right-click delete &middot; Esc close</div>
 </div>
 <div id="ctxmenu" class="ctxmenu" hidden></div>
 <script>
+""" + PATCH_JS + r"""
 let ROWS = [], V = {}, TOTAL = 0;
+
+/* The picture kind that every catalogue picture of this page shows: the package
+   picture, the label crop, or the box crop. `bottle_label_dir` and
+   `bottle_label_box_dir` of `config.yaml` name the crops, and
+   `svoe-wino-hackaton/scripts/build_labels.py` writes them.
+
+   The functions read the control and hold no state of their own, so a picker
+   that draws outside `render` shows the same kind as the table. A wine with no
+   crop of that kind keeps its package picture: the server falls back, and
+   `noLabelMark` marks the picture. */
+function imgKind() { const el = $("#imgkind"); return (el && el.value) || "package"; }
+function imgSrc(slug) {
+  const kind = imgKind();
+  return `/img/bottle?slug=${encodeURIComponent(slug)}`
+       + (kind === "package" ? "" : `&kind=${kind}`);
+}
+/* A label crop is RGBA and its alpha holds the mask, so it needs a white
+   backdrop. A package picture needs none. */
+function imgClass() { return imgKind() === "package" ? "" : " onwhite"; }
+function imgKindWord() {
+  const kind = imgKind();
+  return kind === "label" ? "label" : kind === "labelbox" ? "label box" : "bottle";
+}
+function noLabelMark(r) {
+  const kind = imgKind();
+  if (!r || !r.has_bottle || kind === "package") return false;
+  return kind === "label" ? !r.has_label : !r.has_label_box;
+}
 /* `ROWS` also holds the catalogue cards that have no candidate photo. They are
    not review work, so every counter of the review set uses this number. */
-function reviewRows() { return ROWS.filter(r => !r.catalog_only); }
+function reviewRows() { return ROWS.filter(r => !r.catalog_only && !isNullRow(r)); }
 function reviewCount() { return reviewRows().length; }
+/* Every row of the table: the catalogue, and any directory that the catalogue does
+   not hold. `reviewCount` counts the wines that carry photos, which is the set that
+   the labelling work covers. */
+function tableCount() { return ROWS.filter(r => !isNullRow(r)).length; }
 let VIEW = [];        // the rows as the table shows them now: filtered and sorted
 let W = {};           // slug -> { comment, ts }: one note about a whole wine
 /* slug -> { reason, ts }. An excluded slug holds an error, most often a wrong
@@ -3723,6 +4351,11 @@ let LB = null;        // the place of the large view: { wine: index in VIEW, pho
    empties it. A held photo keeps its label until a target is chosen and `apply`
    runs; `apply` then drops the label, as it does for every move. */
 let HELD = [];
+/* The inbox: the image files that lie directly in `my/` and belong to no wine
+   yet. The server lists them; `to` is the wine that the reviewer dragged the
+   photo to. The target lives in this tab alone, as the sideboard does: `apply`
+   sends it, and the server then moves the file. */
+let INBOX = [];
 /* The result of the last run of `validate`. It lives in this tab: the server
    never keeps it and a reload empties it. `FAILED` maps a slug to the findings
    that name it, and the filter `failed a check` shows exactly those wines.
@@ -3742,6 +4375,33 @@ const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
    the only label that takes a photo out of the set. */
 const SHORT = { positive: "pos", negative: "neg", unusable: "unu", variant: "var" };
 const KEY_OF = { "1": "positive", "2": "negative", "3": "unusable", "4": "variant" };
+/* The virtual NULL wine. A photo that lies under this slug matches NO card of
+   the catalogue. The row stands first in the table and no filter takes it away,
+   so the drop target is always there. */
+const NULL_SLUG = "__null__";
+/* The labels that a photo of the NULL wine takes. The server refuses the other
+   two: they judge a photo against a wine, and NULL is not a wine. */
+const NULL_LABELS = ["positive", "unusable"];
+function isNullRow(r) { return !!(r && (r.null_row || r.slug === NULL_SLUG)); }
+/* The photos that the labelling work covers. A photo of the NULL wine is judged
+   by its place and needs no label, so it stays out of this number and out of the
+   progress bar. */
+function photoTotal() {
+  return ROWS.reduce((n, r) => n + (isNullRow(r) ? 0 : r.photos.length), 0);
+}
+/* The photos that lie under the NULL wine now, and the photos that a reviewer
+   sent there and `apply` has not moved yet. */
+function noMatchCount() {
+  const row = ROWS.find(isNullRow);
+  let pending = 0;
+  for (const photos of Object.values(V)) {
+    for (const e of Object.values(photos)) {
+      if (!e.delete && e.reassign_to === NULL_SLUG) pending++;
+    }
+  }
+  for (const h of INBOX) if (h.to === NULL_SLUG) pending++;
+  return { here: row ? row.photos.length : 0, pending };
+}
 const TITLE = {
   positive: "1 \u2014 this photo shows this wine",
   negative: "2 \u2014 a different wine; keep as a negative sample",
@@ -3765,7 +4425,7 @@ function copiedTo(slug, file) {
   return r ? r.copy_to || null : null;
 }
 /* True when the photo is marked for deletion. The file is still on disk: the
-   mark becomes a move into `work/trash/` only when "apply" is pressed. */
+   mark becomes a move into `my/trash/` only when "apply" is pressed. */
 function deleteMarked(slug, file) {
   const r = V[slug] && V[slug][file];
   return !!(r && r.delete);
@@ -3851,13 +4511,29 @@ function pruneHeld() {
 }
 
 function renderHeld() {
-  $("#held-n").textContent = HELD.length;
-  $("#side-n").textContent = HELD.length;   // the button states it while hidden too
-  if (!HELD.length) {
+  const n = HELD.length + INBOX.length;
+  $("#held-n").textContent = n;
+  $("#side-n").textContent = n;             // the button states it while hidden too
+  if (!n) {
     $("#held").innerHTML = '<div class="empty">empty</div>';
     return;
   }
-  $("#held").innerHTML = HELD.map(h => {
+  /* The inbox stands first: such a photo belongs to no wine, so it waits for a
+     decision, while a held photo already has a place to go back to. */
+  const inbox = INBOX.map(h => {
+    const src = `/img/inbox?file=${encodeURIComponent(h.file)}`;
+    return `<div class="card held-card inbox-card ${h.to ? "targeted" : ""}"
+                 draggable="true" data-inbox="1" data-file="${esc(h.file)}">
+      <img loading="lazy" draggable="false" src="${src}" alt="" data-full="${src}">
+      <div class="from" title="this file lies directly in my/ and belongs to no wine yet"
+        >inbox &middot; ${esc(h.file)}</div>
+      ${h.to ? `<div class="to">&rarr; ${esc(h.to)}</div>
+        <button class="back" type="button" data-clear="1"
+                title="take the target away; the photo stays in the inbox">clear</button>`
+             : ""}
+      </div>`;
+  }).join("");
+  $("#held").innerHTML = inbox + HELD.map(h => {
     const src = `/img/photo?slug=${encodeURIComponent(h.slug)}&file=${encodeURIComponent(h.file)}`;
     const l = labelOf(h.slug, h.file);
     return `<div class="card held-card ${SHORT[l] || ""}" draggable="true"
@@ -3868,6 +4544,21 @@ function renderHeld() {
               title="put this photo back in its wine">put back</button>
       </div>`;
   }).join("");
+}
+
+/* Take the list of the inbox from the server and keep the targets that the
+   reviewer already chose. A file that the server no longer lists is gone: it was
+   moved, or it was taken off the disk. */
+function setInbox(files) {
+  const chosen = new Map(INBOX.map(h => [h.file, h.to]));
+  INBOX = (files || []).map(f => ({ file: f, to: chosen.get(f) || null }));
+}
+
+/* Record the wine of one photo of the inbox. Nothing is sent: `apply` sends it. */
+function inboxTarget(file, to) {
+  const h = INBOX.find(x => x.file === file);
+  if (h) h.to = to;
+  render();
 }
 
 /* The short label counts of one wine, for the row and for the header. */
@@ -3933,12 +4624,20 @@ function twinBadge(slug) {
     esc(f.tag)} \u00d7${f.slugs.length}</div>`;
 }
 
-/* A catalogue card with no directory in `my/` carries `catalog_only`. It has no
-   candidate photo, so it is not part of the review work and stays out of the
-   default list. These filters ask about the catalogue itself, so each one shows
-   those cards. */
+/* A catalogue card with no directory in `my/` carries `catalog_only`. The table is
+   built from the catalogue, so `all` lists every such card: every wine of the
+   catalogue is a row, and a wine with no photo is a row with no photo.
+
+   The other filters ask about photos and about labels. A card with no photo holds
+   neither, so it stays out of them and the work lists hold the wines that carry
+   photos alone. The filters below ask about the catalogue itself, so each one
+   shows those cards as well. */
 const CATALOG_SCOPE_FILTERS = new Set([
+  "all",
   "nophotos", "img_none", "img_assumed", "img_confirmed", "img_manual", "img_shared",
+  // An exclusion is a statement about the card, not about its photos. A card
+  // with no directory in `my/` can be excluded too, so both entries show it.
+  "excluded", "included",
   // `catalog_photo_twin` reads the whole catalogue, so it can report a card that
   // has no directory in `my/`. Such a card MUST reach the table, or the other
   // half of the cluster is not visible. The other checks read `my/` alone and
@@ -3972,6 +4671,10 @@ function matchFilter(row, mode) {
     case "img_confirmed": return (row.image_match || {}).confidence === "confirmed";
     case "img_manual": return (row.image_match || {}).method === "manual";
     case "img_shared": return ((row.image_match || {}).shared_with || []).length > 0;
+    // The same scope as the control `Slugs`. It stands here as well, because the
+    // reviewer looks for the excluded wines in this list.
+    case "excluded": return isExcluded(row.slug);
+    case "included": return !isExcluded(row.slug);
     default: return true;
   }
 }
@@ -4007,10 +4710,13 @@ function noteBadge(text) {
     <span class="note-pop">${esc(text)}</span></span>`;
 }
 
-function labelButtons(current) {
-  return Object.keys(SHORT).map(name =>
+function labelButtons(current, slug) {
+  const names = slug === NULL_SLUG ? NULL_LABELS : Object.keys(SHORT);
+  return names.map(name =>
     `<button class="${SHORT[name]} ${current === name ? "on" : ""}" data-l="${name}"
-             title="${TITLE[name]}">${GLYPH[name]}</button>`).join("");
+             title="${slug === NULL_SLUG && name === "positive"
+                      ? "1 \u2014 confirmed: no card of the catalogue shows this wine"
+                      : TITLE[name]}">${GLYPH[name]}</button>`).join("");
 }
 
 function sortRows(rows, mode) {
@@ -4252,7 +4958,10 @@ function cardsHtml(r) {
   const shown = r.photos.filter(p => !isHeld(r.slug, p.file));
   if (!shown.length) {
     return `<span class="empty">${
-        r.catalog_only ? "no directory my/" + esc(r.slug)
+        isNullRow(r) ? "no photo matches nothing yet \u2014 drag a photo here, or "
+                     + "press 0 in the large view, to state that no card of the "
+                     + "catalogue shows it"
+        : r.catalog_only ? "no directory my/" + esc(r.slug)
                        + " \u2014 this card is a gap of the photo set"
         : r.photos.length ? "every photo is in the sideboard" : "no photos"}</span>`;
   }
@@ -4267,7 +4976,7 @@ function cardsHtml(r) {
                      cp ? "copied" : ""} ${bad ? "bad" : ""} ${note ? "noted" : ""}
                    ${pr ? "prop" : ""} ${dl ? "del" : ""}" draggable="true"
                    data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
-        ${dl ? `<span class="del-tag" title="marked for deletion; press apply to move it to work/trash/">del</span>` : ""}
+        ${dl ? `<span class="del-tag" title="marked for deletion; press apply to move it to my/trash/">del</span>` : ""}
         ${pr ? `<span class="prop-tag" title="${esc(pr.by || "agent")} proposes ${
           esc(pr.proposed)}${pr.source_url ? "\nfrom " + esc(pr.source_url) : ""}">${
           esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
@@ -4278,10 +4987,12 @@ function cardsHtml(r) {
         <img loading="lazy" draggable="false" src="${src}" alt="" data-full="${src}">
         <div class="cap"><span>${esc(p.file.split("_")[0] || "")}</span>
           <span>${p.conf === null ? "" : "conf " + p.conf}</span></div>
-        <div class="btns">${labelButtons(l)}</div>
+        <div class="btns">${labelButtons(l, r.slug)}</div>
         <button class="move ${mv ? "on" : ""}" data-move="1"
-                title="move this photo to another wine slug">${
-          mv ? "\u2192 " + esc(mv) : "\u2192 move"}</button>
+                title="${mv === NULL_SLUG
+                  ? "this photo matches no card of the catalogue; press apply to move it to the NULL wine"
+                  : "move this photo to another wine slug"}">${
+          mv ? "\u2192 " + esc(mv === NULL_SLUG ? "NULL" : mv) : "\u2192 move"}</button>
         <button class="cpy ${cp ? "on" : ""}" data-cpy="1"
                 title="copy this photo to another wine slug; this photo stays here">${
           cp ? "\u29c9 " + esc(cp) : "\u29c9 copy"}</button>
@@ -4293,12 +5004,17 @@ function render() {
   const mode = $("#sort").value, filt = $("#filter").value;
   const sel = $("#slugsel").value;
   const terms = queryTerms($("#q").value);
-  let rows = ROWS.filter(r => matchFilter(r, filt));
+  /* The NULL wine takes no filter and no sort. It is the drop target for a photo
+     that matches no card of the catalogue, and the target MUST always be there.
+     It is put back in front of the view after the filters have run. */
+  const nullRow = ROWS.find(isNullRow) || null;
+  let rows = ROWS.filter(r => !isNullRow(r) && matchFilter(r, filt));
   if (sel === "excluded") rows = rows.filter(r => isExcluded(r.slug));
   else if (sel === "included") rows = rows.filter(r => !isExcluded(r.slug));
   if (terms.length) rows = rows.filter(r => matchQuery(r, terms));
   if (GROUP_FILTER) rows = rows.filter(r => r.group === GROUP_FILTER);
   rows = clusterGroups(sortRows(rows, mode));
+  if (nullRow) rows.unshift(nullRow);
   VIEW = rows;            // the arrow keys follow this order
 
   // Give each variant group one of two background colours, in the order of view.
@@ -4315,8 +5031,8 @@ function render() {
       ? "no photo<br>unresolved"
       : (r.in_catalog ? "no bottle<br>photo" : "not in<br>catalogue");
     const img = r.has_bottle
-      ? `<img class="bottle" loading="lazy" src="/img/bottle?slug=${encodeURIComponent(r.slug)}"
-             alt="" data-full="/img/bottle?slug=${encodeURIComponent(r.slug)}">`
+      ? picHtml(`<img class="bottle${imgClass()}" loading="lazy" src="${imgSrc(r.slug)}"
+             alt="" data-full="${imgSrc(r.slug)}">`, r.patched, noLabelMark(r))
       : `<div class="bottle missing">${noPhoto}</div>`;
     const badge = imatchBadge(im);
     const shared = (im.shared_with || []).length
@@ -4325,12 +5041,20 @@ function render() {
           im.shared_with.length + 1}</div>`
       : "";
     const ex = isExcluded(r.slug), why = excludeReason(r.slug);
-    const bottle = `<div class="bottle-col">${img}${badge}${shared}${twinBadge(r.slug)}
-      <button class="excl-btn ${ex ? "on" : ""}" data-excl="${esc(r.slug)}"
+    const exclBtn = `<button class="excl-btn ${ex ? "on" : ""}" data-excl="${esc(r.slug)}"
         title="${ex ? "excluded: " + esc(why) + "\nclick to include this slug again"
                     : "exclude this slug from the benchmark; its photos are then not used"}">${
         ex ? "Excluded" : "Exclude"}</button>
-      ${ex && why ? `<div class="excl-why" title="${esc(why)}">${esc(why)}</div>` : ""}
+      ${ex && why ? `<div class="excl-why" title="${esc(why)}">${esc(why)}</div>` : ""}`;
+    /* The NULL wine carries no bottle photo, no image badge, and no variant
+       group: it is no wine. It keeps the exclude button, because that button
+       states whether its photos reach the benchmark. */
+    const bottle = isNullRow(r)
+      ? `<div class="bottle-col"><div class="bottle null-bottle"
+           title="the virtual NULL wine: a photo here matches no card of the catalogue"
+           >NULL</div>${exclBtn}</div>`
+      : `<div class="bottle-col">${img}${badge}${shared}${twinBadge(r.slug)}
+      ${exclBtn}
       <button class="grp-btn ${grpOf(r) ? "on" : ""}" data-group="${esc(r.slug)}"
         title="${grpOf(r)
           ? "in variant group " + esc(grpOf(r).id) + " of " + grpOf(r).slugs.length +
@@ -4345,13 +5069,16 @@ function render() {
     const fullName = [r.producer, r.name].filter(Boolean).join(" ");
     const grp = r.group ? GROUPS[r.group] : null;
     return `<tr data-slug="${esc(r.slug)}" class="${r.group ? gclass.get(r.group) : ""} ${
-      ex ? "excl" : ""} ${r.catalog_only ? "cat-only" : ""}">
+      ex ? "excl" : ""} ${r.catalog_only ? "cat-only" : ""} ${
+      isNullRow(r) ? "null-row" : ""}">
       <td class="wine"><div class="wine-inner">${bottle}<div class="meta">
         <div class="nm">${esc(r.name) || "<span class='empty'>unknown name</span>"}${
           r.name ? `<button class="copy" data-copy="${esc(fullName)}"
              title="copy the brand and the name to the clipboard">copy</button>` : ""}</div>
         <div class="pr">${esc(r.producer)}</div>
-        <div class="sm">${esc(r.category)}${r.region ? " &middot; " + esc(r.region) : ""}</div>
+        <div class="sm">${isNullRow(r)
+          ? "no card of the catalogue shows the wine of a photo in this row"
+          : esc(r.category) + (r.region ? " &middot; " + esc(r.region) : "")}</div>
         <div class="sm">${esc(r.grapes)}</div>
         <div class="sm">${esc(r.slug)}<button class="copy" data-copy="${esc(r.slug)}"
              title="copy the slug to the clipboard">copy</button></div>
@@ -4375,10 +5102,17 @@ function render() {
   const gf = GROUP_FILTER && GROUPS[GROUP_FILTER];
   $("#grp-clear").hidden = !gf;
   if (gf) $("#grp-clear-id").textContent = `${gf.id} of ${gf.slugs.length}`;
-  $("#count").textContent = `${rows.length} of ${reviewCount()} wines shown` +
+  $("#count").textContent =
+    `${rows.length - (nullRow ? 1 : 0)} of ${tableCount()} wines shown` +
     (gf ? ` \u00b7 variant group ${gf.id}` : "") +
     (filt === "failed"
       ? " \u00b7 " + (FAILED ? FAILED_INFO : "no check was run yet; press validate")
+      : "") +
+    /* `Show` and `Slugs` state the same scope and can contradict each other. The
+       table is then empty for a reason that the reader cannot see, so it is said. */
+    ((filt === "excluded" && sel === "included") ||
+     (filt === "included" && sel === "excluded")
+      ? ` \u00b7 the control Slugs stands on ${sel} and takes every row away`
       : "");
   $("#export-csv").title = `download ${rows.length} shown wine(s) in this order`;
   renderHeld();
@@ -4390,6 +5124,7 @@ function stats() {
   const all = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0 };
   let doneWines = 0;
   for (const r of ROWS) {
+    if (isNullRow(r)) continue;          // no label work; it is counted apart
     const t = tally(r);
     all.positive += t.positive; all.negative += t.negative;
     all.unusable += t.unusable; all.variant += t.variant; all.moved += t.moved;
@@ -4401,9 +5136,15 @@ function stats() {
   // that hold a photo at all. A catalogue card with no photo is a gap of the set,
   // and the filter `no candidate photos (catalogue gap)` lists exactly those.
   const withPhoto = ROWS.filter(r => r.in_catalog && r.photos.length).length;
+  const nm = noMatchCount();
   $("#stat").innerHTML = `labelled <b>${labelled}</b>/<b>${TOTAL}</b> photos &middot; ` +
     rowTags({ ...all, total: TOTAL }) + ` &middot; ` +
     `<b>${doneWines}</b>/<b>${reviewCount()}</b> wines done` +
+    (nm.here || nm.pending
+      ? ` &middot; <b>${nm.here}</b> <span class="muted" title="these photos match`
+        + ` no card of the catalogue">no match</span>`
+        + (nm.pending ? ` <span class="muted">(+${nm.pending} pending)</span>` : "")
+      : "") +
     (SLUGS.length
       ? ` &middot; <b>${withPhoto}</b>/<b>${SLUGS.length}</b> catalogue wines`
         + ` <span class="muted">with a photo</span>`
@@ -4419,6 +5160,9 @@ function stats() {
       if (e.copy_to) pendingCopy++;
     }
   }
+  // A photo of the inbox with a wine is a move too, and `apply` carries it out.
+  const pendingIn = INBOX.filter(h => h.to).length;
+  pending += pendingIn;
   const box = $("#pending");
   box.hidden = pending === 0 && pendingCopy === 0 && pendingDel === 0;
   if (!box.hidden) {
@@ -4480,6 +5224,9 @@ function fillFig(id, item) {
   if (!item) { fig.hidden = true; img.removeAttribute("src"); return; }
   // Set `src` only when it changes. A repeated set reloads the image and flickers.
   if (img.getAttribute("src") !== item.src) img.setAttribute("src", item.src);
+  // A label crop is transparent outside the mask. It needs the white backdrop
+  // here too, and a photo of the candidate never carries the flag.
+  img.classList.toggle("onwhite", !!item.onwhite);
   fig.querySelector("figcaption").innerHTML = item.cap;
   fig.hidden = false;
 }
@@ -4487,8 +5234,11 @@ function fillFig(id, item) {
 function bottleItem(r) {
   if (!r || !r.has_bottle) return null;
   return {
-    src: `/img/bottle?slug=${encodeURIComponent(r.slug)}`,
-    cap: `<b>catalogue bottle</b><br>${esc(r.name || r.slug)}` +
+    src: imgSrc(r.slug),
+    onwhite: imgKind() !== "package",
+    cap: `<b>catalogue ${imgKindWord()}</b>` +
+         (noLabelMark(r) ? ` <span class="muted">no crop, package shown</span>` : "") +
+         `<br>${esc(r.name || r.slug)}` +
          (r.producer ? `<br>${esc(r.producer)}` : "") +
          (r.group && GROUPS[r.group]
            ? `<br>variant group of ${GROUPS[r.group].slugs.length}` : ""),
@@ -4620,14 +5370,24 @@ async function applyMoves(btn) {
     `label and must be reviewed again. Its comment is kept and states where ` +
     `the photo was.`);
   if (nDel) warn.push(
-    `DELETE ${nDel} photo(s). Each one is moved out of my/ into work/trash/ ` +
+    `DELETE ${nDel} photo(s). Each one is moved out of my/ into my/trash/ ` +
     `and loses its label, its comment and any proposal. It leaves the set.`);
+  /* The inbox: a file that lies directly in `my/` and holds a wine now. The file
+     keeps its name, and a name that is taken in the target gets a suffix. */
+  const inbox = INBOX.filter(h => h.to).map(h => ({ file: h.file, to: h.to }));
+  if (inbox.length) warn.push(
+    `Move ${inbox.length} photo(s) of the inbox into the directory of their ` +
+    `wine. Each one keeps its file name and carries no label, so it must be ` +
+    `reviewed. Its comment states that it comes from the inbox.`);
   if (!warn.length) return;
   if (!window.confirm(`Carry out the pending work now?\n\n` + warn.join("\n\n"))) return;
   btn.disabled = true; btn.textContent = "working...";
   let out = {};
   try {
-    const res = await fetch("/api/apply-moves", { method: "POST" });
+    const res = await fetch("/api/apply-moves", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inbox }),
+    });
     out = await res.json();
     if (!res.ok) throw new Error(out.error || res.status);
   } catch (e) {
@@ -4636,9 +5396,10 @@ async function applyMoves(btn) {
     return;
   }
   ROWS = out.rows; V = out.labels || {}; W = out.wines || W;
+  setInbox(out.inbox);
   pruneHeld();
-  TOTAL = ROWS.reduce((k, r) => k + r.photos.length, 0);
-  $("#head-sub").textContent = `${reviewCount()} wines, ${TOTAL} candidate photos`;
+  TOTAL = photoTotal();
+  $("#head-sub").textContent = `${tableCount()} wines, ${TOTAL} candidate photos`;
   render();
   const deleted = out.deleted || [], delFailed = out.delete_failed || [];
   const copied = out.copied || [], copyFailed = out.copy_failed || [];
@@ -4658,7 +5419,14 @@ async function applyMoves(btn) {
   }
   if (deleted.length || dfails.length) {
     if (report.length) report.push("");
-    report.push(`deleted ${deleted.length} photo(s) into work/trash/`, ...dels, ...dfails);
+    report.push(`deleted ${deleted.length} photo(s) into my/trash/`, ...dels, ...dfails);
+  }
+  const inMoved = out.inbox_moved || [], inFailed = out.inbox_failed || [];
+  if (inMoved.length || inFailed.length) {
+    if (report.length) report.push("");
+    report.push(`moved ${inMoved.length} photo(s) out of the inbox`,
+      ...inMoved.map(m => `my/${m.file} -> ${m.to}/${m.as}`),
+      ...inFailed.map(f => `! my/${f.file} -> ${f.to}: ${f.why}`));
   }
   if (out.delete_gone) report.push(`${out.delete_gone} marked photo(s) were already gone`);
   alert(report.length ? report.join("\n") : "nothing to do");
@@ -4667,7 +5435,7 @@ async function applyMoves(btn) {
 /* ---- the right-click menu of one photo ---- */
 
 /* Mark one photo for deletion, or take the mark away. The file stays on disk.
-   "apply" moves every marked photo into `work/trash/`. */
+   "apply" moves every marked photo into `my/trash/`. */
 async function markDelete(slug, file, on) {
   const res = await fetch("/api/mark-delete", {
     method: "POST",
@@ -4787,6 +5555,11 @@ function showCtxMenu(x, y, slug, file) {
     `<button type="button" data-act="copy-url">Copy Image URL</button>` +
     `<button type="button" data-act="download">Download</button>` +
     `<div class="ctx-sep"></div>` +
+    (slug === NULL_SLUG ? "" :
+      (movedTo(slug, file) === NULL_SLUG
+        ? `<button type="button" class="done" data-act="unnull">Keep this photo on this wine</button>`
+        : `<button type="button" data-act="null">No match in the catalogue (NULL)</button>`)) +
+    `<div class="ctx-sep"></div>` +
     (marked
       ? `<button type="button" data-act="undelete">Keep this photo</button>`
       : `<button type="button" class="danger" data-act="delete">Delete</button>`);
@@ -4832,6 +5605,10 @@ document.addEventListener("click", ev => {
   hideCtxMenu();
   if (act === "delete") markDelete(slug, file, true);
   else if (act === "undelete") markDelete(slug, file, false);
+  // The photo matches no card of the catalogue. `apply` moves the file to the
+  // NULL wine, in the same way as every other move.
+  else if (act === "null") moveTo(slug, file, NULL_SLUG);
+  else if (act === "unnull") moveTo(slug, file, "");
 }, true);
 
 window.addEventListener("blur", hideCtxMenu);
@@ -4887,7 +5664,10 @@ function hasPhoto(ev) {
 document.addEventListener("dragstart", ev => {
   const card = ev.target.closest && ev.target.closest(".card[data-file]");
   if (!card) return;
-  DRAG = { slug: card.dataset.slug, file: card.dataset.file };
+  /* A card of the inbox carries no slug: the file belongs to no wine yet. */
+  DRAG = card.dataset.inbox
+    ? { inbox: true, file: card.dataset.file }
+    : { slug: card.dataset.slug, file: card.dataset.file };
   if (!sideShown()) setSide(true);      // the drop target MUST be on the screen
   ev.dataTransfer.setData(PHOTO_TYPE, JSON.stringify(DRAG));
   ev.dataTransfer.effectAllowed = "move";
@@ -4917,7 +5697,10 @@ $("#side").addEventListener("drop", ev => {
   ev.preventDefault();
   $("#side").classList.remove("over");
   const d = readPhoto(ev);
-  if (d) hold(d.slug, d.file);
+  if (!d) return;
+  /* A photo of the inbox is already here. The drop takes its target away. */
+  if (d.inbox) inboxTarget(d.file, null);
+  else hold(d.slug, d.file);
 });
 
 /* A wine row takes a card and records the move. */
@@ -4947,6 +5730,9 @@ document.addEventListener("drop", async ev => {
   const d = readPhoto(ev);
   if (!d) return;
   const to = tr.dataset.slug;
+  /* A photo of the inbox: the row states the wine that the photo shows. The file
+     is not moved now. `apply` sends the pair and the server moves the file. */
+  if (d.inbox) { inboxTarget(d.file, to); return; }
   if (to === d.slug) {          // back on its own wine: the gesture "put it back"
     unhold(d.slug, d.file);
     render();
@@ -5056,7 +5842,8 @@ function adSuggest() {
   $("#ad-list").innerHTML = hits.map(r => `
     <button class="mv-item" data-slug="${esc(r.slug)}">
       ${r.has_bottle
-        ? `<img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(r.slug)}" alt="">`
+        ? picHtml(`<img loading="lazy" class="${imgClass().trim()}" src="${
+            imgSrc(r.slug)}" alt="">`, r.patched, noLabelMark(r))
         : `<span class="no-img"></span>`}
       <span class="t"><b>${esc(r.name) || esc(r.slug)}</b>
         <div>${esc(r.producer)}</div><div>${esc(r.slug)}</div></span>
@@ -5128,8 +5915,8 @@ async function addPhotos(slug, files, tr, url) {
   }
   if (tr) tr.classList.remove("busy");
   if (added.length) {
-    TOTAL = ROWS.reduce((k, r) => k + r.photos.length, 0);
-    $("#head-sub").textContent = `${reviewCount()} wines, ${TOTAL} candidate photos`;
+    TOTAL = photoTotal();
+    $("#head-sub").textContent = `${tableCount()} wines, ${TOTAL} candidate photos`;
     // The table is NOT drawn again. A wine that no longer matches the filter
     // would leave the table at once: under `no candidate photos (catalogue gap)`
     // the row would go away as soon as the first photo lands on it. The row is
@@ -5196,7 +5983,8 @@ async function askMove(card, slugArg, fileArg, modeArg) {
   $("#mv-list").innerHTML = targets.length ? targets.map(t => `
     <button class="mv-item ${t.slug === cur ? "sel" : ""}" data-slug="${esc(t.slug)}">
       ${t.has_bottle
-        ? `<img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(t.slug)}" alt="">`
+        ? picHtml(`<img loading="lazy" class="${imgClass().trim()}" src="${
+            imgSrc(t.slug)}" alt="">`, t.patched, noLabelMark(t))
         : `<span class="no-img"></span>`}
       <span class="t">
         <b>${esc(t.name) || esc(t.slug)}</b>${t.in_group
@@ -5392,7 +6180,8 @@ async function askGroup(slug) {
   $("#gp-list").innerHTML = targets.length ? targets.map(t => `
     <button class="mv-item" data-slug="${esc(t.slug)}">
       ${t.has_bottle
-        ? `<img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(t.slug)}" alt="">`
+        ? picHtml(`<img loading="lazy" class="${imgClass().trim()}" src="${
+            imgSrc(t.slug)}" alt="">`, t.patched, noLabelMark(t))
         : `<span class="no-img"></span>`}
       <span class="t">
         <b>${esc(t.name) || esc(t.slug)}</b>${t.in_group
@@ -5640,6 +6429,7 @@ const VIEW_PARAMS = [
   ["filter", "#filter", "all"],
   ["sort", "#sort", "slug"],
   ["slugs", "#slugsel", "all"],
+  ["img", "#imgkind", "package"],
 ];
 
 /* One variant group, or "" for every wine. It has no control of its own: the
@@ -5697,13 +6487,12 @@ function openFromHash() {
   // `#<slug>` alone opens a wine that holds no candidate photo.
   const slug = decodeURIComponent(cut < 0 ? raw : raw.slice(0, cut));
   const file = cut < 0 ? "" : decodeURIComponent(raw.slice(cut + 1));
-  // A catalogue-only wine is a row of the catalogue that never entered the review
-  // set. The filter `all` leaves it out, so the address needs the scope that
-  // shows it. Every such wine holds no candidate photo.
+  // `all` lists every wine of the catalogue, so one scope shows every row. The
+  // filter falls back to `all` when the present one leaves the wine out.
   const row = ROWS.find(r => r.slug === slug);
   if (!row) return false;
   if (!VIEW.some(r => r.slug === slug)) {
-    $("#filter").value = row.catalog_only ? "nophotos" : "all";
+    $("#filter").value = "all";
     $("#q").value = "";
     render();
   }
@@ -5745,6 +6534,12 @@ document.addEventListener("click", ev => {
   // `.cpy`, not `.copy`: `.copy` is the button that writes a name to the clipboard.
   const cpyb = ev.target.closest(".cpy");
   if (cpyb) { askMove(cpyb.closest(".card"), null, null, "copy"); return; }
+
+  const clear = ev.target.closest("[data-clear]");
+  if (clear) {
+    inboxTarget(clear.closest(".card").dataset.file, null);
+    return;
+  }
 
   const back = ev.target.closest("[data-back]");
   if (back) {
@@ -5830,6 +6625,18 @@ document.addEventListener("keydown", ev => {
     askMove(cardOf(r.slug, lbPhoto.file), r.slug, lbPhoto.file, askKey);
     return;
   }
+  // "0" states that no card of the catalogue shows this photo. The photo goes to
+  // the NULL wine, in the same way as a move to another wine: `apply` moves the
+  // file. The same key again clears the pending move.
+  if (ev.key === "0") {
+    ev.preventDefault();
+    if (!lbPhoto) return;
+    const r = VIEW[LB.wine];
+    if (r.slug === NULL_SLUG) return;         // the photo is already there
+    moveTo(r.slug, lbPhoto.file,
+           movedTo(r.slug, lbPhoto.file) === NULL_SLUG ? "" : NULL_SLUG);
+    return;
+  }
   const want = KEY_OF[ev.key];
   if (want) {
     ev.preventDefault();
@@ -5837,7 +6644,7 @@ document.addEventListener("keydown", ev => {
     setLabel(VIEW[LB.wine].slug, lbPhoto.file, want);
   }
 });
-for (const id of ["#sort", "#filter", "#slugsel"]) {
+for (const id of ["#sort", "#filter", "#slugsel", "#imgkind"]) {
   $(id).addEventListener("change", render);
 }
 // The button is marked only while the table shows the wines that a check reported.
@@ -5852,13 +6659,18 @@ $("#q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(render
   const data = await (await fetch("/api/rows")).json();
   ROWS = data.rows; V = data.labels || {}; W = data.wines || {};
   EXC = data.excluded || {};
+  setInbox(data.inbox);
   GROUPS = data.groups || {}; SLUGS = data.slugs || [];
   $("#slug-list").innerHTML = SLUGS.map(x => `<option value="${esc(x)}">`).join("");
   $("#my-slug-list").innerHTML =
     reviewRows().map(r => `<option value="${esc(r.slug)}">`).join("");
   initSide();
-  TOTAL = ROWS.reduce((n, r) => n + r.photos.length, 0);
-  $("#head-sub").textContent = `${reviewCount()} wines, ${TOTAL} candidate photos`;
+  // The selector appears only when a label crop is present. Without the two
+  // directories of `config.yaml` every wine would fall back to its package
+  // picture, and the choice would say nothing.
+  $("#imgkind-wrap").hidden = !ROWS.some(r => r.has_label || r.has_label_box);
+  TOTAL = photoTotal();
+  $("#head-sub").textContent = `${tableCount()} wines, ${TOTAL} candidate photos`;
   readViewFromUrl();
   render();
   openFromHash();
@@ -5879,7 +6691,7 @@ PAGE_RUNS = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Svoe Vino match runs</title>
 <style>
-""" + THEME_CSS + """
+""" + THEME_CSS + PATCH_CSS + """
 * { box-sizing: border-box; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
@@ -6006,7 +6818,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 <header>
   <div class="head-top">
     <h1>Match runs <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a href="/">Review</a><a class="on" href="/runs">Runs</a></nav>
+    <nav class="nav"><a href="/">Review</a><a class="on" href="/runs">Runs</a><a
+      href="/clusters">Clusters</a></nav>
   </div>
   <div class="bar">
     <label>Show
@@ -6022,6 +6835,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
         <option value="false_match">negative: the slug came back at rank 1</option>
         <option value="negative_in_topk">negative: the slug is anywhere in the list</option>
         <option value="negative">every negative photo</option>
+        <option value="no_match">no match: every photo that matches no card</option>
+        <option value="no_match_answered">no match: the backend answered a card anyway</option>
         <option value="negative_above_positive">negative: the wrong wine stands above the true wine</option>
         <option value="twin_conflict">set defect: one photo is positive for two wines</option>
         <option value="error">the request failed</option>
@@ -6074,6 +6889,7 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 </main>
 <div id="lb"><img alt=""></div>
 <script>
+""" + PATCH_JS + """
 const $ = s => document.querySelector(s);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -6081,6 +6897,11 @@ const pct = v => v === null || v === undefined ? "\\u2014" : (100 * v).toFixed(1
 const numOr = v => v === null || v === undefined ? "\\u2014" : v;
 
 let RUNS = [], CUR = null, OFFSET = 0, TOTAL = 0;
+/* The slugs whose catalogue photo comes from `patch_dir`. A row of a run holds a
+   slug alone and no catalogue record, so `init` reads the list from
+   `/api/patched` and every candidate image asks this set. */
+let PATCHED = new Set();
+const isPatched = slug => PATCHED.has(slug);
 /* The order of the table of the runs. The newest run stands first at the start. */
 let RSORT = { key: "id", dir: -1 };
 const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var",
@@ -6201,7 +7022,28 @@ function renderMetrics(met, head) {
     'NOT the shares of the whole set. Correct at rank 1 now: <b>' + sub.recovered_at_1 +
     '</b>. Inside the depth now: <b>' + sub.recovered_at_depth + '</b>. Still failing: <b>' +
     sub.still_failing + '</b>.</div>';
-  $("#met").innerHTML = unlNote + subNote +
+  /* When the vectors that answered this run were built. Two runs of one
+     backend id are otherwise indistinguishable although a rebuild moved every
+     vector between them. An unknown age states its reason, so that "not
+     reported" and "not known" never look the same. */
+  const emb = head.embeddings;
+  let embNote;
+  if (!emb) {
+    embNote = '<div class="sm note">Embeddings: not recorded. This run was made ' +
+      'before the run file carried the age of the index.</div>';
+  } else if (emb.built_at) {
+    const when = String(emb.built_at).replace("T", " ").slice(0, 16);
+    const bits = [];
+    if (emb.pipeline) bits.push("pipeline " + esc(emb.pipeline));
+    if (emb.index_file) bits.push("index " + esc(emb.index_file));
+    if (emb.source === "mtime") bits.push("from the file mtime, not the build record");
+    embNote = '<div class="sm note">Embeddings last built <b>' + esc(when) + '</b>' +
+      (bits.length ? " (" + bits.join(", ") + ")" : "") + '.</div>';
+  } else {
+    embNote = '<div class="sm note">Embeddings age not reported: ' +
+      esc(emb.reason || "no reason given") + '.</div>';
+  }
+  $("#met").innerHTML = embNote + unlNote + subNote +
     '<div class="cards">' + spec.join("") + '</div>' +
     '<div class="sm note">The task asks for a match share of 90 to 100 percent, an ' +
     'answer inside ' + sla + ' ms, and a noticeable gap between the first and the ' +
@@ -6232,20 +7074,22 @@ function candCard(c, truth, forbidden, twins) {
   const score = c.score === null || c.score === undefined ? "" : c.score.toFixed(3);
   return `<div class="cand ${isTruth ? "truth" : ""} ${isBad ? "forbidden" : ""} ${
       isTwin ? "twin" : ""}">
-    <img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(c.slug)}"
+    ${picHtml(`<img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(c.slug)}"
          alt="" data-full="/img/bottle?slug=${encodeURIComponent(c.slug)}"
          onerror="this.replaceWith(Object.assign(document.createElement('div'),
-                  {className:'nobottle',textContent:'no bottle photo'}))">
+                  {className:'nobottle',textContent:'no bottle photo'}))">`,
+       isPatched(c.slug))}
     <div class="r"><span>#${c.rank}</span><span>${score}</span></div>
     <div class="sl">${esc(c.slug)}</div></div>`;
 }
 
 function twinGhost(slug, apart) {
   return `<div class="cand twin missing ${apart ? "apart" : ""}">
-    <img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(slug)}" alt=""
+    ${picHtml(`<img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(slug)}" alt=""
          data-full="/img/bottle?slug=${encodeURIComponent(slug)}"
          onerror="this.replaceWith(Object.assign(document.createElement('div'),
-                  {className:'nobottle',textContent:'no bottle photo'}))">
+                  {className:'nobottle',textContent:'no bottle photo'}))">`,
+       isPatched(slug))}
     <div class="r"><span>true wine</span><span>&mdash;</span></div>
     <div class="sl">${esc(slug)}</div></div>`;
 }
@@ -6269,10 +7113,11 @@ function rowHtml(r) {
   let strip = "";
   if (truth.length && !found) {          // the expected wine, which never came back
     strip += `<div class="cand truth missing">
-      <img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(truth[0])}" alt=""
+      ${picHtml(`<img loading="lazy" src="/img/bottle?slug=${encodeURIComponent(truth[0])}" alt=""
            data-full="/img/bottle?slug=${encodeURIComponent(truth[0])}"
            onerror="this.replaceWith(Object.assign(document.createElement('div'),
-                    {className:'nobottle',textContent:'no bottle photo'}))">
+                    {className:'nobottle',textContent:'no bottle photo'}))">`,
+         isPatched(truth[0]))}
       <div class="r"><span>expected</span><span>\\u2014</span></div>
       <div class="sl">${esc(truth[0])}</div></div>`;
   }
@@ -6355,16 +7200,75 @@ $("#q").addEventListener("input", () => {
   clearTimeout(t);
   t = setTimeout(() => CUR && loadRun(CUR, false), 250);
 });
+/* ---- the large view ---- */
+/* `LBI` holds the row that the open image came from and the place of the image
+   in that row. The arrow keys move from it: left and right inside the row, up
+   and down to the same place in another row. A photo that stands outside a row
+   opens with no `LBI`, so the arrow keys do nothing for it. */
+let LBI = null;
+/* The images of one row, in the order that the row shows them: the matched photo
+   first, then the strip. A bottle photo that failed to load is no image any
+   more, because `onerror` puts a text card in its place. Such a card is not a
+   step of the move. */
+const lbImgs = tr => Array.from(tr.querySelectorAll("img[data-full]"));
+
+function openLb(tr, i) {
+  const imgs = lbImgs(tr);
+  if (!imgs.length) return;
+  i = Math.max(0, Math.min(i, imgs.length - 1));
+  LBI = { row: tr, i };
+  $("#lb img").src = imgs[i].dataset.full;
+  $("#lb").classList.add("on");
+}
+
+/* Move inside the row. The first image and the last image hold: the move does
+   not turn around at an end. */
+function stepLb(step) {
+  if (LBI) openLb(LBI.row, LBI.i + step);
+}
+
+/* Move to the previous row or to the next row and keep the place. A place after
+   the end of the new row holds at its last image. A row with no image is
+   stepped over. The table scrolls to the row, so the place of the eye is held
+   when the view closes. */
+function stepLbRow(step) {
+  if (!LBI) return;
+  let tr = LBI.row;
+  do { tr = step > 0 ? tr.nextElementSibling : tr.previousElementSibling; }
+  while (tr && !lbImgs(tr).length);
+  if (!tr) return;
+  openLb(tr, LBI.i);
+  tr.scrollIntoView({ block: "center" });
+}
+
+function closeLb() { $("#lb").classList.remove("on"); LBI = null; }
+
 document.addEventListener("click", ev => {
   const img = ev.target.closest("img[data-full]");
-  if (img) { $("#lb img").src = img.dataset.full; $("#lb").classList.add("on"); return; }
-  if (ev.target.closest("#lb")) $("#lb").classList.remove("on");
+  if (img) {
+    const tr = img.closest("#res-body tr");
+    if (tr) { openLb(tr, lbImgs(tr).indexOf(img)); return; }
+    LBI = null;
+    $("#lb img").src = img.dataset.full;
+    $("#lb").classList.add("on");
+    return;
+  }
+  if (ev.target.closest("#lb")) closeLb();
 });
 document.addEventListener("keydown", ev => {
-  if (ev.key === "Escape") $("#lb").classList.remove("on");
+  if (ev.key === "Escape") { closeLb(); return; }
+  if (!LBI || !$("#lb").classList.contains("on")) return;
+  if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  const step = { ArrowRight: 1, ArrowLeft: -1 }[ev.key];
+  if (step !== undefined) { ev.preventDefault(); stepLb(step); return; }
+  const rstep = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
+  if (rstep !== undefined) { ev.preventDefault(); stepLbRow(rstep); }
 });
 
 (async function init() {
+  try {
+    PATCHED = new Set((await (await fetch("/api/patched")).json()).slugs || []);
+  } catch (e) { /* the mark is a hint; its absence MUST NOT stop the page */ }
   RUNS = (await (await fetch("/api/runs")).json()).runs || [];
   renderRuns();
   const want = decodeURIComponent((location.hash || "").slice(1));
@@ -6372,6 +7276,603 @@ document.addEventListener("keydown", ev => {
                 RUNS.find(r => r.has_metrics && !r.dry_run);
   if (first) loadRun(first.id, false);
 })();
+</script>
+</body>
+</html>
+"""
+
+
+# The page of the catalogue clusters. It reads `GET /api/clusters`, which answers the
+# file of `scripts/10_clusters.py`, and it writes nothing. A cluster is a group of
+# catalogue cards that the matcher confuses, or can confuse. Read
+# `docs/plans/04_catalog-clusters.md`.
+PAGE_CLUSTERS = r"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalogue clusters</title>
+<style>
+""" + THEME_CSS + PATCH_CSS + r"""
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: 10px 16px; box-shadow: var(--shadow);
+}
+h1 { font-size: 15px; margin: 0 0 8px; font-weight: 650; }
+h1 .sub { color: var(--muted); font-weight: 400; }
+.head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.head-top h1 { margin-right: auto; }
+.nav { display: flex; gap: 6px; flex: none; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+a { color: var(--accent); }
+main { padding: 12px 16px 64px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.bar label { color: var(--muted); font-size: 12px; display: flex; gap: 5px; align-items: center; }
+select, input[type=search] {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 7px; font: inherit; font-size: 13px;
+}
+input[type=search] { min-width: 210px; max-width: 100%; }
+.muted { color: var(--muted); }
+.empty { color: var(--muted); font-style: italic; padding: 24px 0; }
+code {
+  font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--panel-2);
+  padding: 1px 4px; border-radius: 4px; word-break: break-all;
+}
+#about {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 12px; margin-bottom: 12px; font-size: 13px;
+}
+#about summary { cursor: pointer; font-weight: 600; }
+#about p { margin: 8px 0; }
+#about table { border-collapse: collapse; margin: 6px 0; }
+#about th, #about td { padding: 2px 12px 2px 0; text-align: left; vertical-align: top;
+                       font-size: 12px; }
+#about th { color: var(--muted); font-weight: 600; }
+
+/* one cluster */
+.cl {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; margin-bottom: 12px; scroll-margin-top: 110px;
+}
+.cl.hit { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cl-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline;
+           margin-bottom: 8px; }
+.cid { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text);
+       text-decoration: none; }
+.cid:hover { color: var(--accent); }
+.tag { padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.tag.same-wine { color: var(--var); background: var(--var-bg); }
+.tag.look-alike { color: var(--neg); background: var(--neg-bg); }
+.tag.mixed { color: var(--accent); background: var(--grp-a); }
+.chip { font-size: 11px; color: var(--muted); border: 1px solid var(--line);
+        border-radius: 999px; padding: 0 6px; white-space: nowrap; }
+.members { display: flex; flex-wrap: wrap; gap: 10px; }
+.mem {
+  width: 176px; background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 8px; padding: 6px; position: relative;
+}
+.mem.hit { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.mem .no {
+  position: absolute; top: 9px; left: 9px; z-index: 2; font-size: 11px; font-weight: 700;
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  border-radius: 4px; padding: 0 4px;
+}
+.mem img, .mem .nobottle {
+  width: 162px; height: 200px; object-fit: contain; display: block;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+}
+.mem .nobottle { display: flex; align-items: center; justify-content: center;
+                 color: var(--muted); font-size: 11px; text-align: center; }
+.mem .nm { font-weight: 600; font-size: 13px; margin-top: 4px; line-height: 1.25; }
+.mem .pr, .mem .gr, .mem .ph { font-size: 11px; color: var(--muted); line-height: 1.3; }
+.mem .sl { font-size: 10px; word-break: break-all; line-height: 1.25; margin-top: 2px; }
+.mem .lk { font-size: 11px; margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
+.ph .p { color: var(--pos); }
+.ph .n { color: var(--neg); }
+.ph .x { color: var(--exc); }
+.links-wrap { overflow-x: auto; margin-top: 10px; }
+table.links { border-collapse: collapse; font-size: 12px; }
+table.links th {
+  text-align: left; color: var(--muted); font-weight: 600; padding: 3px 8px;
+  border-bottom: 1px solid var(--line); white-space: nowrap;
+}
+table.links td { padding: 4px 8px; border-bottom: 1px solid var(--line);
+                 vertical-align: middle; white-space: nowrap; }
+table.links tr:last-child td { border-bottom: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.pass { color: var(--text); font-weight: 650; }
+.fail { color: var(--muted); }
+.by { display: flex; gap: 4px; }
+.by .chip { color: var(--text); border-color: var(--accent); }
+.thumbs { display: flex; gap: 4px; }
+.thumbs img {
+  width: 38px; height: 38px; object-fit: cover; display: block;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--panel-2);
+}
+.mem img, .thumbs img { cursor: zoom-in; }
+/* the image that the large view shows now, or showed last */
+img.lb-cur { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* The large view. It is dark in both themes, as the large view of the review page
+   is, because a photo reads best on a dark ground. */
+#lb {
+  position: fixed; inset: 0; z-index: 50; display: none;
+  align-items: center; justify-content: center; gap: 10px;
+  padding: 58px 12px 40px; background: rgba(0,0,0,.88);
+}
+#lb.on { display: flex; }
+.lb-fig {
+  margin: 0; flex: 0 1 auto; min-width: 0; max-width: calc(100vw - 140px);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.lb-fig img {
+  display: block; max-width: 100%; max-height: calc(100vh - 170px);
+  object-fit: contain; border-radius: 6px;
+}
+/* The previous image is hidden while the next one loads, so the caption never stands
+   under the wrong picture. */
+.lb-fig img.loading { visibility: hidden; }
+.lb-fig figcaption {
+  color: #e9e9ee; font-size: 12px; line-height: 1.45; text-align: center;
+  max-width: 760px; overflow-wrap: anywhere;
+}
+.lb-fig figcaption b { color: #fff; }
+.lb-fig figcaption a { color: #c9a8dc; }
+.lb-fig figcaption .where { color: #9a9aa6; }
+.lb-btn {
+  font: 600 18px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #e9e9ee; background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.2); border-radius: 8px; cursor: pointer;
+}
+.lb-btn:hover:not(:disabled) { background: rgba(255,255,255,.2); }
+.lb-btn:disabled { opacity: .3; cursor: default; }
+.lb-step { flex: none; width: 44px; height: 64px; font-size: 28px; }
+.lb-rows { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
+.lb-rows .lb-btn, #lb-close { width: 38px; height: 34px; }
+#lb-close { position: absolute; top: 12px; right: 12px; font-size: 22px; }
+#lb .hint {
+  position: absolute; left: 0; right: 0; bottom: 12px; text-align: center;
+  color: #9a9aa6; font-size: 11px;
+}
+#lb .hint b { color: #e9e9ee; }
+
+@media (max-width: 600px) {
+  .mem { width: calc(50% - 5px); }
+  .mem img, .mem .nobottle { width: 100%; height: 160px; }
+  input[type=search] { min-width: 0; width: 100%; }
+  .lb-step { width: 32px; height: 52px; font-size: 22px; }
+  .lb-fig { max-width: calc(100vw - 100px); }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head-top">
+    <h1>Catalogue clusters <span class="sub" id="head-sub"></span></h1>
+    <nav class="nav"><a href="/">Review</a><a href="/runs">Runs</a><a class="on"
+      href="/clusters">Clusters</a></nav>
+  </div>
+  <div class="bar">
+    <label>Kind
+      <select id="kind">
+        <option value="">every kind</option>
+        <option value="same-wine">same wine</option>
+        <option value="mixed">mixed</option>
+        <option value="look-alike">look-alike</option>
+      </select>
+    </label>
+    <label>Signal
+      <select id="signal">
+        <option value="">any signal</option>
+        <option value="name">name</option>
+        <option value="photo">photo</option>
+        <option value="label">label</option>
+        <option value="confusion">confusion</option>
+      </select>
+    </label>
+    <label>Size
+      <select id="size">
+        <option value="2">2 cards or more</option>
+        <option value="3">3 cards or more</option>
+        <option value="5">5 cards or more</option>
+      </select>
+    </label>
+    <label>Sort
+      <select id="sort">
+        <option value="confusions">most confused photos first</option>
+        <option value="size">largest first</option>
+        <option value="photo">closest photos first</option>
+        <option value="producer">producer A-Z</option>
+      </select>
+    </label>
+    <label>Image
+      <select id="img">
+        <option value="package">package</option>
+        <option value="label">label</option>
+      </select>
+    </label>
+    <label>Find <input id="q" type="search" placeholder="slug, name, or producer"></label>
+    <span class="muted" id="count"></span>
+  </div>
+</header>
+<main>
+  <details id="about"><summary>What this page shows</summary>
+    <div id="about-body"></div></details>
+  <div id="list"><p class="empty">Loading the clusters…</p></div>
+</main>
+<div id="lb" role="dialog" aria-modal="true" aria-label="large view">
+  <div class="lb-rows">
+    <button id="lb-up" class="lb-btn" data-rstep="-1" title="previous cluster (Up)">&uarr;</button>
+    <button id="lb-down" class="lb-btn" data-rstep="1" title="next cluster (Down)">&darr;</button>
+  </div>
+  <button id="lb-close" class="lb-btn" title="close (Esc)">&times;</button>
+  <button id="lb-prev" class="lb-btn lb-step" data-step="-1" title="previous image (Left)">&lsaquo;</button>
+  <figure class="lb-fig"><img id="lb-img" alt=""><figcaption id="lb-cap"></figcaption></figure>
+  <button id="lb-next" class="lb-btn lb-step" data-step="1" title="next image (Right)">&rsaquo;</button>
+  <div class="hint"><b>&larr; &rarr;</b> image in the cluster &middot;
+    <b>&uarr; &darr;</b> previous or next cluster &middot; <b>Esc</b> close</div>
+</div>
+<script>
+""" + PATCH_JS + r"""
+const $ = s => document.querySelector(s);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const num = v => v === null || v === undefined ? "—" : Number(v).toFixed(3);
+const SIGNALS = ["name", "photo", "label", "confusion"];
+const KIND_TEXT = { "same-wine": "same wine", "look-alike": "look-alike", "mixed": "mixed" };
+let DATA = null, CARDS = {};
+
+function signalCounts(c) {
+  const out = {};
+  for (const l of c.links) for (const s of l.by) out[s] = (out[s] || 0) + 1;
+  return out;
+}
+
+function bestPhoto(c) {
+  return Math.max(-1, ...c.links.map(l => l.photo === null ? -1 : l.photo));
+}
+
+function matches(c, q) {
+  if (!q) return true;
+  return c.slugs.some(s => {
+    const k = CARDS[s] || {};
+    return `${s} ${k.name || ""} ${k.producer || ""}`.toLowerCase().includes(q);
+  });
+}
+
+/* The clusters that the controls select, in the selected order. */
+function view() {
+  const kind = $("#kind").value, sig = $("#signal").value, size = +$("#size").value;
+  const q = $("#q").value.trim().toLowerCase();
+  const list = DATA.clusters.filter(c => (!kind || c.kind === kind)
+    && (!sig || c.signals.includes(sig)) && c.size >= size && matches(c, q));
+  const order = {
+    confusions: (a, b) => b.confusions - a.confusions || b.size - a.size,
+    size: (a, b) => b.size - a.size || b.confusions - a.confusions,
+    photo: (a, b) => bestPhoto(b) - bestPhoto(a),
+    producer: (a, b) => (a.producers[0] || "").localeCompare(b.producers[0] || "", "ru"),
+  }[$("#sort").value];
+  return list.sort((a, b) => order(a, b) || a.id.localeCompare(b.id));
+}
+
+function photoCounts(k) {
+  if (!k.in_review) return "no test photo";
+  const p = k.photos || {};
+  const parts = [
+    p.positive ? `<span class="p">${p.positive} positive</span>` : "",
+    p.negative ? `<span class="n">${p.negative} negative</span>` : "",
+    p.variant ? `${p.variant} variant` : "",
+    p.unlabelled ? `${p.unlabelled} unlabelled` : "",
+  ].filter(Boolean);
+  return parts.length ? parts.join(" · ") : "no labelled photo";
+}
+
+function memberHtml(slug, no, img) {
+  const k = CARDS[slug] || {};
+  const onLabel = img === "label";
+  const src = `/img/bottle?slug=${encodeURIComponent(slug)}&kind=${img}`;
+  const tag = `<img loading="lazy" src="${src}" alt="${esc(k.name || slug)}"${
+    onLabel && k.has_label ? ' class="onwhite"' : ""} data-full="${src}"
+    data-card="${esc(slug)}" data-no="${no}">`;
+  // A plain click opens the large view. The link stays, so a click with a
+  // modifier key still opens the picture in a new tab.
+  const pic = k.in_catalog === false
+    ? `<div class="nobottle">not in the catalogue</div>`
+    : `<a href="${src}" target="_blank" rel="noopener" title="open the large view">${
+        picHtml(tag, k.patched, onLabel && !k.has_label)}</a>`;
+  return `<div class="mem" data-slug="${esc(slug)}">
+    <span class="no">#${no}</span>${pic}
+    <div class="nm">${esc(k.name || slug)}</div>
+    <div class="pr">${esc(k.producer || "")}${k.category ? " · " + esc(k.category) : ""}</div>
+    ${k.grapes ? `<div class="gr">${esc(k.grapes)}</div>` : ""}
+    <div class="sl">${esc(slug)}</div>
+    <div class="ph">${photoCounts(k)}${k.excluded ? ' · <span class="x">excluded</span>' : ""}</div>
+    <div class="lk"><a href="/#${encodeURIComponent(slug)}">review</a>${k.page_url
+      ? `<a href="${esc(k.page_url)}" target="_blank" rel="noopener">vino-svoe.ru</a>` : ""}</div>
+  </div>`;
+}
+
+function linkRow(l, no) {
+  const passed = s => l.by.includes(s) ? "pass" : "fail";
+  const name = l.name === "same" ? `<td class="pass">same</td>`
+    : l.name === "grapes-differ"
+      ? `<td class="fail" title="one name key, and grapes that disagree">grapes differ</td>`
+      : `<td class="fail">—</td>`;
+  const thumbs = (l.photos || []).map(p => {
+    const src = `/img/photo?slug=${encodeURIComponent(p.slug)}&file=${encodeURIComponent(p.file)}`;
+    return `<a href="/#${encodeURIComponent(p.slug)}/${encodeURIComponent(p.file)}"
+      title="${esc(`a positive photo of #${no[p.slug]} that the run ${p.run} answered as #${
+      no[p.answered]}`)}"><img loading="lazy" alt="" src="${src}" data-full="${src}"
+      data-of="${esc(p.slug)}" data-file="${esc(p.file)}" data-answered="${esc(p.answered)}"
+      data-run="${esc(p.run)}" onerror="this.parentNode.remove()"></a>`;
+  }).join("");
+  return `<tr>
+    <td title="${esc(l.a)}">#${no[l.a]}</td><td title="${esc(l.b)}">#${no[l.b]}</td>
+    <td><div class="by">${l.by.map(s => `<span class="chip">${s}</span>`).join("")}</div></td>
+    ${name}
+    <td class="num ${passed("photo")}">${num(l.photo)}</td>
+    <td class="num ${passed("label")}">${num(l.label)}</td>
+    <td class="num ${passed("confusion")}">${l.a_as_b}</td>
+    <td class="num ${passed("confusion")}">${l.b_as_a}</td>
+    <td><div class="thumbs">${thumbs}</div></td>
+  </tr>`;
+}
+
+function clusterHtml(c, img) {
+  const no = {};
+  c.slugs.forEach((s, i) => { no[s] = i + 1; });
+  const counts = signalCounts(c);
+  const chips = SIGNALS.filter(s => counts[s])
+    .map(s => `<span class="chip" title="links that passed this signal">${s} ${counts[s]}</span>`)
+    .join("");
+  return `<section class="cl" id="cl-${esc(c.id)}" data-id="${esc(c.id)}">
+    <div class="cl-head">
+      <a class="cid" href="#${encodeURIComponent(c.slugs[0])}"
+         title="the address of this cluster">${esc(c.id)}</a>
+      <span class="tag ${esc(c.kind)}">${esc(KIND_TEXT[c.kind] || c.kind)}</span>
+      <span class="muted">${c.size} cards · ${esc(c.producers.join(", "))}</span>
+      ${chips}
+      ${c.confusions ? `<span class="muted">${c.confusions} confused photo(s)</span>` : ""}
+    </div>
+    <div class="members">${c.slugs.map(s => memberHtml(s, no[s], img)).join("")}</div>
+    <div class="links-wrap"><table class="links"><thead><tr>
+      <th>card</th><th>card</th><th>passed</th><th>name</th>
+      <th class="num">photo</th><th class="num">label</th>
+      <th class="num" title="positive photos of the first card that a run answered as the second card">1st as 2nd</th>
+      <th class="num" title="positive photos of the second card that a run answered as the first card">2nd as 1st</th>
+      <th>confused photos</th>
+    </tr></thead><tbody>${c.links.map(l => linkRow(l, no)).join("")}</tbody></table></div>
+  </section>`;
+}
+
+function render() {
+  closeLb();                  // the open image belongs to the blocks drawn before
+  const list = view(), img = $("#img").value;
+  const cards = list.reduce((n, c) => n + c.size, 0);
+  $("#count").textContent =
+    `${list.length} of ${DATA.clusters.length} clusters · ${cards} cards`;
+  $("#list").innerHTML = list.length
+    ? list.map(c => clusterHtml(c, img)).join("")
+    : `<p class="empty">No cluster matches the controls.</p>`;
+}
+
+function aboutHtml() {
+  const s = DATA.settings || {}, i = DATA.inputs || {}, n = DATA.counts || {};
+  const links = n.links || {};
+  const index = x => x
+    ? `<code>${esc(x.file.split("/").pop())}</code>, ${x.cards} cards, built ${esc(x.built_at || "?")}`
+    : "not used";
+  const runs = (i.runs || []).map(r => `<tr><th><code>${esc(r.id)}</code></th><td>${
+    r.used} of ${r.wrong_at_1} wrong answers used, ${r.stale} stale</td></tr>`).join("");
+  return `<p>A cluster is a group of catalogue cards that the matcher confuses, or can
+    confuse. A link joins two cards and records every signal that passed. A cluster is a
+    connected group of links, and a card is in at most one cluster.</p>
+  <table>
+    <tr><th>name</th><td>the same producer, name and category after normalisation,
+      and grapes that agree. ${links.name || 0} links.</td></tr>
+    <tr><th>photo</th><td>the SigLIP 2 cosine of the two catalogue photos is at least
+      ${esc(s.photo_threshold)}. ${links.photo || 0} links. ${index(i.photo_index)}.</td></tr>
+    <tr><th>label</th><td>the SigLIP 2 cosine of the two label crops is at least
+      ${esc(s.label_threshold)}. ${links.label || 0} links. ${index(i.label_index)}.</td></tr>
+    <tr><th>confusion</th><td>at least ${esc(s.min_confusions)} positive photos, over both
+      directions, that a run answered as the other card. ${links.confusion || 0} links.</td></tr>
+  </table>
+  <table>${runs}</table>
+  <p><span class="tag same-wine">same wine</span> the name links alone join every card.
+    <span class="tag mixed">mixed</span> name links and other links.
+    <span class="tag look-alike">look-alike</span> no name link. A number in a link row
+    is bold when that signal passed.</p>
+  <p>The file <code>${esc(DATA.file)}</code> was built ${esc(DATA.built_at)}. Build it
+    again with <code>python3 scripts/10_clusters.py</code>. This page reads the file at
+    each load.</p>`;
+}
+
+/* `#<slug>` opens the cluster of that card. The controls are cleared when they hide
+   that cluster, so a pasted address always opens. */
+function openFromHash() {
+  const slug = decodeURIComponent((location.hash || "").slice(1));
+  if (!slug || !DATA) return;
+  const c = DATA.clusters.find(x => x.slugs.includes(slug));
+  if (!c) {
+    $("#count").textContent = `${slug} is in no cluster`;
+    return;
+  }
+  if (!view().includes(c)) {
+    $("#kind").value = $("#signal").value = $("#q").value = "";
+    $("#size").value = "2";
+    render();
+  }
+  document.querySelectorAll(".hit").forEach(e => e.classList.remove("hit"));
+  const el = document.getElementById("cl-" + c.id);
+  el.classList.add("hit");
+  const mem = [...el.querySelectorAll(".mem")].find(m => m.dataset.slug === slug);
+  if (mem) mem.classList.add("hit");
+  el.scrollIntoView({ block: "start" });
+}
+
+/* ---- the large view ---- */
+/* `LB` holds the cluster that the open image comes from and the place of the image in
+   that cluster. Left and right move inside the cluster: the cards first, then the
+   confused photos, in the order of the page. Up and down move to the same place in the
+   previous or the next cluster of the view. A place after the end of that cluster holds
+   at its last image. The first and the last image hold: a move does not turn around. */
+let LB = null;
+const lbImgs = cl => Array.from(cl.querySelectorAll("img[data-full]"));
+
+/* The next cluster of the view in the direction of `step` that holds an image. */
+function lbNeighbour(cl, step) {
+  let x = cl;
+  do { x = step > 0 ? x.nextElementSibling : x.previousElementSibling; }
+  while (x && !(x.classList.contains("cl") && lbImgs(x).length));
+  return x;
+}
+
+function lbCaption(img, cl, i, n) {
+  const d = img.dataset, shown = [...document.querySelectorAll("#list .cl")];
+  const where = `<span class="where">image ${i + 1} of ${n} · ${esc(cl.dataset.id)}
+    · cluster ${shown.indexOf(cl) + 1} of ${shown.length}</span>`;
+  const no = slug => {
+    const m = [...cl.querySelectorAll(".mem")].find(e => e.dataset.slug === slug);
+    return m ? m.querySelector(".no").textContent : "";
+  };
+  if (d.card) {
+    const k = CARDS[d.card] || {};
+    return `<b>#${esc(d.no)} ${esc(k.name || d.card)}</b> · ${esc(k.producer || "")}${
+      k.category ? " · " + esc(k.category) : ""}<br>${esc(d.card)} ·
+      <a href="/#${encodeURIComponent(d.card)}" target="_blank" rel="noopener">review</a>
+      <br>${where}`;
+  }
+  const of = CARDS[d.of] || {}, answered = CARDS[d.answered] || {};
+  return `A positive photo of <b>${no(d.of)} ${esc(of.name || d.of)}</b> that a run answered
+    as <b>${no(d.answered)} ${esc(answered.name || d.answered)}</b><br>${esc(d.of)}/${
+    esc(d.file)} · ${esc(d.run)} · <a href="/#${encodeURIComponent(d.of)}/${
+    encodeURIComponent(d.file)}" target="_blank" rel="noopener">review</a><br>${where}`;
+}
+
+function openLb(cl, i) {
+  const imgs = lbImgs(cl);
+  if (!imgs.length) return;
+  i = Math.max(0, Math.min(i, imgs.length - 1));
+  LB = { cl, i };
+  const img = imgs[i], big = $("#lb-img");
+  if (big.getAttribute("src") !== img.dataset.full) {
+    big.classList.add("loading");
+    big.src = img.dataset.full;
+  }
+  // A catalogue picture is a render or a label crop with a mask. It stands on white.
+  big.classList.toggle("onwhite", !!img.dataset.card);
+  $("#lb-cap").innerHTML = lbCaption(img, cl, i, imgs.length);
+  document.querySelectorAll("img.lb-cur").forEach(e => e.classList.remove("lb-cur"));
+  img.classList.add("lb-cur");
+  $("#lb-prev").disabled = i === 0;
+  $("#lb-next").disabled = i === imgs.length - 1;
+  $("#lb-up").disabled = !lbNeighbour(cl, -1);
+  $("#lb-down").disabled = !lbNeighbour(cl, 1);
+  $("#lb").classList.add("on");
+}
+
+function stepLb(step) {
+  if (LB) openLb(LB.cl, LB.i + step);
+}
+
+/* The page scrolls to the new cluster, so the eye keeps its place when the view
+   closes. */
+function stepLbRow(step) {
+  if (!LB) return;
+  const x = lbNeighbour(LB.cl, step);
+  if (!x) return;
+  openLb(x, LB.i);
+  x.scrollIntoView({ block: "start" });
+}
+
+function closeLb() {
+  $("#lb").classList.remove("on");
+  $("#lb-img").removeAttribute("src");
+  LB = null;
+}
+
+for (const type of ["load", "error"]) {
+  $("#lb-img").addEventListener(type, ev => ev.target.classList.remove("loading"));
+}
+
+document.addEventListener("click", ev => {
+  const img = ev.target.closest("#list img[data-full]");
+  if (img) {
+    // A click with a modifier key follows the link of the image into a new tab.
+    if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+    ev.preventDefault();
+    const cl = img.closest(".cl");
+    openLb(cl, lbImgs(cl).indexOf(img));
+    return;
+  }
+  const btn = ev.target.closest("#lb .lb-btn");
+  if (btn) {
+    if (btn.id === "lb-close") closeLb();
+    else if (btn.dataset.step) stepLb(+btn.dataset.step);
+    else if (btn.dataset.rstep) stepLbRow(+btn.dataset.rstep);
+    return;
+  }
+  if (ev.target.id === "lb") closeLb();      // a click on the dark ground
+});
+document.addEventListener("keydown", ev => {
+  if (!LB || !$("#lb").classList.contains("on")) return;
+  if (ev.key === "Escape") { closeLb(); return; }
+  if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  const step = { ArrowRight: 1, ArrowLeft: -1 }[ev.key];
+  if (step !== undefined) { ev.preventDefault(); stepLb(step); return; }
+  const rstep = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
+  if (rstep !== undefined) { ev.preventDefault(); stepLbRow(rstep); }
+});
+
+let TYPING = 0;
+(async function init() {
+  let res;
+  try {
+    res = await fetch("/api/clusters");
+    DATA = await res.json();
+  } catch (e) {
+    $("#list").innerHTML = `<p class="empty">Cannot read /api/clusters: ${esc(e)}</p>`;
+    return;
+  }
+  if (!res.ok) {
+    $("#list").innerHTML = `<p class="empty">${esc(DATA.error || res.status)}</p>`;
+    return;
+  }
+  if (!DATA.exists) {
+    $("#about").hidden = true;
+    $("#list").innerHTML = `<p class="empty">No cluster file yet: <code>${
+      esc(DATA.file)}</code>. Run <code>python3 scripts/10_clusters.py</code>, then load
+      this page again.</p>`;
+    return;
+  }
+  CARDS = DATA.cards || {};
+  $("#head-sub").textContent =
+    `${DATA.clusters.length} clusters · built ${DATA.built_at || "?"}`;
+  $("#about-body").innerHTML = aboutHtml();
+  for (const id of ["#kind", "#signal", "#size", "#sort", "#img"]) {
+    $(id).addEventListener("change", render);
+  }
+  $("#q").addEventListener("input", () => {
+    clearTimeout(TYPING);
+    TYPING = setTimeout(render, 150);
+  });
+  render();
+  openFromHash();
+})();
+window.addEventListener("hashchange", openFromHash);
 </script>
 </body>
 </html>
@@ -6386,7 +7887,18 @@ def main():
     ap.add_argument("--port", type=int, default=DEFAULT_PORT)
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--no-browser", action="store_true")
+    ap.add_argument("--dataset", default="", metavar="NAME",
+                    help="the dataset of `config.yaml` to review. The default is "
+                         "the dataset named `default`")
     args = ap.parse_args()
+
+    # The dataset MUST be chosen before any path of this file is read. The names
+    # of this file are bound again, because they were bound at import.
+    try:
+        common.select_dataset(args.dataset or None)
+    except common.ConfigError as exc:
+        sys.exit("error: %s" % exc)
+    bind_paths()
 
     common.print_config()
 
@@ -6394,9 +7906,15 @@ def main():
     if not os.path.isdir(MY):
         sys.exit(f"error: photo set not found: {MY}")
     _state = load_state()
-    global _excluded
+    global _excluded, _patches, _crops, _labels, _label_boxes
     _excluded = load_excluded()
     catalog = load_catalog()
+    # The patches MUST be read before the rows, because a row states whether its
+    # bottle photo is a patch. The crops and the label crops MUST be read before
+    # the rows for the same reason.
+    _patches = load_patches()
+    _crops = load_crops()
+    _labels, _label_boxes = load_label_crops()
     group_of, groups = load_variants()
     _rows = build_rows(catalog, group_of)
     total = sum(len(r["photos"]) for r in _rows)
@@ -6417,6 +7935,30 @@ def main():
     missing = sum(1 for r in _rows if not r["has_bottle"])
     if missing:
         print(f"wines without a catalogue bottle photo: {missing}")
+    if _patches:
+        unknown = sorted(set(_patches) - set(catalog))
+        print(f"patched catalogue photos: {len(_patches)} from {PATCH_DIR}")
+        print(f"  {', '.join(sorted(_patches))}")
+        if unknown:
+            print(f"  WARNING: {len(unknown)} patch file(s) name no card of the "
+                  f"catalogue: {', '.join(unknown)}", file=sys.stderr)
+    if BOTTLE_CROPPED_DIR:
+        print(f"cropped catalogue photos: {len(_crops)} from {BOTTLE_CROPPED_DIR}")
+        stale = sorted(s for s, p in _patches.items()
+                       if s in _crops and common.changed_after(p, _crops[s]))
+        if stale:
+            print(f"  WARNING: {len(stale)} patch(es) changed after the crop, so the "
+                  f"page shows the patch with its border: {', '.join(stale)}. Run "
+                  f"svoe-wino-hackaton/scripts/build_cropped.py again.", file=sys.stderr)
+
+    if BOTTLE_LABEL_DIR or BOTTLE_LABEL_BOX_DIR:
+        print(f"label crops: {len(_labels)} from {BOTTLE_LABEL_DIR or '(unset)'}")
+        print(f"label box crops: {len(_label_boxes)} from "
+              f"{BOTTLE_LABEL_BOX_DIR or '(unset)'}")
+        without = sum(1 for r in _rows if r["has_bottle"] and not r["has_label"])
+        if without:
+            print(f"  {without} wine(s) with a package picture and no label crop; "
+                  f"the page shows the package for them")
 
     if groups:
         print(f"variant groups: {len(groups)}   wines in a group: "

@@ -1,15 +1,17 @@
 {
   "counts": {
-    "commented": 1501,
+    "commented": 1494,
     "copied": 0,
     "deleting": 0,
-    "labelled": 2435,
-    "negative": 561,
-    "positive": 1559,
-    "proposed": 1076,
+    "labelled": 2525,
+    "negative": 581,
+    "no_match": 0,
+    "no_match_pending": 0,
+    "positive": 1617,
+    "proposed": 1044,
     "reassigned": 0,
-    "unusable": 237,
-    "variant": 78,
+    "unusable": 250,
+    "variant": 77,
     "wine_notes": 82
   },
   "labels": {
@@ -1108,8 +1110,8 @@
     },
     "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut": {
       "01_conf095.jpg": {
-        "label": "variant",
-        "ts": "2026-09-21T14:12:56+0300"
+        "label": "negative",
+        "ts": "2026-09-22T09:37:13+0300"
       },
       "02_conf095.jpg": {
         "label": "positive",
@@ -1882,18 +1884,18 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.80 vs reference.",
         "confidence": 0.82,
-        "label": "negative",
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://vitrinavin.ru/product/Agrolain-Heritage-DG-Skin-Contact-Rkatsiteli-2021/",
-        "ts": "2026-09-18T15:32:38+0300"
+        "ts": "2026-09-22T09:36:52+0300"
       },
       "02_agent.jpg": {
         "by": "kimi",
         "confidence": 0.82,
-        "label": "negative",
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://decanter.ru/product/agrolain-heritage-dg-rkatsiteli-skin-2021-id263451",
-        "ts": "2026-09-18T15:32:40+0300"
+        "ts": "2026-09-22T09:36:52+0300"
       }
     },
     "agrolayn-lame-du-vin-saperavi-krasnoe-suhoe-13": {
@@ -2413,17 +2415,18 @@
         "by": "irec-03",
         "comment": "Clean studio shot on white, no watermark, whole bottle. Front label reads MASSANDRA / AVTORSKOE VINO / ALIGOTE / 2022 / Krym, g. Yalta, the two blue signatures OSMANOV Marlen Umerovich and SHPIL Igor Vladimirovich, the engraving of the Massandra winery, and the foot line Alk. 12,x % ob. | Sobstvennye vinogradniki | Obem 0,75 l. Same olive glass and same dark green capsule printed AVTORSKOE as the catalogue render. Marked variant for one reason only: the year line reads 2022 while the catalogue render reads 2023. The label design generation is the same.",
         "confidence": 0.85,
+        "label": "positive",
         "proposed": "variant",
         "source_url": "https://www.wildberries.ru/catalog/299621188/detail.aspx",
-        "ts": "2026-09-16T06:02:13+0300"
+        "ts": "2026-09-22T09:38:11+0300"
       },
       "07_agent.jpg": {
         "by": "irec-03",
-        "comment": "Clean studio shot on white with the shop watermark ALKOPLAZA.ru over the middle of the label; every line stays readable. Front label reads MASSANDRA / AVTORSKOE VINO / ALIGOTE / 2024 / Krym, g. Yalta, the two blue signatures, the winery engraving, and Alk. 12,0 % ob. | Obem 0,75 l - the 12,0% of the catalogue record. Same olive glass and same dark green AVTORSKOE capsule as the catalogue render. Marked variant because the year line reads 2024 while the catalogue render reads 2023; the label design generation is the same.",
         "confidence": 0.85,
+        "label": "positive",
         "proposed": "variant",
         "source_url": "https://www.alcoplaza.ru/Wine/vino-massandra-avtorskoe-aligote-2022-god-075-beloe-suhoe",
-        "ts": "2026-09-16T06:02:13+0300"
+        "ts": "2026-09-22T09:38:16+0300"
       }
     },
     "aligote-barrel-2024": {
@@ -2457,17 +2460,23 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.77 vs reference.",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://krasnostop.ru/katalog/tihie-vina/kommunalka-aligote-syur-li-beloe-suhoe-vino-0-75-l/",
-        "ts": "2026-09-18T14:06:22+0300"
+        "ts": "2026-09-22T09:38:52+0300"
       },
       "02_agent.webp": {
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.76 vs reference.",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://winestreet.ru/wine/communal/kommunalka-syur-li-075-l-2022.html",
-        "ts": "2026-09-18T14:06:22+0300"
+        "ts": "2026-09-22T09:40:16+0300"
+      },
+      "03_manual.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T11:27:06+0300"
       }
     },
     "alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14": {
@@ -2556,6 +2565,20 @@
         "proposed": "positive",
         "source_url": "https://otzovik.com/review_9598625.html",
         "ts": "2026-09-18T12:57:06+0300"
+      }
+    },
+    "alma-valley-kokur-beloe-suhoe-14": {
+      "01_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:34:01+0300"
+      },
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:34:13+0300"
+      },
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:34:12+0300"
       }
     },
     "alma-valley-kolombar-beloe-polusuhoe-135": {
@@ -5106,11 +5129,11 @@
     "belmas-winery-risling-beloe-suhoe-135": {
       "01_agent.png": {
         "by": "kimi",
-        "comment": "real-world photo from ekb.luding.ru; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.72; front label compared with catalogue bottle",
         "confidence": 0.86,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://ekb.luding.ru/collection/item/riesling-belmas--285843/",
-        "ts": "2026-09-18T01:18:17+0300"
+        "ts": "2026-09-22T20:03:44+0300"
       }
     },
     "belmas-winery-sauvignon-blanc-belmas-sovinon-blan-beloe-suhoe-13": {
@@ -5237,9 +5260,10 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.86 vs reference.",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://eng.winestyle.ru/products/Belmas-Katya-Sauvignon-Blanc-2024.html",
-        "ts": "2026-09-18T14:06:24+0300"
+        "ts": "2026-09-22T20:04:55+0300"
       }
     },
     "belmas-winery-viognier-belmas-vione-beloe-suhoe-122": {
@@ -5995,17 +6019,19 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.86 vs reference.",
         "confidence": 0.82,
+        "label": "unusable",
         "proposed": "positive",
         "source_url": "https://lf-wines.ru/catalog/krasnye-vina-rossiya/chateau-cachalot-syrah/",
-        "ts": "2026-09-18T14:06:25+0300"
+        "ts": "2026-09-22T20:02:17+0300"
       },
       "02_agent.jpg": {
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); web photo; embedding sim=0.82 vs reference.",
         "confidence": 0.9,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://garryspirit.ru/2023/12/15/chateau-cachalot-syrah-2022/",
-        "ts": "2026-09-18T14:06:25+0300"
+        "ts": "2026-09-22T20:02:20+0300"
       }
     },
     "chateau-cachalot-vione-beloe-suhoe-112": {
@@ -6029,17 +6055,18 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 1.0); studio packshot; embedding sim=0.99 vs reference.",
         "confidence": 0.82,
+        "label": "unusable",
         "proposed": "positive",
         "source_url": "https://static-offer.metro-cc.ru/products/075l-vino-shato-de-talyu-enolog-kr-sh",
-        "ts": "2026-09-18T14:06:25+0300"
+        "ts": "2026-09-22T20:02:22+0300"
       },
       "02_agent.webp": {
         "by": "kimi",
-        "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.89 vs reference.",
         "confidence": 0.82,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.cru.ru/wine/russia/chateau-de-talu-oenologist-2020-075/",
-        "ts": "2026-09-18T14:06:25+0300"
+        "ts": "2026-09-22T20:02:33+0300"
       }
     },
     "chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13": {
@@ -6068,17 +6095,19 @@
         "by": "kimi",
         "comment": "studio packshot from avatars.mds.yandex.net; pipeline check: dashscope same-wine conf=1.0, SigLIP similarity to catalogue bottle=0.87",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://market.yandex.ru/search?text=Chateau+tamagne+cabernet+%D0%BA%D1%83%D0%BF%D0%B8%D1%82%D1%8C&utm_source_service=img&icookie=BQwJRve890c47qfWTSKkG%2Fxe8F3PIAu9UrPcFZ5rVeUNnZiRj8ou05xeXHLbvP2Mtr%2FOAUby%2Bpmdbqcoh2R1wmAsLAI%3D&wprid=1789427672734535-9363594962054523188-balancer-l7leveler-kubr-yp-klg-147-BAL&src_pof=972",
-        "ts": "2026-09-18T11:23:56+0300"
+        "ts": "2026-09-22T20:02:38+0300"
       },
       "02_agent.png": {
         "by": "kimi",
         "comment": "studio packshot from novosib.luding.ru; pipeline check: dashscope same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.94",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://novosib.luding.ru/collection/item/clairet-kuban-gelendzhik-chateau-de-talu--581381/",
-        "ts": "2026-09-18T11:23:56+0300"
+        "ts": "2026-09-22T20:02:39+0300"
       }
     },
     "chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137": {
@@ -6092,17 +6121,18 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 1.0); studio packshot; embedding sim=0.95 vs reference.",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://www.auchan.ru/product/vino-shdt-kupazh-132-suh-kr-0-75/",
-        "ts": "2026-09-18T14:06:26+0300"
+        "ts": "2026-09-22T20:02:42+0300"
       },
       "02_agent.webp": {
         "by": "kimi",
-        "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 1.0); studio packshot; embedding sim=0.79 vs reference.",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://megamarket.ru/catalog/details/vino-chateau-de-talu-kupazh-132-krasnoe-suhoe-750-ml-rossiya-100067665467_91672/",
-        "ts": "2026-09-18T14:06:26+0300"
+        "ts": "2026-09-22T20:02:46+0300"
       }
     },
     "chateau-de-talu-merlo-rezerv-krasnoe-suhoe-14": {
@@ -6120,9 +6150,10 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 1.0); studio packshot; embedding sim=0.96 vs reference.",
         "confidence": 0.82,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://eng.winestyle.ru/products/Chateau-de-Talu-Merlot-2023.html",
-        "ts": "2026-09-18T14:06:26+0300"
+        "ts": "2026-09-22T20:02:47+0300"
       },
       "02_agent.webp": {
         "by": "kimi",
@@ -6138,9 +6169,10 @@
         "by": "kimi",
         "comment": "real-world photo from i2023.otzovik.com; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.72; front label compared with catalogue bottle",
         "confidence": 0.86,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://otzovik.com/review_14309693.html",
-        "ts": "2026-09-18T01:18:17+0300"
+        "ts": "2026-09-22T20:05:01+0300"
       }
     },
     "chateau-de-talu-roze-kaberne-sovinon-rozovoe-suhoe-14": {
@@ -8910,9 +8942,10 @@
         "by": "kimi",
         "comment": "studio packshot from api.sabonis.ru; pipeline check: dashscope same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.83",
         "confidence": 0.82,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://sabonis.ru/productDetail/vino-domen-lipko-pino-nuar",
-        "ts": "2026-09-18T11:23:56+0300"
+        "ts": "2026-09-22T20:05:16+0300"
       }
     },
     "domaine-lipko-pinot-noir-domaine-lipko-pino-nuar-krasnoe-suhoe-133": {
@@ -9092,11 +9125,11 @@
     "dubinin-winery-merlo-roze-rozovoe-suhoe-125": {
       "01_agent.jpg": {
         "by": "kimi",
-        "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.81 vs reference.",
         "confidence": 0.82,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://rskrf.ru/goods/dubinin-winery-roze-merlo-vino-sukhoe-rozovoe-2022/",
-        "ts": "2026-09-18T14:06:28+0300"
+        "ts": "2026-09-22T20:05:22+0300"
       }
     },
     "dubinin-winery-pino-nuar-bryut-roze-rozovoe-ekstra-bryut-125": {
@@ -9182,17 +9215,19 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 1.0); studio packshot; embedding sim=0.91 vs reference.",
         "confidence": 0.82,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.alcoplaza.ru/Wine/vino-kokur-tz-dva-serdca-2022-god-075-beloe-suhoe",
-        "ts": "2026-09-18T14:06:28+0300"
+        "ts": "2026-09-22T20:41:36+0300"
       },
       "02_agent.webp": {
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.85 vs reference.",
         "confidence": 0.82,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://www.wildberries.ru/catalog/791004082/detail.aspx",
-        "ts": "2026-09-18T14:06:28+0300"
+        "ts": "2026-09-22T20:41:38+0300"
       }
     },
     "dva-serdtsa-muskat-suhoy-muskat-belyy-beloe-suhoe-12": {
@@ -12151,9 +12186,22 @@
         "by": "kimi",
         "comment": "studio packshot from avatars.mds.yandex.net; pipeline check: dashscope same-wine conf=1.0, SigLIP similarity to catalogue bottle=0.96",
         "confidence": 0.82,
+        "label": "unusable",
         "proposed": "positive",
         "source_url": "https://market.yandex.ru/card/igristoye-vino-inkerman-roze-zero-dozazh-ekstra-bryut/4748825765?utm_source_service=img&icookie=9n%2FjCb3oCoBpe68XfC9zql%2Fa25Uc7wHBcvNzC4OSGNCu4yRltOW0xE8dYdj%2FyUNbnLAIJCFua%2FIs6J46Vit7GLN%2B91k%3D&wprid=1789429546648457-10940454556848795687-balancer-l7leveler-kubr-yp-klg-269-BAL&src_pof=972",
-        "ts": "2026-09-18T11:23:57+0300"
+        "ts": "2026-09-22T20:45:54+0300"
+      },
+      "02_manual.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:45:46+0300"
+      },
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:45:43+0300"
+      },
+      "04_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:46:10+0300"
       }
     },
     "inkermanskiy-zmv-inkerman-rozovoe-polusladkoe-rkatsiteli-12": {
@@ -12367,6 +12415,10 @@
         "proposed": "positive",
         "source_url": "https://online.metro-cc.ru/products/075l-vino-zmv-koktebel-kaza-belyy-kupazh-bl-sh",
         "ts": "2026-09-18T14:06:31+0300"
+      },
+      "02_manual.webp": {
+        "label": "negative",
+        "ts": "2026-09-22T20:46:59+0300"
       }
     },
     "kokur-avtorskoe": {
@@ -12377,6 +12429,50 @@
       "02_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-16T07:58:03+0300"
+      }
+    },
+    "kokur-premium": {
+      "01_conf095.jpg": {
+        "label": "unusable",
+        "ts": "2026-09-22T20:38:39+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:40:38+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:40:40+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:40:41+0300"
+      },
+      "05_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:40:42+0300"
+      },
+      "06_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:40:43+0300"
+      }
+    },
+    "kokur-suhoe": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:40:47+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:40:49+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:40:51+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:40:52+0300"
       }
     },
     "koldun-beloe-suhoe": {
@@ -14083,9 +14179,14 @@
         "by": "kimi",
         "comment": "real-world photo from i2021.otzovik.com; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.68; front label compared with catalogue bottle",
         "confidence": 0.84,
+        "label": "negative",
         "proposed": "positive",
         "source_url": "https://otzovik.com/review_12031688.html",
-        "ts": "2026-09-18T01:18:18+0300"
+        "ts": "2026-09-22T20:38:24+0300"
+      },
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:38:30+0300"
       }
     },
     "massandra-portveyn-belyy-krymskiy-kokur-beloe-sladkoe-18": {
@@ -14920,6 +15021,24 @@
         "ts": "2026-09-16T12:09:00+0300"
       }
     },
+    "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-bryut-beloe-novyy-svet-shardone-125": {
+      "01_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:40:57+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:41:00+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:41:02+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:41:02+0300"
+      }
+    },
     "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-ekstra-bryut-beloe-novyy-svet-kokur-11": {
       "01_conf095.jpg": {
         "label": "unusable",
@@ -14929,11 +15048,11 @@
     "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-shardone-125": {
       "01_agent.jpg": {
         "by": "kimi",
-        "comment": "real-world photo from irecommend.ru; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.87; front label compared with catalogue bottle",
         "confidence": 0.9,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://irecommend.ru/content/rossiiskoe-shampanskoe-vyderzhannoe-polusladkoe-rozovoe-novyi-svet-originalnoe",
-        "ts": "2026-09-18T01:18:19+0300"
+        "ts": "2026-09-22T20:37:57+0300"
       }
     },
     "oleg": {
@@ -15476,9 +15595,10 @@
         "by": "kimi",
         "comment": "real-world photo from avatars.dzeninfra.ru; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.78; front label compared with catalogue bottle",
         "confidence": 0.88,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://dzen.ru/a/aYMKImAlml3RwtSI",
-        "ts": "2026-09-18T01:18:19+0300"
+        "ts": "2026-09-22T20:37:31+0300"
       }
     },
     "perovskih_muskat_orange": {
@@ -15495,6 +15615,24 @@
       "01_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-15T18:02:06+0300"
+      }
+    },
+    "perovskih_polusladkoe_beloe": {
+      "01_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:33:23+0300"
+      },
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:33:23+0300"
+      },
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:33:24+0300"
+      },
+      "04_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:33:25+0300"
       }
     },
     "perovskih_polusladkoe_krasnoe": {
@@ -15599,12 +15737,11 @@
     "pino-glyu-2025": {
       "01_agent.webp": {
         "by": "kimi",
-        "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.90 vs reference.",
         "confidence": 0.82,
         "label": "negative",
         "proposed": "positive",
         "source_url": "https://vino.ru/avtorskoe-vino/novozav-vino-sukhoe-krasnoe-kommunalka-sira-0-75-2023/",
-        "ts": "2026-09-21T13:18:59+0300"
+        "ts": "2026-09-22T09:41:15+0300"
       },
       "02_agent.webp": {
         "by": "kimi",
@@ -15612,7 +15749,7 @@
         "label": "negative",
         "proposed": "positive",
         "source_url": "https://krymwine.ru/catalog/vino/tikhie-vina/vino_novozovedennoe_kommunalka_sira.html",
-        "ts": "2026-09-21T13:19:01+0300"
+        "ts": "2026-09-22T09:41:18+0300"
       }
     },
     "pino-gri-avtorskoe": {
@@ -15806,6 +15943,42 @@
       "01_conf095.webp": {
         "label": "positive",
         "ts": "2026-09-15T18:01:40+0300"
+      }
+    },
+    "portvejn-krymskij": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:41:06+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "unusable",
+        "ts": "2026-09-22T20:41:16+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "unusable",
+        "ts": "2026-09-22T20:41:18+0300"
+      },
+      "04_conf090.jpg": {
+        "label": "unusable",
+        "ts": "2026-09-22T20:41:21+0300"
+      }
+    },
+    "portvejn-surozh": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:41:28+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:41:29+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:41:30+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:41:31+0300"
       }
     },
     "pozdnij-sbor-beloe": {
@@ -18144,6 +18317,16 @@
         "ts": "2026-09-18T12:30:51+0300"
       }
     },
+    "solnechnaya-dolina-porto-solnechnoy-doliny-kokur-belyy-beloe-sladkoe-175": {
+      "01_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:31:48+0300"
+      },
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:32:54+0300"
+      }
+    },
     "solnechnaya-dolina-privat-kaberne-sovinon-krasnoe-sladkoe-155": {
       "01_conf095.jpg": {
         "label": "positive",
@@ -18159,9 +18342,10 @@
         "by": "claude-code",
         "comment": "Real photo from the producer's own Telegram channel: the bottle held in a hand in the cellar, other bottles on the floor behind. Front label matches the catalogue bottle and every line is legible: the large СОСЕДИ wordmark, АЛИГОТЕ and ШАРДОНЕ in two boxed captions joined by an ampersand, the comic strip panels of the winemakers at the press and the barrels, 'Крым 2025', 'алк. 11.0 %', and the Коммуналка signature at the foot. The vintage 2025 matches the slug exactly.",
         "confidence": 0.94,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://t.me/comm_wine/1473",
-        "ts": "2026-09-18T01:33:03+0300"
+        "ts": "2026-09-22T09:41:38+0300"
       }
     },
     "sovinon-blan-krasnaya-gorka": {
@@ -18889,17 +19073,31 @@
         "by": "kimi",
         "comment": "studio packshot from irecommend.ru; pipeline check: dashscope same-wine conf=1.0, SigLIP similarity to catalogue bottle=0.97",
         "confidence": 0.82,
+        "label": "unusable",
         "proposed": "positive",
         "source_url": "https://irecommend.ru/content/vino-beloe-sukhoe-dva-petra-kokur",
-        "ts": "2026-09-18T11:23:57+0300"
+        "ts": "2026-09-22T20:41:43+0300"
       },
       "02_agent.webp": {
         "by": "kimi",
         "comment": "studio packshot from cdn-irec.r-99.com; pipeline check: dashscope same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.88",
         "confidence": 0.82,
+        "label": "unusable",
         "proposed": "positive",
         "source_url": "https://irecommend.ru/content/vino-beloe-sukhoe-dva-petra-kokur",
-        "ts": "2026-09-18T11:23:58+0300"
+        "ts": "2026-09-22T20:41:44+0300"
+      },
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:42:35+0300"
+      },
+      "04_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:42:36+0300"
+      },
+      "05_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:42:36+0300"
       }
     },
     "twopeters_risling": {
@@ -18974,6 +19172,16 @@
         "proposed": "positive",
         "source_url": "https://krasnostop.ru/wineries/dva-petra/",
         "ts": "2026-09-18T14:06:39+0300"
+      }
+    },
+    "uppa-winery-kokur-kokur-belyy-beloe-suhoe-12": {
+      "01_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:35:12+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:35:12+0300"
       }
     },
     "uppa-winery-pavel-shvets-cabernet-sauvignon-merlot-kaberne-sovinon-krasnoe-suhoe-14": {
@@ -19649,6 +19857,10 @@
         "proposed": "positive",
         "source_url": "https://megamarket.ru/catalog/details/kokur-i-ko-igristoe-vino-p-sl-beloe-135-075-6-rossiya-100054387352/otzyvy/",
         "ts": "2026-09-18T17:35:22+0300"
+      },
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:43:47+0300"
       }
     },
     "valeriy-zaharin-aligote-avtorskoe-valeriy-zaharin-beloe-bryut-115": {
@@ -21195,6 +21407,16 @@
         "ts": "2026-09-15T18:16:45+0300"
       }
     },
+    "vinodelnya-marchenko-krasnostop-zolotovskiy-krasnoe-suhoe-14": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:03:01+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:03:03+0300"
+      }
+    },
     "vinodelnya-marchenko-merlo-krasnoe-suhoe-14": {
       "01_agent.jpg": {
         "by": "kimi",
@@ -21565,6 +21787,16 @@
       "03_conf095.jpg": {
         "label": "negative",
         "ts": "2026-09-18T15:30:14+0300"
+      }
+    },
+    "vinodelnya-myshako-merlo-zinfandel-kyuve-rozovoe-suhoe-128": {
+      "01_conf095.jpg": {
+        "label": "unusable",
+        "ts": "2026-09-22T20:03:12+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "negative",
+        "ts": "2026-09-22T20:03:17+0300"
       }
     },
     "vinodelnya-myshako-myshako-kyuve-rozovoe-pino-nuar-bryut-123": {
@@ -23059,17 +23291,19 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 1.0); studio packshot; embedding sim=0.95 vs reference.",
         "confidence": 0.82,
+        "label": "unusable",
         "proposed": "positive",
         "source_url": "https://spb.wine-shopper.ru/vedernikovie-rezerv-cimlianskii-cernyi-briut-075-l/",
-        "ts": "2026-09-18T14:06:44+0300"
+        "ts": "2026-09-22T20:03:24+0300"
       },
       "02_agent.jpg": {
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.88 vs reference.",
         "confidence": 0.82,
+        "label": "unusable",
         "proposed": "positive",
         "source_url": "https://www.alcoplaza.ru/sparkling-wine/vino-igristoe-vedernikovskoe-cimlyanskij-chernyj-sibirkovyj-50-50-075-beloe-ekstra-bryut",
-        "ts": "2026-09-18T14:06:44+0300"
+        "ts": "2026-09-22T20:03:25+0300"
       }
     },
     "vinodelnya-vedernikov-vedernikov-tsimlyanskiy-chyornyy-tsimlyanskiy-chernyy-krasnoe-suhoe-14": {
@@ -23135,9 +23369,14 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 1.0); studio packshot; embedding sim=0.98 vs reference.",
         "confidence": 0.82,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://wine-shopper.ru/zakov-kokurkod-075-l/",
-        "ts": "2026-09-18T14:06:44+0300"
+        "ts": "2026-09-22T20:37:25+0300"
+      },
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:37:25+0300"
       }
     },
     "vinodelnya-zhakov-logovo-saperavi-krasnoe-suhoe-126": {
@@ -23551,6 +23790,20 @@
         "ts": "2026-09-15T18:05:54+0300"
       }
     },
+    "winepark-kokur-kokur-belyy-beloe-suhoe-13": {
+      "01_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:30:23+0300"
+      },
+      "02_manual.webp": {
+        "label": "unusable",
+        "ts": "2026-09-22T20:30:57+0300"
+      },
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:30:59+0300"
+      }
+    },
     "winepark-kuchuk-isar-kaberne-sovinon-krasnoe-suhoe-135": {
       "01_agent.webp": {
         "by": "kimi",
@@ -23605,6 +23858,24 @@
         "proposed": "positive",
         "source_url": "https://www.alcoplaza.ru/Wine/yaiyla-riesling-2020-075",
         "ts": "2026-09-18T14:06:45+0300"
+      }
+    },
+    "yaiyla-winery-kokur-kokur-belyy-beloe-suhoe-13": {
+      "01_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:29:14+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:29:14+0300"
+      },
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:29:15+0300"
+      },
+      "04_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:29:15+0300"
       }
     },
     "zb-vajn-moskato-polusladkoe-rozovoe": {
@@ -23690,9 +23961,22 @@
         "by": "kimi",
         "comment": "studio packshot from irecommend.ru; pipeline check: local same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.92",
         "confidence": 0.82,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://irecommend.ru/content/priyatnoe-beloe-vino-n10762216",
-        "ts": "2026-09-18T11:23:58+0300"
+        "ts": "2026-09-22T20:36:11+0300"
+      },
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-22T20:36:12+0300"
+      },
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:36:12+0300"
+      },
+      "04_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-22T20:36:13+0300"
       }
     },
     "zmv-koktebel-bastardo-krasnoe-suhoe-14": {
@@ -23960,9 +24244,10 @@
         "by": "kimi",
         "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 1.0); web photo; embedding sim=0.85 vs reference.",
         "confidence": 0.9,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://someliekhauz.ru/tproduct/1-388494962302-vino-beloe-suhoe-blan-de-nyozh-loko-chem",
-        "ts": "2026-09-18T16:13:46+0300"
+        "ts": "2026-09-22T20:03:35+0300"
       }
     },
     "zolotaya-balka-chernyy-prints-shardone-beloe-ekstra-bryut-12": {
@@ -24217,8 +24502,8 @@
       }
     }
   },
-  "note": "Manual labels for the photos of svoe-vino-testset/my. The key of an entry is the slug, then the photo file name. label 'positive': the photo shows the wine of this slug. label 'negative': the photo shows a different wine, and the photo stays in the set as a negative sample of this slug. label 'unusable': the photo is not usable at all and does not belong in the set. label 'variant': the photo shows this wine in another bottle, such as another vintage or another package design. A photo with no entry is not reviewed yet. Field 'reassign_to' names the slug that the photo belongs to; scripts/09_apply_moves.py moves the file. Field 'copy_to' names a slug that the photo ALSO belongs to; the same script copies the file and leaves the source photo where it is. The copy carries no label and one comment that names the source slug. Field 'comment' holds a free text note of the reviewer about this photo and this slug. The map 'wines' holds one free text note about a whole wine, keyed by the slug.",
-  "updated": "2026-09-21T14:35:01+0300",
+  "note": "Manual labels for the photos of svoe-vino-testset/my. The key of an entry is the slug, then the photo file name. label 'positive': the photo shows the wine of this slug. label 'negative': the photo shows a different wine, and the photo stays in the set as a negative sample of this slug. label 'unusable': the photo is not usable at all and does not belong in the set. label 'variant': the photo shows this wine in another bottle, such as another vintage or another package design. A photo with no entry is not reviewed yet. The slug '__null__' is the virtual NULL wine. A photo under that slug matches NO card of the catalogue. The place is the statement, so such a photo needs no label; 'positive' confirms it and 'unusable' takes the photo out of the set. Field 'reassign_to' names the slug that the photo belongs to; scripts/09_apply_moves.py moves the file. Field 'copy_to' names a slug that the photo ALSO belongs to; the same script copies the file and leaves the source photo where it is. The copy carries no label and one comment that names the source slug. Field 'comment' holds a free text note of the reviewer about this photo and this slug. The map 'wines' holds one free text note about a whole wine, keyed by the slug.",
+  "updated": "2026-09-22T20:46:59+0300",
   "version": 2,
   "wines": {
     "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12": {

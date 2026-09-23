@@ -56,6 +56,11 @@ tags:
       routes under `/api/v1/`. They MAY change when the page changes.
   - name: runs
     description: The routes of the runs page, which reads the output of a match run.
+  - name: clusters
+    description: |
+      The routes of the clusters page. It reads the file that `scripts/10_clusters.py`
+      writes. A cluster is a group of catalogue cards that the matcher confuses, or can
+      confuse.
 
 paths:
 
@@ -271,8 +276,55 @@ paths:
       description: |
         The picture that the catalogue holds for this wine. An agent SHOULD read the
         field `bottle_path` and open the file instead.
+
+        A wine named by `patch_dir` of `config.yaml` answers with its CORRECTED
+        picture. A patch replaces the picture of the catalogue record, so the record
+        picture is never served for such a wine. `GET /api/patched` lists these wines,
+        and every record that carries a bottle also carries the field `patched`.
+
+        `kind` selects the picture. `package` is the picture above. `label` is the
+        label of that picture, cut out with SAM3, as RGBA with the mask in the alpha
+        channel. `labelbox` is the bounding box of the label alone, as RGB.
+        `bottle_label_dir` and `bottle_label_box_dir` of `config.yaml` name the two
+        directories.
+
+        A wine with no crop of the asked kind answers with its `package` picture. The
+        records state `has_label` and `has_label_box`, so a client knows when this
+        happened. An unknown kind answers with the `package` picture as well.
       parameters:
         - $ref: "#/components/parameters/SlugQuery"
+        - name: kind
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [package, label, labelbox]
+            default: package
+          description: Which picture of the wine to answer.
+      responses:
+        "200":
+          $ref: "#/components/responses/Picture"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
+  /img/inbox:
+    get:
+      tags: [images]
+      operationId: getInboxPhoto
+      summary: Read one file of the inbox of `my/`.
+      description: |
+        The inbox holds the image files that lie directly in `my/`, not in the
+        directory of a wine. Such a file belongs to no wine yet.
+
+        The server refuses a name that holds a path separator or a parent reference, a
+        name that is a directory, and a file that is not present.
+      parameters:
+        - name: file
+          in: query
+          required: true
+          description: The file name, as `inbox` of `GET /api/rows` states it.
+          schema: { type: string }
+          example: bottle-01.webp
       responses:
         "200":
           $ref: "#/components/responses/Picture"
@@ -414,6 +466,11 @@ paths:
 
         `rows` holds the wines that have a directory in `my/`, then the catalogue cards
         that have none. A catalogue card carries `catalog_only: true`.
+
+        The virtual NULL wine, the slug `__null__`, is not in this list. It is no card
+        of the catalogue and it holds no labelling work. `GET /api/v1/wine/__null__`
+        answers for it, and `POST /api/v1/propose` refuses it: a reviewer moves a photo
+        there, an agent does not.
 
         An agent SHOULD read `GET /api/v1/wines` instead, which pages and filters.
       responses:
@@ -597,6 +654,12 @@ paths:
         An empty `label`, or `null`, clears the label. Clearing the label keeps the
         other fields of the entry, for example `comment` and `reassign_to`. The entry
         is removed when no field is left.
+
+        The slug `__null__` is the virtual NULL wine: its photos match no card of the
+        catalogue. Such a photo takes `positive` or `unusable` alone. `positive`
+        confirms the statement of the place, and `unusable` takes the photo out of the
+        set. The route answers `400` for `negative` and for `variant` there, because
+        both judge a photo against a wine and NULL is not a wine.
       requestBody:
         required: true
         content:
@@ -746,6 +809,12 @@ paths:
                   description: |
                     The slug that the photo belongs to. It MUST be a known slug and it
                     MUST NOT be the slug of the photo. An empty value clears the record.
+
+                    The value `__null__` names the virtual NULL wine. It states that no
+                    card of the catalogue shows this wine. `POST /api/apply-moves` moves
+                    the file into `<photo_dir>/__null__/`, and the directory is made by
+                    that write. `scripts/match_run.py` then reads the photo as a
+                    rejection case: no answer is the only correct outcome.
       responses:
         "200":
           $ref: "#/components/responses/OkCounts"
@@ -756,6 +825,39 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
+
+  /api/patched:
+    get:
+      tags: [page]
+      operationId: listPatched
+      summary: The wines whose catalogue picture is a correction.
+      description: |
+        `patch_dir` of `config.yaml` holds a corrected catalogue picture for a wine,
+        one file per slug: `<slug>.<extension>`. Such a picture REPLACES the picture
+        of the catalogue record: `GET /img/bottle` serves it, and every view marks the
+        image `patched`.
+
+        The runs page holds a slug alone and no record, so it reads this list. A page
+        that already holds records SHOULD read the field `patched` of the record.
+
+        The server reads the directory again at every `GET /api/reload`.
+      responses:
+        "200":
+          description: The corrected wines.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [dir, slugs]
+                properties:
+                  dir:
+                    type: string
+                    description: |
+                      The configured `patch_dir`. It is empty when the key is absent.
+                  slugs:
+                    type: array
+                    description: The slugs that take a corrected picture, in order.
+                    items: { type: string }
 
   /api/checks:
     get:
@@ -879,6 +981,10 @@ paths:
                     The slug that the photo shows as well. It MUST be a known slug and
                     it MUST NOT be the slug of the photo. An empty value clears the
                     record.
+
+                    The slug `__null__` is refused: a copy states that the photo shows a
+                    SECOND wine, and NULL is not a wine. A photo that matches no card of
+                    the catalogue is moved with `POST /api/reassign`, not copied.
       responses:
         "200":
           $ref: "#/components/responses/OkCounts"
@@ -897,7 +1003,7 @@ paths:
       summary: Mark one photo for deletion, or take the mark away.
       description: |
         The route does not touch the file. `POST /api/apply-moves` moves every marked
-        photo into `work/trash/` later, on one command.
+        photo into `my/trash/` later, on one command.
 
         A photo that carries both a target and a delete mark is deleted and is not moved.
       requestBody:
@@ -939,7 +1045,7 @@ paths:
       description: |
         This route touches the files on the disk. It copies every photo that holds
         `copy_to`, it moves every photo that holds `reassign_to`, and it moves every
-        marked photo into `work/trash/`. It then builds the rows again.
+        marked photo into `my/trash/`. It then builds the rows again.
 
         The three actions run in that order, because a move takes the source file away
         and a copy reads it.
@@ -947,12 +1053,31 @@ paths:
         A copy that is done no longer holds `copy_to`, so a second call does not write
         the file again.
 
-        The request body is not read. Send an empty object.
+        The body MAY hold `inbox`. Each pair moves one file of the inbox of `my/` into
+        the directory of one wine. The file keeps its name, and a name that is taken in
+        the target gets a suffix. The photo gets no label, and its comment states that
+        it comes from the inbox. The page holds these pairs in the browser alone, so
+        they come with the request and not from the label file.
       requestBody:
         required: false
         content:
           application/json:
-            schema: { type: object }
+            schema:
+              type: object
+              properties:
+                inbox:
+                  type: array
+                  description: The files of the inbox that hold a wine now.
+                  items:
+                    type: object
+                    required: [file, to]
+                    properties:
+                      file:
+                        type: string
+                        description: The file name, as `inbox` of `GET /api/rows` states it.
+                      to:
+                        type: string
+                        description: The slug of the wine. It MUST be a slug of the catalogue.
       responses:
         "200":
           description: The work is done.
@@ -1153,6 +1278,44 @@ paths:
               schema: { $ref: "#/components/schemas/Error" }
         "404":
           description: No run holds this identifier.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ----------------------------------------------------------- the clusters page
+
+  /clusters:
+    get:
+      tags: [clusters]
+      operationId: getClustersPage
+      summary: Read the clusters page.
+      responses:
+        "200":
+          description: The HTML page.
+          content:
+            text/html:
+              schema: { type: string }
+
+  /api/clusters:
+    get:
+      tags: [clusters]
+      operationId: getClusters
+      summary: Read the catalogue clusters and one record for each card of a cluster.
+      description: |
+        The route reads the file that the key `clusters.file` of `config.yaml` names, at
+        each request. A new build of `scripts/10_clusters.py` needs no restart. The
+        route adds `cards`, which holds the label counts of the dataset in use. The
+        route writes nothing. Read `docs/plans/04_catalog-clusters.md`.
+      responses:
+        "200":
+          description: |
+            The clusters. When the file is absent, `exists` is false, `clusters` is
+            empty, and `hint` names the command that builds the file.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClusterView" }
+        "500":
+          description: The file cannot be read as JSON.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
@@ -1426,13 +1589,22 @@ components:
           type: array
           items:
             type: object
-            required: [slug, name, bottle_path, bottle_url]
+            required: [slug, name, bottle_path, patched, bottle_url]
             properties:
               slug: { type: string }
               name: { type: string }
               bottle_path:
                 oneOf: [{ type: string }, { type: "null" }]
-                description: The absolute path of the bottle photo on this machine.
+                description: The absolute path of the bottle photo on this machine. The crop of `bottle_cropped_dir` when the wine has one.
+              patched:
+                type: boolean
+                description: Whether that photo is a correction from `patch_dir`.
+              has_label:
+                type: boolean
+                description: Whether a label crop is present for this wine.
+              has_label_box:
+                type: boolean
+                description: Whether a box crop is present for this wine.
               bottle_url: { type: string }
 
     Wine:
@@ -1440,7 +1612,7 @@ components:
       description: One wine, with its properties and its photo counts.
       required:
         [slug, name, producer, category, color, region, grapes, page_url,
-         description, in_catalog, bottle_path, bottle_url, image_match,
+         description, in_catalog, bottle_path, bottle_url, patched, image_match,
          catalog_only, photos_total, labels, labelled, unlabelled, proposed,
          wine_note, excluded, exclude_reason, variant_group]
       properties:
@@ -1472,12 +1644,38 @@ components:
           oneOf: [{ type: string }, { type: "null" }]
           description: |
             The absolute path of the catalogue bottle photo on this machine. An agent
-            SHOULD read this file instead of `GET /img/bottle`.
+            SHOULD read this file instead of `GET /img/bottle`. The file is the crop
+            of `bottle_cropped_dir` when the wine has one: the same picture without
+            its empty border. Otherwise it is the patch, or the photo of the
+            catalogue record.
         bottle_url:
           oneOf: [{ type: string }, { type: "null" }]
           description: |
             The address of the catalogue bottle photo, or null when the wine holds no
             bottle photo.
+        patched:
+          type: boolean
+          description: |
+            True when `bottle_path` is a corrected picture from `patch_dir` and not the
+            picture of the catalogue record. See `GET /api/patched`.
+        label_path:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            The absolute path of the label crop of this wine, or null when the wine has
+            none. The crop is cut out of the picture that `bottle_path` names.
+        label_box_path:
+          oneOf: [{ type: string }, { type: "null" }]
+          description: |
+            The absolute path of the box crop of this wine, or null when the wine has
+            none.
+        has_label:
+          type: boolean
+          description: |
+            Whether a label crop is present. False means that
+            `GET /img/bottle?kind=label` answers with the package picture instead.
+        has_label_box:
+          type: boolean
+          description: Whether a box crop is present.
         image_match: { $ref: "#/components/schemas/ImageMatch" }
         catalog_only:
           type: boolean
@@ -1485,6 +1683,12 @@ components:
             True when the wine is a catalogue card that holds no directory in `my/`.
             Such a wine holds no candidate photo and no label state.
             `GET /api/v1/wine/{slug}` does NOT answer for it.
+        null_row:
+          type: boolean
+          description: |
+            True for the virtual NULL wine, the slug `__null__`. It is no card of the
+            catalogue. Its photos match NO card of the catalogue, and the place is the
+            statement, so such a photo needs no label.
         photos_total:
           type: integer
           description: The number of candidate photos of this wine.
@@ -1690,7 +1894,7 @@ components:
         counts the labels itself from `labels`.
       required:
         [slug, name, producer, category, color, region, grapes, page_url,
-         in_catalog, has_bottle, image_match, group, photos, min_conf]
+         in_catalog, has_bottle, patched, image_match, group, photos, min_conf]
       properties:
         slug: { type: string }
         name: { type: string }
@@ -1703,7 +1907,23 @@ components:
         in_catalog: { type: boolean }
         has_bottle:
           type: boolean
-          description: Whether the catalogue holds a bottle photo for this wine.
+          description: |
+            Whether a bottle photo is available for this wine. A corrected picture from
+            `patch_dir` counts, even when the catalogue record holds none.
+        patched:
+          type: boolean
+          description: |
+            True when the bottle photo is a correction from `patch_dir`. The page draws
+            the mark `patched` in the top right corner of such an image.
+        has_label:
+          type: boolean
+          description: |
+            Whether a label crop is present for this wine. The page draws the mark
+            `no label` in the bottom right corner of the picture when the selector asks
+            for a label crop and this field is false.
+        has_label_box:
+          type: boolean
+          description: Whether a box crop is present for this wine.
         image_match: { $ref: "#/components/schemas/ImageMatch" }
         group:
           oneOf: [{ type: string }, { type: "null" }]
@@ -1719,6 +1939,13 @@ components:
           description: |
             Present and true only on a catalogue card that holds no directory in `my/`.
             Such a row is not part of the review set and holds no label state.
+        null_row:
+          type: boolean
+          description: |
+            Present and true only on the row of the virtual NULL wine, the slug
+            `__null__`. The row carries no catalogue record, no bottle photo, and no
+            variant group. Its photos match no card of the catalogue. The row is
+            answered even when `<photo_dir>/__null__/` is not present yet.
 
     Group:
       type: object
@@ -1789,7 +2016,7 @@ components:
 
     RowsBundle:
       type: object
-      required: [rows, labels, wines, excluded, groups, slugs]
+      required: [rows, labels, wines, excluded, inbox, groups, slugs]
       properties:
         rows:
           type: array
@@ -1800,6 +2027,12 @@ components:
         labels: { $ref: "#/components/schemas/LabelState" }
         wines: { $ref: "#/components/schemas/WineNotes" }
         excluded: { $ref: "#/components/schemas/ExcludedMap" }
+        inbox:
+          type: array
+          description: |
+            The image files that lie directly in `my/` and belong to no wine yet. The
+            page shows them in the sideboard. `GET /img/inbox` reads one of them.
+          items: { type: string }
         groups:
           type: object
           description: Every variant group, as identifier to group.
@@ -1811,13 +2044,22 @@ components:
 
     SuggestTarget:
       type: object
-      required: [slug, name, producer, category, has_bottle, in_group, score]
+      required: [slug, name, producer, category, has_bottle, patched, in_group, score]
       properties:
         slug: { type: string }
         name: { type: string }
         producer: { type: string }
         category: { type: string }
         has_bottle: { type: boolean }
+        patched:
+          type: boolean
+          description: Whether the bottle photo is a correction from `patch_dir`.
+        has_label:
+          type: boolean
+          description: Whether a label crop is present for this wine.
+        has_label_box:
+          type: boolean
+          description: Whether a box crop is present for this wine.
         in_group:
           type: boolean
           description: Whether this wine is in the variant group of the asked wine.
@@ -1985,7 +2227,8 @@ components:
       type: object
       required:
         [ok, moved, already_done, failed, copied, copy_failed, renamed, deleted,
-         delete_failed, delete_gone, rows, labels, counts]
+         delete_failed, delete_gone, inbox_moved, inbox_failed, inbox, rows, labels,
+         counts]
       properties:
         ok: { type: boolean, const: true }
         moved:
@@ -2001,6 +2244,28 @@ components:
         already_done:
           type: integer
           description: The records whose photo was already in the target directory.
+        inbox_moved:
+          type: array
+          description: The files that left the inbox of `my/`.
+          items:
+            type: object
+            properties:
+              file: { type: string, description: The name in the inbox. }
+              to: { type: string, description: The slug that holds the photo now. }
+              as: { type: string, description: The file name in the target directory. }
+        inbox_failed:
+          type: array
+          description: The pairs of the inbox that were refused, each with the reason.
+          items:
+            type: object
+            properties:
+              file: { type: string }
+              to: { type: string }
+              why: { type: string }
+        inbox:
+          type: array
+          description: The files that lie in the inbox of `my/` after the work.
+          items: { type: string }
         failed:
           type: array
           items:
@@ -2046,7 +2311,7 @@ components:
             properties:
               slug: { type: string }
               file: { type: string }
-              to: { type: string, description: The path in `work/trash/`. }
+              to: { type: string, description: The path in `my/trash/`. }
         delete_failed:
           type: array
           items:
@@ -2152,3 +2417,142 @@ components:
             One page of the rows of `results.jsonl`. The shape of one row follows the
             match runner. Read `docs/match-runner.md`.
           items: { type: object }
+
+    ClusterView:
+      type: object
+      required: [exists, file, clusters, cards]
+      properties:
+        exists:
+          type: boolean
+          description: Whether the cluster file is on disk.
+        file: { type: string }
+        dataset:
+          type: string
+          description: The dataset whose labels give the counts of `cards`.
+        hint:
+          type: string
+          description: Only when `exists` is false. The command that builds the file.
+        version: { type: integer }
+        built_at: { type: string }
+        note: { type: string }
+        settings:
+          type: object
+          properties:
+            signals:
+              type: array
+              items: { type: string, enum: [name, photo, label, confusion] }
+            photo_threshold: { type: number }
+            label_threshold: { type: number }
+            min_confusions: { type: integer }
+        inputs:
+          type: object
+          description: |
+            The catalogue file, the two index files with their build time, the label
+            file, and one record for each run: `id`, `backend`, `positives`,
+            `wrong_at_1`, `used`, and `stale`.
+        counts:
+          type: object
+          description: |
+            `cards`, `clusters`, `cards_in_clusters`, `largest`, `kinds`, `links` (for
+            each signal), and `sizes` (the cluster count for each size).
+        clusters:
+          type: array
+          items: { $ref: "#/components/schemas/Cluster" }
+        cards:
+          type: object
+          description: One record for each card of a cluster, by slug.
+          additionalProperties: { $ref: "#/components/schemas/ClusterCard" }
+
+    Cluster:
+      type: object
+      required: [id, kind, size, signals, slugs, links]
+      properties:
+        id:
+          type: string
+          description: |
+            The position in the sort order of the file, such as `c013`. It is not stable
+            between two builds. Address a cluster through a member slug instead.
+        kind:
+          type: string
+          enum: [same-wine, mixed, look-alike]
+          description: |
+            `same-wine`: the `name` links alone join every card. `look-alike`: the
+            cluster holds no `name` link. `mixed`: all other clusters.
+        size: { type: integer, minimum: 2 }
+        signals:
+          type: array
+          description: Every signal that passed on at least one link.
+          items: { type: string, enum: [name, photo, label, confusion] }
+        slugs:
+          type: array
+          items: { type: string }
+        producers:
+          type: array
+          items: { type: string }
+        confusions:
+          type: integer
+          description: The confused photos over every link, in both directions.
+        links:
+          type: array
+          items: { $ref: "#/components/schemas/ClusterLink" }
+
+    ClusterLink:
+      type: object
+      required: [a, b, by]
+      properties:
+        a: { type: string }
+        b: { type: string }
+        by:
+          type: array
+          description: The signals that passed.
+          items: { type: string, enum: [name, photo, label, confusion] }
+        name:
+          oneOf: [{ type: string, enum: [same, grapes-differ] }, { type: "null" }]
+          description: |
+            `same`: the `name` signal passed. `grapes-differ`: one name key, and grapes
+            that disagree. Null: two different name keys.
+        photo:
+          oneOf: [{ type: number }, { type: "null" }]
+          description: The cosine of the two catalogue photos, also when it is under the threshold.
+        label:
+          oneOf: [{ type: number }, { type: "null" }]
+          description: The cosine of the two label crops, also when it is under the threshold.
+        a_as_b:
+          type: integer
+          description: The positive photos of `a` that a run answered as `b` at rank 1.
+        b_as_a: { type: integer }
+        photos:
+          type: array
+          description: At most 6 of these photos.
+          items:
+            type: object
+            properties:
+              slug: { type: string }
+              file: { type: string }
+              answered: { type: string }
+              run: { type: string }
+
+    ClusterCard:
+      type: object
+      properties:
+        name: { type: string }
+        producer: { type: string }
+        category: { type: string }
+        grapes: { type: string }
+        page_url: { type: string }
+        in_catalog: { type: boolean }
+        patched: { type: boolean }
+        has_label: { type: boolean }
+        in_review:
+          type: boolean
+          description: Whether the card has a directory in the photo set.
+        excluded: { type: boolean }
+        photos:
+          type: object
+          description: The label counts of the candidate photos of the card.
+          properties:
+            positive: { type: integer }
+            negative: { type: integer }
+            variant: { type: integer }
+            unusable: { type: integer }
+            unlabelled: { type: integer }

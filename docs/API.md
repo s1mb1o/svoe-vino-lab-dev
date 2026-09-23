@@ -142,7 +142,7 @@ It holds no label state. Read `GET /api/v1/wine/<slug>` for the full form.
 
 ## The routes of the page
 
-These routes serve the review page and the runs page. An agent MAY use them. They
+These routes serve the review page, the runs page, and the clusters page. An agent MAY use them. They
 follow the page, so they MAY change when the page changes. The routes under `/api/v1/`
 do not change in this way.
 
@@ -160,6 +160,11 @@ page reads it once at the start. It is large, about 2500 photos and 850 wines.
 
 `rows` holds first the wines that have a directory in `my/`, then the catalogue cards
 that have none. A catalogue card carries `catalog_only: true`.
+
+One row is the virtual NULL wine, the slug `__null__`. It carries `null_row: true`. Its
+photos match NO card of the catalogue. The row is answered even when
+`<photo_dir>/__null__/` is not present yet. It is not in `GET /api/v1/wines`, and
+`POST /api/v1/propose` refuses it: a reviewer moves a photo there, an agent does not.
 
 A row is not the record of `GET /api/v1/wines`. A row holds `has_bottle` and
 `min_conf`, and it holds no label count, because the page counts the labels itself
@@ -225,6 +230,28 @@ set. Read `docs/match-runner.md`.
 Errors: `400` for a bad identifier, a bad number, or an unknown order. `404` when no
 run holds the identifier.
 
+#### `GET /api/clusters`
+
+The catalogue clusters for the page `/clusters`. A cluster is a group of catalogue
+cards that the matcher confuses, or can confuse. `scripts/10_clusters.py` writes the
+file that the key `clusters.file` of `config.yaml` names. Read
+`docs/plans/04_catalog-clusters.md`.
+
+The answer holds the whole file, `{version, built_at, note, settings, inputs, counts,
+clusters}`, and three added fields: `exists`, `file`, and `cards`. `cards` holds one
+record for each card of a cluster: `{name, producer, category, grapes, page_url,
+in_catalog, patched, has_label, in_review, excluded, photos}`. `photos` holds the label
+counts of the candidate photos in the dataset in use.
+
+One cluster holds `{id, kind, size, signals, slugs, producers, confusions, links}`.
+One link holds `{a, b, by, name, photo, label, a_as_b, b_as_a, photos}`. `by` names
+the signals that passed. `photo` and `label` hold the cosine also when that signal did
+not pass. `id` is not stable between two builds.
+
+The route reads the file at each request, so a new build needs no restart. When the
+file is absent, the answer is `200` with `exists: false` and `hint`. Errors: `500` when
+the file cannot be read as JSON.
+
 ### Write
 
 Each of these routes answers `{"ok": true, "counts": {...}}` unless the table states
@@ -239,7 +266,7 @@ another answer. `counts` is the counter set of the whole review set.
 | `POST /api/reassign` | `{slug, file, to}` | Record that the photo belongs to `to`. The file is NOT moved. `POST /api/apply-moves` moves it later. An empty `to` clears the record. `400` when the target is unknown or is the slug of the photo. |
 | `POST /api/copy` | `{slug, file, to}` | Record that the photo shows the wine `to` as well. The file is NOT copied, and the photo stays in its own wine with its label. `POST /api/apply-moves` copies it later. An empty `to` clears the record. `400` when the target is unknown or is the slug of the photo. |
 | `POST /api/mark-delete` | `{slug, file, delete}` | Mark the photo for deletion, or take the mark away. `delete` defaults to true. The file is NOT touched. Answers `{ok, slug, file, delete, counts}`. `400` `unknown photo`. |
-| `POST /api/apply-moves` | `{}` | Carry out every recorded copy, every recorded move, and every deletion, in that order. A move takes the source file away, so the copies MUST run first. This route touches the files. A deleted photo is moved into `work/trash/`, not unlinked. A photo that holds both a target and a delete mark is deleted, and is neither moved nor copied. A copy that is done no longer holds `copy_to`, so a second call does not write the file again. Answers `{ok, moved, already_done, failed, copied, copy_failed, renamed, deleted, delete_failed, delete_gone, rows, labels, counts}`. `500` when a file cannot be written. |
+| `POST /api/apply-moves` | `{}` | Carry out every recorded copy, every recorded move, and every deletion, in that order. A move takes the source file away, so the copies MUST run first. This route touches the files. A deleted photo is moved into `my/trash/`, not unlinked. A photo that holds both a target and a delete mark is deleted, and is neither moved nor copied. A copy that is done no longer holds `copy_to`, so a second call does not write the file again. Answers `{ok, moved, already_done, failed, copied, copy_failed, renamed, deleted, delete_failed, delete_gone, rows, labels, counts}`. `500` when a file cannot be written. |
 | `POST /api/validate` | `{checks: [id]}` | Run the named checks over the whole photo set and answer the defects. The route only reads. An absent `checks` runs every check. Answers `{ok, ran, wines, photos, seconds, findings, slugs}`. `findings` holds one record per defect, with `check`, `why`, and `photos` (a list of `{slug, file}`). `slugs` holds every wine that at least one finding names, sorted. `400` when `checks` is not a list of strings, is empty, or names an unknown check. |
 | `POST /api/exclude` | `{slug, excluded, reason}` | Take one wine out of the benchmark, or bring it back. `excluded` defaults to true. A reason is required to exclude, at most 1000 characters. Answers `{ok, slug, excluded, entry, count}`. Read `docs/excluded-slugs.md`. |
 | `POST /api/group` | `{slug, target}` | Join two wines into one variant group. The write is one pair. A wine that is in no group takes the group of the other wine. Answers `{ok, changed, group, ...}`; when `changed` is true the answer also holds `rows`, `labels`, `wines`, `excluded`, `groups`, and `slugs`. `409` when both wines are already in two different groups: a merge of two groups cannot be undone by taking one pair away. |

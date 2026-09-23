@@ -48,6 +48,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MY = common.PHOTO_DIR
 OUT = common.VARIANT_GROUPS_FILE
 CATALOG = common.CATALOG_FILE
+# slug -> corrected catalogue photo. See the README, `Patched catalogue photos`.
+PATCHES = common.load_patches()
+# slug -> cropped catalogue photo. See the README, `Cropped catalogue photos`.
+CROPS = common.load_cropped_bottles()
 
 
 def load_catalog():
@@ -121,7 +125,11 @@ def embed_bottles(slugs, catalog, batch, maxside):
     for s in slugs:
         if s in cache:
             continue
-        path = (catalog.get(s) or {}).get("local_path")
+        # The script embeds the picture that the review tool shows: the crop,
+        # then the corrected photo of `patch_dir`, then the photo of the record.
+        # A group is found by comparing the bottle photos, so a photo that the
+        # tool no longer shows MUST NOT decide a group.
+        path = common.catalogue_picture(s, catalog.get(s), CROPS, PATCHES)
         if path and os.path.exists(path):
             todo.append((s, path))
     log("bottle photos to embed: %d" % len(todo))

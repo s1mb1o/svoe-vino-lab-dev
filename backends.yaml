@@ -84,6 +84,60 @@ backends:
     workers: 1
     headers: {}
 
+  # The SAME model and the SAME server as `svm-siglip2-448`, answering from an
+  # OLDER index. `index` names another index file of the index directory, so
+  # two index versions are compared in one benchmark with no restart and no
+  # second model in memory. The server refuses a file that was built by another
+  # model, resize mode, background or vector width, so this cannot silently
+  # compare two vector spaces.
+  #
+  # `siglip2-12041b8834` is the index of 2026-09-18, built BEFORE the 6 patched
+  # catalogue photos existed. Against `siglip2-d3a1b76f7e` it measures what the
+  # patches are worth. The file is on the gx10 host, beside the current index.
+  # Read `available_indexes` of the pipeline in `GET /v1/info` for the files
+  # this server actually holds; an absent file answers 404 for every photo.
+  - id: svm-siglip2-448-prepatch
+    label: svoe-vino-matcher pipeline siglip2-448, pre-patch index of 2026-09-18
+    url: http://127.0.0.1:8158/v1/pipelines/siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10, index: siglip2-12041b8834 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  # The SAME model and the SAME server as `svm-siglip2-448`, with each backend
+  # pinned to one index file. The pair holds before and after a restart of the
+  # server, because neither backend depends on the index that the server owns.
+  #
+  # `siglip2-fa019ee3e5` is the index of 2026-09-22 17:37: the catalogue photos
+  # WITH their empty border, and 15 patches. `siglip2-88f817cdf0` is the index of
+  # 2026-09-23: the cropped pictures of `dataset.image_dir`, which
+  # `svoe-wino-hackaton/scripts/build_cropped.py` writes. The pair measures what
+  # the crop is worth.
+  - id: svm-siglip2-448-bordered
+    label: svoe-vino-matcher pipeline siglip2-448, index of the photos with their border (2026-09-22)
+    url: http://127.0.0.1:8158/v1/pipelines/siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10, index: siglip2-fa019ee3e5 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-siglip2-448-cropped
+    label: svoe-vino-matcher pipeline siglip2-448, index of the cropped pictures (2026-09-23)
+    url: http://127.0.0.1:8158/v1/pipelines/siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10, index: siglip2-88f817cdf0 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
   - id: svm-barcode-siglip2-448
     label: svoe-vino-matcher pipeline barcode-siglip2-448
     url: http://127.0.0.1:8158/v1/pipelines/barcode-siglip2-448/predict
@@ -164,5 +218,236 @@ backends:
     query: { limit: 10 }
     top_k: 10
     timeout_s: 300
+    workers: 1
+    headers: {}
+
+  # ------------------------------------------------------- the label experiment
+  #
+  # These four answer from `svoe-vino-matcher/config.label.yaml` on port 8164,
+  # NOT from the main config on 8158. Start that server first:
+  #   cd ../svoe-vino-matcher && SVM_PY=.venv/bin/python ./scripts/serve.sh config.label.yaml
+  #
+  # The three pipelines share one query photo set and differ in ONE thing: which
+  # picture is embedded. `-photo` embeds the whole photo, `-label` embeds the
+  # SAM3 label crop of that photo against an index of catalogue label crops, and
+  # `-ensemble` sums the two. Run the three in one session to compare them.
+  #
+  # Fill the crop cache BEFORE the run, or every request cuts its photo again on
+  # the shared gx10 service:
+  #   cd ../svoe-vino-matcher && .venv/bin/python scripts/label_crop_cache.py \
+  #       --config config.label.yaml --pipeline siglip2-448-label \
+  #       --photos ../svoe-vino-testset/dataset/my/photo
+  # Then set `query.cache_only: true` in `config.label.yaml`, so a missing crop
+  # is reported instead of quietly answering with the whole photo.
+
+  - id: svm-label-gw-photo
+    label: label experiment, control — gateway SigLIP 2 over the whole picture
+    url: http://127.0.0.1:8164/v1/pipelines/gateway-siglip2/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-label-gw-label
+    label: label experiment — gateway SigLIP 2 over the SAM3 label crop
+    url: http://127.0.0.1:8164/v1/pipelines/gateway-siglip2-label/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    # A cached crop answers in milliseconds. An uncached crop waits for the
+    # shared SAM3 service, which took 2.2 s per call under load on 2026-09-22.
+    timeout_s: 180
+    workers: 1
+    headers: {}
+
+  - id: svm-label-gw-ensemble
+    label: label experiment — gateway whole picture plus label crop, equal weights
+    url: http://127.0.0.1:8164/v1/pipelines/ensemble-gateway-photo-label/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 180
+    workers: 1
+    headers: {}
+
+  # The hard cases of 2026-09-23: the ensemble above, re-ranked inside one
+  # producer by the words that separate its cards. Plan
+  # `svoe-vino-matcher/docs/plans/02_sibling-difference-rerank.md`. The OCR text
+  # comes from the cache alone (`cache_only: true`), so a photo that is not in
+  # the cache keeps the base order.
+  - id: svm-label-gw-difference
+    label: hard cases — the gateway ensemble, re-ranked inside one producer by the difference words
+    url: http://127.0.0.1:8164/v1/pipelines/difference-ensemble-gateway-photo-label/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 180
+    workers: 1
+    headers: {}
+
+  # The crop A/B of 2026-09-23. Each pipeline runs twice with the SAME backend
+  # settings. `bordered` asks the temporary server on 8165, which reads the
+  # catalogue photos with their border (`photo_dir` + `patch_dir`, 15 patches).
+  # `cropped` asks the live server on 8158, which reads `dataset.image_dir`. The
+  # server on 8165 runs on gx10 and is reached through an SSH tunnel; it is
+  # stopped after the A/B, so the `bordered` entries answer nothing later.
+
+  - id: svm-crop-ab-bordered-siglip2-336
+    label: svoe-vino-matcher pipeline siglip2-336, catalogue photos with their border
+    url: http://127.0.0.1:8165/v1/pipelines/siglip2-336/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-bordered-dinov3-336
+    label: svoe-vino-matcher pipeline dinov3-336, catalogue photos with their border
+    url: http://127.0.0.1:8165/v1/pipelines/dinov3-336/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-bordered-gateway-siglip2
+    label: svoe-vino-matcher pipeline gateway-siglip2, catalogue photos with their border
+    url: http://127.0.0.1:8165/v1/pipelines/gateway-siglip2/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-bordered-ensemble-siglip2-dinov3
+    label: svoe-vino-matcher pipeline ensemble-siglip2-dinov3, catalogue photos with their border
+    url: http://127.0.0.1:8165/v1/pipelines/ensemble-siglip2-dinov3/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-bordered-text-siglip2-448
+    label: svoe-vino-matcher pipeline text-siglip2-448, catalogue photos with their border
+    url: http://127.0.0.1:8165/v1/pipelines/text-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-bordered-barcode-siglip2-448
+    label: svoe-vino-matcher pipeline barcode-siglip2-448, catalogue photos with their border
+    url: http://127.0.0.1:8165/v1/pipelines/barcode-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-bordered-rerank-siglip2-448
+    label: svoe-vino-matcher pipeline rerank-siglip2-448, catalogue photos with their border
+    url: http://127.0.0.1:8165/v1/pipelines/rerank-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-cropped-siglip2-336
+    label: svoe-vino-matcher pipeline siglip2-336, catalogue cropped pictures
+    url: http://127.0.0.1:8158/v1/pipelines/siglip2-336/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-cropped-dinov3-336
+    label: svoe-vino-matcher pipeline dinov3-336, catalogue cropped pictures
+    url: http://127.0.0.1:8158/v1/pipelines/dinov3-336/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-cropped-gateway-siglip2
+    label: svoe-vino-matcher pipeline gateway-siglip2, catalogue cropped pictures
+    url: http://127.0.0.1:8158/v1/pipelines/gateway-siglip2/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-cropped-ensemble-siglip2-dinov3
+    label: svoe-vino-matcher pipeline ensemble-siglip2-dinov3, catalogue cropped pictures
+    url: http://127.0.0.1:8158/v1/pipelines/ensemble-siglip2-dinov3/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-cropped-text-siglip2-448
+    label: svoe-vino-matcher pipeline text-siglip2-448, catalogue cropped pictures
+    url: http://127.0.0.1:8158/v1/pipelines/text-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-cropped-barcode-siglip2-448
+    label: svoe-vino-matcher pipeline barcode-siglip2-448, catalogue cropped pictures
+    url: http://127.0.0.1:8158/v1/pipelines/barcode-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
+    workers: 1
+    headers: {}
+
+  - id: svm-crop-ab-cropped-rerank-siglip2-448
+    label: svoe-vino-matcher pipeline rerank-siglip2-448, catalogue cropped pictures
+    url: http://127.0.0.1:8158/v1/pipelines/rerank-siglip2-448/predict
+    field: image
+    response: auto
+    query: { limit: 10 }
+    top_k: 10
+    timeout_s: 60
     workers: 1
     headers: {}

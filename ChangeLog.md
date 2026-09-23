@@ -1,8 +1,355 @@
 # ChangeLog
 
+## 2026-09-23
+
+### Backend for the hard cases
+
+- New backend `svm-label-gw-difference` in `backends.yaml`. It asks the pipeline
+  `difference-ensemble-gateway-photo-label` of `svoe-vino-matcher` on port 8164: the
+  gateway ensemble, re-ranked inside one producer by the label words that separate
+  its cards. Plan: `svoe-vino-matcher/docs/plans/02_sibling-difference-rerank.md`.
+
+### Cropped catalogue photos
+
+- New key `bottle_cropped_dir` of `config.yaml`. It names the catalogue photos without
+  their empty border, one PNG file per wine slug.
+  `svoe-wino-hackaton/scripts/build_cropped.py` writes them. The project owner asked
+  for these pictures for display and for training.
+- `common.catalogue_picture` states the order of the catalogue picture: the crop, then
+  the patch, then the photo of the catalogue record. `GET /img/bottle`, the field
+  `bottle_path` of the agent API, `scripts/08_variants.py`, and `scripts/03_embed.py`
+  use it. The mark `patched` does not change.
+- A patch that changed after its crop wins over the crop, because such a crop was cut
+  from the picture before the correction. The tool prints a warning at start for each
+  such patch.
+- The pixel checks `candidate_is_catalog_photo` and `catalog_photo_twin` still read the
+  catalogue photo of the delivery, because they look for a copy of that photo.
+- `scripts/03_embed.py` scores only the candidates that have no `sim` yet. The scores of
+  earlier runs were made against the old reference and stay as they are.
+- New backends `svm-siglip2-448-bordered` and `svm-siglip2-448-cropped`. Each one pins
+  the index file of `siglip2-448`, so the two pictures of the catalogue are compared on
+  one server with no restart.
+
+## 2026-09-22
+
+### The large view of the page `/clusters`
+
+- A click on a card picture or on a confused photo opens a large view. The caption
+  names the card, or the photo and the card that the run answered, and states the
+  place in the cluster and in the view.
+- `Left` and `Right` move over the images of one cluster: the cards first, then the
+  confused photos. `Up` and `Down` open the same place in the previous or the next
+  cluster, hold at its last image when the place is after its end, and scroll the page
+  to that cluster. The first and the last image hold. `Esc` or a click on the dark
+  ground closes the view. The view holds four buttons for the same moves.
+- This follows the large view of the runs page. A click with a modifier key still
+  opens the picture in a new tab. A click on a confused photo no longer opens the
+  review page; the link `review` of the caption does that, in a new tab.
+- The old picture is hidden while the next one loads, so the caption never stands
+  under the picture of the step before.
+
+### Catalogue clusters, and the page `/clusters`
+
+- Added `scripts/10_clusters.py`. It finds the clusters of catalogue cards that the
+  matcher confuses, or can confuse, over the whole catalogue of 2,103 cards. It
+  writes `dataset/catalog-clusters.json`. A later re-rank step reads the same file.
+  The plan and the four decisions of the owner are in
+  `docs/plans/04_catalog-clusters.md`.
+- Four signals join two cards: `name` (same producer, name and category after
+  normalisation, and grapes that agree), `photo` and `label` (the SigLIP 2 cosine of
+  the catalogue photos and of the label crops, at or above 0.95), and `confusion` (at
+  least 2 positive photos that a run answered as the other card). A link records every
+  signal that passed, and the cosines also when they did not pass.
+- The vectors come from the index files of `svoe-vino-matcher`, so the script calls no
+  service and runs in under a second.
+- `config.yaml` gained the block `clusters`. `scripts/common.py` reads it as
+  `CLUSTERS` and `CLUSTERS_FILE`, and the start report of every script names
+  `clusters_file`.
+- The review tool serves the new page `GET /clusters` and the route
+  `GET /api/clusters`. The page shows the photos of each cluster side by side, the card
+  fields, the label counts, and the evidence of each link with the confused test
+  photos. It writes nothing. `/clusters#<slug>` opens the cluster of a card. The route
+  reads the file at each request, so a new build needs no restart.
+- Every page gained the link `Clusters` in its navigation.
+- `variant-groups.json`, `scripts/08_variants.py`, and the review table did not
+  change.
+- Measured with the defaults: 255 clusters over 630 cards, the largest of 10 cards;
+  53 `same-wine`, 22 `mixed`, 180 `look-alike`. The three Abrau-Durso Pinot Noir cards
+  stand in one cluster with the Cabernet Sauvignon `-125` of the same label line. Read
+  `ResearchLog.md` for the choice of the defaults.
+
+### Three backends for the label experiment
+
+- `backends.yaml` gained `svm-label-gw-photo`, `svm-label-gw-label` and
+  `svm-label-gw-ensemble`. They answer from `svoe-vino-matcher/config.label.yaml`
+  on port 8164, not from the main config on 8158, so the label experiment is
+  measured without a change to the recognizer that serves 8158.
+- The three differ in ONE thing: which picture is embedded. `-photo` embeds the
+  whole query photo against the whole-picture index, `-label` embeds the SAM3
+  label crop of that photo against an index of catalogue label crops, and
+  `-ensemble` sums the two. The comment in `backends.yaml` states how to start
+  that server and how to fill the query crop cache before a run.
+- The first measurement is in `runs/2026-09-22T18*-label-exp`. Over 1,600
+  positive photos the whole picture holds R@1 0.7594, the label crop 0.7431
+  (p = 0.194, not established), and the two together 0.7931 (+0.0337,
+  p = 0.000449). Read `svoe-vino-matcher/ResearchLog.md`.
+
+### The review table shows the package, the label, or the label box
+
+- The tool bar holds the control `Image` with the three values `package`,
+  `label`, and `label box`. `package` is the catalogue photo, or the patch of
+  that photo, as before. `label` is the label cut out of that photo with SAM3.
+  `label box` is the bounding box of the label alone.
+  `svoe-wino-hackaton/scripts/build_labels.py` writes the two crop directories,
+  and it cuts the label out of the patch when the wine has one.
+- `config.yaml` gained the two generic keys `bottle_label_dir` and
+  `bottle_label_box_dir`. `scripts/common.py` reads them and holds
+  `load_bottle_labels()`. An absent key gives no crop of that kind. A configured
+  directory that is not on disk gives a warning at the start, and the tool runs.
+- A label crop does NOT replace the catalogue photo, unlike a patch. It is a
+  second view of the same photo. This is why the tool holds a selector for the
+  crops and no selector for the patches.
+- `GET /img/bottle` gained the parameter `kind`. A wine with no crop of the asked
+  kind answers with its package picture, so a view never holds a hole. An unknown
+  kind answers with the package picture as well.
+- Every row carries `has_label` and `has_label_box`; the wine record also carries
+  `label_path` and `label_box_path`. The page draws the mark `no label` in the
+  bottom right corner of a picture that fell back, so the mark stands beside the
+  mark `patched` and not over it. The pickers draw a dot in place of the word.
+- The control acts on the whole review page: the table, the large view, the move
+  target list, and the group picker. The runs page is unchanged.
+- The control travels in the query string as `img`, beside `filter`, `sort`, and
+  `slugs`. `/?img=label` opens the table on the label crops.
+- The control is hidden when no wine has a crop, because the choice would then
+  say nothing.
+- A label crop is RGBA and its alpha channel holds the mask. The page puts such a
+  picture on white, so a white label edge stays visible in the dark theme.
+- The tool reads both directories again at every `GET /api/reload`.
+- `docs/openapi.yaml`, `README.md`, and `SMOKE_TESTS.md` state the selector. The
+  first build of the crops covers 2,070 of the 2,103 catalogue cards.
+
+### The `Show` list of the review table holds the benchmark scope
+
+- The control `Show` gained two entries: `excluded from the benchmark` and
+  `included in the benchmark`. The reviewer looks for the excluded wines in that
+  list, so the scope now stands there as well.
+- The control `Slugs` (`all` / `included` / `excluded`) is unchanged. The two
+  controls state the same scope, and one of them is enough.
+- Both new entries ask about the card, not about its photos, so they joined
+  `CATALOG_SCOPE_FILTERS`. A catalogue card with no directory in `my/` can be
+  excluded too, and it reaches the list.
+- The two controls can contradict each other, for example `Show` on `excluded`
+  with `Slugs` on `included`. The table is then empty. The count line names the
+  reason, in the same way as it does for `failed a check`.
+- Checked against the running dataset `my` with its 14 excluded slugs:
+  `all` gives 2107 rows, `excluded` gives 14, `included` gives 2093 and keeps
+  the 246 catalogue-only cards.
+
 ## 2026-09-21
 
+### A backend MAY pin an index, and the run records which one answered
+
+- New backend `svm-siglip2-448-prepatch` in `backends.yaml`. It is the SAME
+  pipeline and the SAME server as `svm-siglip2-448`, with
+  `query: { limit: 10, index: siglip2-12041b8834 }`. That is the index of
+  2026-09-18, built before the 6 patched catalogue photos existed, so the pair
+  measures what the patches are worth in one benchmark, with no restart and no
+  second model in memory.
+- No code was needed for that: `match_backends._url` already puts every key of
+  `query` into the query string.
+- **Defect found and fixed in the same change.** `embeddings_of` read the
+  `embeddings` block of the pipeline, which is the index the pipeline OWNS. A
+  backend that pins another index therefore recorded the wrong provenance: two
+  runs that read different vectors stated the same age. The first paired run
+  showed it — the server log proved 40 requests used
+  `index=siglip2-12041b8834.npz` while `run.json` claimed
+  `siglip2-d3a1b76f7e.npz`. `embeddings_of` now reads `index` from the backend
+  URL, takes the build time from `available_indexes` of that pipeline, and
+  marks the block `pinned_by_backend: true`. A pinned index the server does
+  not offer, and a pinned index on a pipeline that owns none, each record a
+  reason instead of a wrong age.
+
+
+### The virtual NULL wine: a photo that matches no card of the catalogue
+
+- The review table holds a new first row, the NULL wine. It is a virtual wine
+  with the reserved slug `__null__`. A photo that lies under it matches NO card
+  of the catalogue. Until now the reviewer could state "not this wine"
+  (`negative`) and could not state "no card of the catalogue".
+- The row takes a photo in four ways: a drag onto the row, the key `0` in the
+  large view, the entry `No match in the catalogue (NULL)` of the context menu,
+  and the last entry of the move dialog. Each way records a move, and `apply`
+  moves the file into `<photo_dir>/__null__/`, as for every other move.
+- The row stands first, and no filter and no search take it away, so the drop
+  target is always there. It is built whether the directory is present or not;
+  the first `apply` makes the directory.
+- The place is the statement: a photo there needs no label. The card takes
+  `positive`, which confirms it, and `unusable`, which takes the photo out of
+  the set. `POST /api/label` answers `400` for `negative` and for `variant`
+  there, and `POST /api/copy` refuses `__null__`: both judge a photo against a
+  wine, and NULL is not a wine.
+- These photos are out of the labelling progress of the header. The header
+  counts them apart as `no match`, with the pending moves in brackets.
+- `scripts/match_run.py` reads them as rejection cases. Such a photo enters the
+  query set with the label `no_match` and no truth. No answer is the only
+  correct outcome, and every card at rank 1 is `false_match_at_1`.
+  `metrics.json` gained the block `no_match` with `n`, `rejected`,
+  `false_match_at_1`, `rejection_rate`, `errors`, and the score that a false
+  match reached. `summary.md` gained the section "Photos with no match in the
+  catalogue". `--only no_match` runs these photos alone.
+- The page `/runs` gained the filters `no match: every photo that matches no
+  card` and `no match: the backend answered a card anyway`.
+- Open point: the pipeline stages read `photo_dir` and now can meet the
+  directory `__null__`. They are not changed. The pipeline builds the dataset
+  `default` alone, and the NULL directory is empty there until a reviewer uses
+  it.
+- Read `docs/plans/03_null-image.md` for the decisions and the two stages.
+
+### A run records when its embeddings were built, and the page shows it
+
+- `scripts/match_run.py` gained `embeddings_of()`. At run creation it asks the
+  backend `GET /v1/info` and stores the answer in `run.json` under
+  `embeddings`. Two runs of one backend id were until now indistinguishable
+  although a rebuild of the index moved every vector between them.
+- The probe resolves the pipeline that owns the vectors. It reads the name from
+  `/v1/pipelines/<name>/predict` or from `?pipeline=`, falls back to
+  `default_pipeline` for `/v1/eval/predict`, and then walks the `embed` and
+  `base` keys until it reaches the `embed` pipeline. An `ensemble` reports one
+  block per member instead of one age.
+- An unknown age is always a stated reason, never a blank: no HTTP backend, the
+  server did not answer, no such pipeline, or the pipeline owns no index. A
+  `kind: remote` backend such as `official-api` owns no index, so an unknown
+  age there is the ordinary case and not a fault.
+- `scripts/review_server.py` carries the block through `run_head()` and prints
+  one line in the run detail header. A run made before this change prints "not
+  recorded" rather than an empty line.
+- The probe needs the matcher of 2026-09-21 or later. An older server reports
+  no `embeddings` block, and the run then records "pipeline `<name>` reports no
+  index".
+
 ### Added
+- Arrow keys in the large view of the runs page. `Left` and `Right` move through
+  the images of one photo row: the matched photo first, then the candidate
+  strip. The first image and the last image hold; the move does not turn around
+  at an end. `Up` and `Down` move to the previous row or to the next row and keep
+  the place in the row, and the table scrolls to that row. A bottle photo that
+  failed to load is not a step of the move, because the page puts a text card in
+  its place. `Escape` closes the view, as before.
+- `patch_dir` in `config.yaml`. It names a directory of corrected catalogue photos,
+  one file per wine slug: `<wine_slug>.<extension>`. The first directory is
+  `svoe-wino-hackaton/dataset/patched-official-2026-09-17`, which held 7 files on
+  2026-09-22. Its `README.md` names each one and states where it comes from. The
+  key is generic: every dataset reads the same directory. `common.PATCH_DIR`
+  holds the path and `common.load_patches()` reads the files. The extension of a
+  patch does NOT have to be the extension of the photo it replaces:
+  `czitronnyj-magaracha.png` replaces a `.webp`. The match is made on the slug
+  alone, which is the name before the extension. A file whose extension is not an
+  image type, such as that `README.md`, is not a patch.
+- A patch REPLACES the catalogue photo of that slug. Some cards of «Свое вино» carry
+  the photo of a different wine, so the photo it corrects MUST NOT stay in view.
+  `GET /img/bottle` serves the patch, and never the photo of the catalogue record.
+  The catalogue file is never rewritten.
+- The mark `patched` in the top right corner of every catalogue bottle that comes
+  from `patch_dir`: the review table, the pickers of `add to wine`, `move` and
+  `group`, and the candidate strips of a run. The pickers show a 34 px thumbnail,
+  where the mark is a dot of the same colour and the tooltip states the meaning. The
+  colour is `--var` in both the light and the dark palette.
+- The field `patched` in a row, in a wine record, in a variant sibling, and in a
+  suggest target. `GET /api/patched` answers the slugs that take a patch; the runs
+  page holds a slug alone and no record, so it reads that list.
+- The tool reads `patch_dir` again at every `GET /api/reload`, so a new patch file
+  needs no restart. The start report states how many slugs take a patch, and warns
+  about a patch file whose name is not a slug of the catalogue.
+- `scripts/08_variants.py` embeds the patch and not the photo of the record. A
+  variant group is found by comparing the catalogue bottle photos, so a photo that
+  the tool no longer shows MUST NOT decide a group.
+- `svoe-vino-matcher/config.yaml` reads the same directory under the same key and
+  indexes the patch in place of the catalogue photo.
+
+### Fixed
+- A new or an edited patch stayed invisible in the browser for 24 hours.
+  `_file` answered every image with `Cache-Control: public, max-age=86400`, and the
+  URL `/img/bottle?slug=<slug>` does not change when a patch replaces the file.
+  The browser therefore answered from its own cache and never asked the server.
+  The route `/img/bottle` now answers with an `ETag` and `Cache-Control: no-cache`.
+  The browser asks with `If-None-Match` and gets `304` while the file is the same.
+  It gets the new file in the first answer after a patch. The other image routes
+  keep `max-age=86400`, because their file never changes behind a stable URL.
+  A browser that cached a bottle image before this change keeps the old copy until
+  the 24 hours pass. One reload with an empty cache clears it.
+
+### Changed
+- The table of the review page is built from the catalogue. The filter `all wines`
+  holds one row per catalogue card now, and not only the wines that hold a directory
+  in the photo set. A wine with no candidate photo is a row with no candidate photo,
+  and a drop of a photo on such a row makes its directory. The header counts every
+  row: `2103 wines` for `official-real-photos`, `2106` for `default`, which holds 3
+  directories whose slug the catalogue does not hold. Every other filter keeps its
+  list: a card with no photo holds no photo and no label, so it stays out of the work
+  lists. An address that names a wine with no photo now opens the filter `all` and
+  not `no candidate photos`.
+
+### Fixed
+- `load_state` of `scripts/review_server.py` answered `{"labels": {}}` with no key
+  `wines` when the label file was missing or broken. `prune_state` reads that key, so
+  the tool stopped with `KeyError: 'wines'`. Every new dataset met this fault at the
+  first start, because a new dataset holds no label file. Both answers hold the two
+  keys now.
+
+### Changed
+- `.gitignore` covers `dataset/*/photo/` and `dataset/*/trash/`, and not the paths of
+  one dataset alone. The pictures of every dataset stay out of git.
+- The trash stands at `dataset/my/trash` now, and not at `work/trash`. The 360 files
+  that the directory held were moved with it. A dataset owns its trash, so the trash
+  stands beside the photos, the labels, and the other files of that dataset.
+  `.gitignore` holds the new path: the directory holds pictures and does not belong
+  in git.
+- `config.yaml` holds two parts now. `rootdir`, `catalog_file`, and `backends_file`
+  stand at the top and are the same for every dataset. The key `dataset` holds one
+  entry per photo set, and each entry holds `name`, `photo_dir`, `trash_dir`,
+  `label_file`, `variant_groups_file`, `manual_groups_file`, `excluded_slugs_file`,
+  and `runs_dir`. One entry MUST carry the name `default`.
+- `scripts/review_server.py` and `scripts/match_run.py` take `--dataset NAME`. Without
+  the option they use the dataset named `default`. An unknown name stops the script
+  and names every dataset of the file. Every other script uses `default`, so a second
+  dataset is reviewed and benchmarked, and it is not built by the pipeline.
+  `run.json` of a run records the dataset in `options.dataset`, and the configuration
+  report at start holds the line `dataset`.
+- `scripts/common.py` holds `DATASETS`, `dataset_names()`, and `select_dataset(name)`.
+  The call binds the paths of one dataset. A file with the paths at the top level is
+  the old flat shape; it is refused, and the error names the keys that belong in a
+  dataset entry now. `common.OUT` follows `photo_dir` of the chosen dataset.
+
+### Added
+- The dataset `official-real-photos`. It holds the 100 photos of the official test set,
+  copied from `~/Downloads/Реальные фото`, which stays as it is. The photos carry no
+  ground truth. Each one lies in the directory of the wine that the pipeline
+  `svm-siglip2-448` answered at rank 1 in the run
+  `2026-09-21T114905Z-svm-siglip2-448-dir-realphoto`; the 100 photos fall on 65 wines
+  and the scores run from 0.653 to 0.852. A place is not a label: every photo holds a
+  comment that names the run, the rank and the score, it holds no label, and the field
+  `prefilled_from` records the placement. A reviewer MUST judge each photo. The
+  dataset holds its own `review-labels.json` and `excluded-slugs.json`; the variant
+  groups and the manual groups are written when they are needed.
+- The review page holds an inbox. An image file that lies directly in `my/`, and not
+  in the directory of a wine, belongs to no wine yet. `scan_inbox` lists these files,
+  `GET /api/rows` carries them in the new field `inbox`, and the page shows them in
+  the sideboard with a dashed frame. The reviewer drags such a card to a wine row;
+  the card then states the target and the header counts one more pending move. The
+  button `clear`, and a drop back on the sideboard, take the target away. `apply`
+  moves every file that holds a wine into `my/<slug>/`. The file keeps its name, and
+  a name that is taken in the target gets the suffix `_moved2`. The photo carries no
+  label, because no reviewer has judged it against this wine, and its comment states
+  that it comes from the inbox. The target lives in the browser tab, as the rest of
+  the sideboard does, so a reload before `apply` forgets it and the file stays in the
+  inbox.
+- `POST /api/apply-moves` reads the field `inbox` of the body: a list of
+  `{"file": ..., "to": ...}`. It answers `inbox_moved`, `inbox_failed`, and the
+  `inbox` that is left. A pair is refused when the target is not a slug of the
+  catalogue, when a name holds a path separator, when the file is not in the inbox,
+  or when the same file is named twice.
+- `GET /img/inbox?file=<name>` serves one file of the inbox. It refuses a name with a
+  path separator, a name that is a directory, and a file that is not present.
 - `scripts/match_run.py` takes `--photos-dir DIR`. The runner then matches the image
   files of that directory instead of the photo set of the project. The walk is
   recursive. A hidden file and a file that is not an image stay out. Such a directory

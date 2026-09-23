@@ -3,14 +3,23 @@
 Two values are written per candidate:
   sim      cosine similarity of SigLIP2 embeddings against the reference image
   bg_white fraction of border pixels that are near white, a cheap studio-cutout signal
+
+The reference is the picture that the review tool shows: the cropped catalogue
+photo, then the patch, then `ref_path` of the database. `common.catalogue_picture`
+states the rule. The stage scores only the candidates that have no `sim` yet, so
+a score that an earlier run wrote against an older reference stays as it is.
 """
 import argparse, io, math, os, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import common  # noqa: E402
 from common import EMBED_MODEL, WORK, data_url, db, log, post_json
 
 REF_CACHE = os.path.join(WORK, "ref_emb.npy")
 REF_INDEX = os.path.join(WORK, "ref_emb.index")
+# slug -> cropped catalogue photo, and slug -> corrected catalogue photo.
+CROPS = common.load_cropped_bottles()
+PATCHES = common.load_patches()
 
 
 def embed_batch(paths, maxside=384):
@@ -64,7 +73,9 @@ def main():
             "SELECT id,local_path FROM candidates WHERE slug=? AND dl_status='ok' AND sim IS NULL",
             (w["slug"],)).fetchall()
         present = [(cid, p) for cid, p in rows if p and os.path.exists(p)]
-        if not os.path.exists(w["ref_path"] or ""):
+        ref_path = common.catalogue_picture(
+            w["slug"], {"local_path": w["ref_path"]}, CROPS, PATCHES)
+        if not os.path.exists(ref_path or ""):
             # A missing reference is a storage problem. Leave the wine open.
             log("skip %s: reference photo missing" % w["slug"])
             continue
@@ -78,7 +89,7 @@ def main():
             conn.commit()
             continue
         try:
-            ref = np.array(embed_batch([w["ref_path"]], args.maxside)[0], dtype=np.float32)
+            ref = np.array(embed_batch([ref_path], args.maxside)[0], dtype=np.float32)
         except Exception as exc:  # noqa: BLE001
             log("ref embed failed", w["slug"], type(exc).__name__)
             continue

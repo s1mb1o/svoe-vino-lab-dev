@@ -16,48 +16,117 @@ Test data for the Svoe Vino wine scanner.
 
 `config.yaml` in the project root holds the configuration. `scripts/common.py` reads it.
 
+The file holds two parts. The keys at the top are the same for every dataset. The key
+`dataset` holds one entry per photo set.
+
+### The generic keys
+
 | Key | Constant in `common.py` | Meaning |
 |---|---|---|
 | `rootdir` | `ROOTDIR` | Root directory of the workspace. Every relative path of the configuration is resolved against it. |
-| `catalog_file` | `CATALOG_FILE` | Catalogue of the vino-svoe.ru wines, one JSON record per line. |
+| `catalog_file` | `CATALOG_FILE` | Catalogue of the vino-svoe.ru wines, one JSON record per line. Every dataset reads the same catalogue. |
+| `patch_dir` | `PATCH_DIR` | Corrected catalogue photos, one file per wine slug. Optional. Every dataset reads the same directory. See [Patched catalogue photos](#patched-catalogue-photos). |
+| `bottle_cropped_dir` | `BOTTLE_CROPPED_DIR` | Catalogue photos without their empty border, one file per wine slug. Optional. Every view shows the crop in place of the catalogue photo. See [Cropped catalogue photos](#cropped-catalogue-photos). |
+| `bottle_label_dir` | `BOTTLE_LABEL_DIR` | Label crops of the catalogue photos, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
+| `bottle_label_box_dir` | `BOTTLE_LABEL_BOX_DIR` | Box crops of the same labels, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
+| `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
+| `clusters` | `CLUSTERS`, `CLUSTERS_FILE` | The settings of `scripts/10_clusters.py` and the path of the cluster file. See [Catalogue clusters](#catalogue-clusters). |
+
+### The keys of one dataset
+
+| Key | Constant in `common.py` | Meaning |
+|---|---|---|
+| `name` | `DATASET` | The name of the dataset. It MUST be present, and the names MUST differ. |
 | `photo_dir` | `PHOTO_DIR` | Photo set. One directory per wine slug. |
 | `trash_dir` | `TRASH_DIR` | A deleted photo is moved here, not unlinked. |
 | `label_file` | `LABEL_FILE` | Labels of the review tool. |
 | `variant_groups_file` | `VARIANT_GROUPS_FILE` | Variant groups. `scripts/08_variants.py` writes this file. |
 | `manual_groups_file` | `MANUAL_GROUPS_FILE` | Variant pairs made by hand in the review tool. `scripts/08_variants.py` never writes this file. |
 | `excluded_slugs_file` | `EXCLUDED_SLUGS_FILE` | Excluded slugs. The photos of an excluded slug are not used for benchmarking. |
-| `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
-| `runs_dir` | `RUNS_DIR` | One directory per match run. |
+| `runs_dir` | `RUNS_DIR` | One directory per match run. The runs of one dataset stand apart from the runs of another. |
 
 ```yaml
 rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
 catalog_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl
-photo_dir: svoe-vino-testset/dataset/my/photo
-trash_dir: svoe-vino-testset/work/trash
-label_file: svoe-vino-testset/dataset/my/review-labels.json
-variant_groups_file: svoe-vino-testset/dataset/my/variant-groups.json
-manual_groups_file: svoe-vino-testset/dataset/my/manual-groups.json
-excluded_slugs_file: svoe-vino-testset/dataset/my/excluded-slugs.json
+patch_dir: svoe-wino-hackaton/dataset/patched-official-2026-09-17
 backends_file: svoe-vino-testset/backends.yaml
-runs_dir: svoe-vino-testset/runs
+
+dataset:
+  - name: default
+    photo_dir: svoe-vino-testset/dataset/my/photo
+    trash_dir: svoe-vino-testset/dataset/my/trash
+    label_file: svoe-vino-testset/dataset/my/review-labels.json
+    variant_groups_file: svoe-vino-testset/dataset/my/variant-groups.json
+    manual_groups_file: svoe-vino-testset/dataset/my/manual-groups.json
+    excluded_slugs_file: svoe-vino-testset/dataset/my/excluded-slugs.json
+    runs_dir: svoe-vino-testset/runs
 ```
 
 An absolute value stays as it is. An absent key gives the earlier default path.
 `common.rootpath(path)` resolves any other relative path against `rootdir`.
-`scripts/review_server.py` and `scripts/08_variants.py` take every path from these
-constants. `scripts/review_server.py` prints the configuration and the work directory
-at start:
+
+### Choosing a dataset
+
+One entry MUST carry the name `default`. A script that runs with no option uses that
+dataset.
+
+```bash
+python3 scripts/review_server.py                    # the dataset `default`
+python3 scripts/review_server.py --dataset second
+python3 scripts/match_run.py --backend official-api --dataset second
+```
+
+`scripts/review_server.py` and `scripts/match_run.py` take `--dataset NAME`. Every
+other script uses `default`, so a second dataset is reviewed and benchmarked, and it
+is not built by the pipeline. `run.json` of every run records the dataset it used.
+
+### The datasets of this project
+
+| Name | Photos | State |
+|---|---|---|
+| `default` | the photo set that the pipeline built | 2,435 labels of a reviewer |
+| `official-real-photos` | 100 official test photos, real-world shots | no label yet |
+
+`official-real-photos` holds the 100 photos of the official test set. They carry **no
+ground truth**. Each photo lies in the directory of the wine that the recognizer
+answered at rank 1 in the run `2026-09-21T114905Z-svm-siglip2-448-dir-realphoto`, with
+the pipeline `svm-siglip2-448`. The scores of those answers run from 0.653 to 0.852,
+and the 100 photos fall on 65 wines.
+
+**A place is not a label.** Every photo holds a comment that names the run, the rank
+and the score, and holds no label. The filter `holds a comment` lists them all. A
+reviewer MUST judge each photo: the key `1` keeps it, and a photo of another wine is
+moved with the `move` button or with the sideboard.
+
+`scripts/match_run.py --dataset official-real-photos` answers `the query set is empty`
+until the photos hold labels. The query set is built from labels, and a machine
+placement is not one.
+
+An unknown name stops the script and names every dataset of the file.
+
+`common.select_dataset(name)` binds the paths of one dataset. A script that reads a
+path at call time needs no more than this call. A script that binds a path of `common`
+at import time MUST bind it again after the call; `scripts/review_server.py` does that
+in `bind_paths()`.
+
+The file MUST hold the key `dataset`. A file with the paths at the top level is the
+old flat shape. Such a file is refused, and the error names the keys that belong in a
+dataset entry now.
+
+Every script prints the configuration and the work directory at start:
 
 ```
 configuration: .../svoe-vino-testset/config.yaml
-  rootdir              : /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
-  catalog_file         : .../svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl
-  photo_dir            : .../svoe-vino-testset/my
+  dataset             : default
+  rootdir             : /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
+  catalog_file        : .../svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl
+  photo_dir           : .../svoe-vino-testset/dataset/my/photo
   ...
 work directory: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
 ```
 
-A path that does not exist gets the mark `(absent)`.
+A path that does not exist gets the mark `(absent)`. The line `dataset` names every
+dataset of the file when the file holds more than one.
 
 ## Result
 
@@ -148,7 +217,53 @@ so a `negative` photo is kept and is marked with its own colour. `unusable` is t
 only label that takes a photo out of the set. A photo with no label is not
 reviewed yet.
 
+### The NULL wine: a photo that matches no card
+
+A photo can show a wine that no card of the catalogue holds. The label `negative`
+does not state this: it states "not this wine" and states nothing about the rest
+of the catalogue.
+
+The first row of the table is the NULL wine. It is a virtual wine. It carries a
+dashed `NULL` placeholder in place of a bottle photo, and it holds the photos that
+match no card of the catalogue. The row stands first, and no filter and no search
+take it away, so the drop target is always there.
+
+A photo goes there in four ways:
+
+- drag the card of the photo to the NULL row, as to any other wine row;
+- press `0` in the large view;
+- right-click the card and press `No match in the catalogue (NULL)`;
+- open the move dialog and choose the last entry, `NULL`.
+
+Each way records a move. The file is moved when `apply` runs, exactly as for a move
+to another wine. The photo then lies in `<photo_dir>/__null__/`.
+
+**The place is the statement.** A photo under `__null__` needs no label: the
+directory already says that no card of the catalogue shows this wine. The card
+still takes two labels. `positive` confirms the statement. `unusable` takes the
+photo out of the set, as everywhere else. The server refuses `negative` and
+`variant` there, because both judge a photo against a wine and NULL is not a wine.
+A copy to NULL is refused for the same reason; a photo that matches nothing is
+moved, not copied.
+
+These photos are out of the labelling progress of the header. They are counted
+apart, as `no match`.
+
+`scripts/match_run.py` reads them as rejection cases. Read
+"The photos with no match" in the section "Benchmark".
+
 ### The table
+
+The table is built from the catalogue. The filter `all wines` holds one row per
+catalogue card, and a wine with no candidate photo is a row with no candidate photo.
+The header states that count: `2103 wines, 100 candidate photos`. A directory of the
+photo set whose slug the catalogue does not hold is a row as well.
+
+Every other filter asks about photos or about labels. A wine with no photo holds
+neither, so it stays out of those lists and the work lists hold the wines that carry
+photos alone. The filters that ask about the catalogue itself show every card:
+`no candidate photos (catalogue gap)`, the `catalogue photo:` filters,
+`failed a check`, `excluded from the benchmark`, and `included in the benchmark`.
 
 The page holds one table row per wine.
 Column 1 holds the catalogue bottle photo of the wine from the strapi dump.
@@ -161,7 +276,7 @@ A `move` button under a photo sends the photo to another wine slug.
 A `copy` button under a photo gives the photo to another wine slug as well,
 and leaves the photo where it is.
 
-The page has thirteen sort orders, twenty-two filters, and a text search.
+The page has thirteen sort orders, twenty-four filters, and a text search.
 Sort by `unlabelled first` to continue an unfinished pass.
 Sort by `confidence, lowest first` to check the weakest evidence first.
 Filter by `has no positive photo` to find the wines that still need a good photo.
@@ -191,9 +306,10 @@ words of the wine names, 96.0 percent stand in the slug exactly as the table wri
 them, and the rules above reach 1.6 percent more. The rest do not match, because the
 slugs do not follow one rule; `b-yu-rne` for `Бюрнье` is an example.
 
-The search does NOT open a scope of its own. A catalogue card that holds no
-candidate photo stays out of the table under most filters, also when it meets the
-query. Select `no candidate photos (catalogue gap)` to search those cards.
+The search does NOT open a scope of its own. It searches the wines that the selected
+filter holds. The filter `all wines` holds every catalogue card, so a search there
+reaches every wine. A card with no candidate photo stays out of the filters that ask
+about photos or about labels, also when it meets the query.
 
 ### The note about a wine
 
@@ -286,6 +402,79 @@ script keeps every pair made by hand.
 A perceptual hash was tried first and was dropped: a bottle photo is mostly bottle,
 so the hash of the silhouette hides the label. Read `ResearchLog.md` for the numbers.
 
+### Catalogue clusters
+
+A variant group joins wines of `my/`. A catalogue cluster joins cards of the WHOLE
+catalogue that the matcher confuses, or can confuse. A later re-rank step reads the
+clusters. The two are separate: `scripts/08_variants.py` and the review table do not
+read the cluster file, and the page `/clusters` does not read the variant groups.
+Read `docs/plans/04_catalog-clusters.md` for the rules and the decisions.
+
+`scripts/10_clusters.py` writes the file that the key `clusters.file` of `config.yaml`
+names:
+
+```bash
+python3 scripts/10_clusters.py
+python3 scripts/10_clusters.py --show abrau-dyurso-pino-nuar-krasnoe-suhoe-12
+python3 scripts/10_clusters.py --no-confusion --photo-threshold 0.93 --out work/clusters-test.json
+```
+
+Four signals join two cards. A link records every signal that passed.
+
+| Signal | Rule | Default in `config.yaml` |
+|---|---|---|
+| `name` | The same producer, the same name, and the same category after normalisation. The words of the producer are removed from the name. The grapes of one card MUST be a subset of the grapes of the other card, or one field MUST be empty. | |
+| `photo` | The SigLIP 2 cosine of the two catalogue photos. | `photo_threshold: 0.95` |
+| `label` | The SigLIP 2 cosine of the two label crops. | `label_threshold: 0.95` |
+| `confusion` | The positive photos of one card that a run of `runs` answered as the other card at rank 1, over both directions. | `min_confusions: 2` |
+
+The vectors come from the two index files of `svoe-vino-matcher` that `photo_index`
+and `label_index` name. The script calls no service, so it can run while the pipeline
+uses gx10. The name of an index file holds a digest. After a rebuild of an index, set
+the new file name in `config.yaml`.
+
+A confusion counts only when the current label file still marks the photo `positive`
+in the folder of that card. An old run can hold a label that a reviewer changed later.
+
+A cluster is a connected component over the links, so a card is in at most one
+cluster. `kind` states how the cluster holds together:
+
+| `kind` | Meaning |
+|---|---|
+| `same-wine` | The `name` links alone join every card. The cards differ by vintage, alcohol value, or package. |
+| `mixed` | The cluster holds `name` links and other links. |
+| `look-alike` | The cluster holds no `name` link. The cards share one label design, or the matcher confused them. |
+
+Measured on 2026-09-22 with the defaults: 255 clusters over 630 of the 2,103 cards, the
+largest of 10 cards; 53 `same-wine`, 22 `mixed`, 180 `look-alike`. With
+`--min-confusions 1` the largest cluster holds 38 cards, because single confusions
+chain whole product lines together. Read `ResearchLog.md`.
+
+The page `http://127.0.0.1:8154/clusters` shows the file. It holds one block for each
+cluster: the catalogue photos side by side, the card fields, the label counts of the
+test photos, and a table of the links with their evidence. The value of a signal that
+passed is bold. `confused photos` shows the test photos that a run answered as the
+other card. The controls filter by kind, signal, size, and text, and sort the
+clusters. `Image` switches between the package and the label crop.
+
+A click on an image opens the large view. The caption names the card, or the photo and
+the card that a run answered for it, and states the place: `image 3 of 18 · c013 ·
+cluster 2 of 255`. The keys and the buttons of the large view move as follows:
+
+| Key | Move |
+|---|---|
+| `Left`, `Right` | the previous or the next image of the cluster: the cards first, then the confused photos, in the order of the page |
+| `Up`, `Down` | the same place in the previous or the next cluster of the view. A place after the end of that cluster holds at its last image. The page scrolls to that cluster. |
+| `Esc` | close. A click on the dark ground also closes. |
+
+The first and the last image hold: a move does not turn around at an end. The image
+that the large view showed last keeps an outline in the page. A click with a modifier
+key, such as `Cmd`, opens the image in a new tab instead.
+
+`/clusters#<slug>` opens the cluster of that card. The cluster id, such as `c013`, is
+not stable between two builds, so the address names a card and not an id. The page
+reads the file at each load, so a new build needs no restart. The page writes nothing.
+
 ### Moving a photo to another wine slug
 
 A search result often shows the right wine in the wrong bottle, so the photo belongs
@@ -299,6 +488,9 @@ catalogue bottle photo, its name, and its producer. The order is:
 2. the same producer,
 3. a wine whose name shares words with this wine, then the same grape and the same
    category.
+
+The last entry of the dialog is always `NULL`. It states that no card of the
+catalogue shows this wine. Read the section "The NULL wine".
 
 A click on a row records the move. A field below takes any of the 2,103 catalogue
 slugs, with completion. `clear the move` removes a recorded move. `Esc` and `cancel`
@@ -333,6 +525,32 @@ The sideboard lives in the browser tab. A reload empties it, a second tab does n
 see it, and the server never learns about it. A photo in the sideboard keeps its
 label until a target is chosen and `apply` runs. `apply` carries out the recorded
 moves and states nothing about a photo that still waits in the sideboard.
+
+#### The inbox: a photo that belongs to no wine yet
+
+An image file that lies directly in `my/`, and not in the directory of a wine,
+belongs to no wine yet. Put a new photo there when the wine is not known, or when
+several photos arrive at one time. The tool lists these files at the start and shows
+them in the sideboard with a dashed frame. The file name stands under the picture.
+
+1. Drag such a card to the row of the wine that the photo shows. The card then
+   states `→ <the slug>` and the header counts one more pending move.
+2. The button `clear` on the card, and a drop back on the sideboard, take the target
+   away. The photo stays in the inbox.
+3. `apply` moves every file that holds a wine into `my/<slug>/`.
+
+The file keeps its name. A name that is already taken in the target directory gets
+the suffix `_moved2`, as any other move does. The photo carries **no label**: no
+reviewer has judged it against this wine yet, so it must be reviewed. Its comment
+states that the photo comes from the inbox.
+
+The target lives in the browser tab, exactly as the rest of the sideboard does. A
+reload before `apply` forgets it, and the file stays in the inbox. The label file is
+written only when the file lands in the directory of a wine.
+
+A file of the inbox that is not an image, and a directory, are not shown. A move is
+refused when the target is not a slug of the catalogue, when a name holds a path
+separator, or when the file is gone. The answer of `apply` names every refusal.
 
 #### The move is recorded, not performed
 
@@ -720,8 +938,133 @@ The tool reads the slug-to-bottle-photo map from the file that `catalog_file` na
 `config.yaml`. The default value is
 `svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl`.
 4 of the 814 wines have no catalogue bottle photo. The row states the reason.
+`patch_dir` corrects that map; see [Patched catalogue photos](#patched-catalogue-photos).
 
 The tool uses the Python standard library and `PyYAML`. `PyYAML` reads `config.yaml`.
+
+## Patched catalogue photos
+
+Some cards of the `vino-svoe.ru` catalogue carry a poor photo, and some carry the photo
+of a DIFFERENT wine. `patch_dir` of `config.yaml` names a directory of corrected
+photos. The directory holds one file per wine slug:
+
+```
+svoe-wino-hackaton/dataset/patched-official-2026-09-17/
+  README.md                       not a patch; the extension is not an image type
+  bukovinka.webp                  the corrected photo of the card `bukovinka`
+  czitronnyj-magaracha.png        a `.png` may replace a `.webp`
+  kaberne-sovinon-2.webp
+  oleg.webp
+  risling-1.webp
+  rubin-golodrigi.webp
+  vinodelnya-vedernikov-...-125.webp
+```
+
+The name before the extension is the slug. The extension states the file type alone: a
+`.png` patch replaces a `.webp` photo, because the match is made on the slug. A file
+whose extension is not an image type is not a patch, so a `README.md` beside the patches
+is ignored.
+
+A patch REPLACES the catalogue photo of that slug. It does not stand beside it, because a wrong photo is not a second view of the
+wine. The catalogue file is never rewritten; the patch is a layer above it.
+
+What the tool does with a patch:
+
+- `GET /img/bottle` serves the patch, and never the photo of the catalogue record.
+- Every record that carries a bottle also carries the field `patched`.
+- `GET /api/patched` lists the slugs that take a patch.
+- Every view that shows a catalogue bottle draws the mark `patched` in the top right
+  corner of the image. The pickers show a 34 px thumbnail, where the mark is a dot of
+  the same colour and the tooltip states the meaning.
+- The tool reads the directory again at every `GET /api/reload`, so a new patch file
+  needs no restart.
+
+`svoe-vino-matcher/config.yaml` read the same directory under the same key until
+2026-09-23. It now indexes the cropped pictures of `dataset.image_dir`, and those
+pictures hold the patches. A new or edited patch therefore needs a new run of
+`svoe-wino-hackaton/scripts/build_cropped.py`. See
+[Cropped catalogue photos](#cropped-catalogue-photos).
+
+An absent `patch_dir` gives no patch. A configured directory that is not on disk makes
+the review tool print a warning and start with no patch: a typo in the path MUST NOT
+pass without a word, and it MUST NOT stop the work of the reviewer either. The matcher
+is stricter and refuses to load such a configuration, because it writes an index.
+
+## Cropped catalogue photos
+
+Many catalogue photos have an empty border around the package. The border is
+transparent on most photos, and white on a photo with no alpha channel.
+`svoe-wino-hackaton/scripts/build_cropped.py` cuts the border away and writes one file
+per wine slug, `<slug>.png`. It cuts the patch when the wine has one. The crop holds
+the pixels of the source and nothing else. `bottle_cropped_dir` of `config.yaml` names
+the directory.
+
+The crop is the picture that the tool shows and embeds:
+
+- `GET /img/bottle` serves the crop. The field `bottle_path` of the agent API names it.
+- `scripts/08_variants.py` embeds the crop to find variant groups.
+- `scripts/03_embed.py` embeds the crop as the reference of a wine. The stage scores
+  only the candidates that have no `sim` yet, so a score of an earlier run stays as it
+  is.
+- The pixel checks `candidate_is_catalog_photo` and `catalog_photo_twin` still read the
+  catalogue photo of the delivery. They look for a copy of that photo, and a copy
+  carries the border.
+
+`common.catalogue_picture` states the order: the crop, then the patch, then the photo
+of the catalogue record. A wine with no crop keeps its patch or its photo.
+
+The mark `patched` does not change. It states that the picture comes from a patch,
+and a crop of a patch is still that patch.
+
+A patch that changed after its crop wins over the crop, because such a crop was cut
+from the picture before the correction. The review tool prints a warning at start
+for each such patch. Run `svoe-wino-hackaton/scripts/build_cropped.py` again to crop
+the new patch.
+
+An absent `bottle_cropped_dir` shows the photos with their border. A configured
+directory that is not on disk makes the review tool print a warning and start without
+crops. `svoe-vino-matcher/config.yaml` indexes the same directory as
+`dataset.image_dir`.
+
+## The picture selector
+
+Column 1 of the table shows the catalogue picture of the wine. The control `Image` in
+the tool bar states WHICH picture:
+
+| Value | Picture | Directory |
+| --- | --- | --- |
+| `package` | the crop of the catalogue photo, or the patch, or the catalogue photo | `bottle_cropped_dir`, `patch_dir`, `catalog_file` |
+| `label` | the label cut out of that photo, as RGBA with the mask in the alpha channel | `bottle_label_dir` |
+| `label box` | the bounding box of the label alone, as RGB | `bottle_label_box_dir` |
+
+`svoe-wino-hackaton/scripts/build_labels.py` writes the two crop directories. It reads
+the same patch directory, so the label of a patched wine is cut out of the patch.
+
+A label crop does NOT replace the catalogue photo. A patch replaces a wrong photo; a
+crop is a second view of the SAME photo. This is why the tool holds a selector for the
+crops and no selector for the patches.
+
+What the tool does with the crops:
+
+- `GET /img/bottle?slug=<slug>&kind=label` serves the label crop, and `kind=labelbox`
+  serves the box crop. No `kind`, or an unknown `kind`, serves the package picture.
+- A wine with no crop of the asked kind answers with its package picture. The page draws
+  the mark `no label` in the BOTTOM right corner of such a picture, so the mark stands
+  beside the `patched` mark and not over it.
+- Every record carries `has_label` and `has_label_box`. The wine record also carries
+  `label_path` and `label_box_path`. An agent SHOULD read the path and open the file.
+- The control travels in the query string as `img`, beside `filter`, `sort` and `slugs`.
+  `/?img=label` opens the table on the label crops.
+- The control is hidden when no wine has a crop. Without the two directories every wine
+  would fall back to its package picture, and the choice would say nothing.
+- A label crop is RGBA. The page puts it on white, so a white label edge stays visible in
+  the dark theme. A reader that drops the alpha channel sees the label on white as well,
+  because the colour under the transparent part is white.
+- The tool reads both directories again at every `GET /api/reload`, so a new build of the
+  crops needs no restart.
+
+A configured directory that is not on disk makes the tool print a warning and start with
+no crop of that kind.
 
 ## Excluded slugs
 
@@ -735,7 +1078,11 @@ benchmarking.
 
 The review tool holds an `Exclude` button under the bottle photo of each row. An
 excluded row is red. The control `Slugs` filters the table to `all`, `included`, or
-`excluded`.
+`excluded`. The control `Show` holds the same scope in its list, as
+`excluded from the benchmark` and `included in the benchmark`. The two controls
+state the same thing, and one of them is enough. A contradiction between them, such
+as `Show` on `excluded` with `Slugs` on `included`, gives an empty table, and the
+count line states the reason.
 
 Read `docs/excluded-slugs.md` for the format of the file and for the rule of a consumer.
 
@@ -779,6 +1126,26 @@ is correct when the recognizer answers with its slug. A `negative` photo shows a
 different wine, so the recognizer is wrong when that slug stands at rank 1. `variant`
 photos stay out unless `--variants` asks for them. A photo of an excluded slug never
 enters the set.
+
+### The photos with no match
+
+A photo of `<photo_dir>/__null__/` matches no card of the catalogue. The review tool
+writes it there; read the section "The NULL wine". Such a photo enters the query set
+with the label `no_match`, with no truth, and it needs no label of its own.
+
+A `no_match` photo is a rejection case. No answer is the only correct outcome, and
+every card that comes back at rank 1 is a false match. `metrics.json` holds the block
+`no_match` with `n`, `rejected`, `false_match_at_1`, `rejection_rate`, and the score
+that a false match reached. `summary.md` holds the same numbers under "Photos with no
+match in the catalogue". The score is the useful number for a threshold: a backend
+that MUST refuse such a photo needs a threshold above that value.
+
+`--only no_match` runs these photos alone. `--only positive` and `--only negative`
+leave them out. The slug `__null__` in `excluded-slugs.json` takes every one of them
+out of the benchmark.
+
+The page `/runs` holds two filters for them: `no match: every photo that matches no
+card` and `no match: the backend answered a card anyway`.
 
 The run directory holds `predictions.jsonl` in the exact format of the organizers, so
 the same run serves as the submission. It also holds `results.jsonl` with every
