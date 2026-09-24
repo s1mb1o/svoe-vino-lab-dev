@@ -2,6 +2,54 @@
 
 ## 2026-09-24
 
+### The lab server: the Dataset page on the database
+
+- `config.yaml` holds two keys now: `rootdir` and `database_file`. The owner removed each
+  JSON file and each directory. The database is the only source of the lab data.
+- New `pipeline/lab_server.py` on port 8168. It opens the database read-only for each
+  request and checks the schema version. `GET /dataset` serves the Dataset page.
+  `GET /api/dataset` answers the 2,103 rows of `wine_catalog`, with `wine_slug` under
+  the key `slug` of the page.
+- Clusters, Embeddings, Testset, Runs, and `/docs` are disabled for now. Each one answers
+  the new notice page `pipeline/pages/disabled.html` with HTTP 503 and the full
+  navigation. Each other `/api/` route answers HTTP 503 with a JSON error. No part of a
+  page is removed.
+- The Dataset page and the colour theme moved out of `scripts/review_server.py` into
+  `pipeline/pages/dataset.html` and `pipeline/pages/theme.css`. New
+  `pipeline/lab_pages.py` reads them for both servers. Each page string of
+  `review_server.py` stayed byte-identical at the move.
+- Fix on the Dataset page: `safeUrl` gives no link for an empty value. Before, a record
+  with no `page_url` or `image_url` got `site page` and `source image` links to the
+  Dataset page itself.
+- Port 8168 is recorded in `PORTS_USED.md`. The review tool of `svoe-vino-testset` keeps
+  8154.
+- The database file is `data/lab.sqlite3` now, with no delivery directory. The owner
+  chose the flat layout. `database_file` stays relative to `rootdir`, so its value is
+  `svoe-vino-lab/data/lab.sqlite3`. `.gitignore` excludes `data/**/*.sqlite3` at any
+  depth. The earlier rule `data/*/*.sqlite3` did not match the flat file.
+- New tests `tests/test_lab_server.py`, 10 cases. New smoke cases S1 to S12.
+- The tools of `scripts/` read JSON files through `scripts/common.py`. They do not start
+  with the new `config.yaml`, and their 5 test modules stop at the import.
+
+### Project rules and the log of the owner messages
+
+- New `AGENTS.md` with the rules of this project. `CLAUDE.md` is a symbolic link to it.
+  The file links to the workspace rules in `../CLAUDE.md`.
+- New rule: an agent records each message of the project owner verbatim in
+  `docs/owner-messages.md`, before the work on it starts. The log starts with the
+  messages after 2026-09-24 21:37. Earlier messages are not recorded.
+
+### The lab database: the key column is `wine_slug`
+
+- New schema file `pipeline/schema/002_wine_slug.sql`. It renames the column `slug` of
+  `wine_catalog` to `wine_slug`, the name of `code-map.json` and `embedding-ignore.json`.
+  SQLite renames the column in the `CHECK` constraint too.
+- `pipeline/labdb.py` applies the file to an existing database at version 1. The rows
+  stay. A new database gets schema version 2.
+- `pipeline/seed_catalog.py` writes the column `wine_slug`.
+- New test: a version 1 database keeps its rows and its constraint after the rename.
+- Plan 07, rule 8: the key column of a wine is `wine_slug`.
+
 ### The lab database: steps 1 and 2
 
 - New plan `docs/plans/07_sqlite-lab-database.md` and decision record

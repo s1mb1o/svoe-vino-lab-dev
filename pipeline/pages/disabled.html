@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino lab — __PAGE__ is disabled</title>
+<style>
+/* THEME_CSS */
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: 10px 16px; box-shadow: var(--shadow);
+}
+h1 { font-size: 15px; margin: 0; font-weight: 650; }
+.head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.head-top h1 { margin-right: auto; }
+.nav { display: flex; gap: 6px; flex: none; flex-wrap: wrap; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+main { max-width: 640px; margin: 48px auto; padding: 0 16px; }
+.notice {
+  padding: 16px 18px; border: 1px dashed var(--line); border-radius: 8px;
+  background: var(--panel); color: var(--muted);
+}
+.notice b { color: var(--text); }
+a { color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <div class="head-top">
+    <h1>__PAGE__</h1>
+    <nav class="nav">__NAV__</nav>
+  </div>
+</header>
+<main>
+  <div class="notice">
+    <p><b>The page __PAGE__ is disabled for now.</b></p>
+    <p>The lab database does not hold the data of this page yet.
+      The page comes back when its data is in the database.</p>
+    <p>Open the <a href="/dataset">Dataset</a> page.</p>
+  </div>
+</main>
+</body>
+</html>

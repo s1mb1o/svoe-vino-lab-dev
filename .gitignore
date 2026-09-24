@@ -30,5 +30,5 @@ runs/
 # The lab database. `pipeline/seed_catalog.py` rebuilds it from the official CSV.
 # Decide on a text export before the database holds data that cannot be rebuilt.
 # Read open question 3 of docs/plans/07_sqlite-lab-database.md.
-data/*/*.sqlite3
-data/*/*.sqlite3-*
+data/**/*.sqlite3
+data/**/*.sqlite3-*

@@ -742,10 +742,31 @@ Read `docs/plans/07_sqlite-lab-database.md`. Use a scratch database for cases D1
 | # | Case | Expected result |
 |---|---|---|
 | D1 | `python3 pipeline/seed_catalog.py --db $DB $CSV` before the database exists | `error: no database at …`, exit 1. No file is made. |
-| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: 1`, `tables: catalog_source, wine_catalog`. |
+| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: 2`, `tables: catalog_source, wine_catalog`. |
 | D3 | `python3 pipeline/seed_catalog.py --db $DB $CSV` | `rows read: 4147`, `duplicate rows: 2044`, `wines: 2103`, `values trimmed: 198`, `empty grapes: 2`, `result: stored 2103 wines`. |
 | D4 | Repeat case D3 | `result: unchanged; the database already holds this file`. |
 | D5 | Seed the same database from another CSV file | `error: the database holds another delivery: …`, exit 1. `wine_catalog` keeps 2103 rows. |
-| D6 | Compare `wine_catalog` of `data/catalog-2026-09-17/lab.sqlite3` with `catalog.jsonl` of the same delivery, column by column; a NULL `grapes` counts as `""` | The slug sets are equal. No value differs. |
-| D7 | `python3 -m unittest discover -s tests -p 'test_seed_catalog.py'` | 13 tests, `OK`. |
+| D6 | Compare `wine_catalog` of `data/lab.sqlite3` with `catalog.jsonl` of the same delivery, column by column; a NULL `grapes` counts as `""` | The slug sets are equal. No value differs. |
+| D7 | `python3 -m unittest discover -s tests -p 'test_seed_catalog.py'` | 14 tests, `OK`. |
 | D8 | `git -C ../svoe-wino-hackaton status --short -- dataset/official-2026-09-17` after cases D1 to D6 | No line. The seed does not change the delivery. |
+
+## The lab server — `pipeline/lab_server.py`
+
+Start the server with `python3 pipeline/lab_server.py --no-browser`.
+Use `H=http://127.0.0.1:8168`. `config.yaml` MUST name the database
+`svoe-vino-lab/data/lab.sqlite3`, and that database MUST be at schema version 2.
+
+| # | Case | Expected result |
+|---|---|---|
+| S1 | Start the server | The log states the config path, `database_file`, `schema version: 2`, the catalogue source with its SHA-256 and seed time, `wines: 2103`, the disabled pages, and the URL `$H/dataset`. |
+| S2 | Set `database_file` to a path with no file, then start the server | `error: no database at …`, exit 1. |
+| S3 | Start the server on a database at schema version 1 | `error: the database has schema version 1 and this code needs version 2; run python3 pipeline/labdb.py …`, exit 1. |
+| S4 | Open `$H/dataset` | The header reads `2103 of 2103 records · 0 patches · 0 alternatives · 0 barcodes · 0 QR URLs · 0 Atlas bindings`. The first card is `Автохтонное Вино Крыма белое сухое`. |
+| S5 | Look at a card of `$H/dataset` | Name, producer, category and region, colour, grapes, and slug. `no catalogue image`. The editors for barcodes, QR URLs, the Atlas binding, and alternative photos stay on the card. No `site page` link and no `source image` link. |
+| S6 | Search `Автохтонное` | 9 cards. |
+| S7 | Switch the system to dark mode and reload `$H/dataset` | The page is dark. |
+| S8 | Click `Clusters`, `Embeddings`, `Testset`, and `Runs` | Each one shows `The page <name> is disabled for now.` with the full navigation. The link of the page is marked. |
+| S9 | `curl -s -o /dev/null -w "%{http_code}" $H/api/runs` | `503`. |
+| S10 | `curl -s $H/api/dataset \| python3 -c "import json,sys; print(len(json.load(sys.stdin)['records']))"` | `2103`. |
+| S11 | Press `Validate` on `$H/dataset`, then `Run selected` | The dialog lists the checks. After the run it reads `validation ERROR Error: disabled for now: the lab database does not hold the data of this route yet`. |
+| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 10 tests, `OK`. |

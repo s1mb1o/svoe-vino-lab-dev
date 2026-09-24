@@ -65,7 +65,7 @@ class SeedCatalogTest(unittest.TestCase):
 
     def test_create_applies_the_schema(self):
         self.create_db()
-        self.assertEqual(self.query("PRAGMA user_version"), [(1,)])
+        self.assertEqual(self.query("PRAGMA user_version"), [(2,)])
         conn = sqlite3.connect(self.db)
         self.assertEqual(labdb.tables(conn), ["catalog_source", "wine_catalog"])
         conn.close()
@@ -73,7 +73,27 @@ class SeedCatalogTest(unittest.TestCase):
     def test_connect_twice_keeps_the_version(self):
         self.create_db()
         labdb.connect(self.db).close()
-        self.assertEqual(self.query("PRAGMA user_version"), [(1,)])
+        self.assertEqual(self.query("PRAGMA user_version"), [(2,)])
+
+    def test_version_1_database_keeps_its_rows_after_the_rename(self):
+        schema = self.root / "schema-1"
+        schema.mkdir()
+        first = Path(labdb.SCHEMA_DIR) / "001_wine_catalog.sql"
+        (schema / first.name).write_text(first.read_text(encoding="utf-8"), encoding="utf-8")
+        labdb.connect(self.db, create=True, directory=str(schema)).close()
+        conn = sqlite3.connect(self.db)
+        conn.execute("INSERT INTO wine_catalog VALUES "
+                     "('a', 'n', 'p', 'c', 'co', 'r', NULL, 'd', 'a.webp')")
+        conn.commit()
+        conn.close()
+
+        labdb.connect(self.db).close()
+        self.assertEqual(self.query("PRAGMA user_version"), [(2,)])
+        self.assertEqual(self.query("SELECT wine_slug, csv_photo_name FROM wine_catalog"),
+                         [("a", "a.webp")])
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.query("INSERT INTO wine_catalog VALUES "
+                       "('', 'n', 'p', 'c', 'co', 'r', NULL, 'd', 'b.webp')")
 
     def test_newer_database_is_refused(self):
         self.create_db()
@@ -112,8 +132,8 @@ class SeedCatalogTest(unittest.TestCase):
         self.assertEqual(catalog.trimmed, 2)
         self.assertEqual(catalog.empty_grapes, 1)
         self.assertEqual(
-            self.query("SELECT slug, name, grapes, csv_photo_name FROM wine_catalog "
-                       "ORDER BY slug"),
+            self.query("SELECT wine_slug, name, grapes, csv_photo_name FROM wine_catalog "
+                       "ORDER BY wine_slug"),
             [("a", "Вино a", "Алиготе, Кокур Белый", "a.webp"),
              ("b", "Вино b", None, "b.webp")])
         self.assertEqual(
@@ -165,7 +185,7 @@ class SeedCatalogTest(unittest.TestCase):
         other = self.write_csv([wine("a"), wine("b")], name="two.csv")
         with self.assertRaisesRegex(SEED.CatalogError, "holds another delivery"):
             SEED.seed(self.db, other)
-        self.assertEqual(self.query("SELECT slug FROM wine_catalog"), [("a",)])
+        self.assertEqual(self.query("SELECT wine_slug FROM wine_catalog"), [("a",)])
 
     def test_main_reports_the_counts(self):
         self.create_db()

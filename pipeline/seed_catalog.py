@@ -1,7 +1,7 @@
 """Seed the table `wine_catalog` from the Strapi CSV of one delivery.
 
 Usage:
-    python3 pipeline/seed_catalog.py --db data/catalog-2026-09-17/lab.sqlite3 \\
+    python3 pipeline/seed_catalog.py --db data/lab.sqlite3 \\
         ../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv
 
 Rules. Read `docs/plans/07_sqlite-lab-database.md` for the reasons.
@@ -29,7 +29,7 @@ import labdb  # noqa: E402
 
 # Table column, CSV column. The order is the order of the table.
 COLUMNS = (
-    ("slug", "Slug"),
+    ("wine_slug", "Slug"),
     ("name", "Название вина"),
     ("producer", "Винодельня"),
     ("category", "Категория"),

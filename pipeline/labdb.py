@@ -5,7 +5,7 @@ number of the last applied file. `connect` applies each newer file in number ord
 one transaction per file. Read `docs/plans/07_sqlite-lab-database.md`.
 
 Usage:
-    python3 pipeline/labdb.py data/catalog-2026-09-17/lab.sqlite3
+    python3 pipeline/labdb.py data/lab.sqlite3
 """
 import argparse
 import os
