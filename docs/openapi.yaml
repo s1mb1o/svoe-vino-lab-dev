@@ -1845,6 +1845,48 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
 
+  /api/run-inputs:
+    get:
+      tags: [runs]
+      operationId: getRunInputs
+      summary: Read the model-bound images of one recorded query.
+      description: |
+        The route rebuilds the exact derived query images that the local matcher passed
+        to an embedding model or to a VLM. It reads the matcher configuration and the
+        content-addressed crop cache. It does not call a model or SAM3.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: The identifier of the run.
+          schema: { type: string }
+        - name: query
+          in: query
+          required: true
+          description: The `query_id` of one result row.
+          schema: { type: string }
+      responses:
+        "200":
+          description: The model inputs and reconstruction notes.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RunModelInputs" }
+        "404":
+          description: The run, the query, or its source image is not present.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422":
+          description: The exact model input cannot be rebuilt from the saved data.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          description: A local matcher file cannot be read.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
   # ----------------------------------------------------------- the clusters page
 
   /clusters:
@@ -1925,6 +1967,67 @@ paths:
           description: |
             `slugs` is not a list of strings, the slugs are not the slugs of one
             cluster, or the note is too long.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/cluster-rule-edit:
+    post:
+      tags: [clusters]
+      operationId: editClusterRule
+      summary: Store a manual edit of one cluster rule.
+      description: |
+        The route changes the rule text and the functional difference-sheet questions.
+        Each question gives one expected answer for each current cluster slug. A blank
+        answer becomes null. The route applies the same checks as a VLM build. It
+        recomputes the valid questions and the mode. The input SHA and build time stay
+        unchanged. The edit stays current until an input changes. A later rule build
+        replaces the manual edit. The route writes
+        `dataset/catalog-cluster-rules.json`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slugs, rule, questions]
+              properties:
+                slugs:
+                  type: array
+                  minItems: 2
+                  items: { type: string }
+                rule: { type: string, maxLength: 4000 }
+                questions:
+                  type: array
+                  maxItems: 3
+                  items:
+                    type: object
+                    required: [question, answers]
+                    properties:
+                      question: { type: string, maxLength: 500 }
+                      answers:
+                        type: object
+                        description: The expected answer of each card, keyed by slug.
+                        additionalProperties:
+                          oneOf:
+                            - { type: string, maxLength: 500 }
+                            - { type: "null" }
+      responses:
+        "200":
+          description: The checked manual rule is stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, mode, edited_at]
+                properties:
+                  ok: { type: boolean, const: true }
+                  mode: { type: string, enum: [sheet, verdict, none] }
+                  edited_at: { type: string }
+        "400":
+          description: |
+            The slugs do not identify one current cluster, the cluster has no stored
+            rule, or the rule editor data is invalid.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
@@ -3420,6 +3523,43 @@ components:
             match runner. Read `docs/match-runner.md`.
           items: { type: object }
 
+    RunModelInput:
+      type: object
+      required: [sha256, uses, pipelines, label, model, width, height, mime, src]
+      properties:
+        sha256:
+          type: string
+          description: The SHA-256 of the model-bound image bytes.
+        uses:
+          type: array
+          items: { type: string, enum: [Embedding, VLM] }
+        pipelines:
+          type: array
+          items: { type: string }
+        label: { type: string }
+        model: { type: string }
+        width: { type: integer }
+        height: { type: integer }
+        mime: { type: string, enum: [image/png, image/jpeg] }
+        src:
+          type: string
+          description: A data URL of the model-bound image bytes.
+
+    RunModelInputs:
+      type: object
+      required: [run, query, pipeline, config, inputs, notes]
+      properties:
+        run: { type: string }
+        query: { type: string }
+        pipeline: { type: string }
+        config: { type: string }
+        inputs:
+          type: array
+          items: { $ref: "#/components/schemas/RunModelInput" }
+        notes:
+          type: array
+          items: { type: string }
+
     ClusterView:
       type: object
       required: [exists, file, clusters, cards]
@@ -3545,7 +3685,7 @@ components:
                   oneOf: [{ type: string }, { type: "null" }]
               kind:
                 type: string
-                enum: [feature, alcohol, serial]
+                enum: [feature, vintage, alcohol, serial, bottle]
               valid:
                 type: boolean
                 description: |
@@ -3562,8 +3702,15 @@ components:
           type: string
           description: The note text that the build used.
         built_at: { type: string }
+        edited_at:
+          type: string
+          description: Present after the reviewer saves a manual edit.
         ms: { type: integer }
         max_side: { type: integer }
+        letters:
+          type: object
+          description: The card slug for each letter that the rule text uses.
+          additionalProperties: { type: string }
         error:
           oneOf: [{ type: string }, { type: "null" }]
 

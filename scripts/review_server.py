@@ -49,12 +49,14 @@ import webbrowser
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cluster_rules  # noqa: E402
 import common  # noqa: E402
+import run_model_inputs  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Every path comes from `config.yaml`. Read the file for the meaning of each key.
@@ -3556,6 +3558,22 @@ def run_rows(run_id, mode="all", query="", limit=200, offset=0, sort="manifest")
     return kept[offset:offset + limit], total
 
 
+def run_result(run_id, query_id):
+    """Return one recorded result by query id, or None."""
+    path = run_path(run_id, "results.jsonl")
+    if not query_id or not path or not os.path.isfile(path):
+        return None
+    with open(path, encoding="utf-8") as source:
+        for line in source:
+            try:
+                record = json.loads(line)
+            except ValueError:
+                continue
+            if record.get("query_id") == query_id:
+                return record
+    return None
+
+
 def _row_matches(rec, mode):
     """Answer whether the row passes the filter `mode`.
 
@@ -3998,6 +4016,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, {"runs": [run_head(r) for r in run_dirs()]})
         elif route == "/api/run":
             self._run_view(query)
+        elif route == "/api/run-inputs":
+            self._run_inputs_view(query)
         elif route == "/api/reload":
             self._reload()
         elif route == "/api/suggest":
@@ -4113,6 +4133,8 @@ class Handler(BaseHTTPRequestHandler):
             self._inbox_fetch(body)
         elif route == "/api/cluster-note":
             self._set_cluster_note(body)
+        elif route == "/api/cluster-rule-edit":
+            self._edit_cluster_rule(body)
         elif route == "/api/cluster-rule":
             self._build_cluster_rule(body)
         elif route.startswith("/api/v1/"):
@@ -4446,7 +4468,8 @@ class Handler(BaseHTTPRequestHandler):
             if rule:
                 shown = {k: rule.get(k) for k in (
                     "mode", "differences", "questions", "rule", "indistinguishable",
-                    "note", "built_at", "ms", "error", "max_side", "letters")}
+                    "note", "built_at", "edited_at", "ms", "error", "max_side",
+                    "letters")}
             out.append({**c, "key": key, "rule": shown,
                         "rule_status": cluster_rules.rule_status(rule, sha),
                         "notes": [{"text": n["text"], "updated_at": n.get("updated_at"),
@@ -4486,6 +4509,32 @@ class Handler(BaseHTTPRequestHandler):
             self._json(400, {"error": str(exc)})
             return
         self._json(200, {"ok": True, "note": note})
+
+    def _edit_cluster_rule(self, body):
+        """Store a manual edit of one cluster rule.
+
+        Body: `{slugs, rule, questions}`. Each question holds `question` and an
+        `answers` object keyed by slug. The rule checker recomputes the mode and the
+        valid questions. A later VLM rebuild replaces the manual edit.
+        """
+        slugs = body.get("slugs")
+        clusters = cluster_rules.load_clusters()
+        if not isinstance(slugs, list) or not all(isinstance(s, str) for s in slugs):
+            self._json(400, {"error": "slugs MUST be a list of slugs"})
+            return
+        if not any(sorted(c["slugs"]) == sorted(slugs) for c in clusters):
+            self._json(400, {"error": "these slugs are not the slugs of one cluster; "
+                                      "load the page again"})
+            return
+        try:
+            rule = cluster_rules.edit_rule(
+                slugs, {"rule": body.get("rule"), "questions": body.get("questions")},
+                getattr(self.server, "catalog", {}))
+        except (OSError, ValueError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {"ok": True, "mode": rule["mode"],
+                         "edited_at": rule["edited_at"]})
 
     def _build_cluster_rule(self, body):
         """Build the rule of one cluster again. Body: `{slug}` of one of its cards.
@@ -4550,6 +4599,43 @@ class Handler(BaseHTTPRequestHandler):
             "total": total, "offset": offset, "limit": limit,
             "rows": rows,
         })
+
+    def _run_inputs_view(self, query):
+        """Answer the exact model-bound images of one recorded query."""
+        run_id = (query.get("id") or [""])[0]
+        query_id = (query.get("query") or [""])[0]
+        if run_id not in run_dirs():
+            self._json(404, {"error": "unknown run"})
+            return
+        record = run_result(run_id, query_id)
+        if record is None:
+            self._json(404, {"error": "unknown query"})
+            return
+        meta = _read_json(run_path(run_id, "run.json")) or {}
+        backend_url = str(((meta.get("backend") or {}).get("url") or ""))
+        image_path = str(record.get("image_path") or "")
+        if ((meta.get("options") or {}).get("photos_dir") or "").strip():
+            path = self._run_photo_path(run_id, image_path)
+        else:
+            slug, separator, filename = image_path.partition("/")
+            path = self._photo_path(slug, filename) if separator else None
+        if not path:
+            self._json(404, {"error": "the source image of this query is not present"})
+            return
+        matcher_root = os.path.join(os.path.dirname(ROOT), "svoe-vino-matcher")
+        try:
+            answer = run_model_inputs.build_model_inputs(
+                Path(matcher_root), backend_url, Path(path),
+                str(record.get("image_sha256") or ""),
+                list(record.get("candidates") or []),
+            )
+        except run_model_inputs.InputRebuildError as exc:
+            self._json(422, {"error": str(exc)})
+            return
+        except (OSError, ValueError) as exc:
+            self._json(500, {"error": "cannot rebuild model inputs: %s" % exc})
+            return
+        self._json(200, {"run": run_id, "query": query_id, **answer})
 
     def _rebuild_rows(self):
         """Read the groups again, build the rows again, and answer both."""
@@ -10513,9 +10599,37 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .sm { font-size: 12px; color: var(--muted); word-break: break-all; }
 #more { margin-top: 12px; }
 #lb { position: fixed; inset: 0; background: rgba(0,0,0,.82); display: none;
-      align-items: center; justify-content: center; z-index: 50; }
+      align-items: center; justify-content: center; z-index: 50; padding: 24px; }
 #lb.on { display: flex; }
-#lb img { max-width: 92vw; max-height: 92vh; object-fit: contain; }
+.lb-shell { width: min(1180px, 96vw); max-height: 94vh; display: flex;
+            flex-direction: column; gap: 10px; align-items: stretch; }
+.lb-main-wrap { min-height: 0; display: flex; align-items: center; justify-content: center;
+                flex: 1 1 auto; }
+#lb-main { max-width: 94vw; max-height: calc(94vh - 176px); object-fit: contain; }
+.lb-inputs { min-height: 118px; display: flex; gap: 8px; overflow-x: auto;
+             align-items: stretch; padding: 8px; border-radius: 8px;
+             background: color-mix(in srgb, var(--panel) 92%, transparent); }
+.lb-inputs[hidden] { display: none; }
+.lb-input-note { color: #d7d7df; font-size: 12px; align-self: center; padding: 8px; }
+.model-input { width: 118px; min-width: 118px; padding: 5px; text-align: left;
+               background: var(--panel-2); border-color: var(--line); position: relative; }
+.model-input img { display: block; width: 106px; height: 74px; object-fit: contain;
+                   border-radius: 4px; background: var(--panel); }
+.model-input .badges { display: flex; gap: 3px; position: absolute; top: 8px; left: 8px; }
+.model-input .badge { padding: 1px 5px; border-radius: 999px; color: #fff;
+                      background: #2767c5; font-size: 9px; font-weight: 750;
+                      line-height: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.45); }
+.model-input .badge.vlm { background: #8d3fc5; }
+.model-input .input-label { display: block; color: var(--muted); font-size: 9px;
+                            line-height: 1.2; margin-top: 4px; overflow: hidden;
+                            text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 640px) {
+  #lb { padding: 10px; }
+  #lb-main { max-height: calc(94vh - 156px); }
+  .lb-inputs { min-height: 108px; }
+  .model-input { width: 104px; min-width: 104px; }
+  .model-input img { width: 92px; height: 64px; }
+}
 </style>
 </head>
 <body>
@@ -10594,7 +10708,12 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
     <button id="more" hidden>load more</button>
   </div>
 </main>
-<div id="lb"><img alt=""></div>
+<div id="lb" role="dialog" aria-modal="true" aria-label="large image and model inputs">
+  <div class="lb-shell">
+    <div class="lb-main-wrap"><img id="lb-main" alt=""></div>
+    <div class="lb-inputs" id="lb-inputs" hidden></div>
+  </div>
+</div>
 <script>
 """ + PATCH_JS + """
 const $ = s => document.querySelector(s);
@@ -10928,6 +11047,7 @@ function rowHtml(r) {
   return `<tr>
     <td class="qcell">
       <img class="qphoto" loading="lazy" src="${src}" alt="" data-full="${src}"
+           data-query-id="${esc(r.query_id || "")}"
            onload="const b = this.closest('td').querySelector('.qres');
                    if (b) b.textContent = ' \u00b7 ' + this.naturalWidth + ' \u00d7 '
                                           + this.naturalHeight;">
@@ -10997,18 +11117,90 @@ $("#q").addEventListener("input", () => {
    and down to the same place in another row. A photo that stands outside a row
    opens with no `LBI`, so the arrow keys do nothing for it. */
 let LBI = null;
+let LB_REQUEST = 0;
 /* The images of one row, in the order that the row shows them: the matched photo
    first, then the strip. A bottle photo that failed to load is no image any
    more, because `onerror` puts a text card in its place. Such a card is not a
    step of the move. */
 const lbImgs = tr => Array.from(tr.querySelectorAll("img[data-full]"));
 
+function clearLbInputs(message) {
+  const rail = $("#lb-inputs");
+  rail.replaceChildren();
+  rail.hidden = !message;
+  if (message) {
+    const note = document.createElement("div");
+    note.className = "lb-input-note";
+    note.textContent = message;
+    rail.append(note);
+  }
+}
+
+function renderLbInputs(data) {
+  const rail = $("#lb-inputs");
+  rail.replaceChildren();
+  for (const input of data.inputs || []) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "model-input";
+    button.dataset.modelInput = input.src;
+    button.title = `${input.uses.join(" + ")} · ${input.pipelines.join(", ")} · ` +
+                   `${input.width} × ${input.height} · ${input.model || input.label}`;
+    const image = document.createElement("img");
+    image.src = input.src;
+    image.alt = button.title;
+    const badges = document.createElement("span");
+    badges.className = "badges";
+    for (const use of input.uses || []) {
+      const badge = document.createElement("span");
+      badge.className = `badge ${use === "VLM" ? "vlm" : ""}`;
+      badge.textContent = use;
+      badges.append(badge);
+    }
+    const label = document.createElement("span");
+    label.className = "input-label";
+    label.textContent = `${input.width} × ${input.height} · ${input.pipelines.join(", ")}`;
+    button.append(image, badges, label);
+    rail.append(button);
+  }
+  for (const text of data.notes || []) {
+    const note = document.createElement("div");
+    note.className = "lb-input-note";
+    note.textContent = text;
+    rail.append(note);
+  }
+  rail.hidden = !rail.childElementCount;
+}
+
+async function loadLbInputs(image) {
+  const query = image.dataset.queryId;
+  const request = ++LB_REQUEST;
+  if (!query || !CUR) { clearLbInputs(""); return; }
+  clearLbInputs("Reading model inputs…");
+  try {
+    const response = await fetch(`/api/run-inputs?id=${encodeURIComponent(CUR)}` +
+                                 `&query=${encodeURIComponent(query)}`,
+                                 {cache: "no-store"});
+    const data = await response.json();
+    if (request !== LB_REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    renderLbInputs(data);
+  } catch (error) {
+    if (request === LB_REQUEST) clearLbInputs(`Cannot read model inputs: ${error.message}`);
+  }
+}
+
+function showLbImage(image) {
+  $("#lb-main").src = image.dataset.full;
+  loadLbInputs(image);
+}
+
 function openLb(tr, i) {
   const imgs = lbImgs(tr);
   if (!imgs.length) return;
   i = Math.max(0, Math.min(i, imgs.length - 1));
   LBI = { row: tr, i };
-  $("#lb img").src = imgs[i].dataset.full;
+  showLbImage(imgs[i]);
   $("#lb").classList.add("on");
 }
 
@@ -11032,15 +11224,23 @@ function stepLbRow(step) {
   tr.scrollIntoView({ block: "center" });
 }
 
-function closeLb() { $("#lb").classList.remove("on"); LBI = null; }
+function closeLb() {
+  LB_REQUEST++;
+  $("#lb").classList.remove("on");
+  $("#lb-main").removeAttribute("src");
+  clearLbInputs("");
+  LBI = null;
+}
 
 document.addEventListener("click", ev => {
+  const input = ev.target.closest("[data-model-input]");
+  if (input) { $("#lb-main").src = input.dataset.modelInput; return; }
   const img = ev.target.closest("img[data-full]");
   if (img) {
     const tr = img.closest("#res-body tr");
     if (tr) { openLb(tr, lbImgs(tr).indexOf(img)); return; }
     LBI = null;
-    $("#lb img").src = img.dataset.full;
+    showLbImage(img);
     $("#lb").classList.add("on");
     return;
   }
@@ -11084,8 +11284,9 @@ document.addEventListener("keydown", ev => {
 # matcher confuses, or can confuse. Read `docs/plans/04_catalog-clusters.md`.
 #
 # Each cluster also shows its label rule and the note of the reviewer. The page
-# writes the note with `POST /api/cluster-note` and builds one rule again with
-# `POST /api/cluster-rule`. Read `docs/plans/05_cluster-label-rules.md`.
+# writes the note with `POST /api/cluster-note`, writes a manual rule edit with
+# `POST /api/cluster-rule-edit`, and builds one rule again with `POST
+# /api/cluster-rule`. Read `docs/plans/05_cluster-label-rules.md`.
 PAGE_CLUSTERS = r"""<!doctype html>
 <html lang="en">
 <head>
@@ -11283,6 +11484,29 @@ table.sheet td.nul { color: var(--muted); }
   border-radius: 6px; padding: 5px 7px;
 }
 .note-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.rule-editor {
+  margin: 8px 0; padding: 8px; border: 1px solid var(--line); border-radius: 7px;
+  background: var(--panel);
+}
+.rule-editor > label { display: block; color: var(--muted); font-size: 12px; }
+.rule-editor textarea, .rule-editor input[type=text] {
+  width: 100%; resize: vertical; font: inherit; font-size: 13px; color: var(--text);
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+  padding: 5px 7px;
+}
+.rule-editor textarea[data-field=rule] { min-height: 58px; }
+.edit-questions { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+.edit-question { padding: 7px; border: 1px solid var(--line); border-radius: 6px; }
+.edit-question-head { display: flex; gap: 8px; align-items: flex-start; }
+.edit-question-head label { flex: 1; color: var(--muted); font-size: 12px; }
+.edit-question-head textarea { min-height: 44px; }
+.edit-answers { display: grid; gap: 5px; margin-top: 6px; }
+.edit-answer { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(180px, 2fr);
+  gap: 8px; align-items: center; color: var(--muted); font-size: 12px; }
+.edit-answer span { overflow-wrap: anywhere; }
+.rule-edit-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.rule.editing .rule-head [data-act=edit-rule],
+.rule.editing .rule-head [data-act=rebuild] { display: none; }
 .btn {
   font: inherit; font-size: 12px; font-weight: 600; color: var(--text);
   background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
@@ -11305,6 +11529,7 @@ table.sheet td.nul { color: var(--muted); }
   input[type=search] { min-width: 0; width: 100%; }
   .lb-step { width: 32px; height: 52px; font-size: 22px; }
   .lb-fig { max-width: calc(100vw - 100px); }
+  .edit-answer { grid-template-columns: 1fr; gap: 2px; }
 }
 </style>
 </head>
@@ -11524,6 +11749,38 @@ function lettersOf(c) {
   return out;
 }
 
+function editorQuestionHtml(c, no, q = { question: "", answers: {} }) {
+  const letter = lettersOf(c), answers = q.answers || {};
+  return `<div class="edit-question" data-role="edit-question">
+    <div class="edit-question-head"><label>Question
+      <textarea data-field="question" maxlength="500">${esc(q.question || "")}</textarea></label>
+      <button class="btn" data-act="remove-question" type="button">Remove</button></div>
+    <div class="edit-answers">${c.slugs.map(s => `<label class="edit-answer">
+      <span>#${no[s]}${letter[s] ? " · " + esc(letter[s]) : ""} ${
+        esc((CARDS[s] || {}).name || s)}</span>
+      <input type="text" data-field="answer" data-slug="${esc(s)}" maxlength="500"
+        value="${esc(answers[s] == null ? "" : answers[s])}"
+        placeholder="blank means not visible"></label>`).join("")}</div>
+  </div>`;
+}
+
+function ruleEditorHtml(c, no) {
+  const r = c.rule || {}, questions = r.questions || [];
+  return `<div class="rule-editor" data-role="rule-editor" hidden>
+    <label>Rule text
+      <textarea data-field="rule" maxlength="4000">${esc(r.rule || "")}</textarea></label>
+    <div class="edit-questions" data-role="edit-questions">${
+      questions.map(q => editorQuestionHtml(c, no, q)).join("")}</div>
+    <div class="rule-edit-row">
+      <button class="btn" data-act="add-question" type="button"${
+        questions.length >= 3 ? " disabled" : ""}>Add question</button>
+      <button class="btn" data-act="save-rule" type="button">Save rule</button>
+      <button class="btn" data-act="cancel-rule" type="button">Cancel</button>
+      <span class="muted">Blank answers mean that the label does not show the feature.</span>
+    </div>
+  </div>`;
+}
+
 /* The label rule of stage 2, and the note of the reviewer. */
 function ruleHtml(c, no) {
   const r = c.rule, st = c.rule_status || "none";
@@ -11533,6 +11790,8 @@ function ruleHtml(c, no) {
     : `<span class="tag m-missing">${r ? "failed" : "no rule"}</span>`;
   const when = r && r.built_at ? `<span class="muted">built ${esc(r.built_at)}${
     r.ms ? ` · ${(r.ms / 1000).toFixed(1)} s` : ""}</span>` : "";
+  const edited = r && r.edited_at
+    ? `<span class="muted">edited ${esc(r.edited_at)}</span>` : "";
   let body = r && r.error ? `<p class="warn">${esc(r.error)}</p>` : "";
   if (ok) {
     if (r.differences) body += `<p>${esc(r.differences)}</p>`;
@@ -11566,11 +11825,13 @@ function ruleHtml(c, no) {
   const text = DRAFTS[c.key] !== undefined ? DRAFTS[c.key] : notes.map(n => n.text).join("\n");
   return `<div class="rule" data-key="${esc(c.key)}">
     <div class="rule-head"><b>Label rule</b>${tag}
-      <span class="st ${esc(st)}">${esc(STATUS_TEXT[st] || st)}</span>${when}
+      <span class="st ${esc(st)}">${esc(STATUS_TEXT[st] || st)}</span>${when}${edited}
+      ${ok ? '<button class="btn" data-act="edit-rule">Edit rule</button>' : ""}
       <button class="btn" data-act="rebuild" title="save the note, describe the labels that
         have no current description, then ask the VLM for the rule again (5 to 30 s)">Rebuild rule</button>
       <span class="muted" data-role="msg"></span></div>
-    ${body}
+    <div data-role="rule-view">${body}</div>
+    ${ok ? ruleEditorHtml(c, no) : ""}
     <div class="note-box">
       <label class="muted" for="note-${esc(c.key)}">Note of the reviewer. The next build
         of the rule reads it as a correct fact.</label>
@@ -11687,8 +11948,10 @@ function aboutHtml() {
     to find where the labels differ. A <b>difference sheet</b> holds questions about the
     label and the expected answer of each card; the re-rank asks these questions about
     the query photo. A struck question is not used. A <b>verdict rule</b> is a rule
-    text; the VLM names the card itself. The note of the reviewer goes into the next
-    build of the rule. Files: <code>${esc(rr.rules_file)}</code> and
+    text; the VLM names the card itself. <b>Edit rule</b> changes the rule text, the
+    questions, and the expected answers. The server checks the edit and recomputes the
+    mode. The note of the reviewer goes into the next build of the rule. Files:
+    <code>${esc(rr.rules_file)}</code> and
     <code>${esc(rr.notes_file)}</code>, updated ${esc(rr.updated_at || "never")}.
     ${rr.error ? `<span class="warn">${esc(rr.error)}</span>` : ""}</p>`;
 }
@@ -11856,9 +12119,36 @@ async function refresh(key) {
 }
 
 async function saveNote(box, c) {
-  const text = box.querySelector("textarea").value;
+  const text = box.querySelector("textarea[data-act=note]").value;
   await postJson("/api/cluster-note", { slugs: c.slugs, text });
   delete DRAFTS[c.key];
+}
+
+async function saveRule(box, c) {
+  const editor = box.querySelector("[data-role=rule-editor]");
+  const questions = [...editor.querySelectorAll("[data-role=edit-question]")].map(q => ({
+    question: q.querySelector("[data-field=question]").value,
+    answers: Object.fromEntries([...q.querySelectorAll("[data-field=answer]")]
+      .map(a => [a.dataset.slug, a.value])),
+  }));
+  await postJson("/api/cluster-rule-edit", {
+    slugs: c.slugs,
+    rule: editor.querySelector("[data-field=rule]").value,
+    questions,
+  });
+}
+
+function resetRuleBox(box, c) {
+  const no = {};
+  c.slugs.forEach((s, i) => { no[s] = i + 1; });
+  const tmp = document.createElement("div");
+  tmp.innerHTML = ruleHtml(c, no);
+  box.replaceWith(tmp.firstElementChild);
+}
+
+function syncAddQuestion(editor) {
+  editor.querySelector("[data-act=add-question]").disabled =
+    editor.querySelectorAll("[data-role=edit-question]").length >= 3;
 }
 
 document.addEventListener("input", ev => {
@@ -11872,13 +12162,46 @@ document.addEventListener("click", async ev => {
   const box = btn.closest(".rule"), key = box.dataset.key;
   const c = DATA.clusters.find(x => x.key === key);
   if (!c) return;
-  const msg = box.querySelector(btn.dataset.act === "save-note"
+  const act = btn.dataset.act;
+  if (act === "edit-rule") {
+    box.classList.add("editing");
+    box.querySelector("[data-role=rule-view]").hidden = true;
+    const editor = box.querySelector("[data-role=rule-editor]");
+    editor.hidden = false;
+    editor.querySelector("textarea, input")?.focus();
+    return;
+  }
+  if (act === "cancel-rule") {
+    resetRuleBox(box, c);
+    return;
+  }
+  if (act === "add-question") {
+    const editor = box.querySelector("[data-role=rule-editor]");
+    const questions = editor.querySelector("[data-role=edit-questions]");
+    if (questions.querySelectorAll("[data-role=edit-question]").length >= 3) return;
+    const no = {};
+    c.slugs.forEach((s, i) => { no[s] = i + 1; });
+    questions.insertAdjacentHTML("beforeend", editorQuestionHtml(c, no));
+    syncAddQuestion(editor);
+    questions.lastElementChild.querySelector("textarea").focus();
+    return;
+  }
+  if (act === "remove-question") {
+    const editor = box.querySelector("[data-role=rule-editor]");
+    btn.closest("[data-role=edit-question]").remove();
+    syncAddQuestion(editor);
+    return;
+  }
+  const msg = box.querySelector(act === "save-note"
     ? "[data-role=note-msg]" : "[data-role=msg]");
   box.querySelectorAll("button").forEach(b => { b.disabled = true; });
   try {
-    if (btn.dataset.act === "save-note") {
+    if (act === "save-note") {
       msg.textContent = "saving…";
       await saveNote(box, c);
+    } else if (act === "save-rule") {
+      msg.textContent = "saving the rule…";
+      await saveRule(box, c);
     } else {
       if (DRAFTS[key] !== undefined) {
         msg.textContent = "saving the note…";

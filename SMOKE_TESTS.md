@@ -594,6 +594,11 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | R8 | Set the filter to `negative: the slug came back at rank 1` | Only the false matches are listed. |
 | R9 | Press `load more` | The next 100 photos are added under the present ones. |
 | R10 | Click a photo or a bottle | The large view opens. `Esc` closes it. |
+| R10a | Click the matched photo in a row of `2026-09-24T145415Z-svm-barcode-siglip2-448-upscale` that used visual matching | A strip under the large image shows the 448 by 448 input of the embedding model. The preview has an `Embedding` badge. |
+| R10b | Click an image in the model input strip | That derived image becomes the large image. |
+| R10c | Click query `q-000021` of that run | The large view states that the barcode or QR lookup answered the photo and that no embedding model ran. |
+| R10d | Click query `q-000005` of `2026-09-23T224548Z-svm-label-gw-cluster-rules-qwen38max-rules-v2` | The strip shows the whole-photo and label embedding inputs. It also shows the difference and cluster-rule inputs with `VLM` badges. |
+| R10e | Click a candidate bottle after a matched photo | The model input strip is absent. It does not show inputs from the previous matched photo. |
 | R11 | Open a run made with `--photos-dir` | A note above the cards states `A run of a plain directory`, with the photo count, the count with a candidate, the count with none, the errors, the median top score, and the median gap. Every share card holds a dash. |
 | R12 | Look at a row of that run | The photo is shown. The tag reads `unlabelled` and the second tag reads `answered`. The line under the photo holds the path of the file, `no ground truth`, and the latency. No candidate carries a green or a red border. |
 | R13 | Rename or move the photos directory, then open that run again | The rows stay, and every photo shows the broken-image mark. The answers are still readable. |
@@ -703,6 +708,9 @@ call the VLM on gx10 and wait for its single slot.
 | L7 | Type a note, click `Save note` | The status line reads `saved <time>`. `dataset/catalog-cluster-notes.json` holds the note with the slugs of the cluster. The status of the rule becomes `stale`. |
 | L8 | Clear the text, click `Save note` | The note is gone from the file. The status of the rule is `current` again when no other input changed. |
 | L9 | Click `Rebuild rule` | The line reads `building the rule… (5 to 30 s)` and both buttons are dimmed. The block is drawn again with a new build time and the status `current`. An unsaved note is saved first. |
+| L9a | Click `Edit rule` | The displayed rule becomes a structured editor. It has the rule text, each question, and one expected answer for each card. It also has `Add question`, `Save rule`, and `Cancel`. |
+| L9b | Change one expected answer and click `Save rule` | The table shows the new answer. The rule stays `current`. The header shows `edited <time>`. `dataset/catalog-cluster-rules.json` holds the edit and its recomputed mode. |
+| L9c | Remove every question, enter a rule text, and click `Save rule` | The mode becomes `verdict rule`. A later click on `Rebuild rule` replaces the manual edit. |
 | L10 | Click `Rebuild rule` in a second tab while the first build runs | The second tab reads `failed: another rule is being built; try again soon`. |
 | L11 | `curl -s -X POST $H/api/cluster-note -d '{"slugs":["abrau-dyurso-pino-nuar-krasnoe-suhoe-12"],"text":"x"}'` | `400` `these slugs are not the slugs of one cluster`. |
 | L12 | Set `Rule` to `with a note` | Only the clusters with a note are listed. `stale` lists the clusters whose inputs changed after the build. |

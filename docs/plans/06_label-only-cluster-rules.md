@@ -339,6 +339,10 @@ Options:
 
 ## Result
 
+The PDF report `pdfs/2026-09-24_cluster-label-rules-review.pdf` of the workspace holds
+the review of the run v2, this result, the vintage variants, the A/B of stage 1, and the
+open questions.
+
 Measured on 2026-09-24. Run
 `runs/2026-09-24T080721Z-svm-label-gw-cluster-rules-label-only-rules`, 2,180 photos
 (1,599 positive, 581 negative), the 255 rules of this plan (221 `sheet`, 33 `verdict`,

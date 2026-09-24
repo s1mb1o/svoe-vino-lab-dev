@@ -887,6 +887,92 @@ def update_rules(change):
     return data
 
 
+def edit_rule(slugs, value, catalog):
+    """Replace the reviewer-editable parts of one stored cluster rule.
+
+    `value` holds the rule text and at most three difference-sheet questions. Each
+    question maps the current slugs to its expected answers. The same checks as a VLM
+    build set the question kinds, valid flags, and mode. Build metadata and the input
+    SHA stay unchanged, so a manual edit stays current until a rule input changes.
+    """
+    if not isinstance(slugs, list) or not slugs or not all(isinstance(s, str) for s in slugs):
+        raise ValueError("slugs MUST be a non-empty list of slugs")
+    if not isinstance(value, dict):
+        raise ValueError("rule MUST be an object")
+    rule_text = value.get("rule")
+    if not isinstance(rule_text, str):
+        raise ValueError("rule text MUST be a string")
+    rule_text = rule_text.strip()
+    if len(rule_text) > 4000:
+        raise ValueError("rule text is longer than 4000 characters")
+    questions = value.get("questions")
+    if not isinstance(questions, list):
+        raise ValueError("questions MUST be a list")
+    if len(questions) > 3:
+        raise ValueError("a rule can have at most 3 questions")
+
+    members = set(slugs)
+    clean_questions = []
+    for i, question in enumerate(questions, 1):
+        if not isinstance(question, dict):
+            raise ValueError("question %d MUST be an object" % i)
+        text = question.get("question")
+        answers = question.get("answers")
+        if not isinstance(text, str):
+            raise ValueError("question %d text MUST be a string" % i)
+        text = text.strip()
+        if len(text) > 500:
+            raise ValueError("question %d is longer than 500 characters" % i)
+        if not isinstance(answers, dict):
+            raise ValueError("question %d answers MUST be an object" % i)
+        extra = set(answers) - members
+        if extra:
+            raise ValueError("question %d has an answer for a card outside the cluster" % i)
+        clean_answers = {}
+        for slug in slugs:
+            answer = answers.get(slug)
+            if answer is not None and not isinstance(answer, str):
+                raise ValueError("question %d answers MUST be strings or null" % i)
+            answer = answer.strip() if isinstance(answer, str) else None
+            if answer and len(answer) > 500:
+                raise ValueError("question %d has an answer longer than 500 characters" % i)
+            clean_answers[slug] = answer or None
+        if text or any(clean_answers.values()):
+            clean_questions.append({"question": text, "answers": clean_answers})
+
+    key = cluster_key(slugs)
+    edited = None
+
+    def change(data):
+        nonlocal edited
+        old = data["clusters"].get(key)
+        if not old or sorted(old.get("slugs") or []) != sorted(slugs):
+            raise ValueError("this cluster has no stored rule; load the page again")
+        letters = old.get("letters") or {}
+        if set(letters.values()) != members:
+            raise ValueError("the stored rule has a different set of cards; load the page again")
+        by_slug = {slug: letter for letter, slug in letters.items()}
+        raw = {
+            "differences": old.get("differences") or "",
+            "questions": [{
+                "question": q["question"],
+                "answers": {by_slug[slug]: q["answers"][slug] for slug in slugs},
+            } for q in clean_questions],
+            "rule": rule_text,
+            "indistinguishable": [[by_slug[slug] for slug in group if slug in by_slug]
+                                    for group in old.get("indistinguishable") or []],
+        }
+        checked = check_rule(raw, letters, catalog, data.get("cards") or {})
+        stamp = now()
+        edited = {**old, **checked, "answer": raw, "edited_at": stamp}
+        if "generated_answer" not in edited and old.get("answer") is not None:
+            edited["generated_answer"] = old["answer"]
+        data["clusters"][key] = edited
+
+    update_rules(change)
+    return edited
+
+
 def load_notes():
     data = load_json(NOTES_FILE, {}) or {}
     return [n for n in data.get("notes") or []

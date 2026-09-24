@@ -357,6 +357,27 @@ set. Read `docs/match-runner.md`.
 Errors: `400` for a bad identifier, a bad number, or an unknown order. `404` when no
 run holds the identifier.
 
+#### `GET /api/run-inputs?id=<id>&query=<query id>`
+
+The exact derived query images that the local matcher passed to an embedding model or
+to a VLM for one result row. The Runs page reads this route only when the user opens
+the matched photo.
+
+The route reads the backend URL and the source SHA-256 from the run. It reads the
+matching local matcher configuration and the content-addressed label crop cache. It
+applies the recorded image preparation and model resize rules. It does not call an
+embedding model, a VLM, or SAM3. It refuses the reconstruction when the source bytes
+changed after the run.
+
+The answer holds `{run, query, pipeline, config, inputs, notes}`. Each item of `inputs`
+holds `{sha256, uses, pipelines, label, model, width, height, mime, src}`. `uses` can
+hold `Embedding`, `VLM`, or both. `src` is a data URL of the bytes sent to the model.
+`notes` explains a barcode or QR short-circuit and any transient model input that the
+run did not store.
+
+Errors: `404` for an unknown run, query, or source image. `422` when the exact input
+cannot be rebuilt. `500` when a local file cannot be read.
+
 #### `GET /api/clusters`
 
 The catalogue clusters for the page `/clusters`. A cluster is a group of catalogue
@@ -379,7 +400,8 @@ Each cluster also holds `key`, `notes`, `rule`, and `rule_status`, and each card
 holds `description`, `description_error`, and `description_built_at`. These come from
 the two files of `scripts/11_cluster_rules.py`. `key` is the SHA-1 of the sorted slugs,
 12 hex digits. `rule` holds `{mode, differences, questions, rule, indistinguishable,
-note, built_at, ms, error, max_side}`. `mode` is `sheet`, `verdict`, or `none`.
+note, built_at, edited_at, ms, error, max_side, letters}`. `edited_at` is present after
+a reviewer saves a manual edit. `mode` is `sheet`, `verdict`, or `none`.
 `rule_status` is `none`, `error`, `stale`, or `current`. A note holds `{text,
 updated_at, slugs, members_changed}`. The top field `rules` holds the paths of the two
 files, the model, and `busy`. Read `docs/plans/05_cluster-label-rules.md`.
@@ -409,6 +431,7 @@ another answer. `counts` is the counter set of the whole review set.
 | `POST /api/upload?slug=<slug>&name=<file>` | the picture bytes | The body is the picture itself, not a form. The route writes no label, no score, and no comment. Answers `{ok, slug, file, photos}`. An agent SHOULD use `POST /api/v1/propose` with a `data:` URL instead. |
 | `POST /api/inbox-upload?name=<file>` | the picture bytes | Store one external file directly in the unassigned `my/` inbox. The media type comes from the bytes. The route removes path parts and unsafe characters from the source name. It does not replace an existing file. Answers `{ok, file, inbox}`. |
 | `POST /api/cluster-note` | `{slugs, text}` | The note of one catalogue cluster, at most 4000 characters. `slugs` MUST be the slugs of one current cluster. An empty `text` clears the note. The note replaces every note of that cluster, and the rule stays `stale` until its next build. Answers `{ok, note}`. `400` when the slugs are not the slugs of one cluster. |
+| `POST /api/cluster-rule-edit` | `{slugs, rule, questions}` | Store a manual edit of the functional rule. `questions` has at most three `{question, answers}` objects. Each `answers` object is keyed by a current cluster slug. A blank answer means null. The server applies the same rule checks as a VLM build and recomputes the mode. Build identity stays unchanged. A later `POST /api/cluster-rule` replaces the edit. Answers `{ok, mode, edited_at}`. |
 | `POST /api/cluster-rule` | `{slug}` | Build the label rule of the cluster of `slug` again: first the label descriptions that are not current, then the rule with the note. The route calls the VLM and takes about 5 to 30 seconds. One build runs at a time. Answers `{ok, descriptions_built, mode, error}`. `400` when the slug is in no cluster. `409` when another build runs. |
 | `POST /api/fetch-image` | `{slug, url}` | Fetch one picture from an address and store it, without a proposal. The rules of the address are the rules of `POST /api/v1/propose`. Answers `{ok, slug, file, photos, url}`. An agent SHOULD use `POST /api/v1/propose` instead. |
 | `POST /api/inbox-fetch` | `{url}` | Fetch one picture that was dragged from another browser page. Store it directly in the unassigned `my/` inbox. The address rules equal the rules of `POST /api/v1/propose`. Answers `{ok, file, inbox, url}`. |

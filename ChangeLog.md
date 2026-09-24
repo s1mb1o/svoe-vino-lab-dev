@@ -2,6 +2,29 @@
 
 ## 2026-09-24
 
+### Manual cluster rule editor
+
+- Each `Label rule` block on `/clusters` has an `Edit rule` button.
+- The editor changes the rule text, the questions, and each card's expected answer.
+- The editor can add or remove questions. A rule has at most three questions.
+- New route `POST /api/cluster-rule-edit` stores the edit.
+- The server applies the rule checks again. It recomputes the valid questions and the
+  mode.
+- A manual edit keeps the build identity. A later VLM rebuild replaces the edit.
+
+### Model input previews on the Runs page
+
+- A click on a matched photo now opens a lazy strip of the derived images that the
+  matcher passed to an embedding model.
+- The same strip shows the query images that the matcher passed to a VLM. Each such
+  preview has a `VLM` badge.
+- New route `GET /api/run-inputs` rebuilds the model-bound bytes from the run, the
+  matcher configuration, and the content-addressed crop cache. It does not call a
+  model or SAM3.
+- The route checks the source SHA-256. It refuses an inexact reconstruction after the
+  source image changes.
+- A barcode or QR short-circuit states that no embedding model ran.
+
 ### External pictures in the Testset sideboard
 
 - The Testset sideboard accepts image files from the desktop and images dragged from

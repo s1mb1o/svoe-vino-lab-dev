@@ -1,16 +1,16 @@
 {
   "counts": {
-    "commented": 1494,
+    "commented": 1495,
     "copied": 0,
     "deleting": 0,
-    "labelled": 2528,
-    "negative": 583,
+    "labelled": 2556,
+    "negative": 584,
     "no_match": 0,
     "no_match_pending": 0,
-    "positive": 1619,
+    "positive": 1644,
     "proposed": 1041,
     "reassigned": 0,
-    "unusable": 249,
+    "unusable": 251,
     "variant": 77,
     "wine_notes": 82
   },
@@ -1157,6 +1157,26 @@
       "04_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-15T16:09:30+0300"
+      },
+      "05_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:41:41+0300"
+      },
+      "06_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:41:42+0300"
+      },
+      "07_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:41:43+0300"
+      },
+      "08_manual.png": {
+        "label": "positive",
+        "ts": "2026-09-24T18:41:44+0300"
+      },
+      "09_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:41:48+0300"
       }
     },
     "abrau-dyurso-victor-dravigny-brut-shardone-beloe-bryut-12": {
@@ -1194,6 +1214,94 @@
       "04_conf095.jpg": {
         "label": "positive",
         "ts": "2026-09-15T16:09:21+0300"
+      },
+      "05_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:41:59+0300"
+      },
+      "06_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:00+0300"
+      },
+      "07_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:00+0300"
+      },
+      "08_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:01+0300"
+      },
+      "09_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:01+0300"
+      },
+      "10_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:02+0300"
+      },
+      "11_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:02+0300"
+      },
+      "12_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:03+0300"
+      },
+      "13_manual.png": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:04+0300"
+      },
+      "14_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:04+0300"
+      },
+      "15_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:04+0300"
+      },
+      "16_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:05+0300"
+      },
+      "17_manual.webp": {
+        "label": "unusable",
+        "ts": "2026-09-24T18:42:08+0300"
+      },
+      "18_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:09+0300"
+      },
+      "19_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:10+0300"
+      },
+      "20_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:11+0300"
+      },
+      "21_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:12+0300"
+      },
+      "22_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:13+0300"
+      },
+      "23_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:14+0300"
+      },
+      "24_manual.jpg": {
+        "label": "unusable",
+        "ts": "2026-09-24T18:42:15+0300"
+      },
+      "25_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:17+0300"
+      },
+      "26_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T18:42:18+0300"
       }
     },
     "abrau-dyurso-victor-dravigny-extra-brut-shardone-beloe-bryut-125": {
@@ -1259,6 +1367,12 @@
       "11_manual.webp": {
         "label": "positive",
         "ts": "2026-09-19T08:02:56+0300"
+      },
+      "1224475_34991316.jpg": {
+        "comment": "перенесён в abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125 из входящих my/",
+        "label": "negative",
+        "moved_from": "my/",
+        "ts": "2026-09-24T18:41:33+0300"
       }
     },
     "abrau-dyurso-victor-dravigny-krasnoe-polusladkoe-kaberne-sovinon-125": {
@@ -24512,7 +24626,7 @@
     }
   },
   "note": "Manual labels for the photos of svoe-vino-testset/my. The key of an entry is the slug, then the photo file name. label 'positive': the photo shows the wine of this slug. label 'negative': the photo shows a different wine, and the photo stays in the set as a negative sample of this slug. label 'unusable': the photo is not usable at all and does not belong in the set. label 'variant': the photo shows this wine in another bottle, such as another vintage or another package design. A photo with no entry is not reviewed yet. The slug '__null__' is the virtual NULL wine. A photo under that slug matches NO card of the catalogue. The place is the statement, so such a photo needs no label; 'positive' confirms it and 'unusable' takes the photo out of the set. Field 'reassign_to' names the slug that the photo belongs to; scripts/09_apply_moves.py moves the file. Field 'copy_to' names a slug that the photo ALSO belongs to; the same script copies the file and leaves the source photo where it is. The copy carries no label and one comment that names the source slug. Field 'comment' holds a free text note of the reviewer about this photo and this slug. The map 'wines' holds one free text note about a whole wine, keyed by the slug.",
-  "updated": "2026-09-24T15:00:41+0300",
+  "updated": "2026-09-24T18:42:18+0300",
   "version": 2,
   "wines": {
     "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12": {

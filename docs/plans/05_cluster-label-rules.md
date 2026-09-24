@@ -137,8 +137,13 @@ Both files are in `svoe-vino-testset/dataset/`, next to `catalog-clusters.json`.
 - `POST /api/cluster-rule` builds the rule of one cluster again. Body: `{slug}`. It
   describes the cards that have no current description first. It takes about 5 to 30
   seconds.
+- `POST /api/cluster-rule-edit` stores a manual edit. Body: `{slugs, rule,
+  questions}`. The server checks the questions and recomputes the mode. A later VLM
+  build replaces the manual edit.
 - Each cluster block shows the note editor, the mode, the difference sheet as a table,
-  the rule text, and the button `Rebuild rule`. Each card shows its description.
+  the rule text, and the buttons `Edit rule` and `Rebuild rule`. The rule editor can
+  add or remove questions and can change each expected answer. Each card shows its
+  description.
 - The page follows the system colour scheme.
 
 ## The re-rank

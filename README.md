@@ -723,6 +723,13 @@ the text about the differences, the sheet as a table with one column for each ca
 and the rule text. A struck question is not used; its tooltip gives the reason. Each
 card holds its `label description`.
 
+Press `Edit rule` to edit the rule text and the functional difference sheet. You can
+add or remove questions. Each question has one expected answer for each card. A blank
+answer means that the label does not show the feature. `Save rule` applies the same
+checks as a VLM build. It recomputes the valid questions and the mode. The edit keeps
+the build identity, so it stays current until an input changes. `Rebuild rule` replaces
+the manual edit with a new VLM result.
+
 Stage 2 shows the VLM the cards as «Card A», «Card B», and so on, and the rule text
 uses these letters. The rule keeps the map `letters`, from the letter to the slug. The
 letters follow the sorted slugs, so A is card #1 of the page. The page writes the letter
@@ -1462,6 +1469,13 @@ one frame in the accent colour. The link in the frame opens that cluster on
 filter `negative_above_positive` selects the negative photos whose forbidden wine stands
 above that true wine, and the filter `twin_conflict` selects the photos that a defect of
 the set marks.
+
+A click on the matched photo opens the large view and reads its model inputs. A strip
+under the large image shows each derived image that the matcher passed to an embedding
+model. It also shows each query image that the matcher passed to a VLM. A `VLM` badge
+marks these images. A click on a strip image shows it as the large image. The page reads
+the inputs only after the user opens the matched photo. A barcode or QR answer states
+that no embedding model ran.
 
 A run of the backend `svm-label-gw-cluster-rules` holds the answer of the VLM rule step
 in the `explain` record of each card that the step touched. When the step acted on a
