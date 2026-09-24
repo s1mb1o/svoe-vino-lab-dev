@@ -11,6 +11,27 @@ Test data for the Svoe Vino wine scanner.
 - `runs/` holds one directory per match run. It is the history of the measurements.
 - `excluded-slugs.json` names the slugs that are out of the benchmark.
 - `manual-groups.json` names the variant pairs that a reviewer made by hand.
+- `pipeline/` holds the lab database tools. `data/` holds one directory per catalogue
+  delivery with its database.
+
+## The lab database
+
+One SQLite database holds the lab state of one catalogue delivery. The database is filled
+one step at a time. Read [plan 07](docs/plans/07_sqlite-lab-database.md) for the steps,
+the tables, and the rules. Read [decision record 01](docs/decisions/01_sqlite-lab-database.md)
+for the reasons.
+
+```bash
+# step 1: create the database and its tables
+python3 pipeline/labdb.py data/catalog-2026-09-17/lab.sqlite3
+
+# step 2: seed wine_catalog from the Strapi CSV of the delivery
+python3 pipeline/seed_catalog.py --db data/catalog-2026-09-17/lab.sqlite3 \
+    ../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv
+```
+
+The database MUST be on a local disk. The seed never writes to the delivery directory.
+The other tools of this project do not read the database yet.
 
 ## Configuration
 

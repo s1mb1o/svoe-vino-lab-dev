@@ -2,6 +2,33 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-24 — keys and dependencies of `strapi_output0709.csv`
+
+Status: measured on the file of `official-2026-09-17`. The result shapes the table
+`wine_catalog` of `docs/plans/07_sqlite-lab-database.md`.
+
+- The file has 4,147 data rows and nine columns: `Название вина`, `Категория`, `Цвет`,
+  `Регион`, `Сорт винограда`, `Описание`, `Винодельня`, `Slug`, `Название фото`.
+  It has no byte order mark. SHA-256:
+  `12a1b0b620db7a2264b094446861e83940a927708d65a1b7ccffda7ec3aeffee`.
+- 2,044 rows are exact copies of an earlier row. 2,103 distinct rows remain, one per
+  `Slug`. No slug has two different rows.
+- `Slug` is the only candidate key. `Название фото` has 2,090 distinct values: 13 photo
+  names are shared by two slugs, for example `DSC09173.webp` for `aligote-barrel-2024`
+  and `aligote-barrel-2025`. `Описание` has 2,083 distinct values.
+- `Винодельня → Регион` does not hold. Three of the 135 producers appear in two regions:
+  Olymp Winery, Vibes, and Союз-Вино. So `region` is not a transitive dependency.
+- (`Винодельня`, `Название вина`) is not a key: 64 pairs have more than one slug. These
+  are vintages, alcohol values, and other variants.
+- `Сорт винограда` is a list. A wine has 0 to 9 grapes, 140 distinct grape names. 344
+  values use `,`, and 2 values use ` и `. 2 wines have an empty value:
+  `beloe-polusladkoe` and
+  `igristoe-zhemchuzhnoe-vino-polusuhoe-krasnoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare`.
+- 198 values of the distinct rows have outer white space: 31 in `Название вина`, 120 in
+  `Описание`, 37 in `Цвет`, and 10 in `Винодельня`. `build_catalog.py` of
+  `svoe-wino-hackaton` trims them with `str.strip()`.
+- `Категория` has 4 values. `Регион` has 9 values.
+
 ## 2026-09-24 — stage 1 A/B: `qwen3.8-max` against `qwen3.5-9b`
 
 Status: measured on 133 cards. The open questions are Q7 and Q8 of

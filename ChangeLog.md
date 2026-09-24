@@ -2,6 +2,23 @@
 
 ## 2026-09-24
 
+### The lab database: steps 1 and 2
+
+- New plan `docs/plans/07_sqlite-lab-database.md` and decision record
+  `docs/decisions/01_sqlite-lab-database.md`. One SQLite database holds the lab state of
+  one catalogue delivery. The tables are in BCNF.
+- New `pipeline/labdb.py`. It creates the database and applies the schema files of
+  `pipeline/schema/` in number order. `PRAGMA user_version` holds the version.
+- New schema file `pipeline/schema/001_wine_catalog.sql`: the tables `catalog_source` and
+  `wine_catalog`. The columns of `wine_catalog` are the nine columns of
+  `strapi_output0709.csv`, with the names of `catalog.jsonl`.
+- New CLI `pipeline/seed_catalog.py`. It seeds `wine_catalog` from a Strapi CSV. It trims
+  each value, drops exact duplicate rows, and stops on two different rows for one slug.
+  It refuses a database that is not there and a second delivery.
+- New database `data/catalog-2026-09-17/lab.sqlite3`: 2,103 wines from 4,147 CSV rows.
+  All 2,103 × 8 values equal `catalog.jsonl`. `.gitignore` excludes the database file.
+- New tests `tests/test_seed_catalog.py`, 13 cases.
+
 ### Manual cluster rule editor
 
 - Each `Label rule` block on `/clusters` has an `Edit rule` button.

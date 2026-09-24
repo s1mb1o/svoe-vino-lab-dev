@@ -26,3 +26,9 @@ runs/
 # The lock file next to a shared JSON file. `scripts/cluster_rules.py` makes it
 # to serialise writes. It holds no data.
 *.lock
+
+# The lab database. `pipeline/seed_catalog.py` rebuilds it from the official CSV.
+# Decide on a text export before the database holds data that cannot be rebuilt.
+# Read open question 3 of docs/plans/07_sqlite-lab-database.md.
+data/*/*.sqlite3
+data/*/*.sqlite3-*

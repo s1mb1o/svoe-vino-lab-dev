@@ -732,3 +732,20 @@ L18 call no model. Run them from `scripts/` in `python3`, after
 | L21 | Copy the run `2026-09-23T224548Z-svm-label-gw-cluster-rules-qwen38max-rules-v2` to a scratch directory and run `python3 scripts/cluster_rules_report.py <copy> --rules work/catalog-cluster-rules.2026-09-24T082150.json` | Every number equals the report of the run. The new section `The two halves of the wines` reads: half A, 775 positives, R@1 0.8103 → 0.8284, 23 wins, 9 losses; half B, 825 positives, R@1 0.8206 → 0.8339, 24 wins, 13 losses. |
 | L22 | For the cluster of `abrau-dyurso-pino-nuar-krasnoe-suhoe-12` (c013), take `letters` of the sorted slugs, and call `cr.check_rule` with a vintage question `{"A": "other", "B": "2023", "C": "2023", "D": "2024"}` and a grape question `{"A": "Пино Нуар", "B": "Каберне Совиньон", "C": "Пино Нуар", "D": "Пино Нуар"}`, with `catalog` and `cr.load_rules()["cards"]` | The vintage question keeps `other` for A and the label years 2023, 2023, and 2024, and it is valid. `cr.vintage_note(letters, catalog, cards)` names B, C, and D with their years `on the label`, and A as the card with no year. |
 | L23 | The same call with the grape `Мерло` for card A | The vintage question holds null for every card and is not valid: the grape separates A from every card with a year, so A is not a vintage variant. |
+
+## The lab database — `pipeline/labdb.py` and `pipeline/seed_catalog.py`
+
+Read `docs/plans/07_sqlite-lab-database.md`. Use a scratch database for cases D1 to D5:
+`DB=/tmp/lab-smoke/lab.sqlite3` and
+`CSV=../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv`.
+
+| # | Case | Expected result |
+|---|---|---|
+| D1 | `python3 pipeline/seed_catalog.py --db $DB $CSV` before the database exists | `error: no database at …`, exit 1. No file is made. |
+| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: 1`, `tables: catalog_source, wine_catalog`. |
+| D3 | `python3 pipeline/seed_catalog.py --db $DB $CSV` | `rows read: 4147`, `duplicate rows: 2044`, `wines: 2103`, `values trimmed: 198`, `empty grapes: 2`, `result: stored 2103 wines`. |
+| D4 | Repeat case D3 | `result: unchanged; the database already holds this file`. |
+| D5 | Seed the same database from another CSV file | `error: the database holds another delivery: …`, exit 1. `wine_catalog` keeps 2103 rows. |
+| D6 | Compare `wine_catalog` of `data/catalog-2026-09-17/lab.sqlite3` with `catalog.jsonl` of the same delivery, column by column; a NULL `grapes` counts as `""` | The slug sets are equal. No value differs. |
+| D7 | `python3 -m unittest discover -s tests -p 'test_seed_catalog.py'` | 13 tests, `OK`. |
+| D8 | `git -C ../svoe-wino-hackaton status --short -- dataset/official-2026-09-17` after cases D1 to D6 | No line. The seed does not change the delivery. |
