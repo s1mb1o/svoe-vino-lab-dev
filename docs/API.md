@@ -148,9 +148,17 @@ do not change in this way.
 
 `GET /dataset` serves the Dataset page. `GET /img/catalog?slug=<slug>` serves the
 unmodified `local_path` of one catalogue record. `GET /img/patch?slug=<slug>` serves
-the correction from `patch_dir`. `GET /img/alternative?slug=<slug>&file=<file>` serves
-one active alternative. The image routes stay separate because a patch replaces the
+the correction from `patch_dir`. A browser navigation to one of these two image routes
+gets an HTML preview on a checkerboard. The preview states the natural pixel
+dimensions. `raw=1` always gets the image bytes. `view=1` always gets the preview when
+`raw=1` is absent. An image request and a client that does not accept HTML get the
+image bytes by default. `GET /img/alternative?slug=<slug>&file=<file>` serves one
+active alternative. The image routes stay separate because a patch replaces the
 catalogue image and an alternative adds a view.
+
+`GET /embedding` serves the Embedding page. `GET /img/embedding` serves one exact
+prepared image. It takes `slug`, `kind`, and, for an additional image, `file`. The
+allowed kinds are `main`, `main-label`, `additional`, and `additional-label`.
 
 An agent SHOULD use `POST /api/v1/propose` and MUST NOT use `POST /api/label`. A label
 is the decision of the reviewer.
@@ -159,14 +167,28 @@ Every route in this section answers `application/json`.
 
 ### Read
 
+#### `GET /api/embedding`
+
+The answer holds every catalogue record with its prepared main image, main label, and
+additional image pairs. Each image states `kind`, `file`, `available`, and `ignored`.
+The top level holds the configured source paths and the counts of available, ignored,
+and missing-label images.
+
+#### `POST /api/embedding-ignore`
+
+Set one prepared image to ignored or used. The body is
+`{"wine_slug":"<slug>","kind":"<kind>","file":"<file>","ignored":true}`.
+`file` is required only for an additional image. The server refuses an unknown image.
+It writes `embedding_ignore_file` atomically.
+
 #### `GET /api/dataset`
 
 The full configured catalogue in one answer:
 `{catalog_file, patch_dir, patches, alternative_dir, alternatives, barcode_file,
-barcodes, atlas_matches_file, atlas_bindings_file, atlas_bindings,
+barcodes, qr_urls, atlas_matches_file, atlas_bindings_file, atlas_bindings,
 atlas_manual_bindings, records}`. The order
 of `records` is the order of `catalog.jsonl`. Each record keeps every source field. It
-adds `_patched`, `_alternatives`, `_barcodes`, `_atlas_product_uuid`, and
+adds `_patched`, `_alternatives`, `_barcodes`, `_qr_urls`, `_atlas_product_uuid`, and
 `_atlas_binding_source`. The source is `automatic`, `manual`, or null. A manual UUID
 replaces an automatic UUID for the same slug.
 
@@ -205,7 +227,29 @@ Add one product barcode to a catalogue slug. The JSON body is
 value. It refuses an empty value, a value above 128 characters, and a value that
 already belongs to a slug. The server preserves QR codes and other record fields in
 the structured code map. The Dataset page calls the route when the reviewer presses
-`V`. Pressing `X` writes nothing.
+the checkmark icon. Pressing the cross icon writes nothing.
+
+#### `DELETE /api/dataset-barcode?slug=<slug>&barcode=<value>`
+
+Remove one exact product barcode from one catalogue slug. The server refuses a value
+that the slug does not own. It preserves the QR code and every other record field. If
+the removed value is the last barcode, the structured record stays and its `barcode`
+field becomes `null`. The answer is `{ok, slug, removed, barcodes, total}`.
+
+#### `POST /api/dataset-qr-url`
+
+Add one wine page URL decoded from a QR code. The body is
+`{"slug":"<slug>","url":"<http-or-https-url>"}`. The server normalizes the scheme,
+host, port, path, and fragment in the same way as the matcher. It refuses an invalid
+URL and a normalized URL that already belongs to a slug. It writes the value to the
+`qr_code` field of the shared code map. The answer is
+`{ok, slug, url, qr_urls, total}`.
+
+#### `DELETE /api/dataset-qr-url?slug=<slug>&url=<url>`
+
+Remove one QR URL from one slug. The server preserves every barcode and other record
+field. If the removed URL is the last QR URL, `qr_code` becomes `null`. The answer is
+`{ok, slug, removed, qr_urls, total}`.
 
 #### `POST /api/dataset-atlas-binding`
 
@@ -214,7 +258,7 @@ Create or replace one manual Drink Atlas Core product binding. The JSON body is
 UUID. It writes the row to `atlas_bindings_file`. The automatic match file does not
 change. A manual row replaces the automatic value for the same slug. Several slugs MAY
 use the same product UUID. The Dataset page calls the route when the reviewer presses
-`V`. Pressing `X` writes nothing.
+the checkmark icon. Pressing the cross icon writes nothing.
 
 #### `GET /api/dataset-validation`
 
@@ -363,14 +407,17 @@ another answer. `counts` is the counter set of the whole review set.
 | `POST /api/exclude` | `{slug, excluded, reason}` | Take one wine out of the benchmark, or bring it back. `excluded` defaults to true. A reason is required to exclude, at most 1000 characters. Answers `{ok, slug, excluded, entry, count}`. Read `docs/excluded-slugs.md`. |
 | `POST /api/group` | `{slug, target}` | Join two wines into one variant group. The write is one pair. A wine that is in no group takes the group of the other wine. Answers `{ok, changed, group, ...}`; when `changed` is true the answer also holds `rows`, `labels`, `wines`, `excluded`, `groups`, and `slugs`. `409` when both wines are already in two different groups: a merge of two groups cannot be undone by taking one pair away. |
 | `POST /api/upload?slug=<slug>&name=<file>` | the picture bytes | The body is the picture itself, not a form. The route writes no label, no score, and no comment. Answers `{ok, slug, file, photos}`. An agent SHOULD use `POST /api/v1/propose` with a `data:` URL instead. |
+| `POST /api/inbox-upload?name=<file>` | the picture bytes | Store one external file directly in the unassigned `my/` inbox. The media type comes from the bytes. The route removes path parts and unsafe characters from the source name. It does not replace an existing file. Answers `{ok, file, inbox}`. |
 | `POST /api/cluster-note` | `{slugs, text}` | The note of one catalogue cluster, at most 4000 characters. `slugs` MUST be the slugs of one current cluster. An empty `text` clears the note. The note replaces every note of that cluster, and the rule stays `stale` until its next build. Answers `{ok, note}`. `400` when the slugs are not the slugs of one cluster. |
 | `POST /api/cluster-rule` | `{slug}` | Build the label rule of the cluster of `slug` again: first the label descriptions that are not current, then the rule with the note. The route calls the VLM and takes about 5 to 30 seconds. One build runs at a time. Answers `{ok, descriptions_built, mode, error}`. `400` when the slug is in no cluster. `409` when another build runs. |
 | `POST /api/fetch-image` | `{slug, url}` | Fetch one picture from an address and store it, without a proposal. The rules of the address are the rules of `POST /api/v1/propose`. Answers `{ok, slug, file, photos, url}`. An agent SHOULD use `POST /api/v1/propose` instead. |
+| `POST /api/inbox-fetch` | `{url}` | Fetch one picture that was dragged from another browser page. Store it directly in the unassigned `my/` inbox. The address rules equal the rules of `POST /api/v1/propose`. Answers `{ok, file, inbox, url}`. |
 
 ### The rules of a picture
 
-`POST /api/v1/propose`, `POST /api/upload`, and `POST /api/fetch-image` store a
-picture. The three routes keep the same rules.
+`POST /api/v1/propose`, `POST /api/upload`, `POST /api/fetch-image`,
+`POST /api/inbox-upload`, and `POST /api/inbox-fetch` store a picture. The five
+routes keep the same limits and address rules.
 
 1. The media type is read from the first bytes of the file. The server does not trust
    the address and does not trust the header of the remote server.
@@ -380,8 +427,11 @@ picture. The three routes keep the same rules.
 4. An address MUST be `http`, `https`, or a `data:` URL.
 5. An `http` or `https` address MUST NOT resolve to a loopback, private, link-local,
    reserved, or multicast address.
-6. The stored name is `NN_<tag>.<ext>`. `NN` is the next free rank. The tag is `agent`
-   for `POST /api/v1/propose` and `manual` for the other two routes.
+6. A picture that belongs to a wine gets the name `NN_<tag>.<ext>`. `NN` is the next
+   free rank. The tag is `agent` for `POST /api/v1/propose` and `manual` for the two
+   other wine routes.
+7. An inbox picture keeps a safe form of its source name. The extension comes from
+   the bytes. A name that is already present gets `_inbox2`, `_inbox3`, and so on.
 
 ## Errors
 

@@ -316,11 +316,16 @@ paths:
       description: |
         The Dataset page uses this route for the left image. The route serves
         `local_path` of the `catalog.jsonl` record. It does not apply a crop or a patch.
+        A request that accepts HTML gets a checkerboard preview. An image request gets
+        the image bytes. `raw=1` and `view=1` select the answer explicitly. `raw=1`
+        takes precedence.
       parameters:
         - $ref: "#/components/parameters/SlugQuery"
+        - $ref: "#/components/parameters/ImageView"
+        - $ref: "#/components/parameters/RawImage"
       responses:
         "200":
-          $ref: "#/components/responses/Picture"
+          $ref: "#/components/responses/PreviewablePicture"
         "404":
           $ref: "#/components/responses/NotFoundText"
 
@@ -332,11 +337,16 @@ paths:
       description: |
         The Dataset page uses this route for the right image. The route serves the file
         for the slug from `patch_dir`. A slug with no patch answers 404.
+        A request that accepts HTML gets a checkerboard preview. An image request gets
+        the image bytes. `raw=1` and `view=1` select the answer explicitly. `raw=1`
+        takes precedence.
       parameters:
         - $ref: "#/components/parameters/SlugQuery"
+        - $ref: "#/components/parameters/ImageView"
+        - $ref: "#/components/parameters/RawImage"
       responses:
         "200":
-          $ref: "#/components/responses/Picture"
+          $ref: "#/components/responses/PreviewablePicture"
         "404":
           $ref: "#/components/responses/NotFoundText"
 
@@ -355,6 +365,32 @@ paths:
           required: true
           schema: { type: string }
           description: The active file name returned in `_alternatives`.
+      responses:
+        "200":
+          $ref: "#/components/responses/Picture"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
+  /img/embedding:
+    get:
+      tags: [images]
+      operationId: getEmbeddingImage
+      summary: Read one exact prepared embedding image.
+      description: |
+        The route has no fallback. A missing crop or label answers 404. `file` is
+        required for an additional image and is absent for a main image.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [main, main-label, additional, additional-label]
+        - name: file
+          in: query
+          required: false
+          schema: { type: string }
       responses:
         "200":
           $ref: "#/components/responses/Picture"
@@ -525,6 +561,73 @@ paths:
             text/html:
               schema: { type: string }
 
+  /embedding:
+    get:
+      tags: [page]
+      operationId: getEmbeddingPage
+      summary: Read the embedding input page.
+      description: |
+        The page shows the exact prepared main, label, and additional images. It can
+        mark each image as ignored for future index builds.
+      responses:
+        "200":
+          description: The HTML page.
+          content:
+            text/html:
+              schema: { type: string }
+
+  /api/embedding:
+    get:
+      tags: [page]
+      operationId: getEmbeddingInputs
+      summary: Read all prepared embedding inputs and their ignore state.
+      responses:
+        "200":
+          description: The source paths, counts, and catalogue records with image cells.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [catalog_file, alternative_dir, alternative_label_dir,
+                  ignore_file, available, ignored, missing_labels, records]
+                additionalProperties: true
+
+  /api/embedding-ignore:
+    post:
+      tags: [page]
+      operationId: setEmbeddingIgnore
+      summary: Set one prepared image to ignored or used.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [wine_slug, kind, ignored]
+              properties:
+                wine_slug: { type: string }
+                kind:
+                  type: string
+                  enum: [main, main-label, additional, additional-label]
+                file:
+                  type: string
+                  description: Required for an additional image.
+                ignored: { type: boolean }
+      responses:
+        "200":
+          description: The new state and the total ignored count.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, wine_slug, kind, file, ignored, total]
+                additionalProperties: true
+        "400":
+          description: The image, kind, or request is invalid.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
   /api/dataset:
     get:
       tags: [page]
@@ -669,6 +772,84 @@ paths:
               schema: { $ref: "#/components/schemas/DatasetBarcodeResult" }
         "400":
           description: The slug, value, code map, or mapping is invalid.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [page]
+      operationId: removeDatasetBarcode
+      summary: Remove one exact product barcode from a catalogue slug.
+      description: |
+        The server refuses a barcode that the slug does not own. It preserves the QR
+        code and every other field of the structured record. When the last barcode is
+        removed, the record stays and its `barcode` field becomes null.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: barcode
+          in: query
+          required: true
+          description: The exact product barcode to remove.
+          schema: { type: string, maxLength: 128 }
+      responses:
+        "200":
+          description: The barcode was removed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetBarcodeRemoveResult" }
+        "400":
+          description: The slug does not own the barcode, or the code map is invalid.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/dataset-qr-url:
+    post:
+      tags: [page]
+      operationId: storeDatasetQrUrl
+      summary: Add one wine page URL decoded from a QR code.
+      description: |
+        The server accepts an HTTP or HTTPS URL. It normalizes the value in the same
+        way as the barcode matcher. One normalized URL cannot belong to two wines.
+        The write preserves barcodes and the other fields of the structured code map.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DatasetQrUrlRequest" }
+      responses:
+        "200":
+          description: The QR URL was added.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetQrUrlResult" }
+        "400":
+          description: The slug, URL, code map, or mapping is invalid.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [page]
+      operationId: removeDatasetQrUrl
+      summary: Remove one QR URL from a catalogue slug.
+      description: |
+        The server refuses a URL that the slug does not own. It preserves every
+        barcode and other record field. When the last QR URL is removed, the record
+        stays and its `qr_code` field becomes null.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: url
+          in: query
+          required: true
+          description: The HTTP or HTTPS QR URL to remove.
+          schema: { type: string, format: uri, maxLength: 4096 }
+      responses:
+        "200":
+          description: The QR URL was removed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetQrUrlRemoveResult" }
+        "400":
+          description: The slug does not own the URL, or the code map is invalid.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
@@ -903,6 +1084,49 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
 
+  /api/inbox-upload:
+    post:
+      tags: [page]
+      operationId: uploadInboxPhoto
+      summary: Store one external picture in the unassigned inbox.
+      description: |
+        The Testset sideboard uses this route when a user drops a desktop file on it.
+        The body is the picture itself, not a form. The server reads the media type
+        from the bytes. It removes path parts and unsafe characters from the source
+        name. A name that is already present gets an `_inboxN` suffix.
+
+        The file lies directly in `my/`. It gets no wine, label, score, or comment.
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: The source file name. The server keeps only a safe base name.
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          image/jpeg: { schema: { type: string, format: binary } }
+          image/png:  { schema: { type: string, format: binary } }
+          image/webp: { schema: { type: string, format: binary } }
+          image/gif:  { schema: { type: string, format: binary } }
+          image/bmp:  { schema: { type: string, format: binary } }
+      responses:
+        "200":
+          description: The picture is stored in the inbox.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, file, inbox]
+                properties:
+                  ok: { type: boolean, const: true }
+                  file: { type: string, examples: ["new-bottle.png"] }
+                  inbox:
+                    type: array
+                    items: { type: string }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
   /api/fetch-image:
     post:
       tags: [page]
@@ -941,6 +1165,42 @@ paths:
                   photos:
                     type: array
                     items: { $ref: "#/components/schemas/RowPhoto" }
+                  url: { type: string, description: The address that was fetched. }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/inbox-fetch:
+    post:
+      tags: [page]
+      operationId: fetchInboxPhoto
+      summary: Fetch one external picture into the unassigned inbox.
+      description: |
+        The Testset sideboard uses this route when a user drags an image from another
+        browser page. The address rules equal the rules of `POST /api/v1/propose`.
+        The file lies directly in `my/`. It gets no wine, label, score, or comment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url: { type: string, description: An http, https, or data URL. }
+      responses:
+        "200":
+          description: The picture is stored in the inbox.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, file, inbox, url]
+                properties:
+                  ok: { type: boolean, const: true }
+                  file: { type: string }
+                  inbox:
+                    type: array
+                    items: { type: string }
                   url: { type: string, description: The address that was fetched. }
         "400":
           $ref: "#/components/responses/BadRequest"
@@ -1744,6 +2004,20 @@ components:
       schema: { type: string }
       example: agora-risling
 
+    ImageView:
+      name: view
+      in: query
+      required: false
+      description: '`1` always answers with the checkerboard HTML preview.'
+      schema: { type: string, enum: ["1"] }
+
+    RawImage:
+      name: raw
+      in: query
+      required: false
+      description: '`1` always answers with the image bytes. It takes precedence over `view`.'
+      schema: { type: string, enum: ["1"] }
+
   responses:
 
     OkCounts:
@@ -1791,6 +2065,19 @@ components:
         The picture. The media type follows the extension of the file. The answer holds
         `Cache-Control: public, max-age=86400`.
       content:
+        image/jpeg: { schema: { type: string, format: binary } }
+        image/png:  { schema: { type: string, format: binary } }
+        image/webp: { schema: { type: string, format: binary } }
+        image/gif:  { schema: { type: string, format: binary } }
+        image/bmp:  { schema: { type: string, format: binary } }
+
+    PreviewablePicture:
+      description: |
+        The image bytes, or an HTML checkerboard preview for browser navigation. The
+        image answer holds `Cache-Control: no-cache`. The HTML answer holds
+        `Cache-Control: no-store`.
+      content:
+        text/html:  { schema: { type: string } }
         image/jpeg: { schema: { type: string, format: binary } }
         image/png:  { schema: { type: string, format: binary } }
         image/webp: { schema: { type: string, format: binary } }
@@ -2019,6 +2306,10 @@ components:
           type: array
           description: The exact product barcodes for this slug.
           items: { type: string }
+        _qr_urls:
+          type: array
+          description: The wine page URLs decoded from QR codes for this slug.
+          items: { type: string }
         _atlas_product_uuid:
           oneOf:
             - { type: string, format: uuid }
@@ -2034,7 +2325,7 @@ components:
       type: object
       required:
         [catalog_file, patch_dir, patches, alternative_dir, alternatives, barcode_file,
-         barcodes, atlas_matches_file, atlas_bindings_file, atlas_bindings,
+         barcodes, qr_urls, atlas_matches_file, atlas_bindings_file, atlas_bindings,
          atlas_manual_bindings, records]
       properties:
         catalog_file:
@@ -2058,6 +2349,9 @@ components:
         barcodes:
           type: integer
           description: The total number of exact product barcodes.
+        qr_urls:
+          type: integer
+          description: The total number of wine page URLs decoded from QR codes.
         atlas_matches_file:
           type: string
           description: The absolute path of the automatic match JSONL file.
@@ -2141,6 +2435,72 @@ components:
         total:
           type: integer
           description: The total number of product barcodes after the change.
+
+    DatasetBarcodeRemoveResult:
+      type: object
+      required: [ok, slug, removed, barcodes, total]
+      properties:
+        ok: { type: boolean, const: true }
+        slug: { type: string }
+        removed:
+          type: string
+          description: The normalized barcode value that was removed.
+        barcodes:
+          type: array
+          description: All product barcodes of the slug after the removal.
+          items: { type: string }
+        total:
+          type: integer
+          description: The total number of product barcodes after the removal.
+
+    DatasetQrUrlRequest:
+      type: object
+      required: [slug, url]
+      properties:
+        slug:
+          type: string
+          description: The slug of one catalogue record.
+        url:
+          type: string
+          format: uri
+          maxLength: 4096
+          description: The HTTP or HTTPS wine page URL decoded from a QR code.
+
+    DatasetQrUrlResult:
+      type: object
+      required: [ok, slug, url, qr_urls, total]
+      properties:
+        ok: { type: boolean, const: true }
+        slug: { type: string }
+        url:
+          type: string
+          format: uri
+          description: The normalized URL that was stored.
+        qr_urls:
+          type: array
+          description: All QR URLs of the slug after the change.
+          items: { type: string }
+        total:
+          type: integer
+          description: The total number of QR URLs after the change.
+
+    DatasetQrUrlRemoveResult:
+      type: object
+      required: [ok, slug, removed, qr_urls, total]
+      properties:
+        ok: { type: boolean, const: true }
+        slug: { type: string }
+        removed:
+          type: string
+          format: uri
+          description: The normalized QR URL that was removed.
+        qr_urls:
+          type: array
+          description: All QR URLs of the slug after the removal.
+          items: { type: string }
+        total:
+          type: integer
+          description: The total number of QR URLs after the removal.
 
     DatasetAtlasBindingRequest:
       type: object

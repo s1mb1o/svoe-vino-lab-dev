@@ -41,8 +41,12 @@ def config_path(key, default):
 DATASET_KEYS = ("photo_dir", "trash_dir", "label_file", "variant_groups_file",
                 "manual_groups_file", "excluded_slugs_file", "runs_dir")
 # The keys that every dataset shares. They stand at the top of `config.yaml`.
-GENERIC_KEYS = ("rootdir", "catalog_file", "patch_dir", "alternative_dir", "barcode_file", "atlas_matches_file", "atlas_bindings_file", "bottle_cropped_dir",
-                "bottle_label_dir", "bottle_label_box_dir", "backends_file", "clusters")
+GENERIC_KEYS = (
+    "rootdir", "catalog_file", "patch_dir", "alternative_dir",
+    "alternative_label_dir", "embedding_ignore_file", "barcode_file",
+    "atlas_matches_file", "atlas_bindings_file", "bottle_cropped_dir",
+    "bottle_label_dir", "bottle_label_box_dir", "backends_file", "clusters",
+)
 # The dataset that a script uses when it gets no name.
 DEFAULT_DATASET = "default"
 
@@ -125,6 +129,14 @@ PATCH_DIR = config_path("patch_dir", "")
 # There is NO default directory. The Dataset page shows the editor only when
 # `config.yaml` names the directory.
 ALTERNATIVE_DIR = config_path("alternative_dir", "")
+
+# Segmented label crops of the extra catalogue views. The directory mirrors
+# `alternative_dir`, with one directory per wine slug.
+ALTERNATIVE_LABEL_DIR = config_path("alternative_label_dir", "")
+
+# The page and the matcher share the list of images that an index build leaves
+# out. An absent file means that no image is ignored.
+EMBEDDING_IGNORE_FILE = config_path("embedding_ignore_file", "")
 
 # Exact product barcodes, grouped by wine slug. The Dataset page writes this
 # file. The barcode matcher reads the same file.
@@ -338,6 +350,10 @@ def select_dataset(name=None):
         # `patch_dir` is optional, so it is reported only when it is configured.
     ) + ((("patch_dir", PATCH_DIR),) if PATCH_DIR else ()
          ) + ((("alternative_dir", ALTERNATIVE_DIR),) if ALTERNATIVE_DIR else ()
+         ) + ((("alternative_label_dir", ALTERNATIVE_LABEL_DIR),)
+              if ALTERNATIVE_LABEL_DIR else ()
+         ) + ((("embedding_ignore_file", EMBEDDING_IGNORE_FILE),)
+              if EMBEDDING_IGNORE_FILE else ()
          ) + ((("barcode_file", BARCODE_FILE),) if BARCODE_FILE else ()
          ) + ((("atlas_matches_file", ATLAS_MATCHES_FILE),) if ATLAS_MATCHES_FILE else ()
          ) + ((("atlas_bindings_file", ATLAS_BINDINGS_FILE),) if ATLAS_BINDINGS_FILE else ()

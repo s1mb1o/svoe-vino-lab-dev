@@ -295,6 +295,48 @@ Options: a trigger for a rival of the same producer within a margin, with one re
 of label attributes for each card; a second look with the whole photo or a larger crop
 when every answer is `not visible`. Both options wait for the result of this plan.
 
+### Q7. `qwen3.8-max` for stage 1
+
+Facts, from the A/B of 2026-09-24 in `ResearchLog.md`:
+
+- On 133 cards, the label year of `qwen3.8-max` (whole picture) and of the stored
+  `qwen3.5-9b` descriptions agree on 119 cards. On the 14 other cards, `qwen3.8-max` is
+  right 11 times and wrong once; the 9B is right 6 times and wrong 7 times.
+- `qwen3.8-max` read years on neck bands, rotated text, and handwriting that the 9B
+  missed, and it did not take a founding year for a vintage.
+- On the label crop, `qwen3.8-max` was worse than on the whole picture.
+- Cost: about 16 s and about 1,860 tokens for each whole picture. Stage 1 runs one call
+  at a time, so 630 cards take about 2.8 h; with 4 calls at a time, about 45 min.
+  Every rule then becomes stale: about 45 min for stage 2, then a benchmark.
+
+Options:
+
+1. Stage 1 on `qwen3.8-max`, thinking off, with the whole picture. Add the keys of a
+   stage 1 model to the block `cluster_rules` of `config.yaml`, and 4 calls at a time.
+   **Recommended.**
+2. The same, with a prompt that states «picture» instead of «photo» (some catalogue
+   pictures are drawings). The prompt changes every description in any case.
+3. No change.
+
+### Q8. The label crop keeps one label
+
+Facts: the SAM3 label crop keeps the largest label mask. It cuts away a second label:
+the lower strip of the Бюрнье bottles holds the grape, the sugar level, and the year,
+and the neck band of the Новый Свет bottles holds the vintage. Stage 2 gets these crops
+since this plan. The re-rank sends a query crop of the same kind. Stage 1 describes the
+whole picture, so its descriptions still carry such texts into stage 2. At query time a
+question about such a text can only get `not visible`. This was not measured on real
+photos.
+
+Options:
+
+1. Keep the union of all label masks in one crop, for the catalogue and for the query.
+   `svoe-wino-hackaton/scripts/build_labels.py` and the query crop cache change, and
+   the label index is built again.
+2. Stage 2 and the query VLM get the whole bottle again. The label-only rule stays in
+   the prompt and in `check_rule`.
+3. No change.
+
 ## Result
 
 Measured on 2026-09-24. Run

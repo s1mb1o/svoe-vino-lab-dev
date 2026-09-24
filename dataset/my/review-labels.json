@@ -1,14 +1,14 @@
 {
   "counts": {
-    "commented": 1495,
+    "commented": 1494,
     "copied": 0,
     "deleting": 0,
-    "labelled": 2524,
+    "labelled": 2528,
     "negative": 583,
     "no_match": 0,
     "no_match_pending": 0,
-    "positive": 1615,
-    "proposed": 1044,
+    "positive": 1619,
+    "proposed": 1041,
     "reassigned": 0,
     "unusable": 249,
     "variant": 77,
@@ -4045,9 +4045,10 @@
         "by": "hunter-06",
         "comment": "Real photo, bottle held in hand against a wall. Front label reads BYURNE / BURNIER, filigree crest with the red bull, KRASNOSTOP / KRASNOSTOP / 2014 / PROIZVEDENO V ROSSII. Producer, variety and the dark Bordeaux bottle match the catalogue bottle; the label is white with the red wordmark as in the catalogue. NOTE for the reviewer: Burnier rebranded in 2024 - the catalogue render carries the new two-part label with a separate lower strip KRASNOSTOP / krasnoe sukhoe / 20-24 and a red tab at the left; this 2014 bottle carries the earlier single label with the variety and year printed inside it.",
         "confidence": 0.86,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://vineandwine.vin/ru/vinnye-reytingi/7056/",
-        "ts": "2026-09-16T00:28:39+0300"
+        "ts": "2026-09-24T14:50:39+0300"
       },
       "03_agent.jpg": {
         "by": "hunter-06",
@@ -4056,23 +4057,24 @@
         "label": "unusable",
         "proposed": "positive",
         "source_url": "https://lublu-vino.ru/otzyvy-na-vino/otzyv-na-krasnoe-vino-burnier-krasnostop",
-        "ts": "2026-09-16T23:07:41+0300"
+        "ts": "2026-09-24T14:50:43+0300"
       },
       "04_agent.jpg": {
         "by": "hunter-06",
         "comment": "Real close-up photo of the front label during a review tasting: BYURNE in red, BURNIER in grey, filigree crest with the red bull, KRASNOSTOP / KRASNOSTOP / 2014. Producer and variety match the catalogue bottle. NOTE: earlier label generation (pre-2024 rebrand); the crest here carries a knight helm.",
         "confidence": 0.84,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://garryspirit.ru/2022/09/28/burnier-krasnostop-2014/",
-        "ts": "2026-09-16T00:28:40+0300"
+        "ts": "2026-09-24T14:50:44+0300"
       },
       "05_agent.jpg": {
         "by": "hunter-06",
-        "comment": "Real close-up photo of the front label of the 2011 vintage on a table with other bottles behind: BYURNE / BURNIER, crest with the red bull, KRASNOSTOP / KRASNOSTOP / 2011. Producer and variety match the catalogue bottle. NOTE: earlier label generation and an old vintage; the catalogue render is the 2024 rebranded label.",
         "confidence": 0.82,
+        "label": "positive",
         "proposed": "positive",
         "source_url": "https://garryspirit.ru/2020/03/24/burnier_krasnostop_2011/",
-        "ts": "2026-09-16T00:28:41+0300"
+        "ts": "2026-09-24T14:50:49+0300"
       }
     },
     "b-yu-rne-l-yu-bl-yu-suhoe-rozovoe": {
@@ -21220,6 +21222,12 @@
         "ts": "2026-09-18T12:27:03+0300"
       }
     },
+    "vinodelnya-byurne-merlo-krasnoe-suhoe-14": {
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-24T15:00:41+0300"
+      }
+    },
     "vinodelnya-byurne-sira-krasnoe-suhoe-135": {
       "01_agent.webp": {
         "by": "kimi",
@@ -24504,7 +24512,7 @@
     }
   },
   "note": "Manual labels for the photos of svoe-vino-testset/my. The key of an entry is the slug, then the photo file name. label 'positive': the photo shows the wine of this slug. label 'negative': the photo shows a different wine, and the photo stays in the set as a negative sample of this slug. label 'unusable': the photo is not usable at all and does not belong in the set. label 'variant': the photo shows this wine in another bottle, such as another vintage or another package design. A photo with no entry is not reviewed yet. The slug '__null__' is the virtual NULL wine. A photo under that slug matches NO card of the catalogue. The place is the statement, so such a photo needs no label; 'positive' confirms it and 'unusable' takes the photo out of the set. Field 'reassign_to' names the slug that the photo belongs to; scripts/09_apply_moves.py moves the file. Field 'copy_to' names a slug that the photo ALSO belongs to; the same script copies the file and leaves the source photo where it is. The copy carries no label and one comment that names the source slug. Field 'comment' holds a free text note of the reviewer about this photo and this slug. The map 'wines' holds one free text note about a whole wine, keyed by the slug.",
-  "updated": "2026-09-24T11:15:18+0300",
+  "updated": "2026-09-24T15:00:41+0300",
   "version": 2,
   "wines": {
     "abrau-dyurso-abrau-estates-beloe-shardone-suhoe-12": {

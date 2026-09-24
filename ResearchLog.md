@@ -2,6 +2,77 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-24 — stage 1 A/B: `qwen3.8-max` against `qwen3.5-9b`
+
+Status: measured on 133 cards. The open questions are Q7 and Q8 of
+`docs/plans/06_label-only-cluster-rules.md`. No project file and no rule changed.
+
+- Sample: the cards of the 43 mixed clusters and the 31 cluster cards with a year in
+  the name, 133 cards. `qwen3.8-max` of QwenCloud, thinking off, got the unchanged
+  `DESCRIBE_PROMPT` through `describe()` of `scripts/cluster_rules.py`, twice: with the
+  whole catalogue picture (the input of the stored `qwen3.5-9b` descriptions) and with
+  the label crop. Both pictures went at a long side of 2048 pixels.
+- 266 calls, 0 errors. Median 15.7 s for the whole picture and 18.7 s for the label
+  crop. Tokens: 184,425 prompt and 61,016 completion for the whole picture; 358,515
+  and 50,070 for the label crop.
+- On the 31 cards with a year in the name, each of the three variants gives that year
+  for 23 cards.
+- The three readings of the label year agree on 119 of the 133 cards. `qwen3.8-max`
+  wrote no transliteration in stage 1.
+- The 14 cards with different readings, judged by eye on enlarged pictures:
+
+| Card | On the picture | 9B | max, whole | max, label crop |
+|---|---|---|---|---|
+| `abrau-dyurso-pino-nuar-krasnoe-suhoe-125` | «урож. 2024 года» | 2024 right | 2021 wrong | 2023 wrong |
+| `abrau-dyurso-risling-beloe-suhoe-12` | «урож. 202? года», last digit unreadable | none, wrong | 2020 ? | 2021 ? |
+| `b-yu-rne-pino-gri-beloe-suhoe` | 2024 on a lower label strip | right | right | the strip is not in the crop |
+| `b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe` | 2025 on a lower label strip | right | right | the strip is not in the crop |
+| `leto-kaberne-fran-rezerv-2020-suhoe-krasnoe` | four blurred characters on the edge | none ? | 2021 ? | none ? |
+| `locantita-more` | «2023», probably, inside the main label | none, wrong | right | none, wrong |
+| `novyy-svet-…-kyuve-de-prestizh-shardone-125` | 2013 on the glass | right | right | not in the crop |
+| `novyy-svet-…-kollektsionnoe-…-shardone-125` | 2016 on the neck band | right | right | not in the crop |
+| `novyy-svet-…-vyderzhannoe-bryut-…-125` | 2018 on the neck band | none, wrong | right | not in the crop |
+| `novyy-svet-…-vyderzhannoe-polusladkoe-rozovoe-…-125` | 2018 on the neck band | none, wrong | right | not in the crop |
+| `shato-pino-petnat-pino-gri-beloe-ekstra-bryut-11` | a handwritten «2020», probably | none, wrong | right | none, wrong |
+| `soyuz-vino-kubanskoe-traditsionnoe-…-11` | «ТРАДИЦИИ ВИНОДЕЛИЯ 1976», a table wine, no vintage | 1976, wrong | none, right | none, right |
+| `vinodelnya-berdyaeva-risling-risling-reynskiy-beloe-suhoe-121` | 2022 printed vertically beside «РИСЛИНГ» | none, wrong | right | right |
+| `vinodelnya-byurne-sira-krasnoe-suhoe-135` | 2019 on a lower label strip | right | right | not in the crop |
+
+- On these 14 cards: `qwen3.8-max` on the whole picture is right 11 times, wrong once,
+  and unknown twice. `qwen3.5-9b` is right 6 times, wrong 7 times, and unknown once.
+  The label crop is right twice and wrong 3 times; for 7 cards the year is outside the
+  crop; 2 are unknown.
+- The one card where the 9B wins is the probe of 2026-09-23 that kept stage 1 local.
+- The label crop is a poor input for stage 1: the SAM3 crop keeps one label mask. It
+  cuts away a lower label strip (Бюрнье: the grape, the sugar level, and the year are
+  all on it; the main labels of two Бюрнье cards are identical) and a neck band (Новый
+  Свет: the vintage). Inside the crop, `qwen3.8-max` missed two years that it read on
+  the whole picture.
+- The query crop of the re-rank is made the same way. Whether it drops such strips on
+  real photos was not measured: c001 triggered the step on one test photo only.
+
+## 2026-09-24 — the review page and the index builder need one ignore source
+
+An ignore control in a page is not enough. The index builder must read the same state,
+and the index name must change with that state. Otherwise a rebuild can reuse vectors
+that contain an ignored image. The shared document identifies a main image by kind and
+slug. It identifies an additional image by kind, slug, and exact file name. Photo and
+label decisions stay independent.
+
+The page also uses the exact prepared directories. It does not replace a missing crop
+or label with the catalogue image. This makes missing preprocessing visible.
+
+## 2026-09-24 — a raw image route can also give a browser preview
+
+The Dataset page needs raw image URLs for its image elements. A clicked image also
+needs a checkerboard viewer, because a native browser image tab does not show a clear
+boundary for transparent pixels. The page opens this viewer as a modal, so the list
+keeps its scroll position. Its arrows use the filtered and sorted records already on
+the page. The catalogue and patch routes also use content negotiation for a direct
+navigation. A request that accepts HTML gets the standalone viewer. An image request
+gets the original bytes. The parameters `view=1` and `raw=1` make either result
+explicit.
+
 ## 2026-09-24 — the Dataset page follows the full-list review flow
 
 The owner requested the same continuous list as the Review page. The Dataset page now

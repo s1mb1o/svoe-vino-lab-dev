@@ -27,6 +27,8 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `catalog_file` | `CATALOG_FILE` | Catalogue of the vino-svoe.ru wines, one JSON record per line. Every dataset reads the same catalogue. |
 | `patch_dir` | `PATCH_DIR` | Corrected catalogue photos, one file per wine slug. Optional. Every dataset reads the same directory. See [Patched catalogue photos](#patched-catalogue-photos). |
 | `alternative_dir` | `ALTERNATIVE_DIR` | Extra catalogue views, zero or more files per wine slug. Optional. Every dataset and the matcher read the same directory. |
+| `alternative_label_dir` | `ALTERNATIVE_LABEL_DIR` | Segmented label crops of the extra views. The layout is `<wine_slug>/<source-file-stem>.png`. Optional. |
+| `embedding_ignore_file` | `EMBEDDING_IGNORE_FILE` | Images that the reviewer removed from future embedding index builds. Optional. The Embedding page and the matcher share this JSON file. |
 | `barcode_file` | `BARCODE_FILE` | Exact product barcodes grouped by wine slug. Optional. The Dataset page and the matcher share this file. |
 | `atlas_matches_file` | `ATLAS_MATCHES_FILE` | Automatic Svoe Vino to Drink Atlas Core product matches. Optional. The Dataset page reads this JSONL file. |
 | `atlas_bindings_file` | `ATLAS_BINDINGS_FILE` | Manual Svoe Vino to Drink Atlas Core product bindings. Optional. The Dataset page writes this JSONL overlay. |
@@ -54,6 +56,9 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
 catalog_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl
 patch_dir: svoe-wino-hackaton/dataset/patched-official-2026-09-17
+alternative_dir: svoe-wino-hackaton/dataset/derived/additional
+alternative_label_dir: svoe-wino-hackaton/dataset/derived/additional-labels
+embedding_ignore_file: svoe-vino-matcher/dataset/embedding-ignore.json
 barcode_file: svoe-vino-matcher/dataset/code-map.json
 atlas_matches_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-matches.jsonl
 atlas_bindings_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-bindings.manual.jsonl
@@ -253,6 +258,12 @@ It writes no file until you press `Apply`. Press `Cancel` to discard the candida
 
 The page shows all records that pass the current filter. It has no pagination. Search
 and sort apply to the full list. Images outside the viewport keep native lazy loading.
+Click a catalogue image or a patch image to open a modal preview over the Dataset
+page. The page stays at the same scroll position. The preview puts the image on a
+checkerboard and draws its boundary. It also shows the natural pixel dimensions. The
+arrow buttons and the Left and Right keys move through images of the same kind in the
+current filtered and sorted list. The `open raw image` link opens the image bytes
+without the preview.
 
 A record with a patch has a `Remove` button. The button stages the removal. Press
 `Apply` to remove the patch, or press `Cancel` to keep it. You can drop a new image on
@@ -273,33 +284,61 @@ add views of the slug to every photo index. They do not replace the catalogue pi
 or its patch. Rebuild the matcher index after a change.
 
 The information area of each row holds `Barcodes` and a `+` button. Press `+` to add
-an input row. Enter one barcode and press `V` to save it. Press `X` to cancel the new
+an input row. Enter one barcode and press the checkmark icon to save it. Press the
+cross icon to cancel the new
 row. A wine MAY have more than one barcode. The page writes a confirmed value to
 `barcode_file`. The barcode matcher reads the same file. The server removes spaces
-from the value and refuses a value that already belongs to another slug.
+from the value and refuses a value that already belongs to another slug. Each saved
+barcode has a small red `×`. Press it and confirm to remove only that barcode. The
+write keeps the QR code and every other field of the wine record.
+
+The `QR URLs` area works in the same way. Press `+`, enter the web page URL encoded
+in the QR code, and press the checkmark icon. Each saved URL has `×`, `copy`, and
+`open` controls.
+The page writes it to the `qr_code` field of `barcode_file`. The matcher normalizes a
+scanned QR URL and uses this field for an exact wine identification before visual
+matching. One wine MAY have more than one QR URL. One normalized URL cannot belong to
+two wines.
 
 Each row also shows `Atlas Core product`. The value is the permanent product UUID.
+The `open` link after `copy` opens that product at `http://127.0.0.1:8157/products/`.
 The page reads automatic values from `atlas_matches_file`. Press `+` to add a missing
-binding. Press `edit` to replace an automatic or manual value. The input has `V` and
-`X` buttons. `V` writes the value to `atlas_bindings_file`. `X` writes nothing. A
+binding. Press `edit` to replace an automatic or manual value. The input has a save
+checkmark icon and a cancel cross icon. The checkmark writes the value to
+`atlas_bindings_file`. The cross writes nothing. A
 manual value replaces the automatic value for the same slug. The automatic file does
 not change. Several Svoe Vino slugs MAY bind to one Atlas product UUID.
 
 The row shows the name, the producer, the category, the region, the colour, the grapes,
-the slug, the image match, the description, and the source links. Open
-`full catalog.jsonl record` to read every field of the JSON record. Search reads every
-source field, every saved barcode, and every Atlas product UUID. The filter can show
-the 15 patched records alone.
+the slug, the image match, and the source links. It does not show the wine description.
+Open `full catalog.jsonl record` to read the description and every other field. Search
+reads every
+source field, every saved barcode, every QR URL, and every Atlas product UUID. The
+filter can show the 15 patched records alone.
 
 Press `Validate` to open the validation dialog. The dialog describes three read-only
 checks. The slug check compares the catalogue with the public wine sitemap. The image
 check downloads each source image and compares its SHA-256 with the local file. This
 is an exact byte check. A resize URL can re-encode the same visible image. The page
 check compares the source image file name with `og:image` on each `wine_slug` page.
-
 The server runs the selected checks in the background. The dialog shows progress and
 the problem records. Closing the dialog does not stop the job. Open it again to read
 the current progress or the last result.
+
+### The Embedding page
+
+Open `http://127.0.0.1:8154/embedding`. The page shows every image prepared for an
+embedding build. The left column identifies the wine. The right side is a matrix. The
+first column holds the cropped main package image and its segmented label. Each next
+column holds one full additional image and its segmented label. Every image cell has a
+checkerboard background. A missing prepared image or label is shown as missing. It is
+not replaced with another image.
+
+Press `Ignore` to remove one image from future index builds. Press `Use` to restore it.
+The page writes the decision to `embedding_ignore_file`. `svoe-vino-matcher` filters
+the main photo, main label, additional photo, and additional label independently. The
+ignore fingerprint is part of the index file name, so a changed decision cannot reuse
+an old index.
 
 ### The four labels
 
@@ -766,6 +805,14 @@ An image file that lies directly in `my/`, and not in the directory of a wine,
 belongs to no wine yet. Put a new photo there when the wine is not known, or when
 several photos arrive at one time. The tool lists these files at the start and shows
 them in the sideboard with a dashed frame. The file name stands under the picture.
+
+You can also drag image files from the desktop to the sideboard. You can drag an
+image from another browser page too. The server copies each picture directly into
+`my/` and shows it in the inbox at once. The picture stays unassigned until you drag
+its card to a wine row and press `apply`. A reload does not remove an inbox picture.
+The server reads the image type from the bytes. It removes path parts and unsafe
+characters from the source name. A name that is already in the inbox gets the suffix
+`_inbox2`, `_inbox3`, and so on.
 
 1. Drag such a card to the row of the wine that the photo shows. The card then
    states `→ <the slug>` and the header counts one more pending move.

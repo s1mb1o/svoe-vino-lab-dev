@@ -20,8 +20,10 @@ class DatasetBarcodeTest(unittest.TestCase):
         self.path = Path(self.directory.name) / "code-map.json"
         self.old_file = SERVER.BARCODE_FILE
         self.old_barcodes = SERVER._barcodes
+        self.old_qr_urls = SERVER._qr_urls
         SERVER.BARCODE_FILE = str(self.path)
         SERVER._barcodes = {}
+        SERVER._qr_urls = {}
         self.catalog = {
             "wine-a": {"slug": "wine-a"},
             "wine-b": {"slug": "wine-b"},
@@ -30,6 +32,7 @@ class DatasetBarcodeTest(unittest.TestCase):
     def tearDown(self):
         SERVER.BARCODE_FILE = self.old_file
         SERVER._barcodes = self.old_barcodes
+        SERVER._qr_urls = self.old_qr_urls
         self.directory.cleanup()
 
     def write_map(self):
@@ -84,6 +87,43 @@ class DatasetBarcodeTest(unittest.TestCase):
             SERVER.store_dataset_barcode(self.catalog, "wine-a", "  ")
         with self.assertRaisesRegex(ValueError, "unknown wine slug"):
             SERVER.store_dataset_barcode(self.catalog, "missing", "444")
+
+    def test_remove_one_barcode_preserves_other_fields(self):
+        self.path.write_text(json.dumps({"version": 1, "wines": [{
+            "wine_slug": "wine-a",
+            "barcode": ["111", "222"],
+            "qr_code": "https://example.test/a",
+            "source_note": "keep this field",
+        }]}), encoding="utf-8")
+        SERVER._barcodes = SERVER.load_barcodes()
+
+        removed = SERVER.remove_dataset_barcode(self.catalog, "wine-a", "111")
+
+        self.assertEqual(removed, "111")
+        self.assertEqual(SERVER._barcodes, {"wine-a": ["222"]})
+        record = json.loads(self.path.read_text())["wines"][0]
+        self.assertEqual(record["barcode"], "222")
+        self.assertEqual(record["qr_code"], "https://example.test/a")
+        self.assertEqual(record["source_note"], "keep this field")
+
+    def test_remove_last_barcode_keeps_record_with_null_value(self):
+        self.write_map()
+
+        SERVER.remove_dataset_barcode(self.catalog, "wine-a", "111")
+
+        self.assertEqual(SERVER._barcodes, {})
+        record = json.loads(self.path.read_text())["wines"][0]
+        self.assertIsNone(record["barcode"])
+        self.assertEqual(record["qr_code"], "https://example.test/a")
+
+    def test_remove_unknown_barcode_is_rejected_without_a_write(self):
+        self.write_map()
+        before = self.path.read_bytes()
+
+        with self.assertRaisesRegex(ValueError, "does not have barcode 999"):
+            SERVER.remove_dataset_barcode(self.catalog, "wine-a", "999")
+
+        self.assertEqual(self.path.read_bytes(), before)
 
 
 if __name__ == "__main__":

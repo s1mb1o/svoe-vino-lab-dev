@@ -2,12 +2,55 @@
 
 ## 2026-09-24
 
+### External pictures in the Testset sideboard
+
+- The Testset sideboard accepts image files from the desktop and images dragged from
+  another browser page.
+- A dropped picture goes directly into the durable `my/` inbox. It has no wine, label,
+  score, or comment. The page shows it at once for future distribution.
+- New routes `POST /api/inbox-upload` and `POST /api/inbox-fetch` store the two forms
+  of external drop.
+- The server reads the image type from the bytes. It removes path parts and unsafe
+  characters from the source name. It does not replace a file with the same name.
+- The empty sideboard and its help text now state that it accepts external images.
+
+### Embedding input page
+
+- Every page uses the navigation order `Dataset`, `Clusters`, `Embeddings`, `Testset`,
+  `Runs`. The earlier `Review` label is now `Testset`.
+- New page `/embedding`. It shows the cropped main image and segmented label in one
+  column. Each additional view gets another column with its full image and label.
+- Every image cell uses a checkerboard. A missing derived file stays visibly missing.
+- The Show filter has `Patched image` for wines whose main image comes from a patch.
+- Each prepared image has an `Ignore` or `Use` control. The page writes
+  `svoe-vino-matcher/dataset/embedding-ignore.json`.
+- An ignored image stays visible in grayscale. Its dashed border and `Use` button
+  identify the state.
+- The matcher filters the four image kinds independently. The ignore fingerprint
+  changes every affected index file name.
+- A label pipeline MAY name `source.alternative_dir` to index segmented labels of
+  additional views.
+
+### Checkerboard preview for Dataset images
+
+- A click on a catalogue image or a patch image opens a checkerboard modal over the
+  Dataset page. It does not open a new page.
+- A border shows the displayed image boundary. The header shows the natural pixel
+  dimensions and the file name.
+- Arrow buttons and the Left and Right keys move through the current filtered and
+  sorted list. Escape closes the modal without changing the page scroll position.
+- The preview scales a tall image to fit the available height. It shows no scrollbar.
+- The preview has an `open raw image` link.
+- Image elements and API clients continue to get the original image bytes.
+
 ### All Dataset records on one page
 
 - The Dataset page shows all records that pass the current filter.
 - The `Rows`, `Previous`, and `Next` controls are removed.
 - Search waits 180 ms after input before it rebuilds the full list.
 - Catalogue and patch images keep native lazy loading.
+- A row does not show the wine description. The description stays searchable and stays
+  in `full catalog.jsonl record`.
 
 ### Label-only cluster rules
 
@@ -54,21 +97,34 @@ a label-only prompt, and the vintage policy in the same rebuild.
 ### Drink Atlas Core product binding on the Dataset page
 
 - Each Dataset row shows its effective Drink Atlas Core product UUID.
+- An `open` link after `copy` opens the matching product page on the local Drink Atlas
+  Core service at `http://127.0.0.1:8157/products/<uuid>`.
 - Automatic matches come from `atlas_matches_file`. The page marks them `automatic`.
-- The `+` or `edit` button opens a UUID input with `V` and `X`. `V` writes a manual
-  binding. `X` cancels and writes nothing.
+- The `+` or `edit` button opens a UUID input with save checkmark and cancel cross
+  icons. The checkmark writes a manual binding. The cross cancels and writes nothing.
 - `POST /api/dataset-atlas-binding` writes the manual overlay in
   `atlas_bindings_file`. A manual value replaces the automatic value for that slug.
 - The automatic match file does not change. Several Svoe Vino slugs MAY bind to one
   Atlas product UUID.
 
-### Barcode entry on the Dataset page
+### Barcode and QR URL entry on the Dataset page
 
 - Each Dataset row shows its product barcodes and a `+` button.
-- The `+` button opens a text input with `V` and `X` buttons. `V` writes the value.
-  `X` cancels the new row and writes nothing.
+- The `+` button opens a text input with save checkmark and cancel cross icons. The
+  checkmark writes the value. The cross cancels the new row and writes nothing.
 - `POST /api/dataset-barcode` adds one value to `barcode_file`. One slug MAY have more
   than one value. A value cannot belong to two slugs.
+- Each saved barcode has a small red `×` button. A confirmed click removes only that
+  barcode. The server preserves the QR code and the other fields of the wine record.
+- `DELETE /api/dataset-barcode?slug=<slug>&barcode=<value>` performs the removal. A
+  wine with no barcode keeps its structured record with `barcode: null`.
+- Each Dataset row has a `QR URLs` editor with the same `+`, save checkmark, cancel
+  cross, red `×`, and `copy` controls. Each saved URL also has `open`.
+- `POST` and `DELETE /api/dataset-qr-url` add and remove URL values in the `qr_code`
+  field. The server normalizes the URL and prevents one normalized URL from belonging
+  to two wines.
+- The barcode matcher already reads `qr_code`. A matching scanned URL identifies the
+  wine before visual matching.
 - The page and `svoe-vino-matcher` share `svoe-vino-matcher/dataset/code-map.json`.
 
 ### Alternative photos on the Dataset page

@@ -11,7 +11,7 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 |---|---|---|
 | 1 | Start the tool | The log states first the configuration: the path of `config.yaml`, the dataset, `rootdir`, every configured path, and the work directory. It then states the wine count, the photo count, the loaded label count by label, and the URL. The start takes a few seconds, not minutes. |
 | 2 | `curl -s -o /dev/null -w "%{http_code}" $H/` | `200` |
-| 2a | Open `$H/` and look at the top right of the header | The navigation holds `Review`, `Dataset`, `Runs`, and `Clusters`. `Review` is the marked link. A click on `Dataset` opens `/dataset`. |
+| 2a | Open `$H/` and look at the top right of the header | The navigation order is `Dataset`, `Clusters`, `Embeddings`, `Testset`, `Runs`. `Testset` is the marked link. A click on `Dataset` opens `/dataset`. |
 | 2b | Drag a photo card to the sideboard at the right | The card leaves the row of its wine and stands in the panel. The counter beside `Sideboard` rises. No request is sent. |
 | 2c | Drag the card from the sideboard to the row of another wine | The card stands again in the row of its own wine, with a dashed outline. Its button reads `→ <the target slug>`. The header states one more pending move. |
 | 2d | Drag a held card to the row of the wine it comes from | The card stands again in that row. No move is recorded. |
@@ -53,6 +53,11 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 2o | Drag an inbox card to a row, then reload the page before `apply` | The photo stands again in the sideboard with no target. The target lives in the tab alone. |
 | 2p | `curl -s -o /dev/null -w "%{http_code}" "$H/img/inbox?file=../../config.yaml"` | `404`. The route serves the files of the inbox alone. |
 | 2q | POST `/api/apply-moves` with `{"inbox": [{"file": "x.png", "to": "no-such-wine"}]}` | `inbox_failed` names the pair and the reason `the target is not a slug of the catalogue`. The file stays in the inbox. |
+| 2r | Drag one or more image files from the desktop to the sideboard | The sideboard gets a dashed accent outline during the drag. Each file appears as an inbox card. Each file lies directly in `my/`. No wine, label, score, or comment is set. |
+| 2s | Reload after the external drop | The new inbox cards stay. They are ready for later distribution to wine rows. |
+| 2t | Drop the same file name on the sideboard two times | The second file gets the suffix `_inbox2`. The first file does not change. |
+| 2u | Drop a non-image file on the sideboard | The page states that the file cannot be added. No inbox file is written. |
+| 2v | Drag an image from another public browser page to the sideboard | The server fetches the image. It appears as a durable inbox card. A local or private network address is refused. |
 | 2g | Hold a photo with no target, then press `apply` | The recorded moves and the deletions are carried out. The held photo is not touched and `apply` states nothing about it. |
 | 2h | Press the button `sideboard` in the header | The panel goes away. The table and the header use the whole width. |
 | 2i | Press the button again, or the key `s` | The panel comes back. The header keeps the room free and no control of the header is covered. |
@@ -508,7 +513,7 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | # | Case | Expected result |
 |---|---|---|
 | D1 | Open `$H/dataset` | The header states `2103 of 2103 records · 15 patches`. The document holds all 2,103 records in the order of `catalog.jsonl`. `Dataset` is the marked navigation link. |
-| D2 | Look at the first row | The original catalogue bottle stands at the left. The second image place is a drop target for a patch. The text matches the first record of `catalog.jsonl`. |
+| D2 | Look at the first row | The original catalogue bottle stands at the left. The second image place is a drop target for a patch. The main fields match the first record of `catalog.jsonl`. The wine description is not visible. It stays in `full catalog.jsonl record`. |
 | D3 | Set `Show` to `with a patch` | The page shows 15 records. Each row shows the original catalogue image and the patch image next to it. |
 | D4 | Search `Пино Нуар`, then search the full first slug | The page shows records that contain every search word in any JSON field. |
 | D5 | Open `full catalog.jsonl record` | The formatted JSON has every source field. It does not have the internal `_patched` or `_index` fields. |
@@ -516,6 +521,11 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | D7 | Inspect the controls and scroll through the list | There is no `Rows`, `Previous`, or `Next` control. All records that pass the filter stay in one continuous list. Images below the viewport have `loading="lazy"`. |
 | D8 | `GET /api/dataset` | The answer holds the catalogue, patch, alternative, barcode, and Atlas binding paths and counts, plus 2,103 records. Every record has `_patched`, `_barcodes`, `_atlas_product_uuid`, and `_atlas_binding_source`. |
 | D9 | Compare `GET /img/catalog?slug=bukovinka` and `GET /img/patch?slug=bukovinka` | The first body equals `local_path` of the catalogue record. The second body equals `patch_dir/bukovinka.webp`. |
+| D9a | Click a catalogue image or a patch image | A modal opens over the Dataset page. It shows the image on a checkerboard inside a visible boundary. The header shows the natural pixel dimensions and an `open raw image` link. No new tab opens. |
+| D9b | Request `/img/catalog?slug=bukovinka` with `Accept: text/html`, then request it with `raw=1` | The first answer is the HTML preview. The second answer is the original image body even when the request accepts HTML. |
+| D9c | Press the preview arrow buttons, then press the Left and Right keys | The preview moves through images of the same kind in the current filtered and sorted list. It does not close or change the Dataset scroll position. |
+| D9d | Press Escape or the preview close button | The preview closes. The Dataset page stays at its earlier scroll position. |
+| D9e | Open a tall image in the preview | The full checkerboard frame fits below the header. The preview has no horizontal or vertical scrollbar. |
 | D10 | `GET /img/patch` with a slug that has no patch | `404`. The server reads no file outside `patch_dir`. |
 | D11 | Drop an image on a row that has no patch | The drop target shows the candidate, its file name, `Apply`, and `Cancel`. No file appears in `patch_dir`. |
 | D12 | Press `Cancel` on a patch candidate | The candidate is discarded. The row shows the empty drop target again. No file changes. |
@@ -529,26 +539,52 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | D20 | Close the dialog while a check runs, then open it | The job continues. The dialog shows the current progress or the completed result. |
 | D21 | `GET /api/dataset-validation` | The answer holds `running`, `selected`, `progress`, and `results`. The route starts no work. |
 | D22 | `POST /api/dataset-validation` with `{"checks":["slugs"]}` | The answer is `202`. A second POST while the job runs answers `409`. An empty list or an unknown check answers `400`. |
-| D23 | Press `+` beside `Barcodes` in one row | A text input and the `V` and `X` buttons appear. No file changes. |
-| D24 | Enter a barcode and press `X` | The input row closes. The barcode file does not change. |
-| D25 | Enter a new barcode and press `V` | The barcode appears in the row. `barcode_file` contains it under the correct `wine_slug`. The header count increases by one. |
+| D23 | Press `+` beside `Barcodes` in one row | A text input and the save checkmark and cancel cross icons appear. No file changes. |
+| D24 | Enter a barcode and press the cancel cross icon | The input row closes. The barcode file does not change. |
+| D25 | Enter a new barcode and press the save checkmark icon | The barcode appears in the row. `barcode_file` contains it under the correct `wine_slug`. The header count increases by one. |
 | D26 | Add a second barcode to the same slug | The code map stores both values. Both values appear in the row. |
 | D27 | Add a barcode that another slug already has | The server answers `400`. The page shows the error. The file does not change. |
 | D28 | Search for a saved barcode | The page shows the slug that owns the value. |
+| D28a | Look at a saved barcode | A small red `×` button stands before the number. The `copy` button stands after it. |
+| D28b | Press the red `×`, then cancel the confirmation | The barcode stays visible. The barcode file does not change. |
+| D28c | Press the red `×`, then confirm | Only that barcode disappears. The count and header total fall by one. The QR code and the other fields of the wine record do not change. |
+| D28d | Remove the last barcode of a wine | The structured wine record stays in the code map with `barcode: null`. |
+| D28e | Press `+` beside `QR URLs`, enter a public HTTP or HTTPS wine page, and press the save checkmark icon | The normalized URL appears with `×`, `copy`, and `open`. The shared code map stores it in `qr_code`. The header QR URL total rises by one. |
+| D28f | Press `open` on a saved QR URL | The URL opens in a new tab. |
+| D28g | Add the same normalized QR URL to another wine | The server answers `400`. The code map does not change. |
+| D28h | Press the red `×` on a QR URL and confirm | Only that URL disappears. Other QR URLs, barcodes, and record fields do not change. The last removal writes `qr_code: null`. |
+| D28i | Search for a saved QR URL | The page shows the slug that owns the URL. |
 | D29 | Look at `Atlas Core product` for a slug in `atlas_matches_file` | The row shows the product UUID and marks the source `automatic`. |
-| D30 | Press `+` for an unbound slug | A UUID input and the `V` and `X` buttons appear. No file changes. |
-| D31 | Enter a UUID and press `X` | The input closes. The manual binding file does not change. |
-| D32 | Enter a valid UUID and press `V` | The row shows the UUID and marks it `manual`. `atlas_bindings_file` contains the slug and UUID. |
+| D29a | Press `open` after the Atlas Core product UUID | A new tab opens `http://127.0.0.1:8157/products/<uuid>` for that exact UUID. |
+| D30 | Press `+` for an unbound slug | A UUID input and the save checkmark and cancel cross icons appear. No file changes. |
+| D31 | Enter a UUID and press the cancel cross icon | The input closes. The manual binding file does not change. |
+| D32 | Enter a valid UUID and press the save checkmark icon | The row shows the UUID and marks it `manual`. `atlas_bindings_file` contains the slug and UUID. |
 | D33 | Press `edit` on an automatic binding and save another UUID | The manual overlay gets the new UUID. The automatic match file does not change. The row shows the manual UUID. |
 | D34 | Enter text that is not a UUID | The server answers `400`. The page shows the error. No file changes. |
 | D35 | Search for an Atlas product UUID | The page shows every Svoe Vino slug bound to that product. |
+
+## The Embedding page — `/embedding`
+
+| # | Case | Expected result |
+|---|---|---|
+| E1 | Open `$H/embedding` | The page shows every catalogue record in one continuous list. `Embeddings` is the marked navigation link. The navigation order is `Dataset`, `Clusters`, `Embeddings`, `Testset`, `Runs`. |
+| E2 | Look at the first row | The left column identifies the wine. The first matrix column holds the cropped main package image above the segmented main label. Both cells have a checkerboard. |
+| E2a | Set `Show` to `Patched image` | The page shows only records whose main catalogue image has a patch. |
+| E3 | Add an alternative image and its `<source-file-stem>.png` label, then reload | A new matrix column shows the full additional image above its segmented label. |
+| E4 | Remove one prepared label and reload | The cell states `label not prepared`. It does not show the package image as a fallback. |
+| E5 | Press `Ignore` on a main image | The image becomes grayscale, and the cell gets a dashed border. The button becomes `Use`. `embedding_ignore_file` holds `main` and the wine slug. |
+| E6 | Press `Use` on that image | The cell returns to the active state. Its ignore record is absent. |
+| E7 | Ignore one main label and one additional image | The other two image kinds of the wine stay active. The matcher leaves only the two named inputs out. |
+| E8 | Change one ignore decision and load the matcher config | `Config.index_id` returns a different name. An old index cannot be reused. |
+| E9 | `GET /api/embedding` | The answer holds 2,103 records and the source paths and counts. Each prepared image states `available` and `ignored`. |
+| E10 | POST an unknown slug, kind, or file to `/api/embedding-ignore` | `400`. The ignore file does not change. |
 
 ## The page of the runs — `/runs`
 
 | # | Case | Expected result |
 |---|---|---|
 | R1 | Open `http://127.0.0.1:8154/runs` | The table of the runs, the newest first. The newest run with metrics opens by itself. |
-| R1a | Look at the top right of the header | The navigation holds `Review`, `Dataset`, `Runs`, and `Clusters`. `Runs` is the marked link. A click on `Dataset` opens `/dataset`. |
+| R1a | Look at the top right of the header | The navigation order is `Dataset`, `Clusters`, `Embeddings`, `Testset`, `Runs`. `Runs` is the marked link. A click on `Dataset` opens `/dataset`. |
 | R2 | Click another run | The metrics and the photos change. The address holds the run id after `#`. |
 | R3 | Reload the page with the `#` in the address | The same run opens. |
 | R4 | Look at a row of a positive photo that was matched | The candidate of the true slug carries a green border. |

@@ -61,6 +61,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # `bind_paths` sets them all. It runs here, and it runs again when `--dataset`
 # names another dataset, because these names are read all over this file.
 MY = TRASH = LABEL_FILE = CATALOG = PATCH_DIR = ALTERNATIVE_DIR = None
+ALTERNATIVE_LABEL_DIR = EMBEDDING_IGNORE_FILE = None
 BARCODE_FILE = ATLAS_MATCHES_FILE = ATLAS_BINDINGS_FILE = None
 BOTTLE_CROPPED_DIR = None
 BOTTLE_LABEL_DIR = BOTTLE_LABEL_BOX_DIR = None
@@ -70,6 +71,7 @@ VARIANTS_FILE = MANUAL_GROUPS_FILE = EXCLUDED_FILE = RUNS_DIR = None
 def bind_paths():
     """Take every path of this file from the dataset that `common` holds now."""
     global MY, TRASH, LABEL_FILE, CATALOG, PATCH_DIR, ALTERNATIVE_DIR
+    global ALTERNATIVE_LABEL_DIR, EMBEDDING_IGNORE_FILE
     global BARCODE_FILE, ATLAS_MATCHES_FILE, ATLAS_BINDINGS_FILE
     global BOTTLE_CROPPED_DIR
     global BOTTLE_LABEL_DIR, BOTTLE_LABEL_BOX_DIR
@@ -84,6 +86,8 @@ def bind_paths():
     # Extra catalogue views. Every dataset and the matcher read the same
     # directory. A file ADDS a view; it does not replace the main picture.
     ALTERNATIVE_DIR = common.ALTERNATIVE_DIR
+    ALTERNATIVE_LABEL_DIR = common.ALTERNATIVE_LABEL_DIR
+    EMBEDDING_IGNORE_FILE = common.EMBEDDING_IGNORE_FILE
     # Exact product barcodes. The Dataset page and the barcode matcher share
     # this structured code-map file.
     BARCODE_FILE = common.BARCODE_FILE
@@ -122,6 +126,7 @@ NULL_NAME = "NULL \u2014 no match in the catalogue"
 NULL_LABELS = ("positive", "unusable")
 COMMENT_MAX = 4000
 BARCODE_MAX = 128
+QR_URL_MAX = 4096
 # The OpenAPI document of this server. `/openapi.yaml`, `/openapi.json`, and
 # `/docs` read it. It is written by hand; it is not generated from the code.
 SPEC_FILE = os.path.join(ROOT, "docs", "openapi.yaml")
@@ -169,9 +174,17 @@ _patches = {}
 # slug -> paths of extra catalogue views. The Dataset page edits these files,
 # and the matcher indexes every file beside the primary picture of the slug.
 _alternatives = {}
+# slug -> segmented label crops of extra catalogue views.
+_alternative_labels = {}
+# (kind, slug, file) -> the persisted ignore record. An empty file component is
+# used by the main package image and its main label crop.
+_embedding_ignored = {}
 # slug -> exact product barcode values. `BARCODE_FILE` uses the structured map
 # that `svoe-vino-matcher` reads. One slug MAY have more than one barcode.
 _barcodes = {}
+# slug -> URL payloads from QR codes. The barcode matcher reads these values from
+# the `qr_code` field of the same structured code map.
+_qr_urls = {}
 # Automatic Atlas matches, manual overrides, and their effective combination.
 _atlas_matches = {}
 _atlas_manual_bindings = {}
@@ -257,6 +270,96 @@ def load_alternatives():
     return out
 
 
+def load_alternative_labels():
+    """Read segmented labels of alternative images in `<slug>/<stem>.png`."""
+    if not ALTERNATIVE_LABEL_DIR:
+        return {}
+    if not os.path.isdir(ALTERNATIVE_LABEL_DIR):
+        print("warning: alternative_label_dir is not a directory: %s"
+              % ALTERNATIVE_LABEL_DIR, file=sys.stderr)
+        return {}
+    out = {}
+    for slug in sorted(os.listdir(ALTERNATIVE_LABEL_DIR)):
+        if slug.startswith("."):
+            continue
+        directory = os.path.join(ALTERNATIVE_LABEL_DIR, slug)
+        if not os.path.isdir(directory):
+            continue
+        files = [os.path.join(directory, fn) for fn in sorted(os.listdir(directory))
+                 if os.path.splitext(fn)[1].lower() in IMAGE_EXT
+                 and os.path.isfile(os.path.join(directory, fn))]
+        if files:
+            out[slug] = files
+    return out
+
+
+EMBEDDING_IMAGE_KINDS = ("main", "main-label", "additional", "additional-label")
+
+
+def _embedding_key(kind, slug, filename=""):
+    return kind, slug, filename
+
+
+def load_embedding_ignored():
+    """Read the images that future embedding index builds leave out."""
+    if not EMBEDDING_IGNORE_FILE or not os.path.exists(EMBEDDING_IGNORE_FILE):
+        return {}
+    try:
+        with open(EMBEDDING_IGNORE_FILE, encoding="utf-8") as source:
+            document = json.load(source)
+        rows = document.get("ignored") if isinstance(document, dict) else None
+        if not isinstance(rows, list):
+            raise ValueError("the document MUST hold an `ignored` list")
+        out = {}
+        for number, row in enumerate(rows, 1):
+            if not isinstance(row, dict):
+                raise ValueError("ignored item %d MUST be an object" % number)
+            kind = str(row.get("kind") or "")
+            slug = str(row.get("wine_slug") or "")
+            filename = str(row.get("file") or "")
+            if kind not in EMBEDDING_IMAGE_KINDS or not slug:
+                raise ValueError("ignored item %d has an invalid kind or wine_slug"
+                                 % number)
+            if kind.startswith("additional") and not filename:
+                raise ValueError("ignored item %d MUST name `file`" % number)
+            clean = {"kind": kind, "wine_slug": slug}
+            if filename:
+                clean["file"] = filename
+            if row.get("ts"):
+                clean["ts"] = str(row["ts"])
+            out[_embedding_key(kind, slug, filename)] = clean
+        return out
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        print("warning: cannot read embedding_ignore_file: %s" % exc,
+              file=sys.stderr)
+        return {}
+
+
+def save_embedding_ignored():
+    """Write the shared embedding ignore document atomically."""
+    if not EMBEDDING_IGNORE_FILE:
+        raise ValueError("embedding_ignore_file is not configured")
+    directory = os.path.dirname(EMBEDDING_IGNORE_FILE)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    document = {
+        "version": 1,
+        "ignored": sorted(_embedding_ignored.values(),
+                          key=lambda row: (row["wine_slug"], row["kind"],
+                                           row.get("file", ""))),
+    }
+    temporary = EMBEDDING_IGNORE_FILE + ".part"
+    try:
+        with open(temporary, "w", encoding="utf-8") as target:
+            json.dump(document, target, ensure_ascii=False, indent=2)
+            target.write("\n")
+        os.replace(temporary, EMBEDDING_IGNORE_FILE)
+    except OSError:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+        raise
+
+
 def _barcode_values(value):
     """Return one barcode scalar or list as normalized unique strings."""
     values = value if isinstance(value, list) else ([] if value is None else [value])
@@ -290,6 +393,23 @@ def _read_barcode_document():
             for slug, values in sorted(grouped.items())
         ]}
     raise ValueError("barcode_file MUST contain a `wines` list")
+
+
+def _write_barcode_document(document):
+    """Write the shared barcode and QR URL document atomically."""
+    directory = os.path.dirname(BARCODE_FILE)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    temporary = BARCODE_FILE + ".part"
+    try:
+        with open(temporary, "w", encoding="utf-8") as target:
+            json.dump(document, target, ensure_ascii=False, indent=2)
+            target.write("\n")
+        os.replace(temporary, BARCODE_FILE)
+    except OSError:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+        raise
 
 
 def _barcode_maps(document):
@@ -327,6 +447,86 @@ def load_barcodes():
         return {}
 
 
+def _qr_url_values(value):
+    """Return one QR URL scalar or list as clean unique strings."""
+    values = value if isinstance(value, list) else ([] if value is None else [value])
+    out = []
+    for item in values:
+        clean = str(item).strip()
+        if clean and clean not in out:
+            out.append(clean)
+    return out
+
+
+def _qr_url_key(value):
+    """Normalize one QR URL in the same way as the matcher lookup."""
+    text = str(value).strip()
+    if text.startswith("URL:"):
+        text = text[4:].strip()
+    try:
+        parts = urllib.parse.urlsplit(text)
+    except ValueError:
+        return text
+    if parts.scheme.lower() not in ("http", "https") or not parts.hostname:
+        return text
+    if parts.username or parts.password:
+        return text
+    try:
+        host = parts.hostname.encode("idna").decode("ascii").lower()
+        port = parts.port
+    except (UnicodeError, ValueError):
+        return text
+    default_port = ((parts.scheme.lower() == "http" and port == 80)
+                    or (parts.scheme.lower() == "https" and port == 443))
+    netloc = host if port is None or default_port else "%s:%d" % (host, port)
+    return urllib.parse.urlunsplit((
+        parts.scheme.lower(), netloc, parts.path or "/", parts.query, ""))
+
+
+def _qr_url_maps(document):
+    """Return slug QR URLs and normalized URL owners from a code map."""
+    by_slug = {}
+    owner = {}
+    for number, record in enumerate(document.get("wines") or [], 1):
+        if not isinstance(record, dict):
+            raise ValueError("barcode record %d MUST be an object" % number)
+        slug = str(record.get("wine_slug") or "").strip()
+        if not slug:
+            raise ValueError("barcode record %d MUST name `wine_slug`" % number)
+        values = _qr_url_values(record.get("qr_code"))
+        if values:
+            by_slug.setdefault(slug, []).extend(
+                value for value in values if value not in by_slug.get(slug, []))
+        for value in values:
+            key = _qr_url_key(value)
+            old = owner.get(key)
+            if old is not None and old != slug:
+                raise ValueError(
+                    "QR URL %r maps to both `%s` and `%s`" % (key, old, slug))
+            owner[key] = slug
+    return by_slug, owner
+
+
+def load_qr_urls():
+    """Read `barcode_file` and answer slug -> QR URL values."""
+    if not BARCODE_FILE:
+        return {}
+    try:
+        by_slug, _owner = _qr_url_maps(_read_barcode_document())
+        return by_slug
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        print("warning: cannot read QR URLs from barcode_file: %s" % exc,
+              file=sys.stderr)
+        return {}
+
+
+def _reload_code_identifiers():
+    """Reload both identifier indexes after one shared code-map write."""
+    global _barcodes, _qr_urls
+    _barcodes = load_barcodes()
+    _qr_urls = load_qr_urls()
+
+
 def _clean_new_barcode(value):
     """Validate and normalize one barcode entered on the Dataset page."""
     if not isinstance(value, str):
@@ -339,6 +539,39 @@ def _clean_new_barcode(value):
     if any(ord(char) < 32 or ord(char) == 127 for char in clean):
         raise ValueError("barcode contains a control character")
     return clean
+
+
+def _clean_new_qr_url(value):
+    """Validate and normalize one QR URL entered on the Dataset page."""
+    if not isinstance(value, str):
+        raise ValueError("QR URL MUST be a string")
+    text = value.strip()
+    if text.startswith("URL:"):
+        text = text[4:].strip()
+    if not text:
+        raise ValueError("QR URL is empty")
+    if len(text) > QR_URL_MAX:
+        raise ValueError("QR URL is longer than %d characters" % QR_URL_MAX)
+    if any(char.isspace() or ord(char) < 32 or ord(char) == 127 for char in text):
+        raise ValueError("QR URL contains whitespace or a control character")
+    try:
+        parts = urllib.parse.urlsplit(text)
+    except ValueError as exc:
+        raise ValueError("QR URL is not a valid URL") from exc
+    if parts.scheme.lower() not in ("http", "https") or not parts.hostname:
+        raise ValueError("QR URL MUST use http or https and name a host")
+    if parts.username or parts.password:
+        raise ValueError("QR URL MUST NOT contain user information")
+    try:
+        host = parts.hostname.encode("idna").decode("ascii").lower()
+        port = parts.port
+    except (UnicodeError, ValueError) as exc:
+        raise ValueError("QR URL has an invalid host or port") from exc
+    default_port = ((parts.scheme.lower() == "http" and port == 80)
+                    or (parts.scheme.lower() == "https" and port == 443))
+    netloc = host if port is None or default_port else "%s:%d" % (host, port)
+    return urllib.parse.urlunsplit((
+        parts.scheme.lower(), netloc, parts.path or "/", parts.query, ""))
 
 
 def store_dataset_barcode(catalog, slug, value):
@@ -375,21 +608,107 @@ def store_dataset_barcode(catalog, slug, value):
             key=lambda item: str(item.get("wine_slug") or "")
             if isinstance(item, dict) else "")
 
-        directory = os.path.dirname(BARCODE_FILE)
-        if directory:
-            os.makedirs(directory, exist_ok=True)
-        temporary = BARCODE_FILE + ".part"
-        try:
-            with open(temporary, "w", encoding="utf-8") as target:
-                json.dump(document, target, ensure_ascii=False, indent=2)
-                target.write("\n")
-            os.replace(temporary, BARCODE_FILE)
-        except OSError:
-            if os.path.exists(temporary):
-                os.unlink(temporary)
-            raise
-        _barcodes = load_barcodes()
+        _write_barcode_document(document)
+        _reload_code_identifiers()
     return barcode
+
+
+def remove_dataset_barcode(catalog, slug, value):
+    """Remove one exact barcode from a slug and preserve the other record fields."""
+    global _barcodes
+    if not BARCODE_FILE:
+        raise ValueError("barcode_file is not configured")
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    barcode = _clean_new_barcode(value)
+    with _lock:
+        document = _read_barcode_document()
+        by_slug, owner = _barcode_maps(document)
+        if owner.get(barcode) != slug:
+            raise ValueError("this slug does not have barcode %s" % barcode)
+        record = next(
+            (item for item in document["wines"]
+             if isinstance(item, dict)
+             and str(item.get("wine_slug") or "").strip() == slug),
+            None,
+        )
+        if record is None:
+            raise ValueError("this slug does not have barcode %s" % barcode)
+        values = [item for item in by_slug.get(slug, []) if item != barcode]
+        record["barcode"] = (values[0] if len(values) == 1
+                             else values if values else None)
+
+        _write_barcode_document(document)
+        _reload_code_identifiers()
+    return barcode
+
+
+def store_dataset_qr_url(catalog, slug, value):
+    """Add one QR URL to a slug and write the shared code map."""
+    if not BARCODE_FILE:
+        raise ValueError("barcode_file is not configured")
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    url = _clean_new_qr_url(value)
+    key = _qr_url_key(url)
+    with _lock:
+        document = _read_barcode_document()
+        by_slug, owner = _qr_url_maps(document)
+        if key in owner:
+            if owner[key] == slug:
+                raise ValueError("this slug already has QR URL %s" % url)
+            raise ValueError(
+                "QR URL %s already belongs to `%s`" % (url, owner[key]))
+
+        record = next(
+            (item for item in document["wines"]
+             if isinstance(item, dict)
+             and str(item.get("wine_slug") or "").strip() == slug),
+            None,
+        )
+        values = list(by_slug.get(slug, []))
+        values.append(url)
+        if record is None:
+            record = {"wine_slug": slug, "barcode": None, "qr_code": url}
+            document["wines"].append(record)
+        else:
+            record["qr_code"] = values[0] if len(values) == 1 else values
+        document["wines"].sort(
+            key=lambda item: str(item.get("wine_slug") or "")
+            if isinstance(item, dict) else "")
+        _write_barcode_document(document)
+        _reload_code_identifiers()
+    return url
+
+
+def remove_dataset_qr_url(catalog, slug, value):
+    """Remove one QR URL from a slug and preserve the other record fields."""
+    if not BARCODE_FILE:
+        raise ValueError("barcode_file is not configured")
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    url = _clean_new_qr_url(value)
+    key = _qr_url_key(url)
+    with _lock:
+        document = _read_barcode_document()
+        by_slug, owner = _qr_url_maps(document)
+        if owner.get(key) != slug:
+            raise ValueError("this slug does not have QR URL %s" % url)
+        record = next(
+            (item for item in document["wines"]
+             if isinstance(item, dict)
+             and str(item.get("wine_slug") or "").strip() == slug),
+            None,
+        )
+        if record is None:
+            raise ValueError("this slug does not have QR URL %s" % url)
+        values = [item for item in by_slug.get(slug, [])
+                  if _qr_url_key(item) != key]
+        record["qr_code"] = (values[0] if len(values) == 1
+                             else values if values else None)
+        _write_barcode_document(document)
+        _reload_code_identifiers()
+    return url
 
 
 def _clean_product_uuid(value):
@@ -1748,6 +2067,127 @@ def _alternative_path(slug, filename):
     )
 
 
+def _alternative_label_path(slug, filename):
+    """Return one active alternative label, or None for an unsafe name."""
+    if (not slug or not filename or os.path.basename(slug) != slug
+            or os.path.basename(filename) != filename):
+        return None
+    return next(
+        (path for path in _alternative_labels.get(slug, [])
+         if os.path.basename(path) == filename),
+        None,
+    )
+
+
+def _alternative_label_for(slug, image_path):
+    """Return the label whose stem equals the alternative image stem."""
+    stem = os.path.splitext(os.path.basename(image_path))[0]
+    return next(
+        (path for path in _alternative_labels.get(slug, [])
+         if os.path.splitext(os.path.basename(path))[0] == stem),
+        None,
+    )
+
+
+def _embedding_image_path(catalog, slug, kind, filename=""):
+    """Return one exact image that the Embedding page can mark."""
+    if kind == "main":
+        # `bottle_cropped_dir` is the production photo index source. Do not
+        # fall back to an unprepared catalogue image when that source is set.
+        return _crops.get(slug) if BOTTLE_CROPPED_DIR else bottle_path(slug, catalog)
+    if kind == "main-label":
+        return _labels.get(slug)
+    if kind == "additional":
+        return _alternative_path(slug, filename)
+    if kind == "additional-label":
+        return _alternative_label_path(slug, filename)
+    return None
+
+
+def embedding_view(catalog):
+    """Return the exact image matrix that an embedding build can consume."""
+    records = []
+    available = ignored = missing_labels = 0
+    for rec in catalog.values():
+        slug = rec.get("slug") or ""
+        main_path = (_crops.get(slug) if BOTTLE_CROPPED_DIR
+                     else bottle_path(slug, catalog))
+        main_label = _labels.get(slug)
+
+        def image_item(kind, path, filename=""):
+            nonlocal available, ignored
+            file_value = filename or (os.path.basename(path) if path else "")
+            is_ignored = _embedding_key(kind, slug, filename) in _embedding_ignored
+            if path:
+                available += 1
+                ignored += int(is_ignored)
+            return {
+                "kind": kind,
+                "file": file_value,
+                "available": bool(path),
+                "ignored": is_ignored,
+            }
+
+        alternatives = []
+        for image_path in _alternatives.get(slug, []):
+            image_file = os.path.basename(image_path)
+            label_path = _alternative_label_for(slug, image_path)
+            label_file = os.path.basename(label_path) if label_path else ""
+            if not label_path:
+                missing_labels += 1
+            alternatives.append({
+                "image": image_item("additional", image_path, image_file),
+                "label": image_item("additional-label", label_path, label_file),
+                "source_file": image_file,
+            })
+        if main_path and not main_label:
+            missing_labels += 1
+        item = dict(rec)
+        item["_patched"] = slug in _patches
+        item["main"] = image_item("main", main_path)
+        item["main_label"] = image_item("main-label", main_label)
+        item["alternatives"] = alternatives
+        records.append(item)
+    return {
+        "catalog_file": CATALOG or "",
+        "alternative_dir": ALTERNATIVE_DIR or "",
+        "alternative_label_dir": ALTERNATIVE_LABEL_DIR or "",
+        "ignore_file": EMBEDDING_IGNORE_FILE or "",
+        "available": available,
+        "ignored": ignored,
+        "missing_labels": missing_labels,
+        "records": records,
+    }
+
+
+def store_embedding_ignore(catalog, slug, kind, filename, ignored):
+    """Set one image's shared ignore state and persist it."""
+    global _embedding_ignored
+    if kind not in EMBEDDING_IMAGE_KINDS:
+        raise ValueError("unknown embedding image kind")
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    if kind.startswith("additional"):
+        if not filename or os.path.basename(filename) != filename:
+            raise ValueError("file is required for an additional image")
+    else:
+        filename = ""
+    if not _embedding_image_path(catalog, slug, kind, filename):
+        raise ValueError("embedding image does not exist")
+    key = _embedding_key(kind, slug, filename)
+    with _lock:
+        if ignored:
+            row = {"kind": kind, "wine_slug": slug,
+                   "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z")}
+            if filename:
+                row["file"] = filename
+            _embedding_ignored[key] = row
+        else:
+            _embedding_ignored.pop(key, None)
+        save_embedding_ignored()
+    return key in _embedding_ignored
+
+
 def store_dataset_alternative(catalog, slug, body):
     """Add one alternative catalogue view and update the running state."""
     global _alternatives
@@ -1944,6 +2384,47 @@ def free_name(directory, name, tag="moved"):
     while os.path.exists(os.path.join(directory, "%s_%s%d%s" % (stem, tag, n, ext))):
         n += 1
     return "%s_%s%d%s" % (stem, tag, n, ext)
+
+
+def store_inbox_image(body, name=""):
+    """Write one unassigned picture directly in `my/`. Return its file name.
+
+    The name keeps a useful part of the source name. The bytes decide the file
+    extension. A second picture with the same name gets an `_inboxN` suffix.
+    """
+    if not body or len(body) > UPLOAD_MAX:
+        raise ValueError("the picture is empty or larger than %d bytes"
+                         % UPLOAD_MAX)
+    # Do not trust the file name or the media type that the drag source states.
+    # An inbox can hold files for a long time, so accept only a known signature.
+    ctype = sniff_image_type(body)
+    if ctype not in UPLOAD_TYPES:
+        raise ValueError("not an image type: %s" % (ctype or "none"))
+
+    # A browser normally sends File.name, but API callers can send a path. Keep
+    # no path part. Keep letters from every alphabet, digits, and a small set of
+    # readable punctuation. A leading dot would hide the file from `scan_inbox`.
+    leaf = os.path.basename((name or "").replace("\\", "/"))
+    stem = os.path.splitext(leaf)[0]
+    stem = "".join(
+        ch if (ch.isalnum() or ch in " ._()-") else "_" for ch in stem
+    ).strip(" .")
+    stem = stem[:120].rstrip(" .") or "inbox"
+    wanted = stem + UPLOAD_TYPES[ctype]
+
+    with _lock:
+        os.makedirs(MY, exist_ok=True)
+        filename = free_name(MY, wanted, tag="inbox")
+        temporary = os.path.join(MY, "." + filename + ".part")
+        try:
+            with open(temporary, "wb") as stream:
+                stream.write(body)
+            os.replace(temporary, os.path.join(MY, filename))
+        except OSError:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+            raise
+    return filename
 
 
 def perform_moves(planned, labels):
@@ -3148,6 +3629,165 @@ def guess_type(path):
     return t or "application/octet-stream"
 
 
+def image_preview_page(kind, slug, filename, raw_url, navigation):
+    """Build the browser preview for one catalogue image."""
+    safe_kind = html.escape(kind)
+    safe_slug = html.escape(slug)
+    safe_filename = html.escape(filename)
+    safe_raw_url = html.escape(raw_url, quote=True)
+    title = f"{safe_kind} · {safe_slug}"
+    previous_url = html.escape(navigation.get("previous_url", ""), quote=True)
+    next_url = html.escape(navigation.get("next_url", ""), quote=True)
+    previous = (f'<a class="nav-button previous" data-previous href="{previous_url}" '
+                'rel="prev" aria-label="Previous image" '
+                'title="Previous image (Left arrow)">←</a>'
+                if previous_url else
+                '<span class="nav-button previous disabled" aria-hidden="true">←</span>')
+    following = (f'<a class="nav-button next" data-next href="{next_url}" '
+                 'rel="next" aria-label="Next image" '
+                 'title="Next image (Right arrow)">→</a>'
+                 if next_url else
+                 '<span class="nav-button next disabled" aria-hidden="true">→</span>')
+    position = f'{navigation.get("position", 0)} / {navigation.get("total", 0)}'
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<style>
+:root {{ color-scheme: dark; }}
+* {{ box-sizing: border-box; }}
+body {{
+  margin: 0;
+  min-height: 100vh;
+  background: #15141b;
+  color: #eeeaf2;
+  font: 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}}
+header {{
+  min-height: 64px;
+  padding: 10px 18px;
+  border-bottom: 1px solid #393541;
+  background: #1d1b23;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}}
+.identity {{ min-width: 0; flex: 1; }}
+.kind {{ color: #d0a7e6; font-weight: 700; }}
+.slug, .filename {{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}}
+.slug {{ font-weight: 650; }}
+.filename, #size {{ color: #aaa5b0; }}
+.meta {{
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}}
+a {{ color: #d0a7e6; }}
+.nav-button {{
+  position: fixed;
+  top: calc(50% + 16px);
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #61586b;
+  border-radius: 50%;
+  background: #292531e8;
+  color: #eeeaf2;
+  box-shadow: 0 4px 18px #0008;
+  font-size: 30px;
+  line-height: 43px;
+  text-align: center;
+  text-decoration: none;
+}}
+.nav-button:hover {{ border-color: #c18bdf; background: #3b3345; }}
+.nav-button.previous {{ left: 16px; }}
+.nav-button.next {{ right: 16px; }}
+.nav-button.disabled {{ opacity: .25; cursor: default; }}
+main {{
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: auto;
+}}
+.image-frame {{
+  flex: 0 0 auto;
+  line-height: 0;
+  border: 1px solid #c18bdf;
+  box-shadow: 0 0 0 1px #09080c, 0 12px 40px #0008;
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(-45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #c8c8c8 75%),
+    linear-gradient(-45deg, transparent 75%, #c8c8c8 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+}}
+img {{
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 112px);
+  object-fit: contain;
+}}
+@media (max-width: 640px) {{
+  header {{ align-items: flex-start; flex-direction: column; gap: 7px; }}
+  .meta {{ width: 100%; justify-content: space-between; }}
+  .nav-button {{ top: auto; bottom: 12px; }}
+  .nav-button.previous {{ left: 12px; }}
+  .nav-button.next {{ right: 12px; }}
+  main {{ min-height: calc(100vh - 104px); padding: 12px; }}
+  img {{ max-width: calc(100vw - 24px); max-height: calc(100vh - 128px); }}
+}}
+</style>
+</head>
+<body>
+<header>
+  <div class="identity">
+    <div><span class="kind">{safe_kind}</span> <span class="slug">{safe_slug}</span></div>
+    <div class="filename">{safe_filename}</div>
+  </div>
+  <div class="meta"><span>{position}</span><span id="size" aria-live="polite">reading size…</span>
+    <a href="{safe_raw_url}">open raw image</a></div>
+</header>
+<main>
+  <div class="image-frame"><img id="preview" src="{safe_raw_url}" alt="{title}"></div>
+</main>
+{previous}
+{following}
+<script>
+const image = document.getElementById("preview");
+const size = document.getElementById("size");
+function showSize() {{
+  size.textContent = `${{image.naturalWidth}} × ${{image.naturalHeight}} px`;
+}}
+if (image.complete && image.naturalWidth) showSize();
+else image.addEventListener("load", showSize, {{once: true}});
+image.addEventListener("error", () => {{ size.textContent = "image load failed"; }}, {{once: true}});
+document.addEventListener("keydown", event => {{
+  const selector = event.key === "ArrowLeft" ? "[data-previous]" :
+    event.key === "ArrowRight" ? "[data-next]" : "";
+  if (!selector || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+  const link = document.querySelector(selector);
+  if (!link) return;
+  event.preventDefault();
+  location.assign(link.href);
+}});
+</script>
+</body>
+</html>"""
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "svoe-vino-review/1.0"
     protocol_version = "HTTP/1.1"
@@ -3222,6 +3862,48 @@ class Handler(BaseHTTPRequestHandler):
                      "public, max-age=86400" if cache else "no-store"}
         self._send(200, body, guess_type(path), extra)
 
+    def _previewable_image(self, route, query, path, kind):
+        """Serve an image body or its checkerboard browser preview."""
+        if not path or not os.path.isfile(path):
+            self._send(404, "not found", "text/plain; charset=utf-8")
+            return
+        slug = (query.get("slug") or [""])[0]
+        raw = (query.get("raw") or [""])[0] == "1"
+        view = (query.get("view") or [""])[0] == "1"
+        accepts_html = "text/html" in self.headers.get("Accept", "").lower()
+        if not raw and (view or accepts_html):
+            raw_query = {"slug": slug, "raw": "1"}
+            version = (query.get("v") or [""])[0]
+            if version:
+                raw_query["v"] = version
+            raw_url = f"{route}?{urllib.parse.urlencode(raw_query)}"
+            catalog = getattr(self.server, "catalog", {})
+            if route == "/img/patch":
+                slugs = [item for item in catalog if item in _patches]
+            else:
+                slugs = [item for item, rec in catalog.items() if rec.get("local_path")]
+            try:
+                index = slugs.index(slug)
+            except ValueError:
+                index = -1
+            def preview_url(item):
+                return (f"{route}?" + urllib.parse.urlencode({
+                    "slug": item, "view": "1",
+                })) if item else ""
+            navigation = {
+                "position": index + 1 if index >= 0 else 0,
+                "total": len(slugs),
+                "previous_url": preview_url(slugs[index - 1]) if index > 0 else "",
+                "next_url": preview_url(slugs[index + 1])
+                if 0 <= index < len(slugs) - 1 else "",
+            }
+            body = image_preview_page(
+                kind, slug, os.path.basename(path), raw_url, navigation)
+            self._send(200, body, "text/html; charset=utf-8",
+                       {"Cache-Control": "no-store"})
+            return
+        self._file(path, revalidate=True)
+
     # -- routes
 
     def do_GET(self):
@@ -3236,6 +3918,9 @@ class Handler(BaseHTTPRequestHandler):
         elif route == "/dataset":
             self._send(200, PAGE_DATASET, "text/html; charset=utf-8",
                        {"Cache-Control": "no-store"})
+        elif route == "/embedding":
+            self._send(200, PAGE_EMBEDDING, "text/html; charset=utf-8",
+                       {"Cache-Control": "no-store"})
         elif route == "/api/dataset":
             records = []
             for rec in getattr(self.server, "catalog", {}).values():
@@ -3246,6 +3931,7 @@ class Handler(BaseHTTPRequestHandler):
                     for path in _alternatives.get(rec.get("slug"), [])
                 ]
                 item["_barcodes"] = list(_barcodes.get(rec.get("slug"), []))
+                item["_qr_urls"] = list(_qr_urls.get(rec.get("slug"), []))
                 item["_atlas_product_uuid"] = _atlas_bindings.get(rec.get("slug"))
                 item["_atlas_binding_source"] = (
                     "manual" if rec.get("slug") in _atlas_manual_bindings else
@@ -3259,12 +3945,15 @@ class Handler(BaseHTTPRequestHandler):
                 "alternatives": sum(len(paths) for paths in _alternatives.values()),
                 "barcode_file": BARCODE_FILE or "",
                 "barcodes": sum(len(values) for values in _barcodes.values()),
+                "qr_urls": sum(len(values) for values in _qr_urls.values()),
                 "atlas_matches_file": ATLAS_MATCHES_FILE or "",
                 "atlas_bindings_file": ATLAS_BINDINGS_FILE or "",
                 "atlas_bindings": len(_atlas_bindings),
                 "atlas_manual_bindings": len(_atlas_manual_bindings),
                 "records": records,
             })
+        elif route == "/api/embedding":
+            self._json(200, embedding_view(getattr(self.server, "catalog", {})))
         elif route == "/api/dataset-validation":
             self._json(200, dataset_validation_view())
         elif route == "/api/rows":
@@ -3334,14 +4023,22 @@ class Handler(BaseHTTPRequestHandler):
             # the catalogue image with the patch or with a crop.
             slug = (query.get("slug") or [""])[0]
             rec = getattr(self.server, "catalog", {}).get(slug) or {}
-            self._file(rec.get("local_path"), revalidate=True)
+            self._previewable_image(route, query, rec.get("local_path"),
+                                    "catalogue image")
         elif route == "/img/patch":
             slug = (query.get("slug") or [""])[0]
-            self._file(_patches.get(slug), revalidate=True)
+            self._previewable_image(route, query, _patches.get(slug), "patch image")
         elif route == "/img/alternative":
             slug = (query.get("slug") or [""])[0]
             filename = (query.get("file") or [""])[0]
             self._file(_alternative_path(slug, filename), revalidate=True)
+        elif route == "/img/embedding":
+            slug = (query.get("slug") or [""])[0]
+            kind = (query.get("kind") or [""])[0]
+            filename = (query.get("file") or [""])[0]
+            path = _embedding_image_path(
+                getattr(self.server, "catalog", {}), slug, kind, filename)
+            self._file(path, revalidate=True)
         elif route == "/img/photo":
             slug = (query.get("slug") or [""])[0]
             fn = (query.get("file") or [""])[0]
@@ -3362,6 +4059,9 @@ class Handler(BaseHTTPRequestHandler):
         route = parsed.path
         if route == "/api/upload":
             self._upload(urllib.parse.parse_qs(parsed.query))
+            return
+        if route == "/api/inbox-upload":
+            self._inbox_upload(urllib.parse.parse_qs(parsed.query))
             return
         if route == "/api/dataset-patch":
             self._store_dataset_patch(urllib.parse.parse_qs(parsed.query))
@@ -3387,8 +4087,12 @@ class Handler(BaseHTTPRequestHandler):
             self._start_dataset_validation(body)
         elif route == "/api/dataset-barcode":
             self._store_dataset_barcode(body)
+        elif route == "/api/dataset-qr-url":
+            self._store_dataset_qr_url(body)
         elif route == "/api/dataset-atlas-binding":
             self._store_dataset_atlas_binding(body)
+        elif route == "/api/embedding-ignore":
+            self._store_embedding_ignore(body)
         elif route == "/api/validate":
             self._validate(body)
         elif route == "/api/comment":
@@ -3405,6 +4109,8 @@ class Handler(BaseHTTPRequestHandler):
             self._apply_moves(body)
         elif route == "/api/fetch-image":
             self._fetch(body)
+        elif route == "/api/inbox-fetch":
+            self._inbox_fetch(body)
         elif route == "/api/cluster-note":
             self._set_cluster_note(body)
         elif route == "/api/cluster-rule":
@@ -3422,6 +4128,10 @@ class Handler(BaseHTTPRequestHandler):
             self._remove_dataset_patch(urllib.parse.parse_qs(parsed.query))
         elif parsed.path == "/api/dataset-alternative":
             self._remove_dataset_alternative(urllib.parse.parse_qs(parsed.query))
+        elif parsed.path == "/api/dataset-barcode":
+            self._remove_dataset_barcode(urllib.parse.parse_qs(parsed.query))
+        elif parsed.path == "/api/dataset-qr-url":
+            self._remove_dataset_qr_url(urllib.parse.parse_qs(parsed.query))
         else:
             self._json(404, {"error": "unknown route"})
 
@@ -3514,6 +4224,56 @@ class Handler(BaseHTTPRequestHandler):
             "total": sum(len(values) for values in _barcodes.values()),
         })
 
+    def _remove_dataset_barcode(self, query):
+        """Remove one product barcode from one Dataset record."""
+        slug = (query.get("slug") or [""])[0]
+        value = (query.get("barcode") or [""])[0]
+        try:
+            barcode = remove_dataset_barcode(
+                getattr(self.server, "catalog", {}), slug, value)
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {
+            "ok": True, "slug": slug, "removed": barcode,
+            "barcodes": list(_barcodes.get(slug, [])),
+            "total": sum(len(values) for values in _barcodes.values()),
+        })
+
+    def _store_dataset_qr_url(self, body):
+        """Confirm one QR URL entered on the Dataset page."""
+        if not isinstance(body, dict):
+            self._json(400, {"error": "body MUST be an object"})
+            return
+        slug = str(body.get("slug") or "").strip()
+        try:
+            url = store_dataset_qr_url(
+                getattr(self.server, "catalog", {}), slug, body.get("url"))
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {
+            "ok": True, "slug": slug, "url": url,
+            "qr_urls": list(_qr_urls.get(slug, [])),
+            "total": sum(len(values) for values in _qr_urls.values()),
+        })
+
+    def _remove_dataset_qr_url(self, query):
+        """Remove one QR URL from one Dataset record."""
+        slug = (query.get("slug") or [""])[0]
+        value = (query.get("url") or [""])[0]
+        try:
+            url = remove_dataset_qr_url(
+                getattr(self.server, "catalog", {}), slug, value)
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {
+            "ok": True, "slug": slug, "removed": url,
+            "qr_urls": list(_qr_urls.get(slug, [])),
+            "total": sum(len(values) for values in _qr_urls.values()),
+        })
+
     def _store_dataset_atlas_binding(self, body):
         """Confirm one Drink Atlas Core product binding."""
         if not isinstance(body, dict):
@@ -3530,6 +4290,27 @@ class Handler(BaseHTTPRequestHandler):
         self._json(200, {
             "ok": True, "slug": slug, "product_uuid": product_uuid,
             "source": "manual", "total": len(_atlas_bindings),
+        })
+
+    def _store_embedding_ignore(self, body):
+        """Set one image's participation in future embedding builds."""
+        if not isinstance(body, dict) or not isinstance(body.get("ignored"), bool):
+            self._json(400, {"error": "body MUST hold boolean `ignored`"})
+            return
+        slug = str(body.get("wine_slug") or "").strip()
+        kind = str(body.get("kind") or "").strip()
+        filename = str(body.get("file") or "").strip()
+        try:
+            value = store_embedding_ignore(
+                getattr(self.server, "catalog", {}), slug, kind, filename,
+                body["ignored"])
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {
+            "ok": True, "wine_slug": slug, "kind": kind,
+            "file": filename, "ignored": value,
+            "total": len(_embedding_ignored),
         })
 
     def _start_dataset_validation(self, body):
@@ -3772,14 +4553,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def _rebuild_rows(self):
         """Read the groups again, build the rows again, and answer both."""
-        global _rows, _patches, _alternatives, _barcodes, _atlas_bindings
+        global _rows, _patches, _alternatives, _alternative_labels
+        global _embedding_ignored, _barcodes, _qr_urls, _atlas_bindings
         global _crops, _labels, _label_boxes
         # A patch file that was added while the tool ran is read here, so the
         # reviewer needs no restart to see the corrected photo. A label crop and
         # a cropped photo that a new build wrote are read here for the same reason.
         _patches = load_patches()
         _alternatives = load_alternatives()
+        _alternative_labels = load_alternative_labels()
+        _embedding_ignored = load_embedding_ignored()
         _barcodes = load_barcodes()
+        _qr_urls = load_qr_urls()
         reload_atlas_bindings()
         _crops = load_crops()
         _labels, _label_boxes = load_label_crops()
@@ -4483,6 +5268,22 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._json(200, {"ok": True, "slug": slug, "file": fn, "photos": photos})
 
+    def _inbox_upload(self, query):
+        """Take one dropped file and keep it unassigned in the inbox."""
+        name = (query.get("name") or [""])[0]
+        length = int(self.headers.get("Content-Length") or 0)
+        if length <= 0 or length > UPLOAD_MAX:
+            self._json(400, {"error": "the file is empty or larger than %d bytes"
+                                      % UPLOAD_MAX})
+            return
+        body = self.rfile.read(length)
+        try:
+            filename = store_inbox_image(body, name)
+        except (ValueError, OSError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {"ok": True, "file": filename, "inbox": scan_inbox()})
+
     def _fetch(self, body):
         """Take a picture address dragged from another tab and fetch it here.
 
@@ -4509,6 +5310,27 @@ class Handler(BaseHTTPRequestHandler):
             self._json(400, {"error": "%s: %s" % (type(exc).__name__, exc)})
             return
         self._json(200, {"ok": True, "slug": slug, "file": fn, "photos": photos,
+                         "url": url})
+
+    def _inbox_fetch(self, body):
+        """Fetch a dragged browser picture and keep it unassigned in the inbox."""
+        url = (body.get("url") or "").strip()
+        if not url:
+            self._json(400, {"error": "no address"})
+            return
+        try:
+            data, _ctype = fetch_image(url)
+            parts = urllib.parse.urlsplit(url)
+            name = (os.path.basename(parts.path)
+                    if parts.scheme in ("http", "https") else "inbox")
+            filename = store_inbox_image(data, name)
+        except ValueError as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        except Exception as exc:  # noqa: BLE001 - any network or decode failure
+            self._json(400, {"error": "%s: %s" % (type(exc).__name__, exc)})
+            return
+        self._json(200, {"ok": True, "file": filename, "inbox": scan_inbox(),
                          "url": url})
 
     def _set_many(self, body):
@@ -4675,8 +5497,9 @@ body { margin: 0; background: #f6f6f4; }
 </style>
 </head>
 <body>
-<div id="nav"><a href="/">Review</a><a href="/dataset">Dataset</a><a
-  href="/runs">Runs</a><a href="/clusters">Clusters</a><a
+<div id="nav"><a href="/dataset">Dataset</a><a href="/clusters">Clusters</a><a
+  href="/embedding">Embeddings</a><a href="/">Testset</a><a
+  href="/runs">Runs</a><a
   href="/openapi.yaml">openapi.yaml</a><a href="/openapi.json">openapi.json</a></div>
 <div id="swagger-ui"></div>
 <script crossorigin
@@ -4828,6 +5651,7 @@ body.side-off main, body.side-off header { padding-right: 16px; }
 #held .empty { color: var(--muted); font-size: 12px; text-align: center; padding: 18px 6px; }
 #side.over { background: var(--panel-2); }
 #side.over #held { outline: 2px dashed var(--accent); outline-offset: -6px; border-radius: 8px; }
+#side.busy #held { opacity: .55; }
 .held-card { width: 100%; }
 .held-card .from {
   font-size: 10px; color: var(--muted); word-break: break-all; margin-top: 4px;
@@ -5247,9 +6071,9 @@ body.dragging::after {
 <header>
   <div class="head-top">
     <h1>Svoe Vino photo review <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a class="on" href="/">Review</a><a
-      href="/dataset">Dataset</a><a href="/runs">Runs</a><a
-      href="/clusters">Clusters</a></nav>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      href="/clusters">Clusters</a><a href="/embedding">Embeddings</a><a
+      class="on" href="/">Testset</a><a href="/runs">Runs</a></nav>
   </div>
   <div class="bar">
     <label>Sort
@@ -5340,10 +6164,9 @@ A wine with no crop keeps its package picture and carries the mark `no label`.">
   <div class="side-head"><button id="side-hide" type="button"
         title="hide the sideboard (key s)">&times;</button>Sideboard
     <span class="n" id="held-n">0</span>
-    <div class="side-help">Drag a photo here to hold it. Drag it to a wine
-      row to move it there. The move runs when you press apply.
-      A photo that lies directly in <b>my/</b> stands here from the start, with a
-      dashed frame. It belongs to no wine yet.</div>
+    <div class="side-help">Drag a photo card here to hold it. Drop image files or
+      a browser image here to add them to the inbox for future distribution. Drag
+      an inbox image to a wine row, then press apply.</div>
   </div>
   <div id="held"></div>
 </aside>
@@ -5665,7 +6488,8 @@ function renderHeld() {
   $("#held-n").textContent = n;
   $("#side-n").textContent = n;             // the button states it while hidden too
   if (!n) {
-    $("#held").innerHTML = '<div class="empty">empty</div>';
+    $("#held").innerHTML = '<div class="empty">Drop external images here.<br>' +
+      'They stay unassigned for future distribution.</div>';
     return;
   }
   /* The inbox stands first: such a photo belongs to no wine, so it waits for a
@@ -6832,20 +7656,30 @@ document.addEventListener("dragend", ev => {
   $("#side").classList.remove("over");
 });
 
-/* The sideboard takes a card and holds it. Nothing is sent to the server. */
+/* The sideboard holds a card of this page. It also stores an external picture in
+   the durable inbox, without assigning the picture to a wine. */
 $("#side").addEventListener("dragover", ev => {
-  if (!hasPhoto(ev)) return;
+  if (!hasPhoto(ev) && !hasDrop(ev)) return;
   ev.preventDefault();
-  ev.dataTransfer.dropEffect = "move";
+  ev.dataTransfer.dropEffect = hasPhoto(ev) ? "move" : "copy";
   $("#side").classList.add("over");
 });
 $("#side").addEventListener("dragleave", ev => {
   if (!$("#side").contains(ev.relatedTarget)) $("#side").classList.remove("over");
 });
-$("#side").addEventListener("drop", ev => {
-  if (!hasPhoto(ev)) return;
+$("#side").addEventListener("drop", async ev => {
+  const internal = hasPhoto(ev);
+  if (!internal && !hasDrop(ev)) return;
   ev.preventDefault();
+  ev.stopPropagation();
   $("#side").classList.remove("over");
+  document.body.classList.remove("dragging");
+  if (!internal) {
+    const files = [...ev.dataTransfer.files];
+    const url = files.length ? "" : urlOfDrop(ev.dataTransfer);
+    await addToInbox(files, url);
+    return;
+  }
   const d = readPhoto(ev);
   if (!d) return;
   /* A photo of the inbox is already here. The drop takes its target away. */
@@ -6977,6 +7811,46 @@ function askWine(files, url) {
   $("#ad-list").innerHTML = "";
   $("#ad").classList.add("open");
   $("#ad-input").focus();
+}
+
+/* Store external pictures directly in `my/`. They become durable inbox cards and
+   get no wine, label, score, or comment until the reviewer distributes them. */
+async function addToInbox(files, url) {
+  /* The operating system does not always state a media type. Send each dropped
+     file. The server accepts or refuses it from the file signature. */
+  const images = files || [];
+  if (!images.length && !url) {
+    alert("Drop an image file or a picture from a page.");
+    return;
+  }
+  $("#side").classList.add("busy");
+  if (url) {
+    try {
+      const res = await fetch("/api/inbox-fetch", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const out = await res.json();
+      if (!res.ok) throw new Error(out.error || res.status);
+      setInbox(out.inbox);
+    } catch (e) {
+      alert(`cannot add the picture to the inbox:\n${url}\n\n${e.message}`);
+    }
+  }
+  for (const f of images) {
+    try {
+      const res = await fetch(
+        `/api/inbox-upload?name=${encodeURIComponent(f.name)}`,
+        { method: "POST", headers: { "Content-Type": f.type }, body: f });
+      const out = await res.json();
+      if (!res.ok) throw new Error(out.error || res.status);
+      setInbox(out.inbox);
+    } catch (e) {
+      alert(`cannot add ${f.name} to the inbox: ${e.message}`);
+    }
+  }
+  $("#side").classList.remove("busy");
+  renderHeld();
 }
 
 function closeWine() {
@@ -7980,8 +8854,7 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .producer { margin-top: 5px; font-size: 18px; line-height: 1.3; }
 .kind, .grapes, .slug, .match { margin-top: 4px; color: var(--muted); font-size: 15px; }
 .slug { overflow-wrap: anywhere; }
-.desc { margin-top: 8px; max-width: 900px; color: var(--text); }
-.barcode-editor, .atlas-binding-editor { margin-top: 8px; }
+.barcode-editor, .qr-url-editor, .atlas-binding-editor { margin-top: 8px; }
 .barcode-head { display: flex; align-items: center; gap: 7px; }
 .barcode-head strong { font-size: 12px; font-weight: 650; }
 .barcode-head .count { color: var(--muted); font-size: 11px; }
@@ -8000,10 +8873,24 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .barcode-value code { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .atlas-binding-editor .barcode-value code { overflow-wrap: anywhere; }
 .barcode-value .copy { padding: 0 5px; font-size: 10px; }
+.barcode-value .open-product { padding: 0 3px; font-size: 10px; }
+.qr-url-editor .barcode-values { align-items: flex-start; flex-direction: column; }
+.qr-url-editor .barcode-value { max-width: 100%; padding-left: 4px; }
+.qr-url-editor .barcode-value code { min-width: 0; overflow-wrap: anywhere; }
+.barcode-remove {
+  width: 18px; height: 18px; padding: 0; border: 0; border-radius: 999px;
+  color: var(--exc); background: transparent; font-size: 16px; font-weight: 750;
+  line-height: 16px;
+}
+.barcode-remove:hover:not(:disabled) { color: #fff; background: var(--exc); }
 .barcode-empty { margin-top: 4px; color: var(--muted); font-size: 11px; }
 .barcode-new { display: flex; gap: 5px; margin-top: 6px; max-width: 430px; }
 .barcode-new input { flex: 1 1 auto; min-width: 100px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .barcode-new button { flex: 0 0 30px; padding: 3px 0; font-weight: 750; }
+.barcode-new .action-icon {
+  display: block; width: 17px; height: 17px; margin: auto; fill: none;
+  stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+}
 .barcode-new .accept { color: var(--pos); border-color: var(--pos); }
 .barcode-new .cancel { color: var(--neg); }
 .links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 7px; }
@@ -8073,6 +8960,51 @@ details.record pre {
 .validation-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 .validation-actions .primary { color: var(--text); border-color: var(--accent); }
 .validation-meta { margin-top: 8px; color: var(--muted); font-size: 11px; }
+.image-preview-dialog {
+  width: min(1180px, calc(100vw - 32px)); height: calc(100vh - 32px);
+  display: grid; grid-template-rows: auto 1fr; min-height: 0;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.image-preview-head {
+  display: flex; align-items: center; gap: 14px; min-width: 0; padding: 9px 12px;
+  border-bottom: 1px solid var(--line); background: var(--panel);
+}
+.image-preview-identity { flex: 1 1 auto; min-width: 0; }
+.image-preview-title, .image-preview-file {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.image-preview-title { font-weight: 700; }
+.image-preview-file, .image-preview-meta { color: var(--muted); font-size: 12px; }
+.image-preview-meta { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+.image-preview-close { width: 30px; height: 30px; padding: 0; font-size: 20px; }
+.image-preview-stage {
+  position: relative; min-height: 0; overflow: hidden; padding: 20px 76px;
+  display: flex; align-items: flex-start; justify-content: center; background: var(--bg);
+}
+.image-preview-frame {
+  flex: 0 0 auto; line-height: 0; border: 1px solid var(--accent);
+  box-shadow: 0 0 0 1px #09080c, 0 12px 40px #0008; background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(-45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #c8c8c8 75%),
+    linear-gradient(-45deg, transparent 75%, #c8c8c8 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+}
+.image-preview-frame img {
+  display: block; width: auto; height: auto; object-fit: contain;
+  max-width: min(1000px, calc(100vw - 200px)); max-height: calc(100vh - 132px);
+}
+.image-preview-arrow {
+  position: sticky; top: calc(50% - 24px); z-index: 2; flex: 0 0 48px;
+  width: 48px; height: 48px; padding: 0; border-radius: 50%;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow: 0 4px 18px #0008; font-size: 29px; line-height: 42px;
+}
+.image-preview-arrow.previous { margin-right: auto; transform: translateX(-58px); }
+.image-preview-arrow.next { margin-left: auto; transform: translateX(58px); }
 @media (max-width: 860px) {
   .wine { flex-direction: column; }
   .pictures { width: 100%; }
@@ -8081,6 +9013,8 @@ details.record pre {
   input[type=search] { min-width: 0; width: min(100%, 360px); }
   .alternative-editor { width: 100%; min-width: 0; padding: 10px 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .alternative-grid { grid-template-columns: repeat(4, minmax(64px, 1fr)); max-height: none; }
+  .image-preview-stage { padding: 12px 54px; }
+  .image-preview-frame img { max-width: calc(100vw - 148px); max-height: calc(100vh - 128px); }
 }
 @media (max-width: 440px) {
   header, main { padding-left: 10px; padding-right: 10px; }
@@ -8090,6 +9024,14 @@ details.record pre {
   .producer { font-size: 16px; }
   .kind, .grapes, .slug, .match { font-size: 13px; }
   .alternative-grid { grid-template-columns: repeat(3, minmax(60px, 1fr)); }
+  .image-preview-dialog { width: 100vw; height: 100vh; border: 0; border-radius: 0; }
+  .image-preview-head { align-items: flex-start; flex-wrap: wrap; }
+  .image-preview-meta { order: 3; width: 100%; justify-content: space-between; }
+  .image-preview-stage { padding: 10px 44px 64px; }
+  .image-preview-frame img { max-width: calc(100vw - 108px); max-height: calc(100vh - 178px); }
+  .image-preview-arrow { position: fixed; top: auto; bottom: 12px; }
+  .image-preview-arrow.previous { left: 12px; margin: 0; transform: none; }
+  .image-preview-arrow.next { right: 12px; margin: 0; transform: none; }
 }
 </style>
 </head>
@@ -8097,9 +9039,9 @@ details.record pre {
 <header>
   <div class="head-top">
     <h1>Dataset <span class="sub" id="head-sub">loading catalog.jsonl…</span></h1>
-    <nav class="nav"><a href="/">Review</a><a class="on"
-      href="/dataset">Dataset</a><a href="/runs">Runs</a><a
-      href="/clusters">Clusters</a></nav>
+    <nav class="nav"><a class="on" href="/dataset">Dataset</a><a
+      href="/clusters">Clusters</a><a href="/embedding">Embeddings</a><a
+      href="/">Testset</a><a href="/runs">Runs</a></nav>
   </div>
   <div class="bar">
     <label>Show
@@ -8163,19 +9105,46 @@ details.record pre {
     </div>
   </section>
 </div>
+<div class="modal" id="image-preview-modal" role="dialog" aria-modal="true"
+  aria-labelledby="image-preview-title" hidden>
+  <section class="image-preview-dialog">
+    <div class="image-preview-head">
+      <div class="image-preview-identity">
+        <div class="image-preview-title" id="image-preview-title"></div>
+        <div class="image-preview-file" id="image-preview-file"></div>
+      </div>
+      <div class="image-preview-meta"><span id="image-preview-position"></span>
+        <span id="image-preview-size" aria-live="polite"></span>
+        <a id="image-preview-raw" href="" target="_blank" rel="noopener">open raw image</a></div>
+      <button class="image-preview-close" id="image-preview-close" type="button"
+        aria-label="Close image preview">×</button>
+    </div>
+    <div class="image-preview-stage">
+      <button class="image-preview-arrow previous" id="image-preview-previous" type="button"
+        aria-label="Previous image" title="Previous image (Left arrow)">←</button>
+      <div class="image-preview-frame"><img id="image-preview-image" src="" alt=""></div>
+      <button class="image-preview-arrow next" id="image-preview-next" type="button"
+        aria-label="Next image" title="Next image (Right arrow)">→</button>
+    </div>
+  </section>
+</div>
 <script>
 "use strict";
 const $ = s => document.querySelector(s);
-let DATA = {records: [], patches: 0, alternatives: 0, barcodes: 0, atlas_bindings: 0};
+let DATA = {records: [], patches: 0, alternatives: 0, barcodes: 0, qr_urls: 0,
+  atlas_bindings: 0};
 let ROWS = [];
 let VALIDATION = {running: false, results: {}};
 let VALIDATION_TIMER = null;
+let IMAGE_PREVIEW = null;
 const PENDING_PATCHES = new Map();
 const BUSY_PATCHES = new Set();
 const PENDING_ALTERNATIVES = new Map();
 const BUSY_ALTERNATIVES = new Set();
 const DRAFT_BARCODES = new Map();
 const BUSY_BARCODES = new Set();
+const DRAFT_QR_URLS = new Map();
+const BUSY_QR_URLS = new Set();
 const DRAFT_ATLAS_BINDINGS = new Map();
 const BUSY_ATLAS_BINDINGS = new Set();
 let ALTERNATIVE_ID = 0;
@@ -8191,6 +9160,12 @@ function safeUrl(value) {
     return (u.protocol === "http:" || u.protocol === "https:") ? u.href : "";
   } catch (_) { return ""; }
 }
+const ICON_SAVE = '<svg class="action-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4L16 6.5"/></svg>';
+const ICON_CANCEL = '<svg class="action-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
+function qrUrlForOpen(value) {
+  const text = String(value || "").trim();
+  return safeUrl(text.startsWith("URL:") ? text.slice(4).trim() : text);
+}
 function rawRecord(r) {
   const out = {};
   for (const [key, value] of Object.entries(r)) if (!key.startsWith("_")) out[key] = value;
@@ -8198,14 +9173,63 @@ function rawRecord(r) {
 }
 function norm(value) { return String(value || "").toLocaleLowerCase("ru-RU"); }
 function compareText(a, b) { return String(a || "").localeCompare(String(b || ""), "ru"); }
+function imagePreviewRecords(kind) {
+  return ROWS.filter(r => kind === "patch" ? r._patched : !!r.local_path);
+}
+function imagePreviewUrl(record, kind) {
+  const slug = encodeURIComponent(record.slug || "");
+  const version = kind === "patch" && record._patchVersion ? `&v=${record._patchVersion}` : "";
+  return `/img/${kind}?slug=${slug}&raw=1${version}`;
+}
+function showImagePreview(slug, kind) {
+  const records = imagePreviewRecords(kind);
+  const index = records.findIndex(record => record.slug === slug);
+  if (index < 0) return;
+  const record = records[index];
+  const label = kind === "patch" ? "patch image" : "catalogue image";
+  const src = imagePreviewUrl(record, kind);
+  IMAGE_PREVIEW = {slug, kind};
+  $("#image-preview-title").textContent = `${label} · ${record.name || slug}`;
+  $("#image-preview-file").textContent = slug;
+  $("#image-preview-position").textContent = `${index + 1} / ${records.length}`;
+  $("#image-preview-size").textContent = "reading size…";
+  $("#image-preview-raw").href = src;
+  $("#image-preview-previous").disabled = index === 0;
+  $("#image-preview-next").disabled = index === records.length - 1;
+  const image = $("#image-preview-image");
+  image.alt = `${label} · ${record.name || slug}`;
+  image.onload = () => {
+    $("#image-preview-size").textContent = `${image.naturalWidth} × ${image.naturalHeight} px`;
+  };
+  image.onerror = () => { $("#image-preview-size").textContent = "image load failed"; };
+  image.src = src;
+  $("#image-preview-modal").hidden = false;
+  document.body.style.overflow = "hidden";
+  $("#image-preview-close").focus();
+}
+function closeImagePreview() {
+  $("#image-preview-modal").hidden = true;
+  $("#image-preview-image").src = "";
+  document.body.style.overflow = "";
+  IMAGE_PREVIEW = null;
+}
+function stepImagePreview(step) {
+  if (!IMAGE_PREVIEW) return;
+  const records = imagePreviewRecords(IMAGE_PREVIEW.kind);
+  const index = records.findIndex(record => record.slug === IMAGE_PREVIEW.slug);
+  const target = records[index + step];
+  if (target) showImagePreview(target.slug, IMAGE_PREVIEW.kind);
+}
 function imageFigure(r, patch) {
   if (patch) return patchEditor(r);
   const slug = encodeURIComponent(r.slug || "");
   const present = !!r.local_path;
   const src = `/img/catalog?slug=${slug}`;
+  const preview = `${src}&view=1`;
   const label = "catalog.jsonl";
   const content = present
-    ? `<a href="${src}" target="_blank" rel="noopener" title="Open ${label} image"><img
+    ? `<a href="${preview}" data-image-preview="catalog" data-slug="${esc(r.slug)}"
+         title="Open ${label} image"><img
          src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — ${label}"></a>`
     : '<div class="noimage">no catalogue image</div>';
   return `<figure>${content}<figcaption><span>${label}</span></figcaption></figure>`;
@@ -8239,7 +9263,9 @@ function patchEditor(r) {
       <button type="button" data-patch-cancel ${busy ? "disabled" : ""}>Cancel</button></div>`;
   } else if (r._patched) {
     const src = `/img/patch?slug=${slug}${version}`;
-    content = `<a href="${src}" target="_blank" rel="noopener" title="Open patch image"><img
+    const preview = `${src}&view=1`;
+    content = `<a href="${preview}" data-image-preview="patch" data-slug="${esc(r.slug)}"
+      title="Open patch image"><img
       src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — patch"></a>`;
     state = '<span class="patch">patched</span>';
     actions = `<div class="patch-actions"><button class="remove" type="button"
@@ -8301,21 +9327,55 @@ function barcodeEditor(r) {
   const editing = DRAFT_BARCODES.has(r.slug);
   const busy = BUSY_BARCODES.has(r.slug);
   const existing = values.length ? `<div class="barcode-values">${values.map(value =>
-    `<span class="barcode-value"><code>${esc(value)}</code><button class="copy" type="button"
-      data-copy="${esc(value)}">copy</button></span>`).join("")}</div>`
+    `<span class="barcode-value"><button class="barcode-remove" type="button"
+      data-barcode-remove="${esc(value)}" aria-label="Remove barcode ${esc(value)}"
+      title="Remove barcode" ${busy ? "disabled" : ""}>×</button><code>${esc(value)}</code>
+      <button class="copy" type="button" data-copy="${esc(value)}">copy</button></span>`
+    ).join("")}</div>`
     : '<div class="barcode-empty">no barcode</div>';
   const entry = editing ? `<div class="barcode-new">
     <input class="barcode-input" type="text" maxlength="128" autocomplete="off"
       aria-label="New barcode" placeholder="Barcode value" value="${esc(DRAFT_BARCODES.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
     <button class="accept" type="button" data-barcode-save aria-label="Save barcode"
-      title="Save barcode" ${busy ? "disabled" : ""}>${busy ? "…" : "V"}</button>
+      title="Save barcode" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
     <button class="cancel" type="button" data-barcode-cancel aria-label="Cancel barcode"
-      title="Cancel" ${busy ? "disabled" : ""}>X</button>
+      title="Cancel" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
   </div>` : "";
   return `<div class="barcode-editor" data-slug="${esc(r.slug)}">
     <div class="barcode-head"><strong>Barcodes</strong><span class="count">${values.length}</span>
       <button class="barcode-add" type="button" data-barcode-add aria-label="Add barcode"
         title="Add barcode" ${!configured || editing ? "disabled" : ""}>+</button></div>
+    ${existing}${entry}
+  </div>`;
+}
+function qrUrlEditor(r) {
+  const configured = !!DATA.barcode_file;
+  const values = r._qr_urls || [];
+  const editing = DRAFT_QR_URLS.has(r.slug);
+  const busy = BUSY_QR_URLS.has(r.slug);
+  const existing = values.length ? `<div class="barcode-values">${values.map(value => {
+    const openUrl = qrUrlForOpen(value);
+    const shown = openUrl || value;
+    return `<span class="barcode-value"><button class="barcode-remove" type="button"
+      data-qr-url-remove="${esc(value)}" aria-label="Remove QR URL ${esc(value)}"
+      title="Remove QR URL" ${busy ? "disabled" : ""}>×</button><code>${esc(shown)}</code>
+      <button class="copy" type="button" data-copy="${esc(shown)}">copy</button>${openUrl
+        ? `<a class="open-product" href="${esc(openUrl)}" target="_blank" rel="noopener">open</a>`
+        : ""}</span>`;
+  }).join("")}</div>` : '<div class="barcode-empty">no QR URL</div>';
+  const entry = editing ? `<div class="barcode-new">
+    <input class="qr-url-input" type="url" maxlength="4096" autocomplete="off"
+      aria-label="New QR URL" placeholder="https://producer.example/wine"
+      value="${esc(DRAFT_QR_URLS.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
+    <button class="accept" type="button" data-qr-url-save aria-label="Save QR URL"
+      title="Save QR URL" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
+    <button class="cancel" type="button" data-qr-url-cancel aria-label="Cancel QR URL"
+      title="Cancel" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
+  </div>` : "";
+  return `<div class="qr-url-editor" data-slug="${esc(r.slug)}">
+    <div class="barcode-head"><strong>QR URLs</strong><span class="count">${values.length}</span>
+      <button class="barcode-add" type="button" data-qr-url-add aria-label="Add QR URL"
+        title="Add QR URL" ${!configured || editing ? "disabled" : ""}>+</button></div>
     ${existing}${entry}
   </div>`;
 }
@@ -8325,18 +9385,22 @@ function atlasBindingEditor(r) {
   const source = r._atlas_binding_source || "";
   const editing = DRAFT_ATLAS_BINDINGS.has(r.slug);
   const busy = BUSY_ATLAS_BINDINGS.has(r.slug);
+  const productUrl = current
+    ? `http://127.0.0.1:8157/products/${encodeURIComponent(current)}` : "";
   const existing = current
     ? `<div class="barcode-values"><span class="barcode-value"><code>${esc(current)}</code>
-       <button class="copy" type="button" data-copy="${esc(current)}">copy</button></span></div>`
+       <button class="copy" type="button" data-copy="${esc(current)}">copy</button>
+       <a class="open-product" href="${esc(productUrl)}" target="_blank"
+          rel="noopener">open</a></span></div>`
     : '<div class="barcode-empty">not bound</div>';
   const entry = editing ? `<div class="barcode-new">
     <input class="atlas-binding-input" type="text" maxlength="36" autocomplete="off"
       aria-label="Drink Atlas Core product UUID" placeholder="Product UUID"
       value="${esc(DRAFT_ATLAS_BINDINGS.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
     <button class="accept" type="button" data-atlas-binding-save aria-label="Save Atlas binding"
-      title="Save Atlas binding" ${busy ? "disabled" : ""}>${busy ? "…" : "V"}</button>
+      title="Save Atlas binding" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
     <button class="cancel" type="button" data-atlas-binding-cancel aria-label="Cancel Atlas binding"
-      title="Cancel" ${busy ? "disabled" : ""}>X</button>
+      title="Cancel" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
   </div>` : "";
   return `<div class="atlas-binding-editor" data-slug="${esc(r.slug)}">
     <div class="barcode-head"><strong>Atlas Core product</strong>
@@ -8366,10 +9430,10 @@ function recordHtml(r) {
       <div class="slug">${esc(r.slug)}
         <button class="copy" type="button" data-copy="${esc(r.slug)}">copy</button></div>
       ${barcodeEditor(r)}
+      ${qrUrlEditor(r)}
       ${atlasBindingEditor(r)}
       ${match.method || r.match ? `<div class="match">Image match: ${esc(match.method || r.match)}${
         match.confidence ? ` · ${esc(match.confidence)}` : ""}</div>` : ""}
-      ${r.description ? `<div class="desc">${esc(r.description)}</div>` : ""}
       <div class="links">${page ? `<a href="${esc(page)}" target="_blank" rel="noopener">site page</a>` : ""}${
         remote ? `<a href="${esc(remote)}" target="_blank" rel="noopener">source image</a>` : ""}</div>
       <details class="record" data-index="${r._index}"><summary>full catalog.jsonl record</summary></details>
@@ -8386,6 +9450,7 @@ function applyView() {
     if (filter === "unpatched" && r._patched) return false;
     if (filter === "missing" && r.local_path) return false;
     const hay = norm(JSON.stringify({record: rawRecord(r), barcodes: r._barcodes || [],
+      qr_urls: r._qr_urls || [],
       atlas_product_uuid: r._atlas_product_uuid || ""}));
     return words.every(word => hay.includes(word));
   });
@@ -8397,7 +9462,7 @@ function render() {
   applyView();
   $("#list").innerHTML = ROWS.length ? ROWS.map(recordHtml).join("")
     : '<div class="empty">No catalogue record matches this view.</div>';
-  $("#head-sub").textContent = `${ROWS.length} of ${DATA.records.length} records · ${DATA.patches} patches · ${DATA.alternatives || 0} alternatives · ${DATA.barcodes || 0} barcodes · ${DATA.atlas_bindings || 0} Atlas bindings`;
+  $("#head-sub").textContent = `${ROWS.length} of ${DATA.records.length} records · ${DATA.patches} patches · ${DATA.alternatives || 0} alternatives · ${DATA.barcodes || 0} barcodes · ${DATA.qr_urls || 0} QR URLs · ${DATA.atlas_bindings || 0} Atlas bindings`;
 }
 function validationDetails(title, value) {
   if (!value || (Array.isArray(value) && !value.length)) return "";
@@ -8654,6 +9719,79 @@ async function saveBarcode(slug) {
     if (DRAFT_BARCODES.has(slug)) focusBarcode(slug);
   }
 }
+async function removeBarcode(slug, barcode) {
+  if (!barcode || BUSY_BARCODES.has(slug)) return;
+  if (!confirm(`Remove barcode ${barcode}?`)) return;
+  BUSY_BARCODES.add(slug);
+  render();
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}&barcode=${encodeURIComponent(barcode)}`;
+    const response = await fetch("/api/dataset-barcode" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._barcodes = out.barcodes || [];
+    DATA.barcodes = Number(out.total) || 0;
+  } catch (error) {
+    alert(`Cannot remove the barcode: ${error.message}`);
+  } finally {
+    BUSY_BARCODES.delete(slug);
+    render();
+  }
+}
+function focusQrUrl(slug) {
+  requestAnimationFrame(() => {
+    const editor = [...document.querySelectorAll(".qr-url-editor")]
+      .find(item => item.dataset.slug === slug);
+    const input = editor?.querySelector(".qr-url-input");
+    if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  });
+}
+async function saveQrUrl(slug) {
+  if (!DRAFT_QR_URLS.has(slug) || BUSY_QR_URLS.has(slug)) return;
+  const value = DRAFT_QR_URLS.get(slug) || "";
+  if (!value.trim()) { focusQrUrl(slug); return; }
+  BUSY_QR_URLS.add(slug);
+  render();
+  try {
+    const response = await fetch("/api/dataset-qr-url", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, url: value})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._qr_urls = out.qr_urls || [];
+    DATA.qr_urls = Number(out.total) || 0;
+    DRAFT_QR_URLS.delete(slug);
+  } catch (error) {
+    alert(`Cannot save the QR URL: ${error.message}`);
+  } finally {
+    BUSY_QR_URLS.delete(slug);
+    render();
+    if (DRAFT_QR_URLS.has(slug)) focusQrUrl(slug);
+  }
+}
+async function removeQrUrl(slug, url) {
+  if (!url || BUSY_QR_URLS.has(slug)) return;
+  if (!confirm(`Remove QR URL ${url}?`)) return;
+  BUSY_QR_URLS.add(slug);
+  render();
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}&url=${encodeURIComponent(url)}`;
+    const response = await fetch("/api/dataset-qr-url" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._qr_urls = out.qr_urls || [];
+    DATA.qr_urls = Number(out.total) || 0;
+  } catch (error) {
+    alert(`Cannot remove the QR URL: ${error.message}`);
+  } finally {
+    BUSY_QR_URLS.delete(slug);
+    render();
+  }
+}
 function focusAtlasBinding(slug) {
   requestAnimationFrame(() => {
     const editor = [...document.querySelectorAll(".atlas-binding-editor")]
@@ -8691,6 +9829,12 @@ async function saveAtlasBinding(slug) {
   }
 }
 $("#list").addEventListener("click", event => {
+  const imagePreview = event.target.closest("[data-image-preview]");
+  if (imagePreview) {
+    event.preventDefault();
+    showImagePreview(imagePreview.dataset.slug, imagePreview.dataset.imagePreview);
+    return;
+  }
   const button = event.target.closest("button[data-copy]");
   if (button) { copyValue(button); return; }
   const atlasBinding = event.target.closest(".atlas-binding-editor");
@@ -8709,10 +9853,31 @@ $("#list").addEventListener("click", event => {
     }
     return;
   }
+  const qrUrl = event.target.closest(".qr-url-editor");
+  if (qrUrl) {
+    const slug = qrUrl.dataset.slug;
+    const remove = event.target.closest("[data-qr-url-remove]");
+    if (remove) {
+      removeQrUrl(slug, remove.dataset.qrUrlRemove);
+    } else if (event.target.closest("[data-qr-url-add]")) {
+      DRAFT_QR_URLS.set(slug, "");
+      render();
+      focusQrUrl(slug);
+    } else if (event.target.closest("[data-qr-url-save]")) {
+      saveQrUrl(slug);
+    } else if (event.target.closest("[data-qr-url-cancel]")) {
+      DRAFT_QR_URLS.delete(slug);
+      render();
+    }
+    return;
+  }
   const barcode = event.target.closest(".barcode-editor");
   if (barcode) {
     const slug = barcode.dataset.slug;
-    if (event.target.closest("[data-barcode-add]")) {
+    const remove = event.target.closest("[data-barcode-remove]");
+    if (remove) {
+      removeBarcode(slug, remove.dataset.barcodeRemove);
+    } else if (event.target.closest("[data-barcode-add]")) {
       DRAFT_BARCODES.set(slug, "");
       render();
       focusBarcode(slug);
@@ -8782,6 +9947,9 @@ $("#list").addEventListener("input", event => {
   if (event.target.matches(".barcode-input")) {
     const editor = event.target.closest(".barcode-editor");
     DRAFT_BARCODES.set(editor.dataset.slug, event.target.value);
+  } else if (event.target.matches(".qr-url-input")) {
+    const editor = event.target.closest(".qr-url-editor");
+    DRAFT_QR_URLS.set(editor.dataset.slug, event.target.value);
   } else if (event.target.matches(".atlas-binding-input")) {
     const editor = event.target.closest(".atlas-binding-editor");
     DRAFT_ATLAS_BINDINGS.set(editor.dataset.slug, event.target.value);
@@ -8796,6 +9964,16 @@ $("#list").addEventListener("keydown", event => {
     } else if (event.key === "Escape") {
       event.preventDefault();
       DRAFT_BARCODES.delete(editor.dataset.slug);
+      render();
+    }
+  } else if (event.target.matches(".qr-url-input")) {
+    const editor = event.target.closest(".qr-url-editor");
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveQrUrl(editor.dataset.slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_QR_URLS.delete(editor.dataset.slug);
       render();
     }
   } else if (event.target.matches(".atlas-binding-input")) {
@@ -8867,7 +10045,21 @@ $("#validation-x").addEventListener("click", closeValidation);
 $("#validation-modal").addEventListener("click", event => {
   if (event.target === $("#validation-modal")) closeValidation();
 });
+$("#image-preview-close").addEventListener("click", closeImagePreview);
+$("#image-preview-previous").addEventListener("click", () => stepImagePreview(-1));
+$("#image-preview-next").addEventListener("click", () => stepImagePreview(1));
+$("#image-preview-modal").addEventListener("click", event => {
+  if (event.target === $("#image-preview-modal")) closeImagePreview();
+});
 document.addEventListener("keydown", event => {
+  if (!$("#image-preview-modal").hidden) {
+    if (event.key === "Escape") closeImagePreview();
+    else if (event.key === "ArrowLeft") stepImagePreview(-1);
+    else if (event.key === "ArrowRight") stepImagePreview(1);
+    else return;
+    event.preventDefault();
+    return;
+  }
   if (event.key === "Escape" && !$("#validation-modal").hidden) closeValidation();
 });
 window.addEventListener("beforeunload", event => {
@@ -8905,6 +10097,274 @@ window.addEventListener("beforeunload", event => {
 
 
 # ------------------------------------------------------------ the page of the runs
+
+
+PAGE_EMBEDDING = r"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino embedding inputs</title>
+<style>
+""" + THEME_CSS + r"""
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header {
+  position: sticky; top: 0; z-index: 10; padding: 10px 16px;
+  background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+h1 { margin: 0; font-size: 15px; font-weight: 650; }
+h1 span, .source { color: var(--muted); font-weight: 400; }
+.nav { display: flex; gap: 6px; margin-left: auto; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+.bar { display: flex; gap: 10px 14px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.bar label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 12px; }
+select, input[type=search], button {
+  color: var(--text); background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 8px; font: inherit; font-size: 13px;
+}
+input[type=search] { min-width: 300px; }
+button { cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { cursor: wait; opacity: .5; }
+a { color: var(--accent); }
+main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
+.source {
+  margin-bottom: 12px; padding: 8px 10px; font-size: 12px; overflow-wrap: anywhere;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+}
+.source b { color: var(--text); font-weight: 600; }
+.list { display: grid; gap: 10px; }
+.wine {
+  display: grid; grid-template-columns: minmax(250px, 330px) minmax(0, 1fr); gap: 14px;
+  padding: 12px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; scroll-margin-top: 108px;
+}
+.wine:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+.info { min-width: 0; padding: 3px 4px; }
+.name { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.name h2 { margin: 0; font-size: 22px; line-height: 1.2; }
+.producer { margin-top: 5px; font-size: 18px; line-height: 1.3; }
+.kind, .slug, .match { margin-top: 4px; color: var(--muted); font-size: 14px; }
+.slug { overflow-wrap: anywhere; }
+.copy { padding: 1px 7px; color: var(--muted); font-size: 12px; }
+.tag {
+  padding: 1px 7px; color: var(--var); background: var(--var-bg);
+  border-radius: 999px; font-size: 11px; font-weight: 650;
+}
+.links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.matrix-wrap { min-width: 0; overflow-x: auto; padding-bottom: 3px; }
+.matrix {
+  display: grid; grid-template-rows: auto 248px 196px; grid-auto-flow: column;
+  grid-auto-columns: minmax(190px, 240px); gap: 6px; width: max-content; min-width: 100%;
+}
+.column-title {
+  min-width: 0; padding: 2px 4px; color: var(--muted); font-size: 11px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.column-title strong { color: var(--text); font-size: 12px; }
+.cell {
+  position: relative; min-width: 0; overflow: hidden; border: 1px solid var(--line);
+  border-radius: 8px; background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #d0d0d0 25%, transparent 25%),
+    linear-gradient(-45deg, #d0d0d0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #d0d0d0 75%),
+    linear-gradient(-45deg, transparent 75%, #d0d0d0 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
+.cell img { display: block; width: 100%; height: 100%; padding: 6px; object-fit: contain; }
+.cell .role {
+  position: absolute; left: 5px; top: 5px; padding: 2px 6px; border-radius: 999px;
+  color: #fff; background: #17171dcc; font-size: 10px; font-weight: 700;
+}
+.cell button {
+  position: absolute; right: 5px; top: 5px; z-index: 2; padding: 2px 7px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent); font-size: 11px;
+  font-weight: 700;
+}
+.cell.ignored { border: 2px dashed var(--neg); }
+.cell.ignored img { opacity: .58; filter: grayscale(100%); }
+.cell.ignored button { color: var(--pos); border-color: var(--pos); }
+.cell:not(.ignored) button { color: var(--neg); }
+.cell.missing {
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  color: var(--muted); text-align: center; background: var(--panel-2);
+  background-image: none; border-style: dashed;
+}
+.cell.missing strong { display: block; color: var(--text); }
+.empty { padding: 30px 0; color: var(--muted); font-style: italic; }
+@media (max-width: 780px) {
+  .wine { grid-template-columns: 1fr; }
+  .matrix { grid-auto-columns: minmax(170px, 75vw); }
+  input[type=search] { min-width: 0; width: min(100%, 360px); }
+  .nav { width: 100%; margin-left: 0; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <h1>Embedding inputs <span id="summary">loading…</span></h1>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      href="/clusters">Clusters</a><a class="on" href="/embedding">Embeddings</a><a
+      href="/">Testset</a><a href="/runs">Runs</a></nav>
+  </div>
+  <div class="bar">
+    <label>Show <select id="filter">
+      <option value="all">all records</option>
+      <option value="patched">Patched image</option>
+      <option value="ignored">with ignored images</option>
+      <option value="missing">with missing labels</option>
+      <option value="additional">with additional images</option>
+    </select></label>
+    <label>Search <input id="q" type="search" placeholder="name, producer, slug"></label>
+  </div>
+</header>
+<main>
+  <div class="source" id="source">Reading embedding inputs…</div>
+  <div class="list" id="list"></div>
+</main>
+<script>
+const $ = selector => document.querySelector(selector);
+let DATA = {records: []};
+const INITIAL = new URLSearchParams(location.search);
+const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[char]));
+function safeUrl(value) {
+  try { const url = new URL(value); return ["http:", "https:"].includes(url.protocol) ? url.href : ""; }
+  catch (_) { return ""; }
+}
+function imageUrl(slug, item) {
+  const query = new URLSearchParams({slug, kind: item.kind});
+  if (item.file && item.kind.startsWith("additional")) query.set("file", item.file);
+  return "/img/embedding?" + query;
+}
+function cellHtml(slug, item, role, missing) {
+  if (!item.available) return `<div class="cell missing"><span><strong>${esc(role)}</strong>${esc(missing)}</span></div>`;
+  const url = imageUrl(slug, item);
+  return `<div class="cell ${item.ignored ? "ignored" : ""}">
+    <a href="${esc(url)}" target="_blank" rel="noopener"><img loading="lazy"
+      src="${esc(url)}" alt="${esc(role)}"></a><span class="role">${esc(role)}</span>
+    <button type="button" data-ignore data-slug="${esc(slug)}" data-kind="${esc(item.kind)}"
+      data-file="${esc(item.kind.startsWith("additional") ? item.file : "")}" data-ignored="${item.ignored}">
+      ${item.ignored ? "Use" : "Ignore"}</button></div>`;
+}
+function columnHtml(slug, title, top, bottom, isMain) {
+  const suffix = title ? ` · ${esc(title)}` : "";
+  return `<div class="column-title"><strong>${isMain ? "Main image" : "Additional image"}</strong>${suffix}</div>
+    ${cellHtml(slug, top, isMain ? "cropped package" : "full image", "image not prepared")}
+    ${cellHtml(slug, bottom, "segmented label", "label not prepared")}`;
+}
+function wineHtml(record) {
+  const match = record.image_match || {};
+  const where = [record.category, record.region].filter(Boolean).map(esc).join(" · ");
+  const page = safeUrl(record.page_url), remote = safeUrl(record.image_url);
+  const columns = [columnHtml(record.slug, record.main.file, record.main,
+    record.main_label, true), ...(record.alternatives || []).map(view =>
+      columnHtml(record.slug, view.source_file, view.image, view.label, false))].join("");
+  return `<article class="wine" id="${esc(record.slug)}">
+    <section class="info"><div class="name"><h2>${esc(record.name || "Unnamed wine")}</h2>
+      <button class="copy" type="button" data-copy="${esc(record.name || "")}">copy</button>
+      ${record._patched ? '<span class="tag">patch</span>' : ""}</div>
+      <div class="producer">${esc(record.producer || "—")}</div>
+      ${where ? `<div class="kind">${where}</div>` : ""}
+      ${record.color ? `<div class="kind">Colour: ${esc(record.color)}</div>` : ""}
+      ${record.grapes ? `<div class="kind">${esc(record.grapes)}</div>` : ""}
+      <div class="slug">${esc(record.slug)} <button class="copy" type="button"
+        data-copy="${esc(record.slug)}">copy</button></div>
+      ${match.method || record.match ? `<div class="match">Image match: ${esc(match.method || record.match)}${
+        match.confidence ? ` · ${esc(match.confidence)}` : ""}</div>` : ""}
+      <div class="links">${page ? `<a href="${esc(page)}" target="_blank" rel="noopener">site page</a>` : ""}${
+        remote ? `<a href="${esc(remote)}" target="_blank" rel="noopener">source image</a>` : ""}</div>
+    </section><section class="matrix-wrap"><div class="matrix">${columns}</div></section>
+  </article>`;
+}
+function hasIgnored(record) {
+  return record.main.ignored || record.main_label.ignored || (record.alternatives || []).some(
+    view => view.image.ignored || view.label.ignored);
+}
+function hasMissingLabel(record) {
+  return (record.main.available && !record.main_label.available) || (record.alternatives || []).some(
+    view => view.image.available && !view.label.available);
+}
+function render() {
+  const filter = $("#filter").value, words = $("#q").value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  const rows = DATA.records.filter(record => {
+    if (filter === "ignored" && !hasIgnored(record)) return false;
+    if (filter === "patched" && !record._patched) return false;
+    if (filter === "missing" && !hasMissingLabel(record)) return false;
+    if (filter === "additional" && !(record.alternatives || []).length) return false;
+    const hay = [record.name, record.producer, record.slug, record.category, record.region,
+      record.color, record.grapes].join(" ").toLocaleLowerCase();
+    return words.every(word => hay.includes(word));
+  });
+  $("#list").innerHTML = rows.length ? rows.map(wineHtml).join("")
+    : '<div class="empty">No catalogue record matches this view.</div>';
+  $("#summary").textContent = `${rows.length} of ${DATA.records.length} wines · ${DATA.available} prepared images · ${DATA.ignored} ignored · ${DATA.missing_labels} missing labels`;
+}
+async function load() {
+  const response = await fetch("/api/embedding", {cache: "no-store"});
+  const body = await response.json();
+  if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+  DATA = body;
+  $("#source").innerHTML = `<b>Catalogue:</b> ${esc(body.catalog_file)} · <b>Additional:</b> ${
+    esc(body.alternative_dir || "not configured")} · <b>Additional labels:</b> ${
+    esc(body.alternative_label_dir || "not configured")} · <b>Ignore file:</b> ${
+    esc(body.ignore_file || "not configured")}`;
+  render();
+}
+document.addEventListener("change", event => {
+  if (event.target.matches("#filter")) render();
+});
+$("#q").addEventListener("input", render);
+$("#q").value = INITIAL.get("q") || "";
+if (["all", "patched", "ignored", "missing", "additional"].includes(INITIAL.get("filter"))) {
+  $("#filter").value = INITIAL.get("filter");
+}
+document.addEventListener("click", async event => {
+  const copy = event.target.closest("[data-copy]");
+  if (copy) {
+    await navigator.clipboard.writeText(copy.dataset.copy || "");
+    const old = copy.textContent; copy.textContent = "copied";
+    setTimeout(() => { copy.textContent = old; }, 700); return;
+  }
+  const button = event.target.closest("[data-ignore]");
+  if (!button) return;
+  button.disabled = true;
+  try {
+    const response = await fetch("/api/embedding-ignore", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({wine_slug: button.dataset.slug, kind: button.dataset.kind,
+        file: button.dataset.file, ignored: button.dataset.ignored !== "true"})
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+    await load();
+  } catch (error) {
+    alert("Cannot change embedding state: " + error.message);
+    button.disabled = false;
+  }
+});
+load().catch(error => {
+  $("#source").textContent = "Cannot read /api/embedding: " + error.message;
+});
+</script>
+</body>
+</html>
+"""
 
 
 PAGE_RUNS = """<!doctype html>
@@ -9062,8 +10522,9 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 <header>
   <div class="head-top">
     <h1>Match runs <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a href="/">Review</a><a href="/dataset">Dataset</a><a
-      class="on" href="/runs">Runs</a><a href="/clusters">Clusters</a></nav>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      href="/clusters">Clusters</a><a href="/embedding">Embeddings</a><a
+      href="/">Testset</a><a class="on" href="/runs">Runs</a></nav>
   </div>
   <div class="bar">
     <label>Show
@@ -9851,8 +11312,9 @@ table.sheet td.nul { color: var(--muted); }
 <header>
   <div class="head-top">
     <h1>Catalogue clusters <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a href="/">Review</a><a href="/dataset">Dataset</a><a
-      href="/runs">Runs</a><a class="on" href="/clusters">Clusters</a></nav>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      class="on" href="/clusters">Clusters</a><a href="/embedding">Embeddings</a><a
+      href="/">Testset</a><a href="/runs">Runs</a></nav>
   </div>
   <div class="bar">
     <label>Kind
@@ -10501,7 +11963,8 @@ def main():
     if not os.path.isdir(MY):
         sys.exit(f"error: photo set not found: {MY}")
     _state = load_state()
-    global _excluded, _patches, _alternatives, _barcodes, _atlas_bindings
+    global _excluded, _patches, _alternatives, _alternative_labels
+    global _embedding_ignored, _barcodes, _qr_urls, _atlas_bindings
     global _crops, _labels, _label_boxes
     _excluded = load_excluded()
     catalog = load_catalog()
@@ -10510,7 +11973,10 @@ def main():
     # the rows for the same reason.
     _patches = load_patches()
     _alternatives = load_alternatives()
+    _alternative_labels = load_alternative_labels()
+    _embedding_ignored = load_embedding_ignored()
     _barcodes = load_barcodes()
+    _qr_urls = load_qr_urls()
     reload_atlas_bindings()
     _crops = load_crops()
     _labels, _label_boxes = load_label_crops()
@@ -10550,11 +12016,20 @@ def main():
             print(f"  WARNING: {len(unknown)} alternative slug directory or "
                   f"directories name no card of the catalogue: {', '.join(unknown)}",
                   file=sys.stderr)
+    if ALTERNATIVE_LABEL_DIR:
+        count = sum(len(paths) for paths in _alternative_labels.values())
+        print(f"alternative label crops: {count} for "
+              f"{len(_alternative_labels)} wine(s) from {ALTERNATIVE_LABEL_DIR}")
+    if EMBEDDING_IGNORE_FILE:
+        print(f"embedding ignores: {len(_embedding_ignored)} from "
+              f"{EMBEDDING_IGNORE_FILE}")
     if BARCODE_FILE:
         count = sum(len(values) for values in _barcodes.values())
-        unknown = sorted(set(_barcodes) - set(catalog))
+        qr_count = sum(len(values) for values in _qr_urls.values())
+        unknown = sorted((set(_barcodes) | set(_qr_urls)) - set(catalog))
         print(f"product barcodes: {count} for {len(_barcodes)} wine(s) "
               f"from {BARCODE_FILE}")
+        print(f"QR URLs: {qr_count} for {len(_qr_urls)} wine(s) from {BARCODE_FILE}")
         if unknown:
             print(f"  WARNING: {len(unknown)} barcode record(s) name no card of the "
                   f"catalogue: {', '.join(unknown)}", file=sys.stderr)

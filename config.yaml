@@ -36,6 +36,15 @@ patch_dir: svoe-wino-hackaton/dataset/patched-official-2026-09-17
 # to each photo index. An index rebuild is required after a change.
 alternative_dir: svoe-wino-hackaton/dataset/derived/additional
 
+# Segmented label crops of the extra catalogue views. The directory mirrors
+# `alternative_dir`: `<wine_slug>/<file-stem>.png`. The Embedding page shows a
+# missing crop explicitly. A label index reads each present crop as another view.
+alternative_label_dir: svoe-wino-hackaton/dataset/derived/additional-labels
+
+# Images that the reviewer removed from future embedding index builds. The
+# Embedding page writes this file. `svoe-vino-matcher` reads the same file.
+embedding_ignore_file: svoe-vino-matcher/dataset/embedding-ignore.json
+
 # Exact product barcodes, grouped by wine slug. The Dataset page writes this
 # file when the reviewer confirms a new barcode. The barcode matcher reads the
 # same file. One wine MAY have more than one barcode.
