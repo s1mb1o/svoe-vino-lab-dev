@@ -65,6 +65,16 @@ image replaces the `main` image of the same wine. The files are in `data/images/
 `seed_images.py` fills `main`. It matches `csv_photo_name` with the upload file names
 by the rule of `build_catalog.py`, and it reads no network resource. A wine with no
 match gets a console message. Read [plan 08](docs/plans/08_seed-images.md).
+
+```bash
+# step 5: store the patched main images; the file name is the wine slug
+python3 pipeline/seed_patched.py --db data/lab.sqlite3 \
+    ../svoe-wino-hackaton/dataset/patched-official-2026-09-17
+```
+
+`seed_patched.py` fills `main_patched` from the patch folder. The folder is the truth
+for the patches: a new file replaces the row of its wine, and a missing file deletes
+the row. Read step 5 of [plan 07](docs/plans/07_sqlite-lab-database.md).
 Git ignores the whole `data/` directory.
 
 The sections below describe the tools of `scripts/`. They read JSON files through

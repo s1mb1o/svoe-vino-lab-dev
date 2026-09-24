@@ -1,6 +1,33 @@
 # ChangeLog
 
+## 2026-09-25
+
+- `COMMANDS.md`: the owner's command notes are fixed. The delete command names
+  `data/lab.sqlite3`. The load section holds `import_catalog.py`, `seed_images.py`, and
+  `seed_patched.py` in one block. The stale pasted replies and the fixed schema version
+  are gone. The typo `Pапуск` is `Запуск`.
+- `tests/test_seed_patched.py` names the columns of its `wine_image` insert. Schema file
+  006 added `width` and `height`, and the insert by position failed.
+
 ## 2026-09-24
+
+### The patched main images: `pipeline/seed_patched.py`
+
+- New CLI `pipeline/seed_patched.py`. It stores each file of
+  `svoe-wino-hackaton/dataset/patched-official-2026-09-17/` as
+  `images/patched/<sha256>.<extension>` and writes one `main_patched` row of
+  `wine_image` for its wine. The file name before the extension is the wine slug.
+- The patch folder is the truth for the patches, as the owner chose: a new file replaces
+  the row of its wine, and a missing file deletes the row. The old file stays in the
+  store. `match_method` is `slug-name`.
+- The script skips hidden files, `_originals/`, and `README.md`. A slug that
+  `wine_catalog` does not hold gets a message. Two files for one slug are an error.
+- It reuses `sha256_of` and `store_file` of `pipeline/seed_images.py`, and
+  `labdb.image_store` and `labdb.IMAGE_FOLDERS`.
+- On a copy of the database: 15 rows added, 15 files written. The lab server shows the
+  15 patches as card images.
+- Plan 07 step 5, new tests `tests/test_seed_patched.py` (11 cases), smoke cases P1 to P7.
+
 
 ### The Dataset page: no colour line, and the slug above the name
 

@@ -231,6 +231,48 @@ through `scripts/common.py`. They do not start with the new `config.yaml`.
 
 Tests: `tests/test_lab_server.py`, 15 cases.
 
+## Step 5 — the patched main images
+
+Status: done on 2026-09-24. Plan 08 made the table `wine_image` and the type
+`main_patched`. This step fills that type.
+
+Command:
+
+```bash
+python3 pipeline/seed_patched.py --db data/lab.sqlite3 \
+    ../svoe-wino-hackaton/dataset/patched-official-2026-09-17
+```
+
+The patch folder is an overlay on the delivery. Its `README.md` states the rule: the
+name of a file before the extension is the wine slug, and the file replaces the main
+image of that wine.
+
+Rules:
+
+1. A patch is a file at the top level of the folder with the extension `webp`, `png`,
+   `jpg`, or `jpeg`, in any case. The script skips a hidden file, a folder such as
+   `_originals/`, and another file such as `README.md`.
+2. The script copies each patch to `images/patched/<sha256>.<extension>` next to the
+   database file, with the store rules of `pipeline/seed_images.py`.
+3. The patch folder is the truth for the patches. The owner chose this on 2026-09-24:
+   - a patch of a wine with no `main_patched` row adds a row;
+   - a patch with the same sha256 changes nothing;
+   - a patch with another sha256 replaces the row; the old file stays in the store;
+   - a row whose wine has no patch file in the folder is deleted, and the wine goes
+     back to its `main` image.
+4. `match_method` is `slug-name`. `source_name` is the file name in the folder.
+5. A slug that `wine_catalog` does not hold gets a message and no row. Two patch files
+   for one slug are an error, and the row of that wine stays.
+6. The script writes the files first. It then reads the rows again under the write lock
+   and writes all changes in one transaction.
+7. `pipeline/lab_server.py` shows `main_patched` in place of `main` on the card.
+
+Result on 2026-09-24, on a copy of the database: 15 patch files, 15 rows added,
+15 files written, `README.md` skipped. A second run changed nothing. The folder holds 15
+patches; its `README.md` table lists 7 of them.
+
+Tests: `tests/test_seed_patched.py`, 11 cases.
+
 ## Candidate later steps
 
 These steps are proposals. The owner selects the next step and its content.
@@ -238,7 +280,7 @@ These steps are proposals. The owner selects the next step and its content.
 | Step | Content | Source |
 |---|---|---|
 | 4 | Done by [plan 08](08_seed-images.md): the table `wine_image` and `pipeline/seed_images.py`. The store is `data/images/<folder>/<sha256>.<ext>`, one folder for each image type. | `uploads/` of the delivery, the rename rule of `build_catalog.py` |
-| 5 | Patched pictures (`main_patched`) and extra catalogue views (`front`, `back`, `label_front`, `label_back`) into `wine_image`. | `patched-official-<DATE>/`, `derived/additional/` |
+| 5 | Patched pictures (`main_patched`): done, see step 5 above. Extra catalogue views (`front`, `back`, `label_front`, `label_back`) into `wine_image`: open. | `patched-official-<DATE>/`, `derived/additional/` |
 | 6 | Test photos into `data/images/testset/`, with their source URLs, in their own table. Several test sets, each with its own photos. Read the section "Input for the test set step" of plan 08. | `dataset/*/photo/`, `review-labels.json` field `source_url` |
 | 7 | Datasets, photo placements, labels, comments, wine notes, excluded slugs. | `review-labels.json`, `excluded-slugs.json` |
 | 8 | Variant groups and manual pairs. | `variant-groups.json`, `manual-groups.json` |

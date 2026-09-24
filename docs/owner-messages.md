@@ -276,3 +276,113 @@ pros and cons of each?
 ```text
 git commit all
 ```
+
+## 2026-09-24T23:28:52+0300
+
+```text
+what's next?
+```
+
+## 2026-09-24T23:29:13+0300
+
+```text
+C
+```
+
+## 2026-09-24T23:32:03+0300
+
+```text
+create script that imports patched. svoe-wino-hackaton/dataset/patched-official-2026-09-17 - filenames are wine_slug
+```
+
+## 2026-09-24T23:37:09+0300
+
+```text
+Question: A wine has a main_patched row, and the patch folder now holds a different file for it (a better patch). What should the script do?
+Answer: Replace the row (Recommended)
+
+Question: The database has a main_patched row, and the patch folder no longer holds a file for that wine. What should the script do?
+Answer: Delete the row (Recommended)
+```
+
+## 2026-09-24T23:37:47+0300
+
+```text
+fix caption
+```
+
+## 2026-09-24T23:39:05+0300
+
+```text
+http://127.0.0.1:8168/dataset 
+add sorting by image size in pixels
+```
+
+## 2026-09-24T23:42:35+0300
+
+```text
+A
+
+remember in local CLAUDE.md that while we develop, we do not care if database scheme need to be updated. I even will ask you at some moment flatten all changes and recreate DB from scratch
+```
+
+## 2026-09-24T23:44:12+0300
+
+```text
+http://127.0.0.1:8168/dataset 
+
+wine_slug is link to vino-svoe.ru page with this wine
+```
+
+## 2026-09-24T23:53:42+0300
+
+```text
+fix issues
+```
+
+## 2026-09-24T23:56:42+0300
+
+```text
+may be we should process main, patched and alternative images as soon as we import them? But store original images sha256 to ensure that we will not download them twice?
+```
+
+## 2026-09-24T23:56:54+0300
+
+```text
+Question: Which issues should I fix?
+Answer: COMMANDS.md, Patch folder README, Commit seed_patched + labdb
+```
+
+## 2026-09-24T23:58:47+0300
+
+```text
+Questions of the agent:
+1. What should happen to each image at import: crop, label boxes, format or size normalisation, or something else?
+2. Keep the originals (A), or keep only the processed files (B)?
+
+Answer:
+A
+```
+
+## 2026-09-25T00:02:13+0300
+
+```text
+Questions of the agent:
+1. Crop alone for now, with the old `build_cropped.py` settings? Or other steps too, such as label boxes inside the import, downscaling very large images, or a perceptual hash?
+2. PNG (recommended) or lossless WebP for the crops?
+
+Answer:
+crop white and transparent, also if image have not transparent background - use SAM3 to segment
+
+python3 pipeline/seed_images.py --db data/lab.sqlite3 \
+    ../svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads
+
+python3 pipeline/seed_patched.py --db data/lab.sqlite3 \
+    ../svoe-wino-hackaton/dataset/patched-official-2026-09-17
+```
+
+## 2026-09-25T00:02:21+0300
+
+```text
+for image show badge "crop", "seg"
+```

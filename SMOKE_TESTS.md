@@ -778,6 +778,22 @@ Read `docs/plans/08_seed-images.md`. Use a new scratch database for cases I1 to 
 | I8 | `git -C ../svoe-wino-hackaton status --short -- dataset/official-2026-09-17` after cases I1 to I6 | No line. The script does not change the delivery. |
 | I9 | `git status --short data/` in `svoe-vino-lab` | No line. Git ignores `data/`. |
 
+## The patched main images — `pipeline/seed_patched.py`
+
+Read step 5 of `docs/plans/07_sqlite-lab-database.md`. Use a copy of the lab database:
+`sqlite3 -readonly data/lab.sqlite3 ".backup /tmp/lab-patched/lab.sqlite3"`, and
+`PDB=/tmp/lab-patched/lab.sqlite3`, `PF=../svoe-wino-hackaton/dataset/patched-official-2026-09-17`.
+
+| # | Case | Expected result |
+|---|---|---|
+| P1 | `python3 pipeline/seed_patched.py --db $PDB $PF` | `skipped: README.md is not a patch file`, `patch files: 15`, `unknown slugs: 0`, `errors: 0`, `rows added: 15`, `files written: 15`, `result: stored`. Exit 0. |
+| P2 | Repeat case P1 | `rows unchanged: 15`, `files written: 0`, `files in the store already: 15`, `result: no change`. |
+| P3 | Copy `$PF` to `/tmp/lab-patched/pf`, write other bytes into `bukovinka.webp`, and run the script on the copy | `replaced: bukovinka: <old> -> <new> (bukovinka.webp)`, `rows replaced: 1`. The old file stays in `images/patched/`. |
+| P4 | Delete `bukovinka.webp` from the copy, and run the script on the copy | `deleted: bukovinka: …`, `rows deleted: 1`. The card of `bukovinka` shows its `main` image again. |
+| P5 | Start the lab server on `$PDB`, and read `main_image_url` of `bukovinka` in `/api/dataset` | `/images/patched/68caeb4d02d51839b59f4c6f91fe8d5bf92c8ad3ddb507a62b057fcf56127368.webp`. A GET of it answers 200, `image/webp`, 110,188 bytes. |
+| P6 | Compare the SHA-256 and the time of each file of `$PF` before and after case P1 | No change. The script only reads the patch folder. |
+| P7 | `python3 -m unittest discover -s tests -p 'test_seed_patched.py'` | 11 tests, `OK`. |
+
 ## The lab server — `pipeline/lab_server.py`
 
 Start the server with `python3 pipeline/lab_server.py --no-browser`.

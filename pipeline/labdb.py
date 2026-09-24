@@ -15,6 +15,11 @@ import sys
 
 SCHEMA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schema")
 SCHEMA_RE = re.compile(r"^(\d{3})_[a-z0-9_]+\.sql$")
+# The folder of each image type of `wine_image` in the image store. Read
+# `pipeline/schema/005_wine_image.sql`.
+IMAGE_FOLDERS = {"main": "main", "main_patched": "patched", "front": "additional",
+                 "back": "additional", "label_front": "additional",
+                 "label_back": "additional"}
 
 
 class SchemaError(Exception):
@@ -74,6 +79,11 @@ def connect(path, create=False, directory=SCHEMA_DIR):
         conn.close()
         raise
     return conn
+
+
+def image_store(db_path):
+    """Return the image store of the database at `db_path`: `images/` next to it."""
+    return os.path.join(os.path.dirname(os.path.abspath(db_path)), "images")
 
 
 def tables(conn):
