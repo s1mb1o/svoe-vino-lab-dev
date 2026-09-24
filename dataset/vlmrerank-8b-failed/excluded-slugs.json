@@ -1,5 +1,5 @@
 {
-  "count": 6,
+  "count": 5,
   "excluded": {
     "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-12": {
       "reason": "conflicts with abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-125",
@@ -17,16 +17,12 @@
       "reason": "зфпу 404",
       "ts": "2026-09-21T14:32:59+0300"
     },
-    "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-13": {
-      "reason": "одинаковая бутылка",
-      "ts": "2026-09-24T11:21:08+0300"
-    },
     "zhemchuzhnaya-9-merlo-kaberne-sovinon": {
       "reason": "svoe-vino excluded slug",
       "ts": "2026-09-21T13:36:03+0300"
     }
   },
   "note": "Excluded slugs of svoe-vino-testset. The key of an entry is the wine slug. Field 'reason' states why the slug is excluded. Field 'ts' holds the time of the exclusion. The photos of an excluded slug MUST NOT be used for benchmarking. A slug that is not in this file is included. Purpose: some slugs of the catalogue hold an error, most often a wrong bottle photo. A wrong bottle photo shifts the metrics, because the reference of the slug does not show the wine. Such a slug is excluded instead of corrected, so the benchmark stays comparable.",
-  "updated": "2026-09-24T11:21:08+0300",
+  "updated": "2026-09-22T11:28:14+0300",
   "version": 1
 }

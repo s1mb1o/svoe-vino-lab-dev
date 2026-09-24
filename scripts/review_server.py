@@ -41,10 +41,13 @@ import socket
 import sys
 import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 import webbrowser
-from concurrent.futures import ThreadPoolExecutor
+import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import yaml
@@ -57,14 +60,18 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Every path comes from `config.yaml`. Read the file for the meaning of each key.
 # `bind_paths` sets them all. It runs here, and it runs again when `--dataset`
 # names another dataset, because these names are read all over this file.
-MY = TRASH = LABEL_FILE = CATALOG = PATCH_DIR = BOTTLE_CROPPED_DIR = None
+MY = TRASH = LABEL_FILE = CATALOG = PATCH_DIR = ALTERNATIVE_DIR = None
+BARCODE_FILE = ATLAS_MATCHES_FILE = ATLAS_BINDINGS_FILE = None
+BOTTLE_CROPPED_DIR = None
 BOTTLE_LABEL_DIR = BOTTLE_LABEL_BOX_DIR = None
 VARIANTS_FILE = MANUAL_GROUPS_FILE = EXCLUDED_FILE = RUNS_DIR = None
 
 
 def bind_paths():
     """Take every path of this file from the dataset that `common` holds now."""
-    global MY, TRASH, LABEL_FILE, CATALOG, PATCH_DIR, BOTTLE_CROPPED_DIR
+    global MY, TRASH, LABEL_FILE, CATALOG, PATCH_DIR, ALTERNATIVE_DIR
+    global BARCODE_FILE, ATLAS_MATCHES_FILE, ATLAS_BINDINGS_FILE
+    global BOTTLE_CROPPED_DIR
     global BOTTLE_LABEL_DIR, BOTTLE_LABEL_BOX_DIR
     global VARIANTS_FILE, MANUAL_GROUPS_FILE, EXCLUDED_FILE, RUNS_DIR
     MY = common.PHOTO_DIR
@@ -74,6 +81,15 @@ def bind_paths():
     CATALOG = common.CATALOG_FILE
     # Corrected catalogue photos. Every dataset reads the same directory.
     PATCH_DIR = common.PATCH_DIR
+    # Extra catalogue views. Every dataset and the matcher read the same
+    # directory. A file ADDS a view; it does not replace the main picture.
+    ALTERNATIVE_DIR = common.ALTERNATIVE_DIR
+    # Exact product barcodes. The Dataset page and the barcode matcher share
+    # this structured code-map file.
+    BARCODE_FILE = common.BARCODE_FILE
+    # Automatic Atlas bindings and the manual overlay of the Dataset page.
+    ATLAS_MATCHES_FILE = common.ATLAS_MATCHES_FILE
+    ATLAS_BINDINGS_FILE = common.ATLAS_BINDINGS_FILE
     # The catalogue photos without their empty border. Every dataset reads the
     # same directory. An unset key shows the photos with their border.
     BOTTLE_CROPPED_DIR = common.BOTTLE_CROPPED_DIR
@@ -105,6 +121,7 @@ NULL_NAME = "NULL \u2014 no match in the catalogue"
 # and NULL is not a wine.
 NULL_LABELS = ("positive", "unusable")
 COMMENT_MAX = 4000
+BARCODE_MAX = 128
 # The OpenAPI document of this server. `/openapi.yaml`, `/openapi.json`, and
 # `/docs` read it. It is written by hand; it is not generated from the code.
 SPEC_FILE = os.path.join(ROOT, "docs", "openapi.yaml")
@@ -129,6 +146,19 @@ _lock = threading.Lock()
 # One build of a cluster rule at a time. The VLM has one slot, and a build takes
 # about 5 to 30 seconds. `POST /api/cluster-rule` holds it.
 _rule_lock = threading.Lock()
+# One Dataset validation can run at a time. It reads the public site and can take
+# several minutes when it downloads every image and every wine page.
+_dataset_validation_lock = threading.Lock()
+_dataset_validation = {
+    "running": False,
+    "selected": [],
+    "started_at": None,
+    "finished_at": None,
+    "current_check": None,
+    "progress": {"done": 0, "total": 0, "label": ""},
+    "results": {},
+    "error": None,
+}
 _state = {"labels": {}, "wines": {}}
 _rows = []
 # slug -> the path of a corrected catalogue photo. `common.PATCH_DIR` holds the
@@ -136,6 +166,16 @@ _rows = []
 # it, and every view marks the image `patched`. `load_patches` fills this map at
 # start and at every `/api/reload`, so a new patch file needs no restart.
 _patches = {}
+# slug -> paths of extra catalogue views. The Dataset page edits these files,
+# and the matcher indexes every file beside the primary picture of the slug.
+_alternatives = {}
+# slug -> exact product barcode values. `BARCODE_FILE` uses the structured map
+# that `svoe-vino-matcher` reads. One slug MAY have more than one barcode.
+_barcodes = {}
+# Automatic Atlas matches, manual overrides, and their effective combination.
+_atlas_matches = {}
+_atlas_manual_bindings = {}
+_atlas_bindings = {}
 # slug -> the path of the cropped catalogue photo. `common.BOTTLE_CROPPED_DIR`
 # holds the files. A crop is the patch or the catalogue photo with its empty
 # border cut away, so it holds the same picture. `bottle_path` answers the crop
@@ -183,10 +223,290 @@ def load_patches():
     prints the error and answers an empty map.
     """
     try:
-        return common.load_patches()
+        return common.load_patches(PATCH_DIR)
     except common.ConfigError as exc:
         print("warning: %s" % exc, file=sys.stderr)
         return {}
+
+
+def load_alternatives():
+    """Read `alternative_dir` and answer slug -> active image paths.
+
+    A hidden directory is recovery data and is not active. A broken directory
+    does not stop the review tool. The matcher is stricter when it builds an
+    index.
+    """
+    if not ALTERNATIVE_DIR:
+        return {}
+    if not os.path.isdir(ALTERNATIVE_DIR):
+        print("warning: alternative_dir is not a directory: %s" % ALTERNATIVE_DIR,
+              file=sys.stderr)
+        return {}
+    out = {}
+    for slug in sorted(os.listdir(ALTERNATIVE_DIR)):
+        if slug.startswith("."):
+            continue
+        directory = os.path.join(ALTERNATIVE_DIR, slug)
+        if not os.path.isdir(directory):
+            continue
+        files = [os.path.join(directory, fn) for fn in sorted(os.listdir(directory))
+                 if os.path.splitext(fn)[1].lower() in IMAGE_EXT
+                 and os.path.isfile(os.path.join(directory, fn))]
+        if files:
+            out[slug] = files
+    return out
+
+
+def _barcode_values(value):
+    """Return one barcode scalar or list as normalized unique strings."""
+    values = value if isinstance(value, list) else ([] if value is None else [value])
+    out = []
+    for item in values:
+        clean = "".join(str(item).split())
+        if clean and clean not in out:
+            out.append(clean)
+    return out
+
+
+def _read_barcode_document():
+    """Read the configured code map and convert its old flat shape in memory."""
+    if not BARCODE_FILE:
+        raise ValueError("barcode_file is not configured")
+    if not os.path.exists(BARCODE_FILE):
+        return {"version": 1, "wines": []}
+    with open(BARCODE_FILE, encoding="utf-8") as source:
+        document = json.load(source)
+    if isinstance(document, dict) and isinstance(document.get("wines"), list):
+        return document
+    if isinstance(document, dict) and "wines" not in document:
+        grouped = {}
+        for barcode, slug in document.items():
+            clean_slug = str(slug).strip()
+            grouped.setdefault(clean_slug, []).append("".join(str(barcode).split()))
+        return {"version": 1, "wines": [
+            {"wine_slug": slug,
+             "barcode": values[0] if len(values) == 1 else values,
+             "qr_code": None}
+            for slug, values in sorted(grouped.items())
+        ]}
+    raise ValueError("barcode_file MUST contain a `wines` list")
+
+
+def _barcode_maps(document):
+    """Return slug values and barcode owners from one structured code map."""
+    by_slug = {}
+    owner = {}
+    for number, record in enumerate(document.get("wines") or [], 1):
+        if not isinstance(record, dict):
+            raise ValueError("barcode record %d MUST be an object" % number)
+        slug = str(record.get("wine_slug") or "").strip()
+        if not slug:
+            raise ValueError("barcode record %d MUST name `wine_slug`" % number)
+        values = _barcode_values(record.get("barcode"))
+        if values:
+            by_slug.setdefault(slug, []).extend(
+                value for value in values if value not in by_slug.get(slug, []))
+        for value in values:
+            old = owner.get(value)
+            if old is not None and old != slug:
+                raise ValueError(
+                    "barcode %r maps to both `%s` and `%s`" % (value, old, slug))
+            owner[value] = slug
+    return by_slug, owner
+
+
+def load_barcodes():
+    """Read `barcode_file` and answer slug -> exact barcode values."""
+    if not BARCODE_FILE:
+        return {}
+    try:
+        by_slug, _owner = _barcode_maps(_read_barcode_document())
+        return by_slug
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        print("warning: cannot read barcode_file: %s" % exc, file=sys.stderr)
+        return {}
+
+
+def _clean_new_barcode(value):
+    """Validate and normalize one barcode entered on the Dataset page."""
+    if not isinstance(value, str):
+        raise ValueError("barcode MUST be a string")
+    clean = "".join(value.split())
+    if not clean:
+        raise ValueError("barcode is empty")
+    if len(clean) > BARCODE_MAX:
+        raise ValueError("barcode is longer than %d characters" % BARCODE_MAX)
+    if any(ord(char) < 32 or ord(char) == 127 for char in clean):
+        raise ValueError("barcode contains a control character")
+    return clean
+
+
+def store_dataset_barcode(catalog, slug, value):
+    """Add one exact barcode to a slug and write the shared code map."""
+    global _barcodes
+    if not BARCODE_FILE:
+        raise ValueError("barcode_file is not configured")
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    barcode = _clean_new_barcode(value)
+    with _lock:
+        document = _read_barcode_document()
+        by_slug, owner = _barcode_maps(document)
+        if barcode in owner:
+            if owner[barcode] == slug:
+                raise ValueError("this slug already has barcode %s" % barcode)
+            raise ValueError(
+                "barcode %s already belongs to `%s`" % (barcode, owner[barcode]))
+
+        record = next(
+            (item for item in document["wines"]
+             if isinstance(item, dict)
+             and str(item.get("wine_slug") or "").strip() == slug),
+            None,
+        )
+        values = list(by_slug.get(slug, []))
+        values.append(barcode)
+        if record is None:
+            record = {"wine_slug": slug, "barcode": barcode, "qr_code": None}
+            document["wines"].append(record)
+        else:
+            record["barcode"] = values[0] if len(values) == 1 else values
+        document["wines"].sort(
+            key=lambda item: str(item.get("wine_slug") or "")
+            if isinstance(item, dict) else "")
+
+        directory = os.path.dirname(BARCODE_FILE)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        temporary = BARCODE_FILE + ".part"
+        try:
+            with open(temporary, "w", encoding="utf-8") as target:
+                json.dump(document, target, ensure_ascii=False, indent=2)
+                target.write("\n")
+            os.replace(temporary, BARCODE_FILE)
+        except OSError:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+            raise
+        _barcodes = load_barcodes()
+    return barcode
+
+
+def _clean_product_uuid(value):
+    """Validate and normalize one Drink Atlas Core product UUID."""
+    if not isinstance(value, str):
+        raise ValueError("product_uuid MUST be a string")
+    text = value.strip()
+    if not text:
+        raise ValueError("product_uuid is empty")
+    try:
+        return str(uuid.UUID(text))
+    except (ValueError, AttributeError) as exc:
+        raise ValueError("product_uuid is not a valid UUID") from exc
+
+
+def _read_atlas_binding_rows(path, key):
+    """Read one configured Atlas binding JSONL file."""
+    if not path:
+        raise ValueError("%s is not configured" % key)
+    if not os.path.exists(path):
+        return []
+    rows = []
+    with open(path, encoding="utf-8") as source:
+        for number, line in enumerate(source, 1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    "%s line %d is not valid JSON" % (key, number)) from exc
+            if not isinstance(row, dict):
+                raise ValueError("%s line %d MUST be an object" % (key, number))
+            rows.append(row)
+    return rows
+
+
+def _atlas_binding_map(rows):
+    """Return a validated slug-to-product UUID map."""
+    out = {}
+    for number, row in enumerate(rows, 1):
+        slug = str(row.get("wine_slug") or "").strip()
+        if not slug:
+            raise ValueError(
+                "atlas binding record %d MUST name `wine_slug`" % number)
+        product_uuid = _clean_product_uuid(row.get("product_uuid"))
+        old = out.get(slug)
+        if old is not None and old != product_uuid:
+            raise ValueError(
+                "wine_slug `%s` maps to both %s and %s" %
+                (slug, old, product_uuid))
+        out[slug] = product_uuid
+    return out
+
+
+def _load_atlas_binding_file(path, key):
+    """Read one Atlas binding file and answer slug -> product UUID."""
+    if not path:
+        return {}
+    try:
+        return _atlas_binding_map(_read_atlas_binding_rows(path, key))
+    except (OSError, ValueError) as exc:
+        print("warning: cannot read %s: %s" % (key, exc),
+              file=sys.stderr)
+        return {}
+
+
+def reload_atlas_bindings():
+    """Read automatic matches and put the manual overlay above them."""
+    global _atlas_matches, _atlas_manual_bindings, _atlas_bindings
+    _atlas_matches = _load_atlas_binding_file(
+        ATLAS_MATCHES_FILE, "atlas_matches_file")
+    _atlas_manual_bindings = _load_atlas_binding_file(
+        ATLAS_BINDINGS_FILE, "atlas_bindings_file")
+    _atlas_bindings = dict(_atlas_matches)
+    _atlas_bindings.update(_atlas_manual_bindings)
+    return _atlas_bindings
+
+
+def store_dataset_atlas_binding(catalog, slug, value):
+    """Create or replace one Svoe Vino to Drink Atlas Core binding."""
+    if not ATLAS_BINDINGS_FILE:
+        raise ValueError("atlas_bindings_file is not configured")
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    product_uuid = _clean_product_uuid(value)
+    with _lock:
+        rows = _read_atlas_binding_rows(
+            ATLAS_BINDINGS_FILE, "atlas_bindings_file")
+        _atlas_binding_map(rows)
+        record = next(
+            (item for item in rows
+             if str(item.get("wine_slug") or "").strip() == slug),
+            None,
+        )
+        if record is None:
+            rows.append({"wine_slug": slug, "product_uuid": product_uuid})
+        else:
+            record["product_uuid"] = product_uuid
+        rows.sort(key=lambda item: str(item.get("wine_slug") or ""))
+
+        directory = os.path.dirname(ATLAS_BINDINGS_FILE)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        temporary = ATLAS_BINDINGS_FILE + ".part"
+        try:
+            with open(temporary, "w", encoding="utf-8") as target:
+                for item in rows:
+                    target.write(json.dumps(item, ensure_ascii=False) + "\n")
+            os.replace(temporary, ATLAS_BINDINGS_FILE)
+        except OSError:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+            raise
+        reload_atlas_bindings()
+    return product_uuid
 
 
 def load_crops():
@@ -982,6 +1302,508 @@ def fetch_image(url):
             "the address does not answer with a picture (server said %s)"
             % (ctype or "nothing"))
     return body, sniffed
+
+
+# -------------------------------------------------------- Dataset validation
+
+
+DATASET_VALIDATION_CHECKS = ("slugs", "images", "pages")
+DATASET_SITEMAP_URL = "https://vino-svoe.ru/wines-sitemap.xml"
+DATASET_ALLOWED_HOSTS = {"vino-svoe.ru", "api.vino-svoe.ru"}
+DATASET_VALIDATION_WORKERS = 8
+DATASET_VALIDATION_DETAIL_LIMIT = 250
+
+
+def _dataset_timestamp():
+    """Return one local timestamp for a Dataset validation event."""
+    return time.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+
+def dataset_validation_view():
+    """Return a JSON-safe copy of the current Dataset validation state."""
+    with _dataset_validation_lock:
+        return json.loads(json.dumps(_dataset_validation, ensure_ascii=False))
+
+
+def _dataset_validation_progress(check, done, total, label):
+    """Set the visible progress of one Dataset validation check."""
+    with _dataset_validation_lock:
+        _dataset_validation["current_check"] = check
+        _dataset_validation["progress"] = {
+            "done": done, "total": total, "label": label,
+        }
+
+
+def _dataset_validation_result(check, result):
+    """Store one completed Dataset validation check."""
+    with _dataset_validation_lock:
+        _dataset_validation["results"][check] = result
+
+
+def _dataset_public_url(url):
+    """Validate one public URL that belongs to the Svoe Vino website."""
+    parts = urllib.parse.urlsplit(url)
+    if parts.scheme != "https" or parts.hostname not in DATASET_ALLOWED_HOSTS:
+        raise ValueError("the URL is not an allowed Svoe Vino HTTPS address")
+    check_remote_url(url)
+    return url
+
+
+class _DatasetRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Reject a redirect from the public Svoe Vino hosts."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        _dataset_public_url(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_dataset_url_opener = urllib.request.build_opener(_DatasetRedirectHandler())
+
+
+def _dataset_fetch(url, limit, accept="*/*"):
+    """Download one allowed public resource with a strict size limit."""
+    _dataset_public_url(url)
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept})
+    with _dataset_url_opener.open(req, timeout=FETCH_TIMEOUT) as resp:
+        final_url = resp.geturl()
+        _dataset_public_url(final_url)
+        declared = resp.headers.get("Content-Length")
+        if declared and int(declared) > limit:
+            raise ValueError("the response is larger than %d bytes" % limit)
+        body = resp.read(limit + 1)
+    if len(body) > limit:
+        raise ValueError("the response is larger than %d bytes" % limit)
+    return body, final_url
+
+
+def _dataset_sitemap():
+    """Return slug records from the public wine sitemap."""
+    body, _ = _dataset_fetch(
+        DATASET_SITEMAP_URL, 8 * 1024 * 1024,
+        "application/xml,text/xml;q=0.9,*/*;q=0.1",
+    )
+    try:
+        root = ET.fromstring(body)
+    except ET.ParseError as exc:
+        raise ValueError("the wine sitemap is not valid XML: %s" % exc) from exc
+    records = {}
+    duplicates = []
+    for node in root:
+        if not node.tag.endswith("url"):
+            continue
+        location = ""
+        image_url = ""
+        for child in node.iter():
+            if child.tag.endswith("loc") and child.text:
+                value = child.text.strip()
+                if not location:
+                    location = value
+                elif not image_url:
+                    image_url = value
+        parts = urllib.parse.urlsplit(location)
+        path = parts.path.rstrip("/")
+        if not path.startswith("/wines/"):
+            continue
+        slug = urllib.parse.unquote(path.rsplit("/", 1)[-1])
+        if not slug:
+            continue
+        if slug in records:
+            duplicates.append(slug)
+        records[slug] = {"page_url": location, "image_url": image_url}
+    if not records:
+        raise ValueError("the wine sitemap holds no wine URLs")
+    return records, sorted(set(duplicates))
+
+
+_META_TAG_RE = re.compile(r"<meta\b[^>]*>", re.I)
+_META_ATTR_RE = re.compile(
+    r'''([:\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))''', re.I
+)
+
+
+def _dataset_page_image(body):
+    """Return the `og:image` URL from one wine page."""
+    text = body.decode("utf-8", "replace")
+    for tag in _META_TAG_RE.findall(text):
+        attrs = {}
+        for match in _META_ATTR_RE.finditer(tag):
+            attrs[match.group(1).lower()] = html.unescape(
+                match.group(2) or match.group(3) or match.group(4) or ""
+            )
+        if (attrs.get("property") or attrs.get("name") or "").lower() == "og:image":
+            return attrs.get("content") or ""
+    return ""
+
+
+def _dataset_file_name(url):
+    """Return the decoded file name from one URL."""
+    return urllib.parse.unquote(os.path.basename(urllib.parse.urlsplit(url).path))
+
+
+def _dataset_local_sha256(path):
+    """Return the SHA-256 of one local file."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _dataset_validate_slugs(catalog):
+    """Compare the catalog slug set with the public wine sitemap."""
+    _dataset_validation_progress("slugs", 0, 1, "Downloading the wine sitemap")
+    website, duplicates = _dataset_sitemap()
+    catalog_slugs = set(catalog)
+    website_slugs = set(website)
+    missing = sorted(catalog_slugs - website_slugs)
+    extra = sorted(website_slugs - catalog_slugs)
+    _dataset_validation_progress("slugs", 1, 1, "Compared both slug sets")
+    return {
+        "status": "pass" if not missing and not extra and not duplicates else "fail",
+        "catalog_count": len(catalog_slugs),
+        "website_count": len(website_slugs),
+        "common_count": len(catalog_slugs & website_slugs),
+        "missing_count": len(missing),
+        "extra_count": len(extra),
+        "duplicate_count": len(duplicates),
+        "missing": missing,
+        "extra": extra,
+        "duplicates": duplicates,
+        "source": DATASET_SITEMAP_URL,
+    }
+
+
+def _dataset_validate_one_image(rec):
+    """Compare one downloaded source image with its local catalog file."""
+    slug = rec.get("slug") or ""
+    image_url = rec.get("image_url") or ""
+    local_path = rec.get("local_path") or ""
+    try:
+        body, final_url = _dataset_fetch(
+            image_url, UPLOAD_MAX,
+            "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        )
+        if not sniff_image_type(body, final_url):
+            raise ValueError("the source URL did not return an image")
+        remote_sha = hashlib.sha256(body).hexdigest()
+        local_sha = _dataset_local_sha256(local_path)
+        return {
+            "slug": slug, "match": remote_sha == local_sha,
+            "remote_sha256": remote_sha, "local_sha256": local_sha,
+            "remote_bytes": len(body), "local_bytes": os.path.getsize(local_path),
+            "source_image": image_url,
+        }
+    except (OSError, ValueError, urllib.error.URLError) as exc:
+        return {"slug": slug, "error": str(exc), "source_image": image_url}
+
+
+def _dataset_validate_images(catalog):
+    """Download and hash every catalog source image."""
+    jobs = []
+    skipped = []
+    for slug, rec in catalog.items():
+        if rec.get("image_url") and rec.get("local_path"):
+            jobs.append(rec)
+        else:
+            skipped.append(slug)
+    details = []
+    matched = mismatched = errors = 0
+    _dataset_validation_progress("images", 0, len(jobs), "Waiting for image downloads")
+    with ThreadPoolExecutor(max_workers=DATASET_VALIDATION_WORKERS) as pool:
+        futures = {pool.submit(_dataset_validate_one_image, rec): rec for rec in jobs}
+        for done, future in enumerate(as_completed(futures), 1):
+            result = future.result()
+            if result.get("error"):
+                errors += 1
+                details.append(result)
+            elif result["match"]:
+                matched += 1
+            else:
+                mismatched += 1
+                details.append(result)
+            _dataset_validation_progress(
+                "images", done, len(jobs), "Downloaded and hashed %s" % result["slug"]
+            )
+    shown = details[:DATASET_VALIDATION_DETAIL_LIMIT]
+    return {
+        "status": "pass" if not mismatched and not errors else "fail",
+        "checked": len(jobs), "matched": matched, "mismatched": mismatched,
+        "errors": errors, "skipped": len(skipped),
+        "skipped_slugs": skipped[:DATASET_VALIDATION_DETAIL_LIMIT],
+        "details": shown, "details_limited": len(details) > len(shown),
+        "note": ("This check compares exact bytes. The resize service can re-encode "
+                 "an image that has the same visible content."),
+    }
+
+
+def _dataset_validate_one_page(rec):
+    """Compare one catalog source image with the wine page `og:image`."""
+    slug = rec.get("slug") or ""
+    page_url = rec.get("page_url") or ""
+    expected = _dataset_file_name(rec.get("image_url") or "") or rec.get("upload_file")
+    try:
+        body, _ = _dataset_fetch(
+            page_url, 3 * 1024 * 1024,
+            "text/html,application/xhtml+xml;q=0.9,*/*;q=0.1",
+        )
+        page_image = _dataset_page_image(body)
+        if not page_image:
+            raise ValueError("the wine page has no og:image")
+        actual = _dataset_file_name(page_image)
+        return {
+            "slug": slug, "match": expected == actual,
+            "expected_file": expected, "page_file": actual,
+            "page_image": page_image, "page_url": page_url,
+        }
+    except (OSError, ValueError, urllib.error.URLError) as exc:
+        return {"slug": slug, "error": str(exc), "page_url": page_url}
+
+
+def _dataset_validate_pages(catalog):
+    """Check the source image association on every wine page."""
+    jobs = []
+    skipped = []
+    for slug, rec in catalog.items():
+        expected = _dataset_file_name(rec.get("image_url") or "") or rec.get("upload_file")
+        if rec.get("page_url") and expected:
+            jobs.append(rec)
+        else:
+            skipped.append(slug)
+    details = []
+    matched = mismatched = errors = 0
+    _dataset_validation_progress("pages", 0, len(jobs), "Waiting for wine pages")
+    with ThreadPoolExecutor(max_workers=DATASET_VALIDATION_WORKERS) as pool:
+        futures = {pool.submit(_dataset_validate_one_page, rec): rec for rec in jobs}
+        for done, future in enumerate(as_completed(futures), 1):
+            result = future.result()
+            if result.get("error"):
+                errors += 1
+                details.append(result)
+            elif result["match"]:
+                matched += 1
+            else:
+                mismatched += 1
+                details.append(result)
+            _dataset_validation_progress(
+                "pages", done, len(jobs), "Checked %s" % result["slug"]
+            )
+    shown = details[:DATASET_VALIDATION_DETAIL_LIMIT]
+    return {
+        "status": "pass" if not mismatched and not errors else "fail",
+        "checked": len(jobs), "matched": matched, "mismatched": mismatched,
+        "errors": errors, "skipped": len(skipped),
+        "skipped_slugs": skipped[:DATASET_VALIDATION_DETAIL_LIMIT],
+        "details": shown, "details_limited": len(details) > len(shown),
+        "note": ("This check compares the catalog source image file name with the "
+                 "og:image file name on each wine_slug page."),
+    }
+
+
+def _run_dataset_validation(catalog, selected):
+    """Run selected Dataset checks in one background thread."""
+    functions = {
+        "slugs": _dataset_validate_slugs,
+        "images": _dataset_validate_images,
+        "pages": _dataset_validate_pages,
+    }
+    try:
+        for check in selected:
+            try:
+                result = functions[check](catalog)
+            except Exception as exc:  # Keep the next independent check available.
+                result = {"status": "error", "error": str(exc)}
+            _dataset_validation_result(check, result)
+    except Exception as exc:
+        with _dataset_validation_lock:
+            _dataset_validation["error"] = str(exc)
+    finally:
+        with _dataset_validation_lock:
+            _dataset_validation["running"] = False
+            _dataset_validation["finished_at"] = _dataset_timestamp()
+            _dataset_validation["current_check"] = None
+
+
+def start_dataset_validation(catalog, selected):
+    """Start one Dataset validation. Return False when one already runs."""
+    selected = [name for name in DATASET_VALIDATION_CHECKS if name in selected]
+    if not selected:
+        raise ValueError("select at least one validation check")
+    with _dataset_validation_lock:
+        if _dataset_validation["running"]:
+            return False
+        _dataset_validation.update({
+            "running": True, "selected": selected,
+            "started_at": _dataset_timestamp(), "finished_at": None,
+            "current_check": selected[0],
+            "progress": {"done": 0, "total": 0, "label": "Starting validation"},
+            "results": {}, "error": None,
+        })
+    copied = {slug: dict(rec) for slug, rec in catalog.items()}
+    threading.Thread(
+        target=_run_dataset_validation, args=(copied, selected),
+        name="dataset-validation", daemon=True,
+    ).start()
+    return True
+
+
+def _dataset_patch_target(catalog, slug, body=None):
+    """Validate one patch write and return its destination path."""
+    if not PATCH_DIR:
+        raise ValueError("patch_dir is not configured")
+    if not os.path.isdir(PATCH_DIR):
+        raise ValueError("patch_dir is not a directory: %s" % PATCH_DIR)
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    if body is None:
+        return _patches.get(slug)
+    if not body or len(body) > UPLOAD_MAX:
+        raise ValueError("the picture is empty or larger than %d bytes" % UPLOAD_MAX)
+    ctype = sniff_image_type(body)
+    if ctype not in UPLOAD_TYPES:
+        raise ValueError("the file is not a supported image")
+    return os.path.join(PATCH_DIR, slug + UPLOAD_TYPES[ctype])
+
+
+def _dataset_archive_path(source, tag):
+    """Return a free recovery path beside one dataset image directory."""
+    trash_dir = os.path.join(os.path.dirname(source), ".trash")
+    os.makedirs(trash_dir, exist_ok=True)
+    name = free_name(trash_dir, os.path.basename(source), tag=tag)
+    return os.path.join(trash_dir, name)
+
+
+def _invalidate_patch_derivatives(slug):
+    """Archive derived images that can hold the old patch pixels."""
+    for label, mapping in (
+        ("crop", _crops), ("label", _labels), ("label box", _label_boxes),
+    ):
+        source = mapping.get(slug)
+        if not source or not os.path.exists(source):
+            mapping.pop(slug, None)
+            continue
+        try:
+            destination = _dataset_archive_path(source, "patch-change")
+            os.replace(source, destination)
+            mapping.pop(slug, None)
+        except OSError as exc:
+            print("warning: cannot archive stale %s for %s: %s"
+                  % (label, slug, exc), file=sys.stderr)
+
+
+def store_dataset_patch(catalog, slug, body):
+    """Store one patch and update the running server state."""
+    global _patches
+    destination = _dataset_patch_target(catalog, slug, body)
+    temporary = os.path.join(PATCH_DIR, ".%s.patch.part" % slug)
+    with _lock:
+        old = _patches.get(slug)
+        archived = None
+        try:
+            with open(temporary, "wb") as target:
+                target.write(body)
+            if old and os.path.exists(old):
+                archived = _dataset_archive_path(old, "replaced")
+                os.replace(old, archived)
+            os.replace(temporary, destination)
+        except OSError:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+            if archived and old and os.path.exists(archived):
+                os.replace(archived, old)
+            raise
+        _invalidate_patch_derivatives(slug)
+        _patches = load_patches()
+        for row in _rows:
+            if row.get("slug") == slug:
+                row["patched"] = True
+    return destination
+
+
+def remove_dataset_patch(catalog, slug):
+    """Move one patch out of patch_dir and update the running server state."""
+    global _patches
+    source = _dataset_patch_target(catalog, slug)
+    if not source:
+        raise ValueError("this wine has no patch")
+    with _lock:
+        destination = _dataset_archive_path(source, "removed")
+        os.replace(source, destination)
+        _invalidate_patch_derivatives(slug)
+        _patches = load_patches()
+        for row in _rows:
+            if row.get("slug") == slug:
+                row["patched"] = False
+    return destination
+
+
+def _alternative_path(slug, filename):
+    """Return one active alternative image, or None for an unsafe name."""
+    if (not slug or not filename or os.path.basename(slug) != slug
+            or os.path.basename(filename) != filename):
+        return None
+    return next(
+        (path for path in _alternatives.get(slug, [])
+         if os.path.basename(path) == filename),
+        None,
+    )
+
+
+def store_dataset_alternative(catalog, slug, body):
+    """Add one alternative catalogue view and update the running state."""
+    global _alternatives
+    if not ALTERNATIVE_DIR:
+        raise ValueError("alternative_dir is not configured")
+    if not os.path.isdir(ALTERNATIVE_DIR):
+        raise ValueError("alternative_dir is not a directory: %s" % ALTERNATIVE_DIR)
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    if not body or len(body) > UPLOAD_MAX:
+        raise ValueError("the picture is empty or larger than %d bytes" % UPLOAD_MAX)
+    ctype = sniff_image_type(body)
+    if ctype not in UPLOAD_TYPES:
+        raise ValueError("the file is not a supported image")
+
+    with _lock:
+        directory = os.path.join(ALTERNATIVE_DIR, slug)
+        os.makedirs(directory, exist_ok=True)
+        ranks = [int(match.group(1)) for match in
+                 (RANK_RE.match(name) for name in os.listdir(directory)) if match]
+        filename = free_name(
+            directory,
+            "%02d_manual%s" % (max(ranks, default=0) + 1, UPLOAD_TYPES[ctype]),
+        )
+        destination = os.path.join(directory, filename)
+        temporary = os.path.join(directory, ".%s.part" % filename)
+        try:
+            with open(temporary, "wb") as target:
+                target.write(body)
+            os.replace(temporary, destination)
+        except OSError:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+            raise
+        _alternatives = load_alternatives()
+    return destination
+
+
+def remove_dataset_alternative(catalog, slug, filename):
+    """Move one alternative view to the recovery directory."""
+    global _alternatives
+    if not ALTERNATIVE_DIR:
+        raise ValueError("alternative_dir is not configured")
+    if not slug or os.path.basename(slug) != slug or slug not in catalog:
+        raise ValueError("unknown wine slug")
+    source = _alternative_path(slug, filename)
+    if not source:
+        raise ValueError("unknown alternative image")
+    with _lock:
+        trash_dir = os.path.join(ALTERNATIVE_DIR, ".trash", slug)
+        os.makedirs(trash_dir, exist_ok=True)
+        destination = os.path.join(
+            trash_dir, free_name(trash_dir, filename, tag="removed"))
+        os.replace(source, destination)
+        _alternatives = load_alternatives()
+    return destination
 
 
 # -------------------------------------------------------------- the suggestions
@@ -2411,6 +3233,40 @@ class Handler(BaseHTTPRequestHandler):
             self._send(
                 200, PAGE, "text/html; charset=utf-8", {"Cache-Control": "no-store"}
             )
+        elif route == "/dataset":
+            self._send(200, PAGE_DATASET, "text/html; charset=utf-8",
+                       {"Cache-Control": "no-store"})
+        elif route == "/api/dataset":
+            records = []
+            for rec in getattr(self.server, "catalog", {}).values():
+                item = dict(rec)
+                item["_patched"] = rec.get("slug") in _patches
+                item["_alternatives"] = [
+                    os.path.basename(path)
+                    for path in _alternatives.get(rec.get("slug"), [])
+                ]
+                item["_barcodes"] = list(_barcodes.get(rec.get("slug"), []))
+                item["_atlas_product_uuid"] = _atlas_bindings.get(rec.get("slug"))
+                item["_atlas_binding_source"] = (
+                    "manual" if rec.get("slug") in _atlas_manual_bindings else
+                    "automatic" if rec.get("slug") in _atlas_matches else None)
+                records.append(item)
+            self._json(200, {
+                "catalog_file": CATALOG or "",
+                "patch_dir": PATCH_DIR or "",
+                "patches": len(_patches),
+                "alternative_dir": ALTERNATIVE_DIR or "",
+                "alternatives": sum(len(paths) for paths in _alternatives.values()),
+                "barcode_file": BARCODE_FILE or "",
+                "barcodes": sum(len(values) for values in _barcodes.values()),
+                "atlas_matches_file": ATLAS_MATCHES_FILE or "",
+                "atlas_bindings_file": ATLAS_BINDINGS_FILE or "",
+                "atlas_bindings": len(_atlas_bindings),
+                "atlas_manual_bindings": len(_atlas_manual_bindings),
+                "records": records,
+            })
+        elif route == "/api/dataset-validation":
+            self._json(200, dataset_validation_view())
         elif route == "/api/rows":
             with _lock:
                 have = {r["slug"] for r in _rows}
@@ -2472,6 +3328,20 @@ class Handler(BaseHTTPRequestHandler):
             slug = (query.get("slug") or [""])[0]
             kind = (query.get("kind") or ["package"])[0]
             self._file(self._picture_path(slug, kind), revalidate=True)
+        elif route == "/img/catalog":
+            # The Dataset page compares the unmodified catalogue image with the
+            # patch. Do not use `bottle_path` here, because that function replaces
+            # the catalogue image with the patch or with a crop.
+            slug = (query.get("slug") or [""])[0]
+            rec = getattr(self.server, "catalog", {}).get(slug) or {}
+            self._file(rec.get("local_path"), revalidate=True)
+        elif route == "/img/patch":
+            slug = (query.get("slug") or [""])[0]
+            self._file(_patches.get(slug), revalidate=True)
+        elif route == "/img/alternative":
+            slug = (query.get("slug") or [""])[0]
+            filename = (query.get("file") or [""])[0]
+            self._file(_alternative_path(slug, filename), revalidate=True)
         elif route == "/img/photo":
             slug = (query.get("slug") or [""])[0]
             fn = (query.get("file") or [""])[0]
@@ -2493,6 +3363,12 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/upload":
             self._upload(urllib.parse.parse_qs(parsed.query))
             return
+        if route == "/api/dataset-patch":
+            self._store_dataset_patch(urllib.parse.parse_qs(parsed.query))
+            return
+        if route == "/api/dataset-alternative":
+            self._store_dataset_alternative(urllib.parse.parse_qs(parsed.query))
+            return
         length = int(self.headers.get("Content-Length") or 0)
         raw = self.rfile.read(length) if length else b"{}"
         try:
@@ -2507,6 +3383,12 @@ class Handler(BaseHTTPRequestHandler):
             self._set_reassign(body)
         elif route == "/api/copy":
             self._set_copy(body)
+        elif route == "/api/dataset-validation":
+            self._start_dataset_validation(body)
+        elif route == "/api/dataset-barcode":
+            self._store_dataset_barcode(body)
+        elif route == "/api/dataset-atlas-binding":
+            self._store_dataset_atlas_binding(body)
         elif route == "/api/validate":
             self._validate(body)
         elif route == "/api/comment":
@@ -2534,7 +3416,144 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self._json(404, {"error": "unknown route"})
 
+    def do_DELETE(self):
+        parsed = urllib.parse.urlsplit(self.path)
+        if parsed.path == "/api/dataset-patch":
+            self._remove_dataset_patch(urllib.parse.parse_qs(parsed.query))
+        elif parsed.path == "/api/dataset-alternative":
+            self._remove_dataset_alternative(urllib.parse.parse_qs(parsed.query))
+        else:
+            self._json(404, {"error": "unknown route"})
+
     # -- route bodies
+
+    def _store_dataset_patch(self, query):
+        """Apply one staged patch upload from the Dataset page."""
+        slug = (query.get("slug") or [""])[0]
+        length = int(self.headers.get("Content-Length") or 0)
+        if length <= 0 or length > UPLOAD_MAX:
+            self._json(400, {"error": "the file is empty or larger than %d bytes"
+                                      % UPLOAD_MAX})
+            return
+        body = self.rfile.read(length)
+        try:
+            path = store_dataset_patch(
+                getattr(self.server, "catalog", {}), slug, body,
+            )
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {"ok": True, "slug": slug, "patched": True,
+                         "file": os.path.basename(path), "patches": len(_patches)})
+
+    def _remove_dataset_patch(self, query):
+        """Apply one staged patch removal from the Dataset page."""
+        slug = (query.get("slug") or [""])[0]
+        try:
+            path = remove_dataset_patch(
+                getattr(self.server, "catalog", {}), slug,
+            )
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {"ok": True, "slug": slug, "patched": False,
+                         "removed_to": path, "patches": len(_patches)})
+
+    def _store_dataset_alternative(self, query):
+        """Apply one staged alternative-image addition from the Dataset page."""
+        slug = (query.get("slug") or [""])[0]
+        length = int(self.headers.get("Content-Length") or 0)
+        if length <= 0 or length > UPLOAD_MAX:
+            self._json(400, {"error": "the file is empty or larger than %d bytes"
+                                      % UPLOAD_MAX})
+            return
+        body = self.rfile.read(length)
+        try:
+            path = store_dataset_alternative(
+                getattr(self.server, "catalog", {}), slug, body)
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {
+            "ok": True, "slug": slug, "file": os.path.basename(path),
+            "files": [os.path.basename(p) for p in _alternatives.get(slug, [])],
+            "alternatives": sum(len(paths) for paths in _alternatives.values()),
+        })
+
+    def _remove_dataset_alternative(self, query):
+        """Apply one staged alternative-image removal from the Dataset page."""
+        slug = (query.get("slug") or [""])[0]
+        filename = (query.get("file") or [""])[0]
+        try:
+            path = remove_dataset_alternative(
+                getattr(self.server, "catalog", {}), slug, filename)
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {
+            "ok": True, "slug": slug, "removed_to": path,
+            "files": [os.path.basename(p) for p in _alternatives.get(slug, [])],
+            "alternatives": sum(len(paths) for paths in _alternatives.values()),
+        })
+
+    def _store_dataset_barcode(self, body):
+        """Confirm one barcode entered on the Dataset page."""
+        if not isinstance(body, dict):
+            self._json(400, {"error": "body MUST be an object"})
+            return
+        slug = str(body.get("slug") or "").strip()
+        try:
+            barcode = store_dataset_barcode(
+                getattr(self.server, "catalog", {}), slug, body.get("barcode"))
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {
+            "ok": True, "slug": slug, "barcode": barcode,
+            "barcodes": list(_barcodes.get(slug, [])),
+            "total": sum(len(values) for values in _barcodes.values()),
+        })
+
+    def _store_dataset_atlas_binding(self, body):
+        """Confirm one Drink Atlas Core product binding."""
+        if not isinstance(body, dict):
+            self._json(400, {"error": "body MUST be an object"})
+            return
+        slug = str(body.get("slug") or "").strip()
+        try:
+            product_uuid = store_dataset_atlas_binding(
+                getattr(self.server, "catalog", {}), slug,
+                body.get("product_uuid"))
+        except (OSError, ValueError, common.ConfigError) as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(200, {
+            "ok": True, "slug": slug, "product_uuid": product_uuid,
+            "source": "manual", "total": len(_atlas_bindings),
+        })
+
+    def _start_dataset_validation(self, body):
+        """Start selected read-only checks for the Dataset page."""
+        checks = body.get("checks") if isinstance(body, dict) else None
+        if not isinstance(checks, list) or not all(isinstance(x, str) for x in checks):
+            self._json(400, {"error": "checks must be a list of check names"})
+            return
+        unknown = sorted(set(checks) - set(DATASET_VALIDATION_CHECKS))
+        if unknown:
+            self._json(400, {"error": "unknown checks: %s" % ", ".join(unknown)})
+            return
+        try:
+            started = start_dataset_validation(
+                getattr(self.server, "catalog", {}), checks,
+            )
+        except ValueError as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        if not started:
+            self._json(409, {"error": "a Dataset validation is already running",
+                             "validation": dataset_validation_view()})
+            return
+        self._json(202, dataset_validation_view())
 
     def _spec_yaml(self):
         """Answer the OpenAPI document as it is written, in YAML."""
@@ -2646,7 +3665,7 @@ class Handler(BaseHTTPRequestHandler):
             if rule:
                 shown = {k: rule.get(k) for k in (
                     "mode", "differences", "questions", "rule", "indistinguishable",
-                    "note", "built_at", "ms", "error", "max_side")}
+                    "note", "built_at", "ms", "error", "max_side", "letters")}
             out.append({**c, "key": key, "rule": shown,
                         "rule_status": cluster_rules.rule_status(rule, sha),
                         "notes": [{"text": n["text"], "updated_at": n.get("updated_at"),
@@ -2753,11 +3772,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def _rebuild_rows(self):
         """Read the groups again, build the rows again, and answer both."""
-        global _rows, _patches, _crops, _labels, _label_boxes
+        global _rows, _patches, _alternatives, _barcodes, _atlas_bindings
+        global _crops, _labels, _label_boxes
         # A patch file that was added while the tool ran is read here, so the
         # reviewer needs no restart to see the corrected photo. A label crop and
         # a cropped photo that a new build wrote are read here for the same reason.
         _patches = load_patches()
+        _alternatives = load_alternatives()
+        _barcodes = load_barcodes()
+        reload_atlas_bindings()
         _crops = load_crops()
         _labels, _label_boxes = load_label_crops()
         group_of, groups = load_variants()
@@ -3652,8 +4675,9 @@ body { margin: 0; background: #f6f6f4; }
 </style>
 </head>
 <body>
-<div id="nav"><a href="/">Review</a><a href="/runs">Runs</a><a
-  href="/clusters">Clusters</a><a href="/openapi.yaml">openapi.yaml</a><a href="/openapi.json">openapi.json</a></div>
+<div id="nav"><a href="/">Review</a><a href="/dataset">Dataset</a><a
+  href="/runs">Runs</a><a href="/clusters">Clusters</a><a
+  href="/openapi.yaml">openapi.yaml</a><a href="/openapi.json">openapi.json</a></div>
 <div id="swagger-ui"></div>
 <script crossorigin
   src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@__V__/swagger-ui-bundle.js">
@@ -4223,7 +5247,8 @@ body.dragging::after {
 <header>
   <div class="head-top">
     <h1>Svoe Vino photo review <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a class="on" href="/">Review</a><a href="/runs">Runs</a><a
+    <nav class="nav"><a class="on" href="/">Review</a><a
+      href="/dataset">Dataset</a><a href="/runs">Runs</a><a
       href="/clusters">Clusters</a></nav>
   </div>
   <div class="bar">
@@ -6806,6 +7831,1079 @@ $("#q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(render
 """
 
 
+# ------------------------------------------------------------ the catalogue dataset page
+
+
+PAGE_DATASET = r"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino dataset</title>
+<style>
+""" + THEME_CSS + r"""
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: 10px 16px; box-shadow: var(--shadow);
+}
+h1 { font-size: 15px; margin: 0 0 8px; font-weight: 650; }
+h1 .sub { color: var(--muted); font-weight: 400; }
+.head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.head-top h1 { margin-right: auto; }
+.nav { display: flex; gap: 6px; flex: none; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+.bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.bar label { color: var(--muted); font-size: 12px; display: flex; gap: 5px; align-items: center; }
+select, input[type=search], input[type=text], button {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 8px; font: inherit; font-size: 13px;
+}
+input[type=search] { min-width: 280px; }
+button { cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: default; }
+a { color: var(--accent); }
+main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
+.source {
+  margin: 0 0 12px; padding: 8px 10px; color: var(--muted); font-size: 12px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.source b { color: var(--text); font-weight: 600; }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.wine {
+  display: flex; gap: 18px; align-items: flex-start; min-width: 0;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; scroll-margin-top: 104px;
+}
+.wine:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pictures { display: flex; flex: 0 0 auto; gap: 8px; align-items: flex-start; }
+.pictures figure { width: 158px; margin: 0; }
+.pictures a, .noimage {
+  width: 158px; height: 252px; display: flex; align-items: center; justify-content: center;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px;
+  overflow: hidden;
+}
+.pictures img { display: block; width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+.pictures a:hover { border-color: var(--accent); }
+.noimage { color: var(--muted); font-size: 12px; text-align: center; border-style: dashed; }
+.patch-surface {
+  width: 158px; height: 252px; position: relative; overflow: hidden;
+  background: var(--panel-2); border: 1px dashed var(--line); border-radius: 8px;
+}
+.patch-surface > a, .patch-surface > .noimage {
+  width: 100%; height: 100%; border: 0; border-radius: 0; background: transparent;
+}
+.patch-surface > .noimage {
+  flex-direction: column; padding: 12px; font: inherit; line-height: 1.5;
+}
+.patch-surface > .noimage span { color: var(--accent); }
+.patch-surface.can-drop { cursor: pointer; }
+.patch-surface.can-drop:hover, .patch-surface.drag {
+  border-color: var(--accent); background: var(--grp-a);
+}
+.patch-surface.pending { border-style: solid; border-color: var(--var); }
+.patch-surface.removing { border-color: var(--neg); }
+.patch-state {
+  position: absolute; top: 7px; left: 7px; padding: 2px 6px; border-radius: 999px;
+  background: var(--var-bg); color: var(--var); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; pointer-events: none;
+}
+.patch-surface.removing .patch-state { color: var(--neg); background: var(--neg-bg); }
+.patch-file {
+  margin-top: 4px; min-height: 16px; color: var(--muted); font-size: 10px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.patch-actions { display: flex; gap: 5px; margin-top: 5px; }
+.patch-actions button { flex: 1 1 auto; padding: 3px 6px; font-size: 11px; }
+.patch-actions .apply { border-color: var(--accent); font-weight: 700; }
+.patch-actions .remove { color: var(--neg); }
+.patch-actions .busy { cursor: wait; }
+.patch-input { display: none; }
+figcaption {
+  display: flex; justify-content: space-between; gap: 5px; margin-top: 3px;
+  color: var(--muted); font-size: 10px; line-height: 1.3;
+}
+figcaption .patch { color: var(--var); font-weight: 700; text-transform: uppercase; }
+.info { flex: 1 1 auto; min-width: 0; padding-top: 1px; }
+.alternative-editor {
+  flex: 0 0 330px; min-width: 260px; padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+.alternative-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; }
+.alternative-head strong { font-size: 13px; }
+.alternative-head span { color: var(--muted); font-size: 11px; }
+.alternative-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(70px, 1fr)); gap: 6px;
+  max-height: 230px; overflow-y: auto; padding-right: 2px;
+}
+.alternative-card, .alternative-drop {
+  position: relative; height: 108px; min-width: 0; overflow: hidden;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
+}
+.alternative-card a { display: block; width: 100%; height: 100%; }
+.alternative-card img { display: block; width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.alternative-card.pending { border-color: var(--var); }
+.alternative-card.removing { border-color: var(--neg); opacity: .58; }
+.alternative-card .patch-state { top: 4px; left: 4px; font-size: 8px; }
+.alternative-remove {
+  position: absolute; top: 4px; right: 4px; z-index: 2; width: 21px; height: 21px;
+  padding: 0; border-radius: 999px; color: var(--neg); background: var(--panel);
+  font-size: 14px; line-height: 18px;
+}
+.alternative-drop {
+  display: flex; align-items: center; justify-content: center; padding: 8px;
+  color: var(--muted); border-style: dashed; text-align: center; font-size: 11px;
+}
+.alternative-drop:hover, .alternative-drop.drag {
+  color: var(--text); border-color: var(--accent); background: var(--grp-a);
+}
+.alternative-actions { display: flex; gap: 6px; margin-top: 7px; }
+.alternative-actions button { flex: 1 1 auto; padding: 3px 6px; font-size: 11px; }
+.alternative-actions .apply { border-color: var(--accent); font-weight: 700; }
+.alternative-note { margin-top: 6px; color: var(--muted); font-size: 10px; line-height: 1.35; }
+.alternative-input { display: none; }
+.name { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+.name h2 { margin: 0; font-size: 22px; line-height: 1.2; }
+.producer { margin-top: 5px; font-size: 18px; line-height: 1.3; }
+.kind, .grapes, .slug, .match { margin-top: 4px; color: var(--muted); font-size: 15px; }
+.slug { overflow-wrap: anywhere; }
+.desc { margin-top: 8px; max-width: 900px; color: var(--text); }
+.barcode-editor, .atlas-binding-editor { margin-top: 8px; }
+.barcode-head { display: flex; align-items: center; gap: 7px; }
+.barcode-head strong { font-size: 12px; font-weight: 650; }
+.barcode-head .count { color: var(--muted); font-size: 11px; }
+.barcode-add {
+  width: 24px; height: 24px; padding: 0; border-radius: 999px;
+  color: var(--accent); font-size: 17px; line-height: 20px; font-weight: 700;
+}
+.atlas-binding-editor .barcode-add {
+  width: auto; min-width: 24px; padding: 0 7px; font-size: 11px;
+}
+.barcode-values { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+.barcode-value {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 7px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+}
+.barcode-value code { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.atlas-binding-editor .barcode-value code { overflow-wrap: anywhere; }
+.barcode-value .copy { padding: 0 5px; font-size: 10px; }
+.barcode-empty { margin-top: 4px; color: var(--muted); font-size: 11px; }
+.barcode-new { display: flex; gap: 5px; margin-top: 6px; max-width: 430px; }
+.barcode-new input { flex: 1 1 auto; min-width: 100px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.barcode-new button { flex: 0 0 30px; padding: 3px 0; font-weight: 750; }
+.barcode-new .accept { color: var(--pos); border-color: var(--pos); }
+.barcode-new .cancel { color: var(--neg); }
+.links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 7px; }
+.copy {
+  padding: 1px 7px; color: var(--muted); background: var(--panel-2);
+  font-size: 12px; line-height: 1.45;
+}
+.tag {
+  padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 650;
+  color: var(--var); background: var(--var-bg); border: 1px solid transparent;
+}
+details.record { margin-top: 8px; }
+details.record summary { color: var(--accent); cursor: pointer; font-size: 12px; }
+details.record pre {
+  max-height: 360px; overflow: auto; margin: 6px 0 0; padding: 8px 10px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+  color: var(--text); font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.empty { padding: 30px 0; color: var(--muted); font-style: italic; }
+.validate-btn { margin-left: auto; font-weight: 650; }
+.validate-btn.running { color: var(--var); border-color: var(--var); }
+.modal {
+  position: fixed; inset: 0; z-index: 50; padding: 24px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(7, 8, 12, .76);
+}
+.modal[hidden] { display: none; }
+.validation-dialog {
+  width: min(820px, 100%); max-height: calc(100vh - 48px); overflow: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: var(--shadow); padding: 18px;
+}
+.validation-head { display: flex; gap: 12px; align-items: center; }
+.validation-head h2 { margin: 0; font-size: 19px; }
+.validation-head button { margin-left: auto; padding: 2px 9px; font-size: 18px; }
+.validation-intro { margin: 6px 0 14px; color: var(--muted); }
+.validation-checks { display: grid; gap: 8px; }
+.validation-check {
+  display: grid; grid-template-columns: auto 1fr; gap: 2px 9px; align-items: start;
+  padding: 9px 10px; background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.validation-check input { grid-row: 1 / span 2; margin-top: 4px; }
+.validation-check strong { font-size: 13px; }
+.validation-check span { color: var(--muted); font-size: 12px; }
+.validation-progress {
+  margin-top: 14px; padding: 10px; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 8px;
+}
+.validation-progress progress { width: 100%; height: 8px; }
+.validation-progress .progress-text { margin-top: 4px; color: var(--muted); font-size: 12px; }
+.validation-results { display: grid; gap: 8px; margin-top: 12px; }
+.validation-result { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; }
+.validation-result h3 { margin: 0 0 4px; font-size: 14px; }
+.validation-result p { margin: 3px 0; color: var(--muted); }
+.validation-result .status { font-size: 11px; text-transform: uppercase; margin-left: 6px; }
+.validation-result .pass { color: var(--pos); }
+.validation-result .fail, .validation-result .error { color: var(--neg); }
+.validation-result details { margin-top: 6px; }
+.validation-result summary { color: var(--accent); cursor: pointer; }
+.validation-result pre {
+  max-height: 280px; overflow: auto; padding: 8px; background: var(--bg);
+  border-radius: 6px; color: var(--text); font: 11px/1.4 ui-monospace, monospace;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.validation-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.validation-actions .primary { color: var(--text); border-color: var(--accent); }
+.validation-meta { margin-top: 8px; color: var(--muted); font-size: 11px; }
+@media (max-width: 860px) {
+  .wine { flex-direction: column; }
+  .pictures { width: 100%; }
+  .pictures figure { width: calc(50% - 4px); }
+  .pictures a, .noimage, .patch-surface { width: 100%; height: 220px; }
+  input[type=search] { min-width: 0; width: min(100%, 360px); }
+  .alternative-editor { width: 100%; min-width: 0; padding: 10px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+  .alternative-grid { grid-template-columns: repeat(4, minmax(64px, 1fr)); max-height: none; }
+}
+@media (max-width: 440px) {
+  header, main { padding-left: 10px; padding-right: 10px; }
+  .nav { width: 100%; overflow-x: auto; }
+  .pictures a, .noimage, .patch-surface { height: 190px; }
+  .name h2 { font-size: 19px; }
+  .producer { font-size: 16px; }
+  .kind, .grapes, .slug, .match { font-size: 13px; }
+  .alternative-grid { grid-template-columns: repeat(3, minmax(60px, 1fr)); }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head-top">
+    <h1>Dataset <span class="sub" id="head-sub">loading catalog.jsonl…</span></h1>
+    <nav class="nav"><a href="/">Review</a><a class="on"
+      href="/dataset">Dataset</a><a href="/runs">Runs</a><a
+      href="/clusters">Clusters</a></nav>
+  </div>
+  <div class="bar">
+    <label>Show
+      <select id="filter">
+        <option value="all">all records</option>
+        <option value="patched">with a patch</option>
+        <option value="unpatched">without a patch</option>
+        <option value="missing">without a catalogue image</option>
+      </select>
+    </label>
+    <label>Sort
+      <select id="sort">
+        <option value="catalog">catalog.jsonl order</option>
+        <option value="name">wine name A–Z</option>
+        <option value="producer">producer A–Z</option>
+        <option value="slug">slug A–Z</option>
+      </select>
+    </label>
+    <label>Search <input id="q" type="search" placeholder="name, producer, slug, any field"></label>
+    <button id="validate-dataset" class="validate-btn" type="button">Validate</button>
+  </div>
+</header>
+<main>
+  <div class="source" id="source">Reading the configured catalogue…</div>
+  <div class="list" id="list"></div>
+</main>
+<div class="modal" id="validation-modal" role="dialog" aria-modal="true"
+  aria-labelledby="validation-title" hidden>
+  <section class="validation-dialog">
+    <div class="validation-head">
+      <h2 id="validation-title">Validate dataset</h2>
+      <button id="validation-x" type="button" aria-label="Close">×</button>
+    </div>
+    <p class="validation-intro">Choose the read-only checks to run against the public website.</p>
+    <div class="validation-checks">
+      <label class="validation-check">
+        <input type="checkbox" name="validation-check" value="slugs" checked>
+        <strong>Website has the same set of slugs</strong>
+        <span>Compare catalog.jsonl with the authoritative public wine sitemap. Show missing and extra slugs.</span>
+      </label>
+      <label class="validation-check">
+        <input type="checkbox" name="validation-check" value="images" checked>
+        <strong>Source image bytes match</strong>
+        <span>Download each source image, calculate SHA-256, and compare it with the local catalog image. A resize URL can re-encode identical visible content.</span>
+      </label>
+      <label class="validation-check">
+        <input type="checkbox" name="validation-check" value="pages" checked>
+        <strong>Source image matches the wine_slug webpage</strong>
+        <span>Open each wine page and compare the catalog source image file name with the page og:image file name.</span>
+      </label>
+    </div>
+    <div class="validation-progress" id="validation-progress" hidden>
+      <progress id="validation-meter" max="1" value="0"></progress>
+      <div class="progress-text" id="validation-progress-text"></div>
+    </div>
+    <div class="validation-results" id="validation-results"></div>
+    <div class="validation-meta" id="validation-meta"></div>
+    <div class="validation-actions">
+      <button id="validation-close" type="button">Close</button>
+      <button id="validation-run" class="primary" type="button">Run selected</button>
+    </div>
+  </section>
+</div>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+let DATA = {records: [], patches: 0, alternatives: 0, barcodes: 0, atlas_bindings: 0};
+let ROWS = [];
+let VALIDATION = {running: false, results: {}};
+let VALIDATION_TIMER = null;
+const PENDING_PATCHES = new Map();
+const BUSY_PATCHES = new Set();
+const PENDING_ALTERNATIVES = new Map();
+const BUSY_ALTERNATIVES = new Set();
+const DRAFT_BARCODES = new Map();
+const BUSY_BARCODES = new Set();
+const DRAFT_ATLAS_BINDINGS = new Map();
+const BUSY_ATLAS_BINDINGS = new Set();
+let ALTERNATIVE_ID = 0;
+
+function esc(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+function safeUrl(value) {
+  try {
+    const u = new URL(String(value || ""), location.href);
+    return (u.protocol === "http:" || u.protocol === "https:") ? u.href : "";
+  } catch (_) { return ""; }
+}
+function rawRecord(r) {
+  const out = {};
+  for (const [key, value] of Object.entries(r)) if (!key.startsWith("_")) out[key] = value;
+  return out;
+}
+function norm(value) { return String(value || "").toLocaleLowerCase("ru-RU"); }
+function compareText(a, b) { return String(a || "").localeCompare(String(b || ""), "ru"); }
+function imageFigure(r, patch) {
+  if (patch) return patchEditor(r);
+  const slug = encodeURIComponent(r.slug || "");
+  const present = !!r.local_path;
+  const src = `/img/catalog?slug=${slug}`;
+  const label = "catalog.jsonl";
+  const content = present
+    ? `<a href="${src}" target="_blank" rel="noopener" title="Open ${label} image"><img
+         src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — ${label}"></a>`
+    : '<div class="noimage">no catalogue image</div>';
+  return `<figure>${content}<figcaption><span>${label}</span></figcaption></figure>`;
+}
+function patchEditor(r) {
+  const slug = encodeURIComponent(r.slug || "");
+  const pending = PENDING_PATCHES.get(r.slug);
+  const busy = BUSY_PATCHES.has(r.slug);
+  const configured = !!DATA.patch_dir;
+  const version = r._patchVersion ? `&v=${r._patchVersion}` : "";
+  let content = "";
+  let state = "";
+  let surfaceClass = configured ? " can-drop" : "";
+  let actions = "";
+  let file = "";
+  if (pending && pending.action === "set") {
+    surfaceClass += " pending";
+    content = `<img src="${esc(pending.url)}" alt="${esc(r.name || r.slug)} — patch candidate">
+      <span class="patch-state">candidate</span>`;
+    state = '<span class="patch">pending</span>';
+    file = `<div class="patch-file" title="${esc(pending.file.name)}">${esc(pending.file.name)}</div>`;
+    actions = `<div class="patch-actions"><button class="apply${busy ? " busy" : ""}"
+      type="button" data-patch-apply ${busy ? "disabled" : ""}>${busy ? "Applying…" : "Apply"}</button>
+      <button type="button" data-patch-cancel ${busy ? "disabled" : ""}>Cancel</button></div>`;
+  } else if (pending && pending.action === "remove") {
+    surfaceClass += " pending removing";
+    content = '<div class="noimage">The patch will be removed.</div><span class="patch-state">remove</span>';
+    state = '<span class="patch">pending</span>';
+    actions = `<div class="patch-actions"><button class="apply remove${busy ? " busy" : ""}"
+      type="button" data-patch-apply ${busy ? "disabled" : ""}>${busy ? "Applying…" : "Apply"}</button>
+      <button type="button" data-patch-cancel ${busy ? "disabled" : ""}>Cancel</button></div>`;
+  } else if (r._patched) {
+    const src = `/img/patch?slug=${slug}${version}`;
+    content = `<a href="${src}" target="_blank" rel="noopener" title="Open patch image"><img
+      src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — patch"></a>`;
+    state = '<span class="patch">patched</span>';
+    actions = `<div class="patch-actions"><button class="remove" type="button"
+      data-patch-remove>Remove</button></div>`;
+  } else if (configured) {
+    content = '<button class="noimage" type="button" data-patch-pick>Drop an image here<br><span>or choose a file</span></button>';
+  } else {
+    content = '<div class="noimage">patch_dir is not configured</div>';
+  }
+  return `<figure class="patch-editor" data-slug="${esc(r.slug)}">
+    <div class="patch-surface${surfaceClass}" data-patch-drop>${content}</div>
+    <figcaption><span>patch</span>${state}</figcaption>${file}${actions}
+    <input class="patch-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/bmp">
+  </figure>`;
+}
+function alternativeEditor(r) {
+  const configured = !!DATA.alternative_dir;
+  const pending = PENDING_ALTERNATIVES.get(r.slug) || {adds: [], removes: new Set()};
+  const busy = BUSY_ALTERNATIVES.has(r.slug);
+  const slug = encodeURIComponent(r.slug || "");
+  const version = r._alternativeVersion ? `&v=${r._alternativeVersion}` : "";
+  const existing = (r._alternatives || []).map(filename => {
+    const removing = pending.removes.has(filename);
+    const src = `/img/alternative?slug=${slug}&file=${encodeURIComponent(filename)}${version}`;
+    return `<div class="alternative-card${removing ? " removing" : ""}" title="${esc(filename)}">
+      <a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy"
+        alt="${esc(r.name || r.slug)} — alternative"></a>
+      <button class="alternative-remove" type="button" data-alternative-remove="${esc(filename)}"
+        title="${removing ? "Keep this photo" : "Remove this photo"}">${removing ? "↶" : "×"}</button>
+      ${removing ? '<span class="patch-state">remove</span>' : ""}
+    </div>`;
+  }).join("");
+  const additions = pending.adds.map(item => `<div class="alternative-card pending"
+      title="${esc(item.file.name)}"><img src="${esc(item.url)}"
+      alt="${esc(r.name || r.slug)} — alternative candidate">
+      <button class="alternative-remove" type="button" data-alternative-cancel="${item.id}"
+        title="Discard this candidate">×</button><span class="patch-state">candidate</span></div>`).join("");
+  const drop = configured
+    ? '<button class="alternative-drop" type="button" data-alternative-pick>Drop photos here<br>or choose files</button>'
+    : '<div class="alternative-drop">alternative_dir is not configured</div>';
+  const changed = pending.adds.length || pending.removes.size;
+  const actions = changed ? `<div class="alternative-actions">
+    <button class="apply${busy ? " busy" : ""}" type="button" data-alternative-apply
+      ${busy ? "disabled" : ""}>${busy ? "Applying…" : "Apply"}</button>
+    <button type="button" data-alternative-cancel-all ${busy ? "disabled" : ""}>Cancel</button>
+  </div>` : "";
+  return `<aside class="alternative-editor" data-slug="${esc(r.slug)}">
+    <div class="alternative-head"><strong>Alternative photos</strong><span>${
+      (r._alternatives || []).length} active</span></div>
+    <div class="alternative-grid">${existing}${additions}${drop}</div>${actions}
+    <div class="alternative-note">Added views enter the matcher index after an index rebuild.</div>
+    <input class="alternative-input" type="file" multiple
+      accept="image/jpeg,image/png,image/webp,image/gif,image/bmp">
+  </aside>`;
+}
+function barcodeEditor(r) {
+  const configured = !!DATA.barcode_file;
+  const values = r._barcodes || [];
+  const editing = DRAFT_BARCODES.has(r.slug);
+  const busy = BUSY_BARCODES.has(r.slug);
+  const existing = values.length ? `<div class="barcode-values">${values.map(value =>
+    `<span class="barcode-value"><code>${esc(value)}</code><button class="copy" type="button"
+      data-copy="${esc(value)}">copy</button></span>`).join("")}</div>`
+    : '<div class="barcode-empty">no barcode</div>';
+  const entry = editing ? `<div class="barcode-new">
+    <input class="barcode-input" type="text" maxlength="128" autocomplete="off"
+      aria-label="New barcode" placeholder="Barcode value" value="${esc(DRAFT_BARCODES.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
+    <button class="accept" type="button" data-barcode-save aria-label="Save barcode"
+      title="Save barcode" ${busy ? "disabled" : ""}>${busy ? "…" : "V"}</button>
+    <button class="cancel" type="button" data-barcode-cancel aria-label="Cancel barcode"
+      title="Cancel" ${busy ? "disabled" : ""}>X</button>
+  </div>` : "";
+  return `<div class="barcode-editor" data-slug="${esc(r.slug)}">
+    <div class="barcode-head"><strong>Barcodes</strong><span class="count">${values.length}</span>
+      <button class="barcode-add" type="button" data-barcode-add aria-label="Add barcode"
+        title="Add barcode" ${!configured || editing ? "disabled" : ""}>+</button></div>
+    ${existing}${entry}
+  </div>`;
+}
+function atlasBindingEditor(r) {
+  const configured = !!DATA.atlas_bindings_file;
+  const current = r._atlas_product_uuid || "";
+  const source = r._atlas_binding_source || "";
+  const editing = DRAFT_ATLAS_BINDINGS.has(r.slug);
+  const busy = BUSY_ATLAS_BINDINGS.has(r.slug);
+  const existing = current
+    ? `<div class="barcode-values"><span class="barcode-value"><code>${esc(current)}</code>
+       <button class="copy" type="button" data-copy="${esc(current)}">copy</button></span></div>`
+    : '<div class="barcode-empty">not bound</div>';
+  const entry = editing ? `<div class="barcode-new">
+    <input class="atlas-binding-input" type="text" maxlength="36" autocomplete="off"
+      aria-label="Drink Atlas Core product UUID" placeholder="Product UUID"
+      value="${esc(DRAFT_ATLAS_BINDINGS.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
+    <button class="accept" type="button" data-atlas-binding-save aria-label="Save Atlas binding"
+      title="Save Atlas binding" ${busy ? "disabled" : ""}>${busy ? "…" : "V"}</button>
+    <button class="cancel" type="button" data-atlas-binding-cancel aria-label="Cancel Atlas binding"
+      title="Cancel" ${busy ? "disabled" : ""}>X</button>
+  </div>` : "";
+  return `<div class="atlas-binding-editor" data-slug="${esc(r.slug)}">
+    <div class="barcode-head"><strong>Atlas Core product</strong>
+      <span class="count">${current ? `bound · ${esc(source)}` : "not bound"}</span>
+      <button class="barcode-add" type="button" data-atlas-binding-edit
+        aria-label="${current ? "Edit" : "Add"} Atlas binding"
+        title="${current ? "Edit binding" : "Add binding"}"
+        ${!configured || editing ? "disabled" : ""}>${current ? "edit" : "+"}</button></div>
+    ${existing}${entry}
+  </div>`;
+}
+function recordHtml(r) {
+  const match = r.image_match || {};
+  const page = safeUrl(r.page_url);
+  const remote = safeUrl(r.image_url);
+  const where = [r.category, r.region].filter(Boolean).map(esc).join(" · ");
+  return `<article class="wine" id="${esc(r.slug)}">
+    <div class="pictures">${imageFigure(r, false)}${imageFigure(r, true)}</div>
+    <div class="info">
+      <div class="name"><h2>${esc(r.name || "Unnamed wine")}</h2>
+        <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>
+        ${r._patched ? '<span class="tag">patch</span>' : ""}</div>
+      <div class="producer">${esc(r.producer || "—")}</div>
+      ${where ? `<div class="kind">${where}</div>` : ""}
+      ${r.color ? `<div class="kind">Colour: ${esc(r.color)}</div>` : ""}
+      ${r.grapes ? `<div class="grapes">${esc(r.grapes)}</div>` : ""}
+      <div class="slug">${esc(r.slug)}
+        <button class="copy" type="button" data-copy="${esc(r.slug)}">copy</button></div>
+      ${barcodeEditor(r)}
+      ${atlasBindingEditor(r)}
+      ${match.method || r.match ? `<div class="match">Image match: ${esc(match.method || r.match)}${
+        match.confidence ? ` · ${esc(match.confidence)}` : ""}</div>` : ""}
+      ${r.description ? `<div class="desc">${esc(r.description)}</div>` : ""}
+      <div class="links">${page ? `<a href="${esc(page)}" target="_blank" rel="noopener">site page</a>` : ""}${
+        remote ? `<a href="${esc(remote)}" target="_blank" rel="noopener">source image</a>` : ""}</div>
+      <details class="record" data-index="${r._index}"><summary>full catalog.jsonl record</summary></details>
+    </div>
+    ${alternativeEditor(r)}
+  </article>`;
+}
+function applyView() {
+  const filter = $("#filter").value;
+  const q = norm($("#q").value.trim());
+  const words = q.split(/\s+/).filter(Boolean);
+  ROWS = DATA.records.filter(r => {
+    if (filter === "patched" && !r._patched) return false;
+    if (filter === "unpatched" && r._patched) return false;
+    if (filter === "missing" && r.local_path) return false;
+    const hay = norm(JSON.stringify({record: rawRecord(r), barcodes: r._barcodes || [],
+      atlas_product_uuid: r._atlas_product_uuid || ""}));
+    return words.every(word => hay.includes(word));
+  });
+  const sort = $("#sort").value;
+  ROWS.sort((a, b) => sort === "catalog" ? a._index - b._index
+    : compareText(a[sort], b[sort]) || compareText(a.slug, b.slug));
+}
+function render() {
+  applyView();
+  $("#list").innerHTML = ROWS.length ? ROWS.map(recordHtml).join("")
+    : '<div class="empty">No catalogue record matches this view.</div>';
+  $("#head-sub").textContent = `${ROWS.length} of ${DATA.records.length} records · ${DATA.patches} patches · ${DATA.alternatives || 0} alternatives · ${DATA.barcodes || 0} barcodes · ${DATA.atlas_bindings || 0} Atlas bindings`;
+}
+function validationDetails(title, value) {
+  if (!value || (Array.isArray(value) && !value.length)) return "";
+  return `<details><summary>${esc(title)}</summary><pre>${esc(JSON.stringify(value, null, 2))}</pre></details>`;
+}
+function validationResultHtml(name, result) {
+  const titles = {
+    slugs: "Website slug set", images: "Downloaded image SHA-256",
+    pages: "Source image on wine_slug webpage"
+  };
+  const status = result.status || "error";
+  let summary = "";
+  let details = "";
+  if (name === "slugs") {
+    summary = `${result.catalog_count || 0} catalog slugs · ${result.website_count || 0} website slugs · `
+      + `${result.common_count || 0} common · ${result.missing_count || 0} missing · ${result.extra_count || 0} extra`;
+    details = validationDetails(`Missing from website (${result.missing_count || 0})`, result.missing)
+      + validationDetails(`Extra on website (${result.extra_count || 0})`, result.extra)
+      + validationDetails(`Duplicate sitemap slugs (${result.duplicate_count || 0})`, result.duplicates);
+  } else if (name === "images") {
+    summary = `${result.checked || 0} checked · ${result.matched || 0} exact matches · `
+      + `${result.mismatched || 0} byte mismatches · ${result.errors || 0} errors · ${result.skipped || 0} skipped`;
+    details = validationDetails("Mismatches and errors", result.details)
+      + validationDetails("Skipped slugs", result.skipped_slugs);
+  } else if (name === "pages") {
+    summary = `${result.checked || 0} checked · ${result.matched || 0} matches · `
+      + `${result.mismatched || 0} mismatches · ${result.errors || 0} errors · ${result.skipped || 0} skipped`;
+    details = validationDetails("Mismatches and errors", result.details)
+      + validationDetails("Skipped slugs", result.skipped_slugs);
+  }
+  if (result.error) summary = result.error;
+  const limited = result.details_limited
+    ? '<p>Only the first 250 problem records are shown.</p>' : "";
+  return `<section class="validation-result"><h3>${esc(titles[name] || name)}
+    <span class="status ${esc(status)}">${esc(status)}</span></h3>
+    <p>${esc(summary)}</p>${result.note ? `<p>${esc(result.note)}</p>` : ""}${limited}${details}</section>`;
+}
+function renderValidation(state) {
+  VALIDATION = state || {running: false, results: {}};
+  const button = $("#validate-dataset");
+  button.textContent = VALIDATION.running ? "Validate · running" : "Validate";
+  button.classList.toggle("running", !!VALIDATION.running);
+  const progress = VALIDATION.progress || {};
+  $("#validation-progress").hidden = !VALIDATION.running;
+  const meter = $("#validation-meter");
+  meter.max = Math.max(1, Number(progress.total) || 1);
+  meter.value = Number(progress.done) || 0;
+  $("#validation-progress-text").textContent = VALIDATION.running
+    ? `${VALIDATION.current_check || "validation"}: ${progress.done || 0}/${progress.total || 0} · ${progress.label || "working"}` : "";
+  $("#validation-results").innerHTML = Object.entries(VALIDATION.results || {})
+    .map(([name, result]) => validationResultHtml(name, result)).join("");
+  const started = VALIDATION.started_at ? `Started ${VALIDATION.started_at}` : "";
+  const finished = VALIDATION.finished_at ? ` · Finished ${VALIDATION.finished_at}` : "";
+  $("#validation-meta").textContent = started + finished + (VALIDATION.error ? ` · ${VALIDATION.error}` : "");
+  $("#validation-run").disabled = !!VALIDATION.running;
+  for (const box of document.querySelectorAll('input[name="validation-check"]')) {
+    box.disabled = !!VALIDATION.running;
+  }
+}
+async function loadValidation() {
+  const response = await fetch("/api/dataset-validation", {cache: "no-store"});
+  if (!response.ok) throw new Error(await response.text());
+  const state = await response.json();
+  renderValidation(state);
+  clearTimeout(VALIDATION_TIMER);
+  if (state.running) VALIDATION_TIMER = setTimeout(() => loadValidation().catch(showValidationError), 700);
+  return state;
+}
+function showValidationError(error) {
+  $("#validation-results").innerHTML = validationResultHtml("validation", {
+    status: "error", error: String(error)
+  });
+}
+async function runValidation() {
+  const checks = [...document.querySelectorAll('input[name="validation-check"]:checked')]
+    .map(box => box.value);
+  if (!checks.length) {
+    showValidationError("Select at least one validation check.");
+    return;
+  }
+  $("#validation-run").disabled = true;
+  try {
+    const response = await fetch("/api/dataset-validation", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({checks})
+    });
+    const state = await response.json();
+    if (!response.ok) throw new Error(state.error || JSON.stringify(state));
+    renderValidation(state);
+    clearTimeout(VALIDATION_TIMER);
+    VALIDATION_TIMER = setTimeout(() => loadValidation().catch(showValidationError), 300);
+  } catch (error) {
+    $("#validation-run").disabled = false;
+    showValidationError(error);
+  }
+}
+function closeValidation() { $("#validation-modal").hidden = true; }
+async function openValidation() {
+  $("#validation-modal").hidden = false;
+  try { await loadValidation(); } catch (error) { showValidationError(error); }
+}
+function openHash() {
+  const slug = decodeURIComponent(location.hash.slice(1));
+  if (!slug) return;
+  requestAnimationFrame(() => document.getElementById(slug)?.scrollIntoView());
+}
+async function copyValue(button) {
+  const value = button.dataset.copy || "";
+  try { await navigator.clipboard.writeText(value); }
+  catch (_) {
+    const area = document.createElement("textarea");
+    area.value = value; document.body.append(area); area.select();
+    document.execCommand("copy"); area.remove();
+  }
+  const old = button.textContent; button.textContent = "copied";
+  setTimeout(() => { button.textContent = old; }, 900);
+}
+function clearPendingPatch(slug) {
+  const pending = PENDING_PATCHES.get(slug);
+  if (pending && pending.url) URL.revokeObjectURL(pending.url);
+  PENDING_PATCHES.delete(slug);
+}
+function stagePatchFile(slug, file) {
+  if (!file) return;
+  const allowed = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp"]);
+  if ((file.type && !allowed.has(file.type)) || file.size <= 0 || file.size > 20 * 1024 * 1024) {
+    alert("Choose a JPEG, PNG, WebP, GIF, or BMP image up to 20 MB.");
+    return;
+  }
+  clearPendingPatch(slug);
+  PENDING_PATCHES.set(slug, {action: "set", file, url: URL.createObjectURL(file)});
+  render();
+}
+async function applyPendingPatch(slug) {
+  const pending = PENDING_PATCHES.get(slug);
+  if (!pending || BUSY_PATCHES.has(slug)) return;
+  BUSY_PATCHES.add(slug);
+  render();
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}`;
+    const response = pending.action === "set"
+      ? await fetch("/api/dataset-patch" + query, {
+          method: "POST", headers: {"Content-Type": pending.file.type || "application/octet-stream"},
+          body: pending.file
+        })
+      : await fetch("/api/dataset-patch" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) {
+      record._patched = !!out.patched;
+      record._patchVersion = Date.now();
+    }
+    DATA.patches = Number(out.patches) || 0;
+    clearPendingPatch(slug);
+  } catch (error) {
+    alert(`Cannot apply the patch change: ${error.message}`);
+  } finally {
+    BUSY_PATCHES.delete(slug);
+    render();
+  }
+}
+function clearPendingAlternatives(slug) {
+  const pending = PENDING_ALTERNATIVES.get(slug);
+  if (pending) for (const item of pending.adds) URL.revokeObjectURL(item.url);
+  PENDING_ALTERNATIVES.delete(slug);
+}
+function stageAlternativeFiles(slug, files) {
+  if (!files || !files.length) return;
+  const allowed = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp"]);
+  const valid = [];
+  for (const file of files) {
+    if ((file.type && !allowed.has(file.type)) || file.size <= 0 || file.size > 20 * 1024 * 1024) {
+      alert(`${file.name}: choose a JPEG, PNG, WebP, GIF, or BMP image up to 20 MB.`);
+      continue;
+    }
+    valid.push({id: ++ALTERNATIVE_ID, file, url: URL.createObjectURL(file)});
+  }
+  if (!valid.length) return;
+  const pending = PENDING_ALTERNATIVES.get(slug) || {adds: [], removes: new Set()};
+  pending.adds.push(...valid);
+  PENDING_ALTERNATIVES.set(slug, pending);
+  render();
+}
+async function applyPendingAlternatives(slug) {
+  const pending = PENDING_ALTERNATIVES.get(slug);
+  if (!pending || BUSY_ALTERNATIVES.has(slug)) return;
+  BUSY_ALTERNATIVES.add(slug);
+  render();
+  try {
+    const record = DATA.records.find(item => item.slug === slug);
+    for (const filename of [...pending.removes]) {
+      const query = `?slug=${encodeURIComponent(slug)}&file=${encodeURIComponent(filename)}`;
+      const response = await fetch("/api/dataset-alternative" + query, {method: "DELETE"});
+      const out = await response.json();
+      if (!response.ok) throw new Error(out.error || response.status);
+      if (record) record._alternatives = out.files || [];
+      DATA.alternatives = Number(out.alternatives) || 0;
+      pending.removes.delete(filename);
+    }
+    while (pending.adds.length) {
+      const item = pending.adds[0];
+      const query = `?slug=${encodeURIComponent(slug)}`;
+      const response = await fetch("/api/dataset-alternative" + query, {
+        method: "POST", headers: {"Content-Type": item.file.type || "application/octet-stream"},
+        body: item.file
+      });
+      const out = await response.json();
+      if (!response.ok) throw new Error(out.error || response.status);
+      if (record) record._alternatives = out.files || [];
+      DATA.alternatives = Number(out.alternatives) || 0;
+      URL.revokeObjectURL(item.url);
+      pending.adds.shift();
+    }
+    PENDING_ALTERNATIVES.delete(slug);
+    if (record) record._alternativeVersion = Date.now();
+  } catch (error) {
+    alert(`Cannot apply the alternative-photo change: ${error.message}`);
+  } finally {
+    BUSY_ALTERNATIVES.delete(slug);
+    render();
+  }
+}
+function focusBarcode(slug) {
+  requestAnimationFrame(() => {
+    const editor = [...document.querySelectorAll(".barcode-editor")]
+      .find(item => item.dataset.slug === slug);
+    const input = editor?.querySelector(".barcode-input");
+    if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  });
+}
+async function saveBarcode(slug) {
+  if (!DRAFT_BARCODES.has(slug) || BUSY_BARCODES.has(slug)) return;
+  const value = DRAFT_BARCODES.get(slug) || "";
+  if (!value.trim()) { focusBarcode(slug); return; }
+  BUSY_BARCODES.add(slug);
+  render();
+  try {
+    const response = await fetch("/api/dataset-barcode", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, barcode: value})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._barcodes = out.barcodes || [];
+    DATA.barcodes = Number(out.total) || 0;
+    DRAFT_BARCODES.delete(slug);
+  } catch (error) {
+    alert(`Cannot save the barcode: ${error.message}`);
+  } finally {
+    BUSY_BARCODES.delete(slug);
+    render();
+    if (DRAFT_BARCODES.has(slug)) focusBarcode(slug);
+  }
+}
+function focusAtlasBinding(slug) {
+  requestAnimationFrame(() => {
+    const editor = [...document.querySelectorAll(".atlas-binding-editor")]
+      .find(item => item.dataset.slug === slug);
+    const input = editor?.querySelector(".atlas-binding-input");
+    if (input) { input.focus(); input.select(); }
+  });
+}
+async function saveAtlasBinding(slug) {
+  if (!DRAFT_ATLAS_BINDINGS.has(slug) || BUSY_ATLAS_BINDINGS.has(slug)) return;
+  const value = DRAFT_ATLAS_BINDINGS.get(slug) || "";
+  if (!value.trim()) { focusAtlasBinding(slug); return; }
+  BUSY_ATLAS_BINDINGS.add(slug);
+  render();
+  try {
+    const response = await fetch("/api/dataset-atlas-binding", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, product_uuid: value})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) {
+      record._atlas_product_uuid = out.product_uuid || null;
+      record._atlas_binding_source = "manual";
+    }
+    DATA.atlas_bindings = Number(out.total) || 0;
+    DRAFT_ATLAS_BINDINGS.delete(slug);
+  } catch (error) {
+    alert(`Cannot save the Atlas binding: ${error.message}`);
+  } finally {
+    BUSY_ATLAS_BINDINGS.delete(slug);
+    render();
+    if (DRAFT_ATLAS_BINDINGS.has(slug)) focusAtlasBinding(slug);
+  }
+}
+$("#list").addEventListener("click", event => {
+  const button = event.target.closest("button[data-copy]");
+  if (button) { copyValue(button); return; }
+  const atlasBinding = event.target.closest(".atlas-binding-editor");
+  if (atlasBinding) {
+    const slug = atlasBinding.dataset.slug;
+    if (event.target.closest("[data-atlas-binding-edit]")) {
+      const record = DATA.records.find(item => item.slug === slug);
+      DRAFT_ATLAS_BINDINGS.set(slug, record?._atlas_product_uuid || "");
+      render();
+      focusAtlasBinding(slug);
+    } else if (event.target.closest("[data-atlas-binding-save]")) {
+      saveAtlasBinding(slug);
+    } else if (event.target.closest("[data-atlas-binding-cancel]")) {
+      DRAFT_ATLAS_BINDINGS.delete(slug);
+      render();
+    }
+    return;
+  }
+  const barcode = event.target.closest(".barcode-editor");
+  if (barcode) {
+    const slug = barcode.dataset.slug;
+    if (event.target.closest("[data-barcode-add]")) {
+      DRAFT_BARCODES.set(slug, "");
+      render();
+      focusBarcode(slug);
+    } else if (event.target.closest("[data-barcode-save]")) {
+      saveBarcode(slug);
+    } else if (event.target.closest("[data-barcode-cancel]")) {
+      DRAFT_BARCODES.delete(slug);
+      render();
+    }
+    return;
+  }
+  const alternative = event.target.closest(".alternative-editor");
+  if (alternative) {
+    const slug = alternative.dataset.slug;
+    const pending = PENDING_ALTERNATIVES.get(slug) || {adds: [], removes: new Set()};
+    const remove = event.target.closest("[data-alternative-remove]");
+    const cancel = event.target.closest("[data-alternative-cancel]");
+    if (event.target.closest("[data-alternative-pick]")) {
+      alternative.querySelector(".alternative-input").click();
+    } else if (remove) {
+      const filename = remove.dataset.alternativeRemove;
+      if (pending.removes.has(filename)) pending.removes.delete(filename);
+      else pending.removes.add(filename);
+      PENDING_ALTERNATIVES.set(slug, pending);
+      render();
+    } else if (cancel) {
+      const index = pending.adds.findIndex(item => item.id === Number(cancel.dataset.alternativeCancel));
+      if (index >= 0) URL.revokeObjectURL(pending.adds.splice(index, 1)[0].url);
+      if (!pending.adds.length && !pending.removes.size) PENDING_ALTERNATIVES.delete(slug);
+      render();
+    } else if (event.target.closest("[data-alternative-cancel-all]")) {
+      clearPendingAlternatives(slug);
+      render();
+    } else if (event.target.closest("[data-alternative-apply]")) {
+      applyPendingAlternatives(slug);
+    }
+    return;
+  }
+  const editor = event.target.closest(".patch-editor");
+  if (!editor) return;
+  const slug = editor.dataset.slug;
+  if (event.target.closest("[data-patch-pick]")) {
+    editor.querySelector(".patch-input").click();
+  } else if (event.target.closest("[data-patch-remove]")) {
+    clearPendingPatch(slug);
+    PENDING_PATCHES.set(slug, {action: "remove"});
+    render();
+  } else if (event.target.closest("[data-patch-cancel]")) {
+    clearPendingPatch(slug);
+    render();
+  } else if (event.target.closest("[data-patch-apply]")) {
+    applyPendingPatch(slug);
+  }
+});
+$("#list").addEventListener("change", event => {
+  if (event.target.matches(".alternative-input")) {
+    const editor = event.target.closest(".alternative-editor");
+    stageAlternativeFiles(editor.dataset.slug, [...event.target.files]);
+    return;
+  }
+  if (event.target.matches(".patch-input")) {
+    const editor = event.target.closest(".patch-editor");
+    stagePatchFile(editor.dataset.slug, event.target.files[0]);
+  }
+});
+$("#list").addEventListener("input", event => {
+  if (event.target.matches(".barcode-input")) {
+    const editor = event.target.closest(".barcode-editor");
+    DRAFT_BARCODES.set(editor.dataset.slug, event.target.value);
+  } else if (event.target.matches(".atlas-binding-input")) {
+    const editor = event.target.closest(".atlas-binding-editor");
+    DRAFT_ATLAS_BINDINGS.set(editor.dataset.slug, event.target.value);
+  }
+});
+$("#list").addEventListener("keydown", event => {
+  if (event.target.matches(".barcode-input")) {
+    const editor = event.target.closest(".barcode-editor");
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveBarcode(editor.dataset.slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_BARCODES.delete(editor.dataset.slug);
+      render();
+    }
+  } else if (event.target.matches(".atlas-binding-input")) {
+    const editor = event.target.closest(".atlas-binding-editor");
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveAtlasBinding(editor.dataset.slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_ATLAS_BINDINGS.delete(editor.dataset.slug);
+      render();
+    }
+  }
+});
+$("#list").addEventListener("dragover", event => {
+  const alternative = event.target.closest(".alternative-drop");
+  if (alternative && DATA.alternative_dir) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+    alternative.classList.add("drag");
+    return;
+  }
+  const surface = event.target.closest("[data-patch-drop]");
+  if (!surface || !DATA.patch_dir) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "copy";
+  surface.classList.add("drag");
+});
+$("#list").addEventListener("dragleave", event => {
+  const alternative = event.target.closest(".alternative-drop");
+  if (alternative && !alternative.contains(event.relatedTarget)) alternative.classList.remove("drag");
+  const surface = event.target.closest("[data-patch-drop]");
+  if (surface && !surface.contains(event.relatedTarget)) surface.classList.remove("drag");
+});
+$("#list").addEventListener("drop", event => {
+  const alternative = event.target.closest(".alternative-drop");
+  if (alternative && DATA.alternative_dir) {
+    event.preventDefault();
+    alternative.classList.remove("drag");
+    const editor = alternative.closest(".alternative-editor");
+    stageAlternativeFiles(editor.dataset.slug, [...event.dataTransfer.files]);
+    return;
+  }
+  const surface = event.target.closest("[data-patch-drop]");
+  if (!surface || !DATA.patch_dir) return;
+  event.preventDefault();
+  surface.classList.remove("drag");
+  const editor = surface.closest(".patch-editor");
+  stagePatchFile(editor.dataset.slug, [...event.dataTransfer.files][0]);
+});
+$("#list").addEventListener("toggle", event => {
+  const details = event.target;
+  if (!details.matches("details.record") || !details.open || details.querySelector("pre")) return;
+  const record = DATA.records[Number(details.dataset.index)];
+  const pre = document.createElement("pre");
+  pre.textContent = JSON.stringify(rawRecord(record), null, 2);
+  details.append(pre);
+}, true);
+for (const id of ["filter", "sort"]) $("#" + id).addEventListener("change", render);
+let SEARCH_TIMER = null;
+$("#q").addEventListener("input", () => {
+  clearTimeout(SEARCH_TIMER);
+  SEARCH_TIMER = setTimeout(render, 180);
+});
+$("#validate-dataset").addEventListener("click", openValidation);
+$("#validation-run").addEventListener("click", runValidation);
+$("#validation-close").addEventListener("click", closeValidation);
+$("#validation-x").addEventListener("click", closeValidation);
+$("#validation-modal").addEventListener("click", event => {
+  if (event.target === $("#validation-modal")) closeValidation();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !$("#validation-modal").hidden) closeValidation();
+});
+window.addEventListener("beforeunload", event => {
+  if (!PENDING_PATCHES.size && !PENDING_ALTERNATIVES.size && !DRAFT_BARCODES.size
+      && !DRAFT_ATLAS_BINDINGS.size) return;
+  event.preventDefault();
+  event.returnValue = "";
+});
+
+(async function init() {
+  try {
+    const response = await fetch("/api/dataset");
+    if (!response.ok) throw new Error(await response.text());
+    DATA = await response.json();
+    DATA.records = (DATA.records || []).map((r, index) => ({...r, _index: index}));
+    $("#source").innerHTML = `<b>catalog.jsonl</b> ${esc(DATA.catalog_file)}<br>`
+      + `<b>patch directory</b> ${esc(DATA.patch_dir || "not configured")}<br>`
+      + `<b>alternative directory</b> ${esc(DATA.alternative_dir || "not configured")}<br>`
+      + `<b>barcode file</b> ${esc(DATA.barcode_file || "not configured")}<br>`
+      + `<b>automatic Atlas matches</b> ${esc(DATA.atlas_matches_file || "not configured")}<br>`
+      + `<b>manual Atlas bindings</b> ${esc(DATA.atlas_bindings_file || "not configured")}`;
+    render();
+    openHash();
+    loadValidation().catch(() => {});
+  } catch (error) {
+    $("#head-sub").textContent = "could not read the dataset";
+    $("#source").textContent = `Cannot read /api/dataset: ${error}`;
+    $("#list").innerHTML = '<div class="empty">The dataset is not available.</div>';
+  }
+})();
+</script>
+</body>
+</html>
+"""
+
+
 # ------------------------------------------------------------ the page of the runs
 
 
@@ -6911,7 +9009,7 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
   width: 170px; height: 170px; object-fit: contain; background: var(--panel-2);
   border: 1px solid var(--line); border-radius: 6px; padding: 3px;
 }
-.strip { display: flex; gap: 8px; flex-wrap: wrap; }
+.strip { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
 .cand {
   width: 104px; background: var(--panel-2); border: 2px solid transparent;
   border-radius: 8px; padding: 5px;
@@ -6924,8 +9022,14 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .cand.twin.missing { background: transparent; }
 .cand.apart { margin-left: 26px; }
 /* candidates that stand next to each other and belong to one catalogue cluster */
-.clgrp { display: flex; flex-wrap: wrap; gap: 8px; padding: 3px;
+.clgrp { display: flex; flex-wrap: wrap; gap: 8px; padding: 17px 3px 3px;
+         position: relative;
          border: 2px solid var(--accent); border-radius: 11px; }
+.clgrp-link {
+  position: absolute; top: 1px; right: 6px; font-size: 10px; line-height: 14px;
+  font-weight: 650; text-decoration: none;
+}
+.clgrp-link:hover { text-decoration: underline; }
 /* the answer of the VLM rule step, under the frame of the top cluster */
 .clcol { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 .vlm {
@@ -6958,8 +9062,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 <header>
   <div class="head-top">
     <h1>Match runs <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a href="/">Review</a><a class="on" href="/runs">Runs</a><a
-      href="/clusters">Clusters</a></nav>
+    <nav class="nav"><a href="/">Review</a><a href="/dataset">Dataset</a><a
+      class="on" href="/runs">Runs</a><a href="/clusters">Clusters</a></nav>
   </div>
   <div class="bar">
     <label>Show
@@ -7242,7 +9346,9 @@ function candStrip(cands, truth, forbidden, twins, vlm) {
     const cards = cands.slice(i, j).map(c => candCard(c, truth, forbidden, twins)).join("");
     const group = j - i < 2 ? cards
       : `<div class="clgrp" title="cluster ${esc(cl.id)} &middot; ${esc(cl.kind)} &middot; ${
-          cl.size} cards">${cards}</div>`;
+          cl.size} cards"><a class="clgrp-link" href="/clusters#${
+          encodeURIComponent(cands[i].slug)}" title="open cluster ${esc(cl.id)} details">cluster ${
+          esc(cl.id)} details &rarr;</a>${cards}</div>`;
     // The rule step acts on the cluster of rank 1, so its box stands under that group.
     html += i === 0 && vlm ? `<div class="clcol">${group}${vlm}</div>` : group;
     i = j;
@@ -7724,6 +9830,9 @@ table.sheet td.nul { color: var(--muted); }
 .btn:hover:not(:disabled) { border-color: var(--accent); }
 .btn:disabled { opacity: .5; cursor: default; }
 .warn { color: var(--exc); font-size: 12px; }
+.rule details.legend { font-size: 12px; margin: 2px 0 6px; }
+.rule details.legend summary { cursor: pointer; color: var(--accent); }
+.rule details.legend div { margin-top: 2px; }
 .mem details.desc { margin-top: 4px; font-size: 11px; }
 .mem details.desc summary { cursor: pointer; color: var(--accent); }
 .mem .desc div { margin-top: 3px; line-height: 1.3; overflow-wrap: anywhere; }
@@ -7742,8 +9851,8 @@ table.sheet td.nul { color: var(--muted); }
 <header>
   <div class="head-top">
     <h1>Catalogue clusters <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a href="/">Review</a><a href="/runs">Runs</a><a class="on"
-      href="/clusters">Clusters</a></nav>
+    <nav class="nav"><a href="/">Review</a><a href="/dataset">Dataset</a><a
+      href="/runs">Runs</a><a class="on" href="/clusters">Clusters</a></nav>
   </div>
   <div class="bar">
     <label>Kind
@@ -7882,7 +9991,7 @@ function photoCounts(k) {
   return parts.length ? parts.join(" · ") : "no labelled photo";
 }
 
-function memberHtml(slug, no, img) {
+function memberHtml(slug, no, img, letter) {
   const k = CARDS[slug] || {};
   const onLabel = img === "label";
   const src = `/img/bottle?slug=${encodeURIComponent(slug)}&kind=${img}`;
@@ -7896,7 +10005,8 @@ function memberHtml(slug, no, img) {
     : `<a href="${src}" target="_blank" rel="noopener" title="open the large view">${
         picHtml(tag, k.patched, onLabel && !k.has_label)}</a>`;
   return `<div class="mem" data-slug="${esc(slug)}">
-    <span class="no">#${no}</span>${pic}
+    <span class="no" title="${letter ? `the rule calls this card ${esc(letter)}` : ""}">#${no}${
+      letter ? " · " + esc(letter) : ""}</span>${pic}
     <div class="nm">${esc(k.name || slug)}</div>
     <div class="pr">${esc(k.producer || "")}${k.category ? " · " + esc(k.category) : ""}</div>
     ${k.grapes ? `<div class="gr">${esc(k.grapes)}</div>` : ""}
@@ -7936,14 +10046,26 @@ const MODE_TEXT = { sheet: "difference sheet", verdict: "verdict rule",
 const STATUS_TEXT = { current: "current", stale: "stale: an input changed, build it again",
                       error: "the last build failed", none: "not built" };
 const UNUSED = { serial: "a number that changes from bottle to bottle",
+                 bottle: "a feature outside the label: the glass, the liquid, the capsule, the cork, or the bottle shape",
+                 vintage: "the names of two cards do not state two different years",
                  alcohol: "the alcohol value, and another question separates the cards",
                  feature: "no two cards give different answers" };
 /* The unsaved text of a note editor, by cluster key. A new render keeps it. */
 const DRAFTS = {};
 
+/* slug -> the letter that the rule gives the card. Stage 2 shows the VLM the cards as
+   "Card A", "Card B", and so on, and the rule text uses these letters. The rule keeps
+   the map, so the page can name the card of each letter. */
+function lettersOf(c) {
+  const out = {};
+  for (const [letter, slug] of Object.entries((c.rule && c.rule.letters) || {})) out[slug] = letter;
+  return out;
+}
+
 /* The label rule of stage 2, and the note of the reviewer. */
 function ruleHtml(c, no) {
   const r = c.rule, st = c.rule_status || "none";
+  const letter = lettersOf(c);
   const ok = r && !r.error;
   const tag = ok ? `<span class="tag m-${esc(r.mode)}">${esc(MODE_TEXT[r.mode] || r.mode)}</span>`
     : `<span class="tag m-missing">${r ? "failed" : "no rule"}</span>`;
@@ -7955,14 +10077,23 @@ function ruleHtml(c, no) {
     const qs = r.questions || [];
     if (qs.length) {
       body += `<div class="links-wrap"><table class="sheet"><thead><tr><th>question</th>${
-        c.slugs.map(s => `<th title="${esc(s)}">#${no[s]}</th>`).join("")}</tr></thead><tbody>${
+        c.slugs.map(s => `<th title="${esc(s)}">#${no[s]}${letter[s] ? " · " + esc(letter[s]) : ""}</th>`)
+          .join("")}</tr></thead><tbody>${
         qs.map(q => `<tr class="${q.valid ? "" : "off"}" title="${esc(q.valid
           ? "the re-rank asks this question" : "not used: " + (UNUSED[q.kind] || UNUSED.feature))}">
           <td>${esc(q.id)} ${esc(q.question)}</td>${c.slugs.map(s => q.answers[s] == null
             ? `<td class="nul">—</td>` : `<td>${esc(q.answers[s])}</td>`).join("")}</tr>`).join("")
       }</tbody></table></div>`;
     }
-    if (r.rule) body += `<p><b>Rule:</b> ${esc(r.rule)}</p>`;
+    if (r.rule) {
+      body += `<p><b>Rule:</b> ${esc(r.rule)}</p>`;
+      const legend = Object.entries(r.letters || {}).map(([l, s]) =>
+        `<div><b>${esc(l)}</b> = #${no[s] || "?"} ${esc((CARDS[s] || {}).name || "")}
+          <code>${esc(s)}</code></div>`).join("");
+      if (legend) {
+        body += `<details class="legend"><summary>the cards of the letters</summary>${legend}</details>`;
+      }
+    }
     if ((r.indistinguishable || []).length) {
       body += `<p class="muted">No feature separates ${r.indistinguishable
         .map(g => g.map(s => "#" + no[s]).join(" and ")).join("; ")}.</p>`;
@@ -8035,7 +10166,7 @@ function clusterHtml(c, img) {
       ${chips}
       ${c.confusions ? `<span class="muted">${c.confusions} confused photo(s)</span>` : ""}
     </div>
-    <div class="members">${c.slugs.map(s => memberHtml(s, no[s], img)).join("")}</div>
+    <div class="members">${c.slugs.map(s => memberHtml(s, no[s], img, lettersOf(c)[s])).join("")}</div>
     ${ruleHtml(c, no)}
     <div class="links-wrap"><table class="links"><thead><tr>
       <th>card</th><th>card</th><th>passed</th><th>name</th>
@@ -8370,13 +10501,17 @@ def main():
     if not os.path.isdir(MY):
         sys.exit(f"error: photo set not found: {MY}")
     _state = load_state()
-    global _excluded, _patches, _crops, _labels, _label_boxes
+    global _excluded, _patches, _alternatives, _barcodes, _atlas_bindings
+    global _crops, _labels, _label_boxes
     _excluded = load_excluded()
     catalog = load_catalog()
     # The patches MUST be read before the rows, because a row states whether its
     # bottle photo is a patch. The crops and the label crops MUST be read before
     # the rows for the same reason.
     _patches = load_patches()
+    _alternatives = load_alternatives()
+    _barcodes = load_barcodes()
+    reload_atlas_bindings()
     _crops = load_crops()
     _labels, _label_boxes = load_label_crops()
     group_of, groups = load_variants()
@@ -8405,6 +10540,35 @@ def main():
         print(f"  {', '.join(sorted(_patches))}")
         if unknown:
             print(f"  WARNING: {len(unknown)} patch file(s) name no card of the "
+                  f"catalogue: {', '.join(unknown)}", file=sys.stderr)
+    if ALTERNATIVE_DIR:
+        count = sum(len(paths) for paths in _alternatives.values())
+        unknown = sorted(set(_alternatives) - set(catalog))
+        print(f"alternative catalogue photos: {count} for "
+              f"{len(_alternatives)} wine(s) from {ALTERNATIVE_DIR}")
+        if unknown:
+            print(f"  WARNING: {len(unknown)} alternative slug directory or "
+                  f"directories name no card of the catalogue: {', '.join(unknown)}",
+                  file=sys.stderr)
+    if BARCODE_FILE:
+        count = sum(len(values) for values in _barcodes.values())
+        unknown = sorted(set(_barcodes) - set(catalog))
+        print(f"product barcodes: {count} for {len(_barcodes)} wine(s) "
+              f"from {BARCODE_FILE}")
+        if unknown:
+            print(f"  WARNING: {len(unknown)} barcode record(s) name no card of the "
+                  f"catalogue: {', '.join(unknown)}", file=sys.stderr)
+    if ATLAS_MATCHES_FILE or ATLAS_BINDINGS_FILE:
+        unknown = sorted(set(_atlas_bindings) - set(catalog))
+        print(f"Drink Atlas Core bindings: {len(_atlas_bindings)} effective "
+              f"({len(_atlas_matches)} automatic, "
+              f"{len(_atlas_manual_bindings)} manual)")
+        if ATLAS_MATCHES_FILE:
+            print(f"  automatic: {ATLAS_MATCHES_FILE}")
+        if ATLAS_BINDINGS_FILE:
+            print(f"  manual: {ATLAS_BINDINGS_FILE}")
+        if unknown:
+            print(f"  WARNING: {len(unknown)} Atlas binding(s) name no card of the "
                   f"catalogue: {', '.join(unknown)}", file=sys.stderr)
     if BOTTLE_CROPPED_DIR:
         print(f"cropped catalogue photos: {len(_crops)} from {BOTTLE_CROPPED_DIR}")

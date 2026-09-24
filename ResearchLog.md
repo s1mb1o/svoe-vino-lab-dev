@@ -2,6 +2,422 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-24 — the Dataset page follows the full-list review flow
+
+The owner requested the same continuous list as the Review page. The Dataset page now
+puts every filtered catalogue record in one document. It has no row-size selector and
+no page buttons. Search waits 180 ms after input before it rebuilds the list. Image
+elements keep `loading="lazy"`, so the browser can defer images below the viewport.
+
+## 2026-09-24 — label-only rules: the full benchmark
+
+Status: measured. Run
+`runs/2026-09-24T080721Z-svm-label-gw-cluster-rules-label-only-rules`, 2,180 photos.
+Plan: `docs/plans/06_label-only-cluster-rules.md`; its section «Result» holds every
+number.
+
+- Against the base: R@1 0.8161 → 0.8355, 61 wins, 30 losses, p 0.002; negatives
+  rejected 0.8262 → 0.8451, 12 wins, 1 loss, p 0.003. Both halves of the wines improve:
+  half A 33 wins and 18 losses, half B 28 wins and 12 losses.
+- Against the rules of 2026-09-23 (run v2): +0.0038 R@1, 27 wins, 21 losses, p 0.47.
+  The label-only rules are not significantly better than the rules of 2026-09-23.
+  They keep the label-only and the vintage decisions of the owner at the same accuracy.
+- The grape answers improved from 67 % to 89 % correct, and `not visible` fell from
+  25 % to 9 %. A grape written in the alphabet of the label, and a label crop in
+  stage 2, are the two changes that touch these answers. This run does not separate
+  their effects.
+- c032, the first cause of the losses of the run v2, gives 4 wins and 0 losses
+  against the run v2.
+- The re-rank moves only the cards of the first 5 positions. A replay with 10 positions
+  adds 1 win (R@1 0.8361). In one c013 photo the rule scored the true card best, but
+  that card stood at base rank 6.
+- With a quiet gx10, a VLM call took 2,574 ms (median), and 84.5 % of the photos met
+  the 3,000 ms SLA.
+
+## 2026-09-24 — vintage variants when every card states a year: c129
+
+Status: measured on the rules files and on the runs v2 and base. The open questions
+are Q1 and Q2 of `docs/plans/06_label-only-cluster-rules.md`.
+
+- c129 holds `esse-mama-marselan-krasnoe-suhoe-115` («MaMa», 11.5 %) and
+  `esse-mama-marselan-krasnoe-suhoe-135` («МаМа», 13.5 %). The cluster exists only by
+  the `confusion` signal. The two catalogue labels print the same texts: «MAMA»,
+  «MARSELAN/MALBEC», «ESSE UNPLUGGED», and «CRIMEA 2022» or «CRIMEA 2024». The colour
+  shade differs: the 2022 label is orange red, the 2024 label is dark red. The alcohol
+  value is not on the front label.
+- `esse-mama-marselan-krasnoe-suhoe-135/01_conf095.jpg` shows «CRIMEA 2020» (checked
+  on an enlarged crop). No card states 2020.
+- The query VLM of the run v2 read 2022 on `...-115/01`, 2020 on `...-115/02`, 2020 on
+  `...-115/03`, and 2020 on `...-135/01`. The test labels thus put two photos of 2020
+  on the 2022 card and one on the 2024 card.
+- The base answers the 2022 card for all four positive photos: 3 of 4 right. In the
+  run v2 the question of the year gave -1 to both cards for 2020, so the base answer
+  stayed.
+- The rules of 2026-09-24 hold no valid vintage question for c129, because the names
+  state no year. The mode is `verdict` with the rule text «If the label reads CRIMEA
+  2022, it is card A; if it reads CRIMEA 2024, it is card B.»
+- 16 of the 33 verdict rules decide by a label year alone, over 39 test photos: c049,
+  c070, c073, c122, c129, c130, c158, c162, c167, c168, c205, c219, c220, c229, c240,
+  and c254. The check of mode `sheet` removes such a year; the text of mode `verdict`
+  keeps it.
+- `scripts/08_variants.py` joins two cards with the same `producer` and the same
+  `name`. «MaMa» and «МаМа» differ by the alphabet, so the two cards are in no variant
+  group.
+
+## 2026-09-24 — label-only rules: the probes before the rebuild
+
+Status: measured on the rules file of 2026-09-23 and on three test builds. Plan:
+`docs/plans/06_label-only-cluster-rules.md`.
+
+- 45 photos of the run v2 used a question about the glass. The VLM answered
+  `not visible` for 29 of them, because the step sends the label crop alone. A replay
+  without these questions changes no rank-1 card.
+- The new checks, applied to the stored answers of 2026-09-23 without a call: 13
+  questions become kind `bottle`, and 93 vintage questions lose every year, because
+  the card names do not state them. 22 clusters held such a vintage question as their
+  only valid question. 5 vintage questions stay valid, and each takes its years from
+  the names: c002, c074, c105, c114, and c186.
+- 629 of the 630 cluster cards have a label crop. The median label crop has 31 % of the
+  long side of the whole picture, so at one long side the label is about three times
+  larger. 291 label crops have a long side below 400 pixels; an enlarged crop holds no
+  more detail than its source.
+- 43 cards of 21 clusters share one catalogue picture, byte for byte, with another card
+  of their cluster. Examples: «БЮРНЬЕ.ПИНО БЛАН» and «БЮРНЬЕ.ВИОНЬЕ»; «Красностоп
+  Резерв» and «Гренаш»; «Пухляковский» and «Рислинг». The label crop of such a card
+  shows the label of the other card.
+- `qwen3.8-max` with label crops wrote the printed Cyrillic grape names in a Latin
+  transliteration: «Krasnostop», «Chardonne», «Merlo». With the rule «exactly as the
+  label prints it, in its own alphabet» it wrote «КРАСНОСТОП», «ШАРДОНЕ», «МЕРЛО».
+- With label crops, the model trusts the picture more than the card name. c001 gave
+  «ПИНО БЛАН» the text «ВИОНЬЕ» of the shared picture; the rule of 2026-09-23 had taken
+  «Пино Блан» from the name. A caption that names the card with the same picture
+  fixed c108 («Красностоп» against «Гренаш», and the mark «Резерв»). c001 kept the two
+  cards as indistinguishable.
+- The model asked a vintage question about years that only the picture shows (c001),
+  and a question about the background colour of the label (c001), against the prompt.
+  The code check removes the first. The code does not check the second.
+- One stage 2 call for a cluster of 6 to 10 cards took 68 to 118 s with label crops.
+
+The vintage variants, measured before the owner chose where a year comes from:
+
+- By the card names alone, 7 clusters hold cards with a year and cards without one.
+  Only 2 of them hold one wine with and without a year: c158 («Аристов Каберне
+  Совиньон Розе 2020» and «… Розе») and c161 («Шато Тамань Резерв Мюллер-Тургау
+  Лимитед Эдишн 2021» and the same name without a year). The two clusters hold 3
+  positive test photos.
+- By the names and the label descriptions, 43 clusters are mixed. 309 of the 630
+  cluster cards have no label vintage in their description, and 11 have an
+  unreadable or implausible one.
+- c013: the test labels do not follow the rule of the vintage variants. On the 8
+  positive photos of its three Pinot Noir cards, by the years that the query VLM read
+  in the run v2, the rule and the test labels give the same card for 2 photos.
+- The query VLM wrote the year instead of `other` in 4 of the 5 answers of c013 about
+  a year that no card listed: 2020, 2022, 2022, and 2022. The matcher therefore maps
+  such a year to `other`.
+- QwenCloud answered HTTP 400 «Download multimodal file timed out» for 2 of 182 stage
+  2 calls. The client does not repeat a 4xx answer; the next run built both rules.
+
+## 2026-09-24 — label rules: the answers by question type, the misses, and the replay
+
+Status: measured by replay. No new VLM call was made. Sources: the run
+`2026-09-23T224548Z-svm-label-gw-cluster-rules-qwen38max-rules-v2`, its base
+`2026-09-23T121203Z-svm-label-gw-difference-alpha-patches`, and
+`dataset/catalog-cluster-rules.json` of 2026-09-24. Every number below was found after
+the run, so every number is post hoc. A change that these numbers suggest MUST be
+chosen on one half of the wines and reported on the other half.
+
+### The answers by question type
+
+The set: the positive photos where the step acted in mode `sheet` and the true card is
+in the cluster. Each valid question of the rule counts once. The type comes from the
+text of the question.
+
+| Type | Answers | Correct | `not visible` | The value of another card | A value that no card expects | The true card expects null |
+|---|---:|---:|---:|---:|---:|---:|
+| sugar level | 202 | 86 % | 6 % | 3 % | 1 % | 3 % |
+| vintage year | 164 | 26 % | 10 % | 24 % | 35 % | 5 % |
+| grape | 163 | 67 % | 25 % | 2 % | 1 % | 4 % |
+| yes/no mark | 160 | 86 % | 5 % | 9 % | 0 % | 0 % |
+| name or line text | 108 | 94 % | 3 % | 3 % | 1 % | 0 % |
+| wine colour | 105 | 74 % | 22 % | 1 % | 3 % | 0 % |
+| ratio or blend | 29 | 34 % | 55 % | 10 % | 0 % | 0 % |
+
+- The vintage answer differs from the expected year in 59 % of the answers. The valid
+  vintage questions hold 146 expected years. Only 17 of these years are in the name or
+  the slug of the card. The other years come from the catalogue photo. A catalogue
+  photo shows one vintage, and a customer photo can show another vintage. Such a year
+  is a property of the photo, not of the card.
+- The rules file holds one impossible year: c001 expects 2029 for
+  `vinodelnya-byurne-kaberne-fran-krasnoe-suhoe-135`.
+- 5 valid questions ask for the colour of the wine through the glass: c006, c046, c089,
+  c111, and c116. The step sends the label crop on white. That picture does not show
+  the glass.
+
+### The positive misses after the step
+
+270 positive photos have the true card below rank 1 after the step.
+
+| Cause | Photos |
+|---|---:|
+| The true card is not in the top 10 | 31 |
+| The step did not act, because the rank-1 card is in no cluster | 67 |
+| The step did not act, for another cause | 3 |
+| The step acted, but the true card is not in the cluster or not in the window | 20 |
+| The VLM call failed | 1 |
+| Mode `verdict` named a wrong card or `unsure` | 37 |
+| Mode `sheet` gave a wrong card a higher score | 41 |
+| Mode `sheet` got `not visible` for every question | 34 |
+| Mode `sheet` gave a tie with the true card, and the base order stayed | 36 |
+
+- In 45 of the 67 photos with no cluster, the true card has the producer of the rank-1
+  card. The true card stands at rank 2 in 33 of the 67 photos. The median base gap
+  between rank 1 and the true card is 0.017.
+- In the 34 photos with `not visible` for every question, a grape question separates
+  the true card in at least 15 photos, and a ratio question in 11 photos.
+
+### The replay of the score variants
+
+The replay uses the recorded answers and the candidate lists of the base run. The
+served score gives the numbers of the run: R@1 0.8313, 47 wins, 22 losses.
+
+| Variant | R@1 | Wins | Losses | Negative wins | Negative losses |
+|---|---:|---:|---:|---:|---:|
+| the served score | 0.8313 | 47 | 22 | 11 | 3 |
+| no vintage question | 0.8375 | 49 | 14 | 11 | 3 |
+| a yes/no question counts «yes» only | 0.8281 | 42 | 22 | 9 | 2 |
+| an answer that no card expects gives no evidence | 0.8313 | 45 | 20 | 11 | 3 |
+| the three changes above | 0.8356 | 44 | 12 | 9 | 2 |
+| the three changes and a margin guard of 0.05 | 0.8356 | 44 | 12 | 9 | 2 |
+| mode `verdict` off | 0.8294 | 37 | 15 | 10 | 3 |
+
+- The removal of the vintage question is the only variant that removes losses and
+  keeps every win.
+- «Yes» only removes 5 wins and no loss. This data does not support that candidate
+  change.
+- A margin guard of 0.05 changes nothing after the other changes. It also saves few
+  VLM calls: 843 of the 906 photos where the step acted have a base gap below 0.05.
+
+### The 8B cross-encoder on the same photos
+
+The run `2026-09-18T195710Z-svm-vlmrerank-8b-siglip2-448-bench` shares 1,332 positive
+photos with the run of the step. A shared photo has the same bytes and the same true
+card in both runs.
+
+| System | R@1 on the 1,332 photos |
+|---|---:|
+| `vlmrerank-8b-siglip2-448` | 0.8716 |
+| the cluster rule step | 0.8213 |
+| the base of the step (`difference`) | 0.8048 |
+
+- The 8B system is right on 122 photos where the step is wrong, and wrong on 55 photos
+  where the step is right. Exact McNemar p 5.2e-07.
+- Both systems miss 116 photos. An oracle of the two systems reaches R@1 0.9129.
+- On 518 shared negative photos, the forbidden slug stands at rank 1 87 times for the
+  8B system and 74 times for the step.
+- A simulation puts the 8B scores inside the window of the step only, on 1,850 shared
+  photos. It reaches R@1 0.8266 against 0.8213 for the step. Against the base, it has
+  70 wins and 41 losses, and the step has 43 wins and 21 losses. The lead of the 8B
+  system therefore does not come from the order inside the window.
+- The two runs are five days apart. The index, the patches, the labels, and the base
+  differ. The comparison is a comparison of two systems, not of two re-rank steps.
+
+## 2026-09-24 — the R@1 failures of the pipeline `svm-vlmrerank-8b-siglip2-448`
+
+Source: the run `2026-09-18T195710Z-svm-vlmrerank-8b-siglip2-448-bench`. The run holds
+1,881 queries: 1,356 positive photos and 525 negative photos. R@1 is 86.4 %.
+
+- 184 positive photos have their true slug not at rank 1. They fall on 112 wines.
+- The rank of the true slug of these photos: rank 2 for 137 photos, rank 3 for 17,
+  rank 4 for 2, rank 6 for 1, rank 7 for 3, and absent from the top 10 for 24. 74 % of
+  the failures therefore stand at rank 2.
+- 90 negative photos got their forbidden slug at rank 1. The owner chose to keep them
+  out of the failure set.
+- Every file of the 184 photos still has the SHA-256 that the run recorded.
+- The query set of `default` grew after the run. On 2026-09-24 it holds 2,181 photos:
+  1,600 positive and 581 negative.
+
+The labels changed after the run. The state of 2026-09-24, for the photos of the run:
+
+| Label in the run | Label on 2026-09-24 | Rank 1 of the run | Photos |
+|---|---|---|---|
+| `positive` | `negative` | another slug | 4 |
+| `positive` | `negative` | its own slug | 3 |
+| `negative` | `positive` | its own slug | 1 |
+| `negative` | `positive` | another slug; its own slug at rank 4 | 1 |
+| `negative` | `variant` | another slug | 2 |
+| `negative` | `unusable` | its own slug | 1 |
+| `negative` | the file is gone | its own slug | 1 |
+| `negative` | the file is gone | another slug | 1 |
+
+9 of the 184 photos lie on slugs that were excluded after the run.
+
+`--from-run` does not give the same set. `failed_before()` reads the label that the
+earlier run recorded, not the label of today. On the labels of 2026-09-24,
+`--from-run <run> --only positive` selects 172 photos. These are the 171 photos of
+`vlmrerank-8b-failed` and `agrolayn-mountain-eagle-traminer-traminer-beloe-suhoe-12/01_agent.jpg`.
+That photo was `negative` in the run, and the run answered its own slug at rank 1. The
+photo carries `positive` now, so that answer was correct. `failed_before()` repeats it
+because the run counted it as a false match.
+
+Neither selection holds
+`abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut/04_conf095.jpg`. That photo was
+`negative` in the run, and the run answered another slug at rank 1. The photo carries
+`positive` now, so the run missed it at rank 1 by the label of today. The rule of the
+failure set reads the label of the run, and this photo was not `positive` there.
+
+Decision: the failure set is a frozen copy in a dataset of its own. The owner chose it
+on 2026-09-24.
+
+| Option | For | Against |
+|---|---|---|
+| A frozen copy in `dataset/vlmrerank-8b-failed/` (chosen) | The set does not change when `default` changes. The review tool can open it with no risk to `default`. The pattern is the pattern of `official-real-photos`. | A label fix in `default` does not reach the copy. 45 MB of copies. |
+| A dataset that shares `photo_dir` with `default` and holds its own label file | No copies. | The review tool of that dataset shows every other photo of `default` as unlabelled. A move or a delete there changes `default`. |
+| `--from-run` with no new dataset | No new files. The page `/runs` shows the earlier answer of each photo. | It is not a separate test set. Each run takes the set from the live labels, and it reads the label of the earlier run (see above). |
+
+Consequences: a reviewer who fixes a label of one of these photos MUST fix it in both
+datasets, or build the set again. The runs of the set stand in its own `runs_dir`, so
+the review tool on port 8154 does not show them. Port 8167 is assigned to the review
+tool of the set.
+
+## 2026-09-23 — the public wine sitemap is the slug authority
+
+The public `sitemap.xml` is an index. It names `wines-sitemap.xml`. The wine sitemap
+holds one `/wines/<slug>` URL per public wine. The Dataset validator uses this file
+instead of finding links in rendered pages.
+
+The check on 2026-09-23 found 2,103 catalogue slugs and 2,105 website slugs. The sets
+have 2,032 slugs in common. The catalogue has 71 slugs that are not on the website.
+The website has 73 slugs that are not in the catalogue. These numbers describe the
+live website at that time. They are not fixed test values.
+
+The source URL uses the image resize service. A probe of `Сира Нуво` returned the same
+upload file name as the catalogue and as `og:image` on the wine page. The downloaded
+bytes did not have the SHA-256 of the local upload file. The resize service re-encoded
+the WebP. The SHA-256 check must therefore report an exact byte result. It must not
+state that a byte mismatch proves different visible content.
+
+The wine page puts its source image in `og:image`. The dimensions in that URL can
+differ from the catalogue source URL. The upload file name stays the stable part for
+the page association check.
+
+## 2026-09-23 — the Dataset page must keep the original image separate from the patch
+
+The normal image route cannot serve the comparison page. `GET /img/bottle` applies
+the display order: crop, patch, then catalogue image. This order hides the original
+image when a patch exists.
+
+The page `/dataset` uses two explicit read-only routes. `GET /img/catalog` serves
+`local_path` of the source record. `GET /img/patch` serves the file from `patch_dir`.
+The two routes let a reviewer compare the source and the correction in one row.
+
+The configured catalogue has 2,103 records and 15 patches on 2026-09-23. The page
+renders one page of records at a time. This limit keeps the document and its image
+requests small. Search still reads every field of every record in the browser.
+
+## 2026-09-24 — label rules: the full benchmark
+
+Status: measured. Run
+`runs/2026-09-23T224548Z-svm-label-gw-cluster-rules-qwen38max-rules-v2`; report
+`cluster-rules-report.md` of the run. Plan: `docs/plans/05_cluster-label-rules.md`.
+
+| Metric | Base | Re-rank |
+|---|---:|---:|
+| R@1 of 1,600 positives | 0.8156 | 0.8313 |
+| MRR | 0.8833 | 0.8929 |
+| R@5 | 0.9656 | 0.9656 |
+| Negatives rejected (581) | 0.8262 | 0.8399 |
+
+- Positives: 47 wins, 22 losses, exact McNemar p 0.004. Negatives: 11 wins, 3 losses,
+  p 0.057.
+- The step acted on 906 of 2,181 photos and changed the order of 110. Mode `sheet`: 811
+  photos, 47 wins and 18 losses over both labels; mode `verdict`: 95 photos, 11 wins and
+  7 losses. One VLM call failed.
+- Without the clusters that only the `confusion` signal joins (replay): R@1 0.8244,
+  27 wins, 13 losses, p 0.038. This is the number that the test photos did not shape.
+- The post hoc score («an answer that no card expects gives no evidence»): 45 wins and
+  20 losses, p 0.003; without the `confusion` clusters 25 and 11, p 0.029. It does not
+  change the result.
+- «Фантом»: 4 of 17 positive photos right in the base, 10 with the rule of the note.
+- The base score gap of a change: below 0.02 below rank 1, 44 wins and 13 losses; at
+  0.05 or more, 1 win and 5 losses.
+- Latency: median 3,757 ms where the step acted, 283 ms elsewhere; 77.6 % of the photos
+  within the 3,000 ms SLA (97.9 % for the base). The gx10 GPU stood at 95 % from other
+  jobs, so a VLM call took 5.4 s (median) instead of about 2.4 s on a quieter host.
+
+The two main causes of the losses:
+
+1. A vintage that only the catalogue photo shows. c032 holds «Аристов. Кюве Александр.
+   Блан Де Блан» (18 months, the photo shows 2022) and «... Blanc de Blancs 36» (36
+   months, 2021). Four positive photos of the first card show 2021, so the rule moved
+   them to the second card. The months of ageing separate the two cards, and the VLM
+   answered `not visible` for them. A year that the card data does not state is not a
+   stable feature of a card: the next bottle can carry the next vintage.
+2. A «no» for a mark that the VLM does not see. c246: the positive photo of «Совиньон
+   Блан. Авторская технология» got «no» for «АВТОРСКАЯ ТЕХНОЛОГИЯ».
+
+Candidate changes, each chosen after this run and therefore post hoc, to be measured
+on one half of the wines and reported on the other half:
+
+- use a vintage year only when the name or the slug of the card states it;
+- in a yes/no question, count only «yes» as evidence;
+- a margin guard near 0.05, as `group.max_gap` of the kind `difference`.
+
+## 2026-09-24 — label rules: the first full run was stopped
+
+Status: measured on the first 510 photos, then stopped.
+
+Run `runs/2026-09-23T221137Z-svm-label-gw-cluster-rules-qwen38max-rules` held the 156
+rules of `qwen3.8-max`. It was stopped after about 600 photos, and it holds no metrics.
+
+- On the first 510 paired photos: positives 8 wins, 6 losses; negatives 3 wins, 0
+  losses. The step acted on 253 photos and changed the order of 24.
+- 9 of 15 verdict calls failed with «the answer is not a JSON object». The local model
+  wrote a text analysis, such as «Based on the provided image and the rule, here is the
+  analysis», cut at `max_tokens` 256, in about 21 s. `response_format: json_object` is
+  not enforced by the gateway. A `json_schema` with the letters and `unsure` is
+  enforced: the same prompt answered `{"wine": "B"}` in 1.0 s. The matcher now sends
+  that schema in mode `verdict`, and the run was repeated.
+- The gx10 GPU stood at 95 % with a load average of 23 from other jobs during the run.
+  A sheet call took 6.1 s (median) instead of 2.4 s in the partial run. The latency of
+  these runs is therefore not the latency of a quiet host.
+
+## 2026-09-24 — label rules: stage 2 on `qwen3.8-max`
+
+Status: measured on 3 clusters and 2 labels.
+
+`qwen3.8-max` of the QwenCloud Token Plan takes pictures (`image_tokens` in `usage`).
+
+| Probe | Result |
+|---|---|
+| Abrau-Durso Pinot Noir 2024, native 312 x 1000, thinking off | 7.3 s; «урож. 2014 года» — wrong |
+| The same at a long side of 2048, thinking off | 8.0 s; 2021 — wrong |
+| The same at 2048, thinking on | 94.2 s, 4,699 tokens; «УРОЖАЙ 2021 ГОДА» — wrong |
+| `qwen3.5-9b` at 2048, thinking off (for comparison) | 2024 — right |
+| «Фантом 30/70» at 2048, thinking off | 9.7 s; the ratio box was not read |
+| Thinking without streaming, and `response_format: json_object` without thinking | both work |
+
+So the cloud model reads small print no better than the local model, and stage 1
+stays local. Stage 2 is a reasoning task over the descriptions, the card data and the
+note, and there the cloud model is better. The three rules, rebuilt with the new
+prompt of «major differences» (39 s, 40 s, and 68 s with 4 requests at a time):
+
+| Cluster | `qwen3.5-9b` | `qwen3.8-max` |
+|---|---|---|
+| «Фантом» | the ratio, the alcohol value (dropped by the code), the colour of the box | the blend ratio alone |
+| Abrau-Durso Pinot Noir | the vintage, «Бут. №» (dropped by the code), «ГРК» | the grape, which separates «Каберне Совиньон» from «Пино Нуар», and the vintage |
+| Fanagoria Primum Alveus | a Roman numeral, the vintage, the name line, the capsule colour | the vintage and the sugar level |
+
+The vintage question of Abrau-Durso still gives null to the card with no year, so the
+served score keeps the fault of the partial run for years that no card holds. The
+post hoc score of `scripts/cluster_rules_report.py` measures that fault.
+
+After 41 rules, a check found that no kosher question was used. The model gave the
+mark to the kosher cards and null to the others, as rule 3 of the prompt said, and the
+code keeps a question only when two cards hold two different non-null answers. Rule
+3a now asks for a yes/no question with "yes" or "no" for each card. c006 then held
+«Does the label show a kosher mark (the line 'КОШЕРНАЯ КОЛЛЕКЦИЯ')?» with two yes and
+four no, beside the sugar level and the colour of the wine.
+
 ## 2026-09-23 — label rules: the partial benchmark with 3 rules
 
 Status: measured. Run `runs/2026-09-23T193559Z-svm-label-gw-cluster-rules-partial-3-rules`,

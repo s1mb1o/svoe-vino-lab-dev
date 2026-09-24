@@ -146,12 +146,92 @@ These routes serve the review page, the runs page, and the clusters page. An age
 follow the page, so they MAY change when the page changes. The routes under `/api/v1/`
 do not change in this way.
 
+`GET /dataset` serves the Dataset page. `GET /img/catalog?slug=<slug>` serves the
+unmodified `local_path` of one catalogue record. `GET /img/patch?slug=<slug>` serves
+the correction from `patch_dir`. `GET /img/alternative?slug=<slug>&file=<file>` serves
+one active alternative. The image routes stay separate because a patch replaces the
+catalogue image and an alternative adds a view.
+
 An agent SHOULD use `POST /api/v1/propose` and MUST NOT use `POST /api/label`. A label
 is the decision of the reviewer.
 
 Every route in this section answers `application/json`.
 
 ### Read
+
+#### `GET /api/dataset`
+
+The full configured catalogue in one answer:
+`{catalog_file, patch_dir, patches, alternative_dir, alternatives, barcode_file,
+barcodes, atlas_matches_file, atlas_bindings_file, atlas_bindings,
+atlas_manual_bindings, records}`. The order
+of `records` is the order of `catalog.jsonl`. Each record keeps every source field. It
+adds `_patched`, `_alternatives`, `_barcodes`, `_atlas_product_uuid`, and
+`_atlas_binding_source`. The source is `automatic`, `manual`, or null. A manual UUID
+replaces an automatic UUID for the same slug.
+
+#### `POST /api/dataset-patch?slug=<slug>`
+
+Write one patch image. The request body is the image bytes. The server accepts JPEG,
+PNG, WebP, GIF, and BMP files up to 20 MB. The server detects the file type from the
+bytes and writes `<slug>.<extension>` into `patch_dir`. A previous patch moves to
+`patch_dir/.trash`. Existing crop and label images for the slug move to `.trash` in
+their directories. The Dataset page calls this route only when the reviewer presses
+`Apply`.
+
+#### `DELETE /api/dataset-patch?slug=<slug>`
+
+Remove the patch from the active patch set. The file moves to `patch_dir/.trash`, so it
+can be recovered. Existing crop and label images for the slug move to `.trash` in their
+directories. The Dataset page calls this route only when the reviewer presses `Apply`
+after `Remove`.
+
+#### `POST /api/dataset-alternative?slug=<slug>`
+
+Add one alternative catalogue photo. The body and the validation rules equal the patch
+upload rules. The server writes `alternative_dir/<slug>/NN_manual.<extension>` and
+returns the active file names of the slug. The Dataset page calls the route only after
+the reviewer presses `Apply`.
+
+#### `DELETE /api/dataset-alternative?slug=<slug>&file=<file>`
+
+Remove one active alternative photo. The server moves it to
+`alternative_dir/.trash/<slug>/`. The Dataset page calls the route only after `Apply`.
+
+#### `POST /api/dataset-barcode`
+
+Add one product barcode to a catalogue slug. The JSON body is
+`{"slug":"<slug>","barcode":"<value>"}`. The server removes whitespace from the
+value. It refuses an empty value, a value above 128 characters, and a value that
+already belongs to a slug. The server preserves QR codes and other record fields in
+the structured code map. The Dataset page calls the route when the reviewer presses
+`V`. Pressing `X` writes nothing.
+
+#### `POST /api/dataset-atlas-binding`
+
+Create or replace one manual Drink Atlas Core product binding. The JSON body is
+`{"slug":"<slug>","product_uuid":"<uuid>"}`. The server validates and normalizes the
+UUID. It writes the row to `atlas_bindings_file`. The automatic match file does not
+change. A manual row replaces the automatic value for the same slug. Several slugs MAY
+use the same product UUID. The Dataset page calls the route when the reviewer presses
+`V`. Pressing `X` writes nothing.
+
+#### `GET /api/dataset-validation`
+
+The current Dataset validation state. The answer holds `running`, `selected`,
+`started_at`, `finished_at`, `current_check`, `progress`, `results`, and `error`.
+This route starts no work. A completed result stays available until the next job.
+
+#### `POST /api/dataset-validation`
+
+Start one background Dataset validation. The body is
+`{"checks":["slugs","images","pages"]}`. At least one known check is required.
+The route answers `202` with the initial state. It answers `409` when a job runs.
+
+`slugs` compares `catalog.jsonl` with the public wine sitemap. `images` downloads each
+`image_url` and compares its SHA-256 with `local_path`. This is an exact byte check.
+`pages` compares the file name of `image_url`, or `upload_file` when the URL is absent,
+with the file name of `og:image` on `page_url`. The checks write no file.
 
 #### `GET /api/rows`
 
@@ -212,7 +292,10 @@ limit, rows}` for one run.
 `GET /api/run` takes `id` (required), `filter`, `q`, `sort`, `limit` (1 to 1000,
 default 200), and `offset`. `filter` is one of `all`, `error`, `hit`, `miss`, `near`,
 `absent`, `rank_2_5`, `after_5`, `after_10`, `false_match`, `negative_in_topk`, `negative`,
-`negative_above_positive`, `twin_conflict`. `sort` is one of `manifest`, `worst`, `rank`, `latency_desc`,
+`negative_above_positive`, `twin_conflict`, `rule_acted`, `rule_changed`. `rule_acted` keeps
+the rows where the cluster rule step of `svoe-vino-matcher` asked the VLM; `rule_changed`
+keeps the rows where the answer changed the order. Both read the `explain` record with
+`kind: cluster_rules` of a candidate. `sort` is one of `manifest`, `worst`, `rank`, `latency_desc`,
 `latency_asc`, `score_desc`, `score_asc`, `path`. `manifest` is the order that the
 backend answered in.
 

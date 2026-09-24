@@ -17,7 +17,11 @@ The report states:
   because the VLM answered about the whole cluster;
 - a replay with a second score, found after the partial run of 2026-09-23 and
   therefore post hoc: an answer that equals the expected answer of no card gives no
-  evidence. The served score gives -1 to every card with another expected answer;
+  evidence. The served score gives -1 to every card with another expected answer.
+  This replay reads the questions of the rules file, so a report of an older run
+  MUST name the rules file of that run with `--rules`;
+- the paired numbers for each half of the wines. Plan 05 asks that a change that
+  was chosen after an earlier run is measured on one half and reported on the other;
 - the positive «Фантом» photos;
 - the base score gap of each change;
 - the latency.
@@ -25,12 +29,14 @@ The report states:
 Run:
     python3 scripts/cluster_rules_report.py runs/<cluster-rules run>
     python3 scripts/cluster_rules_report.py runs/<run> --base runs/<base run>
+    python3 scripts/cluster_rules_report.py runs/<older run> --rules work/<rules file of that run>
 
 It writes `cluster-rules-report.md` and `cluster-rules-report.json` into the run
 directory and prints the Markdown.
 """
 import argparse
 import collections
+import hashlib
 import json
 import os
 import statistics
@@ -162,6 +168,14 @@ def replay_top1(explain, union=None, rule=None):
     return chosen if chosen in members else window[0]
 
 
+def half_of(slug):
+    """The half of the wines that holds `slug`, `A` or `B`, by the SHA-1 of the slug.
+
+    The split does not change, so every report uses the same two halves.
+    """
+    return "AB"[int(hashlib.sha1(slug.encode("utf-8")).hexdigest(), 16) % 2]
+
+
 def paired_counts(pairs, new_top):
     """Wins and losses of the new answer against the base answer."""
     wins = losses = 0
@@ -180,6 +194,9 @@ def main():
     ap = argparse.ArgumentParser(description="Report a cluster rule run against its base")
     ap.add_argument("run", help="the run directory of the cluster rule backend")
     ap.add_argument("--base", default="", help="the base run. The default is %s" % BASE_RUN)
+    ap.add_argument("--rules", default="",
+                    help="the rules file of the run, for the post hoc score. The default "
+                         "is the current rules file")
     args = ap.parse_args()
     common.select_dataset(None)
     base_path = args.base or os.path.join(common.RUNS_DIR, BASE_RUN)
@@ -201,7 +218,12 @@ def main():
             cluster_id[s] = c["id"]
     union = no_confusion_union(clusters)
 
-    rules = load_rules()["clusters"]
+    if args.rules:
+        with open(args.rules, encoding="utf-8") as fh:
+            rules = json.load(fh)["clusters"]
+    else:
+        rules = load_rules()["clusters"]
+    out_rules = args.rules or "the current rules file"
 
     def variant(restrict, rescore):
         """A function row -> rank-1 card for one replay."""
@@ -219,7 +241,7 @@ def main():
     replay = variant(True, False)
 
     out = {"run": run_id, "base_run": base_id, "pairs": len(pairs), "dropped": dropped,
-           "positives": len(pos), "negatives": len(neg)}
+           "positives": len(pos), "negatives": len(neg), "rules": out_rules}
     for name, rows in (("base", [b for b, _ in pairs]), ("rerank", [r for _, r in pairs])):
         out[name] = {"r1": recall(rows, 1), "r5": recall(rows, 5), "mrr": mrr(rows),
                      "negatives_rejected": sum(1 for r in rows if r["label"] == "negative"
@@ -271,6 +293,21 @@ def main():
             "name": name, "r1": sum(1 for _, r in pos if correct(r, pick(r))) / max(1, len(pos)),
             "wins": w, "losses": l, "p": exact_mcnemar(w, l),
             "neg_wins": wn, "neg_losses": ln, "neg_p": exact_mcnemar(wn, ln)})
+
+    # the two halves of the wines
+    out["halves"] = {}
+    for h in "AB":
+        hp = [(b, r) for b, r in pos if half_of(r["slug"]) == h]
+        hn = [(b, r) for b, r in neg if half_of(r["slug"]) == h]
+        wins, losses = paired_counts(hp, served)
+        neg_wins, neg_losses = paired_counts(hn, served)
+        out["halves"][h] = {
+            "positives": len(hp), "negatives": len(hn),
+            "base_r1": sum(1 for b, _ in hp if correct(b, top1(b))) / max(1, len(hp)),
+            "rerank_r1": sum(1 for _, r in hp if correct(r, top1(r))) / max(1, len(hp)),
+            "wins": wins, "losses": losses, "p": exact_mcnemar(wins, losses),
+            "neg_wins": neg_wins, "neg_losses": neg_losses,
+            "neg_p": exact_mcnemar(neg_wins, neg_losses)}
 
     # «Фантом»
     fan = [(b, r) for b, r in pos if "fantom" in r["slug"]]
@@ -354,12 +391,23 @@ def render(o):
         "", "## The four variants", "",
         "The served score is the design of the plan. The post hoc score was chosen after "
         "the partial run: an answer that no card expects gives no evidence. Both replays "
-        "reuse the recorded answers.", "",
+        "reuse the recorded answers. The post hoc score reads the questions of %s." % (
+            "`%s`" % o["rules"] if o["rules"].endswith(".json") else o["rules"]), "",
         "| Variant | R@1 | Wins | Losses | p | Negative wins | Negative losses |",
         "|---|---:|---:|---:|---:|---:|---:|",
     ] + ["| %s | %.4f | %d | %d | %s | %d | %d |" % (
         v["name"], v["r1"], v["wins"], v["losses"], fmt_p(v["p"]), v["neg_wins"],
         v["neg_losses"]) for v in o["variants"]] + [
+        "", "## The two halves of the wines", "",
+        "The halves split the wines by the SHA-1 of the slug. A change that was chosen "
+        "after an earlier run is measured on one half and reported on the other half.", "",
+        "| Half | Positives | Base R@1 | Re-rank R@1 | Wins | Losses | p | Negatives | "
+        "Negative wins | Negative losses |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ] + ["| %s | %d | %.4f | %.4f | %d | %d | %s | %d | %d | %d |" % (
+        h, v["positives"], v["base_r1"], v["rerank_r1"], v["wins"], v["losses"],
+        fmt_p(v["p"]), v["negatives"], v["neg_wins"], v["neg_losses"])
+        for h, v in sorted(o["halves"].items())] + [
         "", "## «Фантом»", "",
         "%d positive photos: the base answers %d right, the re-rank %d, the post hoc score %d." % (
             o["fantom"]["positives"], o["fantom"]["base_hits"], o["fantom"]["rerank_hits"],

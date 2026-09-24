@@ -29,6 +29,27 @@ catalog_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jso
 # Take the key away to show the official photos alone.
 patch_dir: svoe-wino-hackaton/dataset/patched-official-2026-09-17
 
+# Extra catalogue photos, zero or more files per wine slug. The Dataset page
+# writes `alternative_dir/<wine_slug>/<file>`. These pictures ADD views of a
+# wine. They do not replace the catalogue photo or its patch.
+# `svoe-vino-matcher/config.yaml` reads the same directory and adds every file
+# to each photo index. An index rebuild is required after a change.
+alternative_dir: svoe-wino-hackaton/dataset/derived/additional
+
+# Exact product barcodes, grouped by wine slug. The Dataset page writes this
+# file when the reviewer confirms a new barcode. The barcode matcher reads the
+# same file. One wine MAY have more than one barcode.
+barcode_file: svoe-vino-matcher/dataset/code-map.json
+
+# Automatic binding from a Svoe Vino slug to the permanent UUID of a Drink
+# Atlas Core product. `match_atlas.py` writes this JSONL file. The Dataset page
+# reads it but does not write it.
+atlas_matches_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-matches.jsonl
+
+# Manual Atlas Core bindings. The Dataset page writes this JSONL overlay. A
+# manual row replaces the automatic binding for the same slug.
+atlas_bindings_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-bindings.manual.jsonl
+
 # Cropped catalogue photos, one file per wine slug: `<wine_slug>.png`.
 # `svoe-wino-hackaton/scripts/build_cropped.py` cuts the empty border away from
 # the catalogue photo, or from the patch when the wine has one. The border is
@@ -95,8 +116,14 @@ clusters:
 # both files on `/clusters`. The re-rank of `svoe-vino-matcher` reads `rules_file`.
 # Read `docs/plans/05_cluster-label-rules.md`.
 #
-# The model is a thinking model. `thinking: false` answers in about 3 s instead of
-# about 28 s for one label description.
+# Stage 1, the label descriptions, uses the local model of the gx10 gateway. It is a
+# thinking model. `thinking: false` answers in about 3 s instead of about 28 s.
+#
+# Stage 2, the rules, runs once. The owner chose on 2026-09-23 the more capable
+# `qwen3.8-max` of the QwenCloud Token Plan for it, with thinking, 4 requests at a
+# time. The key is read from the environment variable `rules_key_env` at run time.
+# Never write the key into this file. The re-rank of `svoe-vino-matcher` keeps the
+# local model.
 cluster_rules:
   rules_file: svoe-vino-testset/dataset/catalog-cluster-rules.json
   notes_file: svoe-vino-testset/dataset/catalog-cluster-notes.json
@@ -106,6 +133,13 @@ cluster_rules:
   describe_side: 2048
   rules_max_side: 768
   timeout_s: 300
+  rules_url: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions
+  rules_model: qwen3.8-max
+  rules_api: qwencloud
+  rules_key_env: QWENCLOUD_TOKEN_PLAN_API_KEY
+  rules_thinking: true
+  rules_workers: 4
+  rules_timeout_s: 900
 
 # One entry per photo set. Each entry MUST hold a `name`, and the names MUST
 # differ. One entry MUST carry the name `default`.
@@ -140,3 +174,19 @@ dataset:
     manual_groups_file: svoe-vino-testset/dataset/official-real-photos/manual-groups.json
     excluded_slugs_file: svoe-vino-testset/dataset/official-real-photos/excluded-slugs.json
     runs_dir: svoe-vino-testset/dataset/official-real-photos/runs
+
+  # The failures of the pipeline `svm-vlmrerank-8b-siglip2-448`. The set holds the
+  # positive photos of `default` whose true slug was not at rank 1 in the run
+  # 2026-09-18T195710Z-svm-vlmrerank-8b-siglip2-448-bench: 180 photos of 108 wines.
+  # The photos and their labels are a frozen copy, made on 2026-09-24 with the
+  # labels of that day. A later label change in `default` does not reach this set.
+  # 9 photos lie on excluded slugs, so a run takes 171 photos. `selection.json` of
+  # the directory records the rule and every selected photo.
+  - name: vlmrerank-8b-failed
+    photo_dir: svoe-vino-testset/dataset/vlmrerank-8b-failed/photo
+    trash_dir: svoe-vino-testset/dataset/vlmrerank-8b-failed/trash
+    label_file: svoe-vino-testset/dataset/vlmrerank-8b-failed/review-labels.json
+    variant_groups_file: svoe-vino-testset/dataset/vlmrerank-8b-failed/variant-groups.json
+    manual_groups_file: svoe-vino-testset/dataset/vlmrerank-8b-failed/manual-groups.json
+    excluded_slugs_file: svoe-vino-testset/dataset/vlmrerank-8b-failed/excluded-slugs.json
+    runs_dir: svoe-vino-testset/dataset/vlmrerank-8b-failed/runs

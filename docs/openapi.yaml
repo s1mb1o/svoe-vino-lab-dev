@@ -308,6 +308,59 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundText"
 
+  /img/catalog:
+    get:
+      tags: [images]
+      operationId: getOriginalCatalogImage
+      summary: Read the unmodified image of one catalogue record.
+      description: |
+        The Dataset page uses this route for the left image. The route serves
+        `local_path` of the `catalog.jsonl` record. It does not apply a crop or a patch.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Picture"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
+  /img/patch:
+    get:
+      tags: [images]
+      operationId: getCatalogPatchImage
+      summary: Read the patch image of one catalogue record.
+      description: |
+        The Dataset page uses this route for the right image. The route serves the file
+        for the slug from `patch_dir`. A slug with no patch answers 404.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Picture"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
+  /img/alternative:
+    get:
+      tags: [images]
+      operationId: getAlternativeCatalogImage
+      summary: Read one active alternative image of a catalogue record.
+      description: |
+        The route serves one file from `alternative_dir/<slug>/`. It refuses a file
+        that is not in the active alternative set of the slug.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: file
+          in: query
+          required: true
+          schema: { type: string }
+          description: The active file name returned in `_alternatives`.
+      responses:
+        "200":
+          $ref: "#/components/responses/Picture"
+        "404":
+          $ref: "#/components/responses/NotFoundText"
+
   /img/inbox:
     get:
       tags: [images]
@@ -455,6 +508,255 @@ paths:
           content:
             text/html:
               schema: { type: string }
+
+  /dataset:
+    get:
+      tags: [page]
+      operationId: getDatasetPage
+      summary: Read the catalogue Dataset page.
+      description: |
+        The page lists every record of the configured `catalog.jsonl`. It compares the
+        unmodified catalogue image with the image from `patch_dir`. It edits alternative
+        photos and exact product barcodes for each slug.
+      responses:
+        "200":
+          description: The HTML page.
+          content:
+            text/html:
+              schema: { type: string }
+
+  /api/dataset:
+    get:
+      tags: [page]
+      operationId: getDataset
+      summary: Read every catalogue record and its editable Dataset state.
+      description: |
+        The records keep the order and the fields of `catalog.jsonl`. Each record adds
+        `_patched`, `_alternatives`, and `_barcodes`.
+      responses:
+        "200":
+          description: The configured catalogue and its patch state.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetBundle" }
+
+  /api/dataset-patch:
+    parameters:
+      - in: query
+        name: slug
+        required: true
+        schema: { type: string }
+        description: The slug of one catalogue record.
+    post:
+      tags: [page]
+      operationId: storeDatasetPatch
+      summary: Apply one staged patch image.
+      description: |
+        The body is one JPEG, PNG, WebP, GIF, or BMP image up to 20 MB. The server
+        detects the type from the bytes and writes `<slug>.<extension>` into
+        `patch_dir`. A previous patch moves to `patch_dir/.trash`. Existing crop and
+        label images for the slug move to `.trash` in their directories.
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
+      responses:
+        "200":
+          description: The patch was stored.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetPatchResult" }
+        "400":
+          description: The slug, patch directory, size, or image bytes are invalid.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [page]
+      operationId: removeDatasetPatch
+      summary: Apply one staged patch removal.
+      description: |
+        The server moves the current patch into `patch_dir/.trash`. The file stays
+        available for recovery. Existing crop and label images for the slug move to
+        `.trash` in their directories.
+      responses:
+        "200":
+          description: The patch was removed from the active patch set.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetPatchResult" }
+        "400":
+          description: The slug is unknown, or the slug has no patch.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/dataset-alternative:
+    parameters:
+      - in: query
+        name: slug
+        required: true
+        schema: { type: string }
+        description: The slug of one catalogue record.
+      - in: query
+        name: file
+        required: false
+        schema: { type: string }
+        description: The active file to remove. DELETE requires this parameter.
+    post:
+      tags: [page]
+      operationId: storeDatasetAlternative
+      summary: Apply one staged alternative-image addition.
+      description: |
+        The body is one JPEG, PNG, WebP, GIF, or BMP image up to 20 MB. The server
+        writes a sequential `NN_manual.<extension>` file in
+        `alternative_dir/<slug>/`. The image adds a view of the slug.
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
+      responses:
+        "200":
+          description: The alternative image was stored.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetAlternativeResult" }
+        "400":
+          description: The slug, directory, size, or image bytes are invalid.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [page]
+      operationId: removeDatasetAlternative
+      summary: Apply one staged alternative-image removal.
+      description: |
+        The server moves the active file to `alternative_dir/.trash/<slug>/`. The
+        file stays available for recovery.
+      responses:
+        "200":
+          description: The alternative image was removed from the active set.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetAlternativeResult" }
+        "400":
+          description: The slug or file is unknown.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/dataset-barcode:
+    post:
+      tags: [page]
+      operationId: storeDatasetBarcode
+      summary: Add one exact product barcode to a catalogue slug.
+      description: |
+        The server removes whitespace from the barcode. It refuses an empty value,
+        a value above 128 characters, and a value that already belongs to a slug.
+        The write preserves QR codes and other fields of the structured code map.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DatasetBarcodeRequest" }
+      responses:
+        "200":
+          description: The barcode was added.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetBarcodeResult" }
+        "400":
+          description: The slug, value, code map, or mapping is invalid.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/dataset-atlas-binding:
+    post:
+      tags: [page]
+      operationId: storeDatasetAtlasBinding
+      summary: Create or replace one manual Drink Atlas Core product binding.
+      description: |
+        The server validates and normalizes the product UUID. It writes the manual
+        overlay. It does not change the automatic match file. A manual binding replaces
+        an automatic match for the same slug.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DatasetAtlasBindingRequest" }
+      responses:
+        "200":
+          description: The manual binding was stored.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetAtlasBindingResult" }
+        "400":
+          description: The slug, UUID, or binding file is invalid.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/dataset-validation:
+    get:
+      tags: [page]
+      operationId: getDatasetValidation
+      summary: Read the current Dataset validation state.
+      description: |
+        The route starts no work. It returns the progress of the running job or the
+        result of the last job. A result stays available until the next job starts.
+      responses:
+        "200":
+          description: The current state.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetValidationState" }
+    post:
+      tags: [page]
+      operationId: startDatasetValidation
+      summary: Start selected read-only Dataset checks.
+      description: |
+        `slugs` compares the catalogue slug set with the public wine sitemap.
+        `images` downloads every `image_url` and compares its SHA-256 with the local
+        file. This is an exact byte check. A resize URL can re-encode the same visible
+        image. `pages` compares the catalogue source image file name with the file name
+        of `og:image` on each `wine_slug` page.
+
+        The checks run in one background job. They write no file. Use GET on this route
+        to read progress and results.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [checks]
+              properties:
+                checks:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: string
+                    enum: [slugs, images, pages]
+      responses:
+        "202":
+          description: The background job started.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DatasetValidationState" }
+        "400":
+          description: The list is absent, empty, or holds an unknown check.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: One Dataset validation already runs.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
 
   /api/rows:
     get:
@@ -1679,6 +1981,240 @@ components:
           items: { type: string }
         note: { type: string }
 
+    CatalogRecord:
+      type: object
+      description: |
+        One source record of `catalog.jsonl`. The source can add fields. The Dataset
+        API adds `_patched` and `_alternatives`; it does not write these fields to the
+        file.
+      required: [slug, _patched, _alternatives]
+      additionalProperties: true
+      properties:
+        slug: { type: string }
+        name: { type: string }
+        producer: { type: string }
+        category: { type: string }
+        color: { type: string }
+        region: { type: string }
+        grapes: { type: string }
+        description: { type: string }
+        csv_photo_name: { type: string }
+        upload_file: { type: string }
+        upload_file_alternatives:
+          type: array
+          items: { type: string }
+        local_path: { type: string }
+        page_url: { type: string }
+        image_url: { type: string }
+        match: { type: string }
+        image_match: { $ref: "#/components/schemas/ImageMatch" }
+        _patched:
+          type: boolean
+          description: Whether `patch_dir` holds an image for this slug.
+        _alternatives:
+          type: array
+          description: The active alternative file names for this slug.
+          items: { type: string }
+        _barcodes:
+          type: array
+          description: The exact product barcodes for this slug.
+          items: { type: string }
+        _atlas_product_uuid:
+          oneOf:
+            - { type: string, format: uuid }
+            - { type: "null" }
+          description: The effective Drink Atlas Core product UUID.
+        _atlas_binding_source:
+          oneOf:
+            - { type: string, enum: [automatic, manual] }
+            - { type: "null" }
+          description: The source of the effective Atlas binding.
+
+    DatasetBundle:
+      type: object
+      required:
+        [catalog_file, patch_dir, patches, alternative_dir, alternatives, barcode_file,
+         barcodes, atlas_matches_file, atlas_bindings_file, atlas_bindings,
+         atlas_manual_bindings, records]
+      properties:
+        catalog_file:
+          type: string
+          description: The absolute path of the configured `catalog.jsonl`.
+        patch_dir:
+          type: string
+          description: The absolute path of `patch_dir`, or an empty string.
+        patches:
+          type: integer
+          description: The number of image files in `patch_dir`.
+        alternative_dir:
+          type: string
+          description: The absolute path of `alternative_dir`, or an empty string.
+        alternatives:
+          type: integer
+          description: The number of active alternative image files.
+        barcode_file:
+          type: string
+          description: The absolute path of `barcode_file`, or an empty string.
+        barcodes:
+          type: integer
+          description: The total number of exact product barcodes.
+        atlas_matches_file:
+          type: string
+          description: The absolute path of the automatic match JSONL file.
+        atlas_bindings_file:
+          type: string
+          description: The absolute path of the manual binding JSONL file.
+        atlas_bindings:
+          type: integer
+          description: The number of effective Atlas bindings.
+        atlas_manual_bindings:
+          type: integer
+          description: The number of manual Atlas bindings.
+        records:
+          type: array
+          items: { $ref: "#/components/schemas/CatalogRecord" }
+
+    DatasetPatchResult:
+      type: object
+      required: [ok, slug, patched, patches]
+      properties:
+        ok: { type: boolean, const: true }
+        slug: { type: string }
+        patched:
+          type: boolean
+          description: Whether the slug has an active patch after the change.
+        patches:
+          type: integer
+          description: The number of active patches after the change.
+        file:
+          type: string
+          description: The stored patch file name after a POST.
+        removed_to:
+          type: string
+          description: The recovery path after a DELETE.
+
+    DatasetAlternativeResult:
+      type: object
+      required: [ok, slug, files, alternatives]
+      properties:
+        ok: { type: boolean, const: true }
+        slug: { type: string }
+        files:
+          type: array
+          description: The active alternative file names of the slug after the change.
+          items: { type: string }
+        alternatives:
+          type: integer
+          description: The total number of active alternatives after the change.
+        file:
+          type: string
+          description: The stored alternative file name after a POST.
+        removed_to:
+          type: string
+          description: The recovery path after a DELETE.
+
+    DatasetBarcodeRequest:
+      type: object
+      required: [slug, barcode]
+      properties:
+        slug:
+          type: string
+          description: The slug of one catalogue record.
+        barcode:
+          type: string
+          maxLength: 128
+          description: The exact product barcode to add.
+
+    DatasetBarcodeResult:
+      type: object
+      required: [ok, slug, barcode, barcodes, total]
+      properties:
+        ok: { type: boolean, const: true }
+        slug: { type: string }
+        barcode:
+          type: string
+          description: The normalized value that was stored.
+        barcodes:
+          type: array
+          description: All product barcodes of the slug after the change.
+          items: { type: string }
+        total:
+          type: integer
+          description: The total number of product barcodes after the change.
+
+    DatasetAtlasBindingRequest:
+      type: object
+      required: [slug, product_uuid]
+      properties:
+        slug:
+          type: string
+          description: The slug of one Svoe Vino catalogue record.
+        product_uuid:
+          type: string
+          format: uuid
+          description: The permanent UUID of one Drink Atlas Core product.
+
+    DatasetAtlasBindingResult:
+      type: object
+      required: [ok, slug, product_uuid, source, total]
+      properties:
+        ok: { type: boolean, const: true }
+        slug: { type: string }
+        product_uuid: { type: string, format: uuid }
+        source: { type: string, const: manual }
+        total:
+          type: integer
+          description: The number of effective Atlas bindings after the change.
+
+    DatasetValidationState:
+      type: object
+      required:
+        [running, selected, started_at, finished_at, current_check, progress, results,
+         error]
+      properties:
+        running:
+          type: boolean
+          description: Whether the background job runs now.
+        selected:
+          type: array
+          items: { type: string, enum: [slugs, images, pages] }
+        started_at:
+          oneOf: [{ type: string }, { type: "null" }]
+        finished_at:
+          oneOf: [{ type: string }, { type: "null" }]
+        current_check:
+          oneOf:
+            - { type: string, enum: [slugs, images, pages] }
+            - { type: "null" }
+        progress:
+          type: object
+          required: [done, total, label]
+          properties:
+            done: { type: integer, minimum: 0 }
+            total: { type: integer, minimum: 0 }
+            label: { type: string }
+        results:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/DatasetValidationResult"
+        error:
+          oneOf: [{ type: string }, { type: "null" }]
+
+    DatasetValidationResult:
+      type: object
+      description: |
+        One completed check. The slug result holds the two set differences. The image
+        and page results hold counters and the first 250 problem records. The exact
+        fields depend on the check.
+      required: [status]
+      additionalProperties: true
+      properties:
+        status: { type: string, enum: [pass, fail, error] }
+        error: { type: string }
+        details:
+          type: array
+          items: { type: object, additionalProperties: true }
+
     VariantGroupRef:
       type: object
       description: |
@@ -2452,9 +2988,13 @@ components:
         photo of the same run.
         `twin_conflict`: a defect of the photo set. One photo is `positive` for two
         wines, or one photo is both `positive` and `negative` for one wine.
+        `rule_acted`: the cluster rule step of `svoe-vino-matcher` asked the VLM about
+        the top cluster. A candidate holds an `explain` record with `kind: cluster_rules`.
+        `rule_changed`: the same, and the answer of the VLM changed the order.
       enum:
         [all, error, hit, miss, near, absent, rank_2_5, after_5, after_10, false_match,
-         negative_in_topk, negative, negative_above_positive, twin_conflict]
+         negative_in_topk, negative, negative_above_positive, twin_conflict, rule_acted,
+         rule_changed]
 
     RunRowSort:
       type: string

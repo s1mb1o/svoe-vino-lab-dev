@@ -41,7 +41,7 @@ def config_path(key, default):
 DATASET_KEYS = ("photo_dir", "trash_dir", "label_file", "variant_groups_file",
                 "manual_groups_file", "excluded_slugs_file", "runs_dir")
 # The keys that every dataset shares. They stand at the top of `config.yaml`.
-GENERIC_KEYS = ("rootdir", "catalog_file", "patch_dir", "bottle_cropped_dir",
+GENERIC_KEYS = ("rootdir", "catalog_file", "patch_dir", "alternative_dir", "barcode_file", "atlas_matches_file", "atlas_bindings_file", "bottle_cropped_dir",
                 "bottle_label_dir", "bottle_label_box_dir", "backends_file", "clusters")
 # The dataset that a script uses when it gets no name.
 DEFAULT_DATASET = "default"
@@ -118,6 +118,24 @@ CATALOG_FILE = config_path(
 # There is NO default directory: a patch is applied only when `config.yaml`
 # asks for it.
 PATCH_DIR = config_path("patch_dir", "")
+
+# Extra catalogue photos, zero or more files per wine slug. A file in
+# `alternative_dir/<slug>/` ADDS a view of the wine. It does not replace the
+# catalogue photo or its patch. The matcher reads the same directory.
+# There is NO default directory. The Dataset page shows the editor only when
+# `config.yaml` names the directory.
+ALTERNATIVE_DIR = config_path("alternative_dir", "")
+
+# Exact product barcodes, grouped by wine slug. The Dataset page writes this
+# file. The barcode matcher reads the same file.
+BARCODE_FILE = config_path("barcode_file", "")
+
+# Automatic Atlas bindings. `match_atlas.py` writes this file. The Dataset page
+# reads it but does not write it.
+ATLAS_MATCHES_FILE = config_path("atlas_matches_file", "")
+
+# Manual Atlas binding overlay. The Dataset page writes this JSONL file.
+ATLAS_BINDINGS_FILE = config_path("atlas_bindings_file", "")
 
 # The file types that count as a patch. The name before the extension is the slug.
 PATCH_EXT = (".webp", ".jpg", ".jpeg", ".png", ".gif", ".bmp")
@@ -319,6 +337,10 @@ def select_dataset(name=None):
         ("catalog_file", CATALOG_FILE),
         # `patch_dir` is optional, so it is reported only when it is configured.
     ) + ((("patch_dir", PATCH_DIR),) if PATCH_DIR else ()
+         ) + ((("alternative_dir", ALTERNATIVE_DIR),) if ALTERNATIVE_DIR else ()
+         ) + ((("barcode_file", BARCODE_FILE),) if BARCODE_FILE else ()
+         ) + ((("atlas_matches_file", ATLAS_MATCHES_FILE),) if ATLAS_MATCHES_FILE else ()
+         ) + ((("atlas_bindings_file", ATLAS_BINDINGS_FILE),) if ATLAS_BINDINGS_FILE else ()
          ) + ((("bottle_cropped_dir", BOTTLE_CROPPED_DIR),) if BOTTLE_CROPPED_DIR else ()
          ) + ((("bottle_label_dir", BOTTLE_LABEL_DIR),) if BOTTLE_LABEL_DIR else ()
          ) + ((("bottle_label_box_dir", BOTTLE_LABEL_BOX_DIR),) if BOTTLE_LABEL_BOX_DIR else ()) + (

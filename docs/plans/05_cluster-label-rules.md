@@ -244,6 +244,73 @@ The probes are in `ResearchLog.md`, 2026-09-23.
 7. `Rebuild rule` saves an unsaved note first.
 8. The query side scales the crop to a long side of 1536 pixels, UP or down, for the
    reason of item 2.
+9. The owner changed two decisions on 2026-09-23, after the first rules:
+   - Stage 2 uses `qwen3.8-max` of the QwenCloud Token Plan, with thinking, 4 requests
+     at a time, because it runs once. Stage 1 and the re-rank keep the local
+     `qwen3.5-9b` with thinking off. The owner named the local model «qwen3.6-9B»; the
+     gateway holds no such model, so the local 9B model stays.
+   - The prompt of stage 2 keeps only major differences: the vintage year, the grapes,
+     a kosher mark, the wine name or the line name, the colour and the sugar level of
+     the wine, a blend ratio, a reserve or edition mark, and the volume. A design, a
+     colour shade, a background, a font, a pattern or a capsule colour is not used
+     unless the note of the reviewer names it.
+   `qwen3.8-max` did not read small print better than the local model: at 2048 pixels
+   it read «урож. 2024» as 2021, also with thinking (94 s), where `qwen3.5-9b` read 2024.
+   Stage 1 therefore stays local.
+10. A mark that only some cards carry, such as a kosher mark, gets a yes/no question
+    with "yes" or "no" for each card. The first rules of `qwen3.8-max` gave such a mark
+    to one card and null to the others, and the check «two different non-null answers»
+    struck every kosher question. Every rule was built again.
+
+## Result
+
+Measured on 2026-09-24. Run
+`runs/2026-09-23T224548Z-svm-label-gw-cluster-rules-qwen38max-rules-v2`, 2,181 photos,
+156 rules of `qwen3.8-max` (132 `sheet`, 24 `verdict`), the local `qwen3.5-9b` at query
+time, against the base run `2026-09-23T121203Z-svm-label-gw-difference-alpha-patches`.
+The report is `cluster-rules-report.md` of the run.
+
+| Metric | Base | Re-rank |
+|---|---:|---:|
+| R@1 of 1,600 positives | 0.8156 | 0.8313 |
+| MRR | 0.8833 | 0.8929 |
+| R@5 | 0.9656 | 0.9656 |
+| Negatives rejected (581) | 0.8262 | 0.8399 |
+
+- Positives: 47 wins, 22 losses, exact McNemar p 0.004. Negatives: 11 wins, 3 losses,
+  p 0.057.
+- The step acted on 906 of 2,181 photos and changed the order of 110. Mode `sheet`: 811
+  photos, 47 wins and 18 losses over both labels; mode `verdict`: 95 photos, 11 wins and
+  7 losses. One VLM call failed.
+- Without the clusters that only the `confusion` signal joins (replay): R@1 0.8244,
+  27 wins, 13 losses, p 0.038. This is the number that the test photos did not shape.
+- The post hoc score («an answer that no card expects gives no evidence»): 45 wins and
+  20 losses, p 0.003; without the `confusion` clusters 25 and 11, p 0.029. It does not
+  change the result.
+- «Фантом»: 4 of 17 positive photos right in the base, 10 with the rule of the note.
+- The base score gap of a change: below 0.02 below rank 1, 44 wins and 13 losses; at
+  0.05 or more, 1 win and 5 losses.
+- Latency: median 3,757 ms where the step acted, 283 ms elsewhere; 77.6 % of the photos
+  within the 3,000 ms SLA (97.9 % for the base). The gx10 GPU stood at 95 % from other
+  jobs, so a VLM call took 5.4 s (median) instead of about 2.4 s on a quieter host.
+
+The two main causes of the losses:
+
+1. A vintage that only the catalogue photo shows. c032 holds «Аристов. Кюве Александр.
+   Блан Де Блан» (18 months, the photo shows 2022) and «... Blanc de Blancs 36» (36
+   months, 2021). Four positive photos of the first card show 2021, so the rule moved
+   them to the second card. The months of ageing separate the two cards, and the VLM
+   answered `not visible` for them. A year that the card data does not state is not a
+   stable feature of a card: the next bottle can carry the next vintage.
+2. A «no» for a mark that the VLM does not see. c246: the positive photo of «Совиньон
+   Блан. Авторская технология» got «no» for «АВТОРСКАЯ ТЕХНОЛОГИЯ».
+
+Candidate changes, each chosen after this run and therefore post hoc, to be measured
+on one half of the wines and reported on the other half:
+
+- use a vintage year only when the name or the slug of the card states it;
+- in a yes/no question, count only «yes» as evidence;
+- a margin guard near 0.05, as `group.max_gap` of the kind `difference`.
 
 ## Later
 

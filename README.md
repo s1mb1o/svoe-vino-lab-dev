@@ -26,6 +26,10 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `rootdir` | `ROOTDIR` | Root directory of the workspace. Every relative path of the configuration is resolved against it. |
 | `catalog_file` | `CATALOG_FILE` | Catalogue of the vino-svoe.ru wines, one JSON record per line. Every dataset reads the same catalogue. |
 | `patch_dir` | `PATCH_DIR` | Corrected catalogue photos, one file per wine slug. Optional. Every dataset reads the same directory. See [Patched catalogue photos](#patched-catalogue-photos). |
+| `alternative_dir` | `ALTERNATIVE_DIR` | Extra catalogue views, zero or more files per wine slug. Optional. Every dataset and the matcher read the same directory. |
+| `barcode_file` | `BARCODE_FILE` | Exact product barcodes grouped by wine slug. Optional. The Dataset page and the matcher share this file. |
+| `atlas_matches_file` | `ATLAS_MATCHES_FILE` | Automatic Svoe Vino to Drink Atlas Core product matches. Optional. The Dataset page reads this JSONL file. |
+| `atlas_bindings_file` | `ATLAS_BINDINGS_FILE` | Manual Svoe Vino to Drink Atlas Core product bindings. Optional. The Dataset page writes this JSONL overlay. |
 | `bottle_cropped_dir` | `BOTTLE_CROPPED_DIR` | Catalogue photos without their empty border, one file per wine slug. Optional. Every view shows the crop in place of the catalogue photo. See [Cropped catalogue photos](#cropped-catalogue-photos). |
 | `bottle_label_dir` | `BOTTLE_LABEL_DIR` | Label crops of the catalogue photos, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
 | `bottle_label_box_dir` | `BOTTLE_LABEL_BOX_DIR` | Box crops of the same labels, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
@@ -50,6 +54,9 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
 catalog_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl
 patch_dir: svoe-wino-hackaton/dataset/patched-official-2026-09-17
+barcode_file: svoe-vino-matcher/dataset/code-map.json
+atlas_matches_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-matches.jsonl
+atlas_bindings_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-bindings.manual.jsonl
 backends_file: svoe-vino-testset/backends.yaml
 
 dataset:
@@ -87,6 +94,7 @@ is not built by the pipeline. `run.json` of every run records the dataset it use
 |---|---|---|
 | `default` | the photo set that the pipeline built | 2,435 labels of a reviewer |
 | `official-real-photos` | 100 official test photos, real-world shots | no label yet |
+| `vlmrerank-8b-failed` | 180 positive photos of `default` that `svm-vlmrerank-8b-siglip2-448` missed at rank 1 | frozen copy of the labels of 2026-09-24 |
 
 `official-real-photos` holds the 100 photos of the official test set. They carry **no
 ground truth**. Each photo lies in the directory of the wine that the recognizer
@@ -102,6 +110,41 @@ moved with the `move` button or with the sideboard.
 `scripts/match_run.py --dataset official-real-photos` answers `the query set is empty`
 until the photos hold labels. The query set is built from labels, and a machine
 placement is not one.
+
+`vlmrerank-8b-failed` holds the failures of the run
+`2026-09-18T195710Z-svm-vlmrerank-8b-siglip2-448-bench`. A photo is in the set when its
+label in that run is `positive` and its true slug is not at rank 1. The run holds 184
+such photos. 180 photos of 108 wines are in the set. The other 4 photos carry the label
+`negative` in `default` now, so they stay out.
+
+The set is a frozen copy. The photo files and their label entries were copied from
+`default` on 2026-09-24, without a change. A later label change in `default` does not
+reach this set, and a change in this set does not reach `default`. `excluded-slugs.json`,
+`variant-groups.json`, and `manual-groups.json` are copies of the files of `default` of
+the same day. 9 photos lie on excluded slugs, so a run takes 171 photos.
+
+`selection.json` in the directory of the set records the rule, the source run, and each
+of the 184 photos: the query id and the rank of the true slug in the source run, the
+answer at rank 1, and the reason when a photo stays out. The review tool and the match
+runner do not read this file.
+
+Every photo of the set failed at rank 1 in the source run. R@1 of a run of this set is
+therefore the share of those failures that the backend answers correctly now. It is not
+the R@1 of `default`.
+
+```bash
+python3 scripts/match_run.py --dataset vlmrerank-8b-failed --backend svm-vlmrerank-8b-siglip2-448
+python3 scripts/review_server.py --dataset vlmrerank-8b-failed --port 8167 --no-browser
+```
+
+The runs of the set stand in `dataset/vlmrerank-8b-failed/runs/`. The review tool on
+port 8154 shows the runs of `default` alone. The second command shows the runs of this
+set at `http://127.0.0.1:8167/runs`. A run of this set gives new query ids, so join it
+with the source run on `image_path`.
+
+`--from-run` of the source run is not the same set. It reads the live labels of
+`default`, and it repeats a photo that was `negative` in the source run as well. Read
+the ResearchLog entry of 2026-09-24.
 
 An unknown name stops the script and names every dataset of the file.
 
@@ -199,6 +242,64 @@ It answers one question for each candidate photo: what is this photo for this sl
 python3 scripts/review_server.py            # opens http://127.0.0.1:8154/
 python3 scripts/review_server.py --no-browser --port 8154
 ```
+
+### The Dataset page
+
+Open `http://127.0.0.1:8154/dataset`. The page shows every record of the configured
+`catalog.jsonl`. The unmodified catalogue image stands at the left. The image from
+`patch_dir` stands next to it. A record with no patch is a drop target. Drop an image
+there, or press the target to choose a file. The page shows the file as a candidate.
+It writes no file until you press `Apply`. Press `Cancel` to discard the candidate.
+
+The page shows all records that pass the current filter. It has no pagination. Search
+and sort apply to the full list. Images outside the viewport keep native lazy loading.
+
+A record with a patch has a `Remove` button. The button stages the removal. Press
+`Apply` to remove the patch, or press `Cancel` to keep it. You can drop a new image on
+an existing patch to stage a replacement. An applied replacement or removal moves the
+old file into `patch_dir/.trash`, so the old file can be recovered. The page accepts
+JPEG, PNG, WebP, GIF, and BMP files up to 20 MB. Apply also moves the old derived crop
+and label images into `.trash` directories beside those files. This prevents another
+page from showing pixels that came from the old patch.
+
+The right side of each row holds `Alternative photos`. Drop one or more files there,
+or press the drop target to choose files. The page shows local candidates. It writes
+no file until you press `Apply`. You can mark an active alternative for removal. The
+removal also waits for `Apply`. `Cancel` discards all pending changes of that row.
+
+An addition writes `alternative_dir/<slug>/NN_manual.<extension>`. A removal moves the
+file to `alternative_dir/.trash/<slug>/`, so the file can be recovered. These pictures
+add views of the slug to every photo index. They do not replace the catalogue picture
+or its patch. Rebuild the matcher index after a change.
+
+The information area of each row holds `Barcodes` and a `+` button. Press `+` to add
+an input row. Enter one barcode and press `V` to save it. Press `X` to cancel the new
+row. A wine MAY have more than one barcode. The page writes a confirmed value to
+`barcode_file`. The barcode matcher reads the same file. The server removes spaces
+from the value and refuses a value that already belongs to another slug.
+
+Each row also shows `Atlas Core product`. The value is the permanent product UUID.
+The page reads automatic values from `atlas_matches_file`. Press `+` to add a missing
+binding. Press `edit` to replace an automatic or manual value. The input has `V` and
+`X` buttons. `V` writes the value to `atlas_bindings_file`. `X` writes nothing. A
+manual value replaces the automatic value for the same slug. The automatic file does
+not change. Several Svoe Vino slugs MAY bind to one Atlas product UUID.
+
+The row shows the name, the producer, the category, the region, the colour, the grapes,
+the slug, the image match, the description, and the source links. Open
+`full catalog.jsonl record` to read every field of the JSON record. Search reads every
+source field, every saved barcode, and every Atlas product UUID. The filter can show
+the 15 patched records alone.
+
+Press `Validate` to open the validation dialog. The dialog describes three read-only
+checks. The slug check compares the catalogue with the public wine sitemap. The image
+check downloads each source image and compares its SHA-256 with the local file. This
+is an exact byte check. A resize URL can re-encode the same visible image. The page
+check compares the source image file name with `og:image` on each `wine_slug` page.
+
+The server runs the selected checks in the background. The dialog shows progress and
+the problem records. Closing the dialog does not stop the job. Open it again to read
+the current progress or the last result.
 
 ### The four labels
 
@@ -483,7 +584,8 @@ A label rule tells the cards of one cluster apart. The re-rank kind `cluster_rul
 `svoe-vino-matcher` reads the rules: when the rank-1 card and another card of its
 cluster stand in the first 5 positions, the VLM reads the label of the query photo
 with the rule of that cluster. Read `docs/plans/05_cluster-label-rules.md` for the
-decisions and the measurements.
+decisions and the measurements, and `docs/plans/06_label-only-cluster-rules.md` for
+the label-only rules of 2026-09-24.
 
 `scripts/11_cluster_rules.py` builds the rules in two stages:
 
@@ -497,25 +599,62 @@ python3 scripts/11_cluster_rules.py --dry-run
 | Stage | One VLM call for | Input | Answer |
 |---|---|---|---|
 | 1, `describe` | each card of a cluster | the catalogue picture of the review tool, scaled to a long side of 2048 pixels; no card data | the label description: the texts and the numbers with their place, the vintage, the colours, the design, the marks, the bottle |
-| 2, `rules` | each cluster | the pictures of all cards (long side 768), the card data, the label descriptions, and the note of the reviewer | the difference sheet (questions with the expected answer of each card), the rule text, and the groups that no feature separates |
+| 2, `rules` | each cluster | the label crop of each card from `bottle_label_dir`, on white, scaled to a long side of 768 pixels, UP or down (a card with no label crop sends its catalogue picture); the card data; the label descriptions without the key `bottle`; and the note of the reviewer | the difference sheet (questions with the expected answer of each card), the rule text, and the groups that no feature separates |
 
-The VLM is `qwen3.5-9b` on the gx10 gateway, with thinking off. One description takes
-about 15 seconds; one rule about 10 to 30 seconds. The script does only the work that
-is not current, so a stopped run resumes. A small catalogue photo is scaled UP for
-stage 1: at 312 x 1000 pixels the model read «урож. 2024» as 2021.
+Stage 1 uses `qwen3.5-9b` on the gx10 gateway, with thinking off; one description
+takes about 15 seconds. Stage 2 runs once, so it uses the more capable `qwen3.8-max` of
+the QwenCloud Token Plan, with thinking, 4 requests at a time; one rule takes about 40
+to 70 seconds. The key comes from the environment variable `QWENCLOUD_TOKEN_PLAN_API_KEY`
+(`rules_key_env` of `config.yaml`); a shell that runs stage 2, or the review tool that
+builds a rule, MUST hold it. The prompt of stage 2 keeps only major differences: the
+grapes, a kosher mark, the wine name or the line name, the colour of the wine as the
+label states it, the sugar level, a blend ratio, a reserve or edition mark, the volume,
+and the vintage year. The prompt allows only features that are printed on the label:
+some catalogue pictures are drawings, and a drawing shows only the label correctly.
+The re-rank also sends only the label crop of the query. The vintage year is used only
+when the catalogue names of at least two cards state two different years: a year that
+only the picture shows changes from bottle to bottle. An expected text is written as the
+label prints it, in its own alphabet, so the query VLM can find it among the options: a
+first build wrote «Krasnostop» for the printed «КРАСНОСТОП». The catalogue reuses the
+picture of one card for another card (43 cards of 21 clusters on 2026-09-24). The caption
+of such a card names the other card, and the catalogue data wins where the picture
+contradicts it. The script does only the work that is not current, so a stopped run
+resumes. A small catalogue photo is scaled UP for stage 1: at 312 x 1000 pixels the
+model read «урож. 2024» as 2021.
 
 The code checks the sheet and sets the mode of the rule:
 
 | Mode | Meaning |
 |---|---|
 | `sheet` | At least one question separates two cards. The re-rank asks the questions about the query photo. |
-| `verdict` | No question separates two cards, and the rule text is not empty. The VLM reads the rule text and names the card. |
-| `none` | No difference was found. The re-rank does not act. |
+| `verdict` | No question separates two cards, the rule text is not empty, and the rule text names no feature outside the label. The VLM reads the rule text and names the card. |
+| `none` | No usable difference was found. The re-rank does not act. |
 
-The code enforces two rules of the prompt. A question about a bottle number, such as
-«Бут. №» or «Тираж», is never used: the number changes from bottle to bottle. A
-question about the alcohol value is used only when no other question separates the
-cards: the value changes between vintages.
+The vintage variants. When cards differ only by the vintage year, and one card states
+no year, that card is the card of every vintage that no other card states. A card
+states a year in its name, in its slug, or on its label (the key `vintage` of its
+label description). Only a mixed cluster, which holds cards with a year and cards
+without one, gets the note of the vintage variants in its prompt: 43 clusters on
+2026-09-24. The model gives a card with no year the answer `other` in the vintage
+question. The re-rank of `svoe-vino-matcher` counts a year that no card lists as
+`other`.
+
+The code enforces five rules of the prompt, because the model does not always keep
+them:
+
+- A question about a bottle number, such as «Бут. №» or «Тираж», is never used: the
+  number changes from bottle to bottle. Its kind is `serial`.
+- A question about a feature outside the label, such as the glass, the colour of the
+  liquid, the capsule, the cork, or the shape of the bottle, is never used. Its kind is
+  `bottle`. A rule text that names such a feature gives mode `none`, not `verdict`.
+- A vintage question keeps the expected year of a card only when the name or the slug
+  of the card states that year. Its kind is `vintage`. The question is used when two
+  cards keep two different years.
+- The mark `other` of a vintage question stays only for a card that states no year,
+  and only when no other question separates that card from every card with a year.
+  Then the vintage question also keeps the year on the label of a card.
+- A question about the alcohol value is used only when no other question separates the
+  cards: the value changes between vintages. Its kind is `alcohol`.
 
 Two files hold the results:
 
@@ -527,13 +666,34 @@ Two files hold the results:
 The cluster key is the SHA-1 of the sorted slugs of a cluster, 12 hex digits. A note
 keeps the slugs of its cluster. It belongs to the current cluster that shares the most
 slugs with it, so a note survives a new build of the clusters. A rule is `current`
-while its slugs, its card data, its descriptions, its note, and its prompt stay the
-same; else it is `stale`. A lock file keeps two writers of the rules file apart.
+while its slugs, its card data, its descriptions, the paths of its label crops, its
+note, and its prompt stay the same; else it is `stale`. A label crop that is cut again
+under the same path does not make a rule stale. A lock file keeps two writers of the
+rules file apart.
+
+The post hoc score of `scripts/cluster_rules_report.py` reads the questions of a rules
+file: the current file, or the file that `--rules` names. A report of an older run
+MUST name the rules file of that run. The rules of 2026-09-23 (`qwen3.8-max`, whole
+pictures) are kept as `work/catalog-cluster-rules.2026-09-24T082150.json`. That copy is
+the only record of them, because `dataset/catalog-cluster-rules.json` is not in git. The
+report also gives the paired numbers for each half of the wines; the half of a wine is
+the SHA-1 of its slug, modulo 2.
 
 The page `/clusters` shows a `Label rule` block in each cluster: the mode, the status,
 the text about the differences, the sheet as a table with one column for each card,
 and the rule text. A struck question is not used; its tooltip gives the reason. Each
-card holds its `label description`. The filter `Rule` selects a mode, a status, or the
+card holds its `label description`.
+
+Stage 2 shows the VLM the cards as «Card A», «Card B», and so on, and the rule text
+uses these letters. The rule keeps the map `letters`, from the letter to the slug. The
+letters follow the sorted slugs, so A is card #1 of the page. The page writes the letter
+beside the number of each card and in the head of the sheet, and `the cards of the
+letters` under the rule text names the card and the slug of each letter. The sheet is
+stored by slug, so the re-rank never reads a letter in mode `sheet`. In mode `verdict`
+the query prompt shows the same letters with the card names and descriptions, and the
+code turns the answered letter back into a slug with the same map. A slug is not put
+into a prompt: it is long, so the model can answer it with a typo, and it holds hints
+such as a year or the alcohol value that the label can contradict. The filter `Rule` selects a mode, a status, or the
 clusters with a note.
 
 The note editor stands under the rule. `Save note` stores the note. The note does not
@@ -1052,6 +1212,11 @@ What the tool does with a patch:
   the same colour and the tooltip states the meaning.
 - The tool reads the directory again at every `GET /api/reload`, so a new patch file
   needs no restart.
+- The Dataset page can add, replace, and remove these files. It stages one change in
+  the browser and writes the change only when the reviewer presses `Apply`. A replaced
+  or removed patch moves to `.trash/` in this directory. Existing derived crop and
+  label files for the slug move to `.trash/` in their directories. Rebuild these files
+  after the patch change.
 
 `svoe-vino-matcher/config.yaml` read the same directory under the same key until
 2026-09-23. It now indexes the cropped pictures of `dataset.image_dir`, and those
@@ -1245,10 +1410,21 @@ example the most wrong first. The expected wine carries a green border, and the 
 NOT match carries a red one. A dashed green border marks the true wine of a negative
 photo, which the server reads from a byte-equal `positive` photo of the same run. Two or
 more candidates that stand next to each other and belong to one catalogue cluster share
-one frame in the accent colour. The
+one frame in the accent colour. The link in the frame opens that cluster on
+`/clusters` and scrolls to its details. The
 filter `negative_above_positive` selects the negative photos whose forbidden wine stands
 above that true wine, and the filter `twin_conflict` selects the photos that a defect of
 the set marks.
+
+A run of the backend `svm-label-gw-cluster-rules` holds the answer of the VLM rule step
+in the `explain` record of each card that the step touched. When the step acted on a
+photo, a box `VLM` stands under the frame of the top cluster: the mode, the cluster id,
+the time of the call or `from the cache`, each question with the answer of the VLM (or
+the verdict), the score of each card of the window, and whether the answer moved a card
+to rank 1. A run that did not record the questions takes their text from the current
+rule of the cluster, and the box states that. The filters `rule step: the VLM answered
+for the top cluster` and `rule step: the VLM answer changed the order` select these
+rows. Read `docs/plans/05_cluster-label-rules.md`.
 
 Read `docs/match-runner.md` for every file, every field, and every option.
 

@@ -1,0 +1,1101 @@
+{
+  "counts": {
+    "commented": 19,
+    "copied": 0,
+    "deleting": 0,
+    "labelled": 180,
+    "negative": 0,
+    "no_match": 0,
+    "no_match_pending": 0,
+    "positive": 180,
+    "proposed": 0,
+    "reassigned": 0,
+    "unusable": 0,
+    "variant": 0,
+    "wine_notes": 6
+  },
+  "labels": {
+    "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T15:17:24+0300"
+      }
+    },
+    "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105": {
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:33:08+0300"
+      }
+    },
+    "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-125": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:35:47+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:35:54+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:35:56+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:35:58+0300"
+      }
+    },
+    "abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-115": {
+      "01_agent.jpg": {
+        "by": "kimi",
+        "comment": "real-world photo from cdn-irec.r-99.com; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.67; front label compared with catalogue bottle",
+        "confidence": 0.84,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://irecommend.ru/content/ne-shedevralno-no-krasivo",
+        "ts": "2026-09-18T12:56:47+0300"
+      },
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T10:45:09+0300"
+      },
+      "05_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T10:45:10+0300"
+      },
+      "06_manual.webp": {
+        "comment": "копия фотографии из abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-125",
+        "copied_from": "abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-125",
+        "label": "positive",
+        "ts": "2026-09-21T13:51:33+0300"
+      }
+    },
+    "abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-125": {
+      "04_agent.jpg": {
+        "by": "hunter-01",
+        "comment": "Flat-lay on a wooden table with cheese and walnuts, not a shop render. Front label is the navy diamond with gold border, red 1870, gold script Abrau-Dyurso, gold Brut d'Or, METHODE CLASSIQUE and red script Blanc de Noirs - same layout as the catalogue bottle. Black mesh capsule and the gold neck band with the imperial eagle medallion also match. Vintage reads 2018 here against 2021 on the catalogue render; the slug carries no vintage and this wine has no variant group.",
+        "confidence": 0.93,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://porusski.me/2021/10/12/052-blanc-de-noirs/",
+        "ts": "2026-09-16T05:55:31+0300"
+      }
+    },
+    "abrau-dyurso-imperatorskoe-polusladkoe-shardone-beloe-12": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:18:14+0300"
+      }
+    },
+    "abrau-dyurso-imperial-brut-rose-pino-nuar-rozovoe-bryut-12": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:20:02+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:20:05+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:20:12+0300"
+      }
+    },
+    "abrau-dyurso-pino-nuar-krasnoe-suhoe-12": {
+      "01_agent.jpg": {
+        "by": "kimi",
+        "comment": "real-world photo from i2024.otzovik.com; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.76; front label compared with catalogue bottle",
+        "confidence": 0.88,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://otzovik.com/review_15867534.html",
+        "ts": "2026-09-18T12:56:51+0300"
+      },
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T10:44:04+0300"
+      },
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T10:44:04+0300"
+      },
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T10:44:06+0300"
+      }
+    },
+    "abrau-dyurso-pino-nuar-krasnoe-suhoe-125": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T17:38:36+0300"
+      },
+      "02_manual.jpg": {
+        "comment": "Спирт: 12.5% \nГод: 2022",
+        "label": "positive",
+        "ts": "2026-09-15T22:28:15+0300"
+      }
+    },
+    "abrau-dyurso-risling-beloe-suhoe-12": {
+      "03_conf090.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T22:29:37+0300"
+      },
+      "06_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T10:04:59+0300"
+      }
+    },
+    "abrau-dyurso-russkoe-igristoe-polusladkoe-krasnoe-kaberne-sovinon-12": {
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:14:47+0300"
+      }
+    },
+    "abrau-dyurso-russkoe-igristoe-polusladkoe-shardone-beloe-12": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T05:47:29+0300"
+      }
+    },
+    "abrau-dyurso-shardone-beloe-suhoe-12": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T22:31:48+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T22:31:51+0300"
+      },
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-17T23:15:27+0300"
+      }
+    },
+    "abrau-dyurso-shardone-beloe-suhoe-13": {
+      "01_conf095.png": {
+        "label": "positive",
+        "ts": "2026-09-18T15:25:24+0300"
+      }
+    },
+    "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-polusladkoe": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:09:33+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:09:35+0300"
+      }
+    },
+    "abrau-dyurso-victor-dravigny-brut-shardone-beloe-bryut-12": {
+      "02_agent.jpg": {
+        "by": "claude-code",
+        "confidence": 0.9,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://otzovik.com/review_17368513.html",
+        "ts": "2026-09-18T07:41:12+0300"
+      }
+    },
+    "abrau-dyurso-victor-dravigny-polusladkoe-sovinon-blan-beloe-12": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:08:32+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:08:35+0300"
+      }
+    },
+    "aligote-avtorskoe": {
+      "05_agent.jpg": {
+        "by": "irec-03",
+        "comment": "Clean studio shot on white, no watermark, whole bottle. Front label reads MASSANDRA / AVTORSKOE VINO / ALIGOTE / 2022 / Krym, g. Yalta, the two blue signatures OSMANOV Marlen Umerovich and SHPIL Igor Vladimirovich, the engraving of the Massandra winery, and the foot line Alk. 12,x % ob. | Sobstvennye vinogradniki | Obem 0,75 l. Same olive glass and same dark green capsule printed AVTORSKOE as the catalogue render. Marked variant for one reason only: the year line reads 2022 while the catalogue render reads 2023. The label design generation is the same.",
+        "confidence": 0.85,
+        "label": "positive",
+        "proposed": "variant",
+        "source_url": "https://www.wildberries.ru/catalog/299621188/detail.aspx",
+        "ts": "2026-09-16T07:15:27+0300"
+      },
+      "06_agent.jpg": {
+        "by": "irec-03",
+        "confidence": 0.85,
+        "label": "positive",
+        "proposed": "variant",
+        "source_url": "https://www.alcoplaza.ru/Wine/vino-massandra-avtorskoe-aligote-2022-god-075-beloe-suhoe",
+        "ts": "2026-09-16T07:15:31+0300"
+      }
+    },
+    "aratti-kaberne-sovinon-2021-krasnoe-suhoe": {
+      "02_agent.webp": {
+        "by": "kimi",
+        "confidence": 0.82,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://winestreet.ru/wine/aratti/aratti-kaberne-sovin-on-075-l-2023.html",
+        "ts": "2026-09-18T18:02:33+0300"
+      }
+    },
+    "aratti-risling-beloe-polusuhoe": {
+      "01_agent.webp": {
+        "by": "kimi",
+        "comment": "real-world photo from winehelp2.ru; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.86; front label compared with catalogue bottle",
+        "confidence": 0.9,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://winehelp2.ru/wine/white/aratti/",
+        "ts": "2026-09-18T12:57:22+0300"
+      }
+    },
+    "arie-vyderzhka-bochka-francziya-2020": {
+      "01_agent.webp": {
+        "by": "kimi",
+        "comment": "VLM same-wine verdict (dashscope qwen3.7-flash, conf 0.95); studio packshot; embedding sim=0.80 vs reference.",
+        "confidence": 0.82,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://bestwine24.ru/vino/smf/brand-is-winemafia/",
+        "ts": "2026-09-18T18:02:43+0300"
+      },
+      "02_agent.webp": {
+        "by": "kimi",
+        "confidence": 0.82,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://winecantina.ru/catalog/vino/vino-winemafia-arie-2020/",
+        "ts": "2026-09-18T18:03:01+0300"
+      }
+    },
+    "balaklava-muskat": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T07:51:18+0300"
+      },
+      "05_agent.jpg": {
+        "by": "hunter-07",
+        "comment": "Same bottle as this slug's catalogue render: front label МУСКАТ ПОЛУСЛАДКОЕ БЕЛОЕ / Российское игристое вино / БАЛАКЛАВА / ПОЛУСЛАДКОЕ / Muscat / с ЗГУ «Крым». Caution for the reviewer: this slug and balaklava-muskat-beloe-polusladkoe hold the same front label; the two catalogue renders differ only in the neck mark (this one shows 1889 / ЗОЛОТАЯ БАЛКА on the foil, the other shows ЗОЛОТАЯ БАЛКА / КРЫМ / с 1889 г. on the glass). The photo carries the on-glass form, so it is a certain match for the other slug and a near-certain one here.",
+        "confidence": 0.85,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://otzovik.com/review_14152681.html",
+        "ts": "2026-09-16T07:51:25+0300"
+      },
+      "06_agent.jpg": {
+        "by": "hunter-07",
+        "comment": "Right wine in the OLDER label generation: the top line reads «БАЛАКЛАВА МУСКАТ ПОЛУСЛАДКОЕ» and the second line Вино игристое белое, where the catalogue label reads МУСКАТ ПОЛУСЛАДКОЕ БЕЛОЕ / Российское игристое вино. БАЛАКЛАВА / ПОЛУСЛАДКОЕ / Muscat and the gold frame are unchanged. Full bottle, real photo. Proposed as variant per the owner policy.",
+        "confidence": 0.87,
+        "label": "positive",
+        "proposed": "variant",
+        "source_url": "https://otzovik.com/review_10206801.html",
+        "ts": "2026-09-16T07:51:27+0300"
+      }
+    },
+    "balaklava-muskat-beloe-polusladkoe": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T09:14:24+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T09:14:26+0300"
+      },
+      "08_agent.webp": {
+        "by": "hunter-07",
+        "comment": "Photograph of the physical bottle standing on a wooden counter in a shop (not a white-background render; the shelves behind are out of focus). Front label reads МУСКАТ ПОЛУСЛАДКОЕ БЕЛОЕ / Российское игристое вино / БАЛАКЛАВА / ПОЛУСЛАДКОЕ / Muscat / с ЗГУ «КРЫМ» - the current generation and the same text as this slug's catalogue render. Neck: vertical КРЫМ foil with the red 1889 and ЗОЛОТАЯ БАЛКА. Single bottle in focus, no lineup.",
+        "confidence": 0.89,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://www.cigarpro.ru/drinks/sparkling-wines/russian/balaklava/igristoe-vino-balaklava-muscat-balaklava-muskat-beloe-polusladkoe-075-l/",
+        "ts": "2026-09-16T09:14:45+0300"
+      }
+    },
+    "belbek-kaberne-sovinon-krasnoe-suhoe-138": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:13:59+0300"
+      }
+    },
+    "belbek-meritazh-kaberne-sovinon-krasnoe-suhoe-136": {
+      "01_agent.jpg": {
+        "by": "kimi",
+        "comment": "real-world photo from sidreriyabelgorod.ru; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.76; front label compared with catalogue bottle",
+        "confidence": 0.88,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://sidreriyabelgorod.ru/catalog/344757374/",
+        "ts": "2026-09-18T12:59:44+0300"
+      }
+    },
+    "chateau-de-talu-ruzh-kaberne-sovinon-krasnoe-suhoe-14": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T15:59:34+0300"
+      }
+    },
+    "chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-rezerv-krasnoe-suhoe-146": {
+      "02_agent.png": {
+        "by": "hunter-09",
+        "comment": "Full bottle, studio on white. Label matches the catalogue bottle: Latin CHATEAU de TALU under the crest (zoomed to check), the man in the top hat SITTING on a cloud with the ladder below him, Yuzhnaya Vertikal, and the two grape lines Kaberne Fran / Rezerv. Distinguished from the base bottle, where the man climbs the ladder and there is no Rezerv line, and from the Premium, which reads Premium instead of Rezerv.",
+        "confidence": 0.9,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://simplewine.ru/catalog/product/yuzhnaya_vertikal_kaberne_fran_rezerv_2022_075_148919/",
+        "ts": "2026-09-16T10:34:17+0300"
+      },
+      "03_agent.jpg": {
+        "by": "hunter-09",
+        "comment": "Second, different studio shot of the same Reserve bottle (decanter.ru). Zoomed the label top: Latin CHATEAU de TALU, as on the catalogue bottle. Man sitting on the cloud, Yuzhnaya Vertikal, Kaberne Fran / Rezerv. Small image (320x520) but the whole bottle is in frame.",
+        "confidence": 0.88,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://decanter.ru/product/south-vertical-cabernet-franc-reserve-id259741",
+        "ts": "2026-09-16T10:34:35+0300"
+      },
+      "04_agent.jpg": {
+        "by": "hunter-09",
+        "confidence": 0.85,
+        "label": "positive",
+        "proposed": "variant",
+        "source_url": "https://vinoteki.ru/product/vino-krasnoe-suhoe-chateau-de-talu-south-vertical-cabernet-franc-reserve-kuban-gelendzhik-2020-075l/",
+        "ts": "2026-09-16T10:34:36+0300"
+      }
+    },
+    "chateau-le-grand-vostock-kyuve-karsov-rezerv-shardone-beloe-suhoe-14": {
+      "05_agent.webp": {
+        "by": "hunter-09",
+        "comment": "Bristol shop photo of the real bottle on white, different shot from the cru.ru one (other angle, other highlights). Front label reads Chateau LE GRAND VOSTOCK / Cuvee Karsov / RESERVE with the same two-line Russian small print as the catalogue bottle; burgundy bottle, dark capsule with gold oak medallion. Checked it is not Cadet Karsov, not Grand Karsov, not the red Cuvee Karsov.",
+        "confidence": 0.9,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://bristol.ru/product/12639",
+        "ts": "2026-09-16T10:34:55+0300"
+      }
+    },
+    "chteau-le-grand-vostock-cuvee-karsov-reserve-shardone-beloe-suhoe-14": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:06:16+0300"
+      }
+    },
+    "david-2021": {
+      "03_agent.png": {
+        "by": "hunter-12",
+        "comment": "Right wine, earlier vintage and earlier label generation, so proposed as variant and not as positive. Same bottle and same dark red wax capsule, but the label reads FARKHAD NAGDALIEV & WINEMAFIA on the top line instead of WINEMAFIA / Vinnaya Derevnya, the boxed line reads 2020 SINGLE VINEYARD and Bottle No 0312 OF 1444, and there is no gold medal sticker. This is the David Saperavi 2020 release; the slug is the 2021.",
+        "confidence": 0.85,
+        "label": "positive",
+        "proposed": "variant",
+        "source_url": "https://wine.rbc.ru/vino/p/david-747/",
+        "ts": "2026-09-16T12:01:08+0300"
+      }
+    },
+    "derbent-vino-endemy-shardone-beloe-bryut-105-125": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T07:54:13+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T07:54:16+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T07:54:17+0300"
+      }
+    },
+    "derbent-vino-endemy-shardone-beloe-suhoe-13": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T12:03:16+0300"
+      }
+    },
+    "domaine-lipko-blaufrankish-krasnoe-suhoe-126": {
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T09:59:48+0300"
+      }
+    },
+    "domaine-lipko-white-blend-lipko-muskat-belyy-beloe-polusuhoe-115": {
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T09:57:41+0300"
+      }
+    },
+    "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115": {
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T09:54:06+0300"
+      },
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T09:54:07+0300"
+      },
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T09:55:13+0300"
+      }
+    },
+    "esse-brut-zero-dosage-shardone-beloe-ekstra-bryut-135": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T12:10:20+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T12:10:22+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T12:10:30+0300"
+      }
+    },
+    "esse-mama-marselan-krasnoe-suhoe-115": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:01:43+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:01:44+0300"
+      }
+    },
+    "esse-merlo-krasnoe-suhoe-135": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:02:03+0300"
+      }
+    },
+    "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-115": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:05:03+0300"
+      }
+    },
+    "esse-rose-cuvee-prestige-pino-nuar-rozovoe-bryut-13": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:05:09+0300"
+      }
+    },
+    "esse-vione-beloe-suhoe-13": {
+      "02_conf090.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:05:56+0300"
+      }
+    },
+    "fanagoriya-101-ottenok-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-14": {
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T10:53:08+0300"
+      }
+    },
+    "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115": {
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T05:43:25+0300"
+      }
+    },
+    "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115": {
+      "07_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T05:36:15+0300"
+      }
+    },
+    "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11": {
+      "07_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T05:38:06+0300"
+      }
+    },
+    "fanagoriya-fanagoriya-blanc-de-blancs-beloe-iz-belogo-shardone-igristoe-bryut-beloe-11-13": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:10:31+0300"
+      }
+    },
+    "fanagoriya-fanagoriya-bryut-beloe-sovinon-blan-igristoe-bryut-beloe-11-13": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:11:01+0300"
+      }
+    },
+    "fanagoriya-fanagoriya-bryut-rozovoe-sovinon-blan-igristoe-bryut-rozovoe-11-13": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:11:18+0300"
+      }
+    },
+    "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12": {
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T07:49:39+0300"
+      },
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T07:49:40+0300"
+      },
+      "04_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T07:49:42+0300"
+      },
+      "05_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T07:49:43+0300"
+      }
+    },
+    "ferrum-winery-sabernet-sauvignon-cabernet-franc-kaberne-sovinon-krasnoe-suhoe-12": {
+      "01_conf095.png": {
+        "label": "positive",
+        "ts": "2026-09-15T17:15:27+0300"
+      }
+    },
+    "fiori-di-mare-krasnoe-polusuhoe": {
+      "01_conf090.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:15:43+0300"
+      },
+      "03_conf090.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:15:57+0300"
+      },
+      "04_conf090.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:16:00+0300"
+      }
+    },
+    "golubitskoe-estate-risling-beloe-suhoe-125": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:17:07+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:17:09+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:17:10+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:17:38+0300"
+      }
+    },
+    "golubitskoe-estate-tte-de-cheval-bryut-risling-beloe-12": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:17:45+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:17:47+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:17:52+0300"
+      }
+    },
+    "imenie-sikory-gerts-kaberne-sovinon-krasnoe-suhoe-14": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:11:46+0300"
+      }
+    },
+    "imenie-sikory-risling-semeynyy-rezerv-risling-reynskiy-beloe-suhoe-13": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:20:54+0300"
+      }
+    },
+    "imenie-sikory-shardone-sikory-beloe-suhoe-13": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:21:14+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:21:15+0300"
+      }
+    },
+    "inkermanskiy-zmv-inkerman-bryut-rkatsiteli-beloe-12": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:22:11+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:22:13+0300"
+      }
+    },
+    "inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135": {
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:22:26+0300"
+      }
+    },
+    "inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:23:32+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:23:34+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:23:35+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T17:23:37+0300"
+      }
+    },
+    "kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:11:04+0300"
+      }
+    },
+    "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135": {
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T05:52:09+0300"
+      },
+      "05_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T05:52:11+0300"
+      }
+    },
+    "kuban-vino-shato-tamane-terruar-krasnostop-saperavi-2022-krasnoe-suhoe-125": {
+      "01_agent.jpg": {
+        "by": "kimi",
+        "comment": "real-world photo from irecommend.ru; pipeline check: qwen3-vl same-wine conf=0.95, SigLIP similarity to catalogue bottle=0.68; front label compared with catalogue bottle",
+        "confidence": 0.84,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://irecommend.ru/content/poprobovav-vsego-odin-raz-ya-stal-yarym-poklonnikom-dannogo-sorta",
+        "ts": "2026-09-18T13:37:53+0300"
+      },
+      "02_agent.jpg": {
+        "by": "kimi",
+        "confidence": 0.82,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://irecommend.ru/content/ne-ozhidal-vstretit-v-prodazhe-rad-chto-oshibalsya",
+        "ts": "2026-09-18T13:37:54+0300"
+      }
+    },
+    "locantita-more": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:10:54+0300"
+      }
+    },
+    "loco-cimbali-blanc-de-neige-shardone-beloe-suhoe-131": {
+      "01_conf095.png": {
+        "label": "positive",
+        "ts": "2026-09-16T15:51:24+0300"
+      }
+    },
+    "loco-cimbali-oranzh-muskat-belyy-beloe-suhoe-129": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:10:37+0300"
+      }
+    },
+    "loco-cimbali-risling-risling-reynskiy-beloe-suhoe-13": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T12:04:51+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T12:04:52+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T12:04:53+0300"
+      }
+    },
+    "massandra-vino-avtorskoe-pino-gri-beloe-suhoe-12": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:10:21+0300"
+      }
+    },
+    "muskat-pozdnego-sbora-rozovyj": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T15:51:41+0300"
+      }
+    },
+    "novyj-svet-paradizio": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T12:08:24+0300"
+      }
+    },
+    "novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-polusladkoe-rozovoe-novyy-svet-pino-fran-135": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T15:52:21+0300"
+      }
+    },
+    "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-ekstra-bryut-beloe-novyy-svet-shardone-125": {
+      "02_conf090.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:09:13+0300"
+      }
+    },
+    "novyy-svet-dom-shampanskih-vin-rossiyskoe-shampanskoe-kollektsionnoe-polusuhoe-beloe-novyy-svet-shardone-13": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T12:08:54+0300"
+      },
+      "04_conf090.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T12:09:00+0300"
+      }
+    },
+    "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11": {
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T12:06:14+0300"
+      }
+    },
+    "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143": {
+      "01_conf090.webp": {
+        "label": "positive",
+        "ts": "2026-09-15T18:01:54+0300"
+      }
+    },
+    "pomeste-golubitskoe-tte-de-cheval-sladkoe-roze-pino-gri-rozovoe-115": {
+      "01_conf095.webp": {
+        "label": "positive",
+        "ts": "2026-09-15T18:01:40+0300"
+      }
+    },
+    "rozovoe-bryut-1": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T23:44:35+0300"
+      },
+      "04_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T23:44:39+0300"
+      }
+    },
+    "shardone-2": {
+      "06_agent.webp": {
+        "by": "cigar-r04",
+        "comment": "WATERMARK cigarpro.ru | back label of the same bottle. It reads РОССИЙСКОЕ ВИНО С ЗГУ «КУБАНЬ» СУХОЕ БЕЛОЕ «ШАРДОНЕ КРАСНАЯ ГОРКА», из винограда сорта Шардоне, год урожая 2024, ООО «Русский Терруар», 0,75 л, 13,0 % об. It names the wine of this slug; the harvest is 2024 against 2025 on the render.",
+        "confidence": 0.88,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/galitskiy-and-galitskiy/krasnaia-gorka-chardonnay/",
+        "ts": "2026-09-17T20:10:50+0300"
+      }
+    },
+    "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135": {
+      "04_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-16T06:16:12+0300"
+      }
+    },
+    "shato-pino-exclusive-pino-nuar-merlo-krasnoe-suhoe-135": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T06:08:41+0300"
+      }
+    },
+    "shato-pino-kaberne-sovinon-krasnoe-suhoe-14": {
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T06:17:20+0300"
+      }
+    },
+    "shato-pino-koldun-belyy-shardone-beloe-suhoe-12": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:08:22+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:08:25+0300"
+      }
+    },
+    "shato-pino-shardone-beloe-suhoe-125": {
+      "06_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T06:20:27+0300"
+      }
+    },
+    "shato-pino-shardone-risling-beloe-suhoe-12": {
+      "07_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T06:22:15+0300"
+      }
+    },
+    "shato-pino-shiraz-krasnoe-suhoe-14": {
+      "02_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-16T06:08:16+0300"
+      },
+      "03_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-16T06:08:17+0300"
+      },
+      "05_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T06:13:12+0300"
+      },
+      "06_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T06:13:13+0300"
+      }
+    },
+    "shato-taman-krasnostop": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T12:22:55+0300"
+      }
+    },
+    "shato-taman-shardone": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T12:23:48+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T12:23:51+0300"
+      }
+    },
+    "solnechnaya-dolina-privat-kaberne-sovinon-krasnoe-sladkoe-155": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:07:26+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:07:27+0300"
+      }
+    },
+    "soyuz-vino-sheremetevskie-pogreba-kaberne-sovinon-krasnoe-suhoe-11": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:07:07+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:07:12+0300"
+      }
+    },
+    "usadba-mezyb-mezyb-kaberne-sovinon-kaberne-fran-krasnoe-suhoe-14": {
+      "01_conf078.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:28:30+0300"
+      }
+    },
+    "usadba-mezyb-staraya-doroga-na-dzhanhot-kaberne-sovinon-krasnoe-suhoe-144": {
+      "02_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T00:46:20+0300"
+      }
+    },
+    "usadba-mezyb-usadba-mezyb-kaberne-fran-krasnoe-suhoe-145": {
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T00:45:14+0300"
+      },
+      "03_manual_moved2.jpg": {
+        "comment": "до переноса в usadba-mezyb-usadba-mezyb-kaberne-fran-krasnoe-suhoe-145 был в usadba-mezyb-staraya-doroga-na-dzhanhot-kaberne-sovinon-krasnoe-suhoe-144",
+        "label": "positive",
+        "moved_from": "usadba-mezyb-staraya-doroga-na-dzhanhot-kaberne-sovinon-krasnoe-suhoe-144",
+        "ts": "2026-09-18T00:46:32+0300"
+      }
+    },
+    "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13": {
+      "03_agent.webp": {
+        "by": "cigar-03",
+        "confidence": 0.95,
+        "label": "positive",
+        "proposed": "positive",
+        "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/avtohtonnoe-vino-kryma-ot-valeriya-zaharina/avtoxtonnoe-vino-ot-valeriia-zaxarina-kefesiia-750-ml/",
+        "ts": "2026-09-18T15:27:00+0300"
+      }
+    },
+    "vaynkraft-pino-nuar-krasnoe-suhoe-13": {
+      "03_agent.jpg": {
+        "by": "cigar-r01",
+        "confidence": 0.9,
+        "label": "positive",
+        "proposed": "variant",
+        "source_url": "https://www.cigarpro.ru/drinks/wine/russian-wines/winecraft/winecraft-pino-noir-750-ml/",
+        "ts": "2026-09-18T15:28:06+0300"
+      }
+    },
+    "villa-di-alma-kaberne-sovinon-ekstra-bryut-rozovoe-125": {
+      "03_conf088.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:33:32+0300"
+      }
+    },
+    "villa-sofiya-sovinon-blan-beloe-suhoe-123": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T15:56:48+0300"
+      }
+    },
+    "vinodelnya-krinitsa-ester-muskat-belyy-beloe-suhoe-12": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T18:46:56+0300"
+      }
+    },
+    "vinodelnya-myshako-kaberne-fran-krasnoe-suhoe-142": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:17:22+0300"
+      }
+    },
+    "vinodelnya-myshako-marselan-krasnoe-suhoe-143": {
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T12:28:14+0300"
+      }
+    },
+    "vinodelnya-myshako-quintessence-new-generation-risling-zekt-beloe-bryut-125": {
+      "04_conf072.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T06:06:35+0300"
+      }
+    },
+    "vinodelnya-myshako-quintessence-new-generation-zinfandel-rozovoe-polusuhoe-115": {
+      "01_conf100.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T16:31:50+0300"
+      }
+    },
+    "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155": {
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T08:32:16+0300"
+      }
+    },
+    "vinodelnya-myshako-shardone-beloe-suhoe-123": {
+      "01_conf100.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T23:40:53+0300"
+      },
+      "02_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T23:40:54+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T23:40:56+0300"
+      }
+    },
+    "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145": {
+      "04_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T08:23:54+0300"
+      },
+      "06_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T08:23:56+0300"
+      },
+      "07_manual.webp": {
+        "label": "positive",
+        "ts": "2026-09-18T08:23:56+0300"
+      },
+      "08_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T08:23:58+0300"
+      }
+    },
+    "vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145": {
+      "01_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:18:52+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T18:18:58+0300"
+      },
+      "06_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T08:24:05+0300"
+      },
+      "07_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T08:24:05+0300"
+      },
+      "09_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T08:24:07+0300"
+      },
+      "10_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T08:24:08+0300"
+      }
+    },
+    "vinodelnya-vedernikov-fantom-7030-krasnostop-zolotovskiy-krasnoe-suhoe-15": {
+      "03_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-18T08:24:14+0300"
+      }
+    },
+    "vinodelnya-vedernikov-krasnostop-zolotovskiy-rezerv-krasnoe-suhoe-15": {
+      "02_conf100.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T23:37:39+0300"
+      },
+      "03_conf095.jpg": {
+        "label": "positive",
+        "ts": "2026-09-16T23:37:41+0300"
+      }
+    },
+    "vysokij-bereg-risling-zelenaya-seriya": {
+      "06_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T22:12:47+0300"
+      }
+    },
+    "vysokij-bereg-risling-zelenaya-seriya-1": {
+      "06_manual.jpg": {
+        "label": "positive",
+        "ts": "2026-09-15T22:14:30+0300"
+      }
+    }
+  },
+  "note": "Manual labels for the photos of svoe-vino-testset/my. The key of an entry is the slug, then the photo file name. label 'positive': the photo shows the wine of this slug. label 'negative': the photo shows a different wine, and the photo stays in the set as a negative sample of this slug. label 'unusable': the photo is not usable at all and does not belong in the set. label 'variant': the photo shows this wine in another bottle, such as another vintage or another package design. A photo with no entry is not reviewed yet. The slug '__null__' is the virtual NULL wine. A photo under that slug matches NO card of the catalogue. The place is the statement, so such a photo needs no label; 'positive' confirms it and 'unusable' takes the photo out of the set. Field 'reassign_to' names the slug that the photo belongs to; scripts/09_apply_moves.py moves the file. Field 'copy_to' names a slug that the photo ALSO belongs to; the same script copies the file and leaves the source photo where it is. The copy carries no label and one comment that names the source slug. Field 'comment' holds a free text note of the reviewer about this photo and this slug. The map 'wines' holds one free text note about a whole wine, keyed by the slug.",
+  "updated": "2026-09-24T07:22:35+0300",
+  "version": 2,
+  "wines": {
+    "abrau-dyurso-pino-nuar-krasnoe-suhoe-12": {
+      "comment": "irec-02 (irecommend-only run): irecommend.ru has NO product page for the still Abrau-Durso Pinot Noir. Checked via yandex.ru/images site:irecommend.ru with 5 query forms (Абрау-Дюрсо Пино Нуар / вино красное сухое Пино Нуар / тираж / урожай 2023) plus a plain non-site image scan and a bing image scan; zero irecommend hits carrying that product title. The Abrau-Durso products irecommend does carry are the sparklings (Русское шампанское, Brut d'Or, Императорское, Victor Dravigny, Розовое) and the still Купаж Абрау / Купаж светлый / Купаж темный. No proposal.",
+      "ts": "2026-09-16T06:06:44+0300"
+    },
+    "abrau-dyurso-shardone-beloe-suhoe-12": {
+      "comment": "???",
+      "ts": "2026-09-15T22:34:07+0300"
+    },
+    "abrau-dyurso-victor-dravigny-brut-shardone-beloe-bryut-12": {
+      "comment": "page 404",
+      "ts": "2026-09-21T14:33:03+0300"
+    },
+    "aligote-avtorskoe": {
+      "comment": "irec-02 (irecommend-only run): irecommend.ru has NO Массандра Авторское вино Алиготе. It does carry two neighbours in the same Авторское line - 'Массандра Авторское вино Кокур 2023' and 'Массандра Шардоне (авторское вино)' - with the identical white label, year, two signatures and grey palace engraving. Those are different grapes, so they are not this slug and I did not propose them. All 27 'Массандра Алиготе' review photos I fetched show the regular Массандра line instead (cream label, 1894, palace crest), a different label. No proposal.",
+      "ts": "2026-09-16T06:06:44+0300"
+    },
+    "chateau-de-talu-yuzhnaya-vertikal-kaberne-fran-rezerv-krasnoe-suhoe-146": {
+      "comment": "hunter-09: warning about a near neighbour. Chateau de Talu also sells a Cabernet Franc Reserve with a completely different white label showing the chateau above engraved sea waves (CABERNET FRANC / RESERVE / GELENDZHIK, or the Cyrillic KABERNE FRAN / REZERV), for example https://krasnostop.ru/images/detailed/6/tl-cbrnt-fnc-rsrv.jpg and https://static.decanter.ru/upload/images/443252/443252-vino-chateau-de-talu-cabernet-franc-reserve-2020-0-75-l-f.jpg . It may be the pre-Yuzhnaya-Vertikal generation of this same wine, or a separate Reserve line. I could not settle it, so I did not propose those as variants. Also not proposed, because it is a close-up of the label alone: the Vivino user photo https://images.vivino.com/thumbs/pxpa4ko5Rpm1e3lZH5v-9w_375x500.jpg from https://www.vivino.com/en/chateau-de-talu-iuzhnaia-vertikal-kaberne-fran-rezerv-south-vertical-cabernet-franc-reserve/w/12682659 - it does show the correct Yuzhnaya Vertikal Reserve label.",
+      "ts": "2026-09-16T04:33:53+0300"
+    },
+    "villa-sofiya-sovinon-blan-beloe-suhoe-123": {
+      "comment": "cigar-r01 (cigarpro-only run): cigarpro.ru does not sell this producer. The site search /search-new for 'Вилла София' returns only Villa Krim, Villa Zvezda, Villa Maria, Villa Antinori and other unrelated Villa brands; 'София' returns only 'София Семигорья' of Villa Victoria, a different producer. All six matcher candidates are OTHER producers of a Sauvignon Blanc (Бахчисарай, Тристория, Петрикор, Усадьба Дивноморское, Inkerman Sevre, Семигорья), so none can be this wine. 0 proposals. Same finding as cigar-r02 on the sibling villa-sofiya-sovinon-blan-beloe-suhoe-14; see that note: both bottles of variant group g025 carry the same front label and only the alcohol value separates them, so a front photo alone cannot decide between the two.",
+      "ts": "2026-09-16T12:52:10+0300"
+    }
+  }
+}

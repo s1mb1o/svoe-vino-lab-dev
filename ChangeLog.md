@@ -1,6 +1,194 @@
 # ChangeLog
 
+## 2026-09-24
+
+### All Dataset records on one page
+
+- The Dataset page shows all records that pass the current filter.
+- The `Rows`, `Previous`, and `Next` controls are removed.
+- Search waits 180 ms after input before it rebuilds the full list.
+- Catalogue and patch images keep native lazy loading.
+
+### Label-only cluster rules
+
+Plan: `docs/plans/06_label-only-cluster-rules.md`. The owner chose the label crops with
+a label-only prompt, and the vintage policy in the same rebuild.
+
+- Stage 2 of `scripts/cluster_rules.py` sends the label crop of each card from
+  `bottle_label_dir` on white, scaled to a long side of 768 pixels, UP or down. A card
+  with no label crop sends its catalogue picture with a caption that states it.
+- The prompt of stage 2 allows only features that are printed on the label. It states
+  that some catalogue pictures are drawings, and that a drawing shows only the label
+  correctly. It asks for texts exactly as the label prints them, in their own alphabet.
+  It allows a vintage question only when the catalogue names of two cards state two
+  different years.
+- A card that shares its catalogue picture with another card of its cluster gets a
+  caption that names that card: 43 cards of 21 clusters.
+- The label description goes into stage 2 without the key `bottle`. Stage 1 does not
+  change.
+- `check_rule` enforces two new kinds. A question of kind `bottle` (the glass, the
+  liquid, the capsule, the cork, the shape of the bottle) is never valid, and a rule text
+  about such a feature gives mode `none`. A question of kind `vintage` keeps a year only
+  when the name or the slug of the card states it.
+- `RULES_SHA` holds the picture setting and the captions, and `rule_inputs_sha` holds
+  the paths of the label crops. Every rule of 2026-09-23 became stale, and all 255 rules
+  are built again. The old rules file is kept as
+  `work/catalog-cluster-rules.2026-09-24T082150.json`.
+- The page `/clusters` names the reason for a struck question of kind `bottle` or
+  `vintage`.
+- `scripts/cluster_rules_report.py` has the option `--rules` for the post hoc score of
+  an older run, and a section with the paired numbers for each half of the wines.
+- The vintage variants, added by the owner during the rebuild: when cards differ only
+  by the vintage year, and one card states no year, that card is the card of every
+  vintage that no other card states. A year counts from the name, the slug, or the
+  label description. Only the 43 mixed clusters get the note `VINTAGE_NOTE` in their
+  prompt, so the other rules stay current. `check_rule` keeps the mark `other` only for
+  a card with no year that differs from a card with a year only by the vintage.
+- `README.md`, `SMOKE_TESTS.md` (L16 to L23), and `ResearchLog.md` describe the change.
+- The benchmark: run `runs/2026-09-24T080721Z-svm-label-gw-cluster-rules-label-only-rules`.
+  Against the base, R@1 0.8161 → 0.8355, 61 wins, 30 losses, p 0.002; negatives
+  0.8262 → 0.8451. Against the run v2, +0.0038 R@1, p 0.47, not significant. The
+  section «Result» of the plan holds the details.
+- The plan holds six open questions for the owner, Q1 to Q6.
+
+### Drink Atlas Core product binding on the Dataset page
+
+- Each Dataset row shows its effective Drink Atlas Core product UUID.
+- Automatic matches come from `atlas_matches_file`. The page marks them `automatic`.
+- The `+` or `edit` button opens a UUID input with `V` and `X`. `V` writes a manual
+  binding. `X` cancels and writes nothing.
+- `POST /api/dataset-atlas-binding` writes the manual overlay in
+  `atlas_bindings_file`. A manual value replaces the automatic value for that slug.
+- The automatic match file does not change. Several Svoe Vino slugs MAY bind to one
+  Atlas product UUID.
+
+### Barcode entry on the Dataset page
+
+- Each Dataset row shows its product barcodes and a `+` button.
+- The `+` button opens a text input with `V` and `X` buttons. `V` writes the value.
+  `X` cancels the new row and writes nothing.
+- `POST /api/dataset-barcode` adds one value to `barcode_file`. One slug MAY have more
+  than one value. A value cannot belong to two slugs.
+- The page and `svoe-vino-matcher` share `svoe-vino-matcher/dataset/code-map.json`.
+
+### Alternative photos on the Dataset page
+
+- Each Dataset row has an `Alternative photos` area at the right. It accepts multiple
+  images by drag and drop or by a file chooser.
+- Additions appear as candidates. Active images can be marked for removal. `Apply`
+  writes all pending changes of the row. `Cancel` writes nothing.
+- `alternative_dir/<slug>/` holds the active files. A removal moves a file to
+  `alternative_dir/.trash/<slug>/` for recovery.
+- `POST` and `DELETE /api/dataset-alternative` apply the staged changes.
+- `svoe-vino-matcher` reads the same directory and indexes every file as another view
+  of the slug. An alternative does not replace the main catalogue picture or a patch.
+
+### Patch changes on the Dataset page
+
+- A `no patch` place accepts an image by drag and drop or by a file chooser. The page
+  shows the image as a candidate. It writes the file only after `Apply`.
+- An existing patch has a `Remove` button. Removal stays pending until `Apply`.
+  `Cancel` discards a pending addition, replacement, or removal.
+- `POST /api/dataset-patch` applies an image. `DELETE /api/dataset-patch` applies a
+  removal. The server validates the slug, the size, and the image bytes.
+- A replaced or removed patch moves to `patch_dir/.trash` for recovery.
+- Existing package crops and label crops for the slug move to `.trash` in their
+  directories. Another page cannot keep showing pixels from the old patch.
+
+### The dataset `vlmrerank-8b-failed`
+
+- New dataset `vlmrerank-8b-failed` in `config.yaml`. It holds the positive photos of
+  `default` whose true slug was not at rank 1 in the run
+  `2026-09-18T195710Z-svm-vlmrerank-8b-siglip2-448-bench`.
+- The run holds 184 such photos. 180 photos of 108 wines are copied into
+  `dataset/vlmrerank-8b-failed/photo/`. Each file keeps its path `<slug>/<file>` and the
+  SHA-256 that the run recorded.
+- 4 photos stay out, because their label in `default` is `negative` now:
+  `abrau-dyurso-az-abrau-bayanshira-beloe-suhoe-12/02_manual.jpg`,
+  `abrau-dyurso-russkoe-igristoe-koshernoe-bryut-shardone-beloe-13/04_conf095.jpg`,
+  `abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut/01_conf095.jpg`, and
+  `inkermanskiy-zmv-inkerman-muskat-polusladkoe-beloe-13/01_conf095.jpg`.
+- The label entries of the 180 photos and the notes of their wines are copied without
+  a change. `excluded-slugs.json`, `variant-groups.json`, and `manual-groups.json` are
+  copies of the files of `default`. 9 photos lie on excluded slugs, so a run takes 171
+  photos.
+- `dataset/vlmrerank-8b-failed/selection.json` records the rule, the source run, and
+  each of the 184 photos.
+- The runs of the set go to `dataset/vlmrerank-8b-failed/runs/`. Port 8167 is assigned
+  to the review tool of this set.
+- `README.md`, `ResearchLog.md`, and `SMOKE_TESTS.md` (F1 to F5) describe the set.
+
 ## 2026-09-23
+
+### Dataset validation
+
+- The Dataset page has a `Validate` button. Its dialog explains and runs three
+  read-only checks: the website slug set, exact source image bytes with SHA-256,
+  and the source image file on each `wine_slug` page.
+- The checks run in one background job. The dialog shows progress and keeps the
+  last result when it is closed and opened again.
+- New routes `GET /api/dataset-validation` and `POST /api/dataset-validation`.
+  The POST route refuses a second job while one job runs.
+- The slug check reads the public wine sitemap. The page check reads `og:image`.
+  The image check states that a resize service can re-encode the same visible image.
+
+### Dataset page
+
+- New page `/dataset`. It shows every record of the configured `catalog.jsonl`.
+- Each row shows the unmodified catalogue image and the patch image next to it.
+  A row with no patch shows an explicit `no patch` place.
+- The page shows the main catalogue fields in the row. The control
+  `full catalog.jsonl record` shows every field of the source record.
+- Search reads every field. Filters select patched records, unpatched records, or
+  records without a catalogue image. Pagination keeps the page responsive.
+- New read-only routes `GET /api/dataset`, `GET /img/catalog`, and `GET /img/patch`.
+- The navigation of every page includes `Dataset`.
+
+### The benchmark of the cluster rule step
+
+- Run `runs/2026-09-23T224548Z-svm-label-gw-cluster-rules-qwen38max-rules-v2`: R@1
+  0.8156 -> 0.8313, 47 wins, 22 losses, exact McNemar p 0.004; without the `confusion`
+  clusters 0.8244, p 0.038. `ResearchLog.md` and the section «Result» of
+  `docs/plans/05_cluster-label-rules.md` hold the analysis. A first full run was stopped
+  after about 600 photos for the verdict fault of `svoe-vino-matcher`.
+- The rules of the 99 clusters that the test set cannot trigger are built after the
+  benchmark, for the page `/clusters`.
+
+### Stage 2 of the label rules runs on `qwen3.8-max`
+
+- The owner's decision: stage 2 runs once, so it uses `qwen3.8-max` of the QwenCloud
+  Token Plan, with thinking, 4 requests at a time. New keys `rules_url`,
+  `rules_model`, `rules_api`, `rules_key_env`, `rules_thinking`, `rules_workers`, and
+  `rules_timeout_s` in the block `cluster_rules` of `config.yaml`. The key is read from
+  `QWENCLOUD_TOKEN_PLAN_API_KEY` at run time.
+- Stage 1 and the re-rank keep the local `qwen3.5-9b`.
+- The prompt of stage 2 keeps only major differences. Every rule is therefore stale
+  and is built again.
+- `scripts/11_cluster_rules.py` builds the rules of stage 2 in parallel.
+- A mark that only some cards carry, such as a kosher mark, gets a yes/no question
+  with "yes" or "no" for each card. Before this rule the check struck every kosher
+  question, because only one card held a non-null answer.
+
+### The letters of a rule on the page `/clusters`
+
+- `GET /api/clusters` gives the map `letters` of each rule: the letter that stage 2
+  used for a card, to the slug of that card.
+- The badge of each card and the head of the sheet show the letter beside the number,
+  and `the cards of the letters` under the rule text names the card and the slug of each
+  letter. The prompts do not change.
+
+### The answer of the VLM rule step on the page `/runs`
+
+- A row whose candidates hold the `explain` record of the cluster rule step shows a box
+  `VLM` under the frame of the top cluster: the mode, the cluster id, the time of the
+  call or `from the cache`, each question with the answer, the score of each card of the
+  window, and whether the answer moved a card to rank 1. A run that did not record the
+  questions takes their text from the current rule, and the box states that.
+- New filters `rule_acted` and `rule_changed` of `GET /api/run` and of the page.
+- The strip of the candidates aligns its cards at the top, so a card next to the box
+  keeps its height.
+- `README.md`, `docs/API.md`, `docs/openapi.yaml`, and `SMOKE_TESTS.md` (R30 to R33)
+  describe the change.
 
 ### Label rules for the catalogue clusters
 
@@ -44,6 +232,8 @@ Plan: `docs/plans/05_cluster-label-rules.md`.
   catalogue cluster now share one frame in the accent colour. The tooltip of the frame
   names the cluster id, the kind, and the size. A cluster card that stands apart from
   the others gets no frame.
+- The frame holds a link to the cluster details. The link opens `/clusters` and scrolls
+  to that cluster.
 - The page reads `GET /api/clusters` once at start. When the cluster file is missing
   or the request fails, the page shows no frame and works as before.
 

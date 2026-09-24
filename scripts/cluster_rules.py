@@ -1,19 +1,22 @@
 """The label rules of the catalogue clusters.
 
-Read `docs/plans/05_cluster-label-rules.md`. The terms of that plan are the terms
+Read `docs/plans/05_cluster-label-rules.md` and
+`docs/plans/06_label-only-cluster-rules.md`. The terms of these plans are the terms
 of this module.
 
 Stage 1 asks the VLM to describe the label of one card. The call sends the
 catalogue picture and no card data, so the description holds what the model sees.
 
 Stage 2 asks the VLM where the labels of one cluster differ. The call sends the
-pictures of all cards of the cluster, the card data, the label descriptions, and the
-note of the reviewer. The answer is a difference sheet, which holds questions with the
-expected answer of each card, and a rule text. The code checks the sheet and sets
-the mode of the cluster rule:
+label crop of each card of the cluster, the card data, the label descriptions, and
+the note of the reviewer. Some catalogue pictures are drawings, and a drawing shows
+only the label correctly, so stage 2 uses features of the label only. The answer is a
+difference sheet, which holds questions with the expected answer of each card, and a
+rule text. The code checks the sheet and sets the mode of the cluster rule:
 
     sheet    at least one question separates two cards
-    verdict  no question separates two cards, and the rule text is not empty
+    verdict  no question separates two cards, and the rule text is not empty and
+             names no feature outside the label
     none     neither
 
 Two files hold the results. `scripts/11_cluster_rules.py` and the review tool write
@@ -58,8 +61,22 @@ DESCRIBE_SIDE = int(CFG.get("describe_side", 2048))
 RULES_MAX_SIDE = int(CFG.get("rules_max_side", 768))
 TIMEOUT_S = float(CFG.get("timeout_s", 300))
 
+# Stage 2 runs once, so it MAY use a more capable model than stage 1. On 2026-09-23
+# the owner chose `qwen3.8-max` of the QwenCloud Token Plan, with thinking. The key
+# comes from the environment variable that `rules_key_env` names. It is never written
+# to a file. `rules_api: qwencloud` sends `enable_thinking` as a top field; the
+# llama.cpp gateway reads it from `chat_template_kwargs`.
+RULES_URL = CFG.get("rules_url") or URL
+RULES_MODEL = CFG.get("rules_model") or MODEL
+RULES_API = CFG.get("rules_api") or "llama.cpp"
+RULES_KEY_ENV = CFG.get("rules_key_env") or ""
+RULES_THINKING = bool(CFG.get("rules_thinking", THINKING))
+RULES_WORKERS = max(1, int(CFG.get("rules_workers", 1)))
+RULES_TIMEOUT_S = float(CFG.get("rules_timeout_s", 900))
+
 DESCRIBE_MAX_TOKENS = 1500
-RULES_MAX_TOKENS = 2500
+# With thinking, the reasoning shares the budget of the answer.
+RULES_MAX_TOKENS = 16000 if RULES_THINKING else 2500
 # A second attempt for an answer that reached `max_tokens`. With temperature 0 the
 # same request loops again: on 2026-09-23 one description ran into the limit of 1,500
 # tokens in 45 s. The second attempt adds a repeat penalty and a higher limit.
@@ -89,38 +106,62 @@ DESCRIBE_PROMPT = (
 )
 
 RULES_PROMPT = (
-    "You see the catalogue photos of %(n)d wine cards, Card A to Card %(last)s. "
-    "A recognizer confuses these cards, because their bottles look alike.\n\n"
+    "You see the label pictures of %(n)d wine cards, Card A to Card %(last)s. Each "
+    "picture shows the label of the catalogue picture of one card. "
+    "A recognizer confuses these cards, because their bottles look alike. Some "
+    "catalogue pictures are drawings, not photos. In a drawing, only the label is "
+    "drawn correctly.\n\n"
     "The catalogue data and the label description of each card:\n\n%(cards)s\n\n"
     "Notes of the reviewer about these cards:\n%(notes)s\n\n"
-    "Task: find the features of the bottle label that tell the cards apart. Later, a "
-    "model will look at a customer photo of ONE of these bottles and answer your "
-    "questions. The answers MUST identify the card.\n\n"
+    "Task: find the features of the label that tell the cards apart. Later, a "
+    "model will look at the label of a customer photo of ONE of these bottles and "
+    "answer your questions. That model sees only the label. The answers MUST identify "
+    "the card.\n\n"
     "Rules:\n"
     "1. Write 1 to 3 short questions about the label. A person MUST be able to answer "
-    "each question by looking at the bottle.\n"
-    "2. For each question, give the expected answer of each card as a short text, such "
-    "as \"2019\", \"30/70\" or \"gold\". Give null when the label of the card does not "
-    "show this feature.\n"
-    "3. Use a question only when at least two cards have different answers.\n"
-    "4. The notes of the reviewer are correct. Use them first.\n"
-    "5. Compare first the wine name and the grape names that each label prints. A "
-    "different name is the strongest feature.\n"
+    "each question by looking at the label alone.\n"
+    "1a. Use only features that are printed on the label. Do not ask about the glass, "
+    "the colour of the liquid, the capsule, the cork or the shape of the bottle.\n"
+    "2. Use only MAJOR differences between the wines: the grape varieties, a kosher "
+    "mark, the wine name or the name of the line, the colour of the wine as the label "
+    "states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, "
+    "semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, "
+    "the volume of the bottle, and the vintage year under rule 2a. A different design, "
+    "colour shade, background, font or pattern is NOT a major difference. Do not use "
+    "it, unless the notes of the reviewer name it.\n"
+    "2a. Ask about the vintage year only when the catalogue names of at least two cards "
+    "state two different years. Take the expected year of each card from its name, and "
+    "give null to a card whose name states no year. A year that only the picture shows "
+    "is not a feature of the card, because the next bottle of the same wine can show "
+    "the next vintage.\n"
+    "3. For each question, give the expected answer of each card as a short text, such "
+    "as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does "
+    "not show this feature. Write a name, a grape variety or another text exactly as "
+    "the label prints it, in its own alphabet. Do not translate it and do not "
+    "transliterate it. When the picture of a card is the picture of another card, "
+    "write the text as the catalogue data of the card writes it. Give a sugar level or "
+    "a colour of the wine with the words of rule 2.\n"
+    "3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, "
+    "gets a yes/no question, for example \"Does the label show a kosher mark?\". Give "
+    "\"yes\" or \"no\" for each card, and not null.\n"
+    "4. Use a question only when at least two cards have different answers.\n"
+    "5. The notes of the reviewer are correct. Use them first.\n"
     "6. Do not use a bottle number, a batch number, a lot number or a serial number, "
     "such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n"
-    "7. The catalogue data is correct. A catalogue photo can be too small to show a "
-    "small text. Then take the value from the catalogue data, for example a year or a "
-    "ratio in the name.\n"
+    "7. The catalogue data is correct. A catalogue picture can be too small to show a "
+    "small text. Then take the value from the catalogue data, for example a year, a "
+    "grape or a ratio in the name.\n"
     "8. A model wrote the label descriptions, and they can hold errors. Use a feature "
-    "only when you see it in the photos, or when the catalogue data or the notes of the "
-    "reviewer state it.\n"
+    "only when you see it in the pictures, or when the catalogue data or the notes of "
+    "the reviewer state it.\n"
     "9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are "
     "the same text and are not a difference.\n"
     "10. The alcohol value can change between two vintages of one wine. Use it only "
     "when no other feature differs.\n"
-    "11. List the groups of cards that no feature tells apart in \"indistinguishable\".\n"
+    "11. List the groups of cards that no major feature tells apart in "
+    "\"indistinguishable\".\n"
     "12. Also write the rule as one short plain text, for example: \"If the label shows "
-    "2024, it is card A; otherwise it is card B.\"\n\n"
+    "30/70, it is card A; otherwise it is card B.\"\n\n"
     "Answer with one JSON object:\n"
     "{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": "
     "\"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", "
@@ -133,6 +174,38 @@ CARD_BLOCK = (
     "end of the catalogue slug).\n"
     "Label description of card %(letter)s: %(description)s"
 )
+
+# The caption before the picture of each card in stage 2. The catalogue reuses the
+# picture of one card for another card: on 2026-09-24, 43 cards of 21 clusters shared
+# a picture with another card of their cluster. The label crop then shows the label of
+# one card only, and the model took that label for both cards. The caption names the
+# cards that share the picture.
+CAPTION = "Card %(letter)s:"
+CAPTION_NO_LABEL = ("Card %(letter)s (the whole catalogue picture, because no label crop "
+                    "exists):")
+CAPTION_SHARED = ("Card %(letter)s (the same catalogue picture as card %(twins)s. The "
+                  "catalogue can reuse the picture of another card. Where the picture "
+                  "contradicts the catalogue data of card %(letter)s, take the answers of "
+                  "card %(letter)s from its catalogue data):")
+
+# The vintage variants. The owner decided on 2026-09-24: when cards differ only by the
+# vintage year, and one card states no year, that card is the card of every vintage
+# that no other card states. A year counts from the name, from the slug, or from the
+# label of the catalogue picture. Only the prompt of a mixed cluster, which holds cards
+# that state a year and cards that state none, gets this note. So the rules of the other
+# clusters stay current. Read `docs/plans/06_label-only-cluster-rules.md`.
+VINTAGE_NOTE = (
+    "Vintage variants. The catalogue data or the label descriptions state a vintage year "
+    "for these cards: %(dated)s. They state no vintage year for these cards: "
+    "%(undated)s. Check these years in the pictures. When a card that states no year and "
+    "one or more cards that state a year differ only by the vintage year, rule 2a does "
+    "not apply to them. Then ask a vintage question. Give each card that states a year "
+    "that year. Give each card that states no year the answer \"other\": it is the card "
+    "of every vintage that no other card states. When the cards differ by more than the "
+    "vintage year, follow rule 2a."
+)
+# The answer of a card that states no year. The matcher holds the same word.
+OTHER = "other"
 
 RULES_NOTE = (
     "Label descriptions and cluster rules of the catalogue clusters. "
@@ -150,8 +223,18 @@ FIELDS = ("name", "producer", "category", "grapes")
 ALCOHOL = re.compile(r"-(\d{2,3})$")
 # A question about a number that changes from bottle to bottle.
 SERIAL = re.compile(r"serial|batch|\blot\b|bottle number|бут\.?\s*№|тираж|№")
+# A question or a rule text about a feature outside the label. Some catalogue
+# pictures are drawings, and a drawing shows only the label correctly. The re-rank
+# sends the label crop of the query alone, so it cannot see such a feature either.
+BOTTLE = re.compile(r"glass|liquid|through the|capsule|cork|neck foil|foil capsule|"
+                    r"shape of the bottle|bottle shape|colou?r of the bottle|"
+                    r"bottle colou?r|wine in the bottle|стекл|капсул|пробк")
 ALCOHOL_WORDS = re.compile(r"alcohol|abv|% ?vol|алкогол|крепост")
 PERCENT = re.compile(r"^\d{1,2}([.,]\d{1,2})?\s*%")
+# A question about the vintage. `\byear\b` does not take «years», so a question
+# about the years of ageing stays a `feature`.
+VINTAGE_WORDS = re.compile(r"vintage|harvest|урож|\byear\b")
+YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
 # The answers that state no value. The re-rank of `svoe-vino-matcher` holds the
 # same list; the two lists MUST stay equal.
 NOT_VISIBLE = {"", "null", "none", "n/a", "not visible", "not shown", "unreadable",
@@ -176,8 +259,13 @@ def cluster_key(slugs):
 
 DESCRIBE_SHA = sha256_json({"prompt": DESCRIBE_PROMPT, "model": MODEL, "thinking": THINKING,
                             "side": DESCRIBE_SIDE})[:16]
-RULES_SHA = sha256_json({"prompt": RULES_PROMPT, "card": CARD_BLOCK, "model": MODEL,
-                         "thinking": THINKING, "max_side": RULES_MAX_SIDE})[:16]
+# Stage 2 sends the label crop of each card, scaled to `rules_max_side`, UP or down.
+# Read `docs/plans/06_label-only-cluster-rules.md`.
+RULES_PICTURE = "label crop, enlarged"
+RULES_SHA = sha256_json({"prompt": RULES_PROMPT, "card": CARD_BLOCK, "model": RULES_MODEL,
+                         "thinking": RULES_THINKING, "max_side": RULES_MAX_SIDE,
+                         "picture": RULES_PICTURE,
+                         "captions": [CAPTION, CAPTION_NO_LABEL, CAPTION_SHARED]})[:16]
 
 
 def normalize(text):
@@ -264,6 +352,22 @@ def picture_resolver(catalog):
     return lambda slug: common.catalogue_picture(slug, catalog.get(slug), crops, patches)
 
 
+_LABELS = None
+
+
+def label_pictures():
+    """slug -> the label crop of `bottle_label_dir`, the picture of stage 2.
+
+    The crop holds the label alone, and its alpha channel is the label mask. On white
+    it is the view that the re-rank sends for a query. The map is read once for each
+    process. An unset `bottle_label_dir` gives an empty map.
+    """
+    global _LABELS
+    if _LABELS is None:
+        _LABELS = common.load_bottle_labels(common.BOTTLE_LABEL_DIR)
+    return _LABELS
+
+
 def encode_picture(path, max_side, enlarge=False):
     """A PNG data URL of the picture on white, with the long side at most `max_side`.
 
@@ -315,12 +419,20 @@ class VlmError(RuntimeError):
 
 
 class Vlm:
-    """The chat route of the gateway, with JSON answers, thinking off, temperature 0."""
+    """One OpenAI-compatible chat route, with JSON answers and temperature 0.
+
+    `api` is `llama.cpp` (the gx10 gateway: `chat_template_kwargs.enable_thinking`,
+    no key) or `qwencloud` (a top field `enable_thinking`, the key from the variable
+    `key_env`). A JSON mode is not sent with thinking; `parse_json` reads the answer.
+    """
 
     def __init__(self, url=URL, model=MODEL, thinking=THINKING, timeout_s=TIMEOUT_S,
-                 retries=3):
+                 retries=3, api="llama.cpp", key_env=""):
         self.url, self.model, self.thinking = url, model, thinking
         self.timeout_s, self.retries = timeout_s, retries
+        self.api, self.key_env = api, key_env
+        # The second attempt for an answer that reached `max_tokens`.
+        self.loop_guard = LOOP_GUARD if api == "llama.cpp" else {"max_tokens": 32000}
         self.calls = self.failed = 0
         self.total_ms = 0.0
 
@@ -329,18 +441,31 @@ class Vlm:
             "model": self.model,
             "temperature": 0,
             "max_tokens": max_tokens,
-            "response_format": {"type": "json_object"},
-            "chat_template_kwargs": {"enable_thinking": self.thinking},
             "messages": [{"role": "user", "content": content}],
         }
+        # The QwenCloud route takes JSON mode with thinking (measured on 2026-09-24); one
+        # rule of `qwen3.8-max` without it held a broken string. The local gateway runs
+        # with thinking off and takes JSON mode as a grammar.
+        if not self.thinking or self.api == "qwencloud":
+            payload["response_format"] = {"type": "json_object"}
+        if self.api == "qwencloud":
+            payload["enable_thinking"] = self.thinking
+        else:
+            payload["chat_template_kwargs"] = {"enable_thinking": self.thinking}
         payload.update(extra or {})
+        headers = {"Content-Type": "application/json"}
+        if self.key_env:
+            key = os.environ.get(self.key_env)
+            if not key:
+                self.failed += 1
+                raise VlmError("the environment variable %s is not set" % self.key_env)
+            headers["Authorization"] = "Bearer " + key
         body = json.dumps(payload).encode("utf-8")
         delay, last = 5.0, None
         for _ in range(self.retries):
             t0 = time.perf_counter()
             try:
-                req = urllib.request.Request(self.url, data=body,
-                                             headers={"Content-Type": "application/json"})
+                req = urllib.request.Request(self.url, data=body, headers=headers)
                 with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
                     answer = json.load(resp)
             except urllib.error.HTTPError as exc:
@@ -402,11 +527,11 @@ def describe(vlm, path, guard=False):
            "sent_size": list(size), "settings_sha": DESCRIBE_SHA, "built_at": now(),
            "description": None, "error": None}
     if guard:
-        rec["loop_guard"] = LOOP_GUARD
+        rec["loop_guard"] = vlm.loop_guard
     try:
         out = vlm.ask([{"type": "image_url", "image_url": {"url": url}},
                        {"type": "text", "text": DESCRIBE_PROMPT}], DESCRIBE_MAX_TOKENS,
-                      extra=LOOP_GUARD if guard else None)
+                      extra=vlm.loop_guard if guard else None)
     except VlmError as exc:
         rec["error"] = str(exc)
         return rec
@@ -422,33 +547,117 @@ def describe(vlm, path, guard=False):
 
 # ---------------------------------------------------------------- stage 2
 
+def vintage_facts(slugs, catalog, cards):
+    """The vintage years that each card states, and the cards that state no year.
+
+    A card states a year in its name, in its slug, or on its label: the key `vintage`
+    of its label description. A year of the name or the slug wins over the year of the
+    label. A card states no year when its name and its slug hold no year and its
+    description gives no vintage. A card with an unreadable or an implausible label
+    year, or with no description, is in neither group.
+
+    Answer `(dated, undated)`. `dated` maps a slug to `{"years", "where"}`. `undated`
+    lists the slugs in the order of `slugs`.
+    """
+    last = int(time.strftime("%Y"))
+    dated, undated = {}, []
+    for s in slugs:
+        name = ((catalog or {}).get(s) or {}).get("name") or ""
+        named = set(YEAR.findall(name)) | set(YEAR.findall(s))
+        desc = ((cards or {}).get(s) or {}).get("description")
+        label, state = None, "unknown"
+        if isinstance(desc, dict):
+            value = desc.get("vintage")
+            text = "" if value is None else str(value).strip().lower()
+            if text in ("", "null", "none", "n/a"):
+                state = "none"
+            else:
+                found = {y for y in YEAR.findall(text) if 1900 <= int(y) <= last}
+                if len(found) == 1:
+                    state, label = "year", found.pop()
+        if named:
+            dated[s] = {"years": named, "where": "in the name"}
+        elif label:
+            dated[s] = {"years": {label}, "where": "on the label"}
+        elif state == "none":
+            undated.append(s)
+    return dated, undated
+
+
+def vintage_note(letters, catalog, cards):
+    """The note of `VINTAGE_NOTE` for a mixed cluster, or an empty text."""
+    dated, undated = vintage_facts(list(letters.values()), catalog, cards)
+    if not dated or not undated:
+        return ""
+    letter = {s: x for x, s in letters.items()}
+    return VINTAGE_NOTE % {
+        "dated": "; ".join("Card %s: %s, %s" % (letter[s], ", ".join(sorted(f["years"])),
+                                                 f["where"])
+                           for s, f in sorted(dated.items(), key=lambda kv: letter[kv[0]])),
+        "undated": ", ".join("Card %s" % letter[s] for s in undated)}
+
+
 def rule_inputs_sha(slugs, catalog, cards, note_text):
-    """The SHA-256 of every input of stage 2. A different value makes a rule stale."""
+    """The SHA-256 of every input of stage 2. A different value makes a rule stale.
+
+    `label_pictures` holds the path of each label crop. The path, and not the bytes,
+    enters the SHA, so that the page `/clusters` reads no picture for the status. A
+    crop that is cut again under the same path does not make a rule stale.
+
+    The note of the vintage variants enters the SHA only when a cluster has one, so
+    the rule of a cluster without the note keeps its SHA.
+    """
     slugs = sorted(slugs)
-    return sha256_json({
+    labels = label_pictures()
+    inputs = {
         "slugs": slugs,
         "cards": {s: card_data(s, catalog) for s in slugs},
         "pictures": {s: (cards.get(s) or {}).get("picture_sha256") for s in slugs},
+        "labels": {s: labels.get(s) for s in slugs},
         "descriptions": {s: sha256_json((cards.get(s) or {}).get("description")) for s in slugs},
         "note": note_text or "",
         "settings": RULES_SHA,
-    })[:16]
+    }
+    vintage = vintage_note({LETTERS[i]: s for i, s in enumerate(slugs)}, catalog, cards)
+    if vintage:
+        inputs["vintage_note"] = vintage
+    return sha256_json(inputs)[:16]
 
 
 def rules_content(letters, catalog, cards, note_text, picture_of, max_side):
-    """The message content of stage 2, and an estimate of its tokens."""
+    """The message content of stage 2, and an estimate of its tokens.
+
+    Each card goes with its label crop, scaled to `max_side`, UP or down. A card
+    with no label crop goes with the picture of `picture_of`, and its caption states
+    that. The caption of a card also names the cards with the same catalogue picture.
+    The key `bottle` of the label description stays out: the bottle and the capsule
+    are not on the label, and a drawing can show them wrong.
+    """
+    labels = label_pictures()
+    shas = {s: (cards.get(s) or {}).get("picture_sha256") for s in letters.values()}
     content, tokens, blocks = [], 0, []
     for letter, slug in letters.items():
-        content.append({"type": "text", "text": "Card %s:" % letter})
-        path = picture_of(slug)
+        twins = [x for x, s in letters.items()
+                 if s != slug and shas[slug] and shas[s] == shas[slug]]
+        path = labels.get(slug)
+        if not path:
+            path = picture_of(slug)
+            caption = CAPTION_NO_LABEL % {"letter": letter}
+        elif twins:
+            caption = CAPTION_SHARED % {"letter": letter, "twins": ", ".join(twins)}
+        else:
+            caption = CAPTION % {"letter": letter}
+        content.append({"type": "text", "text": caption})
         if path:
-            url, size = encode_picture(path, max_side)
+            url, size = encode_picture(path, max_side, enlarge=True)
             content.append({"type": "image_url", "image_url": {"url": url}})
             tokens += image_tokens(size)
         else:
             content.append({"type": "text", "text": "(no catalogue photo)"})
         data = card_data(slug, catalog)
         desc = (cards.get(slug) or {}).get("description")
+        if isinstance(desc, dict):
+            desc = {k: v for k, v in desc.items() if k != "bottle"}
         blocks.append(CARD_BLOCK % {
             "letter": letter, "name": data["name"], "producer": data["producer"],
             "category": data["category"], "grapes": data["grapes"],
@@ -458,6 +667,10 @@ def rules_content(letters, catalog, cards, note_text, picture_of, max_side):
     text = RULES_PROMPT % {"n": len(letters), "last": list(letters)[-1],
                            "cards": "\n\n".join(blocks),
                            "notes": (note_text or "").strip() or "none"}
+    vintage = vintage_note(letters, catalog, cards)
+    if vintage:
+        head = "\n\nAnswer with one JSON object:"
+        text = text.replace(head, "\n\n" + vintage + head, 1)
     content.append({"type": "text", "text": text})
     return content, tokens + int(len(text) / 2.5)
 
@@ -472,23 +685,72 @@ def clean_answer(value):
 
 
 def question_kind(text, answers):
-    """`serial`, `alcohol`, or `feature`, for the two rules the code enforces."""
+    """`serial`, `bottle`, `alcohol`, `vintage`, or `feature`, for the rules the code
+    enforces."""
     t = (text or "").lower()
     if SERIAL.search(t):
         return "serial"
+    if BOTTLE.search(t):
+        return "bottle"
     values = [a for a in answers.values() if a is not None]
     if ALCOHOL_WORDS.search(t) or values and all(PERCENT.match(a.strip()) for a in values):
         return "alcohol"
+    if VINTAGE_WORDS.search(t) or values and all(YEAR.fullmatch(a.strip()) for a in values):
+        return "vintage"
     return "feature"
 
 
-def check_rule(value, letters):
+def named_year(answer, slug, catalog):
+    """The expected answer of a vintage question when the card data states it, or None.
+
+    The answer stays when it holds a year and the name or the slug of the card holds
+    every year of the answer.
+    """
+    if answer is None:
+        return None
+    years = YEAR.findall(answer)
+    name = ((catalog or {}).get(slug) or {}).get("name") or ""
+    return answer if years and all(y in name or y in slug for y in years) else None
+
+
+def vintage_answer(answer, slug, dated, catch_all):
+    """The expected answer of a vintage question in a rule with vintage variants.
+
+    A card that states a year keeps a single year of `dated`, as the bare year. A card
+    of `catch_all` keeps `other`. Every other answer is None.
+    """
+    if answer is None:
+        return None
+    if slug in catch_all:
+        return OTHER if normalize(answer) == OTHER else None
+    years = set(YEAR.findall(answer))
+    if slug in dated and len(years) == 1 and years <= dated[slug]["years"]:
+        return years.pop()
+    return None
+
+
+def check_rule(value, letters, catalog=None, cards=None):
     """Check the answer of stage 2 and set the mode. The letters become slugs.
 
-    The code enforces two rules of the prompt, because the model did not always keep
-    them in the first probe. A question about a bottle number is never valid: the
-    number changes from bottle to bottle. A question about the alcohol value is valid
-    only when no other question is valid.
+    The code enforces five rules of the prompt, because the model did not always keep
+    them:
+
+    - A question about a bottle number is never valid: the number changes from bottle
+      to bottle.
+    - A question about a feature outside the label is never valid, and a rule text
+      about such a feature gives mode `none`, not `verdict`. Some catalogue pictures
+      are drawings, and a drawing shows only the label correctly.
+    - A vintage question keeps the expected year of a card only when the name or the
+      slug of the card states that year. A year that only the picture shows changes
+      from bottle to bottle.
+    - The vintage variants of `VINTAGE_NOTE`. The model marks a card that states no
+      year with `other`. The mark stays only when the card states no year, and when
+      another question of the rule separates it from no card that states a year: the
+      two cards differ only by the vintage. Then a vintage question also keeps the year
+      on the label of a card. Else the rule above applies. `cards` holds the label
+      descriptions.
+    - A question about the alcohol value is valid only when no other question is
+      valid.
     """
     questions = []
     for q in value.get("questions") or []:
@@ -499,12 +761,36 @@ def check_rule(value, letters):
         answers = {}
         for letter, slug in letters.items():
             answers[slug] = clean_answer(given.get(letter, given.get(slug)))
-        distinct = {normalize(a) for a in answers.values() if a is not None}
-        kind = question_kind(text, answers)
-        valid = bool(text) and len(distinct) >= 2 and kind != "serial"
         questions.append({"id": "q%d" % (len(questions) + 1), "question": text,
-                          "answers": answers, "kind": kind, "valid": valid})
-    if any(q["valid"] and q["kind"] == "feature" for q in questions):
+                          "answers": answers, "kind": question_kind(text, answers)})
+
+    # The vintage variants: the cards that state no year, and that differ from a card
+    # with a year only by the vintage in every other question.
+    dated, undated = vintage_facts(list(letters.values()), catalog, cards)
+
+    def only_vintage_differs(a, b):
+        for q in questions:
+            if q["kind"] in ("vintage", "serial", "bottle", "alcohol"):
+                continue
+            x, y = normalize(q["answers"].get(a)), normalize(q["answers"].get(b))
+            if x is not None and y is not None and x != y:
+                return False
+        return True
+
+    variants = {u for u in undated if any(only_vintage_differs(u, d) for d in dated)}
+    catch_all = {u for u in variants
+                 if any(q["kind"] == "vintage" and normalize(q["answers"].get(u)) == OTHER
+                        for q in questions)}
+
+    for q in questions:
+        if q["kind"] == "vintage":
+            q["answers"] = {s: (vintage_answer(a, s, dated, catch_all) if catch_all
+                                else named_year(a, s, catalog))
+                            for s, a in q["answers"].items()}
+        distinct = {normalize(a) for a in q["answers"].values() if a is not None}
+        q["valid"] = (bool(q["question"]) and len(distinct) >= 2
+                      and q["kind"] not in ("serial", "bottle"))
+    if any(q["valid"] and q["kind"] in ("feature", "vintage") for q in questions):
         for q in questions:
             if q["kind"] == "alcohol":
                 q["valid"] = False
@@ -517,7 +803,7 @@ def check_rule(value, letters):
     rule = str(value.get("rule") or "").strip()
     if any(q["valid"] for q in questions):
         mode = "sheet"
-    elif rule:
+    elif rule and not BOTTLE.search(rule.lower()):
         mode = "verdict"
     else:
         mode = "none"
@@ -545,9 +831,10 @@ def build_rule(vlm, slugs, catalog, cards, note_text, picture_of, guard=False):
         side = int(side * 0.75)
     rec["max_side"], rec["prompt_tokens_estimate"] = side, estimate
     if guard:
-        rec["loop_guard"] = LOOP_GUARD
+        rec["loop_guard"] = vlm.loop_guard
+    rec["model"] = vlm.model
     try:
-        out = vlm.ask(content, RULES_MAX_TOKENS, extra=LOOP_GUARD if guard else None)
+        out = vlm.ask(content, RULES_MAX_TOKENS, extra=vlm.loop_guard if guard else None)
     except VlmError as exc:
         rec["error"] = str(exc)
         return rec
@@ -557,7 +844,7 @@ def build_rule(vlm, slugs, catalog, cards, note_text, picture_of, guard=False):
         rec["error"] = "the answer is not a JSON object (finish_reason %s)" % out["finish_reason"]
         rec["raw"] = out["text"][:4000]
         return rec
-    rec.update(check_rule(value, letters))
+    rec.update(check_rule(value, letters, catalog, cards))
     rec["answer"] = value
     return rec
 
@@ -588,6 +875,8 @@ def update_rules(change):
         data = load_rules()
         change(data)
         data["settings"] = {"url": URL, "model": MODEL, "thinking": THINKING,
+                            "rules_url": RULES_URL, "rules_model": RULES_MODEL,
+                            "rules_thinking": RULES_THINKING,
                             "describe_side": DESCRIBE_SIDE,
                             "rules_max_side": RULES_MAX_SIDE,
                             "describe_sha": DESCRIBE_SHA, "rules_sha": RULES_SHA}
@@ -654,10 +943,13 @@ def set_note(slugs, text, clusters):
 class Builder:
     """Run the two stages for the cards and the clusters that are not current."""
 
-    def __init__(self, catalog, picture_of, vlm=None, log=common.log):
+    def __init__(self, catalog, picture_of, vlm=None, log=common.log, rules_vlm=None):
         self.catalog = catalog
         self.picture_of = picture_of
         self.vlm = vlm or Vlm()
+        self.rules_vlm = rules_vlm or Vlm(
+            url=RULES_URL, model=RULES_MODEL, thinking=RULES_THINKING,
+            timeout_s=RULES_TIMEOUT_S, api=RULES_API, key_env=RULES_KEY_ENV)
         self.log = log
 
     def describe_cards(self, slugs, force=False):
@@ -704,11 +996,12 @@ class Builder:
         if not force and rule_status(old, sha) == "current":
             return old, False
         guard = looped(old)
-        rec = build_rule(self.vlm, slugs, self.catalog, data["cards"], text, self.picture_of,
-                         guard=guard)
+        rec = build_rule(self.rules_vlm, slugs, self.catalog, data["cards"], text,
+                         self.picture_of, guard=guard)
         if looped(rec) and not guard:
-            self.log("rule %s: the answer reached max_tokens; again with %s" % (key, LOOP_GUARD))
-            rec = build_rule(self.vlm, slugs, self.catalog, data["cards"], text,
+            self.log("rule %s: the answer reached max_tokens; again with %s"
+                     % (key, self.rules_vlm.loop_guard))
+            rec = build_rule(self.rules_vlm, slugs, self.catalog, data["cards"], text,
                              self.picture_of, guard=True)
         update_rules(lambda d: d["clusters"].__setitem__(key, rec))
         self.log("rule %s (%d cards): mode %s, %d valid questions, %s ms%s"

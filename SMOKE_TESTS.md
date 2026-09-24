@@ -11,7 +11,7 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 |---|---|---|
 | 1 | Start the tool | The log states first the configuration: the path of `config.yaml`, the dataset, `rootdir`, every configured path, and the work directory. It then states the wine count, the photo count, the loaded label count by label, and the URL. The start takes a few seconds, not minutes. |
 | 2 | `curl -s -o /dev/null -w "%{http_code}" $H/` | `200` |
-| 2a | Open `$H/` and look at the top right of the header | The navigation holds `Review`, `Runs`, and `Clusters`. `Review` is the marked link. A click on `Runs` opens `/runs`. A click on `Clusters` opens `/clusters`. |
+| 2a | Open `$H/` and look at the top right of the header | The navigation holds `Review`, `Dataset`, `Runs`, and `Clusters`. `Review` is the marked link. A click on `Dataset` opens `/dataset`. |
 | 2b | Drag a photo card to the sideboard at the right | The card leaves the row of its wine and stands in the panel. The counter beside `Sideboard` rises. No request is sent. |
 | 2c | Drag the card from the sideboard to the row of another wine | The card stands again in the row of its own wine, with a dashed outline. Its button reads `→ <the target slug>`. The header states one more pending move. |
 | 2d | Drag a held card to the row of the wine it comes from | The card stands again in that row. No move is recorded. |
@@ -36,6 +36,13 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 2p7 | Put a file whose name is no slug of the catalogue in `patch_dir`, then start the tool | The start report warns and names the file. The tool starts. |
 | 2p8 | Set `patch_dir` to a path that is not on disk, then start the tool | The tool warns on the error stream and starts with no patch. It does not show a corrected photo that it could not read. |
 | 2p9 | Look at a wine with no patch | No mark. The row is as it was before this feature. |
+| 2pb | Open `/dataset` and look at the right side of a row | The row holds an `Alternative photos` area. It states the number of active photos and holds a drop target. |
+| 2pc | Drop two supported images on the alternative area | Both images appear as candidates. No file is written under `alternative_dir`. |
+| 2pd | Press `Cancel` after case 2pc | Both candidates disappear. No file is written. |
+| 2pe | Drop two images and press `Apply` | Both files appear under `alternative_dir/<slug>/` as sequential `NN_manual.<extension>` files. The header count and the active count rise by two. |
+| 2pf | Mark one active alternative for removal, then press `Cancel` | The active image stays in place. |
+| 2pg | Mark one active alternative for removal, then press `Apply` | The image leaves the active list and moves to `alternative_dir/.trash/<slug>/`. |
+| 2ph | Add an alternative, then load `svoe-vino-matcher/config.yaml` | `Config.photos` includes the main picture and the alternative under the same slug. The photo-index file name differs from the name before the addition. |
 | 2h | Put an image file directly in `dataset/my/photo/`, then start the tool and open `$H/` | The photo stands in the sideboard with a dashed frame. The line under it reads `inbox` and the file name. The counter beside `Sideboard` counts it. |
 | 2i | Put a file that is not an image, and a directory, in the same place | Neither is shown. The sideboard holds the image files alone. |
 | 2j | Drag an inbox card to a wine row | The card stays in the sideboard, its frame takes the accent colour, and it states `→ <the slug>`. The header counts one more pending move. No request is sent. |
@@ -362,6 +369,16 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | C12 | A `dataset` list with no entry named `default` | Every script stops and states that a script with no `--dataset` uses that name. |
 | C13 | A dataset entry that holds `catalog_file`, or two entries with one name, or an entry with no `name` | Every script stops and names the fault. |
 
+## The failure set — the dataset `vlmrerank-8b-failed`
+
+| # | Case | Expected result |
+|---|---|---|
+| F1 | `python3 -c "import sys; sys.path.insert(0,'scripts'); import common; print(common.dataset_names())"` | `['default', 'official-real-photos', 'vlmrerank-8b-failed']` |
+| F2 | `python3 scripts/match_run.py --dataset vlmrerank-8b-failed --dry-run` | The console states `query set: 171 photos (positive 171)` and `left out: excluded slug 9`. The run directory stands under `dataset/vlmrerank-8b-failed/runs/`. Remove that directory after the check. |
+| F3 | `python3 scripts/review_server.py --dataset vlmrerank-8b-failed --port 8167 --no-browser`, then `curl -s http://127.0.0.1:8167/api/rows` | 108 rows hold photos, with 180 photos in total. The map `labels` holds 180 entries, and each entry carries `positive`. The start does not change `review-labels.json`. |
+| F4 | Open `http://127.0.0.1:8167/runs` | The table lists the runs of `dataset/vlmrerank-8b-failed/runs/` alone. No run of `default` is listed. |
+| F5 | `python3 -c "import json,hashlib; d='dataset/vlmrerank-8b-failed/'; s=json.load(open(d+'selection.json')); print(sum(hashlib.sha256(open(d+'photo/'+p['image_path'],'rb').read()).hexdigest()!=p['image_sha256'] for p in s['photos'] if p['copied']))"` | `0`. Each copied photo has the SHA-256 that the source run recorded. |
+
 ## The picture selector — `package` / `label` / `label box`
 
 The cases need `bottle_label_dir` and `bottle_label_box_dir` in `config.yaml`.
@@ -486,12 +503,52 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | P11 | `--rerun-depth 0` | The run refuses to start. |
 | P12 | The page `/runs` on a repeat run | The tag `repeat d<K>` in the table, the warning above the cards, and a `before:` line under every photo. |
 
+## The Dataset page — `/dataset`
+
+| # | Case | Expected result |
+|---|---|---|
+| D1 | Open `$H/dataset` | The header states `2103 of 2103 records · 15 patches`. The document holds all 2,103 records in the order of `catalog.jsonl`. `Dataset` is the marked navigation link. |
+| D2 | Look at the first row | The original catalogue bottle stands at the left. The second image place is a drop target for a patch. The text matches the first record of `catalog.jsonl`. |
+| D3 | Set `Show` to `with a patch` | The page shows 15 records. Each row shows the original catalogue image and the patch image next to it. |
+| D4 | Search `Пино Нуар`, then search the full first slug | The page shows records that contain every search word in any JSON field. |
+| D5 | Open `full catalog.jsonl record` | The formatted JSON has every source field. It does not have the internal `_patched` or `_index` fields. |
+| D6 | Click `copy` beside a slug | The clipboard gets the full slug. The button reads `copied` for a short time. |
+| D7 | Inspect the controls and scroll through the list | There is no `Rows`, `Previous`, or `Next` control. All records that pass the filter stay in one continuous list. Images below the viewport have `loading="lazy"`. |
+| D8 | `GET /api/dataset` | The answer holds the catalogue, patch, alternative, barcode, and Atlas binding paths and counts, plus 2,103 records. Every record has `_patched`, `_barcodes`, `_atlas_product_uuid`, and `_atlas_binding_source`. |
+| D9 | Compare `GET /img/catalog?slug=bukovinka` and `GET /img/patch?slug=bukovinka` | The first body equals `local_path` of the catalogue record. The second body equals `patch_dir/bukovinka.webp`. |
+| D10 | `GET /img/patch` with a slug that has no patch | `404`. The server reads no file outside `patch_dir`. |
+| D11 | Drop an image on a row that has no patch | The drop target shows the candidate, its file name, `Apply`, and `Cancel`. No file appears in `patch_dir`. |
+| D12 | Press `Cancel` on a patch candidate | The candidate is discarded. The row shows the empty drop target again. No file changes. |
+| D13 | Drop an image and press `Apply` | The server writes `<slug>.<extension>` in `patch_dir`. The row shows the patch. The patch count increases by one. Old crop and label images for the slug move to `.trash` in their directories. |
+| D14 | Press `Remove` on an existing patch | The row states that removal is pending. The patch file stays in `patch_dir`. |
+| D15 | Press `Cancel`, then press `Remove` and `Apply` | Cancel keeps the patch. Apply moves it into `patch_dir/.trash`. Old crop and label images move to their `.trash` directories. The row becomes a drop target. |
+| D16 | Press `Validate` | A dialog describes the slug set, the downloaded SHA-256, and the source image on each `wine_slug` page. All checks are selected. |
+| D17 | Select only the slug check and press `Run selected` | The dialog shows progress. It then shows the catalogue count, the website count, and the lists of missing and extra slugs. |
+| D18 | Run the image check | The progress names each completed slug. The result counts exact matches, byte mismatches, errors, and skipped records. A mismatch record holds both SHA-256 values and both sizes. |
+| D19 | Run the page check | The result compares the source image file name with the file name of `og:image` on each wine page. A mismatch names both files and the page URL. |
+| D20 | Close the dialog while a check runs, then open it | The job continues. The dialog shows the current progress or the completed result. |
+| D21 | `GET /api/dataset-validation` | The answer holds `running`, `selected`, `progress`, and `results`. The route starts no work. |
+| D22 | `POST /api/dataset-validation` with `{"checks":["slugs"]}` | The answer is `202`. A second POST while the job runs answers `409`. An empty list or an unknown check answers `400`. |
+| D23 | Press `+` beside `Barcodes` in one row | A text input and the `V` and `X` buttons appear. No file changes. |
+| D24 | Enter a barcode and press `X` | The input row closes. The barcode file does not change. |
+| D25 | Enter a new barcode and press `V` | The barcode appears in the row. `barcode_file` contains it under the correct `wine_slug`. The header count increases by one. |
+| D26 | Add a second barcode to the same slug | The code map stores both values. Both values appear in the row. |
+| D27 | Add a barcode that another slug already has | The server answers `400`. The page shows the error. The file does not change. |
+| D28 | Search for a saved barcode | The page shows the slug that owns the value. |
+| D29 | Look at `Atlas Core product` for a slug in `atlas_matches_file` | The row shows the product UUID and marks the source `automatic`. |
+| D30 | Press `+` for an unbound slug | A UUID input and the `V` and `X` buttons appear. No file changes. |
+| D31 | Enter a UUID and press `X` | The input closes. The manual binding file does not change. |
+| D32 | Enter a valid UUID and press `V` | The row shows the UUID and marks it `manual`. `atlas_bindings_file` contains the slug and UUID. |
+| D33 | Press `edit` on an automatic binding and save another UUID | The manual overlay gets the new UUID. The automatic match file does not change. The row shows the manual UUID. |
+| D34 | Enter text that is not a UUID | The server answers `400`. The page shows the error. No file changes. |
+| D35 | Search for an Atlas product UUID | The page shows every Svoe Vino slug bound to that product. |
+
 ## The page of the runs — `/runs`
 
 | # | Case | Expected result |
 |---|---|---|
 | R1 | Open `http://127.0.0.1:8154/runs` | The table of the runs, the newest first. The newest run with metrics opens by itself. |
-| R1a | Look at the top right of the header | The navigation holds `Review`, `Runs`, and `Clusters`. `Runs` is the marked link. A click on `Review` opens `/`. |
+| R1a | Look at the top right of the header | The navigation holds `Review`, `Dataset`, `Runs`, and `Clusters`. `Runs` is the marked link. A click on `Dataset` opens `/dataset`. |
 | R2 | Click another run | The metrics and the photos change. The address holds the run id after `#`. |
 | R3 | Reload the page with the `#` in the address | The same run opens. |
 | R4 | Look at a row of a positive photo that was matched | The candidate of the true slug carries a green border. |
@@ -524,6 +581,10 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | R27 | Open a run made before this feature | The marks are there. The field `twin` is added when the run is read, not when it is written. |
 | R28 | Set the filter to `positive: the true slug is not in the top 5` | Only the photos whose true slug stands at rank 6 or deeper, or never came back, are listed. |
 | R29 | Compare the counts of `not in the top 5` and `the true slug never came back` | The first count is never smaller than the second. |
+| R30 | Open `/runs#2026-09-23T193559Z-svm-label-gw-cluster-rules-partial-3-rules` and set the filter to `rule step: the VLM answered for the top cluster` | 35 rows. Each row shows a box `VLM` under the frame of the top cluster: the mode, the cluster id, the time or `from the cache`, the questions with the answers, the scores, and the line about the order. |
+| R31 | Set the filter to `rule step: the VLM answer changed the order` | 17 rows. The last line of each box names the card that the answer moved to rank 1, and its rank before. |
+| R32 | Look at the box of a run made before the matcher recorded the questions | The box states that the question text comes from the current rule of the cluster. A run made after that change shows the questions of the run itself and no such line. |
+| R33 | Look at a row with the box next to other candidates | The other candidates keep their height and stand at the top of the strip. |
 | R30 | A backend with `top_k: 5` | `not in the top 10` and `not in the top 5` hold the same rows, because no candidate stands deeper than 5. |
 | R31 | Set the filter to `positive: the true slug is at rank 2 to 5` | Only the photos whose true slug came back at rank 2, 3, 4, or 5 are listed. A photo whose true slug never came back is not listed. |
 | R32 | Add the counts of `correct at rank 1`, `rank 2 to 5`, and `not in the top 5` | The sum equals the count of the positive photos of the run. |
@@ -596,7 +657,8 @@ call the VLM on gx10 and wait for its single slot.
 
 | # | Case | Expected result |
 |---|---|---|
-| L1 | Run `python3 scripts/11_cluster_rules.py --dry-run` | The log states the clusters, the cards, the notes, the model with `thinking False`, and the counts of the descriptions and the rules that are not current. No VLM call is made. |
+| L1 | Run `python3 scripts/11_cluster_rules.py --dry-run` | The log states the clusters, the cards, the notes, `stage 1: qwen3.5-9b, thinking False   stage 2: qwen3.8-max, thinking True, 4 requests at a time`, and the counts of the descriptions and the rules that are not current. No VLM call is made. |
+| L1a | Run `python3 scripts/11_cluster_rules.py --stage rules --cluster <slug>` in a shell without `QWENCLOUD_TOKEN_PLAN_API_KEY` | The rule records the error `the environment variable QWENCLOUD_TOKEN_PLAN_API_KEY is not set`, and the page states `failed`. |
 | L2 | Run `python3 scripts/11_cluster_rules.py --cluster no-such-slug` | The script stops with `in no cluster: no-such-slug`. |
 | L3 | Run it with `--cluster vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145` twice | The first run describes the cards that are not current and builds one rule. The second run makes no VLM call: every description and the rule are current. |
 | L4 | `curl -s $H/api/clusters` and find the cluster of `vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145` | The cluster holds `key`, `notes`, `rule`, and `rule_status`. The rule holds a valid question with the answers `30/70`, `50/50`, and `70/30`. Each card record holds `description`. The top field `rules` names the two files and the model. |
@@ -609,4 +671,20 @@ call the VLM on gx10 and wait for its single slot.
 | L11 | `curl -s -X POST $H/api/cluster-note -d '{"slugs":["abrau-dyurso-pino-nuar-krasnoe-suhoe-12"],"text":"x"}'` | `400` `these slugs are not the slugs of one cluster`. |
 | L12 | Set `Rule` to `with a note` | Only the clusters with a note are listed. `stale` lists the clusters whose inputs changed after the build. |
 | L13 | Open `/clusters` in the dark system theme and in the light system theme | The block `Label rule`, the sheet, and the note editor are readable in both themes. |
+| L15 | Open `$H/clusters#fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12` and open `the cards of the letters` | The badges read `#1 · A` to `#9 · I`, the head of the sheet names the same letters, and the list names the card name and the slug of each letter: `B = #2 Primum Alveus Brut 2014 fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12`. |
 | L14 | Run `python3 scripts/cluster_rules_report.py runs/<a run of svm-label-gw-cluster-rules>` | The report states the metrics against the base run, the wins and the losses with the exact McNemar test, the table by mode, the replay without the `confusion` signal, the «Фантом» photos, the table of the score gaps, and the latency. It writes `cluster-rules-report.md` and `.json` into the run directory. |
+
+The label-only rules of `docs/plans/06_label-only-cluster-rules.md`. The cases L16 to
+L18 call no model. Run them from `scripts/` in `python3`, after
+`import cluster_rules as cr; catalog = cr.load_catalog()`.
+
+| # | Case | Expected result |
+|---|---|---|
+| L16 | `cr.check_rule({"questions": [{"question": "What colour does the wine show through the glass?", "answers": {"A": "red", "B": "rose"}}], "rule": "Clear glass is card B."}, {"A": "x-a", "B": "x-b"}, catalog)` | The question has `kind` `bottle` and `valid` false. The mode is `none`, not `verdict`, because the rule text names the glass. |
+| L17 | `cr.check_rule({"questions": [{"question": "What vintage year is printed?", "answers": {"A": "2024", "B": "2025"}}]}, {"A": "aligote-barrel-2024", "B": "aligote-barrel-2025"}, catalog)`, then the same with the slugs `abrau-dyurso-pino-nuar-krasnoe-suhoe-12` and `abrau-dyurso-pino-nuar-krasnoe-suhoe-125` | The first question has `kind` `vintage`, keeps `2024` and `2025`, and is valid: the slugs state the years. The second question holds null for both cards and is not valid. |
+| L18 | Build the stage 2 content of the cluster of `b-yu-rne-krasnostop-suhoe-krasnoe-classic` with `cr.rules_content` | Each picture is the label crop of `bottle_label_dir`. The captions of card E («ПИНО БЛАН») and card J («ВИОНЬЕ») read `the same catalogue picture as card J` and `... as card E`. The prompt text holds no key `"bottle"`. |
+| L19 | Run `python3 scripts/11_cluster_rules.py --stage rules --cluster b-yu-rne-krasnostop-suhoe-krasnoe-classic --force` in a shell that holds `QWENCLOUD_TOKEN_PLAN_API_KEY`, and read the rule | No valid question names the glass, the liquid, the capsule, the cork, or the shape of the bottle. The grape answers are written as the label prints them: `КРАСНОСТОП`, `ШАРДОНЕ`, `МЕРЛО`. A vintage question, if the model asks one, is not valid. |
+| L20 | Start the review tool again, open `$H/clusters`, and hover a struck question of kind `bottle` or `vintage` | The tooltip reads `not used: a feature outside the label: …` or `not used: the names of two cards do not state two different years`. |
+| L21 | Copy the run `2026-09-23T224548Z-svm-label-gw-cluster-rules-qwen38max-rules-v2` to a scratch directory and run `python3 scripts/cluster_rules_report.py <copy> --rules work/catalog-cluster-rules.2026-09-24T082150.json` | Every number equals the report of the run. The new section `The two halves of the wines` reads: half A, 775 positives, R@1 0.8103 → 0.8284, 23 wins, 9 losses; half B, 825 positives, R@1 0.8206 → 0.8339, 24 wins, 13 losses. |
+| L22 | For the cluster of `abrau-dyurso-pino-nuar-krasnoe-suhoe-12` (c013), take `letters` of the sorted slugs, and call `cr.check_rule` with a vintage question `{"A": "other", "B": "2023", "C": "2023", "D": "2024"}` and a grape question `{"A": "Пино Нуар", "B": "Каберне Совиньон", "C": "Пино Нуар", "D": "Пино Нуар"}`, with `catalog` and `cr.load_rules()["cards"]` | The vintage question keeps `other` for A and the label years 2023, 2023, and 2024, and it is valid. `cr.vintage_note(letters, catalog, cards)` names B, C, and D with their years `on the label`, and A as the card with no year. |
+| L23 | The same call with the grape `Мерло` for card A | The vintage question holds null for every card and is not valid: the grape separates A from every card with a year, so A is not a vintage variant. |

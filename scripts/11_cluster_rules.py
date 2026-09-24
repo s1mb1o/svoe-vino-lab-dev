@@ -20,6 +20,7 @@ Run:
 """
 import argparse
 import collections
+import concurrent.futures
 import os
 import sys
 import time
@@ -59,8 +60,10 @@ def main():
     picture_of = cr.picture_resolver(catalog)
     notes = cr.assign_notes(clusters, cr.load_notes())
     slugs = [s for c in targets for s in c["slugs"]]
-    log("clusters: %d   cards: %d   notes: %d   model %s, thinking %s"
-        % (len(targets), len(slugs), sum(len(v) for v in notes.values()), cr.MODEL, cr.THINKING))
+    log("clusters: %d   cards: %d   notes: %d" % (len(targets), len(slugs),
+                                                  sum(len(v) for v in notes.values())))
+    log("stage 1: %s, thinking %s   stage 2: %s, thinking %s, %d requests at a time"
+        % (cr.MODEL, cr.THINKING, cr.RULES_MODEL, cr.RULES_THINKING, cr.RULES_WORKERS))
     log("rules file: %s" % cr.RULES_FILE)
 
     if args.dry_run:
@@ -89,14 +92,19 @@ def main():
                builder.vlm.total_ms / max(1, builder.vlm.calls)))
 
     if args.stage in ("rules", "all"):
+        # The rules of two clusters do not depend on each other. The rules file takes
+        # one write at a time under its lock.
         t1, built = time.time(), 0
-        for i, c in enumerate(targets, 1):
-            _, called = builder.build(c["slugs"], notes.get(cr.cluster_key(c["slugs"]), []),
-                                      force=args.force)
-            built += int(called)
-            if i % 20 == 0:
-                log("stage 2: %d of %d clusters, %d calls, %.0f s"
-                    % (i, len(targets), built, time.time() - t1))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=cr.RULES_WORKERS) as pool:
+            futures = [pool.submit(builder.build, c["slugs"],
+                                   notes.get(cr.cluster_key(c["slugs"]), []), args.force)
+                       for c in targets]
+            for i, f in enumerate(concurrent.futures.as_completed(futures), 1):
+                _, called = f.result()
+                built += int(called)
+                if i % 20 == 0:
+                    log("stage 2: %d of %d clusters, %d calls, %.0f s"
+                        % (i, len(targets), built, time.time() - t1))
 
     data = cr.load_rules()
     modes = collections.Counter()
