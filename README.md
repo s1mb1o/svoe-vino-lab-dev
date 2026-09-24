@@ -12,6 +12,7 @@ Test data for the Svoe Vino wine scanner.
 - `excluded-slugs.json` names the slugs that are out of the benchmark.
 - `manual-groups.json` names the variant pairs that a reviewer made by hand.
 - `pipeline/` holds the lab database tools. `data/lab.sqlite3` is the lab database.
+  `data/images/` holds the images of the wines. Git ignores `data/`.
 
 ## The lab database
 
@@ -24,12 +25,16 @@ for the reasons.
 # step 1: create the database and its tables
 python3 pipeline/labdb.py data/lab.sqlite3
 
-# step 2: seed wine_catalog from the Strapi CSV of the delivery
-python3 pipeline/seed_catalog.py --db data/lab.sqlite3 \
+# step 2: import the Strapi CSV into wine_catalog; the first import adds every wine
+python3 pipeline/import_catalog.py --db data/lab.sqlite3 \
     ../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv
 ```
 
-The database MUST be on a local disk. The seed never writes to the delivery directory.
+The database MUST be on a local disk. The import never writes to the delivery directory.
+A later import adds the new wines and marks the missing wines `Removed`. A wine that
+the import removed is `Active` again when it comes back. A wine that a person removed
+stays `Removed`. A changed field of a wine stops the import with an error.
+`tests/data/` holds fake variants of the CSV to test this.
 
 ```bash
 # step 3: the lab server, the Dataset page on the database
@@ -40,8 +45,27 @@ python3 pipeline/lab_server.py            # http://127.0.0.1:8168/dataset
 `database_file` is resolved against `rootdir`, so the value is
 `svoe-vino-lab/data/lab.sqlite3`. The lab server opens the database
 read-only. Only the Dataset page works. Clusters, Embeddings, Testset, and Runs are
-disabled for now: each one answers a notice page. The lab server uses port 8168.
+disabled for now: each one answers a notice page. Each card of the Dataset page holds
+the buttons `Disable` / `Enable`, `Remove`, and `Restore` below the catalogue image. The
+filter `State` shows `All (except Removed)` or `Removed`. The lab server writes the
+state of a wine; it writes no other column. The lab server uses port 8168.
 The review tool of `svoe-vino-testset` keeps port 8154, so both can run.
+
+```bash
+# step 4: find the main image of each wine in the Strapi uploads folder, offline
+python3 pipeline/seed_images.py --db data/lab.sqlite3 \
+    ../svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads
+```
+
+The table `wine_image` holds the images of a wine and the type of each image: `main`,
+`main_patched`, `front`, `back`, `label_front`, and `label_back`. A `main_patched`
+image replaces the `main` image of the same wine. The files are in `data/images/`:
+`main/`, `patched/`, and `additional/`, each file as `<sha256>.<extension>`. The folder
+`testset/` is for the photos of the test sets; they get their own table later.
+`seed_images.py` fills `main`. It matches `csv_photo_name` with the upload file names
+by the rule of `build_catalog.py`, and it reads no network resource. A wine with no
+match gets a console message. Read [plan 08](docs/plans/08_seed-images.md).
+Git ignores the whole `data/` directory.
 
 The sections below describe the tools of `scripts/`. They read JSON files through
 `scripts/common.py`, and they do not start with the present `config.yaml`.

@@ -1,13 +1,15 @@
 """The lab server: the Dataset page on the lab database.
 
 The server reads two keys of `config.yaml`: `rootdir` and `database_file`. It opens
-the database read-only for each request and checks the schema version. It serves
-the Dataset page and `GET /api/dataset` from the table `wine_catalog`.
+the database for each request and checks the schema version. It serves the Dataset
+page and `GET /api/dataset` from the table `wine_catalog`. A GET opens the database
+read-only. `POST /api/wine-state` changes the state of one wine; it writes the
+columns `state` and `removed_by` alone.
 
 The pages Clusters, Embeddings, Testset, and Runs are disabled for now. Each one
 answers a notice page with HTTP 503, and each other API route answers HTTP 503 with
-a JSON error. The database does not hold their data yet. The navigation of every
-page stays as it is. Read `docs/plans/07_sqlite-lab-database.md`.
+a JSON error, except `POST /api/wine-state`. The database does not hold their data
+yet. The navigation of every page stays as it is. Read `docs/plans/07_sqlite-lab-database.md`.
 
 Usage:
     python3 pipeline/lab_server.py              # http://127.0.0.1:8168/dataset
@@ -39,7 +41,9 @@ DEFAULT_PORT = 8168
 
 # The columns of `wine_catalog` that `/api/dataset` sends, in table order.
 CATALOG_COLUMNS = ("wine_slug", "name", "producer", "category", "color", "region",
-                   "grapes", "description", "csv_photo_name")
+                   "grapes", "description", "csv_photo_name", "state", "removed_by")
+# The states of a wine, in the order of the start report.
+STATES = ("Active", "Disabled", "Removed")
 # The Dataset page reads the key `slug`. The API sends `wine_slug` under that key.
 PAGE_KEYS = {"wine_slug": "slug"}
 
@@ -51,6 +55,16 @@ DISABLED_PAGES = {"/clusters": "Clusters", "/embedding": "Embeddings", "/": "Tes
                   "/runs": "Runs", "/docs": "API docs"}
 DISABLED_ERROR = ("disabled for now: the lab database does not hold the data of "
                   "this route yet")
+# action -> (the states that allow it, the new state). A removal by a person sets
+# `removed_by` = `person`, so the import does not restore the wine.
+ACTIONS = {
+    "disable": (("Active",), "Disabled"),
+    "enable": (("Disabled",), "Active"),
+    "remove": (("Active", "Disabled"), "Removed"),
+    "restore": (("Removed",), "Active"),
+}
+# The largest body of `POST /api/wine-state`, in bytes.
+MAX_BODY = 4096
 
 
 class ConfigError(Exception):
@@ -71,12 +85,16 @@ def load_config(path=CONFIG_PATH):
     return os.path.abspath(os.path.join(rootdir, database))
 
 
-def open_database(path):
-    """Open the database read-only. Raise `ConfigError` on a wrong schema version."""
+def open_database(path, write=False):
+    """Open the database, read-only unless `write`. Check the schema version.
+
+    Raise `ConfigError` on a missing file or on a wrong schema version.
+    """
     if not os.path.isfile(path):
         raise ConfigError("no database at %s; create it with "
                           "`python3 pipeline/labdb.py %s`" % (path, path))
-    conn = sqlite3.connect(Path(path).as_uri() + "?mode=ro", uri=True)
+    conn = sqlite3.connect(Path(path).as_uri() + ("?mode=rw" if write else "?mode=ro"),
+                           uri=True)
     try:
         version = conn.execute("PRAGMA user_version").fetchone()[0]
         expected = len(labdb.schema_files())
@@ -94,17 +112,17 @@ def open_database(path):
     return conn
 
 
-def catalog_source(conn):
-    """Return the row of `catalog_source` as a map, or None."""
-    row = conn.execute("SELECT source_path, source_sha256, source_rows, imported_at "
-                       "FROM catalog_source").fetchone()
-    if row is None:
-        return None
-    return dict(zip(("source_path", "source_sha256", "source_rows", "imported_at"), row))
+def state_counts(conn):
+    """Return the number of wines of each state, in the order of `STATES`."""
+    counts = dict(conn.execute("SELECT state, count(*) FROM wine_catalog GROUP BY state"))
+    return {state: counts.get(state, 0) for state in STATES}
 
 
 def dataset_records(conn):
-    """Return the wines in seed order, in the record shape of the Dataset page."""
+    """Return every wine in import order, in the record shape of the Dataset page.
+
+    The records hold each state. The key `state` tells a removed wine apart.
+    """
     records = []
     for row in conn.execute("SELECT %s FROM wine_catalog ORDER BY rowid"
                             % ", ".join(CATALOG_COLUMNS)):
@@ -123,8 +141,6 @@ def dataset_view(db_path):
     with closing(open_database(db_path)) as conn:
         records = dataset_records(conn)
     return {
-        # The page shows this value under the label `catalog.jsonl`.
-        "catalog_file": "%s, table wine_catalog" % db_path,
         "database_file": db_path,
         "patch_dir": "", "patches": 0,
         "alternative_dir": "", "alternatives": 0,
@@ -133,6 +149,43 @@ def dataset_view(db_path):
         "atlas_bindings": 0, "atlas_manual_bindings": 0,
         "records": records,
     }
+
+
+class StateError(Exception):
+    """A state change is not allowed. `code` is the HTTP status of the answer."""
+
+    def __init__(self, code, message):
+        super().__init__(message)
+        self.code = code
+
+
+def change_state(db_path, slug, action):
+    """Apply one action to one wine. Return the new state and `removed_by`."""
+    if action not in ACTIONS:
+        raise StateError(400, "unknown action %r; use one of: %s"
+                         % (action, ", ".join(ACTIONS)))
+    if not isinstance(slug, str) or not slug:
+        raise StateError(400, "the request holds no wine slug")
+    allowed, target = ACTIONS[action]
+    with closing(open_database(db_path, write=True)) as conn:
+        conn.isolation_level = None
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            row = conn.execute("SELECT state FROM wine_catalog WHERE wine_slug = ?",
+                               (slug,)).fetchone()
+            if row is None:
+                raise StateError(404, "no wine with the slug %s" % slug)
+            if row[0] not in allowed:
+                raise StateError(409, "the wine %s is %s; %s needs %s"
+                                 % (slug, row[0], action, " or ".join(allowed)))
+            removed_by = "person" if target == "Removed" else None
+            conn.execute("UPDATE wine_catalog SET state = ?, removed_by = ? "
+                         "WHERE wine_slug = ?", (target, removed_by, slug))
+            conn.execute("COMMIT")
+        except BaseException:
+            conn.execute("ROLLBACK")
+            raise
+    return {"slug": slug, "state": target, "removed_by": removed_by}
 
 
 def disabled_page(route):
@@ -185,9 +238,35 @@ class Handler(BaseHTTPRequestHandler):
 
     do_HEAD = do_GET
 
+    def _wine_state(self):
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            length = -1
+        if length <= 0 or length > MAX_BODY:
+            self._json(400, {"error": "the body MUST be JSON of at most %d bytes" % MAX_BODY})
+            return
+        try:
+            body = json.loads(self.rfile.read(length).decode("utf-8"))
+        except (UnicodeDecodeError, ValueError):
+            self._json(400, {"error": "the body is not JSON"})
+            return
+        if not isinstance(body, dict):
+            self._json(400, {"error": "the body MUST be a JSON object"})
+            return
+        try:
+            self._json(200, change_state(self.server.db_path, body.get("slug"),
+                                         body.get("action")))
+        except StateError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+
     def _write_route(self):
         route = urllib.parse.urlsplit(self.path).path
-        if route.startswith("/api/"):
+        if route == "/api/wine-state" and self.command == "POST":
+            self._wine_state()
+        elif route.startswith("/api/"):
             self._json(503, {"error": DISABLED_ERROR})
         else:
             self._send(404, "not found", "text/plain; charset=utf-8")
@@ -218,8 +297,7 @@ def main(argv=None):
         db_path = load_config(args.config)
         with closing(open_database(db_path)) as conn:
             version = conn.execute("PRAGMA user_version").fetchone()[0]
-            source = catalog_source(conn)
-            wines = conn.execute("SELECT count(*) FROM wine_catalog").fetchone()[0]
+            states = state_counts(conn)
     except (ConfigError, sqlite3.Error) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
@@ -227,13 +305,10 @@ def main(argv=None):
     print("config: %s" % os.path.abspath(args.config))
     print("database_file: %s" % db_path)
     print("schema version: %d" % version)
-    if source:
-        print("catalogue source: %s" % source["source_path"])
-        print("  sha256 %s, %d rows, seeded %s"
-              % (source["source_sha256"], source["source_rows"], source["imported_at"]))
-    else:
-        print("catalogue source: none; seed it with `python3 pipeline/seed_catalog.py`")
-    print("wines: %d" % wines)
+    print("wines: %d (%s)" % (sum(states.values()),
+                              ", ".join("%s %d" % item for item in states.items())))
+    if not sum(states.values()):
+        print("  the catalogue is empty; import it with `python3 pipeline/import_catalog.py`")
     print("disabled pages: %s" % ", ".join(DISABLED_PAGES.values()))
 
     try:

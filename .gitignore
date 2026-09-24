@@ -27,8 +27,8 @@ runs/
 # to serialise writes. It holds no data.
 *.lock
 
-# The lab database. `pipeline/seed_catalog.py` rebuilds it from the official CSV.
+# The lab data: the lab database and the image store `data/images/`. The owner asked
+# on 2026-09-24 to keep the whole directory out of git.
 # Decide on a text export before the database holds data that cannot be rebuilt.
 # Read open question 3 of docs/plans/07_sqlite-lab-database.md.
-data/**/*.sqlite3
-data/**/*.sqlite3-*
+data/

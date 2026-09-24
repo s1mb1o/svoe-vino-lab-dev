@@ -41,17 +41,14 @@ button:hover:not(:disabled) { border-color: var(--accent); }
 button:disabled { opacity: .45; cursor: default; }
 a { color: var(--accent); }
 main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
-.source {
-  margin: 0 0 12px; padding: 8px 10px; color: var(--muted); font-size: 12px;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-  overflow-wrap: anywhere;
-}
-.source b { color: var(--text); font-weight: 600; }
 .list { display: flex; flex-direction: column; gap: 10px; }
 .wine {
   display: flex; gap: 18px; align-items: flex-start; min-width: 0;
   background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
   padding: 10px 12px; scroll-margin-top: 104px;
+  /* The browser skips the layout and the paint of a card out of view. The list holds
+     about 2,100 cards, so a change of one card no longer lays out the whole list. */
+  content-visibility: auto; contain-intrinsic-size: auto 406px;
 }
 .wine:target { outline: 2px solid var(--accent); outline-offset: 2px; }
 .pictures { display: flex; flex: 0 0 auto; gap: 8px; align-items: flex-start; }
@@ -102,6 +99,13 @@ figcaption {
   color: var(--muted); font-size: 10px; line-height: 1.3;
 }
 figcaption .patch { color: var(--var); font-weight: 700; text-transform: uppercase; }
+.state-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.state-actions button { flex: 1 1 auto; padding: 3px 6px; font-size: 11px; }
+.state-actions [data-state-action="remove"] { color: var(--exc); }
+.state-actions [data-state-action="restore"],
+.state-actions [data-state-action="enable"] { color: var(--pos); }
+.tag.state-disabled { color: var(--unu); background: var(--unu-bg); }
+.tag.state-removed { color: var(--exc); background: var(--exc-bg); }
 .info { flex: 1 1 auto; min-width: 0; padding-top: 1px; }
 .alternative-editor {
   flex: 0 0 330px; min-width: 260px; padding-left: 12px;
@@ -144,6 +148,8 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .name h2 { margin: 0; font-size: 22px; line-height: 1.2; }
 .producer { margin-top: 5px; font-size: 18px; line-height: 1.3; }
 .kind, .grapes, .slug, .match { margin-top: 4px; color: var(--muted); font-size: 15px; }
+/* The slug is the first line of a card, above the name. */
+.info > .slug:first-child { margin: 0 0 3px; }
 .slug { overflow-wrap: anywhere; }
 .barcode-editor, .qr-url-editor, .atlas-binding-editor { margin-top: 8px; }
 .barcode-head { display: flex; align-items: center; gap: 7px; }
@@ -343,6 +349,12 @@ details.record pre {
         <option value="missing">without a catalogue image</option>
       </select>
     </label>
+    <label>State
+      <select id="state">
+        <option value="present">All (except Removed)</option>
+        <option value="removed">Removed</option>
+      </select>
+    </label>
     <label>Sort
       <select id="sort">
         <option value="catalog">catalog.jsonl order</option>
@@ -356,7 +368,6 @@ details.record pre {
   </div>
 </header>
 <main>
-  <div class="source" id="source">Reading the configured catalogue…</div>
   <div class="list" id="list"></div>
 </main>
 <div class="modal" id="validation-modal" role="dialog" aria-modal="true"
@@ -438,6 +449,13 @@ const DRAFT_QR_URLS = new Map();
 const BUSY_QR_URLS = new Set();
 const DRAFT_ATLAS_BINDINGS = new Map();
 const BUSY_ATLAS_BINDINGS = new Set();
+// state -> the buttons of a wine in that state, as [action, label].
+const STATE_ACTIONS = {
+  Active: [["disable", "Disable"], ["remove", "Remove"]],
+  Disabled: [["enable", "Enable"], ["remove", "Remove"]],
+  Removed: [["restore", "Restore"]],
+};
+const BUSY_STATES = new Set();
 let ALTERNATIVE_ID = 0;
 
 function esc(value) {
@@ -525,7 +543,23 @@ function imageFigure(r, patch) {
          title="Open ${label} image"><img
          src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — ${label}"></a>`
     : '<div class="noimage">no catalogue image</div>';
-  return `<figure>${content}<figcaption><span>${label}</span></figcaption></figure>`;
+  return `<figure>${content}<figcaption><span>${label}</span></figcaption>${stateActions(r)}</figure>`;
+}
+function stateActions(r) {
+  // A record with no `state` comes from a server with no wine states. It gets no button.
+  const actions = STATE_ACTIONS[r.state];
+  if (!actions) return "";
+  const busy = BUSY_STATES.has(r.slug);
+  return `<div class="state-actions">${actions.map(([action, label]) =>
+    `<button type="button" data-state-action="${action}" data-slug="${esc(r.slug)}"
+      ${busy ? "disabled" : ""}>${busy ? "…" : label}</button>`).join("")}</div>`;
+}
+function stateTag(r) {
+  if (r.state === "Disabled") return '<span class="tag state-disabled">disabled</span>';
+  if (r.state === "Removed") {
+    return `<span class="tag state-removed">removed${r.removed_by ? ` by ${esc(r.removed_by)}` : ""}</span>`;
+  }
+  return "";
 }
 function patchEditor(r) {
   const slug = encodeURIComponent(r.slug || "");
@@ -713,15 +747,14 @@ function recordHtml(r) {
   return `<article class="wine" id="${esc(r.slug)}">
     <div class="pictures">${imageFigure(r, false)}${imageFigure(r, true)}</div>
     <div class="info">
-      <div class="name"><h2>${esc(r.name || "Unnamed wine")}</h2>
-        <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>
-        ${r._patched ? '<span class="tag">patch</span>' : ""}</div>
-      <div class="producer">${esc(r.producer || "—")}</div>
-      ${where ? `<div class="kind">${where}</div>` : ""}
-      ${r.color ? `<div class="kind">Colour: ${esc(r.color)}</div>` : ""}
-      ${r.grapes ? `<div class="grapes">${esc(r.grapes)}</div>` : ""}
       <div class="slug">${esc(r.slug)}
         <button class="copy" type="button" data-copy="${esc(r.slug)}">copy</button></div>
+      <div class="name"><h2>${esc(r.name || "Unnamed wine")}</h2>
+        <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>
+        ${r._patched ? '<span class="tag">patch</span>' : ""}${stateTag(r)}</div>
+      <div class="producer">${esc(r.producer || "—")}</div>
+      ${where ? `<div class="kind">${where}</div>` : ""}
+      ${r.grapes ? `<div class="grapes">${esc(r.grapes)}</div>` : ""}
       ${barcodeEditor(r)}
       ${qrUrlEditor(r)}
       ${atlasBindingEditor(r)}
@@ -736,12 +769,14 @@ function recordHtml(r) {
 }
 function applyView() {
   const filter = $("#filter").value;
+  const state = $("#state").value;
   const q = norm($("#q").value.trim());
   const words = q.split(/\s+/).filter(Boolean);
   ROWS = DATA.records.filter(r => {
     if (filter === "patched" && !r._patched) return false;
     if (filter === "unpatched" && r._patched) return false;
     if (filter === "missing" && r.local_path) return false;
+    if ((state === "removed") !== (r.state === "Removed")) return false;
     const hay = norm(JSON.stringify({record: rawRecord(r), barcodes: r._barcodes || [],
       qr_urls: r._qr_urls || [],
       atlas_product_uuid: r._atlas_product_uuid || ""}));
@@ -751,11 +786,30 @@ function applyView() {
   ROWS.sort((a, b) => sort === "catalog" ? a._index - b._index
     : compareText(a[sort], b[sort]) || compareText(a.slug, b.slug));
 }
+const EMPTY_VIEW = '<div class="empty">No catalogue record matches this view.</div>';
 function render() {
   applyView();
-  $("#list").innerHTML = ROWS.length ? ROWS.map(recordHtml).join("")
-    : '<div class="empty">No catalogue record matches this view.</div>';
+  $("#list").innerHTML = ROWS.length ? ROWS.map(recordHtml).join("") : EMPTY_VIEW;
+  renderHead();
+}
+function renderHead() {
   $("#head-sub").textContent = `${ROWS.length} of ${DATA.records.length} records · ${DATA.patches} patches · ${DATA.alternatives || 0} alternatives · ${DATA.barcodes || 0} barcodes · ${DATA.qr_urls || 0} QR URLs · ${DATA.atlas_bindings || 0} Atlas bindings`;
+}
+function renderCard(slug) {
+  // A full render replaces about 2,100 cards and takes about 0.7 s. A state change
+  // replaces its own card alone. A card that leaves the view of the `State` filter
+  // is taken out of the list.
+  const card = document.getElementById(slug);
+  const record = DATA.records.find(item => item.slug === slug);
+  if (!card || !record) { render(); return; }
+  if (($("#state").value === "removed") !== (record.state === "Removed")) {
+    card.remove();
+    ROWS = ROWS.filter(item => item !== record);
+    if (!ROWS.length) $("#list").innerHTML = EMPTY_VIEW;
+    renderHead();
+    return;
+  }
+  card.outerHTML = recordHtml(record);
 }
 function validationDetails(title, value) {
   if (!value || (Array.isArray(value) && !value.length)) return "";
@@ -860,7 +914,14 @@ async function openValidation() {
 function openHash() {
   const slug = decodeURIComponent(location.hash.slice(1));
   if (!slug) return;
-  requestAnimationFrame(() => document.getElementById(slug)?.scrollIntoView());
+  // A card out of view has an estimated height (`content-visibility`). The first scroll
+  // renders the cards near the target, and their true heights move it. The second
+  // scroll, two frames later, puts the card at its place.
+  const scroll = () => document.getElementById(slug)?.scrollIntoView();
+  requestAnimationFrame(() => {
+    scroll();
+    requestAnimationFrame(() => requestAnimationFrame(scroll));
+  });
 }
 async function copyValue(button) {
   const value = button.dataset.copy || "";
@@ -977,6 +1038,30 @@ async function applyPendingAlternatives(slug) {
   } finally {
     BUSY_ALTERNATIVES.delete(slug);
     render();
+  }
+}
+async function changeState(slug, action) {
+  if (!slug || BUSY_STATES.has(slug)) return;
+  BUSY_STATES.add(slug);
+  // The busy mark goes on the buttons alone. A render of the card is not necessary.
+  for (const button of document.querySelectorAll(`#${CSS.escape(slug)} .state-actions button`)) {
+    button.disabled = true;
+    button.textContent = "…";
+  }
+  try {
+    const response = await fetch("/api/wine-state", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, action})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) { record.state = out.state; record.removed_by = out.removed_by; }
+  } catch (error) {
+    alert(`Cannot change the state of the wine: ${error.message}`);
+  } finally {
+    BUSY_STATES.delete(slug);
+    renderCard(slug);
   }
 }
 function focusBarcode(slug) {
@@ -1130,6 +1215,8 @@ $("#list").addEventListener("click", event => {
   }
   const button = event.target.closest("button[data-copy]");
   if (button) { copyValue(button); return; }
+  const stateButton = event.target.closest("button[data-state-action]");
+  if (stateButton) { changeState(stateButton.dataset.slug, stateButton.dataset.stateAction); return; }
   const atlasBinding = event.target.closest(".atlas-binding-editor");
   if (atlasBinding) {
     const slug = atlasBinding.dataset.slug;
@@ -1325,7 +1412,7 @@ $("#list").addEventListener("toggle", event => {
   pre.textContent = JSON.stringify(rawRecord(record), null, 2);
   details.append(pre);
 }, true);
-for (const id of ["filter", "sort"]) $("#" + id).addEventListener("change", render);
+for (const id of ["filter", "state", "sort"]) $("#" + id).addEventListener("change", render);
 let SEARCH_TIMER = null;
 $("#q").addEventListener("input", () => {
   clearTimeout(SEARCH_TIMER);
@@ -1368,19 +1455,13 @@ window.addEventListener("beforeunload", event => {
     if (!response.ok) throw new Error(await response.text());
     DATA = await response.json();
     DATA.records = (DATA.records || []).map((r, index) => ({...r, _index: index}));
-    $("#source").innerHTML = `<b>catalog.jsonl</b> ${esc(DATA.catalog_file)}<br>`
-      + `<b>patch directory</b> ${esc(DATA.patch_dir || "not configured")}<br>`
-      + `<b>alternative directory</b> ${esc(DATA.alternative_dir || "not configured")}<br>`
-      + `<b>barcode file</b> ${esc(DATA.barcode_file || "not configured")}<br>`
-      + `<b>automatic Atlas matches</b> ${esc(DATA.atlas_matches_file || "not configured")}<br>`
-      + `<b>manual Atlas bindings</b> ${esc(DATA.atlas_bindings_file || "not configured")}`;
     render();
     openHash();
     loadValidation().catch(() => {});
   } catch (error) {
     $("#head-sub").textContent = "could not read the dataset";
-    $("#source").textContent = `Cannot read /api/dataset: ${error}`;
-    $("#list").innerHTML = '<div class="empty">The dataset is not available.</div>';
+    $("#list").innerHTML = `<div class="empty">The dataset is not available. `
+      + `Cannot read /api/dataset: ${esc(String(error))}</div>`;
   }
 })();
 </script>

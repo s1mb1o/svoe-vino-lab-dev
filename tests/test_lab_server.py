@@ -17,9 +17,9 @@ import labdb  # noqa: E402
 
 WINES = [
     ("wine-b", "Вино b", "Винодельня", "Белое", "Соломенный", "Крым",
-     "Алиготе", "Описание b", "b.webp"),
+     "Алиготе", "Описание b", "b.webp", "Active", None),
     ("wine-a", "Вино a", "Винодельня", "Красное", "Рубиновый", "Кубань",
-     None, "Описание a", "a.webp"),
+     None, "Описание a", "a.webp", "Removed", "import"),
 ]
 
 
@@ -30,9 +30,7 @@ class LabServerTest(unittest.TestCase):
         self.db = str(self.root / "lab.sqlite3")
         conn = labdb.connect(self.db, create=True)
         with conn:
-            conn.execute("INSERT INTO catalog_source VALUES (1, '/x.csv', ?, 3, "
-                         "'2026-09-24T21:00:00+0300')", ("0" * 64,))
-            conn.executemany("INSERT INTO wine_catalog VALUES (?,?,?,?,?,?,?,?,?)", WINES)
+            conn.executemany("INSERT INTO wine_catalog VALUES (?,?,?,?,?,?,?,?,?,?,?)", WINES)
         conn.close()
         self.server = LAB.make_server(self.db, port=0)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
@@ -44,9 +42,10 @@ class LabServerTest(unittest.TestCase):
         self.server.server_close()
         self.directory.cleanup()
 
-    def request(self, path, method="GET"):
-        req = urllib.request.Request(self.base + path, method=method,
-                                     data=b"{}" if method == "POST" else None)
+    def request(self, path, method="GET", body=None):
+        data = body if body is not None else (b"{}" if method == "POST" else None)
+        req = urllib.request.Request(self.base + path, method=method, data=data,
+                                     headers={"Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(req) as response:
                 return response.status, response.headers, response.read().decode("utf-8")
@@ -60,7 +59,7 @@ class LabServerTest(unittest.TestCase):
         self.assertIn("text/html", headers["Content-Type"])
         self.assertIn(lab_pages.theme_css(), body)
 
-    def test_api_dataset_sends_the_wines_in_seed_order(self):
+    def test_api_dataset_sends_the_wines_in_import_order(self):
         status, _, body = self.request("/api/dataset")
         self.assertEqual(status, 200)
         data = json.loads(body)
@@ -70,6 +69,8 @@ class LabServerTest(unittest.TestCase):
         self.assertEqual((first["name"], first["grapes"], first["csv_photo_name"]),
                          ("Вино b", "Алиготе", "b.webp"))
         self.assertIsNone(data["records"][1]["grapes"])
+        self.assertEqual([(r["state"], r["removed_by"]) for r in data["records"]],
+                         [("Active", None), ("Removed", "import")])
         self.assertEqual((first["_barcodes"], first["_patched"]), ([], False))
         self.assertEqual(data["database_file"], self.db)
         self.assertEqual((data["patches"], data["barcodes"]), (0, 0))
@@ -93,6 +94,52 @@ class LabServerTest(unittest.TestCase):
             self.assertEqual(status, 503, path)
             self.assertIn("disabled for now", json.loads(body)["error"])
 
+    def post_state(self, slug, action):
+        status, _, body = self.request("/api/wine-state", "POST",
+                                       json.dumps({"slug": slug, "action": action}).encode())
+        return status, json.loads(body)
+
+    def stored(self, slug):
+        conn = sqlite3.connect(self.db)
+        try:
+            return conn.execute("SELECT state, removed_by FROM wine_catalog "
+                                "WHERE wine_slug = ?", (slug,)).fetchone()
+        finally:
+            conn.close()
+
+    def test_state_actions_follow_the_allowed_transitions(self):
+        steps = [("disable", "Disabled", None), ("enable", "Active", None),
+                 ("disable", "Disabled", None), ("remove", "Removed", "person"),
+                 ("restore", "Active", None), ("remove", "Removed", "person")]
+        for action, state, removed_by in steps:
+            status, body = self.post_state("wine-b", action)
+            self.assertEqual(status, 200, action)
+            self.assertEqual(body, {"slug": "wine-b", "state": state, "removed_by": removed_by})
+            self.assertEqual(self.stored("wine-b"), (state, removed_by), action)
+
+    def test_restore_of_a_wine_that_the_import_removed(self):
+        self.assertEqual(self.post_state("wine-a", "restore")[0], 200)
+        self.assertEqual(self.stored("wine-a"), ("Active", None))
+
+    def test_state_action_from_a_wrong_state_is_a_conflict(self):
+        for slug, action in (("wine-b", "enable"), ("wine-b", "restore"),
+                             ("wine-a", "disable"), ("wine-a", "remove")):
+            status, body = self.post_state(slug, action)
+            self.assertEqual(status, 409, (slug, action))
+            self.assertIn("needs", body["error"])
+        self.assertEqual(self.stored("wine-b"), ("Active", None))
+        self.assertEqual(self.stored("wine-a"), ("Removed", "import"))
+
+    def test_state_request_errors(self):
+        self.assertEqual(self.post_state("wine-none", "disable")[0], 404)
+        self.assertEqual(self.post_state("wine-b", "delete")[0], 400)
+        self.assertEqual(self.post_state("", "disable")[0], 400)
+        self.assertEqual(self.request("/api/wine-state", "POST", b"not json")[0], 400)
+        self.assertEqual(self.request("/api/wine-state", "POST", b"[1]")[0], 400)
+        self.assertEqual(self.request("/api/wine-state", "POST", b"x" * 5000)[0], 400)
+        self.assertEqual(self.request("/api/wine-state", "DELETE")[0], 503)
+        self.assertEqual(self.stored("wine-b"), ("Active", None))
+
     def test_unknown_route_is_not_found(self):
         self.assertEqual(self.request("/nothing")[0], 404)
 
@@ -110,13 +157,20 @@ class LabServerTest(unittest.TestCase):
 
     def test_old_schema_version_names_the_upgrade_command(self):
         conn = sqlite3.connect(self.db)
-        conn.execute("PRAGMA user_version = 1")
+        conn.execute("PRAGMA user_version = 3")
         conn.close()
         with self.assertRaisesRegex(LAB.ConfigError, "pipeline/labdb.py"):
             LAB.open_database(self.db)
         status, _, body = self.request("/api/dataset")
         self.assertEqual(status, 503)
-        self.assertIn("schema version 1", json.loads(body)["error"])
+        self.assertIn("schema version 3", json.loads(body)["error"])
+        self.assertEqual(self.post_state("wine-b", "disable")[0], 503)
+
+    def test_state_counts_follow_the_order_of_the_states(self):
+        conn = LAB.open_database(self.db)
+        self.assertEqual(list(LAB.state_counts(conn).items()),
+                         [("Active", 1), ("Disabled", 0), ("Removed", 1)])
+        conn.close()
 
     def test_missing_database_is_an_error(self):
         with self.assertRaisesRegex(LAB.ConfigError, "no database at"):

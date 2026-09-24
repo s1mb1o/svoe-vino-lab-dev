@@ -2,6 +2,102 @@
 
 ## 2026-09-24
 
+### The Dataset page: no colour line, and the slug above the name
+
+- A card no longer shows the line `Colour: …`. The owner asked for it. The colour stays
+  in `full catalog.jsonl record` and in the search.
+- The slug with its `copy` button is the first line of a card, above the name. The
+  owner asked for it.
+
+### The Dataset page: fast state changes, and `Ignore` is `Disable`
+
+- A state click took 1.8 to 2.1 s. The server write took 2 to 4 ms. The time went to two
+  full renders of the list: about 0.7 s each for 2,103 cards and 6.9 MB of HTML.
+- A state change now renders its own card alone. A card that leaves the view of the
+  `State` filter is taken out of the list. The busy mark goes on the buttons alone.
+- Each card has `content-visibility: auto`. A full render takes about 0.14 s, and a
+  state click about 0.1 s, in headless Chromium.
+- A link `/dataset#<slug>` scrolls two times, so the card still lands below the header
+  when the cards out of view have an estimated height.
+- The owner renamed the button `Ignore` to `Disable`. The API action is `disable` now.
+  The button, the action, and the state `Disabled` use one term.
+- New smoke cases S21 and S22.
+
+### The images of a wine: the table `wine_image` and `pipeline/seed_images.py`
+
+- New schema file `pipeline/schema/005_wine_image.sql`: the table `wine_image`. One row
+  links a wine, an image type, and a stored file by its SHA-256. The types: `main`,
+  `main_patched`, `front`, `back`, `label_front`, `label_back`. A wine has at most one
+  `main` and one `main_patched`. The columns `source_name` and `match_method` record the
+  source file and the match.
+- New script `pipeline/seed_images.py`. It finds the main image of each wine in the
+  Strapi `uploads` folder by `csv_photo_name`, with stage 1 of `build_catalog.py`. It
+  reads no network resource. It stores each file as
+  `data/images/main/<sha256>.<extension>`. A wine with no match gets a console message.
+- The run on `data/lab.sqlite3`: 2,046 of 2,103 wines matched (`name-unique` 2,023,
+  `name-identical` 23), 57 no match, 2,018 files, 135 MB. A second run changes nothing.
+- New folders `data/images/patched/`, `data/images/additional/`, and
+  `data/images/testset/`. No tool fills them yet. The photos of the test sets get their
+  own table later.
+- New plan `docs/plans/08_seed-images.md` and decision 8 of decision record 01. Plan 07
+  marks step 4 as done.
+- Tests: `tests/test_seed_images.py` 19 cases. `tests/test_labdb.py` expects schema
+  version 5 and the table `wine_image`. New smoke cases I1 to I9. The cases D2, D10,
+  D10a, S1, and S3 expect schema version 5.
+
+### Git ignores the whole `data/` directory
+
+- `.gitignore` now holds `data/` instead of the two `*.sqlite3` rules. The directory
+  holds the lab database and the image store `data/images/`. The owner asked for it.
+
+### The Dataset page: state buttons and the state filter
+
+- Each card holds buttons below the catalogue image. An `Active` wine: `Ignore` and
+  `Remove`. A `Disabled` wine: `Enable` and `Remove`. A `Removed` wine: `Restore`. The
+  card shows the tag `disabled`, `removed by import`, or `removed by person`.
+- New filter `State`: `All (except Removed)`, the default, and `Removed`.
+- New route `POST /api/wine-state` with the actions `ignore`, `enable`, `remove`, and
+  `restore`. It allows the listed changes alone and answers 409 for another change. The
+  lab server writes the columns `state` and `removed_by` alone; a GET stays read-only.
+- New schema file `pipeline/schema/004_removed_by.sql`: the column `removed_by`
+  (`import` or `person`) and a table check that ties it to `state`. It builds the table
+  again and keeps each rowid. An earlier `Removed` wine gets `import`.
+- `pipeline/import_catalog.py` restores only a wine that the import removed. A wine
+  that a person removed stays `Removed`, and the report counts it under
+  `kept removed by a person`.
+- `Ignore` sets the state `Disabled`. No tool reads the state for embeddings and matches
+  yet. Decision 7 of decision record 01 records the choices of the owner.
+- Tests: `tests/test_labdb.py` 9, `tests/test_import_catalog.py` 20,
+  `tests/test_lab_server.py` 15 cases. New smoke cases S13 to S20, D10a, and D10b.
+
+### The Dataset page: no source panel
+
+- The owner removed the source panel above the list: `catalog.jsonl`, `patch directory`,
+  `alternative directory`, `barcode file`, and the two Atlas lines. The panel and its
+  style are gone from `pipeline/pages/dataset.html`.
+- An error of `/api/dataset` shows in the list now, with its reason.
+- `/api/dataset` of the lab server no longer sends `catalog_file`. Only the panel read it.
+
+### The catalogue import: add and remove wines
+
+- New schema file `pipeline/schema/003_wine_state.sql`. It adds the column `state` to
+  `wine_catalog`: `Active`, `Disabled`, or `Removed`, with the default `Active`. It drops
+  the table `catalog_source`. The database keeps no record of the imported files.
+- New CLI `pipeline/import_catalog.py`. It replaces `pipeline/seed_catalog.py`, which is
+  removed. The first import into an empty database adds every wine. A later import adds
+  the new wines as `Active`, and marks each missing `Active` or `Disabled` wine `Removed`.
+  A `Removed` wine that comes back becomes `Active`. A `Disabled` wine in the CSV stays
+  `Disabled`. A changed field of a wine stops the import, and the error names each field.
+  The import writes all changes in one transaction under the write lock.
+- New fake variants of the official CSV in `tests/data/`, from
+  `tests/data/make_catalog_variants.py`: v2 and v3 add and remove wines, v4 changes one
+  field. `tests/data/README.md` states the expected import results.
+- The lab server sends `state` in each record of `/api/dataset`, and the start report
+  counts the wines of each state.
+- Tests: `tests/test_seed_catalog.py` is replaced by `tests/test_labdb.py` (7 cases) and
+  `tests/test_import_catalog.py` (17 cases). `tests/test_lab_server.py` has 11 cases.
+- Plan 07 steps 1 and 2 and decision 6 of decision record 01 describe the rules.
+
 ### The lab server: the Dataset page on the database
 
 - `config.yaml` holds two keys now: `rootdir` and `database_file`. The owner removed each

@@ -733,22 +733,50 @@ L18 call no model. Run them from `scripts/` in `python3`, after
 | L22 | For the cluster of `abrau-dyurso-pino-nuar-krasnoe-suhoe-12` (c013), take `letters` of the sorted slugs, and call `cr.check_rule` with a vintage question `{"A": "other", "B": "2023", "C": "2023", "D": "2024"}` and a grape question `{"A": "Пино Нуар", "B": "Каберне Совиньон", "C": "Пино Нуар", "D": "Пино Нуар"}`, with `catalog` and `cr.load_rules()["cards"]` | The vintage question keeps `other` for A and the label years 2023, 2023, and 2024, and it is valid. `cr.vintage_note(letters, catalog, cards)` names B, C, and D with their years `on the label`, and A as the card with no year. |
 | L23 | The same call with the grape `Мерло` for card A | The vintage question holds null for every card and is not valid: the grape separates A from every card with a year, so A is not a vintage variant. |
 
-## The lab database — `pipeline/labdb.py` and `pipeline/seed_catalog.py`
+## The lab database — `pipeline/labdb.py` and `pipeline/import_catalog.py`
 
-Read `docs/plans/07_sqlite-lab-database.md`. Use a scratch database for cases D1 to D5:
-`DB=/tmp/lab-smoke/lab.sqlite3` and
-`CSV=../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv`.
+Read `docs/plans/07_sqlite-lab-database.md` and `tests/data/README.md`. Use a scratch
+database for cases D1 to D10: `DB=/tmp/lab-smoke/lab.sqlite3`,
+`CSV=../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv`, and
+`V=tests/data/strapi_output0709`.
 
 | # | Case | Expected result |
 |---|---|---|
-| D1 | `python3 pipeline/seed_catalog.py --db $DB $CSV` before the database exists | `error: no database at …`, exit 1. No file is made. |
-| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: 2`, `tables: catalog_source, wine_catalog`. |
-| D3 | `python3 pipeline/seed_catalog.py --db $DB $CSV` | `rows read: 4147`, `duplicate rows: 2044`, `wines: 2103`, `values trimmed: 198`, `empty grapes: 2`, `result: stored 2103 wines`. |
-| D4 | Repeat case D3 | `result: unchanged; the database already holds this file`. |
-| D5 | Seed the same database from another CSV file | `error: the database holds another delivery: …`, exit 1. `wine_catalog` keeps 2103 rows. |
-| D6 | Compare `wine_catalog` of `data/lab.sqlite3` with `catalog.jsonl` of the same delivery, column by column; a NULL `grapes` counts as `""` | The slug sets are equal. No value differs. |
-| D7 | `python3 -m unittest discover -s tests -p 'test_seed_catalog.py'` | 14 tests, `OK`. |
-| D8 | `git -C ../svoe-wino-hackaton status --short -- dataset/official-2026-09-17` after cases D1 to D6 | No line. The seed does not change the delivery. |
+| D1 | `python3 pipeline/import_catalog.py --db $DB $CSV` before the database exists | `error: no database at …`, exit 1. No file is made. |
+| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: 5`, `tables: wine_catalog, wine_image`. |
+| D3 | `python3 pipeline/import_catalog.py --db $DB $CSV` | `rows read: 4147`, `duplicate rows: 2044`, `wines in the CSV: 2103`, `values trimmed: 198`, `empty grapes: 2`, `added: 2103`, `states: Active 2103, Disabled 0, Removed 0`, `result: imported`. |
+| D4 | Repeat case D3 | `added: 0`, `restored: 0`, `removed: 0`, `result: no change`. |
+| D5 | Import `$V.v2-add-remove.csv` | `added: 2`, `removed: 3`, `states: Active 2102, Disabled 0, Removed 3`. |
+| D6 | Import `$V.v3-add-remove.csv` | `added: 1`, `restored: 1`, `removed: 2`, `states: Active 2102, Disabled 0, Removed 4`. |
+| D7 | Import `$V.v4-changed-field.csv` | `error: 1 wines of the CSV differ from the database, …: shato-pino-shary-kolduna-glyu-glyu-vione-krasnoe-suhoe-10 (Active): region 'Кубань' -> 'Крым'`, exit 1. The states do not change. |
+| D8 | Import `$CSV` again | `added: 0`, `restored: 4`, `removed: 3`, `states: Active 2103, Disabled 0, Removed 3`. The 3 removed wines are the fake wines. |
+| D9 | Set the state of one wine to `Disabled` with `sqlite3`, then import `$CSV` | `result: no change`. The wine stays `Disabled`. |
+| D10 | Open a database at schema version 2 with `python3 pipeline/labdb.py <path>` | `schema version: 5`, `tables: wine_catalog, wine_image`. Each wine is `Active`. The table `catalog_source` is gone. |
+| D10a | Open a database at schema version 3 that holds `Removed` wines with `python3 pipeline/labdb.py <path>` | `schema version: 5`. Each `Removed` wine has `removed_by` = `import`. The order of the rows does not change. |
+| D10b | Set a wine to `Removed` with `removed_by` = `person`, then import `$CSV` | `kept removed by a person: 1: <slug>`, `result: no change`. The wine stays `Removed`. |
+| D11 | Compare `wine_catalog` of a database after case D3 with `catalog.jsonl` of the same delivery, column by column; a NULL `grapes` counts as `""` | The slug sets are equal. No value differs. |
+| D12 | `python3 -m unittest discover -s tests -p 'test_labdb.py'`, then the same with `test_import_catalog.py` | 9 tests `OK`, then 20 tests `OK`. |
+| D13 | `git -C ../svoe-wino-hackaton status --short -- dataset/official-2026-09-17` after cases D1 to D11 | No line. The import and `tests/data/make_catalog_variants.py` do not change the delivery. |
+
+## The images of a wine — `pipeline/seed_images.py`
+
+Read `docs/plans/08_seed-images.md`. Use a new scratch database for cases I1 to I8:
+`IDB=/tmp/lab-images/lab.sqlite3`. Make it with `python3 pipeline/labdb.py $IDB` and
+`python3 pipeline/import_catalog.py --db $IDB $CSV`. The store is
+`STORE=/tmp/lab-images/images/main`.
+`UP=../svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads`.
+
+| # | Case | Expected result |
+|---|---|---|
+| I1 | `python3 pipeline/seed_images.py --db $IDB $UP` | 57 lines `no match: <slug>: …` above the report. `upload files indexed: 6241`, `wines: 2103`, `matched: 2046 (name-identical 23, name-unique 2023)`, `no match: 57 (different bytes 52, no candidate 5)`, `conflicts: 0`, `errors: 0`, `rows added: 2046`, `files written: 2018`, `result: stored`. Exit 0. No network access. |
+| I2 | Repeat case I1 | `rows added: 0`, `rows unchanged: 2046`, `files written: 0`, `files in the store already: 2018`, `result: no change`. |
+| I3 | Compare the name of each file in `$STORE` with the SHA-256 of its bytes | 2,018 files. Each name before the extension is the SHA-256. No `.tmp` file. |
+| I4 | Delete one file of `$STORE`, then repeat case I1 | `files written: 1`, `rows unchanged: 2046`. The file is back. |
+| I5 | Write other bytes into one file of `$STORE`, then repeat case I1 | A line `error: <slug>: …: the stored bytes do not agree with the name; the file stays`. `errors: 1` or more, exit 1. The file keeps the other bytes. |
+| I6 | `python3 pipeline/seed_images.py --db /tmp/lab-images/none.sqlite3 $UP` | `error: no database at …`, exit 1. No file is made. |
+| I7 | `python3 -m unittest discover -s tests -p 'test_seed_images.py'` | 19 tests, `OK`. |
+| I8 | `git -C ../svoe-wino-hackaton status --short -- dataset/official-2026-09-17` after cases I1 to I6 | No line. The script does not change the delivery. |
+| I9 | `git status --short data/` in `svoe-vino-lab` | No line. Git ignores `data/`. |
 
 ## The lab server — `pipeline/lab_server.py`
 
@@ -758,15 +786,26 @@ Use `H=http://127.0.0.1:8168`. `config.yaml` MUST name the database
 
 | # | Case | Expected result |
 |---|---|---|
-| S1 | Start the server | The log states the config path, `database_file`, `schema version: 2`, the catalogue source with its SHA-256 and seed time, `wines: 2103`, the disabled pages, and the URL `$H/dataset`. |
+| S1 | Start the server | The log states the config path, `database_file`, `schema version: 5`, `wines: 2103 (Active 2103, Disabled 0, Removed 0)`, the disabled pages, and the URL `$H/dataset`. |
 | S2 | Set `database_file` to a path with no file, then start the server | `error: no database at …`, exit 1. |
-| S3 | Start the server on a database at schema version 1 | `error: the database has schema version 1 and this code needs version 2; run python3 pipeline/labdb.py …`, exit 1. |
-| S4 | Open `$H/dataset` | The header reads `2103 of 2103 records · 0 patches · 0 alternatives · 0 barcodes · 0 QR URLs · 0 Atlas bindings`. The first card is `Автохтонное Вино Крыма белое сухое`. |
-| S5 | Look at a card of `$H/dataset` | Name, producer, category and region, colour, grapes, and slug. `no catalogue image`. The editors for barcodes, QR URLs, the Atlas binding, and alternative photos stay on the card. No `site page` link and no `source image` link. |
+| S3 | Start the server on a database at schema version 3 | `error: the database has schema version 3 and this code needs version 5; run python3 pipeline/labdb.py …`, exit 1. |
+| S4 | Open `$H/dataset` | The header reads `2103 of 2103 records · 0 patches · 0 alternatives · 0 barcodes · 0 QR URLs · 0 Atlas bindings`. No source panel stands above the list. The first card is `Автохтонное Вино Крыма белое сухое`. |
+| S4a | Set the schema version of the database to 3 while the server runs, then reload `$H/dataset` | The header reads `could not read the dataset`. The list reads `The dataset is not available. Cannot read /api/dataset: …` with the `labdb.py` command. |
+| S5 | Look at a card of `$H/dataset` | The slug with a `copy` button is the first line, above the name. Then producer, category and region, and grapes. No line `Colour: …`. `no catalogue image`. The editors for barcodes, QR URLs, the Atlas binding, and alternative photos stay on the card. No `site page` link and no `source image` link. |
 | S6 | Search `Автохтонное` | 9 cards. |
 | S7 | Switch the system to dark mode and reload `$H/dataset` | The page is dark. |
 | S8 | Click `Clusters`, `Embeddings`, `Testset`, and `Runs` | Each one shows `The page <name> is disabled for now.` with the full navigation. The link of the page is marked. |
 | S9 | `curl -s -o /dev/null -w "%{http_code}" $H/api/runs` | `503`. |
 | S10 | `curl -s $H/api/dataset \| python3 -c "import json,sys; print(len(json.load(sys.stdin)['records']))"` | `2103`. |
 | S11 | Press `Validate` on `$H/dataset`, then `Run selected` | The dialog lists the checks. After the run it reads `validation ERROR Error: disabled for now: the lab database does not hold the data of this route yet`. |
-| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 10 tests, `OK`. |
+| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 15 tests, `OK`. |
+| S13 | Look below the catalogue image of an `Active` wine | Two buttons: `Disable` and `Remove`. |
+| S14 | Press `Disable` | The card shows the tag `disabled` and the buttons `Enable` and `Remove`. The database holds `Disabled`. |
+| S15 | Press `Enable` | The tag goes away. The buttons are `Disable` and `Remove`. The database holds `Active`. |
+| S16 | Press `Remove` | The card leaves the view `All (except Removed)`. The database holds `Removed` and `removed_by` = `person`. |
+| S17 | Set `State` to `Removed` | The list holds the removed wines alone. Each card shows `removed by import` or `removed by person`, and one button: `Restore`. |
+| S18 | Press `Restore` | The card leaves the view `Removed`. The database holds `Active` and a NULL `removed_by`. |
+| S19 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"slug":"bukovinka","action":"enable"}' $H/api/wine-state` on an `Active` wine | HTTP 409: `the wine bukovinka is Active; enable needs Disabled`. |
+| S20 | Switch the system to dark mode and look at a `Disabled` and a `Removed` card | The tags and the buttons are readable in dark mode. |
+| S21 | Press `Disable`, then `Enable`, on a card in the view with all 2,103 cards | Each change shows in well under one second. The list does not flash, and the scroll position stays. |
+| S22 | Open `$H/dataset#<slug>` for a card near the end of the list | The card stands at the top, just below the header. |

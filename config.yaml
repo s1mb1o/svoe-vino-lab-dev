@@ -15,5 +15,5 @@
 rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
 
 # Database file of the vino-svoe.ru wines.
-database_file: data/lab.sqlite3
+database_file: svoe-vino-lab/data/lab.sqlite3
 

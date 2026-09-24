@@ -1,8 +1,8 @@
 # 07 — The lab database
 
 Date: 2026-09-24.
-Status: steps 1 to 3 are implemented on 2026-09-24. The owner approves each later step
-before it starts.
+Status: steps 1 to 3 are implemented on 2026-09-24. Step 4 is implemented on 2026-09-24
+by [plan 08](08_seed-images.md). The owner approves each later step before it starts.
 
 ## Goal
 
@@ -15,7 +15,8 @@ The decisions and their reasons are in `docs/decisions/01_sqlite-lab-database.md
 
 ## Rules
 
-1. One database holds one delivery. A new delivery gets a new database file.
+1. One database holds one catalogue. `pipeline/import_catalog.py` updates it from a new
+   CSV by added and removed wines.
 2. The database file is `data/lab.sqlite3`. The owner chose this flat layout on
    2026-09-24. A second delivery needs a second file name.
 3. Do not use the prefix `official-` for a directory of this project. In this workspace,
@@ -42,13 +43,21 @@ Command:
 python3 pipeline/labdb.py data/lab.sqlite3
 ```
 
-Schema files: `pipeline/schema/001_wine_catalog.sql` and `pipeline/schema/002_wine_slug.sql`.
-File 002 renames the column `slug` to `wine_slug`. The owner asked for the name on 2026-09-24.
+Schema files:
+
+| File | Change |
+|---|---|
+| `pipeline/schema/001_wine_catalog.sql` | The tables `catalog_source` and `wine_catalog`. |
+| `pipeline/schema/002_wine_slug.sql` | Renames the column `slug` to `wine_slug`. The owner asked for the name on 2026-09-24. |
+| `pipeline/schema/003_wine_state.sql` | Adds the column `state`. Drops the table `catalog_source`. The owner asked for both on 2026-09-24. |
+| `pipeline/schema/004_removed_by.sql` | Adds the column `removed_by` and the table check that ties it to `state`. It builds the table again and keeps each rowid. A wine that was `Removed` before gets `import`. |
 
 | Table | Key | Content |
 |---|---|---|
-| `catalog_source` | `id` = 1 | The CSV file of the delivery: absolute path, SHA-256, data row count, seed time. At most one row. |
-| `wine_catalog` | `wine_slug` | One row per catalogue card. |
+| `wine_catalog` | `wine_slug` | One row per catalogue card, with its state. |
+
+The database keeps no record of the imported CSV files. The owner removed the table
+`catalog_source` on 2026-09-24.
 
 The columns of `wine_catalog`:
 
@@ -63,53 +72,85 @@ The columns of `wine_catalog`:
 | `grapes` | `Сорт винограда` | The verbatim list. NULL when the CSV value is empty. |
 | `description` | `Описание` | Not empty. |
 | `csv_photo_name` | `Название фото` | Not empty. Not unique. |
+| `state` | none | `Active`, `Disabled`, or `Removed`. The default is `Active`. |
+| `removed_by` | none | `import` or `person` for a `Removed` wine. NULL for another state. A table check enforces this. |
+
+The states:
+
+| State | Meaning | Set by |
+|---|---|---|
+| `Active` | The wine is in use. | `pipeline/import_catalog.py`; the buttons `Enable` and `Restore` |
+| `Disabled` | A person took the wine out of use. The wine is not used for embeddings and matches. No tool reads the state for that yet. | the button `Disable` |
+| `Removed` | The wine is out of the dataset. `removed_by` tells who removed it. | `pipeline/import_catalog.py` (`import`); the button `Remove` (`person`) |
 
 Normal form:
 
 - `Slug` is the only candidate key of the CSV. `Название фото` and `Описание` are not
   unique.
 - No non-key column determines another non-key column. `Винодельня → Регион` does not
-  hold: 3 producers appear in two regions.
+  hold: 3 producers appear in two regions. `state` and `removed_by` depend on the wine
+  alone. The table check `(state = 'Removed') = (removed_by IS NOT NULL)` keeps the two
+  columns consistent.
 - Deviation from 1NF: `grapes` holds a list as one string. The owner accepted this on
-  2026-09-24. A child table `wine_grape (wine_slug, position, grape)` MAY follow when a query
-  needs one grape.
+  2026-09-24. A child table `wine_grape (wine_slug, position, grape)` MAY follow when a
+  query needs one grape.
 
-## Step 2 — the seed CLI
+## Step 2 — the import CLI
 
-Status: done.
+Status: done. `pipeline/import_catalog.py` replaced the seed CLI `pipeline/seed_catalog.py`
+on 2026-09-24. The first import into an empty database adds every wine.
 
 Command:
 
 ```bash
-python3 pipeline/seed_catalog.py --db data/lab.sqlite3 \
+python3 pipeline/import_catalog.py --db data/lab.sqlite3 \
     ../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv
 ```
 
-Rules:
+Rules of the CSV:
 
-1. The database MUST exist. The seed does not create it. This stops a mistyped path
+1. The CSV MUST hold exactly the nine known columns. The column order is free.
+2. Each value loses its outer white space. `build_catalog.py` uses the same rule.
+3. An empty `Сорт винограда` becomes NULL. Another empty value stops the import.
+4. Rows that are equal after the trim are one wine. Two different rows with one slug
+   stop the import.
+
+Rules of the import. The import handles an added wine and a removed wine alone. The
+owner set this scope on 2026-09-24.
+
+1. The database MUST exist. The import does not create it. This stops a mistyped path
    from making a second database.
-2. The CSV MUST hold exactly the nine known columns. The column order is free.
-3. Each value loses its outer white space. `build_catalog.py` uses the same rule.
-4. An empty `Сорт винограда` becomes NULL. Another empty value stops the seed.
-5. Rows that are equal after the trim are one wine. Two different rows with one slug
-   stop the seed.
-6. A second seed from the same file changes nothing. The SHA-256 identifies the file.
-7. A seed from another file stops, because the database holds one delivery.
+2. A wine of the CSV that the database does not hold is added as `Active`.
+3. A wine of the database that the CSV does not hold becomes `Removed`, with
+   `removed_by` = `import`. This applies to an `Active` wine and to a `Disabled` wine.
+4. A wine that the import removed becomes `Active` when the CSV holds it again.
+5. A wine that a person removed stays `Removed`, also when the CSV holds it. The import
+   never changes `removed_by` = `person`. The report counts such wines under
+   `kept removed by a person`. The owner chose this on 2026-09-24.
+6. A `Disabled` wine that the CSV holds stays `Disabled`.
+7. A wine of the CSV with a field that differs from the database stops the import. The
+   error names the wine, its state, and each changed field with the old and the new
+   value. This applies to a `Removed` wine too.
+8. The import takes the write lock before it reads the database. It writes all changes
+   in one transaction, or no change.
+9. A second import of the same file changes nothing.
 
-Result on 2026-09-24:
+Result of the first import on 2026-09-24:
 
 | Count | Value |
 |---|---|
 | Data rows read | 4,147 |
 | Duplicate rows | 2,044 |
-| Wines stored | 2,103 |
+| Wines added | 2,103 |
 | Values trimmed | 198 |
 | Wines with NULL `grapes` | 2 |
 | CSV SHA-256 | `12a1b0b620db7a2264b094446861e83940a927708d65a1b7ccffda7ec3aeffee` |
 | Values that differ from `catalog.jsonl` | 0 of 2,103 × 8 |
 
-Tests: `tests/test_seed_catalog.py`, 14 cases.
+`tests/data/` holds three fake variants of the official CSV and the expected import
+results. Read `tests/data/README.md`.
+
+Tests: `tests/test_labdb.py`, 9 cases. `tests/test_import_catalog.py`, 20 cases.
 
 ## Step 3 — the lab server with the Dataset page
 
@@ -130,21 +171,53 @@ Rules:
 1. `database_file` is resolved against `rootdir`, as every relative path of
    `config.yaml`. The value for this project is `svoe-vino-lab/data/lab.sqlite3`.
    The owner kept this rule on 2026-09-24.
-2. The server opens the database read-only for each request. It never writes to it.
+2. The server opens the database for each request. A GET opens it read-only.
+   `POST /api/wine-state` opens it read-write and writes the columns `state` and
+   `removed_by` of one wine alone.
 3. The schema version of the database MUST equal the number of schema files. Another
    version stops the start, and `/api/dataset` answers HTTP 503.
 4. `GET /dataset` serves `pipeline/pages/dataset.html`. `GET /api/dataset` answers the
-   rows of `wine_catalog` in seed order. The key `wine_slug` goes out as `slug`,
-   because the page reads `slug`.
+   rows of `wine_catalog` in import order, with each state. The key `wine_slug` goes
+   out as `slug`, because the page reads `slug`. A removed wine stays in the answer, and
+   its key `state` tells it apart.
 5. The data of the page editors is not in the database yet: patches, alternative
    photos, barcodes, QR URLs, and Atlas bindings. The editors stay on the page. Each
    count is 0, and each write answers HTTP 503.
+5a. Each card holds state buttons below the catalogue image. `POST /api/wine-state`
+   takes `{"slug": …, "action": …}` and allows these changes alone:
+
+   | Action | Button | From | To |
+   |---|---|---|---|
+   | `disable` | `Disable` | `Active` | `Disabled` |
+   | `enable` | `Enable` | `Disabled` | `Active` |
+   | `remove` | `Remove` | `Active`, `Disabled` | `Removed`, `removed_by` = `person` |
+   | `restore` | `Restore` | `Removed` | `Active`, `removed_by` = NULL |
+
+   Another change answers HTTP 409. An unknown slug answers 404. A bad body or an unknown
+   action answers 400. A card of a `Disabled` wine shows the tag `disabled`. A card of a
+   `Removed` wine shows `removed by import` or `removed by person`.
+5b. The filter `State` shows `All (except Removed)` or `Removed`. The default is
+   `All (except Removed)`. The owner asked for the buttons and the filter on
+   2026-09-24. The owner renamed the button `Ignore` to `Disable` on the same day.
+5c. A state change renders its own card alone, not the list. A card that leaves the
+   view of the `State` filter is taken out of the list. Each card has
+   `content-visibility: auto`, so the browser skips the layout of a card out of view.
+   A link `/dataset#<slug>` scrolls two times: the second scroll puts the card at its
+   place after the cards near it get their true heights. Measured on 2026-09-24 in
+   headless Chromium with 2,103 cards: a full render took 0.7 s before and 0.14 s after;
+   a state click took 1.8 to 2.1 s before and about 0.1 s after. The server write takes
+   2 to 4 ms.
 6. The pages Clusters, Embeddings, Testset, and Runs, and `/docs`, are disabled for now.
    Each one answers a notice page with HTTP 503. The notice page keeps the navigation.
 7. Each other `/api/` route answers HTTP 503 with a JSON error. An `/img/` route answers
    HTTP 503.
-8. Do not remove a part of a page. A disabled part comes back when its data is in the
-   database.
+8. Do not remove a part of a page unless the owner asks for it. A disabled part comes
+   back when its data is in the database. On 2026-09-24 the owner removed the source
+   panel of the Dataset page: the lines `catalog.jsonl`, `patch directory`, and the
+   other sources above the list. An error of `/api/dataset` now shows in the list.
+   The owner also removed the line `Colour: …` of each card. The colour stays in the
+   full record and in the search. The slug with its `copy` button stands above the
+   name, as the first line of a card. The owner asked for both on 2026-09-24.
 
 The shared page files are in `pipeline/pages/`: `dataset.html`, `theme.css`, and
 `disabled.html`. `pipeline/lab_pages.py` reads them. `scripts/review_server.py` reads
@@ -156,7 +229,7 @@ record with no `page_url` got a `site page` link to the Dataset page itself.
 `scripts/review_server.py` and the other scripts of `scripts/` read the JSON files
 through `scripts/common.py`. They do not start with the new `config.yaml`.
 
-Tests: `tests/test_lab_server.py`, 10 cases.
+Tests: `tests/test_lab_server.py`, 15 cases.
 
 ## Candidate later steps
 
@@ -164,9 +237,9 @@ These steps are proposals. The owner selects the next step and its content.
 
 | Step | Content | Source |
 |---|---|---|
-| 4 | Catalogue pictures. Find the upload file of each `csv_photo_name`. Store the bytes as `objects/<sha256>.<ext>`. Tables for the image and for the picture of a card. | `uploads/` of the delivery, the rename rule of `build_catalog.py` |
-| 5 | Patched pictures and extra catalogue views. | `patched-official-<DATE>/`, `derived/additional/` |
-| 6 | Test photos into the object store, with their source URLs. | `dataset/*/photo/`, `review-labels.json` field `source_url` |
+| 4 | Done by [plan 08](08_seed-images.md): the table `wine_image` and `pipeline/seed_images.py`. The store is `data/images/<folder>/<sha256>.<ext>`, one folder for each image type. | `uploads/` of the delivery, the rename rule of `build_catalog.py` |
+| 5 | Patched pictures (`main_patched`) and extra catalogue views (`front`, `back`, `label_front`, `label_back`) into `wine_image`. | `patched-official-<DATE>/`, `derived/additional/` |
+| 6 | Test photos into `data/images/testset/`, with their source URLs, in their own table. Several test sets, each with its own photos. Read the section "Input for the test set step" of plan 08. | `dataset/*/photo/`, `review-labels.json` field `source_url` |
 | 7 | Datasets, photo placements, labels, comments, wine notes, excluded slugs. | `review-labels.json`, `excluded-slugs.json` |
 | 8 | Variant groups and manual pairs. | `variant-groups.json`, `manual-groups.json` |
 | 9 | Match runs, queries, and candidates. | `runs/*/` |
@@ -183,3 +256,5 @@ These steps are proposals. The owner selects the next step and its content.
 4. Does the database use WAL mode when the review server and a script write at the same
    time?
 5. Is the object store of step 4 one store per delivery, or one store for all deliveries?
+   On 2026-09-24, plan 08 put the store in `images/` next to the database file. One
+   database holds one delivery, so each delivery has its own store for now.

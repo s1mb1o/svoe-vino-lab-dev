@@ -2,6 +2,30 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-24 — the offline match of the main images
+
+Status: measured on `official-2026-09-17` and on the 2,103 wines of `data/lab.sqlite3`.
+The result shapes `docs/plans/08_seed-images.md`.
+
+- The delivery holds no Strapi database dump. `prod-svoe-vino-strapi/` holds the flat
+  folder `strapi/uploads` alone: 15,803 files, of them 15,199 `.webp`. 6,241 file names
+  carry the Strapi suffix `_<10 hex>` and are not a resized variant. The match index
+  holds these 6,241 files.
+- The match of `build_catalog.py` uses `csv_photo_name`. The wine name is not part of it.
+- Stage 1 of `build_catalog.py`, offline:
+  - one candidate: 2,023 wines;
+  - several candidates: 75 wines, of them 23 with equal bytes and 52 with different bytes;
+  - no candidate: 5 wines.
+- So an offline run with no live answer finds 2,046 wines, and 57 wines get no file.
+- `derived/official-2026-09-17/catalog.jsonl` holds the live answers of 2026-09-17:
+  2,023 `csv-name-unique`, 70 `live-og-image`, 10 `unresolved`. It names a file for 47 of
+  the 52 wines with different bytes and for the 5 wines with no candidate. For the 2,023
+  wines with one candidate, it names the same file each time.
+- The 2,046 found wines use 2,018 different files, 135 MB. So some wines share a file:
+  2,023 `name-unique` wines use 1,998 files, and 23 `name-identical` wines use 20 files.
+- A survey of the test sets of `svoe-vino-testset` is in the section "Input for the
+  test set step" of plan 08.
+
 ## 2026-09-24 — keys and dependencies of `strapi_output0709.csv`
 
 Status: measured on the file of `official-2026-09-17`. The result shapes the table
