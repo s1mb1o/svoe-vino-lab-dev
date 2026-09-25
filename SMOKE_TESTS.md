@@ -813,11 +813,12 @@ Use `H=http://127.0.0.1:8168`. `config.yaml` MUST name the database
 | S5 | Look at a card of `$H/dataset` | The slug with a `copy` button is the first line, above the name. Then producer, category and region, and grapes. No line `Colour: …`. The bottle image of the wine, or `no catalogue image` for a wine with no row in `wine_image`. The editors for barcodes, QR URLs, the Atlas binding, and alternative photos stay on the card. No `site page` link and no `source image` link. |
 | S6 | Search `Автохтонное` | 9 cards. |
 | S7 | Switch the system to dark mode and reload `$H/dataset` | The page is dark. |
-| S8 | Click `Clusters`, `Embeddings`, `Testset`, and `Runs` | Each one shows `The page <name> is disabled for now.` with the full navigation. The link of the page is marked. |
+| S8 | Click `Clusters`, `Testset`, and `Runs` | Each one shows `The page <name> is disabled for now.` with the full navigation. The link of the page is marked. |
+| S8a | Look at the navigation of `$H/dataset`, `$H/embedding`, and `$H/runs` | The order is `Dataset`, `Embeddings`, `Clusters`, `Testset`, `Runs`. |
 | S9 | `curl -s -o /dev/null -w "%{http_code}" $H/api/runs` | `503`. |
 | S10 | `curl -s $H/api/dataset \| python3 -c "import json,sys; print(len(json.load(sys.stdin)['records']))"` | `2103`. |
 | S11 | Press `Validate` on `$H/dataset`, then `Run selected` | The dialog lists the checks. After the run it reads `validation ERROR Error: disabled for now: the lab database does not hold the data of this route yet`. |
-| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 21 tests, `OK`. |
+| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 25 tests, `OK`. |
 | S13 | Look below the catalogue image of an `Active` wine | Two buttons: `Disable` and `Remove`. |
 | S14 | Press `Disable` | The card shows the tag `disabled` and the buttons `Enable` and `Remove`. The database holds `Disabled`. |
 | S15 | Press `Enable` | The tag goes away. The buttons are `Disable` and `Remove`. The database holds `Active`. |
@@ -843,7 +844,7 @@ Use `H=http://127.0.0.1:8168`. `config.yaml` MUST name the database
 ## The lab embeddings — `pipeline/build_embeddings.py` and `/embedding`
 
 Use `P=~/.venvs/svoe-vino-lab/bin/python` and `N=gx10-siglip2-so400m-patch16-naflex-p256`.
-Use `H=http://127.0.0.1:8168`. The page cases need the hook in `lab_server.py`.
+Use `H=http://127.0.0.1:8168`.
 
 | # | Case | Expected result |
 |---|---|---|
@@ -856,7 +857,7 @@ Use `H=http://127.0.0.1:8168`. The page cases need the hook in `lab_server.py`.
 | EB7 | Delete one `images/<sha256>_full.png`, and run EB2 | `built` is 1. |
 | EB8 | Put `remove_background` with no `white_background` in a view, and run EB2 | Exit 2. The `error` line states `the gateway drops the alpha channel`. |
 | EB9 | Start a second `$P pipeline/build_embeddings.py --name $N` while EB2 runs | Exit 3. The `error` line names the PID of the first build. |
-| EB10 | Open `$H/embedding` | `Embeddings` is the marked navigation link. The combobox lists the 11 entries of `config.yaml` as `<name> — <current> / <items>`. |
+| EB10 | Open `$H/embedding` | HTTP 200. `Embeddings` is the marked navigation link, the second after `Dataset`. The combobox lists the 11 entries of `config.yaml` as `<name> — <current> / <items>`. |
 | EB11 | Select `$N` after EB2 | Each wine row shows the card image column: the prepared `full` image with the badge `current`, and the `label` cell with the badge `failed` and `no label cut yet`. Each cell has a checkerboard background. |
 | EB12 | Press `Build` on an entry with no files | A job row with a progress bar appears. `Build` is disabled, `Stop` is enabled. At the end the grid reads again. |
 | EB13 | Press `Stop` during EB12 | The job reads `stopping`, then the message `last build stopped`. A second `Build` continues the build. |

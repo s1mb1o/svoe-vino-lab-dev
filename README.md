@@ -44,8 +44,9 @@ python3 pipeline/lab_server.py            # http://127.0.0.1:8168/dataset
 `config.yaml` holds two keys: `rootdir` and `database_file`. A relative
 `database_file` is resolved against `rootdir`, so the value is
 `svoe-vino-lab/data/lab.sqlite3`. The lab server opens the database
-read-only. Only the Dataset page works. Clusters, Embeddings, Testset, and Runs are
-disabled for now: each one answers a notice page. Each card of the Dataset page holds
+read-only. The Dataset and Embeddings pages work. Clusters, Testset, and Runs are
+disabled for now: each one answers a notice page. The navigation order is `Dataset`,
+`Embeddings`, `Clusters`, `Testset`, `Runs`. Each card of the Dataset page holds
 the buttons `Disable` / `Enable`, `Remove`, and `Restore` below the catalogue image. The
 filter `State` shows `All (except Removed)` or `Removed`. The lab server writes the
 state of a wine; it writes no other column. The card image comes from the table
@@ -131,9 +132,9 @@ python3 -m venv ~/.venvs/svoe-vino-lab
 - The Embeddings page of the lab server (`/embedding`) shows the prepared images of one
   entry, with a combobox, the buttons `Build` and `Stop`, and the progress of each
   running build. The lab server starts a build with `embedding_python` of
-  `config.yaml`. The routes are in `pipeline/embedding_routes.py`. On 2026-09-25 the
-  route waits for a small change of `lab_server.py`; until then `/embedding` answers
-  the notice page.
+  `config.yaml`. The routes are in `pipeline/embedding_routes.py`. `lab_server.py`
+  sends each route of the page to that module. The old routes `/api/embedding` and
+  `/img/embedding` of the review tool stay HTTP 503.
 
 The sections below describe the tools of `scripts/`. They read JSON files through
 `scripts/common.py`, and they do not start with the present `config.yaml`.

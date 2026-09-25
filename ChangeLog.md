@@ -2,6 +2,15 @@
 
 ## 2026-09-25
 
+- The Embeddings page is on. `pipeline/lab_server.py` sends each route that
+  `embedding_routes.handles` accepts to `embedding_routes.respond`, for GET, HEAD, and
+  POST. `/embedding` is no longer in `DISABLED_PAGES`. `make_server` takes
+  `config_path`; `main` passes `--config`. The old routes `/api/embedding` and
+  `/img/embedding` stay HTTP 503. The navigation order is now `Dataset`, `Embeddings`,
+  `Clusters`, `Testset`, `Runs`, in `NAV` and in the navigation of `dataset.html` and
+  `embedding.html`. The owner asked for both on 2026-09-25. New tests in
+  `tests/test_lab_server.py` (4): the page, the config path of the routes, the old
+  routes, the navigation order. The lab server on 8168 was restarted.
 - Plan 12 (`docs/plans/12_testsets-benchmark.md`), approved by the owner: the test sets
   in the database and a lab benchmark runner. New `pipeline/import_testset.py` imports
   `dataset/<set>/` read-only (photos, per-set labels, excluded slugs, variant groups). New

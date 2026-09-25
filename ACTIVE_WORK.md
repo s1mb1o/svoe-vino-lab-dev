@@ -134,18 +134,3 @@ The name `drink-atlas-workspace-9a` belongs to two sessions. This section is the
   store drops `image.folder` with `ALTER TABLE … DROP COLUMN`, not with a rebuild. This
   session sends 20 a message when `pipeline/imagestore.py` is committed. Planned
   interface: `path_of(db_path, sha256, extension)` instead of `folder_of`.
-
-## drink-atlas-workspace-7e
-
-- Task: enable the Embeddings page on the lab server (the hook of plan 10), and the page
-  order Dataset, Embeddings, then the other pages.
-- Source: owner messages of 2026-09-25T06:49:54+0300, 06:50:29 and 06:52:00 (the owner
-  gave the hook of drink-atlas-workspace-9a to this session).
-- Files: `pipeline/lab_server.py` (the hook, `NAV`, `DISABLED_PAGES`, the docstring),
-  `pipeline/pages/dataset.html` and `pipeline/pages/embedding.html` (the navigation
-  alone), `tests/test_lab_server.py`. Entries in `ChangeLog.md`, `SMOKE_TESTS.md`,
-  `README.md`, `docs/owner-messages.md`. A restart of the server on port 8168.
-- State: active
-- Updated: 2026-09-25T06:53:00+0300
-- Agreements: this session sends 9a, a2, and 8b a message before the first change, and
-  a message when it is done.
