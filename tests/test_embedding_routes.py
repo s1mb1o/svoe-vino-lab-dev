@@ -1,0 +1,211 @@
+import contextlib
+import io
+import os
+import sys
+import tempfile
+import time
+import types
+import unittest
+
+import embedding_lab  # noqa: F401  (puts pipeline/ on sys.path)
+from embedding_lab import FakeGateway, standard_lab
+
+import build_embeddings  # noqa: E402
+import embedding_routes  # noqa: E402
+import embeddings  # noqa: E402
+
+# A build that takes its lock, writes `start`, and waits for SIGTERM or 20 s. Its file
+# name is the name of the build script, so the lock check accepts it.
+FAKE_BUILD = r'''
+import json, os, signal, sys, time
+sys.path.insert(0, %(pipeline)r)
+import embeddings
+name = sys.argv[sys.argv.index("--name") + 1]
+settings = embeddings.load_settings(sys.argv[sys.argv.index("--config") + 1])
+directory = embeddings.entry_dir(settings.db_path, name)
+embeddings.acquire_lock(directory)
+stop = []
+signal.signal(signal.SIGTERM, lambda *args: stop.append(1))
+print(json.dumps({"event": "start", "pid": os.getpid(), "todo": 5, "t": time.time(),
+                  "time": "now"}), flush=True)
+deadline = time.time() + 20
+while not stop and time.time() < deadline:
+    time.sleep(0.05)
+if stop:
+    print(json.dumps({"event": "stopping"}), flush=True)
+    print(json.dumps({"event": "stopped", "built": 0, "failed": 0, "done": 0}), flush=True)
+else:
+    print(json.dumps({"event": "done", "built": 5, "failed": 0, "done": 5}), flush=True)
+embeddings.release_lock(directory)
+'''
+
+
+def wait_for(check, seconds=10):
+    deadline = time.time() + seconds
+    while time.time() < deadline:
+        if check():
+            return True
+        time.sleep(0.05)
+    return False
+
+
+class RoutesTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.gateway = FakeGateway()
+        self.lab = standard_lab(self.tmp.name, self.gateway.base_url)
+        self.server = types.SimpleNamespace(db_path=self.lab.db_path,
+                                            config_path=self.lab.config_path)
+        self.saved_script = embedding_routes.BUILD_SCRIPT
+
+    def tearDown(self):
+        for process in embedding_routes._PROCESSES.values():
+            process.kill()
+            process.wait()
+        embedding_routes._PROCESSES.clear()
+        embedding_routes.BUILD_SCRIPT = self.saved_script
+        self.gateway.close()
+        self.lab.close()
+        self.tmp.cleanup()
+
+    def get(self, path, method="GET"):
+        return embedding_routes.respond(self.server, method, path)
+
+    def build(self):
+        settings = embeddings.load_settings(self.lab.config_path)
+        directory = self.lab.entry_dir()
+        os.makedirs(directory, exist_ok=True)
+        with contextlib.redirect_stdout(io.StringIO()):
+            build_embeddings.run(settings.find("gw"), settings.db_path, directory,
+                                 make_backend=lambda e: build_embeddings.OpenAIBackend(
+                                     e, waits=(), timeout=10))
+
+    def test_handles(self):
+        for route in ("/embedding", "/api/embeddings", "/api/embeddings/gw",
+                      "/api/embedding-jobs", "/embeddings/gw/images/x.png"):
+            self.assertTrue(embedding_routes.handles(route), route)
+        for route in ("/api/embedding", "/img/embedding", "/dataset", "/embeddingx"):
+            self.assertFalse(embedding_routes.handles(route), route)
+
+    def test_page(self):
+        code, body, content_type, _ = self.get("/embedding")
+        self.assertEqual(code, 200)
+        self.assertIn("text/html", content_type)
+        self.assertIn('class="on" href="/embedding"', body)
+        self.assertNotIn("/* THEME_CSS */", body)
+        self.assertIn("prefers-color-scheme: dark", body)
+
+    def test_list_before_and_after_a_build(self):
+        code, body, _, _ = self.get("/api/embeddings")
+        self.assertEqual(code, 200)
+        entry = body["embeddings"][0]
+        self.assertEqual(entry["name"], "gw")
+        self.assertEqual(entry["items"], 9)
+        self.assertEqual(entry["counts"]["missing"], 9)
+        self.assertIsNone(entry["job"]["state"])
+        self.build()
+        entry = self.get("/api/embeddings")[1]["embeddings"][0]
+        self.assertEqual(entry["counts"], {"current": 4, "stale": 0, "missing": 0, "failed": 5})
+        self.assertEqual(entry["dim"], 8)
+
+    def test_entry_view_and_image_route(self):
+        self.build()
+        code, body, _, _ = self.get("/api/embeddings/gw")
+        self.assertEqual(code, 200)
+        records = {record["slug"]: record for record in body["records"]}
+        self.assertNotIn("disabled", records)
+        transparent = records["transparent"]["columns"]
+        self.assertEqual([column["image_type"] for column in transparent], ["main", "label_front"])
+        full = transparent[0]["cells"]["full"]
+        self.assertEqual(full["status"], "current")
+        self.assertEqual(transparent[0]["cells"]["label"]["status"], "failed")
+        self.assertEqual(transparent[0]["cells"]["label"]["error"], embeddings.NO_CUT["label"])
+        self.assertNotIn("full", transparent[1]["cells"])
+        self.assertEqual(transparent[1]["cells"]["label"]["status"], "current")
+        code, data, content_type, cache = self.get(full["url"])
+        self.assertEqual((code, content_type), (200, "image/png"))
+        self.assertTrue(data.startswith(b"\x89PNG"))
+        self.assertIn("immutable", cache)
+        unprocessed = records["unprocessed"]["columns"][0]["cells"]["full"]
+        self.assertEqual(unprocessed["status"], "failed")
+        self.assertNotIn("url", unprocessed)
+
+    def test_bad_image_paths(self):
+        digest = "a" * 64
+        for path in ("/embeddings/gw/images/%s_full.jpg" % digest,
+                     "/embeddings/gw/images/../index.json",
+                     "/embeddings/../data/images/%s_full.png" % digest,
+                     "/embeddings/gw/images/%s_full.png" % digest):
+            self.assertEqual(self.get(path)[0], 404, path)
+
+    def test_unknown_and_broken_entries(self):
+        self.assertEqual(self.get("/api/embeddings/none")[0], 404)
+        self.lab.entries.append({"name": "bad", "backend": "grpc"})
+        self.lab.write_config()
+        code, body, _, _ = self.get("/api/embeddings/bad")
+        self.assertEqual(code, 400)
+        self.assertIn("backend MUST be", body["error"])
+        entries = {entry["name"]: entry for entry in self.get("/api/embeddings")[1]["embeddings"]}
+        self.assertIn("backend MUST be", entries["bad"]["error"])
+        self.assertEqual(self.get("/api/embeddings/bad/build", "POST")[0], 400)
+
+    def test_methods(self):
+        self.assertEqual(self.get("/api/embeddings/gw/build")[0], 405)
+        self.assertEqual(self.get("/api/embeddings", "POST")[0], 405)
+        self.assertEqual(self.get("/api/embeddings/gw/stop", "POST")[0], 409)
+
+    def test_start_second_start_and_stop(self):
+        script_dir = os.path.join(self.tmp.name, "fake")
+        os.makedirs(script_dir)
+        script = os.path.join(script_dir, embeddings.BUILD_SCRIPT_NAME)
+        with open(script, "w", encoding="utf-8") as fh:
+            fh.write(FAKE_BUILD % {"pipeline": os.path.dirname(embeddings.__file__)})
+        embedding_routes.BUILD_SCRIPT = script
+        self.lab.write_config(python=sys.executable)
+
+        code, body, _, _ = self.get("/api/embeddings/gw/build", "POST")
+        self.assertEqual(code, 202, body)
+        self.assertEqual(self.get("/api/embeddings/gw/build", "POST")[0], 409)
+        directory = self.lab.entry_dir()
+        self.assertTrue(wait_for(lambda: embeddings.running_pid(directory)))
+        self.assertTrue(wait_for(lambda: embeddings.job_state(directory)["todo"] == 5))
+        jobs = {job["name"]: job for job in self.get("/api/embedding-jobs")[1]["jobs"]}
+        self.assertEqual(jobs["gw"]["state"], "running")
+        self.assertEqual(jobs["gw"]["todo"], 5)
+
+        code, body, _, _ = self.get("/api/embeddings/gw/stop", "POST")
+        self.assertEqual(code, 202, body)
+        process = embedding_routes._PROCESSES[directory]
+        process.wait(timeout=10)
+        self.assertEqual(embeddings.job_state(directory)["state"], "stopped")
+        self.assertEqual(self.get("/api/embeddings/gw/stop", "POST")[0], 409)
+
+    def test_a_missing_interpreter_is_an_error(self):
+        self.lab.write_config(python=os.path.join(self.tmp.name, "no-python"))
+        code, body, _, _ = self.get("/api/embeddings/gw/build", "POST")
+        self.assertEqual(code, 400)
+        self.assertIn("is not a file", body["error"])
+
+
+class JobStateTest(unittest.TestCase):
+    def write_log(self, directory, lines):
+        with open(os.path.join(directory, embeddings.LOG), "w", encoding="utf-8") as fh:
+            fh.write("\n".join(lines) + "\n")
+
+    def test_states_from_the_log(self):
+        with tempfile.TemporaryDirectory() as directory:
+            self.assertIsNone(embeddings.job_state(directory)["state"])
+            start = '{"event": "start", "pid": 1, "todo": 3}'
+            self.write_log(directory, [start, '{"event": "done", "built": 3, "failed": 0}'])
+            self.assertEqual(embeddings.job_state(directory)["state"], "done")
+            self.write_log(directory, [start, '{"event": "progress", "done": 1, "todo": 3}',
+                                       "Traceback (most recent call last):", "KeyError: 'x'"])
+            job = embeddings.job_state(directory)
+            self.assertEqual((job["state"], job["message"], job["done"]), ("failed", "KeyError: 'x'", 1))
+            self.write_log(directory, ['{"event": "error", "message": "no database"}'])
+            job = embeddings.job_state(directory)
+            self.assertEqual((job["state"], job["message"]), ("failed", "no database"))
+
+
+if __name__ == "__main__":
+    unittest.main()

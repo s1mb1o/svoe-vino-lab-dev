@@ -2,6 +2,11 @@
 
 ## 2026-09-25
 
+- New file `ACTIVE_WORK.md` and rules 13 to 21 in `AGENTS.md`, section "Work of the
+  sessions". Each agent session that works on this project keeps one section there: its
+  task, its source, the files that it changes, its state, and the time of the last
+  update. A session does not change a file that another section lists; it sends that
+  session a message. The owner asked for the file.
 - `COMMANDS.md`: the owner's command notes are fixed. The delete command names
   `data/lab.sqlite3`. The load section holds `import_catalog.py`, `seed_images.py`, and
   `seed_patched.py` in one block. The stale pasted replies and the fixed schema version
@@ -9,7 +14,88 @@
 - `tests/test_seed_patched.py` names the columns of its `wine_image` insert. Schema file
   006 added `width` and `height`, and the insert by position failed.
 
+### The embeddings of the lab: the build, the routes, the page (plan 10)
+
+- New key `embeddings` in `config.yaml`: 11 entries, one for each image embedding model of
+  gx10 on the screenshot of the owner, and `local-siglip2-so400m-patch16-naflex-p256`.
+  Each entry has a name, an endpoint, options (`extra_body`), and the steps of the views
+  `full` (variant C) and `label` (variant F). New key `embedding_python`: the venv
+  `~/.venvs/svoe-vino-lab`.
+- New module `pipeline/embeddings.py`: the configuration check, the inputs (Active
+  wines; `main_patched` replaces `main`), the steps `segment`, `remove_background`,
+  `white_background`, `resize`, the `embedding_hash`, the item status, the atomic files,
+  the lock, and the job state.
+- New CLI `pipeline/build_embeddings.py`: the backends `openai` (the gateway) and
+  `local` (Hugging Face on `mps`). It writes `data/embeddings/<name>/index.json`,
+  `vectors-<8 hex>.npy`, and `images/<sha256>_<view>.png`, and one JSON event line for
+  each step to stdout. SIGTERM stops it after the present batch; the next run continues.
+- New module `pipeline/embedding_routes.py` and page `pipeline/pages/embedding.html`:
+  the combobox, `Build`, `Stop`, the job rows, and the wine matrix of the prepared
+  images. The hook in `lab_server.py` waits for the commit of plan 09.
+- The gateway drops the alpha channel (measured). So the configuration check rejects
+  `remove_background` with no `white_background`, and a build fails each model input
+  with a transparent pixel. The owner asked for an error on 2026-09-25.
+- New `requirements-local.txt` and `QUESTIONS.md` (Q1, the label image: answered).
+- New tests: `tests/test_embeddings.py`, `tests/test_build_embeddings.py`,
+  `tests/test_embedding_routes.py`, with the fixture `tests/embedding_lab.py`: 44 tests.
+- The first real build: `gx10-siglip2-so400m-patch16-naflex-p256`. A stop with SIGTERM
+  after 416 items, and a second start that continued with the rest.
+
+### An agent may restart the lab server on 8168
+
+- New rules 22 to 24 in `AGENTS.md`, section "The lab server". The owner allows an agent
+  to restart `pipeline/lab_server.py` on port 8168 when a change needs it: stop it with
+  SIGINT, start it with `--no-browser` in the background with the log
+  `work/lab_server.log`, check `/api/dataset`, and tell the owner.
+
+### Each import processes its images: `crop` and `seg`
+
+- New schema file `pipeline/schema/007_image_table.sql`: the table `image` with one row
+  for each stored file, and the table `image_derivative` that links an original to its
+  processed file. `wine_image` refers to `image`; `extension`, `width`, and `height`
+  moved to `image`. The migration keeps each row. The owner chose option C.
+- New module `pipeline/derive.py`. An image with transparent pixels loses its border
+  (`crop`, the alpha rule of `build_cropped.py`). An image with no transparent pixels
+  goes to SAM3 on gx10 with `wine bottle, can, packet` (`seg`); the largest instance
+  wins, and its mask is smoothed, grown a little, and becomes the alpha channel. When
+  SAM3 finds nothing, the white rule cuts the border. When SAM3 does not answer, the
+  image stays unprocessed, and the next import asks again.
+- New module `pipeline/imagestore.py`: the store functions of each writer.
+- `pipeline/seed_images.py` and `pipeline/seed_patched.py` process each image that they
+  store or keep, and take `--sam3 <URL>`. The processed files are PNG files in
+  `data/images/cropped/`.
+- The Dataset page shows the processed image with the badge `crop` or `seg`. The link
+  `open raw image` opens the original. The size sort uses the processed file.
+- Tests: `tests/test_derive.py` 14, `tests/test_seed_images.py` 25,
+  `tests/test_seed_patched.py` 14, `tests/test_lab_server.py` 21, `tests/test_labdb.py`
+  10. No test calls the real SAM3 service.
+- The run on `data/lab.sqlite3` migrated it to schema 7 and processed the 2,018
+  originals in 4 min 25 s: `crop` 1,876, `seg` 142. One `crop` comes from the white rule:
+  SAM3 found no package on a bag-in-box image of three wines. The processed files take
+  1.2 GB. A run of `seed_patched.py` on a copy of the database processed the 15 patches
+  (`crop` 15). The real database holds no patch yet.
+- A known weak result: on 3 bag-in-box images of Союз-Вино, SAM3 cuts out the bottle
+  that is printed on the box, and not the box.
+
 ## 2026-09-24
+
+### The Dataset page: sort by image size, and the slug links to the wine page
+
+- New schema file `pipeline/schema/006_image_size.sql`: the columns `width` and
+  `height` of `wine_image`. Both MAY be NULL.
+- `pipeline/seed_images.py` reads the pixel size of each stored file with Pillow. A new
+  row gets it; a kept row with no size gets it too. On `data/lab.sqlite3` the run filled
+  2,046 sizes.
+- `/api/dataset` sends `main_image_width` and `main_image_height`.
+- The `Sort` control has `image size, smallest first` and `image size, largest first`.
+  The key is the pixel count. A card with no known size stands at the end.
+- The slug of a card is a link to `https://vino-svoe.ru/wines/<slug>`. It opens a new
+  tab. The owner asked for it.
+- `AGENTS.md` (`CLAUDE.md`) has the new rules 9 to 12: a schema change is allowed at any
+  time during development, and the owner asks for a flatten later.
+- Tests: `tests/test_seed_images.py` 22, `tests/test_lab_server.py` 20,
+  `tests/test_labdb.py` expects schema version 6. New smoke cases I7a and S28 to S30.
+  The tests of `seed_images.py` use real PNG pictures now.
 
 ### The patched main images: `pipeline/seed_patched.py`
 
@@ -28,6 +114,27 @@
   15 patches as card images.
 - Plan 07 step 5, new tests `tests/test_seed_patched.py` (11 cases), smoke cases P1 to P7.
 
+### The Dataset page shows the main images
+
+- `GET /api/dataset` sends `main_image_url` in each record: the `main_patched` image of
+  the wine, else its `main` image, else null.
+- New route `GET /images/<folder>/<sha256>.<extension>` of the lab server. It sends one
+  file of the image store `data/images/`, with a cache time of one year. It admits a
+  name of 64 hex characters and an extension alone; another path gives 404.
+- `pipeline/pages/dataset.html` loads `main_image_url` for the card image, the large
+  view, and the filter `without a catalogue image`. A record of
+  `scripts/review_server.py` still loads `/img/catalog`.
+- `pipeline/labdb.py` holds `IMAGE_FOLDERS` and `image_store`. `seed_images.py` uses
+  them.
+- On `data/lab.sqlite3`: 2,046 cards show an image, 57 cards show `no catalogue image`.
+  The owner selected option C; decision 9 of decision record 01 holds the options.
+- The caption below the card image names the image type and the match, for example
+  `main · name-unique`, instead of `catalog.jsonl`. `/api/dataset` sends
+  `main_image_type` and `main_image_match_method` for it. A record of the review tool
+  keeps `catalog.jsonl`.
+- `.gitignore` holds `/data/` instead of `data/`. The first rule also ignored
+  `tests/data/`.
+- Tests: `tests/test_lab_server.py` 19 cases. New smoke cases S23 to S27.
 
 ### The Dataset page: no colour line, and the slug above the name
 

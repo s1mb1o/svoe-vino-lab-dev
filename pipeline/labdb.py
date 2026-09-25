@@ -20,6 +20,8 @@ SCHEMA_RE = re.compile(r"^(\d{3})_[a-z0-9_]+\.sql$")
 IMAGE_FOLDERS = {"main": "main", "main_patched": "patched", "front": "additional",
                  "back": "additional", "label_front": "additional",
                  "label_back": "additional"}
+# The folder of the processed files. Read `pipeline/schema/007_image_table.sql`.
+DERIVED_FOLDER = "cropped"
 
 
 class SchemaError(Exception):

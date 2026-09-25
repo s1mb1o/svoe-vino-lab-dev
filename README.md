@@ -48,7 +48,11 @@ read-only. Only the Dataset page works. Clusters, Embeddings, Testset, and Runs 
 disabled for now: each one answers a notice page. Each card of the Dataset page holds
 the buttons `Disable` / `Enable`, `Remove`, and `Restore` below the catalogue image. The
 filter `State` shows `All (except Removed)` or `Removed`. The lab server writes the
-state of a wine; it writes no other column. The lab server uses port 8168.
+state of a wine; it writes no other column. The card image comes from the table
+`wine_image`: the server sends the files of `data/images/` at
+`/images/<folder>/<sha256>.<extension>`. `Sort` can order the cards by the pixel count
+of the image. The slug of a card links to the page of the wine on vino-svoe.ru. The lab
+server uses port 8168.
 The review tool of `svoe-vino-testset` keeps port 8154, so both can run.
 
 ```bash
@@ -63,8 +67,17 @@ image replaces the `main` image of the same wine. The files are in `data/images/
 `main/`, `patched/`, and `additional/`, each file as `<sha256>.<extension>`. The folder
 `testset/` is for the photos of the test sets; they get their own table later.
 `seed_images.py` fills `main`. It matches `csv_photo_name` with the upload file names
-by the rule of `build_catalog.py`, and it reads no network resource. A wine with no
+by the rule of `build_catalog.py`, and it reads no internet resource. A wine with no
 match gets a console message. Read [plan 08](docs/plans/08_seed-images.md).
+
+The table `image` holds one row for each stored file. Each import also processes each
+image it stores, with `pipeline/derive.py`: an image with a transparent background loses
+its border (`crop`), and SAM3 on gx10 segments the bottle of an image with no
+transparent background (`seg`). The processed file is a PNG in `data/images/cropped/`.
+The table `image_derivative` links it to its original by the sha256. The Dataset page
+shows the processed image with the badge `crop` or `seg`. When SAM3 does not answer,
+the image stays unprocessed, and the next import asks again. The option `--sam3 <URL>`
+names another SAM3 service. Read [plan 09](docs/plans/09_image-processing.md).
 
 ```bash
 # step 5: store the patched main images; the file name is the wine slug
@@ -74,8 +87,53 @@ python3 pipeline/seed_patched.py --db data/lab.sqlite3 \
 
 `seed_patched.py` fills `main_patched` from the patch folder. The folder is the truth
 for the patches: a new file replaces the row of its wine, and a missing file deletes
-the row. Read step 5 of [plan 07](docs/plans/07_sqlite-lab-database.md).
+the row. It processes each patch as `seed_images.py` does. Read step 5 of
+[plan 07](docs/plans/07_sqlite-lab-database.md).
 Git ignores the whole `data/` directory.
+
+## The embeddings of the lab
+
+The key `embeddings` of `config.yaml` holds one entry for each embedding: a name, an
+endpoint, options, and the steps of each view. The entries are the image embedding
+models of gx10 and one local model. Read [plan 10](docs/plans/10_embeddings-page.md).
+
+```bash
+# create the venv of the build once; the local backend needs torch
+python3 -m venv ~/.venvs/svoe-vino-lab
+~/.venvs/svoe-vino-lab/bin/pip install -r requirements-local.txt
+
+# build one entry; a second run continues a stopped build
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name gx10-siglip2-so400m-patch16-naflex-p256
+```
+
+- A build writes `data/embeddings/<name>/`: `index.json` with the settings and the
+  items, `vectors-<8 hex>.npy` with one float32 row for each item, and
+  `images/<source_sha256>_<view>.png`. The PNG is the exact model input. The database
+  does not change.
+- The inputs are the images of the Active wines. `main_patched` replaces `main`. A file
+  that several wines share is one item.
+- The view `full` is variant C: the package cut of plan 09 (`segment`,
+  `remove_background`), on white (`white_background`), and `resize`. The view `label`
+  is variant F: the same with the label cut. The label cut at import does not exist
+  yet, so each label item of a full image fails with `no label cut yet`. A label
+  close-up (`label_front`, `label_back`) goes to the view `label` as it is.
+- The gateway drops the alpha channel. So the configuration check rejects
+  `remove_background` with no `white_background` after it, and a build fails each item
+  whose model input has a transparent pixel. The page shows the error.
+- The `embedding_hash` of an item covers the source file, the view, the model, the
+  options, the steps, and the processed file. A build does nothing for an item whose
+  hash did not change and whose prepared image exists. A change of the model or of the
+  steps makes each item stale.
+- The build writes one JSON line for each event to stdout. SIGTERM or Ctrl+C stops it
+  after the present batch, and the finished items stay. A checkpoint writes the files
+  every 30 s.
+- The Embeddings page of the lab server (`/embedding`) shows the prepared images of one
+  entry, with a combobox, the buttons `Build` and `Stop`, and the progress of each
+  running build. The lab server starts a build with `embedding_python` of
+  `config.yaml`. The routes are in `pipeline/embedding_routes.py`. On 2026-09-25 the
+  route waits for a small change of `lab_server.py`; until then `/embedding` answers
+  the notice page.
 
 The sections below describe the tools of `scripts/`. They read JSON files through
 `scripts/common.py`, and they do not start with the present `config.yaml`.

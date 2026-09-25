@@ -7,9 +7,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from PIL import Image, ImageDraw
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
+import derive  # noqa: E402
 import labdb  # noqa: E402
 import seed_patched as SP  # noqa: E402
 
@@ -20,6 +23,31 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def picture(size=(40, 80), transparent=True):
+    """The PNG bytes of a bottle box on a transparent or a white canvas."""
+    image = Image.new("RGBA" if transparent else "RGB", size,
+                      (255, 255, 255, 0) if transparent else (255, 255, 255))
+    ImageDraw.Draw(image).rectangle((10, 10, 29, 69), fill=(90, 30, 20))
+    out = io.BytesIO()
+    image.save(out, "PNG")
+    return out.getvalue()
+
+
+class FakeSam3:
+    """A SAM3 client with no network. It answers the mask of the bottle box."""
+
+    calls = 0
+
+    def __init__(self, endpoint=None):
+        pass
+
+    def segment(self, image):
+        FakeSam3.calls += 1
+        mask = Image.new("L", image.size, 0)
+        ImageDraw.Draw(mask).rectangle((10, 10, 29, 69), fill=255)
+        return mask
+
+
 class SeedPatchedTest(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
@@ -28,6 +56,8 @@ class SeedPatchedTest(unittest.TestCase):
         os.makedirs(os.path.dirname(self.db))
         self.folder = self.root / "patched"
         self.folder.mkdir()
+        self.real_client, derive.Sam3Client = derive.Sam3Client, FakeSam3
+        FakeSam3.calls = 0
         conn = labdb.connect(self.db, create=True)
         with conn:
             conn.executemany(
@@ -36,13 +66,16 @@ class SeedPatchedTest(unittest.TestCase):
                 "(?, 'n', 'p', 'c', 'co', 'r', 'd', 'x.webp', ?, ?)",
                 [("wine-a", "Active", None), ("wine-b", "Disabled", None),
                  ("wine-c", "Removed", "import")])
-            conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, extension, "
-                         "source_name, match_method) VALUES ('wine-a', 'main', ?, 'webp', "
+            conn.execute("INSERT INTO image (sha256, folder, extension) "
+                         "VALUES (?, 'main', 'webp')", (sha(b"main a"),))
+            conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
+                         "source_name, match_method) VALUES ('wine-a', 'main', ?, "
                          "'a_0123456789.webp', 'name-unique')", (sha(b"main a"),))
         conn.close()
         self.messages = []
 
     def tearDown(self):
+        derive.Sam3Client = self.real_client
         self.directory.cleanup()
 
     def patch(self, name, data):
@@ -50,14 +83,15 @@ class SeedPatchedTest(unittest.TestCase):
 
     def run_seed(self):
         self.messages = []
-        return SP.seed_patched(self.db, str(self.folder), self.messages.append)
+        return SP.seed_patched(self.db, str(self.folder), self.messages.append, FakeSam3())
 
     def rows(self):
         conn = sqlite3.connect(self.db)
         try:
             return conn.execute(
-                "SELECT wine_slug, image_type, sha256, extension, source_name, match_method "
-                "FROM wine_image ORDER BY wine_slug, image_type").fetchall()
+                "SELECT w.wine_slug, w.image_type, w.sha256, i.extension, w.source_name, "
+                "w.match_method FROM wine_image w JOIN image i ON i.sha256 = w.sha256 "
+                "ORDER BY w.wine_slug, w.image_type").fetchall()
         finally:
             conn.close()
 
@@ -166,6 +200,39 @@ class SeedPatchedTest(unittest.TestCase):
         self.assertIn("skipped names: 1: README.md", text)
         self.assertIn("rows added: 1", text)
         self.assertIn("result: stored", text)
+
+    def query(self, sql, *args):
+        conn = sqlite3.connect(self.db)
+        try:
+            return conn.execute(sql, args).fetchall()
+        finally:
+            conn.close()
+
+    def test_patch_gets_its_pixel_size_and_a_crop(self):
+        data = picture()
+        self.patch("wine-a.png", data)
+        report = self.run_seed()
+        self.assertEqual(self.query("SELECT folder, extension, width, height FROM image "
+                                    "WHERE sha256 = ?", sha(data)), [("patched", "png", 40, 80)])
+        [(method, box)] = [(m, (l, t, r, b)) for m, l, t, r, b in self.query(
+            "SELECT method, box_left, box_top, box_right, box_bottom FROM image_derivative "
+            "WHERE source_sha256 = ?", sha(data))]
+        self.assertEqual((method, box), ("crop", (10, 10, 30, 70)))
+        self.assertEqual((dict(report.derivatives.methods), FakeSam3.calls), ({"crop": 1}, 0))
+        self.assertEqual(self.run_seed().derivatives.present, 1)
+
+    def test_patch_with_no_transparency_goes_to_sam3(self):
+        self.patch("wine-a.png", picture(transparent=False))
+        report = self.run_seed()
+        self.assertEqual((dict(report.derivatives.methods), FakeSam3.calls), ({"seg": 1}, 1))
+
+    def test_file_that_is_no_image_gets_a_row_and_no_processing(self):
+        self.patch("wine-a.webp", b"patch a")
+        report = self.run_seed()
+        self.assertEqual((report.added, report.errors), (["wine-a"], 0))
+        self.assertEqual(report.derivatives.unreadable, 1)
+        self.assertEqual(self.query("SELECT width FROM image WHERE sha256 = ?",
+                                    sha(b"patch a")), [(None,)])
 
     def test_missing_folder_stops_the_run(self):
         with self.assertRaisesRegex(SP.SeedError, "no patch folder"):

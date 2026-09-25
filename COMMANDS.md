@@ -40,3 +40,20 @@ Options:
 The start report states the schema version and the wine count of each state.
 After a change of the code in `pipeline/`, stop the server and start it again.
 After a new file in `pipeline/schema/`, run `labdb.py` first.
+
+# Эмбеддинги
+
+Create the venv of the build once:
+```bash
+python3 -m venv ~/.venvs/svoe-vino-lab
+~/.venvs/svoe-vino-lab/bin/pip install -r requirements-local.txt
+```
+
+Build one entry of the key `embeddings` of `config.yaml`:
+```bash
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name gx10-siglip2-so400m-patch16-naflex-p256
+```
+Ctrl+C stops the build after the present batch. A second run continues it.
+The files are in `data/embeddings/<name>/`. The Embeddings page of the lab server
+starts and stops a build too.

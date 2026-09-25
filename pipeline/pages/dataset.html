@@ -60,6 +60,14 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
 }
 .pictures img { display: block; width: 100%; height: 100%; object-fit: contain; padding: 5px; }
 .pictures a:hover { border-color: var(--accent); }
+.pictures a { position: relative; }
+/* The processing of the card image: `crop` or `seg`. */
+.image-badge {
+  position: absolute; top: 5px; left: 5px; padding: 1px 6px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; line-height: 1.4;
+  color: var(--neg); background: var(--neg-bg); border: 1px solid var(--line);
+}
+.image-badge.seg { color: var(--pos); background: var(--pos-bg); }
 .noimage { color: var(--muted); font-size: 12px; text-align: center; border-style: dashed; }
 .patch-surface {
   width: 158px; height: 252px; position: relative; overflow: hidden;
@@ -361,6 +369,8 @@ details.record pre {
         <option value="name">wine name A–Z</option>
         <option value="producer">producer A–Z</option>
         <option value="slug">slug A–Z</option>
+        <option value="size-asc">image size, smallest first</option>
+        <option value="size-desc">image size, largest first</option>
       </select>
     </label>
     <label>Search <input id="q" type="search" placeholder="name, producer, slug, any field"></label>
@@ -484,10 +494,24 @@ function rawRecord(r) {
 }
 function norm(value) { return String(value || "").toLocaleLowerCase("ru-RU"); }
 function compareText(a, b) { return String(a || "").localeCompare(String(b || ""), "ru"); }
+// The lab server sends `main_image_url`: a file of its image store, named by SHA-256.
+// The review tool sends `local_path` and serves the file at `/img/catalog`.
+// The number of pixels of the card image, or 0 when the size is unknown.
+function imagePixels(r) {
+  return r.main_image_width && r.main_image_height ? r.main_image_width * r.main_image_height : 0;
+}
+// The page of the wine on the public site.
+const SITE_WINE_URL = "https://vino-svoe.ru/wines/";
+function winePageUrl(r) { return SITE_WINE_URL + encodeURIComponent(r.slug || ""); }
+function catalogImageUrl(r) {
+  if (r.main_image_url) return r.main_image_url;
+  return r.local_path ? `/img/catalog?slug=${encodeURIComponent(r.slug || "")}` : "";
+}
 function imagePreviewRecords(kind) {
-  return ROWS.filter(r => kind === "patch" ? r._patched : !!r.local_path);
+  return ROWS.filter(r => kind === "patch" ? r._patched : !!catalogImageUrl(r));
 }
 function imagePreviewUrl(record, kind) {
+  if (kind === "catalog" && record.main_image_url) return record.main_image_url;
   const slug = encodeURIComponent(record.slug || "");
   const version = kind === "patch" && record._patchVersion ? `&v=${record._patchVersion}` : "";
   return `/img/${kind}?slug=${slug}&raw=1${version}`;
@@ -504,7 +528,9 @@ function showImagePreview(slug, kind) {
   $("#image-preview-file").textContent = slug;
   $("#image-preview-position").textContent = `${index + 1} / ${records.length}`;
   $("#image-preview-size").textContent = "reading size…";
-  $("#image-preview-raw").href = src;
+  // The raw image of a processed card image is the original.
+  $("#image-preview-raw").href = kind === "catalog" && record.main_image_original_url
+    ? record.main_image_original_url : src;
   $("#image-preview-previous").disabled = index === 0;
   $("#image-preview-next").disabled = index === records.length - 1;
   const image = $("#image-preview-image");
@@ -533,15 +559,20 @@ function stepImagePreview(step) {
 }
 function imageFigure(r, patch) {
   if (patch) return patchEditor(r);
-  const slug = encodeURIComponent(r.slug || "");
-  const present = !!r.local_path;
-  const src = `/img/catalog?slug=${slug}`;
-  const preview = `${src}&view=1`;
-  const label = "catalog.jsonl";
+  const src = catalogImageUrl(r);
+  const present = !!src;
+  const preview = r.main_image_url ? src : `${src}&view=1`;
+  const derivation = r.main_image_derivation;
+  const badge = derivation ? `<span class="image-badge ${esc(derivation)}"
+    title="processed image: ${esc(derivation)}">${esc(derivation)}</span>` : "";
+  // A record of the lab server holds `main_image_type`: the caption names the type and
+  // the match. A record of the review tool comes from catalog.jsonl.
+  const label = !("main_image_type" in r) ? "catalog.jsonl"
+    : r.main_image_type ? `${r.main_image_type} · ${r.main_image_match_method}` : "main";
   const content = present
     ? `<a href="${preview}" data-image-preview="catalog" data-slug="${esc(r.slug)}"
          title="Open ${label} image"><img
-         src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — ${label}"></a>`
+         src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — ${label}">${badge}</a>`
     : '<div class="noimage">no catalogue image</div>';
   return `<figure>${content}<figcaption><span>${label}</span></figcaption>${stateActions(r)}</figure>`;
 }
@@ -747,7 +778,8 @@ function recordHtml(r) {
   return `<article class="wine" id="${esc(r.slug)}">
     <div class="pictures">${imageFigure(r, false)}${imageFigure(r, true)}</div>
     <div class="info">
-      <div class="slug">${esc(r.slug)}
+      <div class="slug"><a href="${esc(winePageUrl(r))}" target="_blank" rel="noopener"
+        title="Open the page of the wine on vino-svoe.ru">${esc(r.slug)}</a>
         <button class="copy" type="button" data-copy="${esc(r.slug)}">copy</button></div>
       <div class="name"><h2>${esc(r.name || "Unnamed wine")}</h2>
         <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>
@@ -775,7 +807,7 @@ function applyView() {
   ROWS = DATA.records.filter(r => {
     if (filter === "patched" && !r._patched) return false;
     if (filter === "unpatched" && r._patched) return false;
-    if (filter === "missing" && r.local_path) return false;
+    if (filter === "missing" && catalogImageUrl(r)) return false;
     if ((state === "removed") !== (r.state === "Removed")) return false;
     const hay = norm(JSON.stringify({record: rawRecord(r), barcodes: r._barcodes || [],
       qr_urls: r._qr_urls || [],
@@ -783,8 +815,16 @@ function applyView() {
     return words.every(word => hay.includes(word));
   });
   const sort = $("#sort").value;
-  ROWS.sort((a, b) => sort === "catalog" ? a._index - b._index
-    : compareText(a[sort], b[sort]) || compareText(a.slug, b.slug));
+  ROWS.sort((a, b) => {
+    if (sort === "catalog") return a._index - b._index;
+    if (sort === "size-asc" || sort === "size-desc") {
+      // A card with no known size goes last. Equal sizes keep the catalogue order.
+      const pa = imagePixels(a), pb = imagePixels(b);
+      if (!pa || !pb) return (!pa) - (!pb) || a._index - b._index;
+      return (sort === "size-asc" ? pa - pb : pb - pa) || a._index - b._index;
+    }
+    return compareText(a[sort], b[sort]) || compareText(a.slug, b.slug);
+  });
 }
 const EMPTY_VIEW = '<div class="empty">No catalogue record matches this view.</div>';
 function render() {

@@ -2,9 +2,10 @@
 
 The server reads two keys of `config.yaml`: `rootdir` and `database_file`. It opens
 the database for each request and checks the schema version. It serves the Dataset
-page and `GET /api/dataset` from the table `wine_catalog`. A GET opens the database
-read-only. `POST /api/wine-state` changes the state of one wine; it writes the
-columns `state` and `removed_by` alone.
+page and `GET /api/dataset` from the tables `wine_catalog` and `wine_image`. A GET
+opens the database read-only. `POST /api/wine-state` changes the state of one wine; it
+writes the columns `state` and `removed_by` alone. `GET /images/<folder>/<sha256>.<ext>`
+sends one file of the image store `images/` next to the database file.
 
 The pages Clusters, Embeddings, Testset, and Runs are disabled for now. Each one
 answers a notice page with HTTP 503, and each other API route answers HTTP 503 with
@@ -18,6 +19,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 import sqlite3
 import sys
 import threading
@@ -65,6 +67,18 @@ ACTIONS = {
 }
 # The largest body of `POST /api/wine-state`, in bytes.
 MAX_BODY = 4096
+# The image types of the card image, first the type that wins. `main_patched` replaces
+# `main`.
+CARD_IMAGE_TYPES = ("main_patched", "main")
+# A file of the image store: `/images/<folder>/<sha256>.<extension>`. The name admits no
+# other path, so a request cannot read a file outside the store.
+IMAGE_ROUTE = re.compile(r"^/images/(%s)/([0-9a-f]{64}\.([0-9a-z]+))$" % "|".join(
+    sorted(set(labdb.IMAGE_FOLDERS.values()) | {labdb.DERIVED_FOLDER})))
+IMAGE_CONTENT_TYPES = {"webp": "image/webp", "jpg": "image/jpeg", "jpeg": "image/jpeg",
+                       "png": "image/png", "gif": "image/gif", "avif": "image/avif",
+                       "heic": "image/heic", "tif": "image/tiff", "tiff": "image/tiff"}
+# The name of a stored file is the SHA-256 of its bytes, so the file never changes.
+IMAGE_CACHE = "public, max-age=31536000, immutable"
 
 
 class ConfigError(Exception):
@@ -118,16 +132,62 @@ def state_counts(conn):
     return {state: counts.get(state, 0) for state in STATES}
 
 
+def card_images(conn):
+    """Return wine slug -> the card image, as a dict of the keys `main_image_*` of
+    `/api/dataset`.
+
+    A wine with a `main_patched` image gets that image. Another wine gets its `main`
+    image. A wine with neither has no key. The card shows the processed file of the
+    image when `image_derivative` holds one, else the original. The size is the size of
+    the file that the card shows.
+    """
+    images = {}
+    for (slug, image_type, method, digest, folder, extension, width, height, derivation,
+         p_digest, p_folder, p_extension, p_width, p_height) in conn.execute(
+            "SELECT w.wine_slug, w.image_type, w.match_method, o.sha256, o.folder, "
+            "o.extension, o.width, o.height, d.method, p.sha256, p.folder, p.extension, "
+            "p.width, p.height FROM wine_image w "
+            "JOIN image o ON o.sha256 = w.sha256 "
+            "LEFT JOIN image_derivative d ON d.source_sha256 = w.sha256 "
+            "LEFT JOIN image p ON p.sha256 = d.sha256 "
+            "WHERE w.image_type IN (%s)" % ", ".join("?" for _ in CARD_IMAGE_TYPES),
+            CARD_IMAGE_TYPES):
+        rank = CARD_IMAGE_TYPES.index(image_type)
+        if slug in images and rank >= images[slug][0]:
+            continue
+        original = "/images/%s/%s.%s" % (folder, digest, extension)
+        shown = original
+        if p_digest is not None:
+            shown = "/images/%s/%s.%s" % (p_folder, p_digest, p_extension)
+            width, height = p_width, p_height
+        images[slug] = (rank, {
+            "main_image_url": shown, "main_image_original_url": original,
+            "main_image_derivation": derivation if p_digest is not None else None,
+            "main_image_type": image_type, "main_image_match_method": method,
+            "main_image_width": width, "main_image_height": height})
+    return {slug: image for slug, (_, image) in images.items()}
+
+
+# The keys of the card image in each record of `/api/dataset`.
+CARD_IMAGE_KEYS = ("main_image_url", "main_image_original_url", "main_image_derivation",
+                   "main_image_type", "main_image_match_method", "main_image_width",
+                   "main_image_height")
+
+
 def dataset_records(conn):
     """Return every wine in import order, in the record shape of the Dataset page.
 
-    The records hold each state. The key `state` tells a removed wine apart.
+    The records hold each state. The key `state` tells a removed wine apart. The keys
+    of `CARD_IMAGE_KEYS` describe the card image. Each is None for a wine with no card
+    image. The size is None for an image that no tool measured.
     """
+    images = card_images(conn)
     records = []
     for row in conn.execute("SELECT %s FROM wine_catalog ORDER BY rowid"
                             % ", ".join(CATALOG_COLUMNS)):
         record = {PAGE_KEYS.get(column, column): value
                   for column, value in zip(CATALOG_COLUMNS, row)}
+        record.update(images.get(record["slug"]) or dict.fromkeys(CARD_IMAGE_KEYS))
         # The page shows these editors. Their data is not in the database yet.
         record.update({"_patched": False, "_alternatives": [], "_barcodes": [],
                        "_qr_urls": [], "_atlas_product_uuid": None,
@@ -204,12 +264,12 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.startswith("/api/"):
             sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
 
-    def _send(self, code, body, ctype):
-        data = body.encode("utf-8")
+    def _send(self, code, body, ctype, cache="no-store"):
+        data = body if isinstance(body, bytes) else body.encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store")
+        self.send_header("Cache-Control", cache)
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(data)
@@ -233,10 +293,29 @@ class Handler(BaseHTTPRequestHandler):
             self._json(503, {"error": DISABLED_ERROR})
         elif route.startswith("/img/"):
             self._send(503, DISABLED_ERROR, "text/plain; charset=utf-8")
+        elif route.startswith("/images/"):
+            self._image(route)
         else:
             self._send(404, "not found", "text/plain; charset=utf-8")
 
     do_HEAD = do_GET
+
+    def _image(self, route):
+        """Send one file of the image store, or 404."""
+        match = IMAGE_ROUTE.match(route)
+        if not match:
+            self._send(404, "not found", "text/plain; charset=utf-8")
+            return
+        folder, name, extension = match.groups()
+        path = os.path.join(labdb.image_store(self.server.db_path), folder, name)
+        try:
+            with open(path, "rb") as fh:
+                data = fh.read()
+        except OSError:
+            self._send(404, "not found", "text/plain; charset=utf-8")
+            return
+        self._send(200, data, IMAGE_CONTENT_TYPES.get(extension, "application/octet-stream"),
+                   IMAGE_CACHE)
 
     def _wine_state(self):
         try:

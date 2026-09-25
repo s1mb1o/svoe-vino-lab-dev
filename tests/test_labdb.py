@@ -40,10 +40,11 @@ class LabDbTest(unittest.TestCase):
 
     def test_create_applies_the_schema(self):
         labdb.connect(self.db, create=True).close()
-        self.assertEqual(VERSION, 5)
+        self.assertEqual(VERSION, 7)
         self.assertEqual(self.query("PRAGMA user_version"), [(VERSION,)])
         conn = sqlite3.connect(self.db)
-        self.assertEqual(labdb.tables(conn), ["wine_catalog", "wine_image"])
+        self.assertEqual(labdb.tables(conn),
+                         ["image", "image_derivative", "wine_catalog", "wine_image"])
         conn.close()
 
     def test_connect_twice_keeps_the_version(self):
@@ -115,6 +116,31 @@ class LabDbTest(unittest.TestCase):
                                     "ORDER BY rowid"),
                          [("b", "Removed", "import"), ("c", "Disabled", None),
                           ("a", "Active", None)])
+
+    def test_version_6_images_move_to_the_image_table(self):
+        labdb.connect(self.db, create=True, directory=self.schema_up_to(6)).close()
+        conn = sqlite3.connect(self.db)
+        conn.execute("INSERT INTO wine_catalog (wine_slug, name, producer, category, color, "
+                     "region, description, csv_photo_name) VALUES ('a', 'n', 'p', 'c', "
+                     "'co', 'r', 'd', 'x.webp'), ('b', 'n', 'p', 'c', 'co', 'r', 'd', 'x.webp')")
+        conn.executemany("INSERT INTO wine_image VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+            ("a", "main", "1" * 64, "webp", "a.webp", "name-unique", 10, 20),
+            ("b", "main", "1" * 64, "webp", "a.webp", "name-identical", 10, 20),
+            ("a", "main_patched", "2" * 64, "png", "a.png", "slug-name", None, None)])
+        conn.commit()
+        conn.close()
+
+        labdb.connect(self.db).close()
+        self.assertEqual(self.query("SELECT * FROM image ORDER BY sha256"),
+                         [("1" * 64, "main", "webp", 10, 20),
+                          ("2" * 64, "patched", "png", None, None)])
+        self.assertEqual(self.query("SELECT * FROM wine_image ORDER BY wine_slug, image_type"),
+                         [("a", "main", "1" * 64, "a.webp", "name-unique"),
+                          ("a", "main_patched", "2" * 64, "a.png", "slug-name"),
+                          ("b", "main", "1" * 64, "a.webp", "name-identical")])
+        self.assertEqual(self.query("PRAGMA foreign_key_check"), [])
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.query("INSERT INTO wine_image VALUES ('b', 'main', ?, 'x', 'y')", "3" * 64)
 
     def test_removed_by_is_set_exactly_for_a_removed_wine(self):
         labdb.connect(self.db, create=True).close()

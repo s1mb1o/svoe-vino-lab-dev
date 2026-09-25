@@ -140,3 +140,77 @@ Consequences:
   `wine_image` holds rows. A schema file that builds `wine_catalog` again MUST handle it.
 - Git keeps no copy of the database and of the image store. Open question 3 of plan 07
   stays open.
+
+## Decision 9 — the card image of the Dataset page
+
+Date: 2026-09-24. Plan: section "The card image on the Dataset page" of
+`docs/plans/08_seed-images.md`.
+
+Context: the Dataset page showed no catalogue image. The lab server sent no image in
+`/api/dataset`, and it answered `/img/catalog` with HTTP 503. `pipeline/pages/dataset.html`
+is shared with `scripts/review_server.py`, which has its own `/img/catalog` route.
+
+| Option | For | Against |
+|---|---|---|
+| A: the server alone. `/api/dataset` sends `local_path`; `/img/catalog?slug=` sends the file. | The smallest change. The page does not change, so the review tool and the open work of a parallel session on the page stay safe. | The caption stays `catalog.jsonl`. The URL holds the slug alone, so the browser must check each image again. |
+| B: A, and the caption shows the image type and `match_method`. | A correct caption. | A change of the shared page while a parallel session changes it. A fallback for the review tool. |
+| C: static URLs `/images/<folder>/<sha256>.<ext>` in each record. | The URL changes when the image changes, so the browser keeps each file for good. No database read for an image. | Changes of the server and of the page. Two ways to load a card image in the page. A file route that MUST refuse each other path. |
+
+Decision of the owner: C.
+
+Consequences:
+
+- The page loads `main_image_url` when a record holds it, else `/img/catalog`.
+- The route `/images/` admits a name of 64 hex characters and an extension alone.
+- The owner asked for the caption part of option B later on 2026-09-24. The caption
+  names the image type and `match_method`. The server sends both in each record.
+
+## Decision 10 — the pixel size of an image
+
+Date: 2026-09-24. Plan: section "The sort by image size" of
+`docs/plans/08_seed-images.md`.
+
+Context: the owner wants a sort of the Dataset page by the image size in pixels.
+
+| Option | For | Against |
+|---|---|---|
+| A: `width` and `height` in `wine_image` | One read of each file. Other tools can use the size. `/api/dataset` stays fast. | A schema file and a fill of the old rows. Each tool that adds a row must write the size. |
+| B: the server reads the size and keeps it in memory by SHA-256 | No schema change. | About 2 s more for the first page after a start. The database does not hold the size. |
+| C: the browser measures the loaded images | The page alone changes. | The browser must load all 2,046 images, 135 MB. |
+
+Decision of the owner: A. The owner also set the rules 9 to 12 of `AGENTS.md`: a schema
+change is allowed at any time during development, and a flatten comes later.
+
+Consequences:
+
+- `width` and `height` MAY be NULL. A flatten MAY make them NOT NULL.
+- `pipeline/seed_patched.py` does not write the size yet. A card with a patch then
+  stands at the end of a size sort.
+
+## Decision 11 — the processing of the images and the table `image`
+
+Date: 2026-09-25. Plan: `docs/plans/09_image-processing.md`.
+
+Context: the owner wants each import to process its images, and to keep the sha256 of
+each original, so that no image is loaded two times.
+
+| Question | Options | Decision of the owner |
+|---|---|---|
+| Keep the originals | A: keep them, and add the processed files; B: keep the processed files alone; C: process later, in a separate command | A |
+| The processing | the crop alone; the crop and SAM3 label boxes; other steps | Cut white and transparent borders. SAM3 segments an image with no transparent background. |
+| The storage of the link | A: a table of processed files keyed by the sha256 of the original; B: columns in `wine_image`; C: a table `image` for each file, and `wine_image` and `image_derivative` refer to it | C |
+| The result of `seg` | the mask as the alpha channel; the box alone | The segmentation of the bottle, the can, or the packet, smoothed and grown a little |
+| Several instances | the union; the largest | One package: the largest instance |
+| The size of the size sort | the processed file; the original | The processed file |
+
+Consequences:
+
+- The link from a wine to its processed file is a chain of foreign keys:
+  `wine_image.sha256` -> `image` <- `image_derivative.source_sha256`, and
+  `image_derivative.sha256` -> `image`.
+- `wine_image` is in BCNF: `extension`, `width`, and `height` are in `image` now.
+- A file that several wines share is processed one time, and SAM3 gets one request for it.
+- An import needs the SAM3 service of gx10 for an image with no transparent background.
+  When the service does not answer, the image gets no processed file, and the next
+  import asks again.
+

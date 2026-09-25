@@ -2,6 +2,101 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-25 — the SigLIP 2 models of the gx10 gateway
+
+Status: read from `GET http://192.168.86.14:18081/v1/models` on 2026-09-25. The result
+shapes the embedding configuration of the Embeddings page.
+
+- The API route is `POST http://192.168.86.14:18081/v1/embeddings`. The address
+  `http://192.168.86.14:18081/ui/#/models/<id>` is the llama-swap UI page of a model. It
+  is not an API route.
+- `siglip2-so400m-patch16-naflex`: image and text, 1152-d, L2-normalized, native aspect
+  ratio. The default patch budget is 256 patches of 16 px. The request field
+  `max_num_patches` changes the budget, from 1 to 4096. Cold start about 48 s. Warm about
+  30 ms for 2 images. Reserve about 7 GB.
+- `siglip2-so400m-patch14-384`: fixed 384 x 384 input, squash with no crop. It is not
+  NaFlex. The field `max_num_patches` gives HTTP 400. Its vectors are identical to the
+  removed model ID `siglip2`, so the old `siglip2` indexes stay valid.
+- The gateway also serves `siglip2-so400m-patch16-256`, `-384`, and `-512` (fixed size),
+  and the image-only `naflexvit_so400m_patch16_siglip.v2_webli` (timm).
+- The Hugging Face repository of the NaFlex model is `google/siglip2-so400m-patch16-naflex`.
+  The repository `google/siglip2-so400m-patch14-384` is a different model.
+- The input images of the gateway MUST be JPEG, PNG, or WebP data URIs.
+  `scripts/common.py` `data_url` sends a JPEG of quality 88 when it resizes. A JPEG
+  changes the pixels that the model sees.
+- The gateway drops the alpha channel of an RGBA PNG. Measured on 2026-09-25 with
+  `dinov3-vitb16-pretrain-lvd1689m` and a 256 x 512 test image: an RGBA image and the
+  same image with the alpha removed by Pillow `convert("RGB")` give cos 1.0000. The same
+  RGBA image with a red and with a blue colour under the transparent pixels gives cos
+  0.9750. So the model sees the colour under a transparent pixel. The SigLIP 2 models
+  were not measured. The probe script is not kept.
+- The llama-swap folder "Image embeddings" holds 12 models: the 9 models of the list
+  above and `wemm-embed-2b`, `wemm-embed-4b`, `wemm-embed-9b`.
+  `naflexvit_so400m_patch16_siglip.v2_webli` accepts `max_num_patches` (1 to 4096,
+  default 256). `PE-Core-L14-336` squashes to 336 x 336, 1024-d. `dinov3-vitb16` is
+  768-d, `dinov3-vitl16` is 1024-d, both image-only.
+- NaFlex works on this Mac. Measured on 2026-09-25 in `~/.venvs/svoe-vino-lab` (torch
+  2.14.0, transformers 5.17.0, torchvision 0.29.0, `mps`): 4 card images of 4 wines,
+  variant C, long side 1024 px, `max_num_patches` 256. The cos of the local vector and
+  the gateway vector of the same PNG: 0.9946, 0.9986, 0.9985, 0.9903. The cos between
+  two different wines: 0.65 to 0.69. The model load took 18.4 s. The first batch of 4
+  images took 3.4 s. The model files are 4.54 GB (`model.safetensors`).
+- The first build of `gx10-siglip2-so400m-patch16-naflex-p256` on 2026-09-25: 2,018 full
+  items (variant C, long side 1024 px) in 216 s over two runs (a stop with SIGTERM
+  after 416 items, then 1,602 items), so about 9 items per second from this Mac over the
+  T7 disk. The directory holds 397 MB: about 200 KB for each PNG. A third run found
+  2,018 current items and ended in 0.3 s.
+- The image processors of `transformers` 5 need `torchvision`. Without it,
+  `AutoImageProcessor` raises `ImportError`.
+- The system `python3` of this Mac (Homebrew 3.14) has `torch` 2.11.0, and `mps` is
+  available. `import transformers` fails with `Unable to compare versions for
+  numpy>=1.17: need=1.17 found=None`. The cause: site-packages holds two numpy
+  `dist-info` directories, `numpy-2.4.4.dist-info` and `numpy-2.5.3.dist-info`.
+  `svoe-vino-matcher/.venv` has no `torch`.
+- The Hugging Face cache holds `google/siglip2-so400m-patch14-384` alone. It does not
+  hold `google/siglip2-so400m-patch16-naflex`.
+- `svoe-vino-matcher/index/` stores one index as `<path>-<hash10>.npz` with the arrays
+  `item_ids`, `slugs`, and `vectors` (float32, N x 1152), and a `.meta.json` with the
+  settings and the build facts.
+
+## 2026-09-25 — the SAM3 noun `box`
+
+Status: measured on the 143 files of `data/images/main/` with no transparent pixels.
+The texts were `wine bottle, can, packet` first, then `wine bottle, can, packet, box`.
+
+- With `box`, 137 of 143 processed files stay byte-identical. 6 change.
+- 4 bag-in-box images of Союз-Вино (6 wines) are correct now: the mask is the whole box.
+  Before, SAM3 took the bottle that is printed on the box, or it found nothing.
+- 2 images are worse now. On `ona-skazala-da` (a photo of a table) the largest instance
+  is a wooden crate. On `fanagoriya-tochka-saperavi-krasnoe-suhoe-14` (a bottle and its
+  tube) the largest instance is the tube.
+- A rule can separate the cases: a box wins when it holds the bottle instance. The
+  bottle of a bag-in-box is printed inside the box. The crate and the tube stand next to
+  the bottle.
+- The run took 1 min 31 s for 143 requests.
+
+## 2026-09-25 — the processing of the main images with SAM3
+
+Status: measured on the 2,018 files of `data/images/main/` with `pipeline/derive.py`.
+
+- 1,875 files hold transparent pixels. 143 files are RGB with no alpha channel.
+- A crop by the alpha rule takes about 0.11 s for each file and gives a PNG of about
+  0.5 MB. The full run took 4 min 25 s. The processed files take 1.2 GB.
+- SAM3 answered each of the 143 requests. It found a package on 142 files. On one
+  bag-in-box image it found nothing for `wine bottle, can, packet`.
+- On 3 other bag-in-box images, the largest instance is the bottle that is printed on the
+  box. A noun for the box, for example `box`, is not tested yet.
+- On a photo of a scene, SAM3 finds the bottle. The mask edge of such a photo can be rough.
+
+## 2026-09-24 — the pixel sizes of the main images
+
+Status: measured with Pillow on the 2,018 files of `data/images/main/`.
+
+- A read of the size from the file header takes about 2 s for all 2,018 files.
+- The smallest image is 120 x 460 pixels. The next are 140 x 532 and 116 x 700.
+- The largest images are 3977 x 8347 and 6337 x 9506 pixels.
+- The median is 385,200 pixels.
+
 ## 2026-09-24 — the offline match of the main images
 
 Status: measured on `official-2026-09-17` and on the 2,103 wines of `data/lab.sqlite3`.

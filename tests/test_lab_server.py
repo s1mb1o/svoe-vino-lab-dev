@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sqlite3
 import sys
@@ -74,6 +75,96 @@ class LabServerTest(unittest.TestCase):
         self.assertEqual((first["_barcodes"], first["_patched"]), ([], False))
         self.assertEqual(data["database_file"], self.db)
         self.assertEqual((data["patches"], data["barcodes"]), (0, 0))
+
+    def add_image(self, slug, image_type, data, extension="webp", size=(None, None)):
+        """Store `data` as an image of `slug`. Return its URL on the lab server."""
+        digest = hashlib.sha256(data).hexdigest()
+        folder = self.root / "images" / labdb.IMAGE_FOLDERS[image_type]
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / ("%s.%s" % (digest, extension))).write_bytes(data)
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("INSERT INTO image (sha256, folder, extension, width, height) "
+                         "VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
+                         (digest, labdb.IMAGE_FOLDERS[image_type], extension) + size)
+            conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
+                         "source_name, match_method) VALUES (?, ?, ?, 'x', 'manual')",
+                         (slug, image_type, digest))
+        conn.close()
+        return "/images/%s/%s.%s" % (labdb.IMAGE_FOLDERS[image_type], digest, extension)
+
+    def add_derivative(self, original_url, method, data, size):
+        """Store `data` as the processed file of an original. Return its URL."""
+        source = original_url.rsplit("/", 1)[1].split(".")[0]
+        digest = hashlib.sha256(data).hexdigest()
+        folder = self.root / "images" / labdb.DERIVED_FOLDER
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / (digest + ".png")).write_bytes(data)
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("INSERT INTO image VALUES (?, 'cropped', 'png', ?, ?)",
+                         (digest,) + size)
+            conn.execute("INSERT INTO image_derivative VALUES (?, ?, 'test', ?, 0, 0, ?, ?)",
+                         (source, method, digest) + size)
+        conn.close()
+        return "/images/cropped/%s.png" % digest
+
+    def test_api_dataset_sends_the_card_image(self):
+        main_b = self.add_image("wine-b", "main", b"b main")
+        self.add_image("wine-a", "main", b"a main")
+        patched_a = self.add_image("wine-a", "main_patched", b"a patched", "png")
+        self.add_image("wine-a", "front", b"a front")
+        records = json.loads(self.request("/api/dataset")[2])["records"]
+        self.assertEqual([(r["main_image_url"], r["main_image_type"],
+                           r["main_image_match_method"]) for r in records],
+                         [(main_b, "main", "manual"), (patched_a, "main_patched", "manual")])
+
+    def test_api_dataset_sends_the_size_of_the_card_image(self):
+        self.add_image("wine-b", "main", b"b main", size=(300, 900))
+        self.add_image("wine-a", "main", b"a main", size=(100, 200))
+        self.add_image("wine-a", "main_patched", b"a patched")
+        records = json.loads(self.request("/api/dataset")[2])["records"]
+        self.assertEqual([(r["main_image_width"], r["main_image_height"]) for r in records],
+                         [(300, 900), (None, None)])
+
+    def test_api_dataset_sends_the_processed_file_and_its_badge(self):
+        original = self.add_image("wine-b", "main", b"b main", size=(300, 900))
+        processed = self.add_derivative(original, "seg", b"b processed", (120, 700))
+        records = json.loads(self.request("/api/dataset")[2])["records"]
+        first = records[0]
+        self.assertEqual((first["main_image_url"], first["main_image_original_url"],
+                          first["main_image_derivation"]), (processed, original, "seg"))
+        self.assertEqual((first["main_image_width"], first["main_image_height"]), (120, 700))
+        self.assertEqual(records[1]["main_image_derivation"], None)
+        status, headers, _ = self.request(processed, "HEAD")
+        self.assertEqual((status, headers["Content-Type"]), (200, "image/png"))
+
+    def test_api_dataset_sends_no_card_image_for_a_wine_with_none(self):
+        records = json.loads(self.request("/api/dataset")[2])["records"]
+        self.assertEqual([(r["main_image_url"], r["main_image_type"],
+                           r["main_image_match_method"]) for r in records],
+                         [(None, None, None)] * 2)
+
+    def test_image_route_sends_the_stored_file(self):
+        url = self.add_image("wine-b", "main", b"b main")
+        req = urllib.request.Request(self.base + url)
+        with urllib.request.urlopen(req) as response:
+            self.assertEqual(response.read(), b"b main")
+            self.assertEqual(response.headers["Content-Type"], "image/webp")
+            self.assertEqual(response.headers["Cache-Control"],
+                             "public, max-age=31536000, immutable")
+        url = self.add_image("wine-a", "main_patched", b"a patched", "png")
+        status, headers, _ = self.request(url, "HEAD")
+        self.assertEqual((status, headers["Content-Type"]), (200, "image/png"))
+
+    def test_image_route_sends_no_other_file(self):
+        url = self.add_image("wine-b", "main", b"b main")
+        digest = url.rsplit("/", 1)[1]
+        for path in ("/images/main/../../lab.sqlite3", "/images/main/%2e%2e%2flab.sqlite3",
+                     "/images/other/" + digest, "/images/main/" + digest.upper(),
+                     "/images/main/" + "0" * 64 + ".webp", "/images/main/",
+                     "/images/" + digest):
+            self.assertEqual(self.request(path)[0], 404, path)
 
     def test_disabled_pages_keep_the_navigation(self):
         for route, name in (("/clusters", "Clusters"), ("/embedding", "Embeddings"),

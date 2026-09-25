@@ -273,6 +273,11 @@ patches; its `README.md` table lists 7 of them.
 
 Tests: `tests/test_seed_patched.py`, 11 cases.
 
+Change of 2026-09-25 by plan 09 (`docs/plans/09_image-processing.md`): the script writes
+one row of `image` for each patch file, with its pixel size, and a row of `wine_image`
+with no `extension`. It processes each patch with `pipeline/derive.py` and takes the
+option `--sam3 <URL>`. Tests: `tests/test_seed_patched.py`, 14 cases.
+
 ## Candidate later steps
 
 These steps are proposals. The owner selects the next step and its content.

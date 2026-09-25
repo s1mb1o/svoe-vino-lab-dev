@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino embeddings</title>
+<style>
+/* THEME_CSS */
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header {
+  position: sticky; top: 0; z-index: 10; padding: 10px 16px;
+  background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+h1 { margin: 0; font-size: 15px; font-weight: 650; }
+h1 span { color: var(--muted); font-weight: 400; }
+.nav { display: flex; gap: 6px; margin-left: auto; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+.bar { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.bar label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 12px; }
+select, input[type=search], button {
+  color: var(--text); background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 8px; font: inherit; font-size: 13px;
+}
+#emb { max-width: min(520px, 90vw); }
+input[type=search] { min-width: 260px; }
+button { cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { cursor: default; opacity: .45; }
+#build { border-color: var(--accent); font-weight: 700; }
+#stop:not(:disabled) { color: var(--exc); border-color: var(--exc); font-weight: 700; }
+.jobmsg { color: var(--muted); font-size: 12px; }
+.jobmsg.bad { color: var(--exc); }
+a { color: var(--accent); }
+.jobs { display: grid; gap: 4px; margin-top: 8px; }
+.job {
+  display: grid; grid-template-columns: minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto;
+  gap: 10px; align-items: center; font-size: 12px; padding: 4px 8px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+}
+.job-name { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.job-state { color: var(--var); font-weight: 650; }
+.prog { height: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+.prog div { height: 100%; background: var(--accent); }
+main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
+.source {
+  margin-bottom: 12px; padding: 8px 10px; font-size: 12px; overflow-wrap: anywhere;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+}
+.source b { color: var(--text); font-weight: 600; }
+.source div + div { margin-top: 3px; }
+.err { color: var(--exc); }
+.list { display: grid; gap: 10px; }
+.wine {
+  display: grid; grid-template-columns: minmax(230px, 310px) minmax(0, 1fr); gap: 14px;
+  padding: 12px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.info { min-width: 0; padding: 3px 4px; }
+.info h2 { margin: 0; font-size: 20px; line-height: 1.2; }
+.producer { margin-top: 5px; font-size: 16px; line-height: 1.3; }
+.kind, .slug { margin-top: 4px; color: var(--muted); font-size: 13px; }
+.slug { overflow-wrap: anywhere; }
+.copy { padding: 1px 7px; color: var(--muted); font-size: 12px; }
+.matrix-wrap { min-width: 0; overflow-x: auto; padding-bottom: 3px; }
+.matrix {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 230px);
+  gap: 6px; width: max-content; min-width: 100%;
+}
+.column-title {
+  min-width: 0; padding: 2px 4px; color: var(--muted); font-size: 11px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.column-title strong { color: var(--text); font-size: 12px; }
+.cell {
+  position: relative; min-width: 0; overflow: hidden; border: 1px solid var(--line);
+  border-radius: 8px; background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #d0d0d0 25%, transparent 25%),
+    linear-gradient(-45deg, #d0d0d0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #d0d0d0 75%),
+    linear-gradient(-45deg, transparent 75%, #d0d0d0 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
+.cell a { display: block; width: 100%; height: 100%; }
+.cell img { display: block; width: 100%; height: 100%; padding: 6px; object-fit: contain; }
+.cell .badge, .cell .role, .cell .size {
+  position: absolute; padding: 2px 6px; border-radius: 999px; font-size: 10px; font-weight: 700;
+}
+.cell .badge { left: 5px; top: 5px; }
+.cell .role { right: 5px; top: 5px; color: #fff; background: #17171dcc; }
+.cell .size { right: 5px; bottom: 5px; color: #fff; background: #17171d99; font-weight: 600; }
+.badge.current { color: var(--pos); background: var(--pos-bg); }
+.badge.stale { color: var(--var); background: var(--var-bg); }
+.badge.missing { color: var(--unu); background: var(--unu-bg); }
+.badge.failed { color: var(--exc); background: var(--exc-bg); }
+.cell.failed { border: 2px solid var(--exc); }
+.cell.stale { border: 2px solid var(--var); }
+.cell .error {
+  position: absolute; left: 0; right: 0; bottom: 0; max-height: 60%; overflow: auto;
+  padding: 5px 7px; color: var(--exc); background: var(--exc-bg); font-size: 11px;
+  line-height: 1.3;
+}
+.cell.empty, .cell.none {
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  color: var(--muted); text-align: center; background: var(--panel-2);
+  background-image: none; border-style: dashed; font-size: 12px;
+}
+.cell.none { opacity: .6; }
+.cell.empty strong { display: block; color: var(--text); }
+.empty-list { padding: 30px 0; color: var(--muted); font-style: italic; }
+@media (max-width: 780px) {
+  .wine { grid-template-columns: 1fr; }
+  .matrix { grid-auto-columns: minmax(160px, 70vw); }
+  input[type=search] { min-width: 0; width: min(100%, 340px); }
+  .nav { width: 100%; margin-left: 0; overflow-x: auto; }
+  .job { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <h1>Embeddings <span id="summary">loading…</span></h1>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      href="/clusters">Clusters</a><a class="on" href="/embedding">Embeddings</a><a
+      href="/">Testset</a><a href="/runs">Runs</a></nav>
+  </div>
+  <div class="bar">
+    <label>Embedding <select id="emb"></select></label>
+    <button id="build" type="button" disabled>Build</button>
+    <button id="stop" type="button" disabled>Stop</button>
+    <span class="jobmsg" id="jobmsg"></span>
+  </div>
+  <div class="bar">
+    <label>Show <select id="filter">
+      <option value="all">all wines</option>
+      <option value="failed">with a failed image</option>
+      <option value="missing">with a missing image</option>
+      <option value="stale">with a stale image</option>
+    </select></label>
+    <label>Search <input id="q" type="search" placeholder="name, producer, slug"></label>
+  </div>
+  <div class="jobs" id="jobs" hidden></div>
+</header>
+<main>
+  <div class="source" id="source">Reading config.yaml…</div>
+  <div class="list" id="list"></div>
+</main>
+<script>
+const $ = selector => document.querySelector(selector);
+const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[char]));
+const ACTIVE = ["running", "stopping"];
+const INITIAL = new URLSearchParams(location.search);
+const STORE_KEY = "svoe-vino-lab.embedding";
+let LIST = [], DATA = null, NAME = null, POLL = null;
+const LAST_STATE = {};
+
+async function getJson(url, options) {
+  const response = await fetch(url, Object.assign({cache: "no-store"}, options || {}));
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+  return body;
+}
+function stored() {
+  try { return localStorage.getItem(STORE_KEY); } catch (_) { return null; }
+}
+function remember(name) {
+  try { localStorage.setItem(STORE_KEY, name); } catch (_) { /* no storage */ }
+  const url = new URL(location.href);
+  url.searchParams.set("name", name);
+  history.replaceState(null, "", url);
+}
+function stepsText(steps) {
+  return steps.map(step => {
+    const options = Object.entries(step).filter(([key]) => key !== "step")
+      .map(([key, value]) => `${key} ${value}`);
+    return options.length ? `${step.step} (${options.join(", ")})` : step.step;
+  }).join(" → ");
+}
+function duration(seconds) {
+  seconds = Math.max(0, Math.round(seconds));
+  const m = Math.floor(seconds / 60), s = seconds % 60;
+  return m ? `${m} min ${s} s` : `${s} s`;
+}
+function entryOf(name) { return LIST.find(entry => entry.name === name); }
+function optionText(entry) {
+  if (entry.error) return `${entry.name} — configuration error`;
+  const busy = entry.job && ACTIVE.includes(entry.job.state) ? " · building" : "";
+  return `${entry.name} — ${entry.counts.current} / ${entry.items}${busy}`;
+}
+
+async function loadList() {
+  const body = await getJson("/api/embeddings");
+  LIST = body.embeddings;
+  const wanted = NAME || INITIAL.get("name") || stored();
+  NAME = entryOf(wanted) ? wanted : (LIST[0] ? LIST[0].name : null);
+  $("#emb").innerHTML = LIST.map(entry =>
+    `<option value="${esc(entry.name)}">${esc(optionText(entry))}</option>`).join("");
+  $("#emb").value = NAME || "";
+  showJobs(LIST.filter(entry => entry.job).map(entry => Object.assign({name: entry.name}, entry.job)));
+}
+
+async function loadEntry() {
+  DATA = null;
+  const entry = entryOf(NAME);
+  if (!entry) {
+    $("#source").textContent = "config.yaml holds no embedding. Add the key `embeddings`.";
+    render(); buttons(); return;
+  }
+  if (entry.error) {
+    $("#source").innerHTML = `<div class="err"><b>Configuration error of ${esc(entry.name)}:</b> ${esc(entry.error)}</div>`;
+    render(); buttons(); return;
+  }
+  $("#source").textContent = `Reading ${entry.name}…`;
+  try {
+    DATA = await getJson("/api/embeddings/" + encodeURIComponent(NAME));
+  } catch (error) {
+    $("#source").innerHTML = `<div class="err">Cannot read the embedding: ${esc(error.message)}</div>`;
+  }
+  showSource(); render(); buttons();
+}
+
+function showSource() {
+  if (!DATA) return;
+  const e = DATA.embedding, c = e.counts;
+  const extra = Object.keys(e.extra_body || {}).length ? JSON.stringify(e.extra_body) : "none";
+  const views = Object.entries(e.views).map(([view, steps]) =>
+    `<div><b>${esc(view)}:</b> ${esc(stepsText(steps))}</div>`).join("");
+  const software = e.software ? Object.entries(e.software).map(([k, v]) => `${k} ${v}`).join(", ") : "";
+  $("#source").innerHTML = `<div><b>Backend:</b> ${esc(e.backend)}${e.base_url ? ` · ${esc(e.base_url)}` : ""} ·
+    <b>Model:</b> ${esc(e.model)} · <b>extra_body:</b> ${esc(extra)} · <b>batch:</b> ${e.batch_size}</div>
+    ${views}
+    <div><b>Items:</b> ${e.items} · current ${c.current} · stale ${c.stale} · missing ${c.missing} ·
+      failed ${c.failed}${e.dim ? ` · dim ${e.dim}` : ""}${e.updated_at ? ` · updated ${esc(e.updated_at)}` : ""}</div>
+    <div><b>Directory:</b> ${esc(e.directory)}${software ? ` · ${esc(software)}` : ""}</div>
+    ${e.index_error ? `<div class="err">${esc(e.index_error)}</div>` : ""}`;
+}
+
+function cellHtml(cell, view) {
+  const badge = `<span class="badge ${cell.status}">${cell.status}</span>`;
+  const role = `<span class="role">${esc(view)}</span>`;
+  const error = cell.error ? `<div class="error">${esc(cell.error)}</div>` : "";
+  if (!cell.url) {
+    return `<div class="cell empty ${cell.status}">${badge}${role}<span><strong>${esc(view)}</strong>${
+      cell.status === "failed" ? "no image" : "image not prepared"}</span>${error}</div>`;
+  }
+  const size = cell.width ? `<span class="size">${cell.width}×${cell.height}</span>` : "";
+  return `<div class="cell ${cell.status}"><a href="${esc(cell.url)}" target="_blank" rel="noopener"><img
+    loading="lazy" src="${esc(cell.url)}" alt="${esc(view)}"></a>${badge}${role}${size}${error}</div>`;
+}
+
+function columnHtml(column, first, views) {
+  const title = column.role === "label" ? "Close-up" : (first ? "Card image" : "Additional image");
+  const cells = views.map(view => column.cells[view] ? cellHtml(column.cells[view], view)
+    : `<div class="cell none">${column.role === "label" ? "a close-up is in the label view alone" : "not in this view"}</div>`);
+  return `<div class="column-title" title="${esc(column.sha256)}"><strong>${title}</strong> · ${
+    esc(column.image_type)} · <a href="${esc(column.original_url)}" target="_blank" rel="noopener">original</a></div>
+    ${cells.join("")}`;
+}
+
+function wineHtml(record, views) {
+  const where = [record.category, record.region].filter(Boolean).map(esc).join(" · ");
+  return `<article class="wine"><section class="info"><h2>${esc(record.name || "Unnamed wine")}</h2>
+      <div class="producer">${esc(record.producer || "—")}</div>
+      ${where ? `<div class="kind">${where}</div>` : ""}
+      <div class="slug">${esc(record.slug)} <button class="copy" type="button"
+        data-copy="${esc(record.slug)}">copy</button></div>
+    </section><section class="matrix-wrap"><div class="matrix"
+      style="grid-template-rows: auto repeat(${views.length}, 230px)">${
+      record.columns.map((column, i) => columnHtml(column, i === 0, views)).join("")}</div></section>
+  </article>`;
+}
+
+function hasStatus(record, status) {
+  return record.columns.some(column => Object.values(column.cells).some(cell => cell.status === status));
+}
+
+function render() {
+  if (!DATA) { $("#list").innerHTML = ""; $("#summary").textContent = ""; return; }
+  const views = Object.keys(DATA.embedding.views);
+  const filter = $("#filter").value;
+  const words = $("#q").value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+  const rows = DATA.records.filter(record => {
+    if (filter !== "all" && !hasStatus(record, filter)) return false;
+    const hay = [record.name, record.producer, record.slug].join(" ").toLocaleLowerCase();
+    return words.every(word => hay.includes(word));
+  });
+  $("#list").innerHTML = rows.length ? rows.map(record => wineHtml(record, views)).join("")
+    : '<div class="empty-list">No wine matches this view.</div>';
+  const c = DATA.embedding.counts;
+  $("#summary").textContent = `${rows.length} of ${DATA.records.length} wines · ${DATA.embedding.items} items · current ${
+    c.current} · stale ${c.stale} · missing ${c.missing} · failed ${c.failed}`;
+}
+
+function selectedJob() {
+  const entry = entryOf(NAME);
+  return entry && entry.job ? entry.job : null;
+}
+
+function buttons() {
+  const entry = entryOf(NAME), job = selectedJob();
+  const active = !!job && ACTIVE.includes(job.state);
+  $("#build").disabled = !entry || !!entry.error || active;
+  $("#stop").disabled = !job || job.state !== "running";
+  const msg = $("#jobmsg");
+  msg.classList.remove("bad");
+  if (!job || !job.state) { msg.textContent = entry && !entry.error ? "no build yet" : ""; return; }
+  if (active) { msg.textContent = `build ${job.state}`; return; }
+  const counts = `built ${job.built || 0} · failed ${job.failed || 0}`;
+  if (job.state === "done") msg.textContent = `last build done: ${counts}`;
+  else if (job.state === "stopped") msg.textContent = `last build stopped: ${counts}; Build continues it`;
+  else { msg.textContent = `last build failed: ${job.message || ""}`; msg.classList.add("bad"); }
+}
+
+function showJobs(jobs) {
+  const ended = [];
+  for (const job of jobs) {
+    const entry = entryOf(job.name);
+    if (entry) entry.job = job;
+    if (ACTIVE.includes(LAST_STATE[job.name]) && !ACTIVE.includes(job.state)) ended.push(job.name);
+    LAST_STATE[job.name] = job.state;
+  }
+  const running = jobs.filter(job => ACTIVE.includes(job.state));
+  $("#jobs").hidden = !running.length;
+  $("#jobs").innerHTML = running.map(job => {
+    const percent = job.todo ? Math.round(100 * job.done / job.todo) : 0;
+    const elapsed = job.started_t ? duration(Date.now() / 1000 - job.started_t) : "";
+    const count = job.todo == null ? esc(job.message || "") : `${job.done} / ${job.todo}`;
+    return `<div class="job"><span class="job-name" title="${esc(job.name)}">${esc(job.name)}</span>
+      <span class="job-state">${esc(job.state)}</span><div class="prog"><div style="width:${percent}%"></div></div>
+      <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span></div>`;
+  }).join("");
+  if (running.length && !POLL) POLL = setInterval(pollJobs, 2000);
+  if (!running.length && POLL) { clearInterval(POLL); POLL = null; }
+  buttons();
+  if (ended.length) {
+    loadList().then(() => { if (ended.includes(NAME)) return loadEntry(); }).catch(() => {});
+  }
+}
+
+async function pollJobs() {
+  try { showJobs((await getJson("/api/embedding-jobs")).jobs); } catch (_) { /* next poll */ }
+}
+
+async function action(kind) {
+  if (!NAME) return;
+  $("#build").disabled = $("#stop").disabled = true;
+  try {
+    await getJson(`/api/embeddings/${encodeURIComponent(NAME)}/${kind}`, {method: "POST"});
+  } catch (error) {
+    alert(`Cannot ${kind} ${NAME}: ${error.message}`);
+  }
+  await pollJobs();
+}
+
+$("#emb").addEventListener("change", () => {
+  NAME = $("#emb").value; remember(NAME); buttons(); loadEntry();
+});
+$("#filter").addEventListener("change", render);
+$("#q").addEventListener("input", render);
+$("#build").addEventListener("click", () => action("build"));
+$("#stop").addEventListener("click", () => action("stop"));
+document.addEventListener("click", async event => {
+  const copy = event.target.closest("[data-copy]");
+  if (!copy) return;
+  try { await navigator.clipboard.writeText(copy.dataset.copy || ""); } catch (_) { return; }
+  const old = copy.textContent; copy.textContent = "copied";
+  setTimeout(() => { copy.textContent = old; }, 700);
+});
+if (["all", "failed", "missing", "stale"].includes(INITIAL.get("filter"))) $("#filter").value = INITIAL.get("filter");
+$("#q").value = INITIAL.get("q") || "";
+
+loadList().then(loadEntry).catch(error => {
+  $("#source").innerHTML = `<div class="err">Cannot read /api/embeddings: ${esc(error.message)}</div>`;
+});
+</script>
+</body>
+</html>

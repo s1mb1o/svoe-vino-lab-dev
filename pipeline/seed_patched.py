@@ -7,8 +7,10 @@ Usage:
 The patch folder is an overlay on a delivery. Each file `<wine_slug>.<extension>`
 replaces the main image of that wine. Read the `README.md` of the folder. The script
 copies each patch to `images/patched/<sha256>.<extension>` in the directory of the
-database file, and writes one row of the type `main_patched` for each wine to the
-table `wine_image`. Read `docs/plans/07_sqlite-lab-database.md`, step 5.
+database file. It writes one row of `image` for each file, and one row of the type
+`main_patched` for each wine to the table `wine_image`. Then it processes each patch
+with `derive.py`, as `seed_images.py` does. Read
+`docs/plans/07_sqlite-lab-database.md`, step 5, and `docs/plans/09_image-processing.md`.
 
 Rules of the folder:
 - A patch is a file at the top level of the folder. The name before the extension is
@@ -34,9 +36,10 @@ Rules of the store, as in `pipeline/seed_images.py`:
   do not agree with its name is an error. The script does not overwrite it.
 - The script writes the files first. Then it reads the rows again and writes all
   changes in one transaction.
+- The script reads the pixel size of each patch from its header.
 
-Exit status: 0 also when a slug is unknown. 1 when the run cannot start, or when a
-patch file or a stored file gave an error.
+Exit status: 0 also when a slug is unknown, and when SAM3 does not answer. 1 when the
+run cannot start, or when a patch file or a stored file gave an error.
 """
 import argparse
 import collections
@@ -45,6 +48,8 @@ import sqlite3
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import derive  # noqa: E402
+import imagestore  # noqa: E402
 import labdb  # noqa: E402
 import seed_images  # noqa: E402
 
@@ -72,14 +77,16 @@ class Report:
         self.unchanged = 0       # slugs with the same row
         self.written = 0         # files copied to the store
         self.present = 0         # files that the store held already
+        self.derivatives = derive.Derivatives()   # the processing of the patches
 
     def changed(self):
-        return bool(self.added or self.replaced or self.deleted or self.written)
+        return bool(self.added or self.replaced or self.deleted or self.written
+                    or self.derivatives.written or self.derivatives.processed())
 
 
 def store_of(db_path):
     """Return the folder of the type `main_patched` in the image store of the database."""
-    return os.path.join(labdb.image_store(db_path), labdb.IMAGE_FOLDERS[IMAGE_TYPE])
+    return imagestore.folder_of(db_path, labdb.IMAGE_FOLDERS[IMAGE_TYPE])
 
 
 def scan_patches(folder, report, log):
@@ -100,8 +107,9 @@ def scan_patches(folder, report, log):
     return patches
 
 
-def seed_patched(db_path, folder, log=print):
-    """Store the patches and keep the `main_patched` rows in step. Return a `Report`."""
+def seed_patched(db_path, folder, log=print, segmenter=None):
+    """Store and process the patches, and keep the `main_patched` rows in step. Return
+    a `Report`. `segmenter` is the SAM3 client; None means `derive.SAM3_ENDPOINT`."""
     if not os.path.isdir(folder):
         raise SeedError("no patch folder at %s" % folder)
     conn = labdb.connect(db_path)
@@ -115,6 +123,8 @@ def seed_patched(db_path, folder, log=print):
 
         found = {}       # slug -> (sha256, extension, file name) of a stored patch
         keep = set()     # slugs with a file in the folder, also with an error
+        files = {}       # sha256 -> row of image for each stored patch
+        originals = {}   # sha256 -> store path of each patch to process
         for slug, names in patches.items():
             keep.add(slug)
             if slug not in wines:
@@ -129,22 +139,38 @@ def seed_patched(db_path, folder, log=print):
             name = names[0]
             extension = os.path.splitext(name)[1][1:].lower()
             try:
-                digest = seed_images.sha256_of(os.path.join(folder, name))
+                digest = imagestore.sha256_of(os.path.join(folder, name))
                 target = os.path.join(store, "%s.%s" % (digest, extension))
-                if seed_images.store_file(os.path.join(folder, name), target, digest):
+                if imagestore.store_file(os.path.join(folder, name), target, digest):
                     report.written += 1
                 else:
                     report.present += 1
-            except (seed_images.StoreError, OSError) as exc:
+            except (imagestore.StoreError, OSError) as exc:
                 report.errors += 1
                 log("error: %s: %s; the row stays" % (slug, exc))
                 continue
+            try:
+                size = imagestore.pixel_size(target)
+            except OSError as exc:
+                size = (None, None)
+                log("no pixel size: %s: %s: %s" % (slug, target, exc))
             found[slug] = (digest, extension, name)
+            files[digest] = (digest, labdb.IMAGE_FOLDERS[IMAGE_TYPE], extension) + size
+            originals[digest] = target
+
+        report.derivatives = derive.derive_all(
+            conn, db_path, originals, segmenter or derive.Sam3Client(), log)
 
         # The rows are read again under the write lock, so the changes fit the rows of
         # this moment and not the rows of the start of the run.
         conn.execute("BEGIN IMMEDIATE")
         try:
+            conn.executemany(
+                "INSERT INTO image (sha256, folder, extension, width, height) "
+                "VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING", list(files.values()))
+            conn.executemany(
+                "UPDATE image SET width = ?, height = ? WHERE sha256 = ? AND width IS NULL",
+                [(w, h, d) for d, _, _, w, h in files.values() if w is not None])
             stored = {slug: digest for slug, digest in conn.execute(
                 "SELECT wine_slug, sha256 FROM wine_image WHERE image_type = ?",
                 (IMAGE_TYPE,))}
@@ -161,14 +187,15 @@ def seed_patched(db_path, folder, log=print):
                 else:
                     report.added.append(slug)
                 conn.execute(
-                    "INSERT INTO wine_image (wine_slug, image_type, sha256, extension, "
-                    "source_name, match_method) VALUES (?, ?, ?, ?, ?, ?)",
-                    (slug, IMAGE_TYPE, digest, extension, name, MATCH_METHOD))
+                    "INSERT INTO wine_image (wine_slug, image_type, sha256, source_name, "
+                    "match_method) VALUES (?, ?, ?, ?, ?)",
+                    (slug, IMAGE_TYPE, digest, name, MATCH_METHOD))
             for slug in sorted(set(stored) - keep):
                 conn.execute("DELETE FROM wine_image WHERE wine_slug = ? AND "
                              "image_type = ?", (slug, IMAGE_TYPE))
                 report.deleted.append(slug)
                 log("deleted: %s: the patch folder holds no file for this wine" % slug)
+            derive.write_rows(conn, report.derivatives)
             conn.execute("COMMIT")
         except BaseException:
             conn.execute("ROLLBACK")
@@ -189,13 +216,15 @@ def main(argv=None):
     parser.add_argument("folder", help="the patch folder, for example "
                         "svoe-wino-hackaton/dataset/patched-official-2026-09-17")
     parser.add_argument("--db", required=True, help="path of the lab database")
+    parser.add_argument("--sam3", default=derive.SAM3_ENDPOINT,
+                        help="the SAM3 service (default: %(default)s)")
     args = parser.parse_args(argv)
 
     def log(message):
         print(message, flush=True)
 
     try:
-        report = seed_patched(args.db, args.folder, log)
+        report = seed_patched(args.db, args.folder, log, derive.Sam3Client(args.sam3))
     except (SeedError, labdb.SchemaError, sqlite3.Error, OSError) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
@@ -203,17 +232,18 @@ def main(argv=None):
     print("patch files: %d" % report.files)
     print("skipped names: %d%s" % (len(report.skipped), _names(report.skipped)))
     print("unknown slugs: %d%s" % (len(report.unknown), _names(report.unknown)))
-    print("errors: %d" % report.errors)
+    print("errors: %d" % (report.errors + report.derivatives.errors))
     print("rows added: %d" % len(report.added))
     print("rows replaced: %d%s" % (len(report.replaced), _names(report.replaced)))
     print("rows deleted: %d%s" % (len(report.deleted), _names(report.deleted)))
     print("rows unchanged: %d" % report.unchanged)
     print("files written: %d" % report.written)
     print("files in the store already: %d" % report.present)
+    seed_images.print_derivatives(report.derivatives)
     print("store: %s" % store_of(args.db))
     print("database: %s" % args.db)
     print("result: %s" % ("stored" if report.changed() else "no change"))
-    return 1 if report.errors else 0
+    return 1 if report.errors or report.derivatives.errors else 0
 
 
 if __name__ == "__main__":

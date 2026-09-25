@@ -17,3 +17,111 @@ rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
 # Database file of the vino-svoe.ru wines.
 database_file: svoe-vino-lab/data/lab.sqlite3
 
+# The Python interpreter that the lab server uses to start an embedding build. The venv
+# holds the packages of requirements-local.txt, `torch` too. Read
+# docs/plans/10_embeddings-page.md.
+embedding_python: ~/.venvs/svoe-vino-lab/bin/python
+
+# The embeddings of the Embeddings page. One entry: a name, an endpoint, options, and
+# the steps of each view. `pipeline/build_embeddings.py --name <name>` builds one entry
+# into `data/embeddings/<name>/`.
+#
+# `backend: openai` sends `POST <base_url>/embeddings`. `extra_body` goes into the body of
+# each request. `backend: local` runs a Hugging Face model on this machine; `extra_body`
+# goes to the image processor.
+#
+# The views of each entry: `full` is variant C (segment the package, remove the
+# background, put it on white); `label` is variant F (the same for the label). A label
+# close-up goes to the view `label` as it is. The entries are the image embedding models
+# of gx10 on the screenshot of the owner of 2026-09-25.
+embeddings:
+  - name: gx10-siglip2-so400m-patch16-naflex-p256
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-naflex
+    extra_body:
+      max_num_patches: 256
+    views: &views_c_f
+      full:
+        steps:
+          - step: segment
+            target: package
+          - step: remove_background
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+      label:
+        steps:
+          - step: segment
+            target: label
+          - step: remove_background
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+
+  - name: gx10-siglip2-so400m-patch16-naflex-p512
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-naflex
+    extra_body:
+      max_num_patches: 512
+    views: *views_c_f
+
+  - name: gx10-siglip2-so400m-patch14-384
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch14-384
+    views: *views_c_f
+
+  - name: gx10-siglip2-so400m-patch16-256
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-256
+    views: *views_c_f
+
+  - name: gx10-siglip2-so400m-patch16-384
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-384
+    views: *views_c_f
+
+  - name: gx10-siglip2-so400m-patch16-512
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-512
+    views: *views_c_f
+
+  - name: gx10-naflexvit-so400m-patch16-siglip2-p256
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: naflexvit_so400m_patch16_siglip.v2_webli
+    extra_body:
+      max_num_patches: 256
+    views: *views_c_f
+
+  - name: gx10-pe-core-l14-336
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: PE-Core-L14-336
+    views: *views_c_f
+
+  - name: gx10-dinov3-vitb16
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: dinov3-vitb16-pretrain-lvd1689m
+    views: *views_c_f
+
+  - name: gx10-dinov3-vitl16
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: dinov3-vitl16-pretrain-lvd1689m
+    views: *views_c_f
+
+  - name: local-siglip2-so400m-patch16-naflex-p256
+    backend: local
+    model: google/siglip2-so400m-patch16-naflex
+    extra_body:
+      max_num_patches: 256
+    views: *views_c_f

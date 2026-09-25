@@ -8,9 +8,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from PIL import Image
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
+import derive  # noqa: E402
 import labdb  # noqa: E402
 import seed_images as SEED  # noqa: E402
 
@@ -22,6 +25,41 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def picture(seed, size=(4, 6), transparent=True):
+    """Return the PNG bytes of a small picture. Each seed gives other bytes. A
+    transparent picture has a transparent border of one pixel, so its processing is
+    a crop and needs no SAM3."""
+    colour = (seed % 256, seed // 256 % 256, 0)
+    if not transparent:
+        image = Image.new("RGB", size, colour)
+    else:
+        image = Image.new("RGBA", size, (0, 0, 0, 0))
+        image.paste(colour + (255,), (1, 1, size[0] - 1, size[1] - 1))
+    out = io.BytesIO()
+    image.save(out, "PNG")
+    return out.getvalue()
+
+
+class FakeSam3:
+    """A SAM3 client with no network. It answers a mask of the whole image, or it
+    fails. The class stands in for `derive.Sam3Client` in each test."""
+
+    calls = 0
+    fail = False
+
+    def __init__(self, endpoint=None):
+        pass
+
+    def segment(self, image):
+        FakeSam3.calls += 1
+        if FakeSam3.fail:
+            raise derive.Sam3Unavailable("the fake service is down")
+        return Image.new("L", image.size, 255)
+
+
+BOTTLE = picture(1)
+
+
 class SeedImagesTest(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
@@ -31,8 +69,11 @@ class SeedImagesTest(unittest.TestCase):
         self.uploads.mkdir()
         self.store = self.root / "images" / "main"
         labdb.connect(self.db, create=True).close()
+        self.real_client, derive.Sam3Client = derive.Sam3Client, FakeSam3
+        FakeSam3.calls, FakeSam3.fail = 0, False
 
     def tearDown(self):
+        derive.Sam3Client = self.real_client
         self.directory.cleanup()
 
     def add_wine(self, slug, photo, state="Active"):
@@ -52,7 +93,7 @@ class SeedImagesTest(unittest.TestCase):
 
     def run_seed(self):
         messages = []
-        report = SEED.seed_images(self.db, str(self.uploads), messages.append)
+        report = SEED.seed_images(self.db, str(self.uploads), messages.append, FakeSam3())
         return report, messages
 
     def query(self, sql, *args):
@@ -63,25 +104,26 @@ class SeedImagesTest(unittest.TestCase):
             conn.close()
 
     def images(self):
-        return self.query("SELECT wine_slug, image_type, sha256, extension, source_name, "
-                          "match_method FROM wine_image ORDER BY wine_slug")
+        return self.query("SELECT w.wine_slug, w.image_type, w.sha256, i.extension, "
+                          "w.source_name, w.match_method FROM wine_image w "
+                          "JOIN image i ON i.sha256 = w.sha256 ORDER BY w.wine_slug")
 
     # -- the match
 
     def test_unique_name_match_stores_the_file_and_the_row(self):
         self.add_wine("beloe", "Вино Белое.webp")
-        digest = self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        digest = self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         report, messages = self.run_seed()
         self.assertEqual(messages, [])
         self.assertEqual(dict(report.methods), {"name-unique": 1})
         self.assertEqual((report.added, report.written), (1, 1))
         self.assertEqual(self.images(), [("beloe", "main", digest, "webp",
                                           "Vino_Beloe_0123456789.webp", "name-unique")])
-        self.assertEqual((self.store / (digest + ".webp")).read_bytes(), b"bottle")
+        self.assertEqual((self.store / (digest + ".webp")).read_bytes(), BOTTLE)
 
     def test_extension_is_lower_case(self):
         self.add_wine("beloe", "Вино Белое.JPG")
-        digest = self.upload("Vino_Beloe_0123456789.JPG", b"bottle")
+        digest = self.upload("Vino_Beloe_0123456789.JPG", BOTTLE)
         self.run_seed()
         self.assertEqual(self.images()[0][3], "jpg")
         self.assertTrue((self.store / (digest + ".jpg")).is_file())
@@ -89,15 +131,15 @@ class SeedImagesTest(unittest.TestCase):
     def test_second_lookup_keeps_the_extension_of_the_photo_name(self):
         # Strapi converted `label.png` to WebP and kept `png` in the name.
         self.add_wine("label", "label.png")
-        digest = self.upload("label_png_0123456789.webp", b"label")
+        digest = self.upload("label_png_0123456789.webp", picture(2))
         self.run_seed()
         self.assertEqual(self.images(), [("label", "main", digest, "webp",
                                           "label_png_0123456789.webp", "name-unique")])
 
     def test_resized_variant_and_name_without_suffix_are_left_out(self):
         self.add_wine("beloe", "Вино Белое.webp")
-        self.upload("thumbnail_Vino_Beloe_0123456789.webp", b"small")
-        self.upload("Vino_Beloe.webp", b"no suffix")
+        self.upload("thumbnail_Vino_Beloe_0123456789.webp", picture(3))
+        self.upload("Vino_Beloe.webp", picture(4))
         report, messages = self.run_seed()
         self.assertEqual(dict(report.no_match), {"no candidate": 1})
         self.assertEqual(messages, ["no match: beloe: no upload file fits the photo "
@@ -106,8 +148,8 @@ class SeedImagesTest(unittest.TestCase):
 
     def test_identical_copies_match_with_the_first_name(self):
         self.add_wine("muskat", "Агора_Мускат.webp")
-        digest = self.upload("Agora_Muskat_bbbbbbbbbb.webp", b"same")
-        self.upload("Agora_Muskat_aaaaaaaaaa.webp", b"same")
+        digest = self.upload("Agora_Muskat_bbbbbbbbbb.webp", picture(5))
+        self.upload("Agora_Muskat_aaaaaaaaaa.webp", picture(5))
         report, messages = self.run_seed()
         self.assertEqual(messages, [])
         self.assertEqual(self.images(), [("muskat", "main", digest, "webp",
@@ -117,9 +159,9 @@ class SeedImagesTest(unittest.TestCase):
     def test_different_copies_give_no_match_and_the_run_goes_on(self):
         self.add_wine("muskat", "Агора_Мускат.webp")
         self.add_wine("beloe", "Вино Белое.webp")
-        self.upload("Agora_Muskat_aaaaaaaaaa.webp", b"one")
-        self.upload("Agora_Muskat_bbbbbbbbbb.webp", b"two")
-        digest = self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        self.upload("Agora_Muskat_aaaaaaaaaa.webp", picture(6))
+        self.upload("Agora_Muskat_bbbbbbbbbb.webp", picture(7))
+        digest = self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         report, messages = self.run_seed()
         self.assertEqual(dict(report.no_match), {"different bytes": 1})
         self.assertEqual(len(messages), 1)
@@ -130,7 +172,7 @@ class SeedImagesTest(unittest.TestCase):
     def test_wines_that_share_a_file_get_one_file_and_two_rows(self):
         self.add_wine("a", "Вино Белое.webp")
         self.add_wine("b", "Вино Белое.webp")
-        digest = self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        digest = self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         report, _ = self.run_seed()
         self.assertEqual((report.added, report.written, report.present), (2, 1, 0))
         self.assertEqual([row[:3] for row in self.images()],
@@ -141,7 +183,7 @@ class SeedImagesTest(unittest.TestCase):
         self.add_wine("d", "d.webp", "Disabled")
         self.add_wine("r", "r.webp", "Removed")
         for slug in "adr":
-            self.upload("%s_0123456789.webp" % slug, slug.encode())
+            self.upload("%s_0123456789.webp" % slug, picture(ord(slug)))
         self.run_seed()
         self.assertEqual([row[0] for row in self.images()], ["a", "d", "r"])
 
@@ -149,7 +191,7 @@ class SeedImagesTest(unittest.TestCase):
 
     def test_second_run_changes_nothing(self):
         self.add_wine("beloe", "Вино Белое.webp")
-        self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         self.run_seed()
         report, messages = self.run_seed()
         self.assertEqual(messages, [])
@@ -159,7 +201,7 @@ class SeedImagesTest(unittest.TestCase):
 
     def test_second_run_writes_a_missing_file_again(self):
         self.add_wine("beloe", "Вино Белое.webp")
-        digest = self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        digest = self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         self.run_seed()
         (self.store / (digest + ".webp")).unlink()
         report, _ = self.run_seed()
@@ -168,11 +210,14 @@ class SeedImagesTest(unittest.TestCase):
 
     def test_other_main_row_stays_and_is_a_conflict(self):
         self.add_wine("beloe", "Вино Белое.webp")
-        self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         old = sha(b"old")
         conn = sqlite3.connect(self.db)
-        conn.execute("INSERT INTO wine_image VALUES ('beloe', 'main', ?, 'webp', "
-                     "'old.webp', 'name-unique')", (old,))
+        conn.execute("INSERT INTO image (sha256, folder, extension) VALUES (?, 'main', "
+                     "'webp')", (old,))
+        conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, source_name, "
+                     "match_method) VALUES ('beloe', 'main', ?, 'old.webp', 'name-unique')",
+                     (old,))
         conn.commit()
         conn.close()
         report, messages = self.run_seed()
@@ -183,7 +228,7 @@ class SeedImagesTest(unittest.TestCase):
 
     def test_stored_file_with_other_bytes_is_an_error_and_stays(self):
         self.add_wine("beloe", "Вино Белое.webp")
-        digest = self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        digest = self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         self.store.mkdir(parents=True)
         (self.store / (digest + ".webp")).write_bytes(b"damaged")
         report, messages = self.run_seed()
@@ -192,12 +237,94 @@ class SeedImagesTest(unittest.TestCase):
         self.assertEqual((self.store / (digest + ".webp")).read_bytes(), b"damaged")
         self.assertEqual(self.images(), [])
 
+    # -- the pixel size
+
+    def sizes(self):
+        return self.query("SELECT w.wine_slug, i.width, i.height FROM wine_image w "
+                          "JOIN image i ON i.sha256 = w.sha256 ORDER BY w.wine_slug")
+
+    def test_new_row_gets_the_pixel_size(self):
+        self.add_wine("beloe", "Вино Белое.webp")
+        self.upload("Vino_Beloe_0123456789.webp", picture(1, (5, 7)))
+        report, _ = self.run_seed()
+        self.assertEqual(self.sizes(), [("beloe", 5, 7)])
+        self.assertEqual((report.sized, report.unsized), (0, 0))
+
+    def test_second_run_fills_a_missing_size(self):
+        self.add_wine("beloe", "Вино Белое.webp")
+        self.upload("Vino_Beloe_0123456789.webp", picture(1, (5, 7)))
+        self.run_seed()
+        conn = sqlite3.connect(self.db)
+        conn.execute("UPDATE image SET width = NULL, height = NULL WHERE folder = 'main'")
+        conn.commit()
+        conn.close()
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            SEED.main(["--db", self.db, str(self.uploads)])
+        self.assertEqual(self.sizes(), [("beloe", 5, 7)])
+        self.assertIn("pixel sizes filled: 1", out.getvalue())
+        self.assertIn("result: stored", out.getvalue())
+
+    def test_file_that_is_no_image_gets_no_size_and_a_row(self):
+        self.add_wine("beloe", "Вино Белое.webp")
+        self.upload("Vino_Beloe_0123456789.webp", b"not an image")
+        report, messages = self.run_seed()
+        self.assertEqual((report.added, report.unsized, report.errors), (1, 1, 0))
+        self.assertEqual(self.sizes(), [("beloe", None, None)])
+        self.assertEqual(len(messages), 2)
+        self.assertTrue(messages[0].startswith("no pixel size: beloe: "))
+        self.assertTrue(messages[1].startswith("no processing: "))
+        self.assertEqual(report.derivatives.unreadable, 1)
+
+    # -- the processing
+
+    def derivatives(self):
+        return self.query("SELECT w.wine_slug, d.method, p.folder, p.extension "
+                          "FROM wine_image w JOIN image_derivative d "
+                          "ON d.source_sha256 = w.sha256 JOIN image p ON p.sha256 = d.sha256 "
+                          "ORDER BY w.wine_slug")
+
+    def test_import_processes_each_original_one_time(self):
+        self.add_wine("a", "Вино Белое.webp")
+        self.add_wine("b", "Вино Белое.webp")
+        self.upload("Vino_Beloe_0123456789.webp", picture(1, (8, 12)))
+        report, messages = self.run_seed()
+        self.assertEqual(messages, [])
+        self.assertEqual(dict(report.derivatives.methods), {"crop": 1})
+        self.assertEqual(self.derivatives(), [("a", "crop", "cropped", "png"),
+                                              ("b", "crop", "cropped", "png")])
+        self.assertEqual(self.query("SELECT box_left, box_top, box_right, box_bottom "
+                                    "FROM image_derivative"), [(1, 1, 7, 11)])
+        self.assertEqual(FakeSam3.calls, 0)
+        again, _ = self.run_seed()
+        self.assertEqual((again.derivatives.processed(), again.derivatives.present), (0, 1))
+
+    def test_original_with_no_transparency_goes_to_sam3(self):
+        self.add_wine("beloe", "Вино Белое.webp")
+        self.upload("Vino_Beloe_0123456789.webp", picture(1, (40, 80), transparent=False))
+        report, _ = self.run_seed()
+        self.assertEqual((dict(report.derivatives.methods), FakeSam3.calls), ({"seg": 1}, 1))
+
+    def test_sam3_that_does_not_answer_keeps_the_rows_and_a_second_run_processes(self):
+        self.add_wine("beloe", "Вино Белое.webp")
+        self.upload("Vino_Beloe_0123456789.webp", picture(1, (40, 80), transparent=False))
+        FakeSam3.fail = True
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            status = SEED.main(["--db", self.db, str(self.uploads)])
+        self.assertEqual(status, 0)
+        self.assertIn("no processing, SAM3 did not answer: 1", out.getvalue())
+        self.assertEqual((len(self.images()), self.derivatives()), (1, []))
+        FakeSam3.fail = False
+        report, _ = self.run_seed()
+        self.assertEqual(dict(report.derivatives.methods), {"seg": 1})
+
     # -- the command
 
     def test_main_reports_and_exits_0_with_no_match(self):
         self.add_wine("beloe", "Вино Белое.webp")
         self.add_wine("none", "Нет.webp")
-        self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             status = SEED.main(["--db", self.db, str(self.uploads)])
@@ -211,7 +338,7 @@ class SeedImagesTest(unittest.TestCase):
 
     def test_main_exits_1_on_a_store_error(self):
         self.add_wine("beloe", "Вино Белое.webp")
-        digest = self.upload("Vino_Beloe_0123456789.webp", b"bottle")
+        digest = self.upload("Vino_Beloe_0123456789.webp", BOTTLE)
         self.store.mkdir(parents=True)
         (self.store / (digest + ".webp")).write_bytes(b"damaged")
         with contextlib.redirect_stdout(io.StringIO()):
@@ -234,10 +361,13 @@ class SeedImagesTest(unittest.TestCase):
     # -- the table
 
     def insert(self, slug, image_type, data):
-        conn = sqlite3.connect(self.db)
+        conn = labdb.connect(self.db)
         try:
-            conn.execute("INSERT INTO wine_image VALUES (?, ?, ?, 'webp', 'x.webp', "
-                         "'manual')", (slug, image_type, sha(data)))
+            conn.execute("INSERT INTO image (sha256, folder, extension) VALUES (?, 'main', "
+                         "'webp') ON CONFLICT DO NOTHING", (sha(data),))
+            conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
+                         "source_name, match_method) VALUES (?, ?, ?, 'x.webp', 'manual')",
+                         (slug, image_type, sha(data)))
             conn.commit()
         finally:
             conn.close()
@@ -256,10 +386,13 @@ class SeedImagesTest(unittest.TestCase):
         self.add_wine("a", "a.webp")
         with self.assertRaises(sqlite3.IntegrityError):
             self.insert("a", "testset", b"1")
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.insert("b", "main", b"1")
         conn = labdb.connect(self.db)
         with self.assertRaises(sqlite3.IntegrityError):
-            conn.execute("INSERT INTO wine_image VALUES ('b', 'main', ?, 'webp', "
-                         "'x.webp', 'manual')", (sha(b"1"),))
+            conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
+                         "source_name, match_method) VALUES ('a', 'main', ?, 'x.webp', "
+                         "'manual')", (sha(b"no image row"),))
         conn.close()
 
     @unittest.skipUnless(BUILD_CATALOG.is_file(), "build_catalog.py is not present")

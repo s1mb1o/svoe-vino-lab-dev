@@ -1,7 +1,8 @@
 # 08 — The images of a wine, and the main images of the delivery
 
 Date: 2026-09-24.
-Status: implemented on 2026-09-24. This plan is step 4 of
+Status: implemented on 2026-09-24, with the card images of the Dataset page. This plan
+is step 4 of
 [plan 07](07_sqlite-lab-database.md). The owner messages of 2026-09-24 in
 [owner-messages.md](../owner-messages.md) hold the request and the answers.
 
@@ -52,6 +53,7 @@ Schema file: `pipeline/schema/005_wine_image.sql`.
 | `extension` | The file extension in lower case, with no dot. |
 | `source_name` | The file name at the source. For `main` it is the upload file name, the value of `upload_file` in `catalog.jsonl`. |
 | `match_method` | How the file was found for the wine. |
+| `width`, `height` | The pixel size of the file. NULL means that no tool measured it yet. Schema file 006. |
 
 - The key is `(wine_slug, image_type, sha256)`.
 - A unique index allows at most one `main` and at most one `main_patched` for each wine.
@@ -111,6 +113,65 @@ holds the live answers of 2026-09-17. It names a file for 47 of the 52 wines wit
 different bytes and for the 5 wines with no candidate. For the 2,023 `name-unique` wines
 it names the same file. The owner did not select this input (option B).
 
+## The card image on the Dataset page
+
+The owner asked on 2026-09-24 why the Dataset page showed no catalogue image. The lab
+server did not read `wine_image`, and it answered each `/img/` route with HTTP 503. The
+owner selected option C of three. Decision 9 of decision record 01 holds the options.
+
+1. `GET /api/dataset` sends three keys in each record: `main_image_url`,
+   `main_image_type`, and `main_image_match_method`. They describe the `main_patched`
+   image of the wine, else its `main` image. Each is null for a wine with neither. The URL
+   is `/images/<folder>/<sha256>.<extension>`.
+2. `GET /images/<folder>/<sha256>.<extension>` sends that file from the image store.
+   - The folder MUST be `main`, `patched`, or `additional`.
+   - The name MUST be 64 lower-case hex characters, a dot, and an extension of
+     `a-z0-9`. The route sends no other file, so a request cannot leave the store.
+   - The answer has `Cache-Control: public, max-age=31536000, immutable`. The name is
+     the SHA-256 of the bytes, so the file at a URL never changes.
+   - A missing file or another path gives 404.
+3. `pipeline/pages/dataset.html` uses `main_image_url` when a record holds it: for the
+   card image, for the large view, and for the filter `without a catalogue image`. A
+   record of `scripts/review_server.py` holds `local_path` instead. The page then uses
+   `/img/catalog?slug=<slug>` as before.
+4. The lab server still answers `/img/` with HTTP 503.
+5. The caption below the image names the image type and the match, for example
+   `main · name-unique`. A lab record with no image gets the caption `main`. A record of
+   the review tool keeps the caption `catalog.jsonl`. The owner asked for this caption on
+   2026-09-24 ("fix caption"). It is the caption part of option B.
+6. `pipeline/labdb.py` holds the folder of each image type in `IMAGE_FOLDERS`, and the
+   store path in `image_store`. `seed_images.py` and `lab_server.py` read both.
+
+Check on 2026-09-24 in headless Chromium, on `data/lab.sqlite3`: 2,103 cards, 2,046
+images from `/images/main/`, 57 cards with `no catalogue image`. The large view reads
+`1 / 2046`. The filter `without a catalogue image` shows 57 cards. The captions:
+`main · name-unique` 2,023, `main · name-identical` 23, `main` 57.
+
+## The sort by image size
+
+The owner asked on 2026-09-24 for a sort of the Dataset page by the image size in pixels.
+The owner selected option A of three: store the size in the database. Decision 10 of
+decision record 01 holds the options.
+
+1. Schema file `pipeline/schema/006_image_size.sql` adds `width` and `height` to
+   `wine_image`. Both MAY be NULL, so `pipeline/seed_patched.py` can still add a row.
+2. `pipeline/seed_images.py` reads the size from the header of each stored file with
+   Pillow. A new row gets the size. A kept row with a NULL size gets it too. The report
+   holds `pixel sizes filled` and `no pixel size`.
+3. `GET /api/dataset` sends `main_image_width` and `main_image_height` of the card image.
+4. The `Sort` control has two new values: `image size, smallest first` and
+   `image size, largest first`. The key is `width * height`. A card with no known size
+   stands at the end. Cards of equal size keep the catalogue order.
+
+The run on `data/lab.sqlite3` filled 2,046 sizes in 4 seconds. The smallest image has
+55,200 pixels (120 x 460). The largest has 60,239,522 pixels (6337 x 9506).
+
+## The link of the slug
+
+The owner asked on 2026-09-24 that the slug of a card is a link to the page of the wine
+on vino-svoe.ru. The page builds `https://vino-svoe.ru/wines/<slug>` from the slug. The
+link opens a new tab. The URL is the value of `SITE` in `build_catalog.py`.
+
 ## Gotchas
 
 1. The foreign key of `wine_image` blocks `DROP TABLE wine_catalog` while `wine_image`
@@ -122,6 +183,12 @@ it names the same file. The owner did not select this input (option B).
    request. A new schema file makes the running server answer an error until a tool of
    `pipeline/` migrates the database, for example `pipeline/labdb.py`.
 3. `name-unique` is an assumption. Nothing confirms that the website shows that file.
+4. `pipeline/seed_images.py` needs Pillow. The lab server does not.
+5. A test that adds a `wine_image` row MUST name the columns. A row with positional
+   values breaks when a schema file adds a column.
+6. The rule of `.gitignore` for the lab data MUST be `/data/`, with the leading slash.
+   The first rule `data/` also matched `tests/data/`. So commit `f0c5649` left out the
+   CSV variants of `tests/data/`.
 
 ## Later steps
 

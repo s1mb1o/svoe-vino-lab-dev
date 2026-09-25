@@ -743,7 +743,7 @@ database for cases D1 to D10: `DB=/tmp/lab-smoke/lab.sqlite3`,
 | # | Case | Expected result |
 |---|---|---|
 | D1 | `python3 pipeline/import_catalog.py --db $DB $CSV` before the database exists | `error: no database at …`, exit 1. No file is made. |
-| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: 5`, `tables: wine_catalog, wine_image`. |
+| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: 7`, `tables: image, image_derivative, wine_catalog, wine_image`. |
 | D3 | `python3 pipeline/import_catalog.py --db $DB $CSV` | `rows read: 4147`, `duplicate rows: 2044`, `wines in the CSV: 2103`, `values trimmed: 198`, `empty grapes: 2`, `added: 2103`, `states: Active 2103, Disabled 0, Removed 0`, `result: imported`. |
 | D4 | Repeat case D3 | `added: 0`, `restored: 0`, `removed: 0`, `result: no change`. |
 | D5 | Import `$V.v2-add-remove.csv` | `added: 2`, `removed: 3`, `states: Active 2102, Disabled 0, Removed 3`. |
@@ -751,8 +751,8 @@ database for cases D1 to D10: `DB=/tmp/lab-smoke/lab.sqlite3`,
 | D7 | Import `$V.v4-changed-field.csv` | `error: 1 wines of the CSV differ from the database, …: shato-pino-shary-kolduna-glyu-glyu-vione-krasnoe-suhoe-10 (Active): region 'Кубань' -> 'Крым'`, exit 1. The states do not change. |
 | D8 | Import `$CSV` again | `added: 0`, `restored: 4`, `removed: 3`, `states: Active 2103, Disabled 0, Removed 3`. The 3 removed wines are the fake wines. |
 | D9 | Set the state of one wine to `Disabled` with `sqlite3`, then import `$CSV` | `result: no change`. The wine stays `Disabled`. |
-| D10 | Open a database at schema version 2 with `python3 pipeline/labdb.py <path>` | `schema version: 5`, `tables: wine_catalog, wine_image`. Each wine is `Active`. The table `catalog_source` is gone. |
-| D10a | Open a database at schema version 3 that holds `Removed` wines with `python3 pipeline/labdb.py <path>` | `schema version: 5`. Each `Removed` wine has `removed_by` = `import`. The order of the rows does not change. |
+| D10 | Open a database at schema version 2 with `python3 pipeline/labdb.py <path>` | `schema version: 7`, `tables: image, image_derivative, wine_catalog, wine_image`. Each wine is `Active`. The table `catalog_source` is gone. |
+| D10a | Open a database at schema version 3 that holds `Removed` wines with `python3 pipeline/labdb.py <path>` | `schema version: 7`. Each `Removed` wine has `removed_by` = `import`. The order of the rows does not change. |
 | D10b | Set a wine to `Removed` with `removed_by` = `person`, then import `$CSV` | `kept removed by a person: 1: <slug>`, `result: no change`. The wine stays `Removed`. |
 | D11 | Compare `wine_catalog` of a database after case D3 with `catalog.jsonl` of the same delivery, column by column; a NULL `grapes` counts as `""` | The slug sets are equal. No value differs. |
 | D12 | `python3 -m unittest discover -s tests -p 'test_labdb.py'`, then the same with `test_import_catalog.py` | 9 tests `OK`, then 20 tests `OK`. |
@@ -768,13 +768,16 @@ Read `docs/plans/08_seed-images.md`. Use a new scratch database for cases I1 to 
 
 | # | Case | Expected result |
 |---|---|---|
-| I1 | `python3 pipeline/seed_images.py --db $IDB $UP` | 57 lines `no match: <slug>: …` above the report. `upload files indexed: 6241`, `wines: 2103`, `matched: 2046 (name-identical 23, name-unique 2023)`, `no match: 57 (different bytes 52, no candidate 5)`, `conflicts: 0`, `errors: 0`, `rows added: 2046`, `files written: 2018`, `result: stored`. Exit 0. No network access. |
-| I2 | Repeat case I1 | `rows added: 0`, `rows unchanged: 2046`, `files written: 0`, `files in the store already: 2018`, `result: no change`. |
+| I1 | `python3 pipeline/seed_images.py --db $IDB $UP` | 57 lines `no match: <slug>: …` above the report. `upload files indexed: 6241`, `wines: 2103`, `matched: 2046 (name-identical 23, name-unique 2023)`, `no match: 57 (different bytes 52, no candidate 5)`, `conflicts: 0`, `errors: 0`, `rows added: 2046`, `pixel sizes filled: 0`, `no pixel size: 0`, `files written: 2018`, `processed: 2018 (crop 1876, seg 142)`, `no processing, SAM3 did not answer: 0`, `processed files written: 2018`, `result: stored`. Exit 0. No internet access; 142 requests to SAM3 on gx10. Each row of `image` has `width` and `height`. |
+| I2 | Repeat case I1 | `rows added: 0`, `rows unchanged: 2046`, `files written: 0`, `files in the store already: 2018`, `processed already: 2018`, `processed files written: 0`, `result: no change`. No request to SAM3. |
+| I2a | On a new scratch database, run case I1 with `--sam3 http://127.0.0.1:9` | One wait of about 30 s for the first image that needs SAM3. `no processing, SAM3 did not answer: 143`, exit 0. Then run case I1 again with no option: `processed: 143 (crop 1, seg 142)`. |
+| I2b | `sqlite3 $IDB 'PRAGMA foreign_key_check'` after case I1 | No line. |
 | I3 | Compare the name of each file in `$STORE` with the SHA-256 of its bytes | 2,018 files. Each name before the extension is the SHA-256. No `.tmp` file. |
 | I4 | Delete one file of `$STORE`, then repeat case I1 | `files written: 1`, `rows unchanged: 2046`. The file is back. |
 | I5 | Write other bytes into one file of `$STORE`, then repeat case I1 | A line `error: <slug>: …: the stored bytes do not agree with the name; the file stays`. `errors: 1` or more, exit 1. The file keeps the other bytes. |
 | I6 | `python3 pipeline/seed_images.py --db /tmp/lab-images/none.sqlite3 $UP` | `error: no database at …`, exit 1. No file is made. |
-| I7 | `python3 -m unittest discover -s tests -p 'test_seed_images.py'` | 19 tests, `OK`. |
+| I7 | `python3 -m unittest discover -s tests -p 'test_seed_images.py'` | 25 tests, `OK`. `test_derive.py`: 14 tests, `OK`. No test calls the real SAM3 service. |
+| I7a | Set `width` and `height` of each `main` row of `image` to NULL with `sqlite3`, then repeat case I1 | `pixel sizes filled: 2046`, `result: stored`. Each row has its size again. |
 | I8 | `git -C ../svoe-wino-hackaton status --short -- dataset/official-2026-09-17` after cases I1 to I6 | No line. The script does not change the delivery. |
 | I9 | `git status --short data/` in `svoe-vino-lab` | No line. Git ignores `data/`. |
 
@@ -786,13 +789,13 @@ Read step 5 of `docs/plans/07_sqlite-lab-database.md`. Use a copy of the lab dat
 
 | # | Case | Expected result |
 |---|---|---|
-| P1 | `python3 pipeline/seed_patched.py --db $PDB $PF` | `skipped: README.md is not a patch file`, `patch files: 15`, `unknown slugs: 0`, `errors: 0`, `rows added: 15`, `files written: 15`, `result: stored`. Exit 0. |
+| P1 | `python3 pipeline/seed_patched.py --db $PDB $PF` | `skipped: README.md is not a patch file`, `patch files: 15`, `unknown slugs: 0`, `errors: 0`, `rows added: 15`, `files written: 15`, `processed: 15 (crop 15)`, `processed files written: 15`, `result: stored`. Exit 0. |
 | P2 | Repeat case P1 | `rows unchanged: 15`, `files written: 0`, `files in the store already: 15`, `result: no change`. |
 | P3 | Copy `$PF` to `/tmp/lab-patched/pf`, write other bytes into `bukovinka.webp`, and run the script on the copy | `replaced: bukovinka: <old> -> <new> (bukovinka.webp)`, `rows replaced: 1`. The old file stays in `images/patched/`. |
 | P4 | Delete `bukovinka.webp` from the copy, and run the script on the copy | `deleted: bukovinka: …`, `rows deleted: 1`. The card of `bukovinka` shows its `main` image again. |
 | P5 | Start the lab server on `$PDB`, and read `main_image_url` of `bukovinka` in `/api/dataset` | `/images/patched/68caeb4d02d51839b59f4c6f91fe8d5bf92c8ad3ddb507a62b057fcf56127368.webp`. A GET of it answers 200, `image/webp`, 110,188 bytes. |
 | P6 | Compare the SHA-256 and the time of each file of `$PF` before and after case P1 | No change. The script only reads the patch folder. |
-| P7 | `python3 -m unittest discover -s tests -p 'test_seed_patched.py'` | 11 tests, `OK`. |
+| P7 | `python3 -m unittest discover -s tests -p 'test_seed_patched.py'` | 14 tests, `OK`. |
 
 ## The lab server — `pipeline/lab_server.py`
 
@@ -802,19 +805,19 @@ Use `H=http://127.0.0.1:8168`. `config.yaml` MUST name the database
 
 | # | Case | Expected result |
 |---|---|---|
-| S1 | Start the server | The log states the config path, `database_file`, `schema version: 5`, `wines: 2103 (Active 2103, Disabled 0, Removed 0)`, the disabled pages, and the URL `$H/dataset`. |
+| S1 | Start the server | The log states the config path, `database_file`, `schema version: 7`, `wines: 2103 (Active 2103, Disabled 0, Removed 0)`, the disabled pages, and the URL `$H/dataset`. |
 | S2 | Set `database_file` to a path with no file, then start the server | `error: no database at …`, exit 1. |
-| S3 | Start the server on a database at schema version 3 | `error: the database has schema version 3 and this code needs version 5; run python3 pipeline/labdb.py …`, exit 1. |
+| S3 | Start the server on a database at schema version 3 | `error: the database has schema version 3 and this code needs version 7; run python3 pipeline/labdb.py …`, exit 1. |
 | S4 | Open `$H/dataset` | The header reads `2103 of 2103 records · 0 patches · 0 alternatives · 0 barcodes · 0 QR URLs · 0 Atlas bindings`. No source panel stands above the list. The first card is `Автохтонное Вино Крыма белое сухое`. |
 | S4a | Set the schema version of the database to 3 while the server runs, then reload `$H/dataset` | The header reads `could not read the dataset`. The list reads `The dataset is not available. Cannot read /api/dataset: …` with the `labdb.py` command. |
-| S5 | Look at a card of `$H/dataset` | The slug with a `copy` button is the first line, above the name. Then producer, category and region, and grapes. No line `Colour: …`. `no catalogue image`. The editors for barcodes, QR URLs, the Atlas binding, and alternative photos stay on the card. No `site page` link and no `source image` link. |
+| S5 | Look at a card of `$H/dataset` | The slug with a `copy` button is the first line, above the name. Then producer, category and region, and grapes. No line `Colour: …`. The bottle image of the wine, or `no catalogue image` for a wine with no row in `wine_image`. The editors for barcodes, QR URLs, the Atlas binding, and alternative photos stay on the card. No `site page` link and no `source image` link. |
 | S6 | Search `Автохтонное` | 9 cards. |
 | S7 | Switch the system to dark mode and reload `$H/dataset` | The page is dark. |
 | S8 | Click `Clusters`, `Embeddings`, `Testset`, and `Runs` | Each one shows `The page <name> is disabled for now.` with the full navigation. The link of the page is marked. |
 | S9 | `curl -s -o /dev/null -w "%{http_code}" $H/api/runs` | `503`. |
 | S10 | `curl -s $H/api/dataset \| python3 -c "import json,sys; print(len(json.load(sys.stdin)['records']))"` | `2103`. |
 | S11 | Press `Validate` on `$H/dataset`, then `Run selected` | The dialog lists the checks. After the run it reads `validation ERROR Error: disabled for now: the lab database does not hold the data of this route yet`. |
-| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 15 tests, `OK`. |
+| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 21 tests, `OK`. |
 | S13 | Look below the catalogue image of an `Active` wine | Two buttons: `Disable` and `Remove`. |
 | S14 | Press `Disable` | The card shows the tag `disabled` and the buttons `Enable` and `Remove`. The database holds `Disabled`. |
 | S15 | Press `Enable` | The tag goes away. The buttons are `Disable` and `Remove`. The database holds `Active`. |
@@ -825,3 +828,38 @@ Use `H=http://127.0.0.1:8168`. `config.yaml` MUST name the database
 | S20 | Switch the system to dark mode and look at a `Disabled` and a `Removed` card | The tags and the buttons are readable in dark mode. |
 | S21 | Press `Disable`, then `Enable`, on a card in the view with all 2,103 cards | Each change shows in well under one second. The list does not flash, and the scroll position stays. |
 | S22 | Open `$H/dataset#<slug>` for a card near the end of the list | The card stands at the top, just below the header. |
+| S23 | Open `$H/dataset` after `pipeline/seed_images.py` ran on the database | 2,046 cards show a bottle image. The `src` of each image starts with `/images/main/`. 57 cards show `no catalogue image`. The captions: `main · name-unique` 2,023, `main · name-identical` 23, `main` 57. |
+| S24 | Set `Show` to `without a catalogue image` | 57 cards. |
+| S25 | Click the image of the first card | The large view opens with the image, `1 / 2046`, and its size in pixels. The arrows step to the next image. |
+| S26 | `curl -sI $H<main_image_url of one record>` | HTTP 200, `Content-Type: image/webp`, `Cache-Control: public, max-age=31536000, immutable`. |
+| S27 | `curl -s --path-as-is -o /dev/null -w "%{http_code}" $H/images/main/../../lab.sqlite3`, and the same for a name of 64 zeros | `404` each time. |
+| S28 | Set `Sort` to `image size, smallest first` | The first card is `monte-garu-beloe-polusladkoe`. The pixel count of each card image is not smaller than the one above it. The 57 cards with no image stand at the end. |
+| S29 | Set `Sort` to `image size, largest first` | The first card is `usadba-mezyb-shishka-merlo-vione-rozovoe-suhoe-125`. The 57 cards with no image stand at the end. |
+| S31 | Look at a card after case I1 | The image is the processed file: its `src` starts with `/images/cropped/`. A badge `crop` or `seg` stands at the top left of the image. The badges: `crop` 1,903, `seg` 143. |
+| S32 | Open the large view of a `seg` card and read the link `open raw image` | The link names the original in `/images/main/`, not the processed file. |
+| S33 | Switch the system to dark mode and look at the badges | Both badges are readable. |
+| S30 | Click the slug of a card | A new tab opens `https://vino-svoe.ru/wines/<slug>`. The `copy` button next to the slug still copies the slug. |
+
+## The lab embeddings — `pipeline/build_embeddings.py` and `/embedding`
+
+Use `P=~/.venvs/svoe-vino-lab/bin/python` and `N=gx10-siglip2-so400m-patch16-naflex-p256`.
+Use `H=http://127.0.0.1:8168`. The page cases need the hook in `lab_server.py`.
+
+| # | Case | Expected result |
+|---|---|---|
+| EB1 | `python3 -m unittest discover -s tests -p 'test_*embedding*.py'` | 44 tests, `OK`. |
+| EB2 | `$P pipeline/build_embeddings.py --name $N` on an empty `data/embeddings/$N/` | The first line is `start` with `items` 4036 and `todo` 4036. The last line is `done`. `index.json` holds 2,018 items of the view `full`; `failures` holds the 2,018 label items with `no label cut yet`. `images/` holds 2,018 PNG files `<sha256>_full.png`. |
+| EB3 | Run EB2 again | `start` states `current` 2018. No `progress` line sends an image to gx10: `built` stays 0. The PNG files keep their time stamps. |
+| EB4 | Start EB2 on an empty directory, and press Ctrl+C after about 30 s | The lines `stopping` and `stopped` follow. `index.json` holds the finished items. `build.lock` is gone. |
+| EB5 | Run EB2 after EB4 | `start` states `current` equal to the items of EB4. The build ends with `done`. |
+| EB6 | Change `max_num_patches` of `$N` to 257, and run EB2 | Each full item is built again. Set the value back to 256 after the test. |
+| EB7 | Delete one `images/<sha256>_full.png`, and run EB2 | `built` is 1. |
+| EB8 | Put `remove_background` with no `white_background` in a view, and run EB2 | Exit 2. The `error` line states `the gateway drops the alpha channel`. |
+| EB9 | Start a second `$P pipeline/build_embeddings.py --name $N` while EB2 runs | Exit 3. The `error` line names the PID of the first build. |
+| EB10 | Open `$H/embedding` | `Embeddings` is the marked navigation link. The combobox lists the 11 entries of `config.yaml` as `<name> — <current> / <items>`. |
+| EB11 | Select `$N` after EB2 | Each wine row shows the card image column: the prepared `full` image with the badge `current`, and the `label` cell with the badge `failed` and `no label cut yet`. Each cell has a checkerboard background. |
+| EB12 | Press `Build` on an entry with no files | A job row with a progress bar appears. `Build` is disabled, `Stop` is enabled. At the end the grid reads again. |
+| EB13 | Press `Stop` during EB12 | The job reads `stopping`, then the message `last build stopped`. A second `Build` continues the build. |
+| EB14 | Press `Build` on two entries | Two job rows run at the same time. |
+| EB15 | Restart the lab server while a build runs, and reload the page | The job row shows the running build again. |
+| EB16 | Switch the system to dark mode | The page, the badges, and the job rows are readable. |

@@ -1,0 +1,18 @@
+# The packages of the embedding build of svoe-vino-lab, with the local backend.
+# Read docs/plans/10_embeddings-page.md.
+#
+# Install:
+#   python3 -m venv ~/.venvs/svoe-vino-lab
+#   ~/.venvs/svoe-vino-lab/bin/pip install -r requirements-local.txt
+#
+# The `openai` backend and the lab server need the first four packages alone.
+# The `local` backend needs `torch`, `torchvision`, and `transformers` too. The image
+# processors of `transformers` 5 need `torchvision`. The model files go to the
+# Hugging Face cache, `~/.cache/huggingface/`.
+pyyaml>=6.0
+numpy>=2.0
+pillow>=10.0
+requests>=2.31
+torch>=2.11
+torchvision>=0.26
+transformers>=5.5
