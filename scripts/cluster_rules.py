@@ -46,6 +46,7 @@ import common
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                              "pipeline"))
 import model_cache  # noqa: E402
+import vlm_config  # noqa: E402
 
 CFG = common.CONFIG.get("cluster_rules") or {}
 
@@ -58,8 +59,30 @@ def _path(key, default_name):
 RULES_FILE = _path("rules_file", "catalog-cluster-rules.json")
 NOTES_FILE = _path("notes_file", "catalog-cluster-notes.json")
 
-URL = CFG.get("url") or common.GX10 + "/v1/chat/completions"
-MODEL = CFG.get("model") or "qwen3.5-9b"
+# The VLM of each stage is an entry of the key `vlm` of the configuration. Read
+# pipeline/vlm_config.py. The key `vlm` of `cluster_rules` names the entry of stage 1,
+# and `rules_vlm` names the entry of stage 2. Without `rules_vlm`, stage 2 uses the
+# entry of stage 1.
+OLD_VLM_KEYS = ("url", "model", "rules_url", "rules_model", "rules_api", "rules_key_env")
+# The `api` of `Vlm` for each `thinking_field` of an entry.
+API_OF = {"chat_template_kwargs": "llama.cpp", "top_level": "qwencloud"}
+
+
+def stage_entries(cfg, config):
+    """Return the `vlm` entries of stage 1 and of stage 2. Raise common.ConfigError for
+    a key that the entries replace, and vlm_config.VlmConfigError for a missing entry."""
+    old = [k for k in OLD_VLM_KEYS if k in cfg]
+    if old:
+        raise common.ConfigError(
+            "cluster_rules: the keys vlm and rules_vlm replace the old keys %s; name an "
+            "entry of the key vlm" % ", ".join(old))
+    first = vlm_config.entry(config, cfg.get("vlm") or "qwen3.5-9b")
+    return first, vlm_config.entry(config, cfg.get("rules_vlm") or first.name)
+
+
+VLM, RULES_VLM = stage_entries(CFG, common.CONFIG)
+URL, MODEL = VLM.url, VLM.model
+API, KEY_ENV = API_OF[VLM.thinking_field], VLM.key_env
 THINKING = bool(CFG.get("thinking", False))
 # Stage 1 scales the picture to this long side, UP or down. A small catalogue
 # photo hides small print: at 312 x 1000 pixels the model read «урож. 2024» as
@@ -70,13 +93,11 @@ TIMEOUT_S = float(CFG.get("timeout_s", 300))
 
 # Stage 2 runs once, so it MAY use a more capable model than stage 1. On 2026-09-23
 # the owner chose `qwen3.8-max` of the QwenCloud Token Plan, with thinking. The key
-# comes from the environment variable that `rules_key_env` names. It is never written
-# to a file. `rules_api: qwencloud` sends `enable_thinking` as a top field; the
-# llama.cpp gateway reads it from `chat_template_kwargs`.
-RULES_URL = CFG.get("rules_url") or URL
-RULES_MODEL = CFG.get("rules_model") or MODEL
-RULES_API = CFG.get("rules_api") or "llama.cpp"
-RULES_KEY_ENV = CFG.get("rules_key_env") or ""
+# comes from the shell variable of the `key` of its `vlm` entry. It is never written
+# to a file. An entry with `thinking_field: top_level` sends `enable_thinking` as a top
+# field; the llama.cpp gateway reads it from `chat_template_kwargs`.
+RULES_URL, RULES_MODEL = RULES_VLM.url, RULES_VLM.model
+RULES_API, RULES_KEY_ENV = API_OF[RULES_VLM.thinking_field], RULES_VLM.key_env
 RULES_THINKING = bool(CFG.get("rules_thinking", THINKING))
 RULES_WORKERS = max(1, int(CFG.get("rules_workers", 1)))
 RULES_TIMEOUT_S = float(CFG.get("rules_timeout_s", 900))
@@ -431,10 +452,11 @@ class Vlm:
     `api` is `llama.cpp` (the gx10 gateway: `chat_template_kwargs.enable_thinking`,
     no key) or `qwencloud` (a top field `enable_thinking`, the key from the variable
     `key_env`). A JSON mode is not sent with thinking; `parse_json` reads the answer.
+    `API_OF` gives the `api` of a `vlm` entry. The defaults are the entry of stage 1.
     """
 
     def __init__(self, url=URL, model=MODEL, thinking=THINKING, timeout_s=TIMEOUT_S,
-                 retries=3, api="llama.cpp", key_env=""):
+                 retries=3, api=API, key_env=KEY_ENV):
         self.url, self.model, self.thinking = url, model, thinking
         self.timeout_s, self.retries = timeout_s, retries
         self.api, self.key_env = api, key_env

@@ -46,9 +46,9 @@ python3 pipeline/lab_server.py            # http://127.0.0.1:8168/dataset
 `config.yaml` holds two keys: `rootdir` and `database_file`. A relative
 `database_file` is resolved against `rootdir`, so the value is
 `svoe-vino-lab/data/lab.sqlite3`. The lab server opens the database
-read-only. The Dataset, Embeddings, and Runs pages work. Clusters and Testset are
-disabled for now: each one answers a notice page. The navigation order is `Dataset`,
-`Embeddings`, `Clusters`, `Testset`, `Runs`. Each card of the Dataset page holds
+read-only. The Dataset, Embeddings, Testset (`/testset`), and Runs pages work. `/`
+redirects to `/dataset`. Clusters is disabled for now: it answers a notice page. The
+navigation order is `Dataset`, `Embeddings`, `Clusters`, `Testset`, `Runs`. Each card of the Dataset page holds
 the buttons `Disable` / `Enable`, `Remove`, and `Restore` below the catalogue image. The
 `main` image of a `Disabled` wine is gray on the card. The browser draws it with a CSS
 filter; the file does not change. The patch and the alternative photos keep their
@@ -250,14 +250,96 @@ python3 pipeline/import_testsets.py --db data/lab.sqlite3
 ```
 
 `import_testsets.py` imports the three test sets of `../svoe-vino-testset/dataset/` into
-the tables `test_set`, `test_photo`, `test_excluded`, and `test_variant`. The set name is
-the name of the directory. The labels stay in `review-labels.json` of each set; each
-import makes the rows of the set equal to the files again. A photo is stored as
+the tables `test_set`, `test_photo`, `test_wine_note`, `test_excluded`, and
+`test_variant`. The set name is the name of the directory. The import keeps each field of
+a label entry of `review-labels.json`, the notes of a whole wine, and the text `note`
+(schema 019, plan 24). Since plan 24 the database is the source of the labels: the
+Testset page writes to the rows. So the import refuses a set that holds a page edit;
+`--force` replaces the page edits with the files. A photo is stored as
 `data/images/testset/<sha256>.<extension>`, one time for the same bytes. A photo whose
 bytes the lab holds already, for example as a patch, keeps that file. `--source` names
 another directory of the sets. `import_testset.py --set <name> <dir>` imports one set.
 Read [plan 12](docs/plans/12_testsets-benchmark.md).
+
+```bash
+# seed or restore: build the whole lab database again from its sources
+python3 pipeline/seed_from_testset.py --db data/lab.sqlite3
+```
+
+`seed_from_testset.py` runs the steps of this section in one command: the tables, the
+catalogue, the main images, the patches, the GTINs and QR URLs, the Atlas Core bindings,
+the three test sets, and the label cuts (SAM3 on gx10 through `data/cache/sam3/`). It
+builds the new database at `<db>.seeding`, next to `--db`, with the same image store. A
+failed step stops the script, and `--db` does not change; the next run deletes the
+partial file. After the last step, the old database goes to
+`data/backups/lab-<UTC time>.sqlite3`, and the new one is copied into `--db` with the
+SQLite backup API. The lab server needs no restart. The new database holds the data of
+the sources alone: a wine state, a comment, a favorite, a manual wine, an alternative
+photo, an edit of the Testset page, and an image description are in the backup only. It
+copies no configuration, no run, and no cluster. Read
+[plan 28](docs/plans/28_seed-from-testset.md).
 Git ignores the whole `data/` directory.
+
+## The Testset page of the lab
+
+The Testset page of the lab server (`/testset`) shows one test set of the database and
+writes the labels of its photos. Each click writes to `data/lab.sqlite3` at once. The page
+is a port of the Testset page of the review tool, with a smaller scope. Read
+[plan 24](docs/plans/24_testset-page.md).
+
+- The combobox in the title (`Test set [my (4043 photos) ▾]`) chooses the set: `my`,
+  `official-real-photos`, or `vlmrerank-8b-failed`. The address keeps the set, the
+  controls, and the open photo: `/testset?set=<set>#<slug>/<file name>`. The line after
+  the combobox counts the wines and each photo of the set, the sidebar too. The stats
+  line ends with the time of the last edit of the set.
+- One row for each `Active` and `Disabled` wine, and one row for each place that holds a
+  photo of the set, also when its wine is `Removed` or is not in `wine_catalog`. The NULL
+  place (`__null__`) is the right sidebar, not a row. A `Removed` wine keeps its photos and its labels and gets
+  the badge `Removed`, so a restore finds it again; the benchmark leaves its photos out
+  ("removed wine") until the restore.
+- The buttons `V`, `N`, `x`, and `D` set `positive`, `negative`, `unusable`, and
+  `variant`; the same button again clears the label. A photo of `__null__` takes
+  `positive` or `unusable` alone. The right-click menu marks a photo for deletion; the
+  mark moves no file. The field below a wine holds its note. `Exclude` takes a slug out of
+  the benchmark and asks for a reason.
+- The sidebar holds the photos that wait for a wine, also after a restart. A drag of a
+  photo card onto the sidebar moves the photo to `__null__`; a drag of a sidebar card
+  onto a wine row moves it to that wine; the key `0` of the large view moves it to the
+  sidebar (`POST /api/testset-move`). A move clears the label and keeps the comment, the
+  box, the delete mark, and the proposal; `moved_from` gets the old place; a file name
+  that the target holds gets `_moved<N>`. No file moves. A sidebar card has `V`
+  (confirmed: no card of the catalogue shows this wine) and `×` (unusable). The
+  benchmark takes a NULL photo only with `V` (`positive`).
+- The large view shows the catalogue image and the photo side by side, with the comment
+  panel. The keys: `Left` and `Right` the photos of the wine, `Up` and `Down` the wines,
+  `1` to `4` the labels, `b` the box, `Esc` close.
+- The box of the main object is optional, for a scene with several items. `b` or `Box`,
+  then a drag on the photo, draws it; `Clear box` removes it. The box is in the pixels of
+  the photo after its EXIF orientation. A card with a box gets the badge `box`. The IoU
+  of the box against the box of the matcher comes with plan 27.
+- The filters of the old page, and `marked for deletion`, `holds a box`, and `removed
+  from the catalogue`. The 13 sort orders of the old page. `Find` matches each word in
+  the slug, the name, the producer, the region, or the grapes, in any order, with the case
+  and the accents folded.
+- A drop of image files from the Finder onto the sidebar (the NULL place) or onto a wine
+  row stores each file in that place with no label (`POST /api/testset-upload`). A new
+  image keeps its file name; a clash with another image of the place gets `_upload<N>`.
+  An image that the set holds already keeps the file name of the set. The same place
+  refuses it (HTTP 409); another place takes it, for example for `negative`. The page
+  takes JPEG, PNG, WebP, GIF, and BMP of at most 20 MB. HEIC is refused: Pillow here
+  cannot read it.
+- Not on this page yet: the copy of a photo, the upload by a file button and by URL, the
+  checks (`validate`), the group editor, and the CSV export.
+
+```bash
+# write the JSON files of one set from the database (the database is the source)
+python3 pipeline/export_testset.py --db data/lab.sqlite3 --set my --out <directory>
+```
+
+The export writes `review-labels.json` and `excluded-slugs.json` into `--out`, in the
+form of the review tool. The import of a set, then its export, gives the same `labels`,
+`wines`, excluded slugs, and `note` as the source files: checked on the three sets on
+2026-09-25.
 
 ## The embeddings of the lab
 
@@ -300,7 +382,13 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   every 30 s.
 - The Embeddings page of the lab server (`/embedding`) shows the prepared images of one
   entry, with a combobox, the buttons `Build` and `Stop`, and the progress of each
-  running build. The lab server starts a build with `embedding_python` of
+  running build. Each running job row ends with a button `(x)`: it stops the build of
+  that row (`POST /api/embeddings/<name>/stop`), also when the combobox selects another
+  entry. A `stopping` row keeps a disabled `(x)`. `Build` continues a stopped build.
+  The header has two rows. The first row holds the title, the
+  `Configuration` combobox, the buttons, the message of the last build, and the
+  navigation. The second row holds `Show` and `Search`. The header shows no counts; the
+  row `Items` of the source panel shows them. The lab server starts a build with `embedding_python` of
   `config.yaml`. The routes are in `pipeline/embedding_routes.py`. `lab_server.py`
   sends each route of the page to that module. The old routes `/api/embedding` and
   `/img/embedding` of the review tool stay HTTP 503. The count of failed items is red
@@ -343,6 +431,92 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   is `random-unit-vectors`. `pipeline/mock_run.py` makes its runs (section "The runs of
   the lab").
 
+## The VLM inferences
+
+The key `vlm` holds one entry for each named VLM inference. `config.yaml` and
+`config.old.yaml` hold the same section; `tests/test_vlm_config.py` checks that the two
+files agree. `pipeline/vlm_config.py` reads the key. An entry holds the first five keys,
+MAY hold `key`, and holds no other key:
+
+| Key | Meaning |
+|---|---|
+| `name` | The name that a script uses. The names differ. |
+| `protocol` | `openai`: `POST <endpoint>/chat/completions`. |
+| `thinking_field` | Where the switch `enable_thinking` goes: `chat_template_kwargs` (the gx10 gateway) or `top_level` (QwenCloud and DashScope). In `scripts/cluster_rules.py` it also selects the JSON mode rule and the second attempt of an answer that reached `max_tokens`. |
+| `endpoint` | The base URL, for example `http://192.168.86.14:18081/v1`. |
+| `model` | The model name that the service knows. |
+| `key` | Absent or `null` when the service needs no key, or `{env:NAME}`: the key is read from the shell variable `NAME` at run time. A key value in the file is refused. |
+
+| Entry | Service | Key |
+|---|---|---|
+| `qwen3.5-9b-nvfp4` | gx10 gateway; the image descriptions of plan 26 | none |
+| `qwen3.5-9b` | gx10 gateway; stage 1 of the cluster rules | none |
+| `qwen3-vl-32b` | gx10 gateway; the default of `04_verify.py` | none |
+| `qwencloud-qwen3.8-max` | QwenCloud Token Plan; stage 2 of the cluster rules | `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}` |
+| `qwencloud-qwen3.8-flash` | QwenCloud Token Plan | `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}` |
+| `dashscope-qwen3.7-flash` | DashScope, pay-as-you-go | `{env:QWENCLOUD_PAYGO_API_KEY}` |
+
+```bash
+# 04_verify.py names the entries in --backends, as name:workers
+SVOE_VINO_REVIEW_CONFIG=config.old.yaml python3 scripts/04_verify.py \
+    --backends qwen3-vl-32b:12,qwencloud-qwen3.8-flash:8
+```
+
+`scripts/04_verify.py` and `scripts/cluster_rules.py` import `scripts/common.py`, which
+needs the key `dataset`. `config.yaml` has no such key, so both scripts run with
+`SVOE_VINO_REVIEW_CONFIG=config.old.yaml`. An entry whose key variable is not set is
+ignored by `04_verify.py`; `cluster_rules.py` refuses the call. `scripts/bench_vlm_models.py`
+keeps its own endpoint and does not read the key `vlm`.
+
+## The image descriptions
+
+The table `image_description` describes each image that `wine_image` links to a wine
+(`main`, `main_patched`, and the additional types): `package_type`, `subject_scope`,
+`package_view`, and `content_roles`. Read [plan 26](docs/plans/26_image-description.md).
+
+| Field | Values |
+|---|---|
+| `package_type` | `bottle`, `can`, `keg`, `bag`, `bag_in_box`, `tetra_pak`, `barrel`, `decanter`, `box`, `other`, `unknown` |
+| `subject_scope` | `full_package`, `label_closeup`, `multiple_packages`, `unknown` |
+| `package_view` | `front`, `back`, `unknown` |
+| `content_roles` | a list of 1 to 2 of `front_label`, `back_label`, `unknown`; `unknown` stands alone |
+
+- A button `✎` in the bottom right corner of each image of `/dataset` opens the editor
+  of that image. A value set by hand stays. `— not set —` clears a value.
+- `created_by` tells who made the row: `manual` (the owner, before the VLM) or `vlm`.
+  `vlm_at` is empty until the VLM filled the row.
+- The watcher `pipeline/describe_images.py` sends each image with no VLM fill to the
+  `vlm` entry of `image_description.vlm` (`qwen3.5-9b-nvfp4`). The prompt holds the
+  values that are set as fixed facts. The code checks the answer against the JSON Schema
+  `ANSWER_SCHEMA` and fills only the values that are not set (`COALESCE`). `vlm_answer`
+  keeps the full answer. An answer that fails the schema writes nothing and counts as a
+  failure; an image stops after `max_attempts` (3) failures. A failure of the service (an
+  HTTP 429 or 5xx answer, no connection) does not count; the watcher waits and tries again.
+- The lab server starts the watcher when `image_description.watch` is true. The commands
+  are in `COMMANDS.md`, section "Описания изображений".
+- The pill at the left of `Add wine` shows the watcher: `VLM 895 / 2,022 · 2.6 s`
+  (working, a green dot that pulses), `VLM all … described` or `VLM idle · … pending`
+  (idle), `VLM waiting: <error>` (amber: the service or the database cannot be used now),
+  or `VLM watcher not running` (stopped). `· N failed` in red counts the images that
+  reached `max_attempts`. Its title names the pid, the wine of the image that the VLM
+  reads now, the counts, the speed of the last 20 images, and the time of the last step.
+  The page asks `GET /api/image-description-status` every 5 s while its tab is visible.
+  The watcher writes its state into `work/describe_images.status.json` at each step; the
+  route reads it, checks that the pid lives, and adds the counts of the database. The
+  cards do not change while the page is open; a reload shows the new descriptions.
+- The dialog holds a closed block `Raw VLM reply` for a row that the VLM filled. It
+  loads `GET /api/image-description-reply?sha256=<sha256>` when it opens: the record of
+  the call in `data/cache/`, with the model, `finish_reason`, the tokens, the reply text,
+  the prompt, the full response body, and the request fields. The route builds the key of
+  the call again from the image, `max_side`, the `vlm` entry, and the prompt; a change of
+  one of them makes an old record unfindable (`found: false`).
+- The button `Advanced Filters:` in the bar shows a second row of filters. Its first
+  filter is `Package`: `All`, each `package_type`, and `not described`. The
+  `package_type` of the patched image decides when the wine has one, else the main
+  image. A wine with no image is `not described`. The button is marked while a filter is
+  active. A save in the dialog draws the card again but does not apply the filter again,
+  as for `Show`; choose the value again to apply it.
+
 ## The runs of the lab
 
 The Runs page of the lab server (`/runs`) shows the run directories of `runs/`. The runs
@@ -361,11 +535,14 @@ python3 pipeline/mock_run.py --set my [--top-k 10] [--seed N] [--limit N]
   of `embeddings` in `config.yaml`. `pipeline/benchmark.py` writes it when
   `run_benchmark` gets the argument `configuration`. A run with no such key has no
   configuration; all runs before 2026-09-25 are such runs.
-- The filter `Configuration` above the table offers `every run`, each configuration of
+- The filter `Configuration` in the header, after the title `Match runs`, offers `every run`, each configuration of
   `config.yaml` with the count of its runs, a name that a run holds and `config.yaml`
   does not (`not in config.yaml`), and `no configuration`. The page address keeps the
   value (`?configuration=<name>`); the hash keeps the open run. When the open run
   leaves the table, the first run of the table with metrics opens.
+- The table of the runs has pages: `prev`, `next`, and `per page` (25, 50, 100, or
+  `all`). The browser keeps the page size. A sort goes back to page 1; the hash of a run
+  opens the page that holds it.
 - The table has the column `configuration`.
 - The photo of a row comes from the image store of the lab database by its
   `image_sha256`, in the folder of its `image` row (mostly `testset`). A photo whose
@@ -446,7 +623,9 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `bottle_label_box_dir` | `BOTTLE_LABEL_BOX_DIR` | Box crops of the same labels, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
 | `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
 | `clusters` | `CLUSTERS`, `CLUSTERS_FILE` | The settings of `scripts/10_clusters.py` and the path of the cluster file. See [Catalogue clusters](#catalogue-clusters). |
-| `cluster_rules` | `cluster_rules.CFG` | The VLM, the picture sizes, the rules file, and the notes file of `scripts/11_cluster_rules.py`. See [Label rules of the clusters](#label-rules-of-the-clusters). |
+| `cluster_rules` | `cluster_rules.CFG` | The VLM entries of the two stages (`vlm`, `rules_vlm`), the picture sizes, the rules file, and the notes file of `scripts/11_cluster_rules.py`. See [Label rules of the clusters](#label-rules-of-the-clusters). |
+| `vlm` | `cluster_rules.VLM`, `cluster_rules.RULES_VLM` | The named VLM inferences. See [The VLM inferences](#the-vlm-inferences). |
+| `image_description` | `describe_images.settings` | The watcher of the image descriptions: `watch`, `vlm`, `max_side`, `poll_seconds`, `max_attempts`. See [The image descriptions](#the-image-descriptions). |
 
 ### The keys of one dataset
 
@@ -1091,9 +1270,12 @@ python3 scripts/11_cluster_rules.py --dry-run
 Stage 1 uses `qwen3.5-9b` on the gx10 gateway, with thinking off; one description
 takes about 15 seconds. Stage 2 runs once, so it uses the more capable `qwen3.8-max` of
 the QwenCloud Token Plan, with thinking, 4 requests at a time; one rule takes about 40
-to 70 seconds. The key comes from the environment variable `QWENCLOUD_TOKEN_PLAN_API_KEY`
-(`rules_key_env` of `config.yaml`); a shell that runs stage 2, or the review tool that
-builds a rule, MUST hold it. The prompt of stage 2 keeps only major differences: the
+to 70 seconds. `cluster_rules.vlm` and `cluster_rules.rules_vlm` of `config.old.yaml`
+name the two `vlm` entries: `qwen3.5-9b` and `qwencloud-qwen3.8-max`. The key comes from
+the environment variable `QWENCLOUD_TOKEN_PLAN_API_KEY` (the `key` of the entry
+`qwencloud-qwen3.8-max`); a shell that runs stage 2, or the review tool that builds a
+rule, MUST hold it. The old keys `url`, `model`, `rules_url`, `rules_model`, `rules_api`,
+and `rules_key_env` are refused. The prompt of stage 2 keeps only major differences: the
 grapes, a kosher mark, the wine name or the line name, the colour of the wine as the
 label states it, the sugar level, a blend ratio, a reserve or edition mark, the volume,
 and the vintage year. The prompt allows only features that are printed on the label:

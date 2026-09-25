@@ -104,7 +104,9 @@ Source: owner messages of 2026-09-25T12:36:00+0300, 12:38:00, 12:41:00 (three an
    - the lab navigation (`Dataset`, `Embeddings`, `Clusters`, `Testset`, `Runs`) and the
      mark `/* THEME_CSS */`;
    - the filter `Configuration` above the table of the runs, and the column
-     `configuration`;
+     `configuration`; since 2026-09-25T18:05:36 the filter stands in the header, after
+     the title `Match runs`, and the table has pages (25, 50, 100, or all runs; owner
+     message of 18:05:49; drink-atlas-workspace-ca [a2daf6]);
    - `row.photo_url` in place of `/img/photo` and `/img/runphoto`;
    - `bottles[slug]` in place of `/img/bottle`;
    - `patched` of `/api/run` in place of `/api/patched`;

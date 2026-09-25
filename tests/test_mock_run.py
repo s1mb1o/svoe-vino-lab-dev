@@ -27,8 +27,11 @@ import mock_run as MR  # noqa: E402
 
 PHOTOS = {"wine-a/01.jpg": b"a1", "wine-a/02.jpg": b"a2", "wine-b/01.jpg": b"b1",
           "__null__/n1.jpg": b"n1"}
+# A NULL photo is a `no match` query only with the label `positive` (owner answer of
+# 2026-09-25T18:05:36+0300, plan 24).
 LABELS = {"wine-a": {"01.jpg": {"label": "positive"}, "02.jpg": {"label": "negative"}},
-          "wine-b": {"01.jpg": {"label": "positive"}}}
+          "wine-b": {"01.jpg": {"label": "positive"}},
+          "__null__": {"n1.jpg": {"label": "positive"}}}
 SLUGS = ["wine-%02d" % i for i in range(40)]
 
 

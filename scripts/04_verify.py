@@ -8,12 +8,13 @@ import argparse, json, os, queue, re, sys, threading, time
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import GX10, VLM_MODEL, data_url, db, log
+from common import CONFIG, data_url, db, log
 
 # The cache of the model calls is in `pipeline/`. Read docs/plans/25_model-call-cache.md.
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                              "pipeline"))
 import model_cache  # noqa: E402
+import vlm_config  # noqa: E402
 
 PROMPT = (
     "\u041f\u0435\u0440\u0432\u043e\u0435 \u0444\u043e\u0442\u043e \u2014 \u044d\u0442\u0430\u043b\u043e\u043d \u0431\u0443\u0442\u044b\u043b\u043a\u0438 \u0438\u0437 \u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430. "
@@ -53,7 +54,7 @@ def parse(text):
 
 
 class Backend:
-    """One vision endpoint. `local` is llama-swap on gx10, the others are Qwen cloud."""
+    """One vision endpoint. `name` is the name of its entry of the key `vlm`."""
 
     def __init__(self, name, url, model, key, workers):
         self.name = name
@@ -91,30 +92,25 @@ class Backend:
         return out["choices"][0]["message"]["content"]
 
 
-def build_backends(spec):
-    """spec: comma list of name:workers, e.g. local:12,tokenplan:8,dashscope:6"""
-    cat = {
-        "local": (GX10 + "/v1/chat/completions", VLM_MODEL, ""),
-        "tokenplan": ("https://token-plan.ap-southeast-1.maas.aliyuncs.com"
-                      "/compatible-mode/v1/chat/completions", "qwen3.8-flash",
-                      os.environ.get("QWEN_API_KEY", "")),
-        "dashscope": ("https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions",
-                      "qwen3.7-flash", os.environ.get("DASHSCOPE_API_KEY", "")),
-    }
+def build_backends(spec, config=CONFIG):
+    """spec: comma list of name:workers. A name is an entry of the key `vlm` of the
+    configuration, e.g. qwen3-vl-32b:12,qwencloud-qwen3.8-flash:8,dashscope-qwen3.7-flash:6"""
+    entries = vlm_config.entries(config)
     out = []
     for part in spec.split(","):
         part = part.strip()
         if not part:
             continue
         name, _, n = part.partition(":")
-        if name not in cat:
+        entry = entries.get(name)
+        if entry is None:
             log("unknown backend %s, ignored" % name)
             continue
-        url, model, key = cat[name]
-        if name != "local" and not key:
+        key = entry.api_key()
+        if entry.key_env and not key:
             log("backend %s has no API key in the environment, ignored" % name)
             continue
-        out.append(Backend(name, url, model, key, int(n or 4)))
+        out.append(Backend(name, entry.url, entry.model, key, int(n or 4)))
     return out
 
 
@@ -139,8 +135,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--top", type=int, default=8, help="candidates verified per wine")
-    ap.add_argument("--backends", default="local:12",
-                    help="comma list of name:workers, e.g. local:12,tokenplan:8,dashscope:6")
+    ap.add_argument("--backends", default="qwen3-vl-32b:12",
+                    help="comma list of name:workers; a name is an entry of the key vlm, "
+                         "e.g. qwen3-vl-32b:12,qwencloud-qwen3.8-flash:8")
     ap.add_argument("--maxside", type=int, default=448)
     ap.add_argument("--bg-max", type=float, default=0.55)
     ap.add_argument("--sim-min", type=float, default=0.25)

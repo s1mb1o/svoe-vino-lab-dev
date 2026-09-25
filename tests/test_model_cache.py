@@ -116,6 +116,7 @@ class ModelCacheTest(CacheCase):
         self.assertEqual(record["request"]["images"],
                          [model_cache.sha256_hex(b"one"), model_cache.sha256_hex(b"two")])
         self.assertRegex(record["created"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d{4}$")
+        self.assertEqual(os.stat(model_cache.path_of(fields)).st_mode & 0o777, 0o644)
 
     def test_lookup_misses_for_a_broken_file_and_for_other_request_fields(self):
         fields = self.fields()

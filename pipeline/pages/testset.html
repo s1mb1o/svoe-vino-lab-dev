@@ -1,0 +1,1869 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino test sets</title>
+<style>
+/* THEME_CSS */
+
+/* The Testset page of the lab server (plan 24). It is a port of `PAGE` of
+   `scripts/review_server.py`: the labels, the delete mark, the comments, the notes of
+   a wine, and the exclusions. Each click writes to the lab database. The right sidebar
+   is the NULL place: a photo there waits for a wine (owner answer of 2026-09-25
+   18:05:36). The copy, the upload, and the checks of the old page are not here. */
+
+/* The catalogue image of a wine with a `main_patched` image: the page shows the patch.
+   The mark sits ON the image, in the top right corner. */
+.pic { position: relative; display: block; line-height: 0; }
+.pic > .patched {
+  position: absolute; top: 3px; right: 3px; z-index: 1; pointer-events: none;
+  font: 700 9px/1.25 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--var);
+  background: var(--var-bg); border: 1px solid var(--var);
+  border-radius: 4px; padding: 0 3px;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: 10px 16px; box-shadow: var(--shadow);
+}
+h1 { font-size: 17px; margin: 0 0 8px; font-weight: 650; letter-spacing: .01em;
+     display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* The title holds the selector of the test set (owner answer of 2026-09-25 18:05:36). */
+h1 #set { font: inherit; font-size: 16px; padding: 2px 8px; }
+h1 .sub { color: var(--muted); font-weight: 400; }
+.head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.head-top h1 { margin-right: auto; }
+.nav { display: flex; gap: 6px; flex: none; flex-wrap: wrap; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+.bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.bar label { color: var(--muted); font-size: 12px; display: flex; gap: 5px; align-items: center; }
+select, input[type=search] {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 7px; font: inherit; font-size: 13px; max-width: 100%;
+}
+input[type=search] { min-width: 210px; }
+.progress { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px 12px;
+            align-items: center; font-size: 13px; }
+.progress b { font-variant-numeric: tabular-nums; }
+.meter { width: 150px; height: 7px; border-radius: 4px; background: var(--panel-2);
+         border: 1px solid var(--line); overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--accent); width: 0; }
+.muted { color: var(--muted); }
+.tag { padding: 1px 6px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); }
+.tag.pos { color: var(--pos); background: var(--pos-bg); border-color: transparent; }
+.tag.neg { color: var(--neg); background: var(--neg-bg); border-color: transparent; }
+.tag.unu { color: var(--unu); background: var(--unu-bg); border-color: transparent; }
+.tag.var { color: var(--var); background: var(--var-bg); border-color: transparent; }
+.tag.grp { color: var(--accent); border-color: var(--accent); }
+.tag.exc { color: var(--exc); background: var(--exc-bg); border-color: transparent; }
+/* The tag `variant group of N` is a button: it shows the group alone. */
+button.tag {
+  font: inherit; font-size: 11px; line-height: 1.35; cursor: pointer;
+  background: none; padding: 1px 6px;
+}
+button.tag.grp:hover { background: var(--accent); color: var(--panel); }
+#grp-clear {
+  border: 1px solid var(--accent); background: none; color: var(--accent);
+  border-radius: 999px; font: inherit; font-size: 12px; line-height: 1.2;
+  padding: 3px 10px; cursor: pointer; white-space: nowrap;
+}
+#grp-clear:hover { background: var(--accent); color: var(--panel); }
+#grp-clear[hidden] { display: none; }
+#grp-clear b { font-variant-numeric: tabular-nums; }
+/* The state of the wine in the catalogue. A wine that is `Removed` keeps its photos in
+   the set, so that a restore finds them again (owner answer of 2026-09-25 17:13:17). */
+.state {
+  display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; letter-spacing: .02em; vertical-align: middle;
+  border: 1px solid var(--line); color: var(--muted); background: var(--panel-2);
+}
+.state.removed { color: var(--exc); border-color: var(--exc); background: var(--exc-bg); }
+.state.disabled { color: var(--var); border-color: var(--var); background: var(--var-bg); }
+tr.tr-removed .bottle { opacity: .55; }
+
+main { padding: 12px 16px 64px; padding-right: 244px; }
+/* The sidebar stands over the page at the right edge. The sticky header keeps the same
+   room free, so the sidebar does not cover the counts. */
+header { padding-right: 244px; }
+body.side-off #side { display: none; }
+body.side-off main, body.side-off header { padding-right: 16px; }
+#side-toggle {
+  font: inherit; font-size: 11px; padding: 3px 9px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+}
+#side-toggle:hover { border-color: var(--accent); color: var(--text); }
+#side-toggle.on { color: var(--accent); border-color: var(--accent); }
+#side-toggle b { font-variant-numeric: tabular-nums; }
+/* The sidebar: the photos of the NULL place. The database holds them, so they stay
+   between launches. */
+#side {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 228px; z-index: 20;
+  display: flex; flex-direction: column;
+  background: var(--panel); border-left: 1px solid var(--line);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, .06);
+}
+#side .sb-head {
+  padding: 10px 12px 8px; border-bottom: 1px solid var(--line);
+  font-size: 13px; font-weight: 650;
+}
+#side .sb-head .n { color: var(--accent); }
+#side .sb-help { color: var(--muted); font-size: 11px; font-weight: 400; margin-top: 4px; }
+#side-hide {
+  float: right; font: inherit; font-size: 12px; line-height: 1; padding: 2px 6px;
+  border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--muted); cursor: pointer;
+}
+#side-hide:hover { border-color: var(--accent); color: var(--text); }
+#held { flex: 1; overflow-y: auto; padding: 10px; display: flex;
+        flex-direction: column; gap: 8px; }
+#held .empty { font-size: 12px; text-align: center; padding: 18px 6px; }
+#side.over { background: var(--panel-2); }
+#side.over #held { outline: 2px dashed var(--accent); outline-offset: -6px; border-radius: 8px; }
+.card.held-card { width: 100%; }
+.card.held-card img { height: 150px; }
+.card.held-card .box-tag { top: 132px; }
+.card .from { font-size: 10px; color: var(--muted); word-break: break-all; margin: 0 2px 4px; }
+/* A row that is ready to take the dragged photo. */
+tr.photo-drop > td { background: var(--panel-2) !important; }
+tr.photo-drop { outline: 2px dashed var(--accent); outline-offset: -2px; }
+.card.dragging { opacity: .4; }
+/* An upload of files from the file manager runs. */
+body.uploading, body.uploading * { cursor: progress !important; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; }
+tbody tr { background: var(--panel); }
+/* The rows of one variant group stand next to each other and share a colour. */
+tbody tr.grp-a { background: var(--grp-a); }
+tbody tr.grp-b { background: var(--grp-b); }
+tbody tr.grp-a + tr.grp-a td, tbody tr.grp-b + tr.grp-b td { border-top-style: dashed; }
+/* An excluded wine is out of the benchmark. The red row states it at a glance. */
+tbody tr.excl, tbody tr.excl.grp-a, tbody tr.excl.grp-b { background: var(--exc-bg); }
+tbody tr.excl .bottle { opacity: .55; }
+tbody tr + tr td { border-top: 1px solid var(--line); }
+td { padding: 10px; vertical-align: top; }
+td.wine { width: 320px; min-width: 300px; }
+.wine-inner { display: flex; gap: 10px; }
+.bottle {
+  width: 84px; min-width: 84px; height: 140px; object-fit: contain;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 3px;
+  cursor: zoom-in;
+}
+.bottle.missing { display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 11px; text-align: center; cursor: default; }
+/* The virtual NULL wine: it collects the photos that match no card of the catalogue. */
+.bottle.null-bottle { display: flex; align-items: center; justify-content: center;
+  border-style: dashed; border-width: 2px; background: transparent; cursor: default;
+  color: var(--muted); font-size: 18px; font-weight: 700; letter-spacing: .04em; }
+tbody tr.null-row { background: var(--panel-2); }
+tbody tr.null-row .meta .nm { color: var(--muted); }
+.bottle-col { display: flex; flex-direction: column; gap: 5px; min-width: 84px; }
+/* A wine of the catalogue with no photo in this set. */
+tbody tr.cat-only { background: var(--panel-2); }
+.excl-btn {
+  width: 84px; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--muted); border-radius: 6px; font: inherit; font-size: 11px;
+  line-height: 1.2; padding: 3px 4px; cursor: pointer;
+}
+.excl-btn:hover { border-color: var(--exc); color: var(--exc); }
+.excl-btn.on {
+  border-color: var(--exc); background: var(--exc); color: #fff; font-weight: 650;
+}
+.excl-btn.saving { border-style: dashed; }
+.excl-why {
+  width: 84px; color: var(--exc); font-size: 11px; line-height: 1.25;
+  word-break: break-word;
+}
+.meta { min-width: 0; }
+.meta .nm { font-weight: 650; }
+.meta .pr { color: var(--text); }
+.meta .sm { color: var(--muted); font-size: 12px; word-break: break-all; }
+.copy {
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
+  border-radius: 4px; font: inherit; font-size: 10px; line-height: 1.2;
+  padding: 1px 4px; margin-left: 4px; cursor: pointer; vertical-align: baseline;
+  font-weight: 400;
+  /* The label of this button stays out of a text selection. */
+  -webkit-user-select: none; user-select: none;
+}
+.copy:hover { border-color: var(--accent); color: var(--text); }
+.copy.done { color: var(--pos); border-color: var(--pos); }
+.wine-note {
+  display: block; width: 100%; margin-top: 6px; resize: none;
+  height: 26px; overflow: hidden;
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px;
+  font: inherit; font-size: 12px; line-height: 1.35;
+}
+.wine-note::placeholder { color: var(--muted); }
+.wine-note:focus, .wine-note.filled {
+  height: 84px; overflow: auto; outline: none; border-color: var(--accent);
+}
+.wine-note.filled { background: var(--panel); }
+.wine-note.saving { border-style: dashed; }
+.cards { display: flex; flex-wrap: wrap; gap: 10px; }
+.card {
+  position: relative; width: 172px; background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 8px; padding: 6px;
+}
+.card.pos { border-color: var(--pos); background: var(--pos-bg); }
+.card.neg { border-color: var(--neg); background: var(--neg-bg); }
+.card.unu { border-color: var(--unu); background: var(--unu-bg); opacity: .55; }
+.card.var { border-color: var(--var); background: var(--var-bg); }
+.card.moved { outline: 2px dashed var(--accent); outline-offset: 2px; }
+/* A card marked for deletion. The mark moves no file. */
+.card.del { outline: 2px solid var(--neg); outline-offset: 2px; opacity: .45; }
+.card.del img { filter: grayscale(1); }
+.del-tag {
+  position: absolute; top: 4px; right: 4px; z-index: 3;
+  background: var(--neg); color: #fff; border-radius: 999px;
+  font-size: 10px; line-height: 1; padding: 3px 7px; font-weight: 700;
+  pointer-events: none;
+}
+.card.del .note-badge { right: 40px; }
+/* A photo with a box of the main object. The large view shows the box. */
+.box-tag {
+  position: absolute; left: 10px; top: 154px; z-index: 3;
+  background: var(--accent); color: #fff; border-radius: 999px;
+  font-size: 9px; line-height: 1; padding: 3px 7px; font-weight: 700; letter-spacing: .03em;
+  pointer-events: none;
+}
+/* A photo that an agent proposed is not a label. It is marked apart. */
+.card.prop { border-style: dashed; border-color: var(--var); }
+.prop-tag {
+  position: absolute; top: 4px; left: 4px; z-index: 2;
+  background: var(--var); color: #14100a; border-radius: 999px;
+  font-size: 9px; font-weight: 700; padding: 1px 6px; letter-spacing: .02em;
+}
+.card img {
+  width: 100%; height: 172px; object-fit: contain; display: block;
+  background: var(--panel); border-radius: 5px; cursor: zoom-in;
+}
+.card .cap { font-size: 11px; color: var(--muted); margin: 4px 2px 5px;
+             display: flex; justify-content: space-between; gap: 4px; }
+.card .moved-to { font-size: 11px; color: var(--accent); margin: 4px 2px 0;
+                  word-break: break-all; }
+.btns { display: flex; gap: 6px; }
+.btns button {
+  flex: 1; padding: 5px 0; font: inherit; font-weight: 700; font-size: 12px;
+  border-radius: 6px; border: 1px solid var(--line); background: var(--panel);
+  color: var(--muted); cursor: pointer;
+}
+.btns button:hover { border-color: var(--accent); color: var(--text); }
+.btns button.on.pos { background: var(--pos); border-color: var(--pos); color: #fff; }
+.btns button.on.neg { background: var(--neg); border-color: var(--neg); color: #fff; }
+.btns button.on.unu { background: var(--unu); border-color: var(--unu); color: #fff; }
+.btns button.on.var { background: var(--var); border-color: var(--var); color: #fff; }
+.empty { color: var(--muted); font-style: italic; }
+#count { color: var(--muted); font-size: 12px; margin: 0 0 8px; }
+#error { color: var(--exc); font-size: 13px; margin: 0 0 8px; white-space: pre-wrap; }
+#error:empty { display: none; }
+.note-badge {
+  position: absolute; top: 4px; right: 4px; z-index: 2;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: #fff; cursor: default;
+  box-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+.note-badge svg { width: 12px; height: 12px; display: block; }
+.note-pop {
+  display: none; position: absolute; top: 24px; right: 0; z-index: 30;
+  width: 250px; max-height: 240px; overflow: auto;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--accent); border-radius: 7px;
+  padding: 7px 8px; font-size: 11px; line-height: 1.45;
+  white-space: pre-wrap; overflow-wrap: anywhere; text-align: left;
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+}
+.note-badge:hover .note-pop { display: block; }
+/* The right-click menu of one photo. */
+.ctxmenu {
+  position: fixed; z-index: 60; min-width: 172px; padding: 4px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .45);
+  font-size: 13px;
+}
+.ctxmenu[hidden] { display: none; }
+.ctxmenu button {
+  display: block; width: 100%; text-align: left; padding: 7px 10px;
+  background: none; border: 0; border-radius: 6px; color: inherit;
+  font: inherit; cursor: pointer;
+}
+.ctxmenu button:hover { background: var(--line); }
+.ctxmenu button.danger { color: var(--neg); }
+.ctxmenu button.done { color: var(--pos); }
+.ctxmenu .ctx-sep { height: 1px; background: var(--line); margin: 4px 0; }
+.ctxmenu .ctx-head {
+  padding: 4px 10px 6px; color: var(--muted); font-size: 11px;
+  border-bottom: 1px solid var(--line); margin-bottom: 4px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* The large view: the catalogue image at the left, the photo at the right, and the
+   comment panel. The two images stay next to each other in the middle. */
+#lb {
+  position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none;
+  align-items: center; justify-content: center; gap: 12px;
+  z-index: 50; padding: 20px 20px 34px;
+}
+#lb.open { display: flex; }
+.lb-inner {
+  display: flex; gap: 8px; flex: 1 1 auto; min-width: 0; height: 100%;
+  align-items: center; justify-content: center;
+}
+.lb-side {
+  flex: 0 0 300px; max-width: 42vw; height: 100%; min-height: 0;
+  display: flex; flex-direction: column; gap: 6px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px; box-shadow: var(--shadow);
+}
+.side-h { font-size: 13px; font-weight: 650; }
+.side-ctx { font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+.lb-side textarea {
+  flex: 1 1 auto; min-height: 120px; resize: none;
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; padding: 7px;
+  font: inherit; font-size: 13px; line-height: 1.4;
+}
+.lb-side textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.side-foot { display: flex; align-items: center; gap: 8px; font-size: 11px; flex-wrap: wrap; }
+#cmt-state, #box-state { color: var(--muted); flex: 1; }
+#cmt-state.saved, #box-state.saved { color: var(--pos); }
+#cmt-state.failed, #box-state.failed { color: var(--neg); }
+.side-foot button {
+  font: inherit; font-size: 11px; padding: 3px 9px; cursor: pointer;
+  background: var(--panel-2); color: var(--muted);
+  border: 1px solid var(--line); border-radius: 6px;
+}
+.side-foot button:hover { border-color: var(--accent); color: var(--text); }
+#box-mode.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.side-note { font-size: 10px; color: var(--muted); line-height: 1.35; }
+.side-note b { color: var(--text); }
+.lb-fig {
+  position: relative; margin: 0; flex: 0 1 auto; min-width: 0; max-width: 49%; gap: 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.lb-fig[hidden] { display: none; }
+.lb-fig img {
+  max-width: 100%; max-height: calc(100vh - 116px); width: auto; object-fit: contain;
+  border-radius: 6px; background: rgba(255,255,255,.06); cursor: default;
+  -webkit-user-drag: none; user-select: none;
+}
+/* The box mode: a drag on the photo draws the box of the main object. */
+#lb.boxing #lb-cand img { cursor: crosshair; touch-action: none; }
+.lb-box {
+  position: absolute; z-index: 2; pointer-events: none; display: none;
+  border: 2px solid #ffd23f; box-shadow: 0 0 0 1px rgba(0,0,0,.7), inset 0 0 0 1px rgba(0,0,0,.7);
+}
+.lb-box.on { display: block; }
+.lb-box.draft { border-style: dashed; }
+.lb-fig figcaption {
+  color: #e9e9ee; font-size: 12px; text-align: center; width: 0; min-width: 100%;
+  text-shadow: 0 1px 2px #000; overflow-wrap: anywhere;
+}
+.lb-fig figcaption b { color: #fff; }
+#lb .hint {
+  position: absolute; left: 0; right: 0; bottom: 10px; text-align: center;
+  color: #9a9aa6; font-size: 11px;
+}
+#lb .hint b { color: #e9e9ee; }
+#lb-status {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  padding: 3px 16px; border-radius: 999px; border: 1px solid transparent;
+  font-size: 13px; font-weight: 700; letter-spacing: .03em; white-space: nowrap;
+  max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
+}
+#lb-status.none { color: #9a9aa6; border-color: #44444f; background: rgba(255,255,255,.05); }
+#lb-status.pos { color: #0b2b15; background: #5fd98a; }
+#lb-status.neg { color: #08243c; background: #6db6f2; }
+#lb-status.unu { color: #1b1b20; background: #8a8a95; }
+#lb-status.var { color: #2e2207; background: #e0b25c; }
+@media (max-width: 980px) {
+  /* The column scrolls from its top, below the status pill. */
+  #lb.open { flex-direction: column; overflow-y: auto; justify-content: flex-start;
+             padding-top: 48px; }
+  .lb-side { flex: 0 0 auto; max-width: 100%; width: 100%; height: auto; }
+  .lb-side textarea { min-height: 70px; }
+  .side-note { display: none; }
+}
+@media (max-width: 760px) {
+  .lb-inner { flex-direction: column; gap: 10px; height: auto; }
+  .lb-fig { max-width: 100%; }
+  .lb-fig img { max-height: calc(50vh - 70px); }
+  #lb .hint { display: none; }
+  /* A sticky header takes half of a phone screen, so it scrolls away here. */
+  header { position: static; }
+  /* The sidebar stands above the table as a strip that scrolls to the side. */
+  main, header { padding-right: 16px; }
+  #side { position: static; width: auto; box-shadow: none; border-left: 0;
+          border-bottom: 1px solid var(--line); }
+  #held { flex-direction: row; overflow-x: auto; }
+  .card.held-card { width: 150px; flex: none; }
+  .nav { width: 100%; }
+  td.wine { width: auto; min-width: 0; }
+  table, tbody, tr, td { display: block; width: 100%; }
+  td { padding: 8px 10px; }
+  input[type=search] { min-width: 0; width: 100%; }
+  .bar label { flex-wrap: wrap; }
+  .progress { margin-left: 0; }
+  .card { width: calc(50% - 5px); }
+  .card img { height: 150px; }
+  .box-tag { top: 132px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head-top">
+    <h1>Test set <select id="set" title="the test set of the page"></select>
+      <span class="sub" id="head-sub"></span></h1>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
+      class="on" href="/testset">Testset</a><a href="/runs">Runs</a></nav>
+  </div>
+  <div class="bar">
+    <label>Sort
+      <select id="sort">
+        <option value="slug">slug A-Z</option>
+        <option value="slug_desc">slug Z-A</option>
+        <option value="name">wine name A-Z</option>
+        <option value="producer">producer A-Z</option>
+        <option value="photos_desc">photo count, most first</option>
+        <option value="photos_asc">photo count, fewest first</option>
+        <option value="conf_asc">confidence, lowest first</option>
+        <option value="conf_desc">confidence, highest first</option>
+        <option value="todo">unlabelled first</option>
+        <option value="pos_desc">positive count, most first</option>
+        <option value="neg_desc">negative count, most first</option>
+        <option value="unu_desc">unusable count, most first</option>
+        <option value="group">variant group first</option>
+      </select>
+    </label>
+    <label>Show
+      <select id="filter">
+        <option value="all">all wines</option>
+        <option value="todo">not fully labelled</option>
+        <option value="untouched">no label yet</option>
+        <option value="partial">partly labelled</option>
+        <option value="done">fully labelled</option>
+        <option value="has_pos">has a positive photo</option>
+        <option value="no_pos">has no positive photo</option>
+        <option value="has_neg">has a negative sample</option>
+        <option value="has_unu">has an unusable photo</option>
+        <option value="has_var">has a different-design photo</option>
+        <option value="grouped">has a similar wine (variant group)</option>
+        <option value="nophotos">no candidate photos</option>
+        <option value="noted">holds a comment</option>
+        <option value="proposal">holds a photo proposed by an agent</option>
+        <option value="deleted">marked for deletion</option>
+        <option value="boxed">holds a box</option>
+        <option value="removed">removed from the catalogue</option>
+        <option value="excluded">excluded from the benchmark</option>
+        <option value="included">included in the benchmark</option>
+      </select>
+    </label>
+    <label>Slugs
+      <select id="slugsel" title="An excluded slug is out of the benchmark.">
+        <option value="all">all</option>
+        <option value="included">included</option>
+        <option value="excluded">excluded</option>
+      </select>
+    </label>
+    <label>Find <input id="q" type="search" placeholder="slug, name, producer, region"></label>
+    <button id="grp-clear" type="button" hidden
+            title="the table shows one variant group; click to show every wine again"
+            >variant group <b id="grp-clear-id"></b> &times;</button>
+    <div class="progress">
+      <span id="stat"></span>
+      <span class="meter"><i id="meter"></i></span>
+      <button id="side-toggle" type="button"
+              title="show or hide the sidebar (key s)">sidebar <b id="side-n">0</b></button>
+    </div>
+  </div>
+</header>
+<aside id="side">
+  <div class="sb-head"><button id="side-hide" type="button"
+        title="hide the sidebar (key s)">&times;</button>Sidebar (NULL)
+    <span class="n" id="held-n">0</span>
+    <div class="sb-help">The NULL place of the set. Drag a photo here to keep it for a
+      later wine; drag it onto a wine row to move it there. Image files from the Finder
+      go here or onto a wine row too. V confirms that no card of the
+      catalogue shows the photo: only such a photo is a "no match" query of a run.</div>
+  </div>
+  <div id="held"></div>
+</aside>
+<main>
+  <p id="error"></p>
+  <p id="count"></p>
+  <table><tbody id="rows"></tbody></table>
+</main>
+<div id="lb">
+  <div id="lb-status"></div>
+  <div class="lb-inner">
+    <figure class="lb-fig" id="lb-ref"><img alt=""><figcaption></figcaption></figure>
+    <figure class="lb-fig" id="lb-cand"><img alt="" draggable="false"><div
+      class="lb-box" id="lb-box"></div><figcaption></figcaption></figure>
+  </div>
+  <aside class="lb-side">
+    <div class="side-h">Comment on this match</div>
+    <div class="side-ctx" id="cmt-ctx"></div>
+    <textarea id="cmt" spellcheck="false"
+      placeholder="What is wrong or unclear about this photo for this wine? &#10;&#10;Example: same label, but the capsule is red, so this is the other vintage."></textarea>
+    <div class="side-foot">
+      <span id="cmt-state"></span>
+      <button id="cmt-clear" type="button">clear</button>
+    </div>
+    <div class="side-h">Box of the main object</div>
+    <div class="side-foot">
+      <button id="box-mode" type="button" title="key b: then drag on the photo">Box</button>
+      <button id="box-clear" type="button">Clear box</button>
+      <span id="box-state"></span>
+    </div>
+    <div class="side-note">The text is saved as you type. The keys do not act while the
+      cursor is in the field. Press Esc once to leave the field, and Esc again to close
+      the view. The box is optional: draw it around the main item of a scene with several
+      items.</div>
+  </aside>
+  <div class="hint"><span id="lb-pos"></span>
+    &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
+    <b>1</b> positive &middot; <b>2</b> negative &middot; <b>3</b> unusable &middot;
+    <b>4</b> other design &middot; <b>b</b> box &middot; <b>0</b> to the sidebar &middot;
+    right-click delete &middot; Esc close</div>
+</div>
+<div id="ctxmenu" class="ctxmenu" hidden></div>
+<script>
+const PATCH_TIP = "patched: this catalogue image is the main_patched image of the wine"
+  + " in the lab database. The main image is not shown.";
+function picHtml(imgHtml, patched) {
+  return `<div class="pic">${imgHtml}${
+    patched ? `<span class="patched" title="${PATCH_TIP}">patched</span>` : ""}</div>`;
+}
+
+let SET = "";         // the name of the set on the page
+let SETS = [];        // [{name, photos, labelled, edited_at}]
+let ROWS = [];        // the rows of the set, as `GET /api/testset` sends them
+let V = {};           // slug -> file -> the label entry of the photo
+let W = {};           // slug -> the note of the whole wine
+let EXC = {};         // slug -> { reason }: the excluded slugs of the set
+let GROUPS = {};      // group id -> { id, slugs }
+let VIEW = [];        // the rows as the table shows them now: filtered and sorted
+let LB = null;        // the place of the large view: { wine: index in VIEW, photo: index }
+let TOTAL = 0;
+let EDITED_AT = null; // the time of the last page edit of the set, as the server writes it
+let GROUP_FILTER = "";
+
+const $ = s => document.querySelector(s);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/* The four labels. `negative` is a wanted result: the photo shows a different wine and
+   stays in the set as a negative sample of this slug. `unusable` takes a photo out. */
+const SHORT = { positive: "pos", negative: "neg", unusable: "unu", variant: "var" };
+const KEY_OF = { "1": "positive", "2": "negative", "3": "unusable", "4": "variant" };
+/* The virtual NULL wine. Its row stands first and no filter takes it away. */
+const NULL_SLUG = "__null__";
+const NULL_LABELS = ["positive", "unusable"];
+function isNullRow(r) { return !!(r && (r.null_row || r.slug === NULL_SLUG)); }
+const TITLE = {
+  positive: "1 — this photo shows this wine",
+  negative: "2 — a different wine; keep as a negative sample",
+  unusable: "3 — not usable at all; leave out of the set",
+  variant: "4 — this wine, different design (other vintage or package)",
+};
+const GLYPH = { positive: "V", negative: "N", unusable: "×", variant: "D" };
+
+function entryOf(slug, file) { return (V[slug] && V[slug][file]) || {}; }
+function labelOf(slug, file) { return entryOf(slug, file).label || null; }
+function movedTo(slug, file) { return entryOf(slug, file).reassign_to || null; }
+function deleteMarked(slug, file) { return entryOf(slug, file).delete === true; }
+function boxOf(slug, file) {
+  const b = entryOf(slug, file).box;
+  return Array.isArray(b) && b.length === 4 && b.every(Number.isInteger) ? b : null;
+}
+function commentOf(slug, file) {
+  const c = entryOf(slug, file).comment;
+  return typeof c === "string" ? c : "";
+}
+function proposalOf(slug, file) {
+  const e = entryOf(slug, file);
+  return e.proposed && !e.label ? e : null;
+}
+function wineNote(slug) { return W[slug] || ""; }
+function isExcluded(slug) { return !!EXC[slug]; }
+function excludeReason(slug) { return (EXC[slug] && EXC[slug].reason) || ""; }
+function grpOf(r) { return (r.group && GROUPS[r.group]) || null; }
+
+function tally(row) {
+  const t = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0, noted: 0,
+              prop: 0, del: 0, box: 0, total: row.photos.length };
+  for (const p of row.photos) {
+    const l = labelOf(row.slug, p.file);
+    if (l in SHORT) t[l]++;
+    if (movedTo(row.slug, p.file)) t.moved++;
+    if (commentOf(row.slug, p.file)) t.noted++;
+    if (proposalOf(row.slug, p.file)) t.prop++;
+    if (deleteMarked(row.slug, p.file)) t.del++;
+    if (boxOf(row.slug, p.file)) t.box++;
+  }
+  t.labelled = t.positive + t.negative + t.unusable + t.variant;
+  return t;
+}
+
+/* The photos that the labelling work covers. A photo of the NULL wine is judged by its
+   place and needs no label, so it stays out of this number. */
+function photoTotal() {
+  return ROWS.reduce((n, r) => n + (isNullRow(r) ? 0 : r.photos.length), 0);
+}
+function reviewRows() { return ROWS.filter(r => !r.catalog_only && !isNullRow(r)); }
+
+function rowTags(t) {
+  return (t.positive ? `<span class="tag pos">${t.positive} pos</span> ` : "") +
+         (t.variant ? `<span class="tag var">${t.variant} design</span> ` : "") +
+         (t.negative ? `<span class="tag neg">${t.negative} neg</span> ` : "") +
+         (t.unusable ? `<span class="tag unu">${t.unusable} unusable</span> ` : "") +
+         (t.moved ? `<span class="tag grp">${t.moved} moved</span> ` : "") +
+         (t.noted ? `<span class="tag grp">${t.noted} noted</span> ` : "") +
+         (t.prop ? `<span class="tag var">${t.prop} proposed</span> ` : "") +
+         (t.del ? `<span class="tag exc">${t.del} to delete</span> ` : "") +
+         (t.box ? `<span class="tag grp">${t.box} box</span>` : "");
+}
+
+function stateBadge(r) {
+  if (isNullRow(r)) return "";
+  if (!r.in_catalog) {
+    return `<span class="state" title="wine_catalog holds no wine with this slug">not in catalogue</span>`;
+  }
+  if (r.state === "Removed") {
+    return `<span class="state removed" title="the wine is Removed in the catalogue; its photos stay in the set and leave the benchmark until a restore">Removed</span>`;
+  }
+  if (r.state === "Disabled") return `<span class="state disabled">Disabled</span>`;
+  return "";
+}
+
+/* A wine with no photo in the set is not labelling work. `all` lists it, and the
+   filters below ask about the catalogue itself, so each one shows it too. */
+const CATALOG_SCOPE_FILTERS = new Set(["all", "nophotos", "excluded", "included"]);
+
+function matchFilter(row, mode) {
+  if (row.catalog_only && !CATALOG_SCOPE_FILTERS.has(mode)) return false;
+  const t = tally(row);
+  switch (mode) {
+    case "todo": return t.labelled < t.total;
+    case "untouched": return t.labelled === 0;
+    case "partial": return t.labelled > 0 && t.labelled < t.total;
+    case "done": return t.total > 0 && t.labelled === t.total;
+    case "has_pos": return t.positive > 0;
+    case "no_pos": return t.positive === 0;
+    case "has_neg": return t.negative > 0;
+    case "has_unu": return t.unusable > 0;
+    case "has_var": return t.variant > 0;
+    case "grouped": return !!row.group;
+    case "nophotos": return row.photos.length === 0;
+    case "noted": return t.noted > 0;
+    case "proposal": return t.prop > 0;
+    case "deleted": return t.del > 0;
+    case "boxed": return t.box > 0;
+    case "removed": return row.state === "Removed";
+    case "excluded": return isExcluded(row.slug);
+    case "included": return !isExcluded(row.slug);
+    default: return true;
+  }
+}
+
+/* Put the rows of one variant group next to each other. A group takes the place of
+   its first row. */
+function clusterGroups(rows) {
+  const byGroup = new Map();
+  for (const r of rows) {
+    if (!r.group) continue;
+    if (!byGroup.has(r.group)) byGroup.set(r.group, []);
+    byGroup.get(r.group).push(r);
+  }
+  if (!byGroup.size) return rows;
+  const done = new Set(), out = [];
+  for (const r of rows) {
+    if (!r.group) { out.push(r); continue; }
+    if (done.has(r.group)) continue;
+    done.add(r.group);
+    out.push(...byGroup.get(r.group));
+  }
+  return out;
+}
+
+function sortRows(rows, mode) {
+  const bySlug = (a, b) => a.slug.localeCompare(b.slug);
+  const txt = k => (a, b) => (a[k] || "￿").localeCompare(b[k] || "￿") || bySlug(a, b);
+  const num = (f, dir) => (a, b) => {
+    const x = f(a), y = f(b);
+    const ax = x === null ? (dir > 0 ? -Infinity : Infinity) : x;
+    const ay = y === null ? (dir > 0 ? -Infinity : Infinity) : y;
+    return (ax - ay) * dir || bySlug(a, b);
+  };
+  const out = rows.slice();
+  switch (mode) {
+    case "slug_desc": out.sort((a, b) => bySlug(b, a)); break;
+    case "name": out.sort(txt("name")); break;
+    case "producer": out.sort(txt("producer")); break;
+    case "photos_desc": out.sort(num(r => r.photos.length, -1)); break;
+    case "photos_asc": out.sort(num(r => r.photos.length, 1)); break;
+    case "conf_asc": out.sort(num(r => r.min_conf, 1)); break;
+    case "conf_desc": out.sort(num(r => r.min_conf, -1)); break;
+    case "todo": out.sort((a, b) => {
+        const ta = tally(a), tb = tally(b);
+        const pa = ta.total ? ta.labelled / ta.total : 1;
+        const pb = tb.total ? tb.labelled / tb.total : 1;
+        return pa - pb || bySlug(a, b);
+      }); break;
+    case "pos_desc": out.sort(num(r => tally(r).positive, -1)); break;
+    case "neg_desc": out.sort(num(r => tally(r).negative, -1)); break;
+    case "unu_desc": out.sort(num(r => tally(r).unusable, -1)); break;
+    case "group": out.sort((a, b) => (a.group ? 0 : 1) - (b.group ? 0 : 1) || bySlug(a, b)); break;
+    default: out.sort(bySlug);
+  }
+  return out;
+}
+
+/* The search folds the case and the accents, takes the query apart into words, and asks
+   for each word on its own, in any order. The fuzzy rules of the old page (one letter
+   away; Cyrillic to Latin) are not in the first version of this page. */
+function foldText(s) {
+  s = (s || "").toLowerCase().replace(/ё/g, "\x01").replace(/й/g, "\x02");
+  s = s.normalize("NFD").replace(/\p{Mn}+/gu, "");
+  return s.replace(/\x01/g, "ё").replace(/\x02/g, "й");
+}
+function wordsOf(s) { return foldText(s).split(/[^\p{L}\p{N}]+/u).filter(Boolean); }
+function rowWords(r) {
+  if (!r.__words) {
+    r.__words = [...new Set(wordsOf([r.slug, r.name, r.producer, r.region, r.grapes].join(" ")))];
+  }
+  return r.__words;
+}
+function matchQuery(r, terms) {
+  const ws = rowWords(r);
+  return terms.every(t => ws.some(w => w.includes(t)));
+}
+
+function noteBadge(text) {
+  if (!text) return "";
+  return `<span class="note-badge" title="">
+    <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path
+      d="M2 3.2A1.2 1.2 0 0 1 3.2 2h9.6A1.2 1.2 0 0 1 14 3.2v7.1a1.2 1.2 0 0 1-1.2
+         1.2H6.6L3.4 14a.5.5 0 0 1-.8-.4v-2.1h-.4A1.2 1.2 0 0 1 2 10.3z"/></svg>
+    <span class="note-pop">${esc(text)}</span></span>`;
+}
+
+function labelButtons(current, slug) {
+  const names = slug === NULL_SLUG ? NULL_LABELS : Object.keys(SHORT);
+  return names.map(name =>
+    `<button class="${SHORT[name]} ${current === name ? "on" : ""}" data-l="${name}"
+             title="${slug === NULL_SLUG && name === "positive"
+                      ? "1 — confirmed: no card of the catalogue shows this wine"
+                      : TITLE[name]}">${GLYPH[name]}</button>`).join("");
+}
+
+function cardHtml(r, p) {
+  const l = labelOf(r.slug, p.file), mv = movedTo(r.slug, p.file);
+  const note = commentOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
+  const dl = deleteMarked(r.slug, p.file), bx = boxOf(r.slug, p.file);
+  const from = entryOf(r.slug, p.file).moved_from;
+  return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${pr ? "prop" : ""} ${
+                 dl ? "del" : ""} ${isNullRow(r) ? "held-card" : ""}" draggable="true"
+               data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
+    ${dl ? `<span class="del-tag" title="marked for deletion; the mark moves no file">del</span>` : ""}
+    ${pr ? `<span class="prop-tag" title="${esc(pr.by || "agent")} proposes ${
+      esc(pr.proposed)}${pr.source_url ? "\nfrom " + esc(pr.source_url) : ""}">${
+      esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
+    ${noteBadge(note)}
+    ${bx ? `<span class="box-tag" title="box of the main object: ${bx.join(", ")}">box</span>` : ""}
+    <img loading="lazy" draggable="false" src="${esc(p.url)}" alt="" data-full="1">
+    ${isNullRow(r) && from ? `<div class="from" title="the place of the photo before the move">from ${
+      esc(from)}</div>` : ""}
+    <div class="cap"><span>${esc(p.file.split("_")[0] || "")}</span>
+      <span>${p.conf === null ? "" : "conf " + p.conf}</span></div>
+    <div class="btns">${labelButtons(l, r.slug)}</div>
+    ${mv ? `<div class="moved-to" title="a move that waits for apply in the old tool; read-only here">→ ${
+      esc(mv === NULL_SLUG ? "NULL" : mv)}</div>` : ""}
+    </div>`;
+}
+
+function cardsHtml(r) {
+  if (!r.photos.length) {
+    return `<span class="empty">${isNullRow(r)
+      ? "the NULL row of this set holds no photo"
+      : "no photo of this wine in the set " + esc(SET)}</span>`;
+  }
+  return r.photos.map(p => cardHtml(r, p)).join("");
+}
+
+function rowCountsHtml(r) {
+  const t = tally(r);
+  return `${t.total} photo(s) ${rowTags(t)}`;
+}
+
+function rowHtml(r, gclass) {
+  const ex = isExcluded(r.slug), why = excludeReason(r.slug);
+  const img = r.bottle_url
+    ? picHtml(`<img class="bottle" loading="lazy" src="${esc(r.bottle_url)}" alt=""
+         data-bottle="1">`, r.patched)
+    : `<div class="bottle missing">${r.in_catalog ? "no card<br>image" : "not in<br>catalogue"}</div>`;
+  const exclBtn = `<button class="excl-btn ${ex ? "on" : ""}" data-excl="${esc(r.slug)}"
+      title="${ex ? "excluded: " + esc(why) + "\nclick to include this slug again"
+                  : "exclude this slug from the benchmark; its photos are then not used"}">${
+      ex ? "Excluded" : "Exclude"}</button>
+    ${ex && why ? `<div class="excl-why" title="${esc(why)}">${esc(why)}</div>` : ""}`;
+  const bottle = isNullRow(r)
+    ? `<div class="bottle-col"><div class="bottle null-bottle"
+         title="the virtual NULL wine: a photo here matches no card of the catalogue"
+         >NULL</div>${exclBtn}</div>`
+    : `<div class="bottle-col">${img}${exclBtn}</div>`;
+  const fullName = [r.producer, r.name].filter(Boolean).join(" ");
+  const grp = grpOf(r);
+  return `<tr data-slug="${esc(r.slug)}" class="${r.group ? gclass.get(r.group) : ""} ${
+    ex ? "excl" : ""} ${r.catalog_only ? "cat-only" : ""} ${isNullRow(r) ? "null-row" : ""} ${
+    r.state === "Removed" ? "tr-removed" : ""}">
+    <td class="wine"><div class="wine-inner">${bottle}<div class="meta">
+      <div class="nm">${esc(r.name) || "<span class='empty'>unknown name</span>"}${
+        r.name && !isNullRow(r) ? `<button class="copy" data-copy="${esc(fullName)}"
+           title="copy the brand and the name to the clipboard">copy</button>` : ""}${
+        stateBadge(r)}</div>
+      <div class="pr">${esc(r.producer)}</div>
+      <div class="sm">${isNullRow(r)
+        ? "no card of the catalogue shows the wine of a photo in this row"
+        : esc(r.category) + (r.region ? " &middot; " + esc(r.region) : "")}</div>
+      <div class="sm">${esc(r.grapes)}</div>
+      <div class="sm">${esc(r.slug)}<button class="copy" data-copy="${esc(r.slug)}"
+           title="copy the slug to the clipboard">copy</button></div>
+      ${grp ? `<div class="sm"><button class="tag grp" type="button"
+        data-grp-show="${esc(grp.id)}"
+        title="${GROUP_FILTER === grp.id ? "show every wine again"
+          : "show only the " + grp.slugs.length + " wines of this variant group"}"
+        >variant group of ${grp.slugs.length}</button></div>` : ""}
+      <div class="sm row-counts">${rowCountsHtml(r)}</div>
+      <textarea class="wine-note ${wineNote(r.slug) ? "filled" : ""}"
+        data-wine="${esc(r.slug)}" spellcheck="false"
+        placeholder="note about this wine">${esc(wineNote(r.slug))}</textarea>
+    </div></div></td>
+    <td><div class="cards">${cardsHtml(r)}</div></td></tr>`;
+}
+
+function render() {
+  const mode = $("#sort").value, filt = $("#filter").value, sel = $("#slugsel").value;
+  const terms = wordsOf($("#q").value);
+  const nullRow = ROWS.find(isNullRow) || null;
+  let rows = ROWS.filter(r => !isNullRow(r) && matchFilter(r, filt));
+  if (sel === "excluded") rows = rows.filter(r => isExcluded(r.slug));
+  else if (sel === "included") rows = rows.filter(r => !isExcluded(r.slug));
+  if (terms.length) rows = rows.filter(r => matchQuery(r, terms));
+  if (GROUP_FILTER) rows = rows.filter(r => r.group === GROUP_FILTER);
+  rows = clusterGroups(sortRows(rows, mode));
+  // The NULL row stands in the sidebar, not in the table. It keeps the place 0 of VIEW,
+  // so the large view and the arrow keys reach its photos.
+  VIEW = nullRow ? [nullRow].concat(rows) : rows;
+
+  const gclass = new Map();
+  let gi = 0;
+  for (const r of rows) {
+    if (r.group && !gclass.has(r.group)) gclass.set(r.group, (gi++ % 2) ? "grp-b" : "grp-a");
+  }
+  $("#rows").innerHTML = rows.map(r => rowHtml(r, gclass)).join("");
+  const gf = GROUP_FILTER && GROUPS[GROUP_FILTER];
+  $("#grp-clear").hidden = !gf;
+  if (gf) $("#grp-clear-id").textContent = `of ${gf.slugs.length}`;
+  $("#count").textContent =
+    `${rows.length} of ${ROWS.filter(r => !isNullRow(r)).length} wines shown` +
+    (gf ? " · one variant group" : "") +
+    ((filt === "excluded" && sel === "included") || (filt === "included" && sel === "excluded")
+      ? ` · the control Slugs stands on ${sel} and takes every row away` : "");
+  renderSide();
+  stats();
+  writeViewToUrl();
+}
+
+/* ---- the sidebar: the photos of the NULL place ---- */
+const SIDE_KEY = "svl.testset.sidebar";
+function sideShown() { return !document.body.classList.contains("side-off"); }
+function setSide(on, remember) {
+  document.body.classList.toggle("side-off", !on);
+  $("#side-toggle").classList.toggle("on", on);
+  if (remember !== false) {
+    try { localStorage.setItem(SIDE_KEY, on ? "1" : "0"); } catch (e) { /* private mode */ }
+  }
+}
+function initSide() {
+  let want = null;
+  try { want = localStorage.getItem(SIDE_KEY); } catch (e) { /* private mode */ }
+  setSide(want !== "0", false);
+}
+function renderSide() {
+  const r = ROWS.find(isNullRow);
+  const n = r ? r.photos.length : 0;
+  $("#held-n").textContent = n;
+  $("#side-n").textContent = n;
+  $("#held").innerHTML = n ? r.photos.map(p => cardHtml(r, p)).join("")
+    : `<div class="empty">Drag a photo or an image file here. It waits for a wine, also ` +
+      `after a restart.</div>`;
+}
+$("#side-toggle").addEventListener("click", () => setSide(!sideShown()));
+$("#side-hide").addEventListener("click", () => setSide(false));
+
+function stats() {
+  const all = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0, noted: 0,
+                prop: 0, del: 0, box: 0 };
+  let doneWines = 0;
+  for (const r of ROWS) {
+    if (isNullRow(r)) continue;
+    const t = tally(r);
+    for (const k of Object.keys(all)) all[k] += t[k];
+    if (t.total && t.labelled === t.total) doneWines++;
+  }
+  const labelled = all.positive + all.negative + all.unusable + all.variant;
+  const nullRow = ROWS.find(isNullRow);
+  const held = nullRow ? nullRow.photos.length : 0;
+  const confirmed = nullRow ? tally(nullRow).positive : 0;
+  $("#stat").innerHTML = `labelled <b>${labelled}</b>/<b>${TOTAL}</b> photos &middot; ` +
+    rowTags({ ...all, moved: 0, noted: 0, prop: 0 }) + ` &middot; ` +
+    `<b>${doneWines}</b>/<b>${reviewRows().length}</b> wines done` +
+    (held ? ` &middot; <b>${held}</b> <span class="muted">in the sidebar, ${confirmed}` +
+            ` confirmed no match</span>` : "") +
+    // The time of the last edit stands here, not in the title: a long title line pushes
+    // the navigation into a row of its own.
+    (EDITED_AT ? ` &middot; <span class="muted">last edit ${esc(EDITED_AT)}</span>` : "");
+  $("#meter").style.width = TOTAL ? (100 * labelled / TOTAL).toFixed(1) + "%" : "0";
+  headSub();
+}
+
+/* The line after the set combobox, and the photo count of the set in the combobox. Both
+   count each photo of the set, the sidebar too, as the server counts the photos of a set.
+   stats() draws them again after each write, so a move or an upload does not leave them
+   behind. */
+function headSub() {
+  const photos = ROWS.reduce((n, r) => n + r.photos.length, 0);
+  $("#head-sub").textContent =
+    `${ROWS.filter(r => !isNullRow(r)).length} wines, ${photos} photos`;
+  const opt = [...$("#set").options].find(o => o.value === SET);
+  if (opt) opt.textContent = `${SET} (${photos} photos)`;
+}
+
+/* The local time in the form of `test_set.edited_at`: 2026-09-25T18:30:58+0300. The page
+   and the lab server run on the same machine, so the clock is the same. */
+function localStamp() {
+  const d = new Date(), pad = n => String(Math.abs(n)).padStart(2, "0");
+  const off = -d.getTimezoneOffset();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T` +
+    `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` +
+    `${off < 0 ? "-" : "+"}${pad(Math.trunc(off / 60))}${pad(off % 60)}`;
+}
+
+function cardOf(slug, file) {
+  return $(`.card[data-slug="${CSS.escape(slug)}"][data-file="${CSS.escape(file)}"]`);
+}
+function rowOf(slug) { return $(`tr[data-slug="${CSS.escape(slug)}"]`); }
+
+/* Draw one card and the counts of its row again, not the whole table, so no row moves
+   under the pointer. */
+function refreshCard(slug, file) {
+  const r = ROWS.find(x => x.slug === slug);
+  const p = r && r.photos.find(x => x.file === file);
+  const card = cardOf(slug, file);
+  if (r && p && card) card.outerHTML = cardHtml(r, p);
+  const tr = rowOf(slug);
+  const counts = tr && tr.querySelector(".row-counts");
+  if (r && counts) counts.innerHTML = rowCountsHtml(r);
+  stats();
+}
+
+async function post(route, body) {
+  const res = await fetch(route, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ set: SET, ...body }),
+  });
+  let out = {};
+  try { out = await res.json(); } catch (e) { out = {}; }
+  if (!res.ok) throw new Error(out.error || ("HTTP " + res.status));
+  EDITED_AT = localStamp();   // each write route sets `test_set.edited_at`
+  return out;
+}
+
+/* Take the photo of a write answer: its entry replaces the entry of the page. */
+function takePhoto(slug, photo) {
+  (V[slug] = V[slug] || {})[photo.file] = photo.entry || {};
+  refreshCard(slug, photo.file);
+  if (LB) {
+    const lr = VIEW[LB.wine], lp = lr && lr.photos[LB.photo];
+    if (lp && lr.slug === slug && lp.file === photo.file) {
+      renderLbStatus();
+      fillFig("#lb-cand", candItem(lr, LB.photo));
+      drawBox();
+    }
+  }
+}
+
+/* Store one label. The same label again clears it. */
+async function setLabel(slug, file, want) {
+  const next = labelOf(slug, file) === want ? null : want;
+  try {
+    const out = await post("/api/testset-label", { place: slug, file, label: next });
+    takePhoto(slug, out.photo);
+  } catch (e) { alert("the label is not saved: " + e.message); }
+}
+
+async function markDelete(slug, file, on) {
+  try {
+    const out = await post("/api/testset-delete", { place: slug, file, delete: on });
+    takePhoto(slug, out.photo);
+  } catch (e) { alert("the delete mark is not saved: " + e.message); }
+}
+
+function fillFig(id, item) {
+  const fig = $(id), img = fig.querySelector("img");
+  if (!item) { fig.hidden = true; img.removeAttribute("src"); return; }
+  // Set `src` only when it changes. A repeated set reloads the image and flickers.
+  if (img.getAttribute("src") !== item.src) img.setAttribute("src", item.src);
+  fig.querySelector("figcaption").innerHTML = item.cap;
+  fig.hidden = false;
+}
+
+function bottleItem(r) {
+  if (!r || !r.bottle_url) return null;
+  return {
+    src: r.bottle_url,
+    cap: `<b>catalogue image</b>${r.patched ? " (patched)" : ""}<br>${esc(r.name || r.slug)}` +
+         (r.producer ? `<br>${esc(r.producer)}` : "") +
+         (r.state && r.state !== "Active" ? `<br>${esc(r.state)}` : ""),
+  };
+}
+
+function candItem(r, pi) {
+  const p = r.photos[pi];
+  if (!p) return null;
+  const t = tally(r), bx = boxOf(r.slug, p.file);
+  return {
+    src: p.url,
+    cap: `<b>photo ${pi + 1} of ${r.photos.length}</b><br>${esc(p.file)}` +
+         (p.conf === null ? "" : ` &middot; conf ${p.conf}`) +
+         (bx ? `<br>box ${bx.join(", ")}` : "") +
+         (isNullRow(r) ? `<br>the NULL place: ${t.labelled} of ${t.total} labelled`
+                       : `<br>this wine: ${t.labelled} of ${t.total} labelled`),
+  };
+}
+
+function renderLbStatus() {
+  const el = $("#lb-status");
+  if (!LB) { el.textContent = ""; el.className = ""; return; }
+  const r = VIEW[LB.wine], p = r.photos[LB.photo];
+  if (!p) {
+    el.textContent = "no photo of this wine in the set";
+    el.className = "none";
+    return;
+  }
+  const l = labelOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
+  el.textContent = (l === "positive" && isNullRow(r)
+                   ? "confirmed: no card of the catalogue shows this wine"
+                 : l === "positive" ? "positive — this wine"
+                 : l === "negative" ? "negative sample — a different wine"
+                 : l === "unusable" ? "unusable — not in the set"
+                 : l === "variant" ? "this wine, different design"
+                 : pr ? `${pr.by || "agent"} proposes ${pr.proposed} (${
+                     Math.round((pr.confidence || 0) * 100)}%)`
+                 : "not labelled") + (deleteMarked(r.slug, p.file) ? "  · marked for deletion" : "");
+  el.className = SHORT[l] || (pr ? "var" : "none");
+}
+
+/* Open the large view at one photo of one wine. `wi` is an index in VIEW. */
+function showLightbox(wi, pi) {
+  if (wi < 0 || wi >= VIEW.length) return;
+  const r = VIEW[wi];
+  if (!r.photos.length && !r.bottle_url) return;
+  pi = r.photos.length ? Math.max(0, Math.min(pi, r.photos.length - 1)) : 0;
+  setBoxMode(false);
+  LB = { wine: wi, photo: pi };
+  fillFig("#lb-ref", bottleItem(r));
+  fillFig("#lb-cand", candItem(r, pi));
+  renderLbStatus();
+  drawBox();
+  const hasNull = VIEW.length > 0 && isNullRow(VIEW[0]);
+  $("#lb-pos").textContent = isNullRow(r) ? "the NULL place (sidebar) · "
+    : `wine ${wi + (hasNull ? 0 : 1)} of ${VIEW.length - (hasNull ? 1 : 0)} — ${r.slug} · `;
+  setHash(r.photos.length ? `${r.slug}/${r.photos[pi].file}` : r.slug);
+  loadComment(r, pi);
+  $("#lb").classList.add("open");
+  const tr = rowOf(r.slug);
+  if (tr) tr.scrollIntoView({ block: "center" });
+}
+
+function stepWine(step) {
+  if (!LB) return;
+  let i = LB.wine + step;
+  while (i >= 0 && i < VIEW.length && !VIEW[i].photos.length && !VIEW[i].bottle_url) i += step;
+  if (i < 0 || i >= VIEW.length) return;
+  showLightbox(i, 0);
+}
+
+function closeLightbox() {
+  flushComment();
+  CMT_AT = null;
+  setBoxMode(false);
+  $("#lb").classList.remove("open");
+  LB = null;
+  setHash("");
+}
+
+/* ---- the box of the main object ----
+   The box is in the pixels of the photo as the browser shows it, after its EXIF
+   orientation: `naturalWidth` and `naturalHeight`. The server checks the box against
+   the size of the stored file after the same orientation. */
+let BOX_MODE = false, BOX_DRAG = null;
+
+function lbPhoto() {
+  if (!LB) return null;
+  const r = VIEW[LB.wine], p = r && r.photos[LB.photo];
+  return p ? { slug: r.slug, file: p.file } : null;
+}
+
+function setBoxMode(on) {
+  BOX_MODE = !!on && !!lbPhoto();
+  $("#lb").classList.toggle("boxing", BOX_MODE);
+  $("#box-mode").classList.toggle("on", BOX_MODE);
+  if (BOX_MODE) boxState("drag on the photo to draw the box", "");
+  else if (!BOX_DRAG) boxState(currentBoxText(), "");
+  BOX_DRAG = null;
+}
+
+function currentBoxText() {
+  const at = lbPhoto(), b = at && boxOf(at.slug, at.file);
+  return b ? "box " + b.join(", ") : "";
+}
+
+function boxState(text, cls) {
+  const el = $("#box-state");
+  el.textContent = text;
+  el.className = cls || "";
+}
+
+/* Place the frame over the image: the frame is a child of the figure, so the offset of
+   the image in the figure and its shown size give the scale. */
+function placeFrame(el, box) {
+  const img = $("#lb-cand img");
+  if (!box || !img.naturalWidth || !img.clientWidth) { el.classList.remove("on"); return; }
+  const sx = img.clientWidth / img.naturalWidth, sy = img.clientHeight / img.naturalHeight;
+  el.style.left = (img.offsetLeft + box[0] * sx) + "px";
+  el.style.top = (img.offsetTop + box[1] * sy) + "px";
+  el.style.width = Math.max(1, (box[2] - box[0]) * sx) + "px";
+  el.style.height = Math.max(1, (box[3] - box[1]) * sy) + "px";
+  el.classList.add("on");
+}
+
+function drawBox() {
+  const el = $("#lb-box");
+  el.classList.remove("draft");
+  const at = lbPhoto();
+  placeFrame(el, at && boxOf(at.slug, at.file));
+  if (!BOX_MODE) boxState(currentBoxText(), "");
+}
+
+function pointAt(ev) {
+  const img = $("#lb-cand img"), rect = img.getBoundingClientRect();
+  const x = (ev.clientX - rect.left) * img.naturalWidth / rect.width;
+  const y = (ev.clientY - rect.top) * img.naturalHeight / rect.height;
+  return [Math.max(0, Math.min(img.naturalWidth, x)),
+          Math.max(0, Math.min(img.naturalHeight, y))];
+}
+
+function dragBox(a, b) {
+  const img = $("#lb-cand img");
+  return [Math.floor(Math.min(a[0], b[0])), Math.floor(Math.min(a[1], b[1])),
+          Math.min(img.naturalWidth, Math.ceil(Math.max(a[0], b[0]))),
+          Math.min(img.naturalHeight, Math.ceil(Math.max(a[1], b[1])))];
+}
+
+async function saveBox(box) {
+  const at = lbPhoto();
+  if (!at) return;
+  boxState("saving...", "");
+  try {
+    const out = await post("/api/testset-box", { place: at.slug, file: at.file, box });
+    takePhoto(at.slug, out.photo);
+    boxState(box ? "saved: box " + box.join(", ") : "box removed", "saved");
+  } catch (e) {
+    boxState("not saved: " + e.message, "failed");
+    drawBox();
+  }
+}
+
+$("#lb-cand img").addEventListener("pointerdown", ev => {
+  if (!BOX_MODE) return;
+  ev.preventDefault();
+  ev.target.setPointerCapture(ev.pointerId);
+  BOX_DRAG = { start: pointAt(ev) };
+});
+$("#lb-cand img").addEventListener("pointermove", ev => {
+  if (!BOX_DRAG) return;
+  const el = $("#lb-box");
+  el.classList.add("draft");
+  placeFrame(el, dragBox(BOX_DRAG.start, pointAt(ev)));
+});
+$("#lb-cand img").addEventListener("pointerup", ev => {
+  if (!BOX_DRAG) return;
+  const box = dragBox(BOX_DRAG.start, pointAt(ev));
+  BOX_DRAG = null;
+  setBoxMode(false);
+  // A click with no drag draws no box.
+  if (box[2] - box[0] < 3 || box[3] - box[1] < 3) { drawBox(); return; }
+  saveBox(box);
+});
+$("#lb-cand img").addEventListener("load", drawBox);
+window.addEventListener("resize", () => { if (LB) drawBox(); });
+$("#box-mode").addEventListener("click", () => setBoxMode(!BOX_MODE));
+$("#box-clear").addEventListener("click", () => {
+  const at = lbPhoto();
+  setBoxMode(false);
+  if (at && boxOf(at.slug, at.file)) saveBox(null);
+});
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {                       // the clipboard API needs a secure context
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } finally { ta.remove(); }
+    return ok;
+  }
+}
+
+async function copyFromButton(btn) {
+  await copyText(btn.dataset.copy);
+  const old = btn.textContent;
+  btn.textContent = "copied"; btn.classList.add("done");
+  setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); }, 900);
+}
+
+/* ---- the right-click menu of one photo ---- */
+function photoUrl(slug, file) {
+  const r = ROWS.find(x => x.slug === slug), p = r && r.photos.find(x => x.file === file);
+  return p ? p.url : "";
+}
+
+function hideCtxMenu() {
+  const m = $("#ctxmenu");
+  m.hidden = true;
+  m.innerHTML = "";
+}
+
+function ctxDone(btn, text) {
+  const old = btn.textContent;
+  btn.textContent = text;
+  btn.classList.add("done");
+  setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); hideCtxMenu(); }, 700);
+}
+
+function showCtxMenu(x, y, slug, file) {
+  const m = $("#ctxmenu");
+  m.innerHTML =
+    `<div class="ctx-head">${esc(file)}</div>` +
+    `<button type="button" data-act="copy-url">Copy Image URL</button>` +
+    `<button type="button" data-act="download">Download</button>` +
+    `<div class="ctx-sep"></div>` +
+    (slug === NULL_SLUG
+      ? `<button type="button" data-act="to-wine">Move to a wine…</button>`
+      : `<button type="button" data-act="to-null">Move to the sidebar (NULL)</button>`) +
+    `<div class="ctx-sep"></div>` +
+    (deleteMarked(slug, file)
+      ? `<button type="button" data-act="undelete">Keep this photo</button>`
+      : `<button type="button" class="danger" data-act="delete">Delete</button>`);
+  m.dataset.slug = slug;
+  m.dataset.file = file;
+  m.hidden = false;
+  const r = m.getBoundingClientRect();
+  m.style.left = Math.max(4, Math.min(x, window.innerWidth - r.width - 8)) + "px";
+  m.style.top = Math.max(4, Math.min(y, window.innerHeight - r.height - 8)) + "px";
+}
+
+function photoAtEvent(ev) {
+  const card = ev.target.closest(".card");
+  if (card) return { slug: card.dataset.slug, file: card.dataset.file };
+  if (LB && ev.target.closest("#lb-cand")) return lbPhoto();
+  return null;
+}
+
+document.addEventListener("contextmenu", ev => {
+  const at = photoAtEvent(ev);
+  if (!at) { hideCtxMenu(); return; }
+  ev.preventDefault();
+  showCtxMenu(ev.clientX, ev.clientY, at.slug, at.file);
+});
+
+document.addEventListener("click", async ev => {
+  const item = ev.target.closest("#ctxmenu button");
+  if (!item) { hideCtxMenu(); return; }
+  const m = $("#ctxmenu"), slug = m.dataset.slug, file = m.dataset.file;
+  const act = item.dataset.act;
+  if (act === "copy-url") {
+    ctxDone(item, (await copyText(new URL(photoUrl(slug, file), location.href).href))
+      ? "copied" : "failed");
+    return;
+  }
+  hideCtxMenu();
+  if (act === "download") {
+    const a = document.createElement("a");
+    a.href = photoUrl(slug, file);
+    a.download = `${slug}__${file}`;
+    document.body.appendChild(a); a.click(); a.remove();
+  } else if (act === "to-null") moveTo(slug, file, NULL_SLUG);
+  else if (act === "to-wine") {
+    const to = (window.prompt("Move " + file + " to the wine with the slug:", "") || "").trim();
+    if (to) moveTo(slug, file, to);
+  } else if (act === "delete") markDelete(slug, file, true);
+  else if (act === "undelete") markDelete(slug, file, false);
+}, true);
+window.addEventListener("blur", hideCtxMenu);
+window.addEventListener("resize", hideCtxMenu);
+document.addEventListener("scroll", hideCtxMenu, true);
+
+/* ---- the move of a photo ----
+   A card goes to the sidebar (the NULL place) or onto a wine row. The server changes
+   the place of the row, clears the label, and writes the old place into `moved_from`.
+   The page then draws the two places again, not the whole table. */
+const PHOTO_TYPE = "application/x-photo";
+let DRAG = null;
+
+function rankOf(file) {
+  const m = /^(\d+)_/.exec(file);
+  return m ? Number(m[1]) : 9999;
+}
+function byRank(a, b) {
+  return rankOf(a.file) - rankOf(b.file) || (a.file < b.file ? -1 : a.file > b.file ? 1 : 0);
+}
+
+function refreshRow(r) {
+  if (isNullRow(r)) { renderSide(); return; }
+  const tr = rowOf(r.slug);
+  if (!tr) return;
+  tr.querySelector(".cards").innerHTML = cardsHtml(r);
+  const counts = tr.querySelector(".row-counts");
+  if (counts) counts.innerHTML = rowCountsHtml(r);
+  tr.classList.toggle("cat-only", !!r.catalog_only);
+}
+
+async function moveTo(slug, file, to) {
+  if (!to || slug === to) return;
+  // A comment that waits for its save belongs to the old place of the photo.
+  if (CMT_AT && CMT_AT.slug === slug && CMT_AT.file === file) {
+    if (CMT_TIMER) { clearTimeout(CMT_TIMER); CMT_TIMER = null; }
+    await saveComment(CMT_AT, $("#cmt").value.trim());
+    CMT_AT = null;
+  }
+  let out;
+  try {
+    out = await post("/api/testset-move", { place: slug, file, to });
+  } catch (e) { alert("the move is not saved: " + e.message); return; }
+  const src = ROWS.find(r => r.slug === slug), dst = ROWS.find(r => r.slug === to);
+  if (!src || !dst) { load(SET, false); return; }   // a wine with no row: draw all again
+  const i = src.photos.findIndex(p => p.file === file);
+  const photo = i >= 0 ? src.photos.splice(i, 1)[0] : { url: "", conf: null };
+  if (V[slug]) delete V[slug][file];
+  const moved = { ...photo, ...out.photo };
+  delete moved.place;
+  dst.photos.push(moved);
+  dst.photos.sort(byRank);
+  (V[to] = V[to] || {})[moved.file] = moved.entry || {};
+  for (const r of [src, dst]) {
+    const confs = r.photos.map(p => p.conf).filter(c => c !== null && c !== undefined);
+    r.min_conf = confs.length ? Math.min(...confs) : null;
+    r.catalog_only = !isNullRow(r) && !r.photos.length;
+  }
+  refreshRow(src);
+  refreshRow(dst);
+  TOTAL = photoTotal();
+  stats();
+  if (LB && VIEW[LB.wine] === src) {
+    if (src.photos.length || src.bottle_url) {
+      showLightbox(LB.wine, Math.min(LB.photo, src.photos.length - 1));
+    } else closeLightbox();
+  }
+}
+
+function hasPhoto(ev) {
+  return !!ev.dataTransfer && [...ev.dataTransfer.types].includes(PHOTO_TYPE);
+}
+function readPhoto(ev) {
+  try {
+    const raw = ev.dataTransfer.getData(PHOTO_TYPE);
+    if (raw) return JSON.parse(raw);
+  } catch (e) { /* the value that `dragstart` kept stands in */ }
+  return DRAG;
+}
+document.addEventListener("dragstart", ev => {
+  const card = ev.target.closest && ev.target.closest(".card[data-file]");
+  if (!card) return;
+  DRAG = { slug: card.dataset.slug, file: card.dataset.file };
+  if (!sideShown()) setSide(true);      // the drop target MUST be on the screen
+  ev.dataTransfer.setData(PHOTO_TYPE, JSON.stringify(DRAG));
+  ev.dataTransfer.effectAllowed = "move";
+  card.classList.add("dragging");
+});
+document.addEventListener("dragend", () => {
+  DRAG = null;
+  document.querySelectorAll(".card.dragging").forEach(c => c.classList.remove("dragging"));
+  document.querySelectorAll("tr.photo-drop").forEach(x => x.classList.remove("photo-drop"));
+  $("#side").classList.remove("over");
+});
+$("#side").addEventListener("dragover", ev => {
+  if (!hasPhoto(ev) && !hasFiles(ev)) return;
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = hasFiles(ev) ? "copy" : "move";
+  $("#side").classList.add("over");
+});
+$("#side").addEventListener("dragleave", ev => {
+  if (!$("#side").contains(ev.relatedTarget)) $("#side").classList.remove("over");
+});
+$("#side").addEventListener("drop", ev => {
+  if (hasFiles(ev)) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    $("#side").classList.remove("over");
+    uploadFiles([...ev.dataTransfer.files], NULL_SLUG);
+    return;
+  }
+  if (!hasPhoto(ev)) return;
+  ev.preventDefault();
+  ev.stopPropagation();
+  $("#side").classList.remove("over");
+  const d = readPhoto(ev);
+  if (d) moveTo(d.slug, d.file, NULL_SLUG);
+});
+document.addEventListener("dragover", ev => {
+  if (!hasPhoto(ev) && !hasFiles(ev)) return;
+  const tr = ev.target.closest && ev.target.closest("tr[data-slug]");
+  // A file dropped out of a target MUST NOT open in the tab and replace the page. The
+  // sidebar is a target: its own listener sets the effect.
+  if (!tr && hasFiles(ev) && !$("#side").contains(ev.target)) {
+    ev.preventDefault();
+    ev.dataTransfer.dropEffect = "none";
+  }
+  if (!tr) return;
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = hasFiles(ev) ? "copy" : "move";
+  if (!tr.classList.contains("photo-drop")) {
+    document.querySelectorAll("tr.photo-drop").forEach(x => x.classList.remove("photo-drop"));
+    tr.classList.add("photo-drop");
+  }
+});
+document.addEventListener("dragleave", ev => {
+  if (!hasPhoto(ev) && !hasFiles(ev)) return;
+  const tr = ev.target.closest && ev.target.closest("tr[data-slug]");
+  if (tr && !tr.contains(ev.relatedTarget)) tr.classList.remove("photo-drop");
+});
+document.addEventListener("drop", ev => {
+  if (hasFiles(ev)) {
+    ev.preventDefault();
+    const tr = ev.target.closest && ev.target.closest("tr[data-slug]");
+    if (!tr) return;
+    tr.classList.remove("photo-drop");
+    uploadFiles([...ev.dataTransfer.files], tr.dataset.slug);
+    return;
+  }
+  if (!hasPhoto(ev)) return;
+  const tr = ev.target.closest && ev.target.closest("tr[data-slug]");
+  if (!tr) return;
+  ev.preventDefault();
+  tr.classList.remove("photo-drop");
+  const d = readPhoto(ev);
+  if (d) moveTo(d.slug, d.file, tr.dataset.slug);
+});
+
+/* ---- the upload of image files from the file manager ----
+   A drop of files from the macOS Finder onto the sidebar or onto a wine row stores each
+   file in that place (owner answers of 2026-09-25T18:25:10). The new photo has no label.
+   The server refuses an image that the place holds already. */
+const UPLOAD_MAX = 20 * 1024 * 1024;   // `testsets.UPLOAD_MAX`
+
+function hasFiles(ev) {
+  return !!ev.dataTransfer && [...ev.dataTransfer.types].includes("Files");
+}
+
+async function uploadFiles(files, to) {
+  const dst = ROWS.find(r => r.slug === to);
+  const bad = [];
+  document.body.classList.add("uploading");
+  for (const file of files) {
+    if (file.size > UPLOAD_MAX) { bad.push(`${file.name}: larger than 20 MB`); continue; }
+    let out = {};
+    try {
+      const query = new URLSearchParams({ set: SET, place: to, name: file.name });
+      const res = await fetch("/api/testset-upload?" + query, { method: "POST", body: file });
+      try { out = await res.json(); } catch (e) { out = {}; }
+      if (!res.ok) throw new Error(out.error || ("HTTP " + res.status));
+    } catch (e) { bad.push(`${file.name}: ${e.message}`); continue; }
+    if (!dst) continue;
+    const photo = { ...out.photo };
+    delete photo.place;
+    dst.photos.push(photo);
+    (V[to] = V[to] || {})[photo.file] = photo.entry || {};
+  }
+  document.body.classList.remove("uploading");
+  if (!dst) { load(SET, false); }                   // a wine with no row: draw all again
+  else {
+    dst.photos.sort(byRank);
+    const confs = dst.photos.map(p => p.conf).filter(c => c !== null && c !== undefined);
+    dst.min_conf = confs.length ? Math.min(...confs) : null;
+    dst.catalog_only = !isNullRow(dst) && !dst.photos.length;
+    refreshRow(dst);
+    TOTAL = photoTotal();
+    if (bad.length < files.length) EDITED_AT = localStamp();
+    stats();
+  }
+  if (bad.length) {
+    alert(`${bad.length} of ${files.length} file(s) not stored:\n` + bad.join("\n"));
+  }
+}
+
+/* Show only the wines of one variant group, or every wine again. */
+function showGroup(gid) {
+  const want = GROUPS[gid] ? gid : "";
+  if (want === GROUP_FILTER) return;
+  GROUP_FILTER = want;
+  if (want) {
+    $("#q").value = "";
+    $("#filter").value = "all";
+    $("#slugsel").value = "all";
+  }
+  render();
+  if (want) window.scrollTo({ top: 0 });
+}
+
+/* ---- the note of a whole wine ----
+   The text is saved after a pause, and the table is NOT drawn again, so the cursor
+   stays in the field. */
+const WN_TIMERS = new Map();
+
+async function saveWineNote(el) {
+  const slug = el.dataset.wine, text = el.value.trim();
+  if (wineNote(slug) === text) return;
+  el.classList.add("saving");
+  try {
+    const out = await post("/api/testset-wine-note", { slug, text });
+    if (out.note) W[slug] = out.note; else delete W[slug];
+  } catch (e) {
+    el.classList.remove("saving");
+    alert("the note is not saved: " + e.message);
+    return;
+  }
+  el.classList.remove("saving");
+  el.classList.toggle("filled", !!text);
+  stats();   // the time of the last edit; stats() does not draw the table again
+}
+
+document.addEventListener("input", ev => {
+  const el = ev.target.closest && ev.target.closest(".wine-note");
+  if (!el) return;
+  clearTimeout(WN_TIMERS.get(el));
+  WN_TIMERS.set(el, setTimeout(() => saveWineNote(el), 700));
+});
+document.addEventListener("blur", ev => {
+  const el = ev.target.closest && ev.target.closest(".wine-note");
+  if (!el) return;
+  clearTimeout(WN_TIMERS.get(el));
+  saveWineNote(el);
+}, true);
+
+/* ---- the exclusion of a whole slug ----
+   The photos of an excluded slug are NOT used in the benchmark. The reason is asked at
+   the click. */
+async function toggleExclude(btn) {
+  const slug = btn.dataset.excl, was = isExcluded(slug);
+  let reason = "";
+  if (!was) {
+    reason = (window.prompt(
+      "Exclude " + slug + " from the benchmark.\n" +
+      "State the error, for example \"wrong bottle photo in the catalogue\".",
+      "wrong bottle photo in the catalogue") || "").trim();
+    if (!reason) return;
+  } else if (!window.confirm("Include " + slug + " in the benchmark again?")) {
+    return;
+  }
+  btn.classList.add("saving");
+  try {
+    const out = await post("/api/testset-exclude", { slug, excluded: !was, reason });
+    if (out.excluded) EXC[slug] = out.entry; else delete EXC[slug];
+  } catch (e) {
+    btn.classList.remove("saving");
+    alert("the exclusion is not saved: " + e.message);
+    return;
+  }
+  render();
+}
+
+/* ---- the comment panel of the large view ----
+   The text is saved as it is typed, after a short pause. A move to another photo and a
+   close of the view flush the pending text first. */
+let CMT_AT = null, CMT_TIMER = null;
+
+function cmtState(text, cls) {
+  const el = $("#cmt-state");
+  el.textContent = text;
+  el.className = cls || "";
+}
+
+async function saveComment(at, text) {
+  if (!at) return;
+  if (commentOf(at.slug, at.file) === text) {
+    cmtState(text ? "saved" : "", text ? "saved" : "");
+    return;
+  }
+  cmtState("saving...");
+  try {
+    const out = await post("/api/testset-comment", { place: at.slug, file: at.file, text });
+    (V[at.slug] = V[at.slug] || {})[at.file] = out.photo.entry || {};
+    refreshCard(at.slug, at.file);
+  } catch (e) {
+    cmtState("not saved: " + e.message, "failed");
+    return;
+  }
+  cmtState(text ? "saved" : "", text ? "saved" : "");
+}
+
+function flushComment() {
+  if (CMT_TIMER) { clearTimeout(CMT_TIMER); CMT_TIMER = null; }
+  if (CMT_AT) saveComment(CMT_AT, $("#cmt").value.trim());
+}
+
+function loadComment(r, pi) {
+  flushComment();
+  const p = r.photos[pi];
+  $("#cmt").disabled = !p;
+  if (!p) {
+    CMT_AT = null;
+    $("#cmt").value = "";
+    $("#cmt-ctx").textContent = `${r.slug} — no photo in the set`;
+    cmtState("", "");
+    return;
+  }
+  CMT_AT = { slug: r.slug, file: p.file };
+  $("#cmt").value = commentOf(r.slug, p.file);
+  $("#cmt-ctx").textContent = `${SET} / ${r.slug} / ${p.file}`;
+  cmtState($("#cmt").value ? "saved" : "", $("#cmt").value ? "saved" : "");
+}
+
+$("#cmt").addEventListener("input", () => {
+  cmtState("typing...");
+  if (CMT_TIMER) clearTimeout(CMT_TIMER);
+  const at = CMT_AT;
+  CMT_TIMER = setTimeout(() => {
+    CMT_TIMER = null;
+    saveComment(at, $("#cmt").value.trim());
+  }, 600);
+});
+$("#cmt").addEventListener("blur", flushComment);
+$("#cmt-clear").addEventListener("click", () => {
+  $("#cmt").value = "";
+  flushComment();
+  $("#cmt").focus();
+});
+window.addEventListener("beforeunload", flushComment);
+
+/* ---- the address ----
+   The query string holds the set, the search, and the selects. The fragment holds the
+   open photo: `#<slug>/<file name>`. A control at its default value is left out. */
+const VIEW_PARAMS = [
+  ["q", "#q", ""],
+  ["filter", "#filter", "all"],
+  ["sort", "#sort", "slug"],
+  ["slugs", "#slugsel", "all"],
+];
+
+function writeViewToUrl() {
+  const p = new URLSearchParams();
+  if (SET) p.set("set", SET);
+  for (const [key, sel, dflt] of VIEW_PARAMS) {
+    const v = $(sel).value.trim();
+    if (v && v !== dflt) p.set(key, v);
+  }
+  if (GROUP_FILTER) p.set("group", GROUP_FILTER);
+  const want = location.pathname + "?" + p.toString() + location.hash;
+  if (want === location.pathname + location.search + location.hash) return;
+  history.replaceState(null, "", want);
+}
+
+function readViewFromUrl() {
+  const p = new URLSearchParams(location.search);
+  for (const [key, sel] of VIEW_PARAMS) {
+    if (!p.has(key)) continue;
+    const el = $(sel), v = p.get(key);
+    if (el.tagName === "SELECT" && ![...el.options].some(o => o.value === v)) continue;
+    el.value = v;
+  }
+  const gid = p.get("group") || "";
+  GROUP_FILTER = GROUPS[gid] ? gid : "";
+}
+
+let HASH_SELF = "";
+function setHash(frag) {
+  const want = frag ? "#" + frag.split("/").map(encodeURIComponent).join("/") : "";
+  if (location.hash === want || (!want && !location.hash)) return;
+  HASH_SELF = want;
+  history.replaceState(null, "", want || location.pathname + location.search);
+}
+
+function openFromHash() {
+  const raw = location.hash.replace(/^#\/?/, "");
+  if (!raw) return false;
+  const cut = raw.indexOf("/");
+  const slug = decodeURIComponent(cut < 0 ? raw : raw.slice(0, cut));
+  const file = cut < 0 ? "" : decodeURIComponent(raw.slice(cut + 1));
+  if (!ROWS.some(r => r.slug === slug)) return false;
+  if (!VIEW.some(r => r.slug === slug)) {
+    $("#filter").value = "all";
+    $("#slugsel").value = "all";
+    $("#q").value = "";
+    GROUP_FILTER = "";
+    render();
+  }
+  const wi = VIEW.findIndex(r => r.slug === slug);
+  if (wi < 0) return false;
+  const pi = VIEW[wi].photos.findIndex(p => p.file === file);
+  showLightbox(wi, pi < 0 ? 0 : pi);
+  return true;
+}
+
+window.addEventListener("hashchange", () => {
+  if (location.hash === HASH_SELF) return;
+  if (!openFromHash()) closeLightbox();
+});
+
+document.addEventListener("click", ev => {
+  const copy = ev.target.closest(".copy");
+  if (copy) { copyFromButton(copy); return; }
+  if (ev.target.id === "grp-clear") { showGroup(""); return; }
+  const gshow = ev.target.closest("[data-grp-show]");
+  if (gshow) {
+    showGroup(gshow.dataset.grpShow === GROUP_FILTER ? "" : gshow.dataset.grpShow);
+    return;
+  }
+  const exb = ev.target.closest(".excl-btn");
+  if (exb) { toggleExclude(exb); return; }
+  const btn = ev.target.closest(".btns button");
+  if (btn) {
+    const c = btn.closest(".card");
+    setLabel(c.dataset.slug, c.dataset.file, btn.dataset.l);
+    return;
+  }
+  if (ev.target.closest("#lb")) {   // a click on an image or in the panel keeps it open
+    if (!ev.target.matches(".lb-fig img") && !ev.target.closest(".lb-side")
+        && !ev.target.closest(".lb-box")) {
+      closeLightbox();
+    }
+    return;
+  }
+  const img = ev.target.closest("img[data-full], img[data-bottle]");
+  if (!img) return;
+  const card = img.closest(".card"), tr = img.closest("tr");
+  const slug = card ? card.dataset.slug : tr && tr.dataset.slug;
+  if (!slug) return;
+  const wi = VIEW.findIndex(x => x.slug === slug);
+  if (wi < 0) return;
+  const pi = card ? VIEW[wi].photos.findIndex(p => p.file === card.dataset.file) : 0;
+  showLightbox(wi, pi < 0 ? 0 : pi);
+});
+
+document.addEventListener("keydown", ev => {
+  const tag = ev.target && ev.target.tagName;
+  if (tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT") {
+    if (ev.key === "Escape") { ev.target.blur(); ev.stopPropagation(); }
+    return;
+  }
+  if (ev.key === "Escape") {
+    if (!$("#ctxmenu").hidden) hideCtxMenu();
+    else if (BOX_MODE) { setBoxMode(false); drawBox(); }
+    else closeLightbox();
+    return;
+  }
+  if ((ev.key === "s" || ev.key === "S") && !ev.metaKey && !ev.ctrlKey && !ev.altKey) {
+    ev.preventDefault();
+    setSide(!sideShown());
+    return;
+  }
+  if (!LB || !$("#lb").classList.contains("open")) return;
+  if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  const step = { ArrowRight: 1, ArrowLeft: -1 }[ev.key];
+  if (step !== undefined) { ev.preventDefault(); showLightbox(LB.wine, LB.photo + step); return; }
+  const wstep = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
+  if (wstep !== undefined) { ev.preventDefault(); stepWine(wstep); return; }
+  const at = lbPhoto();
+  if (ev.key === "b" || ev.key === "B") {
+    ev.preventDefault();
+    if (at) setBoxMode(!BOX_MODE);
+    return;
+  }
+  if (ev.key === "0") {
+    ev.preventDefault();
+    if (at && at.slug !== NULL_SLUG) moveTo(at.slug, at.file, NULL_SLUG);
+    return;
+  }
+  const want = KEY_OF[ev.key];
+  if (want) {
+    ev.preventDefault();
+    if (!at) return;
+    if (at.slug === NULL_SLUG && !NULL_LABELS.includes(want)) return;
+    setLabel(at.slug, at.file, want);
+  }
+});
+
+for (const id of ["#sort", "#filter", "#slugsel"]) $(id).addEventListener("change", render);
+let QT = null;
+$("#q").addEventListener("input", () => { clearTimeout(QT); QT = setTimeout(render, 180); });
+$("#set").addEventListener("change", () => {
+  flushComment();
+  GROUP_FILTER = "";
+  load($("#set").value, false);
+});
+
+/* Load the rows of one set. The label entries, the notes, and the exclusions become the
+   maps of the page. */
+async function load(name, first) {
+  $("#error").textContent = "";
+  let data;
+  try {
+    const res = await fetch("/api/testset" + (name ? "?set=" + encodeURIComponent(name) : ""));
+    data = await res.json();
+    if (!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+  } catch (e) {
+    $("#error").textContent = "cannot load the test set: " + e.message;
+    return;
+  }
+  SET = data.set; SETS = data.sets || []; ROWS = data.rows || []; GROUPS = data.groups || {};
+  V = {}; W = {}; EXC = {};
+  for (const r of ROWS) {
+    for (const p of r.photos) (V[r.slug] = V[r.slug] || {})[p.file] = p.entry || {};
+    if (r.note) W[r.slug] = r.note;
+    if (r.excluded) EXC[r.slug] = { reason: r.exclude_reason };
+  }
+  $("#set").innerHTML = SETS.map(s => `<option value="${esc(s.name)}" ${
+    s.name === SET ? "selected" : ""}>${esc(s.name)} (${s.photos} photos)</option>`).join("");
+  TOTAL = photoTotal();
+  EDITED_AT = data.edited_at || null;
+  if (first) readViewFromUrl();
+  render();
+  if (first) openFromHash();
+}
+
+initSide();
+load(new URLSearchParams(location.search).get("set") || "", true);
+</script>
+</body>
+</html>

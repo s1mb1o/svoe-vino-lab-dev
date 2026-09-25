@@ -34,6 +34,16 @@ The route `/api/dataset-alternative` stores (POST, the image bytes as the body) 
 (DELETE) one alternative photo of a wine; `POST /api/dataset-alternative-type` changes its
 type. `alternatives.py` does the work. Read `docs/plans/16_alternative-images.md`.
 
+The route `/api/image-description` sets (POST) the values of one image in the table
+`image_description` by hand, with `image_descriptions.py`; `GET /api/dataset` sends the
+key `image_descriptions`. `GET /api/image-description-status` sends the state of the
+watcher and the counts for the indicator of the page. `GET
+/api/image-description-reply?sha256=` sends the raw VLM reply of one image from
+`data/cache/`, with `describe_images.cached_reply`. When `image_description.watch` of
+`config.yaml` is true,
+`main` starts the watcher `describe_images.py --watch` and stops it at the exit; a SIGTERM
+leads to that exit. Read `docs/plans/26_image-description.md`.
+
 The Embeddings page is on: `embedding_routes.py` answers each of its routes. Read
 `docs/plans/10_embeddings-page.md`.
 
@@ -44,10 +54,15 @@ The Runs page is on: `run_routes.py` answers each of its routes. It reads the ru
 directories of `runs/`; the database does not hold the runs. Read
 `docs/plans/23_runs-page.md`.
 
-The pages Clusters and Testset are disabled for now. Each one answers a notice
-page with HTTP 503, and each API route that this text does not name answers HTTP 503
-with a JSON error. The database does not hold the data of those routes yet. The navigation of every page stays as it is. Read
-`docs/plans/07_sqlite-lab-database.md`.
+The Testset page is on at `/testset`: `testset_routes.py` answers each of its routes.
+It shows the test sets of the database and writes the labels of their photos; the
+database is the source of the labels. `GET /` redirects to `/dataset`. Read
+`docs/plans/24_testset-page.md`.
+
+The page Clusters is disabled for now. It answers a notice page with HTTP 503, and each
+API route that this text does not name answers HTTP 503 with a JSON error. The database
+does not hold the data of those routes yet. The navigation of every page stays as it is.
+Read `docs/plans/07_sqlite-lab-database.md`.
 
 Usage:
     python3 pipeline/lab_server.py              # http://127.0.0.1:8168/dataset
@@ -57,7 +72,9 @@ import argparse
 import json
 import os
 import re
+import signal
 import sqlite3
+import subprocess
 import sys
 import threading
 import traceback
@@ -74,13 +91,17 @@ import alternatives  # noqa: E402
 import atlas_bindings  # noqa: E402
 import codes  # noqa: E402
 import comments  # noqa: E402
+import describe_images  # noqa: E402
 import embedding_routes  # noqa: E402
 import favorites  # noqa: E402
+import image_descriptions  # noqa: E402
 import lab_pages  # noqa: E402
 import labdb  # noqa: E402
 import manual_wines  # noqa: E402
 import patches  # noqa: E402
 import run_routes  # noqa: E402
+import testset_routes  # noqa: E402
+import vlm_config  # noqa: E402
 import website_import_routes  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -99,9 +120,12 @@ PAGE_KEYS = {"wine_slug": "slug"}
 
 # The pages of the navigation, in the order of the navigation.
 NAV = (("/dataset", "Dataset"), ("/embedding", "Embeddings"),
-       ("/clusters", "Clusters"), ("/", "Testset"), ("/runs", "Runs"))
+       ("/clusters", "Clusters"), ("/testset", "Testset"), ("/runs", "Runs"))
 # The disabled pages. `/docs` is the API page of the review tool.
-DISABLED_PAGES = {"/clusters": "Clusters", "/": "Testset", "/docs": "API docs"}
+DISABLED_PAGES = {"/clusters": "Clusters", "/docs": "API docs"}
+# `GET /` goes to the Dataset page. The owner moved the Testset page to `/testset` on
+# 2026-09-25T17:01:44+0300.
+HOME = "/dataset"
 DISABLED_ERROR = ("disabled for now: the lab database does not hold the data of "
                   "this route yet")
 # action -> (the states that allow it, the new state). A removal by a person sets
@@ -349,6 +373,7 @@ def dataset_view(db_path):
         atlas_total, atlas_manual = atlas_bindings.counts(conn)
         comment_total = comments.count(conn)
         favorite_total = favorites.count(conn)
+        descriptions = image_descriptions.descriptions(conn)
     return {
         "database_file": db_path,
         "wine_editor": True,
@@ -361,6 +386,9 @@ def dataset_view(db_path):
         "atlas_bindings": atlas_total, "atlas_manual_bindings": atlas_manual,
         "comments": comment_total,
         "favorites": favorite_total,
+        "image_description_editor": True,
+        "image_description_values": image_descriptions.VALUES,
+        "image_descriptions": descriptions,
         "records": records,
     }
 
@@ -670,6 +698,81 @@ def set_favorite(db_path, slug, on):
     return _code_write(db_path, slug, write)
 
 
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+
+def set_image_description(db_path, sha256, values):
+    """Set values of one image by hand. Return the answer of the POST.
+
+    `values` holds 1 to 4 fields of `image_descriptions.FIELDS`. A value is a value of its
+    field, or null to clear it. A field that `values` does not hold stays as it is. The
+    image MUST be linked to a wine (`image_descriptions.is_linked`).
+    """
+    if not isinstance(sha256, str) or not SHA256_RE.match(sha256):
+        raise StateError(400, "`sha256` MUST be 64 lower-case hex digits")
+    if not isinstance(values, dict) or not values:
+        raise StateError(400, "`values` MUST hold 1 to 4 fields")
+    try:
+        checked = {field: image_descriptions.check_value(field, value)
+                   for field, value in values.items()}
+    except image_descriptions.DescriptionError as exc:
+        raise StateError(400, str(exc))
+    with closing(open_database(db_path, write=True)) as conn:
+        conn.isolation_level = None
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            if not image_descriptions.is_linked(conn, sha256):
+                raise StateError(404, "no wine image with the sha256 %s" % sha256)
+            row = image_descriptions.set_values(conn, sha256, checked)
+            conn.execute("COMMIT")
+        except BaseException:
+            conn.execute("ROLLBACK")
+            raise
+    return {"ok": True, "sha256": sha256, "description": row}
+
+
+def image_description_status(db_path):
+    """Return the answer of `GET /api/image-description-status`: the state of the watcher
+    (`image_descriptions.watcher_status`) and the counts of the linked images."""
+    with closing(open_database(db_path)) as conn:
+        return image_descriptions.watcher_status(conn)
+
+
+def image_description_reply(db_path, config_path, sha256):
+    """Return the answer of `GET /api/image-description-reply`: the `model_cache` record
+    of the VLM call that described one image (`describe_images.cached_reply`), with the
+    request fields and the reply as the service sent it. `found` is False when the VLM
+    has not filled the row, or when no record matches."""
+    if not isinstance(sha256, str) or not SHA256_RE.match(sha256):
+        raise StateError(400, "`sha256` MUST be 64 lower-case hex digits")
+    with closing(open_database(db_path)) as conn:
+        image = conn.execute("SELECT folder, extension FROM image WHERE sha256 = ?",
+                             (sha256,)).fetchone()
+        row = image_descriptions.description(conn, sha256)
+    if image is None:
+        raise StateError(404, "no image with the sha256 %s" % sha256)
+    answer = {"ok": True, "sha256": sha256, "found": False}
+    if not row or not row["vlm_at"]:
+        return dict(answer, reason="the VLM has not filled this image")
+    try:
+        with open(config_path or CONFIG_PATH, encoding="utf-8") as fh:
+            config = yaml.safe_load(fh) or {}
+        cfg = describe_images.settings(config)
+        entry = vlm_config.entry(config, row["vlm_name"] or cfg["vlm"])
+    except (OSError, ValueError, yaml.YAMLError, vlm_config.VlmConfigError) as exc:
+        raise ConfigError("cannot read the vlm entry: %s" % exc)
+    path = os.path.join(labdb.image_store(db_path), image[0], "%s.%s" % (sha256, image[1]))
+    try:
+        record = describe_images.cached_reply(entry, path, row, cfg["max_side"])
+    except OSError as exc:
+        return dict(answer, reason="cannot read the image file: %s" % exc)
+    if record is None:
+        return dict(answer, reason="no record in data/cache/ matches this image")
+    return dict(answer, found=True, key=record.get("key"), created=record.get("created"),
+                ms=record.get("ms"), request=record.get("request"), reply=record["answer"])
+
+
 def disabled_page(route):
     """Return the notice page of a disabled route."""
     name = DISABLED_PAGES[route]
@@ -732,6 +835,33 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _testset(self):
+        """Send the answer of `testset_routes.respond`. The catalogue image of a slug
+        follows the rule of `card_images`."""
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+
+        try:
+            code, body, ctype, cache = testset_routes.respond(
+                self.server, self.command, self.path, read_body, open_database, card_images)
+        except (ConfigError, sqlite3.Error) as exc:
+            code, body, ctype, cache = 503, {"error": str(exc)}, testset_routes.JSON_TYPE, \
+                "no-store"
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
+    def _redirect(self, location):
+        self.send_response(302)
+        self.send_header("Location", location)
+        self.send_header("Content-Length", "0")
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+
     def do_GET(self):
         route = urllib.parse.urlsplit(self.path).path
         if embedding_routes.handles(route):
@@ -740,6 +870,10 @@ class Handler(BaseHTTPRequestHandler):
             self._website_import()
         elif run_routes.handles(route):
             self._runs()
+        elif testset_routes.handles(route):
+            self._testset()
+        elif route == "/":
+            self._redirect(HOME)
         elif route == "/dataset" or lab_pages.DATASET_PREVIEW_ROUTE.match(route):
             self._send(200, lab_pages.page("dataset.html"), "text/html; charset=utf-8")
         elif route == "/api/dataset":
@@ -749,6 +883,21 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(503, {"error": str(exc)})
         elif route in DISABLED_PAGES:
             self._send(503, disabled_page(route), "text/html; charset=utf-8")
+        elif route == "/api/image-description-status":
+            try:
+                self._json(200, image_description_status(self.server.db_path))
+            except (ConfigError, sqlite3.Error) as exc:
+                self._json(503, {"error": str(exc)})
+        elif route == "/api/image-description-reply":
+            query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+            try:
+                self._json(200, image_description_reply(
+                    self.server.db_path, self.server.config_path,
+                    (query.get("sha256") or [None])[0]))
+            except StateError as exc:
+                self._json(exc.code, {"error": str(exc)})
+            except (ConfigError, sqlite3.Error) as exc:
+                self._json(503, {"error": str(exc)})
         elif route.startswith("/api/") or route.startswith("/openapi."):
             self._json(503, {"error": DISABLED_ERROR})
         elif route.startswith("/img/"):
@@ -905,6 +1054,19 @@ class Handler(BaseHTTPRequestHandler):
         except (ConfigError, sqlite3.Error) as exc:
             self._json(503, {"error": str(exc)})
 
+    def _image_description(self):
+        """Answer a POST of `/api/image-description`."""
+        body = self._json_body(MAX_BODY)
+        if body is None:
+            return
+        try:
+            self._json(200, set_image_description(self.server.db_path, body.get("sha256"),
+                                                  body.get("values")))
+        except StateError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+
     def _image_body(self):
         """Return the image bytes of the body. Raise `PatchError` 413 for a body that is
         too large."""
@@ -972,6 +1134,8 @@ class Handler(BaseHTTPRequestHandler):
             self._embedding()
         elif website_import_routes.handles(route):
             self._website_import()
+        elif testset_routes.handles(route):
+            self._testset()
         elif route == "/api/wine-state" and self.command == "POST":
             self._wine_state()
         elif route == "/api/wine" and self.command == "POST":
@@ -990,6 +1154,8 @@ class Handler(BaseHTTPRequestHandler):
             self._comment()
         elif route == "/api/dataset-favorite" and self.command == "POST":
             self._favorite()
+        elif route == "/api/image-description" and self.command == "POST":
+            self._image_description()
         elif route.startswith("/api/"):
             self._json(503, {"error": DISABLED_ERROR})
         else:
@@ -1010,6 +1176,47 @@ def make_server(db_path, host="127.0.0.1", port=DEFAULT_PORT, config_path=None,
     server.config_path = config_path
     server.segmenter = segmenter
     return server
+
+
+WATCHER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "describe_images.py")
+WATCHER_LOG = os.path.join(ROOT, "work", "describe_images.log")
+
+
+def start_watcher(config_path):
+    """Start the watcher of the image descriptions when `image_description.watch` of the
+    configuration is true. Return the process, or None. The watcher stops by itself when
+    this process is gone (`--parent-pid`)."""
+    try:
+        with open(config_path, encoding="utf-8") as fh:
+            config = yaml.safe_load(fh) or {}
+    except (OSError, yaml.YAMLError):
+        return None
+    section = config.get("image_description")
+    if not isinstance(section, dict) or section.get("watch") is not True:
+        return None
+    os.makedirs(os.path.dirname(WATCHER_LOG), exist_ok=True)
+    with open(WATCHER_LOG, "a", encoding="utf-8") as log:
+        return subprocess.Popen(
+            [sys.executable, WATCHER, "--watch", "--parent-pid", str(os.getpid()),
+             "--config", os.path.abspath(config_path)],
+            stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
+            start_new_session=True)
+
+
+def stop_watcher(process):
+    """Stop the watcher process, if it runs."""
+    if process is None or process.poll() is not None:
+        return
+    process.terminate()
+    try:
+        process.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        process.kill()
+
+
+def _stop_on_sigterm(signum, frame):
+    """A SIGTERM ends `serve_forever` as Ctrl+C does, so the `finally` block runs."""
+    raise KeyboardInterrupt
 
 
 def main(argv=None):
@@ -1051,12 +1258,17 @@ def main(argv=None):
     print("lab server: %s   (Ctrl+C to stop)" % url)
     if not args.no_browser:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
+    watcher = start_watcher(args.config)
+    if watcher is not None:
+        print("image description watcher: pid %d, log %s" % (watcher.pid, WATCHER_LOG))
+    signal.signal(signal.SIGTERM, _stop_on_sigterm)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         print("\nstopped")
     finally:
         server.server_close()
+        stop_watcher(watcher)
     return 0
 
 

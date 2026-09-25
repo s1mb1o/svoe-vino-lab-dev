@@ -14,8 +14,11 @@ The query set follows `build_queries` of `match_run.py` with its defaults
 - A photo with the label `positive` or `negative` enters. Its place is its slug.
 - A photo stays out when its place is excluded, when its label is `unusable`, `variant`,
   or NULL, or when it is marked for deletion.
-- A photo of `__null__` enters with the label `no_match` and no truth, unless it is
-  `unusable`, marked for deletion, or `__null__` is excluded.
+- A photo of `__null__` enters with the label `no_match` and no truth only with the
+  label `positive` (confirmed: no card shows this wine), and when it is not marked for
+  deletion and `__null__` is not excluded. A NULL photo with no label waits for a wine
+  in the sidebar of `/testset` and stays out (owner answer of 2026-09-25T18:05:36+0300).
+  This differs from `match_run.py`, which takes each NULL photo that is not `unusable`.
 - The rows are in the order of `<place>/<file name>`, and the query ids follow it.
 """
 import argparse
@@ -50,11 +53,18 @@ class BenchmarkError(Exception):
 
 
 def build_queries(conn, db_path, set_name):
-    """Return (rows, left out counts) of the set, as `build_queries` of match_run.py."""
+    """Return (rows, left out counts) of the set, as `build_queries` of match_run.py.
+
+    Two rules differ from match_run.py: the photos of a `Removed` wine are left out, and
+    a NULL photo is a query only with the label `positive` (plan 24)."""
     if conn.execute("SELECT 1 FROM test_set WHERE set_name = ?", (set_name,)).fetchone() is None:
         raise BenchmarkError("the database holds no test set %r" % set_name)
     excluded = {slug for (slug,) in conn.execute(
         "SELECT wine_slug FROM test_excluded WHERE set_name = ?", (set_name,))}
+    # The photos of a Removed wine stay in the set and leave the run until a restore. The
+    # owner chose this on 2026-09-25T17:13:17+0300 (plan 24).
+    removed = {slug for (slug,) in conn.execute(
+        "SELECT wine_slug FROM wine_catalog WHERE state = 'Removed'")}
     rows, skipped = [], collections.Counter()
     for place, name, digest, label, delete, folder, extension in conn.execute(
             "SELECT p.place, p.file_name, p.sha256, p.label, p.marked_delete, i.folder, "
@@ -72,11 +82,18 @@ def build_queries(conn, db_path, set_name):
                 skipped["unusable"] += 1
             elif delete:
                 skipped["marked for deletion"] += 1
+            elif label != "positive":
+                # The NULL place is also the sidebar of the Testset page, where a photo
+                # waits for a wine. A NULL photo is a query only when a person confirmed
+                # it (`positive`). The owner chose this on 2026-09-25T18:05:36+0300.
+                skipped["unconfirmed NULL"] += 1
             else:
                 rows.append({**row, "label": NO_MATCH, "truth": []})
             continue
         if place in excluded:
             skipped["excluded slug"] += 1
+        elif place in removed:
+            skipped["removed wine"] += 1
         elif label not in LABELS_IN_SET:
             skipped["no label" if not label else label] += 1
         elif delete:

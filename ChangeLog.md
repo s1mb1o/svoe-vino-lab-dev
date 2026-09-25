@@ -2,6 +2,223 @@
 
 ## 2026-09-25
 
+- `/testset` and `/runs`: the plan 24 follow-ups of drink-atlas-workspace-ca [a2daf6]
+  (owner messages of 2026-09-25T18:04:02+0300, 18:04:22, 18:05:36, 18:05:49, and the
+  answers of 18:05:36), which stopped before its tests ended and before its docs:
+  - `/testset`: the set combobox in the title; the right sidebar is the NULL place and
+    the NULL row leaves the table; a drag moves a photo to the sidebar or back to a wine
+    (new route `POST /api/testset-move`, `testsets.move_photo`); a move clears the label,
+    keeps the comment, the box, the delete mark, and the proposal, sets `moved_from`, and
+    gives a clashing name the suffix `_moved<N>`; no file moves.
+  - `pipeline/benchmark.py`: a NULL photo is a `no match` query only with the label
+    `positive`. The docstring now states this rule.
+  - `/runs`: the filter `Configuration` in the header after `Match runs`; pages of the
+    runs table (25, 50, 100, or all; the browser keeps the size).
+  - Checked by TESTSET [0fe970] (owner message of 18:13:00) in headless Chromium, with
+    each write answered by the real route code on a copy of the database; the live
+    database did not change. The move was also checked on a copy with SQL.
+  - Four page fixes of TESTSET [0fe970] in `pipeline/pages/testset.html`: the line after
+    the combobox and the combobox count each photo of the set (the sidebar too) and are
+    drawn again after each write (new `headSub`); the time of the last edit moved from the
+    title to the stats line and follows each write (new `localStamp`; `post`, the end of
+    `uploadFiles`, and `saveWineNote`), so the navigation stays in the title row; the
+    large view of a NULL photo reads `the NULL place (sidebar)` and `confirmed: no card of
+    the catalogue shows this wine`; the wine position no longer counts the NULL place.
+  - `tests/test_mock_run.py`: the fixture NULL photo gets `positive`, as the new rule
+    asks; all 559 tests pass.
+  - Docs: `README.md`, `SMOKE_TESTS.md` TP3, TP4, TP18 to TP23, RN14 to RN17, plan 24
+    ("Changes after the approval"), plan 23 (one item).
+- `/testset`: a drop of image files from the macOS Finder onto the sidebar (the NULL
+  place) or onto a wine row stores each file in that place with no label. New route
+  `POST /api/testset-upload` and `testsets.upload_photo`. A new image keeps its Finder
+  name (`_upload<N>` on a clash); an image that the set holds already keeps its file name
+  of the set, the same place refuses it (HTTP 409), and another place takes it. JPEG,
+  PNG, WebP, GIF, and BMP of at most 20 MB; HEIC is refused. A file dropped outside a
+  target no longer opens in the tab. Owner message of 2026-09-25T18:19:01+0300 and the
+  answers of 18:25:10; session drink-atlas-workspace-cb [48de03]. 565 tests `OK`; the
+  drops checked in headless Chromium on a fixture database. 8168 restarted with SIGTERM
+  at 18:34:39 (new watcher pid 21744 with `caffeinate`). `README.md`, `SMOKE_TESTS.md`
+  TP13 to TP17, plan 24.
+- `/dataset`, plan 26 additions of drink-atlas-workspace-99 (owner messages of about
+  17:58 and 18:00): the block `Raw VLM reply` in the dialog `Image description` (new
+  route `GET /api/image-description-reply?sha256=`, new `describe_images.cached_reply`),
+  and the button `Advanced Filters:` with the filter `Package` (the patched image
+  decides, else the main image). 99 stopped before its docs; TESTSET [0fe970] checked
+  both features read-only on 8168 (owner message of 18:13:00): 1,683 of 1,683
+  VLM-filled images answer `found: true`, the error codes are 400 and 404, the counts of
+  `Package` agree with SQL for all 2,104 wines, and at 390 px no feature adds a
+  horizontal scroll. `test_describe_images.py` 24 and `test_lab_server.py` 58 tests pass.
+  A save in the dialog does not apply the `Package` filter again (as for `Show`).
+  `README.md`, `SMOKE_TESTS.md` ID14 to ID20, plan 26.
+- Plan 28, `pipeline/seed_from_testset.py`: one command builds the lab database again
+  from `svoe-vino-testset` and its sources (tables, catalogue, main images, patches,
+  GTINs and QR URLs, Atlas Core bindings, the three test sets, label cuts), backs up the
+  old database to `data/backups/`, and swaps the new one in. Owner message of
+  2026-09-25T17:46:51+0300 and the answers of 17:52:00 (full rebuild and swap; label
+  cuts always). Written by drink-atlas-workspace-c5 [7cabb3], which stopped before its
+  test run ended; the docs by TESTSET [0fe970] (owner message of 18:13:00). The 10 tests
+  pass. The test run of c5 reached step 8: `data/lab-test.sqlite3.seeding` holds steps
+  1 to 7. The full test run is not done: it asks SAM3 on gx10 about 1,660 times, and 8
+  embedding builds used gx10. `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md` (section SD),
+  plan 28 (section "The state on 2026-09-25").
+- `/embedding`: each running job row ends with a button `(x)` that stops the build of
+  that row with `POST /api/embeddings/<name>/stop` (the route of the `Stop` button), also
+  when the `Configuration` combobox selects another entry. A `stopping` row keeps a
+  disabled `(x)`. Owner message of 2026-09-25T18:16:00+0300; session TESTSET [0fe970].
+  `pipeline/pages/embedding.html`: the `.job` grid gets one column, new `.job-stop` CSS,
+  the button in `showJobs`, new `stopJob`, one click listener on `#jobs`. Checked in
+  headless Chromium on 8168 with a fake job list and every POST answered in the browser,
+  so no real build stopped: dark and light theme at 1,440 px, light at 390 px; one click
+  sent one stop request for the row. The page needs no restart. `SMOKE_TESTS.md` EB41 to
+  EB43, `README.md`.
+- The indicator of the image description watcher on `/dataset` (owner message of
+  17:32:17, answers of 17:33:57): the pill left of `Add wine` shows working (described of
+  linked, the speed), idle, waiting (the error), or stopped, and the failed count. The
+  watcher writes `work/describe_images.status.json` at each step (`describe_images.Status`);
+  the new route `GET /api/image-description-status` reads it, checks the pid, and adds the
+  counts (`image_descriptions.watcher_status`). The page asks every 5 s while its tab is
+  visible. 15 new tests; all 512 tests pass. Checked in headless Chromium in both themes
+  and at 390 px, with the live state and three faked states. 8168 restarted at 17:38:45
+  (watcher pid 66779, `caffeinate` on it).
+
+- The header of `/embedding` has two rows instead of three (owner message of 17:30). The
+  summary line `N of M wines · … items · current … · stale … · missing … · failed …`
+  after the title `Embeddings` is gone; the row `Items` of the source panel still shows
+  the counts, with the failed count in red. The bar `Configuration`, `Build`, `Stop`,
+  `Log`, and the message of the last build moved into the first row, between the title
+  and the navigation. `pipeline/pages/embedding.html` alone (the `.head` CSS, the header
+  markup, `render`). Tested in headless Chromium on 8168: two rows at 1,440 px, no page
+  error, the `Show` filter and `Search` work. A window narrower than about 1,410 px puts
+  the navigation in its own row. No restart was necessary.
+- The dialog `Import from vino-svoe.ru` on `/dataset` (owner message of 17:19): each row
+  of `Missing on the website` shows a red prohibition sign (a circle with a diagonal bar)
+  on top of the wine image, or on top of the empty box when the wine has no image. The
+  sign is an inline SVG in `pipeline/pages/website_import.js` (`MISSING_SIGN`,
+  `changeHtml`). It has `pointer-events: none`, so a click on it opens the large view of
+  the image and does not change the checkbox. Tested in headless Chromium on 8168 in light
+  and dark mode: 71 of 71 rows have the sign, and the 27 checks of the dialog still pass.
+  No restart was necessary.
+- Plan 24, the Testset page on the lab database (owner messages of 16:57:18 and 17:10:55,
+  answers of 17:01:44 to 17:26:22; taken over from TESTSET [0fe970]). The page is
+  `/testset`; `GET /` redirects to `/dataset`. The database is the source of the labels.
+  - Schema `019_testset_page.sql` (entered and migrated at 17:37:35; a backup of version
+    18 is in the scratchpad of the session): `test_photo` built again with each field of a
+    label entry (`comment`, `ts`, `proposed`, `proposed_by`, `confidence`, `source_url`,
+    `moved_from`, `copied_from`, `reassign_to`, `prefilled_from`, `extra`) and the box of
+    the main object (`box_left` to `box_bottom`); new table `test_wine_note`;
+    `test_set.edited_at` and `test_set.label_note`.
+  - `pipeline/import_testset.py` and `import_testsets.py` keep each field, the notes of a
+    whole wine, and the text `note`. A value that its column cannot keep exactly goes into
+    `extra`. The import refuses a set with a page edit, unless `--force`. The three sets
+    were imported again at about 17:38.
+  - New `pipeline/export_testset.py`: `review-labels.json` and `excluded-slugs.json` of one
+    set from the database. The round trip (import, then export) on the three sets gave the
+    same `labels`, `wines`, excluded slugs, `note`, and `counts` as the source files.
+  - New `pipeline/testsets.py` (the reads and the writes) and `pipeline/testset_routes.py`
+    (`GET /api/testset`, `POST /api/testset-label`, `-delete`, `-comment`, `-box`,
+    `-wine-note`, `-exclude`). New page `pipeline/pages/testset.html`: a port of the old
+    Testset page with the labels, the delete mark, the comments, the wine notes, the
+    exclusions, the 13 sorts, the filters, the large view, a set selector, the badges
+    `Removed`, `Disabled`, and `not in catalogue`, and the box drawing (`b`). The move,
+    the copy, the upload, the sideboard, the checks, and the group editor are not there.
+  - `pipeline/lab_server.py`: `testset_routes` delegation, `/` redirect, `NAV` link
+    `/testset`, `/` out of `DISABLED_PAGES`. The Testset link of `dataset.html`,
+    `embedding.html`, and `runs.html` leads to `/testset`.
+  - `pipeline/benchmark.py`: `build_queries` leaves out the photos of a `Removed` wine
+    ("removed wine") until a restore (owner answer of 17:13:17).
+  - Tests: new `tests/test_testsets.py` (13), `tests/test_testset_routes.py` (5),
+    `tests/test_export_testset.py` (6); 4 new tests in `tests/test_import_testset.py`, 1 in
+    `tests/test_benchmark.py`, 2 in `tests/test_lab_server.py`; `tests/test_labdb.py` at
+    version 19. All 539 tests pass. Checked in headless Chromium on a copy of the database
+    on port 8174: 36 checks pass, in the light and the dark theme and at 390 px.
+  - 8168 was restarted at 17:55:56 (SIGTERM; server pid 16219, watcher pid 16234, and a
+    new `caffeinate -ims -w 16234`). Port 8174 is recorded in `PORTS_USED.md` as a
+    temporary test copy; it is stopped.
+  - New draft `docs/plans/27_main-item-iou.md`: the IoU of the box in the run validator
+    (owner answers of 17:23:18).
+- New `tests/test_testset_retention.py` (owner message of 17:10:55, answer of 17:13:17):
+  a wine that is in a test set keeps its rows of `test_set`, `test_photo`,
+  `test_excluded`, `test_variant`, and `image` when a person removes it
+  (`lab_server.change_state`) and when the catalogue import removes it, and has them again
+  after a restore. The rule already held; the 4 tests guard it. No production code changed.
+  The rules for the Testset page and the benchmark (a `Removed` wine with photos shows with
+  a `Removed` badge; the benchmark skips its photos as "removed wine" until a restore) are
+  part of plan 24 (the entry above).
+- Plan 26, the image descriptions (owner messages of 16:31 to 16:48, approved at
+  16:48:07). New table `image_description` (schema `018_image_description.sql`; the
+  database is at version 18 since 17:00:57): `package_type`, `subject_scope` (with
+  `multiple_packages`), `package_view`, `content_roles`, and `created_by` (`manual` or
+  `vlm`) with `vlm_at`, `vlm_name`, `vlm_model`, `vlm_answer`, `vlm_error`, `vlm_attempts`.
+  - New `pipeline/image_descriptions.py` (the table) and `pipeline/describe_images.py`
+    (the watcher). The watcher sends each linked image with no VLM fill to
+    `qwen3.5-9b-nvfp4`, with the values that are set as fixed facts in the prompt. It checks
+    the answer against the JSON Schema `ANSWER_SCHEMA` with `jsonschema`, and fills only
+    the values that are not set (`COALESCE`). A valid answer goes into `model_cache`; an
+    answer that fails the schema writes nothing.
+  - `pipeline/lab_server.py`: `POST /api/image-description`, the keys
+    `image_descriptions` and `image_description_values` of `/api/dataset`, and the start
+    and stop of the watcher in `main` when `image_description.watch` is true. A SIGTERM now
+    ends the server through its `finally` block, so the watcher stops too.
+  - `/dataset`: a button `✎` in the bottom right corner of the main image, the patch
+    image, and each alternative photo opens the editor of that image.
+  - The check of the owner: `package_type` set by hand to `tetra_pak` and `can` for the
+    main images of `soyuz-vino-soyuz-vino-evropak-shiraz-krasnoe-polusladkoe-11` and
+    `abrau-dyurso-fizz-beloe-bryut`; after the VLM run both values stayed, and the other
+    three values were filled. On a scratch copy of the database, a wrong preset `keg` stayed
+    while the VLM answered `bottle`.
+  - 33 new tests; all 497 tests pass. 8168 was restarted at 17:01:08 (schema 18, no
+    watcher) and at 17:07:33 (with the watcher). The backlog of about 2,020 images runs
+    since 17:07.
+- `pipeline/vlm_config.py`: the key `key` of a `vlm` entry is optional now; absent means
+  no key. The three gx10 entries of `config.yaml` lost their `key: null` between 16:23
+  and 16:54 (not by this session); `config.old.yaml` follows, so the two sections stay equal.
+  The owner confirmed the rule at 2026-09-25T17:11:35+0300: a missing `key` is not set, and it is null.
+
+- Owner messages of about 16:00 and 16:11 and the answers of about 16:05 and 16:09: the key
+  `vlm` in `config.yaml` and in `config.old.yaml` holds the named VLM inferences. An
+  entry holds `name`, `protocol` (`openai`), `thinking_field` (`chat_template_kwargs` or
+  `top_level`), `endpoint`, `model`, and `key` (`null` or `{env:NAME}`; a key value is
+  refused). The new `pipeline/vlm_config.py` reads it.
+  - Six entries: `qwen3.5-9b-nvfp4` (the owner request), `qwen3.5-9b`, and `qwen3-vl-32b`
+    of gx10; `qwencloud-qwen3.8-max` (the owner request) and `qwencloud-qwen3.8-flash` of
+    the QwenCloud Token Plan with `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}`;
+    `dashscope-qwen3.7-flash` with `{env:QWENCLOUD_PAYGO_API_KEY}`.
+  - `scripts/04_verify.py`: the built-in backends `local`, `tokenplan`, and `dashscope`
+    are gone. `--backends` names `vlm` entries; the default is `qwen3-vl-32b:12`, the
+    model of the old `local`. The column `candidates.vlm_model` now gets the entry
+    name. The two cloud entries read the variables of `CREDENTIALS.md`, not the old
+    `QWEN_API_KEY` and `DASHSCOPE_API_KEY`.
+  - `scripts/cluster_rules.py`: `cluster_rules.vlm` (default `qwen3.5-9b`) and
+    `cluster_rules.rules_vlm` (default: the entry of stage 1) replace `url`, `model`,
+    `rules_url`, `rules_model`, `rules_api`, and `rules_key_env`, and the old keys are
+    refused. `config.old.yaml` names `qwen3.5-9b` and `qwencloud-qwen3.8-max`, the same
+    models as before. The chat URLs and the payloads stay the same, so the keys of
+    `model_cache` do not change.
+  - New `tests/test_vlm_config.py` (19 tests). All 464 tests pass. One live request to
+    `qwen3.5-9b-nvfp4` gave HTTP 200 with the right JSON and no reasoning text.
+
+- Owner messages of about 15:40 and 15:45 and the answers of 15:55: the dialog
+  `Import from vino-svoe.ru` on `/dataset` (`pipeline/pages/website_import.js`, taken over
+  from the stale session drink-atlas-workspace-ff with the permission of the owner).
+  - One card holds all conflicts of one wine. The heading states the conflicts and the
+    wines, for example `12 · 9 wines`. A card stays marked until each of its conflicts
+    has a choice.
+  - Each wine slug links to `https://vino-svoe.ru/wines/<slug>` in a new tab. A row of
+    `Missing on the website` keeps the slug as plain text: the website has no page.
+  - A click on an image shows a large view with the file name. Esc or a click closes
+    it. The click changes neither the checkbox nor the radio button.
+  - New section titles: `New wines on website`, and `Missing main images, taken from
+    website` with the hint "The database has no main image for these wines. Apply
+    stores the website image as the main image."
+  - A long section hint wraps next to its title, or below it on a narrow screen.
+  - Checked in headless Chromium on 8168 (run `20260925T125132`), both themes and
+    390 px. Nothing was applied. The lab server reads the file on each request: no
+    restart. New smoke tests IW13 to IW15.
+- Owner message of 15:43:34 and the answer "Both pages": the `Sort` control of
+  `/dataset` has no option `catalog.jsonl order` now. The default sort is
+  `wine name A–Z`. `pipeline/pages/dataset.html` lost the option and its line in the
+  sort code. The size and change-time sorts still use the catalogue order as the tie
+  break. The same change is in the dataset page of the `svoe-vino-testset` review tool.
 - Owner messages of 13:45:11, 13:47:30, and 13:51:48: the cache of the model calls
   (plan 25, `docs/plans/25_model-call-cache.md`). A call to SAM3, Grounding DINO, or a
   VLM that repeats an earlier successful call reads its answer from `data/cache/` and
@@ -11,7 +228,8 @@
     sent image (the copy after the resize). One JSON file for each call:
     `data/cache/<model>/<key[0:2]>/<key>.json`. It holds the request fields, the time, the
     duration, and the answer; no image, no key. A success alone is stored. A write goes
-    through a temporary file and `os.replace`.
+    through a temporary file and `os.replace`. A record has the mode
+    0644 (`mkstemp` made it 0600 before the fix of about 15:24).
   - `pipeline/derive.py`: `Sam3Client._post` does the lookup and the store; the retry loop
     moved unchanged into `_send`. So each SAM3 caller of `pipeline/` uses the cache.
     Agreed with drink-atlas-workspace-8b and drink-atlas-workspace-7b.

@@ -57,7 +57,11 @@ header {
 h1 { font-size: 15px; margin: 0 0 8px; font-weight: 650; }
 h1 .sub { color: var(--muted); font-weight: 400; }
 .head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-.head-top h1 { margin-right: auto; }
+.head-top h1 { margin-right: 0; }
+/* The filter `Configuration` stands in the header, after the title (owner message of
+   2026-09-25T18:05:36+0300). The navigation stays at the right. */
+.head-conf { color: var(--muted); font-size: 12px; display: flex; gap: 5px;
+             align-items: center; margin-right: auto; }
 .nav { display: flex; gap: 6px; flex: none; flex-wrap: wrap; }
 .nav a {
   color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
@@ -141,8 +145,15 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 /* A photo whose bytes are not in the image store of the lab database. */
 .qphoto.nophoto { display: flex; align-items: center; justify-content: center;
                   color: var(--muted); font-size: 11px; text-align: center; }
-/* The filter of the table of the runs. */
+/* The count and the pages of the table of the runs. */
 .runs-bar { margin: 0 0 8px; }
+.pager { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; }
+.pager button {
+  font: inherit; font-size: 12px; padding: 2px 9px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+}
+.pager button:hover:not(:disabled) { border-color: var(--accent); }
+.pager button:disabled { color: var(--muted); cursor: default; opacity: .6; }
 .strip { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
 .cand {
   width: 104px; background: var(--panel-2); border: 2px solid transparent;
@@ -224,9 +235,11 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 <header>
   <div class="head-top">
     <h1>Match runs <span class="sub" id="head-sub"></span></h1>
+    <label class="head-conf">Configuration <select id="configuration"
+      title="A lab configuration is one entry of `embeddings` in config.yaml. The key `configuration` of run.json names it."></select></label>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
-      href="/">Testset</a><a class="on" href="/runs">Runs</a></nav>
+      href="/testset">Testset</a><a class="on" href="/runs">Runs</a></nav>
   </div>
   <div class="bar">
     <label>Show
@@ -270,9 +283,16 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 <main>
   <h2>Runs</h2>
   <div class="bar runs-bar">
-    <label>Configuration <select id="configuration"
-      title="A lab configuration is one entry of `embeddings` in config.yaml. The key `configuration` of run.json names it."></select></label>
     <span class="muted" id="runs-count"></span>
+    <span class="pager">
+      <button id="page-prev" type="button" title="the page before">&lsaquo; prev</button>
+      <span id="page-info"></span>
+      <button id="page-next" type="button" title="the next page">next &rsaquo;</button>
+      <label>per page <select id="page-size">
+        <option value="25">25</option><option value="50">50</option>
+        <option value="100">100</option><option value="0">all</option>
+      </select></label>
+    </span>
   </div>
   <p class="sm">Click a column to sort. Click it again to turn the order around.</p>
   <table id="runs"><thead><tr>
@@ -349,6 +369,14 @@ let CLUSTER = {};
 let CARDNAME = {};
 /* The order of the table of the runs. The newest run stands first at the start. */
 let RSORT = { key: "id", dir: -1 };
+/* The pages of the table of the runs (owner message of 2026-09-25, "add pagination to
+   display runs"). RSIZE 0 shows every run. The browser keeps the page size. */
+const PAGE_KEY = "svl.runs.page-size";
+let RPAGE = 0, RSIZE = 25;
+try {
+  const kept = localStorage.getItem(PAGE_KEY);
+  if (kept !== null && ["25", "50", "100", "0"].includes(kept)) RSIZE = Number(kept);
+} catch (e) { /* private mode */ }
 const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var",
                     unlabelled: "unl" };
 
@@ -394,9 +422,24 @@ function renderConfigs() {
     .join("");
 }
 
+/* Put the page of the table on the run `id`, when the table shows it. */
+function pageOfRun(id) {
+  const i = visibleRuns().findIndex(r => r.id === id);
+  if (i >= 0 && RSIZE) RPAGE = Math.floor(i / RSIZE);
+}
+
 function renderRuns() {
   const shown = visibleRuns();
-  $("#runs-body").innerHTML = shown.map(r => `
+  const pages = RSIZE ? Math.max(1, Math.ceil(shown.length / RSIZE)) : 1;
+  RPAGE = Math.max(0, Math.min(RPAGE, pages - 1));
+  const from = RSIZE ? RPAGE * RSIZE : 0;
+  const page = RSIZE ? shown.slice(from, from + RSIZE) : shown;
+  $("#page-size").value = String(RSIZE);
+  $("#page-prev").disabled = RPAGE === 0;
+  $("#page-next").disabled = RPAGE >= pages - 1;
+  $("#page-info").textContent = shown.length
+    ? `${from + 1}\u2013${from + page.length} \u00b7 page ${RPAGE + 1} of ${pages}` : "";
+  $("#runs-body").innerHTML = page.map(r => `
     <tr data-id="${esc(r.id)}" class="${CUR === r.id ? "on" : ""}">
       <td>${esc(r.id)} ${r.dry_run ? '<span class="tag dry">dry run</span>' : ""}
         ${r.subset ? `<span class="tag var" title="a repeat of ${esc(r.subset.based_on)} at depth ${r.subset.rerun_depth}">repeat d${r.subset.rerun_depth}</span>` : ""}</td>
@@ -426,6 +469,8 @@ function renderRuns() {
    in the table any more, the first run of the table with metrics opens. */
 function setConfig(value) {
   CONF = value;
+  RPAGE = 0;
+  if (CUR) pageOfRun(CUR);
   const url = new URL(location.href);
   if (CONF) url.searchParams.set("configuration", CONF);
   else url.searchParams.delete("configuration");
@@ -769,6 +814,16 @@ document.querySelector("#runs thead").addEventListener("click", ev => {
   // the same column turns the order around; another column starts at its own end
   const down = (key === "id" || key === "started" || key === "backend") ? -1 : 1;
   RSORT = { key, dir: RSORT.key === key ? -RSORT.dir : down };
+  RPAGE = 0;
+  renderRuns();
+});
+$("#page-prev").addEventListener("click", () => { RPAGE--; renderRuns(); });
+$("#page-next").addEventListener("click", () => { RPAGE++; renderRuns(); });
+$("#page-size").addEventListener("change", ev => {
+  RSIZE = Number(ev.target.value);
+  try { localStorage.setItem(PAGE_KEY, String(RSIZE)); } catch (e) { /* private mode */ }
+  RPAGE = 0;
+  if (CUR) pageOfRun(CUR);
   renderRuns();
 });
 let t = null;
@@ -932,11 +987,12 @@ document.addEventListener("keydown", ev => {
   RUNS = data.runs || [];
   CONFIGS = data.configurations || [];
   renderConfigs();
-  renderRuns();
   const want = decodeURIComponent((location.hash || "").slice(1));
   const shown = visibleRuns();
   const first = shown.find(r => r.id === want) ||
                 shown.find(r => r.has_metrics && !r.dry_run) || shown[0];
+  if (first) pageOfRun(first.id);
+  renderRuns();
   if (first) loadRun(first.id, false);
 })();
 </script>

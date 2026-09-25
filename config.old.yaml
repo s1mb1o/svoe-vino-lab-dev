@@ -133,22 +133,23 @@ clusters:
 #
 # Stage 2, the rules, runs once. The owner chose on 2026-09-23 the more capable
 # `qwen3.8-max` of the QwenCloud Token Plan for it, with thinking, 4 requests at a
-# time. The key is read from the environment variable `rules_key_env` at run time.
-# Never write the key into this file. The re-rank of `svoe-vino-matcher` keeps the
-# local model.
+# time. The key is read from the shell variable of the `key` of its `vlm` entry at run
+# time. Never write the key into this file. The re-rank of `svoe-vino-matcher` keeps
+# the local model.
+#
+# `vlm` names the entry of the key `vlm` for stage 1, and `rules_vlm` names the entry
+# for stage 2. Without `rules_vlm`, stage 2 uses the entry of stage 1. The keys `url`,
+# `model`, `rules_url`, `rules_model`, `rules_api`, and `rules_key_env` are replaced by
+# these two keys since 2026-09-25, and `scripts/cluster_rules.py` refuses them.
 cluster_rules:
   rules_file: svoe-vino-testset/dataset/catalog-cluster-rules.json
   notes_file: svoe-vino-testset/dataset/catalog-cluster-notes.json
-  url: http://192.168.86.14:18081/v1/chat/completions
-  model: qwen3.5-9b
+  vlm: qwen3.5-9b
   thinking: false
   describe_side: 2048
   rules_max_side: 768
   timeout_s: 300
-  rules_url: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions
-  rules_model: qwen3.8-max
-  rules_api: qwencloud
-  rules_key_env: QWENCLOUD_TOKEN_PLAN_API_KEY
+  rules_vlm: qwencloud-qwen3.8-max
   rules_thinking: true
   rules_workers: 4
   rules_timeout_s: 900
@@ -202,3 +203,60 @@ dataset:
     manual_groups_file: svoe-vino-testset/dataset/vlmrerank-8b-failed/manual-groups.json
     excluded_slugs_file: svoe-vino-testset/dataset/vlmrerank-8b-failed/excluded-slugs.json
     runs_dir: svoe-vino-testset/dataset/vlmrerank-8b-failed/runs
+
+# The VLM inferences. One entry: a name, a protocol, the thinking field, an endpoint, a
+# model, and a key. `pipeline/vlm_config.py` reads this key. A script names an entry by
+# its name, for example `scripts/04_verify.py --backends qwen3-vl-32b:12`, or the keys
+# `vlm` and `rules_vlm` of `cluster_rules`. `config.yaml` holds the same section.
+#
+# `protocol: openai` sends `POST <endpoint>/chat/completions`. `thinking_field` tells
+# where the thinking switch goes: `chat_template_kwargs` sends
+# `chat_template_kwargs.enable_thinking` (the gx10 gateway); `top_level` sends
+# `enable_thinking` as a top field (QwenCloud and DashScope).
+#
+# `key` is absent or null when the service needs no key, or `{env:NAME}`: the key is
+# read from the shell variable NAME at run time. Never write a key value into this
+# file. The gx10 gateway needs no key.
+vlm:
+  - name: qwen3.5-9b-nvfp4
+    protocol: openai
+    thinking_field: chat_template_kwargs
+    endpoint: http://192.168.86.14:18081/v1
+    model: qwen3.5-9b-nvfp4
+
+  - name: qwen3.5-9b
+    protocol: openai
+    thinking_field: chat_template_kwargs
+    endpoint: http://192.168.86.14:18081/v1
+    model: qwen3.5-9b
+
+  - name: qwen3-vl-32b
+    protocol: openai
+    thinking_field: chat_template_kwargs
+    endpoint: http://192.168.86.14:18081/v1
+    model: qwen3-vl-32b
+
+  # The QwenCloud Token Plan. Read the section "QwenCloud Token Plan API" of
+  # CREDENTIALS.md in the workspace root.
+  - name: qwencloud-qwen3.8-max
+    protocol: openai
+    thinking_field: top_level
+    endpoint: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    model: qwen3.8-max
+    key: "{env:QWENCLOUD_TOKEN_PLAN_API_KEY}"
+
+  - name: qwencloud-qwen3.8-flash
+    protocol: openai
+    thinking_field: top_level
+    endpoint: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    model: qwen3.8-flash
+    key: "{env:QWENCLOUD_TOKEN_PLAN_API_KEY}"
+
+  # Alibaba Cloud Model Studio, pay-as-you-go. It is not the QwenCloud endpoint. Read
+  # the section "dashscope-intl" of CREDENTIALS.md.
+  - name: dashscope-qwen3.7-flash
+    protocol: openai
+    thinking_field: top_level
+    endpoint: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    model: qwen3.7-flash
+    key: "{env:QWENCLOUD_PAYGO_API_KEY}"

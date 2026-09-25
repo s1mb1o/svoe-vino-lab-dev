@@ -23,7 +23,7 @@ LABELS = {
     "wine-b": {"01.jpg": {"label": "positive"}, "02.jpg": {"label": "variant"},
                "03.jpg": {"label": "unusable"}},
     "wine-c": {"01.jpg": {"label": "positive"}},
-    "__null__": {"n2.jpg": {"label": "unusable"}},
+    "__null__": {"n1.jpg": {"label": "positive"}, "n2.jpg": {"label": "unusable"}},
 }
 
 
@@ -164,6 +164,44 @@ class BenchmarkTest(unittest.TestCase):
         named_meta = json.loads(Path(named, "run.json").read_text(encoding="utf-8"))
         self.assertNotIn("configuration", plain_meta)
         self.assertEqual(named_meta["configuration"], "mock")
+
+    def test_the_photos_of_a_removed_wine_leave_the_run_until_a_restore(self):
+        # Owner answer of 2026-09-25T17:13:17+0300 (plan 24).
+        conn = sqlite3.connect(self.db)
+        conn.execute("UPDATE wine_catalog SET state = 'Removed', removed_by = 'person' "
+                     "WHERE wine_slug = 'wine-a'")
+        conn.commit()
+        rows, skipped = self.queries()
+        self.assertNotIn("wine-a", {r["slug"] for r in rows})
+        self.assertEqual(skipped["removed wine"], 3)
+        self.assertEqual(self.query_count("wine-a"), 3)
+        conn.execute("UPDATE wine_catalog SET state = 'Active', removed_by = NULL "
+                     "WHERE wine_slug = 'wine-a'")
+        conn.commit()
+        conn.close()
+        rows, skipped = self.queries()
+        self.assertEqual(sum(r["slug"] == "wine-a" for r in rows), 2)
+        self.assertNotIn("removed wine", skipped)
+
+    def query_count(self, place):
+        conn = sqlite3.connect(self.db)
+        try:
+            return conn.execute("SELECT count(*) FROM test_photo WHERE place = ?",
+                                (place,)).fetchone()[0]
+        finally:
+            conn.close()
+
+    def test_a_null_photo_with_no_label_waits_in_the_sidebar(self):
+        # Owner answer of 2026-09-25T18:05:36+0300: the NULL place is also the sidebar of
+        # the Testset page, so a NULL photo is a query only with the label positive.
+        conn = sqlite3.connect(self.db)
+        conn.execute("UPDATE test_photo SET label = NULL WHERE place = '__null__' AND "
+                     "file_name = 'n1.jpg'")
+        conn.commit()
+        conn.close()
+        rows, skipped = self.queries()
+        self.assertNotIn("__null__/n1.jpg", {r["image_path"] for r in rows})
+        self.assertEqual(skipped["unconfirmed NULL"], 1)
 
 
 if __name__ == "__main__":

@@ -602,105 +602,6 @@ The name `drink-atlas-workspace-9a` belongs to two sessions. This section is the
   ff and TESTSET told (after schema 015) that the fixture of `tests/test_manual_wines.py`
   fails; fixed by this session (the column list). 12 tests OK.
 
-## drink-atlas-workspace-e3
-
-- Task: (1) a button on `/embedding` that opens a dialog with the build log
-  (`build.log`) of the selected entry: done, not committed. (2) a click on an image of
-  `/embedding` opens a preview as on `/dataset`: done, not committed. (3) the label cut of
-  each full photo, so the view `label` of `/embedding` gets its images and vectors; a
-  badge `vector` on each cell whose item has a vector row (current and stale).
-- Source: (1) owner message of 11:42:50, answers of 11:45:00. (2) owner message of
-  11:59:27, answers of 12:02:31. (3) owner message of 12:11:50, answers of 12:27:47
-  ("New table", "Current and stale"). The owner answer of 12:28:04 to 7b (one cut for
-  each original and kind in `image_derivative`) replaces the new table: the label cut of
-  a full photo is a row of kind `label` of `image_derivative` (agreed with 7b, about 12:31).
-- Files: (1) and (2): hunks in `pipeline/embedding_routes.py` (docstring, `ENTRY_ROUTE`,
-  the `/log` branch of `respond`, `build_log`), `pipeline/pages/embedding.html` (the log
-  dialog, the preview CSS and markup, `cellHtml`, `columnHtml`, `wineHtml`, one line of
-  `render`, the log and preview functions and listeners, the last line),
-  `tests/test_embedding_routes.py` (3 tests at the end of `RoutesTest`).
-  (3): new `docs/plans/22_label-cut.md`, new `pipeline/seed_label_cuts.py`, new
-  `tests/test_seed_label_cuts.py`; hunks in `pipeline/embeddings.py` (`read_inputs`
-  alone), `tests/test_embeddings.py` (one new test at the end),
-  `pipeline/embedding_routes.py` (`entry_view`, new `_vector_rows`, `import numpy`),
-  `pipeline/pages/embedding.html` (`cellHtml`, the `.vector` CSS, the preview file line),
-  `tests/test_embedding_routes.py` (one test after `test_entry_view_and_image_route`).
-  `data/lab.sqlite3` (rows of `image` and `image_derivative` of kind `label`; a backup
-  first), new files in `data/images/cropped/`. Entries in `README.md`, `SMOKE_TESTS.md`,
-  `ChangeLog.md`, `ResearchLog.md`, `COMMANDS.md`, plan 10, `docs/owner-messages.md`.
-  No schema file.
-- Task (4): the job row of `/embedding` shows the phase of a running build: `waiting
-  for the model · <time>` and `retry <n>` (owner message of 13:37:14 "make it show
-  progress", answer of about 13:40 "Phase text"). Files of (4): hunks in
-  `pipeline/build_embeddings.py` (one `request` event in the batch loop of `run`, one
-  `retry` event in `OpenAIBackend.embed`), `pipeline/embeddings.py` (`job_state`: the
-  keys `phase`, `phase_event`, `phase_t`), `pipeline/pages/embedding.html` (`showJobs`,
-  `LOG_HIDDEN` and the label of `#log-hide`), `tests/test_build_embeddings.py` (new tests
-  at the end of `BuildTest`), `tests/test_embedding_routes.py` (one test in
-  `JobStateTest`). A restart of 8168. Entries in `README.md`, `SMOKE_TESTS.md`,
-  `ChangeLog.md`, plan 10.
-- State: waiting: the owner commits (1) to (4). All four are done, tested, and live.
-  (3): the seed ended at 13:36:59 (2,014 cuts written, 5 before, 4 with no label, no
-  error); a `Build` of `gx10-siglip2-so400m-patch16-naflex-p256` at 13:44 left 4 failed
-  items of 4,043; each other entry needs a `Build`. (4): 8168 restarted at 13:44:04 and
-  at 13:46:33 (SIGTERM; the second start with `start_new_session`, PID 25039).
-- Updated: 2026-09-25T13:47:00+0300
-- Agreements: the owner chose (11:45:00) small separate hunks on top of the uncommitted
-  work of drink-atlas-workspace-7b in the three code files of the Embeddings page. 7b
-  agreed (about 11:46). With 7b (about 12:31): 7b enters its schema file (`image_derivative.kind`,
-  key (source_sha256, kind)); 7b does not touch `embeddings.py`; this session changes
-  `read_inputs` in the same restart as 015, and its seed adds rows of kind `label` for
-  full originals through the writer of `alternatives.py`. `pipeline/embeddings.py` is
-  also in the list of 9a [f028b4], which has ended (7b); the owner gets told.
-  With drink-atlas-workspace-85 (about 13:08, plan 23): 85 adds hunks outside my regions
-  (the label of `#emb`, `BACKENDS`, `Embedding.__init__`, `start`, `build_embeddings.main`).
-  No overlap.
-
-## TESTSET [0fe970]
-
-- Task: (1) plan 12 step 4 without the flat store: the test set tables and an `image`
-  rebuild with the folder `testset` in one schema file; photos in `data/images/testset/`;
-  a script that imports the sets `my`, `official-real-photos`, and `vlmrerank-8b-failed`
-  of `svoe-vino-testset/dataset/`; migrate, restart 8168, run the import. (2) after (1):
-  a plan for the Testset page `/` with label editing on the database.
-- Source: owner messages of 2026-09-25T12:13:10+0300 and 12:15:00, and the two answers of
-  12:22:00 ("Enter schema now", "Editing on the DB").
-- Files: `docs/owner-messages.md` (append). Taken over from drink-atlas-workspace-20 (not
-  in `ListAgents`; owner choice 12:22): `pipeline/schema_pending/NNN_testset.sql` (it
-  enters as `pipeline/schema/016_testset.sql`: number 016 taken at 12:34, rule 26; 7b and
-  ff got a message),
-  `pipeline/import_testset.py`, `pipeline/benchmark.py` (the photo path alone),
-  `tests/testset_fixture.py`, `tests/test_import_testset.py`, `tests/test_benchmark.py`,
-  `docs/plans/12_testsets-benchmark.md`. New `pipeline/import_testsets.py`,
-  `tests/test_import_testsets.py`. (2): new `docs/plans/24_testset-page.md`; the code files
-  follow its approval. At the entry: `tests/test_labdb.py` (the version and
-  the table list), `data/lab.sqlite3` (a backup first), `data/images/testset/`, a restart
-  of 8168. Entries in `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`, `ChangeLog.md`.
-- State: (1) done, not committed: 016 entered at 12:34, `data/lab.sqlite3` at 16 (then 17
-  by 7b), the three sets imported (4,323 photo rows, 3,449 new files), tests and docs
-  done. No restart of 8168 by this session; 7b restarted 8168 at 12:45:39 (version 17). (2) waiting: the owner
-  approves `docs/plans/24_testset-page.md` and answers its questions Q1 to Q4. The plan
-  holds the box of the main object (owner message of 12:42:00).
-- Updated: 2026-09-25T13:03:12+0300
-- Agreements: drink-atlas-workspace-20 and 9a [f028b4] are not in `ListAgents`. With
-  drink-atlas-workspace-7b (about 12:32): this session reuses `import_testset.py`; the
-  file `NNN_derivative_kind.sql` of 7b rebuilds `image_derivative` alone, and either
-  order works. ff took 015 at 12:32:01. 7b asked (about 12:34) that this
-  session does not restart 8168: 7b restarts once, after its 017; this session agreed.
-  7b set `VERSION` 17 in `tests/test_labdb.py` on top of 16. drink-atlas-workspace-85
-  (about 12:47) got a notice: plan 24 (Testset) and its Runs page touch the same regions of
-  `lab_server.py`; no change of this session there before the approval of plan 24. 85 answered (about 13:01): plan 23 is
-  `23_runs-page.md` of 85 (written first, approved 12:52), so this plan is 24. 85 changes
-  in `lab_server.py`: the docstring paragraph of the disabled pages, `import run_routes`,
-  `"/runs"` out of `DISABLED_PAGES` (`"/"` stays), one `do_GET` branch after the
-  `embedding_routes` branch, `Handler._runs` after `_embedding`; in
-  `tests/test_lab_server.py` the `/runs` and `/api/runs` entries alone. 85 MAY add the
-  optional argument `configuration=None` to `run_benchmark` of `pipeline/benchmark.py`
-  (the key `configuration` of `run.json`) and one test at the end of
-  `tests/test_benchmark.py`, on top of the photo path change of this session. 85 adds the literal folder
-  `testset` to `IMAGE_ROUTE` of `lab_server.py` now, in plan 23 (agreed about 13:03);
-  plan 24 drops that hunk.
-
 ## drink-atlas-workspace-85
 
 - Task: enable the Runs page `/runs` on the lab server. The runs stay in `runs/`, not
@@ -760,30 +661,19 @@ The name `drink-atlas-workspace-9a` belongs to two sessions. This section is the
 
 ## CACHE [31e42f]
 
-- Task: plan 25: a cache of the model calls (GDINO, SAM3, VLM) in `data/cache/`, one JSON
-  file for each call. The key is a hash of the endpoint, the model, the parameters, the
-  sha256 of each sent image, and the prompt. Only a success is stored.
-- Source: owner message of 2026-09-25T13:45:11+0300, answers of 13:47:30 (JSON files, hash
-  only, all four scopes, full URL), message of 13:51:48 (choose the recommended way; test).
-- Files: new `docs/plans/25_model-call-cache.md`, `pipeline/model_cache.py`,
-  `pipeline/gdino.py`, `tests/test_model_cache.py`, `tests/test_gdino.py`. Hunks in
-  `scripts/cluster_rules.py` (`Vlm.ask`), `scripts/04_verify.py` (`Backend.ask`),
-  `scripts/bench_vlm_models.py` (`call`). After the agreement of 8b: hunks in
-  `pipeline/derive.py` (`Sam3Client._post`, a new `_send`, the import, `SAM3_MODEL`)
-  and `tests/test_derive.py` (`setUpModule`, one test at the end of `Sam3ClientTest`).
-  New files in `data/cache/`. Entries in `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`,
-  `ResearchLog.md`, `COMMANDS.md`, `docs/owner-messages.md`.
-- State: waiting: the owner commits. Code, tests, and docs are done: 445 unit tests and
-  12 live cases against gx10 pass. No restart of 8168: the lab server uses the cache
-  after its next restart.
-- Updated: 2026-09-25T14:04:00+0300
-- Agreements: with drink-atlas-workspace-8b (about 13:56): the hunks in `Sam3Client` and in
-  `tests/test_derive.py` are allowed; build on the file on disk; the key holds the sent bytes,
-  every form field, and the model; a failure is never stored. The test isolation is a
-  module-level `setUpModule` before `class Sam3ClientTest` (told 8b). With
-  drink-atlas-workspace-7b (about 13:56): 7b plans no more changes in `Sam3Client`,
-  `Sam3ClientTest`, or `Sam3InstancesTest`; `_post(data, texts, return_masks)` stays the
-  entry point; unit tests do not write into `data/cache/`.
+- Task: plan 25, the cache of the model calls. The main work is committed in `c7c6629`.
+  Open: the mode 0644 of a cache record (owner message of about 15:23, "it is ok in json";
+  the fix of `mkstemp` 0600).
+- Source: owner messages of 2026-09-25T13:45:11+0300 to about 15:25; `docs/plans/25_model-call-cache.md`.
+- Files: `pipeline/model_cache.py` (one `os.chmod` line in `store`),
+  `tests/test_model_cache.py` (one assert), `docs/plans/25_model-call-cache.md` (one line).
+  Entries in `ChangeLog.md`, `ResearchLog.md`, `docs/owner-messages.md`.
+- State: waiting: the owner commits the three files. Tests pass.
+- Updated: 2026-09-25T16:17:00+0300
+- Agreements: with drink-atlas-workspace-ca [af6346] (about 16:16): ca changes
+  `scripts/04_verify.py` and `scripts/cluster_rules.py` (the `vlm:` config); this session
+  plans no more changes there. ca keeps `Vlm.ask`, `Backend.ask`, and the `model_cache`
+  imports. Earlier agreements with 8b and 7b are done (the hunks are in `c7c6629`).
 
 ## root
 
@@ -797,3 +687,283 @@ The name `drink-atlas-workspace-9a` belongs to two sessions. This section is the
 - State: waiting: the audit now uses the declared SQLite target architecture.
 - Updated: 2026-09-25T14:37:47+0300
 - Agreements: the owner authorized the detailed audit after the file conflict was stated.
+
+## drink-atlas-workspace-30
+
+- Task: remove the sort option `catalog.jsonl order` from `/dataset` of the lab and from
+  the dataset page of the `svoe-vino-testset` review tool.
+- Source: owner message of 2026-09-25T15:43:34+0300 and the answer "Both pages".
+- Files: hunks in `pipeline/pages/dataset.html` (the `catalog` option of `#sort` and its
+  line in the sort code), `ChangeLog.md`, `docs/owner-messages.md` (append). Outside this
+  project: `svoe-vino-testset/scripts/review_server.py` (the same two lines of its dataset
+  page), `svoe-vino-testset/ChangeLog.md`.
+- State: waiting: the owner commits and restarts the review tool on 8154. The change is
+  done and tested (`test_lab_server.py` 50 OK; testset `test_dataset_*` 17 OK). 8168
+  serves the new page with no restart.
+- Updated: 2026-09-25T17:27:00+0300
+- Agreements: section ff lists the sort code of `dataset.html`. ff is not in `ListAgents`,
+  and its hunks are committed in `c7c6629`. The owner asked for this change directly.
+  With drink-atlas-workspace-ca [af6346] (about 15:55, plan 26): ca adds hunks to
+  `dataset.html` (CSS, the `✎` button, a dialog, its functions) and does not touch
+  `#sort` or the sort code. This session plans no more change to `dataset.html`.
+  With drink-atlas-workspace-ca [a2daf6] (about 17:27, plan 24, owner permission of
+  17:26:22): ca changes the Testset nav link of `dataset.html` (`href="/"` to
+  `href="/testset"`). No clash; my two hunks stay uncommitted in the file.
+
+## drink-atlas-workspace-c5 [d24b28]
+
+- Task: changes of the dialog `Import from vino-svoe.ru` on `/dataset`: section names, an
+  image preview, links to the wine page on vino-svoe.ru, conflicts grouped by wine.
+- Source: owner messages of 2026-09-25, about 15:40 and 15:45.
+- Files: `docs/owner-messages.md` (append). After the owner answers:
+  `pipeline/pages/website_import.js` (the stale section drink-atlas-workspace-ff lists it;
+  the owner decides), entries in `ChangeLog.md`, `SMOKE_TESTS.md`,
+  `docs/plans/21_website-import-ui.md`.
+- State: waiting: the owner commits. Done, tested in headless Chromium on 8168, and
+  documented (`ChangeLog.md`, `SMOKE_TESTS.md` IW7 and IW13 to IW15, plan 21). No
+  restart was necessary. The owner allowed at 15:55 the takeover of
+  `pipeline/pages/website_import.js` from the stale section drink-atlas-workspace-ff.
+- Updated: 2026-09-25T17:22:00+0300
+- Agreements: with drink-atlas-workspace-a0 (17:22): a0 may edit
+  `pipeline/pages/website_import.js` for the owner request of 17:19 (a red prohibition
+  sign on the image of a `Missing on the website` row): a CSS block, `image`, and
+  `changeHtml`. a0 keeps all code of this session. The click on the image MUST still
+  open the large view.
+
+## drink-atlas-workspace-ca [af6346]
+
+The name `drink-atlas-workspace-ca` belongs to two sessions. This section is the session
+`[af6346]`.
+
+- Task: a section `vlm:` in `config.yaml` and in `config.old.yaml`: named VLM inferences,
+  each with `name`, `protocol` (`openai`), `thinking_field` (`chat_template_kwargs` or
+  `top_level`), `endpoint`, `model`, and `key` (null or `{env:XXX}`). Six entries:
+  `qwen3.5-9b-nvfp4`, `qwen3.5-9b`, `qwen3-vl-32b` of gx10; `qwencloud-qwen3.8-max`,
+  `qwencloud-qwen3.8-flash` of the Token Plan; `dashscope-qwen3.7-flash`. A loader
+  `pipeline/vlm_config.py`. Every hard-coded VLM of `scripts/04_verify.py` and
+  `scripts/cluster_rules.py` moves into the section; the keys `url`, `model`,
+  `rules_url`, `rules_model`, `rules_api`, `rules_key_env` of `cluster_rules` become
+  `vlm` and `rules_vlm`. One live request to `qwen3.5-9b-nvfp4` at the end.
+- Task (2): plan 26, `docs/plans/26_image-description.md` (approved 16:48:07): the table
+  `image_description`, the watcher `pipeline/describe_images.py` that the lab server
+  starts, and the editor button on `/dataset`. State: waiting: the owner commits. Done,
+  tested (497 tests `OK`), checked live, and deployed; the watcher runs the backlog since
+  17:07:33 (pid 78322, `caffeinate`), with a row in `GPU_TASKS.md`. Files: new
+  `pipeline/schema/018_image_description.sql` (number 018 taken at 17:01, rule 26;
+  TESTSET got a message; `data/lab.sqlite3` at version 18 since 17:00:57, backup in the
+  scratchpad of this session; 8168 restarted with SIGTERM at 17:01:08, watch false), `pipeline/image_descriptions.py`,
+  `pipeline/describe_images.py`, `tests/test_image_descriptions.py`,
+  `tests/test_describe_images.py`, `tests/image_description_fixture.py`; hunks in `pipeline/lab_server.py` (docstring, import,
+  `dataset_view`, `_write_route`, new `Handler._image_description`, `main`),
+  `pipeline/pages/dataset.html` (CSS, `imageFigure`, `patchEditor`, `alternativeEditor`,
+  a new dialog and its handlers), `tests/test_lab_server.py` (new tests at the end),
+  `tests/test_labdb.py` (VERSION, table list), `config.yaml` (key `image_description`),
+  `data/lab.sqlite3` (backup, migration, the two manual values of the check), a restart
+  of 8168, `work/describe_images.log`. Docs: `README.md`, `COMMANDS.md`,
+  `SMOKE_TESTS.md`, `ChangeLog.md`, `ResearchLog.md`, plan 26. Agreements: the owner
+  allowed the hunks in the files of stale sections (answer Q2 of 16:48:07); TESTSET
+  and drink-atlas-workspace-30 got a notice at about 16:50. With
+  drink-atlas-workspace-ca [a2daf6] (plan 24, owner permission of 17:26:22; message at
+  about 17:27): its hunks in `pipeline/lab_server.py`, `pipeline/pages/dataset.html` (the
+  Testset nav link alone), `tests/test_lab_server.py` (after the tests of this
+  session), and `tests/test_labdb.py` (VERSION 19) are apart from the hunks of this
+  session. It restarts 8168 with SIGTERM after its schema 019, and then starts
+  `caffeinate` on the new watcher, or sends this session the new pid. Done: restart at
+  17:55:56, watcher pid 16234. With drink-atlas-workspace-99 (notice of about 18:01):
+  its hunks for a raw VLM reply and a Package filter go on top of the plan 26 hunks in
+  `pipeline/describe_images.py`, `pipeline/lab_server.py`, `pipeline/pages/dataset.html`,
+  and the two test files; this session plans no more change there. 99 restarts 8168,
+  starts `caffeinate` on the new watcher, and sends the pid or updates `GPU_TASKS.md`.
+- Task (3): an indicator of the watcher on `/dataset` (owner message of 17:32:17, answers
+  of 17:33:57): the watcher writes `work/describe_images.status.json`; a route
+  `GET /api/image-description-status` adds the counts and the pid check; a pill in the
+  header bar polls it every 5 s. State: waiting: the owner commits. Done, tested (512
+  tests `OK`), checked in headless Chromium, and deployed (8168 restarted at 17:38:45,
+  watcher pid 66779 with `caffeinate`). Files: `pipeline/describe_images.py`,
+  `pipeline/image_descriptions.py`, hunks in `pipeline/lab_server.py` (one route branch
+  in `do_GET`, one function), `pipeline/pages/dataset.html` (the pill in `.bar-actions`,
+  CSS, the poll), `tests/test_describe_images.py`, `tests/test_image_descriptions.py`,
+  `tests/test_lab_server.py` (new tests after the tests of task 2), plan 26, docs. A
+  restart of 8168, agreed with drink-atlas-workspace-ca [a2daf6].
+- Source: owner messages of about 2026-09-25T16:00+0300 and 16:11, and the answers of
+  about 16:05 and 16:09 (estimates).
+- Files: `docs/owner-messages.md` (append), `config.yaml` (a new section `vlm:` after
+  `embeddings`), `config.old.yaml` (the same section; the keys of `cluster_rules`), new
+  `pipeline/vlm_config.py`, new `tests/test_vlm_config.py`, hunks in
+  `scripts/04_verify.py` (the import line, `Backend` docstring, `build_backends`, the
+  `--backends` option) and `scripts/cluster_rules.py` (the import, the `CFG` constants,
+  the `Vlm` docstring and defaults). Entries in `README.md` (the stage 2 paragraph of
+  the cluster rules), `SMOKE_TESTS.md`, `ChangeLog.md`.
+- State: waiting: the owner commits. Done and tested: 464 tests `OK`, smoke cases VL1
+  to VL6 checked, one live request to `qwen3.5-9b-nvfp4` gave HTTP 200. Also
+  written: `ResearchLog.md` (one entry at the top) and
+  `/Users/ashmelev/Admin/GPU_TASKS.md` (one row). No restart: the lab server
+  does not import either script.
+- Updated: 2026-09-25T18:03:55+0300
+- Agreements: `config.yaml` is in the stale section drink-atlas-workspace-85; the owner
+  chose this file (answer of about 16:05). `scripts/04_verify.py` and `scripts/cluster_rules.py`
+  are in the section CACHE [31e42f]; its hunks there are committed in `c7c6629`. The owner
+  chose the callers change (answer of about 16:05). CACHE got a notice at about 16:16 and agreed: it plans no more change in
+  the two files and removes them from its list.
+
+## drink-atlas-workspace-ca [a2daf6]
+
+The name `drink-atlas-workspace-ca` belongs to two sessions. This section is the session
+`[a2daf6]`.
+
+- Task: plan 24, the Testset page `/testset` on the lab database (labels, marks,
+  comments, wine notes, exclusions, the box of the main object), `/` redirects to
+  `/dataset`. Taken over from TESTSET [0fe970], which stopped (owner answer 17:17:45).
+  Also done: `tests/test_testset_retention.py` (a Removed wine keeps its test set rows).
+- Source: owner messages of 2026-09-25T16:57:18+0300 and 17:10:55, the answers of
+  17:01:44, 17:13:17, 17:17:45, 17:23:18, and 17:26:22; `docs/plans/24_testset-page.md`.
+- Files: `docs/owner-messages.md` (append), `docs/plans/24_testset-page.md`, new
+  `docs/plans/27_main-item-iou.md` (a draft alone), new
+  `pipeline/schema/019_testset_page.sql` (number 019 taken at 17:37:35, rule 26; af6346 got
+  a message), `pipeline/import_testset.py`, `pipeline/import_testsets.py`,
+  new `pipeline/export_testset.py`, new `pipeline/testsets.py`, new
+  `pipeline/testset_routes.py`, new `pipeline/pages/testset.html`, `pipeline/benchmark.py`
+  (`build_queries`: the photos of a Removed wine), `tests/testset_fixture.py`,
+  `tests/test_import_testset.py`, `tests/test_import_testsets.py`, `tests/test_benchmark.py`,
+  new `tests/test_testsets.py`, new `tests/test_testset_routes.py`, new
+  `tests/test_export_testset.py`, `tests/test_testset_retention.py`. Hunks:
+  `pipeline/lab_server.py` (docstring, import, `NAV`, `DISABLED_PAGES`, the `/` redirect,
+  the delegation in `do_GET` and `_write_route`, `Handler._testset`),
+  `tests/test_lab_server.py` (the navigation, disabled page, and redirect tests),
+  `tests/test_labdb.py` (VERSION, table list), the Testset link of the navigation in
+  `pipeline/pages/dataset.html`, `pipeline/pages/embedding.html`, `pipeline/pages/runs.html`.
+  `data/lab.sqlite3` (a backup first, the migration, a new import of the three sets), a
+  restart of 8168. Docs: `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`, `ChangeLog.md`,
+  `docs/plans/07_sqlite-lab-database.md`.
+- State: plan 24 done, waiting: the owner commits. Active since 18:04 (owner messages of
+  18:04:02 to about 18:06, answers of 18:05:36): (a) `/testset`: the set combobox in the
+  title; (b) `/testset`: the right sidebar is the NULL place; a drag moves a photo there
+  or back to a wine (new route `POST /api/testset-move`); the NULL row leaves the table;
+  the benchmark uses a NULL photo only with the label `positive`; a move clears the label
+  and sets `moved_from`; (c) `/runs`: the filter `Configuration` in the header after
+  `Match runs`; (d) `/runs`: pages of the runs table. Files of (a) to (d):
+  `pipeline/pages/testset.html`, `pipeline/testsets.py`, `pipeline/testset_routes.py`,
+  `pipeline/benchmark.py` (`build_queries`), `pipeline/pages/runs.html` (the header, the
+  runs table, `renderRuns`; stale section 85 lists it; the owner asked for it),
+  `tests/test_testsets.py`, `tests/test_testset_routes.py`, `tests/test_benchmark.py`,
+  `docs/plans/24_testset-page.md`, `docs/plans/23_runs-page.md` (one note), docs. A
+  restart of 8168 for the new route (after drink-atlas-workspace-99 restarts).
+- Updated: 2026-09-25T18:06:14+0300
+- Agreements: the owner allowed the takeover of the plan 24 files of TESTSET [0fe970]
+  (17:17:45) and hunks in the files of stale sections (17:26:22). TESTSET stopped and got
+  no notice. Owner decisions for plan 24: the page at `/testset`, `/` redirects to
+  `/dataset`; Q1 the proposal; Q2 no manual groups; Q3 the IoU goes to a new plan 27 (any
+  overlap, IoU > 0; a configuration with no box gives IoU n/a and the slug decides); Q4
+  one box; a Removed wine with photos shows with a `Removed` badge; the benchmark skips
+  its photos ("removed wine") until a restore.
+  With drink-atlas-workspace-30 (about 17:28): my one nav line in `dataset.html`; its two
+  uncommitted removed lines (`catalog` of `#sort` and its sort line) stay, and my commit
+  MUST NOT stage them. With drink-atlas-workspace-e3 (about 17:28): the nav line of
+  `embedding.html`; e3 is done. With drink-atlas-workspace-2a [8c825b] (about 17:31):
+  2a edited the header of `embedding.html`; my nav line came after. With
+  drink-atlas-workspace-ca [af6346] (17:27 to 17:56): my hunks in `lab_server.py`,
+  `test_lab_server.py` (after its tests), and `test_labdb.py` (VERSION 19) are apart from
+  its hunks; af6346 restarted 8168 at 17:38:45; the new watcher pid 16234 was sent to it.
+## drink-atlas-workspace-a0
+
+- Task: the dialog `Import from vino-svoe.ru`: a red prohibition sign on top of the wine
+  image in the rows of the section `Missing on the website`.
+- Source: owner message of 2026-09-25T17:19:00+0300.
+- Files: `docs/owner-messages.md` (append). After the agreement with
+  drink-atlas-workspace-c5 [d24b28]: `pipeline/pages/website_import.js` (the CSS, `image`,
+  `changeHtml`), entries in `ChangeLog.md`, `SMOKE_TESTS.md`.
+- State: waiting: the owner commits. Done, tested in headless Chromium on 8168 (14 sign
+  checks and the 27 dialog checks of c5 pass), and documented (`ChangeLog.md`,
+  `SMOKE_TESTS.md` IW16). No restart was necessary.
+- Updated: 2026-09-25T17:27:00+0300
+- Agreements: with drink-atlas-workspace-c5 [d24b28] (17:22): this session edits
+  `pipeline/pages/website_import.js` for the sign and keeps the code of c5. The sign has
+  `pointer-events: none`, so a click on the image still opens the large view.
+
+## drink-atlas-workspace-2a [8c825b]
+
+- Task: the header of `/embedding` gets 2 rows instead of 3: the summary line of `#summary`
+  goes away, the Configuration bar moves into the first row.
+- Source: owner message of 2026-09-25T17:30:00+0300.
+- Files: `docs/owner-messages.md` (append), `pipeline/pages/embedding.html` (the `.head`
+  CSS, the `h1` and the Configuration bar of the header markup, the `#summary` lines of
+  `render`; not the navigation), entries in `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`.
+- State: waiting: the owner commits. Done, tested (headless Chromium on 8168; 72 tests of
+  `test_embedding_routes` and `test_lab_server` pass), documented. No restart.
+- Updated: 2026-09-25T17:45:00+0300
+- Agreements: drink-atlas-workspace-ca [a2daf6] lists the Testset link of the navigation
+  in `embedding.html`; this session does not change the `<nav>` lines (message sent at
+  17:33). ca answered: no clash; ca makes its one-line nav edit after this edit.
+
+## drink-atlas-workspace-c5 [7cabb3]
+
+The name `drink-atlas-workspace-c5` belongs to two sessions. This section is the session
+`[7cabb3]`.
+
+- Task: one script that seeds `data/lab.sqlite3` and `data/images/` from
+  `svoe-vino-testset` (catalogue, the three test sets, QR URLs, GTINs, annotations), and
+  that restores this state again after a test. Not config, runs, or clusters.
+- Source: owner message of 2026-09-25T17:46:51+0300.
+- Files: `docs/owner-messages.md` (append), new `docs/plans/28_seed-from-testset.md`,
+  new `pipeline/seed_from_testset.py`, new `tests/test_seed_from_testset.py`. Entries in
+  `COMMANDS.md`, `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`. Test runs on
+  `data/lab-test.sqlite3` and `data/backups/lab-test-*` alone (removed after the test);
+  the live `data/lab.sqlite3` does not change. A test run MAY add files to `data/images/`.
+- State: active. Owner choices at 17:52: full rebuild and swap; label cuts always.
+- Updated: 2026-09-25T17:58:00+0300
+
+## drink-atlas-workspace-99
+
+- Task: (1) an expandable "Raw VLM reply" in the dialog "Image description" of
+  `/dataset`: a new route `GET /api/image-description-reply?sha256=` reads the
+  `data/cache/` record of the call that described the image (the prompt, the reply text,
+  `finish_reason`, the tokens). (2) a button "Advanced Filters:" on `/dataset` that shows
+  a new row; its first filter is Package (All, each `package_type`, not described). The
+  patched image decides, else the main image.
+- Source: owner messages of about 2026-09-25T17:58 and 18:00, and the answers of about
+  17:59:30 and 18:01:30.
+- Files: `docs/owner-messages.md` (append); hunks in `pipeline/describe_images.py` (new
+  `cached_reply` after `describe`, one import), `pipeline/lab_server.py` (docstring
+  sentence, imports, new `image_description_reply` after `image_description_status`, one
+  branch in `do_GET`), `pipeline/pages/dataset.html` (CSS, the dialog markup, a new
+  `<details>` block and its loader after `describeStatus`, the Advanced Filters button,
+  row, and one line of the filter function), `tests/test_describe_images.py` and
+  `tests/test_lab_server.py` (new tests at the end). Docs: `SMOKE_TESTS.md`,
+  `ChangeLog.md`, plan 26 (one note). A restart of 8168 for the new route.
+- State: active.
+- Updated: 2026-09-25T18:04:00+0300
+- Agreements: the files are in the sections of drink-atlas-workspace-ca [af6346] (plan 26)
+  and drink-atlas-workspace-ca [a2daf6] (plan 24), and of older waiting sections. My hunks
+  are new functions and branches, apart from their hunks. Notices to af6346 and a2daf6
+  at about 18:04.
+
+## drink-atlas-workspace-cb [48de03]
+
+- Task: `/testset`: a file that is dropped from the macOS Finder onto the sidebar (the
+  NULL place) or onto a wine row goes into that place of the set. New route
+  `POST /api/testset-upload`. No schema change.
+- Source: owner message of 2026-09-25T18:19:01+0300 and the five answers of 18:25:10
+  (sidebar and wine rows; hunks in the files of ca [a2daf6] allowed; the same image is
+  allowed in another place and keeps the file name of the set; a new image keeps its
+  Finder name).
+- Files: `docs/owner-messages.md` (append). Hunks in `pipeline/testsets.py` (docstring,
+  `free_name`, new upload functions at the end), `pipeline/testset_routes.py`
+  (docstring, the upload route), `pipeline/pages/testset.html` (the drop handlers of the
+  sidebar and of the rows, the sidebar help text), `tests/test_testsets.py` and
+  `tests/test_testset_routes.py` (new tests at the end). Entries in `README.md`,
+  `SMOKE_TESTS.md`, `ChangeLog.md`, `docs/plans/24_testset-page.md` (one note). A
+  restart of 8168.
+- State: waiting: the owner commits. Done, tested (565 tests `OK`), checked in headless
+  Chromium on a fixture database, and deployed: 8168 restarted with SIGTERM at 18:34:39
+  (server pid 21740, watcher pid 21744, `caffeinate` pid 22198; the row of
+  `/Users/ashmelev/Admin/GPU_TASKS.md` is updated).
+- Updated: 2026-09-25T18:38:18+0300
+- Agreements: the owner allowed hunks in the files of the stale section of
+  drink-atlas-workspace-ca [a2daf6] (answer of 18:25:10). My hunks are new functions and
+  separate branches on top of its uncommitted work.
+  With TESTSET [0fe970] (about 18:38): TESTSET fixes four page defects of the ca
+  follow-ups in `pipeline/pages/testset.html` with separate hunks on top of mine. This
+  session plans no more change in `testset.html`, `testsets.py`, or `testset_routes.py`.
+  TESTSET keeps clear of my regions (the `body.uploading` CSS, the sidebar help text, the
+  empty text of `renderSide`, the `hasFiles` branches of the drag listeners, the upload
+  block) and MAY add one header-refresh line at the end of `uploadFiles`.

@@ -2,6 +2,82 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-25 — the label files of the test sets and the Testset page (plan 24)
+
+Status: measured on 2026-09-25 by session drink-atlas-workspace-ca [a2daf6] on the three
+sets of `svoe-vino-testset/dataset/` and on a copy of `data/lab.sqlite3`.
+
+- The label entries hold these fields alone: `label`, `ts`, `comment`, `proposed`, `by`,
+  `confidence` (a float), `source_url`, `moved_from`, `copied_from`, `reassign_to`, and
+  `prefilled_from` (an object; `official-real-photos` alone). No entry is empty, no entry
+  holds `ts` alone, and no entry holds `delete` or `copy_to`. No entry names a missing
+  file. So the columns of schema 019 keep every value, and `extra` stays empty for the
+  three sets.
+- The longest texts: a photo comment of 1,387 characters, a wine note of 2,671, a reason
+  of 100. The limit of 4,000 of the old tool holds.
+- The round trip (the new import, then `export_testset.py`) gives the same `labels`,
+  `wines`, excluded slugs, `note`, and `counts` as the source files; the JSON text with
+  sorted keys is equal too. The import of the three sets takes about 5 s when the store
+  holds each file (the SHA-256 of 4,323 files).
+- `image.width` and `image.height` are the size of the file header
+  (`imagestore.pixel_size`), before the EXIF orientation. None of the 3,453 distinct test
+  photo files has an orientation other than 1 (3,449 with 1, 4 with none). The box check
+  reads the orientation of the stored file at each write, so a turned photo gets the size
+  that the browser shows.
+- `GET /api/testset?set=my` answers 3.1 MB in about 0.14 s (2,106 rows, 4,043 photos).
+  The first draw of the page in headless Chromium took 0.8 to 0.9 s.
+- At 390 px the navigation of the page was 393 px wide: `.nav` had `flex: none`, so it
+  did not shrink. `width: 100%` in the phone rule lets the links wrap.
+
+## 2026-09-25 — the image descriptions of plan 26 with `qwen3.5-9b-nvfp4`
+
+Status: measured on 2026-09-25 from 17:03 to 17:08 by session drink-atlas-workspace-ca
+[af6346]. Four check requests and the first minutes of the backlog. A small sample.
+
+- The time of one image is 2.2 to 2.8 s (JPEG, long side 1024, thinking off, JSON mode,
+  the model loaded). The first request of the day took 19.9 s; its cause was not
+  examined. At 2.5 s the backlog of about 2,020 images takes about 1.5 hours.
+- Each answer of the sample was valid against `ANSWER_SCHEMA`. No answer needed a retry.
+- A fixed fact in the prompt pulls the other values: on a scratch copy of the database,
+  the preset `package_view: back` with `content_roles: ["back_label"]` on a catalogue
+  photo gave the answer `back` and `["back_label"]`. The preset `package_type: keg` on a
+  bottle photo gave the answer `bottle`. So a wrong preset can also make the VLM values
+  wrong; the stored value of the preset stays in both cases. `vlm_answer` shows what the
+  VLM said. Do not judge the VLM by the rows with presets.
+- The two example wines of the owner: the VLM answered `tetra_pak` and `can`, the same as
+  the presets, with `full_package`, `front`, and `["front_label"]`.
+- A reload of the model on gx10 at about 17:55: the gateway refused one connection at
+  17:55:49 (not counted), and llama-swap showed `qwen3.5-9b-nvfp4` as `starting`. The next
+  request waited in llama-swap and got its answer after 279.6 s, at 18:00:37. The timeout
+  of the watcher is 300 s, so a slower load gives a timeout; that failure is not counted,
+  and the watcher waits and asks again. The cause of the reload was not examined. The
+  indicator shows a time per image that is too long for the next 20 images, because the
+  mean holds this one call.
+
+## 2026-09-25 — `qwen3.5-9b-nvfp4` of gx10 and the VLM endpoints of the scripts
+
+Status: one live request on 2026-09-25 at about 16:21 by session drink-atlas-workspace-ca
+[af6346]. One request is a small sample.
+
+- The gateway `/v1/models` has no `qwen9.5-9b`. The owner chose `qwen3.5-9b-nvfp4`. The
+  gateway serves it under the name `Qwen3.5-9B-NVFP4`.
+- The request held one generated PNG of 480 × 160 pixels with the text
+  `CHATEAU TEST 2021`, JSON mode, `temperature: 0`, and
+  `chat_template_kwargs.enable_thinking: false`. It gave HTTP 200 in 19.9 s,
+  `finish_reason: stop`, 111 prompt tokens and 24 completion tokens, and the right JSON
+  `{"text": "CHATEAU TEST 2021", "year": 2021}`. The answer held no reasoning text, so
+  the thinking switch of `chat_template_kwargs` works for this model. The cause of the
+  time of 19.9 s was not examined. The model was loaded before the request, next to
+  `qwen3.5-9b`, `qwen38-27b-nvfp4`, and `sam3`.
+- The gx10 gateway needs no key. `CREDENTIALS.md` names `QWENCLOUD_TOKEN_PLAN_API_KEY`
+  for the QwenCloud Token Plan and `QWENCLOUD_PAYGO_API_KEY` for DashScope. The old
+  backends of `scripts/04_verify.py` read `QWEN_API_KEY` and `DASHSCOPE_API_KEY`. Both
+  variables were not set in the shell of this session, so the two cloud backends were
+  ignored before this change.
+- `scripts/common.py` needs the key `dataset`, and `config.yaml` has none. So
+  `scripts/04_verify.py` and `scripts/cluster_rules.py` run only with
+  `SVOE_VINO_REVIEW_CONFIG=config.old.yaml`. This was true before this change too.
+
 ## 2026-09-25 — The model services of gx10 for the cache of plan 25
 
 Status: measured on 2026-09-25 by session CACHE [31e42f]. One photo for each number.
@@ -31,6 +107,15 @@ Status: measured on 2026-09-25 by session CACHE [31e42f]. One photo for each num
   budget. With `chat_template_kwargs.enable_thinking` false (the payload of
   `scripts/cluster_rules.py`), it answered in 1,033 ms. `04_verify.py` uses
   `qwen3-vl-32b` by default, so the default run is not affected.
+- A VLM hit after SAM3 depends on the bytes that the VLM gets, not on the SAM3 cache.
+  The VLM key holds the sha256 of each sent image. Measured at about 15:25 on 4 main
+  photos with no transparency (method `seg`): 3 live SAM3 calls of one photo gave the same
+  answer each time (no cache), and `derive.derive_image` gave the same PNG bytes on a miss,
+  on a hit, and with a new client. So one original and one code version give one VLM
+  input. A change of the processing, of its settings, or of the Pillow version can change
+  the bytes: then the VLM gets a miss, never a wrong hit. 4 photos are a small sample:
+  SAM3 is fp16 with a batch of 4, so a different batch under load could change a mask
+  (not seen).
 
 ## 2026-09-25 — A lab server that an agent starts with `nohup … &` can stop with no trace
 

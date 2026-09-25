@@ -16,9 +16,9 @@ header {
   position: sticky; top: 0; z-index: 10; padding: 10px 16px;
   background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
 }
-.head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.head { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; }
+.head .bar { margin-top: 0; }
 h1 { margin: 0; font-size: 15px; font-weight: 650; }
-h1 span { color: var(--muted); font-weight: 400; }
 .nav { display: flex; gap: 6px; margin-left: auto; }
 .nav a {
   color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
@@ -45,13 +45,16 @@ button:disabled { cursor: default; opacity: .45; }
 a { color: var(--accent); }
 .jobs { display: grid; gap: 4px; margin-top: 8px; }
 .job {
-  display: grid; grid-template-columns: minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto;
+  display: grid; grid-template-columns: minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto auto;
   gap: 10px; align-items: center; font-size: 12px; padding: 4px 8px;
   background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
 }
 .job-name { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .job-state { color: var(--var); font-weight: 650; }
 .job-phase { color: var(--var); }
+/* The button (x) of a running job row stops that build (owner message of 2026-09-25T18:16). */
+.job-stop { justify-self: start; padding: 0 6px; font-size: 12px; line-height: 18px; font-weight: 700; }
+.job-stop:not(:disabled) { color: var(--exc); border-color: var(--exc); }
 .prog { height: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
 .prog div { height: 100%; background: var(--accent); }
 main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
@@ -281,17 +284,17 @@ button.preview-thumb:hover { border-color: var(--accent); }
 <body>
 <header>
   <div class="head">
-    <h1>Embeddings <span id="summary">loading…</span></h1>
+    <h1>Embeddings</h1>
+    <div class="bar">
+      <label>Configuration <select id="emb"></select></label>
+      <button id="build" type="button" disabled>Build</button>
+      <button id="stop" type="button" disabled>Stop</button>
+      <button id="log" type="button" disabled title="Show build.log of the last build">Log</button>
+      <span class="jobmsg" id="jobmsg"></span>
+    </div>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       class="on" href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
-      href="/">Testset</a><a href="/runs">Runs</a></nav>
-  </div>
-  <div class="bar">
-    <label>Configuration <select id="emb"></select></label>
-    <button id="build" type="button" disabled>Build</button>
-    <button id="stop" type="button" disabled>Stop</button>
-    <button id="log" type="button" disabled title="Show build.log of the last build">Log</button>
-    <span class="jobmsg" id="jobmsg"></span>
+      href="/testset">Testset</a><a href="/runs">Runs</a></nav>
   </div>
   <div class="bar">
     <label>Show <select id="filter">
@@ -485,7 +488,7 @@ function hasStatus(record, status) {
 }
 
 function render() {
-  if (!DATA) { $("#list").innerHTML = ""; $("#summary").textContent = ""; return; }
+  if (!DATA) { $("#list").innerHTML = ""; return; }
   const views = Object.keys(DATA.embedding.views);
   const filter = $("#filter").value;
   const words = $("#q").value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
@@ -497,9 +500,6 @@ function render() {
   SHOWN = rows;
   $("#list").innerHTML = rows.length ? rows.map(record => wineHtml(record, views)).join("")
     : '<div class="empty-list">No wine matches this view.</div>';
-  const c = DATA.embedding.counts;
-  $("#summary").innerHTML = `${rows.length} of ${DATA.records.length} wines · ${DATA.embedding.items} items · current ${
-    c.current} · stale ${c.stale} · missing ${c.missing} · failed ${failedCount(c.failed)}`;
 }
 
 function selectedJob() {
@@ -543,9 +543,13 @@ function showJobs(jobs) {
       ? ` · <span class="job-phase" title="${esc(job.phase)}">${esc(job.phase.length > 90
         ? job.phase.slice(0, 90) + "…" : job.phase)} · ${duration(waited)}</span>` : "";
     const count = job.todo == null ? esc(job.message || "") : `${job.done} / ${job.todo}${phase}`;
+    // A `stopping` job keeps a disabled button, so the row does not change its width.
+    const stop = `<button type="button" class="job-stop" data-stop="${esc(job.name)}"
+      title="${job.state === "running" ? `stop the build of ${esc(job.name)}` : "stopping"}"
+      aria-label="stop the build of ${esc(job.name)}"${job.state === "running" ? "" : " disabled"}>(x)</button>`;
     return `<div class="job"><span class="job-name" title="${esc(job.name)}">${esc(job.name)}</span>
       <span class="job-state">${esc(job.state)}</span><div class="prog"><div style="width:${percent}%"></div></div>
-      <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span></div>`;
+      <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span>${stop}</div>`;
   }).join("");
   if (running.length && !POLL) POLL = setInterval(pollJobs, 2000);
   if (!running.length && POLL) { clearInterval(POLL); POLL = null; }
@@ -566,6 +570,19 @@ async function action(kind) {
     await getJson(`/api/embeddings/${encodeURIComponent(NAME)}/${kind}`, {method: "POST"});
   } catch (error) {
     alert(`Cannot ${kind} ${NAME}: ${error.message}`);
+  }
+  await pollJobs();
+}
+
+// The button (x) of a job row stops the build of that row, also when the Configuration
+// combobox selects another entry. `Build` continues a stopped build.
+async function stopJob(button) {
+  const name = button.dataset.stop;
+  button.disabled = true;
+  try {
+    await getJson(`/api/embeddings/${encodeURIComponent(name)}/stop`, {method: "POST"});
+  } catch (error) {
+    alert(`Cannot stop ${name}: ${error.message}`);
   }
   await pollJobs();
 }
@@ -763,6 +780,10 @@ $("#filter").addEventListener("change", render);
 $("#q").addEventListener("input", render);
 $("#build").addEventListener("click", () => action("build"));
 $("#stop").addEventListener("click", () => action("stop"));
+$("#jobs").addEventListener("click", event => {
+  const button = event.target.closest("button[data-stop]");
+  if (button && !button.disabled) stopJob(button);
+});
 $("#log").addEventListener("click", () => { $("#log-dialog").showModal(); loadLog(); });
 $("#log-refresh").addEventListener("click", loadLog);
 $("#log-close").addEventListener("click", () => $("#log-dialog").close());

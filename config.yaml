@@ -134,3 +134,73 @@ embeddings:
   - name: mock
     backend: mock
     views: *views_c_f
+
+# The VLM inferences. One entry: a name, a protocol, the thinking field, an endpoint, a
+# model, and a key. `pipeline/vlm_config.py` reads this key. A script names an entry by
+# its name, for example `scripts/04_verify.py --backends qwen3-vl-32b:12`, or the keys
+# `vlm` and `rules_vlm` of `cluster_rules`. `config.old.yaml` holds the same section.
+#
+# `protocol: openai` sends `POST <endpoint>/chat/completions`. `thinking_field` tells
+# where the thinking switch goes: `chat_template_kwargs` sends
+# `chat_template_kwargs.enable_thinking` (the gx10 gateway); `top_level` sends
+# `enable_thinking` as a top field (QwenCloud and DashScope).
+#
+# `key` is absent or null when the service needs no key, or `{env:NAME}`: the key is
+# read from the shell variable NAME at run time. Never write a key value into this
+# file. The gx10 gateway needs no key.
+vlm:
+  - name: qwen3.5-9b-nvfp4
+    protocol: openai
+    thinking_field: chat_template_kwargs
+    endpoint: http://192.168.86.14:18081/v1
+    model: qwen3.5-9b-nvfp4
+
+  - name: qwen3.5-9b
+    protocol: openai
+    thinking_field: chat_template_kwargs
+    endpoint: http://192.168.86.14:18081/v1
+    model: qwen3.5-9b
+
+  - name: qwen3-vl-32b
+    protocol: openai
+    thinking_field: chat_template_kwargs
+    endpoint: http://192.168.86.14:18081/v1
+    model: qwen3-vl-32b
+
+  # The QwenCloud Token Plan. Read the section "QwenCloud Token Plan API" of
+  # CREDENTIALS.md in the workspace root.
+  - name: qwencloud-qwen3.8-max
+    protocol: openai
+    thinking_field: top_level
+    endpoint: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    model: qwen3.8-max
+    key: "{env:QWENCLOUD_TOKEN_PLAN_API_KEY}"
+
+  - name: qwencloud-qwen3.8-flash
+    protocol: openai
+    thinking_field: top_level
+    endpoint: https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
+    model: qwen3.8-flash
+    key: "{env:QWENCLOUD_TOKEN_PLAN_API_KEY}"
+
+  # Alibaba Cloud Model Studio, pay-as-you-go. It is not the QwenCloud endpoint. Read
+  # the section "dashscope-intl" of CREDENTIALS.md.
+  - name: dashscope-qwen3.7-flash
+    protocol: openai
+    thinking_field: top_level
+    endpoint: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    model: qwen3.7-flash
+    key: "{env:QWENCLOUD_PAYGO_API_KEY}"
+
+# The descriptions of the images: `package_type`, `subject_scope`, `package_view`, and
+# `content_roles` in the table `image_description`. Read docs/plans/26_image-description.md.
+# `watch: true` makes the lab server start `pipeline/describe_images.py --watch` and stop
+# it at its exit. The watcher sends each linked image with no VLM description to the
+# `vlm` entry, one at a time, and fills only the values that are not set. It sleeps
+# `poll_seconds` when no image waits. An image stops after `max_attempts` failed answers.
+image_description:
+  watch: true
+  vlm: qwen3.5-9b-nvfp4
+  max_side: 1024
+  poll_seconds: 30
+  max_attempts: 3

@@ -84,6 +84,7 @@ JSON has sorted keys, the separators `,` and `:`, and no ASCII escape.
 
 1. The record goes to a temporary file in the target directory, then `os.replace` puts
    it in place. A reader sees the old file, no file, or the whole new file.
+   The record gets the mode 0644, the mode of the other data files.
 2. Two processes that write the same key write the same content. The last write stays.
    No lock is necessary.
 3. A write that fails prints one warning to stderr for each process. The call returns

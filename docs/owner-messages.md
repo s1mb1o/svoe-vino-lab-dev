@@ -1682,3 +1682,784 @@ if you got question, choose most recommended way. After you finish, test it in d
 ```text
 so mask  PNG bitstream is stored inside json?
 ```
+
+## 2026-09-25T15:26:14+0300
+
+```text
+it is ok in json
+```
+
+## 2026-09-25T15:27:05+0300
+
+```text
+if SAM3 result cached, then VLM results also be cached and reused, because SAM3 will get mask from file and reuse it on same file. Correct?
+```
+
+## 2026-09-25T15:43:34+0300
+
+```text
+remove sort as in catalog.jsonl
+```
+
+The message had a screenshot of the `Sort` control with the value `catalog.jsonl order`.
+
+Question of drink-atlas-workspace-30: "Which page should lose the "catalog.jsonl order" sort option? After the removal, the default sort becomes "wine name A–Z" (the next option)."
+
+Selected answer:
+
+```text
+Both pages
+```
+
+## 2026-09-25T15:40:00+0300
+
+````text
+Popup dialog Import from vino-svoe.ru:
+
+add page slug
+
+
+New on the website -> "New wines on website"
+
+When clicked on image - show preview popup
+
+Also wine_slug shall be link to that page on svoe-vino.ru
+
+
+"Main image from the website" - it is not clear whan is actually will be done. (ex.: Missing images recovered from website)
+
+
+Group conflicts bt affectedwine_slug
+````
+
+The message had a screenshot of the dialog `Import from vino-svoe.ru` with the first three
+conflicts of run `20260925T125132`. The time is approximate.
+
+## 2026-09-25T15:45:00+0300
+
+```text
+If i choose "all database", will it notify me about change?
+```
+
+The time is approximate.
+
+## 2026-09-25T15:55:00+0300
+
+Questions of drink-atlas-workspace-c5 [d24b28] and the selected answers:
+
+1. "What does "add page slug" mean? The website page slug is always the same text as
+   wine_slug."
+
+```text
+Linked slug is enough
+```
+
+2. "Session ff owns website_import.js and is no longer running (its section is stale).
+   May I take over this file for these changes?"
+
+```text
+Yes, take it over (Recommended)
+```
+
+3. "What name and hint for the section that is now "Main image from the website"?"
+
+```text
+Missing images from website (Recommended)
+```
+
+The option: title "Missing main images, taken from website". Hint: "The database has no
+main image for these wines. Apply stores the website image as the main image."
+
+4. "What should the image preview popup show?"
+
+```text
+One image, full size (Recommended)
+```
+
+The option: a click on an image shows a large view of that image with its file name. A
+click or Esc closes it. The click does not change the radio button or the checkbox.
+
+## 2026-09-25T16:00:00+0300
+
+The time is an estimate. The clock was not read when the message came; the entry was written before 16:16:17. Session drink-atlas-workspace-ca [af6346].
+
+```text
+add vlm: section to config. It describes named inference of VLM, its protocol and endpoint, and key ({env:XXX} - to access shell)
+and create there qwen9.5-9B
+```
+
+## 2026-09-25T16:05:00+0300
+
+The time is an estimate. The clock was not read when the message came; the entry was written before 16:16:17.
+
+Questions of drink-atlas-workspace-ca [af6346] and the selected answers:
+
+1. "Which config gets the vlm: section?"
+
+```text
+svoe-vino-lab (Recommended)
+```
+
+2. "Which gx10 model id did you mean by "qwen9.5-9B"?"
+
+```text
+qwen3.5-9b-nvfp4
+```
+
+3. "The gx10 gateway needs no key. What goes in the key field of this entry?"
+
+```text
+key: null
+```
+
+4. "What should this change include?"
+
+```text
+Config + loader + callers
+```
+
+The option: "Also switch cluster_rules.py and 04_verify.py to read the endpoint from
+vlm:. These files are in the section of session CACHE [31e42f], which is not committed
+yet."
+
+## 2026-09-25T16:09:00+0300
+
+The time is an estimate. The clock was not read when the message came; the entry was written before 16:16:17.
+
+Questions of drink-atlas-workspace-ca [af6346] and the selected answers:
+
+1. "How should the two scripts use the vlm: section?"
+
+```text
+Move every endpoint
+```
+
+The option: "Put every hard-coded VLM of both scripts into vlm: (about 5 more entries:
+gx10 qwen3-vl-32b and qwen3.5-9b, Token Plan qwen3.8-flash and qwen3.8-max, DashScope
+qwen3.7-flash). Delete the built-ins. Defaults keep the same models, by entry name.
+config.old.yaml needs the same section."
+
+2. "Which values does the protocol field take?"
+
+```text
+openai + thinking field
+```
+
+The option: "protocol: openai for every entry. A second field thinking_field:
+chat_template_kwargs | top_level selects the thinking dialect."
+
+3. "What is the entry name?"
+
+```text
+qwen3.5-9b-nvfp4 (Recommended)
+```
+
+4. "May I send one test request to qwen3.5-9b-nvfp4 on gx10 at the end?"
+
+```text
+Yes, one request (Recommended)
+```
+
+## 2026-09-25T16:11:00+0300
+
+The time is an estimate. The clock was not read when the message came; the entry was written before 16:16:17. Session drink-atlas-workspace-ca [af6346].
+
+```text
+add there qwen3.8-max through qwencloud.com, use {env:...}
+```
+
+## 2026-09-25T16:16:00+0300
+
+The time is an estimate. The clock was not read when the message came; the entry was written before 16:16:17. Session drink-atlas-workspace-ca [af6346].
+
+```text
+svoe-vino-lab/config.yaml - i do not see them
+```
+
+## 2026-09-25T16:31:00+0300
+
+Session drink-atlas-workspace-ca [af6346]. The clock read 16:31:58 just after the message.
+
+```text
+add additional table, that describes image. 
+it allows to specify explicitly package_type for some wines that are not bottles, for example:
+
+https://vino-svoe.ru/wines/soyuz-vino-soyuz-vino-evropak-shiraz-krasnoe-polusladkoe-11 - тетрапак
+https://vino-svoe.ru/wines/abrau-dyurso-fizz-beloe-bryut - аллюминиевая банка
+
+"package_type": 
+
+[
+  "bottle",
+  "can",
+  "keg",
+  "bag",
+  "bag_in_box",
+  "tetra_pak",
+  "barrel",
+  "decanter",
+  "box",
+  "other",
+  "unknown"
+]
+
+subject_scope: full_package, label_closeup, unknown
+package_view: front, back, unknown
+content_roles: front_label, back_label, unknown
+
+this is reduced set comparing the one we use for drink-atlas image-description-messages-v2 profile. But this is enough.
+
+in image corner add button to edit. 
+
+there is process that runs through all images (main, patched, additional) and run VLM to classify image if it was not. Also add UI to set these items manually for images.
+If some value is set, it is not overwritten by VLM. Check this after implementation.
+
+Also table should have flag was row filled by VLM, or created before because user wanted to set some value in advance.
+```
+
+## 2026-09-25T16:33:00+0300
+
+Session drink-atlas-workspace-ca [af6346]. The time is an estimate between 16:32 and 16:35.
+
+```text
+Show me prompt
+```
+
+## 2026-09-25T16:40:29+0300
+
+Questions of drink-atlas-workspace-ca [af6346] and the selected answers. The agent showed
+the prompt draft before the questions.
+
+1. "When you set a value in advance (for example package_type: tetra_pak), does the VLM
+   see it?"
+
+```text
+Sent as a fixed fact
+```
+
+The option: "The prompt gets a line such as \"package_type is tetra_pak; do not change
+it\". This can make the other fields agree with your value."
+
+2. "Which vlm: entry classifies the images?"
+
+```text
+qwen3.5-9b-nvfp4 (Recommended)
+```
+
+3. "How does the classification pass start?"
+
+```text
+can we have wacher in background that wakes while there are unprocessed images?
+```
+
+4. "What does the edit button in the image corner change?"
+
+```text
+This image only (Recommended)
+```
+
+## 2026-09-25T16:41:43+0300
+
+Session drink-atlas-workspace-ca [af6346].
+
+```text
+subject_scope - add multiple_packages
+```
+
+## 2026-09-25T16:42:41+0300
+
+Session drink-atlas-workspace-ca [af6346].
+
+```text
+check that VLM returned valid JSON schema
+```
+
+## 2026-09-25T16:48:07+0300
+
+Questions of drink-atlas-workspace-ca [af6346] about `docs/plans/26_image-description.md`
+and the selected answers:
+
+1. "Where does the background watcher run?"
+
+```text
+Server starts the process
+```
+
+The option: "The lab server starts the separate process at its start and stops it at its
+exit. One start for both, but more code."
+
+2. "Does the request also send the JSON Schema to the gateway (response_format type
+   json_schema)?"
+
+```text
+No, code check only
+```
+
+3. "May I add my hunks to lab_server.py, dataset.html, test_lab_server.py, and
+   test_labdb.py? Stale sessions list them; their work is committed in c7c6629."
+
+```text
+Yes, add hunks (Recommended)
+```
+
+4. "Is plan 26 approved as written (the prompt, the table, the editor, the check), with
+   the answers above?"
+
+```text
+Approved, implement
+```
+
+The option: "I implement plan 26, run the check on the two example wines, and then start
+the watcher for the backlog of 2,022 images (about 11 hours at 19.9 s per image)."
+
+## 2026-09-25T16:57:18+0300
+
+```text
+enable  http://127.0.0.1:8168/testset  page
+```
+
+## 2026-09-25T17:01:44+0300
+
+Questions of drink-atlas-workspace-ca [a2daf6] about the message of 16:57:18 and the
+selected answers:
+
+1. "The Testset page is plan 24 (docs/plans/24_testset-page.md). It is a draft by session TESTSET [0fe970]: labels, delete marks, comments, wine notes, exclusions, and an optional box, all written to data/lab.sqlite3, plus a new schema file, an import of all fields, and an export. How should we go ahead?"
+
+```text
+TESTSET implements (Recommended)
+```
+
+The option: "You approve plan 24. I send the approval and your answers to TESTSET [0fe970], which wrote the plan and owns its files. TESTSET is idle and still running, so it can start now."
+
+2. "Your link uses /testset. Plan 24 and the navigation use / for the Testset page. Which address should the page have?"
+
+```text
+/testset -> testset
+/ -> /dataset
+```
+
+3. "Plan 24 has open questions Q1–Q4 with proposals: Q1 rows for Active and Disabled wines, plus any wine with a photo in the set; Q2 no manual variant pairs in v1; Q3 the matcher main-item test goes in a later plan; Q4 one box per photo. Do you accept the proposals?"
+
+```text
+I will answer each
+```
+
+4. "Q1 of plan 24: which wines get a row on the Testset page?"
+
+```text
+Active + Disabled + photo (Recommended)
+```
+
+The option: "A row for each Active and Disabled wine, plus a row for each slug that has a photo in the set, even if its wine is Removed or is not in wine_catalog."
+
+5. "Q2 of plan 24: manual-groups.json (pairs that a person joined) exists for my and vlmrerank-8b-failed. The benchmark reads variant-groups.json only. What should v1 do with the manual pairs?"
+
+```text
+skip manual groups functionality
+```
+
+6. "Q3 of plan 24: to test how the matcher finds the main item, svoe-vino-matcher must report a box for its match, and the benchmark needs a metric for it (for example IoU). Where should this work go?"
+
+```text
+in dataset user draws rect around item that is main on scene. Run validator should display IoU metrics for these cases. However, it will fails match if fail to find right bbox at least partially
+```
+
+7. "Q4 of plan 24: how many boxes can one photo hold?"
+
+```text
+One box (Recommended)
+```
+
+The option: "One box per photo entry: the main object. A box for each item in a scene is a later change."
+
+## 2026-09-25T17:10:55+0300
+
+```text
+please, ensure that if I add wine in testset, it will be still there, even if wine_slug change state to Removed. In case later it wil be restored.
+```
+
+## 2026-09-25T17:11:35+0300
+
+Session drink-atlas-workspace-ca [af6346].
+
+```text
+if key:null missing in config, it means it not set, and it is null
+```
+
+## 2026-09-25T17:13:17+0300
+
+Questions of drink-atlas-workspace-ca [a2daf6] about the message of 17:10:55 and the
+selected answers:
+
+1. "The test set rows already stay when a wine becomes Removed: the state change writes only wine_catalog.state and removed_by, test_photo has no foreign key to wine_catalog, and no code deletes wine_catalog rows. Nothing checks this rule, though, so a later change could break it. How should I lock the rule in?"
+
+```text
+Test + plan 24 rule (Recommended)
+```
+
+The option: "I add a new test file, tests/test_testset_retention.py. It sets a wine to Removed and then restores it, and checks that its test_photo, test_excluded, and test_variant rows stay the same. I also send TESTSET the rule for plan 24: the page shows a Removed wine that has photos, with a Removed badge, and a later upload accepts it. No production code changes."
+
+2. "The benchmark still uses the photos of a Removed wine as queries whose correct answer is that wine. If the matcher index leaves Removed wines out, those photos count as misses. What should a run do with them while the wine is Removed?"
+
+```text
+Skip while Removed (Recommended)
+```
+
+The option: "A run leaves these photos out and counts them in the skipped totals as \"removed wine\". When the wine is restored, they count again. TESTSET adds this to benchmark.py as part of plan 24."
+
+## 2026-09-25T17:17:45+0300
+
+Question of drink-atlas-workspace-ca [a2daf6] after TESTSET [0fe970] stopped (idle notice
+of 17:15: "I've stopped, as you asked, and I'm not implementing anything.") and the
+selected answer:
+
+"TESTSET [0fe970] has stopped and is not implementing plan 24, so the Testset page (/testset, with / redirecting to /dataset) has no owner now. What should happen with plan 24?"
+
+```text
+This session takes it (Recommended)
+```
+
+The option: "I take plan 24 over from TESTSET's section with your permission (rule 17). I add your answers to the plan, then build it step by step: schema file, full import/export, routes, the /testset page, tests, migration, and an 8168 restart. The Q3 IoU and matcher part stays apart until you settle the overlap rule."
+
+## 2026-09-25T17:19:00+0300
+
+The message has one attached image before the text: a red prohibition sign (a red circle
+with a diagonal bar) on a checkerboard background.
+
+```text
+[Image #1] while showing conflict with website, items that are missing on website, draw  with sign attached on top of wine imge
+```
+
+## 2026-09-25T17:23:18+0300
+
+Questions of drink-atlas-workspace-ca [a2daf6] about Q3 of plan 24 and the selected
+answers:
+
+1. "Q3: the matcher (svoe-vino-matcher) does not report a box for its match today. The whole-image configurations have none at all, and only the label crop for OCR has a box. Where should the IoU work go?"
+
+```text
+New plan 27 after 24 (Recommended)
+```
+
+The option: "Plan 24 delivers the page, the box drawing, and box storage and export. A new plan 27 has the matcher return the box of the matched item, and the lab benchmark and the Runs page show IoU. The page then works sooner."
+
+2. "Q3: when a photo has a true box, what should \"at least partially\" mean for the matcher's box?"
+
+```text
+Any overlap: IoU > 0 (Recommended)
+```
+
+The option: "The match passes when the slug is right and the two boxes share at least one pixel. This follows your words \"at least partially\"."
+
+3. "Q3: a configuration may return no box at all (every whole-image configuration today). On a photo that has a true box, what should a run do?"
+
+```text
+IoU n/a, slug decides (Recommended)
+```
+
+The option: "The run shows IoU as n/a for that configuration, and the slug alone decides the match. Old configurations keep their scores."
+
+## 2026-09-25T17:26:22+0300
+
+Question of drink-atlas-workspace-ca [a2daf6] about the files of plan 24 that other
+sessions list, and the selected answer:
+
+"Plan 24 needs small changes in files that other sessions list in ACTIVE_WORK.md. Most of those sessions have ended (stale sections: 7b, 85, 20, 98, a2, f0, f1, fa, ff, 0b, 9a), and their work is committed in c7c6629. The changes: lab_server.py (import, NAV, / redirect, the route delegation, docstring), test_lab_server.py and test_labdb.py (the nav, redirect, and version tests), benchmark.py and test_benchmark.py (skip photos of Removed wines), and one Testset link line (href \"/\" to \"/testset\") in dataset.html, embedding.html, and runs.html. I will notify the live sessions ca [af6346], e3, and 30 before I edit. May I add these hunks?"
+
+```text
+Yes, add hunks (Recommended)
+```
+
+The option: "I add small separate hunks in those files and record the agreement in my section. I notify the live sessions first."
+
+## 2026-09-25T15:25:10+0300
+
+To drink-atlas-workspace-e3 [daefe2]. Recorded late, at 17:28, after the work.
+
+```text
+git commit all in @svoe-vino-lab  and save
+```
+
+## 2026-09-25T15:26:55+0300
+
+Question of drink-atlas-workspace-e3 [daefe2] after commit `c7c6629`, and the selected
+answer. Recorded late, at 17:28.
+
+"Commit c7c6629 is on local main. Local main is now 9 commits ahead of origin (gitlab drink-atlas/svoe-vino-lab), and none of the earlier 8 were pushed. Does \"save\" mean push?"
+
+```text
+Push to origin (Recommended)
+```
+
+The option: "Run git push origin main. That sends all 9 commits to gitlab.my.3simbio.ru."
+
+## 2026-09-25T17:32:17+0300
+
+Session drink-atlas-workspace-ca [af6346].
+
+```text
+http://127.0.0.1:8168/dataset add indicator that enrihcment process is running and processing images with VLM
+```
+
+## 2026-09-25T17:30:00+0300
+
+Session drink-atlas-workspace-2a [8c825b]. The message came with a screenshot of the
+header of `/embedding`. The time is the time of the start of the work.
+
+```text
+http://127.0.0.1:8168/embedding
+
+Remove"2046 of 2046 wines · 4043 items · current 4039 · stale 0 · missing 0 · failed 4"
+Move there Configuration
+
+so header will have 2 rows instead of 3
+```
+
+## 2026-09-25T17:33:57+0300
+
+Questions of drink-atlas-workspace-ca [af6346] and the selected answers:
+
+1. "Where does the page get the state of the watcher?"
+
+```text
+Status file (Recommended)
+```
+
+2. "What does the indicator show?"
+
+```text
+State + progress (Recommended)
+```
+
+3. "When the VLM describes an image while the page is open, does its card update?"
+
+```text
+No, indicator only (Recommended)
+```
+
+## 2026-09-25T17:46:51+0300
+
+```text
+write script that will seed database and images directories with  @svoe-vino-testset  catalog, datasets, urls, barcodes, annotations. All three datasets. 
+
+Do not copy only config, runs, and clusters. 
+
+i want use it to migrate all annotations from @svoe-vino-testset , test, change something, then be able recover from those annotations that are in @svoe-vino-testset
+```
+
+## 2026-09-25T17:52:00+0300
+
+Questions of drink-atlas-workspace-c5 [7cabb3] and the selected answers:
+
+1. "How should the seed/recover script work?"
+
+```text
+Full rebuild + swap (Recommended)
+```
+
+2. "Should the script also make the label cuts again (SAM3 on gx10, mostly cache hits)?"
+
+```text
+Always
+```
+
+## 2026-09-25T17:26:30+0300
+
+The time of this entry is approximate.
+
+```text
+http://127.0.0.1:8168/dataset show if VLM descriptor working, and what is its progress
+```
+
+## 2026-09-25T17:58:00+0300
+
+The message had one screenshot: the dialog "Image description" of
+`zmv-koktebel-grand-kupazh-kaberne-sovinon-krasnoe-suhoe-13`.
+
+```text
+add expandable to see what VLM exactly returned
+```
+
+## 2026-09-25T17:59:30+0300
+
+The question of drink-atlas-workspace-99 and the selected answer. The time is approximate.
+
+1. "What should the expandable \"Raw VLM answer\" section show? Note: the stored vlm_answer holds only the same 4 values as the status line (the schema forbids extra keys, and the reply was plain JSON). The full reply (the prompt, the reply text as sent, finish_reason, token counts, model, reasoning) exists only in data/cache/."
+
+```text
+Full reply from cache (Recommended)
+```
+
+## 2026-09-25T18:00:30+0300
+
+The time of this entry is approximate.
+
+```text
+http://127.0.0.1:8168/dataset add button "Advanced Filters:" 
+if pressed, new row displayed
+
+First advanced filter is Package: "All, bottle, can, ..."
+```
+
+## 2026-09-25T18:01:30+0300
+
+The question of drink-atlas-workspace-99 and the answer (text of the option "Other"). The
+time is approximate.
+
+1. "Package filter: which image of a wine decides its package_type? (2,019 of the 2,022 described images are `main` images; alternative photos and patches are rare.)"
+
+```text
+main image or patched if available
+```
+
+## 2026-09-25T18:04:02+0300
+
+```text
+http://127.0.0.1:8168/testset has NULL wine_slug and right sidebar. Let items that moved to right sidebar be assigned to NULL. This is intermediate store for images, that keep them between launches.
+```
+
+## 2026-09-25T18:04:22+0300
+
+```text
+add combobox to switch between testsets
+```
+
+The message came with a screenshot of the header of `/testset` (dark theme): `Test sets my · 2105 wines, 4043 photos`, and the controls `Set` (`my (4043 photos)`), `Sort`, `Show`, `Slugs`, and `Find`. It came during the work on the message of 18:04:02.
+
+## 2026-09-25T18:05:36+0300
+
+Questions of drink-atlas-workspace-ca [a2daf6] about the messages of 18:04:02 and of the
+combobox, and the selected answers:
+
+1. "The Set combobox is already on /testset, left of Sort. I checked it on 8168: it lists my, official-real-photos, and vlmrerank-8b-failed, and it switches the page and the address (?set=...). What should change?"
+
+```text
+Put it in the title
+```
+
+The option: "The title becomes \"Test set [my ▾]\" in a larger font, so the set is the first thing on the page. The Set control in the bar goes away."
+
+2. "Sidebar: a drag of a photo card onto the right sidebar moves the photo to the NULL place (__null__) in the database, so the photo stays there between launches. A drag from the sidebar onto a wine row moves it to that wine. Where do the NULL photos show?"
+
+```text
+Sidebar alone (Recommended)
+```
+
+The option: "The sidebar is the NULL place. The NULL row leaves the table. A sidebar card keeps the V (confirmed no match) and × (unusable) buttons and opens the large view."
+
+3. "Today the benchmark uses every NULL photo (not unusable, not marked for deletion) as a query whose right answer is \"no match\". With the sidebar, NULL also holds photos that wait for a wine. Which NULL photos should a run use?"
+
+```text
+Only confirmed ones (Recommended)
+```
+
+The option: "A NULL photo is a \"no match\" query only with the label positive (V = confirmed: no card shows this wine). A NULL photo with no label is in the store and stays out of the run."
+
+4. "What happens to the fields of a photo when it moves to another place (to the sidebar or to a wine)?"
+
+```text
+Clear the label (Recommended)
+```
+
+The option: "As in the old tool: the label judged the old wine, so it goes. The comment, the box, the delete mark, and the proposal stay. moved_from gets the old slug. A file name that the target holds gets a suffix."
+
+## 2026-09-25T18:05:36+0300
+
+```text
+move configuration to header (after Match runs)
+```
+
+The message came with a screenshot of `/runs` (dark theme): the header `Match runs 84 run(s)` with `Show`, `Sort`, and `Find`, and below it the section `Runs` with the filter `Configuration` (`every run — 84`) and `84 of 84 run(s)`.
+
+## 2026-09-25T18:05:49+0300
+
+```text
+add pagination to display runs
+```
+
+The message came during the work on the message of 18:05:36 (the Runs page).
+
+## 2026-09-25T18:11:00+0300
+
+```text
+what we have for next steps?
+```
+
+The message went to session TESTSET [0fe970].
+
+## 2026-09-25T18:13:00+0300
+
+```text
+read what work left in ACTIVE_WORK. Do it
+```
+
+The message went to session TESTSET [0fe970].
+
+## 2026-09-25T18:16:00+0300
+
+The message had one screenshot: a list of jobs, each `running` with a progress bar, for
+example `gx10-siglip2-so400m-patch14-384 running 0 / 4043 · waiting for the model · 52 s`,
+and `mock running 464 / 4043 27 s`.
+
+```text
+add near a running job a button "(x)"  that stops it
+```
+
+The message went to session TESTSET [0fe970], during the work on the message of 18:13:00.
+
+## 2026-09-25T18:19:01+0300
+
+```text
+http://127.0.0.1:8168/testset?set=my sidebar does not accept drag&drop from mac finder
+```
+
+The message went to session drink-atlas-workspace-cb [48de03].
+
+## 2026-09-25T18:25:10+0300
+
+Questions of drink-atlas-workspace-cb [48de03] about the message of 18:19:01, and the
+selected answers:
+
+1. "Where should a file dropped from Finder go?"
+
+```text
+Sidebar and wine rows
+```
+
+The option: "As the first option, and a Finder drop on a wine row stores the photo directly in that wine. It needs a little more code and more tests." The first option: "Drop on the sidebar stores the file as a NULL-place photo with no label. You then drag it onto a wine row, as now. New route POST /api/testset-upload; no schema change."
+
+2. "The page code belongs to the stale section of drink-atlas-workspace-ca [a2daf6] (not in ListAgents). May I add hunks to testset.html, testset_routes.py, testsets.py and their tests, and restart 8168 for the new route?"
+
+```text
+Yes, go ahead
+```
+
+3. "A dropped file has the same bytes (SHA-256) as a photo that the set already holds. What should happen?"
+
+```text
+allow it,  because it can be for negative label, but keep same filename to avoid duplicates
+```
+
+4. "The same image (same SHA-256) is dropped again. Which file name does the new row get?"
+
+```text
+Name of the existing photo
+```
+
+The option: "The new row reuses the file name that the set already has for this image (e.g. 03_conf80.jpg). The same image in the same place is refused as a duplicate. Another place (e.g. for a negative label) is allowed."
+
+5. "Which file name does a new image (not yet in the set) get?"
+
+```text
+The Finder name (Recommended)
+```
+
+The option: "Cleaned of path parts and odd characters, the extension from the bytes. A clash with a different image in the same place gets a suffix _upload2, _upload3, and so on. This is the form of the old inbox upload."
+
+## 2026-09-25T18:55:00+0300
+
+```text
+commit all
+```
+
+The message went to session TESTSET [0fe970].

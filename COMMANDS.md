@@ -39,7 +39,25 @@ removed on the page. Add `--force` to add the missing rows anyway.
 python3 pipeline/import_testsets.py --db data/lab.sqlite3
 ```
 Each run makes the rows of each set equal to its JSON files again. A second run writes
-no new image file.
+no new image file. Since plan 24 the Testset page `/testset` writes the labels to the
+database, and the database is the source. So the import refuses a set with a page edit.
+Add `--force` to replace the page edits with the files.
+
+Собрать базу данных заново из `svoe-vino-testset` и исходных файлов (заполнить пустую
+лабораторию или вернуть её в состояние этих файлов после теста):
+```
+python3 pipeline/seed_from_testset.py --db data/lab.sqlite3
+```
+The old database goes to `data/backups/`. The data of the lab alone (states, comments,
+favorites, manual wines, alternative photos, Testset page edits, image descriptions) are
+in that backup only. The label cuts need SAM3 on gx10 for each image that
+`data/cache/sam3/` does not hold. Read `docs/plans/28_seed-from-testset.md`.
+
+Выгрузить тестовый набор из базы в JSON-файлы (`review-labels.json`, `excluded-slugs.json`):
+```
+python3 pipeline/export_testset.py --db data/lab.sqlite3 --set my --out <directory>
+```
+A file of the same name in `--out` is replaced. The export writes no photo file.
 
 Сделать вырезку этикетки для каждого полного фото (вид `label` страницы Embeddings):
 ```
@@ -78,6 +96,29 @@ Options:
 The start report states the schema version and the wine count of each state.
 After a change of the code in `pipeline/`, stop the server and start it again.
 After a new file in `pipeline/schema/`, run `labdb.py` first.
+
+# Описания изображений (plan 26)
+
+With `image_description.watch: true` in `config.yaml`, the lab server starts the watcher
+`pipeline/describe_images.py --watch` and stops it at its exit (SIGTERM or Ctrl+C). The
+start report names the pid of the watcher. The log is `work/describe_images.log`.
+
+```bash
+tail -f work/describe_images.log                          # the watcher at work
+python3 pipeline/describe_images.py --sha <sha256>         # one image, now
+python3 pipeline/describe_images.py --once                 # one pass, then stop
+python3 pipeline/describe_images.py --once --retry-failed  # the failed images again
+sqlite3 data/lab.sqlite3 "SELECT created_by, vlm_at IS NOT NULL, count(*) \
+    FROM image_description GROUP BY 1, 2"                  # the progress
+```
+
+The state of the watcher is in `work/describe_images.status.json`, and
+`curl -s http://127.0.0.1:8168/api/image-description-status` answers the state with
+the counts. The pill left of `Add wine` on `/dataset` shows the same.
+
+One watcher runs at a time (`work/describe_images.lock`). `--sha` and `--once` stop with
+an error while the watcher of the server runs. A run of many images from this Mac needs
+`caffeinate -ims -w <pid of the watcher>`.
 
 # Эмбеддинги
 

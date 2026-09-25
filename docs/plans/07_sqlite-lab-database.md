@@ -224,10 +224,10 @@ Rules:
    headless Chromium with 2,103 cards: a full render took 0.7 s before and 0.14 s after;
    a state click took 1.8 to 2.1 s before and about 0.1 s after. The server write takes
    2 to 4 ms.
-6. The pages Clusters and Testset, and `/docs`, are disabled for now. Each one answers a
-   notice page with HTTP 503. The notice page keeps the navigation. The Embeddings page
-   is on since plan 10, and the Runs page since plan 23: it reads `runs/`, not the
-   database.
+6. The page Clusters and `/docs` are disabled for now. Each one answers a notice page
+   with HTTP 503. The notice page keeps the navigation. The Embeddings page is on since
+   plan 10, and the Runs page since plan 23: it reads `runs/`, not the database. The
+   Testset page is on since plan 24, at `/testset`; `/` redirects to `/dataset`.
 7. Each other `/api/` route answers HTTP 503 with a JSON error. An `/img/` route answers
    HTTP 503.
 8. Do not remove a part of a page unless the owner asks for it. A disabled part comes
@@ -312,8 +312,8 @@ These steps are proposals. The owner selects the next step and its content.
 | 4 | Done by [plan 08](08_seed-images.md): the table `wine_image` and `pipeline/seed_images.py`. The store is `data/images/<folder>/<sha256>.<ext>`, one folder for each image type. | `uploads/` of the delivery, the rename rule of `build_catalog.py` |
 | 5 | Patched pictures (`main_patched`): done, see step 5 above. Extra catalogue views (`front`, `back`, `label_front`, `label_back`) into `wine_image`: open. | `patched-official-<DATE>/`, `derived/additional/` |
 | 6 | Test photos into `data/images/testset/`, with their source URLs, in their own table. Several test sets, each with its own photos. Read the section "Input for the test set step" of plan 08. | `dataset/*/photo/`, `review-labels.json` field `source_url` |
-| 7 | Datasets, photo placements, labels, comments, wine notes, excluded slugs. | `review-labels.json`, `excluded-slugs.json` |
-| 8 | Variant groups and manual pairs. | `variant-groups.json`, `manual-groups.json` |
+| 7 | Done by plan 12 (schema 016) and [plan 24](24_testset-page.md) (schema 019): the test sets, the photo placements, each field of a label entry, the box of the main object, the wine notes, and the excluded slugs. The database is the source of the labels; `pipeline/export_testset.py` writes the JSON files. | `review-labels.json`, `excluded-slugs.json` |
+| 8 | Variant groups: done by plan 12 (`test_variant`). Manual pairs: open; the owner skipped them for plan 24 (2026-09-25T17:01:44+0300). | `variant-groups.json`, `manual-groups.json` |
 | 9 | Match runs, queries, and candidates. | `runs/*/` |
 | 10 | Move each disabled page to the lab server when its data is in the database. | `scripts/review_server.py` |
 

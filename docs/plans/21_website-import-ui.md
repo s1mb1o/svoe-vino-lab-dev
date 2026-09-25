@@ -203,6 +203,11 @@ A new module `pipeline/website_import_routes.py`, like `embedding_routes.py`.
   and the radio buttons `database` and `website`), new wines, missing wines, restored
   wines, and main images. A checkbox of a plain change is set at the start. A conflict
   has no choice at the start. `Apply` is disabled until each conflict has a choice.
+- Changes of 2026-09-25, about 16:00 (owner messages of about 15:40 and the answers of
+  15:55): one card holds all conflicts of one wine. Each wine slug is a link to
+  `https://vino-svoe.ru/wines/<slug>`, except in `Missing on the website`. A click on an
+  image shows a large view with the file name; the click changes no choice. The section
+  titles are `New wines on website` and `Missing main images, taken from website`.
 - `Apply` starts the apply job. At the end the page reads the data again and shows the
   result.
 - `#sort` gets `changed in the lab, newest first` (`modified_at`) and `changed on

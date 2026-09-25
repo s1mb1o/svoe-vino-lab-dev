@@ -10,6 +10,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -211,7 +212,7 @@ class LabServerTest(unittest.TestCase):
             self.assertEqual(self.request(path)[0], 404, path)
 
     def test_disabled_pages_keep_the_navigation(self):
-        for route, name in (("/clusters", "Clusters"), ("/", "Testset")):
+        for route, name in (("/clusters", "Clusters"),):
             status, _, body = self.request(route)
             self.assertEqual(status, 503, route)
             self.assertIn("The page %s is disabled for now." % name, body)
@@ -247,6 +248,7 @@ class LabServerTest(unittest.TestCase):
         hrefs = [href for href, _ in LAB.NAV]
         pages = {name: lab_pages.page(name) for name in ("dataset.html", "embedding.html")}
         pages["/runs"] = self.request("/runs")[2]
+        pages["/testset"] = self.request("/testset")[2]
         for name, body in pages.items():
             nav = re.search(r'<nav class="nav">(.*?)</nav>', body, re.S).group(1)
             self.assertEqual(re.findall(r'href="([^"]*)"', nav), hrefs, name)
@@ -693,6 +695,159 @@ class LabServerTest(unittest.TestCase):
         records = {r["slug"]: r for r in json.loads(self.request("/api/dataset")[2])["records"]}
         self.assertEqual(records["wine-b"]["_website_modified_at"], "2026-09-22T15:36:48.000Z")
         self.assertRegex(records["wine-b"]["_modified_at"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
+
+    # The image descriptions: plan 26.
+    def link_image(self, slug, sha256, image_type="main"):
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("INSERT OR IGNORE INTO image (sha256, folder, extension) "
+                         "VALUES (?, 'main', 'png')", (sha256,))
+            if slug:
+                conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
+                             "source_name, match_method) VALUES (?, ?, ?, 'b.webp', 'test')",
+                             (slug, image_type, sha256))
+        conn.close()
+
+    def post_description(self, sha256, values):
+        status, _, body = self.request("/api/image-description", "POST", json.dumps(
+            {"sha256": sha256, "values": values}).encode())
+        return status, json.loads(body)
+
+    def test_the_image_description_route_sets_values_by_hand(self):
+        sha = "a" * 64
+        self.link_image("wine-b", sha)
+        status, answer = self.post_description(sha, {"package_type": "tetra_pak"})
+        self.assertEqual(status, 200)
+        row = answer["description"]
+        self.assertEqual((row["package_type"], row["subject_scope"], row["created_by"],
+                          row["vlm_at"]), ("tetra_pak", None, "manual", None))
+        status, answer = self.post_description(sha, {"package_view": "back",
+                                                     "content_roles": ["back_label"]})
+        row = answer["description"]
+        self.assertEqual((row["package_type"], row["package_view"], row["content_roles"]),
+                         ("tetra_pak", "back", ["back_label"]))
+        status, answer = self.post_description(sha, {"package_type": None})
+        self.assertIsNone(answer["description"]["package_type"])
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertTrue(data["image_description_editor"])
+        self.assertEqual(data["image_descriptions"][sha]["package_view"], "back")
+
+    def test_the_image_description_route_refuses_a_bad_request(self):
+        linked, loose = "b" * 64, "c" * 64
+        self.link_image("wine-b", linked, "full_back")
+        self.link_image(None, loose)
+        for sha, values, code in (("B" * 64, {"package_type": "can"}, 400),
+                                  (linked, {}, 400), (linked, None, 400),
+                                  (linked, {"package_type": "carton"}, 400),
+                                  (linked, {"color": "red"}, 400),
+                                  (linked, {"content_roles": ["unknown", "back_label"]}, 400),
+                                  (loose, {"package_type": "can"}, 404)):
+            with self.subTest(sha=sha[:1], values=values):
+                self.assertEqual(self.post_description(sha, values)[0], code)
+        self.assertEqual(self.post_description(linked, {"package_view": "back"})[0], 200)
+        self.assertEqual(json.loads(self.request("/api/dataset")[2])["image_descriptions"]
+                         [linked]["package_view"], "back")
+
+    def test_the_watcher_starts_only_with_watch_true(self):
+        config = self.root / "config.yaml"
+        started = []
+        with mock.patch.object(LAB.subprocess, "Popen",
+                               lambda args, **kw: started.append(args) or "process"), \
+                mock.patch.object(LAB, "WATCHER_LOG", str(self.root / "w.log")):
+            for text in ("database_file: x\n", "image_description:\n  watch: false\n",
+                         "image_description: on\n"):
+                config.write_text(text)
+                self.assertIsNone(LAB.start_watcher(str(config)))
+            self.assertIsNone(LAB.start_watcher(str(self.root / "missing.yaml")))
+            config.write_text("image_description:\n  watch: true\n")
+            self.assertEqual(LAB.start_watcher(str(config)), "process")
+        self.assertEqual(len(started), 1)
+        self.assertEqual(started[0][1:5], [LAB.WATCHER, "--watch", "--parent-pid",
+                                           str(LAB.os.getpid())])
+
+    def test_stop_watcher_ends_the_process(self):
+        import subprocess
+        process = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+        LAB.stop_watcher(process)
+        self.assertIsNotNone(process.poll())
+        LAB.stop_watcher(process)
+        LAB.stop_watcher(None)
+
+    def test_the_status_route_of_the_watcher(self):
+        import image_descriptions
+        path = str(self.root / "status.json")
+        sha = "d" * 64
+        self.link_image("wine-b", sha)
+        with mock.patch.object(image_descriptions, "STATUS_PATH", path):
+            status, _, body = self.request("/api/image-description-status")
+            answer = json.loads(body)
+            self.assertEqual(status, 200)
+            self.assertEqual((answer["state"], answer["linked"], answer["pending"]),
+                             ("stopped", 1, 1))
+            image_descriptions.write_status({"pid": LAB.os.getpid(), "state": "working",
+                                             "sha256": sha, "vlm": "vlm-a",
+                                             "seconds_per_image": 2.5})
+            answer = json.loads(self.request("/api/image-description-status")[2])
+            self.assertEqual((answer["state"], answer["slug"], answer["seconds_per_image"]),
+                             ("working", "wine-b", 2.5))
+        self.assertEqual(self.request("/api/image-description-status", "POST")[0], 503)
+
+    # Plan 24: the Testset page is at /testset, and / goes to the Dataset page.
+
+    def test_root_redirects_to_the_dataset_page(self):
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, *args, **kwargs):
+                return None
+
+        opener = urllib.request.build_opener(NoRedirect)
+        with self.assertRaises(urllib.error.HTTPError) as caught:
+            opener.open(self.base + "/")
+        self.assertEqual(caught.exception.code, 302)
+        self.assertEqual(caught.exception.headers["Location"], "/dataset")
+        self.assertEqual(self.request("/")[0], 200)
+
+    def test_the_testset_page_is_on(self):
+        status, headers, body = self.request("/testset")
+        self.assertEqual(status, 200)
+        self.assertEqual(body, lab_pages.page("testset.html"))
+        self.assertIn("text/html", headers["Content-Type"])
+        self.assertIn('class="on" href="/testset"', body)
+        # The database of this test holds no test set.
+        status, _, body = self.request("/api/testset")
+        self.assertEqual(status, 404)
+        self.assertIn("no test set", json.loads(body)["error"])
+
+    # The raw VLM reply of the dialog "Image description" (owner message of about 17:58).
+
+    def test_the_raw_reply_route(self):
+        import describe_images
+        import image_descriptions
+        route = "/api/image-description-reply?sha256="
+        sha = "e" * 64
+        self.link_image("wine-b", sha)
+        self.assertEqual(self.request(route + "xyz")[0], 400)
+        self.assertEqual(self.request(route + "f" * 64)[0], 404)
+        answer = json.loads(self.request(route + sha)[2])
+        self.assertEqual((answer["found"], answer["reason"]),
+                         (False, "the VLM has not filled this image"))
+        conn = sqlite3.connect(self.db)
+        with conn:
+            image_descriptions.record_vlm(conn, sha, {
+                "package_type": "can", "subject_scope": "full_package",
+                "package_view": "front", "content_roles": ["front_label"]},
+                "qwen3.5-9b-nvfp4", "Model")
+        conn.close()
+        record = {"key": "k", "created": "t", "ms": 5, "request": {"prompt": []},
+                  "answer": {"choices": [{"message": {"content": "{}"}}]}}
+        with mock.patch.object(describe_images, "cached_reply", return_value=record):
+            status, _, body = self.request(route + sha)
+        answer = json.loads(body)
+        self.assertEqual((status, answer["found"], answer["reply"], answer["ms"]),
+                         (200, True, record["answer"], 5))
+        with mock.patch.object(describe_images, "cached_reply", return_value=None):
+            answer = json.loads(self.request(route + sha)[2])
+        self.assertEqual((answer["found"], answer["reason"]),
+                         (False, "no record in data/cache/ matches this image"))
 
 
 if __name__ == "__main__":

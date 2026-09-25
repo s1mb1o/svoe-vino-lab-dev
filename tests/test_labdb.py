@@ -40,12 +40,13 @@ class LabDbTest(unittest.TestCase):
 
     def test_create_applies_the_schema(self):
         labdb.connect(self.db, create=True).close()
-        self.assertEqual(VERSION, 17)
+        self.assertEqual(VERSION, 19)
         self.assertEqual(self.query("PRAGMA user_version"), [(VERSION,)])
         conn = sqlite3.connect(self.db)
         self.assertEqual(labdb.tables(conn),
-                         ["image", "image_derivative", "test_excluded", "test_photo",
-                          "test_set", "test_variant", "website_refusal",
+                         ["image", "image_derivative", "image_description",
+                          "test_excluded", "test_photo",
+                          "test_set", "test_variant", "test_wine_note", "website_refusal",
                           "wine_atlas_binding", "wine_catalog", "wine_code",
                           "wine_comment", "wine_favorite", "wine_image"])
         conn.close()

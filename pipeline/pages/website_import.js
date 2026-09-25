@@ -10,9 +10,10 @@
   const style = document.createElement("style");
   style.textContent = `
 .website-dialog { width: min(1040px, 100%); }
-.website-dialog h3 { margin: 16px 0 6px; font-size: 14px; display: flex; gap: 8px;
-  align-items: baseline; }
-.website-dialog h3 .count { color: var(--muted); font-weight: 400; }
+.website-dialog h3 { margin: 16px 0 6px; font-size: 14px; display: flex; flex-wrap: wrap;
+  gap: 8px; align-items: baseline; }
+/* The title keeps one line. A long hint wraps next to it, or below it on a narrow screen. */
+.website-dialog h3 .count { flex: 1 1 160px; color: var(--muted); font-weight: 400; }
 .website-dialog h3 button { font-size: 11px; padding: 1px 7px; }
 .website-dialog h3 button:first-of-type { margin-left: auto; }
 .website-rows { display: grid; gap: 6px; }
@@ -25,8 +26,23 @@
   background: var(--bg); border-radius: 6px; }
 .website-row .no-image { width: 64px; height: 64px; border-radius: 6px;
   background: var(--bg); }
+.website-row img, .website-choice img { cursor: zoom-in; }
+/* The sign lets a click through to the image, so the click opens the large view. */
+.website-row .missing-image { position: relative; width: 64px; height: 64px; }
+.website-row .missing-image > img, .website-row .missing-image > .no-image { display: block; }
+.website-row .missing-image svg { position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; }
 .website-row .title { font-weight: 600; }
 .website-row .meta { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.website-preview { position: fixed; inset: 0; z-index: 60; padding: 24px; display: flex;
+  flex-direction: column; gap: 10px; align-items: center; justify-content: center;
+  background: rgba(7, 8, 12, .9); cursor: zoom-out; }
+.website-preview[hidden] { display: none; }
+.website-preview img { max-width: 100%; max-height: calc(100vh - 110px); object-fit: contain;
+  background: var(--bg); border-radius: 8px; }
+.website-preview .caption { max-width: 100%; padding: 4px 10px; background: var(--panel);
+  color: var(--text); border: 1px solid var(--line); border-radius: 6px; font-size: 13px;
+  overflow-wrap: anywhere; }
 .website-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
 .website-choice { display: flex; gap: 8px; align-items: center; padding: 6px 8px;
   border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
@@ -61,11 +77,22 @@
   const status = modal.querySelector("#website-status");
   const actions = modal.querySelector("#website-actions");
 
+  // The large view of one image. A click or Esc closes it.
+  const preview = document.createElement("div");
+  preview.className = "website-preview";
+  preview.hidden = true;
+  preview.innerHTML = `<img alt=""><div class="caption"></div>`;
+  document.body.appendChild(preview);
+  preview.addEventListener("click", () => { preview.hidden = true; });
+
+  // The same address as `SITE_WINE_URL` of dataset.html.
+  const SITE_WINE_URL = "https://vino-svoe.ru/wines/";
   const KINDS = [
-    ["new", "New on the website", "Add the wine as Active, with its main image."],
+    ["new", "New wines on website", "Add the wine as Active, with its main image."],
     ["missing", "Missing on the website", "Set the wine Removed."],
     ["back", "Back on the website", "Set the wine Active again."],
-    ["main", "Main image from the website", "Store the website image as the main image."],
+    ["main", "Missing main images, taken from website",
+     "The database has no main image for these wines. Apply stores the website image as the main image."],
   ];
   let state = null;
   let diff = null;
@@ -151,18 +178,43 @@
       <button type="button" class="primary" data-website="start">Compare</button>`;
   }
 
-  function image(url) {
-    return url ? `<img src="${esc(url)}" alt="" loading="lazy">` : `<div class="no-image"></div>`;
+  function image(url, file) {
+    return url ? `<img src="${esc(url)}" alt="" loading="lazy" data-preview
+      data-caption="${esc(file)}">` : `<div class="no-image"></div>`;
+  }
+  function showPreview(picture) {
+    preview.querySelector("img").src = picture.currentSrc || picture.src;
+    preview.querySelector(".caption").textContent = picture.dataset.caption || "";
+    preview.hidden = false;
   }
   function runUrl(file) {
     return file ? `/website-import/${diff.run}/${file}` : null;
   }
+  function slugHtml(entry) {
+    // A missing wine has no page on the website.
+    if (entry.kind === "missing") return esc(entry.slug);
+    return `<a href="${esc(SITE_WINE_URL + encodeURIComponent(entry.slug))}" target="_blank"
+      rel="noopener">${esc(entry.slug)}</a>`;
+  }
   function wineTitle(entry) {
     return `<div><div class="title">${esc(entry.name || entry.slug)}</div>
-      <div class="meta">${esc(entry.slug)}${entry.producer ? " · " + esc(entry.producer) : ""}${
+      <div class="meta">${slugHtml(entry)}${entry.producer ? " · " + esc(entry.producer) : ""}${
         entry.state ? " · " + esc(entry.state) : ""}</div></div>`;
   }
-  function conflictHtml(entry) {
+  // The conflicts of one wine, in the order of the diff.
+  function conflictGroups(conflicts) {
+    const groups = new Map();
+    for (const entry of conflicts) {
+      if (!groups.has(entry.slug)) groups.set(entry.slug, []);
+      groups.get(entry.slug).push(entry);
+    }
+    return [...groups.values()];
+  }
+  function conflictHtml(entries) {
+    return `<div class="website-row conflict unset" data-row="${esc(entries[0].slug)}">
+      ${wineTitle(entries[0])}${entries.map(choicesHtml).join("")}</div>`;
+  }
+  function choicesHtml(entry) {
     const name = `conflict-${entry.id}`;
     let sides;
     if (entry.kind === "text") {
@@ -174,33 +226,40 @@
       sides = [["database", entry.database.url, entry.database.source_name],
                ["website", runUrl(entry.website.file), entry.website.name]].map(
         ([side, url, file]) => `<label class="website-choice"><input type="radio"
-          name="${esc(name)}" value="${side}" data-conflict="${esc(entry.id)}">${image(url)}
+          name="${esc(name)}" value="${side}" data-conflict="${esc(entry.id)}">${image(url, file)}
           <span><span class="side">${side}</span><br><span class="value">${esc(file)}</span></span></label>`);
     }
     const what = entry.kind === "text" ? `the field <strong>${esc(entry.field)}</strong>`
       : "the <strong>main image</strong>";
-    return `<div class="website-row conflict unset" data-row="${esc(entry.id)}">
-      <div>${wineTitle(entry)}<div class="meta">vino-svoe.ru changed ${what}.</div></div>
+    return `<div class="website-conflict"><div class="meta">vino-svoe.ru changed ${what}.</div>
       <div class="website-choices">${sides.join("")}</div></div>`;
   }
+  // A prohibition sign on top of the image of a wine that is missing on the website.
+  const MISSING_SIGN = `<svg viewBox="0 0 100 100" role="img" aria-label="Missing on the website">
+    <circle cx="50" cy="50" r="42" fill="none" stroke="#e30613" stroke-width="10"/>
+    <line x1="20.3" y1="20.3" x2="79.7" y2="79.7" stroke="#e30613" stroke-width="10"/></svg>`;
   function changeHtml(entry) {
     const url = entry.image ? runUrl(entry.image.file) : entry.stored && entry.stored.url;
+    const file = entry.image ? entry.image.name : entry.stored && entry.stored.source_name;
+    const picture = entry.kind === "missing"
+      ? `<span class="missing-image">${image(url, file)}${MISSING_SIGN}</span>` : image(url, file);
     return `<label class="website-row"><input type="checkbox" checked
-      data-change="${esc(entry.id)}">${image(url)}${wineTitle(entry)}</label>`;
+      data-change="${esc(entry.id)}">${picture}${wineTitle(entry)}</label>`;
   }
 
   function showDiff() {
     const conflicts = diff.conflicts;
+    const groups = conflictGroups(conflicts);
     let html = `<p class="validation-intro">Compared at ${esc(diff.created_at)}:
       ${diff.website} wines on vino-svoe.ru, ${diff.images} images.
       ${diff.refused ? `${diff.refused} conflicts or changes stay refused by an earlier choice.` : ""}
       A choice <em>database</em> and a cleared checkbox are remembered: a later import skips
       them while the website keeps the value.</p>`;
     if (conflicts.length) {
-      html += `<h3>Conflicts <span class="count">${conflicts.length}</span>
+      html += `<h3>Conflicts <span class="count">${conflicts.length} · ${groups.length} wines</span>
         <button type="button" data-website="all" data-side="database">all database</button>
         <button type="button" data-website="all" data-side="website">all website</button></h3>
-        <div class="website-rows">${conflicts.map(conflictHtml).join("")}</div>`;
+        <div class="website-rows">${groups.map(conflictHtml).join("")}</div>`;
     }
     for (const [kind, title, hint] of KINDS) {
       const entries = diff.changes.filter(entry => entry.kind === kind);
@@ -230,7 +289,8 @@
     const apply = actions.querySelector('[data-website="apply"]');
     if (apply) apply.disabled = left > 0;
     for (const row of body.querySelectorAll(".website-row.conflict")) {
-      row.classList.toggle("unset", !row.querySelector("input:checked"));
+      row.classList.toggle("unset", [...row.querySelectorAll(".website-conflict")].some(
+        part => !part.querySelector("input:checked")));
     }
     setStatus(left ? `${left} conflicts need a choice.` : "Each conflict has a choice.");
   }
@@ -302,6 +362,12 @@
 
   modal.addEventListener("click", async event => {
     if (event.target === modal) return close();
+    const picture = event.target.closest("img[data-preview]");
+    if (picture) {
+      // The image is in a label. The default action changes its radio button or checkbox.
+      event.preventDefault();
+      return showPreview(picture);
+    }
     const target = event.target.closest("[data-website]");
     if (!target) return;
     const action = target.dataset.website;
@@ -330,7 +396,11 @@
     if (event.target.matches("input[data-conflict]")) refreshApply();
   });
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && !modal.hidden) {
+    if (event.key !== "Escape") return;
+    if (!preview.hidden) {
+      event.stopPropagation();
+      preview.hidden = true;
+    } else if (!modal.hidden) {
       event.stopPropagation();
       close();
     }

@@ -31,6 +31,12 @@ h1 .sub { color: var(--muted); font-weight: 400; }
 .nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
 .bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
 .bar label { color: var(--muted); font-size: 12px; display: flex; gap: 5px; align-items: center; }
+/* The row of the advanced filters. The button has the accent border while the row is open
+   or an advanced filter is active, also when the row is closed. */
+.advanced-bar { margin-top: 8px; }
+.advanced-bar[hidden] { display: none; }
+#advanced-toggle[aria-expanded="true"], #advanced-toggle.active { border-color: var(--accent); }
+#advanced-toggle.active { color: var(--accent); font-weight: 650; }
 select, input[type=search], input[type=text], button {
   background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
   border-radius: 6px; padding: 4px 8px; font: inherit; font-size: 13px;
@@ -70,6 +76,73 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
   color: var(--neg); background: var(--neg-bg); border: 1px solid var(--line);
 }
 .image-badge.seg { color: var(--pos); background: var(--pos-bg); }
+/* The image descriptions (plan 26): the button in the bottom right corner of an image.
+   The top corners hold the processing badge and the × of an alternative photo. */
+.describe-host { position: relative; }
+.describe-edit {
+  position: absolute; right: 5px; bottom: 5px; z-index: 2; width: 22px; height: 22px;
+  padding: 0; border-radius: 6px; font-size: 12px; line-height: 1; opacity: .85;
+  color: var(--muted); background: var(--panel); border: 1px solid var(--line);
+}
+.describe-edit:hover { color: var(--accent); border-color: var(--accent); opacity: 1; }
+.describe-edit.set { color: var(--accent); border-color: var(--accent); }
+.alternative-card .describe-edit { right: 4px; bottom: 4px; width: 21px; height: 21px; }
+.describe-dialog { width: min(640px, 100%); }
+.describe-body { display: grid; grid-template-columns: 180px 1fr; gap: 16px; }
+.describe-body img {
+  width: 180px; height: 240px; object-fit: contain; padding: 4px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px;
+}
+.describe-fields { display: grid; gap: 10px; align-content: start; }
+.describe-fields label { display: grid; gap: 4px; color: var(--muted); font-size: 12px; }
+.describe-fields fieldset {
+  margin: 0; padding: 6px 10px 8px; border: 1px solid var(--line); border-radius: 8px;
+  color: var(--muted); font-size: 12px;
+}
+.describe-fields fieldset label {
+  display: inline-flex; gap: 5px; align-items: center; margin: 4px 12px 0 0;
+  color: var(--text); font-size: 13px;
+}
+.describe-status { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.describe-status .fail { color: var(--neg); }
+/* The raw VLM reply of the dialog: the `data/cache/` record, loaded when it opens. */
+.describe-raw { margin-top: 10px; font-size: 12px; color: var(--muted); }
+.describe-raw[hidden] { display: none; }
+.describe-raw summary { cursor: pointer; }
+.describe-raw summary:hover { color: var(--text); }
+.describe-raw details { margin-top: 6px; }
+.describe-raw pre {
+  margin: 4px 0 0; padding: 8px; max-height: 280px; overflow: auto;
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.describe-raw .fail { color: var(--neg); }
+/* The indicator of the watcher in the header bar: working, idle, waiting, or stopped. */
+.vlm-status {
+  display: inline-flex; gap: 6px; align-items: center; align-self: center; padding: 3px 10px;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--panel-2);
+  color: var(--muted); font-size: 12px; white-space: nowrap; cursor: default;
+}
+.vlm-status[hidden] { display: none; }
+.vlm-status .dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: 0 0 auto;
+}
+.vlm-status.working { color: var(--text); border-color: var(--pos); }
+.vlm-status.working .dot { background: var(--pos); animation: vlm-pulse 1.2s ease-in-out infinite; }
+.vlm-status.idle .dot { background: var(--pos); }
+.vlm-status.waiting { color: var(--var); border-color: var(--var); }
+.vlm-status.waiting .dot { background: var(--var); }
+.vlm-status.stopped .dot { background: transparent; border: 1px solid var(--muted); }
+.vlm-status .failed { color: var(--neg); }
+@keyframes vlm-pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .vlm-status.working .dot { animation: none; } }
+@media (max-width: 560px) {
+  .describe-body { grid-template-columns: 1fr; }
+  .describe-body img { width: 100%; }
+  /* The indicator makes the row of actions wider than a phone: the row wraps. */
+  .bar-actions { flex-wrap: wrap; }
+}
 .noimage { color: var(--muted); font-size: 12px; text-align: center; border-style: dashed; }
 .patch-surface {
   width: 158px; height: 252px; position: relative; overflow: hidden;
@@ -484,7 +557,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <h1>Dataset <span class="sub" id="head-sub">loading catalog.jsonl…</span></h1>
     <nav class="nav"><a class="on" href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
-      href="/">Testset</a><a href="/runs">Runs</a></nav>
+      href="/testset">Testset</a><a href="/runs">Runs</a></nav>
   </div>
   <div class="bar">
     <label>Show
@@ -506,7 +579,6 @@ button.preview-thumb:hover { border-color: var(--accent); }
     </label>
     <label>Sort
       <select id="sort">
-        <option value="catalog">catalog.jsonl order</option>
         <option value="name">wine name A–Z</option>
         <option value="producer">producer A–Z</option>
         <option value="slug">slug A–Z</option>
@@ -517,11 +589,17 @@ button.preview-thumb:hover { border-color: var(--accent); }
       </select>
     </label>
     <label>Search <input id="q" type="search" placeholder="name, producer, slug, any field"></label>
+    <button id="advanced-toggle" type="button" aria-expanded="false" aria-controls="advanced-bar"
+      hidden>Advanced Filters:</button>
     <div class="bar-actions">
+      <span class="vlm-status" id="vlm-status" role="status" aria-live="polite" hidden></span>
       <button id="add-wine" class="wine-add-btn" type="button" hidden>Add wine</button>
       <button id="validate-dataset" class="validate-btn" type="button">Validate</button>
       <button id="website-import" class="validate-btn" type="button" hidden>Import from website</button>
     </div>
+  </div>
+  <div class="bar advanced-bar" id="advanced-bar" hidden>
+    <label>Package <select id="package-filter"><option value="all">All</option></select></label>
   </div>
 </header>
 <main>
@@ -599,6 +677,36 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <div class="validation-actions">
       <button id="wine-cancel" type="button">Cancel</button>
       <button id="wine-save" class="primary" type="button" disabled>Save</button>
+    </div>
+  </section>
+</div>
+<div class="modal" id="describe-modal" role="dialog" aria-modal="true"
+  aria-labelledby="describe-title" hidden>
+  <section class="validation-dialog describe-dialog">
+    <div class="validation-head">
+      <h2 id="describe-title">Image description</h2>
+      <button id="describe-x" type="button" aria-label="Close">×</button>
+    </div>
+    <p class="validation-intro">A value that you set stays: the VLM fills only the values
+      that are not set, and it gets your values as fixed facts.</p>
+    <div class="describe-body">
+      <img id="describe-image" alt="">
+      <form class="describe-fields" id="describe-form" novalidate>
+        <label>package_type <select name="package_type"></select></label>
+        <label>subject_scope <select name="subject_scope"></select></label>
+        <label>package_view <select name="package_view"></select></label>
+        <fieldset><legend>content_roles</legend><div id="describe-roles"></div></fieldset>
+      </form>
+    </div>
+    <div class="describe-status" id="describe-status"></div>
+    <details class="describe-raw" id="describe-raw" hidden>
+      <summary>Raw VLM reply</summary>
+      <div id="describe-raw-body"></div>
+    </details>
+    <div class="wine-form-error" id="describe-error" role="alert" hidden></div>
+    <div class="validation-actions">
+      <button id="describe-cancel" type="button">Cancel</button>
+      <button id="describe-save" class="primary" type="button">Save</button>
     </div>
   </section>
 </div>
@@ -965,7 +1073,11 @@ function imageFigure(r, patch) {
          src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — ${label}">${badge}</a>`
     : '<div class="noimage">no catalogue image</div>';
   const gray = r.state === "Disabled" ? ' class="state-disabled"' : "";
-  return `<figure${gray}>${content}<figcaption><span>${label}</span></figcaption>${stateActions(r)}</figure>`;
+  // The description button of plan 26 describes the original file, not the processed one.
+  const describe = present ? describeButton(shaOfUrl(r.main_image_original_url), r.slug,
+                                            r.main_image_original_url) : "";
+  const box = describe ? `<div class="describe-host">${content}${describe}</div>` : content;
+  return `<figure${gray}>${box}<figcaption><span>${label}</span></figcaption>${stateActions(r)}</figure>`;
 }
 function stateActions(r) {
   // A record with no `state` comes from a server with no wine states. It gets no button.
@@ -1026,7 +1138,8 @@ function patchEditor(r) {
       title="processed image: ${esc(derivation)}">${esc(derivation)}</span>` : "";
     content = `<a href="${preview}" data-image-preview="patch" data-slug="${esc(r.slug)}"
       title="Open patch image"><img
-      src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — patch">${badge}</a>`;
+      src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — patch">${badge}</a>${
+      describeButton(shaOfUrl(r._patch_url), r.slug, r._patch_url)}`;
     state = '<span class="patch">patched</span>';
     actions = `<div class="patch-actions single"><button class="remove" type="button"
       data-patch-remove>Remove</button></div>`;
@@ -1072,6 +1185,7 @@ function alternativeEditor(r) {
         alt="${esc(r.name || r.slug)} — alternative"></a>${badge}
       <button class="alternative-remove" type="button" data-alternative-remove="${esc(key)}"
         title="${removing ? "Keep this photo" : "Remove this photo"}" ${turning ? "disabled" : ""}>${removing ? "↶" : "×"}</button>
+      ${photo ? describeButton(photo.sha256, r.slug, photo.url) : ""}
       ${removing ? '<span class="patch-state">remove</span>' : ""}
     </div>`;
     if (!photo) return card;
@@ -1281,6 +1395,219 @@ function favoriteStar(r) {
     data-favorite-toggle="${esc(r.slug)}" aria-pressed="${on}" aria-label="${label}"
     title="${label}" ${BUSY_FAVORITES.has(r.slug) ? "disabled" : ""}>${on ? "★" : "☆"}</button>`;
 }
+// The image descriptions (plan 26). The lab server sends `image_descriptions`: sha256 ->
+// the row of `image_description`, and `image_description_values`: the values of each
+// field. A button in the bottom right corner of an image opens the editor.
+const DESCRIBE_FIELDS = ["package_type", "subject_scope", "package_view", "content_roles"];
+let DESCRIBE_TARGET = null;
+function describeOn() { return !!DATA.image_description_editor; }
+// The sha256 in the name of a stored file, for example `/images/main/<sha256>.webp`.
+function shaOfUrl(url) {
+  const match = /([0-9a-f]{64})\.[0-9a-z]+(?:[?#]|$)/.exec(url || "");
+  return match ? match[1] : "";
+}
+function describeText(values) {
+  return DESCRIBE_FIELDS.map(field => {
+    const value = values ? values[field] : null;
+    return `${field}: ${value == null ? "—" : Array.isArray(value) ? value.join(", ") : value}`;
+  }).join(" · ");
+}
+function describeButton(sha, slug, src) {
+  if (!describeOn() || !sha) return "";
+  const row = (DATA.image_descriptions || {})[sha];
+  const set = row && DESCRIBE_FIELDS.some(field => row[field] != null);
+  const title = row ? `Edit the description: ${describeText(row)}`
+    : "Describe this image (not described yet)";
+  return `<button class="describe-edit${set ? " set" : ""}" type="button"
+    data-describe="${esc(sha)}" data-slug="${esc(slug)}" data-src="${esc(src)}"
+    title="${esc(title)}" aria-label="Edit the image description">✎</button>`;
+}
+function describeStatus(row) {
+  if (!row) return "Not described yet. The VLM will describe this image.";
+  const lines = [`Created by: ${row.created_by === "vlm" ? "VLM" : "manual"}`];
+  if (row.vlm_at) {
+    lines.push(`VLM: filled at ${esc(row.vlm_at)} by ${esc(row.vlm_name || "?")}${
+      row.vlm_model ? ` (${esc(row.vlm_model)})` : ""}`);
+  } else if (row.vlm_error) {
+    lines.push(`<span class="fail">VLM: failed ${row.vlm_attempts} times: ${esc(row.vlm_error)}</span>`);
+  } else {
+    lines.push("VLM: pending");
+  }
+  if (row.vlm_answer) lines.push(`VLM answer: ${esc(describeText(row.vlm_answer))}`);
+  return lines.join("<br>");
+}
+// The raw VLM reply: `GET /api/image-description-reply` sends the `data/cache/` record of
+// the call that filled the row. The section loads it when it opens.
+function describeRawHtml(out) {
+  if (!out.found) return `<p>No cached reply: ${esc(out.reason || "unknown reason")}.</p>`;
+  const reply = out.reply || {};
+  const choice = (reply.choices || [])[0] || {};
+  const message = choice.message || {};
+  const usage = reply.usage || {};
+  const parts = (((out.request || {}).prompt || [])[0] || {}).content;
+  const prompt = Array.isArray(parts)
+    ? parts.filter(part => part.type === "text").map(part => part.text).join("\n") : "";
+  const reasoning = message.reasoning || message.reasoning_content;
+  const meta = [reply.model, choice.finish_reason && `finish_reason: ${choice.finish_reason}`,
+    usage.prompt_tokens != null
+      && `tokens: ${usage.prompt_tokens} prompt + ${usage.completion_tokens} completion`,
+    out.ms != null && `${(out.ms / 1000).toFixed(1)} s`,
+    out.created && `cached ${out.created}`].filter(Boolean);
+  return `<div>${esc(meta.join(" · "))}</div>
+    <pre>${esc(message.content)}</pre>
+    ${reasoning ? `<details><summary>Reasoning</summary><pre>${esc(reasoning)}</pre></details>` : ""}
+    <details><summary>Prompt</summary><pre>${esc(prompt)}</pre></details>
+    <details><summary>Full response body (JSON)</summary>
+      <pre>${esc(JSON.stringify(reply, null, 2))}</pre></details>
+    <details><summary>Request fields (JSON; the image is its sha256)</summary>
+      <pre>${esc(JSON.stringify(out.request, null, 2))}</pre></details>`;
+}
+async function loadDescribeRaw() {
+  const box = $("#describe-raw");
+  const sha = box.dataset.sha;
+  if (!box.open || !sha || box.dataset.loaded === sha) return;
+  box.dataset.loaded = sha;
+  const body = $("#describe-raw-body");
+  body.textContent = "Loading…";
+  try {
+    const response = await fetch(`/api/image-description-reply?sha256=${encodeURIComponent(sha)}`);
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    if (box.dataset.sha === sha) body.innerHTML = describeRawHtml(out);
+  } catch (error) {
+    if (box.dataset.sha !== sha) return;
+    body.innerHTML = `<p class="fail">Cannot load the reply: ${esc(error.message)}</p>`;
+    box.dataset.loaded = "";
+  }
+}
+function openDescribe(sha, slug, src) {
+  const values = DATA.image_description_values || {};
+  const row = (DATA.image_descriptions || {})[sha] || null;
+  DESCRIBE_TARGET = {sha, slug};
+  const form = $("#describe-form");
+  for (const field of ["package_type", "subject_scope", "package_view"]) {
+    const select = form.elements[field];
+    select.innerHTML = '<option value="">— not set —</option>' + (values[field] || [])
+      .map(value => `<option value="${esc(value)}">${esc(value)}</option>`).join("");
+    select.value = row && row[field] ? row[field] : "";
+  }
+  const roles = row && row.content_roles ? row.content_roles : [];
+  $("#describe-roles").innerHTML = (values.content_roles || []).map(role =>
+    `<label><input type="checkbox" name="content_roles" value="${esc(role)}"${
+      roles.includes(role) ? " checked" : ""}> ${esc(role)}</label>`).join("");
+  $("#describe-image").src = src;
+  $("#describe-image").alt = `The image ${sha}`;
+  $("#describe-title").textContent = `Image description · ${slug}`;
+  $("#describe-status").innerHTML = describeStatus(row);
+  const raw = $("#describe-raw");
+  raw.hidden = !(row && row.vlm_at);
+  raw.open = false;
+  raw.dataset.sha = sha;
+  raw.dataset.loaded = "";
+  $("#describe-raw-body").textContent = "";
+  $("#describe-error").hidden = true;
+  $("#describe-save").disabled = false;
+  $("#describe-save").textContent = "Save";
+  $("#describe-modal").hidden = false;
+  form.elements.package_type.focus();
+}
+function closeDescribe() {
+  $("#describe-modal").hidden = true;
+  DESCRIBE_TARGET = null;
+}
+// `unknown` stands alone in `content_roles`.
+function checkDescribeRole(box) {
+  if (!box.checked) return;
+  for (const other of $("#describe-roles").querySelectorAll("input")) {
+    if (other !== box && (box.value === "unknown" || other.value === "unknown")) {
+      other.checked = false;
+    }
+  }
+}
+async function saveDescribe() {
+  if (!DESCRIBE_TARGET) return;
+  const {sha, slug} = DESCRIBE_TARGET;
+  const form = $("#describe-form");
+  const values = {};
+  for (const field of ["package_type", "subject_scope", "package_view"]) {
+    values[field] = form.elements[field].value || null;
+  }
+  const roles = [...$("#describe-roles").querySelectorAll("input:checked")].map(box => box.value);
+  values.content_roles = roles.length ? roles : null;
+  $("#describe-save").disabled = true;
+  $("#describe-save").textContent = "Saving…";
+  try {
+    const response = await fetch("/api/image-description", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({sha256: sha, values})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    DATA.image_descriptions = DATA.image_descriptions || {};
+    DATA.image_descriptions[sha] = out.description;
+    closeDescribe();
+    renderCard(slug);
+  } catch (error) {
+    $("#describe-error").textContent = `Cannot save the description: ${error.message}`;
+    $("#describe-error").hidden = false;
+    $("#describe-save").disabled = false;
+    $("#describe-save").textContent = "Save";
+  }
+}
+// The indicator of the watcher: `GET /api/image-description-status` every 5 s while the
+// tab is visible. The cards do not change; a reload shows the new descriptions.
+const VLM_POLL_MS = 5000;
+let VLM_TIMER = null;
+function vlmCount(value) { return Number(value || 0).toLocaleString("en-US"); }
+function vlmStatusView(s) {
+  const speed = s.seconds_per_image ? ` · ${Number(s.seconds_per_image).toFixed(1)} s` : "";
+  if (s.state === "working") return ["working", `VLM ${vlmCount(s.described)} / ${vlmCount(s.linked)}${speed}`];
+  if (s.state === "idle") {
+    return ["idle", s.pending ? `VLM idle · ${vlmCount(s.pending)} pending`
+      : `VLM all ${vlmCount(s.described)} described`];
+  }
+  if (s.state === "waiting") {
+    const error = String(s.error || "the service").slice(0, 40);
+    return ["waiting", `VLM waiting: ${error}`];
+  }
+  return ["stopped", "VLM watcher not running"];
+}
+function renderVlmStatus(s) {
+  const [kind, text] = vlmStatusView(s);
+  const failed = s.failed ? ` · <span class="failed">${vlmCount(s.failed)} failed</span>` : "";
+  const lines = [
+    s.pid ? `Watcher pid ${s.pid} · vlm ${s.vlm || "?"}${s.model ? ` (${s.model})` : ""}`
+      : "The watcher does not run. The lab server starts it when image_description.watch is true.",
+    s.state === "working" ? `Now: ${s.slug || s.sha256 || "?"}` : "",
+    `Described ${vlmCount(s.described)} of ${vlmCount(s.linked)} · pending ${vlmCount(s.pending)} · failed ${vlmCount(s.failed)}`,
+    s.seconds_per_image ? `Speed: ${Number(s.seconds_per_image).toFixed(2)} s per image (last 20)` : "",
+    s.state === "waiting" && s.error ? `Error: ${s.error}` : "",
+    s.updated_at ? `Last step: ${s.updated_at}` : "",
+  ].filter(Boolean);
+  const el = $("#vlm-status");
+  el.className = `vlm-status ${kind}`;
+  el.innerHTML = `<span class="dot"></span>${esc(text)}${failed}`;
+  el.title = lines.join("\n");
+  el.hidden = false;
+}
+async function pollVlmStatus() {
+  clearTimeout(VLM_TIMER);
+  if (!document.hidden) {
+    try {
+      const response = await fetch("/api/image-description-status");
+      const out = await response.json();
+      if (!response.ok) throw new Error(out.error || response.status);
+      renderVlmStatus(out);
+    } catch (error) {
+      renderVlmStatus({state: "stopped"});
+      $("#vlm-status").title = `Cannot read the state of the watcher: ${error.message}`;
+    }
+  }
+  VLM_TIMER = setTimeout(pollVlmStatus, VLM_POLL_MS);
+}
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && describeOn()) pollVlmStatus();
+});
 function recordHtml(r) {
   const match = r.image_match || {};
   const page = safeUrl(r.page_url);
@@ -1325,8 +1652,37 @@ function inStateView(record) {
   if (state === "favorites") return !!record._favorite;
   return record.state !== "Removed";
 }
+// The advanced filters: the row under the bar that the button "Advanced Filters:" shows.
+// Package is the `package_type` of the patched image when the wine has one, else of the
+// main image; "" is a wine whose image has no `package_type` yet ("not described").
+function packageOf(record) {
+  const url = record._patched && record._patch_url ? record._patch_url
+    : record.main_image_original_url;
+  const row = (DATA.image_descriptions || {})[shaOfUrl(url)];
+  return row && row.package_type || "";
+}
+function initAdvancedFilters() {
+  if (!describeOn()) return;
+  const values = (DATA.image_description_values || {}).package_type || [];
+  $("#package-filter").innerHTML = '<option value="all">All</option>'
+    + values.map(value => `<option value="${esc(value)}">${esc(value)}</option>`).join("")
+    + '<option value="">not described</option>';
+  $("#advanced-toggle").hidden = false;
+}
+function toggleAdvancedFilters() {
+  const bar = $("#advanced-bar");
+  bar.hidden = !bar.hidden;
+  $("#advanced-toggle").setAttribute("aria-expanded", String(!bar.hidden));
+}
+function changeAdvancedFilter() {
+  const active = $("#package-filter").value !== "all";
+  $("#advanced-toggle").classList.toggle("active", active);
+  $("#advanced-toggle").title = active ? "An advanced filter is active" : "";
+  render();
+}
 function applyView() {
   const filter = $("#filter").value;
+  const pack = $("#package-filter").value;
   const q = norm($("#q").value.trim());
   const words = q.split(/\s+/).filter(Boolean);
   ROWS = DATA.records.filter(r => {
@@ -1334,6 +1690,7 @@ function applyView() {
     if (filter === "unpatched" && r._patched) return false;
     if (filter === "missing" && catalogImageUrl(r)) return false;
     if (filter === "comments" && !(r._comments || []).length) return false;
+    if (pack !== "all" && packageOf(r) !== pack) return false;
     if (!inStateView(r)) return false;
     const hay = norm(JSON.stringify({record: rawRecord(r), gtins: r._gtins || [],
       barcodes: r._barcodes || [],
@@ -1344,7 +1701,6 @@ function applyView() {
   });
   const sort = $("#sort").value;
   ROWS.sort((a, b) => {
-    if (sort === "catalog") return a._index - b._index;
     if (sort === "size-asc" || sort === "size-desc") {
       // A card with no known size goes last. Equal sizes keep the catalogue order.
       const pa = imagePixels(a), pb = imagePixels(b);
@@ -2177,6 +2533,13 @@ async function toggleFavorite(slug) {
   }
 }
 $("#list").addEventListener("click", event => {
+  const describe = event.target.closest("button[data-describe]");
+  if (describe) {
+    event.preventDefault();
+    event.stopPropagation();
+    openDescribe(describe.dataset.describe, describe.dataset.slug, describe.dataset.src);
+    return;
+  }
   const imagePreview = event.target.closest("[data-image-preview]");
   if (imagePreview) {
     event.preventDefault();
@@ -2510,6 +2873,17 @@ $("#wine-drop").addEventListener("drop", event => {
   $("#wine-drop").classList.remove("over");
   stageWineImage(event.dataTransfer.files[0]);
 });
+$("#describe-x").addEventListener("click", closeDescribe);
+$("#describe-cancel").addEventListener("click", closeDescribe);
+$("#describe-save").addEventListener("click", saveDescribe);
+$("#describe-form").addEventListener("submit", event => { event.preventDefault(); saveDescribe(); });
+$("#describe-roles").addEventListener("change", event => checkDescribeRole(event.target));
+$("#describe-raw").addEventListener("toggle", loadDescribeRaw);
+$("#advanced-toggle").addEventListener("click", toggleAdvancedFilters);
+$("#package-filter").addEventListener("change", changeAdvancedFilter);
+$("#describe-modal").addEventListener("click", event => {
+  if (event.target === $("#describe-modal")) closeDescribe();
+});
 $("#image-preview-close").addEventListener("click", closeImagePreview);
 $("#image-preview-previous").addEventListener("click", () => stepImagePreview(-1));
 $("#image-preview-next").addEventListener("click", () => stepImagePreview(1));
@@ -2539,6 +2913,7 @@ document.addEventListener("keydown", event => {
   }
   if (event.key === "Escape" && !$("#validation-modal").hidden) closeValidation();
   if (event.key === "Escape" && !$("#wine-modal").hidden) closeWineForm();
+  if (event.key === "Escape" && !$("#describe-modal").hidden) closeDescribe();
 });
 window.addEventListener("beforeunload", event => {
   if (!PENDING_PATCHES.size && !PENDING_ALTERNATIVES.size && !DRAFT_BARCODES.size
@@ -2560,6 +2935,7 @@ window.addEventListener("beforeunload", event => {
     if (!commentsOn()) $('#filter option[value="comments"]').remove();
     // The review tool sends no favorites, so its filter `State` has no `Favorites`.
     if (!favoritesOn()) $('#state option[value="favorites"]').remove();
+    initAdvancedFilters();
     render();
     openHash();
     // A link to `/dataset/<slug>` opens the preview over the card of that wine. A slug
@@ -2569,6 +2945,7 @@ window.addEventListener("beforeunload", event => {
       scrollToCard(preview.slug);
     } else if (preview) history.replaceState(null, "", "/dataset");
     loadValidation().catch(() => {});
+    if (describeOn()) pollVlmStatus();
   } catch (error) {
     $("#head-sub").textContent = "could not read the dataset";
     $("#list").innerHTML = `<div class="empty">The dataset is not available. `

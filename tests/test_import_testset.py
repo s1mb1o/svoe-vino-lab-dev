@@ -165,6 +165,74 @@ class ImportTestsetTest(unittest.TestCase):
         after = {str(p): p.read_bytes() for p in Path(set_dir).rglob("*") if p.is_file()}
         self.assertEqual(before, after)
 
+    # Plan 24: the database is the source of the labels, so the import keeps each field.
+
+    def columns(self, place, name):
+        conn = sqlite3.connect(self.db)
+        conn.row_factory = sqlite3.Row
+        try:
+            return dict(conn.execute("SELECT * FROM test_photo WHERE place = ? AND "
+                                     "file_name = ?", (place, name)).fetchone())
+        finally:
+            conn.close()
+
+    def test_import_keeps_every_field_of_an_entry(self):
+        entry = {"label": "positive", "comment": "a note", "ts": "2026-09-25T10:00:00+0300",
+                 "proposed": "variant", "by": "kimi", "confidence": 0.75,
+                 "source_url": "https://example.org/p", "moved_from": "wine-c",
+                 "copied_from": "wine-b", "reassign_to": "__null__",
+                 "prefilled_from": {"rank": 1, "run_id": "r", "score": 0.5},
+                 "copy_to": "wine-b", "later": [1, 2]}
+        odd = {"label": None, "delete": False, "comment": "", "confidence": 1}
+        set_dir = FX.write_set(self.root, PHOTOS, {"wine-a": {"01.jpg": entry, "02.jpg": odd}})
+        report = self.run_import(set_dir)
+        row = self.columns("wine-a", "01.jpg")
+        self.assertEqual((row["label"], row["comment"], row["proposed"], row["proposed_by"],
+                          row["confidence"], row["reassign_to"]),
+                         ("positive", "a note", "variant", "kimi", 0.75, "__null__"))
+        self.assertEqual(json.loads(row["prefilled_from"]), entry["prefilled_from"])
+        self.assertEqual(json.loads(row["extra"]), {"copy_to": "wine-b", "later": [1, 2]})
+        # A value that its column cannot keep exactly goes into `extra`.
+        row = self.columns("wine-a", "02.jpg")
+        self.assertEqual((row["label"], row["marked_delete"], row["comment"]), (None, 0, None))
+        self.assertEqual(json.loads(row["extra"]), odd)
+        self.assertEqual(report.extra, 2)
+
+    def test_import_keeps_the_notes_of_the_wines_and_the_text_note(self):
+        set_dir = self.standard_set()
+        document = {"version": 2, "note": "the note", "labels": LABELS,
+                    "wines": {"wine-a": {"comment": "whole wine", "ts": "t1"},
+                              "wine-b": {"comment": "b", "ts": "t2", "by": "x"}}}
+        (Path(set_dir) / "review-labels.json").write_text(json.dumps(document))
+        report = self.run_import(set_dir)
+        self.assertEqual(report.wine_notes, 2)
+        self.assertEqual(self.query("SELECT wine_slug, comment, ts, extra FROM test_wine_note "
+                                    "ORDER BY 1"),
+                         [("wine-a", "whole wine", "t1", None), ("wine-b", "b", "t2", '{"by": "x"}')])
+        self.assertEqual(self.query("SELECT label_note, edited_at FROM test_set"),
+                         [("the note", None)])
+
+    def test_a_set_with_page_edits_is_refused_unless_force(self):
+        set_dir = self.standard_set()
+        self.run_import(set_dir)
+        conn = sqlite3.connect(self.db)
+        conn.execute("UPDATE test_photo SET label = 'unusable' WHERE place = 'wine-a' AND "
+                     "file_name = '01.jpg'")
+        conn.execute("UPDATE test_set SET edited_at = '2026-09-25T18:00:00+0300'")
+        conn.commit()
+        conn.close()
+        with self.assertRaisesRegex(IT.TestsetError, "edits of the Testset page"):
+            self.run_import(set_dir)
+        self.assertEqual(self.photos()[("wine-a", "01.jpg")][1], "unusable")
+        IT.import_testset(self.db, "my", set_dir, self.messages.append, self.schema, force=True)
+        self.assertEqual(self.photos()[("wine-a", "01.jpg")][1], "positive")
+        self.assertEqual(self.query("SELECT edited_at FROM test_set"), [(None,)])
+
+    def test_an_entry_that_is_not_an_object_stops_the_import(self):
+        set_dir = FX.write_set(self.root, PHOTOS, {"wine-a": {"01.jpg": "positive"}})
+        with self.assertRaisesRegex(IT.TestsetError, "wine-a/01.jpg is not a JSON object"):
+            self.run_import(set_dir)
+
 
 if __name__ == "__main__":
     unittest.main()

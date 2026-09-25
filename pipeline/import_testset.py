@@ -1,24 +1,32 @@
-"""Import one test set of `dataset/<set>/` into the lab database, read-only.
+"""Import one test set of `dataset/<set>/` into the lab database.
 
 Usage:
     python3 pipeline/import_testset.py --db data/lab.sqlite3 --set my \
         ../svoe-vino-testset/dataset/my
+    python3 pipeline/import_testset.py --db data/lab.sqlite3 --set my --force <dir>
 
 `pipeline/import_testsets.py` imports the three sets of `svoe-vino-testset/dataset/`
 with one command.
 
-The labels stay in the JSON files of the set, in git. The database holds a copy, and
-each import makes the rows of the set equal to the files again. The owner chose per-set
-labels on 2026-09-25. Read `docs/plans/12_testsets-benchmark.md`.
+Each import makes the rows of the set equal to the files of the set directory. The owner
+chose per-set labels on 2026-09-25. Read `docs/plans/12_testsets-benchmark.md`. Since
+plan 24 the database is the source of the labels: the Testset page writes to the rows,
+and `pipeline/export_testset.py` writes the JSON files. So the import refuses a set that
+holds a page edit (`test_set.edited_at`), unless `--force`. `--force` replaces the page
+edits with the files. Read `docs/plans/24_testset-page.md`.
 
 Rules of the set directory:
 - A photo is a file `photo/<place>/<file>` with an extension of `IMAGE_EXT`. A hidden
   file is skipped. A file directly in `photo/` has no place; it is left out and counted.
 - `place` is a wine slug, or `__null__` for a photo that matches no card. A place that
   `wine_catalog` does not hold gets a console message; its photos are imported.
-- The label of a photo is the field `label` of `labels[<place>][<file>]` in
-  `review-labels.json`. A photo with no entry, or with an entry with no label, gets NULL.
-  `marked_delete` is the field `delete`. Another label value stops the import.
+- The label entry of a photo is `labels[<place>][<file>]` in `review-labels.json`. Each
+  field of the entry goes into a column of `test_photo` by the rule of `testsets.py`,
+  and each other field into `extra`, so the export gives the same entry back. A photo
+  with no entry gets no field. A label value that is not one of the four labels, and
+  not null, stops the import. An entry that is not a JSON object stops it too.
+- The map `wines` of `review-labels.json` goes into `test_wine_note`, and its text
+  `note` into `test_set.label_note`.
 - A label entry whose file is not there is left out and counted.
 - `excluded-slugs.json` holds the excluded slugs, and `variant-groups.json` the variant
   groups. A missing file gives none. `review-labels.json` MUST be there.
@@ -46,6 +54,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(1, os.path.join(os.path.dirname(HERE), "scripts"))
 import imagestore  # noqa: E402
 import labdb  # noqa: E402
+import testsets  # noqa: E402
 from match_scoring import NULL_SLUG  # noqa: E402
 
 # The extensions of a photo, as `scripts/match_run.py` reads a photo directory.
@@ -77,6 +86,9 @@ class Report:
         self.written = 0                       # files copied to the store
         self.present = 0                       # files that the store held already
         self.unsized = 0                       # new files with no pixel size
+        self.wine_notes = 0                    # notes of a whole wine
+        self.boxes = 0                         # photos with a box of the main object
+        self.extra = 0                         # entries with a field in `extra`
 
 
 def load_json(path, required=False):
@@ -116,16 +128,39 @@ def scan_photos(photo_dir):
     return photos, loose
 
 
-def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEMA_DIR):
-    """Import the set directory as the set `set_name`. Return a `Report`."""
+def check_not_edited(conn, set_name, force):
+    """Raise `TestsetError` when the Testset page edited the set and `force` is false."""
+    row = conn.execute("SELECT edited_at FROM test_set WHERE set_name = ?",
+                       (set_name,)).fetchone()
+    if row and row[0] and not force:
+        raise TestsetError("the set %s holds edits of the Testset page (the last at %s); "
+                           "the database is the source of its labels. Export them with "
+                           "`pipeline/export_testset.py`, or add --force to replace them "
+                           "with the files" % (set_name, row[0]))
+
+
+def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEMA_DIR,
+                   force=False):
+    """Import the set directory as the set `set_name`. Return a `Report`.
+
+    Raise `TestsetError` for a set with page edits, unless `force`."""
     if not SET_NAME_RE.match(set_name or ""):
         raise TestsetError("the set name %r MUST hold 0-9, a-z, '_', and '-' alone" % set_name)
     set_dir = os.path.abspath(set_dir)
     photo_dir = os.path.join(set_dir, "photo")
     if not os.path.isdir(photo_dir):
         raise TestsetError("no photo directory at %s" % photo_dir)
-    labels = (load_json(os.path.join(set_dir, "review-labels.json"), required=True)
-              or {}).get("labels") or {}
+    document = load_json(os.path.join(set_dir, "review-labels.json"), required=True) or {}
+    labels = document.get("labels") or {}
+    wines = document.get("wines") or {}
+    label_note = document.get("note") if isinstance(document.get("note"), str) else None
+    for place, files in labels.items():
+        for name, entry in (files or {}).items():
+            if entry is not None and not isinstance(entry, dict):
+                raise TestsetError("the label entry %s/%s is not a JSON object" % (place, name))
+    for slug, note in wines.items():
+        if not isinstance(note, dict):
+            raise TestsetError("the note of the wine %s is not a JSON object" % slug)
     excluded = (load_json(os.path.join(set_dir, "excluded-slugs.json")) or {}).get("excluded") or {}
     groups = (load_json(os.path.join(set_dir, "variant-groups.json")) or {}).get("groups") or []
 
@@ -137,14 +172,16 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
     bad = sorted({str((entry or {}).get("label")) for files in labels.values()
                   for entry in files.values()
                   if (entry or {}).get("label") is not None
-                  and (entry or {}).get("label") not in LABELS})
+                  and not ((entry or {}).get("label") in LABELS
+                           and isinstance((entry or {}).get("label"), str))})
     if bad:
         raise TestsetError("unknown label values: %s" % ", ".join(bad[:SHOWN]))
 
     conn = labdb.connect(db_path, directory=schema_dir)
     conn.isolation_level = None
     try:
-        wines = {row[0] for row in conn.execute("SELECT wine_slug FROM wine_catalog")}
+        check_not_edited(conn, set_name, force)
+        catalog = {row[0] for row in conn.execute("SELECT wine_slug FROM wine_catalog")}
         known = {digest for (digest,) in conn.execute("SELECT sha256 FROM image")}
         new_images = {}   # sha256 -> the row of `image`
         rows = []
@@ -168,16 +205,30 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
                     log("no pixel size: %s/%s: %s" % (place, name, exc))
                 new_images[digest] = (digest, FOLDER, extension, width, height)
             entry = (labels.get(place) or {}).get(name) or {}
-            label = entry.get("label")
-            report.labels[label] += 1
-            rows.append((set_name, place, name, digest, label, 1 if entry.get("delete") else 0))
+            size = None
+            if "box" in entry:
+                try:
+                    size = testsets.oriented_size(path)
+                except OSError as exc:
+                    log("no pixel size for the box: %s/%s: %s" % (place, name, exc))
+            columns = testsets.entry_columns(entry, size)
+            report.labels[columns["label"]] += 1
+            report.boxes += columns["box_left"] is not None
+            report.extra += columns["extra"] is not None
+            rows.append((set_name, place, name, digest)
+                        + tuple(columns[c] for c in testsets.ENTRY_COLUMNS))
         report.photos = len(rows)
         report.unknown_places = sorted({place for place, _, _ in photos
-                                        if place != NULL_SLUG and place not in wines})
+                                        if place != NULL_SLUG and place not in catalog})
         for place in report.unknown_places:
             log("unknown place: %s: wine_catalog holds no wine with this slug" % place)
-        excluded_rows = [(set_name, slug, (rec or {}).get("reason"), (rec or {}).get("ts"))
+        # A short entry `slug: reason` is the form that the old tool also reads.
+        excluded_rows = [(set_name, slug, rec, None) if isinstance(rec, str) else
+                         (set_name, slug, (rec or {}).get("reason"), (rec or {}).get("ts"))
                          for slug, rec in sorted(excluded.items())]
+        note_rows = [(set_name, slug) + testsets.note_columns(note)
+                     for slug, note in sorted(wines.items())]
+        report.wine_notes = len(note_rows)
         # A slug in two groups keeps its last group, as `load_groups` of match_run.py does.
         variant = {}
         for number, group in enumerate(groups):
@@ -188,18 +239,24 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
 
         conn.execute("BEGIN IMMEDIATE")
         try:
+            # A page write MAY come between the first check and the write lock.
+            check_not_edited(conn, set_name, force)
             conn.executemany("INSERT INTO image (sha256, folder, extension, width, height) "
                              "VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
                              new_images.values())
-            for table in ("test_photo", "test_excluded", "test_variant"):
+            for table in ("test_photo", "test_excluded", "test_variant", "test_wine_note"):
                 conn.execute("DELETE FROM %s WHERE set_name = ?" % table, (set_name,))
-            conn.execute("INSERT INTO test_set (set_name, source_dir) VALUES (?, ?) "
-                         "ON CONFLICT (set_name) DO UPDATE SET source_dir = excluded.source_dir",
-                         (set_name, set_dir))
-            conn.executemany("INSERT INTO test_photo (set_name, place, file_name, sha256, "
-                             "label, marked_delete) VALUES (?, ?, ?, ?, ?, ?)", rows)
+            conn.execute("INSERT INTO test_set (set_name, source_dir, label_note) "
+                         "VALUES (?, ?, ?) ON CONFLICT (set_name) DO UPDATE SET "
+                         "source_dir = excluded.source_dir, label_note = excluded.label_note, "
+                         "edited_at = NULL", (set_name, set_dir, label_note))
+            conn.executemany("INSERT INTO test_photo (set_name, place, file_name, sha256, %s) "
+                             "VALUES (%s)" % (", ".join(testsets.ENTRY_COLUMNS), ", ".join(
+                                 "?" for _ in range(4 + len(testsets.ENTRY_COLUMNS)))), rows)
             conn.executemany("INSERT INTO test_excluded (set_name, wine_slug, reason, ts) "
                              "VALUES (?, ?, ?, ?)", excluded_rows)
+            conn.executemany("INSERT INTO test_wine_note (set_name, wine_slug, comment, ts, "
+                             "extra) VALUES (?, ?, ?, ?, ?)", note_rows)
             conn.executemany("INSERT INTO test_variant (set_name, wine_slug, group_no) "
                              "VALUES (?, ?, ?)",
                              [(set_name, slug, number) for slug, number in sorted(variant.items())])
@@ -223,6 +280,9 @@ def print_report(report, set_name, set_dir, db_path):
     print("places that wine_catalog does not hold: %d" % len(report.unknown_places))
     print("excluded slugs: %d" % report.excluded)
     print("slugs in a variant group: %d" % report.variant_slugs)
+    print("notes of a whole wine: %d" % report.wine_notes)
+    print("photos with a box: %d" % report.boxes)
+    print("entries with a field in extra: %d" % report.extra)
     print("files written: %d" % report.written)
     print("files in the store already: %d" % report.present)
     print("database: %s" % db_path)
@@ -230,20 +290,22 @@ def print_report(report, set_name, set_dir, db_path):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Import one test set of dataset/<set>/ into the lab database, "
-                    "read-only. The JSON files stay the source of the labels.")
+        description="Import one test set of dataset/<set>/ into the lab database. "
+                    "The database is the source of the labels after the import.")
     parser.add_argument("set_dir", help="the directory of the set, for example "
                         "../svoe-vino-testset/dataset/my")
     parser.add_argument("--db", required=True, help="path of the lab database")
     parser.add_argument("--set", required=True, dest="set_name",
                         help="the name of the set in the database, for example my")
+    parser.add_argument("--force", action="store_true",
+                        help="replace the edits of the Testset page with the files")
     args = parser.parse_args(argv)
 
     def log(message):
         print(message, flush=True)
 
     try:
-        report = import_testset(args.db, args.set_name, args.set_dir, log)
+        report = import_testset(args.db, args.set_name, args.set_dir, log, force=args.force)
     except (TestsetError, imagestore.StoreError, labdb.SchemaError, sqlite3.Error,
             OSError) as exc:
         print("error: %s" % exc, file=sys.stderr)

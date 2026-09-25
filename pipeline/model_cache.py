@@ -122,6 +122,8 @@ def store(fields, answer, ms):
                                              dir=os.path.dirname(path))
         with os.fdopen(handle, "w", encoding="utf-8") as fh:
             fh.write(canonical(record))
+        # `mkstemp` makes the file 0600. A record gets the mode of the other data files.
+        os.chmod(temporary, 0o644)
         os.replace(temporary, path)
     except (OSError, TypeError, ValueError) as exc:
         if temporary:
