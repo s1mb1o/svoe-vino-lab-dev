@@ -12,6 +12,8 @@ Read docs/plans/10_embeddings-page.md.
     GET  /api/embeddings/<name>                       the wines and the cells of one entry
     POST /api/embeddings/<name>/build                 start a build
     POST /api/embeddings/<name>/stop                  stop a build (SIGTERM)
+    POST /api/embeddings/<name>/open                  open the directory in Finder
+    GET  /api/embeddings/<name>/log                   the text of `build.log`
     GET  /api/embedding-jobs                          the job of each entry
     GET  /embeddings/<name>/images/<sha256>_<view>.png  one prepared image
 """
@@ -25,13 +27,19 @@ import threading
 import urllib.parse
 from contextlib import closing
 
+import numpy as np
+
 import embeddings
 import lab_pages
 
 PAGE = "/embedding"
 API_LIST = "/api/embeddings"
 API_JOBS = "/api/embedding-jobs"
-ENTRY_ROUTE = re.compile(r"^/api/embeddings/(%s)(/build|/stop)?$" % embeddings.NAME_PATTERN)
+ENTRY_ROUTE = re.compile(r"^/api/embeddings/(%s)(/build|/stop|/open|/log)?$"
+                         % embeddings.NAME_PATTERN)
+# The command that opens a directory in Finder. The lab server runs on the Mac of the
+# owner, so the window opens there.
+OPEN_COMMAND = ("open",)
 IMAGE_ROUTE = re.compile(r"^/embeddings/(%s)/images/([0-9a-f]{64})_(%s)\.png$"
                          % (embeddings.NAME_PATTERN, "|".join(embeddings.VIEWS)))
 BUILD_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -97,9 +105,14 @@ def respond(server, method, path):
             if method not in ("GET", "HEAD"):
                 return _error(405, "use GET")
             return entry_view(settings, name)
+        if action == "/log":
+            if method not in ("GET", "HEAD"):
+                return _error(405, "use GET")
+            return build_log(settings, name)
         if method != "POST":
             return _error(405, "use POST")
-        return start(settings, name) if action == "/build" else stop(settings, name)
+        return {"/build": start, "/stop": stop, "/open": open_directory}[action](
+            settings, name)
     except embeddings.ConfigError as exc:
         return _error(503, str(exc))
 
@@ -138,6 +151,19 @@ def _read(directory):
         return embeddings.read_index(directory) or {}, embeddings.image_names(directory), None
     except (ValueError, OSError) as exc:
         return {}, set(), "the index cannot be read: %s" % exc
+
+
+def _vector_rows(directory, index):
+    """Return the number of rows of the vectors file that the index names, or 0. The file
+    is mapped, not read."""
+    name = index.get("vectors_file")
+    if not name or not embeddings.VECTORS_RE.match(name):
+        return 0
+    try:
+        vectors = np.load(os.path.join(directory, name), mmap_mode="r", allow_pickle=False)
+    except (OSError, ValueError):
+        return 0
+    return int(vectors.shape[0]) if vectors.ndim == 2 else 0
 
 
 def _inputs(settings):
@@ -181,6 +207,7 @@ def entry_view(settings, name):
     directory = embeddings.entry_dir(settings.db_path, name)
     items = embeddings.plan_items(embedding, sources)
     index, names, index_error = _read(directory)
+    rows = _vector_rows(directory, index)
     status = embeddings.item_status(items, index, names)
     records = []
     for wine in wines:
@@ -200,6 +227,11 @@ def entry_view(settings, name):
                     cell["url"] = image_url(name, digest, view, shown)
                 if record and state in ("current", "stale"):
                     cell.update(width=record.get("width"), height=record.get("height"))
+                    # `vector`: the vectors file holds the row of this item. A stale item
+                    # keeps the vector of its old hash.
+                    row = record.get("row")
+                    if isinstance(row, int) and 0 <= row < rows:
+                        cell["vector"] = True
                 if state == "failed":
                     cell["error"] = record.get("error")
                 cells[view] = cell
@@ -268,6 +300,37 @@ def stop(settings, name):
     except ProcessLookupError:
         return _error(409, "no build of %s runs" % name)
     return _json(202, {"name": name, "state": "stopping", "pid": pid})
+
+
+def open_directory(settings, name):
+    """Open the directory of one entry in Finder. The route opens no other path. HTTP 404
+    when the directory is not on disk yet, 500 when the command fails."""
+    embedding, answer = _lookup(settings, name)
+    if answer:
+        return answer
+    directory = embeddings.entry_dir(settings.db_path, name)
+    if not os.path.isdir(directory):
+        return _error(404, "the directory of %s is not on disk yet: %s" % (name, directory))
+    try:
+        subprocess.run(OPEN_COMMAND + (directory,), check=True, timeout=10,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return _error(500, "cannot open %s: %s" % (directory, exc))
+    return _json(200, {"name": name, "opened": directory})
+
+
+def build_log(settings, name):
+    """Return the text of `build.log` of one entry. HTTP 404 when no build wrote it yet."""
+    embedding, answer = _lookup(settings, name)
+    if answer:
+        return answer
+    path = os.path.join(embeddings.entry_dir(settings.db_path, name), embeddings.LOG)
+    try:
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            text = fh.read()
+    except FileNotFoundError:
+        return _error(404, "%s has no build log yet" % name)
+    return _json(200, {"name": name, "file": path, "text": text})
 
 
 def _image(settings, name, digest, view):

@@ -26,7 +26,10 @@ The decisions and their reasons are in `docs/decisions/01_sqlite-lab-database.md
 5. The schema is in `pipeline/schema/NNN_<name>.sql`. A schema change is a new file with
    the next number. Do not edit an applied file.
 6. `PRAGMA user_version` holds the number of the last applied schema file.
-   `pipeline/labdb.py` applies each newer file in one transaction.
+   `pipeline/labdb.py` applies each newer file in one transaction. The foreign keys are
+   off during the file, so a file MAY build a parent table again, and
+   `PRAGMA foreign_key_check` MUST find no broken link before the COMMIT. SQLite ignores
+   `PRAGMA foreign_keys` inside a transaction. This came with schema 014 on 2026-09-25.
 7. Each table is `STRICT`.
 8. The key column of a wine is `wine_slug`, as in `code-map.json` and `embedding-ignore.json`.
    Another column name follows the key of `catalog.jsonl` when that key exists.
@@ -134,6 +137,9 @@ owner set this scope on 2026-09-24.
 8. The import takes the write lock before it reads the database. It writes all changes
    in one transaction, or no change.
 9. A second import of the same file changes nothing.
+10. A wine that a person added has a slug that starts with `__`. The import never
+    removes it. A CSV slug with this prefix stops the import. The owner chose this on
+    2026-09-25. Read [plan 20](20_add-wine.md).
 
 Result of the first import on 2026-09-24:
 
@@ -150,7 +156,8 @@ Result of the first import on 2026-09-24:
 `tests/data/` holds three fake variants of the official CSV and the expected import
 results. Read `tests/data/README.md`.
 
-Tests: `tests/test_labdb.py`, 9 cases. `tests/test_import_catalog.py`, 20 cases.
+Tests: `tests/test_labdb.py`, 14 cases on 2026-09-25 (9 at the end of step 2).
+`tests/test_import_catalog.py`, 22 cases.
 
 ## Step 3 — the lab server with the Dataset page
 
@@ -180,9 +187,19 @@ Rules:
    rows of `wine_catalog` in import order, with each state. The key `wine_slug` goes
    out as `slug`, because the page reads `slug`. A removed wine stays in the answer, and
    its key `state` tells it apart.
-5. The data of the page editors is not in the database yet: patches, alternative
-   photos, barcodes, QR URLs, and Atlas bindings. The editors stay on the page. Each
-   count is 0, and each write answers HTTP 503.
+5. The data of the page editors is in the database. The GTINs and the QR URLs are in
+   the table `wine_code` since schema 008: `POST` and `DELETE` of `/api/dataset-gtin` and
+   `/api/dataset-qr-url` (plan 11). The Atlas bindings are in `wine_atlas_binding` since
+   schema 009: `POST /api/dataset-atlas-binding` sets a manual binding, and `DELETE
+   /api/dataset-atlas-binding?slug=…` removes it (plan 15). A patch is the `main_patched`
+   row of `wine_image`: `POST` and `DELETE` of `/api/dataset-patch` (plan 14). The
+   alternative photos are rows of `wine_image` of the types `full_front`, `label_front`,
+   `full_back`, and `label_back` since schemas 010 and 012: `POST` and `DELETE` of
+   `/api/dataset-alternative`, and `POST /api/dataset-alternative-type` (plan 16). Their
+   processed files are in `image_derivative`, one for each original and kind of cut since
+   schema 017. The comments of a wine are in `wine_comment` since schema 011 (plan 17).
+   The favorites are in `wine_favorite` since schema 013 (plan 19). A wine added by hand
+   has a slug that starts with `__`: `POST /api/wine` (plan 20).
 5a. Each card holds state buttons below the catalogue image. `POST /api/wine-state`
    takes `{"slug": …, "action": …}` and allows these changes alone:
 
@@ -207,8 +224,10 @@ Rules:
    headless Chromium with 2,103 cards: a full render took 0.7 s before and 0.14 s after;
    a state click took 1.8 to 2.1 s before and about 0.1 s after. The server write takes
    2 to 4 ms.
-6. The pages Clusters, Embeddings, Testset, and Runs, and `/docs`, are disabled for now.
-   Each one answers a notice page with HTTP 503. The notice page keeps the navigation.
+6. The pages Clusters and Testset, and `/docs`, are disabled for now. Each one answers a
+   notice page with HTTP 503. The notice page keeps the navigation. The Embeddings page
+   is on since plan 10, and the Runs page since plan 23: it reads `runs/`, not the
+   database.
 7. Each other `/api/` route answers HTTP 503 with a JSON error. An `/img/` route answers
    HTTP 503.
 8. Do not remove a part of a page unless the owner asks for it. A disabled part comes
@@ -277,6 +296,12 @@ Change of 2026-09-25 by plan 09 (`docs/plans/09_image-processing.md`): the scrip
 one row of `image` for each patch file, with its pixel size, and a row of `wine_image`
 with no `extension`. It processes each patch with `pipeline/derive.py` and takes the
 option `--sam3 <URL>`. Tests: `tests/test_seed_patched.py`, 14 cases.
+
+Change of 2026-09-25 by plan 14 (`docs/plans/14_patch-editor.md`): the database is the
+truth for the patches. The owner chose this on 2026-09-25T09:53:00+0300. Rule 3 above no
+longer deletes a row: a row whose wine has no patch file in the folder stays, and the
+report names it (`rows kept with no file in the folder`). The patch editor of the
+Dataset page writes rows too.
 
 ## Candidate later steps
 

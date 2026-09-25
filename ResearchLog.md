@@ -2,6 +2,325 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-25 — The model services of gx10 for the cache of plan 25
+
+Status: measured on 2026-09-25 by session CACHE [31e42f]. One photo for each number.
+
+- The SAM3 answer with masks is small. A catalogue photo of 906 × 1280 pixels, sent as a
+  PNG of 766,538 bytes: 13,437 bytes for `derive.SAM3_TEXTS` (3 instances, 1.1 s), and
+  34,464 bytes for `alternatives.DETECT_TEXTS` (12 instances, 1.2 s). Estimate: about
+  2,000 originals and 2 noun lists give about 100 MB of cache records.
+- `GET /upstream/sam3/health` answers `"model":"facebook/sam3"`, `"dtype":"fp16"`,
+  `"workers":1`. The answer of `POST /segment_multi` has no model field.
+- The gateway serves three Grounding DINO models: `grounding-dino-base`
+  (`IDEA-Research/grounding-dino-base`, float32), `mm-gdino-base`
+  (`openmmlab-community/mm_grounding_dino_base_o365v1_goldg_v3det`), and
+  `mm-gdino-base-all`. One process serves one checkpoint, at
+  `/upstream/<model>/detect`. The request is multipart: `image`, `texts`, `threshold`
+  (default 0.25), `text_threshold` (default 0.25). The answer holds `count`, `width`,
+  `height`, `model`, `prompts`, and `instances` (boxes and scores, no masks).
+- The first GDINO call of the session took 9,667 ms (a cold start, a guess). A cache hit
+  of any service takes 0 to 62 ms in the process, most of it the JSON parse.
+- A GET of `/upstream/<model>/health` goes through llama-swap. The cache key therefore
+  does not hold the checkpoint of `/health`: such a check before each lookup could start
+  the model also for a run that the cache answers completely. Not measured; the reason
+  is the start-on-demand rule of the gateway.
+- `qwen3.5-9b` with the payload of `scripts/04_verify.py` (`max_tokens` 150, no
+  `chat_template_kwargs`) answered `finish_reason` `length` with an empty `content` and
+  about 500 characters of `reasoning_content`: the thinking of the model takes the whole
+  budget. With `chat_template_kwargs.enable_thinking` false (the payload of
+  `scripts/cluster_rules.py`), it answered in 1,033 ms. `04_verify.py` uses
+  `qwen3-vl-32b` by default, so the default run is not affected.
+
+## 2026-09-25 — A lab server that an agent starts with `nohup … &` can stop with no trace
+
+Status: one observation and a guess, not a proven cause.
+
+- The lab server that session ff started at 12:50:39 with
+  `nohup python3 pipeline/lab_server.py --no-browser >> work/lab_server.log 2>&1 &` from
+  its tool shell stopped at about 13:03:30. The log has no traceback and no stop line,
+  and no session stopped it. The guess of ff: a cleanup of the processes of its tool shell.
+- A server started that way keeps the process group of the tool shell, also after the
+  shell exits (checked with `ps -o pid,ppid,pgid`: parent 1, group of the old shell).
+  `nohup` blocks SIGHUP alone. A kill of that process group stops the server.
+- Mitigation, used since 13:20 on 2026-09-25: start the server in its own session, so it
+  leads its own process group:
+
+  ```bash
+  python3 -c "import subprocess; subprocess.Popen(['python3', 'pipeline/lab_server.py', '--no-browser'], stdin=subprocess.DEVNULL, stdout=open('work/lab_server.log', 'ab'), stderr=subprocess.STDOUT, start_new_session=True)"
+  ```
+
+  The new process has PGID = PID. Rule 23 of `AGENTS.md` does not name this form yet; the
+  owner decides.
+
+## 2026-09-25 — The rebuild of `image` for the test sets, and the test photos in the lab
+
+Status: tested on a `.backup` copy of `data/lab.sqlite3` (version 15) on 2026-09-25, then
+applied to the live database, for schema 016.
+
+- The rebuild of `image` (create new, copy with the rowid, `DROP TABLE image`, rename)
+  works with the present `labdb.migrate`. Three tables reference `image`: `wine_image`,
+  `image_derivative` (two columns), and `test_photo`. Their foreign keys name the table,
+  so they point to the new table after the rename. The rows of `image` (4,054),
+  `wine_image` (2,051), and `image_derivative` (2,023) stayed. `PRAGMA
+  foreign_key_check` found no problem. Q1 fact 2 of plan 12 (the failed rebuild) holds
+  only for the old `migrate`, which ran with the foreign keys on.
+- The server needs no restart after a schema file that changes no column that its code
+  reads. It checks the version on each request, so it answers HTTP 200 again when the
+  migration is done.
+- The three sets hold 4,323 photo rows and 3,453 distinct files. In `my`, 690 rows hold
+  the bytes of an earlier row of `my`. This check did not find the cause. All 180 photos of
+  `vlmrerank-8b-failed` are photos of `my`. 4 test photos have the bytes of a lab image:
+  2 in `additional` and 2 in `patched`.
+- The labels of `my` that are NULL: 1,487. Of these, 428 files have no entry in
+  `review-labels.json`, and 1,059 entries have no `label` field.
+
+## 2026-09-25 — A rebuild of a parent table in a schema file
+
+Status: tested on a `.backup` copy of `data/lab.sqlite3` (version 13) on 2026-09-25 with
+SQLite 3.53.4 of Python 3.14, for schema 014.
+
+- `labdb.migrate` ran each file inside `BEGIN … COMMIT` with the foreign keys on. The
+  rebuild of `wine_catalog` (create new, copy, `DROP TABLE wine_catalog`, rename) failed
+  at the COMMIT with `FOREIGN KEY constraint failed`.
+- `PRAGMA defer_foreign_keys = ON` in the file does not help: the COMMIT fails in the
+  same way, also after the new table has the name `wine_catalog`.
+- `PRAGMA foreign_keys = OFF` has no effect inside a transaction. It MUST be set before
+  BEGIN. With the foreign keys off, the rebuild worked, and `PRAGMA foreign_key_check`
+  before the COMMIT found no broken link. This is the procedure of the SQLite ALTER TABLE
+  documentation.
+- The rename of `wine_catalog_new` to `wine_catalog` does not rewrite the CREATE text of
+  the child tables: each still says `REFERENCES wine_catalog`. The rowids, the comment
+  ids, and the row counts of the 6 tables did not change.
+
+## 2026-09-25 — The spelling of Cyrillic letters in the slugs of vino-svoe.ru
+
+Status: a comparison of the words of `name` with the words of `wine_slug` in
+`data/lab.sqlite3` on 2026-09-25, 1,783 matched words.
+
+- The most common spelling of each letter: `х` h (175), `ц` ts (128; cz 26), `ш` sh,
+  `ч` ch, `ж` zh, `й` y (258; j 71), `ы` y, `ю` yu, `я` ya, `ё` yo, `э` e, `ь` and `ъ`
+  nothing. `щ` has one sample: shh.
+- With this spelling, the name alone gives the website slug for 325 of 2,103 wines, and
+  the start of the slug for 21 more. Most other slugs add the producer, the grapes, or
+  the type, for example `fanagoriya-100-ottenkov-shardone-beloe-suhoe-14`.
+
+## 2026-09-25 — Why each label item of `/embedding` fails
+
+Status: code reading and a read-only probe of SAM3 on gx10 on 2026-09-25 (owner message
+of 12:11:50). `data/lab.sqlite3` at version 12.
+
+- Each of the 2,021 `label` items of `gx10-siglip2-so400m-patch16-naflex-p256` fails with
+  `no label cut yet`. `build.log` holds no other error of the view `label`.
+- The cause is in `embeddings.read_inputs`: it sets `cuts["label"]` to `None` for each
+  source. The view `label` starts with `segment target: label`, so `prepare` raises
+  `ItemError(NO_CUT["label"])` before any request to the model. No label image is made,
+  and no vector.
+- The label cut of a full photo does not exist. Plan 10, "Work outside this plan", states
+  it as not started. `image_derivative` has the primary key `source_sha256`, so it holds
+  one processed file for each original: the package cut. It has no place for a second
+  cut.
+- The database holds no close-up (`label_front`, `label_back`) of an Active wine: each
+  of the 2,021 sources has the role `full`.
+- `alternatives.label_instance` and `alternatives.label_cut` (the rule of
+  `svoe-wino-hackaton/scripts/build_labels.py`) work on full photos too. Probe: 8 random
+  full sources, the nouns `label, bottle` and `barcode, bottle, label, bottle neck, can`.
+  Each noun set found a label on 8 of 8, with the same box. The cut covered 10 % to 52 %
+  of the photo; the score was 0.85 to 0.98. SAM3 took 0.4 to 0.8 s for each photo. By
+  eye, each cut is the front label with no bottle and no background.
+- A label cut of each full source takes about 2,021 × 0.6 s ≈ 20 min on gx10.
+- The real run (12:46:36 to 13:36:59) took 3,022 s, 1.5 s for each photo, not 0.6 s. The
+  seed process waited on the SAM3 socket for about 75 % of the time (`sample`). The gx10
+  GPU was at 96 %, with vLLM, two Qwen models, and ComfyUI next to SAM3. Batches of 50
+  took 36 s in quiet minutes and several minutes in busy ones.
+- Result: 2,019 of 2,023 full originals have a label cut. SAM3 found no label on 4:
+  `3e9045b9…`, `45738caa…`, `5478f9d5…`, `97e800d0…`.
+- The bar of a build showed `0 / 2023` for 41 s once. Two later logs got the first
+  `progress` line after 2 to 4 s. The log of the slow build was overwritten, so the cause
+  is not proved; the likely cause is the cold start of the SigLIP model on the gateway,
+  which was not loaded at 12:57 (`/running` listed `qwen3.5-9b`, `qwen38-27b-nvfp4`,
+  `sam3`).
+
+## 2026-09-25 — The slug prefix of a manual wine
+
+Status: queries of `data/lab.sqlite3` on 2026-09-25 for plan 20, 2,103 wines.
+
+- No slug starts with `_`. So the prefix `__` of a manual wine cannot collide with a slug
+  of the catalogue.
+- Each slug holds `a-z`, `0-9`, `-`, and `_` alone. 36 slugs hold `_`, for example
+  `denisov_pazori_risling`. The longest slug has 139 characters.
+- `category` has 4 values (`Белое`, `Красное`, `Розовое`, `Оранжевое`). `color` is free
+  text with 826 distinct values. There are 135 producers and 9 regions.
+- Python 3.14 has no module `cgi`, so `http.server` has no multipart parser. The route
+  `POST /api/wine` takes JSON with the image in base64.
+
+## 2026-09-25 — A barcode tells the back of a package
+
+Status: probed on 2026-09-25 for plan 16. Read-only calls to SAM3 on gx10, with the noun
+`barcode` added.
+
+- 16 random photos of `frap-public-small/objects/images`, judged by eye. With the first
+  rule (a barcode whose centre lies on the largest bottle or can): 4 wrong sides. A
+  front of a Kopke bottle got 4 barcodes: two faint ones (score 0.38 and 0.56, height 1 %
+  of the photo) in the text of its label, two beside it. A front view of a PET bottle got
+  a narrow barcode on the edge of the label that wraps the side (score 0.80, 6 % of the
+  bottle width). A glass decanter with a hanging tag got the barcode of the tag. The
+  back of a decanter with an information label had no barcode.
+- Real back barcodes had scores of 0.94 and 0.95 and 18 % and 30 % of the bottle width.
+  The limits 0.7 and 10 % keep them and reject the first two errors. Then 13 or 14 of
+  16 sides are right. The limits came from these errors, so this is no accuracy
+  measure.
+- 15 lab photos with no back view (12 catalogue `main` images and the 3 owner photos of
+  `avtohtonnoe-vino-kryma-beloe-suhoe`) gave no back type with the limits.
+- A novelty decanter in the shape of a cat has no neck. The detection calls it a label.
+- The time of one SAM3 call grows with the nouns. 7 lab images (4 catalogue images, 3
+  owner photos): six nouns 5.2 s, the five nouns `barcode, bottle, label, bottle neck,
+  can` 4.4 s, the four nouns without `can` 3.9 s. The types were the same, except the
+  can: without the noun `can` it became `label_front`. `label` alone found a label cut in
+  7 of 7 images.
+
+## 2026-09-25 — The catalogue API of vino-svoe.ru for the website import
+
+Status: probed on 2026-09-25 from this Mac for plan 18. Read-only requests. No proxy is
+necessary.
+
+- `robots.txt` of `api.vino-svoe.ru` disallows everything except `*/img/*` and
+  `*/file-proxy/str-api-file-name/*`. `robots.txt` of `vino-svoe.ru` allows the wine
+  pages and `wines-sitemap.xml`. The owner chose the API with this knowledge.
+- `GET /v1/wines?page=N&perPage=30`: 30 is the maximum. 2,105 wines on 71 pages, no
+  duplicate slug. A list item holds `slug`, `title`, `manufacturer`, `category`,
+  `color`, `region`, and `image.url`, but no description and no grapes. The card
+  `GET /v1/wines/<slug>` holds them.
+- `GET /v1/file-proxy/str-api-file-name/uploads/<name>` returns the original upload.
+  Its SHA-256 equals the stored `main` image of the Strapi delivery of 2026-09-17. The
+  resize proxy `/v1/img/...` does not give the original.
+- The slug set and the image names of the API equal those of `wines-sitemap.xml`.
+- The API `category` holds the colour and the sweetness (19 values, for example
+  `Белое сухое`). The first word is one of the four values of `wine_catalog.category`.
+- The grape names of a card, joined with `, `, and the trimmed `description` equal the
+  delivery for 3 of 3 sampled wines. A `title` can have a leading space.
+- Compared with the delivery of 2026-09-17: 73 new wines, 71 missing wines, 52 wines
+  with no `main` row. 13 wines have another upload name; 10 of them have the same bytes,
+  and 3 have new bytes (`vintazh-premium`, `muskat-premium`, `shardone-rezerv`). 7 wines
+  have 9 changed list fields.
+- The 10 names with the same bytes are not new uploads. Each has `match_method` =
+  `name-identical`: the delivery held several equal copies of the file, and
+  `seed_images.py` took the first name in sort order. The website uses another copy. So
+  a different name does not prove a changed image. The import compares bytes.
+- No response header gives a hash or a date of the original. `HEAD` of
+  `/v1/file-proxy/...` gives `Content-Length` (the exact size of the original),
+  `Content-Type`, and `Accept-Ranges: bytes`, but no `ETag` and no `Last-Modified`. The
+  server is `QRATOR`. A `Range: bytes=0-0` request answers 206 with
+  `Content-Range: bytes 0-0/<size>`. The resize proxy `/v1/img/...` gives other bytes
+  (59,306 bytes for an original of 90,880 bytes). The `image` object of the API holds
+  `altText` and `url` alone.
+- `wines-sitemap.xml` gives a `lastmod` for each of the 2,105 wines. The 3 wines with new
+  image bytes have `lastmod` on 2026-09-17 (after 19:00) and 2026-09-22. The 10
+  `name-identical` wines have `lastmod` from January to July 2026. Only 10 known wines
+  have `lastmod` on or after 2026-09-17. It is not known whether a replacement of a file
+  in the Strapi media library changes the `lastmod` of the wine.
+- The list of the API is in the order of creation, the newest first.
+  `https://vino-svoe.ru/api/wines` is the same list (the same 8 fields, 2,105 items).
+  The `robots.txt` of `vino-svoe.ru` disallows `/api/*`. 71 of the 73 new wines are in
+  the first 90 positions. The other 2 (`pinot-noir-2024`, `chardonnay-2024`) are at
+  positions 1,047 and 1,048: their image is the image of a missing wine, so they are
+  probably renamed slugs of old wines. So a read of the first pages alone does not find
+  each new wine. A missing wine needs the full list anyway. The list is 71 requests.
+- A reused HTTPS connection answers a `GET` of an original (52 KB mean) in 0.16 s and a
+  `HEAD` in 0.16 s. A new connection for each request needs 0.53 s and 0.45 s. So a size
+  check with `HEAD` saves no time, and the pause of 0.25 s sets the time of a run.
+- A full compare with one reused connection (2026-09-25, 12:51 to 13:03) took 11.5
+  minutes for 2,255 requests and 150 MB: the list in about 40 s, the images in about
+  10.5 minutes. The run of plan 18 with a new connection for each request took 22.5
+  minutes. The pause of 0.25 s alone would allow about 9.5 minutes.
+- JPEG, PNG, and WebP hold no checksum of the whole file. PNG has a CRC-32 in each
+  chunk; the CRC of `IHDR` covers the header fields alone. WebP (RIFF) and JPEG hold no
+  checksum.
+
+## 2026-09-25 — SAM3 tells a full package from a label close-up
+
+Status: probed on 2026-09-25 for plan 16. Read-only calls to SAM3 on gx10.
+
+- Set: 12 random catalogue `main` images of `data/lab.sqlite3` (11 bottles, 1 can), 4
+  label crops of 4 of them (45 % to 85 % of the height), and the patch photo of
+  `avtohtonnoe-vino-kryma-beloe-suhoe` (the upper part of a bottle, other bottles behind
+  it). Nouns `bottle, bottle neck, can, label, wine bottle label`, threshold 0.35, long
+  side 1536 px.
+- The neck rule of the FRAP prototype (workspace `ResearchLog.md`, 2026-09-23) alone: 11
+  of 12 full, 4 of 4 crops, and the patch photo wrong. The can has no neck. The necks of
+  the bottles behind the patch photo counted.
+- Rule 10 of plan 16 adds two tests: the neck lies inside the largest bottle (2 %
+  tolerance), and a can that covers 90 % of the height of a photo at least two times as
+  tall as wide is a full package. It gave 17 of 17 on the same set. The rule was fitted
+  to this set, so the number does not measure its accuracy.
+- SAM3 finds a `bottle` in a label crop too: the bottle box then fills the crop, and the
+  neck is missing or touches the top edge.
+- In a label crop the label box can equal the bottle box. The rule of `build_labels.py`
+  then rejects the label as the package. The label cut of plan 16 falls back to the
+  largest label.
+- A browser check on a copy of the database with the live SAM3: a whole catalogue bottle
+  got `front_full`, a crop of its label `front_label` (named `full_front` and
+  `label_front` since schema 012). The two uploads with detection and
+  processing took 2.5 s together; a change from `FL` to `FF` took 0.7 s.
+
+## 2026-09-25 — Why a save of a code on `/dataset` took a couple of seconds
+
+Status: measured on 2026-09-25. Fixed the same day (plan 11, decision O2, point 6).
+
+- The server is fast. `add_code` and `remove_code` on a copy of `data/lab.sqlite3` took
+  1 to 4 ms on the T7 drive and on the internal disk. `GET /api/dataset` took 30 to
+  80 ms.
+- The page was slow. `saveGtin`, `saveBarcode`, and `saveQrUrl` called the full
+  `render()` two times: once for the busy mark, and once after the answer. The `+`
+  button and the cancel called it one more time. `render()` builds all 2,103 cards
+  again, each with its image.
+- Headless Chromium on this Mac: a full `render()` took 234 to 306 ms to the paint.
+  `renderCard()` of one card took 17 to 28 ms. One save took about 540 ms. A comment in
+  the page gives about 0.7 s for a full render. The browser window of the owner was
+  slower again: "a couple of seconds". That time was not measured.
+- `applyView()` takes about 13 ms. So the cost is the DOM of 2,103 cards, not the filter.
+- The state buttons already used `renderCard(slug)`. The code editors now do the same.
+  After the fix, a GTIN save took about 60 ms and the `+` button about 50 ms.
+- Limit: `renderCard` does not apply the text search again. A card whose GTIN you
+  remove stays in a search for that GTIN until the next full render.
+
+## 2026-09-25 — SIGINT does not stop a lab server that a script started in the background
+
+Status: seen on 2026-09-25 at the deploy of schema 008. Not checked at the source.
+
+- Rule 23 of `AGENTS.md` says: stop the process on port 8168 with SIGINT. `kill -INT` on
+  the running `python3 pipeline/lab_server.py --no-browser` (PID 49812) did nothing: the
+  port stayed open for more than 5 s. `kill -TERM` stopped it at once.
+- A probable cause: a shell that is not interactive starts a command with `&` with SIGINT
+  set to "ignore". Python then does not install its handler for SIGINT, so the server
+  gets no `KeyboardInterrupt`. macOS `ps` has no field that shows the ignored signals, so
+  this cause is not confirmed.
+- The lab server holds no state between requests. It opens the database for each request,
+  and each write is one transaction. So SIGTERM is a safe stop. The log line `stopped`
+  of `main` does not appear after SIGTERM.
+- The same failure came again at the restarts of 10:32:52, 11:16:21, and about 11:22.
+  At 11:22 the process state was `SN` (sleeping), not `U`, so it was not disk
+  contention. SIGTERM stopped the process each time.
+- Decision: the owner chose SIGTERM on 2026-09-25 at 11:29:27. Rule 23 of `AGENTS.md`
+  names SIGTERM since then.
+
+## 2026-09-25 — the GS1 check digit and the GTIN-14 form
+
+Status: used in `pipeline/codes.py` and in `pipeline/pages/dataset.html`. Tested with the
+23 GTINs of `code-map.json` and with an EAN-8 and a UPC-A example.
+
+- The check digit is the last digit. The other digits get the weights 3 and 1 in turn,
+  from the right: the digit next to the check digit gets 3. The check digit is
+  `(10 - sum mod 10) mod 10`.
+- A leading zero adds 0 to the sum, so the GTIN-14 form (leading zeros up to 14 digits)
+  has the same check digit as the value as read. The seed and the server check the value
+  as read, then store the GTIN-14 form.
+- The (01) field of a DataMatrix code gives 14 digits, for example `04630037251630`. The
+  EAN-13 code of the same product gives `4630037251630`. The GTIN-14 form gives both one
+  row. The owner chose this form on 2026-09-25.
+- The check digit does not prove that a GTIN exists. For example, `00000000000000` has a
+  valid check digit, and `codes.py` accepts it.
+
 ## 2026-09-25 — drop the column `image.folder` in place, not with a table rebuild
 
 Status: tested on 2026-09-25 on a backup copy of `data/lab.sqlite3` (schema 7: 4,042

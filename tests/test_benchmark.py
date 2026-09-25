@@ -137,6 +137,34 @@ class BenchmarkTest(unittest.TestCase):
                          log=lambda m: None, schema_dir=self.schema)
         self.assertEqual(Path(self.db).read_bytes(), before)
 
+    def test_a_photo_of_another_folder_gets_the_path_of_that_folder(self):
+        # The bytes of a test photo MAY be a catalogue image that `image` held before the
+        # import. The row then keeps its folder, for example `main`.
+        row = next(r for r in self.queries()[0] if r["image_path"] == "wine-a/01.jpg")
+        source = Path(row["abs_path"])
+        self.assertEqual(source.parent.name, "testset")
+        target = Path(self.db).parent / "images" / "main" / source.name
+        target.parent.mkdir(parents=True)
+        source.rename(target)
+        conn = sqlite3.connect(self.db)
+        conn.execute("UPDATE image SET folder = 'main' WHERE sha256 = ?", (row["image_sha256"],))
+        conn.commit()
+        conn.close()
+        row = next(r for r in self.queries()[0] if r["image_path"] == "wine-a/01.jpg")
+        self.assertEqual(Path(row["abs_path"]), target)
+
+    def test_run_json_holds_the_configuration_only_when_it_is_given(self):
+        # Plan 23: the Runs page filters the runs by the key `configuration` of run.json.
+        plain, _ = BM.run_benchmark(self.db, "my", FakeBackend({}), str(self.runs),
+                                    embeddings={}, log=lambda m: None, schema_dir=self.schema)
+        named, _ = BM.run_benchmark(self.db, "my", FakeBackend({}), str(self.runs),
+                                    embeddings={}, label="named", log=lambda m: None,
+                                    schema_dir=self.schema, configuration="mock")
+        plain_meta = json.loads(Path(plain, "run.json").read_text(encoding="utf-8"))
+        named_meta = json.loads(Path(named, "run.json").read_text(encoding="utf-8"))
+        self.assertNotIn("configuration", plain_meta)
+        self.assertEqual(named_meta["configuration"], "mock")
+
 
 if __name__ == "__main__":
     unittest.main()

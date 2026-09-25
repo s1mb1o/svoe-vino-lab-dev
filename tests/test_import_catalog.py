@@ -213,6 +213,30 @@ class ImportCatalogTest(unittest.TestCase):
         self.assertEqual(self.query("SELECT state, removed_by FROM wine_catalog "
                                     "WHERE wine_slug = 'b'"), [("Active", None)])
 
+    # -- a wine that a person added (plan 20)
+
+    def test_manual_wine_stays_active_when_the_csv_does_not_hold_it(self):
+        self.create_db()
+        self.run_import([wine("a")])
+        conn = sqlite3.connect(self.db)
+        conn.execute("INSERT INTO wine_catalog (wine_slug, name, producer, category, "
+                     "color, region, description, csv_photo_name) "
+                     "VALUES ('__mine', 'Моё', 'Я', 'Белое', 'Соломенный', 'Крым', "
+                     "'Описание', 'mine.jpg')")
+        conn.commit()
+        conn.close()
+        _, _, changes, states = self.run_import([wine("a")])
+        self.assertTrue(changes.empty())
+        self.assertEqual(self.states(), {"a": "Active", "__mine": "Active"})
+        self.assertEqual(states["Removed"], 0)
+
+    def test_csv_slug_with_the_manual_prefix_stops_the_import(self):
+        self.create_db()
+        with self.assertRaisesRegex(IMP.CatalogError,
+                                    "1 slugs of the CSV start with __.*: __x"):
+            self.run_import([wine("a"), wine("__x")])
+        self.assertEqual(self.query("SELECT count(*) FROM wine_catalog"), [(0,)])
+
     # -- a changed wine
 
     def test_changed_field_stops_the_import_and_writes_nothing(self):

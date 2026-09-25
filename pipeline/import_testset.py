@@ -1,7 +1,11 @@
 """Import one test set of `dataset/<set>/` into the lab database, read-only.
 
 Usage:
-    python3 pipeline/import_testset.py --db data/lab.sqlite3 --set my dataset/my
+    python3 pipeline/import_testset.py --db data/lab.sqlite3 --set my \
+        ../svoe-vino-testset/dataset/my
+
+`pipeline/import_testsets.py` imports the three sets of `svoe-vino-testset/dataset/`
+with one command.
 
 The labels stay in the JSON files of the set, in git. The database holds a copy, and
 each import makes the rows of the set equal to the files again. The owner chose per-set
@@ -20,9 +24,11 @@ Rules of the set directory:
   groups. A missing file gives none. `review-labels.json` MUST be there.
 
 Rules of the store:
-- Each photo file is stored in the image store with `pipeline/imagestore.py`. A file
-  that the table `image` holds already is not stored again. The pixel size comes from the
-  header; a file whose size Pillow cannot read gets NULL and a console message.
+- Each photo file is stored as `images/testset/<sha256>.<extension>` with
+  `pipeline/imagestore.py`, and gets a row of `image` with the folder `testset`. A file
+  that the table `image` holds already is not stored again, and keeps its folder. The
+  pixel size comes from the header; a file whose size Pillow cannot read gets NULL and a
+  console message.
 - The files are stored first. Then the rows of the set are deleted and written again in
   one transaction.
 - The import never writes to the set directory.
@@ -47,6 +53,8 @@ IMAGE_EXT = frozenset({".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"})
 # The label values of `review-labels.json`. NULL means no label.
 LABELS = frozenset({"positive", "negative", "unusable", "variant"})
 SET_NAME_RE = re.compile(r"^[0-9a-z_-]+$")
+# The folder of the image store for a test photo. Read the schema file of the test sets.
+FOLDER = "testset"
 # The number of problem names that an error message shows.
 SHOWN = 10
 
@@ -82,6 +90,11 @@ def load_json(path, required=False):
             return json.load(fh)
     except (OSError, ValueError) as exc:
         raise TestsetError("cannot read %s: %s" % (path, exc))
+
+
+def photo_path(db_path, sha256, extension):
+    """Return the path of a test photo in the image store of the database."""
+    return os.path.join(imagestore.folder_of(db_path, FOLDER), "%s.%s" % (sha256, extension))
 
 
 def scan_photos(photo_dir):
@@ -141,7 +154,7 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
             if digest in known or digest in new_images:
                 report.present += 1
             else:
-                target = imagestore.path_of(db_path, digest, extension)
+                target = photo_path(db_path, digest, extension)
                 os.makedirs(os.path.dirname(target), exist_ok=True)
                 if imagestore.store_file(path, target, digest):
                     report.written += 1
@@ -153,7 +166,7 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
                     width = height = None
                     report.unsized += 1
                     log("no pixel size: %s/%s: %s" % (place, name, exc))
-                new_images[digest] = (digest, extension, width, height)
+                new_images[digest] = (digest, FOLDER, extension, width, height)
             entry = (labels.get(place) or {}).get(name) or {}
             label = entry.get("label")
             report.labels[label] += 1
@@ -175,8 +188,8 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
 
         conn.execute("BEGIN IMMEDIATE")
         try:
-            conn.executemany("INSERT INTO image (sha256, extension, width, height) "
-                             "VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING",
+            conn.executemany("INSERT INTO image (sha256, folder, extension, width, height) "
+                             "VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
                              new_images.values())
             for table in ("test_photo", "test_excluded", "test_variant"):
                 conn.execute("DELETE FROM %s WHERE set_name = ?" % table, (set_name,))
@@ -199,11 +212,28 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
     return report
 
 
+def print_report(report, set_name, set_dir, db_path):
+    """Print the counts of one import."""
+    labels = ", ".join("%s %d" % (label or "no label", n)
+                       for label, n in sorted(report.labels.items(), key=lambda x: str(x[0])))
+    print("set: %s from %s" % (set_name, os.path.abspath(set_dir)))
+    print("photos: %d (%s)" % (report.photos, labels))
+    print("files directly in photo/, left out: %d" % report.loose)
+    print("label entries with no file, left out: %d" % report.no_file)
+    print("places that wine_catalog does not hold: %d" % len(report.unknown_places))
+    print("excluded slugs: %d" % report.excluded)
+    print("slugs in a variant group: %d" % report.variant_slugs)
+    print("files written: %d" % report.written)
+    print("files in the store already: %d" % report.present)
+    print("database: %s" % db_path)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Import one test set of dataset/<set>/ into the lab database, "
                     "read-only. The JSON files stay the source of the labels.")
-    parser.add_argument("set_dir", help="the directory of the set, for example dataset/my")
+    parser.add_argument("set_dir", help="the directory of the set, for example "
+                        "../svoe-vino-testset/dataset/my")
     parser.add_argument("--db", required=True, help="path of the lab database")
     parser.add_argument("--set", required=True, dest="set_name",
                         help="the name of the set in the database, for example my")
@@ -218,18 +248,7 @@ def main(argv=None):
             OSError) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
-    labels = ", ".join("%s %d" % (label or "no label", n)
-                       for label, n in sorted(report.labels.items(), key=lambda x: str(x[0])))
-    print("set: %s from %s" % (args.set_name, os.path.abspath(args.set_dir)))
-    print("photos: %d (%s)" % (report.photos, labels))
-    print("files directly in photo/, left out: %d" % report.loose)
-    print("label entries with no file, left out: %d" % report.no_file)
-    print("places that wine_catalog does not hold: %d" % len(report.unknown_places))
-    print("excluded slugs: %d" % report.excluded)
-    print("slugs in a variant group: %d" % report.variant_slugs)
-    print("files written: %d" % report.written)
-    print("files in the store already: %d" % report.present)
-    print("database: %s" % args.db)
+    print_report(report, args.set_name, args.set_dir, args.db)
     return 0
 
 

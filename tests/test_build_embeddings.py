@@ -170,6 +170,26 @@ class BuildTest(unittest.TestCase):
         failed = [event for event in events if event["event"] == "item_failed"]
         self.assertEqual(len(failed), 5)
 
+    def test_a_request_line_comes_before_each_model_request(self):
+        _, events = self.build()
+        names = [event["event"] for event in events]
+        requests = [event for event in events if event["event"] == "request"]
+        self.assertEqual(len(requests), len(self.gateway.requests))
+        self.assertEqual(sum(event["images"] for event in requests), 4)
+        self.assertLess(names.index("request"), names.index("progress"))
+
+    def test_each_retry_writes_a_retry_line(self):
+        self.gateway.status = 503
+        make = lambda embedding: build_embeddings.OpenAIBackend(embedding, waits=(0, 0),
+                                                                timeout=10)
+        _, events = self.build(make_backend=make)
+        requests = [event for event in events if event["event"] == "request"]
+        retries = [event for event in events if event["event"] == "retry"]
+        # Each request is tried 3 times: 2 retry lines for each request.
+        self.assertEqual([(event["attempt"], event["wait"]) for event in retries],
+                         [(1, 0), (2, 0)] * len(requests))
+        self.assertIn("HTTP 503", retries[0]["error"])
+
 
 class LockTest(unittest.TestCase):
     def test_a_live_build_holds_the_lock(self):

@@ -3935,7 +3935,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send(
                 200, PAGE, "text/html; charset=utf-8", {"Cache-Control": "no-store"}
             )
-        elif route == "/dataset":
+        elif route == "/dataset" or lab_pages.DATASET_PREVIEW_ROUTE.match(route):
             self._send(200, PAGE_DATASET, "text/html; charset=utf-8",
                        {"Cache-Control": "no-store"})
         elif route == "/embedding":

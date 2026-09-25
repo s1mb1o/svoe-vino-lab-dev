@@ -10,6 +10,11 @@ import urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import GX10, VLM_MODEL, data_url, db, log
 
+# The cache of the model calls is in `pipeline/`. Read docs/plans/25_model-call-cache.md.
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                             "pipeline"))
+import model_cache  # noqa: E402
+
 PROMPT = (
     "\u041f\u0435\u0440\u0432\u043e\u0435 \u0444\u043e\u0442\u043e \u2014 \u044d\u0442\u0430\u043b\u043e\u043d \u0431\u0443\u0442\u044b\u043b\u043a\u0438 \u0438\u0437 \u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0430. "
     "\u042d\u0442\u043e \u0432\u0438\u043d\u043e: \u043f\u0440\u043e\u0438\u0437\u0432\u043e\u0434\u0438\u0442\u0435\u043b\u044c \"%s\", \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \"%s\". "
@@ -58,6 +63,7 @@ class Backend:
         self.workers = workers
         self.calls = 0
         self.errors = 0
+        self.hits = 0
 
     def ask(self, ref_url, cand_url, producer, title, timeout=240):
         payload = {"model": self.model, "max_tokens": 150, "temperature": 0,
@@ -65,13 +71,23 @@ class Backend:
                        {"type": "image_url", "image_url": {"url": ref_url}},
                        {"type": "image_url", "image_url": {"url": cand_url}},
                        {"type": "text", "text": PROMPT % (producer, title)}]}]}
+        # A repeated request reads the answer of `model_cache`. An answer with a choice
+        # is stored.
+        fields = model_cache.vlm_fields(self.url, payload)
+        record = model_cache.lookup(fields) if fields else None
+        if record is not None:
+            self.hits += 1
+            return record["answer"]["choices"][0]["message"]["content"]
         headers = {"Content-Type": "application/json"}
         if self.key:
             headers["Authorization"] = "Bearer " + self.key
         req = urllib.request.Request(self.url, data=json.dumps(payload).encode(),
                                      headers=headers)
+        started = time.perf_counter()
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             out = json.load(resp)
+        if fields and out.get("choices"):
+            model_cache.store(fields, out, (time.perf_counter() - started) * 1000)
         return out["choices"][0]["message"]["content"]
 
 

@@ -2,6 +2,646 @@
 
 ## 2026-09-25
 
+- Owner messages of 13:45:11, 13:47:30, and 13:51:48: the cache of the model calls
+  (plan 25, `docs/plans/25_model-call-cache.md`). A call to SAM3, Grounding DINO, or a
+  VLM that repeats an earlier successful call reads its answer from `data/cache/` and
+  sends no request.
+  - New `pipeline/model_cache.py`. The key is the sha256 of the request fields: the full
+    endpoint URL, the served model name, the parameters, the prompt, and the sha256 of each
+    sent image (the copy after the resize). One JSON file for each call:
+    `data/cache/<model>/<key[0:2]>/<key>.json`. It holds the request fields, the time, the
+    duration, and the answer; no image, no key. A success alone is stored. A write goes
+    through a temporary file and `os.replace`.
+  - `pipeline/derive.py`: `Sam3Client._post` does the lookup and the store; the retry loop
+    moved unchanged into `_send`. So each SAM3 caller of `pipeline/` uses the cache.
+    Agreed with drink-atlas-workspace-8b and drink-atlas-workspace-7b.
+  - New `pipeline/gdino.py`: `GdinoClient` for `grounding-dino-base`, `mm-gdino-base`, and
+    `mm-gdino-base-all` of the gx10 gateway, with a command line that states `hit` or
+    `miss`.
+  - The VLM calls of `scripts/cluster_rules.py` (`Vlm.ask`, new counter `hits`),
+    `scripts/04_verify.py` (`Backend.ask`), and `scripts/bench_vlm_models.py` (`call`, a
+    cached line holds `"cached": true`) use the cache. A VLM answer is stored when it holds
+    a choice. A cached `Vlm.ask` needs no API key.
+  - Tests: new `tests/test_model_cache.py` (12), new `tests/test_gdino.py` (4), one new
+    test and a `setUpModule` in `tests/test_derive.py` (17). All 445 tests pass. No test
+    writes into `data/cache/`. 12 live cases against gx10 pass: SAM3 miss then hit (494 ms,
+    then 14 ms), other nouns, a hit with no network, a failure that is not stored, two
+    processes on one key, GDINO miss then hit (9,667 ms cold, then 18 ms), another GDINO
+    model and threshold, and VLM miss then hit for `cluster_rules` and `04_verify`.
+  - Entries in `README.md` (section "The cache of the model calls"), `COMMANDS.md`,
+    `SMOKE_TESTS.md` (section MC), and `ResearchLog.md`.
+- Owner messages of 13:14:45 and 13:26:43: new `docs/database-structure.pdf`, a one-page
+  A4 landscape ER diagram of `data/lab.sqlite3` at schema version 17. It shows the 13 tables
+  with all 65 columns, the keys, the checks, the indexes, the triggers, and the 12 foreign
+  keys as lines. Notes explain the migrations, the table rebuilds, the image store, the
+  value rules, and the test-set import.
+  - The source is new `docs/database-structure.html`, written by hand. Update it and print
+    it again when a new file enters `pipeline/schema/`. Its head comment holds the print
+    command. A small script draws the foreign-key lines and sets `data-fit` on `<html>`
+    (`ok` or `overflow`).
+  - Headless Chrome 153 with `--user-data-dir` and a new directory wrote the PDF but did
+    not exit. Without `--user-data-dir`, the print takes about 2 s.
+- The Embeddings page, the phase of a running build (owner message of 13:37:14 "make it
+  show progress", answer "Phase text"). The bar moved only after each batch of 16 images
+  had its vectors, so a cold start of a gateway model on gx10 (up to about 48 s) showed
+  `0 / 2023` with no change. `pipeline/build_embeddings.py` writes the line `request`
+  before each model request and the line `retry` before each wait of
+  `OpenAIBackend.embed`. `embeddings.job_state` gives `phase`, `phase_event`, and
+  `phase_t`. The job row shows `waiting for the model · <time>` when a request takes 3 s
+  or more, and `retry <n> in <s> s: <error>`. The log dialog hides the `request` lines
+  with the checkbox. Tests: `tests/test_build_embeddings.py` (2 new),
+  `tests/test_embedding_routes.py` (1 new); 53 embedding tests pass. Checked in headless
+  Chromium with a mocked job. The lab server on 8168 was restarted at 13:44:04 (SIGTERM
+  on the process of the owner's terminal); the restart also deployed the mock backend of
+  drink-atlas-workspace-85. It was restarted again at 13:46:33 with `start_new_session`
+  (PID 25039 leads its own process group), so the end of the tool shell of a session
+  does not stop it (finding of 85 in `ResearchLog.md`).
+- The label view of the Embeddings page, plan 22 (owner message of 12:11:50, answers of
+  12:27:47). Cause of the failures: `embeddings.read_inputs` set the label cut to `None`,
+  because no full photo had a label cut. New `pipeline/seed_label_cuts.py`: SAM3 and the
+  label rule of plan 16 (`alternatives.label_derivatives`) for each full original; the cut
+  is a row of the kind `label` of `image_derivative` (schema 017 of
+  drink-atlas-workspace-7b, owner answer of 12:28:04). `read_inputs` reads the kinds
+  `package` and `label`. The run on `data/lab.sqlite3` (12:46:36 to 13:36:59, 3,022 s):
+  2,019 of 2,023 full originals have a label cut, 4 have no label, no error; a backup of
+  version 17 is in the scratchpad of the session. A `Build` of
+  `gx10-siglip2-so400m-patch16-naflex-p256` made the label items: 4,039 of 4,043 items
+  are `current`, 4 failed (`no label cut yet`). Each other entry needs a `Build`.
+  The badge `vector`: `embedding_routes.entry_view` maps the vectors file and sets
+  `vector` on a cell whose current or stale record has a row in it; the page shows it at
+  the bottom left of the cell and in the preview. Tests: `tests/test_seed_label_cuts.py`
+  (7), `tests/test_embedding_routes.py` (1 new). `README.md`, `SMOKE_TESTS.md` (EB31 to
+  EB36), `COMMANDS.md`, `ResearchLog.md`, plans 10 and 22 follow.
+
+- Plan 23, change of Q1 (owner message of 13:37:14, answer of 13:41:00: "mock should run
+  as any other config"): the configuration `mock` builds as any entry. It has the views
+  of the other entries in `config.yaml`. New `MockBackend` of `pipeline/build_embeddings.py`
+  gives each prepared image a random unit vector of 256 values, with no request.
+  `pipeline/embeddings.py` gives a mock entry the model `random-unit-vectors` and
+  refuses `base_url`, `model`, and `extra_body`. The refusals of `embedding_routes.start`
+  and `build_embeddings.main` are gone. Tests: `tests/test_mock_run.py` (14, with a full
+  build on the fixture of `tests/embedding_lab.py`), `tests/test_run_routes.py` (7).
+  Live since the restart of 8168 by e3 at 13:44:04.
+- Plan 23 (`docs/plans/23_runs-page.md`), owner messages of 12:36:00, 12:38:00, 12:41:00,
+  12:43:00, and 12:52:00: the Runs page on the lab server, the filter `Configuration`,
+  and the configuration `mock`.
+  - `/runs` is on. It reads the run directories of `runs/`; the database does not hold
+    the runs. New `pipeline/run_files.py` (the run functions of the review tool, with
+    the runs directory as an argument), new `pipeline/run_routes.py` (`/runs`,
+    `/api/runs`, `/api/run`, `/api/run-clusters`, `/api/run-inputs`), new
+    `pipeline/pages/runs.html` (the Runs page of the review tool, with the lab
+    navigation, the filter `Configuration`, the column `configuration`, and the images of
+    the lab image store).
+  - `run.json` gets the key `configuration`: the name of an entry of `embeddings` in
+    `config.yaml`. `pipeline/benchmark.py` `run_benchmark` writes it with the new
+    argument `configuration`.
+  - New `pipeline/mock_run.py` and the entry `mock` (`backend: mock`) at the end of
+    `embeddings` in `config.yaml`: a run with random top-k candidates for each photo of
+    a test set. `pipeline/embeddings.py` accepts the backend `mock` (zero items);
+    `embedding_routes.start` and `build_embeddings.py` refuse to build it.
+  - `/embedding`: the selector label is `Configuration`, not `Embedding`.
+  - `pipeline/lab_server.py`: `/runs` leaves `DISABLED_PAGES`; `do_GET` sends the routes
+    to `run_routes.py`; `IMAGE_ROUTE` admits the folder `testset` of the test photos.
+  - The mock run `runs/2026-09-25T101320Z-lab-mock-my/` (seed 20260925).
+  - Tests: 6 + 7 + 14 new tests and one in `tests/test_benchmark.py`; the disabled-page
+    tests of `tests/test_lab_server.py` no longer name `/runs`. The full suite: 425 tests
+    `OK`. 8168 was down since about 13:03:30; started at 13:14:31, and restarted at
+    13:20:00 with SIGTERM in its own session (`ResearchLog.md`).
+- Plan 21 (`docs/plans/21_website-import-ui.md`), owner messages of about 12:00 ("can we
+  make 2 modes", "also introduce last_modified time") and the answers after them: the
+  website import in the UI.
+  - `pipeline/import_website.py`: the modes `--prepare DIR` (the compare writes
+    `diff.json` and the website images; no write to the database) and `--apply DIR`
+    (the choices of `choices.json`). The CLI with no mode flag still stops on a conflict.
+    One reused HTTPS connection: a full run takes about 10 minutes, not 22. The sitemap
+    gives `website_modified_at`. A refusal skips a conflict or a plain change while the
+    website keeps the refused value; a write deletes a refusal that no longer matches.
+    Each choice writes a short `script` comment.
+  - Schema 015 (`pipeline/schema/015_website_import.sql`): `wine_catalog.website_modified_at`,
+    `wine_catalog.modified_at` with two triggers, and the table `website_refusal`.
+    `data/lab.sqlite3` migrated at 12:33.
+  - New `pipeline/website_import_routes.py`: start, state, diff, images, apply, and stop
+    of the job; `job.json` and `work/website-import/<run>/`. Hunks in
+    `pipeline/lab_server.py` (the delegation, the two times in `dataset_records`).
+  - New `pipeline/pages/website_import.js`: the button `Import from website` and the merge
+    dialog. Hunks in `pipeline/pages/dataset.html` (the button, the script tag, two sort
+    options and their code).
+  - Also: `import_website.py` uses `manual_wines.is_manual` (plan 20 rule 4, review of
+    7b). The fixture insert of `tests/test_lab_server.py` names its columns.
+  - Tests: 31 + 6 new or changed tests; `test_lab_server.py` 50; the full suite 397, all
+    `OK`. 8168 restarted at 12:50:39 with SIGTERM.
+- The review of the unfinished work (owner messages of 12:01:18; answers of 12:28:04):
+  `docs/reviews/2026-09-25_unfinished-work.md` lists the findings of each session. Each
+  running session fixed its own; 7b fixed these:
+  - Schema file `pipeline/schema/017_derivative_kind.sql`: `image_derivative` holds one cut
+    for each original and kind (`package`, `label`), key (`source_sha256`, `kind`). The
+    2,023 rows of `data/lab.sqlite3` are `package` cuts (migrated at 12:35:13; a backup of
+    version 16 is in the scratchpad of the session). `derive.Derivatives` has a `kind`;
+    `derive.write_rows` writes it; `derive_all` looks at the `package` rows alone
+    (agreed with drink-atlas-workspace-8b). `lab_server.card_images` joins the `package`
+    cut; `alternative_images` joins the cut of the kind of each row.
+  - `pipeline/alternatives.py`: the row of `image` holds the size of the file, not of the
+    SAM3 copy; a photo with no current cut of its kind is processed on the next request
+    (the same file again, or a type change), and a change back to a kind reuses its cut;
+    `label_derivatives` is public (EMBEDDINGS calls it); `insert_image` calls
+    `patches.insert_image`.
+  - `pipeline/patches.py`: an upload of more than 100,000,000 pixels answers 413.
+  - `pipeline/lab_server.py`: an unexpected error of the patch and alternative routes
+    answers 500 with a JSON error; `_json_body` answers 400 for a lone surrogate on every
+    JSON route (finding of drink-atlas-workspace-98); the module docstring.
+  - `pipeline/pages/dataset.html`: a patch dropped while the last one of the wine is
+    processing gets a message; `Cancel` takes back the marked removals alone and the
+    uploads go on; `×` is disabled while a type change runs.
+  - `pipeline/seed_patched.py`: refuses a table with `main_patched` rows unless `--force`,
+    in the form that `seed_codes.py` and `seed_atlas_bindings.py` of f1 use.
+  - The 5 review-tool test modules load again: `scripts/common.py` reads the config path
+    from `SVOE_VINO_REVIEW_CONFIG`, and the modules set it to `config.old.yaml` (25 tests).
+  - Tests: `tests/test_alternatives.py` (33: the size, both cuts of one file, a type change
+    with no SAM3, the same photo again, a version 9 database through 010, 012, and 017,
+    the neck cases), `tests/test_patches.py` (the pixel limit, 503), `tests/test_seed_patched.py`
+    (`--force`), `tests/test_lab_server.py` (`add_derivative` names its columns),
+    `tests/test_labdb.py` (version 17). Full suite: 369 tests, no error except the 5 load
+    errors, which are fixed now.
+  - Docs: README steps 3 and 4, plan 07 rule 5 of step 3 (the whole sentence, with the
+    facts of f1), plans 10, 14, and 16, SMOKE_TESTS P5, P8, AL22 to AL27, PE20 to PE22.
+  - The lab server on 8168 was restarted at 12:45:39 (SIGTERM, rule 23), with the code of
+    the other sessions as of that minute.
+
+- The review fixes of drink-atlas-workspace-f1 (review
+  `docs/reviews/2026-09-25_unfinished-work.md`, sections f1 and a2; owner answers of
+  2026-09-25T12:28:04+0300):
+  - `seed_codes.py` and `seed_atlas_bindings.py` refuse a table that already holds rows,
+    because a second run added back each value that a person removed on the page.
+    `--force` adds the missing rows as before. `seed_patched.py` of drink-atlas-workspace-7b
+    uses the same form.
+  - The error of `seed_codes.py` names the record, the field, and the value, for example
+    ``record 2 (wine-b): `barcode` '4631168664970': wrong check digit 0; expected 9``.
+  - `codes.clean_qr_url` keeps the brackets of an IPv6 host: `http://[::1]:8080/x`
+    stayed `http://::1:8080/x` before.
+  - The shared Dataset page on the review tool works as before plan 11 again: the
+    Barcodes editor accepts an EAN-13, the GTIN editor and its count show only when the
+    answer holds `gtins` (the lab), and the `+` of `Barcodes` and `QR URLs` needs a
+    non-empty `barcode_file` when the answer holds no `gtins`. Checked in headless
+    Chromium with the answer of `/api/dataset` changed in the browser to the form of the
+    review tool. The review tool itself does not start now (the known `config.yaml`
+    error of `scripts/common.py`).
+  - Tests: `tests/test_codes.py` (13), `tests/test_seed_codes.py` (11),
+    `tests/test_seed_atlas_bindings.py` (9), and a check that the lab answer holds no
+    `barcode_file` in `tests/test_lab_server.py`. `COMMANDS.md`, `README.md` (steps 6 and
+    7), plans 11 (decision O3, O2 point 5) and 15, and `SMOKE_TESTS.md` (the header of
+    the lab server section, S1, S3, S12, WC2, WC3, AB2) follow. No restart: the page is
+    read from disk. 8168 runs the IPv6 fix of `codes.py` since the restart by
+    drink-atlas-workspace-7b at 12:45:39.
+
+- The test sets in the lab database (plan 12 step 4), by TESTSET [0fe970]. Owner messages
+  of 2026-09-25T12:13:10+0300 and 12:15:00, and the answers of 12:22:00 ("Enter schema
+  now", "Editing on the DB"):
+  - `pipeline/schema/016_testset.sql` (was `pipeline/schema_pending/NNN_testset.sql` of
+    drink-atlas-workspace-20): it builds `image` again with the folder `testset`, and it
+    adds `test_set`, `test_photo`, `test_excluded`, and `test_variant`. It enters before
+    the flat image store of 9a [f028b4]; the flat store MUST also move
+    `data/images/testset/`.
+  - `pipeline/import_testset.py`: a test photo goes to `data/images/testset/` and gets the
+    folder `testset` (new `photo_path`, `FOLDER`); new `print_report`. A file that `image`
+    holds already keeps its folder.
+  - New `pipeline/import_testsets.py`: imports `my`, `official-real-photos`, and
+    `vlmrerank-8b-failed` of `svoe-vino-testset/dataset/` with one command. New
+    `tests/test_import_testsets.py` (3 tests).
+  - `pipeline/benchmark.py`: the path of a photo comes from its folder in `image`. One new
+    test in `tests/test_benchmark.py`. `tests/testset_fixture.py` no longer emulates the
+    flat store. `tests/test_import_testset.py` uses `photo_path`.
+  - `tests/test_labdb.py`: version 16 and the four new tables.
+  - `data/lab.sqlite3` migrated from 15 to 16 at 12:34 (a backup first). The lab server
+    needed no restart. The import wrote 4,323 photo rows (`my` 4,043,
+    `official-real-photos` 100, `vlmrerank-8b-failed` 180) and 3,449 new files (760 MB).
+  - Docs: plan 12 (status, decisions, step 4, Q1, risks), `README.md`, `COMMANDS.md`,
+    `SMOKE_TESTS.md` (new section TS), `ResearchLog.md`.
+- The review findings of drink-atlas-workspace-0b (`docs/reviews/2026-09-25_unfinished-work.md`,
+  owner answers of 2026-09-25T12:28:04+0300), `pipeline/pages/dataset.html`:
+  - A click on a thumbnail of another kind, or of another alternative photo, switches the
+    preview fully (owner decision "Switch fully"): the title, the page path, the
+    position, and the arrows follow. The new `setPreviewItem` does this part of
+    `showImagePreview`, so the thumbnails keep their place. Each thumbnail holds its
+    `kind` and `sha256`; the mark goes on the thumbnail of the item in view.
+  - Bug (7b finding 11): `open raw image` in the patch preview opened the processed
+    patch. It now opens the patch original (`_patch_url`).
+  - At a width of at most 860 px the text column takes the full width
+    (`.info { align-self: stretch; }`), so the favorites star stands at the right edge.
+  - Docs: `SMOKE_TESTS.md` AL12 stands before the barcode rows AL13 and AL14 of 7b again;
+    the preview rows are now AL15 to AL20, and AL21 is new (the full switch). PE14 names
+    the raw link, PE18 names `main · processed`. Plan 14 item 4 names the new thumbnails
+    (one line; 7b agreed). `README.md`: the full switch and the raw link.
+  - Checked in headless Chromium on the live lab server, read-only: the thumbnail clicks
+    of each kind, the arrows after a switch, the raw link of `/patch`, and the star at
+    800 px. No server change and no restart.
+- Review fixes of section "98" of `docs/reviews/2026-09-25_unfinished-work.md` (owner
+  answer of 12:28:04: each session fixes its own), by drink-atlas-workspace-98:
+  1. `pipeline/comments.py`: `clean_text` refuses a lone surrogate (U+D800 to U+DFFF)
+     with HTTP 400. Before, the INSERT raised `UnicodeEncodeError` and the request got
+     no answer. New cases in `tests/test_comments.py` and `tests/test_lab_server.py`.
+     The lab server gets it at its next restart; this session did not restart 8168,
+     because other sessions have review fixes in progress.
+  2. `pipeline/pages/dataset.html`: in the view `with comments`, the removal of the last
+     comment of a wine takes its card out of the list, as the `State` views do.
+  3. `pipeline/pages/dataset.html`: an empty or blank comment draft no longer triggers
+     the leave-page prompt.
+  4. Docs: `SMOKE_TESTS.md` D2, D10, D10a (the schema version and the tables; the text
+     now names the last schema file, so it does not go stale), `docs/plans/07_*.md`
+     (14 cases of `test_labdb.py`), `docs/plans/11_wine-codes.md` (SIGTERM), `README.md`
+     step 3 (the value `Favorites` of `State`).
+  Fixes 2 and 3 were checked in headless Chromium on a copy of the database.
+- Plan 20, the fixes of review section fa (owner answer of 12:28:04). A text field or
+  `image_name` that is not a JSON string, or that holds a lone surrogate, now gets HTTP
+  400; before, the server sent no answer. The slug `__null__` is reserved (the no-match
+  place of `scripts/match_scoring.py`). A new test: the slug of a `Removed` manual wine is
+  a conflict. `pipeline/manual_wines.py`, `tests/test_manual_wines.py` (12). Live since
+  the restart of 8168 by drink-atlas-workspace-7b at 12:45:39; checked with two refused
+  requests. After schema 015 of drink-atlas-workspace-ff, the
+  test fixture names the columns of `wine_catalog`; the route tests expect the message of
+  the lone surrogate check of `_json_body`, and a unit test covers the check of
+  `manual_wines.py`. Plan 20 (rules 16 and 16a) and `SMOKE_TESTS.md`
+  (AW1, AW16) follow.
+
+- Plan 20, `Add wine`: the slug follows the name until a person types a slug (owner
+  message of 12:05:54). `slugOfName` of `pipeline/pages/dataset.html` spells each
+  Cyrillic letter as the slugs of vino-svoe.ru mostly do (`х` -> `h`, `ц` -> `ts`, `й` and
+  `ы` -> `y`). The description is optional (owner message and answer of 12:09:52). New
+  schema file `pipeline/schema/014_description_optional.sql` builds `wine_catalog` again
+  with a nullable `description`; it keeps each row, each rowid, and the rows of the 5
+  child tables. `pipeline/labdb.py` `migrate` now runs a schema file with the foreign keys
+  off and a `PRAGMA foreign_key_check` before the COMMIT: SQLite ignores the pragma inside
+  a transaction, and `PRAGMA defer_foreign_keys` does not save the DROP of a parent table
+  (tested on a copy). `pipeline/manual_wines.py` stores an empty description as NULL.
+  The imports still require a description. `data/lab.sqlite3` migrated to version 14 at
+  12:13:19 (backup in the scratchpad of drink-atlas-workspace-fa); the lab server on 8168
+  was restarted at 12:13:40 (SIGTERM). Tests: `tests/test_labdb.py` (3 new, 14),
+  `tests/test_manual_wines.py` (10), `tests/test_import_catalog.py` (22). Checked in
+  headless Chromium. `README.md`, `SMOKE_TESTS.md` (D12, AW12 to AW15), plan 07 (rule 6),
+  and plan 20 follow.
+
+- The Embeddings page: a click on a prepared image opens the image preview of `/dataset`
+  (owner message of 11:59:27, answers of 12:02:31: with thumbnails; a URL query key).
+  `pipeline/pages/embedding.html` alone; no server change and no restart. The CSS and the
+  markup are copies of the preview of `pipeline/pages/dataset.html`. The arrows and the
+  arrow keys step through the images of the same view of the filtered list (2,048 `full`
+  images of `gx10-siglip2-so400m-patch16-naflex-p256`). The thumbnails show each column
+  of the wine: `original` and each view, with the status badge. `open raw image` names
+  the original. The URL key `preview=<sha256>_<view>` names the open preview; Back
+  closes it, and a link opens it again. A click with a modifier key opens the image in a
+  new tab. At a width of at most 440 px the modal has no padding, so the dialog fills the
+  screen (the preview of `/dataset` keeps a 24 px gap there). Tests:
+  `tests/test_embedding_routes.py` (1 new; 49 embedding tests pass). Checked in headless
+  Chromium on the live server: open, keys, thumbnails, Back and Forward, a copied link,
+  light and dark mode, 1400 px and 390 px. `README.md`, `SMOKE_TESTS.md` (EB1, EB23 to
+  EB30), and plan 10 (items 7 and 10) follow.
+
+- Owner message of 2026-09-25T11:57:30+0300: the `main` image of a `Disabled` wine is
+  gray on the card of `/dataset`. `pipeline/pages/dataset.html`: `imageFigure` gives the
+  figure the class `state-disabled`, and the CSS `filter: grayscale(1)` draws the image
+  gray in the browser. The file, the badge, the patch, and the alternative photos do not
+  change. Checked in headless Chromium on the live lab server, in light and dark mode, on
+  the one `Disabled` wine (`aligote-barrel-2024`). No server change and no restart.
+- Owner message of 2026-09-25T11:58:25+0300: the favorites star of plan 19 moves from
+  before the name to the top right of the text column of a card, next to the
+  alternative photos. `pipeline/pages/dataset.html`: the star is its own line of
+  `recordHtml` after the slug; `.info` is `position: relative`, and the star is
+  absolute at its top right. The slug and the name keep 34 px of free space at the right
+  (class `with-star`), so no text runs under the star. At a width of at most 860 px the
+  alternative photos stand below the text, and the star stays at the top right of the
+  text. No server change and no restart.
+- Plan 19 (`docs/plans/19_favorites.md`), owner message of 11:37:46 and the two answers
+  of 11:39:42: favorite wines on the lab database.
+  - Schema file `pipeline/schema/013_wine_favorite.sql`: the table `wine_favorite` (`wine_slug`,
+    `created_at` in UTC). `data/lab.sqlite3` is at version 13.
+  - New `pipeline/favorites.py`: `favorites`, `count`, and `set_favorite` (a repeated
+    request changes nothing).
+  - `pipeline/lab_server.py`: `POST /api/dataset-favorite` with `"favorite": true|false`,
+    `_favorite` of each record, and `favorites` of `/api/dataset`.
+  - `pipeline/pages/dataset.html`: the star before the name (`☆`, or an amber `★`), the
+    value `Favorites` of the filter `State` (each favorite in each state, also a removed
+    one), and `N favorites` in the header. The review tool shows none of these.
+  - Tests: new `tests/test_favorites.py` (4), 2 new tests in `tests/test_lab_server.py`,
+    `tests/test_labdb.py` (version 13, table `wine_favorite`). Checked in headless
+    Chromium on a copy of the database, in light and dark mode.
+  - The lab server on 8168 was restarted at 11:55 with SIGTERM.
+- Plan 20: the button `Add wine` of the Dataset page adds a wine by hand (owner messages
+  of 11:30:05 and 11:41:15, answers of 11:40:48 and 11:42:50, approval at 11:46:09). A
+  dialog asks each catalogue field and a required main image. The slug gets the fixed
+  prefix `__`, so it cannot collide with a slug of vino-svoe.ru; the prefix alone marks a
+  manual wine, with no schema file. New `pipeline/manual_wines.py` and the route
+  `POST /api/wine` (JSON, the image in base64) of `pipeline/lab_server.py`: the wine is
+  `Active`, the image is `main` with `match_method` = `manual` and its file name as
+  `csv_photo_name`, and `derive.derive_all` processes it. A known slug gets HTTP 409.
+  The card of a manual wine has no link to vino-svoe.ru. `pipeline/import_catalog.py`
+  never removes a manual wine and stops on a CSV slug with `__`; drink-atlas-workspace-ff
+  added the same rules to `import_website.py`. Tests: new `tests/test_manual_wines.py`
+  (10), `tests/test_import_catalog.py` (2 new, 22). Checked in headless Chromium on a
+  scratch database, in light and dark mode. The lab server on 8168 was restarted at
+  11:52:40 (SIGTERM). `README.md`, `SMOKE_TESTS.md` (D12, new section AW), and plan 07
+  (step 2, rule 10) follow. The image zone of the dialog is a portrait column at the left
+  of the fields (owner message of 11:55:02); at 640 px or less it stands above them.
+
+- Plan 18 (`docs/plans/18_import-website.md`), owner message of 2026-09-25T11:06:56+0300
+  and the answers after it: a new tool `pipeline/import_website.py --db data/lab.sqlite3`
+  imports the live catalogue of vino-svoe.ru from its JSON API.
+  - A new website wine is added as `Active` with its image as `main`. A missing `Active`
+    or `Disabled` wine becomes `Removed`. A `Removed` wine on the website becomes
+    `Active`, also when a person removed it. A wine with no `main` row gets the website
+    image. Each change gets a short comment of the source `script` (plan 17).
+  - A changed `name`, `producer`, `category`, `color`, or `region`, or a changed main
+    image (SHA-256 of the original), stops the import. The error lists all problems,
+    and nothing changes. The same bytes under another upload name are no change.
+  - A manual wine (slug prefix `__`, rules 24 to 26 of plan 20) is never removed. A
+    website slug with this prefix stops the import.
+  - Tests: `tests/test_import_website.py`, 20 tests, `OK`, with a fake HTTP client.
+  - The first real run (11:31 to 11:54, 22.5 minutes) stopped on 10 problems, as
+    expected: 7 wines with a changed text, 3 changed images. `data/lab.sqlite3` did not
+    change.
+  - Entries in `COMMANDS.md`, `README.md`, `SMOKE_TESTS.md` (section IW), and
+    `ResearchLog.md` (the API, the response headers, the sitemap `lastmod`).
+- The Embeddings page: a `Log` button after `Stop` opens a dialog with `build.log` of
+  the selected entry (owner message of 11:42:50, answer of 11:45:00: readable lines and
+  a filter). The new route `GET /api/embeddings/<name>/log` of
+  `pipeline/embedding_routes.py` sends the text of the file (404 when no build wrote it
+  yet). The page shows each JSON line as `time · event · fields`, and a line that is not
+  JSON, for example a traceback, as it is, in red. The checkbox `hide item_failed and
+  progress` is on at the start; for `gx10-siglip2-so400m-patch16-naflex-p256` it
+  leaves 2 of 2,150 lines. `Refresh` reads the file again. `Log` is disabled for an entry
+  with no build. Tests: `tests/test_embedding_routes.py` (2 new; 48 embedding tests
+  pass). Checked in headless Chromium on the live server, in light and dark mode, at
+  1400 px and 390 px. The lab server on 8168 was restarted at 11:48:14 (SIGTERM).
+  `README.md`, `SMOKE_TESTS.md` (EB1, EB19 to EB22), and plan 10 follow.
+  Owner message of 11:56:36: an `item_failed` line shows the full `source_sha256`, not
+  the first 12 characters.
+
+- Plan 16: the detection of an alternative photo sends SAM3 the nouns `barcode, bottle,
+  label, bottle neck, can` (owner message of 11:45:49, answer of 11:47:17). `wine bottle
+  label` is gone; the label cut uses `label` alone. 7 test images: 4.4 s instead of
+  5.2 s, the same types. `pipeline/alternatives.py` alone; `tests/test_alternatives.py`
+  (27) passes. Live since the restart of 8168 by drink-atlas-workspace-e3 at 11:48:14.
+
+- Plan 16, last section (owner messages of 11:26:11 and 11:27:30, answer of 11:28:52):
+  - A barcode makes an alternative photo a back view: `full_back` or `label_back`.
+    `alternatives.side` counts a barcode of score 0.7 or more, at least 10 % of the width
+    of the largest bottle or can, with its centre on that package. SAM3 gets the noun
+    `barcode` too. Probe: 13 or 14 of 16 random FRAP photos got the right side; 15 lab
+    photos with no back view got no back type (`ResearchLog.md`).
+  - Schema file `pipeline/schema/012_type_names_kind_first.sql` renames the additional
+    types to `full_front`, `label_front`, `full_back`, `label_back` and keeps each row.
+    `data/lab.sqlite3` is at version 12 since 11:30:03 (the 3 owner photos kept their
+    types); a backup of version 11 is in the scratchpad of the session. The buttons read
+    `FF`, `LF`, `FB`, `LB`. `labdb.IMAGE_FOLDERS` and `embeddings.ROLES` and
+    `TYPE_ORDER` hold the six names of the schema alone. The fixtures of the tests use the
+    new names; `tests/test_labdb.py` expects version 12.
+  - Tests: `tests/test_alternatives.py` (27). The lab server on 8168 was restarted at
+    11:32:35 and again at 11:35:26 for the barcode limits (SIGTERM, rule 23).
+  - `README.md`, `SMOKE_TESTS.md` (AL1 to AL14), `ResearchLog.md`, and plans 10 and 16
+    follow.
+
+- Owner messages of 2026-09-25T11:19:38+0300, the four answers of 11:22:10, and 11:22:21:
+  the image preview of `/dataset` for the alternative photos of the lab server.
+  - `pipeline/pages/dataset.html`: a click on an alternative photo opens the image
+    preview, in place of a new tab. The arrows and the keys step through every
+    alternative photo of the list, one photo for each step. The page path is
+    `/dataset/<slug>/alternative/<sha256>`. The preview shows the processed file;
+    `open raw image` opens the original.
+  - The thumbnails are the same in each preview of a wine: `main`, `main · processed`,
+    `patched`, `patched · processed`, then two for each alternative photo, for example
+    `alternative 2 FF` and `alternative 2 FF · processed`. The labels `original` and
+    `processed` are now `main` and `main · processed`.
+  - The thumbnails stand in one row. A row that is wider than the preview scrolls
+    sideways, and the marked thumbnail is scrolled into view. Before, a second row was
+    cut off at the bottom of the preview.
+  - `pipeline/lab_pages.py`: `DATASET_PREVIEW_ROUTE` accepts the alternative path. The
+    review tool serves the path too, but it has no preview of an alternative photo.
+  - Tests: the route test of `tests/test_lab_server.py` holds the new path and two wrong
+    forms. `test_lab_server.py`: 47 tests, `OK`. Checked in headless Chromium on the live
+    lab server, read-only: the deep link, the four keys, the card click, Back, an unknown
+    photo, and widths of 1400 px and 800 px.
+  - The lab server on 8168 was restarted at 11:26 with SIGTERM, for the new route.
+- Rule 23 of `AGENTS.md` (owner message of 11:29:27): an agent stops the lab server on
+  8168 with SIGTERM, not SIGINT. A server that was started in the background ignores
+  SIGINT. `ResearchLog.md` records the finding and the decision.
+- Plan 17 (`docs/plans/17_wine-comments.md`), owner messages of 11:04:34, 11:07:00,
+  11:07:59, and 11:09:30: timestamped comments of a wine on the lab database.
+  - Schema file `pipeline/schema/011_wine_comment.sql`: the table `wine_comment` (`id`,
+    `wine_slug`, `created_at` in UTC ISO 8601 with `Z`, `source` `user` or `script`,
+    `text` of at most 4,000 characters). `data/lab.sqlite3` is at version 11.
+  - New `pipeline/comments.py`: `clean_text`, `check_source`, `comments` (time order, the
+    oldest first), `count`, `add`, and `remove` by `id`.
+  - `pipeline/lab_server.py`: `POST` and `DELETE /api/dataset-comment`; the POST body MAY
+    hold `"source": "script"`, else the source is `user`. `_comments` of each record and
+    `comments` of `/api/dataset`.
+  - `pipeline/pages/dataset.html`: the editor `Comments` after `Atlas Core product`: a
+    multi-line field (Enter adds a line break, Cmd+Enter or Ctrl+Enter saves, Esc
+    cancels), the local time and the source of each comment, and `×` with a
+    confirmation. The value `with comments` of the filter `Show`, `N comments` in the
+    header, and the comment text in the search. The review tool shows none of these.
+  - Tests: new `tests/test_comments.py` (9), 6 new tests in `tests/test_lab_server.py`,
+    `tests/test_labdb.py` (version 11, table `wine_comment`). Full suite: 283 tests, only
+    the 5 old loader errors of the `scripts/review_server.py` tests. Checked in headless
+    Chromium on a copy of the database, in light and dark mode.
+  - The lab server on 8168 was restarted at about 11:23 with SIGTERM. SIGINT does not
+    stop a server that was started in the background.
+- Plan 16 (`docs/plans/16_alternative-images.md`), approved by the owner at 11:02:26:
+  alternative photos of a wine on the lab database.
+  - Schema file `pipeline/schema/010_additional_types.sql` builds `wine_image` again with
+    the types `front_full`, `front_label`, `back_full`, `back_label` in place of `front`,
+    `label_front`, `back`, `label_back`. It keeps each row and its rowid. `data/lab.sqlite3`
+    is at version 10 since 11:11:16; a backup of version 9 is in the scratchpad of the
+    session. `labdb.IMAGE_FOLDERS` has the new names.
+  - New `pipeline/alternatives.py`: upload, SAM3 detection of a full package or a label
+    close-up (`detect`), the label cut (`label_instance`, the rule of `build_labels.py`
+    with a fall-back to the largest label), the type change (a change between full and
+    label cuts the photo again), and the removal (the file stays).
+  - `pipeline/derive.py`: `Sam3Client` takes the SAM3 texts and the mask switch
+    (`_post`), and answers all instances (`instances`, new `_sent_copy`). `segment` gives
+    the same mask as before. Agreed with drink-atlas-workspace-8b.
+  - `pipeline/lab_server.py`: `POST`/`DELETE /api/dataset-alternative`, `POST
+    /api/dataset-alternative-type`, `alternative_images` (the `cut_nothing` rule applies),
+    `_alternatives` of each record, `alternative_editor` and `alternatives` of
+    `/api/dataset`. A shared `Handler._image_body` reads the body of a patch and of a photo.
+  - `pipeline/pages/dataset.html`: a photo goes to the server at once and shows
+    `processing`; the buttons `FF`, `FL`, `BF`, `BL` below each photo save the type at
+    once; `×` and `Apply` remove a photo. The review tool keeps its old editor.
+  - Tests: new `tests/test_alternatives.py` (20), `tests/test_derive.py` (2 new),
+    `tests/test_labdb.py` (version 10), and the type names in the fixtures of
+    `tests/embedding_lab.py`, `tests/test_seed_images.py`, `tests/test_embeddings.py`,
+    `tests/test_embedding_routes.py`, `tests/test_lab_server.py`. Checked in headless
+    Chromium with the live SAM3 on a copy of the database, in light and dark mode. The
+    lab server on 8168 was restarted at 11:16:21 (SIGINT did not stop it; SIGTERM did).
+  - `README.md`, `SMOKE_TESTS.md` (section AL), `ResearchLog.md`, and plan 10 follow.
+
+- Plan 15 (`docs/plans/15_atlas-binding.md`): the Atlas Core product of a wine in the
+  database (owner message of 2026-09-25T10:23:51+0300; answers of 10:30:50: the
+  database, and a remove of a manual binding). New schema file `009_atlas_binding.sql`:
+  the table `wine_atlas_binding`, one `automatic` and one `manual` row at most per wine;
+  the manual row wins. `data/lab.sqlite3` is at version 9 (backup before the migration:
+  `work/lab.sqlite3.before-009-f1`).
+- New `pipeline/atlas_bindings.py` (the UUID check, the effective bindings, the set and
+  the remove of a manual row) and `pipeline/seed_atlas_bindings.py`. The seed read
+  `atlas-matches.jsonl` and `atlas-bindings.manual.jsonl` of
+  `svoe-wino-hackaton/dataset/derived/official-2026-09-17/` and added 364 automatic rows
+  and 3 manual rows. It adds rows alone; a changed file row prints `differs`.
+- `pipeline/lab_server.py`: `GET /api/dataset` sends the bindings, the counts, and
+  `atlas_binding_editor: true`. `POST /api/dataset-atlas-binding` sets a manual binding,
+  and the new `DELETE` removes it; the wine then shows its automatic binding, or none.
+- `pipeline/pages/dataset.html`: the editor `Atlas Core product` is on for the lab. A
+  manual binding gets a red `×`. A save and a remove redraw their own card alone.
+- The lab does not write the JSONL files. The review tool does not see a lab binding.
+- Tests: new `tests/test_atlas_bindings.py` (6) and `tests/test_seed_atlas_bindings.py`
+  (9); `tests/test_lab_server.py` (41); `tests/test_labdb.py` (version 9). Checked in
+  headless Chromium on the live page with the writes answered in the browser, and with
+  one set and remove on the live server. `README.md` (step 7), `COMMANDS.md`,
+  `SMOKE_TESTS.md` (S4, section AB), and plan 07 follow. The lab server on 8168 was
+  restarted with SIGTERM at 10:37:59.
+
+- The Dataset page of the lab server (owner messages of 2026-09-25T10:20:28 to
+  10:26:37, answers of 10:23:52; plan 14, last section):
+  - A dropped or chosen patch file goes to the server at once, with no `Apply` step. The
+    editor shows `Processing…` until the answer. `Remove` keeps `Apply` and `Cancel`.
+  - The card shows the `main` image at the left and the processed patch in the patch
+    slot, side by side. `card_images` of `pipeline/lab_server.py` sends the `main` image
+    in `main_image_*` and the patch in `_patch_url`, `_patch_image_url`, and
+    `_patch_derivation`. The key `catalog_main_url` is gone; `main_image_original_url`
+    holds the same URL now. `patches.patch_urls` and `patches.image_url` are gone.
+  - A `crop` whose box is the whole image cut nothing (`cut_nothing`): the slot shows the
+    original with no badge. On the live database 568 cards lose the badge `crop`; 1,332
+    keep it; 146 keep `seg`.
+  - The preview shows four thumbnails for a patched wine: `original`, `processed`,
+    `patched`, `patched · processed`. They are 120 px high (72 px at a width of at most
+    440 px, in one row that scrolls sideways) and stand at the bottom of the preview, so
+    a new image does not move them. Up and Down step to the previous and the next wine.
+  - The patch `Remove` button has the size of the `Remove` button of the main image and
+    stands at the right. The buttons of `.state-actions` get one width each
+    (`flex: 1 1 0`).
+  - The filter `State` has the new value `Disabled`: the disabled wines alone
+    (`inStateView`).
+- The Embeddings page (owner message of 10:29:30): the failed count is red when it is
+  above zero, in the source panel and in the summary line. The row `Directory` has an
+  `open` button. The new route `POST /api/embeddings/<name>/open` of
+  `pipeline/embedding_routes.py` runs `open` on the directory of the entry (404 when the
+  directory is not on disk, 500 when the command fails). The row `Directory` no longer
+  repeats the endpoint.
+- Tests: `tests/test_lab_server.py` (the two card image tests follow the side-by-side
+  card; new `test_a_crop_that_cut_nothing_gets_no_badge` and
+  `test_cut_nothing_knows_a_turned_image`), `tests/test_patches.py` (12),
+  `tests/test_embedding_routes.py` (2 new). Checked in headless Chromium on a copy of the
+  database, in light and dark mode, at 1400 px and 390 px. The lab server on 8168 was
+  restarted at 10:32:52 (SIGINT did not stop it; SIGTERM did).
+- `README.md` (steps 3 and 5, "The Dataset page", the lab embeddings), `SMOKE_TESTS.md`
+  (PE2 to PE19, S17a, EB17, EB18), and plan 14 follow.
+
+- The lab keeps GTINs alone (owner message of 2026-09-25T10:13:54+0300 and the answers
+  of 10:16:07; plan 11, decision O2). `pipeline/codes.py` has the kinds `gtin` and
+  `qr_url` alone. The lab server has no route `/api/dataset-barcode` (HTTP 503), and
+  `GET /api/dataset` sends no `barcodes` and no `_barcodes`. `seed_codes.py` stores each
+  `barcode` value of the code map as a GTIN; another value stops the seed. No schema
+  file: schema 008 keeps `barcode` in its CHECK until the flatten. The one `barcode` row
+  of `data/lab.sqlite3` (`golubitskoe-estate-chardonnay`, `343343234233123`) is deleted.
+  The Dataset page shows the editor `Barcodes` on the review tool alone, which sends
+  `barcode_file`. `scripts/review_server.py` is not changed. (Correction: the shared
+  page did change for the review tool; the fix is in the entry "The review fixes of
+  drink-atlas-workspace-f1" above.)
+- The save delay of the code editors (owner message of 2026-09-25T09:51:46+0300): a save
+  of a GTIN or a QR URL took a couple of seconds, because the page drew all 2,103 cards
+  two times. The server write takes 1 to 4 ms. Each editor of a code now redraws its own
+  card and the head line (`renderCodeCard`). In headless Chromium a GTIN save takes
+  about 60 ms instead of about 540 ms. Read `ResearchLog.md`.
+- Tests: `tests/test_codes.py` (12), `tests/test_seed_codes.py` (10),
+  `tests/test_lab_server.py` (35). `README.md` (step 6), `SMOKE_TESTS.md` (S4, S5, WC1
+  to WC3, WC10, WC11, WC15), and plans 07 and 11 follow. The lab server on 8168 was
+  restarted with SIGTERM at about 10:27.
+
+- The image preview of `/dataset/<slug>` (owner messages of 2026-09-25T10:08:37+0300 and
+  10:10:04, answers of 10:13:53): the image stands in the vertical center of the stage.
+  Thumbnails below it show `original` (the `main` image), `patched` with the badge `PATCH`
+  when the wine has a patch, and `processed` with the badge `crop` or `seg`. A click on a
+  thumbnail shows that image; `open raw image` of the processed file opens its original.
+  A record of the review tool gets no thumbnail. The image keeps 104 px of the height for
+  the thumbnails.
+- `pipeline/lab_server.py`: `card_images` sends the new key `catalog_main_url`, the
+  original of the `main` image, also when a `main_patched` image replaces it on the card.
+- Tests: a new case in `tests/test_patches.py` (11). Checked in headless Chromium on a
+  copy of the database, in light and dark mode, at 1400 px and 390 px.
+- `README.md` (section "The Dataset page") and `SMOKE_TESTS.md` (PE12 to PE16) follow.
+
+- Plan 14 (`docs/plans/14_patch-editor.md`): the patch editor of `/dataset` works on the
+  lab server. Before, the page read `patch_dir is not configured`, because the lab server
+  sent an empty `patch_dir`. The owner chose on 2026-09-25T09:53:00+0300: the database is
+  the truth for the patches; `Apply` processes the file in the request; the change goes
+  on top of the uncommitted work of the other sessions.
+- New `pipeline/patches.py`: `store_patch` and `remove_patch`. A patch is a JPEG, PNG, or
+  WebP file of at most 20 MiB; Pillow reads the type from the bytes. The file goes to
+  `images/patched/<sha256>.<extension>`, or reuses the stored file with the same SHA-256.
+  `derive.derive_all` processes it before the write transaction. When SAM3 does not
+  answer, the patch is stored with no processed file and a warning. `match_method` is
+  `manual`, and `source_name` is the file name of the upload. `remove_patch` deletes the
+  row alone; the file stays in the store.
+- `pipeline/lab_server.py`: `POST` and `DELETE` of `/api/dataset-patch`. The answer holds
+  `patched`, `patches`, and `record`, the new record of the wine. `/api/dataset` sends
+  `_patched` and `_patch_url` for each wine, the count `patches`, and `patch_editor: true`
+  instead of `patch_dir`. `make_server` takes `segmenter`.
+- `pipeline/pages/dataset.html`: the editor turns on with `patch_dir` (the review tool) or
+  `patch_editor` (the lab server). It shows `_patch_url` when a record holds it. `Apply`
+  sends the file name, takes `record` from the answer so the card image changes at once,
+  and shows the warning of the answer. The page keeps its work on
+  `scripts/review_server.py`.
+- `pipeline/seed_patched.py`: a `main_patched` row whose wine has no file in the patch
+  folder stays. The report line `rows deleted` is now `rows kept with no file in the
+  folder`. So a seed run no longer deletes a patch of the editor.
+- Tests: new `tests/test_patches.py` (10). `tests/test_seed_patched.py`: the delete test is
+  now `test_missing_patch_file_keeps_the_row`. `tests/test_lab_server.py`: the list of
+  disabled routes names `/api/dataset-alternative` instead of `/api/dataset-patch`. The
+  editor was checked in headless Chromium, in light and dark mode, on a copy of the
+  database: stage, `Apply`, reload, preview at `/dataset/<slug>/patch`, `Remove`.
+- `README.md` (steps 3 and 5), `SMOKE_TESTS.md` (P4, new section PE), and plan 07 (step
+  5) follow the change.
+
+- The image preview of the Dataset page is addressable (owner message of
+  2026-09-25T09:46:41+0300). The open preview puts the wine slug in the page path:
+  `/dataset/<slug>` for the catalogue image, `/dataset/<slug>/patch` for the patch image.
+  The open adds a history entry, so Back closes the preview; the arrow keys change the
+  path and add no entry; the close gives `/dataset` again. A link to such a path opens
+  the preview over the card of the wine. A slug that the list does not show gives the
+  plain page at `/dataset`. A wine with the state `Removed` is not in the default list,
+  so its link opens no preview.
+- `pipeline/lab_pages.py`: the new pattern `DATASET_PREVIEW_ROUTE`. `pipeline/lab_server.py`
+  and `scripts/review_server.py` serve `dataset.html` at the paths of that pattern too.
+  Other paths under `/dataset/` answer 404.
+- New test in `tests/test_lab_server.py`: `test_dataset_preview_paths_send_the_page`. The
+  page was checked in headless Chromium on 8168 (open, arrows, close, Back, Forward, a
+  direct link, an unknown slug, the scroll position). The patch path was not checked in
+  a browser, because the lab server sends no patch images yet. New smoke tests D9f to
+  D9h. The lab server on 8168 was restarted with SIGINT at 09:52:55.
+- Plan 11 (`docs/plans/11_wine-codes.md`), approved by the owner: the GTINs, the
+  barcodes, and the QR URLs of a wine are in the database. New schema file
+  `pipeline/schema/008_wine_code.sql`: the table `wine_code` (`wine_slug`, `kind`,
+  `value`). One wine MAY have more than one value of each kind; one value MAY belong to
+  more than one wine. A GTIN is stored in its GTIN-14 form. New `pipeline/codes.py`
+  checks each value: the GS1 check digit of a GTIN, the rules of a barcode, and the
+  normal form of a QR URL of the old editor. New `pipeline/seed_codes.py` seeds the table
+  from `svoe-vino-matcher/dataset/code-map.json`.
+- `pipeline/lab_server.py`: `/api/dataset` sends `_gtins`, `_barcodes`, and `_qr_urls` of
+  each wine and the counts `gtins`, `barcodes`, and `qr_urls`. `POST` and `DELETE` of
+  `/api/dataset-gtin`, `/api/dataset-barcode`, and `/api/dataset-qr-url` write one row of
+  `wine_code` (400 a bad value, 404 an unknown wine or value, 409 a value that the wine
+  has). The key `barcode_file` is gone from `/api/dataset`. The JSON body check of
+  `/api/wine-state` is now the method `_json_body`, shared with the new routes.
+- `pipeline/pages/dataset.html`: a new editor `GTINs` above `Barcodes`. The GTIN input and
+  the barcode input check the check digit while the person types; a bad value shows a
+  red line below the input and disables the checkmark icon. The `+` buttons no longer
+  depend on `barcode_file`. The header counts the GTINs. The text search finds a GTIN.
+- Deploy: `data/lab.sqlite3` is at schema version 8. The seed added 23 GTINs and 3 QR
+  URLs. The lab server on 8168 was restarted with SIGTERM, because SIGINT did not stop it
+  (`ResearchLog.md`).
+- New tests: `tests/test_codes.py` (16), `tests/test_seed_codes.py` (9), 8 in
+  `tests/test_lab_server.py`, 1 in `tests/test_labdb.py`. `tests/test_labdb.py` expects
+  version 8 and the table `wine_code`. The Dataset editors were checked in headless
+  Chromium in light and dark mode on a copy of the database.
+- `README.md` step 6, `COMMANDS.md`, plan 07 rule 5, and `SMOKE_TESTS.md` (S1, S3, S4,
+  S12, and section WC) follow the change.
+
 - The Embeddings page is on. `pipeline/lab_server.py` sends each route that
   `embedding_routes.handles` accepts to `embedding_routes.respond`, for GET, HEAD, and
   POST. `/embedding` is no longer in `DISABLED_PAGES`. `make_server` takes

@@ -42,7 +42,12 @@ CONFIG_PATH = os.path.join(ROOT, "config.yaml")
 STEPS_VERSION = 1
 NAME_PATTERN = r"[a-z0-9][a-z0-9._-]{0,99}"
 NAME_RE = re.compile(r"^%s$" % NAME_PATTERN)
-BACKENDS = ("openai", "local")
+# The backend `mock` sends no request: `build_embeddings.MockBackend` gives each prepared
+# image a random unit vector. Its entry has views and steps as any entry, and no model.
+# Read `docs/plans/23_runs-page.md`.
+BACKENDS = ("openai", "local", "mock")
+# The model name of each entry of the backend `mock`.
+MOCK_MODEL = "random-unit-vectors"
 VIEWS = ("full", "label")
 ENTRY_KEYS = ("name", "backend", "base_url", "model", "extra_body", "batch_size", "views")
 DEFAULT_BATCH_SIZE = 16
@@ -63,17 +68,14 @@ ASPECTS = ("keep", "ignore")
 MIN_SIZE, MAX_SIZE = 16, 4096
 
 # The role of each image type of `wine_image`. A `full` image shows the whole package
-# with its label. A `label` image is a close-up of a label. The names `front_full`,
-# `back_full`, `front_label`, and `back_label` are the names that the owner chose on
-# 2026-09-25 for the additional images; the schema holds the old names today.
-ROLES = {"main": "full", "main_patched": "full",
-         "front": "full", "back": "full", "front_full": "full", "back_full": "full",
-         "label_front": "label", "label_back": "label",
-         "front_label": "label", "back_label": "label"}
+# with its label. A `label` image is a close-up of a label. The owner chose the names of
+# the additional types on 2026-09-25: the kind first, then the side (schema files 010
+# and later).
+ROLES = {"main": "full", "main_patched": "full", "full_front": "full", "full_back": "full",
+         "label_front": "label", "label_back": "label"}
 # The order of the columns of one wine. The card image is first: `main_patched` replaces
 # `main`.
-TYPE_ORDER = ("main_patched", "main", "front_full", "front", "back_full", "back",
-              "front_label", "label_front", "back_label", "label_back")
+TYPE_ORDER = ("main_patched", "main", "full_front", "full_back", "label_front", "label_back")
 
 ALPHA_ERROR = ("the gateway drops the alpha channel; the model would see the hidden "
                "colours under the transparent pixels (variant B or E); add "
@@ -187,6 +189,11 @@ class Embedding:
         self.backend = raw.get("backend")
         if self.backend not in BACKENDS:
             raise ConfigError("backend MUST be one of: %s" % ", ".join(BACKENDS))
+        if self.backend == "mock":
+            taken = sorted(set(raw) & {"base_url", "model", "extra_body"})
+            if taken:
+                raise ConfigError("the backend mock takes no %s" % ", ".join(taken))
+            raw = dict(raw, model=MOCK_MODEL)
         base_url = raw.get("base_url")
         if self.backend == "openai":
             if not isinstance(base_url, str) or not base_url.startswith(("http://", "https://")):
@@ -352,13 +359,17 @@ def read_inputs(conn, db_path):
     full image of one wine and a close-up of another wine is a full image.
     """
     store = labdb.image_store(db_path)
-    cuts = {}
-    for source, digest, left, top, right, bottom, folder, extension in conn.execute(
-            "SELECT d.source_sha256, d.sha256, d.box_left, d.box_top, d.box_right, "
+    # kind -> source sha256 -> the processed file. An original has at most one cut of
+    # each kind (`package`, `label`); schema 017.
+    cuts = {target: {} for target in TARGETS}
+    for kind, source, digest, left, top, right, bottom, folder, extension in conn.execute(
+            "SELECT d.kind, d.source_sha256, d.sha256, d.box_left, d.box_top, d.box_right, "
             "d.box_bottom, i.folder, i.extension FROM image_derivative d "
             "JOIN image i ON i.sha256 = d.sha256"):
-        cuts[source] = {"sha256": digest, "box": (left, top, right, bottom),
-                        "path": os.path.join(store, folder, "%s.%s" % (digest, extension))}
+        if kind in cuts:
+            cuts[kind][source] = {
+                "sha256": digest, "box": (left, top, right, bottom),
+                "path": os.path.join(store, folder, "%s.%s" % (digest, extension))}
     wines, by_slug, sources = [], {}, {}
     for slug, name, producer, category, region, image_type, digest, folder, extension in (
             conn.execute(
@@ -381,9 +392,8 @@ def read_inputs(conn, db_path):
             sources[digest] = {
                 "role": role, "path": os.path.join(store, folder, "%s.%s" % (digest, extension)),
                 "url": "/images/%s/%s.%s" % (folder, digest, extension),
-                # The label cut at import does not exist yet. Read "Work outside this
-                # plan" of docs/plans/10_embeddings-page.md.
-                "cuts": {"package": cuts.get(digest), "label": None}}
+                # `pipeline/seed_label_cuts.py` makes the label cut of a full original.
+                "cuts": {target: cuts[target].get(digest) for target in TARGETS}}
         elif role == "full":
             source["role"] = "full"
     for wine in wines:
@@ -690,6 +700,21 @@ def read_events(directory):
 FINAL_STATES = {"done": "done", "stopped": "stopped", "error": "failed"}
 
 
+def _phase(run):
+    """Return the phase of a running build: the model request or the retry that no
+    `progress` line followed yet, as the keys `phase`, `phase_event`, and `phase_t`."""
+    last = next((event for event in reversed(run)
+                 if event["event"] in ("progress", "request", "retry")), None)
+    if not last or last["event"] == "progress":
+        return {}
+    if last["event"] == "request":
+        text = "waiting for the model"
+    else:
+        text = "retry %s in %s s: %s" % (last.get("attempt"), last.get("wait"),
+                                         last.get("error") or "")
+    return {"phase": text, "phase_event": last["event"], "phase_t": last.get("t")}
+
+
 def job_state(directory):
     """Return the job of an embedding from `build.lock` and `build.log`.
 
@@ -707,13 +732,14 @@ def job_state(directory):
     job = {"state": None, "pid": pid, "started_at": None, "started_t": None,
            "todo": progress.get("todo"), "done": progress.get("done", 0),
            "built": progress.get("built", 0), "failed": progress.get("failed", 0),
-           "message": None}
+           "message": None, "phase": None, "phase_event": None, "phase_t": None}
     if start:
         job.update(started_at=start.get("time"), started_t=start.get("t"))
     if pid:
         if start and start.get("pid") == pid:
             job["state"] = ("stopping" if any(event["event"] == "stopping" for event in run)
                             else "running")
+            job.update(_phase(run))
         else:
             job.update(state="running", started_at=None, started_t=None, todo=None,
                        done=0, built=0, failed=0,

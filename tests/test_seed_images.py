@@ -376,8 +376,8 @@ class SeedImagesTest(unittest.TestCase):
         self.add_wine("a", "a.webp")
         self.insert("a", "main", b"1")
         self.insert("a", "main_patched", b"2")
-        self.insert("a", "front", b"3")
-        self.insert("a", "front", b"4")
+        self.insert("a", "full_front", b"3")
+        self.insert("a", "full_front", b"4")
         for image_type in ("main", "main_patched"):
             with self.assertRaises(sqlite3.IntegrityError):
                 self.insert("a", image_type, b"5")

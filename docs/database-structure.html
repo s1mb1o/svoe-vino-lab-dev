@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Database Structure</title>
+<!--
+  One A4 landscape page: the structure of data/lab.sqlite3 at schema version 17
+  (pipeline/schema/001 to 017). This file is the source of docs/database-structure.pdf.
+  The page is written by hand. Update it when a new file enters pipeline/schema/.
+  A small script at the end draws the foreign-key lines after the layout. It also sets
+  <html data-fit="ok"> when the content fits the page, and "overflow" when it does not.
+  Then data-overflow gives the overflow of the page and of the diagram in CSS pixels.
+
+  Print it again (in the project root). Chrome exits after about 2 s. Then check that the
+  PDF has one page.
+    timeout 30 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new \
+      --no-pdf-header-footer --print-to-pdf=docs/database-structure.pdf \
+      "file://$PWD/docs/database-structure.html"
+    pdfinfo docs/database-structure.pdf | grep Pages
+  Do not pass --user-data-dir with a new directory. On 2026-09-25 Chrome 153 then wrote the
+  PDF but did not exit.
+-->
+<style>
+:root {
+  --paper: #ffffff;
+  --ink: #1b1b20;
+  --muted: #55555f;
+  --faint: #7c7c87;
+  --rule: #d3d3da;
+  --row-rule: #ececf1;
+  --link: #6a6a74;
+  --pk-bg: #f1dfae;
+  --pk-ink: #5f4500;
+  --fk-bg: #d9e5f7;
+  --fk-ink: #1d4b8f;
+  --cat: #7d2a3c;
+  --cat-tint: #f8eef0;
+  --img: #1f6873;
+  --img-tint: #e8f2f3;
+  --tst: #6b5310;
+  --tst-tint: #f5efdf;
+  --cat-ink: var(--cat);
+  --img-ink: var(--img);
+  --tst-ink: var(--tst);
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --paper: #17171b;
+    --ink: #e8e8ee;
+    --muted: #b0b0ba;
+    --faint: #8a8a95;
+    --rule: #3b3b44;
+    --row-rule: #2a2a31;
+    --link: #9d9da8;
+    --pk-bg: #4d3d12;
+    --pk-ink: #f0d488;
+    --fk-bg: #1c3352;
+    --fk-ink: #a8c7f4;
+    --cat: #93354a;
+    --cat-tint: #2a1c20;
+    --img: #237580;
+    --img-tint: #162527;
+    --tst: #7d6014;
+    --tst-tint: #28231a;
+    --cat-ink: #e0919f;
+    --img-ink: #72c3cd;
+    --tst-ink: #d6b561;
+  }
+}
+@page { size: A4 landscape; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); }
+body {
+  font-family: var(--sans);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+@media screen {
+  body { padding: 16px; }
+  .page { margin: 0 auto; box-shadow: 0 0 0 1px var(--rule); }
+}
+.page {
+  width: 297mm;
+  height: 210mm;
+  padding: 6.5mm 7mm 6mm;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+code { font-family: var(--mono); font-size: 0.94em; }
+
+/* Title and legend */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  padding-bottom: 4px;
+  border-bottom: 1.2px solid var(--ink);
+}
+h1 { margin: 0; font-size: 15pt; line-height: 1.1; letter-spacing: -0.01em; }
+h1 code { font-size: 10.5pt; font-weight: 500; color: var(--muted); margin-left: 6px; }
+.sub { margin-top: 2px; font-size: 7pt; color: var(--muted); }
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 3px 11px;
+  max-width: 128mm;
+  font-size: 6.4pt;
+  color: var(--muted);
+}
+.legend svg { vertical-align: middle; }
+
+/* Group labels and the diagram use the same columns */
+.groups, .diagram {
+  display: grid;
+  grid-template-columns: 206px 30px 262px 26px 266px 34px 234px 1fr;
+}
+.groups { margin-top: 5px; }
+.groups div {
+  padding-top: 2px;
+  border-top: 2px solid var(--gi);
+  color: var(--gi);
+  font-size: 6.2pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.groups span { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--muted); }
+.g-cat { grid-column: 1 / 4; }
+.g-img { grid-column: 5 / 6; }
+.g-tst { grid-column: 7 / 8; }
+
+.diagram { position: relative; flex: 1; min-height: 0; margin-top: 5px; }
+.col { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
+.c1 { grid-column: 1; }
+.c2 { grid-column: 3; }
+.c3 { grid-column: 5; }
+.c4 { grid-column: 7; }
+.links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  z-index: 0;
+  pointer-events: none;
+}
+.links path.link { fill: none; stroke: var(--link); stroke-width: 0.9; }
+.links marker path, .links marker circle, .legend .mk { fill: var(--link); }
+.legend .ln { fill: none; stroke: var(--link); stroke-width: 0.9; }
+
+/* Table boxes */
+.cat { --g: var(--cat); --gt: var(--cat-tint); --gi: var(--cat-ink); }
+.img { --g: var(--img); --gt: var(--img-tint); --gi: var(--img-ink); }
+.tst { --g: var(--tst); --gt: var(--tst-tint); --gi: var(--tst-ink); }
+.box {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.box h2 {
+  margin: 0;
+  padding: 3px 6px;
+  background: var(--g);
+  color: #ffffff;
+  font: 700 7.8pt/1.1 var(--mono);
+}
+.box .what {
+  margin: 0;
+  padding: 2.5px 6px;
+  background: var(--gt);
+  border-bottom: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 6.2pt;
+  line-height: 1.28;
+}
+.box table { width: 100%; border-collapse: collapse; }
+.box td {
+  padding: 1.1px 3px;
+  border-top: 1px solid var(--row-rule);
+  vertical-align: top;
+  font-size: 6.9pt;
+  line-height: 1.17;
+}
+.box tr:first-child td { border-top: 0; }
+.box tr.more td { border-top: 0; padding-top: 0; }
+td.k { width: 1px; padding-left: 5px; white-space: nowrap; }
+td.n { width: 1px; font-family: var(--mono); white-space: nowrap; }
+td.t {
+  width: 1px;
+  padding-top: 2px;
+  color: var(--faint);
+  font: 5.6pt/1.17 var(--mono);
+  white-space: nowrap;
+}
+td.d { padding-right: 5px; color: var(--muted); font-size: 6.1pt; }
+td.d code { color: var(--ink); font-size: 5.9pt; }
+.pk, .fk {
+  display: inline-block;
+  margin-right: 1.5px;
+  padding: 1.2px 2px 1px;
+  border-radius: 2px;
+  font: 700 4.9pt/1 var(--sans);
+  vertical-align: 1px;
+}
+.pk { background: var(--pk-bg); color: var(--pk-ink); }
+.fk { background: var(--fk-bg); color: var(--fk-ink); }
+.to { color: var(--fk-ink); }
+.box .foot {
+  padding: 2px 6px 2.5px;
+  background: var(--gt);
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font: 5.7pt/1.32 var(--mono);
+}
+.box .foot b { font-family: var(--sans); font-weight: 600; color: var(--ink); }
+
+/* Notes */
+.notes {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1.2px solid var(--ink);
+  font-size: 6.3pt;
+  line-height: 1.34;
+}
+.notes p { margin: 0; }
+.notes b { display: block; margin-bottom: 1px; font-size: 6.9pt; }
+.files { margin-top: 4px; color: var(--faint); font: 5.6pt/1.3 var(--mono); }
+.files b { font-family: var(--sans); color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div>
+    <h1>Lab database structure <code>data/lab.sqlite3</code></h1>
+    <div class="sub">svoe-vino-lab · SQLite · 13 tables, all STRICT · schema version 17 =
+      <code>pipeline/schema/001</code> to <code>017</code> · state of 2026-09-25</div>
+  </div>
+  <div class="legend">
+    <span><b class="pk">PK</b> primary-key column</span>
+    <span><b class="fk">FK</b> foreign-key column</span>
+    <span><code>TEXT?</code> MAY be NULL; all other columns are NOT NULL</span>
+    <span>≈ a wine slug that no foreign key checks</span>
+    <span><svg width="34" height="8" viewBox="0 0 34 8"><path class="ln" d="M3,4 H29"/><circle class="mk" cx="3" cy="4" r="1.8"/><path class="mk" d="M28,1 L34,4 L28,7 z"/></svg>
+      foreign key → the key that it references</span>
+  </div>
+</header>
+
+<div class="groups">
+  <div class="g-cat cat">Catalogue <span>· key <code>wine_slug</code></span></div>
+  <div class="g-img img">Image store <span>· key <code>sha256</code></span></div>
+  <div class="g-tst tst">Test sets <span>· key <code>set_name</code></span></div>
+</div>
+
+<main class="diagram" id="diagram">
+<svg class="links" id="links" aria-hidden="true">
+  <defs>
+    <marker id="arrow" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="6" markerHeight="6"
+            markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L8,4 L0,7.4 z"/></marker>
+    <marker id="dot" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="4" markerHeight="4"
+            markerUnits="userSpaceOnUse"><circle cx="4" cy="4" r="4"/></marker>
+  </defs>
+</svg>
+
+<!-- Column 1: the child tables of wine_catalog -->
+<div class="col c1">
+  <section class="box cat" data-t="wine_code">
+    <h2>wine_code</h2>
+    <p class="what">GTINs, barcodes, and QR URLs. A wine MAY have many values. A value MAY
+      belong to many wines.</p>
+    <table>
+      <tr data-c="wine_slug"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d"><span class="to">→ wine_catalog</span></td></tr>
+      <tr data-c="kind"><td class="k"><b class="pk">PK</b></td><td class="n">kind</td><td class="t">TEXT</td><td class="d"><code>gtin</code> | <code>barcode</code> | <code>qr_url</code></td></tr>
+      <tr data-c="value"><td class="k"><b class="pk">PK</b></td><td class="n">value</td><td class="t">TEXT</td><td class="d"></td></tr>
+      <tr class="more"><td class="k"></td><td class="d" colspan="3">gtin: 14 digits · barcode: ≤ 128 chars · qr_url: http(s) URL, ≤ 4096 chars</td></tr>
+    </table>
+    <div class="foot"><b>index</b> wine_code_value (kind, value)</div>
+  </section>
+
+  <section class="box cat" data-t="wine_atlas_binding">
+    <h2>wine_atlas_binding</h2>
+    <p class="what">The Drink Atlas Core product of a wine. The <code>manual</code> row wins
+      over the <code>automatic</code> row.</p>
+    <table>
+      <tr data-c="wine_slug"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d"><span class="to">→ wine_catalog</span></td></tr>
+      <tr data-c="source"><td class="k"><b class="pk">PK</b></td><td class="n">source</td><td class="t">TEXT</td><td class="d"><code>automatic</code> | <code>manual</code></td></tr>
+      <tr data-c="product_uuid"><td class="k"></td><td class="n">product_uuid</td><td class="t">TEXT</td><td class="d">lower-case UUID, 36 chars</td></tr>
+    </table>
+    <div class="foot"><b>index</b> wine_atlas_binding_product (product_uuid)</div>
+  </section>
+
+  <section class="box cat" data-t="wine_comment">
+    <h2>wine_comment</h2>
+    <p class="what">Comments on a wine. A comment has no edit. A remove names the id.</p>
+    <table>
+      <tr data-c="id"><td class="k"><b class="pk">PK</b></td><td class="n">id</td><td class="t">INTEGER</td><td class="d">the rowid</td></tr>
+      <tr data-c="wine_slug"><td class="k"><b class="fk">FK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d"><span class="to">→ wine_catalog</span></td></tr>
+      <tr data-c="created_at"><td class="k"></td><td class="n">created_at</td><td class="t">TEXT</td><td class="d">UTC time of the write</td></tr>
+      <tr data-c="source"><td class="k"></td><td class="n">source</td><td class="t">TEXT</td><td class="d"><code>user</code> | <code>script</code></td></tr>
+      <tr data-c="text"><td class="k"></td><td class="n">text</td><td class="t">TEXT</td><td class="d">1 to 4000 chars, with line breaks</td></tr>
+    </table>
+    <div class="foot"><b>index</b> wine_comment_wine (wine_slug, created_at, id)</div>
+  </section>
+
+  <section class="box cat" data-t="wine_favorite">
+    <h2>wine_favorite</h2>
+    <p class="what">A wine is a favorite while it has a row.</p>
+    <table>
+      <tr data-c="wine_slug"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d"><span class="to">→ wine_catalog</span></td></tr>
+      <tr data-c="created_at"><td class="k"></td><td class="n">created_at</td><td class="t">TEXT</td><td class="d">UTC time of the mark</td></tr>
+    </table>
+  </section>
+</div>
+
+<!-- Column 2: the catalogue and the refusals of the website import -->
+<div class="col c2">
+  <section class="box cat" data-t="wine_catalog">
+    <h2>wine_catalog</h2>
+    <p class="what">One row per wine card. Sources: the Strapi CSV of the organizers, the
+      website import of vino-svoe.ru, and the form <code>Add wine</code>.</p>
+    <table>
+      <tr data-c="wine_slug"><td class="k"><b class="pk">PK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d">the key of each wine link</td></tr>
+      <tr data-c="name"><td class="k"></td><td class="n">name</td><td class="t">TEXT</td><td class="d">CSV: Название вина</td></tr>
+      <tr data-c="producer"><td class="k"></td><td class="n">producer</td><td class="t">TEXT</td><td class="d">CSV: Винодельня</td></tr>
+      <tr data-c="category"><td class="k"></td><td class="n">category</td><td class="t">TEXT</td><td class="d">CSV: Категория</td></tr>
+      <tr data-c="color"><td class="k"></td><td class="n">color</td><td class="t">TEXT</td><td class="d">CSV: Цвет</td></tr>
+      <tr data-c="region"><td class="k"></td><td class="n">region</td><td class="t">TEXT</td><td class="d">CSV: Регион</td></tr>
+      <tr data-c="grapes"><td class="k"></td><td class="n">grapes</td><td class="t">TEXT?</td><td class="d">CSV: Сорт винограда</td></tr>
+      <tr data-c="description"><td class="k"></td><td class="n">description</td><td class="t">TEXT?</td><td class="d">CSV: Описание; NULL since 014</td></tr>
+      <tr data-c="csv_photo_name"><td class="k"></td><td class="n">csv_photo_name</td><td class="t">TEXT</td><td class="d">CSV: Название фото</td></tr>
+      <tr data-c="state"><td class="k"></td><td class="n">state</td><td class="t">TEXT</td><td class="d">default <code>Active</code></td></tr>
+      <tr class="more"><td class="k"></td><td class="d" colspan="3"><code>Active</code> | <code>Disabled</code> | <code>Removed</code></td></tr>
+      <tr data-c="removed_by"><td class="k"></td><td class="n">removed_by</td><td class="t">TEXT?</td><td class="d"><code>import</code> | <code>person</code>; only for <code>Removed</code></td></tr>
+      <tr data-c="website_modified_at"><td class="k"></td><td class="n">website_modified_at</td><td class="t">TEXT?</td><td class="d"><code>lastmod</code> in wines-sitemap.xml</td></tr>
+      <tr data-c="modified_at"><td class="k"></td><td class="n">modified_at</td><td class="t">TEXT?</td><td class="d">UTC time of the last change</td></tr>
+    </table>
+    <div class="foot"><b>state</b> Active: in the last CSV · Removed: not in the last CSV,
+      or removed by a person · Disabled: out of use; only a person sets it<br>
+      <b>check</b> (state = 'Removed') = (removed_by IS NOT NULL)<br>
+      <b>triggers</b> wine_catalog_insert_time, wine_catalog_update_time set modified_at</div>
+  </section>
+
+  <section class="box cat" data-t="website_refusal">
+    <h2>website_refusal</h2>
+    <p class="what">The choices of a person in the merge dialog of the website import. A
+      later import skips a refused change while its situation stays.</p>
+    <table>
+      <tr data-c="wine_slug"><td class="k"><b class="pk">PK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d">≈ no FK: a refused new wine is not in wine_catalog</td></tr>
+      <tr data-c="kind"><td class="k"><b class="pk">PK</b></td><td class="n">kind</td><td class="t">TEXT</td><td class="d"><code>text</code> | <code>image</code> | <code>new</code> | <code>missing</code> | <code>back</code> | <code>main</code></td></tr>
+      <tr data-c="field"><td class="k"><b class="pk">PK</b></td><td class="n">field</td><td class="t">TEXT</td><td class="d">the field name for <code>text</code>; else <code>''</code> (the default)</td></tr>
+      <tr data-c="website_value"><td class="k"></td><td class="n">website_value</td><td class="t">TEXT?</td><td class="d">text: the website value · image, main: SHA-256 of the file · else NULL</td></tr>
+      <tr data-c="created_at"><td class="k"></td><td class="n">created_at</td><td class="t">TEXT</td><td class="d">UTC time of the choice</td></tr>
+    </table>
+    <div class="foot"><b>check</b> (kind = 'text') = (field &lt;&gt; '')</div>
+  </section>
+</div>
+
+<!-- Column 3: the image store -->
+<div class="col c3">
+  <section class="box img" data-t="wine_image">
+    <h2>wine_image</h2>
+    <p class="what">Links a wine and an image type to an original file. A file that several
+      wines share has one row for each wine.</p>
+    <table>
+      <tr data-c="wine_slug"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d"><span class="to">→ wine_catalog</span></td></tr>
+      <tr data-c="image_type"><td class="k"><b class="pk">PK</b></td><td class="n">image_type</td><td class="t">TEXT</td><td class="d"></td></tr>
+      <tr class="more"><td class="k"></td><td class="d" colspan="3"><code>main</code> | <code>main_patched</code> | <code>full_front</code> | <code>label_front</code> | <code>full_back</code> | <code>label_back</code></td></tr>
+      <tr data-c="sha256"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">sha256</td><td class="t">TEXT</td><td class="d"><span class="to">→ image</span></td></tr>
+      <tr data-c="source_name"><td class="k"></td><td class="n">source_name</td><td class="t">TEXT</td><td class="d">the file name at the source</td></tr>
+      <tr data-c="match_method"><td class="k"></td><td class="n">match_method</td><td class="t">TEXT</td><td class="d">how the file was found, e.g. <code>name-unique</code>, <code>manual</code></td></tr>
+    </table>
+    <div class="foot"><b>unique index</b> wine_image_one_main (wine_slug, image_type)
+      WHERE image_type IN ('main', 'main_patched')</div>
+  </section>
+
+  <section class="box img" data-t="image">
+    <h2>image</h2>
+    <p class="what">One row per stored file: an original or a cut. The file is
+      <code>images/&lt;folder&gt;/&lt;sha256&gt;.&lt;extension&gt;</code>.</p>
+    <table>
+      <tr data-c="sha256"><td class="k"><b class="pk">PK</b></td><td class="n">sha256</td><td class="t">TEXT</td><td class="d">64 lower-case hex digits</td></tr>
+      <tr data-c="folder"><td class="k"></td><td class="n">folder</td><td class="t">TEXT</td><td class="d"><code>main</code> | <code>patched</code> | <code>additional</code> | <code>cropped</code> | <code>testset</code></td></tr>
+      <tr data-c="extension"><td class="k"></td><td class="n">extension</td><td class="t">TEXT</td><td class="d">lower-case [0-9a-z], e.g. <code>webp</code></td></tr>
+      <tr data-c="width"><td class="k"></td><td class="n">width</td><td class="t">INTEGER?</td><td class="d">pixels, &gt; 0; NULL: not measured yet</td></tr>
+      <tr data-c="height"><td class="k"></td><td class="n">height</td><td class="t">INTEGER?</td><td class="d">pixels, &gt; 0</td></tr>
+    </table>
+    <div class="foot"><b>check</b> (width IS NULL) = (height IS NULL)</div>
+  </section>
+
+  <section class="box img" data-t="image_derivative">
+    <h2>image_derivative</h2>
+    <p class="what">The cut of an original file. The box is in the pixels of the original
+      after its EXIF orientation.</p>
+    <table>
+      <tr data-c="source_sha256"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">source_sha256</td><td class="t">TEXT</td><td class="d"><span class="to">→ image</span>: the original</td></tr>
+      <tr data-c="kind"><td class="k"><b class="pk">PK</b></td><td class="n">kind</td><td class="t">TEXT</td><td class="d"><code>package</code> | <code>label</code></td></tr>
+      <tr data-c="method"><td class="k"></td><td class="n">method</td><td class="t">TEXT</td><td class="d"><code>crop</code> | <code>seg</code></td></tr>
+      <tr data-c="settings"><td class="k"></td><td class="n">settings</td><td class="t">TEXT</td><td class="d">cut settings as text</td></tr>
+      <tr data-c="sha256"><td class="k"><b class="fk">FK</b></td><td class="n">sha256</td><td class="t">TEXT</td><td class="d"><span class="to">→ image</span>: the cut file</td></tr>
+      <tr data-c="box_left"><td class="k"></td><td class="n">box_left</td><td class="t">INTEGER</td><td class="d">≥ 0</td></tr>
+      <tr data-c="box_top"><td class="k"></td><td class="n">box_top</td><td class="t">INTEGER</td><td class="d">≥ 0</td></tr>
+      <tr data-c="box_right"><td class="k"></td><td class="n">box_right</td><td class="t">INTEGER</td><td class="d">&gt; box_left</td></tr>
+      <tr data-c="box_bottom"><td class="k"></td><td class="n">box_bottom</td><td class="t">INTEGER</td><td class="d">&gt; box_top</td></tr>
+    </table>
+    <div class="foot"><b>kind</b> package (the default): the whole package, crop or seg ·
+      label: the label, seg · one cut per original and kind</div>
+  </section>
+</div>
+
+<!-- Column 4: the test sets -->
+<div class="col c4">
+  <section class="box tst" data-t="test_set">
+    <h2>test_set</h2>
+    <p class="what">A photo set of a directory <code>dataset/&lt;set&gt;/</code>.</p>
+    <table>
+      <tr data-c="set_name"><td class="k"><b class="pk">PK</b></td><td class="n">set_name</td><td class="t">TEXT</td><td class="d">[0-9a-z_-], e.g. <code>my</code></td></tr>
+      <tr data-c="source_dir"><td class="k"></td><td class="n">source_dir</td><td class="t">TEXT</td><td class="d">the directory of the last import</td></tr>
+    </table>
+  </section>
+
+  <section class="box tst" data-t="test_photo">
+    <h2>test_photo</h2>
+    <p class="what">One photo file of one set:
+      <code>&lt;source_dir&gt;/photo/&lt;place&gt;/&lt;file_name&gt;</code>. The place
+      <code>__null__</code> holds photos with no card. The same bytes MAY have another label
+      in another set.</p>
+    <table>
+      <tr data-c="set_name"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">set_name</td><td class="t">TEXT</td><td class="d"><span class="to">→ test_set</span></td></tr>
+      <tr data-c="place"><td class="k"><b class="pk">PK</b></td><td class="n">place</td><td class="t">TEXT</td><td class="d">≈ wine slug, or <code>__null__</code></td></tr>
+      <tr data-c="file_name"><td class="k"><b class="pk">PK</b></td><td class="n">file_name</td><td class="t">TEXT</td><td class="d">the file name</td></tr>
+      <tr data-c="sha256"><td class="k"><b class="fk">FK</b></td><td class="n">sha256</td><td class="t">TEXT</td><td class="d"><span class="to">→ image</span></td></tr>
+      <tr data-c="label"><td class="k"></td><td class="n">label</td><td class="t">TEXT?</td><td class="d">NULL: no label yet</td></tr>
+      <tr class="more"><td class="k"></td><td class="d" colspan="3"><code>positive</code> | <code>negative</code> | <code>unusable</code> | <code>variant</code></td></tr>
+      <tr data-c="marked_delete"><td class="k"></td><td class="n">marked_delete</td><td class="t">INTEGER</td><td class="d"><code>0</code> | <code>1</code>: the label field <code>delete</code></td></tr>
+    </table>
+  </section>
+
+  <section class="box tst" data-t="test_excluded">
+    <h2>test_excluded</h2>
+    <p class="what">An excluded slug of one set. Its photos are out of the benchmark.
+      Source: excluded-slugs.json.</p>
+    <table>
+      <tr data-c="set_name"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">set_name</td><td class="t">TEXT</td><td class="d"><span class="to">→ test_set</span></td></tr>
+      <tr data-c="wine_slug"><td class="k"><b class="pk">PK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d">≈ wine slug</td></tr>
+      <tr data-c="reason"><td class="k"></td><td class="n">reason</td><td class="t">TEXT?</td><td class="d">free text from the file</td></tr>
+      <tr data-c="ts"><td class="k"></td><td class="n">ts</td><td class="t">TEXT?</td><td class="d">the time as the file gives it</td></tr>
+    </table>
+  </section>
+
+  <section class="box tst" data-t="test_variant">
+    <h2>test_variant</h2>
+    <p class="what">The variant group of a slug in one set. Source: variant-groups.json.
+      The metric <code>near_duplicate_confusion</code> reads it.</p>
+    <table>
+      <tr data-c="set_name"><td class="k"><b class="pk">PK</b><b class="fk">FK</b></td><td class="n">set_name</td><td class="t">TEXT</td><td class="d"><span class="to">→ test_set</span></td></tr>
+      <tr data-c="wine_slug"><td class="k"><b class="pk">PK</b></td><td class="n">wine_slug</td><td class="t">TEXT</td><td class="d">≈ wine slug</td></tr>
+      <tr data-c="group_no"><td class="k"></td><td class="n">group_no</td><td class="t">INTEGER</td><td class="d">≥ 0: the position of the group in the file</td></tr>
+    </table>
+  </section>
+</div>
+</main>
+
+<footer class="notes">
+  <p><b>Migrations</b><code>pipeline/labdb.py</code> applies each file
+    <code>pipeline/schema/NNN_&lt;name&gt;.sql</code> one time, in number order, with one
+    transaction for each file. <code>PRAGMA user_version</code> holds the number of the last
+    applied file. The code refuses a gap in the numbers. A change is a new file with the
+    next number. Do not edit an applied file.</p>
+  <p><b>Rebuilds</b>To change a constraint or to remove a column, a file builds the table
+    again: a new table, a copy of the rows, DROP, RENAME. Files 004, 007, 010, 012, 014, 016,
+    and 017 do this. <code>labdb.migrate</code> runs each file with the foreign keys off, and
+    <code>PRAGMA foreign_key_check</code> checks each link before the COMMIT. A rebuild of
+    <code>wine_catalog</code> drops its two triggers, so the file MUST create them again.</p>
+  <p><b>Images</b>The store is <code>images/</code> in the directory of the database file.
+    The same bytes are stored one time, in the folder of the type that stored them first:
+    <code>main</code>, <code>patched</code> (main_patched), <code>additional</code> (full_*,
+    label_*), <code>testset</code>. A new cut goes to <code>cropped</code>. A reader MUST use
+    <code>main_patched</code> instead of <code>main</code> when a wine has both.</p>
+  <p><b>Values</b>The columns <code>created_at</code> and <code>modified_at</code> hold UTC
+    text <code>YYYY-MM-DDTHH:MM:SSZ</code>; a GLOB check keeps the form. A TEXT column refuses
+    <code>''</code> through a CHECK or its foreign key. Exceptions: website_refusal.field,
+    website_refusal.website_value, test_excluded.reason, test_excluded.ts. The code does not
+    delete a row of <code>wine_catalog</code>: Removed and Disabled are states.</p>
+  <p><b>Test sets</b>The labels stay in git, in
+    <code>dataset/&lt;set&gt;/review-labels.json</code>.
+    <code>pipeline/import_testset.py</code> copies them here, read-only. Each import makes
+    the rows of a set equal to the files again. The slugs of the test-set tables
+    and of website_refusal have no foreign key (≈).</p>
+</footer>
+<div class="files"><b>Schema files</b> 001 wine_catalog · 002 wine_slug · 003 wine_state ·
+  004 removed_by · 005 wine_image · 006 image_size · 007 image_table · 008 wine_code ·
+  009 atlas_binding · 010 additional_types · 011 wine_comment · 012 type_names_kind_first ·
+  013 wine_favorite · 014 description_optional · 015 website_import · 016 testset ·
+  017 derivative_kind</div>
+
+</div>
+<script>
+(function () {
+  // One entry per foreign key: child table, child column, edge of the child box, parent
+  // table, parent column, edge of the parent box. "L" is the left edge, "R" the right edge.
+  // A line that starts and ends on the same edge has a 7th value: its bulge in pixels.
+  // Different bulges keep such lines apart. Keep the right curves 5 mm from the paper edge.
+  var LINKS = [
+    ["wine_code", "wine_slug", "R", "wine_catalog", "wine_slug", "L"],
+    ["wine_atlas_binding", "wine_slug", "R", "wine_catalog", "wine_slug", "L"],
+    ["wine_comment", "wine_slug", "R", "wine_catalog", "wine_slug", "L"],
+    ["wine_favorite", "wine_slug", "R", "wine_catalog", "wine_slug", "L"],
+    ["wine_image", "wine_slug", "L", "wine_catalog", "wine_slug", "R"],
+    ["wine_image", "sha256", "L", "image", "sha256", "L", 16],
+    ["image_derivative", "source_sha256", "R", "image", "sha256", "R", 13],
+    ["image_derivative", "sha256", "R", "image", "sha256", "R", 22],
+    ["test_photo", "sha256", "L", "image", "sha256", "R"],
+    ["test_photo", "set_name", "R", "test_set", "set_name", "R", 11],
+    ["test_excluded", "set_name", "R", "test_set", "set_name", "R", 16],
+    ["test_variant", "set_name", "R", "test_set", "set_name", "R", 21]
+  ];
+  var SVG = "http://www.w3.org/2000/svg";
+  var diagram = document.getElementById("diagram");
+  var svg = document.getElementById("links");
+
+  // The point on the box edge, at the middle of the first text line of the column name.
+  function point(table, column, side) {
+    var box = diagram.querySelector('[data-t="' + table + '"]');
+    var cell = box.querySelector('[data-c="' + column + '"] td.n');
+    var range = document.createRange();
+    range.selectNodeContents(cell);
+    var d = diagram.getBoundingClientRect();
+    var b = box.getBoundingClientRect();
+    var r = range.getClientRects()[0];
+    return { x: (side === "R" ? b.right : b.left) - d.left, y: r.top + r.height / 2 - d.top };
+  }
+
+  function curve(a, sideA, b, sideB, bulge) {
+    var k = sideA === sideB ? bulge || 16 : Math.max(Math.abs(b.x - a.x) / 2, 12);
+    var ax = a.x + (sideA === "R" ? k : -k);
+    var bx = b.x + (sideB === "R" ? k : -k);
+    return "M" + a.x + "," + a.y + " C" + ax + "," + a.y + " " + bx + "," + b.y + " " +
+      b.x + "," + b.y;
+  }
+
+  function draw() {
+    Array.prototype.forEach.call(svg.querySelectorAll("path.link"), function (p) {
+      p.remove();
+    });
+    LINKS.forEach(function (l) {
+      var p = document.createElementNS(SVG, "path");
+      p.setAttribute("class", "link");
+      p.setAttribute("d", curve(point(l[0], l[1], l[2]), l[2], point(l[3], l[4], l[5]), l[5],
+        l[6]));
+      p.setAttribute("marker-start", "url(#dot)");
+      p.setAttribute("marker-end", "url(#arrow)");
+      svg.appendChild(p);
+    });
+    var page = document.querySelector(".page");
+    var pageOver = page.scrollHeight - page.clientHeight;
+    var diagramOver = diagram.scrollHeight - diagram.clientHeight;
+    var over = pageOver > 1 || diagramOver > 1;
+    document.documentElement.setAttribute("data-fit", over ? "overflow" : "ok");
+    document.documentElement.setAttribute("data-overflow",
+      "page " + pageOver + " px, diagram " + diagramOver + " px");
+  }
+
+  draw();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  window.addEventListener("resize", draw);
+})();
+</script>
+</body>
+</html>

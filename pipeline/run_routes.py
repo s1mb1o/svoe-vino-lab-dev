@@ -1,0 +1,263 @@
+"""The routes of the Runs page of the lab server.
+
+The page reads the run directories of `runs/` with `run_files.py`. The runs stay files;
+the lab database does not hold them. Each route is GET and writes nothing:
+
+    GET /runs                                   the page
+    GET /api/runs                               the head of each run, and the lab
+                                                configurations of `config.yaml`
+    GET /api/run?id=&filter=&sort=&q=&offset=&limit=
+                                                the metrics and the rows of one run
+    GET /api/run-clusters                       the catalogue clusters and card names
+    GET /api/run-inputs?id=&query=              the model inputs of one row
+
+A lab configuration is one entry of the key `embeddings` of `config.yaml`. The key
+`configuration` of `run.json` names it. The images come from the image store of the
+lab database, through the route `/images/<folder>/<sha256>.<ext>`: the photo of a row by
+its `image_sha256`, and the catalogue image of a slug by the rule of `card_images` of
+`lab_server.py`. Read `docs/plans/23_runs-page.md`.
+"""
+import hashlib
+import os
+import sqlite3
+import sys
+import urllib.parse
+from contextlib import closing
+from pathlib import Path
+
+import embeddings
+import lab_pages
+import labdb
+import run_files
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RUNS_DIR = os.path.join(ROOT, "runs")
+CLUSTERS_FILE = os.path.join(ROOT, "dataset", "catalog-clusters.json")
+RULES_FILE = os.path.join(ROOT, "dataset", "catalog-cluster-rules.json")
+MATCHER_ROOT = os.path.join(os.path.dirname(ROOT), "svoe-vino-matcher")
+ROUTES = ("/runs", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs")
+JSON_TYPE = "application/json; charset=utf-8"
+MAX_LIMIT = 1000
+# The keys of a cluster rule that the VLM box of the page reads.
+RULE_KEYS = ("mode", "questions")
+
+
+def handles(route):
+    """Answer whether `route` belongs to the Runs page."""
+    return route in ROUTES
+
+
+def _json(code, value):
+    return code, value, JSON_TYPE, "no-store"
+
+
+def _error(code, message):
+    return _json(code, {"error": message})
+
+
+def respond(server, method, path, card_images):
+    """Answer one request. Return (HTTP code, body, content type, Cache-Control).
+
+    `card_images(conn)` is `lab_server.card_images`: slug -> the images of the card.
+    """
+    parts = urllib.parse.urlsplit(path)
+    route = parts.path
+    query = urllib.parse.parse_qs(parts.query)
+    if method not in ("GET", "HEAD"):
+        return _error(405, "the route %s answers GET alone" % route)
+    runs_dir = getattr(server, "runs_dir", None) or RUNS_DIR
+    if route == "/runs":
+        return 200, lab_pages.page("runs.html"), "text/html; charset=utf-8", "no-store"
+    if route == "/api/runs":
+        return _json(200, runs_view(runs_dir, server.config_path or embeddings.CONFIG_PATH))
+    if route == "/api/run":
+        return run_view(runs_dir, server.db_path, query, card_images)
+    if route == "/api/run-clusters":
+        return _json(200, clusters_view(server.db_path))
+    return inputs_view(runs_dir, server.db_path, query)
+
+
+def _one(query, key, default=""):
+    return (query.get(key) or [default])[0]
+
+
+def configurations(config_path):
+    """Return (the lab configurations of `config.yaml`, in file order, the error of the
+    file or None). An entry that is not valid keeps its name and its error."""
+    try:
+        settings = embeddings.load_settings(config_path)
+    except embeddings.ConfigError as exc:
+        return [], str(exc)
+    return [{"name": name, "backend": embedding.backend if embedding else None,
+             "error": error} for name, embedding, error in settings.entries], None
+
+
+def runs_view(runs_dir, config_path):
+    """Return the head of each run, the newest first, and the lab configurations."""
+    entries, error = configurations(config_path)
+    return {"runs_dir": runs_dir,
+            "runs": [run_files.run_head(runs_dir, run_id)
+                     for run_id in run_files.run_dirs(runs_dir)],
+            "configurations": entries, "config_error": error}
+
+
+def _connect(db_path):
+    """Open the lab database read-only."""
+    if not db_path or not os.path.isfile(db_path):
+        raise sqlite3.OperationalError("no database at %s" % db_path)
+    return sqlite3.connect(Path(os.path.abspath(db_path)).as_uri() + "?mode=ro", uri=True)
+
+
+def _store_rows(conn, digests):
+    """Return sha256 -> (folder, extension) of the `image` rows of `digests`."""
+    out, digests = {}, sorted(digests)
+    for start in range(0, len(digests), 500):
+        chunk = digests[start:start + 500]
+        out.update((digest, (folder, extension)) for digest, folder, extension in conn.execute(
+            "SELECT sha256, folder, extension FROM image WHERE sha256 IN (%s)"
+            % ", ".join("?" for _ in chunk), chunk))
+    return out
+
+
+def _row_slugs(row):
+    """Return the slugs whose catalogue image one row shows."""
+    slugs = {c.get("slug") for c in row.get("candidates") or ()}
+    slugs.update(row.get("truth") or ())
+    slugs.update((row.get("twin") or {}).get("slugs") or ())
+    slugs.discard(None)
+    return slugs
+
+
+def add_images(conn, rows, card_images):
+    """Add `photo_url` to each row. Return (slug -> catalogue image URL, the slugs with
+    a patch). The photo URL takes the folder of the `image` row: most test photos are
+    in `testset`, and a photo whose bytes were a lab image before keeps that folder."""
+    store = _store_rows(conn, {r.get("image_sha256") for r in rows if r.get("image_sha256")})
+    for row in rows:
+        hit = store.get(row.get("image_sha256") or "")
+        row["photo_url"] = ("/images/%s/%s.%s" % (hit[0], row["image_sha256"], hit[1])
+                            if hit else None)
+    wanted = set().union(*(_row_slugs(r) for r in rows)) if rows else set()
+    cards = card_images(conn)
+    bottles, patched = {}, []
+    for slug in sorted(wanted):
+        image = cards.get(slug)
+        if not image:
+            continue
+        url = image.get("_patch_image_url") or image.get("main_image_url")
+        if url:
+            bottles[slug] = url
+        if image.get("_patch_url"):
+            patched.append(slug)
+    return bottles, patched
+
+
+def run_view(runs_dir, db_path, query, card_images):
+    """Answer the metrics and the filtered rows of one run."""
+    run_id = _one(query, "id")
+    if not run_files.run_path(runs_dir, run_id, "run.json"):
+        return _error(400, "bad run id")
+    if run_id not in run_files.run_dirs(runs_dir):
+        return _error(404, "unknown run")
+    mode = _one(query, "filter", "all")
+    try:
+        limit = max(1, min(int(_one(query, "limit", "200")), MAX_LIMIT))
+        offset = max(0, int(_one(query, "offset", "0")))
+    except ValueError:
+        return _error(400, "limit and offset MUST be numbers")
+    sort = _one(query, "sort", "manifest")
+    if sort not in run_files.ROW_SORTS:
+        return _error(400, "sort MUST be one of %s" % ", ".join(run_files.ROW_SORTS))
+    rows, total = run_files.run_rows(runs_dir, run_id, mode, _one(query, "q"), limit,
+                                     offset, sort)
+    bottles, patched, images_error = {}, [], None
+    try:
+        with closing(_connect(db_path)) as conn:
+            bottles, patched = add_images(conn, rows, card_images)
+    except sqlite3.Error as exc:
+        images_error = "cannot read the image store: %s" % exc
+        for row in rows:
+            row.setdefault("photo_url", None)
+    return _json(200, {
+        "run": run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {},
+        "metrics": run_files.read_json(
+            run_files.run_path(runs_dir, run_id, "metrics.json")) or {},
+        "head": run_files.run_head(runs_dir, run_id),
+        "filter": mode, "sort": sort, "total": total, "offset": offset, "limit": limit,
+        "rows": rows, "bottles": bottles, "patched": patched, "images_error": images_error,
+    })
+
+
+def cluster_key(slugs):
+    """The key of a cluster in the rules file: the SHA-1 of its sorted slugs, 12 hex
+    digits. This is `cluster_key` of `scripts/cluster_rules.py`."""
+    return hashlib.sha1("\n".join(sorted(slugs)).encode("utf-8")).hexdigest()[:12]
+
+
+def clusters_view(db_path):
+    """Return the clusters of `dataset/catalog-clusters.json` with the questions of their
+    rule, and the card name of each cluster slug. A missing file gives no cluster."""
+    data = run_files.read_json(CLUSTERS_FILE)
+    if not isinstance(data, dict):
+        return {"exists": False, "file": CLUSTERS_FILE, "clusters": [], "cards": {}}
+    rules = (run_files.read_json(RULES_FILE) or {}).get("clusters") or {}
+    clusters = []
+    for cluster in data.get("clusters") or []:
+        slugs = cluster.get("slugs") or []
+        rule = rules.get(cluster_key(slugs))
+        clusters.append({"id": cluster.get("id"), "kind": cluster.get("kind"),
+                         "size": cluster.get("size", len(slugs)), "slugs": slugs,
+                         "rule": {k: rule.get(k) for k in RULE_KEYS}
+                         if isinstance(rule, dict) else None})
+    wanted = sorted({slug for cluster in clusters for slug in cluster["slugs"]})
+    cards = {}
+    try:
+        with closing(_connect(db_path)) as conn:
+            for start in range(0, len(wanted), 500):
+                chunk = wanted[start:start + 500]
+                for slug, name in conn.execute(
+                        "SELECT wine_slug, name FROM wine_catalog WHERE wine_slug IN (%s)"
+                        % ", ".join("?" for _ in chunk), chunk):
+                    cards[slug] = {"name": name or ""}
+    except sqlite3.Error:
+        pass  # the names are a hint of the VLM box; the slug stands in their place
+    return {"exists": True, "file": CLUSTERS_FILE, "clusters": clusters, "cards": cards}
+
+
+def inputs_view(runs_dir, db_path, query):
+    """Answer the exact model-bound images of one recorded query."""
+    run_id, query_id = _one(query, "id"), _one(query, "query")
+    if run_id not in run_files.run_dirs(runs_dir):
+        return _error(404, "unknown run")
+    record = run_files.run_result(runs_dir, run_id, query_id)
+    if record is None:
+        return _error(404, "unknown query")
+    meta = run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {}
+    backend_url = str((meta.get("backend") or {}).get("url") or "")
+    if not backend_url:
+        # The configuration `mock` sends no request, so no image went to a model.
+        return _json(200, {"run": run_id, "query": query_id, "inputs": [],
+                           "notes": ["This run sent no request to a model, so it has no "
+                                     "model input."]})
+    digest = str(record.get("image_sha256") or "")
+    try:
+        with closing(_connect(db_path)) as conn:
+            hit = _store_rows(conn, {digest}).get(digest) if digest else None
+    except sqlite3.Error as exc:
+        return _error(503, "cannot read the image store: %s" % exc)
+    if not hit:
+        return _error(404, "the source image of this query is not in the lab image store")
+    path = os.path.join(labdb.image_store(db_path), hit[0], "%s.%s" % (digest, hit[1]))
+    scripts = os.path.join(ROOT, "scripts")
+    if scripts not in sys.path:
+        sys.path.insert(1, scripts)
+    import run_model_inputs  # noqa: E402  (PIL and the matcher code, on demand)
+    try:
+        answer = run_model_inputs.build_model_inputs(
+            Path(MATCHER_ROOT), backend_url, Path(path), digest,
+            list(record.get("candidates") or []))
+    except run_model_inputs.InputRebuildError as exc:
+        return _error(422, str(exc))
+    except (OSError, ValueError) as exc:
+        return _error(500, "cannot rebuild model inputs: %s" % exc)
+    return _json(200, {"run": run_id, "query": query_id, **answer})

@@ -7,6 +7,7 @@ import tempfile
 import threading
 import unittest
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -32,7 +33,8 @@ class LabServerTest(unittest.TestCase):
         self.db = str(self.root / "lab.sqlite3")
         conn = labdb.connect(self.db, create=True)
         with conn:
-            conn.executemany("INSERT INTO wine_catalog VALUES (?,?,?,?,?,?,?,?,?,?,?)", WINES)
+            conn.executemany("INSERT INTO wine_catalog (%s) VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+                             % ", ".join(LAB.CATALOG_COLUMNS), WINES)
         conn.close()
         self.server = LAB.make_server(self.db, port=0)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
@@ -61,6 +63,16 @@ class LabServerTest(unittest.TestCase):
         self.assertIn("text/html", headers["Content-Type"])
         self.assertIn(lab_pages.theme_css(), body)
 
+    def test_dataset_preview_paths_send_the_page(self):
+        for path in ("/dataset/wine-a", "/dataset/wine-a/patch", "/dataset/wine%20a",
+                     "/dataset/wine-a/alternative/" + "a" * 64):
+            status, _, body = self.request(path)
+            self.assertEqual(status, 200, path)
+            self.assertEqual(body, lab_pages.page("dataset.html"), path)
+        for path in ("/dataset/", "/dataset/wine-a/other", "/dataset/wine-a/patch/x",
+                     "/dataset/wine-a/alternative", "/dataset/wine-a/alternative/abc"):
+            self.assertEqual(self.request(path)[0], 404, path)
+
     def test_api_dataset_sends_the_wines_in_import_order(self):
         status, _, body = self.request("/api/dataset")
         self.assertEqual(status, 200)
@@ -73,9 +85,13 @@ class LabServerTest(unittest.TestCase):
         self.assertIsNone(data["records"][1]["grapes"])
         self.assertEqual([(r["state"], r["removed_by"]) for r in data["records"]],
                          [("Active", None), ("Removed", "import")])
-        self.assertEqual((first["_barcodes"], first["_patched"]), ([], False))
+        self.assertFalse(first["_patched"])
+        self.assertNotIn("_barcodes", first)
         self.assertEqual(data["database_file"], self.db)
-        self.assertEqual((data["patches"], data["barcodes"]), (0, 0))
+        self.assertEqual(data["patches"], 0)
+        self.assertNotIn("barcodes", data)
+        # The page shows the Barcodes editor only for an answer with `barcode_file`.
+        self.assertNotIn("barcode_file", data)
 
     def add_image(self, slug, image_type, data, extension="webp", size=(None, None)):
         """Store `data` as an image of `slug`. Return its URL on the lab server."""
@@ -105,20 +121,26 @@ class LabServerTest(unittest.TestCase):
         with conn:
             conn.execute("INSERT INTO image VALUES (?, 'cropped', 'png', ?, ?)",
                          (digest,) + size)
-            conn.execute("INSERT INTO image_derivative VALUES (?, ?, 'test', ?, 0, 0, ?, ?)",
+            conn.execute("INSERT INTO image_derivative (source_sha256, method, settings, "
+                         "sha256, box_left, box_top, box_right, box_bottom) "
+                         "VALUES (?, ?, 'test', ?, 0, 0, ?, ?)",
                          (source, method, digest) + size)
         conn.close()
         return "/images/cropped/%s.png" % digest
 
     def test_api_dataset_sends_the_card_image(self):
         main_b = self.add_image("wine-b", "main", b"b main")
-        self.add_image("wine-a", "main", b"a main")
+        main_a = self.add_image("wine-a", "main", b"a main")
         patched_a = self.add_image("wine-a", "main_patched", b"a patched", "png")
-        self.add_image("wine-a", "front", b"a front")
+        self.add_image("wine-a", "full_front", b"a front")
         records = json.loads(self.request("/api/dataset")[2])["records"]
+        # The patch stands beside the `main` image on the card; it does not replace it.
         self.assertEqual([(r["main_image_url"], r["main_image_type"],
                            r["main_image_match_method"]) for r in records],
-                         [(main_b, "main", "manual"), (patched_a, "main_patched", "manual")])
+                         [(main_b, "main", "manual"), (main_a, "main", "manual")])
+        self.assertEqual([(r["_patched"], r["_patch_url"], r["_patch_image_url"],
+                           r["_patch_derivation"]) for r in records],
+                         [(False, None, None, None), (True, patched_a, patched_a, None)])
 
     def test_api_dataset_sends_the_size_of_the_card_image(self):
         self.add_image("wine-b", "main", b"b main", size=(300, 900))
@@ -126,7 +148,7 @@ class LabServerTest(unittest.TestCase):
         self.add_image("wine-a", "main_patched", b"a patched")
         records = json.loads(self.request("/api/dataset")[2])["records"]
         self.assertEqual([(r["main_image_width"], r["main_image_height"]) for r in records],
-                         [(300, 900), (None, None)])
+                         [(300, 900), (100, 200)])
 
     def test_api_dataset_sends_the_processed_file_and_its_badge(self):
         original = self.add_image("wine-b", "main", b"b main", size=(300, 900))
@@ -139,6 +161,27 @@ class LabServerTest(unittest.TestCase):
         self.assertEqual(records[1]["main_image_derivation"], None)
         status, headers, _ = self.request(processed, "HEAD")
         self.assertEqual((status, headers["Content-Type"]), (200, "image/png"))
+
+    def test_a_crop_that_cut_nothing_gets_no_badge(self):
+        original = self.add_image("wine-b", "main", b"b main", size=(300, 900))
+        self.add_derivative(original, "crop", b"b same pixels", (300, 900))
+        seg_original = self.add_image("wine-a", "main", b"a main", size=(300, 900))
+        seg = self.add_derivative(seg_original, "seg", b"a seg", (300, 900))
+        first, second = json.loads(self.request("/api/dataset")[2])["records"]
+        self.assertEqual((first["main_image_url"], first["main_image_derivation"],
+                          first["main_image_width"], first["main_image_height"]),
+                         (original, None, 300, 900))
+        # A `seg` file changes the pixels, so it keeps its badge with the whole box.
+        self.assertEqual((second["main_image_url"], second["main_image_derivation"]),
+                         (seg, "seg"))
+
+    def test_cut_nothing_knows_a_turned_image(self):
+        self.assertTrue(LAB.cut_nothing("crop", (0, 0, 300, 900), 300, 900))
+        self.assertTrue(LAB.cut_nothing("crop", (0, 0, 900, 300), 300, 900))
+        self.assertFalse(LAB.cut_nothing("crop", (0, 0, 299, 900), 300, 900))
+        self.assertFalse(LAB.cut_nothing("crop", (1, 0, 300, 900), 300, 900))
+        self.assertFalse(LAB.cut_nothing("seg", (0, 0, 300, 900), 300, 900))
+        self.assertFalse(LAB.cut_nothing("crop", (0, 0, 300, 900), None, None))
 
     def test_api_dataset_sends_no_card_image_for_a_wine_with_none(self):
         records = json.loads(self.request("/api/dataset")[2])["records"]
@@ -168,7 +211,7 @@ class LabServerTest(unittest.TestCase):
             self.assertEqual(self.request(path)[0], 404, path)
 
     def test_disabled_pages_keep_the_navigation(self):
-        for route, name in (("/clusters", "Clusters"), ("/", "Testset"), ("/runs", "Runs")):
+        for route, name in (("/clusters", "Clusters"), ("/", "Testset")):
             status, _, body = self.request(route)
             self.assertEqual(status, 503, route)
             self.assertIn("The page %s is disabled for now." % name, body)
@@ -209,10 +252,9 @@ class LabServerTest(unittest.TestCase):
             self.assertEqual(re.findall(r'href="([^"]*)"', nav), hrefs, name)
 
     def test_other_api_routes_are_disabled(self):
-        for path, method in (("/api/runs", "GET"), ("/api/rows", "GET"),
+        for path, method in (("/api/rows", "GET"),
                              ("/api/dataset-validation", "GET"),
-                             ("/api/dataset-barcode", "POST"),
-                             ("/api/dataset-patch?slug=wine-a", "DELETE")):
+                             ("/api/exclude", "POST")):
             status, _, body = self.request(path, method)
             self.assertEqual(status, 503, path)
             self.assertIn("disabled for now", json.loads(body)["error"])
@@ -263,6 +305,330 @@ class LabServerTest(unittest.TestCase):
         self.assertEqual(self.request("/api/wine-state", "DELETE")[0], 503)
         self.assertEqual(self.stored("wine-b"), ("Active", None))
 
+    def post_code(self, route, slug, key, value):
+        status, _, body = self.request(route, "POST",
+                                       json.dumps({"slug": slug, key: value}).encode())
+        return status, json.loads(body)
+
+    def delete_code(self, route, slug, key, value):
+        query = urllib.parse.urlencode({"slug": slug, key: value})
+        status, _, body = self.request("%s?%s" % (route, query), "DELETE")
+        return status, json.loads(body)
+
+    def codes(self):
+        conn = sqlite3.connect(self.db)
+        try:
+            return conn.execute(
+                "SELECT wine_slug, kind, value FROM wine_code ORDER BY rowid").fetchall()
+        finally:
+            conn.close()
+
+    def test_code_routes_add_values_in_their_normal_form(self):
+        cases = (("/api/dataset-gtin", "gtin", "4631168664979", "04631168664979", "gtins"),
+                 ("/api/dataset-qr-url", "url", "URL:https://A.ru/w#x", "https://a.ru/w",
+                  "qr_urls"))
+        for route, key, value, stored, list_key in cases:
+            status, body = self.post_code(route, "wine-b", key, value)
+            self.assertEqual(status, 200, route)
+            self.assertEqual(body, {"ok": True, "slug": "wine-b", key: stored,
+                                    list_key: [stored], "total": 1})
+        data = json.loads(self.request("/api/dataset")[2])
+        first = data["records"][0]
+        self.assertEqual((first["_gtins"], first["_qr_urls"]),
+                         (["04631168664979"], ["https://a.ru/w"]))
+        self.assertEqual(data["records"][1]["_gtins"], [])
+        self.assertEqual((data["gtins"], data["qr_urls"]), (1, 1))
+
+    def test_lab_has_no_barcode_route(self):
+        # The lab keeps GTINs alone (owner choice of 2026-09-25). The route answers like
+        # each other API route that the lab server does not serve.
+        status, body = self.post_code("/api/dataset-barcode", "wine-b", "barcode", "AB-12")
+        self.assertEqual(status, 503)
+        self.assertIn("disabled", body["error"])
+        self.assertEqual(self.codes(), [])
+
+    def test_code_values_keep_the_order_of_the_writes(self):
+        for value in ("4640005351194", "4640005350852"):
+            self.assertEqual(self.post_code("/api/dataset-gtin", "wine-b", "gtin", value)[0], 200)
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertEqual(data["records"][0]["_gtins"], ["04640005351194", "04640005350852"])
+
+    def test_two_wines_share_one_value(self):
+        # wine-a is Removed. A write is allowed for a wine in each state.
+        for slug, total in (("wine-b", 1), ("wine-a", 2)):
+            status, body = self.post_code("/api/dataset-gtin", slug, "gtin", "4631168664979")
+            self.assertEqual((status, body["total"]), (200, total), slug)
+        self.assertEqual(self.codes(), [("wine-b", "gtin", "04631168664979"),
+                                        ("wine-a", "gtin", "04631168664979")])
+
+    def test_same_value_for_the_same_wine_is_a_conflict(self):
+        self.post_code("/api/dataset-gtin", "wine-b", "gtin", "4631168664979")
+        # The GTIN-14 form of the same GTIN is the same value.
+        status, body = self.post_code("/api/dataset-gtin", "wine-b", "gtin", "04631168664979")
+        self.assertEqual(status, 409)
+        self.assertIn("already has the gtin 04631168664979", body["error"])
+        self.assertEqual(len(self.codes()), 1)
+
+    def test_code_values_are_checked(self):
+        cases = (("/api/dataset-gtin", "gtin", "4631168664970",
+                  "wrong check digit 0; expected 9"),
+                 ("/api/dataset-gtin", "gtin", "46311686649", "it has 11"),
+                 ("/api/dataset-qr-url", "url", "ftp://a.ru/", "http or https"),
+                 ("/api/dataset-gtin", "gtin", "", "holds no `gtin`"),
+                 ("/api/dataset-qr-url", "url", 5, "holds no `url`"))
+        for route, key, value, message in cases:
+            status, body = self.post_code(route, "wine-b", key, value)
+            self.assertEqual(status, 400, (route, value))
+            self.assertIn(message, body["error"])
+        self.assertEqual(self.codes(), [])
+
+    def test_code_request_errors(self):
+        route = "/api/dataset-gtin"
+        self.assertEqual(self.post_code(route, "wine-none", "gtin", "4631168664979")[0], 404)
+        self.assertEqual(self.post_code(route, "", "gtin", "4631168664979")[0], 400)
+        self.assertEqual(self.request(route, "POST", b"not json")[0], 400)
+        self.assertEqual(self.request(route, "POST", b"[1]")[0], 400)
+        self.assertEqual(self.request(route, "POST", b"x" * 20000)[0], 400)
+        self.assertEqual(self.request(route, "PUT")[0], 503)
+        self.assertEqual(self.codes(), [])
+
+    def test_delete_removes_one_stored_value(self):
+        for value in ("4640005351194", "4640005350852"):
+            self.post_code("/api/dataset-gtin", "wine-b", "gtin", value)
+        self.post_code("/api/dataset-gtin", "wine-a", "gtin", "4640005351194")
+        status, body = self.delete_code("/api/dataset-gtin", "wine-b", "gtin", "04640005351194")
+        self.assertEqual(status, 200)
+        self.assertEqual(body, {"ok": True, "slug": "wine-b", "removed": "04640005351194",
+                                "gtins": ["04640005350852"], "total": 2})
+        self.assertEqual(self.codes(), [("wine-b", "gtin", "04640005350852"),
+                                        ("wine-a", "gtin", "04640005351194")])
+
+    def test_delete_errors(self):
+        self.post_code("/api/dataset-qr-url", "wine-b", "url", "https://a.ru/")
+        cases = (("wine-b", "https://b.ru/", 404, "has no url"),
+                 ("wine-none", "https://a.ru/", 404, "no wine"),
+                 ("wine-b", "", 400, "holds no `url`"))
+        for slug, value, code, message in cases:
+            status, body = self.delete_code("/api/dataset-qr-url", slug, "url", value)
+            self.assertEqual(status, code, (slug, value))
+            self.assertIn(message, body["error"])
+        # A GTIN MUST be sent in its stored form.
+        self.post_code("/api/dataset-gtin", "wine-b", "gtin", "4631168664979")
+        self.assertEqual(
+            self.delete_code("/api/dataset-gtin", "wine-b", "gtin", "4631168664979")[0], 404)
+        self.assertEqual(len(self.codes()), 2)
+
+    # The Atlas Core product of a wine: plan 15.
+    UUID_1 = "6062ada1-1c2b-4f3e-9a8b-0123456789ab"
+    UUID_2 = "7a1b2c3d-0000-4000-8000-00000000000f"
+    UUID_3 = "00000000-1111-4222-8333-444444444444"
+
+    def post_atlas(self, slug, product_uuid):
+        status, _, body = self.request("/api/dataset-atlas-binding", "POST", json.dumps(
+            {"slug": slug, "product_uuid": product_uuid}).encode())
+        return status, json.loads(body)
+
+    def delete_atlas(self, slug):
+        query = urllib.parse.urlencode({"slug": slug})
+        status, _, body = self.request("/api/dataset-atlas-binding?" + query, "DELETE")
+        return status, json.loads(body)
+
+    def add_automatic(self, slug, product_uuid):
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("INSERT INTO wine_atlas_binding VALUES (?, 'automatic', ?)",
+                         (slug, product_uuid))
+        conn.close()
+
+    def atlas_rows(self):
+        conn = sqlite3.connect(self.db)
+        try:
+            return conn.execute("SELECT wine_slug, source, product_uuid FROM "
+                                "wine_atlas_binding ORDER BY wine_slug, source").fetchall()
+        finally:
+            conn.close()
+
+    def test_api_dataset_sends_the_atlas_bindings(self):
+        self.add_automatic("wine-b", self.UUID_1)
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertTrue(data["atlas_binding_editor"])
+        self.assertEqual((data["atlas_bindings"], data["atlas_manual_bindings"]), (1, 0))
+        first, second = data["records"]
+        self.assertEqual((first["_atlas_product_uuid"], first["_atlas_binding_source"]),
+                         (self.UUID_1, "automatic"))
+        self.assertEqual((second["_atlas_product_uuid"], second["_atlas_binding_source"]),
+                         (None, None))
+
+    def test_manual_binding_wins_and_its_remove_shows_the_automatic_one(self):
+        self.add_automatic("wine-b", self.UUID_1)
+        status, body = self.post_atlas("wine-b", " %s " % self.UUID_2.upper())
+        self.assertEqual(status, 200)
+        self.assertEqual(body, {"ok": True, "slug": "wine-b", "product_uuid": self.UUID_2,
+                                "source": "manual", "total": 1, "manual": 1})
+        record = json.loads(self.request("/api/dataset")[2])["records"][0]
+        self.assertEqual((record["_atlas_product_uuid"], record["_atlas_binding_source"]),
+                         (self.UUID_2, "manual"))
+        # A second POST replaces the manual row.
+        self.assertEqual(self.post_atlas("wine-b", self.UUID_3)[1]["product_uuid"], self.UUID_3)
+        status, body = self.delete_atlas("wine-b")
+        self.assertEqual(status, 200)
+        self.assertEqual(body, {"ok": True, "slug": "wine-b", "removed": self.UUID_3,
+                                "product_uuid": self.UUID_1, "source": "automatic",
+                                "total": 1, "manual": 0})
+        self.assertEqual(self.atlas_rows(), [("wine-b", "automatic", self.UUID_1)])
+
+    def test_remove_of_the_only_binding_leaves_none(self):
+        # wine-a is Removed. A write is allowed for a wine in each state.
+        self.assertEqual(self.post_atlas("wine-a", self.UUID_1)[0], 200)
+        status, body = self.delete_atlas("wine-a")
+        self.assertEqual((status, body["product_uuid"], body["source"], body["total"]),
+                         (200, None, None, 0))
+        self.assertEqual(self.atlas_rows(), [])
+
+    def test_atlas_binding_errors(self):
+        self.add_automatic("wine-b", self.UUID_1)
+        cases = ((self.post_atlas("wine-b", "not-a-uuid"), 400, "not a valid UUID"),
+                 (self.post_atlas("wine-b", " "), 400, "empty"),
+                 (self.post_atlas("wine-b", 5), 400, "MUST be a string"),
+                 (self.post_atlas("", self.UUID_1), 400, "no wine slug"),
+                 (self.post_atlas("wine-none", self.UUID_1), 404, "no wine"),
+                 # wine-b has an automatic row alone.
+                 (self.delete_atlas("wine-b"), 404, "no manual Atlas binding"),
+                 (self.delete_atlas("wine-none"), 404, "no wine"))
+        for (status, body), code, message in cases:
+            self.assertEqual(status, code, message)
+            self.assertIn(message, body["error"])
+        self.assertEqual(self.request("/api/dataset-atlas-binding", "DELETE")[0], 400)
+        self.assertEqual(self.request("/api/dataset-atlas-binding", "PUT")[0], 503)
+        self.assertEqual(self.atlas_rows(), [("wine-b", "automatic", self.UUID_1)])
+
+    # The comments of a wine: plan 17.
+    def post_comment(self, slug, text, **extra):
+        status, _, body = self.request("/api/dataset-comment", "POST", json.dumps(
+            dict({"slug": slug, "text": text}, **extra)).encode())
+        return status, json.loads(body)
+
+    def delete_comment(self, slug, comment_id):
+        query = urllib.parse.urlencode({"slug": slug, "id": comment_id})
+        status, _, body = self.request("/api/dataset-comment?" + query, "DELETE")
+        return status, json.loads(body)
+
+    def comment_rows(self):
+        conn = sqlite3.connect(self.db)
+        try:
+            return conn.execute("SELECT wine_slug, source, text FROM wine_comment "
+                                "ORDER BY id").fetchall()
+        finally:
+            conn.close()
+
+    def test_comment_route_adds_a_user_comment(self):
+        status, body = self.post_comment("wine-b", "  Пробка\r\nсухая  ")
+        self.assertEqual(status, 200)
+        comment = body["comment"]
+        self.assertRegex(comment["created_at"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
+        self.assertEqual(comment, {"id": comment["id"], "created_at": comment["created_at"],
+                                   "source": "user", "text": "Пробка\nсухая"})
+        self.assertEqual(body, {"ok": True, "slug": "wine-b", "comment": comment,
+                                "comments": [comment], "total": 1})
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertEqual(data["comments"], 1)
+        self.assertEqual([r["_comments"] for r in data["records"]], [[comment], []])
+
+    def test_comment_route_takes_the_script_source(self):
+        # wine-a is Removed. A comment is allowed for a wine in each state.
+        status, body = self.post_comment("wine-a", "checked by a script", source="script")
+        self.assertEqual((status, body["comment"]["source"]), (200, "script"))
+        self.assertEqual(self.comment_rows(), [("wine-a", "script", "checked by a script")])
+
+    def test_longest_comment_fits_the_body_limit(self):
+        # json.dumps writes each Cyrillic character as a 6-byte escape.
+        self.assertEqual(self.post_comment("wine-b", "я" * 4000)[0], 200)
+
+    def test_comments_are_sent_in_time_order(self):
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.executemany("INSERT INTO wine_comment (wine_slug, created_at, source, text) "
+                             "VALUES ('wine-b', ?, 'user', ?)",
+                             [("2020-01-01T09:00:00Z", "late"),
+                              ("2020-01-01T08:00:00Z", "early")])
+        conn.close()
+        record = json.loads(self.request("/api/dataset")[2])["records"][0]
+        self.assertEqual([c["text"] for c in record["_comments"]], ["early", "late"])
+        # A new comment has the present time, so it comes last.
+        body = self.post_comment("wine-b", "new")[1]
+        self.assertEqual([c["text"] for c in body["comments"]], ["early", "late", "new"])
+
+    def test_delete_removes_one_comment(self):
+        first = self.post_comment("wine-b", "same")[1]["comment"]
+        second = self.post_comment("wine-b", "same")[1]["comment"]
+        self.post_comment("wine-a", "other")
+        status, body = self.delete_comment("wine-b", first["id"])
+        self.assertEqual(status, 200)
+        self.assertEqual(body, {"ok": True, "slug": "wine-b", "removed": first["id"],
+                                "comments": [second], "total": 2})
+        self.assertEqual(self.comment_rows(), [("wine-b", "user", "same"),
+                                               ("wine-a", "user", "other")])
+
+    def test_comment_errors(self):
+        other = self.post_comment("wine-a", "other")[1]["comment"]
+        cases = ((self.post_comment("wine-b", " \n "), 400, "empty"),
+                 (self.post_comment("wine-b", 5), 400, "MUST be a string"),
+                 (self.post_comment("wine-b", "x" * 4001), 400, "longer than 4000"),
+                 # JSON allows "\ud800" alone; SQLite cannot store it (review, 2026-09-25).
+                 (self.post_comment("wine-b", "a\ud800b"), 400, "lone surrogate"),
+                 (self.post_comment("wine-b", "x", source="person"), 400, "unknown source"),
+                 (self.post_comment("wine-b", "x", source=None), 400, "unknown source"),
+                 (self.post_comment("", "x"), 400, "no wine slug"),
+                 (self.post_comment("wine-none", "x"), 404, "no wine"),
+                 # The id of a comment of another wine removes nothing.
+                 (self.delete_comment("wine-b", other["id"]), 404, "has no comment"),
+                 (self.delete_comment("wine-b", "x"), 400, "no valid comment `id`"),
+                 (self.delete_comment("wine-b", "-1"), 400, "no valid comment `id`"),
+                 (self.delete_comment("wine-b", "9" * 19), 400, "no valid comment `id`"),
+                 (self.delete_comment("wine-none", other["id"]), 404, "no wine"))
+        for (status, body), code, message in cases:
+            self.assertEqual(status, code, message)
+            self.assertIn(message, body["error"])
+        self.assertEqual(self.request("/api/dataset-comment", "DELETE")[0], 400)
+        self.assertEqual(self.request("/api/dataset-comment", "POST", b"not json")[0], 400)
+        self.assertEqual(self.request("/api/dataset-comment", "PUT")[0], 503)
+        self.assertEqual(self.comment_rows(), [("wine-a", "user", "other")])
+
+    # The favorite wines: plan 19.
+    def post_favorite(self, slug, favorite):
+        status, _, body = self.request("/api/dataset-favorite", "POST", json.dumps(
+            {"slug": slug, "favorite": favorite}).encode())
+        return status, json.loads(body)
+
+    def test_favorite_route_marks_and_removes(self):
+        # wine-a is Removed. A favorite MAY have each state.
+        status, body = self.post_favorite("wine-a", True)
+        self.assertEqual((status, body),
+                         (200, {"ok": True, "slug": "wine-a", "favorite": True, "total": 1}))
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertEqual(data["favorites"], 1)
+        self.assertEqual([r["_favorite"] for r in data["records"]], [False, True])
+        # The body names the new value, so a repeated request gives the same result.
+        self.assertEqual(self.post_favorite("wine-a", True)[1]["total"], 1)
+        status, body = self.post_favorite("wine-a", False)
+        self.assertEqual((status, body["favorite"], body["total"]), (200, False, 0))
+        self.assertEqual(self.post_favorite("wine-a", False)[1]["total"], 0)
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertEqual([r["_favorite"] for r in data["records"]], [False, False])
+
+    def test_favorite_errors(self):
+        cases = ((self.post_favorite("wine-b", 1), 400, "true or false"),
+                 (self.post_favorite("wine-b", "true"), 400, "true or false"),
+                 (self.post_favorite("wine-b", None), 400, "true or false"),
+                 (self.post_favorite("", True), 400, "no wine slug"),
+                 (self.post_favorite("wine-none", True), 404, "no wine"))
+        for (status, body), code, message in cases:
+            self.assertEqual(status, code, message)
+            self.assertIn(message, body["error"])
+        self.assertEqual(self.request("/api/dataset-favorite", "POST", b"not json")[0], 400)
+        self.assertEqual(self.request("/api/dataset-favorite", "DELETE")[0], 503)
+        self.assertEqual(json.loads(self.request("/api/dataset")[2])["favorites"], 0)
+
     def test_unknown_route_is_not_found(self):
         self.assertEqual(self.request("/nothing")[0], 404)
 
@@ -306,6 +672,27 @@ class LabServerTest(unittest.TestCase):
         config.write_text("rootdir: %s\n" % self.root)
         with self.assertRaisesRegex(LAB.ConfigError, "database_file"):
             LAB.load_config(str(config))
+
+    def test_the_website_import_routes_and_the_change_times(self):
+        import website_import_routes
+        saved, website_import_routes.WORK = website_import_routes.WORK, str(self.root / "work")
+        try:
+            status, _, body = self.request("/api/website-import")
+            self.assertEqual((status, json.loads(body)), (200, {"state": "none"}))
+            status, headers, _ = self.request("/website-import.js")
+            self.assertEqual((status, headers["Content-Type"]),
+                             (200, "text/javascript; charset=utf-8"))
+            self.assertEqual(self.request("/api/website-import", method="POST")[0], 405)
+        finally:
+            website_import_routes.WORK = saved
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("UPDATE wine_catalog SET website_modified_at = "
+                         "'2026-09-22T15:36:48.000Z' WHERE wine_slug = 'wine-b'")
+        conn.close()
+        records = {r["slug"]: r for r in json.loads(self.request("/api/dataset")[2])["records"]}
+        self.assertEqual(records["wine-b"]["_website_modified_at"], "2026-09-22T15:36:48.000Z")
+        self.assertRegex(records["wine-b"]["_modified_at"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
 
 
 if __name__ == "__main__":

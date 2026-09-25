@@ -33,12 +33,19 @@ import json
 import math
 import os
 import re
+import sys
 import threading
 import time
 import urllib.error
 import urllib.request
 
 import common
+
+# The cache of the model calls is in `pipeline/`. The directory goes to the end of the
+# path, so each module of `scripts/` keeps its name. Read docs/plans/25_model-call-cache.md.
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                             "pipeline"))
+import model_cache  # noqa: E402
 
 CFG = common.CONFIG.get("cluster_rules") or {}
 
@@ -433,8 +440,15 @@ class Vlm:
         self.api, self.key_env = api, key_env
         # The second attempt for an answer that reached `max_tokens`.
         self.loop_guard = LOOP_GUARD if api == "llama.cpp" else {"max_tokens": 32000}
-        self.calls = self.failed = 0
+        self.calls = self.failed = self.hits = 0
         self.total_ms = 0.0
+
+    @staticmethod
+    def _result(answer, ms):
+        choice = (answer.get("choices") or [{}])[0]
+        return {"text": ((choice.get("message") or {}).get("content") or "").strip(),
+                "ms": round(ms), "usage": answer.get("usage") or {},
+                "finish_reason": choice.get("finish_reason")}
 
     def ask(self, content, max_tokens, extra=None):
         payload = {
@@ -453,6 +467,13 @@ class Vlm:
         else:
             payload["chat_template_kwargs"] = {"enable_thinking": self.thinking}
         payload.update(extra or {})
+        # A repeated request reads the answer of `model_cache`, and needs no key. `hits`
+        # counts these answers; `calls` and `total_ms` count the requests alone.
+        fields = model_cache.vlm_fields(self.url, payload)
+        record = model_cache.lookup(fields) if fields else None
+        if record is not None:
+            self.hits += 1
+            return self._result(record["answer"], record["ms"])
         headers = {"Content-Type": "application/json"}
         if self.key_env:
             key = os.environ.get(self.key_env)
@@ -483,10 +504,9 @@ class Vlm:
             ms = (time.perf_counter() - t0) * 1000
             self.calls += 1
             self.total_ms += ms
-            choice = (answer.get("choices") or [{}])[0]
-            return {"text": ((choice.get("message") or {}).get("content") or "").strip(),
-                    "ms": round(ms), "usage": answer.get("usage") or {},
-                    "finish_reason": choice.get("finish_reason")}
+            if fields and answer.get("choices"):
+                model_cache.store(fields, answer, ms)
+            return self._result(answer, ms)
         self.failed += 1
         raise VlmError(last or "no answer")
 

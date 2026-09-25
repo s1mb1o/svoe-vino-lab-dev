@@ -1,4 +1,5 @@
 import importlib.util
+import os
 import sys
 import tempfile
 import unittest
@@ -7,6 +8,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+# `scripts/common.py` reads the old configuration of the review tool: `config.yaml` is
+# the configuration of the lab server.
+os.environ.setdefault("SVOE_VINO_REVIEW_CONFIG", str(ROOT / "config.old.yaml"))
 SPEC = importlib.util.spec_from_file_location(
     "review_server_for_inbox_upload_tests", ROOT / "scripts" / "review_server.py")
 SERVER = importlib.util.module_from_spec(SPEC)

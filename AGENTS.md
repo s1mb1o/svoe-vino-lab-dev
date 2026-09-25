@@ -62,10 +62,11 @@ of each session, so that two sessions do not change the same file.
 22. The lab server `pipeline/lab_server.py` of this project listens on port 8168. The
     owner allowed on 2026-09-25 that an agent restarts it when a change needs a restart,
     for example new code of the server or a new schema file.
-23. To restart the server, stop the process that listens on port 8168 with SIGINT. Then
+23. To restart the server, stop the process that listens on port 8168 with SIGTERM. Do
+    not use SIGINT: a server that was started in the background ignores SIGINT. Then
     start `python3 pipeline/lab_server.py --no-browser` in the project root, in the
     background, with the log in `work/lab_server.log`. Check that `GET /api/dataset`
-    answers HTTP 200.
+    answers HTTP 200. The owner chose SIGTERM on 2026-09-25.
 24. Tell the owner about each restart. This permission is for port 8168 alone. Another
     service of the workspace stays a service that the owner restarts.
 

@@ -16,9 +16,10 @@ import sys
 SCHEMA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schema")
 SCHEMA_RE = re.compile(r"^(\d{3})_[a-z0-9_]+\.sql$")
 # The folder of each image type of `wine_image` in the image store. Read
-# `pipeline/schema/005_wine_image.sql`.
-IMAGE_FOLDERS = {"main": "main", "main_patched": "patched", "front": "additional",
-                 "back": "additional", "label_front": "additional",
+# `pipeline/schema/005_wine_image.sql` and the schema files of the additional types
+# (010 and later).
+IMAGE_FOLDERS = {"main": "main", "main_patched": "patched", "full_front": "additional",
+                 "label_front": "additional", "full_back": "additional",
                  "label_back": "additional"}
 # The folder of the processed files. Read `pipeline/schema/007_image_table.sql`.
 DERIVED_FOLDER = "cropped"
@@ -53,13 +54,27 @@ def migrate(conn, directory=SCHEMA_DIR):
     for number, path in files[version:]:
         with open(path, encoding="utf-8") as fh:
             sql = fh.read()
+        # A schema file MAY build a parent table again, for example `wine_catalog`. The
+        # DROP of the old table breaks the links of the child tables until the new table
+        # takes the name. So the foreign keys are off during the file, and
+        # `PRAGMA foreign_key_check` checks each link before the COMMIT. The pragma
+        # `foreign_keys` has no effect inside a transaction, so it is set before BEGIN.
+        foreign_keys = conn.execute("PRAGMA foreign_keys").fetchone()[0]
+        conn.execute("PRAGMA foreign_keys = OFF")
         try:
-            conn.executescript("BEGIN;\n%s\nPRAGMA user_version = %d;\nCOMMIT;"
-                               % (sql, number))
+            conn.executescript("BEGIN;\n%s\n" % sql)
+            broken = conn.execute("PRAGMA foreign_key_check").fetchall()
+            if broken:
+                raise SchemaError("the schema file %s breaks %d foreign keys; the first: %r"
+                                  % (os.path.basename(path), len(broken), broken[0]))
+            conn.execute("PRAGMA user_version = %d" % number)
+            conn.commit()
         except Exception:
             if conn.in_transaction:
                 conn.rollback()
             raise
+        finally:
+            conn.execute("PRAGMA foreign_keys = %s" % ("ON" if foreign_keys else "OFF"))
         version = number
     return version
 

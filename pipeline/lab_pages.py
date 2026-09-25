@@ -5,9 +5,14 @@ A page file is in `pipeline/pages/`. The shared colour theme is in
 `<style>` element, and `page` puts the theme in place of that line.
 """
 import os
+import re
 
 PAGES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pages")
 THEME_MARK = "/* THEME_CSS */\n"
+# The Dataset page with the image preview of one wine open: `/dataset/<slug>` shows the
+# catalogue image, `/dataset/<slug>/patch` the patch image, and
+# `/dataset/<slug>/alternative/<sha256>` one alternative photo. The page reads the path.
+DATASET_PREVIEW_ROUTE = re.compile(r"^/dataset/[^/]+(/patch|/alternative/[0-9a-f]{64})?$")
 
 
 def _read(name):

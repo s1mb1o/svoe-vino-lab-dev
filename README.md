@@ -33,7 +33,9 @@ python3 pipeline/import_catalog.py --db data/lab.sqlite3 \
 The database MUST be on a local disk. The import never writes to the delivery directory.
 A later import adds the new wines and marks the missing wines `Removed`. A wine that
 the import removed is `Active` again when it comes back. A wine that a person removed
-stays `Removed`. A changed field of a wine stops the import with an error.
+stays `Removed`. A changed field of a wine stops the import with an error. A wine that
+a person added (slug prefix `__`) is never removed, and a CSV slug with this prefix
+stops the import.
 `tests/data/` holds fake variants of the CSV to test this.
 
 ```bash
@@ -44,13 +46,25 @@ python3 pipeline/lab_server.py            # http://127.0.0.1:8168/dataset
 `config.yaml` holds two keys: `rootdir` and `database_file`. A relative
 `database_file` is resolved against `rootdir`, so the value is
 `svoe-vino-lab/data/lab.sqlite3`. The lab server opens the database
-read-only. The Dataset and Embeddings pages work. Clusters, Testset, and Runs are
+read-only. The Dataset, Embeddings, and Runs pages work. Clusters and Testset are
 disabled for now: each one answers a notice page. The navigation order is `Dataset`,
 `Embeddings`, `Clusters`, `Testset`, `Runs`. Each card of the Dataset page holds
 the buttons `Disable` / `Enable`, `Remove`, and `Restore` below the catalogue image. The
-filter `State` shows `All (except Removed)` or `Removed`. The lab server writes the
-state of a wine; it writes no other column. The card image comes from the table
-`wine_image`: the server sends the files of `data/images/` at
+`main` image of a `Disabled` wine is gray on the card. The browser draws it with a CSS
+filter; the file does not change. The patch and the alternative photos keep their
+colours. The filter `State` shows `All (except Removed)`, `Disabled`, `Removed`, or `Favorites`
+(each favorite wine, also a removed one; the lab server alone). The lab server writes
+these data alone: the state of a wine; its GTINs and QR URLs (`wine_code`, plan 11); its
+manual Atlas Core binding (`wine_atlas_binding`, plan 15); its comments (`wine_comment`,
+plan 17); the favorite mark (`wine_favorite`, plan 19); a wine added by hand, with a slug
+that starts with `__` (plan 20); its patch (the `main_patched` row, plan 14) and its
+alternative photos (the types `full_front`, `label_front`, `full_back`, `label_back`,
+plan 16), each with its files and their rows of `image` and `image_derivative`; and the
+data of the website import of plan 21. The card images come from the table
+`wine_image`: the `main` image at the left and the patch in the patch slot next to it,
+side by side. Each slot shows the processed file with its badge `crop` or `seg`. A
+`crop` whose box is the whole image cut nothing: the slot shows the original and no
+badge. The server sends the files of `data/images/` at
 `/images/<folder>/<sha256>.<extension>`. `Sort` can order the cards by the pixel count
 of the image. The slug of a card links to the page of the wine on vino-svoe.ru. The lab
 server uses port 8168.
@@ -63,10 +77,14 @@ python3 pipeline/seed_images.py --db data/lab.sqlite3 \
 ```
 
 The table `wine_image` holds the images of a wine and the type of each image: `main`,
-`main_patched`, `front`, `back`, `label_front`, and `label_back`. A `main_patched`
-image replaces the `main` image of the same wine. The files are in `data/images/`:
+`main_patched`, `full_front`, `label_front`, `full_back`, and `label_back` (the names of
+schema 012). A reader such as the Embeddings page uses a `main_patched` image in place of
+the `main` image of the same wine; the card of the Dataset page shows the two side by
+side. `image_derivative` holds one processed file for each original and kind of cut
+(`package` or `label`, schema 017). The files are in `data/images/`:
 `main/`, `patched/`, and `additional/`, each file as `<sha256>.<extension>`. The folder
-`testset/` is for the photos of the test sets; they get their own table later.
+`testset/` holds the photos of the test sets (schema 016, see "later: the test sets"
+below).
 `seed_images.py` fills `main`. It matches `csv_photo_name` with the upload file names
 by the rule of `build_catalog.py`, and it reads no internet resource. A wine with no
 match gets a console message. Read [plan 08](docs/plans/08_seed-images.md).
@@ -86,10 +104,159 @@ python3 pipeline/seed_patched.py --db data/lab.sqlite3 \
     ../svoe-wino-hackaton/dataset/patched-official-2026-09-17
 ```
 
-`seed_patched.py` fills `main_patched` from the patch folder. The folder is the truth
-for the patches: a new file replaces the row of its wine, and a missing file deletes
-the row. It processes each patch as `seed_images.py` does. Read step 5 of
-[plan 07](docs/plans/07_sqlite-lab-database.md).
+`seed_patched.py` fills `main_patched` from the patch folder. The database is the truth
+for the patches, and the folder is one source of them: a new file adds or replaces the
+row of its wine. A row whose wine has no file in the folder stays, because the patch
+editor of the Dataset page also writes rows. It processes each patch as
+`seed_images.py` does. Read step 5 of [plan 07](docs/plans/07_sqlite-lab-database.md)
+and [plan 14](docs/plans/14_patch-editor.md).
+
+The patch editor of the Dataset page on the lab server stands next to the card image.
+Drop a JPEG, PNG, or WebP file of at most 20 MiB on it, or press it to choose a file.
+The page sends the file at once; there is no `Apply` step. The editor shows
+`Processing…` while the server stores the file in `data/images/patched/`, writes the
+`main_patched` row, and processes the file as `seed_patched.py` does. SAM3 can take up
+to about two minutes. When SAM3 does not answer, the patch is stored with no processed
+file, and the page shows a warning. A patch applied by mistake is removed with `Remove`
+and `Apply`: this deletes the row; the file stays in the store. The patch `Remove`
+button has the size of the `Remove` button of the main image and stands at the right.
+The editor does not write the patch folder.
+
+```bash
+# step 6: the GTINs and the QR URLs of the code map of the matcher
+python3 pipeline/seed_codes.py --db data/lab.sqlite3 \
+    ../svoe-vino-matcher/dataset/code-map.json
+```
+
+The table `wine_code` holds the codes of a wine: `gtin` and `qr_url`. One
+wine MAY have more than one value of each kind, and one value MAY belong to more than
+one wine. A GTIN is a GS1 number of 8, 12, 13, or 14 digits with a valid check digit.
+The table stores it in its GTIN-14 form, with leading zeros: the printed
+`4631168664979` is `04631168664979`. The lab keeps GTINs alone: it has no kind
+`barcode` (owner choice of 2026-09-25). Each `barcode` value of the code map MUST be a
+GTIN. A QR URL gets the normal form of the matcher: no `URL:` prefix, a lower-case host, and no
+fragment. `pipeline/codes.py` holds the checks. `seed_codes.py` adds rows alone, and a
+wrong check digit stops it with no write; the error names the record, the field, and the
+value. It refuses a table `wine_code` that already holds rows, because a second run adds
+back the values that a person removed on the page; `--force` adds the missing rows anyway. The Dataset page of the lab has the editors
+`GTINs` and `QR URLs`. They write the table through `POST` and `DELETE` of
+`/api/dataset-gtin` and `/api/dataset-qr-url`. A save redraws its own card alone. The
+page checks the check digit while you type, and the server checks it again. The editor
+`Barcodes` shows only on the review tool, which sends `barcode_file`. `svoe-vino-matcher`
+still reads `code-map.json`; it does not see the codes of the table. Read
+[plan 11](docs/plans/11_wine-codes.md).
+
+```bash
+# step 7: the Atlas Core product of each wine, from the files of svoe-wino-hackaton
+D=../svoe-wino-hackaton/dataset/derived/official-2026-09-17
+python3 pipeline/seed_atlas_bindings.py --db data/lab.sqlite3 \
+    --matches $D/atlas-matches.jsonl --manual $D/atlas-bindings.manual.jsonl
+```
+
+The table `wine_atlas_binding` (schema 009) links a wine to a Drink Atlas Core product
+UUID. A wine has at most one `automatic` row, from `match_atlas.py`, and one `manual`
+row, from a person. The manual row wins. One product MAY belong to more than one wine.
+The seed adds rows alone. A file row whose UUID differs from the stored row prints
+`differs: <slug> <source>` and is not applied. Like `seed_codes.py`, the seed refuses a
+table that already holds rows unless `--force` is given. On 2026-09-25 the seed added 364
+automatic rows and 3 manual rows. The editor `Atlas Core product` of the Dataset page
+sets a manual binding with `POST /api/dataset-atlas-binding`. The red `×` of a manual
+binding removes it with `DELETE`; the wine then shows its automatic binding, or `not
+bound`. The lab does not write the JSONL files, so the review tool does not see a lab
+binding. Read [plan 15](docs/plans/15_atlas-binding.md).
+
+The table `wine_comment` (schema 011) holds the timestamped comments of a wine. One wine
+MAY have more than one comment. Each row has the UTC time of the write (`created_at`),
+a source, and the text with its line breaks, at most 4,000 characters. The source is
+`user` for a person on the Dataset page and `script` for a script. The editor
+`Comments` of the Dataset page lists the comments of a wine in time order, the oldest
+first, with the local time and the source. The `+` button opens a multi-line field:
+Enter adds a line break, Cmd+Enter or Ctrl+Enter saves, and Esc cancels. The red `×`
+removes one comment after a confirmation. A comment has no edit. The editor writes
+through `POST` and `DELETE` of `/api/dataset-comment`. A script calls
+`comments.add(conn, slug, text, "script")` in its own transaction, or sends
+`"source": "script"` in the body of the POST. The value `with comments` of the filter
+`Show` shows the wines with at least one comment. The text search finds the text of a
+comment. Read [plan 17](docs/plans/17_wine-comments.md).
+
+The table `wine_favorite` (schema 013) holds the favorite wines. A wine is a favorite
+while it has a row. The star at the top right of the text column of each card of the
+Dataset page, next to the alternative photos, toggles the mark with one click and saves
+it at once: `☆` is not a favorite, and an amber `★` is
+a favorite. The page writes through `POST /api/dataset-favorite` with
+`{"slug": …, "favorite": true|false}`. The value `Favorites` of the filter `State` shows
+each favorite wine in each state, also a `Removed` one. The header counts the favorites.
+Read [plan 19](docs/plans/19_favorites.md).
+
+The button `Add wine` of the Dataset page, before `Validate`, adds a wine by hand. The
+dialog asks the slug, the name, the producer, the category, the color, the region, the
+grapes (optional), the description (optional), and the main image (JPEG, PNG, or WebP,
+at most 20 MB). The slug follows the name (`Южный Лес` -> `yuzhnyy-les`) until you type
+a slug; an empty slug field follows the name again. The image zone is a portrait column at the left of the fields. The slug gets
+the fixed prefix `__`; the rest holds `a-z`, `0-9`, `-`, and `_`,
+and starts with a letter or a digit. No slug of vino-svoe.ru starts with `_`, so a
+manual slug cannot collide with a website wine. The category is a select of the values
+of the loaded records; the producer and the region suggest the values of the loaded
+records. `Save` stays off until each required field and the image are there. The page
+sends `POST /api/wine` with JSON and the image in base64. The server stores the wine as
+`Active`, the image as `main` (`match_method` = `manual`, its file name as
+`csv_photo_name`), and processes the image as a patch. A slug that the database holds
+already gets HTTP 409, and the dialog shows the error. The card of a manual wine shows
+the slug with no link to vino-svoe.ru. `import_catalog.py` and `import_website.py` never
+remove a manual wine. The review tool shows no button. Read
+[plan 20](docs/plans/20_add-wine.md).
+
+```bash
+# later: compare wine_catalog with the live catalogue of vino-svoe.ru
+python3 pipeline/import_website.py --db data/lab.sqlite3
+```
+
+`import_website.py` reads the JSON API `https://api.vino-svoe.ru/v1`: the list pages,
+the card of each new wine, and the original image of each wine through
+`/v1/file-proxy/`. A website wine that the database does not hold is added as `Active`
+with its image as `main`. An `Active` or `Disabled` wine that the website does not hold
+becomes `Removed`. A `Removed` wine on the website becomes `Active`, also when a person
+removed it. A website wine with no `main` row gets the website image. Each change gets a
+comment of the source `script`: `New on vino-svoe.ru.`, `Missing on vino-svoe.ru.`,
+`Back on vino-svoe.ru.`, or `Main image from vino-svoe.ru.` A new wine gets the first
+word of the website category (`Белое сухое` -> `Белое`), and its `csv_photo_name` is
+the upload file name. The tool compares `name`, `producer`, `category`, `color`, and
+`region` of each known wine, and the SHA-256 of its original image with the `main` row.
+A difference stops the import. The error lists all problems, and nothing changes. The
+same bytes under a new upload name are no change. The tool does not detect a renamed
+slug: the old slug becomes `Removed`, and the new slug is a new wine. A manual wine
+(slug prefix `__`, plan 20) is never removed, and a website slug with this prefix stops
+the import. Read [plan 18](docs/plans/18_import-website.md).
+
+The button `Import from website` of the Dataset page runs the same compare as a job of the
+lab server: `import_website.py --prepare work/website-import/<run>/`. The button shows the
+progress. After the compare, a dialog lists each conflict with the choice `database` or
+`website`, and each plain change (new, missing, back, main image) with a checkbox. `Apply`
+needs a choice for each conflict, and it runs `import_website.py --apply` on the same run
+directory. A choice `website` writes the website value, or replaces the `main` image; the
+old file stays in the store. A choice `database` and a cleared checkbox are refusals in
+the table `website_refusal` (schema 015). A later run, also of the CLI, skips a refusal
+while the website keeps the refused value. Each choice writes a short comment of the
+source `script`. The compare reuses one HTTPS connection; a full run takes about 10
+minutes. Each write also sets `wine_catalog.website_modified_at`, the `lastmod` of
+`wines-sitemap.xml`. `wine_catalog.modified_at` is the time of the last change of a field
+or of the state of the row; two triggers of schema 015 set it. The sort of the Dataset page
+offers `changed in the lab, newest first` and `changed on vino-svoe.ru, newest first`. Read
+[plan 21](docs/plans/21_website-import-ui.md).
+
+```bash
+# later: the test sets my, official-real-photos, and vlmrerank-8b-failed
+python3 pipeline/import_testsets.py --db data/lab.sqlite3
+```
+
+`import_testsets.py` imports the three test sets of `../svoe-vino-testset/dataset/` into
+the tables `test_set`, `test_photo`, `test_excluded`, and `test_variant`. The set name is
+the name of the directory. The labels stay in `review-labels.json` of each set; each
+import makes the rows of the set equal to the files again. A photo is stored as
+`data/images/testset/<sha256>.<extension>`, one time for the same bytes. A photo whose
+bytes the lab holds already, for example as a patch, keeps that file. `--source` names
+another directory of the sets. `import_testset.py --set <name> <dir>` imports one set.
+Read [plan 12](docs/plans/12_testsets-benchmark.md).
 Git ignores the whole `data/` directory.
 
 ## The embeddings of the lab
@@ -116,9 +283,11 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   that several wines share is one item.
 - The view `full` is variant C: the package cut of plan 09 (`segment`,
   `remove_background`), on white (`white_background`), and `resize`. The view `label`
-  is variant F: the same with the label cut. The label cut at import does not exist
-  yet, so each label item of a full image fails with `no label cut yet`. A label
-  close-up (`label_front`, `label_back`) goes to the view `label` as it is.
+  is variant F: the same with the label cut. The label cut of a full original is the
+  row of the kind `label` of `image_derivative` (plan 22).
+  `python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3` makes it with SAM3 and the
+  label rule of plan 16. A full image with no label cut fails with `no label cut yet`. A
+  label close-up (`label_front`, `label_back`) goes to the view `label` as it is.
 - The gateway drops the alpha channel. So the configuration check rejects
   `remove_background` with no `white_background` after it, and a build fails each item
   whose model input has a transparent pixel. The page shows the error.
@@ -134,7 +303,120 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   running build. The lab server starts a build with `embedding_python` of
   `config.yaml`. The routes are in `pipeline/embedding_routes.py`. `lab_server.py`
   sends each route of the page to that module. The old routes `/api/embedding` and
-  `/img/embedding` of the review tool stay HTTP 503.
+  `/img/embedding` of the review tool stay HTTP 503. The count of failed items is red
+  when it is above zero. The `open` button of the row `Directory` opens the directory of
+  the entry in Finder (`POST /api/embeddings/<name>/open` runs `open` on the Mac of the
+  lab server; the route opens no other path). The row `Directory` does not repeat the
+  endpoint of the first row. The `Log` button after `Stop` opens a dialog with
+  `build.log` of the last build of the entry (`GET /api/embeddings/<name>/log`). Each
+  JSON line shows as `time · event · fields`. A line that is not JSON, for example a
+  traceback, shows as it is, in red. The checkbox `hide item_failed, progress, and request` is on
+  at the start. `Refresh` reads the file again. `Log` is disabled while the entry has no
+  build yet.
+- A click on a prepared image of `/embedding` opens the image preview of `/dataset`: the
+  image in the center, the title (view and wine), the slug, the column, the image type,
+  the status, `<position> / <count>`, the size, and `open raw image` (the original).
+  The arrows, Left, Right, Up, and Down step to the image of the same view of the
+  previous or the next column, over the wines of the filtered list. The thumbnails show
+  each column of the wine: `original` and each view, with its status. The URL key
+  `preview=<sha256>_<view>` names the open preview. Back closes it, and a link with the
+  key opens it again. Esc or a click on the backdrop closes it. A click with Cmd, Ctrl,
+  Shift, or Alt opens the prepared image in a new tab, as before.
+- The job row of a running build shows its phase after `done / todo`:
+  `waiting for the model · <time>` while a model request takes 3 s or more (a cold start
+  of a gateway model takes up to about 48 s), and `retry <n> in <s> s: <error>` while the
+  build waits to try a request again. The build writes the line `request` before each
+  model request and the line `retry` before each wait; `embeddings.job_state` gives the
+  keys `phase`, `phase_event`, and `phase_t`.
+- The badge `vector` at the bottom left of an image cell tells that the vectors file of
+  the entry holds the vector of the item. A `stale` item keeps the vector of its old
+  hash, so it has the badge too. The preview names `vector` in its second line.
+- The owner calls an entry a "configuration", because it holds more than the embedding
+  model: the endpoint, the options, and the steps of each view. The selector of
+  `/embedding` has the label `Configuration`. The route and the page name stay.
+- The last entry is `name: mock`, `backend: mock`, with the views of the other entries.
+  It builds as any entry (owner message of 2026-09-25T13:37:14+0300: "mock should run as
+  any other config"): the build prepares the images, then `MockBackend` of
+  `build_embeddings.py` gives each image a random unit vector of 256 values. It sends no
+  request. The seed is the SHA-256 of the prepared PNG, so a model input always gets the
+  same vector. The entry takes no `base_url`, `model`, or `extra_body`; its model name
+  is `random-unit-vectors`. `pipeline/mock_run.py` makes its runs (section "The runs of
+  the lab").
+
+## The runs of the lab
+
+The Runs page of the lab server (`/runs`) shows the run directories of `runs/`. The runs
+stay files; the lab database does not hold them. The page is the Runs page of the
+review tool: the table of the runs, the metric cards, the histograms, the photo rows
+with `Show`, `Sort`, and `Find`, the candidate images with the cluster frames and the
+VLM box, and the large view with the arrow keys and the model inputs. Read
+[plan 23](docs/plans/23_runs-page.md).
+
+```bash
+# a run of the configuration mock: random top-k candidates for each photo of a test set
+python3 pipeline/mock_run.py --set my [--top-k 10] [--seed N] [--limit N]
+```
+
+- The key `configuration` of `run.json` names the lab configuration of a run: one entry
+  of `embeddings` in `config.yaml`. `pipeline/benchmark.py` writes it when
+  `run_benchmark` gets the argument `configuration`. A run with no such key has no
+  configuration; all runs before 2026-09-25 are such runs.
+- The filter `Configuration` above the table offers `every run`, each configuration of
+  `config.yaml` with the count of its runs, a name that a run holds and `config.yaml`
+  does not (`not in config.yaml`), and `no configuration`. The page address keeps the
+  value (`?configuration=<name>`); the hash keeps the open run. When the open run
+  leaves the table, the first run of the table with metrics opens.
+- The table has the column `configuration`.
+- The photo of a row comes from the image store of the lab database by its
+  `image_sha256`, in the folder of its `image` row (mostly `testset`). A photo whose
+  bytes are not in the store shows `not in the lab image store`. The catalogue image of
+  a slug is its processed patch when the wine has a `main_patched` image (with the mark
+  `patched`), else its processed `main` image, as on the card of `/dataset`.
+- The cluster frames and the VLM box read `dataset/catalog-clusters.json` and
+  `dataset/catalog-cluster-rules.json`. The link `cluster details` opens `/clusters`,
+  which is disabled for now.
+- The model inputs of the large view use `scripts/run_model_inputs.py` and the code of
+  `svoe-vino-matcher`, as in the review tool. A run with no backend URL, for example a
+  mock run, states that it has no model input.
+- The mock backend answers `top_k` distinct Active slugs with random scores from high to
+  low, and a random latency from 50 to 4,000 ms. Each place slug of a photo (of its
+  positive or its negative row) gets a random rank from 1 to `top_k`, or no rank. So a
+  mock run shows every state of the page: rank 1, a deeper rank, absent, a false match,
+  and a negative above a positive. The same seed gives the same answers. The run id is
+  `<stamp>-lab-mock-<set>`.
+- The routes are in `pipeline/run_routes.py`; `pipeline/run_files.py` reads the files.
+  `lab_server.py` sends each route of the page to `run_routes.py`. The review tool keeps
+  its own copy of the run functions.
+
+## The cache of the model calls
+
+A call to SAM3, to Grounding DINO, or to a VLM that repeats an earlier successful call
+reads the answer from `data/cache/` and sends no request. Read
+[plan 25](docs/plans/25_model-call-cache.md).
+
+```bash
+# one Grounding DINO call; the output states "cache": "miss" or "hit"
+python3 pipeline/gdino.py <image> --texts "wine bottle, label" [--model mm-gdino-base]
+```
+
+- The key is the sha256 of the request fields: the full endpoint URL, the served model
+  name, the parameters (for example `threshold`, `max_tokens`, `temperature`), the prompt
+  (the nouns, or the VLM messages), and the sha256 of each sent image. The hash is the
+  hash of the sent copy, after the resize. The timeout, the retries, the headers, and
+  the API key are not in the key.
+- One record is one JSON file `data/cache/<model>/<key[0:2]>/<key>.json`. It holds the
+  request fields, `created`, `ms`, and the answer as the service sent it. It holds no
+  image.
+- A success alone is stored: HTTP 200 with a JSON body, and for a VLM at least one entry
+  in `choices`. An answer with no instance is a success. A failure asks again next time.
+- The clients: `derive.Sam3Client` (each SAM3 call of `pipeline/`), `gdino.GdinoClient`,
+  `Vlm.ask` of `scripts/cluster_rules.py`, `Backend.ask` of `scripts/04_verify.py`, and
+  `call` of `scripts/bench_vlm_models.py`. A VLM request with an image URL that is not a
+  data URL is not cached.
+- To send a request again, delete its record, or the directory of its model. Do this
+  also after the gateway serves a new checkpoint under the same name: the served name is
+  in the key, the checkpoint is not.
+- Unit tests set `model_cache.ROOT` to a temporary directory.
 
 The sections below describe the tools of `scripts/`. They read JSON files through
 `scripts/common.py`, and they do not start with the present `config.yaml`.
@@ -385,12 +667,36 @@ It writes no file until you press `Apply`. Press `Cancel` to discard the candida
 
 The page shows all records that pass the current filter. It has no pagination. Search
 and sort apply to the full list. Images outside the viewport keep native lazy loading.
-Click a catalogue image or a patch image to open a modal preview over the Dataset
-page. The page stays at the same scroll position. The preview puts the image on a
-checkerboard and draws its boundary. It also shows the natural pixel dimensions. The
-arrow buttons and the Left and Right keys move through images of the same kind in the
-current filtered and sorted list. The `open raw image` link opens the image bytes
-without the preview.
+Click a catalogue image, a patch image, or an alternative photo of the lab server to
+open a modal preview over the Dataset page. The page stays at the same scroll position.
+The preview puts the image on a checkerboard and draws its boundary. It also shows the
+natural pixel dimensions. The arrow buttons and the Left and Right keys move through
+images of the same kind in the current filtered and sorted list. For the alternative
+photos, each photo is one step, so a wine with three photos takes three steps. The
+`open raw image` link opens the image bytes without the preview. The page path names
+the open preview: `/dataset/<slug>` for the catalogue image, `/dataset/<slug>/patch` for
+the patch image, and `/dataset/<slug>/alternative/<sha256>` for an alternative photo.
+The review tool opens an alternative photo in a new tab, with no preview.
+
+On the lab server (port 8168), the image stands in the vertical center of the preview.
+Thumbnails of 120 px stand at the bottom of the preview. Each preview of a wine shows
+the same thumbnails: `main` (the `main` image of the delivery) and `main · processed`
+(its processed file, with the badge `crop` or `seg`). A wine with a patch also gets
+`patched` with the badge `PATCH`, and `patched · processed`. Each alternative photo gets
+two thumbnails in the order of the upload, for example `alternative LF` and
+`alternative LF · processed`. The label holds the button code of the type. A wine with
+more than one photo gets the number of the photo in the label, for example
+`alternative 2 FF`. A thumbnail with no file reads `none`. The thumbnails keep their
+place when the image changes. Click a thumbnail to show that image in the preview. A
+thumbnail of another kind, or of another alternative photo, switches the preview fully:
+the title, the page path, the position, and the arrows follow that image. The page path
+names the kind and the photo, not the choice of the original or the processed file, so
+a copied link opens the processed file. The mark on a thumbnail shows the image in view.
+For a processed file, `open raw image` opens its original; this includes the processed
+patch. The Up and Down keys step to the previous and the next item, as
+Left and Right do. The thumbnails stand in one row. A row that is wider than the
+preview scrolls sideways, and the marked thumbnail is scrolled into view. At a width of
+at most 440 px the thumbnails are 72 px high.
 
 A record with a patch has a `Remove` button. The button stages the removal. Press
 `Apply` to remove the patch, or press `Cancel` to keep it. You can drop a new image on
@@ -409,6 +715,21 @@ An addition writes `alternative_dir/<slug>/NN_manual.<extension>`. A removal mov
 file to `alternative_dir/.trash/<slug>/`, so the file can be recovered. These pictures
 add views of the slug to every photo index. They do not replace the catalogue picture
 or its patch. Rebuild the matcher index after a change.
+
+On the lab server (port 8168) the editor works on the database (plan 16). A dropped or
+chosen JPEG, PNG, or WebP photo goes to the server at once; the card shows `processing`
+until the answer. SAM3 tells a full package from a label close-up: a real bottle neck
+inside the largest bottle, or a tall can, is a full package. A clear barcode on the
+package (score 0.7 or more, at least 10 % of its width) makes the photo a back view. The
+photo gets one of `full_front`, `label_front`, `full_back`, `label_back`, and the
+processed file of its kind: the package cut of `derive.py`, or the label cut (the
+largest label that is not the package). The badge shows `crop` or `seg`. The buttons
+`FF`, `LF`, `FB`, `LB` below each photo change the type at once; the filled button is
+the present type. A change between a full type and a label type cuts the photo again; a
+change between front and back keeps the cut. `×` and `Apply` delete the row; the file
+stays in `data/images/additional/`. When SAM3 does not answer, the photo gets
+`full_front`, no processed file, and a warning. The detection rules were fitted to small
+probe sets; their accuracy on real photos is not known, so check the type.
 
 The information area of each row holds `Barcodes` and a `+` button. Press `+` to add
 an input row. Enter one barcode and press the checkmark icon to save it. Press the

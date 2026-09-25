@@ -51,6 +51,7 @@ a { color: var(--accent); }
 }
 .job-name { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .job-state { color: var(--var); font-weight: 650; }
+.job-phase { color: var(--var); }
 .prog { height: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
 .prog div { height: 100%; background: var(--accent); }
 main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
@@ -73,6 +74,13 @@ main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
 .kind, .slug { margin-top: 4px; color: var(--muted); font-size: 13px; }
 .slug { overflow-wrap: anywhere; }
 .copy { padding: 1px 7px; color: var(--muted); font-size: 12px; }
+/* The badge of an item whose vector is in the vectors file. */
+.cell .vector {
+  position: absolute; left: 5px; bottom: 5px; padding: 2px 6px; border-radius: 999px;
+  color: var(--neg); background: var(--neg-bg); font-size: 10px; font-weight: 700;
+}
+/* A count of failed items above zero. */
+.failed-count { color: var(--exc); font-weight: 700; }
 .matrix-wrap { min-width: 0; overflow-x: auto; padding-bottom: 3px; }
 .matrix {
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 230px);
@@ -128,6 +136,146 @@ main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
   .nav { width: 100%; margin-left: 0; overflow-x: auto; }
   .job { grid-template-columns: 1fr 1fr; }
 }
+/* The build log dialog. */
+#log-dialog {
+  width: min(1100px, calc(100vw - 32px)); height: min(80vh, 900px); padding: 0;
+  color: var(--text); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; box-shadow: var(--shadow);
+}
+#log-dialog[open] { display: flex; flex-direction: column; }
+#log-dialog::backdrop { background: rgba(7, 8, 12, .6); }
+.log-head {
+  display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.log-head h2 { margin: 0; font-size: 15px; overflow-wrap: anywhere; }
+.log-head label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 12px; }
+.log-count { color: var(--muted); font-size: 12px; }
+#log-close { margin-left: auto; }
+.log-lines {
+  flex: 1; min-height: 0; overflow: auto; padding: 8px 14px;
+  font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.log-line { display: grid; grid-template-columns: 64px 96px minmax(0, 1fr); gap: 0 10px; }
+.log-line .t { color: var(--muted); }
+.log-line .ev { font-weight: 650; }
+.log-line .fields { overflow-wrap: anywhere; white-space: pre-wrap; }
+.log-line.ev-error .ev, .log-line.ev-item_failed .ev, .log-line.raw .fields { color: var(--exc); }
+.log-line.ev-done .ev { color: var(--pos); }
+.log-line.ev-stopping .ev, .log-line.ev-stopped .ev, .log-line.ev-warning .ev { color: var(--var); }
+.log-note { color: var(--muted); font-style: italic; }
+@media (max-width: 780px) {
+  .log-line { grid-template-columns: 64px minmax(0, 1fr); margin-bottom: 6px; }
+  .log-line .fields { grid-column: 1 / -1; }
+}
+/* The image preview, the same as on /dataset. */
+.modal {
+  position: fixed; inset: 0; z-index: 50; padding: 24px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(7, 8, 12, .76);
+}
+.modal[hidden] { display: none; }
+.image-preview-dialog {
+  width: min(1180px, calc(100vw - 32px)); height: calc(100vh - 32px);
+  display: grid; grid-template-rows: auto 1fr; min-height: 0;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.image-preview-head {
+  display: flex; align-items: center; gap: 14px; min-width: 0; padding: 9px 12px;
+  border-bottom: 1px solid var(--line); background: var(--panel);
+}
+.image-preview-identity { flex: 1 1 auto; min-width: 0; }
+.image-preview-title, .image-preview-file {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.image-preview-title { font-weight: 700; }
+.image-preview-file, .image-preview-meta { color: var(--muted); font-size: 12px; }
+.image-preview-meta { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+.image-preview-close { width: 30px; height: 30px; padding: 0; font-size: 20px; }
+.image-preview-stage {
+  position: relative; min-height: 0; overflow: hidden; padding: 20px 76px;
+  display: flex; align-items: center; justify-content: center; background: var(--bg);
+}
+/* The image in the center of the stage, and its thumbnails at the bottom. */
+.image-preview-main {
+  flex: 0 1 auto; align-self: stretch; min-width: 0; display: flex;
+  flex-direction: column; align-items: center; gap: 12px;
+}
+.image-preview-main .image-preview-frame { margin: auto 0; }
+.image-preview-thumbs { display: flex; gap: 10px; max-width: 100%; padding: 1px; overflow-x: auto; }
+.image-preview-thumbs .preview-thumb { flex: 0 0 auto; }
+.image-preview-thumbs:empty { display: none; }
+.preview-thumb {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel);
+  color: var(--muted); font-size: 11px; line-height: 1.2;
+}
+button.preview-thumb { cursor: pointer; }
+button.preview-thumb:hover { border-color: var(--accent); }
+.preview-thumb.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); color: var(--text); }
+.preview-thumb-image {
+  position: relative; display: grid; place-items: center; height: 120px; min-width: 80px;
+  background-color: #fff; background-image:
+    linear-gradient(45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(-45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #c8c8c8 75%),
+    linear-gradient(-45deg, transparent 75%, #c8c8c8 75%);
+  background-size: 10px 10px; background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+}
+.preview-thumb-image img { display: block; height: 120px; width: auto; max-width: 200px; object-fit: contain; }
+.preview-thumb-image .badge {
+  position: absolute; top: 3px; left: 3px; padding: 1px 5px; border-radius: 999px;
+  font-size: 9px; font-weight: 700;
+}
+.preview-thumb.none .preview-thumb-image {
+  width: 80px; background: var(--bg); border: 1px dashed var(--line); font-size: 11px;
+}
+.image-preview-frame {
+  flex: 0 0 auto; line-height: 0; border: 1px solid var(--accent);
+  box-shadow: 0 0 0 1px #09080c, 0 12px 40px #0008; background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(-45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #c8c8c8 75%),
+    linear-gradient(-45deg, transparent 75%, #c8c8c8 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+}
+.image-preview-frame img {
+  display: block; width: auto; height: auto; object-fit: contain;
+  /* 164 px of the height are for the thumbnails below the image. */
+  max-width: min(1000px, calc(100vw - 200px)); max-height: calc(100vh - 296px);
+}
+.image-preview-arrow {
+  position: sticky; top: calc(50% - 24px); z-index: 2; flex: 0 0 48px;
+  width: 48px; height: 48px; padding: 0; border-radius: 50%;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow: 0 4px 18px #0008; font-size: 29px; line-height: 42px;
+}
+.image-preview-arrow.previous { margin-right: auto; transform: translateX(-58px); }
+.image-preview-arrow.next { margin-left: auto; transform: translateX(58px); }
+@media (max-width: 860px) {
+  .image-preview-stage { padding: 12px 54px; }
+  .image-preview-frame img { max-width: calc(100vw - 148px); max-height: calc(100vh - 292px); }
+}
+@media (max-width: 440px) {
+  /* The dialog fills the screen, so the modal keeps no padding. */
+  .modal { padding: 0; }
+  .image-preview-dialog { width: 100vw; height: 100vh; border: 0; border-radius: 0; }
+  .image-preview-head { align-items: flex-start; flex-wrap: wrap; }
+  .image-preview-meta { order: 3; width: 100%; justify-content: space-between; }
+  .image-preview-stage { padding: 10px 44px 64px; }
+  .image-preview-frame img { max-width: calc(100vw - 108px); max-height: calc(100vh - 298px); }
+  .preview-thumb-image, .preview-thumb-image img { height: 72px; }
+  .preview-thumb-image { min-width: 48px; }
+  .preview-thumb-image img { max-width: 80px; }
+  .preview-thumb.none .preview-thumb-image { width: 48px; }
+  .preview-thumb { flex: 0 0 auto; font-size: 10px; }
+  .image-preview-arrow { position: fixed; top: auto; bottom: 12px; }
+  .image-preview-arrow.previous { left: 12px; margin: 0; transform: none; }
+  .image-preview-arrow.next { right: 12px; margin: 0; transform: none; }
+}
 </style>
 </head>
 <body>
@@ -139,9 +287,10 @@ main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
       href="/">Testset</a><a href="/runs">Runs</a></nav>
   </div>
   <div class="bar">
-    <label>Embedding <select id="emb"></select></label>
+    <label>Configuration <select id="emb"></select></label>
     <button id="build" type="button" disabled>Build</button>
     <button id="stop" type="button" disabled>Stop</button>
+    <button id="log" type="button" disabled title="Show build.log of the last build">Log</button>
     <span class="jobmsg" id="jobmsg"></span>
   </div>
   <div class="bar">
@@ -159,6 +308,42 @@ main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
   <div class="source" id="source">Reading config.yaml…</div>
   <div class="list" id="list"></div>
 </main>
+<dialog id="log-dialog" aria-labelledby="log-title">
+  <div class="log-head">
+    <h2 id="log-title">Build log</h2>
+    <label><input id="log-hide" type="checkbox" checked> hide item_failed, progress, and request</label>
+    <span class="log-count" id="log-count"></span>
+    <button id="log-refresh" type="button">Refresh</button>
+    <button id="log-close" type="button" title="Close (Esc)">Close</button>
+  </div>
+  <div class="log-lines" id="log-lines"></div>
+</dialog>
+<div class="modal" id="image-preview-modal" role="dialog" aria-modal="true"
+  aria-labelledby="image-preview-title" hidden>
+  <section class="image-preview-dialog">
+    <div class="image-preview-head">
+      <div class="image-preview-identity">
+        <div class="image-preview-title" id="image-preview-title"></div>
+        <div class="image-preview-file" id="image-preview-file"></div>
+      </div>
+      <div class="image-preview-meta"><span id="image-preview-position"></span>
+        <span id="image-preview-size" aria-live="polite"></span>
+        <a id="image-preview-raw" href="" target="_blank" rel="noopener">open raw image</a></div>
+      <button class="image-preview-close" id="image-preview-close" type="button"
+        aria-label="Close image preview">×</button>
+    </div>
+    <div class="image-preview-stage">
+      <button class="image-preview-arrow previous" id="image-preview-previous" type="button"
+        aria-label="Previous image" title="Previous image (Left or Up arrow)">←</button>
+      <div class="image-preview-main">
+        <div class="image-preview-frame"><img id="image-preview-image" src="" alt=""></div>
+        <div class="image-preview-thumbs" id="image-preview-thumbs"></div>
+      </div>
+      <button class="image-preview-arrow next" id="image-preview-next" type="button"
+        aria-label="Next image" title="Next image (Right or Down arrow)">→</button>
+    </div>
+  </section>
+</div>
 <script>
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -235,38 +420,47 @@ async function loadEntry() {
   showSource(); render(); buttons();
 }
 
+// The count of failed items: red when it is above zero.
+function failedCount(count) {
+  return count ? `<span class="failed-count">${count}</span>` : `${count}`;
+}
 function showSource() {
   if (!DATA) return;
   const e = DATA.embedding, c = e.counts;
   const extra = Object.keys(e.extra_body || {}).length ? JSON.stringify(e.extra_body) : "none";
   const views = Object.entries(e.views).map(([view, steps]) =>
     `<div><b>${esc(view)}:</b> ${esc(stepsText(steps))}</div>`).join("");
-  const software = e.software ? Object.entries(e.software).map(([k, v]) => `${k} ${v}`).join(", ") : "";
+  // The first row names the endpoint already, so the Directory row leaves it out.
+  const software = e.software ? Object.entries(e.software).filter(([k]) => k !== "endpoint")
+    .map(([k, v]) => `${k} ${v}`).join(", ") : "";
   $("#source").innerHTML = `<div><b>Backend:</b> ${esc(e.backend)}${e.base_url ? ` · ${esc(e.base_url)}` : ""} ·
     <b>Model:</b> ${esc(e.model)} · <b>extra_body:</b> ${esc(extra)} · <b>batch:</b> ${e.batch_size}</div>
     ${views}
     <div><b>Items:</b> ${e.items} · current ${c.current} · stale ${c.stale} · missing ${c.missing} ·
-      failed ${c.failed}${e.dim ? ` · dim ${e.dim}` : ""}${e.updated_at ? ` · updated ${esc(e.updated_at)}` : ""}</div>
-    <div><b>Directory:</b> ${esc(e.directory)}${software ? ` · ${esc(software)}` : ""}</div>
+      failed ${failedCount(c.failed)}${e.dim ? ` · dim ${e.dim}` : ""}${e.updated_at ? ` · updated ${esc(e.updated_at)}` : ""}</div>
+    <div><b>Directory:</b> ${esc(e.directory)} <button class="copy" type="button" data-open-directory
+      title="Open the directory in Finder">open</button>${software ? ` · ${esc(software)}` : ""}</div>
     ${e.index_error ? `<div class="err">${esc(e.index_error)}</div>` : ""}`;
 }
 
-function cellHtml(cell, view) {
+function cellHtml(cell, view, sha256) {
   const badge = `<span class="badge ${cell.status}">${cell.status}</span>`;
   const role = `<span class="role">${esc(view)}</span>`;
   const error = cell.error ? `<div class="error">${esc(cell.error)}</div>` : "";
+  const vector = cell.vector ? '<span class="vector" title="The vectors file holds the embedding of this item">vector</span>' : "";
   if (!cell.url) {
     return `<div class="cell empty ${cell.status}">${badge}${role}<span><strong>${esc(view)}</strong>${
-      cell.status === "failed" ? "no image" : "image not prepared"}</span>${error}</div>`;
+      cell.status === "failed" ? "no image" : "image not prepared"}</span>${vector}${error}</div>`;
   }
   const size = cell.width ? `<span class="size">${cell.width}×${cell.height}</span>` : "";
-  return `<div class="cell ${cell.status}"><a href="${esc(cell.url)}" target="_blank" rel="noopener"><img
-    loading="lazy" src="${esc(cell.url)}" alt="${esc(view)}"></a>${badge}${role}${size}${error}</div>`;
+  return `<div class="cell ${cell.status}"><a href="${esc(cell.url)}" target="_blank" rel="noopener"
+    data-preview="${esc(sha256)}_${esc(view)}"><img
+    loading="lazy" src="${esc(cell.url)}" alt="${esc(view)}"></a>${badge}${role}${size}${vector}${error}</div>`;
 }
 
 function columnHtml(column, first, views) {
   const title = column.role === "label" ? "Close-up" : (first ? "Card image" : "Additional image");
-  const cells = views.map(view => column.cells[view] ? cellHtml(column.cells[view], view)
+  const cells = views.map(view => column.cells[view] ? cellHtml(column.cells[view], view, column.sha256)
     : `<div class="cell none">${column.role === "label" ? "a close-up is in the label view alone" : "not in this view"}</div>`);
   return `<div class="column-title" title="${esc(column.sha256)}"><strong>${title}</strong> · ${
     esc(column.image_type)} · <a href="${esc(column.original_url)}" target="_blank" rel="noopener">original</a></div>
@@ -275,7 +469,7 @@ function columnHtml(column, first, views) {
 
 function wineHtml(record, views) {
   const where = [record.category, record.region].filter(Boolean).map(esc).join(" · ");
-  return `<article class="wine"><section class="info"><h2>${esc(record.name || "Unnamed wine")}</h2>
+  return `<article class="wine" data-slug="${esc(record.slug)}"><section class="info"><h2>${esc(record.name || "Unnamed wine")}</h2>
       <div class="producer">${esc(record.producer || "—")}</div>
       ${where ? `<div class="kind">${where}</div>` : ""}
       <div class="slug">${esc(record.slug)} <button class="copy" type="button"
@@ -300,11 +494,12 @@ function render() {
     const hay = [record.name, record.producer, record.slug].join(" ").toLocaleLowerCase();
     return words.every(word => hay.includes(word));
   });
+  SHOWN = rows;
   $("#list").innerHTML = rows.length ? rows.map(record => wineHtml(record, views)).join("")
     : '<div class="empty-list">No wine matches this view.</div>';
   const c = DATA.embedding.counts;
-  $("#summary").textContent = `${rows.length} of ${DATA.records.length} wines · ${DATA.embedding.items} items · current ${
-    c.current} · stale ${c.stale} · missing ${c.missing} · failed ${c.failed}`;
+  $("#summary").innerHTML = `${rows.length} of ${DATA.records.length} wines · ${DATA.embedding.items} items · current ${
+    c.current} · stale ${c.stale} · missing ${c.missing} · failed ${failedCount(c.failed)}`;
 }
 
 function selectedJob() {
@@ -317,6 +512,7 @@ function buttons() {
   const active = !!job && ACTIVE.includes(job.state);
   $("#build").disabled = !entry || !!entry.error || active;
   $("#stop").disabled = !job || job.state !== "running";
+  $("#log").disabled = !job || !job.state;
   const msg = $("#jobmsg");
   msg.classList.remove("bad");
   if (!job || !job.state) { msg.textContent = entry && !entry.error ? "no build yet" : ""; return; }
@@ -340,7 +536,13 @@ function showJobs(jobs) {
   $("#jobs").innerHTML = running.map(job => {
     const percent = job.todo ? Math.round(100 * job.done / job.todo) : 0;
     const elapsed = job.started_t ? duration(Date.now() / 1000 - job.started_t) : "";
-    const count = job.todo == null ? esc(job.message || "") : `${job.done} / ${job.todo}`;
+    // The phase: a model request that takes 3 s or more, or a retry. A cold start of a
+    // gateway model takes up to about 48 s.
+    const waited = job.phase_t ? Date.now() / 1000 - job.phase_t : 0;
+    const phase = job.phase && (job.phase_event === "retry" || waited >= 3)
+      ? ` · <span class="job-phase" title="${esc(job.phase)}">${esc(job.phase.length > 90
+        ? job.phase.slice(0, 90) + "…" : job.phase)} · ${duration(waited)}</span>` : "";
+    const count = job.todo == null ? esc(job.message || "") : `${job.done} / ${job.todo}${phase}`;
     return `<div class="job"><span class="job-name" title="${esc(job.name)}">${esc(job.name)}</span>
       <span class="job-state">${esc(job.state)}</span><div class="prog"><div style="width:${percent}%"></div></div>
       <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span></div>`;
@@ -368,6 +570,192 @@ async function action(kind) {
   await pollJobs();
 }
 
+// The build log dialog. Each JSON line of build.log is one event; any other line (a
+// Python traceback) stays as it is.
+const LOG_HIDDEN = ["item_failed", "progress", "request"];
+let LOG_LINES = [];
+function logLine(text) {
+  let event = null;
+  try { event = JSON.parse(text); } catch (_) { /* not JSON */ }
+  if (!event || typeof event !== "object" || typeof event.event !== "string") return {raw: text};
+  return {raw: text, event};
+}
+function logFields(event) {
+  return Object.entries(event).filter(([key]) => !["event", "time", "t"].includes(key))
+    .map(([key, value]) => {
+      if (key === "source_sha256" || key === "error" || key === "message") return String(value);
+      if (key === "seconds") return `${value} s`;
+      return `${key} ${typeof value === "object" ? JSON.stringify(value) : value}`;
+    }).join(" · ");
+}
+function renderLog() {
+  const hide = $("#log-hide").checked;
+  const shown = LOG_LINES.filter(line => !(hide && line.event && LOG_HIDDEN.includes(line.event.event)));
+  $("#log-count").textContent = `${shown.length} of ${LOG_LINES.length} lines`;
+  $("#log-lines").innerHTML = shown.length ? shown.map(line => {
+    if (!line.event) {
+      return `<div class="log-line raw"><span class="t"></span><span class="ev"></span><span class="fields">${esc(line.raw)}</span></div>`;
+    }
+    const e = line.event, time = (String(e.time || "").match(/T(\d\d:\d\d:\d\d)/) || [])[1] || "";
+    return `<div class="log-line ev-${esc(e.event)}" title="${esc(line.raw)}"><span class="t">${esc(time)}</span><span
+      class="ev">${esc(e.event)}</span><span class="fields">${esc(logFields(e))}</span></div>`;
+  }).join("") : '<div class="log-note">No line matches this view.</div>';
+}
+async function loadLog() {
+  if (!NAME) return;
+  $("#log-title").textContent = `Build log · ${NAME}`;
+  $("#log-count").textContent = "";
+  $("#log-lines").innerHTML = '<div class="log-note">Reading build.log…</div>';
+  try {
+    const body = await getJson(`/api/embeddings/${encodeURIComponent(NAME)}/log`);
+    $("#log-title").title = body.file;
+    LOG_LINES = body.text.split("\n").filter(line => line.trim()).map(logLine);
+  } catch (error) {
+    LOG_LINES = [];
+    $("#log-lines").innerHTML = `<div class="log-note err">Cannot read the build log: ${esc(error.message)}</div>`;
+    return;
+  }
+  renderLog();
+  $("#log-lines").scrollTop = $("#log-lines").scrollHeight;
+}
+
+// The image preview, the same as on /dataset. A preview of `view` steps through each
+// prepared image of that view of the wines in the filtered list, in page order. The URL
+// key `preview=<sha256>_<view>` names the open preview, so Back closes it.
+let SHOWN = [], IMAGE_PREVIEW = null, PREVIEW_THUMBS = [];
+function previewItems(view) {
+  return SHOWN.flatMap(record => record.columns.flatMap((column, i) => {
+    const cell = column.cells[view];
+    return cell && cell.url ? [{record, column, first: i === 0, cell}] : [];
+  }));
+}
+function previewIndex(items, slug, sha256) {
+  return items.findIndex(item => item.column.sha256 === sha256 && (!slug || item.record.slug === slug));
+}
+function previewKeyOfUrl() {
+  const match = (new URLSearchParams(location.search).get("preview") || "").match(/^([0-9a-f]{64})_(.+)$/);
+  return match ? {sha256: match[1], view: match[2]} : null;
+}
+function previewUrl(key) {
+  const url = new URL(location.href);
+  if (key) url.searchParams.set("preview", key); else url.searchParams.delete("preview");
+  return url;
+}
+// The thumbnails below the preview: for each column of the wine, the original and the
+// prepared image of each view, with its status. A thumbnail with no `url` stands for an
+// image that is not prepared. `raw` is the target of `open raw image`: the original.
+function previewThumbs(record) {
+  const kinds = record.columns.map((column, i) => i === 0 ? "card" : column.role === "label" ? "close-up" : "additional");
+  const seen = {};
+  return record.columns.flatMap((column, i) => {
+    const kind = kinds[i];
+    seen[kind] = (seen[kind] || 0) + 1;
+    const name = kinds.filter(other => other === kind).length > 1 ? `${kind} ${seen[kind]}` : kind;
+    const thumbs = [{url: column.original_url, raw: column.original_url, label: `${name} · original`}];
+    for (const view of Object.keys(DATA.embedding.views)) {
+      const cell = column.cells[view];
+      if (!cell) continue;
+      thumbs.push({url: cell.url, raw: column.original_url, label: `${name} · ${view}`, badge: cell.status});
+    }
+    return thumbs;
+  });
+}
+function renderPreviewThumbs(record, src) {
+  PREVIEW_THUMBS = previewThumbs(record);
+  const on = PREVIEW_THUMBS.findIndex(thumb => thumb.url === src);
+  $("#image-preview-thumbs").innerHTML = PREVIEW_THUMBS.map((thumb, index) => {
+    const badge = thumb.badge ? `<span class="badge ${esc(thumb.badge)}">${esc(thumb.badge)}</span>` : "";
+    return thumb.url
+      ? `<button class="preview-thumb${index === on ? " on" : ""}" type="button"
+          data-preview-thumb="${index}" title="Show the ${esc(thumb.label)} image"><span
+          class="preview-thumb-image"><img src="${esc(thumb.url)}" alt="${esc(thumb.label)}">${badge}</span>
+          <span>${esc(thumb.label)}</span></button>`
+      : `<div class="preview-thumb none" title="The ${esc(thumb.label)} image is not prepared"><span
+          class="preview-thumb-image">${esc(thumb.badge || "none")}</span><span>${esc(thumb.label)}</span></div>`;
+  }).join("");
+  // A strip that scrolls shows the thumbnail that is on in its center.
+  const strip = $("#image-preview-thumbs");
+  strip.scrollLeft = 0;
+  const current = strip.querySelector(".preview-thumb.on");
+  if (!current) return;
+  Promise.all([...strip.querySelectorAll("img")].map(img => img.decode().catch(() => {})))
+    .then(() => {
+      if (!current.isConnected) return;
+      const box = strip.getBoundingClientRect(), item = current.getBoundingClientRect();
+      strip.scrollLeft += item.left - box.left - (box.width - item.width) / 2;
+    });
+}
+// Open the preview. `mode` is the change of the page URL: "push" adds a history entry,
+// "replace" changes the entry, "none" keeps the URL. Return false when the filtered list
+// holds no such image.
+function showImagePreview(slug, sha256, view, mode = "push") {
+  const items = previewItems(view);
+  const index = previewIndex(items, slug, sha256);
+  if (index < 0) return false;
+  const {record, column, first, cell} = items[index];
+  const where = column.role === "label" ? "Close-up" : (first ? "Card image" : "Additional image");
+  IMAGE_PREVIEW = {slug: record.slug, sha256, view};
+  $("#image-preview-title").textContent = `${view} · ${record.name || record.slug}`;
+  $("#image-preview-file").textContent = `${record.slug} · ${where} · ${column.image_type} · ${cell.status}${
+    cell.vector ? " · vector" : ""}`;
+  $("#image-preview-position").textContent = `${index + 1} / ${items.length}`;
+  $("#image-preview-size").textContent = "reading size…";
+  $("#image-preview-raw").href = column.original_url;
+  $("#image-preview-previous").disabled = index === 0;
+  $("#image-preview-next").disabled = index === items.length - 1;
+  const image = $("#image-preview-image");
+  image.alt = `${view} · ${record.name || record.slug}`;
+  image.onload = () => {
+    $("#image-preview-size").textContent = `${image.naturalWidth} × ${image.naturalHeight} px`;
+  };
+  image.onerror = () => { $("#image-preview-size").textContent = "image load failed"; };
+  image.src = cell.url;
+  renderPreviewThumbs(record, cell.url);
+  $("#image-preview-modal").hidden = false;
+  document.body.style.overflow = "hidden";
+  $("#image-preview-close").focus();
+  const url = previewUrl(`${sha256}_${view}`);
+  if (mode === "push") history.pushState({imagePreview: true}, "", url);
+  else if (mode === "replace") history.replaceState(history.state, "", url);
+  return true;
+}
+function hideImagePreview() {
+  $("#image-preview-modal").hidden = true;
+  $("#image-preview-image").src = "";
+  document.body.style.overflow = "";
+  IMAGE_PREVIEW = null;
+}
+// Close the preview. The entry of an open that this page pushed goes away with Back.
+function closeImagePreview() {
+  hideImagePreview();
+  if (history.state && history.state.imagePreview) history.back();
+  else if (previewKeyOfUrl()) history.replaceState(null, "", previewUrl(null));
+}
+function stepImagePreview(step) {
+  if (!IMAGE_PREVIEW) return;
+  const items = previewItems(IMAGE_PREVIEW.view);
+  const target = items[previewIndex(items, IMAGE_PREVIEW.slug, IMAGE_PREVIEW.sha256) + step];
+  if (target) showImagePreview(target.record.slug, target.column.sha256, IMAGE_PREVIEW.view, "replace");
+}
+function showPreviewThumb(button) {
+  const thumb = PREVIEW_THUMBS[Number(button.dataset.previewThumb)];
+  const image = $("#image-preview-image");
+  if (!thumb || image.getAttribute("src") === thumb.url) return;
+  $("#image-preview-size").textContent = "reading size…";
+  $("#image-preview-raw").href = thumb.raw;
+  image.src = thumb.url;
+  for (const other of $("#image-preview-thumbs").querySelectorAll("[data-preview-thumb]")) {
+    other.classList.toggle("on", other === button);
+  }
+}
+// Open the preview that the URL names, after the entry is read.
+function openPreviewOfUrl() {
+  const key = previewKeyOfUrl();
+  if (key && !showImagePreview("", key.sha256, key.view, "none")) {
+    history.replaceState(null, "", previewUrl(null));
+  }
+}
+
 $("#emb").addEventListener("change", () => {
   NAME = $("#emb").value; remember(NAME); buttons(); loadEntry();
 });
@@ -375,6 +763,56 @@ $("#filter").addEventListener("change", render);
 $("#q").addEventListener("input", render);
 $("#build").addEventListener("click", () => action("build"));
 $("#stop").addEventListener("click", () => action("stop"));
+$("#log").addEventListener("click", () => { $("#log-dialog").showModal(); loadLog(); });
+$("#log-refresh").addEventListener("click", loadLog);
+$("#log-close").addEventListener("click", () => $("#log-dialog").close());
+$("#log-hide").addEventListener("change", renderLog);
+// A click on the backdrop closes the dialog; the content fills the dialog box.
+$("#log-dialog").addEventListener("click", event => {
+  if (event.target === $("#log-dialog")) $("#log-dialog").close();
+});
+// A click on a prepared image opens the preview. A click with a modifier key keeps the
+// default: the image opens in a new tab.
+$("#list").addEventListener("click", event => {
+  const link = event.target.closest("a[data-preview]");
+  if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const match = link.dataset.preview.match(/^([0-9a-f]{64})_(.+)$/);
+  const wine = link.closest("article[data-slug]");
+  if (!match || !wine) return;
+  event.preventDefault();
+  showImagePreview(wine.dataset.slug, match[1], match[2]);
+});
+$("#image-preview-close").addEventListener("click", closeImagePreview);
+$("#image-preview-previous").addEventListener("click", () => stepImagePreview(-1));
+$("#image-preview-next").addEventListener("click", () => stepImagePreview(1));
+$("#image-preview-modal").addEventListener("click", event => {
+  if (event.target === $("#image-preview-modal")) closeImagePreview();
+});
+$("#image-preview-thumbs").addEventListener("click", event => {
+  const button = event.target.closest("[data-preview-thumb]");
+  if (button) showPreviewThumb(button);
+});
+// Back and Forward open or close the preview that the URL names.
+window.addEventListener("popstate", () => {
+  const key = previewKeyOfUrl();
+  if (!key || !showImagePreview("", key.sha256, key.view, "none")) hideImagePreview();
+});
+document.addEventListener("keydown", event => {
+  if ($("#image-preview-modal").hidden) return;
+  if (event.key === "Escape") closeImagePreview();
+  else if (event.key === "ArrowLeft" || event.key === "ArrowUp") stepImagePreview(-1);
+  else if (event.key === "ArrowRight" || event.key === "ArrowDown") stepImagePreview(1);
+  else return;
+  event.preventDefault();
+});
+$("#source").addEventListener("click", async event => {
+  if (!event.target.closest("[data-open-directory]")) return;
+  try {
+    await getJson(`/api/embeddings/${encodeURIComponent(NAME)}/open`, {method: "POST"});
+  } catch (error) {
+    alert(`Cannot open the directory of ${NAME}: ${error.message}`);
+  }
+});
 document.addEventListener("click", async event => {
   const copy = event.target.closest("[data-copy]");
   if (!copy) return;
@@ -385,7 +823,7 @@ document.addEventListener("click", async event => {
 if (["all", "failed", "missing", "stale"].includes(INITIAL.get("filter"))) $("#filter").value = INITIAL.get("filter");
 $("#q").value = INITIAL.get("q") || "";
 
-loadList().then(loadEntry).catch(error => {
+loadList().then(loadEntry).then(openPreviewOfUrl).catch(error => {
   $("#source").innerHTML = `<div class="err">Cannot read /api/embeddings: ${esc(error.message)}</div>`;
 });
 </script>

@@ -56,12 +56,14 @@ def build_queries(conn, db_path, set_name):
     excluded = {slug for (slug,) in conn.execute(
         "SELECT wine_slug FROM test_excluded WHERE set_name = ?", (set_name,))}
     rows, skipped = [], collections.Counter()
-    for place, name, digest, label, delete, extension in conn.execute(
-            "SELECT p.place, p.file_name, p.sha256, p.label, p.marked_delete, i.extension "
-            "FROM test_photo p JOIN image i ON i.sha256 = p.sha256 "
+    for place, name, digest, label, delete, folder, extension in conn.execute(
+            "SELECT p.place, p.file_name, p.sha256, p.label, p.marked_delete, i.folder, "
+            "i.extension FROM test_photo p JOIN image i ON i.sha256 = p.sha256 "
             "WHERE p.set_name = ? ORDER BY p.place, p.file_name", (set_name,)):
+        # A photo whose bytes `image` held before the import keeps the folder of that file.
         row = {"image_path": "%s/%s" % (place, name),
-               "abs_path": imagestore.path_of(db_path, digest, extension),
+               "abs_path": os.path.join(imagestore.folder_of(db_path, folder),
+                                        "%s.%s" % (digest, extension)),
                "image_sha256": digest, "slug": place}
         if place == NULL_SLUG:
             if NULL_SLUG in excluded:
@@ -125,12 +127,16 @@ def git_commit():
 
 
 def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, limit=None,
-                  label=None, embeddings=None, log=print, schema_dir=labdb.SCHEMA_DIR):
+                  label=None, embeddings=None, log=print, schema_dir=labdb.SCHEMA_DIR,
+                  configuration=None):
     """Run the set against `backend`. Return (run directory, metrics).
 
     `backend` is a backend of `match_backends.build_backend`: it has `id`, `spec`,
     `top_k`, and `ask(path)`. `embeddings` is the index state of the backend; None asks
     the backend with `match_backends.embeddings_of`. The runner reads the database alone.
+    `configuration` is the name of the lab configuration of the run (an entry of
+    `embeddings` in `config.yaml`); `run.json` holds it under the key `configuration`.
+    None writes no such key. Read `docs/plans/23_runs-page.md`.
     """
     conn = open_database(db_path, schema_dir)
     try:
@@ -178,6 +184,8 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
         "left_out": dict(skipped),
         "based_on": None,
     }
+    if configuration is not None:
+        meta["configuration"] = configuration
 
     results, lock, done = [], threading.Lock(), 0
     t_start = time.time()

@@ -125,3 +125,12 @@ embeddings:
     extra_body:
       max_num_patches: 256
     views: *views_c_f
+
+  # The configuration `mock` builds as any entry, with the same views and steps, but it
+  # sends no request: each prepared image gets a random unit vector of 256 values
+  # (`backend: mock`; no `base_url`, `model`, or `extra_body`). `pipeline/mock_run.py
+  # --set <set>` makes a run of it with random top-k candidates, to test the Runs page.
+  # Read docs/plans/23_runs-page.md.
+  - name: mock
+    backend: mock
+    views: *views_c_f

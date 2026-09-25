@@ -40,11 +40,14 @@ class LabDbTest(unittest.TestCase):
 
     def test_create_applies_the_schema(self):
         labdb.connect(self.db, create=True).close()
-        self.assertEqual(VERSION, 7)
+        self.assertEqual(VERSION, 17)
         self.assertEqual(self.query("PRAGMA user_version"), [(VERSION,)])
         conn = sqlite3.connect(self.db)
         self.assertEqual(labdb.tables(conn),
-                         ["image", "image_derivative", "wine_catalog", "wine_image"])
+                         ["image", "image_derivative", "test_excluded", "test_photo",
+                          "test_set", "test_variant", "website_refusal",
+                          "wine_atlas_binding", "wine_catalog", "wine_code",
+                          "wine_comment", "wine_favorite", "wine_image"])
         conn.close()
 
     def test_connect_twice_keeps_the_version(self):
@@ -74,6 +77,67 @@ class LabDbTest(unittest.TestCase):
             labdb.connect(self.db, create=True, directory=str(schema))
         self.assertEqual(self.query("PRAGMA user_version"), [(0,)])
         self.assertEqual(self.query("SELECT name FROM sqlite_schema"), [])
+
+    def test_schema_file_may_build_a_parent_table_again(self):
+        schema = self.root / "schema"
+        schema.mkdir()
+        (schema / "001_a.sql").write_text(
+            "CREATE TABLE p (k TEXT PRIMARY KEY) STRICT;\n"
+            "CREATE TABLE c (k TEXT NOT NULL REFERENCES p (k)) STRICT;\n"
+            "INSERT INTO p VALUES ('a');\nINSERT INTO c VALUES ('a');\n")
+        (schema / "002_b.sql").write_text(
+            "CREATE TABLE p_new (k TEXT PRIMARY KEY, v TEXT) STRICT;\n"
+            "INSERT INTO p_new (k) SELECT k FROM p;\nDROP TABLE p;\n"
+            "ALTER TABLE p_new RENAME TO p;\n")
+        conn = labdb.connect(self.db, create=True, directory=str(schema))
+        self.assertEqual(conn.execute("PRAGMA foreign_keys").fetchone(), (1,))
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute("INSERT INTO c VALUES ('none')")
+        conn.close()
+        self.assertEqual(self.query("PRAGMA user_version"), [(2,)])
+        self.assertEqual(self.query("SELECT k FROM c"), [("a",)])
+
+    def test_schema_file_that_breaks_a_link_changes_nothing(self):
+        schema = self.root / "schema"
+        schema.mkdir()
+        (schema / "001_a.sql").write_text(
+            "CREATE TABLE p (k TEXT PRIMARY KEY) STRICT;\n"
+            "CREATE TABLE c (k TEXT NOT NULL REFERENCES p (k)) STRICT;\n"
+            "INSERT INTO p VALUES ('a');\nINSERT INTO c VALUES ('a');\n")
+        labdb.connect(self.db, create=True, directory=str(schema)).close()
+        (schema / "002_b.sql").write_text("DELETE FROM p;\n")
+        with self.assertRaisesRegex(labdb.SchemaError, "002_b.sql breaks 1 foreign keys"):
+            labdb.connect(self.db, directory=str(schema))
+        self.assertEqual(self.query("PRAGMA user_version"), [(1,)])
+        self.assertEqual(self.query("SELECT k FROM p"), [("a",)])
+
+    def test_version_13_wines_keep_their_rows_and_links(self):
+        labdb.connect(self.db, create=True, directory=self.schema_up_to(13)).close()
+        conn = sqlite3.connect(self.db)
+        conn.executemany("INSERT INTO wine_catalog (wine_slug, name, producer, category, "
+                         "color, region, description, csv_photo_name) "
+                         "VALUES (?, 'n', 'p', 'c', 'co', 'r', 'd', 'x.webp')",
+                         [("b",), ("a",)])
+        conn.execute("INSERT INTO wine_code (wine_slug, kind, value) "
+                     "VALUES ('a', 'gtin', '04600000000008')")
+        conn.commit()
+        conn.close()
+        labdb.connect(self.db).close()
+        self.assertEqual(self.query("PRAGMA user_version"), [(VERSION,)])
+        self.assertEqual(self.query("SELECT wine_slug FROM wine_catalog ORDER BY rowid"),
+                         [("b",), ("a",)])
+        self.assertEqual(self.query("SELECT wine_slug FROM wine_code"), [("a",)])
+        self.assertEqual(self.query("PRAGMA foreign_key_check"), [])
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("INSERT INTO wine_catalog (wine_slug, name, producer, category, "
+                         "color, region, csv_photo_name) "
+                         "VALUES ('c', 'n', 'p', 'c', 'co', 'r', 'x.webp')")
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute("INSERT INTO wine_catalog (wine_slug, name, producer, category, "
+                         "color, region, description, csv_photo_name) "
+                         "VALUES ('d', 'n', 'p', 'c', 'co', 'r', '', 'x.webp')")
+        conn.close()
 
     def test_version_1_database_keeps_its_rows(self):
         labdb.connect(self.db, create=True, directory=self.schema_up_to(1)).close()
@@ -168,6 +232,29 @@ class LabDbTest(unittest.TestCase):
             conn.execute(insert, (slug, state, removed_by))
         with self.assertRaises(sqlite3.IntegrityError):
             conn.execute(insert, ("d", "active", None))
+        conn.close()
+
+    def test_wine_code_checks_the_form_and_allows_shared_values(self):
+        labdb.connect(self.db, create=True).close()
+        conn = sqlite3.connect(self.db)
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.executemany("INSERT INTO wine_catalog (wine_slug, name, producer, category, "
+                         "color, region, description, csv_photo_name) "
+                         "VALUES (?, 'n', 'p', 'c', 'co', 'r', 'd', 'x.webp')", [("a",), ("b",)])
+        insert = "INSERT INTO wine_code (wine_slug, kind, value) VALUES (?, ?, ?)"
+        for row in (("a", "gtin", "04631168664979"), ("b", "gtin", "04631168664979"),
+                    ("a", "barcode", "AB-1"), ("a", "qr_url", "https://a.ru/")):
+            conn.execute(insert, row)
+        for row in (("a", "gtin", "04631168664979"),   # the same value twice for one wine
+                    ("a", "gtin", "4631168664979"),    # not the GTIN-14 form
+                    ("a", "gtin", "0463116866497X"),
+                    ("a", "barcode", "A" * 129),
+                    ("a", "qr_url", "ftp://a.ru/"),
+                    ("a", "ean", "1"),
+                    ("a", "barcode", ""),
+                    ("x", "barcode", "AB-1")):         # no such wine
+            with self.assertRaises(sqlite3.IntegrityError, msg=row):
+                conn.execute(insert, row)
         conn.close()
 
 

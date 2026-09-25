@@ -105,6 +105,21 @@ class DeriveImageTest(unittest.TestCase):
         self.assertEqual(alpha.getpixel((10, 200)), 0)
 
 
+# The tests of this file send no answer to the cache of the project in `data/cache/`.
+_CACHE = {}
+
+
+def setUpModule():
+    _CACHE["directory"] = tempfile.TemporaryDirectory()
+    _CACHE["root"], derive.model_cache.ROOT = (derive.model_cache.ROOT,
+                                               _CACHE["directory"].name)
+
+
+def tearDownModule():
+    derive.model_cache.ROOT = _CACHE["root"]
+    _CACHE["directory"].cleanup()
+
+
 class Sam3ClientTest(unittest.TestCase):
     def mask_b64(self, size, box):
         out = io.BytesIO()
@@ -153,6 +168,46 @@ class Sam3ClientTest(unittest.TestCase):
         finally:
             derive.SAM3_RETRIES, derive.time.sleep = old
         self.assertEqual(len(calls), 3)
+
+    def test_repeated_post_reads_the_cache_and_a_failure_is_not_stored(self):
+        import requests
+        client = derive.Sam3Client("http://sam3-cache.invalid")
+        calls = []
+
+        class Response:
+            status_code = 200
+
+            def json(self):
+                return {"instances": [{"label": "can", "area": len(calls)}]}
+
+        def post(url, files=None, data=None, timeout=None):
+            calls.append((files["image"][1], data["texts"], data["return_masks"]))
+            return Response()
+
+        client.session.post = post
+        first = client._post(b"png-1", "bottle")
+        self.assertEqual(client._post(b"png-1", "bottle"), first)
+        self.assertEqual(len(calls), 1)
+        client._post(b"png-1", "can")
+        client._post(b"png-2", "bottle")
+        client._post(b"png-1", "bottle", False)
+        self.assertEqual(len(calls), 4)
+
+        def fail(*args, **kwargs):
+            raise requests.ConnectionError("refused")
+
+        client.session.post = fail
+        old = derive.SAM3_RETRIES
+        derive.SAM3_RETRIES = 0
+        try:
+            with self.assertRaises(derive.Sam3Unavailable):
+                client._post(b"png-3", "bottle")
+        finally:
+            derive.SAM3_RETRIES = old
+        client.session.post = post
+        client._post(b"png-3", "bottle")
+        self.assertEqual(calls[-1], (b"png-3", "bottle", "true"))
+        self.assertEqual(len(calls), 5)
 
 
 class DeriveAllTest(unittest.TestCase):
@@ -233,6 +288,47 @@ class DeriveAllTest(unittest.TestCase):
         self.assertEqual(self.conn.execute("SELECT settings FROM image_derivative")
                          .fetchall(), [(derive.SETTINGS_ALPHA,)])
 
+
+
+class Sam3InstancesTest(unittest.TestCase):
+    def test_instances_sends_the_texts_and_answers_each_instance_and_the_scale(self):
+        client = derive.Sam3Client("http://sam3.invalid")
+        sent = []
+        answer = {"instances": [{"label": "bottle neck", "box": [1, 2, 3, 4], "score": 0.8,
+                                 "area": 4},
+                                {"label": "label", "box": [5, 6, 7, 8], "score": 0.7,
+                                 "area": 4}]}
+
+        def post(data, texts, masks):
+            sent.append((Image.open(io.BytesIO(data)).size, texts, masks))
+            return answer
+
+        client._post = post
+        found, scale = client.instances(bottle_on_white(size=(1000, 3072)), "bottle, label",
+                                        masks=False)
+        self.assertEqual(sent, [((500, 1536), "bottle, label", False)])
+        self.assertEqual(found, answer["instances"])
+        self.assertEqual(scale, 0.5)
+
+    def test_post_sends_the_texts_and_the_mask_switch(self):
+        client = derive.Sam3Client("http://sam3.invalid")
+        forms = []
+
+        class Response:
+            status_code = 200
+
+            def json(self):
+                return {"instances": []}
+
+        def post(url, files=None, data=None, timeout=None):
+            forms.append(data)
+            return Response()
+
+        client.session.post = post
+        client._post(b"png", "bottle neck", False)
+        client._post(b"png")
+        self.assertEqual([(f["texts"], f["return_masks"]) for f in forms],
+                         [("bottle neck", "false"), (derive.SAM3_TEXTS, "true")])
 
 if __name__ == "__main__":
     unittest.main()

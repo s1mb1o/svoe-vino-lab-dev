@@ -41,6 +41,7 @@ from PIL import Image, ImageChops, ImageFilter, ImageOps
 
 import imagestore
 import labdb
+import model_cache
 
 # The rule of `build_cropped.py`.
 ALPHA_THRESHOLD = 32
@@ -49,7 +50,9 @@ OPEN_SIZE = 5
 
 # The SAM3 service of gx10 and the values of `build_labels.py`.
 SAM3_ENDPOINT = "http://192.168.86.14:18081/upstream/sam3"
-SAM3_TEXTS = "wine bottle, can, packet, box"
+# The served name of the gateway. It names the directory of the cache records.
+SAM3_MODEL = "sam3"
+SAM3_TEXTS ="wine bottle, can, packet, box"
 SAM3_THRESHOLD = 0.35
 SAM3_MASK_THRESHOLD = 0.5
 SAM3_MAX_SIDE = 1536
@@ -89,7 +92,24 @@ class Sam3Client:
         self.endpoint = endpoint.rstrip("/")
         self.session = requests.Session()
 
-    def _post(self, data):
+    def _post(self, data, texts=SAM3_TEXTS, return_masks=True):
+        # A repeated request reads the answer of `model_cache`. Only an answer of HTTP
+        # 200 is stored, so a failure asks SAM3 again. Read docs/plans/25_model-call-cache.md.
+        form = {"texts": texts, "threshold": str(SAM3_THRESHOLD),
+                "mask_threshold": str(SAM3_MASK_THRESHOLD),
+                "return_masks": "true" if return_masks else "false"}
+        params = {key: value for key, value in form.items() if key != "texts"}
+        fields = model_cache.request_fields(self.endpoint + "/segment_multi", SAM3_MODEL,
+                                            params, texts, [data])
+        record = model_cache.lookup(fields)
+        if record is not None:
+            return record["answer"]
+        started = time.perf_counter()
+        answer = self._send(data, form)
+        model_cache.store(fields, answer, (time.perf_counter() - started) * 1000)
+        return answer
+
+    def _send(self, data, form):
         # The service answers HTTP 429 when its queue is full, because it serves every
         # client of the host. The client waits and asks again, as `build_labels.py`.
         last = None
@@ -99,9 +119,7 @@ class Sam3Client:
                 response = self.session.post(
                     self.endpoint + "/segment_multi",
                     files={"image": ("image.png", data, "image/png")},
-                    data={"texts": SAM3_TEXTS, "threshold": str(SAM3_THRESHOLD),
-                          "mask_threshold": str(SAM3_MASK_THRESHOLD),
-                          "return_masks": "true"},
+                    data=form,
                     timeout=SAM3_TIMEOUT)
                 if response.status_code == 200:
                     return response.json()
@@ -122,9 +140,9 @@ class Sam3Client:
         raise Sam3Unavailable("the SAM3 service at %s did not answer: %s"
                               % (self.endpoint, last))
 
-    def segment(self, image):
-        """Return the mask of the package as an `L` image of the size of `image`, or
-        None when SAM3 finds no package. Raise `Sam3Unavailable`."""
+    def _sent_copy(self, image):
+        """Return (the PNG bytes of the copy that goes to SAM3, the scale of the copy).
+        The copy lies on white and has a long side of at most `SAM3_MAX_SIDE`."""
         flat = image.convert("RGB")
         if image.mode == "RGBA":
             flat = Image.new("RGB", image.size, "white")
@@ -135,9 +153,27 @@ class Sam3Client:
                                 max(1, round(flat.height * scale))), Image.Resampling.LANCZOS)
         buffer = io.BytesIO()
         flat.save(buffer, "PNG")
-        answer = self._post(buffer.getvalue())
-        instances = [item for item in answer.get("instances") or []
-                     if item.get("mask_png_b64")]
+        return buffer.getvalue(), scale
+
+    def instances(self, image, texts, masks=True):
+        """Send `image` with the nouns `texts` to SAM3. Return (instances, scale).
+
+        Each instance is the dict of the service as it comes: `label` (the noun that
+        found it), `box`, `score`, `area`, and `mask_png_b64` when `masks`. The box and the
+        mask are in the pixels of the sent copy: divide a box by `scale` for the pixels of
+        `image`. Raise `Sam3Unavailable`.
+        """
+        data, scale = self._sent_copy(image)
+        answer = self._post(data, texts, masks)
+        return list(answer.get("instances") or []), scale
+
+    def segment(self, image):
+        """Return the mask of the package as an `L` image of the size of `image`, or
+        None when SAM3 finds no package. Raise `Sam3Unavailable`."""
+        data, _scale = self._sent_copy(image)
+        answer = self._post(data)
+        found = answer.get("instances") or []
+        instances = [item for item in found if item.get("mask_png_b64")]
         if not instances:
             return None
         best = max(instances, key=lambda item: (int(item.get("area") or 0),
@@ -267,9 +303,11 @@ def png_bytes(image, icc_profile):
 
 class Derivatives:
     """The processed files of one run. The importer writes the rows in its
-    transaction with `write_rows`."""
+    transaction with `write_rows`. `kind` is the kind of cut of each link: `package`
+    (this module) or `label` (`alternatives.label_derivatives`)."""
 
-    def __init__(self):
+    def __init__(self, kind="package"):
+        self.kind = kind
         self.images = []                        # rows of `image` for processed files
         self.links = []                         # rows of `image_derivative`
         self.methods = collections.Counter()    # processed originals by method
@@ -288,7 +326,8 @@ def derive_all(conn, db_path, originals, segmenter, log=print):
 
     `originals` maps the sha256 of an original to its path in the store.
     """
-    done = dict(conn.execute("SELECT source_sha256, settings FROM image_derivative"))
+    done = dict(conn.execute("SELECT source_sha256, settings FROM image_derivative "
+                             "WHERE kind = 'package'"))
     folder = imagestore.folder_of(db_path, labdb.DERIVED_FOLDER)
     os.makedirs(folder, exist_ok=True)
     segmenter = _Once(segmenter)
@@ -325,16 +364,17 @@ def derive_all(conn, db_path, originals, segmenter, log=print):
 
 
 def write_rows(conn, derivatives):
-    """Write the rows of `derivatives`. The caller holds the transaction. The
-    original of each link MUST have its row in `image` already."""
+    """Write the rows of `derivatives`, each with the kind `derivatives.kind`. The caller
+    holds the transaction. The original of each link MUST have its row in `image`
+    already."""
     conn.executemany(
         "INSERT INTO image (sha256, folder, extension, width, height) "
         "VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING", derivatives.images)
     conn.executemany(
         "INSERT INTO image_derivative (source_sha256, method, settings, sha256, box_left, "
-        "box_top, box_right, box_bottom) VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
-        "ON CONFLICT (source_sha256) DO UPDATE SET method = excluded.method, "
+        "box_top, box_right, box_bottom, kind) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
+        "ON CONFLICT (source_sha256, kind) DO UPDATE SET method = excluded.method, "
         "settings = excluded.settings, sha256 = excluded.sha256, "
         "box_left = excluded.box_left, box_top = excluded.box_top, "
         "box_right = excluded.box_right, box_bottom = excluded.box_bottom",
-        derivatives.links)
+        [link + (derivatives.kind,) for link in derivatives.links])

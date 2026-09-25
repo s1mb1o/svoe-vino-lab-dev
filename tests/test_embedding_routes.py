@@ -6,6 +6,7 @@ import tempfile
 import time
 import types
 import unittest
+import unittest.mock
 
 import embedding_lab  # noqa: F401  (puts pipeline/ on sys.path)
 from embedding_lab import FakeGateway, standard_lab
@@ -130,6 +131,18 @@ class RoutesTest(unittest.TestCase):
         self.assertEqual(unprocessed["status"], "failed")
         self.assertNotIn("url", unprocessed)
 
+    def test_a_cell_with_a_vector_row_gets_vector(self):
+        self.build()
+        records = {record["slug"]: record for record in self.get("/api/embeddings/gw")[1]["records"]}
+        cells = records["transparent"]["columns"][0]["cells"]
+        self.assertIs(cells["full"].get("vector"), True)
+        self.assertNotIn("vector", cells["label"])
+        # A vectors file that is gone, or shorter than the rows of the index: no badge.
+        index = embeddings.read_index(self.lab.entry_dir())
+        os.remove(os.path.join(self.lab.entry_dir(), index["vectors_file"]))
+        records = {record["slug"]: record for record in self.get("/api/embeddings/gw")[1]["records"]}
+        self.assertNotIn("vector", records["transparent"]["columns"][0]["cells"]["full"])
+
     def test_bad_image_paths(self):
         digest = "a" * 64
         for path in ("/embeddings/gw/images/%s_full.jpg" % digest,
@@ -187,6 +200,61 @@ class RoutesTest(unittest.TestCase):
         self.assertIn("is not a file", body["error"])
 
 
+    def test_open_opens_the_directory_of_the_entry_alone(self):
+        saved = embedding_routes.OPEN_COMMAND
+        self.addCleanup(setattr, embedding_routes, "OPEN_COMMAND", saved)
+        embedding_routes.OPEN_COMMAND = ("true",)
+        code, body, _, _ = self.get("/api/embeddings/gw/open", "POST")
+        self.assertEqual(code, 404)
+        self.assertIn("not on disk yet", body["error"])
+        os.makedirs(self.lab.entry_dir(), exist_ok=True)
+        code, body, _, _ = self.get("/api/embeddings/gw/open", "POST")
+        self.assertEqual((code, body["opened"]), (200, self.lab.entry_dir()))
+        embedding_routes.OPEN_COMMAND = ("false",)
+        code, body, _, _ = self.get("/api/embeddings/gw/open", "POST")
+        self.assertEqual(code, 500)
+        self.assertEqual(self.get("/api/embeddings/gw/open")[0], 405)
+        self.assertEqual(self.get("/api/embeddings/nope/open", "POST")[0], 404)
+        self.assertEqual(self.get("/api/embeddings/gw/open/x", "POST")[0], 404)
+
+    def test_page_leaves_the_endpoint_out_of_the_directory_row(self):
+        body = self.get("/embedding")[1]
+        self.assertIn('k !== "endpoint"', body)
+        self.assertIn("data-open-directory", body)
+        self.assertIn("failed-count", body)
+
+    def test_log_answers_the_text_of_the_build_log(self):
+        code, body, _, _ = self.get("/api/embeddings/gw/log")
+        self.assertEqual(code, 404)
+        self.assertIn("no build log yet", body["error"])
+        directory = self.lab.entry_dir()
+        os.makedirs(directory, exist_ok=True)
+        text = '{"event": "start", "pid": 1}\nTraceback (most recent call last):\n'
+        with open(os.path.join(directory, embeddings.LOG), "w", encoding="utf-8") as fh:
+            fh.write(text)
+        code, body, content_type, cache = self.get("/api/embeddings/gw/log")
+        self.assertEqual((code, body["name"], body["text"]), (200, "gw", text))
+        self.assertEqual(body["file"], os.path.join(directory, embeddings.LOG))
+        self.assertEqual((content_type, cache), (embedding_routes.JSON, embedding_routes.NO_STORE))
+        self.assertEqual(self.get("/api/embeddings/gw/log", "POST")[0], 405)
+        self.assertEqual(self.get("/api/embeddings/nope/log")[0], 404)
+        self.assertEqual(self.get("/api/embeddings/gw/log/x")[0], 404)
+
+    def test_page_has_the_build_log_dialog(self):
+        body = self.get("/embedding")[1]
+        self.assertIn('id="log-dialog"', body)
+        self.assertIn('<button id="log" type="button" disabled', body)
+        self.assertIn("/log`", body)
+        self.assertIn('const LOG_HIDDEN = ["item_failed", "progress", "request"];', body)
+
+    def test_page_has_the_image_preview_of_the_dataset_page(self):
+        body = self.get("/embedding")[1]
+        self.assertIn('id="image-preview-modal"', body)
+        self.assertIn('data-preview="${esc(sha256)}_${esc(view)}"', body)
+        self.assertIn('url.searchParams.set("preview", key)', body)
+        self.assertIn("then(openPreviewOfUrl)", body)
+
+
 class JobStateTest(unittest.TestCase):
     def write_log(self, directory, lines):
         with open(os.path.join(directory, embeddings.LOG), "w", encoding="utf-8") as fh:
@@ -205,6 +273,33 @@ class JobStateTest(unittest.TestCase):
             self.write_log(directory, ['{"event": "error", "message": "no database"}'])
             job = embeddings.job_state(directory)
             self.assertEqual((job["state"], job["message"]), ("failed", "no database"))
+
+    def test_the_phase_of_a_running_build(self):
+        # The lock check accepts a build process alone; this test stands in for one.
+        alive = unittest.mock.patch.object(embeddings, "build_alive", return_value=True)
+        with tempfile.TemporaryDirectory() as directory, alive:
+            with open(os.path.join(directory, embeddings.LOCK), "w", encoding="utf-8") as fh:
+                fh.write('{"pid": %d}' % os.getpid())
+            start = '{"event": "start", "pid": %d, "todo": 32, "t": 1.0}' % os.getpid()
+            request = '{"event": "request", "images": 16, "t": 2.0}'
+            self.write_log(directory, [start, request])
+            job = embeddings.job_state(directory)
+            self.assertEqual((job["state"], job["phase"], job["phase_event"], job["phase_t"]),
+                             ("running", "waiting for the model", "request", 2.0))
+            retry = ('{"event": "retry", "attempt": 1, "wait": 2, "error": "HTTP 503 from x",'
+                     ' "t": 3.0}')
+            self.write_log(directory, [start, request, retry])
+            job = embeddings.job_state(directory)
+            self.assertEqual((job["phase"], job["phase_event"]),
+                             ("retry 1 in 2 s: HTTP 503 from x", "retry"))
+            progress = '{"event": "progress", "done": 16, "todo": 32, "t": 4.0}'
+            self.write_log(directory, [start, request, retry, progress])
+            job = embeddings.job_state(directory)
+            self.assertEqual((job["done"], job["phase"], job["phase_t"]), (16, None, None))
+            # A build that ended has no phase.
+            os.remove(os.path.join(directory, embeddings.LOCK))
+            self.write_log(directory, [start, request])
+            self.assertIsNone(embeddings.job_state(directory)["phase"])
 
 
 if __name__ == "__main__":

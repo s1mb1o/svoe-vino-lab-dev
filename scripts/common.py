@@ -4,7 +4,10 @@ import base64, io, json, os, re, sqlite3, sys, threading, time, urllib.parse
 import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CONFIG_PATH = os.path.join(ROOT, "config.yaml")
+# `config.yaml` is the configuration of the lab server since 2026-09-24. The review tool
+# reads the old configuration from the path of `SVOE_VINO_REVIEW_CONFIG`, for example
+# `config.old.yaml`. Its tests set the variable.
+CONFIG_PATH = os.environ.get("SVOE_VINO_REVIEW_CONFIG") or os.path.join(ROOT, "config.yaml")
 
 
 def load_config(path=CONFIG_PATH):

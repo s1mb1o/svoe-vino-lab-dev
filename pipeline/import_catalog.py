@@ -23,6 +23,9 @@ Rules of the import:
 - A wine that a person removed stays `Removed`, also when the CSV holds it. The
   import never changes `removed_by` = `person`.
 - A `Disabled` wine that the CSV holds stays `Disabled`.
+- A wine that a person added has a slug that starts with `__`
+  (`manual_wines.is_manual`). The import never removes it. A CSV slug with this prefix
+  stops the import. Read `docs/plans/20_add-wine.md`.
 - A wine of the CSV with a field that differs from the database stops the import. The
   error names each changed field. This applies to a `Removed` wine too.
 - The import writes all changes in one transaction, or no change.
@@ -37,6 +40,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import labdb  # noqa: E402
+import manual_wines  # noqa: E402
 
 # Table column, CSV column. The order is the order of the table.
 COLUMNS = (
@@ -159,6 +163,11 @@ def _short(value):
 
 def plan_changes(conn, catalog):
     """Compare the CSV with the database. Return `Changes`, or raise `CatalogError`."""
+    manual = [slug for slug in catalog.wines if manual_wines.is_manual(slug)]
+    if manual:
+        raise CatalogError(
+            "%d slugs of the CSV start with %s, the prefix of a wine that a person "
+            "added: %s" % (len(manual), manual_wines.MANUAL_PREFIX, _names(manual)))
     stored = {row[0]: row for row in conn.execute(
         "SELECT %s, state, removed_by FROM wine_catalog ORDER BY rowid"
         % ", ".join(FIELDS))}
@@ -183,7 +192,8 @@ def plan_changes(conn, catalog):
     restored = [slug for slug in back if stored[slug][removed_by] == "import"]
     kept = [slug for slug in back if stored[slug][removed_by] == "person"]
     removed = [slug for slug, row in stored.items()
-               if slug not in catalog.wines and row[state] != "Removed"]
+               if slug not in catalog.wines and row[state] != "Removed"
+               and not manual_wines.is_manual(slug)]
     unchanged = len(catalog.wines) - len(added) - len(back)
     return Changes(added, restored, removed, kept, unchanged)
 

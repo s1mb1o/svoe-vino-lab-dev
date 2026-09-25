@@ -11,7 +11,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import testset_fixture as FX  # noqa: E402
 import import_testset as IT  # noqa: E402
-import imagestore  # noqa: E402
 
 PHOTOS = {
     "wine-a/01.jpg": b"photo a1",
@@ -90,8 +89,10 @@ class ImportTestsetTest(unittest.TestCase):
         report = self.run_import(self.standard_set())
         self.assertEqual((report.written, report.present), (6, 1))
         self.assertEqual(self.query("SELECT count(*) FROM image"), [(6,)])
-        path = imagestore.path_of(self.db, sha(b"photo a1"), "jpg")
+        path = IT.photo_path(self.db, sha(b"photo a1"), "jpg")
         self.assertEqual(Path(path).read_bytes(), b"photo a1")
+        self.assertEqual(Path(path).parent.name, "testset")
+        self.assertEqual(self.query("SELECT DISTINCT folder FROM image"), [("testset",)])
 
     def test_a_second_import_follows_the_files(self):
         set_dir = self.standard_set()
@@ -137,13 +138,15 @@ class ImportTestsetTest(unittest.TestCase):
 
     def test_a_file_that_image_holds_is_not_stored_again(self):
         conn = sqlite3.connect(self.db)
-        conn.execute("INSERT INTO image (sha256, extension, width, height) VALUES (?, 'jpg', 1, 1)",
-                     (sha(b"photo a1"),))
+        conn.execute("INSERT INTO image (sha256, folder, extension, width, height) "
+                     "VALUES (?, 'main', 'jpg', 1, 1)", (sha(b"photo a1"),))
         conn.commit()
         conn.close()
         report = self.run_import(self.standard_set())
         self.assertEqual((report.written, report.present), (5, 2))
-        self.assertFalse(Path(imagestore.path_of(self.db, sha(b"photo a1"), "jpg")).exists())
+        self.assertFalse(Path(IT.photo_path(self.db, sha(b"photo a1"), "jpg")).exists())
+        self.assertEqual(self.query("SELECT folder FROM image WHERE sha256 = ?",
+                                    sha(b"photo a1")), [("main",)])
 
     def test_a_real_picture_gets_its_pixel_size(self):
         from PIL import Image

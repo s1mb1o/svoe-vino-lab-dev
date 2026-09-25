@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino runs</title>
+<style>
+/* THEME_CSS */
+
+/* The catalogue image of a wine with a `main_patched` image in the lab database: the
+   page shows the patch, not the `main` image. The mark sits ON the image, in the top
+   right corner, because it states something about the picture and not about the
+   wine. */
+.pic { position: relative; display: block; line-height: 0; }
+.pic > .patched {
+  position: absolute; top: 3px; right: 3px; z-index: 1; pointer-events: none;
+  font: 700 9px/1.25 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--var);
+  background: var(--var-bg); border: 1px solid var(--var);
+  border-radius: 4px; padding: 0 3px;
+}
+/* A label crop is RGBA and its alpha channel holds the mask. The page puts such
+   a picture on white, so a white label edge stays visible in the dark theme. */
+.pic img.onwhite, figure img.onwhite { background: #fff; }
+/* The picture selector asks for a label crop, and this wine has none. The page
+   shows the package picture and marks it. The mark sits in the BOTTOM right
+   corner, so it stands beside the `patched` mark and not over it. */
+.pic > .nolabel {
+  position: absolute; bottom: 3px; right: 3px; z-index: 1; pointer-events: none;
+  font: 700 9px/1.25 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--muted);
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 4px; padding: 0 3px;
+}
+/* The pickers show a 34 px thumbnail. The word does not fit there, so the mark
+   is a dot of the same colour. The tooltip still states what it means. */
+.mv-item .pic { flex: none; }
+.mv-item .pic > .patched {
+  top: 1px; right: 1px; width: 9px; height: 9px; padding: 0;
+  border-radius: 50%; font-size: 0; overflow: hidden;
+}
+.mv-item .pic > .nolabel {
+  bottom: 1px; right: 1px; width: 9px; height: 9px; padding: 0;
+  border-radius: 50%; font-size: 0; overflow: hidden;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: 10px 16px; box-shadow: var(--shadow);
+}
+h1 { font-size: 15px; margin: 0 0 8px; font-weight: 650; }
+h1 .sub { color: var(--muted); font-weight: 400; }
+.head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.head-top h1 { margin-right: auto; }
+.nav { display: flex; gap: 6px; flex: none; flex-wrap: wrap; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+h2 { font-size: 13px; margin: 18px 0 8px; font-weight: 650; }
+a { color: var(--accent); }
+main { padding: 12px 16px 64px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.bar label { color: var(--muted); font-size: 12px; display: flex; gap: 5px; align-items: center; }
+select, input[type=search] {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 7px; font: inherit; font-size: 13px;
+}
+input[type=search] { min-width: 210px; }
+button {
+  font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+  cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+table { border-collapse: separate; border-spacing: 0; width: 100%; }
+th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600;
+     padding: 6px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 8px 10px; vertical-align: top; }
+tbody tr { background: var(--panel); }
+tbody tr + tr td { border-top: 1px solid var(--line); }
+#runs th[data-k] { cursor: pointer; user-select: none; }
+#runs th[data-k]:hover { color: var(--text); }
+#runs th.sorted { color: var(--accent); }
+#runs th[data-k]::after { content: attr(data-dir); font-size: 9px; margin-left: 3px; }
+#met .note { margin: 8px 0 10px; }
+#met .warn { margin: 0 0 10px; padding: 7px 10px; border-radius: 6px;
+             background: var(--var-bg); color: var(--text);
+             border: 1px solid var(--var); }
+.was { color: var(--var); }
+#runs tbody tr { cursor: pointer; }
+#runs tbody tr:hover { background: var(--panel-2); }
+#runs tbody tr.on { background: var(--grp-a); }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.muted { color: var(--muted); }
+.empty { color: var(--muted); font-style: italic; }
+.tag { padding: 1px 6px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); }
+.tag.pos { color: var(--pos); background: var(--pos-bg); border-color: transparent; }
+.tag.neg { color: var(--neg); background: var(--neg-bg); border-color: transparent; }
+.tag.var { color: var(--var); background: var(--var-bg); border-color: transparent; }
+.tag.unl { color: var(--muted); }
+.tag.bad { color: #fff; background: var(--exc); border-color: transparent; }
+.tag.ok { color: var(--pos); border-color: var(--pos); }
+.tag.dry { color: var(--muted); }
+
+/* the metric cards */
+.cards { display: flex; flex-wrap: wrap; gap: 10px; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 12px; min-width: 116px;
+}
+.card .k { color: var(--muted); font-size: 11px; }
+.card .v { font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.card.bad .v { color: var(--exc); }
+.card.good .v { color: var(--pos); }
+
+/* the histogram of the rank of the true slug */
+.hist { display: flex; gap: 6px; align-items: flex-end; height: 74px; margin-top: 4px; }
+.hist .col { display: flex; flex-direction: column; justify-content: flex-end;
+             align-items: center; gap: 3px; min-width: 42px; }
+.hist .bar-i { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 2px; }
+.hist .col.absent .bar-i { background: var(--exc); }
+.hist .lab { font-size: 10px; color: var(--muted); }
+.hist .cnt { font-size: 11px; font-variant-numeric: tabular-nums; }
+
+/* one result row */
+.qcell { width: 190px; min-width: 190px; }
+.qphoto {
+  width: 170px; height: 170px; object-fit: contain; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 6px; padding: 3px;
+}
+/* A photo whose bytes are not in the image store of the lab database. */
+.qphoto.nophoto { display: flex; align-items: center; justify-content: center;
+                  color: var(--muted); font-size: 11px; text-align: center; }
+/* The filter of the table of the runs. */
+.runs-bar { margin: 0 0 8px; }
+.strip { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+.cand {
+  width: 104px; background: var(--panel-2); border: 2px solid transparent;
+  border-radius: 8px; padding: 5px;
+}
+.cand.truth { border-color: var(--pos); background: var(--pos-bg); }
+.cand.forbidden { border-color: var(--exc); background: var(--exc-bg); }
+.cand.missing { border-style: dashed; border-color: var(--pos); background: transparent; }
+/* the true wine of a negative photo, which a byte-equal positive photo names */
+.cand.twin { border-style: dashed; border-color: var(--pos); background: var(--pos-bg); }
+.cand.twin.missing { background: transparent; }
+.cand.apart { margin-left: 26px; }
+/* candidates that stand next to each other and belong to one catalogue cluster */
+.clgrp { display: flex; flex-wrap: wrap; gap: 8px; padding: 17px 3px 3px;
+         position: relative;
+         border: 2px solid var(--accent); border-radius: 11px; }
+.clgrp-link {
+  position: absolute; top: 1px; right: 6px; font-size: 10px; line-height: 14px;
+  font-weight: 650; text-decoration: none;
+}
+.clgrp-link:hover { text-decoration: underline; }
+/* the answer of the VLM rule step, under the frame of the top cluster */
+.clcol { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.vlm {
+  max-width: 470px; font-size: 12px; line-height: 1.4; background: var(--panel-2);
+  border: 1px solid var(--accent); border-radius: 8px; padding: 6px 9px;
+}
+.vlm .vh { font-weight: 650; }
+.vlm .q { margin-top: 3px; }
+.vlm .a { font-weight: 650; color: var(--accent); }
+.vlm .sc, .vlm .mv, .vlm .src { margin-top: 3px; color: var(--muted); }
+.vlm .sc b, .vlm .mv b { color: var(--text); font-weight: 600; }
+.vlm .err { margin-top: 3px; color: var(--exc); }
+.cand img, .cand .nobottle {
+  width: 92px; height: 116px; object-fit: contain; display: block;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+}
+.cand .nobottle { display: flex; align-items: center; justify-content: center;
+                  color: var(--muted); font-size: 10px; text-align: center; }
+.cand .r { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.cand .sl { font-size: 10px; word-break: break-all; line-height: 1.25; margin-top: 2px; }
+.sm { font-size: 12px; color: var(--muted); word-break: break-all; }
+#more { margin-top: 12px; }
+#lb { position: fixed; inset: 0; background: rgba(0,0,0,.82); display: none;
+      align-items: center; justify-content: center; z-index: 50; padding: 24px; }
+#lb.on { display: flex; }
+.lb-shell { width: min(1180px, 96vw); max-height: 94vh; display: flex;
+            flex-direction: column; gap: 10px; align-items: stretch; }
+.lb-main-wrap { min-height: 0; display: flex; align-items: center; justify-content: center;
+                flex: 1 1 auto; }
+#lb-main { max-width: 94vw; max-height: calc(94vh - 176px); object-fit: contain; }
+.lb-inputs { min-height: 118px; display: flex; gap: 8px; overflow-x: auto;
+             align-items: stretch; padding: 8px; border-radius: 8px;
+             background: color-mix(in srgb, var(--panel) 92%, transparent); }
+.lb-inputs[hidden] { display: none; }
+.lb-input-note { color: #d7d7df; font-size: 12px; align-self: center; padding: 8px; }
+.model-input { width: 118px; min-width: 118px; padding: 5px; text-align: left;
+               background: var(--panel-2); border-color: var(--line); position: relative; }
+.model-input img { display: block; width: 106px; height: 74px; object-fit: contain;
+                   border-radius: 4px; background: var(--panel); }
+.model-input .badges { display: flex; gap: 3px; position: absolute; top: 8px; left: 8px; }
+.model-input .badge { padding: 1px 5px; border-radius: 999px; color: #fff;
+                      background: #2767c5; font-size: 9px; font-weight: 750;
+                      line-height: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.45); }
+.model-input .badge.vlm { background: #8d3fc5; }
+.model-input .input-label { display: block; color: var(--muted); font-size: 9px;
+                            line-height: 1.2; margin-top: 4px; overflow: hidden;
+                            text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 640px) {
+  #lb { padding: 10px; }
+  #lb-main { max-height: calc(94vh - 156px); }
+  .lb-inputs { min-height: 108px; }
+  .model-input { width: 104px; min-width: 104px; }
+  .model-input img { width: 92px; height: 64px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head-top">
+    <h1>Match runs <span class="sub" id="head-sub"></span></h1>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
+      href="/">Testset</a><a class="on" href="/runs">Runs</a></nav>
+  </div>
+  <div class="bar">
+    <label>Show
+      <select id="filter">
+        <option value="all">every photo</option>
+        <option value="miss">positive: the true slug is not at rank 1</option>
+        <option value="near">positive: the true slug is at rank 2 or deeper</option>
+        <option value="rank_2_5">positive: the true slug is at rank 2 to 5</option>
+        <option value="after_5">positive: the true slug is not in the top 5</option>
+        <option value="after_10">positive: the true slug is not in the top 10</option>
+        <option value="absent">positive: the true slug never came back</option>
+        <option value="hit">positive: correct at rank 1</option>
+        <option value="false_match">negative: the slug came back at rank 1</option>
+        <option value="negative_in_topk">negative: the slug is anywhere in the list</option>
+        <option value="negative">every negative photo</option>
+        <option value="no_match">no match: every photo that matches no card</option>
+        <option value="no_match_answered">no match: the backend answered a card anyway</option>
+        <option value="negative_above_positive">negative: the wrong wine stands above the true wine</option>
+        <option value="twin_conflict">set defect: one photo is positive for two wines</option>
+        <option value="rule_acted">rule step: the VLM answered for the top cluster</option>
+        <option value="rule_changed">rule step: the VLM answer changed the order</option>
+        <option value="error">the request failed</option>
+      </select>
+    </label>
+    <label>Sort
+      <select id="sort">
+        <option value="manifest">the order of the run</option>
+        <option value="worst">the most wrong first</option>
+        <option value="rank">the rank of the true slug</option>
+        <option value="score_desc">the score of the answer, highest first</option>
+        <option value="score_asc">the score of the answer, lowest first</option>
+        <option value="latency_desc">the slowest answer first</option>
+        <option value="latency_asc">the fastest answer first</option>
+        <option value="path">the photo path, A-Z</option>
+      </select>
+    </label>
+    <label>Find <input id="q" type="search" placeholder="slug or predicted slug"></label>
+    <span class="muted" id="count"></span>
+  </div>
+</header>
+<main>
+  <h2>Runs</h2>
+  <div class="bar runs-bar">
+    <label>Configuration <select id="configuration"
+      title="A lab configuration is one entry of `embeddings` in config.yaml. The key `configuration` of run.json names it."></select></label>
+    <span class="muted" id="runs-count"></span>
+  </div>
+  <p class="sm">Click a column to sort. Click it again to turn the order around.</p>
+  <table id="runs"><thead><tr>
+    <th data-k="id">run</th>
+    <th data-k="configuration">configuration</th>
+    <th data-k="backend">backend</th>
+    <th data-k="started">started</th>
+    <th data-k="queries" class="num">queries</th>
+    <th data-k="match_share" class="num">match share</th>
+    <th data-k="f1_at_1" class="num">F1@1</th>
+    <th data-k="f1_at_5" class="num">F1@5</th>
+    <th data-k="recall_at_5" class="num">R@5</th>
+    <th data-k="false_match_at_1" class="num">false match @1</th>
+    <th data-k="within_sla_share" class="num">within SLA</th>
+    <th data-k="latency_median" class="num">median ms</th>
+  </tr></thead><tbody id="runs-body"></tbody></table>
+
+  <div id="detail" hidden>
+    <h2 id="det-h">Metrics</h2>
+    <div class="cards" id="met"></div>
+    <div id="hists"></div>
+    <h2>Photos</h2>
+    <table id="res"><thead><tr>
+      <th class="qcell">matched image</th>
+      <th>candidates, the highest score first</th>
+    </tr></thead><tbody id="res-body"></tbody></table>
+    <button id="more" hidden>load more</button>
+  </div>
+</main>
+<div id="lb" role="dialog" aria-modal="true" aria-label="large image and model inputs">
+  <div class="lb-shell">
+    <div class="lb-main-wrap"><img id="lb-main" alt=""></div>
+    <div class="lb-inputs" id="lb-inputs" hidden></div>
+  </div>
+</div>
+<script>
+
+const PATCH_TIP = "patched: this catalogue image is the main_patched image of the wine"
+  + " in the lab database. The main image is not shown.";
+const NOLABEL_TIP = "no label crop for this wine, so the package picture is shown."
+  + " svoe-wino-hackaton/scripts/build_labels.py writes the crops.";
+/* `noLabel` is optional. The runs page passes two arguments and gets the old
+   behaviour. */
+function picHtml(imgHtml, patched, noLabel) {
+  return `<div class="pic">${imgHtml}${
+    patched ? `<span class="patched" title="${PATCH_TIP}">patched</span>` : ""}${
+    noLabel ? `<span class="nolabel" title="${NOLABEL_TIP}">no label</span>` : ""}</div>`;
+}
+
+const $ = s => document.querySelector(s);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pct = v => v === null || v === undefined ? "\u2014" : (100 * v).toFixed(1) + "%";
+const numOr = v => v === null || v === undefined ? "\u2014" : v;
+
+let RUNS = [], CUR = null, OFFSET = 0, TOTAL = 0;
+/* The lab configurations of `config.yaml`, from `/api/runs`, in file order. */
+let CONFIGS = [];
+/* The value of the filter `Configuration`: "" is every run, NO_CONFIG is the runs with
+   no key `configuration`, any other value is the name of one configuration. A name of
+   config.yaml holds no parenthesis, so NO_CONFIG cannot be a name. */
+const NO_CONFIG = "(none)";
+let CONF = new URLSearchParams(location.search).get("configuration") || "";
+/* slug -> the URL of its catalogue image in the lab image store, and the slugs whose
+   image is the `main_patched` image. A row of a run holds a slug alone, so each answer
+   of `/api/run` sends both for the slugs of its rows. */
+const BOTTLES = {};
+let PATCHED = new Set();
+const isPatched = slug => PATCHED.has(slug);
+/* The catalogue cluster of each slug, from `/api/run-clusters`. A slug stands in one
+   cluster at most. */
+let CLUSTER = {};
+/* The card names of `/api/run-clusters`, by slug, for the box of the rule step. */
+let CARDNAME = {};
+/* The order of the table of the runs. The newest run stands first at the start. */
+let RSORT = { key: "id", dir: -1 };
+const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var",
+                    unlabelled: "unl" };
+
+/* ---- the table of the runs ---- */
+function sortedRuns() {
+  const k = RSORT.key, dir = RSORT.dir;
+  return RUNS.slice().sort((a, b) => {
+    let x = a[k], y = b[k];
+    // a run with no value for this column stands last, whatever the direction
+    const nx = x === null || x === undefined, ny = y === null || y === undefined;
+    if (nx && ny) return String(a.id).localeCompare(String(b.id)) * -1;
+    if (nx) return 1;
+    if (ny) return -1;
+    if (typeof x === "number" && typeof y === "number") return (x - y) * dir;
+    return String(x).localeCompare(String(y)) * dir;
+  });
+}
+
+/* Answer whether the filter `Configuration` keeps the run `r`. */
+function inConfig(r) {
+  if (!CONF) return true;
+  if (CONF === NO_CONFIG) return !r.configuration;
+  return r.configuration === CONF;
+}
+
+const visibleRuns = () => sortedRuns().filter(inConfig);
+
+/* The values of the filter: every run, each configuration of config.yaml with the count
+   of its runs, a name that a run holds and config.yaml does not, and no configuration. */
+function renderConfigs() {
+  const count = name => RUNS.filter(r => r.configuration === name).length;
+  const known = new Set(CONFIGS.map(c => c.name));
+  const other = [...new Set(RUNS.map(r => r.configuration).filter(n => n && !known.has(n)))]
+    .sort();
+  const opts = [["", `every run — ${RUNS.length}`]]
+    .concat(CONFIGS.map(c => [c.name, `${c.name} — ${count(c.name)}${
+      c.error ? " (not valid)" : ""}`]))
+    .concat(other.map(n => [n, `${n} — ${count(n)} (not in config.yaml)`]))
+    .concat([[NO_CONFIG, `no configuration — ${RUNS.filter(r => !r.configuration).length}`]]);
+  if (!opts.some(([value]) => value === CONF)) CONF = "";
+  $("#configuration").innerHTML = opts.map(([value, text]) =>
+    `<option value="${esc(value)}"${value === CONF ? " selected" : ""}>${esc(text)}</option>`)
+    .join("");
+}
+
+function renderRuns() {
+  const shown = visibleRuns();
+  $("#runs-body").innerHTML = shown.map(r => `
+    <tr data-id="${esc(r.id)}" class="${CUR === r.id ? "on" : ""}">
+      <td>${esc(r.id)} ${r.dry_run ? '<span class="tag dry">dry run</span>' : ""}
+        ${r.subset ? `<span class="tag var" title="a repeat of ${esc(r.subset.based_on)} at depth ${r.subset.rerun_depth}">repeat d${r.subset.rerun_depth}</span>` : ""}</td>
+      <td>${r.configuration ? esc(r.configuration) : '<span class="muted">—</span>'}</td>
+      <td>${esc(r.backend)}</td>
+      <td class="sm">${esc((r.started || "").replace("T", " ").slice(0, 19))}</td>
+      <td class="num">${numOr(r.queries)}</td>
+      <td class="num">${pct(r.match_share)}</td>
+      <td class="num">${r.f1_at_1 === null || r.f1_at_1 === undefined ? "—" : r.f1_at_1.toFixed(3)}</td>
+      <td class="num">${r.f1_at_5 === null || r.f1_at_5 === undefined ? "—" : r.f1_at_5.toFixed(3)}</td>
+      <td class="num">${pct(r.recall_at_5)}</td>
+      <td class="num">${numOr(r.false_match_at_1)}</td>
+      <td class="num">${pct(r.within_sla_share)}</td>
+      <td class="num">${numOr(r.latency_median)}</td>
+    </tr>`).join("");
+  for (const th of document.querySelectorAll("#runs th[data-k]")) {
+    const on = th.dataset.k === RSORT.key;
+    th.classList.toggle("sorted", on);
+    th.dataset.dir = on ? (RSORT.dir > 0 ? "▲" : "▼") : "";
+  }
+  $("#head-sub").textContent = `${RUNS.length} run(s)`;
+  $("#runs-count").textContent = shown.length ? `${shown.length} of ${RUNS.length} run(s)`
+    : "no run of this configuration";
+}
+
+/* A change of the filter keeps the value in the page address. When the open run is not
+   in the table any more, the first run of the table with metrics opens. */
+function setConfig(value) {
+  CONF = value;
+  const url = new URL(location.href);
+  if (CONF) url.searchParams.set("configuration", CONF);
+  else url.searchParams.delete("configuration");
+  history.replaceState(null, "", url);
+  renderRuns();
+  const shown = visibleRuns();
+  if (CUR && shown.some(r => r.id === CUR)) return;
+  const first = shown.find(r => r.has_metrics && !r.dry_run) || shown[0];
+  if (first) { loadRun(first.id, false); return; }
+  CUR = null;
+  $("#detail").hidden = true;
+  $("#count").textContent = "";
+}
+
+/* ---- the metrics of one run ---- */
+function card(k, v, cls) {
+  return `<div class="card ${cls || ""}"><div class="k">${esc(k)}</div>
+          <div class="v">${v}</div></div>`;
+}
+
+function histogram(title, hist, note) {
+  const order = ["1", "2", "3", "4-10", ">10", "absent"];
+  const keys = order.filter(k => hist && hist[k] !== undefined);
+  if (!keys.length) return "";
+  const max = Math.max(...keys.map(k => hist[k]));
+  const cols = keys.map(k => `
+    <div class="col ${k === "absent" ? "absent" : ""}">
+      <div class="cnt">${hist[k]}</div>
+      <div class="bar-i" style="height:${Math.round(60 * hist[k] / max)}px"></div>
+      <div class="lab">${esc(k)}</div>
+    </div>`).join("");
+  return `<h2>${esc(title)}</h2><div class="sm">${esc(note || "")}</div>
+          <div class="hist">${cols}</div>`;
+}
+
+function renderMetrics(met, head) {
+  const pos = met.positive || {}, neg = met.negative || {}, lat = met.latency_ms || {};
+  const dash = "\u2014";
+  const f1 = b => b && b.f1 !== null && b.f1 !== undefined ? b.f1.toFixed(3) : dash;
+  const fix = v => v === null || v === undefined ? dash : v.toFixed(3);
+  const share = pos.match_share === undefined ? pos.recall_at_1 : pos.match_share;
+  const target = pos.target_match_share || 0.9;
+  const margin = pos.score_margin || {};
+  const sla = lat.sla_ms || 3000;
+  /* The first row holds the numbers that the specification of the task names:
+     the share of the matches with its target of 90 to 100 percent, the F1 of the
+     top-1 and of the top-5 cards, the answer inside the SLA of 3 seconds, and the
+     near-duplicate errors, which the specification calls the main source of the
+     errors. */
+  const spec = [
+    card("match share", pct(share),
+         share === null || share === undefined ? "" : (share >= target ? "good" : "bad")),
+    card("F1 top-1", f1(pos.f1_at_1)),
+    card("F1 top-5", f1(pos.f1_at_5)),
+    card("within " + sla + " ms", pct(lat.within_sla_share),
+         lat.within_sla_share === null || lat.within_sla_share === undefined ? ""
+         : (lat.within_sla_share >= 0.9 ? "good" : "bad")),
+    card("near-duplicate errors", numOr(pos.near_duplicate_confusion), "bad"),
+    card("false match @1", numOr(neg.false_match_at_1), "bad"),
+  ];
+  const rest = [
+    card("R@1", pct(pos.recall_at_1)),
+    card("R@5", pct(pos.recall_at_5)),
+    card("R@10", pct(pos.recall_at_10)),
+    card("MRR", fix(pos.mrr)),
+    card("score gap, correct", fix(margin.correct_median)),
+    card("score gap, wrong", fix(margin.wrong_median)),
+    card("positive photos", numOr(pos.n)),
+    card("negative photos", numOr(neg.n)),
+    card("median ms", numOr(lat.median)),
+    card("errors", (pos.errors || 0) + (neg.errors || 0)),
+  ];
+  /* A run with no ground truth. Every share above is empty, and the note says
+     why, so that a reader does not take a dash for a failure. */
+  const unlB = met.unlabelled;
+  const unlNote = !unlB ? "" :
+    '<div class="sm warn">A run of a plain directory. The photos hold no ground ' +
+    'truth, so every share is empty. ' + unlB.n + ' photo(s), ' + unlB.answered +
+    ' with a candidate, ' + unlB.no_answer + ' with none, ' + unlB.errors +
+    ' error(s). Median top score: ' + fix(unlB.top_score_median) +
+    '. Median gap to the second candidate: ' + fix(unlB.score_margin_median) +
+    '.</div>';
+  const sub = met.subset;
+  const subNote = !sub ? "" :
+    '<div class="sm warn">A repeat run. It holds the ' + sub.n + ' photo(s) of <b>' +
+    esc(sub.based_on) + '</b> that failed at depth ' + sub.rerun_depth + ', out of ' +
+    sub.photos_in_earlier_run + '. The shares below cover those photos only; they are ' +
+    'NOT the shares of the whole set. Correct at rank 1 now: <b>' + sub.recovered_at_1 +
+    '</b>. Inside the depth now: <b>' + sub.recovered_at_depth + '</b>. Still failing: <b>' +
+    sub.still_failing + '</b>.</div>';
+  /* When the vectors that answered this run were built. Two runs of one
+     backend id are otherwise indistinguishable although a rebuild moved every
+     vector between them. An unknown age states its reason, so that "not
+     reported" and "not known" never look the same. */
+  const emb = head.embeddings;
+  let embNote;
+  if (!emb) {
+    embNote = '<div class="sm note">Embeddings: not recorded. This run was made ' +
+      'before the run file carried the age of the index.</div>';
+  } else if (emb.built_at) {
+    const when = String(emb.built_at).replace("T", " ").slice(0, 16);
+    const bits = [];
+    if (emb.pipeline) bits.push("pipeline " + esc(emb.pipeline));
+    if (emb.index_file) bits.push("index " + esc(emb.index_file));
+    if (emb.source === "mtime") bits.push("from the file mtime, not the build record");
+    embNote = '<div class="sm note">Embeddings last built <b>' + esc(when) + '</b>' +
+      (bits.length ? " (" + bits.join(", ") + ")" : "") + '.</div>';
+  } else {
+    embNote = '<div class="sm note">Embeddings age not reported: ' +
+      esc(emb.reason || "no reason given") + '.</div>';
+  }
+  $("#met").innerHTML = embNote + unlNote + subNote +
+    '<div class="cards">' + spec.join("") + '</div>' +
+    '<div class="sm note">The task asks for a match share of 90 to 100 percent, an ' +
+    'answer inside ' + sla + ' ms, and a noticeable gap between the first and the ' +
+    'second candidate. A near-duplicate error answers a wine of the same variant ' +
+    'group as the true one.</div>' +
+    '<div class="cards">' + rest.join("") + '</div>';
+  const k = met.top_k || 1;
+  $("#hists").innerHTML =
+    histogram("How far from R@1 (positive photos)", pos.rank_histogram,
+      "The rank of the true slug in the answer. `absent` means that the true slug never came back.") +
+    histogram("Where the slug of a negative photo landed", neg.slug_rank_histogram,
+      "A negative photo shows a different wine. Only rank 1 is a proven error; " +
+      "deeper ranks are a diagnostic. Scored to top-" + k + ".");
+  $("#det-h").textContent = "Metrics of " + (head.id || "");
+  $("#detail").hidden = false;
+}
+
+/* ---- one photo and its candidates ----
+
+   A negative photo states one wine that the photo does NOT show. When a byte-equal
+   photo stands in the same run as `positive` for another wine, that wine is the
+   true wine of the photo. The true wine gets a dashed green frame and the wrong
+   wine keeps the red frame. The true wine SHOULD stand above the wrong wine. */
+function candCard(c, truth, forbidden, twins) {
+  const isTruth = truth.includes(c.slug);
+  const isBad = forbidden && c.slug === forbidden;
+  const isTwin = !isBad && twins.includes(c.slug);
+  const score = c.score === null || c.score === undefined ? "" : c.score.toFixed(3);
+  return `<div class="cand ${isTruth ? "truth" : ""} ${isBad ? "forbidden" : ""} ${
+      isTwin ? "twin" : ""}">
+    ${bottleHtml(c.slug)}
+    <div class="r"><span>#${c.rank}</span><span>${score}</span></div>
+    <div class="sl">${esc(c.slug)}</div></div>`;
+}
+
+/* The catalogue image of one slug. A slug with no image in the lab store gets a text
+   card. The arrow keys of the large view step over a text card. */
+function bottleHtml(slug) {
+  const url = BOTTLES[slug];
+  if (!url) return `<div class="nobottle">no catalogue image</div>`;
+  return picHtml(`<img loading="lazy" src="${esc(url)}" alt="" data-full="${esc(url)}"
+       onerror="this.replaceWith(Object.assign(document.createElement('div'),
+                {className:'nobottle',textContent:'no bottle photo'}))">`, isPatched(slug));
+}
+
+/* Two or more candidates that stand next to each other and belong to one catalogue
+   cluster share one frame. A cluster card that stands apart from the others gets no
+   frame. */
+function candStrip(cands, truth, forbidden, twins, vlm) {
+  let html = "";
+  for (let i = 0; i < cands.length;) {
+    const cl = CLUSTER[cands[i].slug];
+    let j = i + 1;
+    while (cl && j < cands.length && CLUSTER[cands[j].slug] === cl) j++;
+    const cards = cands.slice(i, j).map(c => candCard(c, truth, forbidden, twins)).join("");
+    const group = j - i < 2 ? cards
+      : `<div class="clgrp" title="cluster ${esc(cl.id)} &middot; ${esc(cl.kind)} &middot; ${
+          cl.size} cards"><a class="clgrp-link" href="/clusters#${
+          encodeURIComponent(cands[i].slug)}" title="open cluster ${esc(cl.id)} details">cluster ${
+          esc(cl.id)} details &rarr;</a>${cards}</div>`;
+    // The rule step acts on the cluster of rank 1, so its box stands under that group.
+    html += i === 0 && vlm ? `<div class="clcol">${group}${vlm}</div>` : group;
+    i = j;
+  }
+  return html;
+}
+
+/* ---- the VLM rule step ----
+
+   The cluster rule step of `svoe-vino-matcher` writes one `explain` record with
+   `kind: cluster_rules` into each card that it touched: the cluster, the mode, the
+   window, the answer of the VLM, the score of each card, and the base rank. A run
+   that did not record the questions takes their text from the current rule of the
+   cluster, and the box states that. */
+function ruleStep(r) {
+  for (const c of r.candidates || []) {
+    const e = c.explain;
+    if (e && e.kind === "cluster_rules") return e;
+  }
+  return null;
+}
+
+const RULE_MODE = { sheet: "difference sheet", verdict: "verdict rule" };
+
+function vlmHtml(e, cands) {
+  const win = e.window || [];
+  const cl = CLUSTER[win[0]] || {};
+  const rule = cl.rule || {};
+  const name = s => esc(CARDNAME[s] || s);
+  const when = e.cached ? "from the cache" : `${((e.ms || 0) / 1000).toFixed(1)} s`;
+  let body = "";
+  if (e.error) {
+    body = `<div class="err">no answer: ${esc(e.error)}. The base order stays.</div>`;
+  } else if (e.mode === "sheet") {
+    const ans = e.answers || {};
+    const asked = e.questions || (rule.questions || []).filter(q => q.valid);
+    body = asked.map(q => `<div class="q">${esc(q.id)} ${esc(q.question)} &rarr; <span
+      class="a">${esc(ans[q.id] == null ? "no answer" : ans[q.id])}</span></div>`).join("");
+    body += Object.keys(ans).filter(k => !asked.some(q => q.id === k))
+      .map(k => `<div class="q">${esc(k)} &rarr; <span class="a">${esc(ans[k])}</span></div>`)
+      .join("");
+    const sc = e.scores || {};
+    body += `<div class="sc">scores: ${win.map(s => `<b>${name(s)}</b> ${
+      (sc[s] || 0) > 0 ? "+" : ""}${sc[s] || 0}`).join(" &middot; ")}</div>`;
+    if (!e.questions) {
+      body += `<div class="src">The run holds the answers only; the question text comes
+        from the current rule of the cluster.</div>`;
+    }
+  } else {
+    body = `<div class="q">answer &rarr; <span class="a">${esc(JSON.stringify(e.answer || {}))}</span>${
+      e.chosen ? " = <b>" + name(e.chosen) + "</b>" : ""}</div>`;
+  }
+  const top = cands[0] || {};
+  const was = top.explain && top.explain.base_rank;
+  const moved = e.changed
+    ? `the answer moved <b>${name(top.slug)}</b> from #${was || "?"} to #1`
+    : "the base order stays";
+  return `<div class="vlm"><div class="vh">VLM &middot; ${esc(RULE_MODE[e.mode] || e.mode)}
+    &middot; ${esc(cl.id || e.cluster)} &middot; ${when}</div>${body}
+    <div class="mv">${moved}</div></div>`;
+}
+
+function twinGhost(slug, apart) {
+  return `<div class="cand twin missing ${apart ? "apart" : ""}">
+    ${bottleHtml(slug)}
+    <div class="r"><span>true wine</span><span>&mdash;</span></div>
+    <div class="sl">${esc(slug)}</div></div>`;
+}
+
+function rowHtml(r) {
+  /* A run of `--photos-dir` holds photos with no ground truth. Their path is the
+     path against that directory, not `<slug>/<file>`. The photo itself comes from the
+     image store of the lab database by its `image_sha256`: `/api/run` sends
+     `photo_url`, or null when the store does not hold these bytes. */
+  const unl = r.label === "unlabelled";
+  const cut = r.image_path.lastIndexOf("/");
+  const slug = unl ? "" : r.image_path.slice(0, cut);
+  const file = cut < 0 ? r.image_path : r.image_path.slice(cut + 1);
+  const src = r.photo_url;
+  const truth = r.truth || [];
+  const forbidden = r.label === "negative" ? r.slug : null;
+  const twin = r.twin || {};
+  const twins = r.label === "negative" ? (twin.slugs || []) : [];
+  const found = (r.candidates || []).some(c => truth.includes(c.slug));
+  let strip = "";
+  if (truth.length && !found) {          // the expected wine, which never came back
+    strip += `<div class="cand truth missing">
+      ${bottleHtml(truth[0])}
+      <div class="r"><span>expected</span><span>\u2014</span></div>
+      <div class="sl">${esc(truth[0])}</div></div>`;
+  }
+  const step = ruleStep(r);
+  strip += candStrip(r.candidates || [], truth, forbidden, twins,
+                     step ? vlmHtml(step, r.candidates || []) : "");
+  // the true wine of a negative photo, which never came back. It stands after the
+  // answer, apart from it, because it holds no rank in the answer.
+  const gone = twins.filter(s => !(r.candidates || []).some(c => c.slug === s));
+  strip += gone.map((s, i) => twinGhost(s, i === 0)).join("");
+  if (!strip) strip = `<span class="empty">${esc(r.error || "no candidate came back")}</span>`;
+
+  const tag = LABEL_TAG[r.label] || "";
+  const rank = unl ? "no ground truth"
+             : (r.rank_of_truth ? `rank ${r.rank_of_truth}` : "not in the list");
+  /* No answer of an unlabelled photo is wrong, because no answer is known. */
+  const bad = !unl && ((r.label === "negative" && r.outcome === "false_match_at_1") ||
+                       (r.label !== "negative" && r.rank_of_truth !== 1));
+  return `<tr>
+    <td class="qcell">
+      ${src ? `<img class="qphoto" loading="lazy" src="${esc(src)}" alt="" data-full="${esc(src)}"
+           data-query-id="${esc(r.query_id || "")}"
+           onload="const b = this.closest('td').querySelector('.qres');
+                   if (b) b.textContent = ' · ' + this.naturalWidth + ' × '
+                                          + this.naturalHeight;">`
+        : `<div class="qphoto nophoto">not in the lab image store</div>`}
+      <div class="sm"><span class="tag ${tag}">${esc(r.label)}</span>
+        <span class="tag ${bad ? "bad" : "ok"}">${esc(r.outcome || "")}</span>${
+        twin.verdict === "below"
+          ? ` <span class="tag bad">negative_above_positive</span>` : ""}${
+        twin.conflict ? ` <span class="tag bad">twin_conflict</span>` : ""}</div>
+      ${unl ? "" : `<div class="sm">${esc(slug)}</div>`}
+      <div class="sm">${esc(unl ? r.image_path : file)} &middot; ${esc(rank)} &middot; ${numOr(r.latency_ms)} ms<span
+        class="qres"></span></div>
+      ${twins.length ? `<div class="sm">true wine: ${esc(twins.join(", "))} &middot; ${
+        twin.rank ? "rank " + twin.rank : "not in the list"}${
+        twin.forbidden_rank ? " &middot; this slug: rank " + twin.forbidden_rank : ""
+        }</div>` : ""}
+      ${r.previous ? `<div class="sm was">before: ${
+        r.previous.rank_of_truth ? "rank " + r.previous.rank_of_truth : "not in the list"
+        } &middot; ${esc(r.previous.outcome || "")}</div>` : ""}
+      ${r.error ? `<div class="sm" style="color:var(--exc)">${esc(r.error)}</div>` : ""}
+    </td>
+    <td><div class="strip">${strip}</div></td></tr>`;
+}
+
+/* ---- loading ---- */
+async function loadRun(id, append) {
+  CUR = id;
+  if (!append) { OFFSET = 0; $("#res-body").innerHTML = ""; }
+  const url = `/api/run?id=${encodeURIComponent(id)}&filter=${$("#filter").value}` +
+              `&sort=${$("#sort").value}` +
+              `&q=${encodeURIComponent($("#q").value.trim())}&offset=${OFFSET}&limit=100`;
+  const data = await (await fetch(url)).json();
+  if (data.error) { alert(data.error); return; }
+  TOTAL = data.total;
+  Object.assign(BOTTLES, data.bottles || {});
+  for (const s of data.patched || []) PATCHED.add(s);
+  if (!append) renderMetrics(data.metrics || {}, data.head || {});
+  $("#res-body").insertAdjacentHTML("beforeend", (data.rows || []).map(rowHtml).join(""));
+  OFFSET += (data.rows || []).length;
+  $("#count").textContent = `${OFFSET} of ${TOTAL} photo(s) shown`;
+  $("#more").hidden = OFFSET >= TOTAL;
+  renderRuns();
+  history.replaceState(null, "", location.pathname + location.search + "#" +
+                       encodeURIComponent(id));
+}
+
+$("#runs-body").addEventListener("click", ev => {
+  const tr = ev.target.closest("tr[data-id]");
+  if (tr) loadRun(tr.dataset.id, false);
+});
+$("#more").addEventListener("click", () => loadRun(CUR, true));
+$("#configuration").addEventListener("change", ev => setConfig(ev.target.value));
+$("#filter").addEventListener("change", () => CUR && loadRun(CUR, false));
+$("#sort").addEventListener("change", () => CUR && loadRun(CUR, false));
+document.querySelector("#runs thead").addEventListener("click", ev => {
+  const th = ev.target.closest("th[data-k]");
+  if (!th) return;
+  const key = th.dataset.k;
+  // the same column turns the order around; another column starts at its own end
+  const down = (key === "id" || key === "started" || key === "backend") ? -1 : 1;
+  RSORT = { key, dir: RSORT.key === key ? -RSORT.dir : down };
+  renderRuns();
+});
+let t = null;
+$("#q").addEventListener("input", () => {
+  clearTimeout(t);
+  t = setTimeout(() => CUR && loadRun(CUR, false), 250);
+});
+/* ---- the large view ---- */
+/* `LBI` holds the row that the open image came from and the place of the image
+   in that row. The arrow keys move from it: left and right inside the row, up
+   and down to the same place in another row. A photo that stands outside a row
+   opens with no `LBI`, so the arrow keys do nothing for it. */
+let LBI = null;
+let LB_REQUEST = 0;
+/* The images of one row, in the order that the row shows them: the matched photo
+   first, then the strip. A bottle photo that failed to load is no image any
+   more, because `onerror` puts a text card in its place. Such a card is not a
+   step of the move. */
+const lbImgs = tr => Array.from(tr.querySelectorAll("img[data-full]"));
+
+function clearLbInputs(message) {
+  const rail = $("#lb-inputs");
+  rail.replaceChildren();
+  rail.hidden = !message;
+  if (message) {
+    const note = document.createElement("div");
+    note.className = "lb-input-note";
+    note.textContent = message;
+    rail.append(note);
+  }
+}
+
+function renderLbInputs(data) {
+  const rail = $("#lb-inputs");
+  rail.replaceChildren();
+  for (const input of data.inputs || []) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "model-input";
+    button.dataset.modelInput = input.src;
+    button.title = `${input.uses.join(" + ")} · ${input.pipelines.join(", ")} · ` +
+                   `${input.width} × ${input.height} · ${input.model || input.label}`;
+    const image = document.createElement("img");
+    image.src = input.src;
+    image.alt = button.title;
+    const badges = document.createElement("span");
+    badges.className = "badges";
+    for (const use of input.uses || []) {
+      const badge = document.createElement("span");
+      badge.className = `badge ${use === "VLM" ? "vlm" : ""}`;
+      badge.textContent = use;
+      badges.append(badge);
+    }
+    const label = document.createElement("span");
+    label.className = "input-label";
+    label.textContent = `${input.width} × ${input.height} · ${input.pipelines.join(", ")}`;
+    button.append(image, badges, label);
+    rail.append(button);
+  }
+  for (const text of data.notes || []) {
+    const note = document.createElement("div");
+    note.className = "lb-input-note";
+    note.textContent = text;
+    rail.append(note);
+  }
+  rail.hidden = !rail.childElementCount;
+}
+
+async function loadLbInputs(image) {
+  const query = image.dataset.queryId;
+  const request = ++LB_REQUEST;
+  if (!query || !CUR) { clearLbInputs(""); return; }
+  clearLbInputs("Reading model inputs…");
+  try {
+    const response = await fetch(`/api/run-inputs?id=${encodeURIComponent(CUR)}` +
+                                 `&query=${encodeURIComponent(query)}`,
+                                 {cache: "no-store"});
+    const data = await response.json();
+    if (request !== LB_REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    renderLbInputs(data);
+  } catch (error) {
+    if (request === LB_REQUEST) clearLbInputs(`Cannot read model inputs: ${error.message}`);
+  }
+}
+
+function showLbImage(image) {
+  $("#lb-main").src = image.dataset.full;
+  loadLbInputs(image);
+}
+
+function openLb(tr, i) {
+  const imgs = lbImgs(tr);
+  if (!imgs.length) return;
+  i = Math.max(0, Math.min(i, imgs.length - 1));
+  LBI = { row: tr, i };
+  showLbImage(imgs[i]);
+  $("#lb").classList.add("on");
+}
+
+/* Move inside the row. The first image and the last image hold: the move does
+   not turn around at an end. */
+function stepLb(step) {
+  if (LBI) openLb(LBI.row, LBI.i + step);
+}
+
+/* Move to the previous row or to the next row and keep the place. A place after
+   the end of the new row holds at its last image. A row with no image is
+   stepped over. The table scrolls to the row, so the place of the eye is held
+   when the view closes. */
+function stepLbRow(step) {
+  if (!LBI) return;
+  let tr = LBI.row;
+  do { tr = step > 0 ? tr.nextElementSibling : tr.previousElementSibling; }
+  while (tr && !lbImgs(tr).length);
+  if (!tr) return;
+  openLb(tr, LBI.i);
+  tr.scrollIntoView({ block: "center" });
+}
+
+function closeLb() {
+  LB_REQUEST++;
+  $("#lb").classList.remove("on");
+  $("#lb-main").removeAttribute("src");
+  clearLbInputs("");
+  LBI = null;
+}
+
+document.addEventListener("click", ev => {
+  const input = ev.target.closest("[data-model-input]");
+  if (input) { $("#lb-main").src = input.dataset.modelInput; return; }
+  const img = ev.target.closest("img[data-full]");
+  if (img) {
+    const tr = img.closest("#res-body tr");
+    if (tr) { openLb(tr, lbImgs(tr).indexOf(img)); return; }
+    LBI = null;
+    showLbImage(img);
+    $("#lb").classList.add("on");
+    return;
+  }
+  if (ev.target.closest("#lb")) closeLb();
+});
+document.addEventListener("keydown", ev => {
+  if (ev.key === "Escape") { closeLb(); return; }
+  if (!LBI || !$("#lb").classList.contains("on")) return;
+  if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  const step = { ArrowRight: 1, ArrowLeft: -1 }[ev.key];
+  if (step !== undefined) { ev.preventDefault(); stepLb(step); return; }
+  const rstep = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
+  if (rstep !== undefined) { ev.preventDefault(); stepLbRow(rstep); }
+});
+
+(async function init() {
+  try {
+    const cls = await (await fetch("/api/run-clusters")).json();
+    for (const cl of cls.clusters || [])
+      for (const s of cl.slugs || []) CLUSTER[s] = cl;
+    for (const [s, k] of Object.entries(cls.cards || {})) CARDNAME[s] = k.name || s;
+  } catch (e) { /* the frame is a hint; its absence MUST NOT stop the page */ }
+  const data = await (await fetch("/api/runs")).json();
+  RUNS = data.runs || [];
+  CONFIGS = data.configurations || [];
+  renderConfigs();
+  renderRuns();
+  const want = decodeURIComponent((location.hash || "").slice(1));
+  const shown = visibleRuns();
+  const first = shown.find(r => r.id === want) ||
+                shown.find(r => r.has_metrics && !r.dry_run) || shown[0];
+  if (first) loadRun(first.id, false);
+})();
+</script>
+</body>
+</html>

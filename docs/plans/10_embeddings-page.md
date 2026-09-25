@@ -34,7 +34,7 @@ section "2026-09-25 — the SigLIP 2 models of the gx10 gateway".
 | The processing of a full image | The variants A to F below. |
 | The views of one entry | `full` uses C. `label` uses F. |
 | B and E as a model input | An error, so that the owner sees what needs work. |
-| Close-up images | `front_label` and `back_label` go to the view `label` as they are. |
+| Close-up images | `label_front` and `label_back` go to the view `label` as they are. |
 | The label cut | At import, next to the package cut of plan 09. Outside this plan. |
 | The type buttons of additional images | On the Dataset page. Outside this plan. |
 | Upscale of small images | No, as the default. The step `resize` has an option for it. |
@@ -47,10 +47,9 @@ section "2026-09-25 — the SigLIP 2 models of the gx10 gateway".
 A source image has one of two roles:
 
 - `full`: the whole package with its label: a bottle, a can, a packet, a box. The image
-  types `main`, `main_patched`, and the additional full images (today `front` and
-  `back`; the Dataset work renames them to `front_full` and `back_full`).
-- `label`: a close-up of a label. Today `label_front` and `label_back` (later
-  `front_label` and `back_label`).
+  types `main`, `main_patched`, and the additional full images `full_front` and
+  `full_back` (schema 012).
+- `label`: a close-up of a label: `label_front` and `label_back`.
 
 A full image has these variants:
 
@@ -304,6 +303,8 @@ One JSON object per line. The build flushes each line.
 {"event": "start", "name": "...", "pid": 123, "items": 4036, "current": 0, "todo": 4036, "time": "..."}
 {"event": "progress", "done": 160, "todo": 4036, "failed": 2, "time": "..."}
 {"event": "item_failed", "source_sha256": "...", "view": "full", "error": "..."}
+{"event": "request", "images": 16, "time": "..."}
+{"event": "retry", "attempt": 1, "wait": 2, "error": "HTTP 503 from ...", "time": "..."}
 {"event": "done", "built": 4034, "current": 0, "failed": 2, "pruned": 0, "seconds": 71.4}
 {"event": "stopped", "built": 800, "failed": 0, "seconds": 20.1}
 {"event": "error", "message": "..."}
@@ -341,6 +342,9 @@ the routes below to it, and takes `/embedding` out of `DISABLED_PAGES`. The old 
 7. `GET /embeddings/<name>/images/<sha256>_<view>.png`: one prepared image. A regular
    expression checks the path, as `/images/` does. The page adds `?v=<embedding_hash>`
    to the URL. So the server sends a long cache time, and a new image gets a new URL.
+8. `GET /api/embeddings/<name>/log`: the text of `build.log` of the entry, as JSON
+   `{"name", "file", "text"}`. HTTP 404 when no build wrote the file yet. Added on
+   2026-09-25 (owner message of 11:42:50).
 
 ### Jobs
 
@@ -363,7 +367,10 @@ The page follows the Embedding page of `svoe-vino-testset` (its `README.md`, sec
 1. The navigation of `dataset.html`. The theme of `theme.css`: light and dark, after the
    system setting.
 2. A combobox with each entry: `<name> — <current> / <items>`. The URL key `?name=`
-   holds the selection.
+   holds the selection. Its label is `Configuration`, because an entry holds more than
+   the embedding model (owner messages of 2026-09-25T12:38:00+0300 and 12:41:00; plan
+   23). The last entry `mock` has the backend `mock`: it builds as any entry, with random
+   unit vectors of 256 values and no request (owner answer of 13:41:00).
 3. A summary: backend, model, `extra_body`, the steps of each view, and the counts.
 4. The buttons `Build` and `Stop`. `Build` is disabled while a build of this entry runs.
    `Stop` is enabled while it runs.
@@ -378,9 +385,25 @@ The page follows the Embedding page of `svoe-vino-testset` (its `README.md`, sec
 7. Each image cell has a checkerboard background. A cell shows the status badge
    `current`, `stale`, `missing`, or `failed`. A `failed` cell shows its error. A
    missing prepared image is shown as missing. It is not replaced with another image.
-   A click opens the image in a new tab.
+   A click opens the image in a new tab. Since 2026-09-25 (owner message of 11:59:27),
+   a click opens the preview of item 10; a click with a modifier key opens the new tab.
 8. A filter: all wines, wines with a failed cell, with a missing cell, with a stale
    cell. A search field: name, producer, slug.
+9. The button `Log` after `Stop` opens a dialog with `build.log` (route 8). Each JSON
+   line shows as `time · event · fields`. A line that is not JSON shows as it is, in
+   red. A checkbox hides the `item_failed` and `progress` lines; it is on at the start.
+   Added on 2026-09-25 (owner message of 11:42:50, answer of 11:45:00).
+10. A click on a prepared image opens the image preview of `/dataset`: the image, a
+    title, the size, `open raw image` (the original), arrows, and thumbnails. The arrows
+    step through the images of the same view of the filtered list. The thumbnails show
+    each column of the wine: the original and each view, with its status. The URL key
+    `preview=<sha256>_<view>` names the open preview. Added on 2026-09-25 (owner message
+    of 11:59:27, answers of 12:02:31).
+11. The job row shows the phase of a running build: `waiting for the model · <time>`
+    when a model request takes 3 s or more, and `retry <n> in <s> s: <error>`. The build
+    writes `request` before each model request and `retry` before each wait (see
+    "Progress on stdout"). Added on 2026-09-25 (owner message of 13:37:14, answer
+    "Phase text").
 
 ## The local backend
 
@@ -403,8 +426,8 @@ The page follows the Embedding page of `svoe-vino-testset` (its `README.md`, sec
 
 | Work | Owner decision | State on 2026-09-25 |
 |---|---|---|
-| The SAM3 label cut at import (D, E, F) | At import, next to the package cut of plan 09. | Not started. `pipeline/derive.py` belongs to drink-atlas-workspace-8b. Until it exists, each item of the view `label` of a full image fails with `no label cut yet`. |
-| Additional images on the Dataset page, with the type buttons `front_full`, `front_label`, `back_full`, `back_label` | On the Dataset page. Default `front_full`. The buttons act as the Testset candidate buttons do. | Not started. `pipeline/pages/dataset.html` belongs to drink-atlas-workspace-8b. The table `wine_image` holds no additional image today. |
+| The SAM3 label cut at import (D, E, F) | At import, next to the package cut of plan 09. | On 2026-09-25 by plan 22 (`22_label-cut.md`): the row of the kind `label` of `image_derivative` (schema 017), made by `pipeline/seed_label_cuts.py` with the label rule of plan 16. `read_inputs` reads it. The imports do not call the seed yet. |
+| Additional images on the Dataset page, with the type buttons `front_full`, `front_label`, `back_full`, `back_label` | On the Dataset page. Default `front_full`. The buttons act as the Testset candidate buttons do. | Done on 2026-09-25 by plan 16 (`16_alternative-images.md`): schema file 010 renames the types; the server detects the kind and, by a barcode, the side (one of the four types); the buttons read `FF`, `LF`, `FB`, `LB`; schema file 012 puts the kind first in the names (`full_front`, `label_front`, `full_back`, `label_back`). |
 
 ## Files of the implementation
 

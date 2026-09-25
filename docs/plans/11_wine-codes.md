@@ -1,9 +1,12 @@
 # 11 — GTIN, barcode, and QR URL in the database
 
 Date: 2026-09-25.
-Status: approved by the owner on 2026-09-25T07:19:46+0300.
+Status: approved by the owner on 2026-09-25T07:19:46+0300. Implemented and deployed on
+2026-09-25 as schema file `008_wine_code.sql`.
 The owner message of 2026-09-25T00:52:48+0300, the answers of 2026-09-25T00:58:25+0300,
 and the approval are in [owner-messages.md](../owner-messages.md).
+Changed on 2026-09-25: the lab keeps GTINs alone. Read decision O2. The text about the
+kind `barcode` below describes the first version.
 
 ## Goal
 
@@ -89,9 +92,10 @@ module.
 Rules of the check digit. The owner asked on 2026-09-25 to check the checksum of each
 input.
 
-1. The GS1 check digit is the last digit. Section "Check digit" of the GS1 General
-   Specifications defines it. Leading zeros do not change it, so the check is the same
-   for the value as read and for its GTIN-14 form.
+1. The GS1 check digit is the last digit. Multiply the other digits by 3 and 1 in turn,
+   from the right: the digit next to the check digit gets 3. The check digit is
+   `(10 - sum mod 10) mod 10`. Leading zeros do not change the sum, so the check is the
+   same for the value as read and for its GTIN-14 form.
 2. Each input is checked: a value of the seed, a value of a POST, and a value that a
    person types on the Dataset page.
 3. The error of a wrong check digit names the digit that the value has and the digit
@@ -126,6 +130,8 @@ Rules:
    prints `result: no change`.
 8. The seed does not copy the field `source_note`. One record has it. The field stays in
    `code-map.json`.
+9. The seed refuses a table `wine_code` that already holds rows, unless `--force` is
+   given. Read decision O3.
 
 ## Lab server
 
@@ -151,6 +157,8 @@ File: `pipeline/lab_server.py`.
    not have answers 404.
 4. A write opens the database read-write and changes one row of `wine_code` alone.
 5. A write is allowed for a wine in each state.
+6. A DELETE names the value in its stored form, as `/api/dataset` sends it. A GTIN of
+   13 digits in a DELETE answers 404.
 
 ## Dataset page
 
@@ -179,8 +187,10 @@ File: `pipeline/pages/dataset.html`.
 
 ## Documents
 
-`COMMANDS.md` (the seed command), `README.md`, `docs/API.md`, `docs/openapi.yaml`,
-plan 07 rule 5, `SMOKE_TESTS.md`, and `ChangeLog.md`.
+`COMMANDS.md` (the seed command), `README.md` (step 6), plan 07 rule 5, `SMOKE_TESTS.md`
+(section WC), and `ChangeLog.md`. `docs/API.md` and `docs/openapi.yaml` describe the old
+review tool of `scripts/review_server.py`, not the lab server, so they do not change.
+This plan and the README describe the routes of the lab server.
 
 ## Order of the work and its effects
 
@@ -202,7 +212,8 @@ plan 07 rule 5, `SMOKE_TESTS.md`, and `ChangeLog.md`.
 6. The deploy follows rules 22 to 27 of `AGENTS.md`, in one step:
    1. Read `pipeline/schema/` and `ACTIVE_WORK.md`. Send a message to each session
       whose section names schema work. Take the next free number.
-   2. Stop the lab server on port 8168 with SIGINT.
+   2. Stop the lab server on port 8168 with SIGTERM. Rule 23 names SIGTERM since
+      2026-09-25: a server that was started in the background ignores SIGINT.
    3. Put `NNN_wine_code.sql` in `pipeline/schema/`. Run `labdb.py` and `seed_codes.py`
       on `data/lab.sqlite3`.
    4. Start the lab server again. Check that `GET /api/dataset` answers HTTP 200.
@@ -225,3 +236,41 @@ A DataMatrix `(01)` field gives 14 digits, for example `04630037251630`. The EAN
 of the same product gives 13 digits: `4630037251630`. Both are the same GTIN. The
 GTIN-14 form gives the same GTIN one row. The page shows 14 digits, for example
 `04631168664979` for the printed `4631168664979`.
+
+### O2. GTINs alone, no kind `barcode`
+
+Answered by the owner on 2026-09-25T10:13:54+0300 ("no, keep only GTIN") and in the
+answers of 2026-09-25T10:16:07+0300.
+
+1. The lab has no kind `barcode`. `pipeline/codes.py` has the kinds `gtin` and `qr_url`
+   alone. `clean_barcode` and `classify_barcode` are removed.
+2. No new schema file. Schema 008 still allows `barcode` in its CHECK until the flatten.
+   The code never writes it. The one `barcode` row of `data/lab.sqlite3`
+   (`golubitskoe-estate-chardonnay`, `343343234233123`) was deleted on 2026-09-25.
+3. The lab server has no route `/api/dataset-barcode`. The route answers HTTP 503 as
+   each other API route that the lab server does not serve. `GET /api/dataset` sends
+   no key `barcodes` and no record key `_barcodes`.
+4. The seed stores each `barcode` value of the code map as a GTIN. A value that is not a
+   GTIN stops the seed with no write.
+5. The Dataset page shows the editor `Barcodes` only when the answer of `/api/dataset`
+   holds `barcode_file`, so on the review tool alone. `scripts/review_server.py` is not
+   changed. The first version of this change still refused an EAN-13 in the Barcodes
+   editor of the review tool and showed the GTIN editor there. The fix of 2026-09-25
+   (review `docs/reviews/2026-09-25_unfinished-work.md`, a2 finding 1): the page checks
+   a barcode only for an empty value; the GTIN editor and its count show only when the
+   answer holds `gtins`; the `+` of `Barcodes` and of `QR URLs` needs a non-empty
+   `barcode_file` when the answer holds no `gtins`, as before plan 11.
+6. In the same change, each editor of a code redraws its own card with `renderCard`, not
+   all 2,103 cards with `render`. A save took about 0.5 s in headless Chromium and a
+   couple of seconds in the browser of the owner. It now takes about 60 ms.
+
+### O3. A second run of the seed
+
+Answered by the owner on 2026-09-25T12:28:04+0300 ("Refuse unless --force").
+
+1. A second run of `seed_codes.py` added back each value that a person removed on the
+   page, because the seed adds every file row that is not in the table.
+2. The seed now refuses a table `wine_code` that already holds rows. The error names the
+   count of rows and the option `--force`. With `--force`, the seed adds the missing rows
+   as before.
+3. `seed_atlas_bindings.py` (plan 15) and `seed_patched.py` use the same rule.

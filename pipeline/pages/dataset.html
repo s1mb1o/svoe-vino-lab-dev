@@ -61,6 +61,8 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
 .pictures img { display: block; width: 100%; height: 100%; object-fit: contain; padding: 5px; }
 .pictures a:hover { border-color: var(--accent); }
 .pictures a { position: relative; }
+/* The `main` image of a Disabled wine is gray. The browser draws it; the file stays. */
+.pictures figure.state-disabled img { filter: grayscale(1); }
 /* The processing of the card image: `crop` or `seg`. */
 .image-badge {
   position: absolute; top: 5px; left: 5px; padding: 1px 6px; border-radius: 999px;
@@ -96,8 +98,11 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
   margin-top: 4px; min-height: 16px; color: var(--muted); font-size: 10px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.patch-actions { display: flex; gap: 5px; margin-top: 5px; }
-.patch-actions button { flex: 1 1 auto; padding: 3px 6px; font-size: 11px; }
+.patch-actions { display: flex; gap: 5px; margin-top: 6px; }
+.patch-actions button { flex: 1 1 0; padding: 3px 6px; font-size: 11px; }
+/* One button: the size of one button of `.state-actions`, at the right. */
+.patch-actions.single { justify-content: flex-end; }
+.patch-actions.single button { flex: 0 0 calc(50% - 2.5px); }
 .patch-actions .apply { border-color: var(--accent); font-weight: 700; }
 .patch-actions .remove { color: var(--neg); }
 .patch-actions .busy { cursor: wait; }
@@ -108,7 +113,7 @@ figcaption {
 }
 figcaption .patch { color: var(--var); font-weight: 700; text-transform: uppercase; }
 .state-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
-.state-actions button { flex: 1 1 auto; padding: 3px 6px; font-size: 11px; }
+.state-actions button { flex: 1 1 0; padding: 3px 6px; font-size: 11px; }
 .state-actions [data-state-action="remove"] { color: var(--exc); }
 .state-actions [data-state-action="restore"],
 .state-actions [data-state-action="enable"] { color: var(--pos); }
@@ -124,8 +129,14 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .alternative-head span { color: var(--muted); font-size: 11px; }
 .alternative-grid {
   display: grid; grid-template-columns: repeat(3, minmax(70px, 1fr)); gap: 6px;
-  max-height: 230px; overflow-y: auto; padding-right: 2px;
+  max-height: 310px; overflow-y: auto; padding-right: 2px;
 }
+/* A photo of the lab server: the card and its type buttons below it. */
+.alternative-item { min-width: 0; }
+.alternative-card.busy { opacity: .6; cursor: wait; }
+.alternative-types { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 3px; }
+.alternative-types button { padding: 1px 0; font-size: 10px; font-weight: 700; color: var(--muted); }
+.alternative-types button.on { color: #fff; background: var(--accent); border-color: var(--accent); }
 .alternative-card, .alternative-drop {
   position: relative; height: 108px; min-width: 0; overflow: hidden;
   background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px;
@@ -159,7 +170,7 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 /* The slug is the first line of a card, above the name. */
 .info > .slug:first-child { margin: 0 0 3px; }
 .slug { overflow-wrap: anywhere; }
-.barcode-editor, .qr-url-editor, .atlas-binding-editor { margin-top: 8px; }
+.gtin-editor, .barcode-editor, .qr-url-editor, .atlas-binding-editor { margin-top: 8px; }
 .barcode-head { display: flex; align-items: center; gap: 7px; }
 .barcode-head strong { font-size: 12px; font-weight: 650; }
 .barcode-head .count { color: var(--muted); font-size: 11px; }
@@ -198,6 +209,42 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 }
 .barcode-new .accept { color: var(--pos); border-color: var(--pos); }
 .barcode-new .cancel { color: var(--neg); }
+/* The result of the check of a GTIN or a barcode while the person types. */
+.code-hint { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.code-hint.bad { color: var(--exc); }
+/* The favorite star of the lab server: plan 19. */
+.favorite-star {
+  flex: 0 0 auto; padding: 0 2px; border: 0; background: transparent;
+  color: var(--muted); font-size: 24px; line-height: 1;
+}
+.favorite-star.on, .favorite-star:hover:not(:disabled) { color: var(--var); }
+/* The star stands at the top right of the text column, next to the alternative photos.
+   The slug and the name keep a free space for it. */
+.info { position: relative; }
+.info > .favorite-star { position: absolute; top: -4px; right: 0; }
+.info.with-star > .slug, .info.with-star > .name { padding-right: 34px; }
+/* The Comments editor of the lab server: plan 17. */
+.comment-editor { margin-top: 8px; }
+.comment-list {
+  display: flex; flex-direction: column; gap: 5px; max-width: 560px;
+  margin: 5px 0 0; padding: 0; list-style: none;
+}
+.comment {
+  padding: 3px 8px 5px 4px; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 6px;
+}
+.comment-meta { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; }
+.comment-source { padding: 0 6px; border: 1px solid var(--line); border-radius: 999px; font-size: 10px; }
+.comment-text {
+  margin: 2px 0 0 24px; font-size: 13px; line-height: 1.4;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.barcode-new.comment-new { align-items: flex-start; max-width: 560px; }
+.comment-new textarea {
+  flex: 1 1 auto; min-width: 100px; min-height: 62px; resize: vertical;
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 8px; font: inherit; font-size: 13px; line-height: 1.4;
+}
 .links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 7px; }
 .copy {
   padding: 1px 7px; color: var(--muted); background: var(--panel-2);
@@ -265,6 +312,51 @@ details.record pre {
 .validation-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 .validation-actions .primary { color: var(--text); border-color: var(--accent); }
 .validation-meta { margin-top: 8px; color: var(--muted); font-size: 11px; }
+/* The form `Add wine` (plan 20). */
+.bar-actions { display: flex; gap: 8px; margin-left: auto; }
+.bar-actions .validate-btn { margin-left: 0; }
+.wine-add-btn { font-weight: 650; }
+.wine-form-dialog { width: min(920px, 100%); }
+.wine-form-body { display: grid; grid-template-columns: 240px 1fr; gap: 16px; }
+.wine-form-image {
+  display: grid; grid-template-rows: auto 1fr; gap: 4px; color: var(--muted);
+  font-size: 12px;
+}
+.wine-form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; align-content: start;
+}
+.wine-form-grid label, .wine-form-grid .wide {
+  display: grid; gap: 4px; align-content: start; color: var(--muted); font-size: 12px;
+}
+.wine-form-grid .wide { grid-column: 1 / -1; }
+.wine-form-grid input[type=text], .wine-form-grid select { width: 100%; }
+.wine-form-grid textarea {
+  width: 100%; resize: vertical; background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font: inherit;
+  font-size: 13px;
+}
+.wine-form-grid input.invalid { border-color: var(--neg); }
+.wine-form-slug { display: flex; }
+.wine-form-slug span {
+  padding: 4px 7px; background: var(--bg); color: var(--muted);
+  border: 1px solid var(--line); border-right: 0; border-radius: 6px 0 0 6px;
+  font-family: ui-monospace, monospace;
+}
+.wine-form-slug input {
+  flex: 1; min-width: 0; border-radius: 0 6px 6px 0; font-family: ui-monospace, monospace;
+}
+.wine-form-drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; width: 100%; min-height: 320px; border-style: dashed; color: var(--muted);
+}
+.wine-form-drop.over { border-color: var(--accent); color: var(--text); }
+.wine-form-drop img { max-width: 100%; max-height: 360px; object-fit: contain; }
+.wine-form-drop span { font-size: 12px; }
+.wine-form-error { margin-top: 10px; color: var(--neg); white-space: pre-wrap; }
+@media (max-width: 640px) {
+  .wine-form-body, .wine-form-grid { grid-template-columns: 1fr; }
+  .wine-form-drop { min-height: 160px; }
+}
 .image-preview-dialog {
   width: min(1180px, calc(100vw - 32px)); height: calc(100vh - 32px);
   display: grid; grid-template-rows: auto 1fr; min-height: 0;
@@ -285,8 +377,44 @@ details.record pre {
 .image-preview-close { width: 30px; height: 30px; padding: 0; font-size: 20px; }
 .image-preview-stage {
   position: relative; min-height: 0; overflow: hidden; padding: 20px 76px;
-  display: flex; align-items: flex-start; justify-content: center; background: var(--bg);
+  display: flex; align-items: center; justify-content: center; background: var(--bg);
 }
+/* The image in the center of the stage, and its thumbnails at the bottom. The auto
+   margins of the frame take the free height, so the thumbnails keep their place when
+   the image changes. */
+.image-preview-main {
+  flex: 0 1 auto; align-self: stretch; min-width: 0; display: flex;
+  flex-direction: column; align-items: center; gap: 12px;
+}
+.image-preview-main .image-preview-frame { margin: auto 0; }
+/* One row of thumbnails. A strip that is wider than the stage scrolls, so the image keeps
+   its height. */
+.image-preview-thumbs { display: flex; gap: 10px; max-width: 100%; padding: 1px; overflow-x: auto; }
+.image-preview-thumbs .preview-thumb { flex: 0 0 auto; }
+.image-preview-thumbs:empty { display: none; }
+.preview-thumb {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel);
+  color: var(--muted); font-size: 11px; line-height: 1.2;
+}
+button.preview-thumb { cursor: pointer; }
+button.preview-thumb:hover { border-color: var(--accent); }
+.preview-thumb.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); color: var(--text); }
+.preview-thumb-image {
+  position: relative; display: grid; place-items: center; height: 120px; min-width: 80px;
+  background-color: #fff; background-image:
+    linear-gradient(45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(-45deg, #c8c8c8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #c8c8c8 75%),
+    linear-gradient(-45deg, transparent 75%, #c8c8c8 75%);
+  background-size: 10px 10px; background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+}
+.preview-thumb-image img { display: block; height: 120px; width: auto; max-width: 200px; object-fit: contain; }
+.preview-thumb-image .image-badge { top: 3px; left: 3px; }
+.preview-thumb.none .preview-thumb-image {
+  width: 80px; background: var(--bg); border: 1px dashed var(--line); font-size: 11px;
+}
+.image-badge.patch { color: var(--var); background: var(--var-bg); text-transform: uppercase; }
 .image-preview-frame {
   flex: 0 0 auto; line-height: 0; border: 1px solid var(--accent);
   box-shadow: 0 0 0 1px #09080c, 0 12px 40px #0008; background-color: #fff;
@@ -300,7 +428,8 @@ details.record pre {
 }
 .image-preview-frame img {
   display: block; width: auto; height: auto; object-fit: contain;
-  max-width: min(1000px, calc(100vw - 200px)); max-height: calc(100vh - 132px);
+  /* 164 px of the height are for the thumbnails below the image. */
+  max-width: min(1000px, calc(100vw - 200px)); max-height: calc(100vh - 296px);
 }
 .image-preview-arrow {
   position: sticky; top: calc(50% - 24px); z-index: 2; flex: 0 0 48px;
@@ -312,6 +441,8 @@ details.record pre {
 .image-preview-arrow.next { margin-left: auto; transform: translateX(58px); }
 @media (max-width: 860px) {
   .wine { flex-direction: column; }
+  /* The text column takes the full width, so the favorites star stands at the right edge. */
+  .info { align-self: stretch; }
   .pictures { width: 100%; }
   .pictures figure { width: calc(50% - 4px); }
   .pictures a, .noimage, .patch-surface { width: 100%; height: 220px; }
@@ -319,7 +450,7 @@ details.record pre {
   .alternative-editor { width: 100%; min-width: 0; padding: 10px 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .alternative-grid { grid-template-columns: repeat(4, minmax(64px, 1fr)); max-height: none; }
   .image-preview-stage { padding: 12px 54px; }
-  .image-preview-frame img { max-width: calc(100vw - 148px); max-height: calc(100vh - 128px); }
+  .image-preview-frame img { max-width: calc(100vw - 148px); max-height: calc(100vh - 292px); }
 }
 @media (max-width: 440px) {
   header, main { padding-left: 10px; padding-right: 10px; }
@@ -333,7 +464,14 @@ details.record pre {
   .image-preview-head { align-items: flex-start; flex-wrap: wrap; }
   .image-preview-meta { order: 3; width: 100%; justify-content: space-between; }
   .image-preview-stage { padding: 10px 44px 64px; }
-  .image-preview-frame img { max-width: calc(100vw - 108px); max-height: calc(100vh - 178px); }
+  .image-preview-frame img { max-width: calc(100vw - 108px); max-height: calc(100vh - 298px); }
+  .preview-thumb-image, .preview-thumb-image img { height: 72px; }
+  .preview-thumb-image { min-width: 48px; }
+  .preview-thumb-image img { max-width: 80px; }
+  .preview-thumb.none .preview-thumb-image { width: 48px; }
+  /* One row that scrolls sideways, so no thumbnail falls below the stage. */
+  .image-preview-thumbs { flex-wrap: nowrap; justify-content: flex-start; max-width: 100%; overflow-x: auto; }
+  .preview-thumb { flex: 0 0 auto; font-size: 10px; }
   .image-preview-arrow { position: fixed; top: auto; bottom: 12px; }
   .image-preview-arrow.previous { left: 12px; margin: 0; transform: none; }
   .image-preview-arrow.next { right: 12px; margin: 0; transform: none; }
@@ -355,12 +493,15 @@ details.record pre {
         <option value="patched">with a patch</option>
         <option value="unpatched">without a patch</option>
         <option value="missing">without a catalogue image</option>
+        <option value="comments">with comments</option>
       </select>
     </label>
     <label>State
       <select id="state">
         <option value="present">All (except Removed)</option>
+        <option value="disabled">Disabled</option>
         <option value="removed">Removed</option>
+        <option value="favorites">Favorites</option>
       </select>
     </label>
     <label>Sort
@@ -371,10 +512,16 @@ details.record pre {
         <option value="slug">slug A–Z</option>
         <option value="size-asc">image size, smallest first</option>
         <option value="size-desc">image size, largest first</option>
+        <option value="changed">changed in the lab, newest first</option>
+        <option value="website-changed">changed on vino-svoe.ru, newest first</option>
       </select>
     </label>
     <label>Search <input id="q" type="search" placeholder="name, producer, slug, any field"></label>
-    <button id="validate-dataset" class="validate-btn" type="button">Validate</button>
+    <div class="bar-actions">
+      <button id="add-wine" class="wine-add-btn" type="button" hidden>Add wine</button>
+      <button id="validate-dataset" class="validate-btn" type="button">Validate</button>
+      <button id="website-import" class="validate-btn" type="button" hidden>Import from website</button>
+    </div>
   </div>
 </header>
 <main>
@@ -417,6 +564,44 @@ details.record pre {
     </div>
   </section>
 </div>
+<div class="modal" id="wine-modal" role="dialog" aria-modal="true"
+  aria-labelledby="wine-title" hidden>
+  <section class="validation-dialog wine-form-dialog">
+    <div class="validation-head">
+      <h2 id="wine-title">Add wine</h2>
+      <button id="wine-x" type="button" aria-label="Close">×</button>
+    </div>
+    <p class="validation-intro">A wine that you add by hand gets the slug prefix __.
+      The imports never remove it. The slug follows the name until you type a slug.
+      Grapes and Description are optional.</p>
+    <form class="wine-form-body" id="wine-form" novalidate>
+      <div class="wine-form-image">Main image
+        <button class="wine-form-drop" id="wine-drop" type="button"></button>
+        <input id="wine-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+      </div>
+      <div class="wine-form-grid">
+        <label>Slug
+          <span class="wine-form-slug"><span>__</span><input id="wine-slug" name="slug"
+            type="text" maxlength="198" autocomplete="off" spellcheck="false"
+            placeholder="a-z, 0-9, - and _"></span></label>
+        <label>Name <input name="name" type="text"></label>
+        <label>Producer <input name="producer" type="text" list="wine-producers"></label>
+        <label>Category <select name="category"></select></label>
+        <label>Color <input name="color" type="text"></label>
+        <label>Region <input name="region" type="text" list="wine-regions"></label>
+        <label class="wide">Grapes (optional) <input name="grapes" type="text"></label>
+        <label class="wide">Description (optional) <textarea name="description" rows="6"></textarea></label>
+      </div>
+    </form>
+    <datalist id="wine-producers"></datalist>
+    <datalist id="wine-regions"></datalist>
+    <div class="wine-form-error" id="wine-error" role="alert" hidden></div>
+    <div class="validation-actions">
+      <button id="wine-cancel" type="button">Cancel</button>
+      <button id="wine-save" class="primary" type="button" disabled>Save</button>
+    </div>
+  </section>
+</div>
 <div class="modal" id="image-preview-modal" role="dialog" aria-modal="true"
   aria-labelledby="image-preview-title" hidden>
   <section class="image-preview-dialog">
@@ -433,32 +618,47 @@ details.record pre {
     </div>
     <div class="image-preview-stage">
       <button class="image-preview-arrow previous" id="image-preview-previous" type="button"
-        aria-label="Previous image" title="Previous image (Left arrow)">←</button>
-      <div class="image-preview-frame"><img id="image-preview-image" src="" alt=""></div>
+        aria-label="Previous image" title="Previous image (Left or Up arrow)">←</button>
+      <div class="image-preview-main">
+        <div class="image-preview-frame"><img id="image-preview-image" src="" alt=""></div>
+        <div class="image-preview-thumbs" id="image-preview-thumbs"></div>
+      </div>
       <button class="image-preview-arrow next" id="image-preview-next" type="button"
-        aria-label="Next image" title="Next image (Right arrow)">→</button>
+        aria-label="Next image" title="Next image (Right or Down arrow)">→</button>
     </div>
   </section>
 </div>
 <script>
 "use strict";
 const $ = s => document.querySelector(s);
-let DATA = {records: [], patches: 0, alternatives: 0, barcodes: 0, qr_urls: 0,
+let DATA = {records: [], patches: 0, alternatives: 0, gtins: 0, barcodes: 0, qr_urls: 0,
   atlas_bindings: 0};
 let ROWS = [];
 let VALIDATION = {running: false, results: {}};
 let VALIDATION_TIMER = null;
 let IMAGE_PREVIEW = null;
+let PREVIEW_THUMBS = [];
 const PENDING_PATCHES = new Map();
 const BUSY_PATCHES = new Set();
 const PENDING_ALTERNATIVES = new Map();
 const BUSY_ALTERNATIVES = new Set();
+// `<slug>|<sha256>` of each photo whose type change runs, and the slugs whose uploads run.
+const BUSY_ALTERNATIVE_TYPES = new Set();
+const UPLOADING_ALTERNATIVES = new Set();
+// The types of an alternative photo of the lab server: [type, button, full name].
+const ALTERNATIVE_TYPES = [["full_front", "FF", "full front"], ["label_front", "LF", "label front"],
+                           ["full_back", "FB", "full back"], ["label_back", "LB", "label back"]];
+const DRAFT_GTINS = new Map();
+const BUSY_GTINS = new Set();
 const DRAFT_BARCODES = new Map();
 const BUSY_BARCODES = new Set();
 const DRAFT_QR_URLS = new Map();
 const BUSY_QR_URLS = new Set();
 const DRAFT_ATLAS_BINDINGS = new Map();
 const BUSY_ATLAS_BINDINGS = new Set();
+const DRAFT_COMMENTS = new Map();
+const BUSY_COMMENTS = new Set();
+const BUSY_FAVORITES = new Set();
 // state -> the buttons of a wine in that state, as [action, label].
 const STATE_ACTIONS = {
   Active: [["disable", "Disable"], ["remove", "Remove"]],
@@ -483,6 +683,41 @@ function safeUrl(value) {
 }
 const ICON_SAVE = '<svg class="action-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4L16 6.5"/></svg>';
 const ICON_CANCEL = '<svg class="action-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
+// The check of a GTIN while the person types. The server checks again. The rules and the
+// messages are those of `pipeline/codes.py`. A barcode of the review tool is an exact
+// value, often an EAN-13; the page checks only that it is not empty.
+const GTIN_LENGTHS = [8, 12, 13, 14];
+function gtinCheckDigit(digits) {
+  let total = 0;
+  [...digits].reverse().forEach((digit, i) => { total += Number(digit) * (i % 2 === 0 ? 3 : 1); });
+  return (10 - total % 10) % 10;
+}
+// Return [the message, true when the value is bad] of a `gtin` or a `barcode` value.
+function codeCheck(kind, value) {
+  const clean = String(value || "").replace(/\s+/g, "");
+  if (!clean) return ["", true];
+  if (kind === "barcode") return ["", false];
+  const digits = /^[0-9]+$/.test(clean);
+  const gtinShape = digits && GTIN_LENGTHS.includes(clean.length);
+  if (!digits) return ["GTIN MUST hold digits alone", true];
+  if (!gtinShape) return [`GTIN MUST have 8, 12, 13, or 14 digits; it has ${clean.length}`, true];
+  const expected = gtinCheckDigit(clean.slice(0, -1));
+  if (Number(clean.slice(-1)) !== expected)
+    return [`wrong check digit ${clean.slice(-1)}; expected ${expected}`, true];
+  return [`GTIN-14: ${clean.padStart(14, "0")}`, false];
+}
+function codeHintHtml(kind, value) {
+  const [text, bad] = codeCheck(kind, value);
+  return `<div class="code-hint${bad && text ? " bad" : ""}" aria-live="polite">${esc(text)}</div>`;
+}
+// Show the check of the input of `editor`, and allow the save of a good value alone.
+function showCodeCheck(editor, kind, value) {
+  const [text, bad] = codeCheck(kind, value);
+  const hint = editor.querySelector(".code-hint");
+  if (hint) { hint.textContent = text; hint.classList.toggle("bad", bad && !!text); }
+  const save = editor.querySelector(".accept");
+  if (save) save.disabled = bad;
+}
 function qrUrlForOpen(value) {
   const text = String(value || "").trim();
   return safeUrl(text.startsWith("URL:") ? text.slice(4).trim() : text);
@@ -507,55 +742,210 @@ function catalogImageUrl(r) {
   if (r.main_image_url) return r.main_image_url;
   return r.local_path ? `/img/catalog?slug=${encodeURIComponent(r.slug || "")}` : "";
 }
-function imagePreviewRecords(kind) {
-  return ROWS.filter(r => kind === "patch" ? r._patched : !!catalogImageUrl(r));
+// The images that the arrows of a preview of `kind` step through, in page order, as
+// {record, photo}. For the kind `alternative`, each alternative photo of the lab server
+// is one item, and `photo` is that photo; else `photo` is null. The review tool sends
+// the alternative photos as file names, so they get no preview.
+function imagePreviewItems(kind) {
+  if (kind === "alternative") {
+    return ROWS.flatMap(record => (record._alternatives || [])
+      .filter(photo => photo && typeof photo === "object").map(photo => ({record, photo})));
+  }
+  return ROWS.filter(r => kind === "patch" ? r._patched : !!catalogImageUrl(r))
+    .map(record => ({record, photo: null}));
+}
+function imagePreviewIndex(items, slug, sha256) {
+  return items.findIndex(({record, photo}) =>
+    record.slug === slug && (!photo || photo.sha256 === sha256));
+}
+function alternativeTypeName(type) {
+  const entry = ALTERNATIVE_TYPES.find(([name]) => name === type);
+  return entry ? entry[2] : type;
 }
 function imagePreviewUrl(record, kind) {
   if (kind === "catalog" && record.main_image_url) return record.main_image_url;
+  if (kind === "patch" && (record._patch_image_url || record._patch_url)) {
+    return record._patch_image_url || record._patch_url;
+  }
   const slug = encodeURIComponent(record.slug || "");
   const version = kind === "patch" && record._patchVersion ? `&v=${record._patchVersion}` : "";
   return `/img/${kind}?slug=${slug}&raw=1${version}`;
 }
-function showImagePreview(slug, kind) {
-  const records = imagePreviewRecords(kind);
-  const index = records.findIndex(record => record.slug === slug);
-  if (index < 0) return;
-  const record = records[index];
-  const label = kind === "patch" ? "patch image" : "catalogue image";
-  const src = imagePreviewUrl(record, kind);
-  IMAGE_PREVIEW = {slug, kind};
-  $("#image-preview-title").textContent = `${label} · ${record.name || slug}`;
-  $("#image-preview-file").textContent = slug;
-  $("#image-preview-position").textContent = `${index + 1} / ${records.length}`;
+// The page path of an open preview: `/dataset/<slug>` for the catalogue image,
+// `/dataset/<slug>/patch` for the patch image, `/dataset/<slug>/alternative/<sha256>` for
+// an alternative photo. Both servers serve this page at the path.
+function imagePreviewPath(slug, kind, sha256) {
+  const tail = kind === "patch" ? "/patch" : kind === "alternative" ? `/alternative/${sha256}` : "";
+  return `/dataset/${encodeURIComponent(slug)}${tail}`;
+}
+// Return {slug, kind, sha256} of the preview that the page path names, or null.
+function imagePreviewOfPath() {
+  const match = location.pathname.match(
+    /^\/dataset\/([^/]+)(?:(\/patch)|\/alternative\/([0-9a-f]{64}))?$/);
+  if (!match) return null;
+  const kind = match[2] ? "patch" : match[3] ? "alternative" : "catalog";
+  try { return {slug: decodeURIComponent(match[1]), kind, sha256: match[3] || ""}; }
+  catch (_) { return null; }
+}
+// Open the preview. `mode` is the change of the page URL: "push" adds a history entry,
+// so Back closes the preview; "replace" changes the entry; "none" keeps the URL.
+// `sha256` names the photo of the kind `alternative`.
+// Return false when the current list holds no such image.
+function showImagePreview(slug, kind, mode = "push", sha256 = "") {
+  const item = setPreviewItem(slug, kind, mode, sha256);
+  if (!item) return false;
+  const {record, photo} = item;
+  const src = photo ? photo.image_url : imagePreviewUrl(record, kind);
   $("#image-preview-size").textContent = "reading size…";
-  // The raw image of a processed card image is the original.
-  $("#image-preview-raw").href = kind === "catalog" && record.main_image_original_url
-    ? record.main_image_original_url : src;
-  $("#image-preview-previous").disabled = index === 0;
-  $("#image-preview-next").disabled = index === records.length - 1;
+  // The raw image of a processed file is its original.
+  $("#image-preview-raw").href = photo ? photo.url
+    : kind === "patch" ? record._patch_url || src
+    : kind === "catalog" && record.main_image_original_url ? record.main_image_original_url : src;
   const image = $("#image-preview-image");
-  image.alt = `${label} · ${record.name || slug}`;
   image.onload = () => {
     $("#image-preview-size").textContent = `${image.naturalWidth} × ${image.naturalHeight} px`;
   };
   image.onerror = () => { $("#image-preview-size").textContent = "image load failed"; };
   image.src = src;
+  renderPreviewThumbs(record, src);
   $("#image-preview-modal").hidden = false;
   document.body.style.overflow = "hidden";
   $("#image-preview-close").focus();
+  return true;
 }
-function closeImagePreview() {
+// Make one image the item of the preview: the title, the position, the arrows, and the
+// page path follow it (see `showImagePreview` for `mode`). The image and the thumbnails
+// do not change. Return {record, photo}, or null when the current list holds no such image.
+function setPreviewItem(slug, kind, mode, sha256) {
+  const items = imagePreviewItems(kind);
+  const index = imagePreviewIndex(items, slug, sha256);
+  if (index < 0) return null;
+  const {record, photo} = items[index];
+  const label = kind === "patch" ? "patch image"
+    : photo ? `alternative photo (${alternativeTypeName(photo.type)})` : "catalogue image";
+  IMAGE_PREVIEW = {slug, kind, sha256: photo ? photo.sha256 : ""};
+  $("#image-preview-title").textContent = `${label} · ${record.name || slug}`;
+  $("#image-preview-file").textContent = slug;
+  $("#image-preview-position").textContent = `${index + 1} / ${items.length}`;
+  $("#image-preview-previous").disabled = index === 0;
+  $("#image-preview-next").disabled = index === items.length - 1;
+  $("#image-preview-image").alt = `${label} · ${record.name || slug}`;
+  const path = imagePreviewPath(slug, kind, IMAGE_PREVIEW.sha256);
+  if (mode === "push") history.pushState({imagePreview: true}, "", path);
+  else if (mode === "replace") history.replaceState(history.state, "", path);
+  return items[index];
+}
+function hideImagePreview() {
   $("#image-preview-modal").hidden = true;
   $("#image-preview-image").src = "";
   document.body.style.overflow = "";
   IMAGE_PREVIEW = null;
 }
+// Close the preview and give the page its path `/dataset` again. The entry of an open
+// that this page pushed goes away with Back, so Forward opens the preview again.
+function closeImagePreview() {
+  hideImagePreview();
+  if (history.state && history.state.imagePreview) history.back();
+  else if (imagePreviewOfPath()) history.replaceState(null, "", "/dataset");
+}
 function stepImagePreview(step) {
   if (!IMAGE_PREVIEW) return;
-  const records = imagePreviewRecords(IMAGE_PREVIEW.kind);
-  const index = records.findIndex(record => record.slug === IMAGE_PREVIEW.slug);
-  const target = records[index + step];
-  if (target) showImagePreview(target.slug, IMAGE_PREVIEW.kind);
+  const items = imagePreviewItems(IMAGE_PREVIEW.kind);
+  const index = imagePreviewIndex(items, IMAGE_PREVIEW.slug, IMAGE_PREVIEW.sha256);
+  const target = items[index + step];
+  if (target) {
+    showImagePreview(target.record.slug, IMAGE_PREVIEW.kind, "replace",
+                     target.photo ? target.photo.sha256 : "");
+  }
+}
+// The thumbnails below the preview, the same for each kind of preview: the `main` image
+// and its processed file; for a wine with a patch, the patch and its processed file; for
+// each alternative photo of the lab server, the photo and its processed file, in the
+// order of the upload. `raw` is the target of `open raw image`: the original of a
+// processed file. A thumbnail with no `url` stands for a file that the wine does not
+// have. A record of the review tool holds no `main_image_type`, so it gets no thumbnail.
+function previewThumbs(record) {
+  if (!("main_image_type" in record)) return [];
+  // `kind` and `sha256` name the item of a thumbnail, as in `showImagePreview`.
+  const main = {kind: "catalog", sha256: ""};
+  const patch = {kind: "patch", sha256: ""};
+  const original = record.main_image_original_url;
+  const thumbs = [
+    original ? {...main, url: original, raw: original, label: "main"} : {label: "main"},
+    record.main_image_derivation
+      ? {...main, url: record.main_image_url, raw: original, label: "main · processed",
+         badge: record.main_image_derivation}
+      : {label: "main · processed"},
+  ];
+  if (record._patch_url) {
+    thumbs.push({...patch, url: record._patch_url, raw: record._patch_url, label: "patched",
+                 badge: "patch"});
+    thumbs.push(record._patch_derivation
+      ? {...patch, url: record._patch_image_url, raw: record._patch_url,
+         label: "patched · processed", badge: record._patch_derivation}
+      : {label: "patched · processed"});
+  }
+  // The label names the type with its button code, for example `alternative LF`, and the
+  // number of the photo when the wine has more than one.
+  const photos = (record._alternatives || []).filter(photo => photo && typeof photo === "object");
+  photos.forEach((photo, index) => {
+    const entry = ALTERNATIVE_TYPES.find(([type]) => type === photo.type);
+    const name = `alternative${photos.length > 1 ? ` ${index + 1}` : ""} ${entry ? entry[1] : photo.type}`;
+    const item = {kind: "alternative", sha256: photo.sha256};
+    thumbs.push({...item, url: photo.url, raw: photo.url, label: name});
+    thumbs.push(photo.derivation
+      ? {...item, url: photo.image_url, raw: photo.url, label: `${name} · processed`,
+         badge: photo.derivation}
+      : {label: `${name} · processed`});
+  });
+  return thumbs;
+}
+function renderPreviewThumbs(record, src) {
+  PREVIEW_THUMBS = previewThumbs(record);
+  // The thumbnail of the item in view is on, also when two files of the wine have the
+  // same URL.
+  const on = PREVIEW_THUMBS.findIndex(thumb => thumb.url === src
+    && thumb.kind === IMAGE_PREVIEW.kind && thumb.sha256 === IMAGE_PREVIEW.sha256);
+  $("#image-preview-thumbs").innerHTML = PREVIEW_THUMBS.map((thumb, index) => {
+    const badge = thumb.badge ? `<span class="image-badge ${esc(thumb.badge)}">${esc(thumb.badge)}</span>` : "";
+    return thumb.url
+      ? `<button class="preview-thumb${index === on ? " on" : ""}" type="button"
+          data-preview-thumb="${index}" title="Show the ${thumb.label} image"><span
+          class="preview-thumb-image"><img src="${esc(thumb.url)}" alt="${thumb.label}">${badge}</span>
+          <span>${thumb.label}</span></button>`
+      : `<div class="preview-thumb none" title="The wine has no ${thumb.label} image"><span
+          class="preview-thumb-image">none</span><span>${thumb.label}</span></div>`;
+  }).join("");
+  // A strip that scrolls shows the thumbnail that is on in its center. The width of a
+  // thumbnail is known when its image is loaded.
+  const strip = $("#image-preview-thumbs");
+  strip.scrollLeft = 0;
+  const current = strip.querySelector(".preview-thumb.on");
+  if (!current) return;
+  Promise.all([...strip.querySelectorAll("img")].map(img => img.decode().catch(() => {})))
+    .then(() => {
+      if (!current.isConnected) return;
+      const box = strip.getBoundingClientRect();
+      const item = current.getBoundingClientRect();
+      strip.scrollLeft += item.left - box.left - (box.width - item.width) / 2;
+    });
+}
+// Show the image of a thumbnail. A thumbnail of another kind, or of another alternative
+// photo, also makes its image the item of the preview: the title, the page path, and the
+// arrows follow (owner, 2026-09-25). The thumbnails keep their place.
+function showPreviewThumb(button) {
+  const thumb = PREVIEW_THUMBS[Number(button.dataset.previewThumb)];
+  if (!thumb || !IMAGE_PREVIEW) return;
+  if ((thumb.kind !== IMAGE_PREVIEW.kind || thumb.sha256 !== IMAGE_PREVIEW.sha256)
+      && !setPreviewItem(IMAGE_PREVIEW.slug, thumb.kind, "replace", thumb.sha256)) return;
+  $("#image-preview-raw").href = thumb.raw;
+  for (const other of $("#image-preview-thumbs").querySelectorAll("[data-preview-thumb]")) {
+    other.classList.toggle("on", other === button);
+  }
+  const image = $("#image-preview-image");
+  if (image.getAttribute("src") === thumb.url) return;
+  $("#image-preview-size").textContent = "reading size…";
+  image.src = thumb.url;
 }
 function imageFigure(r, patch) {
   if (patch) return patchEditor(r);
@@ -574,7 +964,8 @@ function imageFigure(r, patch) {
          title="Open ${label} image"><img
          src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — ${label}">${badge}</a>`
     : '<div class="noimage">no catalogue image</div>';
-  return `<figure>${content}<figcaption><span>${label}</span></figcaption>${stateActions(r)}</figure>`;
+  const gray = r.state === "Disabled" ? ' class="state-disabled"' : "";
+  return `<figure${gray}>${content}<figcaption><span>${label}</span></figcaption>${stateActions(r)}</figure>`;
 }
 function stateActions(r) {
   // A record with no `state` comes from a server with no wine states. It gets no button.
@@ -592,11 +983,14 @@ function stateTag(r) {
   }
   return "";
 }
+// The review tool turns the patch editor on with `patch_dir`, the lab server with
+// `patch_editor`.
+function patchEditorOn() { return !!(DATA.patch_dir || DATA.patch_editor); }
 function patchEditor(r) {
   const slug = encodeURIComponent(r.slug || "");
   const pending = PENDING_PATCHES.get(r.slug);
   const busy = BUSY_PATCHES.has(r.slug);
-  const configured = !!DATA.patch_dir;
+  const configured = patchEditorOn();
   const version = r._patchVersion ? `&v=${r._patchVersion}` : "";
   let content = "";
   let state = "";
@@ -609,8 +1003,10 @@ function patchEditor(r) {
       <span class="patch-state">candidate</span>`;
     state = '<span class="patch">pending</span>';
     file = `<div class="patch-file" title="${esc(pending.file.name)}">${esc(pending.file.name)}</div>`;
+    // The lab server applies and processes a new file at once. SAM3 can take minutes.
+    const working = DATA.patch_editor ? "Processing…" : "Applying…";
     actions = `<div class="patch-actions"><button class="apply${busy ? " busy" : ""}"
-      type="button" data-patch-apply ${busy ? "disabled" : ""}>${busy ? "Applying…" : "Apply"}</button>
+      type="button" data-patch-apply ${busy ? "disabled" : ""}>${busy ? working : "Apply"}</button>
       <button type="button" data-patch-cancel ${busy ? "disabled" : ""}>Cancel</button></div>`;
   } else if (pending && pending.action === "remove") {
     surfaceClass += " pending removing";
@@ -620,13 +1016,19 @@ function patchEditor(r) {
       type="button" data-patch-apply ${busy ? "disabled" : ""}>${busy ? "Applying…" : "Apply"}</button>
       <button type="button" data-patch-cancel ${busy ? "disabled" : ""}>Cancel</button></div>`;
   } else if (r._patched) {
-    const src = `/img/patch?slug=${slug}${version}`;
-    const preview = `${src}&view=1`;
+    // The lab server sends `_patch_image_url`: the processed patch, or the patch when
+    // it has no processed file. Both are files of its image store, named by SHA-256.
+    const stored = r._patch_image_url || r._patch_url;
+    const src = stored || `/img/patch?slug=${slug}${version}`;
+    const preview = stored ? src : `${src}&view=1`;
+    const derivation = r._patch_derivation;
+    const badge = derivation ? `<span class="image-badge ${esc(derivation)}"
+      title="processed image: ${esc(derivation)}">${esc(derivation)}</span>` : "";
     content = `<a href="${preview}" data-image-preview="patch" data-slug="${esc(r.slug)}"
       title="Open patch image"><img
-      src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — patch"></a>`;
+      src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — patch">${badge}</a>`;
     state = '<span class="patch">patched</span>';
-    actions = `<div class="patch-actions"><button class="remove" type="button"
+    actions = `<div class="patch-actions single"><button class="remove" type="button"
       data-patch-remove>Remove</button></div>`;
   } else if (configured) {
     content = '<button class="noimage" type="button" data-patch-pick>Drop an image here<br><span>or choose a file</span></button>';
@@ -639,32 +1041,55 @@ function patchEditor(r) {
     <input class="patch-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/bmp">
   </figure>`;
 }
+// The review tool turns the alternative editor on with `alternative_dir`, the lab server
+// with `alternative_editor`.
+function alternativeEditorOn() { return !!(DATA.alternative_dir || DATA.alternative_editor); }
 function alternativeEditor(r) {
-  const configured = !!DATA.alternative_dir;
+  const configured = alternativeEditorOn();
+  const lab = !!DATA.alternative_editor;
   const pending = PENDING_ALTERNATIVES.get(r.slug) || {adds: [], removes: new Set()};
   const busy = BUSY_ALTERNATIVES.has(r.slug);
   const slug = encodeURIComponent(r.slug || "");
   const version = r._alternativeVersion ? `&v=${r._alternativeVersion}` : "";
-  const existing = (r._alternatives || []).map(filename => {
-    const removing = pending.removes.has(filename);
-    const src = `/img/alternative?slug=${slug}&file=${encodeURIComponent(filename)}${version}`;
-    return `<div class="alternative-card${removing ? " removing" : ""}" title="${esc(filename)}">
-      <a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy"
-        alt="${esc(r.name || r.slug)} — alternative"></a>
-      <button class="alternative-remove" type="button" data-alternative-remove="${esc(filename)}"
-        title="${removing ? "Keep this photo" : "Remove this photo"}">${removing ? "↶" : "×"}</button>
+  const existing = (r._alternatives || []).map(item => {
+    // The lab server sends each photo as an object; the review tool sends a file name.
+    const photo = typeof item === "object" && item ? item : null;
+    const key = photo ? photo.sha256 : item;
+    const removing = pending.removes.has(key);
+    const src = photo ? photo.image_url
+      : `/img/alternative?slug=${slug}&file=${encodeURIComponent(item)}${version}`;
+    const turning = photo && BUSY_ALTERNATIVE_TYPES.has(`${r.slug}|${key}`);
+    const badge = photo && photo.derivation ? `<span class="image-badge ${esc(photo.derivation)}"
+      title="processed image: ${esc(photo.derivation)}">${esc(photo.derivation)}</span>` : "";
+    // A photo of the lab server opens the image preview; a file of the review tool opens
+    // in a new tab.
+    const link = photo
+      ? `data-image-preview="alternative" data-slug="${esc(r.slug)}" data-sha="${esc(key)}"`
+      : 'target="_blank" rel="noopener"';
+    const card = `<div class="alternative-card${removing ? " removing" : ""}${turning ? " busy" : ""}"
+      title="${esc(photo ? `${photo.type} · ${key}` : key)}">
+      <a href="${esc(src)}" ${link}><img src="${esc(src)}" loading="lazy"
+        alt="${esc(r.name || r.slug)} — alternative"></a>${badge}
+      <button class="alternative-remove" type="button" data-alternative-remove="${esc(key)}"
+        title="${removing ? "Keep this photo" : "Remove this photo"}" ${turning ? "disabled" : ""}>${removing ? "↶" : "×"}</button>
       ${removing ? '<span class="patch-state">remove</span>' : ""}
     </div>`;
+    if (!photo) return card;
+    const buttons = ALTERNATIVE_TYPES.map(([type, code, name]) => `<button type="button"
+      class="${photo.type === type ? "on" : ""}" data-alternative-type="${type}"
+      data-sha="${esc(key)}" title="${name}" ${turning || removing ? "disabled" : ""}>${code}</button>`).join("");
+    return `<div class="alternative-item">${card}<div class="alternative-types">${buttons}</div></div>`;
   }).join("");
+  // The lab server stores a new photo at once: a candidate is an upload that runs.
   const additions = pending.adds.map(item => `<div class="alternative-card pending"
       title="${esc(item.file.name)}"><img src="${esc(item.url)}"
-      alt="${esc(r.name || r.slug)} — alternative candidate">
+      alt="${esc(r.name || r.slug)} — alternative candidate">${lab ? "" : `
       <button class="alternative-remove" type="button" data-alternative-cancel="${item.id}"
-        title="Discard this candidate">×</button><span class="patch-state">candidate</span></div>`).join("");
+        title="Discard this candidate">×</button>`}<span class="patch-state">${lab ? "processing" : "candidate"}</span></div>`).join("");
   const drop = configured
     ? '<button class="alternative-drop" type="button" data-alternative-pick>Drop photos here<br>or choose files</button>'
     : '<div class="alternative-drop">alternative_dir is not configured</div>';
-  const changed = pending.adds.length || pending.removes.size;
+  const changed = lab ? pending.removes.size : pending.adds.length || pending.removes.size;
   const actions = changed ? `<div class="alternative-actions">
     <button class="apply${busy ? " busy" : ""}" type="button" data-alternative-apply
       ${busy ? "disabled" : ""}>${busy ? "Applying…" : "Apply"}</button>
@@ -679,8 +1104,39 @@ function alternativeEditor(r) {
       accept="image/jpeg,image/png,image/webp,image/gif,image/bmp">
   </aside>`;
 }
+function gtinEditor(r) {
+  const values = r._gtins || [];
+  const editing = DRAFT_GTINS.has(r.slug);
+  const busy = BUSY_GTINS.has(r.slug);
+  const draft = DRAFT_GTINS.get(r.slug) || "";
+  const existing = values.length ? `<div class="barcode-values">${values.map(value =>
+    `<span class="barcode-value"><button class="barcode-remove" type="button"
+      data-gtin-remove="${esc(value)}" aria-label="Remove GTIN ${esc(value)}"
+      title="Remove GTIN" ${busy ? "disabled" : ""}>×</button><code>${esc(value)}</code>
+      <button class="copy" type="button" data-copy="${esc(value)}">copy</button></span>`
+    ).join("")}</div>`
+    : '<div class="barcode-empty">no GTIN</div>';
+  const entry = editing ? `<div class="barcode-new">
+    <input class="gtin-input" type="text" inputmode="numeric" maxlength="32" autocomplete="off"
+      aria-label="New GTIN" placeholder="EAN-13, UPC-A, EAN-8, or GTIN-14" value="${esc(draft)}" ${busy ? "disabled" : ""}>
+    <button class="accept" type="button" data-gtin-save aria-label="Save GTIN"
+      title="Save GTIN" ${busy || codeCheck("gtin", draft)[1] ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
+    <button class="cancel" type="button" data-gtin-cancel aria-label="Cancel GTIN"
+      title="Cancel" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
+  </div>${codeHintHtml("gtin", draft)}` : "";
+  return `<div class="gtin-editor" data-slug="${esc(r.slug)}">
+    <div class="barcode-head"><strong>GTINs</strong><span class="count">${values.length}</span>
+      <button class="barcode-add" type="button" data-gtin-add aria-label="Add GTIN"
+        title="Add GTIN" ${editing ? "disabled" : ""}>+</button></div>
+    ${existing}${entry}
+  </div>`;
+}
+// The Barcodes editor belongs to the review tool. The lab server keeps GTINs alone and
+// sends no `barcode_file`. The GTIN editor belongs to the lab server, which sends `gtins`;
+// the review tool has no GTIN route.
+function barcodesOn() { return "barcode_file" in DATA; }
+function gtinsOn() { return "gtins" in DATA; }
 function barcodeEditor(r) {
-  const configured = !!DATA.barcode_file;
   const values = r._barcodes || [];
   const editing = DRAFT_BARCODES.has(r.slug);
   const busy = BUSY_BARCODES.has(r.slug);
@@ -691,23 +1147,23 @@ function barcodeEditor(r) {
       <button class="copy" type="button" data-copy="${esc(value)}">copy</button></span>`
     ).join("")}</div>`
     : '<div class="barcode-empty">no barcode</div>';
+  const draft = DRAFT_BARCODES.get(r.slug) || "";
   const entry = editing ? `<div class="barcode-new">
     <input class="barcode-input" type="text" maxlength="128" autocomplete="off"
-      aria-label="New barcode" placeholder="Barcode value" value="${esc(DRAFT_BARCODES.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
+      aria-label="New barcode" placeholder="Barcode value" value="${esc(draft)}" ${busy ? "disabled" : ""}>
     <button class="accept" type="button" data-barcode-save aria-label="Save barcode"
-      title="Save barcode" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
+      title="Save barcode" ${busy || codeCheck("barcode", draft)[1] ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
     <button class="cancel" type="button" data-barcode-cancel aria-label="Cancel barcode"
       title="Cancel" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
-  </div>` : "";
+  </div>${codeHintHtml("barcode", draft)}` : "";
   return `<div class="barcode-editor" data-slug="${esc(r.slug)}">
     <div class="barcode-head"><strong>Barcodes</strong><span class="count">${values.length}</span>
       <button class="barcode-add" type="button" data-barcode-add aria-label="Add barcode"
-        title="Add barcode" ${!configured || editing ? "disabled" : ""}>+</button></div>
+        title="Add barcode" ${!DATA.barcode_file || editing ? "disabled" : ""}>+</button></div>
     ${existing}${entry}
   </div>`;
 }
 function qrUrlEditor(r) {
-  const configured = !!DATA.barcode_file;
   const values = r._qr_urls || [];
   const editing = DRAFT_QR_URLS.has(r.slug);
   const busy = BUSY_QR_URLS.has(r.slug);
@@ -733,20 +1189,26 @@ function qrUrlEditor(r) {
   return `<div class="qr-url-editor" data-slug="${esc(r.slug)}">
     <div class="barcode-head"><strong>QR URLs</strong><span class="count">${values.length}</span>
       <button class="barcode-add" type="button" data-qr-url-add aria-label="Add QR URL"
-        title="Add QR URL" ${!configured || editing ? "disabled" : ""}>+</button></div>
+        title="Add QR URL" ${!(gtinsOn() || DATA.barcode_file) || editing ? "disabled" : ""}>+</button></div>
     ${existing}${entry}
   </div>`;
 }
 function atlasBindingEditor(r) {
-  const configured = !!DATA.atlas_bindings_file;
+  // The review tool sends `atlas_bindings_file`. The lab server sends
+  // `atlas_binding_editor`, and it allows the remove of a manual binding.
+  const configured = !!DATA.atlas_bindings_file || !!DATA.atlas_binding_editor;
   const current = r._atlas_product_uuid || "";
   const source = r._atlas_binding_source || "";
+  const removable = !!DATA.atlas_binding_editor && source === "manual";
   const editing = DRAFT_ATLAS_BINDINGS.has(r.slug);
   const busy = BUSY_ATLAS_BINDINGS.has(r.slug);
   const productUrl = current
     ? `http://127.0.0.1:8157/products/${encodeURIComponent(current)}` : "";
   const existing = current
-    ? `<div class="barcode-values"><span class="barcode-value"><code>${esc(current)}</code>
+    ? `<div class="barcode-values"><span class="barcode-value">${removable
+         ? `<button class="barcode-remove" type="button" data-atlas-binding-remove
+             aria-label="Remove manual Atlas binding" title="Remove manual binding"
+             ${busy ? "disabled" : ""}>×</button>` : ""}<code>${esc(current)}</code>
        <button class="copy" type="button" data-copy="${esc(current)}">copy</button>
        <a class="open-product" href="${esc(productUrl)}" target="_blank"
           rel="noopener">open</a></span></div>`
@@ -770,6 +1232,55 @@ function atlasBindingEditor(r) {
     ${existing}${entry}
   </div>`;
 }
+// The Comments editor belongs to the lab server. The review tool sends no `comments`.
+function commentsOn() { return "comments" in DATA; }
+// The local time of a stored UTC time `YYYY-MM-DDTHH:MM:SSZ`, as `YYYY-MM-DD HH:MM`.
+function commentTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value || "");
+  const pad = number => String(number).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} `
+    + `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+function commentEditor(r) {
+  const values = r._comments || [];
+  const editing = DRAFT_COMMENTS.has(r.slug);
+  const busy = BUSY_COMMENTS.has(r.slug);
+  const existing = values.length ? `<ol class="comment-list">${values.map(comment => {
+    const shown = commentTime(comment.created_at);
+    return `<li class="comment"><div class="comment-meta"><button class="barcode-remove"
+      type="button" data-comment-remove="${esc(comment.id)}"
+      aria-label="Remove the comment of ${esc(shown)}" title="Remove comment"
+      ${busy ? "disabled" : ""}>×</button><time datetime="${esc(comment.created_at)}"
+      title="${esc(comment.created_at)}">${esc(shown)}</time><span
+      class="comment-source">${esc(comment.source)}</span></div>
+      <div class="comment-text">${esc(comment.text)}</div></li>`;
+  }).join("")}</ol>` : '<div class="barcode-empty">no comment</div>';
+  const entry = editing ? `<div class="barcode-new comment-new">
+    <textarea class="comment-input" rows="3" maxlength="4000" aria-label="New comment"
+      placeholder="Comment. Cmd+Enter or Ctrl+Enter saves."
+      ${busy ? "disabled" : ""}>${esc(DRAFT_COMMENTS.get(r.slug) || "")}</textarea>
+    <button class="accept" type="button" data-comment-save aria-label="Save comment"
+      title="Save comment (Cmd+Enter or Ctrl+Enter)" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
+    <button class="cancel" type="button" data-comment-cancel aria-label="Cancel comment"
+      title="Cancel (Esc)" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
+  </div>` : "";
+  return `<div class="comment-editor" data-slug="${esc(r.slug)}">
+    <div class="barcode-head"><strong>Comments</strong><span class="count">${values.length}</span>
+      <button class="barcode-add" type="button" data-comment-add aria-label="Add comment"
+        title="Add comment" ${editing ? "disabled" : ""}>+</button></div>
+    ${existing}${entry}
+  </div>`;
+}
+// The favorite star belongs to the lab server. The review tool sends no `favorites`.
+function favoritesOn() { return "favorites" in DATA; }
+function favoriteStar(r) {
+  const on = !!r._favorite;
+  const label = on ? "Remove from favorites" : "Add to favorites";
+  return `<button class="favorite-star${on ? " on" : ""}" type="button"
+    data-favorite-toggle="${esc(r.slug)}" aria-pressed="${on}" aria-label="${label}"
+    title="${label}" ${BUSY_FAVORITES.has(r.slug) ? "disabled" : ""}>${on ? "★" : "☆"}</button>`;
+}
 function recordHtml(r) {
   const match = r.image_match || {};
   const page = safeUrl(r.page_url);
@@ -777,19 +1288,23 @@ function recordHtml(r) {
   const where = [r.category, r.region].filter(Boolean).map(esc).join(" · ");
   return `<article class="wine" id="${esc(r.slug)}">
     <div class="pictures">${imageFigure(r, false)}${imageFigure(r, true)}</div>
-    <div class="info">
-      <div class="slug"><a href="${esc(winePageUrl(r))}" target="_blank" rel="noopener"
-        title="Open the page of the wine on vino-svoe.ru">${esc(r.slug)}</a>
+    <div class="info${favoritesOn() ? " with-star" : ""}">
+      <div class="slug">${manualWine(r) ? `<span title="A wine added by hand">${esc(r.slug)}</span>`
+        : `<a href="${esc(winePageUrl(r))}" target="_blank" rel="noopener"
+        title="Open the page of the wine on vino-svoe.ru">${esc(r.slug)}</a>`}
         <button class="copy" type="button" data-copy="${esc(r.slug)}">copy</button></div>
+      ${favoritesOn() ? favoriteStar(r) : ""}
       <div class="name"><h2>${esc(r.name || "Unnamed wine")}</h2>
         <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>
         ${r._patched ? '<span class="tag">patch</span>' : ""}${stateTag(r)}</div>
       <div class="producer">${esc(r.producer || "—")}</div>
       ${where ? `<div class="kind">${where}</div>` : ""}
       ${r.grapes ? `<div class="grapes">${esc(r.grapes)}</div>` : ""}
-      ${barcodeEditor(r)}
+      ${gtinsOn() ? gtinEditor(r) : ""}
+      ${barcodesOn() ? barcodeEditor(r) : ""}
       ${qrUrlEditor(r)}
       ${atlasBindingEditor(r)}
+      ${commentsOn() ? commentEditor(r) : ""}
       ${match.method || r.match ? `<div class="match">Image match: ${esc(match.method || r.match)}${
         match.confidence ? ` · ${esc(match.confidence)}` : ""}</div>` : ""}
       <div class="links">${page ? `<a href="${esc(page)}" target="_blank" rel="noopener">site page</a>` : ""}${
@@ -799,19 +1314,32 @@ function recordHtml(r) {
     ${alternativeEditor(r)}
   </article>`;
 }
+// The `State` filter: `present` shows the Active and the Disabled wines, `disabled` the
+// Disabled wines alone, and `removed` the Removed wines alone. A record of the review
+// tool has no state and stands in `present`. `favorites` shows the favorite wines in
+// each state, also the Removed ones.
+function inStateView(record) {
+  const state = $("#state").value;
+  if (state === "removed") return record.state === "Removed";
+  if (state === "disabled") return record.state === "Disabled";
+  if (state === "favorites") return !!record._favorite;
+  return record.state !== "Removed";
+}
 function applyView() {
   const filter = $("#filter").value;
-  const state = $("#state").value;
   const q = norm($("#q").value.trim());
   const words = q.split(/\s+/).filter(Boolean);
   ROWS = DATA.records.filter(r => {
     if (filter === "patched" && !r._patched) return false;
     if (filter === "unpatched" && r._patched) return false;
     if (filter === "missing" && catalogImageUrl(r)) return false;
-    if ((state === "removed") !== (r.state === "Removed")) return false;
-    const hay = norm(JSON.stringify({record: rawRecord(r), barcodes: r._barcodes || [],
+    if (filter === "comments" && !(r._comments || []).length) return false;
+    if (!inStateView(r)) return false;
+    const hay = norm(JSON.stringify({record: rawRecord(r), gtins: r._gtins || [],
+      barcodes: r._barcodes || [],
       qr_urls: r._qr_urls || [],
-      atlas_product_uuid: r._atlas_product_uuid || ""}));
+      atlas_product_uuid: r._atlas_product_uuid || "",
+      comments: (r._comments || []).map(comment => comment.text)}));
     return words.every(word => hay.includes(word));
   });
   const sort = $("#sort").value;
@@ -823,6 +1351,12 @@ function applyView() {
       if (!pa || !pb) return (!pa) - (!pb) || a._index - b._index;
       return (sort === "size-asc" ? pa - pb : pb - pa) || a._index - b._index;
     }
+    if (sort === "changed" || sort === "website-changed") {
+      // The newest time first. A wine with no time goes last, in the catalogue order.
+      const key = sort === "changed" ? "_modified_at" : "_website_modified_at";
+      const ta = a[key] || "", tb = b[key] || "";
+      return (ta < tb) - (ta > tb) || a._index - b._index;
+    }
     return compareText(a[sort], b[sort]) || compareText(a.slug, b.slug);
   });
 }
@@ -833,7 +1367,12 @@ function render() {
   renderHead();
 }
 function renderHead() {
-  $("#head-sub").textContent = `${ROWS.length} of ${DATA.records.length} records · ${DATA.patches} patches · ${DATA.alternatives || 0} alternatives · ${DATA.barcodes || 0} barcodes · ${DATA.qr_urls || 0} QR URLs · ${DATA.atlas_bindings || 0} Atlas bindings`;
+  $("#head-sub").textContent = `${ROWS.length} of ${DATA.records.length} records · ${DATA.patches} patches · ${DATA.alternatives || 0} alternatives · ${gtinsOn() ? `${DATA.gtins || 0} GTINs · ` : ""}${barcodesOn() ? `${DATA.barcodes || 0} barcodes · ` : ""}${DATA.qr_urls || 0} QR URLs · ${DATA.atlas_bindings || 0} Atlas bindings${commentsOn() ? ` · ${DATA.comments || 0} comments` : ""}${favoritesOn() ? ` · ${DATA.favorites || 0} favorites` : ""}`;
+}
+// A code editor changes its own card alone, and the counts of the head line.
+function renderCodeCard(slug) {
+  renderCard(slug);
+  renderHead();
 }
 function renderCard(slug) {
   // A full render replaces about 2,100 cards and takes about 0.7 s. A state change
@@ -842,7 +1381,7 @@ function renderCard(slug) {
   const card = document.getElementById(slug);
   const record = DATA.records.find(item => item.slug === slug);
   if (!card || !record) { render(); return; }
-  if (($("#state").value === "removed") !== (record.state === "Removed")) {
+  if (!inStateView(record)) {
     card.remove();
     ROWS = ROWS.filter(item => item !== record);
     if (!ROWS.length) $("#list").innerHTML = EMPTY_VIEW;
@@ -951,9 +1490,137 @@ async function openValidation() {
   $("#validation-modal").hidden = false;
   try { await loadValidation(); } catch (error) { showValidationError(error); }
 }
+// The form `Add wine` (plan 20). The lab server sends `wine_editor`; the review tool
+// does not, so its page has no button. A closed form keeps its values until a save.
+// `slugTyped`: a person typed the slug, so the name no longer fills it.
+const WINE_FORM = {file: null, url: "", busy: false, slugTyped: false};
+const WINE_FIELDS = ["name", "producer", "category", "color", "region", "grapes", "description"];
+const WINE_REQUIRED = ["name", "producer", "category", "color", "region"];
+const MANUAL_PREFIX = "__";
+// The spelling of each Cyrillic letter in a slug: the most common spelling in the slugs
+// of vino-svoe.ru (ResearchLog, 2026-09-25). A letter that the map does not hold stays.
+const SLUG_LETTERS = {а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "yo", ж: "zh",
+  з: "z", и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s",
+  т: "t", у: "u", ф: "f", х: "h", ц: "ts", ч: "ch", ш: "sh", щ: "shh", ъ: "", ы: "y",
+  ь: "", э: "e", ю: "yu", я: "ya"};
+// The rest of a slug after `__` from a wine name: the letters of `SLUG_LETTERS`, no
+// accents, and one `-` for each run of other characters.
+function slugOfName(name) {
+  const latin = [...String(name || "").toLocaleLowerCase("ru-RU")]
+    .map(letter => SLUG_LETTERS[letter] ?? letter).join("")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return latin.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+    .slice(0, 198).replace(/-+$/, "");
+}
+function wineFormOn() { return !!DATA.wine_editor; }
+function manualWine(r) { return String(r.slug || "").startsWith(MANUAL_PREFIX); }
+function wineSlugOk() { return /^[a-z0-9][a-z0-9_-]*$/.test($("#wine-slug").value.trim()); }
+function wineFormValues() {
+  const form = $("#wine-form");
+  const values = {slug: MANUAL_PREFIX + $("#wine-slug").value.trim()};
+  for (const field of WINE_FIELDS) values[field] = form.elements[field].value.trim();
+  return values;
+}
+function updateWineForm() {
+  const values = wineFormValues();
+  const ready = wineSlugOk() && WINE_REQUIRED.every(field => values[field]) && WINE_FORM.file;
+  $("#wine-save").disabled = !ready || WINE_FORM.busy;
+  $("#wine-save").textContent = WINE_FORM.busy ? "Saving…" : "Save";
+  const slug = $("#wine-slug");
+  slug.classList.toggle("invalid", !!slug.value.trim() && !wineSlugOk());
+}
+function showWineError(text) {
+  $("#wine-error").textContent = text;
+  $("#wine-error").hidden = !text;
+}
+function renderWineImage() {
+  $("#wine-drop").innerHTML = WINE_FORM.file
+    ? `<img src="${esc(WINE_FORM.url)}" alt=""><span>${esc(WINE_FORM.file.name)} · drop or choose another file</span>`
+    : 'Drop an image here<br><span>or choose a file: JPEG, PNG, or WebP up to 20 MB</span>';
+}
+function stageWineImage(file) {
+  if (!file) return;
+  const allowed = new Set(["image/jpeg", "image/png", "image/webp"]);
+  if ((file.type && !allowed.has(file.type)) || file.size <= 0 || file.size > 20 * 1024 * 1024) {
+    showWineError("Choose a JPEG, PNG, or WebP image up to 20 MB.");
+    return;
+  }
+  if (WINE_FORM.url) URL.revokeObjectURL(WINE_FORM.url);
+  WINE_FORM.file = file;
+  WINE_FORM.url = URL.createObjectURL(file);
+  showWineError("");
+  renderWineImage();
+  updateWineForm();
+}
+function clearWineForm() {
+  $("#wine-form").reset();
+  if (WINE_FORM.url) URL.revokeObjectURL(WINE_FORM.url);
+  WINE_FORM.file = null;
+  WINE_FORM.url = "";
+  WINE_FORM.slugTyped = false;
+  showWineError("");
+  renderWineImage();
+}
+// The values of one field in the loaded records, for the select and the suggestions.
+function wineChoices(key) {
+  return [...new Set(DATA.records.map(r => String(r[key] || "").trim()).filter(Boolean))]
+    .sort(compareText);
+}
+function openWineForm() {
+  const category = $("#wine-form").elements.category;
+  const chosen = category.value;
+  category.innerHTML = '<option value="">choose…</option>'
+    + wineChoices("category").map(value => `<option>${esc(value)}</option>`).join("");
+  category.value = chosen;
+  $("#wine-producers").innerHTML = wineChoices("producer")
+    .map(value => `<option value="${esc(value)}">`).join("");
+  $("#wine-regions").innerHTML = wineChoices("region")
+    .map(value => `<option value="${esc(value)}">`).join("");
+  if (!WINE_FORM.file) renderWineImage();
+  $("#wine-modal").hidden = false;
+  updateWineForm();
+  $("#wine-slug").focus();
+}
+function closeWineForm() { $("#wine-modal").hidden = true; }
+function fileBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",", 2)[1] || "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+async function saveWine() {
+  if (WINE_FORM.busy || $("#wine-save").disabled) return;
+  WINE_FORM.busy = true;
+  updateWineForm();
+  showWineError("");
+  try {
+    const body = {...wineFormValues(), image_name: WINE_FORM.file.name,
+      image: await fileBase64(WINE_FORM.file)};
+    const response = await fetch("/api/wine", {
+      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)
+    });
+    const out = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(out.error || `HTTP ${response.status}`);
+    DATA.records.push({...out.record, _index: DATA.records.length});
+    clearWineForm();
+    closeWineForm();
+    render();
+    if (document.getElementById(out.slug)) scrollToCard(out.slug);
+    if (out.warning) alert(out.warning);
+  } catch (error) {
+    showWineError(`Cannot add the wine: ${error.message}`);
+  } finally {
+    WINE_FORM.busy = false;
+    updateWineForm();
+  }
+}
 function openHash() {
   const slug = decodeURIComponent(location.hash.slice(1));
-  if (!slug) return;
+  if (slug) scrollToCard(slug);
+}
+function scrollToCard(slug) {
   // A card out of view has an estimated height (`content-visibility`). The first scroll
   // renders the cards near the target, and their true heights move it. The second
   // scroll, two frames later, puts the card at its place.
@@ -981,6 +1648,10 @@ function clearPendingPatch(slug) {
 }
 function stagePatchFile(slug, file) {
   if (!file) return;
+  if (BUSY_PATCHES.has(slug)) {
+    alert("The previous patch of this wine is still processing. Drop the file again when it is done.");
+    return;
+  }
   const allowed = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp"]);
   if ((file.type && !allowed.has(file.type)) || file.size <= 0 || file.size > 20 * 1024 * 1024) {
     alert("Choose a JPEG, PNG, WebP, GIF, or BMP image up to 20 MB.");
@@ -988,7 +1659,10 @@ function stagePatchFile(slug, file) {
   }
   clearPendingPatch(slug);
   PENDING_PATCHES.set(slug, {action: "set", file, url: URL.createObjectURL(file)});
-  render();
+  // The owner asked on 2026-09-25 that the lab server applies a new patch at once. A
+  // patch applied by mistake is removed with `Remove`.
+  if (DATA.patch_editor) applyPendingPatch(slug);
+  else render();
 }
 async function applyPendingPatch(slug) {
   const pending = PENDING_PATCHES.get(slug);
@@ -996,7 +1670,8 @@ async function applyPendingPatch(slug) {
   BUSY_PATCHES.add(slug);
   render();
   try {
-    const query = `?slug=${encodeURIComponent(slug)}`;
+    const query = `?slug=${encodeURIComponent(slug)}` +
+      (pending.action === "set" ? `&name=${encodeURIComponent(pending.file.name)}` : "");
     const response = pending.action === "set"
       ? await fetch("/api/dataset-patch" + query, {
           method: "POST", headers: {"Content-Type": pending.file.type || "application/octet-stream"},
@@ -1007,11 +1682,14 @@ async function applyPendingPatch(slug) {
     if (!response.ok) throw new Error(out.error || response.status);
     const record = DATA.records.find(item => item.slug === slug);
     if (record) {
+      // The lab server sends the new record, so the card image changes too.
+      if (out.record) Object.assign(record, out.record);
       record._patched = !!out.patched;
       record._patchVersion = Date.now();
     }
     DATA.patches = Number(out.patches) || 0;
     clearPendingPatch(slug);
+    if (out.warning) alert(out.warning);
   } catch (error) {
     alert(`Cannot apply the patch change: ${error.message}`);
   } finally {
@@ -1039,7 +1717,100 @@ function stageAlternativeFiles(slug, files) {
   const pending = PENDING_ALTERNATIVES.get(slug) || {adds: [], removes: new Set()};
   pending.adds.push(...valid);
   PENDING_ALTERNATIVES.set(slug, pending);
-  render();
+  // The owner asked on 2026-09-25 that the lab server stores a new photo at once, as a
+  // patch. A photo added by mistake is removed with × and Apply.
+  if (DATA.alternative_editor) { renderCard(slug); uploadAlternatives(slug); }
+  else render();
+}
+function dropPendingAlternatives(slug) {
+  const pending = PENDING_ALTERNATIVES.get(slug);
+  if (pending && !pending.adds.length && !pending.removes.size) PENDING_ALTERNATIVES.delete(slug);
+}
+// Send the queued photos of one wine, one at a time. A photo dropped during the uploads
+// joins the queue. The server detects the type and processes the photo.
+async function uploadAlternatives(slug) {
+  if (UPLOADING_ALTERNATIVES.has(slug)) return;
+  UPLOADING_ALTERNATIVES.add(slug);
+  const warnings = [];
+  try {
+    for (;;) {
+      const pending = PENDING_ALTERNATIVES.get(slug);
+      const item = pending && pending.adds[0];
+      if (!item) break;
+      try {
+        const query = `?slug=${encodeURIComponent(slug)}&name=${encodeURIComponent(item.file.name)}`;
+        const response = await fetch("/api/dataset-alternative" + query, {
+          method: "POST", headers: {"Content-Type": item.file.type || "application/octet-stream"},
+          body: item.file
+        });
+        const out = await response.json();
+        if (!response.ok) throw new Error(out.error || response.status);
+        const record = DATA.records.find(r => r.slug === slug);
+        if (record && out.record) Object.assign(record, out.record);
+        DATA.alternatives = Number(out.alternatives) || 0;
+        if (out.warning) warnings.push(`${item.file.name}: ${out.warning}`);
+      } catch (error) {
+        warnings.push(`${item.file.name}: cannot store the photo: ${error.message}`);
+      }
+      URL.revokeObjectURL(item.url);
+      pending.adds.shift();
+      dropPendingAlternatives(slug);
+      renderCard(slug);
+      renderHead();
+    }
+  } finally {
+    UPLOADING_ALTERNATIVES.delete(slug);
+  }
+  if (warnings.length) alert(warnings.join("\n"));
+}
+async function setAlternativeType(slug, sha256, type) {
+  const key = `${slug}|${sha256}`;
+  const record = DATA.records.find(r => r.slug === slug);
+  const photo = record && (record._alternatives || []).find(item => item.sha256 === sha256);
+  if (!photo || photo.type === type || BUSY_ALTERNATIVE_TYPES.has(key)) return;
+  BUSY_ALTERNATIVE_TYPES.add(key);
+  renderCard(slug);
+  try {
+    const response = await fetch("/api/dataset-alternative-type", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, sha256, type})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    if (out.record) Object.assign(record, out.record);
+    if (out.warning) alert(out.warning);
+  } catch (error) {
+    alert(`Cannot change the type of the photo: ${error.message}`);
+  } finally {
+    BUSY_ALTERNATIVE_TYPES.delete(key);
+    renderCard(slug);
+  }
+}
+// Remove the photos that × marked, on the lab server.
+async function applyAlternativeRemovals(slug) {
+  const pending = PENDING_ALTERNATIVES.get(slug);
+  if (!pending || BUSY_ALTERNATIVES.has(slug)) return;
+  BUSY_ALTERNATIVES.add(slug);
+  renderCard(slug);
+  try {
+    const record = DATA.records.find(r => r.slug === slug);
+    for (const sha256 of [...pending.removes]) {
+      const query = `?slug=${encodeURIComponent(slug)}&sha256=${encodeURIComponent(sha256)}`;
+      const response = await fetch("/api/dataset-alternative" + query, {method: "DELETE"});
+      const out = await response.json();
+      if (!response.ok) throw new Error(out.error || response.status);
+      if (record && out.record) Object.assign(record, out.record);
+      DATA.alternatives = Number(out.alternatives) || 0;
+      pending.removes.delete(sha256);
+    }
+    dropPendingAlternatives(slug);
+  } catch (error) {
+    alert(`Cannot remove the photo: ${error.message}`);
+  } finally {
+    BUSY_ALTERNATIVES.delete(slug);
+    renderCard(slug);
+    renderHead();
+  }
 }
 async function applyPendingAlternatives(slug) {
   const pending = PENDING_ALTERNATIVES.get(slug);
@@ -1104,6 +1875,59 @@ async function changeState(slug, action) {
     renderCard(slug);
   }
 }
+function focusGtin(slug) {
+  requestAnimationFrame(() => {
+    const editor = [...document.querySelectorAll(".gtin-editor")]
+      .find(item => item.dataset.slug === slug);
+    const input = editor?.querySelector(".gtin-input");
+    if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  });
+}
+async function saveGtin(slug) {
+  if (!DRAFT_GTINS.has(slug) || BUSY_GTINS.has(slug)) return;
+  const value = DRAFT_GTINS.get(slug) || "";
+  if (codeCheck("gtin", value)[1]) { focusGtin(slug); return; }
+  BUSY_GTINS.add(slug);
+  renderCodeCard(slug);
+  try {
+    const response = await fetch("/api/dataset-gtin", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, gtin: value})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._gtins = out.gtins || [];
+    DATA.gtins = Number(out.total) || 0;
+    DRAFT_GTINS.delete(slug);
+  } catch (error) {
+    alert(`Cannot save the GTIN: ${error.message}`);
+  } finally {
+    BUSY_GTINS.delete(slug);
+    renderCodeCard(slug);
+    if (DRAFT_GTINS.has(slug)) focusGtin(slug);
+  }
+}
+async function removeGtin(slug, gtin) {
+  if (!gtin || BUSY_GTINS.has(slug)) return;
+  if (!confirm(`Remove GTIN ${gtin}?`)) return;
+  BUSY_GTINS.add(slug);
+  renderCodeCard(slug);
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}&gtin=${encodeURIComponent(gtin)}`;
+    const response = await fetch("/api/dataset-gtin" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._gtins = out.gtins || [];
+    DATA.gtins = Number(out.total) || 0;
+  } catch (error) {
+    alert(`Cannot remove the GTIN: ${error.message}`);
+  } finally {
+    BUSY_GTINS.delete(slug);
+    renderCodeCard(slug);
+  }
+}
 function focusBarcode(slug) {
   requestAnimationFrame(() => {
     const editor = [...document.querySelectorAll(".barcode-editor")]
@@ -1115,9 +1939,9 @@ function focusBarcode(slug) {
 async function saveBarcode(slug) {
   if (!DRAFT_BARCODES.has(slug) || BUSY_BARCODES.has(slug)) return;
   const value = DRAFT_BARCODES.get(slug) || "";
-  if (!value.trim()) { focusBarcode(slug); return; }
+  if (codeCheck("barcode", value)[1]) { focusBarcode(slug); return; }
   BUSY_BARCODES.add(slug);
-  render();
+  renderCodeCard(slug);
   try {
     const response = await fetch("/api/dataset-barcode", {
       method: "POST", headers: {"Content-Type": "application/json"},
@@ -1133,7 +1957,7 @@ async function saveBarcode(slug) {
     alert(`Cannot save the barcode: ${error.message}`);
   } finally {
     BUSY_BARCODES.delete(slug);
-    render();
+    renderCodeCard(slug);
     if (DRAFT_BARCODES.has(slug)) focusBarcode(slug);
   }
 }
@@ -1141,7 +1965,7 @@ async function removeBarcode(slug, barcode) {
   if (!barcode || BUSY_BARCODES.has(slug)) return;
   if (!confirm(`Remove barcode ${barcode}?`)) return;
   BUSY_BARCODES.add(slug);
-  render();
+  renderCodeCard(slug);
   try {
     const query = `?slug=${encodeURIComponent(slug)}&barcode=${encodeURIComponent(barcode)}`;
     const response = await fetch("/api/dataset-barcode" + query, {method: "DELETE"});
@@ -1154,7 +1978,7 @@ async function removeBarcode(slug, barcode) {
     alert(`Cannot remove the barcode: ${error.message}`);
   } finally {
     BUSY_BARCODES.delete(slug);
-    render();
+    renderCodeCard(slug);
   }
 }
 function focusQrUrl(slug) {
@@ -1170,7 +1994,7 @@ async function saveQrUrl(slug) {
   const value = DRAFT_QR_URLS.get(slug) || "";
   if (!value.trim()) { focusQrUrl(slug); return; }
   BUSY_QR_URLS.add(slug);
-  render();
+  renderCodeCard(slug);
   try {
     const response = await fetch("/api/dataset-qr-url", {
       method: "POST", headers: {"Content-Type": "application/json"},
@@ -1186,7 +2010,7 @@ async function saveQrUrl(slug) {
     alert(`Cannot save the QR URL: ${error.message}`);
   } finally {
     BUSY_QR_URLS.delete(slug);
-    render();
+    renderCodeCard(slug);
     if (DRAFT_QR_URLS.has(slug)) focusQrUrl(slug);
   }
 }
@@ -1194,7 +2018,7 @@ async function removeQrUrl(slug, url) {
   if (!url || BUSY_QR_URLS.has(slug)) return;
   if (!confirm(`Remove QR URL ${url}?`)) return;
   BUSY_QR_URLS.add(slug);
-  render();
+  renderCodeCard(slug);
   try {
     const query = `?slug=${encodeURIComponent(slug)}&url=${encodeURIComponent(url)}`;
     const response = await fetch("/api/dataset-qr-url" + query, {method: "DELETE"});
@@ -1207,7 +2031,7 @@ async function removeQrUrl(slug, url) {
     alert(`Cannot remove the QR URL: ${error.message}`);
   } finally {
     BUSY_QR_URLS.delete(slug);
-    render();
+    renderCodeCard(slug);
   }
 }
 function focusAtlasBinding(slug) {
@@ -1223,7 +2047,7 @@ async function saveAtlasBinding(slug) {
   const value = DRAFT_ATLAS_BINDINGS.get(slug) || "";
   if (!value.trim()) { focusAtlasBinding(slug); return; }
   BUSY_ATLAS_BINDINGS.add(slug);
-  render();
+  renderCodeCard(slug);
   try {
     const response = await fetch("/api/dataset-atlas-binding", {
       method: "POST", headers: {"Content-Type": "application/json"},
@@ -1234,42 +2058,171 @@ async function saveAtlasBinding(slug) {
     const record = DATA.records.find(item => item.slug === slug);
     if (record) {
       record._atlas_product_uuid = out.product_uuid || null;
-      record._atlas_binding_source = "manual";
+      record._atlas_binding_source = out.source || "manual";
     }
     DATA.atlas_bindings = Number(out.total) || 0;
+    if ("manual" in out) DATA.atlas_manual_bindings = Number(out.manual) || 0;
     DRAFT_ATLAS_BINDINGS.delete(slug);
   } catch (error) {
     alert(`Cannot save the Atlas binding: ${error.message}`);
   } finally {
     BUSY_ATLAS_BINDINGS.delete(slug);
-    render();
+    renderCodeCard(slug);
     if (DRAFT_ATLAS_BINDINGS.has(slug)) focusAtlasBinding(slug);
+  }
+}
+async function removeAtlasBinding(slug) {
+  const record = DATA.records.find(item => item.slug === slug);
+  if (!record || record._atlas_binding_source !== "manual" || BUSY_ATLAS_BINDINGS.has(slug)) return;
+  if (!confirm(`Remove the manual Atlas binding ${record._atlas_product_uuid}?`)) return;
+  BUSY_ATLAS_BINDINGS.add(slug);
+  renderCodeCard(slug);
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}`;
+    const response = await fetch("/api/dataset-atlas-binding" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    // The wine shows its automatic binding again, or none.
+    record._atlas_product_uuid = out.product_uuid || null;
+    record._atlas_binding_source = out.source || null;
+    DATA.atlas_bindings = Number(out.total) || 0;
+    DATA.atlas_manual_bindings = Number(out.manual) || 0;
+  } catch (error) {
+    alert(`Cannot remove the Atlas binding: ${error.message}`);
+  } finally {
+    BUSY_ATLAS_BINDINGS.delete(slug);
+    renderCodeCard(slug);
+  }
+}
+function focusComment(slug) {
+  requestAnimationFrame(() => {
+    const editor = [...document.querySelectorAll(".comment-editor")]
+      .find(item => item.dataset.slug === slug);
+    const input = editor?.querySelector(".comment-input");
+    if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  });
+}
+async function saveComment(slug) {
+  if (!DRAFT_COMMENTS.has(slug) || BUSY_COMMENTS.has(slug)) return;
+  const value = DRAFT_COMMENTS.get(slug) || "";
+  if (!value.trim()) { focusComment(slug); return; }
+  BUSY_COMMENTS.add(slug);
+  renderCodeCard(slug);
+  try {
+    // The page sends no `source`, so the server stores `user`.
+    const response = await fetch("/api/dataset-comment", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, text: value})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._comments = out.comments || [];
+    DATA.comments = Number(out.total) || 0;
+    DRAFT_COMMENTS.delete(slug);
+  } catch (error) {
+    alert(`Cannot save the comment: ${error.message}`);
+  } finally {
+    BUSY_COMMENTS.delete(slug);
+    renderCodeCard(slug);
+    if (DRAFT_COMMENTS.has(slug)) focusComment(slug);
+  }
+}
+async function removeComment(slug, id) {
+  const record = DATA.records.find(item => item.slug === slug);
+  const comment = (record?._comments || []).find(item => String(item.id) === String(id));
+  if (!comment || BUSY_COMMENTS.has(slug)) return;
+  if (!confirm(`Remove the comment of ${commentTime(comment.created_at)}?\n\n`
+      + comment.text.slice(0, 300))) return;
+  BUSY_COMMENTS.add(slug);
+  renderCodeCard(slug);
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}&id=${encodeURIComponent(comment.id)}`;
+    const response = await fetch("/api/dataset-comment" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    record._comments = out.comments || [];
+    DATA.comments = Number(out.total) || 0;
+  } catch (error) {
+    alert(`Cannot remove the comment: ${error.message}`);
+  } finally {
+    BUSY_COMMENTS.delete(slug);
+    // In the view `with comments`, a wine with no comment left leaves the list, as a
+    // wine that leaves the view of the `State` filter. The view holds few cards, so a
+    // full render is fast.
+    if ($("#filter").value === "comments" && !record._comments.length) render();
+    else renderCodeCard(slug);
+  }
+}
+async function toggleFavorite(slug) {
+  const record = DATA.records.find(item => item.slug === slug);
+  if (!record || BUSY_FAVORITES.has(slug)) return;
+  BUSY_FAVORITES.add(slug);
+  renderCodeCard(slug);
+  try {
+    // The body names the new value, not a toggle.
+    const response = await fetch("/api/dataset-favorite", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, favorite: !record._favorite})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    record._favorite = !!out.favorite;
+    DATA.favorites = Number(out.total) || 0;
+  } catch (error) {
+    alert(`Cannot change the favorite mark: ${error.message}`);
+  } finally {
+    BUSY_FAVORITES.delete(slug);
+    renderCodeCard(slug);
   }
 }
 $("#list").addEventListener("click", event => {
   const imagePreview = event.target.closest("[data-image-preview]");
   if (imagePreview) {
     event.preventDefault();
-    showImagePreview(imagePreview.dataset.slug, imagePreview.dataset.imagePreview);
+    showImagePreview(imagePreview.dataset.slug, imagePreview.dataset.imagePreview, "push",
+                     imagePreview.dataset.sha || "");
     return;
   }
   const button = event.target.closest("button[data-copy]");
   if (button) { copyValue(button); return; }
   const stateButton = event.target.closest("button[data-state-action]");
   if (stateButton) { changeState(stateButton.dataset.slug, stateButton.dataset.stateAction); return; }
+  const star = event.target.closest("button[data-favorite-toggle]");
+  if (star) { toggleFavorite(star.dataset.favoriteToggle); return; }
+  const comment = event.target.closest(".comment-editor");
+  if (comment) {
+    const slug = comment.dataset.slug;
+    const remove = event.target.closest("[data-comment-remove]");
+    if (remove) {
+      removeComment(slug, remove.dataset.commentRemove);
+    } else if (event.target.closest("[data-comment-add]")) {
+      DRAFT_COMMENTS.set(slug, "");
+      renderCodeCard(slug);
+      focusComment(slug);
+    } else if (event.target.closest("[data-comment-save]")) {
+      saveComment(slug);
+    } else if (event.target.closest("[data-comment-cancel]")) {
+      DRAFT_COMMENTS.delete(slug);
+      renderCodeCard(slug);
+    }
+    return;
+  }
   const atlasBinding = event.target.closest(".atlas-binding-editor");
   if (atlasBinding) {
     const slug = atlasBinding.dataset.slug;
-    if (event.target.closest("[data-atlas-binding-edit]")) {
+    if (event.target.closest("[data-atlas-binding-remove]")) {
+      removeAtlasBinding(slug);
+    } else if (event.target.closest("[data-atlas-binding-edit]")) {
       const record = DATA.records.find(item => item.slug === slug);
       DRAFT_ATLAS_BINDINGS.set(slug, record?._atlas_product_uuid || "");
-      render();
+      renderCodeCard(slug);
       focusAtlasBinding(slug);
     } else if (event.target.closest("[data-atlas-binding-save]")) {
       saveAtlasBinding(slug);
     } else if (event.target.closest("[data-atlas-binding-cancel]")) {
       DRAFT_ATLAS_BINDINGS.delete(slug);
-      render();
+      renderCodeCard(slug);
     }
     return;
   }
@@ -1281,13 +2234,31 @@ $("#list").addEventListener("click", event => {
       removeQrUrl(slug, remove.dataset.qrUrlRemove);
     } else if (event.target.closest("[data-qr-url-add]")) {
       DRAFT_QR_URLS.set(slug, "");
-      render();
+      renderCodeCard(slug);
       focusQrUrl(slug);
     } else if (event.target.closest("[data-qr-url-save]")) {
       saveQrUrl(slug);
     } else if (event.target.closest("[data-qr-url-cancel]")) {
       DRAFT_QR_URLS.delete(slug);
-      render();
+      renderCodeCard(slug);
+    }
+    return;
+  }
+  const gtin = event.target.closest(".gtin-editor");
+  if (gtin) {
+    const slug = gtin.dataset.slug;
+    const remove = event.target.closest("[data-gtin-remove]");
+    if (remove) {
+      removeGtin(slug, remove.dataset.gtinRemove);
+    } else if (event.target.closest("[data-gtin-add]")) {
+      DRAFT_GTINS.set(slug, "");
+      renderCodeCard(slug);
+      focusGtin(slug);
+    } else if (event.target.closest("[data-gtin-save]")) {
+      saveGtin(slug);
+    } else if (event.target.closest("[data-gtin-cancel]")) {
+      DRAFT_GTINS.delete(slug);
+      renderCodeCard(slug);
     }
     return;
   }
@@ -1299,13 +2270,13 @@ $("#list").addEventListener("click", event => {
       removeBarcode(slug, remove.dataset.barcodeRemove);
     } else if (event.target.closest("[data-barcode-add]")) {
       DRAFT_BARCODES.set(slug, "");
-      render();
+      renderCodeCard(slug);
       focusBarcode(slug);
     } else if (event.target.closest("[data-barcode-save]")) {
       saveBarcode(slug);
     } else if (event.target.closest("[data-barcode-cancel]")) {
       DRAFT_BARCODES.delete(slug);
-      render();
+      renderCodeCard(slug);
     }
     return;
   }
@@ -1315,7 +2286,10 @@ $("#list").addEventListener("click", event => {
     const pending = PENDING_ALTERNATIVES.get(slug) || {adds: [], removes: new Set()};
     const remove = event.target.closest("[data-alternative-remove]");
     const cancel = event.target.closest("[data-alternative-cancel]");
-    if (event.target.closest("[data-alternative-pick]")) {
+    const type = event.target.closest("[data-alternative-type]");
+    if (type) {
+      setAlternativeType(slug, type.dataset.sha, type.dataset.alternativeType);
+    } else if (event.target.closest("[data-alternative-pick]")) {
       alternative.querySelector(".alternative-input").click();
     } else if (remove) {
       const filename = remove.dataset.alternativeRemove;
@@ -1329,10 +2303,18 @@ $("#list").addEventListener("click", event => {
       if (!pending.adds.length && !pending.removes.size) PENDING_ALTERNATIVES.delete(slug);
       render();
     } else if (event.target.closest("[data-alternative-cancel-all]")) {
-      clearPendingAlternatives(slug);
-      render();
+      if (DATA.alternative_editor) {
+        // The uploads that run go on: Cancel takes back the marked removals alone.
+        pending.removes.clear();
+        dropPendingAlternatives(slug);
+        renderCard(slug);
+      } else {
+        clearPendingAlternatives(slug);
+        render();
+      }
     } else if (event.target.closest("[data-alternative-apply]")) {
-      applyPendingAlternatives(slug);
+      if (DATA.alternative_editor) applyAlternativeRemovals(slug);
+      else applyPendingAlternatives(slug);
     }
     return;
   }
@@ -1364,19 +2346,37 @@ $("#list").addEventListener("change", event => {
   }
 });
 $("#list").addEventListener("input", event => {
-  if (event.target.matches(".barcode-input")) {
+  if (event.target.matches(".gtin-input")) {
+    const editor = event.target.closest(".gtin-editor");
+    DRAFT_GTINS.set(editor.dataset.slug, event.target.value);
+    showCodeCheck(editor, "gtin", event.target.value);
+  } else if (event.target.matches(".barcode-input")) {
     const editor = event.target.closest(".barcode-editor");
     DRAFT_BARCODES.set(editor.dataset.slug, event.target.value);
+    showCodeCheck(editor, "barcode", event.target.value);
   } else if (event.target.matches(".qr-url-input")) {
     const editor = event.target.closest(".qr-url-editor");
     DRAFT_QR_URLS.set(editor.dataset.slug, event.target.value);
   } else if (event.target.matches(".atlas-binding-input")) {
     const editor = event.target.closest(".atlas-binding-editor");
     DRAFT_ATLAS_BINDINGS.set(editor.dataset.slug, event.target.value);
+  } else if (event.target.matches(".comment-input")) {
+    const editor = event.target.closest(".comment-editor");
+    DRAFT_COMMENTS.set(editor.dataset.slug, event.target.value);
   }
 });
 $("#list").addEventListener("keydown", event => {
-  if (event.target.matches(".barcode-input")) {
+  if (event.target.matches(".gtin-input")) {
+    const editor = event.target.closest(".gtin-editor");
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveGtin(editor.dataset.slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_GTINS.delete(editor.dataset.slug);
+      renderCodeCard(editor.dataset.slug);
+    }
+  } else if (event.target.matches(".barcode-input")) {
     const editor = event.target.closest(".barcode-editor");
     if (event.key === "Enter") {
       event.preventDefault();
@@ -1384,7 +2384,7 @@ $("#list").addEventListener("keydown", event => {
     } else if (event.key === "Escape") {
       event.preventDefault();
       DRAFT_BARCODES.delete(editor.dataset.slug);
-      render();
+      renderCodeCard(editor.dataset.slug);
     }
   } else if (event.target.matches(".qr-url-input")) {
     const editor = event.target.closest(".qr-url-editor");
@@ -1394,7 +2394,7 @@ $("#list").addEventListener("keydown", event => {
     } else if (event.key === "Escape") {
       event.preventDefault();
       DRAFT_QR_URLS.delete(editor.dataset.slug);
-      render();
+      renderCodeCard(editor.dataset.slug);
     }
   } else if (event.target.matches(".atlas-binding-input")) {
     const editor = event.target.closest(".atlas-binding-editor");
@@ -1404,20 +2404,31 @@ $("#list").addEventListener("keydown", event => {
     } else if (event.key === "Escape") {
       event.preventDefault();
       DRAFT_ATLAS_BINDINGS.delete(editor.dataset.slug);
-      render();
+      renderCodeCard(editor.dataset.slug);
+    }
+  } else if (event.target.matches(".comment-input")) {
+    // Enter adds a line break. Cmd+Enter or Ctrl+Enter saves.
+    const editor = event.target.closest(".comment-editor");
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      saveComment(editor.dataset.slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_COMMENTS.delete(editor.dataset.slug);
+      renderCodeCard(editor.dataset.slug);
     }
   }
 });
 $("#list").addEventListener("dragover", event => {
   const alternative = event.target.closest(".alternative-drop");
-  if (alternative && DATA.alternative_dir) {
+  if (alternative && alternativeEditorOn()) {
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
     alternative.classList.add("drag");
     return;
   }
   const surface = event.target.closest("[data-patch-drop]");
-  if (!surface || !DATA.patch_dir) return;
+  if (!surface || !patchEditorOn()) return;
   event.preventDefault();
   event.dataTransfer.dropEffect = "copy";
   surface.classList.add("drag");
@@ -1430,7 +2441,7 @@ $("#list").addEventListener("dragleave", event => {
 });
 $("#list").addEventListener("drop", event => {
   const alternative = event.target.closest(".alternative-drop");
-  if (alternative && DATA.alternative_dir) {
+  if (alternative && alternativeEditorOn()) {
     event.preventDefault();
     alternative.classList.remove("drag");
     const editor = alternative.closest(".alternative-editor");
@@ -1438,7 +2449,7 @@ $("#list").addEventListener("drop", event => {
     return;
   }
   const surface = event.target.closest("[data-patch-drop]");
-  if (!surface || !DATA.patch_dir) return;
+  if (!surface || !patchEditorOn()) return;
   event.preventDefault();
   surface.classList.remove("drag");
   const editor = surface.closest(".patch-editor");
@@ -1465,26 +2476,75 @@ $("#validation-x").addEventListener("click", closeValidation);
 $("#validation-modal").addEventListener("click", event => {
   if (event.target === $("#validation-modal")) closeValidation();
 });
+$("#add-wine").addEventListener("click", openWineForm);
+$("#wine-x").addEventListener("click", closeWineForm);
+$("#wine-cancel").addEventListener("click", closeWineForm);
+$("#wine-save").addEventListener("click", saveWine);
+// The slug follows the name until a person types a slug. An empty slug follows the
+// name again.
+$("#wine-form").addEventListener("input", event => {
+  if (event.target.id === "wine-slug") WINE_FORM.slugTyped = !!event.target.value.trim();
+  else if (event.target.name === "name" && !WINE_FORM.slugTyped) {
+    $("#wine-slug").value = slugOfName(event.target.value);
+  }
+  updateWineForm();
+});
+$("#wine-form").addEventListener("change", updateWineForm);
+// A submit of the form never reloads the page.
+$("#wine-form").addEventListener("submit", event => { event.preventDefault(); saveWine(); });
+$("#wine-modal").addEventListener("click", event => {
+  if (event.target === $("#wine-modal")) closeWineForm();
+});
+$("#wine-drop").addEventListener("click", () => $("#wine-file").click());
+$("#wine-file").addEventListener("change", event => {
+  stageWineImage(event.target.files[0]);
+  event.target.value = "";
+});
+$("#wine-drop").addEventListener("dragover", event => {
+  event.preventDefault();
+  $("#wine-drop").classList.add("over");
+});
+$("#wine-drop").addEventListener("dragleave", () => $("#wine-drop").classList.remove("over"));
+$("#wine-drop").addEventListener("drop", event => {
+  event.preventDefault();
+  $("#wine-drop").classList.remove("over");
+  stageWineImage(event.dataTransfer.files[0]);
+});
 $("#image-preview-close").addEventListener("click", closeImagePreview);
 $("#image-preview-previous").addEventListener("click", () => stepImagePreview(-1));
 $("#image-preview-next").addEventListener("click", () => stepImagePreview(1));
 $("#image-preview-modal").addEventListener("click", event => {
   if (event.target === $("#image-preview-modal")) closeImagePreview();
 });
+$("#image-preview-thumbs").addEventListener("click", event => {
+  const button = event.target.closest("[data-preview-thumb]");
+  if (button) showPreviewThumb(button);
+});
+// Back and Forward open or close the preview that the page path names.
+window.addEventListener("popstate", () => {
+  const target = imagePreviewOfPath();
+  if (!target || !showImagePreview(target.slug, target.kind, "none", target.sha256)) {
+    hideImagePreview();
+  }
+});
 document.addEventListener("keydown", event => {
   if (!$("#image-preview-modal").hidden) {
     if (event.key === "Escape") closeImagePreview();
-    else if (event.key === "ArrowLeft") stepImagePreview(-1);
-    else if (event.key === "ArrowRight") stepImagePreview(1);
+    // Up and Down step to the previous and the next wine too (owner, 2026-09-25).
+    else if (event.key === "ArrowLeft" || event.key === "ArrowUp") stepImagePreview(-1);
+    else if (event.key === "ArrowRight" || event.key === "ArrowDown") stepImagePreview(1);
     else return;
     event.preventDefault();
     return;
   }
   if (event.key === "Escape" && !$("#validation-modal").hidden) closeValidation();
+  if (event.key === "Escape" && !$("#wine-modal").hidden) closeWineForm();
 });
 window.addEventListener("beforeunload", event => {
   if (!PENDING_PATCHES.size && !PENDING_ALTERNATIVES.size && !DRAFT_BARCODES.size
-      && !DRAFT_ATLAS_BINDINGS.size) return;
+      && !DRAFT_ATLAS_BINDINGS.size
+      // An empty comment draft (after `+`) loses nothing.
+      && ![...DRAFT_COMMENTS.values()].some(text => text.trim())) return;
   event.preventDefault();
   event.returnValue = "";
 });
@@ -1495,8 +2555,19 @@ window.addEventListener("beforeunload", event => {
     if (!response.ok) throw new Error(await response.text());
     DATA = await response.json();
     DATA.records = (DATA.records || []).map((r, index) => ({...r, _index: index}));
+    $("#add-wine").hidden = !wineFormOn();
+    // The review tool sends no comments, so its filter `Show` has no `with comments`.
+    if (!commentsOn()) $('#filter option[value="comments"]').remove();
+    // The review tool sends no favorites, so its filter `State` has no `Favorites`.
+    if (!favoritesOn()) $('#state option[value="favorites"]').remove();
     render();
     openHash();
+    // A link to `/dataset/<slug>` opens the preview over the card of that wine. A slug
+    // or a photo that the list does not show gives the plain page.
+    const preview = imagePreviewOfPath();
+    if (preview && showImagePreview(preview.slug, preview.kind, "none", preview.sha256)) {
+      scrollToCard(preview.slug);
+    } else if (preview) history.replaceState(null, "", "/dataset");
     loadValidation().catch(() => {});
   } catch (error) {
     $("#head-sub").textContent = "could not read the dataset";
@@ -1505,5 +2576,6 @@ window.addEventListener("beforeunload", event => {
   }
 })();
 </script>
+<script src="/website-import.js"></script>
 </body>
 </html>

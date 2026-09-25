@@ -20,9 +20,47 @@ python3 pipeline/seed_images.py --db data/lab.sqlite3 \
 
 python3 pipeline/seed_patched.py --db data/lab.sqlite3 \
     ../svoe-wino-hackaton/dataset/patched-official-2026-09-17
+
+python3 pipeline/seed_codes.py --db data/lab.sqlite3 \
+    ../svoe-vino-matcher/dataset/code-map.json
+
+python3 pipeline/seed_atlas_bindings.py --db data/lab.sqlite3 \
+    --matches ../svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-matches.jsonl \
+    --manual ../svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-bindings.manual.jsonl
 ```
-A second run of each command is safe. It prints `result: no change`.
+A second run of `import_catalog.py` and of `seed_images.py` is safe. It prints
+`result: no change`. `seed_patched.py`, `seed_codes.py`, and `seed_atlas_bindings.py`
+refuse a table that already holds rows, because a second run adds back what a person
+removed on the page. Add `--force` to add the missing rows anyway.
+
+Загрузить тестовые наборы `my`, `official-real-photos` и `vlmrerank-8b-failed` из
+`svoe-vino-testset/dataset/`:
+```
+python3 pipeline/import_testsets.py --db data/lab.sqlite3
+```
+Each run makes the rows of each set equal to its JSON files again. A second run writes
+no new image file.
+
+Сделать вырезку этикетки для каждого полного фото (вид `label` страницы Embeddings):
+```
+python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3
+```
+The tool asks SAM3 on gx10 for each full original with no label cut, about 0.6 s for
+each photo. A second run continues the first one. `--limit N` makes a short test run.
+After the run, press `Build` on `/embedding` for each entry.
 `seed_images.py` prints one `no match: <slug>: …` line for each wine with no image.
+
+Обновить каталог с сайта vino-svoe.ru:
+```
+python3 pipeline/import_website.py --db data/lab.sqlite3
+```
+The tool reads the API of the website. It adds the new wines, removes the missing wines,
+restores the wines that came back, and stores a missing main image. Each change gets a
+short comment. A changed text or a changed main image stops the import, and nothing
+changes. Fix each named wine by hand, then run the tool again. A run takes some minutes,
+because it downloads the image of each wine. Read `docs/plans/18_import-website.md`.
+The button `Import from website` of the Dataset page runs the same compare, and a dialog
+lets you merge each conflict. Read `docs/plans/21_website-import-ui.md`.
 
 # Запуск сервера и WebUI
 
@@ -57,3 +95,32 @@ Build one entry of the key `embeddings` of `config.yaml`:
 Ctrl+C stops the build after the present batch. A second run continues it.
 The files are in `data/embeddings/<name>/`. The Embeddings page of the lab server
 starts and stops a build too.
+
+Сделать прогон конфигурации `mock` (случайные top-k кандидаты для каждого фото
+тестового набора; для проверки страницы `/runs`):
+```bash
+python3 pipeline/mock_run.py --set my --top-k 10 --seed 20260925
+```
+The run is in `runs/<stamp>-lab-mock-my/`. The Runs page of the lab server shows it
+under the filter `Configuration` = `mock`. Without `--seed`, the script takes a random
+seed and prints it.
+
+# Кэш вызовов моделей
+
+The SAM3, Grounding DINO, and VLM calls keep their answers in `data/cache/<model>/`.
+Read `docs/plans/25_model-call-cache.md`.
+
+One Grounding DINO call (the output states `"cache": "miss"` or `"hit"`):
+```bash
+python3 pipeline/gdino.py <image> --texts "wine bottle, label" [--model mm-gdino-base]
+```
+
+The records and the size of each model:
+```bash
+du -sh data/cache/*/ && find data/cache -name '*.json' | cut -d/ -f3 | sort | uniq -c
+```
+
+Send the requests of one model again (for example after a new checkpoint on gx10):
+```bash
+rm -r data/cache/sam3/
+```

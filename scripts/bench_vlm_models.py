@@ -27,6 +27,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import data_url  # noqa: E402
 from importlib import import_module  # noqa: E402
 
+# The cache of the model calls is in `pipeline/`. Read docs/plans/25_model-call-cache.md.
+sys.path.append(str(Path(__file__).resolve().parent.parent / "pipeline"))
+import model_cache  # noqa: E402
+
 verify = import_module("04_verify")
 PROMPT = verify.PROMPT
 parse = verify.parse
@@ -120,6 +124,20 @@ def call(model, item, ref_url, cand_url, key, timeout=180):
             }
         ],
     }
+    # A repeated request reads the answer of `model_cache`. The line of such an answer
+    # holds `"cached": true`, and the latency of the first call.
+    fields = model_cache.vlm_fields(ENDPOINT, payload)
+    record = model_cache.lookup(fields) if fields else None
+    if record is not None:
+        out = record["answer"]
+        return {
+            "ok": True,
+            "http": 200,
+            "latency_s": round(record["ms"] / 1000.0, 2),
+            "raw": out["choices"][0]["message"]["content"],
+            "usage": out.get("usage", {}),
+            "cached": True,
+        }
     req = urllib.request.Request(
         ENDPOINT,
         data=json.dumps(payload).encode(),
@@ -130,6 +148,8 @@ def call(model, item, ref_url, cand_url, key, timeout=180):
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             out = json.load(resp)
         dt = time.time() - t0
+        if fields and out.get("choices"):
+            model_cache.store(fields, out, dt * 1000)
         text = out["choices"][0]["message"]["content"]
         return {
             "ok": True,

@@ -526,6 +526,9 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | D9c | Press the preview arrow buttons, then press the Left and Right keys | The preview moves through images of the same kind in the current filtered and sorted list. It does not close or change the Dataset scroll position. |
 | D9d | Press Escape or the preview close button | The preview closes. The Dataset page stays at its earlier scroll position. |
 | D9e | Open a tall image in the preview | The full checkerboard frame fits below the header. The preview has no horizontal or vertical scrollbar. |
+| D9f | Click a catalogue image, then press the Right key | The address bar shows `/dataset/<slug>` of the wine that the preview shows. A patch image gives `/dataset/<slug>/patch`. The Right key changes the path and adds no history entry. |
+| D9g | Close the preview, then press Forward and Back of the browser | The close gives the path `/dataset`. Forward opens the same preview again. Back closes it. The Dataset page stays at its earlier scroll position. |
+| D9h | Open `/dataset/bukovinka` in a new tab, then `/dataset/no-such-wine`, then `/dataset/a/b` | The first opens the catalogue image preview over the card of the wine; the close shows that card. The second shows the plain page at `/dataset`. The third answers 404. |
 | D10 | `GET /img/patch` with a slug that has no patch | `404`. The server reads no file outside `patch_dir`. |
 | D11 | Drop an image on a row that has no patch | The drop target shows the candidate, its file name, `Apply`, and `Cancel`. No file appears in `patch_dir`. |
 | D12 | Press `Cancel` on a patch candidate | The candidate is discarded. The row shows the empty drop target again. No file changes. |
@@ -743,7 +746,7 @@ database for cases D1 to D10: `DB=/tmp/lab-smoke/lab.sqlite3`,
 | # | Case | Expected result |
 |---|---|---|
 | D1 | `python3 pipeline/import_catalog.py --db $DB $CSV` before the database exists | `error: no database at …`, exit 1. No file is made. |
-| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: 7`, `tables: image, image_derivative, wine_catalog, wine_image`. |
+| D2 | `python3 pipeline/labdb.py $DB` | `(created)`, `schema version: N`, where N is the number of the last file of `pipeline/schema/` (14 on 2026-09-25), `tables: image, image_derivative, wine_atlas_binding, wine_catalog, wine_code, wine_comment, wine_favorite, wine_image` at schema 14 (2026-09-25); a later schema file MAY add a table. |
 | D3 | `python3 pipeline/import_catalog.py --db $DB $CSV` | `rows read: 4147`, `duplicate rows: 2044`, `wines in the CSV: 2103`, `values trimmed: 198`, `empty grapes: 2`, `added: 2103`, `states: Active 2103, Disabled 0, Removed 0`, `result: imported`. |
 | D4 | Repeat case D3 | `added: 0`, `restored: 0`, `removed: 0`, `result: no change`. |
 | D5 | Import `$V.v2-add-remove.csv` | `added: 2`, `removed: 3`, `states: Active 2102, Disabled 0, Removed 3`. |
@@ -751,11 +754,11 @@ database for cases D1 to D10: `DB=/tmp/lab-smoke/lab.sqlite3`,
 | D7 | Import `$V.v4-changed-field.csv` | `error: 1 wines of the CSV differ from the database, …: shato-pino-shary-kolduna-glyu-glyu-vione-krasnoe-suhoe-10 (Active): region 'Кубань' -> 'Крым'`, exit 1. The states do not change. |
 | D8 | Import `$CSV` again | `added: 0`, `restored: 4`, `removed: 3`, `states: Active 2103, Disabled 0, Removed 3`. The 3 removed wines are the fake wines. |
 | D9 | Set the state of one wine to `Disabled` with `sqlite3`, then import `$CSV` | `result: no change`. The wine stays `Disabled`. |
-| D10 | Open a database at schema version 2 with `python3 pipeline/labdb.py <path>` | `schema version: 7`, `tables: image, image_derivative, wine_catalog, wine_image`. Each wine is `Active`. The table `catalog_source` is gone. |
-| D10a | Open a database at schema version 3 that holds `Removed` wines with `python3 pipeline/labdb.py <path>` | `schema version: 7`. Each `Removed` wine has `removed_by` = `import`. The order of the rows does not change. |
+| D10 | Open a database at schema version 2 with `python3 pipeline/labdb.py <path>` | `schema version: N`, where N is the number of the last file of `pipeline/schema/` (14 on 2026-09-25), the tables of D2. Each wine is `Active`. The table `catalog_source` is gone. |
+| D10a | Open a database at schema version 3 that holds `Removed` wines with `python3 pipeline/labdb.py <path>` | `schema version: N`, where N is the number of the last file of `pipeline/schema/` (14 on 2026-09-25). Each `Removed` wine has `removed_by` = `import`. The order of the rows does not change. |
 | D10b | Set a wine to `Removed` with `removed_by` = `person`, then import `$CSV` | `kept removed by a person: 1: <slug>`, `result: no change`. The wine stays `Removed`. |
 | D11 | Compare `wine_catalog` of a database after case D3 with `catalog.jsonl` of the same delivery, column by column; a NULL `grapes` counts as `""` | The slug sets are equal. No value differs. |
-| D12 | `python3 -m unittest discover -s tests -p 'test_labdb.py'`, then the same with `test_import_catalog.py` | 9 tests `OK`, then 20 tests `OK`. |
+| D12 | `python3 -m unittest discover -s tests -p 'test_labdb.py'`, then the same with `test_import_catalog.py` | 14 tests `OK`, then 22 tests `OK`. |
 | D13 | `git -C ../svoe-wino-hackaton status --short -- dataset/official-2026-09-17` after cases D1 to D11 | No line. The import and `tests/data/make_catalog_variants.py` do not change the delivery. |
 
 ## The images of a wine — `pipeline/seed_images.py`
@@ -792,38 +795,42 @@ Read step 5 of `docs/plans/07_sqlite-lab-database.md`. Use a copy of the lab dat
 | P1 | `python3 pipeline/seed_patched.py --db $PDB $PF` | `skipped: README.md is not a patch file`, `patch files: 15`, `unknown slugs: 0`, `errors: 0`, `rows added: 15`, `files written: 15`, `processed: 15 (crop 15)`, `processed files written: 15`, `result: stored`. Exit 0. |
 | P2 | Repeat case P1 | `rows unchanged: 15`, `files written: 0`, `files in the store already: 15`, `result: no change`. |
 | P3 | Copy `$PF` to `/tmp/lab-patched/pf`, write other bytes into `bukovinka.webp`, and run the script on the copy | `replaced: bukovinka: <old> -> <new> (bukovinka.webp)`, `rows replaced: 1`. The old file stays in `images/patched/`. |
-| P4 | Delete `bukovinka.webp` from the copy, and run the script on the copy | `deleted: bukovinka: …`, `rows deleted: 1`. The card of `bukovinka` shows its `main` image again. |
-| P5 | Start the lab server on `$PDB`, and read `main_image_url` of `bukovinka` in `/api/dataset` | `/images/patched/68caeb4d02d51839b59f4c6f91fe8d5bf92c8ad3ddb507a62b057fcf56127368.webp`. A GET of it answers 200, `image/webp`, 110,188 bytes. |
+| P4 | Delete `bukovinka.webp` from the copy, and run the script on the copy | `rows kept with no file in the folder: 1: bukovinka`, `result: no change`. The row of `bukovinka` stays (plan 14). |
+| P5 | Start the lab server on `$PDB`, and read `_patch_url` of `bukovinka` in `/api/dataset` | `/images/patched/68caeb4d02d51839b59f4c6f91fe8d5bf92c8ad3ddb507a62b057fcf56127368.webp`. A GET of it answers 200, `image/webp`, 110,188 bytes. `main_image_url` stays the `main` image (the card shows both, plan 14). |
 | P6 | Compare the SHA-256 and the time of each file of `$PF` before and after case P1 | No change. The script only reads the patch folder. |
 | P7 | `python3 -m unittest discover -s tests -p 'test_seed_patched.py'` | 14 tests, `OK`. |
+| P8 | Repeat case P1 on a database that holds `main_patched` rows, with no `--force` | `error: wine_image already holds N rows of the type main_patched; a second run adds back the patches that a person removed on the page; give --force to add the missing rows anyway`. Exit 1. Nothing changes. With `--force` the run is case P2. |
 
 ## The lab server — `pipeline/lab_server.py`
 
 Start the server with `python3 pipeline/lab_server.py --no-browser`.
 Use `H=http://127.0.0.1:8168`. `config.yaml` MUST name the database
-`svoe-vino-lab/data/lab.sqlite3`, and that database MUST be at schema version 2.
+`svoe-vino-lab/data/lab.sqlite3`, and that database MUST be at the schema version N of
+the last file of `pipeline/schema/` (16 on 2026-09-25).
 
 | # | Case | Expected result |
 |---|---|---|
-| S1 | Start the server | The log states the config path, `database_file`, `schema version: 7`, `wines: 2103 (Active 2103, Disabled 0, Removed 0)`, the disabled pages, and the URL `$H/dataset`. |
+| S1 | Start the server | The log states the config path, `database_file`, `schema version: N`, `wines: 2103 (Active 2103, Disabled 0, Removed 0)`, the disabled pages, and the URL `$H/dataset`. |
 | S2 | Set `database_file` to a path with no file, then start the server | `error: no database at …`, exit 1. |
-| S3 | Start the server on a database at schema version 3 | `error: the database has schema version 3 and this code needs version 7; run python3 pipeline/labdb.py …`, exit 1. |
-| S4 | Open `$H/dataset` | The header reads `2103 of 2103 records · 0 patches · 0 alternatives · 0 barcodes · 0 QR URLs · 0 Atlas bindings`. No source panel stands above the list. The first card is `Автохтонное Вино Крыма белое сухое`. |
+| S3 | Start the server on a database at schema version 3 | `error: the database has schema version 3 and this code needs version N; run python3 pipeline/labdb.py …`, exit 1. |
+| S4 | Open `$H/dataset` | The header reads `2103 of 2103 records · 0 patches · 0 alternatives · 23 GTINs · 3 QR URLs · 367 Atlas bindings`. No source panel stands above the list. The first card is `Автохтонное Вино Крыма белое сухое`. |
 | S4a | Set the schema version of the database to 3 while the server runs, then reload `$H/dataset` | The header reads `could not read the dataset`. The list reads `The dataset is not available. Cannot read /api/dataset: …` with the `labdb.py` command. |
-| S5 | Look at a card of `$H/dataset` | The slug with a `copy` button is the first line, above the name. Then producer, category and region, and grapes. No line `Colour: …`. The bottle image of the wine, or `no catalogue image` for a wine with no row in `wine_image`. The editors for barcodes, QR URLs, the Atlas binding, and alternative photos stay on the card. No `site page` link and no `source image` link. |
+| S5 | Look at a card of `$H/dataset` | The slug with a `copy` button is the first line, above the name. Then producer, category and region, and grapes. No line `Colour: …`. The bottle image of the wine, or `no catalogue image` for a wine with no row in `wine_image`. The editors for GTINs, QR URLs, the Atlas binding, and alternative photos stay on the card. No `site page` link and no `source image` link. |
 | S6 | Search `Автохтонное` | 9 cards. |
 | S7 | Switch the system to dark mode and reload `$H/dataset` | The page is dark. |
-| S8 | Click `Clusters`, `Testset`, and `Runs` | Each one shows `The page <name> is disabled for now.` with the full navigation. The link of the page is marked. |
+| S8 | Click `Clusters` and `Testset` | Each one shows `The page <name> is disabled for now.` with the full navigation. The link of the page is marked. `Runs` opens the Runs page (section RN). |
 | S8a | Look at the navigation of `$H/dataset`, `$H/embedding`, and `$H/runs` | The order is `Dataset`, `Embeddings`, `Clusters`, `Testset`, `Runs`. |
-| S9 | `curl -s -o /dev/null -w "%{http_code}" $H/api/runs` | `503`. |
+| S9 | `curl -s -o /dev/null -w "%{http_code}" $H/api/runs` | `200` (plan 23). `$H/api/rows` stays `503`. |
 | S10 | `curl -s $H/api/dataset \| python3 -c "import json,sys; print(len(json.load(sys.stdin)['records']))"` | `2103`. |
 | S11 | Press `Validate` on `$H/dataset`, then `Run selected` | The dialog lists the checks. After the run it reads `validation ERROR Error: disabled for now: the lab database does not hold the data of this route yet`. |
-| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 25 tests, `OK`. |
+| S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 49 tests on 2026-09-25, `OK`. |
 | S13 | Look below the catalogue image of an `Active` wine | Two buttons: `Disable` and `Remove`. |
 | S14 | Press `Disable` | The card shows the tag `disabled` and the buttons `Enable` and `Remove`. The database holds `Disabled`. |
+| S14a | Look at the card of S14, then press `Enable` | After `Disable`, the `main` image of the card is gray at once; its badge `crop` or `seg` keeps its colour. The patch slot and the alternative photos keep their colours. After `Enable`, the image has its colours again. The file in `data/images/` does not change. |
 | S15 | Press `Enable` | The tag goes away. The buttons are `Disable` and `Remove`. The database holds `Active`. |
 | S16 | Press `Remove` | The card leaves the view `All (except Removed)`. The database holds `Removed` and `removed_by` = `person`. |
 | S17 | Set `State` to `Removed` | The list holds the removed wines alone. Each card shows `removed by import` or `removed by person`, and one button: `Restore`. |
+| S17a | Set `State` to `Disabled` | The list holds the disabled wines alone. Press `Enable` on one: the card leaves the view. |
 | S18 | Press `Restore` | The card leaves the view `Removed`. The database holds `Active` and a NULL `removed_by`. |
 | S19 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"slug":"bukovinka","action":"enable"}' $H/api/wine-state` on an `Active` wine | HTTP 409: `the wine bukovinka is Active; enable needs Disabled`. |
 | S20 | Switch the system to dark mode and look at a `Disabled` and a `Removed` card | The tags and the buttons are readable in dark mode. |
@@ -841,6 +848,157 @@ Use `H=http://127.0.0.1:8168`. `config.yaml` MUST name the database
 | S33 | Switch the system to dark mode and look at the badges | Both badges are readable. |
 | S30 | Click the slug of a card | A new tab opens `https://vino-svoe.ru/wines/<slug>`. The `copy` button next to the slug still copies the slug. |
 
+## The alternative photos of the lab server — `/api/dataset-alternative`
+
+Read `docs/plans/16_alternative-images.md`. Use a copy of the lab database, as in section P,
+and start a lab server on it. SAM3 on gx10 MUST answer. `W=chateau-tamagne-select-blanc-brut`.
+Make two test photos from one catalogue image: the whole bottle, and a crop of its label.
+
+| # | Case | Expected result |
+|---|---|---|
+| AL1 | Open `$H/dataset` and search `$W` | `Alternative photos` reads `0 active` and `Drop photos here`. No card reads `alternative_dir is not configured`. `/api/dataset` holds `"alternative_editor": true` and no key `alternative_dir`. |
+| AL2 | Choose both test photos at once | Two cards read `processing`. After about 3 s the full bottle has `FF` filled and the badge `seg` or `crop`; the label crop has `LF` filled and the badge `seg` (the label cut). The head reads `2 active`; the page header counts `2 alternatives`. |
+| AL3 | Press `FF` on the label crop | The card is dimmed while the server works. The badge stays `seg`, and the picture shows the package cut. `image_derivative` of the file holds the settings of `derive.py`. |
+| AL4 | Press `FB` on the full bottle | The type changes in well under a second, with no new cut. |
+| AL5 | Press `LF` on the label crop again | The label cut comes back. The settings of `image_derivative` are `alternatives.SETTINGS_LABEL`. |
+| AL6 | Reload the page | The types and the cuts stay. |
+| AL7 | Press `×` on one photo, then `Apply` | The photo goes away; the head reads `1 active`. The file stays in `data/images/additional/`. `Cancel` instead keeps the photo. |
+| AL8 | Drop the same file on the same wine again | Nothing changes; the photo stays once. |
+| AL9 | Drop a photo while SAM3 does not answer | The page shows the warning `no detection: …` and `The photo is stored with no processed file. …`. The type is `FF` (`full_front`), with no badge. |
+| AL10 | Switch the system to dark mode | The badges and the buttons, the filled one too, are readable. |
+| AL11 | `python3 -m unittest discover -s tests -p 'test_alternatives.py'` | 27 tests, `OK`. |
+| AL12 | `sqlite3 -readonly data/lab.sqlite3 "PRAGMA user_version"` | `12` or more. `wine_image` refuses the old type names `front`, `back`, `front_full`, `back_label`. |
+| AL13 | Drop a photo of the back label of a bottle, with a clear barcode on it | The photo gets `LB` (or `FB` for a whole bottle seen from the back). |
+| AL14 | Drop a front photo of a bottle on a shop shelf with price tags | The photo gets `FF` or `LF`: a barcode beside the bottle does not count. |
+| AL15 | Click an alternative photo of the live wine `avtohtonnoe-vino-kryma-beloe-suhoe` (three photos on 2026-09-25) | The image preview opens at `/dataset/<slug>/alternative/<sha256>` of that photo. The title reads `alternative photo (<type>) · <name>`, for example `alternative photo (full front)`. The position counts every alternative photo of the list, for example `2 / 3`. The preview shows the processed file. `open raw image` names the original. |
+| AL16 | Press Right, Left, Down, and Up in the preview of AL15 | Each key steps one photo, also into the photos of the next wine. The path follows. No history entry is added. Back after the close of the preview gives `/dataset`. |
+| AL17 | Look at the thumbnails of AL15, then open `/dataset/<slug>` and `/dataset/<slug>/patch` of the same wine | All three previews show the same thumbnails: `main`, `main · processed`, `patched`, `patched · processed`, then `alternative 1 FB`, `alternative 1 FB · processed`, and so on for each photo, in the order of the upload. The thumbnail of the image in view is marked. A photo with no processed file reads `none` at `… · processed`. |
+| AL18 | Open the preview of AL15 at a width of 1400 px and of 800 px | The thumbnails stand in one row. The row scrolls sideways, and the marked thumbnail is in view. The image keeps its height; no thumbnail is cut at the bottom. |
+| AL19 | Open `$H/dataset/<slug>/alternative/` followed by 64 zeros, then `$H/dataset/<slug>/alternative/abc` | The first shows the plain page at `/dataset`. The second answers 404. |
+| AL20 | Click an alternative photo on the review tool (`scripts/review_server.py`) | The photo opens in a new tab. The review tool has no preview of an alternative photo. |
+| AL21 | In the preview of AL15, click `main`, then `patched · processed`, then `alternative 3 FF` | Each click switches the preview fully. `main`: the title reads `catalogue image`, the path is `/dataset/<slug>`, the position counts the catalogue images, and `main` stays marked. Right then opens the catalogue image of the next wine. `patched · processed`: the title reads `patch image`, the path ends in `/patch`, and `open raw image` names the `/images/patched/…` original. `alternative 3 FF`: the path ends in `/alternative/<sha256>` of that photo, and the position reads `3 / 3`. The thumbnails keep their place. |
+| AL22 | Drop the patch file of a patched wine as an alternative photo, where SAM3 calls it a label | The patch slot keeps its package cut; the alternative photo shows its label cut. `image_derivative` holds two rows for the file: `package` and `label`. |
+| AL23 | Stop the SAM3 service, press `LF` on a full photo | The page warns `The photo got no cut of its new kind. …`. The card shows the photo as it is. Press `FF`: the package cut comes back at once, with no SAM3 call. |
+| AL24 | Drop a photo while SAM3 does not answer; start SAM3; drop the same file again | The second drop changes no row and processes the photo: the badge appears. |
+| AL25 | Drop two photos, mark an existing photo with `×`, press `Cancel` | The mark goes away. Both uploads finish. |
+| AL26 | Press a type button, and press `×` of the same photo while the card is dimmed | `×` is disabled until the type change is done. |
+| AL27 | Drop a phone photo with a long side above 1,536 px | `image.width` and `image.height` of the file are its real size, not the size of the SAM3 copy. |
+
+## The patch editor of the lab server — `/api/dataset-patch`
+
+Read `docs/plans/14_patch-editor.md`. Use a copy of the lab database, as in section P, and
+start a lab server on it. `W=chateau-tamagne-select-blanc-brut` (a wine with a `main`
+image), `PF=../svoe-wino-hackaton/dataset/patched-official-2026-09-17`.
+
+| # | Case | Expected result |
+|---|---|---|
+| PE1 | Open `$H/dataset` and search `$W` | The patch editor reads `Drop an image here` / `or choose a file`. No card reads `patch_dir is not configured`. `/api/dataset` holds `"patch_editor": true` and no key `patch_dir`. |
+| PE2 | Choose `$PF/bukovinka.webp` in the editor of `$W` | The page sends the file at once, with no `Apply` step. While the server works, the editor shows the candidate, the file name, and a disabled `Processing…`. |
+| PE3 | Wait for the answer of PE2 | The editor shows the processed patch with the badge `crop`, the mark `patched`, and `Remove`. The left image stays the `main` image, caption `main · name-unique`, so the two stand side by side. The header counts `1 patches`. `wine_image` holds `main_patched` for `$W` with `source_name` `bukovinka.webp`. The file is in `data/images/patched/`. |
+| PE4 | Reload the page, search `$W`, and click the patch image | The patch stays. The preview opens at `/dataset/$W/patch` with the `/images/patched/…` file, `240 × 1035 px`. |
+| PE5 | Switch the system to dark mode and look at the card of PE3 | The editor, the mark `patched`, and `Remove` are readable. |
+| PE6 | Press `Remove`, then `Apply` | The editor reads `Drop an image here` again. The left image stays the `main` image. The header counts `0 patches`. The file stays in `data/images/patched/`. |
+| PE7 | Drop a JPEG with a white background while SAM3 answers | The patch slot gets the badge `seg`. |
+| PE8 | Drop a JPEG with a white background while SAM3 does not answer | The page shows the warning `The patch is stored with no processed file. …`. The patch slot shows the patch with no badge. |
+| PE9 | Choose a GIF file | The page shows `Cannot apply the patch change: the image is GIF; a patch MUST be JPEG, PNG, or WebP`. The candidate stays with `Apply` and `Cancel`. The database does not change. |
+| PE10 | `curl -s -X DELETE "$H/api/dataset-patch?slug=$W"` on a wine with no patch | HTTP 404: `the wine … has no patch`. |
+| PE11 | `python3 -m unittest discover -s tests -p 'test_patches.py'` | 12 tests, `OK`. |
+| PE12 | Open `$H/dataset/avtohtonnoe-vino-kryma-beloe-suhoe` (a wine with a patch) | The image stands in the vertical center of the stage. Thumbnails of 120 px stand at the bottom: `main`, `main · processed` with the badge `crop`, `patched` with the badge `PATCH`, and `patched · processed` with the badge `seg`. Two thumbnails of each alternative photo follow (section AL). `main · processed` is marked. |
+| PE13 | Click each of the first four thumbnails of PE12 | The preview shows that image. The size follows: `main` 317 × 1200 px, `main · processed` 287 × 1090 px, `patched` 480 × 640 px, `patched · processed` 243 × 559 px. The mark moves. The thumbnails keep their place. `open raw image` names `/images/main/…` for the first two, and `/images/patched/…` for the last two. |
+| PE14 | Open `$H/dataset/avtohtonnoe-vino-kryma-beloe-suhoe/patch` | The same thumbnails as PE12. `patched · processed` is marked. `open raw image` names the `/images/patched/…` original, not the processed file. |
+| PE15 | Open `$H/dataset/$W` (a wine with no patch and no alternative photo) | Two thumbnails: `main` and `main · processed` with the badge `crop`. |
+| PE16 | Repeat PE12 in dark mode and at a width of 390 px | The thumbnails and the badges are readable. At 390 px the thumbnails stand in one row above the arrows, and the row scrolls sideways. |
+| PE17 | Press Down, then Up, in the preview of PE12 | Down opens the next wine (`/dataset/aligote-barrel-2024` in the default view); Up opens `avtohtonnoe-vino-kryma-beloe-suhoe` again. Left and Right still work. |
+| PE18 | Search `fanagoriya-100-ottenkov-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-135` | Its crop cut nothing, so the card shows the `/images/main/…` original with no badge. The preview shows `main · processed` as `none`. |
+| PE19 | Measure the buttons below the images of a patched card | The patch `Remove` has the width and the height of the `Remove` of the main image (77 × 24 px at 1400 px) and stands at the right edge of the patch slot. `Disable` and `Remove` of the main image have one width. |
+| PE20 | Drop a patch, and drop a second file on the same wine while `Processing…` shows | The page says `The previous patch of this wine is still processing. …`. The first patch is stored. |
+| PE21 | `POST /api/dataset-patch` with a small PNG of 15000 × 15000 px | HTTP 413: `the image has 15000 × 15000 pixels; the limit is 100000000 pixels`. Nothing is stored. |
+| PE22 | Send a JSON body with a lone surrogate, for example `{"slug":"a\ud800","action":"disable"}`, to `POST /api/wine-state` | HTTP 400: `the body holds a lone surrogate character`. |
+
+## The GTINs and QR URLs of a wine — `pipeline/seed_codes.py` and the Dataset editors
+
+Read [plan 11](docs/plans/11_wine-codes.md). Use `H=http://127.0.0.1:8168`. Case WC1 starts on a
+database at schema version 8 with an empty table `wine_code`.
+
+| # | Case | Expected result |
+|---|---|---|
+| WC1 | `python3 pipeline/seed_codes.py --db data/lab.sqlite3 ../svoe-vino-matcher/dataset/code-map.json` | `values: gtin 23, qr_url 3`, `slugs with no wine: 0`, `added: gtin 23, qr_url 3`, `result: seeded`. |
+| WC2 | Run WC1 again, then run it again with `--force` | First `error: wine_code already holds … rows; …; give --force to add the missing rows anyway`, exit 1. Then `added: gtin 0, qr_url 0`, `result: no change`. |
+| WC3 | `python3 -m unittest discover -s tests -p 'test_codes.py'`, then the same with `test_seed_codes.py` | 13 tests `OK`, then 11 tests `OK`. |
+| WC4 | Search `agrolayn-mountain-eagle-viognier` on `$H/dataset` | `GTINs 2`: `04640005351194` and `04640005350852`. |
+| WC5 | Search `kuban-vino-shato-tamane`, and look at `QR URLs` | `https://chateautamagne.ru/ru/catalog/wine/111`, with no `URL:` prefix. |
+| WC6 | Press `+` of `GTINs`, and type `4630171630090` | The line below the input reads `wrong check digit 0; expected 4` in red. The checkmark icon is disabled. Enter sends no request. |
+| WC7 | Change the value to `4630171630094` | The line reads `GTIN-14: 04630171630094`. The checkmark icon is enabled. |
+| WC8 | Type `4631168664979` on a second wine, and press the checkmark icon | The GTIN `04631168664979` is saved. Two wines have it. The header count of GTINs grows by 1. |
+| WC9 | Type the same GTIN again on the same wine, as `04631168664979` | An alert: `the wine … already has the gtin 04631168664979`. |
+| WC10 | Look at a card of `$H/dataset` | The card has the editors `GTINs` and `QR URLs`. It has no editor `Barcodes`. The header line has no count of barcodes. |
+| WC11 | `curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d '{"slug":"shardone-2","barcode":"INT-42"}' $H/api/dataset-barcode` | `503`. The table `wine_code` gets no row. |
+| WC12 | Press the red `×` of a GTIN, and confirm | That GTIN alone goes away. The other wine keeps its row of the same GTIN. |
+| WC13 | Switch the system to dark mode during WC6 | The red line is readable. |
+| WC14 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"slug":"shardone-2","gtin":"4680140700220"}' $H/api/dataset-gtin` | HTTP 400: `wrong check digit 0; expected 8`. |
+| WC15 | Press `+` of `GTINs` on a card far down the list, save a valid GTIN, then remove it | Each step changes the card at once, in much less than 1 s. The list keeps its scroll position. The header count of GTINs changes by 1. |
+
+## The Atlas Core product of a wine — `pipeline/seed_atlas_bindings.py` and the Dataset editor
+
+Read [plan 15](docs/plans/15_atlas-binding.md). Use `H=http://127.0.0.1:8168` and
+`D=../svoe-wino-hackaton/dataset/derived/official-2026-09-17`. Case AB1 starts on a
+database at schema version 9 with an empty table `wine_atlas_binding`.
+
+| # | Case | Expected result |
+|---|---|---|
+| AB1 | `python3 pipeline/seed_atlas_bindings.py --db data/lab.sqlite3 --matches $D/atlas-matches.jsonl --manual $D/atlas-bindings.manual.jsonl` | `rows: automatic 364, manual 3`, `slugs with no wine: 0`, `differs: 0`, `added: automatic 364, manual 3`, `result: seeded`. |
+| AB2 | Run AB1 again, then run it again with `--force` | First `error: wine_atlas_binding already holds 367 rows; …`, exit 1. Then `added: automatic 0, manual 0`, `result: no change`. |
+| AB3 | `python3 -m unittest discover -s tests -p 'test_atlas_bindings.py'`, then the same with `test_seed_atlas_bindings.py` | 6 tests `OK`, then 9 tests `OK`. |
+| AB4 | Open `$H/dataset` | The header reads `… 367 Atlas bindings`. The `+` or `edit` button of `Atlas Core product` is enabled on each card. |
+| AB5 | Search `vaynkraft-pino-nuar-krasnoe-suhoe-13` | `Atlas Core product` reads `bound · manual`. A red `×` stands before the UUID. |
+| AB6 | Look at a wine that reads `bound · automatic` | No red `×`. `copy` and `open` stand after the UUID. |
+| AB7 | Press `+` on a wine that reads `not bound`, enter `00000000-1111-4222-8333-444444444444`, and press the checkmark icon | The card reads `bound · manual` at once. The header count grows by 1. |
+| AB8 | Press the red `×` of the binding of AB7, and confirm | The card reads `not bound`. The header count falls by 1. |
+| AB9 | Press `edit` on a wine that reads `bound · automatic`, enter another UUID, save, then press the red `×` and confirm | After the save, `bound · manual` with the new UUID. After the remove, `bound · automatic` with the old UUID. |
+| AB10 | Enter `not-a-uuid` and press the checkmark icon | An alert: `product_uuid is not a valid UUID`. The card does not change. |
+| AB11 | `curl -s -X DELETE "$H/api/dataset-atlas-binding?slug=<a wine with an automatic binding alone>"` | HTTP 404: `the wine … has no manual Atlas binding`. |
+| AB12 | Switch the system to dark mode during AB5 | The red `×` and the source label are readable. |
+
+## The comments of a wine — the Dataset editor `Comments`
+
+Read [plan 17](docs/plans/17_wine-comments.md). Use `H=http://127.0.0.1:8168`. The
+database is at schema version 11 or later.
+
+| # | Case | Expected result |
+|---|---|---|
+| CM1 | `python3 -m unittest discover -s tests -p 'test_comments.py'` | 9 tests `OK`. The comment tests of `test_lab_server.py` pass too. |
+| CM2 | Open `$H/dataset` | The header ends with `· N comments`. Each card has the editor `Comments` after `Atlas Core product`. A wine with no comment reads `no comment`. |
+| CM3 | Press `+` of `Comments`, type two lines (Enter between them), and press Cmd+Enter | The comment shows at once: the local time `YYYY-MM-DD HH:MM`, the source `user`, and the text on two lines. The count and the header grow by 1. |
+| CM4 | Add a second comment to the same wine with the checkmark icon | The new comment is the last one. The list is in time order, the oldest first. |
+| CM5 | Press `+`, type a text, and press Esc | The field closes. No comment is added. |
+| CM6 | Put the mouse on the time of a comment | The title shows the stored UTC time, for example `2026-09-25T08:18:04Z`. |
+| CM7 | Set `Show` to `with comments` | The list holds the wines with at least one comment alone. |
+| CM8 | Search a word of a comment | The wine of that comment is in the list. |
+| CM9 | Press the red `×` of the first comment of CM4, and confirm | The other comment stays. The count and the header fall by 1. A reload shows the same list. |
+| CM10 | `curl -s -X POST $H/api/dataset-comment -H 'Content-Type: application/json' -d '{"slug":"<slug>","text":"checked","source":"script"}'` | HTTP 200. After a reload, the comment shows the source `script`. |
+| CM11 | `curl -s -X POST $H/api/dataset-comment -H 'Content-Type: application/json' -d '{"slug":"<slug>","text":" "}'` | HTTP 400: `the comment is empty`. |
+| CM12 | `curl -s -X DELETE "$H/api/dataset-comment?slug=<slug>&id=999999"` | HTTP 404: `the wine … has no comment 999999`. |
+| CM13 | Switch the system to dark mode during CM4 | The comment boxes, the time, the source label, and the input field are readable. |
+| CM14 | Open the Dataset page of the review tool (`scripts/review_server.py`) | No editor `Comments`, no `comments` in the header, and no value `with comments` in `Show`. |
+
+## The favorite wines — the star of the Dataset page
+
+Read [plan 19](docs/plans/19_favorites.md). Use `H=http://127.0.0.1:8168`. The database
+is at schema version 13 or later.
+
+| # | Case | Expected result |
+|---|---|---|
+| FV1 | `python3 -m unittest discover -s tests -p 'test_favorites.py'` | 4 tests `OK`. The favorite tests of `test_lab_server.py` pass too. |
+| FV2 | Open `$H/dataset` | The header ends with `· N favorites`. Each card has a `☆` at the top right of the text column, next to the alternative photos. No text runs under it. `State` has the value `Favorites` after `Removed`. |
+| FV3 | Press `☆` on a card | It becomes an amber `★` at once. The header count grows by 1. |
+| FV4 | Press the `★` of FV3 | It becomes `☆`. The header count falls by 1. |
+| FV5 | Set `State` to `Removed`, press `☆` on a removed wine, then set `State` to `Favorites` | The list holds each favorite, also the removed wine. |
+| FV6 | In the `Favorites` view, press `★` on a card | The card leaves the list at once. |
+| FV7 | Reload the page | The stars and the count stay as they were. |
+| FV8 | `curl -s -X POST $H/api/dataset-favorite -H 'Content-Type: application/json' -d '{"slug":"<slug>","favorite":"yes"}'` | HTTP 400: ``favorite` MUST be true or false``. |
+| FV9 | Switch the system to dark mode during FV3 | The `☆` and the amber `★` are readable. |
+| FV10 | Open the Dataset page of the review tool (`scripts/review_server.py`) | No star, no `favorites` in the header, and no value `Favorites` in `State`. |
+
 ## The lab embeddings — `pipeline/build_embeddings.py` and `/embedding`
 
 Use `P=~/.venvs/svoe-vino-lab/bin/python` and `N=gx10-siglip2-so400m-patch16-naflex-p256`.
@@ -848,7 +1006,7 @@ Use `H=http://127.0.0.1:8168`.
 
 | # | Case | Expected result |
 |---|---|---|
-| EB1 | `python3 -m unittest discover -s tests -p 'test_*embedding*.py'` | 44 tests, `OK`. |
+| EB1 | `python3 -m unittest discover -s tests -p 'test_*embedding*.py'` | 50 tests, `OK`. |
 | EB2 | `$P pipeline/build_embeddings.py --name $N` on an empty `data/embeddings/$N/` | The first line is `start` with `items` 4036 and `todo` 4036. The last line is `done`. `index.json` holds 2,018 items of the view `full`; `failures` holds the 2,018 label items with `no label cut yet`. `images/` holds 2,018 PNG files `<sha256>_full.png`. |
 | EB3 | Run EB2 again | `start` states `current` 2018. No `progress` line sends an image to gx10: `built` stays 0. The PNG files keep their time stamps. |
 | EB4 | Start EB2 on an empty directory, and press Ctrl+C after about 30 s | The lines `stopping` and `stopped` follow. `index.json` holds the finished items. `build.lock` is gone. |
@@ -864,3 +1022,120 @@ Use `H=http://127.0.0.1:8168`.
 | EB14 | Press `Build` on two entries | Two job rows run at the same time. |
 | EB15 | Restart the lab server while a build runs, and reload the page | The job row shows the running build again. |
 | EB16 | Switch the system to dark mode | The page, the badges, and the job rows are readable. |
+| EB17 | Look at the source panel of `$N` | The count after `failed` is red when it is above zero. The row `Directory` ends with the software versions and does not name the endpoint. |
+| EB18 | Press `open` on the row `Directory` | Finder opens `data/embeddings/$N/`. For an entry whose directory is not on disk yet, the page shows `Cannot open the directory of …: the directory of … is not on disk yet`. |
+| EB19 | Select `$N` after EB2, and press `Log` | A dialog `Build log · $N` opens. The checkbox `hide item_failed, progress, and request` is on. The lines `start` and `done` show, each as `time · event · fields`; `done` is green. The count reads `2 of <all> lines`. |
+| EB20 | Clear the checkbox of EB19, then press `Refresh`, then press Esc | Each line of `build.log` shows; each `item_failed` line names the full `source_sha256` (64 characters, not cut), the view, and the error, in red. `Refresh` reads the file again and scrolls to the end. Esc closes the dialog; a click on the backdrop closes it too. |
+| EB21 | Select an entry with no build yet | `Log` is disabled. `curl -s $H/api/embeddings/<that entry>/log` answers `404` and `<name> has no build log yet`. |
+| EB22 | Let a build end with a Python traceback, and press `Log` | The traceback lines show as they are, with their indent, in red. |
+| EB23 | Select `$N`, and click the first `full` image | The preview of `/dataset` opens: `full · <wine name>`, `<slug> · Card image · <type> · current`, `1 / <count>`, the size in px, and `open raw image` to the original. The thumbnail `card · full` is marked. The URL holds `preview=<sha256>_full`. |
+| EB24 | Press Right, then Down, then Left in EB23 | Each key steps to the `full` image of the next or the previous column; after the last column of a wine, the first column of the next wine. The position and the marked thumbnail follow. |
+| EB25 | Click the thumbnail `card · original` in EB23 | The original shows. `open raw image` names it. A thumbnail of a `failed` item with no image reads `failed` and is not a button. |
+| EB26 | Press Back in EB23, then Forward | Back closes the preview and removes `preview=` from the URL. Forward opens it again. |
+| EB27 | Copy the URL of EB23, and open it in a new tab | The page opens with the preview open. Esc closes it and removes `preview=`. |
+| EB28 | Set `Show` to `with a failed image`, and step through a preview | The arrows step over the wines of the filtered list alone. |
+| EB29 | Cmd+click a prepared image | The image opens in a new tab. No preview opens. |
+| EB30 | Open EB23 in dark mode, and at a width of 390 px | The preview is readable. At 390 px the dialog fills the screen, the thumbnails are one row that scrolls sideways, and the arrows stand at the bottom. |
+| EB31 | `python3 -m unittest discover -s tests -p 'test_seed_label_cuts.py'` | 7 tests, `OK`. No test calls the real SAM3 service. |
+| EB32 | `python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3 --limit 5` | `to do` names the full originals with no label cut. `label cuts written: 5` (less when SAM3 finds no label). `result: done`. |
+| EB33 | Run the seed with no `--limit` | One `progress:` line for each 50 originals. At the end `result: done`. `SELECT count(*) FROM image_derivative WHERE kind = 'label'` is about the number of full originals (2,023 on 2026-09-25) less the `no label` count. |
+| EB34 | Run EB33 again | `to do` is the `no label` count of EB33 alone. No cut is written again. |
+| EB35 | Press `Build` on `$N` after EB33 | The build makes each `label` item. The `label` cell of a card image shows the prepared label with the badge `current`. |
+| EB36 | Look at a `current` cell and a `failed` cell of `$N` | The `current` cell has the badge `vector` at the bottom left; the `failed` cell has none. The preview of the `current` cell names `vector` in its second line. |
+| EB37 | Press `Build` on an entry whose gateway model is not loaded on gx10 | The job row reads `0 / <todo> · waiting for the model · <time>` in amber after 3 s, and the time counts up. When the first batch returns, the phase goes away and `done` grows by the batch size. |
+| EB38 | Let the gateway answer HTTP 503 during a build | The job row reads `retry 1 in 2 s: HTTP 503 from …` (the full error in the tooltip). `build.log` holds one `retry` line for each wait. |
+| EB39 | Open `Log` after EB37 | The `request` lines are hidden while the checkbox is on; the `retry` lines show. |
+
+## The website import — `pipeline/import_website.py`
+
+Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
+`api.vino-svoe.ru` and takes some minutes.
+
+| # | Case | Expected result |
+|---|---|---|
+| IW1 | `python3 -m unittest discover -s tests -p 'test_import_website.py'`, then the same with `test_website_import_routes.py` | 31 tests `OK`, then 6 tests `OK`. No test sends a request to the internet. |
+| IW2 | `python3 pipeline/import_website.py --db data/lab.sqlite3` while the website has a changed text or a changed main image | Exit 1. The `error:` line states `the import stops, and nothing changed`, and one line follows for each problem: `<slug> (<state>): the text changed: <field> <old> -> <new>` or `<slug>: the main image changed: stored … website …`. `data/lab.sqlite3` and `data/images/` do not change. |
+| IW3 | Run IW2 when the website shows no changed text and no changed image | Exit 0. The report states `added`, `restored`, `removed`, and `main images stored` with the slugs, and `result: imported`. Each changed wine has one comment of the source `script` on `/dataset`. |
+| IW4 | Run IW3 again | `result: no change`. No new comment. |
+| IW5 | Set a wine `Removed` on `/dataset` during IW3, before the line `images: 2105/2105` | Exit 1: `the database changed during the import; run the import again`. |
+| IW6 | Open `/dataset` on the lab server | The bar shows `Import from website`. The review tool (`scripts/review_server.py`) does not show it. |
+| IW7 | Press `Import from website`, then `Compare` | The button shows the progress, for example `Website: images 300/2105`. After about 10 minutes the dialog opens with the sections `Conflicts`, `New on the website`, `Missing on the website`, `Back on the website`, and `Main image from the website`. `data/lab.sqlite3` does not change. |
+| IW8 | In the dialog of IW7, leave one conflict with no choice | `Apply` is disabled. The status line states the count of conflicts with no choice. |
+| IW9 | Choose each conflict, clear one checkbox, and press `Apply` | The button shows `Website: applying…`. The dialog then lists the counts. `Reload the page` shows the new states. Each changed wine has a comment of the source `script`. `website_refusal` holds a row for each choice `database` and each cleared checkbox. |
+| IW10 | Run `python3 pipeline/import_website.py --db data/lab.sqlite3` after IW9 | No stop on a refused conflict. The report states `skipped by a refusal: N`. |
+| IW11 | Set `Sort` to `changed in the lab, newest first` after IW9 | The wines of IW9 come first. A wine with no time goes last. |
+| IW12 | Switch the system to dark mode, and open the dialog | The dialog, the rows, and the choices are readable. |
+
+## The manual wines — the Dataset button `Add wine`
+
+Read [plan 20](docs/plans/20_add-wine.md). Use `H=http://127.0.0.1:8168`. A wine that
+AW3 adds stays in the database: use a scratch database, or remove the wine with
+`Remove` after the check.
+
+| # | Case | Expected result |
+|---|---|---|
+| AW1 | `python3 -m unittest discover -s tests -p 'test_manual_wines.py'`, then the same with `test_import_catalog.py` | 12 tests `OK`, then 22 tests `OK`. No test calls the real SAM3 service. |
+| AW2 | Open `$H/dataset` and press `Add wine` | The dialog `Add wine` opens. The image zone is a tall column at the left of the fields. The slug field starts with a fixed `__`. `Category` lists the categories of the records. `Save` is off. |
+| AW3 | Fill each required field, type `Test Wine` as the slug, then `test-wine` | `Test Wine` gets a red border. `Save` stays off until the slug is `test-wine` and an image is dropped or chosen; the image shows as a thumbnail. |
+| AW4 | Press `Save` after AW3 | The dialog closes. The list ends with the card `__test-wine`: the slug is plain text with no link, the image caption reads `main · manual`, and the image has the badge `crop` or `seg`. The header count grows by 1. |
+| AW5 | Press `Add wine`, fill the form again with the slug `test-wine`, and press `Save` | The dialog stays open with `Cannot add the wine: the database holds a wine with the slug __test-wine already`. |
+| AW6 | Press Esc, then open the dialog again | The dialog closes, and it opens again with the values of AW5. |
+| AW7 | Drop a GIF file on the image zone | `Choose a JPEG, PNG, or WebP image up to 20 MB.` The image stays as it was. |
+| AW8 | `curl -s -X POST $H/api/wine -H 'Content-Type: application/json' -d '{"slug":"no-prefix"}'` | HTTP 400: `the slug 'no-prefix' MUST start with __ …`. |
+| AW9 | Run `import_catalog.py` with the official CSV on a scratch database that holds a manual wine | The manual wine stays `Active`. `removed: 0` for it. |
+| AW10 | Switch the system to dark mode during AW3 | The dialog, the fields, the fixed prefix, and the image zone are readable. |
+| AW10a | Make the window 390 px wide during AW3 | The image zone stands above the fields. The page has no horizontal scroll. |
+| AW11 | Open the Dataset page of the review tool (`scripts/review_server.py`) | No button `Add wine`. `Validate` stays at the right. |
+| AW12 | Open the dialog with an empty form and type the name `Южный Лес, 2021` | The slug reads `yuzhnyy-les-2021` while you type. |
+| AW13 | Type `my-own` in the slug field after AW12, then change the name | The slug stays `my-own`. Empty the slug field and change the name: the slug follows the name again. |
+| AW14 | Save a wine with an empty `Description` | HTTP 200. `sqlite3 data/lab.sqlite3 "SELECT description FROM wine_catalog WHERE wine_slug = '__<slug>'"` prints an empty line (NULL). |
+| AW15 | `python3 pipeline/labdb.py data/lab.sqlite3` on a database at version 13 | `schema version: 14`. The row counts of `wine_catalog`, `wine_image`, `wine_code`, `wine_atlas_binding`, `wine_comment`, and `wine_favorite` do not change. `PRAGMA foreign_key_check` prints nothing. |
+| AW16 | `curl -s -X POST $H/api/wine -H 'Content-Type: application/json' -d '{"slug":"__null__"}'`, then a valid body with `"image_name":5` | HTTP 400 `the slug __null__ is reserved`, then HTTP 400 that names the field `image_name`. |
+
+## The test sets — `pipeline/import_testsets.py`
+
+Read [plan 12](docs/plans/12_testsets-benchmark.md). The import copies about 760 MB to
+`data/images/testset/` the first time.
+
+| # | Case | Expected result |
+|---|---|---|
+| TS1 | `python3 -m unittest discover -s tests -p 'test_import_testset*.py'`, then the same with `test_benchmark.py` | 13 tests `OK`, then 8 tests `OK`. |
+| TS2 | `python3 pipeline/labdb.py data/lab.sqlite3` on a database at version 15 | `schema version: 16` or later. The tables `test_excluded`, `test_photo`, `test_set`, and `test_variant` are there. The row counts of `image`, `wine_image`, and `image_derivative` do not change. `PRAGMA foreign_key_check` prints nothing. |
+| TS3 | `python3 pipeline/import_testsets.py --db data/lab.sqlite3` | Exit 0 and `sets imported: 3`. `my`: `photos: 4043`, `files directly in photo/, left out: 12`. `official-real-photos`: `photos: 100`. `vlmrerank-8b-failed`: `photos: 180` (values of 2026-09-25). |
+| TS4 | `sqlite3 data/lab.sqlite3 "SELECT set_name, count(*) FROM test_photo GROUP BY 1"` after TS3 | `my\|4043`, `official-real-photos\|100`, `vlmrerank-8b-failed\|180`. |
+| TS5 | Run TS3 again | `files written: 0` for each set. The counts of TS4 do not change. |
+| TS6 | `python3 pipeline/import_testsets.py --db data/lab.sqlite3 --source /tmp` | Exit 1: `error: no photo directory for the sets my, official-real-photos, vlmrerank-8b-failed in /tmp`. Nothing changes. |
+
+## The Runs page of the lab server — `/runs` and `pipeline/mock_run.py`
+
+Read [plan 23](docs/plans/23_runs-page.md). `$H` is `http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| RN1 | `python3 -m unittest discover -s tests -p 'test_run_files.py'`, then the same with `test_run_routes.py` and `test_mock_run.py` | 6, 7, and 14 tests `OK` (2026-09-25). |
+| RN2 | `python3 pipeline/mock_run.py --set my --seed 20260925` | A new directory `runs/<stamp>-lab-mock-my/`. The console states `seed: 20260925`, `positive: 1625`, a recall@1 near 0.09, and a recall@5 near 0.45 (values of 2026-09-25). |
+| RN3 | `python3 -c "import json; print(json.load(open('runs/<id of RN2>/run.json'))['configuration'])"` | `mock`. |
+| RN4 | Open `$H/runs` | The table of the runs, the newest first, with the column `configuration`. The filter `Configuration` holds `every run — N`, each entry of `config.yaml` with its count, `mock — 1` or more, and `no configuration — N`. The newest run with metrics opens by itself. |
+| RN5 | Choose `mock` in `Configuration` | The table holds the mock runs alone, and `k of N run(s)` stands next to the filter. The page address holds `?configuration=mock`. The first mock run opens. Reload: the filter keeps `mock`. |
+| RN6 | Look at the photo rows of a mock run | Each row shows the test photo and 10 candidate images with falling scores. Some rows have the true wine at rank 1 (green frame at #1), some at a deeper rank, some `expected` (absent). No image is broken. |
+| RN7 | Choose `no configuration` | The runs before 2026-09-25 alone. When the open run leaves the table, the first run with metrics of the table opens. |
+| RN8 | Click the photo of a row of a mock run | The large view opens. Below the image: `This run sent no request to a model, so it has no model input.` |
+| RN9 | Click the photo of a row of a run of `svm-siglip2-448` | The large view shows the model inputs, as in the review tool, or the error of `scripts/run_model_inputs.py` when the matcher config is not there. |
+| RN10 | Choose `Show` = `negative: the wrong wine stands above the true wine` on a mock run | Rows with a red frame on the slug of the negative label above the dashed green frame of the true wine. |
+| RN11 | Switch the system to dark mode and reload `$H/runs` | The page is dark. |
+| RN12 | Open `$H/embedding` and choose `mock` | The selector has the label `Configuration`. The entry `mock` has the items of the other entries (`mock — 0 / N` before its first build). The details read `Model: random-unit-vectors`. |
+| RN13 | Press `Build` for `mock` | The build runs as for any entry: progress, `Stop`, `Log`. No request goes to gx10. At the end `current` is the count of the items that got an image, and `index.json` in `data/embeddings/mock/` states `dim` 256. A second `Build` makes nothing again. |
+
+## The cache of the model calls — `pipeline/model_cache.py` and `pipeline/gdino.py`
+
+Read [plan 25](docs/plans/25_model-call-cache.md). `<photo>` is a file of `data/images/main/`.
+
+| # | Case | Expected result |
+|---|---|---|
+| MC1 | `python3 -m unittest discover -s tests -p 'test_model_cache.py'`, then the same with `test_gdino.py` and `test_derive.py` | 12, 4, and 17 tests `OK` (2026-09-25). No directory `data/cache/` appears from a test. |
+| MC2 | `python3 pipeline/gdino.py <photo> --texts "wine bottle"`, two times | The first output states `"cache": "miss"`, the second `"cache": "hit"` with the same instances. The second run takes about 0.2 s. One file is new in `data/cache/grounding-dino-base/`. |
+| MC3 | MC2 with `--threshold 0.4`, then with `--model mm-gdino-base` | Each first run states `miss`. The second model gets its own directory `data/cache/mm-gdino-base/`. |
+| MC4 | Open one record of MC2 | The keys `v`, `key`, `request`, `created`, `ms`, `answer`. `request` holds `endpoint` (the full URL), `model`, `params`, `prompt`, and `images` (one sha256 of 64 hex digits). No image bytes, no key. |
+| MC5 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import derive; print(derive.Sam3Client().segment(derive.open_image(sys.argv[1])[0]).getbbox())" <photo>`, two times, each with `time` | The same box two times. The first run takes about 1 s, the second about 0.2 s: the second run sends no request. After both runs, `data/cache/sam3/` holds one new file. |
+| MC6 | `python3 pipeline/gdino.py <photo> --gateway http://127.0.0.1:9` | `error: the Grounding DINO service ... did not answer`, exit status 1, after about 30 s of retries. No file is new in `data/cache/`. |
+| MC7 | `rm -r data/cache/grounding-dino-base/`, then MC2 one time | `"cache": "miss"`: the request goes to gx10 again. |

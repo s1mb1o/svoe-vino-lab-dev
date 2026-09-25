@@ -81,9 +81,17 @@ class SeedPatchedTest(unittest.TestCase):
     def patch(self, name, data):
         (self.folder / name).write_bytes(data)
 
-    def run_seed(self):
+    def run_seed(self, force=True):
         self.messages = []
-        return SP.seed_patched(self.db, str(self.folder), self.messages.append, FakeSam3())
+        return SP.seed_patched(self.db, str(self.folder), self.messages.append, FakeSam3(),
+                               force)
+
+    def test_a_second_run_needs_force(self):
+        self.patch("wine-a.webp", b"patch a")
+        self.run_seed(force=False)
+        with self.assertRaisesRegex(SP.SeedError, "already holds 1 rows .*--force"):
+            self.run_seed(force=False)
+        self.assertEqual(self.run_seed(force=True).unchanged, 1)
 
     def rows(self):
         conn = sqlite3.connect(self.db)
@@ -134,28 +142,29 @@ class SeedPatchedTest(unittest.TestCase):
         (self.folder / "wine-a.webp").unlink()
         self.patch("wine-a.png", b"better patch a")
         report = self.run_seed()
-        self.assertEqual((report.replaced, report.added, report.deleted), (["wine-a"], [], []))
+        self.assertEqual((report.replaced, report.added, report.kept), (["wine-a"], [], []))
         self.assertEqual(self.patched()["wine-a"],
                          (sha(b"better patch a"), "png", "wine-a.png", "slug-name"))
         self.assertTrue(self.stored(b"patch a", "webp").exists())
         self.assertTrue(any(m.startswith("replaced: wine-a") for m in self.messages))
 
-    def test_missing_patch_file_deletes_the_row(self):
+    def test_missing_patch_file_keeps_the_row(self):
+        # The database is the truth: a patch of the editor has no file in the folder.
         self.patch("wine-a.webp", b"patch a")
         self.patch("wine-b.webp", b"patch b")
         self.run_seed()
         (self.folder / "wine-b.webp").unlink()
         report = self.run_seed()
-        self.assertEqual(report.deleted, ["wine-b"])
-        self.assertEqual(set(self.patched()), {"wine-a"})
-        self.assertTrue(self.stored(b"patch b", "webp").exists())
+        self.assertEqual(report.kept, ["wine-b"])
+        self.assertFalse(report.changed())
+        self.assertEqual(set(self.patched()), {"wine-a", "wine-b"})
 
     def test_two_files_for_one_wine_are_an_error_and_the_row_stays(self):
         self.patch("wine-a.webp", b"patch a")
         self.run_seed()
         self.patch("wine-a.png", b"other patch a")
         report = self.run_seed()
-        self.assertEqual((report.errors, report.deleted, report.replaced), (1, [], []))
+        self.assertEqual((report.errors, report.kept, report.replaced), (1, [], []))
         self.assertEqual(self.patched()["wine-a"][0], sha(b"patch a"))
 
     def test_unknown_slug_gets_no_row(self):

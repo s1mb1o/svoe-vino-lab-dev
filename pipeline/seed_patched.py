@@ -1,4 +1,4 @@
-"""Store the patched main images of the wines, and keep the `main_patched` rows in step.
+"""Store the patched main images of the wines, and add or replace their `main_patched` rows.
 
 Usage:
     python3 pipeline/seed_patched.py --db data/lab.sqlite3 \\
@@ -20,14 +20,16 @@ Rules of the folder:
 - A slug that `wine_catalog` does not hold gets a console message and no row.
 - Two patch files for one slug are an error. The row of that wine does not change.
 
-Rules of the rows. The patch folder is the truth for the patches. The owner chose this
-on 2026-09-24.
+Rules of the rows. The database is the truth for the patches, and the folder is one
+source of them. The owner chose this on 2026-09-25; the patch editor of the Dataset page
+is the other source. Read `docs/plans/14_patch-editor.md`.
 - A patch of a wine with no `main_patched` row adds a row.
 - A patch with the same sha256 as the row of its wine changes nothing.
 - A patch with another sha256 replaces the row of its wine. The old file stays in the
   store, because another row can use it.
-- A `main_patched` row whose wine has no patch file in the folder is deleted. The wine
-  goes back to its `main` image. A wine with an error keeps its row.
+- A `main_patched` row whose wine has no patch file in the folder stays. The script
+  names it in the report. Before 2026-09-25 the script deleted such a row.
+- A wine with an error keeps its row.
 - `match_method` is `slug-name`: the file name is the wine slug.
 - A wine of each state gets its patch: `Active`, `Disabled`, and `Removed`.
 
@@ -73,14 +75,14 @@ class Report:
         self.errors = 0          # read errors, store errors, and slugs with two files
         self.added = []          # slugs with a new row
         self.replaced = []       # slugs whose row points to another file now
-        self.deleted = []        # slugs whose row is gone
+        self.kept = []           # slugs with a row and no file in the folder
         self.unchanged = 0       # slugs with the same row
         self.written = 0         # files copied to the store
         self.present = 0         # files that the store held already
         self.derivatives = derive.Derivatives()   # the processing of the patches
 
     def changed(self):
-        return bool(self.added or self.replaced or self.deleted or self.written
+        return bool(self.added or self.replaced or self.written
                     or self.derivatives.written or self.derivatives.processed())
 
 
@@ -107,14 +109,25 @@ def scan_patches(folder, report, log):
     return patches
 
 
-def seed_patched(db_path, folder, log=print, segmenter=None):
-    """Store and process the patches, and keep the `main_patched` rows in step. Return
-    a `Report`. `segmenter` is the SAM3 client; None means `derive.SAM3_ENDPOINT`."""
+def seed_patched(db_path, folder, log=print, segmenter=None, force=False):
+    """Store and process the patches, and add or replace the `main_patched` rows. Return
+    a `Report`. `segmenter` is the SAM3 client; None means `derive.SAM3_ENDPOINT`.
+
+    With rows of the type `main_patched` in the table and no `force`, raise `SeedError`:
+    a second run would add back the patches that a person removed on the page. The owner
+    chose this on 2026-09-25.
+    """
     if not os.path.isdir(folder):
         raise SeedError("no patch folder at %s" % folder)
     conn = labdb.connect(db_path)
     conn.isolation_level = None
     try:
+        present = conn.execute("SELECT count(*) FROM wine_image WHERE image_type = ?",
+                               (IMAGE_TYPE,)).fetchone()[0]
+        if present and not force:
+            raise SeedError("wine_image already holds %d rows of the type %s; a second run "
+                            "adds back the patches that a person removed on the page; give "
+                            "--force to add the missing rows anyway" % (present, IMAGE_TYPE))
         wines = {row[0] for row in conn.execute("SELECT wine_slug FROM wine_catalog")}
         report = Report()
         patches = scan_patches(folder, report, log)
@@ -190,11 +203,7 @@ def seed_patched(db_path, folder, log=print, segmenter=None):
                     "INSERT INTO wine_image (wine_slug, image_type, sha256, source_name, "
                     "match_method) VALUES (?, ?, ?, ?, ?)",
                     (slug, IMAGE_TYPE, digest, name, MATCH_METHOD))
-            for slug in sorted(set(stored) - keep):
-                conn.execute("DELETE FROM wine_image WHERE wine_slug = ? AND "
-                             "image_type = ?", (slug, IMAGE_TYPE))
-                report.deleted.append(slug)
-                log("deleted: %s: the patch folder holds no file for this wine" % slug)
+            report.kept = sorted(set(stored) - keep)
             derive.write_rows(conn, report.derivatives)
             conn.execute("COMMIT")
         except BaseException:
@@ -211,20 +220,23 @@ def _names(slugs):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Store the patched main images of the wines, and keep the rows of "
-                    "the type main_patched in step with the patch folder.")
+        description="Store the patched main images of the wines, and add or replace "
+                    "the rows of the type main_patched from the patch folder.")
     parser.add_argument("folder", help="the patch folder, for example "
                         "svoe-wino-hackaton/dataset/patched-official-2026-09-17")
     parser.add_argument("--db", required=True, help="path of the lab database")
     parser.add_argument("--sam3", default=derive.SAM3_ENDPOINT,
                         help="the SAM3 service (default: %(default)s)")
+    parser.add_argument("--force", action="store_true",
+                        help="run also when wine_image already holds main_patched rows")
     args = parser.parse_args(argv)
 
     def log(message):
         print(message, flush=True)
 
     try:
-        report = seed_patched(args.db, args.folder, log, derive.Sam3Client(args.sam3))
+        report = seed_patched(args.db, args.folder, log, derive.Sam3Client(args.sam3),
+                              args.force)
     except (SeedError, labdb.SchemaError, sqlite3.Error, OSError) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
@@ -235,7 +247,8 @@ def main(argv=None):
     print("errors: %d" % (report.errors + report.derivatives.errors))
     print("rows added: %d" % len(report.added))
     print("rows replaced: %d%s" % (len(report.replaced), _names(report.replaced)))
-    print("rows deleted: %d%s" % (len(report.deleted), _names(report.deleted)))
+    print("rows kept with no file in the folder: %d%s"
+          % (len(report.kept), _names(report.kept)))
     print("rows unchanged: %d" % report.unchanged)
     print("files written: %d" % report.written)
     print("files in the store already: %d" % report.present)
