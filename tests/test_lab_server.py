@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 import sqlite3
 import sys
 import tempfile
@@ -167,14 +168,45 @@ class LabServerTest(unittest.TestCase):
             self.assertEqual(self.request(path)[0], 404, path)
 
     def test_disabled_pages_keep_the_navigation(self):
-        for route, name in (("/clusters", "Clusters"), ("/embedding", "Embeddings"),
-                            ("/", "Testset"), ("/runs", "Runs")):
+        for route, name in (("/clusters", "Clusters"), ("/", "Testset"), ("/runs", "Runs")):
             status, _, body = self.request(route)
             self.assertEqual(status, 503, route)
             self.assertIn("The page %s is disabled for now." % name, body)
             for href, label in LAB.NAV:
                 self.assertIn('href="%s">%s</a>' % (href, label), body)
             self.assertIn('class="on" href="%s"' % route, body)
+
+    def test_embedding_page_is_on(self):
+        status, headers, body = self.request("/embedding")
+        self.assertEqual(status, 200)
+        self.assertEqual(body, lab_pages.page("embedding.html"))
+        self.assertIn("text/html", headers["Content-Type"])
+
+    def test_embedding_routes_read_the_config_path(self):
+        missing = str(self.root / "missing.yaml")
+        self.server.config_path = missing
+        for path, method in (("/api/embeddings", "GET"), ("/api/embedding-jobs", "GET"),
+                             ("/api/embeddings/gx10-a/build", "POST"),
+                             ("/api/embeddings/gx10-a/stop", "POST")):
+            status, _, body = self.request(path, method)
+            self.assertEqual(status, 503, path)
+            self.assertIn(missing, json.loads(body)["error"])
+
+    def test_old_embedding_routes_stay_disabled(self):
+        for path in ("/api/embedding", "/img/embedding/a.png"):
+            status, _, body = self.request(path)
+            self.assertEqual(status, 503, path)
+            self.assertIn("disabled for now", body)
+
+    def test_pages_keep_the_navigation_order(self):
+        # Dataset first, Embeddings second: owner message of 2026-09-25T06:50:29+0300.
+        self.assertEqual([label for _, label in LAB.NAV][:2], ["Dataset", "Embeddings"])
+        hrefs = [href for href, _ in LAB.NAV]
+        pages = {name: lab_pages.page(name) for name in ("dataset.html", "embedding.html")}
+        pages["/runs"] = self.request("/runs")[2]
+        for name, body in pages.items():
+            nav = re.search(r'<nav class="nav">(.*?)</nav>', body, re.S).group(1)
+            self.assertEqual(re.findall(r'href="([^"]*)"', nav), hrefs, name)
 
     def test_other_api_routes_are_disabled(self):
         for path, method in (("/api/runs", "GET"), ("/api/rows", "GET"),

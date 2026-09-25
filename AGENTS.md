@@ -68,3 +68,22 @@ of each session, so that two sessions do not change the same file.
     answers HTTP 200.
 24. Tell the owner about each restart. This permission is for port 8168 alone. Another
     service of the workspace stays a service that the owner restarts.
+
+## Schema numbers between sessions
+
+The owner set these rules on 2026-09-25. They add to rule 11. `pipeline/labdb.py` refuses
+a gap in the numbers and applies each schema file one time, by its number. So a number
+that two sessions use, or a number that changes after a database applied the file,
+breaks the migration of `data/lab.sqlite3`.
+
+25. The number of a new schema file is fixed only when the file enters
+    `pipeline/schema/`. Until then, a plan and a section of `ACTIVE_WORK.md` name the
+    file `NNN_<name>.sql`.
+26. Just before the entry, read `pipeline/schema/` and `ACTIVE_WORK.md`. Send a message
+    to each session whose section names schema work. Take the next free number, and
+    state it in your section in the same minute.
+27. The entry of the file, the migration of `data/lab.sqlite3` with `pipeline/labdb.py`,
+    and the restart of the lab server of rules 22 to 24 belong together. A new schema
+    file makes the running server answer HTTP 503 until the migration and the restart.
+28. Do not renumber, rename, or edit a file that is in `pipeline/schema/`. A change is a
+    new file with the next number.

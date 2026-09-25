@@ -7,10 +7,14 @@ opens the database read-only. `POST /api/wine-state` changes the state of one wi
 writes the columns `state` and `removed_by` alone. `GET /images/<folder>/<sha256>.<ext>`
 sends one file of the image store `images/` next to the database file.
 
-The pages Clusters, Embeddings, Testset, and Runs are disabled for now. Each one
-answers a notice page with HTTP 503, and each other API route answers HTTP 503 with
-a JSON error, except `POST /api/wine-state`. The database does not hold their data
-yet. The navigation of every page stays as it is. Read `docs/plans/07_sqlite-lab-database.md`.
+The Embeddings page is on: `embedding_routes.py` answers each of its routes. Read
+`docs/plans/10_embeddings-page.md`.
+
+The pages Clusters, Testset, and Runs are disabled for now. Each one answers a notice
+page with HTTP 503, and each other API route answers HTTP 503 with a JSON error, except
+`POST /api/wine-state` and the routes of the Embeddings page. The database does not
+hold their data yet. The navigation of every page stays as it is. Read
+`docs/plans/07_sqlite-lab-database.md`.
 
 Usage:
     python3 pipeline/lab_server.py              # http://127.0.0.1:8168/dataset
@@ -32,6 +36,7 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import embedding_routes  # noqa: E402
 import lab_pages  # noqa: E402
 import labdb  # noqa: E402
 
@@ -50,11 +55,11 @@ STATES = ("Active", "Disabled", "Removed")
 PAGE_KEYS = {"wine_slug": "slug"}
 
 # The pages of the navigation, in the order of the navigation.
-NAV = (("/dataset", "Dataset"), ("/clusters", "Clusters"),
-       ("/embedding", "Embeddings"), ("/", "Testset"), ("/runs", "Runs"))
+NAV = (("/dataset", "Dataset"), ("/embedding", "Embeddings"),
+       ("/clusters", "Clusters"), ("/", "Testset"), ("/runs", "Runs"))
 # The disabled pages. `/docs` is the API page of the review tool.
-DISABLED_PAGES = {"/clusters": "Clusters", "/embedding": "Embeddings", "/": "Testset",
-                  "/runs": "Runs", "/docs": "API docs"}
+DISABLED_PAGES = {"/clusters": "Clusters", "/": "Testset", "/runs": "Runs",
+                  "/docs": "API docs"}
 DISABLED_ERROR = ("disabled for now: the lab database does not hold the data of "
                   "this route yet")
 # action -> (the states that allow it, the new state). A removal by a person sets
@@ -278,9 +283,19 @@ class Handler(BaseHTTPRequestHandler):
         self._send(code, json.dumps(value, ensure_ascii=False),
                    "application/json; charset=utf-8")
 
+    def _embedding(self):
+        """Send the answer of `embedding_routes.respond`."""
+        code, body, ctype, cache = embedding_routes.respond(self.server, self.command,
+                                                            self.path)
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
     def do_GET(self):
         route = urllib.parse.urlsplit(self.path).path
-        if route == "/dataset":
+        if embedding_routes.handles(route):
+            self._embedding()
+        elif route == "/dataset":
             self._send(200, lab_pages.page("dataset.html"), "text/html; charset=utf-8")
         elif route == "/api/dataset":
             try:
@@ -343,7 +358,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def _write_route(self):
         route = urllib.parse.urlsplit(self.path).path
-        if route == "/api/wine-state" and self.command == "POST":
+        if embedding_routes.handles(route):
+            self._embedding()
+        elif route == "/api/wine-state" and self.command == "POST":
             self._wine_state()
         elif route.startswith("/api/"):
             self._json(503, {"error": DISABLED_ERROR})
@@ -353,11 +370,13 @@ class Handler(BaseHTTPRequestHandler):
     do_POST = do_PUT = do_DELETE = _write_route
 
 
-def make_server(db_path, host="127.0.0.1", port=DEFAULT_PORT):
-    """Return the HTTP server. The caller runs `serve_forever`."""
+def make_server(db_path, host="127.0.0.1", port=DEFAULT_PORT, config_path=None):
+    """Return the HTTP server. The caller runs `serve_forever`. The Embeddings page
+    reads `config_path`, or the `config.yaml` of the project when it is None."""
     server = ThreadingHTTPServer((host, port), Handler)
     server.daemon_threads = True
     server.db_path = db_path
+    server.config_path = config_path
     return server
 
 
@@ -391,7 +410,7 @@ def main(argv=None):
     print("disabled pages: %s" % ", ".join(DISABLED_PAGES.values()))
 
     try:
-        server = make_server(db_path, args.host, args.port)
+        server = make_server(db_path, args.host, args.port, args.config)
     except OSError as exc:
         print("error: cannot listen on %s:%d: %s" % (args.host, args.port, exc),
               file=sys.stderr)

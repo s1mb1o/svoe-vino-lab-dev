@@ -646,3 +646,92 @@ we have plenty time. Run tests and benchmark when ready
 ```text
 add to agents.md that I allow you restart server 8168 if required
 ```
+
+## 2026-09-25T06:49:57+0300
+
+```text
+Question: A photo can be in several test sets (179 of the 180 photos of vlmrerank-8b-failed are also in my). Where does a label live?
+Answer: Per test set (Recommended)
+
+Question: The reviewer labels cannot be rebuilt, and git ignores data/. Where are they kept for the first benchmark?
+Answer: Import from the JSON files (Recommended)
+
+Question: Which matcher backends should the first lab benchmark run?
+Answer: One baseline, checked against an old run (Recommended)
+
+Question: Where does the new runner write its results?
+Answer: Run files, as now (Recommended)
+```
+
+## 2026-09-25T06:46:22+0300
+
+```text
+@svoe-vino-lab  commit
+```
+
+## 2026-09-25T06:47:11+0300
+
+```text
+Question: All uncommitted work in svoe-vino-lab belongs to other sessions (20, 8b, 9a, a2). What should the commit contain?
+Answer: Checkpoint all (Recommended)
+```
+
+## 2026-09-25T06:49:54+0300
+
+```text
+enable Embeddings page
+```
+
+## 2026-09-25T06:50:29+0300
+
+```text
+Order of pages:
+- Dataset
+- Embeddings
+...
+```
+
+## 2026-09-25T06:52:00+0300
+
+```text
+Question: The Embeddings hook belongs to session 9a, and a2 was to change lab_server.py first. Who should make the change?
+Answer: This session (Recommended)
+```
+
+## 2026-09-25T07:01:40+0300
+
+```text
+Question: Plan 12 (docs/plans/12_testsets-benchmark.md): the test sets and their per-set labels in the database, imported read-only from the JSON files; a lab runner pipeline/benchmark.py; a parity check against run 2026-09-24T131126Z (same backend, same index, same 2,183 queries). Do you approve it?
+Answer: Approve
+
+Question: Q1 of plan 12: the table `image` of schema 007 does not accept the folder `testset`. Where does a test photo file get its row?
+Answer: A: rebuild `image` with `testset` (Recommended)
+
+Question: Three sessions agreed on a rule for schema numbers: a number is fixed only when the file enters pipeline/schema/ (the next free number then); before the entry, message each session whose ACTIVE_WORK.md section names schema work; the entry, the migration of data/lab.sqlite3, and the server restart go together; never renumber or edit a file in pipeline/schema/. Add it to AGENTS.md?
+Answer: Add it (Recommended)
+```
+
+## 2026-09-25T07:09:07+0300
+
+```text
+Question: Plan 12 overlaps with the flat image store of session 9a [f028b4] (your option 1: data/images/<sha256>.<ext>, no column image.folder). With the flat store, a test photo needs no `testset` folder, so Q1 option A (rebuild `image`) is not needed. Also, a rebuild of `image` fails in labdb.py today (foreign keys; tested on a copy). How should plan 12 go on?
+Answer: Wait for the flat store (Recommended)
+
+Question: The parity check needs the test photos in a database. Where may I run it before my schema file enters pipeline/schema/?
+Answer: Wait for the entry
+```
+
+## 2026-09-25T07:19:46+0300
+
+```text
+yes, i approve.
+store each GTIN padded to 14 digits
+
+check input checksum
+```
+
+## 2026-09-25T07:20:11+0300
+
+```text
+commit all
+```

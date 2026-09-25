@@ -2,6 +2,21 @@
 
 ## 2026-09-25
 
+- Plan 12 (`docs/plans/12_testsets-benchmark.md`), approved by the owner: the test sets
+  in the database and a lab benchmark runner. New `pipeline/import_testset.py` imports
+  `dataset/<set>/` read-only (photos, per-set labels, excluded slugs, variant groups). New
+  `pipeline/benchmark.py` sends the photos of a set to a backend of `backends.yaml` and
+  writes the run files of `scripts/match_run.py`. The tables are in
+  `pipeline/schema_pending/NNN_testset.sql`; the file enters `pipeline/schema/` after the
+  flat image store of drink-atlas-workspace-9a [f028b4]. No benchmark runs before that.
+- `judge`, `f1`, `metrics_of`, `write_summary`, and their constants moved unchanged from
+  `scripts/match_run.py` to the new `scripts/match_scoring.py`; `embeddings_of` moved to
+  `scripts/match_backends.py`. Each moved item is byte-identical to commit `a8e113a`. With
+  the variant groups of `my`, the moved `metrics_of` gives the `metrics.json` of the run
+  `2026-09-24T131126Z-svm-siglip2-448-index-9fbef0a4a2` exactly.
+- New rules 25 to 28 of `AGENTS.md`: a schema number is fixed only when the file enters
+  `pipeline/schema/`. The sessions -a2, -9a, and -20 agreed; the owner approved.
+- New tests: `tests/test_import_testset.py` (10), `tests/test_benchmark.py` (7).
 - New file `ACTIVE_WORK.md` and rules 13 to 21 in `AGENTS.md`, section "Work of the
   sessions". Each agent session that works on this project keeps one section there: its
   task, its source, the files that it changes, its state, and the time of the last

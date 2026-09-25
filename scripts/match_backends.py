@@ -11,6 +11,7 @@ The answer of a backend is parsed into a list of `{"slug": str, "score": float
 or None, "rank": int}`. A backend that states no score gives `score: None`. A
 missing score is never read as a score of zero.
 """
+import datetime as dt
 import json
 import os
 import time
@@ -241,3 +242,126 @@ def build_backend(path, backend_id):
         raise BackendError("unknown backend %r. The file holds: %s"
                            % (backend_id, ", ".join(sorted(specs))))
     return HttpMultipartBackend(specs[backend_id])
+
+
+# The pipeline kinds of svoe-vino-matcher that own no index. Each names the
+# pipeline it sits on, under one of these keys, so the walk below reaches the
+# `embed` pipeline that holds the vectors.
+EMBED_REF_KEYS = ("embed", "base")
+
+
+def embeddings_of(backend, timeout_s=10):
+    """Ask the backend when the embeddings it answers with were last built.
+
+    A run states which vectors produced it. Without this, two runs of the same
+    backend id are indistinguishable although a rebuild moved every vector
+    between them.
+
+    The answer is always a dictionary, never a bare timestamp or a blank. When
+    the age cannot be read, `built_at` is None and `reason` says why, because
+    "the backend reports no index" and "the probe failed" MUST NOT look the
+    same. A `kind: remote` backend, such as the official recognizer, owns no
+    index and is the ordinary case of an unknown age, not a fault.
+    """
+    if backend is None or not getattr(backend, "url", ""):
+        return {"built_at": None, "reason": "the run has no HTTP backend"}
+
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+
+    parts = urllib.parse.urlsplit(backend.url)
+    base = "%s://%s" % (parts.scheme, parts.netloc)
+    # `/v1/pipelines/<name>/predict` names the pipeline. `/v1/eval/predict`
+    # does not, and answers with the default pipeline of the server.
+    segments = [s for s in parts.path.split("/") if s]
+    wanted = ""
+    if len(segments) >= 3 and segments[:2] == ["v1", "pipelines"]:
+        wanted = segments[2]
+    query = urllib.parse.parse_qs(parts.query or "")
+    if query.get("pipeline"):
+        wanted = query["pipeline"][0]
+
+    try:
+        req = urllib.request.Request(base + "/v1/info",
+                                     headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+            info = json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        return {"built_at": None,
+                "reason": "%s/v1/info did not answer: %s" % (base, exc)}
+
+    by_name = {p.get("name"): p for p in (info.get("pipelines") or [])
+               if isinstance(p, dict)}
+    if not wanted:
+        wanted = info.get("default_pipeline") or ""
+    if wanted not in by_name:
+        return {"built_at": None,
+                "reason": "the server does not report a pipeline `%s`" % wanted}
+
+    # The backend MAY pin another index with `?index=`. The run then answered
+    # from THAT file, so the age of the pipeline's own index would be the wrong
+    # provenance: two runs that read different vectors would record the same
+    # age. `available_indexes` of the pipeline carries the build time of every
+    # file the server offers.
+    pinned = (query.get("index") or query.get("index_file") or [""])[0].strip()
+    if pinned:
+        entry = by_name[wanted]
+        if not entry.get("supports_index_override"):
+            return {"built_at": None, "pipeline": wanted, "index_file": pinned,
+                    "reason": "the backend pins index `%s` but pipeline `%s` "
+                              "owns no index" % (pinned, wanted)}
+        stem = pinned[:-4] if pinned.endswith(".npz") else pinned
+        for item in (entry.get("available_indexes") or []):
+            name = str(item.get("index_file") or "")
+            if name[:-4] != stem and name != stem:
+                continue
+            stamp = item.get("built_at_unix")
+            out = {"index_file": name, "built_at_unix": stamp, "source": "meta",
+                   "pipeline": wanted, "pinned_by_backend": True}
+            out["built_at"] = (
+                dt.datetime.fromtimestamp(stamp).astimezone().isoformat(
+                    timespec="seconds") if stamp else None)
+            if stamp is None:
+                out["source"] = None
+                out["reason"] = "`%s` has no build time in its sidecar" % name
+            return out
+        return {"built_at": None, "pipeline": wanted, "index_file": pinned,
+                "reason": "the backend pins index `%s`, which pipeline `%s` "
+                          "does not offer" % (pinned, wanted)}
+
+    # Walk from the answering pipeline to the one that owns the index. An
+    # ensemble reads several, so it reports every member instead of one age.
+    seen, name = [], wanted
+    while name and name not in seen:
+        seen.append(name)
+        entry = by_name.get(name) or {}
+        if entry.get("embeddings"):
+            out = dict(entry["embeddings"])
+            out["pipeline"] = name
+            if name != wanted:
+                out["answering_pipeline"] = wanted
+            return out
+        if entry.get("members"):
+            members = []
+            for m in entry["members"]:
+                ref = (m or {}).get("pipeline")
+                block = (by_name.get(ref) or {}).get("embeddings")
+                if block:
+                    members.append({**block, "pipeline": ref,
+                                    "weight": (m or {}).get("weight")})
+            if members:
+                return {"built_at": None, "pipeline": wanted,
+                        "reason": "an ensemble reads the index of every member",
+                        "members": members}
+        nxt = ""
+        for key in EMBED_REF_KEYS:
+            ref = entry.get(key)
+            if isinstance(ref, dict):
+                ref = ref.get("pipeline")
+            if ref:
+                nxt = str(ref)
+                break
+        name = nxt
+    return {"built_at": None, "pipeline": wanted,
+            "reason": "pipeline `%s` reports no index" % wanted}

@@ -2,6 +2,29 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-25 — drop the column `image.folder` in place, not with a table rebuild
+
+Status: tested on 2026-09-25 on a backup copy of `data/lab.sqlite3` (schema 7: 4,042
+`image` rows, 2,046 `wine_image` rows, 2,018 `image_derivative` rows). SQLite 3.53.4 in
+Python. The result shapes the schema file of the flat image store.
+
+- A rebuild of `image` fails in `pipeline/labdb.py`. drink-atlas-workspace-20 found it:
+  `CREATE image_new`, `INSERT … SELECT`, `DROP TABLE image`, `ALTER TABLE image_new
+  RENAME TO image` ends in "FOREIGN KEY constraint failed" at `COMMIT`, also with
+  `PRAGMA defer_foreign_keys = ON`. The `DROP` counts one deferred violation for each child
+  row. The `RENAME` does not clear the counter. `labdb.migrate` runs each file in one
+  transaction with `foreign_keys = ON`, and this pragma cannot change inside a transaction.
+- `ALTER TABLE image DROP COLUMN folder` works in the same wrapper:
+  `executescript("BEGIN; ALTER TABLE image DROP COLUMN folder; PRAGMA user_version = N;
+  COMMIT;")` on a connection with `foreign_keys = ON`. All 4,042 rows stay.
+  `PRAGMA foreign_key_check` returns no row. `PRAGMA integrity_check` returns `ok`.
+- SQLite allows `DROP COLUMN` (3.35 and later) only for a column that is not a key, not
+  indexed, not in a foreign key, not in a view or a trigger, and not in a CHECK of another
+  column. The CHECK of `folder` belongs to `folder` itself, so the drop is allowed.
+- A later change that needs a real rebuild of a parent table needs the 12-step procedure
+  of SQLite in `labdb.py`: `PRAGMA foreign_keys = OFF` before `BEGIN`, `PRAGMA
+  foreign_key_check` before `COMMIT`, then `foreign_keys = ON`.
+
 ## 2026-09-25 — the SigLIP 2 models of the gx10 gateway
 
 Status: read from `GET http://192.168.86.14:18081/v1/models` on 2026-09-25. The result
