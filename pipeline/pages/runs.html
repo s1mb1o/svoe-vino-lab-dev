@@ -58,7 +58,7 @@ h1 { font-size: 15px; margin: 0 0 8px; font-weight: 650; }
 h1 .sub { color: var(--muted); font-weight: 400; }
 .head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
 .head-top h1 { margin-right: 0; }
-/* The filter `Configuration` stands in the header, after the title (owner message of
+/* The filter `Pipeline` stands in the header, after the title (owner message of
    2026-09-25T18:05:36+0300). The navigation stays at the right. */
 .head-conf { color: var(--muted); font-size: 12px; display: flex; gap: 5px;
              align-items: center; margin-right: auto; }
@@ -115,6 +115,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .tag.bad { color: #fff; background: var(--exc); border-color: transparent; }
 .tag.ok { color: var(--pos); border-color: var(--pos); }
 .tag.dry { color: var(--muted); }
+/* A run with `use_cache: false` in run.json (plan 39). */
+.tag.nocache { color: var(--muted); }
 
 /* the metric cards */
 .cards { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -175,6 +177,12 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
   font-weight: 650; text-decoration: none;
 }
 .clgrp-link:hover { text-decoration: underline; }
+/* The cards of one photo row are level (owner message of 2026-09-26T00:12:24+0300): in a
+   row with a cluster frame, a card outside a frame starts below the 2 px border and the
+   17 px label strip of the frame, where the cards of a frame start. `evenCards` gives the
+   cards of the row one height. */
+.strip:has(.clgrp) > .cand,
+.strip:has(.clgrp) > .clcol > .cand { margin-top: 19px; }
 /* the answer of the VLM rule step, under the frame of the top cluster */
 .clcol { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 .vlm {
@@ -222,6 +230,20 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .model-input .input-label { display: block; color: var(--muted); font-size: 9px;
                             line-height: 1.2; margin-top: 4px; overflow: hidden;
                             text-overflow: ellipsis; white-space: nowrap; }
+/* The catalogue inputs of a candidate of an embedding run (plan 38): the cosine of each
+   item, the best item of each view, and the items of a view that the run did not
+   compare. An item whose input is no longer in the index has a text card. */
+.model-input .input-label.cos { color: var(--text); font-size: 11px; font-weight: 650;
+                                white-space: normal; }
+.model-input .badge.best { background: #1f8a4c; }
+.model-input.unused { opacity: .55; }
+.model-input .noinput { display: flex; align-items: center; justify-content: center;
+                        width: 100%; height: 74px; border-radius: 4px; padding: 4px;
+                        background: var(--panel); color: var(--muted); font-size: 9px;
+                        text-align: center; }
+/* The notes of this rail state the score, so they take the text colour of the theme. */
+.lb-input-note.cand { color: var(--text); }
+.lb-input-note.head { flex: 0 0 190px; }
 @media (max-width: 640px) {
   #lb { padding: 10px; }
   #lb-main { max-height: calc(94vh - 156px); }
@@ -235,8 +257,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 <header>
   <div class="head-top">
     <h1>Match runs <span class="sub" id="head-sub"></span></h1>
-    <label class="head-conf">Configuration <select id="configuration"
-      title="A lab configuration is one entry of `embeddings` in config.yaml. The key `configuration` of run.json names it."></select></label>
+    <label class="head-conf">Pipeline <select id="configuration"
+      title="A pipeline is one entry of `pipeline` in config.yaml. The key `configuration` of run.json names it."></select></label>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       href="/testset">Testset</a><a class="on" href="/runs">Runs</a></nav>
@@ -297,7 +319,7 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
   <p class="sm">Click a column to sort. Click it again to turn the order around.</p>
   <table id="runs"><thead><tr>
     <th data-k="id">run</th>
-    <th data-k="configuration">configuration</th>
+    <th data-k="configuration">pipeline</th>
     <th data-k="backend">backend</th>
     <th data-k="started">started</th>
     <th data-k="queries" class="num">queries</th>
@@ -349,11 +371,13 @@ const pct = v => v === null || v === undefined ? "\u2014" : (100 * v).toFixed(1)
 const numOr = v => v === null || v === undefined ? "\u2014" : v;
 
 let RUNS = [], CUR = null, OFFSET = 0, TOTAL = 0;
-/* The lab configurations of `config.yaml`, from `/api/runs`, in file order. */
+/* The run.json of the open run, from `/api/run`. */
+let RUN = {};
+/* The pipelines of `config.yaml`, from `/api/runs`, in file order (plan 34). */
 let CONFIGS = [];
-/* The value of the filter `Configuration`: "" is every run, NO_CONFIG is the runs with
-   no key `configuration`, any other value is the name of one configuration. A name of
-   config.yaml holds no parenthesis, so NO_CONFIG cannot be a name. */
+/* The value of the filter `Pipeline`: "" is every run, NO_CONFIG is the runs whose key
+   `configuration` names no pipeline or is absent, any other value is the name of one
+   pipeline. A name of config.yaml holds no parenthesis, so NO_CONFIG cannot be a name. */
 const NO_CONFIG = "(none)";
 let CONF = new URLSearchParams(location.search).get("configuration") || "";
 /* slug -> the URL of its catalogue image in the lab image store, and the slugs whose
@@ -395,27 +419,28 @@ function sortedRuns() {
   });
 }
 
-/* Answer whether the filter `Configuration` keeps the run `r`. */
+/* Answer whether `name` is a pipeline of config.yaml. */
+const isPipeline = name => CONFIGS.some(c => c.name === name);
+
+/* Answer whether the filter `Pipeline` keeps the run `r`. */
 function inConfig(r) {
   if (!CONF) return true;
-  if (CONF === NO_CONFIG) return !r.configuration;
+  if (CONF === NO_CONFIG) return !isPipeline(r.configuration);
   return r.configuration === CONF;
 }
 
 const visibleRuns = () => sortedRuns().filter(inConfig);
 
-/* The values of the filter: every run, each configuration of config.yaml with the count
-   of its runs, a name that a run holds and config.yaml does not, and no configuration. */
+/* The values of the filter: `All` (every run; owner answer of 2026-09-26T01:19:00+0300),
+   each pipeline of config.yaml with the count of its runs, and no pipeline. The combo
+   lists the items of the key `pipeline` alone (owner message of 2026-09-26T00:10:18+0300);
+   a run of another name counts as no pipeline. */
 function renderConfigs() {
   const count = name => RUNS.filter(r => r.configuration === name).length;
-  const known = new Set(CONFIGS.map(c => c.name));
-  const other = [...new Set(RUNS.map(r => r.configuration).filter(n => n && !known.has(n)))]
-    .sort();
-  const opts = [["", `every run — ${RUNS.length}`]]
+  const opts = [["", `All — ${RUNS.length}`]]
     .concat(CONFIGS.map(c => [c.name, `${c.name} — ${count(c.name)}${
       c.error ? " (not valid)" : ""}`]))
-    .concat(other.map(n => [n, `${n} — ${count(n)} (not in config.yaml)`]))
-    .concat([[NO_CONFIG, `no configuration — ${RUNS.filter(r => !r.configuration).length}`]]);
+    .concat([[NO_CONFIG, `no pipeline — ${RUNS.filter(r => !isPipeline(r.configuration)).length}`]]);
   if (!opts.some(([value]) => value === CONF)) CONF = "";
   $("#configuration").innerHTML = opts.map(([value, text]) =>
     `<option value="${esc(value)}"${value === CONF ? " selected" : ""}>${esc(text)}</option>`)
@@ -442,7 +467,8 @@ function renderRuns() {
   $("#runs-body").innerHTML = page.map(r => `
     <tr data-id="${esc(r.id)}" class="${CUR === r.id ? "on" : ""}">
       <td>${esc(r.id)} ${r.dry_run ? '<span class="tag dry">dry run</span>' : ""}
-        ${r.subset ? `<span class="tag var" title="a repeat of ${esc(r.subset.based_on)} at depth ${r.subset.rerun_depth}">repeat d${r.subset.rerun_depth}</span>` : ""}</td>
+        ${r.use_cache === false ? '<span class="tag nocache" title="The box Use caches was off: the run read no cached model answer, so its latency is real time.">no cache</span>' : ""}
+        ${r.subset ?`<span class="tag var" title="a repeat of ${esc(r.subset.based_on)} at depth ${r.subset.rerun_depth}">repeat d${r.subset.rerun_depth}</span>` : ""}</td>
       <td>${r.configuration ? esc(r.configuration) : '<span class="muted">—</span>'}</td>
       <td>${esc(r.backend)}</td>
       <td class="sm">${esc((r.started || "").replace("T", " ").slice(0, 19))}</td>
@@ -462,7 +488,7 @@ function renderRuns() {
   }
   $("#head-sub").textContent = `${RUNS.length} run(s)`;
   $("#runs-count").textContent = shown.length ? `${shown.length} of ${RUNS.length} run(s)`
-    : "no run of this configuration";
+    : "no run of this pipeline";
 }
 
 /* A change of the filter keeps the value in the page address. When the open run is not
@@ -613,17 +639,19 @@ function candCard(c, truth, forbidden, twins) {
   const score = c.score === null || c.score === undefined ? "" : c.score.toFixed(3);
   return `<div class="cand ${isTruth ? "truth" : ""} ${isBad ? "forbidden" : ""} ${
       isTwin ? "twin" : ""}">
-    ${bottleHtml(c.slug)}
+    ${bottleHtml(c.slug, true)}
     <div class="r"><span>#${c.rank}</span><span>${score}</span></div>
     <div class="sl">${esc(c.slug)}</div></div>`;
 }
 
 /* The catalogue image of one slug. A slug with no image in the lab store gets a text
-   card. The arrow keys of the large view step over a text card. */
-function bottleHtml(slug) {
+   card. The arrow keys of the large view step over a text card. The image of a candidate
+   (`cand`) holds its slug, so the large view can show its catalogue inputs (plan 38). */
+function bottleHtml(slug, cand) {
   const url = BOTTLES[slug];
   if (!url) return `<div class="nobottle">no catalogue image</div>`;
-  return picHtml(`<img loading="lazy" src="${esc(url)}" alt="" data-full="${esc(url)}"
+  return picHtml(`<img loading="lazy" src="${esc(url)}" alt="" data-full="${esc(url)}"${
+       cand ? ` data-cand="${esc(slug)}"` : ""}
        onerror="this.replaceWith(Object.assign(document.createElement('div'),
                 {className:'nobottle',textContent:'no bottle photo'}))">`, isPatched(slug));
 }
@@ -749,7 +777,7 @@ function rowHtml(r) {
   /* No answer of an unlabelled photo is wrong, because no answer is known. */
   const bad = !unl && ((r.label === "negative" && r.outcome === "false_match_at_1") ||
                        (r.label !== "negative" && r.rank_of_truth !== 1));
-  return `<tr>
+  return `<tr data-query-id="${esc(r.query_id || "")}">
     <td class="qcell">
       ${src ? `<img class="qphoto" loading="lazy" src="${esc(src)}" alt="" data-full="${esc(src)}"
            data-query-id="${esc(r.query_id || "")}"
@@ -777,6 +805,21 @@ function rowHtml(r) {
     <td><div class="strip">${strip}</div></td></tr>`;
 }
 
+/* The cards of one photo row get the height of the tallest card of the row (owner
+   message of 2026-09-26T00:12:24+0300). A card has a fixed width, so its height depends
+   on its text alone and does not change with the window. The function reads each height
+   first and then writes them, so a batch of rows costs one layout. A row that it handled
+   has the attribute `data-even`. */
+function evenCards(root) {
+  const strips = [...root.querySelectorAll(".strip:not([data-even])")];
+  const cards = strips.map(strip => [...strip.querySelectorAll(".cand")]);
+  const tallest = cards.map(list => Math.max(0, ...list.map(card => card.offsetHeight)));
+  strips.forEach((strip, i) => {
+    strip.dataset.even = "";
+    for (const card of cards[i]) card.style.minHeight = tallest[i] + "px";
+  });
+}
+
 /* ---- loading ---- */
 async function loadRun(id, append) {
   CUR = id;
@@ -789,8 +832,10 @@ async function loadRun(id, append) {
   TOTAL = data.total;
   Object.assign(BOTTLES, data.bottles || {});
   for (const s of data.patched || []) PATCHED.add(s);
+  if (!append) RUN = data.run || {};
   if (!append) renderMetrics(data.metrics || {}, data.head || {});
   $("#res-body").insertAdjacentHTML("beforeend", (data.rows || []).map(rowHtml).join(""));
+  evenCards($("#res-body"));
   OFFSET += (data.rows || []).length;
   $("#count").textContent = `${OFFSET} of ${TOTAL} photo(s) shown`;
   $("#more").hidden = OFFSET >= TOTAL;
@@ -892,7 +937,95 @@ function renderLbInputs(data) {
   rail.hidden = !rail.childElementCount;
 }
 
+/* The catalogue inputs of one candidate of an embedding run (plan 38, owner message of
+   2026-09-26T01:23:11+0300): the PNG of each item of the wine that went to the model,
+   and the cosine that the run recorded for it. A click on an item shows it large. */
+const CAND_STATE = {
+  same: "the PNG that went to the model in this run",
+  changed: "the index holds another input of this item now; the input of the run is gone",
+  gone: "the index holds no input of this item now",
+  current: "the present input in the index; the run recorded no cosine",
+};
+const cos4 = v => v === null || v === undefined ? "\u2014" : v.toFixed(4);
+
+function renderCandInputs(data) {
+  const rail = $("#lb-inputs");
+  rail.replaceChildren();
+  const head = document.createElement("div");
+  head.className = "lb-input-note cand head";
+  const views = Object.entries(data.views || {}).map(([view, c]) => `${view} ${cos4(c)}`);
+  head.textContent = `score ${cos4(data.score)}: the mean of the best cosine of each ` +
+                     `view (${views.join(", ") || "no view"})`;
+  rail.append(head);
+  for (const item of data.items || []) {
+    const old = item.state === "current";
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `model-input ${item.cosine === null && !old ? "unused" : ""}`;
+    if (item.url) button.dataset.modelInput = item.url;
+    const size = item.width ? ` · ${item.width} × ${item.height}` : "";
+    button.title = `${item.type} · ${item.view}${size} · ${CAND_STATE[item.state] || ""}` +
+                   ` · ${item.sha256}`;
+    let picture;
+    if (item.url) {
+      picture = document.createElement("img");
+      picture.src = item.url;
+      picture.alt = button.title;
+    } else {
+      picture = document.createElement("span");
+      picture.className = "noinput";
+      picture.textContent = CAND_STATE[item.state] || "no input";
+    }
+    const badges = document.createElement("span");
+    badges.className = "badges";
+    if (item.best) {
+      const badge = document.createElement("span");
+      badge.className = "badge best";
+      badge.textContent = "best";
+      badges.append(badge);
+    }
+    const score = document.createElement("span");
+    score.className = "input-label cos";
+    score.textContent = `${item.view} · ${item.cosine !== null ? cos4(item.cosine)
+                         : old ? "no cosine" : "not compared"}`;
+    const label = document.createElement("span");
+    label.className = "input-label";
+    label.textContent = `${item.type}${size}`;
+    button.append(picture, badges, score, label);
+    rail.append(button);
+  }
+  for (const text of data.notes || []) {
+    const note = document.createElement("div");
+    note.className = "lb-input-note cand";
+    note.textContent = text;
+    rail.append(note);
+  }
+  rail.hidden = false;
+}
+
+async function loadCandInputs(image) {
+  const request = ++LB_REQUEST;
+  const tr = image.closest("tr[data-query-id]");
+  const query = tr && tr.dataset.queryId;
+  // A run of another backend records no cosine of a catalogue input.
+  if (!query || !CUR || (RUN.backend || {}).kind !== "embedding") { clearLbInputs(""); return; }
+  clearLbInputs("Reading catalogue inputs…");
+  try {
+    const response = await fetch(`/api/run-candidate?id=${encodeURIComponent(CUR)}` +
+                                 `&query=${encodeURIComponent(query)}` +
+                                 `&slug=${encodeURIComponent(image.dataset.cand)}`,
+                                 {cache: "no-store"});
+    const data = await response.json();
+    if (request !== LB_REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    renderCandInputs(data);
+  } catch (error) {
+    if (request === LB_REQUEST) clearLbInputs(`Cannot read catalogue inputs: ${error.message}`);
+  }
+}
+
 async function loadLbInputs(image) {
+  if (image.dataset.cand) { loadCandInputs(image); return; }
   const query = image.dataset.queryId;
   const request = ++LB_REQUEST;
   if (!query || !CUR) { clearLbInputs(""); return; }
@@ -975,6 +1108,30 @@ document.addEventListener("keydown", ev => {
   const rstep = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
   if (rstep !== undefined) { ev.preventDefault(); stepLbRow(rstep); }
 });
+
+/* The header controls are kept in localStorage and come back at the next page load (owner
+   message of 2026-09-26T00:30:00+0300). A value in the URL wins over the stored value;
+   `renderConfigs` drops a pipeline that is no longer an option. The listeners of each
+   control run first; the header listener then stores the new values. */
+const HEADER_KEY = "svl.runs.header";
+function saveHeader() {
+  const value = {configuration: CONF, filter: $("#filter").value, sort: $("#sort").value,
+                 q: $("#q").value};
+  try { localStorage.setItem(HEADER_KEY, JSON.stringify(value)); } catch (_) { /* no storage */ }
+}
+(function restoreHeader() {
+  let value;
+  try { value = JSON.parse(localStorage.getItem(HEADER_KEY) || "{}") || {}; } catch (_) { return; }
+  if (!new URLSearchParams(location.search).has("configuration")
+      && typeof value.configuration === "string") CONF = value.configuration;
+  for (const id of ["filter", "sort"]) {
+    const node = $("#" + id);
+    if ([...node.options].some(option => option.value === value[id])) node.value = value[id];
+  }
+  if (typeof value.q === "string") $("#q").value = value.q;
+})();
+$("header").addEventListener("change", saveHeader);
+$("header").addEventListener("input", saveHeader);
 
 (async function init() {
   try {

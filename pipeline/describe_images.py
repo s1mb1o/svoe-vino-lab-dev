@@ -5,17 +5,28 @@ against `ANSWER_SCHEMA`, and fills the values of `image_description` that are no
 A value that is set stays: the owner set it, and it goes into the prompt as a fixed fact.
 Read `docs/plans/26_image-description.md`.
 
+Stage 2 (plan 29, `docs/plans/29_image-details.md`): when no image waits for a class and
+`image_description.details` is true, the watcher sends the detail prompt of the next image
+that waits for a detail, with the cut of the image, and stores the valid answer in
+`image_detail` (`image_details.py`).
+
+Up to `image_description.workers` calls run at the same time, each in a worker of a thread
+pool (owner answers of 2026-09-25T23:58:53+0300, `docs/plans/35_vlm-workers.md`). The main
+thread alone takes the images, and it never takes an image that a call holds.
+
 The lab server starts `--watch --parent-pid <its pid>` when `image_description.watch` is
 true, and stops it at its exit. The lock file allows one watcher at a time.
 
 Usage:
-    python3 pipeline/describe_images.py --once           # one pass, then stop
-    python3 pipeline/describe_images.py --sha <sha256>   # one image
-    python3 pipeline/describe_images.py --watch          # wait for new images
+    python3 pipeline/describe_images.py --once                  # one pass, then stop
+    python3 pipeline/describe_images.py --sha <sha256>          # the class of one image
+    python3 pipeline/describe_images.py --detail-sha <sha256>   # the detail of one image
+    python3 pipeline/describe_images.py --watch                 # wait for new images
 """
 import argparse
 import base64
 import collections
+import concurrent.futures
 import fcntl
 import io
 import itertools
@@ -23,6 +34,7 @@ import json
 import os
 import sqlite3
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -35,6 +47,7 @@ from PIL import Image, ImageOps
 
 import comments
 import image_descriptions
+import image_details
 import imagestore
 import labdb
 import model_cache
@@ -47,7 +60,8 @@ LOG_PATH = os.path.join(ROOT, "work", "describe_images.log")
 
 # The key `image_description` of the configuration. A missing key takes its default.
 DEFAULTS = {"watch": False, "vlm": "qwen3.5-9b-nvfp4", "max_side": 1024,
-            "poll_seconds": 30, "max_attempts": 3}
+            "poll_seconds": 30, "max_attempts": 3, "workers": 1,
+            "details": False, "detail_max_side": 1536}
 MAX_TOKENS = 300
 TIMEOUT_SECONDS = 300
 # The wait after a failure of the service, doubled up to the maximum.
@@ -113,6 +127,47 @@ ANSWER_SCHEMA = {
 }
 VALIDATOR = jsonschema.Draft202012Validator(ANSWER_SCHEMA)
 
+# The detail prompts of plan 29: the prompts of the owner message of
+# 2026-09-25T19:14:31+0300. `{name}`, `{names}`, and `{key}` come from
+# `image_details.NAMES`; for `bottle` the text is the text of the owner.
+PACKAGE_PROMPT = """This is a catalogue photo of one wine {name}. Describe its label, so that a person can tell this {name} apart from similar {names} of the same producer.
+Report only what you see. Do not guess. If a text or a number is too small to read, write "unreadable" for it.
+Write each text exactly as it is printed, in its own alphabet. Do not translate it and do not transliterate it.
+Answer with one JSON object with these keys:
+"texts": a list of every text that you can read, each as {"text": "...", "where": "..."};
+"numbers": a list of every number that you can read, such as a year, a ratio or a percentage, each as {"value": "...", "where": "..."};
+"vintage": the vintage year if the label shows one, else null;
+"colours": the main colours of the label;
+"design": a short description of the design and the layout of the label;
+"marks": a list of stickers, medals, seals and other marks, each with its place;
+"{key}": the colour and the shape of the {name} and of the capsule."""
+
+LABEL_PROMPT = """This is a catalogue photo of one wine {name} label. Describe it.
+Report only what you see. Do not guess. If a text or a number is too small to read, write "unreadable" for it.
+Write each text exactly as it is printed, in its own alphabet. Do not translate it and do not transliterate it.
+Answer with one JSON object with these keys:
+"texts": a list of every text that you can read, each as {"text": "...", "where": "..."};
+"numbers": a list of every number that you can read, such as a year, a ratio or a percentage, each as {"value": "...", "where": "..."};
+"vintage": the vintage year if the label shows one, else null;
+"colours": the main colours of the label;
+"design": a short description of the design and the layout of the label;
+"marks": a list of stickers, medals, seals and other marks, each with its place;"""
+
+# The keys of a detail answer are strict. The values accept the forms that the probe of
+# 2026-09-25 saw, because the prompt does not fix them.
+DETAIL_PROPERTIES = {
+    "texts": {"type": "array", "items": {
+        "type": "object", "required": ["text", "where"],
+        "properties": {"text": {"type": "string"}, "where": {"type": "string"}}}},
+    "numbers": {"type": "array", "items": {
+        "type": "object", "required": ["value", "where"],
+        "properties": {"value": {"type": ["string", "number"]}, "where": {"type": "string"}}}},
+    "vintage": {"type": ["string", "integer", "null"]},
+    "colours": {"type": ["array", "string"], "items": {"type": "string"}},
+    "design": {"type": "string"},
+    "marks": {"type": "array", "items": {"type": ["string", "object"]}},
+}
+
 
 class DescribeError(Exception):
     """One VLM call failed. `counted` is False for a failure of the service (an HTTP 429
@@ -135,11 +190,18 @@ def settings(config):
         raise ValueError("image_description MUST be a mapping")
     unknown = sorted(set(value) - set(DEFAULTS))
     if unknown:
-        raise ValueError("image_description has the unknown key %s" % ", ".join(unknown))
+        # `max_tokens` of the `vlm` entry replaced `detail_max_tokens` (owner answer of
+        # 2026-09-25).
+        hint = ("; max_tokens of the vlm entry replaced detail_max_tokens"
+                if "detail_max_tokens" in unknown else "")
+        raise ValueError("image_description has the unknown key %s%s"
+                         % (", ".join(unknown), hint))
     out = dict(DEFAULTS, **value)
-    for key in ("max_side", "poll_seconds", "max_attempts"):
+    for key in ("max_side", "poll_seconds", "max_attempts", "workers", "detail_max_side"):
         if not isinstance(out[key], int) or isinstance(out[key], bool) or out[key] < 1:
             raise ValueError("image_description.%s MUST be a positive integer" % key)
+    if not isinstance(out["details"], bool):
+        raise ValueError("image_description.details MUST be true or false")
     return out
 
 
@@ -206,13 +268,17 @@ def image_data_url(path, max_side):
     return "data:image/jpeg;base64," + base64.b64encode(buffer.getvalue()).decode("ascii")
 
 
-def payload_of(entry, data_url, prompt):
-    """Return the chat request of one image."""
+def payload_of(entry, data_url, prompt, max_tokens=MAX_TOKENS, schema=None):
+    """Return the chat request of one image. With `schema`, the request asks the service
+    to keep to that JSON Schema (`json_schema`, strict); else it asks for a JSON object."""
+    response_format = {"type": "json_object"} if schema is None else {
+        "type": "json_schema", "json_schema": {"name": "answer", "strict": True,
+                                               "schema": schema}}
     payload = {
         "model": entry.model,
         "temperature": 0,
-        "max_tokens": MAX_TOKENS,
-        "response_format": {"type": "json_object"},
+        "max_tokens": max_tokens,
+        "response_format": response_format,
         "messages": [{"role": "user", "content": [
             {"type": "image_url", "image_url": {"url": data_url}},
             {"type": "text", "text": prompt}]}],
@@ -224,14 +290,15 @@ def payload_of(entry, data_url, prompt):
     return payload
 
 
-def parse_answer(text):
+def parse_answer(text, validator=VALIDATOR):
     """Return the answer as a dict, or raise DescribeError. The text MUST be one JSON
-    object, and the object MUST be valid against ANSWER_SCHEMA."""
+    object, and the object MUST be valid against the schema of `validator`
+    (ANSWER_SCHEMA by default)."""
     try:
         answer = json.loads(text)
     except (TypeError, ValueError) as exc:
         raise DescribeError("the answer is not JSON (%s): %.300s" % (exc, text))
-    error = next(iter(sorted(VALIDATOR.iter_errors(answer), key=lambda e: list(e.path))), None)
+    error = next(iter(sorted(validator.iter_errors(answer), key=lambda e: list(e.path))), None)
     if error is not None:
         where = "/".join(str(part) for part in error.path) or "the answer"
         raise DescribeError("the answer fails the schema at %s: %s; answer: %.300s"
@@ -263,13 +330,14 @@ def post(entry, payload, timeout=TIMEOUT_SECONDS):
         raise DescribeError("the body is not JSON: %s" % exc)
 
 
-def describe(entry, path, preset, max_side):
-    """Ask the VLM about one image file. Return (answer, model, ms, cache hit).
+def ask(entry, payload, validator=VALIDATOR):
+    """Send one request, and check the answer against the schema of `validator`. Return
+    (answer, model, ms, cache hit).
 
     A call that repeats a valid earlier call reads `model_cache`. A record is stored only
-    after the answer passed the schema check.
+    after the answer passed the schema check. An answer that `max_tokens` cut off is a
+    failure.
     """
-    payload = payload_of(entry, image_data_url(path, max_side), prompt_text(preset))
     fields = model_cache.vlm_fields(entry.url, payload)
     record = model_cache.lookup(fields) if fields else None
     if record is not None:
@@ -279,13 +347,56 @@ def describe(entry, path, preset, max_side):
         body = post(entry, payload)
         ms, hit = (time.perf_counter() - started) * 1000, False
     try:
-        text = body["choices"][0]["message"]["content"]
+        choice = body["choices"][0]
+        text = choice["message"]["content"]
     except (KeyError, IndexError, TypeError):
         raise DescribeError("the body holds no answer: %.300s" % json.dumps(body))
-    answer = parse_answer(text)
+    if choice.get("finish_reason") == "length":
+        raise DescribeError("max_tokens %s cut off the answer: %.300s"
+                            % (payload.get("max_tokens"), text))
+    answer = parse_answer(text, validator)
     if not hit and fields:
         model_cache.store(fields, body, ms)
     return answer, body.get("model") or entry.model, ms, hit
+
+
+def describe(entry, path, preset, max_side):
+    """Ask the VLM for the class of one image file. Return (answer, model, ms, cache hit)."""
+    return ask(entry, payload_of(entry, image_data_url(path, max_side), prompt_text(preset)))
+
+
+def detail_prompt(prompt_kind, package_type):
+    """Return the detail prompt of plan 29 for a prompt kind (`package` or `label`) and a
+    package type of `image_details.NAMES`. The placeholders are replaced as plain text,
+    because the prompts hold `{` and `}`."""
+    name, names = image_details.NAMES[package_type]
+    template = PACKAGE_PROMPT if prompt_kind == "package" else LABEL_PROMPT
+    return (template.replace("{names}", names).replace("{name}", name)
+            .replace("{key}", package_type))
+
+
+def detail_schema(prompt_kind, key):
+    """Return the JSON Schema of a detail answer. The package prompt adds the key of the
+    package type."""
+    properties = dict(DETAIL_PROPERTIES)
+    if prompt_kind == "package":
+        properties[key] = {"type": ["string", "object"]}
+    return {"type": "object", "additionalProperties": False,
+            "required": list(properties), "properties": properties}
+
+
+def describe_detail(entry, path, prompt_kind, package_type, cfg):
+    """Ask the VLM for the detail of one image file. Return (answer, model, ms, cache hit).
+
+    The request sends the schema of the answer in `response_format`, because the package
+    prompt alone gave the key `text` instead of `texts` in 3 of 4 answers (owner answer of
+    2026-09-25T21:45:41+0300). The code checks the answer against the same schema.
+    `max_tokens` is the value of the `vlm` entry (`vlm_config.DEFAULT_MAX_TOKENS` when
+    absent)."""
+    schema = detail_schema(prompt_kind, package_type)
+    payload = payload_of(entry, image_data_url(path, cfg["detail_max_side"]),
+                         detail_prompt(prompt_kind, package_type), entry.max_tokens, schema)
+    return ask(entry, payload, jsonschema.Draft202012Validator(schema))
 
 
 def cached_reply(entry, path, row, max_side):
@@ -316,8 +427,13 @@ def cached_reply(entry, path, row, max_side):
     return None
 
 
+# The workers of `run` write log lines at the same time. The lock keeps each line whole.
+LOG_LOCK = threading.Lock()
+
+
 def log(message):
-    print("%s %s" % (comments.now_utc(), message), flush=True)
+    with LOG_LOCK:
+        print("%s %s" % (comments.now_utc(), message), flush=True)
 
 
 def describe_one(db_path, entry, cfg, sha256, folder, extension):
@@ -349,6 +465,30 @@ def describe_one(db_path, entry, cfg, sha256, folder, extension):
         json.dumps(answer["content_roles"]), ms / 1000, " (cache)" if hit else "",
         "; " + kept if kept else ""))
     return took
+
+
+def detail_one(db_path, entry, cfg, item):
+    """Get the detail of one target of `image_details.pending` and store it. Return True
+    on a success. Raise DescribeError for a failure of the service, after it is stored."""
+    sha256, kind, package_type, input_sha256, folder, extension = item
+    path = os.path.join(imagestore.folder_of(db_path, folder),
+                        "%s.%s" % (input_sha256, extension))
+    try:
+        answer, model, ms, hit = describe_detail(entry, path, kind, package_type, cfg)
+    except (DescribeError, OSError) as exc:
+        counted = getattr(exc, "counted", True)
+        write(db_path, lambda conn: image_details.record_failure(
+            conn, item, str(exc)[:1000], count=counted))
+        log("%s detail failed%s: %s" % (sha256[:12], "" if counted else " (not counted)", exc))
+        if not counted:
+            raise
+        return False
+    write(db_path, lambda conn: image_details.record_answer(
+        conn, item, answer, entry.name, model))
+    log("%s detail ok %s %s, %d texts, %.1f s%s" % (
+        sha256[:12], kind, package_type, len(answer["texts"]), ms / 1000,
+        " (cache)" if hit else ""))
+    return True
 
 
 def parent_alive(pid):
@@ -391,8 +531,9 @@ def take_lock(wait, parent_pid=None):
 class Status:
     """The state of the watcher in `image_descriptions.STATUS_PATH`, for the indicator of
     `/dataset`: `working` (a call runs), `idle` (no image waits), `waiting` (the service or
-    the database cannot be used now), or `stopped`. The speed is the mean time of the
-    last 20 images."""
+    the database cannot be used now), or `stopped`. The speed is the wall time per image
+    of the last 20 images. With more than one worker it is the rate of the backlog, not
+    the time of one call (owner answer of 2026-09-25T23:58:53+0300)."""
 
     def __init__(self, entry, cfg):
         self.base = {"pid": os.getpid(), "vlm": entry.name, "model": entry.model,
@@ -406,62 +547,122 @@ class Status:
             self.base, state=state, updated_at=comments.now_utc(), last=self.last,
             seconds_per_image=speed, **fields))
 
-    def step(self, sha256, described, seconds):
-        self.times.append(seconds)
+    def step(self, sha256, described, seconds, wall):
+        """Record one image that ended: `seconds` is the time of its call, `wall` is the
+        wall time since the end of the image before it."""
+        self.times.append(wall)
         self.last = {"sha256": sha256, "described": bool(described),
                      "seconds": round(seconds, 2), "at": comments.now_utc()}
+
+
+def next_items(db_path, cfg, count, busy):
+    """Return up to `count` pairs (stage, item) to start, with no image of the set `busy`.
+    The images that wait for a class come first. When fewer wait and `cfg["details"]` is
+    true, the images that wait for a detail fill the rest (plan 29)."""
+    limit = count + len(busy)
+    with closing(open_db(db_path)) as conn:
+        found = [("class", item) for item in image_descriptions.pending(
+            conn, cfg["max_attempts"], limit=limit) if item[0] not in busy]
+        if len(found) < count and cfg["details"]:
+            found += [("detail", item) for item in image_details.pending(
+                conn, cfg["max_attempts"], limit=limit) if item[0] not in busy]
+    return found[:count]
+
+
+def run_item(db_path, entry, cfg, stage, item):
+    """Make the call of one pair of `next_items` in a worker of the pool."""
+    if stage == "class":
+        return describe_one(db_path, entry, cfg, *item)
+    return detail_one(db_path, entry, cfg, item)
 
 
 def run(db_path, entry, cfg, watch=False, parent_pid=None):
     """Describe the pending images, the newest link first. Without `watch`, stop when no
     image is pending. With `watch`, wait for new images until the parent process is gone.
-    Return the number of described images. Each step writes the state (`Status`)."""
+    Return the number of described images. Each step writes the state (`Status`).
+
+    Up to `cfg["workers"]` calls run at the same time. The main thread alone takes the
+    images (`next_items`), and it never takes an image that a call holds. So two calls
+    never send the same image.
+
+    A failure of the service stops the new calls for the backoff time. The calls that run
+    finish, and their results are stored. A failure during the backoff does not double
+    it. Without `watch`, the first failure is raised after the calls that run ended."""
     done, backoff, waited = 0, BACKOFF_SECONDS, None
     status = Status(entry, cfg)
+    running = {}  # future -> (sha256, stage, start time), in the order of the starts
+    resume = 0.0  # no new call starts before this time of `time.monotonic()`
+    mark = None  # the end of the last image, or the start that made the pool busy
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=cfg["workers"])
     try:
         while parent_alive(parent_pid):
-            try:
-                with closing(open_db(db_path)) as conn:
-                    item = image_descriptions.pending(conn, cfg["max_attempts"], limit=1)
-            except (WaitError, sqlite3.Error) as exc:
-                if not watch:
-                    raise
-                status.set("waiting", error=str(exc))
-                if str(exc) != waited:
+            ended = 0
+            for future in [f for f in running if f.done()]:
+                sha256, stage, started = running.pop(future)
+                ended += 1
+                try:
+                    described = future.result()
+                except DescribeError as exc:
+                    if not watch:
+                        raise
+                    status.set("waiting", error=str(exc))
+                    if time.monotonic() >= resume:
+                        resume = time.monotonic() + backoff
+                        backoff = min(backoff * 2, BACKOFF_MAX_SECONDS)
+                    continue
+                except (WaitError, sqlite3.Error) as exc:
+                    if not watch:
+                        raise
+                    status.set("waiting", error=str(exc))
                     log("waiting: %s" % exc)
-                    waited = str(exc)
-                if not sleep(cfg["poll_seconds"], parent_pid):
-                    break
-                continue
-            waited = None
-            if not item:
+                    resume = max(resume, time.monotonic() + cfg["poll_seconds"])
+                    continue
+                now = time.monotonic()
+                done += described
+                status.step(sha256, described, now - started, now - mark)
+                mark = now
+                backoff = BACKOFF_SECONDS
+            found = None
+            free = cfg["workers"] - len(running)
+            if free > 0 and time.monotonic() >= resume:
+                try:
+                    found = next_items(db_path, cfg, free,
+                                       {sha256 for sha256, _, _ in running.values()})
+                except (WaitError, sqlite3.Error) as exc:
+                    if not watch:
+                        raise
+                    status.set("waiting", error=str(exc))
+                    if str(exc) != waited:
+                        log("waiting: %s" % exc)
+                        waited = str(exc)
+                    resume = time.monotonic() + cfg["poll_seconds"]
+                else:
+                    waited = None
+            for stage, item in found or ():
+                started = time.monotonic()
+                if not running:
+                    mark = started
+                status.set("working", sha256=item[0], stage=stage)
+                running[pool.submit(run_item, db_path, entry, cfg, stage, item)] = (
+                    item[0], stage, started)
+            if running:
+                if ended and not found and time.monotonic() >= resume:
+                    # The state names the newest call that runs, not a call that ended.
+                    sha256, stage, _ = list(running.values())[-1]
+                    status.set("working", sha256=sha256, stage=stage)
+                # Wake at the end of a call, and at least once each second for the check
+                # of the parent and the end of a backoff.
+                concurrent.futures.wait(list(running), timeout=1.0,
+                                        return_when=concurrent.futures.FIRST_COMPLETED)
+            elif found == []:
                 status.set("idle")
                 if not watch or not sleep(cfg["poll_seconds"], parent_pid):
                     break
-                continue
-            sha256 = item[0][0]
-            status.set("working", sha256=sha256)
-            started = time.monotonic()
-            try:
-                described = describe_one(db_path, entry, cfg, *item[0])
-                done += described
-                status.step(sha256, described, time.monotonic() - started)
-                backoff = BACKOFF_SECONDS
-            except DescribeError as exc:
-                if not watch:
-                    raise
-                status.set("waiting", error=str(exc))
-                if not sleep(backoff, parent_pid):
-                    break
-                backoff = min(backoff * 2, BACKOFF_MAX_SECONDS)
-            except (WaitError, sqlite3.Error) as exc:
-                if not watch:
-                    raise
-                status.set("waiting", error=str(exc))
-                log("waiting: %s" % exc)
-                if not sleep(cfg["poll_seconds"], parent_pid):
-                    break
+            elif not sleep(max(0.0, resume - time.monotonic()), parent_pid):
+                # A backoff or a wait for the database, and no call runs.
+                break
     finally:
+        pool.shutdown(wait=True)
         status.set("stopped")
     return done
 
@@ -473,9 +674,11 @@ def main(argv=None):
     mode.add_argument("--once", action="store_true", help="one pass, then stop")
     mode.add_argument("--watch", action="store_true", help="wait for new images")
     mode.add_argument("--sha", help="describe one image")
+    mode.add_argument("--detail-sha", help="get the detail of one eligible image (plan 29)")
     parser.add_argument("--parent-pid", type=int, help="stop when this process is gone")
     parser.add_argument("--retry-failed", action="store_true",
-                        help="set the failure count of each unfilled row to 0 first")
+                        help="set the failure count of each unfilled row to 0 first, "
+                             "also of the details")
     args = parser.parse_args(argv)
     sys.stdout.reconfigure(line_buffering=True)
     try:
@@ -492,12 +695,26 @@ def main(argv=None):
         print("error: another watcher holds %s" % LOCK_PATH, file=sys.stderr)
         return 1
     with lock:
-        log("start: %s, vlm %s (%s), database %s" % (
-            "watch" if args.watch else "sha " + args.sha if args.sha else "once",
-            entry.name, entry.model, db_path))
+        log("start: %s, vlm %s (%s), workers %d, details %s, database %s" % (
+            "watch" if args.watch else "sha " + args.sha if args.sha
+            else "detail-sha " + args.detail_sha if args.detail_sha else "once",
+            entry.name, entry.model, cfg["workers"], "on" if cfg["details"] else "off",
+            db_path))
         try:
             if args.retry_failed:
                 log("retry: %d failed rows" % write(db_path, image_descriptions.reset_failed))
+                log("retry: %d failed detail rows" % write(db_path, image_details.reset_failed))
+            if args.detail_sha:
+                with closing(open_db(db_path)) as conn:
+                    item = image_details.target(conn, args.detail_sha)
+                    done = item is not None and image_details.is_done(conn, item)
+                if item is None:
+                    print("error: no eligible image %s" % args.detail_sha, file=sys.stderr)
+                    return 1
+                if done:
+                    log("%s detail skipped: it is done for these inputs" % args.detail_sha[:12])
+                    return 1
+                return 0 if detail_one(db_path, entry, cfg, tuple(item)) else 1
             if args.sha:
                 with closing(open_db(db_path)) as conn:
                     row = conn.execute("SELECT folder, extension FROM image WHERE sha256 = ?",

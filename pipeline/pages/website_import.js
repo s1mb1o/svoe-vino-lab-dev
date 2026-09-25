@@ -50,6 +50,9 @@
 /* pre-wrap shows a change of the white space alone, for example two spaces. */
 .website-choice .value { overflow-wrap: anywhere; white-space: pre-wrap; }
 .website-choice .side { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+/* The pixel size of the file under the image of a main image conflict. */
+.website-thumb { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.website-thumb .dims { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
 .website-status { margin-top: 12px; color: var(--muted); white-space: pre-wrap; }
 .website-status.error { color: var(--neg); }
 .website-result { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px;
@@ -226,7 +229,8 @@
       sides = [["database", entry.database.url, entry.database.source_name],
                ["website", runUrl(entry.website.file), entry.website.name]].map(
         ([side, url, file]) => `<label class="website-choice"><input type="radio"
-          name="${esc(name)}" value="${side}" data-conflict="${esc(entry.id)}">${image(url, file)}
+          name="${esc(name)}" value="${side}" data-conflict="${esc(entry.id)}"><span
+          class="website-thumb">${image(url, file)}<span class="dims"></span></span>
           <span><span class="side">${side}</span><br><span class="value">${esc(file)}</span></span></label>`);
     }
     const what = entry.kind === "text" ? `the field <strong>${esc(entry.field)}</strong>`
@@ -395,6 +399,11 @@
   modal.addEventListener("change", event => {
     if (event.target.matches("input[data-conflict]")) refreshApply();
   });
+  // The load event does not bubble, so the listener catches it in the capture phase.
+  modal.addEventListener("load", event => {
+    const dims = event.target.closest(".website-thumb img") && event.target.nextElementSibling;
+    if (dims) dims.textContent = `${event.target.naturalWidth}×${event.target.naturalHeight}`;
+  }, true);
   document.addEventListener("keydown", event => {
     if (event.key !== "Escape") return;
     if (!preview.hidden) {

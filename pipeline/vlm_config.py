@@ -10,8 +10,12 @@ The key holds a list. One entry is one named VLM inference:
     model           the model name that the service knows
     key             absent or null (the service needs no key), or `{env:NAME}`: the key
                     is read from the shell variable NAME at run time
+    max_tokens      absent (DEFAULT_MAX_TOKENS) or a positive integer: the `max_tokens`
+                    of a detail request of `describe_images.py` (owner answer of
+                    2026-09-25). The other callers keep their own limits.
 
-Every entry MUST hold the first five keys, MAY hold `key`, and MUST hold no other key.
+Every entry MUST hold the first five keys, MAY hold `key` and `max_tokens`, and MUST hold
+no other key.
 A key value in the file is refused, so that no key is written into `config.yaml`.
 
 The module imports the standard library alone, so `scripts/` can import it too.
@@ -23,7 +27,9 @@ import re
 PROTOCOLS = ("openai",)
 THINKING_FIELDS = ("chat_template_kwargs", "top_level")
 REQUIRED = ("name", "protocol", "thinking_field", "endpoint", "model")
-KEYS = REQUIRED + ("key",)
+KEYS = REQUIRED + ("key", "max_tokens")
+# The owner chose 8192 on 2026-09-25.
+DEFAULT_MAX_TOKENS = 8192
 
 _ENV_KEY = re.compile(r"\{env:([A-Za-z_][A-Za-z0-9_]*)\}\Z")
 
@@ -33,7 +39,8 @@ class VlmConfigError(Exception):
 
 
 class Entry(collections.namedtuple(
-        "Entry", "name protocol thinking_field endpoint model key_env")):
+        "Entry", "name protocol thinking_field endpoint model key_env max_tokens",
+        defaults=(DEFAULT_MAX_TOKENS,))):
     """One VLM inference. `key_env` is the name of the shell variable of the key, or ""
     when the service needs no key."""
     __slots__ = ()
@@ -83,8 +90,11 @@ def _entry(item, index):
             raise VlmConfigError("%s: key MUST be null or {env:NAME}; never write a key "
                                  "value into the configuration" % where)
         key_env = match.group(1)
+    max_tokens = item.get("max_tokens", DEFAULT_MAX_TOKENS)
+    if not isinstance(max_tokens, int) or isinstance(max_tokens, bool) or max_tokens < 1:
+        raise VlmConfigError("%s: max_tokens MUST be a positive integer" % where)
     return Entry(item["name"], item["protocol"], item["thinking_field"],
-                 item["endpoint"], item["model"], key_env)
+                 item["endpoint"], item["model"], key_env, max_tokens)
 
 
 def entries(config):

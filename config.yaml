@@ -126,14 +126,84 @@ embeddings:
       max_num_patches: 256
     views: *views_c_f
 
-  # The configuration `mock` builds as any entry, with the same views and steps, but it
-  # sends no request: each prepared image gets a random unit vector of 256 values
-  # (`backend: mock`; no `base_url`, `model`, or `extra_body`). `pipeline/mock_run.py
-  # --set <set>` makes a run of it with random top-k candidates, to test the Runs page.
-  # Read docs/plans/23_runs-page.md.
-  - name: mock
-    backend: mock
-    views: *views_c_f
+# The clusters of the Clusters page (`/clusters`). The values apply to every entry of
+# `embeddings`. `pipeline/clusters.py` reads this key; a missing key takes the value that
+# is shown here. Read docs/plans/30_embedding-clusters.md, decisions D6 and D6a.
+# A wine pair is a link when the cosine of one pair of their images is at or above the
+# threshold of its space: `full_threshold` for the package images, `label_threshold` for
+# the label images. The page has no threshold input; the button "Build clusters" and
+# `pipeline/build_clusters.py` use these values.
+# A build stores no cluster with fewer than `min_cluster_size` wines; the page has no
+# input for it. A build stops, and keeps the old clusters.json, when one space has more
+# than `max_links` links or one cluster has more than `max_cluster_size` wines.
+clusters:
+  full_threshold: 0.95
+  label_threshold: 0.95
+  min_cluster_size: 2
+  max_links: 20000
+  max_cluster_size: 50
+
+# The pipelines. A pipeline is a matcher that answers a test photo with a ranked list of
+# wines. The dialog `Run>` of `/testset` and the filter `Pipeline` of `/runs` show these
+# entries; they do not show the entries of `embeddings`. `pipeline/pipelines.py` reads
+# this key. The key `configuration` of `run.json` names the pipeline of a run. The
+# section `embeddings` prepares and uses the vectors; this section holds the runs (owner
+# message of 2026-09-26T00:11:19+0300). Read docs/plans/34_pipeline-section.md.
+pipeline:
+  # The pipeline `vino-svoe-search-by-photo` is the official recognizer of vino-svoe.ru,
+  # the baseline to beat (`backend: svoe-vino-ru`). It holds no vectors and has no build.
+  # `pipeline/remote_run.py --name vino-svoe-search-by-photo --set <set>` sends each
+  # photo of the set to the API as it is and writes a run. The request keys have the
+  # meaning of the same keys of `backends.yaml` (docs/match-runner.md). Read
+  # docs/plans/31_remote-configuration.md.
+  - name: vino-svoe-search-by-photo
+    backend: svoe-vino-ru
+    url: https://api.vino-svoe.ru/v1/wines/search-by-photo
+    field: image            # the name of the multipart field that holds the image
+    response: auto          # auto | slug-object | slug-array | candidates
+    query: { limit: 10 }    # the query string that asks for a ranked list
+    top_k: 10
+    timeout_s: 40
+    # How many requests this server takes at the same time. Measured on 2026-09-17
+    # from cloudzy-ams with 36 requests: at 4 at once the wall time fell by 3.2x and the
+    # median latency did not rise. At 8 at once the wall time fell by 4.7x, and the
+    # median latency rose by 35 percent, from 2377 ms to 3198 ms. Read `ResearchLog.md`.
+    # Use `--workers 4` for the rate that costs no latency, and `--workers 1` for a run
+    # whose latency is compared with the jury harness.
+    workers: 8
+    headers: {}             # a value "env:NAME" reads the environment variable NAME
+
+  # Two basic pipelines of the embedding `gx10-siglip2-so400m-patch16-naflex-p256` (owner
+  # message of 2026-09-26T00:45:33+0300 and the answers of 00:52:41 and 00:57:59). The key `views` holds the steps of the
+  # test photo; the catalogue side stays the index of the entry, and the view `full` of
+  # the photo is compared with the `full` vectors of the index. `white_background` does
+  # not change an opaque photo; a transparent area becomes white.
+  # `siglip2-p256-as-is`: the photo as it is, resized to a long side of 1024 px.
+  - name: siglip2-p256-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p256
+    views:
+      full:
+        steps:
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+
+  # `siglip2-p256-crop`: SAM3 finds the package, and the photo is cut to its box; the
+  # background inside the box stays.
+  - name: siglip2-p256-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p256
+    views:
+      full:
+        steps:
+          - step: segment
+            target: package
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
 
 # The VLM inferences. One entry: a name, a protocol, the thinking field, an endpoint, a
 # model, and a key. `pipeline/vlm_config.py` reads this key. A script names an entry by
@@ -148,6 +218,10 @@ embeddings:
 # `key` is absent or null when the service needs no key, or `{env:NAME}`: the key is
 # read from the shell variable NAME at run time. Never write a key value into this
 # file. The gx10 gateway needs no key.
+#
+# `max_tokens` is absent (8192) or a positive integer: the `max_tokens` of a detail
+# request of `pipeline/describe_images.py` (owner answer of 2026-09-25). The other
+# scripts keep their own limits.
 vlm:
   - name: qwen3.5-9b-nvfp4
     protocol: openai
@@ -196,11 +270,20 @@ vlm:
 # `content_roles` in the table `image_description`. Read docs/plans/26_image-description.md.
 # `watch: true` makes the lab server start `pipeline/describe_images.py --watch` and stop
 # it at its exit. The watcher sends each linked image with no VLM description to the
-# `vlm` entry, one at a time, and fills only the values that are not set. It sleeps
-# `poll_seconds` when no image waits. An image stops after `max_attempts` failed answers.
+# `vlm` entry and fills only the values that are not set. It sleeps `poll_seconds` when
+# no image waits. An image stops after `max_attempts` failed answers.
+# `workers` is the number of requests at the same time (1 when absent). Each request
+# holds one image; two requests never hold the same image. Read
+# docs/plans/35_vlm-workers.md. The owner chose 8 on 2026-09-25.
+# `details: true` turns on stage 2 (docs/plans/29_image-details.md): when no image waits
+# for a class, the watcher sends the detail prompt with the cut of the next eligible image
+# (long side `detail_max_side`, `max_tokens` of the `vlm` entry) into `image_detail`.
 image_description:
   watch: true
   vlm: qwen3.5-9b-nvfp4
   max_side: 1024
   poll_seconds: 30
   max_attempts: 3
+  workers: 8
+  details: true
+  detail_max_side: 1536

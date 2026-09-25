@@ -13,6 +13,7 @@ Rules:
 - The caller stores a success alone. A failure is not stored.
 - A record is a hit only when its request fields equal the request fields of the call.
   A file that cannot be read is a miss.
+- With `READ` off, each lookup is a miss, and `store` still writes the fresh answer.
 - The module imports the standard library alone, so `scripts/` can import it too.
 """
 import base64
@@ -30,6 +31,12 @@ VERSION = 1
 # The directory of the records. A unit test sets this to a temporary directory.
 ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                     "data", "cache")
+
+# The reads of the records in this process. `run_job.py --no-cache` (the checkbox `Use
+# caches` of the dialog `Run>`, off) sets it to False before it builds the backend: each
+# model call then goes to its service, so the latency of the run is real time (owner
+# answers of 2026-09-26T01:32:00+0300). Read docs/plans/39_use-caches-checkbox.md.
+READ = True
 
 _UNSAFE = re.compile(r"[^A-Za-z0-9._-]")
 _warned = False
@@ -92,7 +99,9 @@ def path_of(fields, key=None):
 
 
 def lookup(fields):
-    """Return the record of `fields`, or None."""
+    """Return the record of `fields`, or None. With `READ` off, return None."""
+    if not READ:
+        return None
     path = path_of(fields)
     try:
         with open(path, encoding="utf-8") as fh:

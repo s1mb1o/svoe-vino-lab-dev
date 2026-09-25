@@ -58,8 +58,11 @@ class RunRoutesTest(unittest.TestCase):
         self.config = self.root / "config.yaml"
         self.config.write_text(json.dumps({
             "rootdir": str(self.root), "database_file": "lab.sqlite3",
-            "embeddings": [{"name": "bad", "backend": "none"},
-                           {"name": "mock", "backend": "mock", "views": VIEWS_C_F}]}),
+            "embeddings": [{"name": "gw", "backend": "openai", "base_url": "http://x/v1",
+                            "model": "m", "views": VIEWS_C_F}],
+            "pipeline": [{"name": "bad", "backend": "none"},
+                         {"name": "remote", "backend": "svoe-vino-ru",
+                          "url": "http://127.0.0.1:9/v1/wines/search-by-photo"}]}),
             encoding="utf-8")
         self.server = LAB.make_server(self.db, port=0, config_path=str(self.config))
         self.server.runs_dir = str(self.runs)
@@ -126,8 +129,9 @@ class RunRoutesTest(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual([(r["id"], r["configuration"]) for r in data["runs"]],
                          [(MOCK_RUN, "mock"), (OLD_RUN, None)])
+        # The pipelines alone (plan 34): the embedding `gw` is not in the list.
         self.assertEqual([(c["name"], c["backend"]) for c in data["configurations"]],
-                         [("bad", None), ("mock", "mock")])
+                         [("bad", None), ("remote", "svoe-vino-ru")])
         self.assertIn("backend MUST be one of", data["configurations"][0]["error"])
         self.assertIsNone(data["config_error"])
 

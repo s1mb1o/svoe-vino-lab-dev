@@ -11,10 +11,11 @@ The page shows the test sets of the lab database and writes the labels of their 
     POST /api/testset-box         {set, place, file, box}; box [l, t, r, b] or null
     POST /api/testset-wine-note   {set, slug, text}; an empty text removes it
     POST /api/testset-exclude     {set, slug, excluded, reason}
-    POST /api/testset-move        {set, place, file, to}; to a slug or __null__
+    POST /api/testset-move        {set, place, file, to}; to a slug, __null__ (the row
+                                  "No Match"), or __drawer__ (the Drawer)
     POST /api/testset-upload?set=<name>&place=<slug>&name=<file name>
-                                  the body is the bytes of one image; place a slug
-                                  or __null__
+                                  the body is the bytes of one image; place a slug,
+                                  __null__, or __drawer__
 
 A write runs in one transaction. `lab_server.py` answers HTTP 503 for an error of the
 database or of the configuration.

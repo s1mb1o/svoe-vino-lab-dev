@@ -1,0 +1,192 @@
+"""Run one pipeline of `config.yaml` (the key `pipeline`) on one test set, as a job of
+the lab server.
+
+Usage:
+    python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N]
+        [--workers N] [--no-cache] [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
+
+The button `Run>` of `/testset` starts this script through `run_jobs.start`. The output
+is one JSON event on each line; the lab server writes it to
+`work/run-jobs/<pipeline>/job.log`. The events: `start`, `progress` (after each
+answer), `run_dir`, `log`, `stopping`, and one final event `done`, `stopped`, or
+`failed`. Read docs/plans/32_testset-run-button.md and docs/plans/34_pipeline-section.md.
+
+A pipeline of the backend `svoe-vino-ru` runs as `remote_run.py`, and the backend
+`embedding` runs as `embedding_run.py` (plan 33). `benchmark.run_benchmark` writes the run
+files, so the run is the same as a run of those scripts. SIGTERM stops the job as Ctrl+C stops those scripts: the files of the
+answered photos are written, and the final event is `stopped`.
+
+`--no-cache` is the checkbox `Use caches` of the dialog, off: the job reads no record of
+`model_cache`, so each model call goes to its service and the latency is real time; the
+fresh answers are stored. The event `start` and `run.json` hold `use_cache`. Read
+docs/plans/39_use-caches-checkbox.md.
+"""
+import argparse
+import json
+import os
+import signal
+import sqlite3
+import sys
+import threading
+import time
+import traceback
+
+import benchmark  # also puts scripts/ on sys.path
+import embeddings
+import labdb
+import match_backends
+import model_cache
+import pipelines
+import remote_run
+import run_jobs
+
+
+def _line(event, fields):
+    record = {"event": event, "t": round(time.time(), 3), "time": embeddings.now()}
+    record.update(fields)
+    return json.dumps(record, ensure_ascii=False) + "\n"
+
+
+def emit(event, **fields):
+    sys.stdout.write(_line(event, fields))
+    sys.stdout.flush()
+
+
+class Counting:
+    """A backend of `benchmark.run_benchmark` that writes a `progress` event after each
+    answer. `benchmark.py` does not change."""
+
+    def __init__(self, backend, todo):
+        self.inner = backend
+        self.id, self.spec, self.top_k = backend.id, backend.spec, backend.top_k
+        self.todo = todo
+        self.done = 0
+        self.errors = 0
+        self._lock = threading.Lock()
+
+    def ask(self, path):
+        answer = self.inner.ask(path)
+        with self._lock:
+            self.done += 1
+            if answer[3]:
+                self.errors += 1
+            emit("progress", done=self.done, todo=self.todo, errors=self.errors)
+        return answer
+
+
+def build(entry, db_path, set_name, config_path):
+    """Return (the backend, the key `embeddings` of run.json, the seed or None) of one
+    pipeline."""
+    if entry.backend == pipelines.REMOTE_BACKEND:
+        return remote_run.build_backend(entry), remote_run.embeddings_state(entry), None
+    if entry.backend == pipelines.EMBEDDING_BACKEND:
+        import embedding_run  # noqa: E402  (the runner of plan 33, on demand)
+        backend = embedding_run.build_pipeline_backend(entry, config_path)
+        return backend, backend.catalogue.state, None
+    raise embeddings.ConfigError("the pipeline %s has the backend %s, which has no runner"
+                                 % (entry.name, entry.backend))
+
+
+def query_total(db_path, set_name, limit):
+    total = run_jobs.query_count(db_path, set_name)
+    return min(total, limit) if limit else total
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Run one pipeline of config.yaml on one test set, as a job of the "
+                    "lab server. The output is one JSON event on each line.")
+    parser.add_argument("--name", required=True, help="the name of the pipeline")
+    parser.add_argument("--set", required=True, dest="set_name", help="the test set")
+    parser.add_argument("--limit", type=int, default=None, help="the first N queries alone")
+    parser.add_argument("--workers", type=int, default=None,
+                        help="requests at a time; the default is the value of the entry")
+    parser.add_argument("--no-cache", dest="use_cache", action="store_false",
+                        help="read no answer of data/cache/: each model call goes to its "
+                             "service, so the latency is real time; the fresh answers are "
+                             "stored")
+    parser.add_argument("--config", default=embeddings.CONFIG_PATH, help="path of config.yaml")
+    parser.add_argument("--jobs-dir", default=run_jobs.JOBS_DIR, help="the directory of the jobs")
+    parser.add_argument("--runs-dir", default=benchmark.RUNS_DIR, help="the directory of the runs")
+    args = parser.parse_args(argv)
+    for value, what in ((args.limit, "--limit"), (args.workers, "--workers")):
+        if value is not None and value < 1:
+            emit("failed", message="%s MUST be 1 or more" % what)
+            return 2
+
+    directory = run_jobs.job_dir(args.jobs_dir, args.name)
+    try:
+        run_jobs.acquire_lock(directory)
+    except embeddings.Busy as exc:
+        emit("failed", message=str(exc))
+        return 3
+    stopped = threading.Event()
+
+    def on_term(signum, frame):
+        # The first SIGTERM stops the run; a later one waits for the files. The line goes
+        # out with one system call, because the signal can come in the middle of `emit`.
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        stopped.set()
+        os.write(sys.stdout.fileno(), _line("stopping", {"signal": "SIGTERM"}).encode())
+        raise KeyboardInterrupt
+
+    signal.signal(signal.SIGTERM, on_term)
+    run_id = None
+    try:
+        settings = pipelines.load(args.config)
+        try:
+            entry = settings.find(args.name)
+        except KeyError:
+            raise embeddings.ConfigError("config.yaml has no pipeline %s" % args.name)
+        todo = query_total(settings.db_path, args.set_name, args.limit)
+        # Before the backend exists, so that each client of `model_cache` follows it.
+        model_cache.READ = args.use_cache
+        backend, state, seed = build(entry, settings.db_path, args.set_name,
+                                     settings.config_path)
+        emit("start", pid=os.getpid(), configuration=args.name, set=args.set_name,
+             todo=todo, limit=args.limit,
+             workers=args.workers or int(backend.spec.get("workers") or 1), seed=seed,
+             use_cache=args.use_cache)
+        counting = Counting(backend, todo)
+
+        def log(message):
+            nonlocal run_id
+            prefix = "run directory: "
+            if message.startswith(prefix):
+                run_id = os.path.basename(message[len(prefix):])
+                emit("run_dir", run_id=run_id)
+            else:
+                emit("log", message=message.strip())
+
+        run_dir, met = benchmark.run_benchmark(
+            settings.db_path, args.set_name, counting, args.runs_dir, workers=args.workers,
+            limit=args.limit, embeddings=state, log=log, configuration=args.name,
+            use_cache=args.use_cache)
+        run_id = os.path.basename(run_dir)
+        pos = met["positive"]
+        summary = {"answered": counting.done, "errors": counting.errors,
+                   "recall_at_1": pos.get("recall_at_1"), "recall_at_5": pos.get("recall_at_5")}
+        if stopped.is_set():
+            emit("stopped", run_id=run_id, message="stopped after %d of %d photos"
+                 % (counting.done, todo), **summary)
+        else:
+            emit("done", run_id=run_id, message="recall@1 %s, recall@5 %s"
+                 % (pos.get("recall_at_1"), pos.get("recall_at_5")), **summary)
+        return 0
+    except KeyboardInterrupt:
+        emit("stopped", run_id=run_id, message="stopped before the first answer")
+        return 0
+    except (benchmark.BenchmarkError, embeddings.ConfigError, match_backends.BackendError,
+            labdb.SchemaError, sqlite3.Error, OSError) as exc:
+        emit("failed", run_id=run_id, message=str(exc))
+        return 1
+    except Exception as exc:  # noqa: BLE001 - the page shows each fatal error
+        traceback.print_exc()
+        emit("failed", run_id=run_id, message="%s: %s" % (type(exc).__name__, exc))
+        return 1
+    finally:
+        run_jobs.release_lock(directory)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -130,6 +130,17 @@ class ModelCacheTest(CacheCase):
         model_cache.store(fields, {"instances": [1]}, 5)
         self.assertEqual(model_cache.lookup(fields)["answer"], {"instances": [1]})
 
+    def test_with_read_off_a_lookup_misses_and_a_store_still_writes(self):
+        # The checkbox `Use caches` of the dialog `Run>`, off (plan 39).
+        self.addCleanup(setattr, model_cache, "READ", True)
+        fields = self.fields()
+        model_cache.store(fields, {"instances": [1]}, 5)
+        model_cache.READ = False
+        self.assertIsNone(model_cache.lookup(fields))
+        model_cache.store(fields, {"instances": [2]}, 6)
+        model_cache.READ = True
+        self.assertEqual(model_cache.lookup(fields)["answer"], {"instances": [2]})
+
     def test_parallel_writes_of_one_key_leave_one_whole_record(self):
         fields = self.fields()
         answer = {"instances": [{"mask_png_b64": "A" * 200000}]}

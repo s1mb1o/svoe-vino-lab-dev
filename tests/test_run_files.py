@@ -72,6 +72,18 @@ class RunFilesTest(unittest.TestCase):
         self.assertEqual((old["configuration"], old["backend"]), (None, "svm-x"))
         self.assertEqual((old["positive"], old["recall_at_1"]), (2, 0.5))
 
+    def test_run_head_holds_use_cache_as_a_boolean_alone(self):
+        # The checkbox `Use caches` of the dialog `Run>` (plan 39).
+        runs = str(self.runs)
+        for run_id, value in (("2026-09-26T100000Z-live", False),
+                              ("2026-09-26T110000Z-cached", True),
+                              ("2026-09-26T120000Z-wrong", "no")):
+            self.write_run(run_id, {"use_cache": value}, ROWS[:1])
+        self.assertIs(RF.run_head(runs, "2026-09-26T100000Z-live")["use_cache"], False)
+        self.assertIs(RF.run_head(runs, "2026-09-26T110000Z-cached")["use_cache"], True)
+        self.assertIsNone(RF.run_head(runs, "2026-09-26T120000Z-wrong")["use_cache"])
+        self.assertIsNone(RF.run_head(runs, "2026-09-25T100000Z-old")["use_cache"])
+
     def test_configuration_of_accepts_a_non_empty_string_alone(self):
         for meta, want in (({"configuration": "mock"}, "mock"), ({"configuration": ""}, None),
                            ({"configuration": 3}, None), ({}, None), (None, None)):

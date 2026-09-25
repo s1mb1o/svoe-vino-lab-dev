@@ -169,6 +169,32 @@ class Sam3ClientTest(unittest.TestCase):
             derive.SAM3_RETRIES, derive.time.sleep = old
         self.assertEqual(len(calls), 3)
 
+    def test_with_the_reads_off_a_repeated_post_asks_sam3_again(self):
+        # The checkbox `Use caches` of the dialog `Run>`, off (plan 39): the fresh answer
+        # is stored, so the next call with the reads on gets the newest answer.
+        client = derive.Sam3Client("http://sam3-live.invalid")
+        calls = []
+
+        class Response:
+            status_code = 200
+
+            def json(self):
+                return {"instances": [{"label": "can", "area": len(calls)}]}
+
+        def post(url, files=None, data=None, timeout=None):
+            calls.append(files["image"][1])
+            return Response()
+
+        client.session.post = post
+        self.addCleanup(setattr, derive.model_cache, "READ", True)
+        client._post(b"png-live", "bottle")
+        derive.model_cache.READ = False
+        second = client._post(b"png-live", "bottle")
+        self.assertEqual(len(calls), 2)
+        derive.model_cache.READ = True
+        self.assertEqual(client._post(b"png-live", "bottle"), second)
+        self.assertEqual(len(calls), 2)
+
     def test_repeated_post_reads_the_cache_and_a_failure_is_not_stored(self):
         import requests
         client = derive.Sam3Client("http://sam3-cache.invalid")

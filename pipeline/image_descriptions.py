@@ -12,9 +12,11 @@ reads it through `watcher_status`.
 """
 import json
 import os
+import re
 import tempfile
 
 import comments
+import image_details
 import labdb
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,6 +25,11 @@ STATUS_PATH = os.path.join(ROOT, "work", "describe_images.status.json")
 # The states that the watcher writes. `stopped` also stands for a missing file or a
 # process that is gone.
 STATES = ("working", "idle", "waiting", "stopped")
+# The first line of an entry of the watcher log: the UTC time and a word, for an image
+# the first 12 digits of its sha256. `detail_failures` sends the last LOG_LIMIT entries
+# of each image.
+LOG_LINE = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ (\S+)")
+LOG_LIMIT = 20
 
 # The fields of a description, in the order of the table, and the values of each field.
 FIELDS = ("package_type", "subject_scope", "package_view", "content_roles")
@@ -231,26 +238,77 @@ def _alive(pid):
     return True
 
 
+def max_attempts_of(status):
+    """Return `max_attempts` of the state that the watcher wrote, else 3."""
+    max_attempts = status.get("max_attempts")
+    if not isinstance(max_attempts, int) or max_attempts < 1:
+        max_attempts = 3
+    return max_attempts
+
+
 def watcher_status(conn, path=None):
     """Return the state of the watcher and the counts, for `GET
     /api/image-description-status`. A missing file, a state that is not known, or a
-    process that is gone gives the state `stopped`."""
+    process that is gone gives the state `stopped`. `stage` (`class` or `detail`) names
+    the stage of a `working` watcher; the `details_*` counts are the counts of plan 29."""
     status = read_status(path) or {}
     state = status.get("state")
     if state not in STATES or not _alive(status.get("pid")):
         state = "stopped"
-    max_attempts = status.get("max_attempts")
-    if not isinstance(max_attempts, int) or max_attempts < 1:
-        max_attempts = 3
+    max_attempts = max_attempts_of(status)
     answer = {"state": state, "pid": status.get("pid") if state != "stopped" else None}
     for key in ("vlm", "model", "started_at", "updated_at", "seconds_per_image", "last"):
         answer[key] = status.get(key)
     answer["error"] = status.get("error") if state == "waiting" else None
     answer["sha256"] = status.get("sha256") if state == "working" else None
+    answer["stage"] = status.get("stage") if state == "working" else None
     answer["slug"] = None
     if answer["sha256"]:
         row = conn.execute("SELECT wine_slug FROM wine_image WHERE sha256 = ? ORDER BY rowid "
                            "LIMIT 1", (answer["sha256"],)).fetchone()
         answer["slug"] = row[0] if row else None
     answer.update(counts(conn, max_attempts))
+    answer.update(image_details.counts(conn, max_attempts))
     return answer
+
+
+def log_entries(log_path, sha256s, limit=LOG_LIMIT):
+    """Return a dict: each sha256 of `sha256s` -> the last `limit` entries of the watcher
+    log that name its image, oldest first. An entry starts with a line of the form
+    `<UTC time> <the first 12 digits of the sha256> ...`; each line that follows with no
+    time belongs to it, for example the text of a cut answer. A file that cannot be read
+    gives no entry."""
+    wanted = {sha256[:12]: sha256 for sha256 in sha256s}
+    found = {sha256: [] for sha256 in sha256s}
+    if not wanted:
+        return found
+    entry = None
+    try:
+        with open(log_path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                line = line.rstrip("\n")
+                match = LOG_LINE.match(line)
+                if match:
+                    sha256 = wanted.get(match.group(1))
+                    entry = [line] if sha256 else None
+                    if entry is not None:
+                        found[sha256].append(entry)
+                elif entry is not None:
+                    entry.append(line)
+    except OSError:
+        return {sha256: [] for sha256 in sha256s}
+    return {sha256: ["\n".join(lines) for lines in entries[-limit:]]
+            for sha256, entries in found.items()}
+
+
+def detail_failures(conn, log_path, path=None):
+    """Return the answer of `GET /api/image-detail-failures`: the images of
+    `image_details.failed`, each with `log`, its entries of the watcher log `log_path`.
+    `max_attempts` is the value of the running watcher, else 3."""
+    max_attempts = max_attempts_of(read_status(path) or {})
+    failures = image_details.failed(conn, max_attempts)
+    logs = log_entries(log_path, [item["sha256"] for item in failures])
+    for item in failures:
+        item["log"] = logs[item["sha256"]]
+    return {"max_attempts": max_attempts, "log_file": os.path.relpath(log_path, ROOT),
+            "failures": failures}

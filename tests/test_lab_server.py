@@ -211,14 +211,11 @@ class LabServerTest(unittest.TestCase):
                      "/images/" + digest):
             self.assertEqual(self.request(path)[0], 404, path)
 
-    def test_disabled_pages_keep_the_navigation(self):
-        for route, name in (("/clusters", "Clusters"),):
-            status, _, body = self.request(route)
-            self.assertEqual(status, 503, route)
-            self.assertIn("The page %s is disabled for now." % name, body)
-            for href, label in LAB.NAV:
-                self.assertIn('href="%s">%s</a>' % (href, label), body)
-            self.assertIn('class="on" href="%s"' % route, body)
+    def test_clusters_page_is_on(self):
+        status, headers, body = self.request("/clusters")
+        self.assertEqual(status, 200)
+        self.assertEqual(body, lab_pages.page("clusters.html"))
+        self.assertIn("text/html", headers["Content-Type"])
 
     def test_embedding_page_is_on(self):
         status, headers, body = self.request("/embedding")
@@ -236,6 +233,15 @@ class LabServerTest(unittest.TestCase):
             self.assertEqual(status, 503, path)
             self.assertIn(missing, json.loads(body)["error"])
 
+    def test_cluster_routes_read_the_config_path(self):
+        missing = str(self.root / "missing.yaml")
+        self.server.config_path = missing
+        for path, method in (("/api/clusters", "GET"),
+                             ("/api/clusters/gx10-a/build", "POST")):
+            status, _, body = self.request(path, method)
+            self.assertEqual(status, 503, path)
+            self.assertIn(missing, json.loads(body)["error"])
+
     def test_old_embedding_routes_stay_disabled(self):
         for path in ("/api/embedding", "/img/embedding/a.png"):
             status, _, body = self.request(path)
@@ -246,7 +252,8 @@ class LabServerTest(unittest.TestCase):
         # Dataset first, Embeddings second: owner message of 2026-09-25T06:50:29+0300.
         self.assertEqual([label for _, label in LAB.NAV][:2], ["Dataset", "Embeddings"])
         hrefs = [href for href, _ in LAB.NAV]
-        pages = {name: lab_pages.page(name) for name in ("dataset.html", "embedding.html")}
+        pages = {name: lab_pages.page(name) for name in
+                 ("dataset.html", "embedding.html", "clusters.html")}
         pages["/runs"] = self.request("/runs")[2]
         pages["/testset"] = self.request("/testset")[2]
         for name, body in pages.items():
@@ -791,6 +798,16 @@ class LabServerTest(unittest.TestCase):
             self.assertEqual((answer["state"], answer["slug"], answer["seconds_per_image"]),
                              ("working", "wine-b", 2.5))
         self.assertEqual(self.request("/api/image-description-status", "POST")[0], 503)
+
+    def test_the_route_of_the_failed_details(self):
+        import image_descriptions
+        with mock.patch.object(image_descriptions, "STATUS_PATH",
+                               str(self.root / "status.json")), \
+                mock.patch.object(LAB, "WATCHER_LOG", str(self.root / "w.log")):
+            status, _, body = self.request("/api/image-detail-failures")
+        self.assertEqual(status, 200)
+        answer = json.loads(body)
+        self.assertEqual((answer["max_attempts"], answer["failures"]), (3, []))
 
     # Plan 24: the Testset page is at /testset, and / goes to the Dataset page.
 

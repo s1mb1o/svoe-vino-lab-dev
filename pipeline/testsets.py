@@ -16,8 +16,11 @@ and `test_set.edited_at`. The other fields of the entry do not change, as `_entr
 and the export writes no entry. A write to a wine of each state is allowed.
 
 `move_photo` gives a photo another place. The right sidebar of the Testset page is the
-NULL place: a photo there waits for a wine, and it stays there between launches. The
-owner chose this on 2026-09-25T18:05:36+0300. A move clears the label, because the label
+Drawer (`__drawer__`): a photo there waits for a wine, it stays there between launches,
+and no run uses it. The NULL place (`__null__`) is the row "No Match" of the table: a run
+uses its photos, and the right answer is no match. The owner chose the sidebar on
+2026-09-25T18:05:36+0300 and the two places on 2026-09-26T00:29:00 (plan 36). A move
+clears the label, because the label
 judged the old place, and writes the old place into `moved_from`. The other fields stay.
 
 `upload_photo` adds a file that the page gets from a drop of the file manager (the macOS
@@ -41,11 +44,16 @@ import comments
 import imagestore
 
 LABELS = ("positive", "negative", "unusable", "variant")
-# The virtual NULL wine: a photo of this place matches no card of the catalogue. Such a
-# photo takes `positive` (confirmed) or `unusable` alone, as in the old tool.
+# The virtual NULL wine, the row "No Match" of the page: a photo of this place matches no
+# card of the catalogue, and a run uses it. Such a photo takes `positive` (confirmed) or
+# `unusable` alone, as in the old tool.
 NULL_SLUG = "__null__"
-NULL_NAME = "NULL — no match in the catalogue"
+NULL_NAME = "No Match"
 NULL_LABELS = ("positive", "unusable")
+# The Drawer, the right sidebar of the page: a photo of this place waits for a wine, and no
+# run uses it. It takes no label (plan 36, owner answer of 2026-09-26T00:29:00+0300).
+DRAWER_SLUG = "__drawer__"
+DRAWER_NAME = "Drawer"
 TEXT_MAX = comments.TEXT_MAX
 REASON_MAX = 1000
 # The form of `ts`, as the old tool writes it: the local time with its offset.
@@ -259,7 +267,7 @@ def counts(conn, set_name):
     """Return the counts of one set, with the keys of `count_state` of the old tool, and
     `photos` and `boxes`."""
     (photos, positive, negative, unusable, variant, reassigned, copied, deleting,
-     commented, proposed, no_match, no_match_pending, boxes) = conn.execute(
+     commented, proposed, no_match, no_match_pending, boxes, drawer) = conn.execute(
         "SELECT count(*), "
         "count(*) FILTER (WHERE label = 'positive'), "
         "count(*) FILTER (WHERE label = 'negative'), "
@@ -272,8 +280,10 @@ def counts(conn, set_name):
         "count(*) FILTER (WHERE proposed IS NOT NULL AND label IS NULL), "
         "count(*) FILTER (WHERE place = ?), "
         "count(*) FILTER (WHERE reassign_to = ?), "
-        "count(*) FILTER (WHERE box_left IS NOT NULL) "
-        "FROM test_photo WHERE set_name = ?", (NULL_SLUG, NULL_SLUG, set_name)).fetchone()
+        "count(*) FILTER (WHERE box_left IS NOT NULL), "
+        "count(*) FILTER (WHERE place = ?) "
+        "FROM test_photo WHERE set_name = ?",
+        (NULL_SLUG, NULL_SLUG, DRAWER_SLUG, set_name)).fetchone()
     notes = conn.execute("SELECT count(*) FROM test_wine_note WHERE set_name = ? "
                          "AND comment IS NOT NULL", (set_name,)).fetchone()[0]
     return {"positive": positive, "negative": negative, "unusable": unusable,
@@ -281,7 +291,7 @@ def counts(conn, set_name):
             "reassigned": reassigned, "copied": copied, "deleting": deleting,
             "commented": commented, "proposed": proposed, "wine_notes": notes,
             "no_match": no_match, "no_match_pending": no_match_pending,
-            "photos": photos, "boxes": boxes}
+            "photos": photos, "boxes": boxes, "drawer": drawer}
 
 
 def set_names(conn):
@@ -331,7 +341,8 @@ def set_view(conn, set_name, card_images):
     The rows follow the answer of the owner of 2026-09-25T17:01:44+0300 (Q1): a row for
     each `Active` and `Disabled` wine, and a row for each place that holds a photo of the
     set, also when its wine is `Removed` or is not in `wine_catalog`. The NULL row
-    stands first. The other rows are in slug order; the page sorts them.
+    ("No Match") stands first, the Drawer row second (plan 36). The other rows are in
+    slug order; the page sorts them.
     """
     names = set_names(conn)
     if set_name is None:
@@ -356,11 +367,13 @@ def set_view(conn, set_name, card_images):
     variant = groups(conn, set_name)
     group_of = {slug: gid for gid, group in variant.items() for slug in group["slugs"]}
     slugs = {slug for slug, wine in wines.items() if wine[-1] in LISTED_STATES}
-    slugs.update(place for place in by_place if place != NULL_SLUG)
+    slugs.update(place for place in by_place if place not in (NULL_SLUG, DRAWER_SLUG))
     null = _wine_row(NULL_SLUG, None, None, by_place.get(NULL_SLUG, []))
     null.update(name=NULL_NAME, null_row=True, catalog_only=False)
-    rows = [null] + [_wine_row(slug, wines.get(slug), cards.get(slug),
-                               by_place.get(slug, [])) for slug in sorted(slugs)]
+    drawer = _wine_row(DRAWER_SLUG, None, None, by_place.get(DRAWER_SLUG, []))
+    drawer.update(name=DRAWER_NAME, drawer_row=True, catalog_only=False)
+    rows = [null, drawer] + [_wine_row(slug, wines.get(slug), cards.get(slug),
+                                       by_place.get(slug, [])) for slug in sorted(slugs)]
     for row in rows:
         reason, ts = excluded.get(row["slug"], (None, None))
         row.update(excluded=row["slug"] in excluded, exclude_reason=reason or "",
@@ -424,6 +437,9 @@ def set_label(conn, set_name, place, file_name, label):
     if place == NULL_SLUG and label is not None and label not in NULL_LABELS:
         raise TestsetError(400, "a photo of the NULL wine takes %s alone"
                            % " or ".join(NULL_LABELS))
+    if place == DRAWER_SLUG and label is not None:
+        raise TestsetError(400, "a photo of the Drawer takes no label; move it to a wine "
+                                "or to No Match first")
     return _write_photo(conn, set_name, place, file_name, ("label",),
                         lambda row: {"label": label})
 
@@ -498,7 +514,8 @@ def free_name(conn, set_name, place, name, tag="moved"):
 
 
 def move_photo(conn, set_name, place, file_name, to):
-    """Move one photo to the place `to`: a wine slug of the page, or `NULL_SLUG`.
+    """Move one photo to the place `to`: a wine slug of the page, `NULL_SLUG`, or
+    `DRAWER_SLUG`.
 
     The label becomes NULL and `moved_from` gets the old place. A file name that the
     target holds gets the suffix `_moved<N>`. The bytes of the photo do not move: the
@@ -533,8 +550,8 @@ def move_photo(conn, set_name, place, file_name, to):
 
 def _known_slug(conn, set_name, slug):
     """Tell whether `slug` is a row of the page: a wine of the catalogue, a place of the
-    set, or the NULL wine."""
-    return (slug == NULL_SLUG
+    set, the NULL wine, or the Drawer."""
+    return (slug in (NULL_SLUG, DRAWER_SLUG)
             or conn.execute("SELECT 1 FROM wine_catalog WHERE wine_slug = ?",
                             (slug,)).fetchone() is not None
             or conn.execute("SELECT 1 FROM test_photo WHERE set_name = ? AND place = ? "
@@ -645,8 +662,8 @@ def upload_name(name, extension):
 
 
 def upload_photo(conn, set_name, place, data, name):
-    """Add the image `data` to the place `place` of the set: a wine slug of the page, or
-    `NULL_SLUG`. `name` is the file name that the browser sends.
+    """Add the image `data` to the place `place` of the set: a wine slug of the page,
+    `NULL_SLUG`, or `DRAWER_SLUG`. `name` is the file name that the browser sends.
 
     An image that the place holds already is refused with HTTP 409. An image that another
     place of the set holds gets the file name of that photo. A file name that the place

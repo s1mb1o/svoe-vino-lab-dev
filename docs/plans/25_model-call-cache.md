@@ -8,6 +8,11 @@ cases against gx10 pass (list in `ChangeLog.md`). Not committed. The lab server 
 uses the cache after its next restart. The owner messages are in
 [owner-messages.md](../owner-messages.md).
 
+Changed by [plan 39](39_use-caches-checkbox.md) on 2026-09-26: `model_cache.READ` (True
+by default) turns the reads off in one process. `run_job.py --no-cache` (the checkbox
+`Use caches` of the dialog `Run>`, off) sets it. Each call then asks its service, and the
+fresh answer is stored.
+
 ## Goal
 
 1. A call to GDINO, SAM3, or a VLM that repeats an earlier successful call reads the

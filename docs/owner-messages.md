@@ -2463,3 +2463,1375 @@ commit all
 ```
 
 The message went to session TESTSET [0fe970].
+
+## 2026-09-25T19:05:00+0300
+
+The message quoted four lines of the answer of TESTSET [0fe970].
+
+```text
+explain
+
+Choices that stopped sessions were waiting for:
+
+8b: option A or B for the SAM3 box noun.
+ff: merge the conflicts in the website import dialog.
+7e: review the one-page PDF of the database structure.
+30: restart the old review tool on 8154.
+```
+
+## 2026-09-25T19:07:49+0300
+
+```text
+http://127.0.0.1:8168/dataset
+
+Package filter, show only those that exists in database
+```
+
+The message came with a screenshot of the open `Package` select of `/dataset` (dark
+theme): `All`, `bottle`, `can`, `keg`, `bag`, `bag_in_box`, `tetra_pak` (checked),
+`barrel`, `decanter`, `box`, `other`, `unknown`, `not described`. The message went to
+session drink-atlas-workspace-cb [48de03].
+
+## 2026-09-25T19:09:07+0300
+
+Questions of drink-atlas-workspace-cb [48de03] about the message of 19:07:49, and the
+selected answers:
+
+1. "Which values should the Package list show?"
+
+```text
+Values of the wines (Recommended)
+```
+
+The option: "Only values that at least one wine has as its Package (the patched image, else the main image). Each option then shows at least one wine. 'not described' only if a wine has no description. The list is built again after a save in the description dialog."
+
+2. "The code is in dataset.html, in the region of the stale session drink-atlas-workspace-99 (its work is committed in f4ebe45). May I change initAdvancedFilters there?"
+
+```text
+Yes, go ahead
+```
+
+## 2026-09-25T19:10:14+0300
+
+```text
+http://127.0.0.1:8168/images/cropped/e668767c263f50ef71baa124b33c3dcc0d543b9f62989cecb4c7bd7f73a5832b.png
+
+it has 2 labels. and i guess sam found even 3. in such case left bbox, not segment
+```
+
+The message went to session drink-atlas-workspace-cb [48de03], during the work on the
+message of 19:07:49.
+
+## 2026-09-25T19:10:30+0300
+
+```text
+or think how handle correctly
+```
+
+The message went to session drink-atlas-workspace-cb [48de03]. It follows the message of
+19:10:14 (the label crop with 2 labels).
+
+## 2026-09-25T19:14:31+0300
+
+````text
+@svoe-vino-lab 
+
+after we get all main, patched and additional images documented, we can use known types on images to use fine-tuner VLM prompts.
+
+use for bottle (and substitue bottle with actual container_type name):
+```
+This is a catalogue photo of one wine bottle. Describe its label, so that a person can tell this bottle apart from similar bottles of the same producer.
+Report only what you see. Do not guess. If a text or a number is too small to read, write "unreadable" for it.
+Write each text exactly as it is printed, in its own alphabet. Do not translate it and do not transliterate it.
+Answer with one JSON object with these keys:
+"texts": a list of every text that you can read, each as {"text": "...", "where": "..."};
+"numbers": a list of every number that you can read, such as a year, a ratio or a percentage, each as {"value": "...", "where": "..."};
+"vintage": the vintage year if the label shows one, else null;
+"colours": the main colours of the label;
+"design": a short description of the design and the layout of the label;
+"marks": a list of stickers, medals, seals and other marks, each with its place;
+"bottle": the colour and the shape of the bottle and of the capsule.
+```
+
+and for images that are label_closeup:
+```
+This is a catalogue photo of one wine bottle label. Describe it.
+Report only what you see. Do not guess. If a text or a number is too small to read, write "unreadable" for it.
+Write each text exactly as it is printed, in its own alphabet. Do not translate it and do not transliterate it.
+Answer with one JSON object with these keys:
+"texts": a list of every text that you can read, each as {"text": "...", "where": "..."};
+"numbers": a list of every number that you can read, such as a year, a ratio or a percentage, each as {"value": "...", "where": "..."};
+"vintage": the vintage year if the label shows one, else null;
+"colours": the main colours of the label;
+"design": a short description of the design and the layout of the label;
+"marks": a list of stickers, medals, seals and other marks, each with its place;
+```
+
+We pass cropped and segmented images to VLM, so it processes only important stuff.
+````
+
+The message went to session drink-atlas-workspace-a7 [bbd3b6]. The first prompt came as
+pasted text.
+
+## 2026-09-25T19:16:44+0300
+
+Questions of drink-atlas-workspace-cb [48de03] about the messages of 19:10:14 and
+19:10:30, and the selected answers:
+
+1. "Which rule should decide 'more than one label → box crop'? (Counts are from 251 cached SAM3 answers, 250 of them catalogue images.)"
+
+```text
+Body labels (Recommended)
+```
+
+The option: "A second label counts only when it is on the same bottle, not inside the main label, at least 25% of its area and 60% of its width. Then the cut is the box around all counted labels (crop, no mask). 13 of 251 switch: Agora, stacked bands, and sparkling wines with a big shoulder label. Neck labels and capsules keep the segment."
+
+2. "A new rule changes the settings of the label cuts, so all 2,021 cuts must be made again. About 1,770 photos have no cached SAM3 answer: about 20 min of SAM3 requests on gx10, one at a time. The Embeddings view 'label' then needs a rebuild for the changed cuts. What should I do after the code and tests?"
+
+```text
+Re-run the cuts, no rebuild
+```
+
+The option: "I run seed_label_cuts.py (with a GPU_TASKS row and caffeinate) and report which cuts changed. You start the embedding rebuild."
+
+## 2026-09-25T19:53:16+0300
+
+```text
+In svoe-vino-lab re-enable clusters page. Now it should be embedding depended and stored in embedding dir.
+
+Think should be clusters created based one main/patched image? Or include additional images? What about labels images? Should they use separate cluster space?
+
+How generate differencies prompts for VLM rerank?
+
+Check svoe-vino-testset and -matcher
+```
+
+## 2026-09-25T20:01:13+0300
+
+Question of `/root` about the message of 19:53:16:
+
+```text
+Please choose 1, 2, or 3.
+```
+
+The first option was the index-faithful design. It keeps `full` and `label` as separate
+similarity spaces. It uses every image that the selected embedding index can return. It
+builds the combined graph from the union of both edge sets. It stores the clusters, the
+notes, and the rules in the selected embedding directory.
+
+The selected answer:
+
+```text
+1
+```
+
+## 2026-09-25T20:24:14+0300
+
+Question of drink-atlas-workspace-cb [48de03], and the selected answer:
+
+"The label rule is in pipeline/alternatives.py and tests/test_alternatives.py, which the stale section of drink-atlas-workspace-7b lists (its work is committed). May I change label_instance, label_derivatives, SETTINGS_LABEL and add tests there?"
+
+```text
+Yes, go ahead
+```
+
+The option: "Hunks in those two files, docs (plan 22, SMOKE_TESTS, ChangeLog, ResearchLog), then the re-run of seed_label_cuts.py on data/lab.sqlite3 with a backup first. A restart of 8168, because the server imports alternatives.py for new label photos."
+
+## 2026-09-25T20:24:17+0300
+
+Questions of drink-atlas-workspace-a7 [bbd3b6] about the message of 19:14:31, and the
+selected answers:
+
+1. "How should the detail pass run?"
+
+```text
+Stage 2 of the watcher (Recommended)
+```
+
+The option: "describe_images.py classifies first. When no image waits for a class, it takes the next image that waits for a detail. One process, one gx10 slot, one status pill, and it starts with the lab server. A new table image_detail and a new schema file. Adds hunks to describe_images.py and image_descriptions.py (committed in f4ebe45; the stale sections ca [af6346] and 99 list them)."
+
+2. "For a package that is not a bottle, how should the word 'bottle' be replaced?"
+
+```text
+Text and key (Recommended)
+```
+
+The option: "'one wine can', 'similar cans', and the key \"can\": 'the colour and the shape of the can and of the capsule'. Readable names in the text (Tetra Pak carton, bag-in-box); the key is the package_type value. The label prompt changes too: 'one wine can label'. The capsule clause stays as you wrote it."
+
+3. "What happens to the 7 multiple_packages images (e.g. the Fanagoria ice wine, where the package cut is the tube, not the bottle)?"
+
+```text
+Skip them (Recommended)
+```
+
+The option: "No detail request. They get one when you set subject_scope to full_package or label_closeup by hand. Images with subject_scope unknown are also skipped."
+
+4. "Which VLM and image size should the detail pass use?"
+
+```text
+9B nvfp4, 1536 px (Recommended)
+```
+
+The option: "qwen3.5-9b-nvfp4, which is loaded now. Long side 1536, max_tokens 4096, thinking off. Measured: 16 s per bottle, 60 s per dense back label. It misread one tiny line."
+
+## 2026-09-25T20:28:51+0300
+
+Questions of drink-atlas-workspace-a7 [bbd3b6] about plan 29, and the selected answers:
+
+1. "Do you approve plan 29 (docs/plans/29_image-details.md) for implementation?"
+
+```text
+Approve
+```
+
+The option: "Implement as written: new table image_detail, stage 2 in describe_images.py, tests, migration, restart of 8168 after messages to /root and cb, then a live check of 4 images (bottle, can, tetra_pak, label_closeup) before the backlog of ~2,015 images (~9 h estimate)."
+
+2. "Q1: should the image description dialog on /dataset get a read-only 'Details' block now?"
+
+```text
+Later (Recommended)
+```
+
+The option: "No page change except the pill. You read the answers in image_detail.answer, or ask for the view in a later request."
+
+## 2026-09-25T20:36:26+0300
+
+```text
+@svoe-vino-lab 
+
+add implementation that will run against existing svoe-vino.ru matching API
+
+  
+
+- id: official-api
+    label: Official vino-svoe recognizer (the baseline to beat)
+    url: https://api.vino-svoe.ru/v1/wines/search-by-photo
+    field: image
+    response: auto
+    query: { limit: 10 }    # the query string that asks for a ranked list
+    top_k: 10
+    timeout_s: 40
+    # How many requests this server takes at the same time. Measured on
+    # 2026-09-17 from cloudzy-ams with 36 requests: at 4 at once the wall time
+    # fell by 3.2x and the median latency did not rise. At 8 at once the wall
+    # time fell by 4.7x, and the median latency rose by 35 percent, from 2377 ms
+    # to 3198 ms, because the requests wait in a queue. No answer stated
+    # throttling and no answer was refused at either rate. Read `ResearchLog.md`.
+    # The value 8 buys the shorter wall time and pays the longer latency. Use
+    # `--workers 4` for the rate that costs no latency, and `--workers 1` for a
+    # run whose latency is compared with the jury harness.
+    workers: 8
+    headers: {}             # a value "env:NAME" reads the environment variable NAME
+
+name: vino-svoe-search-by-photo <- config entry
+```
+
+## 2026-09-25T21:45:41+0300
+
+Question of drink-atlas-workspace-a7 [bbd3b6] after the plan 29 live check, and the
+selected answer:
+
+"The package prompt returns the key \"text\" instead of \"texts\" in 3 of 4 answers. How should stage 2 handle it?"
+
+```text
+JSON Schema in request (Recommended)
+```
+
+The option: "Stage 2 sends response_format json_schema (strict) with the schema of the answer, so the gateway constrains the keys. The code check stays. Your prompt text stays verbatim. Stage 1 (plan 26) keeps json_object. Measured: 2 of 2 failed images became valid (15 s and 31 s)."
+
+## 2026-09-25T20:39:30+0300
+
+Questions of drink-atlas-workspace-5c [cbb143] about the configuration
+`vino-svoe-search-by-photo`, and the selected answers:
+
+1. "How should a run of the configuration vino-svoe-search-by-photo start?"
+
+```text
+New CLI script (Recommended)
+```
+
+The option: "New `pipeline/remote_run.py --name vino-svoe-search-by-photo --set my [--workers N] [--limit N]`, modeled on `mock_run.py`. It builds the HTTP client of `match_backends.py` from the config entry and calls `benchmark.run_benchmark(..., configuration=name)`. The run appears under the Configuration filter of /runs. No change to `benchmark.py`, which two other sessions list."
+
+2. "Your stub has `views: full:` with no steps. What should happen to each test photo before it goes to the API?"
+
+```text
+Send the photo as it is (Recommended)
+```
+
+The option: "An empty `full:` means no step. The API gets the original bytes from the image store, the same as the 2026-09-17 runs of `official-api`. The entry has zero embedding items."
+
+3. "What should the Build button of /embedding do for this entry? It has no vectors to build."
+
+```text
+Hide Build, show a note (Recommended)
+```
+
+The option: "The selector shows the entry. In place of Build, the page states that this configuration is a remote matcher and names the command that makes a run. `POST .../build` answers HTTP 400."
+
+## 2026-09-25T21:52:00+0300
+
+```text
+7e - drop
+30 - drop
+```
+
+The answer to the explanation of TESTSET [0fe970]: 7e waited for the review of
+`docs/database-structure.pdf`; 30 waited for a restart of the review tool on 8154.
+
+## 2026-09-25T22:03:25+0300
+
+```text
+@svoe-vino-lab   
+
+stop work sessions using @svoe-vino-lab/ACTIVE_WORK.md
+```
+
+## 2026-09-25T22:05:09+0300
+
+The question of drink-atlas-workspace-27 [fa998d]: "ACTIVE_WORK.md has 25 sections from
+other sessions. Only 3 of those sessions are live now: cb [48de03] (idle, waiting for
+your commit), a7 [bbd3b6] (busy: schema 020 has entered pipeline/schema/ and 8168 is up
+again, so it is probably migrating now), and 5c [cbb143] (busy: docs and live check still
+to do). The other 22 are not in ListAgents, so they are stale. What should "stop" cover?"
+
+```text
+Stop everything now
+```
+
+The option: "Remove all 25 sections at once and tell cb, a7 and 5c to stop at once. a7
+may be in the middle of its migration and 8168 restart."
+
+## 2026-09-25T22:30:47+0300
+
+```text
+let vino-svoe-search-by-photo run on provided dataset
+```
+
+## 2026-09-25T22:31:30+0300
+
+```text
+let vino-svoe-search-by-photo run on provided testset
+```
+
+## 2026-09-25T22:32:30+0300
+
+```text
+so it should work with same images as other
+```
+
+## 2026-09-25T22:36:00+0300
+
+The question of drink-atlas-workspace-5c [cbb143]: "Which test set is the \"provided testset\" for the run of vino-svoe-search-by-photo? Every lab run takes its query photos from the same image store with the same query rules, so the images match the other runs of the same set."
+
+```text
+official-real-photos
+```
+
+The option: "The 100 photos of the official test set that the organizers provided. 80 of them are queries today (14 unusable, 4 variant, 2 excluded). About 1 minute. No lab run of this set exists yet."
+
+## 2026-09-25T22:41:00+0300
+
+```text
+http://127.0.0.1:8168/testset?set=my
+
+add "Run>" button, that displayes popup dialog, where i select configuration to run with.
+start runner, show progress on top (same way as for embeddings build)
+```
+
+## 2026-09-25T22:37:15+0300
+
+```text
+http://127.0.0.1:8168/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256&space=full
+make bottles cards be displayed like on http://127.0.0.1:8154/clusters
+```
+
+The message holds a screenshot of three cards of one cluster in the form of the 8154 page (badge "#1 · A", photo counts, "review", "vino-svoe.ru", "label description"): "Фантом 30/70", "Фантом 50/50", "Фантом 70/30" of Ведерниковъ.
+
+## 2026-09-25T22:41:15+0300
+
+The question of drink-atlas-workspace-a9 [79efd8]: "The 8154 card shows fields that the 8168 API does not send: photo counts, the \"review\" link, the \"vino-svoe.ru\" link, and \"label description\". How much of the 8154 card do you want?"
+
+```text
+Layout only (Recommended)
+```
+
+The option: "Change clusters.html alone. A 176 px card with a \"#N\" badge on a 162×200 bottle image, the name, \"producer · category\", the grapes, and the slug, in a wrapping row. No new data, no restart of 8168."
+
+The question of drink-atlas-workspace-a9 [79efd8]: "8154 shows one image per card. On 8168 a card has a \"full\" image and usually a \"label\" image. Which image does the card show in the space \"combined\"?"
+
+```text
+Image selector (Recommended)
+```
+
+The option: "Add an \"Image\" select (full / label) to the header, like the \"Image\" select of 8154. In \"full\" and \"label\" spaces the card shows the image of that space."
+
+## 2026-09-25T22:46:00+0300
+
+Questions of drink-atlas-workspace-5c [cbb143] about the button `Run>` of `/testset`, and
+the selected answers:
+
+1. "Which configurations can the Run dialog start? Today only `mock` and `vino-svoe-search-by-photo` have a runner. The 11 embedding configurations have catalogue vectors, but no code embeds a test photo and ranks it against them yet."
+
+```text
+All listed, runnable enabled (Recommended)
+```
+
+The option: "The dialog lists every configuration of config.yaml. `vino-svoe-search-by-photo` and `mock` can start. An embedding configuration is shown disabled with the note `no runner yet`. The embedding runner is a separate plan later."
+
+2. "What does the dialog ask besides the configuration? The test set is the set of the page (`?set=my`)."
+
+```text
+Plus limit and workers
+```
+
+The option: "Also a field `first N queries` (empty = all) and a field `workers` (default of the entry). Useful for a quick probe before a full run."
+
+3. "Where does the progress show?"
+
+```text
+Testset header, like Embeddings (Recommended)
+```
+
+The option: "A job row under the header of /testset: configuration and set, state, bar, done / total, elapsed, and a stop button (x). When the run ends, the row shows a link to the run on /runs for some seconds. A reload of the page finds a running job again."
+
+## 2026-09-25T22:46:27+0300
+
+```text
+http://127.0.0.1:8168/dataset
+
+Patch image "Remove" button  - draw it red, and rename it "Clear". Do not ask for "Apply", clear patch as soon button pressed
+```
+
+## 2026-09-25T22:47:19+0300
+
+```text
+GTINs input does not allow enter more than 14 digits
+```
+
+## 2026-09-25T22:47:32+0300
+
+```text
+does VLM uses cache while describing photos?
+```
+
+## 2026-09-25T22:48:32+0300
+
+```text
+if it uses cache, why. counter not increase?
+[Image: a screenshot of the VLM indicator of /dataset: "VLM details 139 / 2,017 · 15.7 s · 1 details failed"]
+```
+
+## 2026-09-25T22:49:56+0300
+
+```text
+/Users/ashmelev/Pictures/Screenshots/Screenshot 2026-09-25 at 22.48.46.png
+
+if clicked - show popup dialog with details and log
+```
+
+## 2026-09-25T22:50:31+0300
+
+```text
+Make it work again, but rewrite text, considering we use database, not catalog.jsonl
+[Image: a screenshot of the dialog "Validate dataset" of /dataset with the result "validation ERROR Error: disabled for now: the lab database does not hold the data of this route yet"]
+```
+
+## 2026-09-25T22:51:31+0300
+
+```text
+we do not need "Validate", because all handled in Website
+```
+
+## 2026-09-25T22:54:00+0300
+
+The answers to the questions of the agent (session drink-atlas-workspace-15).
+
+1. "What should the dialog show when you click “N details failed”?"
+
+```text
+Rows + log lines (Recommended)
+```
+
+The option: "New GET route. For each failed detail: thumbnail, wine slug, prompt kind, package type, attempts, time, the stored error (≤1000 chars, includes the first 300 chars of the cut reply), and the lines of work/describe_images.log for that image. No change to the watcher."
+
+2. "The old review tool on 8154 serves the same dataset.html, and its Validate still works there (it reads catalog.jsonl). How far should the removal go?"
+
+```text
+Hide on 8168 only (Recommended)
+```
+
+The option: "The lab server page (8168) has no Validate. The review tool (8154) keeps it. The website import exists only on 8168. No change to scripts/review_server.py."
+
+3. "Should “N failed” (the class stage, 0 now) open the same dialog?"
+
+```text
+Details only (Recommended)
+```
+
+The option: "Only “N details failed” gets the dialog, as you asked."
+
+## 2026-09-25T23:00:00+0300
+
+```text
+are these parameters used to calculate clusters?
+[Image: a screenshot of the filter bar of /clusters: "Full threshold" 0,5, "Label threshold" 0,95, "Minimum size" 2, "Search" with the placeholder "name, producer, slug"]
+```
+
+## 2026-09-25T23:00:30+0300
+
+```text
+how clusters are built?
+```
+
+## 2026-09-25T23:01:00+0300
+
+```text
+http://127.0.0.1:8168/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256&space=combined
+
+how clusters are built?
+```
+
+## 2026-09-25T23:09:52+0300
+
+```text
+resume
+```
+
+## 2026-09-25T23:10:30+0300
+
+```text
+what safe guard can i add?
+```
+
+## 2026-09-25T23:15:00+0300
+
+The answer to the question of the agent (session drink-atlas-workspace-43): "Which options
+do you want, and what limits?"
+
+```text
+A
+```
+
+## 2026-09-25T23:19:28+0300
+
+```text
+@svoe-vino-lab 
+implement test runner that use enpoints from configuration and run tests on them
+```
+
+## 2026-09-25T23:20:22+0300
+
+```text
+if clicked on image, show its preview
+[Image: a screenshot of the dialog "Failed details" of /dataset; the mouse is on the thumbnail with the title "Open the file that the VLM got"]
+```
+
+## 2026-09-25T23:21:25+0300
+
+```text
+add settings to vlms - max_tokens, and make it 8192 by default
+```
+
+## 2026-09-25T23:24:31+0300
+
+The answers to the questions of the agent (session drink-atlas-workspace-15).
+
+1. "Each vlm entry in config.yaml gets an optional `max_tokens` (8192 when absent). Which calls should use it?"
+
+```text
+Detail calls (Recommended)
+```
+
+The option: "It replaces image_description.detail_max_tokens (4096), which I remove from the code and config.yaml. Class calls keep 300 (their JSON answer is short). The 2,029 saved class answers and “Raw VLM reply” keep working. cluster_rules.py and 04_verify.py keep their own limits."
+
+2. "After the change and the 8168 restart, should the 1 failed detail (cut off at 4096) be tried again with 8192?"
+
+```text
+Yes, retry it (Recommended)
+```
+
+The option: "I set vlm_attempts of that one row to 0, so the watcher sends it again. Its reply looked like a repeated-text loop on a 1851 × 6279 px cut, so it may fail again, taking about twice as long."
+
+## 2026-09-25T23:24:20+0300
+
+Questions of drink-atlas-workspace-ab [539687] about the message of 23:19:28, and the
+selected answers:
+
+1. "I read your message as: the runner of the 11 embedding configurations of config.yaml (the Run dialog shows them as `no runner yet`). Each test photo goes to `POST <base_url>/embeddings` of the entry, and its vector ranks the catalogue vectors of data/embeddings/<name>/. The catalogue vectors come from SAM3 cuts on white, and the test photos have no cuts yet (0 of 80 in official-real-photos). How should a test photo be prepared?"
+
+```text
+Cut at run time (Recommended)
+```
+
+The option: "New pipeline/embedding_run.py. SAM3 cuts the package and the label of each photo in memory with the catalogue rules. Then the view steps of the entry run, then the endpoint call. The query gets the same preparation as the catalogue. data/cache/sam3/ caches the SAM3 answers, so only the first run of a set waits for SAM3. Estimate, not measured on test photos: ~1.2 s per photo (official-real-photos ~2 min, my ~40 min). No database write."
+
+2. "How should the runner score a wine for one test photo? A wine has more than one vector (main image, alternatives, label cuts)."
+
+```text
+Full + label sum (Recommended)
+```
+
+The option: "Score = the best `full` cosine of the wine + its best `label` cosine. A photo with no label cut uses the full score alone. One ranking per run. In the matcher label experiment of 2026-09-22, photo + label gave recall@1 0.793. Photo alone gave 0.759 and label alone gave 0.743."
+
+3. "Should the Run> dialog of /testset also start these configurations? That needs hunks in pipeline/run_job.py, pipeline/run_jobs.py, and tests/test_run_jobs.py. The stale section of drink-atlas-workspace-5c lists these files (5c is not in ListAgents, and its work is not committed)."
+
+```text
+Dialog + CLI (Recommended)
+```
+
+The option: "run_jobs enables the backends openai and local when the entry has a built index, and shows `no index` when it has none. run_job builds the new backend. A local entry runs with embedding_python (torch)."
+
+4. "The stale sections 5c, a9, 3b, and 15 list ChangeLog.md, README.md, and SMOKE_TESTS.md. Session 39 waits for the same decision. May I add my own separate hunks to these files?"
+
+```text
+Yes, separate hunks (Recommended)
+```
+
+The option: "One ChangeLog bullet, one README paragraph, and new SMOKE_TESTS rows. The hunks of the other sessions stay as they are. COMMANDS.md gets the command; no section lists that file."
+
+## 2026-09-25T23:35:19+0300
+
+Questions of drink-atlas-workspace-ab [539687] about plan 33, and the selected answers:
+
+1. "Plan 33 is in docs/plans/33_embedding-run.md. The sum rule has one gap: 117 of 2,045 wines have no current `label` vector. The 111 label items of each index went stale when the label cuts were made again at 20:53. How should the runner score such a wine?"
+
+```text
+Mean of its views (Recommended)
+```
+
+The option: "Score = the mean of the view scores that the wine has. For a wine with both views, the order is the same as with the sum. A wine with `full` alone competes with its full cosine."
+
+2. "After the unit tests pass, may I make a live check on gx10? It uses the entry gx10-siglip2-so400m-patch16-naflex-p256 and the set official-real-photos (80 photos): about 160 SAM3 calls and 80 embedding requests, one at a time, through llama-swap 18081. The VLM watcher of plan 29 runs on the same gateway. The first request can make the gateway load the SigLIP 2 model if it is not loaded now. After the check, a restart of 8168 and one run from the dialog."
+
+```text
+Yes, as described (Recommended)
+```
+
+The option: "3 photos first, then all 80. A row in GPU_TASKS.md. No build: the 111 stale label items stay out of the ranking."
+
+## 2026-09-25T23:37:48+0300
+
+```text
+I think we need introduce "pipeline:" section in config.
+
+we should move there "vino-svoe-search-by-photo" and "mock" from "embeddings:" to "pipeline:"
+
+also we need to show pipelines chooser on Testset and Runs, and not "embedding" chooser
+```
+
+## 2026-09-25T23:44:31+0300
+
+```text
+[Image: a screenshot of the VLM indicator of /dataset: "VLM details 292 / 2,017 · 20.0 s · 1 details failed"] allow run multiple requests. Add requests count to config.yaml
+```
+
+## 2026-09-25T23:55:27+0300
+
+Questions of drink-atlas-workspace-6a [792d65] about the message of 23:37:48, and the
+selected answers:
+
+1. "How should the code hold the pipelines? Note: your answer of 23:24:20 put the embedding runs of plan 33 (session ab, in progress now) into the Run> dialog. A pipelines-only dialog removes them unless a pipeline can name an embedding."
+
+```text
+New module (Recommended)
+```
+
+The option: "A new module pipeline/pipelines.py reads `pipeline:` and checks each entry. The remote matcher code moves there from embeddings.py. The Run> dialog and the /runs filter read the pipelines. /embedding and /clusters stop listing the two entries. The embedding runs of plan 33 leave the dialog and stay a command until a later change."
+
+2. "The entry `mock` also builds random vectors on /embedding (your wish of 13:37: "mock should run as any other config"). What happens to that build?"
+
+```text
+Move fully (Recommended)
+```
+
+The option: "`mock` leaves `embeddings:`. /embedding and /clusters stop showing it. The random-vector build code goes away. data/embeddings/mock/ (12 MB) stays on disk. I delete it only when you say so."
+
+3. "The code, the routes, and run.json call a run target a "configuration" (/api/run-configurations, the key `configuration` of run.json, /runs?configuration=). What should change?"
+
+```text
+Labels only (Recommended)
+```
+
+The option: "The pages show the word "Pipeline". The routes, the JSON keys, the key `configuration` of run.json, and the URL parameter stay. The 5 old runs of the two entries keep their filter."
+
+4. "The stale section of session 5c lists pipeline/pages/testset.html. Stale sections also list ChangeLog.md, README.md, and SMOKE_TESTS.md. May I change them?"
+
+```text
+Yes, separate hunks (Recommended)
+```
+
+The option: "I change the dialog text of testset.html and add my own hunks to ChangeLog.md, README.md, and SMOKE_TESTS.md. The hunks of the other sessions stay as they are."
+
+## 2026-09-25T23:58:53+0300
+
+Questions of drink-atlas-workspace-d3 [4920ce] about the message of 23:44:31 (more than one
+VLM request at the same time), and the selected answers:
+
+1. "How should the watcher send several VLM requests at the same time?"
+
+```text
+Rolling pool (Recommended)
+```
+
+The option: "One watcher process with N threads. When one request ends, the next pending image starts at once. Requests take 7 to 80 s, so no slot waits for a slow one. Class images still go before details. A service failure stops new starts for the backoff time; running requests finish. No schema change."
+
+2. "Where should the count of requests go in config.yaml?"
+
+```text
+image_description.workers (Recommended)
+```
+
+The option: "One key in the watcher block. `workers` is the term that config.yaml (vino-svoe-search-by-photo) and backends.yaml already use for 'requests at the same time'. The code default is 1, so a config without the key works as today."
+
+3. "Which count should config.yaml get now?"
+
+```text
+8
+```
+
+The option: "Set 8. The stage 4 pipeline sent 8 requests at once to the same gateway (vLLM) on 2026-09-15. The 9B model probably takes more than the 32B model, but this is not measured."
+
+4. "What should the speed on the pill ('20.0 s') show with N requests at once?"
+
+```text
+Wall time per image (Recommended)
+```
+
+The option: "The wall time between the last 20 finished images. With 1 request it equals today's value. With N requests it shows the real rate of the backlog. No change of dataset.html."
+
+## 2026-09-25T23:58:00+0300
+
+```text
+[Image: a screenshot of a conflict row of the dialog "Import from vino-svoe.ru" of /dataset: "Мускат. Премиум", muskat-premium · Active; "vino-svoe.ru changed the field name." DATABASE "Мускат. Премиум" / WEBSITE "Мускат Премиум"; "vino-svoe.ru changed the main image." DATABASE Screenshot_25_e7771a3f2d.webp / WEBSITE MAX_02198_7f3ccea6d6.webp]
+http://127.0.0.1:8168/dataset
+show size under bottle image
+```
+
+## 2026-09-26T00:00:30+0300
+
+The answers to the questions of the agent (session drink-atlas-workspace-43 [c33611]).
+
+1. "Which size do you want under each bottle image in the website import dialog?"
+
+```text
+Pixels (Recommended)
+```
+
+The option: "Show width × height, e.g. 1200×1600. The browser reads it from the loaded image. Only website_import.js changes, and no server restart is needed."
+
+2. "Where should the size appear?"
+
+```text
+Conflicts only
+```
+
+The option: "Only the DATABASE / WEBSITE image choices, as in the screenshot."
+
+## 2026-09-26T00:06:30+0300
+
+The answer to the questions of the agent (session drink-atlas-workspace-39, earlier name
+drink-atlas-workspace-43 [58637c]): "1. ChangeLog and smoke test: may I add my own line
+and row for the build limits? 2. Rebuild: should I rebuild `clusters.json` at 0.95/0.95
+so `/clusters` loads quickly again?"
+
+```text
+2
+```
+
+## 2026-09-26T00:08:47+0300
+
+```text
+Run failed:
+
+config.yaml has no pipeline vino-svoe-search-by-photo
+```
+
+## 2026-09-26T00:10:18+0300
+
+```text
+http://127.0.0.1:8168/runs
+
+Pipelines combo shall show only items in pipeline: section of config
+[Image: a screenshot of the filter `Pipeline` of /runs: "every run — 90", the 11 embedding entries (gx10-siglip2-so400m-patch16-naflex-p256 — 2, the other ten — 0), "mock — 2 (not a pipeline)", "vino-svoe-search-by-photo — 3 (not a pipeline)", "no pipeline — 83"]
+```
+
+## 2026-09-26T00:11:19+0300
+
+```text
+embeddings: section is abou preparint and using embeddings, but pipeline: used for runs
+```
+
+## 2026-09-26T00:12:24+0300
+
+Questions of drink-atlas-workspace-ab [539687] about the messages of 00:10:18 and 00:11:19,
+and the selected answers:
+
+1. "You wrote that `pipeline:` is for runs. My embedding runs (plan 33) name an entry of `embeddings:`, so after the next restart the /runs combo still shows `gx10-siglip2-so400m-patch16-naflex-p256 — 2 (not a pipeline)`. How should an embedding run belong to `pipeline:`?"
+
+```text
+Pipeline names embedding (Recommended)
+```
+
+The option: "A pipeline entry names one `embeddings:` entry, for example `name: siglip2-naflex-p256`, `backend: embedding`, `embedding: gx10-siglip2-so400m-patch16-naflex-p256`. `embedding_run.py --name <pipeline>` and the dialog `Run>` start it. run.json holds the pipeline name, so the combo lists it. `embeddings:` keeps the builds, the vectors, and the clusters. Session 6a adds the kind to pipelines.py after its plan 34; I adapt embedding_run.py."
+
+2. "What should happen to the 2 embedding runs of 2026-09-25: the 3-photo probe and the 80-photo run of official-real-photos?"
+
+```text
+Move to the pipeline (Recommended)
+```
+
+The option: "With the first option above: their run.json gets the name of the new pipeline in `configuration`. The result files do not change."
+
+## 2026-09-26T00:12:24+0300
+
+```text
+http://127.0.0.1:8168/runs#2026-09-25T205359Z-lab-gx10-siglip2-so400m-patch16-naflex-p256-official-real-photos
+
+keep height of cards uniform at least in row
+[Image: a screenshot of three photo rows of the run: the candidate cards inside a cluster frame (`cluster c006 details →`) start lower than the cards outside a frame, and the cards have different heights because the slug text takes 1 to 4 lines]
+```
+
+## 2026-09-26T00:15:17+0300
+
+The question of drink-atlas-workspace-ab [539687] about the pipeline entries of the
+embedding runs, and the selected answer:
+
+"Which pipeline entries should the `pipeline:` section get for the embedding runs? Today `embeddings:` holds 11 entries with a built index (10 on gx10, 1 local)."
+
+```text
+Only the tested entry
+```
+
+The option: "One pipeline, for gx10-siglip2-so400m-patch16-naflex-p256, with the same name. You add the others later."
+
+## 2026-09-26T00:15:59+0300
+
+Question of drink-atlas-workspace-d3 [4920ce] about plan 35 (more than one VLM request at
+the same time), and the selected answer:
+
+1. "The stale sections 5c, a9, and 3b list README.md, SMOKE_TESTS.md, and ChangeLog.md. The active sessions cb, ab, 6a, and 39 agreed. May I add my own separate hunks to these three files?"
+
+```text
+Yes, separate hunks (Recommended)
+```
+
+The option: "README: the watcher bullet of 'The image descriptions' and the `image_description` row of the configuration table. SMOKE_TESTS: one new row. ChangeLog: one bullet. The hunks of the other sessions stay as they are. COMMANDS.md and ResearchLog.md need no answer: only active sessions list them, and they agreed."
+
+## 2026-09-26T00:16:00+0300
+
+```text
+define limits in config
+```
+
+## 2026-09-26T00:19:00+0300
+
+The answers to the questions of the agent (session drink-atlas-workspace-39).
+
+1. "Where in config.yaml should the cluster limits live?"
+
+```text
+One global block (Recommended)
+```
+
+The option: "A new top-level `clusters:` block applies to every embedding. Without the block, the current values (20000 / 50) apply. Only pipeline/clusters.py, its test and config.yaml change."
+
+2. "Should the default thresholds (0.95) also move into config.yaml?"
+
+```text
+Limits and thresholds
+```
+
+The option: "The block also holds `full_threshold` and `label_threshold`. The page fills the inputs from config when no clusters.json exists."
+
+## 2026-09-26T00:20:00+0300
+
+```text
+we do not need set cluster thresholds in UI, let them be in config
+```
+
+## 2026-09-26T00:25:11+0300
+
+The message holds a screenshot of the select `Show` of `/testset` with its 19 options.
+
+```text
+can we split this to a few axes?
+```
+
+## 2026-09-26T00:26:27+0300
+
+````text
+I removed pipeline 'mock' from config
+
+```
+  
+
+# The pipeline `mock` sends no request and builds no vectors (`backend: mock`; the keys
+  # `name` and `backend` alone). `pipeline/mock_run.py --set <set>` makes a run of it with
+  # random top-k candidates, to test the Runs page. Read docs/plans/23_runs-page.md.
+  - name: mock
+    backend: mock
+
+```
+remove  from source also
+````
+
+## 2026-09-26T00:25:00+0300
+
+```text
+http://127.0.0.1:8168/testset?set=official-real-photos
+
+add to test-set special row - "No Match". We put here all wines that should return no-match
+```
+
+The message went to session drink-atlas-workspace-e2 [9e7fe4].
+
+## 2026-09-26T00:26:58+0300
+
+The answers to the questions of the agent (session drink-atlas-workspace-28).
+
+1. "Which form should the axis controls take?"
+
+```text
+Separate selects (Recommended)
+```
+
+The option: "One small select for each axis in the toolbar: Progress, Verdict, Marks, Wine, plus the existing Slugs. One value per axis. This is the smallest change and matches the current code."
+
+2. "Is the grouping into axes right?"
+
+```text
+As proposed (Recommended)
+```
+
+The option: "Progress, Verdict, Marks, Wine, and the existing Slugs select for the benchmark, as in the table."
+
+3. "Which pages get the change?"
+
+```text
+Lab page 8168 only (Recommended)
+```
+
+The option: "Only pipeline/pages/testset.html. This matches the screenshot."
+
+## 2026-09-26T00:29:55+0300
+
+```text
+show in this dialog pipelines, not embeddings
+[Image: a screenshot of the dialog "Run the set official-real-photos" of /testset: the 11 embedding entries, each with the note "no runner yet"]
+```
+
+## 2026-09-26T00:29:55+0300
+
+The question of drink-atlas-workspace-ab [539687] about the message of 00:26:27 (remove
+`mock` from the source), and the selected answer:
+
+"How far should the removal of `mock` go? Your last message (the Run> dialog) needs only the restart of 8168: the new code on disk lists exactly `vino-svoe-search-by-photo` and `gx10-siglip2-so400m-patch16-naflex-p256`. Session d3 restarts it at about 00:35 to 00:45, after session 6a reports plan 34 as ready."
+
+```text
+Also free the 808 MB only
+```
+
+The option: "The first option, plus: delete data/embeddings/mock/ (808 MB). The 2 mock runs stay on /runs as history."
+
+The first option: "Delete pipeline/mock_run.py and tests/test_mock_run.py. Remove the backend `mock` from pipelines.py and run_job.py. Tests that use a mock pipeline switch to the remote pipeline with the local fake matcher. The docs lose the mock commands and rows, and plan 23 gets a note. The data stays: the 2 mock runs remain on /runs under `no pipeline`, and data/embeddings/mock/ (808 MB) stays. I start after the restart, when 6a hands over its files."
+
+## 2026-09-26T00:29:00+0300
+
+The question of drink-atlas-workspace-e2 [9e7fe4] about the row "No Match", and the answer:
+
+"How should the \"No Match\" row store its photos? Today the sidebar is the NULL place (`__null__`). A sidebar photo with V is a \"no match\" query of a run. A sidebar photo with no label waits for a wine. No set holds a `__null__` photo now."
+
+The options were "Row = confirmed NULL (Recommended)", "Two places", and "New place for the row". The owner wrote this answer:
+
+```text
+yes, we need 2 special items:
+- "no match" - images that assigned to this item expected not to much, but they are matched
+- "drawler" - it is right drawler sidebar. These images are not used for matching.
+```
+
+## 2026-09-26T00:30:00+0300
+
+```text
+when change anything in top header (testset, embedding, sort order, etc.) remember in localStorage and restore when load page again
+```
+
+## 2026-09-26T00:33:00+0300
+
+The answers to the questions of the agent (session drink-atlas-workspace-39).
+
+1. "Which pages should remember their header controls?"
+
+```text
+All five pages (Recommended)
+```
+
+The option: "/dataset, /embedding, /clusters, /testset, /runs. Each page has its own storage key. A value in the URL (a shared link, for example ?name=… or ?set=…) wins over the stored value. A stored value that is no longer a choice (a removed set or embedding) is ignored."
+
+2. "How should the code be built?"
+
+```text
+Code in each page (Recommended)
+```
+
+The option: "Each page saves its header controls on change and restores them in its own start-up, after its select options load. It follows the existing localStorage code of /embedding and /testset. No server change and no restart: the server reads the pages from disk for each request."
+
+3. "Should the free-text search boxes be remembered too?"
+
+```text
+Yes, all controls (Recommended)
+```
+
+The option: "Search text is restored as well, as you wrote \"anything in top header\". A restored search can hide items until you clear it."
+
+## 2026-09-26T00:33:55+0300
+
+Questions of drink-atlas-workspace-e2 [9e7fe4] about plan 36, and the selected answers:
+
+1. "Plan 36 (docs/plans/36_no-match-row-and-drawer.md): `__null__` becomes the first table row \"No Match\". A run uses each of its photos, also with no label (the rule of match_run.py). × or the delete mark removes a photo from the run. The right sidebar becomes the \"Drawer\", a new place `__drawer__`. A run never uses its photos, and its cards have no label buttons. Key 0 and a drop onto the sidebar move a photo to the Drawer. No schema change. Do you approve?"
+
+```text
+Approve (Recommended)
+```
+
+The option: "Implement plan 36 as written, then run the tests, the docs, and a restart of 8168."
+
+2. "The stale sections 5c, a9, and 3b list pipeline/pages/testset.html, README.md, SMOKE_TESTS.md, and ChangeLog.md. May I add my own separate hunks to these files? I asked the active sessions 28 and 6a separately."
+
+```text
+Yes, separate hunks (Recommended)
+```
+
+The option: "testset.html: the NULL/sidebar code. README: the Testset paragraph about the sidebar. SMOKE_TESTS: rows for No Match and the Drawer. ChangeLog: one bullet. The hunks of other sessions stay as they are."
+
+## 2026-09-26T00:39:13+0300
+
+The message holds a screenshot of the select `Slugs` of `/testset` on the value `excluded`.
+
+```text
+remove Slugs: Included / Excluded
+```
+
+## 2026-09-26T00:39:51+0300
+
+The answer to the question of the agent (session drink-atlas-workspace-28).
+
+"Should the page keep a way to show only the excluded (or only the included) wines?"
+
+```text
+Remove entirely (Recommended)
+```
+
+The option: "The Slugs select goes away with no replacement. Excluded rows stay red, and the Exclude button stays. Old links with slugs=… or filter=excluded open the full list."
+
+## 2026-09-26T00:42:25+0300
+
+The message holds a screenshot of the select `Wine` of `/testset` on the value `removed from the catalogue`.
+
+```text
+Wine: [    ] -> Clusters: [ No / embedding #1 / .... ] <- show wines groupped by clusters. 
+
+Other filters are applied too
+```
+
+## 2026-09-26T00:46:18+0300
+
+The answers to the questions of the agent (session drink-atlas-workspace-28).
+
+1. "What happens to the two values of Wine: 'in a variant group' (63 wines) and 'removed from the catalogue' (0 wines now)?"
+
+```text
+Replace Wine, drop both (Recommended)
+```
+
+The option: "Clusters takes the place of Wine. Both filters go away. Variant groups stay visible through their row tag and the sort 'variant group first'. Removed rows keep the badge."
+
+2. "Which view of the clusters does the select offer?"
+
+```text
+combined only (Recommended)
+```
+
+The option: "One entry per embedding that has clusters.json, as in your message. It uses the view combined (full and label links together). Now: 168 clusters, 393 wines."
+
+3. "When a cluster source is chosen, which wines does the table list, with the other filters applied?"
+
+```text
+Clustered wines that pass (Recommended)
+```
+
+The option: "Only wines in a cluster of that source, and only those that pass the other filters. A cluster can show in part; its header says '3 of 4 wines shown'. Wines in no cluster are hidden."
+
+4. "How does the table mark one cluster?"
+
+```text
+Header row per cluster (Recommended)
+```
+
+The option: "A thin row above each cluster: 'cluster 12 · 3 of 4 wines shown · full + label', with a link to that cluster on /clusters. The rows of a cluster stand together."
+
+## 2026-09-26T00:45:33+0300
+
+```text
+create basic runner configs:
+
+1. source image as is -> evaluate gx10-siglip2-so400m-patch16-naflex-p256 
+2. segment and crop -> evaluate gx10-siglip2-so400m-patch16-naflex-p256 
+
+add them to config.yaml
+
+inside pipeline it shall be specified what embedding is used
+```
+
+## 2026-09-26T00:52:41+0300
+
+Questions of drink-atlas-workspace-6a [792d65] about the message of 00:45:33, and the
+selected answers:
+
+1. "How should a pipeline state its own preparation of the test photo? In all three options each pipeline names `embedding: gx10-siglip2-so400m-patch16-naflex-p256`. The query has the view `full` alone, so it is compared with the `full` vectors of that index."
+
+```text
+Steps in the pipeline (Recommended)
+```
+
+The option: "The pipeline gets an optional key `views` with the steps of the test photo, in the step language of `embeddings`. An empty step list, or `resize` alone, means the photo as it is. Without the key, the query gets the steps of the embedding entry, as the present pipeline does. The catalogue side stays the built index. Changes in pipelines.py and in embedding_run.py of session ab."
+
+2. "The test photos of official-real-photos are 4000 to 4624 px on the long side, about 12 MB each as PNG. The catalogue images of the index are at most 1024 px. The model sees about 256 patches either way. Should the two pipelines resize the photo before the request?"
+
+```text
+Resize to 1024 (Recommended)
+```
+
+The option: "The step `resize` with `max_size: 1024` and `aspect: keep`, as the catalogue images have. One request is about 1 MB, not about 16 MB of base64."
+
+3. "What should "segment and crop" keep inside the crop?"
+
+```text
+The original background (Recommended)
+```
+
+The option: "SAM3 finds the package, and the photo is cut to its box: the step `segment` alone. The background inside the box stays. When SAM3 finds no package, the white rule of the catalogue cuts the border."
+
+4. "Which names should the two new pipelines get?"
+
+```text
+Short names
+```
+
+The option: "`siglip2-p256-as-is` and `siglip2-p256-crop`. The run ids are shorter; the key `embedding` names the model."
+
+## 2026-09-26T00:57:59+0300
+
+The question of drink-atlas-workspace-6a [792d65] about the steps of the two pipelines,
+and the selected answer:
+
+"60 queries of the set `my` (58 photos) and 3 of `vlmrerank-8b-failed` have transparent pixels; official-real-photos has none. With the steps you chose, those queries fail with the transparency error, because the gateway drops the alpha channel. What should the two pipelines do?"
+
+```text
+Add white_background (Recommended)
+```
+
+The option: "as-is: `white_background`, then `resize` 1024. crop: `segment`, `white_background`, `resize` 1024. An opaque photo does not change, so the other photos stay exactly as you chose. A transparent area becomes white, as on the catalogue images."
+
+## 2026-09-26T01:04:00+0300
+
+```text
+move minimum size to config,yaml also
+[Image: a screenshot of the input "Minimum size" with the value 2 on /clusters]
+```
+
+## 2026-09-26T01:05:00+0300
+
+The answer to the question of the agent (session drink-atlas-workspace-39): "What should `min_cluster_size` in config.yaml do?"
+
+```text
+Build: drop small clusters (Recommended)
+```
+
+The option: "The build does not store a cluster with fewer wines. The counts on the page (clusters, wines, sizes) count only the stored clusters. A change needs \"Build clusters\" again, like the thresholds."
+
+## 2026-09-26T01:06:36+0300
+
+The message holds a screenshot of the selects `Marks` (`any`) and `Clusters` (`No`) of `/testset`.
+
+```text
+http://127.0.0.1:8168/testset?set=my - add Sort "cluster size"
+
+add "Additional settings" button. Put Marks and Clusters there
+```
+
+## 2026-09-26T01:08:49+0300
+
+The answers to the questions of the agent (session drink-atlas-workspace-28).
+
+1. "How should the sort \"cluster size\" work?"
+
+```text
+Largest first, needs Clusters (Recommended)
+```
+
+The option: "With an embedding in Clusters, the clusters stand largest first (the size of the whole cluster, as in the header; a tie goes by the cluster id). Inside a cluster, the rows go by slug. With Clusters on No, the option is disabled."
+
+2. "What form should the \"Additional settings\" button take?"
+
+```text
+Toggle row, with a count (Recommended)
+```
+
+The option: "The button opens a second row under the bar with Marks and Clusters; a second click hides it. The button shows how many of the two are not at their default, for example \"Additional settings · 1\", so a hidden setting is not forgotten. The open state is kept in localStorage."
+
+## 2026-09-26T01:10:00+0300
+
+```text
+http://127.0.0.1:8168/runs#2026-09-25T205359Z-lab-gx10-siglip2-so400m-patch16-naflex-p256-official-real-photos
+
+Pipeline: All | ...
+[Image: a screenshot of the open filter `Pipeline` of /runs: "every run — 92" (selected), "vino-svoe-search-by-photo — 3", "siglip2-p256-as-is — 0", "siglip2-p256-crop — 0", "no pipeline — 89"; under it the pager "1–25 · page 1 of 4" and "per page 25"]
+```
+
+## 2026-09-26T01:19:00+0300
+
+Questions of drink-atlas-workspace-d3 [4920ce] about the message of 01:10:00, and the
+selected answers:
+
+1. "What does \"Pipeline: All | ...\" ask for in the Pipeline filter of /runs?"
+
+```text
+Rename to All (Recommended)
+```
+
+The option: "The first item reads \"All — 92\" instead of \"every run — 92\". The other items and the run counts stay. One line in runs.html, no restart of 8168."
+
+2. "The run of your link counts under \"no pipeline\": its run.json names gx10-siglip2-so400m-patch16-naflex-p256, and that entry is no longer in `pipeline:` of config.yaml (the file changed at 01:07). What should happen to the runs of a pipeline that is not in config.yaml?"
+
+```text
+Leave as is (Recommended)
+```
+
+The option: "The filter lists the entries of `pipeline:` alone (your message of 00:10:18). The 2 gx10-siglip2 runs and the 2 mock runs stay under \"no pipeline\"."
+
+## 2026-09-26T01:20:30+0300
+
+```text
+add checkbox [x] Use caches
+
+If checked (default) use cached VLM, LLM. If not, then avoid - we need real time
+[Image: a screenshot of the dialog `Run>` of /testset: "Run the set my", "2209 queries in the set my. Each query is one request to the matcher of the pipeline.", the radio items "vino-svoe-search-by-photo" (svoe-vino-ru), "siglip2-p256-as-is" (embedding), "siglip2-p256-crop" (running, disabled), the inputs "first N queries" (all) and "workers" (empty), the buttons "Cancel" and "Start"]
+```
+
+## 2026-09-26T01:23:11+0300
+
+```text
+http://127.0.0.1:8168/runs#2026-09-25T220722Z-lab-siglip2-p256-as-is-my
+
+if clicked on matching image - show preview popup, and in thumbnails list show all variants of this image that was feeded to embedding and score. 
+
+i want to know what exactly was feeded, and what score we get.
+```
+
+## 2026-09-26T01:24:00+0300
+
+```text
+[Image: a screenshot of a job row of /embedding: the elapsed time "0 s" and a red button "(x)" at the end of the row] http://127.0.0.1:8168/embedding
+
+use icon, not "(x)" red color. Also put button at the beggining of line
+```
+
+## 2026-09-26T01:26:00+0300
+
+```text
+[Image: a screenshot of the dialog `Run>` of /testset: "Run the set my", "2209 queries in the set my. Each query is one request to the matcher of the pipeline.", the radio items "vino-svoe-search-by-photo" (svoe-vino-ru), "siglip2-p256-as-is" (embedding), "siglip2-p256-crop" (running, disabled), the inputs "first N queries" (all) and "workers" (empty), the buttons "Cancel" and "Start"]
+if pipeline item has embedding entry, then propose override with combobox that holds all embeddings.
+If embedding overrided, then make name "name_of_pipleine+name_of_choosen_embedding"
+```
+
+## 2026-09-26T01:27:00+0300
+
+````text
+no, do not implement this
+```
+if pipeline item has embedding entry, then propose override with combobox that holds all embeddings.
+If embedding overrided, then make name "name_of_pipleine+name_of_choosen_embedding"
+```
+````
+
+## 2026-09-26T01:32:00+0300
+
+```text
+do same for job progress bar at http://127.0.0.1:8168/testset?set=my
+```
+
+## 2026-09-26T01:32:00+0300
+
+Questions of drink-atlas-workspace-d3 [4920ce] about the message of 01:20:30 (the
+checkbox `Use caches`), and the selected answers:
+
+1. "With \"Use caches\" off, which cached answers should the run skip? Today none of the 3 pipelines calls a VLM or an LLM. The only cache that a run reads is the SAM3 cut of siglip2-p256-crop (data/cache/sam3/). The embedding request and the vino-svoe API request have no cache, so they are real time in both modes."
+
+```text
+Every model cache (Recommended)
+```
+
+The option: "Off skips every record of data/cache/: SAM3, GDINO, VLM, and LLM. A crop run with the box off then sends each photo to SAM3, and its latency is the real-time latency."
+
+2. "With the box off, what happens to the fresh answers of the model calls?"
+
+```text
+Store them (Recommended)
+```
+
+The option: "The run reads no record but writes each fresh answer, as a normal cache miss does. The cache then holds the newest answer. This is the least code: only the read is skipped."
+
+3. "How should the runs show that a run was made with the box off?"
+
+```text
+run.json + a tag (Recommended)
+```
+
+The option: "run.json gets `use_cache: true` or `false`. The table of /runs shows a tag `no cache` next to the run id, as it shows the tag `dry run`. The old runs have no key and get no tag."
+
+4. "Which approach should the code take?"
+
+```text
+One switch in model_cache (Recommended)
+```
+
+The option: "model_cache gets a process switch. `run_job.py --no-cache` sets it before the backend is built, and every present and future client (SAM3, GDINO, VLM) follows it with no change. The dialog sends `use_cache`; run_jobs passes the flag. Needs a restart of 8168 (run_jobs.py is server code)."
+
+## 2026-09-26T01:29:00+0300
+
+The answers to the questions of the session drink-atlas-workspace-e2 about the message of
+01:23:11.
+
+1. "Which click should open the popup with the variants and scores? (The query column is titled \"matched image\"; it already opens a popup with its model input, without a score.)"
+
+```text
+Candidate card (Recommended)
+```
+
+The option: "A click on a candidate bottle opens it large. The rail shows each catalogue input of that wine in the index (images/<sha>_<view>.png, the exact bytes sent to the model) with its cosine to the query input."
+
+2. "Where should the score of each variant come from? The run files hold only the best cosine per wine per view, not the per-item cosine. The index was rebuilt at 01:23, after the run finished (vectors-c981c73c.npy is gone, vectors-f72139b0.npy is current)."
+
+```text
+Record in run (Recommended)
+```
+
+The option: "embedding_run.py writes, for each candidate, every item it compared: source sha256, view, embedding_hash, cosine. The popup shows the exact numbers of the run. Old runs show variants with no score; a new run of set my takes about 6 min per pipeline."
+
+3. "Which catalogue variants go in the rail? The as-is pipeline has only the query view `full`, so only the `full` items of a wine got a score. Most wines have 1 catalogue image = 2 items (full, label)."
+
+```text
+All items, mark unused (Recommended)
+```
+
+The option: "Every item of the wine in the index. An item of a view that the query does not have shows \"not compared by this pipeline\" and no score. The best item of each view gets a mark."
+
+## 2026-09-26T01:43:59+0300
+
+```text
+wait current work to finish, then commit all, then
+
+run basic pipeline with all variants of embeddings, add new pipelines if required. Compare results. If you got questions - answer yourself, and log questions to QUESTIONS.md
+
+At the end I want from you report with embeddings matching benchmarks.
+```

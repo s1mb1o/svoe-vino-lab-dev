@@ -582,6 +582,27 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | E9 | `GET /api/embedding` | The answer holds 2,103 records and the source paths and counts. Each prepared image states `available` and `ignored`. |
 | E10 | POST an unknown slug, kind, or file to `/api/embedding-ignore` | `400`. The ignore file does not change. |
 
+## The embedding-dependent Clusters page — `/clusters`
+
+Use `H=http://127.0.0.1:8168`. Read [plan 30](docs/plans/30_embedding-clusters.md).
+
+| # | Case | Expected result |
+|---|---|---|
+| LC1 | `python3 -m unittest discover -s tests -p 'test_cluster*.py'`, then `test_build_clusters.py` | 21 and 2 tests `OK`. |
+| LC2 | Open `$H/clusters` | `Clusters` is the marked navigation link. The configuration with `clusters.json` opens. The summary names the file, build time, vector file, dimension, item states, thresholds, and counts. |
+| LC3 | Choose `full`, `label`, and `combined`; in `combined`, choose `Image` `full` and `label` | Each selection changes the clusters. Each card shows one image: `full` shows the full prepared image, and `label` shows the label prepared image. The select `Image` is disabled in `full` and `label`. In `combined`, `Image` chooses the view of the image. The address keeps `name`, `space`, and `image=label` for a `label` choice in `combined`. |
+| LC4 | Look at an edge row | The row gives the exact wine pair, each signal, cosine, image type, source SHA-256 prefix, and links to the two prepared images that produced the highest cosine. |
+| LC5 | Find a wine with `main_patched` | The effective patch occurs. The replaced `main` image does not occur. |
+| LC6 | Find a cluster whose edge uses an additional image | The evidence names `full_front`, `full_back`, `label_front`, or `label_back`. A label-only image never occurs in full evidence. |
+| LC7 | Change a threshold and press `Build clusters` | The request finishes with `Clusters built`. `data/embeddings/<name>/clusters.json` holds both selected thresholds and the new counts. |
+| LC8 | Change an embedding input after LC7, then reload | The artifact is marked `stale`. A new build makes it `current`. |
+| LC9 | Write and clear a reviewer note | `cluster-notes.json` in the selected embedding directory changes atomically. The other embedding directories do not change. |
+| LC10 | Click a prepared image; use the arrow buttons and arrow keys; press Esc | The preview shows the selected image. The controls move over the images of the visible clusters. Esc closes it. |
+| LC11 | Open `$H/clusters#<slug>` | The component that contains the slug gets an outline and scrolls into view. |
+| LC12 | Use light and dark system themes, then a width of 390 px | Both themes are readable. The member cards use one column at 390 px. The edge table scrolls inside its box. |
+| LC13 | `curl -s $H/api/clusters` | One record per configured embedding. The selected entry states whether its artifact exists, whether it is stale, and the counts of all three spaces. |
+| LC14 | `curl -s $H/api/clusters/gx10-siglip2-so400m-patch16-naflex-p256` | The answer holds `artifact`, `cards`, and `status`. The artifact holds separate `full`, `label`, and `combined` spaces. |
+
 ## The page of the runs — `/runs`
 
 | # | Case | Expected result |
@@ -822,7 +843,7 @@ the last file of `pipeline/schema/` (16 on 2026-09-25).
 | S8a | Look at the navigation of `$H/dataset`, `$H/embedding`, and `$H/runs` | The order is `Dataset`, `Embeddings`, `Clusters`, `Testset`, `Runs`. |
 | S9 | `curl -s -o /dev/null -w "%{http_code}" $H/api/runs` | `200` (plan 23). `$H/api/rows` stays `503`. |
 | S10 | `curl -s $H/api/dataset \| python3 -c "import json,sys; print(len(json.load(sys.stdin)['records']))"` | `2103`. |
-| S11 | Press `Validate` on `$H/dataset`, then `Run selected` | The dialog lists the checks. After the run it reads `validation ERROR Error: disabled for now: the lab database does not hold the data of this route yet`. |
+| S11 | Open `$H/dataset`, then the Dataset page of the review tool (8154) | The header of 8168 has no `Validate`, and the page sends no `GET /api/dataset-validation`. The review tool still shows `Validate`. |
 | S12 | `python3 -m unittest discover -s tests -p 'test_lab_server.py'` | 49 tests on 2026-09-25, `OK`. |
 | S13 | Look below the catalogue image of an `Active` wine | Two buttons: `Disable` and `Remove`. |
 | S14 | Press `Disable` | The card shows the tag `disabled` and the buttons `Enable` and `Remove`. The database holds `Disabled`. |
@@ -894,10 +915,10 @@ image), `PF=../svoe-wino-hackaton/dataset/patched-official-2026-09-17`.
 |---|---|---|
 | PE1 | Open `$H/dataset` and search `$W` | The patch editor reads `Drop an image here` / `or choose a file`. No card reads `patch_dir is not configured`. `/api/dataset` holds `"patch_editor": true` and no key `patch_dir`. |
 | PE2 | Choose `$PF/bukovinka.webp` in the editor of `$W` | The page sends the file at once, with no `Apply` step. While the server works, the editor shows the candidate, the file name, and a disabled `Processing…`. |
-| PE3 | Wait for the answer of PE2 | The editor shows the processed patch with the badge `crop`, the mark `patched`, and `Remove`. The left image stays the `main` image, caption `main · name-unique`, so the two stand side by side. The header counts `1 patches`. `wine_image` holds `main_patched` for `$W` with `source_name` `bukovinka.webp`. The file is in `data/images/patched/`. |
+| PE3 | Wait for the answer of PE2 | The editor shows the processed patch with the badge `crop`, the mark `patched`, and the red `Clear`. The left image stays the `main` image, caption `main · name-unique`, so the two stand side by side. The header counts `1 patches`. `wine_image` holds `main_patched` for `$W` with `source_name` `bukovinka.webp`. The file is in `data/images/patched/`. |
 | PE4 | Reload the page, search `$W`, and click the patch image | The patch stays. The preview opens at `/dataset/$W/patch` with the `/images/patched/…` file, `240 × 1035 px`. |
-| PE5 | Switch the system to dark mode and look at the card of PE3 | The editor, the mark `patched`, and `Remove` are readable. |
-| PE6 | Press `Remove`, then `Apply` | The editor reads `Drop an image here` again. The left image stays the `main` image. The header counts `0 patches`. The file stays in `data/images/patched/`. |
+| PE5 | Switch the system to dark mode and look at the card of PE3 | The editor, the mark `patched`, and the red `Clear` are readable. |
+| PE6 | Press `Clear` | No `Apply` step. The editor shows `Clearing…`, then reads `Drop an image here` again. The left image stays the `main` image. The header counts `0 patches`. The file stays in `data/images/patched/`. |
 | PE7 | Drop a JPEG with a white background while SAM3 answers | The patch slot gets the badge `seg`. |
 | PE8 | Drop a JPEG with a white background while SAM3 does not answer | The page shows the warning `The patch is stored with no processed file. …`. The patch slot shows the patch with no badge. |
 | PE9 | Choose a GIF file | The page shows `Cannot apply the patch change: the image is GIF; a patch MUST be JPEG, PNG, or WebP`. The candidate stays with `Apply` and `Cancel`. The database does not change. |
@@ -910,7 +931,7 @@ image), `PF=../svoe-wino-hackaton/dataset/patched-official-2026-09-17`.
 | PE16 | Repeat PE12 in dark mode and at a width of 390 px | The thumbnails and the badges are readable. At 390 px the thumbnails stand in one row above the arrows, and the row scrolls sideways. |
 | PE17 | Press Down, then Up, in the preview of PE12 | Down opens the next wine (`/dataset/aligote-barrel-2024` in the default view); Up opens `avtohtonnoe-vino-kryma-beloe-suhoe` again. Left and Right still work. |
 | PE18 | Search `fanagoriya-100-ottenkov-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-135` | Its crop cut nothing, so the card shows the `/images/main/…` original with no badge. The preview shows `main · processed` as `none`. |
-| PE19 | Measure the buttons below the images of a patched card | The patch `Remove` has the width and the height of the `Remove` of the main image (77 × 24 px at 1400 px) and stands at the right edge of the patch slot. `Disable` and `Remove` of the main image have one width. |
+| PE19 | Measure the buttons below the images of a patched card | The patch `Clear` has the width and the height of the `Remove` of the main image (77 × 24 px at 1400 px) and stands at the right edge of the patch slot. `Disable` and `Remove` of the main image have one width. |
 | PE20 | Drop a patch, and drop a second file on the same wine while `Processing…` shows | The page says `The previous patch of this wine is still processing. …`. The first patch is stored. |
 | PE21 | `POST /api/dataset-patch` with a small PNG of 15000 × 15000 px | HTTP 413: `the image has 15000 × 15000 pixels; the limit is 100000000 pixels`. Nothing is stored. |
 | PE22 | Send a JSON body with a lone surrogate, for example `{"slug":"a\ud800","action":"disable"}`, to `POST /api/wine-state` | HTTP 400: `the body holds a lone surrogate character`. |
@@ -937,6 +958,7 @@ database at schema version 8 with an empty table `wine_code`.
 | WC13 | Switch the system to dark mode during WC6 | The red line is readable. |
 | WC14 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"slug":"shardone-2","gtin":"4680140700220"}' $H/api/dataset-gtin` | HTTP 400: `wrong check digit 0; expected 8`. |
 | WC15 | Press `+` of `GTINs` on a card far down the list, save a valid GTIN, then remove it | Each step changes the card at once, in much less than 1 s. The list keeps its scroll position. The header count of GTINs changes by 1. |
+| WC16 | Press `+` of `GTINs`, type `46301716300941`, then type one more digit. Then clear the input and paste `4630171630094123` | The 15th digit does not enter; the input holds 14 characters. The paste keeps its first 14 characters, `46301716300941`. |
 
 ## The Atlas Core product of a wine — `pipeline/seed_atlas_bindings.py` and the Dataset editor
 
@@ -1046,9 +1068,13 @@ Use `H=http://127.0.0.1:8168`.
 | EB38 | Let the gateway answer HTTP 503 during a build | The job row reads `retry 1 in 2 s: HTTP 503 from …` (the full error in the tooltip). `build.log` holds one `retry` line for each wait. |
 | EB39 | Open `Log` after EB37 | The `request` lines are hidden while the checkbox is on; the `retry` lines show. |
 | EB40 | Open `$H/embedding` in a window 1,440 px wide | The header has two rows. Row 1: `Embeddings`, `Configuration` with the combobox, `Build`, `Stop`, `Log`, the message of the last build, and the navigation at the right. Row 2: `Show` and `Search`. The header shows no line `N of M wines · … items · current …`; the row `Items` of the source panel shows the counts. A window narrower than about 1,410 px puts the navigation in its own row. |
-| EB41 | Start two builds, then look at the job rows | Each `running` row ends with a red button `(x)`, its title `stop the build of <name>`. |
-| EB42 | Select another entry in `Configuration`, then press `(x)` on the row of the first build | The page sends `POST /api/embeddings/<first name>/stop`. The row reads `stopping` with a disabled `(x)`, then the row goes away. The message line of the first entry reads `last build stopped: …; Build continues it`. The other build runs on. |
-| EB43 | Make the window 390 px wide during EB41 | The `(x)` button stays small at the left of its cell. The job rows fit the window. |
+| EB41 | Start two builds, then look at the job rows | Each `running` row starts with a small icon button `×` in the muted text color, not red, its title `stop the build of <name>`. |
+| EB42 | Select another entry in `Configuration`, then press `×` on the row of the first build | The page sends `POST /api/embeddings/<first name>/stop`. The row reads `stopping` with a disabled `×`, then the row goes away. The message line of the first entry reads `last build stopped: …; Build continues it`. The other build runs on. |
+| EB43 | Make the window 390 px wide during EB41 | The `×` button stays small in a narrow column at the left of the row; the name, the state, the bar, the counts, and the elapsed time are at its right. The job rows fit the window. |
+| EB44 | `python3 -m unittest discover -s tests -p 'test_alternatives.py'` | 40 tests, `OK` (2026-09-25). `BodyLabelsTest`: a second label of the same width counts; a neck label, a part of the main label, a narrow label, a small label, and a label on another bottle do not. |
+| EB45 | `sqlite3 data/lab.sqlite3 "SELECT method, count(*) FROM image_derivative WHERE kind = 'label' GROUP BY 1"` after EB33 | Most rows `seg`; the photos with a second body label `crop`: 111 `crop` and 1,910 `seg` on 2026-09-25. Each row has the settings `alternatives.SETTINGS_LABEL`. |
+| EB46 | Open the `label` cut of a wine with two labels one above the other (a row `crop` of EB45) | The cut holds both labels and the glass between them, with no transparent part. |
+| EB47 | Open the `label` cut of a wine with a neck label and one body label | The cut is the segment of the body label alone (`seg`), as before. |
 
 ## The website import — `pipeline/import_website.py`
 
@@ -1073,6 +1099,7 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 | IW14 | Click a wine slug in a conflict or in a change row | A new tab opens `https://vino-svoe.ru/wines/<slug>`. The checkbox of the row does not change. A row of `Missing on the website` shows the slug as plain text. |
 | IW15 | Click an image in a change row or in a conflict | A large view of the image opens with its file name. The checkbox or the radio button does not change. Esc or a click closes the large view, and the dialog stays open. |
 | IW16 | In the dialog of IW7, look at the section `Missing on the website`, in light and in dark mode, then click the sign of one row | Each row shows a red prohibition sign on top of the wine image. No other section shows the sign. The click opens the large view of the image without the sign. The checkbox of the row does not change. |
+| IW17 | In the dialog of IW7, look at a conflict of the main image, in light and in dark mode | Each image of the conflict shows its pixel size under it, for example `300×493`, on the `database` side and on the `website` side. The size equals the width and the height of the file. A text conflict and the rows of the changes show no size. |
 
 ## The manual wines — the Dataset button `Add wine`
 
@@ -1127,13 +1154,13 @@ write cases on a copy: start `python3 pipeline/lab_server.py --port 8174 --no-br
 |---|---|---|
 | TP1 | `python3 -m unittest discover -s tests -p 'test_testset*.py'`, then `test_export_testset.py` | `OK`. |
 | TP2 | `curl -s -o /dev/null -w '%{http_code} %{redirect_url}' http://127.0.0.1:8168/` | `302 http://127.0.0.1:8168/dataset`. |
-| TP3 | Open `/testset` | The title `Test set [my (4043 photos) ▾] 2105 wines, 4043 photos`, and `labelled 2556/4043 photos` (2026-09-25). The table has no NULL row; the NULL place is the right sidebar. The navigation marks `Testset`. The link `Testset` of each other page leads here. |
+| TP3 | Open `/testset` | The title `Test set [my (4043 photos) ▾] 2105 wines, 4043 photos`, and `labelled 2556/4043 photos` (2026-09-25). The first table row is `No Match` (plan 36); the right sidebar is the Drawer. The navigation marks `Testset`. The link `Testset` of each other page leads here. |
 | TP4 | Choose `official-real-photos` in the combobox of the title | The header shows `100 photos`. The address holds `?set=official-real-photos`. |
 | TP5 | Click `D` on a card, then `D` again | The card turns yellow, then plain. Each click answers HTTP 200. A reload keeps the state. |
 | TP6 | Open a photo, press `2`, type a comment | The status says `negative sample`. The comment state says `saved`. The card gets the comment badge. |
-| TP7 | In the large view press `b` and drag on the photo | A yellow frame stays on the photo. The side panel says `saved: box l, t, r, b`. After `Esc` the card has the badge `box`, and `Show` `holds a box` lists the wine. `Clear box` removes it. |
+| TP7 | In the large view press `b` and drag on the photo | A yellow frame stays on the photo. The side panel says `saved: box l, t, r, b`. After `Esc` the card has the badge `box`, and `Marks` `a box` lists the wine. `Clear box` removes it. |
 | TP8 | Right-click a card, `Delete`; then `Keep this photo` | The card gets `del` and turns gray; then it is plain again. No file moves. |
-| TP9 | Remove a wine that has photos on `/dataset`, then open `/testset` | The row of the wine stays, with the badge `Removed`. `Show` `removed from the catalogue` lists it. After `Restore` on `/dataset` the badge goes away, and the labels are the same. |
+| TP9 | Remove a wine that has photos on `/dataset`, then open `/testset` | The row of the wine stays, with the badge `Removed`. After `Restore` on `/dataset` the badge goes away, and the labels are the same. |
 | TP10 | Type a note in the field of a wine; click `Exclude` and give a reason | The note stays after a reload. The row turns red, and the reason shows below the button. |
 | TP11 | Open `/testset?set=my#<slug>/<file>` | The large view opens at that photo, with its comment and its box. |
 | TP12 | The system theme dark; a window of 390 px | The dark colours. No horizontal scroll. The header scrolls away; the large view starts below the status. |
@@ -1142,16 +1169,71 @@ write cases on a copy: start `python3 pipeline/lab_server.py --port 8174 --no-br
 | TP15 | Drag the file of TP13 onto the sidebar again, then onto a wine row | The sidebar: an alert `1 of 1 file(s) not stored: … holds this image already as <name>`. The wine row: the card is added with the name of TP13. |
 | TP16 | Drag a HEIC file, a PDF, or a file of more than 20 MB from the Finder onto the sidebar | An alert names each refused file and its reason. Nothing is added. |
 | TP17 | Drop a Finder file on the header, not on a target | Nothing happens. The browser does not open the file, and the page stays. |
-| TP18 | Drag a photo card of a wine onto the sidebar | `POST /api/testset-move` with `to` `__null__`, HTTP 200. The card leaves the row and stands in the sidebar with no label and the line `from <slug>`. The title still counts the same photos. The stats line ends with `last edit <time>`. The navigation stays in the title row at 1,440 px. |
+| TP18 | Drag a photo card of a wine onto the sidebar | `POST /api/testset-move` with `to` `__drawer__`, HTTP 200. The card leaves the row and stands in the sidebar with no label and the line `from <slug>`. The title still counts the same photos. The stats line ends with `last edit <time>`. The navigation stays in the title row at 1,440 px. |
 | TP19 | Drag the sidebar card of TP18 onto another wine row | The card leaves the sidebar and is a card of that wine with no label. A file name that the row holds already gets `_moved<N>`. No file moves in `data/images/`. |
-| TP20 | Click a sidebar card, then press `1` | The large view reads `the NULL place (sidebar)` and `the NULL place: <n> of <m> labelled`. After `1`: `confirmed: no card of the catalogue shows this wine`; the card turns green; the stats line counts it under `confirmed no match`. `2` does nothing there. |
-| TP21 | Open a photo of a wine in the large view | The position reads `wine <i> of <n>`; `<n>` is the count of the table rows, without the NULL place. |
-| TP22 | Press `0` in the large view of a wine photo | The photo moves to the sidebar; the large view shows the next photo. |
+| TP20 | Click a card of the row `No Match`, then press `1` | The large view reads `No Match ·` and `No Match: <n> of <m> labelled`. After `1`: `confirmed: no card of the catalogue shows this wine`; the card turns green. `2` does nothing there. |
+| TP21 | Open a photo of a wine in the large view | The position reads `wine <i> of <n>`; `<n>` is the count of the wine rows of the table, without `No Match` and the Drawer. |
+| TP22 | Press `0` in the large view of a wine photo | The photo moves to the Drawer; the large view shows the next photo. |
 | TP23 | Type a note of a wine, wait 1 s | The stats line shows the new `last edit` time. The cursor stays in the field. |
+| TP24 | Look at the filter row of `/testset` | Three selects `Progress`, `Verdict`, and the button `Additional settings`; `Marks` and `Clusters` stand in the row of the button (TP36). There is no `Show`, no `Slugs`, and no `Wine`. `Progress` holds `all`, `not fully labelled`, `no label yet`, `partly labelled`, `fully labelled`, `no candidate photos`. `Verdict` holds `any`, `positive`, `no positive`, `negative`, `unusable`, `different design`. `Marks` holds `any`, `a comment`, `an agent proposal`, `a deletion mark`, `a box`. `Clusters` holds `No` and each embedding with a `clusters.json`: on 2026-09-26 `gx10-siglip2-so400m-patch16-naflex-p256 (168 clusters)`. |
+| TP25 | Set `Progress` to `partly labelled` and `Verdict` to `negative` | The table holds the wines that pass both axes. On 2026-09-26 in `my`: 62 of 2105 (184 for `partly labelled` alone, 357 for `negative` alone). The address holds `filter=partial&verdict=has_neg`. |
+| TP26 | Set `Progress` to `no candidate photos`, then `Verdict` to `no positive` | First 412 rows (2026-09-26, `my`), then 0. A wine with no photo in the set shows only when `Verdict`, `Marks`, and `Wine` stand on `any`. |
+| TP27 | Open an address of the old single select: `/testset?filter=has_pos`, `?filter=noted` | The value goes to its axis: `Verdict` `positive`, `Marks` `a comment`. The address changes to `verdict=has_pos`, `marks=noted`. The count equals the count of the old option. |
+| TP28 | Set `Verdict` and `Marks`, then click the tag `variant group of N` of a row | Every axis goes back to its first value. The table shows the group alone. |
+| TP29 | Open `/testset?filter=excluded`, then `/testset?slugs=excluded` | Each time the full list: 2105 of 2105 wines (2026-09-26, `my`). The address drops the old key. The 6 excluded rows are red. |
+| TP30 | Open `Additional settings` and choose `gx10-siglip2-so400m-patch16-naflex-p256` in `Clusters` | The count line reads `393 of 2105 wines shown · 168 clusters of gx10-siglip2-so400m-patch16-naflex-p256` (2026-09-26, `my`). The row `No Match` stays first. Then 168 header rows, each `<id> · <n> of <n> wines shown · <signals>`, for example `c032 · 2 of 2 wines shown · full + label`. The rows of one cluster stand together below their header. The address holds `cluster=<embedding>`. |
+| TP31 | Keep the cluster of TP30 and set `Verdict` to `positive` | 145 wines in 82 clusters (2026-09-26). Some headers read `1 of 2`: a cluster shows in part. A wine in no cluster is not listed. |
+| TP32 | Click the first photo of the first wine of TP31 | The large view reads `wine 1 of 145`. The Up and Down keys step over the wine rows and skip the header rows. |
+| TP33 | Click `open on /clusters` of a header | A new tab opens `/clusters` with the view `combined`. The same cluster (same id) is marked and scrolled into view. |
+| TP34 | Reload `/testset` with no query after TP30 | `Clusters` comes back on the embedding of TP30, and the table is grouped again. `?cluster=<embedding>` opens the same view; `?filter=grouped` and `?filter=removed` open with `Clusters` on `No`. |
+| TP35 | Width 390 px and the dark theme with a cluster chosen | The header rows are readable in both themes. No horizontal scroll. |
+| TP36 | Open `/testset` with an empty localStorage | The second row is hidden. The button reads `Additional settings`. A click shows the row with `Marks` and `Clusters` and marks the button; a second click hides it. A reload keeps the open state. |
+| TP37 | Choose an embedding in `Clusters`, then `a comment` in `Marks`, then hide the row | The button reads `Additional settings · 1`, then `· 2`. With the row hidden, the count stays. |
+| TP38 | With `Clusters` on `No`, open `Sort` | `cluster size, largest first` is disabled. `?sort=cluster_size` alone opens with `slug A-Z`. |
+| TP39 | Choose an embedding in `Clusters` and `cluster size, largest first` in `Sort` | The first headers read `c001 · 8 of 8`, then the clusters of 6 (`c002`, `c003`, `c004` on 2026-09-26). Each size stands before a smaller size; a tie goes by the id. Inside a cluster the rows go by slug. The address holds `sort=cluster_size`. |
+| TP40 | Set `Clusters` back to `No` after TP39 | `Sort` goes to `slug A-Z`, and `cluster size, largest first` is disabled again. |
+
+### The row "No Match" and the Drawer
+
+Read [plan 36](docs/plans/36_no-match-row-and-drawer.md). Run the write cases on a copy, as
+above.
+
+| # | Case | Expected result |
+|---|---|---|
+| NM1 | Open `/testset?set=official-real-photos` | The first table row is `No Match`, with a dashed box `NO MATCH` and the slug `__null__`. The sidebar title reads `Drawer`. The header button reads `drawer <n>`. |
+| NM2 | Set any filter, any sort, any search word | The row `No Match` still stands first. The line `N of M wines shown` does not count it. |
+| NM3 | Drag a wine card onto the sidebar | The card stands in the Drawer, with no label buttons and the line `from <slug>`. The stats line reads `1 in the Drawer`. |
+| NM4 | Drag the card of NM3 onto the row `No Match` | `POST /api/testset-move` with `to` `__null__`. The card has `V` and `×`. The stats line reads `1 in No Match`. The large view status reads `No Match: a run expects no card for this photo`. |
+| NM5 | Right-click a card of the Drawer, then a card of `No Match`, then a wine card | The Drawer: `Move to a wine…` and `Move to No Match`. `No Match`: `Move to a wine…` and `Move to the Drawer`. A wine card: `Move to the Drawer` and `Move to No Match`. |
+| NM6 | `curl -s -X POST http://127.0.0.1:8174/api/testset-label -d '{"set":"official-real-photos","place":"__drawer__","file":"<file>","label":"positive"}'` on a Drawer photo | HTTP 400: `a photo of the Drawer takes no label`. |
+| NM7 | Put one photo in `No Match` with no label and one in the Drawer, then run `python3 -c "import sys; sys.path.insert(0,'pipeline'); import benchmark as b; c=b.open_database('<copy>'); r,s=b.build_queries(c,'<copy>','official-real-photos'); print([x['image_path'] for x in r if x['slug']=='__null__'], dict(s))"` | The `No Match` photo is a row with the label `no_match`. The counts hold `drawer: 1`. Checked on 2026-09-26 on a copy. |
+| NM8 | Open the page in the dark theme and at a width of 390 px | The row `No Match` and the Drawer follow the theme. The Drawer stands above the table as a strip. No horizontal scroll. |
+
+## The button `Run>` of the Testset page — `pipeline/run_jobs.py` and `pipeline/run_job.py`
+
+Read [plan 32](docs/plans/32_testset-run-button.md). `$H` is `http://127.0.0.1:8168`.
+Plan 34 replaces the rows RJ2, RJ4, and RJ9: read the section "The pipelines".
+
+| # | Case | Expected result |
+|---|---|---|
+| RJ1 | `python3 -m unittest discover -s tests -p 'test_run_jobs.py'` | 14 tests `OK` (2026-09-25). |
+| RJ2 | Open `$H/testset?set=official-real-photos` and click `Run>` | A dialog `Run the set official-real-photos` with `80 queries in the set official-real-photos` (2026-09-25). Each configuration of `config.yaml` has a row. `vino-svoe-search-by-photo` (`svoe-vino-ru`) and `mock` (`mock`) can be chosen; the 11 embedding configurations are grey with `no runner yet`. `Start` is off until a row is chosen. |
+| RJ3 | Press `Esc`, then open the dialog again and click outside the panel | `Esc` closes the dialog; a click outside the panel closes it too. While the dialog is open, the keys of the page (`s`, `1` to `4`) do not act. |
+| RJ4 | Choose `mock`, leave the fields empty, `Start` | The dialog closes. A job row `mock · official-real-photos` shows `running`, then `done` with `80 / 80 · recall@1 …`, the elapsed time, and `open run`. `open run` opens `/runs?configuration=mock#<run id>`. The row goes away 60 s after the end. |
+| RJ5 | Choose `vino-svoe-search-by-photo`, `first N queries` 5, `workers` 1, `Start` | The row counts `1 / 5` to `5 / 5` (about 3 to 10 s per photo on 2026-09-25), then `done`. The run directory is `runs/<stamp>-lab-vino-svoe-search-by-photo-official-real-photos/` with `answered: 5`. |
+| RJ6 | Start `vino-svoe-search-by-photo` with no limit, then click `×` after some photos | The state goes to `stopping`, then `stopped` with `stopped after N of 80 photos` and `open run`. `run.json` holds `answered` = N. |
+| RJ7 | While a run of a configuration runs, open the dialog again | The row of that configuration is grey with the note `running`. A second `POST /api/run-jobs` of it answers HTTP 409. |
+| RJ8 | Reload the page while a job runs | The job row comes back with the same counts. |
+| RJ9 | `curl -s -X POST $H/api/run-jobs -d '{"configuration":"gx10-dinov3-vitb16","set":"my"}'` | HTTP 400 with `... (backend openai): no runner yet`. |
+| RJ10 | Switch the system to dark mode and repeat RJ2 and RJ4 | The dialog and the job row are dark. |
+| RJ11 | Look at a running job row, then at the same row after the end; repeat in a window 390 px wide | A running or stopping row starts with a small icon button `×` in the muted text color, not red; a stopping row has it disabled. An ended row has an empty first cell and `open run` in the last cell, so the names of all rows start at the same place. At 390 px the first cell is a narrow column at the left of the row. |
 
 ## The Runs page of the lab server — `/runs` and `pipeline/mock_run.py`
 
 Read [plan 23](docs/plans/23_runs-page.md). `$H` is `http://127.0.0.1:8168`.
+Plan 34 replaces the rows RN4, RN5, RN7, RN12, RN13, RN14, and RN17: read the section
+"The pipelines". The pipeline `mock` and `pipeline/mock_run.py` are removed, so RN1 to RN3
+cannot run; RN6, RN8, and RN10 use the 2 old mock runs.
 
 | # | Case | Expected result |
 |---|---|---|
@@ -1172,6 +1254,90 @@ Read [plan 23](docs/plans/23_runs-page.md). `$H` is `http://127.0.0.1:8168`.
 | RN15 | Look below the table of the runs | `1–25 · page 1 of <p>`, `prev` off, `next`, and `per page` 25. `next` shows the next 25 runs; on the last page `next` is off. |
 | RN16 | Choose `per page` 50, reload | The table shows 50 runs; after the reload the page size is still 50. `all` shows every run. |
 | RN17 | Choose a configuration with no run | `no run of this configuration`; `prev` and `next` are off. |
+| RN18 | Open `$H/runs#<id of a run of ER2>` and look at the photo rows | In each row, each candidate card has the height of the tallest card of the row. In a row with a cluster frame, the cards outside a frame start and end at the level of the cards in the frame. A long slug, for example a `novyy-svet-…` slug, is not cut: its row is taller. |
+
+## The remote configuration — `pipeline/remote_run.py`
+
+Read [plan 31](docs/plans/31_remote-configuration.md). `$H` is `http://127.0.0.1:8168`.
+Plan 34 replaces the rows RM4, RM5, and RM7 to RM10: read the section "The pipelines".
+
+| # | Case | Expected result |
+|---|---|---|
+| RM1 | `python3 -m unittest discover -s tests -p 'test_remote_run.py'` | 15 tests `OK` (2026-09-25). |
+| RM2 | `python3 pipeline/remote_run.py --name vino-svoe-search-by-photo --set my --limit 3 --workers 1 --label smoke` | A new directory `runs/<stamp>-lab-vino-svoe-search-by-photo-my-smoke/`. Each row of `results.jsonl` has `http_status` 201 and 10 candidates with `score: null`. On 2026-09-25 the 3 photos had the true wine at rank 1. |
+| RM3 | `python3 -c "import json; m=json.load(open('runs/<id of RM2>/run.json')); print(m['configuration'], m['backend']['kind'])"` | `vino-svoe-search-by-photo remote`. |
+| RM4 | `python3 pipeline/remote_run.py --name mock --set my` | `error: the configuration mock has the backend mock; this script runs the backend svoe-vino-ru alone`, exit code 1. |
+| RM5 | Open `$H/runs` and choose `vino-svoe-search-by-photo` in `Configuration` | The table holds the runs of the configuration alone. The photo rows show the test photo and the candidate images. |
+| RM6 | Click the photo of a row of a run of RM5 | The large view opens. Below the image: `This run sent the photo as it is to the remote matcher https://api.vino-svoe.ru/v1/wines/search-by-photo. The matcher reports no model input.` |
+| RM7 | Open `$H/embedding` and choose `vino-svoe-search-by-photo` | The option reads `vino-svoe-search-by-photo — remote matcher`. `Build`, `Stop`, and `Log` are hidden, and the bar reads `remote matcher: no build`. The details show the URL, the request keys, `full: the photo as it is, no step`, and the command of a run with a `copy` button. The list reads `A remote matcher has no model inputs of the catalogue.` |
+| RM8 | `curl -s -X POST $H/api/embeddings/vino-svoe-search-by-photo/build` | HTTP 400 with the text `... is a remote matcher (backend svoe-vino-ru); it holds no vectors. Make a run: ...`. |
+| RM9 | Choose another entry on `$H/embedding` after RM7 | `Build`, `Stop`, and `Log` are visible again. |
+| RM10 | Switch the system to dark mode and repeat RM7 | The page is dark. |
+
+## The embedding runner — `pipeline/embedding_run.py`
+
+Read [plan 33](docs/plans/33_embedding-run.md). `$H` is `http://127.0.0.1:8168`. `$P` is
+`siglip2-p256-crop`, a pipeline of the backend `embedding`. Its key `embedding` names `$E`,
+the entry `gx10-siglip2-so400m-patch16-naflex-p256`. The owner removed the first pipeline,
+which had the name of `$E`, at about 01:07 on 2026-09-26. ER2 and ER3 send requests to
+SAM3 and to the gateway of gx10.
+
+| # | Case | Expected result |
+|---|---|---|
+| ER1 | `python3 -m unittest discover -s tests -p 'test_embedding_run.py'` | 33 tests `OK` (2026-09-26, with the 9 tests of plan 38; row CI1). No request goes to gx10. |
+| ER2 | `python3 pipeline/embedding_run.py --name $P --set official-real-photos --limit 3 --label smoke` | The first line names the index of `$E` and the item counts, for example `4039 current items; 2 stale, 2 missing, 4 failed items stay out`. A new directory `runs/<stamp>-lab-$P-official-real-photos-smoke/`. Each row of `results.jsonl` has `http_status` 200 and 10 candidates. A cold start of the model can make the first request wait (51 s on 2026-09-25); a photo takes about 4 s. |
+| ER3 | Run ER2 again, then `find data/cache/sam3 -name '*.json' -mmin -2 \| wc -l` | `0`: the second run sends no SAM3 request. |
+| ER4 | `python3 -c "import json; m=json.load(open('runs/<id of ER2>/run.json')); print(m['configuration'], m['backend']['kind'], m['embeddings']['index_file'])"` | `$P embedding $E/vectors-<8 hex>.npy`. |
+| ER5 | A row of `results.jsonl` of ER2 | Each candidate holds `slug`, `score`, `rank`, and the cosine of each view of the pipeline: `full` alone for `$P`. `score` is the mean of the view cosines. A pipeline with no key `views` has the views of its entry, so its candidates also hold `label` when the photo has a label cut. |
+| ER6 | `python3 pipeline/embedding_run.py --name nope --set my` | `error: config.yaml has no pipeline nope`, exit code 1. |
+| ER7 | Open `$H/runs`, choose `$P` in `Pipeline`, and click the photo of a row | The large view shows one model input with the badge `Embedding`: `full`, the box of the package with its own background. A run of the removed pipeline of 2026-09-25 (under `no pipeline`) shows `full` (the package on white) and `label` (the label on white); a photo with no label cut there shows `full` alone and the note `The view label has no input: SAM3 found no label.` |
+| ER8 | `python3 pipeline/embedding_run.py --name vino-svoe-search-by-photo --set my` | `error: the pipeline vino-svoe-search-by-photo has the backend svoe-vino-ru; this script runs the backend embedding alone`, exit code 1. |
+
+## The catalogue inputs of a candidate — plan 38
+
+Read [plan 38](docs/plans/38_candidate-inputs.md). `$H` is `http://127.0.0.1:8168`. `$R` is
+a run of `siglip2-p256-as-is` made after plan 38.
+
+| # | Case | Expected result |
+|---|---|---|
+| CI1 | `python3 -m unittest discover -s tests -p 'test_embedding_run.py'` | 33 tests `OK` (2026-09-26); the class `CandidateItemsTest` holds 9. No request goes to gx10. |
+| CI2 | `python3 pipeline/embedding_run.py --name siglip2-p256-as-is --set my --limit 30 --label probe`, then read the first row of `results.jsonl` | Each candidate holds `items`. For `q-000001`, rank 1 `fanagoriya-100-ottenkov-…` has 3 `full` items (0.8141, 0.5488, 0.5293) and 3 `label` items with `cosine` null. |
+| CI3 | Open `$H/runs#$R` and click the image of the candidate at rank 1 of the first row | The large view opens. The strip shows the note `score 0.8141: the mean of the best cosine of each view (full 0.8141)`, then 6 items: `full · 0.8141` with the badge `best`, `full · 0.5488`, `full · 0.5293`, and 3 dim items `label · not compared`. The last note reads `The query has no view label, so the run did not compare these items.` |
+| CI4 | Click the second item of CI3 | The PNG of that item becomes the large image. The view stays open. |
+| CI5 | Press the right arrow key in the view of CI3 | The view shows the candidate at rank 2, and the strip shows its items (`full · 0.7794`). |
+| CI6 | Open the run `2026-09-25T220722Z-lab-siglip2-p256-as-is-my` and click a candidate image | The strip shows the items of the present index with `no cosine` and the note `This run recorded no cosine of each item, because it ran before plan 38. …`. |
+| CI7 | Click a candidate image of a run of `vino-svoe-search-by-photo` | The large view opens with no strip, as before plan 38. |
+| CI8 | Click the photo of a row of `$R` | The strip shows the model input of the photo (`full`), as before plan 38. |
+| CI9 | Repeat CI3 in the dark theme and in the light theme | The notes and the cosines are readable in both themes. |
+
+## The pipelines — the key `pipeline` and `pipeline/pipelines.py`
+
+Read [plan 34](docs/plans/34_pipeline-section.md). `$H` is `http://127.0.0.1:8168`. The
+rows PL1 to PL14 replace the rows RJ2, RJ4, RJ9, RN4, RN5, RN7, RN12, RN13, RN14, RN17,
+RM4, RM5, and RM7 to RM10. The owner removed the pipeline `mock` and
+`pipeline/mock_run.py` on 2026-09-26 (owner message of 00:26:27), so the rows RN1 to RN3
+cannot run; RN6, RN8, and RN10 use the 2 old mock runs. The test counts of RJ1 and RM1
+changed too.
+
+| # | Case | Expected result |
+|---|---|---|
+| PL1 | `python3 -m unittest discover -s tests -p 'test_pipelines.py'`, then the same with `test_run_jobs.py`, `test_remote_run.py`, and `test_run_routes.py` | 29, 14, 13, and 7 tests `OK` (2026-09-26). |
+| PL2 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import pipelines; print([(n, p.backend) for n, p, e in pipelines.load().entries])"` | `[('vino-svoe-search-by-photo', 'svoe-vino-ru'), ('siglip2-p256-as-is', 'embedding'), ('siglip2-p256-crop', 'embedding')]` (since about 01:07 on 2026-09-26: the owner removed the pipeline `gx10-siglip2-so400m-patch16-naflex-p256`). |
+| PL3 | After a restart of 8168: open `$H/testset?set=official-real-photos` and click `Run>` | The dialog lists the three pipelines of PL2 alone, with the notes `svoe-vino-ru` and `embedding`. No entry of `embeddings` has a row. `Start` is off until a row is chosen. |
+| PL4 | `curl -s "$H/api/run-configurations?set=official-real-photos"` | The three pipelines with `runnable: true`. `siglip2-p256-as-is` and `siglip2-p256-crop` have `workers: 1`. A pipeline of the backend `embedding` whose entry has no index has `runnable: false` and the reason `no index: build it on /embedding`. |
+| PL5 | Start a pipeline of the backend `embedding` in the dialog, for example `siglip2-p256-crop` with `first N queries` 3 | The job row counts `1 / 3` to `3 / 3`, then `done`. The runner uses `~/.venvs/svoe-vino-lab/bin/python` (`embedding_python`): `lsof -bnPw -p <pid> \| grep -c .venvs/svoe-vino-lab` is above 0 (a framework Python shows the Homebrew path in `ps`). The run sends SAM3 and embedding requests to gx10. |
+| PL6 | `curl -s -X POST $H/api/run-jobs -d '{"configuration":"gx10-dinov3-vitb16","set":"my"}'` | HTTP 404 with `config.yaml has no pipeline gx10-dinov3-vitb16`: an entry of `embeddings` is not a pipeline. |
+| PL7 | Open `$H/runs` in a window 1,440 px wide | `Pipeline` stands in the header, right after the title `Match runs N run(s)`. The table has the column `pipeline`. |
+| PL8 | Open the filter `Pipeline` of `$H/runs` | `All — N` (owner answer of 2026-09-26T01:19:00+0300), each pipeline of `config.yaml` with the count of its runs, and `no pipeline — N`. No entry of `embeddings`, no `mock`, and no item `(not a pipeline)`. On 2026-09-26 at 01:23: `All — 92`, `vino-svoe-search-by-photo — 3`, `siglip2-p256-as-is — 1`, `siglip2-p256-crop — 0` (its first run was not finished), `no pipeline — 88`: the 2 runs of the removed pipeline `gx10-siglip2-so400m-patch16-naflex-p256` and the 2 mock runs count there. |
+| PL9 | Choose `vino-svoe-search-by-photo` in `Pipeline` | The table holds the runs of that pipeline alone. The page address holds `?configuration=vino-svoe-search-by-photo`. Reload: the filter keeps the value. |
+| PL10 | Choose `no pipeline` | The runs whose `run.json` has no key `configuration` or a name that is not a pipeline, for example the 2 mock runs of 2026-09-25. |
+| PL11 | Choose a pipeline with no run | `no run of this pipeline`; `prev` and `next` are off. |
+| PL12 | Open `$H/embedding` and `$H/clusters` | Each combobox lists the 11 entries of `embeddings` alone: no `mock` and no `vino-svoe-search-by-photo`. |
+| PL13 | `curl -s -X POST $H/api/embeddings/mock/build` | HTTP 404 with `config.yaml has no embedding mock`. |
+| PL14 | `python3 pipeline/remote_run.py --name siglip2-p256-as-is --set my` | `error: the pipeline siglip2-p256-as-is has the backend embedding; this script runs the backend svoe-vino-ru alone`, exit code 1. `python3 pipeline/remote_run.py --name mock --set my` gives `error: config.yaml has no pipeline mock`. |
+| PL15 | In the dialog of PL3, choose `siglip2-p256-as-is`, `first N queries` 3, `Start` | The job ends with `3 / 3`. The run sends no SAM3 request and one image for each photo. `run.json` holds `backend.views.full` = `white_background`, `resize`. On `/runs`, the model input of a row is the whole photo, 1024 px on the long side. |
+| PL16 | The same with `siglip2-p256-crop` | The job ends with `3 / 3`. The model input of a row is the box of the package with its own background, 1024 px on the long side. A photo with no package found gets the border cut of the white rule. |
+| PL17 | Put `views: {full: {steps: [{step: resize, max_size: 1024}, {step: segment, target: package}]}}` into a copy of a pipeline of the backend `embedding` and load the copy with `pipelines.load` | The entry has the error: view full: the first step MUST be segment. |
 
 ## The cache of the model calls — `pipeline/model_cache.py` and `pipeline/gdino.py`
 
@@ -1186,6 +1352,20 @@ Read [plan 25](docs/plans/25_model-call-cache.md). `<photo>` is a file of `data/
 | MC5 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import derive; print(derive.Sam3Client().segment(derive.open_image(sys.argv[1])[0]).getbbox())" <photo>`, two times, each with `time` | The same box two times. The first run takes about 1 s, the second about 0.2 s: the second run sends no request. After both runs, `data/cache/sam3/` holds one new file. |
 | MC6 | `python3 pipeline/gdino.py <photo> --gateway http://127.0.0.1:9` | `error: the Grounding DINO service ... did not answer`, exit status 1, after about 30 s of retries. No file is new in `data/cache/`. |
 | MC7 | `rm -r data/cache/grounding-dino-base/`, then MC2 one time | `"cache": "miss"`: the request goes to gx10 again. |
+
+## The checkbox `Use caches` of the dialog `Run>` — `model_cache.READ` and `run_job.py --no-cache`
+
+Read [plan 39](docs/plans/39_use-caches-checkbox.md). `$H` is `http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| UC1 | `python3 -m unittest discover -s tests -p 'test_model_cache.py'`, then the same with `test_derive.py`, `test_run_files.py`, `test_benchmark.py`, and `test_run_jobs.py` | 13, 18, 7, 13, and 16 tests `OK` (2026-09-26). |
+| UC2 | Open `$H/testset?set=my` and click `Run>` | The row of `first N queries` and `workers` holds the checkbox `Use caches`, checked. After a reload, the box is checked again. |
+| UC3 | Clear `Use caches`, choose `siglip2-p256-crop`, `first N queries` 3, `Start` | The event `start` in `work/run-jobs/siglip2-p256-crop/job.log` holds `"use_cache": false`, and `ps` shows `run_job.py ... --no-cache`. Each of the 3 photos sends a SAM3 request: 3 records of `data/cache/sam3/` get a new `created`. `run.json` of the run holds `"use_cache": false`. On 2026-09-26 at 01:51, through `POST /api/run-jobs`: 3 records written again, median 1,300 ms. |
+| UC4 | UC3 with `Use caches` checked | The event `start` and `run.json` hold `"use_cache": true`. The job sends no SAM3 request: no record of `data/cache/sam3/` gets a new `created`. The median latency is lower than in UC3. On 2026-09-26 at 01:51: no record written, median 116 ms. |
+| UC5 | Open `$H/runs` | The run of UC3 has the tag `no cache` after its id, with a title. The run of UC4 and the runs before 2026-09-26 have no tag. |
+| UC6 | `curl -s -X POST $H/api/run-jobs -d '{"configuration":"vino-svoe-search-by-photo","set":"my","use_cache":"no"}'` | HTTP 400 with `use_cache MUST be true or false`. No job starts. |
+| UC7 | Switch the system to dark mode and repeat UC2 and UC5 | The checkbox and the tag follow the dark theme. |
 
 ## The VLM inferences — the key `vlm` and `pipeline/vlm_config.py`
 
@@ -1227,6 +1407,39 @@ of `README.md`. `H=http://127.0.0.1:8168`.
 | ID18 | Choose `Package: can` | The header reads `<n> of <total> records`; each card shows a wine whose patched image, else main image, has `package_type` `can`. The button `Advanced Filters:` is marked, also with the row closed. |
 | ID19 | Choose `Package: not described` | The wines whose deciding image has no `package_type`, and the wines with no image. |
 | ID20 | Width 390 px with the filter row and the dialog block open | No horizontal scroll. |
+| ID21 | Open the select `Package` | `All`, then only the values that at least one wine has, in the order of `image_descriptions.VALUES`, then `not described` when a wine has no value. On 2026-09-25: `bottle`, `can`, `tetra_pak`, `box`, `not described` (2,009, 11, 21, 6, and 57 wines). |
+| ID22 | Choose `Package: box`, then save the last `box` wine as `keg` in the dialog | The select now holds `keg`. It keeps `box` while `box` is chosen; after a reload `box` is gone. |
+
+## The image details — `image_detail` and stage 2 of `pipeline/describe_images.py`
+
+Read [plan 29](docs/plans/29_image-details.md) and the section "The image details" of
+`README.md`. `H=http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| DT1 | `python3 -m unittest discover -s tests -p 'test_image_details.py'`, then the same with `test_describe_images.py` | 13 and 38 tests `OK` (2026-09-25). No test calls the real VLM or writes into `data/cache/`. |
+| DT2 | `curl -s $H/api/image-description-status` | The JSON also holds `stage`, `details_eligible`, `details_done`, `details_failed`, `details_pending`. On 2026-09-25: `details_eligible` 2,015. |
+| DT3 | Open `$H/dataset` while stage 2 works | The pill reads `VLM details <done> / <eligible> · <seconds> s` with a pulsing green dot. Its title has a line `Details <done> of <eligible> · pending … · failed …`. |
+| DT4 | `tail work/describe_images.log` while stage 2 works | Lines `<sha12> detail ok package bottle, <n> texts, <s> s`. |
+| DT5 | `sqlite3 data/lab.sqlite3 "SELECT json(answer) FROM image_detail WHERE vlm_at IS NOT NULL LIMIT 1"` | One JSON object with the keys `texts`, `numbers`, `vintage`, `colours`, `design`, `marks`, and the key of the `package_type` (for example `bottle`). A `label` row has no seventh key. |
+| DT6 | Set `package_type` of a detailed image to `can` in the dialog `✎` | `details_done` drops by one; the watcher sends the image again with `one wine can` and the key `can`. The row then holds `package_type` `can`. |
+| DT7 | Set `subject_scope: multiple_packages` for an image with no detail | The image leaves `details_eligible`. The watcher sends no detail request for it. |
+| DT8 | Stop 8168, set `image_description.details: false`, start 8168 | The watcher runs stage 1 alone. `details_pending` stays. |
+| DT9 | `curl -s $H/api/image-detail-failures` | The JSON holds `max_attempts`, `log_file` (`work/describe_images.log`), and `failures`. Each failure has `wine_slug`, `prompt_kind`, `package_type`, `input_url`, `vlm_attempts`, `vlm_error`, `updated_at`, and `log`. The count equals `details_failed` of DT2. On 2026-09-25: 1 failure, `usadba-mezyb-shishka-merlo-vione-rozovoe-suhoe-125`, 3 attempts, 4 log entries. |
+| DT10 | Click `N details failed` in the pill of `$H/dataset` | The dialog `Failed details` opens. Each image shows a thumbnail, the slug with `FAILED`, the prompt kind, the type, the attempts, the time, and an open block `Last error`. The closed block `Log · N entries` holds the whole cut answer of each failed call. `Escape`, `×`, `Close`, and a click outside close it. |
+| DT11 | Press `Tab` to the button `N details failed` and wait 10 s | The button keeps the focus while the pill text stays the same. |
+| DT12 | Click the thumbnail in the dialog `Failed details` | The image preview shows `the file that the VLM got · <slug>`, the sha256 of the file, and its size (1851 × 6279 px on 2026-09-25). The arrows are off, there are no thumbnails, and the page path stays. The first `Escape` closes the preview alone; the dialog stays open. A Cmd-click opens the file in a new tab. |
+| DT13 | Set `max_tokens: 0` on the `vlm` entry of `image_description.vlm`, then run `python3 pipeline/describe_images.py --once` | `error: vlm entry qwen3.5-9b-nvfp4: max_tokens MUST be a positive integer`. Nothing is sent. |
+| DT14 | Add `detail_max_tokens: 4096` under `image_description`, then run `python3 pipeline/describe_images.py --once` | The error names `detail_max_tokens` and says that `max_tokens` of the vlm entry replaced it. |
+| DT15 | Read a record of `data/cache/qwen3.5-9b-nvfp4/` written after 2026-09-25T23:28 for a detail request (`response_format.type` `json_schema`) | `request.params.max_tokens` is 8192. A class record keeps 300. |
+
+## The VLM workers — `image_description.workers`
+
+Read [plan 35](docs/plans/35_vlm-workers.md). `H=http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| VW1 | `python3 -m unittest discover -s tests -p 'test_describe_images.py'`; restart 8168 with `image_description.workers: 8`; after 5 min read `work/describe_images.log` and the pill of `$H/dataset` | 48 tests `OK` (2026-09-26), `WorkersTest` among them. The start line holds `workers 8`. The speed on the pill (the wall time per image) is at most half of the mean `<s> s` of the detail lines of the same minutes (the time of one call). On 2026-09-26: 2.1 s on the pill against a mean call of 16.0 s. After a `timed out` line, no new call starts for 30 s, and the calls that run finish (00:42:29 to 00:42:59). |
 
 ## The seed and the restore — `pipeline/seed_from_testset.py`
 

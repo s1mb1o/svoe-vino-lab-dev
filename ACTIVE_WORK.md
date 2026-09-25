@@ -21,949 +21,585 @@ The form of a section:
 - Agreements: <the agreements with other sessions, if any>
 ```
 
-## drink-atlas-workspace-20
+## drink-atlas-workspace-5c [cbb143]
 
-- Task: (1) the rules of this file, rules 13 to 21 of `AGENTS.md`: done, not committed.
-  (2) plan 12: the test sets and their labels in the database, imported read-only from
-  `dataset/<set>/review-labels.json`, and a benchmark runner that writes `runs/<id>/`.
-  The first run is `svm-siglip2-448` on the set `my`; it MUST give the metrics of the
-  latest JSON-era run of that backend.
-- Source: owner messages of 2026-09-25 ("we have plenty time. Run tests and benchmark
-  when ready", and the four answers after it).
-- Files: `docs/plans/12_testsets-benchmark.md`. After the plan: `pipeline/schema_pending/NNN_testset.sql`, later
-  `pipeline/schema/NNN_testset.sql` (the number is fixed only when the file enters `pipeline/schema/`: the next free
-  number then; not before the commit of plan 09; proposed to a2 and 9a on 2026-09-25), `pipeline/import_testset.py`, `pipeline/benchmark.py`, `scripts/match_run.py`
-  (the scoring code and `embeddings_of` move out), `scripts/match_scoring.py`,
-  `scripts/match_backends.py` (gets `embeddings_of`),
-  `tests/test_import_testset.py`, `tests/test_benchmark.py`,
-  `tests/testset_fixture.py`, `runs/<id>/` of my runs.
-  Entries in `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`, `docs/plans/07_*.md` (steps
-  6 and 7), `docs/owner-messages.md`. `AGENTS.md` rules 25 to 28 (schema numbers). Earlier: `AGENTS.md` rules 13 to
-  21, this section.
-- State: waiting: the code and the tests of plan 12 are done. The schema file enters
-  `pipeline/schema/` after the flat image store of drink-atlas-workspace-9a [f028b4];
-  then the import of the sets and the parity run. The owner chose this order.
-- Updated: 2026-09-25T07:16:02+0300
-- Agreements: none.
+- Task: (1) done: a run of `vino-svoe-search-by-photo` on `official-real-photos`
+  (owner choice of 22:36:00). (2) the button `Run>` of `/testset`: a dialog selects a
+  configuration and starts a runner; the header shows the progress.
+- Source: owner messages of 2026-09-25T22:30:47+0300 to 22:41:00, the answers of
+  22:46:00; `docs/plans/32_testset-run-button.md`.
+- Files: `docs/owner-messages.md` (append), new `docs/plans/32_testset-run-button.md`, new
+  `pipeline/run_jobs.py`, new `pipeline/run_job.py`, new `tests/test_run_jobs.py`, hunks
+  in `pipeline/lab_server.py` (the docstring, `import run_jobs`, `_run_jobs`, one branch in
+  `do_GET` and in `_write_route`), `pipeline/pages/testset.html` (the button, the dialog,
+  the job rows, their script and style). `work/run-jobs/`. Entries in `README.md`,
+  `SMOKE_TESTS.md`, `ChangeLog.md`. A restart of 8168.
+- State: active. The code, the tests (648 `OK`), and the docs are done. 8168 restarted
+  at 22:56:54 (pid 14874). The live routes and a live job work. A browser check waits
+  for the restart of 15 [40dc83].
+- Updated: 2026-09-25T23:06:30+0300
+- Agreements: a9 [79efd8] and 3b [d30290] add their own hunks in `ChangeLog.md`,
+  `SMOKE_TESTS.md`, and `README.md` (answers of about 22:45 and 22:48). 15 [40dc83] adds
+  separate hunks in `pipeline/lab_server.py` and restarts 8168 after its tests (messages
+  of about 22:55 and 23:04). a7 [bbd3b6] asked for `caffeinate` on the new watcher and
+  the new pids in `GPU_TASKS.md`: done at 22:57.
 
-## drink-atlas-workspace-8b
+## drink-atlas-workspace-a9 [79efd8]
 
-- Task: the SAM3 noun `box` of plan 09: option A (keep the result, patch the crate of
-  `ona-skazala-da` and the tube of `fanagoriya-tochka-saperavi-krasnoe-suhoe-14`) or
-  option B (a box wins only when it holds the bottle instance). Plans 08 and 09 are
-  committed in `a8e113a`.
-- Source: `docs/plans/09_image-processing.md`; owner message of 2026-09-25T00:55:04+0300.
-- Files: `pipeline/derive.py`, `tests/test_derive.py`. Option B also writes rows of
-  `image_derivative` and `image` in `data/lab.sqlite3`, and entries in `ChangeLog.md`,
-  `ResearchLog.md`, and `docs/plans/09_image-processing.md`.
-- State: waiting: the owner chooses option A or B.
-- Updated: 2026-09-25T13:52:53+0300
-- Agreements: all other files of plans 08 and 09 are released (2026-09-25): to
-  drink-atlas-workspace-a2, drink-atlas-workspace-9a, and drink-atlas-workspace-7e.
-  After the A/B decision, this session hands `pipeline/derive.py` and
-  `tests/test_derive.py` over to drink-atlas-workspace-9a. drink-atlas-workspace-9a
-  MAY apply its store-path lines (flat store, its own schema file) to both files in its step
-  before the A/B change; this session reads both files again before its next change
-  (2026-09-25). drink-atlas-workspace-7b MAY change `Sam3Client` of
-  `pipeline/derive.py` (a method `instances()`) and add one test at the end of
-  `tests/test_derive.py` now, for plan 16 (2026-09-25). drink-atlas-workspace-7b MAY
-  also change `derive_all()` and `write_rows()` for the column `kind` of
-  `image_derivative` (owner decision of 12:28:04); 7b and 9a agree the order of their
-  changes of these two functions (2026-09-25). CACHE MAY add a cache of the SAM3
-  answers to `Sam3Client._post` and tests to `Sam3ClientTest` (plan 25); it agrees the
-  order with 7b (2026-09-25).
+- Task: show the bottle cards of `/clusters` on 8168 in the form of the cards of `/clusters` on 8154.
+- Source: owner message of 2026-09-25T22:37:15+0300; owner answers of 22:41:15 (layout only; an "Image" select for the space "combined").
+- Files: `docs/owner-messages.md` (append), `pipeline/pages/clusters.html`, `ChangeLog.md` (one bullet at the top of 2026-09-25), `SMOKE_TESTS.md` (row LC3).
+- State: done, not committed. The section stays until the commit (rule 20).
+- Updated: 2026-09-25T22:56:28+0300
+- Agreements: drink-atlas-workspace-5c [cbb143] agreed to the `ChangeLog.md` bullet and the `SMOKE_TESTS.md` LC3 row (answer after 22:44:53). 5c adds its own entries later as separate hunks. drink-atlas-workspace-15 asked to add its own hunks to `ChangeLog.md` (one bullet) and `SMOKE_TESTS.md` (S11 and new `/dataset` rows); a9 agreed at 22:56:28.
 
-## drink-atlas-workspace-a2
+## drink-atlas-workspace-3b [d30290]
 
-- Task: plan 11: GTIN, barcode, and QR URL in the database (table `wine_code`); one wine
-  MAY have more than one value, and one value MAY belong to more than one wine.
-- Source: owner messages of 2026-09-25T00:52:48+0300, 2026-09-25T00:58:25+0300, and
-  2026-09-25T07:19:46+0300 (approval; GTIN-14; check the check digit of each input);
-  `docs/plans/11_wine-codes.md`.
-- Files: `pipeline/schema/008_wine_code.sql`, `pipeline/codes.py`, `pipeline/seed_codes.py`,
-  `pipeline/lab_server.py`, `pipeline/pages/dataset.html`, `tests/test_codes.py`,
-  `tests/test_seed_codes.py`, `tests/test_lab_server.py`, `tests/test_labdb.py`,
-  `docs/plans/11_wine-codes.md`, `docs/plans/07_*.md` (rule 5), `data/lab.sqlite3`.
-  Entries in `COMMANDS.md`, `README.md` (step 6), `SMOKE_TESTS.md` (S1, S3, S4, S12,
-  section WC), `ChangeLog.md`, `ResearchLog.md` (two entries at the top), and
-  `docs/owner-messages.md`.
-- State: waiting: the owner commits. The code is done and deployed: schema 008 entered,
-  `data/lab.sqlite3` is at version 8 with 23 GTINs and 3 QR URLs, and the lab server on
-  8168 runs the new code (restarted at 07:35 with SIGTERM). All tests pass except the 5
-  old loader errors of the `scripts/review_server.py` tests. After the commit, this
-  session sends 9a [f028b4] a message, and `pipeline/lab_server.py` is free.
-- Updated: 2026-09-25T07:38:08+0300
-- Agreements: with drink-atlas-workspace-8b (2026-09-25): this session changes
-  `pipeline/lab_server.py`, `pipeline/pages/dataset.html`, `tests/test_lab_server.py`,
-  `tests/test_labdb.py`, and `data/lab.sqlite3` after the commit of plan 09. The commit
-  waits for the owner. 8b plans no more changes to the four code files. 8b MAY run
-  `seed_images.py` once more on `data/lab.sqlite3` (schema version 7). Done: plan 09 is
-  committed in `a8e113a`, and 8b released the five files on 2026-09-25. 8b keeps
-  `pipeline/derive.py` and `tests/test_derive.py`, and tells this session before a run of
-  option B on `data/lab.sqlite3`.
-  With drink-atlas-workspace-9a (2026-09-25): this session changes
-  `pipeline/lab_server.py` first, after the commit of plan 09, and sends 9a a message after
-  its commit of plan 11. 9a then adds its `/embedding` hook. If 9a is ready first, it asks,
-  and this session expects to agree. The schema point of this agreement is replaced by
-  the rule below.
-  Schema numbers, with drink-atlas-workspace-20 and 9a (2026-09-25): a number is fixed
-  only when a file enters `pipeline/schema/`. Just before the entry, read
-  `pipeline/schema/` and `ACTIVE_WORK.md`, take the next free number, and state it here.
-  Do not renumber or edit a file that is in `pipeline/schema/`.
-  With drink-atlas-workspace-9a [f028b4] (2026-09-25): the session that is ready first
-  tells the others before its first change to `pipeline/lab_server.py`. Each session
-  commits before the next one starts on `pipeline/lab_server.py`. [f028b4] changes the
-  image code alone, and its schema file drops `image.folder` alone.
-  Later, [f028b4] agreed (2026-09-25, about 07:24) that this session goes first on
-  `pipeline/lab_server.py`, `pipeline/pages/dataset.html`, `tests/test_lab_server.py`,
-  and `tests/test_labdb.py`, and that `NNN_wine_code.sql` enters `pipeline/schema/`
-  before its file. This session sends [f028b4] a message after its commit.
-  With drink-atlas-workspace-7e (2026-09-25): by the owner message of
-  2026-09-25T06:52:00+0300, 7e changes `pipeline/lab_server.py`, the navigation of
-  `pipeline/pages/dataset.html`, and `tests/test_lab_server.py` first. This session
-  starts on these files after the message of 7e that its work is committed. The owner
-  gave the `/embedding` hook to 7e, so the hook point of the agreement with 9a
-  [fb66e9] no longer applies.
+- Task: (1) the patch `Remove` button of `/dataset`: red, the label `Clear`, and the lab server clears the patch at once with no `Apply`. (2) the GTIN input of `/dataset` accepts at most 14 digits.
+- Source: owner messages of 2026-09-25T22:46:27+0300 and 22:47:19.
+- Files: `docs/owner-messages.md` (append), hunks in `pipeline/pages/dataset.html` (the patch button style, `patchEditor`, the `data-patch-remove` branch of the click handler, the comment in `stagePatchFile`, the `.gtin-input` element). The patch editor paragraphs and the GTIN paragraph of `README.md`, rows PE3, PE5, PE6, PE19 and one GTIN row of `SMOKE_TESTS.md`, one bullet in `ChangeLog.md`.
+- State: done, not committed. The section stays until the commit (rule 20).
+- Updated: 2026-09-25T22:57:00+0300
+- Agreements: drink-atlas-workspace-5c [cbb143] agreed to the separate hunks in `README.md`, `SMOKE_TESTS.md`, and `ChangeLog.md` (answer after 22:47). This session agreed that drink-atlas-workspace-15 adds separate hunks to `pipeline/pages/dataset.html`, `README.md`, `SMOKE_TESTS.md`, and `ChangeLog.md` (VLM details failures modal, hidden Validate; request after 22:54).
 
-## drink-atlas-workspace-9a [f028b4]
+## drink-atlas-workspace-cb [395cc7]
 
-The name `drink-atlas-workspace-9a` belongs to two sessions. This section is the session
-`[f028b4]`.
+- Earlier name: drink-atlas-workspace-15 [40dc83] (the same conversation after a reload).
 
-- Task: the flat image store `data/images/<sha256>.<extension>` with no type folders.
-  The column `image.folder` goes away in a new schema file.
-- Source: owner messages of 2026-09-25T00:03:25+0300 and 2026-09-25T00:06:15+0300 (option 1);
-  approved 2026-09-25T07:32:59+0300; `docs/plans/13_flat-image-store.md`.
-- Files: in a private git worktree first, not in the shared tree: `pipeline/labdb.py`,
-  `pipeline/imagestore.py`, `pipeline/seed_images.py`, `pipeline/seed_patched.py`,
-  `pipeline/embeddings.py`, `tests/embedding_lab.py`, `tests/test_seed_images.py`,
-  `tests/test_seed_patched.py`, a new `pipeline/schema/NNN_flat_image_store.sql`,
-  `docs/plans/13_flat-image-store.md`. Later, when free: `pipeline/lab_server.py`,
-  `tests/test_lab_server.py` (after a2), `pipeline/derive.py`, `tests/test_derive.py`
-  (after 8b). At the end in the shared tree: all of these, `data/images/`,
-  `data/lab.sqlite3`, entries in `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`, a note in plan 08, a server restart on 8168. Entries appended to
-  `docs/owner-messages.md` and `ResearchLog.md`.
-- State: waiting: the change is ready and tested in the private worktree (18 files).
-  The shared tree gets it in one step after (1) the commit of drink-atlas-workspace-a2
-  (`pipeline/lab_server.py`, `tests/test_lab_server.py`, `tests/test_labdb.py`), and
-  (2) done: drink-atlas-workspace-8b agreed on `pipeline/derive.py` and
-  `tests/test_derive.py`, and (3) the commit of drink-atlas-workspace-7b (the patch
-  editor; the owner chose at 09:53 that it goes first).
-- Updated: 2026-09-25T09:53:53+0300
-- Agreements: with drink-atlas-workspace-a2 (2026-09-25): whoever is ready first tells
-  the other before the first change to `pipeline/lab_server.py`. Each session commits
-  before the next one starts on that file. A schema number is fixed only when a file
-  enters `pipeline/schema/`. The owner chooses the order.
-  With drink-atlas-workspace-20 (2026-09-25): the schema file of plan 12 enters
-  `pipeline/schema/` after the file of this session (owner message 07:09:07). The flat
-  store drops `image.folder` with `ALTER TABLE … DROP COLUMN`, not with a rebuild. This
-  session sends 20 a message when `pipeline/imagestore.py` is committed. Planned
-  interface: `path_of(db_path, sha256, extension)` instead of `folder_of`.
-  With drink-atlas-workspace-8b (2026-09-25): this session applies its store-path
-  lines to `pipeline/derive.py` and `tests/test_derive.py` in the flat-store step,
-  before the A/B change of 8b. 8b changes neither file before that step; if the owner
-  decides option B first, 8b sends a message and both agree the order again. Plan 09
-  and schema 007 stay as they are; plan 13 describes the change.
-  Notice of drink-atlas-workspace-f0 (2026-09-25 about 09:49, owner approval about
-  09:50): f0 adds a route hunk to `pipeline/lab_server.py` (`/dataset/<slug>` and
-  `/dataset/<slug>/patch` serve `dataset.html`) and one test to
-  `tests/test_lab_server.py`. It does not touch the image code. The flat-store step
-  applies its lines on top of this hunk.
-  With drink-atlas-workspace-7b (2026-09-25): 7b goes first in the shared tree (owner
-  choice 09:53). 7b changes `pipeline/seed_patched.py` and `tests/test_seed_patched.py`
-  (no delete of a `main_patched` row) in the shared tree; this session merges the
-  change into its worktree. In the new `pipeline/patches.py`, 7b keeps the store path,
-  the `INSERT INTO image`, and any image URL each in one place. The flat-store step
-  changes them too. 7b sends a message after its commit.
+- Task: (1) a click on `N details failed` of the VLM indicator of `/dataset` opens a
+  dialog with the failed details and the watcher log. (2) hide `Validate` of `/dataset`
+  on the lab server (8168); the review tool (8154) keeps it. (3) a click on the
+  thumbnail of the dialog shows the file in the image preview. (4) a setting
+  `max_tokens` of the `vlm` entries, 8192 by default.
+- Source: owner messages of 2026-09-25T22:49:56+0300 and 22:51:31; owner answers of
+  22:54:00 (rows + log lines; hide on 8168 only; details only); owner message of
+  23:20:22 (the preview) and 23:21:25 (`max_tokens`).
+- Files: `docs/owner-messages.md` (append), `pipeline/image_details.py` (a new function
+  `failed`), `pipeline/image_descriptions.py` (new functions `detail_failures`,
+  `log_entries`), hunks in `pipeline/lab_server.py` (a new function
+  `image_detail_failures`, one `do_GET` branch after `/api/image-description-status`, one
+  docstring sentence), hunks in `pipeline/pages/dataset.html` (the VLM indicator, the new
+  dialog `#detail-failures-modal`, its style and script, one Escape line; the `Validate`
+  button, `validationOn`, two lines in `init`), `tests/test_image_details.py`,
+  `tests/test_image_descriptions.py`, `tests/test_lab_server.py` (one test), separate hunks in `README.md`, `SMOKE_TESTS.md`,
+  `ChangeLog.md`. A restart of 8168. For (4): `pipeline/vlm_config.py`, hunks in
+  `pipeline/describe_images.py` (`DEFAULTS`, `settings`, `describe_detail`) and
+  `config.yaml` (the `image_description` block), `tests/test_vlm_config.py`,
+  `tests/test_describe_images.py`, one row of `data/lab.sqlite3` `image_detail`
+  (`vlm_attempts` of `e049e469…`), a second restart of 8168. One entry at the top of
+  `ResearchLog.md`.
+- State: done, not committed. The section stays until the commit (rule 20). 8168 was
+  restarted at 23:05:37 and 23:28:25; the failed detail row was reset at 23:29, timed out
+  twice, and was set back to 3 attempts at about 23:35. A second looping row
+  (`24e28aea6a4d`) was set to 3 attempts at 2026-09-26T00:20:23, reset to 0 at 00:41:25,
+  and got a valid answer at 00:41:39.
+- Updated: 2026-09-26T01:37:49+0300
+- Agreements: 3b [d30290] agreed to the separate hunks in `dataset.html`, `README.md`,
+  `SMOKE_TESTS.md`, `ChangeLog.md` (answer after 22:55). 5c [cbb143] asked for a separate
+  `do_GET` hunk in `lab_server.py`; 5c restarts 8168 near 22:58; 15 tells 5c before its
+  own restart.
+  39 [fb59ad] agreed to add a separate bullet under the bullets of 15 in `ChangeLog.md`
+  and one row in `SMOKE_TESTS.md` (answer after 23:27). ab [539687] agreed to the entry in
+  `ResearchLog.md` and to the change of the own bullet in `ChangeLog.md` (answer after 23:42).
+  15 agreed that d3 [4920ce] adds separate hunks in `pipeline/describe_images.py`
+  (`run`, `Status`, `DEFAULTS`, `settings`), `config.yaml`, `tests/test_describe_images.py`,
+  and if needed `pipeline/vlm_config.py` and `tests/test_vlm_config.py` (parallel requests,
+  owner message of 23:44:31); d3 keeps the `max_tokens` hunks of 15.
+  cb (earlier 15) agreed that 6a [792d65] adds separate hunks in `config.yaml`: the two
+  entries leave the end of `embeddings:`, and a new section `pipeline:` comes after
+  `embeddings:`, before the comment of `vlm:` (owner message of 23:37:48).
+  cb agreed that d3 [4920ce] adds separate hunks in `README.md` (the watcher paragraph,
+  the `image_description` row), `SMOKE_TESTS.md` (one row), `ChangeLog.md` (one bullet),
+  and `ResearchLog.md` (one entry at the top); d3 keeps the hunks of cb.
+  cb agreed that 43 [c33611] adds a heading `## 2026-09-26` with one bullet at the top of
+  `ChangeLog.md` and row IW17 in `SMOKE_TESTS.md`.
+  cb agreed that 39 [fb59ad] adds a block `clusters:` in `config.yaml` after `embeddings:`
+  and before the comment of `pipeline:` (owner message of 2026-09-26T00:20:00).
+  cb agreed that 39 [fb59ad] adds separate hunks in `pipeline/pages/dataset.html`: a block
+  of localStorage functions for the header controls and call lines in `init` (owner
+  message of 2026-09-26T00:30:00).
+  cb agreed that d3 [4920ce] adds separate hunks for plan 39 in `README.md`,
+  `SMOKE_TESTS.md` (a new section), and `ChangeLog.md` (one bullet in 2026-09-26).
 
-## drink-atlas-workspace-f0
+## drink-atlas-workspace-39 [fb59ad]
 
-- Task: the image preview of `/dataset` puts the wine slug in the page path:
-  `/dataset/<slug>` for the catalogue image, `/dataset/<slug>/patch` for the patch image.
-  A link opens the same preview.
-- Source: owner message of 2026-09-25T09:46:41+0300 and the two answers after it (path
-  segment; edit on top of the uncommitted work of a2 now).
-- Files: `pipeline/pages/dataset.html`, `pipeline/lab_server.py` (the route of `/dataset`
-  alone), `tests/test_lab_server.py` (one new test), `scripts/review_server.py` (the route
-  of `/dataset` alone), `pipeline/lab_pages.py` (the shared route pattern). Entries in
-  `SMOKE_TESTS.md` (D9f to D9h), `ChangeLog.md`,
-  `docs/owner-messages.md`.
-- State: waiting: the owner commits. The code, the test, and the docs are done. The lab
-  server on 8168 runs the new code (restarted with SIGINT at 09:52:55).
-- Updated: 2026-09-25T10:16:54+0300
-- Agreements: the owner chose (2026-09-25, about 09:48) that this session adds small
-  separate hunks on top of the uncommitted plan 11 hunks of drink-atlas-workspace-a2 in
-  `pipeline/pages/dataset.html`, `pipeline/lab_server.py`, and `tests/test_lab_server.py`.
-  A commit of this session stages its own hunks alone. a2 was not reachable by
-  `SendMessage` at 09:48. drink-atlas-workspace-9a [f028b4] got a message at 09:48.
-  With drink-atlas-workspace-7b [d39f66] (2026-09-25, about 09:54): this session's hunks
-  in `pipeline/pages/dataset.html` are written; 7b edits after them. The patch line of
-  `imagePreviewUrl` belongs to 7b. 7b MAY restart 8168 with this session's code in it.
-  With 7b again (2026-09-25, owner messages 10:08 and 10:13:53): 7b adds the preview
-  thumbnails on top of this session's hunks: CSS, modal markup, one call at the end of
-  `showImagePreview` before the `pushState` lines, new functions after
-  `stepImagePreview`. This session plans no more change to `dataset.html`. The hunk in
-  `showImagePreview` holds lines of both sessions; before a commit, this session sends
-  7b a message, and both agree which commit takes that hunk.
-  With drink-atlas-workspace-f1 [222bcf] (2026-09-25, owner choice 10:16:07): f1 adds
-  small hunks to `pipeline/pages/dataset.html`, `pipeline/lab_server.py`, and
-  `tests/test_lab_server.py` (no `barcode` kind; the GTIN and QR URL editors redraw
-  their own card). f1 does not touch the hunks of this session. This session plans no
-  more change to these files.
+- Earlier name: drink-atlas-workspace-43 [58637c] (the same conversation after a reload).
 
-## drink-atlas-workspace-7b
+- Task: (1) done: safeguard A of the cluster build (limits of links and of the largest
+  cluster). (2) the thresholds and the limits come from a new block `clusters:` of
+  `config.yaml`; the page `/clusters` has no threshold input.
+- Task (4): the key `min_cluster_size` of the block `clusters:` of `config.yaml`: the build
+  stores no smaller cluster; the input "Minimum size" of `/clusters` goes away. Owner
+  message of 2026-09-26T01:04:00+0300, answer of 01:05:00. Files: `pipeline/clusters.py`,
+  `pipeline/pages/clusters.html`, my block of `config.yaml`, `tests/test_clusters.py`,
+  `tests/test_build_clusters.py`, `tests/test_cluster_routes.py`,
+  `docs/plans/30_embedding-clusters.md`. A restart of 8168. State: done. 29 cluster tests
+  OK; 8168 restarted by 39 at 01:06:21 (pid 89346); a live build from the config gave
+  `min_cluster_size: 2` in `settings` and the same clusters; 15 browser checks pass.
+- Task (3): each header control of `/dataset`, `/embedding`, `/clusters`, `/testset`,
+  `/runs` (selects, number inputs, search boxes) is stored in `localStorage` on change and
+  restored at page load. A URL value wins; a stored value that is no longer a choice is
+  ignored. Code in each page; no server change, no restart. Owner message of
+  2026-09-26T00:30:00+0300, answers of 00:33:00. Files: separate hunks (the header
+  state code, one start-up call) in `pipeline/pages/dataset.html`,
+  `pipeline/pages/embedding.html`, `pipeline/pages/clusters.html`,
+  `pipeline/pages/testset.html`, `pipeline/pages/runs.html`. Agreed (about 00:33 to
+  00:35): 6a (embedding, runs, testset), 28 and e2 (testset; e2 keeps `svl.testset.sidebar`,
+  `setSide`, `initSide`), ab (runs; keep `evenCards`), cb (dataset; keep its `init` lines).
+- Source: owner messages of 2026-09-25T23:00:00+0300, 23:10:30, the answer "A", the answer
+  "2" of 2026-09-26T00:06:30, "define limits in config" of 00:16:00, the answers of
+  00:19:00 (one global block; limits and thresholds), and 00:20:00 (no thresholds in the UI).
+- Files: `docs/owner-messages.md` (append), `pipeline/clusters.py`,
+  `pipeline/build_clusters.py`, `pipeline/cluster_routes.py`, `pipeline/pages/clusters.html`
+  (the threshold inputs, the build request, the summary; the owner asked for this UI
+  change, the section a9 is stale), `tests/test_clusters.py`, `tests/test_cluster_routes.py`,
+  `tests/test_build_clusters.py`, `docs/plans/30_embedding-clusters.md`. After agreement:
+  `config.yaml` (a new block `clusters:` after the `embeddings:` list), the cluster
+  paragraph of `COMMANDS.md`, one bullet in `ChangeLog.md`, one row in `SMOKE_TESTS.md`.
+  A restart of 8168. Done: the rebuild of the clusters of
+  `gx10-siglip2-so400m-patch16-naflex-p256` at 0.95 / 0.95 (00:07:14, 1.0 MB).
+- State: done, not committed. The section stays until the commit (rule 20). Task 2 is
+  live since the restart of 8168 by d3 at 00:36:23 (a build request with a threshold
+  answers HTTP 400; the page has no threshold input). Task 3: the five pages pass a
+  Playwright check (restore after reload, the URL wins, an unknown stored set gives the
+  default set, no page error). An address with a view key restores no stored view
+  control (a missing key is the default; proposal of 28, applied in `testset.html` and
+  for the image of `clusters.html`); 14 checks pass. Open: the owner decides on the `ChangeLog.md` bullet and
+  the `SMOKE_TESTS.md` rows (stale sections 5c, a9, 3b).
+- Updated: 2026-09-26T01:37:40+0300
+- Agreements: 15 [40dc83] (now drink-atlas-workspace-cb [395cc7]) agreed at about 23:28
+  to one separate bullet under its bullet in `ChangeLog.md` and one new row in
+  `SMOKE_TESTS.md`; its bullet and its rows S11 and DT9 to DT12 stay as they are. 15
+  restarts 8168 near 23:29 for its own change. d3 [4920ce] adds its own separate bullet
+  in `ChangeLog.md` and row in `SMOKE_TESTS.md`; 39 agreed (request after 23:44).
+  drink-atlas-workspace-43 [c33611] (a new session, not the earlier name of 39) adds the
+  heading `## 2026-09-26` with one bullet in `ChangeLog.md` and row IW17 in
+  `SMOKE_TESTS.md`; 39 agreed (request after 00:00).
+  ab [539687], 6a [792d65], d3 [4920ce], cb [395cc7] agreed (about 00:20 to 00:23) to the
+  new block `clusters:` of `config.yaml` after the `embeddings:` list (6a, d3, cb) and to
+  the cluster paragraph of `COMMANDS.md` (ab, 6a, d3). d3 restarts 8168 and deploys this
+  code with it.
+  28 [5ddfae] removes `, "#slugsel"` from the line `HEADER_IDS` of `testset.html` in the
+  same edit as its removal of the select `Slugs` (owner message of 00:39:13); 39 agreed.
+  28 [5ddfae] (plan 37, `#wine` becomes `#cluster`) reads the consts `HEADER` and
+  `URL_VIEW` of the block of 39 in its own hunk of `load`; 39 does not rename them.
+  d3 [4920ce] changes the label `every run` to `All` in `renderConfigs` of `runs.html`
+  and the comment above it (owner answer of 01:19:00); 39 agreed.
+  43 [c33611] changes the job rows of `embedding.html` (`.job`, `.job-stop`, `showJobs`;
+  owner message of 01:24:00) and adds its own README.md, SMOKE_TESTS.md (EB41 to EB43),
+  and ChangeLog.md hunks; 39 agreed.
+  43 [c33611] changes the job rows of `testset.html` (`.job`, `.job-stop`, `showRunJobs`;
+  owner message of 01:32:00) with its own README.md, SMOKE_TESTS.md, ChangeLog.md hunks;
+  39 agreed.
+  e2 [9e7fe4] adds plan 38 hunks to `runs.html` (candidate card, large view of the
+  catalogue items; owner message of 01:23:11); 39 agreed.
+  d3 [4920ce] adds plan 39 hunks ("Use caches": `#run-cache` in the Run dialog of
+  `testset.html`, the tag `no cache` in `runs.html`; owner answers of 01:32:00); 39 agreed.
 
-- Task: (1) the patch editor of `/dataset` on the lab database: drop, `Apply`, and
-  `Remove` of a `main_patched` image: done, not committed. (2) the image preview of
-  `/dataset/<slug>`: the image in the vertical center, and thumbnails below it: the
-  original, the patch (with a badge) when it exists, and the processed file. (3) the card
-  shows the `main` image in its place and the processed patch in the patch slot, side by
-  side; a dropped patch file is applied and processed at once; a `crop` that cuts
-  nothing gets no badge; the preview gets four thumbnails. (4) larger thumbnails at the
-  bottom of the preview, at a fixed height (owner message of 10:24:00). (5) the patch
-  `Remove` button: the size of the `Remove` button of the main image, at the right
-  (owner message of 10:24:52; the CSS of `.state-actions` and `.patch-actions`). (6) the
-  value `Disabled` of the `State` filter (owner message of 10:25:56; the `#state`
-  select, new `inStateView`, one line each in `applyView` and `renderCard`). (7) the
-  keys Up and Down step to the previous and the next wine in the preview (owner message
-  of 10:26:37; the `keydown` listener and the titles of the arrow buttons). (8) the
-  Embeddings page: the failed count in red, an `open` button on the `Directory` row
-  that opens the directory in Finder, no `endpoint` in the `Directory` row (owner
-  message of 10:29:30). Files: `pipeline/pages/embedding.html` (`showSource`, the
-  summary line, one click listener), `pipeline/embedding_routes.py` (`ENTRY_ROUTE`,
-  `respond`, new `open_directory`), `tests/test_embedding_routes.py` (new tests at the
-  end of `RoutesTest`). (9) alternative images on the lab database: plan
-  `docs/plans/16_alternative-images.md` (draft), owner message of 10:52:31 and the four
-  answers of 10:58:12; approved by the owner at 11:02:26. Files: new
-  `pipeline/alternatives.py`, `tests/test_alternatives.py`,
-  `pipeline/schema/010_additional_types.sql` (entered as number 010 at the time of
-  this update; 20, 9a [f028b4], and 98 got a message just before), hunks in
-  `pipeline/lab_server.py` (docstring, `_alternatives` in `dataset_records`, the
-  alternative keys of `dataset_view`, `_write_route`, new `Handler._alternative`),
-  `pipeline/pages/dataset.html` (`alternativeEditor` and its handlers, the
-  `.alternative-*` CSS), `pipeline/derive.py` (`Sam3Client` alone; asked 8b at 11:03),
-  `pipeline/labdb.py` (`IMAGE_FOLDERS`: the new type names; no answer of 9a, told 9a at
-  11:15), `tests/test_labdb.py` (`VERSION` 10), the type names in the fixtures of
-  `tests/embedding_lab.py`, `tests/test_seed_images.py`, `tests/test_embeddings.py`,
-  `tests/test_embedding_routes.py`, `tests/test_lab_server.py`, `tests/test_derive.py`
-  (new class `Sam3InstancesTest`; agreed with 8b at 11:06), `data/lab.sqlite3` (migrated
-  to version 10 at 11:11:16; backup in the scratchpad of this session), a restart of
-  8168 (98 allows it). Entries in `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`, plan 10.
-- Source: owner messages of 2026-09-25T09:46:30+0300 and 2026-09-25T09:48:52+0300, and
-  the three answers of 2026-09-25T09:53:00+0300 (the database is the truth; `Apply` runs
-  `derive.derive_all`; edit on top now); `docs/plans/14_patch-editor.md`. (2): owner
-  messages of 2026-09-25T10:08:37+0300 and 10:10:04, answers of 10:13:53 (three
-  thumbnails; edit on top of f0 now). (3): owner messages of 10:20:28 and 10:21:13, and
-  the three answers after them.
-- Files: new `docs/plans/14_patch-editor.md`, `pipeline/patches.py`, `tests/test_patches.py`.
-  Hunks in `pipeline/lab_server.py` (module docstring, `import patches`,
-  `dataset_records`, `dataset_view`, the patch functions after `remove_code`,
-  `Handler._patch`, `_write_route`, `make_server`), `pipeline/pages/dataset.html`
-  (`patchEditorOn`, `patchEditor`, `applyPendingPatch`, the patch line of
-  `imagePreviewUrl`, the drag and drop checks of `[data-patch-drop]`),
-  `tests/test_lab_server.py` (one line of `test_other_api_routes_are_disabled`),
-  `pipeline/seed_patched.py` and `tests/test_seed_patched.py` (the delete rule alone).
-  (3): `card_images` of `pipeline/lab_server.py`, `pipeline/patches.py` (`patch_urls`
-  goes away), `tests/test_lab_server.py` (`test_api_dataset_sends_the_card_image` and
-  `test_api_dataset_sends_the_size_of_the_card_image` alone), `dataset.html`
-  (`patchEditor`, `stagePatchFile`, `imagePreviewUrl`, `previewThumbs`).
-  (2): `pipeline/pages/dataset.html` (the CSS and the markup of the preview modal,
-  `showImagePreview`, new `previewThumbs`), `pipeline/lab_server.py` (`card_images`,
-  `CARD_IMAGE_KEYS`: the key `catalog_main_url`), `tests/test_patches.py`, entries in
-  `README.md` (section "The Dataset page"), `SMOKE_TESTS.md` (PE11 to PE16),
-  `ChangeLog.md`.
-  Entries in `README.md` (steps 3 and 5), `SMOKE_TESTS.md` (P4, section PE),
-  `docs/plans/07_*.md` (step 5), `ChangeLog.md`, `docs/owner-messages.md`.
-- State: waiting: the owner commits. (1) to (14) are done, tested, and deployed (8168 since
-  12:45:39; schema 017 entered at 12:35:13). Before: (1) to (11) are done, tested, and deployed; the lab
-  server on 8168 runs them since 11:35:26. (10) a barcode gives the back types; (11)
-  schema `012_type_names_kind_first.sql` entered at 11:30:03, `data/lab.sqlite3` at
-  version 12, names changed in `pipeline/alternatives.py`, `pipeline/labdb.py`,
-  `pipeline/embeddings.py` (told 9a), the page, and the fixtures.
-  (12) the detection nouns `barcode, bottle, label, bottle neck, can` (owner message of
-  11:45:49, answer of 11:47:17; `pipeline/alternatives.py`): done, tested, and live since
-  the restart of 8168 by e3 at 11:48:14.
-  (13) a review of the unfinished work of all sessions (owner message of 12:01:18):
-  done, `docs/reviews/2026-09-25_unfinished-work.md`. The owner chose at 12:28:04: each
-  session fixes its own findings (messages sent at about 12:30); one cut for each
-  original and kind; a seed refuses a non-empty table unless `--force`; a thumbnail
-  switches the preview fully (0b). (14) the fixes of 7b: `pipeline/alternatives.py`,
-  `pipeline/patches.py`, `pipeline/lab_server.py` (the patch and alternative routes,
-  `card_images`, `alternative_images`, docstrings), `pipeline/pages/dataset.html`
-  (`stagePatchFile`, the alternative Cancel and ×), `pipeline/seed_patched.py`
-  (`--force`), a new `pipeline/schema/NNN_derivative_kind.sql`, `pipeline/derive.py`
-  (`write_rows`, the `done` query; asked 8b at 12:31), `scripts/common.py` and the 5
-  review-tool test modules (the load errors; no section lists them), the tests of these
-  files, and docs.
-- Updated: 2026-09-25T12:49:00+0300
-- Agreements: the owner chose (09:53) small separate hunks on top of the uncommitted work
-  of a2 and f0. A commit of this session stages its own hunks alone.
-  With drink-atlas-workspace-f0 (about 10:00): its hunks in `dataset.html` are written;
-  this session changes only the parts named above; f0 allows a restart of 8168 with its
-  code in it.
-  With drink-atlas-workspace-9a [f028b4] (about 10:00): this session goes first in the
-  shared tree, then the flat store. This session changes the delete rule of
-  `seed_patched.py` and its test in the shared tree; [f028b4] merges them. In
-  `pipeline/patches.py`, the store path, the `INSERT INTO image`, and the image URL are
-  each in one place. This session sends [f028b4] a message after its commit.
-  With drink-atlas-workspace-f0 (2026-09-25T10:13:53, the owner chose): this session
-  edits the preview code on top of the uncommitted hunks of f0. Those hunks are then
-  committed together. f0 plans no more change in `dataset.html`; before a commit of f0,
-  f0 sends this session a message.
-  With drink-atlas-workspace-0b (about 11:25, the owner chose at 11:22): 0b adds the
-  preview of the alternative photos on top of the uncommitted hunks of this session in
-  `previewThumbs`, `showImagePreview`, `stepImagePreview`, `alternativeEditor` (the `<a>`
-  of a lab photo), and the preview listeners. Those hunks are committed together. 0b
-  updates `SMOKE_TESTS.md` PE12 to PE14 for its new thumbnail names, or tells this
-  session. This session plans no change in these regions.
-  With drink-atlas-workspace-e3 (about 11:46, the owner chose at 11:45:00): e3 adds a
-  `Log` button to `/embedding` on top of the uncommitted hunks of this session in
-  `pipeline/embedding_routes.py` (`ENTRY_ROUTE`, `respond`), `embedding.html`, and
-  `tests/test_embedding_routes.py`. This session plans no change there; a restart by e3
-  may deploy the code of this session.
-  With drink-atlas-workspace-f1 (about 10:17, and 10:28): no overlap of the regions. f1
-  is done with its code and allows a restart of 8168; before an Atlas change in
-  `dataset_records`, `dataset_view`, or the Atlas editor, f1 sends a message. The line
-  `"patch_editor": True, "patches": …` of `dataset_view` stays. The restart of 8168 at
-  the end of the work of f1 also deploys `catalog_main_url`; f1 tells this session.
+## drink-atlas-workspace-ab [539687]
 
-## drink-atlas-workspace-f1
+- Task: plan 33, the runner of the embedding configurations of `config.yaml`: each photo
+  of a test set gets the SAM3 cuts and the steps of the entry, the endpoint of the entry
+  gives its vectors, and the vectors rank the catalogue vectors of
+  `data/embeddings/<name>/`; the result is a run on `/runs`. A command alone (owner
+  answer of 23:55:27 to session 6a).
+- Source: owner message of 2026-09-25T23:19:28+0300 and the answers of 23:24:20 and
+  23:35:19.
+- Files: `docs/owner-messages.md` (append), new `docs/plans/33_embedding-run.md`, new
+  `pipeline/embedding_run.py`, new `tests/test_embedding_run.py`, hunks in
+  `pipeline/embeddings.py` (`apply_steps`), `pipeline/alternatives.py` (`label_cut_of`),
+  `pipeline/run_routes.py` (`inputs_view` alone). Separate hunks in `README.md`,
+  `SMOKE_TESTS.md` (section ER), `ChangeLog.md` (one bullet of 2026-09-26),
+  `COMMANDS.md`, `ResearchLog.md` (entry of 2026-09-26), `docs/API.md`.
+- New tasks of 2026-09-26: (1) an embedding run becomes a pipeline (owner answers
+  of 00:12:24 and 00:15:17): one pipeline `gx10-siglip2-so400m-patch16-naflex-p256`,
+  `backend: embedding`; 6a adds the kind to `pipelines.py`, this session adapts
+  `embedding_run.py`. (2) /runs: the cards of one photo row get one height (owner
+  message of 00:12:24).
+- New files: `pipeline/embedding_run.py`, `tests/test_embedding_run.py`, plan 33
+  (sections 1, 8, 9, 13); separate hunks in `pipeline/pages/runs.html` (the CSS rule
+  after `.clgrp-link:hover` and the function `evenCards` before `loadRun`, agreed with
+  6a); separate hunks in `README.md`, `SMOKE_TESTS.md` (ER1, ER6 to ER8, RN18),
+  `ChangeLog.md` (two bullets of 2026-09-26), `COMMANDS.md`, `docs/API.md`.
+- New task of 00:26:27: remove the pipeline `mock` from the source, the tests, and the
+  docs (owner answer of 00:29:55: "Also free the 808 MB only"). Done: the delete of
+  `data/embeddings/mock/` (808 MB) at about 00:31. The 2 mock runs in `runs/` stay.
+  6a [792d65] removes `mock` from the source, the tests, and the docs (message of
+  about 00:33; this session agreed, no handover). This session changed its own test
+  (`tests/test_embedding_run.py`: a pipeline of the backend `svoe-vino-ru`).
+- New task of about 00:55 (owner message of 00:45:33 and answers of 00:52:41, through
+  6a): a pipeline of the backend `embedding` MAY hold `views`, the steps of the test
+  photo. Files: hunks in `pipeline/embedding_run.py` (`query_inputs`, `EmbeddingBackend`,
+  `build_backend`, `build_pipeline_backend`) and `tests/test_embedding_run.py`. 6a does
+  `pipelines.py`, `config.yaml`, the docs, and the restart.
+- State: finished at 01:47; waiting: e2 [9e7fe4] commits all pending changes (owner
+  message of 01:43:59). This session does not commit, and removes this section after
+  that commit (rule 20). Done, not committed. The key `views`: 24 tests `OK`; 6a added
+  `siglip2-p256-as-is` and `siglip2-p256-crop` (with `white_background`, owner answer of
+  00:57:59) and restarted 8168 at 01:01:42 (pid 81403); the dialog and the combo list 4
+  pipelines, all runnable; the model inputs of both on 3 real photos are right (checked
+  at 01:02 with the SAM3 cache alone). Earlier, also done: (1) `embedding_run.py --name` takes a pipeline name
+  (`find_pipeline`, `build_pipeline_backend`); 6a's `run_job.build` calls it. (2) The
+  card heights of `/runs` are live. d3 restarted 8168 at 00:36:23 (pid 36577): the
+  dialog and the combo list the 2 pipelines alone, and `inputs_view` is live (checked
+  at 00:37). 6a completed the removal of `mock`; the full suite gave 692 tests `OK`
+  at 00:40. The section stays until the commit (rule 20).
+- Updated: 2026-09-26T01:47:40+0300
+- Agreements: the owner allowed separate hunks in `ChangeLog.md`, `README.md`,
+  `SMOKE_TESTS.md` (answers of 23:24:20).
+  15 [40dc83] (message from the session drink-atlas-workspace-cb, about 23:41) adds a
+  separate new entry at the top of `ResearchLog.md` and changes its own bullet of
+  `ChangeLog.md`; this session agreed.
+  6a [792d65] (messages of about 23:44 and 00:00): this session removed its hunks from
+  `pipeline/run_job.py` and `pipeline/run_jobs.py` and does not change them or
+  `tests/test_run_jobs.py`. 6a keeps the hunks of this session in `pipeline/embeddings.py`
+  and `pipeline/run_routes.py`, adds separate hunks to `tests/test_run_routes.py` and to
+  the `mock_run.py` and `remote_run.py` paragraphs of `COMMANDS.md`, and includes the
+  `inputs_view` hunk in its restart of 8168. This session changed its test of a wrong
+  backend to an entry with a configuration error, which passes after the change of 6a.
+  d3 [4920ce] (about 00:00) adds separate hunks to `README.md`, `SMOKE_TESTS.md`,
+  `ChangeLog.md`, `COMMANDS.md`, `ResearchLog.md`; this session agreed. This session
+  started `caffeinate -ims -w 50025` (pid 73010) for the VLM watcher, and asked d3 to
+  hold the new watcher after its restart and to update the plan 29 row of
+  `GPU_TASKS.md`.
+  43 [c33611] (about 00:02) adds the heading `## 2026-09-26` of `ChangeLog.md` with its
+  bullet and the row IW17 of `SMOKE_TESTS.md`; this session agreed and put its bullet
+  under that heading.
+  6a [792d65] (about 00:16 to 00:20): 6a writes the kind `embedding` of `pipelines.py`,
+  the entry of `config.yaml`, `run_job.build`, and the rules of `run_jobs`; this session
+  writes `embedding_run.py` against `Pipeline.embedding`; 6a allowed the two hunks of
+  `runs.html`. 39 [fb59ad] (about 00:20) changes the clusters paragraph of `COMMANDS.md`;
+  this session agreed.
+  39 [fb59ad] (about 00:34) adds separate hunks to `pipeline/pages/runs.html` (the
+  header values in localStorage; owner message of 00:30:00); this session agreed and
+  asked 39 to keep the call `evenCards` of `loadRun` and to ask 6a too.
+  d3 [4920ce] (about 01:21) changes the label `every run` of `renderConfigs` in
+  `pipeline/pages/runs.html` to `All` (owner answer of 01:19:00); this session agreed and
+  asked d3 to ask 6a too.
+  6a [792d65] (about 01:25) told this session that the owner removed the pipeline
+  `gx10-siglip2-so400m-patch16-naflex-p256` at about 01:07; this session changed its doc
+  examples to `siglip2-p256-crop` (README, COMMANDS, ER rows, plan 33) at 01:28.
+  e2 [9e7fe4] (about 01:35; plan 38, owner message of 01:23:11 and answers of 01:29:00)
+  adds separate hunks to `pipeline/embedding_run.py` (`Catalogue`: the item key of each
+  row, the key `items` of each candidate; a new function after `model_inputs`),
+  `tests/test_embedding_run.py` (new tests, and `items` in the three key-set checks),
+  `pipeline/run_routes.py` (a new route; not `inputs_view`), and `docs/API.md`; this
+  session agreed.
+  d3 [4920ce] (about 01:38; plan 39, owner answers of 01:32:00) adds a CSS line after
+  `.tag.dry` and a tag `no cache` in `renderRuns` of `pipeline/pages/runs.html`; this
+  session agreed, and asked d3 to ask 6a and to tell this session before any change of
+  the SAM3 cache path of `embedding_run.py`.
+  d3 restarts 8168 at about 01:50 (plan 39, with plan 38 of e2); this session answered
+  "ready" at 01:44: 40 tests `OK` (`test_embedding_run`, `test_run_routes`); the switch
+  `model_cache.READ` holds in the runner process alone, so `inputs_view` keeps the cache.
+  e2 [9e7fe4] (about 01:47): plan 38 is done; 33 tests `OK` in
+  `tests/test_embedding_run.py`; this session changed its row ER1 to 33.
+## drink-atlas-workspace-6a [792d65]
 
-- Task: (1) keep GTIN alone in the lab: remove the kind `barcode` from the lab code, the
-  lab API, the seed, and the Dataset page on the lab server; delete the one `barcode`
-  row of `data/lab.sqlite3`. No schema file: schema 008 keeps `'barcode'` in its CHECK
-  until the flatten. The old review tool keeps its Barcodes editor. (2) the save delay:
-  the GTIN and QR URL editors redraw their own card, not all 2,103 cards. (3) the
-  Atlas Core product binding on the lab server.
-- Source: owner messages of 2026-09-25T09:51:46+0300, 09:52:30, 10:13:54, and the four
-  answers of 10:16:07 (code only; lab page only; edit on top now; fix the delay too).
-  (3): owner message of 2026-09-25T10:23:51+0300 and the answers of 10:30:50 (the
-  database; a remove of a manual binding); `docs/plans/15_atlas-binding.md`.
-- Files: hunks in `pipeline/codes.py`, `pipeline/seed_codes.py`, `pipeline/lab_server.py`
-  (module docstring, `CODE_ROUTES`, `dataset_view`, `code_counts`),
-  `pipeline/pages/dataset.html` (the GTIN, barcode, and QR URL editors: markup,
-  open, cancel, save, remove; `renderHead`; the text search), `tests/test_codes.py`,
-  `tests/test_seed_codes.py`, `tests/test_lab_server.py` (code route tests alone),
-  `data/lab.sqlite3` (one DELETE). Entries in `docs/plans/11_wine-codes.md`, `README.md`,
-  `SMOKE_TESTS.md` (S4, S5, section WC), `docs/plans/07_*.md` (rule 5, one line),
-  `ChangeLog.md`, `ResearchLog.md`, `docs/owner-messages.md`. (3): new
-  `docs/plans/15_atlas-binding.md`, `pipeline/schema/009_atlas_binding.sql` (number 009
-  taken at 10:36), `pipeline/atlas_bindings.py`, `pipeline/seed_atlas_bindings.py`,
-  `tests/test_atlas_bindings.py`, `tests/test_seed_atlas_bindings.py`; hunks in
-  `pipeline/lab_server.py` (the `_atlas_*` lines of `dataset_records`, the `atlas_*` keys
-  of `dataset_view`, the new route in `_write_route`, `Handler._atlas_binding`),
-  `pipeline/pages/dataset.html` (`atlasBindingEditor`, `saveAtlasBinding`, new
-  `removeAtlasBinding`, the Atlas click and keydown handlers), `tests/test_lab_server.py`
-  (new Atlas route tests), `tests/test_labdb.py` (the version 9), `data/lab.sqlite3`
-  (migration to 9 and the seed). Entries in `README.md`, `SMOKE_TESTS.md` (S4, new
-  section AB), `docs/plans/07_*.md` (rule 5), `ChangeLog.md`. A restart of 8168.
-- State: waiting: the owner commits. (1) to (3): done and deployed. (4) done and tested: the
-  fixes of `docs/reviews/2026-09-25_unfinished-work.md`, sections f1 and a2 (owner answer
-  of 2026-09-25T12:28:04+0300, section 4 item 1): the seeds `seed_codes.py` and
-  `seed_atlas_bindings.py` refuse a table with rows unless `--force`; the Barcodes editor
-  of the review tool on the shared page; the IPv6 host of `codes.clean_qr_url`; the value
-  in the seed error of `seed_codes.py`; a test for `barcode_file`; SMOKE_TESTS S1, S3,
-  S12, and the line "schema version 2". (4) files: `pipeline/codes.py`,
-  `pipeline/seed_codes.py`, `pipeline/seed_atlas_bindings.py`, `tests/test_codes.py`,
-  `tests/test_seed_codes.py`, `tests/test_seed_atlas_bindings.py`, hunks in
-  `pipeline/pages/dataset.html` (`codeCheck`, `gtinEditor`, `barcodeEditor`,
-  `qrUrlEditor`, the `gtinEditor` call of `recordHtml`), `tests/test_lab_server.py` (one
-  assertion), entries in `COMMANDS.md`, `README.md` (steps 6 and 7), `SMOKE_TESTS.md`,
-  `ChangeLog.md`, plans 11 and 15. No restart: the page is read from disk.
-- Updated: 2026-09-25T12:48:02+0300
-- Agreements: the owner chose (10:16:07) that this session edits on top of the
-  uncommitted plan 11 hunks of drink-atlas-workspace-a2 (not reachable). The removal and
-  plan 11 go into one commit. Messages to 7b [d39f66] and f0 [15172d] at 10:17.
-  Schema 009 (rule 26, about 10:36): messages to 20, 9a [f028b4], and 8b; 20 agreed.
-  With 7b [d39f66] (10:34 to 10:38): its hunks and mine in `lab_server.py`,
-  `dataset.html`, and `test_lab_server.py` do not overlap; this session restarted 8168
-  with the code of both at 10:37:59.
-  With 7b [d39f66] (about 10:48, plan 16): 7b changes the `_alternatives` line of
-  `dataset_records`, the alternative keys of `dataset_view`, and the schema version in
-  `tests/test_labdb.py`. This session plans no more change to any file.
-  With fa (about 11:43, plan 20): fa adds hunks to `lab_server.py` and `dataset.html` on
-  top; no overlap with the hunks of this session.
-  With 7b [d39f66] (about 12:40, review): 7b takes the shared sentences of plan 07 rule 5,
-  README step 3, and the `lab_server.py` docstring whole, with the Atlas and code facts
-  of this session. `seed_patched.py` uses the same `--force` form.
+- Task: a new section `pipeline:` in `config.yaml`. The entries `vino-svoe-search-by-photo`
+  and `mock` move there from `embeddings:`. The dialog `Run>` of `/testset` and the filter
+  of `/runs` show the pipelines, not the embeddings. Added: the pipeline backend
+  `embedding` (a pipeline names one `embeddings` entry) and the pipeline
+  `gx10-siglip2-so400m-patch16-naflex-p256`; the combo of `/runs` lists the pipelines
+  alone. The owner removed `mock` from `config.yaml` and from the source (00:26:27):
+  `pipeline/mock_run.py` and `tests/test_mock_run.py` are deleted.
+- Source: owner message of 2026-09-25T23:37:48+0300; owner answers of 23:55:27 (a new
+  module; `mock` moves fully; labels only; separate hunks); owner messages of
+  2026-09-26T00:10:18 and 00:11:19 and the answers of 00:12:24 and 00:15:17 in the
+  session ab; plan 34.
+- Files: `docs/owner-messages.md` (append), new `docs/plans/34_pipeline-section.md`, new
+  `pipeline/pipelines.py`, new `tests/test_pipelines.py`. Hunks: `config.yaml` (the two
+  entries of `embeddings` and their comments; a new section `pipeline` after
+  `embeddings`), `pipeline/embeddings.py` (the backends, the remote and mock code of the
+  class `Embedding`, `remote_refusal`), `pipeline/build_embeddings.py` (`MockBackend`,
+  the remote refusal), `pipeline/embedding_routes.py` (the remote refusal of `start`),
+  `pipeline/pages/embedding.html` (the remote branch), `pipeline/run_jobs.py`,
+  `pipeline/run_job.py`, `pipeline/run_routes.py` (`configurations`, the docstring),
+  `pipeline/remote_run.py`, `pipeline/pages/runs.html` (the labels and the code of the
+  filter), `pipeline/pages/testset.html` (the texts of the dialog),
+  `tests/test_run_jobs.py`, `tests/test_remote_run.py`, `tests/test_run_routes.py` (the
+  config of `setUp`, one test). Deleted: `pipeline/mock_run.py`,
+  `tests/test_mock_run.py`. Separate hunks in `README.md`, `SMOKE_TESTS.md`,
+  `ChangeLog.md`, `COMMANDS.md` (the mock and remote paragraphs). One note line in
+  `docs/plans/23_runs-page.md` and `docs/plans/31_remote-configuration.md`. A restart of
+  8168.
+- Task 2: two basic pipelines of the backend `embedding` for
+  `gx10-siglip2-so400m-patch16-naflex-p256`: `siglip2-p256-as-is` and
+  `siglip2-p256-crop` (owner message of 2026-09-26T00:45:33+0300, answers of 00:52:41
+  and 00:57:59; plan 34 section 7). Done, not committed. Files: `config.yaml` (the two
+  entries), `pipeline/pipelines.py` (the key `views`), `pipeline/embeddings.py`
+  (`check_steps`), `tests/test_pipelines.py`, separate hunks in `README.md`,
+  `SMOKE_TESTS.md` (PL1 to PL4, PL8, PL15 to PL17), `ChangeLog.md`, plan 34. ab [539687]
+  wrote the hunks of `pipeline/embedding_run.py` and `tests/test_embedding_run.py`
+  (agreed after 00:53). 6a restarted 8168 at 01:01:42 (pid 81403); the watcher pid
+  81420 got `caffeinate` (pid 81659); the row of `~/Admin/GPU_TASKS.md` names them.
+- State: done, not committed. The section stays until the commit (rule 20). d3 restarted
+  8168 at 00:36:23; the live check passed (the dialog and the filter list the 2
+  pipelines; `/embedding` and `/clusters` list the 11 embedding models).
+- Updated: 2026-09-26T01:38:20+0300
+- Agreements: the owner allowed separate hunks in `pipeline/pages/testset.html` (stale
+  5c), `ChangeLog.md`, `README.md`, `SMOKE_TESTS.md` (answer of 23:55:27). ab [539687]
+  handed over `pipeline/run_jobs.py`, `pipeline/run_job.py`, `tests/test_run_jobs.py`
+  (message after 23:44); the hunks of ab in `pipeline/embeddings.py` (`apply_steps`) and
+  `pipeline/run_routes.py` (`inputs_view`) stay. ab agreed to separate hunks in
+  `tests/test_run_routes.py` and in the mock and remote paragraphs of `COMMANDS.md`, and
+  changes its own test `test_another_backend_is_refused`; the restart of 8168 of this
+  session also deploys the `inputs_view` hunk of ab (answer after 00:00). cb [395cc7]
+  (earlier 15) agreed to the `config.yaml` hunks; its `max_tokens` paragraph and the
+  `image_description` block stay. d3 [4920ce] adds `workers` in `image_description`; no
+  overlap. d3 adds its own separate hunks in `README.md`, `SMOKE_TESTS.md`,
+  `ChangeLog.md`, and `COMMANDS.md` (6a agreed). ab and 6a agreed the split of the
+  backend `embedding` (after 00:15): 6a writes `pipelines.py`, `run_job.build`,
+  `run_jobs`, and the `config.yaml` entry; ab changes `pipeline/embedding_run.py`
+  (`build_pipeline_backend`). ab adds two separate hunks to `pipeline/pages/runs.html`
+  (the CSS near `.strip` and `.cand`, the JS `evenCards`). d3 restarts 8168 for both
+  sessions after the message "ready" of 6a.
+  6a finishes the removal of `mock` (ab agreed after 00:31); ab deleted
+  `data/embeddings/mock/` (owner answer of 00:29:55). 39 [fb59ad] adds separate hunks to
+  `config.yaml` (`clusters:`), `COMMANDS.md` (the cluster paragraph), and the pages
+  `embedding.html`, `runs.html`, `testset.html` (the localStorage of the header); 28
+  [5ddfae] and e2 [9e7fe4] add separate hunks to `testset.html` and the docs (6a agreed).
+  After 01:19: d3 [4920ce] changed the item `every run` to `All` in
+  `pipeline/pages/runs.html` (owner answer of 01:19:00) and added its own bullet in
+  `ChangeLog.md`; 6a wrote the README, PL8, and plan 34 hunks of that change. The owner
+  removed the pipeline `gx10-siglip2-so400m-patch16-naflex-p256` at about 01:07; 6a fixed
+  `tests/test_pipelines.py`, the `config.yaml` comment of the two basic pipelines, PL2 to
+  PL5 and PL14, and plan 34. 43 [c33611] adds separate hunks to
+  `pipeline/pages/embedding.html` and the docs (6a agreed); d3 sends the hunks of the
+  checkbox `Use caches` before it changes `run_jobs.py`, `run_job.py`,
+  `tests/test_run_jobs.py`, or `testset.html`.
+  After 01:30: 43 [c33611] adds separate hunks to the job rows of
+  `pipeline/pages/testset.html` (`.job`, `.job-stop`, `showRunJobs`). e2 [9e7fe4] adds
+  separate hunks for plan 38 to `pipeline/run_routes.py` (a route `/api/run-candidate`),
+  `tests/test_run_routes.py`, and `pipeline/pages/runs.html`. d3 [4920ce] writes the
+  checkbox `Use caches` (plan 39, owner answers of 01:32:00) in `pipeline/run_jobs.py`
+  (`start`, the docstring), `pipeline/run_job.py` (`--no-cache`), `tests/test_run_jobs.py`,
+  the Run dialog of `pipeline/pages/testset.html` (after the restart), the tag
+  `no cache` of `pipeline/pages/runs.html`, and the docs. 6a agreed to each; no line of
+  6a changes.
 
-## drink-atlas-workspace-98
+## drink-atlas-workspace-d3 [4920ce]
 
-- Task: (4) the review findings of section "98" of
-  `docs/reviews/2026-09-25_unfinished-work.md` (owner answer of 12:28:04: each session
-  fixes its own). (3) favorites of `/dataset`: a star toggles a wine; the value `Favorites` of the
-  `State` filter shows each favorite, also a removed one (owner message of 11:37:46).
-  (2) rule 23 of `AGENTS.md`: stop 8168 with SIGTERM, not SIGINT (owner message
-  of 11:29:27). (1) timestamped comments of a wine on `/dataset` (plan 17): a new table
-  `wine_comment`, add and remove, the list in time order (the oldest first), a
-  multi-line input, the value `with comments` of the filter `Show`.
-- Source: owner messages of 2026-09-25T11:04:34+0300, the three answers of 11:07:00
-  (oldest first; multi-line; edit on top now), 11:07:59 (the filter), and 11:09:30 (the source `user` or `script`);
-  `docs/plans/17_wine-comments.md`.
-- Files: (4) `pipeline/comments.py`, `tests/test_comments.py`, `tests/test_lab_server.py`
-  (my comment tests), `pipeline/pages/dataset.html` (`removeComment`, my part of
-  `beforeunload`), `SMOKE_TESTS.md` (D2, D10, D10a, D12 of the lab database section),
-  `docs/plans/07_*.md` (the test count of step 2), `docs/plans/11_wine-codes.md` (the
-  SIGINT line), `README.md` (step 3: the `State` values), `ChangeLog.md`.
-  (3) new `docs/plans/19_favorites.md`, `pipeline/favorites.py`,
-  `tests/test_favorites.py`, `pipeline/schema/013_wine_favorite.sql` (number 013 taken
-  at 11:55, rule 26). Hunks in `pipeline/lab_server.py` (docstring, `import
-  favorites`, one line of `dataset_records`, the key `favorites` of `dataset_view`, new
-  `set_favorite` after `remove_comment`, new `Handler._favorite` after `_comment`, one
-  line of `_write_route`), `pipeline/pages/dataset.html` (the `.favorite-star` CSS, one
-  `<option>` of `#state`, `BUSY_FAVORITES`, new `favoriteStar` and `toggleFavorite`
-  after my comment code, the star in the `.name` line of `recordHtml`, one line of
-  `inStateView`, `renderHead`, one click branch, one line of `init`),
-  `tests/test_lab_server.py` (new tests after my comment tests), `tests/test_labdb.py`
-  (the version and the tables), `data/lab.sqlite3` (the migration), a restart of 8168.
-  Entries in `README.md`, `SMOKE_TESTS.md` (new section FV), `ChangeLog.md`,
-  `docs/plans/07_*.md` (rule 5), `docs/owner-messages.md`.
-  (2) `AGENTS.md` (rule 23 alone), `ResearchLog.md` (the two SIGINT entries).
-  (1) new `docs/plans/17_wine-comments.md`, `pipeline/comments.py`,
-  `tests/test_comments.py`, `pipeline/schema/011_wine_comment.sql` (number 011 taken at 11:19, rule 26). Hunks in
-  `pipeline/lab_server.py` (module docstring, `import comments`, one line of
-  `dataset_records`, the key `comments` of `dataset_view`, new `add_comment` and
-  `remove_comment` after `remove_atlas_binding`, new `Handler._comment` after
-  `_atlas_binding`, one line of `_write_route`), `pipeline/pages/dataset.html` (the
-  `.comment-*` CSS, one `<option>` of `#filter`, `DATA` defaults, `DRAFT_COMMENTS` and
-  `BUSY_COMMENTS`, new `commentEditor` after `atlasBindingEditor`, one line of
-  `recordHtml`, the filter line and the search text of `applyView`, `renderHead`, new
-  comment functions after the Atlas functions, the comment branches of the click,
-  input, and keydown listeners, one line of `beforeunload`, one line of `init`), `tests/test_lab_server.py` (new
-  comment tests after the Atlas tests), `tests/test_labdb.py` (the version and the
-  tables), `data/lab.sqlite3` (the migration), a restart of 8168. Entries in
-  `README.md`, `SMOKE_TESTS.md` (new section CM), `ChangeLog.md`, `ResearchLog.md` (the
-  SIGINT entry), `docs/plans/07_*.md` (rule 5, one sentence), `docs/owner-messages.md`.
-- State: waiting: the owner commits (1) to (4). All four are done and live: fix 1 of (4)
-  (`comments.py`) since the restart of 7b at 12:45:39, fixes 2 and 3 at once (page).
-- Updated: 2026-09-25T13:18:36+0300
-- Agreements: the owner chose (11:07:00) small separate hunks on top of the uncommitted
-  work of the other sessions.
-  With drink-atlas-workspace-7b (about 11:12): no overlap of the regions; the session that
-  enters its schema file second sets `VERSION` and the table list of
-  `tests/test_labdb.py`. 7b took 010; this session takes 011.
-  Rule 26 messages (about 11:19): to 7b, 20, 9a [f028b4], and ff. ff writes comments
-  with source `script` through `comments.add`; ff needs no schema file. 20 agreed.
-  With drink-atlas-workspace-0b (about 11:24): its preview hunks in `dataset.html` do not
-  touch mine; 0b keeps my line of `init`. 0b MAY restart 8168.
-  With drink-atlas-workspace-20 (11:30): `AGENTS.md` is in the list of 20; message sent
-  before the change of rule 23. The owner approved the change at 11:29:27.
-  20 answered (about 11:31): it plans no change of `AGENTS.md`.
-  With drink-atlas-workspace-ff (about 11:46): the deploy of (3) waits for the end of its
-  `import_website.py` run (about 11:58); ff sends a message then.
-  With drink-atlas-workspace-fa (about 11:47, plan 20): no overlap of the regions. fa
-  sends a message when its hunks in `lab_server.py` and `dataset.html` are written; this
-  session applies the plan 19 hunks after that. fa does not restart 8168 between the
-  apply of this session and its message `deploy done`.
-  With drink-atlas-workspace-7b (about 11:57): 013 agreed. The `favorites` line and the
-  comment sentence of `inStateView` sit in the uncommitted `Disabled` hunk of 7b, so they
-  go into the same commit as that hunk.
-  20 agreed to 013 (about 11:56). fa: the `dataset.html` change of 11:53:48 is its own and
-  went live with the restart of 11:55:50; `deploy done` sent to fa and 7b.
-  With drink-atlas-workspace-0b (about 12:00): by the owner message of 11:58:25 to 0b, 0b
-  moves the star to the top right of `.info` (its hunks on top of plan 19). This session
-  plans no more change to those lines. Done: 0b's move is live; this session updated the
-  star position in plan 19, `README.md`, and `SMOKE_TESTS.md` FV2 (about 12:05).
-## drink-atlas-workspace-ff
+- Task: the VLM watcher `describe_images.py` sends up to `image_description.workers`
+  requests at the same time (a rolling pool of threads); `config.yaml` gets `workers: 8`.
+- Source: owner message of 2026-09-25T23:44:31+0300; owner answers of 23:58:53 (rolling
+  pool; `image_description.workers`; 8; the pill shows the wall time per image) and of
+  2026-09-26T00:15:59 (separate hunks in the files of the stale sections); plan 35.
+- Task (2): the filter `Pipeline` of `/runs`. Source: owner message of
+  2026-09-26T01:10:00+0300 (a link to the run
+  `2026-09-25T205359Z-lab-gx10-siglip2-so400m-patch16-naflex-p256-official-real-photos`,
+  the text "Pipeline: All | ...", a screenshot of the open filter); owner answers of
+  01:19:00 (the item `every run` becomes `All`; the runs of a pipeline that is not in
+  config.yaml stay under `no pipeline`). Files: `docs/owner-messages.md` (append),
+  `pipeline/pages/runs.html` (`renderConfigs`: the label and its comment), one bullet in
+  `ChangeLog.md`. State: done, not committed; live (a page change, no restart). 6a, 39,
+  and ab agreed (after 01:20). 6a wrote the `README.md`, PL8, and plan 34 hunks itself
+  (split of 6a, about 01:24).
+- Task (3): plan 39, a checkbox `Use caches` in the dialog `Run>` of `/testset`; on by
+  default. Off: the job reads no record of `model_cache` (SAM3, GDINO, VLM, LLM), each
+  model call goes to its service, the fresh answers are stored, `run.json` gets
+  `use_cache: false`, and `/runs` shows the tag `no cache`. Source: owner message of
+  2026-09-26T01:20:30+0300 and the answers of 01:32:00. Files: `docs/owner-messages.md`
+  (append), new `docs/plans/39_use-caches-checkbox.md`, `pipeline/model_cache.py` (`READ`,
+  `lookup`), `pipeline/run_files.py` (`run_head`), `tests/test_model_cache.py`,
+  `tests/test_run_files.py`, `tests/test_derive.py` (one test in `Sam3ClientTest`), one
+  note line in `docs/plans/25_model-call-cache.md` and
+  `docs/plans/32_testset-run-button.md`. After the agreements: hunks in
+  `pipeline/run_jobs.py`, `pipeline/run_job.py`, `tests/test_run_jobs.py` (6a),
+  `pipeline/benchmark.py`, `tests/test_benchmark.py` (e2), `pipeline/pages/testset.html`
+  (the checkbox after `#run-workers`, one CSS rule after `.run-fields input`, one key in
+  `startRun`), `pipeline/pages/runs.html` (`.tag.nocache`, the tag in `renderRuns`),
+  separate hunks in `README.md`, `SMOKE_TESTS.md` (a new section after "The cache of the
+  model calls"), `ChangeLog.md`, one entry at the top of `ResearchLog.md`. A restart of
+  8168 (`run_jobs.py`, `run_files.py`). The rows of `~/Admin/GPU_TASKS.md` (the watcher,
+  the plan 39 check).
+  State: done, not committed. 724 tests `OK`. 8168 restarted at 01:46:24 (server pid
+  59921; watcher pid 59935, `caffeinate` pid 60808; e2's plan 38 route went live with
+  it). Browser check 24 of 24; live check of 2 crop jobs of 3 queries (01:51). e2 commits
+  all pending changes (owner message of 01:43:59); this session does not commit.
+  Agreements: 6a (items 1 to 6; this session wrote items 1 to 3), e2 (`benchmark.py`,
+  `tests/test_benchmark.py`), ab and 39 (`runs.html`, `testset.html`), cb (the docs),
+  43 (no overlap with its job row hunks); 6a, ab, 39, cb, 43, and e2 answered "ready"
+  for the restart. 28 [5ddfae] is not in `ListAgents` (stale); d1 [0feb34] is another
+  conversation. The dialog hunks do not touch the lines of 28. Updated:
+  2026-09-26T01:55:00+0300.
+- Files: `docs/owner-messages.md` (append), new `docs/plans/35_vlm-workers.md`. Hunks in
+  `pipeline/describe_images.py` (the docstring, the imports, `DEFAULTS`, `settings`,
+  `log`, `Status`, `next_items`, `run_item`, `run`, the `start:` line of `main`),
+  `config.yaml` (the key `workers` and the comment of the `image_description` block),
+  `tests/test_describe_images.py` (the imports, new tests at the end). Separate hunks in
+  `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`, `COMMANDS.md`, `ResearchLog.md`; one
+  note line in `docs/plans/26_image-description.md` and `docs/plans/29_image-details.md`.
+  A restart of 8168. The watcher row of `~/Admin/GPU_TASKS.md`.
+- State: done, not committed. The section stays until the commit (rule 20). 8168 was
+  restarted at 00:36:23 (server pid 36577; watcher pid 36603 with `workers 8`;
+  `caffeinate` pid 36646). Live: 26.5 details per minute instead of 3.4, the same call
+  time. 692 tests `OK`. The docs, the ResearchLog entry, and the result of plan 35 are in.
+- Updated: 2026-09-26T00:44:26+0300
+- Agreements: cb [395cc7] (earlier 15 [40dc83]) agreed at about 23:50 to separate hunks in
+  `pipeline/describe_images.py`, `config.yaml`, `tests/test_describe_images.py` (and
+  `pipeline/vlm_config.py`, `tests/test_vlm_config.py` if needed); the hunks of cb stay.
+  cb sends a message before its own hunk near `TIMEOUT_SECONDS`, `post`, and `ask`. At
+  about 00:05 cb, ab [539687], 6a [792d65], and 39 [fb59ad] agreed to separate hunks in
+  `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md` (and cb, ab: `ResearchLog.md`; ab, 6a:
+  `COMMANDS.md`). 6a: `config.yaml` hunks do not overlap (6a: `embeddings`, `pipeline`;
+  d3: `image_description`). 6a asked at about 00:15: d3 restarts 8168 for both after the
+  "ready" of 6a, and tells 6a the minute; no restart before. ab: its server code may go
+  live (answer after 00:10).
+  39 [fb59ad] asked at about 00:21 for separate hunks: a new block `clusters:` in
+  `config.yaml` (after `embeddings`, before `pipeline`) and one clusters paragraph in
+  `COMMANDS.md`; d3 agreed (no overlap).
+  43 [c33611] agreed at about 00:25, after the fact, to the `ChangeLog.md` bullet (top of
+  `## 2026-09-26`) and the `SMOKE_TESTS.md` section with VW1 after DT15.
 
-- Task: (1) plan 18: `pipeline/import_website.py` (CLI): done, not committed. (2) plan 21:
-  the UI mode of the import with a merge dialog, remembered refusals, the reused HTTPS
-  connection, and two change times of a wine (`website_modified_at`, `modified_at`)
-  with two sort options on `/dataset`.
-- Source: (1) owner message of 2026-09-25T11:06:56+0300 and the answers after it;
-  `docs/plans/18_import-website.md`. (2) owner messages of about 12:00 ("can we make 2
-  modes", "also introduce last_modified time") and the answers after them;
-  `docs/plans/21_website-import-ui.md`.
-- Files: `docs/owner-messages.md` (append), `docs/plans/18_import-website.md`, new
-  `docs/plans/21_website-import-ui.md`, `pipeline/import_website.py`,
-  `tests/test_import_website.py`. After the approval of plan 21:
-  `pipeline/schema/015_website_import.sql` (number 015 taken at 12:32:01, rule 26;
-  messages to 7b and TESTSET; 20, 9a [f028b4], and e3 were not reachable), new
-  `pipeline/website_import_routes.py`, new `pipeline/pages/website_import.js`, new
-  `tests/test_website_import_routes.py`, hunks in `pipeline/lab_server.py` (the import,
-  the delegation in `do_GET` and `_write_route`, the two times in `dataset_records`) and
-  `pipeline/pages/dataset.html` (the button in the bar, one `<script src>` tag, two
-  options of `#sort` and the sort code), `tests/test_lab_server.py` and
-  `tests/test_labdb.py` (new tests at the end), `data/lab.sqlite3` (the migration),
-  `work/website-import/`, a restart of 8168. Entries in `COMMANDS.md`, `README.md`,
-  `SMOKE_TESTS.md`, `ChangeLog.md`, `ResearchLog.md`.
-- State: waiting: the owner merges the conflicts in the dialog of `/dataset` (run
-  `20260925T125132`, prepared 13:02: 12 conflicts, 196 changes), and commits. Plans 18
-  and 21 are implemented, tested (397 tests OK), deployed, and documented. Nothing was
-  applied to `data/lab.sqlite3`.
-- Updated: 2026-09-25T13:04:00+0300
-- Agreements: with drink-atlas-workspace-98 (2026-09-25, about 11:20): this session
-  calls `comments.add(conn, slug, text, "script")` in its own transaction. It changes
-  neither `pipeline/comments.py` nor schema 011.
-  To drink-atlas-workspace-9a [f028b4] (about 11:33): a notice that
-  `pipeline/import_website.py` writes `image.folder` and a store path in
-  `store_path` and `insert_image`; the flat store changes these lines too.
-  With drink-atlas-workspace-7b (12:33 to 12:45): no restart by this session while 7b
-  changed derive.py; 7b restarted 8168 at 12:45:39 for all. 7b took 017, TESTSET 016.
-  With drink-atlas-workspace-f1 and fa (about 12:40): the fixture inserts of
-  `tests/test_lab_server.py` (this session) and `tests/test_manual_wines.py` (fa) name
-  their columns after schema 015.
-  With drink-atlas-workspace-fa (about 11:50): rules 24 to 26 of plan 20 are in
-  `import_website.py` and plan 18 (rules 21, 22). The tool checks the prefix `__` itself
-  until `pipeline/manual_wines.py` is committed.
+## drink-atlas-workspace-43 [c33611]
 
-## drink-atlas-workspace-0b
-
-- Task: (1) the image preview of `/dataset` for the alternative photos, the same as for
-  the `main` and the patch image (the modal, the thumbnails, the page path, the arrows).
-  (2) the `main` image of a Disabled wine in grayscale on the card, in the browser
-  (owner message of 11:57:30): one class in `imageFigure`, one CSS line after
-  `.pictures a { position: relative; }`, entries in `README.md`, `SMOKE_TESTS.md`,
-  `ChangeLog.md`. (3) the favorites star at the top right of `.info`, close to the
-  alternative photos (owner message of 11:58:25): the star line and the `.info` line of
-  `recordHtml`, new CSS after the `.favorite-star` rules of 98; entries in the same docs.
-  (4) the review findings of this session (`docs/reviews/2026-09-25_unfinished-work.md`,
-  owner answers of 12:28:04): a thumbnail of another kind switches the preview fully;
-  the raw link of the patch preview (7b finding 11); SMOKE_TESTS AL numbers, PE18, plan
-  14 item 4 (one line, 7b agreed); `.info { align-self: stretch; }` at <= 860 px. Files:
-  `showImagePreview`, `previewThumbs`, `showPreviewThumb`, `renderPreviewThumbs`, the
-  860 px media query of `dataset.html`; `SMOKE_TESTS.md`, `docs/plans/14_patch-editor.md`,
-  `README.md`, `ChangeLog.md`.
-- Source: owner message of 2026-09-25T11:19:38+0300, the four answers of 11:22:10 (every
-  photo; all wine images; `/alternative/<sha256>`; edit on top now), and the message of
-  11:22:21 (the strip: main, main processed, patched, patched processed, alternative,
-  alternative processed).
-- Files: `docs/owner-messages.md` (append). Hunks in
-  `pipeline/pages/dataset.html` (the preview functions and the alternative card link),
-  `pipeline/lab_pages.py` (`DATASET_PREVIEW_ROUTE`), `tests/test_lab_server.py` (the
-  preview route test). Also the CSS of `.image-preview-thumbs` (one row that scrolls)
-  and the scroll to the marked thumbnail at the end of `renderPreviewThumbs`; 7b got a
-  message. Entries in `README.md` (section "The Dataset page"), `SMOKE_TESTS.md` (PE12
-  to PE15, PE18, new AL15 to AL21), `ChangeLog.md`.
-- State: waiting: the owner commits (1) to (4). (2) to (4) are done and live; the page needs no restart. The code, the test, and the docs are done. The
-  route went live with a restart of 8168 at 11:26 (SIGTERM); 7b restarted 8168 again at
-  about 11:32 for schema 012.
-- Updated: 2026-09-25T12:40:00+0300
-- Agreements: the owner chose (11:22:10) small separate hunks on top of the uncommitted
-  work of 7b, 98, and the others. Messages to 7b and 98 at 11:23 name the regions:
-  `previewThumbs`, `showImagePreview`, `stepImagePreview`, `imagePreviewPath`,
-  `imagePreviewOfPath`, the `<a>` of a lab photo in `alternativeEditor`, the
-  `data-image-preview` branch of the `#list` click listener, `popstate`, the preview line
-  of `init`. 7b agreed (about 11:24): its hunks and mine in these regions go into one
-  commit. 98 agreed (about 11:24): no overlap; a restart of 8168 needs no question.
-  7b asked (about 11:31) for a restart for schema 012; this session answered
-  `restart ok`.
-  With drink-atlas-workspace-fa (about 11:44, plan 20, owner choice 11:42:50): fa adds
-  hunks to `dataset.html` and `lab_server.py` outside the preview regions of this
-  session, and it restarts 8168 at the end. This session plans no more code change.
-  (2): fa and 7b agreed (about 11:59): no overlap; `imageFigure` holds no uncommitted
-  hunk. (3): 98 agreed (about 12:01); it keeps `favoriteStar` and `toggleFavorite`, and it
-  updates its own docs of the star place (plan 19, `README.md`, FV2).
-
-## drink-atlas-workspace-fa
-
-- Task: plan 20: a button `Add wine` on `/dataset`: a full manual form, the slug prefix
-  `__`, a required `main` image; the imports never remove a `__` wine. No schema file.
-- Source: owner messages of 2026-09-25T11:30:05+0300 and 11:41:15, the answers of
-  11:40:48 and 11:42:50 (edit on top now); `docs/plans/20_add-wine.md`.
-- Files: `docs/owner-messages.md` (append), new `docs/plans/20_add-wine.md`. After the
-  approval: new `pipeline/manual_wines.py`, `tests/test_manual_wines.py`;
-  `pipeline/import_catalog.py`, `tests/test_import_catalog.py`. Hunks in
-  `pipeline/lab_server.py` (module docstring, `import manual_wines`, the key
-  `wine_editor` of `dataset_view`, new `add_wine` after `change_state`, new
-  `Handler._new_wine` after `_wine_state`, one branch of `_write_route` after
-  `/api/wine-state`), `pipeline/pages/dataset.html` (the `.wine-form-*` CSS, the
-  `Add wine` button in the bar, the new `#wine-modal` markup, new form functions after
-  `openValidation`, the slug line of `recordHtml`, the form listeners after the
-  validation listeners, one line of the document `keydown` listener, one line of
-  `init`). Entries in `README.md`, `SMOKE_TESTS.md` (new section AW), `ChangeLog.md`,
-  `docs/plans/07_*.md` (step 2, one rule). A restart of 8168.
-- State: waiting: the owner commits (1) to (4). (4), the fixes of review section fa
-  (items 1, 3, 4; item 5 was done at 12:13), is done, tested, and live since the restart
-  of 8168 by 7b at 12:45:39 (checked). (1) to (3) are deployed: schema 014 entered at 12:13, `data/lab.sqlite3` is at version 14 (12:13:19),
-  8168 runs the code since 12:13:40 (SIGTERM). Full suite: 334 tests, only the 5 old
-  loader errors. (2): the slug follows the name until a person types a
-  slug (owner message of 12:05:54). (3): `description` is optional (owner message and
-  answer of 12:09:52: rebuild the table). Files of (2) and (3): hunks in
-  `pipeline/pages/dataset.html` (my form functions, the `input` listener of
-  `#wine-form`, the dialog markup), `pipeline/manual_wines.py`,
-  `tests/test_manual_wines.py`, `pipeline/labdb.py` (`migrate` alone: foreign keys off
-  during a schema file, `PRAGMA foreign_key_check` before COMMIT),
-  `tests/test_labdb.py` (the version, one new test), a new
-  `pipeline/schema/014_description_optional.sql` (number 014 taken at 12:12, rule 26;
-  messages to 20, 9a [f028b4], 7b, and 98), `data/lab.sqlite3` (the migration; a backup first), a restart of 8168.
-  Entries in `README.md`, `SMOKE_TESTS.md` (AW), `ChangeLog.md`, `ResearchLog.md`,
-  plan 20, plan 07. (1) plan 20 waits for the commit of the owner.
-- Updated: 2026-09-25T12:48:12+0300
-- Agreements: the owner chose (11:42:50) small separate hunks on top of the uncommitted
-  work of the other sessions. Messages at about 11:47 to 7b, 98, 0b, and f1 (the regions of
-  `lab_server.py` and `dataset.html` above), to ff (rules 24 to 26 of plan 20 for
-  `import_website.py`), and to 9a [f028b4] (the store path of `manual_wines.py`).
-  0b, 98, f1, 7b, and ff answered: no overlap. ff added rules 24 to 26 to
-  `import_website.py` with its own `MANUAL_PREFIX` until my commit. 98 deployed plan 19
-  on top of my hunks. I plan no more edits to `lab_server.py` or `dataset.html`.
-  20, 9a [f028b4], 7b, and 98 got the rule 26 message for 014 at 12:12. 7b and 98 agreed;
-  98 asked for the checks of the child references and the comment ids (done, sent).
-  ff and TESTSET told (after schema 015) that the fixture of `tests/test_manual_wines.py`
-  fails; fixed by this session (the column list). 12 tests OK.
-
-## drink-atlas-workspace-85
-
-- Task: enable the Runs page `/runs` on the lab server. The runs stay in `runs/`, not
-  in SQLite. A filter by configuration (the entry of the `/embedding` selector). (2) The
-  configuration `mock` builds like any other entry: random unit vectors (owner message
-  of 13:37:14 in the session e3, answer of 13:41:00).
-- Source: owner messages of 2026-09-25T12:36:00+0300 and 12:38:00 (the term
-  "Configuration").
-- Files: `docs/owner-messages.md` (append), new `docs/plans/23_runs-page.md` (approved
-  12:52:00). New `pipeline/run_files.py`, `pipeline/run_routes.py`,
-  `pipeline/pages/runs.html`, `pipeline/mock_run.py`, `tests/test_run_files.py`,
-  `tests/test_run_routes.py`, `tests/test_mock_run.py`. Hunks in `pipeline/lab_server.py`
-  (docstring: the disabled-pages paragraph and a new Runs paragraph; `import
-  run_routes`; `DISABLED_PAGES` loses `/runs`; one `do_GET` branch after the embedding
-  branch; new `Handler._runs` after `_embedding`), `tests/test_lab_server.py` (the
-  `/runs` and `/api/runs` lines of the disabled-page tests), `pipeline/pages/embedding.html`
-  (the label of `#emb` alone), `pipeline/embeddings.py` (`BACKENDS`, the mock branch of
-  `Embedding.__init__`), `pipeline/embedding_routes.py` (`start` alone),
-  `pipeline/build_embeddings.py` (`main` alone), `pipeline/benchmark.py` (the argument
-  `configuration` of `run_benchmark`), `tests/test_benchmark.py` (one test at the end),
-  `config.yaml` (the entry `mock` at the end of `embeddings`), `runs/<id>/` of my mock
-  runs. Entries in `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`, `ChangeLog.md`, plans 07
-  and 10. A restart of 8168.
-- State: waiting: the owner commits (1) and (2). (2) is live since the restart of 8168
-  by e3 at 13:44:04 (the mock files were written at 13:41:35 to 13:41:59). (2) is
-  done and tested:(2) is
-  done and tested: `pipeline/embeddings.py` (the mock branch of `Embedding.__init__`),
-  `pipeline/build_embeddings.py` (new `MockBackend`, one branch of `make_backend`, no
-  refusal in `main`), `pipeline/embedding_routes.py` (my refusal in `start` is gone; no
-  hunk of this session is left there), `config.yaml` (`views: *views_c_f`),
-  `tests/test_mock_run.py`, `tests/test_run_routes.py`, docs.
-- Updated: 2026-09-25T13:54:00+0300
-- Agreements: with TESTSET [0fe970] (about 12:58): 23 is this plan, TESTSET took 24.
-  TESTSET changes neither `lab_server.py` nor `test_lab_server.py` before the approval of
-  plan 24, then adds its hunks on top; this session sends it the lines. This session adds
-  `configuration=None` to `run_benchmark` itself, and its test after the last test of
-  `tests/test_benchmark.py`.
-  With ff (about 12:58): the `do_GET` branch of this session stands after the
-  `website_import_routes` branch of ff. ff plans no more change of `lab_server.py`.
-  With 7b [d39f66] (about 12:59): no collision in `embedding.html`, `embeddings.py`,
-  `embedding_routes.py`; `start` is not a region of 7b. EMBEDDINGS [2d4494] is e3; a
-  message was sent at about 12:57. e3 answered (about 13:05): no overlap; the `#emb`
-  label, `BACKENDS`, `Embedding.__init__`, `start`, and `build_embeddings.main` are outside
-  its regions. TESTSET agreed (about 13:02) that this session adds the literal folder
-  `testset` to `IMAGE_ROUTE`; plan 24 drops that hunk.
-
-## drink-atlas-workspace-7e
-
-- Task: a one-page A4 description of the structure of `data/lab.sqlite3` (schema
-  version 17).
-- Source: owner message of 2026-09-25T13:14:45+0300.
-- Files: `docs/owner-messages.md` (append), `docs/database-structure.html` and
-  `docs/database-structure.pdf` (new), an entry in `ChangeLog.md`.
-- State: waiting: the owner reviews the page. Done, not committed. Owner choices at
-  13:26: PDF file, one-off page, landscape ER diagram.
-- Updated: 2026-09-25T13:53:00+0300
-
-## CACHE [31e42f]
-
-- Task: plan 25, the cache of the model calls. The main work is committed in `c7c6629`.
-  Open: the mode 0644 of a cache record (owner message of about 15:23, "it is ok in json";
-  the fix of `mkstemp` 0600).
-- Source: owner messages of 2026-09-25T13:45:11+0300 to about 15:25; `docs/plans/25_model-call-cache.md`.
-- Files: `pipeline/model_cache.py` (one `os.chmod` line in `store`),
-  `tests/test_model_cache.py` (one assert), `docs/plans/25_model-call-cache.md` (one line).
-  Entries in `ChangeLog.md`, `ResearchLog.md`, `docs/owner-messages.md`.
-- State: waiting: the owner commits the three files. Tests pass.
-- Updated: 2026-09-25T16:17:00+0300
-- Agreements: with drink-atlas-workspace-ca [af6346] (about 16:16): ca changes
-  `scripts/04_verify.py` and `scripts/cluster_rules.py` (the `vlm:` config); this session
-  plans no more changes there. ca keeps `Vlm.ask`, `Backend.ask`, and the `model_cache`
-  imports. Earlier agreements with 8b and 7b are done (the hunks are in `c7c6629`).
-
-## root
-
-- Task: Perform a detailed Pareto audit of the project. Explain the architecture. List
-  improvements with benefits and costs.
-- Source: owner messages of 2026-09-25T14:27:40+0300,
-  2026-09-25T14:28:00+0300, and 2026-09-25T14:37:47+0300.
-- Files: `docs/owner-messages.md` (append),
-  `docs/reviews/2026-09-25_pareto-audit.md` (new). Read-only inspection of all other
-  files.
-- State: waiting: the audit now uses the declared SQLite target architecture.
-- Updated: 2026-09-25T14:37:47+0300
-- Agreements: the owner authorized the detailed audit after the file conflict was stated.
-
-## drink-atlas-workspace-30
-
-- Task: remove the sort option `catalog.jsonl order` from `/dataset` of the lab and from
-  the dataset page of the `svoe-vino-testset` review tool.
-- Source: owner message of 2026-09-25T15:43:34+0300 and the answer "Both pages".
-- Files: hunks in `pipeline/pages/dataset.html` (the `catalog` option of `#sort` and its
-  line in the sort code), `ChangeLog.md`, `docs/owner-messages.md` (append). Outside this
-  project: `svoe-vino-testset/scripts/review_server.py` (the same two lines of its dataset
-  page), `svoe-vino-testset/ChangeLog.md`.
-- State: waiting: the owner commits and restarts the review tool on 8154. The change is
-  done and tested (`test_lab_server.py` 50 OK; testset `test_dataset_*` 17 OK). 8168
-  serves the new page with no restart.
-- Updated: 2026-09-25T17:27:00+0300
-- Agreements: section ff lists the sort code of `dataset.html`. ff is not in `ListAgents`,
-  and its hunks are committed in `c7c6629`. The owner asked for this change directly.
-  With drink-atlas-workspace-ca [af6346] (about 15:55, plan 26): ca adds hunks to
-  `dataset.html` (CSS, the `✎` button, a dialog, its functions) and does not touch
-  `#sort` or the sort code. This session plans no more change to `dataset.html`.
-  With drink-atlas-workspace-ca [a2daf6] (about 17:27, plan 24, owner permission of
-  17:26:22): ca changes the Testset nav link of `dataset.html` (`href="/"` to
-  `href="/testset"`). No clash; my two hunks stay uncommitted in the file.
-
-## drink-atlas-workspace-c5 [d24b28]
-
-- Task: changes of the dialog `Import from vino-svoe.ru` on `/dataset`: section names, an
-  image preview, links to the wine page on vino-svoe.ru, conflicts grouped by wine.
-- Source: owner messages of 2026-09-25, about 15:40 and 15:45.
-- Files: `docs/owner-messages.md` (append). After the owner answers:
-  `pipeline/pages/website_import.js` (the stale section drink-atlas-workspace-ff lists it;
-  the owner decides), entries in `ChangeLog.md`, `SMOKE_TESTS.md`,
-  `docs/plans/21_website-import-ui.md`.
-- State: waiting: the owner commits. Done, tested in headless Chromium on 8168, and
-  documented (`ChangeLog.md`, `SMOKE_TESTS.md` IW7 and IW13 to IW15, plan 21). No
-  restart was necessary. The owner allowed at 15:55 the takeover of
-  `pipeline/pages/website_import.js` from the stale section drink-atlas-workspace-ff.
-- Updated: 2026-09-25T17:22:00+0300
-- Agreements: with drink-atlas-workspace-a0 (17:22): a0 may edit
-  `pipeline/pages/website_import.js` for the owner request of 17:19 (a red prohibition
-  sign on the image of a `Missing on the website` row): a CSS block, `image`, and
-  `changeHtml`. a0 keeps all code of this session. The click on the image MUST still
-  open the large view.
-
-## drink-atlas-workspace-ca [af6346]
-
-The name `drink-atlas-workspace-ca` belongs to two sessions. This section is the session
-`[af6346]`.
-
-- Task: a section `vlm:` in `config.yaml` and in `config.old.yaml`: named VLM inferences,
-  each with `name`, `protocol` (`openai`), `thinking_field` (`chat_template_kwargs` or
-  `top_level`), `endpoint`, `model`, and `key` (null or `{env:XXX}`). Six entries:
-  `qwen3.5-9b-nvfp4`, `qwen3.5-9b`, `qwen3-vl-32b` of gx10; `qwencloud-qwen3.8-max`,
-  `qwencloud-qwen3.8-flash` of the Token Plan; `dashscope-qwen3.7-flash`. A loader
-  `pipeline/vlm_config.py`. Every hard-coded VLM of `scripts/04_verify.py` and
-  `scripts/cluster_rules.py` moves into the section; the keys `url`, `model`,
-  `rules_url`, `rules_model`, `rules_api`, `rules_key_env` of `cluster_rules` become
-  `vlm` and `rules_vlm`. One live request to `qwen3.5-9b-nvfp4` at the end.
-- Task (2): plan 26, `docs/plans/26_image-description.md` (approved 16:48:07): the table
-  `image_description`, the watcher `pipeline/describe_images.py` that the lab server
-  starts, and the editor button on `/dataset`. State: waiting: the owner commits. Done,
-  tested (497 tests `OK`), checked live, and deployed; the watcher runs the backlog since
-  17:07:33 (pid 78322, `caffeinate`), with a row in `GPU_TASKS.md`. Files: new
-  `pipeline/schema/018_image_description.sql` (number 018 taken at 17:01, rule 26;
-  TESTSET got a message; `data/lab.sqlite3` at version 18 since 17:00:57, backup in the
-  scratchpad of this session; 8168 restarted with SIGTERM at 17:01:08, watch false), `pipeline/image_descriptions.py`,
-  `pipeline/describe_images.py`, `tests/test_image_descriptions.py`,
-  `tests/test_describe_images.py`, `tests/image_description_fixture.py`; hunks in `pipeline/lab_server.py` (docstring, import,
-  `dataset_view`, `_write_route`, new `Handler._image_description`, `main`),
-  `pipeline/pages/dataset.html` (CSS, `imageFigure`, `patchEditor`, `alternativeEditor`,
-  a new dialog and its handlers), `tests/test_lab_server.py` (new tests at the end),
-  `tests/test_labdb.py` (VERSION, table list), `config.yaml` (key `image_description`),
-  `data/lab.sqlite3` (backup, migration, the two manual values of the check), a restart
-  of 8168, `work/describe_images.log`. Docs: `README.md`, `COMMANDS.md`,
-  `SMOKE_TESTS.md`, `ChangeLog.md`, `ResearchLog.md`, plan 26. Agreements: the owner
-  allowed the hunks in the files of stale sections (answer Q2 of 16:48:07); TESTSET
-  and drink-atlas-workspace-30 got a notice at about 16:50. With
-  drink-atlas-workspace-ca [a2daf6] (plan 24, owner permission of 17:26:22; message at
-  about 17:27): its hunks in `pipeline/lab_server.py`, `pipeline/pages/dataset.html` (the
-  Testset nav link alone), `tests/test_lab_server.py` (after the tests of this
-  session), and `tests/test_labdb.py` (VERSION 19) are apart from the hunks of this
-  session. It restarts 8168 with SIGTERM after its schema 019, and then starts
-  `caffeinate` on the new watcher, or sends this session the new pid. Done: restart at
-  17:55:56, watcher pid 16234. With drink-atlas-workspace-99 (notice of about 18:01):
-  its hunks for a raw VLM reply and a Package filter go on top of the plan 26 hunks in
-  `pipeline/describe_images.py`, `pipeline/lab_server.py`, `pipeline/pages/dataset.html`,
-  and the two test files; this session plans no more change there. 99 restarts 8168,
-  starts `caffeinate` on the new watcher, and sends the pid or updates `GPU_TASKS.md`.
-- Task (3): an indicator of the watcher on `/dataset` (owner message of 17:32:17, answers
-  of 17:33:57): the watcher writes `work/describe_images.status.json`; a route
-  `GET /api/image-description-status` adds the counts and the pid check; a pill in the
-  header bar polls it every 5 s. State: waiting: the owner commits. Done, tested (512
-  tests `OK`), checked in headless Chromium, and deployed (8168 restarted at 17:38:45,
-  watcher pid 66779 with `caffeinate`). Files: `pipeline/describe_images.py`,
-  `pipeline/image_descriptions.py`, hunks in `pipeline/lab_server.py` (one route branch
-  in `do_GET`, one function), `pipeline/pages/dataset.html` (the pill in `.bar-actions`,
-  CSS, the poll), `tests/test_describe_images.py`, `tests/test_image_descriptions.py`,
-  `tests/test_lab_server.py` (new tests after the tests of task 2), plan 26, docs. A
-  restart of 8168, agreed with drink-atlas-workspace-ca [a2daf6].
-- Source: owner messages of about 2026-09-25T16:00+0300 and 16:11, and the answers of
-  about 16:05 and 16:09 (estimates).
-- Files: `docs/owner-messages.md` (append), `config.yaml` (a new section `vlm:` after
-  `embeddings`), `config.old.yaml` (the same section; the keys of `cluster_rules`), new
-  `pipeline/vlm_config.py`, new `tests/test_vlm_config.py`, hunks in
-  `scripts/04_verify.py` (the import line, `Backend` docstring, `build_backends`, the
-  `--backends` option) and `scripts/cluster_rules.py` (the import, the `CFG` constants,
-  the `Vlm` docstring and defaults). Entries in `README.md` (the stage 2 paragraph of
-  the cluster rules), `SMOKE_TESTS.md`, `ChangeLog.md`.
-- State: waiting: the owner commits. Done and tested: 464 tests `OK`, smoke cases VL1
-  to VL6 checked, one live request to `qwen3.5-9b-nvfp4` gave HTTP 200. Also
-  written: `ResearchLog.md` (one entry at the top) and
-  `/Users/ashmelev/Admin/GPU_TASKS.md` (one row). No restart: the lab server
-  does not import either script.
-- Updated: 2026-09-25T18:03:55+0300
-- Agreements: `config.yaml` is in the stale section drink-atlas-workspace-85; the owner
-  chose this file (answer of about 16:05). `scripts/04_verify.py` and `scripts/cluster_rules.py`
-  are in the section CACHE [31e42f]; its hunks there are committed in `c7c6629`. The owner
-  chose the callers change (answer of about 16:05). CACHE got a notice at about 16:16 and agreed: it plans no more change in
-  the two files and removes them from its list.
-
-## drink-atlas-workspace-ca [a2daf6]
-
-The name `drink-atlas-workspace-ca` belongs to two sessions. This section is the session
-`[a2daf6]`.
-
-- Task: plan 24, the Testset page `/testset` on the lab database (labels, marks,
-  comments, wine notes, exclusions, the box of the main object), `/` redirects to
-  `/dataset`. Taken over from TESTSET [0fe970], which stopped (owner answer 17:17:45).
-  Also done: `tests/test_testset_retention.py` (a Removed wine keeps its test set rows).
-- Source: owner messages of 2026-09-25T16:57:18+0300 and 17:10:55, the answers of
-  17:01:44, 17:13:17, 17:17:45, 17:23:18, and 17:26:22; `docs/plans/24_testset-page.md`.
-- Files: `docs/owner-messages.md` (append), `docs/plans/24_testset-page.md`, new
-  `docs/plans/27_main-item-iou.md` (a draft alone), new
-  `pipeline/schema/019_testset_page.sql` (number 019 taken at 17:37:35, rule 26; af6346 got
-  a message), `pipeline/import_testset.py`, `pipeline/import_testsets.py`,
-  new `pipeline/export_testset.py`, new `pipeline/testsets.py`, new
-  `pipeline/testset_routes.py`, new `pipeline/pages/testset.html`, `pipeline/benchmark.py`
-  (`build_queries`: the photos of a Removed wine), `tests/testset_fixture.py`,
-  `tests/test_import_testset.py`, `tests/test_import_testsets.py`, `tests/test_benchmark.py`,
-  new `tests/test_testsets.py`, new `tests/test_testset_routes.py`, new
-  `tests/test_export_testset.py`, `tests/test_testset_retention.py`. Hunks:
-  `pipeline/lab_server.py` (docstring, import, `NAV`, `DISABLED_PAGES`, the `/` redirect,
-  the delegation in `do_GET` and `_write_route`, `Handler._testset`),
-  `tests/test_lab_server.py` (the navigation, disabled page, and redirect tests),
-  `tests/test_labdb.py` (VERSION, table list), the Testset link of the navigation in
-  `pipeline/pages/dataset.html`, `pipeline/pages/embedding.html`, `pipeline/pages/runs.html`.
-  `data/lab.sqlite3` (a backup first, the migration, a new import of the three sets), a
-  restart of 8168. Docs: `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`, `ChangeLog.md`,
-  `docs/plans/07_sqlite-lab-database.md`.
-- State: plan 24 done, waiting: the owner commits. Active since 18:04 (owner messages of
-  18:04:02 to about 18:06, answers of 18:05:36): (a) `/testset`: the set combobox in the
-  title; (b) `/testset`: the right sidebar is the NULL place; a drag moves a photo there
-  or back to a wine (new route `POST /api/testset-move`); the NULL row leaves the table;
-  the benchmark uses a NULL photo only with the label `positive`; a move clears the label
-  and sets `moved_from`; (c) `/runs`: the filter `Configuration` in the header after
-  `Match runs`; (d) `/runs`: pages of the runs table. Files of (a) to (d):
-  `pipeline/pages/testset.html`, `pipeline/testsets.py`, `pipeline/testset_routes.py`,
-  `pipeline/benchmark.py` (`build_queries`), `pipeline/pages/runs.html` (the header, the
-  runs table, `renderRuns`; stale section 85 lists it; the owner asked for it),
-  `tests/test_testsets.py`, `tests/test_testset_routes.py`, `tests/test_benchmark.py`,
-  `docs/plans/24_testset-page.md`, `docs/plans/23_runs-page.md` (one note), docs. A
-  restart of 8168 for the new route (after drink-atlas-workspace-99 restarts).
-- Updated: 2026-09-25T18:06:14+0300
-- Agreements: the owner allowed the takeover of the plan 24 files of TESTSET [0fe970]
-  (17:17:45) and hunks in the files of stale sections (17:26:22). TESTSET stopped and got
-  no notice. Owner decisions for plan 24: the page at `/testset`, `/` redirects to
-  `/dataset`; Q1 the proposal; Q2 no manual groups; Q3 the IoU goes to a new plan 27 (any
-  overlap, IoU > 0; a configuration with no box gives IoU n/a and the slug decides); Q4
-  one box; a Removed wine with photos shows with a `Removed` badge; the benchmark skips
-  its photos ("removed wine") until a restore.
-  With drink-atlas-workspace-30 (about 17:28): my one nav line in `dataset.html`; its two
-  uncommitted removed lines (`catalog` of `#sort` and its sort line) stay, and my commit
-  MUST NOT stage them. With drink-atlas-workspace-e3 (about 17:28): the nav line of
-  `embedding.html`; e3 is done. With drink-atlas-workspace-2a [8c825b] (about 17:31):
-  2a edited the header of `embedding.html`; my nav line came after. With
-  drink-atlas-workspace-ca [af6346] (17:27 to 17:56): my hunks in `lab_server.py`,
-  `test_lab_server.py` (after its tests), and `test_labdb.py` (VERSION 19) are apart from
-  its hunks; af6346 restarted 8168 at 17:38:45; the new watcher pid 16234 was sent to it.
-## drink-atlas-workspace-a0
-
-- Task: the dialog `Import from vino-svoe.ru`: a red prohibition sign on top of the wine
-  image in the rows of the section `Missing on the website`.
-- Source: owner message of 2026-09-25T17:19:00+0300.
-- Files: `docs/owner-messages.md` (append). After the agreement with
-  drink-atlas-workspace-c5 [d24b28]: `pipeline/pages/website_import.js` (the CSS, `image`,
-  `changeHtml`), entries in `ChangeLog.md`, `SMOKE_TESTS.md`.
-- State: waiting: the owner commits. Done, tested in headless Chromium on 8168 (14 sign
-  checks and the 27 dialog checks of c5 pass), and documented (`ChangeLog.md`,
-  `SMOKE_TESTS.md` IW16). No restart was necessary.
-- Updated: 2026-09-25T17:27:00+0300
-- Agreements: with drink-atlas-workspace-c5 [d24b28] (17:22): this session edits
-  `pipeline/pages/website_import.js` for the sign and keeps the code of c5. The sign has
-  `pointer-events: none`, so a click on the image still opens the large view.
-
-## drink-atlas-workspace-2a [8c825b]
-
-- Task: the header of `/embedding` gets 2 rows instead of 3: the summary line of `#summary`
-  goes away, the Configuration bar moves into the first row.
-- Source: owner message of 2026-09-25T17:30:00+0300.
-- Files: `docs/owner-messages.md` (append), `pipeline/pages/embedding.html` (the `.head`
-  CSS, the `h1` and the Configuration bar of the header markup, the `#summary` lines of
-  `render`; not the navigation), entries in `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`.
-- State: waiting: the owner commits. Done, tested (headless Chromium on 8168; 72 tests of
-  `test_embedding_routes` and `test_lab_server` pass), documented. No restart.
-- Updated: 2026-09-25T17:45:00+0300
-- Agreements: drink-atlas-workspace-ca [a2daf6] lists the Testset link of the navigation
-  in `embedding.html`; this session does not change the `<nav>` lines (message sent at
-  17:33). ca answered: no clash; ca makes its one-line nav edit after this edit.
-
-## drink-atlas-workspace-c5 [7cabb3]
-
-The name `drink-atlas-workspace-c5` belongs to two sessions. This section is the session
-`[7cabb3]`.
-
-- Task: one script that seeds `data/lab.sqlite3` and `data/images/` from
-  `svoe-vino-testset` (catalogue, the three test sets, QR URLs, GTINs, annotations), and
-  that restores this state again after a test. Not config, runs, or clusters.
-- Source: owner message of 2026-09-25T17:46:51+0300.
-- Files: `docs/owner-messages.md` (append), new `docs/plans/28_seed-from-testset.md`,
-  new `pipeline/seed_from_testset.py`, new `tests/test_seed_from_testset.py`. Entries in
-  `COMMANDS.md`, `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`. Test runs on
-  `data/lab-test.sqlite3` and `data/backups/lab-test-*` alone (removed after the test);
-  the live `data/lab.sqlite3` does not change. A test run MAY add files to `data/images/`.
-- State: active. Owner choices at 17:52: full rebuild and swap; label cuts always.
-- Updated: 2026-09-25T17:58:00+0300
-
-## drink-atlas-workspace-99
-
-- Task: (1) an expandable "Raw VLM reply" in the dialog "Image description" of
-  `/dataset`: a new route `GET /api/image-description-reply?sha256=` reads the
-  `data/cache/` record of the call that described the image (the prompt, the reply text,
-  `finish_reason`, the tokens). (2) a button "Advanced Filters:" on `/dataset` that shows
-  a new row; its first filter is Package (All, each `package_type`, not described). The
-  patched image decides, else the main image.
-- Source: owner messages of about 2026-09-25T17:58 and 18:00, and the answers of about
-  17:59:30 and 18:01:30.
-- Files: `docs/owner-messages.md` (append); hunks in `pipeline/describe_images.py` (new
-  `cached_reply` after `describe`, one import), `pipeline/lab_server.py` (docstring
-  sentence, imports, new `image_description_reply` after `image_description_status`, one
-  branch in `do_GET`), `pipeline/pages/dataset.html` (CSS, the dialog markup, a new
-  `<details>` block and its loader after `describeStatus`, the Advanced Filters button,
-  row, and one line of the filter function), `tests/test_describe_images.py` and
-  `tests/test_lab_server.py` (new tests at the end). Docs: `SMOKE_TESTS.md`,
-  `ChangeLog.md`, plan 26 (one note). A restart of 8168 for the new route.
-- State: active.
-- Updated: 2026-09-25T18:04:00+0300
-- Agreements: the files are in the sections of drink-atlas-workspace-ca [af6346] (plan 26)
-  and drink-atlas-workspace-ca [a2daf6] (plan 24), and of older waiting sections. My hunks
-  are new functions and branches, apart from their hunks. Notices to af6346 and a2daf6
-  at about 18:04.
-
-## drink-atlas-workspace-cb [48de03]
-
-- Task: `/testset`: a file that is dropped from the macOS Finder onto the sidebar (the
-  NULL place) or onto a wine row goes into that place of the set. New route
-  `POST /api/testset-upload`. No schema change.
-- Source: owner message of 2026-09-25T18:19:01+0300 and the five answers of 18:25:10
-  (sidebar and wine rows; hunks in the files of ca [a2daf6] allowed; the same image is
-  allowed in another place and keeps the file name of the set; a new image keeps its
-  Finder name).
-- Files: `docs/owner-messages.md` (append). Hunks in `pipeline/testsets.py` (docstring,
-  `free_name`, new upload functions at the end), `pipeline/testset_routes.py`
-  (docstring, the upload route), `pipeline/pages/testset.html` (the drop handlers of the
-  sidebar and of the rows, the sidebar help text), `tests/test_testsets.py` and
-  `tests/test_testset_routes.py` (new tests at the end). Entries in `README.md`,
-  `SMOKE_TESTS.md`, `ChangeLog.md`, `docs/plans/24_testset-page.md` (one note). A
+- Task: the pixel size (width × height) under each image of a main image conflict of the
+  dialog `Import from vino-svoe.ru` of `/dataset`.
+- Source: owner message of 2026-09-25T23:58:00+0300 and the answers of 2026-09-26T00:00:30.
+- Files: `docs/owner-messages.md` (append), `pipeline/pages/website_import.js`, one bullet in
+  `ChangeLog.md`, one row in `SMOKE_TESTS.md`.
+- State: done, not committed. The section stays until the commit (rule 20). The
+  `ChangeLog.md` bullet and row IW17 are in. No restart of 8168.
+- Updated: 2026-09-26T00:21:00+0300
+- Agreements: cb [395cc7] agreed at about 00:09 to the new heading `## 2026-09-26` with
+  one bullet at the top of `ChangeLog.md` and row IW17 after IW16 in `SMOKE_TESTS.md`;
+  its bullets of `## 2026-09-25` and its rows S11 and DT9 to DT15 stay as they are.
+  39 [fb59ad] agreed at about 00:10 to the same two hunks. ab [539687] agreed at about
+  00:11 and adds its own bullet under the same heading.
+  d3 [4920ce] asked at about 00:20, after the fact, for its bullet "Plan 35" at the top of
+  `## 2026-09-26` in `ChangeLog.md` and a new section with row VW1 after DT15 in
+  `SMOKE_TESTS.md`; this session agreed. The bullet and IW17 of this session are unchanged.
+- Task 2: the stop button of each job row of `/embedding` shows an icon, not the red text
+  `(x)`, and moves to the start of the row.
+- Source: owner message of 2026-09-26T01:24:00+0300.
+- Files: `docs/owner-messages.md` (append). After agreement with 6a [792d65] and 39
+  [fb59ad]: separate hunks in `pipeline/pages/embedding.html` (the CSS `.job` and
+  `.job-stop`, the stop button in `showJobs`, the comments near them). Separate hunks:
+  the `/embedding` job paragraph of `README.md`, rows EB41 to EB43 of `SMOKE_TESTS.md`,
+  one bullet in `ChangeLog.md`. No restart of 8168 (a page file).
+- State 2: done, not committed. The section stays until the commit (rule 20). A
+  Playwright check with mocked jobs passes (the button is the first cell, an SVG icon, no
+  text, 1,440 px dark and light, 390 px; a click on the icon sends the stop request; no
+  page error). The owner message of 01:26:00 (an embedding override in the dialog `Run>`)
+  was cancelled by the owner at 01:27:00; no work on it.
+- Updated 2: 2026-09-26T01:33:00+0300
+- Agreements 2: 6a [792d65] agreed at about 01:27 (6a has no hunk left in
+  `embedding.html`); 39 [fb59ad] agreed at about 01:27 (its header state block near the
+  end of the script stays). Both agreed to the separate doc hunks.
+- Task 3: the same change for the run job rows of `/testset`: the stop button shows the
+  icon `×`, not the red text `(x)`, and is the first cell of the row. `open run` of an
+  ended row stays at the end.
+- Source: owner message of 2026-09-26T01:32:00+0300.
+- Files: `docs/owner-messages.md` (append). After agreement: separate hunks in
+  `pipeline/pages/testset.html` (the CSS `.job`, `.job-stop`, the `@media (max-width:
+  860px)` line of `.job`; the button, the link, and the row template in `showRunJobs`).
+  The owner asked for this change; 5c [cbb143] is stale. Separate hunks: the `/testset`
+  job row lines of `README.md` and `SMOKE_TESTS.md`, one bullet in `ChangeLog.md`. No
   restart of 8168.
-- State: waiting: the owner commits. Done, tested (565 tests `OK`), checked in headless
-  Chromium on a fixture database, and deployed: 8168 restarted with SIGTERM at 18:34:39
-  (server pid 21740, watcher pid 21744, `caffeinate` pid 22198; the row of
-  `/Users/ashmelev/Admin/GPU_TASKS.md` is updated).
-- Updated: 2026-09-25T18:38:18+0300
-- Agreements: the owner allowed hunks in the files of the stale section of
-  drink-atlas-workspace-ca [a2daf6] (answer of 18:25:10). My hunks are new functions and
-  separate branches on top of its uncommitted work.
-  With TESTSET [0fe970] (about 18:38): TESTSET fixes four page defects of the ca
-  follow-ups in `pipeline/pages/testset.html` with separate hunks on top of mine. This
-  session plans no more change in `testset.html`, `testsets.py`, or `testset_routes.py`.
-  TESTSET keeps clear of my regions (the `body.uploading` CSS, the sidebar help text, the
-  empty text of `renderSide`, the `hasFiles` branches of the drag listeners, the upload
-  block) and MAY add one header-refresh line at the end of `uploadFiles`.
+- State 3: done, not committed. The section stays until the commit (rule 20). A
+  Playwright check with mocked jobs passes (running and stopping rows start with the SVG
+  icon; the ended row has an empty first cell and `open run` last; the names align;
+  1,440 px dark and light, 390 px; a click on the icon sends the stop request; no page
+  error). Doc hunks: README job row sentence, RJ6, new RJ11, one ChangeLog bullet.
+- Updated 3: 2026-09-26T01:43:00+0300
+- Agreements 3: 39 [fb59ad], 6a [792d65], 28 [5ddfae], d3 [4920ce], and e2 [9e7fe4]
+  agreed at about 01:37 to 01:39; no overlap with their hunks. 6a: the link
+  `/runs?configuration=<name>` of `open run` stays. d3 adds its checkbox `Use caches` in
+  the Run dialog later.
+
+## drink-atlas-workspace-28 [5ddfae]
+
+- Task: (1) split the select `Show` of `/testset` into several filter axes. (2) remove
+  the select `Slugs` of `/testset`. (3) plan 37: the select `Clusters` of `/testset`
+  takes the place of `Wine` and groups the wines by the clusters of an embedding. (4) the
+  sort `cluster size` and the button `Additional settings` (Marks, Clusters) of `/testset`.
+- Source: owner message of 2026-09-26T00:25:11+0300; owner message of 00:39:13 and the
+  answer of 2026-09-26T00:39:51+0300 (remove entirely); owner message of 00:42:25 and the
+  answers of 00:46:18 (plan 37); owner message of 01:06:36 and the answers of
+  01:08:49 (task 4).
+- Files: `docs/owner-messages.md` (append), new `docs/plans/37_testset-cluster-grouping.md`. After the owner choice: hunks in
+  `pipeline/pages/testset.html` (the select `Show`, `matchFilter`, `render`,
+  `VIEW_PARAMS`, `readViewFromUrl`, `openFromHash`, `showGroup`, the select `Slugs`, the
+  `change` listener list, `matchAxis`, `load`, a new cluster block, the CSS of
+  `tr.cl-head`); separate hunks in `README.md`,
+  `SMOKE_TESTS.md`, `ChangeLog.md`.
+- State: done, not committed. The section stays until the commit (rule 20). Tasks (1)
+  to (4) are done. No restart of 8168 was necessary.
+- Updated: 2026-09-26T01:33:44+0300
+- Agreements: 6a [792d65] agreed to separate hunks in `pipeline/pages/testset.html`
+  (message of about 00:30; its hunks are the `#run-open` title and the Run dialog). The
+  owner asked for the change of this page (answers of 00:26:58); 5c is stale. e2 [9e7fe4]
+  changes the NULL lines of `render` (`nullRow`, the row filter, `VIEW`, `#count`); this
+  session agreed before 00:39 and handed over the new filter line. 39 [fb59ad] adds a
+  localStorage block and start-up call lines (owner message of 00:30:00); this session
+  agreed before 00:39. 39 agreed that this session removes `"#slugsel"` from its
+  `HEADER_IDS` line (message after 00:40); done in the same edit as task (2).
+  Plan 37: e2 agreed to the new hunks in `render` (message after 00:49); 39 agreed that
+  `load` reads its consts `HEADER` and `URL_VIEW` (message after 00:49).
+  43 [c33611] adds hunks for the run job rows (`.job`, `.job-stop`, `showRunJobs`; owner
+  message of 01:32:00); this session agreed at 01:33 (no overlap).
+
+## drink-atlas-workspace-e2 [9e7fe4]
+
+- Task: plan 36: the row "No Match" (`__null__`, a run uses its photos) and the Drawer
+  (the right sidebar, a new place `__drawer__`, a run does not use its photos) of `/testset`.
+- Source: owner message of 2026-09-26T00:25:00+0300 and the answer of 00:29:00;
+  `docs/plans/36_no-match-row-and-drawer.md`.
+- Files: `docs/owner-messages.md` (append), new `docs/plans/36_no-match-row-and-drawer.md`.
+  After the approval: `pipeline/testsets.py`, `pipeline/benchmark.py`,
+  `pipeline/manual_wines.py`, `pipeline/testset_routes.py` (docstring),
+  `tests/test_testsets.py`, `tests/test_testset_routes.py`, `tests/test_benchmark.py`,
+  `tests/test_manual_wines.py`, one note line in `docs/plans/24_testset-page.md`. Separate
+  hunks in `pipeline/pages/testset.html` (the sidebar HTML, `isNullRow`, `labelButtons`,
+  `cardHtml`, `cardsHtml`, `rowHtml`, the NULL lines of `render`, `renderSide`, `stats`,
+  the move menu, the drop handlers, the key `0`), `README.md`, `SMOKE_TESTS.md`,
+  `ChangeLog.md`. Rows TP3, TP18, TP20, TP21, TP22 and a new group NM1 to NM8 of
+  `SMOKE_TESTS.md`. Port 8175 in `~/Admin/mbp2023/PORTS_USED.md`.
+- State: done, not committed. The section stays until the commit (rule 20). 692 tests
+  `OK`; 23 browser checks pass on port 8175 (stopped). The server code went live with the
+  restart of 8168 by d3 at 00:36:23; this session did not restart 8168.
+- Updated: 2026-09-26T00:49:11+0300
+- Agreements: 28 [5ddfae] agreed to the separate hunks in `testset.html` (its code hunks
+  are in; `render` keeps `matchFilter(r, filts)`), `README.md`, `SMOKE_TESTS.md` (28 takes
+  TP24 to TP28; this session takes other numbers), `ChangeLog.md`. 6a [792d65] agreed (no
+  overlap); this session tells 6a and d3 [4920ce] the minute of its restart of 8168.
+  28 [5ddfae] (plan 37, message after 00:45): new hunks in `render` (the grouping branch,
+  the `cl-head` rows in the innerHTML map, one `#count` clause), a CSS rule `tr.cl-head`,
+  and a function block before `render`. This session agreed: no overlap; the header
+  rows stay out of `rows` and `VIEW`, and No Match stays the first row with no header.
+  43 [c33611] (message of about 01:33): separate hunks in `testset.html` (`.job`,
+  `.job-stop`, the `@media` line of `.job`, the `tail`/`link` consts and the row template
+  of `showRunJobs`), `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`. This session agreed:
+  no overlap.
+- Task 2: plan 38: a click on a candidate card of an embedding run on `/runs` opens the
+  large view; the rail shows each catalogue item of that wine (the PNG that went to the
+  model) with the cosine that the run recorded. The runner records the items.
+- Source: owner message of 2026-09-26T01:23:11+0300 and the answers of 01:29:00.
+- Files (task 2): `docs/owner-messages.md` (append), new
+  `docs/plans/38_candidate-inputs.md`. After the agreements: hunks in
+  `pipeline/embedding_run.py` (`Catalogue`, `Catalogue.rank`, a new function after
+  `model_inputs`), `tests/test_embedding_run.py` (new tests at the end),
+  `pipeline/run_routes.py` (the docstring, `ROUTES`, one branch of `respond`, a new
+  function at the end), `tests/test_run_routes.py` (new tests at the end),
+  `pipeline/pages/runs.html` (CSS after `.model-input .input-label`, `candCard`,
+  `bottleHtml`, the `<tr>` of `rowHtml`, one line in `loadRun`, `loadLbInputs`, a new
+  render function after `renderLbInputs`), `docs/API.md` (the route and the key
+  `items`). Separate hunks in `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`. A restart
+  of 8168.
+- State (task 2): done, not committed. 33 tests of `test_embedding_run.py` `OK`; 30
+  browser checks pass on port 8175 (stopped at 01:45). The route went live with the
+  restart of 8168 by d3 at 01:46:24 (checked). Agreements: ab, 6a, 39, d3 agreed to the
+  separate hunks (messages of about 01:37 to 01:40); ab asked for `items` in the three
+  key-set checks (done). This session agreed to d3's hunks in `pipeline/benchmark.py` and
+  `tests/test_benchmark.py` (plan 39, `use_cache`).
+- Task 3: the owner message of 2026-09-26T01:43:59+0300: wait for the present work of the
+  sessions, commit all, then run the basic pipelines with each embedding entry, compare
+  the results, and write a report. Plan 40. Files: `docs/owner-messages.md` (append), new
+  `docs/plans/40_embedding-benchmark.md`, `QUESTIONS.md` (append Q2 to Q11), `config.yaml`
+  (20 new entries of `pipeline:` after `siglip2-p256-crop`), `data/embeddings/*` (the
+  builds of the missing items and of `gx10-siglip2-so400m-patch16-512`), new runs in
+  `runs/`, new `docs/reports/2026-09-26_embedding-benchmark.md`, one entry at the top of
+  `ResearchLog.md`, one bullet in `ChangeLog.md`, a row of `~/Admin/GPU_TASKS.md`. State:
+  waiting: the work of the active sessions (all but d3 sent "finished" by 01:52).
+- Updated (task 2, 3): 2026-09-26T01:49:00+0300

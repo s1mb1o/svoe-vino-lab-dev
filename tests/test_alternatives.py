@@ -455,5 +455,58 @@ class AlternativeRouteTest(unittest.TestCase):
         self.assertEqual((status, out["type"]), (200, "full_front"))
 
 
+    # A second body label gives the box of the labels (owner answer of 2026-09-25T19:16:44).
+
+    def test_two_body_labels_give_the_box_of_the_labels_with_no_mask(self):
+        self.sam3.answer = TWO_LABELS
+        data = picture(transparent=False)
+        status, out = self.upload("wine-b", data)
+        self.assertEqual(status, 200, out)
+        photo, = out["record"]["_alternatives"]
+        self.assertEqual((photo["type"], photo["derivation"]), ("label_front", "crop"))
+        self.assertEqual(self.settings(sha(data), "label"), ("crop", alternatives.SETTINGS_LABEL))
+        cut = Image.open(self.root / photo["image_url"].lstrip("/"))
+        self.assertEqual((cut.mode, cut.size), ("RGBA", (32, 62)))
+        self.assertEqual(cut.getchannel("A").getextrema(), (255, 255))
+
+
+# A close-up with two labels one above the other, as wide as each other.
+TWO_LABELS = [instance("bottle", (0, 0, 40, 80)), instance("label", (4, 10, 36, 44)),
+              instance("label", (6, 48, 34, 72))]
+
+
+class BodyLabelsTest(unittest.TestCase):
+    def others(self, answer, size=SIZE):
+        main = alternatives.label_instance(answer)
+        return [item["box"] for item in alternatives.body_labels(answer, main, *size)]
+
+    def test_a_second_label_of_the_same_width_counts(self):
+        self.assertEqual(self.others(TWO_LABELS), [[6, 48, 34, 72]])
+
+    def test_a_neck_label_and_a_part_of_the_main_label_do_not_count(self):
+        answer = [instance("bottle", (0, 0, 40, 80)), instance("label", (4, 10, 36, 44)),
+                  instance("label", (15, 0, 25, 9)), instance("label", (4, 10, 36, 30))]
+        self.assertEqual(self.others(answer), [])
+
+    def test_a_narrow_or_small_label_does_not_count(self):
+        answer = [instance("bottle", (0, 0, 40, 80)), instance("label", (4, 10, 36, 44)),
+                  instance("label", (14, 48, 30, 78)), instance("label", (4, 60, 36, 68))]
+        self.assertEqual(self.others(answer), [])
+
+    def test_a_label_on_another_bottle_does_not_count(self):
+        answer = [instance("bottle", (0, 0, 24, 80)), instance("bottle", (26, 0, 40, 60)),
+                  instance("label", (2, 10, 22, 40)), instance("label", (27, 20, 39, 50))]
+        self.assertEqual(self.others(answer), [])
+
+    def test_with_no_bottle_each_label_can_count(self):
+        answer = [instance("label", (4, 10, 36, 44)), instance("label", (6, 48, 34, 72))]
+        self.assertEqual(self.others(answer), [[6, 48, 34, 72]])
+
+    def test_the_box_is_in_the_pixels_of_the_image(self):
+        image = Image.new("RGB", (80, 160), "white")
+        cut, box = alternatives.label_box_cut(image, TWO_LABELS[1:], 0.5)
+        self.assertEqual((box, cut.size, cut.mode), ((8, 20, 72, 144), (64, 124), "RGBA"))
+
+
 if __name__ == "__main__":
     unittest.main()

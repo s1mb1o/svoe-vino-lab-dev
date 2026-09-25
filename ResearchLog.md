@@ -2,6 +2,307 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — a cached SAM3 answer hides about 1.2 s per photo of `siglip2-p256-crop`
+
+Session drink-atlas-workspace-d3 [4920ce], plan 39 (the checkbox `Use caches`). Two jobs
+of `siglip2-p256-crop` ran on the first 3 queries of the set `my`, one after the other,
+at 01:51, through llama-swap 18081 on gx10.
+
+| | `Use caches` off | `Use caches` on |
+|---|---|---|
+| Run | `2026-09-25T225101Z-lab-siglip2-p256-crop-my` | `2026-09-25T225128Z-lab-siglip2-p256-crop-my` |
+| SAM3 requests | 3 (3 records written again) | 0 (3 cache hits) |
+| Latency per photo | 1,276, 1,300, 1,329 ms | 97, 116, 140 ms |
+
+- The latency of an embedding run includes the SAM3 call. With a cache hit, the latency
+  is about the time of the embedding request alone. The run `siglip2-p256-as-is` of `my`
+  (no SAM3) has a median of 137 ms.
+- The full run `2026-09-25T220729Z-lab-siglip2-p256-crop-my` (before plan 39) had 406 of
+  2,209 queries (18 %) under 400 ms. These queries very likely read SAM3 from the cache.
+  This is an inference from the latency; the run files do not record a cache hit. Its
+  median of 1,302 ms is near the real time; its lower decile of 159 ms is not.
+- For a comparison of latency, a run needs `Use caches` off. The key `use_cache` of
+  `run.json` and the tag `no cache` of `/runs` show such a run.
+
+## 2026-09-26 — 8 detail requests at the same time: 7.8 times the rate, the same call time
+
+Session drink-atlas-workspace-d3 [4920ce], plan 35. The watcher `describe_images.py`
+sends up to `image_description.workers` (8) detail requests at the same time since the
+restart of 8168 at 2026-09-26T00:36:23+0300. The model is `qwen3.5-9b-nvfp4` on gx10,
+through llama-swap 18081. Source of the numbers: the `detail ok` lines of
+`work/describe_images.log` (no cache hit in either period) and the records of
+`data/cache/qwen3.5-9b-nvfp4/` with `response_format` `json_schema`.
+
+| | One request at a time | 8 requests at the same time |
+|---|---|---|
+| Period (local time) | 2026-09-25 23:41:09 to 2026-09-26 00:09:39, no timeout | 00:36:39 to 00:42:32 |
+| Details | 98 | 157, and 1 timeout |
+| Call time: mean, median, p90, max | 17.6, 15.7, 26.5, 36.1 s | 16.0, 15.2, 23.7, 32.5 s |
+| Wall time per image | 17.6 s | 2.26 s |
+| Details per minute | 3.4 | 26.5 |
+| Tokens/s per call (cache records): median, p10, minimum | 21.7, 16.3, 14.8 (111 calls, 23:28 to 00:36) | 22.1, 21.2, 20.4 (147 calls) |
+
+Findings:
+
+- The rate rose 7.8 times. The time of one call did not rise: one stream keeps about
+  22 tokens/s with 8 streams at the same time. A likely reason: the decode of a 9B model
+  is bound by the memory bandwidth, so vLLM runs 8 streams in one batch for almost the
+  cost of one. This reason is not measured.
+- The risk of plan 35 did not occur: no good answer came near the timeout of 300 s. The
+  longest call took 32.5 s. 8,192 tokens take about 371 s at the median rate and about
+  402 s at the slowest call (20.4 tokens/s).
+- The limit of `workers` on gx10 is not known. 8 is not proved to be the best value. A
+  higher value is not tested. The gateway also serves SAM3, SigLIP 2, and other models.
+- One timeout came under 8 workers too: `ac892b17a4bf` at 00:42:29. The watcher stopped
+  the new calls for 30 s; the 7 calls that ran finished between 00:42:32 and 00:42:55; the
+  watcher went on at 00:42:59. The next call of the same image gave a valid answer in
+  16.3 s (00:43:16).
+- Three timeouts of 2026-09-25/26 were stuck requests, not loops of the model: the next
+  call of the same image, with the same payload, gave a valid answer in 13 to 22 s
+  (`f8cf4e3ef618`: 2 timeouts under one request at a time, then 21.3 s under 8 workers;
+  `24e28aea6a4d`: 2 timeouts, then 13.3 s; `ac892b17a4bf`: 1 timeout, then 16.3 s). The
+  cause of a stuck request is not known. The entry of drink-atlas-workspace-15 below
+  holds the conclusion for the timeout rule: a counted timeout would burn the attempts of
+  good images.
+- At this rate, the 1,464 details that were pending at 00:42 take about 1 hour, not
+  about 7 hours.
+
+## 2026-09-26 — plan 33 live check: the embedding runner on `official-real-photos`
+
+Session drink-atlas-workspace-ab [539687]. The command was
+`python3 pipeline/embedding_run.py --name gx10-siglip2-so400m-patch16-naflex-p256 --set
+official-real-photos`: one photo at a time, from this Mac, through llama-swap 18081. The
+index of 2026-09-25 18:14 gave 3,926 current items. 111 stale `label` items (after the
+label cuts of 20:53), 3 missing items, and 4 failed items stayed out. During the run the
+VLM watcher of plan 29 held the GPU of gx10 at 96 %. The run is
+`runs/2026-09-25T205359Z-lab-gx10-siglip2-so400m-patch16-naflex-p256-official-real-photos/`.
+
+Findings:
+
+- 80 queries (59 positive, 21 negative), 0 errors, 437 s. The latency of a photo had a
+  median of 4.0 s, a p90 of 6.1 s, and a maximum of 39.3 s. A photo costs two SAM3 calls,
+  the steps, and one embedding request. The SAM3 statistics showed a mean latency of
+  2.4 s at 73 % load. The first request of the smoke run took 51 s, because the gateway
+  loaded `siglip2-so400m-patch16-naflex`, which was not loaded at 23:52.
+- Each of the 80 photos got a package cut and a label cut. The contact sheets of 8 missed
+  photos showed correct cuts: the bottle on white and the label on white.
+- All positive photos: recall@1 0.525 (31 of 59), recall@5 0.712 (42), recall@10 0.729
+  (43). The official recognizer on the same 80 photos (run of 2026-09-25 22:32) had 34,
+  55, and 57 of 59.
+- 15 of the 16 positive photos outside the top 10 show 10 wines with no row in
+  `wine_image`: `balaklava-muskat`, `bukovinka`, `czitronnyj-magaracha`, `oleg`,
+  `pobeda`, `pozdnij-sbor-krasnoe`, `roze-2`, `rozovoe-zoloto`, `rubin-golodrigi`, and
+  `zhemchuzhnaya-9-aligote-czitron`. The index holds no vector of these wines, so no
+  embedding configuration can find them. The official recognizer had all 15 photos in
+  its top 5, 8 of them at rank 1.
+- The 44 positive photos whose wine has a catalogue image: this run 31, 42, and 43 at
+  rank 1, 5, and 10; the official recognizer 26, 40, and 42. The sample is small: the
+  difference at rank 1 is 5 photos.
+- The one miss of a wine with an image is `denisov_pazori_risling`. Its top 3 were three
+  wines «Императорское» of Абрау-Дюрсо, at a score of 0.70 to 0.71.
+- Negative photos: 4 of 21 false matches at rank 1, the same count as the official
+  recognizer.
+- A direct call of `run_routes.inputs_view` made the two model inputs of a query again in
+  1.1 to 1.2 s, from the SAM3 cache, with no request. The data URL of an input with a long
+  side of 1024 px is 0.8 to 1.5 MB.
+
+Options, not chosen yet:
+
+- Give the 10 wines a main image in the catalogue, then build the embedding entries
+  again. The runs of all configurations can then find them.
+- Compare the embedding configurations on the 44 photos whose wine has an image.
+
+## 2026-09-25 — a detail call that times out blocks the detail queue
+
+Session drink-atlas-workspace-15 [40dc83]. The trigger: the retry of the one failed
+detail (`e049e469…`, `usadba-mezyb-shishka-merlo-vione-rozovoe-suhoe-125`) after the
+change of `max_tokens` from 4096 to 8192. Its input is a `package` cut of 1851 × 6279
+px. At 4096 the model repeated the label texts until `max_tokens` cut the answer, 3
+times, about 188 s each.
+
+Findings:
+
+- The speed of the detail calls on gx10 (`qwen3.5-9b-nvfp4`) is 21.8 tokens/s, with the
+  prompt time included (297 records of `data/cache/`, p10 21.6, p90 21.9). A normal
+  answer has a median of 328 and a maximum of 1,678 completion tokens.
+- `TIMEOUT_SECONDS` of `describe_images.py` is 300 s. At 21.8 tokens/s a call ends at
+  about 6,500 tokens. So with `max_tokens` 8192 a looping answer ends in a timeout, not
+  in `finish_reason: length`.
+- A timeout is a failure of the service (`counted=False`): `vlm_attempts` stays, the
+  watcher waits (30 s, then doubling to 600 s), and `pending` gives the same image
+  again, because its link is the newest. The image blocks every other detail. The
+  retry at 23:29 timed out at 23:34:17 and 23:39:47. Setting `vlm_attempts` back to 3
+  freed the queue at 23:41:09.
+- A timeout is not always a loop of the model. `24e28aea6a4d` (`rubin-premium`, a
+  `package` cut of 116 × 484 px) timed out at 2026-09-26T00:14:39 and 00:20:09 under the
+  serial watcher. Its `vlm_attempts` was set to 3 at 00:20:23 to free the queue (on at
+  00:21:25). After the restart with 8 workers (00:36:23) and a reset to 0 at 00:41:25,
+  the same request gave a valid answer in 13.3 s (00:41:39, 4 texts). d3 [4920ce] saw the
+  same for `f8cf4e3ef618`: two timeouts (00:28:51, 00:34:21), then a valid answer in 21.3
+  s. The cause is not known: a request stuck in the gateway or the server, or an output
+  that depends on the batch. `e049e469…` differs: it was cut off at 4096 three times, a
+  real loop. Before, 98 serial details from 23:41 to 00:14 had a median call time of
+  15.7 s and a maximum of 36.1 s (measured by d3).
+- So a timeout that counts would burn the attempts of good images. A timeout above the
+  time to write `max_tokens` tokens separates the two cases: a loop ends as a counted
+  cut-off (`finish_reason: length`), and a timeout then means a stuck request, which the
+  retry that is not counted handles well.
+
+- The speed with 8 workers (measured by d3 [4920ce], `usage.completion_tokens` / `ms` of
+  the detail records): serial, 111 calls, median 21.7 tokens/s, p10 16.3, min 14.8;
+  8 workers, 147 calls in about 5 min, median 22.1, p10 21.2, min 20.4. One stream does
+  not become slower with 8 at once. 8192 tokens take about 371 s at the median, 402 s at
+  20.4, and 553 s at 14.8 tokens/s. A busier gateway (other models on llama-swap) can be
+  slower.
+
+Options, not chosen yet:
+
+- A timeout that follows `max_tokens`, for example `max_tokens / 15 + 60` s (606 s for
+  8192; it covers the slowest measured call, 14.8 tokens/s). A loop then ends as a
+  counted cut-off after about 6 to 9 min, and a stuck request holds one worker for about
+  10 min before its retry that is not counted.
+- A smaller `max_tokens` of the `vlm` entry, with the timeout of 300 s. The longest
+  normal detail answer is 1,678 tokens (297 records), 791 and 693 in the later samples.
+  At 3072 a loop ends as a counted cut-off after about 150 s (20.4 tokens/s) to 210 s
+  (14.8), below 300 s. Stuck requests come under 8 workers too (d3 [4920ce]: 1 in 158
+  calls, `ac892b17a4bf` at 2026-09-26T00:42:29, a valid answer at the next call). At 26.5
+  details per minute that is one every 6 min: a timeout of 300 s then holds about 0.8
+  of 8 workers on average, 606 s about 1.7.
+- Count a timeout as a failure of the image. Risk: an overloaded service or a stuck
+  request burns attempts of good images (seen two times on 2026-09-26).
+- A loop guard in the detail request, as `LOOP_GUARD` of `scripts/cluster_rules.py`
+  (`repeat_penalty` 1.15 on llama.cpp). It changes the answers and the cache keys.
+
+## 2026-09-25 — the label cut of a photo with more than one label
+
+Session drink-atlas-workspace-cb [48de03]. The trigger: a label close-up (Agora
+Chardonnay) with an art label above a text label. The rule of `build_labels.py` kept the
+largest label (the art label) as a segment. The text label was lost, and the dark strip
+`AGORA` inside the art label was a hole, because SAM3 gave it as its own instance.
+
+The measurement used 251 SAM3 answers of `data/cache/sam3/` (250 catalogue images), with
+no new request. The share of photos that would get the box of the labels:
+
+| Rule for a second label | Photos |
+|---|---|
+| Any second label | 132 |
+| Area >= 15 % of the main label | 73 |
+| Area >= 25 % | 31 |
+| Area >= 25 % and width >= 60 %, centre on the bottle, < 80 % inside the main label | 13 |
+
+- A plain count sends half of the catalogue to a box. The second labels are mostly neck
+  labels, capsules, and shoulder foils. The box then runs up to the neck, and the cut is
+  almost the whole bottle.
+- The area alone keeps many neck labels. The width test removes most of them: a neck
+  label is narrow.
+- The chosen rule (the last row) gives the box for two labels one above the other, and
+  for sparkling wines with a large shoulder label (Abrau-Durso). The run on all 2,021 full
+  originals gave 111 boxes (5.5 %).
+- Known weak cases of the box: text printed on the glass that SAM3 calls a label
+  (`cock-test-belle-...`), and a narrow body label with a wide neck label
+  (`zb-vajn-spumante-...`): the box is then almost the whole bottle. A tetra pak with no
+  real label (`soyuz-vino-lak-dazyur-...`) got two small icons as labels; the old segment
+  cut was one of these icons.
+## 2026-09-25 — embedding-dependent cluster spaces
+
+Status: measured with the current
+`gx10-siglip2-so400m-patch16-naflex-p256` index at cosine `0.95`. The builder read
+4,039 current items and four failed items. It expanded the items to 4,097 wine-image
+assignments: 2,048 rows in `full` and 2,045 rows in `label`.
+
+| Space | Links | Clusters | Wines | Largest |
+|---|---:|---:|---:|---:|
+| `full` | 214 | 147 | 334 | 6 |
+| `label` | 154 | 108 | 244 | 8 |
+| `combined` union | 274 | 168 | 397 | 8 |
+
+- Only 94 wine pairs pass in both spaces. Thus `full` and `label` contain different
+  evidence. A single mixed vector space would hide this difference.
+- The matcher and the old cluster builder both let the best image vector of one wine
+  win. The new artifact applies the same rule to every indexed main or additional
+  image. It records the winning image pair.
+- The database held three additional images during the first direct measurement. They
+  created no new edge at `0.95`. This sample is too small to justify main-only clusters.
+  An additional image can become the best retrieval vector later, so it stays in the
+  applicable space.
+- `main_patched` replaces `main`. The two source images do not compete as if they were
+  two views of the current product.
+- The old test-set cluster builder also added name and benchmark-confusion edges. These
+  signals do not depend on one embedding. The new core artifact excludes them. A Runs
+  view can add benchmark confusions as a visible overlay later.
+- A VLM difference rule must have the same observation space as its query image. The
+  current matcher sends a label crop. Therefore it can use a `label` rule only. A later
+  package reranker needs a separate `full` rule.
+- Difference discovery belongs in an offline build. The VLM sees the typed cluster
+  images, detailed descriptions, catalogue facts, and the reviewer note. The result is
+  a validated set of closed questions with expected answers and source-image evidence.
+  Query time sends one image and these questions. Each question allows its known
+  answers, `other`, and `not visible`. This design avoids an open-ended discovery call
+  for each query.
+
+## 2026-09-25 — plan 29 live check: the key drift of the package prompt, and `json_schema`
+
+Status: measured on 2026-09-25 from 20:45 to 20:52 MSK by session drink-atlas-workspace-a7
+[bbd3b6], with the plan 29 code on a scratch copy of `data/lab.sqlite3` (schema 020 there
+alone). `qwen3.5-9b-nvfp4`, thinking off, `max_tokens` 4096, long side 1,536, the cut of
+`image_derivative`.
+
+| Image | Prompt | `response_format` | Result | Time |
+|---|---|---|---|---|
+| `avtohtonnoe-vino-kryma-beloe-suhoe` (`07d588a4…`, full front) | package, `bottle` | `json_object` | fails: key `text`, a list of strings | 15.1 s |
+| `soyuz-vino-izola-del-sole-roze-v-banke-…` (`e3c38e97…`) | package, `can` | `json_object` | valid, 6 texts | 21.0 s |
+| `soyuz-vino-el-krusero-tinto-…` (`0169a8f4…`) | package, `tetra_pak` | `json_object` | fails: key `text`, `numbers` as strings | 19.7 s |
+| `2239638a9aeb…` (back label close-up) | label, `bottle` | `json_object` | valid, 16 texts | 99.4 s |
+| `07d588a4…` | package, `bottle` | `json_schema`, strict | valid, 6 texts with `where` | 15.1 s |
+| `0169a8f4…` | package, `tetra_pak` | `json_schema`, strict | valid, 11 texts with `where` | 31.0 s |
+
+- With the probe of 19:20, the package prompt gave the key `text` in 3 of 4 answers. The
+  label prompt gave valid keys in 2 of 2 answers.
+- `temperature: 0` repeats the same answer, so a retry of a key drift fails again. With
+  `json_object` alone, most package images would stop after 3 failures.
+- The gateway 18081 honours `response_format: {"type": "json_schema", "json_schema":
+  {"name": ..., "strict": true, "schema": ...}}` for this model: the same payload gave the
+  keys of the schema. The schema of `describe_images.detail_schema` (type lists such as
+  `["string", "object"]`) was accepted.
+- The OCR of small text stays weak: «ПИСАДКОЕ КРАСНОЕ» for «ПОЛУСЛАДКОЕ КРАСНОЕ», and
+  "Icosa del Sole" on the `izola-del-sole` can.
+- A second check at 21:50 with the final code (`json_schema` in the request, owner answer
+  of 21:45:41): 8 of 8 answers were valid, the 2 images that failed before and 6 more
+  `bottle` package cuts. The times were 13 to 31 s; the first request took 286 s. The
+  cause of the 286 s is not known: a first compile of the `json_schema` grammar, or the
+  SAM3 run of drink-atlas-workspace-cb on the same gx10.
+- More OCR errors of small text in that check: «Усадьба Черовских» for «Усадьба
+  Перовских», "Listo" for "Listva".
+
+## 2026-09-25 — a probe of the detail prompts on `qwen3.5-9b-nvfp4`
+
+Status: measured on 2026-09-25 at 19:20 MSK by session drink-atlas-workspace-a7
+[bbd3b6]. The prompts are the two prompts of the owner message of 19:14:31, sent
+verbatim. Three requests, one at a time, through llama-swap 18081: thinking off,
+`response_format: json_object`, `max_tokens` 4096, the cut of `image_derivative` as a
+JPEG (`describe_images.image_data_url`). No cache record, no database write.
+
+| Case | Input | Long side | Time | Prompt tokens | Completion tokens |
+|---|---|---|---|---|---|
+| package prompt, `bottle` | package cut `2e667cfd…` (353 × 1,136, `myshako-igristoe-beloe-polusladkoe`) | own size | 15.7 s | 582 | 346 |
+| label prompt | label cut `9f3d8fce…` of a back label close-up (`avtohtonnoe-vino-kryma-beloe-suhoe`) | 1,024 | 79.3 s | 1,059 | 1,759 |
+| label prompt | the same cut | 1,536 | 60.5 s | 2,051 | 1,324 |
+
+- Each answer ended with `finish_reason: stop` and parsed as JSON.
+- The package answer used the key `text` instead of `texts`. So a schema check of each
+  answer is necessary, and a key drift MUST count as a failure.
+- The package answer read the large texts. It misread the small line «ИГРИСТОЕ ВИНО» as
+  «ИГРИСТОВОЕ ВИНО», and it did not report «ВИНОДЕЛЬНЯ». The source cut is small (353 ×
+  1,136). The model gave `bottle` as an object `{colour, shape, capsule}` and each mark
+  as `{place}` with no description.
+- The back label answer read each text block of the label correctly, also the address,
+  the e-mail, the bottling date, and the barcode digits. `vintage` came as the string
+  `"2021"`.
+- A back label needs about 1,300 to 1,800 completion tokens. The limit of
+  `describe_images.MAX_TOKENS` (300) is too small for the detail prompts.
+- At 16 s for each package image, about 2,020 images take about 9 hours. This is an
+  estimate from one request.
+
 ## 2026-09-25 — the label files of the test sets and the Testset page (plan 24)
 
 Status: measured on 2026-09-25 by session drink-atlas-workspace-ca [a2daf6] on the three

@@ -71,6 +71,33 @@ class DescriptionCase(unittest.TestCase):
         conn.execute("PRAGMA foreign_keys = ON")
         return conn
 
+    def add_cut(self, slug, kind, color="white"):
+        """Store a cut of the kind `package` or `label` for the image of `slug`, as a
+        row of `image_derivative` and a PNG file in `images/cropped/`. A second cut of
+        the same kind replaces the row. Return the sha256 of the cut (plan 29)."""
+        data = png(color, size=(20, 40), mode="RGBA")
+        digest = hashlib.sha256(data).hexdigest()
+        folder = self.root / "images" / "cropped"
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / ("%s.png" % digest)).write_bytes(data)
+        conn = self.connect()
+        with conn:
+            conn.execute("INSERT OR IGNORE INTO image (sha256, folder, extension, width, "
+                         "height) VALUES (?, 'cropped', 'png', 20, 40)", (digest,))
+            conn.execute("INSERT OR REPLACE INTO image_derivative (source_sha256, kind, "
+                         "method, settings, sha256, box_left, box_top, box_right, box_bottom) "
+                         "VALUES (?, ?, 'seg', 'test', ?, 0, 0, 20, 40)",
+                         (self.sha[slug], kind, digest))
+        conn.close()
+        return digest
+
+    def classify(self, slug, **values):
+        """Set values of `image_description` for the image of `slug` by hand."""
+        conn = self.connect()
+        with conn:
+            image_descriptions.set_values(conn, self.sha[slug], values)
+        conn.close()
+
     def cache_files(self):
         return [p for p in (self.root / "cache").rglob("*.json")] \
             if os.path.isdir(self.root / "cache") else []

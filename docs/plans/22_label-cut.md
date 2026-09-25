@@ -48,6 +48,20 @@ left 4 failed items of 4,043. The owner message of
 4. SAM3 runs outside the write transaction. Each original gets its own short transaction.
    A second run continues the first one.
 5. An original with no label gets no row. The next run asks SAM3 again.
+
+Note of 2026-09-25 (drink-atlas-workspace-cb [48de03]; owner messages of 19:10:14 and
+19:10:30, answers of 19:16:44 and 20:24:14): a photo with a second body label gets the
+box of the labels, not the segment of the largest label. A second label counts when its
+centre lies on the largest bottle, when less than 80 % of it lies inside the main label,
+and when it has at least 25 % of the area and 60 % of the width of the main label
+(`alternatives.body_labels`). The cut is then the crop of the photo to the box around the
+counted labels, with no mask (method `crop`, kind `label`). A neck label, a capsule, and a
+part of the main label do not count. The new `SETTINGS_LABEL` names the rule, so each
+label cut was made again with `seed_label_cuts.py` on 2026-09-25 from 20:30:00 to 20:53:39
+(1,419 s): 2,017 cuts, 4 originals with no label; 111 cuts are now `crop`, and the 1,910
+`seg` cuts have the same file as before. A label
+close-up of `wine_image` (`label_front`, `label_back`) gets the new rule at its next
+request, as before. The rule of the measurement is in `ResearchLog.md`.
 6. The run stops at the first time that SAM3 does not answer.
 7. `embeddings.read_inputs` reads the row of the kind `package` into `cuts["package"]` and
    the row of the kind `label` into `cuts["label"]`. The hash of each label item changes,

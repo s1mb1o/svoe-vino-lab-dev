@@ -1,7 +1,383 @@
 # ChangeLog
 
+## 2026-09-26
+
+- Plan 38, the catalogue inputs of a candidate of an embedding run on `/runs` (owner
+  message of 2026-09-26T01:23:11+0300 and the answers of 01:29:00; session
+  drink-atlas-workspace-e2 [9e7fe4]). `embedding_run.Catalogue.rank` records the key
+  `items` in each candidate: each current item of the wine in the index, with its image
+  type, its `embedding_hash`, and its cosine to the query (null for a view that the query
+  does not have). The new route `GET /api/run-candidate` answers the items with the PNG of
+  the index that went to the model, the best item of each view, and the state of the item
+  in the present index. `/api/run` removes `items` from its rows. On `/runs`, a click on a
+  candidate image of an embedding run fills the strip of the large view with these items.
+  A run from before plan 38 shows the items of the present index with no cosine. 33 tests
+  of `test_embedding_run.py` `OK`; 30 browser checks pass on a test copy on port 8175 in
+  both themes. Found on the way: the photo `q-000001` of the set `my` (a
+  `a-gordienko-m-nikolaev-pino-nuar-…` photo) is the `main_patched` image of
+  `fanagoriya-100-ottenkov-krasnogo-kaberne-…`, so that wine takes rank 1 (0.8141).
+- Plan 39, the checkbox `Use caches` of the dialog `Run>` of `/testset` (owner message of
+  2026-09-26T01:20:30+0300 and the answers of 01:32:00; session
+  drink-atlas-workspace-d3 [4920ce]). The box is on at each page load. Off, the job reads
+  no record of `data/cache/` (SAM3, GDINO, VLM, LLM): each model call goes to its service,
+  so the latency is real time, and the fresh answers are still stored. `model_cache.READ`
+  (True by default) is the one switch; `run_job.py --no-cache` sets it before the backend
+  is built, so each present and future client follows it. `POST /api/run-jobs` takes
+  `use_cache` (a missing key is true; a value that is not a boolean is HTTP 400). The
+  event `start` and `run.json` hold `use_cache`; `/runs` shows the tag `no cache` for
+  `use_cache: false`. Today only `siglip2-p256-crop` reads a cache (the SAM3 cut); the
+  embedding request and the vino-svoe API have no cache. New tests in
+  `test_model_cache.py`, `test_derive.py`, `test_run_files.py`, `test_benchmark.py`, and
+  `test_run_jobs.py`.
+- `/testset`: the run job rows get the same stop button as `/embedding`: an icon `×` in
+  the muted text color, not the red text `(x)`, in the first cell of the row (owner
+  message of 2026-09-26T01:32:00+0300; session drink-atlas-workspace-43 [c33611]). An
+  ended row has an empty first cell and keeps `open run` in the last cell. A window of
+  860 px or less puts the first cell in a narrow column at the left of the row. The
+  request `POST /api/run-jobs/<name>/stop` does not change. A page change alone; no
+  restart of 8168.
+- `/embedding`: the stop button of each running job row shows an icon `×` in the muted
+  text color, not the red text `(x)`, and is the first cell of the row (owner message of
+  2026-09-26T01:24:00+0300; session drink-atlas-workspace-43 [c33611]). A window of
+  780 px or less puts the button in a narrow column at the left of the row. The request
+  `POST /api/embeddings/<name>/stop` does not change. A page change alone; no restart
+  of 8168.
+- `/runs`: the first item of the filter `Pipeline` reads `All — N`, not `every run — N`
+  (owner message of 2026-09-26T01:10:00+0300 and the answers of 01:19:00; session
+  drink-atlas-workspace-d3 [4920ce]). The value stays "", so the address key
+  `configuration` and the stored header value do not change. The runs of a pipeline that
+  is not in `config.yaml` stay under `no pipeline` (owner answer). A page change alone;
+  no restart of 8168.
+- `/testset`: the sort `cluster size, largest first` and the button `Additional
+  settings` (owner message of 2026-09-26T01:06:36+0300 and the answers of 01:08:49;
+  session drink-atlas-workspace-28 [5ddfae]; plan 37, section "Changes"). The sort
+  needs an embedding in `Clusters`: the largest cluster first, a tie by the cluster id,
+  and the rows of a cluster by slug; with `Clusters` on `No` it is disabled and falls
+  back to `slug A-Z`. `Marks` and `Clusters` moved into a second row that the button
+  shows or hides; the button shows `· N` for N of the two away from their default, and
+  `svl.testset.more` in localStorage keeps the open state. The ids of the selects and
+  the address keys did not change. A browser check on 8168: 14 of 14 checks pass (the
+  order of all 168 headers, the count, the fallback, the reload, 390 px with no
+  horizontal scroll), and the check of plan 37 gives the same result as before.
+- Two basic pipelines of `gx10-siglip2-so400m-patch16-naflex-p256` (owner message of
+  2026-09-26T00:45:33+0300 and the answers of 00:52:41 and 00:57:59; session
+  drink-atlas-workspace-6a [792d65], with session ab [539687] for
+  `pipeline/embedding_run.py`). A pipeline of the backend `embedding` MAY hold the key
+  `views`: the steps of the test photo; the catalogue side stays the index of the entry.
+  `siglip2-p256-as-is` sends the photo as it is (`white_background`, `resize` 1024) and
+  asks SAM3 nothing; `siglip2-p256-crop` cuts the photo to the SAM3 box of the package,
+  with the background of the box (`segment`, `white_background`, `resize` 1024).
+  `white_background` does not change an opaque photo; it keeps the 60 queries of `my`
+  with transparent pixels from the transparency error. `embeddings.check_steps` (earlier
+  `_steps`) takes `segment_first=False` for a test photo; `segment` stays the first step
+  when present, and `remove_background` stays directly after it. `pipelines.load` refuses
+  a view that the named entry does not have. 29 tests `OK` in `test_pipelines.py`, 24 in
+  `test_embedding_run.py`; the full suite 708 `OK`. 6a restarted 8168 at 01:01:42 (pid
+  81403; the watcher pid 81420 with `caffeinate`, pid 81659): the dialog and the filter
+  list the four pipelines, each runnable. At about 01:07 the owner removed the pipeline
+  `gx10-siglip2-so400m-patch16-naflex-p256` from `config.yaml`; its 2 runs count as `no
+  pipeline` (owner answer of 01:19:00 to session d3), and the project test of
+  `test_pipelines.py`, the rows PL2 to PL5, PL8, and PL14, and plan 34 follow.
+- Plan 37, the select `Clusters` of `/testset` (owner message of 2026-09-26T00:42:25+0300
+  and the answers of 00:46:18; session drink-atlas-workspace-28 [5ddfae]). It takes the
+  place of the select `Wine`; the values `in a variant group` and `removed from the
+  catalogue` are gone. `No`, or each embedding with a `clusters.json`: the table then
+  lists only the wines in a cluster of the view `combined` that pass the other filters,
+  one cluster after the other, each under a header row `<id> · <shown> of <size> wines
+  shown · <signals>` with a link `open on /clusters`. The page reads `GET /api/clusters`
+  at the first load and `GET /api/clusters/<name>` at the first use of an embedding; no
+  server change. The address key `cluster` replaces `wine`. The stored value of the
+  localStorage block of session 39 is applied after the options arrive. A browser check
+  on 8168 (set `my`): 393 wines in 168 clusters, each row under the header of its
+  cluster; with `Verdict` `positive` 145 wines, 44 clusters in part; the large view
+  reads `wine 1 of 145`; a reload restores the choice; the link marks the same cluster
+  on `/clusters`; no page error.
+- Plan 36: `/testset` has two special places (owner message of 2026-09-26T00:25:00+0300
+  and the answers of 00:29:00 and 00:33:55; session drink-atlas-workspace-e2 [9e7fe4]).
+  The row `No Match` (`__null__`) stands first in the table again, and no filter takes it
+  away. A run uses each of its photos as a `no_match` query, also with no label, as
+  `scripts/match_run.py` does; `×`, the delete mark, or an exclusion takes a photo out.
+  The right sidebar is now the Drawer, a new reserved place `__drawer__`: its photos wait
+  for a wine, take no label (HTTP 400), and no run uses them (`build_queries` counts them
+  as `drawer`). A drop onto the sidebar, a Finder drop onto the sidebar, and the key `0`
+  go to the Drawer. The menu holds `Move to the Drawer` and `Move to No Match`.
+  `manual_wines.RESERVED_SLUGS` holds `__drawer__`. No schema change and no data change:
+  no set held a `__null__` photo. 692 tests `OK`; 23 browser checks on a copy of the
+  database on the temporary port 8175 (light, dark, 390 px) pass. The server code went
+  live with the restart of 8168 by drink-atlas-workspace-d3 at 00:36:23.
+- The select `Slugs` of `/testset` is gone (owner message of 2026-09-26T00:39:13+0300
+  and the answer of 00:39:51: remove entirely; session drink-atlas-workspace-28
+  [5ddfae]). The page has no filter of the benchmark scope. An excluded row stays red,
+  and `Exclude` stays. An old address with `slugs=…`, `filter=excluded`, or
+  `filter=included` opens the full list and drops the key. The key `#slugsel` left
+  `HEADER_IDS` of the localStorage block of session 39 in the same edit (agreed by 39).
+  A browser check on 8168 gave no page error, 2105 of 2105 wines for each old address,
+  and a working restore of `#marks` after a reload.
+- The select `Show` of `/testset` is four filter axes now (owner message of
+  2026-09-26T00:25:11+0300 and the answers of 00:26:58; session
+  drink-atlas-workspace-28 [5ddfae]). `Progress` (`#filter`) holds the labelling states
+  and `no candidate photos`; `Verdict` (`#verdict`) the labels; `Marks` (`#marks`) the
+  comment, the agent proposal, the deletion mark, and the box; `Wine` (`#wine`) the
+  variant group and `Removed`. The options `excluded from the benchmark` and `included in
+  the benchmark` left the list, because `Slugs` holds the same scope; the count line
+  lost its message about a contradiction of the two controls. A wine passes when it
+  passes every axis. A wine with no photo in the set shows only when `Verdict`, `Marks`,
+  and `Wine` stand on `any`, as before. The address keys `verdict`, `marks`, and `wine`
+  are new; an old address `?filter=<value>` puts the value into its axis. A browser check
+  on 8168 (set `my`) gave the same count for each of the 19 old options under the old
+  and the new code. Only `pipeline/pages/testset.html` changed; the review tool (8154)
+  keeps its select.
+- Plan 34, the key `pipeline` of `config.yaml` (owner message of 2026-09-25T23:37:48+0300
+  and the answers of 23:55:27; the messages of 2026-09-26T00:10:18 and 00:11:19 and the
+  answers of 00:12:24 and 00:15:17 in the session ab; session drink-atlas-workspace-6a
+  [792d65]). A pipeline is a matcher that answers a test photo with a ranked list; the
+  key `embeddings` keeps the embedding models (`openai`, `local`) alone. The entry
+  `vino-svoe-search-by-photo` (backend `svoe-vino-ru`) moved to `pipeline`, and a new
+  pipeline `gx10-siglip2-so400m-patch16-naflex-p256` of the new backend `embedding`
+  names the embedding entry of the same name. The new module
+  `pipeline/pipelines.py` reads the key; the remote matcher code left
+  `pipeline/embeddings.py`, and `embeddings.read_config` and `check_entries` serve both
+  keys. The dialog `Run>` of `/testset` and the filter `Pipeline` of `/runs` show the
+  pipelines alone; the filter shows no entry of `embeddings` and no item `(not a
+  pipeline)`, and a run of another name counts as `no pipeline`. A pipeline of the
+  backend `embedding` with no index is disabled with `no index: build it on /embedding`,
+  and its job runs with `embedding_python`. `/embedding` and `/clusters` show the
+  embedding models alone; the remote branch of `embedding.html` is gone. The owner
+  removed `mock` from `config.yaml` at 00:25 and asked at 00:26:27 to remove it from the
+  source: the backend `mock`, `pipeline/mock_run.py`, `tests/test_mock_run.py`, and
+  `build_embeddings.MockBackend` are gone. Its 2 runs stay in `runs/` under `no pipeline`;
+  session ab deleted `data/embeddings/mock/` (owner answer of 00:29:55). The routes, the
+  JSON keys, and the key `configuration` of `run.json` keep their names, so the old runs
+  keep their filter value. New `tests/test_pipelines.py`; 18, 14, 13, and 7 tests `OK` in
+  `test_pipelines.py`, `test_run_jobs.py`, `test_remote_run.py`, and
+  `test_run_routes.py`. At 00:08 a run of the dialog failed with
+  `config.yaml has no pipeline vino-svoe-search-by-photo`: the old server started the new
+  `run_job.py` 13 s before `config.yaml` got the key `pipeline`.
+- An embedding run is a run of a pipeline (owner messages of 2026-09-26T00:10:18 and
+  00:11:19, answers of 00:12:24 and 00:15:17; session drink-atlas-workspace-ab [539687],
+  with plan 34 of session drink-atlas-workspace-6a [792d65]). `pipeline/embedding_run.py
+  --name` takes a pipeline of the backend `embedding`: its key `embedding` names an entry
+  of `embeddings:`. The new `build_pipeline_backend(pipeline, config_path)` gives the
+  backend the pipeline name and `spec["embedding"]`; `run_job.build` of 6a calls it, so the
+  dialog `Run>` starts the pipeline. `config.yaml` holds one such pipeline,
+  `gx10-siglip2-so400m-patch16-naflex-p256`, with the name of its embedding entry, so the
+  2 runs of 2026-09-25 keep their `run.json`. 19 tests `OK` in
+  `tests/test_embedding_run.py`. After the restart of 8168 at 00:36:23 (session d3),
+  the dialog and the filter of `/runs` list the 2 pipelines alone, and
+  `GET /api/run-inputs` answers the model inputs of an embedding run.
+- `/runs`: the candidate cards of one photo row have one height, the height of the
+  tallest card of the row (owner message of 2026-09-26T00:12:24+0300). In a row with a
+  cluster frame, a card outside a frame starts where the cards of the frame start
+  (`margin-top: 19px`). `evenCards` of `pipeline/pages/runs.html` sets the heights after
+  each batch of rows; a long slug is not cut. The server reads the page on each request,
+  so no restart was necessary. A headless screenshot showed level rows.
+- Plan 35, more than one VLM request at the same time (owner message of
+  2026-09-25T23:44:31+0300 and the answers of 23:58:53; session drink-atlas-workspace-d3
+  [4920ce]). `pipeline/describe_images.py` runs up to `image_description.workers` calls at
+  the same time in a thread pool (1 when absent; `config.yaml` sets 8). The main thread
+  alone takes the images, and it never takes an image that a call holds. A failure of the
+  service stops the new calls for the backoff time; the calls that run finish and are
+  stored; a failure during the backoff does not double it. The speed on the pill of
+  `/dataset` is now the wall time per image of the last 20 images (the rate of the
+  backlog), not the time of one call. The start line of the log names `workers`. 8 new
+  tests (`WorkersSettingsTest`, `WorkersTest`); 692 tests `OK`. The key entered
+  `config.yaml` with the restart of 8168 at 00:36:23, because the old server refused an
+  unknown key of `image_description`. Live: 26.5 details per minute instead of 3.4, with
+  the same call time (mean 16.0 s, maximum 32.5 s); the pill read `VLM details 494 /
+  2,018 · 2.1 s`. The one timeout of the first 6 minutes was a stuck request; the next
+  call of the image gave a valid answer.
+- Plan 33, the runner of the embedding configurations (owner message of
+  2026-09-25T23:19:28+0300 and the answers of 23:24:20 and 23:35:19; session
+  drink-atlas-workspace-ab [539687]). New `pipeline/embedding_run.py --name <name> --set
+  <set>` for an entry of the backend `openai` or `local` with an index. Each photo gets
+  the package cut of `derive.derive_image` and the label cut of the new
+  `alternatives.label_cut_of` in memory, then the steps of each view with the new
+  `embeddings.apply_steps` (the step loop of `prepare`), so a test photo gets the pixels
+  of a catalogue image. One request to the endpoint of the entry gives the vectors. The
+  score of a wine is the mean of its best cosine in each view, over the current items of
+  the index. `benchmark.run_benchmark` writes the run; `run.json` holds `kind:
+  embedding`. `GET /api/run-inputs` makes the model inputs of such a run again from the
+  steps of `run.json` and the SAM3 cache; it takes effect with the next restart of 8168.
+  The dialog `Run>` does not start these runs (owner answer of 23:55:27 to session 6a).
+  16 new tests; 673 tests `OK` at 2026-09-25 23:50. The live check on `official-real-photos` with
+  `gx10-siglip2-so400m-patch16-naflex-p256`: recall@1 0.525 and recall@5 0.712 of 59
+  positive photos; 15 of the 16 misses are photos of 10 wines with no catalogue image.
+  Read `ResearchLog.md` of 2026-09-26.
+- The dialog `Import from vino-svoe.ru` of `/dataset` shows the pixel size (width ×
+  height) under each image of a main image conflict, on the `database` side and on the
+  `website` side (owner message of 2026-09-25T23:58:00+0300 and the answers of
+  2026-09-26T00:00:30; session drink-atlas-workspace-43 [c33611]). The browser reads
+  the size from the loaded original file, so the diff and the server do not change.
+  The other rows of the dialog show no size. Only `pipeline/pages/website_import.js`
+  changed; the server reads it on each request, so no restart was necessary. A
+  headless check on 8168 showed 6 sizes for the 6 images of the 3 image conflicts,
+  and each size equals the pixel size of its file.
+
 ## 2026-09-25
 
+- Each entry of `vlm` in `config.yaml` MAY hold `max_tokens`, 8192 when absent (owner
+  message of 2026-09-25T23:21:25+0300 and answers after it; session
+  drink-atlas-workspace-15 [40dc83]). It is the `max_tokens` of a detail request of
+  `pipeline/describe_images.py` and replaces `image_description.detail_max_tokens`
+  (4096), which `config.yaml` no longer holds; a configuration that still holds it gets
+  an error that names the replacement. A class request keeps 300, so the saved class
+  answers and `Raw VLM reply` stay valid. `scripts/cluster_rules.py` and
+  `scripts/04_verify.py` keep their own limits. 657 tests `OK`. 8168 was restarted at
+  23:28:25. The one failed detail (`e049e469…`) was sent again at 8192: it ended in the
+  timeout of 300 s two times, and a timeout is not counted, so the image blocked the
+  detail queue. Its `vlm_attempts` was set back to 3 at about 23:35, and the queue went on at
+  23:41:09. Read the ResearchLog entry of the same date.
+- A click on `N details failed` in the VLM pill of `/dataset` opens the dialog `Failed
+  details`, and the lab server hides `Validate` (owner messages of
+  2026-09-25T22:49:56+0300 and 22:51:31, answers of 22:54:00; session
+  drink-atlas-workspace-15 [40dc83]). The new route `GET /api/image-detail-failures`
+  (`image_descriptions.detail_failures`, `image_details.failed`) sends each image whose
+  detail failed `max_attempts` times with its present inputs: the slug, the file that the
+  VLM got, the prompt kind, the type, the attempts, the time, `vlm_error`, and the last 20
+  entries of `work/describe_images.log` that name the image, each with the lines that
+  follow it (the text of a cut answer). The pill writes a new HTML only when its HTML
+  changes, so the button keeps the focus during the 5 s poll. `Validate` shows only when
+  `GET /api/dataset` has no `database_file`, so the review tool (8154) keeps it; the website
+  import covers its checks on 8168. 652 tests `OK`. A headless check in the light and the
+  dark theme found no script error: 1 failure with 4 log entries, `Escape` closes the
+  dialog, the button kept the focus for 11 s, and `Validate` shows without
+  `database_file`. 8168 was restarted at 23:05:37. A click on the thumbnail shows the
+  file alone in the image preview, above the dialog (owner message of 23:20:22); the page
+  path stays, and a Cmd-click still opens the file in a new tab.
+- `/testset` has the button `Run>` (plan 32). Its dialog lists every configuration of
+  `config.yaml` with the count of the queries of the set; `vino-svoe-search-by-photo`
+  and `mock` can start, and the embedding configurations are disabled with
+  `no runner yet`. The fields `first N queries` and `workers` are optional. `Start`
+  runs the new `pipeline/run_job.py` as a separate process (one JSON event on each line
+  in `work/run-jobs/<configuration>/job.log`), and a job row under the header shows the
+  state, a bar, done / total, the errors, the elapsed time, `(x)` to stop, and
+  `open run` for 60 s after the end. New `pipeline/run_jobs.py` answers
+  `/api/run-configurations` and `/api/run-jobs`. Owner message of
+  2026-09-25T22:41:00+0300 and answers of 22:46:00; session drink-atlas-workspace-5c
+  [cbb143]. 14 new tests in `tests/test_run_jobs.py`; 648 tests `OK`. 8168 restarted at
+  22:56:54 (pid 14874); `caffeinate -ims -w 14904` (pid 15258) holds the new watcher of
+  plan 29, and its row in `GPU_TASKS.md` names the new pids. A live job of 5 photos of
+  `official-real-photos` ended `done`. `README.md`, `SMOKE_TESTS.md` RJ1 to RJ10.
+- The first full run of `vino-svoe-search-by-photo`: the set `official-real-photos` (the
+  owner chose it as the provided test set, answer of 22:36:00), 80 queries, 4 workers,
+  `runs/2026-09-25T193223Z-lab-vino-svoe-search-by-photo-official-real-photos/`. All 80
+  answers HTTP 201. Positive (59): recall@1 0.576, recall@5 0.932, recall@10 0.966, MRR
+  0.746. Negative (21): 4 false matches at rank 1. The median latency was 9.2 s (the
+  maximum 15.7 s); on 2026-09-17 it was 2.4 s at 1 worker on the set `my`. The cause is
+  not known.
+- The patch button of `/dataset` is the red `Clear`, and the GTIN input accepts at most
+  14 characters (owner messages of 2026-09-25T22:46:27+0300 and 22:47:19; session
+  drink-atlas-workspace-3b [d30290]). Only `pipeline/pages/dataset.html` changed. The
+  former `Remove` button has the label `Clear` and the colour `--exc` in both themes. On
+  the lab server one press sends the `DELETE` at once, with no `Apply`; the editor shows
+  `Clearing…` until the answer. The review tool on 8154 keeps the staged removal with
+  `Apply` and `Cancel`. The GTIN input had `maxlength="32"`; now it has 14. A browser check
+  in the light and the dark theme with a mocked `DELETE` found no script error, and the
+  button keeps its size of 77 × 24 px. The server reads the page for each request, so
+  8168 was not restarted.
+- The bottle cards of `/clusters` have the form of the cards of `/clusters` on 8154
+  (owner message of 2026-09-25T22:37:15+0300, answers of 22:41:15; session
+  drink-atlas-workspace-a9 [79efd8]). Only `pipeline/pages/clusters.html` changed. A card
+  is 176 px wide, and the cards wrap in a row. The card shows a badge `#N` on one
+  162×200 image, the name, `producer · category`, the grapes, and the slug. The colour,
+  the region, and the view tag on the image are not on the card. The search still finds
+  the colour and the region. A new select `Image` (`full`, `label`) chooses the image in
+  the space `combined`. The address keeps a `label` choice as `image=label`. In the
+  spaces `full` and `label`, the select is disabled and shows the view of the space.
+  The owner chose the layout alone: the photo counts, the links `review` and
+  `vino-svoe.ru`, and `label description` of 8154 are not on the card. The lab rules
+  have no card letters, so the badge has no letter. The server reads the page for each
+  request, so 8168 was not restarted. The 21 cluster tests and the 59 lab server tests
+  pass. A browser check in the dark and the light theme and at 390 px found no script
+  error.
+- The owner stopped the work of all sessions in `ACTIVE_WORK.md` (owner message of
+  2026-09-25T22:03:25+0300, answer "Stop everything now" of 22:05:09; session
+  drink-atlas-workspace-27 [fa998d]). All 25 sections were removed. 22 sessions were stale
+  (not in `ListAgents`). The live sessions drink-atlas-workspace-cb [48de03],
+  drink-atlas-workspace-a7 [bbd3b6], and drink-atlas-workspace-5c [cbb143] got a stop
+  message at 22:05. The uncommitted files of the sessions stay in the tree. A copy of the
+  file before the change is `work/ACTIVE_WORK-stopped-2026-09-25T2206.md`.
+- Image details, stage 2 of the watcher `describe_images.py` (plan 29, owner message of
+  2026-09-25T19:14:31+0300, answers of 20:24:17, approval of 20:28:51, answer of
+  21:45:41; session drink-atlas-workspace-a7 [bbd3b6]). When no image waits for a class
+  and `image_description.details` is true, the watcher sends the detail prompt of the
+  owner with the cut of the next eligible image and stores the valid answer in the new
+  table `image_detail` (schema `020_image_detail.sql`, new `pipeline/image_details.py`).
+  A `full_package` image gets the package prompt with its `package` cut; the word
+  `bottle` becomes the name of the `package_type`, also in the last key. A
+  `label_closeup` image gets the label prompt with its `label` cut. `multiple_packages`,
+  `unknown` scopes, and the types `other` and `unknown` get no detail. The request sends
+  the JSON Schema of the answer (`response_format: json_schema`, strict), a long side of
+  1,536, and `max_tokens` 4,096; the code checks the same schema, and `finish_reason:
+  length` is a failure. A row stores its inputs (`prompt_kind`, `package_type`,
+  `input_sha256`); a change makes it stale. New option `--detail-sha`; `--retry-failed`
+  also resets the details. `watcher_status` adds `stage` and the `details_*` counts; the
+  pill of `/dataset` shows `VLM details <done> / <eligible>`. `config.yaml`: `details`,
+  `detail_max_side`, `detail_max_tokens`. `data/lab.sqlite3` at version 20 since 22:00
+  (backup `data/backups/lab-before-020-20260925T220038.sqlite3`). 8168 was down at 21:56
+  (not stopped by this session); started at 22:00:54 with `/opt/homebrew/bin/python3`
+  (5c and cb agreed). The backlog of 2,015 images runs since 22:00:53 (watcher pid
+  59886, `caffeinate` pid 60168). 634 tests `OK`. Live checks and the key drift of the
+  package prompt with `json_object` (3 of 4) are in `ResearchLog.md`. Docs: `README.md`
+  (section "The image details"), `COMMANDS.md`, `SMOKE_TESTS.md` DT1 to DT8, plan 26
+  (note), plan 29.
+- The lab configuration `vino-svoe-search-by-photo` of `config.yaml` (`backend:
+  svoe-vino-ru`) is the official recognizer of vino-svoe.ru,
+  `https://api.vino-svoe.ru/v1/wines/search-by-photo`. The new script
+  `pipeline/remote_run.py --name <name> --set <set>` sends each photo of the test set to
+  the API as it is and writes a run with `configuration: <name>`; `/runs` shows it under
+  the filter `Configuration`. The request keys of the entry have the meaning of the keys
+  of `backends.yaml`. `pipeline/embeddings.py` accepts the backend with zero items;
+  `Build` refuses it (HTTP 400), and `/embedding` hides `Build`, `Stop`, and `Log` and
+  shows the command of a run. The large view of `/runs` states that a remote run has no
+  model input, in place of the HTTP 422 "more than one configuration matches". Owner
+  message of 2026-09-25T20:36:26+0300 and answers of 20:39:30; session
+  drink-atlas-workspace-5c [cbb143]. A smoke run of 3 photos (`--label smoke`) answered
+  HTTP 201 with 10 candidates for each photo. 15 new tests in `tests/test_remote_run.py`.
+  Live on 8168 since the restart of a7 [bbd3b6] at 22:00:54. Plan 31, `README.md`,
+  `COMMANDS.md`, `SMOKE_TESTS.md` RM1 to RM10.
+- The owner dropped two waiting tasks (owner message of 2026-09-25T21:52:00+0300); their
+  sections left `ACTIVE_WORK.md`:
+  - drink-atlas-workspace-7e: the review of `docs/database-structure.pdf`. The page and
+    its source `docs/database-structure.html` stay in the repository. They show schema
+    version 17, not 19: `image_description` (018), `test_wine_note`, and the new columns
+    of `test_photo` and `test_set` (019) are not in them.
+  - drink-atlas-workspace-30: the restart of the review tool on 8154. The change is
+    committed in `svoe-vino-testset`, but the running tool still shows the sort option
+    `catalog.jsonl order` on its dataset page until its next start.
+- The label cut (`alternatives.label_derivatives`, `image_derivative` kind `label`): a
+  photo with a second body label gets the crop to the box around the labels, with no
+  mask, not the segment of the largest label. A second label counts when its centre is on
+  the largest bottle, less than 80 % of it lies inside the main label, and it has at
+  least 25 % of the area and 60 % of the width of the main label (`body_labels`). Neck
+  labels, capsules, and parts of the main label do not count. Owner messages of
+  2026-09-25T19:10:14+0300 and 19:10:30, answers of 19:16:44 and 20:24:14; session
+  drink-atlas-workspace-cb [48de03]. `seed_label_cuts.py` made each label cut again
+  (20:30:00 to 20:53:39): 111 `crop`, 1,910 `seg` with the same file, 4 with no label.
+  No embedding rebuild (owner choice): the `label` items of these 111 cuts are stale
+  until the next `Build`. Backup of the database before the run in the scratchpad of the
+  session. 591 tests `OK`. Plan 22 (note), `SMOKE_TESTS.md` EB44 to EB47, `ResearchLog.md`.
+- `/clusters` is enabled for the lab database. Each configured embedding keeps its own
+  `clusters.json` and `cluster-notes.json` in `data/embeddings/<name>/`. The builder
+  uses the effective main image and every applicable additional image. It keeps `full`
+  and `label` vectors in separate spaces and gives a `combined` union view. Each edge
+  records the image pair with the highest cosine. The page builds the artifact, shows
+  exact edge evidence and stale status, filters the three views, previews prepared
+  images, and writes reviewer notes. The initial thresholds are `0.95` and `0.95`.
+  Plan 30. Owner selected option 1 on 2026-09-25. The current NaFlex build gives 147
+  full clusters over 334 wines, 108 label clusters over 244 wines, and 168 combined
+  clusters over 397 wines. The final 21 cluster tests and two build-command tests pass.
+  All 59 lab-server tests and the then-current 591-test project suite passed before the
+  concurrent plan 29 edits. The page passed a live browser check in `combined` and
+  `label`; the browser reported no warning or error. Port 8168 was restarted with
+  SIGTERM and answered HTTP 200 for `/api/dataset` and `/clusters`.
+- `/dataset`: the select `Package` of `Advanced Filters:` lists only the `package_type`
+  values that at least one wine has (the patched image, else the main image), and `not
+  described` only when a wine has no value. A save in the description dialog builds the
+  list again; the chosen value stays. Owner message of 2026-09-25T19:07:49+0300 and the
+  answers of 19:09:07; session drink-atlas-workspace-cb [48de03]. Checked on 8168 in
+  headless Chromium: `bottle`, `can`, `tetra_pak`, `box`, `not described`, no page error.
+  No restart: the page is read from disk. `SMOKE_TESTS.md` ID21, ID22.
 - `/testset` and `/runs`: the plan 24 follow-ups of drink-atlas-workspace-ca [a2daf6]
   (owner messages of 2026-09-25T18:04:02+0300, 18:04:22, 18:05:36, 18:05:49, and the
   answers of 18:05:36), which stopped before its tests ended and before its docs:

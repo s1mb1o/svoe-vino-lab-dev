@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino clusters</title>
+<style>
+/* THEME_CSS */
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+header {
+  position: sticky; top: 0; z-index: 10; padding: 10px 16px;
+  background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.head, .bar { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
+.bar { margin-top: 8px; }
+h1 { margin: 0; font-size: 15px; font-weight: 650; }
+.nav { display: flex; gap: 6px; margin-left: auto; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+label { display: flex; gap: 5px; align-items: center; color: var(--muted); font-size: 12px; }
+select, input, button, textarea {
+  color: var(--text); background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 8px; font: inherit; font-size: 13px;
+}
+#embedding { max-width: min(560px, 90vw); }
+input[type=number] { width: 82px; }
+input[type=search] { width: min(360px, 85vw); }
+button { cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { cursor: default; opacity: .5; }
+#build { border-color: var(--accent); font-weight: 700; }
+.message { color: var(--muted); font-size: 12px; }
+.message.error, .error { color: var(--exc); }
+main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
+.summary {
+  display: grid; gap: 4px; padding: 9px 11px; margin-bottom: 12px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  font-size: 12px; overflow-wrap: anywhere;
+}
+.summary-row { display: flex; gap: 8px 18px; flex-wrap: wrap; }
+.summary b { font-weight: 650; }
+.bad { color: var(--exc); font-weight: 700; }
+.good { color: var(--pos); font-weight: 700; }
+.warn { color: var(--var); font-weight: 700; }
+.empty {
+  padding: 28px; color: var(--muted); background: var(--panel);
+  border: 1px dashed var(--line); border-radius: 10px; text-align: center;
+}
+.list { display: grid; gap: 14px; }
+.cluster {
+  scroll-margin-top: 124px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 11px; overflow: hidden; box-shadow: var(--shadow);
+}
+.cluster.target { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cluster-head {
+  display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap;
+  padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--panel-2);
+}
+.cluster-head h2 { margin: 0; font-size: 15px; }
+.badge {
+  padding: 2px 7px; border-radius: 999px; background: var(--unu-bg);
+  color: var(--unu); font-size: 11px; font-weight: 700;
+}
+.badge.full { color: var(--neg); background: var(--neg-bg); }
+.badge.label { color: var(--pos); background: var(--pos-bg); }
+.badge.mixed { color: var(--var); background: var(--var-bg); }
+.cluster-key { color: var(--muted); font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
+/* The bottle card has the form of the card of the 8154 Clusters page. */
+.members { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px 12px; }
+.member {
+  width: 176px; background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 8px; padding: 6px; position: relative;
+}
+.member .no {
+  position: absolute; top: 9px; left: 9px; z-index: 2; font-size: 11px; font-weight: 700;
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  border-radius: 4px; padding: 0 4px;
+}
+.member .pic { display: block; padding: 0; border: 0; border-radius: 0; background: none; cursor: zoom-in; }
+.member img, .member .nobottle {
+  width: 162px; height: 200px; object-fit: contain; display: block;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+}
+.member .nobottle { display: flex; align-items: center; justify-content: center;
+                    color: var(--muted); font-size: 11px; text-align: center; }
+.member .nm { font-weight: 600; font-size: 13px; margin-top: 4px; line-height: 1.25; }
+.member .pr, .member .gr { font-size: 11px; color: var(--muted); line-height: 1.3; }
+.member .sl { font-size: 10px; word-break: break-all; line-height: 1.25; margin-top: 2px; }
+.no-image { margin-top: 8px; color: var(--muted); font-size: 11px; font-style: italic; }
+details { border-top: 1px solid var(--line); }
+summary { cursor: pointer; padding: 8px 12px; font-weight: 650; }
+.links-wrap { overflow-x: auto; padding: 0 12px 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 12px; }
+th, td { padding: 5px 7px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; }
+.pair { max-width: 270px; overflow-wrap: anywhere; }
+.evidence { display: grid; gap: 2px; }
+.evidence a { font-size: 11px; overflow-wrap: anywhere; }
+.sim { font-variant-numeric: tabular-nums; font-weight: 700; }
+.review { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr); gap: 12px; padding: 10px 12px; border-top: 1px solid var(--line); }
+.review h3 { margin: 0 0 5px; font-size: 13px; }
+.note textarea { width: 100%; min-height: 74px; resize: vertical; }
+.note-actions { display: flex; gap: 8px; align-items: center; margin-top: 5px; }
+.inherited { color: var(--var); font-size: 11px; }
+.rule { min-width: 0; }
+.rule pre {
+  max-height: 220px; overflow: auto; margin: 0; padding: 7px;
+  background: var(--panel-2); border-radius: 6px; font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+#preview {
+  width: min(1000px, calc(100vw - 30px)); height: min(90vh, 1000px); padding: 0;
+  color: var(--text); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; box-shadow: var(--shadow);
+}
+#preview::backdrop { background: rgba(4, 5, 8, .72); }
+.preview-head { display: flex; gap: 10px; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.preview-title { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.preview-body { height: calc(100% - 48px); display: grid; grid-template-columns: 42px minmax(0, 1fr) 42px; align-items: center; padding: 10px; }
+.preview-body img { display: block; max-width: 100%; max-height: calc(90vh - 90px); margin: auto; object-fit: contain; }
+.preview-body button { height: 52px; font-size: 22px; }
+@media (max-width: 760px) {
+  .nav { width: 100%; margin-left: 0; overflow-x: auto; }
+  .review { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .member { width: calc(50% - 5px); }
+  .member .pic, .member img, .member .nobottle { width: 100%; }
+  .member img, .member .nobottle { height: 160px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <h1>Clusters</h1>
+    <div class="bar" style="margin-top:0">
+      <label>Configuration <select id="embedding"></select></label>
+      <label>Space <select id="space">
+        <option value="combined">combined</option>
+        <option value="full">full</option>
+        <option value="label">label</option>
+      </select></label>
+      <label title="The image of the card in the space combined">Image <select id="image">
+        <option value="full">full</option>
+        <option value="label">label</option>
+      </select></label>
+      <button id="build" type="button" disabled>Build clusters</button>
+      <span class="message" id="message"></span>
+    </div>
+    <nav class="nav"><a href="/dataset">Dataset</a><a href="/embedding">Embeddings</a><a
+      class="on" href="/clusters">Clusters</a><a href="/testset">Testset</a><a
+      href="/runs">Runs</a></nav>
+  </div>
+  <div class="bar">
+    <label>Search <input id="search" type="search" placeholder="name, producer, slug"></label>
+  </div>
+</header>
+<main>
+  <section class="summary" id="summary">Reading configurations…</section>
+  <section class="list" id="list"></section>
+</main>
+<dialog id="preview">
+  <div class="preview-head"><strong class="preview-title" id="preview-title"></strong>
+    <a id="preview-original" href="" target="_blank" rel="noopener">open original</a>
+    <button id="preview-close" type="button">Close</button></div>
+  <div class="preview-body"><button id="preview-previous" type="button">←</button>
+    <img id="preview-image" alt=""><button id="preview-next" type="button">→</button></div>
+</dialog>
+<script>
+const $ = selector => document.querySelector(selector);
+const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[char]));
+const PARAMS = new URLSearchParams(location.search);
+/* The header controls are kept in localStorage and come back at the next page load (owner
+   message of 2026-09-26T00:30:00+0300). A value in the URL wins over the stored value. */
+const HEADER_KEY = "svl.clusters.header";
+function storedHeader() {
+  try { return JSON.parse(localStorage.getItem(HEADER_KEY) || "{}") || {}; } catch (_) { return {}; }
+}
+const HEADER = storedHeader();
+function saveHeader() {
+  const value = {name: NAME, space: SPACE, image: IMAGE, search: $("#search").value};
+  try { localStorage.setItem(HEADER_KEY, JSON.stringify(value)); } catch (_) { /* no storage */ }
+}
+let ENTRIES = [], DATA = null, NAME = "", SPACE = PARAMS.get("space") || HEADER.space || "combined";
+// `updateUrl` writes `space` always and `image` only when it is not `full`, so an address
+// with `space` holds the image too.
+let IMAGE = (PARAMS.has("space") ? PARAMS.get("image") : HEADER.image) === "label" ? "label" : "full";
+let PREVIEW = [], PREVIEW_INDEX = 0;
+if (typeof HEADER.search === "string") $("#search").value = HEADER.search;
+
+function setMessage(text, error=false) {
+  $("#message").textContent = text || "";
+  $("#message").classList.toggle("error", error);
+}
+
+async function request(url, options={}) {
+  const response = await fetch(url, options);
+  let body;
+  try { body = await response.json(); } catch (_) { body = {error: await response.text()}; }
+  if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+  return body;
+}
+
+function updateUrl() {
+  const query = new URLSearchParams();
+  if (NAME) query.set("name", NAME);
+  query.set("space", SPACE);
+  if (SPACE === "combined" && IMAGE !== "full") query.set("image", IMAGE);
+  history.replaceState(null, "", `${location.pathname}?${query}${location.hash}`);
+}
+
+function entryLabel(entry) {
+  if (entry.error) return `${entry.name} — configuration error`;
+  if (!entry.exists) return `${entry.name} — not built`;
+  const count = entry.counts?.[SPACE]?.clusters ?? 0;
+  return `${entry.name} — ${count} clusters${entry.stale ? " — stale" : ""}`;
+}
+
+function fillEntries() {
+  const select = $("#embedding");
+  select.innerHTML = ENTRIES.map(entry =>
+    `<option value="${esc(entry.name)}"${entry.error ? " disabled" : ""}>${esc(entryLabel(entry))}</option>`
+  ).join("");
+  const wanted = NAME || PARAMS.get("name") || HEADER.name;
+  const chosen = ENTRIES.find(entry => entry.name === wanted && !entry.error)
+    || ENTRIES.find(entry => entry.exists && !entry.error)
+    || ENTRIES.find(entry => !entry.error);
+  NAME = chosen?.name || "";
+  select.value = NAME;
+  $("#build").disabled = !NAME;
+}
+
+function statusCounts(status={}) {
+  return ["current", "stale", "missing", "failed"].map(key => {
+    const value = status[key] || 0;
+    const cls = key === "current" ? "good" : value ? (key === "failed" ? "bad" : "warn") : "";
+    return `<span class="${cls}">${esc(key)} ${value}</span>`;
+  }).join(" · ");
+}
+
+function renderSummary() {
+  if (!DATA) return;
+  const status = DATA.status || {};
+  const artifact = DATA.artifact;
+  if (!artifact) {
+    $("#summary").innerHTML = `<div><b>Directory:</b> ${esc(status.directory || "")}</div>
+      <div class="warn">No clusters.json. Build the selected configuration.</div>`;
+    return;
+  }
+  const input = artifact.inputs || {};
+  const settings = artifact.settings || {};
+  const counts = artifact.spaces?.[SPACE]?.counts || {};
+  const stale = status.stale ? '<span class="bad">stale</span>' : '<span class="good">current</span>';
+  $("#summary").innerHTML = `
+    <div class="summary-row"><span><b>File:</b> ${esc(status.file)}</span><span>${stale}</span></div>
+    <div class="summary-row"><span><b>Built:</b> ${esc(artifact.built_at)}</span>
+      <span><b>Embedding:</b> ${esc(input.updated_at || "?")}</span>
+      <span><b>Vectors:</b> ${esc(input.vectors_file || "?")} · ${esc(input.dim || "?")} dimensions</span>
+      <span title="The block clusters of config.yaml sets these values"><b>Build settings:</b> full threshold ${esc(settings.full_threshold ?? "?")} · label threshold ${esc(settings.label_threshold ?? "?")} · minimum size ${esc(settings.min_cluster_size ?? 2)}</span></div>
+    <div class="summary-row"><span><b>Items:</b> ${statusCounts(input.status)}</span>
+      <span><b>${esc(SPACE)}:</b> ${counts.clusters || 0} clusters · ${counts.links || 0} links · ${counts.wines_in_clusters || 0} wines · largest ${counts.largest || 0}</span></div>`;
+}
+
+/* The view of the card image: the view of the space, or the "Image" select in the
+   space combined. */
+function imageView() {
+  return SPACE === "combined" ? IMAGE : SPACE;
+}
+
+function imageHtml(image, slug) {
+  const title = `${slug} · ${image.view} · ${(image.image_types || []).join(", ")}`;
+  const encoded = encodeURIComponent(JSON.stringify({
+    url: image.prepared_url, original: image.original_url, title
+  }));
+  return `<button class="pic" type="button" data-preview="${encoded}" title="${esc(title)}">
+    <img src="${esc(image.prepared_url)}" alt="${esc(title)}" loading="lazy"></button>`;
+}
+
+function memberHtml(slug, index) {
+  const card = DATA.cards?.[slug] || {slug};
+  const view = imageView();
+  const image = (card.images || []).find(item => item.view === view);
+  return `<article class="member"><span class="no">#${index + 1}</span>
+    ${image ? imageHtml(image, slug) : `<div class="nobottle">No current ${esc(view)} image.</div>`}
+    <div class="nm">${esc(card.name || slug)}</div>
+    <div class="pr">${esc(card.producer || "")}${card.category ? " · " + esc(card.category) : ""}</div>
+    ${card.grapes ? `<div class="gr">${esc(card.grapes)}</div>` : ""}
+    <div class="sl">${esc(slug)}</div>
+  </article>`;
+}
+
+function shortSlug(slug) {
+  return slug.length > 44 ? `${slug.slice(0, 41)}…` : slug;
+}
+
+function evidenceHtml(record) {
+  if (!record) return "—";
+  const left = record.a_image || {}, right = record.b_image || {};
+  return `<div class="evidence"><span class="sim">${Number(record.similarity).toFixed(4)}</span>
+    <a href="${esc(left.prepared_url)}" target="_blank" rel="noopener">A: ${esc((left.image_types || []).join(" + "))} · ${esc((left.source_sha256 || "").slice(0, 8))}</a>
+    <a href="${esc(right.prepared_url)}" target="_blank" rel="noopener">B: ${esc((right.image_types || []).join(" + "))} · ${esc((right.source_sha256 || "").slice(0, 8))}</a></div>`;
+}
+
+function linksHtml(cluster) {
+  const rows = (cluster.links || []).map(link => `<tr>
+    <td class="pair"><b>A</b> ${esc(shortSlug(link.a))}<br><b>B</b> ${esc(shortSlug(link.b))}</td>
+    <td>${(link.by || []).map(value => `<span class="badge ${esc(value)}">${esc(value)}</span>`).join(" ")}</td>
+    <td>${evidenceHtml(link.spaces?.full)}</td><td>${evidenceHtml(link.spaces?.label)}</td>
+  </tr>`).join("");
+  return `<details><summary>Edges (${cluster.links?.length || 0})</summary><div class="links-wrap">
+    <table><thead><tr><th>Wine pair</th><th>Signal</th><th>Full evidence</th><th>Label evidence</th></tr></thead>
+    <tbody>${rows}</tbody></table></div></details>`;
+}
+
+function ruleHtml(rule) {
+  if (!rule) return '<div class="no-image">No VLM difference rule.</div>';
+  const state = rule.stale ? '<span class="bad">stale</span>' : '<span class="good">current</span>';
+  const shown = {...rule}; delete shown.raw_reply; delete shown.prompt;
+  return `<div>${state}</div><pre>${esc(JSON.stringify(shown, null, 2))}</pre>`;
+}
+
+function clusterHtml(cluster) {
+  const note = cluster.note || {text: ""};
+  const inherited = note.inherited
+    ? `<span class="inherited">Inherited from ${esc(note.from_key)}. Save to attach it to this member set.</span>` : "";
+  const anchors = cluster.slugs.map(slug => `<span id="anchor-${esc(slug)}"></span>`).join("");
+  return `<section class="cluster" id="cluster-${esc(cluster.key)}" data-slugs="${esc(cluster.slugs.join(" ").toLowerCase())}">
+    ${anchors}<div class="cluster-head"><h2>${esc(cluster.id)} · ${cluster.size} wines</h2>
+      <span class="badge ${esc(cluster.kind)}">${esc(cluster.kind)}</span>
+      ${(cluster.signals || []).map(signal => `<span class="badge ${esc(signal)}">${esc(signal)}</span>`).join("")}
+      <span class="cluster-key">${esc(cluster.key)}</span></div>
+    <div class="members">${cluster.slugs.map(memberHtml).join("")}</div>
+    ${linksHtml(cluster)}
+    <div class="review"><div class="note"><h3>Reviewer note</h3>
+      <textarea maxlength="4000" data-note="${esc(cluster.key)}">${esc(note.text || "")}</textarea>
+      <div class="note-actions"><button type="button" data-save-note="${esc(cluster.key)}">Save note</button>${inherited}<span data-note-status="${esc(cluster.key)}"></span></div>
+    </div><div class="rule"><h3>VLM difference rule</h3>${ruleHtml(cluster.rule)}</div></div>
+  </section>`;
+}
+
+function clusterSearchText(cluster) {
+  return cluster.slugs.map(slug => {
+    const card = DATA.cards?.[slug] || {};
+    return [slug, card.name, card.producer, card.category, card.color, card.grapes, card.region].join(" ");
+  }).join(" ").toLowerCase();
+}
+
+/* The "Image" select chooses the image in the space combined alone. In the spaces
+   full and label, it shows the view of the space. */
+function syncImage() {
+  $("#image").value = imageView();
+  $("#image").disabled = SPACE !== "combined";
+}
+
+function render() {
+  syncImage();
+  renderSummary();
+  const artifact = DATA?.artifact;
+  if (!artifact) {
+    $("#list").innerHTML = '<div class="empty">Build clusters to populate this page.</div>';
+    return;
+  }
+  const all = artifact.spaces?.[SPACE]?.clusters || [];
+  const query = $("#search").value.trim().toLowerCase();
+  const shown = all.filter(cluster => !query || clusterSearchText(cluster).includes(query));
+  $("#list").innerHTML = shown.length ? shown.map(clusterHtml).join("")
+    : `<div class="empty">No cluster matches the filters. ${all.length} cluster(s) exist in ${esc(SPACE)}.</div>`;
+  bindDynamic();
+  openHash();
+}
+
+function previewItems() {
+  return [...document.querySelectorAll("[data-preview]")].map(button =>
+    JSON.parse(decodeURIComponent(button.dataset.preview)));
+}
+
+function showPreview(index) {
+  if (!PREVIEW.length) return;
+  PREVIEW_INDEX = (index + PREVIEW.length) % PREVIEW.length;
+  const item = PREVIEW[PREVIEW_INDEX];
+  $("#preview-title").textContent = `${item.title} · ${PREVIEW_INDEX + 1}/${PREVIEW.length}`;
+  $("#preview-image").src = item.url;
+  $("#preview-image").alt = item.title;
+  $("#preview-original").href = item.original;
+}
+
+function bindDynamic() {
+  PREVIEW = previewItems();
+  document.querySelectorAll("[data-preview]").forEach((button, index) => button.addEventListener("click", () => {
+    showPreview(index); $("#preview").showModal();
+  }));
+  document.querySelectorAll("[data-save-note]").forEach(button => button.addEventListener("click", async () => {
+    const key = button.dataset.saveNote;
+    const textarea = document.querySelector(`[data-note="${key}"]`);
+    const status = document.querySelector(`[data-note-status="${key}"]`);
+    button.disabled = true; status.textContent = "Saving…";
+    try {
+      await request(`/api/clusters/${encodeURIComponent(NAME)}/note`, {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({space: SPACE, key, text: textarea.value})
+      });
+      status.textContent = "Saved";
+      await loadDetail(false);
+    } catch (error) { status.textContent = error.message; status.className = "error"; }
+    finally { button.disabled = false; }
+  }));
+}
+
+function openHash() {
+  document.querySelectorAll(".cluster.target").forEach(node => node.classList.remove("target"));
+  const slug = decodeURIComponent(location.hash.slice(1));
+  if (!slug) return;
+  const anchor = document.getElementById(`anchor-${slug}`);
+  const cluster = anchor?.closest(".cluster");
+  if (cluster) { cluster.classList.add("target"); cluster.scrollIntoView({block: "start"}); }
+}
+
+async function loadDetail(showMessage=true) {
+  if (!NAME) return;
+  if (showMessage) setMessage("Loading…");
+  try {
+    DATA = await request(`/api/clusters/${encodeURIComponent(NAME)}`);
+    setMessage(""); render(); updateUrl();
+  } catch (error) {
+    DATA = null; setMessage(error.message, true);
+    $("#summary").innerHTML = `<div class="error">${esc(error.message)}</div>`;
+    $("#list").innerHTML = "";
+  }
+}
+
+async function loadList() {
+  try {
+    const data = await request("/api/clusters");
+    ENTRIES = data.embeddings || []; fillEntries();
+    $("#space").value = ["combined", "full", "label"].includes(SPACE) ? SPACE : "combined";
+    SPACE = $("#space").value;
+    if (!NAME) {
+      $("#summary").innerHTML = '<div class="error">config.yaml has no valid embedding.</div>';
+      return;
+    }
+    await loadDetail();
+  } catch (error) {
+    setMessage(error.message, true);
+    $("#summary").innerHTML = `<div class="error">${esc(error.message)}</div>`;
+  }
+}
+
+$("#embedding").addEventListener("change", () => { NAME = $("#embedding").value; loadDetail(); });
+$("#space").addEventListener("change", () => {
+  SPACE = $("#space").value; updateUrl();
+  [...$("#embedding").options].forEach((option, index) => option.textContent = entryLabel(ENTRIES[index]));
+  render();
+});
+$("#image").addEventListener("change", () => { IMAGE = $("#image").value; updateUrl(); render(); });
+$("#search").addEventListener("input", render);
+// The listeners of each control run first; the header listener then stores the new values.
+$("header").addEventListener("change", saveHeader);
+$("header").addEventListener("input", saveHeader);
+/* The thresholds and the limits of a build come from the block `clusters` of config.yaml. */
+$("#build").addEventListener("click", async () => {
+  $("#build").disabled = true; setMessage("Building clusters…");
+  try {
+    await request(`/api/clusters/${encodeURIComponent(NAME)}/build`, {
+      method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"
+    });
+    setMessage("Clusters built"); await loadList();
+  } catch (error) { setMessage(error.message, true); }
+  finally { $("#build").disabled = !NAME; }
+});
+$("#preview-close").addEventListener("click", () => $("#preview").close());
+$("#preview-previous").addEventListener("click", () => showPreview(PREVIEW_INDEX - 1));
+$("#preview-next").addEventListener("click", () => showPreview(PREVIEW_INDEX + 1));
+document.addEventListener("keydown", event => {
+  if (!$("#preview").open) return;
+  if (event.key === "ArrowLeft" || event.key === "ArrowUp") showPreview(PREVIEW_INDEX - 1);
+  if (event.key === "ArrowRight" || event.key === "ArrowDown") showPreview(PREVIEW_INDEX + 1);
+});
+window.addEventListener("hashchange", openHash);
+loadList();
+</script>
+</body>
+</html>

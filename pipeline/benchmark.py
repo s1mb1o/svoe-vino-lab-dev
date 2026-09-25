@@ -14,11 +14,12 @@ The query set follows `build_queries` of `match_run.py` with its defaults
 - A photo with the label `positive` or `negative` enters. Its place is its slug.
 - A photo stays out when its place is excluded, when its label is `unusable`, `variant`,
   or NULL, or when it is marked for deletion.
-- A photo of `__null__` enters with the label `no_match` and no truth only with the
-  label `positive` (confirmed: no card shows this wine), and when it is not marked for
-  deletion and `__null__` is not excluded. A NULL photo with no label waits for a wine
-  in the sidebar of `/testset` and stays out (owner answer of 2026-09-25T18:05:36+0300).
-  This differs from `match_run.py`, which takes each NULL photo that is not `unusable`.
+- A photo of `__null__` (the row "No Match" of `/testset`) enters with the label
+  `no_match` and no truth, also with no label, as in `match_run.py`. It stays out when
+  its label is `unusable`, when it is marked for deletion, or when `__null__` is
+  excluded (plan 36, owner answer of 2026-09-26T00:29:00+0300).
+- A photo of `__drawer__` (the Drawer, the sidebar of `/testset`) waits for a wine and
+  stays out.
 - The rows are in the order of `<place>/<file name>`, and the query ids follow it.
 """
 import argparse
@@ -40,6 +41,7 @@ sys.path.insert(1, os.path.join(ROOT, "scripts"))
 import imagestore  # noqa: E402
 import labdb  # noqa: E402
 import match_backends  # noqa: E402
+import testsets  # noqa: E402
 from match_scoring import (  # noqa: E402
     LABELS_IN_SET, NO_MATCH, NULL_SLUG, judge, metrics_of, write_summary)
 
@@ -55,8 +57,8 @@ class BenchmarkError(Exception):
 def build_queries(conn, db_path, set_name):
     """Return (rows, left out counts) of the set, as `build_queries` of match_run.py.
 
-    Two rules differ from match_run.py: the photos of a `Removed` wine are left out, and
-    a NULL photo is a query only with the label `positive` (plan 24)."""
+    Two rules differ from match_run.py: the photos of a `Removed` wine are left out
+    (plan 24), and the photos of the Drawer are left out (plan 36)."""
     if conn.execute("SELECT 1 FROM test_set WHERE set_name = ?", (set_name,)).fetchone() is None:
         raise BenchmarkError("the database holds no test set %r" % set_name)
     excluded = {slug for (slug,) in conn.execute(
@@ -75,18 +77,18 @@ def build_queries(conn, db_path, set_name):
                "abs_path": os.path.join(imagestore.folder_of(db_path, folder),
                                         "%s.%s" % (digest, extension)),
                "image_sha256": digest, "slug": place}
+        if place == testsets.DRAWER_SLUG:
+            # The Drawer keeps a photo for a later wine; no run uses it (plan 36).
+            skipped["drawer"] += 1
+            continue
         if place == NULL_SLUG:
+            # The place is the statement: a NULL photo needs no label (plan 36).
             if NULL_SLUG in excluded:
                 skipped["excluded slug"] += 1
             elif label == "unusable":
                 skipped["unusable"] += 1
             elif delete:
                 skipped["marked for deletion"] += 1
-            elif label != "positive":
-                # The NULL place is also the sidebar of the Testset page, where a photo
-                # waits for a wine. A NULL photo is a query only when a person confirmed
-                # it (`positive`). The owner chose this on 2026-09-25T18:05:36+0300.
-                skipped["unconfirmed NULL"] += 1
             else:
                 rows.append({**row, "label": NO_MATCH, "truth": []})
             continue
@@ -145,7 +147,7 @@ def git_commit():
 
 def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, limit=None,
                   label=None, embeddings=None, log=print, schema_dir=labdb.SCHEMA_DIR,
-                  configuration=None):
+                  configuration=None, use_cache=None):
     """Run the set against `backend`. Return (run directory, metrics).
 
     `backend` is a backend of `match_backends.build_backend`: it has `id`, `spec`,
@@ -154,6 +156,9 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
     `configuration` is the name of the lab configuration of the run (an entry of
     `embeddings` in `config.yaml`); `run.json` holds it under the key `configuration`.
     None writes no such key. Read `docs/plans/23_runs-page.md`.
+    `use_cache` is False when the run read no record of `model_cache` (the checkbox `Use
+    caches` of the dialog `Run>` was off); `run.json` holds it under the key `use_cache`.
+    None writes no such key. Read `docs/plans/39_use-caches-checkbox.md`.
     """
     conn = open_database(db_path, schema_dir)
     try:
@@ -203,6 +208,8 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
     }
     if configuration is not None:
         meta["configuration"] = configuration
+    if use_cache is not None:
+        meta["use_cache"] = use_cache
 
     results, lock, done = [], threading.Lock(), 0
     t_start = time.time()

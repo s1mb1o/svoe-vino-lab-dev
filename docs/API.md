@@ -375,8 +375,43 @@ hold `Embedding`, `VLM`, or both. `src` is a data URL of the bytes sent to the m
 `notes` explains a barcode or QR short-circuit and any transient model input that the
 run did not store.
 
+A run of a pipeline of the backend `embedding` (`backend.kind` is `embedding`, plan 33)
+gets the model input of each view. The route prepares the photo again with the steps that
+`run.json` records and with the SAM3 answers of `data/cache/sam3/`. It sends no request.
+Each item has `uses: ["Embedding"]`; `pipelines` and `label` hold the view (`full` or
+`label`). A view with no input gets a note. When the cache holds no SAM3 answer of the
+photo, `inputs` is empty, and a note states the reason.
+
 Errors: `404` for an unknown run, query, or source image. `422` when the exact input
 cannot be rebuilt. `500` when a local file cannot be read.
+
+#### `GET /api/run-candidate?id=<id>&query=<query id>&slug=<slug>`
+
+The catalogue inputs of one candidate of one result row of a run of the backend
+`embedding` (plan 38). The Runs page reads this route only when the user opens the image
+of a candidate.
+
+Since plan 38, each candidate of such a run holds the key `items` in `results.jsonl`:
+each current item of the wine in the index of the run, in the view order of the entry,
+the highest cosine first inside a view. An item holds `{sha256, view, type,
+embedding_hash, cosine}`. `sha256` is the `source_sha256` of the catalogue image. `type`
+is the image type of the wine column, for example `main` or `main_patched`. `cosine` is
+the cosine to the query vector of the same view, with 4 decimals, or null when the query
+has no vector of this view. `/api/run` removes `items` from its rows.
+
+The answer holds `{run, query, slug, score, views, items, notes}`. `views` maps each view
+of the query to the best cosine of the candidate. Each item holds the keys above and
+`best`, `state`, `url`, `width`, and `height`. `best` is true for the item whose cosine
+equals the best cosine of its view. `state` is `same` when the present index holds the
+item with the same `embedding_hash`: then `url` names
+`/embeddings/<name>/images/<sha256>_<view>.png`, the PNG that went to the model. `changed`
+(another hash) and `gone` (no item or no file) get the `url` null. A run from before plan
+38 has no `items`: the answer then lists the items of the wine in the present index with
+`cosine` null and `state` `current`, and a note states it. A run of another backend gets
+no item and a note. The route sends no request to a model.
+
+Errors: `404` for an unknown run or query, and for a slug that is not a candidate of the
+query.
 
 #### `GET /api/clusters`
 

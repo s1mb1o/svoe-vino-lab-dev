@@ -45,16 +45,24 @@ button:disabled { cursor: default; opacity: .45; }
 a { color: var(--accent); }
 .jobs { display: grid; gap: 4px; margin-top: 8px; }
 .job {
-  display: grid; grid-template-columns: minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto auto;
+  display: grid; grid-template-columns: auto minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto;
   gap: 10px; align-items: center; font-size: 12px; padding: 4px 8px;
   background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
 }
 .job-name { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .job-state { color: var(--var); font-weight: 650; }
 .job-phase { color: var(--var); }
-/* The button (x) of a running job row stops that build (owner message of 2026-09-25T18:16). */
-.job-stop { justify-self: start; padding: 0 6px; font-size: 12px; line-height: 18px; font-weight: 700; }
-.job-stop:not(:disabled) { color: var(--exc); border-color: var(--exc); }
+/* The icon button at the start of a running job row stops that build (owner messages of
+   2026-09-25T18:16 and 2026-09-26T01:24: an icon, not the red text "(x)"). */
+.job-stop {
+  justify-self: start; display: grid; place-items: center; width: 22px; height: 20px;
+  padding: 0; color: var(--muted);
+}
+.job-stop:hover:not(:disabled) { color: var(--text); }
+.job-stop svg {
+  width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.4;
+  stroke-linecap: round;
+}
 .prog { height: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
 .prog div { height: 100%; background: var(--accent); }
 main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
@@ -137,7 +145,8 @@ main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
   .matrix { grid-auto-columns: minmax(160px, 70vw); }
   input[type=search] { min-width: 0; width: min(100%, 340px); }
   .nav { width: 100%; margin-left: 0; overflow-x: auto; }
-  .job { grid-template-columns: 1fr 1fr; }
+  .job { grid-template-columns: auto 1fr 1fr; }
+  .job-stop { grid-row: span 3; align-self: start; }
 }
 /* The build log dialog. */
 #log-dialog {
@@ -546,10 +555,11 @@ function showJobs(jobs) {
     // A `stopping` job keeps a disabled button, so the row does not change its width.
     const stop = `<button type="button" class="job-stop" data-stop="${esc(job.name)}"
       title="${job.state === "running" ? `stop the build of ${esc(job.name)}` : "stopping"}"
-      aria-label="stop the build of ${esc(job.name)}"${job.state === "running" ? "" : " disabled"}>(x)</button>`;
-    return `<div class="job"><span class="job-name" title="${esc(job.name)}">${esc(job.name)}</span>
+      aria-label="stop the build of ${esc(job.name)}"${job.state === "running" ? "" : " disabled"}><svg
+      viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>`;
+    return `<div class="job">${stop}<span class="job-name" title="${esc(job.name)}">${esc(job.name)}</span>
       <span class="job-state">${esc(job.state)}</span><div class="prog"><div style="width:${percent}%"></div></div>
-      <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span>${stop}</div>`;
+      <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span></div>`;
   }).join("");
   if (running.length && !POLL) POLL = setInterval(pollJobs, 2000);
   if (!running.length && POLL) { clearInterval(POLL); POLL = null; }
@@ -841,8 +851,23 @@ document.addEventListener("click", async event => {
   const old = copy.textContent; copy.textContent = "copied";
   setTimeout(() => { copy.textContent = old; }, 700);
 });
-if (["all", "failed", "missing", "stale"].includes(INITIAL.get("filter"))) $("#filter").value = INITIAL.get("filter");
-$("#q").value = INITIAL.get("q") || "";
+/* The controls Show and Search are kept in localStorage and come back at the next page
+   load (owner message of 2026-09-26T00:30:00+0300). The configuration keeps its own key
+   STORE_KEY. A value in the URL wins over the stored value. */
+const HEADER_KEY = "svl.embedding.header";
+function storedHeader() {
+  try { return JSON.parse(localStorage.getItem(HEADER_KEY) || "{}") || {}; } catch (_) { return {}; }
+}
+function saveHeader() {
+  const value = {filter: $("#filter").value, q: $("#q").value};
+  try { localStorage.setItem(HEADER_KEY, JSON.stringify(value)); } catch (_) { /* no storage */ }
+}
+const HEADER = storedHeader();
+const START_FILTER = INITIAL.get("filter") || HEADER.filter;
+if (["all", "failed", "missing", "stale"].includes(START_FILTER)) $("#filter").value = START_FILTER;
+$("#q").value = INITIAL.has("q") ? INITIAL.get("q") : (typeof HEADER.q === "string" ? HEADER.q : "");
+$("#filter").addEventListener("change", saveHeader);
+$("#q").addEventListener("input", saveHeader);
 
 loadList().then(loadEntry).then(openPreviewOfUrl).catch(error => {
   $("#source").innerHTML = `<div class="err">Cannot read /api/embeddings: ${esc(error.message)}</div>`;

@@ -4,18 +4,20 @@ The page reads the run directories of `runs/` with `run_files.py`. The runs stay
 the lab database does not hold them. Each route is GET and writes nothing:
 
     GET /runs                                   the page
-    GET /api/runs                               the head of each run, and the lab
-                                                configurations of `config.yaml`
+    GET /api/runs                               the head of each run, and the
+                                                pipelines of `config.yaml`
     GET /api/run?id=&filter=&sort=&q=&offset=&limit=
                                                 the metrics and the rows of one run
     GET /api/run-clusters                       the catalogue clusters and card names
     GET /api/run-inputs?id=&query=              the model inputs of one row
+    GET /api/run-candidate?id=&query=&slug=     the catalogue inputs of one candidate of
+                                                an embedding run and their cosines
 
-A lab configuration is one entry of the key `embeddings` of `config.yaml`. The key
-`configuration` of `run.json` names it. The images come from the image store of the
-lab database, through the route `/images/<folder>/<sha256>.<ext>`: the photo of a row by
-its `image_sha256`, and the catalogue image of a slug by the rule of `card_images` of
-`lab_server.py`. Read `docs/plans/23_runs-page.md`.
+A pipeline is one entry of the key `pipeline` of `config.yaml` (`pipelines.py`, plan
+34). The key `configuration` of `run.json` names it. The images come from the image
+store of the lab database, through the route `/images/<folder>/<sha256>.<ext>`: the photo
+of a row by its `image_sha256`, and the catalogue image of a slug by the rule of
+`card_images` of `lab_server.py`. Read `docs/plans/23_runs-page.md`.
 """
 import hashlib
 import os
@@ -28,6 +30,7 @@ from pathlib import Path
 import embeddings
 import lab_pages
 import labdb
+import pipelines
 import run_files
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,7 +38,8 @@ RUNS_DIR = os.path.join(ROOT, "runs")
 CLUSTERS_FILE = os.path.join(ROOT, "dataset", "catalog-clusters.json")
 RULES_FILE = os.path.join(ROOT, "dataset", "catalog-cluster-rules.json")
 MATCHER_ROOT = os.path.join(os.path.dirname(ROOT), "svoe-vino-matcher")
-ROUTES = ("/runs", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs")
+ROUTES = ("/runs", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
+          "/api/run-candidate")
 JSON_TYPE = "application/json; charset=utf-8"
 MAX_LIMIT = 1000
 # The keys of a cluster rule that the VLM box of the page reads.
@@ -74,6 +78,8 @@ def respond(server, method, path, card_images):
         return run_view(runs_dir, server.db_path, query, card_images)
     if route == "/api/run-clusters":
         return _json(200, clusters_view(server.db_path))
+    if route == "/api/run-candidate":
+        return candidate_view(runs_dir, server.db_path, query)
     return inputs_view(runs_dir, server.db_path, query)
 
 
@@ -82,18 +88,18 @@ def _one(query, key, default=""):
 
 
 def configurations(config_path):
-    """Return (the lab configurations of `config.yaml`, in file order, the error of the
-    file or None). An entry that is not valid keeps its name and its error."""
+    """Return (the pipelines of `config.yaml`, in file order, the error of the file or
+    None). An entry that is not valid keeps its name and its error."""
     try:
-        settings = embeddings.load_settings(config_path)
+        settings = pipelines.load(config_path)
     except embeddings.ConfigError as exc:
         return [], str(exc)
-    return [{"name": name, "backend": embedding.backend if embedding else None,
-             "error": error} for name, embedding, error in settings.entries], None
+    return [{"name": name, "backend": pipeline.backend if pipeline else None,
+             "error": error} for name, pipeline, error in settings.entries], None
 
 
 def runs_view(runs_dir, config_path):
-    """Return the head of each run, the newest first, and the lab configurations."""
+    """Return the head of each run, the newest first, and the pipelines."""
     entries, error = configurations(config_path)
     return {"runs_dir": runs_dir,
             "runs": [run_files.run_head(runs_dir, run_id)
@@ -170,6 +176,11 @@ def run_view(runs_dir, db_path, query, card_images):
         return _error(400, "sort MUST be one of %s" % ", ".join(run_files.ROW_SORTS))
     rows, total = run_files.run_rows(runs_dir, run_id, mode, _one(query, "q"), limit,
                                      offset, sort)
+    # The items of a candidate of an embedding run come through `/api/run-candidate`
+    # (plan 38), so a page of rows stays small.
+    for row in rows:
+        for cand in row.get("candidates") or ():
+            cand.pop("items", None)
     bottles, patched, images_error = {}, [], None
     try:
         with closing(_connect(db_path)) as conn:
@@ -234,11 +245,20 @@ def inputs_view(runs_dir, db_path, query):
         return _error(404, "unknown query")
     meta = run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {}
     backend_url = str((meta.get("backend") or {}).get("url") or "")
-    if not backend_url:
+    # A run of `embedding_run.py` (plan 33) prepared the photo with the steps of a lab
+    # configuration. The backend `local` sends no HTTP request, so its run has no URL.
+    embedded = (meta.get("backend") or {}).get("kind") == "embedding"
+    if not backend_url and not embedded:
         # The configuration `mock` sends no request, so no image went to a model.
         return _json(200, {"run": run_id, "query": query_id, "inputs": [],
                            "notes": ["This run sent no request to a model, so it has no "
                                      "model input."]})
+    if (meta.get("backend") or {}).get("kind") == "remote":
+        # `remote_run.py` sends the photo as it is to a matcher outside this workspace
+        # (plan 31). The local matcher configurations do not know its URL.
+        return _json(200, {"run": run_id, "query": query_id, "inputs": [],
+                           "notes": ["This run sent the photo as it is to the remote matcher "
+                                     "%s. The matcher reports no model input." % backend_url]})
     digest = str(record.get("image_sha256") or "")
     try:
         with closing(_connect(db_path)) as conn:
@@ -248,6 +268,11 @@ def inputs_view(runs_dir, db_path, query):
     if not hit:
         return _error(404, "the source image of this query is not in the lab image store")
     path = os.path.join(labdb.image_store(db_path), hit[0], "%s.%s" % (digest, hit[1]))
+    if embedded:
+        # The steps of run.json and the SAM3 answers of the cache; no request to a model.
+        import embedding_run  # noqa: E402  (the SAM3 cuts and the steps, on demand)
+        return _json(200, {"run": run_id, "query": query_id,
+                           **embedding_run.model_inputs(meta["backend"], path)})
     scripts = os.path.join(ROOT, "scripts")
     if scripts not in sys.path:
         sys.path.insert(1, scripts)
@@ -261,3 +286,26 @@ def inputs_view(runs_dir, db_path, query):
     except (OSError, ValueError) as exc:
         return _error(500, "cannot rebuild model inputs: %s" % exc)
     return _json(200, {"run": run_id, "query": query_id, **answer})
+
+
+def candidate_view(runs_dir, db_path, query):
+    """Answer the catalogue inputs of one candidate of one recorded query of an embedding
+    run, with the cosine of each (plan 38): `embedding_run.candidate_items`."""
+    run_id, query_id, slug = _one(query, "id"), _one(query, "query"), _one(query, "slug")
+    if run_id not in run_files.run_dirs(runs_dir):
+        return _error(404, "unknown run")
+    record = run_files.run_result(runs_dir, run_id, query_id)
+    if record is None:
+        return _error(404, "unknown query")
+    cand = next((c for c in record.get("candidates") or () if c.get("slug") == slug), None)
+    if cand is None:
+        return _error(404, "the slug is not a candidate of this query")
+    head = {"run": run_id, "query": query_id, "slug": slug}
+    spec = (run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json"))
+            or {}).get("backend") or {}
+    if spec.get("kind") != "embedding":
+        return _json(200, dict(head, score=cand.get("score"), views={}, items=[], notes=[
+            "This run is not a run of an embedding pipeline, so it holds no cosine of a "
+            "catalogue input."]))
+    import embedding_run  # noqa: E402  (numpy and the index, on demand)
+    return _json(200, dict(head, **embedding_run.candidate_items(spec, cand, db_path)))

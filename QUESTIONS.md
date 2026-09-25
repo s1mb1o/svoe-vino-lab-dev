@@ -37,3 +37,23 @@ Until the owner answers:
 
 - The configuration check rejects a view `label`.
 - Each embedding has the view `full` alone.
+
+## Q2 to Q11. The benchmark of the embedding entries (plan 40)
+
+State: answered on 2026-09-26 by the session drink-atlas-workspace-e2 [9e7fe4]. The owner
+message of 2026-09-26T01:43:59+0300 asks the session to answer its own questions and to
+log them here. The owner MAY change an answer. Plan:
+[docs/plans/40_embedding-benchmark.md](docs/plans/40_embedding-benchmark.md).
+
+| # | Question | Answer of the session | Reason |
+|---|---|---|---|
+| Q2 | What is "commit all"? | One commit of every pending change of `svoe-vino-lab`, after each live session that changes the project sent "finished". | The owner asked for it. `runs/` and `data/` stay out: `.gitignore` holds them. |
+| Q3 | What is "basic pipeline"? | The two forms of the owner message of 2026-09-26T00:45:33+0300: `as-is` and `crop`. | The owner named them "basic runner configs". |
+| Q4 | What are "all variants of embeddings"? | The 11 entries of the key `embeddings` of `config.yaml`. | These are the embedding variants of the lab. The gateway also serves `wemm-embed-*` and `qwen3-embed-*`; they are not entries, and `qwen3-embed-*` is a text model. |
+| Q5 | Which test sets? | `my` (2,209 queries) and `official-real-photos` (80 queries). | `my` is the set of the two basic runs of 01:07. `official-real-photos` has the runs of `vino-svoe-search-by-photo`, the baseline of the present recognizer. |
+| Q6 | Is a run of `vino-svoe-search-by-photo` on `my` part of the benchmark? | No. | That run sends 2,209 photos to the external API of vino-svoe.ru. The report uses the runs on `official-real-photos`. |
+| Q7 | What happens to the entry with no index (`gx10-siglip2-so400m-patch16-512`)? | Build its index first. | The gateway serves the model; the owner asked for all variants. |
+| Q8 | What happens to the indexes of 2026-09-25 with 4 missing items? | Add the missing items with `build_embeddings.py` first. | Each run then compares the same catalogue. |
+| Q9 | Is a third pipeline with the steps of the entry (package cut, background removed, view `label`) part of it? | No. | The owner named the two basic forms. The view `label` of the photos of `my` needs about 2,209 new SAM3 calls. |
+| Q10 | How many photos at a time? | 4 for a gx10 entry; 1 for the entry of the backend `local`. | The gateway serves one model at a time; the Mac prepares the next photos meanwhile. The backend `local` takes one request at a time. |
+| Q11 | Which metric ranks the entries? | R@1 of the positive photos of `my`. The report also gives R@5, R@10, MRR, the false match at 1, and the latency. | R@1 is the answer that a user sees. |

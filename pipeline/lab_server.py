@@ -39,13 +39,19 @@ The route `/api/image-description` sets (POST) the values of one image in the ta
 key `image_descriptions`. `GET /api/image-description-status` sends the state of the
 watcher and the counts for the indicator of the page. `GET
 /api/image-description-reply?sha256=` sends the raw VLM reply of one image from
-`data/cache/`, with `describe_images.cached_reply`. When `image_description.watch` of
+`data/cache/`, with `describe_images.cached_reply`. `GET /api/image-detail-failures`
+sends the images whose detail failed, each with its entries of the watcher log
+(`image_descriptions.detail_failures`). When `image_description.watch` of
 `config.yaml` is true,
 `main` starts the watcher `describe_images.py --watch` and stops it at the exit; a SIGTERM
 leads to that exit. Read `docs/plans/26_image-description.md`.
 
 The Embeddings page is on: `embedding_routes.py` answers each of its routes. Read
 `docs/plans/10_embeddings-page.md`.
+
+The Clusters page is on: `cluster_routes.py` answers each of its routes. Each cluster
+artifact depends on one embedding build and stays in that embedding directory. Read
+`docs/plans/30_embedding-clusters.md`.
 
 The website import is on: `website_import_routes.py` answers each of its routes. Read
 `docs/plans/21_website-import-ui.md`.
@@ -59,10 +65,12 @@ It shows the test sets of the database and writes the labels of their photos; th
 database is the source of the labels. `GET /` redirects to `/dataset`. Read
 `docs/plans/24_testset-page.md`.
 
-The page Clusters is disabled for now. It answers a notice page with HTTP 503, and each
-API route that this text does not name answers HTTP 503 with a JSON error. The database
-does not hold the data of those routes yet. The navigation of every page stays as it is.
-Read `docs/plans/07_sqlite-lab-database.md`.
+The button `Run>` of `/testset` starts a run of one configuration on the set of the page:
+`run_jobs.py` answers `/api/run-configurations` and `/api/run-jobs`, and starts
+`run_job.py` as a separate process. Read `docs/plans/32_testset-run-button.md`.
+
+Each API route that this text does not name answers HTTP 503 with a JSON error. The
+navigation of every page stays as it is. Read `docs/plans/07_sqlite-lab-database.md`.
 
 Usage:
     python3 pipeline/lab_server.py              # http://127.0.0.1:8168/dataset
@@ -89,6 +97,7 @@ import yaml
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import alternatives  # noqa: E402
 import atlas_bindings  # noqa: E402
+import cluster_routes  # noqa: E402
 import codes  # noqa: E402
 import comments  # noqa: E402
 import describe_images  # noqa: E402
@@ -99,6 +108,7 @@ import lab_pages  # noqa: E402
 import labdb  # noqa: E402
 import manual_wines  # noqa: E402
 import patches  # noqa: E402
+import run_jobs  # noqa: E402
 import run_routes  # noqa: E402
 import testset_routes  # noqa: E402
 import vlm_config  # noqa: E402
@@ -122,7 +132,7 @@ PAGE_KEYS = {"wine_slug": "slug"}
 NAV = (("/dataset", "Dataset"), ("/embedding", "Embeddings"),
        ("/clusters", "Clusters"), ("/testset", "Testset"), ("/runs", "Runs"))
 # The disabled pages. `/docs` is the API page of the review tool.
-DISABLED_PAGES = {"/clusters": "Clusters", "/docs": "API docs"}
+DISABLED_PAGES = {"/docs": "API docs"}
 # `GET /` goes to the Dataset page. The owner moved the Testset page to `/testset` on
 # 2026-09-25T17:01:44+0300.
 HOME = "/dataset"
@@ -773,6 +783,13 @@ def image_description_reply(db_path, config_path, sha256):
                 ms=record.get("ms"), request=record.get("request"), reply=record["answer"])
 
 
+def image_detail_failures(db_path):
+    """Return the answer of `GET /api/image-detail-failures`: the failed details and
+    their entries of WATCHER_LOG (`image_descriptions.detail_failures`)."""
+    with closing(open_database(db_path)) as conn:
+        return image_descriptions.detail_failures(conn, WATCHER_LOG)
+
+
 def disabled_page(route):
     """Return the notice page of a disabled route."""
     name = DISABLED_PAGES[route]
@@ -811,6 +828,21 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _clusters(self):
+        """Send the answer of `cluster_routes.respond`."""
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+
+        code, body, ctype, cache = cluster_routes.respond(
+            self.server, self.command, self.path, read_body)
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
     def _website_import(self):
         """Send the answer of `website_import_routes.respond`."""
         def read_body(limit):
@@ -831,6 +863,24 @@ class Handler(BaseHTTPRequestHandler):
         the rule of `card_images`."""
         code, body, ctype, cache = run_routes.respond(self.server, self.command, self.path,
                                                       card_images)
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
+    def _run_jobs(self):
+        """Send the answer of `run_jobs.respond` (plan 32)."""
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+
+        try:
+            code, body, ctype, cache = run_jobs.respond(self.server, self.command,
+                                                        self.path, read_body)
+        except (ConfigError, sqlite3.Error) as exc:
+            code, body, ctype, cache = 503, {"error": str(exc)}, run_jobs.JSON, "no-store"
         if isinstance(body, (dict, list)):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
@@ -866,10 +916,14 @@ class Handler(BaseHTTPRequestHandler):
         route = urllib.parse.urlsplit(self.path).path
         if embedding_routes.handles(route):
             self._embedding()
+        elif cluster_routes.handles(route):
+            self._clusters()
         elif website_import_routes.handles(route):
             self._website_import()
         elif run_routes.handles(route):
             self._runs()
+        elif run_jobs.handles(route):
+            self._run_jobs()
         elif testset_routes.handles(route):
             self._testset()
         elif route == "/":
@@ -886,6 +940,11 @@ class Handler(BaseHTTPRequestHandler):
         elif route == "/api/image-description-status":
             try:
                 self._json(200, image_description_status(self.server.db_path))
+            except (ConfigError, sqlite3.Error) as exc:
+                self._json(503, {"error": str(exc)})
+        elif route == "/api/image-detail-failures":
+            try:
+                self._json(200, image_detail_failures(self.server.db_path))
             except (ConfigError, sqlite3.Error) as exc:
                 self._json(503, {"error": str(exc)})
         elif route == "/api/image-description-reply":
@@ -1132,8 +1191,12 @@ class Handler(BaseHTTPRequestHandler):
         route = urllib.parse.urlsplit(self.path).path
         if embedding_routes.handles(route):
             self._embedding()
+        elif cluster_routes.handles(route):
+            self._clusters()
         elif website_import_routes.handles(route):
             self._website_import()
+        elif run_jobs.handles(route):
+            self._run_jobs()
         elif testset_routes.handles(route):
             self._testset()
         elif route == "/api/wine-state" and self.command == "POST":

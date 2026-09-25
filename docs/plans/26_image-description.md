@@ -11,6 +11,9 @@ entries of `config.yaml` lost their `key: null`. The owner confirmed at 2026-09-
 missing `key` is not set, and it is null.
 The owner messages of 2026-09-25 from 16:31 to 16:48 and the answers are in
 [owner-messages.md](../owner-messages.md).
+Plan 29 ([29_image-details.md](29_image-details.md)) adds stage 2 to the watcher of this
+plan: the details of the label in the table `image_detail`. Stage 1 of this plan stays as
+it is and goes first.
 
 ## Goal
 
@@ -233,7 +236,8 @@ WHERE sha256 = :sha256 AND vlm_at IS NULL;
   where `vlm_at` IS NULL and `vlm_attempts` < `max_attempts`.
 - The newest link first (`wine_image.rowid` descending). So a new upload gets its
   description in about one call time, also while the backlog runs.
-- One call at a time. The gx10 slot is shared.
+- One call at a time. The gx10 slot is shared. Note of 2026-09-26: plan 35 replaced this
+  rule. Up to `image_description.workers` calls run at the same time (8 in `config.yaml`).
 - No pending image: the watcher sleeps `poll_seconds` (30) and asks the database again.
   The query is one indexed read.
 - Each write is a short transaction with a busy timeout of 30 s. The lab server writes the

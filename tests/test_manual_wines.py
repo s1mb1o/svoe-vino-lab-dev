@@ -57,7 +57,7 @@ class ManualSlugTest(unittest.TestCase):
     def test_check_slug(self):
         self.assertEqual(manual_wines.check_slug(" __a-b_1 "), "__a-b_1")
         for slug in ("a", "_a", "__", "__-a", "__A", "__a b", "__ä", "__" + "a" * 199, 7,
-                     None, "__null__"):
+                     None, "__null__", "__drawer__"):
             with self.subTest(slug=slug):
                 with self.assertRaises(manual_wines.WineError) as error:
                     manual_wines.check_slug(slug)

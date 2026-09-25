@@ -110,13 +110,27 @@ python3 pipeline/describe_images.py --once                 # one pass, then stop
 python3 pipeline/describe_images.py --once --retry-failed  # the failed images again
 sqlite3 data/lab.sqlite3 "SELECT created_by, vlm_at IS NOT NULL, count(*) \
     FROM image_description GROUP BY 1, 2"                  # the progress
+python3 pipeline/describe_images.py --detail-sha <sha256>  # the detail of one image (plan 29)
+sqlite3 data/lab.sqlite3 "SELECT prompt_kind, package_type, vlm_at IS NOT NULL, \
+    count(*) FROM image_detail GROUP BY 1, 2, 3"           # the progress of the details
+sqlite3 data/lab.sqlite3 "SELECT json(answer) FROM image_detail \
+    WHERE sha256 = '<sha256>'"                             # one detail
 ```
+
+Stage 2 (the details, plan 29) runs with `image_description.details: true`, when no image
+waits for a class. `--retry-failed` also gives the failed details new attempts.
+
+`image_description.workers` (8; plan 35) is the number of requests at the same time, also
+for `--once`. The start line of the log names it: `start: watch, vlm …, workers 8, …`. A
+change of the value needs a restart of 8168: the watcher reads `config.yaml` only at its
+start, and the lab server starts the watcher. Ctrl+C in a `--once` run waits for the
+requests that run.
 
 The state of the watcher is in `work/describe_images.status.json`, and
 `curl -s http://127.0.0.1:8168/api/image-description-status` answers the state with
 the counts. The pill left of `Add wine` on `/dataset` shows the same.
 
-One watcher runs at a time (`work/describe_images.lock`). `--sha` and `--once` stop with
+One watcher runs at a time (`work/describe_images.lock`). `--sha`, `--detail-sha`, and `--once` stop with
 an error while the watcher of the server runs. A run of many images from this Mac needs
 `caffeinate -ims -w <pid of the watcher>`.
 
@@ -137,14 +151,44 @@ Ctrl+C stops the build after the present batch. A second run continues it.
 The files are in `data/embeddings/<name>/`. The Embeddings page of the lab server
 starts and stops a build too.
 
-Сделать прогон конфигурации `mock` (случайные top-k кандидаты для каждого фото
-тестового набора; для проверки страницы `/runs`):
+Build the clusters of one completed embedding entry:
 ```bash
-python3 pipeline/mock_run.py --set my --top-k 10 --seed 20260925
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_clusters.py \
+    --name gx10-siglip2-so400m-patch16-naflex-p256
 ```
-The run is in `runs/<stamp>-lab-mock-my/`. The Runs page of the lab server shows it
-under the filter `Configuration` = `mock`. Without `--seed`, the script takes a random
-seed and prints it.
+The command writes `clusters.json` in `data/embeddings/<name>/`. The Clusters page can
+run the same build. The thresholds and the limits come from the block `clusters` of
+`config.yaml`. The options `--full-threshold 0.9 --label-threshold 0.9` replace the
+thresholds for one build. A build over a limit stops and keeps the old file.
+
+Make a run of the official recognizer of vino-svoe.ru (the pipeline
+`vino-svoe-search-by-photo`, backend `svoe-vino-ru`). Each photo of the test set goes to
+the API as it is. First a probe of 3 photos, then the full set:
+```bash
+python3 pipeline/remote_run.py --name vino-svoe-search-by-photo --set my --limit 3 --label smoke
+python3 pipeline/remote_run.py --name vino-svoe-search-by-photo --set my --workers 4
+```
+The run is in `runs/<stamp>-lab-vino-svoe-search-by-photo-my[-<label>]/`. The Runs page
+shows it under the filter `Pipeline` = `vino-svoe-search-by-photo`. `--workers 4`
+costs no latency; the default 8 of the entry is faster and raises the median latency by
+about 35 percent (`ResearchLog.md`, 2026-09-17). Read
+`docs/plans/31_remote-configuration.md`.
+
+Make a run of a pipeline of the backend `embedding` on a test set. Its key `embedding`
+names an entry of `embeddings:`, and that entry needs its index. Each photo gets the steps
+of the key `views` of the pipeline, or else the steps of the entry, and its vectors rank
+the catalogue vectors of the entry. First a probe of 3 photos, then the full set:
+```bash
+python3 pipeline/embedding_run.py --name siglip2-p256-crop \
+    --set official-real-photos --limit 3 --label smoke
+python3 pipeline/embedding_run.py --name siglip2-p256-crop --set official-real-photos
+```
+The run is in `runs/<stamp>-lab-<pipeline>-<set>[-<label>]/`. A view whose first step is
+`segment` waits for SAM3 on gx10 in the first run of a set: one call for each target and
+photo. The answers stay in `data/cache/sam3/`, so a later run of the set, with any
+pipeline, sends no SAM3 request. `siglip2-p256-as-is` sends no SAM3 request at all. An entry of the backend
+`local` runs with `~/.venvs/svoe-vino-lab/bin/python`. A run of the set `my` from this Mac
+needs `caffeinate -ims -w <pid>`. Read `docs/plans/33_embedding-run.md`.
 
 # Кэш вызовов моделей
 

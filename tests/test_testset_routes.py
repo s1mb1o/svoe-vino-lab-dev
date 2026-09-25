@@ -72,7 +72,7 @@ class TestsetRoutesTest(unittest.TestCase):
         view = json.loads(text)
         self.assertEqual(view["set"], "my")
         self.assertEqual([r["slug"] for r in view["rows"]],
-                         ["__null__", "wine-a", "wine-b", "wine-c"])
+                         ["__null__", "__drawer__", "wine-a", "wine-b", "wine-c"])
         wine_b = next(r for r in view["rows"] if r["slug"] == "wine-b")
         self.assertEqual(wine_b["state"], "Removed")
         photo = wine_b["photos"][0]

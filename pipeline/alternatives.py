@@ -13,7 +13,8 @@ Rules:
   (`side`): a barcode on the package is the back. The type is one of the four. SAM3 does
   not answer: the type is `full_front`, and the answer holds a warning.
 - A full type gets the package cut of `derive.py`. A label type gets the label cut
-  (`label_instance`). `image_derivative` holds one cut for each original and kind
+  (`label_instance`): the segment of the main label, or the box around the main label
+  and the other body labels of the same bottle (`body_labels`). `image_derivative` holds one cut for each original and kind
   (`package`, `label`), so each row shows the cut of its own kind, and a change back to
   a kind reuses its cut.
 - A request processes a photo whenever its row has no current cut of its kind: an upload,
@@ -29,6 +30,7 @@ The store path and the `INSERT INTO image` are each in one function of `patches.
 import base64
 import hashlib
 import io
+import math
 import os
 
 from PIL import Image, ImageChops
@@ -80,13 +82,25 @@ CAN_HEIGHT, CAN_ASPECT = 0.9, 2.0
 BOTTLE_IOU, BOTTLE_COVER, BOTTLE_COVER_IOU = 0.80, 0.80, 0.40
 DUPLICATE_IOU = 0.90
 MIN_BOX_SIDE = 8
+# A second body label on the bottle of the main label, owner answer of
+# 2026-09-25T19:16:44+0300: a label counts when its centre lies on the largest bottle,
+# when less than `PART_COVER` of it lies inside the main label, and when it has at least
+# `BODY_AREA` of the area and `BODY_WIDTH` of the width of the main label. A neck label, a
+# capsule, and a part of the main label do not count. With a counted label, the cut is
+# the box around the main label and the counted labels, with no mask: the segment of one
+# label loses the other label. On 251 cached SAM3 answers of 2026-09-25, 13 photos got the
+# box: two labels one above the other, and sparkling wines with a large shoulder label.
+BODY_AREA, BODY_WIDTH, PART_COVER = 0.25, 0.60, 0.80
 
 SETTINGS_LABEL = (
     "SAM3 %r, threshold %s, mask %s, max side %d; the largest label that is not the "
-    "package (build_labels.py), else the largest label; mask blur %s of the long side, "
-    "keep >= %d/255; edge blur %s px"
+    "package (build_labels.py), else the largest label; a second label on the bottle, "
+    "less than %s inside it, with >= %s of its area and >= %s of its width: the box of "
+    "the labels, no mask; else the mask: mask blur %s of the long side, keep >= %d/255; "
+    "edge blur %s px"
     % (DETECT_TEXTS, derive.SAM3_THRESHOLD, derive.SAM3_MASK_THRESHOLD,
-       derive.SAM3_MAX_SIDE, derive.MASK_BLUR, derive.MASK_KEEP, derive.EDGE_BLUR))
+       derive.SAM3_MAX_SIDE, PART_COVER, BODY_AREA, BODY_WIDTH, derive.MASK_BLUR,
+       derive.MASK_KEEP, derive.EDGE_BLUR))
 
 NO_PROCESSED_FILE = "The photo is stored with no processed file. The card shows it as it is."
 NO_NEW_CUT = ("The photo got no cut of its new kind. The card shows it as it is; the next "
@@ -205,6 +219,13 @@ def label_instance(instances):
     the largest mask wins, not the best score. In a close-up the label can fill the frame
     and equal the bottle box; when the rule leaves no label, the largest label counts.
     """
+    candidates, _bottles = _label_candidates(instances)
+    return candidates[0] if candidates else None
+
+
+def _label_candidates(instances):
+    """Return (the labels of the rule of `label_instance`, the largest first; the bottle
+    boxes)."""
     labels, bottles = [], []
     for item in instances:
         box = _box(item)
@@ -226,8 +247,56 @@ def label_instance(instances):
                        or (_covers(_box(item), bottle) > BOTTLE_COVER
                            and _iou(_box(item), bottle) > BOTTLE_COVER_IOU)
                        for bottle in bottles)]
-    candidates = kept or unique
-    return min(candidates, key=order) if candidates else None
+    return (kept or unique), bottles
+
+
+def _centre_on(box, package, width, height):
+    """Tell whether the centre of `box` lies on `package`, with the tolerance `INSIDE`
+    of the photo of `width` × `height` pixels."""
+    cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+    return (package[0] - INSIDE * width <= cx <= package[2] + INSIDE * width
+            and package[1] - INSIDE * height <= cy <= package[3] + INSIDE * height)
+
+
+def body_labels(instances, main, width, height):
+    """Return the other labels of `instances` that count next to the label `main` (the
+    rule of `BODY_AREA`), the largest first. The boxes are in the pixels of the sent copy
+    of `width` × `height` pixels. With no bottle, each label can count."""
+    candidates, bottles = _label_candidates(instances)
+    bottle = max(bottles, key=_area) if bottles else None
+    main_box, main_area = _box(main), float(main.get("area") or 0)
+    out = []
+    for item in candidates:
+        if item is main:
+            continue
+        box = _box(item)
+        if (float(item.get("area") or 0) >= BODY_AREA * main_area
+                and box[2] - box[0] >= BODY_WIDTH * (main_box[2] - main_box[0])
+                and _covers(main_box, box) < PART_COVER
+                and (bottle is None or _centre_on(box, bottle, width, height))):
+            out.append(item)
+    return out
+
+
+def _copy_scale(image, instance):
+    """Return the scale of the copy that SAM3 got: the width of the mask of `instance`
+    over the width of `image`."""
+    with Image.open(io.BytesIO(base64.b64decode(instance["mask_png_b64"]))) as mask:
+        return mask.width / image.width
+
+
+def label_box_cut(image, items, scale):
+    """Return (the crop of `image` to the box around the boxes of `items` as an RGBA
+    image, the box in the pixels of `image`). The boxes of `items` are in the pixels of the
+    sent copy of the scale `scale`. No mask is applied."""
+    boxes = [_box(item) for item in items]
+    box = (max(0, math.floor(min(b[0] for b in boxes) / scale)),
+           max(0, math.floor(min(b[1] for b in boxes) / scale)),
+           min(image.width, math.ceil(max(b[2] for b in boxes) / scale)),
+           min(image.height, math.ceil(max(b[3] for b in boxes) / scale)))
+    if box[2] <= box[0] or box[3] <= box[1]:
+        box = (0, 0, image.width, image.height)
+    return image.convert("RGBA").crop(box), box
 
 
 def label_cut(image, instance):
@@ -246,6 +315,26 @@ def label_cut(image, instance):
     return out.crop(box), box
 
 
+def label_cut_of(image, instances):
+    """Return (the method, the label cut as an RGBA image, its box in the pixels of
+    `image`), or None when the SAM3 answer `instances` of `DETECT_TEXTS` holds no label.
+
+    One label gets its mask (`seg`). A label with other body labels gets the box around
+    them all (`crop`). `label_derivatives` and the embedding runner of plan 33 use this
+    function, so a test photo gets the cut of a catalogue image.
+    """
+    instance = label_instance(instances)
+    if instance is None:
+        return None
+    scale = _copy_scale(image, instance)
+    others = body_labels(instances, instance, image.width * scale, image.height * scale)
+    if others:
+        result, box = label_box_cut(image, [instance] + others, scale)
+        return "crop", result, box
+    result, box = label_cut(image, instance)
+    return "seg", result, box
+
+
 def label_derivatives(conn, db_path, digest, image, icc_profile, instances, log):
     """Return the `derive.Derivatives` (kind `label`) of the label cut of one original.
 
@@ -256,11 +345,11 @@ def label_derivatives(conn, db_path, digest, image, icc_profile, instances, log)
     if has_current_cut(conn, digest, "label"):
         out.present += 1
         return out
-    instance = label_instance(instances)
-    if instance is None:
+    cut = label_cut_of(image, instances)
+    if cut is None:
         log("no processing: SAM3 found no label")
         return out
-    result, box = label_cut(image, instance)
+    method, result, box = cut
     data = derive.png_bytes(result, icc_profile)
     derived = hashlib.sha256(data).hexdigest()
     folder = imagestore.folder_of(db_path, labdb.DERIVED_FOLDER)
@@ -272,9 +361,9 @@ def label_derivatives(conn, db_path, digest, image, icc_profile, instances, log)
         out.errors += 1
         log("error: %s" % exc)
         return out
-    out.methods["seg"] += 1
+    out.methods[method] += 1
     out.images.append((derived, labdb.DERIVED_FOLDER, "png") + result.size)
-    out.links.append((digest, "seg", SETTINGS_LABEL, derived) + tuple(box))
+    out.links.append((digest, method, SETTINGS_LABEL, derived) + tuple(box))
     return out
 
 

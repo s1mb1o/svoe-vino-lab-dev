@@ -92,12 +92,17 @@ class TestsetsTest(unittest.TestCase):
     def test_the_rows_follow_the_answer_of_the_owner(self):
         rows = self.view()["rows"]
         self.assertEqual([r["slug"] for r in rows],
-                         ["__null__", "unknown-wine", "wine-a", "wine-b", "wine-c", "wine-d"])
+                         ["__null__", "__drawer__", "unknown-wine", "wine-a", "wine-b",
+                          "wine-c", "wine-d"])
         by_slug = {r["slug"]: r for r in rows}
         self.assertTrue(by_slug["__null__"]["null_row"])
         self.assertEqual(by_slug["__null__"]["name"], TS.NULL_NAME)
+        self.assertTrue(by_slug["__drawer__"]["drawer_row"])
+        self.assertEqual((by_slug["__drawer__"]["name"], by_slug["__drawer__"]["photos"],
+                          by_slug["__drawer__"]["catalog_only"]), (TS.DRAWER_NAME, [], False))
         self.assertEqual({s: r["state"] for s, r in by_slug.items()},
-                         {"__null__": None, "unknown-wine": None, "wine-a": "Active",
+                         {"__null__": None, "__drawer__": None, "unknown-wine": None,
+                          "wine-a": "Active",
                           "wine-b": "Active", "wine-c": "Removed", "wine-d": "Disabled"})
         self.assertFalse(by_slug["unknown-wine"]["in_catalog"])
         self.assertEqual([s for s, r in by_slug.items() if r["catalog_only"]],
@@ -229,7 +234,7 @@ class TestsetsTest(unittest.TestCase):
         self.assertEqual(TS.entry_of(row), {"label": "positive", "delete": True,
                                             "confidence": 1, "box": [0, 0, 5, 5]})
 
-    # The sidebar of the page is the NULL place (owner answers of 2026-09-25T18:05:36).
+    # The row "No Match" is the NULL place; the sidebar is the Drawer (plan 36).
 
     def test_a_move_to_the_null_place_and_back(self):
         self.write(TS.set_label, "wine-a", "01_conf095.jpg", "positive")
@@ -246,6 +251,30 @@ class TestsetsTest(unittest.TestCase):
         answer = self.write(TS.move_photo, TS.NULL_SLUG, "01_conf095.jpg", "wine-b")
         self.assertEqual(answer["photo"]["entry"]["moved_from"], TS.NULL_SLUG)
         self.assertFalse(self.row("wine-b")["catalog_only"])
+
+    def test_the_drawer_holds_a_photo_with_no_label(self):
+        self.write(TS.set_label, "wine-a", "01_conf095.jpg", "positive")
+        answer = self.write(TS.move_photo, "wine-a", "01_conf095.jpg", TS.DRAWER_SLUG)
+        self.assertEqual(answer["photo"]["place"], TS.DRAWER_SLUG)
+        self.assertNotIn("label", answer["photo"]["entry"])
+        self.assertEqual((answer["counts"]["drawer"], answer["counts"]["no_match"]), (1, 1))
+        self.assertEqual([p["file"] for p in self.row(TS.DRAWER_SLUG)["photos"]],
+                         ["01_conf095.jpg"])
+        # A Drawer photo takes no label. The comment and the delete mark stay allowed.
+        for label in TS.LABELS:
+            with self.assertRaises(TS.TestsetError) as caught:
+                self.write(TS.set_label, TS.DRAWER_SLUG, "01_conf095.jpg", label)
+            self.assertEqual(caught.exception.code, 400, label)
+        self.write(TS.set_comment, TS.DRAWER_SLUG, "01_conf095.jpg", "later")
+        self.write(TS.set_delete, TS.DRAWER_SLUG, "01_conf095.jpg", True)
+        answer = self.write(TS.move_photo, TS.DRAWER_SLUG, "01_conf095.jpg", TS.NULL_SLUG)
+        self.assertEqual((answer["photo"]["entry"]["moved_from"], answer["counts"]["drawer"],
+                          answer["counts"]["no_match"]), (TS.DRAWER_SLUG, 0, 2))
+
+    def test_an_upload_to_the_drawer(self):
+        answer = self.write(TS.upload_photo, TS.DRAWER_SLUG, jpeg((25, 15)), "d.jpg")
+        self.assertEqual((answer["place"], answer["file"], answer["counts"]["drawer"]),
+                         (TS.DRAWER_SLUG, "d.jpg", 1))
 
     def test_a_taken_name_gets_a_suffix_and_the_other_fields_stay(self):
         answer = self.write(TS.move_photo, "wine-c", "01.jpg", "unknown-wine")

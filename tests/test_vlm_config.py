@@ -53,6 +53,15 @@ class EntriesTest(unittest.TestCase):
             self.assertEqual(entry.api_key(), "secret-value")
         self.assertEqual(entry.api_key(), "")
 
+    def test_max_tokens_is_8192_when_absent(self):
+        self.assertEqual(vlm_config.entry({"vlm": [item()]}, "m").max_tokens, 8192)
+        self.assertEqual(vlm_config.entry({"vlm": [item(max_tokens=2048)]}, "m").max_tokens,
+                         2048)
+        for value in (0, -1, "8192", True, 1.5, None):
+            with self.subTest(value=value):
+                with self.assertRaises(vlm_config.VlmConfigError):
+                    vlm_config.entries({"vlm": [item(max_tokens=value)]})
+
     def test_a_key_value_is_refused_and_not_repeated(self):
         with self.assertRaises(vlm_config.VlmConfigError) as caught:
             vlm_config.entries({"vlm": [item(key="sk-secret-value")]})

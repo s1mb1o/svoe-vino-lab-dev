@@ -80,6 +80,10 @@ def run_head(runs_dir, run_id):
         "started": meta.get("started") or "",
         "finished": meta.get("finished") or "",
         "dry_run": bool((meta.get("options") or {}).get("dry_run")),
+        # False: the run read no record of `model_cache`, so its latency is real time (the
+        # checkbox `Use caches` of the dialog `Run>`, plan 39). None: not recorded.
+        "use_cache": (meta.get("use_cache") if isinstance(meta.get("use_cache"), bool)
+                      else None),
         "queries": (met.get("queries") or {}).get("total",
                                                   (meta.get("query_set") or {}).get("total")),
         "positive": pos.get("n"),

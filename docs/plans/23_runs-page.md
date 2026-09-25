@@ -4,6 +4,10 @@ Date: 2026-09-25. State: implemented and deployed on 2026-09-25 (8168 started at
 13:14:31); the owner commits. Approved by the owner at 2026-09-25T12:52:00+0300.
 Session: drink-atlas-workspace-85.
 
+Changed by [plan 34](34_pipeline-section.md) on 2026-09-26: a lab configuration of a run
+is a pipeline of the key `pipeline` of `config.yaml`. The owner removed the configuration
+`mock` and `pipeline/mock_run.py` (owner message of 2026-09-26T00:26:27+0300).
+
 Source: owner messages of 2026-09-25T12:36:00+0300, 12:38:00, 12:41:00 (three answers),
 12:43:00, and 12:52:00 (the answers to Q1 to Q3 and the approval). The text is in [../owner-messages.md](../owner-messages.md).
 

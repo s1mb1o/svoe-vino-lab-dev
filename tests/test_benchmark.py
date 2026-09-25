@@ -165,6 +165,18 @@ class BenchmarkTest(unittest.TestCase):
         self.assertNotIn("configuration", plain_meta)
         self.assertEqual(named_meta["configuration"], "mock")
 
+    def test_run_json_holds_use_cache_only_when_it_is_given(self):
+        # Plan 39: the checkbox `Use caches` of the dialog `Run>`.
+        metas = {}
+        for label, use_cache in ((None, None), ("live", False), ("cached", True)):
+            run_dir, _ = BM.run_benchmark(self.db, "my", FakeBackend({}), str(self.runs),
+                                          embeddings={}, label=label, log=lambda m: None,
+                                          schema_dir=self.schema, use_cache=use_cache)
+            metas[label] = json.loads(Path(run_dir, "run.json").read_text(encoding="utf-8"))
+        self.assertNotIn("use_cache", metas[None])
+        self.assertIs(metas["live"]["use_cache"], False)
+        self.assertIs(metas["cached"]["use_cache"], True)
+
     def test_the_photos_of_a_removed_wine_leave_the_run_until_a_restore(self):
         # Owner answer of 2026-09-25T17:13:17+0300 (plan 24).
         conn = sqlite3.connect(self.db)
@@ -191,17 +203,30 @@ class BenchmarkTest(unittest.TestCase):
         finally:
             conn.close()
 
-    def test_a_null_photo_with_no_label_waits_in_the_sidebar(self):
-        # Owner answer of 2026-09-25T18:05:36+0300: the NULL place is also the sidebar of
-        # the Testset page, so a NULL photo is a query only with the label positive.
+    def test_a_null_photo_with_no_label_is_a_no_match_query(self):
+        # Plan 36 (owner answer of 2026-09-26T00:29:00+0300): the place `__null__` is the
+        # row "No Match", so a NULL photo needs no label, as in match_run.py.
         conn = sqlite3.connect(self.db)
         conn.execute("UPDATE test_photo SET label = NULL WHERE place = '__null__' AND "
                      "file_name = 'n1.jpg'")
         conn.commit()
         conn.close()
         rows, skipped = self.queries()
-        self.assertNotIn("__null__/n1.jpg", {r["image_path"] for r in rows})
-        self.assertEqual(skipped["unconfirmed NULL"], 1)
+        by_path = {r["image_path"]: r for r in rows}
+        self.assertEqual((by_path["__null__/n1.jpg"]["label"],
+                          by_path["__null__/n1.jpg"]["truth"]), ("no_match", []))
+        self.assertNotIn("unconfirmed NULL", skipped)
+
+    def test_a_drawer_photo_is_never_a_query(self):
+        # Plan 36: the Drawer keeps a photo for a later wine; no run uses it.
+        conn = sqlite3.connect(self.db)
+        conn.execute("UPDATE test_photo SET place = '__drawer__' WHERE place = '__null__' "
+                     "AND file_name = 'n1.jpg'")
+        conn.commit()
+        conn.close()
+        rows, skipped = self.queries()
+        self.assertFalse([r for r in rows if r["image_path"].startswith("__drawer__/")])
+        self.assertEqual(skipped["drawer"], 1)
 
 
 if __name__ == "__main__":

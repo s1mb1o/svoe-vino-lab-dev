@@ -46,9 +46,9 @@ python3 pipeline/lab_server.py            # http://127.0.0.1:8168/dataset
 `config.yaml` holds two keys: `rootdir` and `database_file`. A relative
 `database_file` is resolved against `rootdir`, so the value is
 `svoe-vino-lab/data/lab.sqlite3`. The lab server opens the database
-read-only. The Dataset, Embeddings, Testset (`/testset`), and Runs pages work. `/`
-redirects to `/dataset`. Clusters is disabled for now: it answers a notice page. The
-navigation order is `Dataset`, `Embeddings`, `Clusters`, `Testset`, `Runs`. Each card of the Dataset page holds
+read-only. The Dataset, Embeddings, Clusters, Testset (`/testset`), and Runs pages work.
+`/` redirects to `/dataset`. The navigation order is `Dataset`, `Embeddings`, `Clusters`,
+`Testset`, `Runs`. Each card of the Dataset page holds
 the buttons `Disable` / `Enable`, `Remove`, and `Restore` below the catalogue image. The
 `main` image of a `Disabled` wine is gray on the card. The browser draws it with a CSS
 filter; the file does not change. The patch and the alternative photos keep their
@@ -117,9 +117,11 @@ The page sends the file at once; there is no `Apply` step. The editor shows
 `Processing…` while the server stores the file in `data/images/patched/`, writes the
 `main_patched` row, and processes the file as `seed_patched.py` does. SAM3 can take up
 to about two minutes. When SAM3 does not answer, the patch is stored with no processed
-file, and the page shows a warning. A patch applied by mistake is removed with `Remove`
-and `Apply`: this deletes the row; the file stays in the store. The patch `Remove`
-button has the size of the `Remove` button of the main image and stands at the right.
+file, and the page shows a warning. A patch applied by mistake is removed with the red
+`Clear` button. The page clears the patch at once; there is no `Apply` step. The editor
+shows `Clearing…` while the server works. This deletes the row; the file stays in the
+store. The patch `Clear` button has the size of the `Remove` button of the main image
+and stands at the right.
 The editor does not write the patch folder.
 
 ```bash
@@ -141,7 +143,8 @@ value. It refuses a table `wine_code` that already holds rows, because a second 
 back the values that a person removed on the page; `--force` adds the missing rows anyway. The Dataset page of the lab has the editors
 `GTINs` and `QR URLs`. They write the table through `POST` and `DELETE` of
 `/api/dataset-gtin` and `/api/dataset-qr-url`. A save redraws its own card alone. The
-page checks the check digit while you type, and the server checks it again. The editor
+page checks the check digit while you type, and the server checks it again. The GTIN
+input accepts at most 14 characters (owner message of 2026-09-25T22:47:19+0300). The editor
 `Barcodes` shows only on the review tool, which sends `barcode_file`. `svoe-vino-matcher`
 still reads `code-map.json`; it does not see the codes of the table. Read
 [plan 11](docs/plans/11_wine-codes.md).
@@ -188,7 +191,7 @@ a favorite. The page writes through `POST /api/dataset-favorite` with
 each favorite wine in each state, also a `Removed` one. The header counts the favorites.
 Read [plan 19](docs/plans/19_favorites.md).
 
-The button `Add wine` of the Dataset page, before `Validate`, adds a wine by hand. The
+The button `Add wine` of the Dataset page adds a wine by hand. The
 dialog asks the slug, the name, the producer, the category, the color, the region, the
 grapes (optional), the description (optional), and the main image (JPEG, PNG, or WebP,
 at most 20 MB). The slug follows the name (`Южный Лес` -> `yuzhnyy-les`) until you type
@@ -290,11 +293,12 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
 - The combobox in the title (`Test set [my (4043 photos) ▾]`) chooses the set: `my`,
   `official-real-photos`, or `vlmrerank-8b-failed`. The address keeps the set, the
   controls, and the open photo: `/testset?set=<set>#<slug>/<file name>`. The line after
-  the combobox counts the wines and each photo of the set, the sidebar too. The stats
+  the combobox counts the wines and each photo of the set, the Drawer too. The stats
   line ends with the time of the last edit of the set.
 - One row for each `Active` and `Disabled` wine, and one row for each place that holds a
-  photo of the set, also when its wine is `Removed` or is not in `wine_catalog`. The NULL
-  place (`__null__`) is the right sidebar, not a row. A `Removed` wine keeps its photos and its labels and gets
+  photo of the set, also when its wine is `Removed` or is not in `wine_catalog`. The first
+  row is `No Match` (the place `__null__`), and no filter, sort, or search takes it away.
+  The Drawer (the place `__drawer__`) is the right sidebar, not a row. A `Removed` wine keeps its photos and its labels and gets
   the badge `Removed`, so a restore finds it again; the benchmark leaves its photos out
   ("removed wine") until the restore.
 - The buttons `V`, `N`, `x`, and `D` set `positive`, `negative`, `unusable`, and
@@ -302,14 +306,21 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   `positive` or `unusable` alone. The right-click menu marks a photo for deletion; the
   mark moves no file. The field below a wine holds its note. `Exclude` takes a slug out of
   the benchmark and asks for a reason.
-- The sidebar holds the photos that wait for a wine, also after a restart. A drag of a
-  photo card onto the sidebar moves the photo to `__null__`; a drag of a sidebar card
-  onto a wine row moves it to that wine; the key `0` of the large view moves it to the
-  sidebar (`POST /api/testset-move`). A move clears the label and keeps the comment, the
-  box, the delete mark, and the proposal; `moved_from` gets the old place; a file name
-  that the target holds gets `_moved<N>`. No file moves. A sidebar card has `V`
-  (confirmed: no card of the catalogue shows this wine) and `×` (unusable). The
-  benchmark takes a NULL photo only with `V` (`positive`).
+- Two special places (plan 36, owner answer of 2026-09-26T00:29:00+0300):
+  - The row `No Match` holds the photos that must give no match. A run uses each of them
+    as a `no_match` query, also with no label; `×` (unusable), the delete mark, or an
+    exclusion of `__null__` takes a photo out of the run. Its cards have `V` (confirmed: no
+    card of the catalogue shows this wine) and `×`.
+  - The Drawer, the right sidebar, holds the photos that wait for a wine, also after a
+    restart. No run uses them. Its cards have no label buttons; the comment, the box, and
+    the delete mark stay.
+- A drag of a photo card onto the sidebar moves the photo to the Drawer; a drag onto the
+  row `No Match` or onto a wine row moves it there; the key `0` of the large view moves
+  it to the Drawer; the right-click menu holds `Move to the Drawer`, `Move to No Match`,
+  and, on a card of a special place, `Move to a wine…` (`POST /api/testset-move`). A move
+  clears the label and keeps the comment, the box, the delete mark, and the proposal;
+  `moved_from` gets the old place; a file name that the target holds gets `_moved<N>`.
+  No file moves.
 - The large view shows the catalogue image and the photo side by side, with the comment
   panel. The keys: `Left` and `Right` the photos of the wine, `Up` and `Down` the wines,
   `1` to `4` the labels, `b` the box, `Esc` close.
@@ -317,12 +328,41 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   then a drag on the photo, draws it; `Clear box` removes it. The box is in the pixels of
   the photo after its EXIF orientation. A card with a box gets the badge `box`. The IoU
   of the box against the box of the matcher comes with plan 27.
-- The filters of the old page, and `marked for deletion`, `holds a box`, and `removed
-  from the catalogue`. The 13 sort orders of the old page. `Find` matches each word in
+- Three filter axes take the place of the single select `Show` of the old page (owner
+  answers of 2026-09-26 00:26:58). `Progress`: `all`, `not fully labelled`, `no label
+  yet`, `partly labelled`, `fully labelled`, `no candidate photos`. `Verdict` (a photo of
+  the wine holds this label): `positive`, `no positive`, `negative`, `unusable`,
+  `different design`. `Marks` (a photo of the wine holds this mark): `a comment`, `an
+  agent proposal`, `a deletion mark`, `a box`. A wine passes when it passes every axis.
+  A wine with no photo in the set shows only when `Verdict` and `Marks` stand on `any`.
+  An old address with `?filter=<value>` still opens: the value goes to its axis, and
+  the address changes to the key of that axis (`verdict` or `marks`).
+- `Clusters` ([plan 37](docs/plans/37_testset-cluster-grouping.md)) groups the table
+  by the clusters of one embedding: `No`, or each embedding with a `clusters.json`, as
+  `<embedding> (<N> clusters)` (`, stale` when the inputs changed after the build). The
+  page uses the view `combined`. The table then lists only the wines in a cluster that
+  pass the other filters; a cluster can show in part. A cluster stands at the place of
+  its first row in the sort order. A header row stands above it: `<id> · <shown> of
+  <size> wines shown · <signals>` and `open on /clusters` (a new tab, the cluster
+  marked). The row `No Match` stays first. The address key is `cluster`. `Clusters`
+  took the place of the select `Wine` and its values `in a variant group` and `removed
+  from the catalogue`; the tag `variant group of N`, the sort `variant group first`, and
+  the badge `Removed` stay. The page has no
+  filter of the benchmark scope (owner message of 2026-09-26T00:39:13+0300): the select
+  `Slugs` and the old values `excluded` and `included` are gone, and an old address
+  with them opens the full list. An excluded row stays red. The 13 sort orders of
+  the old page, and `cluster size, largest first` (owner answer of 2026-09-26
+  01:08:49): with an embedding in `Clusters`, the largest cluster stands first (a tie
+  goes by the cluster id), and inside a cluster the rows go by slug. With `Clusters` on
+  `No`, the option is disabled, and a stored or linked `sort=cluster_size` gives
+  `slug A-Z`. `Marks` and `Clusters` stand in a second row that the button
+  `Additional settings` shows or hides; the button shows `· N` when N of the two are not
+  at their default, and localStorage (`svl.testset.more`) keeps the open state.
+  `Find` matches each word in
   the slug, the name, the producer, the region, or the grapes, in any order, with the case
   and the accents folded.
-- A drop of image files from the Finder onto the sidebar (the NULL place) or onto a wine
-  row stores each file in that place with no label (`POST /api/testset-upload`). A new
+- A drop of image files from the Finder onto the sidebar (the Drawer) or onto a row
+  stores each file in that place with no label (`POST /api/testset-upload`). A new
   image keeps its file name; a clash with another image of the place gets `_upload<N>`.
   An image that the set holds already keeps the file name of the set. The same place
   refuses it (HTTP 409); another place takes it, for example for `negative`. The page
@@ -330,6 +370,28 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   cannot read it.
 - Not on this page yet: the copy of a photo, the upload by a file button and by URL, the
   checks (`validate`), the group editor, and the CSV export.
+- The button `Run>` after the selector of the set opens a dialog. The dialog lists every
+  pipeline of `config.yaml` (the key `pipeline`, plan 34) and the count of the queries of
+  the set. It does not list the entries of `embeddings`. A pipeline with an error is
+  disabled with the note `configuration error`. A pipeline of the backend `embedding`
+  whose `embeddings` entry has no index is disabled with the note `no index: build it on
+  /embedding`; its job runs with `embedding_python`.
+  `first N queries` (empty: all) and `workers` (empty: the value of the entry) are
+  optional. The checkbox `Use caches` is on at each page load: a model call that repeats
+  an earlier call reads its answer from `data/cache/` (SAM3, GDINO, VLM, LLM). Off, the
+  job reads no record, each model call goes to its service, and the latency is real
+  time; the fresh answers are still stored (`run_job.py --no-cache`; owner answers of
+  2026-09-26T01:32:00+0300, [plan 39](docs/plans/39_use-caches-checkbox.md)). `run.json`
+  records the state in `use_cache`. The embedding request and the request to the API of
+  vino-svoe.ru have no cache, so they are real time in both modes.
+  `Start` runs `pipeline/run_job.py` as a separate process, and the run goes
+  to `runs/` as a CLI run. A job row under the header shows the pipeline and the
+  set, the state, a bar, done / total, the errors, and the elapsed time; the icon button
+  `×` at the start of the row stops the run and keeps the files of the answered photos.
+  The row stays 60 s after the end, with the link `open run`. One pipeline runs one job at a time. The job files are in
+  `work/run-jobs/<configuration>/` (`job.log`, `job.lock`), so a reload of the page or a
+  restart of the server finds a running job again. Read
+  [plan 32](docs/plans/32_testset-run-button.md).
 
 ```bash
 # write the JSON files of one set from the database (the database is the source)
@@ -382,9 +444,9 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   every 30 s.
 - The Embeddings page of the lab server (`/embedding`) shows the prepared images of one
   entry, with a combobox, the buttons `Build` and `Stop`, and the progress of each
-  running build. Each running job row ends with a button `(x)`: it stops the build of
-  that row (`POST /api/embeddings/<name>/stop`), also when the combobox selects another
-  entry. A `stopping` row keeps a disabled `(x)`. `Build` continues a stopped build.
+  running build. Each running job row starts with an icon button `×`: it stops the build
+  of that row (`POST /api/embeddings/<name>/stop`), also when the combobox selects another
+  entry. A `stopping` row keeps a disabled `×`. `Build` continues a stopped build.
   The header has two rows. The first row holds the title, the
   `Configuration` combobox, the buttons, the message of the last build, and the
   navigation. The second row holds `Show` and `Search`. The header shows no counts; the
@@ -422,21 +484,57 @@ python3 -m venv ~/.venvs/svoe-vino-lab
 - The owner calls an entry a "configuration", because it holds more than the embedding
   model: the endpoint, the options, and the steps of each view. The selector of
   `/embedding` has the label `Configuration`. The route and the page name stay.
-- The last entry is `name: mock`, `backend: mock`, with the views of the other entries.
-  It builds as any entry (owner message of 2026-09-25T13:37:14+0300: "mock should run as
-  any other config"): the build prepares the images, then `MockBackend` of
-  `build_embeddings.py` gives each image a random unit vector of 256 values. It sends no
-  request. The seed is the SHA-256 of the prepared PNG, so a model input always gets the
-  same vector. The entry takes no `base_url`, `model`, or `extra_body`; its model name
-  is `random-unit-vectors`. `pipeline/mock_run.py` makes its runs (section "The runs of
-  the lab").
+- The key `embeddings` holds the embedding models alone: the backends `openai` and
+  `local`. The entry `vino-svoe-search-by-photo` moved to the key `pipeline` on
+  2026-09-26 (owner message of 2026-09-25T23:37:48+0300, plan 34), so `/embedding` and
+  `/clusters` do not show it. The owner removed the entry `mock`, its code, and
+  `data/embeddings/mock/` on 2026-09-26 (owner messages of 00:26:27 and 00:29:55). An
+  entry of `embeddings` with another backend gets an error that names the key
+  `pipeline`.
+- A pipeline of the backend `embedding` names an entry of the backend `openai` or `local`
+  with an index. `pipeline/embedding_run.py` makes its runs of a test set (section "The
+  runs of the lab"). Read [plan 33](docs/plans/33_embedding-run.md).
+
+## The embedding clusters of the lab
+
+The Clusters page (`/clusters`) reads one artifact from the directory of one embedding
+configuration. Read [plan 30](docs/plans/30_embedding-clusters.md).
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_clusters.py \
+    --name gx10-siglip2-so400m-patch16-naflex-p256
+```
+
+The command writes `data/embeddings/<name>/clusters.json`. Reviewer notes go to
+`cluster-notes.json` in the same directory. A future offline difference-rule build will
+write `cluster-rules.json` there. A cluster rebuild changes `clusters.json` alone.
+
+- `main_patched` replaces `main`.
+- `full_front` and `full_back` contribute to the `full` and `label` spaces.
+- `label_front` and `label_back` contribute to the `label` space alone.
+- The builder compares vectors in one space only. It never compares a `full` vector
+  with a `label` vector.
+- One edge uses the highest cosine of all applicable image pairs of two wines. The
+  artifact records the two images that gave this cosine.
+- The `combined` view is the union of the `full` and `label` edges.
+- The initial threshold is `0.95` in each space. The page can build with other values.
+
+The page shows the status of the embedding inputs, the exact evidence of each edge,
+all current images in the selected space, and one note editor per cluster. The artifact
+is stale after an embedding item or a wine-to-image assignment changes.
+
+The page does not create VLM difference rules yet. A later offline build will create
+separate rules for the `label` and `full` spaces. The current matcher uses a query label
+crop, so it can use only a `label` rule. At query time the VLM will receive closed
+questions with the allowed answers, plus `other` and `not visible`. It will not discover
+new differences for each query.
 
 ## The VLM inferences
 
 The key `vlm` holds one entry for each named VLM inference. `config.yaml` and
 `config.old.yaml` hold the same section; `tests/test_vlm_config.py` checks that the two
 files agree. `pipeline/vlm_config.py` reads the key. An entry holds the first five keys,
-MAY hold `key`, and holds no other key:
+MAY hold `key` and `max_tokens`, and holds no other key:
 
 | Key | Meaning |
 |---|---|
@@ -446,6 +544,7 @@ MAY hold `key`, and holds no other key:
 | `endpoint` | The base URL, for example `http://192.168.86.14:18081/v1`. |
 | `model` | The model name that the service knows. |
 | `key` | Absent or `null` when the service needs no key, or `{env:NAME}`: the key is read from the shell variable `NAME` at run time. A key value in the file is refused. |
+| `max_tokens` | Absent (8192) or a positive integer: the `max_tokens` of a detail request of `pipeline/describe_images.py` (owner answer of 2026-09-25). A class request keeps 300, and `scripts/cluster_rules.py` and `scripts/04_verify.py` keep their own limits. |
 
 | Entry | Service | Key |
 |---|---|---|
@@ -492,6 +591,13 @@ The table `image_description` describes each image that `wine_image` links to a 
   keeps the full answer. An answer that fails the schema writes nothing and counts as a
   failure; an image stops after `max_attempts` (3) failures. A failure of the service (an
   HTTP 429 or 5xx answer, no connection) does not count; the watcher waits and tries again.
+- The watcher sends up to `image_description.workers` requests at the same time (8 in
+  `config.yaml`, 1 when absent; [plan 35](docs/plans/35_vlm-workers.md)). Each request
+  runs in a thread of a pool and holds one image; two requests never hold the same image.
+  A failure of the service stops the new requests for the backoff time (30 s, doubled up
+  to 600 s); the requests that run finish, and their results are stored. The speed on the
+  pill is the wall time per image of the last 20 images, so with 8 workers it is the rate
+  of the backlog, not the time of one request.
 - The lab server starts the watcher when `image_description.watch` is true. The commands
   are in `COMMANDS.md`, section "Описания изображений".
 - The pill at the left of `Add wine` shows the watcher: `VLM 895 / 2,022 · 2.6 s`
@@ -517,6 +623,49 @@ The table `image_description` describes each image that `wine_image` links to a 
   active. A save in the dialog draws the card again but does not apply the filter again,
   as for `Show`; choose the value again to apply it.
 
+## The image details
+
+Stage 2 of the watcher (plan 29, [docs/plans/29_image-details.md](docs/plans/29_image-details.md))
+describes the label of each image, so that a person can tell the wine apart from similar
+wines of the same producer. The answers are in the table `image_detail`, one row for each
+original.
+
+- An image gets a detail when `wine_image` links it, its `subject_scope` is
+  `full_package` or `label_closeup`, and its `package_type` is not `other` or `unknown`.
+  `multiple_packages` and `unknown` scopes get no detail.
+- A `full_package` image gets the package prompt of the owner with its `package` cut. The
+  word `bottle` becomes the name of the `package_type` (`can`, `Tetra Pak carton`, …),
+  also in the last key (`"can"`, `"tetra_pak"`). A `label_closeup` image gets the label
+  prompt with its `label` cut, else its `package` cut. With no cut, the VLM gets the
+  original.
+- The watcher runs stage 2 only when no image waits for a class, and only with
+  `image_description.details: true`. The request sends the JSON Schema of the answer in
+  `response_format` (`json_schema`, strict), a long side of `detail_max_side` (1,536), and
+  `max_tokens` of the `vlm` entry (8,192 when absent; 4,096 from `detail_max_tokens` until
+  2026-09-25). The code checks the answer against the same
+  schema. An answer that `max_tokens` cut off, or that fails the schema, is a failure;
+  3 failures stop the image.
+- A row stores its inputs: `prompt_kind`, `package_type`, and `input_sha256` (the file
+  that the VLM got). A change of one of them, for example a new `package_type` from the
+  editor or a new label cut, makes the row stale, and the watcher sends the image again.
+- The pill reads `VLM details <done> / <eligible> · <seconds> s` while stage 2 works, and
+  `VLM all <n> described · details <done> / <eligible>` when it is idle. Its title holds
+  the line `Details …`. `N details failed` in red counts the failed details.
+- A click on `N details failed` opens the dialog `Failed details`. It reads
+  `GET /api/image-detail-failures` at each opening. The route sends each image whose
+  detail failed `max_attempts` times with its present inputs, the newest failure first:
+  the wine slug, the file that the VLM got (a thumbnail: a click shows the file alone in
+  the image preview, with no arrows; a click with Cmd, Ctrl, or Shift opens it), the prompt
+  kind, the `package_type`, the attempts, the time, the last error (`vlm_error`, at most
+  1,000 characters), and the last 20 entries of `work/describe_images.log` that name the
+  image. An entry keeps the lines that follow it, for example the text of a cut answer.
+  `max_attempts` is the value of the running watcher, else 3. The watcher sends such an
+  image again when its inputs change, or after a start with `--retry-failed`.
+- The details are not shown on `/dataset` yet (owner answer "Later" to Q1 of plan 29).
+  Read them with `sqlite3` (`COMMANDS.md`, section "Описания изображений").
+- The 9B model misreads small text, for example «ПИСАДКОЕ» for «ПОЛУСЛАДКОЕ». A detail is
+  not a verified transcription.
+
 ## The runs of the lab
 
 The Runs page of the lab server (`/runs`) shows the run directories of `runs/`. The runs
@@ -527,23 +676,82 @@ VLM box, and the large view with the arrow keys and the model inputs. Read
 [plan 23](docs/plans/23_runs-page.md).
 
 ```bash
-# a run of the configuration mock: random top-k candidates for each photo of a test set
-python3 pipeline/mock_run.py --set my [--top-k 10] [--seed N] [--limit N]
+# a run of a remote pipeline (backend svoe-vino-ru): each photo goes to the API as it is
+python3 pipeline/remote_run.py --name vino-svoe-search-by-photo --set my \
+    [--workers N] [--limit N] [--label TEXT]
+
+# a run of a pipeline of the backend embedding: each photo gets the SAM3 cuts and the
+# steps of its embedding entry, and its vectors rank the catalogue vectors of that entry
+python3 pipeline/embedding_run.py --name siglip2-p256-crop --set my \
+    [--workers N] [--limit N] [--label TEXT] [--top-k N]
+
+# the runner of the button Run> of /testset: one JSON event on each line
+python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers N] \
+    [--no-cache]
 ```
 
-- The key `configuration` of `run.json` names the lab configuration of a run: one entry
-  of `embeddings` in `config.yaml`. `pipeline/benchmark.py` writes it when
-  `run_benchmark` gets the argument `configuration`. A run with no such key has no
-  configuration; all runs before 2026-09-25 are such runs.
-- The filter `Configuration` in the header, after the title `Match runs`, offers `every run`, each configuration of
-  `config.yaml` with the count of its runs, a name that a run holds and `config.yaml`
-  does not (`not in config.yaml`), and `no configuration`. The page address keeps the
-  value (`?configuration=<name>`); the hash keeps the open run. When the open run
-  leaves the table, the first run of the table with metrics opens.
+- `remote_run.py` builds the HTTP backend of `scripts/match_backends.py` from the
+  pipeline and calls `benchmark.run_benchmark`. The run id is `<stamp>-lab-<name>-<set>`.
+  `run.json` holds `configuration: <name>`, and its `backend` holds `kind: remote`. The
+  default of `--workers` is `workers` of the entry (8). A full run of the set `my` sends
+  about 2,200 photos to an external API.
+- `embedding_run.py` makes a run of a pipeline of the backend `embedding` (plan 33; owner
+  answers of 2026-09-25T23:24:20+0300, 23:35:19, and 2026-09-26T00:12:24). The key
+  `embedding` of the pipeline names an entry of `embeddings:`, and that entry needs its
+  index: build it on `/embedding` first. Each photo counts as a full photo and gets the
+  cuts of a catalogue image in memory: the package cut of `derive.derive_image` and the
+  label cut of `alternatives.label_cut_of`, then the steps of each view with
+  `embeddings.apply_steps`. A pipeline MAY hold `views`, the steps of the test photo in
+  place of the steps of the entry (owner answers of 2026-09-26T00:52:41); a view with no
+  `segment` takes the photo as it is and sends no SAM3 request.
+  One request to the endpoint of the entry gives the vector of each view. The score of a
+  wine is the mean of its best cosine in each view of the photo, over the current items
+  of the index; a stale item stays out. When SAM3 finds no label, the photo has the view
+  `full` alone. The SAM3 answers go to `data/cache/sam3/`, so a second run of a set sends
+  no SAM3 request. When SAM3 does not answer, the run asks it no more, and each photo
+  gets an error. `run.json` holds `configuration: <pipeline>`, and its `backend` holds
+  `kind: embedding`, `embedding: <entry>`, the steps of each view, and the SAM3 settings;
+  its `embeddings` holds `built_at`, `index_file`, and the count of each item state. The
+  default of `--workers` is 1. An entry of the backend `local` needs `torch`: run it with
+  `~/.venvs/svoe-vino-lab/bin/python`. The dialog `Run>` starts such a pipeline with
+  `embedding_python` (plan 34); a pipeline whose entry has no index is disabled with the
+  note `no index: build it on /embedding`. `config.yaml` holds two such pipelines,
+  `siglip2-p256-as-is` and `siglip2-p256-crop`, of the entry
+  `gx10-siglip2-so400m-patch16-naflex-p256` (next bullet). The first pipeline of that
+  entry (owner answer of 2026-09-26T00:15:17) had the name of the entry; the owner removed
+  it at about 01:07, and its 2 runs count as `no pipeline` (owner answer of 01:19:00).
+  Read [plan 33](docs/plans/33_embedding-run.md).
+
+- A pipeline of the backend `embedding` MAY hold the key `views`: the steps of the test
+  photo in each view, in the step language of `embeddings`. The first step MAY be another
+  step than `segment`. Without the key, the photo gets the steps of the embedding entry.
+  The catalogue side stays the index of the entry; a view of the photo is compared with
+  the vectors of the same view of the index. Two basic pipelines of
+  `gx10-siglip2-so400m-patch16-naflex-p256` use it (owner message of
+  2026-09-26T00:45:33+0300): `siglip2-p256-as-is` (the photo as it is:
+  `white_background`, `resize` 1024) and `siglip2-p256-crop` (`segment` of the package
+  with the background of its box, `white_background`, `resize` 1024). `white_background`
+  does not change an opaque photo; 60 queries of `my` have transparent pixels.
+- The key `configuration` of `run.json` names the pipeline of a run: one entry of the
+  key `pipeline` in `config.yaml` (plan 34; the key keeps its old name).
+  `pipeline/benchmark.py` writes it when `run_benchmark` gets the argument
+  `configuration`. A run with no such key has no pipeline; all runs before 2026-09-25
+  are such runs.
+- The filter `Pipeline` in the header, after the title `Match runs`, offers `All` (every
+  run; owner answer of 2026-09-26T01:19:00+0300), each pipeline of `config.yaml` with
+  the count of its runs, and `no pipeline`: the runs whose key `configuration` is absent
+  or names no pipeline, for example the runs of a pipeline that the owner removed. The
+  filter lists the items of the key `pipeline` alone (owner message of
+  2026-09-26T00:10:18+0300). The page
+  address keeps the value (`?configuration=<name>`); the hash keeps the open run. When
+  the open run leaves the table, the first run of the table with metrics opens.
 - The table of the runs has pages: `prev`, `next`, and `per page` (25, 50, 100, or
   `all`). The browser keeps the page size. A sort goes back to page 1; the hash of a run
   opens the page that holds it.
-- The table has the column `configuration`.
+- The table has the column `pipeline`: the key `configuration` of `run.json`.
+- A run whose `run.json` holds `use_cache: false` has the tag `no cache` after its id:
+  the checkbox `Use caches` of the dialog `Run>` was off, so the run read no cached
+  model answer, and its latency is real time (plan 39). A run with no key gets no tag.
 - The photo of a row comes from the image store of the lab database by its
   `image_sha256`, in the folder of its `image` row (mostly `testset`). A photo whose
   bytes are not in the store shows `not in the lab image store`. The catalogue image of
@@ -553,14 +761,27 @@ python3 pipeline/mock_run.py --set my [--top-k 10] [--seed N] [--limit N]
   `dataset/catalog-cluster-rules.json`. The link `cluster details` opens `/clusters`,
   which is disabled for now.
 - The model inputs of the large view use `scripts/run_model_inputs.py` and the code of
-  `svoe-vino-matcher`, as in the review tool. A run with no backend URL, for example a
-  mock run, states that it has no model input.
-- The mock backend answers `top_k` distinct Active slugs with random scores from high to
-  low, and a random latency from 50 to 4,000 ms. Each place slug of a photo (of its
-  positive or its negative row) gets a random rank from 1 to `top_k`, or no rank. So a
-  mock run shows every state of the page: rank 1, a deeper rank, absent, a false match,
-  and a negative above a positive. The same seed gives the same answers. The run id is
-  `<stamp>-lab-mock-<set>`.
+  `svoe-vino-matcher`, as in the review tool. A run with no backend URL, for example an
+  old run of the removed pipeline `mock`, states that it has no model input. A run of a
+  remote pipeline states that the photo went to the remote matcher as it is. A run of an embedding configuration
+  shows the model input of each view: the route makes it again from the steps of
+  `run.json` and the SAM3 answers of `data/cache/sam3/`, and sends no request.
+- A click on a candidate image of an embedding run opens the large view with the
+  catalogue inputs of that wine in the strip (plan 38, owner message of
+  2026-09-26T01:23:11+0300). Each item is the PNG of the index that went to the model,
+  with its view, its image type, and the cosine that the run recorded. A note states the
+  score: the mean of the best cosine of each view. The badge `best` marks the best item of
+  each view. An item of a view that the query does not have is dim and reads
+  `not compared`. When the index changed after the run, the item keeps its cosine and has
+  no image. A run from before plan 38 recorded no cosine of an item: the strip shows the
+  items of the present index and reads `no cosine`. The route is `/api/run-candidate`.
+- The candidate cards of one photo row have one height: the height of the tallest card
+  of the row (owner message of 2026-09-26T00:12:24+0300). In a row with a cluster frame, a
+  card outside a frame starts where the cards of the frame start. A card has a fixed
+  width, so a long slug makes its whole row taller and is not cut.
+- The owner removed the pipeline `mock` and `pipeline/mock_run.py` on 2026-09-26 (owner
+  message of 00:26:27). Its 2 runs of 2026-09-25 stay in `runs/`; the filter shows them
+  under `no pipeline`.
 - The routes are in `pipeline/run_routes.py`; `pipeline/run_files.py` reads the files.
   `lab_server.py` sends each route of the page to `run_routes.py`. The review tool keeps
   its own copy of the run functions.
@@ -622,10 +843,11 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `bottle_label_dir` | `BOTTLE_LABEL_DIR` | Label crops of the catalogue photos, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
 | `bottle_label_box_dir` | `BOTTLE_LABEL_BOX_DIR` | Box crops of the same labels, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
 | `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
+| `pipeline` | `pipelines.load` | The pipelines of the lab: the dialog `Run>` of `/testset` and the filter `Pipeline` of `/runs` show them. The backends are `svoe-vino-ru` and `embedding`; a pipeline of the backend `embedding` names one entry of `embeddings`, and its optional key `views` holds the steps of the test photo. See [The runs of the lab](#the-runs-of-the-lab) and [plan 34](docs/plans/34_pipeline-section.md). |
 | `clusters` | `CLUSTERS`, `CLUSTERS_FILE` | The settings of `scripts/10_clusters.py` and the path of the cluster file. See [Catalogue clusters](#catalogue-clusters). |
 | `cluster_rules` | `cluster_rules.CFG` | The VLM entries of the two stages (`vlm`, `rules_vlm`), the picture sizes, the rules file, and the notes file of `scripts/11_cluster_rules.py`. See [Label rules of the clusters](#label-rules-of-the-clusters). |
 | `vlm` | `cluster_rules.VLM`, `cluster_rules.RULES_VLM` | The named VLM inferences. See [The VLM inferences](#the-vlm-inferences). |
-| `image_description` | `describe_images.settings` | The watcher of the image descriptions: `watch`, `vlm`, `max_side`, `poll_seconds`, `max_attempts`. See [The image descriptions](#the-image-descriptions). |
+| `image_description` | `describe_images.settings` | The watcher of the image descriptions: `watch`, `vlm`, `max_side`, `poll_seconds`, `max_attempts`, `workers`; stage 2: `details`, `detail_max_side`; `max_tokens` of the `vlm` entry. See [The image descriptions](#the-image-descriptions) and [The image details](#the-image-details). |
 
 ### The keys of one dataset
 
@@ -877,7 +1099,8 @@ Left and Right do. The thumbnails stand in one row. A row that is wider than the
 preview scrolls sideways, and the marked thumbnail is scrolled into view. At a width of
 at most 440 px the thumbnails are 72 px high.
 
-A record with a patch has a `Remove` button. The button stages the removal. Press
+A record with a patch has a red `Clear` button. On this tool the button stages the
+removal; the lab server clears the patch at once. Press
 `Apply` to remove the patch, or press `Cancel` to keep it. You can drop a new image on
 an existing patch to stage a replacement. An applied replacement or removal moves the
 old file into `patch_dir/.trash`, so the old file can be recovered. The page accepts
@@ -951,6 +1174,10 @@ check compares the source image file name with `og:image` on each `wine_slug` pa
 The server runs the selected checks in the background. The dialog shows progress and
 the problem records. Closing the dialog does not stop the job. Open it again to read
 the current progress or the last result.
+
+The review tool alone has `Validate`. The Dataset page of the lab server (8168) hides it,
+because the website import covers the checks (owner answer of 2026-09-25T22:54:00+0300).
+The page tells the two servers apart by `database_file` of `GET /api/dataset`.
 
 ### The Embedding page
 

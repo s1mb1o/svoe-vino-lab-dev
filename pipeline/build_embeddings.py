@@ -20,7 +20,6 @@ Usage:
 """
 import argparse
 import base64
-import hashlib
 import io
 import json
 import os
@@ -42,7 +41,6 @@ import embeddings  # noqa: E402
 TIMEOUT = 300           # s; a cold start of a gateway model takes up to about 48 s
 RETRY_WAITS = (2, 4, 8)  # s; the waits after HTTP 429, HTTP 5xx, or no answer
 CHECKPOINT_SECONDS = 30
-MOCK_DIM = 256          # the length of each vector of the backend `mock`
 
 
 class BackendError(Exception):
@@ -148,31 +146,9 @@ class LocalBackend:
             raise BackendError("the local model failed: %s: %s" % (type(exc).__name__, exc))
 
 
-class MockBackend:
-    """The backend `mock`: no request and no model. Each prepared image gets a random unit
-    vector of `MOCK_DIM` values. The seed is the SHA-256 of the PNG bytes, so the same
-    model input always gets the same vector. Read `docs/plans/23_runs-page.md`."""
-
-    def __init__(self, embedding):
-        self.model = embedding.model
-
-    def software(self):
-        return {"mock": "random unit vectors of %d values" % MOCK_DIM}
-
-    def embed(self, images):
-        rows = []
-        for png in images:
-            seed = int.from_bytes(hashlib.sha256(png).digest()[:8], "big")
-            vector = np.random.default_rng(seed).standard_normal(MOCK_DIM)
-            rows.append(vector / np.linalg.norm(vector))
-        return np.asarray(rows, dtype=np.float32).reshape(len(images), MOCK_DIM)
-
-
 def make_backend(embedding):
     if embedding.backend == "openai":
         return OpenAIBackend(embedding)
-    if embedding.backend == "mock":
-        return MockBackend(embedding)
     return LocalBackend(embedding)
 
 

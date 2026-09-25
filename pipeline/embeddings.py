@@ -42,12 +42,10 @@ CONFIG_PATH = os.path.join(ROOT, "config.yaml")
 STEPS_VERSION = 1
 NAME_PATTERN = r"[a-z0-9][a-z0-9._-]{0,99}"
 NAME_RE = re.compile(r"^%s$" % NAME_PATTERN)
-# The backend `mock` sends no request: `build_embeddings.MockBackend` gives each prepared
-# image a random unit vector. Its entry has views and steps as any entry, and no model.
-# Read `docs/plans/23_runs-page.md`.
-BACKENDS = ("openai", "local", "mock")
-# The model name of each entry of the backend `mock`.
-MOCK_MODEL = "random-unit-vectors"
+# The backends of an embedding model. A matcher with no vectors, for example the official
+# recognizer of vino-svoe.ru, is an entry of the key `pipeline` (`pipelines.py`). Read
+# docs/plans/34_pipeline-section.md.
+BACKENDS = ("openai", "local")
 VIEWS = ("full", "label")
 ENTRY_KEYS = ("name", "backend", "base_url", "model", "extra_body", "batch_size", "views")
 DEFAULT_BATCH_SIZE = 16
@@ -118,8 +116,13 @@ def sha256_json(value):
     return hashlib.sha256(canonical(value).encode("utf-8")).hexdigest()
 
 
-def _steps(view, spec):
-    """Check the steps of one view. Return them with each default option filled in."""
+def check_steps(view, spec, segment_first=True):
+    """Check the steps of one view. Return them with each default option filled in.
+
+    A view of an entry of `embeddings` starts with `segment`. The steps of a test photo of
+    a pipeline (`pipelines.py`, `segment_first=False`) MAY start with another step, for
+    example `resize` alone for the photo as it is (owner answers of
+    2026-09-26T00:52:41+0300)."""
     if not isinstance(spec, dict) or set(spec) != {"steps"}:
         raise ConfigError("view %s: the view MUST hold the key `steps` alone" % view)
     raw_steps = spec["steps"]
@@ -161,11 +164,11 @@ def _steps(view, spec):
     if repeated:
         raise ConfigError("view %s: a step MAY occur one time; repeated: %s"
                           % (view, ", ".join(repeated)))
-    if kinds[0] != "segment":
+    if kinds[0] != "segment" and (segment_first or "segment" in kinds):
         raise ConfigError("view %s: the first step MUST be `segment`" % view)
     if "remove_background" in kinds:
         position = kinds.index("remove_background")
-        if position != 1:
+        if position != 1 or kinds[0] != "segment":
             raise ConfigError("view %s: `remove_background` MUST come directly after "
                               "`segment`" % view)
         if "white_background" not in kinds[position:]:
@@ -183,17 +186,16 @@ class Embedding:
         if not isinstance(name, str) or not NAME_RE.match(name):
             raise ConfigError("the name %r MUST match %s" % (name, NAME_RE.pattern))
         self.name = name
+        # The backend comes before the keys, so that an entry of a pipeline in this list
+        # gets the text that names the key `pipeline`.
+        self.backend = raw.get("backend")
+        if self.backend not in BACKENDS:
+            raise ConfigError("backend MUST be one of: %s; a matcher with no vectors, for "
+                              "example the backend svoe-vino-ru, is an entry of the key "
+                              "`pipeline`" % ", ".join(BACKENDS))
         unknown = sorted(set(raw) - set(ENTRY_KEYS))
         if unknown:
             raise ConfigError("unknown key: %s" % ", ".join(unknown))
-        self.backend = raw.get("backend")
-        if self.backend not in BACKENDS:
-            raise ConfigError("backend MUST be one of: %s" % ", ".join(BACKENDS))
-        if self.backend == "mock":
-            taken = sorted(set(raw) & {"base_url", "model", "extra_body"})
-            if taken:
-                raise ConfigError("the backend mock takes no %s" % ", ".join(taken))
-            raw = dict(raw, model=MOCK_MODEL)
         base_url = raw.get("base_url")
         if self.backend == "openai":
             if not isinstance(base_url, str) or not base_url.startswith(("http://", "https://")):
@@ -233,7 +235,7 @@ class Embedding:
         other = sorted(set(views) - set(VIEWS))
         if other:
             raise ConfigError("unknown view: %s; use %s" % (", ".join(other), " or ".join(VIEWS)))
-        self.views = {view: _steps(view, views[view]) for view in VIEWS if view in views}
+        self.views = {view: check_steps(view, views[view]) for view in VIEWS if view in views}
         self._hashes = {}
 
     def view_config_hash(self, view, role="full"):
@@ -276,10 +278,10 @@ class Settings:
         raise KeyError(name)
 
 
-def load_settings(path=CONFIG_PATH):
-    """Read `config.yaml`. Return the `Settings`. An entry that is not valid keeps its
-    error, so that the page can show it. Raise ConfigError when the file itself does
-    not allow the work."""
+def read_config(path=CONFIG_PATH):
+    """Read `config.yaml`. Return (the absolute path of the file, its mapping, the
+    absolute path of the database file). Raise ConfigError when the file itself does not
+    allow the work. `load_settings` and `pipelines.load` use it."""
     path = os.path.abspath(path)
     try:
         with open(path, encoding="utf-8") as fh:
@@ -292,28 +294,43 @@ def load_settings(path=CONFIG_PATH):
     if not database:
         raise ConfigError("%s holds no key `database_file`" % path)
     rootdir = config.get("rootdir") or os.path.dirname(ROOT)
-    db_path = os.path.abspath(os.path.join(rootdir, database))
-    python = config.get("embedding_python")
-    if python is not None:
-        if not isinstance(python, str) or not python.strip():
-            raise ConfigError("embedding_python MUST be the path of a Python interpreter")
-        python = os.path.expanduser(python)
-    raw_entries = config.get("embeddings") or []
+    return path, config, os.path.abspath(os.path.join(rootdir, database))
+
+
+def check_entries(config, key, make):
+    """Return the entries of the list `key` of `config`, in file order, as (name, the
+    checked entry or None, the error or None). `make(raw)` checks one entry and raises
+    ConfigError. A name of an earlier entry is an error. Raise ConfigError when the value
+    of `key` is not a list."""
+    raw_entries = config.get(key) or []
     if not isinstance(raw_entries, list):
-        raise ConfigError("the key `embeddings` MUST be a list")
+        raise ConfigError("the key `%s` MUST be a list" % key)
     entries, seen = [], set()
     for number, raw in enumerate(raw_entries, 1):
         name = raw.get("name") if isinstance(raw, dict) else None
         label = name if isinstance(name, str) and name else "#%d" % number
         try:
-            embedding = Embedding(raw)
-            if embedding.name in seen:
-                raise ConfigError("the name %s is used by an earlier entry" % embedding.name)
-            seen.add(embedding.name)
-            entries.append((label, embedding, None))
+            entry = make(raw)
+            if entry.name in seen:
+                raise ConfigError("the name %s is used by an earlier entry" % entry.name)
+            seen.add(entry.name)
+            entries.append((label, entry, None))
         except ConfigError as exc:
             entries.append((label, None, str(exc)))
-    return Settings(path, db_path, python, entries)
+    return entries
+
+
+def load_settings(path=CONFIG_PATH):
+    """Read `config.yaml`. Return the `Settings`. An entry that is not valid keeps its
+    error, so that the page can show it. Raise ConfigError when the file itself does
+    not allow the work."""
+    path, config, db_path = read_config(path)
+    python = config.get("embedding_python")
+    if python is not None:
+        if not isinstance(python, str) or not python.strip():
+            raise ConfigError("embedding_python MUST be the path of a Python interpreter")
+        python = os.path.expanduser(python)
+    return Settings(path, db_path, python, check_entries(config, "embeddings", Embedding))
 
 
 def embeddings_root(db_path):
@@ -470,23 +487,39 @@ def prepare(item, source_path):
         image, _ = derive.open_image(source_path)
     except OSError as exc:
         raise ItemError("Pillow cannot read the source %s: %s" % (source_path, exc))
+
+    def processed():
+        try:
+            return derive.open_image(cut["path"])[0]
+        except OSError as exc:
+            raise ItemError("cannot read the processed file %s: %s" % (cut["path"], exc))
+
+    return apply_steps(image, steps, cut["box"] if cut else None, processed)
+
+
+def apply_steps(image, steps, box, processed):
+    """Apply the steps of one view to an opened source image. Return an RGB image. Raise
+    ItemError.
+
+    `box` is the box of the cut in the pixels of the source, and `processed()` returns the
+    processed file of the cut. `prepare` gives the cut of a catalogue image, and
+    `embedding_run.py` gives the cut of a test photo (plan 33). So both get their pixels
+    from this code.
+    """
     for step in steps:
         kind = step["step"]
         if kind == "segment":
-            left, top, right, bottom = cut["box"]
+            left, top, right, bottom = box
             if right > image.width or bottom > image.height:
                 raise ItemError("the box %s of the processed file is outside the source "
-                                "of %d x %d pixels" % (cut["box"], image.width, image.height))
-            image = image.crop(cut["box"])
+                                "of %d x %d pixels" % (box, image.width, image.height))
+            image = image.crop(box)
         elif kind == "remove_background":
-            try:
-                processed, _ = derive.open_image(cut["path"])
-            except OSError as exc:
-                raise ItemError("cannot read the processed file %s: %s" % (cut["path"], exc))
-            if processed.size != image.size:
+            cut = processed()
+            if cut.size != image.size:
                 raise ItemError("the processed file is %d x %d pixels; its box is %d x %d"
-                                % (processed.size + image.size))
-            image = processed
+                                % (cut.size + image.size))
+            image = cut
         elif kind == "white_background":
             image = on_white(image)
         elif kind == "resize":

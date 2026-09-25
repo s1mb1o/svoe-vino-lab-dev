@@ -135,6 +135,16 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
 .vlm-status.waiting .dot { background: var(--var); }
 .vlm-status.stopped .dot { background: transparent; border: 1px solid var(--muted); }
 .vlm-status .failed { color: var(--neg); }
+/* `N details failed` opens the dialog of the failed details. */
+.vlm-status button.failed {
+  padding: 0; border: 0; background: none; font: inherit;
+  text-decoration: underline dotted; text-underline-offset: 2px;
+}
+.detail-failure-head { display: grid; grid-template-columns: 72px 1fr; gap: 10px; }
+.detail-failure-head img {
+  width: 72px; height: 72px; object-fit: contain; background: var(--bg); border-radius: 6px;
+  cursor: zoom-in;
+}
 @keyframes vlm-pulse { 50% { opacity: .25; } }
 @media (prefers-reduced-motion: reduce) { .vlm-status.working .dot { animation: none; } }
 @media (max-width: 560px) {
@@ -178,6 +188,8 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
 .patch-actions.single button { flex: 0 0 calc(50% - 2.5px); }
 .patch-actions .apply { border-color: var(--accent); font-weight: 700; }
 .patch-actions .remove { color: var(--neg); }
+/* The patch `Clear` button is red (owner message of 2026-09-25T22:46:27+0300). */
+.patch-actions .clear { color: var(--exc); background: var(--exc-bg); border-color: var(--exc); }
 .patch-actions .busy { cursor: wait; }
 .patch-input { display: none; }
 figcaption {
@@ -594,7 +606,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <div class="bar-actions">
       <span class="vlm-status" id="vlm-status" role="status" aria-live="polite" hidden></span>
       <button id="add-wine" class="wine-add-btn" type="button" hidden>Add wine</button>
-      <button id="validate-dataset" class="validate-btn" type="button">Validate</button>
+      <button id="validate-dataset" class="validate-btn" type="button" hidden>Validate</button>
       <button id="website-import" class="validate-btn" type="button" hidden>Import from website</button>
     </div>
   </div>
@@ -707,6 +719,20 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <div class="validation-actions">
       <button id="describe-cancel" type="button">Cancel</button>
       <button id="describe-save" class="primary" type="button">Save</button>
+    </div>
+  </section>
+</div>
+<div class="modal" id="detail-failures-modal" role="dialog" aria-modal="true"
+  aria-labelledby="detail-failures-title" hidden>
+  <section class="validation-dialog">
+    <div class="validation-head">
+      <h2 id="detail-failures-title">Failed details</h2>
+      <button id="detail-failures-x" type="button" aria-label="Close">×</button>
+    </div>
+    <p class="validation-intro" id="detail-failures-intro"></p>
+    <div class="validation-results" id="detail-failures-body"></div>
+    <div class="validation-actions">
+      <button id="detail-failures-close" type="button">Close</button>
     </div>
   </section>
 </div>
@@ -1124,8 +1150,9 @@ function patchEditor(r) {
     surfaceClass += " pending removing";
     content = '<div class="noimage">The patch will be removed.</div><span class="patch-state">remove</span>';
     state = '<span class="patch">pending</span>';
+    const clearing = DATA.patch_editor ? "Clearing…" : "Applying…";
     actions = `<div class="patch-actions"><button class="apply remove${busy ? " busy" : ""}"
-      type="button" data-patch-apply ${busy ? "disabled" : ""}>${busy ? "Applying…" : "Apply"}</button>
+      type="button" data-patch-apply ${busy ? "disabled" : ""}>${busy ? clearing : "Apply"}</button>
       <button type="button" data-patch-cancel ${busy ? "disabled" : ""}>Cancel</button></div>`;
   } else if (r._patched) {
     // The lab server sends `_patch_image_url`: the processed patch, or the patch when
@@ -1141,8 +1168,8 @@ function patchEditor(r) {
       src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — patch">${badge}</a>${
       describeButton(shaOfUrl(r._patch_url), r.slug, r._patch_url)}`;
     state = '<span class="patch">patched</span>';
-    actions = `<div class="patch-actions single"><button class="remove" type="button"
-      data-patch-remove>Remove</button></div>`;
+    actions = `<div class="patch-actions single"><button class="clear" type="button"
+      data-patch-remove>Clear</button></div>`;
   } else if (configured) {
     content = '<button class="noimage" type="button" data-patch-pick>Drop an image here<br><span>or choose a file</span></button>';
   } else {
@@ -1231,7 +1258,7 @@ function gtinEditor(r) {
     ).join("")}</div>`
     : '<div class="barcode-empty">no GTIN</div>';
   const entry = editing ? `<div class="barcode-new">
-    <input class="gtin-input" type="text" inputmode="numeric" maxlength="32" autocomplete="off"
+    <input class="gtin-input" type="text" inputmode="numeric" maxlength="14" autocomplete="off"
       aria-label="New GTIN" placeholder="EAN-13, UPC-A, EAN-8, or GTIN-14" value="${esc(draft)}" ${busy ? "disabled" : ""}>
     <button class="accept" type="button" data-gtin-save aria-label="Save GTIN"
       title="Save GTIN" ${busy || codeCheck("gtin", draft)[1] ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
@@ -1545,6 +1572,7 @@ async function saveDescribe() {
     if (!response.ok) throw new Error(out.error || response.status);
     DATA.image_descriptions = DATA.image_descriptions || {};
     DATA.image_descriptions[sha] = out.description;
+    fillPackageFilter();
     closeDescribe();
     renderCard(slug);
   } catch (error) {
@@ -1558,13 +1586,19 @@ async function saveDescribe() {
 // tab is visible. The cards do not change; a reload shows the new descriptions.
 const VLM_POLL_MS = 5000;
 let VLM_TIMER = null;
+// The last HTML of the indicator. A poll writes only a new HTML, so the button
+// `N details failed` keeps the focus.
+let VLM_HTML = "";
 function vlmCount(value) { return Number(value || 0).toLocaleString("en-US"); }
 function vlmStatusView(s) {
   const speed = s.seconds_per_image ? ` · ${Number(s.seconds_per_image).toFixed(1)} s` : "";
+  // Stage 2 of plan 29: the details of the images.
+  const details = `details ${vlmCount(s.details_done)} / ${vlmCount(s.details_eligible)}`;
+  if (s.state === "working" && s.stage === "detail") return ["working", `VLM ${details}${speed}`];
   if (s.state === "working") return ["working", `VLM ${vlmCount(s.described)} / ${vlmCount(s.linked)}${speed}`];
   if (s.state === "idle") {
     return ["idle", s.pending ? `VLM idle · ${vlmCount(s.pending)} pending`
-      : `VLM all ${vlmCount(s.described)} described`];
+      : `VLM all ${vlmCount(s.described)} described${s.details_eligible ? ` · ${details}` : ""}`];
   }
   if (s.state === "waiting") {
     const error = String(s.error || "the service").slice(0, 40);
@@ -1574,19 +1608,23 @@ function vlmStatusView(s) {
 }
 function renderVlmStatus(s) {
   const [kind, text] = vlmStatusView(s);
-  const failed = s.failed ? ` · <span class="failed">${vlmCount(s.failed)} failed</span>` : "";
+  const failed = (s.failed ? ` · <span class="failed">${vlmCount(s.failed)} failed</span>` : "")
+    + (s.details_failed ? ` · <button class="failed" type="button" data-detail-failures
+      title="Show the failed details and their log">${vlmCount(s.details_failed)} details failed</button>` : "");
   const lines = [
     s.pid ? `Watcher pid ${s.pid} · vlm ${s.vlm || "?"}${s.model ? ` (${s.model})` : ""}`
       : "The watcher does not run. The lab server starts it when image_description.watch is true.",
     s.state === "working" ? `Now: ${s.slug || s.sha256 || "?"}` : "",
     `Described ${vlmCount(s.described)} of ${vlmCount(s.linked)} · pending ${vlmCount(s.pending)} · failed ${vlmCount(s.failed)}`,
+    s.details_eligible !== undefined ? `Details ${vlmCount(s.details_done)} of ${vlmCount(s.details_eligible)} · pending ${vlmCount(s.details_pending)} · failed ${vlmCount(s.details_failed)}` : "",
     s.seconds_per_image ? `Speed: ${Number(s.seconds_per_image).toFixed(2)} s per image (last 20)` : "",
     s.state === "waiting" && s.error ? `Error: ${s.error}` : "",
     s.updated_at ? `Last step: ${s.updated_at}` : "",
   ].filter(Boolean);
   const el = $("#vlm-status");
   el.className = `vlm-status ${kind}`;
-  el.innerHTML = `<span class="dot"></span>${esc(text)}${failed}`;
+  const html = `<span class="dot"></span>${esc(text)}${failed}`;
+  if (html !== VLM_HTML) el.innerHTML = VLM_HTML = html;
   el.title = lines.join("\n");
   el.hidden = false;
 }
@@ -1607,6 +1645,85 @@ async function pollVlmStatus() {
 }
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden && describeOn()) pollVlmStatus();
+});
+// The dialog of the failed details: each opening reads `GET /api/image-detail-failures`.
+function detailFailureHtml(f) {
+  const log = f.log || [];
+  return `<section class="validation-result"><div class="detail-failure-head">
+    <a href="${esc(f.input_url)}" target="_blank" rel="noopener" data-failure-preview
+      data-slug="${esc(f.wine_slug)}" data-sha="${esc(f.input_sha256)}"
+      title="Show the file that the VLM got"><img src="${esc(f.input_url)}"
+      alt="The file that the VLM got" loading="lazy"></a>
+    <div><h3>${esc(f.wine_slug)} <span class="status fail">failed</span></h3>
+      <p>${esc(f.prompt_kind)} prompt · ${esc(f.package_type)} · ${vlmCount(f.vlm_attempts)}
+        attempts · last ${esc(f.updated_at)}</p>
+      <p>sha256 ${esc(f.sha256)}</p></div></div>
+    <details open><summary>Last error</summary><pre>${esc(f.vlm_error || "—")}</pre></details>
+    <details><summary>Log · ${vlmCount(log.length)} entries</summary><pre>${
+      esc(log.join("\n") || "No entry of the log names this image.")}</pre></details>
+  </section>`;
+}
+async function openDetailFailures() {
+  $("#detail-failures-intro").textContent = "";
+  $("#detail-failures-body").innerHTML = '<p class="validation-meta">Loading…</p>';
+  $("#detail-failures-modal").hidden = false;
+  $("#detail-failures-close").focus();
+  try {
+    const response = await fetch("/api/image-detail-failures", {cache: "no-store"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const failures = out.failures || [];
+    $("#detail-failures-intro").textContent = `The images whose detail failed `
+      + `${out.max_attempts} times with the same inputs. The watcher sends such an image `
+      + `again when its inputs change, or after a start with --retry-failed. The log holds `
+      + `the last entries of ${out.log_file} that name the image.`;
+    $("#detail-failures-body").innerHTML = failures.length
+      ? failures.map(detailFailureHtml).join("")
+      : '<p class="validation-meta">No detail failed.</p>';
+  } catch (error) {
+    $("#detail-failures-body").innerHTML = `<section class="validation-result"><h3>Cannot `
+      + `read the failed details <span class="status error">error</span></h3>`
+      + `<p>${esc(String(error))}</p></section>`;
+  }
+}
+function closeDetailFailures() { $("#detail-failures-modal").hidden = true; }
+// A click on a thumbnail shows the file that the VLM got in the image preview, alone: no
+// arrows, no thumbnails, and no change of the page path. The dialog stays below it.
+function showDetailFailurePreview(link) {
+  IMAGE_PREVIEW = null;
+  const label = `the file that the VLM got · ${link.dataset.slug}`;
+  $("#image-preview-title").textContent = label;
+  $("#image-preview-file").textContent = link.dataset.sha;
+  $("#image-preview-position").textContent = "";
+  $("#image-preview-previous").disabled = $("#image-preview-next").disabled = true;
+  $("#image-preview-thumbs").innerHTML = "";
+  $("#image-preview-raw").href = link.href;
+  $("#image-preview-size").textContent = "reading size…";
+  const image = $("#image-preview-image");
+  image.alt = label;
+  image.onload = () => {
+    $("#image-preview-size").textContent = `${image.naturalWidth} × ${image.naturalHeight} px`;
+  };
+  image.onerror = () => { $("#image-preview-size").textContent = "image load failed"; };
+  image.src = link.href;
+  $("#image-preview-modal").hidden = false;
+  document.body.style.overflow = "hidden";
+  $("#image-preview-close").focus();
+}
+$("#detail-failures-body").addEventListener("click", event => {
+  const link = event.target.closest("[data-failure-preview]");
+  // A click with a modifier key keeps the link: it opens the file in a new tab.
+  if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
+  event.preventDefault();
+  showDetailFailurePreview(link);
+});
+$("#vlm-status").addEventListener("click", event => {
+  if (event.target.closest("[data-detail-failures]")) openDetailFailures();
+});
+$("#detail-failures-x").addEventListener("click", closeDetailFailures);
+$("#detail-failures-close").addEventListener("click", closeDetailFailures);
+$("#detail-failures-modal").addEventListener("click", event => {
+  if (event.target === $("#detail-failures-modal")) closeDetailFailures();
 });
 function recordHtml(r) {
   const match = r.image_match || {};
@@ -1663,11 +1780,23 @@ function packageOf(record) {
 }
 function initAdvancedFilters() {
   if (!describeOn()) return;
-  const values = (DATA.image_description_values || {}).package_type || [];
-  $("#package-filter").innerHTML = '<option value="all">All</option>'
-    + values.map(value => `<option value="${esc(value)}">${esc(value)}</option>`).join("")
-    + '<option value="">not described</option>';
+  fillPackageFilter();
   $("#advanced-toggle").hidden = false;
+}
+// The options of Package: the values that at least one wine has, in the order of
+// `image_descriptions.VALUES`, and "not described" when a wine has no value (owner
+// answer of 2026-09-25 19:09:07). The chosen value stays, also when no wine has it now.
+function fillPackageFilter() {
+  const select = $("#package-filter");
+  const chosen = select.value;
+  const present = new Set(DATA.records.map(packageOf));
+  if (chosen !== "all") present.add(chosen);
+  const values = ((DATA.image_description_values || {}).package_type || [])
+    .filter(value => present.has(value));
+  select.innerHTML = '<option value="all">All</option>'
+    + values.map(value => `<option value="${esc(value)}">${esc(value)}</option>`).join("")
+    + (present.has("") ? '<option value="">not described</option>' : "");
+  select.value = chosen;
 }
 function toggleAdvancedFilters() {
   const bar = $("#advanced-bar");
@@ -1841,6 +1970,10 @@ async function runValidation() {
     showValidationError(error);
   }
 }
+// The lab server sends `database_file` and has the website import, which covers the
+// checks of `Validate`; so its page has no `Validate` (owner answer of
+// 2026-09-25T22:54:00+0300). The review tool keeps it.
+function validationOn() { return !DATA.database_file; }
 function closeValidation() { $("#validation-modal").hidden = true; }
 async function openValidation() {
   $("#validation-modal").hidden = false;
@@ -2016,7 +2149,7 @@ function stagePatchFile(slug, file) {
   clearPendingPatch(slug);
   PENDING_PATCHES.set(slug, {action: "set", file, url: URL.createObjectURL(file)});
   // The owner asked on 2026-09-25 that the lab server applies a new patch at once. A
-  // patch applied by mistake is removed with `Remove`.
+  // patch applied by mistake is removed with `Clear`.
   if (DATA.patch_editor) applyPendingPatch(slug);
   else render();
 }
@@ -2689,7 +2822,10 @@ $("#list").addEventListener("click", event => {
   } else if (event.target.closest("[data-patch-remove]")) {
     clearPendingPatch(slug);
     PENDING_PATCHES.set(slug, {action: "remove"});
-    render();
+    // The owner asked on 2026-09-25 that the lab server clears the patch at once, with
+    // no `Apply`. The review tool keeps the staged removal.
+    if (DATA.patch_editor) applyPendingPatch(slug);
+    else render();
   } else if (event.target.closest("[data-patch-cancel]")) {
     clearPendingPatch(slug);
     render();
@@ -2827,6 +2963,29 @@ $("#list").addEventListener("toggle", event => {
   details.append(pre);
 }, true);
 for (const id of ["filter", "state", "sort"]) $("#" + id).addEventListener("change", render);
+/* The header controls are kept in localStorage and come back at the next page load (owner
+   message of 2026-09-26T00:30:00+0300). A stored value that is no longer an option is
+   ignored. The listeners of each control run first; the header listener then stores. */
+const HEADER_KEY = "svl.dataset.header";
+const HEADER_IDS = ["filter", "state", "sort", "q", "package-filter"];
+function saveHeader() {
+  const value = {};
+  for (const id of HEADER_IDS) value[id] = $("#" + id).value;
+  try { localStorage.setItem(HEADER_KEY, JSON.stringify(value)); } catch (_) { /* no storage */ }
+}
+function restoreHeader() {
+  let value;
+  try { value = JSON.parse(localStorage.getItem(HEADER_KEY) || "{}") || {}; } catch (_) { return; }
+  for (const id of HEADER_IDS) {
+    const node = $("#" + id), wanted = value[id];
+    if (typeof wanted !== "string") continue;
+    if (node.tagName === "SELECT" && ![...node.options].some(option => option.value === wanted)) continue;
+    node.value = wanted;
+  }
+  if ($("#package-filter").value !== "all") changeAdvancedFilter();
+}
+$("header").addEventListener("change", saveHeader);
+$("header").addEventListener("input", saveHeader);
 let SEARCH_TIMER = null;
 $("#q").addEventListener("input", () => {
   clearTimeout(SEARCH_TIMER);
@@ -2914,6 +3073,7 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape" && !$("#validation-modal").hidden) closeValidation();
   if (event.key === "Escape" && !$("#wine-modal").hidden) closeWineForm();
   if (event.key === "Escape" && !$("#describe-modal").hidden) closeDescribe();
+  if (event.key === "Escape" && !$("#detail-failures-modal").hidden) closeDetailFailures();
 });
 window.addEventListener("beforeunload", event => {
   if (!PENDING_PATCHES.size && !PENDING_ALTERNATIVES.size && !DRAFT_BARCODES.size
@@ -2931,11 +3091,13 @@ window.addEventListener("beforeunload", event => {
     DATA = await response.json();
     DATA.records = (DATA.records || []).map((r, index) => ({...r, _index: index}));
     $("#add-wine").hidden = !wineFormOn();
+    $("#validate-dataset").hidden = !validationOn();
     // The review tool sends no comments, so its filter `Show` has no `with comments`.
     if (!commentsOn()) $('#filter option[value="comments"]').remove();
     // The review tool sends no favorites, so its filter `State` has no `Favorites`.
     if (!favoritesOn()) $('#state option[value="favorites"]').remove();
     initAdvancedFilters();
+    restoreHeader();
     render();
     openHash();
     // A link to `/dataset/<slug>` opens the preview over the card of that wine. A slug
@@ -2944,7 +3106,7 @@ window.addEventListener("beforeunload", event => {
     if (preview && showImagePreview(preview.slug, preview.kind, "none", preview.sha256)) {
       scrollToCard(preview.slug);
     } else if (preview) history.replaceState(null, "", "/dataset");
-    loadValidation().catch(() => {});
+    if (validationOn()) loadValidation().catch(() => {});
     if (describeOn()) pollVlmStatus();
   } catch (error) {
     $("#head-sub").textContent = "could not read the dataset";

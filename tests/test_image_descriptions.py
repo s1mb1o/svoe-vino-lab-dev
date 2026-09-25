@@ -191,5 +191,51 @@ class WatcherStatusTest(DescriptionCase):
         self.assertEqual(self.status()["state"], "stopped")
 
 
+class DetailFailuresTest(DescriptionCase):
+    def setUp(self):
+        super().setUp()
+        self.log = str(self.root / "describe_images.log")
+        a, b = self.sha["wine-a"][:12], self.sha["wine-b"][:12]
+        with open(self.log, "w", encoding="utf-8") as fh:
+            fh.write("2026-09-25T14:09:06Z %s ok bottle full_package front 2.4 s\n"
+                     "2026-09-25T19:13:24Z %s detail failed: max_tokens cut off: {\n"
+                     '  "texts": [\n'
+                     "2026-09-25T19:13:30Z %s detail ok package bottle, 3 texts, 7.9 s\n"
+                     "2026-09-25T19:14:00Z start: watch, vlm test\n"
+                     "error: a line of another entry\n"
+                     "2026-09-25T19:16:32Z %s detail failed: HTTP 400\n" % (a, a, b, a))
+
+    def test_log_entries_keep_the_lines_that_follow_an_entry(self):
+        entries = DESC.log_entries(self.log, [self.sha["wine-a"], self.sha["none"]])
+        a = self.sha["wine-a"][:12]
+        self.assertEqual(entries[self.sha["wine-a"]], [
+            "2026-09-25T14:09:06Z %s ok bottle full_package front 2.4 s" % a,
+            "2026-09-25T19:13:24Z %s detail failed: max_tokens cut off: {\n  \"texts\": [" % a,
+            "2026-09-25T19:16:32Z %s detail failed: HTTP 400" % a])
+        self.assertEqual(entries[self.sha["none"]], [])
+        self.assertEqual(len(DESC.log_entries(self.log, [self.sha["wine-a"]], limit=1)
+                             [self.sha["wine-a"]]), 1)
+        self.assertEqual(DESC.log_entries(str(self.root / "missing.log"),
+                                          [self.sha["wine-a"]]), {self.sha["wine-a"]: []})
+
+    def test_detail_failures_use_max_attempts_of_the_watcher(self):
+        import image_details
+        conn = self.connect()
+        with conn:
+            DESC.set_values(conn, self.sha["wine-a"], {"package_type": "bottle",
+                                                       "subject_scope": "full_package"})
+            item = image_details.target(conn, self.sha["wine-a"])
+            for _ in range(2):
+                image_details.record_failure(conn, item, "HTTP 400", now="T1")
+        with conn:
+            self.assertEqual(DESC.detail_failures(conn, self.log)["failures"], [])
+            DESC.write_status({"max_attempts": 2})
+            answer = DESC.detail_failures(conn, self.log)
+        conn.close()
+        self.assertEqual(answer["max_attempts"], 2)
+        self.assertEqual([(f["wine_slug"], f["vlm_attempts"], len(f["log"]))
+                          for f in answer["failures"]], [("wine-a", 2, 3)])
+
+
 if __name__ == "__main__":
     unittest.main()

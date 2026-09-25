@@ -10,8 +10,9 @@
 /* The Testset page of the lab server (plan 24). It is a port of `PAGE` of
    `scripts/review_server.py`: the labels, the delete mark, the comments, the notes of
    a wine, and the exclusions. Each click writes to the lab database. The right sidebar
-   is the NULL place: a photo there waits for a wine (owner answer of 2026-09-25
-   18:05:36). The copy, the upload, and the checks of the old page are not here. */
+   is the Drawer (`__drawer__`): a photo there waits for a wine, and no run uses it. The
+   first row of the table is "No Match" (`__null__`): a run uses its photos, and the
+   right answer is no match (plan 36, owner answer of 2026-09-26T00:29:00). The copy, the upload, and the checks of the old page are not here. */
 
 /* The catalogue image of a wine with a `main_patched` image: the page shows the patch.
    The mark sits ON the image, in the top right corner. */
@@ -109,7 +110,7 @@ body.side-off main, body.side-off header { padding-right: 16px; }
 #side-toggle:hover { border-color: var(--accent); color: var(--text); }
 #side-toggle.on { color: var(--accent); border-color: var(--accent); }
 #side-toggle b { font-variant-numeric: tabular-nums; }
-/* The sidebar: the photos of the NULL place. The database holds them, so they stay
+/* The sidebar: the photos of the Drawer. The database holds them, so they stay
    between launches. */
 #side {
   position: fixed; top: 0; right: 0; bottom: 0; width: 228px; z-index: 20;
@@ -156,6 +157,26 @@ tbody tr.excl .bottle { opacity: .55; }
 tbody tr + tr td { border-top: 1px solid var(--line); }
 td { padding: 10px; vertical-align: top; }
 td.wine { width: 320px; min-width: 300px; }
+/* The header row of one cluster of an embedding (plan 37). */
+tbody tr.cl-head { background: var(--panel-2); }
+tbody tr.cl-head td { padding: 5px 10px; font-size: 12px; color: var(--muted);
+                      border-top: 2px solid var(--accent); }
+tr.cl-head b { color: var(--text); font-weight: 650; }
+tr.cl-head a { color: var(--accent); margin-left: 10px; }
+/* An embedding name is long. On a phone the select must not widen the page. */
+#cluster { max-width: calc(100vw - 110px); }
+/* The button `Additional settings` and its row (owner answer of 2026-09-26 01:08:49). */
+#more-btn {
+  font: inherit; font-size: 12px; padding: 4px 9px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+}
+#more-btn:hover { border-color: var(--accent); color: var(--text); }
+#more-btn.on { color: var(--accent); border-color: var(--accent); }
+#more-btn b { margin-left: 5px; color: var(--accent); font-variant-numeric: tabular-nums; }
+#more-btn b:empty { display: none; }
+.bar.more { margin-top: 8px; }
+.bar.more[hidden] { display: none; }
 .wine-inner { display: flex; gap: 10px; }
 .bottle {
   width: 84px; min-width: 84px; height: 140px; object-fit: contain;
@@ -164,12 +185,15 @@ td.wine { width: 320px; min-width: 300px; }
 }
 .bottle.missing { display: flex; align-items: center; justify-content: center;
   color: var(--muted); font-size: 11px; text-align: center; cursor: default; }
-/* The virtual NULL wine: it collects the photos that match no card of the catalogue. */
+/* The row "No Match", the virtual NULL wine: it collects the photos that match no card
+   of the catalogue. */
 .bottle.null-bottle { display: flex; align-items: center; justify-content: center;
   border-style: dashed; border-width: 2px; background: transparent; cursor: default;
   color: var(--muted); font-size: 18px; font-weight: 700; letter-spacing: .04em; }
 tbody tr.null-row { background: var(--panel-2); }
 tbody tr.null-row .meta .nm { color: var(--muted); }
+/* The text of the row "No Match" is prose, not a slug: it breaks between words. */
+tbody tr.null-row .meta .sm { word-break: normal; overflow-wrap: anywhere; }
 .bottle-col { display: flex; flex-direction: column; gap: 5px; min-width: 84px; }
 /* A wine of the catalogue with no photo in this set. */
 tbody tr.cat-only { background: var(--panel-2); }
@@ -423,12 +447,85 @@ tbody tr.cat-only { background: var(--panel-2); }
   .card img { height: 150px; }
   .box-tag { top: 132px; }
 }
+/* The button `Run>`, its dialog, and the job rows of the runs (plan 32). The job rows
+   copy the job rows of the Embeddings page. */
+.run-btn {
+  font: inherit; font-size: 13px; font-weight: 600; padding: 3px 10px; cursor: pointer;
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px;
+}
+.run-btn:hover:not(:disabled) { border-color: var(--accent); }
+.run-btn:disabled { cursor: default; opacity: .45; }
+.run-btn.primary { border-color: var(--accent); font-weight: 700; }
+.run-dlg {
+  position: fixed; inset: 0; z-index: 70; display: flex; align-items: center;
+  justify-content: center; padding: 16px; background: rgba(0, 0, 0, .45);
+}
+.run-dlg[hidden] { display: none; }
+.run-panel {
+  width: min(580px, 100%); max-height: calc(100vh - 32px); overflow: auto;
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  border-radius: 8px; box-shadow: var(--shadow); padding: 16px;
+}
+.run-panel h2 { font-size: 16px; margin: 0 0 4px; }
+.run-sub { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+.run-list { display: grid; gap: 4px; margin-bottom: 12px; }
+.run-opt {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px;
+  align-items: center; padding: 5px 8px; font-size: 13px; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2);
+}
+.run-opt:has(input:checked) { border-color: var(--accent); }
+.run-opt.off { cursor: default; color: var(--muted); }
+.run-opt .run-name { font-weight: 650; overflow-wrap: anywhere; }
+.run-opt .run-note { color: var(--muted); font-size: 12px; text-align: right; }
+.run-fields { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
+.run-fields label { display: flex; gap: 6px; align-items: center; color: var(--muted);
+                    font-size: 12px; }
+.run-fields input {
+  width: 90px; background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 7px; font: inherit; font-size: 13px;
+}
+/* The checkbox `Use caches` (plan 39) keeps the size of a checkbox. */
+.run-fields input[type="checkbox"] { width: auto; margin: 0; padding: 0; }
+.run-error { color: var(--neg); font-size: 13px; min-height: 1.2em; }
+.run-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+.jobs { display: grid; gap: 4px; margin-top: 8px; }
+.job {
+  display: grid; grid-template-columns: 22px minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto auto;
+  gap: 10px; align-items: center; font-size: 12px; padding: 4px 8px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+}
+.job-name { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.job-state { color: var(--var); font-weight: 650; }
+.job-state.done { color: var(--pos); }
+.job-state.failed { color: var(--neg); }
+.job a { color: var(--accent); }
+/* The icon button in the first cell of an active job row stops that run (owner message of
+   2026-09-26T01:32: an icon, not the red text "(x)", at the start of the row). */
+.job-stop {
+  justify-self: start; display: grid; place-items: center; width: 22px; height: 20px;
+  padding: 0; color: var(--muted);
+}
+.job-stop:hover:not(:disabled) { color: var(--text); }
+.job-stop svg {
+  width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.prog { height: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+.prog div { height: 100%; background: var(--accent); }
+@media (max-width: 860px) {
+  .job { grid-template-columns: 22px 1fr 1fr; }
+  .job > :first-child { grid-row: span 4; align-self: start; }
+}
 </style>
 </head>
 <body>
 <header>
   <div class="head-top">
     <h1>Test set <select id="set" title="the test set of the page"></select>
+      <button id="run-open" class="run-btn" type="button"
+              title="run a pipeline of config.yaml on this test set">Run&gt;</button>
       <span class="sub" id="head-sub"></span></h1>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
@@ -450,38 +547,38 @@ tbody tr.cat-only { background: var(--panel-2); }
         <option value="neg_desc">negative count, most first</option>
         <option value="unu_desc">unusable count, most first</option>
         <option value="group">variant group first</option>
+        <option value="cluster_size" disabled title="choose an embedding in Clusters first"
+                >cluster size, largest first</option>
       </select>
     </label>
-    <label>Show
-      <select id="filter">
-        <option value="all">all wines</option>
+    <!-- The filter axes (owner answers of 2026-09-26 00:26:58). A wine passes when it
+         passes every axis. The page has no filter of the benchmark scope: the owner
+         removed the select Slugs (message of 2026-09-26T00:39:13+0300). -->
+    <label>Progress
+      <select id="filter" title="how far the labelling of the photos of the wine is">
+        <option value="all">all</option>
         <option value="todo">not fully labelled</option>
         <option value="untouched">no label yet</option>
         <option value="partial">partly labelled</option>
         <option value="done">fully labelled</option>
-        <option value="has_pos">has a positive photo</option>
-        <option value="no_pos">has no positive photo</option>
-        <option value="has_neg">has a negative sample</option>
-        <option value="has_unu">has an unusable photo</option>
-        <option value="has_var">has a different-design photo</option>
-        <option value="grouped">has a similar wine (variant group)</option>
         <option value="nophotos">no candidate photos</option>
-        <option value="noted">holds a comment</option>
-        <option value="proposal">holds a photo proposed by an agent</option>
-        <option value="deleted">marked for deletion</option>
-        <option value="boxed">holds a box</option>
-        <option value="removed">removed from the catalogue</option>
-        <option value="excluded">excluded from the benchmark</option>
-        <option value="included">included in the benchmark</option>
       </select>
     </label>
-    <label>Slugs
-      <select id="slugsel" title="An excluded slug is out of the benchmark.">
-        <option value="all">all</option>
-        <option value="included">included</option>
-        <option value="excluded">excluded</option>
+    <label>Verdict
+      <select id="verdict" title="a photo of the wine holds this label">
+        <option value="all">any</option>
+        <option value="has_pos">positive</option>
+        <option value="no_pos">no positive</option>
+        <option value="has_neg">negative</option>
+        <option value="has_unu">unusable</option>
+        <option value="has_var">different design</option>
       </select>
     </label>
+    <!-- `Additional settings` shows or hides the row #more (owner answer of 2026-09-26
+         01:08:49). The number counts its selects that are not at their default. -->
+    <button id="more-btn" type="button" aria-expanded="false" aria-controls="more"
+            title="show or hide Marks and Clusters; the number counts those that are not at their default"
+            >Additional settings<b id="more-n"></b></button>
     <label>Find <input id="q" type="search" placeholder="slug, name, producer, region"></label>
     <button id="grp-clear" type="button" hidden
             title="the table shows one variant group; click to show every wine again"
@@ -490,18 +587,35 @@ tbody tr.cat-only { background: var(--panel-2); }
       <span id="stat"></span>
       <span class="meter"><i id="meter"></i></span>
       <button id="side-toggle" type="button"
-              title="show or hide the sidebar (key s)">sidebar <b id="side-n">0</b></button>
+              title="show or hide the Drawer (key s)">drawer <b id="side-n">0</b></button>
     </div>
   </div>
+  <div class="bar more" id="more" hidden>
+    <label>Marks
+      <select id="marks" title="a photo of the wine holds this mark">
+        <option value="all">any</option>
+        <option value="noted">a comment</option>
+        <option value="proposal">an agent proposal</option>
+        <option value="deleted">a deletion mark</option>
+        <option value="boxed">a box</option>
+      </select>
+    </label>
+    <label>Clusters
+      <select id="cluster" title="group the wines by the clusters (view combined) of one embedding; a wine in no cluster is hidden">
+        <option value="all">No</option>
+      </select>
+    </label>
+  </div>
+  <div class="jobs" id="jobs" hidden></div>
 </header>
 <aside id="side">
   <div class="sb-head"><button id="side-hide" type="button"
-        title="hide the sidebar (key s)">&times;</button>Sidebar (NULL)
+        title="hide the Drawer (key s)">&times;</button>Drawer
     <span class="n" id="held-n">0</span>
-    <div class="sb-help">The NULL place of the set. Drag a photo here to keep it for a
-      later wine; drag it onto a wine row to move it there. Image files from the Finder
-      go here or onto a wine row too. V confirms that no card of the
-      catalogue shows the photo: only such a photo is a "no match" query of a run.</div>
+    <div class="sb-help">Drag a photo here to keep it for a later wine; drag it onto a
+      wine row to move it there. Image files from the Finder go here or onto a row too.
+      No run uses a photo of the Drawer. A photo that must give no match goes to the row
+      "No Match".</div>
   </div>
   <div id="held"></div>
 </aside>
@@ -540,10 +654,29 @@ tbody tr.cat-only { background: var(--panel-2); }
   <div class="hint"><span id="lb-pos"></span>
     &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
     <b>1</b> positive &middot; <b>2</b> negative &middot; <b>3</b> unusable &middot;
-    <b>4</b> other design &middot; <b>b</b> box &middot; <b>0</b> to the sidebar &middot;
+    <b>4</b> other design &middot; <b>b</b> box &middot; <b>0</b> to the Drawer &middot;
     right-click delete &middot; Esc close</div>
 </div>
 <div id="ctxmenu" class="ctxmenu" hidden></div>
+<div id="run-dlg" class="run-dlg" hidden>
+  <div class="run-panel" role="dialog" aria-modal="true" aria-labelledby="run-title">
+    <h2 id="run-title">Run the set</h2>
+    <div class="run-sub" id="run-sub"></div>
+    <div class="run-list" id="run-list"></div>
+    <div class="run-fields">
+      <label>first N queries <input id="run-limit" type="number" min="1" step="1"
+             placeholder="all"></label>
+      <label>workers <input id="run-workers" type="number" min="1" max="32" step="1"></label>
+      <label title="On: a model call that repeats an earlier call reads its answer from data/cache/ (SAM3, GDINO, VLM, LLM). Off: each model call goes to its service, so the latency is real time; the fresh answers are stored. Plan 39."><input
+             id="run-cache" type="checkbox" checked> Use caches</label>
+    </div>
+    <div class="run-error" id="run-error"></div>
+    <div class="run-foot">
+      <button id="run-cancel" class="run-btn" type="button">Cancel</button>
+      <button id="run-start" class="run-btn primary" type="button">Start</button>
+    </div>
+  </div>
+</div>
 <script>
 const PATCH_TIP = "patched: this catalogue image is the main_patched image of the wine"
   + " in the lab database. The main image is not shown.";
@@ -577,6 +710,14 @@ const KEY_OF = { "1": "positive", "2": "negative", "3": "unusable", "4": "varian
 const NULL_SLUG = "__null__";
 const NULL_LABELS = ["positive", "unusable"];
 function isNullRow(r) { return !!(r && (r.null_row || r.slug === NULL_SLUG)); }
+/* The Drawer: the sidebar. Its photos wait for a wine, take no label, and no run uses
+   them (plan 36). */
+const DRAWER_SLUG = "__drawer__";
+function isDrawerRow(r) { return !!(r && (r.drawer_row || r.slug === DRAWER_SLUG)); }
+function isSpecialRow(r) { return isNullRow(r) || isDrawerRow(r); }
+function placeName(slug) {
+  return slug === NULL_SLUG ? "No Match" : slug === DRAWER_SLUG ? "Drawer" : slug;
+}
 const TITLE = {
   positive: "1 — this photo shows this wine",
   negative: "2 — a different wine; keep as a negative sample",
@@ -623,11 +764,12 @@ function tally(row) {
 }
 
 /* The photos that the labelling work covers. A photo of the NULL wine is judged by its
-   place and needs no label, so it stays out of this number. */
+   place and needs no label, and a photo of the Drawer takes no label, so they stay out
+   of this number. */
 function photoTotal() {
-  return ROWS.reduce((n, r) => n + (isNullRow(r) ? 0 : r.photos.length), 0);
+  return ROWS.reduce((n, r) => n + (isSpecialRow(r) ? 0 : r.photos.length), 0);
 }
-function reviewRows() { return ROWS.filter(r => !r.catalog_only && !isNullRow(r)); }
+function reviewRows() { return ROWS.filter(r => !r.catalog_only && !isSpecialRow(r)); }
 
 function rowTags(t) {
   return (t.positive ? `<span class="tag pos">${t.positive} pos</span> ` : "") +
@@ -642,7 +784,7 @@ function rowTags(t) {
 }
 
 function stateBadge(r) {
-  if (isNullRow(r)) return "";
+  if (isSpecialRow(r)) return "";
   if (!r.in_catalog) {
     return `<span class="state" title="wine_catalog holds no wine with this slug">not in catalogue</span>`;
   }
@@ -653,13 +795,22 @@ function stateBadge(r) {
   return "";
 }
 
-/* A wine with no photo in the set is not labelling work. `all` lists it, and the
-   filters below ask about the catalogue itself, so each one shows it too. */
-const CATALOG_SCOPE_FILTERS = new Set(["all", "nophotos", "excluded", "included"]);
+/* The selects of the filter axes. The values of their options are unique across the
+   axes, so one switch tests each of them. `#cluster` groups the rows (plan 37); `render`
+   does not give it to `matchFilter`. */
+const FILTER_AXES = ["#filter", "#verdict", "#marks", "#cluster"];
 
-function matchFilter(row, mode) {
-  if (row.catalog_only && !CATALOG_SCOPE_FILTERS.has(mode)) return false;
+/* A wine with no photo in the set is not labelling work. `all` lists it, and `nophotos`
+   asks about the catalogue itself. Any other value of an axis hides it. */
+const CATALOG_SCOPE_FILTERS = new Set(["all", "nophotos"]);
+
+function matchFilter(row, modes) {
+  if (row.catalog_only && !modes.every(m => CATALOG_SCOPE_FILTERS.has(m))) return false;
   const t = tally(row);
+  return modes.every(m => matchAxis(row, t, m));
+}
+
+function matchAxis(row, t, mode) {
   switch (mode) {
     case "todo": return t.labelled < t.total;
     case "untouched": return t.labelled === 0;
@@ -670,15 +821,11 @@ function matchFilter(row, mode) {
     case "has_neg": return t.negative > 0;
     case "has_unu": return t.unusable > 0;
     case "has_var": return t.variant > 0;
-    case "grouped": return !!row.group;
     case "nophotos": return row.photos.length === 0;
     case "noted": return t.noted > 0;
     case "proposal": return t.prop > 0;
     case "deleted": return t.del > 0;
     case "boxed": return t.box > 0;
-    case "removed": return row.state === "Removed";
-    case "excluded": return isExcluded(row.slug);
-    case "included": return !isExcluded(row.slug);
     default: return true;
   }
 }
@@ -766,6 +913,7 @@ function noteBadge(text) {
 }
 
 function labelButtons(current, slug) {
+  if (slug === DRAWER_SLUG) return "";
   const names = slug === NULL_SLUG ? NULL_LABELS : Object.keys(SHORT);
   return names.map(name =>
     `<button class="${SHORT[name]} ${current === name ? "on" : ""}" data-l="${name}"
@@ -780,7 +928,7 @@ function cardHtml(r, p) {
   const dl = deleteMarked(r.slug, p.file), bx = boxOf(r.slug, p.file);
   const from = entryOf(r.slug, p.file).moved_from;
   return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${pr ? "prop" : ""} ${
-                 dl ? "del" : ""} ${isNullRow(r) ? "held-card" : ""}" draggable="true"
+                 dl ? "del" : ""} ${isDrawerRow(r) ? "held-card" : ""}" draggable="true"
                data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
     ${dl ? `<span class="del-tag" title="marked for deletion; the mark moves no file">del</span>` : ""}
     ${pr ? `<span class="prop-tag" title="${esc(pr.by || "agent")} proposes ${
@@ -789,20 +937,20 @@ function cardHtml(r, p) {
     ${noteBadge(note)}
     ${bx ? `<span class="box-tag" title="box of the main object: ${bx.join(", ")}">box</span>` : ""}
     <img loading="lazy" draggable="false" src="${esc(p.url)}" alt="" data-full="1">
-    ${isNullRow(r) && from ? `<div class="from" title="the place of the photo before the move">from ${
-      esc(from)}</div>` : ""}
+    ${isSpecialRow(r) && from ? `<div class="from" title="the place of the photo before the move">from ${
+      esc(placeName(from))}</div>` : ""}
     <div class="cap"><span>${esc(p.file.split("_")[0] || "")}</span>
       <span>${p.conf === null ? "" : "conf " + p.conf}</span></div>
     <div class="btns">${labelButtons(l, r.slug)}</div>
     ${mv ? `<div class="moved-to" title="a move that waits for apply in the old tool; read-only here">→ ${
-      esc(mv === NULL_SLUG ? "NULL" : mv)}</div>` : ""}
+      esc(placeName(mv))}</div>` : ""}
     </div>`;
 }
 
 function cardsHtml(r) {
   if (!r.photos.length) {
     return `<span class="empty">${isNullRow(r)
-      ? "the NULL row of this set holds no photo"
+      ? "no photo yet: drag here a photo that must give no match"
       : "no photo of this wine in the set " + esc(SET)}</span>`;
   }
   return r.photos.map(p => cardHtml(r, p)).join("");
@@ -827,7 +975,7 @@ function rowHtml(r, gclass) {
   const bottle = isNullRow(r)
     ? `<div class="bottle-col"><div class="bottle null-bottle"
          title="the virtual NULL wine: a photo here matches no card of the catalogue"
-         >NULL</div>${exclBtn}</div>`
+         >NO<br>MATCH</div>${exclBtn}</div>`
     : `<div class="bottle-col">${img}${exclBtn}</div>`;
   const fullName = [r.producer, r.name].filter(Boolean).join(" ");
   const grp = grpOf(r);
@@ -841,7 +989,8 @@ function rowHtml(r, gclass) {
         stateBadge(r)}</div>
       <div class="pr">${esc(r.producer)}</div>
       <div class="sm">${isNullRow(r)
-        ? "no card of the catalogue shows the wine of a photo in this row"
+        ? "no card of the catalogue shows the wine of a photo in this row; a run uses " +
+          "each photo that is not unusable, and the right answer is no match"
         : esc(r.category) + (r.region ? " &middot; " + esc(r.region) : "")}</div>
       <div class="sm">${esc(r.grapes)}</div>
       <div class="sm">${esc(r.slug)}<button class="copy" data-copy="${esc(r.slug)}"
@@ -859,40 +1008,135 @@ function rowHtml(r, gclass) {
     <td><div class="cards">${cardsHtml(r)}</div></td></tr>`;
 }
 
+/* ---- the clusters of an embedding (plan 37) ----
+   The select `Clusters` lists each embedding that has a clusters.json. A choice groups the
+   table by the clusters of the view `combined`: a cluster takes the place of its first
+   row, and a header row stands above it. A wine in no cluster is hidden. The page reads
+   the list at the first load and the clusters of an embedding at its first use. */
+const CLUSTER_SPACE = "combined";
+const CLUSTER_DATA = {};   // embedding -> Map(slug -> cluster), or a Promise while it loads
+
+async function loadClusterSources() {
+  let entries = [];
+  try {
+    const res = await fetch("/api/clusters", { cache: "no-store" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+    entries = (data.embeddings || []).filter(e => e.exists && !e.error);
+  } catch (e) {
+    $("#error").textContent = "cannot read the list of the clusters: " + e.message;
+  }
+  $("#cluster").innerHTML = `<option value="all">No</option>` + entries.map(e =>
+    `<option value="${esc(e.name)}">${esc(e.name)} (${
+      ((e.counts || {})[CLUSTER_SPACE] || {}).clusters || 0} clusters${
+      e.stale ? ", stale" : ""})</option>`).join("");
+}
+
+/* The map slug -> cluster of one embedding, or null while it loads. The first call starts
+   the request; `render` runs again when the answer is in. */
+function clusterMap(name) {
+  const got = CLUSTER_DATA[name];
+  if (got instanceof Map) return got;
+  if (got) return null;
+  CLUSTER_DATA[name] = fetch("/api/clusters/" + encodeURIComponent(name), { cache: "no-store" })
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+      const bySlug = new Map();
+      const list = (((data.artifact || {}).spaces || {})[CLUSTER_SPACE] || {}).clusters || [];
+      for (const c of list) for (const slug of c.slugs) bySlug.set(slug, c);
+      CLUSTER_DATA[name] = bySlug;
+    })
+    .catch(e => {
+      delete CLUSTER_DATA[name];
+      $("#error").textContent = `cannot read the clusters of ${name}: ${e.message}`;
+      if ($("#cluster").value === name) $("#cluster").value = "all";
+    })
+    .then(render);
+  return null;
+}
+
+/* The rows that are in a cluster, one cluster after the other. A cluster stands at the
+   place of its first row. `heads` maps the first row of each cluster to its header. */
+function groupByCluster(rows, bySlug, bySize) {
+  const members = new Map();
+  for (const r of rows) {
+    const c = bySlug.get(r.slug);
+    if (!c) continue;
+    if (!members.has(c)) members.set(c, []);
+    members.get(c).push(r);
+  }
+  const groups = [...members];
+  // The sort `cluster size`: the largest cluster first; a tie goes by the cluster id.
+  if (bySize) groups.sort(([a], [b]) => b.size - a.size || String(a.id).localeCompare(String(b.id)));
+  const out = [], heads = new Map();
+  for (const [c, rs] of groups) {
+    heads.set(rs[0], { cluster: c, shown: rs.length });
+    out.push(...rs);
+  }
+  return { rows: out, heads };
+}
+
+function clusterHeadHtml(h, name) {
+  const c = h.cluster;
+  const href = `/clusters?name=${encodeURIComponent(name)}&space=${CLUSTER_SPACE}#${
+    encodeURIComponent(c.slugs[0])}`;
+  return `<tr class="cl-head"><td colspan="2"><b>${esc(c.id)}</b> · ${h.shown} of ${
+    c.size} wines shown · ${esc((c.signals || []).join(" + "))}<a href="${esc(href)}"
+    target="_blank" rel="noopener" title="the cluster on the page Clusters, in a new tab"
+    >open on /clusters</a></td></tr>`;
+}
+
 function render() {
-  const mode = $("#sort").value, filt = $("#filter").value, sel = $("#slugsel").value;
+  const source = $("#cluster").value;
+  // The sort `cluster size` needs clusters (owner answer of 2026-09-26 01:08:49).
+  $('#sort option[value="cluster_size"]').disabled = source === "all";
+  if (source === "all" && $("#sort").value === "cluster_size") $("#sort").value = "slug";
+  const mode = $("#sort").value;
+  const filts = FILTER_AXES.filter(id => id !== "#cluster").map(id => $(id).value);
   const terms = wordsOf($("#q").value);
-  const nullRow = ROWS.find(isNullRow) || null;
-  let rows = ROWS.filter(r => !isNullRow(r) && matchFilter(r, filt));
-  if (sel === "excluded") rows = rows.filter(r => isExcluded(r.slug));
-  else if (sel === "included") rows = rows.filter(r => !isExcluded(r.slug));
+  const nullRow = ROWS.find(isNullRow) || null, drawerRow = ROWS.find(isDrawerRow) || null;
+  let rows = ROWS.filter(r => !isSpecialRow(r) && matchFilter(r, filts));
   if (terms.length) rows = rows.filter(r => matchQuery(r, terms));
   if (GROUP_FILTER) rows = rows.filter(r => r.group === GROUP_FILTER);
-  rows = clusterGroups(sortRows(rows, mode));
-  // The NULL row stands in the sidebar, not in the table. It keeps the place 0 of VIEW,
+  rows = sortRows(rows, mode);
+  let heads = null;
+  if (source === "all") rows = clusterGroups(rows);
+  else {
+    const bySlug = clusterMap(source);
+    ({ rows, heads } = bySlug ? groupByCluster(rows, bySlug, mode === "cluster_size") : { rows: [], heads: null });
+  }
+  const wines = rows.length;
+  // The row "No Match" stands first in the table, and no filter takes it away (plan 36).
+  if (nullRow) rows.unshift(nullRow);
+  // The Drawer stands in the sidebar, not in the table. It keeps the place 0 of VIEW,
   // so the large view and the arrow keys reach its photos.
-  VIEW = nullRow ? [nullRow].concat(rows) : rows;
+  VIEW = drawerRow ? [drawerRow].concat(rows) : rows;
 
   const gclass = new Map();
   let gi = 0;
   for (const r of rows) {
     if (r.group && !gclass.has(r.group)) gclass.set(r.group, (gi++ % 2) ? "grp-b" : "grp-a");
   }
-  $("#rows").innerHTML = rows.map(r => rowHtml(r, gclass)).join("");
+  const more = ["#marks", "#cluster"].filter(id => $(id).value !== "all").length;
+  $("#more-n").textContent = more ? "· " + more : "";
+  $("#rows").innerHTML = rows.map(r => (heads && heads.has(r)
+    ? clusterHeadHtml(heads.get(r), source) : "") + rowHtml(r, gclass)).join("");
   const gf = GROUP_FILTER && GROUPS[GROUP_FILTER];
   $("#grp-clear").hidden = !gf;
   if (gf) $("#grp-clear-id").textContent = `of ${gf.slugs.length}`;
   $("#count").textContent =
-    `${rows.length} of ${ROWS.filter(r => !isNullRow(r)).length} wines shown` +
+    `${wines} of ${ROWS.filter(r => !isSpecialRow(r)).length} wines shown` +
     (gf ? " · one variant group" : "") +
-    ((filt === "excluded" && sel === "included") || (filt === "included" && sel === "excluded")
-      ? ` · the control Slugs stands on ${sel} and takes every row away` : "");
+    (source === "all" ? "" : heads ? ` · ${heads.size} clusters of ${source}`
+      : ` · loading the clusters of ${source}…`);
   renderSide();
   stats();
   writeViewToUrl();
+  saveHeader();
 }
 
-/* ---- the sidebar: the photos of the NULL place ---- */
+/* ---- the sidebar: the photos of the Drawer ---- */
 const SIDE_KEY = "svl.testset.sidebar";
 function sideShown() { return !document.body.classList.contains("side-off"); }
 function setSide(on, remember) {
@@ -908,13 +1152,13 @@ function initSide() {
   setSide(want !== "0", false);
 }
 function renderSide() {
-  const r = ROWS.find(isNullRow);
+  const r = ROWS.find(isDrawerRow);
   const n = r ? r.photos.length : 0;
   $("#held-n").textContent = n;
   $("#side-n").textContent = n;
   $("#held").innerHTML = n ? r.photos.map(p => cardHtml(r, p)).join("")
     : `<div class="empty">Drag a photo or an image file here. It waits for a wine, also ` +
-      `after a restart.</div>`;
+      `after a restart. No run uses it.</div>`;
 }
 $("#side-toggle").addEventListener("click", () => setSide(!sideShown()));
 $("#side-hide").addEventListener("click", () => setSide(false));
@@ -924,20 +1168,20 @@ function stats() {
                 prop: 0, del: 0, box: 0 };
   let doneWines = 0;
   for (const r of ROWS) {
-    if (isNullRow(r)) continue;
+    if (isSpecialRow(r)) continue;
     const t = tally(r);
     for (const k of Object.keys(all)) all[k] += t[k];
     if (t.total && t.labelled === t.total) doneWines++;
   }
   const labelled = all.positive + all.negative + all.unusable + all.variant;
-  const nullRow = ROWS.find(isNullRow);
-  const held = nullRow ? nullRow.photos.length : 0;
-  const confirmed = nullRow ? tally(nullRow).positive : 0;
+  const nullRow = ROWS.find(isNullRow), drawerRow = ROWS.find(isDrawerRow);
+  const noMatch = nullRow ? nullRow.photos.length : 0;
+  const held = drawerRow ? drawerRow.photos.length : 0;
   $("#stat").innerHTML = `labelled <b>${labelled}</b>/<b>${TOTAL}</b> photos &middot; ` +
     rowTags({ ...all, moved: 0, noted: 0, prop: 0 }) + ` &middot; ` +
     `<b>${doneWines}</b>/<b>${reviewRows().length}</b> wines done` +
-    (held ? ` &middot; <b>${held}</b> <span class="muted">in the sidebar, ${confirmed}` +
-            ` confirmed no match</span>` : "") +
+    (noMatch ? ` &middot; <b>${noMatch}</b> <span class="muted">in No Match</span>` : "") +
+    (held ? ` &middot; <b>${held}</b> <span class="muted">in the Drawer</span>` : "") +
     // The time of the last edit stands here, not in the title: a long title line pushes
     // the navigation into a row of its own.
     (EDITED_AT ? ` &middot; <span class="muted">last edit ${esc(EDITED_AT)}</span>` : "");
@@ -946,13 +1190,13 @@ function stats() {
 }
 
 /* The line after the set combobox, and the photo count of the set in the combobox. Both
-   count each photo of the set, the sidebar too, as the server counts the photos of a set.
+   count each photo of the set, the Drawer too, as the server counts the photos of a set.
    stats() draws them again after each write, so a move or an upload does not leave them
    behind. */
 function headSub() {
   const photos = ROWS.reduce((n, r) => n + r.photos.length, 0);
   $("#head-sub").textContent =
-    `${ROWS.filter(r => !isNullRow(r)).length} wines, ${photos} photos`;
+    `${ROWS.filter(r => !isSpecialRow(r)).length} wines, ${photos} photos`;
   const opt = [...$("#set").options].find(o => o.value === SET);
   if (opt) opt.textContent = `${SET} (${photos} photos)`;
 }
@@ -1055,8 +1299,9 @@ function candItem(r, pi) {
     cap: `<b>photo ${pi + 1} of ${r.photos.length}</b><br>${esc(p.file)}` +
          (p.conf === null ? "" : ` &middot; conf ${p.conf}`) +
          (bx ? `<br>box ${bx.join(", ")}` : "") +
-         (isNullRow(r) ? `<br>the NULL place: ${t.labelled} of ${t.total} labelled`
-                       : `<br>this wine: ${t.labelled} of ${t.total} labelled`),
+         (isNullRow(r) ? `<br>No Match: ${t.labelled} of ${t.total} labelled`
+          : isDrawerRow(r) ? `<br>the Drawer: no run uses this photo`
+          : `<br>this wine: ${t.labelled} of ${t.total} labelled`),
   };
 }
 
@@ -1076,6 +1321,8 @@ function renderLbStatus() {
                  : l === "negative" ? "negative sample — a different wine"
                  : l === "unusable" ? "unusable — not in the set"
                  : l === "variant" ? "this wine, different design"
+                 : isNullRow(r) ? "No Match: a run expects no card for this photo"
+                 : isDrawerRow(r) ? "Drawer: the photo waits for a wine; no run uses it"
                  : pr ? `${pr.by || "agent"} proposes ${pr.proposed} (${
                      Math.round((pr.confidence || 0) * 100)}%)`
                  : "not labelled") + (deleteMarked(r.slug, p.file) ? "  · marked for deletion" : "");
@@ -1094,9 +1341,11 @@ function showLightbox(wi, pi) {
   fillFig("#lb-cand", candItem(r, pi));
   renderLbStatus();
   drawBox();
-  const hasNull = VIEW.length > 0 && isNullRow(VIEW[0]);
-  $("#lb-pos").textContent = isNullRow(r) ? "the NULL place (sidebar) · "
-    : `wine ${wi + (hasNull ? 0 : 1)} of ${VIEW.length - (hasNull ? 1 : 0)} — ${r.slug} · `;
+  // The special rows stand first in VIEW: the Drawer, then "No Match".
+  const special = VIEW.filter(isSpecialRow).length;
+  $("#lb-pos").textContent = isDrawerRow(r) ? "the Drawer (sidebar) · "
+    : isNullRow(r) ? "No Match · "
+    : `wine ${wi - special + 1} of ${VIEW.length - special} — ${r.slug} · `;
   setHash(r.photos.length ? `${r.slug}/${r.photos[pi].file}` : r.slug);
   loadComment(r, pi);
   $("#lb").classList.add("open");
@@ -1279,9 +1528,12 @@ function showCtxMenu(x, y, slug, file) {
     `<button type="button" data-act="copy-url">Copy Image URL</button>` +
     `<button type="button" data-act="download">Download</button>` +
     `<div class="ctx-sep"></div>` +
-    (slug === NULL_SLUG
-      ? `<button type="button" data-act="to-wine">Move to a wine…</button>`
-      : `<button type="button" data-act="to-null">Move to the sidebar (NULL)</button>`) +
+    (slug === NULL_SLUG || slug === DRAWER_SLUG
+      ? `<button type="button" data-act="to-wine">Move to a wine…</button>` : "") +
+    (slug === DRAWER_SLUG ? ""
+      : `<button type="button" data-act="to-drawer">Move to the Drawer</button>`) +
+    (slug === NULL_SLUG ? ""
+      : `<button type="button" data-act="to-null">Move to No Match</button>`) +
     `<div class="ctx-sep"></div>` +
     (deleteMarked(slug, file)
       ? `<button type="button" data-act="undelete">Keep this photo</button>`
@@ -1325,6 +1577,7 @@ document.addEventListener("click", async ev => {
     a.download = `${slug}__${file}`;
     document.body.appendChild(a); a.click(); a.remove();
   } else if (act === "to-null") moveTo(slug, file, NULL_SLUG);
+  else if (act === "to-drawer") moveTo(slug, file, DRAWER_SLUG);
   else if (act === "to-wine") {
     const to = (window.prompt("Move " + file + " to the wine with the slug:", "") || "").trim();
     if (to) moveTo(slug, file, to);
@@ -1336,7 +1589,7 @@ window.addEventListener("resize", hideCtxMenu);
 document.addEventListener("scroll", hideCtxMenu, true);
 
 /* ---- the move of a photo ----
-   A card goes to the sidebar (the NULL place) or onto a wine row. The server changes
+   A card goes to the sidebar (the Drawer), onto the row "No Match", or onto a wine row. The server changes
    the place of the row, clears the label, and writes the old place into `moved_from`.
    The page then draws the two places again, not the whole table. */
 const PHOTO_TYPE = "application/x-photo";
@@ -1351,7 +1604,7 @@ function byRank(a, b) {
 }
 
 function refreshRow(r) {
-  if (isNullRow(r)) { renderSide(); return; }
+  if (isDrawerRow(r)) { renderSide(); return; }
   const tr = rowOf(r.slug);
   if (!tr) return;
   tr.querySelector(".cards").innerHTML = cardsHtml(r);
@@ -1385,7 +1638,7 @@ async function moveTo(slug, file, to) {
   for (const r of [src, dst]) {
     const confs = r.photos.map(p => p.conf).filter(c => c !== null && c !== undefined);
     r.min_conf = confs.length ? Math.min(...confs) : null;
-    r.catalog_only = !isNullRow(r) && !r.photos.length;
+    r.catalog_only = !isSpecialRow(r) && !r.photos.length;
   }
   refreshRow(src);
   refreshRow(dst);
@@ -1437,7 +1690,7 @@ $("#side").addEventListener("drop", ev => {
     ev.preventDefault();
     ev.stopPropagation();
     $("#side").classList.remove("over");
-    uploadFiles([...ev.dataTransfer.files], NULL_SLUG);
+    uploadFiles([...ev.dataTransfer.files], DRAWER_SLUG);
     return;
   }
   if (!hasPhoto(ev)) return;
@@ -1445,7 +1698,7 @@ $("#side").addEventListener("drop", ev => {
   ev.stopPropagation();
   $("#side").classList.remove("over");
   const d = readPhoto(ev);
-  if (d) moveTo(d.slug, d.file, NULL_SLUG);
+  if (d) moveTo(d.slug, d.file, DRAWER_SLUG);
 });
 document.addEventListener("dragover", ev => {
   if (!hasPhoto(ev) && !hasFiles(ev)) return;
@@ -1522,7 +1775,7 @@ async function uploadFiles(files, to) {
     dst.photos.sort(byRank);
     const confs = dst.photos.map(p => p.conf).filter(c => c !== null && c !== undefined);
     dst.min_conf = confs.length ? Math.min(...confs) : null;
-    dst.catalog_only = !isNullRow(dst) && !dst.photos.length;
+    dst.catalog_only = !isSpecialRow(dst) && !dst.photos.length;
     refreshRow(dst);
     TOTAL = photoTotal();
     if (bad.length < files.length) EDITED_AT = localStamp();
@@ -1540,8 +1793,7 @@ function showGroup(gid) {
   GROUP_FILTER = want;
   if (want) {
     $("#q").value = "";
-    $("#filter").value = "all";
-    $("#slugsel").value = "all";
+    for (const id of FILTER_AXES) $(id).value = "all";
   }
   render();
   if (want) window.scrollTo({ top: 0 });
@@ -1683,8 +1935,10 @@ window.addEventListener("beforeunload", flushComment);
 const VIEW_PARAMS = [
   ["q", "#q", ""],
   ["filter", "#filter", "all"],
+  ["verdict", "#verdict", "all"],
+  ["marks", "#marks", "all"],
+  ["cluster", "#cluster", "all"],
   ["sort", "#sort", "slug"],
-  ["slugs", "#slugsel", "all"],
 ];
 
 function writeViewToUrl() {
@@ -1708,6 +1962,12 @@ function readViewFromUrl() {
     if (el.tagName === "SELECT" && ![...el.options].some(o => o.value === v)) continue;
     el.value = v;
   }
+  // An address of the time before the axes holds every filter in `filter`. The value
+  // goes to the axis that holds it. `excluded` and `included` have no axis any more.
+  const old = p.get("filter");
+  const home = old && FILTER_AXES.map(id => $(id))
+    .find(el => [...el.options].some(o => o.value === old));
+  if (home) home.value = old;
   const gid = p.get("group") || "";
   GROUP_FILTER = GROUPS[gid] ? gid : "";
 }
@@ -1728,8 +1988,7 @@ function openFromHash() {
   const file = cut < 0 ? "" : decodeURIComponent(raw.slice(cut + 1));
   if (!ROWS.some(r => r.slug === slug)) return false;
   if (!VIEW.some(r => r.slug === slug)) {
-    $("#filter").value = "all";
-    $("#slugsel").value = "all";
+    for (const id of FILTER_AXES) $(id).value = "all";
     $("#q").value = "";
     GROUP_FILTER = "";
     render();
@@ -1812,7 +2071,7 @@ document.addEventListener("keydown", ev => {
   }
   if (ev.key === "0") {
     ev.preventDefault();
-    if (at && at.slug !== NULL_SLUG) moveTo(at.slug, at.file, NULL_SLUG);
+    if (at && at.slug !== DRAWER_SLUG) moveTo(at.slug, at.file, DRAWER_SLUG);
     return;
   }
   const want = KEY_OF[ev.key];
@@ -1820,11 +2079,23 @@ document.addEventListener("keydown", ev => {
     ev.preventDefault();
     if (!at) return;
     if (at.slug === NULL_SLUG && !NULL_LABELS.includes(want)) return;
+    if (at.slug === DRAWER_SLUG) return;
     setLabel(at.slug, at.file, want);
   }
 });
 
-for (const id of ["#sort", "#filter", "#slugsel"]) $(id).addEventListener("change", render);
+for (const id of ["#sort", ...FILTER_AXES]) $(id).addEventListener("change", render);
+
+/* The row #more of `Additional settings`. Its open state is kept in localStorage. */
+const MORE_KEY = "svl.testset.more";
+function setMore(on) {
+  $("#more").hidden = !on;
+  $("#more-btn").classList.toggle("on", on);
+  $("#more-btn").setAttribute("aria-expanded", on ? "true" : "false");
+  try { localStorage.setItem(MORE_KEY, on ? "1" : "0"); } catch (e) { /* no storage */ }
+}
+$("#more-btn").addEventListener("click", () => setMore($("#more").hidden));
+try { if (localStorage.getItem(MORE_KEY) === "1") setMore(true); } catch (e) { /* no storage */ }
 let QT = null;
 $("#q").addEventListener("input", () => { clearTimeout(QT); QT = setTimeout(render, 180); });
 $("#set").addEventListener("change", () => {
@@ -1837,6 +2108,7 @@ $("#set").addEventListener("change", () => {
    maps of the page. */
 async function load(name, first) {
   $("#error").textContent = "";
+  const sources = first ? loadClusterSources() : null;
   let data;
   try {
     const res = await fetch("/api/testset" + (name ? "?set=" + encodeURIComponent(name) : ""));
@@ -1857,13 +2129,211 @@ async function load(name, first) {
     s.name === SET ? "selected" : ""}>${esc(s.name)} (${s.photos} photos)</option>`).join("");
   TOTAL = photoTotal();
   EDITED_AT = data.edited_at || null;
-  if (first) readViewFromUrl();
+  if (first) {
+    // The options of `Clusters` came after the restore of the header, which skipped a
+    // stored cluster (plan 37). The value of the address still wins.
+    await sources;
+    const kept = !URL_VIEW && HEADER["#cluster"];
+    if (typeof kept === "string" && [...$("#cluster").options].some(o => o.value === kept)) {
+      $("#cluster").value = kept;
+    }
+    readViewFromUrl();
+  }
   render();
   if (first) openFromHash();
 }
 
+/* The button `Run>` (plan 32): the dialog selects a pipeline of config.yaml (the key
+   `pipeline`, plan 34) and starts a run of the set of the page. A pipeline with a
+   configuration error is disabled with its reason (owner answer of 2026-09-25T22:46:00).
+   The routes and the key `configuration` keep their names. The job rows under the header
+   show each run that runs or ended less than 60 s ago. */
+const RUN_ACTIVE = ["running", "stopping"];
+const RUN_SHOW_ENDED_S = 60;
+const RUN_STORE_KEY = "svoe-vino-lab.run-configuration";
+let RUN_CONFIGS = [], RUN_POLL = null;
+
+async function runJson(url, options) {
+  const res = await fetch(url, Object.assign({ cache: "no-store" }, options || {}));
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.error || ("HTTP " + res.status));
+  return body;
+}
+function runDuration(seconds) {
+  seconds = Math.max(0, Math.round(seconds));
+  const h = Math.floor(seconds / 3600), m = Math.floor(seconds % 3600 / 60), s = seconds % 60;
+  return h ? `${h} h ${m} min` : (m ? `${m} min ${s} s` : `${s} s`);
+}
+function runStored() {
+  try { return localStorage.getItem(RUN_STORE_KEY); } catch (_) { return null; }
+}
+function runRemember(name) {
+  try { localStorage.setItem(RUN_STORE_KEY, name); } catch (_) { /* no storage */ }
+}
+function runBusy(c) { return !!(c.job && RUN_ACTIVE.includes(c.job.state)); }
+function runChosen() {
+  const input = document.querySelector('input[name="run-cfg"]:checked');
+  return input ? RUN_CONFIGS.find(c => c.name === input.value) || null : null;
+}
+function runSyncFields() {
+  const c = runChosen();
+  $("#run-workers").placeholder = c && c.workers ? String(c.workers) : "";
+  $("#run-start").disabled = !c;
+}
+function closeRunDialog() {
+  $("#run-dlg").hidden = true;
+  $("#run-open").focus();
+}
+async function openRunDialog() {
+  $("#run-title").textContent = `Run the set ${SET}`;
+  $("#run-sub").textContent = "Reading the pipelines…";
+  $("#run-list").innerHTML = "";
+  $("#run-error").textContent = "";
+  $("#run-start").disabled = true;
+  $("#run-dlg").hidden = false;
+  let data;
+  try {
+    data = await runJson("/api/run-configurations?set=" + encodeURIComponent(SET));
+  } catch (e) {
+    $("#run-sub").textContent = "";
+    $("#run-error").textContent = "cannot read the pipelines: " + e.message;
+    return;
+  }
+  RUN_CONFIGS = data.configurations || [];
+  $("#run-sub").textContent = `${data.queries} queries in the set ${data.set}. Each query is `
+    + "one request to the matcher of the pipeline.";
+  $("#run-list").innerHTML = RUN_CONFIGS.map(c => {
+    const off = !c.runnable || runBusy(c);
+    const note = runBusy(c) ? "running" : c.runnable ? c.backend
+      : (c.reason || "").startsWith("configuration error") ? "configuration error" : c.reason;
+    return `<label class="run-opt${off ? " off" : ""}" title="${esc(c.reason || c.backend || "")}"><input
+      type="radio" name="run-cfg" value="${esc(c.name)}"${off ? " disabled" : ""}><span
+      class="run-name">${esc(c.name)}</span><span class="run-note">${esc(note)}</span></label>`;
+  }).join("") || '<div class="run-sub">config.yaml holds no pipeline.</div>';
+  // A start sends requests to the matcher, so no pipeline is chosen by itself; the last
+  // choice of this browser comes back.
+  const last = RUN_CONFIGS.find(c => c.name === runStored() && c.runnable && !runBusy(c));
+  if (last) {
+    const input = [...document.querySelectorAll('input[name="run-cfg"]')]
+      .find(i => i.value === last.name);
+    if (input) input.checked = true;
+  }
+  runSyncFields();
+}
+async function startRun() {
+  const c = runChosen();
+  if (!c) return;
+  const limit = $("#run-limit").value.trim(), workers = $("#run-workers").value.trim();
+  const body = { configuration: c.name, set: SET, limit: limit ? Number(limit) : null,
+                 workers: workers ? Number(workers) : null,
+                 use_cache: $("#run-cache").checked };
+  $("#run-start").disabled = true;
+  $("#run-error").textContent = "";
+  try {
+    await runJson("/api/run-jobs", { method: "POST", body: JSON.stringify(body),
+                                     headers: { "Content-Type": "application/json" } });
+  } catch (e) {
+    $("#run-error").textContent = e.message;
+    $("#run-start").disabled = false;
+    return;
+  }
+  runRemember(c.name);
+  closeRunDialog();
+  pollRunJobs();
+}
+function showRunJobs(jobs, now) {
+  const shown = jobs.filter(j => RUN_ACTIVE.includes(j.state)
+    || (j.ended_t && now - j.ended_t < RUN_SHOW_ENDED_S));
+  $("#jobs").hidden = !shown.length;
+  $("#jobs").innerHTML = shown.map(j => {
+    const active = RUN_ACTIVE.includes(j.state);
+    const percent = j.todo ? Math.round(100 * j.done / j.todo) : 0;
+    const elapsed = j.started_t ? runDuration((active ? now : j.ended_t || now) - j.started_t) : "";
+    let count = j.todo == null ? esc(j.message || "") : `${j.done} / ${j.todo}`;
+    if (!active && j.message && j.todo != null) count += ` · ${esc(j.message)}`;
+    const link = j.run_id ? `<a href="/runs?configuration=${encodeURIComponent(j.name)}#${
+      encodeURIComponent(j.run_id)}">open run</a>` : "<span></span>";
+    // A `stopping` job keeps a disabled button, so the row does not change its width. An
+    // ended job has an empty first cell and `open run` in the last cell.
+    const stop = active ? `<button type="button" class="run-btn job-stop" data-run-stop="${
+      esc(j.name)}" title="stop the run of ${esc(j.name)}" aria-label="stop the run of ${
+      esc(j.name)}"${j.state === "running" ? "" : " disabled"}><svg viewBox="0 0 20 20"
+      aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>` : "<span></span>";
+    const name = `${j.name} · ${j.set || ""}`;
+    return `<div class="job">${stop}<span class="job-name" title="${esc(name)}">${esc(name)}</span>
+      <span class="job-state ${esc(j.state)}">${esc(j.state)}</span><div class="prog"><div
+      style="width:${percent}%"></div></div><span>${count}</span><span>${
+      j.errors ? `errors ${j.errors}` : ""}</span><span>${elapsed}</span>${active ? "<span></span>" : link}</div>`;
+  }).join("");
+  if (shown.length && !RUN_POLL) RUN_POLL = setInterval(pollRunJobs, 2000);
+  if (!shown.length && RUN_POLL) { clearInterval(RUN_POLL); RUN_POLL = null; }
+}
+async function pollRunJobs() {
+  try {
+    const data = await runJson("/api/run-jobs");
+    showRunJobs(data.jobs || [], data.now || Date.now() / 1000);
+  } catch (_) { /* the next poll tries again */ }
+}
+
+$("#run-open").addEventListener("click", openRunDialog);
+$("#run-cancel").addEventListener("click", closeRunDialog);
+$("#run-start").addEventListener("click", startRun);
+$("#run-list").addEventListener("change", runSyncFields);
+$("#run-dlg").addEventListener("click", ev => { if (ev.target === $("#run-dlg")) closeRunDialog(); });
+// While the dialog is open, the keys of the page do not act. Esc closes the dialog.
+window.addEventListener("keydown", ev => {
+  if ($("#run-dlg").hidden) return;
+  ev.stopPropagation();
+  if (ev.key === "Escape") { ev.preventDefault(); closeRunDialog(); }
+}, true);
+$("#jobs").addEventListener("click", async ev => {
+  const button = ev.target.closest("[data-run-stop]");
+  if (!button) return;
+  button.disabled = true;
+  try {
+    await runJson(`/api/run-jobs/${encodeURIComponent(button.dataset.runStop)}/stop`,
+                  { method: "POST" });
+  } catch (e) {
+    alert(`Cannot stop the run of ${button.dataset.runStop}: ${e.message}`);
+  }
+  pollRunJobs();
+});
+
+/* The header controls are kept in localStorage and come back at the next page load (owner
+   message of 2026-09-26T00:30:00+0300). `render` stores them, so a reset in code
+   (`showGroup`, `openFromHash`) is stored too. The stored values are set before `load`;
+   `readViewFromUrl` runs later, so a value in the URL wins. A stored set that the server
+   does not know gives the default set. The variant group filter is not stored. */
+const HEADER_KEY = "svl.testset.header";
+const HEADER_IDS = ["#q", "#sort", ...FILTER_AXES];
+function saveHeader() {
+  const value = {set: SET};
+  for (const id of HEADER_IDS) value[id] = $(id).value;
+  try { localStorage.setItem(HEADER_KEY, JSON.stringify(value)); } catch (_) { /* no storage */ }
+}
+function storedHeader() {
+  try { return JSON.parse(localStorage.getItem(HEADER_KEY) || "{}") || {}; } catch (_) { return {}; }
+}
+const HEADER = storedHeader();
+// `writeViewToUrl` leaves out a control at its default, so an address with a view key
+// holds the whole view: a missing key is the default. Such an address restores no view
+// control; only an address with no view key (the set alone, or nothing) restores them.
+const URL_VIEW = [...VIEW_PARAMS.map(([key]) => key), "group"]
+  .some(key => new URLSearchParams(location.search).has(key));
+if (!URL_VIEW) for (const id of HEADER_IDS) {
+  const el = $(id), v = HEADER[id];
+  if (typeof v !== "string") continue;
+  if (el.tagName === "SELECT" && ![...el.options].some(o => o.value === v)) continue;
+  el.value = v;
+}
+
 initSide();
-load(new URLSearchParams(location.search).get("set") || "", true);
+const START_SET = new URLSearchParams(location.search).get("set") || "";
+if (START_SET || typeof HEADER.set !== "string" || !HEADER.set) load(START_SET, true);
+else load(HEADER.set, true).then(() => {
+  if (SET !== HEADER.set) { $("#error").textContent = ""; load("", true); }
+});
+pollRunJobs();
 </script>
 </body>
 </html>

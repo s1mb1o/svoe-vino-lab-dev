@@ -42,8 +42,9 @@ MANUAL_PREFIX = "__"
 SLUG = re.compile(r"^__[a-z0-9][a-z0-9_-]*$")
 MAX_SLUG = 200
 # `__null__` is the place of the photos that match no wine: `NULL_SLUG` of
-# `scripts/match_scoring.py`.
-RESERVED_SLUGS = frozenset({"__null__"})
+# `scripts/match_scoring.py`. `__drawer__` is the Drawer of the Testset page:
+# `DRAWER_SLUG` of `testsets.py` (plan 36).
+RESERVED_SLUGS = frozenset({"__null__", "__drawer__"})
 IMAGE_TYPE = "main"
 MATCH_METHOD = "manual"
 FOLDER = labdb.IMAGE_FOLDERS[IMAGE_TYPE]

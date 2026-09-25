@@ -246,6 +246,11 @@ Changes after the approval (drink-atlas-workspace-ca [a2daf6]; owner messages of
    the suffix `_moved<N>` stays when a photo returns to its own wine; a move does not
    clear `reassign_to`.
 
+Note of 2026-09-26 (plan 36, drink-atlas-workspace-e2 [9e7fe4]): the sidebar is now the
+Drawer (`__drawer__`), and `__null__` is the first table row `No Match` again. Points 2
+and 4 above no longer hold: a run uses each `__null__` photo that is not `unusable`, and
+no Drawer photo. Read `docs/plans/36_no-match-row-and-drawer.md`.
+
 Rules of each write:
 
 1. One transaction. It changes the field, sets `ts` of the photo entry (or of the note,
