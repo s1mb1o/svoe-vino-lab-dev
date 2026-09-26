@@ -396,7 +396,9 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
     set, holds the steps of the test photo (owner answers of 00:52:41). Raise
     `embeddings.ConfigError`: an unknown or invalid entry, a backend other than openai or
     local, or an entry with no index (`NO_INDEX`). A pipeline with the key `barcode` gets
-    `barcode.CodeFirst` around the backend (plan 42)."""
+    `barcode.CodeFirst` around the backend (plan 42). A pipeline with the key `rerank` gets
+    `cluster_rerank.ClusterRerank` around the embedding backend, inside the barcode step,
+    so a code hit answers first (plan 48)."""
     settings = embeddings.load_settings(config_path)
     try:
         entry = settings.find(pipeline.embedding)
@@ -406,6 +408,10 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
                                      % (pipeline.name, pipeline.embedding))
     backend = build_backend(entry, settings.db_path, top_k, name=pipeline.name,
                             views=getattr(pipeline, "views", None))
+    if getattr(pipeline, "rerank", None) is not None:
+        import cluster_rerank  # noqa: E402  (plan 48, on demand)
+        backend = cluster_rerank.ClusterRerank(backend, pipeline.rerank, config_path,
+                                               settings.db_path)
     if getattr(pipeline, "barcode", None) is not None:
         import barcode  # noqa: E402  (zxing-cpp, on demand)
         backend = barcode.CodeFirst(backend, pipeline.barcode, settings.db_path)

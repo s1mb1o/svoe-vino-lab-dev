@@ -417,15 +417,19 @@ def parse_json(text):
     return value if isinstance(value, dict) else None
 
 
-def ask(entry, content, max_tokens, thinking, timeout, extra=None):
+def ask(entry, content, max_tokens, thinking, timeout, extra=None, schema=None):
     """Send one user message with JSON mode and temperature 0. Return a dict: `text`,
-    `ms`, `usage`, `finish_reason`, `model`, `cached`.
+    `ms`, `usage`, `finish_reason`, `model`, `cached`. `schema`, when set, asks the
+    service to keep to that JSON Schema (`json_schema`), as the verdict of the cluster
+    re-rank does (plan 48).
 
     A call that repeats an earlier complete answer reads `model_cache`. A record is
     stored only for an answer that holds a JSON object and that `max_tokens` did not cut
     off."""
+    response_format = {"type": "json_object"} if schema is None else {
+        "type": "json_schema", "json_schema": {"name": "answer", "schema": schema}}
     payload = {"model": entry.model, "temperature": 0, "max_tokens": max_tokens,
-               "response_format": {"type": "json_object"},
+               "response_format": response_format,
                "messages": [{"role": "user", "content": content}]}
     if entry.thinking_field == "top_level":
         payload["enable_thinking"] = thinking

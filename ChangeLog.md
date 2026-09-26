@@ -2,6 +2,22 @@
 
 ## 2026-09-26
 
+- Plan 48, the cluster re-rank at query time (owner messages of 2026-09-26T13:04:00+0300
+  and 13:10:00 «implement», answer of 14:56:00; session drink-atlas-workspace-39). A
+  pipeline of the backend `embedding` takes the key `rerank` (`pipeline/cluster_rerank.py`,
+  a port of the kind `cluster_rules` of `svoe-vino-matcher` with its prompts verbatim).
+  When the rank-1 card and another card of its cluster stand in the top 5, the VLM
+  (`qwen3.5-9b-nvfp4`, thinking off) reads the SAM3 label cut of the photo with the rule of
+  that cluster (the rules of plan 45, from the embedding directory of `rerank.rules`), and
+  only the cards of that cluster change their order. A failure keeps the base order. The
+  re-rank runs inside the barcode step. Each touched card holds `explain` with `kind:
+  cluster_rules` for the VLM box of `/runs`; the trace gets the step `cluster_rules`.
+  `pipelines.py` checks the key; `embedding_run.build_pipeline_backend` wraps the backend
+  (one hunk; the owner allowed it at 14:56:00); `label_rules.ask` takes a JSON schema. New
+  pipelines `rerank-siglip2-512-crop` and `barcode-rerank-siglip2-512-crop`. New tests
+  `tests/test_cluster_rerank.py` (19); smoke tests RR1 to RR6. A smoke run of 8 real
+  photos: 4 misses at rank 2 moved to rank 1, 4 hits stayed. 8168 restarted by 39 at
+  15:09:04 with the new entries of `config.yaml` (pid 7442).
 - The full benchmark on the test set `my` (owner message of 2026-09-26T11:30:00+0300,
   answer «All 45 pipelines» of 11:34:00; session drink-atlas-workspace-39): the 45
   pipelines of `config.yaml`, label `bench45`, 2,209 photos (1,625 positive, 584 negative).

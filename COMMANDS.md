@@ -175,6 +175,14 @@ each card, stage 2 writes the rule of each cluster. `--stage describe`, `--clust
 Exit status 0: all records are valid; 1: a record holds an error; 2: the run did not
 start or stopped, for example because the service refused the number of images.
 
+Run a pipeline with the cluster re-rank (plan 48) on a test set. The key `rerank` names
+the embedding directory of the rules. Use `embedding_python`, because the barcode twin
+needs zxing-cpp:
+```bash
+~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
+    --name rerank-siglip2-512-crop --set my --workers 4 --label bench48
+```
+
 Make a run of the official recognizer of vino-svoe.ru (the pipeline
 `vino-svoe-search-by-photo`, backend `svoe-vino-ru`). Each photo of the test set goes to
 the API as it is. First a probe of 3 photos, then the full set:

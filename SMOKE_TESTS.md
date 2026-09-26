@@ -628,6 +628,20 @@ Use `N=gx10-siglip2-so400m-patch16-naflex-p256` and `H=http://127.0.0.1:8168`. R
 | LR8 | A service that accepts fewer images than a cluster needs | The run stops with exit status 2. The message names the vlm entry, `at most N image(s)`, `--limit-mm-per-prompt`, and `label_rules.rules_max_images`. |
 | LR9 | Put an unknown key, for example `size: 2`, into the block `label_rules` | `error: label_rules: unknown key: size`, exit status 2. Remove the key. |
 
+## The cluster re-rank — the key `rerank` of a pipeline
+
+Read [plan 48](docs/plans/48_cluster-rerank.md). A run that calls the VLM needs a row in
+`/Users/ashmelev/Admin/GPU_TASKS.md` first.
+
+| # | Case | Expected result |
+|---|---|---|
+| RR1 | `python3 tests/test_cluster_rerank.py` | 19 tests `OK` (one test skips when `svoe-vino-matcher` is not next to the lab). |
+| RR2 | Open the dialog `Run>` of `$H/testset` | `rerank-siglip2-512-crop` and `barcode-rerank-siglip2-512-crop` are in the list with no error. |
+| RR3 | `~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py --name rerank-siglip2-512-crop --set my --limit 20 --label smoke` | The run ends with exit status 0. In `results.jsonl`, a photo whose rank-1 card and another card of its cluster stand in the top 5 holds `explain` with `kind: cluster_rules` on those cards, and its trace ends with the step `cluster_rules`. |
+| RR4 | Open that run on `$H/runs` | A row with the step shows the box `VLM`: the mode, the cluster, the time or `from the cache`, the answers, and the scores. |
+| RR5 | Run RR3 again | The VLM answers come from the cache (`cached: true`); the ranks do not change. |
+| RR6 | Put `rules: missing` into the key `rerank` of a pipeline | The pipeline gets the error `rerank.rules names missing, which is not an entry of the key embeddings`; the other pipelines stay. Set the value back. |
+
 ## The header state of the lab pages — `localStorage`
 
 Use `H=http://127.0.0.1:8168`. Each page keeps its header controls in its own key

@@ -509,6 +509,8 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   has a twin `barcode-<pipeline>`. zxing-cpp 2.3.0 MUST be in `embedding_python`; it
   builds from the source (`requirements-local.txt`). Read
   [plan 42](docs/plans/42_barcode-step.md).
+- A pipeline of the backend `embedding` MAY hold the key `rerank` (plan 48): the cluster
+  re-rank of the section "The cluster re-rank". It runs inside the barcode step.
 
 ## The embedding clusters of the lab
 
@@ -615,6 +617,29 @@ asks for the rule every 3 s, and replaces the rule block when the rule is curren
 (`Rule rebuilt`), usually after 10 to 20 s. After 5 minutes it stops and names the log.
 The prompt tells the model that the note is a correct fact, so a note can name a feature,
 for example the colour of a mark.
+
+## The cluster re-rank
+
+The key `rerank` of a pipeline uses the label rules at query time. Read
+[plan 48](docs/plans/48_cluster-rerank.md). `pipeline/cluster_rerank.py` is a port of the
+kind `cluster_rules` of `svoe-vino-matcher`, with its prompts verbatim.
+
+1. The base answer of the pipeline comes first. A code hit of the barcode step answers the
+   photo, and the re-rank does not run.
+2. The step acts when the rank-1 card is in a cluster with a rule of mode `sheet` or
+   `verdict`, and another card of that cluster stands in the first `window` (5) positions.
+   The clusters and the rules come from the embedding directory that `rerank.rules`
+   names, for every pipeline.
+3. The VLM (`rerank.vlm`, `qwen3.5-9b-nvfp4`, thinking off) gets the SAM3 label cut of the
+   photo on white at 1,536 pixels, and the questions of the rule (`sheet`) or its rule text
+   (`verdict`).
+4. Only the cards of the cluster inside the window change their order. A failure of the VLM
+   keeps the base order.
+
+Each card that the step touched holds `explain` with `kind: cluster_rules`; the VLM box of
+`/runs` shows it. The trace of the photo holds the step `cluster_rules`. The pipelines
+`rerank-siglip2-512-crop` and `barcode-rerank-siglip2-512-crop` use the rules of
+`gx10-siglip2-so400m-patch16-naflex-p256`.
 
 ## The VLM inferences
 
