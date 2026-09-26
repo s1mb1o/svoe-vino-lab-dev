@@ -2,6 +2,23 @@
 
 ## 2026-09-26
 
+- The website import dialog (owner messages of 19:55:00, 19:58:00, 19:59:00, and 20:05:00; session
+  drink-atlas-workspace-fb): a cleared checkbox of a plain change (`new`, `missing`,
+  `back`, `main`) means "skip this time". The apply writes no row, no refusal, and no
+  comment for it, and the next compare shows it again. The result and `result.json` list
+  the ids in `skipped` (`cleared changes, not written`). A conflict with no choice stays
+  a skip. The choice `database` still writes a refusal and a `kept …` comment. The
+  compare reads no refusal of a plain change now, so an old row of such a kind is
+  deleted by the next write. `pipeline/import_website.py`,
+  `pipeline/pages/website_import.js`, plan 21, and `SMOKE_TESTS.md` (IW1, IW9, new IW23).
+  `tests/test_import_website.py`: 33 OK with discovery, 1 new test.
+- Revert of the side effects of the apply of run `20260926T074810` (19:51): the owner
+  wanted only the 52 main images of existing wines, and cleared the 79 new and the 73
+  missing wines. The old rule wrote 152 refusals and 73 comments `kept Active; missing on
+  vino-svoe.ru.` for them. At about 19:59 both sets were deleted from `data/lab.sqlite3` in
+  one transaction (backup `work/lab.sqlite3.before-refusal-revert-2026-09-26T1959`).
+  `website_refusal` is empty. The 52 main images, their derivatives, their 52 comments,
+  and the 2,030 website times stay.
 - Website import (owner messages of 19:16:31 to 19:23:19, answers of 19:22:30; session
   drink-atlas-workspace-0d): the dialog shows a section `Possible renames`. A pair is a
   wine of `Missing on the website` and a wine of `New wines on website` with the same

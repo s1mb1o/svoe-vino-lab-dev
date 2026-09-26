@@ -24,7 +24,7 @@ wine, a missing wine, a restored wine, or a stored main image (plan 18, rules 7 
 | UI mode | A background job. A button on `/dataset` starts the tool as a subprocess, as `Build` on the Embeddings page does. The merge dialog opens after the compare. |
 | Dialog | The conflicts and all plain changes. Each plain change has a checkbox. |
 | A conflict with the choice `database` | Remember the refusal. A later run skips it while the website value stays the same. The CLI obeys it. |
-| A cleared checkbox of a plain change | Remember it in the same way. |
+| A cleared checkbox of a plain change | Remember it in the same way. Changed on 2026-09-26 (owner messages of 19:58:00 and 20:05:00): skip it this time, with no refusal and no comment. |
 | An image conflict with the choice `website` | The website image replaces `main` and gets `derive.py`. The old file stays in the store. `main_patched` stays. |
 | Comments | A comment for each choice. |
 | Image check | A full download and a byte compare of each image, over one reused HTTPS connection. |
@@ -111,14 +111,15 @@ CREATE TABLE website_refusal (
 
 3. A refusal matches while its situation stays:
    - `text`: the website value of the field equals `website_value`.
-   - `image`, `main`: the SHA-256 of the website image equals `website_value`.
-   - `new`: the website holds the slug, and the database does not.
-   - `missing`: the database holds the wine as `Active` or `Disabled`, and the website
-     does not.
-   - `back`: the website holds the slug, and the database holds it as `Removed`.
-4. A matching refusal removes its conflict or its plain change from the run. The report
-   counts it as `refused`.
+   - `image`: the SHA-256 of the website image equals `website_value`.
+4. A matching refusal removes its conflict from the run. The report counts it as
+   `refused`.
 5. A write of an import deletes each refusal that did not match in this run.
+- Change of 2026-09-26 (owner messages of 19:58:00 and 20:05:00): only a conflict with
+  the choice `database` gets a refusal. A plain change never gets one. The compare reads
+  no refusal of the kinds `new`, `missing`, `back`, and `main`. So a row of these kinds
+  does not match, and the next write deletes it (rule 5). The schema keeps the four
+  kinds, because rule 28 of `AGENTS.md` forbids an edit of `015_website_import.sql`.
 
 ### Modes
 
@@ -165,10 +166,13 @@ CREATE TABLE website_refusal (
 | Image, `website` | The website file replaces the `main` row, with `derive.py`. | `main image from vino-svoe.ru; was <old source_name>.` |
 | Image, `database` | An `image` refusal. | `kept main image; vino-svoe.ru has <name>.` |
 | Plain change, checked | As plan 18. | As plan 18. |
-| `missing`, cleared | A refusal. | `kept <state>; missing on vino-svoe.ru.` |
-| `back`, cleared | A refusal. | `kept Removed; back on vino-svoe.ru.` |
-| `main`, cleared | A refusal. | `main image of vino-svoe.ru not taken.` |
-| `new`, cleared | A refusal. | None: the wine is not in the database. |
+| Plain change, cleared | None: skipped this time. The next compare shows it again. | None. |
+| Conflict, no choice | None: skipped this time. The next compare shows it again. | None. |
+
+Until 2026-09-26 19:58, a cleared `missing`, `back`, `main`, or `new` row wrote a refusal,
+and the first three wrote a comment (`kept <state>; missing on vino-svoe.ru.`, `kept
+Removed; back on vino-svoe.ru.`, `main image of vino-svoe.ru not taken.`). The result and
+`result.json` list the cleared change ids in `skipped` (`cleared changes, not written`).
 
 ## The lab server
 
@@ -277,7 +281,7 @@ SIGTERM belong together (rules 22 to 28). The owner gets a message about the res
    The alternative: `database` at the start. Changed on 2026-09-26 (owner message of
    19:11:01): `Apply` skips a conflict with no choice.
 2. The comments of a cleared plain change (the last four rows of the table) are my
-   proposal.
+   proposal. Removed on 2026-09-26: a cleared plain change gets no comment.
 3. An existing row keeps `modified_at` NULL. The alternative: the time of the migration
    for each row.
 4. No page lists or forgets a refusal in this plan. A refusal ends when its situation

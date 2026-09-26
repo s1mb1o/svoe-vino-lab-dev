@@ -470,19 +470,17 @@ class UiModeTest(WebsiteTestBase):
         self.assertEqual(report.texts, ["a name"])
         self.assertEqual(report.removed, ["h"])
         self.assertEqual((report.added, report.mains, report.replaced), ([], [], []))
+        self.assertEqual(report.skipped, ["new:n", "main:e"])
         self.assertEqual(self.query("SELECT name FROM wine_catalog WHERE wine_slug = 'a'"),
                          [("Вино a новое",)])
         self.assertEqual(self.query("SELECT sha256 FROM wine_image WHERE wine_slug = 'b'"),
                          [(sha(self.pics["old_b"]),)])
         self.assertEqual(self.states()["h"], ("Removed", "import"))
         self.assertNotIn("n", self.states())
-        self.assertEqual(self.refusals(), {("b", "image", "", sha(self.pics["b"])),
-                                           ("n", "new", "", None),
-                                           ("e", "main", "", sha(self.pics["e"]))})
+        self.assertEqual(self.refusals(), {("b", "image", "", sha(self.pics["b"]))})
         self.assertEqual(self.notes(), {
             ("a", "script", "name from vino-svoe.ru; was 'Вино a'."),
             ("b", "script", "kept main image; vino-svoe.ru has b_0a1b2c3d4e.png."),
-            ("e", "script", "main image of vino-svoe.ru not taken."),
             ("h", "script", IMP.COMMENT_MISSING)})
         result = IMP.main(["--db", self.db, "--apply", str(self.run_dir)])
         self.assertEqual(result, 1)  # the database changed after the compare
@@ -490,17 +488,41 @@ class UiModeTest(WebsiteTestBase):
 
     def test_a_refusal_holds_in_the_cli_while_the_website_stays(self):
         self.prepare()
-        self.apply({"text:a:name": "database", "image:b": "database"},
-                   {"new:n": False, "main:e": False, "missing:h": False})
-        self.assertEqual(self.notes() & {("h", "script", "kept Active; missing on vino-svoe.ru."),
-                                         ("a", "script", "kept name; vino-svoe.ru has 'Вино a новое'.")},
-                         {("h", "script", "kept Active; missing on vino-svoe.ru."),
-                          ("a", "script", "kept name; vino-svoe.ru has 'Вино a новое'.")})
+        self.apply({"text:a:name": "database", "image:b": "database"})
+        self.assertIn(("a", "script", "kept name; vino-svoe.ru has 'Вино a новое'."),
+                      self.notes())
         before = self.snapshot()
         report = self.run_import(self.client())
-        self.assertEqual(report.refused, 5)
+        self.assertEqual(report.refused, 2)
         self.assertTrue(report.empty())
         self.assertEqual(self.snapshot(), before)
+
+    def test_a_cleared_change_is_skipped_and_shows_again(self):
+        # A refusal of a plain change, as the rule before 2026-09-26T19:58 wrote it, no
+        # longer hides the change. The next write deletes it.
+        conn = labdb.connect(self.db)
+        with conn:
+            conn.execute("INSERT INTO website_refusal (wine_slug, kind, field, website_value, "
+                         "created_at) VALUES ('n', 'new', '', NULL, '2026-09-26T16:51:49Z')")
+        conn.close()
+        diff = self.prepare()
+        self.assertEqual(sorted(entry["id"] for entry in diff["changes"]),
+                         ["main:e", "missing:h", "new:n"])
+        self.assertEqual(diff["stale"], [["n", "new", ""]])
+        before, states = self.snapshot(), self.states()
+        report = self.apply({}, {"new:n": False, "missing:h": False, "main:e": False})
+        self.assertEqual(report.skipped, ["new:n", "missing:h", "main:e"])
+        self.assertEqual(report.unresolved, ["text:a:name", "image:b"])
+        self.assertEqual((report.added, report.removed, report.mains, report.refusals),
+                         ([], [], [], []))
+        self.assertEqual((report.comments, report.stale), (0, 1))
+        # Only the website times of `wine_catalog` change.
+        self.assertEqual(self.snapshot()[1:], before[1:])
+        self.assertEqual(self.states(), states)
+        self.assertEqual(self.refusals(), set())
+        diff = IMP.prepare(self.db, str(self.root / "run2"), self.client(), self.log.append)
+        self.assertEqual(sorted(entry["id"] for entry in diff["changes"]),
+                         ["main:e", "missing:h", "new:n"])
 
     def test_a_new_website_value_ends_the_refusal(self):
         self.prepare()

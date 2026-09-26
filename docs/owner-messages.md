@@ -4500,3 +4500,84 @@ but always for rename one slug has to appear and another removed on website.
 ```text
 git commit
 ```
+
+## 2026-09-26T19:55:00+0300
+
+A message to drink-atlas-workspace-fb [3998cb]. The owner pasted the report of the
+website import apply of run `20260926T074810`, and then wrote the question.
+
+```text
+The import is written.
+
+added
+0
+removed
+0
+restored
+0
+main images stored
+52: lesnaya-proseka, glera-manno, rustok-glera-ru-140, pozdnij-sbor-krasnoe, pozdnij-sbor-beloe, rubin-golodrigi, kaberne-sovinon-2, rozovoe-zoloto, roze-2, pobeda, oleg, bukovinka, …
+text from the website
+0
+main images replaced
+0
+refusals written
+152: yaiyla-vermentino-orange new, yaiyla-malbec new, yaiyla-petit-manseng new, yaiyla-muscat-orange new, vinnye-kraski-shardone new, vinnye-kraski-sovinon-blan new, vinnye-kraski-kaberne-sovinon new, vinnye-kraski-merlo new, ulybka-vetra-sovinon-blan new, ulybka-vetra-kaberne-sovinon new, ulybka-vetra-merlo new, ulybka-vetra-shardone new, …
+conflicts with no choice, not written
+12: text:locantita-sauvignon-blanc-chardonnay:producer, text:alma-valley-locantita-merlot-cabernet-franc:name, text:alma-valley-locantita-merlot-cabernet-franc:producer, text:muskat-premium:name, text:pozdnij-sbor-beloe:name, text:igristoe-vino-endemy-bianka-bryut-beloe:category, text:cabernet-franc-2024-one-barrel-by-dmitry-maslov-kaberne-fran-2024-uan-barrel-dmitrij-maslov:name, text:cabernet-franc-2024-one-barrel-by-dmitry-maslov-kaberne-fran-2024-uan-barrel-dmitrij-maslov:producer, text:chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-145:producer, image:vintazh-premium, image:muskat-premium, image:shardone-rezerv
+website times written
+2030
+comments added
+125
+processed images
+{"crop":48,"seg":4}
+
+---
+
+explain what was made? I wanted only download images for existing wine_slugs that missing them
+```
+
+## 2026-09-26T19:58:00+0300
+
+A message to drink-atlas-workspace-fb [3998cb], after the explanation of the apply of
+run `20260926T074810`.
+
+```text
+an unticked row in the dialog shall mean "skip this time"
+no decision in conflict - "skip this time"
+```
+
+## 2026-09-26T19:59:00+0300
+
+A message to drink-atlas-workspace-fb [3998cb], sent during the work on the message of
+19:58. It came between 19:58:42 and 19:59:23.
+
+```text
+revert this " it also wrote 152 refusals and 73 comments."
+```
+
+## 2026-09-26T20:05:00+0300
+
+Answers to two questions of drink-atlas-workspace-fb [3998cb]. The time is approximate:
+the answers came between 19:59:30 and 20:05:30.
+
+"How should the import change so that an unticked row means "skip this time"? A conflict with no choice already works this way."
+
+```text
+Skip, drop row refusals (Recommended)
+```
+
+"The conflict choice `database` still writes a refusal and a `kept …` comment. The next import then hides that conflict while the website value stays the same. Should that stay?"
+
+```text
+Keep as it is (Recommended)
+```
+
+## 2026-09-26T20:11:00+0300
+
+A message to drink-atlas-workspace-fb [3998cb], after the report of the change of the
+website import dialog.
+
+```text
+commit
+```

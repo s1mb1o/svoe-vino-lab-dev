@@ -287,10 +287,10 @@
     const groups = conflictGroups(conflicts);
     let html = `<p class="validation-intro">Compared at ${esc(diff.created_at)}:
       ${diff.website} wines on vino-svoe.ru, ${diff.images} images.
-      ${diff.refused ? `${diff.refused} conflicts or changes stay refused by an earlier choice.` : ""}
-      A choice <em>database</em> and a cleared checkbox are remembered: a later import skips
-      them while the website keeps the value. Apply skips a conflict with no choice; the
-      next compare shows it again.</p>`;
+      ${diff.refused ? `${diff.refused} conflicts stay refused by an earlier choice.` : ""}
+      A choice <em>database</em> is remembered: a later import skips it while the website
+      keeps the value. Apply skips a conflict with no choice and a cleared checkbox; the
+      next compare shows them again.</p>`;
     if (conflicts.length) {
       html += `<h3>Conflicts <span class="count">${conflicts.length} · ${groups.length} wines</span>
         <button type="button" data-website="all" data-side="database">all database</button>
@@ -343,7 +343,8 @@
     const rows = [["added", r.added], ["removed", r.removed], ["restored", r.restored],
       ["main images stored", r.mains], ["text from the website", r.texts],
       ["main images replaced", r.replaced], ["refusals written", r.refusals],
-      ["conflicts with no choice, not written", r.unresolved]];
+      ["conflicts with no choice, not written", r.unresolved],
+      ["cleared changes, not written", r.skipped]];
     body.innerHTML = `<p class="validation-intro">The import is written.</p>
       <dl class="website-result">${rows.map(([name, list]) =>
         `<dt>${esc(name)}</dt><dd>${(list || []).length}${(list || []).length

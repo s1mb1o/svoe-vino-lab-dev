@@ -1073,7 +1073,7 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 
 | # | Case | Expected result |
 |---|---|---|
-| IW1 | `python3 -m unittest discover -s tests -p 'test_import_website.py'`, then the same with `test_website_import_routes.py` | 31 tests `OK`, then 6 tests `OK`. No test sends a request to the internet. |
+| IW1 | `python3 -m unittest discover -s tests -p 'test_import_website.py'`, then the same with `test_website_import_routes.py` | 33 tests `OK`, then 6 tests `OK`. No test sends a request to the internet. |
 | IW2 | `python3 pipeline/import_website.py --db data/lab.sqlite3` while the website has a changed text or a changed main image | Exit 1. The `error:` line states `the import stops, and nothing changed`, and one line follows for each problem: `<slug> (<state>): the text changed: <field> <old> -> <new>` or `<slug>: the main image changed: stored … website …`. `data/lab.sqlite3` and `data/images/` do not change. |
 | IW3 | Run IW2 when the website shows no changed text and no changed image | Exit 0. The report states `added`, `restored`, `removed`, and `main images stored` with the slugs, and `result: imported`. Each changed wine has one comment of the source `script` on `/dataset`. |
 | IW4 | Run IW3 again | `result: no change`. No new comment. |
@@ -1081,7 +1081,7 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 | IW6 | Open `/dataset` on the lab server | The bar shows `Import from website`. The review tool (`scripts/review_server.py`) does not show it. |
 | IW7 | Press `Import from website`, then `Compare` | The button shows the progress, for example `Website: images 300/2105`. After about 10 minutes the dialog opens with the sections `Conflicts`, `New wines on website`, `Missing on the website`, `Back on the website`, and `Missing main images, taken from website`. `data/lab.sqlite3` does not change. |
 | IW8 | In the dialog of IW7, leave one conflict with no choice | `Apply` stays enabled. The status line states `N conflicts have no choice. Apply skips them.` |
-| IW9 | Choose each conflict, clear one checkbox, and press `Apply` | The button shows `Website: applying…`. The dialog then lists the counts. `Reload the page` shows the new states. Each changed wine has a comment of the source `script`. `website_refusal` holds a row for each choice `database` and each cleared checkbox. |
+| IW9 | Choose each conflict, clear one checkbox, and press `Apply` | The button shows `Website: applying…`. The dialog then lists the counts. `Reload the page` shows the new states. Each changed wine has a comment of the source `script`. `website_refusal` holds a row for each choice `database`. A cleared checkbox gets no row. |
 | IW10 | Run `python3 pipeline/import_website.py --db data/lab.sqlite3` after IW9 | No stop on a refused conflict. The report states `skipped by a refusal: N`. |
 | IW11 | Set `Sort` to `changed in the lab, newest first` after IW9 | The wines of IW9 come first. A wine with no time goes last. |
 | IW12 | Switch the system to dark mode, and open the dialog | The dialog, the rows, and the choices are readable. |
@@ -1095,6 +1095,7 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 | IW20 | After an apply, press `Reload the page` in the result | The page loads again as `/dataset`; the dialog does not open again. |
 | IW21 | In the dialog of IW7, leave one conflict with no choice, and press `Apply` | The result lists the conflict id under `conflicts with no choice, not written`. The wine keeps its field or its main image. The wine gets no comment and no row in `website_refusal`. The next `Compare` shows the conflict again. |
 | IW22 | Open the dialog of IW7 in light and in dark mode, and at a width of 390 px | The section `Possible renames` follows `Conflicts`. Each row shows a wine of `Missing on the website` with the red sign, an arrow, a wine of `New wines on website`, and the matched rules (`same image`, `slug distance N`, `same name and producer`). The rows have no checkbox. Both wines of a row stay in their own sections. The run `20260926T074810` shows 4 rows. |
+| IW23 | In the dialog of IW7, clear the checkboxes of one new wine, one missing wine, and one main image, and press `Apply` | The result lists the three change ids under `cleared changes, not written`. No wine is added or removed, and no main image is stored for them. They get no comment and no row in `website_refusal`. The next `Compare` shows the three changes again. |
 
 ## The manual wines — the Dataset button `Add wine`
 

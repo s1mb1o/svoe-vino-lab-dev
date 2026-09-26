@@ -23,8 +23,9 @@ Rules of the compare:
   the same main image, a short slug distance, or the same name and producer. The list is
   display only. The write does not read it.
 - A refusal of the table `website_refusal` matches while its situation stays. A matching
-  refusal removes its conflict or its plain change from the run. A write deletes each
-  refusal that did not match.
+  refusal removes its conflict from the run. A write deletes each refusal that did not
+  match. Only a conflict gets a refusal: a plain change is never refused (owner messages
+  of 2026-09-26T19:58:00+0300 and 20:05:00).
 - A problem is not a conflict: a list problem, a website slug with the prefix of a
   manual wine (`manual_wines.is_manual`), a website wine with no image, a new wine with
   an empty required value, a bad extension. A problem stops each mode. A network error
@@ -36,8 +37,8 @@ The modes:
 - `--prepare DIR` never writes the database. It writes `DIR/diff.json` and the website
   images that an apply can need to `DIR/images/`. A conflict is no error.
 - `--apply DIR` reads `DIR/diff.json` and the choices of a person in `DIR/choices.json`.
-  A conflict with no choice is skipped: no write, no refusal, no comment. The next
-  compare shows it again. It writes `DIR/result.json`.
+  A conflict with no choice and a cleared plain change are skipped: no write, no
+  refusal, no comment. The next compare shows them again. It writes `DIR/result.json`.
 
 Rules of the change:
 - A new wine is inserted as `Active` with its image as `main`. Comment `COMMENT_NEW`.
@@ -47,7 +48,7 @@ Rules of the change:
   `removed_by` = `import`. A manual wine never does. Comment `COMMENT_MISSING`.
 - A `Disabled` wine on the website stays `Disabled`.
 - A website wine with no `main` row gets its image as `main`. Comment `COMMENT_MAIN`.
-- A choice of the dialog writes the row of the table in plan 21 and its comment.
+- A conflict choice of the dialog writes the row of the table in plan 21 and its comment.
 - Each write sets `website_modified_at` of each website wine. Each comment has the
   source `script`.
 
@@ -221,7 +222,8 @@ class Report:
         self.replaced = []        # slugs of the image choices `website`
         self.refusals = []        # "slug kind" of the new refusals
         self.unresolved = []      # ids of the conflicts with no choice; nothing is written
-        self.refused = 0          # conflicts and changes that a refusal skipped
+        self.skipped = []         # ids of the cleared plain changes; nothing is written
+        self.refused = 0          # conflicts that a refusal skipped
         self.stale = 0            # refusals deleted, because they did not match
         self.times = 0            # values of `website_modified_at` written
         self.unchanged = 0        # other website wines of the database
@@ -485,7 +487,7 @@ def compare(conn, client, log=print):
                               "database": _stored(state, slug), "website": images[slug]})
 
     for slug, item in items.items():
-        if slug in wines or refused((slug, "new", "")):
+        if slug in wines:
             continue
         card = client.get_json(CARD_URL % urllib.parse.quote(slug, safe=""))
         values = list_values(item)
@@ -503,22 +505,20 @@ def compare(conn, client, log=print):
     for slug, row in wines.items():
         if slug in items or row[status] == "Removed" or manual_wines.is_manual(slug):
             continue
-        if not refused((slug, "missing", "")):
-            changes.append({"id": "missing:%s" % slug, "slug": slug, "kind": "missing",
-                            "name": row[1], "producer": row[2], "state": row[status],
-                            "stored": _stored(state, slug)})
+        changes.append({"id": "missing:%s" % slug, "slug": slug, "kind": "missing",
+                        "name": row[1], "producer": row[2], "state": row[status],
+                        "stored": _stored(state, slug)})
     for slug in items:
         row = wines.get(slug)
-        if row is not None and row[status] == "Removed" and not refused((slug, "back", "")):
+        if row is not None and row[status] == "Removed":
             changes.append({"id": "back:%s" % slug, "slug": slug, "kind": "back",
                             "name": row[1], "producer": row[2], "removed_by": row[status + 1],
                             "stored": _stored(state, slug)})
     for slug in items:
         if slug in wines and slug not in mains and slug in images:
-            if not refused((slug, "main", ""), images[slug]["sha256"]):
-                changes.append({"id": "main:%s" % slug, "slug": slug, "kind": "main",
-                                "name": wines[slug][1], "producer": wines[slug][2],
-                                "state": wines[slug][status], "image": images[slug]})
+            changes.append({"id": "main:%s" % slug, "slug": slug, "kind": "main",
+                            "name": wines[slug][1], "producer": wines[slug][2],
+                            "state": wines[slug][status], "image": images[slug]})
 
     needed = {entry["image"]["sha256"] for entry in changes if entry.get("image")}
     needed |= {entry["website"]["sha256"] for entry in conflicts if entry["kind"] == "image"}
@@ -612,7 +612,7 @@ def check_choices(diff, choices):
             {entry["id"]: ticked.get(entry["id"], True) for entry in diff["changes"]})
 
 
-def _notes(by_kind, texts, images, kept, cleared):
+def _notes(by_kind, texts, images, kept):
     """Return the comments of one write: (slug, text)."""
     notes = [(e["slug"], COMMENT_NEW) for e in by_kind["new"]]
     notes += [(e["slug"], COMMENT_BACK) for e in by_kind["back"]]
@@ -626,11 +626,6 @@ def _notes(by_kind, texts, images, kept, cleared):
               for e in kept if e["kind"] == "text"]
     notes += [(e["slug"], "kept main image; vino-svoe.ru has %s." % e["website"]["name"])
               for e in kept if e["kind"] == "image"]
-    texts_of = {"missing": "kept %s; missing on vino-svoe.ru.",
-                "back": "kept Removed; back on vino-svoe.ru.",
-                "main": "main image of vino-svoe.ru not taken."}
-    notes += [(e["slug"], texts_of[e["kind"]] % e["state"] if e["kind"] == "missing"
-               else texts_of[e["kind"]]) for e in cleared if e["kind"] != "new"]
     return notes
 
 
@@ -644,7 +639,7 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
     picked, ticked = check_choices(diff, choices or {})
     by_kind = {kind: [entry for entry in diff["changes"]
                       if entry["kind"] == kind and ticked[entry["id"]]] for kind in CHANGE_KINDS}
-    cleared = [entry for entry in diff["changes"] if not ticked[entry["id"]]]
+    skipped = [entry["id"] for entry in diff["changes"] if not ticked[entry["id"]]]
     texts = [entry for entry in diff["conflicts"]
              if entry["kind"] == "text" and picked.get(entry["id"]) == "website"]
     images = [entry for entry in diff["conflicts"]
@@ -660,10 +655,8 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
     refusals = ([(e["slug"], "text", e["field"], e["website"]) for e in kept
                  if e["kind"] == "text"]
                 + [(e["slug"], "image", "", e["website"]["sha256"]) for e in kept
-                   if e["kind"] == "image"]
-                + [(e["slug"], e["kind"], "", e["image"]["sha256"] if e["kind"] == "main" else None)
-                   for e in cleared])
-    notes = _notes(by_kind, texts, images, kept, cleared)
+                   if e["kind"] == "image"])
+    notes = _notes(by_kind, texts, images, kept)
 
     report = Report()
     conn = labdb.connect(db_path)
@@ -753,6 +746,7 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
     report.replaced = [e["slug"] for e in images]
     report.refusals = ["%s %s" % (row[0], row[1]) for row in refusals]
     report.unresolved = unresolved
+    report.skipped = skipped
     report.refused, report.stale = diff["refused"], len(diff["stale"])
     touched = {e["slug"] for e in diff["changes"] if e["kind"] in ("back", "main")}
     touched |= {e["slug"] for e in diff["conflicts"] if e["id"] in picked}
@@ -855,6 +849,7 @@ def print_report(report, db_path):
     print(_line("main images replaced", report.replaced))
     print(_line("refusals written", report.refusals))
     print(_line("conflicts with no choice, not written", report.unresolved))
+    print(_line("cleared changes, not written", report.skipped))
     print("skipped by a refusal: %d" % report.refused)
     print("refusals deleted: %d" % report.stale)
     print("website times written: %d" % report.times)
