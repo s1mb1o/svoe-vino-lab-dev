@@ -98,7 +98,9 @@ commit of one file with 1 added and 1 removed line.
 
 ## 6. Risks and limits
 
-- The export does not hold the image files of `data/images/`. It holds their rows only.
+- The commit holds the images of `data/images/main/` and `data/images/patched/` alone
+  (section 8). The alternative photos of `data/images/additional/` cannot be rebuilt
+  either, but they stay out of git until the owner asks for them.
 - Each commit that changes a large table adds a new object of 1 to 3 MB. `git gc` packs
   the objects with deltas. The size of the repository grows with the number of backups.
 - The export holds all text of the database, for example the image descriptions and the
@@ -112,3 +114,28 @@ commit of one file with 1 added and 1 removed line.
 the trigger after the rows, the refusal of an existing target, no file after a failed
 restore, the removal of the file of a dropped table, the refusal of a BLOB, and a round
 trip of the full lab schema through `labdb.connect`.
+
+## 8. The main photos and the patches in git
+
+Source: owner message of 2026-09-26T17:51:32+0300, and the answers of 17:54:00.
+
+| question | options | the choice of the owner |
+|---|---|---|
+| The scope | the skill commits the images on each run; one commit now | the skill commits them on each run |
+| The storage | plain git; Git LFS | plain git |
+
+1. `.gitignore` ignores the content of `data/` and of `data/images/`, not the
+   directories, and takes back `data/images/main/` and `data/images/patched/`. git cannot
+   take back a file of an ignored directory.
+2. `data/cache/` stays out of git, as the owner asked. So do the database file,
+   `data/backups/`, `data/embeddings/`, and the image folders `cropped/`, `testset/`, and
+   `additional/`.
+3. On 2026-09-26, `data/images/main/` held 2,019 files (135 MB), and
+   `data/images/patched/` held 18 files (7 MB). The largest file had 1.8 MB.
+4. Each file name is the sha256 of the file. A file never changes. So the history of the
+   folders holds added files and removed files alone, and each image is in git one time.
+5. Step 3 of the skill adds the two folders to the same private index as `db-export/`.
+   One commit then holds rows and images of the same moment. The commit message counts
+   the added and the removed files of each folder.
+6. In a scratch clone, the first run committed the 2,037 files, the second run made no
+   commit, and one new patch with one removed main photo gave a commit of 2 files.

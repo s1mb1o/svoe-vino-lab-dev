@@ -1,12 +1,11 @@
 ---
 name: backup-lab-db
-description: Back up the svoe-vino-lab database data/lab.sqlite3 as a text export in db-export/ and commit it, so that git keeps the history of each row. Also restores an export from the working tree or from any commit into a new database file. Use when asked to back up, snapshot, export, or commit the lab database, to show the history of lab data, or to restore the lab database from git.
+description: Back up the svoe-vino-lab database data/lab.sqlite3 as a text export in db-export/ and commit it together with the image folders data/images/main/ and data/images/patched/, so that git keeps the history of each row and each main photo and patch. Also restores an export from the working tree or from any commit into a new database file. Use when asked to back up, snapshot, export, or commit the lab database, to show the history of lab data, or to restore the lab database from git.
 ---
 
 # Back up the lab database to git
 
-`data/lab.sqlite3` is a binary file, and git ignores `/data/`. So git cannot keep its
-history. `pipeline/db_export.py` writes the database as text files into `db-export/`.
+`data/lab.sqlite3` is a binary file, and git ignores it. So git cannot keep its history. `pipeline/db_export.py` writes the database as text files into `db-export/`.
 Each row is one line, so `git diff` shows each added, changed, and removed row. Read
 [plan 50](../../../docs/plans/50_lab-db-text-export.md) for the reasons.
 
@@ -22,7 +21,11 @@ Each row keeps its `rowid`. The lab code sorts by `rowid` to keep the import ord
 restore without the `rowid` is not the same database. A changed row is one removed line
 and one added line in `git diff`.
 
-The export does not hold the image files of `data/images/`. It holds their rows only.
+The same commit holds the image files of `data/images/main/` and `data/images/patched/`.
+The owner asked for this on 2026-09-26. Each file name is the sha256 of the file, so a
+file never changes: git adds a new file or records a removed file. `.gitignore` keeps the
+rest of `data/` out of git: the database file, `data/cache/`, `data/backups/`,
+`data/embeddings/`, and the image folders `cropped/`, `testset/`, and `additional/`.
 
 Run every command in the project root:
 
@@ -72,14 +75,15 @@ difference is an error of the tool: do not commit, and report it to the owner.
 ## 3. Commit the export
 
 Other sessions work in the same working tree and use the same git index. So the commit
-uses a private index. It holds `HEAD` plus `db-export/` alone. Do not use `git add` or
-`git commit` with the shared index.
+uses a private index. It holds `HEAD` plus `db-export/` and the two image folders alone.
+Do not use `git add` or `git commit` with the shared index.
 
 ```bash
 D=$(mktemp -d); IDX="$D/index"
+P=(db-export data/images/main data/images/patched)
 OLD=$(git rev-parse HEAD); BRANCH=$(git symbolic-ref HEAD)
 GIT_INDEX_FILE="$IDX" git read-tree "$OLD"
-GIT_INDEX_FILE="$IDX" git add -A -- db-export
+GIT_INDEX_FILE="$IDX" git add -A -- "${P[@]}"
 if GIT_INDEX_FILE="$IDX" git diff --cached --quiet "$OLD"; then
   echo "no change since the last export"
 else
@@ -89,25 +93,32 @@ else
   { echo "Lab database export (schema $V, $K tables, $N rows)"; echo
     echo "The skill backup-lab-db exported data/lab.sqlite3 at $(date +%Y-%m-%dT%H:%M:%S%z)."
     echo "Lines added and removed in each file (a changed row counts in both columns):"
-    GIT_INDEX_FILE="$IDX" git diff --cached --numstat "$OLD"
+    GIT_INDEX_FILE="$IDX" git diff --cached --numstat "$OLD" -- db-export | grep . \
+      || echo "no change"
+    echo "Image files (A added, D removed):"
+    GIT_INDEX_FILE="$IDX" git diff --cached --name-status "$OLD" -- data/images \
+      | awk '{split($2, p, "/"); n[$1 " " p[1] "/" p[2] "/" p[3]]++}
+             END {for (k in n) print n[k], k}' | sort -k2 | grep . || echo "no change"
   } > "$D/message"
   TREE=$(GIT_INDEX_FILE="$IDX" git write-tree)
   NEW=$(git commit-tree "$TREE" -p "$OLD" -F "$D/message")
-  git update-ref "$BRANCH" "$NEW" "$OLD" && git reset -q -- db-export \
-    && git log -1 --stat --format='%h %s' "$NEW"
+  git update-ref "$BRANCH" "$NEW" "$OLD" && git reset -q -- "${P[@]}" \
+    && git log -1 --format='%h %s' "$NEW" && git show --stat=100 --format= "$NEW" | tail -1
 fi
 rm -rf "$D"
-git diff --cached --name-only -- db-export
+git diff --cached --name-only -- "${P[@]}"
 ```
 
 - `no change since the last export` is a correct result. Make no commit.
 - `git update-ref` fails when `HEAD` moved during the step: another session made a commit.
   Run step 3 again. The new `HEAD` is the parent then.
-- `git reset -q -- db-export` makes the shared index agree with the new commit for
-  `db-export/` alone. The staged files of other sessions stay.
+- `git reset -q -- "${P[@]}"` makes the shared index agree with the new commit for the
+  three paths alone. The staged files of other sessions stay.
 - The last command MUST print no line.
-- The first commit of `db-export/` adds about 12 MB. A later commit adds each changed
-  file as a new object. `git gc` packs the objects and keeps the differences alone.
+- The first commit of `db-export/` added about 12 MB, and the first commit of the images
+  about 142 MB (2,037 files). A later commit adds each changed export file as a new
+  object, and each new image. `git gc` packs the objects and keeps the differences of the
+  text files alone.
 - Do not push. Push only when the owner asks.
 
 ## 4. Finish
@@ -157,6 +168,10 @@ failed restore leaves no file.
 
 To open a restored file, use `labdb.connect`. It applies the newer schema files of
 `pipeline/schema/` when the export is older.
+
+The image files need no restore step while they are in the working tree. A removed main
+photo or patch comes back from a commit that holds it:
+`git checkout <commit> -- data/images/patched/<sha256>.<extension>`.
 
 Do not put a restored file in the place of `data/lab.sqlite3` unless the owner asks for
 it. The swap needs a stop of the lab server and a start again. Follow the rules 22 to 24

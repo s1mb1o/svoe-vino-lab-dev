@@ -4413,3 +4413,32 @@ Yes, to a new file (Recommended)
 ```text
 Commit, then first backup (Recommended)
 ```
+
+## 2026-09-26T17:51:00+0300
+
+The owner stopped this message and sent the next one.
+
+```text
+do not commit  @svoe-vino-lab/data/cache , commut @svoe-vino-lab/data/images/main
+```
+
+## 2026-09-26T17:51:32+0300
+
+```text
+do not commit  @svoe-vino-lab/data/cache , commit @svoe-vino-lab/data/images/main and @svoe-vino-lab/data/images/patched
+```
+
+## 2026-09-26T17:54:00+0300
+
+"data/images/main (2,019 files, 135 MB) and data/images/patched (18 files, 7 MB) have sha256 file names, so a file never changes. Should the backup skill also commit new images on each run, or is this a one-time commit?"
+
+```text
+Skill commits them too (Recommended)
+```
+
+"How should git store the 142 MB of images?"
+
+```text
+Plain git (Recommended)
+```
+

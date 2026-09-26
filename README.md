@@ -12,10 +12,11 @@ Test data for the Svoe Vino wine scanner.
 - `excluded-slugs.json` names the slugs that are out of the benchmark.
 - `manual-groups.json` names the variant pairs that a reviewer made by hand.
 - `pipeline/` holds the lab database tools. `data/lab.sqlite3` is the lab database.
-  `data/images/` holds the images of the wines. Git ignores `data/`.
+  `data/images/` holds the images of the wines. Git ignores `data/`, except
+  `data/images/main/` and `data/images/patched/`.
 - `db-export/` holds the text export of `data/lab.sqlite3`, one JSON-lines file for each
   table. It keeps the history of the database in git. The skill `backup-lab-db` writes
-  and commits it. Read [plan 50](docs/plans/50_lab-db-text-export.md).
+  and commits it, together with `data/images/main/` and `data/images/patched/`. Read [plan 50](docs/plans/50_lab-db-text-export.md).
 
 ## The lab database
 
@@ -288,7 +289,8 @@ the sources alone: a wine state, a comment, a favorite, a manual wine, an altern
 photo, an edit of the Testset page, and an image description are in the backup only. It
 copies no configuration, no run, and no cluster. Read
 [plan 28](docs/plans/28_seed-from-testset.md).
-Git ignores the whole `data/` directory.
+Git ignores the whole `data/` directory, except `data/images/main/` and
+`data/images/patched/` (plan 50).
 
 ## The Testset page of the lab
 

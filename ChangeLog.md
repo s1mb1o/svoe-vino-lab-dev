@@ -2,6 +2,13 @@
 
 ## 2026-09-26
 
+- Plan 50, section 8: the main photos and the patches in git (owner message of
+  2026-09-26T17:51:32+0300, answers of 17:54:00; session drink-atlas-workspace-96).
+  `.gitignore` ignores the content of `data/` and of `data/images/` and takes back
+  `data/images/main/` (2,019 files, 135 MB) and `data/images/patched/` (18 files, 7 MB);
+  `data/cache/` and the rest of `data/` stay out. Step 3 of the skill `backup-lab-db`
+  commits the two folders with `db-export/` in one commit, in plain git, and counts the
+  added and the removed files in the message.
 - Plan 50, a text export of the lab database for the git history (owner message of
   2026-09-26T17:26:06+0300, answers of 17:28:00; session drink-atlas-workspace-96). New
   `pipeline/db_export.py`: `export` writes `db-export/schema.sql`,

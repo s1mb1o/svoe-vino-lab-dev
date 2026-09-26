@@ -1514,3 +1514,5 @@ Read [plan 50](docs/plans/50_lab-db-text-export.md) and the skill
 | DX4 | Run the restore of DX3 again | `error: … exists already; the restore writes a new file alone`, exit status 1. `$T/r.sqlite3` does not change. |
 | DX5 | `head -2 $T/one/rows/wine_code.jsonl` | Each line is one JSON object. The first key is `rowid`. The rows are in the order of `wine_slug`, `kind`, `value`. |
 | DX6 | Run the skill `backup-lab-db` two times with no change of the database between the runs | The first run makes one commit that changes `db-export/` alone. The second run prints `no change since the last export` and makes no commit. `git diff --cached --name-only -- db-export` prints no line after each run. |
+| DX7 | `git check-ignore -v data/cache/x data/lab.sqlite3 data/images/cropped/x data/images/main/x.webp data/images/patched/x.png` | The first three paths are ignored. The two image paths print no line: git keeps them. |
+| DX8 | Add a file to `data/images/patched/`, then run the skill | The commit holds the new file. The message has `1 A data/images/patched`. |
