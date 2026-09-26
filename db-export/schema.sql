@@ -93,14 +93,6 @@ CREATE TABLE test_set (
     source_dir TEXT NOT NULL CHECK (source_dir <> '')
 , edited_at TEXT CHECK (edited_at <> ''), label_note TEXT) STRICT;
 
-CREATE TABLE test_excluded (
-    set_name  TEXT NOT NULL REFERENCES test_set (set_name),
-    wine_slug TEXT NOT NULL CHECK (wine_slug <> ''),
-    reason    TEXT,
-    ts        TEXT,
-    PRIMARY KEY (set_name, wine_slug)
-) STRICT;
-
 CREATE TABLE test_variant (
     set_name  TEXT NOT NULL REFERENCES test_set (set_name),
     wine_slug TEXT NOT NULL CHECK (wine_slug <> ''),
@@ -154,7 +146,6 @@ CREATE TABLE "test_photo" (
     sha256         TEXT NOT NULL REFERENCES image (sha256),
     label          TEXT CHECK (label IN ('positive', 'negative', 'unusable', 'variant')),
     marked_delete  INTEGER NOT NULL DEFAULT 0 CHECK (marked_delete IN (0, 1)),
-    comment        TEXT CHECK (comment <> '' AND length(comment) <= 4000),
     ts             TEXT CHECK (ts <> ''),
     proposed       TEXT CHECK (proposed IN ('positive', 'negative', 'unusable', 'variant')),
     proposed_by    TEXT CHECK (proposed_by <> ''),
@@ -175,15 +166,6 @@ CREATE TABLE "test_photo" (
     CHECK (box_left IS NULL OR (box_left >= 0 AND box_top >= 0 AND box_right > box_left
                                 AND box_bottom > box_top)),
     PRIMARY KEY (set_name, place, file_name)
-) STRICT;
-
-CREATE TABLE test_wine_note (
-    set_name  TEXT NOT NULL REFERENCES test_set (set_name),
-    wine_slug TEXT NOT NULL CHECK (wine_slug <> ''),
-    comment   TEXT CHECK (comment <> '' AND length(comment) <= 4000),
-    ts        TEXT CHECK (ts <> ''),
-    extra     TEXT CHECK (json_valid(extra) AND json_type(extra) = 'object'),
-    PRIMARY KEY (set_name, wine_slug)
 ) STRICT;
 
 CREATE TABLE image_detail (
@@ -208,5 +190,26 @@ CREATE TABLE image_derivative_absence (
     settings      TEXT NOT NULL CHECK (settings <> ''),
     reason        TEXT NOT NULL CHECK (reason <> ''),
     PRIMARY KEY (source_sha256, kind)
+) STRICT;
+
+CREATE TABLE test_photo_comment (
+    id         INTEGER PRIMARY KEY,
+    set_name   TEXT NOT NULL,
+    place      TEXT NOT NULL,
+    file_name  TEXT NOT NULL,
+    created_at TEXT NOT NULL CHECK (created_at GLOB
+        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
+    source     TEXT NOT NULL CHECK (source IN ('user', 'script')),
+    text       TEXT NOT NULL CHECK (text <> '' AND length(text) <= 4000),
+    FOREIGN KEY (set_name, place, file_name)
+        REFERENCES test_photo (set_name, place, file_name)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) STRICT;
+
+CREATE TABLE wine_beverage_type (
+    wine_slug          TEXT PRIMARY KEY REFERENCES wine_catalog (wine_slug),
+    beverage_type_code TEXT NOT NULL CHECK (beverage_type_code IN ('4', '44')),
+    updated_at         TEXT NOT NULL CHECK (updated_at GLOB
+        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z')
 ) STRICT;
 

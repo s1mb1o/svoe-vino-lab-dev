@@ -28,4 +28,6 @@ BEGIN
     WHERE rowid = NEW.rowid;
 END;
 
-PRAGMA user_version = 21;
+CREATE INDEX test_photo_comment_photo ON test_photo_comment (set_name, place, file_name);
+
+PRAGMA user_version = 23;
