@@ -2,6 +2,13 @@
 
 ## 2026-09-26
 
+- Plan 48, the benchmark of the cluster re-rank on `my` (label `bench48`; session
+  drink-atlas-workspace-39): `rerank-siglip2-512-crop` R@1 81.29 % → 83.26 %, and
+  `barcode-rerank-siglip2-512-crop` 82.58 % → 84.55 %, each +1.97 points with 48 wins and
+  16 losses (exact McNemar p 7.7e-05); the negatives rejected 82.88 % → 85.10 % (16 wins,
+  3 losses, p 0.0044). The step acted on 574 of 2,209 photos, with 0 VLM errors; a photo
+  with the step took a median of 5.1 s. The section «Result» of
+  `docs/plans/48_cluster-rerank.md` holds the losses and the candidate changes.
 - Plan 48, the cluster re-rank at query time (owner messages of 2026-09-26T13:04:00+0300
   and 13:10:00 «implement», answer of 14:56:00; session drink-atlas-workspace-39). A
   pipeline of the backend `embedding` takes the key `rerank` (`pipeline/cluster_rerank.py`,

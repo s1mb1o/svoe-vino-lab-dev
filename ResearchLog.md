@@ -2,6 +2,30 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — plan 48: the cluster re-rank adds 2.0 points of R@1 on `my`
+
+Session drink-atlas-workspace-39 / CLUSTERS [fb59ad]. Label `bench48`, 2,209 photos, the
+rules of the `combined` clusters of `gx10-siglip2-so400m-patch16-naflex-p256` (plan 45,
+`qwen3.5-9b-nvfp4`), the query VLM `qwen3.5-9b-nvfp4` with thinking off.
+
+- `rerank-siglip2-512-crop` against `siglip2-512-crop` (bench45): R@1 81.29 % → 83.26 %,
+  MRR 0.878 → 0.889, R@5 unchanged (the step orders only the top 5); 48 wins, 16 losses,
+  exact McNemar p 7.7e-05. Negatives rejected 82.88 % → 85.10 %, 16 wins, 3 losses,
+  p 0.0044. The barcode twin gives the same differences: 82.58 % → 84.55 %.
+- The rules of one embedding serve a pipeline of another embedding: the clusters of the
+  NaFlex p256 embedding and the answers of siglip2-512 work together.
+- The trigger acted on 574 photos, the number of the analysis before the plan. Mode
+  `sheet` 537 photos (111 changed), mode `verdict` 37 (14 changed). No VLM error.
+- The losses name the weak points of the rules of the 9B model and of the check of plan
+  45: a question about the background colour; a six-digit number on the edge of the label
+  (it changes from bottle to bottle, and `SERIAL` does not catch «number»); features
+  outside the SAM3 label cut (a neck ribbon, a text at the bottom edge); a verdict by the
+  vintage year alone; an expected text with a reading error of stage 2. The misreads of
+  the query VLM: «Demi-Sec» for «Demi-Sucré», a kosher mark `not visible`.
+- Time: a VLM call took a median of 2.7 s with 4 photos at a time; a photo with the step
+  a median of 5.1 s. A second run of the same photos reads every answer from the model
+  cache.
+
 ## 2026-09-26 — the full benchmark on `my`: siglip2-512 with the barcode step is best
 
 Session drink-atlas-workspace-39 / CLUSTERS [fb59ad]. 45 runs, label `bench45`, 2,209

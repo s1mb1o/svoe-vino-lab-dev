@@ -1,7 +1,7 @@
 # 48 — The cluster re-rank at query time
 
 Date: 2026-09-26.
-Status: implemented on 2026-09-26. The section "Result" holds the benchmark.
+Status: implemented and measured on 2026-09-26. The section "Result" holds the benchmark.
 Written by drink-atlas-workspace-39 [fb59ad], also named CLUSTERS [fb59ad].
 Source: the owner messages of 2026-09-26T13:04:00+0300 (the question about the trigger)
 and 13:10:00 («implement»), and the answer of 14:56:00 in
@@ -123,5 +123,40 @@ A pipeline of the backend `embedding` takes the optional key `rerank`:
 
 ## Result
 
-The benchmark of the two pipelines runs since 2026-09-26T15:09 (label `bench48`). This
-section gets the result when the runs end.
+Measured on 2026-09-26, 15:09 to 15:28, label `bench48`, 2,209 photos of `my` (1,625
+positive, 584 negative), against the runs of plan 45 (label `bench45`) on the same photos.
+`scripts/compare_runs.py` gives the paired numbers; `work/bench48/rerank_stats.py` the view
+of the step.
+
+| Pipeline | R@1 | R@5 | MRR | Negatives rejected | Median ms |
+|---|---:|---:|---:|---:|---:|
+| `siglip2-512-crop` | 81.29 % | 95.63 % | 0.878 | 82.88 % | 172 |
+| `rerank-siglip2-512-crop` | **83.26 %** | 95.63 % | 0.889 | **85.10 %** | 223 |
+| `barcode-siglip2-512-crop` | 82.58 % | 96.74 % | 0.890 | 82.88 % | 376 |
+| `barcode-rerank-siglip2-512-crop` | **84.55 %** | 96.74 % | 0.901 | **85.10 %** | 561 |
+
+- Positives: +1.97 points, 48 wins and 16 losses, exact McNemar p 7.7e-05, for both pairs.
+- Negatives: +2.23 points, 16 wins and 3 losses, p 0.0044, for both pairs.
+- The step acted on 574 photos, as the analysis before the plan predicted: 537 of mode
+  `sheet` (111 changed; positives 42 wins and 13 losses; negatives 16 wins and 3 losses)
+  and 37 of mode `verdict` (14 changed; positives 6 wins and 3 losses). 0 VLM errors. Each
+  of the 574 photos had a label cut.
+- 48 of the 89 misses that the step could fix are fixed.
+- Time: one VLM call median 2.7 s, p90 4.1 s, with 4 photos at a time and the watcher of
+  plan 29 on the same model. A photo with the step: median 5.1 s; without it: 184 ms. The
+  barcode run got every VLM answer from the cache (the same label cuts and prompts), so its
+  photos with the step took 0.8 s.
+- The 16 losses: a small mark read wrong (a sugar level «Demi-Sec» for «Demi-Sucré», a
+  kosher mark `not visible`); questions that the check of plan 45 lets through (the
+  background colour of the label; a six-digit number on the edge of the label, which
+  changes from bottle to bottle); features outside the label cut (a neck ribbon, a text
+  at the bottom edge); a verdict by the vintage year alone (`ee8d0719c613`, 3 losses); and
+  an expected text with a reading error of stage 2 («УНИКАЛ» for «УЗНАЙ»).
+
+Candidate changes, each chosen after this run (post hoc), to be measured on one half of
+the wines and reported on the other half:
+
+- strike a question about a colour, a background, or a design unless the note names it;
+- strike a question whose answers are numbers of 5 or more digits;
+- count only «yes» as evidence in a yes/no question;
+- a margin guard on the base score gap.
