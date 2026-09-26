@@ -2,6 +2,31 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — the full benchmark on `my`: siglip2-512 with the barcode step is best
+
+Session drink-atlas-workspace-39 / CLUSTERS [fb59ad]. 45 runs, label `bench45`, 2,209
+photos (1,625 positive, 584 negative). The tables are in
+`docs/reports/2026-09-26_full-benchmark-my.md`.
+
+- R@1: `barcode-siglip2-512-crop` 82.6 %, `barcode-siglip2-512-as-is` 82.0 %,
+  `siglip2-512-crop` 81.3 %, `barcode-siglip2-p512-crop` 81.1 %. The official recognizer
+  67.6 %. The DINOv3 entries 29.8 to 44.4 %.
+- The barcode step: +1.2 to +1.3 points for each of the 22 pipelines, 19 to 21 photos won,
+  0 lost. The same photos carry a code in each pipeline, so the gain does not depend on
+  the embedding. The median time goes from about 170 ms to about 360 ms.
+- Against plan 40 (label `bench40`, 2026-09-25, the same photo counts): each pipeline is
+  1.3 to 2.4 points higher. The cause was not examined.
+- A cluster re-rank can act on the best plain run (`siglip2-512-crop`) as follows, with the
+  `combined` clusters and the rules of `gx10-siglip2-so400m-patch16-naflex-p256`: the
+  rank-1 card and another card of its cluster in the top 5 on 574 photos (179 negatives);
+  89 of the 304 misses have the true card in the cluster of the rank-1 card inside the top
+  5; 257 hits at rank 1 are exposed. «All top 5 in one cluster» acts on 37 photos and can
+  fix 2 misses, because 132 of the 163 clusters have 2 wines. 161 misses have a rank-1 card
+  in no cluster.
+- A shell pitfall: `python3` of the Mac has no zxing-cpp. A barcode pipeline MUST run with
+  `embedding_python` (`~/.venvs/svoe-vino-lab/bin/python`); else it stops at once with «the
+  key `barcode` needs zxing-cpp 2.3.0 in this Python».
+
 ## 2026-09-26 — health checks: the llama-swap lists load nothing, `/upstream/` loads, and a repeated prompt stops llama.cpp `qwen3.5-9b`
 
 Session drink-atlas-workspace-cc [d62b09], plan 46 (the Health page).

@@ -2,6 +2,16 @@
 
 ## 2026-09-26
 
+- The full benchmark on the test set `my` (owner message of 2026-09-26T11:30:00+0300,
+  answer «All 45 pipelines» of 11:34:00; session drink-atlas-workspace-39): the 45
+  pipelines of `config.yaml`, label `bench45`, 2,209 photos (1,625 positive, 584 negative).
+  Best `barcode-siglip2-512-crop`: R@1 82.6 %, R@5 96.7 %, MRR 0.890; without the barcode
+  step 81.3 %. The official recognizer: 67.6 %. The barcode step adds 1.2 to 1.3 points to
+  each pipeline and loses no photo. Report:
+  `docs/reports/2026-09-26_full-benchmark-my.md`. The queue scripts and the logs are in
+  `work/bench45/`; the 20 barcode pipelines of the gx10 entries needed a second pass with
+  `embedding_python`.
+
 - Plan 46, the Health page `/health` (owner message of 2026-09-26T10:35:48+0300, answers
   of 11:02:57; session drink-atlas-workspace-cc). New module `pipeline/health.py` and page
   `pipeline/pages/health.html`; the link `Health` is last in the navigation of each page.
