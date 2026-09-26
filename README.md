@@ -732,6 +732,11 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   `white_background`, `resize` 1024) and `siglip2-p256-crop` (`segment` of the package
   with the background of its box, `white_background`, `resize` 1024). `white_background`
   does not change an opaque photo; 60 queries of `my` have transparent pixels.
+- Plan 40 adds the same two pipelines for each other entry of `embeddings`:
+  `<short>-as-is` and `<short>-crop`, for example `siglip2-512-crop` of
+  `gx10-siglip2-so400m-patch16-512` (20 pipelines; YAML anchors hold the steps one time).
+  The benchmark of the 22 pipelines is
+  [docs/reports/2026-09-26_embedding-benchmark.md](docs/reports/2026-09-26_embedding-benchmark.md).
 - The key `configuration` of `run.json` names the pipeline of a run: one entry of the
   key `pipeline` in `config.yaml` (plan 34; the key keeps its old name).
   `pipeline/benchmark.py` writes it when `run_benchmark` gets the argument

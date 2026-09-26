@@ -205,6 +205,106 @@ pipeline:
             max_size: 1024
             aspect: keep
 
+  # Plan 40 (owner message of 2026-09-26T01:43:59+0300): the two basic pipelines for each
+  # other entry of `embeddings`, for the benchmark of the entries. Their steps are the
+  # steps of `siglip2-p256-as-is` and `siglip2-p256-crop`. The YAML anchors `as-is-views`
+  # and `crop-views` of the first pair hold the steps one time; the other pairs refer to
+  # them. Read docs/plans/40_embedding-benchmark.md.
+  - name: siglip2-p512-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    views: &as-is-views
+      full:
+        steps:
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+  - name: siglip2-p512-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    views: &crop-views
+      full:
+        steps:
+          - step: segment
+            target: package
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+  - name: siglip2-p14-384-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch14-384
+    views: *as-is-views
+  - name: siglip2-p14-384-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch14-384
+    views: *crop-views
+  - name: siglip2-256-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-256
+    views: *as-is-views
+  - name: siglip2-256-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-256
+    views: *crop-views
+  - name: siglip2-384-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-384
+    views: *as-is-views
+  - name: siglip2-384-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-384
+    views: *crop-views
+  - name: siglip2-512-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-512
+    views: *as-is-views
+  - name: siglip2-512-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-512
+    views: *crop-views
+  - name: naflexvit-p256-as-is
+    backend: embedding
+    embedding: gx10-naflexvit-so400m-patch16-siglip2-p256
+    views: *as-is-views
+  - name: naflexvit-p256-crop
+    backend: embedding
+    embedding: gx10-naflexvit-so400m-patch16-siglip2-p256
+    views: *crop-views
+  - name: pe-core-l14-336-as-is
+    backend: embedding
+    embedding: gx10-pe-core-l14-336
+    views: *as-is-views
+  - name: pe-core-l14-336-crop
+    backend: embedding
+    embedding: gx10-pe-core-l14-336
+    views: *crop-views
+  - name: dinov3-vitb16-as-is
+    backend: embedding
+    embedding: gx10-dinov3-vitb16
+    views: *as-is-views
+  - name: dinov3-vitb16-crop
+    backend: embedding
+    embedding: gx10-dinov3-vitb16
+    views: *crop-views
+  - name: dinov3-vitl16-as-is
+    backend: embedding
+    embedding: gx10-dinov3-vitl16
+    views: *as-is-views
+  - name: dinov3-vitl16-crop
+    backend: embedding
+    embedding: gx10-dinov3-vitl16
+    views: *crop-views
+  - name: local-siglip2-p256-as-is
+    backend: embedding
+    embedding: local-siglip2-so400m-patch16-naflex-p256
+    views: *as-is-views
+  - name: local-siglip2-p256-crop
+    backend: embedding
+    embedding: local-siglip2-so400m-patch16-naflex-p256
+    views: *crop-views
+
 # The VLM inferences. One entry: a name, a protocol, the thinking field, an endpoint, a
 # model, and a key. `pipeline/vlm_config.py` reads this key. A script names an entry by
 # its name, for example `scripts/04_verify.py --backends qwen3-vl-32b:12`, or the keys

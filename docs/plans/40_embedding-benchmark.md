@@ -79,4 +79,15 @@ and names the gaps of the method.
 
 ## 7. Result
 
-To be written after the work.
+Done on 2026-09-26, 01:56 to 03:03. The report is
+[docs/reports/2026-09-26_embedding-benchmark.md](../reports/2026-09-26_embedding-benchmark.md).
+
+1. `config.yaml` holds the 20 new pipelines. 8168 lists 23 pipelines.
+2. 11 builds (117 new items for each index of 2026-09-25; the first full build of
+   `gx10-siglip2-so400m-patch16-512`, about 8 min). Each index holds 4,043 current items.
+3. 44 runs with the label `bench40`, 0 errors. The queue is `work/bench40/run_bench40.sh`;
+   `work/bench40/report40.py` writes the tables.
+4. Best on `my`: `siglip2-512-crop`, R@1 79.8 %, R@5 95.1 %. The two present basic
+   pipelines: `siglip2-p256-crop` 73.9 %, `siglip2-p256-as-is` 64.5 %.
+5. 15 of the 59 positive photos of `official-real-photos` and 34 of the 1,625 of `my` show
+   wines with no catalogue image. Two catalogue cards hold photos of other wines.

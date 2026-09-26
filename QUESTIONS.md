@@ -57,3 +57,28 @@ log them here. The owner MAY change an answer. Plan:
 | Q9 | Is a third pipeline with the steps of the entry (package cut, background removed, view `label`) part of it? | No. | The owner named the two basic forms. The view `label` of the photos of `my` needs about 2,209 new SAM3 calls. |
 | Q10 | How many photos at a time? | 4 for a gx10 entry; 1 for the entry of the backend `local`. | The gateway serves one model at a time; the Mac prepares the next photos meanwhile. The backend `local` takes one request at a time. |
 | Q11 | Which metric ranks the entries? | R@1 of the positive photos of `my`. The report also gives R@5, R@10, MRR, the false match at 1, and the latency. | R@1 is the answer that a user sees. |
+
+## Q12. The stale sections of `ACTIVE_WORK.md` after the commit 1dd3006
+
+State: answered on 2026-09-26 by the session drink-atlas-workspace-e2 [9e7fe4], under the
+owner message of 2026-09-26T01:43:59+0300 (the session answers its own questions).
+Rule 21 of `AGENTS.md` says: ask the owner before the removal of a stale section.
+
+Question: the sections of 5c [cbb143], a9 [79efd8], 3b [d30290], and 28 [5ddfae] are stale
+(their sessions are not in the `ListAgents` answer). Their work is in the commit 1dd3006.
+Do they stay?
+
+Answer: remove them. Rule 20 removes a section when its work is committed, and a stale
+section keeps other sessions from their files. The ChangeLog bullets and the commit
+1dd3006 record their work.
+
+## Q13. The commit of the work of plan 40
+
+State: answered on 2026-09-26 by the session drink-atlas-workspace-e2 [9e7fe4], under the
+owner message of 2026-09-26T01:43:59+0300.
+
+Question: the owner asked for "commit all" before the benchmark. Does the work of the
+benchmark (the pipelines, the plan, the report, the logs) get a commit too?
+
+Answer: yes, one commit of the files of this session alone, after the report. The owner
+wants a committed tree. A hunk of another session stays out of this commit.

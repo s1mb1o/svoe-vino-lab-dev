@@ -2,6 +2,30 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — the embedding entries with the basic pipelines: `siglip2-512` is best
+
+Session drink-atlas-workspace-e2 [9e7fe4], plan 40. 22 pipelines (as is and crop, for each
+of the 11 entries of `embeddings`), 44 runs on `my` and `official-real-photos`. The full
+report is [docs/reports/2026-09-26_embedding-benchmark.md](docs/reports/2026-09-26_embedding-benchmark.md).
+
+- R@1 on `my` (1,625 positive photos): `siglip2-512-crop` 79.8 %, `siglip2-512-as-is`
+  79.1 %, `siglip2-p512-crop` 78.6 %, `siglip2-p14-384-crop` 77.5 %; `siglip2-p256-crop`
+  73.9 %, `siglip2-p256-as-is` 64.5 %; DINOv3 41 % at best.
+- More image patches give a better R@1 in the SigLIP2 family (1,024 > 729 > 576 > 256; the
+  counts come from the model names). At about the same patch count, NaFlex beats a square
+  input.
+- The crop of the package helps each entry; the gain falls from +9.3 points
+  (`siglip2-p256`) to +0.7 points (`siglip2-512`) when the model sees more detail.
+- The local copy of `siglip2-p256` and the gateway give nearly the same metrics, but 65
+  positive photos differ at rank 1. The cause is not known.
+- On the 44 photos of `official-real-photos` whose wine has a catalogue image,
+  `siglip2-512-crop` gets 93.2 % at rank 1 and vino-svoe.ru 59.1 % (90.9 % at rank 5).
+- Data: 15 of 59 positive photos of `official-real-photos` and 34 of 1,625 of `my` show
+  wines with no catalogue image. Two catalogue cards (`fanagoriya-100-ottenkov-…`,
+  `avtohtonnoe-vino-kryma-beloe-suhoe`) hold photos of other wines.
+- A run of 2,209 photos takes 72 to 138 s through the gateway with 4 photos at a time,
+  and 333 to 446 s for the local entry on this Mac (MPS), with cached SAM3 answers.
+
 ## 2026-09-26 — a cached SAM3 answer hides about 1.2 s per photo of `siglip2-p256-crop`
 
 Session drink-atlas-workspace-d3 [4920ce], plan 39 (the checkbox `Use caches`). Two jobs

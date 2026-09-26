@@ -2,6 +2,15 @@
 
 ## 2026-09-26
 
+- Plan 40, the benchmark of the 11 embedding entries with the two basic pipelines (owner
+  message of 2026-09-26T01:43:59+0300; session drink-atlas-workspace-e2 [9e7fe4]). First,
+  the commit 1dd3006 of all pending changes. Then 20 new pipelines in `config.yaml`
+  (`<short>-as-is`, `<short>-crop` for each other entry), the builds of the missing index
+  items and of `gx10-siglip2-so400m-patch16-512`, and 44 runs on `my` and
+  `official-real-photos` (label `bench40`, 0 errors). Best: `siglip2-512-crop`, R@1
+  79.8 % on `my`. The report is `docs/reports/2026-09-26_embedding-benchmark.md`. The
+  session answered its own questions in `QUESTIONS.md` (Q2 to Q13) and removed the stale
+  sections 5c, a9, 3b, 28 of `ACTIVE_WORK.md` after the commit (Q12).
 - Plan 38, the catalogue inputs of a candidate of an embedding run on `/runs` (owner
   message of 2026-09-26T01:23:11+0300 and the answers of 01:29:00; session
   drink-atlas-workspace-e2 [9e7fe4]). `embedding_run.Catalogue.rank` records the key
