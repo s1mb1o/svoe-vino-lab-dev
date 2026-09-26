@@ -37,7 +37,8 @@ type. `alternatives.py` does the work. Read `docs/plans/16_alternative-images.md
 The route `/api/image-description` sets (POST) the values of one image in the table
 `image_description` by hand, with `image_descriptions.py`; `GET /api/dataset` sends the
 key `image_descriptions`. `GET /api/image-description-status` sends the state of the
-watcher and the counts for the indicator of the page. `GET
+watcher and the counts for the indicator of the page; `log=<N>` adds the last N lines of
+the watcher log for the dialog of the watcher (plan 49). `GET
 /api/image-description-reply?sha256=` sends the raw VLM reply of one image from
 `data/cache/`, with `describe_images.cached_reply`. `GET /api/image-detail-failures`
 sends the images whose detail failed, each with its entries of the watcher log
@@ -750,11 +751,22 @@ def set_image_description(db_path, sha256, values):
     return {"ok": True, "sha256": sha256, "description": row}
 
 
-def image_description_status(db_path):
+def image_description_status(db_path, log=None):
     """Return the answer of `GET /api/image-description-status`: the state of the watcher
-    (`image_descriptions.watcher_status`) and the counts of the linked images."""
+    (`image_descriptions.watcher_status`) and the counts of the linked images. `log` (the
+    query value, 1 to 200) adds `log_file` and `log`, the last lines of WATCHER_LOG, for
+    the dialog of the watcher (plan 49)."""
+    count = None
+    if log is not None:
+        count = int(log) if isinstance(log, str) and log.isdigit() else 0
+        if not 1 <= count <= 200:
+            raise StateError(400, "`log` MUST be a whole number from 1 to 200")
     with closing(open_database(db_path)) as conn:
-        return image_descriptions.watcher_status(conn)
+        answer = image_descriptions.watcher_status(conn)
+    if count:
+        answer["log_file"] = os.path.relpath(WATCHER_LOG, ROOT)
+        answer["log"] = image_descriptions.log_tail(WATCHER_LOG, count)
+    return answer
 
 
 def image_description_reply(db_path, config_path, sha256):
@@ -968,8 +980,12 @@ class Handler(BaseHTTPRequestHandler):
         elif route in DISABLED_PAGES:
             self._send(503, disabled_page(route), "text/html; charset=utf-8")
         elif route == "/api/image-description-status":
+            query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
             try:
-                self._json(200, image_description_status(self.server.db_path))
+                self._json(200, image_description_status(
+                    self.server.db_path, (query.get("log") or [None])[0]))
+            except StateError as exc:
+                self._json(exc.code, {"error": str(exc)})
             except (ConfigError, sqlite3.Error) as exc:
                 self._json(503, {"error": str(exc)})
         elif route == "/api/image-detail-failures":

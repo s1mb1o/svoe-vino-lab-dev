@@ -10,6 +10,7 @@ transaction of the caller.
 The watcher writes its state into STATUS_PATH at each step. The indicator of `/dataset`
 reads it through `watcher_status`.
 """
+import datetime
 import json
 import os
 import re
@@ -30,6 +31,8 @@ STATES = ("working", "idle", "waiting", "stopped")
 # of each image.
 LOG_LINE = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ (\S+)")
 LOG_LIMIT = 20
+# The read of `log_tail` starts at most this number of bytes before the end of the log.
+TAIL_BYTES = 256 * 1024
 
 # The fields of a description, in the order of the table, and the values of each field.
 FIELDS = ("package_type", "subject_scope", "package_view", "content_roles")
@@ -246,19 +249,100 @@ def max_attempts_of(status):
     return max_attempts
 
 
+def _seconds_between(text, now):
+    """Return the whole seconds from the UTC time `text` (the form of `comments.now_utc`)
+    to `now`, or None when `text` is not such a time."""
+    try:
+        then = datetime.datetime.strptime(text, "%Y-%m-%dT%H:%M:%SZ")
+    except (TypeError, ValueError):
+        return None
+    return int((now - then.replace(tzinfo=datetime.timezone.utc)).total_seconds())
+
+
+def call_view(conn, sha256, stage):
+    """Return one image of a VLM call of the watcher, for the dialog of `/dataset` (plan
+    49): `sha256`, `stage`, `slug` (the first link), `prompt_kind` and `package_type` of
+    a detail, `url` (the file that the VLM gets, on the lab server), and `attempts` and
+    `error` of the row for these inputs. A value that is not found is None."""
+    view = {"sha256": sha256, "stage": stage, "slug": None, "prompt_kind": None,
+            "package_type": None, "url": None, "attempts": 0, "error": None}
+    row = conn.execute("SELECT wine_slug FROM wine_image WHERE sha256 = ? ORDER BY rowid "
+                       "LIMIT 1", (sha256,)).fetchone()
+    view["slug"] = row[0] if row else None
+    if stage == "detail":
+        target = image_details.target(conn, sha256)
+        if target is None:
+            return view
+        _, kind, package_type, input_sha256, folder, extension = target
+        view.update(prompt_kind=kind, package_type=package_type,
+                    url="/images/%s/%s.%s" % (folder, input_sha256, extension))
+        row = image_details.detail(conn, sha256)
+        if row and (row["prompt_kind"], row["package_type"], row["input_sha256"]) == (
+                kind, package_type, input_sha256):
+            view.update(attempts=row["vlm_attempts"], error=row["vlm_error"])
+        return view
+    image = conn.execute("SELECT folder, extension FROM image WHERE sha256 = ?",
+                         (sha256,)).fetchone()
+    if image:
+        view["url"] = "/images/%s/%s.%s" % (image[0], sha256, image[1])
+    row = description(conn, sha256)
+    if row:
+        view.update(attempts=row["vlm_attempts"], error=row["vlm_error"])
+    return view
+
+
+def log_tail(log_path, count):
+    """Return the last `count` lines of the watcher log `log_path`, oldest first (plan
+    49). The read starts at most TAIL_BYTES before the end. The first line of such a read
+    can be a part of a line, so it is dropped. A file that cannot be read gives no line."""
+    try:
+        with open(log_path, "rb") as fh:
+            size = fh.seek(0, os.SEEK_END)
+            fh.seek(max(0, size - TAIL_BYTES))
+            data = fh.read()
+    except OSError:
+        return []
+    lines = data.decode("utf-8", "replace").splitlines()
+    if size > TAIL_BYTES:
+        lines = lines[1:]
+    return lines[-count:]
+
+
 def watcher_status(conn, path=None):
     """Return the state of the watcher and the counts, for `GET
     /api/image-description-status`. A missing file, a state that is not known, or a
     process that is gone gives the state `stopped`. `stage` (`class` or `detail`) names
-    the stage of a `working` watcher; the `details_*` counts are the counts of plan 29."""
+    the stage of a `working` watcher; the `details_*` counts are the counts of plan 29.
+
+    Plan 49: `running` holds a `call_view` of each call that runs, with `started_at` and
+    `seconds` (its age). The state `waiting` adds `waiting_since`, `backoff_seconds`,
+    `retry_at`, `retry_in_seconds`, and `error_image` (the image of the failed call)."""
     status = read_status(path) or {}
     state = status.get("state")
     if state not in STATES or not _alive(status.get("pid")):
         state = "stopped"
     max_attempts = max_attempts_of(status)
-    answer = {"state": state, "pid": status.get("pid") if state != "stopped" else None}
-    for key in ("vlm", "model", "started_at", "updated_at", "seconds_per_image", "last"):
+    answer = {"state": state, "pid": status.get("pid") if state != "stopped" else None,
+              "max_attempts": max_attempts}
+    for key in ("vlm", "model", "endpoint", "timeout_seconds", "workers", "started_at",
+                "updated_at", "seconds_per_image", "last"):
         answer[key] = status.get(key)
+    now = datetime.datetime.now(datetime.timezone.utc)
+    answer["running"] = []
+    for call in (status.get("running") or []) if state != "stopped" else []:
+        if isinstance(call, dict) and isinstance(call.get("sha256"), str):
+            view = call_view(conn, call["sha256"], call.get("stage"))
+            view.update(started_at=call.get("started_at"),
+                        seconds=_seconds_between(call.get("started_at"), now))
+            answer["running"].append(view)
+    waiting = state == "waiting"
+    for key in ("waiting_since", "backoff_seconds", "retry_at"):
+        answer[key] = status.get(key) if waiting else None
+    late = _seconds_between(answer["retry_at"], now)
+    answer["retry_in_seconds"] = max(0, -late) if late is not None else None
+    error_sha256 = status.get("error_sha256") if waiting else None
+    answer["error_image"] = (call_view(conn, error_sha256, status.get("error_stage"))
+                             if isinstance(error_sha256, str) else None)
     answer["error"] = status.get("error") if state == "waiting" else None
     answer["sha256"] = status.get("sha256") if state == "working" else None
     answer["stage"] = status.get("stage") if state == "working" else None

@@ -4282,3 +4282,75 @@ Yes, add the hunk (Recommended)
 ```text
 git commit
 ```
+
+## 2026-09-26T10:33:00+0300
+
+The message came with a screenshot of the pill of `/dataset`. The pill showed the text
+"VLM waiting: no answer from http://192.168.86.14:1808".
+
+```text
+"VLM waiting: no answer from http://192.168.86.14:1808"
+
+1. why this happens?
+2. can you fix it now
+3. implement self-recover in future
+4. "VLM waiting: no answer from http://192.168.86.14:1808" truncates port, so it looks like port is 1808, and i see this as error reason, but actually port that is used is 18081, so this wrong path in error search. Print whole enpoint.
+5. also if clicked, show more detailed dialog.
+```
+
+## 2026-09-26T15:18:00+0300
+
+The questions of the agent and the selected answers, for the owner message of
+2026-09-26T10:33:00+0300.
+
+"How do I fix the stuck image now?"
+
+```text
+One-off run, store answer (Recommended)
+```
+
+"Which self-recovery do I implement in the watcher?"
+
+```text
+Probe after timeout (Recommended)
+```
+
+"What does the amber pill show?"
+
+```text
+Full error, no cut (Recommended)
+```
+
+"What does the dialog show when you click the pill?"
+
+```text
+State + full error, Current image, Backoff and retry, Recent watcher log
+```
+
+## 2026-09-26T15:35:00+0300
+
+The question of the agent and the selected answer, for the probe of the answer of
+2026-09-26T15:18:00+0300.
+
+"Which probe decides that the service is alive after a timeout?"
+
+```text
+1-token chat request (Recommended)
+```
+
+## 2026-09-26T15:56:01+0300
+
+The questions of the agent and the selected answers, for the owner message of
+2026-09-26T10:33:00+0300 (plan 49).
+
+"May I restart the lab server 8168 now to deploy the watcher probe and the new status route? It also restarts the watcher."
+
+```text
+Restart now (Recommended)
+```
+
+"Do I commit my changes?"
+
+```text
+Commit my hunks (Recommended)
+```

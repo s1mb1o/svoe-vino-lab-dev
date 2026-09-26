@@ -2,6 +2,28 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — a VLM request that times out while the service lives (plan 49)
+
+Session drink-atlas-workspace-0d [ab062e]. Read `docs/plans/49_vlm-timeout-probe.md`.
+
+- The detail request of one image (`a902e43a5f77…`, `package` prompt, `bottle`, the cut
+  at 1536 px) timed out 45 times from 2026-09-25T23:02Z to 2026-09-26T07:38Z. The vLLM
+  log of `qwen3.5-9b-nvfp4` on gx10 showed 1 running request at about 22 tokens/s for the
+  full 300 s: about 6,600 tokens. A valid answer of this image has about 380 tokens.
+- The same request in a batch with other requests ended with `finish_reason` `stop` in
+  17 s (a streamed copy) and in 21.1 s (the watcher at 07:39:21Z). So the long output of
+  greedy decoding (`temperature` 0) depends on the batch. The text of the long output was
+  not seen; a repetition loop is an inference.
+- With `max_tokens` 8192 and about 22 tokens/s for one request, the service needs about
+  370 s to stop at `max_tokens`. The client timeout of 300 s ends the request first. So a
+  timeout, not `finish_reason` `length`, is the visible symptom of a long output.
+- llama-swap (port 18081) answers `GET /v1/models` from its own configuration. It does not
+  prove that vLLM behind it serves. A chat request of 1 token with no image answered in
+  0.12 s on 2026-09-26; it proves that the model serves.
+- A read timeout of `urllib` (the server took the request and sent no header in time)
+  comes as a bare `TimeoutError` ("timed out"). A connect timeout comes as a `URLError`
+  ("<urlopen error timed out>").
+
 ## 2026-09-26 — plan 48: the cluster re-rank adds 2.0 points of R@1 on `my`
 
 Session drink-atlas-workspace-39 / CLUSTERS [fb59ad]. Label `bench48`, 2,209 photos, the

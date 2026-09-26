@@ -800,6 +800,28 @@ class LabServerTest(unittest.TestCase):
                              ("working", "wine-b", 2.5))
         self.assertEqual(self.request("/api/image-description-status", "POST")[0], 503)
 
+    def test_the_status_route_sends_the_log_tail_on_request(self):
+        # Plan 49: the dialog of the watcher asks `log=30`.
+        import image_descriptions
+        log = self.root / "w.log"
+        log.write_text("".join("2026-09-26T07:00:%02dZ line %d\n" % (i, i) for i in range(40)),
+                       encoding="utf-8")
+        with mock.patch.object(image_descriptions, "STATUS_PATH",
+                               str(self.root / "status.json")), \
+                mock.patch.object(LAB, "WATCHER_LOG", str(log)):
+            answer = json.loads(self.request("/api/image-description-status")[2])
+            self.assertNotIn("log", answer)
+            status, _, body = self.request("/api/image-description-status?log=30")
+            self.assertEqual(status, 200)
+            answer = json.loads(body)
+            self.assertEqual((len(answer["log"]), answer["log"][-1]),
+                             (30, "2026-09-26T07:00:39Z line 39"))
+            self.assertEqual(answer["log_file"], LAB.os.path.relpath(str(log), LAB.ROOT))
+            for bad in ("0", "201", "x", "-1"):
+                status, _, body = self.request("/api/image-description-status?log=" + bad)
+                self.assertEqual(status, 400, bad)
+                self.assertIn("`log` MUST be a whole number", json.loads(body)["error"])
+
     def test_the_route_of_the_failed_details(self):
         import image_descriptions
         with mock.patch.object(image_descriptions, "STATUS_PATH",

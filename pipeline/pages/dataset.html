@@ -140,6 +140,34 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
   padding: 0; border: 0; background: none; font: inherit;
   text-decoration: underline dotted; text-underline-offset: 2px;
 }
+/* The text of the pill opens the dialog of the watcher (plan 49). */
+.vlm-status button.vlm-open {
+  display: inline-flex; gap: 6px; align-items: center; padding: 0; border: 0;
+  background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.vlm-status button.vlm-open:hover { text-decoration: underline dotted; text-underline-offset: 2px; }
+/* A long error wraps. It is never cut, so the full endpoint stays readable. */
+.vlm-status.waiting {
+  white-space: normal; overflow-wrap: anywhere; max-width: 640px; border-radius: 12px;
+}
+.vlm-status.waiting button.failed { white-space: nowrap; }
+.validation-result .status.waiting { color: var(--var); }
+.vlm-facts {
+  display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 12px; margin: 6px 0 0;
+  font-size: 12px;
+}
+.vlm-facts dt { color: var(--muted); }
+.vlm-facts dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
+.vlm-call {
+  display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 10px; align-items: start;
+  padding: 8px 0 2px; border-top: 1px solid var(--line); margin-top: 6px;
+}
+.vlm-call > div { overflow-wrap: anywhere; }
+.vlm-call img {
+  width: 56px; height: 56px; object-fit: contain; background: var(--bg); border-radius: 6px;
+  cursor: zoom-in;
+}
+.vlm-call .late { color: var(--var); }
 .detail-failure-head { display: grid; grid-template-columns: 72px 1fr; gap: 10px; }
 .detail-failure-head img {
   width: 72px; height: 72px; object-fit: contain; background: var(--bg); border-radius: 6px;
@@ -741,6 +769,28 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <div class="validation-results" id="detail-failures-body"></div>
     <div class="validation-actions">
       <button id="detail-failures-close" type="button">Close</button>
+    </div>
+  </section>
+</div>
+<div class="modal" id="vlm-modal" role="dialog" aria-modal="true" aria-labelledby="vlm-title"
+  hidden>
+  <section class="validation-dialog">
+    <div class="validation-head">
+      <h2 id="vlm-title">VLM watcher</h2>
+      <button id="vlm-x" type="button" aria-label="Close">×</button>
+    </div>
+    <p class="validation-intro">The state of the image description watcher. The dialog
+      reads it again every 5 s.</p>
+    <div class="validation-results" id="vlm-body"></div>
+    <div class="validation-results">
+      <section class="validation-result">
+        <h3>Watcher log</h3>
+        <p id="vlm-log-file"></p>
+        <pre id="vlm-log"></pre>
+      </section>
+    </div>
+    <div class="validation-actions">
+      <button id="vlm-close" type="button">Close</button>
     </div>
   </section>
 </div>
@@ -1610,11 +1660,90 @@ function vlmStatusView(s) {
       : `VLM all ${vlmCount(s.described)} described${s.details_eligible ? ` · ${details}` : ""}`];
   }
   if (s.state === "waiting") {
-    const error = String(s.error || "the service").slice(0, 40);
-    return ["waiting", `VLM waiting: ${error}`];
+    // The full error: a cut at 40 characters showed the port 18081 as 1808 (plan 49).
+    return ["waiting", `VLM waiting: ${s.error || "the service"}`];
   }
   return ["stopped", "VLM watcher not running"];
 }
+// The dialog of the watcher (plan 49). A click on the text of the pill opens it. While it
+// is open, each poll asks `?log=30` and draws it again.
+const VLM_LOG_LINES = 30;
+let VLM_DIALOG_HTML = "";
+function vlmAge(seconds) {
+  if (seconds === null || seconds === undefined) return "?";
+  const s = Math.max(0, Math.round(seconds));
+  if (s < 60) return `${s} s`;
+  if (s < 3600) return `${Math.floor(s / 60)} min ${s % 60} s`;
+  return `${Math.floor(s / 3600)} h ${Math.floor(s % 3600 / 60)} min`;
+}
+function vlmCallHtml(c, s, note) {
+  const what = c.stage === "detail"
+    ? `detail · ${c.prompt_kind || "?"} prompt · ${c.package_type || "?"}` : "class";
+  const thumb = c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener"
+      data-failure-preview data-slug="${esc(c.slug || "")}" data-sha="${esc(c.sha256)}"
+      title="Show the file that the VLM gets"><img src="${esc(c.url)}"
+      alt="The file that the VLM gets" loading="lazy"></a>` : '<span class="noimage">no file</span>';
+  return `<div class="vlm-call">${thumb}<div>
+    <strong>${esc(c.slug || "no linked wine")}</strong> · ${esc(what)}
+    <p>${note}</p>
+    <p>attempts ${vlmCount(c.attempts)} of ${vlmCount(s.max_attempts || 3)}${
+      c.error ? ` · last error: ${esc(c.error)}` : ""}</p>
+    <p>sha256 ${esc(c.sha256)}</p></div></div>`;
+}
+function renderVlmDialog(s) {
+  const [kind] = vlmStatusView(s);
+  const badge = {working: "pass", idle: "pass", waiting: "waiting", stopped: "fail"}[kind];
+  const facts = [
+    ["Endpoint", s.endpoint || "?"],
+    ["VLM entry", `${s.vlm || "?"}${s.model ? ` (${s.model})` : ""}`],
+    ["Watcher", s.pid ? `pid ${s.pid} · started ${s.started_at || "?"} · last step ${s.updated_at || "?"}`
+      : "not running. The lab server starts it when image_description.watch is true."],
+    ["Requests", s.timeout_seconds ? `timeout ${s.timeout_seconds} s · ${vlmCount(s.workers)} workers` : "?"],
+    ["Classes", `${vlmCount(s.described)} of ${vlmCount(s.linked)} · pending ${vlmCount(s.pending)} · failed ${vlmCount(s.failed)}`],
+    ["Details", s.details_eligible !== undefined ? `${vlmCount(s.details_done)} of ${vlmCount(s.details_eligible)} · pending ${vlmCount(s.details_pending)} · failed ${vlmCount(s.details_failed)}` : "?"],
+    ["Speed", s.seconds_per_image ? `${Number(s.seconds_per_image).toFixed(2)} s per image (last 20)` : "—"],
+  ];
+  const dl = rows => `<dl class="vlm-facts">${rows.map(([name, value]) =>
+    `<dt>${esc(name)}</dt><dd>${esc(value)}</dd>`).join("")}</dl>`;
+  let html = `<section class="validation-result"><h3>State <span class="status ${badge}">${
+    esc(s.state || "stopped")}</span></h3>${dl(facts)}${
+    s.error ? `<p>Error</p><pre>${esc(s.error)}</pre>` : ""}</section>`;
+  if (s.state === "waiting") {
+    html += `<section class="validation-result"><h3>Backoff and retry</h3>${dl([
+      ["Waiting since", s.waiting_since || "?"],
+      ["Backoff", s.backoff_seconds ? `${s.backoff_seconds} s` : "— (a wait for the database)"],
+      ["Next try", s.retry_at ? `${s.retry_at} (in ${vlmAge(s.retry_in_seconds)})` : "?"],
+    ])}<p>No new request starts before the next try. A failure of the service doubles the
+      backoff up to 600 s. A request that times out counts against its image when a probe
+      of 1 token to the model answers; then no backoff starts.</p>${
+      s.error_image ? vlmCallHtml(s.error_image, s, "The image of the failed request.") : ""}</section>`;
+  }
+  const calls = s.running || [];
+  html += `<section class="validation-result"><h3>Requests that run · ${vlmCount(calls.length)} of ${
+    vlmCount(s.workers)}</h3>${calls.length ? calls.map(c => {
+      const late = s.timeout_seconds && c.seconds > s.timeout_seconds * 0.8;
+      return vlmCallHtml(c, s, `<span class="${late ? "late" : ""}">runs for ${vlmAge(c.seconds)}${
+        s.timeout_seconds ? ` of the timeout ${s.timeout_seconds} s` : ""}</span> · started ${esc(c.started_at || "?")}`);
+    }).join("") : "<p>No request runs.</p>"}</section>`;
+  if (html !== VLM_DIALOG_HTML) $("#vlm-body").innerHTML = VLM_DIALOG_HTML = html;
+  if (!s.log) return;
+  $("#vlm-log-file").textContent = `The last ${VLM_LOG_LINES} lines of ${s.log_file}, oldest first.`;
+  const pre = $("#vlm-log");
+  const text = s.log.join("\n") || "The log is empty.";
+  if (pre.textContent === text) return;
+  const atEnd = !pre.textContent || pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 4;
+  pre.textContent = text;
+  if (atEnd) pre.scrollTop = pre.scrollHeight;
+}
+function openVlm() {
+  $("#vlm-body").innerHTML = VLM_DIALOG_HTML = '<p class="validation-meta">Loading…</p>';
+  $("#vlm-log-file").textContent = "";
+  $("#vlm-log").textContent = "";
+  $("#vlm-modal").hidden = false;
+  $("#vlm-close").focus();
+  pollVlmStatus();
+}
+function closeVlm() { $("#vlm-modal").hidden = true; }
 function renderVlmStatus(s) {
   const [kind, text] = vlmStatusView(s);
   const failed = (s.failed ? ` · <span class="failed">${vlmCount(s.failed)} failed</span>` : "")
@@ -1632,22 +1761,31 @@ function renderVlmStatus(s) {
   ].filter(Boolean);
   const el = $("#vlm-status");
   el.className = `vlm-status ${kind}`;
-  const html = `<span class="dot"></span>${esc(text)}${failed}`;
+  const html = `<button class="vlm-open" type="button" data-vlm-open aria-haspopup="dialog"><span
+    class="dot"></span>${esc(text)}</button>${failed}`;
   if (html !== VLM_HTML) el.innerHTML = VLM_HTML = html;
   el.title = lines.join("\n");
   el.hidden = false;
+  if (!$("#vlm-modal").hidden) renderVlmDialog(s);
 }
 async function pollVlmStatus() {
   clearTimeout(VLM_TIMER);
   if (!document.hidden) {
+    const open = !$("#vlm-modal").hidden;
     try {
-      const response = await fetch("/api/image-description-status");
+      const response = await fetch(`/api/image-description-status${
+        open ? `?log=${VLM_LOG_LINES}` : ""}`, {cache: "no-store"});
       const out = await response.json();
       if (!response.ok) throw new Error(out.error || response.status);
       renderVlmStatus(out);
     } catch (error) {
       renderVlmStatus({state: "stopped"});
       $("#vlm-status").title = `Cannot read the state of the watcher: ${error.message}`;
+      if (open) {
+        $("#vlm-body").innerHTML = VLM_DIALOG_HTML = `<section class="validation-result"><h3>`
+          + `Cannot read the state of the watcher <span class="status error">error</span></h3>`
+          + `<p>${esc(String(error.message || error))}</p></section>`;
+      }
     }
   }
   VLM_TIMER = setTimeout(pollVlmStatus, VLM_POLL_MS);
@@ -1728,6 +1866,18 @@ $("#detail-failures-body").addEventListener("click", event => {
 });
 $("#vlm-status").addEventListener("click", event => {
   if (event.target.closest("[data-detail-failures]")) openDetailFailures();
+  else if (event.target.closest("[data-vlm-open]")) openVlm();
+});
+$("#vlm-body").addEventListener("click", event => {
+  const link = event.target.closest("[data-failure-preview]");
+  if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
+  event.preventDefault();
+  showDetailFailurePreview(link);
+});
+$("#vlm-x").addEventListener("click", closeVlm);
+$("#vlm-close").addEventListener("click", closeVlm);
+$("#vlm-modal").addEventListener("click", event => {
+  if (event.target === $("#vlm-modal")) closeVlm();
 });
 $("#detail-failures-x").addEventListener("click", closeDetailFailures);
 $("#detail-failures-close").addEventListener("click", closeDetailFailures);
@@ -3098,6 +3248,7 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape" && !$("#wine-modal").hidden) closeWineForm();
   if (event.key === "Escape" && !$("#describe-modal").hidden) closeDescribe();
   if (event.key === "Escape" && !$("#detail-failures-modal").hidden) closeDetailFailures();
+  if (event.key === "Escape" && !$("#vlm-modal").hidden) closeVlm();
 });
 window.addEventListener("beforeunload", event => {
   if (!PENDING_PATCHES.size && !PENDING_ALTERNATIVES.size && !DRAFT_BARCODES.size

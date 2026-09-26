@@ -190,6 +190,63 @@ class WatcherStatusTest(DescriptionCase):
             fh.write("not json")
         self.assertEqual(self.status()["state"], "stopped")
 
+    def test_the_views_of_the_calls_and_of_the_wait(self):
+        # Plan 49: the dialog of the watcher.
+        import os
+        import image_details
+        cut = self.add_cut("wine-a", "package")
+        with self.connect() as conn:
+            DESC.record_failure(conn, self.sha["wine-b"], "HTTP 503", count=False)
+            DESC.set_values(conn, self.sha["wine-a"], {"package_type": "bottle",
+                                                       "subject_scope": "full_package"})
+            item = image_details.target(conn, self.sha["wine-a"])
+            image_details.record_failure(conn, item, "the answer fails the schema")
+        DESC.write_status({
+            "pid": os.getpid(), "state": "waiting", "error": "HTTP 503", "max_attempts": 3,
+            "endpoint": "http://vlm.invalid/v1/chat/completions", "timeout_seconds": 300,
+            "workers": 2, "waiting_since": "2026-09-26T07:00:00Z", "backoff_seconds": 60,
+            "retry_at": "2999-01-01T00:00:00Z", "error_sha256": self.sha["wine-b"],
+            "error_stage": "class", "running": [
+                {"sha256": self.sha["wine-a"], "stage": "detail",
+                 "started_at": "2026-09-26T07:00:00Z"}, {"sha256": 7}]})
+        answer = self.status()
+        self.assertEqual((answer["endpoint"], answer["timeout_seconds"], answer["workers"],
+                          answer["max_attempts"], answer["backoff_seconds"]),
+                         ("http://vlm.invalid/v1/chat/completions", 300, 2, 3, 60))
+        self.assertGreater(answer["retry_in_seconds"], 0)
+        self.assertEqual(answer["error_image"], {
+            "sha256": self.sha["wine-b"], "stage": "class", "slug": "wine-b",
+            "prompt_kind": None, "package_type": None,
+            "url": "/images/main/%s.png" % self.sha["wine-b"], "attempts": 0,
+            "error": "HTTP 503"})
+        [call] = answer["running"]
+        self.assertEqual((call["slug"], call["prompt_kind"], call["package_type"], call["url"],
+                          call["attempts"], call["error"], call["started_at"]),
+                         ("wine-a", "package", "bottle", "/images/cropped/%s.png" % cut, 1,
+                          "the answer fails the schema", "2026-09-26T07:00:00Z"))
+        self.assertGreater(call["seconds"], 0)
+        DESC.write_status({"pid": os.getpid(), "state": "idle", "retry_at": "x",
+                           "error_sha256": self.sha["wine-b"]})
+        answer = self.status()
+        self.assertEqual((answer["running"], answer["error_image"], answer["retry_at"],
+                          answer["retry_in_seconds"]), ([], None, None, None))
+
+
+class LogTailTest(DescriptionCase):
+    def test_the_last_lines_of_the_log(self):
+        log = self.root / "describe_images.log"
+        self.assertEqual(DESC.log_tail(str(log), 30), [])
+        log.write_text("".join("2026-09-26T07:00:%02dZ line %d\n" % (i, i) for i in range(40)),
+                       encoding="utf-8")
+        tail = DESC.log_tail(str(log), 30)
+        self.assertEqual((len(tail), tail[0], tail[-1]),
+                         (30, "2026-09-26T07:00:10Z line 10", "2026-09-26T07:00:39Z line 39"))
+
+    def test_a_large_log_is_read_from_its_end(self):
+        log = self.root / "describe_images.log"
+        log.write_text("x" * (DESC.TAIL_BYTES + 10) + "\nfirst\nsecond\n", encoding="utf-8")
+        self.assertEqual(DESC.log_tail(str(log), 30), ["first", "second"])
+
 
 class DetailFailuresTest(DescriptionCase):
     def setUp(self):

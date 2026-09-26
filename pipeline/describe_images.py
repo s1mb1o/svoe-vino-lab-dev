@@ -17,6 +17,9 @@ thread alone takes the images, and it never takes an image that a call holds.
 The lab server starts `--watch --parent-pid <its pid>` when `image_description.watch` is
 true, and stops it at its exit. The lock file allows one watcher at a time.
 
+A request that times out while a probe of the model answers counts against its image
+(plan 49, `docs/plans/49_vlm-timeout-probe.md`). Else a timeout is a failure of the service.
+
 Usage:
     python3 pipeline/describe_images.py --once                  # one pass, then stop
     python3 pipeline/describe_images.py --sha <sha256>          # the class of one image
@@ -64,6 +67,8 @@ DEFAULTS = {"watch": False, "vlm": "qwen3.5-9b-nvfp4", "max_side": 1024,
             "details": False, "detail_max_side": 1536}
 MAX_TOKENS = 300
 TIMEOUT_SECONDS = 300
+# The timeout of the probe of 1 token after a request that timed out (plan 49).
+PROBE_TIMEOUT_SECONDS = 30
 # The wait after a failure of the service, doubled up to the maximum.
 BACKOFF_SECONDS, BACKOFF_MAX_SECONDS = 30, 600
 
@@ -172,11 +177,13 @@ DETAIL_PROPERTIES = {
 class DescribeError(Exception):
     """One VLM call failed. `counted` is False for a failure of the service (an HTTP 429
     or 5xx answer, no connection, a timeout): such a failure does not count against the
-    image."""
+    image. `timed_out` is True for a read timeout of `post`: the service took the request
+    and sent no answer in time."""
 
-    def __init__(self, message, counted=True):
+    def __init__(self, message, counted=True, timed_out=False):
         super().__init__(message)
         self.counted = counted
+        self.timed_out = timed_out
 
 
 class WaitError(Exception):
@@ -324,10 +331,42 @@ def post(entry, payload, timeout=TIMEOUT_SECONDS):
         body = exc.read().decode("utf-8", "replace")
         raise DescribeError("HTTP %d: %.300s" % (exc.code, body),
                             counted=not (exc.code == 429 or exc.code >= 500))
-    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+    except TimeoutError as exc:
+        # A read timeout. A connect timeout comes as a URLError.
+        raise DescribeError("no answer from %s in %d s: %s" % (entry.url, timeout, exc),
+                            counted=False, timed_out=True)
+    except (urllib.error.URLError, OSError) as exc:
         raise DescribeError("no answer from %s: %s" % (entry.url, exc), counted=False)
     except ValueError as exc:
         raise DescribeError("the body is not JSON: %s" % exc)
+
+
+def probe(entry, timeout=PROBE_TIMEOUT_SECONDS):
+    """Send a request of 1 token with no image to the model of `entry`. Return the time
+    of the answer in seconds. Raise DescribeError when the model does not answer. The
+    probe does not use `model_cache`."""
+    payload = {"model": entry.model, "temperature": 0, "max_tokens": 1,
+               "messages": [{"role": "user", "content": "ping"}]}
+    if entry.thinking_field == "top_level":
+        payload["enable_thinking"] = False
+    else:
+        payload["chat_template_kwargs"] = {"enable_thinking": False}
+    started = time.perf_counter()
+    post(entry, payload, timeout)
+    return time.perf_counter() - started
+
+
+def timeout_error(entry, exc):
+    """Return the error of an image request that timed out (plan 49). When the probe
+    answers, the model serves, so the request of the image is the fault: the failure
+    counts against the image and starts no backoff. Else it is a failure of the service."""
+    try:
+        seconds = probe(entry)
+    except DescribeError as failure:
+        return DescribeError("%s; the probe of the model failed too: %s" % (exc, failure),
+                             counted=False)
+    return DescribeError("%s; a probe of the model answered in %.1f s, so the failure "
+                         "counts against the image" % (exc, seconds))
 
 
 def ask(entry, payload, validator=VALIDATOR):
@@ -336,7 +375,7 @@ def ask(entry, payload, validator=VALIDATOR):
 
     A call that repeats a valid earlier call reads `model_cache`. A record is stored only
     after the answer passed the schema check. An answer that `max_tokens` cut off is a
-    failure.
+    failure. A read timeout gets the probe of `timeout_error`.
     """
     fields = model_cache.vlm_fields(entry.url, payload)
     record = model_cache.lookup(fields) if fields else None
@@ -344,7 +383,12 @@ def ask(entry, payload, validator=VALIDATOR):
         body, ms, hit = record["answer"], record["ms"], True
     else:
         started = time.perf_counter()
-        body = post(entry, payload)
+        try:
+            body = post(entry, payload)
+        except DescribeError as exc:
+            if not exc.timed_out:
+                raise
+            raise timeout_error(entry, exc)
         ms, hit = (time.perf_counter() - started) * 1000, False
     try:
         choice = body["choices"][0]
@@ -434,6 +478,11 @@ LOG_LOCK = threading.Lock()
 def log(message):
     with LOG_LOCK:
         print("%s %s" % (comments.now_utc(), message), flush=True)
+
+
+def utc_after(seconds):
+    """Return the UTC time `seconds` from now, in the form of `comments.now_utc`."""
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() + max(0, seconds)))
 
 
 def describe_one(db_path, entry, cfg, sha256, folder, extension):
@@ -533,19 +582,28 @@ class Status:
     `/dataset`: `working` (a call runs), `idle` (no image waits), `waiting` (the service or
     the database cannot be used now), or `stopped`. The speed is the wall time per image
     of the last 20 images. With more than one worker it is the rate of the backlog, not
-    the time of one call (owner answer of 2026-09-25T23:58:53+0300)."""
+    the time of one call (owner answer of 2026-09-25T23:58:53+0300).
+
+    `running` lists the calls that run, from the dict `running` of `run` (plan 49).
+    `starting` (sha256, stage, UTC start) adds a call that starts after the write."""
 
     def __init__(self, entry, cfg):
         self.base = {"pid": os.getpid(), "vlm": entry.name, "model": entry.model,
-                     "max_attempts": cfg["max_attempts"], "started_at": comments.now_utc()}
+                     "endpoint": entry.url, "timeout_seconds": TIMEOUT_SECONDS,
+                     "workers": cfg["workers"], "max_attempts": cfg["max_attempts"],
+                     "started_at": comments.now_utc()}
         self.times = collections.deque(maxlen=20)
         self.last = None
+        self.running = {}
 
-    def set(self, state, **fields):
+    def set(self, state, starting=None, **fields):
         speed = round(sum(self.times) / len(self.times), 2) if self.times else None
+        calls = [(sha256, stage, at) for sha256, stage, _, at in self.running.values()]
+        running = [{"sha256": sha256, "stage": stage, "started_at": at}
+                   for sha256, stage, at in calls + ([starting] if starting else [])]
         image_descriptions.write_status(dict(
             self.base, state=state, updated_at=comments.now_utc(), last=self.last,
-            seconds_per_image=speed, **fields))
+            seconds_per_image=speed, running=running, **fields))
 
     def step(self, sha256, described, seconds, wall):
         """Record one image that ended: `seconds` is the time of its call, `wall` is the
@@ -587,68 +645,88 @@ def run(db_path, entry, cfg, watch=False, parent_pid=None):
 
     A failure of the service stops the new calls for the backoff time. The calls that run
     finish, and their results are stored. A failure during the backoff does not double
-    it. Without `watch`, the first failure is raised after the calls that run ended."""
+    it. Without `watch`, the first failure is raised after the calls that run ended.
+
+    The state `waiting` names the error, the image of a failed call, `waiting_since` (the
+    first failure after the last success), `backoff_seconds`, and `retry_at` (plan 49)."""
     done, backoff, waited = 0, BACKOFF_SECONDS, None
     status = Status(entry, cfg)
-    running = {}  # future -> (sha256, stage, start time), in the order of the starts
+    # future -> (sha256, stage, start time, UTC start), in the order of the starts
+    running = status.running
     resume = 0.0  # no new call starts before this time of `time.monotonic()`
+    pause = None  # the length of the present backoff
+    since = None  # the first failure after the last success, in UTC
+    wait = {}  # the fields of the last state `waiting`
     mark = None  # the end of the last image, or the start that made the pool busy
+
+    def wait_state(exc, **fields):
+        nonlocal since
+        since = since or comments.now_utc()
+        wait.clear()
+        wait.update(error=str(exc), waiting_since=since,
+                    retry_at=utc_after(resume - time.monotonic()), **fields)
+        status.set("waiting", **wait)
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=cfg["workers"])
     try:
         while parent_alive(parent_pid):
             ended = 0
             for future in [f for f in running if f.done()]:
-                sha256, stage, started = running.pop(future)
+                sha256, stage, started, _ = running.pop(future)
                 ended += 1
                 try:
                     described = future.result()
                 except DescribeError as exc:
                     if not watch:
                         raise
-                    status.set("waiting", error=str(exc))
                     if time.monotonic() >= resume:
-                        resume = time.monotonic() + backoff
+                        resume, pause = time.monotonic() + backoff, backoff
                         backoff = min(backoff * 2, BACKOFF_MAX_SECONDS)
+                    wait_state(exc, backoff_seconds=pause, error_sha256=sha256,
+                               error_stage=stage)
                     continue
                 except (WaitError, sqlite3.Error) as exc:
                     if not watch:
                         raise
-                    status.set("waiting", error=str(exc))
                     log("waiting: %s" % exc)
                     resume = max(resume, time.monotonic() + cfg["poll_seconds"])
+                    wait_state(exc)
                     continue
                 now = time.monotonic()
                 done += described
                 status.step(sha256, described, now - started, now - mark)
                 mark = now
-                backoff = BACKOFF_SECONDS
+                backoff, since = BACKOFF_SECONDS, None
+            if ended and wait and time.monotonic() < resume:
+                # A call ended during a wait: the state keeps the wait and drops the call.
+                status.set("waiting", **wait)
             found = None
             free = cfg["workers"] - len(running)
             if free > 0 and time.monotonic() >= resume:
                 try:
                     found = next_items(db_path, cfg, free,
-                                       {sha256 for sha256, _, _ in running.values()})
+                                       {sha256 for sha256, _, _, _ in running.values()})
                 except (WaitError, sqlite3.Error) as exc:
                     if not watch:
                         raise
-                    status.set("waiting", error=str(exc))
                     if str(exc) != waited:
                         log("waiting: %s" % exc)
                         waited = str(exc)
                     resume = time.monotonic() + cfg["poll_seconds"]
+                    wait_state(exc)
                 else:
                     waited = None
             for stage, item in found or ():
                 started = time.monotonic()
                 if not running:
                     mark = started
-                status.set("working", sha256=item[0], stage=stage)
+                at = comments.now_utc()
+                status.set("working", (item[0], stage, at), sha256=item[0], stage=stage)
                 running[pool.submit(run_item, db_path, entry, cfg, stage, item)] = (
-                    item[0], stage, started)
+                    item[0], stage, started, at)
             if running:
                 if ended and not found and time.monotonic() >= resume:
                     # The state names the newest call that runs, not a call that ended.
-                    sha256, stage, _ = list(running.values())[-1]
+                    sha256, stage, _, _ = list(running.values())[-1]
                     status.set("working", sha256=sha256, stage=stage)
                 # Wake at the end of a call, and at least once each second for the check
                 # of the parent and the end of a backoff.

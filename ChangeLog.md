@@ -2,6 +2,27 @@
 
 ## 2026-09-26
 
+- Plan 49, a probe after a VLM timeout and the dialog of the watcher (owner message of
+  2026-09-26T10:33:00+0300, answers of 15:18:00 and 15:35:00; session
+  drink-atlas-workspace-0d). Cause of the pill `VLM waiting: no answer from
+  http://192.168.86.14:1808`: one detail request
+  (`a902e43a5f77`, Fanagoria «100 оттенков красного» Pinot Noir) ran for the full 300 s
+  timeout 45 times, while the service served other requests; each timeout counted as a
+  failure of the service, so the image never reached `max_attempts` and each timeout
+  started the backoff. The watcher stored a valid answer at 07:39:21Z in another batch; a
+  one-off run of this session at 12:18:31Z read the same answer from `model_cache` and
+  moved `vlm_at` of the row to 12:18:31Z. Code: `describe_images.post` marks a read
+  timeout (`timed_out`); `ask` then sends `probe` (1 token, no image, 30 s); when the
+  probe answers, the timeout counts against the image and starts no backoff. The state
+  file adds `endpoint`, `timeout_seconds`, `workers`, `running`, and in `waiting`
+  `waiting_since`, `backoff_seconds`, `retry_at`, `error_sha256`, `error_stage`.
+  `image_descriptions.watcher_status` adds `call_view` of each call and of the failed
+  image, `retry_in_seconds`, and `max_attempts`; `log_tail` reads the end of the log.
+  `GET /api/image-description-status?log=<1..200>` adds the log tail. `/dataset`: the
+  pill shows the full error (the cut at 40 characters showed the port `18081` as `1808`);
+  a click on the pill opens the dialog `VLM watcher`. New tests: 7 in
+  `test_describe_images.py`, 3 in `test_image_descriptions.py`, 1 in
+  `test_lab_server.py`; smoke tests VP1 to VP10; a Playwright check 88 of 88.
 - Plan 48, the benchmark of the cluster re-rank on `my` (label `bench48`; session
   drink-atlas-workspace-39): `rerank-siglip2-512-crop` R@1 81.29 % → 83.26 %, and
   `barcode-rerank-siglip2-512-crop` 82.58 % → 84.55 %, each +1.97 points with 48 wins and

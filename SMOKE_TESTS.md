@@ -1451,6 +1451,23 @@ Read [plan 35](docs/plans/35_vlm-workers.md). `H=http://127.0.0.1:8168`.
 |---|---|---|
 | VW1 | `python3 -m unittest discover -s tests -p 'test_describe_images.py'`; restart 8168 with `image_description.workers: 8`; after 5 min read `work/describe_images.log` and the pill of `$H/dataset` | 48 tests `OK` (2026-09-26), `WorkersTest` among them. The start line holds `workers 8`. The speed on the pill (the wall time per image) is at most half of the mean `<s> s` of the detail lines of the same minutes (the time of one call). On 2026-09-26: 2.1 s on the pill against a mean call of 16.0 s. After a `timed out` line, no new call starts for 30 s, and the calls that run finish (00:42:29 to 00:42:59). |
 
+## The probe after a VLM timeout and the dialog of the watcher — plan 49
+
+Read [plan 49](docs/plans/49_vlm-timeout-probe.md). `H=http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| VP1 | `python3 tests/test_describe_images.py PostTimeoutTest TimeoutProbeTest` | 7 tests `OK` (2026-09-26). |
+| VP2 | `python3 tests/test_image_descriptions.py WatcherStatusTest LogTailTest` | `OK`; the views of the calls, the wait, and the log tail. |
+| VP3 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import yaml, describe_images as d, vlm_config; c = yaml.safe_load(open('config.yaml')); print(d.probe(vlm_config.entry(c, d.settings(c)['vlm'])))"` | A time in seconds. On 2026-09-26: 0.12 s against `qwen3.5-9b-nvfp4` on gx10. |
+| VP4 | After a restart of 8168: `curl -s $H/api/image-description-status` | The JSON also holds `max_attempts`, `endpoint` (the full chat URL, with the port `18081`), `timeout_seconds` 300, `workers`, `running` (a list), `waiting_since`, `backoff_seconds`, `retry_at`, `retry_in_seconds`, and `error_image`. No key `log`. |
+| VP5 | `curl -s "$H/api/image-description-status?log=30"`; then `?log=0` and `?log=x` | The first answer adds `log_file` (`work/describe_images.log`) and `log`, 30 lines, oldest first. The other two answer HTTP 400 with "`log` MUST be a whole number from 1 to 200". |
+| VP6 | A watcher in the state `waiting`: look at the pill of `$H/dataset` | The pill shows the full error, for example `VLM waiting: no answer from http://192.168.86.14:18081/v1/chat/completions in 300 s: timed out; …`. A long error wraps into lines; no character is cut. |
+| VP7 | Click the text of the pill | The dialog `VLM watcher` opens: `State`, `Endpoint`, the error, `Backoff and retry` (in `waiting`), `Requests that run · N of 8`, and `Watcher log` with 30 lines. The page asks `?log=30` every 5 s while the dialog is open. A click on a thumbnail opens the preview; Escape closes the preview first, then the dialog. |
+| VP8 | Click `N details failed` in the pill | The dialog `Failed details` opens, not the dialog `VLM watcher`. |
+| VP9 | Light and dark system theme, width 1280 px and 375 px | The badge `WAITING` is amber, as the pill. No horizontal page scroll; no section of the dialog is wider than the dialog. On 2026-09-26 a Playwright check with a synthetic `waiting` answer passed 88 of 88 checks. |
+| VP10 | An image whose request times out while the probe answers | `work/describe_images.log` holds `<sha12> detail failed: no answer from … in 300 s: timed out; a probe of the model answered in <s> s, so the failure counts against the image` (no `(not counted)`). No backoff follows; other images go on. After 3 such lines the image is in `N details failed`. |
+
 ## The seed and the restore — `pipeline/seed_from_testset.py`
 
 Read [plan 28](docs/plans/28_seed-from-testset.md). Use a test database, not

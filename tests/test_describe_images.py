@@ -702,5 +702,108 @@ class WorkersTest(DescriptionCase):
         self.assertLess(state["seconds_per_image"], 0.75 * state["last"]["seconds"])
 
 
+class PostTimeoutTest(unittest.TestCase):
+    """Plan 49: `post` marks a read timeout, and only a read timeout."""
+
+    def post_raising(self, exc):
+        with mock.patch.object(DI.urllib.request, "urlopen", side_effect=exc):
+            with self.assertRaises(DI.DescribeError) as caught:
+                DI.post(ENTRY, {"model": "model-1"})
+        return caught.exception
+
+    def test_a_read_timeout_is_marked_and_names_the_full_endpoint(self):
+        exc = self.post_raising(TimeoutError("timed out"))
+        self.assertEqual((exc.timed_out, exc.counted), (True, False))
+        self.assertEqual(str(exc), "no answer from http://vlm.invalid/v1/chat/completions "
+                                   "in 300 s: timed out")
+
+    def test_a_connect_timeout_is_not_a_read_timeout(self):
+        exc = self.post_raising(DI.urllib.error.URLError(TimeoutError("timed out")))
+        self.assertEqual((exc.timed_out, exc.counted), (False, False))
+
+    def test_the_probe_sends_1_token_with_no_image(self):
+        seen = []
+
+        def post(entry, payload, timeout=None):
+            seen.append((payload, timeout))
+            return {"choices": [{"message": {"content": ""}}]}
+        with mock.patch.object(DI, "post", post):
+            self.assertGreaterEqual(DI.probe(ENTRY), 0)
+        payload, timeout = seen[0]
+        self.assertEqual(timeout, DI.PROBE_TIMEOUT_SECONDS)
+        self.assertEqual(payload, {
+            "model": "model-1", "temperature": 0, "max_tokens": 1,
+            "messages": [{"role": "user", "content": "ping"}],
+            "chat_template_kwargs": {"enable_thinking": False}})
+
+
+class TimeoutProbeTest(DescriptionCase):
+    """Plan 49: a timeout counts against the image when the probe answers."""
+
+    TIMEOUT = DI.DescribeError("no answer from http://vlm.invalid/v1/chat/completions in "
+                               "300 s: timed out", counted=False, timed_out=True)
+
+    def run_with(self, probe, watch=False, sleep=None):
+        with mock.patch.object(DI, "post", FakeVlm(self.TIMEOUT)), \
+                mock.patch.object(DI, "probe", probe), \
+                mock.patch.object(DI, "log", lambda message: None), \
+                mock.patch.object(DI, "sleep", sleep or DI.sleep):
+            return DI.run(self.db, ENTRY, CFG, watch=watch)
+
+    def row(self, slug):
+        with closing(self.connect()) as conn:
+            return DESC.description(conn, self.sha[slug])
+
+    def test_a_timeout_with_a_live_model_counts_and_starts_no_backoff(self):
+        self.assertEqual(self.run_with(lambda entry: 0.4), 0)
+        for slug in ("wine-a", "wine-b"):
+            row = self.row(slug)
+            self.assertEqual(row["vlm_attempts"], CFG["max_attempts"])
+            self.assertTrue(row["vlm_error"].endswith(
+                "timed out; a probe of the model answered in 0.4 s, so the failure counts "
+                "against the image"))
+
+    def test_a_timeout_with_a_dead_model_is_a_failure_of_the_service(self):
+        def probe(entry):
+            raise DI.DescribeError("no answer from http://vlm.invalid/v1/chat/completions: "
+                                   "connection refused", counted=False)
+        with self.assertRaises(DI.DescribeError) as caught:
+            self.run_with(probe)
+        self.assertFalse(caught.exception.counted)
+        row = self.row("wine-b")
+        self.assertEqual(row["vlm_attempts"], 0)
+        self.assertIn("timed out; the probe of the model failed too: no answer from "
+                      "http://vlm.invalid/v1/chat/completions: connection refused",
+                      row["vlm_error"])
+
+    def test_the_state_waiting_names_the_image_and_the_next_try(self):
+        def probe(entry):
+            raise DI.DescribeError("HTTP 503: busy", counted=False)
+        states = []
+        self.run_with(probe, watch=True,
+                      sleep=lambda seconds, pid: states.append(DESC.read_status()) and False)
+        state = states[0]
+        self.assertEqual(state["state"], "waiting")
+        self.assertEqual((state["error_sha256"], state["error_stage"]),
+                         (self.sha["wine-b"], "class"))
+        self.assertEqual(state["backoff_seconds"], DI.BACKOFF_SECONDS)
+        self.assertEqual(state["running"], [])
+        self.assertLessEqual(state["waiting_since"], state["retry_at"])
+        self.assertEqual((state["endpoint"], state["timeout_seconds"], state["workers"]),
+                         ("http://vlm.invalid/v1/chat/completions", 300, 1))
+
+    def test_the_state_lists_the_calls_that_run(self):
+        seen = []
+        fake = FakeVlm(body(), during=lambda: seen.append(DESC.read_status()))
+        with mock.patch.object(DI, "post", fake), \
+                mock.patch.object(DI, "log", lambda message: None):
+            DI.run(self.db, ENTRY, CFG)
+        self.assertEqual([[c["sha256"] for c in s["running"]] for s in seen],
+                         [[self.sha["wine-b"]], [self.sha["wine-a"]]])
+        self.assertEqual(seen[0]["running"][0]["stage"], "class")
+        self.assertRegex(seen[0]["running"][0]["started_at"], r"^\d{4}-\d\d-\d\dT.*Z$")
+        self.assertEqual(DESC.read_status()["running"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

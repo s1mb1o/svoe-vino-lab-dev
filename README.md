@@ -703,6 +703,12 @@ The table `image_description` describes each image that `wine_image` links to a 
   keeps the full answer. An answer that fails the schema writes nothing and counts as a
   failure; an image stops after `max_attempts` (3) failures. A failure of the service (an
   HTTP 429 or 5xx answer, no connection) does not count; the watcher waits and tries again.
+- A request that times out (300 s) gets a probe: a chat request of 1 token with no image
+  to the same model, with a timeout of 30 s ([plan 49](docs/plans/49_vlm-timeout-probe.md)).
+  When the probe answers, the model serves, so the timeout counts against the image and
+  starts no backoff. When the probe fails too, the timeout is a failure of the service.
+  So one image that makes the model write for more than 300 s stops after 3 attempts and
+  does not stop the queue.
 - The watcher sends up to `image_description.workers` requests at the same time (8 in
   `config.yaml`, 1 when absent; [plan 35](docs/plans/35_vlm-workers.md)). Each request
   runs in a thread of a pool and holds one image; two requests never hold the same image.
@@ -715,10 +721,17 @@ The table `image_description` describes each image that `wine_image` links to a 
 - The pill at the left of `Add wine` shows the watcher: `VLM 895 / 2,022 · 2.6 s`
   (working, a green dot that pulses), `VLM all … described` or `VLM idle · … pending`
   (idle), `VLM waiting: <error>` (amber: the service or the database cannot be used now),
-  or `VLM watcher not running` (stopped). `· N failed` in red counts the images that
-  reached `max_attempts`. Its title names the pid, the wine of the image that the VLM
+  or `VLM watcher not running` (stopped). The pill shows the full error with the full
+  endpoint; a long error wraps and is never cut. `· N failed` in red counts the images
+  that reached `max_attempts`. Its title names the pid, the wine of the image that the VLM
   reads now, the counts, the speed of the last 20 images, and the time of the last step.
   The page asks `GET /api/image-description-status` every 5 s while its tab is visible.
+- A click on the text of the pill opens the dialog `VLM watcher` (plan 49): the state,
+  the endpoint, the full error, the counts; in the state `waiting` the time of the first
+  failure, the backoff, the next try, and the image of the failed request; each request
+  that runs with its thumbnail, its age against the timeout, and its attempts; and the
+  last 30 lines of `work/describe_images.log`. While it is open, each poll asks
+  `?log=30` and draws it again. A click on a thumbnail opens the file in the preview.
   The watcher writes its state into `work/describe_images.status.json` at each step; the
   route reads it, checks that the pid lives, and adds the counts of the database. The
   cards do not change while the page is open; a reload shows the new descriptions.
