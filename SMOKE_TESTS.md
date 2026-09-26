@@ -588,13 +588,13 @@ Use `H=http://127.0.0.1:8168`. Read [plan 30](docs/plans/30_embedding-clusters.m
 
 | # | Case | Expected result |
 |---|---|---|
-| LC1 | `python3 -m unittest discover -s tests -p 'test_cluster*.py'`, then `test_build_clusters.py` | 21 and 2 tests `OK`. |
+| LC1 | `python3 -m unittest discover -s tests -p 'test_cluster*.py'`, then `test_build_clusters.py` | 26 and 3 tests `OK`. |
 | LC2 | Open `$H/clusters` | `Clusters` is the marked navigation link. The configuration with `clusters.json` opens. The summary names the file, build time, vector file, dimension, item states, thresholds, and counts. |
-| LC3 | Choose `full`, `label`, and `combined`; in `combined`, choose `Image` `full` and `label` | Each selection changes the clusters. Each card shows one image: `full` shows the full prepared image, and `label` shows the label prepared image. The select `Image` is disabled in `full` and `label`. In `combined`, `Image` chooses the view of the image. The address keeps `name`, `space`, and `image=label` for a `label` choice in `combined`. |
+| LC3 | Choose `full`, `label`, and `combined`; in `combined`, choose `Image` `full` and `label` | Each selection changes the clusters. Each card shows one image: `full` shows the package cut, and `label` shows the label cut, each with its transparent background on a checkerboard (LC21). The select `Image` is disabled in `full` and `label`. In `combined`, `Image` chooses the view of the image. The address keeps `name`, `space`, and `image=label` for a `label` choice in `combined`. |
 | LC4 | Look at an edge row | The row gives the exact wine pair, each signal, cosine, image type, source SHA-256 prefix, and links to the two prepared images that produced the highest cosine. |
 | LC5 | Find a wine with `main_patched` | The effective patch occurs. The replaced `main` image does not occur. |
 | LC6 | Find a cluster whose edge uses an additional image | The evidence names `full_front`, `full_back`, `label_front`, or `label_back`. A label-only image never occurs in full evidence. |
-| LC7 | Change a threshold and press `Build clusters` | The request finishes with `Clusters built`. `data/embeddings/<name>/clusters.json` holds both selected thresholds and the new counts. |
+| LC7 | Change `full_threshold` in the block `clusters:` of `config.yaml`, then press `Build clusters` | The request finishes with `Clusters built`. `settings` of `data/embeddings/<name>/clusters.json` holds the two thresholds of `config.yaml` and `min_cluster_size`. The summary shows them. The page has no threshold input and no input "Minimum size". |
 | LC8 | Change an embedding input after LC7, then reload | The artifact is marked `stale`. A new build makes it `current`. |
 | LC9 | Write and clear a reviewer note | `cluster-notes.json` in the selected embedding directory changes atomically. The other embedding directories do not change. |
 | LC10 | Click a prepared image; use the arrow buttons and arrow keys; press Esc | The preview shows the selected image. The controls move over the images of the visible clusters. Esc closes it. |
@@ -602,6 +602,44 @@ Use `H=http://127.0.0.1:8168`. Read [plan 30](docs/plans/30_embedding-clusters.m
 | LC12 | Use light and dark system themes, then a width of 390 px | Both themes are readable. The member cards use one column at 390 px. The edge table scrolls inside its box. |
 | LC13 | `curl -s $H/api/clusters` | One record per configured embedding. The selected entry states whether its artifact exists, whether it is stale, and the counts of all three spaces. |
 | LC14 | `curl -s $H/api/clusters/gx10-siglip2-so400m-patch16-naflex-p256` | The answer holds `artifact`, `cards`, and `status`. The artifact holds separate `full`, `label`, and `combined` spaces. |
+| LC15 | Set `full_threshold: 0.5` in `config.yaml`, then press `Build clusters` | In less than 2 s the page shows `full_threshold 0.5 gives more than 20000 links; raise full_threshold`. `clusters.json` keeps its size and its time. Set the value back. |
+| LC16 | Set `max_cluster_size: 5`, then press `Build clusters` | The error names the space and the size, for example `the full space has a cluster of 6 wines, more than 5; raise the threshold`. `clusters.json` does not change. Set the value back. |
+| LC17 | Set `min_cluster_size: 3`, then press `Build clusters` | No cluster has fewer than 3 wines. `links` of each space does not change. Set the value back to 2 and build again. |
+| LC18 | `curl -s -X POST -d '{"full_threshold": 0.9}' $H/api/clusters/<name>/build` | HTTP 400 with `the thresholds come from the block clusters of config.yaml`. No file changes. |
+| LC19 | Put an unknown key, for example `min_size: 2`, into the block `clusters:`, then press `Build clusters` | HTTP 400 with `clusters: unknown key: min_size`. Remove the key. |
+| LC21 | Open `$H/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256&space=combined#vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145` in the light and the dark theme; click a card image | Each card image is the cut from `/images/<folder>/<sha256>.png`, not the prepared image of `/embeddings/…`. The area around the bottle or the label shows a checkerboard. The preview shows the same cut. `curl -s $H/api/clusters/<name>` gives `cut_url` for each image of `cards`; the cut file is an RGBA PNG. The links of an edge row open the prepared images on white. |
+
+## The label rules of the clusters — `pipeline/build_label_rules.py`
+
+Use `N=gx10-siglip2-so400m-patch16-naflex-p256` and `H=http://127.0.0.1:8168`. Read
+[plan 45](docs/plans/45_cluster-label-rules.md). A run that calls the VLM needs a row in
+`/Users/ashmelev/Admin/GPU_TASKS.md` first.
+
+| # | Case | Expected result |
+|---|---|---|
+| LR1 | `python3 tests/test_label_rules.py` and `python3 tests/test_build_label_rules.py` | 19 and 13 tests `OK`. |
+| LR2 | `python3 pipeline/build_label_rules.py --name $N --dry-run` | A JSON summary with `todo` for each stage and `calls: 0`. `cluster-rules.json` does not change. |
+| LR3 | `python3 pipeline/build_label_rules.py --name $N --cluster vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145` | At most 3 stage 1 calls and 1 stage 2 call. The rule `a29e59138ed4` has mode `sheet` and a valid ratio question with 30/70, 50/50, and 70/30. The alcohol question is not valid. |
+| LR4 | Run LR3 again | `todo: 0` for both stages, no call. |
+| LR5 | Open `$H/clusters?name=$N&space=combined#vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145` | The block `VLM difference rule` shows `current` and the rule. The view `label` shows the same rule for the same members. The view `full` shows no rule. |
+| LR6 | Change the note of that cluster and press `Save note` | The status shows `Saved · rebuilding the rule…`. Within about 20 s (longer while a full rule build runs) it shows `Rule rebuilt`, and the rule block shows `current` and the new rule. `data/embeddings/$N/label-rules.log` holds the command with `--cluster … --wait` and one stage 2 call, no stage 1 call. An open image preview stays open. |
+| LR10 | Press `Save note` while a full run of `build_label_rules.py` runs | The rebuild waits for the full run, then builds the rule. The page keeps `Saved · rebuilding the rule…` until then, at most 5 minutes; then it names the log. |
+| LR7 | Set `rules_max_images: 2` in the block `label_rules`, then run LR3 with `--stage rules --force` (the limit is not an input of a current rule) | The rule gets the error `the cluster needs 3 images, one for each card, and label_rules.rules_max_images is 2 …`, and no call goes out. Set the value back to 20. |
+| LR8 | A service that accepts fewer images than a cluster needs | The run stops with exit status 2. The message names the vlm entry, `at most N image(s)`, `--limit-mm-per-prompt`, and `label_rules.rules_max_images`. |
+| LR9 | Put an unknown key, for example `size: 2`, into the block `label_rules` | `error: label_rules: unknown key: size`, exit status 2. Remove the key. |
+
+## The header state of the lab pages — `localStorage`
+
+Use `H=http://127.0.0.1:8168`. Each page keeps its header controls in its own key
+`svl.<page>.header`.
+
+| # | Action | Expected |
+|---|---|---|
+| HS1 | On `$H/dataset`, `$H/embedding`, `$H/clusters`, `$H/testset`, and `$H/runs`, change each select of the header and type a search text; then open the same page from the navigation (no query string) | Each control shows the value of the last visit. |
+| HS2 | Open `$H/embedding?filter=stale&q=x` and `$H/runs?configuration=` | The values of the URL win over the stored values. |
+| HS3 | On `/testset`, choose a filter, for example `Verdict`; then open `$H/testset?sort=slug` | Each control that the address does not hold shows its default. The stored filter does not come back. After that, a bare `$H/testset` shows the last view. |
+| HS4 | In the browser console, run `localStorage.setItem("svl.testset.header", JSON.stringify({set: "no-such-set"}))`, then reload `$H/testset` | The page opens the default set and shows no error. |
+| HS5 | On `/clusters`, choose `combined` and `Image` `label`; open `$H/clusters?space=combined`, then `$H/clusters` | The address with `space` shows `Image` `full`. The bare address shows `label`. |
 
 ## The page of the runs — `/runs`
 

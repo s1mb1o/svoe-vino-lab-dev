@@ -288,6 +288,31 @@ class BuildTest(unittest.TestCase):
         self.assertIn("grey", detail["cards"])
         self.assertTrue(detail["cards"]["grey"]["images"])
 
+    def test_detail_gives_the_segmented_cut_of_each_image(self):
+        clusters.build_to_directory(self.fixture.settings, "gw")
+        with closing(embeddings.open_database(self.fixture.lab.db_path)) as conn:
+            cuts = {(source, kind): "/images/%s/%s.%s" % (folder, digest, extension)
+                    for source, kind, digest, folder, extension in conn.execute(
+                        "SELECT d.source_sha256, d.kind, d.sha256, i.folder, i.extension "
+                        "FROM image_derivative d JOIN image i ON i.sha256 = d.sha256")}
+        detail = clusters.detail(self.fixture.settings, "gw")
+        seen = 0
+        for card in detail["cards"].values():
+            for image in card["images"]:
+                if image["source_sha256"] == self.fixture.lab.closeup:
+                    # A close-up has no `segment` step, so it has no cut.
+                    self.assertIsNone(image["cut_url"])
+                    continue
+                # The fixture writes its index by hand, so a source can lack its cut. A
+                # real build refuses such an item (`NO_CUT`).
+                kind = "package" if image["view"] == "full" else "label"
+                expected = cuts.get((image["source_sha256"], kind))
+                self.assertEqual(image["cut_url"], expected)
+                if expected:
+                    self.assertNotEqual(image["cut_url"], image["prepared_url"])
+                    seen += 1
+        self.assertTrue(seen)
+
     def test_a_rule_belongs_to_one_vector_space(self):
         artifact = clusters.build_to_directory(self.fixture.settings, "gw")
         cluster = artifact["spaces"]["full"]["clusters"][0]

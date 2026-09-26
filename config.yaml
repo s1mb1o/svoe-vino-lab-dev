@@ -143,6 +143,62 @@ clusters:
   max_links: 20000
   max_cluster_size: 50
 
+# The label rules of the clusters: `pipeline/build_label_rules.py --name <embedding>`
+# writes them into `data/embeddings/<name>/cluster-rules.json`, for the clusters of the
+# view `combined`. Read docs/plans/45_cluster-label-rules.md. `pipeline/label_rules.py`
+# reads this key; a missing key takes the value that is shown here. An unknown key stops
+# the command. The name is not `cluster_rules`: `scripts/cluster_rules.py` reads that key.
+#
+# Stage 1 describes the label of each card: one call for each card, with the package cut
+# of its main image and no card data.
+#   vlm                  the entry of the key `vlm` for stage 1
+#   thinking             true sends `enable_thinking: true`. The model then reasons
+#                        before it answers: slower, and the answer can reach
+#                        `describe_max_tokens`.
+#   describe_side        the long side of the sent picture in pixels. A smaller picture is
+#                        scaled UP, because a small catalogue photo hides small print.
+#   describe_max_tokens  the limit of one answer. An answer that reaches it is asked once
+#                        more with a repetition penalty and twice the limit.
+#   describe_workers     the number of calls at the same time
+#   timeout_s            the timeout of one call of stage 1, in seconds
+#
+# Stage 2 writes the rule of each cluster: one call for each cluster, with one image for
+# each card (its label cut), the card data, the stage 1 descriptions, and the note.
+#   rules_vlm            the entry of the key `vlm` for stage 2; null takes `vlm`
+#   rules_thinking       false (the owner answer of 2026-09-26T10:19:00+0300). On
+#                        2026-09-26 `qwen3.5-9b-nvfp4` with thinking used 12,000 tokens in
+#                        about 505 s and gave no answer; without thinking it gave a
+#                        correct rule in 12.5 s. With true, raise `rules_max_tokens` (for
+#                        example to 16000) and `rules_timeout_s` (for example to 900).
+#   rules_max_side       the long side of each label picture in pixels, scaled UP or down.
+#                        The pictures shrink when the prompt estimate is too large.
+#   rules_max_images     the largest number of images in one prompt that the service of
+#                        `rules_vlm` accepts. The owner set the vLLM option
+#                        `--limit-mm-per-prompt` of `qwen3.5-9b-nvfp4` to 20 on
+#                        2026-09-26. A cluster with more cards gets an error record and
+#                        no call. When the service refuses the number of images, the
+#                        command stops and names the limit of the service.
+#   rules_max_tokens     the limit of one answer of stage 2
+#   rules_context_tokens the context of the model of `rules_vlm` (vLLM `max_model_len`).
+#                        The prompt estimate stays below it minus `rules_max_tokens`.
+#   rules_workers        the number of calls at the same time
+#   rules_timeout_s      the timeout of one call of stage 2, in seconds
+label_rules:
+  vlm: qwen3.5-9b-nvfp4
+  thinking: false
+  describe_side: 2048
+  describe_max_tokens: 1500
+  describe_workers: 4
+  timeout_s: 300
+  rules_vlm: qwen3.5-9b-nvfp4
+  rules_thinking: false
+  rules_max_side: 768
+  rules_max_images: 20
+  rules_max_tokens: 2500
+  rules_context_tokens: 32768
+  rules_workers: 2
+  rules_timeout_s: 300
+
 # The pipelines. A pipeline is a matcher that answers a test photo with a ranked list of
 # wines. The dialog `Run>` of `/testset` and the filter `Pipeline` of `/runs` show these
 # entries; they do not show the entries of `embeddings`. `pipeline/pipelines.py` reads

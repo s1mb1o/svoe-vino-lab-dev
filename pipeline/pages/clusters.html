@@ -92,6 +92,18 @@ main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
   width: 162px; height: 200px; object-fit: contain; display: block;
   background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
 }
+/* The cut is transparent around the package or the label. The checkerboard shows the
+   transparency, as on /embedding and /dataset. */
+.member img {
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #d0d0d0 25%, transparent 25%),
+    linear-gradient(-45deg, #d0d0d0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #d0d0d0 75%),
+    linear-gradient(-45deg, transparent 75%, #d0d0d0 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
 .member .nobottle { display: flex; align-items: center; justify-content: center;
                     color: var(--muted); font-size: 11px; text-align: center; }
 .member .nm { font-weight: 600; font-size: 13px; margin-top: 4px; line-height: 1.25; }
@@ -281,13 +293,17 @@ function imageView() {
   return SPACE === "combined" ? IMAGE : SPACE;
 }
 
+/* The page draws the segmented cut with its transparent background (owner message of
+   2026-09-26T09:51:00+0300). The prepared image is the model input on white; it stays
+   the fallback for an image with no cut, such as a close-up. */
 function imageHtml(image, slug) {
   const title = `${slug} · ${image.view} · ${(image.image_types || []).join(", ")}`;
+  const shown = image.cut_url || image.prepared_url;
   const encoded = encodeURIComponent(JSON.stringify({
-    url: image.prepared_url, original: image.original_url, title
+    url: shown, original: image.original_url, title
   }));
   return `<button class="pic" type="button" data-preview="${encoded}" title="${esc(title)}">
-    <img src="${esc(image.prepared_url)}" alt="${esc(title)}" loading="lazy"></button>`;
+    <img src="${esc(shown)}" alt="${esc(title)}" loading="lazy"></button>`;
 }
 
 function memberHtml(slug, index) {
@@ -407,17 +423,58 @@ function bindDynamic() {
     const key = button.dataset.saveNote;
     const textarea = document.querySelector(`[data-note="${key}"]`);
     const status = document.querySelector(`[data-note-status="${key}"]`);
+    const before = ruleOf(DATA, key)?.built_at;
     button.disabled = true; status.textContent = "Saving…";
     try {
-      await request(`/api/clusters/${encodeURIComponent(NAME)}/note`, {
+      const answer = await request(`/api/clusters/${encodeURIComponent(NAME)}/note`, {
         method: "POST", headers: {"Content-Type": "application/json"},
         body: JSON.stringify({space: SPACE, key, text: textarea.value})
       });
       status.textContent = "Saved";
       await loadDetail(false);
+      // The server rebuilds the label rule in a separate process (plan 45). The view
+      // `full` shows no label rule.
+      const rebuild = answer.rule_rebuild || {};
+      if (rebuild.started && SPACE !== "full") watchRule(key, before, rebuild.log);
+      else if (rebuild.error) noteStatus(key, `Saved; the rule rebuild did not start: ${rebuild.error}`, true);
     } catch (error) { status.textContent = error.message; status.className = "error"; }
     finally { button.disabled = false; }
   }));
+}
+
+/* The rule of the cluster `key` in the view SPACE of a detail answer, or undefined. */
+function ruleOf(detail, key) {
+  return (detail?.artifact?.spaces?.[SPACE]?.clusters || []).find(item => item.key === key)?.rule;
+}
+
+/* The status text beside `Save note`. A render makes a new element, so the code finds it
+   again each time. */
+function noteStatus(key, text, error=false) {
+  const status = document.querySelector(`[data-note-status="${key}"]`);
+  if (status) { status.textContent = text; status.className = error ? "error" : ""; }
+}
+
+/* After a note change, poll the detail every 3 s, for at most 5 minutes, until the label
+   rule of the cluster is current (owner answer of 2026-09-26T11:11:00+0300). Then swap
+   only the rule block of that cluster, so an open preview stays as it is. */
+async function watchRule(key, before, log) {
+  noteStatus(key, "Saved · rebuilding the rule…");
+  const deadline = Date.now() + 5 * 60 * 1000;
+  while (Date.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    let detail;
+    try { detail = await request(`/api/clusters/${encodeURIComponent(NAME)}`); }
+    catch (error) { continue; }
+    const rule = ruleOf(detail, key);
+    if (!rule || rule.stale) continue;
+    DATA = detail;
+    const block = document.querySelector(`[data-note="${key}"]`)?.closest(".cluster")?.querySelector(".rule");
+    if (block) block.innerHTML = `<h3>VLM difference rule</h3>${ruleHtml(rule)}`;
+    if (rule.error) noteStatus(key, `The rule build failed: ${rule.error}`, true);
+    else noteStatus(key, rule.built_at !== before ? "Rule rebuilt" : "The rule is current");
+    return;
+  }
+  noteStatus(key, `The rule is not rebuilt yet. The log is ${log}`, true);
 }
 
 function openHash() {

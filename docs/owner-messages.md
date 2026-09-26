@@ -3836,6 +3836,17 @@ run basic pipeline with all variants of embeddings, add new pipelines if require
 At the end I want from you report with embeddings matching benchmarks.
 ```
 
+
+## 2026-09-26T07:06:00+0300
+
+The answer to the question of the agent (session drink-atlas-workspace-39): "Session e2 will commit all pending changes of svoe-vino-lab. May I add my ChangeLog.md bullet and SMOKE_TESTS.md rows first? The stale sections 5c, a9 and 3b also list those files; I would add separate lines and leave theirs unchanged."
+
+```text
+Yes, add them now (Recommended)
+```
+
+The option: "I add one ChangeLog.md bullet (build limits, thresholds and limits in config.yaml, min_cluster_size, remembered header on five pages) and a few SMOKE_TESTS.md rows, then tell e2 \"docs done\" so they go into the same commit."
+
 ## 2026-09-26T07:22:10+0300
 
 ```text
@@ -4037,12 +4048,126 @@ Follow-up commit (Recommended)
 
 The option: "Leave 533e2d0 as it is. I add one new commit with my 4 doc blocks. No history rewrite, so no risk for the other sessions. The message of 533e2d0 stays incomplete: it does not name the work of 74."
 
+## 2026-09-26T08:58:33+0300
+
+```text
+how clusters  work in @svoe-vino-lab ?
+```
+
+
+## 2026-09-26T09:07:24+0300
+
+The owner sent this message two times. The first send was interrupted. The text of both
+sends is the same.
+
+```text
+for svoe-vino-lab test:
+
+2. Label rules (11_cluster_rules.py → dataset/catalog-cluster-rules.json)
+
+Stage 1: the local qwen3.5-9b-nvfp4 describes each card's label from its catalogue picture, enlarged to 2048 px . It gets no card data.
+Stage 2: qwen3.5-9b-nvfp4 with thinking gets, per cluster, each card's label crop at 768 px, its catalogue data, its stage 1 description and your notes. It writes 1–3 questions with the expected answer for each card, plus a plain-text rule.
+The code then checks the answer and drops questions the model shouldn't ask:
+- bottle numbers
+- anything outside the label (glass, capsule, bottle shape)
+- years the catalogue name doesn't state
+- alcohol, unless nothing else differs
+Each rule gets a mode: sheet (answer the questions), verdict (read the rule text and pick a card) or none. 
+
+for inspiration look to svoe-vino-testset implementation.
+```
+
+
+## 2026-09-26T09:27:00+0300
+
+The questions of the agent and the selected answers, for the label rules of the owner
+message of 2026-09-26T09:07:24+0300.
+
+"Which approach should I plan for the label rules in svoe-vino-lab?"
+
+```text
+A: port as CLI (Recommended)
+```
+
+The option: "New pipeline/build_cluster_rules.py. Stage 1 per your spec (package cut, enlarged to 2048, verbatim prompt, thinking off). Stage 2 with thinking. Ported check_rule. /clusters and /runs show the result read-only."
+
+"Where should the rules be stored? Your message names dataset/catalog-cluster-rules.json, but plan 43 retired that file."
+
+```text
+Per embedding (Recommended)
+```
+
+The option: "data/embeddings/<name>/cluster-rules.json with spaces.label (plan 30/43 contract). /clusters and /runs already read it. Stage 1 descriptions live in the same file; the model call cache avoids repeated calls across embeddings."
+
+"Which clusters should get rules?"
+
+```text
+Combined view (Recommended)
+```
+
+The option: "The combined clusters (168 now), stored under the label rule space. /testset and /runs use combined. I also fix /clusters so the combined view shows these label rules (it looks under 'combined' now and finds nothing)."
+
+"Should the query-time re-rank (step 3 of the testset: the VLM reads the query label with the rule) be part of this task?"
+
+```text
+No, rules only (Recommended)
+```
+
+The option: "This task builds and shows the rules. A lab pipeline that uses them at query time comes in a later plan, after the rules are reviewed."
+
+
+## 2026-09-26T09:51:00+0300
+
+```text
+http://127.0.0.1:8168/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256&space=combined
+
+draw segmented images with transparent background
+```
+
+## 2026-09-26T10:19:00+0300
+
+The questions of the agent and the answers, for plan 45 (the label rules of the embedding
+clusters).
+
+"Stage 2 needs 2–8 label images, but the qwen3.5-9b-nvfp4 service accepts only one image per prompt. How should stage 2 send the labels?"
+
+```text
+i set --limit-mm-per-prompt for qwen35-9b-nvfp4  to 20. Implement check for max value, and show meaningfull error if failed because of that.
+```
+
+"With thinking on, qwen3.5-9b-nvfp4 used 12,000 tokens (about 505 s) twice and gave no answer; with thinking off it gave a correct rule in 12.5 s. How should stage 2 think?"
+
+```text
+thinking off, but make configurable through config.yaml (and commend documentation there)
+```
+
+"The draft is in docs/plans/45_cluster-label-rules.md. Should I start the implementation with your answers above?"
+
+```text
+Yes, implement
+```
+
+The option: "I write the command, the check port, the config block label_rules:, the tests, and the /clusters rule-space fix, then run stage 1 and stage 2 on the NaFlex p256 clusters."
+
+## 2026-09-26T10:26:00+0300
+
+```text
+Как по русски назвать такой подход, что мы используем для поиска отличий черз VLM?
+```
+
 ## 2026-09-26T10:35:48+0300
 
 ```text
 @svoe-vino-lab  create new page - Health. It should display current health status of service. Also there is button "Check".- it shall iterate over all endpoints (llms, embedding models) and report status. And if error, give some meaningful details
 
 commit after done
+
+## 2026-09-26T10:53:00+0300
+
+The owner sent the question of 2026-09-26T10:26:00+0300 again, with the same text.
+
+```text
+Как по русски назвать такой подход, что мы используем для поиска отличий черз VLM?
 ```
 
 ## 2026-09-26T11:02:57+0300
@@ -4077,3 +4202,66 @@ Last, after Runs (Recommended)
 ```
 
 The option: "One <a> in each <nav> line and in NAV of lab_server.py. Your OK covers the line in runs.html."
+
+## 2026-09-26T11:08:00+0300
+
+The owner sent a screenshot of the cluster c030 (`a29e59138ed4`) of `/clusters` with the
+new note and the rule marked `stale`, and this text.
+
+```text
+i saved note for cluster "c030 · 3 wines mixed full label a29e59138ed4"
+
+1. if note changed, LLM/VLM shall recalculate VLM difference rule
+2. check that this happens now, i expect that it will mention now numbers and colors of filled rectangle with these numbers
+```
+
+## 2026-09-26T11:11:00+0300
+
+The question of the agent and the selected answer, for the rebuild of a rule after a note
+change (plan 45).
+
+"How should a note change trigger the rebuild of the cluster's VLM difference rule?"
+
+```text
+Background rebuild (Recommended)
+```
+
+The option: "'Save note' returns at once and starts the rebuild as a separate process (as the embedding builds do). The page shows 'rebuilding…' and swaps in the new rule when it is ready. If a full build runs, the rebuild waits for it and then runs."
+
+## 2026-09-26T11:30:00+0300
+
+```text
+run full benchmark with my dataset
+```
+
+## 2026-09-26T11:34:00+0300
+
+The question of the agent and the selected answer, for the benchmark of the owner message
+of 2026-09-26T11:30:00+0300.
+
+"Which pipelines should the benchmark run on your `my` test set (2,209 labelled photos)? Note: no pipeline uses the new label rules yet, because the query-time re-rank is not built."
+
+```text
+All 45 pipelines
+```
+
+The option: "The official vino-svoe recognizer, the 22 embedding pipelines, and the 22 barcode pipelines. First the index builds of any missing items, one embedding model at a time. Roughly 1.5 to 3 hours; the official recognizer sends 2,209 requests to vino-svoe.ru."
+
+
+## 2026-09-26T13:04:00+0300
+
+```text
+is re-rank wih clusters used?
+
+I think it should be used in following case:
+- when top-k items are from one cluster, we need to use cluster-based re-rank
+
+do you agree?
+```
+
+## 2026-09-26T13:10:00+0300
+
+```text
+commit all 
+implement
+```

@@ -161,6 +161,20 @@ run the same build. The thresholds and the limits come from the block `clusters`
 `config.yaml`. The options `--full-threshold 0.9 --label-threshold 0.9` replace the
 thresholds for one build. A build over a limit stops and keeps the old file.
 
+Build the label rules of the clusters of the view `combined` (plan 45). First look at
+the work, then make a GPU task row, then run:
+```bash
+python3 pipeline/build_label_rules.py --name gx10-siglip2-so400m-patch16-naflex-p256 --dry-run
+caffeinate -ims python3 pipeline/build_label_rules.py \
+    --name gx10-siglip2-so400m-patch16-naflex-p256 > work/label-rules-run.json 2> work/label-rules-run.log
+```
+The command writes `cluster-rules.json` in `data/embeddings/<name>/`. Stage 1 describes
+each card, stage 2 writes the rule of each cluster. `--stage describe`, `--cluster
+<slug>`, and `--force` limit or repeat the work. The settings come from the block
+`label_rules` of `config.yaml`. A second run makes calls only for the work that changed.
+Exit status 0: all records are valid; 1: a record holds an error; 2: the run did not
+start or stopped, for example because the service refused the number of images.
+
 Make a run of the official recognizer of vino-svoe.ru (the pipeline
 `vino-svoe-search-by-photo`, backend `svoe-vino-ru`). Each photo of the test set goes to
 the API as it is. First a probe of 3 photos, then the full set:

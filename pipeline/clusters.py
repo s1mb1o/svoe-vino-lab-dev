@@ -28,6 +28,9 @@ BUILD_LOCK = "clusters.lock"
 NOTES_LOCK = "cluster-notes.json.lock"
 SPACES = ("full", "label", "combined")
 VECTOR_SPACES = ("full", "label")
+# The rule space of `cluster-rules.json` that each view shows. The view `combined` shows
+# the `label` rules, because the matcher sends a label crop at query time (plans 43, 45).
+RULE_SPACE_OF = {"full": "full", "label": "label", "combined": "label"}
 DEFAULT_THRESHOLD = 0.95
 # A build over one of these limits stops and keeps the old `clusters.json`. At threshold
 # 0.95 the lab SigLIP 2 embedding gave 214 full links and a largest cluster of 8 wines.
@@ -593,6 +596,21 @@ def cluster_in(artifact, space, key):
     return None
 
 
+def _cut_url(item):
+    """Return the URL of the segmented file of one item, or None.
+
+    The steps `segment` and `remove_background` of a view give this file: the package or
+    the label cut of `image_derivative`, with its transparent background. The step
+    `white_background` puts it on white for the model, so the prepared image has no
+    transparency. The page draws the cut (owner message of 2026-09-26T09:51:00+0300). An
+    item with no `segment` step, such as a close-up, has no cut."""
+    cut = (item or {}).get("cut")
+    if not cut or not (item.get("steps") or []):
+        return None
+    path = cut["path"]
+    return "/images/%s/%s" % (os.path.basename(os.path.dirname(path)), os.path.basename(path))
+
+
 def _current_images(ctx):
     """Return wine -> current prepared images for the page."""
     assignments = collections.defaultdict(lambda: collections.defaultdict(set))
@@ -610,6 +628,7 @@ def _current_images(ctx):
                 "image_types": sorted(image_types),
                 "prepared_url": _image_url(
                     ctx["embedding"].name, digest, view, record["embedding_hash"]),
+                "cut_url": _cut_url(ctx["items"].get(key)),
                 "original_url": ctx["sources"][digest]["url"],
             })
     for images in out.values():
@@ -650,10 +669,13 @@ def detail(settings, name):
     for space_name, space in (shown.get("spaces") or {}).items():
         for cluster in space.get("clusters") or []:
             cluster["note"] = note_for(cluster, notes)
-            rule = (rules.get(space_name) or {}).get(cluster["key"])
+            rule = (rules.get(RULE_SPACE_OF.get(space_name)) or {}).get(cluster["key"])
             if isinstance(rule, dict):
-                cluster["rule"] = {**rule,
-                                   "stale": rule.get("input_hash") != artifact.get("input_hash")}
+                # A rule that stored its note is stale when the note changed (plan 45).
+                note_changed = "note" in rule and (rule.get("note") or "") != (
+                    cluster["note"].get("text") or "")
+                cluster["rule"] = {**rule, "stale": note_changed or rule.get(
+                    "input_hash") != artifact.get("input_hash")}
             else:
                 cluster["rule"] = None
     return {

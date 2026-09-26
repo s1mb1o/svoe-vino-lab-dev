@@ -48,6 +48,81 @@ Session drink-atlas-workspace-cc [d62b09], plan 46 (the Health page).
   `a902e43a5f77`, about every 5 to 9 minutes since 05:40Z at least. At the same time
   `qwen3.5-9b-nvfp4` stays loaded and answers a 1-token request in about 65 ms.
 
+## 2026-09-26 — plan 45 run: 163 label rules of `qwen3.5-9b-nvfp4`, and the «Фантом» colours
+
+Session drink-atlas-workspace-39 / CLUSTERS [fb59ad]. `pipeline/build_label_rules.py
+--name gx10-siglip2-so400m-patch16-naflex-p256` from 10:35 to 11:16 (2,511 s), after the
+cluster build of 10:33:43 (163 `combined` clusters, 382 wines). Thinking off in both
+stages. The service accepts 20 images in one prompt since the change of the owner.
+
+- Stage 1: 382 descriptions, 0 errors. 5 answers came from the model cache (cards that
+  share a main image). 5 answers reached `max_tokens` 1,500 and were valid at the second
+  attempt with `repetition_penalty` 1.15 and 3,000 tokens. One call: median 15.6 s, p90
+  24.4 s, maximum 38.0 s, with 4 calls at the same time and the watcher of plan 29 on the
+  same model.
+- Stage 2: 163 rules, 0 errors: 139 `sheet`, 24 `verdict`, 0 `none`. One call: median
+  8.9 s, p90 12.7 s, maximum 27.8 s, with 2 calls at the same time.
+- The questions: 223 valid and 17 not valid of kind `feature`; 5 valid and 27 not valid
+  of kind `vintage` (a year that the name or the slug does not state); 1 valid and 9 not
+  valid of kind `alcohol`. Valid questions for each rule: 0 in 24, 1 in 67, 2 in 55, 3 in
+  16, 4 in 1. The prompt asks for 1 to 3 questions; the code does not cut a fourth one.
+- The mode `verdict` holds weak rules. Examples: `45beb9f24dd6` «All three cards have
+  identical labels; no visual feature on the label distinguishes them.»; `5d865603962e`
+  «If the label shows '2024', it is Card B; otherwise, it is Card A.» (a year that only
+  the label shows); `a1519f95d8a3` names three grape texts with the year 2022, and its
+  questions were of kind `vintage`, so the check struck them. The check of
+  `svoe-vino-testset` gives `verdict` to each rule text that names no feature outside the
+  label. Plan 06 of `svoe-vino-testset` (Q2) records the same weakness.
+- The «Фантом» cluster `a29e59138ed4`, after the new note of the owner (11:04:53: «… and its
+  background color. Alcohol percentage is not relevant.»): the rebuild after the note
+  (11:16:39, 12.5 s) gave 2 valid questions, the ratio (30/70, 50/50, 70/30) and «What is
+  the color of the small box in the bottom left corner of the label?» with pink, dark
+  blue, and purple. No alcohol question. The rule text names the ratios only.
+- The colour of card B is wrong. In the label cut of `…-fantom-5050-…` the box is dark
+  burgundy (the most saturated pixels have a mean of RGB 107, 103, 123 on white; visible
+  as maroon), not dark blue. The boxes of A (pink, mean 189, 97, 135) and C (purple, mean
+  142, 103, 164) are right. `qwen3.8-max` of `svoe-vino-testset` wrote «dark red» for B.
+  A query photo of B can then get the answer `other` or `purple` for this question.
+
+## 2026-09-26 — plan 45 probe: `qwen3.5-9b-nvfp4` takes 1 image, and thinking gives no rule
+
+Session drink-atlas-workspace-39 / CLUSTERS [fb59ad], plan 45 (the label rules of the
+embedding clusters), 09:30 to 09:51. Direct requests from the Mac to llama-swap 18081,
+one at a time, for the «Фантом» cluster `a29e59138ed4` (3 cards) of the view `combined`
+of `gx10-siglip2-so400m-patch16-naflex-p256`. The prompts are those of
+`svoe-vino-testset/scripts/cluster_rules.py`. Scratch code: `probe_rules.py`,
+`probe_montage.py`, `probe_montage_nothink.py` in the scratchpad of the session. A small
+sample: one cluster.
+
+- The service is vLLM (`docker compose` of `vllm-qwen35-9b-nvfp4` behind llama-swap).
+  `GET /upstream/qwen3.5-9b-nvfp4/v1/models` gives `Qwen3.5-9B-NVFP4` with
+  `max_model_len` 32,768.
+- The service accepts one image in one prompt. 2 or 3 images give HTTP 400:
+  `At most 1 image(s) may be provided in one prompt. (parameter=image)`. Stage 2 of
+  `svoe-vino-testset` sends one image for each card, so it cannot run on this service.
+- The key `repetition_penalty` of the request is accepted (HTTP 200).
+- Stage 1, the package cut of each card enlarged to 2,048 pixels (541 × 2048), thinking
+  off, JSON mode: 3 of 3 HTTP 200, 14.1 to 18.3 s, 339 to 445 completion tokens, valid
+  JSON, vintage 2018 on each. The ratio mark of the label: card A (30/70) and card C
+  (70/30) read no ratio; card B (50/50) read `9/9`. So the enlargement did not make the
+  small mark readable. The 2026-09-25 repeat of `svoe-vino-testset` read card B as `8/8`.
+- Stage 2 with one image, a montage of the 3 label cuts (each scaled to a long side of 768
+  pixels under a caption strip «Card A» to «Card C»; 1298 × 832 pixels; 3,019 prompt
+  tokens):
+  - thinking on, JSON mode: 502.8 s, `finish_reason: length` at `max_tokens` 12,000,
+    36,751 characters of reasoning, empty content;
+  - thinking on, no JSON mode: 508.3 s, the same, 34,736 characters of reasoning.
+  - The reasoning starts with an ordered analysis of each card and does not reach an
+    answer. The speed is about 23.9 tokens/s.
+  - thinking off, JSON mode: 12.5 s, 262 completion tokens, valid JSON. Question 1 asks
+    for the blend ratio, with 30/70, 50/50, and 70/30: a valid `feature` question.
+    Question 2 asks for the alcohol value, 14.4 %, 14.5 %, and 14.7 %: the check makes it
+    not valid, because question 1 is valid. The rule text names the three ratios. The
+    answer 50/50 of card B comes from the catalogue name and the note, not from the
+    printed mark.
+- Side observation: from about 09:00 to at least 09:27 the watcher of plan 29 repeated a
+  detail call of `a902e43a5f77` that timed out after 300 s each time (not counted).
+
 ## 2026-09-26 — the barcode step: zxing-cpp 2.3.0 on Python 3.14, and a check on real photos
 
 Session drink-atlas-workspace-1c [800d92], plan 42.

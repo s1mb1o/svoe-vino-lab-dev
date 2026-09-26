@@ -543,11 +543,78 @@ The page shows the status of the embedding inputs, the exact evidence of each ed
 all current images in the selected space, and one note editor per cluster. The artifact
 is stale after an embedding item or a wine-to-image assignment changes.
 
-The page does not create VLM difference rules yet. A later offline build will create
-separate rules for the `label` and `full` spaces. The current matcher uses a query label
-crop, so it can use only a `label` rule. At query time the VLM will receive closed
-questions with the allowed answers, plus `other` and `not visible`. It will not discover
-new differences for each query.
+A card image is the segmented cut of the view: the `package` cut in `full`, the `label`
+cut in `label` (`image_derivative`). The cut keeps its transparent background, and a
+checkerboard shows the transparency, as on `/embedding` (owner message of
+2026-09-26T09:51:00+0300). The API gives it as `cut_url` of each image of
+`GET /api/clusters/<name>`. The prepared image (`prepared_url`) is the model input: the
+same cut on white after the step `white_background`. The links of an edge row still open
+the two prepared images. An image with no `segment` step, such as a close-up, has no cut
+and shows its prepared image.
+
+The page does not create VLM difference rules. The offline command of the next section
+creates them for the `label` space. The current matcher uses a query label crop, so it
+can use only a `label` rule. At query time the VLM will receive closed questions with the
+allowed answers, plus `other` and `not visible`. It will not discover new differences for
+each query. The re-rank at query time is not in the lab yet (plan 45).
+
+## The label rules of the clusters
+
+A label rule tells the cards of one cluster apart. `pipeline/build_label_rules.py`
+builds the rules of the clusters of the view `combined` of one embedding. Read
+[plan 45](docs/plans/45_cluster-label-rules.md). The prompts and the check are a port
+of `svoe-vino-testset/scripts/cluster_rules.py`.
+
+```bash
+python3 pipeline/build_label_rules.py --name gx10-siglip2-so400m-patch16-naflex-p256
+python3 pipeline/build_label_rules.py --name <embedding> --stage describe
+python3 pipeline/build_label_rules.py --name <embedding> --cluster <slug>
+python3 pipeline/build_label_rules.py --name <embedding> --dry-run
+python3 pipeline/build_label_rules.py --name <embedding> --force
+```
+
+| Stage | One VLM call for | Input | Answer |
+|---|---|---|---|
+| 1, `describe` | each card of a cluster | the `package` cut of the effective main image (`main_patched`, else `main`), on white, scaled UP or down to a long side of 2048 pixels; no card data | the label description: the texts and the numbers with their place, the vintage, the colours, the design, the marks, the bottle |
+| 2, `rules` | each cluster | one image for each card: its `label` cut on white, scaled UP or down to 768 pixels (a card with no label cut sends its package cut); the card data; the descriptions without the key `bottle`; the note of the reviewer | the difference sheet (questions with the expected answer of each card), the rule text, and the groups that no feature separates |
+
+The block `label_rules` of `config.yaml` holds the settings, with a comment for each key.
+Both stages use `qwen3.5-9b-nvfp4` with thinking off. With thinking on, the probe of
+2026-09-26 gave no answer in 12,000 tokens; `rules_thinking` switches it on. The service
+accepts at most 20 images in one prompt (`rules_max_images`, the vLLM option
+`--limit-mm-per-prompt`). A cluster with more cards gets an error record and no call.
+When the service refuses the number of images, the command stops with a message that
+names the limit of the service.
+
+The code checks the sheet, as in `svoe-vino-testset`: a question about a bottle number
+or about a feature outside the label is never valid; a vintage year counts only when the
+name or the slug of the card states it (with the vintage variants of plan 06 of
+`svoe-vino-testset`); a question about the alcohol value counts only when no other
+question is valid. The mode is `sheet` when a question is valid, else `verdict` when the
+rule text is not empty and names no feature outside the label, else `none`. Each question
+holds `evidence`: the SHA-256 of the picture that stage 2 sent for each card.
+
+`data/embeddings/<name>/cluster-rules.json` holds the descriptions under `cards` (by slug)
+and the rules under `spaces.label` (by cluster key). A rule is current while its inputs
+stay the same: the members, the card data, the pictures, the descriptions, the note, and
+the settings of the prompt. A cluster build that keeps the members keeps the rule; the
+next run writes the new `input_hash` of `clusters.json` into it with no call. The command
+does only the work that is not current, so a stopped run resumes. Each answer goes
+through the model cache.
+
+The page `/clusters` shows the `label` rule in the views `combined` and `label` (the
+block `VLM difference rule`). The rule is `stale` when `clusters.json` has a new input
+hash, or when the note of the cluster changed after the build. The Runs page reads the
+questions of the rule (plan 43).
+
+`Save note` also starts the rebuild of the rule of that cluster (owner answer of
+2026-09-26T11:11:00+0300): the route runs `build_label_rules.py --cluster <slug> --wait`
+as a separate process, and its output goes to `data/embeddings/<name>/label-rules.log`.
+The rebuild waits for a running rule build. The page shows `Saved · rebuilding the rule…`,
+asks for the rule every 3 s, and replaces the rule block when the rule is current
+(`Rule rebuilt`), usually after 10 to 20 s. After 5 minutes it stops and names the log.
+The prompt tells the model that the note is a correct fact, so a note can name a feature,
+for example the colour of a mark.
 
 ## The VLM inferences
 
@@ -927,6 +994,7 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
 | `pipeline` | `pipelines.load` | The pipelines of the lab: the dialog `Run>` of `/testset` and the filter `Pipeline` of `/runs` show them. The backends are `svoe-vino-ru` and `embedding`; a pipeline of the backend `embedding` names one entry of `embeddings`, and its optional key `views` holds the steps of the test photo. See [The runs of the lab](#the-runs-of-the-lab) and [plan 34](docs/plans/34_pipeline-section.md). |
 | `clusters` | `clusters.config_values` | The thresholds and the limits of the cluster build of an embedding (plan 30). See [The embedding clusters of the lab](#the-embedding-clusters-of-the-lab). |
+| `label_rules` | `label_rules.config_values` | The VLM entries, the thinking switches, the picture sizes, the image limit, the token limits, the workers, and the timeouts of `pipeline/build_label_rules.py` (plan 45). See [The label rules of the clusters](#the-label-rules-of-the-clusters). |
 | `cluster_rules` | `cluster_rules.CFG` | Not set in the lab `config.yaml`. The VLM entries of the two stages (`vlm`, `rules_vlm`), the picture sizes, the rules file, and the notes file of `scripts/cluster_rules.py`. Plan 43 retired its command `scripts/11_cluster_rules.py`. See [Catalogue clusters (retired)](#catalogue-clusters-retired). |
 | `vlm` | `cluster_rules.VLM`, `cluster_rules.RULES_VLM` | The named VLM inferences. See [The VLM inferences](#the-vlm-inferences). |
 | `image_description` | `describe_images.settings` | The watcher of the image descriptions: `watch`, `vlm`, `max_side`, `poll_seconds`, `max_attempts`, `workers`; stage 2: `details`, `detail_max_side`; `max_tokens` of the `vlm` entry. See [The image descriptions](#the-image-descriptions) and [The image details](#the-image-details). |

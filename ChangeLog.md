@@ -18,6 +18,47 @@
   prompt cache of the hybrid model); each chat request now holds a random token. New
   tests `tests/test_health.py` (28); smoke tests HL1 to HL9. 8168 restarted by cc at
   11:23:30 (pid 95458) and 11:29:51 (pid 8285).
+- Plan 45, the label rules of the embedding clusters (owner message of
+  2026-09-26T09:07:24+0300, answers of 09:27:00 and 10:19:00; session
+  drink-atlas-workspace-39). New command `pipeline/build_label_rules.py` with the module
+  `pipeline/label_rules.py`, a port of stages 1 and 2 of
+  `svoe-vino-testset/scripts/cluster_rules.py` (verbatim prompts; a test compares them
+  with `scripts/cluster_rules.py`). Stage 1 describes the label of each card from the
+  package cut, enlarged to 2048 pixels, with no card data. Stage 2 sends one label cut for
+  each card (768 pixels), the card data, the descriptions, and the note, and writes the
+  difference sheet and the rule text. The check strikes a bottle number, a feature
+  outside the label, a year that the card name does not state, and the alcohol value
+  when another question is valid; the mode is `sheet`, `verdict`, or `none`. The rules
+  go to `data/embeddings/<name>/cluster-rules.json` (`spaces.label`, for the view
+  `combined`). New block `label_rules:` of `config.yaml`, with a comment for each key:
+  `qwen3.5-9b-nvfp4`, thinking off in both stages (switch: `rules_thinking`), at most 20
+  images in one prompt (`rules_max_images`; the owner set `--limit-mm-per-prompt` to 20).
+  A cluster over the limit gets an error record and no call; a refusal of the service
+  stops the run with a message that names the limit. `/clusters` shows the `label` rules
+  in the views `combined` and `label` (`clusters.RULE_SPACE_OF`); a rule is stale also
+  after a note change. The cluster build of 10:33:43 made the stale artifact current (163
+  clusters). The run of 10:35 to 11:16: 382 descriptions, 163 rules (139 `sheet`, 24
+  `verdict`), 0 errors. New tests `tests/test_label_rules.py` (19) and
+  `tests/test_build_label_rules.py` (14); smoke tests LR1 to LR9. 8168 restarted by 39
+  at 10:33:31 (pid 2858).
+- `/clusters`: "Save note" starts the rebuild of the label rule of that cluster as a
+  separate process (`build_label_rules.py --cluster <slug> --wait`; log
+  `data/embeddings/<name>/label-rules.log`), and the page swaps in the new rule when it is
+  current (owner message of 2026-09-26T11:08:00+0300, answer of 11:11:00). The rebuild
+  waits for a running rule build. Tests in `tests/test_cluster_routes.py`. 8168
+  restarted by 39 at 11:15:39 (pid 80384). The check on the page: the «Фантом» rule was
+  rebuilt with the new note and now asks for the ratio and for the colour of the small
+  box; the colour of card B («dark blue») is wrong (the box is dark burgundy).
+- `/clusters` draws the segmented cut of each card image with its transparent
+  background on a checkerboard, as `/embedding` does (owner message of
+  2026-09-26T09:51:00+0300; session drink-atlas-workspace-39). Before, a card showed the
+  prepared image, which the step `white_background` had put on white. `clusters.detail`
+  gives each image the new field `cut_url`: the `package` cut in `full`, the `label` cut
+  in `label`, from `image_derivative`. An image with no `segment` step keeps its prepared
+  image. The preview shows the same cut. The edge links still open the prepared images.
+  New test `test_detail_gives_the_segmented_cut_of_each_image`; smoke test LC21, LC3
+  changed. 8168 restarted by 39 at 09:56:09 (pid 35773). A browser check in the light and
+  the dark theme passes: 393 of 393 card images are cuts, with no page error.
 - `/embedding`, build log: each `item_failed` line names the wine of the failed file:
   `wine` (the slug), `name`, `image_type` of the first wine in import order, and
   `other_wines` when more wines use the same file (owner messages of
@@ -76,6 +117,37 @@
   `embedding_python`; 5 decoder tests are skipped in system `python3`. A check on 169 real
   photos of the 22 wines of `code-map.json`: 40 hits, 0 wrong wines, 129 photos with no
   code; median 230 ms, maximum 619 ms for each photo.
+- The header controls of `/dataset`, `/embedding`, `/clusters`, `/testset`, and `/runs`
+  are kept in `localStorage` (the key `svl.<page>.header`; `/embedding` keeps its old key
+  for the configuration) and come back at the next page load (owner message of
+  2026-09-26T00:30:00+0300 and the answers of 00:33:00; session
+  drink-atlas-workspace-39 [fb59ad]). Code in each page; no server change. A value in the
+  URL wins. On `/testset`, an address with a view key restores no stored view control,
+  because the address leaves out a control at its default (proposal of
+  drink-atlas-workspace-28 [5ddfae]); on `/clusters`, an address with `space` holds the
+  image. A stored value that is no longer an option is ignored, and an unknown stored test
+  set gives the default set. The variant group filter of `/testset` is not stored. A
+  Playwright check of the five pages passes (15 checks, no page error).
+- The cluster build of `/clusters` has limits, and its settings are in `config.yaml` (owner
+  messages of 2026-09-25T23:00:00+0300 to 2026-09-26T01:05:00+0300; session
+  drink-atlas-workspace-39 [fb59ad], earlier name drink-atlas-workspace-43 [58637c]). A
+  build with full threshold 0.5 gave 2,055,813 links, one cluster of 2,045 wines, and a
+  5 GB `clusters.json`, and the page did not load. Now a build stops, answers HTTP 400,
+  and keeps the old file when one space has more than `max_links` (20,000) links or one
+  cluster has more than `max_cluster_size` (50) wines. The link search checks the count
+  after each row, so it stops in less than one second. The new block `clusters:` of
+  `config.yaml` holds `full_threshold`, `label_threshold`, `min_cluster_size`,
+  `max_links`, and `max_cluster_size` for every embedding (`clusters.config_values`); a
+  missing key takes its default, and an unknown key or a value that is not valid stops the
+  build. `min_cluster_size` (2) drops the smaller clusters at the build. The page has no
+  threshold input and no input "Minimum size"; its summary shows the build settings.
+  `POST /api/clusters/<name>/build` refuses a body with a threshold.
+  `build_clusters.py --full-threshold --label-threshold` replace the thresholds for one
+  build. `settings` of `clusters.json` holds `min_cluster_size`. The clusters of
+  `gx10-siglip2-so400m-patch16-naflex-p256` were built again at 0.95 / 0.95 (1.0 MB:
+  full 147, label 108, combined 168 clusters). Measured limits: 0.9 passes (largest
+  cluster 24), 0.85 stops (a chain of 184 wines). Decisions D6, D6a, and D7 of plan 30;
+  the cluster paragraph of `COMMANDS.md`. 29 cluster tests `OK`.
 - Plan 40, the benchmark of the 11 embedding entries with the two basic pipelines (owner
   message of 2026-09-26T01:43:59+0300; session drink-atlas-workspace-e2 [9e7fe4]). First,
   the commit 1dd3006 of all pending changes. Then 20 new pipelines in `config.yaml`

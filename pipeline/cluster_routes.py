@@ -6,11 +6,15 @@
     POST /api/clusters/<name>/build
     POST /api/clusters/<name>/note
 
-Read `docs/plans/30_embedding-clusters.md`.
+Read `docs/plans/30_embedding-clusters.md`. A note write also starts the rebuild of the
+label rule of the cluster (plan 45).
 """
 import json
 import os
 import re
+import subprocess
+import sys
+import time
 import urllib.parse
 
 import clusters
@@ -25,6 +29,34 @@ JSON_TYPE = "application/json; charset=utf-8"
 HTML_TYPE = "text/html; charset=utf-8"
 NO_STORE = "no-store"
 MAX_BODY = 32768
+# The rebuild of a label rule after a note change (plan 45; owner answer of
+# 2026-09-26T11:11:00+0300). The command runs as a separate process, as an embedding
+# build does, and waits for a running rule build. Its output goes to this file of the
+# embedding directory. The page polls the rule until it is current.
+REBUILD_COMMAND = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "build_label_rules.py")
+REBUILD_LOG = "label-rules.log"
+
+
+def start_rule_rebuild(config_path, name, directory, cluster):
+    """Start the rebuild of the label rule of the `combined` cluster that holds the first
+    card of `cluster`. Return `{started, pid, log}`, or `{started: False, error}`. A
+    failure to start does not fail the note write."""
+    log_path = os.path.join(directory, REBUILD_LOG)
+    command = [sys.executable, REBUILD_COMMAND, "--config", config_path, "--name", name,
+               "--cluster", cluster["slugs"][0], "--wait"]
+    try:
+        with open(log_path, "ab") as log:
+            log.write(("%s note of %s: %s\n" % (time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                                                cluster["key"], " ".join(command)))
+                      .encode("utf-8"))
+            log.flush()
+            process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=log,
+                                       stderr=log, cwd=embeddings.ROOT,
+                                       start_new_session=True)
+    except OSError as exc:
+        return {"started": False, "error": str(exc)}
+    return {"started": True, "pid": process.pid, "log": log_path}
 
 
 def handles(route):
@@ -149,8 +181,9 @@ def respond(server, method, path, read_body):
         if cluster is None:
             return _error(404, "the cluster is not in the current artifact")
         note = clusters.set_note(directory, cluster, body.get("text"))
+        rebuild = start_rule_rebuild(config_path, name, directory, cluster)
         return _json(200, {"embedding": name, "space": space, "key": key,
-                           "note": note})
+                           "note": note, "rule_rebuild": rebuild})
     except clusters.Busy as exc:
         return _error(409, str(exc))
     except clusters.ClusterError as exc:
