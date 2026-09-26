@@ -2,6 +2,15 @@
 
 ## 2026-09-26
 
+- `/embedding`, build log: each `item_failed` line names the wine of the failed file:
+  `wine` (the slug), `name`, `image_type` of the first wine in import order, and
+  `other_wines` when more wines use the same file (owner messages of
+  2026-09-26T07:50:00+0300 and 07:51:00; session drink-atlas-workspace-4f [9a1cce]). The
+  checkbox of the dialog is `Show progress and request`. It is on at the start. When it
+  is off, it hides the `progress` and `request` lines. An `item_failed` line always
+  shows. No restart: 8168 starts `build_embeddings.py` from disk for each build and
+  reads the page from disk. Tests: `test_build_embeddings.py`,
+  `test_embedding_routes.py`, `test_embeddings.py` 54 OK. Smoke rows EB19 and EB20.
 - The lab uses the clusters of `data/embeddings/<name>/` alone (plan 43, owner message of
   2026-09-26T07:32:51+0300 and the answers after it; session drink-atlas-workspace-2a
   [693b64]). `GET /api/run-clusters?id=<run id>` answers the view `combined` of

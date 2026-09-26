@@ -3982,3 +3982,57 @@ The option: "Leave cluster_rules.py and its three tests untouched. The later rul
 ```text
 if you have work done, commit it
 ```
+
+## 2026-09-26T07:50:00+0300
+
+```text
+http://127.0.0.1:8168/embedding?name=gx10-siglip2-so400m-patch16-naflex-p256
+
+07:49:02
+start
+name gx10-siglip2-so400m-patch16-naflex-p256 · pid 19035 · items 4060 · current 4056 · todo 4 · pruned 0
+07:49:02
+item_failed
+5478f9d502c4510d9b3a584da981398c740e122af4ae83933a08dc00903d9ad3 · view label · no label cut yet
+07:49:02
+item_failed
+45738caa6ec044a696bd3c3fd8d9da56d409b97cdfe458cbcb98507640d1e187 · view label · no label cut yet
+07:49:02
+item_failed
+97e800d0597d5a4b79284b0954c0e03aa513bc77cd2ac4d730141fb73718360b · view label · no label cut yet
+07:49:02
+item_failed
+3e9045b90fe4e42148148bafc818243b991519338617e7205c59903b86587e60 · view label · no label cut yet
+07:49:02
+progress
+done 4 · todo 4 · built 0 · failed 4
+07:49:03
+done
+built 0 · failed 4 · done 4 · current 4056 · pruned 0 · todo 4 · 0.6 s
+
+---
+
+It is not clear from log what item caused problem, so add this information
+```
+
+## 2026-09-26T07:51:00+0300
+
+```text
+"hide item_failed, progress, and request"
+rename to "Show progress and request"
+and make it checked by default
+item_failed shall be shown always
+```
+
+## 2026-09-26T08:58:00+0300
+
+The question of the agent and the selected answer, for the index race of commit 533e2d0
+(sessions 4f and 74).
+
+"Commit 533e2d0 mixes my embedding-log code with session 74's /dataset Identifier filter, and my 4 doc blocks (ChangeLog, README, SMOKE_TESTS, owner-messages) are missing from it. How should I fix it?"
+
+```text
+Follow-up commit (Recommended)
+```
+
+The option: "Leave 533e2d0 as it is. I add one new commit with my 4 doc blocks. No history rewrite, so no risk for the other sessions. The message of 533e2d0 stays incomplete: it does not name the work of 74."

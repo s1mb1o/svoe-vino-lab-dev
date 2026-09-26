@@ -464,8 +464,11 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   endpoint of the first row. The `Log` button after `Stop` opens a dialog with
   `build.log` of the last build of the entry (`GET /api/embeddings/<name>/log`). Each
   JSON line shows as `time · event · fields`. A line that is not JSON, for example a
-  traceback, shows as it is, in red. The checkbox `hide item_failed, progress, and request` is on
-  at the start. `Refresh` reads the file again. `Log` is disabled while the entry has no
+  traceback, shows as it is, in red. The checkbox `Show progress and request` is on at the
+  start. When it is off, the `progress` and `request` lines are hidden. An `item_failed`
+  line always shows. It names the wine of the failed file: `wine` (the slug), `name`,
+  `image_type`, and `other_wines` when more wines use the same file. `Refresh` reads the
+  file again. `Log` is disabled while the entry has no
   build yet.
 - A click on a prepared image of `/embedding` opens the image preview of `/dataset`: the
   image in the center, the title (view and wine), the slug, the column, the image type,
