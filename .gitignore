@@ -32,11 +32,12 @@ runs/
 # limits the rule to the project root, so `tests/data/` stays in git.
 # The history of the database is in git as the text export `db-export/`. The skill
 # backup-lab-db writes it. Read docs/plans/50_lab-db-text-export.md.
-# On 2026-09-26 the owner asked to put the main photos and the patches in git, and to
-# keep `data/cache/` out. git cannot take back a file of an ignored directory, so the
+# On 2026-09-26 the owner asked to put the main photos, the patches, and the alternative
+# photos in git, and to keep `data/cache/` out. git cannot take back a file of an ignored directory, so the
 # rules ignore the content of `data/` and of `data/images/`, not the directories.
 /data/*
 !/data/images/
 /data/images/*
 !/data/images/main/
 !/data/images/patched/
+!/data/images/additional/

@@ -2,6 +2,9 @@
 
 ## 2026-09-26
 
+- Plan 50, section 8, item 7: `data/images/additional/` is in git too (owner message of
+  2026-09-26T18:53:37+0300; session drink-atlas-workspace-96). `.gitignore` takes the
+  folder back, and the skill `backup-lab-db` commits it with the other two image folders.
 - Plan 50, section 8: the main photos and the patches in git (owner message of
   2026-09-26T17:51:32+0300, answers of 17:54:00; session drink-atlas-workspace-96).
   `.gitignore` ignores the content of `data/` and of `data/images/` and takes back

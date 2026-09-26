@@ -1,6 +1,6 @@
 ---
 name: backup-lab-db
-description: Back up the svoe-vino-lab database data/lab.sqlite3 as a text export in db-export/ and commit it together with the image folders data/images/main/ and data/images/patched/, so that git keeps the history of each row and each main photo and patch. Also restores an export from the working tree or from any commit into a new database file. Use when asked to back up, snapshot, export, or commit the lab database, to show the history of lab data, or to restore the lab database from git.
+description: Back up the svoe-vino-lab database data/lab.sqlite3 as a text export in db-export/ and commit it together with the image folders data/images/main/, data/images/patched/, and data/images/additional/, so that git keeps the history of each row, each main photo, each patch, and each alternative photo. Also restores an export from the working tree or from any commit into a new database file. Use when asked to back up, snapshot, export, or commit the lab database, to show the history of lab data, or to restore the lab database from git.
 ---
 
 # Back up the lab database to git
@@ -21,11 +21,11 @@ Each row keeps its `rowid`. The lab code sorts by `rowid` to keep the import ord
 restore without the `rowid` is not the same database. A changed row is one removed line
 and one added line in `git diff`.
 
-The same commit holds the image files of `data/images/main/` and `data/images/patched/`.
-The owner asked for this on 2026-09-26. Each file name is the sha256 of the file, so a
+The same commit holds the image files of `data/images/main/`, `data/images/patched/`, and
+`data/images/additional/`. The owner asked for this on 2026-09-26. Each file name is the sha256 of the file, so a
 file never changes: git adds a new file or records a removed file. `.gitignore` keeps the
 rest of `data/` out of git: the database file, `data/cache/`, `data/backups/`,
-`data/embeddings/`, and the image folders `cropped/`, `testset/`, and `additional/`.
+`data/embeddings/`, and the image folders `cropped/` and `testset/`.
 
 Run every command in the project root:
 
@@ -75,12 +75,12 @@ difference is an error of the tool: do not commit, and report it to the owner.
 ## 3. Commit the export
 
 Other sessions work in the same working tree and use the same git index. So the commit
-uses a private index. It holds `HEAD` plus `db-export/` and the two image folders alone.
+uses a private index. It holds `HEAD` plus `db-export/` and the three image folders alone.
 Do not use `git add` or `git commit` with the shared index.
 
 ```bash
 D=$(mktemp -d); IDX="$D/index"
-P=(db-export data/images/main data/images/patched)
+P=(db-export data/images/main data/images/patched data/images/additional)
 OLD=$(git rev-parse HEAD); BRANCH=$(git symbolic-ref HEAD)
 GIT_INDEX_FILE="$IDX" git read-tree "$OLD"
 GIT_INDEX_FILE="$IDX" git add -A -- "${P[@]}"
@@ -113,7 +113,7 @@ git diff --cached --name-only -- "${P[@]}"
 - `git update-ref` fails when `HEAD` moved during the step: another session made a commit.
   Run step 3 again. The new `HEAD` is the parent then.
 - `git reset -q -- "${P[@]}"` makes the shared index agree with the new commit for the
-  three paths alone. The staged files of other sessions stay.
+  four paths alone. The staged files of other sessions stay.
 - The last command MUST print no line.
 - The first commit of `db-export/` added about 12 MB, and the first commit of the images
   about 142 MB (2,037 files). A later commit adds each changed export file as a new
@@ -169,8 +169,8 @@ failed restore leaves no file.
 To open a restored file, use `labdb.connect`. It applies the newer schema files of
 `pipeline/schema/` when the export is older.
 
-The image files need no restore step while they are in the working tree. A removed main
-photo or patch comes back from a commit that holds it:
+The image files need no restore step while they are in the working tree. A removed image
+comes back from a commit that holds it:
 `git checkout <commit> -- data/images/patched/<sha256>.<extension>`.
 
 Do not put a restored file in the place of `data/lab.sqlite3` unless the owner asks for
