@@ -4036,3 +4036,44 @@ Follow-up commit (Recommended)
 ```
 
 The option: "Leave 533e2d0 as it is. I add one new commit with my 4 doc blocks. No history rewrite, so no risk for the other sessions. The message of 533e2d0 stays incomplete: it does not name the work of 74."
+
+## 2026-09-26T10:35:48+0300
+
+```text
+@svoe-vino-lab  create new page - Health. It should display current health status of service. Also there is button "Check".- it shall iterate over all endpoints (llms, embedding models) and report status. And if error, give some meaningful details
+
+commit after done
+```
+
+## 2026-09-26T11:02:57+0300
+
+The questions of the agent and the answers, for the page `/health` (owner message of
+2026-09-26T10:35:48+0300).
+
+"How should the button Check test each endpoint? A real call to a model that is not loaded makes llama-swap on gx10 load it (the gateway notes give cold starts of about 6 s to 3.5 min per model), and the load can unload a model that the watcher or a job uses."
+
+```text
+Hybrid (Recommended)
+```
+
+The option: "Every entry: the gateway lists (/v1/models, /running) or the cloud list GET /models. A real 1-token call goes only to the models that already run on gx10 and to the cloud entries (a few tokens). A model that is not loaded shows 'not loaded' and gets no call. No load, no eviction."
+
+"What should the status part of the page show? It loads when the page opens and again after each Check."
+
+```text
+Server and database, Description watcher, Jobs, gx10 loaded models
+```
+
+"Check covers the vlm and embeddings entries of config.yaml. Which other endpoints should it check too?"
+
+```text
+SAM3 (Recommended), vino-svoe.ru API
+```
+
+"The link Health goes into the <nav> line of the 5 pages. The stale section of f4 [b39b7b] (not in ListAgents) lists runs.html, so rule 21 needs your OK for that one line. I will ask 39, d1, and 9e about their files. Where should the link go?"
+
+```text
+Last, after Runs (Recommended)
+```
+
+The option: "One <a> in each <nav> line and in NAV of lab_server.py. Your OK covers the line in runs.html."

@@ -2,6 +2,22 @@
 
 ## 2026-09-26
 
+- Plan 46, the Health page `/health` (owner message of 2026-09-26T10:35:48+0300, answers
+  of 11:02:57; session drink-atlas-workspace-cc). New module `pipeline/health.py` and page
+  `pipeline/pages/health.html`; the link `Health` is last in the navigation of each page.
+  The status part shows the server, the database (the schema version, the wines, the free
+  disk), the image description watcher with the failures of the last hour of its log, the
+  jobs that run, and the models that run on the llama-swap gateway. The button `Check`
+  checks each endpoint of `config.yaml` (the `vlm` and `embeddings` entries, SAM3, the
+  vino-svoe.ru API), 4 at the same time, with one row and a clear failure text for each.
+  The check "Hybrid" of the owner: a model that does not run on its llama-swap gateway
+  gets no call; a model that runs and a cloud entry get a real call of 1 token; the local
+  embedding entry loads no model. New routes `GET /api/health` and
+  `POST /api/health/check`. At 11:24:33 a byte-identical repeat of the check prompt
+  stopped the llama.cpp model `qwen3.5-9b` on gx10 (`ggml_abort` on a full hit of the
+  prompt cache of the hybrid model); each chat request now holds a random token. New
+  tests `tests/test_health.py` (28); smoke tests HL1 to HL9. 8168 restarted by cc at
+  11:23:30 (pid 95458) and 11:29:51 (pid 8285).
 - `/embedding`, build log: each `item_failed` line names the wine of the failed file:
   `wine` (the slug), `name`, `image_type` of the first wine in import order, and
   `other_wines` when more wines use the same file (owner messages of

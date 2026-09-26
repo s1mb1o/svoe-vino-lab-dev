@@ -821,6 +821,53 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   `lab_server.py` sends each route of the page to `run_routes.py`. The review tool keeps
   its own copy of the run functions.
 
+## The Health page of the lab
+
+The Health page of the lab server (`/health`) shows the state of the server and checks
+each endpoint of `config.yaml`. Read [plan 46](docs/plans/46_health-page.md).
+
+The status part loads when the page opens and again after each check. It shows:
+
+- the server: the process id, the start time, the uptime, the Python version, and the
+  path of `config.yaml`;
+- the database: the schema version of the file and of the code, the wines of each state,
+  the size, and the free disk space (`warn` below 5 GB);
+- the image description watcher: its state, its counts, and the failures of the last
+  hour in `work/describe_images.log`;
+- the embedding builds and the run jobs that run now;
+- the models that run on each llama-swap gateway now (`GET <root>/running`). A mark
+  shows each model that `config.yaml` names.
+
+The button `Check` sends `POST /api/health/check` for each endpoint, 4 at the same time,
+and fills one row for each answer. The endpoints are the entries of `vlm` and
+`embeddings`, SAM3 (`sam3.endpoint`), and the vino-svoe.ru API. A row has the status
+`ok`, `idle`, `warn`, or `error`, a summary line, and the details: each request with its
+HTTP code and its time.
+
+The check loads no model on gx10:
+
+- An endpoint with no key reads `GET <root>/running` and `GET <root>/v1/models` of its
+  llama-swap gateway. A model that runs gets one real call. A model that does not run
+  gets `idle` and no call, because a call would start it. A model that the gateway does
+  not list gets `error` with the close names.
+- A cloud entry reads `GET <endpoint>/models` with its key, then gets one real call. A
+  key variable that is not set gives `error`, and the check sends no request.
+- The real call of a VLM is a chat request of 1 token with thinking off. The real call of
+  an embedding entry sends one grey PNG of 64 x 64 px. SAM3 gets `GET <endpoint>/health`.
+  The vino-svoe.ru API gets `GET /v1/wines?page=1&perPage=1`; the check sends no photo.
+- The entry of the backend `local` imports torch and transformers in `embedding_python`,
+  and looks for the model in the Hugging Face cache. It loads no model.
+- The check does not read `data/cache/`: a health check MUST reach the service.
+
+Two pitfalls of the gx10 gateway:
+
+- A request under `/upstream/<model>/` of llama-swap starts the model. Read `/running`
+  first.
+- Do not send a byte-identical chat prompt twice to the llama.cpp model `qwen3.5-9b` (a
+  hybrid model). On 2026-09-26 a repeat stopped its server in `ggml_abort`, and
+  llama-swap answered HTTP 502. So each chat request of the check holds a new random
+  token. Read `ResearchLog.md`, entry of 2026-09-26 "health checks".
+
 ## The cache of the model calls
 
 A call to SAM3, to Grounding DINO, or to a VLM that repeats an earlier successful call

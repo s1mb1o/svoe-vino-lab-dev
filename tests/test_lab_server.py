@@ -256,6 +256,7 @@ class LabServerTest(unittest.TestCase):
                  ("dataset.html", "embedding.html", "clusters.html")}
         pages["/runs"] = self.request("/runs")[2]
         pages["/testset"] = self.request("/testset")[2]
+        pages["/health"] = self.request("/health")[2]
         for name, body in pages.items():
             nav = re.search(r'<nav class="nav">(.*?)</nav>', body, re.S).group(1)
             self.assertEqual(re.findall(r'href="([^"]*)"', nav), hrefs, name)

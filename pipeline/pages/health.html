@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino health</title>
+<style>
+/* THEME_CSS */
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+header {
+  position: sticky; top: 0; z-index: 10; padding: 10px 16px;
+  background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.head, .bar { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
+.bar { margin-top: 8px; }
+h1 { margin: 0; font-size: 15px; font-weight: 650; }
+.nav { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+button {
+  color: var(--text); background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { cursor: default; opacity: .5; }
+#check { border-color: var(--accent); font-weight: 700; }
+.message { color: var(--muted); font-size: 12px; }
+main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
+h2 { margin: 16px 0 8px; font-size: 14px; font-weight: 650; }
+h2:first-child { margin-top: 0; }
+.note { margin: -4px 0 8px; color: var(--muted); font-size: 12px; }
+.muted { color: var(--muted); }
+.error { color: var(--exc); }
+.warn-text { color: var(--var); }
+.mono { font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.card {
+  min-width: 0; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: var(--shadow); font-size: 12px;
+}
+.card h3 { display: flex; gap: 8px; align-items: center; margin: 0 0 6px; font-size: 13px; }
+.card p { margin: 0 0 6px; overflow-wrap: anywhere; }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 2px 10px; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+.plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+.log {
+  max-height: 170px; overflow: auto; margin: 6px 0 0; padding: 6px 7px;
+  background: var(--panel-2); border-radius: 6px; white-space: pre-wrap;
+  font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere;
+}
+.badge {
+  display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px;
+  font-weight: 700; line-height: 1.5; white-space: nowrap;
+  color: var(--unu); background: var(--unu-bg);
+}
+.badge.ok { color: var(--pos); background: var(--pos-bg); }
+.badge.idle { color: var(--neg); background: var(--neg-bg); }
+.badge.warn { color: var(--var); background: var(--var-bg); }
+.badge.error { color: var(--exc); background: var(--exc-bg); }
+.tag {
+  padding: 0 5px; border: 1px solid var(--line); border-radius: 4px;
+  color: var(--muted); font-size: 10px;
+}
+.table-wrap {
+  overflow-x: auto; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: var(--shadow);
+}
+table { border-collapse: collapse; width: 100%; min-width: 980px; font-size: 12px; }
+th, td { padding: 6px 8px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+tbody tr:last-child td { border-bottom: 0; }
+th { color: var(--muted); font-weight: 600; background: var(--panel-2); }
+td.name { font-weight: 600; overflow-wrap: anywhere; }
+td.endpoint { max-width: 320px; }
+td.result { min-width: 320px; overflow-wrap: anywhere; }
+td.time { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+tr.error td.name { color: var(--exc); }
+details { margin-top: 3px; }
+details summary { cursor: pointer; color: var(--muted); font-size: 11px; }
+details ul { margin: 4px 0 0; padding-left: 16px; font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <h1>Health</h1>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
+      href="/testset">Testset</a><a href="/runs">Runs</a><a class="on"
+      href="/health">Health</a></nav>
+  </div>
+  <div class="bar">
+    <button id="check" type="button" disabled>Check</button>
+    <span id="message" class="message" aria-live="polite">Loading the status…</span>
+  </div>
+</header>
+<main>
+  <h2>Status <span id="status-time" class="message"></span></h2>
+  <div id="cards" class="cards"></div>
+  <h2>Endpoints</h2>
+  <p class="note">Check sends one request to each endpoint. A model that does not run on
+    its llama-swap gateway gets no call, because a call would start it. Each cloud entry
+    gets a real call of 1 token.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kind</th><th>Name</th><th>Model</th><th>Endpoint</th><th>Status</th>
+        <th>Result</th><th>Time</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</main>
+<script>
+"use strict";
+// The Health page (docs/plans/46_health-page.md). `GET /api/health` sends the status and
+// the endpoints of config.yaml. `Check` sends `POST /api/health/check` for each endpoint,
+// at most LIMIT at the same time, and fills each row when its answer comes.
+const LIMIT = 4;
+const KIND = {vlm: "VLM", embedding: "Embedding", sam3: "SAM3", remote: "Remote API"};
+const STATUSES = ["ok", "idle", "warn", "error"];
+const $ = (id) => document.getElementById(id);
+let endpoints = [];
+// endpoint key -> "pending" or the row of the check
+const results = new Map();
+let checking = false;
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (c) => (
+    {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+}
+function keyOf(item) { return item.kind + "/" + item.name; }
+function size(bytes, unit) {
+  return bytes == null ? "?" : (bytes / 1024 ** (unit === "GB" ? 3 : 2)).toFixed(1) + " " + unit;
+}
+function span(seconds) {
+  if (seconds == null) return "?";
+  const d = Math.floor(seconds / 86400), h = Math.floor(seconds % 86400 / 3600);
+  const m = Math.floor(seconds % 3600 / 60);
+  return d ? `${d} d ${h} h` : h ? `${h} h ${m} min` : `${m} min ${seconds % 60} s`;
+}
+function when(iso) { return iso ? new Date(iso).toLocaleString() : "—"; }
+function badge(status, text) {
+  return `<span class="badge ${esc(status)}">${esc(text ?? status)}</span>`;
+}
+function mono(text) { return `<span class="mono">${esc(text)}</span>`; }
+// pairs: [label, HTML]; a falsy pair is left out.
+function kv(pairs) {
+  return `<dl class="kv">${pairs.filter(Boolean).map(([k, v]) =>
+    `<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>`;
+}
+function card(title, state, body) {
+  return `<section class="card"><h3>${esc(title)} ${state ? badge(...state) : ""}</h3>${body}</section>`;
+}
+// A part that failed as a whole holds its error alone.
+function failed(title, part) {
+  return card(title, ["error", "error"], `<p class="error">${esc(part.error)}</p>`);
+}
+
+function serverCard(s) {
+  if (s.error) return failed("Server", s);
+  return card("Server", ["ok", "runs"], kv([
+    ["Address", esc(s.address)], ["Process", esc(s.pid)], ["Started", esc(when(s.started_at))],
+    ["Uptime", esc(span(s.uptime_s))], ["Python", esc(s.python)], ["Config", mono(s.config)]]));
+}
+
+function databaseCard(d) {
+  if (d.error) return failed("Database", d);
+  const states = d.states ? Object.entries(d.states).map(([k, v]) => `${esc(k)} ${v}`).join(" · ") : "—";
+  const message = d.message
+    ? `<p class="${d.status === "error" ? "error" : "warn-text"}">${esc(d.message)}</p>` : "";
+  return card("Database", [d.status, d.status], message + kv([
+    ["File", mono(d.path)], ["Schema", `${esc(d.version ?? "?")} of ${esc(d.expected_version)}`],
+    ["Wines", states], ["Size", esc(size(d.size, "MB"))],
+    ["Free disk", `${esc(size(d.free, "GB"))} of ${esc(size(d.total, "GB"))}`]]));
+}
+
+function watcherCard(w) {
+  const title = "Image description watcher";
+  if (w.error && !w.state) return failed(title, w);
+  const status = {working: "ok", idle: "ok", waiting: "warn", stopped: "idle"}[w.state] || "warn";
+  const fails = w.failures_last_hour || 0;
+  let body = w.error ? `<p class="error">${esc(w.error)}</p>` : "";
+  body += kv([
+    ["VLM", esc(w.vlm || "—")], w.stage && ["Stage", esc(w.stage)],
+    ["Updated", esc(when(w.updated_at))],
+    ["Classes", `${w.described} of ${w.linked} described · ${w.failed} failed · ${w.pending} wait`],
+    ["Details", `${w.details_done} of ${w.details_eligible} done · ${w.details_failed} failed · ${w.details_pending} wait`],
+    ["Last hour", fails ? `<span class="warn-text">${fails} failure${fails === 1 ? "" : "s"} in the log</span>` : "no failure in the log"]]);
+  if ((w.recent_failures || []).length) body += `<pre class="log">${esc(w.recent_failures.join("\n"))}</pre>`;
+  return card(title, [status, w.state], body);
+}
+
+function jobsCard(j) {
+  if (j.error) return failed("Jobs", j);
+  const items = [
+    ...j.builds.map((b) => `Embedding build <b>${esc(b.name)}</b>: ${esc(b.state)}, ${b.done ?? 0} of ${esc(b.todo ?? "?")}` +
+      (b.failed ? `, ${b.failed} failed` : "") + (b.phase ? ` · ${esc(b.phase)}` : "")),
+    ...j.runs.map((r) => `Run <b>${esc(r.name)}</b> on the set ${esc(r.set)}: ${esc(r.state)}, ${r.done ?? 0} of ${esc(r.todo ?? "?")}` +
+      (r.errors ? `, ${r.errors} errors` : ""))];
+  return card("Jobs", items.length ? ["ok", `${items.length} running`] : ["idle", "none"], items.length
+    ? `<ul class="plain">${items.map((item) => `<li>${item}</li>`).join("")}</ul>`
+    : `<p class="muted">No embedding build and no run job runs now.</p>`);
+}
+
+function gatewayCards(g) {
+  if (g.error) return [failed("Gateway", g)];
+  if (!g.length) return [card("Gateway", null, `<p class="muted">No endpoint is on a llama-swap gateway.</p>`)];
+  return g.map((item) => {
+    const title = "Gateway " + item.root.replace(/^https?:\/\//, "");
+    if (item.error) return card(title, ["error", "no answer"], `<p class="error">${esc(item.error)}</p>`);
+    const models = item.running.map((m) => `<li>${mono(m.model)} ${badge(m.state === "ready" ? "ok" : "warn", m.state)}` +
+      (m.used ? ` <span class="tag">config.yaml</span>` : "") +
+      ` <span class="muted">${m.ttl ? `unloads after ${m.ttl} s idle` : "no auto unload"}</span></li>`);
+    return card(title, ["ok", `${item.running.length} running`], models.length
+      ? `<ul class="plain">${models.join("")}</ul>` : `<p class="muted">No model runs now.</p>`);
+  });
+}
+
+function renderStatus(data) {
+  const s = data.status;
+  const cards = [serverCard(s.server), databaseCard(s.database), watcherCard(s.watcher),
+                 jobsCard(s.jobs), ...gatewayCards(s.gateways)];
+  if (data.config_error) cards.unshift(card("config.yaml", ["error", "error"], `<p class="error">${esc(data.config_error)}</p>`));
+  $("cards").innerHTML = cards.join("");
+  $("status-time").textContent = "at " + when(data.time);
+}
+
+function rowHtml(item) {
+  const result = results.get(keyOf(item));
+  let status = "none", label = "not checked", summary = "", details = [], time = "";
+  if (item.error) {
+    status = label = "error";
+    summary = "config.yaml: " + item.error;
+  } else if (result === "pending") {
+    label = "checking…";
+  } else if (result) {
+    status = label = result.status;
+    summary = result.summary;
+    details = result.details || [];
+    time = result.ms == null ? "" : (result.ms / 1000).toFixed(1) + " s";
+  }
+  const extra = [item.key_env ? "key: $" + item.key_env : "",
+                 item.used_by ? "used by " + item.used_by.join(", ") : ""].filter(Boolean).join(" · ");
+  const tone = status === "error" ? "error" : status === "warn" ? "warn-text" : "";
+  return `<tr class="${esc(status)}" data-key="${esc(keyOf(item))}">` +
+    `<td>${esc(KIND[item.kind] || item.kind)}</td><td class="name">${esc(item.name)}</td>` +
+    `<td class="mono">${esc(item.model || "—")}</td>` +
+    `<td class="endpoint mono">${esc(item.endpoint || "—")}${extra ? `<div class="muted">${esc(extra)}</div>` : ""}</td>` +
+    `<td>${badge(status, label)}</td>` +
+    `<td class="result"><div class="${tone}">${esc(summary)}</div>` +
+    (details.length ? `<details><summary>details (${details.length})</summary><ul>${details.map((d) => `<li>${esc(d)}</li>`).join("")}</ul></details>` : "") +
+    `</td><td class="time">${esc(time)}</td></tr>`;
+}
+
+function renderRows() {
+  $("rows").innerHTML = endpoints.length ? endpoints.map(rowHtml).join("")
+    : `<tr><td colspan="7" class="muted">config.yaml names no endpoint.</td></tr>`;
+}
+
+function updateRow(item) {
+  const row = $("rows").querySelector(`tr[data-key="${CSS.escape(keyOf(item))}"]`);
+  if (row) row.outerHTML = rowHtml(item);
+}
+
+// The counts of each status, the configuration errors included.
+function counts() {
+  const out = Object.fromEntries(STATUSES.map((s) => [s, 0]));
+  for (const item of endpoints) {
+    const result = results.get(keyOf(item));
+    const status = item.error ? "error" : result && result !== "pending" ? result.status : null;
+    if (status in out) out[status] += 1;
+  }
+  return STATUSES.filter((s) => out[s]).map((s) => `${out[s]} ${s}`).join(" · ");
+}
+
+async function loadStatus() {
+  try {
+    const response = await fetch("/api/health", {cache: "no-store"});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "HTTP " + response.status);
+    endpoints = data.endpoints;
+    renderStatus(data);
+    renderRows();
+    if (!checking) $("message").textContent = `${endpoints.length} endpoints in config.yaml.`;
+  } catch (error) {
+    $("cards").innerHTML = card("Status", ["error", "error"], `<p class="error">The lab server sent no status: ${esc(error.message)}</p>`);
+    $("message").textContent = "No status.";
+  } finally {
+    $("check").disabled = checking || !endpoints.length;
+  }
+}
+
+async function checkOne(item) {
+  try {
+    const response = await fetch("/api/health/check", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({kind: item.kind, name: item.name})});
+    const data = await response.json();
+    if (!response.ok) return {status: "error", summary: data.error || "HTTP " + response.status, details: [], ms: null};
+    return data;
+  } catch (error) {
+    return {status: "error", summary: "the lab server gave no answer: " + error.message, details: [], ms: null};
+  }
+}
+
+async function checkAll() {
+  checking = true;
+  $("check").disabled = true;
+  results.clear();
+  const todo = endpoints.filter((item) => !item.error);
+  todo.forEach((item) => results.set(keyOf(item), "pending"));
+  renderRows();
+  const total = todo.length, started = performance.now();
+  let done = 0;
+  const seconds = () => ((performance.now() - started) / 1000).toFixed(1);
+  async function worker() {
+    while (todo.length) {
+      const item = todo.shift();
+      results.set(keyOf(item), await checkOne(item));
+      done += 1;
+      updateRow(item);
+      $("message").textContent = `Checking: ${done} of ${total} · ${counts()} · ${seconds()} s`;
+    }
+  }
+  $("message").textContent = `Checking: 0 of ${total}`;
+  await Promise.all(Array.from({length: Math.min(LIMIT, total)}, worker));
+  const elapsed = seconds();
+  checking = false;
+  // The status part loads again after each check.
+  await loadStatus();
+  $("message").textContent = `${endpoints.length} endpoints, checked in ${elapsed} s: ${counts()}`;
+}
+
+$("check").addEventListener("click", () => { if (!checking) checkAll(); });
+loadStatus();
+</script>
+</body>
+</html>

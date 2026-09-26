@@ -69,6 +69,10 @@ The button `Run>` of `/testset` starts a run of one configuration on the set of 
 `run_jobs.py` answers `/api/run-configurations` and `/api/run-jobs`, and starts
 `run_job.py` as a separate process. Read `docs/plans/32_testset-run-button.md`.
 
+The Health page is on at `/health`: `health.py` answers each of its routes. It shows the
+state of the server and checks each endpoint of `config.yaml`. A model that does not run
+on its llama-swap gateway gets no call. Read `docs/plans/46_health-page.md`.
+
 Each API route that this text does not name answers HTTP 503 with a JSON error. The
 navigation of every page stays as it is. Read `docs/plans/07_sqlite-lab-database.md`.
 
@@ -85,6 +89,7 @@ import sqlite3
 import subprocess
 import sys
 import threading
+import time
 import traceback
 import urllib.parse
 import webbrowser
@@ -103,6 +108,7 @@ import comments  # noqa: E402
 import describe_images  # noqa: E402
 import embedding_routes  # noqa: E402
 import favorites  # noqa: E402
+import health  # noqa: E402
 import image_descriptions  # noqa: E402
 import lab_pages  # noqa: E402
 import labdb  # noqa: E402
@@ -128,9 +134,11 @@ STATES = ("Active", "Disabled", "Removed")
 # The Dataset page reads the key `slug`. The API sends `wine_slug` under that key.
 PAGE_KEYS = {"wine_slug": "slug"}
 
-# The pages of the navigation, in the order of the navigation.
+# The pages of the navigation, in the order of the navigation. The owner put `Health`
+# last on 2026-09-26T11:02:57+0300.
 NAV = (("/dataset", "Dataset"), ("/embedding", "Embeddings"),
-       ("/clusters", "Clusters"), ("/testset", "Testset"), ("/runs", "Runs"))
+       ("/clusters", "Clusters"), ("/testset", "Testset"), ("/runs", "Runs"),
+       ("/health", "Health"))
 # The disabled pages. `/docs` is the API page of the review tool.
 DISABLED_PAGES = {"/docs": "API docs"}
 # `GET /` goes to the Dataset page. The owner moved the Testset page to `/testset` on
@@ -905,6 +913,26 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _health(self):
+        """Send the answer of `health.respond` (plan 46)."""
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+
+        try:
+            code, body, ctype, cache = health.respond(self.server, self.command, self.path,
+                                                      read_body, WATCHER_LOG)
+        except Exception as exc:  # noqa: BLE001 - the page needs an answer for each error
+            traceback.print_exc()
+            code, body, ctype, cache = (500, {"error": "internal error: %s" % exc},
+                                        health.JSON_TYPE, "no-store")
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
     def _redirect(self, location):
         self.send_response(302)
         self.send_header("Location", location)
@@ -926,6 +954,8 @@ class Handler(BaseHTTPRequestHandler):
             self._run_jobs()
         elif testset_routes.handles(route):
             self._testset()
+        elif health.handles(route):
+            self._health()
         elif route == "/":
             self._redirect(HOME)
         elif route == "/dataset" or lab_pages.DATASET_PREVIEW_ROUTE.match(route):
@@ -1199,6 +1229,8 @@ class Handler(BaseHTTPRequestHandler):
             self._run_jobs()
         elif testset_routes.handles(route):
             self._testset()
+        elif health.handles(route):
+            self._health()
         elif route == "/api/wine-state" and self.command == "POST":
             self._wine_state()
         elif route == "/api/wine" and self.command == "POST":
@@ -1238,6 +1270,8 @@ def make_server(db_path, host="127.0.0.1", port=DEFAULT_PORT, config_path=None,
     server.db_path = db_path
     server.config_path = config_path
     server.segmenter = segmenter
+    # The start time that the Health page shows.
+    server.started_t = time.time()
     return server
 
 

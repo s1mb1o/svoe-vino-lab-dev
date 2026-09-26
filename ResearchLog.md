@@ -2,6 +2,52 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — health checks: the llama-swap lists load nothing, `/upstream/` loads, and a repeated prompt stops llama.cpp `qwen3.5-9b`
+
+Session drink-atlas-workspace-cc [d62b09], plan 46 (the Health page).
+
+- llama-swap on gx10 (`http://192.168.86.14:18081`): `GET /v1/models` lists 49 models, each
+  with `status.value` `loaded` or `unloaded`. `GET /running` lists the models that run,
+  with `state` (`ready`) and `ttl` (0: no automatic unload). Both answer in about 3 ms and
+  load no model. `GET /logs` gives the proxy log; `GET /logs/stream/upstream` gives the
+  output of the model processes.
+- A request to `/upstream/<model>/<path>` starts the model. A probe of
+  `GET /upstream/sam3/health` at about 10:37 loaded SAM3: 10 s with no answer, and HTTP
+  409 on a second path during the load. No other model stopped.
+- SAM3 answers `GET /upstream/sam3/health` in about 8 ms when it runs:
+  `{"status": "ok", "model": "facebook/sam3", "device": "cuda", "dtype": "fp16",
+  "workers": 1, "batch_size": 4}`.
+- QwenCloud (`token-plan…/compatible-mode/v1`) and DashScope
+  (`dashscope-intl…/compatible-mode/v1`) answer `GET /models` with the key in about 1 s.
+  The lists hold `qwen3.8-max`, `qwen3.8-flash`, and `qwen3.7-flash`. A chat request of
+  1 token takes 1.1 to 1.9 s.
+- The vino-svoe.ru API has no `/v1/info` (HTTP 404, `Cannot GET /v1/info`; that route is a
+  route of svoe-vino-matcher). `GET /v1/wines?page=1&perPage=1` answers in 0.4 to 1.6 s
+  with `totalItems` 2109.
+- The crash. At 11:24:33 the browser test sent the 1-token prompt of 11:10 again to
+  `qwen3.5-9b` (llama.cpp 45b455e of 2026-05-18, `llama-server`, pinned, `ttl` 0). The
+  upstream log: `selected slot by LCP similarity, sim_best = 1.000`, then `need to
+  evaluate at least 1 token for each active slot (n_past = 16, task.n_tokens() = 16)`,
+  `n_past was set to 15`, and a backtrace through `ggml_abort` in
+  `server_context_impl::update_slots`. llama-swap logged `http: proxy error: EOF`,
+  answered HTTP 502 with an empty body, and then logged `upstream exited unexpectedly`.
+  The model did not run after that.
+- The cause, in `tools/server/server-context.cpp` of that commit: on a full prompt match
+  the server keeps one token to evaluate (`[TAG_PROMPT_LOGITS]`) and removes the
+  positions from 15 to the end. The recurrent state of the hybrid model cannot drop one
+  position, so `common_context_seq_rm` calls `GGML_ABORT("failed to remove sequence …")`.
+  A prompt that differs takes the checkpoint path (`restored context checkpoint` or
+  `forcing full prompt re-processing`), which is the path of each chat. The request of
+  11:10 worked, because the slot then held another prompt.
+- The fix of the check: each chat request holds a new random token. `cache_prompt: false`
+  (a field of llama.cpp) also skips the reuse. It was not used, because another service
+  can refuse an unknown field.
+- No OOM: earlyoom reported 62 % of the memory available at 11:25, and the kernel log had
+  no kill.
+- The image description watcher repeats a 300 s timeout of one detail image,
+  `a902e43a5f77`, about every 5 to 9 minutes since 05:40Z at least. At the same time
+  `qwen3.5-9b-nvfp4` stays loaded and answers a 1-token request in about 65 ms.
+
 ## 2026-09-26 — the barcode step: zxing-cpp 2.3.0 on Python 3.14, and a check on real photos
 
 Session drink-atlas-workspace-1c [800d92], plan 42.

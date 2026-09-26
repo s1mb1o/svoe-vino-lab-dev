@@ -1413,3 +1413,21 @@ does not hold (about 0.6 s for each image).
 | SD4 | Stop SD2 with Ctrl+C during a step | The script stops. `data/lab-test.sqlite3` does not change. `data/lab-test.sqlite3.seeding` stays; the next run prints `delete the partial database of an earlier run`. |
 | SD5 | After SD3: `sqlite3 data/lab-test.sqlite3 "SELECT set_name, count(*) FROM test_photo GROUP BY 1"` | `my\|4043`, `official-real-photos\|100`, `vlmrerank-8b-failed\|180` (values of 2026-09-25). |
 | SD6 | Remove `data/lab-test.sqlite3`, its `.seeding` file, and `data/backups/lab-test-*` | The live `data/lab.sqlite3` did not change during SD2 to SD5. |
+
+## The Health page — plan 46
+
+Read [plan 46](docs/plans/46_health-page.md). Use `H=http://127.0.0.1:8168`. The button
+`Check` sends a real call of 1 token to each model that runs on gx10 and to each cloud
+entry.
+
+| # | Case | Expected result |
+|---|---|---|
+| HL1 | `python3 tests/test_health.py` | 28 tests, `OK`. |
+| HL2 | Open `$H/health` | The cards `Server`, `Database`, `Image description watcher`, `Jobs`, and one card for each llama-swap gateway. The table lists each endpoint of `config.yaml` as `not checked`. The link `Health` is last in the navigation and marked. |
+| HL3 | Press `Check` | The button is disabled. Each row gets its result when its answer comes; the message counts the rows. At the end: `<N> endpoints, checked in <s> s: …` with the count of each status, and the status part loads again. |
+| HL4 | `curl -s http://192.168.86.14:18081/running` before and after HL3 | The same models run after the check: the check loads no model. A model that ran has `ok` with its answer time; a model that did not run has `idle`. |
+| HL5 | Press `Check` two times | The second check gives the same statuses. No llama.cpp model stops (each chat request holds a new random token). |
+| HL6 | Open `details` of a row | Each request of the check with its HTTP code and its time. |
+| HL7 | `curl -s -X POST $H/api/health/check -d '{"kind":"vlm","name":"nope"}'` | HTTP 404: `config.yaml has no vlm endpoint nope`. |
+| HL8 | Open `$H/health` with the system theme dark, then light | Both themes are readable. The badges use the colours of `theme.css`. |
+| HL9 | Open `$H/health` at a width of 390 px | No horizontal scroll of the page. The table scrolls in its own box. |

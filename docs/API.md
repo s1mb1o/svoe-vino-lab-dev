@@ -432,6 +432,31 @@ A run with no embedding answers `embedding: null` and no cluster. An embedding w
 `clusters.json` answers `exists: false`. A file that cannot be read adds `error`.
 Errors: `404` for an unknown run.
 
+#### `GET /api/health`
+
+The status part and the endpoints of the Health page of the lab server (plan 46). The
+answer is `{time, config_error, endpoints, status}`. `endpoints` lists
+`{kind, name, model, endpoint, key_env, error}` for each endpoint of `config.yaml`, in the
+order of the page: the `vlm` entries, the `embeddings` entries (with `backend`), `sam3`,
+and `remote` (the vino-svoe.ru API, with `used_by`). `error` holds the configuration error
+of an entry. `status` holds `server`, `database`, `watcher`, `jobs`, and `gateways`. Each
+part holds its own `error`; a part that failed holds `{error}` alone. The route sends no
+request to a model: `gateways` sends one `GET /running` to each root with no key.
+
+#### `POST /api/health/check`
+
+The check of one endpoint of the Health page (plan 46). The body is
+`{"kind": <kind>, "name": <name>}`. `kind` is `vlm`, `embedding`, `sam3`, or `remote`;
+`name` is a name of `endpoints` of `GET /api/health`. The answer is
+`{kind, name, status, summary, details, ms}`. `status` is `ok`, `idle`, `warn`, or `error`.
+`details` lists each request with its HTTP code and its time, and the notes of the check.
+A key value never appears in the answer. A failed check answers HTTP 200 with
+`status: error`.
+
+Errors: `400` for a body that is not a JSON object, for an unknown `kind`, and for no
+`name`. `404` for a name that `config.yaml` does not hold. `405` for another method.
+`503` when `config.yaml` cannot be read.
+
 ### Write
 
 Each of these routes answers `{"ok": true, "counts": {...}}` unless the table states
