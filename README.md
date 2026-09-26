@@ -247,6 +247,10 @@ or of the state of the row; two triggers of schema 015 set it. The sort of the D
 offers `changed in the lab, newest first` and `changed on vino-svoe.ru, newest first`. Read
 [plan 21](docs/plans/21_website-import-ui.md).
 
+While the dialog is open, the path of the page is `/dataset/website-import`. A link to
+`http://127.0.0.1:8168/dataset/website-import` opens the dialog with the newest run. A
+close and Back give `/dataset`.
+
 ```bash
 # later: the test sets my, official-real-photos, and vlmrerank-8b-failed
 python3 pipeline/import_testsets.py --db data/lab.sqlite3
@@ -630,6 +634,11 @@ The table `image_description` describes each image that `wine_image` links to a 
   image. A wine with no image is `not described`. The button is marked while a filter is
   active. A save in the dialog draws the card again but does not apply the filter again,
   as for `Show`; choose the value again to apply it.
+- The second filter of the row is `Identifier`: `All`, `has GTIN`, `has QR URL`, and
+  `has Drink Atlas`. It keeps the wines with at least one value of the chosen kind.
+  `has Drink Atlas` counts a manual and an automatic Atlas Core binding. The filters of
+  the row apply together. A change in a code editor does not apply the filter again, as
+  for `Show`.
 
 ## The image details
 

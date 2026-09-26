@@ -170,6 +170,20 @@ class BuildTest(unittest.TestCase):
         failed = [event for event in events if event["event"] == "item_failed"]
         self.assertEqual(len(failed), 5)
 
+    def test_an_item_failed_line_names_the_wine(self):
+        _, events = self.build()
+        failed = {(event["source_sha256"], event["view"]): event
+                  for event in events if event["event"] == "item_failed"}
+        # The main image of `transparent` is the main image of `shared` too.
+        event = failed[(self.lab.transparent, "label")]
+        self.assertEqual((event["wine"], event["name"], event["image_type"]),
+                         ("transparent", "Name transparent", "main"))
+        self.assertEqual(event["other_wines"], ["shared"])
+        self.assertEqual(event["error"], "no label cut yet")
+        event = failed[(self.lab.unprocessed, "full")]
+        self.assertEqual((event["wine"], event["image_type"]), ("unprocessed", "main"))
+        self.assertNotIn("other_wines", event)
+
     def test_a_request_line_comes_before_each_model_request(self):
         _, events = self.build()
         names = [event["event"] for event in events]

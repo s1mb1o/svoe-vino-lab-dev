@@ -612,6 +612,14 @@ button.preview-thumb:hover { border-color: var(--accent); }
   </div>
   <div class="bar advanced-bar" id="advanced-bar" hidden>
     <label>Package <select id="package-filter"><option value="all">All</option></select></label>
+    <label>Identifier
+      <select id="identifier-filter">
+        <option value="all">All</option>
+        <option value="gtin">has GTIN</option>
+        <option value="qr-url">has QR URL</option>
+        <option value="atlas">has Drink Atlas</option>
+      </select>
+    </label>
   </div>
 </header>
 <main>
@@ -916,7 +924,8 @@ function imagePreviewPath(slug, kind, sha256) {
 function imagePreviewOfPath() {
   const match = location.pathname.match(
     /^\/dataset\/([^/]+)(?:(\/patch)|\/alternative\/([0-9a-f]{64}))?$/);
-  if (!match) return null;
+  // `/dataset/website-import` names the dialog of website_import.js, not a wine.
+  if (!match || match[1] === "website-import") return null;
   const kind = match[2] ? "patch" : match[3] ? "alternative" : "catalog";
   try { return {slug: decodeURIComponent(match[1]), kind, sha256: match[3] || ""}; }
   catch (_) { return null; }
@@ -1803,8 +1812,18 @@ function toggleAdvancedFilters() {
   bar.hidden = !bar.hidden;
   $("#advanced-toggle").setAttribute("aria-expanded", String(!bar.hidden));
 }
+// Identifier keeps the wines that have at least one value of the chosen kind: a GTIN, a
+// QR URL, or a Drink Atlas Core product (a manual or an automatic binding). Owner message
+// of 2026-09-26T07:48:00+0300.
+function hasIdentifier(record, kind) {
+  if (kind === "gtin") return !!(record._gtins || []).length;
+  if (kind === "qr-url") return !!(record._qr_urls || []).length;
+  if (kind === "atlas") return !!record._atlas_product_uuid;
+  return true;
+}
 function changeAdvancedFilter() {
-  const active = $("#package-filter").value !== "all";
+  const active = $("#package-filter").value !== "all"
+    || $("#identifier-filter").value !== "all";
   $("#advanced-toggle").classList.toggle("active", active);
   $("#advanced-toggle").title = active ? "An advanced filter is active" : "";
   render();
@@ -1812,6 +1831,7 @@ function changeAdvancedFilter() {
 function applyView() {
   const filter = $("#filter").value;
   const pack = $("#package-filter").value;
+  const identifier = $("#identifier-filter").value;
   const q = norm($("#q").value.trim());
   const words = q.split(/\s+/).filter(Boolean);
   ROWS = DATA.records.filter(r => {
@@ -1820,6 +1840,7 @@ function applyView() {
     if (filter === "missing" && catalogImageUrl(r)) return false;
     if (filter === "comments" && !(r._comments || []).length) return false;
     if (pack !== "all" && packageOf(r) !== pack) return false;
+    if (!hasIdentifier(r, identifier)) return false;
     if (!inStateView(r)) return false;
     const hay = norm(JSON.stringify({record: rawRecord(r), gtins: r._gtins || [],
       barcodes: r._barcodes || [],
@@ -2967,7 +2988,7 @@ for (const id of ["filter", "state", "sort"]) $("#" + id).addEventListener("chan
    message of 2026-09-26T00:30:00+0300). A stored value that is no longer an option is
    ignored. The listeners of each control run first; the header listener then stores. */
 const HEADER_KEY = "svl.dataset.header";
-const HEADER_IDS = ["filter", "state", "sort", "q", "package-filter"];
+const HEADER_IDS = ["filter", "state", "sort", "q", "package-filter", "identifier-filter"];
 function saveHeader() {
   const value = {};
   for (const id of HEADER_IDS) value[id] = $("#" + id).value;
@@ -2982,7 +3003,9 @@ function restoreHeader() {
     if (node.tagName === "SELECT" && ![...node.options].some(option => option.value === wanted)) continue;
     node.value = wanted;
   }
-  if ($("#package-filter").value !== "all") changeAdvancedFilter();
+  if ($("#package-filter").value !== "all" || $("#identifier-filter").value !== "all") {
+    changeAdvancedFilter();
+  }
 }
 $("header").addEventListener("change", saveHeader);
 $("header").addEventListener("input", saveHeader);
@@ -3040,6 +3063,7 @@ $("#describe-roles").addEventListener("change", event => checkDescribeRole(event
 $("#describe-raw").addEventListener("toggle", loadDescribeRaw);
 $("#advanced-toggle").addEventListener("click", toggleAdvancedFilters);
 $("#package-filter").addEventListener("change", changeAdvancedFilter);
+$("#identifier-filter").addEventListener("change", changeAdvancedFilter);
 $("#describe-modal").addEventListener("click", event => {
   if (event.target === $("#describe-modal")) closeDescribe();
 });

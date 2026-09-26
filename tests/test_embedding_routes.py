@@ -245,7 +245,8 @@ class RoutesTest(unittest.TestCase):
         self.assertIn('id="log-dialog"', body)
         self.assertIn('<button id="log" type="button" disabled', body)
         self.assertIn("/log`", body)
-        self.assertIn('const LOG_HIDDEN = ["item_failed", "progress", "request"];', body)
+        self.assertIn('const LOG_HIDDEN = ["progress", "request"];', body)
+        self.assertIn('<input id="log-show" type="checkbox" checked> Show progress and request', body)
 
     def test_page_has_the_image_preview_of_the_dataset_page(self):
         body = self.get("/embedding")[1]

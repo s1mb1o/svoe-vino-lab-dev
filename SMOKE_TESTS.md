@@ -1100,6 +1100,9 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 | IW15 | Click an image in a change row or in a conflict | A large view of the image opens with its file name. The checkbox or the radio button does not change. Esc or a click closes the large view, and the dialog stays open. |
 | IW16 | In the dialog of IW7, look at the section `Missing on the website`, in light and in dark mode, then click the sign of one row | Each row shows a red prohibition sign on top of the wine image. No other section shows the sign. The click opens the large view of the image without the sign. The checkbox of the row does not change. |
 | IW17 | In the dialog of IW7, look at a conflict of the main image, in light and in dark mode | Each image of the conflict shows its pixel size under it, for example `300×493`, on the `database` side and on the `website` side. The size equals the width and the height of the file. A text conflict and the rows of the changes show no size. |
+| IW18 | On `/dataset`, press `Import from website`, then `×`, then Forward, then Back, then Esc | The open dialog makes the path `/dataset/website-import`. `×`, Back, and Esc close the dialog and give `/dataset`. Forward opens the dialog again. |
+| IW19 | Open `http://127.0.0.1:8168/dataset/website-import` in a new tab, then press `×` | The dialog opens with the newest run in its present state (a running job, the conflicts and changes, or the result). The list shows all records; no image preview opens. `×` gives `/dataset`. |
+| IW20 | After an apply, press `Reload the page` in the result | The page loads again as `/dataset`; the dialog does not open again. |
 
 ## The manual wines — the Dataset button `Add wine`
 
@@ -1423,6 +1426,9 @@ of `README.md`. `H=http://127.0.0.1:8168`.
 | ID20 | Width 390 px with the filter row and the dialog block open | No horizontal scroll. |
 | ID21 | Open the select `Package` | `All`, then only the values that at least one wine has, in the order of `image_descriptions.VALUES`, then `not described` when a wine has no value. On 2026-09-25: `bottle`, `can`, `tetra_pak`, `box`, `not described` (2,009, 11, 21, 6, and 57 wines). |
 | ID22 | Choose `Package: box`, then save the last `box` wine as `keg` in the dialog | The select now holds `keg`. It keeps `box` while `box` is chosen; after a reload `box` is gone. |
+| ID23 | Choose `Identifier: has GTIN`, then `has QR URL`, then `has Drink Atlas` | Each card shows a wine with at least one GTIN, at least one QR URL, or an Atlas Core product (manual or automatic). The button `Advanced Filters:` is marked. On 2026-09-26: 22, 3, and 367 of 2,103 records. |
+| ID24 | Choose `Identifier: has Drink Atlas` and `Package: bottle` | The two filters apply together: a card MUST match both. |
+| ID25 | Choose `Identifier: has GTIN`, then reload | The select keeps `has GTIN`, the filter applies, and the button `Advanced Filters:` is marked. |
 
 ## The image details — `image_detail` and stage 2 of `pipeline/describe_images.py`
 

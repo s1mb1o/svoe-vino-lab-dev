@@ -3877,3 +3877,38 @@ A twin of every embedding pipeline
 ```
 
 The option: "22 new entries: a barcode twin of every embedding pipeline in plan 40."
+
+## 2026-09-26T07:48:00+0300
+
+```text
+http://127.0.0.1:8168/dataset
+
+add advanced filter: 
+- All | has GTIN | has QR URL | has Drink Atlas
+
+name filter yourself
+```
+
+## 2026-09-26T08:00:00+0300
+
+```text
+provide url slug for page when website crawl results displayed
+```
+
+The message came with a screenshot of the dialog "Import from vino-svoe.ru" on `/dataset`
+(the section "Conflicts").
+
+## 2026-09-26T08:07:00+0300
+
+The question of the agent: "Which URL should the page show while the \"Import from
+vino-svoe.ru\" dialog is open?"
+
+```text
+/dataset/website-import (Recommended)
+```
+
+## 2026-09-26T08:20:00+0300
+
+```text
+if you have work done, commit it
+```

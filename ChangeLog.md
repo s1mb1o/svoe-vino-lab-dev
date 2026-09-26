@@ -2,6 +2,21 @@
 
 ## 2026-09-26
 
+- `/dataset`: the row `Advanced Filters:` has a second filter `Identifier` with `All`,
+  `has GTIN`, `has QR URL`, and `has Drink Atlas` (owner message of
+  2026-09-26T07:48:00+0300; session drink-atlas-workspace-74 [1c1b2b]). It reads
+  `_gtins`, `_qr_urls`, and `_atlas_product_uuid` of `GET /api/dataset`. The header
+  state in `localStorage` keeps its value. A page change alone; no restart. On the new
+  database: 22, 3, and 367 of 2,103 records. 14 Playwright checks pass (smoke rows ID23
+  to ID25).
+- `/dataset`: the path is `/dataset/website-import` while the dialog `Import from
+  vino-svoe.ru` is open (owner message of 2026-09-26T08:00:00+0300, answer of 08:07:00;
+  session drink-atlas-workspace-74 [1c1b2b]). A link to it or a reload of it opens the
+  dialog with the newest run. A close and Back give `/dataset`; Forward opens the dialog
+  again. `imagePreviewOfPath` of `dataset.html` does not read `website-import` as a wine
+  slug. `Reload the page` in the result loads `/dataset`. Page code alone
+  (`website_import.js`, `dataset.html`); no restart. 17 Playwright checks pass; 6 website
+  import tests and 60 lab server tests OK (smoke rows IW18 to IW20).
 - The pipelines have a barcode step: the optional key `barcode:` of a pipeline of the
   backend `embedding` (plan 42; owner message of 2026-09-26T07:22:10+0300 and the answers
   of 07:27:08; session drink-atlas-workspace-1c [800d92]). The new `pipeline/barcode.py`

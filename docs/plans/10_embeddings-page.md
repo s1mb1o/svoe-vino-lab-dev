@@ -302,7 +302,7 @@ One JSON object per line. The build flushes each line.
 ```json
 {"event": "start", "name": "...", "pid": 123, "items": 4036, "current": 0, "todo": 4036, "time": "..."}
 {"event": "progress", "done": 160, "todo": 4036, "failed": 2, "time": "..."}
-{"event": "item_failed", "source_sha256": "...", "view": "full", "error": "..."}
+{"event": "item_failed", "source_sha256": "...", "view": "full", "wine": "<slug>", "name": "...", "image_type": "main", "error": "..."}
 {"event": "request", "images": 16, "time": "..."}
 {"event": "retry", "attempt": 1, "wait": 2, "error": "HTTP 503 from ...", "time": "..."}
 {"event": "done", "built": 4034, "current": 0, "failed": 2, "pruned": 0, "seconds": 71.4}
@@ -393,6 +393,11 @@ The page follows the Embedding page of `svoe-vino-testset` (its `README.md`, sec
    line shows as `time · event · fields`. A line that is not JSON shows as it is, in
    red. A checkbox hides the `item_failed` and `progress` lines; it is on at the start.
    Added on 2026-09-25 (owner message of 11:42:50, answer of 11:45:00).
+   Changed on 2026-09-26 (owner messages of 07:50:00 and 07:51:00): the checkbox is
+   `Show progress and request` and is on at the start. When it is off, the `progress`
+   and `request` lines are hidden. An `item_failed` line always shows. It names the
+   wine of the file: `wine`, `name`, `image_type`, and `other_wines` when more wines use
+   the file.
 10. A click on a prepared image opens the image preview of `/dataset`: the image, a
     title, the size, `open raw image` (the original), arrows, and thumbnails. The arrows
     step through the images of the same view of the filtered list. The thumbnails show

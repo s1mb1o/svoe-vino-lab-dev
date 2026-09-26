@@ -171,7 +171,13 @@ def run(embedding, db_path, directory, make_backend=make_backend, stop=None,
     stop = stop or Stop()
     started = time.monotonic()
     with closing(embeddings.open_database(db_path)) as conn:
-        _, sources = embeddings.read_inputs(conn, db_path)
+        wines, sources = embeddings.read_inputs(conn, db_path)
+    # source sha256 -> the wines that use the file, in import order. `item_failed` names
+    # them, so the log shows which wine has the failed image.
+    users = {}
+    for wine in wines:
+        for image_type, digest in wine["columns"]:
+            users.setdefault(digest, []).append((wine, image_type))
     items = embeddings.plan_items(embedding, sources)
     images_dir = os.path.join(directory, embeddings.IMAGES)
     os.makedirs(images_dir, exist_ok=True)
@@ -212,7 +218,11 @@ def run(embedding, db_path, directory, make_backend=make_backend, stop=None,
         failures[key] = {"source_sha256": key[0], "view": key[1], "role": item["role"],
                          "embedding_hash": item["embedding_hash"], "error": error}
         counts["failed"] += 1
-        emit("item_failed", source_sha256=key[0], view=key[1], error=error)
+        (wine, image_type), *others = users[key[0]]
+        names = dict(wine=wine["slug"], name=wine["name"], image_type=image_type)
+        if others:
+            names["other_wines"] = [other["slug"] for other, _ in others]
+        emit("item_failed", source_sha256=key[0], view=key[1], **names, error=error)
 
     def checkpoint():
         order = [key for key in items if key in kept

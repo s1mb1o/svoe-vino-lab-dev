@@ -97,6 +97,9 @@
     ["main", "Missing main images, taken from website",
      "The database has no main image for these wines. Apply stores the website image as the main image."],
   ];
+  // The path of the page while the dialog is open (owner message of
+  // 2026-09-26T08:00:00+0300). A link to it or a reload of it opens the dialog.
+  const PATH = "/dataset/website-import";
   let state = null;
   let diff = null;
   let timer = null;
@@ -155,10 +158,18 @@
   function open() {
     modal.hidden = false;
     document.body.style.overflow = "hidden";
+    if (location.pathname !== PATH) history.pushState({websiteImport: true}, "", PATH);
   }
-  function close() {
+  function hide() {
     modal.hidden = true;
     document.body.style.overflow = "";
+  }
+  // Close the dialog and give the page its path `/dataset` again. The entry that `open`
+  // pushed goes away with Back, so Forward opens the dialog again.
+  function close() {
+    hide();
+    if (history.state && history.state.websiteImport) history.back();
+    else if (location.pathname === PATH) history.replaceState(null, "", "/dataset");
   }
 
   function showRunning() {
@@ -383,7 +394,11 @@
       try { await getJson(`${API}/stop`, {method: "POST"}); } catch (error) { setStatus(error.message, true); }
       await poll();
     } else if (action === "apply") await apply();
-    else if (action === "reload") location.reload();
+    else if (action === "reload") {
+      // The page loads again as `/dataset`, so the dialog does not open again.
+      history.replaceState(null, "", "/dataset");
+      location.reload();
+    }
     else if (action === "all") {
       for (const input of body.querySelectorAll(`input[data-conflict][value="${target.dataset.side}"]`)) {
         input.checked = true;
@@ -415,12 +430,18 @@
     }
   }, true);
   button.addEventListener("click", () => show());
+  // Back and Forward open or close the dialog that the page path names.
+  window.addEventListener("popstate", () => {
+    if (location.pathname !== PATH) {
+      if (!modal.hidden) hide();
+    } else if (modal.hidden && !button.hidden) show();
+  });
 
   // The button appears only on a server with the website import. The review tool of
   // scripts/review_server.py serves the same page with no such route.
   fetch(API).then(response => {
     if (!response.ok) return;
     button.hidden = false;
-    poll();
+    poll().then(() => { if (location.pathname === PATH && modal.hidden) show(); });
   }).catch(() => {});
 })();

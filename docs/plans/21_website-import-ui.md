@@ -210,6 +210,12 @@ A new module `pipeline/website_import_routes.py`, like `embedding_routes.py`.
   titles are `New wines on website` and `Missing main images, taken from website`.
 - `Apply` starts the apply job. At the end the page reads the data again and shows the
   result.
+- Change of 2026-09-26 (owner message of 08:00:00, answer of 08:07:00): the path of the
+  page is `/dataset/website-import` while the dialog is open. The open pushes a history
+  entry; a close and Back give `/dataset`; Forward opens the dialog again. A link to the
+  path, or a reload of it, opens the dialog with the newest run. The server already sends
+  the page for `/dataset/<one segment>`; the page does not read `website-import` as a wine
+  slug. `Reload the page` in the result loads `/dataset`.
 - `#sort` gets `changed in the lab, newest first` (`modified_at`) and `changed on
   vino-svoe.ru, newest first` (`website_modified_at`). A NULL time sorts last.
 
