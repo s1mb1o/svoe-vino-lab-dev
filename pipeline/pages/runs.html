@@ -168,7 +168,7 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .cand.twin { border-style: dashed; border-color: var(--pos); background: var(--pos-bg); }
 .cand.twin.missing { background: transparent; }
 .cand.apart { margin-left: 26px; }
-/* candidates that stand next to each other and belong to one catalogue cluster */
+/* candidates that stand next to each other and belong to one embedding cluster */
 .clgrp { display: flex; flex-wrap: wrap; gap: 8px; padding: 17px 3px 3px;
          position: relative;
          border: 2px solid var(--accent); border-radius: 11px; }
@@ -386,11 +386,14 @@ let CONF = new URLSearchParams(location.search).get("configuration") || "";
 const BOTTLES = {};
 let PATCHED = new Set();
 const isPatched = slug => PATCHED.has(slug);
-/* The catalogue cluster of each slug, from `/api/run-clusters`. A slug stands in one
-   cluster at most. */
+/* The cluster of each slug for the open run, from `/api/run-clusters?id=` (plan 43): the
+   view `combined` of `clusters.json` of the embedding of that run. A slug stands in one
+   cluster at most. A run with no lab embedding has no cluster. */
 let CLUSTER = {};
 /* The card names of `/api/run-clusters`, by slug, for the box of the rule step. */
 let CARDNAME = {};
+/* The embedding of `CLUSTER`, and whether its clusters are stale (`null`: not known). */
+let CLUSTER_SRC = { embedding: null, stale: null };
 /* The order of the table of the runs. The newest run stands first at the start. */
 let RSORT = { key: "id", dir: -1 };
 /* The pages of the table of the runs (owner message of 2026-09-25, "add pagination to
@@ -656,9 +659,9 @@ function bottleHtml(slug, cand) {
                 {className:'nobottle',textContent:'no bottle photo'}))">`, isPatched(slug));
 }
 
-/* Two or more candidates that stand next to each other and belong to one catalogue
-   cluster share one frame. A cluster card that stands apart from the others gets no
-   frame. */
+/* Two or more candidates that stand next to each other and belong to one cluster of the
+   embedding of the run share one frame. A cluster card that stands apart from the others
+   gets no frame. The link opens the cluster on `/clusters`. */
 function candStrip(cands, truth, forbidden, twins, vlm) {
   let html = "";
   for (let i = 0; i < cands.length;) {
@@ -668,7 +671,8 @@ function candStrip(cands, truth, forbidden, twins, vlm) {
     const cards = cands.slice(i, j).map(c => candCard(c, truth, forbidden, twins)).join("");
     const group = j - i < 2 ? cards
       : `<div class="clgrp" title="cluster ${esc(cl.id)} &middot; ${esc(cl.kind)} &middot; ${
-          cl.size} cards"><a class="clgrp-link" href="/clusters#${
+          cl.size} wines${CLUSTER_SRC.stale ? " &middot; stale" : ""}"><a class="clgrp-link"
+          href="/clusters?name=${encodeURIComponent(CLUSTER_SRC.embedding)}&amp;space=combined#${
           encodeURIComponent(cands[i].slug)}" title="open cluster ${esc(cl.id)} details">cluster ${
           esc(cl.id)} details &rarr;</a>${cards}</div>`;
     // The rule step acts on the cluster of rank 1, so its box stands under that group.
@@ -821,13 +825,29 @@ function evenCards(root) {
 }
 
 /* ---- loading ---- */
+/* Read the clusters of the embedding of run `id` (plan 43). The frame is a hint, so a
+   failure leaves no cluster and MUST NOT stop the page. */
+async function loadClusters(id) {
+  CLUSTER = {}; CARDNAME = {}; CLUSTER_SRC = { embedding: null, stale: null };
+  try {
+    const cls = await (await fetch(`/api/run-clusters?id=${encodeURIComponent(id)}`)).json();
+    for (const cl of cls.clusters || [])
+      for (const s of cl.slugs || []) CLUSTER[s] = cl;
+    for (const [s, k] of Object.entries(cls.cards || {})) CARDNAME[s] = k.name || s;
+    CLUSTER_SRC = { embedding: cls.embedding || null, stale: cls.stale ?? null };
+  } catch (e) { /* the frame is a hint; its absence MUST NOT stop the page */ }
+}
+
 async function loadRun(id, append) {
   CUR = id;
   if (!append) { OFFSET = 0; $("#res-body").innerHTML = ""; }
   const url = `/api/run?id=${encodeURIComponent(id)}&filter=${$("#filter").value}` +
               `&sort=${$("#sort").value}` +
               `&q=${encodeURIComponent($("#q").value.trim())}&offset=${OFFSET}&limit=100`;
+  // The clusters of a new run load while its rows load.
+  const clustersRead = append ? null : loadClusters(id);
   const data = await (await fetch(url)).json();
+  await clustersRead;
   if (data.error) { alert(data.error); return; }
   TOTAL = data.total;
   Object.assign(BOTTLES, data.bottles || {});
@@ -1134,12 +1154,6 @@ $("header").addEventListener("change", saveHeader);
 $("header").addEventListener("input", saveHeader);
 
 (async function init() {
-  try {
-    const cls = await (await fetch("/api/run-clusters")).json();
-    for (const cl of cls.clusters || [])
-      for (const s of cl.slugs || []) CLUSTER[s] = cl;
-    for (const [s, k] of Object.entries(cls.cards || {})) CARDNAME[s] = k.name || s;
-  } catch (e) { /* the frame is a hint; its absence MUST NOT stop the page */ }
   const data = await (await fetch("/api/runs")).json();
   RUNS = data.runs || [];
   CONFIGS = data.configurations || [];

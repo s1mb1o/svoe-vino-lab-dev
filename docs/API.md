@@ -142,7 +142,7 @@ It holds no label state. Read `GET /api/v1/wine/<slug>` for the full form.
 
 ## The routes of the page
 
-These routes serve the review page, the runs page, and the clusters page. An agent MAY use them. They
+These routes serve the review page and the runs page. An agent MAY use them. They
 follow the page, so they MAY change when the page changes. The routes under `/api/v1/`
 do not change in this way.
 
@@ -413,37 +413,24 @@ no item and a note. The route sends no request to a model.
 Errors: `404` for an unknown run or query, and for a slug that is not a candidate of the
 query.
 
-#### `GET /api/clusters`
+#### `GET /api/run-clusters?id=<id>`
 
-The catalogue clusters for the page `/clusters`. A cluster is a group of catalogue
-cards that the matcher confuses, or can confuse. `scripts/10_clusters.py` writes the
-file that the key `clusters.file` of `config.yaml` names. Read
-`docs/plans/04_catalog-clusters.md`.
+The clusters of the embedding of one run of the lab server, for the cluster frames and
+the VLM box of `/runs` (plan 43). The embedding is `backend.embedding` of `run.json`,
+or `backend.id` for an older run of an embedding configuration. A run of another
+backend has no embedding.
 
-The answer holds the whole file, `{version, built_at, note, settings, inputs, counts,
-clusters}`, and three added fields: `exists`, `file`, and `cards`. `cards` holds one
-record for each card of a cluster: `{name, producer, category, grapes, page_url,
-in_catalog, patched, has_label, in_review, excluded, photos}`. `photos` holds the label
-counts of the candidate photos in the dataset in use.
+The answer is `{exists, embedding, space, file, built_at, stale, clusters, cards}`.
+`space` is `combined`: the view of `data/embeddings/<embedding>/clusters.json` that the
+route reads. One cluster holds `{id, key, kind, size, slugs, rule}`. `rule` holds
+`{mode, questions}` of the `label` rule of the cluster in `cluster-rules.json`, or
+`null`. `cards` holds `{name}` of each cluster slug from the lab database. `stale` is
+true when the inputs of the embedding changed after the cluster build, and `null` when
+the status is not known.
 
-One cluster holds `{id, kind, size, signals, slugs, producers, confusions, links}`.
-One link holds `{a, b, by, name, photo, label, a_as_b, b_as_a, photos}`. `by` names
-the signals that passed. `photo` and `label` hold the cosine also when that signal did
-not pass. `id` is not stable between two builds.
-
-Each cluster also holds `key`, `notes`, `rule`, and `rule_status`, and each card record
-holds `description`, `description_error`, and `description_built_at`. These come from
-the two files of `scripts/11_cluster_rules.py`. `key` is the SHA-1 of the sorted slugs,
-12 hex digits. `rule` holds `{mode, differences, questions, rule, indistinguishable,
-note, built_at, edited_at, ms, error, max_side, letters}`. `edited_at` is present after
-a reviewer saves a manual edit. `mode` is `sheet`, `verdict`, or `none`.
-`rule_status` is `none`, `error`, `stale`, or `current`. A note holds `{text,
-updated_at, slugs, members_changed}`. The top field `rules` holds the paths of the two
-files, the model, and `busy`. Read `docs/plans/05_cluster-label-rules.md`.
-
-The route reads the file at each request, so a new build needs no restart. When the
-file is absent, the answer is `200` with `exists: false` and `hint`. Errors: `500` when
-the file cannot be read as JSON.
+A run with no embedding answers `embedding: null` and no cluster. An embedding with no
+`clusters.json` answers `exists: false`. A file that cannot be read adds `error`.
+Errors: `404` for an unknown run.
 
 ### Write
 
@@ -465,9 +452,6 @@ another answer. `counts` is the counter set of the whole review set.
 | `POST /api/group` | `{slug, target}` | Join two wines into one variant group. The write is one pair. A wine that is in no group takes the group of the other wine. Answers `{ok, changed, group, ...}`; when `changed` is true the answer also holds `rows`, `labels`, `wines`, `excluded`, `groups`, and `slugs`. `409` when both wines are already in two different groups: a merge of two groups cannot be undone by taking one pair away. |
 | `POST /api/upload?slug=<slug>&name=<file>` | the picture bytes | The body is the picture itself, not a form. The route writes no label, no score, and no comment. Answers `{ok, slug, file, photos}`. An agent SHOULD use `POST /api/v1/propose` with a `data:` URL instead. |
 | `POST /api/inbox-upload?name=<file>` | the picture bytes | Store one external file directly in the unassigned `my/` inbox. The media type comes from the bytes. The route removes path parts and unsafe characters from the source name. It does not replace an existing file. Answers `{ok, file, inbox}`. |
-| `POST /api/cluster-note` | `{slugs, text}` | The note of one catalogue cluster, at most 4000 characters. `slugs` MUST be the slugs of one current cluster. An empty `text` clears the note. The note replaces every note of that cluster, and the rule stays `stale` until its next build. Answers `{ok, note}`. `400` when the slugs are not the slugs of one cluster. |
-| `POST /api/cluster-rule-edit` | `{slugs, rule, questions}` | Store a manual edit of the functional rule. `questions` has at most three `{question, answers}` objects. Each `answers` object is keyed by a current cluster slug. A blank answer means null. The server applies the same rule checks as a VLM build and recomputes the mode. Build identity stays unchanged. A later `POST /api/cluster-rule` replaces the edit. Answers `{ok, mode, edited_at}`. |
-| `POST /api/cluster-rule` | `{slug}` | Build the label rule of the cluster of `slug` again: first the label descriptions that are not current, then the rule with the note. The route calls the VLM and takes about 5 to 30 seconds. One build runs at a time. Answers `{ok, descriptions_built, mode, error}`. `400` when the slug is in no cluster. `409` when another build runs. |
 | `POST /api/fetch-image` | `{slug, url}` | Fetch one picture from an address and store it, without a proposal. The rules of the address are the rules of `POST /api/v1/propose`. Answers `{ok, slug, file, photos, url}`. An agent SHOULD use `POST /api/v1/propose` instead. |
 | `POST /api/inbox-fetch` | `{url}` | Fetch one picture that was dragged from another browser page. Store it directly in the unassigned `my/` inbox. The address rules equal the rules of `POST /api/v1/propose`. Answers `{ok, file, inbox, url}`. |
 

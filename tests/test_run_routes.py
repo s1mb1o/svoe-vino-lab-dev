@@ -166,28 +166,43 @@ class RunRoutesTest(unittest.TestCase):
         self.assertEqual(self.get_json("/api/run-inputs?id=%s&query=q-9" % MOCK_RUN)[0], 404)
         self.assertEqual(self.get_json("/api/run-inputs?id=none&query=q-1")[0], 404)
 
-    def test_api_run_clusters_reads_the_cluster_files(self):
-        clusters, rules = self.root / "clusters.json", self.root / "rules.json"
-        old = RR.CLUSTERS_FILE, RR.RULES_FILE
-        RR.CLUSTERS_FILE, RR.RULES_FILE = str(clusters), str(rules)
-        try:
-            status, data = self.get_json("/api/run-clusters")
-            self.assertEqual((status, data["exists"], data["clusters"]), (200, False, []))
-            clusters.write_text(json.dumps({"clusters": [
-                {"id": "c001", "kind": "look-alike", "size": 2,
-                 "slugs": ["wine-a", "wine-b"]}]}), encoding="utf-8")
-            key = RR.cluster_key(["wine-b", "wine-a"])
-            rules.write_text(json.dumps({"clusters": {key: {
-                "mode": "sheet", "questions": [{"id": "q1", "valid": True}], "ms": 5}}}),
-                encoding="utf-8")
-            status, data = self.get_json("/api/run-clusters")
-        finally:
-            RR.CLUSTERS_FILE, RR.RULES_FILE = old
-        self.assertEqual(status, 200)
-        self.assertEqual(data["clusters"][0]["rule"],
-                         {"mode": "sheet", "questions": [{"id": "q1", "valid": True}]})
-        self.assertEqual(data["cards"], {"wine-a": {"name": "Вино a"},
-                                         "wine-b": {"name": "Вино b"}})
+    def test_api_run_clusters_reads_the_clusters_of_the_run_embedding(self):
+        # Plan 43: a pipeline run names its embedding in `backend.embedding`; a run of an
+        # embedding configuration from before plan 34 names it in `backend.id`.
+        pipe_run, old_run = "2026-09-25T120000Z-lab-pipe-my", "2026-09-25T090000Z-lab-gw-my"
+        self.write_run(pipe_run, {"configuration": "pipe", "backend": {
+            "kind": "embedding", "id": "pipe", "embedding": "gw"}}, [])
+        self.write_run(old_run, {"configuration": "gw", "backend": {
+            "kind": "embedding", "id": "gw"}}, [])
+        self.assertEqual(self.get_json("/api/run-clusters?id=none")[0], 404)
+        status, data = self.get_json("/api/run-clusters?id=%s" % MOCK_RUN)
+        self.assertEqual((status, data["embedding"], data["clusters"]), (200, None, []))
+        status, data = self.get_json("/api/run-clusters?id=%s" % pipe_run)
+        self.assertEqual((status, data["embedding"], data["exists"]), (200, "gw", False))
+        directory = self.root / "embeddings" / "gw"
+        directory.mkdir(parents=True)
+        key = "0123456789ab"
+        cluster = {"id": "c001", "key": key, "kind": "mixed", "size": 2,
+                   "signals": ["full", "label"], "slugs": ["wine-a", "wine-b"], "links": []}
+        (directory / "clusters.json").write_text(json.dumps({
+            "version": 1, "built_at": "2026-09-26T08:00:00+0300", "input_hash": "old",
+            "spaces": {"full": {"clusters": []}, "label": {"clusters": []},
+                       "combined": {"clusters": [cluster]}}}), encoding="utf-8")
+        (directory / "cluster-rules.json").write_text(json.dumps({"version": 1, "spaces": {
+            "label": {key: {"mode": "sheet", "questions": [{"id": "q1", "valid": True}],
+                            "raw_reply": "x"}},
+            "full": {key: {"mode": "verdict"}}}}), encoding="utf-8")
+        for run_id in (pipe_run, old_run):
+            status, data = self.get_json("/api/run-clusters?id=%s" % run_id)
+            self.assertEqual((status, data["embedding"], data["space"], data["exists"]),
+                             (200, "gw", "combined", True))
+            self.assertEqual(data["clusters"], [{
+                "id": "c001", "key": key, "kind": "mixed", "size": 2,
+                "slugs": ["wine-a", "wine-b"],
+                "rule": {"mode": "sheet", "questions": [{"id": "q1", "valid": True}]}}])
+            self.assertEqual(data["cards"], {"wine-a": {"name": "Вино a"},
+                                             "wine-b": {"name": "Вино b"}})
+            self.assertIs(data["stale"], True)
 
 
 if __name__ == "__main__":

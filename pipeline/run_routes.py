@@ -8,7 +8,8 @@ the lab database does not hold them. Each route is GET and writes nothing:
                                                 pipelines of `config.yaml`
     GET /api/run?id=&filter=&sort=&q=&offset=&limit=
                                                 the metrics and the rows of one run
-    GET /api/run-clusters                       the catalogue clusters and card names
+    GET /api/run-clusters?id=                   the clusters of the embedding of one run
+                                                and their card names (plan 43)
     GET /api/run-inputs?id=&query=              the model inputs of one row
     GET /api/run-candidate?id=&query=&slug=     the catalogue inputs of one candidate of
                                                 an embedding run and their cosines
@@ -19,7 +20,6 @@ store of the lab database, through the route `/images/<folder>/<sha256>.<ext>`: 
 of a row by its `image_sha256`, and the catalogue image of a slug by the rule of
 `card_images` of `lab_server.py`. Read `docs/plans/23_runs-page.md`.
 """
-import hashlib
 import os
 import sqlite3
 import sys
@@ -35,8 +35,6 @@ import run_files
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS_DIR = os.path.join(ROOT, "runs")
-CLUSTERS_FILE = os.path.join(ROOT, "dataset", "catalog-clusters.json")
-RULES_FILE = os.path.join(ROOT, "dataset", "catalog-cluster-rules.json")
 MATCHER_ROOT = os.path.join(os.path.dirname(ROOT), "svoe-vino-matcher")
 ROUTES = ("/runs", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
           "/api/run-candidate")
@@ -44,6 +42,10 @@ JSON_TYPE = "application/json; charset=utf-8"
 MAX_LIMIT = 1000
 # The keys of a cluster rule that the VLM box of the page reads.
 RULE_KEYS = ("mode", "questions")
+# The view of `clusters.json` that the page shows, as on the Testset page (plan 37), and
+# the rule space of `cluster-rules.json`: the matcher sends a label crop (plan 30).
+CLUSTER_SPACE = "combined"
+RULE_SPACE = "label"
 
 
 def handles(route):
@@ -77,7 +79,7 @@ def respond(server, method, path, card_images):
     if route == "/api/run":
         return run_view(runs_dir, server.db_path, query, card_images)
     if route == "/api/run-clusters":
-        return _json(200, clusters_view(server.db_path))
+        return clusters_view(runs_dir, server, query)
     if route == "/api/run-candidate":
         return candidate_view(runs_dir, server.db_path, query)
     return inputs_view(runs_dir, server.db_path, query)
@@ -199,31 +201,63 @@ def run_view(runs_dir, db_path, query, card_images):
     })
 
 
-def cluster_key(slugs):
-    """The key of a cluster in the rules file: the SHA-1 of its sorted slugs, 12 hex
-    digits. This is `cluster_key` of `scripts/cluster_rules.py`."""
-    return hashlib.sha1("\n".join(sorted(slugs)).encode("utf-8")).hexdigest()[:12]
+def run_embedding(runs_dir, run_id):
+    """Return the name of the lab embedding of one run, or None (plan 43). A run of a
+    pipeline records it in `backend.embedding`. A run of an embedding configuration from
+    before plan 34 records it in `backend.id`. A run of another backend has none."""
+    meta = run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {}
+    backend = meta.get("backend") or {}
+    if backend.get("kind") != "embedding":
+        return None
+    name = backend.get("embedding") or backend.get("id")
+    return name if isinstance(name, str) and embeddings.NAME_RE.match(name) else None
 
 
-def clusters_view(db_path):
-    """Return the clusters of `dataset/catalog-clusters.json` with the questions of their
-    rule, and the card name of each cluster slug. A missing file gives no cluster."""
-    data = run_files.read_json(CLUSTERS_FILE)
-    if not isinstance(data, dict):
-        return {"exists": False, "file": CLUSTERS_FILE, "clusters": [], "cards": {}}
-    rules = (run_files.read_json(RULES_FILE) or {}).get("clusters") or {}
+def clusters_view(runs_dir, server, query):
+    """Answer the clusters of the embedding of one run (plan 43): the view `combined` of
+    `data/embeddings/<name>/clusters.json`, the `label` rule of each cluster from
+    `cluster-rules.json` of the same directory, and the card name of each cluster slug.
+    A run with no embedding, or an embedding with no cluster build, gives no cluster."""
+    import clusters as embedding_clusters  # noqa: E402  (numpy, on demand)
+    run_id = _one(query, "id")
+    if run_id not in run_files.run_dirs(runs_dir):
+        return _error(404, "unknown run")
+    answer = {"exists": False, "embedding": run_embedding(runs_dir, run_id),
+              "space": CLUSTER_SPACE, "file": None, "built_at": None, "stale": None,
+              "clusters": [], "cards": {}}
+    name = answer["embedding"]
+    if name is None:
+        return _json(200, answer)
+    directory = embeddings.entry_dir(server.db_path, name)
+    answer["file"] = os.path.join(directory, embedding_clusters.CLUSTERS_FILE)
+    try:
+        artifact = embedding_clusters.load_artifact(directory)
+        rules = embedding_clusters.load_rules(directory).get(RULE_SPACE) or {}
+    except embedding_clusters.ClusterError as exc:
+        return _json(200, dict(answer, error=str(exc)))
+    if artifact is None:
+        return _json(200, answer)
+    try:
+        settings = embeddings.load_settings(server.config_path or embeddings.CONFIG_PATH)
+        answer["stale"] = embedding_clusters.artifact_status(settings, name)["stale"]
+    except (embedding_clusters.ClusterError, embeddings.ConfigError, OSError,
+            sqlite3.Error, ValueError):
+        pass  # the status is a hint of the frame; `null` means "not known"
+    view = ((artifact.get("spaces") or {}).get(CLUSTER_SPACE) or {}).get("clusters") or []
     clusters = []
-    for cluster in data.get("clusters") or []:
+    for cluster in view:
         slugs = cluster.get("slugs") or []
-        rule = rules.get(cluster_key(slugs))
-        clusters.append({"id": cluster.get("id"), "kind": cluster.get("kind"),
+        rule = rules.get(cluster.get("key"))
+        clusters.append({"id": cluster.get("id"), "key": cluster.get("key"),
+                         "kind": cluster.get("kind"),
                          "size": cluster.get("size", len(slugs)), "slugs": slugs,
                          "rule": {k: rule.get(k) for k in RULE_KEYS}
                          if isinstance(rule, dict) else None})
+    answer.update(exists=True, built_at=artifact.get("built_at"), clusters=clusters)
     wanted = sorted({slug for cluster in clusters for slug in cluster["slugs"]})
-    cards = {}
+    cards = answer["cards"]
     try:
-        with closing(_connect(db_path)) as conn:
+        with closing(_connect(server.db_path)) as conn:
             for start in range(0, len(wanted), 500):
                 chunk = wanted[start:start + 500]
                 for slug, name in conn.execute(
@@ -232,7 +266,7 @@ def clusters_view(db_path):
                     cards[slug] = {"name": name or ""}
     except sqlite3.Error:
         pass  # the names are a hint of the VLM box; the slug stands in their place
-    return {"exists": True, "file": CLUSTERS_FILE, "clusters": clusters, "cards": cards}
+    return _json(200, answer)
 
 
 def inputs_view(runs_dir, db_path, query):

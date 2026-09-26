@@ -3912,3 +3912,73 @@ vino-svoe.ru\" dialog is open?"
 ```text
 if you have work done, commit it
 ```
+
+## 2026-09-26T07:20:00+0300
+
+The time is approximate. The agent recorded this message late, together with the next one.
+
+```text
+svoe-vino-lab
+
+we have clusters, made using specific embeddings, where do we store cluster information?
+```
+
+## 2026-09-26T07:26:00+0300
+
+```text
+and who uses @svoe-vino-lab/dataset/catalog-clusters.json  ?
+```
+
+## 2026-09-26T07:32:51+0300
+
+```text
+@svoe-vino-lab  shall use those clusters that are inside @svoe-vino-lab/data/embeddings , not @svoe-vino-lab/dataset/catalog-clusters.json  and @svoe-vino-lab/dataset/catalog-cluster-rules.json and @svoe-vino-lab/dataset/catalog-cluster-notes.json
+```
+
+## 2026-09-26T07:37:19+0300
+
+The questions of the agent and the selected answers, for the owner message of
+2026-09-26T07:32:51+0300.
+
+1. "How far should the switch to data/embeddings clusters go?"
+
+```text
+Switch + retire (Recommended)
+```
+
+The option: "The Runs page reads the clusters.json of the run's embedding, plus its cluster-rules.json once one exists. Move the three dataset/catalog-cluster*.json files and the old catalogue-cluster scripts (10_clusters.py, 11_cluster_rules.py, cluster_rules_report.py, the /clusters route of the old review tool) to .attick. Remove their README and config sections. Keep cluster_rules.py because other code imports it."
+
+2. "Which embedding's clusters should the Runs page show?"
+
+```text
+The run's own embedding (Recommended)
+```
+
+The option: "Follow run.json configuration → pipeline → embedding, and use the combined view. Runs with no lab embedding (svm matcher, vino-svoe remote, older runs) show no frames. Their VLM box shows only what the run recorded."
+
+3. "What should happen to the one note in catalog-cluster-notes.json (Vedernikov Fantom 30/70, 50/50, 70/30)?"
+
+```text
+Copy it (Recommended)
+```
+
+The option: "Write it into data/embeddings/gx10-siglip2-so400m-patch16-naflex-p256/cluster-notes.json under key a29e59138ed4. That cluster has exactly the same three wines."
+
+## 2026-09-26T07:40:58+0300
+
+The question of the agent and the selected answer, for the owner message of
+2026-09-26T07:32:51+0300.
+
+"After the retirement, only tests import scripts/cluster_rules.py. What should happen to it?"
+
+```text
+Keep it for now (Recommended)
+```
+
+The option: "Leave cluster_rules.py and its three tests untouched. The later rule builder for data/embeddings/<name>/cluster-rules.json (plan 30) can reuse its Vlm client, prompts and validation. Retire it once that builder exists."
+
+## 2026-09-26T08:52:38+0300
+
+```text
+if you have work done, commit it
+```

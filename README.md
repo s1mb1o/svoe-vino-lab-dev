@@ -521,6 +521,11 @@ The command writes `data/embeddings/<name>/clusters.json`. Reviewer notes go to
 `cluster-notes.json` in the same directory. A future offline difference-rule build will
 write `cluster-rules.json` there. A cluster rebuild changes `clusters.json` alone.
 
+These files are the only cluster data of the lab (plan 43). The Runs page shows the
+clusters of the embedding of each run. The one note of the retired
+`dataset/catalog-cluster-notes.json` is in `cluster-notes.json` of
+`gx10-siglip2-so400m-patch16-naflex-p256`, under the key `a29e59138ed4`.
+
 - `main_patched` replaces `main`.
 - `full_front` and `full_back` contribute to the `full` and `label` spaces.
 - `label_front` and `label_back` contribute to the `label` space alone.
@@ -779,9 +784,14 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   bytes are not in the store shows `not in the lab image store`. The catalogue image of
   a slug is its processed patch when the wine has a `main_patched` image (with the mark
   `patched`), else its processed `main` image, as on the card of `/dataset`.
-- The cluster frames and the VLM box read `dataset/catalog-clusters.json` and
-  `dataset/catalog-cluster-rules.json`. The link `cluster details` opens `/clusters`,
-  which is disabled for now.
+- The cluster frames and the VLM box read the clusters of the embedding of the open run
+  (plan 43): the view `combined` of `data/embeddings/<name>/clusters.json`, and the
+  `label` rule of a cluster from `cluster-rules.json` of the same directory. The route is
+  `/api/run-clusters?id=<run id>`. A pipeline run names its embedding in
+  `backend.embedding` of `run.json`. An older run of an embedding configuration names it
+  in `backend.id`. A run of another backend shows no frame. The link `cluster details`
+  opens `/clusters?name=<embedding>&space=combined#<slug>`. The tooltip of a frame adds
+  `stale` when the inputs of the embedding changed after the cluster build.
 - The model inputs of the large view use `scripts/run_model_inputs.py` and the code of
   `svoe-vino-matcher`, as in the review tool. A run with no backend URL, for example an
   old run of the removed pipeline `mock`, states that it has no model input. A run of a
@@ -866,8 +876,8 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `bottle_label_box_dir` | `BOTTLE_LABEL_BOX_DIR` | Box crops of the same labels, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
 | `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
 | `pipeline` | `pipelines.load` | The pipelines of the lab: the dialog `Run>` of `/testset` and the filter `Pipeline` of `/runs` show them. The backends are `svoe-vino-ru` and `embedding`; a pipeline of the backend `embedding` names one entry of `embeddings`, and its optional key `views` holds the steps of the test photo. See [The runs of the lab](#the-runs-of-the-lab) and [plan 34](docs/plans/34_pipeline-section.md). |
-| `clusters` | `CLUSTERS`, `CLUSTERS_FILE` | The settings of `scripts/10_clusters.py` and the path of the cluster file. See [Catalogue clusters](#catalogue-clusters). |
-| `cluster_rules` | `cluster_rules.CFG` | The VLM entries of the two stages (`vlm`, `rules_vlm`), the picture sizes, the rules file, and the notes file of `scripts/11_cluster_rules.py`. See [Label rules of the clusters](#label-rules-of-the-clusters). |
+| `clusters` | `clusters.config_values` | The thresholds and the limits of the cluster build of an embedding (plan 30). See [The embedding clusters of the lab](#the-embedding-clusters-of-the-lab). |
+| `cluster_rules` | `cluster_rules.CFG` | Not set in the lab `config.yaml`. The VLM entries of the two stages (`vlm`, `rules_vlm`), the picture sizes, the rules file, and the notes file of `scripts/cluster_rules.py`. Plan 43 retired its command `scripts/11_cluster_rules.py`. See [Catalogue clusters (retired)](#catalogue-clusters-retired). |
 | `vlm` | `cluster_rules.VLM`, `cluster_rules.RULES_VLM` | The named VLM inferences. See [The VLM inferences](#the-vlm-inferences). |
 | `image_description` | `describe_images.settings` | The watcher of the image descriptions: `watch`, `vlm`, `max_side`, `poll_seconds`, `max_attempts`, `workers`; stage 2: `details`, `detail_max_side`; `max_tokens` of the `vlm` entry. See [The image descriptions](#the-image-descriptions) and [The image details](#the-image-details). |
 
@@ -1419,220 +1429,22 @@ script keeps every pair made by hand.
 A perceptual hash was tried first and was dropped: a bottle photo is mostly bottle,
 so the hash of the silhouette hides the label. Read `ResearchLog.md` for the numbers.
 
-### Catalogue clusters
+### Catalogue clusters (retired)
 
-A variant group joins wines of `my/`. A catalogue cluster joins cards of the WHOLE
-catalogue that the matcher confuses, or can confuse. A later re-rank step reads the
-clusters. The two are separate: `scripts/08_variants.py` and the review table do not
-read the cluster file, and the page `/clusters` does not read the variant groups.
-Read `docs/plans/04_catalog-clusters.md` for the rules and the decisions.
+Plan 43 retired the catalogue clusters on 2026-09-26. The lab reads cluster data only
+from `data/embeddings/<name>/`. See
+[The embedding clusters of the lab](#the-embedding-clusters-of-the-lab) and
+[plan 43](docs/plans/43_embedding-clusters-only.md).
 
-`scripts/10_clusters.py` writes the file that the key `clusters.file` of `config.yaml`
-names:
+The files `dataset/catalog-clusters.json`, `dataset/catalog-cluster-rules.json`,
+`dataset/catalog-cluster-notes.json`, `scripts/10_clusters.py`,
+`scripts/11_cluster_rules.py`, and `scripts/cluster_rules_report.py` are in
+`../.attick/svoe-vino-lab/`. The README there keeps the former text of the sections
+"Catalogue clusters" and "Label rules of the clusters". Plans 04, 05, and 06 keep the
+decisions and the measurements.
 
-```bash
-python3 scripts/10_clusters.py
-python3 scripts/10_clusters.py --show abrau-dyurso-pino-nuar-krasnoe-suhoe-12
-python3 scripts/10_clusters.py --no-confusion --photo-threshold 0.93 --out work/clusters-test.json
-```
-
-Four signals join two cards. A link records every signal that passed.
-
-| Signal | Rule | Default in `config.yaml` |
-|---|---|---|
-| `name` | The same producer, the same name, and the same category after normalisation. The words of the producer are removed from the name. The grapes of one card MUST be a subset of the grapes of the other card, or one field MUST be empty. | |
-| `photo` | The SigLIP 2 cosine of the two catalogue photos. | `photo_threshold: 0.95` |
-| `label` | The SigLIP 2 cosine of the two label crops. | `label_threshold: 0.95` |
-| `confusion` | The positive photos of one card that a run of `runs` answered as the other card at rank 1, over both directions. | `min_confusions: 2` |
-
-The vectors come from the two index files of `svoe-vino-matcher` that `photo_index`
-and `label_index` name. The script calls no service, so it can run while the pipeline
-uses gx10. The name of an index file holds a digest. After a rebuild of an index, set
-the new file name in `config.yaml`.
-
-A confusion counts only when the current label file still marks the photo `positive`
-in the folder of that card. An old run can hold a label that a reviewer changed later.
-
-A cluster is a connected component over the links, so a card is in at most one
-cluster. `kind` states how the cluster holds together:
-
-| `kind` | Meaning |
-|---|---|
-| `same-wine` | The `name` links alone join every card. The cards differ by vintage, alcohol value, or package. |
-| `mixed` | The cluster holds `name` links and other links. |
-| `look-alike` | The cluster holds no `name` link. The cards share one label design, or the matcher confused them. |
-
-Measured on 2026-09-22 with the defaults: 255 clusters over 630 of the 2,103 cards, the
-largest of 10 cards; 53 `same-wine`, 22 `mixed`, 180 `look-alike`. With
-`--min-confusions 1` the largest cluster holds 38 cards, because single confusions
-chain whole product lines together. Read `ResearchLog.md`.
-
-The page `http://127.0.0.1:8154/clusters` shows the file. It holds one block for each
-cluster: the catalogue photos side by side, the card fields, the label counts of the
-test photos, and a table of the links with their evidence. The value of a signal that
-passed is bold. `confused photos` shows the test photos that a run answered as the
-other card. The controls filter by kind, signal, size, and text, and sort the
-clusters. `Image` switches between the package and the label crop.
-
-A click on an image opens the large view. The caption names the card, or the photo and
-the card that a run answered for it, and states the place: `image 3 of 18 · c013 ·
-cluster 2 of 255`. The keys and the buttons of the large view move as follows:
-
-| Key | Move |
-|---|---|
-| `Left`, `Right` | the previous or the next image of the cluster: the cards first, then the confused photos, in the order of the page |
-| `Up`, `Down` | the same place in the previous or the next cluster of the view. A place after the end of that cluster holds at its last image. The page scrolls to that cluster. |
-| `Esc` | close. A click on the dark ground also closes. |
-
-The first and the last image hold: a move does not turn around at an end. The image
-that the large view showed last keeps an outline in the page. A click with a modifier
-key, such as `Cmd`, opens the image in a new tab instead.
-
-`/clusters#<slug>` opens the cluster of that card. The cluster id, such as `c013`, is
-not stable between two builds, so the address names a card and not an id. The page
-reads the file at each load, so a new build needs no restart. The page writes only the
-note of a cluster and the rule of a cluster. See the next section.
-
-### Label rules of the clusters
-
-A label rule tells the cards of one cluster apart. The re-rank kind `cluster_rules` of
-`svoe-vino-matcher` reads the rules: when the rank-1 card and another card of its
-cluster stand in the first 5 positions, the VLM reads the label of the query photo
-with the rule of that cluster. Read `docs/plans/05_cluster-label-rules.md` for the
-decisions and the measurements, and `docs/plans/06_label-only-cluster-rules.md` for
-the label-only rules of 2026-09-24.
-
-`scripts/11_cluster_rules.py` builds the rules in two stages:
-
-```bash
-python3 scripts/11_cluster_rules.py
-python3 scripts/11_cluster_rules.py --stage describe
-python3 scripts/11_cluster_rules.py --cluster vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145
-python3 scripts/11_cluster_rules.py --dry-run
-```
-
-| Stage | One VLM call for | Input | Answer |
-|---|---|---|---|
-| 1, `describe` | each card of a cluster | the catalogue picture of the review tool, scaled to a long side of 2048 pixels; no card data | the label description: the texts and the numbers with their place, the vintage, the colours, the design, the marks, the bottle |
-| 2, `rules` | each cluster | the label crop of each card from `bottle_label_dir`, on white, scaled to a long side of 768 pixels, UP or down (a card with no label crop sends its catalogue picture); the card data; the label descriptions without the key `bottle`; and the note of the reviewer | the difference sheet (questions with the expected answer of each card), the rule text, and the groups that no feature separates |
-
-Stage 1 uses `qwen3.5-9b` on the gx10 gateway, with thinking off; one description
-takes about 15 seconds. Stage 2 runs once, so it uses the more capable `qwen3.8-max` of
-the QwenCloud Token Plan, with thinking, 4 requests at a time; one rule takes about 40
-to 70 seconds. `cluster_rules.vlm` and `cluster_rules.rules_vlm` of `config.old.yaml`
-name the two `vlm` entries: `qwen3.5-9b` and `qwencloud-qwen3.8-max`. The key comes from
-the environment variable `QWENCLOUD_TOKEN_PLAN_API_KEY` (the `key` of the entry
-`qwencloud-qwen3.8-max`); a shell that runs stage 2, or the review tool that builds a
-rule, MUST hold it. The old keys `url`, `model`, `rules_url`, `rules_model`, `rules_api`,
-and `rules_key_env` are refused. The prompt of stage 2 keeps only major differences: the
-grapes, a kosher mark, the wine name or the line name, the colour of the wine as the
-label states it, the sugar level, a blend ratio, a reserve or edition mark, the volume,
-and the vintage year. The prompt allows only features that are printed on the label:
-some catalogue pictures are drawings, and a drawing shows only the label correctly.
-The re-rank also sends only the label crop of the query. The vintage year is used only
-when the catalogue names of at least two cards state two different years: a year that
-only the picture shows changes from bottle to bottle. An expected text is written as the
-label prints it, in its own alphabet, so the query VLM can find it among the options: a
-first build wrote «Krasnostop» for the printed «КРАСНОСТОП». The catalogue reuses the
-picture of one card for another card (43 cards of 21 clusters on 2026-09-24). The caption
-of such a card names the other card, and the catalogue data wins where the picture
-contradicts it. The script does only the work that is not current, so a stopped run
-resumes. A small catalogue photo is scaled UP for stage 1: at 312 x 1000 pixels the
-model read «урож. 2024» as 2021.
-
-The code checks the sheet and sets the mode of the rule:
-
-| Mode | Meaning |
-|---|---|
-| `sheet` | At least one question separates two cards. The re-rank asks the questions about the query photo. |
-| `verdict` | No question separates two cards, the rule text is not empty, and the rule text names no feature outside the label. The VLM reads the rule text and names the card. |
-| `none` | No usable difference was found. The re-rank does not act. |
-
-The vintage variants. When cards differ only by the vintage year, and one card states
-no year, that card is the card of every vintage that no other card states. A card
-states a year in its name, in its slug, or on its label (the key `vintage` of its
-label description). Only a mixed cluster, which holds cards with a year and cards
-without one, gets the note of the vintage variants in its prompt: 43 clusters on
-2026-09-24. The model gives a card with no year the answer `other` in the vintage
-question. The re-rank of `svoe-vino-matcher` counts a year that no card lists as
-`other`.
-
-The code enforces five rules of the prompt, because the model does not always keep
-them:
-
-- A question about a bottle number, such as «Бут. №» or «Тираж», is never used: the
-  number changes from bottle to bottle. Its kind is `serial`.
-- A question about a feature outside the label, such as the glass, the colour of the
-  liquid, the capsule, the cork, or the shape of the bottle, is never used. Its kind is
-  `bottle`. A rule text that names such a feature gives mode `none`, not `verdict`.
-- A vintage question keeps the expected year of a card only when the name or the slug
-  of the card states that year. Its kind is `vintage`. The question is used when two
-  cards keep two different years.
-- The mark `other` of a vintage question stays only for a card that states no year,
-  and only when no other question separates that card from every card with a year.
-  Then the vintage question also keeps the year on the label of a card.
-- A question about the alcohol value is used only when no other question separates the
-  cards: the value changes between vintages. Its kind is `alcohol`.
-
-Two files hold the results:
-
-| File | Writer | Content |
-|---|---|---|
-| `dataset/catalog-cluster-rules.json` | `scripts/11_cluster_rules.py` and the review tool | the label descriptions by slug, and the cluster rules by cluster key |
-| `dataset/catalog-cluster-notes.json` | the review tool only | the notes of the reviewer |
-
-The cluster key is the SHA-1 of the sorted slugs of a cluster, 12 hex digits. A note
-keeps the slugs of its cluster. It belongs to the current cluster that shares the most
-slugs with it, so a note survives a new build of the clusters. A rule is `current`
-while its slugs, its card data, its descriptions, the paths of its label crops, its
-note, and its prompt stay the same; else it is `stale`. A label crop that is cut again
-under the same path does not make a rule stale. A lock file keeps two writers of the
-rules file apart.
-
-The post hoc score of `scripts/cluster_rules_report.py` reads the questions of a rules
-file: the current file, or the file that `--rules` names. A report of an older run
-MUST name the rules file of that run. The rules of 2026-09-23 (`qwen3.8-max`, whole
-pictures) are kept as `work/catalog-cluster-rules.2026-09-24T082150.json`. That copy is
-the only record of them, because `dataset/catalog-cluster-rules.json` is not in git. The
-report also gives the paired numbers for each half of the wines; the half of a wine is
-the SHA-1 of its slug, modulo 2.
-
-The page `/clusters` shows a `Label rule` block in each cluster: the mode, the status,
-the text about the differences, the sheet as a table with one column for each card,
-and the rule text. A struck question is not used; its tooltip gives the reason. Each
-card holds its `label description`.
-
-Press `Edit rule` to edit the rule text and the functional difference sheet. You can
-add or remove questions. Each question has one expected answer for each card. A blank
-answer means that the label does not show the feature. `Save rule` applies the same
-checks as a VLM build. It recomputes the valid questions and the mode. The edit keeps
-the build identity, so it stays current until an input changes. `Rebuild rule` replaces
-the manual edit with a new VLM result.
-
-Stage 2 shows the VLM the cards as «Card A», «Card B», and so on, and the rule text
-uses these letters. The rule keeps the map `letters`, from the letter to the slug. The
-letters follow the sorted slugs, so A is card #1 of the page. The page writes the letter
-beside the number of each card and in the head of the sheet, and `the cards of the
-letters` under the rule text names the card and the slug of each letter. The sheet is
-stored by slug, so the re-rank never reads a letter in mode `sheet`. In mode `verdict`
-the query prompt shows the same letters with the card names and descriptions, and the
-code turns the answered letter back into a slug with the same map. A slug is not put
-into a prompt: it is long, so the model can answer it with a typo, and it holds hints
-such as a year or the alcohol value that the label can contradict. The filter `Rule` selects a mode, a status, or the
-clusters with a note.
-
-The note editor stands under the rule. `Save note` stores the note. The note does not
-change the rule by itself: `Rebuild rule` saves the note, describes the cards that
-have no current description, and asks the VLM for the rule again. It takes about 5 to
-30 seconds, and one build runs at a time. The prompt tells the VLM that the note is a
-correct fact. Example for the «Фантом» cluster: the note «pay attention to numbers in
-bottom left corner of bottle (30/70), (50/50), (70/30)» gave the question about the
-bottom left corner with the answers 30/70, 50/50, and 70/30.
-
-`scripts/cluster_rules_report.py <run>` reports one run of the backend
-`svm-label-gw-cluster-rules` against its base run. It also replays the run over the
-clusters that exist without the `confusion` signal, because that signal comes from
-match runs over the same test photos.
+`scripts/cluster_rules.py` stays in the lab. The later rule builder of plan 30 can use its
+VLM client, its prompts, and its checks. Today only tests import it.
 
 ### Moving a photo to another wine slug
 
@@ -2341,10 +2153,9 @@ the metrics of the selected run, and one row per photo with the candidates that 
 back. A click on a column sorts the runs; the control `Sort` orders the photos, for
 example the most wrong first. The expected wine carries a green border, and the wine that a negative photo MUST
 NOT match carries a red one. A dashed green border marks the true wine of a negative
-photo, which the server reads from a byte-equal `positive` photo of the same run. Two or
-more candidates that stand next to each other and belong to one catalogue cluster share
-one frame in the accent colour. The link in the frame opens that cluster on
-`/clusters` and scrolls to its details. The
+photo, which the server reads from a byte-equal `positive` photo of the same run. The
+review tool shows no cluster frame: plan 43 retired the catalogue clusters and the page
+`/clusters` of the review tool. The
 filter `negative_above_positive` selects the negative photos whose forbidden wine stands
 above that true wine, and the filter `twin_conflict` selects the photos that a defect of
 the set marks.

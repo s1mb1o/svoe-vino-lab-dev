@@ -2,6 +2,24 @@
 
 ## 2026-09-26
 
+- The lab uses the clusters of `data/embeddings/<name>/` alone (plan 43, owner message of
+  2026-09-26T07:32:51+0300 and the answers after it; session drink-atlas-workspace-2a
+  [693b64]). `GET /api/run-clusters?id=<run id>` answers the view `combined` of
+  `clusters.json` of the embedding of that run (`backend.embedding` of `run.json`, or
+  `backend.id` for an older embedding run), the `label` rule of each cluster from
+  `cluster-rules.json`, and `stale`. `/runs` reads it for each opened run; the frame link
+  opens `/clusters?name=<embedding>&space=combined#<slug>`. A run of another backend shows
+  no frame. `dataset/catalog-clusters.json`, `dataset/catalog-cluster-rules.json`,
+  `dataset/catalog-cluster-notes.json`, `scripts/10_clusters.py`,
+  `scripts/11_cluster_rules.py`, and `scripts/cluster_rules_report.py` moved to
+  `../.attick/svoe-vino-lab/`, with the former README text of the catalogue clusters and
+  their label rules. `scripts/review_server.py` lost its page `/clusters`, the routes
+  `/api/clusters`, `/api/cluster-note`, `/api/cluster-rule-edit`, `/api/cluster-rule`,
+  and its cluster frames; `docs/API.md` and `docs/openapi.yaml` lost their contracts.
+  `scripts/cluster_rules.py` stays (owner answer): only tests import it now. The one
+  reviewer note (the Fantom blend ratios) is in `cluster-notes.json` of
+  `gx10-siglip2-so400m-patch16-naflex-p256` under the key `a29e59138ed4`. Tests:
+  `test_run_routes.py` 7; the full suite 768 OK. Smoke rows R53 to R58 and CR1 to CR3.
 - `/dataset`: the row `Advanced Filters:` has a second filter `Identifier` with `All`,
   `has GTIN`, `has QR URL`, and `has Drink Atlas` (owner message of
   2026-09-26T07:48:00+0300; session drink-atlas-workspace-74 [1c1b2b]). It reads

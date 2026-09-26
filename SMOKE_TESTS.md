@@ -675,87 +675,25 @@ Use `H=http://127.0.0.1:8168`. Read [plan 30](docs/plans/30_embedding-clusters.m
 | R50 | Compare that run with `svm-siglip2-448` in the page | The two detail headers state two different build dates, so the reader can see the runs read different vectors. |
 | R51 | Pin an index the server does not offer | The run still starts, and `embeddings.reason` states that the pipeline does not offer that index. |
 | R52 | Pin an index on a backend whose pipeline owns none | `embeddings.reason` states that the pipeline owns no index. The server answers 400 for every photo. |
-| R53 | Open run `2026-09-23T084340Z-svm-label-gw-difference-hardcase-guard` and find the photo `abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13/01_conf095.jpg` | One frame in the accent colour holds the candidates #1, #2, and #3. Its tooltip reads `cluster c013 · mixed · 4 cards`. Candidate #6 `abrau-dyurso-kaberne-sovinon-krasnoe-suhoe-125` is in the same cluster but gets no frame, because #4 and #5 stand between. |
+| R53 | Open the run `2026-09-25T220729Z-lab-siglip2-p256-crop-my` and find the photo `abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12/01_conf095.jpg` | Candidates #1 and #2 share one frame in the accent colour. Its tooltip reads `cluster <id> · mixed · 2 wines` (the id comes from the current build of `gx10-siglip2-so400m-patch16-naflex-p256`), plus `· stale` when the inputs changed after the build. |
 | R54 | Look at a row where one cluster card stands alone between cards of other clusters | That card gets no frame. |
-| R55 | Rename `dataset/catalog-clusters.json`, then reload `/runs` | The page shows no cluster frame. Everything else works. |
+| R55 | Click `cluster <id> details` in that frame | `/clusters` opens with `name=gx10-siglip2-so400m-patch16-naflex-p256`, `space=combined`, and the cluster of the first card of the frame. |
+| R56 | `curl -s "$H/api/run-clusters?id=<a run of vino-svoe-search-by-photo>"`, then open that run | `embedding` is `null` and `clusters` is empty. The page shows no cluster frame. Everything else works. |
+| R57 | `curl -s "$H/api/run-clusters?id=<a run of dinov3-vitb16-crop>"` while `data/embeddings/gx10-dinov3-vitb16/` holds no `clusters.json` | `embedding` is `gx10-dinov3-vitb16`, `exists` is `false`, and `clusters` is empty. |
+| R58 | `curl -s "$H/api/run-clusters?id=none"` | HTTP 404, `unknown run`. |
 
-## The catalogue clusters — `scripts/10_clusters.py` and `/clusters`
+## The catalogue clusters (retired)
 
-Read `docs/plans/04_catalog-clusters.md` for the rules.
-
-| # | Case | Expected result |
-|---|---|---|
-| C1 | Run `python3 scripts/10_clusters.py` | The log states the two indexes with their card counts and build times, one line for each run with `used` and `stale`, the link counts, the cluster count, the sizes, and the output path. The script calls no service and ends in a few seconds. |
-| C2 | Run `python3 scripts/10_clusters.py --show abrau-dyurso-pino-nuar-krasnoe-suhoe-12` | The card stands in one cluster with `abrau-dyurso-pino-nuar-krasnoe-suhoe-125` and `abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13`. The three pairs of these cards carry `name`. |
-| C3 | Run it with `--min-confusions 1 --out <a scratch file>` | The largest cluster holds more than 30 cards. The default of 2 prevents this chaining. |
-| C4 | Run it with `--no-confusion --no-label --out <a scratch file>` | The file holds no `label` link and no `confusion` link. `settings.signals` names `name` and `photo` alone. |
-| C5 | Run it with `--photo-index /nope.npz` | The script stops with `the index file is not on disk`. It writes no file. |
-| C6 | Run it with `--show vina-arpachina-arpachino-inohodets-aligote-beloe-ekstra-bryut-125` | The card is in no cluster. The cards of the line «Иноходец» share one name and hold different grapes, so the `name` signal does not join them. |
-| C7 | Open `$H/clusters` | The header states the cluster count and the build time. The navigation marks `Clusters`. The count line states `255 of 255 clusters` for the build of 2026-09-22. |
-| C8 | Open `$H/clusters#abrau-dyurso-pino-nuar-krasnoe-suhoe-12` | The page scrolls to the cluster of that card. The cluster and the card carry an outline. |
-| C9 | Set `Kind` to `same wine` | Only the clusters with the tag `same wine` are listed. The count equals `counts.kinds.same-wine` of the file. |
-| C10 | Set `Image` to `label` | Every card shows its label crop. A card with no crop shows its package and the mark `no label`. |
-| C11 | Look at a link row of a cluster | The value of every signal that passed is bold. The column `name` states `same`, `grapes differ`, or a dash. |
-| C12 | Click a thumbnail under `confused photos` | The large view of this page opens that photo. Its caption names the card of the photo, the card that the run answered, and the run. Its link `review` opens the photo in the review page, in a new tab. |
-| C13 | Click `review` under a card | The review page opens that wine. |
-| C14 | Move the cluster file away, then reload `/clusters` | The page states that no cluster file exists and names the command. `GET /api/clusters` answers `exists: false`. |
-| C15 | Build the file again while the tool runs, then reload `/clusters` | The new build time shows. No restart is needed. |
-| C16 | Open `/clusters` in the dark system theme and in the light system theme | Both themes are readable. A label crop stands on white in the dark theme. |
-| C17 | Open `/clusters` at a width of 375 px | The page has no horizontal scroll. A link table scrolls inside its own box. |
-| C18 | `curl -s $H/api/clusters` | `exists: true`, `clusters`, `counts`, `inputs`, `settings`, `rules`, and one record in `cards` for each card of a cluster. The route writes nothing. |
-| C19 | Click the bottle of a card | The large view opens that picture on white. The caption names the card and states `image <i> of <n> · <cluster id> · cluster <k> of <m>`. The picture in the page carries an outline. |
-| C20 | Press `Right` until the last image of the cluster, then press `Right` again | The view moves over the cards first, then over the confused photos. The last image holds, and the button `›` is dimmed. |
-| C21 | Press `Left` at the first image | The first image holds, and the button `‹` is dimmed. |
-| C22 | Press `Down` at the fifth image | The view opens the fifth image of the next cluster. The page scrolls to that cluster. |
-| C23 | Press `Down` at an image whose place is after the end of the next cluster | The view opens the last image of the next cluster. |
-| C24 | Press `Up` in the first cluster, and `Down` in the last cluster | The view holds. The button of that direction is dimmed. |
-| C25 | Click the buttons `‹`, `›`, `↑`, and `↓` | They move as the four keys move. |
-| C26 | Press `Esc`, then open the view again and click the dark ground | The view closes both times. The last image keeps its outline in the page. A click on the picture itself does not close the view. |
-| C27 | Change a filter while the view is open | The view closes, because the blocks are drawn again. |
-| C28 | `Cmd`-click a bottle | The picture opens in a new tab, and the large view does not open. |
-| C29 | Step fast with `Right` over the confused photos | The caption never stands under the picture of the step before. The old picture is hidden until the new one is loaded. |
-
-## The label rules of the clusters — `scripts/11_cluster_rules.py` and `/clusters`
-
-Read `docs/plans/05_cluster-label-rules.md` for the rules. The cases L3, L9 and L10
-call the VLM on gx10 and wait for its single slot.
+Plan 43 retired the catalogue clusters, `scripts/10_clusters.py`,
+`scripts/11_cluster_rules.py`, `scripts/cluster_rules_report.py`, and the page
+`/clusters` of the review tool on 2026-09-26. The former cases C1 and after and L1 to L23
+are in the git history of this file.
 
 | # | Case | Expected result |
 |---|---|---|
-| L1 | Run `python3 scripts/11_cluster_rules.py --dry-run` | The log states the clusters, the cards, the notes, `stage 1: qwen3.5-9b, thinking False   stage 2: qwen3.8-max, thinking True, 4 requests at a time`, and the counts of the descriptions and the rules that are not current. No VLM call is made. |
-| L1a | Run `python3 scripts/11_cluster_rules.py --stage rules --cluster <slug>` in a shell without `QWENCLOUD_TOKEN_PLAN_API_KEY` | The rule records the error `the environment variable QWENCLOUD_TOKEN_PLAN_API_KEY is not set`, and the page states `failed`. |
-| L2 | Run `python3 scripts/11_cluster_rules.py --cluster no-such-slug` | The script stops with `in no cluster: no-such-slug`. |
-| L3 | Run it with `--cluster vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145` twice | The first run describes the cards that are not current and builds one rule. The second run makes no VLM call: every description and the rule are current. |
-| L4 | `curl -s $H/api/clusters` and find the cluster of `vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145` | The cluster holds `key`, `notes`, `rule`, and `rule_status`. The rule holds a valid question with the answers `30/70`, `50/50`, and `70/30`. Each card record holds `description`. The top field `rules` names the two files and the model. |
-| L5 | Open `$H/clusters#vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145` | The block `Label rule` shows the mode `difference sheet`, the status `current`, the text of the differences, the sheet with one column for each card, and the rule text. A question about the alcohol value is struck; its tooltip gives the reason. |
-| L6 | Click `label description` under a card | The description opens: the texts with their place, the numbers, the vintage, the colours, the design, the marks, and the bottle. A list reads as a comma list, not as JSON. |
-| L7 | Type a note, click `Save note` | The status line reads `saved <time>`. `dataset/catalog-cluster-notes.json` holds the note with the slugs of the cluster. The status of the rule becomes `stale`. |
-| L8 | Clear the text, click `Save note` | The note is gone from the file. The status of the rule is `current` again when no other input changed. |
-| L9 | Click `Rebuild rule` | The line reads `building the rule… (5 to 30 s)` and both buttons are dimmed. The block is drawn again with a new build time and the status `current`. An unsaved note is saved first. |
-| L9a | Click `Edit rule` | The displayed rule becomes a structured editor. It has the rule text, each question, and one expected answer for each card. It also has `Add question`, `Save rule`, and `Cancel`. |
-| L9b | Change one expected answer and click `Save rule` | The table shows the new answer. The rule stays `current`. The header shows `edited <time>`. `dataset/catalog-cluster-rules.json` holds the edit and its recomputed mode. |
-| L9c | Remove every question, enter a rule text, and click `Save rule` | The mode becomes `verdict rule`. A later click on `Rebuild rule` replaces the manual edit. |
-| L10 | Click `Rebuild rule` in a second tab while the first build runs | The second tab reads `failed: another rule is being built; try again soon`. |
-| L11 | `curl -s -X POST $H/api/cluster-note -d '{"slugs":["abrau-dyurso-pino-nuar-krasnoe-suhoe-12"],"text":"x"}'` | `400` `these slugs are not the slugs of one cluster`. |
-| L12 | Set `Rule` to `with a note` | Only the clusters with a note are listed. `stale` lists the clusters whose inputs changed after the build. |
-| L13 | Open `/clusters` in the dark system theme and in the light system theme | The block `Label rule`, the sheet, and the note editor are readable in both themes. |
-| L15 | Open `$H/clusters#fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12` and open `the cards of the letters` | The badges read `#1 · A` to `#9 · I`, the head of the sheet names the same letters, and the list names the card name and the slug of each letter: `B = #2 Primum Alveus Brut 2014 fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12`. |
-| L14 | Run `python3 scripts/cluster_rules_report.py runs/<a run of svm-label-gw-cluster-rules>` | The report states the metrics against the base run, the wins and the losses with the exact McNemar test, the table by mode, the replay without the `confusion` signal, the «Фантом» photos, the table of the score gaps, and the latency. It writes `cluster-rules-report.md` and `.json` into the run directory. |
-
-The label-only rules of `docs/plans/06_label-only-cluster-rules.md`. The cases L16 to
-L18 call no model. Run them from `scripts/` in `python3`, after
-`import cluster_rules as cr; catalog = cr.load_catalog()`.
-
-| # | Case | Expected result |
-|---|---|---|
-| L16 | `cr.check_rule({"questions": [{"question": "What colour does the wine show through the glass?", "answers": {"A": "red", "B": "rose"}}], "rule": "Clear glass is card B."}, {"A": "x-a", "B": "x-b"}, catalog)` | The question has `kind` `bottle` and `valid` false. The mode is `none`, not `verdict`, because the rule text names the glass. |
-| L17 | `cr.check_rule({"questions": [{"question": "What vintage year is printed?", "answers": {"A": "2024", "B": "2025"}}]}, {"A": "aligote-barrel-2024", "B": "aligote-barrel-2025"}, catalog)`, then the same with the slugs `abrau-dyurso-pino-nuar-krasnoe-suhoe-12` and `abrau-dyurso-pino-nuar-krasnoe-suhoe-125` | The first question has `kind` `vintage`, keeps `2024` and `2025`, and is valid: the slugs state the years. The second question holds null for both cards and is not valid. |
-| L18 | Build the stage 2 content of the cluster of `b-yu-rne-krasnostop-suhoe-krasnoe-classic` with `cr.rules_content` | Each picture is the label crop of `bottle_label_dir`. The captions of card E («ПИНО БЛАН») and card J («ВИОНЬЕ») read `the same catalogue picture as card J` and `... as card E`. The prompt text holds no key `"bottle"`. |
-| L19 | Run `python3 scripts/11_cluster_rules.py --stage rules --cluster b-yu-rne-krasnostop-suhoe-krasnoe-classic --force` in a shell that holds `QWENCLOUD_TOKEN_PLAN_API_KEY`, and read the rule | No valid question names the glass, the liquid, the capsule, the cork, or the shape of the bottle. The grape answers are written as the label prints them: `КРАСНОСТОП`, `ШАРДОНЕ`, `МЕРЛО`. A vintage question, if the model asks one, is not valid. |
-| L20 | Start the review tool again, open `$H/clusters`, and hover a struck question of kind `bottle` or `vintage` | The tooltip reads `not used: a feature outside the label: …` or `not used: the names of two cards do not state two different years`. |
-| L21 | Copy the run `2026-09-23T224548Z-svm-label-gw-cluster-rules-qwen38max-rules-v2` to a scratch directory and run `python3 scripts/cluster_rules_report.py <copy> --rules work/catalog-cluster-rules.2026-09-24T082150.json` | Every number equals the report of the run. The new section `The two halves of the wines` reads: half A, 775 positives, R@1 0.8103 → 0.8284, 23 wins, 9 losses; half B, 825 positives, R@1 0.8206 → 0.8339, 24 wins, 13 losses. |
-| L22 | For the cluster of `abrau-dyurso-pino-nuar-krasnoe-suhoe-12` (c013), take `letters` of the sorted slugs, and call `cr.check_rule` with a vintage question `{"A": "other", "B": "2023", "C": "2023", "D": "2024"}` and a grape question `{"A": "Пино Нуар", "B": "Каберне Совиньон", "C": "Пино Нуар", "D": "Пино Нуар"}`, with `catalog` and `cr.load_rules()["cards"]` | The vintage question keeps `other` for A and the label years 2023, 2023, and 2024, and it is valid. `cr.vintage_note(letters, catalog, cards)` names B, C, and D with their years `on the label`, and A as the card with no year. |
-| L23 | The same call with the grape `Мерло` for card A | The vintage question holds null for every card and is not valid: the grape separates A from every card with a year, so A is not a vintage variant. |
+| CR1 | `ls dataset/catalog-cluster*.json scripts/10_clusters.py scripts/11_cluster_rules.py scripts/cluster_rules_report.py` | No such file. The files are in `../.attick/svoe-vino-lab/`. |
+| CR2 | Start `SVOE_VINO_REVIEW_CONFIG=$PWD/config.old.yaml python3 scripts/review_server.py --port <free port> --no-browser` (the lab `config.yaml` has no `dataset` key), then request `/clusters`, `/api/clusters`, and `/runs` | `/clusters` and `/api/clusters` answer HTTP 404. `/runs` answers HTTP 200 and shows no cluster frame. The navigation of the review tool pages has no link `Clusters`. |
+| CR3 | Open `data/embeddings/gx10-siglip2-so400m-patch16-naflex-p256/cluster-notes.json` | The key `a29e59138ed4` holds the Fantom note (30/70, 50/50, 70/30) with `updated_at` `2026-09-24T09:22:03+0300`. `/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256` shows it on that cluster. |
 
 ## The lab database — `pipeline/labdb.py` and `pipeline/import_catalog.py`
 
