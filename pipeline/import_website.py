@@ -33,7 +33,8 @@ The modes:
 - `--prepare DIR` never writes the database. It writes `DIR/diff.json` and the website
   images that an apply can need to `DIR/images/`. A conflict is no error.
 - `--apply DIR` reads `DIR/diff.json` and the choices of a person in `DIR/choices.json`.
-  Each conflict MUST have a choice. It writes `DIR/result.json`.
+  A conflict with no choice is skipped: no write, no refusal, no comment. The next
+  compare shows it again. It writes `DIR/result.json`.
 
 Rules of the change:
 - A new wine is inserted as `Active` with its image as `main`. Comment `COMMENT_NEW`.
@@ -212,6 +213,7 @@ class Report:
         self.texts = []           # "slug field" of the text choices `website`
         self.replaced = []        # slugs of the image choices `website`
         self.refusals = []        # "slug kind" of the new refusals
+        self.unresolved = []      # ids of the conflicts with no choice; nothing is written
         self.refused = 0          # conflicts and changes that a refusal skipped
         self.stale = 0            # refusals deleted, because they did not match
         self.times = 0            # values of `website_modified_at` written
@@ -540,19 +542,21 @@ def conflict_line(entry):
 
 
 def check_choices(diff, choices):
-    """Return (conflict id -> choice, change id -> bool). Raise `WebsiteError`."""
+    """Return (conflict id -> choice, change id -> bool). A conflict with no choice is not
+    in the first dict. Raise `WebsiteError`."""
     if not isinstance(choices, dict):
         raise WebsiteError("the choice file MUST hold an object")
     picked = choices.get("conflicts") or {}
     ticked = choices.get("changes") or {}
-    missing = [entry["id"] for entry in diff["conflicts"]
-               if picked.get(entry["id"]) not in CHOICES]
-    if missing:
-        raise WebsiteError("%d conflicts have no choice: %s" % (len(missing), _names(missing)))
+    ids = [entry["id"] for entry in diff["conflicts"] if entry["id"] in picked]
+    bad = [key for key in ids if picked[key] not in CHOICES]
+    if bad:
+        raise WebsiteError("the conflicts %s need database or website" % _names(bad))
     bad = [key for key, value in ticked.items() if not isinstance(value, bool)]
     if bad:
         raise WebsiteError("the changes %s need true or false" % _names(bad))
-    return picked, {entry["id"]: ticked.get(entry["id"], True) for entry in diff["changes"]}
+    return ({key: picked[key] for key in ids},
+            {entry["id"]: ticked.get(entry["id"], True) for entry in diff["changes"]})
 
 
 def _notes(by_kind, texts, images, kept, cleared):
@@ -589,10 +593,11 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
                       if entry["kind"] == kind and ticked[entry["id"]]] for kind in CHANGE_KINDS}
     cleared = [entry for entry in diff["changes"] if not ticked[entry["id"]]]
     texts = [entry for entry in diff["conflicts"]
-             if entry["kind"] == "text" and picked[entry["id"]] == "website"]
+             if entry["kind"] == "text" and picked.get(entry["id"]) == "website"]
     images = [entry for entry in diff["conflicts"]
-              if entry["kind"] == "image" and picked[entry["id"]] == "website"]
-    kept = [entry for entry in diff["conflicts"] if picked[entry["id"]] == "database"]
+              if entry["kind"] == "image" and picked.get(entry["id"]) == "website"]
+    kept = [entry for entry in diff["conflicts"] if picked.get(entry["id"]) == "database"]
+    unresolved = [entry["id"] for entry in diff["conflicts"] if entry["id"] not in picked]
     for entry in texts:
         if entry["field"] not in COMPARED:
             raise WebsiteError("%s: the field %r is not compared" % (entry["id"], entry["field"]))
@@ -694,9 +699,10 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
     report.texts = ["%s %s" % (e["slug"], e["field"]) for e in texts]
     report.replaced = [e["slug"] for e in images]
     report.refusals = ["%s %s" % (row[0], row[1]) for row in refusals]
+    report.unresolved = unresolved
     report.refused, report.stale = diff["refused"], len(diff["stale"])
     touched = {e["slug"] for e in diff["changes"] if e["kind"] in ("back", "main")}
-    touched |= {e["slug"] for e in diff["conflicts"]}
+    touched |= {e["slug"] for e in diff["conflicts"] if e["id"] in picked}
     report.unchanged = diff["unchanged"] - len(touched)
     report.comments = len(notes)
     report.states = {name: states.get(name, 0) for name in STATES}
@@ -795,6 +801,7 @@ def print_report(report, db_path):
     print(_line("text from the website", report.texts))
     print(_line("main images replaced", report.replaced))
     print(_line("refusals written", report.refusals))
+    print(_line("conflicts with no choice, not written", report.unresolved))
     print("skipped by a refusal: %d" % report.refused)
     print("refusals deleted: %d" % report.stale)
     print("website times written: %d" % report.times)

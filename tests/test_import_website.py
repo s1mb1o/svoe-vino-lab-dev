@@ -528,13 +528,20 @@ class UiModeTest(WebsiteTestBase):
         self.assertIn("a (Active): the text changed: name", str(caught.exception))
         self.assertIn("b: the main image changed", str(caught.exception))
 
-    def test_apply_needs_a_choice_for_each_conflict(self):
+    def test_apply_skips_a_conflict_with_no_choice(self):
         self.prepare()
         with self.assertRaises(IMP.WebsiteError) as caught:
-            self.apply({"text:a:name": "website"})
-        self.assertIn("1 conflicts have no choice: image:b", str(caught.exception))
-        with self.assertRaises(IMP.WebsiteError):
             self.apply({"text:a:name": "website", "image:b": "maybe"})
+        self.assertIn("image:b need database or website", str(caught.exception))
+        report = self.apply({"text:a:name": "website"}, {"new:n": False, "main:e": False})
+        self.assertEqual((report.texts, report.replaced), (["a name"], []))
+        self.assertEqual(report.unresolved, ["image:b"])
+        self.assertEqual(self.query("SELECT sha256 FROM wine_image WHERE wine_slug = 'b'"),
+                         [(sha(self.pics["old_b"]),)])
+        self.assertFalse(any(row[0] == "b" for row in self.refusals()))
+        self.assertFalse(any(row[0] == "b" for row in self.notes()))
+        diff = IMP.prepare(self.db, str(self.root / "run2"), self.client(), self.log.append)
+        self.assertEqual([entry["id"] for entry in diff["conflicts"]], ["image:b"])
 
     def test_apply_after_a_database_change_stops(self):
         self.prepare()

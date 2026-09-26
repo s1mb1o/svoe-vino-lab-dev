@@ -216,6 +216,11 @@ A new module `pipeline/website_import_routes.py`, like `embedding_routes.py`.
   path, or a reload of it, opens the dialog with the newest run. The server already sends
   the page for `/dataset/<one segment>`; the page does not read `website-import` as a wine
   slug. `Reload the page` in the result loads `/dataset`.
+- Change of 2026-09-26 (owner message of 19:11:01): `Apply` stays enabled while a
+  conflict has no choice. The apply skips such a conflict: no field change, no image
+  change, no refusal, and no comment. The next compare shows it again. The status line
+  states `N conflicts have no choice. Apply skips them.` The result and `result.json` list
+  the skipped conflict ids (`unresolved`). The CLI still stops on each conflict.
 - `#sort` gets `changed in the lab, newest first` (`modified_at`) and `changed on
   vino-svoe.ru, newest first` (`website_modified_at`). A NULL time sorts last.
 
@@ -259,7 +264,8 @@ SIGTERM belong together (rules 22 to 28). The owner gets a message about the res
 ## Open points for the owner
 
 1. A conflict has no choice at the start, so `Apply` needs a choice for each conflict.
-   The alternative: `database` at the start.
+   The alternative: `database` at the start. Changed on 2026-09-26 (owner message of
+   19:11:01): `Apply` skips a conflict with no choice.
 2. The comments of a cleared plain change (the last four rows of the table) are my
    proposal.
 3. An existing row keeps `modified_at` NULL. The alternative: the time of the migration

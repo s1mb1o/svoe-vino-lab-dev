@@ -112,9 +112,9 @@ class WebsiteImportRoutesTest(unittest.TestCase):
                                    % (run, "b" * 64))[0], 404)
 
         code, answer, _, _ = self.call("POST", "%s/%s/apply" % (ROUTES.API, run),
-                                       {"conflicts": {}})
+                                       {"conflicts": {"text:a:name": "maybe"}})
         self.assertEqual(code, 400)
-        self.assertIn("1 conflicts have no choice", answer["error"])
+        self.assertIn("text:a:name need database or website", answer["error"])
         choices = {"conflicts": {"text:a:name": "website"}, "changes": {"new:n": False}}
         code, answer, _, _ = self.call("POST", "%s/%s/apply" % (ROUTES.API, run), choices)
         self.assertEqual((code, answer["phase"]), (202, "apply"))

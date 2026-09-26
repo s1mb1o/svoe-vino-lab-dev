@@ -269,7 +269,8 @@
       ${diff.website} wines on vino-svoe.ru, ${diff.images} images.
       ${diff.refused ? `${diff.refused} conflicts or changes stay refused by an earlier choice.` : ""}
       A choice <em>database</em> and a cleared checkbox are remembered: a later import skips
-      them while the website keeps the value.</p>`;
+      them while the website keeps the value. Apply skips a conflict with no choice; the
+      next compare shows it again.</p>`;
     if (conflicts.length) {
       html += `<h3>Conflicts <span class="count">${conflicts.length} · ${groups.length} wines</span>
         <button type="button" data-website="all" data-side="database">all database</button>
@@ -299,22 +300,24 @@
     return diff.conflicts.filter(entry =>
       !body.querySelector(`input[data-conflict="${CSS.escape(entry.id)}"]:checked`)).length;
   }
+  // Apply is allowed with conflicts that have no choice (owner message of
+  // 2026-09-26T19:11:01+0300). The apply skips them.
   function refreshApply() {
     const left = unset();
-    const apply = actions.querySelector('[data-website="apply"]');
-    if (apply) apply.disabled = left > 0;
     for (const row of body.querySelectorAll(".website-row.conflict")) {
       row.classList.toggle("unset", [...row.querySelectorAll(".website-conflict")].some(
         part => !part.querySelector("input:checked")));
     }
-    setStatus(left ? `${left} conflicts need a choice.` : "Each conflict has a choice.");
+    setStatus(left ? `${left} conflicts have no choice. Apply skips them.`
+      : "Each conflict has a choice.");
   }
 
   function showResult() {
     const r = state.result || {};
     const rows = [["added", r.added], ["removed", r.removed], ["restored", r.restored],
       ["main images stored", r.mains], ["text from the website", r.texts],
-      ["main images replaced", r.replaced], ["refusals written", r.refusals]];
+      ["main images replaced", r.replaced], ["refusals written", r.refusals],
+      ["conflicts with no choice, not written", r.unresolved]];
     body.innerHTML = `<p class="validation-intro">The import is written.</p>
       <dl class="website-result">${rows.map(([name, list]) =>
         `<dt>${esc(name)}</dt><dd>${(list || []).length}${(list || []).length

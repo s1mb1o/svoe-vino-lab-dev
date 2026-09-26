@@ -2,6 +2,22 @@
 
 ## 2026-09-26
 
+- Website import (owner message of 19:11:01; session drink-atlas-workspace-0d): `Apply`
+  on `/dataset/website-import` no longer needs a choice for each conflict. The apply
+  skips a conflict with no choice: no write, no refusal, no comment. The next compare
+  shows it again.
+  - `pipeline/import_website.py`: `check_choices` rejects only a choice that is not
+    `database` or `website`; `write` skips a conflict with no choice; the new `Report`
+    field `unresolved` holds its id; `print_report` prints it. The CLI still stops on
+    each conflict.
+  - `pipeline/pages/website_import.js`: `Apply` stays enabled; the status line states
+    `N conflicts have no choice. Apply skips them.`; the result shows `conflicts with no
+    choice, not written`.
+  - Tests: `test_apply_skips_a_conflict_with_no_choice` replaces
+    `test_apply_needs_a_choice_for_each_conflict`; the route test sends a bad choice
+    value. 31 and 6 tests OK. 8168 restarted at 19:13:21 (pid 78137); nothing else was
+    newer than the previous start. Docs: plan 21 (a dated change), `README.md`,
+    `SMOKE_TESTS.md` (IW8, new IW21).
 - Plan 50, section 8, item 7: `data/images/additional/` is in git too (owner message of
   2026-09-26T18:53:37+0300; session drink-atlas-workspace-96). `.gitignore` takes the
   folder back, and the skill `backup-lab-db` commits it with the other two image folders.

@@ -1080,7 +1080,7 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 | IW5 | Set a wine `Removed` on `/dataset` during IW3, before the line `images: 2105/2105` | Exit 1: `the database changed during the import; run the import again`. |
 | IW6 | Open `/dataset` on the lab server | The bar shows `Import from website`. The review tool (`scripts/review_server.py`) does not show it. |
 | IW7 | Press `Import from website`, then `Compare` | The button shows the progress, for example `Website: images 300/2105`. After about 10 minutes the dialog opens with the sections `Conflicts`, `New wines on website`, `Missing on the website`, `Back on the website`, and `Missing main images, taken from website`. `data/lab.sqlite3` does not change. |
-| IW8 | In the dialog of IW7, leave one conflict with no choice | `Apply` is disabled. The status line states the count of conflicts with no choice. |
+| IW8 | In the dialog of IW7, leave one conflict with no choice | `Apply` stays enabled. The status line states `N conflicts have no choice. Apply skips them.` |
 | IW9 | Choose each conflict, clear one checkbox, and press `Apply` | The button shows `Website: applying…`. The dialog then lists the counts. `Reload the page` shows the new states. Each changed wine has a comment of the source `script`. `website_refusal` holds a row for each choice `database` and each cleared checkbox. |
 | IW10 | Run `python3 pipeline/import_website.py --db data/lab.sqlite3` after IW9 | No stop on a refused conflict. The report states `skipped by a refusal: N`. |
 | IW11 | Set `Sort` to `changed in the lab, newest first` after IW9 | The wines of IW9 come first. A wine with no time goes last. |
@@ -1093,6 +1093,7 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 | IW18 | On `/dataset`, press `Import from website`, then `×`, then Forward, then Back, then Esc | The open dialog makes the path `/dataset/website-import`. `×`, Back, and Esc close the dialog and give `/dataset`. Forward opens the dialog again. |
 | IW19 | Open `http://127.0.0.1:8168/dataset/website-import` in a new tab, then press `×` | The dialog opens with the newest run in its present state (a running job, the conflicts and changes, or the result). The list shows all records; no image preview opens. `×` gives `/dataset`. |
 | IW20 | After an apply, press `Reload the page` in the result | The page loads again as `/dataset`; the dialog does not open again. |
+| IW21 | In the dialog of IW7, leave one conflict with no choice, and press `Apply` | The result lists the conflict id under `conflicts with no choice, not written`. The wine keeps its field or its main image. The wine gets no comment and no row in `website_refusal`. The next `Compare` shows the conflict again. |
 
 ## The manual wines — the Dataset button `Add wine`
 

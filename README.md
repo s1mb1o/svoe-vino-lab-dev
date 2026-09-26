@@ -240,8 +240,9 @@ The button `Import from website` of the Dataset page runs the same compare as a 
 lab server: `import_website.py --prepare work/website-import/<run>/`. The button shows the
 progress. After the compare, a dialog lists each conflict with the choice `database` or
 `website`, and each plain change (new, missing, back, main image) with a checkbox. `Apply`
-needs a choice for each conflict, and it runs `import_website.py --apply` on the same run
-directory. A choice `website` writes the website value, or replaces the `main` image; the
+runs `import_website.py --apply` on the same run directory. A conflict with no choice does
+not block `Apply`: the apply skips it, writes nothing for it, and the next compare shows it
+again. A choice `website` writes the website value, or replaces the `main` image; the
 old file stays in the store. A choice `database` and a cleared checkbox are refusals in
 the table `website_refusal` (schema 015). A later run, also of the CLI, skips a refusal
 while the website keeps the refused value. Each choice writes a short comment of the
