@@ -231,3 +231,23 @@ Send the requests of one model again (for example after a new checkpoint on gx10
 ```bash
 rm -r data/cache/sam3/
 ```
+
+# Back up the lab database to git as text (plan 50)
+
+The skill `backup-lab-db` runs these steps, checks a round trip, and commits `db-export/`
+alone through a private git index. Export `data/lab.sqlite3` into `db-export/`:
+```bash
+python3 pipeline/db_export.py export
+```
+
+Restore the export into a new file. The restore never replaces a file:
+```bash
+python3 pipeline/db_export.py restore --from db-export \
+    --db data/backups/lab-restored-$(date -u +%Y%m%dT%H%M%SZ).sqlite3
+```
+
+The history of the backups, and of the rows of one table:
+```bash
+git log --stat --format='%h %ad %s' --date=iso -- db-export
+git log -p -- db-export/rows/wine_catalog.jsonl
+```

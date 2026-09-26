@@ -2,6 +2,18 @@
 
 ## 2026-09-26
 
+- Plan 50, a text export of the lab database for the git history (owner message of
+  2026-09-26T17:26:06+0300, answers of 17:28:00; session drink-atlas-workspace-96). New
+  `pipeline/db_export.py`: `export` writes `db-export/schema.sql`,
+  `db-export/rows/<table>.jsonl` (one JSON object for each row, in primary key order,
+  with the `rowid`), and `db-export/after-rows.sql` (the indexes, the views, the
+  triggers, and `PRAGMA user_version`); `restore` builds a new file only, and creates the
+  triggers after the rows. New skill `.claude/skills/backup-lab-db/`: the export, a round
+  trip check, and a commit of `db-export/` alone through a private git index. On schema
+  21: 17 tables, 26,792 rows, 12 MB; the export took 0.4 s and the restore 0.5 s; the
+  second export of the restored file was byte for byte equal. 8 tests in
+  `tests/test_db_export.py`. Plan 07 open question 3 has its answer; the comment of
+  `/data/` in `.gitignore` names `db-export/`.
 - The label rules again with `qwencloud-qwen3.8-max`, and the benchmark of plan 48 again
   (owner message of 2026-09-26T16:01:00+0300; session drink-atlas-workspace-39). The
   block `label_rules:` of `config.yaml` names `qwencloud-qwen3.8-max` for stage 2, with

@@ -1500,3 +1500,17 @@ entry.
 | HL7 | `curl -s -X POST $H/api/health/check -d '{"kind":"vlm","name":"nope"}'` | HTTP 404: `config.yaml has no vlm endpoint nope`. |
 | HL8 | Open `$H/health` with the system theme dark, then light | Both themes are readable. The badges use the colours of `theme.css`. |
 | HL9 | Open `$H/health` at a width of 390 px | No horizontal scroll of the page. The table scrolls in its own box. |
+
+## The text export of the lab database — plan 50
+
+Read [plan 50](docs/plans/50_lab-db-text-export.md) and the skill
+[`backup-lab-db`](.claude/skills/backup-lab-db/SKILL.md). Use a scratch directory `$T`.
+
+| # | Case | Expected result |
+|---|---|---|
+| DX1 | `python3 tests/test_db_export.py` | 8 tests, `OK`. |
+| DX2 | `python3 pipeline/db_export.py export --out $T/one` | `export: … (schema 21, 17 tables, <N> rows)` in less than 2 s. `$T/one` holds `schema.sql`, `after-rows.sql`, and 17 files in `rows/`. `data/lab.sqlite3` does not change. |
+| DX3 | `python3 pipeline/db_export.py restore --from $T/one --db $T/r.sqlite3`, then `export --db $T/r.sqlite3 --out $T/two`, then `diff -r $T/one $T/two` | The same row counts as DX2. `diff` prints no line. |
+| DX4 | Run the restore of DX3 again | `error: … exists already; the restore writes a new file alone`, exit status 1. `$T/r.sqlite3` does not change. |
+| DX5 | `head -2 $T/one/rows/wine_code.jsonl` | Each line is one JSON object. The first key is `rowid`. The rows are in the order of `wine_slug`, `kind`, `value`. |
+| DX6 | Run the skill `backup-lab-db` two times with no change of the database between the runs | The first run makes one commit that changes `db-export/` alone. The second run prints `no change since the last export` and makes no commit. `git diff --cached --name-only -- db-export` prints no line after each run. |

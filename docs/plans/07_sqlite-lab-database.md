@@ -325,6 +325,9 @@ These steps are proposals. The owner selects the next step and its content.
    `--dataset` stay enough?
 3. How does git keep the history of the database when it holds data that cannot be
    rebuilt, such as labels? A text export in git is one option.
+   Answer of 2026-09-26: the text export `db-export/`, one JSON-lines file for each
+   table, and the skill `backup-lab-db` commits it. Read
+   [plan 50](50_lab-db-text-export.md).
 4. Does the database use WAL mode when the review server and a script write at the same
    time?
 5. Is the object store of step 4 one store per delivery, or one store for all deliveries?

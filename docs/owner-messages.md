@@ -4373,3 +4373,43 @@ status
 check can you send parallel requests to qwencloud? Do you use parallel requests to qwencloud?
 are requests to qwencloud cached? these cache entries conflict with other LLM, ex. qwen3.5-9B, or they use different hash?
 ```
+
+## 2026-09-26T17:26:06+0300
+
+```text
+create skill in  @svoe-vino-lab  to backup @svoe-vino-lab/data/lab.sqlite3
+```
+
+## 2026-09-26T17:28:00+0300
+
+"Which text format should the skill export lab.sqlite3 to for the git history?"
+
+```text
+JSON lines per table
+```
+
+"Where should the export file go? /data/ is excluded from git (owner decision of 2026-09-24)."
+
+```text
+New folder db-export/ (Recommended)
+```
+
+"Should the skill commit the export?"
+
+```text
+Export and commit (Recommended)
+```
+
+"Should the skill also cover a restore?"
+
+```text
+Yes, to a new file (Recommended)
+```
+
+## 2026-09-26T17:43:00+0300
+
+"The skill is ready and tested but not committed. What should I commit now?"
+
+```text
+Commit, then first backup (Recommended)
+```

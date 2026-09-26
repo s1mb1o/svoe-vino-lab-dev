@@ -13,6 +13,9 @@ Test data for the Svoe Vino wine scanner.
 - `manual-groups.json` names the variant pairs that a reviewer made by hand.
 - `pipeline/` holds the lab database tools. `data/lab.sqlite3` is the lab database.
   `data/images/` holds the images of the wines. Git ignores `data/`.
+- `db-export/` holds the text export of `data/lab.sqlite3`, one JSON-lines file for each
+  table. It keeps the history of the database in git. The skill `backup-lab-db` writes
+  and commits it. Read [plan 50](docs/plans/50_lab-db-text-export.md).
 
 ## The lab database
 
