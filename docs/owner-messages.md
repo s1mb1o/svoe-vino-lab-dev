@@ -4455,3 +4455,48 @@ data/images/additional/ commit also
 http://127.0.0.1:8168/dataset/website-import 
 allow "Apply" without resolving conflicts. Commit
 ```
+
+## 2026-09-26T19:16:31+0300
+
+```text
+when showing website import dialog, additionally look for wine_slug renames (one wine_slug removed, another with same image appeared, or with short levenstein distance in slug, or same name and brand).
+```
+
+## 2026-09-26T19:18:00+0300
+
+A second message on the same task, sent during the work (the time is approximate).
+
+```text
+when showing website import dialog, additionally look for wine_slug renames (one wine_slug removed, another with same image appeared, or with short levenstein distance in slug, or same name and brand).
+
+Display such slug in separate section.
+```
+
+## 2026-09-26T19:22:30+0300
+
+The questions of drink-atlas-workspace-0d and the answers, for the owner messages of
+2026-09-26T19:16:31+0300 and about 19:18.
+
+"What should Apply do with a pair in the new \"Possible renames\" section?"
+
+```text
+Display only (Recommended)
+```
+
+"What counts as a \"short\" Levenshtein distance between the old slug and the new slug?"
+
+```text
+≤ 3 or ≤ 20 % (Recommended)
+```
+
+## 2026-09-26T19:23:19+0300
+
+```text
+but always for rename one slug has to appear and another removed on website.
+```
+
+## 2026-09-26T19:26:45+0300
+
+```text
+git commit
+```

@@ -543,6 +543,33 @@ class UiModeTest(WebsiteTestBase):
         diff = IMP.prepare(self.db, str(self.root / "run2"), self.client(), self.log.append)
         self.assertEqual([entry["id"] for entry in diff["conflicts"]], ["image:b"])
 
+    def test_renames_pair_a_missing_wine_with_a_new_wine(self):
+        def missing(slug, name, producer, digest=None):
+            return {"kind": "missing", "slug": slug, "name": name, "producer": producer,
+                    "stored": {"sha256": digest} if digest else None}
+
+        def new(slug, name, producer, digest=None):
+            return {"kind": "new", "slug": slug, "name": name, "producer": producer,
+                    "image": {"sha256": digest} if digest else None}
+        diff = {"changes": [
+            missing("ya-jla-risling", "Яйла Рислинг", "Yaiyla", "s1"),
+            missing("old-kokur", "Кокур", "Yaiyla", "s2"),
+            missing("alone", "Мерло", "Other", "s3"),
+            missing("dry-red", "Сухое Красное", "Ёлка Winery"),
+            {"kind": "main", "slug": "main-wine", "name": "Кокур", "producer": "Yaiyla",
+             "image": {"sha256": "s2"}},
+            new("yaiyla-riesling", "YAIYLA RIESLING", "Yaiyla", "s1"),
+            new("kokur-yaiyla", "KOKUR", "Yaiyla", "s2"),
+            new("fresh", "Совсем новое", "Other", "s9"),
+            new("red-dry-2024", "сухое, красное", "Елка winery")]}
+        self.assertEqual(IMP.renames(diff), [
+            {"old": "ya-jla-risling", "new": "yaiyla-riesling",
+             "reasons": ["same image", "slug distance 3"]},
+            {"old": "old-kokur", "new": "kokur-yaiyla", "reasons": ["same image"]},
+            {"old": "dry-red", "new": "red-dry-2024", "reasons": ["same name and producer"]}])
+        self.assertEqual(IMP.edit_distance("a" * 40, "b" * 40, 8), 9)
+        self.assertEqual(IMP.edit_distance("kokur", "kokur-", 3), 1)
+
     def test_apply_after_a_database_change_stops(self):
         self.prepare()
         conn = sqlite3.connect(self.db)

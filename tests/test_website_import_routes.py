@@ -104,6 +104,7 @@ class WebsiteImportRoutesTest(unittest.TestCase):
         self.assertEqual(state["progress"], "images: 1/1")
         code, diff, _, _ = self.call("GET", "%s/%s/diff" % (ROUTES.API, run))
         self.assertEqual((code, diff["run"], len(diff["conflicts"])), (200, run, 1))
+        self.assertEqual(diff["renames"], [])
         code, data, ctype, cache = self.call("GET", "/website-import/%s/images/%s.png"
                                              % (run, "a" * 64))
         self.assertEqual((code, data, ctype), (200, b"PNG", "image/png"))

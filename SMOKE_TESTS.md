@@ -1094,6 +1094,7 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 | IW19 | Open `http://127.0.0.1:8168/dataset/website-import` in a new tab, then press `×` | The dialog opens with the newest run in its present state (a running job, the conflicts and changes, or the result). The list shows all records; no image preview opens. `×` gives `/dataset`. |
 | IW20 | After an apply, press `Reload the page` in the result | The page loads again as `/dataset`; the dialog does not open again. |
 | IW21 | In the dialog of IW7, leave one conflict with no choice, and press `Apply` | The result lists the conflict id under `conflicts with no choice, not written`. The wine keeps its field or its main image. The wine gets no comment and no row in `website_refusal`. The next `Compare` shows the conflict again. |
+| IW22 | Open the dialog of IW7 in light and in dark mode, and at a width of 390 px | The section `Possible renames` follows `Conflicts`. Each row shows a wine of `Missing on the website` with the red sign, an arrow, a wine of `New wines on website`, and the matched rules (`same image`, `slug distance N`, `same name and producer`). The rows have no checkbox. Both wines of a row stay in their own sections. The run `20260926T074810` shows 4 rows. |
 
 ## The manual wines — the Dataset button `Add wine`
 

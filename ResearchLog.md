@@ -2,6 +2,31 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — wine_slug renames in the website import run of 07:48
+
+Session drink-atlas-workspace-0d [ab062e], owner messages of 2026-09-26T19:16:31+0300 to
+19:23:19. A read-only check of `work/website-import/20260926T074810/diff.json`: 73
+missing wines and 79 new wines, so 5,767 pairs. `import_website.renames` takes 0.03 s.
+
+- 4 pairs match. 3 match by the same image alone. `ya-jla-risling` -> `yaiyla-riesling`
+  matches by the same image and a slug distance of 3.
+- The rule "same name and producer" finds 0 pairs, also after the normalization (lower
+  case, `ё` -> `е`, no punctuation). The website changed the producer strings, for
+  example `One Barrel (Уан Баррел)` -> `One Barrel by Dmitry Maslov (OBDM)`. It changed the
+  script of the names too, for example `Яйла Рислинг` -> `YAIYLA RIESLING`.
+- A looser check (the same producer and a name token overlap of at least 0.5) found 2
+  other pairs: `merlo-litavshhuk` -> `merlo-2` and
+  `usadba-perovskih-rkatsiteli-beloe-suhoe-13` -> `rkacziteli-kvevri`. They are not
+  proven renames. The owner did not ask for this rule.
+- The One Barrel pairs cross. The stored main image of the old Chardonnay row
+  (`one-barrel-uan-barrel`) is the website image of the new `pinot-noir-2024`. The
+  stored main image of the old Pinot Noir row is the website image of the new
+  `chardonnay-2024`. The dialog shows a red wine bottle on the old Chardonnay row. So the
+  two lab rows probably hold swapped main images. A person must check this.
+- 9 tables reference `wine_catalog (wine_slug)` with no `ON UPDATE CASCADE` (schema 005,
+  007, 008, 009, 010, 011, 012, 013, 023). A real slug rename must change each of them.
+  The owner chose "display only" on 2026-09-26T19:22:30+0300.
+
 ## 2026-09-26 — the rules of `qwen3.8-max` against the rules of `qwen3.5-9b-nvfp4`
 
 Session drink-atlas-workspace-39 / CLUSTERS [fb59ad]. The same 163 clusters, the same

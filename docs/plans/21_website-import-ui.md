@@ -221,6 +221,16 @@ A new module `pipeline/website_import_routes.py`, like `embedding_routes.py`.
   change, no refusal, and no comment. The next compare shows it again. The status line
   states `N conflicts have no choice. Apply skips them.` The result and `result.json` list
   the skipped conflict ids (`unresolved`). The CLI still stops on each conflict.
+- Change of 2026-09-26 (owner messages of 19:16:31 to 19:23:19, answers of 19:22:30): a
+  section `Possible renames` after `Conflicts`. A rename always pairs a slug that left
+  the website (a `missing` change) with a slug that appeared on it (a `new` change). A
+  pair matches when the stored main image equals the website image, when the slug
+  distance (Levenshtein) is at most 3 edits or at most 20 % of the longer slug, or when
+  the name and the producer are equal after the normalization (lower case, `ё` -> `е`, no
+  punctuation). Each row shows the missing wine, an arrow, the new wine, and the matched
+  rules. The section is display only: the checkboxes of `New wines on website` and
+  `Missing on the website` decide the write. The diff route computes the pairs from
+  `diff.json` with `import_website.renames`, so an older run shows them too.
 - `#sort` gets `changed in the lab, newest first` (`modified_at`) and `changed on
   vino-svoe.ru, newest first` (`website_modified_at`). A NULL time sorts last.
 

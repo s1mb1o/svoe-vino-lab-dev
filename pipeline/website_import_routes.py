@@ -10,7 +10,7 @@ docs/plans/21_website-import-ui.md.
     GET  /api/website-import                              the state of the newest run
     POST /api/website-import/start                        start a compare (`--prepare`)
     POST /api/website-import/stop                         stop the job (SIGTERM)
-    GET  /api/website-import/<run>/diff                   `diff.json` of a run
+    GET  /api/website-import/<run>/diff                   `diff.json` of a run, with `renames`
     POST /api/website-import/<run>/apply                  write `choices.json`, start `--apply`
     GET  /website-import/<run>/images/<sha256>.<ext>      a website image of a run
     GET  /website-import.js                               the script of the dialog
@@ -276,7 +276,7 @@ def respond(server, method, path, read_body):
         diff = _read_json(os.path.join(WORK, run, import_website.DIFF_FILE))
         if diff is None:
             return _error(404, "run %s has no diff" % run)
-        return _json(200, dict(diff, run=run))
+        return _json(200, dict(diff, run=run, renames=import_website.renames(diff)))
     if method != "POST":
         return _error(405, "use POST")
     return apply(server, run, read_body)

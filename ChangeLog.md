@@ -2,6 +2,18 @@
 
 ## 2026-09-26
 
+- Website import (owner messages of 19:16:31 to 19:23:19, answers of 19:22:30; session
+  drink-atlas-workspace-0d): the dialog shows a section `Possible renames`. A pair is a
+  wine of `Missing on the website` and a wine of `New wines on website` with the same
+  main image, a slug distance of at most 3 edits or 20 % of the longer slug, or the same
+  name and producer. Display only; the write does not change.
+  - `pipeline/import_website.py`: `edit_distance` (bounded Levenshtein) and `renames`.
+  - `pipeline/website_import_routes.py`: `GET /api/website-import/<run>/diff` adds
+    `renames`, so the run of 07:48 shows 4 pairs with no new compare.
+  - `pipeline/pages/website_import.js`: the section after `Conflicts`.
+  - Tests: `test_renames_pair_a_missing_wine_with_a_new_wine`; the route test checks
+    `renames`. 32 and 6 tests OK. 8168 restarted at 19:24:19 (pid 107). Docs: plan 21,
+    `README.md`, `SMOKE_TESTS.md` (IW22), `ResearchLog.md`.
 - Website import (owner message of 19:11:01; session drink-atlas-workspace-0d): `Apply`
   on `/dataset/website-import` no longer needs a choice for each conflict. The apply
   skips a conflict with no choice: no write, no refusal, no comment. The next compare

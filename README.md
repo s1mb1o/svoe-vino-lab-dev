@@ -242,7 +242,9 @@ progress. After the compare, a dialog lists each conflict with the choice `datab
 `website`, and each plain change (new, missing, back, main image) with a checkbox. `Apply`
 runs `import_website.py --apply` on the same run directory. A conflict with no choice does
 not block `Apply`: the apply skips it, writes nothing for it, and the next compare shows it
-again. A choice `website` writes the website value, or replaces the `main` image; the
+again. The section `Possible renames` pairs a slug that left the website with a slug that
+appeared on it: the same main image, a slug distance of at most 3 edits or 20 %, or the same
+name and producer. It is display only. A choice `website` writes the website value, or replaces the `main` image; the
 old file stays in the store. A choice `database` and a cleared checkbox are refusals in
 the table `website_refusal` (schema 015). A later run, also of the CLI, skips a refusal
 while the website keeps the refused value. Each choice writes a short comment of the

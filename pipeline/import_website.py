@@ -19,6 +19,9 @@ Rules of the compare:
   each website wine and compares its SHA-256 with `main`, never with `main_patched`. The
   same bytes under a new upload name are no change.
 - A plain change is a new wine, a missing wine, a restored wine, or a stored main image.
+- `renames` lists the possible renames for the dialog: a missing wine and a new wine with
+  the same main image, a short slug distance, or the same name and producer. The list is
+  display only. The write does not read it.
 - A refusal of the table `website_refusal` matches while its situation stays. A matching
   refusal removes its conflict or its plain change from the run. A write deletes each
   refusal that did not match.
@@ -122,6 +125,10 @@ VALUE_CHARS = 60
 # A progress line after this many images.
 PROGRESS = 100
 CHANGED = "the database changed during the import; run the import again"
+# A possible rename: at most this many edits between the two slugs, or at most this share
+# of the longer slug (owner answer of 2026-09-26T19:22:30+0300).
+RENAME_EDITS = 3
+RENAME_SHARE = 0.2
 
 
 class WebsiteError(Exception):
@@ -536,6 +543,52 @@ def conflict_line(entry):
     return ("%s: the main image changed: stored %s (sha256 %s), website %s (sha256 %s)"
             % (entry["slug"], stored["source_name"], stored["sha256"], website["name"],
                website["sha256"]))
+
+
+def edit_distance(a, b, limit):
+    """Return the Levenshtein distance of two strings, or `limit + 1` when it is larger."""
+    if abs(len(a) - len(b)) > limit:
+        return limit + 1
+    previous = list(range(len(b) + 1))
+    for i, char in enumerate(a, 1):
+        current = [i]
+        for j, other in enumerate(b, 1):
+            current.append(min(previous[j] + 1, current[j - 1] + 1,
+                               previous[j - 1] + (char != other)))
+        if min(current) > limit:
+            return limit + 1
+        previous = current
+    return min(previous[-1], limit + 1)
+
+
+def _plain(value):
+    """Return a name or a producer in lower case, with no punctuation and single spaces."""
+    return " ".join(re.sub(r"[\W_]+", " ", (value or "").lower().replace("ё", "е")).split())
+
+
+def renames(diff):
+    """Return the possible renames of a diff: [{"old", "new", "reasons"}], the slug of a
+    missing wine, the slug of a new wine, and the matched rules. Display only."""
+    new = [entry for entry in diff["changes"] if entry["kind"] == "new"]
+    found = []
+    for old in diff["changes"]:
+        if old["kind"] != "missing":
+            continue
+        stored = (old.get("stored") or {}).get("sha256")
+        name = _plain(old["name"]), _plain(old["producer"])
+        for entry in new:
+            reasons = []
+            if stored and stored == (entry.get("image") or {}).get("sha256"):
+                reasons.append("same image")
+            limit = max(RENAME_EDITS, int(RENAME_SHARE * max(len(old["slug"]), len(entry["slug"]))))
+            distance = edit_distance(old["slug"], entry["slug"], limit)
+            if distance <= limit:
+                reasons.append("slug distance %d" % distance)
+            if name[0] and name == (_plain(entry["name"]), _plain(entry["producer"])):
+                reasons.append("same name and producer")
+            if reasons:
+                found.append({"old": old["slug"], "new": entry["slug"], "reasons": reasons})
+    return found
 
 
 # -------------------------------------------------------------------------- the write

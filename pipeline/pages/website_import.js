@@ -33,6 +33,14 @@
 .website-row .missing-image svg { position: absolute; inset: 0; width: 100%; height: 100%;
   pointer-events: none; }
 .website-row .title { font-weight: 600; }
+/* A possible rename: the missing wine, an arrow, the new wine, and the matched rules. */
+.website-row.rename { grid-template-columns: 64px 1fr auto 64px 1fr; }
+.website-row.rename .arrow { color: var(--muted); font-size: 18px; }
+.website-row.rename .reasons { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
+@media (max-width: 640px) {
+  .website-row.rename { grid-template-columns: 64px 1fr; }
+  .website-row.rename .arrow { display: none; }
+}
 .website-row .meta { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 .website-preview { position: fixed; inset: 0; z-index: 60; padding: 24px; display: flex;
   flex-direction: column; gap: 10px; align-items: center; justify-content: center;
@@ -253,13 +261,25 @@
   const MISSING_SIGN = `<svg viewBox="0 0 100 100" role="img" aria-label="Missing on the website">
     <circle cx="50" cy="50" r="42" fill="none" stroke="#e30613" stroke-width="10"/>
     <line x1="20.3" y1="20.3" x2="79.7" y2="79.7" stroke="#e30613" stroke-width="10"/></svg>`;
-  function changeHtml(entry) {
+  function changePicture(entry) {
     const url = entry.image ? runUrl(entry.image.file) : entry.stored && entry.stored.url;
     const file = entry.image ? entry.image.name : entry.stored && entry.stored.source_name;
-    const picture = entry.kind === "missing"
+    return entry.kind === "missing"
       ? `<span class="missing-image">${image(url, file)}${MISSING_SIGN}</span>` : image(url, file);
+  }
+  function changeHtml(entry) {
     return `<label class="website-row"><input type="checkbox" checked
-      data-change="${esc(entry.id)}">${picture}${wineTitle(entry)}</label>`;
+      data-change="${esc(entry.id)}">${changePicture(entry)}${wineTitle(entry)}</label>`;
+  }
+  // A possible rename: a slug that left the website and a slug that appeared on it (owner
+  // messages of 2026-09-26T19:16:31+0300 to 19:23:19). Display only.
+  function renameHtml(pair) {
+    const old = diff.changes.find(entry => entry.kind === "missing" && entry.slug === pair.old);
+    const now = diff.changes.find(entry => entry.kind === "new" && entry.slug === pair.new);
+    if (!old || !now) return "";
+    return `<div class="website-row rename">${changePicture(old)}${wineTitle(old)}
+      <span class="arrow" aria-label="renamed to">→</span>${changePicture(now)}${wineTitle(now)}
+      <div class="reasons">${esc(pair.reasons.join(" · "))}</div></div>`;
   }
 
   function showDiff() {
@@ -276,6 +296,12 @@
         <button type="button" data-website="all" data-side="database">all database</button>
         <button type="button" data-website="all" data-side="website">all website</button></h3>
         <div class="website-rows">${groups.map(conflictHtml).join("")}</div>`;
+    }
+    const renames = diff.renames || [];
+    if (renames.length) {
+      html += `<h3>Possible renames <span class="count">${renames.length} · Display only. The
+        checkboxes of New and Missing decide the write.</span></h3>
+        <div class="website-rows">${renames.map(renameHtml).join("")}</div>`;
     }
     for (const [kind, title, hint] of KINDS) {
       const entries = diff.changes.filter(entry => entry.kind === kind);
