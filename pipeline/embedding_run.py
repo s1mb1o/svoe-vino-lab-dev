@@ -395,7 +395,8 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
     key `embeddings`, and `pipeline.name` is the id of the backend. `pipeline.views`, when
     set, holds the steps of the test photo (owner answers of 00:52:41). Raise
     `embeddings.ConfigError`: an unknown or invalid entry, a backend other than openai or
-    local, or an entry with no index (`NO_INDEX`)."""
+    local, or an entry with no index (`NO_INDEX`). A pipeline with the key `barcode` gets
+    `barcode.CodeFirst` around the backend (plan 42)."""
     settings = embeddings.load_settings(config_path)
     try:
         entry = settings.find(pipeline.embedding)
@@ -403,15 +404,25 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
         raise embeddings.ConfigError("the pipeline %s names the embedding %s, which "
                                      "config.yaml does not hold"
                                      % (pipeline.name, pipeline.embedding))
-    return build_backend(entry, settings.db_path, top_k, name=pipeline.name,
-                         views=getattr(pipeline, "views", None))
+    backend = build_backend(entry, settings.db_path, top_k, name=pipeline.name,
+                            views=getattr(pipeline, "views", None))
+    if getattr(pipeline, "barcode", None) is not None:
+        import barcode  # noqa: E402  (zxing-cpp, on demand)
+        backend = barcode.CodeFirst(backend, pipeline.barcode, settings.db_path)
+    return backend
 
 
-def model_inputs(spec, path):
+def model_inputs(spec, path, candidates=None):
     """Return `{"inputs", "notes"}` of one photo of a run of `kind: embedding`: the model
     input of each view, made again with the steps of `spec` (the key `backend` of
     `run.json`) and the SAM3 answers of the cache. No request goes to SAM3 or to the
-    model. Each input has the keys of `/api/run-inputs` (docs/API.md)."""
+    model. Each input has the keys of `/api/run-inputs` (docs/API.md). `candidates` are
+    the candidates of the row; a first candidate with the key `code` is an answer of the
+    code lookup (plan 42), so the photo has no model input."""
+    first = (candidates or [None])[0]
+    if isinstance(first, dict) and first.get("code"):
+        import barcode  # noqa: E402  (the note alone; no zxing-cpp)
+        return {"inputs": [], "notes": [barcode.answer_note(first)]}
     views = spec.get("views") or {}
     endpoint = (spec.get("sam3") or {}).get("endpoint") or derive.SAM3_ENDPOINT
     try:
@@ -458,8 +469,13 @@ def candidate_items(spec, cand, db_path):
     the key `items` of the candidate, with `best`, `state`, `url`, `width`, and `height`.
     `state` `same` means that the present index holds the item with the hash of the run,
     so `url` names the PNG that went to the model. `changed` and `gone` get no URL. A run
-    with no key `items` gets the items of the present index and a note."""
+    with no key `items` gets the items of the present index and a note. A candidate of the
+    code lookup (the key `code`, plan 42) gets no item and one note."""
     import embedding_routes  # here alone: the URL of a prepared image
+    if cand.get("code"):
+        import barcode  # noqa: E402  (the note alone; no zxing-cpp)
+        return {"score": cand.get("score"), "views": {}, "items": [],
+                "notes": [barcode.candidate_note(cand)]}
     name = spec.get("embedding")
     notes, index = [], {}
     if not name:

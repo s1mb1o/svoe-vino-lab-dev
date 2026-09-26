@@ -2,6 +2,25 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — the barcode step: zxing-cpp 2.3.0 on Python 3.14, and a check on real photos
+
+Session drink-atlas-workspace-1c [800d92], plan 42.
+
+- zxing-cpp 2.3.0 has no wheel for Python 3.14 on macOS arm64. PyPI has wheels of 3.0.0
+  and 3.1.x for this Python. The matcher keeps 2.3.0, because 3.1.1 can stall on an
+  excise mark beside an EAN. `pip install --no-binary zxing-cpp zxing-cpp==2.3.0`
+  builds it from the source in `~/.venvs/svoe-vino-lab` with the Homebrew cmake and ninja
+  and the Apple C++ compiler.
+- A check of the decoder (`barcode.Decoder` with the options of the twins, and a lookup
+  made from `svoe-vino-matcher/dataset/code-map.json` with `codes.clean`): 169 photos
+  of the 22 wines of the code map in `svoe-vino-testset/dataset/*/photo/`. 40 photos
+  gave a hit of the right wine, 0 gave a wrong wine, and 129 gave no hit. The time for
+  each photo was 230 ms (median) and 619 ms (maximum), with the tile scan on each miss.
+  36 hits were EAN-13, 2 were Code 128 with a GTIN-13 (`4630171630094`), and 2 were a QR
+  URL. These photos are the photos that the reviewer used to enter the codes. So the
+  check shows that the decoder and the lookup work. It does not measure the rate of the
+  codes in a test set.
+
 ## 2026-09-26 — the embedding entries with the basic pipelines: `siglip2-512` is best
 
 Session drink-atlas-workspace-e2 [9e7fe4], plan 40. 22 pipelines (as is and crop, for each

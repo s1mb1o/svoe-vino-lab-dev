@@ -3835,3 +3835,45 @@ run basic pipeline with all variants of embeddings, add new pipelines if require
 
 At the end I want from you report with embeddings matching benchmarks.
 ```
+
+## 2026-09-26T07:22:10+0300
+
+```text
+copy support for barcode recognition from @svoe-vino-testset  and create step for it in pipelines
+```
+
+## 2026-09-26T07:27:08+0300
+
+The answers of the owner to the questions of the session drink-atlas-workspace-1c [800d92].
+
+1. "Where should the barcode step go in the lab pipelines? Every option needs zxing-cpp==2.3.0 in ~/.venvs/svoe-vino-lab and requirements-local.txt. The matcher pins 2.3.0 because 3.1.1 can stall on an excise mark."
+
+```text
+Pipeline key barcode: (Recommended)
+```
+
+The option: "A new optional key `barcode:` on a pipeline with `backend: embedding`. The run decodes the photo as it is before the views. A hit answers with the exact wine, and the embedding is skipped. A miss runs the views and the embedding as before. Changes: pipelines.py, embedding_run.py, a new barcode.py."
+
+2. "Which code list should the lookup read?"
+
+```text
+Lab wine_code table (Recommended)
+```
+
+The option: "data/lab.sqlite3, which holds 25 GTINs and 5 QR URLs. Codes are stored as GTIN-14, so a decoded EAN-13 or UPC-A is normalized with codes.clean_gtin, and QR URLs with codes.clean_qr_url."
+
+3. "One code can belong to more than one wine in wine_code. Today only one does: the qr_url http://127.0.0.1:8168/dataset on 2 wines, which looks like a wrong entry. What should a hit on a shared code answer?"
+
+```text
+All its wines, score 1.0 (Recommended)
+```
+
+The option: "Every wine of the code, at score 1.0, in slug order. The embedding does not run."
+
+4. "Which new pipeline entries should config.yaml get?"
+
+```text
+A twin of every embedding pipeline
+```
+
+The option: "22 new entries: a barcode twin of every embedding pipeline in plan 40."

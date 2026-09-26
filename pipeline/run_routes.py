@@ -270,9 +270,11 @@ def inputs_view(runs_dir, db_path, query):
     path = os.path.join(labdb.image_store(db_path), hit[0], "%s.%s" % (digest, hit[1]))
     if embedded:
         # The steps of run.json and the SAM3 answers of the cache; no request to a model.
+        # The candidates tell an answer of the code lookup (plan 42).
         import embedding_run  # noqa: E402  (the SAM3 cuts and the steps, on demand)
         return _json(200, {"run": run_id, "query": query_id,
-                           **embedding_run.model_inputs(meta["backend"], path)})
+                           **embedding_run.model_inputs(
+                               meta["backend"], path, list(record.get("candidates") or []))})
     scripts = os.path.join(ROOT, "scripts")
     if scripts not in sys.path:
         sys.path.insert(1, scripts)

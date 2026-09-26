@@ -2,6 +2,22 @@
 
 ## 2026-09-26
 
+- The pipelines have a barcode step: the optional key `barcode:` of a pipeline of the
+  backend `embedding` (plan 42; owner message of 2026-09-26T07:22:10+0300 and the answers
+  of 07:27:08; session drink-atlas-workspace-1c [800d92]). The new `pipeline/barcode.py`
+  is a copy of the zxing-cpp decoder of `svoe-vino-matcher/svm/pipelines/barcode.py`,
+  which svoe-vino-testset uses through `svm-barcode-siglip2-448`. The lookup reads
+  `wine_code` of the Active wines (GTIN-14 and QR URL, `codes.py`). A hit answers the photo
+  with each wine of the code at score 1.0, and the embedding does not run. A miss asks the
+  embedding. `config.yaml` has 22 twins `barcode-<pipeline>`, with the options of
+  `barcode-siglip2-448`. `embedding_run.build_pipeline_backend` puts `barcode.CodeFirst`
+  around the backend. `/api/run-inputs` and `/api/run-candidate` give a note for a code
+  answer. The trace of plan 41 gets the step `barcode` first (agreed with f4 [b39b7b]).
+  zxing-cpp 2.3.0 is in `~/.venvs/svoe-vino-lab` (a source build: no wheel for Python
+  3.14) and in `requirements-local.txt`. `tests/test_barcode.py`: 28 tests OK with
+  `embedding_python`; 5 decoder tests are skipped in system `python3`. A check on 169 real
+  photos of the 22 wines of `code-map.json`: 40 hits, 0 wrong wines, 129 photos with no
+  code; median 230 ms, maximum 619 ms for each photo.
 - Plan 40, the benchmark of the 11 embedding entries with the two basic pipelines (owner
   message of 2026-09-26T01:43:59+0300; session drink-atlas-workspace-e2 [9e7fe4]). First,
   the commit 1dd3006 of all pending changes. Then 20 new pipelines in `config.yaml`

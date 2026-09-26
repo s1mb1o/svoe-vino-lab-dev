@@ -217,9 +217,12 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
     res_fh = open(os.path.join(run_dir, "results.jsonl"), "w", encoding="utf-8")
 
     def one(row):
-        cands, ms, status, error = backend.ask(row["abs_path"])
+        # A backend MAY return a fifth value: the step trace of the photo (plan 41). The
+        # row then holds it as `trace`.
+        answer = backend.ask(row["abs_path"])
+        cands, ms, status, error = answer[:4]
         verdict = judge(row, cands, False)
-        return {
+        rec = {
             "query_id": row["query_id"], "image_path": row["image_path"],
             "image_sha256": row["image_sha256"], "slug": row["slug"],
             "label": row["label"], "truth": row["truth"],
@@ -227,6 +230,9 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
             "rank_of_truth": verdict["rank_of_truth"], "outcome": verdict["outcome"],
             "latency_ms": ms, "http_status": status, "error": error,
         }
+        if len(answer) > 4 and answer[4] is not None:
+            rec["trace"] = answer[4]
+        return rec
 
     def write(rec):
         pred_fh.write(json.dumps({

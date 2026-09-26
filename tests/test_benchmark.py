@@ -177,6 +177,28 @@ class BenchmarkTest(unittest.TestCase):
         self.assertIs(metas["live"]["use_cache"], False)
         self.assertIs(metas["cached"]["use_cache"], True)
 
+    def test_a_fifth_value_of_ask_is_the_trace_of_the_row(self):
+        # Plan 41: the step trace of the embedding runner. A backend of four values gets no
+        # key `trace`.
+        class Tracing(FakeBackend):
+            def ask(self, path):
+                return super().ask(path) + ({"v": 1, "steps": [{"id": "input", "ms": 1.0}]},)
+
+        plain, _ = BM.run_benchmark(self.db, "my", FakeBackend({"a1": ["wine-a"]}),
+                                    str(self.runs), embeddings={}, log=lambda m: None,
+                                    schema_dir=self.schema)
+        traced, _ = BM.run_benchmark(self.db, "my", Tracing({"a1": ["wine-a"]}), str(self.runs),
+                                     embeddings={}, label="traced", log=lambda m: None,
+                                     schema_dir=self.schema)
+        rows = {name: [json.loads(line) for line in
+                       Path(run_dir, "results.jsonl").read_text().splitlines()]
+                for name, run_dir in (("plain", plain), ("traced", traced))}
+        self.assertTrue(all("trace" not in row for row in rows["plain"]))
+        self.assertEqual([row["trace"]["steps"][0]["id"] for row in rows["traced"]],
+                         ["input"] * 4)
+        self.assertEqual([row["outcome"] for row in rows["traced"]],
+                         [row["outcome"] for row in rows["plain"]])
+
     def test_the_photos_of_a_removed_wine_leave_the_run_until_a_restore(self):
         # Owner answer of 2026-09-25T17:13:17+0300 (plan 24).
         conn = sqlite3.connect(self.db)

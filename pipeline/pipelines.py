@@ -14,10 +14,13 @@ The backends:
                    2026-09-26T00:12:24+0300: `embeddings` prepares and uses the vectors,
                    and `pipeline` holds the runs. The optional key `views` holds the
                    steps of the test photo (owner answers of 00:52:41); without it the
-                   test photo gets the steps of the embedding entry.
+                   test photo gets the steps of the embedding entry. The optional key
+                   `barcode` decodes the photo first (`barcode.py`, plan 42): a code of
+                   `wine_code` answers the photo, and the embedding does not run.
 
 The owner removed the pipeline `mock` and its code on 2026-09-26T00:26:27+0300.
 """
+import barcode
 import embeddings
 from embeddings import ConfigError
 
@@ -33,7 +36,8 @@ REMOTE_DEFAULTS = {"field": "image", "response": "auto", "query": {}, "top_k": 1
                    "timeout_s": 30, "workers": 1, "headers": {}}
 # The answer shapes of `match_backends.SHAPES`. A test keeps the two lists equal.
 REMOTE_SHAPES = ("auto", "slug-object", "slug-array", "candidates")
-BACKEND_KEYS = {REMOTE_BACKEND: REMOTE_KEYS, EMBEDDING_BACKEND: ("embedding", "views")}
+BACKEND_KEYS = {REMOTE_BACKEND: REMOTE_KEYS,
+                EMBEDDING_BACKEND: ("embedding", "views", "barcode")}
 
 
 def _remote(raw):
@@ -68,8 +72,9 @@ def _remote(raw):
 class Pipeline:
     """One checked entry of the key `pipeline` of `config.yaml`. `remote` holds the
     request keys of the backend `svoe-vino-ru`. `embedding` is the name of the `embeddings`
-    entry of the backend `embedding`, and `views` the steps of its test photo (view ->
-    steps), or None for the steps of the entry. Each is None for another backend."""
+    entry of the backend `embedding`, `views` the steps of its test photo (view ->
+    steps), or None for the steps of the entry, and `barcode` the options of the barcode
+    step (plan 42), or None for no barcode step. Each is None for another backend."""
 
     def __init__(self, raw):
         if not isinstance(raw, dict):
@@ -86,7 +91,7 @@ class Pipeline:
         if unknown:
             raise ConfigError("the backend %s takes no %s" % (self.backend, ", ".join(unknown)))
         self.remote = _remote(raw) if self.backend == REMOTE_BACKEND else None
-        self.embedding = self.views = None
+        self.embedding = self.views = self.barcode = None
         if self.backend == EMBEDDING_BACKEND:
             model = raw.get("embedding")
             if not isinstance(model, str) or not embeddings.NAME_RE.match(model):
@@ -95,6 +100,8 @@ class Pipeline:
             self.embedding = model
             if "views" in raw:
                 self.views = _views(raw["views"])
+            if "barcode" in raw:
+                self.barcode = barcode.check_options(raw["barcode"])
 
 
 def _views(views):

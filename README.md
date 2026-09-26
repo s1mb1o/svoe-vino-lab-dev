@@ -494,6 +494,14 @@ python3 -m venv ~/.venvs/svoe-vino-lab
 - A pipeline of the backend `embedding` names an entry of the backend `openai` or `local`
   with an index. `pipeline/embedding_run.py` makes its runs of a test set (section "The
   runs of the lab"). Read [plan 33](docs/plans/33_embedding-run.md).
+- A pipeline of the backend `embedding` MAY hold the key `barcode` (plan 42). The run
+  decodes the photo with zxing-cpp before the views (`pipeline/barcode.py`, a copy of the
+  decoder of svoe-vino-matcher). A GTIN or a QR URL that `wine_code` holds for an Active
+  wine answers the photo: each wine of the code at score 1.0, and the embedding does not
+  run. A miss runs the views and the embedding. Each pipeline of the backend `embedding`
+  has a twin `barcode-<pipeline>`. zxing-cpp 2.3.0 MUST be in `embedding_python`; it
+  builds from the source (`requirements-local.txt`). Read
+  [plan 42](docs/plans/42_barcode-step.md).
 
 ## The embedding clusters of the lab
 

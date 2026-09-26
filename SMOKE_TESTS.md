@@ -1339,6 +1339,20 @@ changed too.
 | PL16 | The same with `siglip2-p256-crop` | The job ends with `3 / 3`. The model input of a row is the box of the package with its own background, 1024 px on the long side. A photo with no package found gets the border cut of the white rule. |
 | PL17 | Put `views: {full: {steps: [{step: resize, max_size: 1024}, {step: segment, target: package}]}}` into a copy of a pipeline of the backend `embedding` and load the copy with `pipelines.load` | The entry has the error: view full: the first step MUST be segment. |
 
+## The barcode step — the key `barcode` and `pipeline/barcode.py`
+
+Read [plan 42](docs/plans/42_barcode-step.md). `$H` is `http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| BC1 | `~/.venvs/svoe-vino-lab/bin/python -m unittest discover -s tests -p 'test_barcode.py'` | 28 tests `OK` (2026-09-26). With system `python3`: 28 tests, `OK (skipped=5)`; the decoder tests need zxing-cpp. |
+| BC2 | `~/.venvs/svoe-vino-lab/bin/python -c "import importlib.metadata as m; print(m.version('zxing-cpp'))"` | `2.3.0`. |
+| BC3 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import pipelines; s = pipelines.load(); print(sum(1 for n, p, e in s.entries if p and p.barcode), [n for n, p, e in s.entries if e])"` | `22 []`: 22 twins `barcode-<pipeline>`, and no entry with an error. |
+| BC4 | Put `barcode: {formats: [UPCE]}` into a copy of a twin and load the copy with `pipelines.load` | The entry has the error `barcode: unknown format UPCE`. |
+| BC5 | After a restart of 8168: open `$H/testset?set=my` and click `Run>` | The dialog lists the 22 twins. A twin is runnable when the entry of its pipeline has an index. |
+| BC6 | Start `barcode-siglip2-p256-as-is` on the set `my` with `first N queries` 10 | The job ends with `10 / 10`. `run.json` holds `backend.barcode` with `engine: zxing-cpp` and the count of the codes. A photo with a code of `wine_code` has candidates with `source`, `code`, `read`, and `format`, and score 1.0. |
+| BC7 | On `/runs`, open the model inputs of a row that the code lookup answered | No input, and the note `The code lookup answered this photo: gtin ...`. A candidate of that row shows the note `The code lookup gave this wine`. |
+
 ## The cache of the model calls — `pipeline/model_cache.py` and `pipeline/gdino.py`
 
 Read [plan 25](docs/plans/25_model-call-cache.md). `<photo>` is a file of `data/images/main/`.

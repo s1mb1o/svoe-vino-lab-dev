@@ -305,6 +305,132 @@ pipeline:
     embedding: local-siglip2-so400m-patch16-naflex-p256
     views: *crop-views
 
+  # Plan 42 (owner message of 2026-09-26T07:22:10+0300, answers of 07:27:08): a barcode
+  # twin of each embedding pipeline. The key `barcode` decodes the photo as it is before
+  # the views (`pipeline/barcode.py`, zxing-cpp 2.3.0 in `embedding_python`). A code that
+  # `wine_code` holds for an Active wine answers the photo: each wine of the code at score
+  # 1.0, and the embedding does not run. A miss runs the views and the embedding of the
+  # twin. The options are the options of `barcode-siglip2-448` of svoe-vino-matcher:
+  # EAN-13, and Code 128 when it holds a GTIN-13; QR; the tile scan; a long side of
+  # 1600 px, and a smaller photo scaled UP to it. The YAML anchor `barcode-options` holds
+  # them one time. Read docs/plans/42_barcode-step.md.
+  - name: barcode-siglip2-p256-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p256
+    barcode: &barcode-options
+      formats: [EAN13, Code128]
+      code128_gtin_only: true
+      qr: true
+      tile_scan: true
+      max_side: 1600
+      upscale: true
+    views: *as-is-views
+  - name: barcode-siglip2-p256-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p256
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-siglip2-p512-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-siglip2-p512-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-siglip2-p14-384-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch14-384
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-siglip2-p14-384-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch14-384
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-siglip2-256-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-256
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-siglip2-256-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-256
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-siglip2-384-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-384
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-siglip2-384-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-384
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-siglip2-512-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-512
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-siglip2-512-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-512
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-naflexvit-p256-as-is
+    backend: embedding
+    embedding: gx10-naflexvit-so400m-patch16-siglip2-p256
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-naflexvit-p256-crop
+    backend: embedding
+    embedding: gx10-naflexvit-so400m-patch16-siglip2-p256
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-pe-core-l14-336-as-is
+    backend: embedding
+    embedding: gx10-pe-core-l14-336
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-pe-core-l14-336-crop
+    backend: embedding
+    embedding: gx10-pe-core-l14-336
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-dinov3-vitb16-as-is
+    backend: embedding
+    embedding: gx10-dinov3-vitb16
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-dinov3-vitb16-crop
+    backend: embedding
+    embedding: gx10-dinov3-vitb16
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-dinov3-vitl16-as-is
+    backend: embedding
+    embedding: gx10-dinov3-vitl16
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-dinov3-vitl16-crop
+    backend: embedding
+    embedding: gx10-dinov3-vitl16
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-local-siglip2-p256-as-is
+    backend: embedding
+    embedding: local-siglip2-so400m-patch16-naflex-p256
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-local-siglip2-p256-crop
+    backend: embedding
+    embedding: local-siglip2-so400m-patch16-naflex-p256
+    barcode: *barcode-options
+    views: *crop-views
+
 # The VLM inferences. One entry: a name, a protocol, the thinking field, an endpoint, a
 # model, and a key. `pipeline/vlm_config.py` reads this key. A script names an entry by
 # its name, for example `scripts/04_verify.py --backends qwen3-vl-32b:12`, or the keys
