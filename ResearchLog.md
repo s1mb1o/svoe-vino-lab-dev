@@ -2,6 +2,34 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-26 — the rules of `qwen3.8-max` against the rules of `qwen3.5-9b-nvfp4`
+
+Session drink-atlas-workspace-39 / CLUSTERS [fb59ad]. The same 163 clusters, the same
+stage 1 descriptions (the 9B), the same query VLM (the 9B), label `bench49` against
+`bench48` (the 9B rules) and `bench45` (no re-rank), 2,209 photos of `my`.
+
+- The build: 163 calls to `qwen3.8-max` with thinking, 4 at the same time (the log gives
+  3.9 calls in flight on average), 61 min, 0 errors and no refusal of QwenCloud. One rule:
+  median 70 s, maximum 259 s. The «Фантом» rule: 3,595 reasoning tokens, 338 answer
+  tokens, and the right colours (pink, dark red, purple); the 9B had «dark blue» for B.
+- The shape of the rules: fewer questions (170 valid against 229), more rules of one
+  question (97 against 67), fewer `vintage` questions struck by the check (3 against 27),
+  more `verdict` rules (32 against 24), and 13 rules that separate the cards by the alcohol
+  value alone (1 for the 9B).
+- R@1 of `rerank-siglip2-512-crop`: 83.82 % against 83.26 % (the 9B rules), +0.55 points,
+  25 wins and 16 losses, exact McNemar p 0.21: the difference is not significant.
+  Negatives rejected 84.42 % against 85.10 %, 3 wins and 7 losses, p 0.34. Against no
+  re-rank: +2.52 points, 52 wins and 11 losses, p 1.7e-07. The barcode twin: 85.17 %.
+- The rules of `qwen3.8-max` lose less in mode `sheet` (7 losses against 13) and more in
+  mode `verdict` (4 positive and 2 negative losses). 22 of their 32 `verdict` rules name
+  every card as indistinguishable, and the query model still names a card. A post hoc
+  replay with the base order for these 48 photos gives no net gain (R@1 -0.13 points,
+  negatives +0.34 points).
+- The cache: each answer of QwenCloud is a record of `data/cache/qwen3.8-max/`. The key is
+  the SHA-256 of the endpoint, the model, the request options (the thinking switch
+  included), the prompt, and the SHA-256 of each image, so a record of `qwen3.5-9b-nvfp4`
+  never answers a call of `qwen3.8-max`. No record holds the API key.
+
 ## 2026-09-26 — a VLM request that times out while the service lives (plan 49)
 
 Session drink-atlas-workspace-0d [ab062e]. Read `docs/plans/49_vlm-timeout-probe.md`.

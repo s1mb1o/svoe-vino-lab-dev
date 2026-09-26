@@ -581,10 +581,14 @@ python3 pipeline/build_label_rules.py --name <embedding> --force
 | 2, `rules` | each cluster | one image for each card: its `label` cut on white, scaled UP or down to 768 pixels (a card with no label cut sends its package cut); the card data; the descriptions without the key `bottle`; the note of the reviewer | the difference sheet (questions with the expected answer of each card), the rule text, and the groups that no feature separates |
 
 The block `label_rules` of `config.yaml` holds the settings, with a comment for each key.
-Both stages use `qwen3.5-9b-nvfp4` with thinking off. With thinking on, the probe of
-2026-09-26 gave no answer in 12,000 tokens; `rules_thinking` switches it on. The service
-accepts at most 20 images in one prompt (`rules_max_images`, the vLLM option
-`--limit-mm-per-prompt`). A cluster with more cards gets an error record and no call.
+Stage 1 uses `qwen3.5-9b-nvfp4` with thinking off. Stage 2 uses `qwencloud-qwen3.8-max`
+with thinking, 4 calls at the same time, since the owner message of
+2026-09-26T16:01:00+0300: about 70 s for one rule. The key comes from the shell variable of
+that `vlm` entry. The rules of `qwen3.5-9b-nvfp4` (thinking off; with thinking it gave no
+answer in 12,000 tokens) are kept as `cluster-rules.qwen3.5-9b-nvfp4.2026-09-26T1116.json`.
+The two rule sets give the same benchmark within the noise (plan 48). The service of
+`qwen3.5-9b-nvfp4` accepts at most 20 images in one prompt (`rules_max_images`, the vLLM
+option `--limit-mm-per-prompt`). A cluster with more cards gets an error record and no call.
 When the service refuses the number of images, the command stops with a message that
 names the limit of the service.
 

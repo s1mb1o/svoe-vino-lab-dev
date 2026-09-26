@@ -4354,3 +4354,22 @@ Restart now (Recommended)
 ```text
 Commit my hunks (Recommended)
 ```
+
+## 2026-09-26T16:01:00+0300
+
+```text
+re-make rules using qwen3.8-max and repeat benchmark
+```
+
+## 2026-09-26T16:44:00+0300
+
+```text
+status
+```
+
+## 2026-09-26T16:46:00+0300
+
+```text
+check can you send parallel requests to qwencloud? Do you use parallel requests to qwencloud?
+are requests to qwencloud cached? these cache entries conflict with other LLM, ex. qwen3.5-9B, or they use different hash?
+```

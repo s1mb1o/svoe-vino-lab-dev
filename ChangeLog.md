@@ -2,6 +2,17 @@
 
 ## 2026-09-26
 
+- The label rules again with `qwencloud-qwen3.8-max`, and the benchmark of plan 48 again
+  (owner message of 2026-09-26T16:01:00+0300; session drink-atlas-workspace-39). The
+  block `label_rules:` of `config.yaml` names `qwencloud-qwen3.8-max` for stage 2, with
+  thinking, 4 calls at the same time; stage 1 stays on `qwen3.5-9b-nvfp4`. 163 rules in
+  61 min, 0 errors (131 `sheet`, 32 `verdict`); the 9B rules are kept as
+  `cluster-rules.qwen3.5-9b-nvfp4.2026-09-26T1116.json`. The benchmark (label `bench49`):
+  `rerank-siglip2-512-crop` 83.82 % R@1 (9B rules 83.26 %, no re-rank 81.29 %), and
+  `barcode-rerank-siglip2-512-crop` 85.17 %, the best of the lab; against no re-rank 52
+  wins and 11 losses, p 1.7e-07; against the 9B rules +0.55 points, p 0.21, not
+  significant. Negatives rejected 84.42 % (9B rules 85.10 %). Plan 48, section «Result
+  with the rules of `qwen3.8-max`»; plan 45, change 8.
 - Plan 49, a probe after a VLM timeout and the dialog of the watcher (owner message of
   2026-09-26T10:33:00+0300, answers of 15:18:00 and 15:35:00; session
   drink-atlas-workspace-0d). Cause of the pill `VLM waiting: no answer from

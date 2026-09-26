@@ -160,3 +160,44 @@ the wines and reported on the other half:
 - strike a question whose answers are numbers of 5 or more digits;
 - count only «yes» as evidence in a yes/no question;
 - a margin guard on the base score gap.
+
+## Result with the rules of `qwen3.8-max`
+
+Owner message of 2026-09-26T16:01:00+0300: «re-make rules using qwen3.8-max and repeat
+benchmark». Stage 2 of plan 45 ran again with `qwencloud-qwen3.8-max`, thinking on, 4 calls
+at the same time (16:03 to 17:05, 61 min, 163 rules, 0 errors; median 70 s for one rule).
+Stage 1 stayed. The rules of `qwen3.5-9b-nvfp4` are kept as
+`cluster-rules.qwen3.5-9b-nvfp4.2026-09-26T1116.json` in the embedding directory. The query
+VLM stayed `qwen3.5-9b-nvfp4`. Label `bench49`, 17:05 to 17:18.
+
+The rules: 131 `sheet` and 32 `verdict` (the 9B: 139 and 24); 170 valid questions (the 9B:
+229); the check struck 3 `vintage` questions (the 9B: 27); 13 rules separate the cards by
+the alcohol value alone (the 9B: 1).
+
+| Pipeline | Rules | R@1 | MRR | Negatives rejected | Median ms |
+|---|---|---:|---:|---:|---:|
+| `siglip2-512-crop` | none | 81.29 % | 0.878 | 82.88 % | 172 |
+| `rerank-siglip2-512-crop` | 9B | 83.26 % | 0.889 | 85.10 % | 223 |
+| `rerank-siglip2-512-crop` | `qwen3.8-max` | **83.82 %** | 0.891 | 84.42 % | 236 |
+| `barcode-siglip2-512-crop` | none | 82.58 % | 0.890 | 82.88 % | 376 |
+| `barcode-rerank-siglip2-512-crop` | 9B | 84.55 % | 0.901 | 85.10 % | 561 |
+| `barcode-rerank-siglip2-512-crop` | `qwen3.8-max` | **85.17 %** | 0.904 | 84.59 % | 423 |
+
+- Against no re-rank (`bench45`), with the rules of `qwen3.8-max`: positives +2.52 points,
+  52 wins and 11 losses, exact McNemar p 1.7e-07 (the barcode twin: +2.58, 52 and 10, p
+  5.7e-08); negatives +1.54 points, 12 wins and 3 losses, p 0.035.
+- Against the rules of the 9B (`bench48`): positives +0.55 points, 25 wins and 16 losses,
+  p 0.21; negatives -0.68 points, 3 wins and 7 losses, p 0.34. The difference between the
+  two rule sets is not significant.
+- The step acted on 574 photos again: 507 `sheet` (99 changed; positives 44 wins, 7
+  losses; negatives 12 wins, 1 loss) and 67 `verdict` (23 changed; positives 8 wins, 4
+  losses; negatives 2 losses). 0 VLM errors. A photo with the step: median 2.6 s.
+- The 14 losses: 5 come from `verdict` rules whose text says that no label feature tells
+  the cards apart (the model still names a card); the others are misreads of the query
+  VLM («КУБАНЬ» for «КУБАНЬ. КРЫМ», a wine colour, a sugar level, a year), one expected
+  text that differs from the print («АВТОРСКОЕ» and «АВТОРСКОЕ ВИНО»), and one photo where
+  the vintage variants of plan 06 of `svoe-vino-testset` disagree with the test label.
+- 22 of the 32 `verdict` rules of `qwen3.8-max` (16 of 24 of the 9B) list every card of
+  their cluster as indistinguishable. A replay that keeps the base order for these rules
+  (48 photos) gives R@1 83.69 % instead of 83.82 % and negatives 84.76 % instead of
+  84.42 %: no net gain, so the check does not change. The replay is post hoc.

@@ -275,6 +275,14 @@ The block `label_rules:` of `config.yaml` holds 14 keys, each with a comment in 
    every 2 s, at most 1 h). The run now reads its inputs after it holds the lock. The page
    shows «Saved · rebuilding the rule…», polls the detail every 3 s for at most 5 min, and
    swaps in only the rule block of that cluster when the rule is current («Rule rebuilt»).
+8. Stage 2 uses `qwencloud-qwen3.8-max` since the owner message of 2026-09-26T16:01:00+0300,
+   with thinking and 4 calls at the same time (`rules_vlm`, `rules_thinking`,
+   `rules_max_tokens` 16000, `rules_timeout_s` 900, `rules_workers` 4). Stage 1 stays on
+   `qwen3.5-9b-nvfp4`. The rebuild of 16:03 to 17:05 made 163 rules (131 `sheet`, 32
+   `verdict`, 0 errors), median 70 s for one rule. The «Фантом» rule now gives the colour of
+   card B right (dark red). The rules of `qwen3.5-9b-nvfp4` are kept as
+   `cluster-rules.qwen3.5-9b-nvfp4.2026-09-26T1116.json`. Plan 48, section «Result with the
+   rules of `qwen3.8-max`», holds the benchmark.
 
 ## The run
 
