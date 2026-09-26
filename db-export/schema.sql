@@ -11,15 +11,6 @@ CREATE TABLE wine_code (
                AND (value GLOB 'http://?*' OR value GLOB 'https://?*')))
 ) STRICT;
 
-CREATE TABLE wine_atlas_binding (
-    wine_slug    TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
-    source       TEXT NOT NULL CHECK (source IN ('automatic', 'manual')),
-    product_uuid TEXT NOT NULL CHECK (length(product_uuid) = 36
-        AND product_uuid NOT GLOB '*[^0-9a-f-]*'
-        AND product_uuid GLOB '????????-????-????-????-????????????'),
-    PRIMARY KEY (wine_slug, source)
-) STRICT;
-
 CREATE TABLE wine_comment (
     id         INTEGER PRIMARY KEY,
     wine_slug  TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
@@ -135,7 +126,8 @@ CREATE TABLE image_description (
     vlm_model     TEXT,
     vlm_answer    TEXT CHECK (vlm_answer IS NULL OR json_valid(vlm_answer)),
     vlm_error     TEXT,
-    vlm_attempts  INTEGER NOT NULL DEFAULT 0 CHECK (vlm_attempts >= 0),
+    vlm_attempts  INTEGER NOT NULL DEFAULT 0 CHECK (vlm_attempts >= 0), presentation_mode TEXT
+    CHECK (presentation_mode IN ('on_package', 'flat_surface', 'other', 'unknown')),
     CHECK ((vlm_at IS NULL) = (vlm_answer IS NULL))
 ) STRICT;
 
@@ -211,5 +203,14 @@ CREATE TABLE wine_beverage_type (
     beverage_type_code TEXT NOT NULL CHECK (beverage_type_code IN ('4', '44')),
     updated_at         TEXT NOT NULL CHECK (updated_at GLOB
         '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z')
+) STRICT;
+
+CREATE TABLE "wine_atlas_binding" (
+    wine_slug    TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
+    source       TEXT NOT NULL CHECK (source IN ('automatic', 'manual')),
+    product_uuid TEXT NOT NULL CHECK (length(product_uuid) = 36
+        AND product_uuid NOT GLOB '*[^0-9a-f-]*'
+        AND product_uuid GLOB '????????-????-????-????-????????????'),
+    PRIMARY KEY (wine_slug, product_uuid)
 ) STRICT;
 

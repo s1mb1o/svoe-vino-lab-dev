@@ -1,6 +1,8 @@
 {"rowid":1,"wine_slug":"abrau-dyurso-abrau-estates-dostoynyy-krasnoe-suhoe-135","source":"automatic","product_uuid":"6062ada1-5a02-40df-b541-00be133fa36d"}
 {"rowid":2,"wine_slug":"abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105","source":"automatic","product_uuid":"6b763a31-0575-4bf5-b0f1-81a7cbd58c56"}
 {"rowid":3,"wine_slug":"abrau-dyurso-abrau-kupazh-svetlyy-suhoe-shardone-beloe-125","source":"automatic","product_uuid":"360840a0-e98a-42e7-8d9a-89aa3d44e136"}
+{"rowid":369,"wine_slug":"abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13","source":"manual","product_uuid":"1f2cd829-4452-481f-a3a0-0666dfdc2634"}
+{"rowid":370,"wine_slug":"abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13","source":"manual","product_uuid":"47763bfb-8281-4918-ac03-e0180768a4a8"}
 {"rowid":4,"wine_slug":"abrau-dyurso-femme-dabrau-amurskiy-potapenko-krasnoe-suhoe-107","source":"automatic","product_uuid":"2f55c6af-72d8-4624-a2d5-f0b6a49377e3"}
 {"rowid":5,"wine_slug":"abrau-dyurso-imperatorskoe-bryut-shardone-beloe-12","source":"automatic","product_uuid":"99357c65-2370-4fe6-be57-a37fbb56f5aa"}
 {"rowid":6,"wine_slug":"abrau-dyurso-russkoe-igristoe-polusladkoe-shardone-beloe-12","source":"automatic","product_uuid":"9652f1b0-7a35-4f83-a0f7-514ebf510f44"}
@@ -9,10 +11,13 @@
 {"rowid":9,"wine_slug":"abrau-dyurso-victor-dravigny-extra-brut-shardone-beloe-bryut-125","source":"automatic","product_uuid":"28ccaee8-62fd-469f-862b-6202e5139a44"}
 {"rowid":10,"wine_slug":"agora-kaberne-sovinon","source":"automatic","product_uuid":"efd193d1-8b8e-4e19-8142-9aecd2cd11b9"}
 {"rowid":11,"wine_slug":"agora-muskat","source":"automatic","product_uuid":"a82c191f-bb4f-473b-b549-2232b2082863"}
+{"rowid":371,"wine_slug":"agora-muskat-chernyj","source":"manual","product_uuid":"7a773683-84ec-4039-b086-7fb1b92821e0"}
+{"rowid":372,"wine_slug":"agora-muskat-chernyj","source":"manual","product_uuid":"a7179429-4616-4403-886a-f509e66439ca"}
 {"rowid":12,"wine_slug":"agora-pino-nuar","source":"automatic","product_uuid":"b3cc678e-1716-458d-b0a9-870b3e43a9e9"}
 {"rowid":13,"wine_slug":"agora-rosa-viva-muscat","source":"automatic","product_uuid":"8b735ab5-9f1f-488b-adca-32f08deeb243"}
 {"rowid":14,"wine_slug":"agora-rosa-viva-riesling","source":"automatic","product_uuid":"814e14b9-cfdb-4d69-b137-d1335369cb5b"}
 {"rowid":15,"wine_slug":"agora-shardone","source":"automatic","product_uuid":"f0f5ea74-8330-49be-aca4-46182279399b"}
+{"rowid":373,"wine_slug":"agrolayn-mountain-eagle-semillon-semilon-beloe-suhoe-11","source":"manual","product_uuid":"a042d962-1443-4d19-9fa2-72d5011b255f"}
 {"rowid":365,"wine_slug":"agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115","source":"manual","product_uuid":"64370c1f-1a9e-4ce8-bf8a-4ae1e025c293"}
 {"rowid":16,"wine_slug":"aligote-shato-pino","source":"automatic","product_uuid":"00d85cd5-12ad-4253-a791-0af0ef32787d"}
 {"rowid":17,"wine_slug":"alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15","source":"automatic","product_uuid":"57183873-163f-4841-b56e-fb173341d427"}
@@ -22,6 +27,7 @@
 {"rowid":21,"wine_slug":"alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14","source":"automatic","product_uuid":"832794b3-9105-4713-aabf-45d5a38e1cae"}
 {"rowid":22,"wine_slug":"alma-valley-tempranilo-krasnoe-suhoe-13","source":"automatic","product_uuid":"9a4298fa-f52a-48a4-8ead-47f1552d0736"}
 {"rowid":23,"wine_slug":"andryus-yutsis-shenen-blan-beloe-suhoe-12","source":"automatic","product_uuid":"29f24c10-3d49-4d4d-a2b7-64cb140fbe41"}
+{"rowid":374,"wine_slug":"aratti-shardone-beloe-suhoe","source":"manual","product_uuid":"feb07c03-ff62-419f-bf6b-2645fec31887"}
 {"rowid":24,"wine_slug":"aromatnoe-malbek-rezerv-krasnoe-suhoe-125","source":"automatic","product_uuid":"24f948de-ad2c-4e17-a582-059b9272f139"}
 {"rowid":25,"wine_slug":"aromatnoe-shenen-blan-beloe-suhoe-13","source":"automatic","product_uuid":"1f4260b4-c87b-43a6-8b63-e17e84bf5d7b"}
 {"rowid":26,"wine_slug":"avtorskoe-risling","source":"automatic","product_uuid":"a3959880-312d-46bb-b1e3-b3fc1411ddc5"}
@@ -41,6 +47,7 @@
 {"rowid":40,"wine_slug":"belbek-belbek-roze-pino-nuar-rozovoe-suhoe-129","source":"automatic","product_uuid":"02ac6ecc-1281-449c-863c-4186b9a811a9"}
 {"rowid":41,"wine_slug":"belbek-pino-nuar-rezerv-krasnoe-suhoe-135","source":"automatic","product_uuid":"832794b3-9105-4713-aabf-45d5a38e1cae"}
 {"rowid":42,"wine_slug":"blagolyubov-stanichnoe-stanichnyy-beloe-suhoe-12","source":"automatic","product_uuid":"f582c862-1f05-4983-86d4-c4407cdc2ccd"}
+{"rowid":375,"wine_slug":"blan-de-blan","source":"manual","product_uuid":"547869ad-7900-4516-9d05-62e5a002f887"}
 {"rowid":43,"wine_slug":"bogovich-wine-vineyard-faina-sovinon-zelenyy-beloe-suhoe-113","source":"automatic","product_uuid":"25795945-4893-4544-a430-6ba3d4119a24"}
 {"rowid":44,"wine_slug":"bogovich-wine-vineyard-klaret-pino-nuar-krasnoe-suhoe-119","source":"automatic","product_uuid":"2e7c03cd-a55f-4a34-842c-afa388e97c19"}
 {"rowid":45,"wine_slug":"bogovich-wine-vineyard-klassika-pino-nuar-krasnoe-suhoe-125","source":"automatic","product_uuid":"fea85dfa-d2f9-44f7-99a9-9e3004a67d22"}
@@ -352,7 +359,6 @@
 {"rowid":349,"wine_slug":"vintazh-premium","source":"automatic","product_uuid":"53ff6647-fc86-45fd-b707-8dabb02a9c63"}
 {"rowid":350,"wine_slug":"vysokij-bereg-czvajgelt","source":"automatic","product_uuid":"9ae054a5-fdc5-4371-9bb2-817b3cda23fa"}
 {"rowid":351,"wine_slug":"vysokij-bereg-risling-zelenaya-seriya","source":"automatic","product_uuid":"d0b2893a-08a0-44ad-9380-11911465b642"}
-{"rowid":352,"wine_slug":"vysokij-bereg-risling-zelenaya-seriya-1","source":"automatic","product_uuid":"d0b2893a-08a0-44ad-9380-11911465b642"}
 {"rowid":368,"wine_slug":"vysokij-bereg-risling-zelenaya-seriya-1","source":"manual","product_uuid":"96191b90-852a-4eba-80fa-363300284df9"}
 {"rowid":353,"wine_slug":"vysokij-bereg-risling-zelenaya-seriya-2","source":"automatic","product_uuid":"d0b2893a-08a0-44ad-9380-11911465b642"}
 {"rowid":354,"wine_slug":"vysokij-bereg-traminer-zelenaya-seriya","source":"automatic","product_uuid":"2ab7b9ec-d172-40d9-ad09-1e791f91dc40"}

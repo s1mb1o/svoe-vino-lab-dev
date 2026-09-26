@@ -1,7 +1,5 @@
 CREATE INDEX wine_code_value ON wine_code (kind, value);
 
-CREATE INDEX wine_atlas_binding_product ON wine_atlas_binding (product_uuid);
-
 CREATE INDEX wine_comment_wine ON wine_comment (wine_slug, created_at, id);
 
 CREATE UNIQUE INDEX wine_image_one_main ON wine_image (wine_slug, image_type)
@@ -30,4 +28,6 @@ END;
 
 CREATE INDEX test_photo_comment_photo ON test_photo_comment (set_name, place, file_name);
 
-PRAGMA user_version = 23;
+CREATE INDEX wine_atlas_binding_product ON wine_atlas_binding (product_uuid);
+
+PRAGMA user_version = 25;
