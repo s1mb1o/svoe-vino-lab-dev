@@ -193,7 +193,9 @@ wine MAY have 2 or more Atlas Core products. The key of `wine_atlas_binding` is
 `(wine_slug, product_uuid)`. Each row keeps its source, `automatic` or `manual`, as a
 label. The rule "the manual row wins" goes away. The migration kept the effective row of
 each wine and dropped the one automatic row that a manual row hid. The editor lists each
-UUID with its source, a red `×`, `copy`, and `open`. The `+` button adds one manual UUID
+UUID with its source, a red `×`, `copy`, and `open`. A UUID of 2 or more Active wines
+shows the badge `N wines` after `open`, as a shared GTIN of plan 58; the tooltip names
+the other wines (owner message of 2026-09-27T20:08:45+0300). The `+` button adds one manual UUID
 with `POST /api/dataset-atlas-binding`. A UUID that the wine already has answers HTTP
 409. `DELETE /api/dataset-atlas-binding?slug=…&product_uuid=…` removes one UUID of either
 source. `GET /api/dataset` sends `_atlas_products`, a list of `{product_uuid, source}`,

@@ -250,7 +250,7 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .alternative-head span { color: var(--muted); font-size: 11px; }
 .alternative-grid {
   display: grid; grid-template-columns: repeat(3, minmax(70px, 1fr)); gap: 6px;
-  max-height: 310px; overflow-y: auto; padding-right: 2px;
+  max-height: 620px; overflow-y: auto; padding-right: 2px;
 }
 /* A photo of the lab server: the card and its type buttons below it. */
 .alternative-item { min-width: 0; }
@@ -1387,15 +1387,17 @@ function alternativeEditor(r) {
   </aside>`;
 }
 // Plan 58: a shared code is a GTIN or a QR URL of 2 or more Active wines, as the barcode
-// step reads `wine_code`. kind (`gtin` or `qr`) -> value -> the slugs. `render` and
+// step reads `wine_code`. The kind `atlas` holds the Atlas Core product UUIDs by the same
+// rule. kind (`gtin`, `qr`, or `atlas`) -> value -> the slugs. `render` and
 // `renderCodeCard` build the map again. A record with no `state` counts as Active.
 let CODE_USERS = null;
 function codeUsers(kind, value) {
   if (!CODE_USERS) {
-    CODE_USERS = {gtin: new Map(), qr: new Map()};
+    CODE_USERS = {gtin: new Map(), qr: new Map(), atlas: new Map()};
     for (const record of DATA.records) {
       if (record.state && record.state !== "Active") continue;
-      for (const [key, values] of [["gtin", record._gtins], ["qr", record._qr_urls]]) {
+      for (const [key, values] of [["gtin", record._gtins], ["qr", record._qr_urls],
+        ["atlas", atlasProducts(record).map(item => item.product_uuid)]]) {
         for (const item of values || []) {
           if (!CODE_USERS[key].has(item)) CODE_USERS[key].set(item, []);
           CODE_USERS[key].get(item).push(record.slug);
@@ -1417,7 +1419,8 @@ function sharedCodeBadge(r, kind, value) {
 function codePeers(slug) {
   const record = DATA.records.find(item => item.slug === slug);
   const out = new Set();
-  for (const [kind, values] of [["gtin", record?._gtins], ["qr", record?._qr_urls]])
+  for (const [kind, values] of [["gtin", record?._gtins], ["qr", record?._qr_urls],
+    ["atlas", record && atlasProducts(record).map(item => item.product_uuid)]])
     for (const value of values || []) for (const other of codeUsers(kind, value)) out.add(other);
   out.delete(slug);
   return [...out];
@@ -1556,7 +1559,7 @@ function atlasBindingEditor(r) {
        <span class="atlas-source">${esc(source)}</span>
        <button class="copy" type="button" data-copy="${esc(product)}">copy</button>
        <a class="open-product" href="${esc(productUrl)}" target="_blank"
-          rel="noopener">open</a></span>`;
+          rel="noopener">open</a>${sharedCodeBadge(r, "atlas", product)}</span>`;
   }).join("")}</div>` : '<div class="barcode-empty">not bound</div>';
   const entry = editing ? `<div class="barcode-new">
     <input class="atlas-binding-input" type="text" maxlength="36" autocomplete="off"

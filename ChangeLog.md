@@ -2,6 +2,25 @@
 
 ## 2026-09-27
 
+- An Atlas Core product UUID of 2 or more Active wines shows the badge `N wines` after
+  `open` on `/dataset`, as a shared GTIN of plan 58. The tooltip names the other wines
+  (owner message of 2026-09-27T20:08:45+0300). The map `codeUsers` of plan 58 has a new
+  kind `atlas`, and `codePeers` reads it. A save, a remove, or an approve of a UUID
+  therefore redraws the cards of the other wines of that UUID. On 2026-09-27, 30 UUIDs
+  are shared, with 64 badges. Browser check on 8168, dark and light theme, with each write
+  request blocked or mocked: the badge and its tooltip on both `balaklava-muskat` cards,
+  the order `approve` → `copy` → `open` → badge on `nebbiolo`, no badge for a UUID whose
+  other wine is Removed; a mocked remove on one card takes the badge off the other card.
+  d8 [a5ab96] checked its approve button again: 20 of 20. Smoke tests AS1 to AS6. Note:
+  the page has a horizontal scroll at 390 px from the header nav and the VLM pill; the
+  scroll was there before this change.
+- `Alternative photos` on `/dataset` shows 4 rows of photos with no scroll. The
+  `max-height` of `.alternative-grid` changed from 310 px (2 rows) to 620 px. A row of
+  photos is 150 px high and the gap is 6 px, so 4 rows need 618 px. A wide window only;
+  at 860 px or less the grid has no height limit, as before (owner message of
+  2026-09-27T19:30:17+0300). Browser check on 8168, dark and light theme, with each write
+  request blocked: each of the 38 wines with alternative photos shows all rows with no
+  scroll; a grid with 15 photos shows 4 full rows and scrolls. Smoke tests AH1 to AH3.
 - The table `wine_code` has a new column `modified_at`: the UTC insert time of each row
   (schema `026_wine_code_time.sql`). The trigger `wine_code_insert_time` sets it. A row is
   never updated, so the insert time is the time of the last change. A delete leaves no

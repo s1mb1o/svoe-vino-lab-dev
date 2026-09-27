@@ -1880,3 +1880,27 @@ Matching lifecycle events and complete artifacts are still required.
 Malformed or multi-line process output MUST NOT prove termination.
 HTTP report regression: missing child timings MUST NOT become zero-duration observations.
 The failed HTTP request stays in the selected quality and deadline denominators.
+
+## Height of Alternative photos
+
+Owner message of 2026-09-27T19:30:17+0300. `$H` is the lab server.
+
+| # | Case | Expected result |
+|---|---|---|
+| AH1 | Open `$H/dataset` in a window wider than 860 px. Find a wine with 9 alternative photos, for example `fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12` | `Alternative photos` shows the 3 rows of photos and the row of the drop and paste tiles. The grid has no scroll bar. |
+| AH2 | A wine with more than 12 alternative photos | The grid shows 4 full rows of photos (620 px). The other rows are available with a scroll of the grid. |
+| AH3 | A window of 860 px or less | The grid has 4 columns and no height limit, as before. |
+
+## Badge of a shared Atlas Core product
+
+Owner message of 2026-09-27T20:08:45+0300. `$H` is the lab server. The badge follows the
+rule of plan 58 (section "Shared codes — plan 58"): it counts the Active wines.
+
+| # | Case | Expected result |
+|---|---|---|
+| AS1 | Open `$H/dataset` and find `balaklava-muskat` | The Atlas Core product `cc7bfa6c-17a7-4c6c-91f2-89c966260704` shows the badge `2 wines` after `open`. The tooltip reads `Also on: balaklava-muskat-beloe-polusladkoe`. A click on the badge does nothing. |
+| AS2 | Find `balaklava-muskat-beloe-polusladkoe` | The same badge. The tooltip names `balaklava-muskat`. |
+| AS3 | Find `nebbiolo` (an automatic UUID) | The order is `automatic`, `approve`, `copy`, `open`, `2 wines`. |
+| AS4 | Find `abrau-dyurso-victor-dravigny-bryut` | Its UUID `28ccaee8-…` has no badge: the other wine of that UUID is Removed. |
+| AS5 | Remove the UUID of AS1 on one card | The other card loses its badge with no reload. Add the UUID again: both cards show the badge again. |
+| AS6 | Light and dark system theme; a window of 390 px | The badge uses the amber colours of the GTIN badge. It wraps inside the card. On 2026-09-27, 64 Atlas badges show on 30 shared UUIDs. |

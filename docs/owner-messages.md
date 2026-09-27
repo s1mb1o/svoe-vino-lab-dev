@@ -5922,3 +5922,23 @@ Owner answer to the question of session d8 [a08e7a] of 15:24:21:
 ```text
 commit
 ```
+
+## 2026-09-27T19:30:17+0300
+
+A message to drink-atlas-workspace-06 [1b7eb8], with a screenshot.
+
+[screenshot: the `/dataset` card of fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12; `Alternative photos · 9 active` shows 2 rows of photos and a scroll bar; the card column at the left is much taller]
+
+```text
+there is enough space to have additional images at least 4 rows visible without scroll
+```
+
+## 2026-09-27T20:08:45+0300
+
+A message to drink-atlas-workspace-06 [1b7eb8], with a screenshot.
+
+[screenshot: the `Atlas Core product` row `cc7bfa6c-17a7-4c6c-91f2-89c966260704 manual copy open` and the `Similar wines` row `balaklava-muskat-beloe-polusladkoe` of a `/dataset` card]
+
+```text
+if 2+ wines have same drink-atlas uuid, show counter badge near
+```
