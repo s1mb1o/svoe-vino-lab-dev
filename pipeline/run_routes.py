@@ -13,6 +13,8 @@ the lab database does not hold them. Each route is GET and writes nothing:
     GET /api/run-inputs?id=&query=              the model inputs of one row
     GET /api/run-candidate?id=&query=&slug=     the catalogue inputs of one candidate of
                                                 an embedding run and their cosines
+    GET /api/run-steps?id=&query=               the steps of one row for the step popup
+                                                (plan 41, `run_steps.py`)
 
 A pipeline is one entry of the key `pipeline` of `config.yaml` (`pipelines.py`, plan
 34). The key `configuration` of `run.json` names it. The images come from the image
@@ -37,7 +39,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS_DIR = os.path.join(ROOT, "runs")
 MATCHER_ROOT = os.path.join(os.path.dirname(ROOT), "svoe-vino-matcher")
 ROUTES = ("/runs", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
-          "/api/run-candidate")
+          "/api/run-candidate", "/api/run-steps")
 JSON_TYPE = "application/json; charset=utf-8"
 MAX_LIMIT = 1000
 # The keys of a cluster rule that the VLM box of the page reads.
@@ -82,6 +84,8 @@ def respond(server, method, path, card_images):
         return clusters_view(runs_dir, server, query)
     if route == "/api/run-candidate":
         return candidate_view(runs_dir, server.db_path, query)
+    if route == "/api/run-steps":
+        return steps_view(runs_dir, server.db_path, query, card_images)
     return inputs_view(runs_dir, server.db_path, query)
 
 
@@ -179,8 +183,10 @@ def run_view(runs_dir, db_path, query, card_images):
     rows, total = run_files.run_rows(runs_dir, run_id, mode, _one(query, "q"), limit,
                                      offset, sort)
     # The items of a candidate of an embedding run come through `/api/run-candidate`
-    # (plan 38), so a page of rows stays small.
+    # (plan 38), and the step trace through `/api/run-steps` (plan 41), so a page of rows
+    # stays small.
     for row in rows:
+        row.pop("trace", None)
         for cand in row.get("candidates") or ():
             cand.pop("items", None)
     bottles, patched, images_error = {}, [], None
@@ -322,6 +328,17 @@ def inputs_view(runs_dir, db_path, query):
     except (OSError, ValueError) as exc:
         return _error(500, "cannot rebuild model inputs: %s" % exc)
     return _json(200, {"run": run_id, "query": query_id, **answer})
+
+
+def steps_view(runs_dir, db_path, query, card_images):
+    """Answer the steps of one recorded query for the step popup (plan 41):
+    `run_steps.steps_view`."""
+    import run_steps  # noqa: E402  (PIL, numpy, and the SAM3 cuts, on demand)
+    try:
+        return _json(200, run_steps.steps_view(runs_dir, db_path, _one(query, "id"),
+                                               _one(query, "query"), card_images))
+    except run_steps.StepError as exc:
+        return _error(exc.code, str(exc))
 
 
 def candidate_view(runs_dir, db_path, query):

@@ -84,6 +84,18 @@ class RunFilesTest(unittest.TestCase):
         self.assertIsNone(RF.run_head(runs, "2026-09-26T120000Z-wrong")["use_cache"])
         self.assertIsNone(RF.run_head(runs, "2026-09-25T100000Z-old")["use_cache"])
 
+    def test_run_head_holds_use_barcode_as_a_boolean_alone(self):
+        # The checkbox `Disable barcode fast path` of the dialog `Run>` (plan 53).
+        runs = str(self.runs)
+        for run_id, value in (("2026-09-26T100000Z-nobarcode", False),
+                              ("2026-09-26T110000Z-barcode", True),
+                              ("2026-09-26T120000Z-wrong", "no")):
+            self.write_run(run_id, {"use_barcode": value}, ROWS[:1])
+        self.assertIs(RF.run_head(runs, "2026-09-26T100000Z-nobarcode")["use_barcode"], False)
+        self.assertIs(RF.run_head(runs, "2026-09-26T110000Z-barcode")["use_barcode"], True)
+        self.assertIsNone(RF.run_head(runs, "2026-09-26T120000Z-wrong")["use_barcode"])
+        self.assertIsNone(RF.run_head(runs, "2026-09-25T100000Z-old")["use_barcode"])
+
     def test_configuration_of_accepts_a_non_empty_string_alone(self):
         for meta, want in (({"configuration": "mock"}, "mock"), ({"configuration": ""}, None),
                            ({"configuration": 3}, None), ({}, None), (None, None)):

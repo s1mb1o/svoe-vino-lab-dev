@@ -68,20 +68,27 @@ FULL = [instance("bottle", (10, 10, 30, 70)), instance("bottle neck", (16, 12, 2
 # A close-up: the bottle fills the frame and has no neck; the label is the middle band.
 CLOSE_UP = [instance("bottle", (0, 0, 40, 80)), instance("label", (4, 20, 36, 60)),
             instance("wine bottle label", (4, 20, 36, 60), score=0.8)]
+# A close-up whose label is close to the bottle box (IoU 0.81) and holds a small sticker,
+# as the photo `d9f847bd…` of the owner message of 2026-09-26T19:38:53+0300.
+STICKER_CLOSE_UP = [instance("bottle", (0, 0, 40, 80)), instance("label", (2, 4, 38, 76)),
+                    instance("label", (24, 10, 34, 30), score=0.4)]
 
 
 class FakeSam3:
     """A SAM3 client with no network. `answer` is the answer of `instances`."""
 
-    def __init__(self, answer=None, scale=1.0):
+    def __init__(self, answer=None, scale=1.0, package_answer=None):
         self.answer = FULL if answer is None else answer
+        self.package_answer = package_answer
         self.scale = scale
         self.instances_calls = []
         self.segment_calls = 0
 
     def instances(self, image, texts, masks=True):
         self.instances_calls.append(texts)
-        return list(self.answer), self.scale
+        answer = (self.package_answer if texts == derive.SAM3_TEXTS
+                  and self.package_answer is not None else self.answer)
+        return list(answer), self.scale
 
     def segment(self, image):
         self.segment_calls += 1
@@ -165,8 +172,24 @@ class LabelInstanceTest(unittest.TestCase):
         answer = [instance("bottle", (0, 0, 40, 80)), instance("label", (0, 0, 40, 80))]
         self.assertEqual(alternatives.label_instance(answer)["box"], [0, 0, 40, 80])
 
+    def test_a_label_close_up_keeps_the_largest_label_with_no_bottle_test(self):
+        self.assertEqual(alternatives.label_instance(STICKER_CLOSE_UP)["box"],
+                         [24, 10, 34, 30])
+        self.assertEqual(alternatives.label_instance(STICKER_CLOSE_UP, close_up=True)["box"],
+                         [2, 4, 38, 76])
+
     def test_no_label_gives_none(self):
         self.assertIsNone(alternatives.label_instance([instance("bottle", (0, 0, 40, 80))]))
+
+    def test_a_packet_or_box_makes_the_label_not_applicable(self):
+        self.assertEqual(
+            alternatives.label_absence_reason([instance("packet", (0, 0, 40, 80))]),
+            "the packet has no separate label")
+        self.assertEqual(
+            alternatives.label_absence_reason([instance("box", (0, 0, 40, 80))]),
+            "the box has no separate label")
+        self.assertIsNone(
+            alternatives.label_absence_reason([instance("wine bottle", (0, 0, 40, 80))]))
 
 
 class MigrationTest(unittest.TestCase):
@@ -304,12 +327,40 @@ class AlternativeRouteTest(unittest.TestCase):
         self.assertEqual(status, 200, out)
         photo, = out["record"]["_alternatives"]
         self.assertEqual((photo["type"], photo["derivation"]), ("label_front", "seg"))
-        self.assertEqual(self.settings(sha(data), "label"), ("seg", alternatives.SETTINGS_LABEL))
+        self.assertEqual(self.settings(sha(data), "label"),
+                         ("seg", alternatives.SETTINGS_LABEL_CLOSE_UP))
         self.assertIsNone(self.settings(sha(data)))
         self.assertEqual(self.sam3.segment_calls, 0)
         cut = Image.open(self.root / photo["image_url"].lstrip("/"))
         self.assertEqual(cut.mode, "RGBA")
         self.assertLess(cut.height, SIZE[1])
+
+    def test_a_close_up_cuts_the_largest_label_and_not_a_sticker_on_it(self):
+        self.sam3.answer = STICKER_CLOSE_UP
+        data = picture(transparent=False)
+        status, out = self.upload("wine-b", data)
+        self.assertEqual(status, 200, out)
+        photo, = out["record"]["_alternatives"]
+        self.assertEqual((photo["type"], photo["derivation"]), ("label_front", "seg"))
+        cut = Image.open(self.root / photo["image_url"].lstrip("/"))
+        self.assertGreaterEqual(cut.width, 36)
+        self.assertGreaterEqual(cut.height, 72)
+
+    def test_a_close_up_cut_of_the_full_photo_rule_is_cut_again(self):
+        self.sam3.answer = STICKER_CLOSE_UP
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("UPDATE image_derivative SET settings = ? WHERE source_sha256 = ? "
+                         "AND kind = 'label'", (alternatives.SETTINGS_LABEL, sha(data)))
+        conn.close()
+        calls = len(self.sam3.instances_calls)
+        status, out = self.set_type("wine-b", sha(data), "label_front")
+        self.assertEqual(status, 200, out)
+        self.assertEqual(len(self.sam3.instances_calls), calls + 1)
+        self.assertEqual(self.settings(sha(data), "label")[1],
+                         alternatives.SETTINGS_LABEL_CLOSE_UP)
 
     def test_a_barcode_gives_the_back_types(self):
         self.sam3.answer = FULL + [instance("barcode", (14, 50, 26, 58))]
@@ -358,7 +409,8 @@ class AlternativeRouteTest(unittest.TestCase):
         self.sam3.answer = CLOSE_UP
         status, out = self.set_type("wine-b", sha(data), "label_back")
         self.assertEqual((status, out["type"]), (200, "label_back"))
-        self.assertEqual(self.settings(sha(data), "label")[1], alternatives.SETTINGS_LABEL)
+        self.assertEqual(self.settings(sha(data), "label")[1],
+                         alternatives.SETTINGS_LABEL_CLOSE_UP)
         status, out = self.set_type("wine-b", sha(data), "full_front")
         self.assertEqual((status, out["type"]), (200, "full_front"))
         self.assertEqual(self.settings(sha(data))[1], derive.SETTINGS_SEG)
@@ -464,7 +516,8 @@ class AlternativeRouteTest(unittest.TestCase):
         self.assertEqual(status, 200, out)
         photo, = out["record"]["_alternatives"]
         self.assertEqual((photo["type"], photo["derivation"]), ("label_front", "crop"))
-        self.assertEqual(self.settings(sha(data), "label"), ("crop", alternatives.SETTINGS_LABEL))
+        self.assertEqual(self.settings(sha(data), "label"),
+                         ("crop", alternatives.SETTINGS_LABEL_CLOSE_UP))
         cut = Image.open(self.root / photo["image_url"].lstrip("/"))
         self.assertEqual((cut.mode, cut.size), ("RGBA", (32, 62)))
         self.assertEqual(cut.getchannel("A").getextrema(), (255, 255))
@@ -506,6 +559,166 @@ class BodyLabelsTest(unittest.TestCase):
         image = Image.new("RGB", (80, 160), "white")
         cut, box = alternatives.label_box_cut(image, TWO_LABELS[1:], 0.5)
         self.assertEqual((box, cut.size, cut.mode), ((8, 20, 72, 144), (64, 124), "RGBA"))
+
+
+
+# A polygon inside the photo of `SIZE`: a trapezium around the bottle.
+POLYGON = [[6, 6], [34, 6], [36, 76], [4, 76]]
+
+
+class ManualCutTest(unittest.TestCase):
+    """The manual cut of plan 56: a polygon replaces the SAM3 cut of the kind of the
+    current type, and no automatic run replaces it."""
+    setUp, tearDown = AlternativeRouteTest.setUp, AlternativeRouteTest.tearDown
+    request, upload = AlternativeRouteTest.request, AlternativeRouteTest.upload
+    set_type, settings = AlternativeRouteTest.set_type, AlternativeRouteTest.settings
+
+    def cut(self, slug, digest, points):
+        body = json.dumps({"slug": slug, "sha256": digest, "points": points}).encode()
+        return self.request("/api/dataset-alternative-cut", "POST", body, "application/json")
+
+    def reset(self, slug, digest):
+        query = urllib.parse.urlencode({"slug": slug, "sha256": digest})
+        return self.request("/api/dataset-alternative-cut?" + query, "DELETE")
+
+    def manual(self, points=POLYGON):
+        return ("seg", alternatives.MANUAL_HEAD + json.dumps(points, separators=(",", ":")))
+
+    def test_a_manual_cut_replaces_the_package_cut(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        self.assertEqual(self.settings(sha(data)), ("seg", derive.SETTINGS_SEG))
+        status, out = self.cut("wine-b", sha(data), POLYGON)
+        self.assertEqual(status, 200, out)
+        self.assertEqual((out["type"], out["kind"], out["changed"]),
+                         ("full_front", "package", True))
+        photo, = out["record"]["_alternatives"]
+        self.assertEqual((photo["derivation"], photo["manual"], photo["manual_points"]),
+                         ("seg", True, POLYGON))
+        self.assertEqual(self.settings(sha(data)), self.manual())
+        self.assertTrue(derive.is_manual(self.settings(sha(data))[1]))
+        with Image.open(self.root / photo["image_url"].lstrip("/")) as cut:
+            self.assertEqual(cut.mode, "RGBA")
+            # The box of the polygon (4, 6, 36, 76), with the soft edge of about 3 sigma
+            # of `derive.EDGE_BLUR` around it.
+            self.assertTrue(32 <= cut.width <= 40 and 70 <= cut.height <= 80, cut.size)
+            self.assertEqual(cut.getpixel((0, 0))[3], 0)
+
+    def test_no_automatic_run_replaces_the_manual_cut(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        self.cut("wine-b", sha(data), POLYGON)
+        calls = (len(self.sam3.instances_calls), self.sam3.segment_calls)
+        self.assertEqual(self.upload("wine-b", data)[1]["changed"], False)
+        self.assertEqual(self.set_type("wine-b", sha(data), "full_back")[0], 200)
+        conn = labdb.connect(self.db)
+        try:
+            path = alternatives.file_path(self.db, "additional", sha(data), "png")
+            report = derive.derive_all(conn, self.db, {sha(data): path}, self.sam3,
+                                       lambda text: None)
+        finally:
+            conn.close()
+        self.assertEqual((report.present, report.links), (1, []))
+        self.assertEqual((len(self.sam3.instances_calls), self.sam3.segment_calls), calls)
+        self.assertEqual(self.settings(sha(data)), self.manual())
+
+    def test_the_other_kind_keeps_its_own_cut_and_a_change_back_reuses_the_manual_cut(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        self.cut("wine-b", sha(data), POLYGON)
+        self.sam3.answer = CLOSE_UP
+        status, out = self.set_type("wine-b", sha(data), "label_front")
+        self.assertEqual(status, 200, out)
+        photo, = out["record"]["_alternatives"]
+        self.assertEqual((photo["manual"], photo["manual_points"]), (False, None))
+        self.assertEqual(self.settings(sha(data), "label"),
+                         ("seg", alternatives.SETTINGS_LABEL_CLOSE_UP))
+        calls = len(self.sam3.instances_calls)
+        status, out = self.set_type("wine-b", sha(data), "full_front")
+        photo, = out["record"]["_alternatives"]
+        self.assertEqual((photo["manual"], photo["manual_points"]), (True, POLYGON))
+        self.assertEqual(len(self.sam3.instances_calls), calls)
+
+    def test_a_manual_label_cut_clears_the_absence_marker_and_stays(self):
+        self.sam3.answer = CLOSE_UP
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        conn = sqlite3.connect(self.db)
+        try:
+            with conn:
+                conn.execute("INSERT INTO image_derivative_absence (source_sha256, kind, "
+                             "settings, reason) VALUES (?, 'label', ?, 'the box has no "
+                             "separate label')", (sha(data), alternatives.SETTINGS_LABEL_ABSENCE))
+        finally:
+            conn.close()
+        status, out = self.cut("wine-b", sha(data), POLYGON)
+        self.assertEqual((status, out["kind"]), (200, "label"), out)
+        self.assertEqual(self.settings(sha(data), "label"), self.manual())
+        conn = labdb.connect(self.db)
+        try:
+            self.assertIsNone(alternatives.current_absence(conn, sha(data)))
+            path = alternatives.file_path(self.db, "additional", sha(data), "png")
+            out = alternatives.process_image(conn, self.db, sha(data), path, "label",
+                                             DownSam3(), [], close_up=True)
+        finally:
+            conn.close()
+        self.assertEqual((out.present, out.unavailable, out.links), (1, 0, []))
+
+    def test_reset_removes_the_manual_cut_and_sam3_cuts_again(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        self.cut("wine-b", sha(data), POLYGON)
+        status, out = self.reset("wine-b", sha(data))
+        self.assertEqual((status, out["changed"], out["kind"]), (200, True, "package"), out)
+        photo, = out["record"]["_alternatives"]
+        self.assertEqual((photo["derivation"], photo["manual"]), ("seg", False))
+        self.assertEqual(self.settings(sha(data)), ("seg", derive.SETTINGS_SEG))
+        status, out = self.reset("wine-b", sha(data))
+        self.assertEqual((status, out["changed"]), (200, False))
+
+    def test_reset_with_no_sam3_shows_the_photo_and_warns(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        self.cut("wine-b", sha(data), POLYGON)
+        self.server.segmenter = DownSam3()
+        status, out = self.reset("wine-b", sha(data))
+        self.assertEqual((status, out["changed"]), (200, True), out)
+        self.assertIn(alternatives.NO_PROCESSED_FILE, out["warning"])
+        photo, = out["record"]["_alternatives"]
+        self.assertEqual((photo["derivation"], photo["image_url"]), (None, photo["url"]))
+        self.assertIsNone(self.settings(sha(data)))
+
+    def test_points_outside_the_photo_are_clamped(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        status, out = self.cut("wine-b", sha(data), [[-5, -5.4], [50.2, 0], [20, 90]])
+        self.assertEqual(status, 200, out)
+        photo, = out["record"]["_alternatives"]
+        self.assertEqual(photo["manual_points"], [[0, 0], [40, 0], [20, 80]])
+
+    def test_bad_cut_requests_are_refused(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        for points in (None, [[1, 1], [30, 30]], [[1, 1], [30, "x"], [5, 60]],
+                       [[1, 1], [30, True], [5, 60]], [[1, 1, 1], [30, 1], [5, 60]],
+                       [[10, 1], [10, 40], [11, 70]], [[0, 0]] * 1001):
+            self.assertEqual(self.cut("wine-b", sha(data), points)[0], 400, points)
+        self.assertEqual(self.cut("wine-b", "0" * 64, POLYGON)[0], 404)
+        self.assertEqual(self.cut("wine-x", sha(data), POLYGON)[0], 404)
+        self.assertEqual(self.cut("", sha(data), POLYGON)[0], 400)
+        self.assertEqual(self.reset("wine-b", "0" * 64)[0], 404)
+        self.assertEqual(self.settings(sha(data)), ("seg", derive.SETTINGS_SEG))
+
+    def test_the_alpha_of_the_original_limits_the_cut(self):
+        image = Image.open(io.BytesIO(picture(transparent=True))).convert("RGBA")
+        cut, box = alternatives.polygon_cut(image, [[0, 0], [40, 0], [40, 80], [0, 80]])
+        self.assertEqual((box, cut.size), ((10, 10, 30, 70), (20, 60)))
+
+    def test_manual_points_reads_a_manual_cut_alone(self):
+        self.assertEqual(alternatives.manual_points(self.manual()[1]), POLYGON)
+        self.assertIsNone(alternatives.manual_points(derive.SETTINGS_SEG))
+        self.assertIsNone(alternatives.manual_points(None))
+        self.assertIsNone(alternatives.manual_points(alternatives.MANUAL_HEAD + "[bad"))
 
 
 if __name__ == "__main__":

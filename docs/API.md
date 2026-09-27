@@ -220,6 +220,35 @@ the reviewer presses `Apply`.
 Remove one active alternative photo. The server moves it to
 `alternative_dir/.trash/<slug>/`. The Dataset page calls the route only after `Apply`.
 
+#### `POST /api/dataset-alternative-cut` and `DELETE /api/dataset-alternative-cut?slug=<slug>&sha256=<sha256>`
+
+The lab server alone (plan 56). `POST` takes the JSON body
+`{"slug": "<slug>", "sha256": "<sha256>", "points": [[x, y], ...]}` of at most 64 KiB. It
+stores the manual cut of one alternative photo: the photo cut along the polygon, on a
+transparent background. The points are in the pixels of the original after its EXIF
+orientation: 3 to 1000 points; the server rounds and clamps each value. The cut replaces
+the SAM3 cut of the kind of the current type (`package` for `FF` and `FB`, `label` for
+`LF` and `LB`). No automatic run replaces it. `DELETE` removes the manual cut of that
+kind, and SAM3 cuts the photo again. The answer holds `ok`, `slug`, `record`,
+`alternatives`, `type`, `kind`, `changed`, and a `warning` when SAM3 does not answer.
+Each photo of `record._alternatives` holds `manual` and `manual_points`. HTTP 400 is a bad
+body or bad points, HTTP 404 no wine or no such photo, and HTTP 409 a type change during
+the request.
+
+#### `POST /api/dataset-alternative-recut`
+
+The lab server alone (owner message of 2026-09-27T00:51:44+0300). The JSON body is
+`{"slug": "<slug>", "sha256": "<sha256>"}`. The route segments one alternative photo
+again, for the kind of its current type (`package` for `FF` and `FB`, `label` for `LF`
+and `LB`). First, SAM3 gets each request of that cut with no read of the model cache;
+the fresh answers replace the cache records. A full photo with transparent pixels needs
+no SAM3 request. Then the server removes the cut of that kind and cuts the photo again
+from the fresh records. A label type keeps the close-up rule. The answer holds `ok`,
+`slug`, `record`, `alternatives`, `type`, `kind`, `changed` (true), and a `warning` when
+the photo gets no processed file. HTTP 400 is a bad body, HTTP 404 no wine or no such
+photo, HTTP 409 a manual cut of that kind (remove it first; the manual cut stays), and
+HTTP 503 no answer of SAM3 (the old cut stays).
+
 #### `POST /api/dataset-barcode`
 
 Add one product barcode to a catalogue slug. The JSON body is
@@ -413,6 +442,44 @@ no item and a note. The route sends no request to a model.
 Errors: `404` for an unknown run or query, and for a slug that is not a candidate of the
 query.
 
+#### `GET /api/run-steps?id=<id>&query=<query id>`
+
+The steps of one result row for the step popup of the Runs page (plan 41). The page reads
+this route when the user clicks the query photo of a row. `pipeline/run_steps.py` builds
+the answer. The route sends no request to a model, to SAM3, or to the matcher.
+
+Since plan 41, each row of an embedding run holds the key `trace` in `results.jsonl`:
+`{v: 1, steps: [...]}`. A step holds `id`, `start_ms` and `ms` (counted from the start of
+the photo, one decimal), and `out`, the result of the step. The ids in their order are
+`input`, `sam3-package`, `sam3-label`, `view` (with `view`), `embed`, `search` (with
+`view`), and `score`. A SAM3 step holds `cached`: true when `model_cache` gave the
+answer. A view with no input holds `skipped`, and a step that raised holds `error`; the
+trace ends at that step. `view.out` holds `width`, `height`, `bytes`, and `sha256` of the
+PNG that went to the model. `search.out` holds `rows`, `wines`, and `top`: the `top_k`
+wines of that view alone, each with `slug`, `cosine`, and the `sha256`, `type`, and
+`embedding_hash` of its best item. A pipeline with the key `barcode` (plan 42) adds the
+step `barcode` first; on a code hit the trace holds that step alone. `/api/run` removes
+`trace` from its rows.
+
+The answer holds `{run, query, kind, configuration, photo, row, recorded, rounds, notes}`.
+`kind` is `embedding`, `matcher`, `remote`, `request`, or `none`. `recorded` is true when
+the row holds a trace. Each round holds `{n, title, note, steps}`. Each step holds `{n, id,
+name, service, model, group, start_ms, ms, state, cached, error, artifacts, lists, vlm,
+settings, result, notes}`. `state` is `done`, `failed`, or `skipped`. `ms` null means that
+the run recorded no time. An artifact holds `{src, caption, width, height, boxes, check}`:
+`boxes` are boxes in the pixels of the image, and `check` is `same` or `changed` when the
+image made again is compared with the `sha256` of the trace. A list holds `{title, note,
+items}`, and an item holds `{slug, name, rank, score, image, truth, forbidden, moved,
+detail}`; `moved` is the move against the order before the step, positive is up. `vlm`
+holds the VLM rule answer of a matcher run: `{mode, cluster, window, questions, answers,
+answer, chosen, scores, ms, cached, error, changed}`.
+
+An embedding run makes its images again from the SAM3 answers of `data/cache/sam3/` and
+the steps of `run.json`. A matcher run takes its model inputs from the code of
+`/api/run-inputs` and its re-rank steps from the `explain` records of the candidates.
+
+Errors: `404` for an unknown run or query. `503` when the lab database cannot be read.
+
 #### `GET /api/run-clusters?id=<id>`
 
 The clusters of the embedding of one run of the lab server, for the cluster frames and
@@ -431,6 +498,36 @@ the status is not known.
 A run with no embedding answers `embedding: null` and no cluster. An embedding with no
 `clusters.json` answers `exists: false`. A file that cannot be read adds `error`.
 Errors: `404` for an unknown run.
+
+#### `GET /api/testset-from-run?id=<id>` and `POST /api/testset-from-run`
+
+The dialog `New testset…` of `/runs` of the lab server (plan 44). The route makes a new
+test set of the lab database from the R@1 misses or the R@5 misses of one run. The run
+names its test set in `options.set` of `run.json`.
+
+The GET answer is `{run, set, name, misses}`. `set` is the test set of the run. `name` is
+the proposed name `<base>-<N>`: `base` is `set` without a trailing `-<digits>`, and `N` is
+the first number that gives a free name. `misses` holds `r1` and `r5`, each
+`{title, rule, selected, copied, errors, left_out}`. `selected` counts the positive rows
+of `results.jsonl` whose true slug is not at rank 1 (`r1`) or not in the top 5 (`r5`). A
+failed request has no rank, so it counts as a miss; `errors` counts such rows. `copied`
+counts the selected photos that the set still holds with the same place, file name,
+SHA-256, and label. `left_out` maps each reason (`gone`, `other bytes`, `label changed`)
+to a count.
+
+The POST body is `{run, misses, name}`. `misses` is `r1` or `r5`. The route writes the
+new set in one transaction: a row of `test_set`, a copy of each copied row of
+`test_photo`, the comments of the copied photos (`test_photo_comment`), and each variant
+group of the source set. No photo file is copied. The answer is `{ok, set, source, run,
+misses, photos, selected, errors, left_out, photo_comments, variant_slugs}`. Since plan
+51 the wine comments belong to no set, and the exclusion went away, so the answer has no
+`wine_notes` and no `excluded`.
+
+Errors: `400` for a bad `misses` and for a name that does not match `^[0-9a-z_-]+$`.
+`404` for an unknown run and for a test set that the database does not hold. `409` for a
+run with no test set, for a dry run, for a run with no `results.jsonl`, for a name that
+the database holds, and for a selection with no photo to copy. `503` when the lab
+database cannot be opened.
 
 #### `GET /api/health`
 
@@ -566,3 +663,45 @@ threshold.
 2. `GET /api/v1/wine/<slug>` answers `404` for a catalogue card that holds no
    directory in `my/`, although `GET /api/v1/wines` lists that card under a catalogue
    filter. There is no route that reads one catalogue-only wine.
+
+## The Recognize page
+
+The page `/recognize` recognizes one photo that the user gives (plan 55,
+`docs/plans/55_recognize-page.md`). `pipeline/recognize_routes.py` answers each route.
+
+#### `GET /api/recognize`
+
+The pipelines of the backend `embedding` of `config.yaml`, in the order of the file:
+`{pipelines: [{name, embedding, barcode, rerank, runnable, reason}]}`. `barcode` and
+`rerank` are true when the pipeline has the key. `runnable` is false when the entry has a
+configuration error or its embedding has no index; `reason` states why. A pipeline of
+another backend is not in the list.
+
+#### `POST /api/recognize?pipeline=<name>&name=<file name>`
+
+The body is the image, 1 byte to 20 MB. `name` is the file name that the page shows; it
+MAY be absent. The server writes the image to `work/recognize/<sha256>.<ext>` and keeps
+it. Then it starts `pipeline/recognize.py` with `embedding_python`, one process for each
+photo, and waits 300 s at most. The script builds the backend of the pipeline and asks it
+one time, as a run asks it for a test photo. So the route sends the SAM3 request and the
+embedding request of the pipeline; a pipeline with the key `barcode` decodes the photo
+first, and a code hit sends no embedding request.
+
+The answer has the keys of `GET /api/run-steps`: `{kind, configuration, photo, row,
+recorded, rounds, notes}`, with `kind` `embedding`. The row has no label and no truth. In
+addition: `pipeline`; `sha256` of the image; `answer`, the candidates as `[{slug, name,
+rank, score, code}]` (`code` is set for a candidate of the code lookup); `build_ms`, the
+time of the backend build in the script; and `process_ms`, the wall time of the script
+(the start of Python, the build, and the question). The photo of the input step is
+`/recognize/photo/<sha256>.<ext>`.
+
+Errors: `400` with the reason for no pipeline, an unknown pipeline, a pipeline of another
+backend, a pipeline that cannot run, an empty body, or a body that Pillow cannot read.
+`503` when the script gives no answer, fails before the question, or runs over 300 s. A
+failure inside the question (SAM3, the embedding endpoint) is not an error of the route:
+the answer holds the failed step and `row.error`.
+
+#### `GET /recognize/photo/<sha256>.<ext>`
+
+One uploaded photo, with `Cache-Control: public, max-age=31536000, immutable`. `404` for
+an unknown file.

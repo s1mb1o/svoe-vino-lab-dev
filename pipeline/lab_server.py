@@ -14,9 +14,10 @@ The routes `/api/dataset-gtin` and `/api/dataset-qr-url` add (POST) and remove (
 one row of the table `wine_code`. The lab keeps GTINs alone: it has no barcode route.
 Read `docs/plans/11_wine-codes.md`.
 
-The route `/api/dataset-atlas-binding` sets (POST) and removes (DELETE) the manual
-Atlas Core product of one wine in the table `wine_atlas_binding` with
-`atlas_bindings.py`. Read `docs/plans/15_atlas-binding.md`.
+The route `/api/dataset-atlas-binding` adds (POST) one manual Atlas Core product of one
+wine and removes (DELETE) one product of either source, manual or automatic, in the
+table `wine_atlas_binding` with `atlas_bindings.py`. A wine MAY have 2 or more products.
+Read `docs/plans/15_atlas-binding.md` and `docs/plans/54_atlas-binding-list.md`.
 
 The route `/api/dataset-comment` adds (POST) and removes (DELETE) one timestamped
 comment of a wine in the table `wine_comment` with `comments.py`. Read
@@ -26,6 +27,10 @@ The route `/api/dataset-favorite` marks (POST `"favorite": true`) or unmarks (PO
 `"favorite": false`) one wine as a favorite in the table `wine_favorite` with
 `favorites.py`. Read `docs/plans/19_favorites.md`.
 
+The route `/api/dataset-beverage-type` sets (POST) the wine type of one wine in the table
+`wine_beverage_type` with `beverage_types.py`: `"4"` a wine, `"44"` a sparkling wine, or
+null for no type. Read `docs/plans/52_wine-beverage-type.md`.
+
 The route `/api/dataset-patch` stores (POST, the image bytes as the body) and removes
 (DELETE) the `main_patched` image of one wine with `patches.py`. Read
 `docs/plans/14_patch-editor.md`.
@@ -33,6 +38,16 @@ The route `/api/dataset-patch` stores (POST, the image bytes as the body) and re
 The route `/api/dataset-alternative` stores (POST, the image bytes as the body) and removes
 (DELETE) one alternative photo of a wine; `POST /api/dataset-alternative-type` changes its
 type. `alternatives.py` does the work. Read `docs/plans/16_alternative-images.md`.
+
+The route `/api/dataset-alternative-cut` stores (POST, a JSON body with the polygon
+`points`) and removes (DELETE) the manual cut of one alternative photo. A manual cut
+replaces the SAM3 cut of the kind of the current type. Read
+`docs/plans/56_manual-alternative-cut.md`.
+
+The route `POST /api/dataset-alternative-recut` (a JSON body with `slug` and `sha256`)
+segments one alternative photo again. SAM3 gets the requests with no cache read, the
+fresh answers replace the cache records, and the photo is cut again from them. A photo
+with a manual cut gets HTTP 409. `alternatives.recut_alternative` does the work.
 
 The route `/api/image-description` sets (POST) the values of one image in the table
 `image_description` by hand, with `image_descriptions.py`; `GET /api/dataset` sends the
@@ -74,6 +89,11 @@ The Health page is on at `/health`: `health.py` answers each of its routes. It s
 state of the server and checks each endpoint of `config.yaml`. A model that does not run
 on its llama-swap gateway gets no call. Read `docs/plans/46_health-page.md`.
 
+The Recognize page is on at `/recognize`: `recognize_routes.py` answers each of its
+routes. A photo goes to one pipeline of the backend `embedding` in a new process of
+`embedding_python` (`recognize.py`), and the page shows its steps as the step popup of
+`/runs` shows them. Read `docs/plans/55_recognize-page.md`.
+
 Each API route that this text does not name answers HTTP 503 with a JSON error. The
 navigation of every page stays as it is. Read `docs/plans/07_sqlite-lab-database.md`.
 
@@ -103,6 +123,7 @@ import yaml
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import alternatives  # noqa: E402
 import atlas_bindings  # noqa: E402
+import beverage_types  # noqa: E402
 import cluster_routes  # noqa: E402
 import codes  # noqa: E402
 import comments  # noqa: E402
@@ -115,6 +136,7 @@ import lab_pages  # noqa: E402
 import labdb  # noqa: E402
 import manual_wines  # noqa: E402
 import patches  # noqa: E402
+import recognize_routes  # noqa: E402
 import run_jobs  # noqa: E402
 import run_routes  # noqa: E402
 import testset_routes  # noqa: E402
@@ -139,7 +161,7 @@ PAGE_KEYS = {"wine_slug": "slug"}
 # last on 2026-09-26T11:02:57+0300.
 NAV = (("/dataset", "Dataset"), ("/embedding", "Embeddings"),
        ("/clusters", "Clusters"), ("/testset", "Testset"), ("/runs", "Runs"),
-       ("/health", "Health"))
+       ("/recognize", "Recognize"), ("/health", "Health"))
 # The disabled pages. `/docs` is the API page of the review tool.
 DISABLED_PAGES = {"/docs": "API docs"}
 # `GET /` goes to the Dataset page. The owner moved the Testset page to `/testset` on
@@ -157,6 +179,8 @@ ACTIONS = {
 }
 # The largest body of `POST /api/wine-state`, in bytes.
 MAX_BODY = 4096
+# The body of a manual cut holds up to `alternatives.MAX_POINTS` points (plan 56).
+MAX_CUT_BODY = 65536
 # The largest body of a POST of a code, in bytes. A QR URL has at most 4096 characters.
 MAX_CODE_BODY = 16384
 # The largest body of a POST of a comment, in bytes. The JSON form of a comment of
@@ -298,13 +322,15 @@ def alternative_images(conn):
     uploads. Each photo is a dict: `sha256`, `type`, `url` (the original), `image_url`
     (the processed file, or the original), and `derivation` (`crop`, `seg`, or None). A
     full type shows its package cut, a label type its label cut (`image_derivative.kind`).
-    A `crop` that cut nothing counts as no processing (`cut_nothing`)."""
+    A `crop` that cut nothing counts as no processing (`cut_nothing`). `manual` tells
+    whether the cut is a manual cut, and `manual_points` holds its polygon, or None
+    (plan 56)."""
     photos = {}
     for (wine, image_type, digest, folder, extension, width, height, derivation,
-         p_digest, p_folder, p_extension, *box) in conn.execute(
+         settings, p_digest, p_folder, p_extension, *box) in conn.execute(
             "SELECT w.wine_slug, w.image_type, o.sha256, o.folder, o.extension, o.width, "
-            "o.height, d.method, p.sha256, p.folder, p.extension, d.box_left, d.box_top, "
-            "d.box_right, d.box_bottom FROM wine_image w "
+            "o.height, d.method, d.settings, p.sha256, p.folder, p.extension, d.box_left, "
+            "d.box_top, d.box_right, d.box_bottom FROM wine_image w "
             "JOIN image o ON o.sha256 = w.sha256 "
             "LEFT JOIN image_derivative d ON d.source_sha256 = w.sha256 "
             "AND d.kind = CASE WHEN w.image_type LIKE 'label_%%' THEN 'label' "
@@ -313,13 +339,16 @@ def alternative_images(conn):
             "WHERE w.image_type IN (%s) ORDER BY w.rowid"
             % ", ".join("?" for _ in alternatives.TYPES), alternatives.TYPES):
         original = "/images/%s/%s.%s" % (folder, digest, extension)
-        shown, method = original, None
+        shown, method, points = original, None, None
         if p_digest is not None and not cut_nothing(derivation, tuple(box), width, height):
             shown = "/images/%s/%s.%s" % (p_folder, p_digest, p_extension)
             method = derivation
+            points = alternatives.manual_points(settings)
         photos.setdefault(wine, []).append({"sha256": digest, "type": image_type,
                                             "url": original, "image_url": shown,
-                                            "derivation": method})
+                                            "derivation": method,
+                                            "manual": points is not None,
+                                            "manual_points": points})
     return photos
 
 
@@ -337,6 +366,21 @@ def wine_codes(conn, slug=None):
     return out
 
 
+def code_times(conn, slug=None):
+    """Return wine slug -> kind -> value -> the insert time of the row of `wine_code`.
+
+    The time is None for a row that is older than schema 026. With `slug`, the answer
+    holds that wine alone.
+    """
+    out = {}
+    query = "SELECT wine_slug, kind, value, modified_at FROM wine_code"
+    rows = (conn.execute(query + " WHERE wine_slug = ?", (slug,))
+            if slug is not None else conn.execute(query))
+    for wine, kind, value, modified_at in rows:
+        out.setdefault(wine, {}).setdefault(kind, {})[value] = modified_at
+    return out
+
+
 def code_counts(conn):
     """Return the number of rows of `wine_code` of each kind."""
     counts = dict(conn.execute("SELECT kind, count(*) FROM wine_code GROUP BY kind"))
@@ -349,21 +393,25 @@ def dataset_records(conn):
     The records hold each state. The key `state` tells a removed wine apart. The keys
     of `CARD_IMAGE_KEYS` describe the card image. Each is None for a wine with no card
     image. The size is None for an image that no tool measured. The keys `_gtins` and
-    `_qr_urls` hold the values of `wine_code`. `_patched` tells
-    whether the wine has a `main_patched` image. `_alternatives` lists the alternative
-    photos (`alternative_images`). `_atlas_product_uuid` and
-    `_atlas_binding_source` give the effective row of `wine_atlas_binding`, or None.
+    `_qr_urls` hold the values of `wine_code`. `_code_times` maps the kind of each of
+    these keys -> value -> the insert time of the value (schema 026), or None.
+    `_patched` tells whether the wine has a `main_patched` image. `_alternatives` lists
+    the alternative photos (`alternative_images`). `_atlas_products` lists the rows of
+    `wine_atlas_binding` in rowid order, each as `{"product_uuid", "source"}`.
     `_comments` lists the comments of the wine in time order (`comments.py`).
     `_favorite` tells whether the wine is a favorite (`favorites.py`).
+    `_beverage_type_code` is the wine type (`beverage_types.py`): `"4"`, `"44"`, or None.
     `_modified_at` and `_website_modified_at` are the two change times of schema 015.
     """
     images = card_images(conn)
     times = {slug: (changed, website) for slug, changed, website in conn.execute(
         "SELECT wine_slug, modified_at, website_modified_at FROM wine_catalog")}
     values = wine_codes(conn)
+    added = code_times(conn)
     atlas = atlas_bindings.bindings(conn)
     notes = comments.comments(conn)
     starred = favorites.favorites(conn)
+    kinds = beverage_types.types(conn)
     photos = alternative_images(conn)
     records = []
     for row in conn.execute("SELECT %s FROM wine_catalog ORDER BY rowid"
@@ -373,12 +421,15 @@ def dataset_records(conn):
         record.update(images.get(record["slug"]) or dict.fromkeys(CARD_IMAGE_KEYS))
         of_wine = values.get(record["slug"], {})
         record.update({key: of_wine.get(kind, []) for kind, key in CODE_RECORD_KEYS.items()})
+        added_of_wine = added.get(record["slug"], {})
+        record["_code_times"] = {kind: added_of_wine.get(kind, {})
+                                 for kind in CODE_RECORD_KEYS}
         record["_patched"] = record["_patch_url"] is not None
         record["_alternatives"] = photos.get(record["slug"], [])
-        product, source = atlas.get(record["slug"], (None, None))
-        record.update({"_atlas_product_uuid": product, "_atlas_binding_source": source})
+        record["_atlas_products"] = _atlas_products(atlas.get(record["slug"], []))
         record["_comments"] = notes.get(record["slug"], [])
         record["_favorite"] = record["slug"] in starred
+        record["_beverage_type_code"] = kinds.get(record["slug"])
         record["_modified_at"], record["_website_modified_at"] = times[record["slug"]]
         records.append(record)
     return records
@@ -392,6 +443,7 @@ def dataset_view(db_path):
         atlas_total, atlas_manual = atlas_bindings.counts(conn)
         comment_total = comments.count(conn)
         favorite_total = favorites.count(conn)
+        type_counts = beverage_types.counts(conn)
         descriptions = image_descriptions.descriptions(conn)
     return {
         "database_file": db_path,
@@ -405,6 +457,7 @@ def dataset_view(db_path):
         "atlas_bindings": atlas_total, "atlas_manual_bindings": atlas_manual,
         "comments": comment_total,
         "favorites": favorite_total,
+        "beverage_types": type_counts,
         "image_description_editor": True,
         "image_description_values": image_descriptions.VALUES,
         "image_descriptions": descriptions,
@@ -476,10 +529,12 @@ def _code_request(route, slug, value):
 
 
 def _code_answer(conn, kind, slug, list_key, **fields):
-    """Return the answer of a code route: the values of the wine and the total."""
+    """Return the answer of a code route: the values of the wine, their insert times, and
+    the total."""
     answer = {"ok": True, "slug": slug}
     answer.update(fields)
     answer[list_key] = wine_codes(conn, slug).get(slug, {}).get(kind, [])
+    answer["modified_at"] = code_times(conn, slug).get(slug, {}).get(kind, {})
     answer["total"] = code_counts(conn)[kind]
     return answer
 
@@ -607,46 +662,78 @@ def remove_alternative(db_path, slug, digest):
         conn, slug, digest))
 
 
+def set_manual_cut(db_path, slug, digest, points):
+    """Store the manual cut of one alternative photo. Return the answer of the POST."""
+    return _alternative_request(db_path, slug, lambda conn: alternatives.store_manual_cut(
+        conn, db_path, slug, digest, points))
+
+
+def reset_manual_cut(db_path, slug, digest, segmenter=None):
+    """Remove the manual cut of one alternative photo, and let SAM3 cut it again. Return
+    the answer of the DELETE."""
+    return _alternative_request(db_path, slug, lambda conn: alternatives.reset_manual_cut(
+        conn, db_path, slug, digest, segmenter))
+
+
+def recut_alternative(db_path, slug, digest, segmenter=None):
+    """Segment one alternative photo again with no read of the SAM3 cache. Return the
+    answer of the POST."""
+    return _alternative_request(db_path, slug, lambda conn: alternatives.recut_alternative(
+        conn, db_path, slug, digest, segmenter))
+
+
+def _atlas_products(rows):
+    """Return the `(product UUID, source)` rows of one wine in the form of the page."""
+    return [{"product_uuid": product, "source": source} for product, source in rows]
+
+
 def _atlas_answer(conn, slug, **fields):
-    """Return the answer of the Atlas route: the effective binding and the counts."""
-    product, source = atlas_bindings.bindings(conn, slug).get(slug, (None, None))
+    """Return the answer of the Atlas route: the products of the wine and the counts."""
     total, manual = atlas_bindings.counts(conn)
     answer = {"ok": True, "slug": slug}
     answer.update(fields)
-    answer.update({"product_uuid": product, "source": source, "total": total,
-                   "manual": manual})
+    answer.update({"products": _atlas_products(atlas_bindings.bindings(conn, slug).get(
+        slug, [])), "total": total, "manual": manual})
     return answer
 
 
-def set_atlas_binding(db_path, slug, product_uuid):
-    """Set the manual Atlas Core product of one wine. Return the answer of the POST."""
+def _atlas_request(slug, product_uuid):
+    """Check the slug and the UUID of an Atlas request. Return the stored UUID."""
     if not isinstance(slug, str) or not slug:
         raise StateError(400, "the request holds no wine slug")
     try:
-        clean = atlas_bindings.clean_uuid(product_uuid)
+        return atlas_bindings.clean_uuid(product_uuid)
     except atlas_bindings.BindingError as exc:
         raise StateError(400, str(exc))
 
+
+def set_atlas_binding(db_path, slug, product_uuid):
+    """Add one manual Atlas Core product to one wine. Return the answer of the POST."""
+    clean = _atlas_request(slug, product_uuid)
+
     def write(conn):
-        atlas_bindings.set_manual(conn, slug, clean)
-        return _atlas_answer(conn, slug)
+        try:
+            atlas_bindings.add_manual(conn, slug, clean)
+        except atlas_bindings.DuplicateError as exc:
+            raise StateError(409, str(exc))
+        return _atlas_answer(conn, slug, product_uuid=clean, source="manual")
 
     return _code_write(db_path, slug, write)
 
 
-def remove_atlas_binding(db_path, slug):
-    """Remove the manual Atlas Core product of one wine. Return the answer of the DELETE.
+def remove_atlas_binding(db_path, slug, product_uuid):
+    """Remove one Atlas Core product of one wine, of either source.
 
-    The answer gives the binding after the remove: the automatic row, or None.
+    Return the answer of the DELETE. It gives the removed row and the products after the
+    remove.
     """
-    if not isinstance(slug, str) or not slug:
-        raise StateError(400, "the request holds no wine slug")
+    clean = _atlas_request(slug, product_uuid)
 
     def write(conn):
-        removed = atlas_bindings.remove_manual(conn, slug)
-        if removed is None:
-            raise StateError(404, "the wine %s has no manual Atlas binding" % slug)
-        return _atlas_answer(conn, slug, removed=removed)
+        source = atlas_bindings.remove(conn, slug, clean)
+        if source is None:
+            raise StateError(404, "the wine %s has no Atlas product %s" % (slug, clean))
+        return _atlas_answer(conn, slug, removed=clean, removed_source=source)
 
     return _code_write(db_path, slug, write)
 
@@ -717,20 +804,39 @@ def set_favorite(db_path, slug, on):
     return _code_write(db_path, slug, write)
 
 
+def set_beverage_type(db_path, slug, code):
+    """Set the wine type of one wine, or remove it. Return the answer of the POST.
+
+    `code` MUST be `"4"`, `"44"`, or None (JSON null) for no type. A wine of each state
+    allows it.
+    """
+    if not isinstance(slug, str) or not slug:
+        raise StateError(400, "the request holds no wine slug")
+    if code is not None and code not in beverage_types.CODES:
+        raise StateError(400, '`beverage_type_code` MUST be "4", "44", or null')
+
+    def write(conn):
+        beverage_types.set_type(conn, slug, code)
+        return {"ok": True, "slug": slug, "beverage_type_code": code,
+                "beverage_types": beverage_types.counts(conn)}
+
+    return _code_write(db_path, slug, write)
+
+
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 def set_image_description(db_path, sha256, values):
     """Set values of one image by hand. Return the answer of the POST.
 
-    `values` holds 1 to 4 fields of `image_descriptions.FIELDS`. A value is a value of its
+    `values` holds 1 to 5 fields of `image_descriptions.FIELDS`. A value is a value of its
     field, or null to clear it. A field that `values` does not hold stays as it is. The
     image MUST be linked to a wine (`image_descriptions.is_linked`).
     """
     if not isinstance(sha256, str) or not SHA256_RE.match(sha256):
         raise StateError(400, "`sha256` MUST be 64 lower-case hex digits")
     if not isinstance(values, dict) or not values:
-        raise StateError(400, "`values` MUST hold 1 to 4 fields")
+        raise StateError(400, "`values` MUST hold 1 to 5 fields")
     try:
         checked = {field: image_descriptions.check_value(field, value)
                    for field, value in values.items()}
@@ -945,6 +1051,30 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _recognize(self):
+        """Send the answer of `recognize_routes.respond` (plan 55). The catalogue image of
+        a slug follows the rule of `card_images`."""
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+
+        try:
+            code, body, ctype, cache = recognize_routes.respond(
+                self.server, self.command, self.path, read_body, card_images)
+        except (ConfigError, sqlite3.Error) as exc:
+            code, body, ctype, cache = (503, {"error": str(exc)}, recognize_routes.JSON_TYPE,
+                                        "no-store")
+        except Exception as exc:  # noqa: BLE001 - the page needs an answer for each error
+            traceback.print_exc()
+            code, body, ctype, cache = (500, {"error": "internal error: %s" % exc},
+                                        recognize_routes.JSON_TYPE, "no-store")
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
     def _redirect(self, location):
         self.send_response(302)
         self.send_header("Location", location)
@@ -968,6 +1098,8 @@ class Handler(BaseHTTPRequestHandler):
             self._testset()
         elif health.handles(route):
             self._health()
+        elif recognize_routes.handles(route):
+            self._recognize()
         elif route == "/":
             self._redirect(HOME)
         elif route == "/dataset" or lab_pages.DATASET_PREVIEW_ROUTE.match(route):
@@ -1119,7 +1251,8 @@ class Handler(BaseHTTPRequestHandler):
             call = (set_atlas_binding, body.get("slug"), body.get("product_uuid"))
         else:
             query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
-            call = (remove_atlas_binding, (query.get("slug") or [None])[0])
+            call = (remove_atlas_binding, (query.get("slug") or [None])[0],
+                    (query.get("product_uuid") or [None])[0])
         try:
             self._json(200, call[0](self.server.db_path, *call[1:]))
         except StateError as exc:
@@ -1154,6 +1287,20 @@ class Handler(BaseHTTPRequestHandler):
         try:
             self._json(200, set_favorite(self.server.db_path, body.get("slug"),
                                          body.get("favorite")))
+        except StateError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+
+    def _beverage_type(self):
+        """Answer a POST of `/api/dataset-beverage-type`."""
+        body = self._json_body(MAX_BODY)
+        if body is None:
+            return
+        try:
+            # A body with no key `beverage_type_code` is an error, not a remove of the type.
+            self._json(200, set_beverage_type(self.server.db_path, body.get("slug"),
+                                              body.get("beverage_type_code", "")))
         except StateError as exc:
             self._json(exc.code, {"error": str(exc)})
         except (ConfigError, sqlite3.Error) as exc:
@@ -1217,6 +1364,22 @@ class Handler(BaseHTTPRequestHandler):
                 answer = set_alternative_type(self.server.db_path, body.get("slug"),
                                               body.get("sha256"), body.get("type"),
                                               self.server.segmenter)
+            elif route == "/api/dataset-alternative-cut" and self.command == "POST":
+                body = self._json_body(MAX_CUT_BODY)
+                if body is None:
+                    return
+                answer = set_manual_cut(self.server.db_path, body.get("slug"),
+                                        body.get("sha256"), body.get("points"))
+            elif route == "/api/dataset-alternative-cut":
+                answer = reset_manual_cut(self.server.db_path, slug,
+                                          (query.get("sha256") or [None])[0],
+                                          self.server.segmenter)
+            elif route == "/api/dataset-alternative-recut":
+                body = self._json_body(MAX_BODY)
+                if body is None:
+                    return
+                answer = recut_alternative(self.server.db_path, body.get("slug"),
+                                           body.get("sha256"), self.server.segmenter)
             elif self.command == "POST":
                 answer = store_alternative(self.server.db_path, slug, self._image_body(),
                                            (query.get("name") or [None])[0],
@@ -1247,6 +1410,8 @@ class Handler(BaseHTTPRequestHandler):
             self._testset()
         elif health.handles(route):
             self._health()
+        elif recognize_routes.handles(route):
+            self._recognize()
         elif route == "/api/wine-state" and self.command == "POST":
             self._wine_state()
         elif route == "/api/wine" and self.command == "POST":
@@ -1259,12 +1424,18 @@ class Handler(BaseHTTPRequestHandler):
             self._alternative(route)
         elif route == "/api/dataset-alternative-type" and self.command == "POST":
             self._alternative(route)
+        elif route == "/api/dataset-alternative-cut" and self.command in ("POST", "DELETE"):
+            self._alternative(route)
+        elif route == "/api/dataset-alternative-recut" and self.command == "POST":
+            self._alternative(route)
         elif route == "/api/dataset-atlas-binding" and self.command in ("POST", "DELETE"):
             self._atlas_binding()
         elif route == "/api/dataset-comment" and self.command in ("POST", "DELETE"):
             self._comment()
         elif route == "/api/dataset-favorite" and self.command == "POST":
             self._favorite()
+        elif route == "/api/dataset-beverage-type" and self.command == "POST":
+            self._beverage_type()
         elif route == "/api/image-description" and self.command == "POST":
             self._image_description()
         elif route.startswith("/api/"):

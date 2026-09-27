@@ -232,6 +232,19 @@ Send the requests of one model again (for example after a new checkpoint on gx10
 rm -r data/cache/sam3/
 ```
 
+
+Импорт старой базы данных:
+
+cd /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab
+
+# Rebuild the database and swap it in. Took about 8 min this time.
+python3 pipeline/seed_from_testset.py --db data/lab.sqlite3 \
+    2>&1 | tee work/seed/seed-$(date +%Y%m%dT%H%M%S).log
+
+# Only if 8168 is not running: start it in its own terminal tab, then check it
+python3 pipeline/lab_server.py --no-browser
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8168/api/dataset   # expect 200
+
 # Back up the lab database to git as text (plan 50)
 
 The skill `backup-lab-db` runs these steps, checks a round trip, and commits `db-export/`

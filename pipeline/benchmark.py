@@ -12,12 +12,14 @@ The runner writes the run files of `scripts/match_run.py` to `runs/<run id>/`:
 The query set follows `build_queries` of `match_run.py` with its defaults
 (`--variants off`, `--only all`):
 - A photo with the label `positive` or `negative` enters. Its place is its slug.
-- A photo stays out when its place is excluded, when its label is `unusable`, `variant`,
-  or NULL, or when it is marked for deletion.
+- A photo stays out when its label is `unusable`, `variant`, or NULL, or when it is
+  marked for deletion.
 - A photo of `__null__` (the row "No Match" of `/testset`) enters with the label
   `no_match` and no truth, also with no label, as in `match_run.py`. It stays out when
-  its label is `unusable`, when it is marked for deletion, or when `__null__` is
-  excluded (plan 36, owner answer of 2026-09-26T00:29:00+0300).
+  its label is `unusable` or when it is marked for deletion (plan 36, owner answer of
+  2026-09-26T00:29:00+0300).
+- No slug is excluded. The owner removed the exclusion on 2026-09-26T18:08:34+0300
+  (plan 51); `match_run.py` still reads `excluded-slugs.json`.
 - A photo of `__drawer__` (the Drawer, the sidebar of `/testset`) waits for a wine and
   stays out.
 - The rows are in the order of `<place>/<file name>`, and the query ids follow it.
@@ -57,12 +59,11 @@ class BenchmarkError(Exception):
 def build_queries(conn, db_path, set_name):
     """Return (rows, left out counts) of the set, as `build_queries` of match_run.py.
 
-    Two rules differ from match_run.py: the photos of a `Removed` wine are left out
-    (plan 24), and the photos of the Drawer are left out (plan 36)."""
+    Three rules differ from match_run.py: the photos of a `Removed` wine are left out
+    (plan 24), the photos of the Drawer are left out (plan 36), and no slug is excluded
+    (plan 51)."""
     if conn.execute("SELECT 1 FROM test_set WHERE set_name = ?", (set_name,)).fetchone() is None:
         raise BenchmarkError("the database holds no test set %r" % set_name)
-    excluded = {slug for (slug,) in conn.execute(
-        "SELECT wine_slug FROM test_excluded WHERE set_name = ?", (set_name,))}
     # The photos of a Removed wine stay in the set and leave the run until a restore. The
     # owner chose this on 2026-09-25T17:13:17+0300 (plan 24).
     removed = {slug for (slug,) in conn.execute(
@@ -83,18 +84,14 @@ def build_queries(conn, db_path, set_name):
             continue
         if place == NULL_SLUG:
             # The place is the statement: a NULL photo needs no label (plan 36).
-            if NULL_SLUG in excluded:
-                skipped["excluded slug"] += 1
-            elif label == "unusable":
+            if label == "unusable":
                 skipped["unusable"] += 1
             elif delete:
                 skipped["marked for deletion"] += 1
             else:
                 rows.append({**row, "label": NO_MATCH, "truth": []})
             continue
-        if place in excluded:
-            skipped["excluded slug"] += 1
-        elif place in removed:
+        if place in removed:
             skipped["removed wine"] += 1
         elif label not in LABELS_IN_SET:
             skipped["no label" if not label else label] += 1
@@ -147,7 +144,7 @@ def git_commit():
 
 def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, limit=None,
                   label=None, embeddings=None, log=print, schema_dir=labdb.SCHEMA_DIR,
-                  configuration=None, use_cache=None):
+                  configuration=None, use_cache=None, use_barcode=None):
     """Run the set against `backend`. Return (run directory, metrics).
 
     `backend` is a backend of `match_backends.build_backend`: it has `id`, `spec`,
@@ -159,6 +156,10 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
     `use_cache` is False when the run read no record of `model_cache` (the checkbox `Use
     caches` of the dialog `Run>` was off); `run.json` holds it under the key `use_cache`.
     None writes no such key. Read `docs/plans/39_use-caches-checkbox.md`.
+    `use_barcode` is False when the run skipped the barcode step of its pipeline (the
+    checkbox `Disable barcode fast path` of the dialog `Run>`), True when the step ran;
+    `run.json` holds it under the key `use_barcode`. None writes no such key. Read
+    `docs/plans/53_disable-barcode-checkbox.md`.
     """
     conn = open_database(db_path, schema_dir)
     try:
@@ -210,6 +211,8 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
         meta["configuration"] = configuration
     if use_cache is not None:
         meta["use_cache"] = use_cache
+    if use_barcode is not None:
+        meta["use_barcode"] = use_barcode
 
     results, lock, done = [], threading.Lock(), 0
     t_start = time.time()

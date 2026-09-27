@@ -22,7 +22,8 @@ import image_descriptions as DESC
 import vlm_config
 
 ANSWER = {"package_type": "bottle", "subject_scope": "full_package",
-          "package_view": "front", "content_roles": ["front_label"]}
+          "package_view": "front", "content_roles": ["front_label"],
+          "presentation_mode": "on_package"}
 CFG = dict(DI.DEFAULTS, poll_seconds=1)
 ENTRY = vlm_config.entry({"vlm": [{
     "name": "gx10-test", "protocol": "openai", "thinking_field": "chat_template_kwargs",
@@ -82,7 +83,9 @@ class PromptTest(unittest.TestCase):
                json.dumps({k: v for k, v in ANSWER.items() if k != "package_view"}),
                json.dumps(dict(ANSWER, content_roles=["unknown", "front_label"])),
                json.dumps(dict(ANSWER, content_roles=[])),
-               json.dumps(dict(ANSWER, content_roles="front_label"))]
+               json.dumps(dict(ANSWER, content_roles="front_label")),
+               json.dumps(dict(ANSWER, presentation_mode="table")),
+               json.dumps({k: v for k, v in ANSWER.items() if k != "presentation_mode"})]
         for text in bad:
             with self.subTest(text=text):
                 with self.assertRaises(DI.DescribeError) as caught:
@@ -151,6 +154,26 @@ class WatcherTest(DescriptionCase):
         self.assertIn(DI.PROMPT, prompts)
         self.assertIn(DI.prompt_text({"package_type": "tetra_pak"}), prompts)
         self.assertEqual(self.row("wine-b")["created_by"], "vlm")
+
+    def test_a_row_of_the_024_requeue_sends_its_old_values_as_fixed_facts(self):
+        old = {"package_type": "bottle", "subject_scope": "label_closeup",
+               "package_view": "back", "content_roles": ["back_label"]}
+        with self.connect() as conn:
+            DESC.record_vlm(conn, self.sha["wine-a"], dict(old, presentation_mode="other"),
+                            "vlm-a", "Model-A")
+            # The UPDATE of schema 024 (the column exists already in a new database).
+            conn.execute("UPDATE image_description SET presentation_mode = NULL, "
+                         "vlm_at = NULL, vlm_name = NULL, vlm_model = NULL, "
+                         "vlm_answer = NULL, vlm_error = NULL, vlm_attempts = 0")
+        answer = dict(ANSWER, presentation_mode="flat_surface")
+        fake = FakeVlm(body(answer))
+        self.assertEqual(self.run_once(fake), 2)
+        self.assertIn(DI.prompt_text(old), [fake.prompt(i) for i in range(2)])
+        self.assertIn("These values are already set.", DI.prompt_text(old))
+        row = self.row("wine-a")
+        self.assertEqual({field: row[field] for field in DESC.FIELDS},
+                         dict(old, presentation_mode="flat_surface"))
+        self.assertEqual(row["vlm_answer"], answer)
 
     def test_a_value_saved_during_the_call_is_kept(self):
         def save():

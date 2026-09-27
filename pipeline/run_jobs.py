@@ -7,11 +7,17 @@ docs/plans/34_pipeline-section.md.
                                              count of the queries of the set
     GET  /api/run-jobs                       the job of each pipeline
     POST /api/run-jobs                       start a job: {"configuration", "set",
-                                             "limit", "workers", "use_cache"}
+                                             "limit", "workers", "use_cache",
+                                             "use_barcode"}
     POST /api/run-jobs/<name>/stop           stop a job (SIGTERM)
 
 The routes and the key `configuration` keep their names; `configuration` names the
 pipeline (owner answer of 2026-09-25T23:55:27+0300).
+
+Each pipeline of `/api/run-configurations` has the key `barcode`: true when the pipeline
+has the barcode step (the key `barcode`, plan 42). The body key `use_barcode` false (the
+checkbox `Disable barcode fast path` of the dialog) gives `--no-barcode` to such a
+pipeline. Read docs/plans/53_disable-barcode-checkbox.md.
 
 A job runs `run_job.py` as a separate process. Its output goes to
 `work/run-jobs/<name>/job.log`, one JSON event on each line, and `job.lock` holds its
@@ -225,7 +231,12 @@ def default_workers(pipeline):
         return None
     if pipeline.remote is not None:
         return pipeline.remote["workers"]
-    return 1
+    return pipeline.workers
+
+
+def has_barcode(pipeline):
+    """Tell whether a pipeline has the barcode step (the key `barcode`, plan 42)."""
+    return getattr(pipeline, "barcode", None) is not None
 
 
 def query_count(db_path, set_name):
@@ -246,7 +257,8 @@ def configurations_view(settings, jobs_dir, set_name):
         can, reason = runnable(pipeline, error, settings.db_path)
         out.append({"name": name, "backend": pipeline.backend if pipeline else None,
                     "runnable": can, "reason": reason,
-                    "workers": default_workers(pipeline), "job": job(jobs_dir, name)})
+                    "workers": default_workers(pipeline), "barcode": has_barcode(pipeline),
+                    "job": job(jobs_dir, name)})
     return {"set": set_name, "queries": query_count(settings.db_path, set_name),
             "configurations": out}
 
@@ -289,6 +301,15 @@ def start(settings, jobs_dir, body, runs_dir=None):
         use_cache = True
     if not isinstance(use_cache, bool):
         return 400, {"error": "use_cache MUST be true or false"}
+    # The checkbox `Disable barcode fast path` of the dialog, as `use_barcode`: a missing
+    # key is the default, true. False gives `--no-barcode` to a pipeline with the key
+    # `barcode`; another pipeline ignores it (owner answers of 2026-09-26T19:47:40+0300,
+    # plan 53).
+    use_barcode = body.get("use_barcode")
+    if use_barcode is None:
+        use_barcode = True
+    if not isinstance(use_barcode, bool):
+        return 400, {"error": "use_barcode MUST be true or false"}
     try:
         pipeline = settings.find(name)
     except KeyError:
@@ -316,6 +337,8 @@ def start(settings, jobs_dir, body, runs_dir=None):
         command += ["--workers", str(workers)]
     if not use_cache:
         command.append("--no-cache")
+    if not use_barcode and has_barcode(pipeline):
+        command.append("--no-barcode")
     if runs_dir:
         command += ["--runs-dir", runs_dir]
     with _START:

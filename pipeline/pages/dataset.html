@@ -87,6 +87,14 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
 .describe-edit:hover { color: var(--accent); border-color: var(--accent); opacity: 1; }
 .describe-edit.set { color: var(--accent); border-color: var(--accent); }
 .alternative-card .describe-edit { right: 4px; bottom: 4px; width: 21px; height: 21px; }
+/* The button ↻ of an alternative photo segments it again with no SAM3 cache read. */
+.alternative-recut {
+  position: absolute; left: 4px; bottom: 4px; z-index: 2; width: 21px; height: 21px;
+  padding: 0; border-radius: 6px; font-size: 13px; line-height: 1; opacity: .85;
+  color: var(--muted); background: var(--panel); border: 1px solid var(--line);
+}
+.alternative-recut:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); opacity: 1; }
+.alternative-recut:disabled { opacity: .4; cursor: not-allowed; }
 .describe-dialog { width: min(640px, 100%); }
 .describe-body { display: grid; grid-template-columns: 180px 1fr; gap: 16px; }
 .describe-body img {
@@ -301,8 +309,11 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 }
 .barcode-value code { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .atlas-binding-editor .barcode-value code { overflow-wrap: anywhere; }
+.atlas-binding-editor .barcode-values { align-items: flex-start; flex-direction: column; }
+.barcode-value .atlas-source { color: var(--muted); font-size: 10px; }
 .barcode-value .copy { padding: 0 5px; font-size: 10px; }
 .barcode-value .open-product { padding: 0 3px; font-size: 10px; }
+.barcode-value .shared-code { padding: 0 6px; font-size: 10px; cursor: help; white-space: nowrap; }
 .qr-url-editor .barcode-values { align-items: flex-start; flex-direction: column; }
 .qr-url-editor .barcode-value { max-width: 100%; padding-left: 4px; }
 .qr-url-editor .barcode-value code { min-width: 0; overflow-wrap: anywhere; }
@@ -336,6 +347,11 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .info { position: relative; }
 .info > .favorite-star { position: absolute; top: -4px; right: 0; }
 .info.with-star > .slug, .info.with-star > .name { padding-right: 34px; }
+/* The wine type select of the lab server: plan 52. It stands at the end of the category
+   line, or alone on the line when the wine has no category and no region. */
+.kind .type-select { white-space: nowrap; }
+.kind .type-select.after { margin-left: 10px; }
+.kind .type-select select { padding: 1px 6px; font-size: 12px; }
 /* The Comments editor of the lab server: plan 17. */
 .comment-editor { margin-top: 8px; }
 .comment-list {
@@ -552,6 +568,34 @@ button.preview-thumb:hover { border-color: var(--accent); }
 }
 .image-preview-arrow.previous { margin-right: auto; transform: translateX(-58px); }
 .image-preview-arrow.next { margin-left: auto; transform: translateX(58px); }
+/* The manual cut of an alternative photo (plan 56): the buttons in the head, the polygon
+   layer over the original, and the bar of the editor in the place of the thumbnails. The
+   layer has fixed colours, because it lies on the photo. */
+.image-badge.manual { color: var(--accent); background: var(--panel); border-color: var(--accent); }
+.image-preview-frame { position: relative; }
+.image-preview-cut-actions { display: flex; gap: 6px; }
+.image-preview-cut-actions button, .image-preview-cut-bar button { padding: 3px 8px; font-size: 12px; }
+.image-preview-cut-bar {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px;
+  max-width: 100%; color: var(--muted); font-size: 12px;
+}
+.image-preview-cut-bar .apply { border-color: var(--accent); font-weight: 700; }
+.image-preview-cut-actions[hidden], .image-preview-cut-bar[hidden],
+.image-preview-cut-layer[hidden] { display: none; }
+.image-preview-cut-layer {
+  position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none;
+}
+.image-preview-cut-layer .cut-shape {
+  fill: rgba(0, 200, 255, .18); stroke: #00c8ff; stroke-width: 2; stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.image-preview-cut-layer polyline.cut-shape { fill: none; }
+.image-preview-cut-layer .cut-point {
+  fill: #fff; stroke: #0a0a0a; stroke-width: 1.5; vector-effect: non-scaling-stroke; cursor: move;
+}
+.image-preview-cut-layer .cut-point.first { fill: #00c8ff; }
+.cutting .image-preview-thumbs { display: none; }
+.cutting .image-preview-arrow { visibility: hidden; }
 @media (max-width: 860px) {
   .wine { flex-direction: column; }
   /* The text column takes the full width, so the favorites star stands at the right edge. */
@@ -597,7 +641,8 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <h1>Dataset <span class="sub" id="head-sub">loading catalog.jsonl…</span></h1>
     <nav class="nav"><a class="on" href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
-      href="/testset">Testset</a><a href="/runs">Runs</a><a href="/health">Health</a></nav>
+      href="/testset">Testset</a><a href="/runs">Runs</a><a
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
   </div>
   <div class="bar">
     <label>Show
@@ -639,13 +684,28 @@ button.preview-thumb:hover { border-color: var(--accent); }
     </div>
   </div>
   <div class="bar advanced-bar" id="advanced-bar" hidden>
-    <label>Package <select id="package-filter"><option value="all">All</option></select></label>
+    <label id="package-filter-label" hidden>Package
+      <select id="package-filter"><option value="all">All</option></select></label>
     <label>Identifier
       <select id="identifier-filter">
         <option value="all">All</option>
         <option value="gtin">has GTIN</option>
         <option value="qr-url">has QR URL</option>
         <option value="atlas">has Drink Atlas</option>
+      </select>
+    </label>
+    <label id="type-filter-label" hidden>Type
+      <select id="type-filter">
+        <option value="all">All</option>
+        <option value="4">Wines</option>
+        <option value="44">Sparkling Wines</option>
+        <option value="unset">Not set</option>
+      </select>
+    </label>
+    <label>Alternatives
+      <select id="alternative-filter">
+        <option value="all">All</option>
+        <option value="with">has alternative photos</option>
       </select>
     </label>
   </div>
@@ -744,6 +804,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
         <label>subject_scope <select name="subject_scope"></select></label>
         <label>package_view <select name="package_view"></select></label>
         <fieldset><legend>content_roles</legend><div id="describe-roles"></div></fieldset>
+        <label>presentation_mode <select name="presentation_mode"></select></label>
       </form>
     </div>
     <div class="describe-status" id="describe-status"></div>
@@ -804,7 +865,12 @@ button.preview-thumb:hover { border-color: var(--accent); }
       </div>
       <div class="image-preview-meta"><span id="image-preview-position"></span>
         <span id="image-preview-size" aria-live="polite"></span>
-        <a id="image-preview-raw" href="" target="_blank" rel="noopener">open raw image</a></div>
+        <a id="image-preview-raw" href="" target="_blank" rel="noopener">open raw image</a>
+        <span class="image-preview-cut-actions" id="image-preview-cut-actions" hidden><button
+          id="image-preview-cut" type="button"
+          title="Draw a polygon that replaces the automatic segmentation">Manual cut</button><button
+          id="image-preview-cut-remove" type="button"
+          title="Remove the manual cut and run the automatic segmentation again">Remove manual cut</button></span></div>
       <button class="image-preview-close" id="image-preview-close" type="button"
         aria-label="Close image preview">×</button>
     </div>
@@ -812,7 +878,16 @@ button.preview-thumb:hover { border-color: var(--accent); }
       <button class="image-preview-arrow previous" id="image-preview-previous" type="button"
         aria-label="Previous image" title="Previous image (Left or Up arrow)">←</button>
       <div class="image-preview-main">
-        <div class="image-preview-frame"><img id="image-preview-image" src="" alt=""></div>
+        <div class="image-preview-frame"><img id="image-preview-image" src="" alt=""><svg
+          class="image-preview-cut-layer" id="image-preview-cut-layer" preserveAspectRatio="none"
+          hidden></svg></div>
+        <div class="image-preview-cut-bar" id="image-preview-cut-bar" hidden>
+          <span id="image-preview-cut-hint"></span>
+          <button id="image-preview-cut-undo" type="button" title="Remove the last point (Backspace)">Undo</button>
+          <button id="image-preview-cut-clear" type="button" title="Remove all points">Clear</button>
+          <button class="apply" id="image-preview-cut-save" type="button">Save cut</button>
+          <button id="image-preview-cut-cancel" type="button" title="Close the editor with no change (Escape)">Cancel</button>
+        </div>
         <div class="image-preview-thumbs" id="image-preview-thumbs"></div>
       </div>
       <button class="image-preview-arrow next" id="image-preview-next" type="button"
@@ -834,7 +909,8 @@ const PENDING_PATCHES = new Map();
 const BUSY_PATCHES = new Set();
 const PENDING_ALTERNATIVES = new Map();
 const BUSY_ALTERNATIVES = new Set();
-// `<slug>|<sha256>` of each photo whose type change runs, and the slugs whose uploads run.
+// `<slug>|<sha256>` of each photo whose type change or new segmentation runs, and the
+// slugs whose uploads run.
 const BUSY_ALTERNATIVE_TYPES = new Set();
 const UPLOADING_ALTERNATIVES = new Set();
 // The types of an alternative photo of the lab server: [type, button, full name].
@@ -851,6 +927,8 @@ const BUSY_ATLAS_BINDINGS = new Set();
 const DRAFT_COMMENTS = new Map();
 const BUSY_COMMENTS = new Set();
 const BUSY_FAVORITES = new Set();
+// slug -> the wine type that the page saves now ("" is no type): plan 52.
+const BUSY_TYPES = new Map();
 // state -> the buttons of a wine in that state, as [action, label].
 const STATE_ACTIONS = {
   Active: [["disable", "Disable"], ["remove", "Remove"]],
@@ -1026,6 +1104,7 @@ function setPreviewItem(slug, kind, mode, sha256) {
   const path = imagePreviewPath(slug, kind, IMAGE_PREVIEW.sha256);
   if (mode === "push") history.pushState({imagePreview: true}, "", path);
   else if (mode === "replace") history.replaceState(history.state, "", path);
+  renderCutActions();
   return items[index];
 }
 function hideImagePreview() {
@@ -1033,6 +1112,7 @@ function hideImagePreview() {
   $("#image-preview-image").src = "";
   document.body.style.overflow = "";
   IMAGE_PREVIEW = null;
+  renderCutActions();
 }
 // Close the preview and give the page its path `/dataset` again. The entry of an open
 // that this page pushed goes away with Back, so Forward opens the preview again.
@@ -1088,7 +1168,7 @@ function previewThumbs(record) {
     thumbs.push({...item, url: photo.url, raw: photo.url, label: name});
     thumbs.push(photo.derivation
       ? {...item, url: photo.image_url, raw: photo.url, label: `${name} · processed`,
-         badge: photo.derivation}
+         badge: photo.manual ? "manual" : photo.derivation}
       : {label: `${name} · processed`});
   });
   return thumbs;
@@ -1258,8 +1338,9 @@ function alternativeEditor(r) {
     const src = photo ? photo.image_url
       : `/img/alternative?slug=${slug}&file=${encodeURIComponent(item)}${version}`;
     const turning = photo && BUSY_ALTERNATIVE_TYPES.has(`${r.slug}|${key}`);
-    const badge = photo && photo.derivation ? `<span class="image-badge ${esc(photo.derivation)}"
-      title="processed image: ${esc(photo.derivation)}">${esc(photo.derivation)}</span>` : "";
+    const cut = photo && photo.derivation && (photo.manual ? "manual" : photo.derivation);
+    const badge = cut ? `<span class="image-badge ${esc(cut)}"
+      title="processed image: ${esc(cut)}">${esc(cut)}</span>` : "";
     // A photo of the lab server opens the image preview; a file of the review tool opens
     // in a new tab.
     const link = photo
@@ -1272,6 +1353,7 @@ function alternativeEditor(r) {
       <button class="alternative-remove" type="button" data-alternative-remove="${esc(key)}"
         title="${removing ? "Keep this photo" : "Remove this photo"}" ${turning ? "disabled" : ""}>${removing ? "↶" : "×"}</button>
       ${photo ? describeButton(photo.sha256, r.slug, photo.url) : ""}
+      ${photo && lab ? recutButton(photo, turning || removing) : ""}
       ${removing ? '<span class="patch-state">remove</span>' : ""}
     </div>`;
     if (!photo) return card;
@@ -1304,6 +1386,51 @@ function alternativeEditor(r) {
       accept="image/jpeg,image/png,image/webp,image/gif,image/bmp">
   </aside>`;
 }
+// Plan 58: a shared code is a GTIN or a QR URL of 2 or more Active wines, as the barcode
+// step reads `wine_code`. kind (`gtin` or `qr`) -> value -> the slugs. `render` and
+// `renderCodeCard` build the map again. A record with no `state` counts as Active.
+let CODE_USERS = null;
+function codeUsers(kind, value) {
+  if (!CODE_USERS) {
+    CODE_USERS = {gtin: new Map(), qr: new Map()};
+    for (const record of DATA.records) {
+      if (record.state && record.state !== "Active") continue;
+      for (const [key, values] of [["gtin", record._gtins], ["qr", record._qr_urls]]) {
+        for (const item of values || []) {
+          if (!CODE_USERS[key].has(item)) CODE_USERS[key].set(item, []);
+          CODE_USERS[key].get(item).push(record.slug);
+        }
+      }
+    }
+  }
+  return CODE_USERS[kind].get(value) || [];
+}
+// The badge at the right of a shared code: the count of its wines. The tooltip names the
+// other wines.
+function sharedCodeBadge(r, kind, value) {
+  const slugs = codeUsers(kind, value);
+  if (slugs.length < 2) return "";
+  const others = slugs.filter(slug => slug !== r.slug);
+  return `<span class="tag shared-code" title="${esc(`Also on: ${others.join(", ")}`)}">${slugs.length} wines</span>`;
+}
+// The Active wines that share a code with the wine `slug`, less the wine itself.
+function codePeers(slug) {
+  const record = DATA.records.find(item => item.slug === slug);
+  const out = new Set();
+  for (const [kind, values] of [["gtin", record?._gtins], ["qr", record?._qr_urls]])
+    for (const value of values || []) for (const other of codeUsers(kind, value)) out.add(other);
+  out.delete(slug);
+  return [...out];
+}
+// The tooltip attribute of a stored code: the insert time of its row (schema 026). A row
+// older than 026 has no time. The review tool sends no `_code_times`, so its codes get no
+// tooltip.
+function codeTimeTitle(r, kind, value) {
+  const times = r._code_times?.[kind];
+  if (!times) return "";
+  const added = times[value];
+  return ` title="${esc(added ? `added ${commentTime(added)}` : "added: unknown")}"`;
+}
 function gtinEditor(r) {
   const values = r._gtins || [];
   const editing = DRAFT_GTINS.has(r.slug);
@@ -1312,8 +1439,8 @@ function gtinEditor(r) {
   const existing = values.length ? `<div class="barcode-values">${values.map(value =>
     `<span class="barcode-value"><button class="barcode-remove" type="button"
       data-gtin-remove="${esc(value)}" aria-label="Remove GTIN ${esc(value)}"
-      title="Remove GTIN" ${busy ? "disabled" : ""}>×</button><code>${esc(value)}</code>
-      <button class="copy" type="button" data-copy="${esc(value)}">copy</button></span>`
+      title="Remove GTIN" ${busy ? "disabled" : ""}>×</button><code${codeTimeTitle(r, "gtin", value)}>${esc(value)}</code>
+      <button class="copy" type="button" data-copy="${esc(value)}">copy</button>${sharedCodeBadge(r, "gtin", value)}</span>`
     ).join("")}</div>`
     : '<div class="barcode-empty">no GTIN</div>';
   const entry = editing ? `<div class="barcode-new">
@@ -1372,10 +1499,10 @@ function qrUrlEditor(r) {
     const shown = openUrl || value;
     return `<span class="barcode-value"><button class="barcode-remove" type="button"
       data-qr-url-remove="${esc(value)}" aria-label="Remove QR URL ${esc(value)}"
-      title="Remove QR URL" ${busy ? "disabled" : ""}>×</button><code>${esc(shown)}</code>
+      title="Remove QR URL" ${busy ? "disabled" : ""}>×</button><code${codeTimeTitle(r, "qr_url", value)}>${esc(shown)}</code>
       <button class="copy" type="button" data-copy="${esc(shown)}">copy</button>${openUrl
         ? `<a class="open-product" href="${esc(openUrl)}" target="_blank" rel="noopener">open</a>`
-        : ""}</span>`;
+        : ""}${sharedCodeBadge(r, "qr", value)}</span>`;
   }).join("")}</div>` : '<div class="barcode-empty">no QR URL</div>';
   const entry = editing ? `<div class="barcode-new">
     <input class="qr-url-input" type="url" maxlength="4096" autocomplete="off"
@@ -1393,26 +1520,44 @@ function qrUrlEditor(r) {
     ${existing}${entry}
   </div>`;
 }
+// The Atlas Core products of a wine, each as `{product_uuid, source}`. The lab server
+// sends the list `_atlas_products`. The review tool sends one UUID in
+// `_atlas_product_uuid` (plan 54).
+function atlasProducts(r) {
+  if (Array.isArray(r._atlas_products)) return r._atlas_products;
+  return r._atlas_product_uuid
+    ? [{product_uuid: r._atlas_product_uuid, source: r._atlas_binding_source || ""}] : [];
+}
+// The UUID of a Drink Atlas product URL `http(s)://<host>/products/<uuid>`, else null.
+// A slash, a query, or a fragment MAY follow the UUID.
+function atlasProductFromUrl(text) {
+  const match = /^https?:\/\/[^\/\s]+\/products\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/?(?:[?#]\S*)?$/i
+    .exec(String(text || "").trim());
+  return match ? match[1] : null;
+}
 function atlasBindingEditor(r) {
-  // The review tool sends `atlas_bindings_file`. The lab server sends
-  // `atlas_binding_editor`, and it allows the remove of a manual binding.
+  // The review tool sends `atlas_bindings_file`: a save replaces its one manual UUID. The
+  // lab server sends `atlas_binding_editor`: a save adds one UUID, and each UUID of either
+  // source has a remove.
   const configured = !!DATA.atlas_bindings_file || !!DATA.atlas_binding_editor;
-  const current = r._atlas_product_uuid || "";
-  const source = r._atlas_binding_source || "";
-  const removable = !!DATA.atlas_binding_editor && source === "manual";
+  const products = atlasProducts(r);
+  const removable = !!DATA.atlas_binding_editor;
+  const replaces = !DATA.atlas_binding_editor && products.length > 0;
   const editing = DRAFT_ATLAS_BINDINGS.has(r.slug);
   const busy = BUSY_ATLAS_BINDINGS.has(r.slug);
-  const productUrl = current
-    ? `http://127.0.0.1:8157/products/${encodeURIComponent(current)}` : "";
-  const existing = current
-    ? `<div class="barcode-values"><span class="barcode-value">${removable
-         ? `<button class="barcode-remove" type="button" data-atlas-binding-remove
-             aria-label="Remove manual Atlas binding" title="Remove manual binding"
-             ${busy ? "disabled" : ""}>×</button>` : ""}<code>${esc(current)}</code>
-       <button class="copy" type="button" data-copy="${esc(current)}">copy</button>
+  const existing = products.length ? `<div class="barcode-values">${products.map(item => {
+    const product = item.product_uuid;
+    const source = item.source || "";
+    const productUrl = `http://127.0.0.1:8157/products/${encodeURIComponent(product)}`;
+    return `<span class="barcode-value">${removable
+         ? `<button class="barcode-remove" type="button" data-atlas-binding-remove="${esc(product)}"
+             aria-label="Remove ${esc(source)} Atlas binding ${esc(product)}"
+             title="Remove ${esc(source)} binding" ${busy ? "disabled" : ""}>×</button>` : ""}<code>${esc(product)}</code>
+       <span class="atlas-source">${esc(source)}</span>
+       <button class="copy" type="button" data-copy="${esc(product)}">copy</button>
        <a class="open-product" href="${esc(productUrl)}" target="_blank"
-          rel="noopener">open</a></span></div>`
-    : '<div class="barcode-empty">not bound</div>';
+          rel="noopener">open</a></span>`;
+  }).join("")}</div>` : '<div class="barcode-empty">not bound</div>';
   const entry = editing ? `<div class="barcode-new">
     <input class="atlas-binding-input" type="text" maxlength="36" autocomplete="off"
       aria-label="Drink Atlas Core product UUID" placeholder="Product UUID"
@@ -1424,11 +1569,11 @@ function atlasBindingEditor(r) {
   </div>` : "";
   return `<div class="atlas-binding-editor" data-slug="${esc(r.slug)}">
     <div class="barcode-head"><strong>Atlas Core product</strong>
-      <span class="count">${current ? `bound · ${esc(source)}` : "not bound"}</span>
+      <span class="count">${products.length}</span>
       <button class="barcode-add" type="button" data-atlas-binding-edit
-        aria-label="${current ? "Edit" : "Add"} Atlas binding"
-        title="${current ? "Edit binding" : "Add binding"}"
-        ${!configured || editing ? "disabled" : ""}>${current ? "edit" : "+"}</button></div>
+        aria-label="${replaces ? "Edit" : "Add"} Atlas binding"
+        title="${replaces ? "Edit binding" : "Add binding"}"
+        ${!configured || editing ? "disabled" : ""}>${replaces ? "edit" : "+"}</button></div>
     ${existing}${entry}
   </div>`;
 }
@@ -1481,10 +1626,25 @@ function favoriteStar(r) {
     data-favorite-toggle="${esc(r.slug)}" aria-pressed="${on}" aria-label="${label}"
     title="${label}" ${BUSY_FAVORITES.has(r.slug) ? "disabled" : ""}>${on ? "★" : "☆"}</button>`;
 }
+// The wine type (plan 52) belongs to the lab server. The review tool sends no
+// `beverage_types`. The code `4` is a wine, `44` a sparkling wine, and "" no type.
+function beverageTypesOn() { return "beverage_types" in DATA; }
+const BEVERAGE_TYPE_OPTIONS = [["", "not set"], ["4", "Wine"], ["44", "Sparkling wine"]];
+function beverageTypeSelect(r, after) {
+  // While a save runs, the select shows the value that the page saves, and is disabled.
+  const busy = BUSY_TYPES.has(r.slug);
+  const code = busy ? BUSY_TYPES.get(r.slug) : r._beverage_type_code || "";
+  return `<label class="type-select${after ? " after" : ""}">Type <select
+    data-beverage-type="${esc(r.slug)}"
+    aria-label="Wine type" ${busy ? "disabled" : ""}>${BEVERAGE_TYPE_OPTIONS.map(
+    ([value, label]) => `<option value="${value}"${value === code ? " selected" : ""}>${
+      label}</option>`).join("")}</select></label>`;
+}
 // The image descriptions (plan 26). The lab server sends `image_descriptions`: sha256 ->
 // the row of `image_description`, and `image_description_values`: the values of each
 // field. A button in the bottom right corner of an image opens the editor.
-const DESCRIBE_FIELDS = ["package_type", "subject_scope", "package_view", "content_roles"];
+const DESCRIBE_FIELDS = ["package_type", "subject_scope", "package_view", "content_roles",
+  "presentation_mode"];
 let DESCRIBE_TARGET = null;
 function describeOn() { return !!DATA.image_description_editor; }
 // The sha256 in the name of a stored file, for example `/images/main/<sha256>.webp`.
@@ -1571,7 +1731,8 @@ function openDescribe(sha, slug, src) {
   const row = (DATA.image_descriptions || {})[sha] || null;
   DESCRIBE_TARGET = {sha, slug};
   const form = $("#describe-form");
-  for (const field of ["package_type", "subject_scope", "package_view"]) {
+  for (const field of ["package_type", "subject_scope", "package_view",
+    "presentation_mode"]) {
     const select = form.elements[field];
     select.innerHTML = '<option value="">— not set —</option>' + (values[field] || [])
       .map(value => `<option value="${esc(value)}">${esc(value)}</option>`).join("");
@@ -1615,7 +1776,8 @@ async function saveDescribe() {
   const {sha, slug} = DESCRIBE_TARGET;
   const form = $("#describe-form");
   const values = {};
-  for (const field of ["package_type", "subject_scope", "package_view"]) {
+  for (const field of ["package_type", "subject_scope", "package_view",
+    "presentation_mode"]) {
     values[field] = form.elements[field].value || null;
   }
   const roles = [...$("#describe-roles").querySelectorAll("input:checked")].map(box => box.value);
@@ -1901,7 +2063,8 @@ function recordHtml(r) {
         <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>
         ${r._patched ? '<span class="tag">patch</span>' : ""}${stateTag(r)}</div>
       <div class="producer">${esc(r.producer || "—")}</div>
-      ${where ? `<div class="kind">${where}</div>` : ""}
+      ${where || beverageTypesOn() ? `<div class="kind">${where}${
+        beverageTypesOn() ? beverageTypeSelect(r, !!where) : ""}</div>` : ""}
       ${r.grapes ? `<div class="grapes">${esc(r.grapes)}</div>` : ""}
       ${gtinsOn() ? gtinEditor(r) : ""}
       ${barcodesOn() ? barcodeEditor(r) : ""}
@@ -1938,9 +2101,16 @@ function packageOf(record) {
   return row && row.package_type || "";
 }
 function initAdvancedFilters() {
+  // The filter `Type` needs the wine types of the lab server (plan 52).
+  if (beverageTypesOn()) {
+    $("#type-filter-label").hidden = false;
+    $("#advanced-toggle").hidden = false;
+  }
+  // The filter `Alternatives` needs no service, so the button shows on each page.
+  $("#advanced-toggle").hidden = false;
   if (!describeOn()) return;
   fillPackageFilter();
-  $("#advanced-toggle").hidden = false;
+  $("#package-filter-label").hidden = false;
 }
 // The options of Package: the values that at least one wine has, in the order of
 // `image_descriptions.VALUES`, and "not described" when a wine has no value (owner
@@ -1968,12 +2138,25 @@ function toggleAdvancedFilters() {
 function hasIdentifier(record, kind) {
   if (kind === "gtin") return !!(record._gtins || []).length;
   if (kind === "qr-url") return !!(record._qr_urls || []).length;
-  if (kind === "atlas") return !!record._atlas_product_uuid;
+  if (kind === "atlas") return atlasProducts(record).length > 0;
   return true;
 }
+// Type keeps the wines with the chosen code: `4` a wine, `44` a sparkling wine. `unset`
+// keeps the wines with no type. The page of the review tool has no wine types (plan 52).
+function typeFilterActive() { return beverageTypesOn() && $("#type-filter").value !== "all"; }
+function inTypeView(record) {
+  if (!typeFilterActive()) return true;
+  const type = $("#type-filter").value;
+  if (type === "unset") return !record._beverage_type_code;
+  return record._beverage_type_code === type;
+}
+// Alternatives keeps the wines with at least one active alternative photo (owner message
+// of 2026-09-27T00:39:59+0300).
+function hasAlternatives(record) { return !!(record._alternatives || []).length; }
 function changeAdvancedFilter() {
   const active = $("#package-filter").value !== "all"
-    || $("#identifier-filter").value !== "all";
+    || $("#identifier-filter").value !== "all" || typeFilterActive()
+    || $("#alternative-filter").value !== "all";
   $("#advanced-toggle").classList.toggle("active", active);
   $("#advanced-toggle").title = active ? "An advanced filter is active" : "";
   render();
@@ -1991,11 +2174,13 @@ function applyView() {
     if (filter === "comments" && !(r._comments || []).length) return false;
     if (pack !== "all" && packageOf(r) !== pack) return false;
     if (!hasIdentifier(r, identifier)) return false;
+    if (!inTypeView(r)) return false;
+    if ($("#alternative-filter").value === "with" && !hasAlternatives(r)) return false;
     if (!inStateView(r)) return false;
     const hay = norm(JSON.stringify({record: rawRecord(r), gtins: r._gtins || [],
       barcodes: r._barcodes || [],
       qr_urls: r._qr_urls || [],
-      atlas_product_uuid: r._atlas_product_uuid || "",
+      atlas_product_uuids: atlasProducts(r).map(item => item.product_uuid),
       comments: (r._comments || []).map(comment => comment.text)}));
     return words.every(word => hay.includes(word));
   });
@@ -2018,6 +2203,7 @@ function applyView() {
 }
 const EMPTY_VIEW = '<div class="empty">No catalogue record matches this view.</div>';
 function render() {
+  CODE_USERS = null;
   applyView();
   $("#list").innerHTML = ROWS.length ? ROWS.map(recordHtml).join("") : EMPTY_VIEW;
   renderHead();
@@ -2025,19 +2211,27 @@ function render() {
 function renderHead() {
   $("#head-sub").textContent = `${ROWS.length} of ${DATA.records.length} records · ${DATA.patches} patches · ${DATA.alternatives || 0} alternatives · ${gtinsOn() ? `${DATA.gtins || 0} GTINs · ` : ""}${barcodesOn() ? `${DATA.barcodes || 0} barcodes · ` : ""}${DATA.qr_urls || 0} QR URLs · ${DATA.atlas_bindings || 0} Atlas bindings${commentsOn() ? ` · ${DATA.comments || 0} comments` : ""}${favoritesOn() ? ` · ${DATA.favorites || 0} favorites` : ""}`;
 }
-// A code editor changes its own card alone, and the counts of the head line.
+// A code editor changes its own card, and the counts of the head line. A code change can
+// add or remove the badge of a shared code on other cards (plan 58): the cards that show a
+// badge now, and the cards of the wines of the codes of `slug`, render again.
 function renderCodeCard(slug) {
+  const cards = new Set([...document.querySelectorAll(".shared-code")]
+    .map(badge => badge.closest("article.wine")?.id).filter(Boolean));
+  CODE_USERS = null;
+  for (const other of codePeers(slug)) cards.add(other);
+  cards.delete(slug);
   renderCard(slug);
+  for (const other of cards) if (document.getElementById(other)) renderCard(other);
   renderHead();
 }
 function renderCard(slug) {
   // A full render replaces about 2,100 cards and takes about 0.7 s. A state change
-  // replaces its own card alone. A card that leaves the view of the `State` filter
-  // is taken out of the list.
+  // replaces its own card alone. A card that leaves the view of the `State` filter or
+  // of the `Type` filter is taken out of the list.
   const card = document.getElementById(slug);
   const record = DATA.records.find(item => item.slug === slug);
   if (!card || !record) { render(); return; }
-  if (!inStateView(record)) {
+  if (!inStateView(record) || !inTypeView(record)) {
     card.remove();
     ROWS = ROWS.filter(item => item !== record);
     if (!ROWS.length) $("#list").innerHTML = EMPTY_VIEW;
@@ -2446,6 +2640,246 @@ async function setAlternativeType(slug, sha256, type) {
     renderCard(slug);
   }
 }
+// The button ↻ at the bottom left of an alternative photo of the lab server (owner
+// message of 2026-09-27T00:51:44+0300). SAM3 gets the photo again with no cache read; the
+// fresh answer replaces the cache record, and the server cuts the photo again from it. A
+// manual cut disables the button: remove the manual cut in the preview first.
+function recutButton(photo, disabled) {
+  const title = photo.manual ? "Remove the manual cut first (in the preview)"
+    : "Segment again with SAM3, with no cache read";
+  return `<button class="alternative-recut" type="button" data-alternative-recut="${esc(photo.sha256)}"
+    title="${title}" aria-label="Segment again" ${disabled || photo.manual ? "disabled" : ""}>↻</button>`;
+}
+async function recutAlternative(slug, sha256) {
+  const key = `${slug}|${sha256}`;
+  const record = DATA.records.find(r => r.slug === slug);
+  const photo = record && (record._alternatives || []).find(item => item.sha256 === sha256);
+  if (!photo || photo.manual || BUSY_ALTERNATIVE_TYPES.has(key)) return;
+  BUSY_ALTERNATIVE_TYPES.add(key);
+  renderCard(slug);
+  try {
+    const response = await fetch("/api/dataset-alternative-recut", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, sha256})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    if (out.record) Object.assign(record, out.record);
+    if (out.warning) alert(out.warning);
+  } catch (error) {
+    alert(`Cannot segment the photo again: ${error.message}`);
+  } finally {
+    BUSY_ALTERNATIVE_TYPES.delete(key);
+    renderCard(slug);
+  }
+}
+// The manual cut of an alternative photo (plan 56): a polygon on the original. It replaces
+// the SAM3 cut of the kind of the current type. `CUT_EDIT` is the open editor: {slug,
+// sha256, points, drag}; the points are in the pixels of the original, `drag` is the
+// index of the point that moves, or -1. `CUT_BUSY` is true while a request runs.
+let CUT_EDIT = null;
+let CUT_BUSY = false;
+// Return {record, photo} of the alternative photo of the preview on the lab server, or null.
+function previewAlternative() {
+  if (!IMAGE_PREVIEW || IMAGE_PREVIEW.kind !== "alternative" || !DATA.alternative_editor) return null;
+  const record = DATA.records.find(r => r.slug === IMAGE_PREVIEW.slug);
+  const photo = record && (record._alternatives || [])
+    .find(item => item && typeof item === "object" && item.sha256 === IMAGE_PREVIEW.sha256);
+  return photo ? {record, photo} : null;
+}
+// Show the cut buttons for the item of the preview. A change of the item closes the editor.
+function renderCutActions() {
+  if (CUT_EDIT) stopCutEdit();
+  const item = previewAlternative();
+  $("#image-preview-cut-actions").hidden = !item;
+  $("#image-preview-cut-remove").hidden = !(item && item.photo.manual);
+  for (const button of $("#image-preview-cut-actions").querySelectorAll("button")) {
+    button.disabled = CUT_BUSY;
+  }
+}
+function stopCutEdit() {
+  CUT_EDIT = null;
+  // An SVG element has no property `hidden`, so the attribute changes.
+  $("#image-preview-cut-layer").setAttribute("hidden", "");
+  $("#image-preview-cut-bar").hidden = true;
+  $(".image-preview-dialog").classList.remove("cutting");
+}
+// Open the editor on the original. A manual cut loads its polygon.
+function startCutEdit() {
+  const item = previewAlternative();
+  if (!item || CUT_BUSY) return;
+  const {record, photo} = item;
+  CUT_EDIT = {slug: record.slug, sha256: photo.sha256, drag: -1,
+              points: (photo.manual_points || []).map(point => [point[0], point[1]])};
+  $(".image-preview-dialog").classList.add("cutting");
+  $("#image-preview-cut-actions").hidden = true;
+  $("#image-preview-cut-bar").hidden = false;
+  $("#image-preview-raw").href = photo.url;
+  const image = $("#image-preview-image");
+  const ready = () => {
+    if (!CUT_EDIT) return;
+    const layer = $("#image-preview-cut-layer");
+    layer.setAttribute("viewBox", `0 0 ${image.naturalWidth} ${image.naturalHeight}`);
+    layer.removeAttribute("hidden");
+    drawCut();
+  };
+  if (image.getAttribute("src") === photo.url && image.complete && image.naturalWidth) ready();
+  else {
+    image.addEventListener("load", ready, {once: true});
+    $("#image-preview-size").textContent = "reading size…";
+    image.src = photo.url;
+  }
+  drawCut();
+}
+// Close the editor with no change, and show the processed file again.
+function cancelCutEdit() {
+  if (!CUT_EDIT) return;
+  const {slug, sha256} = CUT_EDIT;
+  stopCutEdit();
+  showImagePreview(slug, "alternative", "none", sha256);
+}
+function drawCut() {
+  if (!CUT_EDIT) return;
+  const image = $("#image-preview-image");
+  const points = CUT_EDIT.points;
+  // A point has a radius of 6 screen pixels, in the pixels of the original.
+  const radius = 6 * (image.clientWidth ? image.naturalWidth / image.clientWidth : 1);
+  const list = points.map(point => point.join(",")).join(" ");
+  const shape = points.length > 2 ? "polygon" : "polyline";
+  $("#image-preview-cut-layer").innerHTML = `<${shape} class="cut-shape" points="${list}"></${shape}>`
+    + points.map((point, index) => `<circle class="cut-point${index ? "" : " first"}"
+      data-cut-point="${index}" cx="${point[0]}" cy="${point[1]}" r="${radius}"></circle>`).join("");
+  $("#image-preview-cut-hint").textContent = `${points.length} point${points.length === 1 ? "" : "s"}. `
+    + "Click to add a point, drag a point to move it, right-click a point to remove it.";
+  $("#image-preview-cut-save").disabled = CUT_BUSY || points.length < 3;
+  $("#image-preview-cut-undo").disabled = $("#image-preview-cut-clear").disabled
+    = CUT_BUSY || !points.length;
+  $("#image-preview-cut-cancel").disabled = CUT_BUSY;
+}
+// Return the point of a pointer event in the pixels of the original, inside the image.
+function cutPointOf(event) {
+  const layer = $("#image-preview-cut-layer");
+  const image = $("#image-preview-image");
+  const point = layer.createSVGPoint();
+  point.x = event.clientX;
+  point.y = event.clientY;
+  const at = point.matrixTransform(layer.getScreenCTM().inverse());
+  return [Math.min(Math.max(Math.round(at.x), 0), image.naturalWidth),
+          Math.min(Math.max(Math.round(at.y), 0), image.naturalHeight)];
+}
+function undoCutPoint() {
+  if (!CUT_EDIT || CUT_BUSY) return;
+  CUT_EDIT.points.pop();
+  drawCut();
+}
+// The keys of the open editor: Escape closes it, Backspace removes the last point, and
+// the arrow keys do nothing. Return true for a key of the editor.
+function cutKey(event) {
+  if (event.key === "Escape") cancelCutEdit();
+  else if (event.key === "Backspace" || event.key === "Delete") undoCutPoint();
+  else if (!event.key.startsWith("Arrow")) return false;
+  event.preventDefault();
+  return true;
+}
+// Put the new record of an answer in place, and show the new processed file.
+function applyCutAnswer(slug, sha256, out) {
+  const record = DATA.records.find(r => r.slug === slug);
+  if (record && out.record) Object.assign(record, out.record);
+  renderCard(slug);
+  if (CUT_EDIT) stopCutEdit();
+  if (IMAGE_PREVIEW && IMAGE_PREVIEW.slug === slug && IMAGE_PREVIEW.sha256 === sha256) {
+    showImagePreview(slug, "alternative", "none", sha256);
+  }
+  if (out.warning) alert(out.warning);
+}
+async function saveCut() {
+  if (!CUT_EDIT || CUT_BUSY || CUT_EDIT.points.length < 3) return;
+  const {slug, sha256, points} = CUT_EDIT;
+  CUT_BUSY = true;
+  $("#image-preview-cut-save").textContent = "Saving…";
+  drawCut();
+  try {
+    const response = await fetch("/api/dataset-alternative-cut", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, sha256, points})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    CUT_BUSY = false;
+    applyCutAnswer(slug, sha256, out);
+  } catch (error) {
+    alert(`Cannot save the manual cut: ${error.message}`);
+  } finally {
+    CUT_BUSY = false;
+    $("#image-preview-cut-save").textContent = "Save cut";
+    if (CUT_EDIT) drawCut();
+    else renderCutActions();
+  }
+}
+// Remove the manual cut; the server runs the automatic segmentation again.
+async function removeManualCut() {
+  const item = previewAlternative();
+  if (!item || CUT_BUSY || !item.photo.manual) return;
+  if (!confirm("Remove the manual cut? The automatic segmentation runs again.")) return;
+  const slug = item.record.slug;
+  const sha256 = item.photo.sha256;
+  CUT_BUSY = true;
+  renderCutActions();
+  $("#image-preview-cut-remove").textContent = "Removing…";
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}&sha256=${encodeURIComponent(sha256)}`;
+    const response = await fetch("/api/dataset-alternative-cut" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    CUT_BUSY = false;
+    applyCutAnswer(slug, sha256, out);
+  } catch (error) {
+    alert(`Cannot remove the manual cut: ${error.message}`);
+  } finally {
+    CUT_BUSY = false;
+    $("#image-preview-cut-remove").textContent = "Remove manual cut";
+    renderCutActions();
+  }
+}
+$("#image-preview-cut").addEventListener("click", startCutEdit);
+$("#image-preview-cut-remove").addEventListener("click", removeManualCut);
+$("#image-preview-cut-undo").addEventListener("click", undoCutPoint);
+$("#image-preview-cut-clear").addEventListener("click", () => {
+  if (!CUT_EDIT || CUT_BUSY) return;
+  CUT_EDIT.points = [];
+  drawCut();
+});
+$("#image-preview-cut-save").addEventListener("click", saveCut);
+$("#image-preview-cut-cancel").addEventListener("click", cancelCutEdit);
+// A press on the image adds a point, a press on a point takes it; both then follow the
+// pointer. The layer holds the capture, because each move draws the points again.
+$("#image-preview-cut-layer").addEventListener("pointerdown", event => {
+  if (!CUT_EDIT || CUT_BUSY || event.button !== 0) return;
+  event.preventDefault();
+  const target = event.target.closest("[data-cut-point]");
+  if (target) CUT_EDIT.drag = Number(target.dataset.cutPoint);
+  else {
+    CUT_EDIT.points.push(cutPointOf(event));
+    CUT_EDIT.drag = CUT_EDIT.points.length - 1;
+  }
+  event.currentTarget.setPointerCapture(event.pointerId);
+  drawCut();
+});
+$("#image-preview-cut-layer").addEventListener("pointermove", event => {
+  if (!CUT_EDIT || CUT_EDIT.drag < 0) return;
+  CUT_EDIT.points[CUT_EDIT.drag] = cutPointOf(event);
+  drawCut();
+});
+for (const name of ["pointerup", "pointercancel"]) {
+  $("#image-preview-cut-layer").addEventListener(name, () => { if (CUT_EDIT) CUT_EDIT.drag = -1; });
+}
+$("#image-preview-cut-layer").addEventListener("contextmenu", event => {
+  event.preventDefault();
+  const target = event.target.closest("[data-cut-point]");
+  if (!CUT_EDIT || CUT_BUSY || !target) return;
+  CUT_EDIT.points.splice(Number(target.dataset.cutPoint), 1);
+  drawCut();
+});
 // Remove the photos that × marked, on the lab server.
 async function applyAlternativeRemovals(slug) {
   const pending = PENDING_ALTERNATIVES.get(slug);
@@ -2532,7 +2966,7 @@ async function changeState(slug, action) {
     alert(`Cannot change the state of the wine: ${error.message}`);
   } finally {
     BUSY_STATES.delete(slug);
-    renderCard(slug);
+    renderCodeCard(slug);  // the badges of a shared code count the Active wines (plan 58)
   }
 }
 function focusGtin(slug) {
@@ -2557,7 +2991,10 @@ async function saveGtin(slug) {
     const out = await response.json();
     if (!response.ok) throw new Error(out.error || response.status);
     const record = DATA.records.find(item => item.slug === slug);
-    if (record) record._gtins = out.gtins || [];
+    if (record) {
+      record._gtins = out.gtins || [];
+      if (record._code_times) record._code_times.gtin = out.modified_at || {};
+    }
     DATA.gtins = Number(out.total) || 0;
     DRAFT_GTINS.delete(slug);
   } catch (error) {
@@ -2579,7 +3016,10 @@ async function removeGtin(slug, gtin) {
     const out = await response.json();
     if (!response.ok) throw new Error(out.error || response.status);
     const record = DATA.records.find(item => item.slug === slug);
-    if (record) record._gtins = out.gtins || [];
+    if (record) {
+      record._gtins = out.gtins || [];
+      if (record._code_times) record._code_times.gtin = out.modified_at || {};
+    }
     DATA.gtins = Number(out.total) || 0;
   } catch (error) {
     alert(`Cannot remove the GTIN: ${error.message}`);
@@ -2663,7 +3103,10 @@ async function saveQrUrl(slug) {
     const out = await response.json();
     if (!response.ok) throw new Error(out.error || response.status);
     const record = DATA.records.find(item => item.slug === slug);
-    if (record) record._qr_urls = out.qr_urls || [];
+    if (record) {
+      record._qr_urls = out.qr_urls || [];
+      if (record._code_times) record._code_times.qr_url = out.modified_at || {};
+    }
     DATA.qr_urls = Number(out.total) || 0;
     DRAFT_QR_URLS.delete(slug);
   } catch (error) {
@@ -2685,7 +3128,10 @@ async function removeQrUrl(slug, url) {
     const out = await response.json();
     if (!response.ok) throw new Error(out.error || response.status);
     const record = DATA.records.find(item => item.slug === slug);
-    if (record) record._qr_urls = out.qr_urls || [];
+    if (record) {
+      record._qr_urls = out.qr_urls || [];
+      if (record._code_times) record._code_times.qr_url = out.modified_at || {};
+    }
     DATA.qr_urls = Number(out.total) || 0;
   } catch (error) {
     alert(`Cannot remove the QR URL: ${error.message}`);
@@ -2716,7 +3162,10 @@ async function saveAtlasBinding(slug) {
     const out = await response.json();
     if (!response.ok) throw new Error(out.error || response.status);
     const record = DATA.records.find(item => item.slug === slug);
-    if (record) {
+    // The lab answer holds the list `products`. The review tool answer holds one UUID.
+    if (record && Array.isArray(out.products)) {
+      record._atlas_products = out.products;
+    } else if (record) {
       record._atlas_product_uuid = out.product_uuid || null;
       record._atlas_binding_source = out.source || "manual";
     }
@@ -2731,20 +3180,20 @@ async function saveAtlasBinding(slug) {
     if (DRAFT_ATLAS_BINDINGS.has(slug)) focusAtlasBinding(slug);
   }
 }
-async function removeAtlasBinding(slug) {
+async function removeAtlasBinding(slug, product) {
   const record = DATA.records.find(item => item.slug === slug);
-  if (!record || record._atlas_binding_source !== "manual" || BUSY_ATLAS_BINDINGS.has(slug)) return;
-  if (!confirm(`Remove the manual Atlas binding ${record._atlas_product_uuid}?`)) return;
+  const item = record && atlasProducts(record).find(value => value.product_uuid === product);
+  if (!item || BUSY_ATLAS_BINDINGS.has(slug)) return;
+  if (!confirm(`Remove the ${item.source} Atlas binding ${product}?`)) return;
   BUSY_ATLAS_BINDINGS.add(slug);
   renderCodeCard(slug);
   try {
-    const query = `?slug=${encodeURIComponent(slug)}`;
+    const query = `?slug=${encodeURIComponent(slug)}`
+      + `&product_uuid=${encodeURIComponent(product)}`;
     const response = await fetch("/api/dataset-atlas-binding" + query, {method: "DELETE"});
     const out = await response.json();
     if (!response.ok) throw new Error(out.error || response.status);
-    // The wine shows its automatic binding again, or none.
-    record._atlas_product_uuid = out.product_uuid || null;
-    record._atlas_binding_source = out.source || null;
+    record._atlas_products = out.products || [];
     DATA.atlas_bindings = Number(out.total) || 0;
     DATA.atlas_manual_bindings = Number(out.manual) || 0;
   } catch (error) {
@@ -2836,6 +3285,29 @@ async function toggleFavorite(slug) {
     renderCodeCard(slug);
   }
 }
+// The select of a card saves the wine type at once: "4", "44", or "" for no type (sent
+// as null). After a failed save, the card shows the stored value again (plan 52).
+async function setBeverageType(slug, code) {
+  const record = DATA.records.find(item => item.slug === slug);
+  if (!record || BUSY_TYPES.has(slug)) return;
+  BUSY_TYPES.set(slug, code);
+  renderCodeCard(slug);
+  try {
+    const response = await fetch("/api/dataset-beverage-type", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, beverage_type_code: code || null})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    record._beverage_type_code = out.beverage_type_code || null;
+    DATA.beverage_types = out.beverage_types || DATA.beverage_types;
+  } catch (error) {
+    alert(`Cannot change the wine type: ${error.message}`);
+  } finally {
+    BUSY_TYPES.delete(slug);
+    renderCodeCard(slug);
+  }
+}
 $("#list").addEventListener("click", event => {
   const describe = event.target.closest("button[data-describe]");
   if (describe) {
@@ -2878,11 +3350,14 @@ $("#list").addEventListener("click", event => {
   const atlasBinding = event.target.closest(".atlas-binding-editor");
   if (atlasBinding) {
     const slug = atlasBinding.dataset.slug;
-    if (event.target.closest("[data-atlas-binding-remove]")) {
-      removeAtlasBinding(slug);
+    const remove = event.target.closest("[data-atlas-binding-remove]");
+    if (remove) {
+      removeAtlasBinding(slug, remove.dataset.atlasBindingRemove);
     } else if (event.target.closest("[data-atlas-binding-edit]")) {
+      // The lab adds a new UUID. The review tool edits its one UUID.
       const record = DATA.records.find(item => item.slug === slug);
-      DRAFT_ATLAS_BINDINGS.set(slug, record?._atlas_product_uuid || "");
+      DRAFT_ATLAS_BINDINGS.set(slug, DATA.atlas_binding_editor || !record ? ""
+        : record._atlas_product_uuid || "");
       renderCodeCard(slug);
       focusAtlasBinding(slug);
     } else if (event.target.closest("[data-atlas-binding-save]")) {
@@ -2956,6 +3431,8 @@ $("#list").addEventListener("click", event => {
     const type = event.target.closest("[data-alternative-type]");
     if (type) {
       setAlternativeType(slug, type.dataset.sha, type.dataset.alternativeType);
+    } else if (event.target.closest("[data-alternative-recut]")) {
+      recutAlternative(slug, event.target.closest("[data-alternative-recut]").dataset.alternativeRecut);
     } else if (event.target.closest("[data-alternative-pick]")) {
       alternative.querySelector(".alternative-input").click();
     } else if (remove) {
@@ -3005,6 +3482,10 @@ $("#list").addEventListener("click", event => {
   }
 });
 $("#list").addEventListener("change", event => {
+  if (event.target.matches("select[data-beverage-type]")) {
+    setBeverageType(event.target.dataset.beverageType, event.target.value);
+    return;
+  }
   if (event.target.matches(".alternative-input")) {
     const editor = event.target.closest(".alternative-editor");
     stageAlternativeFiles(editor.dataset.slug, [...event.target.files]);
@@ -3014,6 +3495,17 @@ $("#list").addEventListener("change", event => {
     const editor = event.target.closest(".patch-editor");
     stagePatchFile(editor.dataset.slug, event.target.files[0]);
   }
+});
+// A paste of a product URL into the Atlas input inserts the UUID alone. The maxlength 36
+// of the input would cut the URL.
+$("#list").addEventListener("paste", event => {
+  if (!event.target.matches(".atlas-binding-input")) return;
+  const product = atlasProductFromUrl(event.clipboardData?.getData("text"));
+  if (!product) return;
+  event.preventDefault();
+  const input = event.target;
+  input.setRangeText(product, input.selectionStart, input.selectionEnd, "end");
+  DRAFT_ATLAS_BINDINGS.set(input.closest(".atlas-binding-editor").dataset.slug, input.value);
 });
 $("#list").addEventListener("input", event => {
   if (event.target.matches(".gtin-input")) {
@@ -3138,7 +3630,8 @@ for (const id of ["filter", "state", "sort"]) $("#" + id).addEventListener("chan
    message of 2026-09-26T00:30:00+0300). A stored value that is no longer an option is
    ignored. The listeners of each control run first; the header listener then stores. */
 const HEADER_KEY = "svl.dataset.header";
-const HEADER_IDS = ["filter", "state", "sort", "q", "package-filter", "identifier-filter"];
+const HEADER_IDS = ["filter", "state", "sort", "q", "package-filter", "identifier-filter",
+  "type-filter", "alternative-filter"];
 function saveHeader() {
   const value = {};
   for (const id of HEADER_IDS) value[id] = $("#" + id).value;
@@ -3153,7 +3646,8 @@ function restoreHeader() {
     if (node.tagName === "SELECT" && ![...node.options].some(option => option.value === wanted)) continue;
     node.value = wanted;
   }
-  if ($("#package-filter").value !== "all" || $("#identifier-filter").value !== "all") {
+  if ($("#package-filter").value !== "all" || $("#identifier-filter").value !== "all"
+      || typeFilterActive() || $("#alternative-filter").value !== "all") {
     changeAdvancedFilter();
   }
 }
@@ -3214,6 +3708,8 @@ $("#describe-raw").addEventListener("toggle", loadDescribeRaw);
 $("#advanced-toggle").addEventListener("click", toggleAdvancedFilters);
 $("#package-filter").addEventListener("change", changeAdvancedFilter);
 $("#identifier-filter").addEventListener("change", changeAdvancedFilter);
+$("#type-filter").addEventListener("change", changeAdvancedFilter);
+$("#alternative-filter").addEventListener("change", changeAdvancedFilter);
 $("#describe-modal").addEventListener("click", event => {
   if (event.target === $("#describe-modal")) closeDescribe();
 });
@@ -3236,6 +3732,7 @@ window.addEventListener("popstate", () => {
 });
 document.addEventListener("keydown", event => {
   if (!$("#image-preview-modal").hidden) {
+    if (CUT_EDIT && cutKey(event)) return;
     if (event.key === "Escape") closeImagePreview();
     // Up and Down step to the previous and the next wine too (owner, 2026-09-25).
     else if (event.key === "ArrowLeft" || event.key === "ArrowUp") stepImagePreview(-1);

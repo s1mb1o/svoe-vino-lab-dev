@@ -3,7 +3,8 @@ the lab server.
 
 Usage:
     python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N]
-        [--workers N] [--no-cache] [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
+        [--workers N] [--no-cache] [--no-barcode] [--config PATH] [--jobs-dir DIR]
+        [--runs-dir DIR]
 
 The button `Run>` of `/testset` starts this script through `run_jobs.start`. The output
 is one JSON event on each line; the lab server writes it to
@@ -20,6 +21,12 @@ answered photos are written, and the final event is `stopped`.
 `model_cache`, so each model call goes to its service and the latency is real time; the
 fresh answers are stored. The event `start` and `run.json` hold `use_cache`. Read
 docs/plans/39_use-caches-checkbox.md.
+
+`--no-barcode` is the checkbox `Disable barcode fast path` of the dialog: a pipeline with
+the key `barcode` runs with no barcode step (no decode, no lookup in `wine_code`), as its
+twin with no key `barcode`. A pipeline with the key `barcode` writes `use_barcode` into the
+event `start` and `run.json`; another pipeline ignores the flag and writes null into the
+event `start` alone. Read docs/plans/53_disable-barcode-checkbox.md.
 """
 import argparse
 import json
@@ -105,6 +112,10 @@ def main(argv=None):
                         help="read no answer of data/cache/: each model call goes to its "
                              "service, so the latency is real time; the fresh answers are "
                              "stored")
+    parser.add_argument("--no-barcode", dest="use_barcode", action="store_false",
+                        help="skip the barcode step of a pipeline with the key `barcode`: "
+                             "each photo goes to the embedding; another pipeline ignores "
+                             "the flag")
     parser.add_argument("--config", default=embeddings.CONFIG_PATH, help="path of config.yaml")
     parser.add_argument("--jobs-dir", default=run_jobs.JOBS_DIR, help="the directory of the jobs")
     parser.add_argument("--runs-dir", default=benchmark.RUNS_DIR, help="the directory of the runs")
@@ -138,6 +149,10 @@ def main(argv=None):
             entry = settings.find(args.name)
         except KeyError:
             raise embeddings.ConfigError("config.yaml has no pipeline %s" % args.name)
+        # None: the pipeline has no barcode step, so the run records nothing about it.
+        use_barcode = args.use_barcode if run_jobs.has_barcode(entry) else None
+        if use_barcode is False:
+            entry.barcode = None  # `build` then puts no `barcode.CodeFirst` around it
         todo = query_total(settings.db_path, args.set_name, args.limit)
         # Before the backend exists, so that each client of `model_cache` follows it.
         model_cache.READ = args.use_cache
@@ -146,7 +161,7 @@ def main(argv=None):
         emit("start", pid=os.getpid(), configuration=args.name, set=args.set_name,
              todo=todo, limit=args.limit,
              workers=args.workers or int(backend.spec.get("workers") or 1), seed=seed,
-             use_cache=args.use_cache)
+             use_cache=args.use_cache, use_barcode=use_barcode)
         counting = Counting(backend, todo)
 
         def log(message):
@@ -161,7 +176,7 @@ def main(argv=None):
         run_dir, met = benchmark.run_benchmark(
             settings.db_path, args.set_name, counting, args.runs_dir, workers=args.workers,
             limit=args.limit, embeddings=state, log=log, configuration=args.name,
-            use_cache=args.use_cache)
+            use_cache=args.use_cache, use_barcode=use_barcode)
         run_id = os.path.basename(run_dir)
         pos = met["positive"]
         summary = {"answered": counting.done, "errors": counting.errors,

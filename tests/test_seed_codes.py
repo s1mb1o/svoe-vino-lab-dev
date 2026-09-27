@@ -145,7 +145,8 @@ class SeedCodesTest(unittest.TestCase):
     def test_row_of_the_page_blocks_the_seed(self):
         conn = sqlite3.connect(self.db)
         with conn:
-            conn.execute("INSERT INTO wine_code VALUES ('wine-a', 'gtin', '04631168664979')")
+            conn.execute("INSERT INTO wine_code (wine_slug, kind, value) "
+                         "VALUES ('wine-a', 'gtin', '04631168664979')")
         conn.close()
         with self.assertRaisesRegex(SC.SeedError, "already holds 1 rows"):
             self.seed()

@@ -11,13 +11,13 @@ Both options are optional, but one of them MUST be given. Read
 `docs/plans/15_atlas-binding.md`.
 
 Rules:
-- The seed checks every row before the first write. A bad UUID, a line that is not an
-  object, or one slug with two UUIDs in one file stops the seed. The seed then writes
-  nothing.
+- The seed checks every row before the first write. A bad UUID or a line that is not an
+  object stops the seed. The seed then writes nothing.
+- A file MAY give one slug 2 or more UUIDs (plan 54). A pair of slug and UUID in both
+  files gets the source `manual`.
 - A slug that is not in `wine_catalog` prints `no wine: <slug>`. The seed skips it.
 - The seed adds the missing rows in one transaction. It never changes or removes a row.
-  A row of a file whose UUID differs from the stored row of the same wine and source
-  prints `differs: <slug> <source>`, and the seed does not apply it.
+  A pair of slug and UUID that the table holds, of either source, is not added.
 - The seed refuses a table `wine_atlas_binding` that already holds rows, because a
   second run adds back the values that a person removed on the page. `--force` adds the
   missing rows anyway. The owner chose this on 2026-09-25.
@@ -40,7 +40,7 @@ class SeedError(Exception):
 def read_bindings(path, source):
     """Return the checked rows of one file as a list of (slug, source, UUID).
 
-    The list keeps the file order and holds each slug one time.
+    The list keeps the file order and holds each pair of slug and UUID one time.
     """
     rows = {}
     with open(path, encoding="utf-8") as handle:
@@ -61,11 +61,8 @@ def read_bindings(path, source):
                 product = atlas_bindings.clean_uuid(record.get("product_uuid"))
             except atlas_bindings.BindingError as exc:
                 raise SeedError("%s line %d (%s): %s" % (path, number, slug, exc)) from exc
-            if rows.get(slug, product) != product:
-                raise SeedError("%s line %d: the slug %s has two product UUIDs"
-                                % (path, number, slug))
-            rows[slug] = product
-    return [(slug, source, product) for slug, product in rows.items()]
+            rows[(slug, product)] = None
+    return [(slug, source, product) for slug, product in rows]
 
 
 def seed_bindings(db_path, matches_path=None, manual_path=None, log=print, force=False):
@@ -74,12 +71,15 @@ def seed_bindings(db_path, matches_path=None, manual_path=None, log=print, force
     A table that holds rows raises `SeedError`, unless `force`.
 
     Return the counts by source of the rows of the files, the counts by source of the
-    added rows, the rows that differ, and the slugs that are not in `wine_catalog`.
+    added rows, and the slugs that are not in `wine_catalog`.
     """
     rows = []
     for path, source in ((matches_path, "automatic"), (manual_path, "manual")):
         if path:
             rows += read_bindings(path, source)
+    # A pair in both files gets the source `manual`: the later row wins.
+    rows = list({(slug, product): (slug, source, product)
+                 for slug, source, product in rows}.values())
     conn = labdb.connect(db_path)
     try:
         held = conn.execute("SELECT count(*) FROM wine_atlas_binding").fetchone()[0]
@@ -88,19 +88,15 @@ def seed_bindings(db_path, matches_path=None, manual_path=None, log=print, force
                             "back the values that a person removed on the page; give "
                             "--force to add the missing rows anyway" % held)
         wines = {row[0] for row in conn.execute("SELECT wine_slug FROM wine_catalog")}
-        stored = {(slug, source): product for slug, source, product in conn.execute(
-            "SELECT wine_slug, source, product_uuid FROM wine_atlas_binding")}
-        missing, differs, added = [], [], []
+        stored = set(conn.execute("SELECT wine_slug, product_uuid FROM wine_atlas_binding"))
+        missing, added = [], []
         for slug, source, product in rows:
             if slug not in wines:
                 if slug not in missing:
                     missing.append(slug)
                     log("no wine: %s" % slug)
-            elif (slug, source) not in stored:
+            elif (slug, product) not in stored:
                 added.append((slug, source, product))
-            elif stored[(slug, source)] != product:
-                differs.append((slug, source, product))
-                log("differs: %s %s" % (slug, source))
         with conn:
             conn.executemany("INSERT INTO wine_atlas_binding (wine_slug, source, product_uuid) "
                              "VALUES (?, ?, ?)", added)
@@ -111,7 +107,7 @@ def seed_bindings(db_path, matches_path=None, manual_path=None, log=print, force
         return {source: sum(1 for row in items if row[1] == source)
                 for source in atlas_bindings.SOURCES}
 
-    return by_source(rows), by_source(added), differs, missing
+    return by_source(rows), by_source(added), missing
 
 
 def _counts(counts):
@@ -133,8 +129,8 @@ def main(argv=None):
         parser.error("give --matches, --manual, or both")
 
     try:
-        read, added, differs, missing = seed_bindings(args.db, args.matches, args.manual,
-                                                      force=args.force)
+        read, added, missing = seed_bindings(args.db, args.matches, args.manual,
+                                             force=args.force)
     except (SeedError, labdb.SchemaError, sqlite3.Error, OSError) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
@@ -143,7 +139,6 @@ def main(argv=None):
             print("%s: %s" % (name, os.path.abspath(path)))
     print("rows: %s" % _counts(read))
     print("slugs with no wine: %d" % len(missing))
-    print("differs: %d" % len(differs))
     print("added: %s" % _counts(added))
     print("database: %s" % args.db)
     print("result: %s" % ("seeded" if any(added.values()) else "no change"))

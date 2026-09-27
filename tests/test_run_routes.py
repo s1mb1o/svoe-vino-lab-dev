@@ -52,7 +52,8 @@ class RunRoutesTest(unittest.TestCase):
         missing = dict(row, query_id="q-2", image_path="wine-a/02.jpg",
                        image_sha256="0" * 64)
         self.write_run(MOCK_RUN, {"configuration": "mock", "backend": {"id": "mock",
-                                                                       "url": None}},
+                                                                       "url": None},
+                                  "options": {"set": "my"}},
                        [row, missing])
         self.write_run(OLD_RUN, {"options": {"backend": "svm-x"}}, [row])
         self.config = self.root / "config.yaml"
@@ -129,6 +130,8 @@ class RunRoutesTest(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual([(r["id"], r["configuration"]) for r in data["runs"]],
                          [(MOCK_RUN, "mock"), (OLD_RUN, None)])
+        # The test set of `options.set` (the filter `Testset`); an old run has none.
+        self.assertEqual([r["set"] for r in data["runs"]], ["my", None])
         # The pipelines alone (plan 34): the embedding `gw` is not in the list.
         self.assertEqual([(c["name"], c["backend"]) for c in data["configurations"]],
                          [("bad", None), ("remote", "svoe-vino-ru")])

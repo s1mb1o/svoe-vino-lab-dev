@@ -393,9 +393,10 @@ class ClusterRerank:
         explain["changed"] = ranking[0] != window[0]
         return reorder(cands, positions, ranking, explain), explain
 
-    def ask(self, path):
-        """Return `(candidates, latency_ms, http_status, error, trace)`."""
-        answer = self.inner.ask(path)
+    def ask(self, path, only=None):
+        """Return `(candidates, latency_ms, http_status, error, trace)`. `only` goes to
+        the inner backend: the wines of a shared GTIN (plan 58)."""
+        answer = self.inner.ask(path) if only is None else self.inner.ask(path, only=only)
         cands, ms, status, error = answer[:4]
         trace = answer[4] if len(answer) > 4 else None
         # A photo with no answer, or an answer of the code lookup (plan 42), stays.

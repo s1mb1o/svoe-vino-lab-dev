@@ -40,15 +40,29 @@ class LabDbTest(unittest.TestCase):
 
     def test_create_applies_the_schema(self):
         labdb.connect(self.db, create=True).close()
-        self.assertEqual(VERSION, 20)
+        self.assertEqual(VERSION, 26)
         self.assertEqual(self.query("PRAGMA user_version"), [(VERSION,)])
         conn = sqlite3.connect(self.db)
         self.assertEqual(labdb.tables(conn),
-                         ["image", "image_derivative", "image_description",
-                          "image_detail", "test_excluded", "test_photo",
-                          "test_set", "test_variant", "test_wine_note", "website_refusal",
-                          "wine_atlas_binding", "wine_catalog", "wine_code",
-                          "wine_comment", "wine_favorite", "wine_image"])
+                         ["image", "image_derivative", "image_derivative_absence",
+                          "image_description", "image_detail", "test_photo",
+                          "test_photo_comment", "test_set", "test_variant", "website_refusal",
+                          "wine_atlas_binding", "wine_beverage_type", "wine_catalog",
+                          "wine_code", "wine_comment", "wine_favorite", "wine_image"])
+        conn.close()
+
+    def test_derivative_absence_needs_an_image_and_a_reason(self):
+        conn = labdb.connect(self.db, create=True)
+        conn.execute("INSERT INTO image VALUES (?, 'main', 'png', 1, 1)", ("a" * 64,))
+        conn.execute("INSERT INTO image_derivative_absence VALUES "
+                     "(?, 'label', 'settings', 'the packet has no separate label')",
+                     ("a" * 64,))
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute("INSERT INTO image_derivative_absence VALUES "
+                         "(?, 'label', 'settings', 'reason')", ("b" * 64,))
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute("INSERT INTO image_derivative_absence VALUES "
+                         "(?, 'label', 'settings', '')", ("a" * 64,))
         conn.close()
 
     def test_connect_twice_keeps_the_version(self):
@@ -257,6 +271,38 @@ class LabDbTest(unittest.TestCase):
             with self.assertRaises(sqlite3.IntegrityError, msg=row):
                 conn.execute(insert, row)
         conn.close()
+
+    def test_wine_code_insert_sets_the_time(self):
+        labdb.connect(self.db, create=True).close()
+        conn = sqlite3.connect(self.db)
+        conn.execute("INSERT INTO wine_catalog (wine_slug, name, producer, category, "
+                     "color, region, description, csv_photo_name) "
+                     "VALUES ('a', 'n', 'p', 'c', 'co', 'r', 'd', 'x.webp')")
+        insert = ("INSERT INTO wine_code (wine_slug, kind, value, modified_at) "
+                  "VALUES (?, ?, ?, ?)")
+        conn.execute(insert, ("a", "gtin", "04631168664979", None))
+        # An explicit time stays, as in a restore of db_export.py.
+        conn.execute(insert, ("a", "qr_url", "https://a.ru/", "2026-01-02T03:04:05Z"))
+        with self.assertRaises(sqlite3.IntegrityError):
+            conn.execute(insert, ("a", "gtin", "04640005351194", "2026-01-02 03:04:05"))
+        times = dict(conn.execute("SELECT kind, modified_at FROM wine_code"))
+        self.assertRegex(times["gtin"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
+        self.assertEqual(times["qr_url"], "2026-01-02T03:04:05Z")
+        conn.close()
+
+    def test_version_25_codes_keep_no_time(self):
+        labdb.connect(self.db, create=True, directory=self.schema_up_to(25)).close()
+        conn = sqlite3.connect(self.db)
+        conn.execute("INSERT INTO wine_catalog (wine_slug, name, producer, category, "
+                     "color, region, description, csv_photo_name) "
+                     "VALUES ('a', 'n', 'p', 'c', 'co', 'r', 'd', 'x.webp')")
+        conn.execute("INSERT INTO wine_code (wine_slug, kind, value) "
+                     "VALUES ('a', 'gtin', '04631168664979')")
+        conn.commit()
+        conn.close()
+        labdb.connect(self.db).close()
+        self.assertEqual(self.query("PRAGMA user_version"), [(VERSION,)])
+        self.assertEqual(self.query("SELECT modified_at FROM wine_code"), [(None,)])
 
 
 if __name__ == "__main__":

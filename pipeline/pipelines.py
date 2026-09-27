@@ -18,7 +18,8 @@ The backends:
                    `barcode` decodes the photo first (`barcode.py`, plan 42): a code of
                    `wine_code` answers the photo, and the embedding does not run. The
                    optional key `rerank` re-ranks the cards of one cluster with the
-                   label rules of plan 45 (`cluster_rerank.py`, plan 48).
+                   label rules of plan 45 (`cluster_rerank.py`, plan 48). The optional
+                   key `workers` sets the number of concurrent queries. The default is 1.
 
 The owner removed the pipeline `mock` and its code on 2026-09-26T00:26:27+0300.
 """
@@ -40,7 +41,7 @@ REMOTE_DEFAULTS = {"field": "image", "response": "auto", "query": {}, "top_k": 1
 # The answer shapes of `match_backends.SHAPES`. A test keeps the two lists equal.
 REMOTE_SHAPES = ("auto", "slug-object", "slug-array", "candidates")
 BACKEND_KEYS = {REMOTE_BACKEND: REMOTE_KEYS,
-                EMBEDDING_BACKEND: ("embedding", "views", "barcode", "rerank")}
+                EMBEDDING_BACKEND: ("embedding", "views", "barcode", "rerank", "workers")}
 
 
 def _remote(raw):
@@ -78,7 +79,8 @@ class Pipeline:
     entry of the backend `embedding`, `views` the steps of its test photo (view ->
     steps), or None for the steps of the entry, `barcode` the options of the barcode
     step (plan 42), or None for no barcode step, and `rerank` the options of the cluster
-    re-rank (plan 48), or None. Each is None for another backend."""
+    re-rank (plan 48), or None. Each is None for another backend. `workers` is the
+    default number of concurrent queries. A run MAY override `workers`."""
 
     def __init__(self, raw):
         if not isinstance(raw, dict):
@@ -95,8 +97,12 @@ class Pipeline:
         if unknown:
             raise ConfigError("the backend %s takes no %s" % (self.backend, ", ".join(unknown)))
         self.remote = _remote(raw) if self.backend == REMOTE_BACKEND else None
+        self.workers = self.remote["workers"] if self.remote is not None else raw.get("workers", 1)
         self.embedding = self.views = self.barcode = self.rerank = None
         if self.backend == EMBEDDING_BACKEND:
+            if (isinstance(self.workers, bool) or not isinstance(self.workers, int)
+                    or self.workers < 1):
+                raise ConfigError("workers MUST be an integer of 1 or more")
             model = raw.get("embedding")
             if not isinstance(model, str) or not embeddings.NAME_RE.match(model):
                 raise ConfigError("embedding MUST be the name of an entry of the key "

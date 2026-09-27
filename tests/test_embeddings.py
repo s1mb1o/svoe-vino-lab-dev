@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw
 import embedding_lab  # noqa: F401  (puts pipeline/ on sys.path)
 from embedding_lab import VIEWS_C_F, standard_lab
 
+import alternatives  # noqa: E402
 import embeddings  # noqa: E402
 
 
@@ -185,6 +186,22 @@ class LabTest(unittest.TestCase):
                                        self.lab.unprocessed]))
         self.assertEqual(label, sorted(full + [self.lab.closeup]))
         self.assertEqual(items[(self.lab.closeup, "label")]["steps"], [])
+
+    def test_a_not_applicable_label_is_not_an_item(self):
+        self.lab.conn.execute(
+            "INSERT INTO image_derivative_absence VALUES (?, 'label', ?, ?)",
+            (self.lab.grey, alternatives.SETTINGS_LABEL_ABSENCE,
+             "the packet has no separate label"))
+        self.lab.conn.commit()
+        _, sources = self.inputs()
+        embedding = embeddings.Embedding(entry())
+        items = embeddings.plan_items(embedding, sources)
+        self.assertIn((self.lab.grey, "full"), items)
+        self.assertNotIn((self.lab.grey, "label"), items)
+        self.assertEqual(embeddings.not_applicable_reason(
+            embedding, sources[self.lab.grey], "label"),
+            "the packet has no separate label")
+        self.assertEqual(embeddings.not_applicable_count(embedding, sources), 1)
 
     def test_prepare_variant_c(self):
         _, sources = self.inputs()

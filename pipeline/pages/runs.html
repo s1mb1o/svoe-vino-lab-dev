@@ -62,6 +62,9 @@ h1 .sub { color: var(--muted); font-weight: 400; }
    2026-09-25T18:05:36+0300). The navigation stays at the right. */
 .head-conf { color: var(--muted); font-size: 12px; display: flex; gap: 5px;
              align-items: center; margin-right: auto; }
+/* The filter `Testset` follows the filter `Pipeline` (owner message of
+   2026-09-26T07:03:17+0300). The free space stays after the last filter. */
+.head-conf:has(+ .head-conf) { margin-right: 0; }
 .nav { display: flex; gap: 6px; flex: none; flex-wrap: wrap; }
 .nav a {
   color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
@@ -117,6 +120,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .tag.dry { color: var(--muted); }
 /* A run with `use_cache: false` in run.json (plan 39). */
 .tag.nocache { color: var(--muted); }
+/* A run with `use_barcode: false` in run.json (plan 53). */
+.tag.nobarcode { color: var(--muted); }
 
 /* the metric cards */
 .cards { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -205,6 +210,44 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .cand .sl { font-size: 10px; word-break: break-all; line-height: 1.25; margin-top: 2px; }
 .sm { font-size: 12px; color: var(--muted); word-break: break-all; }
 #more { margin-top: 12px; }
+/* ---- the button `New testset…` and its dialog (plan 44) ----
+   The button stands after the heading of the metrics. The dialog takes the look of the
+   dialog `Run>` of /testset. It stands above the step popup and the large view. */
+.det-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+#nts-open:disabled { cursor: default; opacity: .45; border-color: var(--line); }
+.nts-dlg { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center;
+           justify-content: center; padding: 16px; background: rgba(0, 0, 0, .45); }
+.nts-dlg[hidden] { display: none; }
+.nts-panel { width: min(580px, 100%); max-height: calc(100vh - 32px); overflow: auto;
+             background: var(--panel); color: var(--text); border: 1px solid var(--line);
+             border-radius: 8px; box-shadow: var(--shadow); padding: 16px; }
+.nts-panel h2 { font-size: 16px; margin: 0 0 4px; }
+.nts-sub { color: var(--muted); font-size: 12px; margin-bottom: 10px; overflow-wrap: anywhere; }
+.nts-list { display: grid; gap: 4px; margin-bottom: 8px; }
+.nts-opt { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px;
+           align-items: center; padding: 5px 8px; font-size: 13px; cursor: pointer;
+           border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2); }
+.nts-opt:has(input:checked) { border-color: var(--accent); }
+.nts-opt.off { cursor: default; color: var(--muted); }
+.nts-opt .nts-name { font-weight: 650; }
+.nts-opt .nts-rule { color: var(--muted); font-size: 12px; }
+.nts-opt .nts-count { font-size: 12px; font-variant-numeric: tabular-nums; text-align: right; }
+.nts-note { color: var(--muted); font-size: 12px; margin: 0 0 10px; }
+.nts-note:empty { display: none; }
+.nts-field { display: flex; gap: 6px; align-items: center; color: var(--muted);
+             font-size: 12px; margin-bottom: 10px; }
+.nts-field[hidden] { display: none; }
+.nts-field input { flex: 1 1 auto; min-width: 0; background: var(--panel-2); color: var(--text);
+                   border: 1px solid var(--line); border-radius: 6px; padding: 4px 7px;
+                   font: inherit; font-size: 13px; }
+.nts-done { font-size: 13px; line-height: 1.5; }
+.nts-done b { color: var(--pos); }
+.nts-error { color: var(--exc); font-size: 13px; min-height: 1.2em; overflow-wrap: anywhere; }
+.nts-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+.nts-foot button { font-size: 13px; padding: 3px 12px; }
+.nts-foot button:disabled { cursor: default; opacity: .45; border-color: var(--line); }
+.nts-foot button[hidden] { display: none; }
+.nts-foot .primary { border-color: var(--accent); font-weight: 700; }
 #lb { position: fixed; inset: 0; background: rgba(0,0,0,.82); display: none;
       align-items: center; justify-content: center; z-index: 50; padding: 24px; }
 #lb.on { display: flex; }
@@ -251,6 +294,31 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
   .model-input { width: 104px; min-width: 104px; }
   .model-input img { width: 92px; height: 64px; }
 }
+/* ---- the step popup of a query photo (plan 41) ----
+   The step view (the rounds, the cards, the pills, the lists) is in steps.css, shared
+   with /recognize (plan 55). This block holds the popup shell. */
+/* STEPS_CSS */
+body.sp-on { overflow: hidden; }
+#sp { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.6);
+      display: flex; justify-content: center; align-items: flex-start; padding: 3vh 16px; }
+#sp[hidden] { display: none; }
+.sp-shell { width: min(1180px, 100%); max-height: 94vh; overflow: auto; background: var(--bg);
+            border: 1px solid var(--line); border-radius: 10px;
+            box-shadow: 0 18px 60px rgba(0,0,0,.45); }
+.sp-head { position: sticky; top: 0; z-index: 2; background: var(--panel);
+           border-bottom: 1px solid var(--line); padding: 10px 14px;
+           display: flex; gap: 6px 12px; flex-wrap: wrap; align-items: center; }
+.sp-title { font-weight: 650; flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.sp-title .tag { font-weight: 400; margin-left: 4px; }
+.sp-title .sp-slug { display: block; margin-top: 3px; font: 400 13px/1.4 var(--mono); } .sp-slug i { font-style: normal; color: var(--muted); }
+.sp-sub { flex: 1 1 100%; order: 3; font: 12px/1.4 var(--mono); color: var(--muted);
+          overflow-wrap: anywhere; }
+#sp-close { font-family: var(--mono); border-radius: 999px; }
+.sp-body { padding: 0 16px 16px; }
+@media (max-width: 720px) {
+  #sp { padding: 8px; }
+  .sp-body { padding: 0 10px 12px; }
+}
 </style>
 </head>
 <body>
@@ -259,9 +327,12 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
     <h1>Match runs <span class="sub" id="head-sub"></span></h1>
     <label class="head-conf">Pipeline <select id="configuration"
       title="A pipeline is one entry of `pipeline` in config.yaml. The key `configuration` of run.json names it."></select></label>
+    <label class="head-conf">Testset <select id="testset"
+      title="The test set of the run. The key `options.set` of run.json names it. A run of scripts/match_run.py has no test set."></select></label>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
-      href="/testset">Testset</a><a class="on" href="/runs">Runs</a><a href="/health">Health</a></nav>
+      href="/testset">Testset</a><a class="on" href="/runs">Runs</a><a
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
   </div>
   <div class="bar">
     <label>Show
@@ -320,6 +391,7 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
   <table id="runs"><thead><tr>
     <th data-k="id">run</th>
     <th data-k="configuration">pipeline</th>
+    <th data-k="set">testset</th>
     <th data-k="backend">backend</th>
     <th data-k="started">started</th>
     <th data-k="queries" class="num">queries</th>
@@ -333,7 +405,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
   </tr></thead><tbody id="runs-body"></tbody></table>
 
   <div id="detail" hidden>
-    <h2 id="det-h">Metrics</h2>
+    <div class="det-head"><h2 id="det-h">Metrics</h2>
+      <button id="nts-open" type="button" disabled>New testset&hellip;</button></div>
     <div class="cards" id="met"></div>
     <div id="hists"></div>
     <h2>Photos</h2>
@@ -344,10 +417,36 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
     <button id="more" hidden>load more</button>
   </div>
 </main>
+<div id="sp" role="dialog" aria-modal="true" aria-label="the steps of one photo" hidden>
+  <div class="sp-shell">
+    <div class="sp-head">
+      <div class="sp-title" id="sp-title"></div>
+      <button type="button" id="sp-close" title="close (Escape)">close &#x2715;</button>
+      <div class="sp-sub" id="sp-sub"></div>
+    </div>
+    <div class="sp-body" id="sp-body"></div>
+  </div>
+</div>
 <div id="lb" role="dialog" aria-modal="true" aria-label="large image and model inputs">
   <div class="lb-shell">
     <div class="lb-main-wrap"><img id="lb-main" alt=""></div>
     <div class="lb-inputs" id="lb-inputs" hidden></div>
+  </div>
+</div>
+<div id="nts-dlg" class="nts-dlg" hidden>
+  <div class="nts-panel" role="dialog" aria-modal="true" aria-labelledby="nts-title">
+    <h2 id="nts-title">New test set from the misses of a run</h2>
+    <div class="nts-sub" id="nts-sub"></div>
+    <div class="nts-list" id="nts-list"></div>
+    <p class="nts-note" id="nts-note"></p>
+    <label class="nts-field" id="nts-field">Name <input id="nts-name" type="text"
+      spellcheck="false" autocomplete="off"
+      title="a-z, 0-9, _ and - alone. The proposal is the name of the test set of the run with the first free number."></label>
+    <div class="nts-error" id="nts-error"></div>
+    <div class="nts-foot">
+      <button id="nts-cancel" type="button">Cancel</button>
+      <button id="nts-create" class="primary" type="button" disabled>Create</button>
+    </div>
   </div>
 </div>
 <script>
@@ -380,6 +479,12 @@ let CONFIGS = [];
    pipeline. A name of config.yaml holds no parenthesis, so NO_CONFIG cannot be a name. */
 const NO_CONFIG = "(none)";
 let CONF = new URLSearchParams(location.search).get("configuration") || "";
+/* The value of the filter `Testset` (owner message of 2026-09-26T07:03:17+0300): "" is
+   every run, NO_SET is the runs whose run.json names no test set (the runs of
+   `scripts/match_run.py`), any other value is the name of one test set. A set name holds
+   no parenthesis (`SET_NAME_RE` of import_testset.py), so NO_SET cannot be a name. */
+const NO_SET = "(none)";
+let TSET = new URLSearchParams(location.search).get("set") || "";
 /* slug -> the URL of its catalogue image in the lab image store, and the slugs whose
    image is the `main_patched` image. A row of a run holds a slug alone, so each answer
    of `/api/run` sends both for the slugs of its rows. */
@@ -432,7 +537,14 @@ function inConfig(r) {
   return r.configuration === CONF;
 }
 
-const visibleRuns = () => sortedRuns().filter(inConfig);
+/* Answer whether the filter `Testset` keeps the run `r`. */
+function inSet(r) {
+  if (!TSET) return true;
+  if (TSET === NO_SET) return !r.set;
+  return r.set === TSET;
+}
+
+const visibleRuns = () => sortedRuns().filter(r => inConfig(r) && inSet(r));
 
 /* The values of the filter: `All` (every run; owner answer of 2026-09-26T01:19:00+0300),
    each pipeline of config.yaml with the count of its runs, and no pipeline. The combo
@@ -447,6 +559,20 @@ function renderConfigs() {
   if (!opts.some(([value]) => value === CONF)) CONF = "";
   $("#configuration").innerHTML = opts.map(([value, text]) =>
     `<option value="${esc(value)}"${value === CONF ? " selected" : ""}>${esc(text)}</option>`)
+    .join("");
+}
+
+/* The values of the filter `Testset`: `All`, each test set that a run names with the count
+   of its runs, and no test set. */
+function renderSets() {
+  const names = [...new Set(RUNS.map(r => r.set).filter(Boolean))].sort();
+  const count = name => RUNS.filter(r => r.set === name).length;
+  const opts = [["", `All — ${RUNS.length}`]]
+    .concat(names.map(name => [name, `${name} — ${count(name)}`]))
+    .concat([[NO_SET, `no test set — ${RUNS.filter(r => !r.set).length}`]]);
+  if (!opts.some(([value]) => value === TSET)) TSET = "";
+  $("#testset").innerHTML = opts.map(([value, text]) =>
+    `<option value="${esc(value)}"${value === TSET ? " selected" : ""}>${esc(text)}</option>`)
     .join("");
 }
 
@@ -471,8 +597,10 @@ function renderRuns() {
     <tr data-id="${esc(r.id)}" class="${CUR === r.id ? "on" : ""}">
       <td>${esc(r.id)} ${r.dry_run ? '<span class="tag dry">dry run</span>' : ""}
         ${r.use_cache === false ? '<span class="tag nocache" title="The box Use caches was off: the run read no cached model answer, so its latency is real time.">no cache</span>' : ""}
+        ${r.use_barcode === false ? '<span class="tag nobarcode" title="The box Disable barcode fast path was on: the run skipped the barcode step of its pipeline, so the embedding answered each photo.">no barcode</span>' : ""}
         ${r.subset ?`<span class="tag var" title="a repeat of ${esc(r.subset.based_on)} at depth ${r.subset.rerun_depth}">repeat d${r.subset.rerun_depth}</span>` : ""}</td>
       <td>${r.configuration ? esc(r.configuration) : '<span class="muted">—</span>'}</td>
+      <td>${r.set ? esc(r.set) : '<span class="muted">—</span>'}</td>
       <td>${esc(r.backend)}</td>
       <td class="sm">${esc((r.started || "").replace("T", " ").slice(0, 19))}</td>
       <td class="num">${numOr(r.queries)}</td>
@@ -491,18 +619,28 @@ function renderRuns() {
   }
   $("#head-sub").textContent = `${RUNS.length} run(s)`;
   $("#runs-count").textContent = shown.length ? `${shown.length} of ${RUNS.length} run(s)`
-    : "no run of this pipeline";
+    : "no run of this pipeline and test set";
 }
 
-/* A change of the filter keeps the value in the page address. When the open run is not
-   in the table any more, the first run of the table with metrics opens. */
+/* A change of a run filter keeps its value in the page address, under the key `param`.
+   When the open run is not in the table any more, the first run of the table with
+   metrics opens. */
 function setConfig(value) {
   CONF = value;
+  refilter("configuration", CONF);
+}
+
+function setTestset(value) {
+  TSET = value;
+  refilter("set", TSET);
+}
+
+function refilter(param, value) {
   RPAGE = 0;
   if (CUR) pageOfRun(CUR);
   const url = new URL(location.href);
-  if (CONF) url.searchParams.set("configuration", CONF);
-  else url.searchParams.delete("configuration");
+  if (value) url.searchParams.set(param, value);
+  else url.searchParams.delete(param);
   history.replaceState(null, "", url);
   renderRuns();
   const shown = visibleRuns();
@@ -854,6 +992,7 @@ async function loadRun(id, append) {
   for (const s of data.patched || []) PATCHED.add(s);
   if (!append) RUN = data.run || {};
   if (!append) renderMetrics(data.metrics || {}, data.head || {});
+  if (!append) ntsButton();
   $("#res-body").insertAdjacentHTML("beforeend", (data.rows || []).map(rowHtml).join(""));
   evenCards($("#res-body"));
   OFFSET += (data.rows || []).length;
@@ -870,6 +1009,7 @@ $("#runs-body").addEventListener("click", ev => {
 });
 $("#more").addEventListener("click", () => loadRun(CUR, true));
 $("#configuration").addEventListener("change", ev => setConfig(ev.target.value));
+$("#testset").addEventListener("change", ev => setTestset(ev.target.value));
 $("#filter").addEventListener("change", () => CUR && loadRun(CUR, false));
 $("#sort").addEventListener("change", () => CUR && loadRun(CUR, false));
 document.querySelector("#runs thead").addEventListener("click", ev => {
@@ -896,6 +1036,146 @@ $("#q").addEventListener("input", () => {
   clearTimeout(t);
   t = setTimeout(() => CUR && loadRun(CUR, false), 250);
 });
+/* ---- the button `New testset…` and its dialog (plan 44) ----
+
+   The button makes a new test set of the lab database from the R@1 misses or the R@5
+   misses of the open run (owner message of 2026-09-26T09:05:00+0300). The misses come from
+   the whole run: the controls `Show` and `Find` do not change them. `GET
+   /api/testset-from-run` sends the counts and the proposed name `<set>-<N>`, and the POST
+   makes the set (`testset_from_run.py`). The button is off for a run that names no test
+   set and for a dry run. */
+let NTS = null, NTS_REQUEST = 0;
+const NTS_KINDS = ["r1", "r5"];
+const NTS_REASONS = "gone: the set holds no photo with this place and file name now. " +
+  "other bytes: the photo of this place and file name has other bytes now. " +
+  "label changed: the photo has another label now.";
+
+/* The reason why the button is off for the open run, or "". */
+function ntsOff() {
+  const options = RUN.options || {};
+  if (!options.set) return "This run names no test set. A run of scripts/match_run.py has none.";
+  if (options.dry_run) return "A dry run holds no answer.";
+  return "";
+}
+
+function ntsButton() {
+  const off = ntsOff(), button = $("#nts-open");
+  button.disabled = Boolean(off);
+  button.title = off || "Make a new test set from the R@1 misses or the R@5 misses of this " +
+    `run of the test set ${RUN.options.set}.`;
+}
+
+const ntsKind = () => (document.querySelector('input[name="nts-kind"]:checked') || {}).value;
+
+/* The note under the choices: the photos to copy, the photos that stay out by reason, and
+   the selected photos whose request failed. */
+function ntsNote() {
+  const x = NTS && NTS.misses[ntsKind()];
+  if (!x) { $("#nts-note").textContent = ""; return; }
+  const out = Object.entries(x.left_out).filter(([, n]) => n).map(([why, n]) => `${n} ${why}`);
+  $("#nts-note").textContent = `${x.selected} positive photo(s) selected, ${x.copied} to copy.` +
+    (out.length ? ` Left out: ${out.join(", ")}.` : "") +
+    (x.errors ? ` ${x.errors} of the selected photo(s) had a failed request.` : "");
+  $("#nts-note").title = out.length ? NTS_REASONS : "";
+}
+
+function renderNts() {
+  const first = NTS_KINDS.find(kind => NTS.misses[kind].copied > 0);
+  $("#nts-sub").textContent = `The run ${NTS.run} of the test set ${NTS.set}. The new set ` +
+    `also gets the comments of the photos and the variant groups of ${NTS.set}.`;
+  $("#nts-list").innerHTML = NTS_KINDS.map(kind => {
+    const x = NTS.misses[kind], off = !x.copied;
+    return `<label class="nts-opt${off ? " off" : ""}"><input type="radio" name="nts-kind"
+      value="${kind}"${off ? " disabled" : ""}${kind === first ? " checked" : ""}><span><span
+      class="nts-name">${esc(x.title)}</span> <span class="nts-rule">&mdash; ${esc(x.rule)}</span></span><span
+      class="nts-count">${x.copied} photo(s)</span></label>`;
+  }).join("");
+  $("#nts-name").value = NTS.name;
+  $("#nts-create").disabled = !first;
+  $("#nts-error").textContent = first ? "" : "No miss of this run gives a photo to copy.";
+  ntsNote();
+}
+
+async function openNts() {
+  if (!CUR || ntsOff()) return;
+  const request = ++NTS_REQUEST, run = CUR;
+  NTS = null;
+  $("#nts-sub").textContent = run;
+  $("#nts-list").innerHTML = '<span class="muted">Reading the misses of the run…</span>';
+  $("#nts-note").textContent = "";
+  $("#nts-error").textContent = "";
+  $("#nts-name").value = "";
+  $("#nts-field").hidden = false;
+  $("#nts-create").hidden = false;
+  $("#nts-create").disabled = true;
+  $("#nts-cancel").textContent = "Cancel";
+  $("#nts-dlg").hidden = false;
+  try {
+    const response = await fetch(`/api/testset-from-run?id=${encodeURIComponent(run)}`,
+                                 {cache: "no-store"});
+    const data = await response.json();
+    if (request !== NTS_REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    NTS = data;
+    renderNts();
+    $("#nts-name").focus();
+  } catch (error) {
+    if (request !== NTS_REQUEST) return;
+    $("#nts-list").innerHTML = "";
+    $("#nts-error").textContent = `Cannot read the misses: ${error.message}`;
+  }
+}
+
+function closeNts() {
+  NTS_REQUEST++;
+  NTS = null;
+  $("#nts-dlg").hidden = true;
+  $("#nts-open").focus();
+}
+
+async function createNts() {
+  const kind = ntsKind();
+  if (!NTS || !kind || $("#nts-create").disabled) return;
+  const request = NTS_REQUEST, view = NTS;
+  $("#nts-create").disabled = true;
+  $("#nts-error").textContent = "";
+  try {
+    const response = await fetch("/api/testset-from-run", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({run: view.run, misses: kind, name: $("#nts-name").value.trim()})});
+    const data = await response.json();
+    if (request !== NTS_REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    $("#nts-list").innerHTML = `<div class="nts-done">The new test set <b>${esc(data.set)}</b>
+      holds ${data.photos} photo(s): the ${esc(view.misses[kind].title)} of the run.
+      <a href="/testset?set=${encodeURIComponent(data.set)}">Open it on the Testset page</a></div>`;
+    $("#nts-note").textContent = `Copied too: ${data.photo_comments} comment(s) of the ` +
+      `photos, ${data.variant_slugs} slug(s) of a variant group.`;
+    $("#nts-note").title = "";
+    $("#nts-field").hidden = true;
+    $("#nts-create").hidden = true;
+    $("#nts-cancel").textContent = "Close";
+  } catch (error) {
+    if (request !== NTS_REQUEST) return;
+    $("#nts-error").textContent = error.message;
+    $("#nts-create").disabled = false;
+  }
+}
+
+$("#nts-open").addEventListener("click", openNts);
+$("#nts-cancel").addEventListener("click", closeNts);
+$("#nts-create").addEventListener("click", createNts);
+$("#nts-list").addEventListener("change", ntsNote);
+$("#nts-dlg").addEventListener("click", ev => { if (ev.target === $("#nts-dlg")) closeNts(); });
+// While the dialog is open, the keys of the page do not act, as in the dialog `Run>` of
+// /testset. Esc closes the dialog. Enter in the field `Name` creates the set.
+window.addEventListener("keydown", ev => {
+  if ($("#nts-dlg").hidden) return;
+  ev.stopPropagation();
+  if (ev.key === "Escape") { ev.preventDefault(); closeNts(); }
+  else if (ev.key === "Enter" && ev.target === $("#nts-name")) { ev.preventDefault(); createNts(); }
+}, true);
+
 /* ---- the large view ---- */
 /* `LBI` holds the row that the open image came from and the place of the image
    in that row. The arrow keys move from it: left and right inside the row, up
@@ -1108,6 +1388,10 @@ function closeLb() {
 document.addEventListener("click", ev => {
   const input = ev.target.closest("[data-model-input]");
   if (input) { $("#lb-main").src = input.dataset.modelInput; return; }
+  // The query photo of a row opens the step popup (plan 41, owner message of
+  // 2026-09-26T07:14:42+0300). A candidate image opens the large view.
+  const query = ev.target.closest("#res-body .qphoto");
+  if (query) { openSteps(query.closest("tr")); return; }
   const img = ev.target.closest("img[data-full]");
   if (img) {
     const tr = img.closest("#res-body tr");
@@ -1120,8 +1404,18 @@ document.addEventListener("click", ev => {
   if (ev.target.closest("#lb")) closeLb();
 });
 document.addEventListener("keydown", ev => {
-  if (ev.key === "Escape") { closeLb(); return; }
-  if (!LBI || !$("#lb").classList.contains("on")) return;
+  const large = $("#lb").classList.contains("on");
+  // The large view stands above the step popup, so Escape closes it first (plan 41).
+  if (ev.key === "Escape") { if (!large && SP) closeSteps(); else closeLb(); return; }
+  if (SP && !large) {
+    const rstep = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
+    if (rstep !== undefined && !(ev.metaKey || ev.ctrlKey || ev.altKey)) {
+      ev.preventDefault();
+      stepSteps(rstep);
+    }
+    return;
+  }
+  if (!LBI || !large) return;
   if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
   const step = { ArrowRight: 1, ArrowLeft: -1 }[ev.key];
   if (step !== undefined) { ev.preventDefault(); stepLb(step); return; }
@@ -1129,14 +1423,134 @@ document.addEventListener("keydown", ev => {
   if (rstep !== undefined) { ev.preventDefault(); stepLbRow(rstep); }
 });
 
+/* ---- the step popup of a query photo (plan 41) ----
+
+   A click on the query photo of a row opens the popup. `/api/run-steps` sends the rounds
+   and the steps of the photo, and `Steps.html` of steps.js (shared with /recognize, plan
+   55) draws them as the step view of drink-atlas-recognize on port 8162. The card of the
+   input photo is open at the start; the other cards are closed, and a failed card is
+   always open. `SP_OPEN` keeps the open cards while the popup moves from photo to photo
+   with the arrow keys up and down. */
+let SP = null, SP_REQUEST = 0;
+const SP_OPEN = new Set(["input:"]);
+/* STEPS_JS */
+
+/* The slug of the photo on its own line under the title (owner message of 2026-09-26T22:16).
+   A negative photo holds the slug that must not come back. An expected slug that differs
+   from the slug of the photo is named too. An unlabelled photo has no slug. */
+function slugLine(row) {
+  if (row.label === "unlabelled" || !row.slug) return "";
+  const other = (row.truth || []).filter(s => s !== row.slug);
+  return `<span class="sp-slug"><i>${row.label === "negative" ? "forbidden slug" : "slug"}:</i> ${
+    esc(row.slug)}${other.length ? ` <i>· expected:</i> ${esc(other.join(", "))}` : ""}</span>`;
+}
+
+function renderSteps(data) {
+  const row = data.row || {};
+  const tag = LABEL_TAG[row.label] || "";
+  const bad = row.label !== "unlabelled" && ((row.label === "negative" &&
+    row.outcome === "false_match_at_1") || (row.label !== "negative" && row.rank_of_truth !== 1));
+  $("#sp-title").innerHTML = `${esc(row.image_path || data.query)}<span class="tag ${tag}">${
+    esc(row.label || "")}</span><span class="tag ${bad ? "bad" : "ok"}">${esc(row.outcome || "")
+    }</span>${row.label === "unlabelled" ? "" : `<span class="tag">${row.rank_of_truth
+    ? `rank ${esc(row.rank_of_truth)}` : "not in the list"}</span>`}${slugLine(row)}`;
+  $("#sp-sub").textContent = `${data.query} · ${data.run} · ${
+    data.configuration || "no pipeline"} · ${data.kind} run`;
+  $("#sp-body").innerHTML = Steps.html(data, SP_OPEN);
+}
+
+/* The hash of the page: `#<run>`, or `#<run>/<image path>` while the popup shows a photo
+   (owner message of 2026-09-26T23:12). The image path starts with the slug. */
+const runHash = photo => "#" + encodeURIComponent(CUR) +
+  (photo ? "/" + photo.split("/").map(encodeURIComponent).join("/") : "");
+
+/* Open the popup of the photo at `path` of the open run, for a URL `#<run>/<path>`. The
+   row of the photo can be on a later page or outside the filter, so the query id comes
+   from `/api/run?q=`, which matches a part of the image path. The arrow keys work only
+   when the row is in the table. */
+async function openPhoto(path) {
+  try {
+    const data = await (await fetch(`/api/run?id=${encodeURIComponent(CUR)}&filter=all` +
+                                    `&q=${encodeURIComponent(path)}&limit=20`)).json();
+    const row = (data.rows || []).find(r => r.image_path === path);
+    if (!row || !row.query_id) return;
+    const tr = $("#res-body").querySelector(`tr[data-query-id="${CSS.escape(row.query_id)}"]`);
+    if (tr) tr.scrollIntoView({ block: "center" });
+    openSteps(tr, row.query_id);
+  } catch (e) { /* a stale link opens the run alone */ }
+}
+
+async function openSteps(tr, queryId) {
+  const query = tr ? tr.dataset.queryId : queryId;
+  if (!query || !CUR) return;
+  const request = ++SP_REQUEST;
+  SP = { row: tr || null };
+  document.body.classList.add("sp-on");
+  $("#sp").hidden = false;
+  $("#sp-sub").textContent = `${query} · ${CUR}`;
+  $("#sp-body").innerHTML = `<p class="sp-note">Reading the steps…</p>`;
+  try {
+    const response = await fetch(`/api/run-steps?id=${encodeURIComponent(CUR)}` +
+                                 `&query=${encodeURIComponent(query)}`, {cache: "no-store"});
+    const data = await response.json();
+    if (request !== SP_REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    renderSteps(data);
+    if (data.row && data.row.image_path) history.replaceState(null, "",
+      location.pathname + location.search + runHash(data.row.image_path));
+    $(".sp-shell").scrollTop = 0;
+  } catch (error) {
+    if (request === SP_REQUEST) {
+      $("#sp-body").innerHTML = `<p class="sp-note err">Cannot read the steps: ${esc(error.message)}</p>`;
+    }
+  }
+}
+
+function closeSteps() {
+  SP_REQUEST++;
+  SP = null;
+  $("#sp").hidden = true;
+  $("#sp-body").replaceChildren();
+  document.body.classList.remove("sp-on");
+  if (CUR) history.replaceState(null, "", location.pathname + location.search + runHash());
+}
+
+/* Move the popup to the photo of the row above or below. A row with no query id is
+   stepped over. The table scrolls to the row. */
+function stepSteps(step) {
+  if (!SP || !SP.row) return;
+  let tr = SP.row;
+  do { tr = step > 0 ? tr.nextElementSibling : tr.previousElementSibling; }
+  while (tr && !tr.dataset.queryId);
+  if (!tr) return;
+  tr.scrollIntoView({ block: "center" });
+  openSteps(tr);
+}
+
+function toggleStep(head) {
+  Steps.toggle(head, SP_OPEN);
+}
+
+$("#sp-body").addEventListener("click", ev => {
+  const head = ev.target.closest(".step > .head");
+  if (head) toggleStep(head);
+});
+$("#sp-body").addEventListener("keydown", ev => {
+  const head = ev.target.closest(".step > .head");
+  if (head && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); toggleStep(head); }
+});
+$("#sp-close").addEventListener("click", closeSteps);
+$("#sp").addEventListener("click", ev => { if (ev.target.id === "sp") closeSteps(); });
+
 /* The header controls are kept in localStorage and come back at the next page load (owner
    message of 2026-09-26T00:30:00+0300). A value in the URL wins over the stored value;
-   `renderConfigs` drops a pipeline that is no longer an option. The listeners of each
+   `renderConfigs` drops a pipeline and `renderSets` drops a test set that is no longer an
+   option. The listeners of each
    control run first; the header listener then stores the new values. */
 const HEADER_KEY = "svl.runs.header";
 function saveHeader() {
-  const value = {configuration: CONF, filter: $("#filter").value, sort: $("#sort").value,
-                 q: $("#q").value};
+  const value = {configuration: CONF, set: TSET, filter: $("#filter").value,
+                 sort: $("#sort").value, q: $("#q").value};
   try { localStorage.setItem(HEADER_KEY, JSON.stringify(value)); } catch (_) { /* no storage */ }
 }
 (function restoreHeader() {
@@ -1144,6 +1558,8 @@ function saveHeader() {
   try { value = JSON.parse(localStorage.getItem(HEADER_KEY) || "{}") || {}; } catch (_) { return; }
   if (!new URLSearchParams(location.search).has("configuration")
       && typeof value.configuration === "string") CONF = value.configuration;
+  if (!new URLSearchParams(location.search).has("set")
+      && typeof value.set === "string") TSET = value.set;
   for (const id of ["filter", "sort"]) {
     const node = $("#" + id);
     if ([...node.options].some(option => option.value === value[id])) node.value = value[id];
@@ -1158,13 +1574,18 @@ $("header").addEventListener("input", saveHeader);
   RUNS = data.runs || [];
   CONFIGS = data.configurations || [];
   renderConfigs();
-  const want = decodeURIComponent((location.hash || "").slice(1));
+  renderSets();
+  const hash = decodeURIComponent((location.hash || "").slice(1));
+  const cut = hash.indexOf("/");                 // `#<run>/<slug>/<file>` opens the popup
+  const want = cut < 0 ? hash : hash.slice(0, cut);
+  const photo = cut < 0 ? "" : hash.slice(cut + 1);
   const shown = visibleRuns();
   const first = shown.find(r => r.id === want) ||
                 shown.find(r => r.has_metrics && !r.dry_run) || shown[0];
   if (first) pageOfRun(first.id);
   renderRuns();
-  if (first) loadRun(first.id, false);
+  if (first) await loadRun(first.id, false);
+  if (first && photo && first.id === want) openPhoto(photo);
 })();
 </script>
 </body>

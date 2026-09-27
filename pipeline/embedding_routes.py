@@ -49,7 +49,7 @@ HTML = "text/html; charset=utf-8"
 NO_STORE = "no-store"
 # The URL of a prepared image holds its embedding hash, so a new image gets a new URL.
 IMAGE_CACHE = "public, max-age=31536000, immutable"
-STATUSES = ("current", "stale", "missing", "failed")
+STATUSES = ("current", "stale", "missing", "failed", "not_applicable")
 
 # entry directory -> the build process that this server started. The server reaps it.
 _PROCESSES = {}
@@ -183,6 +183,7 @@ def list_view(settings):
             index, names, index_error = _read(directory)
             status = embeddings.item_status(items, index, names)
             counts = collections.Counter(state for state, _ in status.values())
+            counts["not_applicable"] = embeddings.not_applicable_count(embedding, sources)
             record.update(embedding.summary(), items=len(items),
                           counts={state: counts.get(state, 0) for state in STATUSES},
                           dim=index.get("dim"), updated_at=index.get("updated_at"),
@@ -218,6 +219,9 @@ def entry_view(settings, name):
             for view in embedding.views:
                 key = (digest, view)
                 if key not in items:
+                    reason = embeddings.not_applicable_reason(embedding, source, view)
+                    if reason:
+                        cells[view] = {"status": "not_applicable", "error": reason}
                     continue
                 state, record = status[key]
                 cell = {"status": state, "hash": items[key]["embedding_hash"]}
@@ -242,6 +246,7 @@ def entry_view(settings, name):
                         "producer": wine["producer"], "category": wine["category"],
                         "region": wine["region"], "columns": columns})
     counts = collections.Counter(state for state, _ in status.values())
+    counts["not_applicable"] = embeddings.not_applicable_count(embedding, sources)
     return _json(200, {
         "embedding": dict(embedding.summary(), items=len(items),
                           counts={state: counts.get(state, 0) for state in STATUSES},

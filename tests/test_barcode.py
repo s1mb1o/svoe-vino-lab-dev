@@ -107,7 +107,7 @@ class PipelineKeyTest(unittest.TestCase):
         entries = {name: (pipeline, error) for name, pipeline, error in settings.entries}
         plain = [name for name, (pipeline, error) in entries.items()
                  if pipeline and pipeline.backend == "embedding" and pipeline.barcode is None]
-        self.assertEqual(len(plain), 22)
+        self.assertEqual(len(plain), 26)
         for name in plain:
             with self.subTest(name=name):
                 twin, error = entries["barcode-" + name]
@@ -163,10 +163,13 @@ class LookupTest(unittest.TestCase):
         self.assertEqual(hit["slugs"], ["wine-b"])
 
     def test_a_shared_qr_url_gives_each_wine_in_slug_order(self):
-        hit = self.lookup.find([self.code("URL:https://PRODUCER.example:443/wine/1#label",
-                                          kind="qr_code", fmt="QRCode")])
+        found = [self.code("URL:https://PRODUCER.example:443/wine/1#label",
+                           kind="qr_code", fmt="QRCode")]
+        [hit] = self.lookup.hits(found)
         self.assertEqual(hit["source"], "qr_url")
         self.assertEqual(hit["slugs"], ["wine-b", "wine-c"])
+        # A shared QR URL never decides the answer (plan 58).
+        self.assertIsNone(self.lookup.find(found))
 
     def test_no_hit_for_a_disabled_wine_a_bad_value_or_the_kind_barcode(self):
         for text in ("4630171630094", "4631168664970", "LOT-1", "hello"):
@@ -205,7 +208,7 @@ class FakeDecoder:
 
 
 HIT = {"source": "gtin", "code": "04631168664979", "read": "4631168664979",
-       "format": "EAN13", "slugs": ["wine-a", "wine-b"]}
+       "format": "EAN13", "slugs": ["wine-a"]}
 FOUND = [{"kind": "barcode", "format": "EAN13", "text": "4631168664979"}]
 INNER_TRACE = {"v": 1, "steps": [{"id": "input", "start_ms": 0.0, "ms": 2.0},
                                  {"id": "embed", "start_ms": 2.0, "ms": 5.0}]}
@@ -216,7 +219,7 @@ class CodeFirstTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.photo = str(Path(self.tmp.name) / "photo.png")
         Image.new("RGB", (40, 30), "white").save(self.photo)
-        self.lookup = barcode.CodeLookup({("gtin", "04631168664979"): ["wine-a", "wine-b"]})
+        self.lookup = barcode.CodeLookup({("gtin", "04631168664979"): ["wine-a"]})
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -233,11 +236,12 @@ class CodeFirstTest(unittest.TestCase):
         self.assertEqual(inner.paths, [])
         self.assertEqual((status, error), (200, None))
         self.assertEqual([(c["slug"], c["score"], c["rank"]) for c in cands],
-                         [("wine-a", 1.0, 1), ("wine-b", 1.0, 2)])
+                         [("wine-a", 1.0, 1)])
         self.assertEqual({k: cands[0][k] for k in ("source", "code", "read", "format")},
                          {k: HIT[k] for k in ("source", "code", "read", "format")})
         self.assertEqual([step["id"] for step in trace["steps"]], ["barcode"])
-        self.assertEqual(trace["steps"][0]["out"], {"codes": FOUND, "hit": HIT})
+        self.assertEqual(trace["steps"][0]["out"], {"codes": FOUND, "hit": HIT,
+                                                    "mode": "answer"})
 
     def test_a_hit_keeps_top_k_wines(self):
         backend, inner = self.backend(FakeDecoder(FOUND, HIT))

@@ -43,12 +43,12 @@ three answers are in [owner-messages.md](../owner-messages.md).
 3. A wine of each state MAY get a patch, as in `seed_patched.py`.
 4. The file goes to the image store under its SHA-256. A SHA-256 that `image` holds
    already reuses the stored file. The editor writes no second copy.
-5. The upload runs `derive.derive_all` for the new file. SAM3 can take up to about two
-   minutes. The processing runs before the write transaction, so it does not hold the
-   write lock.
-6. SAM3 does not answer: the patch is stored with no processed file. The answer holds a
-   `warning`. To process it later, drop the same file again: the upload runs
-   `derive.derive_all` each time, and the row does not change.
+5. The upload creates the `package` derivative and the `label` derivative for the new
+   file. SAM3 can take up to about two minutes. The processing runs before the write
+   transaction, so it does not hold the write lock.
+6. SAM3 does not answer, or SAM3 finds no label: the patch stays stored. The answer holds
+   a `warning` for each missing derivative. To process it later, drop the same file
+   again. A derivative with the current settings is reused. The row does not change.
 7. The write transaction replaces the `main_patched` row of the wine. The same SHA-256
    changes nothing. `source_name` is the file name of the upload, or `upload` when the
    request holds none. `match_method` is `manual`.
@@ -119,6 +119,8 @@ the answers of 10:13:53 and 10:23:52 in [owner-messages.md](../owner-messages.md
    patched wine `patched` and `patched · processed`, and two for each alternative photo.
 5. The patch `Remove` button has the size of the `Remove` button of the main image and
    stands at the right.
+6. A patch upload creates its `package` and `label` derivatives. A missing label cut does
+   not cancel the upload. The answer holds a label-specific warning.
 
 Rule 11 changes with point 2: the keys `_patch_image_url` and `_patch_derivation` are new.
-Rule 5 is unchanged: the server still processes the file in the request.
+Rule 5 still processes the file in the request. It now creates both derivative kinds.

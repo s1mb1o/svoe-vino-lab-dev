@@ -16,7 +16,9 @@ Rules:
   gets no request. So a second run continues the first one.
 - SAM3 runs outside the write transaction. Each original gets its own short transaction,
   so a stop keeps the finished cuts.
-- An original with no label in the SAM3 answer gets no row. The next run asks again.
+- When the label prompt finds no label, the package prompt distinguishes a printed
+  `packet` or `box` from a bottle or can. A packet or box gets a not-applicable marker.
+  A bottle or can gets no row, and the next run asks again.
 - The run stops at the first time that SAM3 does not answer.
 
 Exit status: 0 when each original has its label cut or no label. 1 when the run cannot
@@ -41,7 +43,9 @@ class Report:
     def __init__(self):
         self.originals = 0    # full originals in the database
         self.present = 0      # originals with a label cut of the present settings
+        self.absence_present = 0  # originals with a current not-applicable marker
         self.written = 0      # label cuts written in this run
+        self.not_applicable = []  # packets and boxes with no separate label
         self.no_label = []    # sha256 of originals with no label in the SAM3 answer
         self.unreadable = []  # sha256 of originals that Pillow cannot read
         self.errors = 0       # store errors
@@ -70,42 +74,49 @@ def seed_label_cuts(db_path, log=print, segmenter=None, limit=None):
     try:
         originals = full_originals(conn, db_path)
         report.originals = len(originals)
-        present = {row[0] for row in conn.execute(
+        # A manual cut (plan 56) stays, so it counts as present.
+        cuts = {row[0] for row in conn.execute(
             "SELECT source_sha256 FROM image_derivative WHERE kind = 'label' AND "
-            "settings = ?", (alternatives.SETTINGS_LABEL,))}
+            "(settings = ? OR substr(settings, 1, ?) = ?)",
+            (alternatives.SETTINGS_LABEL, len(derive.MANUAL_PREFIX), derive.MANUAL_PREFIX))}
+        absences = {row[0] for row in conn.execute(
+            "SELECT source_sha256 FROM image_derivative_absence WHERE kind = 'label' AND "
+            "settings = ?", (alternatives.SETTINGS_LABEL_ABSENCE,))}
+        present = cuts | absences
         todo = [(digest, path) for digest, path in originals if digest not in present]
-        report.present = len(originals) - len(todo)
+        report.present = len(cuts)
+        report.absence_present = len(absences)
         if limit is not None:
             todo = todo[:limit]
-        log("full originals: %d; with a label cut: %d; to do: %d"
-            % (report.originals, report.present, len(todo)))
+        log("full originals: %d; with a label cut: %d; label not applicable: %d; "
+            "to do: %d" % (report.originals, report.present,
+                            report.absence_present, len(todo)))
         for number, (digest, path) in enumerate(todo, 1):
-            try:
-                image, icc_profile = derive.open_image(path)
-            except OSError as exc:
-                report.unreadable.append(digest)
-                log("unreadable: %s: %s" % (path, exc))
-                continue
-            try:
-                instances, _scale = segmenter.instances(image, alternatives.DETECT_TEXTS)
-            except derive.Sam3Unavailable as exc:
-                report.unavailable = str(exc)
-                log("stop: SAM3 does not answer: %s" % exc)
-                break
             messages = []
-            out = alternatives.label_derivatives(conn, db_path, digest, image, icc_profile,
-                                                 instances, messages.append)
-            if out.links:
+            out = alternatives.process_image(conn, db_path, digest, path, "label",
+                                             segmenter, messages)
+            if out.unavailable:
+                report.unavailable = "; ".join(messages)
+                log("stop: SAM3 does not answer: %s" % report.unavailable)
+                break
+            if out.links or out.not_applicable:
                 conn.execute("BEGIN IMMEDIATE")
                 try:
-                    derive.write_rows(conn, out)
+                    alternatives.write_processed_rows(conn, out)
                     conn.execute("COMMIT")
                 except BaseException:
                     conn.execute("ROLLBACK")
                     raise
-                report.written += 1
+                if out.links:
+                    report.written += 1
+                else:
+                    report.not_applicable.append(digest)
+                    log("label not applicable: %s: %s" % (digest, out.not_applicable))
             elif out.present:
                 report.present += 1
+            elif out.unreadable:
+                report.unreadable.append(digest)
+                log("unreadable: %s: %s" % (path, "; ".join(messages)))
             elif out.errors:
                 report.errors += out.errors
                 log("error: %s: %s" % (digest, "; ".join(messages)))
@@ -114,9 +125,10 @@ def seed_label_cuts(db_path, log=print, segmenter=None, limit=None):
                 log("no label: %s" % digest)
             if number % PROGRESS_EVERY == 0 or number == len(todo):
                 elapsed = time.time() - start
-                log("progress: %d/%d · written %d · no label %d · %.2f s each"
-                    % (number, len(todo), report.written, len(report.no_label),
-                       elapsed / number))
+                log("progress: %d/%d · written %d · not applicable %d · no label %d · "
+                    "%.2f s each" % (number, len(todo), report.written,
+                                     len(report.not_applicable), len(report.no_label),
+                                     elapsed / number))
     finally:
         conn.close()
     report.seconds = time.time() - start
@@ -145,6 +157,8 @@ def main(argv=None):
     print("full originals: %d" % report.originals)
     print("label cuts present: %d" % report.present)
     print("label cuts written: %d" % report.written)
+    print("label not applicable present: %d" % report.absence_present)
+    print("label not applicable written: %d" % len(report.not_applicable))
     print("no label: %d" % len(report.no_label))
     print("unreadable: %d" % len(report.unreadable))
     print("errors: %d" % report.errors)

@@ -11,6 +11,7 @@ import unittest.mock
 import embedding_lab  # noqa: F401  (puts pipeline/ on sys.path)
 from embedding_lab import FakeGateway, standard_lab
 
+import alternatives  # noqa: E402
 import build_embeddings  # noqa: E402
 import embedding_routes  # noqa: E402
 import embeddings  # noqa: E402
@@ -106,7 +107,8 @@ class RoutesTest(unittest.TestCase):
         self.assertIsNone(entry["job"]["state"])
         self.build()
         entry = self.get("/api/embeddings")[1]["embeddings"][0]
-        self.assertEqual(entry["counts"], {"current": 4, "stale": 0, "missing": 0, "failed": 5})
+        self.assertEqual(entry["counts"], {"current": 4, "stale": 0, "missing": 0,
+                                           "failed": 5, "not_applicable": 0})
         self.assertEqual(entry["dim"], 8)
 
     def test_entry_view_and_image_route(self):
@@ -130,6 +132,22 @@ class RoutesTest(unittest.TestCase):
         unprocessed = records["unprocessed"]["columns"][0]["cells"]["full"]
         self.assertEqual(unprocessed["status"], "failed")
         self.assertNotIn("url", unprocessed)
+
+    def test_a_not_applicable_label_is_named_and_not_counted_as_an_item(self):
+        self.lab.conn.execute(
+            "INSERT INTO image_derivative_absence VALUES (?, 'label', ?, ?)",
+            (self.lab.grey, alternatives.SETTINGS_LABEL_ABSENCE,
+             "the packet has no separate label"))
+        self.lab.conn.commit()
+        self.build()
+        code, body, _, _ = self.get("/api/embeddings/gw")
+        self.assertEqual(code, 200)
+        self.assertEqual((body["embedding"]["items"],
+                          body["embedding"]["counts"]["not_applicable"]), (8, 1))
+        records = {record["slug"]: record for record in body["records"]}
+        cell = records["grey"]["columns"][0]["cells"]["label"]
+        self.assertEqual(cell, {"status": "not_applicable",
+                                "error": "the packet has no separate label"})
 
     def test_a_cell_with_a_vector_row_gets_vector(self):
         self.build()

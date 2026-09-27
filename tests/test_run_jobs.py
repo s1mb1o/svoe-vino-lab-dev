@@ -321,5 +321,90 @@ class UseCacheTest(Lab):
                 self.assertNotIn("--no-cache", self.command(**extra))
 
 
+BARCODE = "emb-barcode"
+
+
+class FakeBackend:
+    """An embedding backend of `benchmark.run_benchmark` that answers wine-a at once."""
+
+    def __init__(self, pipeline):
+        self.id, self.top_k = pipeline.name, 2
+        self.spec = {"id": pipeline.name, "label": "fake", "workers": 1}
+        self.catalogue = mock.Mock(state={"built": "2026-09-26T19:00:00+0300"})
+
+    def ask(self, path):
+        return [{"slug": "wine-a", "score": 0.9, "rank": 1}], 5, 200, None
+
+
+class UseBarcodeTest(Lab):
+    """Plan 53: the checkbox `Disable barcode fast path` of the dialog `Run>`. The Lab
+    config gets one more pipeline, with the key `barcode`."""
+
+    def setUp(self):
+        super().setUp()
+        config = json.loads(self.config.read_text(encoding="utf-8"))
+        config["pipeline"].append({"name": BARCODE, "backend": "embedding",
+                                   "embedding": "gw", "barcode": {}})
+        self.config.write_text(json.dumps(config), encoding="utf-8")
+
+    def command(self, name, **extra):
+        body = dict({"configuration": name, "set": "my"}, **extra)
+        with mock.patch.object(run_jobs.subprocess, "Popen") as popen, \
+                mock.patch.object(embedding_run, "index_ready", return_value=True):
+            popen.return_value.pid = 4321
+            popen.return_value.poll.return_value = 0
+            code, answer = run_jobs.start(self.settings(), self.jobs, body, self.runs)
+        self.assertEqual(code, 202, answer)
+        run_jobs._PROCESSES.clear()
+        return popen.call_args[0][0]
+
+    def test_each_pipeline_tells_whether_it_has_the_barcode_step(self):
+        view = run_jobs.configurations_view(self.settings(), self.jobs, "my")
+        self.assertEqual({c["name"]: c["barcode"] for c in view["configurations"]},
+                         {REMOTE: False, "broken": False, "emb": False, BARCODE: True})
+
+    def test_use_barcode_false_gives_no_barcode_to_a_barcode_pipeline_alone(self):
+        self.assertIn("--no-barcode", self.command(BARCODE, use_barcode=False))
+        self.assertNotIn("--no-barcode", self.command(REMOTE, use_barcode=False))
+        for extra in ({}, {"use_barcode": True}, {"use_barcode": None}):
+            with self.subTest(extra=extra):
+                self.assertNotIn("--no-barcode", self.command(BARCODE, **extra))
+
+    def test_use_barcode_MUST_be_a_boolean(self):
+        code, answer = run_jobs.start(self.settings(), self.jobs, {
+            "configuration": BARCODE, "set": "my", "use_barcode": "no"}, self.runs)
+        self.assertEqual(code, 400)
+        self.assertIn("use_barcode MUST", answer["error"])
+        self.assertEqual(run_jobs._PROCESSES, {})
+
+    def test_no_barcode_drops_the_step_and_goes_into_the_start_event_and_run_json(self):
+        seen = []
+
+        def build(pipeline, config_path):
+            seen.append(pipeline.barcode)
+            return FakeBackend(pipeline)
+
+        with mock.patch.object(embedding_run, "build_pipeline_backend", side_effect=build):
+            for extra, use_barcode in (((), True), (("--no-barcode",), False)):
+                with self.subTest(extra=extra):
+                    code, events = self.run_main(BARCODE, "--limit", "1", *extra)
+                    self.assertEqual((code, events[-1]["event"]), (0, "done"), events[-1])
+                    self.assertIs(events[0]["use_barcode"], use_barcode)
+                    meta = json.loads((Path(self.runs) / events[-1]["run_id"] / "run.json")
+                                      .read_text("utf-8"))
+                    self.assertIs(meta["use_barcode"], use_barcode)
+        # The step options reach `build` alone when the box is off.
+        self.assertIsInstance(seen[0], dict)
+        self.assertIsNone(seen[1])
+
+    def test_a_pipeline_with_no_barcode_step_records_nothing(self):
+        code, events = self.run_main(REMOTE, "--limit", "1", "--no-barcode")
+        self.assertEqual(code, 0)
+        self.assertIsNone(events[0]["use_barcode"])
+        meta = json.loads((Path(self.runs) / events[-1]["run_id"] / "run.json")
+                          .read_text("utf-8"))
+        self.assertNotIn("use_barcode", meta)
+
+
 if __name__ == "__main__":
     unittest.main()

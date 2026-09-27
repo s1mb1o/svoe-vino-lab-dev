@@ -9,10 +9,13 @@ Rules of the processing:
   `svoe-wino-hackaton/scripts/build_cropped.py`.
 - An original with no transparent pixels goes to SAM3. SAM3 finds the package: a
   bottle, a can, a packet, or a box. A box is the package of a bag-in-box; without the
-  noun, SAM3 takes the bottle that is printed on the box. The main image holds one
-  package, so the largest instance wins. The owner asked for the noun `box` on
-  2026-09-25. The mask is smoothed and grown a little, and it becomes the alpha
-  channel. The result gets `seg`.
+  noun, SAM3 takes the bottle that is printed on the box. The owner asked for the noun
+  `box` on 2026-09-25. A wine bottle wins over a larger box, can, or packet: a photo can
+  show a gift box or a tube next to the bottle (owner message of
+  2026-09-27T00:05:00+0300). A bottle that is printed on a packet or on a box is not
+  the package, so that packet or box wins (`package_instance`). With no bottle, the
+  largest instance wins. The mask is smoothed and grown a little, and it becomes the
+  alpha channel. The result gets `seg`.
 - SAM3 answers and finds no package: the white rule of `build_cropped.py` cuts the
   border. A pixel is content when a colour channel is below `WHITE_LEVEL`. The result
   gets `crop`.
@@ -33,10 +36,12 @@ import hashlib
 import io
 import os
 import random
+import threading
 import time
 
 import numpy as np
 import requests
+import yaml
 from PIL import Image, ImageChops, ImageFilter, ImageOps
 
 import imagestore
@@ -48,8 +53,29 @@ ALPHA_THRESHOLD = 32
 WHITE_LEVEL = 245
 OPEN_SIZE = 5
 
-# The SAM3 service of gx10 and the values of `build_labels.py`.
-SAM3_ENDPOINT = "http://192.168.86.14:18081/upstream/sam3"
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                           "config.yaml")
+
+
+def configured_endpoint(default, path=CONFIG_PATH):
+    """Return the key `sam3.endpoint` of `config.yaml`, or `default` when the file or the
+    key is absent."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            config = yaml.safe_load(fh) or {}
+    except FileNotFoundError:
+        return default
+    endpoint = ((config.get("sam3") if isinstance(config, dict) else None) or {}).get("endpoint")
+    if endpoint is None:
+        return default
+    if not isinstance(endpoint, str) or not endpoint.strip():
+        raise ValueError("%s: `sam3.endpoint` MUST be a URL" % path)
+    return endpoint.strip()
+
+
+# The SAM3 service and the values of `build_labels.py`. The key `sam3.endpoint` of
+# `config.yaml` names the service; without the key, the service of gx10 stays.
+SAM3_ENDPOINT = configured_endpoint("http://192.168.86.14:18081/upstream/sam3")
 # The served name of the gateway. It names the directory of the cache records.
 SAM3_MODEL = "sam3"
 SAM3_TEXTS ="wine bottle, can, packet, box"
@@ -68,17 +94,39 @@ MASK_BLUR = 0.005
 MASK_KEEP = 64
 EDGE_BLUR = 1.0
 
+# The choice of the package instance (owner message of 2026-09-27T00:05:00+0300). The
+# largest bottle wins over each other noun. A bottle is printed on a packet when
+# `PRINTED_COVER` of its box lies inside the box of the packet. A bottle is printed on a
+# box when it lies inside the box in the same way and has less than `PRINTED_AREA` of
+# the area of the box. A real bottle in an open gift box or in front of a crate has more.
+# A replay of the cached SAM3 answers of 2026-09-27 gave these shares: printed bottles
+# 0.005 to 0.21 (packets) and 0.015 to 0.06 (bag-in-box); real bottles in a box 0.13 to 0.36.
+BOTTLE_LABEL = "wine bottle"
+PRINTED_LABELS = ("packet", "box")
+PRINTED_COVER = 0.9
+PRINTED_AREA = 0.1
+
 SETTINGS_ALPHA = "alpha > %d, opening %d px" % (ALPHA_THRESHOLD, OPEN_SIZE)
 # The white rule follows an answer of SAM3, so its settings name the SAM3 texts too. A
 # change of the texts asks SAM3 again for such an image.
 SETTINGS_WHITE = ("white < %d, opening %d px; SAM3 %r found no package"
                   % (WHITE_LEVEL, OPEN_SIZE, SAM3_TEXTS))
-SETTINGS_SEG = ("SAM3 %r, threshold %s, mask %s, max side %d; mask blur %s of the long "
-                "side, keep >= %d/255; edge blur %s px"
+SETTINGS_SEG = ("SAM3 %r, threshold %s, mask %s, max side %d; %r first, except a bottle "
+                "printed on a packet or a box (cover %s, box area < %s); mask blur %s of "
+                "the long side, keep >= %d/255; edge blur %s px"
                 % (SAM3_TEXTS, SAM3_THRESHOLD, SAM3_MASK_THRESHOLD, SAM3_MAX_SIDE,
-                   MASK_BLUR, MASK_KEEP, EDGE_BLUR))
+                   BOTTLE_LABEL, PRINTED_COVER, PRINTED_AREA, MASK_BLUR, MASK_KEEP,
+                   EDGE_BLUR))
 # The settings of a processed file that stays.
 PRESENT_SETTINGS = frozenset({SETTINGS_ALPHA, SETTINGS_WHITE, SETTINGS_SEG})
+# The settings of a manual cut start with this text (plan 56). A manual cut stays: no
+# automatic run processes its original again.
+MANUAL_PREFIX = "manual "
+
+
+def is_manual(settings):
+    """Tell whether `settings` of a row of `image_derivative` names a manual cut."""
+    return isinstance(settings, str) and settings.startswith(MANUAL_PREFIX)
 
 
 class Sam3Unavailable(Exception):
@@ -86,11 +134,21 @@ class Sam3Unavailable(Exception):
 
 
 class Sam3Client:
-    """The client of `POST /segment_multi` of the SAM3 service."""
+    """The client of `POST /segment_multi` of the SAM3 service. With `refresh`, a call
+    reads no record of `model_cache`: it asks SAM3 and stores the fresh answer in place of
+    the old record (owner message of 2026-09-27T00:51:44+0300)."""
 
-    def __init__(self, endpoint=SAM3_ENDPOINT):
+    def __init__(self, endpoint=SAM3_ENDPOINT, refresh=False):
         self.endpoint = endpoint.rstrip("/")
+        self.refresh = refresh
         self.session = requests.Session()
+        # Whether the last call of this thread read `model_cache` (plan 41).
+        self._last = threading.local()
+
+    def cached(self):
+        """Tell whether the last call of this thread read its answer from `model_cache`.
+        None means no call yet."""
+        return getattr(self._last, "cached", None)
 
     def _post(self, data, texts=SAM3_TEXTS, return_masks=True):
         # A repeated request reads the answer of `model_cache`. Only an answer of HTTP
@@ -101,7 +159,8 @@ class Sam3Client:
         params = {key: value for key, value in form.items() if key != "texts"}
         fields = model_cache.request_fields(self.endpoint + "/segment_multi", SAM3_MODEL,
                                             params, texts, [data])
-        record = model_cache.lookup(fields)
+        record = None if self.refresh else model_cache.lookup(fields)
+        self._last.cached = record is not None
         if record is not None:
             return record["answer"]
         started = time.perf_counter()
@@ -172,12 +231,9 @@ class Sam3Client:
         None when SAM3 finds no package. Raise `Sam3Unavailable`."""
         data, _scale = self._sent_copy(image)
         answer = self._post(data)
-        found = answer.get("instances") or []
-        instances = [item for item in found if item.get("mask_png_b64")]
-        if not instances:
+        best = package_instance(answer.get("instances") or [])
+        if best is None:
             return None
-        best = max(instances, key=lambda item: (int(item.get("area") or 0),
-                                                float(item.get("score") or 0)))
         with Image.open(io.BytesIO(base64.b64decode(best["mask_png_b64"]))) as mask:
             mask = mask.convert("L")
         if mask.size != image.size:
@@ -202,6 +258,40 @@ class _Once:
         except Sam3Unavailable as exc:
             self.failure = str(exc)
             raise
+
+
+def _printed_on(bottle, item):
+    """Tell whether the instance `bottle` is a picture that is printed on the packet or
+    the box `item`. The boxes are in the pixels of the sent copy."""
+    if item.get("label") not in PRINTED_LABELS:
+        return False
+    inner, outer = bottle.get("box"), item.get("box")
+    if not inner or not outer or len(inner) != 4 or len(outer) != 4:
+        return False
+    width = min(inner[2], outer[2]) - max(inner[0], outer[0])
+    height = min(inner[3], outer[3]) - max(inner[1], outer[1])
+    own = (inner[2] - inner[0]) * (inner[3] - inner[1])
+    if width <= 0 or height <= 0 or own <= 0 or width * height < PRINTED_COVER * own:
+        return False
+    return (item.get("label") == "packet"
+            or int(bottle.get("area") or 0) < PRINTED_AREA * int(item.get("area") or 0))
+
+
+def package_instance(instances):
+    """Return the package instance of the SAM3 answer `instances`, or None when no
+    instance has a mask. The largest wine bottle wins, unless it is printed on a packet
+    or a box (`_printed_on`); then the largest of those wins. With no bottle, the largest
+    instance wins. The score decides between two instances of one area."""
+    size = lambda item: (int(item.get("area") or 0), float(item.get("score") or 0))
+    instances = [item for item in instances if item.get("mask_png_b64")]
+    if not instances:
+        return None
+    bottles = [item for item in instances if item.get("label") == BOTTLE_LABEL]
+    if not bottles:
+        return max(instances, key=size)
+    bottle = max(bottles, key=size)
+    hosts = [item for item in instances if _printed_on(bottle, item)]
+    return max(hosts, key=size) if hosts else bottle
 
 
 def open_image(path):
@@ -333,7 +423,7 @@ def derive_all(conn, db_path, originals, segmenter, log=print):
     segmenter = _Once(segmenter)
     out = Derivatives()
     for digest, path in originals.items():
-        if done.get(digest) in PRESENT_SETTINGS:
+        if done.get(digest) in PRESENT_SETTINGS or is_manual(done.get(digest)):
             out.present += 1
             continue
         try:

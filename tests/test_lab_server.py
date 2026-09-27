@@ -25,6 +25,8 @@ WINES = [
     ("wine-a", "Вино a", "Винодельня", "Красное", "Рубиновый", "Кубань",
      None, "Описание a", "a.webp", "Removed", "import"),
 ]
+# The form of `wine_code.modified_at` (schema 026).
+CODE_TIME_RE = r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$"
 
 
 class LabServerTest(unittest.TestCase):
@@ -340,6 +342,9 @@ class LabServerTest(unittest.TestCase):
         for route, key, value, stored, list_key in cases:
             status, body = self.post_code(route, "wine-b", key, value)
             self.assertEqual(status, 200, route)
+            added = body.pop("modified_at")
+            self.assertEqual(list(added), [stored])
+            self.assertRegex(added[stored], CODE_TIME_RE)
             self.assertEqual(body, {"ok": True, "slug": "wine-b", key: stored,
                                     list_key: [stored], "total": 1})
         data = json.loads(self.request("/api/dataset")[2])
@@ -362,6 +367,25 @@ class LabServerTest(unittest.TestCase):
             self.assertEqual(self.post_code("/api/dataset-gtin", "wine-b", "gtin", value)[0], 200)
         data = json.loads(self.request("/api/dataset")[2])
         self.assertEqual(data["records"][0]["_gtins"], ["04640005351194", "04640005350852"])
+
+    def test_code_times_give_the_insert_time_of_each_value(self):
+        # Schema 026: a trigger sets `modified_at` at the insert. A row that is older than
+        # 026 keeps NULL.
+        for value in ("4640005351194", "4640005350852"):
+            self.post_code("/api/dataset-gtin", "wine-b", "gtin", value)
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("UPDATE wine_code SET modified_at = NULL WHERE value = ?",
+                         ("04640005350852",))
+        conn.close()
+        data = json.loads(self.request("/api/dataset")[2])
+        times = data["records"][0]["_code_times"]
+        self.assertEqual(set(times), {"gtin", "qr_url"})
+        self.assertEqual(sorted(times["gtin"]), ["04640005350852", "04640005351194"])
+        self.assertRegex(times["gtin"]["04640005351194"], CODE_TIME_RE)
+        self.assertIsNone(times["gtin"]["04640005350852"])
+        self.assertEqual(times["qr_url"], {})
+        self.assertEqual(data["records"][1]["_code_times"], {"gtin": {}, "qr_url": {}})
 
     def test_two_wines_share_one_value(self):
         # wine-a is Removed. A write is allowed for a wine in each state.
@@ -408,6 +432,7 @@ class LabServerTest(unittest.TestCase):
         self.post_code("/api/dataset-gtin", "wine-a", "gtin", "4640005351194")
         status, body = self.delete_code("/api/dataset-gtin", "wine-b", "gtin", "04640005351194")
         self.assertEqual(status, 200)
+        self.assertEqual(list(body.pop("modified_at")), ["04640005350852"])
         self.assertEqual(body, {"ok": True, "slug": "wine-b", "removed": "04640005351194",
                                 "gtins": ["04640005350852"], "total": 2})
         self.assertEqual(self.codes(), [("wine-b", "gtin", "04640005350852"),
@@ -428,7 +453,7 @@ class LabServerTest(unittest.TestCase):
             self.delete_code("/api/dataset-gtin", "wine-b", "gtin", "4631168664979")[0], 404)
         self.assertEqual(len(self.codes()), 2)
 
-    # The Atlas Core product of a wine: plan 15.
+    # The Atlas Core products of a wine: plans 15 and 54.
     UUID_1 = "6062ada1-1c2b-4f3e-9a8b-0123456789ab"
     UUID_2 = "7a1b2c3d-0000-4000-8000-00000000000f"
     UUID_3 = "00000000-1111-4222-8333-444444444444"
@@ -438,8 +463,8 @@ class LabServerTest(unittest.TestCase):
             {"slug": slug, "product_uuid": product_uuid}).encode())
         return status, json.loads(body)
 
-    def delete_atlas(self, slug):
-        query = urllib.parse.urlencode({"slug": slug})
+    def delete_atlas(self, slug, product_uuid):
+        query = urllib.parse.urlencode({"slug": slug, "product_uuid": product_uuid})
         status, _, body = self.request("/api/dataset-atlas-binding?" + query, "DELETE")
         return status, json.loads(body)
 
@@ -464,35 +489,50 @@ class LabServerTest(unittest.TestCase):
         self.assertTrue(data["atlas_binding_editor"])
         self.assertEqual((data["atlas_bindings"], data["atlas_manual_bindings"]), (1, 0))
         first, second = data["records"]
-        self.assertEqual((first["_atlas_product_uuid"], first["_atlas_binding_source"]),
-                         (self.UUID_1, "automatic"))
-        self.assertEqual((second["_atlas_product_uuid"], second["_atlas_binding_source"]),
-                         (None, None))
+        self.assertEqual(first["_atlas_products"],
+                         [{"product_uuid": self.UUID_1, "source": "automatic"}])
+        self.assertEqual(second["_atlas_products"], [])
+        self.assertNotIn("_atlas_product_uuid", first)
 
-    def test_manual_binding_wins_and_its_remove_shows_the_automatic_one(self):
+    def test_a_manual_product_adds_to_the_automatic_one(self):
         self.add_automatic("wine-b", self.UUID_1)
         status, body = self.post_atlas("wine-b", " %s " % self.UUID_2.upper())
         self.assertEqual(status, 200)
         self.assertEqual(body, {"ok": True, "slug": "wine-b", "product_uuid": self.UUID_2,
-                                "source": "manual", "total": 1, "manual": 1})
+                                "source": "manual",
+                                "products": [
+                                    {"product_uuid": self.UUID_1, "source": "automatic"},
+                                    {"product_uuid": self.UUID_2, "source": "manual"}],
+                                "total": 2, "manual": 1})
         record = json.loads(self.request("/api/dataset")[2])["records"][0]
-        self.assertEqual((record["_atlas_product_uuid"], record["_atlas_binding_source"]),
-                         (self.UUID_2, "manual"))
-        # A second POST replaces the manual row.
-        self.assertEqual(self.post_atlas("wine-b", self.UUID_3)[1]["product_uuid"], self.UUID_3)
-        status, body = self.delete_atlas("wine-b")
+        self.assertEqual(record["_atlas_products"], body["products"])
+        # A third product. A UUID that the wine has, of either source, answers 409.
+        self.assertEqual(self.post_atlas("wine-b", self.UUID_3)[1]["total"], 3)
+        for product in (self.UUID_1, self.UUID_3.upper()):
+            status, body = self.post_atlas("wine-b", product)
+            self.assertEqual(status, 409)
+            self.assertIn("already has the Atlas product", body["error"])
+        # A DELETE removes one product of either source.
+        status, body = self.delete_atlas("wine-b", self.UUID_1.upper())
         self.assertEqual(status, 200)
-        self.assertEqual(body, {"ok": True, "slug": "wine-b", "removed": self.UUID_3,
-                                "product_uuid": self.UUID_1, "source": "automatic",
-                                "total": 1, "manual": 0})
-        self.assertEqual(self.atlas_rows(), [("wine-b", "automatic", self.UUID_1)])
+        self.assertEqual(body, {"ok": True, "slug": "wine-b", "removed": self.UUID_1,
+                                "removed_source": "automatic",
+                                "products": [
+                                    {"product_uuid": self.UUID_2, "source": "manual"},
+                                    {"product_uuid": self.UUID_3, "source": "manual"}],
+                                "total": 2, "manual": 2})
+        self.assertEqual(self.atlas_rows(), [("wine-b", "manual", self.UUID_3),
+                                             ("wine-b", "manual", self.UUID_2)])
+        status, body = self.delete_atlas("wine-b", self.UUID_2)
+        self.assertEqual((status, body["removed_source"], body["total"], body["manual"]),
+                         (200, "manual", 1, 1))
+        self.assertEqual(self.atlas_rows(), [("wine-b", "manual", self.UUID_3)])
 
     def test_remove_of_the_only_binding_leaves_none(self):
         # wine-a is Removed. A write is allowed for a wine in each state.
         self.assertEqual(self.post_atlas("wine-a", self.UUID_1)[0], 200)
-        status, body = self.delete_atlas("wine-a")
-        self.assertEqual((status, body["product_uuid"], body["source"], body["total"]),
-                         (200, None, None, 0))
+        status, body = self.delete_atlas("wine-a", self.UUID_1)
+        self.assertEqual((status, body["products"], body["total"]), (200, [], 0))
         self.assertEqual(self.atlas_rows(), [])
 
     def test_atlas_binding_errors(self):
@@ -502,13 +542,17 @@ class LabServerTest(unittest.TestCase):
                  (self.post_atlas("wine-b", 5), 400, "MUST be a string"),
                  (self.post_atlas("", self.UUID_1), 400, "no wine slug"),
                  (self.post_atlas("wine-none", self.UUID_1), 404, "no wine"),
-                 # wine-b has an automatic row alone.
-                 (self.delete_atlas("wine-b"), 404, "no manual Atlas binding"),
-                 (self.delete_atlas("wine-none"), 404, "no wine"))
+                 (self.delete_atlas("wine-b", "not-a-uuid"), 400, "not a valid UUID"),
+                 # wine-a has no row. wine-b has no row of UUID_2.
+                 (self.delete_atlas("wine-a", self.UUID_1), 404, "has no Atlas product"),
+                 (self.delete_atlas("wine-b", self.UUID_2), 404, "has no Atlas product"),
+                 (self.delete_atlas("wine-none", self.UUID_1), 404, "no wine"))
         for (status, body), code, message in cases:
             self.assertEqual(status, code, message)
             self.assertIn(message, body["error"])
         self.assertEqual(self.request("/api/dataset-atlas-binding", "DELETE")[0], 400)
+        self.assertEqual(self.request("/api/dataset-atlas-binding?slug=wine-b", "DELETE")[0],
+                         400)
         self.assertEqual(self.request("/api/dataset-atlas-binding", "PUT")[0], 503)
         self.assertEqual(self.atlas_rows(), [("wine-b", "automatic", self.UUID_1)])
 
@@ -638,6 +682,59 @@ class LabServerTest(unittest.TestCase):
         self.assertEqual(self.request("/api/dataset-favorite", "POST", b"not json")[0], 400)
         self.assertEqual(self.request("/api/dataset-favorite", "DELETE")[0], 503)
         self.assertEqual(json.loads(self.request("/api/dataset")[2])["favorites"], 0)
+
+    # The wine type: plan 52.
+    def post_beverage_type(self, body):
+        status, _, text = self.request("/api/dataset-beverage-type", "POST",
+                                       json.dumps(body).encode())
+        return status, json.loads(text)
+
+    def test_beverage_type_route_sets_changes_and_removes(self):
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertEqual(data["beverage_types"], {"4": 0, "44": 0})
+        self.assertEqual([r["_beverage_type_code"] for r in data["records"]], [None, None])
+        # wine-a is Removed. A wine type MAY have each state.
+        status, body = self.post_beverage_type({"slug": "wine-a", "beverage_type_code": "44"})
+        self.assertEqual((status, body), (200, {
+            "ok": True, "slug": "wine-a", "beverage_type_code": "44",
+            "beverage_types": {"4": 0, "44": 1}}))
+        self.post_beverage_type({"slug": "wine-b", "beverage_type_code": "4"})
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertEqual(data["beverage_types"], {"4": 1, "44": 1})
+        self.assertEqual([r["_beverage_type_code"] for r in data["records"]], ["4", "44"])
+        # The body names the new value, so a repeated request gives the same result.
+        body = self.post_beverage_type({"slug": "wine-a", "beverage_type_code": "44"})[1]
+        self.assertEqual(body["beverage_types"], {"4": 1, "44": 1})
+        body = self.post_beverage_type({"slug": "wine-a", "beverage_type_code": "4"})[1]
+        self.assertEqual(body["beverage_types"], {"4": 2, "44": 0})
+        status, body = self.post_beverage_type({"slug": "wine-a", "beverage_type_code": None})
+        self.assertEqual((status, body["beverage_type_code"], body["beverage_types"]),
+                         (200, None, {"4": 1, "44": 0}))
+        self.assertEqual(self.post_beverage_type(
+            {"slug": "wine-a", "beverage_type_code": None})[0], 200)
+        data = json.loads(self.request("/api/dataset")[2])
+        self.assertEqual([r["_beverage_type_code"] for r in data["records"]], ["4", None])
+
+    def test_beverage_type_errors(self):
+        cases = (({"slug": "wine-b", "beverage_type_code": 4}, 400, '"4", "44", or null'),
+                 ({"slug": "wine-b", "beverage_type_code": "440"}, 400, '"4", "44", or null'),
+                 ({"slug": "wine-b", "beverage_type_code": ""}, 400, '"4", "44", or null'),
+                 ({"slug": "wine-b", "beverage_type_code": ["4"]}, 400, '"4", "44", or null'),
+                 # A body with no key is an error, not a remove of the type.
+                 ({"slug": "wine-b"}, 400, '"4", "44", or null'),
+                 ({"slug": "", "beverage_type_code": "4"}, 400, "no wine slug"),
+                 ({"beverage_type_code": "4"}, 400, "no wine slug"),
+                 ({"slug": "wine-none", "beverage_type_code": "4"}, 404, "no wine"))
+        for body, code, message in cases:
+            with self.subTest(body=body):
+                status, answer = self.post_beverage_type(body)
+                self.assertEqual(status, code)
+                self.assertIn(message, answer["error"])
+        self.assertEqual(self.request("/api/dataset-beverage-type", "POST", b"not json")[0],
+                         400)
+        self.assertEqual(self.request("/api/dataset-beverage-type", "DELETE")[0], 503)
+        self.assertEqual(json.loads(self.request("/api/dataset")[2])["beverage_types"],
+                         {"4": 0, "44": 0})
 
     def test_unknown_route_is_not_found(self):
         self.assertEqual(self.request("/nothing")[0], 404)
@@ -874,8 +971,8 @@ class LabServerTest(unittest.TestCase):
         with conn:
             image_descriptions.record_vlm(conn, sha, {
                 "package_type": "can", "subject_scope": "full_package",
-                "package_view": "front", "content_roles": ["front_label"]},
-                "qwen3.5-9b-nvfp4", "Model")
+                "package_view": "front", "content_roles": ["front_label"],
+                "presentation_mode": "on_package"}, "qwen3.5-9b-nvfp4", "Model")
         conn.close()
         record = {"key": "k", "created": "t", "ms": 5, "request": {"prompt": []},
                   "answer": {"choices": [{"message": {"content": "{}"}}]}}

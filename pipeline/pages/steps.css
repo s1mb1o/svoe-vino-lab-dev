@@ -1,0 +1,142 @@
+/* The step view of one photo (plan 41). `/runs` shows it in the step popup of a query
+   photo, and `/recognize` shows it under the drop area (plan 55). `lab_pages.page` puts
+   this file in place of the mark line STEPS_CSS of a page.
+
+   The look follows the step view of drink-atlas-recognize on port 8162: rounds with a
+   clock, step cards with a lane stripe, a monospace meta line, and state pills. The lane
+   and pill colours are the colours of 8162; the rest takes the lab theme. The popup
+   shell of `/runs` stays in `runs.html`. */
+:root {
+  --sp-lane-a: #eef4fb; --sp-lane-a-edge: #7aa7d4;
+  --sp-lane-b: #f4f0fa; --sp-lane-b-edge: #a48ac9;
+  --sp-ok: #1f7a43; --sp-ok-bg: #e4f4ea;
+  --sp-failed: #a32020; --sp-failed-bg: #fbe6e6;
+  --sp-skipped: #5c6572; --sp-skipped-bg: #e9ecf1;
+  --sp-cached: #9a6400; --sp-cached-bg: #fdf1d8;
+  --sp-checker-a: #e4e7ec; --sp-checker-b: #f4f6f8;
+  --sp-box: #d4145a;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sp-lane-a: #16202b; --sp-lane-a-edge: #3c6c96;
+    --sp-lane-b: #1e1b2b; --sp-lane-b-edge: #6b5896;
+    --sp-ok: #6ede9c; --sp-ok-bg: #16311f;
+    --sp-failed: #f08a8a; --sp-failed-bg: #3a1c1c;
+    --sp-skipped: #9aa3b2; --sp-skipped-bg: #262b34;
+    --sp-cached: #f0c063; --sp-cached-bg: #362a12;
+    --sp-checker-a: #2a2f38; --sp-checker-b: #343a45;
+    --sp-box: #ff5c9a;
+  }
+}
+.sp-note { font-size: 12px; margin: 12px 0 0; }
+.sp-note.err { color: var(--exc); }
+.round { margin-top: 20px; }
+.round > h3 { font-size: 12px; letter-spacing: .09em; text-transform: uppercase;
+              color: var(--muted); margin: 0 0 8px; display: flex; align-items: baseline;
+              gap: 10px; flex-wrap: wrap; }
+.round > h3 .note { text-transform: none; letter-spacing: 0; font-weight: 400;
+                    flex: 1 1 auto; }
+.round > h3 .clock { text-transform: none; letter-spacing: 0; font: 700 12px var(--mono);
+                     color: var(--text); white-space: nowrap; display: flex; gap: 8px;
+                     align-items: baseline; }
+.round > h3 .clock em { font-style: normal; font-weight: 400; color: var(--muted); }
+.steps { display: grid; gap: 10px; }
+.step { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+        overflow: hidden; }
+.step[data-lane="0"] { background: var(--sp-lane-a); border-left: 3px solid var(--sp-lane-a-edge); }
+.step[data-lane="1"] { background: var(--sp-lane-b); border-left: 3px solid var(--sp-lane-b-edge); }
+.step > .head { display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+                cursor: pointer; flex-wrap: wrap; }
+.step > .head:hover { background: var(--panel-2); }
+.step .id { font: 12px var(--mono); color: var(--muted); }
+.step .label { font-weight: 600; font-size: 15px; flex: 1 1 auto; }
+.step .meta { font: 11px var(--mono); color: var(--muted); white-space: nowrap; }
+.pill { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+        border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+.pill.done { color: var(--sp-ok); background: var(--sp-ok-bg); }
+.pill.failed { color: var(--sp-failed); background: var(--sp-failed-bg); }
+.pill.skipped { color: var(--sp-skipped); background: var(--sp-skipped-bg); }
+.pill.cached { color: var(--sp-cached); background: var(--sp-cached-bg); }
+.step > .body { border-top: 1px solid var(--line); padding: 12px; display: grid; gap: 12px; }
+.step > .body[hidden] { display: none; }
+.step .err { color: var(--sp-failed); background: var(--sp-failed-bg); border-radius: 10px;
+             padding: 8px 10px; font-size: 14px; }
+.step .snote { font-size: 12px; }
+.artifacts { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
+.artifacts figure { margin: 0; border: 1px solid var(--line); border-radius: 8px;
+                    overflow: hidden; background: var(--panel-2); max-width: 190px; }
+.artifacts figure.wide { max-width: min(420px, 100%); }
+.artifacts .frame { position: relative; line-height: 0; }
+.artifacts img { display: block; width: 100%; height: auto; max-height: 230px;
+                 object-fit: contain; cursor: zoom-in; }
+.artifacts figure.wide img { max-height: 420px; }
+/* A cut keeps its alpha channel: a checker plate shows the transparent part. */
+.artifacts img.alpha {
+  background-image: linear-gradient(45deg, var(--sp-checker-a) 25%, transparent 25%,
+                                    transparent 75%, var(--sp-checker-a) 75%),
+                    linear-gradient(45deg, var(--sp-checker-a) 25%, transparent 25%,
+                                    transparent 75%, var(--sp-checker-a) 75%);
+  background-color: var(--sp-checker-b); background-size: 16px 16px;
+  background-position: 0 0, 8px 8px;
+}
+.artifacts svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.artifacts svg rect { fill: none; stroke: var(--sp-box); stroke-width: 3;
+                      vector-effect: non-scaling-stroke; }
+.artifacts figcaption { font: 10px/1.35 var(--mono); color: var(--muted); padding: 4px 6px;
+                        text-align: center; overflow-wrap: anywhere; }
+.chk { display: inline-block; margin-top: 2px; border-radius: 999px; padding: 0 6px;
+       font-weight: 700; }
+.chk.same { color: var(--sp-ok); background: var(--sp-ok-bg); }
+.chk.changed { color: var(--sp-failed); background: var(--sp-failed-bg); }
+/* The candidate cards and the VLM box of a step. `runs.html` has the same rules for its
+   table; these copies serve a page with no such rules. `:where` keeps the specificity of
+   the rules of `runs.html`, and the values are equal, so the popup of `/runs` does not
+   change. */
+:where(.step) .cand {
+  width: 104px; background: var(--panel-2); border: 2px solid transparent;
+  border-radius: 8px; padding: 5px;
+}
+:where(.step) .cand.truth { border-color: var(--pos); background: var(--pos-bg); }
+:where(.step) .cand.forbidden { border-color: var(--exc); background: var(--exc-bg); }
+:where(.step) .cand img, :where(.step) .cand .nobottle {
+  width: 92px; height: 116px; object-fit: contain; display: block;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+}
+:where(.step) .cand .nobottle { display: flex; align-items: center; justify-content: center;
+                                color: var(--muted); font-size: 10px; text-align: center; }
+:where(.step) .cand .r { font-size: 11px; color: var(--muted); display: flex;
+                         justify-content: space-between; }
+:where(.step) .cand .sl { font-size: 10px; word-break: break-all; line-height: 1.25;
+                          margin-top: 2px; }
+:where(.step) .vlm {
+  font-size: 12px; line-height: 1.4; background: var(--panel-2);
+  border: 1px solid var(--accent); border-radius: 8px; padding: 6px 9px;
+}
+:where(.step) .vlm .vh { font-weight: 650; }
+:where(.step) .vlm .q { margin-top: 3px; }
+:where(.step) .vlm .a { font-weight: 650; color: var(--accent); }
+:where(.step) .vlm .sc, :where(.step) .vlm .mv { margin-top: 3px; color: var(--muted); }
+:where(.step) .vlm .sc b, :where(.step) .vlm .mv b { color: var(--text); font-weight: 600; }
+:where(.step) .vlm .err { margin-top: 3px; color: var(--exc); }
+.slist h4 { font-size: 12px; margin: 0 0 6px; font-weight: 600; color: var(--muted); }
+.slist .snote { margin: 0 0 6px; }
+.srow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; align-items: stretch; }
+.srow .cand { flex: none; }
+.srow .cand img { cursor: zoom-in; background: #fff; }
+.cand .dt { font-size: 10px; color: var(--muted); margin-top: 2px; word-break: break-all; }
+.mv-up { color: var(--pos); font-weight: 700; margin-left: 3px; }
+.mv-down { color: var(--exc); font-weight: 700; margin-left: 3px; }
+.step .vlm { max-width: none; }
+details.data > summary { cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted);
+                         user-select: none; }
+details.data pre { margin: 8px 0 0; background: var(--panel-2); border-radius: 8px; padding: 10px;
+                   overflow: auto; max-height: 340px; font: 12px/1.45 var(--mono); }
+.sp-total { margin: 18px 0 0; padding: 10px 14px; background: var(--panel);
+            border: 1px solid var(--line); border-radius: 10px; font: 13px var(--mono);
+            color: var(--muted); }
+.sp-total strong { color: var(--text); font-size: 15px; }
+@media (max-width: 720px) {
+  .round > h3 .note { flex: 1 1 100%; order: 3; }
+  .step .meta { white-space: normal; overflow-wrap: anywhere; }
+}

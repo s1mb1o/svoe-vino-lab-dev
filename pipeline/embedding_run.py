@@ -37,6 +37,7 @@ its `backend` holds `kind: embedding` and `embedding: <the embedding entry>`.
 """
 import argparse
 import collections
+import contextlib
 import hashlib
 import os
 import sqlite3
@@ -62,6 +63,51 @@ DEFAULT_TOP_K = 10
 NO_INDEX = "no index: build it on /embedding"
 SCORE = ("the mean of the best cosine of the wine in each view of the photo; the current "
          "items of the index alone")
+# The version of the key `trace` of a row (plan 41).
+TRACE_VERSION = 1
+
+
+class Trace:
+    """The step trace of one photo (plan 41). Each step holds `id`, `start_ms`, and `ms`,
+    counted from the start of the photo, and `out`, the result of the step. A SAM3 step
+    also holds `cached`. A view with no input holds `skipped`, and a step that raised
+    holds `error`."""
+
+    def __init__(self):
+        self.started = time.perf_counter()
+        self.steps = []
+
+    def now(self):
+        return (time.perf_counter() - self.started) * 1000
+
+    @contextlib.contextmanager
+    def step(self, step_id, **keys):
+        record = dict(id=step_id, **keys)
+        start = self.now()
+        record["start_ms"] = round(start, 1)
+        self.steps.append(record)
+        try:
+            yield record
+        except Exception as exc:
+            record["error"] = str(exc)
+            raise
+        finally:
+            record["ms"] = round(self.now() - start, 1)
+
+    def value(self):
+        return {"v": TRACE_VERSION, "steps": self.steps}
+
+
+def _step(trace, step_id, **keys):
+    """Return the step context of `trace`, or a context that records nothing."""
+    return trace.step(step_id, **keys) if trace is not None else contextlib.nullcontext({})
+
+
+def _cached(segmenter):
+    """Tell whether the last SAM3 call of this thread read `model_cache`; None when the
+    client does not tell."""
+    probe = getattr(segmenter, "cached", None)
+    return probe() if callable(probe) else None
 
 
 class Sam3Once:
@@ -89,6 +135,9 @@ class Sam3Once:
     def instances(self, image, texts, masks=True):
         return self._call(self.client.instances, image, texts, masks)
 
+    def cached(self):
+        return _cached(self.client)
+
 
 class CachedSam3(derive.Sam3Client):
     """A SAM3 client that reads the answers of `data/cache/sam3/` alone. It sends no
@@ -99,16 +148,32 @@ class CachedSam3(derive.Sam3Client):
                                      "data/cache/sam3/")
 
 
-def cuts_of(image, targets, segmenter):
+# The rule of `derive.derive_image` that gave the package cut, by its settings text.
+PACKAGE_RULES = {derive.SETTINGS_ALPHA: "alpha", derive.SETTINGS_WHITE: "white",
+                 derive.SETTINGS_SEG: "sam3"}
+
+
+def cuts_of(image, targets, segmenter, trace=None):
     """Return target -> (the box, the processed image) of one opened photo. A target
-    that SAM3 did not find is None. Raise `derive.Sam3Unavailable`."""
+    that SAM3 did not find is None. Raise `derive.Sam3Unavailable`. `trace` gets the
+    steps `sam3-package` and `sam3-label` (plan 41)."""
     out = {}
     if "package" in targets:
-        _method, _settings, processed, box = derive.derive_image(image, segmenter)
+        with _step(trace, "sam3-package") as step:
+            method, settings, processed, box = derive.derive_image(image, segmenter)
+            rule = PACKAGE_RULES.get(settings)
+            # A transparent photo gives its cut with no SAM3 call.
+            step["cached"] = _cached(segmenter) if rule != "alpha" else None
+            step["out"] = {"method": method, "rule": rule, "box": list(box),
+                           "size": list(processed.size)}
         out["package"] = (box, processed)
     if "label" in targets:
-        instances, _scale = segmenter.instances(image, alternatives.DETECT_TEXTS)
-        cut = alternatives.label_cut_of(image, instances)
+        with _step(trace, "sam3-label") as step:
+            instances, _scale = segmenter.instances(image, alternatives.DETECT_TEXTS)
+            cut = alternatives.label_cut_of(image, instances)
+            step["cached"] = _cached(segmenter)
+            step["out"] = ({"found": True, "method": cut[0], "box": list(cut[2]),
+                            "size": list(cut[1].size)} if cut else {"found": False})
         out["label"] = (cut[2], cut[1]) if cut else None
     return out
 
@@ -122,26 +187,39 @@ def _no_cut():
     raise embeddings.ItemError("a view with no step `segment` has no processed file")
 
 
+def cut_targets(views):
+    """Return the SAM3 targets that the views `views` (view -> steps) need."""
+    return {segment_target(steps) for steps in views.values()} - {None}
+
+
+def view_input(image, steps, cuts):
+    """Return (the model input of one view as an RGB image, None), or (None, the reason)
+    when the view has no input. `cuts` is the answer of `cuts_of`. Raise
+    `embeddings.ItemError`."""
+    target = segment_target(steps)
+    if target is None:
+        return embeddings.apply_steps(image, steps, None, _no_cut), None
+    cut = cuts.get(target)
+    if cut is None:
+        return None, "SAM3 found no %s" % target
+    box, processed = cut
+    return embeddings.apply_steps(image, steps, box, lambda p=processed: p), None
+
+
 def query_inputs(image, views, segmenter):
     """Return (view -> the model input as an RGB image, view -> the reason of a view with
     no input) of one opened photo. `views` maps a view to its steps. SAM3 cuts the photo
     only for a view whose first step is `segment`. A view with no `segment`, for example
     of a pipeline with its own `views`, takes the photo as it is into its steps. Raise
     `derive.Sam3Unavailable` and `embeddings.ItemError`."""
-    targets = {segment_target(steps) for steps in views.values()} - {None}
-    cuts = cuts_of(image, targets, segmenter)
+    cuts = cuts_of(image, cut_targets(views), segmenter)
     inputs, missing = {}, {}
     for view, steps in views.items():
-        target = segment_target(steps)
-        if target is None:
-            inputs[view] = embeddings.apply_steps(image, steps, None, _no_cut)
-            continue
-        cut = cuts.get(target)
-        if cut is None:
-            missing[view] = "SAM3 found no %s" % target
-            continue
-        box, processed = cut
-        inputs[view] = embeddings.apply_steps(image, steps, box, lambda p=processed: p)
+        prepared, reason = view_input(image, steps, cuts)
+        if prepared is None:
+            missing[view] = reason
+        else:
+            inputs[view] = prepared
     return inputs, missing
 
 
@@ -250,35 +328,66 @@ class Catalogue:
             out.extend(found)
         return out
 
-    def rank(self, query, top_k):
-        """Return the candidates of the unit vectors `query` (view -> vector)."""
+    def view_top(self, view, top, cosines, top_k):
+        """Return the `top_k` wines of one view alone, the highest best cosine first (plan
+        41): the slug, the cosine, and the item of the best cosine. `top` holds the best
+        cosine of each wine, and `cosines` the cosine of each matrix row."""
+        found = np.flatnonzero(np.isfinite(top))
+        order = sorted(found.tolist(), key=lambda n: (-top[n], self.slugs[n]))[:top_k]
+        out = []
+        for number in order:
+            position = max(self.rows_of[view][number], key=lambda p: cosines[p])
+            item = self.items[view][position]
+            out.append({"slug": self.slugs[number], "cosine": round(float(top[number]), 4),
+                        "sha256": item["sha256"], "type": item["type"],
+                        "embedding_hash": item["embedding_hash"]})
+        return out
+
+    def rank(self, query, top_k, trace=None, only=None):
+        """Return the candidates of the unit vectors `query` (view -> vector). `trace` gets
+        one step `search` for each view, with the top list of that view, and the step
+        `score` (plan 41). `only`, when set, holds the slugs that the rank MAY give: the
+        wines of a shared GTIN (plan 58). Each other wine gets no score."""
         total = np.zeros(len(self.slugs))
         count = np.zeros(len(self.slugs), dtype=np.int64)
         best, cosines = {}, {}
+        wanted = None if only is None else set(only)
+        allowed = None if wanted is None else np.array([s in wanted for s in self.slugs],
+                                                        dtype=bool)
         for view, vector in query.items():
-            if view not in self.views:
-                continue
-            matrix, numbers = self.views[view]
-            top = np.full(len(self.slugs), -np.inf)
-            cosines[view] = matrix @ vector
-            np.maximum.at(top, numbers, cosines[view])
-            found = np.isfinite(top)
-            total[found] += top[found]
-            count[found] += 1
-            best[view] = top
-        present = np.flatnonzero(count)
-        score = total[present] / count[present]
-        order = sorted(range(len(present)),
-                       key=lambda i: (-score[i], self.slugs[present[i]]))[:top_k]
-        cands = []
-        for rank, i in enumerate(order, 1):
-            number = present[i]
-            cand = {"slug": self.slugs[number], "score": round(float(score[i]), 4),
-                    "rank": rank}
-            for view, top in best.items():
-                cand[view] = round(float(top[number]), 4) if np.isfinite(top[number]) else None
-            cand["items"] = self.items_of(number, cosines)
-            cands.append(cand)
+            with _step(trace, "search", view=view) as step:
+                if view not in self.views:
+                    step["skipped"] = "the index holds no vector of the view %s" % view
+                    continue
+                matrix, numbers = self.views[view]
+                top = np.full(len(self.slugs), -np.inf)
+                cosines[view] = matrix @ vector
+                np.maximum.at(top, numbers, cosines[view])
+                if allowed is not None:
+                    top[~allowed] = -np.inf
+                found = np.isfinite(top)
+                total[found] += top[found]
+                count[found] += 1
+                best[view] = top
+                if trace is not None:
+                    step["out"] = {"rows": int(len(numbers)), "wines": int(found.sum()),
+                                   "top": self.view_top(view, top, cosines[view], top_k)}
+        with _step(trace, "score") as step:
+            present = np.flatnonzero(count)
+            score = total[present] / count[present]
+            order = sorted(range(len(present)),
+                           key=lambda i: (-score[i], self.slugs[present[i]]))[:top_k]
+            cands = []
+            for rank, i in enumerate(order, 1):
+                number = present[i]
+                cand = {"slug": self.slugs[number], "score": round(float(score[i]), 4),
+                        "rank": rank}
+                for view, top in best.items():
+                    cand[view] = (round(float(top[number]), 4) if np.isfinite(top[number])
+                                  else None)
+                cand["items"] = self.items_of(number, cosines)
+                cands.append(cand)
+            step["out"] = {"wines": int(len(present))}
         return cands
 
 
@@ -320,40 +429,60 @@ class EmbeddingBackend:
         with self._lock:
             return self.model.embed(images)
 
-    def ask(self, path):
-        """Return `(candidates, latency_ms, http_status, error)`, as a real backend."""
-        started = time.perf_counter()
+    def ask(self, path, only=None):
+        """Return `(candidates, latency_ms, http_status, error, trace)`, as a real backend
+        with the step trace of the photo (plan 41). `benchmark.py` writes the trace into
+        the row. `only` limits the rank to these slugs (plan 58, `Catalogue.rank`)."""
+        trace = Trace()
 
         def ms():
-            return int(round((time.perf_counter() - started) * 1000))
+            return int(round(trace.now()))
 
         try:
-            try:
-                image, _ = derive.open_image(path)
-            except OSError as exc:
-                raise embeddings.ItemError("Pillow cannot read the photo %s: %s" % (path, exc))
-            inputs, missing = query_inputs(image, self.views, self.segmenter)
-            if not inputs:
+            with trace.step("input") as step:
+                try:
+                    image, _ = derive.open_image(path)
+                except OSError as exc:
+                    raise embeddings.ItemError("Pillow cannot read the photo %s: %s"
+                                               % (path, exc))
+                step["out"] = {"width": image.width, "height": image.height}
+            cuts = cuts_of(image, cut_targets(self.views), self.segmenter, trace)
+            sent, missing = {}, {}
+            for view, steps in self.views.items():
+                with trace.step("view", view=view) as step:
+                    prepared, reason = view_input(image, steps, cuts)
+                    if prepared is None:
+                        missing[view] = step["skipped"] = reason
+                        continue
+                    data = embeddings.png_bytes(prepared)
+                    sent[view] = data
+                    step["out"] = {"width": prepared.width, "height": prepared.height,
+                                   "bytes": len(data),
+                                   "sha256": hashlib.sha256(data).hexdigest()}
+            if not sent:
                 raise embeddings.ItemError("no view has an input: %s" % "; ".join(
                     "%s: %s" % item for item in sorted(missing.items())))
-            views = list(inputs)
-            vectors = self._embed([embeddings.png_bytes(inputs[view]) for view in views])
-            query = {}
-            for view, vector in zip(views, vectors):
-                vector = np.asarray(vector, dtype=np.float32)
-                if vector.shape != (self.catalogue.dim,):
-                    raise build_embeddings.BackendError(
-                        "the model sent a vector of %d values; the index holds %d"
-                        % (vector.size, self.catalogue.dim))
-                norm = float(np.linalg.norm(vector))
-                if not np.isfinite(norm) or norm == 0.0:
-                    raise build_embeddings.BackendError("the model sent a vector of length "
-                                                        "%s" % norm)
-                query[view] = vector / norm
-            return self.catalogue.rank(query, self.top_k), ms(), 200, None
+            views = list(sent)
+            with trace.step("embed") as step:
+                vectors = self._embed([sent[view] for view in views])
+                query = {}
+                for view, vector in zip(views, vectors):
+                    vector = np.asarray(vector, dtype=np.float32)
+                    if vector.shape != (self.catalogue.dim,):
+                        raise build_embeddings.BackendError(
+                            "the model sent a vector of %d values; the index holds %d"
+                            % (vector.size, self.catalogue.dim))
+                    norm = float(np.linalg.norm(vector))
+                    if not np.isfinite(norm) or norm == 0.0:
+                        raise build_embeddings.BackendError("the model sent a vector of "
+                                                            "length %s" % norm)
+                    query[view] = vector / norm
+                step["out"] = {"views": views, "dim": self.catalogue.dim}
+            cands = self.catalogue.rank(query, self.top_k, trace, only)
+            return cands, ms(), 200, None, trace.value()
         except (derive.Sam3Unavailable, embeddings.ItemError,
                 build_embeddings.BackendError) as exc:
-            return [], ms(), None, str(exc)
+            return [], ms(), None, str(exc), trace.value()
 
 
 def find_pipeline(name, config_path=embeddings.CONFIG_PATH):
@@ -408,6 +537,7 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
                                      % (pipeline.name, pipeline.embedding))
     backend = build_backend(entry, settings.db_path, top_k, name=pipeline.name,
                             views=getattr(pipeline, "views", None))
+    backend.spec["workers"] = getattr(pipeline, "workers", 1)
     if getattr(pipeline, "rerank", None) is not None:
         import cluster_rerank  # noqa: E402  (plan 48, on demand)
         backend = cluster_rerank.ClusterRerank(backend, pipeline.rerank, config_path,

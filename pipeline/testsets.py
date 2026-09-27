@@ -1,14 +1,20 @@
 """The test sets of the lab database: the reads and the writes of the Testset page.
 
-The tables are `test_set`, `test_photo`, `test_wine_note`, `test_excluded`, and
-`test_variant`. The database is the source of the labels: the page writes here, and
-`export_testset.py` writes the JSON files of a set from the rows. The owner chose this on
-2026-09-25T12:40:00+0300. Read `docs/plans/24_testset-page.md`.
+The tables are `test_set`, `test_photo`, `test_photo_comment`, and `test_variant`. The
+database is the source of the labels: the page writes here, and `export_testset.py` writes
+the JSON files of a set from the rows. The owner chose this on 2026-09-25T12:40:00+0300.
+Read `docs/plans/24_testset-page.md`.
 
 One label entry of `review-labels.json` is one row of `test_photo`. `ENTRY_FIELDS` names
 the column of each JSON field and the test of a value that the column keeps exactly. A
 field with another value, and a field that no column names, goes into the JSON object
 `extra`. So the export gives the same entry back.
+
+One photo MAY have more than one comment: the rows of `test_photo_comment`, in time order.
+The JSON field `comments` of an entry holds them. The comments of a whole wine are the
+rows of `wine_comment` (`comments.py`); they belong to no set. The owner chose this on
+2026-09-26T18:08:34+0300 (plan 51). The exclusion of a slug went away with the same
+answer.
 
 A function that writes runs in the transaction of the caller. It sets `ts` of the entry
 and `test_set.edited_at`. The other fields of the entry do not change, as `_entry` of
@@ -30,6 +36,7 @@ file. An image that the set holds already keeps the file name of the set: a plac
 one image once, and another place MAY hold it again, for example for the label
 `negative`.
 """
+import datetime
 import hashlib
 import io
 import json
@@ -55,9 +62,18 @@ NULL_LABELS = ("positive", "unusable")
 DRAWER_SLUG = "__drawer__"
 DRAWER_NAME = "Drawer"
 TEXT_MAX = comments.TEXT_MAX
-REASON_MAX = 1000
 # The form of `ts`, as the old tool writes it: the local time with its offset.
 TS_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+# The form of `created_at` of a comment: `comments.now_utc`.
+UTC_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+UTC_RE = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
+# The keys of one comment in the JSON field `comments` of an entry.
+COMMENT_KEYS = ("created_at", "source", "text")
+# A wine note of the old tool that starts with the tag of a hunt agent came from a script
+# (plan 51). The tags are those of the hunt of 2026-09-16.
+AGENT_TAG_RE = re.compile(r"^(irec-\d|hunter-\d|cigar-r\d)")
+# The text of the comment that keeps the reason of an old exclusion (plan 51).
+EXCLUDED_PREFIX = "Excluded from the benchmark: "
 # `NN_confNNN.<ext>`: the rank and the confidence of a photo that the pipeline found.
 NAME_RE = re.compile(r"^(\d+)_conf(\d+)\.")
 RANK_RE = re.compile(r"^(\d+)_")
@@ -95,7 +111,6 @@ def _true(value):
 ENTRY_FIELDS = (
     ("label", "label", _label),
     ("delete", "marked_delete", _true),
-    ("comment", "comment", _comment),
     ("ts", "ts", _text),
     ("proposed", "proposed", _label),
     ("by", "proposed_by", _text),
@@ -108,8 +123,6 @@ ENTRY_FIELDS = (
 )
 BOX_COLUMNS = ("box_left", "box_top", "box_right", "box_bottom")
 ENTRY_COLUMNS = tuple(column for _, column, _ in ENTRY_FIELDS) + ("extra",) + BOX_COLUMNS
-# The fields of the note of a wine: (JSON field, column, test).
-NOTE_FIELDS = (("comment", "comment", _comment), ("ts", "ts", _text))
 
 
 class TestsetError(Exception):
@@ -123,6 +136,20 @@ class TestsetError(Exception):
 def now_local():
     """Return the present local time in the form of `ts`."""
     return time.strftime(TS_FORMAT)
+
+
+def utc_of(ts):
+    """Return the local time `ts` (the form of `TS_FORMAT`) as a UTC time in the form of
+    `created_at`, or None when `ts` is not in that form."""
+    if not isinstance(ts, str):
+        return None
+    try:
+        moment = datetime.datetime.strptime(ts, TS_FORMAT)
+    except ValueError:
+        return None
+    if moment.tzinfo is None:
+        return None
+    return moment.astimezone(datetime.timezone.utc).strftime(UTC_FORMAT)
 
 
 def oriented_size(path):
@@ -206,19 +233,89 @@ def entry_of(row):
     return entry
 
 
-def note_columns(note):
-    """Return (comment, ts, extra) of the note of one wine."""
-    values, extra = _split(note, NOTE_FIELDS)
-    return values.get("comment"), values.get("ts"), _extra_text(extra)
+def _comment_item(value):
+    """Tell whether `value` is one comment of the JSON field `comments`."""
+    return (isinstance(value, dict) and set(value) == set(COMMENT_KEYS)
+            and isinstance(value["created_at"], str) and bool(UTC_RE.match(value["created_at"]))
+            and value["source"] in comments.SOURCES and _storable(value["text"]))
 
 
-def note_of(comment, ts, extra):
-    """Return the JSON note of one wine, empty when the row holds no field."""
-    note = {key: value for key, value in (("comment", comment), ("ts", ts))
-            if value is not None}
-    if extra:
-        note.update(json.loads(extra))
-    return note
+def entry_comments(entry, now=None):
+    """Return (the entry with no comment field, the comments of the entry).
+
+    A comment is `{"created_at", "source", "text"}`. The field `comments` gives its
+    comments when each item is valid; else the field stays in the entry and so goes to
+    `extra`. The old field `comment` of the old tool gives one comment: its time is `ts`
+    of the entry in UTC, else `now`; its source is `script` when the entry has `by` (an
+    agent proposal), else `user`. The comments are in time order."""
+    rest, found = dict(entry), []
+    items = rest.get("comments")
+    if isinstance(items, list) and items and all(_comment_item(item) for item in items):
+        found += [{key: item[key] for key in COMMENT_KEYS} for item in items]
+        del rest["comments"]
+    if _storable(rest.get("comment")):
+        text = rest.pop("comment")
+        found.append({"created_at": utc_of(rest.get("ts")) or now or comments.now_utc(),
+                      "source": "script" if _text(rest.get("by")) else "user", "text": text})
+    found.sort(key=lambda item: item["created_at"])
+    return rest, found
+
+
+def _storable(text):
+    """Tell whether `text` fits the column `text` of a comment table as it is."""
+    return _comment(text) and not any(0xD800 <= ord(char) <= 0xDFFF for char in text)
+
+
+def note_source(text):
+    """Return the source of a wine note of the old tool: `script` for the tag of a hunt
+    agent at the start, else `user` (plan 51)."""
+    return "script" if AGENT_TAG_RE.match(text) else "user"
+
+
+def wine_note_comment(note, now):
+    """Return the wine comment of one note of the map `wines` of the old tool, or None
+    when the note holds no text. The rules are those of the schema file of plan 51."""
+    text = note.get("comment") if isinstance(note, dict) else None
+    if not _storable(text):
+        return None
+    return {"created_at": utc_of(note.get("ts")) or now, "source": note_source(text),
+            "text": text}
+
+
+def exclusion_comment(record, now):
+    """Return the wine comment of one entry of `excluded-slugs.json` of the old tool, or
+    None when it holds no reason. An entry is `{reason, ts}` or the short form `reason`."""
+    if isinstance(record, str):
+        reason, ts = record, None
+    elif isinstance(record, dict):
+        reason, ts = record.get("reason"), record.get("ts")
+    else:
+        return None
+    # `strip(" ")` is `trim` of SQLite, as the schema file uses it.
+    reason = reason.strip(" ") if isinstance(reason, str) else ""
+    if not reason or not _storable(EXCLUDED_PREFIX + reason):
+        return None
+    return {"created_at": utc_of(ts) or now, "source": "user", "text": EXCLUDED_PREFIX + reason}
+
+
+def comment_view(comment_id, created_at, source, text):
+    """Return one comment of a photo as the page and the export show it."""
+    return {"id": comment_id, "created_at": created_at, "source": source, "text": text}
+
+
+def photo_comments(conn, set_name, place=None, file_name=None):
+    """Return (place, file name) -> the comments of each photo of one set, or of one
+    photo, in time order. A photo with no comment has no key."""
+    sql = ("SELECT place, file_name, id, created_at, source, text FROM test_photo_comment "
+           "WHERE set_name = ?")
+    args = [set_name]
+    if place is not None:
+        sql += " AND place = ? AND file_name = ?"
+        args += [place, file_name]
+    out = {}
+    for row_place, row_file, *row in conn.execute(sql + " ORDER BY created_at, id", args):
+        out.setdefault((row_place, row_file), []).append(comment_view(*row))
+    return out
 
 
 def _has_field(row):
@@ -255,19 +352,21 @@ def photo_rows(conn, set_name, place=None, file_name=None):
     return [dict(zip(keys, row)) for row in conn.execute(sql, args)]
 
 
-def photo_view(row):
-    """Return one photo for the page: its file, its image, and its JSON entry."""
+def photo_view(row, notes=()):
+    """Return one photo for the page: its file, its image, its JSON entry, and its
+    comments (`notes`, the list of `photo_comments`)."""
     return {"file": row["file_name"], "sha256": row["sha256"],
             "url": "/images/%s/%s.%s" % (row["folder"], row["sha256"], row["extension"]),
             "width": row["width"], "height": row["height"],
-            "conf": photo_conf(row["file_name"]), "entry": entry_of(row)}
+            "conf": photo_conf(row["file_name"]), "entry": entry_of(row),
+            "comments": list(notes)}
 
 
 def counts(conn, set_name):
     """Return the counts of one set, with the keys of `count_state` of the old tool, and
-    `photos` and `boxes`."""
+    `photos` and `boxes`. `commented` counts the photos with a comment."""
     (photos, positive, negative, unusable, variant, reassigned, copied, deleting,
-     commented, proposed, no_match, no_match_pending, boxes, drawer) = conn.execute(
+     proposed, no_match, no_match_pending, boxes, drawer) = conn.execute(
         "SELECT count(*), "
         "count(*) FILTER (WHERE label = 'positive'), "
         "count(*) FILTER (WHERE label = 'negative'), "
@@ -276,7 +375,6 @@ def counts(conn, set_name):
         "count(*) FILTER (WHERE reassign_to IS NOT NULL), "
         "count(*) FILTER (WHERE json_extract(extra, '$.copy_to') IS NOT NULL), "
         "count(*) FILTER (WHERE marked_delete = 1), "
-        "count(*) FILTER (WHERE comment IS NOT NULL), "
         "count(*) FILTER (WHERE proposed IS NOT NULL AND label IS NULL), "
         "count(*) FILTER (WHERE place = ?), "
         "count(*) FILTER (WHERE reassign_to = ?), "
@@ -284,12 +382,12 @@ def counts(conn, set_name):
         "count(*) FILTER (WHERE place = ?) "
         "FROM test_photo WHERE set_name = ?",
         (NULL_SLUG, NULL_SLUG, DRAWER_SLUG, set_name)).fetchone()
-    notes = conn.execute("SELECT count(*) FROM test_wine_note WHERE set_name = ? "
-                         "AND comment IS NOT NULL", (set_name,)).fetchone()[0]
+    commented = conn.execute("SELECT count(*) FROM (SELECT DISTINCT place, file_name FROM "
+                             "test_photo_comment WHERE set_name = ?)", (set_name,)).fetchone()[0]
     return {"positive": positive, "negative": negative, "unusable": unusable,
             "variant": variant, "labelled": positive + negative + unusable + variant,
             "reassigned": reassigned, "copied": copied, "deleting": deleting,
-            "commented": commented, "proposed": proposed, "wine_notes": notes,
+            "commented": commented, "proposed": proposed,
             "no_match": no_match, "no_match_pending": no_match_pending,
             "photos": photos, "boxes": boxes, "drawer": drawer}
 
@@ -342,7 +440,8 @@ def set_view(conn, set_name, card_images):
     each `Active` and `Disabled` wine, and a row for each place that holds a photo of the
     set, also when its wine is `Removed` or is not in `wine_catalog`. The NULL row
     ("No Match") stands first, the Drawer row second (plan 36). The other rows are in
-    slug order; the page sorts them.
+    slug order; the page sorts them. `comments` of a row are the comments of the wine
+    (`wine_comment`, plan 51); a row that `wine_catalog` does not hold has none.
     """
     names = set_names(conn)
     if set_name is None:
@@ -355,15 +454,14 @@ def set_view(conn, set_name, card_images):
     wines = {row[0]: row[1:] for row in conn.execute(
         "SELECT wine_slug, name, producer, category, color, region, grapes, state "
         "FROM wine_catalog")}
+    notes = photo_comments(conn, set_name)
     by_place = {}
     for row in sorted(photo_rows(conn, set_name),
                       key=lambda r: (r["place"], photo_rank(r["file_name"]))):
-        by_place.setdefault(row["place"], []).append(photo_view(row))
+        by_place.setdefault(row["place"], []).append(
+            photo_view(row, notes.get((row["place"], row["file_name"]), ())))
     cards = card_images(conn)
-    excluded = {slug: (reason, ts) for slug, reason, ts in conn.execute(
-        "SELECT wine_slug, reason, ts FROM test_excluded WHERE set_name = ?", (set_name,))}
-    notes = {slug: comment for slug, comment in conn.execute(
-        "SELECT wine_slug, comment FROM test_wine_note WHERE set_name = ?", (set_name,))}
+    wine_notes = comments.comments(conn)
     variant = groups(conn, set_name)
     group_of = {slug: gid for gid, group in variant.items() for slug in group["slugs"]}
     slugs = {slug for slug, wine in wines.items() if wine[-1] in LISTED_STATES}
@@ -375,9 +473,7 @@ def set_view(conn, set_name, card_images):
     rows = [null, drawer] + [_wine_row(slug, wines.get(slug), cards.get(slug),
                                        by_place.get(slug, [])) for slug in sorted(slugs)]
     for row in rows:
-        reason, ts = excluded.get(row["slug"], (None, None))
-        row.update(excluded=row["slug"] in excluded, exclude_reason=reason or "",
-                   group=group_of.get(row["slug"]), note=notes.get(row["slug"]) or "")
+        row.update(group=group_of.get(row["slug"]), comments=wine_notes.get(row["slug"], []))
     edited_at, source_dir = conn.execute(
         "SELECT edited_at, source_dir FROM test_set WHERE set_name = ?", (set_name,)).fetchone()
     return {"sets": _sets(conn), "set": set_name, "edited_at": edited_at,
@@ -407,12 +503,7 @@ def _write_photo(conn, set_name, place, file_name, keys, change):
     values (column -> value) and MAY refuse the change with `TestsetError`. `keys` are the
     JSON fields that the change sets: they leave `extra`. Return the answer: the photo and
     the counts of the set."""
-    _check_set(conn, set_name)
-    _check_place(place, file_name)
-    found = photo_rows(conn, set_name, place, file_name)
-    if not found:
-        raise TestsetError(404, "the set %s has no photo %s/%s" % (set_name, place, file_name))
-    row = found[0]
+    row = _photo_row(conn, set_name, place, file_name)
     values = change(row)
     extra = json.loads(row["extra"]) if row["extra"] else {}
     for key in tuple(keys) + ("ts",):
@@ -425,8 +516,17 @@ def _write_photo(conn, set_name, place, file_name, keys, change):
                  % ", ".join("%s = ?" % column for column in ENTRY_COLUMNS),
                  [row[column] for column in ENTRY_COLUMNS] + [set_name, place, file_name])
     _edited(conn, set_name, now)
-    return {"ok": True, "set": set_name, "place": place, "file": file_name,
-            "photo": photo_view(row), "counts": counts(conn, set_name)}
+    return _photo_answer(conn, set_name, place, file_name, row)
+
+
+def _photo_answer(conn, set_name, place, file_name, row, **fields):
+    """Return the answer of a write to one photo: the photo with its comments, and the
+    counts of the set."""
+    notes = photo_comments(conn, set_name, place, file_name).get((place, file_name), ())
+    answer = {"ok": True, "set": set_name, "place": place, "file": file_name}
+    answer.update(fields)
+    answer.update(photo=photo_view(row, notes), counts=counts(conn, set_name))
+    return answer
 
 
 def set_label(conn, set_name, place, file_name, label):
@@ -452,21 +552,51 @@ def set_delete(conn, set_name, place, file_name, on):
                         lambda row: {"marked_delete": int(on)})
 
 
-def clean_note(text, what):
-    """Return the stored form of a comment or a note, or None for an empty text."""
-    if text is None or (isinstance(text, str) and not text.strip()):
-        return None
+def _photo_row(conn, set_name, place, file_name):
+    """Return the row of one photo, or raise `TestsetError`."""
+    _check_set(conn, set_name)
+    _check_place(place, file_name)
+    found = photo_rows(conn, set_name, place, file_name)
+    if not found:
+        raise TestsetError(404, "the set %s has no photo %s/%s" % (set_name, place, file_name))
+    return found[0]
+
+
+def add_photo_comment(conn, set_name, place, file_name, text, source=None):
+    """Add one comment to one photo. `source` is `user` (the page sends none) or
+    `script`. The write sets `test_set.edited_at`; `ts` of the entry does not change,
+    because a comment has its own time."""
+    row = _photo_row(conn, set_name, place, file_name)
+    source = "user" if source is None else source
     try:
-        return comments.clean_text(text)
+        comments.check_source(source)
+        clean = comments.clean_text(text)
     except comments.CommentError as exc:
-        raise TestsetError(400, str(exc).replace("the comment", what))
+        raise TestsetError(400, str(exc))
+    created_at = comments.now_utc()
+    cursor = conn.execute("INSERT INTO test_photo_comment (set_name, place, file_name, "
+                          "created_at, source, text) VALUES (?, ?, ?, ?, ?, ?)",
+                          (set_name, place, file_name, created_at, source, clean))
+    _edited(conn, set_name, now_local())
+    return _photo_answer(conn, set_name, place, file_name, row,
+                         comment=comment_view(cursor.lastrowid, created_at, source, clean))
 
 
-def set_comment(conn, set_name, place, file_name, text):
-    """Set the comment of one photo. An empty text removes it."""
-    comment = clean_note(text, "the comment")
-    return _write_photo(conn, set_name, place, file_name, ("comment",),
-                        lambda row: {"comment": comment})
+def remove_photo_comment(conn, set_name, place, file_name, comment_id):
+    """Remove one comment of one photo. `comment_id` is the `id` of the comment."""
+    row = _photo_row(conn, set_name, place, file_name)
+    if isinstance(comment_id, str) and comment_id.isascii() and comment_id.isdigit():
+        comment_id = int(comment_id)
+    if not isinstance(comment_id, int) or isinstance(comment_id, bool):
+        raise TestsetError(400, "the request holds no valid comment `id`")
+    removed = conn.execute("DELETE FROM test_photo_comment WHERE id = ? AND set_name = ? AND "
+                           "place = ? AND file_name = ?",
+                           (comment_id, set_name, place, file_name)).rowcount
+    if not removed:
+        raise TestsetError(404, "the photo %s/%s has no comment %d"
+                           % (place, file_name, comment_id))
+    _edited(conn, set_name, now_local())
+    return _photo_answer(conn, set_name, place, file_name, row, removed=comment_id)
 
 
 def set_box(conn, set_name, place, file_name, box):
@@ -543,9 +673,15 @@ def move_photo(conn, set_name, place, file_name, to):
                  "moved_from = ?, extra = ?, ts = ? WHERE set_name = ? AND place = ? AND "
                  "file_name = ?", (to, name, place, row["extra"], now, set_name, place,
                                    file_name))
+    # The comments of the photo follow it. With `PRAGMA foreign_keys = ON`, the key of
+    # `test_photo_comment` (`ON UPDATE CASCADE`) moved them already; this update covers a
+    # connection with the pragma off.
+    conn.execute("UPDATE test_photo_comment SET place = ?, file_name = ? WHERE set_name = ? "
+                 "AND place = ? AND file_name = ?", (to, name, set_name, place, file_name))
     _edited(conn, set_name, now)
+    notes = photo_comments(conn, set_name, to, name).get((to, name), ())
     return {"ok": True, "set": set_name, "from": place, "to": to, "file": file_name,
-            "photo": dict(photo_view(row), place=to), "counts": counts(conn, set_name)}
+            "photo": dict(photo_view(row, notes), place=to), "counts": counts(conn, set_name)}
 
 
 def _known_slug(conn, set_name, slug):
@@ -556,64 +692,6 @@ def _known_slug(conn, set_name, slug):
                             (slug,)).fetchone() is not None
             or conn.execute("SELECT 1 FROM test_photo WHERE set_name = ? AND place = ? "
                             "LIMIT 1", (set_name, slug)).fetchone() is not None)
-
-
-def _check_slug(conn, set_name, slug):
-    _check_set(conn, set_name)
-    if not isinstance(slug, str) or not slug:
-        raise TestsetError(400, "the request holds no `slug`")
-    if not _known_slug(conn, set_name, slug):
-        raise TestsetError(404, "no wine with the slug %s" % slug)
-
-
-def set_wine_note(conn, set_name, slug, text):
-    """Set the note of a whole wine in one set. An empty text removes it."""
-    _check_slug(conn, set_name, slug)
-    comment = clean_note(text, "the note")
-    row = conn.execute("SELECT extra FROM test_wine_note WHERE set_name = ? AND "
-                       "wine_slug = ?", (set_name, slug)).fetchone()
-    extra = json.loads(row[0]) if row and row[0] else {}
-    extra.pop("comment", None)
-    extra.pop("ts", None)
-    now = now_local()
-    if comment is None and not extra:
-        conn.execute("DELETE FROM test_wine_note WHERE set_name = ? AND wine_slug = ?",
-                     (set_name, slug))
-    else:
-        conn.execute("INSERT INTO test_wine_note (set_name, wine_slug, comment, ts, extra) "
-                     "VALUES (?, ?, ?, ?, ?) ON CONFLICT (set_name, wine_slug) DO UPDATE "
-                     "SET comment = excluded.comment, ts = excluded.ts, extra = excluded.extra",
-                     (set_name, slug, comment, now, _extra_text(extra)))
-    _edited(conn, set_name, now)
-    return {"ok": True, "set": set_name, "slug": slug, "note": comment or "",
-            "counts": counts(conn, set_name)}
-
-
-def set_excluded(conn, set_name, slug, excluded, reason):
-    """Exclude one slug of one set from the benchmark, or include it again. An exclusion
-    needs a reason of at most `REASON_MAX` characters."""
-    _check_slug(conn, set_name, slug)
-    if not isinstance(excluded, bool):
-        raise TestsetError(400, "`excluded` MUST be true or false")
-    now = now_local()
-    entry = None
-    if excluded:
-        text = reason.strip() if isinstance(reason, str) else ""
-        if not text:
-            raise TestsetError(400, "a reason is needed to exclude a slug")
-        if len(text) > REASON_MAX:
-            raise TestsetError(400, "the reason is longer than %d characters" % REASON_MAX)
-        conn.execute("INSERT INTO test_excluded (set_name, wine_slug, reason, ts) "
-                     "VALUES (?, ?, ?, ?) ON CONFLICT (set_name, wine_slug) DO UPDATE "
-                     "SET reason = excluded.reason, ts = excluded.ts",
-                     (set_name, slug, text, now))
-        entry = {"reason": text, "ts": now}
-    else:
-        conn.execute("DELETE FROM test_excluded WHERE set_name = ? AND wine_slug = ?",
-                     (set_name, slug))
-    _edited(conn, set_name, now)
-    return {"ok": True, "set": set_name, "slug": slug, "excluded": excluded,
-            "entry": entry, "counts": counts(conn, set_name)}
 
 
 # The limits of an upload: the limits of `patches.py` and of the old tool.
@@ -701,3 +779,23 @@ def upload_photo(conn, set_name, place, data, name):
     row = photo_rows(conn, set_name, place, file_name)[0]
     return {"ok": True, "set": set_name, "place": place, "file": file_name,
             "photo": dict(photo_view(row), place=place), "counts": counts(conn, set_name)}
+
+
+# A set that the page makes (plan 57). The name rule is the `CHECK` of
+# `test_set.set_name` (schema 016). `source_dir` MUST NOT be empty; no directory holds such
+# a set, so the column names the page.
+SET_NAME_RE = re.compile(r"[0-9a-z_-]+")
+NEW_SOURCE = "the page /testset"
+
+
+def create_set(conn, name):
+    """Make the empty test set `name` in the caller's transaction (plan 57). Return
+    {"ok": True, "set": name}. A bad name gives HTTP 400, a present name HTTP 409. The set
+    gets `edited_at`, so `import_testset.py` does not overwrite it without `--force`."""
+    if not isinstance(name, str) or not SET_NAME_RE.fullmatch(name):
+        raise TestsetError(400, "a set name MUST hold 0-9, a-z, _ and - alone")
+    if conn.execute("SELECT 1 FROM test_set WHERE set_name = ?", (name,)).fetchone():
+        raise TestsetError(409, "the test set %s exists already" % name)
+    conn.execute("INSERT INTO test_set (set_name, source_dir, edited_at) VALUES (?, ?, ?)",
+                 (name, NEW_SOURCE, now_local()))
+    return {"ok": True, "set": name}

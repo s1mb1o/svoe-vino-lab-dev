@@ -61,7 +61,8 @@ colours. The filter `State` shows `All (except Removed)`, `Disabled`, `Removed`,
 (each favorite wine, also a removed one; the lab server alone). The lab server writes
 these data alone: the state of a wine; its GTINs and QR URLs (`wine_code`, plan 11); its
 manual Atlas Core binding (`wine_atlas_binding`, plan 15); its comments (`wine_comment`,
-plan 17); the favorite mark (`wine_favorite`, plan 19); a wine added by hand, with a slug
+plan 17); the favorite mark (`wine_favorite`, plan 19); the wine type
+(`wine_beverage_type`, plan 52); a wine added by hand, with a slug
 that starts with `__` (plan 20); its patch (the `main_patched` row, plan 14) and its
 alternative photos (the types `full_front`, `label_front`, `full_back`, `label_back`,
 plan 16), each with its files and their rows of `image` and `image_derivative`; and the
@@ -100,8 +101,10 @@ its border (`crop`), and SAM3 on gx10 segments the bottle of an image with no
 transparent background (`seg`). The processed file is a PNG in `data/images/cropped/`.
 The table `image_derivative` links it to its original by the sha256. The Dataset page
 shows the processed image with the badge `crop` or `seg`. When SAM3 does not answer,
-the image stays unprocessed, and the next import asks again. The option `--sam3 <URL>`
-names another SAM3 service. Read [plan 09](docs/plans/09_image-processing.md).
+the image stays unprocessed, and the next import asks again. The key `sam3.endpoint`
+of `config.yaml` names the SAM3 service of each SAM3 call of `pipeline/`; without the
+key, the service of gx10 stays. The option `--sam3 <URL>` names another SAM3 service
+for one import. Read [plan 09](docs/plans/09_image-processing.md).
 
 ```bash
 # step 5: store the patched main images; the file name is the wine slug
@@ -120,10 +123,10 @@ The patch editor of the Dataset page on the lab server stands next to the card i
 Drop a JPEG, PNG, or WebP file of at most 20 MiB on it, or press it to choose a file.
 The page sends the file at once; there is no `Apply` step. The editor shows
 `Processing…` while the server stores the file in `data/images/patched/`, writes the
-`main_patched` row, and processes the file as `seed_patched.py` does. SAM3 can take up
-to about two minutes. When SAM3 does not answer, the patch is stored with no processed
-file, and the page shows a warning. A patch applied by mistake is removed with the red
-`Clear` button. The page clears the patch at once; there is no `Apply` step. The editor
+`main_patched` row, and creates its package cut and label cut. SAM3 can take up to about
+two minutes. When SAM3 does not answer, the patch stays stored. The page shows a warning
+for each missing cut. A patch applied by mistake is removed with the red `Clear` button.
+The page clears the patch at once; there is no `Apply` step. The editor
 shows `Clearing…` while the server works. This deletes the row; the file stays in the
 store. The patch `Clear` button has the size of the `Remove` button of the main image
 and stands at the right.
@@ -147,7 +150,10 @@ wrong check digit stops it with no write; the error names the record, the field,
 value. It refuses a table `wine_code` that already holds rows, because a second run adds
 back the values that a person removed on the page; `--force` adds the missing rows anyway. The Dataset page of the lab has the editors
 `GTINs` and `QR URLs`. They write the table through `POST` and `DELETE` of
-`/api/dataset-gtin` and `/api/dataset-qr-url`. A save redraws its own card alone. The
+`/api/dataset-gtin` and `/api/dataset-qr-url`. A save redraws its own card, and the cards
+of the other wines of the same code. A GTIN or a QR URL of 2 or more Active wines shows the
+badge `N wines` at its right; the tooltip names the other wines
+([plan 58](docs/plans/58_shared-codes.md)). The
 page checks the check digit while you type, and the server checks it again. The GTIN
 input accepts at most 14 characters (owner message of 2026-09-25T22:47:19+0300). The editor
 `Barcodes` shows only on the review tool, which sends `barcode_file`. `svoe-vino-matcher`
@@ -168,10 +174,24 @@ The seed adds rows alone. A file row whose UUID differs from the stored row prin
 `differs: <slug> <source>` and is not applied. Like `seed_codes.py`, the seed refuses a
 table that already holds rows unless `--force` is given. On 2026-09-25 the seed added 364
 automatic rows and 3 manual rows. The editor `Atlas Core product` of the Dataset page
-sets a manual binding with `POST /api/dataset-atlas-binding`. The red `×` of a manual
-binding removes it with `DELETE`; the wine then shows its automatic binding, or `not
-bound`. The lab does not write the JSONL files, so the review tool does not see a lab
+sets a manual binding with `POST /api/dataset-atlas-binding`. The red `×` removes the
+shown binding, manual or automatic, with `DELETE`. After the remove of a manual row, the
+wine shows its automatic binding, or `not bound`. The remove of an automatic row deletes
+a wrong match of `match_atlas.py`; the seed does not add it back without `--force`. The lab does not write the JSONL files, so the review tool does not see a lab
 binding. Read [plan 15](docs/plans/15_atlas-binding.md).
+
+Schema 025 (plan 54, 2026-09-26) replaces the one-row rules of the paragraph above. A
+wine MAY have 2 or more Atlas Core products. The key of `wine_atlas_binding` is
+`(wine_slug, product_uuid)`. Each row keeps its source, `automatic` or `manual`, as a
+label. The rule "the manual row wins" goes away. The migration kept the effective row of
+each wine and dropped the one automatic row that a manual row hid. The editor lists each
+UUID with its source, a red `×`, `copy`, and `open`. The `+` button adds one manual UUID
+with `POST /api/dataset-atlas-binding`. A UUID that the wine already has answers HTTP
+409. `DELETE /api/dataset-atlas-binding?slug=…&product_uuid=…` removes one UUID of either
+source. `GET /api/dataset` sends `_atlas_products`, a list of `{product_uuid, source}`,
+and the header counts the rows. The seed accepts 2 or more UUIDs of one slug in one file.
+It no longer prints `differs`. The old review tool keeps one UUID per slug. Read
+[plan 54](docs/plans/54_atlas-binding-list.md).
 
 The table `wine_comment` (schema 011) holds the timestamped comments of a wine. One wine
 MAY have more than one comment. Each row has the UTC time of the write (`created_at`),
@@ -195,6 +215,17 @@ a favorite. The page writes through `POST /api/dataset-favorite` with
 `{"slug": …, "favorite": true|false}`. The value `Favorites` of the filter `State` shows
 each favorite wine in each state, also a `Removed` one. The header counts the favorites.
 Read [plan 19](docs/plans/19_favorites.md).
+
+The table `wine_beverage_type` (schema 023) holds the wine type of a wine. The column
+`beverage_type_code` has the name of the column of Drink Atlas Core: `4` is a wine, `44`
+is a sparkling wine. The two values are prefixes of the EGAIS product type codes, not
+dictionary codes. A wine with no row has no type, and that is the default. The select
+`Type` at the end of the category line of each card of the Dataset page sets the type at
+once: `not set`, `Wine`, or `Sparkling wine`. The page writes through
+`POST /api/dataset-beverage-type` with `{"slug": …, "beverage_type_code": "4"|"44"|null}`.
+The filter `Type` in the row of `Advanced Filters:` shows `All`, `Wines`,
+`Sparkling Wines`, or `Not set`. A change of the type does not change the lab change time
+of the wine. Read [plan 52](docs/plans/52_wine-beverage-type.md).
 
 The button `Add wine` of the Dataset page adds a wine by hand. The
 dialog asks the slug, the name, the producer, the category, the color, the region, the
@@ -265,10 +296,12 @@ python3 pipeline/import_testsets.py --db data/lab.sqlite3
 ```
 
 `import_testsets.py` imports the three test sets of `../svoe-vino-testset/dataset/` into
-the tables `test_set`, `test_photo`, `test_wine_note`, `test_excluded`, and
-`test_variant`. The set name is the name of the directory. The import keeps each field of
-a label entry of `review-labels.json`, the notes of a whole wine, and the text `note`
-(schema 019, plan 24). Since plan 24 the database is the source of the labels: the
+the tables `test_set`, `test_photo`, `test_photo_comment`, and `test_variant`. The set
+name is the name of the directory. The import keeps each field of a label entry of
+`review-labels.json` and the text `note` (schema 019, plan 24). The comments of a photo
+(the list `comments`, or the old field `comment`) go into `test_photo_comment`. The old
+map `wines` and the old `excluded-slugs.json` become rows of `wine_comment`; a second
+import adds no text again (schema 022, plan 51). Since plan 24 the database is the source of the labels: the
 Testset page writes to the rows. So the import refuses a set that holds a page edit;
 `--force` replaces the page edits with the files. A photo is stored as
 `data/images/testset/<sha256>.<extension>`, one time for the same bytes. A photo whose
@@ -304,10 +337,18 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
 [plan 24](docs/plans/24_testset-page.md).
 
 - The combobox in the title (`Test set [my (4043 photos) ▾]`) chooses the set: `my`,
-  `official-real-photos`, or `vlmrerank-8b-failed`. The address keeps the set, the
+  `official-real-photos`, `vlmrerank-8b-failed`, or a set that the button `New testset…`
+  of `/runs` made (plan 44). The address keeps the set, the
   controls, and the open photo: `/testset?set=<set>#<slug>/<file name>`. The line after
   the combobox counts the wines and each photo of the set, the Drawer too. The stats
   line ends with the time of the last edit of the set.
+- The last option of the combobox, `Add new testset …`, opens a small dialog (plan 57).
+  It makes a new empty set with the typed name (`POST /api/testset-new`). A name holds
+  0-9, a-z, `_`, and `-` alone, and MUST be free; `Create` is enabled only for such a
+  name. Enter creates the set, Escape or a click outside closes the dialog. After
+  `Create`, the page shows the new set; it is the last set of the combobox. The row of
+  `test_set` has `source_dir` `the page /testset` and an `edited_at`, so
+  `import_testset.py` does not overwrite it without `--force`. No route deletes a set.
 - One row for each `Active` and `Disabled` wine, and one row for each place that holds a
   photo of the set, also when its wine is `Removed` or is not in `wine_catalog`. The first
   row is `No Match` (the place `__null__`), and no filter, sort, or search takes it away.
@@ -317,26 +358,40 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
 - The buttons `V`, `N`, `x`, and `D` set `positive`, `negative`, `unusable`, and
   `variant`; the same button again clears the label. A photo of `__null__` takes
   `positive` or `unusable` alone. The right-click menu marks a photo for deletion; the
-  mark moves no file. The field below a wine holds its note. `Exclude` takes a slug out of
-  the benchmark and asks for a reason.
+  mark moves no file.
+- A wine row shows the comments of the wine as the Dataset page does (`wine_comment`,
+  the route `/api/dataset-comment`): the list with the time, the source, and `×`, and
+  `+` for a new comment (Cmd+Enter or Ctrl+Enter saves, Esc cancels). A wine comment
+  belongs to no set, so it is not an edit of the set. The row `No Match`, the Drawer,
+  and a place that `wine_catalog` does not hold have no wine comments. The old field of
+  the wine note and the button `Exclude` went away (owner answers of
+  2026-09-26T18:08:34+0300, [plan 51](docs/plans/51_testset-comments.md)): the old notes
+  and the reasons of the old exclusions are wine comments now, and the benchmark
+  excludes no slug.
 - Two special places (plan 36, owner answer of 2026-09-26T00:29:00+0300):
   - The row `No Match` holds the photos that must give no match. A run uses each of them
-    as a `no_match` query, also with no label; `×` (unusable), the delete mark, or an
-    exclusion of `__null__` takes a photo out of the run. Its cards have `V` (confirmed: no
-    card of the catalogue shows this wine) and `×`.
+    as a `no_match` query, also with no label; `×` (unusable) or the delete mark takes a
+    photo out of the run. Its cards have `V` (confirmed: no card of the catalogue shows
+    this wine) and `×`.
   - The Drawer, the right sidebar, holds the photos that wait for a wine, also after a
-    restart. No run uses them. Its cards have no label buttons; the comment, the box, and
+    restart. No run uses them. Its cards have no label buttons; the comments, the box, and
     the delete mark stay.
 - A drag of a photo card onto the sidebar moves the photo to the Drawer; a drag onto the
   row `No Match` or onto a wine row moves it there; the key `0` of the large view moves
   it to the Drawer; the right-click menu holds `Move to the Drawer`, `Move to No Match`,
   and, on a card of a special place, `Move to a wine…` (`POST /api/testset-move`). A move
-  clears the label and keeps the comment, the box, the delete mark, and the proposal;
+  clears the label and keeps the comments, the box, the delete mark, and the proposal;
   `moved_from` gets the old place; a file name that the target holds gets `_moved<N>`.
   No file moves.
-- The large view shows the catalogue image and the photo side by side, with the comment
-  panel. The keys: `Left` and `Right` the photos of the wine, `Up` and `Down` the wines,
-  `1` to `4` the labels, `b` the box, `Esc` close.
+- The large view shows the catalogue image and the photo side by side, with the panel
+  `Comments on this photo` (plan 51). A photo MAY have more than one comment
+  (`test_photo_comment`). The panel lists them, the oldest first, with the time, the
+  source, and `×` (remove, after a confirm). `Add`, Cmd+Enter, or Ctrl+Enter adds the
+  text of the field as a new comment (`POST /api/testset-photo-comment`); a text that is
+  not added yet is added at a step to another photo, at the close of the view, at a
+  change of the set, at a move of the photo, and at a reload. The badge of a card lists
+  the comments. The keys: `Left` and `Right` the photos of the wine, `Up` and `Down` the
+  wines, `1` to `4` the labels, `b` the box, `Esc` close.
 - The box of the main object is optional, for a scene with several items. `b` or `Box`,
   then a drag on the photo, draws it; `Clear box` removes it. The box is in the pixels of
   the photo after its EXIF orientation. A card with a box gets the badge `box`. The IoU
@@ -363,7 +418,7 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   the badge `Removed` stay. The page has no
   filter of the benchmark scope (owner message of 2026-09-26T00:39:13+0300): the select
   `Slugs` and the old values `excluded` and `included` are gone, and an old address
-  with them opens the full list. An excluded row stays red. The 13 sort orders of
+  with them opens the full list. The 13 sort orders of
   the old page, and `cluster size, largest first` (owner answer of 2026-09-26
   01:08:49): with an embedding in `Clusters`, the largest cluster stands first (a tie
   goes by the cluster id), and inside a cluster the rows go by slug. With `Clusters` on
@@ -391,12 +446,20 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   /embedding`; its job runs with `embedding_python`.
   `first N queries` (empty: all) and `workers` (empty: the value of the entry) are
   optional. The checkbox `Use caches` is on at each page load: a model call that repeats
-  an earlier call reads its answer from `data/cache/` (SAM3, GDINO, VLM, LLM). Off, the
+  an earlier call reads its answer from `data/cache/` (SAM3, GDINO, VLM, LLM). Barcode
+  scans also use this setting. Off, the
   job reads no record, each model call goes to its service, and the latency is real
   time; the fresh answers are still stored (`run_job.py --no-cache`; owner answers of
   2026-09-26T01:32:00+0300, [plan 39](docs/plans/39_use-caches-checkbox.md)). `run.json`
   records the state in `use_cache`. The embedding request and the request to the API of
   vino-svoe.ru have no cache, so they are real time in both modes.
+  The checkbox `Disable barcode fast path` is off at each page load. It is enabled for a
+  pipeline with the key `barcode` alone; for another pipeline it is greyed. On, the run
+  skips the barcode step: no decode and no lookup in `wine_code`, and the embedding
+  answers each photo, as in the twin pipeline with no key `barcode`
+  (`run_job.py --no-barcode`; owner answers of 2026-09-26T19:47:40+0300,
+  [plan 53](docs/plans/53_disable-barcode-checkbox.md)). `run.json` records the state in
+  `use_barcode`.
   `Start` runs `pipeline/run_job.py` as a separate process, and the run goes
   to `runs/` as a CLI run. A job row under the header shows the pipeline and the
   set, the state, a bar, done / total, the errors, and the elapsed time; the icon button
@@ -411,10 +474,13 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
 python3 pipeline/export_testset.py --db data/lab.sqlite3 --set my --out <directory>
 ```
 
-The export writes `review-labels.json` and `excluded-slugs.json` into `--out`, in the
-form of the review tool. The import of a set, then its export, gives the same `labels`,
-`wines`, excluded slugs, and `note` as the source files: checked on the three sets on
-2026-09-25.
+The export writes `review-labels.json` into `--out`, in the form of the review tool. The
+import of a set, then its export, gave the same `labels`, `wines`, excluded slugs, and
+`note` as the source files: checked on the three sets on 2026-09-25. Since plan 51 each
+entry holds its comments as the list `comments` (`{created_at, source, text}`, the
+oldest first), and the export writes no `wines` and no `excluded-slugs.json`: the notes
+of a wine are wine comments, and the exclusion went away. An old `excluded-slugs.json`
+in `--out` stays as it is; the scripts of `scripts/` still read it.
 
 ## The embeddings of the lab
 
@@ -443,8 +509,11 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   is variant F: the same with the label cut. The label cut of a full original is the
   row of the kind `label` of `image_derivative` (plan 22).
   `python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3` makes it with SAM3 and the
-  label rule of plan 16. A full image with no label cut fails with `no label cut yet`. A
-  label close-up (`label_front`, `label_back`) goes to the view `label` as it is.
+  label rule of plan 16. If SAM3 finds no label and identifies a printed `packet` or
+  `box`, schema 021 records that the label cut is not applicable. The label item is
+  omitted, and the full-package vector stays. A bottle or can with no label cut fails
+  with `no label cut yet`. A label close-up (`label_front`, `label_back`) goes to the
+  view `label` as it is.
 - The gateway drops the alpha channel. So the configuration check rejects
   `remove_background` with no `white_background` after it, and a build fails each item
   whose model input has a transparent pixel. The page shows the error.
@@ -512,9 +581,12 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   runs of the lab"). Read [plan 33](docs/plans/33_embedding-run.md).
 - A pipeline of the backend `embedding` MAY hold the key `barcode` (plan 42). The run
   decodes the photo with zxing-cpp before the views (`pipeline/barcode.py`, a copy of the
-  decoder of svoe-vino-matcher). A GTIN or a QR URL that `wine_code` holds for an Active
-  wine answers the photo: each wine of the code at score 1.0, and the embedding does not
-  run. A miss runs the views and the embedding. Each pipeline of the backend `embedding`
+  decoder of svoe-vino-matcher). A GTIN or a QR URL that `wine_code` holds for one Active
+  wine answers the photo: the wine at score 1.0, and the embedding does not run. A GTIN of
+  2 or more Active wines limits the embedding match to its wines. A QR URL of 2 or more
+  wines decides nothing, and the normal match runs. A code of one wine wins over a shared
+  GTIN ([plan 58](docs/plans/58_shared-codes.md)). A miss runs the views and the
+  embedding. Each pipeline of the backend `embedding`
   has a twin `barcode-<pipeline>`. zxing-cpp 2.3.0 MUST be in `embedding_python`; it
   builds from the source (`requirements-local.txt`). Read
   [plan 42](docs/plans/42_barcode-step.md).
@@ -562,6 +634,13 @@ checkerboard shows the transparency, as on `/embedding` (owner message of
 same cut on white after the step `white_background`. The links of an edge row still open
 the two prepared images. An image with no `segment` step, such as a close-up, has no cut
 and shows its prepared image.
+
+A click on a card image opens the image preview. The preview fits the window and has no
+scroll bar. The Left and Right keys and the arrow buttons move through the images of one
+cluster and wrap at its ends. The Up and Down keys open the first image of the previous
+or the next cluster. A cluster with no image is skipped. The last cluster wraps to the
+first. The title states the image position and the cluster, for example
+`1/8 · cluster c001 (1/168)`. The count covers the clusters that the search shows.
 
 The page does not create VLM difference rules. The offline command of the next section
 creates them for the `label` space. The current matcher uses a query label crop, so it
@@ -696,7 +775,8 @@ keeps its own endpoint and does not read the key `vlm`.
 
 The table `image_description` describes each image that `wine_image` links to a wine
 (`main`, `main_patched`, and the additional types): `package_type`, `subject_scope`,
-`package_view`, and `content_roles`. Read [plan 26](docs/plans/26_image-description.md).
+`package_view`, `content_roles`, and `presentation_mode`. Read
+[plan 26](docs/plans/26_image-description.md).
 
 | Field | Values |
 |---|---|
@@ -704,6 +784,12 @@ The table `image_description` describes each image that `wine_image` links to a 
 | `subject_scope` | `full_package`, `label_closeup`, `multiple_packages`, `unknown` |
 | `package_view` | `front`, `back`, `unknown` |
 | `content_roles` | a list of 1 to 2 of `front_label`, `back_label`, `unknown`; `unknown` stands alone |
+| `presentation_mode` | `on_package`, `flat_surface`, `other`, `unknown`: the surface that carries the label |
+
+- Schema 024 (2026-09-26) added `presentation_mode` and put each row that the VLM had
+  filled back in the queue of the watcher. The four old values stay and go into the
+  prompt as fixed facts, so the next answer fills `presentation_mode` alone. The fixed
+  facts start with "These values are already set."
 
 - A button `✎` in the bottom right corner of each image of `/dataset` opens the editor
   of that image. A value set by hand stays. `— not set —` clears a value.
@@ -765,6 +851,11 @@ The table `image_description` describes each image that `wine_image` links to a 
   `has Drink Atlas` counts a manual and an automatic Atlas Core binding. The filters of
   the row apply together. A change in a code editor does not apply the filter again, as
   for `Show`.
+- The filter `Alternatives` of the row shows `All` or `has alternative photos`. It keeps
+  the wines with at least one active alternative photo. It needs no service, so the
+  button `Advanced Filters:` shows on each page. `Package` shows only when the image
+  descriptions are on. An upload or a removal of an alternative photo does not apply the
+  filter again, as for `Show`.
 
 ## The image details
 
@@ -855,7 +946,10 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   gets an error. `run.json` holds `configuration: <pipeline>`, and its `backend` holds
   `kind: embedding`, `embedding: <entry>`, the steps of each view, and the SAM3 settings;
   its `embeddings` holds `built_at`, `index_file`, and the count of each item state. The
-  default of `--workers` is 1. An entry of the backend `local` needs `torch`: run it with
+  default of `--workers` is the optional `workers` value of the pipeline, or 1 when the
+  value is absent. `barcode-rerank-siglip2-512-crop` sets `workers: 4`. The Run dialog
+  shows this default. An explicit `--workers` or dialog value overrides the default.
+  The worker count of an active run does not change. An entry of the backend `local` needs `torch`: run it with
   `~/.venvs/svoe-vino-lab/bin/python`. The dialog `Run>` starts such a pipeline with
   `embedding_python` (plan 34); a pipeline whose entry has no index is disabled with the
   note `no index: build it on /embedding`. `config.yaml` holds two such pipelines,
@@ -864,6 +958,20 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   entry (owner answer of 2026-09-26T00:15:17) had the name of the entry; the owner removed
   it at about 01:07, and its 2 runs count as `no pipeline` (owner answer of 01:19:00).
   Read [plan 33](docs/plans/33_embedding-run.md).
+
+- `barcode-rerank-siglip2-512-crop-label` adds a second retrieval tower to
+  `barcode-rerank-siglip2-512-crop`. The first tower keeps the package rectangle and
+  searches the `full` vectors. The second tower uses the existing SAM3 label rule,
+  applies the catalogue label steps, and searches only the `label` vectors of
+  `gx10-siglip2-so400m-patch16-512`. Both inputs use one embedding request. The trace
+  shows a separate top-k list for each tower. The final rank uses the existing mean
+  of each wine's best available cosine in each view. It does not merge two truncated
+  top-k lists. A missing query label uses the first tower alone. Barcode lookup,
+  cluster reranking, and the default of four workers stay enabled. The profile uses
+  the existing index and needs no embedding build. SAM3 selects labels on the original
+  photo. This profile adds no association between a label and the package selected by
+  the first tower in a photo with multiple bottles. The existing label rule uses a
+  mask for one label and an enclosing rectangle for multiple body labels.
 
 - A pipeline of the backend `embedding` MAY hold the key `views`: the steps of the test
   photo in each view, in the step language of `embeddings`. The first step MAY be another
@@ -875,6 +983,10 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   `white_background`, `resize` 1024) and `siglip2-p256-crop` (`segment` of the package
   with the background of its box, `white_background`, `resize` 1024). `white_background`
   does not change an opaque photo; 60 queries of `my` have transparent pixels.
+- `siglip2-p256-crop-seg` (owner message of 2026-09-26T23:24:00+0300, answers of
+  23:27:00) is `siglip2-p256-crop` with `remove_background` after `segment`: the SAM3
+  mask of the package makes the background inside the box white. These are the steps of
+  the view `full` of the index. Its barcode twin is `barcode-siglip2-p256-crop-seg`.
 - Plan 40 adds the same two pipelines for each other entry of `embeddings`:
   `<short>-as-is` and `<short>-crop`, for example `siglip2-512-crop` of
   `gx10-siglip2-so400m-patch16-512` (20 pipelines; YAML anchors hold the steps one time).
@@ -896,10 +1008,20 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
 - The table of the runs has pages: `prev`, `next`, and `per page` (25, 50, 100, or
   `all`). The browser keeps the page size. A sort goes back to page 1; the hash of a run
   opens the page that holds it.
-- The table has the column `pipeline`: the key `configuration` of `run.json`.
+- The filter `Testset` stands after the filter `Pipeline` (owner message of
+  2026-09-26T07:03:17+0300). It offers `All`, each test set that a run names with the
+  count of its runs, and `no test set`: the runs whose `run.json` has no key
+  `options.set`, which are the runs of `scripts/match_run.py`. `pipeline/benchmark.py`
+  writes the key for every lab run. The two filters work together. The page address keeps
+  the value (`?set=<name>`), and `localStorage` keeps it in `svl.runs.header`.
+- The table has the column `pipeline`: the key `configuration` of `run.json`, and the
+  column `testset`: the key `options.set` of `run.json` (`set` in `/api/runs`).
 - A run whose `run.json` holds `use_cache: false` has the tag `no cache` after its id:
   the checkbox `Use caches` of the dialog `Run>` was off, so the run read no cached
   model answer, and its latency is real time (plan 39). A run with no key gets no tag.
+- A run whose `run.json` holds `use_barcode: false` has the tag `no barcode` after its id:
+  the checkbox `Disable barcode fast path` of the dialog `Run>` was on, so the run skipped
+  the barcode step of its pipeline (plan 53). A run with no key gets no tag.
 - The photo of a row comes from the image store of the lab database by its
   `image_sha256`, in the folder of its `image` row (mostly `testset`). A photo whose
   bytes are not in the store shows `not in the lab image store`. The catalogue image of
@@ -928,6 +1050,21 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   `not compared`. When the index changed after the run, the item keeps its cosine and has
   no image. A run from before plan 38 recorded no cosine of an item: the strip shows the
   items of the present index and reads `no cosine`. The route is `/api/run-candidate`.
+- A click on the query photo of a row opens the step popup (plan 41, owner message of
+  2026-09-26T07:14:42+0300). It shows the way of the photo through the pipeline as the
+  step view of `drink-atlas-recognize` on port 8162: rounds with a clock (the elapsed
+  time and the sum of the step times), and one card for each step with its number, its
+  name, the service and the model, its time, and its state. A card opens with a click and
+  shows what the step made: the photo with the SAM3 box, the cut, the model input of each
+  view with a check against the run (`same as the run` or `changed since the run`), the
+  top list of each embedding space (`full`, `label`), the answer, and the sections `Step
+  settings` and `Result`. A matcher run shows its model inputs, the order before the
+  re-rank, the difference step, and the VLM rule step with its questions and answers. A
+  click on an image of the popup opens the large view above it. `Esc` closes the large
+  view first, then the popup; the arrow keys up and down move the popup to the next row.
+  Only an embedding run made after plan 41 has step times: `embedding_run.py` writes the
+  key `trace` into each row. An older run shows the same steps with no time. The route is
+  `/api/run-steps`.
 - The candidate cards of one photo row have one height: the height of the tallest card
   of the row (owner message of 2026-09-26T00:12:24+0300). In a row with a cluster frame, a
   card outside a frame starts where the cards of the frame start. A card has a fixed
@@ -935,9 +1072,56 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
 - The owner removed the pipeline `mock` and `pipeline/mock_run.py` on 2026-09-26 (owner
   message of 00:26:27). Its 2 runs of 2026-09-25 stay in `runs/`; the filter shows them
   under `no pipeline`.
+- The button `New testset…` after the heading `Metrics of <run>` makes a new test set of
+  the lab database from the misses of the open run (plan 44, owner message of
+  2026-09-26T09:05:00+0300). The dialog selects the R@1 misses (the true slug is not at
+  rank 1) or the R@5 misses (the true slug is not in the top 5), with the count of each.
+  The misses come from the whole run: `Show` and `Find` do not change them. A positive
+  photo of the run enters when the set of the run still holds it with the same place, file
+  name, SHA-256, and label. The dialog counts the other photos by reason (`gone`, `other
+  bytes`, `label changed`) and states the photos with a failed request. The field `Name`
+  holds `<set>-<N>`: the name of the set of the run without a trailing `-<digits>`, and
+  the first free number (`my` gives `my-1`, `my-1` gives `my-2`). `Create` copies the rows
+  of the photos, the comments of the photos, and the variant groups of the source set
+  (plan 51: the wine comments belong to no set, and the exclusion went away). No photo
+  file is copied. The note of the new set (`label_note`) states
+  the origin, and `source_dir` is the run directory. The new set stands on `/testset`, and
+  the dialog `Run>` runs it. The button is off for a run that names no test set and for a
+  dry run. The routes are `GET /api/testset-from-run?id=<run id>` and
+  `POST /api/testset-from-run` of `pipeline/testset_routes.py`; the rule is in
+  `pipeline/testset_from_run.py`. A new seed of the database (`seed_from_testset.py`)
+  builds the three source sets alone: a set made from a run stays in the backup of the
+  old database only.
 - The routes are in `pipeline/run_routes.py`; `pipeline/run_files.py` reads the files.
   `lab_server.py` sends each route of the page to `run_routes.py`. The review tool keeps
   its own copy of the run functions.
+
+## The Recognize page of the lab
+
+The Recognize page of the lab server (`/recognize`) recognizes one photo that the user
+gives. Read [plan 55](docs/plans/55_recognize-page.md).
+
+- The select `Pipeline` at the top holds each pipeline of the backend `embedding` of
+  `config.yaml`. A pipeline whose embedding has no index is disabled, and its title states
+  the reason. The page keeps the choice; the address `?pipeline=<name>` wins.
+- Drop a photo on the page, or click the drop area to open a file. The photo goes to the
+  selected pipeline at once. The button `Recognize` sends the present photo again, for
+  example after a change of the pipeline. A change of the pipeline alone sends nothing.
+- The server writes the photo to `work/recognize/<sha256>.<ext>` and keeps it. It runs
+  `pipeline/recognize.py` in a new process of `embedding_python` for each photo. The script
+  builds the backend of the pipeline as a run does, and asks it one time. So a pipeline of
+  gx10 sends one SAM3 request and one embedding request, and llama-swap loads the
+  embedding model when it does not run. A pipeline of the backend `local` loads its model
+  in each process: 20 to 26 s on this Mac (measured on 2026-09-26).
+- Below the drop area the page shows the steps of the photo as the step popup of `/runs`
+  shows them: the rounds, the cards, the times, and the total of the photo. The head line
+  shows the first candidate and the time of the process: the start of Python, the build of
+  the backend, and the recognition.
+- The step view is shared: `pipeline/pages/steps.css` and `pipeline/pages/steps.js`.
+  `lab_pages.page` puts them in place of the lines `/* STEPS_CSS */` and `/* STEPS_JS */`
+  of `runs.html` and `recognize.html`.
+- The routes are in `pipeline/recognize_routes.py` (`docs/API.md`, section "The Recognize
+  page").
 
 ## The Health page of the lab
 
@@ -1015,6 +1199,32 @@ python3 pipeline/gdino.py <image> --texts "wine bottle, label" [--model mm-gdino
   also after the gateway serves a new checkpoint under the same name: the served name is
   in the key, the checkpoint is not.
 - Unit tests set `model_cache.ROOT` to a temporary directory.
+
+Barcode scans use the same cache store in `data/cache/barcode/`. The key includes the
+source file SHA-256, all decoder options, the zxing-cpp version, the Pillow version,
+and the scan revision. The record holds decoded codes for the whole image and each
+completed tile. A scan with no code is cached too. Decoder failures are not cached.
+Each run checks the decoded codes against its current wine lookup. The record holds
+no wine match. If a stored unique code no longer identifies one wine, the decoder
+continues with the remaining tiles. A complete cache hit does not open the image or
+run the decoder. The barcode trace records `cached: true` or `cached: false`.
+`Use caches` off and `--no-cache` bypass reads and store the fresh scan results.
+Cache writes are atomic, including when four workers scan the same file.
+
+The isolated speed experiments are described in
+[the barcode benchmark plan](docs/reports/2026-09-27_barcode-benchmark-plan.md).
+Their scripts compare scan passes, cached crop geometry, complete bulk runs, and
+sequential recognition with response-cache reads disabled. The HTTP experiment
+includes upload and step-view work. Run one measurement at a time and complete the
+documented GPU checks before inference. Cached bulk throughput is separate from
+the 3-second new-photo demo target. The experiments do not change production profiles.
+
+Read the [final barcode recommendations](docs/reports/2026-09-27_barcode-variants/final-recommendations.md)
+and the [final profile comparison](docs/reports/2026-09-27_all-profile-rerun/final-profile-comparison.md).
+The authorized queue has 48 successful runs, one run with eight retained errors,
+and four local profiles unavailable under the current memory policy.
+The external recognizer remains excluded pending separate photo-transfer approval.
+The reports keep cached bulk throughput separate from fresh sequential HTTP latency.
 
 The sections below describe the tools of `scripts/`. They read JSON files through
 `scripts/common.py`, and they do not start with the present `config.yaml`.
@@ -1300,6 +1510,25 @@ Left and Right do. The thumbnails stand in one row. A row that is wider than the
 preview scrolls sideways, and the marked thumbnail is scrolled into view. At a width of
 at most 440 px the thumbnails are 72 px high.
 
+The manual cut of an alternative photo (plan 56, lab server alone): the preview of an
+alternative photo has the button `Manual cut`. It opens the editor on the original. A
+click adds a point of a polygon, a drag moves a point, and a right-click removes a point.
+`Undo` (or Backspace) removes the last point, `Clear` removes all points, and `Cancel`
+(or Escape) closes the editor with no change. `Save cut` needs 3 points. The server cuts
+the photo along the polygon on a transparent background. The cut replaces the SAM3 cut
+of the kind of the current type, and no automatic run replaces it. The card and the
+thumbnail show the badge `manual`. `Manual cut` on a photo with a manual cut loads its
+polygon for a change. `Remove manual cut` removes it, and SAM3 cuts the photo again. A
+type change to the other kind shows the cut of that kind; a change back shows the manual
+cut again. The next index build embeds the new cut.
+
+The button `↻` in the bottom left corner of each alternative photo (lab server alone)
+segments the photo again. SAM3 gets the photo with no read of the model cache, the fresh
+answers replace the cache records, and the server cuts the photo again from them, for the
+kind of its current type. Use it to replace a cached SAM3 answer. The button is disabled
+on a photo with a manual cut: remove the manual cut in the preview first. When SAM3 does
+not answer, the old cut stays. The next index build embeds the new cut.
+
 A record with a patch has a red `Clear` button. On this tool the button stages the
 removal; the lab server clears the patch at once. Press
 `Apply` to remove the patch, or press `Cancel` to keep it. You can drop a new image on
@@ -1326,7 +1555,8 @@ inside the largest bottle, or a tall can, is a full package. A clear barcode on 
 package (score 0.7 or more, at least 10 % of its width) makes the photo a back view. The
 photo gets one of `full_front`, `label_front`, `full_back`, `label_back`, and the
 processed file of its kind: the package cut of `derive.py`, or the label cut (the
-largest label that is not the package). The badge shows `crop` or `seg`. The buttons
+largest label; the bottle test of `build_labels.py` does not apply in a label
+close-up). The badge shows `crop` or `seg`. The buttons
 `FF`, `LF`, `FB`, `LB` below each photo change the type at once; the filled button is
 the present type. A change between a full type and a label type cuts the photo again; a
 change between front and back keeps the cut. `×` and `Apply` delete the row; the file
@@ -1359,6 +1589,7 @@ checkmark icon and a cancel cross icon. The checkmark writes the value to
 `atlas_bindings_file`. The cross writes nothing. A
 manual value replaces the automatic value for the same slug. The automatic file does
 not change. Several Svoe Vino slugs MAY bind to one Atlas product UUID.
+A paste of a product URL `http(s)://<host>/products/<uuid>` into the input inserts the UUID alone.
 
 The row shows the name, the producer, the category, the region, the colour, the grapes,
 the slug, the image match, and the source links. It does not show the wine description.

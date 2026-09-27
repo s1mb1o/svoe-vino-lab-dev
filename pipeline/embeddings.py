@@ -34,6 +34,7 @@ from PIL import Image
 
 import derive
 import labdb
+import alternatives
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(ROOT, "config.yaml")
@@ -355,11 +356,12 @@ def open_database(db_path):
     except sqlite3.Error:
         conn.close()
         raise
-    missing = sorted({"wine_catalog", "wine_image", "image", "image_derivative"} - names)
+    missing = sorted({"wine_catalog", "wine_image", "image", "image_derivative",
+                      "image_derivative_absence"} - names)
     if missing:
         conn.close()
         raise ConfigError("the database %s has no table %s; the embeddings need schema "
-                          "007 or newer" % (db_path, ", ".join(missing)))
+                          "021 or newer" % (db_path, ", ".join(missing)))
     return conn
 
 
@@ -372,8 +374,9 @@ def read_inputs(conn, db_path):
 
     `sources` maps the sha256 of each original to a dict: `role` (`full` or `label`),
     `path` of the original, `url` of the original on the lab server, and `cuts`: target
-    -> the processed file as a dict `sha256`, `path`, `box`, or None. A file that is a
-    full image of one wine and a close-up of another wine is a full image.
+    -> the processed file as a dict `sha256`, `path`, `box`, or None. `not_applicable`
+    maps a derivative target to its reason. A file that is a full image of one wine and
+    a close-up of another wine is a full image.
     """
     store = labdb.image_store(db_path)
     # kind -> source sha256 -> the processed file. An original has at most one cut of
@@ -387,6 +390,12 @@ def read_inputs(conn, db_path):
             cuts[kind][source] = {
                 "sha256": digest, "box": (left, top, right, bottom),
                 "path": os.path.join(store, folder, "%s.%s" % (digest, extension))}
+    absences = {"label": {}}
+    for source, settings, reason in conn.execute(
+            "SELECT source_sha256, settings, reason FROM image_derivative_absence "
+            "WHERE kind = 'label'"):
+        if settings == alternatives.SETTINGS_LABEL_ABSENCE:
+            absences["label"][source] = reason
     wines, by_slug, sources = [], {}, {}
     for slug, name, producer, category, region, image_type, digest, folder, extension in (
             conn.execute(
@@ -410,7 +419,9 @@ def read_inputs(conn, db_path):
                 "role": role, "path": os.path.join(store, folder, "%s.%s" % (digest, extension)),
                 "url": "/images/%s/%s.%s" % (folder, digest, extension),
                 # `pipeline/seed_label_cuts.py` makes the label cut of a full original.
-                "cuts": {target: cuts[target].get(digest) for target in TARGETS}}
+                "cuts": {target: cuts[target].get(digest) for target in TARGETS},
+                "not_applicable": {target: absences.get(target, {}).get(digest)
+                                   for target in TARGETS}}
         elif role == "full":
             source["role"] = "full"
     for wine in wines:
@@ -444,6 +455,8 @@ def plan_items(embedding, sources):
             if role == "label" and view != "label":
                 continue
             steps = view_steps if role == "full" else []
+            if not_applicable_reason(embedding, source, view):
+                continue
             cut = source["cuts"].get(steps[0]["target"]) if steps else None
             items[(digest, view)] = {
                 "source_sha256": digest, "view": view, "role": role, "steps": steps,
@@ -452,6 +465,22 @@ def plan_items(embedding, sources):
                     digest, view, role, embedding.view_config_hash(view, role),
                     cut["sha256"] if cut else None)}
     return items
+
+
+def not_applicable_reason(embedding, source, view):
+    """Return why `view` has no item for `source`, or None when the view applies."""
+    if source["role"] != "full":
+        return None
+    for step in embedding.views[view]:
+        if step["step"] == "segment":
+            return source["not_applicable"].get(step["target"])
+    return None
+
+
+def not_applicable_count(embedding, sources):
+    """Return the number of source views that the database marks not applicable."""
+    return sum(not_applicable_reason(embedding, source, view) is not None
+               for source in sources.values() for view in embedding.views)
 
 
 def on_white(image):

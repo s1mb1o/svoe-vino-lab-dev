@@ -8,8 +8,9 @@
 /* THEME_CSS */
 
 /* The Testset page of the lab server (plan 24). It is a port of `PAGE` of
-   `scripts/review_server.py`: the labels, the delete mark, the comments, the notes of
-   a wine, and the exclusions. Each click writes to the lab database. The right sidebar
+   `scripts/review_server.py`: the labels, the delete mark, and the comments of a photo.
+   Each click writes to the lab database. A wine row shows the wine comments of the
+   Dataset page (`wine_comment`); the exclusion went away (plan 51). The right sidebar
    is the Drawer (`__drawer__`): a photo there waits for a wine, and no run uses it. The
    first row of the table is "No Match" (`__null__`): a run uses its photos, and the
    right answer is no match (plan 36, owner answer of 2026-09-26T00:29:00). The copy, the upload, and the checks of the old page are not here. */
@@ -151,9 +152,6 @@ tbody tr { background: var(--panel); }
 tbody tr.grp-a { background: var(--grp-a); }
 tbody tr.grp-b { background: var(--grp-b); }
 tbody tr.grp-a + tr.grp-a td, tbody tr.grp-b + tr.grp-b td { border-top-style: dashed; }
-/* An excluded wine is out of the benchmark. The red row states it at a glance. */
-tbody tr.excl, tbody tr.excl.grp-a, tbody tr.excl.grp-b { background: var(--exc-bg); }
-tbody tr.excl .bottle { opacity: .55; }
 tbody tr + tr td { border-top: 1px solid var(--line); }
 td { padding: 10px; vertical-align: top; }
 td.wine { width: 320px; min-width: 300px; }
@@ -197,20 +195,6 @@ tbody tr.null-row .meta .sm { word-break: normal; overflow-wrap: anywhere; }
 .bottle-col { display: flex; flex-direction: column; gap: 5px; min-width: 84px; }
 /* A wine of the catalogue with no photo in this set. */
 tbody tr.cat-only { background: var(--panel-2); }
-.excl-btn {
-  width: 84px; border: 1px solid var(--line); background: var(--panel-2);
-  color: var(--muted); border-radius: 6px; font: inherit; font-size: 11px;
-  line-height: 1.2; padding: 3px 4px; cursor: pointer;
-}
-.excl-btn:hover { border-color: var(--exc); color: var(--exc); }
-.excl-btn.on {
-  border-color: var(--exc); background: var(--exc); color: #fff; font-weight: 650;
-}
-.excl-btn.saving { border-style: dashed; }
-.excl-why {
-  width: 84px; color: var(--exc); font-size: 11px; line-height: 1.25;
-  word-break: break-word;
-}
 .meta { min-width: 0; }
 .meta .nm { font-weight: 650; }
 .meta .pr { color: var(--text); }
@@ -225,19 +209,48 @@ tbody tr.cat-only { background: var(--panel-2); }
 }
 .copy:hover { border-color: var(--accent); color: var(--text); }
 .copy.done { color: var(--pos); border-color: var(--pos); }
-.wine-note {
-  display: block; width: 100%; margin-top: 6px; resize: none;
-  height: 26px; overflow: hidden;
-  background: var(--panel-2); color: var(--text);
-  border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px;
-  font: inherit; font-size: 12px; line-height: 1.35;
+/* The comments: the wine comments of a row (the editor of the Dataset page, plan 17) and
+   the comments of a photo in the large view (plan 51). */
+.comment-editor { margin-top: 6px; }
+.comment-head { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.comment-head .count { color: var(--muted); font-variant-numeric: tabular-nums; }
+.comment-add, .comment-remove {
+  font: inherit; line-height: 1; cursor: pointer; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
 }
-.wine-note::placeholder { color: var(--muted); }
-.wine-note:focus, .wine-note.filled {
-  height: 84px; overflow: auto; outline: none; border-color: var(--accent);
+.comment-add { font-size: 13px; font-weight: 700; padding: 1px 7px; }
+.comment-add:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }
+.comment-remove { font-size: 12px; padding: 0 5px; }
+.comment-remove:hover:not(:disabled) { color: #fff; background: var(--exc); border-color: var(--exc); }
+.comment-add:disabled, .comment-remove:disabled { cursor: default; opacity: .5; }
+.comment-empty { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.comment-list {
+  display: flex; flex-direction: column; gap: 5px;
+  margin: 5px 0 0; padding: 0; list-style: none;
 }
-.wine-note.filled { background: var(--panel); }
-.wine-note.saving { border-style: dashed; }
+.comment {
+  padding: 3px 8px 5px 4px; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 6px;
+}
+.comment-meta { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; }
+.comment-source { padding: 0 6px; border: 1px solid var(--line); border-radius: 999px; font-size: 10px; }
+.comment-text {
+  margin: 2px 0 0 24px; font-size: 12px; line-height: 1.4;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.comment-new { display: flex; gap: 5px; margin-top: 6px; align-items: flex-start; }
+.comment-new textarea {
+  flex: 1 1 auto; min-width: 100px; min-height: 62px; resize: vertical;
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 8px; font: inherit; font-size: 12px; line-height: 1.4;
+}
+.comment-new button {
+  flex: 0 0 auto; font: inherit; font-size: 11px; font-weight: 650; padding: 3px 8px;
+  border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--muted); cursor: pointer;
+}
+.comment-new .accept { color: var(--pos); border-color: var(--pos); }
+.comment-new button:disabled { cursor: default; opacity: .5; }
 .cards { display: flex; flex-wrap: wrap; gap: 10px; }
 .card {
   position: relative; width: 172px; background: var(--panel-2); border: 1px solid var(--line);
@@ -355,9 +368,14 @@ tbody tr.cat-only { background: var(--panel-2); }
   padding: 10px; box-shadow: var(--shadow);
 }
 .side-h { font-size: 13px; font-weight: 650; }
+.side-h .count { color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; }
 .side-ctx { font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+/* The comments of the photo take the free height and scroll; the field of a new comment
+   stays below them. */
+#cmt-list { flex: 1 1 auto; min-height: 40px; overflow-y: auto; margin: 0; }
+#cmt-list .comment-text { font-size: 13px; }
 .lb-side textarea {
-  flex: 1 1 auto; min-height: 120px; resize: none;
+  flex: 0 0 auto; min-height: 96px; resize: vertical;
   background: var(--panel-2); color: var(--text);
   border: 1px solid var(--line); border-radius: 6px; padding: 7px;
   font: inherit; font-size: 13px; line-height: 1.4;
@@ -488,6 +506,9 @@ tbody tr.cat-only { background: var(--panel-2); }
 }
 /* The checkbox `Use caches` (plan 39) keeps the size of a checkbox. */
 .run-fields input[type="checkbox"] { width: auto; margin: 0; padding: 0; }
+/* The checkbox `Disable barcode fast path` (plan 53) is disabled for a pipeline with no
+   barcode step. */
+.run-fields label:has(input:disabled) { opacity: .45; cursor: default; }
 .run-error { color: var(--neg); font-size: 13px; min-height: 1.2em; }
 .run-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
 .jobs { display: grid; gap: 4px; margin-top: 8px; }
@@ -518,6 +539,9 @@ tbody tr.cat-only { background: var(--panel-2); }
   .job { grid-template-columns: 22px 1fr 1fr; }
   .job > :first-child { grid-row: span 4; align-self: start; }
 }
+/* The dialog `Add new testset …` (plan 57) uses the classes of the Run> dialog. */
+.new-set-field { display: flex; align-items: center; gap: 8px; margin: 10px 0 4px; font-size: 13px; }
+.new-set-field input { flex: 1 1 auto; min-width: 0; }
 </style>
 </head>
 <body>
@@ -529,7 +553,8 @@ tbody tr.cat-only { background: var(--panel-2); }
       <span class="sub" id="head-sub"></span></h1>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
-      class="on" href="/testset">Testset</a><a href="/runs">Runs</a><a href="/health">Health</a></nav>
+      class="on" href="/testset">Testset</a><a href="/runs">Runs</a><a
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
   </div>
   <div class="bar">
     <label>Sort
@@ -632,13 +657,15 @@ tbody tr.cat-only { background: var(--panel-2); }
       class="lb-box" id="lb-box"></div><figcaption></figcaption></figure>
   </div>
   <aside class="lb-side">
-    <div class="side-h">Comment on this match</div>
+    <div class="side-h">Comments on this photo <span class="count" id="cmt-n"></span></div>
     <div class="side-ctx" id="cmt-ctx"></div>
-    <textarea id="cmt" spellcheck="false"
-      placeholder="What is wrong or unclear about this photo for this wine? &#10;&#10;Example: same label, but the capsule is red, so this is the other vintage."></textarea>
+    <ol class="comment-list" id="cmt-list"></ol>
+    <textarea id="cmt" spellcheck="false" maxlength="4000" aria-label="New comment"
+      placeholder="A new comment: what is wrong or unclear about this photo for this wine? Cmd+Enter or Ctrl+Enter adds it.&#10;&#10;Example: same label, but the capsule is red, so this is the other vintage."></textarea>
     <div class="side-foot">
       <span id="cmt-state"></span>
-      <button id="cmt-clear" type="button">clear</button>
+      <button id="cmt-add" type="button"
+        title="add the text as a new comment (Cmd+Enter or Ctrl+Enter)">Add</button>
     </div>
     <div class="side-h">Box of the main object</div>
     <div class="side-foot">
@@ -646,10 +673,11 @@ tbody tr.cat-only { background: var(--panel-2); }
       <button id="box-clear" type="button">Clear box</button>
       <span id="box-state"></span>
     </div>
-    <div class="side-note">The text is saved as you type. The keys do not act while the
-      cursor is in the field. Press Esc once to leave the field, and Esc again to close
-      the view. The box is optional: draw it around the main item of a scene with several
-      items.</div>
+    <div class="side-note">Add, Cmd+Enter, or Ctrl+Enter adds the text as a new comment. A
+      text that is not added yet is added when you go to another photo or close the view.
+      The keys do not act while the cursor is in the field. Press Esc once to leave the
+      field, and Esc again to close the view. The box is optional: draw it around the main
+      item of a scene with several items.</div>
   </aside>
   <div class="hint"><span id="lb-pos"></span>
     &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
@@ -669,11 +697,27 @@ tbody tr.cat-only { background: var(--panel-2); }
       <label>workers <input id="run-workers" type="number" min="1" max="32" step="1"></label>
       <label title="On: a model call that repeats an earlier call reads its answer from data/cache/ (SAM3, GDINO, VLM, LLM). Off: each model call goes to its service, so the latency is real time; the fresh answers are stored. Plan 39."><input
              id="run-cache" type="checkbox" checked> Use caches</label>
+      <label id="run-barcode-label"><input id="run-barcode" type="checkbox" disabled>
+             Disable barcode fast path</label>
     </div>
     <div class="run-error" id="run-error"></div>
     <div class="run-foot">
       <button id="run-cancel" class="run-btn" type="button">Cancel</button>
       <button id="run-start" class="run-btn primary" type="button">Start</button>
+    </div>
+  </div>
+</div>
+<div id="new-set-dlg" class="run-dlg" hidden>
+  <div class="run-panel" role="dialog" aria-modal="true" aria-labelledby="new-set-title">
+    <h2 id="new-set-title">Add new testset</h2>
+    <div class="run-sub">The new set is empty. Drop photos on the wine rows to fill it.</div>
+    <label class="new-set-field">Name <input id="new-set-name" type="text" autocomplete="off"
+           spellcheck="false" placeholder="for example my-2"></label>
+    <div class="run-sub">A name holds 0-9, a-z, <code>_</code> and <code>-</code> alone.</div>
+    <div class="run-error" id="new-set-error"></div>
+    <div class="run-foot">
+      <button id="new-set-cancel" class="run-btn" type="button">Cancel</button>
+      <button id="new-set-create" class="run-btn primary" type="button" disabled>Create</button>
     </div>
   </div>
 </div>
@@ -688,9 +732,7 @@ function picHtml(imgHtml, patched) {
 let SET = "";         // the name of the set on the page
 let SETS = [];        // [{name, photos, labelled, edited_at}]
 let ROWS = [];        // the rows of the set, as `GET /api/testset` sends them
-let V = {};           // slug -> file -> the label entry of the photo
-let W = {};           // slug -> the note of the whole wine
-let EXC = {};         // slug -> { reason }: the excluded slugs of the set
+let V = {};           // slug -> file -> the label entry of the photo, with `comments`
 let GROUPS = {};      // group id -> { id, slugs }
 let VIEW = [];        // the rows as the table shows them now: filtered and sorted
 let LB = null;        // the place of the large view: { wine: index in VIEW, photo: index }
@@ -727,6 +769,11 @@ const TITLE = {
 const GLYPH = { positive: "V", negative: "N", unusable: "×", variant: "D" };
 
 function entryOf(slug, file) { return (V[slug] && V[slug][file]) || {}; }
+/* The entry of a photo of a server answer. The page keeps the comments of the photo in
+   the entry, as the JSON field `comments` of the export does (plan 51). */
+function entryWithComments(photo) {
+  return { ...(photo.entry || {}), comments: photo.comments || [] };
+}
 function labelOf(slug, file) { return entryOf(slug, file).label || null; }
 function movedTo(slug, file) { return entryOf(slug, file).reassign_to || null; }
 function deleteMarked(slug, file) { return entryOf(slug, file).delete === true; }
@@ -734,17 +781,14 @@ function boxOf(slug, file) {
   const b = entryOf(slug, file).box;
   return Array.isArray(b) && b.length === 4 && b.every(Number.isInteger) ? b : null;
 }
-function commentOf(slug, file) {
-  const c = entryOf(slug, file).comment;
-  return typeof c === "string" ? c : "";
+function commentsOf(slug, file) {
+  const c = entryOf(slug, file).comments;
+  return Array.isArray(c) ? c : [];
 }
 function proposalOf(slug, file) {
   const e = entryOf(slug, file);
   return e.proposed && !e.label ? e : null;
 }
-function wineNote(slug) { return W[slug] || ""; }
-function isExcluded(slug) { return !!EXC[slug]; }
-function excludeReason(slug) { return (EXC[slug] && EXC[slug].reason) || ""; }
 function grpOf(r) { return (r.group && GROUPS[r.group]) || null; }
 
 function tally(row) {
@@ -754,7 +798,7 @@ function tally(row) {
     const l = labelOf(row.slug, p.file);
     if (l in SHORT) t[l]++;
     if (movedTo(row.slug, p.file)) t.moved++;
-    if (commentOf(row.slug, p.file)) t.noted++;
+    if (commentsOf(row.slug, p.file).length) t.noted++;
     if (proposalOf(row.slug, p.file)) t.prop++;
     if (deleteMarked(row.slug, p.file)) t.del++;
     if (boxOf(row.slug, p.file)) t.box++;
@@ -903,8 +947,35 @@ function matchQuery(r, terms) {
   return terms.every(t => ws.some(w => w.includes(t)));
 }
 
-function noteBadge(text) {
-  if (!text) return "";
+/* The local time of a stored UTC time `YYYY-MM-DDTHH:MM:SSZ`, as `YYYY-MM-DD HH:MM`, as
+   the Dataset page shows it. */
+function commentTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value || "");
+  const pad = number => String(number).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} `
+    + `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+/* The list of the comments of a wine or of a photo, the oldest first. `removeKey` names
+   the data attribute of the button `×`. */
+function commentListHtml(list, removeKey, busy) {
+  if (!list.length) return "";
+  return list.map(c => {
+    const shown = commentTime(c.created_at);
+    return `<li class="comment"><div class="comment-meta"><button class="comment-remove"
+      type="button" data-${removeKey}="${esc(c.id)}" aria-label="Remove the comment of ${
+      esc(shown)}" title="Remove comment" ${busy ? "disabled" : ""}>×</button><time
+      datetime="${esc(c.created_at)}" title="${esc(c.created_at)}">${esc(shown)}</time><span
+      class="comment-source">${esc(c.source)}</span></div>
+      <div class="comment-text">${esc(c.text)}</div></li>`;
+  }).join("");
+}
+
+function noteBadge(list) {
+  if (!list.length) return "";
+  const text = list.map(c => `${commentTime(c.created_at)} · ${c.source}\n${c.text}`)
+    .join("\n\n");
   return `<span class="note-badge" title="">
     <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path
       d="M2 3.2A1.2 1.2 0 0 1 3.2 2h9.6A1.2 1.2 0 0 1 14 3.2v7.1a1.2 1.2 0 0 1-1.2
@@ -924,7 +995,7 @@ function labelButtons(current, slug) {
 
 function cardHtml(r, p) {
   const l = labelOf(r.slug, p.file), mv = movedTo(r.slug, p.file);
-  const note = commentOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
+  const notes = commentsOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
   const dl = deleteMarked(r.slug, p.file), bx = boxOf(r.slug, p.file);
   const from = entryOf(r.slug, p.file).moved_from;
   return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${pr ? "prop" : ""} ${
@@ -934,7 +1005,7 @@ function cardHtml(r, p) {
     ${pr ? `<span class="prop-tag" title="${esc(pr.by || "agent")} proposes ${
       esc(pr.proposed)}${pr.source_url ? "\nfrom " + esc(pr.source_url) : ""}">${
       esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
-    ${noteBadge(note)}
+    ${noteBadge(notes)}
     ${bx ? `<span class="box-tag" title="box of the main object: ${bx.join(", ")}">box</span>` : ""}
     <img loading="lazy" draggable="false" src="${esc(p.url)}" alt="" data-full="1">
     ${isSpecialRow(r) && from ? `<div class="from" title="the place of the photo before the move">from ${
@@ -962,25 +1033,19 @@ function rowCountsHtml(r) {
 }
 
 function rowHtml(r, gclass) {
-  const ex = isExcluded(r.slug), why = excludeReason(r.slug);
   const img = r.bottle_url
     ? picHtml(`<img class="bottle" loading="lazy" src="${esc(r.bottle_url)}" alt=""
          data-bottle="1">`, r.patched)
     : `<div class="bottle missing">${r.in_catalog ? "no card<br>image" : "not in<br>catalogue"}</div>`;
-  const exclBtn = `<button class="excl-btn ${ex ? "on" : ""}" data-excl="${esc(r.slug)}"
-      title="${ex ? "excluded: " + esc(why) + "\nclick to include this slug again"
-                  : "exclude this slug from the benchmark; its photos are then not used"}">${
-      ex ? "Excluded" : "Exclude"}</button>
-    ${ex && why ? `<div class="excl-why" title="${esc(why)}">${esc(why)}</div>` : ""}`;
   const bottle = isNullRow(r)
     ? `<div class="bottle-col"><div class="bottle null-bottle"
          title="the virtual NULL wine: a photo here matches no card of the catalogue"
-         >NO<br>MATCH</div>${exclBtn}</div>`
-    : `<div class="bottle-col">${img}${exclBtn}</div>`;
+         >NO<br>MATCH</div></div>`
+    : `<div class="bottle-col">${img}</div>`;
   const fullName = [r.producer, r.name].filter(Boolean).join(" ");
   const grp = grpOf(r);
   return `<tr data-slug="${esc(r.slug)}" class="${r.group ? gclass.get(r.group) : ""} ${
-    ex ? "excl" : ""} ${r.catalog_only ? "cat-only" : ""} ${isNullRow(r) ? "null-row" : ""} ${
+    r.catalog_only ? "cat-only" : ""} ${isNullRow(r) ? "null-row" : ""} ${
     r.state === "Removed" ? "tr-removed" : ""}">
     <td class="wine"><div class="wine-inner">${bottle}<div class="meta">
       <div class="nm">${esc(r.name) || "<span class='empty'>unknown name</span>"}${
@@ -1001,9 +1066,7 @@ function rowHtml(r, gclass) {
           : "show only the " + grp.slugs.length + " wines of this variant group"}"
         >variant group of ${grp.slugs.length}</button></div>` : ""}
       <div class="sm row-counts">${rowCountsHtml(r)}</div>
-      <textarea class="wine-note ${wineNote(r.slug) ? "filled" : ""}"
-        data-wine="${esc(r.slug)}" spellcheck="false"
-        placeholder="note about this wine">${esc(wineNote(r.slug))}</textarea>
+      ${wineCommentEditor(r)}
     </div></div></td>
     <td><div class="cards">${cardsHtml(r)}</div></td></tr>`;
 }
@@ -1241,9 +1304,10 @@ async function post(route, body) {
   return out;
 }
 
-/* Take the photo of a write answer: its entry replaces the entry of the page. */
+/* Take the photo of a write answer: its entry and its comments replace those of the
+   page. */
 function takePhoto(slug, photo) {
-  (V[slug] = V[slug] || {})[photo.file] = photo.entry || {};
+  (V[slug] = V[slug] || {})[photo.file] = entryWithComments(photo);
   refreshCard(slug, photo.file);
   if (LB) {
     const lr = VIEW[LB.wine], lp = lr && lr.photos[LB.photo];
@@ -1251,6 +1315,7 @@ function takePhoto(slug, photo) {
       renderLbStatus();
       fillFig("#lb-cand", candItem(lr, LB.photo));
       drawBox();
+      renderPhotoComments();
     }
   }
 }
@@ -1615,10 +1680,10 @@ function refreshRow(r) {
 
 async function moveTo(slug, file, to) {
   if (!to || slug === to) return;
-  // A comment that waits for its save belongs to the old place of the photo.
+  // A comment that is not added yet belongs to the photo at its old place. The server
+  // moves the comments of the photo with it.
   if (CMT_AT && CMT_AT.slug === slug && CMT_AT.file === file) {
-    if (CMT_TIMER) { clearTimeout(CMT_TIMER); CMT_TIMER = null; }
-    await saveComment(CMT_AT, $("#cmt").value.trim());
+    await flushComment();
     CMT_AT = null;
   }
   let out;
@@ -1634,7 +1699,7 @@ async function moveTo(slug, file, to) {
   delete moved.place;
   dst.photos.push(moved);
   dst.photos.sort(byRank);
-  (V[to] = V[to] || {})[moved.file] = moved.entry || {};
+  (V[to] = V[to] || {})[moved.file] = entryWithComments(moved);
   for (const r of [src, dst]) {
     const confs = r.photos.map(p => p.conf).filter(c => c !== null && c !== undefined);
     r.min_conf = confs.length ? Math.min(...confs) : null;
@@ -1767,7 +1832,7 @@ async function uploadFiles(files, to) {
     const photo = { ...out.photo };
     delete photo.place;
     dst.photos.push(photo);
-    (V[to] = V[to] || {})[photo.file] = photo.entry || {};
+    (V[to] = V[to] || {})[photo.file] = entryWithComments(photo);
   }
   document.body.classList.remove("uploading");
   if (!dst) { load(SET, false); }                   // a wine with no row: draw all again
@@ -1799,72 +1864,137 @@ function showGroup(gid) {
   if (want) window.scrollTo({ top: 0 });
 }
 
-/* ---- the note of a whole wine ----
-   The text is saved after a pause, and the table is NOT drawn again, so the cursor
-   stays in the field. */
-const WN_TIMERS = new Map();
+/* ---- the comments of a whole wine ----
+   The rows of `wine_comment`, as the Dataset page shows and writes them (plan 17), with
+   its route `/api/dataset-comment`. A wine comment belongs to no set, so its write does
+   not change `test_set.edited_at` (plan 51). A row that `wine_catalog` does not hold, the
+   row "No Match", and the Drawer have no wine comments. */
+const WC_DRAFT = new Map();   // slug -> the text of a new wine comment that is not saved
+const WC_BUSY = new Set();    // the slugs with a write that runs
 
-async function saveWineNote(el) {
-  const slug = el.dataset.wine, text = el.value.trim();
-  if (wineNote(slug) === text) return;
-  el.classList.add("saving");
-  try {
-    const out = await post("/api/testset-wine-note", { slug, text });
-    if (out.note) W[slug] = out.note; else delete W[slug];
-  } catch (e) {
-    el.classList.remove("saving");
-    alert("the note is not saved: " + e.message);
-    return;
-  }
-  el.classList.remove("saving");
-  el.classList.toggle("filled", !!text);
-  stats();   // the time of the last edit; stats() does not draw the table again
+function wineCommentEditor(r) {
+  if (isSpecialRow(r) || !r.in_catalog) return "";
+  const list = r.comments || [], busy = WC_BUSY.has(r.slug), editing = WC_DRAFT.has(r.slug);
+  const draft = editing ? `<div class="comment-new">
+      <textarea class="wc-input" rows="3" maxlength="4000" aria-label="New wine comment"
+        placeholder="A comment about this wine. Cmd+Enter or Ctrl+Enter saves."
+        ${busy ? "disabled" : ""}>${esc(WC_DRAFT.get(r.slug) || "")}</textarea>
+      <button class="accept" type="button" data-wc-save title="Save (Cmd+Enter or Ctrl+Enter)"
+        ${busy ? "disabled" : ""}>${busy ? "…" : "Save"}</button>
+      <button class="cancel" type="button" data-wc-cancel title="Cancel (Esc)"
+        ${busy ? "disabled" : ""}>Cancel</button></div>` : "";
+  return `<div class="comment-editor" data-wine="${esc(r.slug)}">
+    <div class="comment-head"><strong>Comments</strong><span class="count">${list.length}</span>
+      <button class="comment-add" type="button" data-wc-add aria-label="Add a wine comment"
+        title="Add a comment about this wine" ${editing || busy ? "disabled" : ""}>+</button></div>
+    ${list.length ? `<ol class="comment-list">${commentListHtml(list, "wc-remove", busy)}</ol>` : ""}
+    ${draft}</div>`;
 }
 
-document.addEventListener("input", ev => {
-  const el = ev.target.closest && ev.target.closest(".wine-note");
-  if (!el) return;
-  clearTimeout(WN_TIMERS.get(el));
-  WN_TIMERS.set(el, setTimeout(() => saveWineNote(el), 700));
+function renderWineComments(slug) {
+  const tr = rowOf(slug), r = ROWS.find(x => x.slug === slug);
+  const el = tr && tr.querySelector(".comment-editor");
+  if (el && r) el.outerHTML = wineCommentEditor(r);
+}
+
+function focusWineComment(slug) {
+  requestAnimationFrame(() => {
+    const tr = rowOf(slug), input = tr && tr.querySelector(".wc-input");
+    if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  });
+}
+
+async function wineCommentCall(query, options) {
+  const res = await fetch("/api/dataset-comment" + query, options);
+  let out = {};
+  try { out = await res.json(); } catch (e) { out = {}; }
+  if (!res.ok) throw new Error(out.error || ("HTTP " + res.status));
+  return out;
+}
+
+async function saveWineComment(slug) {
+  const r = ROWS.find(x => x.slug === slug);
+  if (!r || !WC_DRAFT.has(slug) || WC_BUSY.has(slug)) return;
+  const text = WC_DRAFT.get(slug) || "";
+  if (!text.trim()) { focusWineComment(slug); return; }
+  WC_BUSY.add(slug);
+  renderWineComments(slug);
+  try {
+    // The page sends no `source`, so the server stores `user`.
+    const out = await wineCommentCall("", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, text }) });
+    r.comments = out.comments || [];
+    WC_DRAFT.delete(slug);
+  } catch (e) {
+    alert("the wine comment is not saved: " + e.message);
+  } finally {
+    WC_BUSY.delete(slug);
+    renderWineComments(slug);
+    if (WC_DRAFT.has(slug)) focusWineComment(slug);
+  }
+}
+
+async function removeWineComment(slug, id) {
+  const r = ROWS.find(x => x.slug === slug);
+  const c = r && (r.comments || []).find(x => String(x.id) === String(id));
+  if (!c || WC_BUSY.has(slug)) return;
+  if (!confirm(`Remove the wine comment of ${commentTime(c.created_at)}?\n\n`
+      + c.text.slice(0, 300))) return;
+  WC_BUSY.add(slug);
+  renderWineComments(slug);
+  try {
+    const out = await wineCommentCall(`?slug=${encodeURIComponent(slug)}&id=${
+      encodeURIComponent(c.id)}`, { method: "DELETE" });
+    r.comments = out.comments || [];
+  } catch (e) {
+    alert("the wine comment is not removed: " + e.message);
+  } finally {
+    WC_BUSY.delete(slug);
+    renderWineComments(slug);
+  }
+}
+
+document.addEventListener("click", ev => {
+  const editor = ev.target.closest && ev.target.closest(".comment-editor[data-wine]");
+  if (!editor) return;
+  const slug = editor.dataset.wine, remove = ev.target.closest("[data-wc-remove]");
+  if (remove) removeWineComment(slug, remove.dataset.wcRemove);
+  else if (ev.target.closest("[data-wc-add]")) {
+    WC_DRAFT.set(slug, "");
+    renderWineComments(slug);
+    focusWineComment(slug);
+  } else if (ev.target.closest("[data-wc-save]")) saveWineComment(slug);
+  else if (ev.target.closest("[data-wc-cancel]")) {
+    WC_DRAFT.delete(slug);
+    renderWineComments(slug);
+  }
 });
-document.addEventListener("blur", ev => {
-  const el = ev.target.closest && ev.target.closest(".wine-note");
-  if (!el) return;
-  clearTimeout(WN_TIMERS.get(el));
-  saveWineNote(el);
-}, true);
-
-/* ---- the exclusion of a whole slug ----
-   The photos of an excluded slug are NOT used in the benchmark. The reason is asked at
-   the click. */
-async function toggleExclude(btn) {
-  const slug = btn.dataset.excl, was = isExcluded(slug);
-  let reason = "";
-  if (!was) {
-    reason = (window.prompt(
-      "Exclude " + slug + " from the benchmark.\n" +
-      "State the error, for example \"wrong bottle photo in the catalogue\".",
-      "wrong bottle photo in the catalogue") || "").trim();
-    if (!reason) return;
-  } else if (!window.confirm("Include " + slug + " in the benchmark again?")) {
-    return;
+document.addEventListener("input", ev => {
+  if (!ev.target.matches || !ev.target.matches(".wc-input")) return;
+  WC_DRAFT.set(ev.target.closest(".comment-editor").dataset.wine, ev.target.value);
+});
+document.addEventListener("keydown", ev => {
+  if (!ev.target.matches || !ev.target.matches(".wc-input")) return;
+  // Enter adds a line break. Cmd+Enter or Ctrl+Enter saves. Esc cancels.
+  const slug = ev.target.closest(".comment-editor").dataset.wine;
+  if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {
+    ev.preventDefault();
+    saveWineComment(slug);
+  } else if (ev.key === "Escape") {
+    ev.preventDefault();
+    WC_DRAFT.delete(slug);
+    renderWineComments(slug);
   }
-  btn.classList.add("saving");
-  try {
-    const out = await post("/api/testset-exclude", { slug, excluded: !was, reason });
-    if (out.excluded) EXC[slug] = out.entry; else delete EXC[slug];
-  } catch (e) {
-    btn.classList.remove("saving");
-    alert("the exclusion is not saved: " + e.message);
-    return;
-  }
-  render();
-}
+});
 
-/* ---- the comment panel of the large view ----
-   The text is saved as it is typed, after a short pause. A move to another photo and a
-   close of the view flush the pending text first. */
-let CMT_AT = null, CMT_TIMER = null;
+/* ---- the comments of a photo in the large view ----
+   The panel lists the comments of the open photo (`test_photo_comment`, plan 51), the
+   oldest first. `Add`, Cmd+Enter, or Ctrl+Enter adds the text of the field as a new
+   comment. A step to another photo, a close of the view, a change of the set, a move of
+   the photo, and a reload add a text that is not empty, so no typed text is lost. */
+let CMT_AT = null;           // { slug, file } of the open photo
+const PC_BUSY = new Set();   // `<slug>/<file>` of a photo with a remove that runs
 
 function cmtState(text, cls) {
   const el = $("#cmt-state");
@@ -1872,62 +2002,100 @@ function cmtState(text, cls) {
   el.className = cls || "";
 }
 
-async function saveComment(at, text) {
-  if (!at) return;
-  if (commentOf(at.slug, at.file) === text) {
-    cmtState(text ? "saved" : "", text ? "saved" : "");
-    return;
-  }
-  cmtState("saving...");
-  try {
-    const out = await post("/api/testset-comment", { place: at.slug, file: at.file, text });
-    (V[at.slug] = V[at.slug] || {})[at.file] = out.photo.entry || {};
-    refreshCard(at.slug, at.file);
-  } catch (e) {
-    cmtState("not saved: " + e.message, "failed");
-    return;
-  }
-  cmtState(text ? "saved" : "", text ? "saved" : "");
+function sameAt(a, b) { return !!(a && b && a.slug === b.slug && a.file === b.file); }
+
+function renderPhotoComments() {
+  const at = CMT_AT, list = at ? commentsOf(at.slug, at.file) : [];
+  $("#cmt-n").textContent = at ? String(list.length) : "";
+  $("#cmt-list").innerHTML = commentListHtml(list, "pc-remove",
+                                             at && PC_BUSY.has(at.slug + "/" + at.file))
+    || (at ? `<li class="comment-empty">no comment</li>` : "");
 }
 
+async function addComment(at, text) {
+  if (!at || !text) return;
+  const set = SET;
+  cmtState("adding...");
+  try {
+    const out = await post("/api/testset-photo-comment", { place: at.slug, file: at.file, text });
+    if (SET === set) takePhoto(at.slug, out.photo);
+    if (sameAt(at, CMT_AT)) cmtState("added", "saved");
+  } catch (e) {
+    if (SET === set && sameAt(at, CMT_AT) && !$("#cmt").value.trim()) {
+      $("#cmt").value = text;
+      cmtState("not added: " + e.message, "failed");
+    } else {
+      alert("the comment is not added: " + e.message + "\n\n" + text);
+    }
+  }
+}
+
+/* Add the text of the field as a new comment of the open photo. The field is emptied at
+   once, so a second call does not add the same text again. */
 function flushComment() {
-  if (CMT_TIMER) { clearTimeout(CMT_TIMER); CMT_TIMER = null; }
-  if (CMT_AT) saveComment(CMT_AT, $("#cmt").value.trim());
+  const text = $("#cmt").value.trim();
+  if (!CMT_AT || !text) return Promise.resolve();
+  $("#cmt").value = "";
+  return addComment(CMT_AT, text);
+}
+
+async function removePhotoComment(id) {
+  const at = CMT_AT, set = SET;
+  if (!at) return;
+  const key = at.slug + "/" + at.file;
+  const c = commentsOf(at.slug, at.file).find(x => String(x.id) === String(id));
+  if (!c || PC_BUSY.has(key)) return;
+  if (!confirm(`Remove the comment of ${commentTime(c.created_at)}?\n\n`
+      + c.text.slice(0, 300))) return;
+  PC_BUSY.add(key);
+  renderPhotoComments();
+  try {
+    const out = await post("/api/testset-photo-comment-remove",
+                           { place: at.slug, file: at.file, id: c.id });
+    if (SET === set) takePhoto(at.slug, out.photo);
+  } catch (e) {
+    alert("the comment is not removed: " + e.message);
+  } finally {
+    PC_BUSY.delete(key);
+    renderPhotoComments();
+  }
 }
 
 function loadComment(r, pi) {
   flushComment();
   const p = r.photos[pi];
-  $("#cmt").disabled = !p;
-  if (!p) {
-    CMT_AT = null;
-    $("#cmt").value = "";
-    $("#cmt-ctx").textContent = `${r.slug} — no photo in the set`;
-    cmtState("", "");
-    return;
-  }
-  CMT_AT = { slug: r.slug, file: p.file };
-  $("#cmt").value = commentOf(r.slug, p.file);
-  $("#cmt-ctx").textContent = `${SET} / ${r.slug} / ${p.file}`;
-  cmtState($("#cmt").value ? "saved" : "", $("#cmt").value ? "saved" : "");
+  $("#cmt").disabled = $("#cmt-add").disabled = !p;
+  CMT_AT = p ? { slug: r.slug, file: p.file } : null;
+  $("#cmt").value = "";
+  $("#cmt-ctx").textContent = p ? `${SET} / ${r.slug} / ${p.file}`
+    : `${r.slug} — no photo in the set`;
+  cmtState("", "");
+  renderPhotoComments();
 }
 
 $("#cmt").addEventListener("input", () => {
-  cmtState("typing...");
-  if (CMT_TIMER) clearTimeout(CMT_TIMER);
-  const at = CMT_AT;
-  CMT_TIMER = setTimeout(() => {
-    CMT_TIMER = null;
-    saveComment(at, $("#cmt").value.trim());
-  }, 600);
+  cmtState($("#cmt").value.trim() ? "not added yet" : "", "");
 });
-$("#cmt").addEventListener("blur", flushComment);
-$("#cmt-clear").addEventListener("click", () => {
+$("#cmt").addEventListener("keydown", ev => {
+  if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {
+    ev.preventDefault();
+    flushComment();
+  }
+});
+$("#cmt-add").addEventListener("click", () => { flushComment(); $("#cmt").focus(); });
+$("#cmt-list").addEventListener("click", ev => {
+  const remove = ev.target.closest("[data-pc-remove]");
+  if (remove) removePhotoComment(remove.dataset.pcRemove);
+});
+// A reload does not wait for an answer: `keepalive` lets the request end.
+window.addEventListener("beforeunload", () => {
+  const text = $("#cmt").value.trim();
+  if (!CMT_AT || !text) return;
   $("#cmt").value = "";
-  flushComment();
-  $("#cmt").focus();
+  fetch("/api/testset-photo-comment", {
+    method: "POST", keepalive: true, headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ set: SET, place: CMT_AT.slug, file: CMT_AT.file, text }) });
 });
-window.addEventListener("beforeunload", flushComment);
 
 /* ---- the address ----
    The query string holds the set, the search, and the selects. The fragment holds the
@@ -2014,8 +2182,6 @@ document.addEventListener("click", ev => {
     showGroup(gshow.dataset.grpShow === GROUP_FILTER ? "" : gshow.dataset.grpShow);
     return;
   }
-  const exb = ev.target.closest(".excl-btn");
-  if (exb) { toggleExclude(exb); return; }
   const btn = ev.target.closest(".btns button");
   if (btn) {
     const c = btn.closest(".card");
@@ -2099,13 +2265,14 @@ try { if (localStorage.getItem(MORE_KEY) === "1") setMore(true); } catch (e) { /
 let QT = null;
 $("#q").addEventListener("input", () => { clearTimeout(QT); QT = setTimeout(render, 180); });
 $("#set").addEventListener("change", () => {
+  if ($("#set").value === NEW_SET) { $("#set").value = SET; openNewSetDialog(); return; }
   flushComment();
   GROUP_FILTER = "";
   load($("#set").value, false);
 });
 
-/* Load the rows of one set. The label entries, the notes, and the exclusions become the
-   maps of the page. */
+/* Load the rows of one set. The label entries and the comments of the photos become the
+   map of the page. The wine comments stay in the rows (`r.comments`). */
 async function load(name, first) {
   $("#error").textContent = "";
   const sources = first ? loadClusterSources() : null;
@@ -2119,14 +2286,14 @@ async function load(name, first) {
     return;
   }
   SET = data.set; SETS = data.sets || []; ROWS = data.rows || []; GROUPS = data.groups || {};
-  V = {}; W = {}; EXC = {};
+  V = {};
+  WC_DRAFT.clear();
   for (const r of ROWS) {
-    for (const p of r.photos) (V[r.slug] = V[r.slug] || {})[p.file] = p.entry || {};
-    if (r.note) W[r.slug] = r.note;
-    if (r.excluded) EXC[r.slug] = { reason: r.exclude_reason };
+    for (const p of r.photos) (V[r.slug] = V[r.slug] || {})[p.file] = entryWithComments(p);
   }
   $("#set").innerHTML = SETS.map(s => `<option value="${esc(s.name)}" ${
     s.name === SET ? "selected" : ""}>${esc(s.name)} (${s.photos} photos)</option>`).join("");
+  $("#set").insertAdjacentHTML("beforeend", `<option value="${NEW_SET}">Add new testset …</option>`);
   TOTAL = photoTotal();
   EDITED_AT = data.edited_at || null;
   if (first) {
@@ -2151,6 +2318,11 @@ async function load(name, first) {
 const RUN_ACTIVE = ["running", "stopping"];
 const RUN_SHOW_ENDED_S = 60;
 const RUN_STORE_KEY = "svoe-vino-lab.run-configuration";
+// The box `Disable barcode fast path` (plan 53; owner answers of 2026-09-26T19:47:40):
+// off by default; it acts on a pipeline with the key `barcode` alone.
+const RUN_BARCODE_TITLE = "On: the run skips the barcode step of the pipeline: no decode "
+  + "and no lookup in wine_code. The embedding answers each photo, as in the twin pipeline "
+  + "with no key barcode. /runs shows the tag no barcode. Plan 53.";
 let RUN_CONFIGS = [], RUN_POLL = null;
 
 async function runJson(url, options) {
@@ -2179,6 +2351,9 @@ function runSyncFields() {
   const c = runChosen();
   $("#run-workers").placeholder = c && c.workers ? String(c.workers) : "";
   $("#run-start").disabled = !c;
+  $("#run-barcode").disabled = !(c && c.barcode);
+  $("#run-barcode-label").title = c && c.barcode ? RUN_BARCODE_TITLE
+    : c ? `The pipeline ${c.name} has no barcode step.` : "Select a pipeline first.";
 }
 function closeRunDialog() {
   $("#run-dlg").hidden = true;
@@ -2227,6 +2402,7 @@ async function startRun() {
   const body = { configuration: c.name, set: SET, limit: limit ? Number(limit) : null,
                  workers: workers ? Number(workers) : null,
                  use_cache: $("#run-cache").checked };
+  if (c.barcode) body.use_barcode = !$("#run-barcode").checked;
   $("#run-start").disabled = true;
   $("#run-error").textContent = "";
   try {
@@ -2285,6 +2461,73 @@ window.addEventListener("keydown", ev => {
   if ($("#run-dlg").hidden) return;
   ev.stopPropagation();
   if (ev.key === "Escape") { ev.preventDefault(); closeRunDialog(); }
+}, true);
+
+/* The dialog `Add new testset …` (plan 57): `POST /api/testset-new` makes an empty set,
+   and the page loads it. The last option of `#set` opens the dialog. Its value cannot be
+   a set name, because a name holds no parentheses; it never reaches the URL or the
+   stored header, because the change handler selects `SET` again. */
+const NEW_SET = "(new)";
+const SET_NAME_RE = /^[0-9a-z_-]+$/;
+// Return the name of the field when it can be a new set, else null. The error line
+// states the reason.
+function newSetName() {
+  const name = $("#new-set-name").value.trim();
+  const error = !name ? "" : !SET_NAME_RE.test(name) ? "A name holds 0-9, a-z, _ and - alone."
+    : SETS.some(s => s.name === name) ? `The set ${name} exists already.` : "";
+  $("#new-set-error").textContent = error;
+  $("#new-set-create").disabled = !name || !!error;
+  return name && !error ? name : null;
+}
+function openNewSetDialog() {
+  $("#new-set-name").value = "";
+  newSetName();
+  $("#new-set-dlg").hidden = false;
+  $("#new-set-name").focus();
+}
+function closeNewSetDialog() {
+  $("#new-set-dlg").hidden = true;
+  $("#set").focus();
+}
+async function createNewSet() {
+  const name = newSetName();
+  if (!name || $("#new-set-create").dataset.busy) return;
+  $("#new-set-create").dataset.busy = "1";
+  $("#new-set-create").disabled = true;
+  try {
+    const response = await fetch("/api/testset-new", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({name})
+    });
+    const out = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(out.error || `HTTP ${response.status}`);
+    closeNewSetDialog();
+    flushComment();
+    GROUP_FILTER = "";
+    load(out.set || name, false);
+  } catch (error) {
+    $("#new-set-error").textContent = `Cannot create the set: ${error.message}`;
+    $("#new-set-create").disabled = false;
+  } finally {
+    delete $("#new-set-create").dataset.busy;
+  }
+}
+$("#new-set-name").addEventListener("input", newSetName);
+$("#new-set-cancel").addEventListener("click", closeNewSetDialog);
+$("#new-set-create").addEventListener("click", createNewSet);
+$("#new-set-dlg").addEventListener("click", ev => {
+  if (ev.target === $("#new-set-dlg")) closeNewSetDialog();
+});
+// While the dialog is open, the keys of the page do not act. Esc closes the dialog, and
+// Enter in the field creates the set.
+window.addEventListener("keydown", ev => {
+  if ($("#new-set-dlg").hidden) return;
+  ev.stopPropagation();
+  if (ev.key === "Escape") { ev.preventDefault(); closeNewSetDialog(); }
+  else if (ev.key === "Enter" && ev.target === $("#new-set-name")) {
+    ev.preventDefault();
+    createNewSet();
+  }
 }, true);
 $("#jobs").addEventListener("click", async ev => {
   const button = ev.target.closest("[data-run-stop]");

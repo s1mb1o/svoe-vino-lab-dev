@@ -145,6 +145,19 @@ class Sam3ClientTest(unittest.TestCase):
         self.assertEqual(mask.size, (1000, 3072))
         self.assertEqual(mask.getbbox(), (200, 200, 800, 2800))
 
+    def test_refresh_reads_no_record_and_stores_the_fresh_answer(self):
+        answers = iter([{"instances": [1]}, {"instances": [2]}, {"instances": [3]}])
+        plain = derive.Sam3Client("http://sam3-refresh.invalid")
+        fresh = derive.Sam3Client("http://sam3-refresh.invalid", refresh=True)
+        plain._send = fresh._send = lambda data, form: next(answers)
+        self.assertEqual(plain._post(b"png-r"), {"instances": [1]})
+        self.assertEqual(plain._post(b"png-r"), {"instances": [1]})
+        self.assertTrue(plain.cached())
+        # The refresh client asks the service although a record exists, and replaces it.
+        self.assertEqual(fresh._post(b"png-r"), {"instances": [2]})
+        self.assertFalse(fresh.cached())
+        self.assertEqual(plain._post(b"png-r"), {"instances": [2]})
+
     def test_client_answers_none_for_no_instance(self):
         client = derive.Sam3Client("http://sam3.invalid")
         client._post = lambda data: {"instances": []}
@@ -234,6 +247,53 @@ class Sam3ClientTest(unittest.TestCase):
         client._post(b"png-3", "bottle")
         self.assertEqual(calls[-1], (b"png-3", "bottle", "true"))
         self.assertEqual(len(calls), 5)
+
+
+def instance(label, area, box, score=0.9):
+    return {"label": label, "area": area, "box": box, "score": score, "mask_png_b64": "m"}
+
+
+class PackageInstanceTest(unittest.TestCase):
+    """The instances are the cached SAM3 answers of real photos (2026-09-27)."""
+
+    def test_bottle_wins_over_a_larger_gift_box_beside_it(self):
+        # q-000117: the box of the gift package is larger than the bottle.
+        bottle = instance("wine bottle", 174683, [337, 104, 618, 1059])
+        found = [bottle, instance("box", 196382, [636, 89, 902, 890]),
+                 instance("box", 75697, [345, 87, 635, 849])]
+        self.assertIs(derive.package_instance(found), bottle)
+
+    def test_largest_bottle_wins_over_a_bottle_window_of_a_box(self):
+        # q-000042: a bottle-shaped window of a wooden box is a second bottle.
+        bottle = instance("wine bottle", 143913, [315, 266, 574, 1082], 0.97)
+        found = [instance("wine bottle", 46822, [120, 397, 304, 809], 0.5), bottle,
+                 instance("box", 154034, [0, 274, 349, 844])]
+        self.assertIs(derive.package_instance(found), bottle)
+
+    def test_bottle_in_front_of_a_crate_wins(self):
+        # A Ferrum photo: the bottle has 0.13 of the area of the crate.
+        bottle = instance("wine bottle", 8481, [122, 60, 180, 265])
+        found = [bottle, instance("box", 63061, [8, 9, 294, 295])]
+        self.assertIs(derive.package_instance(found), bottle)
+
+    def test_bottle_printed_on_a_packet_gives_the_packet(self):
+        packet = instance("packet", 552707, [10, 10, 447, 1386])
+        found = [instance("wine bottle", 114071, [97, 300, 372, 1383]), packet]
+        self.assertIs(derive.package_instance(found), packet)
+
+    def test_small_bottle_printed_on_a_bag_in_box_gives_the_box(self):
+        box = instance("box", 92394, [1, 31, 301, 355])
+        found = [instance("wine bottle", 5559, [184, 116, 227, 303]), box]
+        self.assertIs(derive.package_instance(found), box)
+
+    def test_with_no_bottle_the_largest_instance_wins(self):
+        can = instance("can", 200, [0, 0, 10, 20])
+        found = [instance("box", 100, [0, 0, 10, 10]), can]
+        self.assertIs(derive.package_instance(found), can)
+
+    def test_instances_with_no_mask_give_none(self):
+        found = [dict(instance("wine bottle", 100, [0, 0, 10, 10]), mask_png_b64=None)]
+        self.assertIsNone(derive.package_instance(found))
 
 
 class DeriveAllTest(unittest.TestCase):

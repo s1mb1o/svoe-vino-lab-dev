@@ -1,4 +1,5 @@
-"""The reads and the writes of the Testset page (plan 24): `pipeline/testsets.py`."""
+"""The reads and the writes of the Testset page (plan 24): `pipeline/testsets.py`. The
+comments of a photo and of a wine follow plan 51."""
 import io
 import json
 import sqlite3
@@ -12,6 +13,7 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import testset_fixture as FX  # noqa: E402
+import comments as CM  # noqa: E402
 import import_testset as IT  # noqa: E402
 import testsets as TS  # noqa: E402
 
@@ -66,8 +68,10 @@ class TestsetsTest(unittest.TestCase):
             conn.close()
 
     def write(self, function, *args):
+        # As `testset_routes.respond`: the foreign keys are on.
         conn = sqlite3.connect(self.db)
         conn.isolation_level = None
+        conn.execute("PRAGMA foreign_keys = ON")
         conn.execute("BEGIN IMMEDIATE")
         try:
             answer = function(conn, "my", *args)
@@ -123,7 +127,11 @@ class TestsetsTest(unittest.TestCase):
         photo = wine_a["photos"][1]
         self.assertRegex(photo["url"], r"^/images/testset/[0-9a-f]{64}\.jpg$")
         self.assertEqual((photo["width"], photo["height"], photo["conf"]), (40, 20, 80))
-        self.assertEqual(photo["entry"], LABELS["wine-a"]["02_conf080.jpg"])
+        # The old field `comment` of the entry is a row of `test_photo_comment` now.
+        self.assertEqual(photo["entry"], {"label": None, "copy_to": "wine-b", "ts": "t0"})
+        self.assertEqual([(c["source"], c["text"]) for c in photo["comments"]],
+                         [("user", "keep")])
+        self.assertEqual(wine_a["photos"][0]["comments"], [])
 
     def test_the_first_set_is_the_default_and_an_unknown_set_is_404(self):
         self.assertEqual(self.view(None)["set"], "my")
@@ -136,8 +144,9 @@ class TestsetsTest(unittest.TestCase):
         answer = self.write(TS.set_label, "wine-a", "02_conf080.jpg", "positive")
         entry = answer["photo"]["entry"]
         self.assertEqual({k: v for k, v in entry.items() if k != "ts"},
-                         {"label": "positive", "copy_to": "wine-b", "comment": "keep"})
+                         {"label": "positive", "copy_to": "wine-b"})
         self.assertNotEqual(entry["ts"], "t0")
+        self.assertEqual([c["text"] for c in answer["photo"]["comments"]], ["keep"])
         self.assertEqual(answer["counts"]["positive"], 1)
         self.assertIsNotNone(self.query("SELECT edited_at FROM test_set")[0][0])
 
@@ -171,15 +180,57 @@ class TestsetsTest(unittest.TestCase):
         with self.assertRaises(TS.TestsetError):
             self.write(TS.set_delete, "wine-a", "01_conf095.jpg", "yes")
 
-    def test_the_comment_of_a_photo(self):
-        answer = self.write(TS.set_comment, "wine-c", "01.jpg", "  line one\r\nline two  ")
-        self.assertEqual(answer["photo"]["entry"]["comment"], "line one\nline two")
-        answer = self.write(TS.set_comment, "wine-c", "01.jpg", "   ")
-        self.assertNotIn("comment", answer["photo"]["entry"])
-        for text in ("x" * (TS.TEXT_MAX + 1), "bell\x07"):
+    def test_the_comments_of_a_photo(self):
+        first = self.write(TS.add_photo_comment, "wine-c", "01.jpg", "  line one\r\nline two  ")
+        self.assertEqual((first["comment"]["text"], first["comment"]["source"]),
+                         ("line one\nline two", "user"))
+        self.assertRegex(first["comment"]["created_at"], TS.UTC_RE)
+        second = self.write(TS.add_photo_comment, "wine-c", "01.jpg", "from a script", "script")
+        self.assertEqual([(c["text"], c["source"]) for c in second["photo"]["comments"]],
+                         [("line one\nline two", "user"), ("from a script", "script")])
+        # A comment is not a field of the entry: `ts` of the entry does not change.
+        self.assertEqual(second["photo"]["entry"], {})
+        self.assertEqual(self.query("SELECT ts FROM test_photo WHERE place = 'wine-c'"),
+                         [(None,)])
+        self.assertIsNotNone(self.query("SELECT edited_at FROM test_set")[0][0])
+        # wine-a/02_conf080.jpg holds the comment of the import.
+        self.assertEqual(second["counts"]["commented"], 2)
+        for text, source in (("   ", None), ("x" * (TS.TEXT_MAX + 1), None),
+                             ("bell\x07", None), ("ok", "robot")):
             with self.assertRaises(TS.TestsetError) as caught:
-                self.write(TS.set_comment, "wine-c", "01.jpg", text)
-            self.assertEqual(caught.exception.code, 400)
+                self.write(TS.add_photo_comment, "wine-c", "01.jpg", text, source)
+            self.assertEqual(caught.exception.code, 400, text)
+        with self.assertRaises(TS.TestsetError) as caught:
+            self.write(TS.add_photo_comment, "wine-c", "missing.jpg", "x")
+        self.assertEqual(caught.exception.code, 404)
+
+        answer = self.write(TS.remove_photo_comment, "wine-c", "01.jpg",
+                            str(first["comment"]["id"]))
+        self.assertEqual(answer["removed"], first["comment"]["id"])
+        self.assertEqual([c["text"] for c in answer["photo"]["comments"]], ["from a script"])
+        other = self.row("wine-a")["photos"][1]["comments"][0]["id"]
+        for comment_id, code in ((first["comment"]["id"], 404), (other, 404), ("x", 400),
+                                 (True, 400), (None, 400)):
+            with self.assertRaises(TS.TestsetError) as caught:
+                self.write(TS.remove_photo_comment, "wine-c", "01.jpg", comment_id)
+            self.assertEqual(caught.exception.code, code, comment_id)
+
+    def test_a_row_shows_the_comments_of_its_wine(self):
+        conn = sqlite3.connect(self.db)
+        with conn:
+            CM.add(conn, "wine-c", "a removed wine keeps its comments", "user")
+            CM.add(conn, "wine-a", "second", "script", "2026-09-26T10:00:00Z")
+            CM.add(conn, "wine-a", "first", "user", "2026-09-26T09:00:00Z")
+        conn.close()
+        self.assertEqual([c["text"] for c in self.row("wine-a")["comments"]],
+                         ["first", "second"])
+        self.assertEqual([c["text"] for c in self.row("wine-c")["comments"]],
+                         ["a removed wine keeps its comments"])
+        for slug in (TS.NULL_SLUG, TS.DRAWER_SLUG, "unknown-wine", "wine-b"):
+            self.assertEqual(self.row(slug)["comments"], [], slug)
+        # The exclusion went away with plan 51.
+        self.assertFalse({"excluded", "exclude_reason", "note"} & set(self.row("wine-a")))
+        self.assertNotIn("wine_notes", self.view()["counts"])
 
     def test_the_box_is_inside_the_photo_after_its_orientation(self):
         # 01_conf095.jpg is 40 x 20 in its header, and the EXIF orientation 6 turns it.
@@ -195,30 +246,42 @@ class TestsetsTest(unittest.TestCase):
         self.assertEqual(TS.oriented_size(self.root / "set" / "photo" / "wine-a" /
                                           "01_conf095.jpg"), (20, 40))
 
-    def test_the_note_of_a_wine(self):
-        answer = self.write(TS.set_wine_note, "wine-c", "a removed wine keeps its note")
-        self.assertEqual(answer["note"], "a removed wine keeps its note")
-        self.assertEqual(self.row("wine-c")["note"], "a removed wine keeps its note")
-        self.assertEqual(answer["counts"]["wine_notes"], 1)
-        self.write(TS.set_wine_note, "wine-c", "")
-        self.assertEqual(self.query("SELECT count(*) FROM test_wine_note"), [(0,)])
-        with self.assertRaises(TS.TestsetError) as caught:
-            self.write(TS.set_wine_note, "no-such-wine", "x")
-        self.assertEqual(caught.exception.code, 404)
+    def test_the_comment_fields_of_an_entry(self):
+        rest, found = TS.entry_comments(
+            {"label": "positive", "comment": "old", "ts": "2026-09-15T22:19:21+0300",
+             "by": "kimi"}, "2026-01-01T00:00:00Z")
+        self.assertEqual(rest, {"label": "positive", "ts": "2026-09-15T22:19:21+0300",
+                                "by": "kimi"})
+        self.assertEqual(found, [{"created_at": "2026-09-15T19:19:21Z", "source": "script",
+                                  "text": "old"}])
+        item = {"created_at": "2026-09-16T10:00:00Z", "source": "user", "text": "new"}
+        rest, found = TS.entry_comments({"comments": [item], "comment": "old", "ts": "t0"},
+                                        "2026-01-01T00:00:00Z")
+        self.assertEqual((rest, [c["text"] for c in found]), ({"ts": "t0"}, ["old", "new"]))
+        self.assertEqual(found[0]["created_at"], "2026-01-01T00:00:00Z")
+        # A list with an item that is not valid stays in the entry, and so goes to `extra`.
+        for items in ([dict(item, source="robot")], [dict(item, id=3)], [], "text"):
+            rest, found = TS.entry_comments({"comments": items}, "2026-01-01T00:00:00Z")
+            self.assertEqual((rest, found), ({"comments": items}, []), items)
+        self.assertEqual((TS.utc_of("2026-09-15T22:19:21+0300"), TS.utc_of("t0"),
+                          TS.utc_of(None)), ("2026-09-15T19:19:21Z", None, None))
 
-    def test_the_exclusion_needs_a_reason(self):
-        with self.assertRaises(TS.TestsetError) as caught:
-            self.write(TS.set_excluded, "wine-a", True, "  ")
-        self.assertEqual(caught.exception.code, 400)
-        with self.assertRaises(TS.TestsetError):
-            self.write(TS.set_excluded, "wine-a", True, "x" * (TS.REASON_MAX + 1))
-        answer = self.write(TS.set_excluded, "wine-a", True, " wrong bottle photo ")
-        self.assertEqual(answer["entry"]["reason"], "wrong bottle photo")
-        self.assertEqual((self.row("wine-a")["excluded"], self.row("wine-a")["exclude_reason"]),
-                         (True, "wrong bottle photo"))
-        self.write(TS.set_excluded, "wine-a", False, None)
-        self.assertEqual(self.query("SELECT count(*) FROM test_excluded"), [(0,)])
-        self.write(TS.set_excluded, "__null__", True, "the NULL wine too")
+    def test_the_rules_of_the_old_notes_and_exclusions(self):
+        now = "2026-01-01T00:00:00Z"
+        for text, source in (("irec-03: no page", "script"), ("hunter-09: trap", "script"),
+                             ("cigar-r05 / cigarpro.ru: no photo", "script"),
+                             ("page 404", "user"), ("hunter: no digit", "user")):
+            self.assertEqual(TS.wine_note_comment({"comment": text, "ts": "t0"}, now),
+                             {"created_at": now, "source": source, "text": text}, text)
+        self.assertIsNone(TS.wine_note_comment({"ts": "t0"}, now))
+        self.assertEqual(TS.exclusion_comment({"reason": " wrong photo ",
+                                               "ts": "2026-09-19T18:46:28+0300"}, now),
+                         {"created_at": "2026-09-19T15:46:28Z", "source": "user",
+                          "text": "Excluded from the benchmark: wrong photo"})
+        self.assertEqual(TS.exclusion_comment("short form", now)["text"],
+                         "Excluded from the benchmark: short form")
+        for record in ({"reason": "  "}, {}, None, 3):
+            self.assertIsNone(TS.exclusion_comment(record, now), record)
 
     def test_a_write_to_a_removed_wine_is_allowed(self):
         answer = self.write(TS.set_label, "wine-c", "01.jpg", "positive")
@@ -265,11 +328,12 @@ class TestsetsTest(unittest.TestCase):
             with self.assertRaises(TS.TestsetError) as caught:
                 self.write(TS.set_label, TS.DRAWER_SLUG, "01_conf095.jpg", label)
             self.assertEqual(caught.exception.code, 400, label)
-        self.write(TS.set_comment, TS.DRAWER_SLUG, "01_conf095.jpg", "later")
+        self.write(TS.add_photo_comment, TS.DRAWER_SLUG, "01_conf095.jpg", "later")
         self.write(TS.set_delete, TS.DRAWER_SLUG, "01_conf095.jpg", True)
         answer = self.write(TS.move_photo, TS.DRAWER_SLUG, "01_conf095.jpg", TS.NULL_SLUG)
         self.assertEqual((answer["photo"]["entry"]["moved_from"], answer["counts"]["drawer"],
                           answer["counts"]["no_match"]), (TS.DRAWER_SLUG, 0, 2))
+        self.assertEqual([c["text"] for c in answer["photo"]["comments"]], ["later"])
 
     def test_an_upload_to_the_drawer(self):
         answer = self.write(TS.upload_photo, TS.DRAWER_SLUG, jpeg((25, 15)), "d.jpg")
@@ -282,7 +346,21 @@ class TestsetsTest(unittest.TestCase):
         answer = self.write(TS.move_photo, "wine-a", "02_conf080.jpg", "wine-c")
         entry = answer["photo"]["entry"]
         self.assertEqual({k: v for k, v in entry.items() if k != "ts"},
-                         {"moved_from": "wine-a", "copy_to": "wine-b", "comment": "keep"})
+                         {"moved_from": "wine-a", "copy_to": "wine-b"})
+        # The comments follow the photo to its new place and its new name.
+        self.assertEqual([c["text"] for c in answer["photo"]["comments"]], ["keep"])
+        self.assertEqual(self.query("SELECT place, file_name FROM test_photo_comment"),
+                         [("wine-c", "02_conf080.jpg")])
+
+    def test_a_move_with_the_foreign_keys_off_takes_the_comments_too(self):
+        conn = sqlite3.connect(self.db)
+        conn.isolation_level = None
+        conn.execute("BEGIN IMMEDIATE")
+        TS.move_photo(conn, "my", "wine-a", "02_conf080.jpg", TS.NULL_SLUG)
+        conn.execute("COMMIT")
+        conn.close()
+        self.assertEqual(self.query("SELECT place, file_name FROM test_photo_comment"),
+                         [(TS.NULL_SLUG, "02_conf080.jpg")])
 
     def test_move_errors(self):
         for args, code in ((("wine-a", "02_conf080.jpg", "wine-a"), 400),
@@ -360,6 +438,46 @@ class TestsetsTest(unittest.TestCase):
         finally:
             conn.close()
         self.assertEqual(self.query("SELECT count(*) FROM test_photo"), [(len(PHOTOS),)])
+
+
+
+class CreateSetTest(unittest.TestCase):
+    """Plan 57: the option `Add new testset …` makes an empty set."""
+    setUp, tearDown, view = TestsetsTest.setUp, TestsetsTest.tearDown, TestsetsTest.view
+
+    def create(self, name):
+        # As `testset_routes.respond`: one write transaction.
+        conn = sqlite3.connect(self.db)
+        conn.isolation_level = None
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            answer = TS.create_set(conn, name)
+            conn.execute("COMMIT")
+            return answer
+        except BaseException:
+            conn.execute("ROLLBACK")
+            raise
+        finally:
+            conn.close()
+
+    def test_a_new_set_is_empty_and_the_last(self):
+        self.assertEqual(self.create("my-2"), {"ok": True, "set": "my-2"})
+        view = self.view("my-2")
+        self.assertEqual((view["set"], view["source_dir"]), ("my-2", TS.NEW_SOURCE))
+        self.assertTrue(view["edited_at"])
+        self.assertEqual([row["photos"] for row in view["rows"] if row["photos"]], [])
+        self.assertEqual([(s["name"], s["photos"]) for s in view["sets"]][-1], ("my-2", 0))
+        self.assertEqual(self.view(None)["set"], "my")
+
+    def test_a_bad_or_present_name_is_refused(self):
+        for name in ("", "My", "a b", "a\n", "(new)", "é", None, 5):
+            with self.assertRaises(TS.TestsetError) as caught:
+                self.create(name)
+            self.assertEqual(caught.exception.code, 400, name)
+        with self.assertRaises(TS.TestsetError) as caught:
+            self.create("my")
+        self.assertEqual(caught.exception.code, 409)
+        self.assertEqual([s["name"] for s in self.view()["sets"]], ["my"])
 
 
 if __name__ == "__main__":

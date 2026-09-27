@@ -195,3 +195,19 @@ they are fixed:
 6. `seed_patched.py` refuses a table with `main_patched` rows unless `--force` (owner
    answer of 12:28:04).
 
+## Change of 2026-09-26: the largest label in a label close-up
+
+Owner message of 2026-09-26T19:38:53+0300, answer of 19:47:16 ("Close-ups: largest").
+This change replaces the bottle test of rule 13 for a label type.
+
+1. In a label close-up (`label_front`, `label_back`), the largest label instance is the
+   main label. The bottle test of `build_labels.py` does not apply.
+2. Reason: in a close-up the bottle fills the frame. The box of the real label is then
+   close to the box of the bottle. On the photo `d9f847bd…` of
+   `vysokij-bereg-risling-zelenaya-seriya`, the IoU was 0.84, above `BOTTLE_IOU` 0.80. The
+   bottle test dropped the real label (1,353,980 px) and kept a QR sticker (176,368 px).
+3. A full photo (`main`, `main_patched`, `full_front`, `full_back`) keeps the bottle
+   test. The embedding runner keeps it for a test photo, because a test photo has no type.
+4. The cut of a close-up has the settings `alternatives.SETTINGS_LABEL_CLOSE_UP`. The text
+   of `SETTINGS_LABEL` did not change, so the label cuts of the full photos stay current.
+   A close-up cut with `SETTINGS_LABEL` is processed again on the next request.

@@ -9,9 +9,9 @@ Rules:
   type from the bytes.
 - The file goes to the image store under its SHA-256. A SHA-256 that `image` holds
   already reuses the stored file.
-- `store_patch` processes the file with `derive.derive_all` before its write
-  transaction, so a slow SAM3 does not hold the write lock. SAM3 does not answer: the
-  patch is stored with no processed file, and the answer holds a warning.
+- `store_patch` creates the package cut and the label cut before its write transaction,
+  so a slow SAM3 does not hold the write lock. SAM3 does not answer: the patch stays
+  stored, and the answer holds a warning for each missing cut.
 - `remove_patch` deletes the row alone. The file stays in the store, because another row
   can use it.
 - A wine of each state MAY get a patch, as in `seed_patched.py`.
@@ -41,6 +41,8 @@ MAX_PIXELS = 100_000_000
 # The Pillow format of an accepted patch -> the extension of the stored file. These are
 # the types of the patch folder: `seed_patched.IMAGE_EXTENSIONS`.
 FORMATS = {"JPEG": "jpg", "PNG": "png", "WEBP": "webp"}
+NO_LABEL_CUT = ("The patch is stored with no label cut. A label-view embedding cannot "
+                "be generated.")
 
 
 class PatchError(Exception):
@@ -126,12 +128,22 @@ def store_patch(conn, db_path, slug, data, name=None, segmenter=None):
     except (imagestore.StoreError, OSError) as exc:
         raise PatchError(500, "cannot store the patch: %s" % exc)
 
+    client = segmenter or derive.Sam3Client()
     warnings = []
-    derivatives = derive.derive_all(conn, db_path, {digest: path},
-                                    segmenter or derive.Sam3Client(), warnings.append)
-    if derivatives.unavailable or derivatives.unreadable or derivatives.errors:
+    package = derive.derive_all(conn, db_path, {digest: path}, client, warnings.append)
+    if package.unavailable or package.unreadable or package.errors:
         warnings.insert(0, "The patch is stored with no processed file. The card shows "
                            "the patch as it is.")
+    # Import here because `alternatives` uses the patch validation and store functions.
+    import alternatives
+    label_warnings = []
+    label = alternatives.process_image(conn, db_path, digest, path, "label", client,
+                                       label_warnings)
+    if (label.unavailable or label.unreadable or label.errors
+            or not (label.links or label.present
+                    or getattr(label, "not_applicable", None))):
+        warnings.append(NO_LABEL_CUT)
+    warnings.extend(label_warnings)
 
     conn.execute("BEGIN IMMEDIATE")
     try:
@@ -146,7 +158,8 @@ def store_patch(conn, db_path, slug, data, name=None, segmenter=None):
             conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
                          "source_name, match_method) VALUES (?, ?, ?, ?, ?)",
                          (slug, IMAGE_TYPE, digest, source_name(name), MATCH_METHOD))
-        derive.write_rows(conn, derivatives)
+        derive.write_rows(conn, package)
+        alternatives.write_processed_rows(conn, label)
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")

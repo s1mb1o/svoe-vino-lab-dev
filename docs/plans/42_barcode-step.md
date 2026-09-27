@@ -149,3 +149,10 @@ Run the full file with `embedding_python`.
 ## 9. Result
 
 See the section 2026-09-26 of [ChangeLog.md](../../ChangeLog.md).
+
+## 10. Change of 2026-09-27
+
+[Plan 58](58_shared-codes.md) (owner message of 2026-09-26T23:54:53+0300) changes the rule
+of a hit. Only a code of one Active wine answers the photo. A GTIN of 2 or more wines limits
+the embedding match to its wines. A QR URL of 2 or more wines decides nothing. The step
+`barcode` of the trace gets the keys `mode` and `shared_qr`.

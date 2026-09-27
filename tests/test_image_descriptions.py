@@ -1,12 +1,16 @@
+import os
 import sqlite3
+import tempfile
 import unittest
 
 from image_description_fixture import DescriptionCase
 
 import image_descriptions as DESC
+import labdb
 
 ANSWER = {"package_type": "bottle", "subject_scope": "full_package",
-          "package_view": "front", "content_roles": ["front_label"]}
+          "package_view": "front", "content_roles": ["front_label"],
+          "presentation_mode": "on_package"}
 
 
 class CheckValueTest(unittest.TestCase):
@@ -30,7 +34,8 @@ class CheckValueTest(unittest.TestCase):
 
     def test_a_value_out_of_its_set(self):
         for field, value in (("package_type", "carton"), ("subject_scope", "collage"),
-                             ("package_view", "side"), ("package_view", ""), ("other", "x")):
+                             ("package_view", "side"), ("package_view", ""), ("other", "x"),
+                             ("presentation_mode", "table"), ("presentation_mode", "")):
             with self.subTest(field=field, value=value):
                 with self.assertRaises(DESC.DescriptionError):
                     DESC.check_value(field, value)
@@ -70,6 +75,17 @@ class TableTest(DescriptionCase):
                          ("manual", "vlm-a", "Model-A"))
         self.assertEqual(row["vlm_answer"], ANSWER)
         self.assertIsNotNone(row["vlm_at"])
+
+    def test_the_vlm_fills_presentation_mode_unless_it_is_set(self):
+        with self.connect() as conn:
+            DESC.set_values(conn, self.sha["wine-a"], {"presentation_mode": "flat_surface"})
+            for slug in ("wine-a", "wine-b"):
+                DESC.record_vlm(conn, self.sha[slug], ANSWER, "vlm-a", "Model-A")
+            rows = DESC.descriptions(conn)
+        self.assertEqual(rows[self.sha["wine-a"]]["presentation_mode"], "flat_surface")
+        self.assertEqual(rows[self.sha["wine-b"]]["presentation_mode"], "on_package")
+        self.assertEqual(DESC.preset(rows[self.sha["wine-a"]])["presentation_mode"],
+                         "flat_surface")
 
     def test_a_second_vlm_answer_is_not_taken(self):
         sha = self.sha["wine-b"]
@@ -141,6 +157,58 @@ class TableTest(DescriptionCase):
                 conn.execute("INSERT INTO image_description (sha256, created_by, created_at, "
                              "updated_at) VALUES (?, 'manual', '2026-09-25T10:00:00Z', "
                              "'2026-09-25T10:00:00Z')", ("f" * 64,))
+            with self.assertRaises(sqlite3.IntegrityError):
+                conn.execute("INSERT INTO image_description (sha256, presentation_mode, "
+                             "created_by, created_at, updated_at) VALUES (?, 'table', 'manual', "
+                             "'2026-09-25T10:00:00Z', '2026-09-25T10:00:00Z')", (sha,))
+
+
+class RequeueTest(unittest.TestCase):
+    """Schema 024 puts each row that the VLM filled back in the queue of the watcher."""
+
+    def test_024_keeps_the_values_and_clears_the_vlm_fill(self):
+        with tempfile.TemporaryDirectory() as directory:
+            schema = os.path.join(directory, "schema")
+            os.mkdir(schema)
+            for number, path in labdb.schema_files()[:23]:
+                with open(path, encoding="utf-8") as fh:
+                    text = fh.read()
+                with open(os.path.join(schema, os.path.basename(path)), "w",
+                          encoding="utf-8") as fh:
+                    fh.write(text)
+            db = os.path.join(directory, "lab.sqlite3")
+            conn = labdb.connect(db, create=True, directory=schema)
+            filled, failed = "a" * 64, "b" * 64
+            for sha in (filled, failed):
+                conn.execute("INSERT INTO image VALUES (?, 'main', 'png', 1, 1)", (sha,))
+            now = "2026-09-25T10:00:00Z"
+            conn.execute(
+                "INSERT INTO image_description (sha256, package_type, subject_scope, "
+                "package_view, content_roles, created_by, created_at, updated_at, vlm_at, "
+                "vlm_name, vlm_model, vlm_answer) VALUES (?, 'bottle', 'label_closeup', "
+                "'back', '[\"back_label\"]', 'vlm', ?, ?, ?, 'vlm-a', 'Model-A', '{}')",
+                (filled, now, now, now))
+            conn.execute(
+                "INSERT INTO image_description (sha256, created_by, created_at, updated_at, "
+                "vlm_error, vlm_attempts) VALUES (?, 'vlm', ?, ?, 'bad answer', 3)",
+                (failed, now, now))
+            conn.commit()
+            self.assertEqual(labdb.migrate(conn), len(labdb.schema_files()))
+            row = DESC.description(conn, filled)
+            self.assertEqual(
+                (row["package_type"], row["subject_scope"], row["package_view"],
+                 row["content_roles"], row["presentation_mode"], row["created_by"]),
+                ("bottle", "label_closeup", "back", ["back_label"], None, "vlm"))
+            self.assertEqual(
+                (row["vlm_at"], row["vlm_name"], row["vlm_model"], row["vlm_answer"],
+                 row["vlm_error"], row["vlm_attempts"], row["updated_at"]),
+                (None, None, None, None, None, 0, now))
+            row = DESC.description(conn, failed)
+            self.assertEqual((row["vlm_error"], row["vlm_attempts"]), ("bad answer", 3))
+            self.assertEqual(DESC.preset(DESC.description(conn, filled)),
+                             {"package_type": "bottle", "subject_scope": "label_closeup",
+                              "package_view": "back", "content_roles": ["back_label"]})
+            conn.close()
 
 
 class WatcherStatusTest(DescriptionCase):

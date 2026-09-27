@@ -1,12 +1,13 @@
-"""The Drink Atlas Core product of a wine: the table `wine_atlas_binding` (schema 009).
+"""The Drink Atlas Core products of a wine: the table `wine_atlas_binding` (schema 025).
 
-A wine has at most one row of each source:
+A wine MAY have 2 or more products. One row links one wine and one product UUID. Each
+row keeps its source as a label:
 - `automatic`: a match of `svoe-wino-hackaton/scripts/match_atlas.py`.
 - `manual`: a binding by a person.
 
-The effective binding of a wine is its manual row, else its automatic row. The seed and
-the lab server use these functions. A function that writes runs in the transaction of
-the caller. Read `docs/plans/15_atlas-binding.md`.
+The seed and the lab server use these functions. A function that writes runs in the
+transaction of the caller. Read `docs/plans/15_atlas-binding.md` and
+`docs/plans/54_atlas-binding-list.md`.
 """
 import uuid
 
@@ -15,6 +16,10 @@ SOURCES = ("automatic", "manual")
 
 class BindingError(ValueError):
     """A value is not a valid product UUID."""
+
+
+class DuplicateError(ValueError):
+    """The wine already has the product UUID."""
 
 
 def clean_uuid(value):
@@ -34,44 +39,49 @@ def clean_uuid(value):
 
 
 def bindings(conn, slug=None):
-    """Return wine slug -> (product UUID, source) of the effective binding.
+    """Return wine slug -> a list of (product UUID, source), in rowid order.
 
     With `slug`, the answer holds that wine alone. A wine with no row has no key.
     """
-    query = "SELECT wine_slug, source, product_uuid FROM wine_atlas_binding"
-    rows = (conn.execute(query + " WHERE wine_slug = ?", (slug,)) if slug is not None
-            else conn.execute(query))
+    query = "SELECT wine_slug, product_uuid, source FROM wine_atlas_binding"
+    rows = (conn.execute(query + " WHERE wine_slug = ? ORDER BY rowid", (slug,))
+            if slug is not None else conn.execute(query + " ORDER BY rowid"))
     out = {}
-    for wine, source, product in rows:
-        if source == "manual" or wine not in out:
-            out[wine] = (product, source)
+    for wine, product, source in rows:
+        out.setdefault(wine, []).append((product, source))
     return out
 
 
 def counts(conn):
-    """Return (the wines with an effective binding, the wines with a manual row)."""
-    total = conn.execute(
-        "SELECT count(DISTINCT wine_slug) FROM wine_atlas_binding").fetchone()[0]
-    manual = conn.execute(
-        "SELECT count(*) FROM wine_atlas_binding WHERE source = 'manual'").fetchone()[0]
-    return total, manual
+    """Return (the rows, the manual rows)."""
+    return conn.execute("SELECT count(*), count(*) FILTER (WHERE source = 'manual') "
+                        "FROM wine_atlas_binding").fetchone()
 
 
-def set_manual(conn, slug, product_uuid):
-    """Set the manual row of `slug`, and return the stored UUID."""
+def add_manual(conn, slug, product_uuid):
+    """Add one manual row to `slug`, and return the stored UUID.
+
+    A UUID that the wine already has, of either source, raises `DuplicateError`.
+    """
     clean = clean_uuid(product_uuid)
+    if conn.execute("SELECT 1 FROM wine_atlas_binding WHERE wine_slug = ? "
+                    "AND product_uuid = ?", (slug, clean)).fetchone():
+        raise DuplicateError("the wine %s already has the Atlas product %s" % (slug, clean))
     conn.execute("INSERT INTO wine_atlas_binding (wine_slug, source, product_uuid) "
-                 "VALUES (?, 'manual', ?) ON CONFLICT (wine_slug, source) "
-                 "DO UPDATE SET product_uuid = excluded.product_uuid", (slug, clean))
+                 "VALUES (?, 'manual', ?)", (slug, clean))
     return clean
 
 
-def remove_manual(conn, slug):
-    """Remove the manual row of `slug`. Return its UUID, or None for a wine with none."""
-    row = conn.execute("SELECT product_uuid FROM wine_atlas_binding "
-                       "WHERE wine_slug = ? AND source = 'manual'", (slug,)).fetchone()
+def remove(conn, slug, product_uuid):
+    """Remove the row of `slug` and `product_uuid`, of either source.
+
+    Return the source of the removed row, or None for a row that does not exist. The
+    seed does not add a removed automatic row back, because it refuses a table with rows.
+    """
+    row = conn.execute("SELECT source FROM wine_atlas_binding WHERE wine_slug = ? "
+                       "AND product_uuid = ?", (slug, product_uuid)).fetchone()
     if row is None:
         return None
-    conn.execute("DELETE FROM wine_atlas_binding WHERE wine_slug = ? AND source = 'manual'",
-                 (slug,))
+    conn.execute("DELETE FROM wine_atlas_binding WHERE wine_slug = ? AND product_uuid = ?",
+                 (slug, product_uuid))
     return row[0]

@@ -7,6 +7,7 @@ that fake. A fake model gives the mean colour of each model input. No test calls
 """
 import base64
 import contextlib
+import hashlib
 import io
 import json
 import os
@@ -354,6 +355,82 @@ class RunTest(Temporary):
         for row in rows.values():
             self.assertEqual(row["candidates"], [])
             self.assertIn("the model sent a vector of 4 values; the index holds 3", row["error"])
+
+    # ---- the step trace of plan 41 ----
+
+    def test_each_row_holds_the_step_trace(self):
+        _, _, rows = self.run_set()
+        row = rows["green/01.png"]
+        trace = row["trace"]
+        self.assertEqual(trace["v"], embedding_run.TRACE_VERSION)
+        steps = trace["steps"]
+        self.assertEqual([(s["id"], s.get("view")) for s in steps], [
+            ("input", None), ("sam3-package", None), ("sam3-label", None), ("view", "full"),
+            ("view", "label"), ("embed", None), ("search", "full"), ("search", "label"),
+            ("score", None)])
+        starts = [s["start_ms"] for s in steps]
+        self.assertEqual(starts, sorted(starts))
+        self.assertTrue(all(s["ms"] >= 0 and "error" not in s for s in steps))
+        # The fake SAM3 does not tell about the cache.
+        self.assertEqual([s["cached"] for s in steps if s["id"].startswith("sam3")], [None, None])
+        self.assertEqual(steps[1]["out"]["rule"], "sam3")
+        self.assertTrue(steps[2]["out"]["found"])
+        # The sha256 of a view is the sha256 of the PNG that went to the model.
+        expected, _ = embedding_run.query_inputs(query_photo("green"), self.embedding.views,
+                                                 FakeSam3())
+        for part in steps[3:5]:
+            data = embeddings.png_bytes(expected[part["view"]])
+            self.assertEqual(part["out"]["sha256"], hashlib.sha256(data).hexdigest())
+            self.assertEqual(part["out"]["bytes"], len(data))
+        self.assertEqual(steps[5]["out"], {"views": ["full", "label"], "dim": 3})
+        # The top list of a space follows the cosine of that space alone.
+        cands = {c["slug"]: c for c in row["candidates"]}
+        for part in steps[6:8]:
+            top = part["out"]["top"]
+            self.assertEqual([hit["cosine"] for hit in top],
+                             sorted((hit["cosine"] for hit in top), reverse=True))
+            self.assertEqual(top[0]["slug"], "green")
+            self.assertEqual((part["out"]["rows"], part["out"]["wines"]), (3, 3))
+            for hit in top:
+                self.assertEqual(hit["cosine"], cands[hit["slug"]][part["view"]])
+                self.assertEqual(hit["sha256"], self.lab.digests[hit["slug"]])
+                self.assertEqual(set(hit), {"slug", "cosine", "sha256", "type",
+                                            "embedding_hash"})
+        self.assertEqual(steps[8]["out"], {"wines": 3})
+
+    def test_a_view_with_no_input_is_a_skipped_step(self):
+        _, _, rows = self.run_set()
+        steps = rows["red/02.png"]["trace"]["steps"]
+        self.assertEqual(next(s for s in steps if s["id"] == "sam3-label")["out"],
+                         {"found": False})
+        label = next(s for s in steps if s.get("view") == "label" and s["id"] == "view")
+        self.assertEqual((label["skipped"], "out" in label), ("SAM3 found no label", False))
+        self.assertEqual([s.get("view") for s in steps if s["id"] == "search"], ["full"])
+
+    def test_a_failed_step_ends_the_trace(self):
+        _, _, rows = self.run_set(sam3=FakeSam3(down=True))
+        steps = rows["green/01.png"]["trace"]["steps"]
+        self.assertEqual([s["id"] for s in steps], ["input", "sam3-package"])
+        self.assertIn("SAM3", steps[1]["error"])
+
+    def test_a_sam3_client_that_tells_the_cache_marks_its_steps(self):
+        class Cached(FakeSam3):
+            def cached(self):
+                return True
+
+        _, _, rows = self.run_set(sam3=Cached())
+        steps = rows["green/01.png"]["trace"]["steps"]
+        self.assertEqual([s["cached"] for s in steps if s["id"].startswith("sam3")],
+                         [True, True])
+
+    def test_the_rows_of_the_run_route_hold_no_trace(self):
+        run_dir, _, _ = self.run_set()
+        code, body, _, _ = run_routes.run_view(self.runs, self.lab.db_path,
+                                               {"id": [os.path.basename(run_dir)]},
+                                               lambda conn: {})
+        self.assertEqual(code, 200)
+        self.assertTrue(body["rows"])
+        self.assertTrue(all("trace" not in row for row in body["rows"]))
 
     def test_the_route_answers_the_model_inputs_of_a_query(self):
         run_dir, _, rows = self.run_set()

@@ -1,35 +1,48 @@
 """The routes of the Testset page of the lab server.
 
 The page shows the test sets of the lab database and writes the labels of their photos.
-`testsets.py` does each read and each write. Read `docs/plans/24_testset-page.md`.
+`testsets.py` does each read and each write. Read `docs/plans/24_testset-page.md`. The
+dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (plan 44).
 
     GET  /testset                 the page
     GET  /api/testset?set=<name>  the rows of one set (the first set without `set`)
     POST /api/testset-label       {set, place, file, label}; label null clears it
     POST /api/testset-delete      {set, place, file, delete}
-    POST /api/testset-comment     {set, place, file, text}; an empty text removes it
+    POST /api/testset-photo-comment
+                                  {set, place, file, text, source?}: a new comment of
+                                  one photo; source user (the default) or script
+    POST /api/testset-photo-comment-remove
+                                  {set, place, file, id}: remove one comment of one photo
     POST /api/testset-box         {set, place, file, box}; box [l, t, r, b] or null
-    POST /api/testset-wine-note   {set, slug, text}; an empty text removes it
-    POST /api/testset-exclude     {set, slug, excluded, reason}
     POST /api/testset-move        {set, place, file, to}; to a slug, __null__ (the row
                                   "No Match"), or __drawer__ (the Drawer)
     POST /api/testset-upload?set=<name>&place=<slug>&name=<file name>
                                   the body is the bytes of one image; place a slug,
                                   __null__, or __drawer__
+    GET  /api/testset-from-run?id=<run id>
+                                  the dialog `New testset…` of `/runs`: the set of the
+                                  run, the proposed name, the counts of the misses
+    POST /api/testset-from-run    {run, misses, name}; misses r1 or r5: a new set from
+                                  the misses of the run (plan 44, `testset_from_run.py`)
+    POST /api/testset-new         {name}: a new empty set (plan 57, `Add new testset …`)
 
 A write runs in one transaction. `lab_server.py` answers HTTP 503 for an error of the
-database or of the configuration.
+database or of the configuration. The comments of a whole wine use the route
+`/api/dataset-comment` of the Dataset page (plan 51).
 """
 import json
 import urllib.parse
 from contextlib import closing
 
 import lab_pages
+import testset_from_run
 import testsets
 
 PAGE_ROUTE = "/testset"
 API = "/api/testset"
 UPLOAD = "/api/testset-upload"
+FROM_RUN = "/api/testset-from-run"
+NEW = "/api/testset-new"
 JSON_TYPE = "application/json; charset=utf-8"
 # The largest body of a write, in bytes. The JSON form of a comment of 4,000 characters
 # MAY need 6 bytes for each character.
@@ -38,13 +51,17 @@ MAX_BODY = 32768
 WRITES = {
     "/api/testset-label": (testsets.set_label, ("set", "place", "file", "label")),
     "/api/testset-delete": (testsets.set_delete, ("set", "place", "file", "delete")),
-    "/api/testset-comment": (testsets.set_comment, ("set", "place", "file", "text")),
+    "/api/testset-photo-comment": (testsets.add_photo_comment,
+                                   ("set", "place", "file", "text", "source")),
+    "/api/testset-photo-comment-remove": (testsets.remove_photo_comment,
+                                          ("set", "place", "file", "id")),
     "/api/testset-box": (testsets.set_box, ("set", "place", "file", "box")),
-    "/api/testset-wine-note": (testsets.set_wine_note, ("set", "slug", "text")),
-    "/api/testset-exclude": (testsets.set_excluded, ("set", "slug", "excluded", "reason")),
     "/api/testset-move": (testsets.move_photo, ("set", "place", "file", "to")),
     # The fields of an upload come from the query; `data` is the body. Read `_upload_body`.
     UPLOAD: (testsets.upload_photo, ("set", "place", "data", "name")),
+    NEW: (testsets.create_set, ("name",)),
+    # `respond` puts the directory of the runs of the server before these keys.
+    FROM_RUN: (testset_from_run.build, ("run", "misses", "name")),
 }
 ROUTES = frozenset((PAGE_ROUTE, API) + tuple(WRITES))
 
@@ -115,6 +132,14 @@ def respond(server, method, path, read_body, open_database, card_images):
                 return _json(200, testsets.set_view(conn, set_name, card_images))
             except testsets.TestsetError as exc:
                 return _error(exc.code, str(exc))
+    if route == FROM_RUN and method in ("GET", "HEAD"):
+        run_id = (urllib.parse.parse_qs(parts.query).get("id") or [""])[0]
+        with closing(open_database(server.db_path)) as conn:
+            try:
+                return _json(200, testset_from_run.dialog_view(
+                    conn, testset_from_run.runs_dir_of(server), run_id))
+            except testsets.TestsetError as exc:
+                return _error(exc.code, str(exc))
     if method != "POST":
         return _error(405, "the route %s answers POST alone" % route)
     if route == UPLOAD:
@@ -125,6 +150,9 @@ def respond(server, method, path, read_body, open_database, card_images):
         return error
     write, keys = WRITES[route]
     args = [body.get(key) for key in keys]
+    if route == FROM_RUN:
+        # The directory of the runs comes from the server, never from the body.
+        args.insert(0, testset_from_run.runs_dir_of(server))
     with closing(open_database(server.db_path, write=True)) as conn:
         conn.isolation_level = None
         conn.execute("PRAGMA foreign_keys = ON")

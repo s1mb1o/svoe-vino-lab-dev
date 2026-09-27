@@ -6,6 +6,17 @@ each decoded code in the table `wine_code` of the Active wines. A hit answers th
 with each wine of the code at score 1.0, in slug order, and the embedding does not run. A
 miss asks the embedding backend, and its answer does not change.
 
+Plan 58 (owner message of 2026-09-26T23:54:53+0300, answers of 23:59:00) adds the shared
+codes. A shared code is a GTIN or a QR URL of 2 or more Active wines. Only a unique code
+gives the fast exit above. A shared GTIN limits the embedding match to the wines of the
+GTIN (`only`). A shared QR URL never decides the answer: the annotation can miss other
+wines of the same URL, so the normal match runs. A unique code wins over a shared GTIN.
+
+`Decoder.scan_file` stores decoded scan stages in `data/cache/barcode/`. A cache hit
+repeats the wine lookup. An incomplete scan resumes when no stored code gives a unique
+hit. The cache key includes the source bytes, options, library versions, and scan
+revision. `model_cache.READ` controls cache reads. Decoder failures are not stored.
+
 The decoder is a copy of `svoe-vino-matcher/svm/pipelines/barcode.py`. It uses zxing-cpp
 2.3.0; zxing-cpp 3.1.1 can stall on an excise mark beside an EAN. It scans the whole photo
 first, with two binarizers. When the whole photo gives no hit, it scans overlapping tiles
@@ -22,15 +33,19 @@ zxing-cpp is a package of `requirements-local.txt`. `Decoder` imports it, so the
 server can check the options with no zxing-cpp. zxing-cpp 2.3.0 has no wheel for Python
 3.14; install it with `pip install --no-binary zxing-cpp zxing-cpp==2.3.0`.
 """
+import io
 import math
+import threading
 import time
 from contextlib import closing
+from importlib.metadata import version
 
-from PIL import Image
+from PIL import Image, __version__ as PILLOW_VERSION
 
 import codes
 import derive
 import embeddings
+import model_cache
 from embeddings import ConfigError
 
 # The zxing-cpp formats of a product code that can hold a GTIN.
@@ -41,6 +56,7 @@ DEFAULTS = {"formats": list(FORMATS), "qr": True, "tile_scan": True, "max_side":
             "upscale": False, "code128_gtin_only": False}
 MIN_SIDE, MAX_SIDE = 64, 8192
 ENGINE = "zxing-cpp"
+CACHE_REVISION = 1
 # The kind of a decoded code -> the kind of `wine_code`.
 LOOKUP_KINDS = {"barcode": "gtin", "qr_code": "qr_url"}
 
@@ -120,17 +136,39 @@ class CodeLookup:
         except codes.CodeError:
             return None
 
-    def find(self, found):
-        """Return the hit of the first decoded code that `wine_code` holds, or None. A hit
-        is a dict: `source` (the kind of `wine_code`), `code` (the stored value), `read`
-        (the text as decoded), `format`, and `slugs`."""
+    def hits(self, found):
+        """Return the hit of each decoded code that `wine_code` holds, in the order of
+        `found`, one hit for each stored value. A hit is a dict: `source` (the kind of
+        `wine_code`), `code` (the stored value), `read` (the text as decoded), `format`,
+        and `slugs`."""
+        out, seen = [], set()
         for code in found:
             key = self.key(code)
             slugs = self.values.get(key) if key else None
-            if slugs:
-                return {"source": key[0], "code": key[1], "read": code["text"],
-                        "format": code["format"], "slugs": list(slugs)}
-        return None
+            if slugs and key not in seen:
+                seen.add(key)
+                out.append({"source": key[0], "code": key[1], "read": code["text"],
+                            "format": code["format"], "slugs": list(slugs)})
+        return out
+
+    def find(self, found):
+        """Return the hit that decides the answer (plan 58), or None: the first hit of a
+        unique code, else the first hit of a shared GTIN. A shared QR URL never decides."""
+        hits = self.hits(found)
+        for hit in hits:
+            if is_unique(hit):
+                return hit
+        return next((hit for hit in hits if hit["source"] == "gtin"), None)
+
+
+def is_unique(hit):
+    """Return True for the hit of a code of one wine."""
+    return hit is not None and len(hit["slugs"]) == 1
+
+
+def shared_qr(hits):
+    """Return the hits of the QR URLs of 2 or more wines."""
+    return [hit for hit in hits if hit["source"] == "qr_url" and not is_unique(hit)]
 
 
 def _dedupe(found):
@@ -168,6 +206,8 @@ class Decoder:
                               "install requirements-local.txt into embedding_python")
         self.zxing = zxingcpp
         self.options = options
+        self.version = version(ENGINE)
+        self._last = threading.local()
         names = list(options["formats"]) + ([QR_FORMAT] if options["qr"] else [])
         formats = getattr(zxingcpp.BarcodeFormat, names[0])
         for name in names[1:]:
@@ -183,6 +223,7 @@ class Decoder:
                 results = self.zxing.read_barcodes(image, formats=self.formats,
                                                    try_downscale=False, binarizer=binarizer)
             except Exception:  # noqa: BLE001 - the matcher skips a binarizer that raises
+                self._last.failed = True
                 continue
             for result in results:
                 text = str(result.text or "").strip()
@@ -210,17 +251,71 @@ class Decoder:
         return image
 
     def scan(self, image, lookup):
-        """Return (each decoded code, the hit of `lookup` or None) of one opened photo."""
+        """Return (each decoded code, the hit of `lookup` or None) of one opened photo.
+        Only a unique code stops the tile scan (plan 58)."""
+        return self._scan(image, lookup, [])
+
+    def _scan(self, image, lookup, batches):
+        """Reuse stored stages. Append each new stage before the wine lookup."""
         image = self.scaled(image)
-        found = self.read(image)
+
+        def read_stage(number, view):
+            if number == len(batches):
+                batches.append(self.read(view))
+            return batches[number]
+
+        found = list(read_stage(0, image))
         hit = lookup.find(_dedupe(found))
-        if self.options["tile_scan"] and hit is None:
-            for tile in tiles(image):
-                found.extend(self.read(tile))
+        if self.options["tile_scan"] and not is_unique(hit):
+            for number, tile in enumerate(tiles(image), 1):
+                found.extend(read_stage(number, tile))
                 hit = lookup.find(_dedupe(found))
-                if hit is not None:
+                if is_unique(hit):
                     break
         return _dedupe(found), hit
+
+    def scan_file(self, path, lookup):
+        """Return (codes, current hit, cached). Resume an incomplete cached scan when
+        its codes no longer identify one wine. Never store catalogue matches."""
+        started = time.perf_counter()
+        with open(path, "rb") as source:
+            data = source.read()
+        fields = model_cache.request_fields(
+            "local://barcode/scan", "barcode",
+            {"revision": CACHE_REVISION, "engine": ENGINE, "version": self.version,
+             "pillow": PILLOW_VERSION, "options": self.options}, "", [data])
+        record = model_cache.lookup(fields)
+        batches = record["answer"].get("batches") if (
+            record is not None and isinstance(record["answer"], dict)) else None
+        total = 35 if self.options["tile_scan"] else 1
+        if not _valid_batches(batches, total):
+            batches = []
+        found, hit = [], None
+        for batch in batches:
+            found = _dedupe(found + batch)
+            hit = lookup.find(found)
+            if is_unique(hit):
+                return found, hit, True
+        if len(batches) == total:
+            return found, hit, True
+        image, _ = derive.open_image(io.BytesIO(data))
+        self._last.failed = False
+        found, hit = self._scan(image, lookup, batches)
+        if not self._last.failed:
+            model_cache.store(fields, {"batches": batches},
+                              (time.perf_counter() - started) * 1000)
+        return found, hit, False
+
+
+def _valid_batches(batches, total):
+    """Treat a malformed cache answer as a miss."""
+    return (isinstance(batches, list) and 0 < len(batches) <= total
+            and all(isinstance(batch, list) and all(
+                isinstance(code, dict) and isinstance(code.get("kind"), str)
+                and code["kind"] in LOOKUP_KINDS
+                and isinstance(code.get("text"), str) and bool(code["text"])
+                and isinstance(code.get("format"), str)
+                for code in batch) for batch in batches))
 
 
 def _ms(value):
@@ -241,10 +336,11 @@ def shift_trace(trace, step, offset):
 
 class CodeFirst:
     """A backend of `benchmark.run_benchmark` for a pipeline with the key `barcode`. It
-    decodes the photo first. A hit answers; a miss asks `inner`, an
+    decodes the photo first. A unique code answers; a shared GTIN asks `inner` with
+    `only`, the wines of the GTIN (plan 58); a miss asks `inner`, an
     `embedding_run.EmbeddingBackend`. `ask` returns five values: the fifth is the step
-    trace of plan 41, with the step `barcode` first. The latency of a miss holds the time of
-    the decode too."""
+    trace of plan 41, with the step `barcode` first. The latency of an answer of `inner`
+    holds the time of the decode too."""
 
     def __init__(self, inner, options, db_path, decoder=None, lookup=None):
         self.inner = inner
@@ -264,6 +360,19 @@ class CodeFirst:
                  "code": hit["code"], "read": hit["read"], "format": hit["format"]}
                 for rank, slug in enumerate(hit["slugs"][:self.top_k], 1)]
 
+    def limited(self, cands, hit):
+        """Return the candidates of a match limited to the wines of a shared GTIN (plan
+        58). A wine of the GTIN that the match did not rank goes at the end as a code
+        candidate with the score None."""
+        ranked = {c.get("slug") for c in cands}
+        out = list(cands[:self.top_k])
+        for cand in self.candidates(dict(hit, slugs=[s for s in hit["slugs"]
+                                                     if s not in ranked])):
+            if len(out) >= self.top_k:
+                break
+            out.append(dict(cand, score=None, rank=len(out) + 1))
+        return out
+
     def ask(self, path):
         """Return `(candidates, latency_ms, http_status, error, trace)`."""
         started = time.perf_counter()
@@ -272,8 +381,11 @@ class CodeFirst:
         # A decode cannot change the answer when no code can match, as in the matcher.
         if self.lookup.values:
             try:
-                image, _ = derive.open_image(path)
-                found, hit = self.decoder.scan(image, self.lookup)
+                if hasattr(self.decoder, "scan_file"):
+                    found, hit, step["cached"] = self.decoder.scan_file(path, self.lookup)
+                else:
+                    image, _ = derive.open_image(path)
+                    found, hit = self.decoder.scan(image, self.lookup)
             except Exception as exc:  # noqa: BLE001 - the embedding still answers the photo
                 step["error"] = "%s: %s" % (type(exc).__name__, exc)
         else:
@@ -282,11 +394,19 @@ class CodeFirst:
         step["ms"] = _ms(decode_ms)
         step["out"] = dict(out, codes=found, hit=hit)
         if hit is not None:
+            step["out"]["mode"] = "answer" if is_unique(hit) else "limit"
+        ignored = shared_qr(self.lookup.hits(found))
+        if ignored:
+            step["out"]["shared_qr"] = ignored
+        if is_unique(hit):
             return (self.candidates(hit), int(round(decode_ms)), 200, None,
                     {"v": 1, "steps": [step]})
-        answer = self.inner.ask(path)
+        answer = (self.inner.ask(path) if hit is None
+                  else self.inner.ask(path, only=hit["slugs"]))
         cands, ms, status, error = answer[:4]
         trace = answer[4] if len(answer) > 4 else None
+        if hit is not None and not error:
+            cands = self.limited(cands, hit)
         return (cands, ms + int(round(decode_ms)), status, error,
                 shift_trace(trace, step, decode_ms))
 

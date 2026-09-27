@@ -64,6 +64,15 @@ def configuration_of(meta):
     return value if isinstance(value, str) and value else None
 
 
+def test_set_of(meta):
+    """Return the test set that `run.json` names in `options.set`, or None.
+
+    `pipeline/benchmark.py` writes the key. A run of `scripts/match_run.py` has none.
+    """
+    value = ((meta or {}).get("options") or {}).get("set")
+    return value if isinstance(value, str) and value else None
+
+
 def run_head(runs_dir, run_id):
     """Return the short record of one run for the table of the runs."""
     meta = read_json(run_path(runs_dir, run_id, "run.json")) or {}
@@ -74,6 +83,7 @@ def run_head(runs_dir, run_id):
     return {
         "id": run_id,
         "configuration": configuration_of(meta),
+        "set": test_set_of(meta),
         "backend": (met.get("backend") or (meta.get("options") or {}).get("backend")
                     or "—"),
         "label": (meta.get("backend") or {}).get("label", ""),
@@ -84,6 +94,11 @@ def run_head(runs_dir, run_id):
         # checkbox `Use caches` of the dialog `Run>`, plan 39). None: not recorded.
         "use_cache": (meta.get("use_cache") if isinstance(meta.get("use_cache"), bool)
                       else None),
+        # False: the run skipped the barcode step of its pipeline (the checkbox `Disable
+        # barcode fast path` of the dialog `Run>`, plan 53). True: the step ran. None: the
+        # pipeline has no barcode step, or the run did not record it.
+        "use_barcode": (meta.get("use_barcode") if isinstance(meta.get("use_barcode"), bool)
+                        else None),
         "queries": (met.get("queries") or {}).get("total",
                                                   (meta.get("query_set") or {}).get("total")),
         "positive": pos.get("n"),

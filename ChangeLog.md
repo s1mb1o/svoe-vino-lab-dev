@@ -1,7 +1,365 @@
 # ChangeLog
 
+## 2026-09-27
+
+- The input of `Atlas Core product` on the Dataset page accepts a pasted product URL.
+  A paste of `http(s)://<host>/products/<uuid>` inserts the UUID alone. Before, the
+  `maxlength` 36 cut the URL to `http://127.0.0.1:8157/products/18306`. Other pasted text
+  does not change. The change is in `pipeline/pages/dataset.html` alone. The server and
+  the API do not change. The review tool page gets the same behavior. Smoke tests AB14
+  and AB15. A Playwright check on 8168 passed 8 of 8 cases; nothing was saved.
+
+- Created the test set `my-1` from the R@1 misses of run
+  `2026-09-27T011711Z-lab-barcode-rerank-siglip2-512-crop-my`. The set contains 252
+  positive photos. All 252 selected photos still had the same SHA-256 and label in
+  `my`. The operation copied 43 photo comments and all 63 variant-group slugs. It did
+  not copy image files.
+
+- Finished the authorized 53-profile queue with explicit terminal outcomes:
+  48 validated successful runs, one retained eight-error run, and four local
+  profiles unavailable under the unchanged memory policy. Preserved every raw row.
+  Added the final all-profile metrics and comparison report. The reference has
+  the highest successful R@1 at 84.67%; NaFlex-1024 crop with barcode has R@5 97.99%
+  with broader index coverage. The label tower remains below the reference.
+  Retained the external recognizer as excluded pending photo-transfer approval.
+  No profile attempt was duplicated. No unrelated service changed.
+
+- Completed all 14 NaFlex and all eight DINOv3 profiles with validated full-set results.
+  Added independently reviewed paired NaFlex reports. Barcode lookup adds 22 to 24
+  correct top-1 answers per NaFlex profile without changing the 2204 fallback rows.
+  Added and reviewed the one-profile G3 to G9 launch template. It binds actual
+  endpoints, current source hashes, process state, and both memory thresholds.
+  Continued the authorized queue. No production behavior or GPU service changed.
+
+- Added a frozen annotation audit and independent verification.
+  It identifies 67 same-digest groups with incompatible exact-slug positive constraints.
+  The conditional deterministic top-1 ceiling is 1576 of 1644 positive rows.
+  Labels, denominators, exclusions, and scores remain unchanged.
+  See `docs/reports/2026-09-27_all-profile-rerun/annotation-audit.md`.
+
+- Completed the seven SigLIP2-512 reruns on all 2228 queries without errors.
+  The new label tower has R@1 0.8291 and R@5 0.9647, below the reference.
+  Prepared 57 missing active catalogue labels and recorded two unresolved sources.
+  Started the authorized NaFlex-1024 index build after fresh process and memory checks.
+  Prepared and reviewed a read-only index validator. Other indexes remain unchanged.
+  Diagnosed CUDA OOM in initial NaFlex loading, preserved the failed attempt, and
+  completed one reviewed incremental retry. The index now has 4181 valid vectors
+  with two explicit missing-label inputs. Added a parent free-memory launch check.
+  Started the next serial profile. The exact paired label report passed review.
+
+- Continued the authorized serial profile queue to six validated completions.
+  Every run preserves 2228 query rows and 1851 image digests with zero query or
+  trace errors. The reference profile reproduces R@1 0.8467 and R@5 0.9702.
+  Started the new label-tower profile with four workers after fresh source, process,
+  model, and memory checks. Saved a partial all-profile report and verified that
+  all 57 production pipeline Python files match the final HTTP measurement source.
+  NaFlex-1024 preparation remains queued behind the active profile.
+  Saved preliminary local-model prerequisites and Mac memory-pressure evidence.
+  Local capacity needs a fresh check before G10. No local model was loaded.
+
+- Delivered the final barcode benchmark recommendations and retained all measured
+  tradeoffs. Started the serial internal queue. The first two profiles completed
+  all 2228 rows with zero errors. The third profile is running. Saved attempt logs,
+  complete artifact hashes, fresh source checks, and a partial report with all
+  54 configured profiles visible. The 53 authorized outcomes remain incomplete.
+
+- Added an offline report for saved internal profile queue attempts. It keeps all
+  54 profiles visible, validates recorded completion evidence, and reports partial
+  state explicitly. It compares the new label profile only after both relevant runs
+  complete. Ten fixture tests cover missing evidence, failure states, output isolation,
+  and signed quality differences. The helper calls no service and changes no queue.
+
+- Completed fresh-photo as-is and same-crop no-rerank HTTP comparisons. The as-is
+  photo4 cell returns all 64 pilot responses within three seconds with 43 of 54
+  positive answers correct. The crop cell returns 58 within three seconds and has
+  44 correct positive answers overall. Saved complete validation and final reports.
+  These sample results do not establish a hard timeout. Started the authorized
+  53-profile internal/local queue through the existing run-job API. Verified all
+  1851 distinct query source files before the first launch. External transfer stays
+  excluded pending explicit approval.
+
+- Fixed offline queue reconciliation for an unreaped macOS child. Confirmed `Z`
+  status proves that execution has ended. Matching final events and complete run
+  artifacts remain required. Unknown process status still blocks progression.
+  The queue helper passes 25 fixture tests. No production server change or rerun.
+
+- Completed the eight-cell sequential HTTP pilot: 512 observations, 511 successful
+  responses, and one retained cold-Qwen HTTP 503. Validated source hashes, fixed
+  selections, independent response caches, and exited processes. Completed the
+  24-hit fresh-crop diagnostic: bottle and label variants preserve 18 unique barcode
+  answers each; the barcode-region variant preserves 22. Started the existing as-is
+  profile comparison. Prepared an isolated same-crop comparison without rerank.
+  These experiments do not change production profiles.
+
+- Prepared a one-profile dispatcher for the authorized internal/local rerun queue.
+  Default inspection is read-only. Execution requires a fresh parent gate and uses
+  the existing run-job API. Durable launch intent prevents automatic duplicate POSTs.
+  Reconciliation verifies complete artifacts, trace errors, and worker/cache options.
+  Twenty-three fixture tests pass. A real read-only inspection preserves the queue
+  hash. Final independent review passed. No queue entry or service changed.
+
+
+- Add `scripts/summarize_recognition_http.py` for offline JSON and Markdown reports.
+  Validate frozen selection and baseline identities. Keep failures and pending rows
+  in explicit denominators. Report barcode-hit and other rows, negative constraints,
+  raw positive correctness, and the two-row annotation-conflict sensitivity.
+  Preserve startup, per-query stage, upload, and step-view timings. An after-first
+  observation does not prove a warm remote model. Ten fixture tests pass.
+  Exclude unavailable child timing placeholders from component statistics. Report
+  missing timing counts and query IDs. Preserve the HTTP failure and all correctness
+  denominators. Save the corrected final pilot report in a new versioned directory.
+  This helper starts no model, image processing, HTTP listener, or benchmark.
+
+- Completed four full bulk comparisons for the barcode benchmark. Each has 2228 query
+  rows and 1851 unique digests. All predictions, ranks, and outcomes match the preserved
+  baseline. Process wall times are 855.785 s (cold, one worker), 462.249 s (warm, one),
+  232.358 s (cold, four), and 129.634 s (warm, four). Warm runs make no native barcode
+  calls. Saved complete validation hashes and step costs. Started the sequential
+  64-row HTTP pilot with fresh response caches at 03:15:13 MSK. Production behavior
+  stays unchanged by these experiment runs.
+  The first fresh HTTP rerank reached the 300-second watchdog during cold Qwen
+  startup. Saved the HTTP 503 observation. Resumed only after old processes exited
+  and direct vLLM metrics showed empty queues. The failed row remains in the result.
+
+
+- Prepare isolated crop, complete bulk, and sequential demo benchmark harnesses.
+  Freeze crop geometry per source digest. Reject lookup drift and changed checkpoints.
+  Compare cold and warm barcode caches with one and four query workers.
+  Compare process-per-image and persistent backends with response-cache reads disabled.
+  Record startup and native decoder errors. Preserve failed attempts.
+  Add a shared completion gate and a measurement lock. Production code is unchanged.
+  The HTTP adapter includes upload and step reconstruction with request-local cache
+  isolation. Failed HTTP observations remain in resumed metrics. Cleanup also closes
+  a child created during handler shutdown. Add six opt-in fresh crop variants with
+  charged SAM3 segmentation and stop after segmentation failure. All five experiment
+  modules pass 77 mock tests. Stage 1, its 64-row control, and all eight cached crop
+  variants are complete. A four-request real HTTP socket control passed with fake
+  inference. Full bulk cold-1 completed all 2228 rows with exact baseline predictions
+  and zero errors. Warm-1 also completed with exact answers and zero native decoder
+  calls. Cold-4 is running. Record the initially cold embedding request
+  separately. Add an offline bulk reporter with eight fixture tests. Freeze the HTTP
+  pilot and its known annotation conflict. Prepare a restricted label-input helper
+  for the later NaFlex-1024 index; its read-only selection contains 59 sources.
+  Its 13 fixture tests and independent review cover source changes, each-call gate
+  checks, manual cuts, transaction races, and cleanup on setup failure.
+
+- Analyze every one of the 49 positive failures in the `after_5` view of run
+  `2026-09-26T213857Z-lab-barcode-rerank-siglip2-512-crop-my`. Twenty-nine photos
+  expect one of 13 wines with no `full` or `label` row in the run index. Thirteen
+  expected wines are at ranks 6 to 9, outside the top-five reranker window. Seven
+  indexed expected wines are absent from the top ten. The report also identifies
+  eight byte-identical label conflicts, one clear wrong-product label, three probable
+  year-label defects, the cross-space rule mismatch, and the rear-view failures. It
+  ranks an index rebuild and completeness gate first. It then ranks a guarded
+  same-producer OCR reranker, full-plus-label fusion, corrected rule coverage, code and
+  rear-view handling, and abstention. The analysis changed no product code and started
+  no inference.
+
+- Prepare the complete profile rerun after the current speed comparisons. The durable
+  queue records all 54 profiles and the 2228-query `my` set. Run profiles sequentially
+  with caches. Prepare the missing NaFlex-1024 index for four profiles. Automatic
+  approval review requires separate approval for the external official recognizer;
+  the other 53 profiles remain independent of that approval.
+
+- Add profile `barcode-rerank-siglip2-512-crop-label`. Keep the package crop as the
+  first retrieval tower. Add the existing SAM3 label selection and search the catalogue
+  label vectors as the second tower. Reuse the SigLIP2-512 index, mean-cosine scoring,
+  barcode lookup, cluster reranking, and four workers. Both lab selectors expose the
+  profile as runnable without a restart. Validation: 136 existing tests pass; 10 needed
+  the system Python and permission for local mock HTTP servers. Synthetic photos
+  confirm both search spaces and the fallback when a label is absent. The current
+  index has 2051 full rows and 2047 label rows. No inference or full run was started.
+
+- Add `scripts/benchmark_barcode_variants.py` for nine barcode scan and cache
+  variants. Require the completed baseline before scanning. Preserve pass order
+  with four decode workers. Isolate benchmark caches. Save per-photo checkpoints,
+  configuration fingerprints, correctness comparisons, and latency distributions.
+  Keep bulk throughput separate from the sequential 3-second demo objective.
+  Tests: 11 mock tests and a two-photo real control pass. Start the full comparison
+  after the 2228-photo baseline completes. The benchmark plan records the process
+  and continuation procedure. Full recognition and crop measurements remain pending.
+
+- The button `↻` in the bottom left corner of each alternative photo of the lab page
+  segments the photo again with no read of the SAM3 cache (owner message of
+  2026-09-27T00:51:44+0300, answers of 00:56:00; session drink-atlas-workspace-86). New
+  route `POST /api/dataset-alternative-recut` and `alternatives.recut_alternative`.
+  First, SAM3 gets each request of the cut of the kind of the current type with the new
+  flag `derive.Sam3Client(refresh=True)`: the client reads no record of `model_cache`,
+  and the fresh answer replaces the record. Then the server removes the cut of that kind
+  and cuts the photo again from the fresh records, with the rule of `_process_again` (a
+  label type keeps the close-up rule, the condition of session 4f). When SAM3 does not
+  answer, nothing changes (HTTP 503). A photo with a manual cut gets HTTP 409, and the
+  page disables the button. Tests: `tests/test_alternative_recut.py` (new, 7),
+  `tests/test_derive.py` (1 new); the full suite has 1,001 tests OK.
+
+- Cache barcode scan stages in `data/cache/barcode/`. The key includes the source
+  bytes, decoder options, library versions, and scan revision. Recheck the wine lookup
+  on a cache hit. Resume an incomplete scan when its unique code no longer identifies
+  one wine. Cache empty results. Do not cache decoder failures. Respect `Use caches`
+  and `--no-cache`. Record the cache state in the barcode trace. Add the optional
+  `workers` field to embedding pipelines. Set `barcode-rerank-siglip2-512-crop` to 4.
+  Keep explicit worker overrides. Tests: 55 barcode tests and 107 worker and runner
+  tests pass. A 14-photo control took 8.4754 s without cached results and 0.0767 s with
+  cached results and four workers. The decoded codes and matches were identical.
+
+- The Dataset page has the filter `Alternatives` in the row of `Advanced Filters:` (owner
+  message of 2026-09-27T00:39:59+0300; session drink-atlas-workspace-86). `has
+  alternative photos` keeps the wines with at least one active alternative photo. The
+  value is stored with the other header controls and comes back after a reload. The
+  button `Advanced Filters:` now shows on each page, because the new filter needs no
+  service. `Package` shows only when the image descriptions are on. A Playwright check
+  passed 48 of 48 checks (light and dark, 1280 px and 375 px; 11 of 2,103 records).
+
+- The SAM3 package cut prefers a wine bottle (owner message of 2026-09-27T00:05:00+0300,
+  answers of 00:20:00; session drink-atlas-workspace-86). Before, the largest instance
+  won, so a gift box, a tube, a crate, or a paper background beside the bottle became
+  the cut (q-000117, q-000042, the Aratti alternative photo `b6e13a6d…`). The new
+  `derive.package_instance` takes the largest `wine bottle`. Exception: a bottle printed
+  on a package. When 90 % of the bottle box lies inside a `packet`, the packet wins.
+  When 90 % of the bottle box lies inside a `box` and the bottle has less than 10 % of
+  the box area, the box wins (bag-in-box). With no bottle, the largest instance wins, as
+  before. The rule applies to the query photos of the runs and to every catalogue cut
+  of `derive_image`. `SETTINGS_SEG` names the new rule. The cut rows with the old text
+  are no longer current, so the next derive run cuts those images again from the SAM3
+  cache. That re-cut and the embedding rebuild of the `*-crop` pipelines are not done
+  yet. Replay on the cached SAM3 answers: 28 of 2,155 query photos and 5 of 156
+  catalogue images change. Tests: `tests/test_derive.py` (7 new), full suite 975 OK.
+
+- Shared codes, plan 58 (owner message of 2026-09-26T23:54:53+0300, answers of 23:59:00;
+  session drink-atlas-workspace-df). A shared code is a GTIN or a QR URL of 2 or more
+  Active wines. The Dataset page shows the badge `N wines` at the right of a shared GTIN
+  and of a shared QR URL; the tooltip names the other wines. The page counts the wines
+  from `DATA.records`, and a code edit or a state change renders the cards of the other
+  wines again. The barcode step: only a unique code gives the fast exit. A shared GTIN
+  limits the embedding match to its wines: `Catalogue.rank` and `EmbeddingBackend.ask`
+  take `only`, and `ClusterRerank.ask` passes it on. A wine of the GTIN with no ranked
+  vector goes at the end with the score None. A shared QR URL never decides; the normal
+  match runs. A unique code wins over a shared GTIN, and only a unique code stops the tile
+  scan. The trace step `barcode` gets `mode` (`answer` or `limit`) and `shared_qr`. Tests:
+  `tests/test_barcode_shared.py` (new, 15), `tests/test_barcode.py` (the hit of 2 wines is
+  now a hit of 1 wine); the full suite has 968 tests OK. One real photo: the Belmas 122
+  photo with the drawn EAN-13 `4630171632036` gives 122 (0.6993) and 135 (0.6928) on
+  `barcode-siglip2-p256-crop`; the plain `siglip2-p256-crop` has neither wine in its top 5.
+
+- The URL of `/runs` holds the photo of the open step popup: `#<run>/<slug>/<file>`
+  (owner message of 2026-09-26T23:12:00+0300, answers of 23:58:00; session
+  drink-atlas-workspace-0f). A click on a query photo and the arrow keys write the path
+  of the photo into the hash; a close writes `#<run>` back. A load of such a URL opens
+  the popup of that photo: the new function `openPhoto` finds the query id through
+  `/api/run?q=<path>`, so a row on a later page or outside the filter opens too. The
+  arrow keys move the popup only when the row is in the table. In
+  `pipeline/pages/runs.html`: `runHash`, `openPhoto`, `openSteps` (an optional query
+  id), `closeSteps`, `stepSteps`, `init`. No server change. Smoke tests RN28 and RN29.
+
 ## 2026-09-26
 
+- The pipelines `siglip2-p256-crop-seg` and `barcode-siglip2-p256-crop-seg` (owner
+  message of 23:24:00, answers of 23:27:00; session drink-atlas-workspace-1b [55fb13]).
+  The steps of the view `full` are `segment` of the package, `remove_background`,
+  `white_background`, and `resize` 1024: the background inside the box becomes white, as
+  in the index of `gx10-siglip2-so400m-patch16-naflex-p256`. Only `config.yaml` changes
+  (the YAML anchor `crop-seg-views`); `pipelines.load` reads the file for each request,
+  so `/recognize` lists both pipelines with no restart. `tests/test_barcode.py` now
+  counts 26 plain pipelines (it counted 22; HEAD already has 23, and the uncommitted
+  p1024 pipelines of another session add 2). A live check on the photo
+  `a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135/01_manual.jpg` of `my`: the truth is
+  #1 in both pipelines; its cosine is 0.8463 with `siglip2-p256-crop` and 0.9098 with
+  `siglip2-p256-crop-seg`. Tests: `test_barcode.py` 28 OK (5 skipped),
+  `test_pipelines.py` 29 OK, `test_recogni*.py` 16 OK.
+
+- The option `Add new testset …` of the combobox `Test set` of `/testset` (plan 57;
+  owner message of 23:03:00, answers of 23:13:58; session drink-atlas-workspace-96
+  [6338a8]). A small dialog makes a new empty set: `POST /api/testset-new {name}`
+  (`testsets.create_set`: the name rule of schema 016, HTTP 400 for a bad name, 409 for a
+  present name; `source_dir` `the page /testset`; `edited_at` set). The page then loads
+  the new set. The value `(new)` of the option never reaches the URL or the stored header.
+  No schema change. 8168 restarted by this session at 23:18:58 (pid 21149) for the route.
+  Tests: 2 new tests in `test_testsets.py` (27 OK), 2 in `test_testset_routes.py` (10
+  OK), 42 Playwright checks in the light and the dark theme; the check of b4 (22 PASS).
+
+- The manual cut of an alternative photo (plan 56; owner message of 22:39:58, answers of
+  22:43 and 22:51:46, message of 22:57:59; session drink-atlas-workspace-96 [6338a8]). The
+  image preview of an alternative photo has `Manual cut`: a polygon editor on the
+  original (click, drag, right-click, `Undo`, `Clear`, `Save cut`, `Cancel`). The server
+  cuts the photo along the polygon (`alternatives.polygon_cut`, method `seg`) and stores
+  the row of `image_derivative` of the kind of the current type, with the settings
+  `manual polygon, edge blur 1.0 px; points [...]`. `derive.is_manual` marks the row:
+  `derive_all`, `alternatives.has_current_cut`, and `seed_label_cuts.py` keep it, so no
+  automatic run replaces it. `Remove manual cut` deletes the row, and SAM3 cuts the photo
+  again. New route `POST` and `DELETE /api/dataset-alternative-cut`;
+  `alternative_images` sends `manual` and `manual_points`; the badge `manual`. No schema
+  change. Tests: 10 new tests in `test_alternatives.py` (54 OK), 1 in
+  `test_seed_label_cuts.py` (9 OK), 35 Playwright checks in the light and the dark theme.
+
+- The page `/recognize` (plan 55; owner message of 22:32, answers of 22:37 and 22:43;
+  session drink-atlas-workspace-41): a pipeline select, a drop area for one photo, and the
+  steps of the photo as in the step popup of `/runs`. `POST /api/recognize` writes the
+  photo to `work/recognize/` and runs the new script `pipeline/recognize.py` in
+  `embedding_python`, one process for each photo; `pipeline/recognize_routes.py` makes the
+  rounds with `run_steps.embedding_rounds`. The step view moved from `runs.html` to the
+  shared files `pipeline/pages/steps.css` and `steps.js`; `lab_pages.page` fills the
+  optional marks `/* STEPS_CSS */` and `/* STEPS_JS */`. Each page has the link
+  `Recognize` between `Runs` and `Health`. New tests: `test_recognize.py`,
+  `test_recognize_routes.py`, `test_lab_pages.py`.
+- A wine MAY have 2 or more Drink Atlas Core products (plan 54; owner message of about
+  21:50, answers of about 21:58 and 22:23; session drink-atlas-workspace-bc). Schema
+  `025_atlas_binding_list.sql` builds `wine_atlas_binding` again with the key
+  `(wine_slug, product_uuid)`. Each row keeps its source as a label, and the rule "the
+  manual row wins" goes away. The migration kept the effective row of each wine: 363
+  automatic and 5 manual rows. It dropped the automatic row of
+  `vysokij-bereg-risling-zelenaya-seriya-1`, which a different manual UUID hid (backup
+  `data/backups/lab-before-025-atlas-binding-list-20260926T192501Z.sqlite3`).
+  `atlas_bindings.py`: `bindings` gives a list for each wine; `add_manual` and `remove`
+  replace `set_manual` and `remove_effective`. `POST /api/dataset-atlas-binding` adds one
+  manual UUID (HTTP 409 for a UUID that the wine has). `DELETE` takes `product_uuid` and
+  removes that row of either source. `GET /api/dataset` sends `_atlas_products` in place
+  of `_atlas_product_uuid` and `_atlas_binding_source`. The Dataset page lists each UUID
+  with its source, `×`, `copy`, and `open`. It still reads the single fields of the old
+  review tool. The seed accepts 2 or more UUIDs of one slug and no longer counts
+  `differs`. The `drink-atlas-matcher` loader reads every UUID of a wine. 8168 restarted
+  at 22:25:16. Tests: the full suite 918, 1 failure (`test_barcode.py`, the uncommitted
+  `config.yaml` of another session); matcher 142 OK. Smoke tests AL1 to AL11.
+
+- The step popup of a photo on `/runs` shows the slug on its own line under the path
+  (owner message of 2026-09-26T22:16:00+0300, answers of 22:20:00; session
+  drink-atlas-workspace-0f): `slug: …` for a positive photo, `forbidden slug: …` for a
+  negative photo. An expected slug that differs from the slug of the photo follows as
+  `expected: …`. An unlabelled photo has no line. The new function `slugLine` and one
+  CSS line in `pipeline/pages/runs.html`; the data come from the present field
+  `row.slug` of `/api/run-steps`. No server change. Smoke test RN27.
+- A new embedding entry `gx10-siglip2-so400m-patch16-naflex-p1024` (owner message of
+  2026-09-26T20:35+0300): the NaFlex model `siglip2-so400m-patch16-naflex` with
+  `max_num_patches: 1024`. This is the patch count of `gx10-siglip2-so400m-patch16-512`
+  (32 x 32 patches of 16 px), but with the native aspect ratio. The views are `*views_c_f`.
+  Four new pipelines follow the p512 pattern: `siglip2-p1024-as-is`, `siglip2-p1024-crop`,
+  `barcode-siglip2-p1024-as-is`, and `barcode-siglip2-p1024-crop`. A probe of the gateway
+  with one test image: 1152-d, norm 1.0, cos 0.9919 with the p512 vector of the same
+  image. The index is not built yet. Plan 10 lists the entry. Tests:
+  `test_pipelines.py` 29, OK.
+- A fifth image description field `presentation_mode` (owner messages of 19:46:00 to
+  20:01:00, answers of 19:55:00, 20:10:00, and 20:18:54; session
+  drink-atlas-workspace-6c): `on_package`, `flat_surface`, `other`, `unknown`, the
+  surface that carries the label. Schema `024_presentation_mode.sql` adds the column and
+  puts the 2,091 rows that the VLM had filled back in the queue (`vlm_at`, `vlm_name`,
+  `vlm_model`, `vlm_answer`, `vlm_error` NULL; `vlm_attempts` 0). The four old values stay
+  and go into the prompt as fixed facts, so the next answer fills `presentation_mode`
+  alone. The prompt and `ANSWER_SCHEMA` of `pipeline/describe_images.py` have the new
+  field; the fixed facts start with the neutral line "These values are already set."
+  `image_descriptions.record_vlm` fills the field with `COALESCE`. The dialog of
+  `/dataset` has a select `presentation_mode`. `POST /api/image-description` takes 1 to 5
+  fields. Plan 26 (a dated change note, the prompt, the schema), `README.md`,
+  `SMOKE_TESTS.md` (ID26 to ID30), and the comment of `image_description` in
+  `config.yaml`. The owner dropped the 4-gon cut of a `flat_surface` photo (20:01:00).
+  Deploy at 20:19: backup
+  `data/backups/lab-before-024-presentation-mode-20260926T171930Z.sqlite3`, migration to
+  version 24, restart of 8168 (pid 22550, watcher pid 22583). Tests:
+  `test_image_descriptions.py` 22, `test_describe_images.py` 56, `test_labdb.py` 15,
+  `test_lab_server.py` 63, `test_health.py` 28, `test_image_details.py` 14, all OK.
+  The full suite: 914 tests, 1 failure in `test_barcode.py` (it counts the pipelines of
+  the uncommitted `config.yaml` hunk of another session). The re-queue ended at 22:29:
+  2,092 of 2,092 rows filled, 2,091 `on_package` and 1 `flat_surface` (the `label_back`
+  photo `405b65f9…` of `vysokij-bereg-risling-zelenaya-seriya-1`); the four old values of
+  each row are the same as in the backup.
 - The website import dialog (owner messages of 19:55:00, 19:58:00, 19:59:00, and 20:05:00; session
   drink-atlas-workspace-fb): a cleared checkbox of a plain change (`new`, `missing`,
   `back`, `main`) means "skip this time". The apply writes no row, no refusal, and no
@@ -19,6 +377,32 @@
   one transaction (backup `work/lab.sqlite3.before-refusal-revert-2026-09-26T1959`).
   `website_refusal` is empty. The 52 main images, their derivatives, their 52 comments,
   and the 2,030 website times stay.
+- The label cut of a label close-up (owner message of 19:38:53, answer of 19:47:16;
+  session drink-atlas-workspace-4f): in `label_front` and `label_back` the largest label
+  wins, with no bottle test (`alternatives.label_instance(close_up=True)`). The bottle
+  test dropped the back label of `d9f847bd…` (box IoU 0.84 with the bottle, which fills
+  the frame) and cut a QR sticker. Full photos and test photos keep the rule of
+  `build_labels.py`. A close-up cut has the new settings `SETTINGS_LABEL_CLOSE_UP`;
+  `SETTINGS_LABEL` did not change, so no full-photo cut went stale. The 3 `label_back`
+  photos of `data/lab.sqlite3` were cut again through `POST /api/dataset-alternative-type`:
+  `d9f847bd…` got the whole label, the other 2 got the same file. 3 new tests in
+  `tests/test_alternatives.py` (44 OK). Plan 16 has a dated change note.
+- The dialog `Run>` of `/testset` (owner message of 19:43:40, answers of 19:47:40; session
+  drink-atlas-workspace-b4, [plan 53](docs/plans/53_disable-barcode-checkbox.md)): a
+  checkbox `Disable barcode fast path`, off by default. On, a pipeline with the key
+  `barcode` runs with no barcode step (`run_job.py --no-barcode`), and the embedding
+  answers each photo. The box is greyed for a pipeline with no key `barcode`
+  (`/api/run-configurations` gives `barcode` for each pipeline). `POST /api/run-jobs`
+  takes `use_barcode`. `run.json` and the event `start` hold `use_barcode`; `/runs` shows
+  the tag `no barcode`. No restart by this session: the restart of 19:50:15 loaded the
+  server hunks.
+- Drink Atlas match runner (owner message of 19:37:57; session
+  drink-atlas-workspace-c6): the runner and plan 47 use the additional image types of
+  schema 012 (`full_front`, `label_front`, `full_back`, `label_back`). The old names of
+  schema 010 matched no row, so the report of 2026-09-26 counted 0 additional photos. The
+  report was not rerun. A search of the workspace found no other code that reads
+  `wine_image` with the old names; `content_roles` keeps `front_label` and `back_label`
+  as a separate vocabulary.
 - Website import (owner messages of 19:16:31 to 19:23:19, answers of 19:22:30; session
   drink-atlas-workspace-0d): the dialog shows a section `Possible renames`. A pair is a
   wine of `Missing on the website` and a wine of `New wines on website` with the same
@@ -47,9 +431,75 @@
     value. 31 and 6 tests OK. 8168 restarted at 19:13:21 (pid 78137); nothing else was
     newer than the previous start. Docs: plan 21 (a dated change), `README.md`,
     `SMOKE_TESTS.md` (IW8, new IW21).
+- Plan 52 (`docs/plans/52_wine-beverage-type.md`), owner messages of 17:53:16 and
+  18:10:45 and the answers of 18:21:29 and 18:46:25 (session drink-atlas-workspace-d3):
+  the wine type of a wine, `beverage_type_code` as in Drink Atlas Core.
+  - Schema file `pipeline/schema/023_wine_beverage_type.sql`: the table
+    `wine_beverage_type` (`wine_slug`, `beverage_type_code` `4` or `44`, `updated_at` in
+    UTC). No row: no type. `data/lab.sqlite3` is at version 23 since 18:54:25 (backup
+    `data/backups/lab-before-023-wine-beverage-type-20260926T155424Z.sqlite3`). 8168
+    restarted at 18:54:37 (pid 38611).
+  - New `pipeline/beverage_types.py`: `types`, `counts`, and `set_type` (the same code
+    again keeps the time; `None` removes the row).
+  - `pipeline/lab_server.py`: `POST /api/dataset-beverage-type` with
+    `"beverage_type_code": "4"|"44"|null`, `_beverage_type_code` of each record, and
+    `beverage_types` of `/api/dataset`.
+  - `pipeline/pages/dataset.html`: the select `Type` at the end of the category line of
+    each card, and the filter `Type` (`All`, `Wines`, `Sparkling Wines`, `Not set`) after
+    `Identifier` in the advanced row. The review tool shows neither.
+  - Tests: new `tests/test_beverage_types.py` (5), 2 new tests in
+    `tests/test_lab_server.py`, and the table name and VERSION 23 in
+    `tests/test_labdb.py`. 33 browser checks passed on a scratch copy of the database.
+  - `docs/database-structure.html` does not show the table: the one-page layout has no
+    room (diagram overflow 91 px), and the page stops at schema 017.
+- Plan 51: the comment tables of the test sets (owner message of
+  2026-09-26T17:55:00+0300, answers of 18:08:34 and 18:17:31; session
+  drink-atlas-workspace-ab). Schema 022 adds `test_photo_comment`: more than one comment
+  for each test photo, with the columns of `wine_comment` and a foreign key to
+  `test_photo` (`ON UPDATE CASCADE ON DELETE CASCADE`), so a move takes the comments
+  with the photo. The migration moved the 1,594 values of `test_photo.comment` into it
+  (`script` for a photo with `proposed_by`, else `user`; the time is the old `ts` in UTC).
+  It moved the 88 notes of `test_wine_note` into 82 rows of `wine_comment`: one row for
+  each wine and text; a text with the tag of a hunt agent (`irec-`, `hunter-`,
+  `cigar-r`) gets `script`; the note of `chateau-tamagne-select-blanc-brut-svo-yo-vino`,
+  a slug that `wine_catalog` does not hold, went to `chateau-tamagne-select-blanc-brut`.
+  It moved the 15 reasons of `test_excluded` into 10 wine comments
+  `Excluded from the benchmark: <reason>`. Then it dropped `test_wine_note`,
+  `test_excluded`, and `test_photo.comment`. The exclusion is gone: the benchmark now
+  uses the photos of those 10 wines, so a new run is not comparable with an old run
+  there. `/testset`: the large view lists the comments of the photo, with `×`, and
+  `Add` or Cmd+Enter adds one; a text that is not added yet is added at a step, a close,
+  a move, or a reload. A wine row shows the wine comments of the Dataset page
+  (`/api/dataset-comment`). The note field and the button `Exclude` are gone. New routes
+  `POST /api/testset-photo-comment` and `POST /api/testset-photo-comment-remove`; gone:
+  `/api/testset-comment`, `/api/testset-wine-note`, `/api/testset-exclude`. The import
+  reads the list `comments`, the old `comment`, the old `wines`, and the old
+  `excluded-slugs.json`; the export writes `comments` and no `wines` and no
+  `excluded-slugs.json`. `New testset…` copies the comments of the photos
+  (`photo_comments`). Live since 18:50:37 (the backup is
+  `data/backups/lab-before-022-testset-comments-20260926T155037Z.sqlite3`); ab
+  restarted 8168 at 18:50:38. Tests: the 8 test files of the change OK; the whole suite
+  in a scratch tree with 022 ran 842 tests, and only `test_barcode` failed (23 != 22),
+  which fails on HEAD too (commit 7b3ac62). 22 browser checks passed on a copy of the
+  database. `docs/database-structure.html` is not changed: it shows schema 001-017 and
+  needs a new layout.
 - Plan 50, section 8, item 7: `data/images/additional/` is in git too (owner message of
   2026-09-26T18:53:37+0300; session drink-atlas-workspace-96). `.gitignore` takes the
   folder back, and the skill `backup-lab-db` commits it with the other two image folders.
+- The red `×` of `Atlas Core product` now removes an automatic binding too (owner
+  message of about 2026-09-26T18:40:00+0300, answers of about 18:45:00; session
+  drink-atlas-workspace-f2). `DELETE /api/dataset-atlas-binding` removes the effective
+  row: the manual row, else the automatic row. The answer adds `removed_source`. A wine
+  with no row answers 404 `the wine … has no Atlas binding`.
+  `atlas_bindings.remove_effective` replaces `remove_manual`. The Dataset page shows the
+  `×` for both sources and names the source in the confirm text. No schema change. The
+  seed refuses a table with rows, so a removed automatic row stays removed unless
+  `--force` is used. Changed: `pipeline/atlas_bindings.py`, `pipeline/lab_server.py`,
+  `pipeline/pages/dataset.html`, `tests/test_atlas_bindings.py`,
+  `tests/test_lab_server.py`, plan 15 (a dated change note), smoke tests AB6, AB11,
+  AB13. Tests: `test_atlas_bindings.py` 6 OK, `test_lab_server.py` 61 OK. Live since the
+  restart of 8168 by ab at 18:50:38 (pid 29949); f2 did not restart it. A remove of an
+  automatic row passed on a scratch copy of `data/lab.sqlite3`.
 - Plan 50, section 8: the main photos and the patches in git (owner message of
   2026-09-26T17:51:32+0300, answers of 17:54:00; session drink-atlas-workspace-96).
   `.gitignore` ignores the content of `data/` and of `data/images/` and takes back
@@ -191,6 +641,66 @@
   New test `test_detail_gives_the_segmented_cut_of_each_image`; smoke test LC21, LC3
   changed. 8168 restarted by 39 at 09:56:09 (pid 35773). A browser check in the light and
   the dark theme passes: 393 of 393 card images are cuts, with no page error.
+- `/clusters`, the image preview (owner messages of 2026-09-26T09:29:30+0300 and
+  09:30:30, answers of 09:32:30; session drink-atlas-workspace-d1). The preview had a
+  scroll bar: the image limit `90vh - 90px` was higher than the dialog body on a window
+  taller than about 1110 px, and a wrapped head pushed the body out at a narrow width.
+  The dialog is now a flex column, and the image fills the rest of the height with
+  `object-fit: contain`. Left and Right (keys and buttons) now move inside one cluster
+  and wrap at its ends. Up and Down open the first image of the previous or the next
+  cluster and wrap at the ends of the list. Before, all four keys stepped through the
+  images of all clusters. The title adds `cluster <id> (<n>/<count>)`. Changed:
+  `pipeline/pages/clusters.html` alone. No restart: 8168 reads the page from disk.
+  19 Playwright checks pass: no overflow at 2560x1440, 1920x1200, 1440x900, 1280x720,
+  390x844, and 320x568, in the light and the dark theme; the key and button navigation;
+  the search filter.
+- `/runs`, the button `New testset…` (plan 44; owner message of 2026-09-26T09:05:00+0300,
+  answers of 09:12:00; session drink-atlas-workspace-9e). The button after `Metrics of
+  <run>` opens a dialog. The dialog makes a new test set of the lab database from the R@1
+  misses or the R@5 misses of the open run. It shows the count of each choice, the photos
+  that stay out by reason, and the name `<set>-<N>` with the first free N (`my` gives
+  `my-1`, `my-1` gives `my-2`). A positive photo enters when the set of the run still
+  holds it with the same place, file name, SHA-256, and label, as for
+  `vlmrerank-8b-failed`. `Create` copies the rows of the photos, the notes of their
+  wines, the excluded slugs, and the variant groups. No photo file is copied, and the
+  schema does not change. The note of the new set states the origin. New:
+  `pipeline/testset_from_run.py`, the route `/api/testset-from-run` (GET and POST) of
+  `pipeline/testset_routes.py`, `tests/test_testset_from_run.py`. The run
+  `2026-09-25T235549Z-lab-local-siglip2-p256-crop-my-bench40` gives 419 R@1 misses and
+  144 R@5 misses; each of them can be copied. Tests: `test_testset_from_run.py` 6 OK;
+  `test_testset_routes.py` 7, `test_testsets.py` 23, `test_lab_server.py` 60, and
+  `test_run_routes.py` 7 OK. 32 browser checks on a fixture server pass in the light and
+  the dark theme. Port 8168 serves the route since the restart of 09:38:53 by another
+  session; this session did not restart it.
+- A printed packet or box with no separate label now keeps its full-package vector only
+  (owner answer of 2026-09-26T09:24:34+0300; session `codex-side-sam3-fix`). After the
+  label prompt finds no label, the package prompt classifies the image. Schema 021 stores
+  a current `image_derivative_absence` marker for a `packet` or `box`. The label-cut seed
+  skips that marker on later runs. Embedding plans omit that label item and the API names
+  its cell `not_applicable`; they do not copy the full vector into the label space. A
+  bottle or can with no detected label stays a retryable segmentation failure. The live
+  migration recorded Gloriya de Luna as a packet and Izabella Bag-in-box as a box. The
+  rebuilt SigLIP 2 index has 4,060 items: 4,058 current, 2 failed bottle labels, and 2
+  not-applicable label cells. Port 8168 restarted on schema 021 at 09:39. Tests: the
+  full suite has 783 tests OK and 5 skipped.
+- A patch upload now creates both `package` and `label` derivatives (owner request after
+  2026-09-26T07:53:41+0300; session `codex-side-sam3-fix`). A transparent patch still
+  uses its alpha channel for the package cut, but SAM3 now runs for its label cut. If
+  SAM3 is unavailable or finds no label, the patch and any package cut stay stored. The
+  API returns a label-specific warning. A repeated upload reuses each current cut and
+  does not call SAM3 again. The live retry of patch `00bae0ae…` created a 272 × 338
+  label cut at SAM3 score 0.982. The next build made its label embedding current: 1 item
+  built and the 4 unrelated missing-label items failed. Port 8168 restarted at 08:54.
+  Tests: `test_patches.py` 15 and `test_alternatives.py` 40 OK.
+- `config.yaml` names the SAM3 service in the new key `sam3.endpoint` (owner request of
+  2026-09-26). `pipeline/derive.py` reads the key at import into `SAM3_ENDPOINT`; without
+  the file or the key, the former URL of gx10 stays. So each SAM3 call of `pipeline/` and
+  the default of each option `--sam3` follow the key. The option `--config` of a script
+  does not change it. The value is the former URL, so the cache keys of
+  `data/cache/sam3/` do not change. Scripts that 8168 starts from disk read the key at
+  once; the lab server process reads it at its next restart. Tests: `test_derive.py`,
+  `test_seed_images.py`, `test_seed_label_cuts.py`, `test_embedding_run.py`,
+  `test_alternatives.py` OK.
 - `/embedding`, build log: each `item_failed` line names the wine of the failed file:
   `wine` (the slug), `name`, `image_type` of the first wine in import order, and
   `other_wines` when more wines use the same file (owner messages of
@@ -218,6 +728,24 @@
   reviewer note (the Fantom blend ratios) is in `cluster-notes.json` of
   `gx10-siglip2-so400m-patch16-naflex-p256` under the key `a29e59138ed4`. Tests:
   `test_run_routes.py` 7; the full suite 768 OK. Smoke rows R53 to R58 and CR1 to CR3.
+- `/runs`: a click on the query photo of a row opens the step popup (plan 41, owner
+  message of 2026-09-26T07:14:42+0300 and the answers of 07:22:00; session
+  drink-atlas-workspace-f4 [b39b7b]). It shows the steps of the photo as the step view of
+  `drink-atlas-recognize` (port 8162): rounds with a clock, and step cards with the
+  service, the model, the time, the state, the derived images, the top list of each
+  embedding space, the VLM answer, and the order before the re-rank of a matcher run.
+  `embedding_run.py` writes the key `trace` into each row: the start, the time, and the
+  result of each step, with the SAM3 cache flag (`derive.Sam3Client.cached`) and the top
+  list of each view. `benchmark.py` writes a fifth value of `ask` as `trace` (committed in
+  5952bca with plan 42). The new route `/api/run-steps` (`pipeline/run_steps.py`) makes
+  the images again from the SAM3 cache and checks each model input against the sha256 of
+  the trace. The run writes no image file. A probe run of 30 photos
+  (`2026-09-26T044622Z-lab-local-siglip2-p256-crop-my-trace-probe`) recorded the trace:
+  median step times input 4 ms, package cut 61 ms (cache), view 29 ms, embedding 54 ms,
+  search 2 ms; about 3.4 KB of trace in each row. Tests: `test_run_steps.py` 10,
+  `test_embedding_run.py` 38, `test_benchmark.py` 14; the full suite 768 OK. Playwright:
+  27 checks on old and matcher runs and 12 checks on the probe run, light and dark, no
+  page error. Smoke rows RN22 to RN26.
 - `/dataset`: the row `Advanced Filters:` has a second filter `Identifier` with `All`,
   `has GTIN`, `has QR URL`, and `has Drink Atlas` (owner message of
   2026-09-26T07:48:00+0300; session drink-atlas-workspace-74 [1c1b2b]). It reads
@@ -233,6 +761,22 @@
   slug. `Reload the page` in the result loads `/dataset`. Page code alone
   (`website_import.js`, `dataset.html`); no restart. 17 Playwright checks pass; 6 website
   import tests and 60 lab server tests OK (smoke rows IW18 to IW20).
+- The lab database was built again from svoe-vino-testset and its sources with
+  `pipeline/seed_from_testset.py` (owner message of 2026-09-26T07:31:00+0300, answers of
+  07:36:00: full seed, fresh start; session drink-atlas-workspace-5d [dab707]). It is the
+  first full run of plan 28. At the start, `data/lab.sqlite3` was an empty database of
+  schema 020. The 8 steps ran from 07:34 to 07:42 with exit status 0. Step 3 took 160 s,
+  step 8 took 290 s (2,029 label cuts, 0.14 s each, mostly from `data/cache/sam3/`; 4
+  images with no label). The new database holds 2,103 wines (all `Active`), 2,061
+  `wine_image` rows, 9,548 `image` rows, 4,062 `image_derivative` rows, 26 codes, 367
+  Atlas bindings, 3 test sets with 4,323 photos, and no image description. The seed moved
+  the empty database to `data/backups/lab-20260926T044210Z.sqlite3`. The old database
+  (2,104 wines, 2 comments, 1 favorite, 2,026 image descriptions) is not in the new one.
+  It is in `../s3-viewer/~lab.sqlite3`, and its copy by drink-atlas-workspace-f4 [b39b7b]
+  is `data/backups/lab-rescue-20260926T0735-from-s3-viewer.sqlite3`. 8168 started at
+  07:42:25; `GET /api/dataset` answers 200 with 2,103 records. The embedding entry
+  `gx10-siglip2-so400m-patch16-naflex-p256` shows 4,024 current, 32 missing, and 4
+  failed items. The log is `work/seed/seed-20260926T073429.log`.
 - The pipelines have a barcode step: the optional key `barcode:` of a pipeline of the
   backend `embedding` (plan 42; owner message of 2026-09-26T07:22:10+0300 and the answers
   of 07:27:08; session drink-atlas-workspace-1c [800d92]). The new `pipeline/barcode.py`
@@ -249,6 +793,15 @@
   `embedding_python`; 5 decoder tests are skipped in system `python3`. A check on 169 real
   photos of the 22 wines of `code-map.json`: 40 hits, 0 wrong wines, 129 photos with no
   code; median 230 ms, maximum 619 ms for each photo.
+- `/runs` has the filter `Testset` after the filter `Pipeline`, and the table of the runs
+  has the column `testset` (owner message of 2026-09-26T07:03:17+0300 and the answer of
+  07:06:00; session drink-atlas-workspace-f4 [b39b7b]). The filter offers `All`, each test
+  set that a run names with its count, and `no test set` (the runs of
+  `scripts/match_run.py`). `run_files.run_head` sends the key `options.set` of `run.json`
+  as `set` in `/api/runs`. The page address keeps the value (`?set=`), and
+  `svl.runs.header` keeps it (agreed with drink-atlas-workspace-39 [fb59ad]). 8168
+  restarted at 07:08:32. `test_run_routes.py`: 7 tests OK; a Playwright check passes (24
+  checks, light and dark, no page error). Smoke rows RN19 to RN21.
 - The header controls of `/dataset`, `/embedding`, `/clusters`, `/testset`, and `/runs`
   are kept in `localStorage` (the key `svl.<page>.header`; `/embedding` keeps its old key
   for the configuration) and come back at the next page load (owner message of

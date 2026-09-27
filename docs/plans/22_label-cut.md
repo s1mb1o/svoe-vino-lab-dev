@@ -6,8 +6,9 @@ owner answer of 12:28:04 to drink-atlas-workspace-7b: `image_derivative` keeps o
 for each original and kind. Implemented by drink-atlas-workspace-e3 on 2026-09-25. The
 seed ran from 12:46:36 to 13:36:59: 2,019 of 2,023 full originals have a label cut; SAM3
 found no label on 4. A `Build` of `gx10-siglip2-so400m-patch16-naflex-p256` at 13:44
-left 4 failed items of 4,043. The owner message of
-2026-09-25T12:11:50+0300 and the answers are in [owner-messages.md](../owner-messages.md).
+left 4 failed items of 4,043. On 2026-09-26, the owner decided that a printed packet or
+box has no separate label and needs no duplicate label vector. Schema 021 records this
+state. The owner messages and the answers are in [owner-messages.md](../owner-messages.md).
 
 ## Goal
 
@@ -33,6 +34,8 @@ left 4 failed items of 4,043. The owner message of
   key (`source_sha256`, `kind`). This plan has no schema file of its own.
 - The badge `vector` shows on a `current` item and on a `stale` item (12:27:47). A stale
   item keeps the vector of its old hash; the status badge tells which.
+- A printed packet or box with no separate label keeps its full-package vector only.
+  It does not get a duplicate vector in the label space (2026-09-26T09:24:34+0300).
 
 ## The label cut
 
@@ -43,11 +46,15 @@ left 4 failed items of 4,043. The owner message of
 3. The label rule is the rule of an alternative label photo (plan 16): the nouns
    `alternatives.DETECT_TEXTS`, then `alternatives.label_instance` (the rule of
    `build_labels.py`). `alternatives.label_derivatives` stores the PNG in
-   `images/cropped/` and gives the rows. `derive.write_rows` writes them with the kind
-   `label`.
+   `images/cropped/` and gives the rows. `alternatives.write_processed_rows` writes them
+   with the kind `label`.
 4. SAM3 runs outside the write transaction. Each original gets its own short transaction.
    A second run continues the first one.
-5. An original with no label gets no row. The next run asks SAM3 again.
+5. If the label prompt finds no label, the code sends the package prompt
+   `derive.SAM3_TEXTS`. A detected `packet` or `box` means that the design is printed on
+   the package. The code writes one `image_derivative_absence` row of the kind `label`.
+   The row stores the rule settings and the reason. A bottle or can with no detected
+   label gets no row. The next seed asks SAM3 again for that bottle or can.
 
 Note of 2026-09-25 (drink-atlas-workspace-cb [48de03]; owner messages of 19:10:14 and
 19:10:30, answers of 19:16:44 and 20:24:14): a photo with a second body label gets the
@@ -66,6 +73,9 @@ request, as before. The rule of the measurement is in `ResearchLog.md`.
 7. `embeddings.read_inputs` reads the row of the kind `package` into `cuts["package"]` and
    the row of the kind `label` into `cuts["label"]`. The hash of each label item changes,
    so the next `Build` of an entry makes each label item.
+8. `embeddings.read_inputs` also reads current label-absence rows. `plan_items` omits the
+   label item for each such source. It keeps the full item. The API reports the omitted
+   cell as `not_applicable` with its reason. The build does not create a label vector.
 
 ## The vector badge
 
@@ -78,9 +88,14 @@ request, as before. The rule of the measurement is in `ResearchLog.md`.
 ## Tests
 
 - `tests/test_seed_label_cuts.py`: a label cut for each full original, no request for a
-  close-up, a second run, a package row that does not count, no label, SAM3 down, the
-  limit, and `read_inputs` and `prepare` on the cut.
-- `tests/test_embedding_routes.py`: `test_a_cell_with_a_vector_row_gets_vector`.
+  close-up, a second run, a package row that does not count, a packet without a separate
+  label, a bottle without a detected label, SAM3 down, the limit, and `read_inputs` and
+  `prepare` on the cut.
+- `tests/test_embeddings.py`, `tests/test_build_embeddings.py`, and
+  `tests/test_embedding_routes.py`: the full item stays, the label item is omitted, no
+  label vector or failure is written, and the API reports `not_applicable`.
+- `tests/test_labdb.py`: schema 021 creates a strict marker table with a foreign key to
+  the source image.
 
 ## Risks
 

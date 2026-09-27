@@ -2,6 +2,77 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-27 — the choice of the SAM3 package instance
+
+Session drink-atlas-workspace-86 [92610a]. The old rule of `Sam3Client.segment` took the
+largest instance of `wine bottle, can, packet, box`. Four rules were replayed on the
+cached SAM3 answers (`embedding_run.CachedSam3`, no request to SAM3). The set: the 154
+catalogue images with a SAM3 package cut and the 2,155 query photos of run
+`2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my`.
+
+| Rule | Query photos changed | Catalogue images changed | Wrong choices seen |
+|---|---|---|---|
+| A: the bottle always wins | 28 | 15 | 12 catalogue packets and bag-in-box: the bottle printed on the package wins |
+| B: the bottle wins unless 90 % of it lies inside a larger package | 21 | 3 | 6 queries: a real bottle in an open gift box or in front of a crate loses (the 7th difference covers the same area) |
+| C: the bottle wins when it has 50 % or more of the largest area | 20 | 2 | 8 queries: q-000108 (0.496), q-000236 (0.38), and the bottle-in-box photos |
+| D: the bottle wins, except a bottle printed on a packet or a box | 28 | 4 | none seen |
+
+- The owner chose D. `derive.package_instance` implements it. The implementation gave the
+  same choice as the replay of D for each photo.
+- A printed bottle has 0.005 to 0.21 of the packet area, and 0.015 to 0.06 of the
+  bag-in-box area. A real bottle inside a `box` instance has 0.13 (the Ferrum crate) to
+  0.36 (an open gift box, where one `box` instance covers the lid and the base). So a
+  packet needs no area test. A box needs the test with the limit 0.1. The margin between
+  0.06 and 0.13 is small. A new bag-in-box photo with a larger printed bottle can pass the
+  limit.
+- SAM3 often gives a `box` for a gift box, a tube, a crate, a cork crate, or a cardboard
+  background. SAM3 also gives a second `wine bottle` for a bottle-shaped window of a
+  wooden box (q-000042, score 0.5). The largest bottle is the real bottle there.
+- A catalogue image with a bottle and its tube (`fanagoriya-tochka-saperavi-krasnoe-suhoe-14`,
+  `fanagoriya-ice-wine-merlo-rozovoe-sladkoe-10`) now gets the bottle cut, not the tube.
+
+## 2026-09-26 — the re-queue of schema 024 (`presentation_mode`)
+
+Session drink-atlas-workspace-6c [c91c62]. The watcher sent the class prompt again for
+2,092 images, with the four old values as fixed facts, to `qwen3.5-9b-nvfp4` on gx10.
+
+- The result: 2,091 `on_package` and 1 `flat_surface`. The one flat label is the
+  `label_back` photo `405b65f9…` of `vysokij-bereg-risling-zelenaya-seriya-1`, the photo of
+  the owner message of 19:46:00. The catalogue holds almost no flat label.
+- The fixed facts held: no row changed its four old values (compared with the backup of
+  20:19:30).
+- 2 answers left out the new key `presentation_mode` and failed the schema. Both passed on
+  the next call.
+- The run took 2 h 10 min, not the 10 to 30 min of the estimate. A call took 6 to 9 s, but
+  the gateway answered HTTP 429 712 times, because the whole-catalog frame run of
+  `drink-atlas-enrichment` used the same model with 8 workers. The watcher backed off 30 s
+  after each 429. Two restarts of 8168 by other sessions did not lose a row.
+- The watcher lives as long as 8168, so `caffeinate -w <watcher pid>` never ends by
+  itself, and a restart of 8168 ends it early. A waiter that reads the pid from
+  `/api/image-description-status` each minute moved `caffeinate` to each new watcher and
+  stopped it when `pending` was 0.
+
+## 2026-09-26 — the bottle test of the label rule in a close-up
+
+Session drink-atlas-workspace-4f [0fa826], owner message of 2026-09-26T19:38:53+0300. A
+read-only pass over the cached SAM3 answers (`DETECT_TEXTS`) of the 2,037 photos of
+`data/lab.sqlite3`. Each photo had a cached answer; the pass sent no SAM3 request.
+
+- The photo `d9f847bd…` (`label_back`): the real label had 1,353,980 mask pixels, a box
+  IoU of 0.84 with the bottle, and a mask IoU of 0.82. The bottle filled 86 % of the frame.
+  The bottle test (`BOTTLE_IOU` 0.80) dropped the label. A QR sticker of 176,368 px won.
+- In 12 of the 2,037 photos, the present rule selects a label that is not the largest
+  label. 11 are `main` photos: gift tubes (Fanagoriya Ice Wine, Lenty) and cartons or
+  packets (Kartuli Supris, Gloria de Luna, Evropak Shiraz). There the largest label is the
+  whole package: box IoU 0.92 to 0.99 and mask IoU 0.89 to 0.98 with the bottle. The
+  bottle test does its job there. On the cartons, the present cut is a small part of the
+  face, for example `QUALITY WINES`; this is a separate question.
+- A mask IoU threshold of 0.85 separates the close-up (0.82) from the 11 catalogue
+  photos (0.89 and more) on this data. The margin is small, and the data holds one
+  close-up only. The owner selected the rule by the photo type instead.
+- `detect` is not a safe signal of a close-up for a catalogue photo: one Fanagoriya
+  `main` photo (bottle in 8 % of the frame, no neck found) gives `label`.
+
 ## 2026-09-26 — wine_slug renames in the website import run of 07:48
 
 Session drink-atlas-workspace-0d [ab062e], owner messages of 2026-09-26T19:16:31+0300 to
@@ -26,6 +97,48 @@ missing wines and 79 new wines, so 5,767 pairs. `import_website.renames` takes 0
 - 9 tables reference `wine_catalog (wine_slug)` with no `ON UPDATE CASCADE` (schema 005,
   007, 008, 009, 010, 011, 012, 013, 023). A real slug rename must change each of them.
   The owner chose "display only" on 2026-09-26T19:22:30+0300.
+
+## 2026-09-26 — `data/lab.sqlite3` against `svoe-vino-testset` and `derived/`
+
+Session drink-atlas-workspace-9e [4644ab], owner message of 2026-09-26T17:28:03+0300.
+A read-only comparison of a snapshot of `data/lab.sqlite3` (17:29) with each source of
+`pipeline/seed_from_testset.py`. The script used the parse and map functions of the seed
+tools. So "equal" means "equal to the rows that the seed writes from the files of today".
+No source file changed after the start of the seed (07:34).
+
+- `svoe-wino-hackaton/dataset/derived/` holds no database. It holds JSONL files and image
+  folders. The only SQLite file of `svoe-vino-testset` is `work/state.db`: the work state
+  of the photo hunt of 2026-09-18 (2,105 wines, 233,368 candidates). The seed does not
+  read it.
+- Equal: the three test sets. `my` 4,043 photos, `official-real-photos` 100,
+  `vlmrerank-8b-failed` 180. Each path and each SHA-256 is equal. Each label column, each
+  wine note, the label note, the excluded slugs, and the variant groups are equal.
+  `test_set.edited_at` is NULL for each set.
+- Equal: the 2,103 wines of `wine_catalog` (9 fields) against the Strapi CSV and against
+  `catalog.jsonl`. The 26 codes against `code-map.json`. The 367 Atlas bindings (364
+  automatic, 3 manual) against the two JSONL files. The 15 patches against
+  `patched-official-2026-09-17/`. No additional photo on either side.
+- Difference 1: 52 wines have an official photo in `catalog.jsonl` (method
+  `live-og-image`) and no `main` row in the lab. `seed_images.py` matches by name alone;
+  the `og:image` load is the open later step 1 of plan 08. 7 of the 52 wines have a patch.
+  So 45 wines have no picture in the lab and a picture in the test set.
+- Difference 2: 5 wines have a `main` row (`name-identical`) in the lab and no photo in
+  `catalog.jsonl` (`unresolved`, "the page did not answer"), for example
+  `beloe-polusladkoe` and three `zb-vajn-*` wines.
+- Difference 3: the lab-only patch of `shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135`
+  (`manual`, SHA-256 `00bae0ae…`). The test set file has the same name and size
+  (273 × 1000), but other bytes (`5de219e9…`).
+- Difference 4: the manual pair of `manual-groups.json` (`my` and
+  `vlmrerank-8b-failed`) is not in `test_variant`. The owner skipped manual pairs for
+  plan 24 on 2026-09-25T17:01:44+0300.
+- Difference 5: the lab makes its own cuts. The package cut is byte-equal to
+  `derived/official-2026-09-17/cropped/` for 1,905 of 2,047 wines with the same source;
+  box IoU >= 0.9 for 2,043. The label cut uses another SAM3 rule (plan 22): the same box
+  for 23 wines, median IoU 0.978, IoU < 0.5 for 68.
+- Lab-only rows: 2,034 image descriptions and 2,028 image details (VLM, 07:42 to 07:59).
+- Not imported by design: `trash/` (360 files of `my`), 12 loose files in `my/photo/`,
+  `selection.json`, `runs/`, `catalog-cluster*.json`, and the Drink Atlas match-test files
+  of `derived/`.
 
 ## 2026-09-26 — the rules of `qwen3.8-max` against the rules of `qwen3.5-9b-nvfp4`
 

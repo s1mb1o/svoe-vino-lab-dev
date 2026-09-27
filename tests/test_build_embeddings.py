@@ -12,6 +12,7 @@ import numpy as np
 import embedding_lab  # noqa: F401  (puts pipeline/ on sys.path)
 from embedding_lab import FakeGateway, standard_lab
 
+import alternatives  # noqa: E402
 import build_embeddings  # noqa: E402
 import embeddings  # noqa: E402
 
@@ -86,6 +87,21 @@ class BuildTest(unittest.TestCase):
         self.assertEqual(self.gateway.images(), sent)
         self.assertEqual(before, os.path.getmtime(os.path.join(
             self.lab.entry_dir(), "images", "%s_full.png" % self.lab.grey)))
+
+    def test_a_not_applicable_label_gets_no_vector_and_no_failure(self):
+        self.lab.conn.execute(
+            "INSERT INTO image_derivative_absence VALUES (?, 'label', ?, ?)",
+            (self.lab.grey, alternatives.SETTINGS_LABEL_ABSENCE,
+             "the packet has no separate label"))
+        self.lab.conn.commit()
+        counts, _events = self.build()
+        self.assertEqual((counts["built"], counts["failed"], counts["todo"]), (4, 4, 8))
+        index, vectors = self.index()
+        keys = {(item["source_sha256"], item["view"]) for item in index["items"]}
+        failures = {(item["source_sha256"], item["view"])
+                    for item in index["failures"]}
+        self.assertNotIn((self.lab.grey, "label"), keys | failures)
+        self.assertEqual(vectors.shape, (4, 8))
 
     def test_a_missing_image_makes_the_item_stale(self):
         self.build()

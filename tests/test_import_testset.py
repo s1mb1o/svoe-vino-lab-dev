@@ -79,8 +79,10 @@ class ImportTestsetTest(unittest.TestCase):
         })
         self.assertEqual((report.photos, report.loose, report.no_file), (7, 1, 1))
         self.assertEqual(report.unknown_places, ["unknown-wine"])
-        self.assertEqual(self.query("SELECT wine_slug, reason, ts FROM test_excluded"),
-                         [("wine-c", "r", "t")])
+        # The reason of an old exclusion is a wine comment (plan 51). "t" is no time.
+        self.assertEqual(self.query("SELECT wine_slug, source, text FROM wine_comment"),
+                         [("wine-c", "user", "Excluded from the benchmark: r")])
+        self.assertEqual((report.excluded, report.wine_comments), (1, 1))
         self.assertEqual(self.query("SELECT wine_slug, group_no FROM test_variant ORDER BY 1"),
                          [("wine-a", 0), ("wine-b", 0)])
         self.assertEqual(self.query("SELECT set_name FROM test_set"), [("my",)])
@@ -106,8 +108,16 @@ class ImportTestsetTest(unittest.TestCase):
         photos = self.photos()
         self.assertEqual(photos[("wine-a", "01.jpg")][1], "negative")
         self.assertNotIn(("wine-c", "01.jpg"), photos)
-        self.assertEqual(self.query("SELECT count(*) FROM test_excluded"), [(0,)])
+        # A wine comment belongs to no set: a new import does not remove it.
+        self.assertEqual(self.query("SELECT count(*) FROM wine_comment"), [(1,)])
         self.assertEqual(report.written, 0)
+
+    def test_a_second_import_adds_no_wine_comment_again(self):
+        set_dir = self.standard_set()
+        self.run_import(set_dir)
+        report = self.run_import(set_dir)
+        self.assertEqual((report.wine_comments, report.wine_comments_present), (0, 1))
+        self.assertEqual(self.query("SELECT count(*) FROM wine_comment"), [(1,)])
 
     def test_labels_are_per_set(self):
         first = self.standard_set()
@@ -187,28 +197,57 @@ class ImportTestsetTest(unittest.TestCase):
         set_dir = FX.write_set(self.root, PHOTOS, {"wine-a": {"01.jpg": entry, "02.jpg": odd}})
         report = self.run_import(set_dir)
         row = self.columns("wine-a", "01.jpg")
-        self.assertEqual((row["label"], row["comment"], row["proposed"], row["proposed_by"],
+        self.assertNotIn("comment", row)
+        self.assertEqual((row["label"], row["proposed"], row["proposed_by"],
                           row["confidence"], row["reassign_to"]),
-                         ("positive", "a note", "variant", "kimi", 0.75, "__null__"))
+                         ("positive", "variant", "kimi", 0.75, "__null__"))
         self.assertEqual(json.loads(row["prefilled_from"]), entry["prefilled_from"])
         self.assertEqual(json.loads(row["extra"]), {"copy_to": "wine-b", "later": [1, 2]})
-        # A value that its column cannot keep exactly goes into `extra`.
+        # The old field `comment` is a comment of the photo. `by` makes its source a
+        # script, and `ts` gives its time in UTC (plan 51).
+        self.assertEqual(self.query("SELECT place, file_name, created_at, source, text FROM "
+                                    "test_photo_comment"),
+                         [("wine-a", "01.jpg", "2026-09-25T07:00:00Z", "script", "a note")])
+        self.assertEqual(report.photo_comments, 1)
+        # A value that its column cannot keep exactly goes into `extra`. So does an empty
+        # comment.
         row = self.columns("wine-a", "02.jpg")
-        self.assertEqual((row["label"], row["marked_delete"], row["comment"]), (None, 0, None))
+        self.assertEqual((row["label"], row["marked_delete"]), (None, 0))
         self.assertEqual(json.loads(row["extra"]), odd)
         self.assertEqual(report.extra, 2)
 
-    def test_import_keeps_the_notes_of_the_wines_and_the_text_note(self):
+    def test_import_reads_the_comments_of_an_entry(self):
+        items = [{"created_at": "2026-09-26T09:00:00Z", "source": "user", "text": "one"},
+                 {"created_at": "2026-09-26T08:00:00Z", "source": "script", "text": "two"}]
+        set_dir = FX.write_set(self.root, PHOTOS, {"wine-a": {"01.jpg": {"comments": items}}})
+        self.run_import(set_dir)
+        self.assertEqual(self.query("SELECT created_at, source, text FROM test_photo_comment "
+                                    "ORDER BY created_at"),
+                         [("2026-09-26T08:00:00Z", "script", "two"),
+                          ("2026-09-26T09:00:00Z", "user", "one")])
+        self.assertIsNone(self.columns("wine-a", "01.jpg")["extra"])
+
+    def test_import_makes_wine_comments_of_the_old_notes_of_the_wines(self):
         set_dir = self.standard_set()
         document = {"version": 2, "note": "the note", "labels": LABELS,
-                    "wines": {"wine-a": {"comment": "whole wine", "ts": "t1"},
-                              "wine-b": {"comment": "b", "ts": "t2", "by": "x"}}}
+                    "wines": {"wine-a": {"comment": "whole wine",
+                                         "ts": "2026-09-16T01:33:53+0300"},
+                              "wine-b": {"comment": "hunter-01: nothing", "ts": "t2", "by": "x"},
+                              "no-wine": {"comment": "lost", "ts": "t3"},
+                              "wine-c": {"ts": "t4"}}}
         (Path(set_dir) / "review-labels.json").write_text(json.dumps(document))
         report = self.run_import(set_dir)
-        self.assertEqual(report.wine_notes, 2)
-        self.assertEqual(self.query("SELECT wine_slug, comment, ts, extra FROM test_wine_note "
-                                    "ORDER BY 1"),
-                         [("wine-a", "whole wine", "t1", None), ("wine-b", "b", "t2", '{"by": "x"}')])
+        self.assertEqual((report.wine_notes, report.wine_comments,
+                          report.wine_comments_left_out), (4, 3, 1))
+        rows = self.query("SELECT wine_slug, created_at, source, text FROM wine_comment "
+                          "ORDER BY wine_slug, text")
+        self.assertEqual([row[:1] + row[2:] for row in rows],
+                         [("wine-a", "user", "whole wine"),
+                          ("wine-b", "script", "hunter-01: nothing"),
+                          ("wine-c", "user", "Excluded from the benchmark: r")])
+        self.assertEqual(rows[0][1], "2026-09-15T22:33:53Z")
+        self.assertIn("left out: a wine comment of no-wine: wine_catalog holds no wine with "
+                      "this slug", self.messages)
         self.assertEqual(self.query("SELECT label_note, edited_at FROM test_set"),
                          [("the note", None)])
 

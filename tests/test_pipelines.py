@@ -116,6 +116,18 @@ class EmbeddingPipelineTest(LoadTest):
                 with self.assertRaisesRegex(embeddings.ConfigError, message):
                     pipelines.Pipeline(dict({"name": "p", "backend": "embedding"}, **keys))
 
+    def test_workers_default_to_one_and_accept_an_explicit_count(self):
+        raw = {"name": "p", "backend": "embedding", "embedding": "gw"}
+        self.assertEqual(pipelines.Pipeline(raw).workers, 1)
+        self.assertEqual(pipelines.Pipeline(dict(raw, workers=4)).workers, 4)
+
+    def test_workers_must_be_a_positive_integer(self):
+        for value in (None, 0, -1, True, 1.5, "4"):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(embeddings.ConfigError, "workers MUST be an integer"):
+                    pipelines.Pipeline({"name": "p", "backend": "embedding", "embedding": "gw",
+                                        "workers": value})
+
 
 class QueryViewsTest(LoadTest):
     """The key `views` of a pipeline of the backend `embedding`: the steps of the test

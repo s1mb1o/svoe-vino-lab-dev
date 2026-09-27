@@ -88,3 +88,26 @@ CREATE INDEX wine_atlas_binding_product ON wine_atlas_binding (product_uuid);
    not see a binding that a person sets on the lab. An export is not part of this plan.
 2. A new run of `match_atlas.py` does not change a stored automatic row. The seed counts
    such a row as `differs`. How to apply a new run is an open point.
+
+## Change of 2026-09-26: the remove of an automatic row
+
+Source: the owner message of about 2026-09-26T18:40:00+0300 ("add (x) button to remove
+wrong drink-atlas match") and the answers of about 18:45:00. Session
+drink-atlas-workspace-f2.
+
+1. `DELETE /api/dataset-atlas-binding?slug=…` removes the effective row: the manual row,
+   else the automatic row. `atlas_bindings.remove_effective` replaces `remove_manual`.
+2. The answer is `{ok, slug, removed, removed_source, product_uuid, source, total,
+   manual}`. `removed_source` is `manual` or `automatic`.
+3. A wine with no row answers HTTP 404: `the wine … has no Atlas binding`.
+4. The Dataset page shows the red `×` for a binding of each source. The confirm text
+   names the source. A wine with both rows needs two removes: the first removes the
+   manual row and shows the automatic row.
+5. The removed automatic row does not come back: the seed refuses a table with rows. A
+   seed with `--force` adds it back. The owner chose the plain delete over a stored
+   rejection.
+
+## Change of 2026-09-26: two or more products of a wine
+
+Schema 025 replaces the rules 1 and 2 of the section "Schema file" and the one-row routes.
+A wine MAY have 2 or more products. Read [plan 54](54_atlas-binding-list.md).

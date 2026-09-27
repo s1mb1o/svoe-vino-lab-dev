@@ -2625,6 +2625,15 @@ The selected answer:
 1
 ```
 
+## 2026-09-26T09:24:34+0300
+
+The agent proposed that a carton-like package with no separate label keeps its full
+embedding, gets no duplicate label vector, and has the label view marked not applicable.
+
+```text
+yes, do it
+```
+
 ## 2026-09-25T20:24:14+0300
 
 Question of drink-atlas-workspace-cb [48de03], and the selected answer:
@@ -3836,6 +3845,23 @@ run basic pipeline with all variants of embeddings, add new pipelines if require
 At the end I want from you report with embeddings matching benchmarks.
 ```
 
+## 2026-09-26T07:03:17+0300
+
+```text
+http://127.0.0.1:8168/runs
+
+add filter "testset"
+```
+
+## 2026-09-26T07:06:00+0300
+
+The question of the agent: "How should the \"Testset\" filter on /runs work? Facts: 56 runs record a set in run.json (28 `my`, 28 `official-real-photos`). 78 older runs from match_run.py have no set. /api/runs does not send the set yet, so the server needs a one-line change and a restart of 8168."
+
+```text
+Combo + column (Recommended)
+```
+
+The option: "A \"Testset\" select in the header next to \"Pipeline\": All — N, one entry for each set that appears in a run, with its count, and \"no test set — 78\". It combines with Pipeline, is kept in the URL (?set=) and in localStorage. The runs table gets a \"testset\" column too."
 
 ## 2026-09-26T07:06:00+0300
 
@@ -3846,6 +3872,62 @@ Yes, add them now (Recommended)
 ```
 
 The option: "I add one ChangeLog.md bullet (build limits, thresholds and limits in config.yaml, min_cluster_size, remembered header on five pages) and a few SMOKE_TESTS.md rows, then tell e2 \"docs done\" so they go into the same commit."
+
+## 2026-09-26T07:14:42+0300
+
+```text
+http://127.0.0.1:8168/runs
+
+when i click on matching photo, show me popup with this image, and also what images were derived from it, what they were compared with (ex.: full bottle embedding space, label embedding space), what VLM response was if use. 
+what was results before re-rank
+
+and show it as steps: 
+- what step
+- what was generated on step
+- how long step take
+ 
+Look how http://127.0.0.1:8162/ is made. I attached you a photo how i want it look like.
+```
+
+The message has one attached image: a screenshot of the step view of the page on port 8162
+(rounds 0 to 2: `00 Input photo`, `01 Bottle proposals`, ..., `11 Search, the crops`; each
+step shows its number, its name, the service and the model, the time, and the state).
+
+## 2026-09-26T07:22:00+0300
+
+The questions of the agent and the selected answers, for the step popup of `/runs`.
+
+1. "Where should the step times and derived images come from? Today a lab embedding run records only the final top-10 and one total time per photo. No per-step time, no crops on disk, no top list per embedding space."
+
+```text
+Record trace (Recommended)
+```
+
+The option: "embedding_run.py writes a small step trace into each results.jsonl row: step name, service, model, start, duration, SAM3 cache hit, boxes, the sha256 of each derived image, and the top list of each space (full, label) before the score fusion. Images are rebuilt on demand from the SAM3 cache and checked against that sha256, so no image files. Only NEW runs get step times. Old runs show the same steps as \"time not recorded\"."
+
+2. "Which runs get the step popup in the first version? Note: VLM answers and \"before re-rank\" exist today only in matcher runs (svm-*cluster-rules*, the explain records). The lab embedding pipelines have no VLM and no re-rank step yet."
+
+```text
+Embedding + matcher (Recommended)
+```
+
+The option: "Embedding runs: all steps. Matcher runs: input photo, the matcher's model inputs, the base order (= before re-rank), the difference and VLM rule steps (questions, answers, time), and the final order. Remote and mock runs: input photo and answer."
+
+3. "The language of the popup labels?"
+
+```text
+English (Recommended)
+```
+
+The option: "Same as all other lab pages (\"Input photo\", \"done\", \"critical path\")."
+
+4. "How should the steps be grouped?"
+
+```text
+Rounds by phase (Recommended)
+```
+
+The option: "Like 8162: Round 0 the photo, Round 1 the model inputs (SAM3 cuts, view steps), Round 2 the embedding and the search per space, Round 3 the re-rank (only when present). Each round header shows its elapsed time and the sum of its steps."
 
 ## 2026-09-26T07:22:10+0300
 
@@ -3889,41 +3971,6 @@ A twin of every embedding pipeline
 
 The option: "22 new entries: a barcode twin of every embedding pipeline in plan 40."
 
-## 2026-09-26T07:48:00+0300
-
-```text
-http://127.0.0.1:8168/dataset
-
-add advanced filter: 
-- All | has GTIN | has QR URL | has Drink Atlas
-
-name filter yourself
-```
-
-## 2026-09-26T08:00:00+0300
-
-```text
-provide url slug for page when website crawl results displayed
-```
-
-The message came with a screenshot of the dialog "Import from vino-svoe.ru" on `/dataset`
-(the section "Conflicts").
-
-## 2026-09-26T08:07:00+0300
-
-The question of the agent: "Which URL should the page show while the \"Import from
-vino-svoe.ru\" dialog is open?"
-
-```text
-/dataset/website-import (Recommended)
-```
-
-## 2026-09-26T08:20:00+0300
-
-```text
-if you have work done, commit it
-```
-
 ## 2026-09-26T07:20:00+0300
 
 The time is approximate. The agent recorded this message late, together with the next one.
@@ -3940,10 +3987,46 @@ we have clusters, made using specific embeddings, where do we store cluster info
 and who uses @svoe-vino-lab/dataset/catalog-clusters.json  ?
 ```
 
+## 2026-09-26T07:31:00+0300
+
+The time is approximate.
+
+```text
+import catalog from @svoe-vino-testset  to @svoe-vino-lab
+```
+
 ## 2026-09-26T07:32:51+0300
 
 ```text
 @svoe-vino-lab  shall use those clusters that are inside @svoe-vino-lab/data/embeddings , not @svoe-vino-lab/dataset/catalog-clusters.json  and @svoe-vino-lab/dataset/catalog-cluster-rules.json and @svoe-vino-lab/dataset/catalog-cluster-notes.json
+```
+
+## 2026-09-26T07:36:00+0300
+
+The questions of the session drink-atlas-workspace-5d [dab707] and the selected answers.
+
+1. "What does \"catalog\" cover in this import? The lab already has seed_from_testset.py, which reads the same sources as svoe-vino-testset/config.yaml. data/lab.sqlite3 is empty now (all 20 schema files applied, no rows)."
+
+```text
+Full seed (Recommended)
+```
+
+The option: "Run seed_from_testset.py into data/lab.sqlite3: the 2,103 wines from the Strapi CSV, main images, patches, GTINs/QR URLs, Atlas bindings, the 3 test sets, and label cuts (SAM3 through data/cache/sam3). Then start 8168 and check GET /api/dataset."
+
+2. "data/lab.sqlite3 was replaced at 07:29 by an empty file. The old database was renamed to data/~lab.sqlite3 at 07:25. No lab code creates a '~' name. The old file has data that exists only in the lab: 1 Disabled wine, 2 comments, 1 favorite, 2,026 image descriptions, 2,018 image details, and any edits from the Testset page. What should happen to that data?"
+
+```text
+Fresh start (Recommended)
+```
+
+The option: "I made the empty file on purpose. The new database holds source data only. data/~lab.sqlite3 stays where it is and is not touched."
+
+## 2026-09-26T07:38:00+0300
+
+The time is approximate.
+
+```text
+after you are done, provide commands how i can repeat this next time
 ```
 
 ## 2026-09-26T07:37:19+0300
@@ -3988,10 +4071,15 @@ Keep it for now (Recommended)
 
 The option: "Leave cluster_rules.py and its three tests untouched. The later rule builder for data/embeddings/<name>/cluster-rules.json (plan 30) can reuse its Vlm client, prompts and validation. Retire it once that builder exists."
 
-## 2026-09-26T08:52:38+0300
+## 2026-09-26T07:48:00+0300
 
 ```text
-if you have work done, commit it
+http://127.0.0.1:8168/dataset
+
+add advanced filter: 
+- All | has GTIN | has QR URL | has Drink Atlas
+
+name filter yourself
 ```
 
 ## 2026-09-26T07:50:00+0300
@@ -4035,6 +4123,91 @@ and make it checked by default
 item_failed shall be shown always
 ```
 
+## 2026-09-26T08:00:00+0300
+
+```text
+provide url slug for page when website crawl results displayed
+```
+
+The message came with a screenshot of the dialog "Import from vino-svoe.ru" on `/dataset`
+(the section "Conflicts").
+
+## 2026-09-26T08:07:00+0300
+
+The question of the agent: "Which URL should the page show while the \"Import from
+vino-svoe.ru\" dialog is open?"
+
+```text
+/dataset/website-import (Recommended)
+```
+
+## 2026-09-26T07:53:41+0300
+
+```text
+find why [http://127.0.0.1:8168/embedding?name=gx10-siglip2-so400m-patch16-naflex-p256](http://127.0.0.1:8168/embedding?name=gx10-siglip2-so400m-patch16-naflex-p256) fails to generate embeddings for images.
+
+07:53:41**start**name gx10-siglip2-so400m-patch16-naflex-p256 · pid 28693 · items 4062 · current 4056 · todo 6 · pruned 0
+07:53:41**item_failed**5478f9d502c4510d9b3a584da981398c740e122af4ae83933a08dc00903d9ad3 · view label · wine vinogradniki-gay-kodzora-rose-cuvee-prestige-de-gai-kodzor-murvedr-rozovoe-suhoe-13 · name Rose Cuvee Prestige De Gai-Kodzor · image_type main · no label cut yet
+07:53:41**item_failed**45738caa6ec044a696bd3c3fd8d9da56d409b97cdfe458cbcb98507640d1e187 · view label · wine fanagoriya-rose-kaberne-fran-rozovoe-suhoe-13 · name Rose. Каберне Фран · image_type main · no label cut yet
+07:53:41**item_failed**97e800d0597d5a4b79284b0954c0e03aa513bc77cd2ac4d730141fb73718360b · view label · wine soyuz-vino-gloriya-de-luna-rosso-sekko-kaberne-sovinon-krasnoe-suhoe-11 · name Глория де Луна Россо Секко · image_type main · no label cut yet
+07:53:41**item_failed**00bae0ae71ba0eab8d9c43b9d88917a68f3b7acec38bdbff6bc2c2f4c3b7acfa · view label · wine shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135 · name Каберне Совиньон - Мерло · image_type main_patched · no label cut yet
+07:53:41**item_failed**3e9045b90fe4e42148148bafc818243b991519338617e7205c59903b86587e60 · view label · wine soyuz-vino-soyuz-vino-izabella-beg-in-boks-krasnoe-polusladkoe-11 · name Союз-Вино Изабелла Бэг-ин-бокс · image_type main · no label cut yet
+07:53:41**request**images 1
+07:53:41**progress**done 6 · todo 6 · built 1 · failed 5
+07:53:42**done**built 1 · failed 5 · done 6 · current 4056 · pruned 0 · todo 6 · 0.8 s
+```
+
+## 2026-09-26T08:00:00+0300 (approximate)
+
+```text
+use my SAM3 endoint and check if label can be segmented. I afraid problem is that label is not opaque, this cause SAM3 to fail
+```
+
+## 2026-09-26T08:20:00+0300 (approximate)
+
+```text
+shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135 - check why this failed?
+
+was it fail, because initilaly wine_slug has not image attached, and SAM3 was run anyway or error was cached even without running SAM3?
+```
+
+## 2026-09-26T08:45:00+0300 (approximate)
+
+```text
+ok, create fix
+```
+
+## 2026-09-26T08:46:47+0300
+
+The agent asked which fix to implement. Option 1 creates the package and label derivatives
+during patch upload. The upload succeeds with a warning when SAM3 is unavailable or finds
+no label.
+
+```text
+1
+```
+
+## 2026-09-26T08:52:38+0300
+
+```text
+if you have work done, commit it
+```
+
+## 2026-09-26T08:20:00+0300
+
+```text
+if you have work done, commit it
+```
+
+## 2026-09-26T08:58:00+0300
+
+The question of the agent: session 4f's commit 533e2d0 holds the work of session 74, and
+the four doc hunks of 4f are not in it. How to fix it?
+
+```text
+Leave it, follow-up only (Recommended)
+```
+
 ## 2026-09-26T08:58:00+0300
 
 The question of the agent and the selected answer, for the index race of commit 533e2d0
@@ -4054,6 +4227,11 @@ The option: "Leave 533e2d0 as it is. I add one new commit with my 4 doc blocks. 
 how clusters  work in @svoe-vino-lab ?
 ```
 
+## 2026-09-26T09:05:00+0300
+
+```text
+In http://127.0.0.1:8168/runs создай кнопку, которая создает новый testset из текущих R@1-misses. При нажатии на кнопку показывай popup диалог где можно указать R@1-misses, R@5-misses. Плюс еще задается имя (используй исходное имя датасет-число, только проверяй что не занято, тогда увеличивай на 1)
+```
 
 ## 2026-09-26T09:07:24+0300
 
@@ -4077,6 +4255,47 @@ Each rule gets a mode: sheet (answer the questions), verdict (read the rule text
 for inspiration look to svoe-vino-testset implementation.
 ```
 
+## 2026-09-26T09:12:00+0300
+
+The questions of the agent and the selected answers, for the button of `/runs` that
+builds a new test set from the misses of a run.
+
+"Как создавать новый testset?"
+
+```text
+Строки в БД (Recommended)
+```
+
+"Как выбирать промахи в диалоге?"
+
+```text
+Радио: R@1 или R@5 (Recommended)
+```
+
+"Что делать с фото, у которых метка в исходном наборе изменилась после run?"
+
+```text
+Не брать (Recommended)
+```
+
+"Какое имя предлагать, если исходный набор уже с номером (например, my-1)?"
+
+```text
+my-2 (Recommended)
+```
+
+## 2026-09-26T09:24:00+0300
+
+The question of the agent and the selected answer, for the stale section of
+drink-atlas-workspace-f4 [b39b7b] (plan 44).
+
+"Секция f4 [b39b7b] в ACTIVE_WORK.md занимает runs.html и docs/API.md. В обоих файлах есть незакоммиченные правки f4 (фильтр Testset, step popup). Сессии f4 нет в ListAgents, значит, секция устарела (правило 21). Можно мне добавить туда свои отдельные hunks?"
+
+```text
+Да, отдельные hunks (Recommended)
+```
+
+The option: "В runs.html добавлю кнопку после #det-h, новый диалог, его CSS и один блок скрипта. В API.md добавлю одну запись после GET /api/run-clusters. Правки f4 не трогаю. Коммичу только свои hunks через отдельный GIT_INDEX_FILE."
 
 ## 2026-09-26T09:27:00+0300
 
@@ -4115,6 +4334,37 @@ No, rules only (Recommended)
 
 The option: "This task builds and shows the rules. A lab pipeline that uses them at query time comes in a later plan, after the rules are reviewed."
 
+## 2026-09-26T09:29:30+0300
+
+```text
+http://127.0.0.1:8168/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256&space=combined
+
+check image preview, it has scroll bar, this shall be avoided
+```
+
+## 2026-09-26T09:30:30+0300
+
+```text
+also arrow left/right shall not switch to next cluster, it shall work only inside one cluster. Move between clusters - up/down
+```
+
+## 2026-09-26T09:32:30+0300
+
+"What should ←/→ do at the last (or first) image of a cluster?"
+
+```text
+Wrap in cluster (Recommended)
+```
+
+The option: "→ on the last image goes back to the first image of the same cluster. The page works like this today, but across all clusters."
+
+"Which image should ↑/↓ open in the adjacent cluster?"
+
+```text
+First image (Recommended)
+```
+
+The option: "↓ opens image 1 of the next cluster. ↑ opens image 1 of the previous cluster. Clusters with no image are skipped. The last cluster wraps to the first."
 
 ## 2026-09-26T09:51:00+0300
 
@@ -4161,6 +4411,7 @@ The option: "I write the command, the check port, the config block label_rules:,
 @svoe-vino-lab  create new page - Health. It should display current health status of service. Also there is button "Check".- it shall iterate over all endpoints (llms, embedding models) and report status. And if error, give some meaningful details
 
 commit after done
+```
 
 ## 2026-09-26T10:53:00+0300
 
@@ -4247,6 +4498,41 @@ All 45 pipelines
 
 The option: "The official vino-svoe recognizer, the 22 embedding pipelines, and the 22 barcode pipelines. First the index builds of any missing items, one embedding model at a time. Roughly 1.5 to 3 hours; the official recognizer sends 2,209 requests to vino-svoe.ru."
 
+## 2026-09-26T11:35:32+0300
+
+```text
+Изучи /Volumes/T7\_2TB/Projects-T7\_2TB/drink-atlas-workspace/svoe-vino-lab как изолированный репозиторий. Зная все о проекте, проверь на сколько хорошо svoe-vino-lab  документирован и написан.&#x20;
+
+Нужно составить список доработок и исправлений чтобы получить высокую оченку на хакатоне.
+Я подозреваю что проект будет сначала проверяться другим LLM, так как в хакатоне не более 150 команд (потолок оценки по числу людей в группе телеграм и числу людей в команде 2-5)
+
+Расположи доработки по принципу паретто. Также создай скилл чтобы повторять проверку для этого и других проектов.
+
+Поищи в интернете рекомендации по оформлению проектов для github которые для хакатонов
+
+Язык хакатона - русский. Но если нужен файл для LLM, то английский работает лучше (поэтому AGENTS.md, CLAUDE.md написаны на английском)
+
+Будь очень внимателен.
+
+Дополнительно составь список TODO с комментариями на 1xA4
+```
+
+## 2026-09-26T11:35:33+0300
+
+The question of the agent and the selected answer, for the audit of the owner message
+of 2026-09-26T11:35:32+0300.
+
+"Какой вариант проверки использовать: полный аудит, симуляция жюри или только документацию?"
+
+```text
+1, затем 2
+```
+
+## 2026-09-26T12:39:00+0300
+
+```text
+Сделай мне изображение с TODO и требуемым отчетом
+```
 
 ## 2026-09-26T13:04:00+0300
 
@@ -4264,6 +4550,14 @@ do you agree?
 ```text
 commit all 
 implement
+```
+
+## 2026-09-26T13:33:30+0300
+
+```text
+Сопоставь базу svoe-vino-lab по main и patched фото и дополнительныи фото с drink-atlas, используя drink-atlas-matcher и перепроверя через сопоставление описании. Подготовь отчёт в html с сортировкой, ничего в самих базах не меняй.
+
+Создай скилл для повторного выполнени этой задачи.
 ```
 
 ## 2026-09-26T14:56:00+0300
@@ -4380,6 +4674,12 @@ are requests to qwencloud cached? these cache entries conflict with other LLM, e
 create skill in  @svoe-vino-lab  to backup @svoe-vino-lab/data/lab.sqlite3
 ```
 
+## 2026-09-26T17:28:03+0300
+
+```text
+is database @svoe-vino-lab/data/lab.sqlite3 exact that we have in @svoe-vino-testset  (svoe-wino-hackaton/dataset/derived) ?
+```
+
 ## 2026-09-26T17:28:00+0300
 
 "Which text format should the skill export lab.sqlite3 to for the git history?"
@@ -4404,6 +4704,14 @@ Export and commit (Recommended)
 
 ```text
 Yes, to a new file (Recommended)
+```
+
+## 2026-09-26T17:37:45+0300
+
+```text
+http://127.0.0.1:8168/testset
+
+show comments same as on dataset page
 ```
 
 ## 2026-09-26T17:43:00+0300
@@ -4442,11 +4750,215 @@ Skill commits them too (Recommended)
 Plain git (Recommended)
 ```
 
+## 2026-09-26T17:55:00+0300
+
+Recorded late, at the time of the record. The owner sent this message earlier in the session drink-atlas-workspace-ab [539687]. The message holds a screenshot of a wine row of `/testset`.
+
+````text
+is text in multiline edit 
+```
+https://otzovik.com/review_16478580.html
+
+Вино игристое Высокий Берег "Рислинг. Зеленая серия" выдержанное экстра брют белое
+```
+
+comes from test_excliuded.reason ?
+````
+
+## 2026-09-26T17:55:00+0300
+
+Recorded late, at the time of the record. The owner sent this message earlier in the session drink-atlas-workspace-ab [539687]. The owner sent it while the agent worked on the question above.
+
+```text
+so called "note about this wine"
+```
+
+## 2026-09-26T17:55:00+0300
+
+Recorded late, at the time of the record. The owner sent this message earlier in the session drink-atlas-workspace-ab [539687].
+
+```text
+what test_wine_note.commen is for?
+```
+
+## 2026-09-26T17:55:00+0300
+
+```text
+create test_photo_comment, similar to wine_comment table, but holding comments for specific test_photo.
+migrate there all data from test_wine_note
+chage ui accordingly when showing test_photo popup 
+remove test_wine_note table
+
+test_photo.comment -> migrate to test_photo_comment and remove test_photo.comment
+
+test_excluded.reason -> migrate to wine_comment, and remove test_excluded table
+```
+
+## 2026-09-26T18:08:34+0300
+
+"How should the change land?"
+
+```text
+One step (Recommended)
+```
+
+"Where should the 88 wine notes from test_wine_note go? They are about the whole wine, not a photo."
+
+```text
+wine_comment (Recommended)
+```
+
+"test_excluded makes the benchmark skip the photos of 10 wines (15 slug/set pairs). After the table is gone, what should the benchmark do?"
+
+```text
+Drop exclusion
+```
+
+"d1 is waiting on your choice for 'show comments same as on dataset page' on /testset. That is the row area where the wine note textarea sits now. Who changes the /testset row?"
+
+```text
+This session (Recommended)
+```
+
+## 2026-09-26T17:53:16+0300
+
+The owner sent this message to drink-atlas-workspace-d3 at the workspace level. The
+answer is in `../ResearchLog.md`, entry "2026-09-26: Wine style or bottle type".
+
+```text
+is it worth to distinguish wine and sparkling wine? They have different bottles. Or better track bottle type?
+```
+
+## 2026-09-26T18:10:45+0300
+
+```text
+borrow beverage_type_code from drink-atlas
+by default value unset. allow select type of wine. Is it enough if we use "4" (wine) and "44" (sparkling wine) for now to avoid complexity. And we add on dataset page control to set wine type and filter (All, Wines, Sparkling Wines).
+```
+
+## 2026-09-26T18:17:31+0300
+
+"Three sessions I can't reach list files this change must touch. f4 (stale) lists pipeline/benchmark.py and tests/test_benchmark.py; neither has uncommitted changes. codex-side-sam3-fix (Codex) lists tests/test_labdb.py, which holds its uncommitted schema-021 hunk; mine is a separate hunk in the table list. 5d (stale) lists data/lab.sqlite3; I'd make a backup in data/backups/ first, then migrate. May I change these?"
+
+```text
+Yes, all (Recommended)
+```
+
+"A restart of 8168 (needed for the new schema) also picks up one pending hunk in config.yaml, written at 16:01 by another session: a sam3.endpoint entry. Everything else on disk was already live at the 15:56 start. OK to restart when the migration is ready?"
+
+```text
+Yes, restart (Recommended)
+```
+
+## 2026-09-26T18:21:29+0300
+
+The questions of drink-atlas-workspace-d3 and the selected answers, for the wine type
+of the owner message of 2026-09-26T18:10:45+0300.
+
+"Where should the wine type be stored?"
+
+```text
+Separate table (Recommended)
+```
+
+"What control should set the type on each card?"
+
+```text
+Select (Recommended)
+```
+
+"Where should the type filter go?"
+
+```text
+Advanced Filters row
+```
+
+"Which values should the filter offer?"
+
+```text
+Add 'Not set' (Recommended)
+```
+
+## 2026-09-26T18:46:25+0300
+
+The questions of drink-atlas-workspace-d3 and the selected answers, for the deploy of
+plan 52.
+
+"The deploy of plan 52 changes two items that stale sections list: tests/test_labdb.py (codex-side-sam3-fix; I add one table name and set VERSION) and data/lab.sqlite3 (5d; a backup first, then the migration with labdb.py). May I change them?"
+
+```text
+Yes, both (Recommended)
+```
+
+"When should plan 52 go live? The shared tree holds ab's unfinished testset code (its table test_photo_comment does not exist yet), so a restart of 8168 now would break /testset and /runs."
+
+```text
+After ab's deploy (Recommended)
+```
+
+## 2026-09-26T18:40:00+0300
+
+Session drink-atlas-workspace-f2. The time is approximate: the entry was recorded at
+18:48:35. The message had one screenshot: the card block `Atlas Core product`,
+`bound · automatic`, `edit`, the UUID `d0b2893a-08a0-44ad-9380-11911465b642`, `copy`,
+`open`.
+
+```text
+add (x) button to remove wrong drink-atlas match
+```
+
+## 2026-09-26T18:45:00+0300
+
+The questions of drink-atlas-workspace-f2 and the selected answers. The time is
+approximate.
+
+"How should the (x) remove a wrong automatic Atlas match?"
+
+```text
+Delete the row (Recommended)
+```
+
+"When a wine has both a manual and an automatic row, what should (x) do?"
+
+```text
+Remove the shown row only (Recommended)
+```
 
 ## 2026-09-26T18:53:37+0300
 
 ```text
 data/images/additional/ commit also
+```
+
+## 2026-09-26T19:00:28+0300
+
+The questions of drink-atlas-workspace-d1 and the answers, for the owner message of
+2026-09-26T17:37:45+0300.
+
+"How should the Testset page show the wine comments of the Dataset page?"
+
+```text
+Same editor, shared (Recommended)
+```
+
+"What happens to the per-set \"note about this wine\" textarea on /testset?"
+
+```text
+reread project, parallel session change a lot
+```
+
+## 2026-09-26T19:01:07+0300
+
+```text
+check again
+```
+
+## 2026-09-26T19:02:38+0300
+
+"Should I run /backup-lab-db now to commit the 3 new rows?"
+
+```text
+yes
 ```
 
 ## 2026-09-26T19:11:01+0300
@@ -4499,6 +5011,125 @@ but always for rename one slug has to appear and another removed on website.
 
 ```text
 git commit
+```
+
+## 2026-09-26T19:37:57+0300
+
+Two messages to drink-atlas-workspace-c6. The first message came earlier in the same
+session. Its exact time is not known. It was a read-only check.
+
+```text
+check will http://127.0.0.1:8157/api/v1/assets/53189/content be matched to vysokij-bereg-risling-zelenaya-seriya-1
+```
+
+```text
+>.A separate bug I found. The match runner still uses the old names for the extra photo types: back_full, back_label, front_full and front_label. Schema 012 renamed them to full_back, label_back and so on. So the runner skips the two extra photos in the DB, both on -2, and its report counts them as 0. I did not change anything, because it is outside this question.
+
+Fix this, also search other places with old names
+```
+
+## 2026-09-26T19:38:53+0300
+
+A message to drink-atlas-workspace-4f [0fa826].
+
+```text
+http://127.0.0.1:8168/dataset/vysokij-bereg-risling-zelenaya-seriya/alternative/d9f847bd293aca369dd9232a8550afc78d98b73f617494165ee4fe7e22536b06
+
+segmentation failed, it considered small area on label as anoter layer and selected it.
+
+i think we should choose largest segmented area as label if there is a few.
+```
+
+## 2026-09-26T19:39:33+0300
+
+The questions of drink-atlas-workspace-c6 and the answers, for the owner message of
+2026-09-26T19:37:57+0300.
+
+"The fix changes 3 files of the stale section `codex-svoe-atlas-match` (uncommitted, not in ListAgents): svoe_vino_match.py, test_svoe_vino_match.py, and plan 47. May I edit them? The change renames the 4 type names only; no other logic."
+
+```text
+Yes, edit them (Recommended)
+```
+
+"After the fix, should I rerun the Drink Atlas match? The 2 additional photos of -2 need new embeddings on GX10 (a small GPU pass, tracked in GPU_TASKS.md)."
+
+```text
+No rerun (Recommended)
+```
+
+## 2026-09-26T19:43:40+0300
+
+A message to drink-atlas-workspace-b4 [aee81a].
+
+```text
+http://127.0.0.1:8168/testset
+
+when start run, allow check "[ ] Disable barcode fast path" - it disables use of barcode for fast check
+```
+
+## 2026-09-26T19:47:16+0300
+
+Answers to drink-atlas-workspace-4f [0fa826].
+
+Question: "Which fix of the label rule should I make?"
+
+```text
+Close-ups: largest (Recommended)
+```
+
+Question: "pipeline/alternatives.py and tests/test_alternatives.py are listed by the stale
+section codex-side-sam3-fix (done, not committed; it cannot be messaged). May I edit them
+in separate hunks?"
+
+```text
+Yes, separate hunks
+```
+
+## 2026-09-26T19:47:40+0300
+
+The questions of drink-atlas-workspace-b4 and the answers, for the owner message of
+2026-09-26T19:43:40+0300.
+
+"What should the box do when it is checked?"
+
+```text
+Skip the step (Recommended)
+```
+
+"How should a run show that the fast path was off?"
+
+```text
+run.json + tag (Recommended)
+```
+
+"What does the box do for a pipeline that has no `barcode` key (for example siglip2-p256-crop or vino-svoe-search-by-photo)?"
+
+```text
+Disabled, greyed (Recommended)
+```
+
+"benchmark.py, run_files.py, and runs.html are listed in the stale section of f4 (f4 is not in ListAgents). May I add separate small hunks to them? I will message ab and 9e about their parts of testset.html, runs.html, and benchmark.py."
+
+```text
+Yes, separate hunks (Recommended)
+```
+
+## 2026-09-26T19:46:00+0300
+
+A message to drink-atlas-workspace-6c [c91c62], with a screenshot of the dialog `Image
+description · vysokij-bereg-risling-zelenaya-seriya-1` on `/dataset`.
+
+```text
+add presentation_mode:
+on_pacakge, flat_surface, other, unknown
+```
+
+## 2026-09-26T19:47:00+0300
+
+A message to drink-atlas-workspace-6c [c91c62].
+
+```text
+when segmenting additional image, and it is flat_surface, then use 4-ngon, not mask
 ```
 
 ## 2026-09-26T19:55:00+0300
@@ -4556,6 +5187,73 @@ A message to drink-atlas-workspace-fb [3998cb], sent during the work on the mess
 revert this " it also wrote 152 refusals and 73 comments."
 ```
 
+## 2026-09-26T19:55:00+0300
+
+The questions of drink-atlas-workspace-6c and the answers, for the owner messages of
+2026-09-26T19:46:00+0300 and 19:47:00.
+
+"Who fills presentation_mode? (All 2,038 existing rows have a VLM fill, so the watcher does not revisit them.)"
+
+```text
+VLM, re-queue old rows
+```
+
+"What should the 4-gon cut of a flat_surface label be?"
+
+```text
+do not implement, i change my mind
+```
+
+"When should a photo get the 4-gon re-cut? The mask cut is made at upload, before the value is known."
+
+```text
+Other
+```
+
+"Which cuts does the flat_surface rule change?"
+
+```text
+Other
+```
+
+## 2026-09-26T20:01:00+0300
+
+A message to drink-atlas-workspace-6c [c91c62].
+
+```text
+i change my mind, no 4-ngon
+```
+
+## 2026-09-26T20:10:00+0300
+
+The questions of drink-atlas-workspace-6c and the answers, for the owner messages of
+2026-09-26T19:46:00+0300 to 20:01:00.
+
+"Which definition of presentation_mode goes into the VLM prompt? (The JSON line of the prompt gets "presentation_mode": "..." at the end.)"
+
+```text
+Proposed text (Recommended)
+```
+
+The proposed text:
+
+```text
+presentation_mode: the surface that carries the label in the image.
+- on_package: the label is on a package, for example on a bottle, a can, or a box.
+- flat_surface: the label is flat and is not on a package, for example a label sheet, a printout, a scan, or a label design file.
+- other: the label is on another surface, for example a screen, a poster, or a shelf tag.
+- unknown: no label is visible, or the surface is not clear.
+```
+
+"The re-queued rows send their old VLM values as fixed facts that say "The owner already set these values". Should I change that sentence?"
+
+```text
+Neutral wording (Recommended)
+```
+
+The neutral wording: "These values are already set. Keep them unchanged in your answer, and
+choose the other values so that they agree with them:"
+
 ## 2026-09-26T20:05:00+0300
 
 Answers to two questions of drink-atlas-workspace-fb [3998cb]. The time is approximate:
@@ -4580,4 +5278,621 @@ website import dialog.
 
 ```text
 commit
+```
+
+## 2026-09-26T20:18:54+0300
+
+The questions of drink-atlas-workspace-6c and the answers, before the deploy of schema 024.
+
+"tests/test_labdb.py is also listed by the stale section codex-side-sam3-fix (not reachable). May I change VERSION 23 → 24 in it? (ab and d3 agreed for their parts.)"
+
+```text
+Yes, the VERSION hunk (Recommended)
+```
+
+"May I deploy now? Order: SIGTERM 8168 → wait until the watcher exits → enter 024_presentation_mode.sql → backup + migrate data/lab.sqlite3 → start 8168 (new watcher). The re-queue then sends about 2,038 class calls to qwen3.5-9b-nvfp4 on gx10 (estimate 10–30 min, 8 workers; stage 2 details pause meanwhile)."
+
+```text
+Deploy now (Recommended)
+```
+
+## 2026-09-26T21:50:00+0300
+
+A message to drink-atlas-workspace-bc [2d545a]. The time is approximate.
+
+```text
+there can be 2 and more drink-atlas uuids, add support
+```
+
+## 2026-09-26T21:58:00+0300
+
+Answers to three questions of drink-atlas-workspace-bc [2d545a]. The time is approximate.
+
+"How should several Drink Atlas Core UUIDs per wine work with the automatic/manual sources?"
+
+```text
+One list, source as label (Recommended)
+```
+
+"Which readers should I update in this task?"
+
+```text
+Lab + matcher reader (Recommended)
+```
+
+"What should replace the single `_atlas_product_uuid` field in GET /api/dataset?"
+
+```text
+New list, page reads both (Recommended)
+```
+
+## 2026-09-26T22:16:00+0300
+
+A message to drink-atlas-workspace-0f [b65dd3], with a screenshot of the step popup of
+`q-000117` of run `2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my` on `/runs`. The
+time is approximate.
+
+```text
+http://127.0.0.1:8168/runs#2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my
+
+add slug to specific item match details
+```
+
+## 2026-09-26T22:20:00+0300
+
+Answers to two questions of drink-atlas-workspace-0f [b65dd3]. The time is approximate.
+
+"The popup title already starts with the slug (the path is <slug>/<file>). How should the popup show the slug?"
+
+```text
+Own line in header (Recommended)
+```
+
+"runs.html is listed by the stale section f4 (it owns the popup code) and by hunks of 9e, b4, ab. May I add a separate hunk in renderSteps (and at most one CSS line)?"
+
+```text
+Yes, separate hunk
+```
+
+## 2026-09-26T22:23:00+0300
+
+Answers to two questions of drink-atlas-workspace-bc [2d545a]. The time is approximate.
+
+"Two stale sessions (not in ListAgents) list files I need to change. codex-side-sam3-fix lists tests/test_labdb.py, where I change only VERSION 24 → 25. codex-svoe-atlas-match lists the 3 matcher files (svoe_vino_match.py, match_svoe_vino_lab.py, test_svoe_vino_match.py), where I change only the prior-binding lines. c6 agreed to the matcher part. May I change these files?"
+
+```text
+Yes, both (Recommended)
+```
+
+"May I deploy now? The order: SIGTERM 8168, wait until the watcher exits, apply the patches, enter 025_atlas_binding_list.sql, back up and migrate data/lab.sqlite3, start 8168, check GET /api/dataset. No other code change is pending for 8168: no .py file is newer than its start at 20:27. The migration drops 1 automatic row (vysokij-bereg-risling-zelenaya-seriya-1, which a different manual UUID hides now). 368 rows remain. 6c's VLM re-queue continues after the restart."
+
+```text
+Deploy now (Recommended)
+```
+
+## 2026-09-26T22:32:00+0300
+
+The message had one screenshot: the step popup of `/runs` (rounds 0 to 2, steps 00
+Input photo to 06 Score, the total of the photo).
+
+```text
+@svoe-vino-lab  add iamge to recognize. On page top there is pipeline specified, below is drag&drop/open-file area, and then steps shown. Like on http://127.0.0.1:8168/runs#2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my
+```
+
+## 2026-09-26T22:37:00+0300
+
+Answers to four questions of drink-atlas-workspace-41 [501d23]. The time is approximate.
+
+"Where should the pipeline run for an uploaded photo?"
+
+```text
+Subprocess per photo (Recommended)
+```
+
+"Which pipelines should the select offer?"
+
+```text
+Embedding pipelines (Recommended)
+```
+
+"Should the other pages link to the new page?"
+
+```text
+Link on every page (Recommended)
+```
+
+"How should the new page get the step renderer of the /runs popup?"
+
+```text
+Shared steps.js + css
+```
+
+## 2026-09-26T22:39:58+0300
+
+```text
+there is automatic segmentation for additional photos, add manual segmentation. If it choosen, it overrides auto segmentation.
+```
+
+## 2026-09-26T22:43:13+0300
+
+Answers to three questions of drink-atlas-workspace-96 [6338a8] about the manual segmentation of alternative photos.
+
+"Which manual segmentation tool do you want for an alternative photo? It opens in the image preview on the original photo, and the result replaces the auto cut."
+
+```text
+Polygon mask (Recommended)
+```
+
+"A cut belongs to the photo file and to one kind: package (FF, FB) or label (LF, LB). What should a manual cut cover?"
+
+```text
+Kind of current type (Recommended)
+```
+
+"Where should the manual cut be stored?"
+
+```text
+image_derivative + marker (Recommended)
+```
+
+## 2026-09-26T22:43:00+0300
+
+Answer to a question of drink-atlas-workspace-41 [501d23]. The time is approximate.
+
+"The stale section f4 [b39b7b] (not in ListAgents) lists the plan 41 popup code of runs.html and docs/API.md. May I move the popup renderer from runs.html into the shared steps.css/steps.js, and add one Recognize section at the end of docs/API.md?"
+
+```text
+Yes, both (Recommended)
+```
+
+## 2026-09-26T22:51:46+0300
+
+Answer to a question of drink-atlas-workspace-96 [6338a8].
+
+"Two sections in ACTIVE_WORK.md are stale (their sessions are not in ListAgents): f4 [b39b7b] lists pipeline/derive.py, and codex-side-sam3-fix lists pipeline/alternatives.py, pipeline/seed_label_cuts.py and their tests. May this session add separate hunks to those files for the manual cut?"
+
+```text
+Yes, separate hunks
+```
+
+## 2026-09-26T22:57:59+0300
+
+```text
+also allow remove manual segmentation and calcualte auto segmentation
+```
+
+## 2026-09-26T23:03:00+0300
+
+The message came with a screenshot of the open select `Test set` of `/testset`. Its
+options: `my (4043 photos)`, `official-real-photos (100 photos)`, and
+`vlmrerank-8b-failed (180 photos)`.
+
+```text
+add there "Add new testset ..."
+```
+
+## 2026-09-26T23:13:58+0300
+
+Answers to two questions of drink-atlas-workspace-96 [6338a8] about "Add new testset …".
+
+"What should \"Add new testset …\" at the end of the Test set select create?"
+
+```text
+Empty set (Recommended)
+```
+
+"How should the name be entered?"
+
+```text
+Small dialog (Recommended)
+```
+
+## 2026-09-26T23:24:00+0300
+
+A message to drink-atlas-workspace-1b [55fb13]. The message came with a screenshot of the
+bar of `/recognize`: the pipeline select shows `siglip2-p256-crop`, and the button
+`Recognize` is next to it.
+
+```text
+add -seg (replaces background with white)
+```
+
+## 2026-09-26T23:27:00+0300
+
+Answers to two questions of drink-atlas-workspace-1b [55fb13] about the pipeline `-seg`.
+
+"What name should the new pipeline get? The steps are segment → remove_background → white_background → resize 1024, which match the catalogue index of gx10-siglip2-so400m-patch16-naflex-p256."
+
+```text
+siglip2-p256-crop-seg (Recommended)
+```
+
+"tests/test_barcode.py requires a barcode- twin for each plain embedding pipeline. Should I add barcode-siglip2-p256-crop-seg too?"
+
+```text
+Add the twin (Recommended)
+```
+
+## 2026-09-26T23:12:00+0300
+
+A message to drink-atlas-workspace-0f [b65dd3], with a screenshot of the step popup of
+`q-000117` on `/runs`: the popup shows the line `slug: …`. The time is approximate.
+
+```text
+http://127.0.0.1:8168/runs#2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my - URL has no slug
+```
+
+## 2026-09-26T23:54:53+0300
+
+A message to drink-atlas-workspace-df [46e479], with a screenshot of two cards of the
+Dataset page: `belmas-winery-viogner-katya-vione-beloe-suhoe-135` and
+`belmas-winery-viognier-belmas-vione-beloe-suhoe-122` show the same GTIN `04630171632036`
+and the same QR URL `https://belmaswinery.com/`. The time is the time of the record.
+
+```text
+1. if barcode used for 2 wines and more (ex.: belmas-winery-viogner-katya-vione-beloe-suhoe-135 and belmas-winery-viognier-belmas-vione-beloe-suhoe-122) then show badge at right of barcode. 
+
+2. if barcode/qr step exists, and barcode used for 2 wine_slugs or more, then instead fast exit, keep only these wines as candidates, continue match, get top-k candidates and filter out all, except candidates that have these code.
+
+3. if qr url used for 2 and more wines, then show badge at right of QR URL. 
+
+4. if barcode/qr step exists, and QR URL used for 2 wine_slugs or more. then continue to main matching. We can't guarantie that we have more wines that may have QR code, and we have not miss them in annotation.
+```
+
+## 2026-09-26T23:58:00+0300
+
+Answers to two questions of drink-atlas-workspace-0f [b65dd3]. The time is approximate.
+
+"What should the URL hold when the step popup of a photo is open?"
+
+```text
+#run/slug/file (Recommended)
+```
+
+"The change touches runs.html outside renderSteps: openSteps, closeSteps (plan 41 code of the stale f4), the hash line of loadRun, and init. May I add separate hunks there? I will also ask session 41, which now has hunks in runs.html."
+
+```text
+Yes, separate hunks
+```
+
+## 2026-09-26T23:59:00+0300
+
+Answers to four questions of drink-atlas-workspace-df [46e479] about the shared codes.
+
+"Point 2: how should a shared GTIN limit the match?"
+
+```text
+Rank only code wines (Recommended)
+```
+
+"What should the badge beside a shared GTIN or QR URL show and do?"
+
+```text
+Count + tooltip (Recommended)
+```
+
+"One photo can have more than one code that matches. Which code decides the answer?"
+
+```text
+Unique > shared GTIN (Recommended)
+```
+
+"dataset.html has uncommitted hunks from 6 sessions (d3, f2, 6c, bc, 41, 96). embedding_run.py is listed by the stale sections f4 and 1c. How should I get access?"
+
+```text
+Allow separate hunks (Recommended)
+```
+
+## 2026-09-27T00:15:16+0300
+
+```text
+[http://127.0.0.1:8168/dataset](http://127.0.0.1:8168/dataset) add button that paste image from clipboard
+```
+
+## 2026-09-27T00:05:00+0300
+
+````text
+abrau-dyurso-imperial-kyuve-pino-nuar-rozovoe-bryut-125/01_conf095.jpgpositivemissnot in the list
+slug: abrau-dyurso-imperial-kyuve-pino-nuar-rozovoe-bryut-125
+close ✕
+q-000117 · 2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my · barcode-siglip2-512-crop · embedding run
+
+---
+
+This fails because box has larger area than bottle, and selected box during SAM, and not bottle. 
+
+Change rule, if there is bottle, then it has higher pririty then other labels
+````
+
+## 2026-09-27T00:06:00+0300
+
+```text
+svoe-vino-lab
+```
+
+## 2026-09-27T00:20:00+0300
+
+"Which bottle-priority rule should the SAM3 package cut use? Replay on cached SAM3 answers: plain 'bottle always wins' also picks the small bottle printed on 12 catalogue packets and bag-in-box images (area 2,786 inside a packet of 612,987)."
+
+```text
+Bottle first + printed-bottle exception (Recommended)
+```
+
+"Should the catalogue be re-cut with the new rule too?"
+
+```text
+Change settings text, re-cut later (Recommended)
+```
+
+## 2026-09-27T00:18:33+0300
+
+Agent question. The answer is pending.
+
+```text
+May I apply the prepared “Paste image” patch as separate edits in dataset.html and the related docs? svoe-vino-lab/AGENTS.md rule 17 requires agreement because ACTIVE_WORK.md lists those files under other sessions. The patch only adds the button and clipboard handler to Alternative photos and preserves their existing edits.
+```
+
+## 2026-09-27T00:27:00+0300
+
+```text
+http://127.0.0.1:8168/images/testset/16b60c38fde117cb2dce097bc75d12d48808b38214f95fee18a665f74fa67d98.jpg - here image in box was selected instead of bottle.
+
+http://127.0.0.1:8168/images/testset/beab7ffa83e2b96bfb8c1e5b9ef9a2a1edef4fc07c12de07466af23d2f80abbe.jpg - here is box selected instead bottle
+```
+
+## 2026-09-27T00:33:00+0300
+
+```text
+http://127.0.0.1:8168/dataset/aratti-shardone-beloe-suhoe/alternative/b6e13a6dfc8b5dfc904bc5930a2ff22e72ef45ee4179064ff946e67474f1f9c8
+
+bottle in fron of paper, and you cut out bottle
+```
+
+## 2026-09-27T00:39:59+0300
+
+```text
+http://127.0.0.1:8168/dataset
+
+add advanced filter to show wines with additional images
+```
+
+## 2026-09-27T00:41:29+0300
+
+```text
+git commit database
+```
+
+## 2026-09-27T00:41:41+0300
+
+```text
+backup database and git coomit
+```
+
+## 2026-09-27T00:51:44+0300
+
+```text
+[screenshot: the block "Alternative photos · 2 active" of aratti-shardone-beloe-suhoe; the FF photo shows the seg cut of the paper, the FB photo shows the bottle]
+put in left bottom corner button reconfigure (icon reload) that re-segment without using cache, and then caching result. So we will be able override cached
+```
+
+## 2026-09-27T00:56:00+0300
+
+"What should the reload button do on a photo that has a manual (pencil) cut?"
+
+```text
+Disabled on a manual cut (Recommended)
+```
+
+"The new route needs a restart of 8168. The restart also loads the new bottle-first rule and the pending code of the other sessions (schema files 021-025 are already applied). May I restart 8168 when the button is ready?"
+
+```text
+Restart when ready (Recommended)
+```
+
+## 2026-09-27T01:01:41+03:00
+
+```text
+add barcode scan cache also. And support a few workers (4).
+```
+
+## 2026-09-27T01:10:40+03:00
+
+```text
+is it possible speedup zxing? Do we do it on whole original image? Or just on bottle? Maybe we should do it on label? Or limit number of passes. Is it possible make zxing-cpp parallel for one image?
+```
+
+## 2026-09-27T01:15:00+0300
+
+```text
+&#x20;Написание презентации:
+
+'/Volumes/T7\_2TB/Projects-T7\_2TB/drink-atlas-workspace/svoe-wino-hackaton/presentation/ЛЦТ2026 Моя презентация.pptx'
+
+Изучи презентацию, что следует в нее добавить по слайдам для хакатона (проект svoe-vino-lab)
+```
+
+## 2026-09-27T01:16:00+0300
+
+Agent question:
+
+```text
+Предлагаю три варианта:
+
+1. Быстрый аудит: список пробелов и рекомендаций по каждому слайду.
+2. Глубокий аудит: логика питча, критерии жюри, конкретный текст, метрики, доказательства и визуалы для каждого слайда. Рекомендую этот вариант.
+3. Аудит и последующее редактирование самого `.pptx`.
+
+Какой вариант выбрать?
+```
+
+Owner answer:
+
+```text
+2
+
+если чего-то не хватает - предложи вариаты, я сам уже внесу в pptx
+```
+
+## 2026-09-27T01:29:32+0300
+
+```text
+составь список того что надо будет реализовать
+```
+
+## 2026-09-27T01:19:52+03:00
+
+```text
+let current run to finish, then benchmark variants.
+
+
+
+remember, we have 2 tasks:
+
+- re-run bulk fast.
+- 3 seconds timeout for hackaton demo. Images will be provided sequentially. So we need speedup one image decodings.
+```
+
+## 2026-09-27T01:35:09+03:00
+
+```text
+implement new profile, that segments label on bottle, and uses label embedding space for second top-k tower
+```
+
+## 2026-09-27T01:35:00+0300
+
+```text
+look at [http://127.0.0.1:8168/runs#2026-09-26T213857Z-lab-barcode-rerank-siglip2-512-crop-my](http://127.0.0.1:8168/runs#2026-09-26T213857Z-lab-barcode-rerank-siglip2-512-crop-my)  and explain why excatly each item failed. And what should be done in matching pipeline to resolve this.
+
+order proposed solutions according parretto rule
+```
+
+## 2026-09-27T01:36:00+0300
+
+Agent question:
+
+```text
+I can use three approaches:
+
+1. UI-only review: inspect each failure shown in the run.
+2. Evidence-backed review: inspect the UI, run artifacts, scores, crops, candidate lists, and matching code. This is recommended.
+3. Full validation: do option 2, then run targeted experiments to verify proposed fixes.
+
+Which approach should I use?
+```
+
+Owner answer:
+
+```text
+3
+```
+
+## 2026-09-27T01:40:18+03:00
+
+```text
+потом запусти заново все профили
+```
+
+## 2026-09-27T08:16:43+0300
+
+```text
+based on R\@1-missed in [http://127.0.0.1:8168/runs#2026-09-27T011711Z-lab-barcode-rerank-siglip2-512-crop-my](http://127.0.0.1:8168/runs#2026-09-27T011711Z-lab-barcode-rerank-siglip2-512-crop-my) create new testset from "my" testset. I want testset contains only failed matches to focus on it.
+```
+
+## 2026-09-27T08:30:09+0300
+
+```text
+backup database, commit
+```
+
+## 2026-09-27T08:30:51+0300
+
+```text
+svoe-vino-lab:
+to wine_code table add last_modified_date
+```
+
+## 2026-09-27T08:32:30+0300
+
+Agent question:
+
+```text
+1. Which column name do you want?
+   - last_modified_date: the exact name you wrote.
+   - modified_at: matches the project convention, for example wine_catalog.modified_at from schema 015.
+2. A row is never edited, so the time is set when the row is inserted. A deleted code leaves no row and no time. Is that enough?
+   - Insert time per row (Recommended): an insert trigger sets the time in SQL, so no code that writes rows has to change. Deletes leave no record.
+   - Also track deletes: also record, for each wine, when its codes last changed, deletes included. This needs a second column or a new table.
+3. What value should the 47 existing rows get?
+   - NULL (Recommended): their real insert time is unknown. Schema 015 did the same for wine_catalog.modified_at.
+   - Migration time: every old row gets the time the migration ran. It looks real, but it is not the real insert time.
+4. Where should the date show up?
+   - Database only (Recommended): schema file, migration, tests, and docs. No change to the API or the pages.
+   - Also API + Dataset page: also send it in /api/dataset and show it next to each GTIN and QR URL on the Dataset page.
+```
+
+Owner answer:
+
+```text
+1. modified_at
+2. Insert time per row (Recommended)
+3. NULL (Recommended)
+4. Also API + Dataset page
+```
+
+## 2026-09-27T08:35:50+0300
+
+Agent question:
+
+```text
+1. Stale sections (their sessions no longer run) list lab_server.py, dataset.html, test_lab_server.py, test_labdb.py, docs/API.md, database-structure.html, and data/lab.sqlite3. Five of those files hold their uncommitted hunks. May I add my own separate hunks and leave theirs as they are, back up data/lab.sqlite3 to data/backups/, then migrate it and restart 8168?
+   - Yes, separate hunks: their hunks stay unchanged. I back up the database before the migration to schema 026.
+   - No, wait: I stop until those sections are committed or cleared.
+2. What shape should the date have in the API?
+   - Separate time map (Recommended): `_gtins` and `_qr_urls` stay lists of strings. A new `_code_times` = {kind: {value: time or null}} is added. The GTIN and QR URL routes add `modified_at` = {value: time}. Existing readers do not break, including the review tool that also uses dataset.html.
+   - Objects in the lists: `_gtins` becomes [{value, modified_at}, ...]. Cleaner, but every reader of these lists must change: search, filters, barcode lookup, shared-code badges, and the review tool.
+3. How should the Dataset page show the date next to each GTIN and QR URL?
+   - Short date after value: small grey text after the value, for example `2026-09-27 08:40` in local time. The full UTC time is in the tooltip. A NULL (old) row shows nothing.
+   - Tooltip only: no visible change. Hovering over the value shows `added 2026-09-27 08:40`, or `added: unknown` for old rows.
+```
+
+Owner answer:
+
+```text
+1. Yes, separate hunks
+2. Separate time map (Recommended)
+3. Tooltip only
+```
+
+## 2026-09-27T08:37:00+0300
+
+The time is approximate. The message came with a screenshot of the `Atlas Core product`
+editor. The input showed `http://127.0.0.1:8157/products/18`.
+
+```text
+if "http://127.0.0.1:8157/products/183060ee-bf30-4253-af5d-39e0e4ca25c6" pasted into Atlas Core product, accept it, but strip url before UUID.
+```
+
+## 2026-09-27T08:40:00+0300
+
+Agent question:
+
+```text
+1. How should the Atlas input handle a pasted product URL? Right now maxlength=36 cuts the paste to "http://127.0.0.1:8157/products/18306".
+   - Paste handler (Recommended): Change dataset.html only. When the pasted text is a product URL, the input receives only the UUID. maxlength 36 stays. Nothing changes in the server or the API. The page is read from disk, so no 8168 restart is needed.
+   - Strip at save: Change dataset.html only. Remove maxlength. The input shows the full URL, and the save strips it before the POST. Typed and dropped URLs work too, but the field shows the URL until you press save.
+   - Server accepts URL: clean_uuid in atlas_bindings.py accepts a product URL. This works for every client, including the API. It changes atlas_bindings.py (listed by f2/bc), the tests, and docs/API.md, and it needs an 8168 restart.
+2. Which URLs should the input accept?
+   - Any host /products/<uuid> (Recommended): Accept any http(s) URL whose path is /products/<uuid>. A trailing slash, a query, or a fragment is allowed. This also covers a LAN IP or localhost instead of 127.0.0.1.
+   - Only 127.0.0.1:8157: Accept only http://127.0.0.1:8157/products/<uuid>. Any other URL is pasted as it is and gets truncated as it is today.
+3. May I add separate hunks to pipeline/pages/dataset.html? f2 [120a07] and bc [2d545a] are stale and list the Atlas editor lines. d8 [a08e7a] is active on the GTIN and QR URL editors. I will not touch d8's lines, and I will send d8 a message.
+   - Yes, separate hunks: Change only the Atlas input markup and add a new paste listener. Add my section to ACTIVE_WORK.md and my own ChangeLog and SMOKE_TESTS hunks.
+   - No, wait: Do not edit now. I record a waiting section instead.
+```
+
+Owner answer:
+
+```text
+1. Paste handler (Recommended)
+2. Any host /products/<uuid> (Recommended)
+3. Yes, separate hunks
 ```

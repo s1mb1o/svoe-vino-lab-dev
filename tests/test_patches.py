@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import io
 import json
@@ -43,11 +44,22 @@ def picture(fmt="PNG", transparent=True, colour=(90, 30, 20)):
     return out.getvalue()
 
 
+def label_instance():
+    """Return one SAM3 label instance for the bottle box."""
+    mask = Image.new("L", (40, 80), 0)
+    ImageDraw.Draw(mask).rectangle((10, 25, 29, 54), fill=255)
+    out = io.BytesIO()
+    mask.save(out, "PNG")
+    return {"label": "label", "box": [10, 25, 30, 55], "score": 0.9, "area": 600,
+            "mask_png_b64": base64.b64encode(out.getvalue()).decode()}
+
+
 class FakeSam3:
     """A SAM3 client with no network. It answers the mask of the bottle box."""
 
     def __init__(self):
         self.calls = 0
+        self.instance_calls = 0
 
     def segment(self, image):
         self.calls += 1
@@ -55,18 +67,45 @@ class FakeSam3:
         ImageDraw.Draw(mask).rectangle((10, 10, 29, 69), fill=255)
         return mask
 
+    def instances(self, image, texts, masks=True):
+        self.instance_calls += 1
+        return [label_instance()], 1.0
 
-class NoPackageSam3:
+
+class NoPackageSam3(FakeSam3):
     """A SAM3 client that finds no package."""
 
     def segment(self, image):
+        self.calls += 1
         return None
+
+
+class NoLabelSam3(FakeSam3):
+    """A SAM3 client that finds no label."""
+
+    def instances(self, image, texts, masks=True):
+        self.instance_calls += 1
+        return [], 1.0
+
+
+class PacketSam3(FakeSam3):
+    """A SAM3 client that finds no label and classifies the package as a packet."""
+
+    def instances(self, image, texts, masks=True):
+        self.instance_calls += 1
+        if texts == derive.SAM3_TEXTS:
+            return [{"label": "packet", "box": [0, 0, 40, 80], "score": 0.9,
+                     "area": 3200}], 1.0
+        return [], 1.0
 
 
 class DownSam3:
     """A SAM3 client whose service does not answer."""
 
     def segment(self, image):
+        raise derive.Sam3Unavailable("connection refused")
+
+    def instances(self, image, texts, masks=True):
         raise derive.Sam3Unavailable("connection refused")
 
 
@@ -121,6 +160,24 @@ class PatchRouteTest(unittest.TestCase):
         finally:
             conn.close()
 
+    def derivative_rows(self, digest):
+        conn = sqlite3.connect(self.db)
+        try:
+            return list(conn.execute(
+                "SELECT kind, method FROM image_derivative WHERE source_sha256 = ? "
+                "ORDER BY kind", (digest,)))
+        finally:
+            conn.close()
+
+    def absence_rows(self, digest):
+        conn = sqlite3.connect(self.db)
+        try:
+            return list(conn.execute(
+                "SELECT kind, reason FROM image_derivative_absence "
+                "WHERE source_sha256 = ?", (digest,)))
+        finally:
+            conn.close()
+
     def test_upload_stores_the_file_the_row_and_the_crop(self):
         data = picture()
         status, out = self.upload("wine-b", data, "Буковинка.png")
@@ -135,6 +192,9 @@ class PatchRouteTest(unittest.TestCase):
         self.assertEqual((record["main_image_type"], record["main_image_url"]), (None, None))
         self.assertNotIn("warning", out)
         self.assertEqual(self.sam3.calls, 0)
+        self.assertEqual(self.sam3.instance_calls, 1)
+        self.assertEqual(self.derivative_rows(sha(data)), [("label", "seg"),
+                                                           ("package", "crop")])
         self.assertEqual((self.root / url.lstrip("/")).read_bytes(), data)
         self.assertEqual(self.patch_rows(),
                          {"wine-b": (sha(data), "Буковинка.png", "manual")})
@@ -148,6 +208,7 @@ class PatchRouteTest(unittest.TestCase):
         status, out = self.upload("wine-b", picture("JPEG", transparent=False), "b.jpg")
         self.assertEqual(status, 200, out)
         self.assertEqual(self.sam3.calls, 1)
+        self.assertEqual(self.sam3.instance_calls, 1)
         self.assertEqual(out["record"]["_patch_derivation"], "seg")
         self.assertTrue(out["record"]["_patch_url"].endswith(".jpg"))
 
@@ -156,6 +217,7 @@ class PatchRouteTest(unittest.TestCase):
         status, out = self.upload("wine-b", picture("WEBP", transparent=False), "b.webp")
         self.assertEqual(status, 200, out)
         self.assertIn("no processed file", out["warning"])
+        self.assertIn("no label cut", out["warning"])
         self.assertIn("connection refused", out["warning"])
         record = out["record"]
         self.assertEqual((out["patched"], record["_patch_derivation"]), (True, None))
@@ -172,11 +234,39 @@ class PatchRouteTest(unittest.TestCase):
         self.assertEqual((record["_patch_derivation"], record["_patch_image_url"]),
                          (None, record["_patch_url"]))
 
+    def test_upload_with_no_label_is_stored_with_a_label_warning(self):
+        self.server.segmenter = NoLabelSam3()
+        data = picture()
+        status, out = self.upload("wine-b", data)
+        self.assertEqual(status, 200, out)
+        self.assertIn("no label cut", out["warning"])
+        self.assertIn("SAM3 found no label", out["warning"])
+        self.assertEqual(self.derivative_rows(sha(data)), [("package", "crop")])
+        retry = FakeSam3()
+        self.server.segmenter = retry
+        status, out = self.upload("wine-b", data)
+        self.assertEqual((status, out["changed"]), (200, False))
+        self.assertNotIn("warning", out)
+        self.assertEqual(retry.instance_calls, 1)
+        self.assertEqual(self.derivative_rows(sha(data)), [("label", "seg"),
+                                                           ("package", "crop")])
+
+    def test_a_packet_gets_no_duplicate_label_view_and_no_warning(self):
+        self.server.segmenter = PacketSam3()
+        data = picture()
+        status, out = self.upload("wine-b", data)
+        self.assertEqual(status, 200, out)
+        self.assertNotIn("warning", out)
+        self.assertEqual(self.derivative_rows(sha(data)), [("package", "crop")])
+        self.assertEqual(self.absence_rows(sha(data)),
+                         [("label", "the packet has no separate label")])
+
     def test_same_file_changes_nothing_and_a_new_file_replaces_the_row(self):
         first, second = picture(), picture(colour=(20, 30, 90))
         self.upload("wine-b", first)
         status, out = self.upload("wine-b", first, "again.png")
         self.assertEqual((status, out["changed"], out["patches"]), (200, False, 1))
+        self.assertEqual(self.sam3.instance_calls, 1)
         self.assertEqual(self.patch_rows()["wine-b"][1], "patch.png")
         status, out = self.upload("wine-b", second)
         self.assertEqual((status, out["changed"], out["patches"]), (200, True, 1))

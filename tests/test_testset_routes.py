@@ -64,7 +64,29 @@ class TestsetRoutesTest(unittest.TestCase):
 
     def post(self, route, **body):
         status, text = self.request(route, "POST", dict(body, set="my"))
-        return status, json.loads(text)
+        try:
+            return status, json.loads(text)
+        except ValueError:
+            return status, {"error": text}
+
+    def get_view(self):
+        status, text = self.request("/api/testset?set=my")
+        self.assertEqual(status, 200)
+        return json.loads(text)
+
+    def test_a_row_shows_the_wine_comments_of_the_dataset_route(self):
+        status, text = self.request("/api/dataset-comment", "POST",
+                                    {"slug": "wine-b", "text": "a wine comment"})
+        self.assertEqual(status, 200, text)
+        wine_b = next(r for r in self.get_view()["rows"] if r["slug"] == "wine-b")
+        self.assertEqual([(c["text"], c["source"]) for c in wine_b["comments"]],
+                         [("a wine comment", "user")])
+        # A wine comment is not an edit of the set.
+        conn = sqlite3.connect(self.db)
+        try:
+            self.assertIsNone(conn.execute("SELECT edited_at FROM test_set").fetchone()[0])
+        finally:
+            conn.close()
 
     def test_the_view_of_a_set(self):
         status, text = self.request("/api/testset?set=my")
@@ -87,9 +109,29 @@ class TestsetRoutesTest(unittest.TestCase):
         status, answer = self.post("/api/testset-delete", place="wine-b", file="01.jpg",
                                    delete=True)
         self.assertEqual((status, answer["counts"]["deleting"]), (200, 1))
-        status, answer = self.post("/api/testset-comment", place="wine-a", file="01.jpg",
-                                   text="")
-        self.assertEqual((status, "comment" in answer["photo"]["entry"]), (200, False))
+        # The comments of a photo (plan 51). The import made the old `comment` "c" one.
+        status, answer = self.post("/api/testset-photo-comment", place="wine-a",
+                                   file="01.jpg", text="second")
+        self.assertEqual(status, 200)
+        self.assertEqual([(c["text"], c["source"]) for c in answer["photo"]["comments"]],
+                         [("c", "user"), ("second", "user")])
+        self.assertNotIn("comment", answer["photo"]["entry"])
+        status, answer = self.post("/api/testset-photo-comment", place="wine-a",
+                                   file="01.jpg", text="by a script", source="script")
+        self.assertEqual((status, answer["comment"]["source"]), (200, "script"))
+        status, answer = self.post("/api/testset-photo-comment", place="wine-a",
+                                   file="01.jpg", text="")
+        self.assertEqual(status, 400)
+        status, answer = self.post("/api/testset-photo-comment-remove", place="wine-a",
+                                   file="01.jpg", id=999)
+        self.assertEqual(status, 404)
+        wine_a = next(r for r in self.get_view()["rows"] if r["slug"] == "wine-a")
+        first = wine_a["photos"][0]["comments"][0]
+        status, answer = self.post("/api/testset-photo-comment-remove", place="wine-a",
+                                   file="01.jpg", id=first["id"])
+        self.assertEqual((status, answer["removed"]), (200, first["id"]))
+        self.assertEqual([c["text"] for c in answer["photo"]["comments"]],
+                         ["second", "by a script"])
         status, answer = self.post("/api/testset-box", place="wine-a", file="01.jpg",
                                    box=[10, 5, 50, 35])
         self.assertEqual((status, answer["photo"]["entry"]["box"]), (200, [10, 5, 50, 35]))
@@ -97,11 +139,11 @@ class TestsetRoutesTest(unittest.TestCase):
                                    box=[10, 5, 61, 35])
         self.assertEqual(status, 400)
         self.assertIn("not inside the photo of 60 x 40 pixels", answer["error"])
-        status, answer = self.post("/api/testset-wine-note", slug="wine-b", text="removed")
-        self.assertEqual((status, answer["note"]), (200, "removed"))
-        status, answer = self.post("/api/testset-exclude", slug="wine-a", excluded=True,
-                                   reason="wrong bottle photo")
-        self.assertEqual((status, answer["excluded"]), (200, True))
+        # The wine note and the exclusion went away with plan 51. The server answers an
+        # unknown API route with 503 `DISABLED_ERROR`.
+        for route in ("/api/testset-comment", "/api/testset-wine-note", "/api/testset-exclude"):
+            status, answer = self.post(route, slug="wine-b", text="x")
+            self.assertEqual((status, answer.get("error")), (503, LAB.DISABLED_ERROR), route)
         conn = sqlite3.connect(self.db)
         try:
             self.assertEqual(conn.execute("SELECT label, marked_delete FROM test_photo "
@@ -166,6 +208,29 @@ class TestsetRoutesTest(unittest.TestCase):
                                     "POST", data)
         self.assertEqual(status, 404)
         self.assertEqual(self.request(route)[0], 405)
+
+
+
+class NewSetRouteTest(unittest.TestCase):
+    """Plan 57: `POST /api/testset-new` makes an empty set."""
+    setUp, tearDown = TestsetRoutesTest.setUp, TestsetRoutesTest.tearDown
+    request, post = TestsetRoutesTest.request, TestsetRoutesTest.post
+
+    def test_a_new_set_is_listed_last_and_opens_empty(self):
+        status, out = self.post("/api/testset-new", name="my-2")
+        self.assertEqual((status, out), (200, {"ok": True, "set": "my-2"}))
+        status, text = self.request("/api/testset?set=my-2")
+        self.assertEqual(status, 200, text)
+        view = json.loads(text)
+        self.assertEqual(view["set"], "my-2")
+        self.assertEqual([(s["name"], s["photos"]) for s in view["sets"]],
+                         [("my", len(PHOTOS)), ("my-2", 0)])
+
+    def test_a_bad_or_present_name_is_refused(self):
+        self.assertEqual(self.post("/api/testset-new", name="My")[0], 400)
+        self.assertEqual(self.post("/api/testset-new")[0], 400)
+        self.assertEqual(self.post("/api/testset-new", name="my")[0], 409)
+        self.assertEqual(self.request("/api/testset-new")[0], 405)
 
 
 if __name__ == "__main__":

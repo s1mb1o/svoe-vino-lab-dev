@@ -113,6 +113,7 @@ The entries:
 |---|---|---|---|
 | `gx10-siglip2-so400m-patch16-naflex-p256` | openai | `siglip2-so400m-patch16-naflex` | `max_num_patches: 256` |
 | `gx10-siglip2-so400m-patch16-naflex-p512` | openai | `siglip2-so400m-patch16-naflex` | `max_num_patches: 512` |
+| `gx10-siglip2-so400m-patch16-naflex-p1024` | openai | `siglip2-so400m-patch16-naflex` | `max_num_patches: 1024` (added 2026-09-26) |
 | `gx10-siglip2-so400m-patch14-384` | openai | `siglip2-so400m-patch14-384` | none |
 | `gx10-siglip2-so400m-patch16-256` | openai | `siglip2-so400m-patch16-256` | none |
 | `gx10-siglip2-so400m-patch16-384` | openai | `siglip2-so400m-patch16-384` | none |

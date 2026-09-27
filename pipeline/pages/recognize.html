@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino recognize</title>
+<style>
+/* THEME_CSS */
+
+/* STEPS_CSS */
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+header {
+  position: sticky; top: 0; z-index: 10; padding: 10px 16px;
+  background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.head, .bar { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
+.bar { margin-top: 8px; }
+h1 { margin: 0; font-size: 15px; font-weight: 650; }
+.nav { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.nav a {
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2);
+}
+.nav a:hover { color: var(--text); border-color: var(--accent); }
+.nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
+button, select {
+  color: var(--text); background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px 12px; font: inherit; font-size: 13px;
+}
+button { cursor: pointer; }
+button:hover:not(:disabled), select:hover { border-color: var(--accent); }
+button:disabled { cursor: default; opacity: .5; }
+#go { border-color: var(--accent); font-weight: 700; }
+.pick { display: flex; gap: 6px; align-items: center; font-size: 13px; font-weight: 600;
+        min-width: 0; max-width: 100%; }
+.pick select { min-width: 0; max-width: min(520px, 100%); }
+.message { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.message.err { color: var(--exc); }
+main { max-width: 1180px; margin: 0 auto; padding: 14px 16px 64px; }
+/* The drop area: a drop or a click on it gives one photo, which goes to the server at
+   once. It shows the present photo. */
+.drop {
+  display: flex; gap: 14px; align-items: center; min-height: 110px; padding: 14px 18px;
+  background: var(--panel); border: 2px dashed var(--line); border-radius: 12px;
+  cursor: pointer;
+}
+.drop:hover, .drop:focus-visible, .drop.over { border-color: var(--accent); outline: none; }
+.drop.over { background: var(--panel-2); }
+.drop img { flex: none; width: 72px; height: 90px; object-fit: contain; border-radius: 6px;
+            background: var(--panel-2); }
+.drop img[hidden] { display: none; }
+.drop .hint { min-width: 0; }
+.drop .hint strong { font-size: 15px; }
+.drop .file { color: var(--muted); font-size: 12px; margin-top: 4px; overflow-wrap: anywhere; }
+.res-head {
+  margin-top: 16px; padding: 10px 14px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; display: flex; gap: 6px 12px; flex-wrap: wrap; align-items: baseline;
+}
+.res-title { font-weight: 650; flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.res-title .tag { font-weight: 400; margin-left: 4px; }
+.res-top { flex: 1 1 100%; font-size: 13px; overflow-wrap: anywhere; }
+.res-top .muted { color: var(--muted); }
+.res-sub { flex: 1 1 100%; font: 12px/1.4 var(--mono); color: var(--muted);
+           overflow-wrap: anywhere; }
+.tag { padding: 1px 6px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); }
+.tag.ok { color: var(--pos); border-color: var(--pos); }
+.tag.bad { color: #fff; background: var(--exc); border-color: transparent; }
+.tag.code { color: var(--accent); border-color: var(--accent); }
+/* The large view of an image of a step. A click or Escape closes it. */
+#lb { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.82); display: none;
+      align-items: center; justify-content: center; padding: 20px; cursor: zoom-out; }
+#lb.on { display: flex; }
+#lb img { max-width: 94vw; max-height: 94vh; object-fit: contain; }
+@media (max-width: 720px) {
+  main { padding: 10px 10px 48px; }
+  .drop { padding: 12px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <h1>Recognize</h1>
+    <nav class="nav"><a href="/dataset">Dataset</a><a
+      href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
+      href="/testset">Testset</a><a href="/runs">Runs</a><a class="on"
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
+  </div>
+  <div class="bar">
+    <label class="pick">Pipeline <select id="pipeline" disabled></select></label>
+    <button id="go" type="button" disabled
+      title="Send the present photo again with the selected pipeline">Recognize</button>
+    <span id="message" class="message" aria-live="polite">Loading the pipelines…</span>
+  </div>
+</header>
+<main>
+  <div id="drop" class="drop" role="button" tabindex="0"
+    aria-label="Drop a photo here, or click to open a file">
+    <img id="thumb" alt="" hidden>
+    <div class="hint">
+      <strong>Drop a photo here</strong>, or click to open a file
+      <div id="file-name" class="file">One image. It goes to the selected pipeline at once.</div>
+    </div>
+    <input id="file" type="file" accept="image/*" hidden>
+  </div>
+  <section id="result" hidden>
+    <div class="res-head">
+      <div id="res-title" class="res-title"></div>
+      <div id="res-top" class="res-top"></div>
+      <div id="res-sub" class="res-sub"></div>
+    </div>
+    <div id="steps"></div>
+  </section>
+</main>
+<div id="lb" role="dialog" aria-modal="true" aria-label="large image"><img id="lb-main" alt=""></div>
+<script>
+/* STEPS_JS */
+
+/* The Recognize page (plan 55). The select holds the pipelines of the backend `embedding`
+   (`GET /api/recognize`). A photo goes to `POST /api/recognize` at once; the answer is the
+   step view of the photo, as in the step popup of `/runs` (plan 41). The server runs the
+   pipeline in a new process of `embedding_python` for each photo, so the time of the
+   process holds the start of Python and the build of the backend too. */
+const $ = s => document.querySelector(s);
+const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const PIPELINE_KEY = "svl.recognize.pipeline";
+// The open cards; the card of the input photo is open at the start, as in the popup.
+const OPEN = new Set(["input:"]);
+let FILE = null, THUMB = null, REQUEST = 0, TIMER = null;
+
+function message(text, error) {
+  $("#message").textContent = text;
+  $("#message").classList.toggle("err", !!error);
+}
+
+function storedPipeline() {
+  const asked = new URLSearchParams(location.search).get("pipeline");
+  if (asked) return asked;
+  try { return localStorage.getItem(PIPELINE_KEY) || ""; } catch (_) { return ""; }
+}
+
+async function loadPipelines() {
+  let data;
+  try {
+    const response = await fetch("/api/recognize", {cache: "no-store"});
+    data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+  } catch (error) {
+    message(`Cannot read the pipelines: ${error.message}`, true);
+    return;
+  }
+  const list = data.pipelines || [];
+  const wanted = storedPipeline();
+  const first = list.find(p => p.name === wanted && p.runnable) || list.find(p => p.runnable);
+  $("#pipeline").innerHTML = list.map(p => `<option value="${esc(p.name)}"${p.runnable ? ""
+    : " disabled"} title="${esc(p.runnable ? `embedding ${p.embedding}${p.barcode
+    ? ", barcode step" : ""}${p.rerank ? ", cluster re-rank" : ""}` : p.reason)}"${
+    first && p.name === first.name ? " selected" : ""}>${esc(p.name)}${p.runnable ? ""
+    : ` — ${esc(p.reason)}`}</option>`).join("");
+  $("#pipeline").disabled = !list.length;
+  message(first ? `${list.filter(p => p.runnable).length} of ${list.length} pipelines can run`
+    : "No pipeline can run: build an index on /embedding first", !first);
+  syncButton();
+}
+
+function syncButton() {
+  $("#go").disabled = !FILE || !$("#pipeline").value;
+}
+
+function setFile(file) {
+  if (!file) return;
+  FILE = file;
+  if (THUMB) URL.revokeObjectURL(THUMB);
+  THUMB = URL.createObjectURL(file);
+  $("#thumb").src = THUMB;
+  $("#thumb").hidden = false;
+  $("#file-name").textContent = `${file.name || "photo"} · ${(file.size / 1024).toFixed(0)} KB`;
+  syncButton();
+  recognize();
+}
+
+const seconds = ms => `${(ms / 1000).toFixed(1)} s`;
+
+async function recognize() {
+  const pipeline = $("#pipeline").value;
+  if (!FILE || !pipeline) return;
+  const request = ++REQUEST;
+  const started = performance.now();
+  clearInterval(TIMER);
+  const tick = () => message(`Recognizing with ${pipeline}… ${seconds(performance.now() - started)}`);
+  tick();
+  TIMER = setInterval(tick, 100);
+  $("#go").disabled = true;
+  $("#result").hidden = false;
+  $("#res-title").textContent = FILE.name || "photo";
+  $("#res-top").textContent = "";
+  $("#res-sub").textContent = pipeline;
+  $("#steps").innerHTML = `<p class="sp-note">Recognizing…</p>`;
+  try {
+    const response = await fetch(`/api/recognize?pipeline=${encodeURIComponent(pipeline)}` +
+                                 `&name=${encodeURIComponent(FILE.name || "photo")}`, {
+      method: "POST", body: FILE,
+      headers: {"Content-Type": FILE.type || "application/octet-stream"}});
+    let data;
+    try { data = await response.json(); } catch (_) { data = {error: `HTTP ${response.status}`}; }
+    if (request !== REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    render(data);
+    message(`Done in ${seconds(performance.now() - started)}`);
+  } catch (error) {
+    if (request !== REQUEST) return;
+    $("#steps").innerHTML = `<p class="sp-note err">Cannot recognize the photo: ${esc(error.message)}</p>`;
+    message("Failed", true);
+  } finally {
+    if (request === REQUEST) {
+      clearInterval(TIMER);
+      syncButton();
+    }
+  }
+}
+
+function render(data) {
+  const row = data.row || {};
+  const top = (data.answer || [])[0];
+  // A candidate of the code lookup (plan 42) holds its code: no embedding model ran.
+  const code = top && top.code;
+  $("#res-title").innerHTML = `${esc(row.image_path || "photo")}${row.error
+    ? `<span class="tag bad">failed</span>` : top ? `<span class="tag ok">answer</span>`
+    : `<span class="tag bad">no candidate</span>`}${code ? `<span class="tag code">code lookup</span>` : ""}`;
+  $("#res-top").innerHTML = row.error ? `<span class="muted">error:</span> ${esc(row.error)}`
+    : top ? `<span class="muted">#1</span> <b>${esc(top.slug)}</b>${top.name
+      ? ` · ${esc(top.name)}` : ""} <span class="muted">· score ${esc(Number(top.score).toFixed(4))}</span>`
+    : "";
+  $("#res-sub").textContent = `${data.pipeline} · sha256 ${String(data.sha256 || "").slice(0, 12)}… · process ${
+    Steps.dur(data.process_ms)} (start of Python, build of the backend ${Steps.dur(data.build_ms)
+    }, recognition ${Steps.dur(row.latency_ms)})`;
+  $("#steps").innerHTML = Steps.html(data, OPEN);
+}
+
+function openLarge(src) {
+  $("#lb-main").src = src;
+  $("#lb").classList.add("on");
+}
+
+function closeLarge() {
+  $("#lb").classList.remove("on");
+  $("#lb-main").removeAttribute("src");
+}
+
+$("#pipeline").addEventListener("change", () => {
+  try { localStorage.setItem(PIPELINE_KEY, $("#pipeline").value); } catch (_) { /* no storage */ }
+  syncButton();
+});
+$("#go").addEventListener("click", recognize);
+$("#drop").addEventListener("click", () => $("#file").click());
+$("#drop").addEventListener("keydown", ev => {
+  if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); $("#file").click(); }
+});
+$("#file").addEventListener("change", ev => {
+  setFile(ev.target.files[0]);
+  ev.target.value = "";
+});
+// A drop anywhere on the page takes the photo; the browser does not open the file.
+window.addEventListener("dragover", ev => {
+  ev.preventDefault();
+  $("#drop").classList.add("over");
+});
+window.addEventListener("dragleave", ev => {
+  if (!ev.relatedTarget) $("#drop").classList.remove("over");
+});
+window.addEventListener("drop", ev => {
+  ev.preventDefault();
+  $("#drop").classList.remove("over");
+  setFile((ev.dataTransfer && ev.dataTransfer.files || [])[0]);
+});
+$("#steps").addEventListener("click", ev => {
+  const img = ev.target.closest("img[data-full]");
+  if (img) { openLarge(img.dataset.full); return; }
+  const head = ev.target.closest(".step > .head");
+  if (head) Steps.toggle(head, OPEN);
+});
+$("#steps").addEventListener("keydown", ev => {
+  const head = ev.target.closest(".step > .head");
+  if (head && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); Steps.toggle(head, OPEN); }
+});
+$("#lb").addEventListener("click", closeLarge);
+document.addEventListener("keydown", ev => { if (ev.key === "Escape") closeLarge(); });
+
+loadPipelines();
+</script>
+</body>
+</html>

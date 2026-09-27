@@ -58,13 +58,13 @@ class SeedAtlasBindingsTest(unittest.TestCase):
             conn.close()
 
     def test_seed_adds_both_sources(self):
-        read, added, differs, missing = self.seed()
+        read, added, missing = self.seed()
         self.assertEqual(self.rows(), [("wine-a", "automatic", UUID_1),
                                        ("wine-b", "automatic", UUID_1),
                                        ("wine-c", "manual", UUID_2)])
         self.assertEqual(read, {"automatic": 2, "manual": 1})
         self.assertEqual(added, read)
-        self.assertEqual((differs, missing), ([], []))
+        self.assertEqual(missing, [])
 
     def test_second_run_is_refused_unless_force(self):
         # The owner chose on 2026-09-25: a second run MUST NOT add back a removed value.
@@ -72,26 +72,42 @@ class SeedAtlasBindingsTest(unittest.TestCase):
         with self.assertRaisesRegex(SA.SeedError,
                                     "wine_atlas_binding already holds 3 rows.*--force"):
             self.seed()
-        _read, added, _differs, _missing = self.seed(force=True)
+        _read, added, _missing = self.seed(force=True)
         self.assertEqual(added, {"automatic": 0, "manual": 0})
         self.assertEqual(len(self.rows()), 3)
 
-    def test_changed_row_is_counted_and_not_applied(self):
+    def test_a_new_uuid_of_a_wine_is_added_with_force(self):
+        # Plan 54: a wine MAY have 2 or more products. A stored pair is not added again.
         self.seed()
-        _read, added, differs, _missing = self.seed(
-            matches=[{"wine_slug": "wine-a", "product_uuid": UUID_3}], manual=None, force=True)
-        self.assertEqual(added, {"automatic": 0, "manual": 0})
-        self.assertEqual(differs, [("wine-a", "automatic", UUID_3)])
-        self.assertEqual(self.log, ["differs: wine-a automatic"])
-        self.assertIn(("wine-a", "automatic", UUID_1), self.rows())
+        _read, added, _missing = self.seed(
+            matches=[{"wine_slug": "wine-a", "product_uuid": UUID_3},
+                     {"wine_slug": "wine-c", "product_uuid": UUID_2}], manual=None, force=True)
+        self.assertEqual(added, {"automatic": 1, "manual": 0})
+        self.assertEqual(self.rows()[3:], [("wine-a", "automatic", UUID_3)])
+        self.assertIn(("wine-c", "manual", UUID_2), self.rows())
 
     def test_manual_and_automatic_rows_of_one_wine(self):
         self.seed(manual=[{"wine_slug": "wine-a", "product_uuid": UUID_2}])
         self.assertEqual(self.rows()[:1] + self.rows()[2:],
                          [("wine-a", "automatic", UUID_1), ("wine-a", "manual", UUID_2)])
 
+    def test_two_uuids_of_one_slug_in_one_file(self):
+        read, added, _missing = self.seed(
+            matches=MATCHES + [{"wine_slug": "wine-a", "product_uuid": UUID_3}], manual=None)
+        self.assertEqual(read, {"automatic": 3, "manual": 0})
+        self.assertEqual(added, read)
+        self.assertEqual(self.rows()[:1] + self.rows()[2:],
+                         [("wine-a", "automatic", UUID_1), ("wine-a", "automatic", UUID_3)])
+
+    def test_a_pair_in_both_files_is_manual(self):
+        read, added, _missing = self.seed(manual=[{"wine_slug": "wine-a",
+                                                   "product_uuid": UUID_1.upper()}])
+        self.assertEqual(read, {"automatic": 1, "manual": 1})
+        self.assertEqual(self.rows(), [("wine-a", "manual", UUID_1),
+                                       ("wine-b", "automatic", UUID_1)])
+
     def test_slug_with_no_wine_is_skipped(self):
-        _read, added, _differs, missing = self.seed(
+        _read, added, missing = self.seed(
             matches=[{"wine_slug": "wine-x", "product_uuid": UUID_1}], manual=None)
         self.assertEqual(missing, ["wine-x"])
         self.assertEqual(self.log, ["no wine: wine-x"])
@@ -101,7 +117,7 @@ class SeedAtlasBindingsTest(unittest.TestCase):
         for records, message in (
                 ([{"wine_slug": "wine-a", "product_uuid": "x"}], r"line 1 \(wine-a\): .*not a valid UUID"),
                 ([{"wine_slug": "wine-a", "product_uuid": UUID_1},
-                  {"wine_slug": "wine-a", "product_uuid": UUID_2}], "line 2: the slug wine-a has two"),
+                  {"wine_slug": "wine-a", "product_uuid": "y"}], r"line 2 \(wine-a\): .*not a valid"),
                 (["[1]\n"], "line 1 MUST be an object"),
                 (["{\n"], "line 1: not JSON"),
                 ([{"product_uuid": UUID_1}], "line 1 MUST name `wine_slug`")):

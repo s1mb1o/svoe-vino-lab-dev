@@ -15,8 +15,9 @@ The steps, in this order. Each step is one tool of `pipeline/`:
 5. `seed_codes.py`: the GTINs and the QR URLs of the code map of the matcher.
 6. `seed_atlas_bindings.py`: the automatic and the manual Atlas Core bindings.
 7. `import_testsets.py`: the test sets `my`, `official-real-photos`, and
-   `vlmrerank-8b-failed`, with their labels, comments, wine notes, excluded slugs, and
-   variant groups.
+   `vlmrerank-8b-failed`, with their labels, the comments of the photos, and the variant
+   groups. The old wine notes and the reasons of the old excluded slugs of the files
+   become wine comments (plan 51).
 8. `seed_label_cuts.py`: the label cut of each full original. The owner chose on
    2026-09-25 that each run makes the label cuts.
 

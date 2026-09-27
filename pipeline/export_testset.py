@@ -3,15 +3,20 @@
 Usage:
     python3 pipeline/export_testset.py --db data/lab.sqlite3 --set my --out <directory>
 
-The database is the source of the labels since plan 24. The export writes two files into
+The database is the source of the labels since plan 24. The export writes one file into
 `--out`, in the form of `scripts/review_server.py`: `review-labels.json` (version 2:
-`version`, `updated`, `counts`, `note`, `wines`, `labels`) and `excluded-slugs.json`
-(version 1). A file of the same name in `--out` is replaced; each write is atomic. The
-export writes no photo file. Read `docs/plans/24_testset-page.md`.
+`version`, `updated`, `counts`, `note`, `labels`). A file of the same name in `--out` is
+replaced; the write is atomic. The export writes no photo file. Read
+`docs/plans/24_testset-page.md`.
 
 A label entry comes from the columns of its row of `test_photo` and from `extra` by the
-rule of `testsets.py`. A row with no field gives no entry, as the old tool removes an
-entry with no field.
+rule of `testsets.py`. The field `comments` holds the rows of `test_photo_comment` of the
+photo, the oldest first: `{created_at, source, text}`. A row with no field and no comment
+gives no entry, as the old tool removes an entry with no field.
+
+Since plan 51 the export writes no map `wines` and no `excluded-slugs.json`: the comments
+of a whole wine are rows of `wine_comment`, and the exclusion went away. An old
+`excluded-slugs.json` in `--out` stays as it is.
 """
 import argparse
 import json
@@ -27,11 +32,11 @@ import labdb  # noqa: E402
 import testsets  # noqa: E402
 
 LABELS_FILE = "review-labels.json"
-EXCLUDED_FILE = "excluded-slugs.json"
 # The keys of `counts` in `review-labels.json`: the keys of `count_state` of the old tool.
+# `wine_notes` went away with plan 51.
 COUNT_KEYS = ("commented", "copied", "deleting", "labelled", "negative", "no_match",
               "no_match_pending", "positive", "proposed", "reassigned", "unusable",
-              "variant", "wine_notes")
+              "variant")
 # The text `note` of a set that the import gave no note. It is the text of the old tool.
 LABELS_NOTE = (
     "Manual labels for the photos of svoe-vino-testset/my. "
@@ -52,19 +57,9 @@ LABELS_NOTE = (
     "Field 'copy_to' names a slug that the photo ALSO belongs to; the same "
     "script copies the file and leaves the source photo where it is. "
     "The copy carries no label and one comment that names the source slug. "
-    "Field 'comment' holds a free text note of the reviewer about this "
-    "photo and this slug. The map 'wines' holds one free text note about a "
-    "whole wine, keyed by the slug."
-)
-EXCLUDED_NOTE = (
-    "Excluded slugs of svoe-vino-testset. The key of an entry is the wine "
-    "slug. Field 'reason' states why the slug is excluded. Field 'ts' holds "
-    "the time of the exclusion. The photos of an excluded slug MUST NOT be "
-    "used for benchmarking. A slug that is not in this file is included. "
-    "Purpose: some slugs of the catalogue hold an error, most often a wrong "
-    "bottle photo. A wrong bottle photo shifts the metrics, because the "
-    "reference of the slug does not show the wine. Such a slug is excluded "
-    "instead of corrected, so the benchmark stays comparable."
+    "Field 'comments' holds the comments of the reviewer about this photo and "
+    "this slug: a list of {created_at, source, text}, the oldest first. "
+    "created_at is a UTC time; source is 'user' or 'script'."
 )
 
 
@@ -94,33 +89,20 @@ def labels_document(conn, set_name):
     if row is None:
         raise ExportError("the database holds no test set %r" % set_name)
     labels = {}
+    notes = testsets.photo_comments(conn, set_name)
     for photo in testsets.photo_rows(conn, set_name):
         entry = testsets.entry_of(photo)
+        found = notes.get((photo["place"], photo["file_name"]))
+        if found:
+            entry["comments"] = [{key: note[key] for key in testsets.COMMENT_KEYS}
+                                 for note in found]
         if entry:
             labels.setdefault(photo["place"], {})[photo["file_name"]] = entry
-    wines = {}
-    for slug, comment, ts, extra in conn.execute(
-            "SELECT wine_slug, comment, ts, extra FROM test_wine_note WHERE set_name = ?",
-            (set_name,)):
-        note = testsets.note_of(comment, ts, extra)
-        if note:
-            wines[slug] = note
     counts = testsets.counts(conn, set_name)
     return {"version": 2, "updated": testsets.now_local(),
             "note": row[0] if row[0] is not None else LABELS_NOTE,
             "counts": {key: counts[key] for key in COUNT_KEYS},
-            "labels": labels, "wines": wines}
-
-
-def excluded_document(conn, set_name):
-    """Return the content of `excluded-slugs.json` of one set."""
-    excluded = {}
-    for slug, reason, ts in conn.execute(
-            "SELECT wine_slug, reason, ts FROM test_excluded WHERE set_name = ?", (set_name,)):
-        excluded[slug] = {key: value for key, value in (("reason", reason), ("ts", ts))
-                          if value is not None}
-    return {"version": 1, "updated": testsets.now_local(), "note": EXCLUDED_NOTE,
-            "count": len(excluded), "excluded": excluded}
+            "labels": labels}
 
 
 def write_json(path, payload):
@@ -134,39 +116,36 @@ def write_json(path, payload):
 
 
 def export_testset(db_path, set_name, out_dir, schema_dir=labdb.SCHEMA_DIR):
-    """Write the two JSON files of one set into `out_dir`. Return (the path of each file,
+    """Write `review-labels.json` of one set into `out_dir`. Return (the path of the file,
     the labels document)."""
     with closing(open_database(db_path, schema_dir)) as conn:
         labels = labels_document(conn, set_name)
-        excluded = excluded_document(conn, set_name)
     os.makedirs(out_dir, exist_ok=True)
     labels_path = os.path.join(out_dir, LABELS_FILE)
-    excluded_path = os.path.join(out_dir, EXCLUDED_FILE)
     write_json(labels_path, labels)
-    write_json(excluded_path, excluded)
-    return labels_path, excluded_path, labels
+    return labels_path, labels
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Export one test set of the lab database to review-labels.json and "
-                    "excluded-slugs.json.")
+        description="Export one test set of the lab database to review-labels.json.")
     parser.add_argument("--db", required=True, help="path of the lab database")
     parser.add_argument("--set", required=True, dest="set_name", help="the name of the set")
     parser.add_argument("--out", required=True,
-                        help="the directory of the two files; a file there is replaced")
+                        help="the directory of the file; a file there is replaced")
     args = parser.parse_args(argv)
     try:
-        labels_path, excluded_path, labels = export_testset(args.db, args.set_name, args.out)
+        labels_path, labels = export_testset(args.db, args.set_name, args.out)
     except (ExportError, labdb.SchemaError, sqlite3.Error, OSError) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
     entries = sum(len(files) for files in labels["labels"].values())
+    notes = sum(len(entry.get("comments") or []) for files in labels["labels"].values()
+                for entry in files.values())
     print("set: %s" % args.set_name)
     print("label entries: %d in %d places" % (entries, len(labels["labels"])))
-    print("notes of a whole wine: %d" % len(labels["wines"]))
+    print("comments of the photos: %d" % notes)
     print("written: %s" % labels_path)
-    print("written: %s" % excluded_path)
     return 0
 
 

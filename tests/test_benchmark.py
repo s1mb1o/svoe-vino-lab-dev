@@ -14,7 +14,6 @@ import match_scoring as MS  # noqa: E402
 PHOTOS = {
     "wine-a/01.jpg": b"a1", "wine-a/02.jpg": b"a2", "wine-a/03.jpg": b"a3",
     "wine-b/01.jpg": b"b1", "wine-b/02.jpg": b"b2", "wine-b/03.jpg": b"b3",
-    "wine-c/01.jpg": b"c1",
     "__null__/n1.jpg": b"n1", "__null__/n2.jpg": b"n2",
 }
 LABELS = {
@@ -22,7 +21,6 @@ LABELS = {
                "03.jpg": {"label": "positive", "delete": True}},
     "wine-b": {"01.jpg": {"label": "positive"}, "02.jpg": {"label": "variant"},
                "03.jpg": {"label": "unusable"}},
-    "wine-c": {"01.jpg": {"label": "positive"}},
     "__null__": {"n1.jpg": {"label": "positive"}, "n2.jpg": {"label": "unusable"}},
 }
 
@@ -51,8 +49,7 @@ class BenchmarkTest(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.root = Path(self.directory.name)
         self.db, self.schema = FX.make_database(self.root)
-        set_dir = FX.write_set(self.root, PHOTOS, LABELS, excluded={"wine-c": {"reason": "r"}},
-                               groups=[["wine-a", "wine-b"]])
+        set_dir = FX.write_set(self.root, PHOTOS, LABELS, groups=[["wine-a", "wine-b"]])
         IT.import_testset(self.db, "my", set_dir, lambda m: None, self.schema)
         self.runs = self.root / "runs"
 
@@ -74,9 +71,25 @@ class BenchmarkTest(unittest.TestCase):
             ("q-000003", "wine-a/02.jpg", "negative", []),
             ("q-000004", "wine-b/01.jpg", "positive", ["wine-b"]),
         ])
-        self.assertEqual(dict(skipped), {"unusable": 2, "marked for deletion": 1, "variant": 1,
-                                         "excluded slug": 1})
+        self.assertEqual(dict(skipped), {"unusable": 2, "marked for deletion": 1, "variant": 1})
         self.assertTrue(all(Path(r["abs_path"]).is_file() for r in rows))
+
+    def test_an_old_exclusion_leaves_no_photo_out(self):
+        # Plan 51 (owner answer of 2026-09-26T18:08:34+0300): the exclusion went away. The
+        # reason of an old excluded-slugs.json is a wine comment, and the photo enters.
+        set_dir = FX.write_set(self.root, {"wine-c/01.jpg": b"c1", "__null__/n9.jpg": b"n9"},
+                               {"wine-c": {"01.jpg": {"label": "positive"}}},
+                               excluded={"wine-c": {"reason": "r"}, "__null__": "all"},
+                               name="old")
+        IT.import_testset(self.db, "old", set_dir, lambda m: None, self.schema)
+        conn = BM.open_database(self.db, self.schema)
+        try:
+            rows, skipped = BM.build_queries(conn, self.db, "old")
+        finally:
+            conn.close()
+        self.assertEqual([(r["image_path"], r["label"]) for r in rows],
+                         [("__null__/n9.jpg", "no_match"), ("wine-c/01.jpg", "positive")])
+        self.assertEqual(dict(skipped), {})
 
     def test_the_run_writes_the_files_of_match_run(self):
         backend = FakeBackend({"a1": ["wine-a"], "a2": ["wine-a"], "b1": ["wine-a", "wine-b"]})

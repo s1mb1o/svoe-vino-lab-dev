@@ -131,16 +131,19 @@ th { color: var(--muted); font-weight: 600; }
   background: var(--panel-2); border-radius: 6px; font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
+/* The dialog is a column: the head takes its own height, and the image fills the rest.
+   So a head that wraps or a tall viewport gives no scroll bar. */
 #preview {
   width: min(1000px, calc(100vw - 30px)); height: min(90vh, 1000px); padding: 0;
   color: var(--text); background: var(--panel); border: 1px solid var(--line);
-  border-radius: 12px; box-shadow: var(--shadow);
+  border-radius: 12px; box-shadow: var(--shadow); overflow: hidden;
 }
+#preview[open] { display: flex; flex-direction: column; }
 #preview::backdrop { background: rgba(4, 5, 8, .72); }
-.preview-head { display: flex; gap: 10px; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.preview-head { flex: none; display: flex; gap: 10px; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--line); }
 .preview-title { min-width: 0; flex: 1; overflow-wrap: anywhere; }
-.preview-body { height: calc(100% - 48px); display: grid; grid-template-columns: 42px minmax(0, 1fr) 42px; align-items: center; padding: 10px; }
-.preview-body img { display: block; max-width: 100%; max-height: calc(90vh - 90px); margin: auto; object-fit: contain; }
+.preview-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 42px minmax(0, 1fr) 42px; grid-template-rows: minmax(0, 1fr); align-items: center; padding: 10px; }
+.preview-body img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .preview-body button { height: 52px; font-size: 22px; }
 @media (max-width: 760px) {
   .nav { width: 100%; margin-left: 0; overflow-x: auto; }
@@ -173,7 +176,8 @@ th { color: var(--muted); font-weight: 600; }
     </div>
     <nav class="nav"><a href="/dataset">Dataset</a><a href="/embedding">Embeddings</a><a
       class="on" href="/clusters">Clusters</a><a href="/testset">Testset</a><a
-      href="/runs">Runs</a><a href="/health">Health</a></nav>
+      href="/runs">Runs</a><a
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
   </div>
   <div class="bar">
     <label>Search <input id="search" type="search" placeholder="name, producer, slug"></label>
@@ -211,7 +215,7 @@ let ENTRIES = [], DATA = null, NAME = "", SPACE = PARAMS.get("space") || HEADER.
 // `updateUrl` writes `space` always and `image` only when it is not `full`, so an address
 // with `space` holds the image too.
 let IMAGE = (PARAMS.has("space") ? PARAMS.get("image") : HEADER.image) === "label" ? "label" : "full";
-let PREVIEW = [], PREVIEW_INDEX = 0;
+let PREVIEW = [], PREVIEW_GROUP = 0, PREVIEW_INDEX = 0;
 if (typeof HEADER.search === "string") $("#search").value = HEADER.search;
 
 function setMessage(text, error=false) {
@@ -399,26 +403,34 @@ function render() {
   openHash();
 }
 
-function previewItems() {
-  return [...document.querySelectorAll("[data-preview]")].map(button =>
-    JSON.parse(decodeURIComponent(button.dataset.preview)));
+/* One preview group for each shown cluster with an image. ←/→ move inside the group and
+   wrap at its ends. ↑/↓ open the first image of the previous or the next group and wrap
+   at the ends of the list (owner messages of 2026-09-26T09:30:30+0300 and 09:32:30). */
+function previewGroups() {
+  return [...document.querySelectorAll(".cluster")].map(section => ({
+    id: section.querySelector(".cluster-head h2").textContent.split(" · ")[0],
+    buttons: [...section.querySelectorAll("[data-preview]")]
+  })).filter(group => group.buttons.length);
 }
 
-function showPreview(index) {
+function showPreview(group, index) {
   if (!PREVIEW.length) return;
-  PREVIEW_INDEX = (index + PREVIEW.length) % PREVIEW.length;
-  const item = PREVIEW[PREVIEW_INDEX];
-  $("#preview-title").textContent = `${item.title} · ${PREVIEW_INDEX + 1}/${PREVIEW.length}`;
+  PREVIEW_GROUP = (group + PREVIEW.length) % PREVIEW.length;
+  const buttons = PREVIEW[PREVIEW_GROUP].buttons;
+  PREVIEW_INDEX = (index + buttons.length) % buttons.length;
+  const item = JSON.parse(decodeURIComponent(buttons[PREVIEW_INDEX].dataset.preview));
+  $("#preview-title").textContent = `${item.title} · ${PREVIEW_INDEX + 1}/${buttons.length}` +
+    ` · cluster ${PREVIEW[PREVIEW_GROUP].id} (${PREVIEW_GROUP + 1}/${PREVIEW.length})`;
   $("#preview-image").src = item.url;
   $("#preview-image").alt = item.title;
   $("#preview-original").href = item.original;
 }
 
 function bindDynamic() {
-  PREVIEW = previewItems();
-  document.querySelectorAll("[data-preview]").forEach((button, index) => button.addEventListener("click", () => {
-    showPreview(index); $("#preview").showModal();
-  }));
+  PREVIEW = previewGroups();
+  PREVIEW.forEach((group, groupIndex) => group.buttons.forEach((button, index) => button.addEventListener("click", () => {
+    showPreview(groupIndex, index); $("#preview").showModal();
+  })));
   document.querySelectorAll("[data-save-note]").forEach(button => button.addEventListener("click", async () => {
     const key = button.dataset.saveNote;
     const textarea = document.querySelector(`[data-note="${key}"]`);
@@ -539,12 +551,16 @@ $("#build").addEventListener("click", async () => {
   finally { $("#build").disabled = !NAME; }
 });
 $("#preview-close").addEventListener("click", () => $("#preview").close());
-$("#preview-previous").addEventListener("click", () => showPreview(PREVIEW_INDEX - 1));
-$("#preview-next").addEventListener("click", () => showPreview(PREVIEW_INDEX + 1));
+$("#preview-previous").addEventListener("click", () => showPreview(PREVIEW_GROUP, PREVIEW_INDEX - 1));
+$("#preview-next").addEventListener("click", () => showPreview(PREVIEW_GROUP, PREVIEW_INDEX + 1));
 document.addEventListener("keydown", event => {
   if (!$("#preview").open) return;
-  if (event.key === "ArrowLeft" || event.key === "ArrowUp") showPreview(PREVIEW_INDEX - 1);
-  if (event.key === "ArrowRight" || event.key === "ArrowDown") showPreview(PREVIEW_INDEX + 1);
+  if (event.key === "ArrowLeft") showPreview(PREVIEW_GROUP, PREVIEW_INDEX - 1);
+  else if (event.key === "ArrowRight") showPreview(PREVIEW_GROUP, PREVIEW_INDEX + 1);
+  else if (event.key === "ArrowUp") showPreview(PREVIEW_GROUP - 1, 0);
+  else if (event.key === "ArrowDown") showPreview(PREVIEW_GROUP + 1, 0);
+  else return;
+  event.preventDefault();
 });
 window.addEventListener("hashchange", openHash);
 loadList();

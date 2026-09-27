@@ -25,11 +25,17 @@ Rules of the set directory:
   and each other field into `extra`, so the export gives the same entry back. A photo
   with no entry gets no field. A label value that is not one of the four labels, and
   not null, stops the import. An entry that is not a JSON object stops it too.
-- The map `wines` of `review-labels.json` goes into `test_wine_note`, and its text
-  `note` into `test_set.label_note`.
+- The field `comments` of an entry goes into `test_photo_comment`, and so does the old
+  field `comment` of the old tool (`testsets.entry_comments`, plan 51).
+- The text `note` of `review-labels.json` goes into `test_set.label_note`.
+- The old map `wines` of `review-labels.json` and the old file `excluded-slugs.json` go
+  into `wine_comment` by the rules of plan 51. A text that the wine has already is not
+  added again, so a second import adds no row. The import never removes a wine comment:
+  the wine comments belong to no set. A slug that `wine_catalog` does not hold gets a
+  console message, and its text is left out.
 - A label entry whose file is not there is left out and counted.
-- `excluded-slugs.json` holds the excluded slugs, and `variant-groups.json` the variant
-  groups. A missing file gives none. `review-labels.json` MUST be there.
+- `variant-groups.json` holds the variant groups. A missing file gives none.
+  `review-labels.json` MUST be there.
 
 Rules of the store:
 - Each photo file is stored as `images/testset/<sha256>.<extension>` with
@@ -52,6 +58,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(1, os.path.join(os.path.dirname(HERE), "scripts"))
+import comments  # noqa: E402
 import imagestore  # noqa: E402
 import labdb  # noqa: E402
 import testsets  # noqa: E402
@@ -81,12 +88,16 @@ class Report:
         self.loose = 0                         # files directly in photo/
         self.no_file = 0                       # label entries whose file is not there
         self.unknown_places = []               # places that wine_catalog does not hold
-        self.excluded = 0                      # excluded slugs
+        self.excluded = 0                      # reasons of excluded-slugs.json
         self.variant_slugs = 0                 # slugs in a variant group
         self.written = 0                       # files copied to the store
         self.present = 0                       # files that the store held already
         self.unsized = 0                       # new files with no pixel size
-        self.wine_notes = 0                    # notes of a whole wine
+        self.wine_notes = 0                    # notes of the old map `wines`
+        self.photo_comments = 0                # rows of test_photo_comment
+        self.wine_comments = 0                 # new rows of wine_comment
+        self.wine_comments_present = 0         # texts that the wine had already
+        self.wine_comments_left_out = 0        # texts of a slug not in wine_catalog
         self.boxes = 0                         # photos with a box of the main object
         self.extra = 0                         # entries with a field in `extra`
 
@@ -183,8 +194,9 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
         check_not_edited(conn, set_name, force)
         catalog = {row[0] for row in conn.execute("SELECT wine_slug FROM wine_catalog")}
         known = {digest for (digest,) in conn.execute("SELECT sha256 FROM image")}
+        now = comments.now_utc()
         new_images = {}   # sha256 -> the row of `image`
-        rows = []
+        rows, comment_rows = [], []
         for place, name, path in photos:
             digest = imagestore.sha256_of(path)
             extension = os.path.splitext(name)[1][1:].lower()
@@ -205,6 +217,7 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
                     log("no pixel size: %s/%s: %s" % (place, name, exc))
                 new_images[digest] = (digest, FOLDER, extension, width, height)
             entry = (labels.get(place) or {}).get(name) or {}
+            entry, notes = testsets.entry_comments(entry, now)
             size = None
             if "box" in entry:
                 try:
@@ -217,25 +230,36 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
             report.extra += columns["extra"] is not None
             rows.append((set_name, place, name, digest)
                         + tuple(columns[c] for c in testsets.ENTRY_COLUMNS))
-        report.photos = len(rows)
+            comment_rows += [(set_name, place, name) + tuple(note[k] for k in testsets.COMMENT_KEYS)
+                             for note in notes]
+        report.photos, report.photo_comments = len(rows), len(comment_rows)
         report.unknown_places = sorted({place for place, _, _ in photos
                                         if place != NULL_SLUG and place not in catalog})
         for place in report.unknown_places:
             log("unknown place: %s: wine_catalog holds no wine with this slug" % place)
-        # A short entry `slug: reason` is the form that the old tool also reads.
-        excluded_rows = [(set_name, slug, rec, None) if isinstance(rec, str) else
-                         (set_name, slug, (rec or {}).get("reason"), (rec or {}).get("ts"))
-                         for slug, rec in sorted(excluded.items())]
-        note_rows = [(set_name, slug) + testsets.note_columns(note)
-                     for slug, note in sorted(wines.items())]
-        report.wine_notes = len(note_rows)
+        # The old wine notes and the old exclusions become wine comments (plan 51).
+        wine_notes = [(slug, testsets.wine_note_comment(note, now))
+                      for slug, note in sorted(wines.items())]
+        reasons = [(slug, testsets.exclusion_comment(rec, now))
+                   for slug, rec in sorted(excluded.items())]
+        report.wine_notes, report.excluded = len(wines), len(excluded)
+        wine_rows = []
+        for slug, note in wine_notes + reasons:
+            if note is None:
+                continue
+            if slug not in catalog:
+                report.wine_comments_left_out += 1
+                log("left out: a wine comment of %s: wine_catalog holds no wine with this "
+                    "slug" % slug)
+                continue
+            wine_rows.append((slug,) + tuple(note[k] for k in testsets.COMMENT_KEYS))
         # A slug in two groups keeps its last group, as `load_groups` of match_run.py does.
         variant = {}
         for number, group in enumerate(groups):
             for slug in (group or {}).get("slugs") or []:
                 if isinstance(slug, str):
                     variant[slug] = number
-        report.excluded, report.variant_slugs = len(excluded_rows), len(variant)
+        report.variant_slugs = len(variant)
 
         conn.execute("BEGIN IMMEDIATE")
         try:
@@ -244,7 +268,7 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
             conn.executemany("INSERT INTO image (sha256, folder, extension, width, height) "
                              "VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING",
                              new_images.values())
-            for table in ("test_photo", "test_excluded", "test_variant", "test_wine_note"):
+            for table in ("test_photo_comment", "test_photo", "test_variant"):
                 conn.execute("DELETE FROM %s WHERE set_name = ?" % table, (set_name,))
             conn.execute("INSERT INTO test_set (set_name, source_dir, label_note) "
                          "VALUES (?, ?, ?) ON CONFLICT (set_name) DO UPDATE SET "
@@ -253,10 +277,15 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
             conn.executemany("INSERT INTO test_photo (set_name, place, file_name, sha256, %s) "
                              "VALUES (%s)" % (", ".join(testsets.ENTRY_COLUMNS), ", ".join(
                                  "?" for _ in range(4 + len(testsets.ENTRY_COLUMNS)))), rows)
-            conn.executemany("INSERT INTO test_excluded (set_name, wine_slug, reason, ts) "
-                             "VALUES (?, ?, ?, ?)", excluded_rows)
-            conn.executemany("INSERT INTO test_wine_note (set_name, wine_slug, comment, ts, "
-                             "extra) VALUES (?, ?, ?, ?, ?)", note_rows)
+            conn.executemany("INSERT INTO test_photo_comment (set_name, place, file_name, "
+                             "created_at, source, text) VALUES (?, ?, ?, ?, ?, ?)", comment_rows)
+            for slug, created_at, source, text in wine_rows:
+                if conn.execute("SELECT 1 FROM wine_comment WHERE wine_slug = ? AND text = ?",
+                                (slug, text)).fetchone():
+                    report.wine_comments_present += 1
+                    continue
+                comments.add(conn, slug, text, source, created_at)
+                report.wine_comments += 1
             conn.executemany("INSERT INTO test_variant (set_name, wine_slug, group_no) "
                              "VALUES (?, ?, ?)",
                              [(set_name, slug, number) for slug, number in sorted(variant.items())])
@@ -278,9 +307,13 @@ def print_report(report, set_name, set_dir, db_path):
     print("files directly in photo/, left out: %d" % report.loose)
     print("label entries with no file, left out: %d" % report.no_file)
     print("places that wine_catalog does not hold: %d" % len(report.unknown_places))
-    print("excluded slugs: %d" % report.excluded)
     print("slugs in a variant group: %d" % report.variant_slugs)
-    print("notes of a whole wine: %d" % report.wine_notes)
+    print("comments of the photos: %d" % report.photo_comments)
+    print("old notes of a whole wine: %d; old exclusions: %d" % (report.wine_notes,
+                                                                 report.excluded))
+    print("wine comments: %d new, %d there already, %d left out (no wine)"
+          % (report.wine_comments, report.wine_comments_present,
+             report.wine_comments_left_out))
     print("photos with a box: %d" % report.boxes)
     print("entries with a field in extra: %d" % report.extra)
     print("files written: %d" % report.written)

@@ -27,13 +27,17 @@ PHOTOS = {
     "wine-b/01.jpg": b"photo b1",
 }
 LABELS = {
-    "wine-a": {"01.jpg": {"label": "positive"}, "02.jpg": {"label": "negative", "delete": True}},
+    "wine-a": {"01.jpg": {"label": "positive", "comment": "a photo comment"},
+               "02.jpg": {"label": "negative", "delete": True}},
     "wine-b": {"01.jpg": {"label": "positive"}},
 }
+# The reason of an old exclusion becomes a wine comment (plan 51).
 EXCLUDED = {"wine-a": {"reason": "a reason", "ts": "2026-09-25T17:00:00+0300"}}
 GROUPS = [["wine-a", "wine-b"]]
-# The tables of a test set, and `image`, which holds the rows of the photo files.
-TABLES = ("test_set", "test_photo", "test_excluded", "test_variant", "image")
+# The tables of a test set, the wine comments, and `image`, which holds the rows of the
+# photo files.
+TABLES = ("test_set", "test_photo", "test_photo_comment", "test_variant", "wine_comment",
+          "image")
 # The values of the CSV of the catalogue import: the values of `FX.make_database`.
 VALUES = {"name": "n", "producer": "p", "category": "c", "color": "co", "region": "r",
           "grapes": "", "description": "d", "csv_photo_name": "x.webp"}
@@ -84,7 +88,10 @@ class RemovedWineKeepsTestsetTest(unittest.TestCase):
         self.assertEqual(
             self.query("SELECT file_name FROM test_photo WHERE place = 'wine-a' ORDER BY 1"),
             [("01.jpg",), ("02.jpg",)])
-        self.assertEqual(self.query("SELECT wine_slug FROM test_excluded"), [("wine-a",)])
+        self.assertEqual(self.query("SELECT place, text FROM test_photo_comment"),
+                         [("wine-a", "a photo comment")])
+        self.assertEqual(self.query("SELECT wine_slug, text FROM wine_comment"),
+                         [("wine-a", "Excluded from the benchmark: a reason")])
         self.assertEqual(self.query("SELECT wine_slug FROM test_variant ORDER BY 1"),
                          [("wine-a",), ("wine-b",)])
 

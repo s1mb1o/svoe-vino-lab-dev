@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
 sys.path.insert(0, str(ROOT / "tests"))
 import alternatives  # noqa: E402
+import derive  # noqa: E402
 import embeddings  # noqa: E402
 import labdb  # noqa: E402
 import seed_label_cuts  # noqa: E402
@@ -69,6 +70,12 @@ class SeedLabelCutsTest(unittest.TestCase):
                 "SELECT source_sha256, method, settings, sha256, box_left, box_top, "
                 "box_right, box_bottom FROM image_derivative WHERE kind = 'label'")}
 
+    def absence_rows(self):
+        with closing(labdb.connect(self.db)) as conn:
+            return dict(conn.execute(
+                "SELECT source_sha256, reason FROM image_derivative_absence "
+                "WHERE kind = 'label'"))
+
     def test_each_full_original_gets_a_label_cut(self):
         sam3 = FakeSam3()
         report = self.seed(sam3)
@@ -107,6 +114,22 @@ class SeedLabelCutsTest(unittest.TestCase):
                 (self.main,))]
         self.assertEqual(kinds, ["label", "package"])
 
+    def test_a_manual_label_cut_counts_as_present_and_stays(self):
+        # Plan 56: a manual cut of the owner on a full original.
+        manual = alternatives.MANUAL_HEAD + "[[0,0],[40,0],[40,80]]"
+        with closing(labdb.connect(self.db)) as conn, conn:
+            conn.execute("INSERT INTO image (sha256, folder, extension, width, height) "
+                         "VALUES (?, 'cropped', 'png', 40, 80)", ("d" * 64,))
+            conn.execute("INSERT INTO image_derivative (source_sha256, kind, method, settings, "
+                         "sha256, box_left, box_top, box_right, box_bottom) "
+                         "VALUES (?, 'label', 'seg', ?, ?, 0, 0, 40, 80)",
+                         (self.front, manual, "d" * 64))
+        sam3 = FakeSam3()
+        report = self.seed(sam3)
+        self.assertEqual((report.written, report.present), (1, 1))
+        self.assertEqual(sam3.instances_calls, [alternatives.DETECT_TEXTS])
+        self.assertEqual(self.label_rows()[self.front][1], manual)
+
     def test_no_label_gives_no_row_and_the_next_run_asks_again(self):
         report = self.seed(FakeSam3([instance("bottle", (10, 10, 30, 70))]))
         self.assertEqual((report.written, sorted(report.no_label)),
@@ -115,6 +138,22 @@ class SeedLabelCutsTest(unittest.TestCase):
         sam3 = FakeSam3()
         self.assertEqual(self.seed(sam3).written, 2)
         self.assertEqual(len(sam3.instances_calls), 2)
+
+    def test_a_packet_with_no_label_is_not_applicable_and_is_not_asked_again(self):
+        label_answer = [instance("bottle", (10, 10, 30, 70))]
+        package_answer = [instance("packet", (0, 0, 40, 80))]
+        sam3 = FakeSam3(label_answer, package_answer=package_answer)
+        report = self.seed(sam3)
+        self.assertEqual((report.written, sorted(report.not_applicable), report.no_label),
+                         (0, sorted([self.main, self.front]), []))
+        self.assertEqual(set(self.absence_rows()), {self.main, self.front})
+        self.assertEqual(sam3.instances_calls,
+                         [alternatives.DETECT_TEXTS, derive.SAM3_TEXTS] * 2)
+        second = FakeSam3()
+        report = self.seed(second)
+        self.assertEqual((report.written, report.present, report.absence_present),
+                         (0, 0, 2))
+        self.assertEqual(second.instances_calls, [])
 
     def test_sam3_down_stops_the_run(self):
         report = self.seed(DownSam3())

@@ -22,6 +22,15 @@ database_file: svoe-vino-lab/data/lab.sqlite3
 # docs/plans/10_embeddings-page.md.
 embedding_python: ~/.venvs/svoe-vino-lab/bin/python
 
+# The SAM3 service. `pipeline/derive.py` reads `endpoint` from this file when a module
+# imports it; each SAM3 call of `pipeline/` and the default of each option `--sam3` use
+# the value. The option `--config` of a script does not change it. Without the key, the
+# service of gx10 below stays. The model cache (`data/cache/sam3/`) keys each answer on
+# this URL too: a new URL asks SAM3 again for each image. A run keeps the URL of its
+# own time in `run.json`.
+sam3:
+  endpoint: http://192.168.86.14:18081/upstream/sam3
+
 # The embeddings of the Embeddings page. One entry: a name, an endpoint, options, and
 # the steps of each view. `pipeline/build_embeddings.py --name <name>` builds one entry
 # into `data/embeddings/<name>/`.
@@ -67,6 +76,16 @@ embeddings:
     model: siglip2-so400m-patch16-naflex
     extra_body:
       max_num_patches: 512
+    views: *views_c_f
+
+  # Owner message of 2026-09-26T20:35+0300: NaFlex with 1,024 patches, the patch count of
+  # `gx10-siglip2-so400m-patch16-512` (32 x 32), but with the native aspect ratio.
+  - name: gx10-siglip2-so400m-patch16-naflex-p1024
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-naflex
+    extra_body:
+      max_num_patches: 1024
     views: *views_c_f
 
   - name: gx10-siglip2-so400m-patch14-384
@@ -268,6 +287,25 @@ pipeline:
             max_size: 1024
             aspect: keep
 
+  # `siglip2-p256-crop-seg` (owner message of 2026-09-26T23:24:00+0300, answers of
+  # 23:27:00): the cut of `siglip2-p256-crop`, and the SAM3 mask of the package makes the
+  # background inside the box white (`remove_background`). These are the steps of the
+  # view `full` of the index, so the photo gets the pixels of a catalogue image. The YAML
+  # anchor `crop-seg-views` holds the steps for the barcode twin.
+  - name: siglip2-p256-crop-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p256
+    views: &crop-seg-views
+      full:
+        steps:
+          - step: segment
+            target: package
+          - step: remove_background
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+
   # Plan 40 (owner message of 2026-09-26T01:43:59+0300): the two basic pipelines for each
   # other entry of `embeddings`, for the benchmark of the entries. Their steps are the
   # steps of `siglip2-p256-as-is` and `siglip2-p256-crop`. The YAML anchors `as-is-views`
@@ -295,6 +333,14 @@ pipeline:
           - step: resize
             max_size: 1024
             aspect: keep
+  - name: siglip2-p1024-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p1024
+    views: *as-is-views
+  - name: siglip2-p1024-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p1024
+    views: *crop-views
   - name: siglip2-p14-384-as-is
     backend: embedding
     embedding: gx10-siglip2-so400m-patch14-384
@@ -393,6 +439,11 @@ pipeline:
     embedding: gx10-siglip2-so400m-patch16-naflex-p256
     barcode: *barcode-options
     views: *crop-views
+  - name: barcode-siglip2-p256-crop-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p256
+    barcode: *barcode-options
+    views: *crop-seg-views
   - name: barcode-siglip2-p512-as-is
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
@@ -401,6 +452,16 @@ pipeline:
   - name: barcode-siglip2-p512-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-siglip2-p1024-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p1024
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-siglip2-p1024-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p1024
     barcode: *barcode-options
     views: *crop-views
   - name: barcode-siglip2-p14-384-as-is
@@ -517,9 +578,38 @@ pipeline:
   - name: barcode-rerank-siglip2-512-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-512
+    workers: 4
     barcode: *barcode-options
     rerank: *rerank-options
     views: *crop-views
+
+  # Two retrieval towers: the package crop searches `full` vectors, and the segmented
+  # label searches `label` vectors of the same index. A missing label uses `full` alone.
+  # Keep the first tower equal to `barcode-rerank-siglip2-512-crop`.
+  - name: barcode-rerank-siglip2-512-crop-label
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-512
+    workers: 4
+    barcode: *barcode-options
+    rerank: *rerank-options
+    views:
+      full:
+        steps:
+          - step: segment
+            target: package
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+      label:
+        steps:
+          - step: segment
+            target: label
+          - step: remove_background
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
 
 # The VLM inferences. One entry: a name, a protocol, the thinking field, an endpoint, a
 # model, and a key. `pipeline/vlm_config.py` reads this key. A script names an entry by
@@ -582,8 +672,9 @@ vlm:
     model: qwen3.7-flash
     key: "{env:QWENCLOUD_PAYGO_API_KEY}"
 
-# The descriptions of the images: `package_type`, `subject_scope`, `package_view`, and
-# `content_roles` in the table `image_description`. Read docs/plans/26_image-description.md.
+# The descriptions of the images: `package_type`, `subject_scope`, `package_view`,
+# `content_roles`, and `presentation_mode` (schema 024) in the table `image_description`.
+# Read docs/plans/26_image-description.md.
 # `watch: true` makes the lab server start `pipeline/describe_images.py --watch` and stop
 # it at its exit. The watcher sends each linked image with no VLM description to the
 # `vlm` entry and fills only the values that are not set. It sleeps `poll_seconds` when

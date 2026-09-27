@@ -35,13 +35,16 @@ LOG_LIMIT = 20
 TAIL_BYTES = 256 * 1024
 
 # The fields of a description, in the order of the table, and the values of each field.
-FIELDS = ("package_type", "subject_scope", "package_view", "content_roles")
+# Schema 024 added `presentation_mode` after `vlm_attempts`.
+FIELDS = ("package_type", "subject_scope", "package_view", "content_roles",
+          "presentation_mode")
 VALUES = {
     "package_type": ("bottle", "can", "keg", "bag", "bag_in_box", "tetra_pak", "barrel",
                      "decanter", "box", "other", "unknown"),
     "subject_scope": ("full_package", "label_closeup", "multiple_packages", "unknown"),
     "package_view": ("front", "back", "unknown"),
     "content_roles": ("front_label", "back_label", "unknown"),
+    "presentation_mode": ("on_package", "flat_surface", "other", "unknown"),
 }
 # The image types of `wine_image` whose images get a description: main, patched, and
 # additional.
@@ -168,10 +171,12 @@ def record_vlm(conn, sha256, answer, name, model, now=None):
         "subject_scope = COALESCE(subject_scope, ?), "
         "package_view = COALESCE(package_view, ?), "
         "content_roles = COALESCE(content_roles, ?), "
+        "presentation_mode = COALESCE(presentation_mode, ?), "
         "vlm_at = ?, vlm_name = ?, vlm_model = ?, vlm_answer = ?, vlm_error = NULL, "
         "updated_at = ? WHERE sha256 = ? AND vlm_at IS NULL",
         (answer["package_type"], answer["subject_scope"], answer["package_view"], roles,
-         now, name, model, json.dumps(answer, separators=(",", ":")), now, sha256))
+         answer["presentation_mode"], now, name, model,
+         json.dumps(answer, separators=(",", ":")), now, sha256))
     return cursor.rowcount == 1
 
 
