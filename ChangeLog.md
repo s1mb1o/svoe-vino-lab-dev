@@ -2,6 +2,20 @@
 
 ## 2026-09-27
 
+- The table `wine_code` has a new column `modified_at`: the UTC insert time of each row
+  (schema `026_wine_code_time.sql`). The trigger `wine_code_insert_time` sets it. A row is
+  never updated, so the insert time is the time of the last change. A delete leaves no
+  time. The 49 rows that are older than 026 keep NULL. `GET /api/dataset` sends
+  `_code_times` for each record, and the GTIN and QR URL routes send `modified_at`. The
+  lists `_gtins` and `_qr_urls` do not change. On the Dataset page, the tooltip of a GTIN
+  or of a QR URL shows `added <local time>` or `added: unknown`. `test_seed_codes.py`
+  names the columns of its INSERT. Backup
+  `data/backups/lab-before-026-wine-code-time-20260927T054451Z.sqlite3`; migration and
+  restart of 8168 at 08:45. Tests: `test_labdb.py` 17, `test_lab_server.py` 64,
+  `test_seed_codes.py` 11 OK. A browser check on a scratch server passed 7 of 7. Smoke
+  tests WC17 to WC20. The owner chose the name, NULL for old rows, the map, and the
+  tooltip in the answers of 08:32 and 08:35.
+
 - The input of `Atlas Core product` on the Dataset page accepts a pasted product URL.
   A paste of `http(s)://<host>/products/<uuid>` inserts the UUID alone. Before, the
   `maxlength` 36 cut the URL to `http://127.0.0.1:8157/products/18306`. Other pasted text

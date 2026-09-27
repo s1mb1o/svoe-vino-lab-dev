@@ -159,6 +159,14 @@ input accepts at most 14 characters (owner message of 2026-09-25T22:47:19+0300).
 `Barcodes` shows only on the review tool, which sends `barcode_file`. `svoe-vino-matcher`
 still reads `code-map.json`; it does not see the codes of the table. Read
 [plan 11](docs/plans/11_wine-codes.md).
+The column `modified_at` of `wine_code` holds the UTC insert time of each row, in the form
+`2026-09-27T05:46:17Z` (schema 026, owner message of 2026-09-27T08:30:51+0300). A trigger
+sets it. The writers of the table do not change. A row is never updated, so the insert time
+is the time of the last change. A row that is older than schema 026 has NULL. `GET /api/dataset` sends the
+times of each wine in `_code_times`: `{"gtin": {value: time}, "qr_url": {value: time}}`.
+A code route also sends `modified_at`: `{value: time}` for the values of its kind. On the
+Dataset page, the tooltip of a GTIN or of a QR URL reads `added YYYY-MM-DD HH:MM` in local
+time, or `added: unknown` for NULL.
 
 ```bash
 # step 7: the Atlas Core product of each wine, from the files of svoe-wino-hackaton

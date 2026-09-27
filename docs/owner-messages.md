@@ -5896,3 +5896,29 @@ Owner answer:
 2. Any host /products/<uuid> (Recommended)
 3. Yes, separate hunks
 ```
+
+## 2026-09-27T15:24:21+0300
+
+Recorded late by session d8 [a08e7a]. The message came between 14:35 and 15:24.
+
+```text
+how resolve commit question?
+```
+
+Agent question:
+
+```text
+It needs one word from you: "commit" or "leave it".
+1. "commit" (recommended): I commit only my 26 lines (ChangeLog.md, README.md, SMOKE_TESTS.md) through a private git index, so the other sessions' uncommitted changes stay out and the shared index is untouched. Then I remove my section from ACTIVE_WORK.md and my task is closed.
+2. "leave it": my lines stay uncommitted, and the next "commit all" by any session picks them up. My section stays in ACTIVE_WORK.md until then, and after this session ends it becomes a stale section.
+```
+
+Owner answer: pending.
+
+## 2026-09-27T15:31:07+0300
+
+Owner answer to the question of session d8 [a08e7a] of 15:24:21:
+
+```text
+commit
+```

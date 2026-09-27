@@ -954,6 +954,10 @@ database at schema version 8 with an empty table `wine_code`.
 | WC14 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"slug":"shardone-2","gtin":"4680140700220"}' $H/api/dataset-gtin` | HTTP 400: `wrong check digit 0; expected 8`. |
 | WC15 | Press `+` of `GTINs` on a card far down the list, save a valid GTIN, then remove it | Each step changes the card at once, in much less than 1 s. The list keeps its scroll position. The header count of GTINs changes by 1. |
 | WC16 | Press `+` of `GTINs`, type `46301716300941`, then type one more digit. Then clear the input and paste `4630171630094123` | The 15th digit does not enter; the input holds 14 characters. The paste keeps its first 14 characters, `46301716300941`. |
+| WC17 | `python3 pipeline/labdb.py $DB` on a database at version 25, then `sqlite3 $DB 'SELECT count(*), count(modified_at) FROM wine_code'` | `schema version: 26` or later. The row count does not change. The second number is `0`: an old row keeps NULL. |
+| WC18 | On `$H/dataset`, hover over a GTIN that is older than schema 026 | The tooltip reads `added: unknown`. |
+| WC19 | Save a new GTIN or a new QR URL, hover over it, then reload the page and hover again | Both tooltips read `added YYYY-MM-DD HH:MM` in local time. `SELECT modified_at FROM wine_code WHERE value = '<value>'` gives the same time in UTC with `Z`. A remove of the new value keeps the tooltips of the other values. |
+| WC20 | `curl -s $H/api/dataset`, and look at one record | The record has `_code_times` with the keys `gtin` and `qr_url`. Each value of `_gtins` and of `_qr_urls` is a key of its map. The lists `_gtins` and `_qr_urls` still hold strings. |
 
 ## The Atlas Core product of a wine — `pipeline/seed_atlas_bindings.py` and the Dataset editor
 
