@@ -272,5 +272,40 @@ class VerifyAndBenchTest(CacheCase):
         self.assertEqual(os.listdir(self.directory.name), ["qwen3.8-flash"])
 
 
+class ForgetTest(CacheCase):
+    def store(self, model, image, params=None):
+        fields = model_cache.request_fields("local://barcode/scan", model, params or {}, "",
+                                            [image])
+        model_cache.store(fields, {"batches": []}, 1)
+        return fields
+
+    def test_forget_deletes_the_records_of_the_images_of_one_model(self):
+        one = self.store("barcode", b"one")
+        one_other_options = self.store("barcode", b"one", {"qr": False})
+        two = self.store("barcode", b"two")
+        sam3 = self.store("sam3", b"one")
+        digest = model_cache.sha256_hex(b"one")
+        self.assertEqual(model_cache.forget("barcode", [digest, "f" * 64]), 2)
+        self.assertIsNone(model_cache.lookup(one))
+        self.assertIsNone(model_cache.lookup(one_other_options))
+        self.assertIsNotNone(model_cache.lookup(two))
+        self.assertIsNotNone(model_cache.lookup(sam3))
+        self.assertEqual(model_cache.forget("barcode", [digest]), 0)
+
+    def test_forget_skips_unreadable_records_and_a_missing_model(self):
+        self.store("barcode", b"one")
+        shard = Path(self.directory.name) / "barcode" / "zz"
+        shard.mkdir()
+        (shard / "bad.json").write_text("not json", encoding="utf-8")
+        (shard / "list.json").write_text("[1]", encoding="utf-8")
+        (shard / "odd.json").write_text('{"request": {"images": [{}]}}', encoding="utf-8")
+        digest = model_cache.sha256_hex(b"one")
+        self.assertEqual(model_cache.forget("barcode", [digest]), 1)
+        self.assertEqual(sorted(p.name for p in shard.iterdir()),
+                         ["bad.json", "list.json", "odd.json"])
+        self.assertEqual(model_cache.forget("gdino", [digest]), 0)
+        self.assertEqual(model_cache.forget("barcode", []), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

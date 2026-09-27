@@ -23,6 +23,11 @@ __pycache__/
 # rebuilt by a new run and does not belong in git.
 runs/
 
+# The artifact folder of a report: images, raw JSON, logs, vectors. On 2026-09-27 three
+# such folders held about 1.4 GB. The owner asked to keep them out of git. The report
+# `.md` file next to a folder stays in git.
+/docs/reports/*/
+
 # The lock file next to a shared JSON file. `scripts/cluster_rules.py` makes it
 # to serialise writes. It holds no data.
 *.lock

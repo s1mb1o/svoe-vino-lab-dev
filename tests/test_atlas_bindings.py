@@ -86,6 +86,19 @@ class TableTest(unittest.TestCase):
         self.assertEqual(AB.bindings(self.conn, "wine-a"), {})
         self.assertEqual(AB.bindings(self.conn, "wine-b"), {"wine-b": [(UUID_1, "automatic")]})
 
+    def test_approve_makes_the_automatic_row_manual_in_place(self):
+        with self.conn:
+            AB.add_manual(self.conn, "wine-a", UUID_2)
+            self.assertEqual(AB.approve(self.conn, "wine-a", UUID_1), "automatic")
+        # The approved row keeps its place before the manual row.
+        self.assertEqual(AB.bindings(self.conn, "wine-a"),
+                         {"wine-a": [(UUID_1, "manual"), (UUID_2, "manual")]})
+        self.assertEqual(AB.bindings(self.conn, "wine-b"), {"wine-b": [(UUID_1, "automatic")]})
+        with self.conn:
+            self.assertEqual(AB.approve(self.conn, "wine-a", UUID_1), "manual")
+            self.assertIsNone(AB.approve(self.conn, "wine-c", UUID_1))
+        self.assertEqual(AB.counts(self.conn), (3, 2))
+
     def test_schema_refuses_a_bad_row(self):
         for row in (("wine-c", "manual", UUID_1.upper()), ("wine-c", "manual", "x" * 36),
                     ("wine-c", "other", UUID_1), ("wine-x", "manual", UUID_1),

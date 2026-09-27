@@ -10,6 +10,7 @@ import sys
 import tempfile
 import threading
 import time
+import types
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -404,6 +405,100 @@ class UseBarcodeTest(Lab):
         meta = json.loads((Path(self.runs) / events[-1]["run_id"] / "run.json")
                           .read_text("utf-8"))
         self.assertNotIn("use_barcode", meta)
+
+
+class SelftestJobTest(Lab):
+    """Plan 67: the button `Selftest` of `/embedding`. `POST /api/run-jobs` with the key
+    `selftest` starts `run_job.py --selftest`; the job is `selftest-<embedding>`."""
+
+    ROWS = [{"query_id": "q-%06d" % number, "image_path": "wine-a/main-%012d.png" % number,
+             "abs_path": "/nowhere/%d.png" % number, "image_sha256": "%064d" % number,
+             "slug": "wine-a", "image_type": "main", "label": "positive",
+             "truth": ["wine-a"]} for number in (1, 2)]
+
+    def start(self, body):
+        with mock.patch.object(run_jobs.subprocess, "Popen") as popen, \
+                mock.patch.object(embedding_run, "index_ready", return_value=True):
+            popen.return_value.pid = 4321
+            popen.return_value.poll.return_value = 0
+            code, answer = run_jobs.start(self.settings(), self.jobs, body, self.runs)
+        run_jobs._PROCESSES.clear()
+        return code, answer, popen.call_args[0][0] if popen.called else None
+
+    def test_the_key_selftest_starts_run_job_with_selftest(self):
+        code, answer, command = self.start({"selftest": "gw", "limit": 5, "workers": 2,
+                                            "use_cache": False})
+        self.assertEqual(code, 202, answer)
+        self.assertEqual((answer["name"], answer["set"]), ("selftest-gw", "dataset"))
+        self.assertEqual(command[1:], [
+            run_jobs.RUNNER, "--config", str(self.config), "--selftest", "--name", "gw",
+            "--jobs-dir", self.jobs, "--limit", "5", "--workers", "2", "--no-cache",
+            "--runs-dir", self.runs])
+        self.assertTrue(os.path.isdir(os.path.join(self.jobs, "selftest-gw")))
+
+    def test_a_selftest_checks_the_body_before_it_starts_a_process(self):
+        wrong = [
+            ({"selftest": 5}, 400, "selftest MUST name"),
+            ({"selftest": "Bad Name"}, 400, "selftest MUST name"),
+            ({"selftest": "gw", "set": "my"}, 400, "no configuration and no set"),
+            ({"selftest": "gw", "configuration": "emb"}, 400, "no configuration and no set"),
+            ({"selftest": "gw", "limit": 0}, 400, "limit MUST"),
+            ({"selftest": "gw", "use_cache": "no"}, 400, "use_cache MUST"),
+            ({"selftest": "nope"}, 404, "no embedding nope"),
+        ]
+        for body, code, text in wrong:
+            with self.subTest(body=body):
+                got, answer, command = self.start(body)
+                self.assertEqual(got, code)
+                self.assertIn(text, answer["error"])
+                self.assertIsNone(command)
+        # With no mock, the embedding `gw` has no index.
+        got, answer = run_jobs.start(self.settings(), self.jobs, {"selftest": "gw"}, self.runs)
+        self.assertEqual(got, 400)
+        self.assertIn(embedding_run.NO_INDEX, answer["error"])
+        self.assertEqual(run_jobs._PROCESSES, {})
+
+    def test_the_runner_writes_a_run_of_the_set_dataset_with_no_barcode(self):
+        import selftest
+        seen = []
+
+        def build(embedding, config_path, rows):
+            seen.append((embedding, len(rows)))
+            return FakeBackend(types.SimpleNamespace(name="selftest-" + embedding))
+
+        out = io.StringIO()
+        with mock.patch.object(selftest, "read_queries", return_value=(self.ROWS, {})), \
+                mock.patch.object(selftest, "build_backend", side_effect=build), \
+                contextlib.redirect_stdout(out):
+            code = run_job.main(["--config", str(self.config), "--selftest", "--name", "gw",
+                                 "--jobs-dir", self.jobs, "--runs-dir", self.runs])
+        events = [json.loads(line) for line in out.getvalue().splitlines()]
+        self.assertEqual((code, events[-1]["event"]), (0, "done"), events[-1])
+        self.assertEqual(seen, [("gw", 2)])
+        start = next(e for e in events if e["event"] == "start")
+        self.assertEqual((start["configuration"], start["set"], start["todo"],
+                          start["use_barcode"]), ("selftest-gw", "dataset", 2, False))
+        run_dir = Path(self.runs) / events[-1]["run_id"]
+        self.assertTrue(run_dir.name.endswith("-lab-selftest-gw-dataset"))
+        meta = json.loads((run_dir / "run.json").read_text("utf-8"))
+        self.assertEqual((meta["configuration"], meta["options"]["set"], meta["use_barcode"]),
+                         ("selftest-gw", "dataset", False))
+        # The lock of the job is in the directory of `selftest-gw`, and the end frees it.
+        directory = os.path.join(self.jobs, "selftest-gw")
+        self.assertTrue(os.path.isdir(directory))
+        self.assertIsNone(run_jobs.read_lock(directory))
+
+    def test_the_runner_refuses_a_set_with_selftest_and_needs_a_set_without_it(self):
+        for args, text in ((["--selftest", "--name", "gw", "--set", "my"], "takes no --set"),
+                           (["--name", REMOTE], "--set is required")):
+            with self.subTest(args=args):
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    code = run_job.main(["--config", str(self.config), "--jobs-dir",
+                                         self.jobs, *args])
+                event = json.loads(out.getvalue().splitlines()[-1])
+                self.assertEqual((code, event["event"]), (2, "failed"))
+                self.assertIn(text, event["message"])
 
 
 if __name__ == "__main__":

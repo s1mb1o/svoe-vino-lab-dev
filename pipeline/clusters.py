@@ -4,6 +4,14 @@ One embedding directory holds `clusters.json`, `cluster-notes.json`, and later
 `cluster-rules.json`. The `full` and `label` vectors are separate similarity spaces.
 The `combined` view is the union of their edges. Read
 `docs/plans/30_embedding-clusters.md`.
+
+Each manual pair of the table `wine_similar` (plan 62) is one more link of each view, with
+`manual` in its list `by`. Read `docs/plans/62_similar-wines.md`.
+
+Each two Active wines of one GTIN of `wine_code` (plan 64) are one more link of each view,
+with `gtin` in its list `by`. So the rules build gives the wines of a shared GTIN a rule,
+and the cluster re-rank of a photo with that GTIN can compare them. A QR URL gives no
+link. Read `docs/plans/64_shared-gtin-rerank.md`.
 """
 import collections
 import contextlib
@@ -19,6 +27,7 @@ from contextlib import closing
 import numpy as np
 
 import embeddings
+import similar_wines
 
 VERSION = 1
 CLUSTERS_FILE = "clusters.json"
@@ -28,6 +37,10 @@ BUILD_LOCK = "clusters.lock"
 NOTES_LOCK = "cluster-notes.json.lock"
 SPACES = ("full", "label", "combined")
 VECTOR_SPACES = ("full", "label")
+# The value of `by` and of `signals` for a manual pair of `wine_similar` (plan 62).
+MANUAL = "manual"
+# The value of `by` and of `signals` for two wines of one GTIN of `wine_code` (plan 64).
+GTIN = "gtin"
 # The rule space of `cluster-rules.json` that each view shows. The view `combined` shows
 # the `label` rules, because the matcher sends a label crop at query time (plans 43, 45).
 RULE_SPACE_OF = {"full": "full", "label": "label", "combined": "label"}
@@ -206,6 +219,22 @@ def _catalog(conn):
         "FROM wine_catalog WHERE state = 'Active' ORDER BY rowid")}
 
 
+def _gtin_pairs(conn):
+    """Return the sorted pairs (a, b) of the Active wines that have one GTIN of
+    `wine_code` (plan 64). A GTIN of N wines gives N * (N - 1) / 2 pairs."""
+    wines = collections.defaultdict(set)
+    for value, slug in conn.execute(
+            "SELECT c.value, c.wine_slug FROM wine_code c "
+            "JOIN wine_catalog w ON w.wine_slug = c.wine_slug "
+            "WHERE w.state = 'Active' AND c.kind = 'gtin'"):
+        wines[value].add(slug)
+    pairs = set()
+    for slugs in wines.values():
+        slugs = sorted(slugs)
+        pairs.update((a, b) for i, a in enumerate(slugs) for b in slugs[i + 1:])
+    return sorted(pairs)
+
+
 def context(settings, name):
     """Read the current index identity and database assignments without its vectors."""
     embedding = _settings_entry(settings, name)
@@ -219,6 +248,12 @@ def context(settings, name):
     with closing(embeddings.open_database(settings.db_path)) as conn:
         wines, sources = embeddings.read_inputs(conn, settings.db_path)
         catalog = _catalog(conn)
+        pairs = similar_wines.pairs(conn)
+        gtin_pairs = _gtin_pairs(conn)
+    # A manual pair counts only when both wines are in the build (plan 62).
+    known = {wine["slug"] for wine in wines}
+    similar = [[a, b] for a, b in pairs if a in known and b in known]
+    gtin = [[a, b] for a, b in gtin_pairs if a in known and b in known]
     items = embeddings.plan_items(embedding, sources)
     names = embeddings.image_names(directory)
     status = embeddings.item_status(items, index, names)
@@ -230,12 +265,19 @@ def context(settings, name):
         "items": _index_items(index),
         "assignments": assignments,
     }
+    # With no pair, the hash stays the hash of the builds before plan 62.
+    if similar:
+        identity["similar"] = similar
+    # With no GTIN pair, the hash stays the hash of the builds before plan 64.
+    if gtin:
+        identity["gtin"] = gtin
     counts = collections.Counter(state for state, _ in status.values())
     return {
         "settings": settings, "embedding": embedding, "directory": directory,
         "index": index, "wines": wines, "sources": sources, "catalog": catalog,
         "items": items, "status": status, "assignments": assignments,
-        "input_hash": sha256_json(identity),
+        "similar": similar, "input_hash": sha256_json(identity),
+        "gtin": gtin,
         "status_counts": {state: counts.get(state, 0)
                           for state in ("current", "stale", "missing", "failed")},
     }
@@ -377,6 +419,22 @@ def space_edges(edges, space):
             for edge in edges]
 
 
+def manual_links(edges, pairs, by=MANUAL):
+    """Add the manual pairs to the normalized link records of one view (plan 62). `by` is
+    `manual`, or `gtin` for the pairs of a shared GTIN (plan 64).
+
+    A pair that has a link gets the value of `by` at the end of its list `by`. Another
+    pair gets a new link with no vector evidence."""
+    by_pair = {(edge["a"], edge["b"]): edge for edge in edges}
+    for a, b in pairs:
+        edge = by_pair.get((a, b))
+        if edge is None:
+            by_pair[(a, b)] = {"a": a, "b": b, "by": [by], "spaces": {}}
+        elif by not in edge["by"]:
+            edge["by"] = edge["by"] + [by]
+    return [by_pair[key] for key in sorted(by_pair)]
+
+
 def components(edges, view, min_size=MIN_CLUSTER_SIZE):
     """Build connected components from normalized link records. A component with fewer
     than `min_size` wines is not a cluster."""
@@ -396,9 +454,18 @@ def components(edges, view, min_size=MIN_CLUSTER_SIZE):
                  if edge["a"] in member_set and edge["b"] in member_set]
         signals = [space for space in VECTOR_SPACES
                    if any(space in edge["spaces"] for edge in links)]
+        # `kind` keeps its vector meaning; a cluster of manual links alone is `manual`.
+        kind = (signals[0] if len(signals) == 1 else "mixed") if signals else MANUAL
+        # A cluster of GTIN links alone is `gtin` (plan 64).
+        if not signals and not any(MANUAL in edge["by"] for edge in links):
+            kind = GTIN
+        if any(MANUAL in edge["by"] for edge in links):
+            signals.append(MANUAL)
+        if any(GTIN in edge["by"] for edge in links):
+            signals.append(GTIN)
         clusters.append({
             "key": cluster_key(members),
-            "kind": signals[0] if len(signals) == 1 else "mixed",
+            "kind": kind,
             "size": len(members),
             "signals": signals,
             "slugs": members,
@@ -433,8 +500,12 @@ def build(ctx, vectors, full_threshold=DEFAULT_THRESHOLD,
         "label": similarity_edges(rows["label"], label_threshold, max_links=max_links,
                                   field="label_threshold"),
     }
-    normalized = {space: space_edges(raw[space], space) for space in VECTOR_SPACES}
-    normalized["combined"] = combined_edges(raw)
+    pairs = ctx.get("similar") or []
+    normalized = {space: manual_links(space_edges(raw[space], space), pairs)
+                  for space in VECTOR_SPACES}
+    normalized["combined"] = manual_links(combined_edges(raw), pairs)
+    gtin = ctx.get("gtin") or []
+    normalized = {space: manual_links(normalized[space], gtin, GTIN) for space in SPACES}
     spaces = {space: components(normalized[space], space, min_cluster_size)
               for space in SPACES}
     for space in SPACES:

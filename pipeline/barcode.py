@@ -8,9 +8,14 @@ miss asks the embedding backend, and its answer does not change.
 
 Plan 58 (owner message of 2026-09-26T23:54:53+0300, answers of 23:59:00) adds the shared
 codes. A shared code is a GTIN or a QR URL of 2 or more Active wines. Only a unique code
-gives the fast exit above. A shared GTIN limits the embedding match to the wines of the
-GTIN (`only`). A shared QR URL never decides the answer: the annotation can miss other
-wines of the same URL, so the normal match runs. A unique code wins over a shared GTIN.
+gives the fast exit above. A shared QR URL never decides the answer: the annotation can
+miss other wines of the same URL, so the normal match runs. A unique code wins over a
+shared GTIN.
+
+Plan 64 (owner message of 2026-09-27T17:12:18+0300, answers of 17:16:05 and 19:28:52)
+changes the shared GTIN. The embedding ranks every wine, and the wines of the GTIN go
+first (`first`). The other wines stay below them. The cluster re-rank compares only the
+wines of the GTIN (`cluster_rerank.py`).
 
 `Decoder.scan_file` stores decoded scan stages in `data/cache/barcode/`. A cache hit
 repeats the wine lookup. An incomplete scan resumes when no stored code gives a unique
@@ -337,7 +342,7 @@ def shift_trace(trace, step, offset):
 class CodeFirst:
     """A backend of `benchmark.run_benchmark` for a pipeline with the key `barcode`. It
     decodes the photo first. A unique code answers; a shared GTIN asks `inner` with
-    `only`, the wines of the GTIN (plan 58); a miss asks `inner`, an
+    `first`, the wines of the GTIN (plan 64); a miss asks `inner`, an
     `embedding_run.EmbeddingBackend`. `ask` returns five values: the fifth is the step
     trace of plan 41, with the step `barcode` first. The latency of an answer of `inner`
     holds the time of the decode too."""
@@ -360,18 +365,20 @@ class CodeFirst:
                  "code": hit["code"], "read": hit["read"], "format": hit["format"]}
                 for rank, slug in enumerate(hit["slugs"][:self.top_k], 1)]
 
-    def limited(self, cands, hit):
-        """Return the candidates of a match limited to the wines of a shared GTIN (plan
-        58). A wine of the GTIN that the match did not rank goes at the end as a code
-        candidate with the score None."""
+    def gtin_first(self, cands, hit):
+        """Return the candidates of a match that puts the wines of a shared GTIN first
+        (plan 64). The inner rank puts the ranked wines of the GTIN first. A wine of the
+        GTIN that the match did not rank goes after them as a code candidate with the
+        score None (plan 58). The other wines follow."""
+        wines = set(hit["slugs"])
+        head = 0
+        while head < len(cands) and cands[head].get("slug") in wines:
+            head += 1
         ranked = {c.get("slug") for c in cands}
-        out = list(cands[:self.top_k])
-        for cand in self.candidates(dict(hit, slugs=[s for s in hit["slugs"]
-                                                     if s not in ranked])):
-            if len(out) >= self.top_k:
-                break
-            out.append(dict(cand, score=None, rank=len(out) + 1))
-        return out
+        extra = [dict(cand, score=None) for cand in self.candidates(
+            dict(hit, slugs=[s for s in hit["slugs"] if s not in ranked]))]
+        out = (list(cands[:head]) + extra + list(cands[head:]))[:self.top_k]
+        return [dict(cand, rank=rank) for rank, cand in enumerate(out, 1)]
 
     def ask(self, path):
         """Return `(candidates, latency_ms, http_status, error, trace)`."""
@@ -394,7 +401,7 @@ class CodeFirst:
         step["ms"] = _ms(decode_ms)
         step["out"] = dict(out, codes=found, hit=hit)
         if hit is not None:
-            step["out"]["mode"] = "answer" if is_unique(hit) else "limit"
+            step["out"]["mode"] = "answer" if is_unique(hit) else "first"
         ignored = shared_qr(self.lookup.hits(found))
         if ignored:
             step["out"]["shared_qr"] = ignored
@@ -402,11 +409,11 @@ class CodeFirst:
             return (self.candidates(hit), int(round(decode_ms)), 200, None,
                     {"v": 1, "steps": [step]})
         answer = (self.inner.ask(path) if hit is None
-                  else self.inner.ask(path, only=hit["slugs"]))
+                  else self.inner.ask(path, first=hit["slugs"]))
         cands, ms, status, error = answer[:4]
         trace = answer[4] if len(answer) > 4 else None
         if hit is not None and not error:
-            cands = self.limited(cands, hit)
+            cands = self.gtin_first(cands, hit)
         return (cands, ms + int(round(decode_ms)), status, error,
                 shift_trace(trace, step, decode_ms))
 

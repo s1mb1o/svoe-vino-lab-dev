@@ -3,17 +3,23 @@
     GET  /clusters
     GET  /api/clusters
     GET  /api/clusters/<name>
+    POST /api/clusters/build-all
     POST /api/clusters/<name>/build
     POST /api/clusters/<name>/note
 
 Read `docs/plans/30_embedding-clusters.md`. A note write also starts the rebuild of the
 label rule of the cluster (plan 45).
+
+`Build all clusters` (plan 65) is a queue of the server: a thread builds the clusters of
+each entry, one at a time, in the order of `config.yaml`. `GET /api/clusters` holds the
+queue. A restart of the server ends the queue.
 """
 import json
 import os
 import re
 import subprocess
 import sys
+import threading
 import time
 import urllib.parse
 
@@ -23,6 +29,9 @@ import lab_pages
 
 PAGE = "/clusters"
 API = "/api/clusters"
+# Only a POST goes to the queue, so a GET of this path stays the detail of an entry
+# `build-all`, as in plan 60.
+API_BUILD_ALL = API + "/build-all"
 ENTRY_ROUTE = re.compile(r"^/api/clusters/(%s)(/build|/note)?$"
                          % embeddings.NAME_PATTERN)
 JSON_TYPE = "application/json; charset=utf-8"
@@ -36,6 +45,12 @@ MAX_BODY = 32768
 REBUILD_COMMAND = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                "build_label_rules.py")
 REBUILD_LOG = "label-rules.log"
+# The queue of `Build all clusters`: None, or the dict of `queue_view`. `_run_queue`
+# runs it.
+_QUEUE = None
+_QUEUE_LOCK = threading.Lock()
+# The wait of the queue before the next try of an entry that is busy.
+QUEUE_POLL_SECONDS = 1
 
 
 def start_rule_rebuild(config_path, name, directory, cluster):
@@ -115,7 +130,89 @@ def list_view(settings):
                                   status_error=status.get("current_error"))
         entries.append(record)
     return {"database_file": settings.db_path, "config_file": settings.config_path,
-            "embeddings": entries}
+            "embeddings": entries, "queue": queue_view()}
+
+
+def queue_view():
+    """Return a copy of the queue of `Build all clusters`, or None. `state` is `running`,
+    `done`, or `failed`. `index` is the position of `current` in `names`. `waiting` tells
+    why the build of `current` waits, or is None. `results` holds one
+    `{name, state, counts, message}` for each entry that ended; `state` is `done`,
+    `skipped`, or `failed`."""
+    with _QUEUE_LOCK:
+        if _QUEUE is None:
+            return None
+        return dict(_QUEUE, names=list(_QUEUE["names"]),
+                    results=[dict(result) for result in _QUEUE["results"]])
+
+
+def build_all(settings):
+    """Start the queue of `Build all clusters`: the clusters of each entry with no
+    configuration error, one at a time, in the order of `config.yaml`. HTTP 409 when a
+    queue runs."""
+    global _QUEUE
+    names = [name for name, embedding, _ in settings.entries if embedding is not None]
+    if not names:
+        return _error(400, "each embedding of config.yaml has a configuration error")
+    with _QUEUE_LOCK:
+        if _QUEUE is not None and _QUEUE["state"] == "running":
+            return _error(409, "Build all clusters runs: %s, %d of %d" % (
+                _QUEUE["current"], _QUEUE["index"] + 1, len(_QUEUE["names"])))
+        _QUEUE = {"state": "running", "names": names, "index": 0, "current": names[0],
+                  "waiting": None, "results": [], "started_t": time.time(),
+                  "ended_t": None, "message": None}
+    threading.Thread(target=_run_queue, args=(settings.config_path, names),
+                     name="build-all-clusters", daemon=True).start()
+    return _json(202, {"queue": queue_view()})
+
+
+def _update_queue(**fields):
+    with _QUEUE_LOCK:
+        _QUEUE.update(fields)
+        if fields.get("state", "running") != "running":
+            _QUEUE["ended_t"] = time.time()
+
+
+def _build_one(config_path, name):
+    """Build the clusters of one entry, as `POST /api/clusters/<name>/build` does. Return
+    its result, or None when `config.yaml` cannot be read. A busy entry (its embedding
+    build, or another cluster build) is waited for."""
+    while True:
+        try:
+            settings = embeddings.load_settings(config_path)
+        except embeddings.ConfigError as exc:
+            _update_queue(state="failed", message="config.yaml: %s" % exc)
+            return None
+        try:
+            artifact = clusters.build_to_directory(settings, name)
+        except clusters.Busy as exc:
+            _update_queue(waiting=str(exc))
+            time.sleep(QUEUE_POLL_SECONDS)
+            continue
+        except clusters.ClusterError as exc:
+            return {"name": name, "state": "skipped", "counts": None, "message": str(exc)}
+        except (OSError, ValueError) as exc:
+            return {"name": name, "state": "failed", "counts": None, "message": str(exc)}
+        return {"name": name, "state": "done", "message": None,
+                "counts": {space: artifact["spaces"][space]["counts"]
+                           for space in clusters.SPACES}}
+
+
+def _run_queue(config_path, names):
+    """The thread of `Build all clusters`. It reads `config.yaml` again for each entry.
+    A skipped or failed entry does not stop the queue."""
+    try:
+        for index, name in enumerate(names):
+            _update_queue(index=index, current=name, waiting=None)
+            result = _build_one(config_path, name)
+            if result is None:
+                return
+            with _QUEUE_LOCK:
+                _QUEUE["results"].append(result)
+                _QUEUE["waiting"] = None
+        _update_queue(state="done")
+    except Exception as exc:  # noqa: BLE001  (a queue that stays `running` blocks the button)
+        _update_queue(state="failed", message="%s: %s" % (type(exc).__name__, exc))
 
 
 def respond(server, method, path, read_body):
@@ -137,6 +234,8 @@ def respond(server, method, path, read_body):
             return _json(200, list_view(settings))
         except clusters.ClusterError as exc:
             return _error(503, str(exc))
+    if route == API_BUILD_ALL and method == "POST":
+        return build_all(settings)
     match = ENTRY_ROUTE.match(route)
     if not match:
         return _error(404, "not found")

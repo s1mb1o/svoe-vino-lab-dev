@@ -11,6 +11,13 @@ Stage 2 (plan 29, `docs/plans/29_image-details.md`): when no image waits for a c
 that waits for a detail, with the cut of the image, and stores the valid answer in
 `image_detail` (`image_details.py`).
 
+Stage 3 (plan 61, `docs/plans/61_label-descriptions.md`): when no image waits for a class
+or a detail and `image_description.labels` is true, the watcher sends the next linked
+image with no label description with the request of stage 1 of the cluster rules
+(`label_rules.DESCRIBE_PROMPT`, the settings of the block `label_rules`). It repairs obvious
+key drift, checks the answer against `LABEL_SCHEMA`, and adds a row to
+`image_label_description` (`label_descriptions.py`).
+
 Up to `image_description.workers` calls run at the same time, each in a worker of a thread
 pool (owner answers of 2026-09-25T23:58:53+0300, `docs/plans/35_vlm-workers.md`). The main
 thread alone takes the images, and it never takes an image that a call holds.
@@ -25,6 +32,7 @@ Usage:
     python3 pipeline/describe_images.py --once                  # one pass, then stop
     python3 pipeline/describe_images.py --sha <sha256>          # the class of one image
     python3 pipeline/describe_images.py --detail-sha <sha256>   # the detail of one image
+    python3 pipeline/describe_images.py --label-sha <sha256>    # the label description
     python3 pipeline/describe_images.py --watch                 # wait for new images
 """
 import argparse
@@ -32,6 +40,7 @@ import base64
 import collections
 import concurrent.futures
 import fcntl
+import hashlib
 import io
 import itertools
 import json
@@ -40,6 +49,7 @@ import sqlite3
 import sys
 import threading
 import time
+import types
 import urllib.error
 import urllib.request
 from contextlib import closing
@@ -53,6 +63,8 @@ import comments
 import image_descriptions
 import image_details
 import imagestore
+import label_descriptions
+import label_rules
 import labdb
 import model_cache
 import vlm_config
@@ -65,7 +77,7 @@ LOG_PATH = os.path.join(ROOT, "work", "describe_images.log")
 # The key `image_description` of the configuration. A missing key takes its default.
 DEFAULTS = {"watch": False, "vlm": "qwen3.5-9b-nvfp4", "max_side": 1024,
             "poll_seconds": 30, "max_attempts": 3, "workers": 1,
-            "details": False, "detail_max_side": 1536}
+            "details": False, "detail_max_side": 1536, "labels": False}
 MAX_TOKENS = 300
 TIMEOUT_SECONDS = 300
 # The timeout of the probe of 1 token after a request that timed out (plan 49).
@@ -183,6 +195,34 @@ DETAIL_PROPERTIES = {
     "marks": {"type": "array", "items": {"type": ["string", "object"]}},
 }
 
+# The check of a label description of stage 3 (plan 61), after the key repair of
+# `label_descriptions.repair`. The keys are the keys of `label_rules.DESCRIBE_PROMPT`. The
+# values accept the forms of the 382 cluster descriptions of 2026-09-27.
+LABEL_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": list(label_descriptions.KEYS),
+    "properties": {
+        "texts": {"type": "array", "items": {"anyOf": [
+            {"type": "string"},
+            {"type": "object", "required": ["text"], "properties": {
+                "text": {"type": "string"}, "where": {"type": ["string", "null"]}}}]}},
+        "numbers": {"type": "array", "items": {"anyOf": [
+            {"type": ["string", "number"]},
+            {"type": "object", "required": ["value"], "properties": {
+                "value": {"type": ["string", "number"]},
+                "where": {"type": ["string", "null"]}}}]}},
+        "vintage": {"type": ["string", "integer", "null"]},
+        "colours": {"type": ["array", "string"], "items": {"type": "string"}},
+        "design": {"type": "string"},
+        "marks": {"type": "array", "items": {"type": ["string", "object"]}},
+        "bottle": {"type": ["string", "object", "null"]},
+    },
+}
+LABEL_VALIDATOR = jsonschema.Draft202012Validator(LABEL_SCHEMA)
+# The longest answer text that a row of stage 3 keeps in `vlm_reply.raw`.
+LABEL_RAW_CHARS = 8000
+
 
 class DescribeError(Exception):
     """One VLM call failed. `counted` is False for a failure of the service (an HTTP 429
@@ -217,9 +257,20 @@ def settings(config):
     for key in ("max_side", "poll_seconds", "max_attempts", "workers", "detail_max_side"):
         if not isinstance(out[key], int) or isinstance(out[key], bool) or out[key] < 1:
             raise ValueError("image_description.%s MUST be a positive integer" % key)
-    if not isinstance(out["details"], bool):
-        raise ValueError("image_description.details MUST be true or false")
+    for key in ("details", "labels"):
+        if not isinstance(out[key], bool):
+            raise ValueError("image_description.%s MUST be true or false" % key)
     return out
+
+
+def label_settings(config_path):
+    """Return the request settings of stage 3 (plan 61): the checked block `label_rules`
+    of the configuration at `config_path`, as `label_rules.config_values` gives it. So
+    stage 3 sends the request of stage 1 of the cluster rules. Raise ValueError."""
+    try:
+        return label_rules.config_values(types.SimpleNamespace(config_path=config_path))
+    except label_rules.RuleError as exc:
+        raise ValueError(str(exc)) from exc
 
 
 def database_path(config):
@@ -453,6 +504,124 @@ def describe_detail(entry, path, prompt_kind, package_type, cfg):
     return ask(entry, payload, jsonschema.Draft202012Validator(schema))
 
 
+def label_payload(entry, content, max_tokens, thinking, extra=None):
+    """Return the chat request of stage 3 (plan 61). It is the request of
+    `label_rules.ask` with no schema, so stage 3 and the cluster rules share the records
+    of `model_cache`. A test compares the two."""
+    payload = {"model": entry.model, "temperature": 0, "max_tokens": max_tokens,
+               "response_format": {"type": "json_object"},
+               "messages": [{"role": "user", "content": content}]}
+    if entry.thinking_field == "top_level":
+        payload["enable_thinking"] = thinking
+    else:
+        payload["chat_template_kwargs"] = {"enable_thinking": thinking}
+    payload.update(extra or {})
+    return payload
+
+
+def label_answer(text):
+    """Return (the label description, the renames) of an answer text of stage 3, or raise
+    DescribeError. The text MUST hold a JSON object (`label_rules.parse_json`, the rule of
+    the cluster rules). After the key repair of `label_descriptions.repair`, the object
+    MUST pass LABEL_SCHEMA."""
+    value = label_rules.parse_json(text)
+    if value is None:
+        raise DescribeError("the answer is not a JSON object: %.300s" % text)
+    value, renames = label_descriptions.repair(value)
+    errors = sorted(LABEL_VALIDATOR.iter_errors(value),
+                    key=lambda e: [str(part) for part in e.path])
+    if errors:
+        where = "/".join(str(part) for part in errors[0].path) or "the answer"
+        raise DescribeError("the answer fails the schema at %s: %s; answer: %.300s"
+                            % (where, errors[0].message, text))
+    return value, renames
+
+
+def label_text(body):
+    """Return (the answer text, finish_reason) of a chat body, or raise DescribeError."""
+    try:
+        choice = body["choices"][0]
+        return (choice["message"].get("content") or "").strip(), choice.get("finish_reason")
+    except (KeyError, IndexError, TypeError, AttributeError):
+        raise DescribeError("the body holds no answer: %.300s" % json.dumps(body))
+
+
+def label_call(entry, payload, timeout):
+    """Send one request of stage 3. Return (body, ms, cache hit).
+
+    A cached record counts only when its answer is complete and passes `label_answer`:
+    a record of the cluster rules can hold an answer that fails the check, and a repeat
+    of that answer would stop the image. Else the request goes to the service. A read
+    timeout gets the probe of `timeout_error`."""
+    fields = model_cache.vlm_fields(entry.url, payload)
+    record = model_cache.lookup(fields) if fields else None
+    if record is not None:
+        try:
+            text, finish = label_text(record["answer"])
+            if finish != "length":
+                label_answer(text)
+                return record["answer"], record["ms"], True
+        except DescribeError:
+            pass
+    started = time.perf_counter()
+    try:
+        body = post(entry, payload, timeout)
+    except DescribeError as exc:
+        if not exc.timed_out:
+            raise
+        raise timeout_error(entry, exc)
+    return body, (time.perf_counter() - started) * 1000, False
+
+
+def describe_label(lcfg, path):
+    """Ask the VLM for the label description of one image file (plan 61) with the request
+    of stage 1 of the cluster rules. `lcfg` is the result of `label_settings`. Return (the
+    description, the renames, the VLM columns of `label_descriptions.VLM_COLUMNS` with no
+    `input_sha256`).
+
+    An answer that `max_tokens` cut off is sent once more with the loop guard of
+    `label_rules.ask_guarded`: `repetition_penalty` and two times `max_tokens`. A second
+    cut-off answer is a failure. A record is stored only for an answer that passed the
+    check."""
+    entry = lcfg["entry"]
+    png, size = label_rules.picture_png(path, lcfg["describe_side"])
+    content = [{"type": "image_url", "image_url": {"url": label_rules.data_url(png)}},
+               {"type": "text", "text": label_rules.DESCRIBE_PROMPT}]
+    max_tokens, extra = lcfg["describe_max_tokens"], {}
+    payload = label_payload(entry, content, max_tokens, lcfg["thinking"])
+    body, ms, hit = label_call(entry, payload, lcfg["timeout_s"])
+    text, finish = label_text(body)
+    guarded = finish == "length"
+    if guarded:
+        max_tokens *= 2
+        extra = {"repetition_penalty": label_rules.REPETITION_PENALTY}
+        payload = label_payload(entry, content, max_tokens, lcfg["thinking"], extra)
+        body, ms, hit = label_call(entry, payload, lcfg["timeout_s"])
+        text, finish = label_text(body)
+        if finish == "length":
+            raise DescribeError("max_tokens %d cut off the answer, also with the loop "
+                                "guard: %.300s" % (max_tokens, text))
+    description, renames = label_answer(text)
+    fields = model_cache.vlm_fields(entry.url, payload)
+    if not hit and fields:
+        model_cache.store(fields, body, ms)
+    request = {"prompt": "label_rules.DESCRIBE_PROMPT",
+               "prompt_sha256": hashlib.sha256(
+                   label_rules.DESCRIBE_PROMPT.encode("utf-8")).hexdigest(),
+               "describe_side": lcfg["describe_side"], "sent_size": list(size),
+               "image_format": "png", "temperature": 0,
+               "response_format": {"type": "json_object"}, **extra,
+               "timeout_s": lcfg["timeout_s"], "settings_sha": lcfg["describe_sha"],
+               "cache_key": model_cache.key_of(fields) if fields else None}
+    reply = {"finish_reason": finish, "usage": body.get("usage") or {}, "ms": round(ms),
+             "cached": hit, "loop_guard": guarded, "repairs": renames,
+             "raw": text[:LABEL_RAW_CHARS]}
+    vlm = {"vlm_name": entry.name, "vlm_endpoint": entry.url, "vlm_model": entry.model,
+           "vlm_served_model": body.get("model") or None, "max_tokens": max_tokens,
+           "thinking": bool(lcfg["thinking"]), "vlm_request": request, "vlm_reply": reply}
+    return description, renames, vlm
+
+
 def cached_reply(entry, path, row, max_side):
     """Return the `model_cache` record of the call that described the image file `path`,
     or None. The page `/dataset` shows it as the raw VLM reply.
@@ -551,6 +720,37 @@ def detail_one(db_path, entry, cfg, item):
     return True
 
 
+def label_one(db_path, cfg, item):
+    """Make the label description of one target of `label_descriptions.pending` and store
+    it (plan 61). Return True when a row was added. Raise DescribeError for a failure of
+    the service, after it is stored. The settings of the request are `cfg["label"]`."""
+    sha256, input_sha256, input_kind, folder, extension = item
+    path = os.path.join(imagestore.folder_of(db_path, folder),
+                        "%s.%s" % (input_sha256, extension))
+    try:
+        description, renames, vlm = describe_label(cfg["label"], path)
+    except (DescribeError, OSError) as exc:
+        counted = getattr(exc, "counted", True)
+        write(db_path, lambda conn: label_descriptions.record_failure(
+            conn, sha256, str(exc)[:1000], count=counted))
+        log("%s label failed%s: %s" % (sha256[:12], "" if counted else " (not counted)", exc))
+        if not counted:
+            raise
+        return False
+    vlm["input_sha256"] = input_sha256
+    vlm["vlm_request"]["input_kind"] = input_kind
+    row_id = write(db_path, lambda conn: label_descriptions.record_vlm(
+        conn, sha256, description, vlm))
+    texts = description.get("texts")
+    reply = vlm["vlm_reply"]
+    log("%s label %s %s, %d texts%s, %.1f s%s" % (
+        sha256[:12], "ok" if row_id else "not taken: the image has a row now", input_kind,
+        len(texts) if isinstance(texts, list) else 0,
+        "; renamed " + ", ".join("%s -> %s" % (old, new) for old, new in renames)
+        if renames else "", reply["ms"] / 1000, " (cache)" if reply["cached"] else ""))
+    return row_id is not None
+
+
 def parent_alive(pid):
     if not pid:
         return True
@@ -603,6 +803,9 @@ class Status:
                      "endpoint": entry.url, "timeout_seconds": TIMEOUT_SECONDS,
                      "workers": cfg["workers"], "max_attempts": cfg["max_attempts"],
                      "started_at": comments.now_utc()}
+        if cfg.get("labels") and cfg.get("label"):
+            # Stage 3 of plan 61 sends its requests to the `vlm` entry of `label_rules`.
+            self.base["labels_vlm"] = cfg["label"]["entry"].name
         self.times = collections.deque(maxlen=20)
         self.last = None
         self.running = {}
@@ -627,7 +830,10 @@ class Status:
 def next_items(db_path, cfg, count, busy):
     """Return up to `count` pairs (stage, item) to start, with no image of the set `busy`.
     The images that wait for a class come first. When fewer wait and `cfg["details"]` is
-    true, the images that wait for a detail fill the rest (plan 29)."""
+    true, the images that wait for a detail fill the rest (plan 29). When still fewer wait
+    and `cfg["labels"]` is true, the images that wait for a label description fill the
+    rest (plan 61). An image that waits for a class can wait for a label description too;
+    it gets one call at a time."""
     limit = count + len(busy)
     with closing(open_db(db_path)) as conn:
         found = [("class", item) for item in image_descriptions.pending(
@@ -635,6 +841,10 @@ def next_items(db_path, cfg, count, busy):
         if len(found) < count and cfg["details"]:
             found += [("detail", item) for item in image_details.pending(
                 conn, cfg["max_attempts"], limit=limit) if item[0] not in busy]
+        if len(found) < count and cfg["labels"]:
+            taken = set(busy) | {item[0] for _, item in found}
+            found += [("label", item) for item in label_descriptions.pending(
+                conn, cfg["max_attempts"], limit=limit + len(found)) if item[0] not in taken]
     return found[:count]
 
 
@@ -642,6 +852,8 @@ def run_item(db_path, entry, cfg, stage, item):
     """Make the call of one pair of `next_items` in a worker of the pool."""
     if stage == "class":
         return describe_one(db_path, entry, cfg, *item)
+    if stage == "label":
+        return label_one(db_path, cfg, item)
     return detail_one(db_path, entry, cfg, item)
 
 
@@ -764,10 +976,12 @@ def main(argv=None):
     mode.add_argument("--watch", action="store_true", help="wait for new images")
     mode.add_argument("--sha", help="describe one image")
     mode.add_argument("--detail-sha", help="get the detail of one eligible image (plan 29)")
+    mode.add_argument("--label-sha", help="make the label description of one linked image "
+                                          "with no label description (plan 61)")
     parser.add_argument("--parent-pid", type=int, help="stop when this process is gone")
     parser.add_argument("--retry-failed", action="store_true",
                         help="set the failure count of each unfilled row to 0 first, "
-                             "also of the details")
+                             "also of the details and of the label descriptions")
     args = parser.parse_args(argv)
     sys.stdout.reconfigure(line_buffering=True)
     try:
@@ -776,6 +990,8 @@ def main(argv=None):
         cfg = settings(config)
         entry = vlm_config.entry(config, cfg["vlm"])
         db_path = database_path(config)
+        if cfg["labels"] or args.label_sha:
+            cfg["label"] = label_settings(args.config)
     except (OSError, ValueError, KeyError, yaml.YAMLError, vlm_config.VlmConfigError) as exc:
         print("error: %s" % exc, file=sys.stderr)
         return 1
@@ -784,15 +1000,31 @@ def main(argv=None):
         print("error: another watcher holds %s" % LOCK_PATH, file=sys.stderr)
         return 1
     with lock:
-        log("start: %s, vlm %s (%s), workers %d, details %s, database %s" % (
+        log("start: %s, vlm %s (%s), workers %d, details %s, labels %s, database %s" % (
             "watch" if args.watch else "sha " + args.sha if args.sha
-            else "detail-sha " + args.detail_sha if args.detail_sha else "once",
+            else "detail-sha " + args.detail_sha if args.detail_sha
+            else "label-sha " + args.label_sha if args.label_sha else "once",
             entry.name, entry.model, cfg["workers"], "on" if cfg["details"] else "off",
+            "on (vlm %s)" % cfg["label"]["entry"].name if cfg["labels"] else "off",
             db_path))
         try:
             if args.retry_failed:
                 log("retry: %d failed rows" % write(db_path, image_descriptions.reset_failed))
                 log("retry: %d failed detail rows" % write(db_path, image_details.reset_failed))
+                log("retry: %d failed label description rows"
+                    % write(db_path, label_descriptions.reset_failed))
+            if args.label_sha:
+                with closing(open_db(db_path)) as conn:
+                    item = label_descriptions.target(conn, args.label_sha)
+                    row = item is not None and label_descriptions.latest(conn, args.label_sha)
+                if item is None:
+                    print("error: no linked image %s" % args.label_sha, file=sys.stderr)
+                    return 1
+                if row:
+                    log("%s label skipped: it has the label description %d"
+                        % (args.label_sha[:12], row["id"]))
+                    return 1
+                return 0 if label_one(db_path, cfg, tuple(item)) else 1
             if args.detail_sha:
                 with closing(open_db(db_path)) as conn:
                     item = image_details.target(conn, args.detail_sha)

@@ -1,9 +1,11 @@
-"""Tests of the shared codes of the barcode step (plan 58): `pipeline/barcode.py`, `only` of
-`embedding_run.Catalogue.rank` and `embedding_run.EmbeddingBackend.ask`, and `only` of
-`cluster_rerank.ClusterRerank.ask`.
+"""Tests of the shared codes of the barcode step (plans 58 and 64): `pipeline/barcode.py`,
+`first` of `embedding_run.Catalogue.rank` and `embedding_run.EmbeddingBackend.ask`, and
+`first` of `cluster_rerank.ClusterRerank` and `cluster_rerank.RuleBook.trigger`.
 
 A shared code is a GTIN or a QR URL of 2 or more Active wines. A unique code answers the
-photo. A shared GTIN limits the match to its wines. A shared QR URL never decides.
+photo. A shared GTIN puts its wines first, and the other wines stay below them (plan 64).
+The cluster re-rank then compares only the wines of the GTIN. A shared QR URL never
+decides.
 """
 import tempfile
 import unittest
@@ -11,6 +13,7 @@ from pathlib import Path
 
 from PIL import Image
 
+import test_cluster_rerank as CR  # the rule fixtures; a module, so no test runs twice
 import test_embedding_run as ER  # the catalogue fixtures (puts pipeline/ on sys.path)
 import barcode  # noqa: E402
 import cluster_rerank  # noqa: E402
@@ -98,8 +101,8 @@ class FakeInner:
         self.spec = {"id": "twin", "kind": "embedding", "label": "lab pipeline twin"}
         self.calls = []
 
-    def ask(self, path, only=None):
-        self.calls.append(only)
+    def ask(self, path, first=None):
+        self.calls.append(first)
         return self.answer
 
 
@@ -114,7 +117,13 @@ class FakeDecoder:
 TRACE = {"v": 1, "steps": [{"id": "embed", "start_ms": 0.0, "ms": 5.0}]}
 
 
-class LimitTest(unittest.TestCase):
+def ranked(*pairs):
+    """Return the candidates of an inner answer: (slug, score) in rank order."""
+    return [{"slug": slug, "score": score, "rank": rank}
+            for rank, (slug, score) in enumerate(pairs, 1)]
+
+
+class FirstTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.photo = str(Path(self.tmp.name) / "photo.png")
@@ -131,30 +140,46 @@ class LimitTest(unittest.TestCase):
                                     lookup=barcode.CodeLookup(LOOKUP))
         return backend.ask(self.photo), inner
 
-    def test_a_shared_gtin_limits_the_match_to_its_wines(self):
+    def test_a_shared_gtin_puts_its_wines_first_and_keeps_the_other_wines(self):
+        # The inner rank puts the ranked wine of the GTIN first (Catalogue.rank).
         (cands, _ms, status, error, trace), inner = self.ask(
-            [ean(GTIN_TWO)], ([{"slug": "wine-c", "score": 0.8, "rank": 1}], 30, 200, None,
-                              TRACE))
+            [ean(GTIN_TWO)], (ranked(("wine-c", 0.6), ("wine-x", 0.9), ("wine-y", 0.8)),
+                              30, 200, None, TRACE))
         self.assertEqual(inner.calls, [["wine-b", "wine-c"]])
         self.assertEqual((status, error), (200, None))
+        # The wine of the GTIN with no vector goes after the ranked wine of the GTIN.
+        # Each candidate keeps its own score.
         self.assertEqual([(c["slug"], c["score"], c["rank"]) for c in cands],
-                         [("wine-c", 0.8, 1), ("wine-b", None, 2)])
-        # The ranked wine keeps the keys of the embedding; the wine with no vector is a
+                         [("wine-c", 0.6, 1), ("wine-b", None, 2), ("wine-x", 0.9, 3),
+                          ("wine-y", 0.8, 4)])
+        # The ranked wines keep the keys of the embedding; the wine with no vector is a
         # code candidate.
         self.assertNotIn("code", cands[0])
         self.assertEqual(cands[1]["code"], GTIN_TWO)
+        self.assertNotIn("code", cands[2])
         step = trace["steps"][0]
         self.assertEqual((step["id"], step["out"]["mode"], step["out"]["hit"]["code"]),
-                         ("barcode", "limit", GTIN_TWO))
+                         ("barcode", "first", GTIN_TWO))
         self.assertEqual([s["id"] for s in trace["steps"]], ["barcode", "embed"])
 
-    def test_the_limited_answer_keeps_top_k(self):
+    def test_the_ranked_wines_of_the_gtin_keep_their_order(self):
         (cands, *_), _inner = self.ask(
-            [ean(GTIN_TWO)], ([{"slug": "wine-b", "score": 0.7, "rank": 1}], 30, 200, None,
-                              TRACE), top_k=1)
+            [ean(GTIN_TWO)], (ranked(("wine-b", 0.7), ("wine-c", 0.6), ("wine-x", 0.9)),
+                              30, 200, None, TRACE))
+        self.assertEqual([(c["slug"], c["rank"]) for c in cands],
+                         [("wine-b", 1), ("wine-c", 2), ("wine-x", 3)])
+        self.assertFalse(any("code" in c for c in cands))
+
+    def test_the_answer_keeps_top_k(self):
+        (cands, *_), _inner = self.ask(
+            [ean(GTIN_TWO)], (ranked(("wine-c", 0.6), ("wine-x", 0.9)), 30, 200, None,
+                              TRACE), top_k=2)
+        self.assertEqual([c["slug"] for c in cands], ["wine-c", "wine-b"])
+        (cands, *_), _inner = self.ask(
+            [ean(GTIN_TWO)], (ranked(("wine-b", 0.7)), 30, 200, None, TRACE), top_k=1)
         self.assertEqual([c["slug"] for c in cands], ["wine-b"])
 
-    def test_an_error_of_the_limited_match_stays_an_error(self):
+    def test_an_error_of_the_match_stays_an_error(self):
         (cands, _ms, _status, error, _trace), _inner = self.ask(
             [ean(GTIN_TWO)], ([], 30, None, "SAM3 is down", TRACE))
         self.assertEqual((cands, error), ([], "SAM3 is down"))
@@ -178,49 +203,133 @@ class LimitTest(unittest.TestCase):
         self.assertEqual(trace["steps"][0]["out"]["mode"], "answer")
 
 
-class RankOnlyTest(ER.Temporary):
+class RankFirstTest(ER.Temporary):
     def setUp(self):
         super().setUp()
         self.lab = ER.catalogue_lab(self.root)
         self.embedding = ER.build(self.lab)
         self.catalogue = embedding_run.Catalogue(self.embedding, self.lab.db_path)
+        self.query = ER.vectors_of(self.catalogue, "green")
 
-    def test_the_rank_gives_only_the_wines_of_only(self):
-        query = ER.vectors_of(self.catalogue, "green")
+    def test_the_wines_of_first_go_first_with_their_own_scores(self):
+        normal = self.catalogue.rank(self.query, 10)
+        self.assertEqual(normal[0]["slug"], "green")
         trace = embedding_run.Trace()
-        cands = self.catalogue.rank(query, 10, trace, only=["red", "blue"])
-        self.assertEqual(sorted(c["slug"] for c in cands), ["blue", "red"])
-        self.assertEqual([c["rank"] for c in cands], [1, 2])
-        for step in trace.value()["steps"]:
-            if step["id"] == "search":
-                self.assertNotIn("green", [t["slug"] for t in step["out"]["top"]])
-        self.assertEqual(self.catalogue.rank(query, 10, only=[]), [])
-        self.assertEqual(self.catalogue.rank(query, 10, only=["nope"]), [])
-        self.assertEqual(self.catalogue.rank(query, 10)[0]["slug"], "green")
+        cands = self.catalogue.rank(self.query, 10, trace, first=["red", "blue"])
+        others = [c["slug"] for c in normal if c["slug"] != "green"]
+        self.assertEqual([c["slug"] for c in cands], others + ["green"])
+        self.assertEqual([c["rank"] for c in cands], [1, 2, 3])
+        self.assertEqual({c["slug"]: c["score"] for c in cands},
+                         {c["slug"]: c["score"] for c in normal})
+        # The rank limits no wine: each search step still sees the best wine.
+        tops = [[t["slug"] for t in step["out"]["top"]]
+                for step in trace.value()["steps"] if step["id"] == "search"]
+        self.assertTrue(tops)
+        for top in tops:
+            self.assertIn("green", top)
 
-    def test_the_backend_passes_only_to_the_rank(self):
+    def test_a_wine_of_first_outside_the_top_k_comes_back(self):
+        self.assertEqual([c["slug"] for c in self.catalogue.rank(self.query, 1)], ["green"])
+        self.assertEqual([c["slug"] for c in self.catalogue.rank(self.query, 1,
+                                                                 first=["blue"])], ["blue"])
+
+    def test_an_empty_or_unknown_first_gives_the_normal_rank(self):
+        normal = self.catalogue.rank(self.query, 10)
+        self.assertEqual(self.catalogue.rank(self.query, 10, first=[]), normal)
+        self.assertEqual(self.catalogue.rank(self.query, 10, first=["nope"]), normal)
+
+    def test_the_backend_passes_first_to_the_rank(self):
         backend = embedding_run.build_backend(self.embedding, self.lab.db_path,
                                               make_model=lambda e: ER.ColourModel(),
                                               segmenter=ER.FakeSam3())
         path = str(self.root / "red.png")
         ER.query_photo("red").save(path)
         self.assertEqual(backend.ask(path)[0][0]["slug"], "red")
-        cands, _ms, status, error, _trace = backend.ask(path, only=["green", "blue"])
+        cands, _ms, status, error, _trace = backend.ask(path, first=["green", "blue"])
         self.assertEqual((status, error), (200, None))
-        self.assertEqual(sorted(c["slug"] for c in cands), ["blue", "green"])
+        self.assertEqual(sorted(c["slug"] for c in cands[:2]), ["blue", "green"])
+        self.assertEqual(cands[2]["slug"], "red")
 
 
-class RerankOnlyTest(unittest.TestCase):
-    def test_the_rerank_passes_only_to_its_inner_backend(self):
-        inner = FakeInner(([{"slug": "wine-b", "score": 0.7, "rank": 1}], 30, 200, None,
-                           TRACE))
-        backend = object.__new__(cluster_rerank.ClusterRerank)
-        backend.inner = inner
-        backend.options = {"window": 3}
-        backend.book = type("Book", (), {"trigger": lambda self, cands, window: (None, None)})()
-        backend.ask("photo.jpg", only=["wine-b", "wine-c"])
+class FirstInner(CR.Inner):
+    """The base backend of the re-rank tests, with `first` (plan 64)."""
+
+    def __init__(self, answer):
+        super().__init__(answer)
+        self.calls = []
+
+    def ask(self, path, first=None):
+        self.calls.append(first)
+        return self.answer
+
+
+class RerankFirstTest(unittest.TestCase):
+    """The window of a shared GTIN (plan 64). The rule `CR.sheet_rule()` expects
+    A 30/70, B 50/50, and C 70/30. A and B are the wines of the GTIN."""
+
+    def make(self, rules, answer, vlm):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        fixture = CR.Fixture(self.tmp.name, rules)
+        options = cluster_rerank.check_options({"rules": "rules", "vlm": "fake-vlm"})
+        self.inner = FirstInner(answer)
+        backend = cluster_rerank.ClusterRerank(self.inner, options, fixture.config_path,
+                                               fixture.db_path, ask_fn=vlm)
+        backend.picture = lambda path: (b"png", "label")
+        return backend
+
+    def test_the_rerank_passes_first_to_its_inner_backend(self):
+        backend = self.make([CR.sheet_rule()], (CR.cands(CR.D), 30, 200, None, TRACE),
+                            CR.FakeVlm())
+        backend.ask("photo.jpg", first=[CR.A, CR.B])
         backend.ask("photo.jpg")
-        self.assertEqual(inner.calls, [["wine-b", "wine-c"], None])
+        self.assertEqual(self.inner.calls, [[CR.A, CR.B], None])
+
+    def test_a_card_that_is_not_a_wine_of_the_gtin_does_not_move(self):
+        answer = (CR.cands(CR.A, CR.B, CR.C, CR.D), 30, 200, None, TRACE)
+        # The answer 70/30 fits C alone. With no GTIN, C moves up (plan 48).
+        backend = self.make([CR.sheet_rule()], answer, CR.FakeVlm('{"q1": "70/30"}'))
+        self.assertEqual([c["slug"] for c in backend.ask("p")[0]], [CR.C, CR.A, CR.B, CR.D])
+        # With the GTIN of A and B, the window holds A and B alone, so C stays.
+        out = backend.ask("p", first=[CR.A, CR.B])[0]
+        self.assertEqual([c["slug"] for c in out], [CR.A, CR.B, CR.C, CR.D])
+        self.assertEqual(out[0]["explain"]["window"], [CR.A, CR.B])
+        self.assertFalse(out[0]["explain"]["changed"])
+
+    def test_the_rule_orders_the_wines_of_the_gtin(self):
+        answer = (CR.cands(CR.A, CR.B, CR.C, CR.D), 30, 200, None, TRACE)
+        backend = self.make([CR.sheet_rule()], answer, CR.FakeVlm('{"q1": "50/50"}'))
+        out, _ms, status, error, trace = backend.ask("p", first=[CR.A, CR.B])
+        self.assertEqual([c["slug"] for c in out], [CR.B, CR.A, CR.C, CR.D])
+        self.assertEqual((status, error), (200, None))
+        self.assertEqual(trace["steps"][-1]["out"]["window"], [CR.A, CR.B])
+
+    def test_a_verdict_for_a_card_outside_the_window_keeps_the_base_order(self):
+        vlm = CR.FakeVlm('{"wine": "C"}')
+        backend = self.make([CR.verdict_rule((CR.A, CR.B, CR.C))],
+                            (CR.cands(CR.A, CR.B, CR.C), 30, 200, None, TRACE), vlm)
+        out = backend.ask("p", first=[CR.A, CR.B])[0]
+        self.assertEqual([c["slug"] for c in out], [CR.A, CR.B, CR.C])
+        # The prompt still lists every card of the cluster.
+        self.assertIn("Name wine-c-12", vlm.calls[0]["content"][1]["text"])
+
+    def test_one_wine_of_the_gtin_in_the_cluster_calls_no_vlm(self):
+        vlm = CR.FakeVlm()
+        answer = (CR.cands(CR.A, CR.B, CR.C), 30, 200, None, TRACE)
+        backend = self.make([CR.sheet_rule((CR.A, CR.C))], answer, vlm)
+        self.assertIs(backend.ask("p", first=[CR.A, CR.B]), answer)
+        self.assertEqual(vlm.calls, [])
+
+    def test_the_rank_1_card_must_be_a_wine_of_the_gtin(self):
+        backend = self.make([CR.sheet_rule()], (CR.cands(CR.D), 30, 200, None, TRACE),
+                            CR.FakeVlm())
+        book = backend.book
+        self.assertEqual(book.trigger(CR.cands(CR.C, CR.A, CR.B), 5, [CR.A, CR.B]),
+                         (None, []))
+        rule, positions = book.trigger(CR.cands(CR.A, CR.C, CR.B), 5, [CR.A, CR.B])
+        self.assertEqual((rule["key"], positions), (CR.sheet_rule()["key"], [0, 2]))
+        rule, positions = book.trigger(CR.cands(CR.A, CR.C, CR.B), 5)
+        self.assertEqual(positions, [0, 1, 2])
 
 
 if __name__ == "__main__":

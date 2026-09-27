@@ -18,6 +18,8 @@ The route `/api/dataset-atlas-binding` adds (POST) one manual Atlas Core product
 wine and removes (DELETE) one product of either source, manual or automatic, in the
 table `wine_atlas_binding` with `atlas_bindings.py`. A wine MAY have 2 or more products.
 Read `docs/plans/15_atlas-binding.md` and `docs/plans/54_atlas-binding-list.md`.
+`POST /api/dataset-atlas-binding-approve` changes one automatic product of one wine to
+manual: a person confirmed the match.
 
 The route `/api/dataset-comment` adds (POST) and removes (DELETE) one timestamped
 comment of a wine in the table `wine_comment` with `comments.py`. Read
@@ -30,6 +32,15 @@ The route `/api/dataset-favorite` marks (POST `"favorite": true`) or unmarks (PO
 The route `/api/dataset-beverage-type` sets (POST) the wine type of one wine in the table
 `wine_beverage_type` with `beverage_types.py`: `"4"` a wine, `"44"` a sparkling wine, or
 null for no type. Read `docs/plans/52_wine-beverage-type.md`.
+
+The route `/api/dataset-similar` adds (POST `{"slug", "other"}`) and removes (DELETE
+`?slug=&other=`) one pair of two similar wines in the table `wine_similar` with
+`similar_wines.py`. The relation has no direction. The cluster build uses each pair as one
+more link. Read `docs/plans/62_similar-wines.md`.
+
+The route `/api/dataset-tag` adds (POST `{"slug", "tag"}`) and removes (DELETE
+`?slug=&tag=`) one free-form text tag of one wine in the table `wine_tag` with
+`wine_tags.py`. The pipeline does not read the tags. Read `docs/plans/63_wine-tags.md`.
 
 The route `/api/dataset-patch` stores (POST, the image bytes as the body) and removes
 (DELETE) the `main_patched` image of one wine with `patches.py`. Read
@@ -61,6 +72,12 @@ sends the images whose detail failed, each with its entries of the watcher log
 `config.yaml` is true,
 `main` starts the watcher `describe_images.py --watch` and stops it at the exit; a SIGTERM
 leads to that exit. Read `docs/plans/26_image-description.md`.
+
+The label descriptions of the images (plan 61): `label_description_routes.py` answers
+`GET /api/image-label-descriptions?sha256=` (the rows of one image, the latest first),
+`POST /api/image-label-description` (a manual row), and `DELETE
+/api/image-label-description` (one row). Stage 3 of the watcher adds the VLM rows. Read
+`docs/plans/61_label-descriptions.md`.
 
 The Embeddings page is on: `embedding_routes.py` answers each of its routes. Read
 `docs/plans/10_embeddings-page.md`.
@@ -132,16 +149,20 @@ import embedding_routes  # noqa: E402
 import favorites  # noqa: E402
 import health  # noqa: E402
 import image_descriptions  # noqa: E402
+import label_description_routes  # noqa: E402
 import lab_pages  # noqa: E402
 import labdb  # noqa: E402
 import manual_wines  # noqa: E402
+import model_cache  # noqa: E402
 import patches  # noqa: E402
 import recognize_routes  # noqa: E402
 import run_jobs  # noqa: E402
 import run_routes  # noqa: E402
+import similar_wines  # noqa: E402
 import testset_routes  # noqa: E402
 import vlm_config  # noqa: E402
 import website_import_routes  # noqa: E402
+import wine_tags  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(ROOT, "config.yaml")
@@ -401,7 +422,9 @@ def dataset_records(conn):
     `_comments` lists the comments of the wine in time order (`comments.py`).
     `_favorite` tells whether the wine is a favorite (`favorites.py`).
     `_beverage_type_code` is the wine type (`beverage_types.py`): `"4"`, `"44"`, or None.
+    `_similar` lists the slugs of the similar wines, in the order of the marks (plan 62).
     `_modified_at` and `_website_modified_at` are the two change times of schema 015.
+    `_tags` lists the tags of the wine, in the order of the adds (plan 63).
     """
     images = card_images(conn)
     times = {slug: (changed, website) for slug, changed, website in conn.execute(
@@ -413,6 +436,8 @@ def dataset_records(conn):
     starred = favorites.favorites(conn)
     kinds = beverage_types.types(conn)
     photos = alternative_images(conn)
+    similar = similar_wines.partners(conn)
+    tagged = wine_tags.tags(conn)
     records = []
     for row in conn.execute("SELECT %s FROM wine_catalog ORDER BY rowid"
                             % ", ".join(CATALOG_COLUMNS)):
@@ -430,6 +455,8 @@ def dataset_records(conn):
         record["_comments"] = notes.get(record["slug"], [])
         record["_favorite"] = record["slug"] in starred
         record["_beverage_type_code"] = kinds.get(record["slug"])
+        record["_similar"] = similar.get(record["slug"], [])
+        record["_tags"] = tagged.get(record["slug"], [])
         record["_modified_at"], record["_website_modified_at"] = times[record["slug"]]
         records.append(record)
     return records
@@ -445,6 +472,8 @@ def dataset_view(db_path):
         favorite_total = favorites.count(conn)
         type_counts = beverage_types.counts(conn)
         descriptions = image_descriptions.descriptions(conn)
+        similar_total = similar_wines.count(conn)
+        tag_total = wine_tags.count(conn)
     return {
         "database_file": db_path,
         "wine_editor": True,
@@ -458,6 +487,8 @@ def dataset_view(db_path):
         "comments": comment_total,
         "favorites": favorite_total,
         "beverage_types": type_counts,
+        "similar_editor": True, "similar_pairs": similar_total,
+        "tag_editor": True, "wine_tags": tag_total,
         "image_description_editor": True,
         "image_description_values": image_descriptions.VALUES,
         "image_descriptions": descriptions,
@@ -576,7 +607,9 @@ def add_code(db_path, route, slug, value):
                      (slug, kind, clean))
         return _code_answer(conn, kind, slug, list_key, **{key: clean})
 
-    return _code_write(db_path, slug, write)
+    answer = _code_write(db_path, slug, write)
+    forget_scans(db_path, slug)
+    return answer
 
 
 def remove_code(db_path, route, slug, value):
@@ -592,7 +625,21 @@ def remove_code(db_path, route, slug, value):
             raise StateError(404, "the wine %s has no %s %s" % (slug, key, value))
         return _code_answer(conn, kind, slug, list_key, removed=value)
 
-    return _code_write(db_path, slug, write)
+    answer = _code_write(db_path, slug, write)
+    forget_scans(db_path, slug)
+    return answer
+
+
+def forget_scans(db_path, slug):
+    """Delete the stored barcode scans (`barcode.Decoder.scan_file`, `data/cache/barcode/`)
+    of the test photos of one wine: the photos whose `place` is the slug. Return the count
+    of deleted records. The next run scans these photos again. An add and a remove of a
+    code call it after the commit (owner answers of 2026-09-27T16:49:57+0300). Raise
+    OSError when a record cannot be deleted; the code change stays."""
+    with closing(open_database(db_path)) as conn:
+        photos = [row[0] for row in conn.execute(
+            "SELECT sha256 FROM test_photo WHERE place = ?", (slug,))]
+    return model_cache.forget("barcode", photos)
 
 
 def _patch_answer(conn, slug, **fields):
@@ -738,6 +785,26 @@ def remove_atlas_binding(db_path, slug, product_uuid):
     return _code_write(db_path, slug, write)
 
 
+def approve_atlas_binding(db_path, slug, product_uuid):
+    """Change one automatic Atlas Core product of one wine to manual.
+
+    Return the answer of the POST. A product that the wine does not have answers 404. A
+    manual product answers 409.
+    """
+    clean = _atlas_request(slug, product_uuid)
+
+    def write(conn):
+        source = atlas_bindings.approve(conn, slug, clean)
+        if source is None:
+            raise StateError(404, "the wine %s has no Atlas product %s" % (slug, clean))
+        if source != "automatic":
+            raise StateError(409, "the Atlas product %s of the wine %s is already %s"
+                             % (clean, slug, source))
+        return _atlas_answer(conn, slug, approved=clean, source="manual")
+
+    return _code_write(db_path, slug, write)
+
+
 def _comment_answer(conn, slug, **fields):
     """Return the answer of the comment route: the comments of the wine and the total."""
     answer = {"ok": True, "slug": slug}
@@ -821,6 +888,112 @@ def set_beverage_type(db_path, slug, code):
                 "beverage_types": beverage_types.counts(conn)}
 
     return _code_write(db_path, slug, write)
+
+
+def _similar_answer(conn, slug, other, **fields):
+    """Return the answer of the similar route: the partners of both wines and the total."""
+    answer = {"ok": True, "slug": slug, "other": other}
+    answer.update(fields)
+    answer.update({"similar": similar_wines.partners(conn, slug).get(slug, []),
+                   "other_similar": similar_wines.partners(conn, other).get(other, []),
+                   "total": similar_wines.count(conn)})
+    return answer
+
+
+def _similar_write(db_path, slug, other, write):
+    """Check the two slugs of a similar request. Run `write(conn)` in one write
+    transaction, after the check that both wines exist."""
+    for value in (slug, other):
+        if not isinstance(value, str) or not value:
+            raise StateError(400, "the request MUST hold two wine slugs: `slug` and `other`")
+    if slug == other:
+        raise StateError(400, "a wine cannot be similar to itself")
+
+    def checked(conn):
+        if conn.execute("SELECT 1 FROM wine_catalog WHERE wine_slug = ?",
+                        (other,)).fetchone() is None:
+            raise StateError(404, "no wine with the slug %s" % other)
+        return write(conn)
+
+    return _code_write(db_path, slug, checked)
+
+
+def add_similar(db_path, slug, other):
+    """Mark two wines as similar. Return the answer of the POST.
+
+    A wine of each state allows it. A pair that exists answers 409.
+    """
+    def write(conn):
+        try:
+            pair = similar_wines.add(conn, slug, other)
+        except similar_wines.DuplicateError as exc:
+            raise StateError(409, str(exc))
+        return _similar_answer(conn, slug, other, added=list(pair))
+
+    return _similar_write(db_path, slug, other, write)
+
+
+def remove_similar(db_path, slug, other):
+    """Remove the pair of two wines. Return the answer of the DELETE.
+
+    A pair that does not exist answers 404.
+    """
+    def write(conn):
+        pair = similar_wines.pair(slug, other)
+        if not similar_wines.remove(conn, slug, other):
+            raise StateError(404, "the wines %s and %s are not similar" % pair)
+        return _similar_answer(conn, slug, other, removed=list(pair))
+
+    return _similar_write(db_path, slug, other, write)
+
+
+def _tag_write(db_path, slug, text, write):
+    """Check the slug and the tag of a tag request. Run `write(conn, tag)` in one write
+    transaction with the normal form of the tag, after the check that the wine exists."""
+    if not isinstance(slug, str) or not slug:
+        raise StateError(400, "the request holds no wine slug")
+    try:
+        tag = wine_tags.normal(text)
+    except wine_tags.TagError as exc:
+        raise StateError(400, str(exc))
+    return _code_write(db_path, slug, lambda conn: write(conn, tag))
+
+
+def _tag_answer(conn, slug, **fields):
+    """Return the answer of the tag route: the tags of the wine and the total."""
+    answer = {"ok": True, "slug": slug}
+    answer.update(fields)
+    answer.update({"tags": wine_tags.tags(conn, slug).get(slug, []),
+                   "total": wine_tags.count(conn)})
+    return answer
+
+
+def add_tag(db_path, slug, text):
+    """Add one tag to one wine. Return the answer of the POST.
+
+    A wine of each state allows it. A tag that the wine has answers 409.
+    """
+    def write(conn, tag):
+        try:
+            wine_tags.add(conn, slug, tag)
+        except wine_tags.DuplicateError as exc:
+            raise StateError(409, str(exc))
+        return _tag_answer(conn, slug, added=tag)
+
+    return _tag_write(db_path, slug, text, write)
+
+
+def remove_tag(db_path, slug, text):
+    """Remove one tag of one wine. Return the answer of the DELETE.
+
+    A tag that the wine does not have answers 404.
+    """
+    def write(conn, tag):
+        if not wine_tags.remove(conn, slug, tag):
+            raise StateError(404, "the wine %s has no tag %s" % (slug, tag))
+        return _tag_answer(conn, slug, removed=tag)
+
+    return _tag_write(db_path, slug, text, write)
 
 
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -1075,6 +1248,25 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _label_descriptions(self):
+        """Send the answer of `label_description_routes.respond` (plan 61)."""
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+
+        try:
+            code, body, ctype, cache = label_description_routes.respond(
+                self.server, self.command, self.path, read_body, open_database)
+        except (ConfigError, sqlite3.Error) as exc:
+            code, body, ctype, cache = (503, {"error": str(exc)},
+                                        label_description_routes.JSON_TYPE, "no-store")
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
     def _redirect(self, location):
         self.send_response(302)
         self.send_header("Location", location)
@@ -1100,6 +1292,8 @@ class Handler(BaseHTTPRequestHandler):
             self._health()
         elif recognize_routes.handles(route):
             self._recognize()
+        elif label_description_routes.handles(route):
+            self._label_descriptions()
         elif route == "/":
             self._redirect(HOME)
         elif route == "/dataset" or lab_pages.DATASET_PREVIEW_ROUTE.match(route):
@@ -1239,12 +1433,18 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, action(self.server.db_path, route, slug, value))
         except StateError as exc:
             self._json(exc.code, {"error": str(exc)})
-        except (ConfigError, sqlite3.Error) as exc:
+        except (ConfigError, sqlite3.Error, OSError) as exc:
             self._json(503, {"error": str(exc)})
 
-    def _atlas_binding(self):
-        """Answer a POST or a DELETE of `/api/dataset-atlas-binding`."""
-        if self.command == "POST":
+    def _atlas_binding(self, route="/api/dataset-atlas-binding"):
+        """Answer a POST or a DELETE of `/api/dataset-atlas-binding`, or a POST of
+        `/api/dataset-atlas-binding-approve`."""
+        if route == "/api/dataset-atlas-binding-approve":
+            body = self._json_body(MAX_BODY)
+            if body is None:
+                return
+            call = (approve_atlas_binding, body.get("slug"), body.get("product_uuid"))
+        elif self.command == "POST":
             body = self._json_body(MAX_BODY)
             if body is None:
                 return
@@ -1301,6 +1501,42 @@ class Handler(BaseHTTPRequestHandler):
             # A body with no key `beverage_type_code` is an error, not a remove of the type.
             self._json(200, set_beverage_type(self.server.db_path, body.get("slug"),
                                               body.get("beverage_type_code", "")))
+        except StateError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+
+    def _similar(self):
+        """Answer a POST or a DELETE of `/api/dataset-similar`."""
+        if self.command == "POST":
+            body = self._json_body(MAX_BODY)
+            if body is None:
+                return
+            call = (add_similar, body.get("slug"), body.get("other"))
+        else:
+            query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+            call = (remove_similar, (query.get("slug") or [None])[0],
+                    (query.get("other") or [None])[0])
+        try:
+            self._json(200, call[0](self.server.db_path, *call[1:]))
+        except StateError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+
+    def _tag(self):
+        """Answer a POST or a DELETE of `/api/dataset-tag`."""
+        if self.command == "POST":
+            body = self._json_body(MAX_BODY)
+            if body is None:
+                return
+            call = (add_tag, body.get("slug"), body.get("tag"))
+        else:
+            query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+            call = (remove_tag, (query.get("slug") or [None])[0],
+                    (query.get("tag") or [None])[0])
+        try:
+            self._json(200, call[0](self.server.db_path, *call[1:]))
         except StateError as exc:
             self._json(exc.code, {"error": str(exc)})
         except (ConfigError, sqlite3.Error) as exc:
@@ -1412,6 +1648,8 @@ class Handler(BaseHTTPRequestHandler):
             self._health()
         elif recognize_routes.handles(route):
             self._recognize()
+        elif label_description_routes.handles(route):
+            self._label_descriptions()
         elif route == "/api/wine-state" and self.command == "POST":
             self._wine_state()
         elif route == "/api/wine" and self.command == "POST":
@@ -1430,12 +1668,18 @@ class Handler(BaseHTTPRequestHandler):
             self._alternative(route)
         elif route == "/api/dataset-atlas-binding" and self.command in ("POST", "DELETE"):
             self._atlas_binding()
+        elif route == "/api/dataset-atlas-binding-approve" and self.command == "POST":
+            self._atlas_binding(route)
         elif route == "/api/dataset-comment" and self.command in ("POST", "DELETE"):
             self._comment()
         elif route == "/api/dataset-favorite" and self.command == "POST":
             self._favorite()
         elif route == "/api/dataset-beverage-type" and self.command == "POST":
             self._beverage_type()
+        elif route == "/api/dataset-similar" and self.command in ("POST", "DELETE"):
+            self._similar()
+        elif route == "/api/dataset-tag" and self.command in ("POST", "DELETE"):
+            self._tag()
         elif route == "/api/image-description" and self.command == "POST":
             self._image_description()
         elif route.startswith("/api/"):

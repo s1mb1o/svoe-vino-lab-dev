@@ -7,14 +7,19 @@ stderr go to `build.log` in the directory of the entry. The job state comes from
 `build.lock` and `build.log`, so a restart of the server does not lose a running build.
 Read docs/plans/10_embeddings-page.md.
 
+`Build All` (plan 60) is a queue of the server: a thread starts the build of each entry,
+one at a time, in the order of `config.yaml`. A build that ends as `stopped` stops the
+queue. A restart of the server ends the queue; the running build goes on.
+
     GET  /embedding                                   the page
     GET  /api/embeddings                              each entry, its counts, its job
     GET  /api/embeddings/<name>                       the wines and the cells of one entry
+    POST /api/embeddings/build-all                    start the queue of `Build All`
     POST /api/embeddings/<name>/build                 start a build
     POST /api/embeddings/<name>/stop                  stop a build (SIGTERM)
     POST /api/embeddings/<name>/open                  open the directory in Finder
     GET  /api/embeddings/<name>/log                   the text of `build.log`
-    GET  /api/embedding-jobs                          the job of each entry
+    GET  /api/embedding-jobs                          the job of each entry, the queue
     GET  /embeddings/<name>/images/<sha256>_<view>.png  one prepared image
 """
 import collections
@@ -24,6 +29,7 @@ import signal
 import subprocess
 import sys
 import threading
+import time
 import urllib.parse
 from contextlib import closing
 
@@ -35,6 +41,9 @@ import lab_pages
 PAGE = "/embedding"
 API_LIST = "/api/embeddings"
 API_JOBS = "/api/embedding-jobs"
+# Only a POST goes to the queue, so a GET of this path stays the view of an entry
+# `build-all`.
+API_BUILD_ALL = API_LIST + "/build-all"
 ENTRY_ROUTE = re.compile(r"^/api/embeddings/(%s)(/build|/stop|/open|/log)?$"
                          % embeddings.NAME_PATTERN)
 # The command that opens a directory in Finder. The lab server runs on the Mac of the
@@ -54,6 +63,11 @@ STATUSES = ("current", "stale", "missing", "failed", "not_applicable")
 # entry directory -> the build process that this server started. The server reaps it.
 _PROCESSES = {}
 _START = threading.Lock()
+# The queue of `Build All`: None, or the dict of `queue_view`. `_run_queue` runs it.
+_QUEUE = None
+_QUEUE_LOCK = threading.Lock()
+# The wait of the queue between two reads of the job of its build.
+QUEUE_POLL_SECONDS = 1
 
 
 def handles(route):
@@ -96,7 +110,9 @@ def respond(server, method, path):
         if route == API_JOBS:
             if method not in ("GET", "HEAD"):
                 return _error(405, "use GET")
-            return _json(200, {"jobs": jobs_view(settings)})
+            return _json(200, {"jobs": jobs_view(settings), "queue": queue_view()})
+        if route == API_BUILD_ALL and method == "POST":
+            return build_all(settings)
         entry = ENTRY_ROUTE.match(route)
         if not entry:
             return _error(404, "not found")
@@ -130,7 +146,8 @@ def _lookup(settings, name):
 def _reap():
     for directory, process in list(_PROCESSES.items()):
         if process.poll() is not None:
-            del _PROCESSES[directory]
+            # A request thread and the queue thread can reap the same process.
+            _PROCESSES.pop(directory, None)
 
 
 def job(directory):
@@ -190,7 +207,7 @@ def list_view(settings):
                           index_error=index_error, job=job(directory))
         out.append(record)
     return {"database_file": settings.db_path, "config_file": settings.config_path,
-            "embeddings": out}
+            "embeddings": out, "queue": queue_view()}
 
 
 def image_url(name, source_sha256, view, embedding_hash):
@@ -305,6 +322,91 @@ def stop(settings, name):
     except ProcessLookupError:
         return _error(409, "no build of %s runs" % name)
     return _json(202, {"name": name, "state": "stopping", "pid": pid})
+
+
+def queue_view():
+    """Return a copy of the queue of `Build All`, or None. `state` is `running`, `done`,
+    `stopped`, or `failed`. `index` is the position of `current` in `names`. `results`
+    holds one `{name, state, built, failed, message}` for each entry that ended."""
+    with _QUEUE_LOCK:
+        if _QUEUE is None:
+            return None
+        return dict(_QUEUE, names=list(_QUEUE["names"]),
+                    results=[dict(result) for result in _QUEUE["results"]])
+
+
+def build_all(settings):
+    """Start the queue of `Build All`: a build of each entry with no configuration error,
+    one at a time, in the order of `config.yaml`. HTTP 409 when a queue runs."""
+    global _QUEUE
+    python = settings.python or sys.executable
+    if not os.path.isfile(python):
+        return _error(400, "embedding_python %s is not a file" % python)
+    names = [name for name, embedding, _ in settings.entries if embedding is not None]
+    if not names:
+        return _error(400, "each embedding of config.yaml has a configuration error")
+    with _QUEUE_LOCK:
+        if _QUEUE is not None and _QUEUE["state"] == "running":
+            return _error(409, "Build All runs: %s, %d of %d" % (
+                _QUEUE["current"], _QUEUE["index"] + 1, len(_QUEUE["names"])))
+        _QUEUE = {"state": "running", "names": names, "index": 0, "current": names[0],
+                  "results": [], "started_t": time.time(), "ended_t": None,
+                  "message": None}
+    threading.Thread(target=_run_queue, args=(settings.config_path, names),
+                     name="build-all", daemon=True).start()
+    return _json(202, {"queue": queue_view()})
+
+
+def _update_queue(**fields):
+    with _QUEUE_LOCK:
+        _QUEUE.update(fields)
+        if fields.get("state", "running") != "running":
+            _QUEUE["ended_t"] = time.time()
+
+
+def _wait_for_end(directory):
+    """Return the job of an entry after its build ends."""
+    while True:
+        state = job(directory)
+        if state["state"] not in ("running", "stopping"):
+            return state
+        time.sleep(QUEUE_POLL_SECONDS)
+
+
+def _run_queue(config_path, names):
+    """The thread of `Build All`. It reads `config.yaml` again for each entry. A build of
+    the entry that runs already (HTTP 409) is waited for; then the queue starts its own."""
+    try:
+        for index, name in enumerate(names):
+            _update_queue(index=index, current=name)
+            while True:
+                try:
+                    settings = embeddings.load_settings(config_path)
+                except embeddings.ConfigError as exc:
+                    _update_queue(state="failed", message="config.yaml: %s" % exc)
+                    return
+                directory = embeddings.entry_dir(settings.db_path, name)
+                code, body, _, _ = start(settings, name)
+                if code != 409:
+                    break
+                _wait_for_end(directory)
+            if code != 202:
+                result = {"name": name, "state": "skipped", "built": 0, "failed": 0,
+                          "message": body.get("error")}
+            else:
+                state = _wait_for_end(directory)
+                result = {"name": name, "state": state["state"] or "failed",
+                          "built": state.get("built") or 0,
+                          "failed": state.get("failed") or 0,
+                          "message": state.get("message")}
+            with _QUEUE_LOCK:
+                _QUEUE["results"].append(result)
+            if result["state"] == "stopped":
+                _update_queue(state="stopped")
+                return
+        _update_queue(state="done")
+    except Exception as exc:  # noqa: BLE001  (a queue that stays `running` blocks Build All)
+        _update_queue(state="failed", message="%s: %s" % (type(exc).__name__, exc))
 
 
 def open_directory(settings, name):

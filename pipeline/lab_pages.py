@@ -20,7 +20,9 @@ PARTS = (("/* STEPS_CSS */\n", "steps.css"), ("/* STEPS_JS */\n", "steps.js"))
 # The Dataset page with the image preview of one wine open: `/dataset/<slug>` shows the
 # catalogue image, `/dataset/<slug>/patch` the patch image, and
 # `/dataset/<slug>/alternative/<sha256>` one alternative photo. The page reads the path.
-DATASET_PREVIEW_ROUTE = re.compile(r"^/dataset/[^/]+(/patch|/alternative/[0-9a-f]{64})?$")
+# `/dataset/<slug>/describe/<sha256>` opens the image description dialog of one image.
+DATASET_PREVIEW_ROUTE = re.compile(
+    r"^/dataset/[^/]+(/patch|/(?:alternative|describe)/[0-9a-f]{64})?$")
 
 
 def _read(name):

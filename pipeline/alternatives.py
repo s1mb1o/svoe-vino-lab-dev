@@ -19,9 +19,13 @@ Rules:
   `image_derivative` holds one cut for each original and kind
   (`package`, `label`), so each row shows the cut of its own kind, and a change back to
   a kind reuses its cut.
+- A full type also gets the label cut of a full photo (`SETTINGS_LABEL`, the rule of
+  `seed_label_cuts.py`), for the view `label` of the Embeddings page (plan 22). An upload
+  reuses the SAM3 answer of the detection for it. A change from a label type to a full
+  type replaces the label cut of the close-up, so a change back cuts the label again.
 - A request processes a photo whenever its row has no current cut of its kind: an upload,
   the same photo again, and each type change. So a photo stored while SAM3 was down gets
-  its cut on the next request.
+  its cut on the next request. For a full type, a missing label cut counts too.
 - The same photo on the same wine a second time changes no row.
 - `remove_alternative` deletes the row alone. The file stays in the store.
 - SAM3 runs before the write transaction, so a slow SAM3 does not hold the write lock.
@@ -125,6 +129,8 @@ SETTINGS_LABEL_ABSENCE = (
 NO_PROCESSED_FILE = "The photo is stored with no processed file. The card shows it as it is."
 NO_NEW_CUT = ("The photo got no cut of its new kind. The card shows it as it is; the next "
               "type change processes it again.")
+NO_LABEL_CUT = ("The photo is stored with no label cut. A label-view embedding cannot be "
+                "generated.")
 
 
 class _Down:
@@ -135,6 +141,9 @@ class _Down:
         self.reason = reason
 
     def segment(self, image):
+        raise derive.Sam3Unavailable("no request: %s" % self.reason)
+
+    def instances(self, image, texts, masks=True):
         raise derive.Sam3Unavailable("no request: %s" % self.reason)
 
 
@@ -499,6 +508,31 @@ def process_image(conn, db_path, digest, path, kind, segmenter, warnings, answer
     return out
 
 
+def full_label_cut(conn, db_path, digest, path, segmenter, warnings, answer=None):
+    """Return the label cut of the full photo `digest` as a `derive.Derivatives` of the
+    kind `label`, for `write_processed_rows`. The view `label` of the Embeddings page
+    starts with this cut (plan 22). `answer` is the SAM3 answer of `DETECT_TEXTS`, or None.
+    A photo with no cut and no not-applicable marker adds `NO_LABEL_CUT` to `warnings`.
+    Manual wines and the website import call this function too."""
+    notes = []
+    label = process_image(conn, db_path, digest, path, "label", segmenter, notes, answer)
+    if (label.unavailable or label.unreadable or label.errors
+            or not (label.links or label.present or label.not_applicable)):
+        warnings.append(NO_LABEL_CUT)
+    warnings.extend(notes)
+    return label
+
+
+def has_current_cuts(conn, digest, kind):
+    """Tell whether the original `digest` has each current cut of `kind`. A full photo
+    needs its package cut and its label cut, or a current not-applicable marker. A label
+    close-up needs its label cut."""
+    if kind == "label":
+        return has_current_cut(conn, digest, "label", True)
+    return has_current_cut(conn, digest, "full") and (
+        has_current_cut(conn, digest, "label") or current_absence(conn, digest) is not None)
+
+
 def _check_slug(slug):
     if not isinstance(slug, str) or not slug:
         raise patches.PatchError(400, "the request holds no wine slug")
@@ -530,18 +564,29 @@ def _stored_path(conn, db_path, digest):
     return file_path(db_path, folder, digest, extension)
 
 
+def _cuts_of(conn, db_path, digest, kind, segmenter, warnings, text):
+    """Return the processing results of a stored photo for `kind`: the cut of `kind`,
+    and for a full photo its label cut too. A current cut gives no SAM3 request."""
+    path = _stored_path(conn, db_path, digest)
+    derivatives = process_image(conn, db_path, digest, path, kind, segmenter, warnings,
+                                close_up=kind == "label")
+    _warn(derivatives, warnings, text)
+    results = [derivatives]
+    if kind == "full":
+        results.append(full_label_cut(conn, db_path, digest, path, segmenter, warnings))
+    return results
+
+
 def _process_again(conn, db_path, slug, digest, image_type, segmenter, text):
     """Process a stored photo that has no current cut of its kind, and write the cut.
     Return the warnings."""
     warnings = []
-    kind = KINDS[image_type]
-    derivatives = process_image(conn, db_path, digest, _stored_path(conn, db_path, digest),
-                                kind, segmenter or derive.Sam3Client(), warnings,
-                                close_up=kind == "label")
-    _warn(derivatives, warnings, text)
+    results = _cuts_of(conn, db_path, digest, KINDS[image_type],
+                       segmenter or derive.Sam3Client(), warnings, text)
     conn.execute("BEGIN IMMEDIATE")
     try:
-        write_processed_rows(conn, derivatives)
+        for derivatives in results:
+            write_processed_rows(conn, derivatives)
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")
@@ -562,8 +607,7 @@ def store_alternative(conn, db_path, slug, data, name=None, segmenter=None):
     digest = hashlib.sha256(data).hexdigest()
     present = _present_type(conn, slug, digest)
     if present:
-        warnings = [] if has_current_cut(conn, digest, KINDS[present],
-                                         KINDS[present] == "label") else _process_again(
+        warnings = [] if has_current_cuts(conn, digest, KINDS[present]) else _process_again(
             conn, db_path, slug, digest, present, segmenter, NO_PROCESSED_FILE)
         return {"sha256": digest, "type": present, "changed": False, "warnings": warnings}
     row = conn.execute("SELECT folder, extension FROM image WHERE sha256 = ?",
@@ -591,6 +635,9 @@ def store_alternative(conn, db_path, slug, data, name=None, segmenter=None):
     derivatives = process_image(conn, db_path, digest, path, kind, client, warnings, answer,
                                 close_up=kind == "label")
     _warn(derivatives, warnings)
+    results = [derivatives]
+    if kind == "full":
+        results.append(full_label_cut(conn, db_path, digest, path, client, warnings, answer))
 
     conn.execute("BEGIN IMMEDIATE")
     try:
@@ -601,7 +648,8 @@ def store_alternative(conn, db_path, slug, data, name=None, segmenter=None):
             conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
                          "source_name, match_method) VALUES (?, ?, ?, ?, ?)",
                          (slug, image_type, digest, patches.source_name(name), MATCH_METHOD))
-            write_processed_rows(conn, derivatives)
+            for result in results:
+                write_processed_rows(conn, result)
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")
@@ -614,7 +662,8 @@ def store_alternative(conn, db_path, slug, data, name=None, segmenter=None):
 def set_type(conn, db_path, slug, digest, image_type, segmenter=None):
     """Give the alternative photo `digest` of the wine `slug` the type `image_type`.
     Return a dict: `type`, `changed`, and `warnings`. The photo is processed when it has no
-    current cut of the kind of `image_type`; a change back to a kind reuses its cut."""
+    current cut of the kind of `image_type` (`has_current_cuts`); a change back to a kind
+    reuses its cut."""
     _check_slug(slug)
     if image_type not in TYPES:
         raise patches.PatchError(400, "unknown type %r; use one of: %s"
@@ -627,19 +676,15 @@ def set_type(conn, db_path, slug, digest, image_type, segmenter=None):
         raise patches.PatchError(404, "the wine %s has no alternative photo %s"
                                  % (slug, digest))
     kind = KINDS[image_type]
+    current = has_current_cuts(conn, digest, kind)
     if old == image_type:
-        warnings = [] if has_current_cut(conn, digest, kind,
-                                         kind == "label") else _process_again(
+        warnings = [] if current else _process_again(
             conn, db_path, slug, digest, image_type, segmenter, NO_NEW_CUT)
         return {"type": old, "changed": False, "warnings": warnings}
     warnings = []
-    derivatives = derive.Derivatives(CUTS[kind])
-    if not has_current_cut(conn, digest, kind, kind == "label"):
-        derivatives = process_image(conn, db_path, digest,
-                                    _stored_path(conn, db_path, digest), kind,
-                                    segmenter or derive.Sam3Client(), warnings,
-                                    close_up=kind == "label")
-        _warn(derivatives, warnings, NO_NEW_CUT)
+    results = [] if current else _cuts_of(conn, db_path, digest, kind,
+                                          segmenter or derive.Sam3Client(), warnings,
+                                          NO_NEW_CUT)
     conn.execute("BEGIN IMMEDIATE")
     try:
         if conn.execute("UPDATE wine_image SET image_type = ? WHERE wine_slug = ? AND "
@@ -647,7 +692,8 @@ def set_type(conn, db_path, slug, digest, image_type, segmenter=None):
                         (image_type, slug, digest, old)).rowcount != 1:
             raise patches.PatchError(409, "the photo %s of %s changed meanwhile"
                                      % (digest, slug))
-        write_processed_rows(conn, derivatives)
+        for derivatives in results:
+            write_processed_rows(conn, derivatives)
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")

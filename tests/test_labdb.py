@@ -40,15 +40,17 @@ class LabDbTest(unittest.TestCase):
 
     def test_create_applies_the_schema(self):
         labdb.connect(self.db, create=True).close()
-        self.assertEqual(VERSION, 26)
+        self.assertEqual(VERSION, 29)
         self.assertEqual(self.query("PRAGMA user_version"), [(VERSION,)])
         conn = sqlite3.connect(self.db)
         self.assertEqual(labdb.tables(conn),
                          ["image", "image_derivative", "image_derivative_absence",
-                          "image_description", "image_detail", "test_photo",
+                          "image_description", "image_detail", "image_label_description",
+                          "image_label_description_failure", "test_photo",
                           "test_photo_comment", "test_set", "test_variant", "website_refusal",
                           "wine_atlas_binding", "wine_beverage_type", "wine_catalog",
-                          "wine_code", "wine_comment", "wine_favorite", "wine_image"])
+                          "wine_code", "wine_comment", "wine_favorite", "wine_image",
+                          "wine_similar", "wine_tag"])
         conn.close()
 
     def test_derivative_absence_needs_an_image_and_a_reason(self):

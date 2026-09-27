@@ -297,5 +297,43 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(one["describe_sha"], thinking["describe_sha"])
 
 
+
+class DescribeRepairTest(unittest.TestCase):
+    """Plan 61: stage 1 gives obvious key drift the key of the prompt."""
+
+    def describe(self, answer):
+        entry = vlm_config.Entry("test-vlm", "openai", "chat_template_kwargs",
+                                 "http://127.0.0.1:9/v1", "test-model", "")
+        cfg = {"entry": entry, "describe_side": 64, "describe_max_tokens": 100,
+               "thinking": False, "timeout_s": 10, "describe_sha": "s"}
+
+        def ask_fn(entry, content, max_tokens, thinking, timeout, extra=None):
+            return {"text": json.dumps(answer, ensure_ascii=False), "ms": 5, "usage": {},
+                    "finish_reason": "stop", "model": "test-model", "cached": False}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cut.png"
+            Image.new("RGB", (10, 20), "red").save(path)
+            return label_rules.describe(ask_fn, cfg, {
+                "kind": "package", "sha256": "c" * 64, "source_sha256": "a" * 64,
+                "path": str(path)})
+
+    def test_a_drifted_answer_gets_the_keys_of_the_prompt(self):
+        rec = self.describe({"text": [{"text": "ФАНТОМ", "where": "left"}], "number": [],
+                             "vintage": None, "colours": [], "design": "", "marks": [],
+                             "bottle": ""})
+        self.assertIsNone(rec["error"])
+        self.assertEqual(list(rec["description"]), ["texts", "numbers", "vintage", "colours",
+                                                    "design", "marks", "bottle"])
+        self.assertEqual(rec["description"]["texts"], [{"text": "ФАНТОМ", "where": "left"}])
+        self.assertEqual(rec["repairs"], [["text", "texts"], ["number", "numbers"]])
+
+    def test_an_answer_with_the_keys_of_the_prompt_has_no_repairs(self):
+        answer = {"texts": [], "numbers": [], "vintage": None, "colours": [], "design": "",
+                  "marks": [], "bottle": ""}
+        rec = self.describe(answer)
+        self.assertEqual(rec["description"], answer)
+        self.assertNotIn("repairs", rec)
+
+
 if __name__ == "__main__":
     unittest.main()

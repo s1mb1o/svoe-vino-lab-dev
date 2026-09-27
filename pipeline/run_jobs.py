@@ -8,7 +8,9 @@ docs/plans/34_pipeline-section.md.
     GET  /api/run-jobs                       the job of each pipeline
     POST /api/run-jobs                       start a job: {"configuration", "set",
                                              "limit", "workers", "use_cache",
-                                             "use_barcode"}
+                                             "use_barcode"}, or the self-test of one
+                                             embedding: {"selftest", "limit",
+                                             "workers", "use_cache"}
     POST /api/run-jobs/<name>/stop           stop a job (SIGTERM)
 
 The routes and the key `configuration` keep their names; `configuration` names the
@@ -23,6 +25,11 @@ A job runs `run_job.py` as a separate process. Its output goes to
 `work/run-jobs/<name>/job.log`, one JSON event on each line, and `job.lock` holds its
 PID. The job state comes from these two files, so a restart of the server does not lose
 a running job. One pipeline runs one job at a time.
+
+The body key `selftest` names an entry of the key `embeddings` (the button `Selftest` of
+`/embedding`). The job `selftest-<embedding>` runs `run_job.py --selftest`: each dataset
+image is a query in the view `full` of the index, and the run has the set `dataset`. Read
+docs/plans/67_embedding-selftest.md.
 """
 import json
 import os
@@ -286,6 +293,8 @@ def _whole(value, low, high, what):
 def start(settings, jobs_dir, body, runs_dir=None):
     """Start a run job. Return (HTTP code, answer). `runs_dir` is the directory of the
     runs of the Runs page; None keeps the default of `run_job.py`, `runs/`."""
+    if "selftest" in body:
+        return start_selftest(settings, jobs_dir, body, runs_dir)
     name, set_name = body.get("configuration"), body.get("set")
     if not isinstance(name, str) or not isinstance(set_name, str) or not set_name:
         return 400, {"error": "the body MUST name the configuration and the set"}
@@ -352,6 +361,66 @@ def start(settings, jobs_dir, body, runs_dir=None):
                                        start_new_session=True)
         _PROCESSES[directory] = process
     return 202, {"name": name, "set": set_name, "state": "running", "pid": process.pid}
+
+
+def start_selftest(settings, jobs_dir, body, runs_dir=None):
+    """Start the self-test of one entry of `embeddings` (plan 67). Return (HTTP code,
+    answer). The job is `selftest-<embedding>`."""
+    import embedding_run  # noqa: E402  (the runner of plan 33, on demand)
+    import selftest  # noqa: E402  (plan 67, on demand)
+    embedding = body.get("selftest")
+    if not isinstance(embedding, str) or not embeddings.NAME_RE.match(embedding):
+        return 400, {"error": "selftest MUST name an entry of embeddings"}
+    if body.get("configuration") is not None or body.get("set") is not None:
+        return 400, {"error": "a self-test takes no configuration and no set"}
+    try:
+        limit = _whole(body.get("limit"), 1, 10 ** 7, "limit")
+        workers = _whole(body.get("workers"), 1, MAX_WORKERS, "workers")
+    except ValueError as exc:
+        return 400, {"error": str(exc)}
+    use_cache = body.get("use_cache")
+    if use_cache is None:
+        use_cache = True
+    if not isinstance(use_cache, bool):
+        return 400, {"error": "use_cache MUST be true or false"}
+    try:
+        entries = embeddings.load_settings(settings.config_path)
+        entries.find(embedding)
+    except KeyError:
+        return 404, {"error": "config.yaml has no embedding %s" % embedding}
+    except embeddings.ConfigError as exc:
+        return 400, {"error": "embedding %s: %s" % (embedding, exc)}
+    if not embedding_run.index_ready(settings.db_path, embedding):
+        return 400, {"error": "%s: %s" % (embedding, embedding_run.NO_INDEX)}
+    # `embedding_python`, as a run of a pipeline of the backend `embedding` has.
+    python = entries.python or sys.executable
+    if not os.path.isfile(python):
+        return 400, {"error": "embedding_python %s is not a file; create the venv with "
+                              "requirements-local.txt" % python}
+    name = selftest.job_name(embedding)
+    command = [python, RUNNER, "--config", settings.config_path, "--selftest", "--name",
+               embedding, "--jobs-dir", jobs_dir]
+    if limit:
+        command += ["--limit", str(limit)]
+    if workers:
+        command += ["--workers", str(workers)]
+    if not use_cache:
+        command.append("--no-cache")
+    if runs_dir:
+        command += ["--runs-dir", runs_dir]
+    directory = job_dir(jobs_dir, name)
+    with _START:
+        state = job(jobs_dir, name)
+        if state["state"] in ACTIVE:
+            return 409, {"error": "a self-test of %s runs: PID %s" % (embedding, state["pid"])}
+        os.makedirs(directory, exist_ok=True)
+        with open(os.path.join(directory, LOG), "wb") as log:
+            process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=log,
+                                       stderr=subprocess.STDOUT, cwd=embeddings.ROOT,
+                                       start_new_session=True)
+        _PROCESSES[directory] = process
+    return 202, {"name": name, "set": selftest.SET_NAME, "state": "running",
+                 "pid": process.pid}
 
 
 def stop(jobs_dir, name):

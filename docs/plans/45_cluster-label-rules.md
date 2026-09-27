@@ -317,3 +317,11 @@ Measured on 2026-09-26. Details: `ResearchLog.md`, 2026-09-26.
   The colour of card B is wrong: «dark blue» for a dark burgundy box.
 - Weak `verdict` rules exist, for example «All three cards have identical labels…», as in
   `svoe-vino-testset` (plan 06 there, Q2).
+
+Note of 2026-09-27 (plan 61, drink-atlas-workspace-6b [e99257], owner answers of about
+14:15 and 14:46:48): `describe` applies `label_descriptions.repair` to each new answer.
+Obvious key drift gets the key of the prompt, for example `text` -> `texts`, and the record
+keeps the renames in `repairs`. 132 of the 382 stored descriptions have the key `text`.
+They do not change: the owner chose "No, new answers only", because a changed description
+makes the rule of its cluster stale. Stage 3 of the watcher sends the same request as stage
+1 of this plan, so both share the records of `data/cache/`.

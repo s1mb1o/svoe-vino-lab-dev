@@ -21,6 +21,9 @@ Rules:
 - `derive.derive_all` processes the image before the write transaction, as in
   `patches.py`. SAM3 does not answer: the wine is stored with no processed file, and
   the answer holds a warning.
+- `alternatives.full_label_cut` makes the label cut of the image before the write
+  transaction, for the view `label` of the Embeddings page (plan 22). No label cut: the
+  answer holds the warning `alternatives.NO_LABEL_CUT`.
 - One write transaction writes the wine as `Active`, the `image` row, the `main` row of
   `wine_image`, and the processed rows.
 
@@ -33,6 +36,7 @@ import hashlib
 import os
 import re
 
+import alternatives
 import derive
 import imagestore
 import labdb
@@ -171,11 +175,12 @@ def add_wine(conn, db_path, body, segmenter=None):
         raise WineError(500, "cannot store the main image: %s" % exc)
 
     warnings = []
-    derivatives = derive.derive_all(conn, db_path, {digest: path},
-                                    segmenter or derive.Sam3Client(), warnings.append)
+    client = segmenter or derive.Sam3Client()
+    derivatives = derive.derive_all(conn, db_path, {digest: path}, client, warnings.append)
     if derivatives.unavailable or derivatives.unreadable or derivatives.errors:
         warnings.insert(0, "The wine is stored with no processed file. The card shows "
                            "the main image as it is.")
+    label = alternatives.full_label_cut(conn, db_path, digest, path, client, warnings)
 
     conn.execute("BEGIN IMMEDIATE")
     try:
@@ -189,6 +194,7 @@ def add_wine(conn, db_path, body, segmenter=None):
                      "source_name, match_method) VALUES (?, ?, ?, ?, ?)",
                      (slug, IMAGE_TYPE, digest, name, MATCH_METHOD))
         derive.write_rows(conn, derivatives)
+        alternatives.write_processed_rows(conn, label)
         conn.execute("COMMIT")
     except BaseException:
         conn.execute("ROLLBACK")

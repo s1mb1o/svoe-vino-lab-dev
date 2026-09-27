@@ -22,6 +22,18 @@ database_file: svoe-vino-lab/data/lab.sqlite3
 # docs/plans/10_embeddings-page.md.
 embedding_python: ~/.venvs/svoe-vino-lab/bin/python
 
+# true: before each run of a pipeline of the backend `embedding`, the run updates the index
+# of the embedding that the key `embedding` of the pipeline names. The build does only the
+# items that are stale, missing, or failed, as the button `Build` of `/embedding` does, so
+# a build with no change takes a few seconds. Its output goes to the end of
+# `data/embeddings/<name>/build.log`, and `/embedding` shows its progress. A build that
+# fails or stops makes the run fail. An embedding with no index gets no build: build it on
+# `/embedding` first. `pipeline/run_job.py` (the button `Run>`) and
+# `pipeline/embedding_run.py` read this key; a missing key is false. Read
+# docs/plans/59_rebuild-embeddings-on-run.md (owner messages of 2026-09-27T08:40:19+0300
+# and 08:40:26).
+rebuild_embeddings_on_run: true
+
 # The SAM3 service. `pipeline/derive.py` reads `endpoint` from this file when a module
 # imports it; each SAM3 call of `pipeline/` and the default of each option `--sam3` use
 # the value. The option `--config` of a script does not change it. Without the key, the
@@ -685,6 +697,11 @@ vlm:
 # `details: true` turns on stage 2 (docs/plans/29_image-details.md): when no image waits
 # for a class, the watcher sends the detail prompt with the cut of the next eligible image
 # (long side `detail_max_side`, `max_tokens` of the `vlm` entry) into `image_detail`.
+# `labels: true` turns on stage 3 (docs/plans/61_label-descriptions.md): when no image
+# waits for a class or a detail, the watcher sends the next linked image with no label
+# description with the request of stage 1 of the cluster rules: `DESCRIBE_PROMPT` and the
+# keys `vlm`, `thinking`, `describe_side`, `describe_max_tokens`, and `timeout_s` of the
+# block `label_rules`. The answer goes into `image_label_description`.
 image_description:
   watch: true
   vlm: qwen3.5-9b-nvfp4
@@ -694,3 +711,4 @@ image_description:
   workers: 8
   details: true
   detail_max_side: 1536
+  labels: true

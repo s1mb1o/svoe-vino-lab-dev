@@ -480,14 +480,15 @@ class AlternativeRouteTest(unittest.TestCase):
     def test_a_type_change_with_no_sam3_shows_the_photo_and_a_change_back_reuses_the_cut(self):
         data = picture(transparent=False)
         self.upload("wine-b", data)
-        self.assertEqual(self.cuts(sha(data)), {"package": "seg"})
+        self.assertEqual(self.cuts(sha(data)), {"package": "seg", "label": "seg"})
         self.server.segmenter = DownSam3()
         status, out = self.set_type("wine-b", sha(data), "label_back")
         self.assertEqual(status, 200)
         self.assertIn(alternatives.NO_NEW_CUT, out["warning"])
+        # The row shows the label cut of the full photo: it has no close-up cut.
         photo = out["record"]["_alternatives"][0]
-        self.assertEqual((photo["type"], photo["derivation"], photo["image_url"]),
-                         ("label_back", None, photo["url"]))
+        self.assertEqual((photo["type"], photo["derivation"]), ("label_back", "seg"))
+        self.assertEqual(self.settings(sha(data), "label")[1], alternatives.SETTINGS_LABEL)
         status, out = self.set_type("wine-b", sha(data), "full_front")
         self.assertEqual((status, out.get("warning")), (200, None))
         self.assertEqual(out["record"]["_alternatives"][0]["derivation"], "seg")
@@ -505,6 +506,65 @@ class AlternativeRouteTest(unittest.TestCase):
     def test_a_removed_wine_gets_a_photo(self):
         status, out = self.upload("wine-a", picture())
         self.assertEqual((status, out["type"]), (200, "full_front"))
+
+    # A full photo also gets the label cut of `seed_label_cuts.py` (owner answer of
+    # 2026-09-27T21:26:58+0300), for the view `label` of the Embeddings page.
+
+    def delete_label_cut(self, digest):
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("DELETE FROM image_derivative WHERE source_sha256 = ? AND "
+                         "kind = 'label'", (digest,))
+        conn.close()
+
+    def test_a_full_photo_gets_its_label_cut_from_the_detection_answer(self):
+        data = picture(transparent=False)
+        status, out = self.upload("wine-b", data)
+        self.assertEqual((status, out["type"]), (200, "full_front"), out)
+        self.assertNotIn("warning", out)
+        self.assertEqual(self.settings(sha(data), "label"), ("seg", alternatives.SETTINGS_LABEL))
+        self.assertEqual(self.sam3.instances_calls, [alternatives.DETECT_TEXTS])
+        # The row of a full type still shows its package cut.
+        self.assertEqual(out["record"]["_alternatives"][0]["derivation"], "seg")
+
+    def test_a_full_photo_with_no_label_gets_a_warning(self):
+        self.sam3.answer = FULL[:2]
+        data = picture(transparent=False)
+        status, out = self.upload("wine-b", data)
+        self.assertEqual((status, out["type"]), (200, "full_front"), out)
+        self.assertIn(alternatives.NO_LABEL_CUT, out["warning"])
+        self.assertEqual(self.cuts(sha(data)), {"package": "seg"})
+        self.assertEqual(self.sam3.instances_calls,
+                         [alternatives.DETECT_TEXTS, derive.SAM3_TEXTS])
+
+    def test_the_same_full_photo_again_makes_a_missing_label_cut(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        self.delete_label_cut(sha(data))
+        status, out = self.upload("wine-b", data)
+        self.assertEqual((status, out["changed"]), (200, False))
+        self.assertEqual(self.settings(sha(data), "label"), ("seg", alternatives.SETTINGS_LABEL))
+        self.assertEqual(self.sam3.segment_calls, 1)
+
+    def test_front_to_back_makes_a_missing_label_cut(self):
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        self.delete_label_cut(sha(data))
+        status, out = self.set_type("wine-b", sha(data), "full_back")
+        self.assertEqual((status, out["type"]), (200, "full_back"), out)
+        self.assertEqual(self.settings(sha(data), "label"), ("seg", alternatives.SETTINGS_LABEL))
+        self.assertEqual(self.sam3.segment_calls, 1)
+
+    def test_front_to_back_of_a_close_up_keeps_its_cut(self):
+        self.sam3.answer = CLOSE_UP
+        data = picture(transparent=False)
+        self.upload("wine-b", data)
+        calls = len(self.sam3.instances_calls)
+        status, out = self.set_type("wine-b", sha(data), "label_back")
+        self.assertEqual((status, out["type"]), (200, "label_back"), out)
+        self.assertEqual(len(self.sam3.instances_calls), calls)
+        self.assertEqual(self.settings(sha(data), "label")[1],
+                         alternatives.SETTINGS_LABEL_CLOSE_UP)
 
 
     # A second body label gives the box of the labels (owner answer of 2026-09-25T19:16:44).
@@ -637,7 +697,10 @@ class ManualCutTest(unittest.TestCase):
         status, out = self.set_type("wine-b", sha(data), "full_front")
         photo, = out["record"]["_alternatives"]
         self.assertEqual((photo["manual"], photo["manual_points"]), (True, POLYGON))
-        self.assertEqual(len(self.sam3.instances_calls), calls)
+        # The package cut needs no request. The label cut of the close-up is not the
+        # label cut of a full photo, so one request cuts the label again.
+        self.assertEqual(self.sam3.instances_calls[calls:], [alternatives.DETECT_TEXTS])
+        self.assertEqual(self.settings(sha(data), "label")[1], alternatives.SETTINGS_LABEL)
 
     def test_a_manual_label_cut_clears_the_absence_marker_and_stays(self):
         self.sam3.answer = CLOSE_UP

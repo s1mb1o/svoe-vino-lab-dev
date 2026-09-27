@@ -300,6 +300,9 @@ button.preview-thumb:hover { border-color: var(--accent); }
       <button id="stop" type="button" disabled>Stop</button>
       <button id="log" type="button" disabled title="Show build.log of the last build">Log</button>
       <span class="jobmsg" id="jobmsg"></span>
+      <button id="build-all" type="button" disabled
+        title="Build each configuration, one at a time, in the order of config.yaml">Build All</button>
+      <span class="jobmsg" id="allmsg"></span>
     </div>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       class="on" href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
@@ -365,7 +368,7 @@ const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
 const ACTIVE = ["running", "stopping"];
 const INITIAL = new URLSearchParams(location.search);
 const STORE_KEY = "svoe-vino-lab.embedding";
-let LIST = [], DATA = null, NAME = null, POLL = null;
+let LIST = [], DATA = null, NAME = null, POLL = null, QUEUE = null;
 const LAST_STATE = {};
 
 async function getJson(url, options) {
@@ -410,6 +413,7 @@ async function loadList() {
   $("#emb").innerHTML = LIST.map(entry =>
     `<option value="${esc(entry.name)}">${esc(optionText(entry))}</option>`).join("");
   $("#emb").value = NAME || "";
+  showQueue(body.queue);
   showJobs(LIST.filter(entry => entry.job).map(entry => Object.assign({name: entry.name}, entry.job)));
 }
 
@@ -562,8 +566,10 @@ function showJobs(jobs) {
       <span class="job-state">${esc(job.state)}</span><div class="prog"><div style="width:${percent}%"></div></div>
       <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span></div>`;
   }).join("");
-  if (running.length && !POLL) POLL = setInterval(pollJobs, 2000);
-  if (!running.length && POLL) { clearInterval(POLL); POLL = null; }
+  // Between two builds of `Build All` no build runs for up to 1 s: the queue keeps the poll.
+  const poll = running.length || queueRuns();
+  if (poll && !POLL) POLL = setInterval(pollJobs, 2000);
+  if (!poll && POLL) { clearInterval(POLL); POLL = null; }
   buttons();
   if (ended.length) {
     loadList().then(() => { if (ended.includes(NAME)) return loadEntry(); }).catch(() => {});
@@ -571,7 +577,46 @@ function showJobs(jobs) {
 }
 
 async function pollJobs() {
-  try { showJobs((await getJson("/api/embedding-jobs")).jobs); } catch (_) { /* next poll */ }
+  try {
+    const body = await getJson("/api/embedding-jobs");
+    showQueue(body.queue);
+    showJobs(body.jobs);
+  } catch (_) { /* next poll */ }
+}
+
+// `Build All` (plan 60): the server builds each configuration, one at a time, in the
+// order of config.yaml. A build that ends as `stopped` (Stop, or the × of its row) stops
+// the queue. The job row names the configuration that builds, so the message holds the
+// position alone. The title of the message lists the result of each configuration.
+function queueRuns() { return !!QUEUE && QUEUE.state === "running"; }
+function showQueue(queue) {
+  QUEUE = queue || null;
+  $("#build-all").disabled = queueRuns() || !LIST.some(entry => !entry.error);
+  const msg = $("#allmsg");
+  msg.classList.remove("bad");
+  msg.title = QUEUE ? QUEUE.results.map(result => `${result.name}: ${result.state}${
+    result.message ? ` (${result.message})` : ""}`).join("\n") : "";
+  if (!QUEUE) { msg.textContent = ""; return; }
+  const position = `${QUEUE.index + 1} / ${QUEUE.names.length}`;
+  if (QUEUE.state === "running") { msg.textContent = `Build All ${position}`; return; }
+  if (QUEUE.state === "stopped") { msg.textContent = `Build All stopped: ${position}`; return; }
+  if (QUEUE.state === "failed") {
+    msg.textContent = `Build All failed: ${QUEUE.message || ""}`; msg.classList.add("bad"); return;
+  }
+  const count = state => QUEUE.results.filter(result => result.state === state).length;
+  const failed = count("failed"), skipped = count("skipped");
+  msg.textContent = `Build All done: ${QUEUE.results.length - skipped} builds${
+    failed ? ` · failed ${failed}` : ""}${skipped ? ` · skipped ${skipped}` : ""}`;
+  if (failed || skipped) msg.classList.add("bad");
+}
+async function buildAll() {
+  $("#build-all").disabled = true;
+  try {
+    showQueue((await getJson("/api/embeddings/build-all", {method: "POST"})).queue);
+  } catch (error) {
+    alert(`Cannot start Build All: ${error.message}`);
+  }
+  await pollJobs();
 }
 
 async function action(kind) {
@@ -792,6 +837,7 @@ $("#filter").addEventListener("change", render);
 $("#q").addEventListener("input", render);
 $("#build").addEventListener("click", () => action("build"));
 $("#stop").addEventListener("click", () => action("stop"));
+$("#build-all").addEventListener("click", buildAll);
 $("#jobs").addEventListener("click", event => {
   const button = event.target.closest("button[data-stop]");
   if (button && !button.disabled) stopJob(button);

@@ -1,3 +1,4 @@
+import base64
 import contextlib
 import hashlib
 import io
@@ -14,6 +15,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
+import alternatives  # noqa: E402
 import derive  # noqa: E402
 import import_website as IMP  # noqa: E402
 import labdb  # noqa: E402
@@ -38,6 +40,35 @@ class FakeSam3:
 
     def segment(self, image):
         raise derive.Sam3Unavailable("the fake service is down")
+
+    def instances(self, image, texts, masks=True):
+        raise derive.Sam3Unavailable("the fake service is down")
+
+
+def bottle_picture():
+    """Return the PNG bytes of a bottle box of 20 x 60 pixels on a transparent canvas of
+    40 x 80 pixels. A label of `picture` is below `alternatives.MIN_BOX_SIDE`."""
+    image = Image.new("RGBA", (40, 80), (0, 0, 0, 0))
+    image.paste((90, 30, 20, 255), (10, 10, 30, 70))
+    out = io.BytesIO()
+    image.save(out, "PNG")
+    return out.getvalue()
+
+
+class LabelSam3(FakeSam3):
+    """A SAM3 client that finds a label on the bottle of `bottle_picture`."""
+
+    def __init__(self):
+        self.calls = 0
+
+    def instances(self, image, texts, masks=True):
+        self.calls += 1
+        mask = Image.new("L", image.size, 0)
+        mask.paste(255, (10, 25, 30, 55))
+        out = io.BytesIO()
+        mask.save(out, "PNG")
+        return [{"label": "label", "box": [10, 25, 30, 55], "score": 0.9, "area": 600,
+                 "mask_png_b64": base64.b64encode(out.getvalue()).decode()}], 1.0
 
 
 class FakeClient:
@@ -213,6 +244,22 @@ class ImportWebsiteTest(WebsiteTestBase):
         self.assertTrue((self.root / "images" / "main" / (sha(pics["n"]) + ".png")).exists())
         self.assertEqual(report.derivatives.methods["crop"], 2)
         self.assertEqual(len(self.query("SELECT * FROM image_derivative")), 2)
+        # SAM3 is down: the first label request stops the label requests.
+        self.assertEqual((report.label_cuts, report.no_label_cut), (0, 2))
+        self.assertEqual(sum(line.startswith("no label cut: ") for line in self.log), 1)
+
+    def test_a_new_main_image_gets_its_label_cut(self):
+        pics = {"a": picture(1), "n": bottle_picture()}
+        self.add_wine("a", main=pics["a"])
+        segmenter = LabelSam3()
+        report = IMP.import_website(self.db, self.site("an", pics, {"n": card("n")}),
+                                    segmenter, self.log.append)
+        self.assertEqual(report.added, ["n"])
+        self.assertEqual((report.label_cuts, report.no_label_cut, segmenter.calls), (1, 0, 1))
+        self.assertEqual(self.query("SELECT method, settings FROM image_derivative WHERE "
+                                    "source_sha256 = ? AND kind = 'label'", (sha(pics["n"]),)),
+                         [("seg", alternatives.SETTINGS_LABEL)])
+        self.assertEqual(report.as_dict()["label_cuts"], 1)
 
     def test_a_returned_wine_with_no_main_gets_both_comments(self):
         self.add_wine("a", main=picture(1))

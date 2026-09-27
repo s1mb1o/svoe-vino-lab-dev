@@ -916,19 +916,6 @@ The form of a section:
   one line of `applyView`, one listener) and does not touch the hunks of df. No overlap:
   the df hunk near it is in `render`, not in `applyView`.
 
-## codex-dataset-clipboard
-
-- Task: add a clipboard image button to Alternative photos on `/dataset`.
-- Source: owner message of 2026-09-27T00:15:16+0300.
-- Files: `docs/owner-messages.md` (append); proposed separate hunks in
-  `pipeline/pages/dataset.html` (alternative controls and clipboard function),
-  `README.md` (alternative upload paragraph), `SMOKE_TESTS.md` (append),
-  and `ChangeLog.md` (one bullet).
-- State: waiting: owner approval for separate edits under rule 17. The prepared patch
-  `/private/tmp/dataset-clipboard-full.patch` passes `git apply --check`. The browser
-  checks pass with mock clipboard and upload APIs. The live page is unchanged.
-- Updated: 2026-09-27T00:18:33+0300
-
 ## drink-atlas-workspace-86 [92610a]
 
 - Task: the SAM3 package cut prefers a wine bottle over a box, a can, or a packet
@@ -1088,40 +1075,653 @@ The form of a section:
   variant-group slugs of `my`. The source set still has 4,043 photos.
 - Updated for task 4: 2026-09-27T08:18:19+0300.
 
-## drink-atlas-workspace-d8 [a08e7a]
+- Task 5: explain the failures of run
+  `2026-09-27T070800Z-lab-barcode-rerank-siglip2-512-crop-my-1` and give a prioritized
+  fix plan. Do not change product code.
+- Source: owner message of 2026-09-27T10:13:36+0300.
+- Files for task 5: `docs/owner-messages.md` (append), a new report in
+  `docs/reports/`, and this section of `ACTIVE_WORK.md`.
+- State for task 5: done, not committed. The report separates 67 exact-byte
+  alternate-valid results from 153 genuine misses. It explains the ten raw-rank-one
+  reranker demotions, eight decoded but unmapped codes, five top-ten retrieval misses,
+  index coverage, label-fusion evidence, and the prioritized repair sequence. The run
+  artifacts and product code stayed read-only.
+- Updated for task 5: 2026-09-27T10:26:13+0300.
 
-- Task: a column `modified_at` in `wine_code` (the insert time of each row), in the API and
-  on the Dataset page.
-- Source: owner message of 2026-09-27T08:30:51+0300 and owner answers of about 08:32 and 08:35.
-- Files: `docs/owner-messages.md` (append), `pipeline/schema/026_wine_code_time.sql` (new;
-  number 026 taken at 08:44:52 after messages to c7 and cb; f4 and 6c have no schema work), `pipeline/lab_server.py` (`wine_codes`,
-  `dataset_records`, `_code_answer`), `pipeline/pages/dataset.html` (the GTIN and QR URL
-  editors), `tests/test_labdb.py`, `tests/test_lab_server.py`,
-  `tests/test_seed_codes.py` (one positional INSERT), `docs/API.md`,
-  `docs/database-structure.html`, and my own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`,
-  `README.md`. A migration of `data/lab.sqlite3` and a restart of 8168.
-- State: active. f4 [8de48d] committed at about 08:35 and plans no schema work.
-  The owner allowed at about 08:35 separate hunks in the files of the stale sections, a
-  backup of `data/lab.sqlite3`, the migration, and a restart of 8168. The owner chose a
-  map `_code_times` and a tooltip on the Dataset page.
-- Updated: 2026-09-27T08:44:52+0300
-- Agreements: 6c [e05b96] told at about 08:40 that it adds separate hunks in
-  `dataset.html` (`atlasProductFromUrl`, a "paste" listener). They do not touch my GTIN
-  and QR URL editor hunks.
+## drink-atlas-workspace-c7 [09419d]
 
-## drink-atlas-workspace-6c [e05b96]
+- Task: a global key of `config.yaml` that updates the embedding of a pipeline before
+  each run of that pipeline, set to true.
+- Source: owner messages of 2026-09-27T08:40:19+0300 and 08:40:26, answers of 08:53:00
+  (update the changed items; `Run>` and the CLI; a failed build fails the run; separate
+  hunks in the files of the stale sections are allowed).
+- Files: `docs/owner-messages.md` (append), `docs/plans/59_rebuild-embeddings-on-run.md`
+  (new), `pipeline/rebuild_on_run.py` (new), `tests/test_rebuild_on_run.py` (new),
+  `config.yaml` (one new top-level key after `embedding_python`), `pipeline/run_job.py`
+  (one import, one call before `build`, one docstring paragraph),
+  `pipeline/embedding_run.py` (one import, one call in `main`, one docstring sentence),
+  and my own hunks in `ChangeLog.md`, `SMOKE_TESTS.md` (section RB after NB10),
+  `README.md` (3 hunks). No schema change. No restart: `run_job.py` and the build are
+  read from disk for each job.
+- State: done, not committed. Waiting: the owner decides the commit. Live since about
+  09:00: the key is true in `config.yaml`. Tests: `test_rebuild_on_run.py` 17 OK, the full
+  suite 1,164 OK (5 skipped). No live run by this session (it sends requests to gx10).
+- Updated: 2026-09-27T19:36:00+0300
+- Agreements: 1d [e2bf93] restarted 8168 at about 14:37; c7 checked at 14:38 that the
+  server does not call `before_run` (no change of server behavior). 4e [ff960b] asked at
+  about 19:34 for separate hunks in `pipeline/embedding_run.py` (plan 64:
+  `Catalogue.rank` and `EmbeddingBackend.ask`, `only` -> `first`). c7 answered "ok" with
+  conditions: my lines 14 to 16, 60, and 697 stay byte-identical; 4e commits only its own
+  hunks through a private index; 4e runs `test_rebuild_on_run.py` (17 OK) after its edit.
 
-- Task: a paste of a product URL `…/products/<uuid>` into the input of `Atlas Core
-  product` inserts the UUID alone.
-- Source: owner message of about 2026-09-27T08:37:00+0300, answers of 08:40.
-- Files: `docs/owner-messages.md` (append), `pipeline/pages/dataset.html` (a new
-  function `atlasProductFromUrl` after `atlasProducts`, and a new `paste` listener after
-  the `input` listener of `#list`), and my own hunks in `ChangeLog.md`,
-  `SMOKE_TESTS.md` (AB14, AB15), and `README.md` (one new line after the Atlas paragraph
-  of the Dataset page). No restart: the page is read from disk.
-- State: done, not committed. Waiting: the owner decides the commit. The owner allowed at
-  08:40 separate hunks in `dataset.html`. The lines of d8 [a08e7a] (the GTIN and QR URL
-  editors) and of f2 and bc (stale) stay unchanged. A Playwright check on 8168 passed 8
-  of 8 cases, with no POST, no DELETE, and no page error. No restart.
-- Updated: 2026-09-27T08:43:00+0300
-- Agreements: d8 [a08e7a] was told at about 08:41; d8 recorded it in its section.
+## drink-atlas-workspace-a8 [c74148]
+
+- Task: a `Paste image` tile after the tile "Drop photos here or choose files" of
+  `Alternative photos` on `/dataset`.
+- Source: owner message of 2026-09-27T08:55:08+0300.
+- Files: `docs/owner-messages.md` (append); separate hunks in `pipeline/pages/dataset.html`
+  (the alternative CSS, the tile in the alternative editor, one click branch, one paste
+  listener, one function); my own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`, `README.md`.
+  No restart: the page is read from disk.
+- State: done, not committed; waiting: the owner decides the commit. The owner chose
+  "Click + ⌘V" and "Replace it" at about 08:57; I removed the stale section
+  codex-dataset-clipboard. 24 of 24 Playwright checks pass on 8168 with mocked write
+  requests; nothing was saved. Smoke tests PI1 to PI7.
+- Updated: 2026-09-27T20:21:00+0300
+- Agreements: d8 [a08e7a] and 6c [e05b96] got a message about my hunks in
+  `dataset.html` at about 09:04. 6c answered "no objection"; it holds no claim on the
+  file. My paste listener is a separate listener; the Atlas listener is unchanged.
+  1d [e2bf93] told at about 14:35 that it adds separate hunks to `dataset.html` (the
+  describe dialog functions, the popstate listener, the init block), none near my
+  hunks; it commits its own hunks alone. I have no objection; no answer was needed.
+  d8 [a5ab96] told at about 14:54 that it adds separate Atlas "approve" hunks to
+  `dataset.html` (`atlasBindingEditor`, a new `approveAtlasBinding`, one branch of the
+  `.atlas-binding-editor` click handler, one CSS line); my hunks stay byte-identical; it
+  commits its own hunks alone. I have no objection; no answer was needed.
+  2f [0e9cfe] asked at about 15:23 for separate hunks of plan 62 in `dataset.html`
+  (`similarEditor`, one line of `recordHtml`, 2 functions, a datalist, one click branch,
+  one keydown branch, CSS) and a later restart of 8168. I answered "ok" at 15:25: my
+  lines stay byte-identical; its click branch stays outside the `.alternative-editor`
+  block; one unchanged line at least between its hunks and mine; a restart is fine.
+  2f told at about 15:50 that plan 62 is live (8168 restart at 15:47, pid 47252). I
+  checked at 15:55: my 6 blocks are byte-identical; the Playwright check passes 24 of 24
+  again (the script now waits for the delayed render of the search input).
+  1e [7df1e0] asked at about 17:10 for separate hunks of plan 63 (wine tags) in
+  `dataset.html` (CSS, `tagEditor`, one card line, new functions, one branch in each of
+  the click, input, and keydown listeners of `#list`), schema 029, and a restart of
+  8168. I answered "ok" at 17:12 with the conditions of 2f: my lines stay
+  byte-identical; its click branch stays outside the `.alternative-editor` block; one
+  unchanged line at least between its hunks and mine.
+  06 [1b7eb8] asked at about 19:31 to change one line of `dataset.html`: the
+  `max-height: 310px` of `.alternative-grid` (owner message of 19:30:17). I answered
+  "ok" at 19:32; the line is not mine, and my lines stay byte-identical.
+  06 told at about 19:34 that the change is in (310px -> 620px, line 280 alone). My
+  lines are unchanged (checked at 19:34). 06 committed d5d46e6 at 20:19; I checked
+  at 20:21: it holds none of my lines, and my hunks stay uncommitted in the tree.
+
+## drink-atlas-workspace-d7 [604e28]
+
+- Task: research how the top-k search can use label-space embeddings and fuse them with
+  the full-bottle embeddings. Research only; no code change.
+- Source: owner message of 2026-09-27T10:13:59+0300.
+- Files: `docs/owner-messages.md` (append), `docs/reports/2026-09-27_label-fusion.md`
+  (new), `docs/reports/2026-09-27_label-fusion/fusion_replay.py` (new, read-only replay of
+  saved runs), `ResearchLog.md` (one entry at the top), my own hunk in `ChangeLog.md`.
+- State: done, not committed; waiting: the owner chooses option A, B, or C of the report.
+- Updated: 2026-09-27T10:21:21+0300
+
+## drink-atlas-workspace-38 [2e502f]
+
+- Task: explain the failures of the run
+  `2026-09-27T070800Z-lab-barcode-rerank-siglip2-512-crop-my-1` and propose fixes.
+  Research only; no code change without the owner's word.
+- Source: owner message of 2026-09-27T10:13:36+0300 (already in
+  `docs/owner-messages.md`).
+- Files: `docs/owner-messages.md` (append); new
+  `docs/reports/2026-09-27_my-1-failure-addendum.md`; new
+  `docs/reports/2026-09-27_my-1-failure-addendum/replay.py`; one entry at the top of
+  `ResearchLog.md`; one entry in `ChangeLog.md`. I do not change
+  `docs/reports/2026-09-27_my-1-failure-analysis.md` (another session wrote it at 10:26).
+- State: done, not committed; waiting: the owner chooses the fixes and decides the
+  commit. The report, the script, and the two log entries are written. No code change.
+- Updated: 2026-09-27T10:48:00+0300
+
+## drink-atlas-workspace-1d [e2bf93]
+
+- Task: a page path that opens the Image description dialog of `/dataset`:
+  `/dataset/<wine_slug>/describe/<sha256>`. The address bar follows the dialog; Back
+  closes it. No "Copy link" button.
+- Source: owner message of 2026-09-27T13:49:11+0300 and the answers after it.
+- Files: `docs/owner-messages.md` (append), `pipeline/lab_pages.py`
+  (`DATASET_PREVIEW_ROUTE` and its comment), `pipeline/pages/dataset.html` (separate
+  hunks: new describe path functions next to `openDescribe`, `openDescribe`,
+  `closeDescribe`, the `popstate` listener, the `init` block), `tests/test_lab_server.py`
+  (`test_dataset_preview_paths_send_the_page`), and my own hunks in `README.md`,
+  `ChangeLog.md`, `SMOKE_TESTS.md`. A restart of 8168 for `lab_pages.py`.
+- State: done, not committed. Waiting: the owner decides the commit. 8168 restarted by 1d
+  at 14:37:41 (pid 13418); `GET /api/dataset` answers 200. Tests: `test_lab_server.py` 64
+  OK, `test_lab_pages.py` 4 OK. 16 of 16 Playwright checks pass on 8168 (write requests
+  blocked; nothing saved). Docs: `README.md`, `ChangeLog.md`, `SMOKE_TESTS.md` (ID31 to
+  ID34).
+- Updated: 2026-09-27T14:45:00+0300
+- Agreements: the owner allowed separate hunks in the files of the stale sections 6c
+  [c91c62], 41 [501d23], d3, f2, and bc.
+  6b [e99257] answered "ok" at about 14:36: it adds one line `loadLabelDescriptions(sha);`
+  before `$("#describe-modal").hidden = false;` in `openDescribe`, and other hunks outside
+  my lines; it does not change `closeDescribe`, the `popstate` listener, or `init`.
+  c7 [09419d] answered at 14:38: the restart loads its `embedding_run.py` and
+  `rebuild_on_run.py`, with no change of server behavior. a8 and d8 were told.
+  d8 [a5ab96] told at about 14:50 that it adds separate Atlas "approve" hunks in
+  `dataset.html` and `tests/test_lab_server.py` (owner message of 14:49:04); 1d has no
+  objection: no overlap with my hunks.
+  2f [0e9cfe] asked at about 15:15 for separate plan 62 hunks in `dataset.html` and
+  `tests/test_lab_server.py`; 1d answered "ok" with one condition: the `popstate`
+  listener next to its keydown branch stays byte-identical.
+  2f reported at 15:47 that plan 62 is live (8168 pid 47252) and my lines are intact; 16 of
+  16 Playwright checks passed again after it.
+  1e [7df1e0] asked at about 16:00 for separate plan 63 hunks in `dataset.html` and
+  `tests/test_lab_server.py`; 1d answered "ok": my lines stay byte-identical.
+
+## drink-atlas-workspace-6b [e99257]
+
+- Task: plan 61, label descriptions of the images: a history table of the answers of
+  `label_rules.DESCRIBE_PROMPT`, stage 3 of the watcher, a key repair and a check, the key
+  repair in `label_rules.describe`, and a history view with edit and remove in the image
+  description dialog of `/dataset`.
+- Source: owner message of 2026-09-27T13:55:59+0300, answers of about 14:15:00; plan
+  `docs/plans/61_label-descriptions.md`.
+- Files: `docs/owner-messages.md` (append), `docs/plans/61_label-descriptions.md` (new),
+  `pipeline/schema/027_image_label_description.sql` (new; 027 taken at 15:16:26), `pipeline/label_descriptions.py` (new),
+  `pipeline/label_description_routes.py` (new), `tests/test_label_descriptions.py` (new).
+  After the owner allows it (files of stale sections): separate hunks in
+  `pipeline/describe_images.py`, `pipeline/image_descriptions.py` (`call_view`,
+  `watcher_status`), `pipeline/label_rules.py` (`describe`, one import),
+  `pipeline/lab_server.py` (docstring, import, 2 route branches, one handler),
+  `pipeline/pages/dataset.html` (CSS, a new dialog section, new functions, one line in
+  `openDescribe`, the pill texts), `config.yaml` (one key `labels` in
+  `image_description`), `tests/test_describe_images.py`, `tests/test_label_rules.py`,
+  `tests/test_labdb.py` (VERSION, table list), and my own hunks in `README.md`,
+  `COMMANDS.md`, `docs/API.md`, `SMOKE_TESTS.md`, `ChangeLog.md`, `ResearchLog.md`, one
+  dated note at the end of plan 45. Later: a migration of `data/lab.sqlite3`, a restart of
+  8168, one row in `/Users/ashmelev/Admin/GPU_TASKS.md`.
+- State: done, not committed. The backlog of stage 3 ended at 16:49 (2,162 of 2,166; 2
+  failed). Waiting: the owner decides the commit. 027 is live: `data/lab.sqlite3` at version 27 since 15:16:56 (backup
+  `data/backups/lab-before-027-image-label-description-20260927T121654Z.sqlite3`). 8168
+  restarted by 6b at 15:17:20 (pid 55047, watcher pid 55081, `caffeinate` pid 57284; the
+  keeper `work/plan61-caffeinate.sh` pid 79610 holds `caffeinate` across restarts); the
+  GPU row is in `GPU_TASKS.md`. Tests: full suite 1,211 OK in the live tree. Docs done:
+  README, COMMANDS, docs/API.md, SMOKE_TESTS (LD1 to LD12), ChangeLog, ResearchLog, plan 45
+  note, plan 61 result. Scratch copy of the work: session scratchpad `lab61/`.
+- Updated: 2026-09-27T17:13:34+0300
+- Agreements: 1d [e2bf93] changes `openDescribe`, `closeDescribe`, the `popstate`
+  listener, and the `init` block of `dataset.html` (its hunks are on disk). I add one line
+  in `openDescribe` before `$("#describe-modal").hidden = false;` and no line in
+  `closeDescribe` (agreed at about 14:30). I send 1d a message before a restart of 8168.
+  2f [0e9cfe] (plan 62, schema 028 `wine_similar`) asked at about 15:25 for separate hunks
+  in `lab_server.py`, `dataset.html`, `tests/test_labdb.py` (VERSION 28, one table name),
+  and a later restart of 8168. 6b answered "ok": my lines stay byte-identical; 2f sends
+  me the new watcher pid after its restart (not needed since the keeper runs; 2f was told).
+  2f restarted 8168 at 15:47 for schema 028 (pid 47252, watcher pid 47284); 6b checked at
+  15:55: stage 3 goes on (697 of 2,163 done), the plan 61 lines are byte-identical, and
+  the plan 61 tests pass with VERSION 28.
+  00 [8866fa] asked at about 16:53 for separate hunks in `pipeline/lab_server.py`
+  (`import model_cache`, `forget_scans`, one call each in `add_code` and `remove_code`,
+  `OSError` in `_code`) and `docs/API.md` (the code routes), then a restart of 8168
+  (owner message of 16:08). 6b answered "ok": my lines stay byte-identical; the stage 3
+  watcher resumes by itself after the restart.
+  1e [7df1e0] (plan 63, wine tags, schema 029 `wine_tag`) asked at about 17:12 for separate
+  hunks in `lab_server.py`, `dataset.html`, `tests/test_labdb.py` (VERSION 29, one table
+  name), `docs/API.md`, and a restart of 8168. 6b answered "ok": no place is next to my
+  lines; I have no more schema work.
+  00 restarted 8168 at 17:09:02 (pid 7024, watcher pid 7068, `labels on`); 6b checked at
+  17:13: the watcher described the last pending image and is idle (2,173 of 2,175 done,
+  2 failed); the plan 61 files are byte-identical.
+
+## drink-atlas-workspace-64 [a6a2b4]
+
+- Task: a button `Build All` on `/embedding` that starts the build of each embedding.
+- Source: owner message of 2026-09-27T14:33:25+0300. Plan `docs/plans/60_build-all-embeddings.md`.
+- Files: `docs/owner-messages.md` (append), `docs/plans/60_build-all-embeddings.md` (new),
+  separate hunks in `pipeline/embedding_routes.py` (docstring, one route branch, the queue
+  functions, the queue in the list and jobs answers, `pop` in `_reap`) and
+  `pipeline/pages/embedding.html` (the button, its message, the poll), one new class at
+  the end of `tests/test_embedding_routes.py`, and my own hunks in `ChangeLog.md`,
+  `SMOKE_TESTS.md` (EB48 to EB54), `README.md`. A restart of 8168 for `embedding_routes.py`.
+- State: done, not committed. Waiting: the owner decides the commit. The owner chose
+  "One at a time, server" and "Yes, separate hunks" at about 14:40. The stale claims of
+  41 and codex-side-sam3-fix on these files are committed in c863231; my hunks leave
+  their lines as they are. 8168 restarted by 64 at 14:44:31 (pid 38527); the restart
+  deployed only `embedding_routes.py` (each other pending server file is older than the
+  server of 1d of 14:37:41). Tests: `test_embedding_routes.py` 23 OK; full suite 1,169 OK
+  (5 skipped). 39 of 40 Playwright checks on 8168 with each POST mocked or blocked; the
+  failed check is an old horizontal scroll at 390 px from the `Configuration` select.
+  No live `Build All` by this session (it sends requests to gx10).
+- Updated: 2026-09-27T14:54:50+0300
+- Agreements: d8 [a5ab96] asked at about 14:54 whether a restart of 8168 may load my
+  `embedding_routes.py`. I answered (a): safe to load; no Build All queue runs.
+
+## drink-atlas-workspace-d8 [a5ab96]
+
+- Task: a button `approve` on an automatic Atlas Core product of a Dataset card. It changes
+  the source of the row from `automatic` to `manual`.
+- Source: owner message of 2026-09-27T14:49:04+0300, answers of 14:54:07 (a new approve
+  route; separate hunks in the files of the stale section bc).
+- Files: `docs/owner-messages.md` (append), separate hunks in `pipeline/atlas_bindings.py`
+  (`approve`), `pipeline/lab_server.py` (docstring, `approve_atlas_binding`,
+  `_atlas_binding`, one route branch), `pipeline/pages/dataset.html` (one CSS line,
+  `atlasBindingEditor`, `approveAtlasBinding`, the Atlas click handler),
+  `tests/test_atlas_bindings.py`, `tests/test_lab_server.py` (`approve_atlas`,
+  `test_approve_makes_an_automatic_product_manual`), and my own hunks in `README.md`,
+  `ChangeLog.md`, `SMOKE_TESTS.md` (AA1 to AA7), `docs/API.md`.
+- State: done, not committed. Waiting: the owner decides the commit. No schema change.
+  8168 restarted by me at 14:57:17 (pid 88971); `GET /api/dataset` answers 200. Tests:
+  `test_atlas_bindings.py` 9 OK, `test_lab_server.py` 65 OK, `test_dataset_atlas_bindings.py`,
+  `test_seed_atlas_bindings.py`, `test_labdb.py` OK. Playwright on 8168 in dark and light
+  mode: 20 of 20 checks pass (the approve POST mocked; nothing saved).
+- Updated: 2026-09-27T14:59:06+0300
+- Agreements: 6b [e99257] "no objection" (its plan 61 code is in a scratch copy; my restart
+  deploys nothing of it). 64 [a6a2b4] said embedding_routes.py is safe to load and no
+  Build All queue ran. 1d [e2bf93] "ok, no objection". a8 [c74148] was told.
+  6b told me at about 15:05 that it enters schema 027, migrates, and restarts 8168; my
+  Atlas lines stay byte-identical. Checked after its restart (pid 55047): `/api/dataset`
+  200, the approve route answers (404 for an unknown wine), the page has the button.
+  2f [0e9cfe] (plan 62, a manual `similar` pair; owner message of 15:12:00): I answered
+  "ok with 3 conditions" at 15:24 to separate hunks after my approve blocks in
+  `lab_server.py`, `dataset.html`, and a new class in `tests/test_lab_server.py`: my
+  approve lines stay byte-identical; each session commits only its own lines (private
+  index, hand-built patch where hunks touch); after its restart, `test_atlas_bindings.py`
+  and `test_lab_server.py` pass and the approve route still answers.
+  2f reported plan 62 live at 15:47 (8168 pid 47252, schema 028). I checked: my approve
+  lines are in place, the route answers 404 for an unknown wine, `test_atlas_bindings.py`
+  9 OK, `test_lab_server.py` 67 OK. Conditions met.
+  00 [8866fa] (owner message of 16:08, a GTIN or QR URL change deletes the barcode scan
+  records of the wine): I answered "ok with 2 conditions" at 16:53 to separate hunks
+  in `lab_server.py` (import, `forget_scans`, `add_code`, `remove_code`, `_code`) and in
+  the code-route section of `docs/API.md`: my approve lines stay byte-identical, each
+  session commits only its own lines; after its restart, `test_atlas_bindings.py` and
+  `test_lab_server.py` pass and the approve route still answers.
+  1e [7df1e0] (plan 63, wine tags, schema 029): I answered "ok with 2 conditions" at 17:11
+  to separate hunks in `lab_server.py`, `dataset.html`, `tests/test_lab_server.py`, and
+  `docs/API.md`, with the same 2 conditions as 00.
+  00 reported its restart at 17:09:02 (pid 7024). I checked: my approve lines are in
+  place, the route answers 404 for an unknown wine, `test_atlas_bindings.py` 9 OK,
+  `test_lab_server.py` 67 OK. The conditions of 00 are met.
+  06 [1b7eb8] (owner message of 20:08:45, a badge for an Atlas UUID of 2 or more wines):
+  I answered "ok with 3 conditions" at 20:10 to its change of the `open` line of
+  `atlasBindingEditor` (2 lines below my hunk) and the kind `atlas` in `codeUsers` and
+  `codePeers`: my approve lines stay byte-identical; it commits its line alone by a
+  hand-built patch (git shows one merged hunk); it tells me when its hunks are on disk,
+  and I re-run my browser check of the approve button.
+  06 reported its hunks on disk. I re-ran the check: 20 of 20 approve checks pass in dark
+  and light mode; on `nebbiolo` the order is source, approve, copy, open, `2 wines`, and
+  the badge stays after an approve (POST mocked; nothing saved). The conditions of 06 are met.
+  06 committed d5d46e6 at 20:19:55. I checked: no approve line of mine is in it; my 9
+  approve lines of `dataset.html` stay uncommitted in the tree. Its ChangeLog text and
+  smoke row AS3 name the approve button, which enters HEAD with my commit.
+
+## drink-atlas-workspace-2f [0e9cfe]
+
+- Task: paste of an image from the clipboard (Ctrl+V / Cmd+V) on `/recognize`.
+- Source: owner message of 2026-09-27T15:04:13+0300.
+- Files: `docs/owner-messages.md` (append), `pipeline/pages/recognize.html` (the drop
+  hint, one `paste` listener), and my own hunks in `ChangeLog.md` and `SMOKE_TESTS.md`.
+  The stale section 41 [501d23] lists `recognize.html`; its work is committed in c863231.
+  The owner asked for this change of the page directly.
+- State: done, not committed. Waiting: the owner decides the commit. No restart: the
+  server reads the page from disk for each request. Checks: 9 of 9 browser checks on the
+  live page (synthetic paste, text paste, real ControlOrMeta+V from the clipboard; POST
+  mocked, no pipeline ran); 390 px light and dark with no horizontal scroll; RC1 tests OK.
+- Updated: 2026-09-27T15:09:00+0300
+- Task 2: a manual two-way relation `similar` between two wines on `/dataset`; the
+  cluster build adds the other wine of a pair to the cluster of the first wine.
+- Source 2: owner message of 2026-09-27T15:12:00+0300.
+- Files 2: `docs/owner-messages.md` (append), `docs/plans/62_similar-wines.md` (new),
+  `pipeline/schema/028_wine_similar.sql` (new; 028 taken at 15:46:57; 6b has no second schema file),
+  `pipeline/similar_wines.py` (new), `tests/test_similar_wines.py` (new),
+  `pipeline/clusters.py` (`context`, `build`, `components`, one new function),
+  `tests/test_clusters.py` (new tests). Separate hunks after agreement:
+  `pipeline/lab_server.py` (docstring paragraph, import, `dataset_records`,
+  `dataset_view`, 2 new functions, one handler, one route branch),
+  `pipeline/pages/dataset.html` (new CSS lines, `similarEditor`, one line in
+  `recordHtml`, 2 new functions, a datalist, one click branch, one keydown branch),
+  `pipeline/pages/clusters.html` (one CSS line `.badge.manual`), `tests/test_labdb.py`
+  (VERSION, table list), `tests/test_lab_server.py` (a new class at the end), and my own
+  hunks in `docs/API.md`, `README.md`, `ChangeLog.md`, `SMOKE_TESTS.md`. A migration of
+  `data/lab.sqlite3` and a restart of 8168.
+- State 2: done, not committed. Waiting: the owner decides the commit. Schema 028
+  entered and migrated at 15:46:57 (backup
+  `data/backups/lab-before-028-wine-similar-20260927T124657Z.sqlite3`). 8168 restarted by
+  2f at 15:47 (pid 47252, watcher pid 47284); only plan 62 was pending. Tests: full suite
+  1,223 OK (5 skipped); d8 checks pass (`test_atlas_bindings.py`, `test_lab_server.py`,
+  the approve POST with `no-such-wine` answers 404). Browser: 19 of 19 on a scratch
+  server, 5 of 5 on 8168 with the writes mocked; 0 pairs in the real table. My hunks went
+  in by `patch -F0`; the lines of the other sessions are byte-identical.
+- Updated 2: 2026-09-27T15:55:00+0300
+- Agreements 2: the owner allowed separate hunks in the files of the stale sections
+  (15:31). 6b "ok": 028 is mine; its plan 61 lines stay byte-identical; `wine_similar`
+  in its alphabetical place in `test_labdb.py`; a restart is fine. a8 "ok": its Paste
+  image lines stay byte-identical; my click branch outside the `.alternative-editor`
+  block; one unchanged line between our hunks. 1d "ok": its `popstate` listener and its
+  test lines stay byte-identical; my patch against the present file. d8 [a5ab96] "ok":
+  its approve lines stay byte-identical; each session commits its own lines (private
+  GIT_INDEX_FILE); after the restart `test_atlas_bindings.py` and `test_lab_server.py`
+  pass and the approve POST with `no-such-wine` answers 404. d8 [a08e7a] "ok".
+  00 [8866fa] asked at about 16:10 for separate hunks in `pipeline/lab_server.py`
+  (`import model_cache`, `forget_scans`, calls in `add_code`/`remove_code`, `OSError` in
+  `_code`) and `docs/API.md` (the code routes section); I answered "ok" with conditions:
+  my plan 62 lines stay byte-identical, `_code_write` does not change, one unchanged line
+  between our hunks, each session stages its own hunks; its restart of 8168 is fine.
+  1e [7df1e0] (plan 63, wine tags, schema 029) asked at about 16:15 for hunks next to my
+  plan 62 hunks in `lab_server.py`, `dataset.html`, `test_labdb.py`, `test_lab_server.py`,
+  `docs/API.md`. I answered "ok" with conditions: my lines stay byte-identical, except
+  `VERSION, 28` and the closing line `"wine_similar"])` of `test_labdb.py`; each session
+  commits its own lines (private GIT_INDEX_FILE, a hand-built patch where hunks touch);
+  plan 62 (028) is committed before 029 or in the same commit; its restart is fine, then
+  it checks `similar_pairs`, `test_similar_wines.py`, and `test_clusters.py`.
+  4e [ff960b] (plan 64, a shared GTIN as a forced link) asked at about 19:30 for hunks
+  next to my plan 62 lines in `clusters.py`, `clusters.html`, `test_clusters.py`. I
+  answered "ok", option A: it adds `by=MANUAL` to `manual_links` (the `def` line, the 2
+  uses of `MANUAL`, and its docstring change); every other plan 62 line stays
+  byte-identical; `ManualPairTest` passes unchanged; with no GTIN pair the hash stays;
+  its commit comes after my plan 62 commit or in the same commit.
+  4e asked at about 20:13 for one more hunk in `clusters.html` (`cardImage` before
+  `memberHtml`, one line in `memberHtml`); I answered "ok": my `.badge.manual` lines stay.
+  06 [1b7eb8] (owner bug report of 20:22:30: a hidden partner opened a new tab that
+  restores the same search) asked at about 20:25 to change the `[data-similar-open]`
+  branch of my `.similar-editor` click block in `dataset.html` (4 lines), add
+  `openSimilarCard` after `scrollToCard`, and change SW6. I answered "ok" with
+  conditions: no second card with the same id; it also changes the new-tab sentence of my
+  README paragraph; it commits after my plan 62 commit; each session stages its own lines.
+  06 reported the fix on disk at about 20:40 (30 of 30 browser checks). At my plan 62
+  commit: send one line to 06, 4e, and 1e (they commit after it). My commit uses my own
+  lines; the 06 lines of the similar-open branch, README line 241, and SW6 go in the 06
+  commit.
+  1c [b72be3] (plan 65, Build all clusters) asked at about 22:10 for hunks in
+  `clusters.html` (a `#build-all` button and a `#queue` span, one line in `loadList`, new
+  queue functions); I answered "ok": my `.badge.manual` lines stay.
+  e3 [c13919] (owner answers of 23:15:34: visible text only, "Hard cases") asked at about
+  23:20 to change the visible texts of plan 62 in `dataset.html` (9 text lines),
+  README.md (2 lines + 1 sentence), SMOKE_TESTS.md (heading, SW2, SW5), docs/API.md
+  (heading, first sentence), and a note at the end of plan 62. I answered "ok": text only,
+  every identifier and server text and the 06 lines stay; `node --check` and the route
+  tests pass; it commits after my plan 62 commit. Notify e3 at my commit too.
+
+## drink-atlas-workspace-00 [8866fa]
+
+- Task: an add or a remove of a GTIN or a QR URL of a wine deletes the barcode scan
+  records (`data/cache/barcode/`) of the test photos of that wine (`test_photo.place`).
+- Source: owner message of 2026-09-27T16:08:37+0300, answers of 16:49:57.
+- Files: `docs/owner-messages.md` (append); `pipeline/model_cache.py` (a new function
+  `forget`); `tests/test_model_cache.py` (a new class at the end); new
+  `tests/test_code_cache_forget.py`; separate new hunks in `pipeline/lab_server.py`
+  (`import model_cache`, a new helper `forget_scans`, one call in `add_code` and in
+  `remove_code`, `OSError` in the except of `_code`) and in `docs/API.md` (the code
+  routes); my own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`. A restart of 8168.
+- State: done, not committed; waiting: the owner decides the commit. 8168 restarted by 00
+  at 17:09:02 (pid 7024, watcher pid 7068); `GET /api/dataset` answers 200. Live check
+  WC22 passed. Tests: 1,229 OK (5 skipped).
+- Updated: 2026-09-27T17:13:30+0300
+- Agreements: 6b "ok" (keep `import model_cache` a separate hunk from its import). d8
+  [a5ab96] "ok": its approve lines byte-identical; after the restart
+  `test_atlas_bindings.py` and `test_lab_server.py` pass and the approve route answers
+  404 for `no-such-wine`. 2f "ok": its plan 62 lines byte-identical, `_code_write`
+  unchanged, one unchanged line between hunks. The owner at 17:02:48 allowed separate hunks
+  in the files of the stale sections. Commit through a private GIT_INDEX_FILE. 1e [7df1e0] asked at about 17:13 for
+  separate hunks of plan 63 in `lab_server.py` and `docs/API.md`; 00 answered "ok": my
+  lines byte-identical, one unchanged line between hunks; 1e restarts 8168 after 00.
+
+## drink-atlas-workspace-1e [7df1e0]
+
+- Task: plan 63, the tags of a wine: table `wine_tag`, module, routes
+  `/api/dataset-tag`, the editor `Tags` on `/dataset`. No pipeline change (owner answer).
+- Source: owner messages of 2026-09-27T17:04:20+0300 and 17:05:11+0300, answers of
+  17:07:53. Plan `docs/plans/63_wine-tags.md`.
+- Files: `docs/owner-messages.md` (append), `docs/plans/63_wine-tags.md` (new),
+  `pipeline/schema/029_wine_tag.sql` (new; 029 taken at 17:20:28; 6b and 2f have no
+  pending schema file), `pipeline/wine_tags.py` (new), `tests/test_wine_tags.py` (new); separate new
+  hunks in `pipeline/lab_server.py` (docstring paragraph, import, `dataset_records`,
+  `dataset_view`, new tag functions, one handler, one route branch),
+  `pipeline/pages/dataset.html` (new CSS lines, `tagEditor`, one line in the card, new
+  functions, one branch in each of the click, input, and keydown listeners),
+  `tests/test_lab_server.py` (a new class at the end), `tests/test_labdb.py` (VERSION,
+  one table name), and my own hunks in `docs/API.md`, `README.md`, `ChangeLog.md`,
+  `SMOKE_TESTS.md`. A migration of `data/lab.sqlite3` and a restart of 8168.
+- State: done, not committed. Waiting: the owner decides the commit. 029 goes with or after
+  the plan 62 commit of 2f (condition 3 of 2f). 8168 restarted by 1e at 17:21 (pid 46259);
+  1c restarted it again at 22:39 (pid 53022). Checks by 23:47: `test_wine_tags.py` 5,
+  `test_lab_server.py` 69, `test_labdb.py` 17, `test_atlas_bindings.py` 9,
+  `test_similar_wines.py` 5, `test_clusters.py` 27, `test_code_cache_forget.py` 4 OK; full
+  suite 1,262 OK (5 skipped); the approve route answers 404 for `no-such-wine`;
+  `similar_pairs` is sent. Browser 58 of 60 (the 2 failures: the old header overflow at
+  390 px, not plan 63). Docs: plan 63 Result, README, API.md, SMOKE_TESTS WT1-WT10,
+  ChangeLog.
+- Updated: 2026-09-27T23:57:08+0300
+- Agreements (all "ok", separate new hunks, their lines byte-identical, each session
+  stages only its own hunks through a private GIT_INDEX_FILE):
+  1d [e2bf93]: keep the describe block, `popstate`, `init`, and 3 path lines of
+  `test_dataset_preview_paths_send_the_page`. d8 [a5ab96]: keep the approve lines; after
+  my restart `test_atlas_bindings.py` and `test_lab_server.py` pass, and the approve route
+  answers 404 for `no-such-wine`. a8 [c74148]: keep the Paste image lines; my click branch
+  stays outside `.alternative-editor`; one unchanged line between hunks. 2f [0e9cfe]: keep
+  every plan 62 line except `VERSION, 28` and the closing `"wine_similar"])` of
+  `test_labdb.py`; 029 is committed with or after plan 62, never alone; after my restart
+  `similar_pairs`, `test_similar_wines.py`, and `test_clusters.py` pass. 6b [e99257]: no
+  condition; 029 is mine; keep the 2 `image_label_description*` names. 00 [8866fa]: keep
+  `import model_cache`, the last 3 lines of `add_code`/`remove_code`, `forget_scans`, the
+  `OSError` except, and the API.md entry of the barcode scans; one unchanged line between
+  hunks; after my restart `test_code_cache_forget.py` passes (4 OK). 00 restarted 8168 at
+  17:09:02. The owner allowed the files of the stale sections at 17:15:09.
+  a4 [34c1c5] (plan 66, image tags, schema 030) asked at about 23:57 for my line
+  `VERSION, 29` of `test_labdb.py`: I answered "ok" with conditions: "wine_tag" stays in
+  the list; I have no pending schema file; commit chain 62 -> 63 -> 66, each with or after
+  the one before; its `image_tags.py` imports `wine_tags.normal` and `TagError`.
+
+## drink-atlas-workspace-4e [ff960b]
+
+- Task: plan 64, a shared GTIN gives a soft re-rank: the GTIN wines go first, the other
+  wines stay below them, and the GTIN wines become the window of the VLM re-rank. The
+  cluster build links the wines of each shared GTIN.
+- Source: owner message of 2026-09-27T17:12:18+0300, answer "3" of 17:16:05, answers of
+  19:28:52 ("Auto cluster link", "Yes, separate hunks").
+- Files: `docs/owner-messages.md` (append), `docs/plans/64_shared-gtin-rerank.md` (new).
+  Separate hunks (owner answer of 19:28:52): `pipeline/barcode.py` (`CodeFirst`, the
+  docstring), `pipeline/cluster_rerank.py` (`RuleBook.trigger`, `ClusterRerank.rerank`,
+  `ClusterRerank.ask`), `pipeline/embedding_run.py` (`Catalogue.rank`,
+  `EmbeddingBackend.ask`), `tests/test_barcode_shared.py`. After agreement with 2f:
+  `pipeline/clusters.py` (a new helper, new lines in `context`, `build`, `components`),
+  `pipeline/pages/clusters.html` (one CSS line), `tests/test_clusters.py` (a new class).
+  My own hunks in `README.md`, `ChangeLog.md`, `SMOKE_TESTS.md`.
+- State: done, not committed. Waiting: the owner says "commit" (owner answer "Leave it"
+  of 20:09:06). The rollout is done: `clusters.json` of
+  `gx10-siglip2-so400m-patch16-naflex-p256` rebuilt at 20:10:14, 19 rules built by 20:20:47
+  (backups in `data/backups/*-before-plan64-*`), 8168 restarted by 4e at 20:21:54 (pid
+  3472). The commit of `clusters.py` comes after the plan 62 commit of 2f, or with it.
+- Updated: 2026-09-27T20:30:00+0300
+- Agreements: 2f [0e9cfe] "ok", option A: I add a keyword `by=MANUAL` to `manual_links`
+  and may change its `def` line, the two uses of `MANUAL` in its body, and its docstring.
+  Every other plan 62 line in `clusters.py`, `clusters.html`, and `test_clusters.py` stays
+  byte-identical; `ManualPairTest` passes unchanged; with no GTIN pair the input hash stays
+  the same; I commit after the plan 62 commit or in the same commit, and each session
+  stages its own lines; the restart after the owner's word is fine. c7 [09419d] "ok" for
+  `Catalogue.rank` and `EmbeddingBackend.ask`: its plan 59 lines (14 to 16, 60, 697 at
+  19:34) stay byte-identical; I stage only my hunks (private GIT_INDEX_FILE); after my edit
+  `test_rebuild_on_run.py` gives 17 OK.
+- Task 2: the cards of `/clusters` show the main image (`main_patched`, else `main`).
+  Source: owner message of 2026-09-27T20:11:15+0300, answer of 20:16:16. Files:
+  `pipeline/pages/clusters.html` (a new function `cardImage`, one line in `memberHtml`),
+  my own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`. State: done, not committed; browser
+  check passed (420 cards, light and dark, 1,600 and 390 px). Agreements: 2f "ok",
+  no other condition; the owner allowed separate hunks in `clusters.html` (stale d1
+  [0feb34] and 41 [501d23]) at 20:16:16, also for my `.badge.gtin` line.
+
+## codex-side-dataset-navigation
+
+- Task: in the Dataset image preview, use Left and Right for the images of the current
+  wine, and use Up and Down for the previous and next visible wine.
+- Source: owner message and answer `1` of 2026-09-27T17:36:35+0300.
+- Files: `docs/owner-messages.md` (append); separate preview-navigation hunks in
+  `pipeline/pages/dataset.html`; and my own hunks in `ChangeLog.md` and
+  `SMOKE_TESTS.md`.
+- State: done, not committed. Left and Right move among the available files of one wine.
+  Up and Down move among visible wines. The live 8168 page passed the button and key
+  checks on the requested slug and its next wine. The browser log has no warning or
+  error. JavaScript syntax, `test_lab_pages.py` (4), and `test_lab_server.py` (69) pass.
+  `git diff --check` passes for the changed code and non-verbatim documents. No restart
+  was needed because the server reads the page from disk.
+- Updated: 2026-09-27T17:43:31+0300
+- Agreements: The owner selected option 1. Keep the active wine-tag changes
+  byte-identical. Add only separate preview-navigation hunks.
+
+## drink-atlas-workspace-06 [1b7eb8]
+
+- Task: a click on a similar wine goes to its card. A card in the list: scroll to it. A
+  card that the filters hide: show it just below the card of the click, then scroll.
+- Source: owner message of 2026-09-27T20:22:30+0300 and the answer after it.
+- Files: `docs/owner-messages.md` (append); separate hunks in
+  `pipeline/pages/dataset.html` (a new function `openSimilarCard` after `scrollToCard`;
+  the `[data-similar-open]` branch of the `.similar-editor` click block of plan 62); my
+  own hunks in `ChangeLog.md`; one sentence of SW6 in `SMOKE_TESTS.md` and one sentence of
+  the plan 62 paragraph in `README.md` (2f lines, agreed). No restart.
+- State: done, not committed; waiting: the plan 62 commit of 2f (condition 3), then the
+  owner decides my commit. Browser check on 8168 (writes blocked): 30 of 30, dark and
+  light, 1440 px and 390 px. Docs: ChangeLog, README (2f sentence), SW6 (2f row).
+- Updated: 2026-09-27T20:44:00+0300
+- Agreements: 2f [0e9cfe] answered "ok" at about 20:36 with 3 conditions: (1)
+  `openSimilarCard` makes no second card with the same id; (2) I change its README
+  sentence "A click on a partner goes to its card; a card out of the list opens in a new
+  tab." and SW6 in the same step; (3) I commit my lines after its plan 62 commit, not in
+  it, through a private GIT_INDEX_FILE; every other plan 62 line stays byte-identical.
+
+## drink-atlas-workspace-1c [b72be3]
+
+- Task: (1) run `seed_label_cuts.py` for the 98 full photos with no label cut, then
+  build the embeddings; (2) each runtime path that adds a full photo also makes its
+  label cut: alternative uploads, manual wines, and the website import.
+- Source: owner message of about 2026-09-27T20:35:00+0300 ("Implement"), answers of
+  2026-09-27T21:26:58+0300 ("Every path").
+- Files: `docs/owner-messages.md` (append), `data/lab.sqlite3` (label cuts through
+  `seed_label_cuts.py`), `data/images/cropped/` (new cut files), `pipeline/alternatives.py`,
+  `pipeline/manual_wines.py`, `pipeline/import_website.py`, `tests/test_alternatives.py`,
+  `tests/test_manual_wines.py`, `tests/test_import_website.py`, `docs/plans/22_label-cut.md`
+  (a note), and my own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`, `README.md`,
+  `ResearchLog.md`. A restart
+  of 8168 for the three server modules.
+- State: done, not committed. Waiting: the owner decides the commit. Seeds 1 and 2
+  made 124 cuts; Build All of `/embedding` left 3 failed items for each entry (the 3
+  photos with no label). 8168 restarted by 1c at 22:05:59 (pid 45770).
+- Updated: 2026-09-27T22:45:55+0300
+- Agreements: the owner allowed at 21:26:58 changes of `pipeline/alternatives.py` and
+  `tests/test_alternatives.py`, which the stale sections codex-side-sam3-fix, 4f
+  [0fa826], 96 [6338a8], and 86 [92610a] list (their work is in `c863231`).
+- Task 2: plan 65, the button `Build all clusters` of `/clusters`: a server queue, as
+  `Build All` of `/embedding` (plan 60).
+- Source 2: owner message of 2026-09-27T21:44:04+0300 ("add \"Build all clusters\""),
+  answers of 2026-09-27T22:05:44+0300 ("Server queue"; "Yes, separate hunks").
+- Files 2: `docs/plans/65_build-all-clusters.md` (new), `pipeline/cluster_routes.py`,
+  `tests/test_cluster_routes.py`; separate new hunks in `pipeline/pages/clusters.html`
+  (one button and one status span after `#build`, one line in `loadList`, new functions
+  and one click listener after the `#build` listener); my own hunks in `docs/API.md`,
+  `README.md`, `ChangeLog.md`, `SMOKE_TESTS.md`. A restart of 8168 after the Build All
+  queue of `/embedding` ends.
+- State 2: done, not committed. Waiting: the owner decides the commit. 8168
+  restarted by 1c at 22:39:33 (pid 53022). Full suite 1,262 OK (5 skipped); browser
+  check 56 of 56.
+- Agreements 2: the owner allowed separate hunks in `clusters.html`, which the stale
+  sections d1 [0feb34] and 41 [501d23] list (22:05:44), and 4e [ff960b], stale with
+  uncommitted hunks (22:39:01). 2f [0e9cfe] answered "ok" with no condition: its
+  lines are the comment line and `.badge.manual`.
+
+## drink-atlas-workspace-e3 [c13919]
+
+- Task: rerun `barcode-rerank-siglip2-512-crop` on `my-1` after all embeddings of
+  `gx10-siglip2-so400m-patch16-512` are built, with an empty barcode scan cache.
+- Source: owner message of 2026-09-27T22:06:44+0300; answer "Clear barcode cache".
+- Files: `docs/owner-messages.md` (append), `data/cache/barcode/` (backup to
+  `work/barcode-cache.before-e3-2026-09-27/`, then delete), one new run in `runs/`, and
+  my own hunk in `ChangeLog.md`. No code change. No 8168 restart.
+- State: done, not committed; waiting: the owner decides the commit. Run
+  `2026-09-27T191826Z-lab-barcode-rerank-siglip2-512-crop-my-1` done, 0 errors.
+- Updated: 2026-09-27T23:23:41+0300
+- Task 2: rename the visible text "Similar wines" of plan 62 to "Hard cases": wines that
+  are hard to distinguish. Identifiers stay (`wine_similar`, `/api/dataset-similar`,
+  `_similar`, CSS classes). No restart, no schema file, no cluster rebuild.
+- Source 2: owner message of 2026-09-27T23:11:41+0300; answers of 23:15:34 ("Visible text
+  only", "Hard cases").
+- Files 2: `docs/owner-messages.md` (append); separate hunks in 2f's plan 62 lines:
+  `pipeline/pages/dataset.html` (9 text lines of `similarEditor`, `saveSimilar`,
+  `removeSimilar`), `README.md` (the plan 62 paragraph, not the line of 06),
+  `SMOKE_TESTS.md` (the heading, SW2, SW5), `docs/API.md` (the plan 62 heading and first
+  sentence), `docs/plans/62_similar-wines.md` (a note at the end); my own hunk in
+  `ChangeLog.md`.
+- State 2: done, not committed; waiting: the plan 62 commit of 2f, then the owner decides
+  the commit. Hunks in by `patch -p1 -F0` at 23:18. node --check OK; test_lab_server.py 69
+  and test_similar_wines.py 5 OK; browser check on 8168, writes blocked: 48 of 48.
+- Agreements 2: 2f [0e9cfe] "ok" at about 23:17, with conditions: text only (each code
+  token, identifier, class, data attribute, and server text byte-identical, and the 06
+  lines too); `node --check` of the page script and `test_lab_server.py`,
+  `test_similar_wines.py` pass; my commit comes after the plan 62 commit, through a
+  private GIT_INDEX_FILE. 2f sends one line when plan 62 is in HEAD.
+
+
+## drink-atlas-workspace-a4 [34c1c5]
+
+- Task: plan 66, the tags of a test image (by `sha256`) on `/testset`.
+- Source: owner message of 2026-09-27T23:50:37+0300, answers of 23:53:00 and 23:59:59. Plan
+  `docs/plans/66_testset-image-tags.md`.
+- Files: `docs/owner-messages.md` (append), `docs/plans/66_testset-image-tags.md` (new).
+  `pipeline/schema/NNN_image_tag.sql` (new),
+  `pipeline/image_tags.py` (new), `tests/test_image_tags.py` (new), `pipeline/testsets.py`,
+  `pipeline/testset_routes.py`, `pipeline/pages/testset.html`, `pipeline/export_testset.py`,
+  `pipeline/import_testset.py`, `tests/test_testsets.py`, `tests/test_testset_routes.py`,
+  `tests/test_export_testset.py`, `tests/test_import_testset.py`, `tests/test_labdb.py`
+  (VERSION, one table name), and my own hunks in `docs/API.md`, `README.md`,
+  `ChangeLog.md`, `SMOKE_TESTS.md`. A migration of `data/lab.sqlite3` and a restart of 8168.
+- State: active. The owner approved plan 66 at 23:59:59.
+- Updated: 2026-09-28T00:01:00+0300
+- Agreements: the owner allowed at 23:59:59 the testset files that the stale sections
+  ab [539687], 96 [6338a8], 41 [501d23], b4 [aee81a], and 9e [4644ab] list.
+  1e [7df1e0] "ok with conditions" at about 00:00: in `tests/test_labdb.py` I MAY change
+  `VERSION, 29` to 30; the closing line `"wine_similar", "wine_tag"])` stays
+  byte-identical. 1e has no pending schema file. Commit chain: plan 62 (028) -> plan 63
+  (029) -> plan 66 (030), never alone. The import of `wine_tags.normal` and
+  `wine_tags.TagError` is fine; plan 66 states that the image tags follow those rules.
+
+## drink-atlas-workspace-31 [e1f2c7]
+
+- Task: plan 68, the re-rank reads the clusters and rules of the pipeline embedding; the
+  key `rerank.rules` goes. Build the clusters and rules of
+  `gx10-siglip2-so400m-patch16-512`; runs A and B of `barcode-rerank-siglip2-512-crop` on `my`.
+- Source: owner message of 2026-09-28T00:04:51+0300, answers of 00:06:31. Plan
+  `docs/plans/68_rerank-own-embedding.md`.
+- Files: `docs/owner-messages.md` (append), `docs/plans/68_rerank-own-embedding.md` (new),
+  `data/embeddings/gx10-siglip2-so400m-patch16-512/` (`clusters.json`, `cluster-rules.json`,
+  maybe `cluster-notes.json`), `tests/test_cluster_rerank.py`. After the owner answer (stale
+  sections list them), separate hunks: `pipeline/cluster_rerank.py` (`OPTION_KEYS`,
+  `check_options`, `ClusterRerank.__init__`, the module docstring),
+  `pipeline/embedding_run.py` (`build_pipeline_backend`), `pipeline/pipelines.py` (the
+  `rerank.rules` check), `config.yaml` (`&rerank-options` and its comment),
+  `docs/plans/48_cluster-rerank.md` (a note at the end). Owner answer of 00:13:52: one line each in
+  `tests/test_barcode_shared.py` (`check_options`, `ClusterRerank`) and
+  `tests/test_pipeline_workers.py` (the `rerank` config). My own hunks in `README.md`,
+  `ChangeLog.md`, `SMOKE_TESTS.md`, `ResearchLog.md`. A restart of 8168.
+- State: active. Owner answers of 00:10:21: copy the note; separate hunks allowed in the files
+  of the stale sections; a restart of 8168 allowed. Run A started 00:09 (pid 31115).
+- Updated: 2026-09-28T00:13:52+0300
+
+## drink-atlas-workspace-49 [549156]
+
+- Task: plan 67, the self-test of one embedding: each dataset image (main, main_patched,
+  additional images) is a query in the `full` space; the output is a run on `/runs` with
+  the set `dataset`; no barcode step. A button `Selftest` on `/embedding` and a script.
+- Source: owner messages of 2026-09-27T23:58:00+0300 and 2026-09-28T00:00:00+0300,
+  answers of 00:04:00. Plan `docs/plans/67_embedding-selftest.md`.
+- Files: `docs/owner-messages.md` (append), `docs/plans/67_embedding-selftest.md` (new),
+  `pipeline/selftest.py` (new), `tests/test_selftest.py` (new). After the owner answer
+  (stale sections list them): `pipeline/benchmark.py` (`run_benchmark`: the keyword
+  `queries`), `pipeline/run_job.py` (`--selftest`), `pipeline/run_jobs.py` (the body key
+  `selftest`), `pipeline/pages/embedding.html` (the button and its job line),
+  `tests/test_run_jobs.py`, separate hunks. My own hunks in `docs/API.md`, `README.md`,
+  `ChangeLog.md`, `SMOKE_TESTS.md`, `COMMANDS.md`. A restart of 8168 for `run_jobs.py`.
+- State: active. The owner allowed at 00:07:00 separate hunks in the files of the stale
+  sections (f4, b4, ab, c7, codex-profile-latency, 41, 64) and a restart of 8168.
+- Updated: 2026-09-28T00:07:15+0300

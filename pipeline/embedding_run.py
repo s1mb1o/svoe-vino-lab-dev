@@ -11,7 +11,9 @@ The pipeline is an entry of the key `pipeline` of `config.yaml` with `backend: e
 (owner answers of 2026-09-26T00:12:24+0300 and 00:15:17). Its key `embedding` names an
 entry of the key `embeddings` with the backend `openai` or `local`, and that entry MUST
 have its index: build it on `/embedding` first. An entry of the backend `local` needs
-`torch`, so run it with `embedding_python`. Read docs/plans/33_embedding-run.md.
+`torch`, so run it with `embedding_python`. Read docs/plans/33_embedding-run.md. With the
+key `rebuild_embeddings_on_run` of `config.yaml` true, the run first updates that index
+(`rebuild_on_run.py`, plan 59).
 
 The rules of a run (owner answers of 2026-09-25T23:24:20+0300 and 23:35:19):
 - Each test photo counts as a full photo. A view whose step `segment` names the target
@@ -55,6 +57,7 @@ import derive
 import embeddings
 import labdb
 import match_backends
+import rebuild_on_run
 
 KIND = "embedding"
 # The backends of an embedding entry that this runner accepts.
@@ -343,17 +346,16 @@ class Catalogue:
                         "embedding_hash": item["embedding_hash"]})
         return out
 
-    def rank(self, query, top_k, trace=None, only=None):
+    def rank(self, query, top_k, trace=None, first=None):
         """Return the candidates of the unit vectors `query` (view -> vector). `trace` gets
         one step `search` for each view, with the top list of that view, and the step
-        `score` (plan 41). `only`, when set, holds the slugs that the rank MAY give: the
-        wines of a shared GTIN (plan 58). Each other wine gets no score."""
+        `score` (plan 41). `first`, when set, holds the slugs that go first: the wines of a
+        shared GTIN (plan 64). The wines of `first` and the other wines each keep the score
+        order, so a wine of `first` outside the normal top-k also comes back."""
         total = np.zeros(len(self.slugs))
         count = np.zeros(len(self.slugs), dtype=np.int64)
         best, cosines = {}, {}
-        wanted = None if only is None else set(only)
-        allowed = None if wanted is None else np.array([s in wanted for s in self.slugs],
-                                                        dtype=bool)
+        wanted = set(first or ())
         for view, vector in query.items():
             with _step(trace, "search", view=view) as step:
                 if view not in self.views:
@@ -363,8 +365,6 @@ class Catalogue:
                 top = np.full(len(self.slugs), -np.inf)
                 cosines[view] = matrix @ vector
                 np.maximum.at(top, numbers, cosines[view])
-                if allowed is not None:
-                    top[~allowed] = -np.inf
                 found = np.isfinite(top)
                 total[found] += top[found]
                 count[found] += 1
@@ -376,7 +376,8 @@ class Catalogue:
             present = np.flatnonzero(count)
             score = total[present] / count[present]
             order = sorted(range(len(present)),
-                           key=lambda i: (-score[i], self.slugs[present[i]]))[:top_k]
+                           key=lambda i: (self.slugs[present[i]] not in wanted, -score[i],
+                                          self.slugs[present[i]]))[:top_k]
             cands = []
             for rank, i in enumerate(order, 1):
                 number = present[i]
@@ -429,10 +430,10 @@ class EmbeddingBackend:
         with self._lock:
             return self.model.embed(images)
 
-    def ask(self, path, only=None):
+    def ask(self, path, first=None):
         """Return `(candidates, latency_ms, http_status, error, trace)`, as a real backend
         with the step trace of the photo (plan 41). `benchmark.py` writes the trace into
-        the row. `only` limits the rank to these slugs (plan 58, `Catalogue.rank`)."""
+        the row. `first` puts these slugs first in the rank (plan 64, `Catalogue.rank`)."""
         trace = Trace()
 
         def ms():
@@ -478,7 +479,7 @@ class EmbeddingBackend:
                                                             "length %s" % norm)
                     query[view] = vector / norm
                 step["out"] = {"views": views, "dim": self.catalogue.dim}
-            cands = self.catalogue.rank(query, self.top_k, trace, only)
+            cands = self.catalogue.rank(query, self.top_k, trace, first)
             return cands, ms(), 200, None, trace.value()
         except (derive.Sam3Unavailable, embeddings.ItemError,
                 build_embeddings.BackendError) as exc:
@@ -691,6 +692,7 @@ def main(argv=None):
 
     try:
         pipeline, db_path = find_pipeline(args.name, args.config)
+        rebuild_on_run.before_run(pipeline, args.config, log)  # plan 59
         backend = build_pipeline_backend(pipeline, args.config, args.top_k)
         items = backend.catalogue.state["items"]
         log("index %s: %d current items; %d stale, %d missing, %d failed items stay out"

@@ -203,6 +203,14 @@ and the header counts the rows. The seed accepts 2 or more UUIDs of one slug in 
 It no longer prints `differs`. The old review tool keeps one UUID per slug. Read
 [plan 54](docs/plans/54_atlas-binding-list.md).
 
+An automatic UUID has a green `approve` button after its source label (owner message of
+2026-09-27T14:49:04+0300). The button tells that a person confirmed the match of
+`match_atlas.py`. It sends `POST /api/dataset-atlas-binding-approve`, which changes the
+source of the row from `automatic` to `manual`. The row keeps its rowid, so the UUID keeps
+its place in the list. The row count does not change; the manual count grows by 1. A
+manual UUID has no `approve` button. The button needs no confirm, because it removes
+nothing. No route changes a manual row back to automatic.
+
 The table `wine_comment` (schema 011) holds the timestamped comments of a wine. One wine
 MAY have more than one comment. Each row has the UTC time of the write (`created_at`),
 a source, and the text with its line breaks, at most 4,000 characters. The source is
@@ -225,6 +233,38 @@ a favorite. The page writes through `POST /api/dataset-favorite` with
 `{"slug": …, "favorite": true|false}`. The value `Favorites` of the filter `State` shows
 each favorite wine in each state, also a `Removed` one. The header counts the favorites.
 Read [plan 19](docs/plans/19_favorites.md).
+
+The table `wine_similar` (schema 028) holds the manual pairs of two hard cases (owner
+message of 2026-09-27T15:12:00+0300). The pair has no direction: one row holds the two
+slugs in sorted order, and the pair shows on the card of each wine. The editor
+`Hard cases` of each card, after `Atlas Core product`, lists the partners with their
+names. A click on a partner goes to its card. When the filters hide that card, it goes in
+just below the card of the click; the next full render of the list takes it out again
+(owner message of 2026-09-27T20:22:30+0300).
+The `+` button opens an input with a list of the slugs and the names of the page; Enter
+or the save button adds the pair, and Esc cancels. The red `×` removes the pair after a
+confirmation. The page writes through `POST` and `DELETE` of `/api/dataset-similar`. The
+cluster build of `/clusters` uses each pair as one more link of the views `full`,
+`label`, and `combined`, with the signal `manual`: the other wine joins the cluster of the
+first wine, two clusters become one, and a pair of two wines with no other link makes a
+cluster of the kind `manual`. A pair counts only when both wines are Active and have an
+image. A change of a pair makes the stored clusters stale; build them again on
+`/clusters`. Read [plan 62](docs/plans/62_similar-wines.md).
+A hard case is a wine that is hard to distinguish from the other wine of the pair (owner
+message of 2026-09-27T23:11:41+0300). The page says `Hard cases`; the table, the route,
+and the keys keep the name `similar`.
+
+The table `wine_tag` (schema 029) holds the free-form text tags of a wine (owner messages
+of 2026-09-27T17:04:20+0300 and 17:05:11). One wine MAY have more than one tag. The first
+use is to mark the variants of one wine with more than one slug, for example `generic` on
+`shato-pino-shiraz-krasnoe-suhoe-135` and `vintage:2017` on
+`shato-pino-shiraz-krasnoe-suhoe-14`. The editor `Tags` of each card, after `Hard cases`,
+lists the tags. The `+` button opens an input that suggests the tags of the page; Enter or
+the save button adds the tag, and Esc cancels. The red `×` removes a tag after a
+confirmation. A tag is stored in lower case, with 1 to 64 letters, digits, `_`, `-`, `:`,
+or `.`, and no white space. The page writes through `POST` and `DELETE` of
+`/api/dataset-tag`. The pipeline does not read the tags yet. Read
+[plan 63](docs/plans/63_wine-tags.md).
 
 The table `wine_beverage_type` (schema 023) holds the wine type of a wine. The column
 `beverage_type_code` has the name of the column of Drink Atlas Core: `4` is a wine, `44`
@@ -471,7 +511,9 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   [plan 53](docs/plans/53_disable-barcode-checkbox.md)). `run.json` records the state in
   `use_barcode`.
   `Start` runs `pipeline/run_job.py` as a separate process, and the run goes
-  to `runs/` as a CLI run. A job row under the header shows the pipeline and the
+  to `runs/` as a CLI run. With `rebuild_embeddings_on_run: true`, the job first updates
+  the index of the embedding, and the job row shows `starting` until the build ends
+  ([plan 59](docs/plans/59_rebuild-embeddings-on-run.md)). A job row under the header shows the pipeline and the
   set, the state, a bar, done / total, the errors, and the elapsed time; the icon button
   `×` at the start of the row stops the run and keeps the files of the answered photos.
   The row stays 60 s after the end, with the link `open run`. One pipeline runs one job at a time. The job files are in
@@ -517,9 +559,10 @@ python3 -m venv ~/.venvs/svoe-vino-lab
 - The view `full` is variant C: the package cut of plan 09 (`segment`,
   `remove_background`), on white (`white_background`), and `resize`. The view `label`
   is variant F: the same with the label cut. The label cut of a full original is the
-  row of the kind `label` of `image_derivative` (plan 22).
-  `python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3` makes it with SAM3 and the
-  label rule of plan 16. If SAM3 finds no label and identifies a printed `packet` or
+  row of the kind `label` of `image_derivative` (plan 22). A patch, a full alternative
+  photo, a manual wine, and a new main image of the website import get it when they are
+  stored. `python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3` makes each missing
+  one with SAM3 and the label rule of plan 16. If SAM3 finds no label and identifies a printed `packet` or
   `box`, schema 021 records that the label cut is not applicable. The label item is
   omitted, and the full-package vector stays. A bottle or can with no label cut fails
   with `no label cut yet`. A label close-up (`label_front`, `label_back`) goes to the
@@ -558,6 +601,13 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   `image_type`, and `other_wines` when more wines use the same file. `Refresh` reads the
   file again. `Log` is disabled while the entry has no
   build yet.
+  The button `Build All` (plan 60) builds each configuration with no configuration
+  error, one at a time, in the order of `config.yaml`
+  (`POST /api/embeddings/build-all`). A thread of the lab server runs the queue, so a
+  closed tab does not stop it; a restart of the server ends it. A failed build does not
+  stop the queue. `Stop`, or the `×` of the job row, stops the build and the queue. The
+  message after the button shows the position (`Build All 3 / 12`) or the result, and its
+  title lists the result of each configuration.
 - A click on a prepared image of `/embedding` opens the image preview of `/dataset`: the
   image in the center, the title (view and wine), the slug, the column, the image type,
   the status, `<position> / <count>`, the size, and `open raw image` (the original).
@@ -593,7 +643,9 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   decodes the photo with zxing-cpp before the views (`pipeline/barcode.py`, a copy of the
   decoder of svoe-vino-matcher). A GTIN or a QR URL that `wine_code` holds for one Active
   wine answers the photo: the wine at score 1.0, and the embedding does not run. A GTIN of
-  2 or more Active wines limits the embedding match to its wines. A QR URL of 2 or more
+  2 or more Active wines puts its wines first: the embedding ranks every wine, and the
+  other wines stay below them. With the key `rerank`, the VLM then compares only the wines
+  of the GTIN ([plan 64](docs/plans/64_shared-gtin-rerank.md)). A QR URL of 2 or more
   wines decides nothing, and the normal match runs. A code of one wine wins over a shared
   GTIN ([plan 58](docs/plans/58_shared-codes.md)). A miss runs the views and the
   embedding. Each pipeline of the backend `embedding`
@@ -613,7 +665,14 @@ configuration. Read [plan 30](docs/plans/30_embedding-clusters.md).
     --name gx10-siglip2-so400m-patch16-naflex-p256
 ```
 
-The command writes `data/embeddings/<name>/clusters.json`. Reviewer notes go to
+The command writes `data/embeddings/<name>/clusters.json`. The button `Build clusters` of
+the page does the same for the selected configuration. The button `Build all clusters`
+(plan 65, `POST /api/clusters/build-all`) builds each configuration with no configuration
+error, one at a time, in the order of `config.yaml`. A thread of the lab server runs the
+queue, so a closed tab does not stop it; a restart of the server ends it. A configuration
+whose embedding build runs is waited for. A configuration with no vectors is skipped. The
+text after the button shows the position (`Build all clusters 3 / 12: <name>`) or the
+result, and its title lists the result of each configuration. Reviewer notes go to
 `cluster-notes.json` in the same directory. A future offline difference-rule build will
 write `cluster-rules.json` there. A cluster rebuild changes `clusters.json` alone.
 
@@ -630,6 +689,9 @@ clusters of the embedding of each run. The one note of the retired
 - One edge uses the highest cosine of all applicable image pairs of two wines. The
   artifact records the two images that gave this cosine.
 - The `combined` view is the union of the `full` and `label` edges.
+- Each two Active wines of one GTIN of `wine_code` are one more link of each view, with
+  `gtin` in its list `by` and the signal `gtin` ([plan 64](docs/plans/64_shared-gtin-rerank.md)).
+  A cluster of these links alone has the kind `gtin`. A QR URL gives no link.
 - The initial threshold is `0.95` in each space. The page can build with other values.
 
 The page shows the status of the embedding inputs, the exact evidence of each edge,
@@ -737,6 +799,10 @@ kind `cluster_rules` of `svoe-vino-matcher`, with its prompts verbatim.
    (`verdict`).
 4. Only the cards of the cluster inside the window change their order. A failure of the VLM
    keeps the base order.
+5. A photo with a GTIN of 2 or more wines puts the wines of the GTIN first (the barcode
+   step). Then the step acts only when the rank-1 card is a wine of the GTIN, and the
+   window holds only the wines of the GTIN of its cluster. Another card does not move
+   ([plan 64](docs/plans/64_shared-gtin-rerank.md)).
 
 Each card that the step touched holds `explain` with `kind: cluster_rules`; the VLM box of
 `/runs` shows it. The trace of the photo holds the step `cluster_rules`. The pipelines
@@ -803,6 +869,10 @@ The table `image_description` describes each image that `wine_image` links to a 
 
 - A button `✎` in the bottom right corner of each image of `/dataset` opens the editor
   of that image. A value set by hand stays. `— not set —` clears a value.
+- The page path names the open editor: `/dataset/<wine_slug>/describe/<sha256>`. A link
+  to this path opens the same editor over the card of the wine. Back closes the editor.
+  An image that no card holds gives the plain page at `/dataset` (owner message of
+  2026-09-27T13:49:11+0300).
 - `created_by` tells who made the row: `manual` (the owner, before the VLM) or `vlm`.
   `vlm_at` is empty until the VLM filled the row.
 - The watcher `pipeline/describe_images.py` sends each image with no VLM fill to the
@@ -910,6 +980,40 @@ original.
 - The 9B model misreads small text, for example «ПИСАДКОЕ» for «ПОЛУСЛАДКОЕ». A detail is
   not a verified transcription.
 
+## The label descriptions
+
+Stage 3 of the watcher (plan 61, [docs/plans/61_label-descriptions.md](docs/plans/61_label-descriptions.md))
+gives each linked image a label description: the answer of `DESCRIBE_PROMPT` of the
+cluster rules (`pipeline/label_rules.py`). The rows are in the table
+`image_label_description` (schema 027). One image can have many rows; the latest row (the
+newest `created_at`, then the higher `id`) is the effective description.
+
+- The request is the request of stage 1 of the cluster rules: the `package` cut of the
+  image, else the original, as PNG at a long side of `label_rules.describe_side` (2,048),
+  `max_tokens` `label_rules.describe_max_tokens` (1,500), thinking off, `json_object`, and
+  the VLM entry `label_rules.vlm`. An answer that `max_tokens` cut off is sent once more
+  with `repetition_penalty` 1.15 and 3,000 tokens (the loop guard). Stage 3 and the
+  cluster rules share the records of `data/cache/`.
+- It is a separate request. It does not change the class request of stage 1.
+- The code repairs obvious key drift: `text` becomes `texts`, `number` becomes `numbers`,
+  `colors` becomes `colours`, and so on (`label_descriptions.repair`). Then
+  `describe_images.LABEL_SCHEMA` checks the answer. A failure counts; 3 failures stop the
+  image (`image_label_description_failure`). `label_rules.describe` repairs the same drift
+  in each new cluster description; the stored cluster descriptions keep their keys.
+- Each VLM row records `vlm_name`, `vlm_endpoint`, `vlm_model`, `vlm_served_model`,
+  `max_tokens`, `thinking`, `input_sha256`, `created_at`, the other settings in
+  `vlm_request`, and `finish_reason`, `usage`, the time, the cache hit, the renames, and
+  the raw answer in `vlm_reply`.
+- The watcher sends no request for an image that has a row. It runs stage 3 only when no
+  image waits for a class or a detail, and only with `image_description.labels: true`.
+- The dialog `Image description` of `/dataset` shows the section `Label description`: one
+  block for each row, the latest first and open. `Edit as new` opens a JSON text area with
+  the row; `Save as new` adds a manual row, which becomes the latest. `Add manual` starts
+  from an empty object of the seven keys. `Remove` deletes one row after a confirmation.
+  When the last row goes, the watcher describes the image again.
+- The pill reads `VLM labels <done> / <linked> · <seconds> s` while stage 3 works. Its
+  title and its dialog hold the line `Labels …`.
+
 ## The runs of the lab
 
 The Runs page of the lab server (`/runs`) shows the run directories of `runs/`. The runs
@@ -968,6 +1072,18 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   entry (owner answer of 2026-09-26T00:15:17) had the name of the entry; the owner removed
   it at about 01:07, and its 2 runs count as `no pipeline` (owner answer of 01:19:00).
   Read [plan 33](docs/plans/33_embedding-run.md).
+- With `rebuild_embeddings_on_run: true` (the lab `config.yaml` sets it; owner messages
+  of 2026-09-27T08:40:19+0300 and 08:40:26), `run_job.py` and `embedding_run.py` update
+  the index of the embedding of the pipeline before the run. `pipeline/rebuild_on_run.py`
+  starts `build_embeddings.py`, as the button `Build` of `/embedding` does, and waits for
+  its end. The build does only the stale, missing, and failed items: with no change it
+  takes a few seconds. Its output goes to the end of `build.log`, so `/embedding` shows
+  its progress. The run waits for a build of the same embedding that runs already. A
+  build that fails or stops makes the run fail; a failed item does not. An embedding with
+  no index gets no build: build it on `/embedding` first. A stop of the run sends SIGTERM
+  to the build, and the finished items stay. `/recognize` and the scripts
+  `scripts/benchmark_*.py` do not update the index. Read
+  [plan 59](docs/plans/59_rebuild-embeddings-on-run.md).
 
 - `barcode-rerank-siglip2-512-crop-label` adds a second retrieval tower to
   `barcode-rerank-siglip2-512-crop`. The first tower keeps the package rectangle and
@@ -1264,6 +1380,7 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `bottle_label_box_dir` | `BOTTLE_LABEL_BOX_DIR` | Box crops of the same labels, one file per wine slug. Optional. See [The picture selector](#the-picture-selector). |
 | `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
 | `pipeline` | `pipelines.load` | The pipelines of the lab: the dialog `Run>` of `/testset` and the filter `Pipeline` of `/runs` show them. The backends are `svoe-vino-ru` and `embedding`; a pipeline of the backend `embedding` names one entry of `embeddings`, and its optional key `views` holds the steps of the test photo. See [The runs of the lab](#the-runs-of-the-lab) and [plan 34](docs/plans/34_pipeline-section.md). |
+| `rebuild_embeddings_on_run` | `rebuild_on_run.enabled` | true: before each run of a pipeline of the backend `embedding`, the run updates the index of its embedding (the stale, missing, and failed items). A missing key is false. The lab `config.yaml` sets true. See [The runs of the lab](#the-runs-of-the-lab) and [plan 59](docs/plans/59_rebuild-embeddings-on-run.md). |
 | `clusters` | `clusters.config_values` | The thresholds and the limits of the cluster build of an embedding (plan 30). See [The embedding clusters of the lab](#the-embedding-clusters-of-the-lab). |
 | `label_rules` | `label_rules.config_values` | The VLM entries, the thinking switches, the picture sizes, the image limit, the token limits, the workers, and the timeouts of `pipeline/build_label_rules.py` (plan 45). See [The label rules of the clusters](#the-label-rules-of-the-clusters). |
 | `cluster_rules` | `cluster_rules.CFG` | Not set in the lab `config.yaml`. The VLM entries of the two stages (`vlm`, `rules_vlm`), the picture sizes, the rules file, and the notes file of `scripts/cluster_rules.py`. Plan 43 retired its command `scripts/11_cluster_rules.py`. See [Catalogue clusters (retired)](#catalogue-clusters-retired). |
@@ -1566,13 +1683,20 @@ package (score 0.7 or more, at least 10 % of its width) makes the photo a back v
 photo gets one of `full_front`, `label_front`, `full_back`, `label_back`, and the
 processed file of its kind: the package cut of `derive.py`, or the label cut (the
 largest label; the bottle test of `build_labels.py` does not apply in a label
-close-up). The badge shows `crop` or `seg`. The buttons
+close-up). A full type also gets the label cut of a full photo, for the view `label` of
+the Embeddings page; with no label cut, the answer holds a warning. The badge shows
+`crop` or `seg`. The buttons
 `FF`, `LF`, `FB`, `LB` below each photo change the type at once; the filled button is
 the present type. A change between a full type and a label type cuts the photo again; a
 change between front and back keeps the cut. `×` and `Apply` delete the row; the file
 stays in `data/images/additional/`. When SAM3 does not answer, the photo gets
 `full_front`, no processed file, and a warning. The detection rules were fitted to small
 probe sets; their accuracy on real photos is not known, so check the type.
+
+The tile `Paste image` follows the drop target. A click on it reads an image from the
+clipboard. Chrome asks for the clipboard permission one time; Safari shows its own
+`Paste` button. ⌘V on the focused tile works with no permission. The pasted image takes
+the same path as a dropped file. With no permission, the tile reads `press ⌘V`.
 
 The information area of each row holds `Barcodes` and a `+` button. Press `+` to add
 an input row. Enter one barcode and press the checkmark icon to save it. Press the

@@ -72,6 +72,22 @@ def add_manual(conn, slug, product_uuid):
     return clean
 
 
+def approve(conn, slug, product_uuid):
+    """Change the automatic row of `slug` and `product_uuid` to a manual row.
+
+    A person confirmed the match. The row keeps its rowid, so its place in the list stays.
+    Return the old source of the row, or None for a row that does not exist. A manual row
+    does not change.
+    """
+    row = conn.execute("SELECT source FROM wine_atlas_binding WHERE wine_slug = ? "
+                       "AND product_uuid = ?", (slug, product_uuid)).fetchone()
+    if row is None:
+        return None
+    conn.execute("UPDATE wine_atlas_binding SET source = 'manual' WHERE wine_slug = ? "
+                 "AND product_uuid = ?", (slug, product_uuid))
+    return row[0]
+
+
 def remove(conn, slug, product_uuid):
     """Remove the row of `slug` and `product_uuid`, of either source.
 

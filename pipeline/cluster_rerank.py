@@ -26,6 +26,11 @@ How it works (a port of the kind `cluster_rules` of `svoe-vino-matcher`,
 The VLM always sees every card of the cluster. A VLM failure, an answer that is not JSON,
 or no winner keeps the base order; the failure is recorded, and the photo still gets an
 answer. The prompts are sent as they are written here. Do not translate them.
+
+Plan 64: a photo with a shared GTIN gets `first`, the wines of the GTIN. The base backend
+puts them first. The trigger then asks that the rank-1 card is a wine of the GTIN, and the
+window holds only the wines of the GTIN of that cluster. A card that is not a wine of the
+GTIN does not move, and the normal trigger does not run.
 """
 import io
 import json
@@ -259,16 +264,22 @@ class RuleBook:
         self.built_at = artifact.get("built_at")
         self.updated_at = data.get("updated_at")
 
-    def trigger(self, candidates, window):
+    def trigger(self, candidates, window, first=None):
         """Return the rule and the window positions of its cards, or (None, []). The
         re-rank acts when the rank-1 card is in a cluster that holds a rule, and at least
-        one other card of that cluster is in the window."""
+        one other card of that cluster is in the window. With `first`, the wines of a
+        shared GTIN (plan 64), the rank-1 card MUST be one of them, and the window holds
+        only these wines."""
         if not candidates:
+            return None, []
+        if first is not None and candidates[0]["slug"] not in first:
             return None, []
         rule = self.by_slug.get(candidates[0]["slug"])
         if rule is None:
             return None, []
         members = set(rule["slugs"])
+        if first is not None:
+            members &= set(first)
         positions = [i for i, c in enumerate(candidates[:window]) if c["slug"] in members]
         return (rule, positions) if len(positions) >= 2 else (None, [])
 
@@ -345,10 +356,13 @@ class ClusterRerank:
             return png_of(cut[1], self.options["side"]), "label"
         return png_of(image, self.options["side"]), "photo"
 
-    def rerank(self, path, cands):
+    def rerank(self, path, cands, first=None):
         """Return (the new candidates, the explain record) for a photo that triggers the
-        step, or (None, None) for a photo that does not."""
-        rule, positions = self.book.trigger(cands, self.options["window"])
+        step, or (None, None) for a photo that does not. `first` goes to the trigger: the
+        wines of a shared GTIN (plan 64)."""
+        size = self.options["window"]
+        rule, positions = (self.book.trigger(cands, size) if first is None
+                           else self.book.trigger(cands, size, first))
         if rule is None:
             return None, None
         mode = rule["mode"]
@@ -393,17 +407,17 @@ class ClusterRerank:
         explain["changed"] = ranking[0] != window[0]
         return reorder(cands, positions, ranking, explain), explain
 
-    def ask(self, path, only=None):
-        """Return `(candidates, latency_ms, http_status, error, trace)`. `only` goes to
-        the inner backend: the wines of a shared GTIN (plan 58)."""
-        answer = self.inner.ask(path) if only is None else self.inner.ask(path, only=only)
+    def ask(self, path, first=None):
+        """Return `(candidates, latency_ms, http_status, error, trace)`. `first` goes to
+        the inner backend and to the trigger: the wines of a shared GTIN (plan 64)."""
+        answer = self.inner.ask(path) if first is None else self.inner.ask(path, first=first)
         cands, ms, status, error = answer[:4]
         trace = answer[4] if len(answer) > 4 else None
         # A photo with no answer, or an answer of the code lookup (plan 42), stays.
         if error or not cands or cands[0].get("code"):
             return answer
         started = time.perf_counter()
-        new, explain = self.rerank(path, cands)
+        new, explain = self.rerank(path, cands, first)
         if new is None:
             return answer
         step_ms = (time.perf_counter() - started) * 1000

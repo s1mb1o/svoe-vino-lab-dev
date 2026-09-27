@@ -3,6 +3,8 @@
 Stage 1 asks a VLM to describe the label of each card of a cluster. The call sends the
 package cut of the effective main image of the card, scaled UP or down to
 `describe_side`, and no card data. So the description holds what the model sees.
+Obvious key drift of an answer gets the key of the prompt, for example `text` -> `texts`
+(`label_descriptions.repair`, plan 61). The record keeps the renames in `repairs`.
 
 Stage 2 asks a VLM where the labels of one cluster differ. The call sends one image for
 each card (its label cut), the card data, the stage 1 descriptions, and the note of the
@@ -43,6 +45,7 @@ from PIL import Image, ImageOps
 
 import clusters
 import embeddings
+import label_descriptions
 import model_cache
 import vlm_config
 
@@ -512,6 +515,11 @@ def describe(ask_fn, cfg, picture):
                         % out["finish_reason"])
         rec["raw"] = out["text"][:4000]
     else:
+        # Plan 61: obvious key drift gets the key of the prompt. The stored descriptions
+        # of earlier runs keep their keys (owner answer of 2026-09-27T14:46:48+0300).
+        value, renames = label_descriptions.repair(value)
+        if renames:
+            rec["repairs"] = renames
         rec["description"] = value
     return rec
 

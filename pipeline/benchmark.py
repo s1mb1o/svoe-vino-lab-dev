@@ -144,7 +144,7 @@ def git_commit():
 
 def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, limit=None,
                   label=None, embeddings=None, log=print, schema_dir=labdb.SCHEMA_DIR,
-                  configuration=None, use_cache=None, use_barcode=None):
+                  configuration=None, use_cache=None, use_barcode=None, queries=None):
     """Run the set against `backend`. Return (run directory, metrics).
 
     `backend` is a backend of `match_backends.build_backend`: it has `id`, `spec`,
@@ -160,13 +160,21 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
     checkbox `Disable barcode fast path` of the dialog `Run>`), True when the step ran;
     `run.json` holds it under the key `use_barcode`. None writes no such key. Read
     `docs/plans/53_disable-barcode-checkbox.md`.
+    `queries` is (the rows, the left out counts) in the form of `build_queries`. The runner
+    then uses these rows and reads no test set and no variant group of the database;
+    `set_name` still names the set in `run.json`. The self-test of an embedding gives them
+    (`selftest.py`). Read `docs/plans/67_embedding-selftest.md`.
     """
-    conn = open_database(db_path, schema_dir)
-    try:
-        rows, skipped = build_queries(conn, db_path, set_name)
-        groups = load_groups(conn, set_name)
-    finally:
-        conn.close()
+    if queries is not None:
+        rows, skipped = list(queries[0]), queries[1]
+        groups = {}
+    else:
+        conn = open_database(db_path, schema_dir)
+        try:
+            rows, skipped = build_queries(conn, db_path, set_name)
+            groups = load_groups(conn, set_name)
+        finally:
+            conn.close()
     if limit:
         rows = rows[:limit]
     if not rows:

@@ -55,7 +55,9 @@ Rules of the change:
 Rules of the store: as in `seed_images.py`. The file is `images/main/<sha256>.<extension>`,
 the extension of the upload name in lower case. `source_name` is the upload name and
 `match_method` is `website`. `derive.derive_all` processes each new original before the
-write transaction.
+write transaction. `alternatives.full_label_cut` then makes its label cut, for the view
+`label` of the Embeddings page (plan 22). The first time that SAM3 does not answer stops
+the label requests; each original with no label cut counts in `no_label_cut`.
 
 The compare reads the database with no lock, because the downloads take minutes. The
 write takes `BEGIN IMMEDIATE` and compares a digest of the rows with the digest of the
@@ -79,6 +81,7 @@ import xml.etree.ElementTree as ElementTree
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import alternatives  # noqa: E402
 import comments  # noqa: E402
 import derive  # noqa: E402
 import imagestore  # noqa: E402
@@ -232,6 +235,8 @@ class Report:
         self.requests = 0
         self.bytes = 0
         self.states = {}
+        self.label_cuts = 0       # label cuts written
+        self.no_label_cut = 0     # new originals with no label cut and no marker
         self.derivatives = derive.Derivatives()
 
     def empty(self):
@@ -685,8 +690,22 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
             except (imagestore.StoreError, OSError) as exc:
                 raise WebsiteError("cannot store an image: %s" % exc)
             originals[digest] = path
-        report.derivatives = derive.derive_all(
-            conn, db_path, originals, segmenter or derive.Sam3Client(), log)
+        client = segmenter or derive.Sam3Client()
+        report.derivatives = derive.derive_all(conn, db_path, originals, client, log)
+        labels = []
+        for digest, path in originals.items():
+            if labels and labels[-1].unavailable:
+                report.no_label_cut += 1
+                continue
+            label_notes = []
+            label = alternatives.full_label_cut(conn, db_path, digest, path, client,
+                                                label_notes)
+            labels.append(label)
+            if label.links:
+                report.label_cuts += 1
+            elif not (label.present or label.not_applicable):
+                report.no_label_cut += 1
+                log("no label cut: %s: %s" % (path, "; ".join(label_notes)))
 
         conn.execute("BEGIN IMMEDIATE")
         try:
@@ -714,6 +733,8 @@ def write(db_path, diff, blobs, choices=None, segmenter=None, log=print):
                 [(slug, IMAGE_TYPE, image["sha256"], image["name"], MATCH_METHOD)
                  for slug, image in mains])
             derive.write_rows(conn, report.derivatives)
+            for label in labels:
+                alternatives.write_processed_rows(conn, label)
             conn.executemany("DELETE FROM website_refusal WHERE wine_slug = ? AND kind = ? "
                              "AND field = ?", [tuple(key) for key in diff["stale"]])
             stamp = now_utc()
@@ -856,6 +877,8 @@ def print_report(report, db_path):
     print("unchanged: %d" % report.unchanged)
     print("image files written: %d" % report.written)
     print_derivatives(report.derivatives)
+    print("label cuts written: %d" % report.label_cuts)
+    print("no label cut: %d" % report.no_label_cut)
     print("comments added: %d" % report.comments)
     print("database: %s" % db_path)
     print("states: %s" % ", ".join("%s %d" % item for item in report.states.items()))

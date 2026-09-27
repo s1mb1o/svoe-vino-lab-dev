@@ -1,5 +1,6 @@
 import base64
 import collections
+import hashlib
 import io
 import json
 import re
@@ -19,6 +20,9 @@ from image_description_fixture import ROOT, DescriptionCase
 
 import describe_images as DI
 import image_descriptions as DESC
+import label_descriptions as LD
+import label_rules
+import model_cache
 import vlm_config
 
 ANSWER = {"package_type": "bottle", "subject_scope": "full_package",
@@ -826,6 +830,341 @@ class TimeoutProbeTest(DescriptionCase):
         self.assertEqual(seen[0]["running"][0]["stage"], "class")
         self.assertRegex(seen[0]["running"][0]["started_at"], r"^\d{4}-\d\d-\d\dT.*Z$")
         self.assertEqual(DESC.read_status()["running"], [])
+
+
+
+# Plan 61: stage 3, the label descriptions with the request of stage 1 of the cluster rules.
+LABEL = {"texts": [{"text": "ФАНТОМ", "where": "left side"}],
+         "numbers": [{"value": "2018", "where": "left side"}], "vintage": 2018,
+         "colours": ["black", "white"], "design": "black and white wavy lines",
+         "marks": [], "bottle": {"colour": "dark blue", "capsule": "black"}}
+LABEL_ENTRY = vlm_config.entry({"vlm": [{
+    "name": "label-test", "protocol": "openai", "thinking_field": "chat_template_kwargs",
+    "endpoint": "http://label.invalid/v1", "model": "label-model"}]}, "label-test")
+LABEL_SETTINGS = {"entry": LABEL_ENTRY, "thinking": False, "describe_side": 64,
+                  "describe_max_tokens": 1500, "timeout_s": 300, "describe_sha": "test-sha"}
+LABEL_CFG = dict(CFG, labels=True, label=LABEL_SETTINGS)
+
+
+def label_body(answer=LABEL, text=None, finish="stop"):
+    return {"model": "Label-Model", "usage": {"prompt_tokens": 90, "completion_tokens": 40},
+            "choices": [{"message": {"content": text if text is not None else json.dumps(
+                answer, ensure_ascii=False)}, "finish_reason": finish}]}
+
+
+def is_label(payload):
+    return payload["messages"][0]["content"][1]["text"] == label_rules.DESCRIBE_PROMPT
+
+
+class LabelVlm(FakeVlm):
+    """Answers a class prompt with `body()` and a label prompt with the next of
+    `bodies`. `payloads` keeps the label requests alone; `stages` keeps the stage of each
+    call, and `calls` the entry name and the timeout of each label request."""
+
+    def __init__(self, *bodies, during=None):
+        super().__init__(*bodies, during=during)
+        self.stages, self.calls = [], []
+
+    def __call__(self, entry, payload, timeout=None):
+        if not is_label(payload):
+            self.stages.append("class")
+            return body()
+        self.stages.append("label")
+        self.calls.append((entry.name, timeout))
+        return super().__call__(entry, payload, timeout)
+
+
+class LabelPayloadTest(unittest.TestCase):
+    def test_the_request_is_the_request_of_the_cluster_rules(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = "%s/cut.png" % directory
+            Image.new("RGBA", (20, 40), (200, 0, 0, 255)).save(path)
+            picture = {"kind": "package", "sha256": "c" * 64, "source_sha256": "a" * 64,
+                       "path": path}
+            sent = []
+
+            def cluster_post(entry, payload, timeout):
+                sent.append(payload)
+                return label_body()
+            with mock.patch.object(model_cache, "ROOT", "%s/cache-1" % directory), \
+                    mock.patch.object(label_rules, "post", cluster_post):
+                rec = label_rules.describe(label_rules.ask, LABEL_SETTINGS, picture)
+            fake = FakeVlm(label_body())
+            with mock.patch.object(model_cache, "ROOT", "%s/cache-2" % directory), \
+                    mock.patch.object(DI, "post", fake):
+                description, renames, vlm = DI.describe_label(LABEL_SETTINGS, path)
+                cache_key = model_cache.key_of(model_cache.vlm_fields(
+                    LABEL_ENTRY.url, fake.payloads[0]))
+        self.assertEqual(fake.payloads, sent)
+        payload = sent[0]
+        self.assertEqual((payload["model"], payload["temperature"], payload["max_tokens"],
+                          payload["response_format"], payload["chat_template_kwargs"]),
+                         ("label-model", 0, 1500, {"type": "json_object"},
+                          {"enable_thinking": False}))
+        self.assertEqual(image_size(payload), (32, 64))
+        self.assertEqual((rec["description"], description, renames), (LABEL, LABEL, []))
+        self.assertEqual({key: vlm[key] for key in (
+            "vlm_name", "vlm_endpoint", "vlm_model", "vlm_served_model", "max_tokens",
+            "thinking")}, {"vlm_name": "label-test",
+                           "vlm_endpoint": "http://label.invalid/v1/chat/completions",
+                           "vlm_model": "label-model", "vlm_served_model": "Label-Model",
+                           "max_tokens": 1500, "thinking": False})
+        self.assertEqual(vlm["vlm_request"], {
+            "prompt": "label_rules.DESCRIBE_PROMPT",
+            "prompt_sha256": hashlib.sha256(label_rules.DESCRIBE_PROMPT.encode()).hexdigest(),
+            "describe_side": 64, "sent_size": [32, 64], "image_format": "png",
+            "temperature": 0, "response_format": {"type": "json_object"}, "timeout_s": 300,
+            "settings_sha": "test-sha", "cache_key": cache_key})
+        self.assertEqual(vlm["vlm_reply"], {
+            "finish_reason": "stop", "usage": {"prompt_tokens": 90, "completion_tokens": 40},
+            "ms": vlm["vlm_reply"]["ms"], "cached": False, "loop_guard": False,
+            "repairs": [], "raw": json.dumps(LABEL, ensure_ascii=False)})
+
+    def test_the_check_of_an_answer(self):
+        self.assertEqual(DI.label_answer("Here: %s." % json.dumps(LABEL)), (LABEL, []))
+        drift = {("text" if key == "texts" else key): value for key, value in LABEL.items()}
+        self.assertEqual(DI.label_answer(json.dumps(drift)), (LABEL, [["text", "texts"]]))
+        loose = dict(LABEL, texts=["ФАНТОМ", {"text": "2018"}], numbers=[2018, "14.7%"],
+                     colours="black", vintage=None, bottle=None, marks=["a medal", {"x": 1}])
+        self.assertEqual(DI.label_answer(json.dumps(loose))[0], loose)
+        bad = [dict(LABEL, where="left"), {k: v for k, v in LABEL.items() if k != "bottle"},
+               dict(LABEL, texts=[{"where": "left"}]), dict(LABEL, design=["a"]),
+               dict(LABEL, vintage=20.18), dict(LABEL, texts="ФАНТОМ")]
+        for value in bad:
+            with self.subTest(value=value), self.assertRaises(DI.DescribeError) as caught:
+                DI.label_answer(json.dumps(value, ensure_ascii=False))
+            self.assertIn("schema", str(caught.exception))
+        with self.assertRaises(DI.DescribeError):
+            DI.label_answer("no JSON here")
+
+
+class LabelSettingsTest(unittest.TestCase):
+    def test_the_labels_key(self):
+        self.assertFalse(DI.settings({})["labels"])
+        self.assertTrue(DI.settings({"image_description": {"labels": True}})["labels"])
+        with self.assertRaises(ValueError):
+            DI.settings({"image_description": {"labels": "yes"}})
+
+    def test_the_project_configuration_turns_stage_3_on(self):
+        path = ROOT / "config.yaml"
+        config = yaml.safe_load(path.read_text(encoding="utf-8"))
+        self.assertTrue(DI.settings(config)["labels"])
+        label = DI.label_settings(str(path))
+        self.assertEqual((label["entry"].name, label["describe_side"],
+                          label["describe_max_tokens"], label["thinking"], label["timeout_s"]),
+                         ("qwen3.5-9b-nvfp4", 2048, 1500, False, 300))
+
+    def test_a_bad_block_label_rules_is_an_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = "%s/config.yaml" % directory
+            with open(path, "w", encoding="utf-8") as fh:
+                yaml.safe_dump({"database_file": "lab.sqlite3", "label_rules": {"size": 1}}, fh)
+            with self.assertRaises(ValueError) as caught:
+                DI.label_settings(path)
+        self.assertIn("unknown key: size", str(caught.exception))
+
+
+class LabelWatcherTest(DescriptionCase):
+    def run_once(self, fake, cfg=LABEL_CFG):
+        with mock.patch.object(DI, "post", fake), \
+                mock.patch.object(DI, "log", lambda message: None):
+            return DI.run(self.db, ENTRY, cfg)
+
+    def rows(self, slug):
+        with closing(self.connect()) as conn:
+            return LD.rows(conn, self.sha[slug])
+
+    def failure(self, slug):
+        with closing(self.connect()) as conn:
+            return LD.failure(conn, self.sha[slug])
+
+    def payload_of(self, slug, max_tokens=1500, extra=None):
+        """The label request of the original of `slug`, as stage 3 sends it."""
+        png, _ = label_rules.picture_png(str(self.root / "images" / "main" / (
+            "%s.png" % self.sha[slug])), 64)
+        content = [{"type": "image_url", "image_url": {"url": label_rules.data_url(png)}},
+                   {"type": "text", "text": label_rules.DESCRIBE_PROMPT}]
+        return DI.label_payload(LABEL_ENTRY, content, max_tokens, False, extra)
+
+    def label_records(self):
+        """The records of `data/cache/` of the label requests: the prompt of the request
+        is `DESCRIBE_PROMPT`."""
+        records = [json.loads(path.read_text(encoding="utf-8")) for path in self.cache_files()]
+        return [record for record in records
+                if record["request"]["prompt"][0]["content"][1]["text"]
+                == label_rules.DESCRIBE_PROMPT]
+
+    def test_stage_3_runs_after_stage_1_and_keeps_the_settings(self):
+        fake = LabelVlm(label_body())
+        self.assertEqual(self.run_once(fake), 4)
+        self.assertEqual(fake.stages, ["class", "class", "label", "label"])
+        self.assertEqual(fake.calls, [("label-test", 300)] * 2)
+        for slug in ("wine-b", "wine-a"):
+            rows = self.rows(slug)
+            self.assertEqual(len(rows), 1)
+            row = rows[0]
+            self.assertEqual((row["created_by"], row["description"], row["vlm_name"],
+                              row["vlm_served_model"], row["max_tokens"], row["thinking"],
+                              row["input_sha256"]),
+                             ("vlm", LABEL, "label-test", "Label-Model", 1500, False,
+                              self.sha[slug]))
+            self.assertEqual(row["vlm_request"]["input_kind"], "original")
+            self.assertEqual(row["vlm_request"]["cache_key"], model_cache.key_of(
+                model_cache.vlm_fields(LABEL_ENTRY.url, self.payload_of(slug))))
+            self.assertRegex(row["created_at"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
+        self.assertEqual(len(self.label_records()), 2)
+        self.assertEqual(self.run_once(fake), 0)
+        self.assertEqual(len(fake.payloads), 2)
+
+    def test_labels_off_sends_no_label_request(self):
+        fake = LabelVlm(label_body())
+        self.assertEqual(self.run_once(fake, dict(LABEL_CFG, labels=False)), 2)
+        self.assertEqual(fake.payloads, [])
+        self.assertEqual(self.rows("wine-a"), [])
+
+    def test_an_image_waits_for_its_class_before_its_label_call(self):
+        found = DI.next_items(self.db, LABEL_CFG, 4, set())
+        self.assertEqual([(stage, item[0]) for stage, item in found],
+                         [("class", self.sha["wine-b"]), ("class", self.sha["wine-a"])])
+        self.run_once(LabelVlm(label_body()), CFG)
+        found = DI.next_items(self.db, LABEL_CFG, 4, {self.sha["wine-b"]})
+        self.assertEqual([(stage, item[0]) for stage, item in found],
+                         [("label", self.sha["wine-a"])])
+
+    def test_the_package_cut_goes_to_the_vlm(self):
+        cut = self.add_cut("wine-a", "package")
+        self.run_once(LabelVlm(label_body()))
+        row = self.rows("wine-a")[0]
+        self.assertEqual((row["input_sha256"], row["vlm_request"]["input_kind"]),
+                         (cut, "package"))
+        self.assertEqual(self.rows("wine-b")[0]["vlm_request"]["input_kind"], "original")
+
+    def test_a_drifted_answer_is_repaired(self):
+        drift = {("text" if key == "texts" else "number" if key == "numbers" else key): value
+                 for key, value in LABEL.items()}
+        self.run_once(LabelVlm(label_body(drift)))
+        row = self.rows("wine-a")[0]
+        self.assertEqual(row["description"], LABEL)
+        self.assertEqual(list(row["description"]), list(LABEL))
+        self.assertEqual(row["vlm_reply"]["repairs"], [["text", "texts"], ["number", "numbers"]])
+        self.assertEqual(json.loads(row["vlm_reply"]["raw"]), drift)
+
+    def test_an_answer_that_fails_the_check_writes_nothing(self):
+        fake = LabelVlm(label_body(dict(LABEL, where="left")))
+        for _ in range(3):
+            self.run_once(fake)
+        self.assertEqual(self.rows("wine-a"), [])
+        failure = self.failure("wine-a")
+        self.assertEqual(failure["attempts"], 3)
+        self.assertIn("fails the schema", failure["error"])
+        self.assertEqual(self.label_records(), [])
+        self.run_once(fake)
+        self.assertEqual(len(fake.payloads), 6)
+        with closing(self.connect()) as conn:
+            status = DESC.watcher_status(conn, self.status_path)
+        self.assertEqual((status["labels_failed"], status["labels_pending"]), (2, 0))
+
+    def test_a_cached_answer_that_fails_the_check_is_sent_again(self):
+        fields = model_cache.vlm_fields(LABEL_ENTRY.url, self.payload_of("wine-a"))
+        model_cache.store(fields, label_body(text='{"a": 1}'), 5)
+        fake = LabelVlm(label_body())
+        self.run_once(fake)
+        self.assertEqual(len(fake.payloads), 2)
+        self.assertEqual(self.rows("wine-a")[0]["description"], LABEL)
+        self.assertFalse(self.rows("wine-a")[0]["vlm_reply"]["cached"])
+        record = model_cache.lookup(fields)
+        self.assertEqual(json.loads(record["answer"]["choices"][0]["message"]["content"]), LABEL)
+
+    def test_a_valid_cached_answer_is_read_back(self):
+        fields = model_cache.vlm_fields(LABEL_ENTRY.url, self.payload_of("wine-a"))
+        model_cache.store(fields, label_body(), 15000)
+        fake = LabelVlm(label_body())
+        self.run_once(fake)
+        self.assertEqual(len(fake.payloads), 1)
+        reply = self.rows("wine-a")[0]["vlm_reply"]
+        self.assertEqual((reply["cached"], reply["ms"]), (True, 15000))
+
+    def test_the_loop_guard(self):
+        fake = LabelVlm(label_body(text='{"texts": [', finish="length"), label_body())
+        self.run_once(fake, dict(LABEL_CFG, max_attempts=1))
+        first, second = fake.payloads[:2]
+        self.assertEqual((first["max_tokens"], "repetition_penalty" in first), (1500, False))
+        self.assertEqual((second["max_tokens"], second["repetition_penalty"]),
+                         (3000, label_rules.REPETITION_PENALTY))
+        row = self.rows("wine-b")[0]
+        self.assertEqual((row["max_tokens"], row["vlm_request"]["repetition_penalty"],
+                          row["vlm_reply"]["loop_guard"]),
+                         (3000, label_rules.REPETITION_PENALTY, True))
+        self.assertEqual(self.rows("wine-a")[0]["vlm_reply"]["loop_guard"], False)
+        self.assertEqual(len(self.label_records()), 2)
+
+    def test_two_cut_off_answers_are_a_counted_failure(self):
+        fake = LabelVlm(label_body(text='{"texts": [', finish="length"))
+        self.run_once(fake, dict(LABEL_CFG, max_attempts=1))
+        self.assertEqual(len(fake.payloads), 4)
+        self.assertEqual(self.rows("wine-a"), [])
+        failure = self.failure("wine-a")
+        self.assertEqual(failure["attempts"], 1)
+        self.assertIn("cut off", failure["error"])
+
+    def test_a_manual_row_saved_during_the_call_stays_the_latest(self):
+        def save():
+            with closing(self.connect()) as conn, conn:
+                for slug in ("wine-a", "wine-b"):
+                    LD.add_manual(conn, self.sha[slug], {"design": "the owner"})
+        fake = LabelVlm(label_body(), during=save)
+        self.assertEqual(self.run_once(fake), 2)
+        self.assertEqual(len(fake.payloads), 1)
+        for slug in ("wine-a", "wine-b"):
+            self.assertEqual([row["created_by"] for row in self.rows(slug)], ["manual"])
+
+    def test_a_failure_of_the_service_is_not_counted(self):
+        fake = LabelVlm(DI.DescribeError("HTTP 503: busy", counted=False))
+        with self.assertRaises(DI.DescribeError):
+            self.run_once(fake)
+        failure = self.failure("wine-b")
+        self.assertEqual((failure["attempts"], failure["error"]), (0, "HTTP 503: busy"))
+
+    def test_the_state_and_the_counts_of_stage_3(self):
+        seen = []
+        fake = LabelVlm(label_body(), during=lambda: seen.append(DESC.read_status()))
+        self.run_once(fake)
+        self.assertEqual((seen[0]["stage"], seen[0]["running"][0]["stage"],
+                          seen[0]["labels_vlm"]), ("label", "label", "label-test"))
+        with closing(self.connect()) as conn:
+            status = DESC.watcher_status(conn, self.status_path)
+            view = DESC.call_view(conn, self.sha["wine-a"], "label")
+        self.assertEqual({key: status[key] for key in (
+            "labels_linked", "labels_done", "labels_failed", "labels_pending")},
+            {"labels_linked": 2, "labels_done": 2, "labels_failed": 0, "labels_pending": 0})
+        self.assertEqual((view["url"], view["input_kind"], view["attempts"], view["slug"]),
+                         ("/images/main/%s.png" % self.sha["wine-a"], "original", 0, "wine-a"))
+
+    def test_the_label_sha_option(self):
+        config = {"rootdir": str(self.root), "database_file": "lab.sqlite3",
+                  "vlm": [{"name": "gx10-test", "protocol": "openai",
+                           "thinking_field": "chat_template_kwargs",
+                           "endpoint": "http://vlm.invalid/v1", "model": "model-1"},
+                          {"name": "label-test", "protocol": "openai",
+                           "thinking_field": "chat_template_kwargs",
+                           "endpoint": "http://label.invalid/v1", "model": "label-model"}],
+                  "image_description": {"vlm": "gx10-test"},
+                  "label_rules": {"vlm": "label-test", "describe_side": 64}}
+        path = self.root / "config.yaml"
+        path.write_text(yaml.safe_dump(config), encoding="utf-8")
+        args = ["--config", str(path), "--label-sha"]
+        fake = LabelVlm(label_body())
+        with mock.patch.object(DI, "post", fake), \
+                mock.patch.object(DI, "log", lambda message: None), \
+                mock.patch.object(DI, "LOCK_PATH", str(self.root / "describe.lock")):
+            self.assertEqual(DI.main(args + [self.sha["wine-a"]]), 0)
+            self.assertEqual(DI.main(args + [self.sha["wine-a"]]), 1)
+            with mock.patch("sys.stderr"):
+                self.assertEqual(DI.main(args + [self.sha["none"]]), 1)
+        self.assertEqual(len(fake.payloads), 1)
+        self.assertEqual(fake.calls, [("label-test", 300)])
+        self.assertEqual(self.rows("wine-a")[0]["vlm_name"], "label-test")
+        self.assertEqual(self.rows("wine-b"), [])
 
 
 if __name__ == "__main__":

@@ -192,6 +192,26 @@ adds `_patched`, `_alternatives`, `_barcodes`, `_qr_urls`, `_atlas_product_uuid`
 `_atlas_binding_source`. The source is `automatic`, `manual`, or null. A manual UUID
 replaces an automatic UUID for the same slug.
 
+#### `GET /api/image-label-descriptions?sha256=<sha256>`
+
+The lab server alone (plan 61). The label descriptions of one linked image:
+`{sha256, rows, latest_id, failure, max_attempts}`. `rows` holds each row of
+`image_label_description`, the latest first: `id`, `sha256`, `description`,
+`created_by` (`vlm` or `manual`), `created_at`, and the VLM columns `vlm_name`,
+`vlm_endpoint`, `vlm_model`, `vlm_served_model`, `max_tokens`, `thinking`,
+`input_sha256`, `vlm_request`, and `vlm_reply` (null in a manual row). `failure` is
+`{attempts, error, updated_at}` of stage 3, or null. A `sha256` that is not 64 lower-case
+hex digits answers `400`. An image that no wine links answers `404`.
+
+#### `POST /api/image-label-description` and `DELETE /api/image-label-description`
+
+The lab server alone (plan 61). `POST` with `{"sha256":"<sha256>","description":{...}}`
+adds a manual row, which becomes the latest. `description` MUST be a JSON object of at
+most 64 KiB; it gets no schema check. `DELETE` with `{"id":<id>}` removes one row. When
+the image has no row after the removal, its failures of stage 3 go too, and the watcher
+describes it again. Each answer is the answer of the GET for the image. A bad body
+answers `400`; an unknown image or id answers `404`.
+
 #### `POST /api/dataset-patch?slug=<slug>`
 
 Write one patch image. The request body is the image bytes. The server accepts JPEG,
@@ -280,6 +300,15 @@ Remove one QR URL from one slug. The server preserves every barcode and other re
 field. If the removed URL is the last QR URL, `qr_code` becomes `null`. The answer is
 `{ok, slug, removed, qr_urls, total}`.
 
+#### The barcode scans after a code change
+
+The lab server alone (owner answers of 2026-09-27T16:49:57+0300). A successful `POST` or
+`DELETE` of `/api/dataset-gtin` or `/api/dataset-qr-url` deletes the stored barcode scans
+of the test photos of the wine. A stored scan is a record of `data/cache/barcode/`. A test
+photo of the wine is a row of `test_photo` with `place` equal to the slug. The next run
+scans these photos again. A refused request deletes no record. The answer does not
+change. When a record cannot be deleted, the answer is HTTP 503, and the code change stays.
+
 #### `POST /api/dataset-atlas-binding`
 
 Create or replace one manual Drink Atlas Core product binding. The JSON body is
@@ -288,6 +317,16 @@ UUID. It writes the row to `atlas_bindings_file`. The automatic match file does 
 change. A manual row replaces the automatic value for the same slug. Several slugs MAY
 use the same product UUID. The Dataset page calls the route when the reviewer presses
 the checkmark icon. Pressing the cross icon writes nothing.
+
+#### `POST /api/dataset-atlas-binding-approve`
+
+The lab server alone. A person confirms one automatic Drink Atlas Core product of one
+wine. The JSON body is `{"slug":"<slug>","product_uuid":"<uuid>"}`. The server changes
+the source of the row from `automatic` to `manual`. The row keeps its place in the list.
+The answer is `{ok, slug, approved, source, products, total, manual}`; `products` is the
+list of the wine after the change. A wine that does not exist answers `404`. A UUID
+that the wine does not have answers `404`. A manual UUID answers `409`. A bad UUID or no
+slug answers `400`.
 
 #### `GET /api/dataset-validation`
 
@@ -705,3 +744,92 @@ the answer holds the failed step and `row.error`.
 
 One uploaded photo, with `Cache-Control: public, max-age=31536000, immutable`. `404` for
 an unknown file.
+
+## Hard cases (the relation `similar`) — plan 62
+
+The table `wine_similar` (schema 028) holds the manual pairs of two hard cases: two wines
+that are hard to distinguish. The page says `Hard cases`; the routes and the keys keep the
+name `similar`. A pair has no direction. Read [plan 62](plans/62_similar-wines.md).
+
+`GET /api/dataset` sends `similar_editor: true` and `similar_pairs` (the number of pairs).
+Each record holds `_similar`: the slugs of its partners, in the order of the marks.
+
+### `POST /api/dataset-similar`
+
+The body is `{"slug": "<wine slug>", "other": "<wine slug>"}`. A wine of each state
+allows it. The answer:
+
+```json
+{"ok": true, "slug": "wine-b", "other": "wine-a", "added": ["wine-a", "wine-b"],
+ "similar": ["wine-a"], "other_similar": ["wine-b"], "total": 1}
+```
+
+`added` is the stored pair, in sorted order. `similar` and `other_similar` are the
+partners of each wine after the write. `total` is the number of pairs.
+
+### `DELETE /api/dataset-similar?slug=<wine slug>&other=<wine slug>`
+
+Removes one pair; the order of the two slugs does not matter. The answer has the keys of
+the POST, with `removed` in place of `added`.
+
+Errors of both routes: `400` for a missing slug, a missing `other`, or two equal slugs;
+`404` for a wine that does not exist, or a DELETE of a pair that does not exist; `409`
+for a POST of a pair that exists; `503` for a database error.
+
+The cluster build (`pipeline/clusters.py`) adds each pair of two Active wines with an
+image to the links of each view. Such a link has `"manual"` in its list `by`; a link with
+no vector evidence has an empty `spaces`. A cluster with a manual link has `"manual"` in
+`signals`; a cluster of manual links alone has the kind `manual`.
+
+## Wine tags — plan 63
+
+The table `wine_tag` (schema 029) holds the free-form text tags of a wine. One wine MAY
+have more than one tag. The pipeline does not read the tags. Read
+[plan 63](plans/63_wine-tags.md).
+
+The normal form of a tag: no outer white space, lower case. A valid tag has 1 to 64
+characters: letters (also Cyrillic), digits, `_`, `-`, `:`, and `.`, with no white space.
+Examples: `generic`, `vintage:2017`.
+
+`GET /api/dataset` sends `tag_editor: true` and `wine_tags` (the number of rows: each tag
+of each wine counts one time). Each record holds `_tags`: its tags, in the order of the
+adds.
+
+### `POST /api/dataset-tag`
+
+The body is `{"slug": "<wine slug>", "tag": "<text>"}`. A wine of each state allows it.
+The answer:
+
+```json
+{"ok": true, "slug": "wine-a", "added": "vintage:2017", "tags": ["vintage:2017"],
+ "total": 1}
+```
+
+`added` is the normal form of the tag. `tags` is the list of the tags of the wine after
+the write. `total` is the number of rows.
+
+### `DELETE /api/dataset-tag?slug=<wine slug>&tag=<text>`
+
+Removes one tag. The server applies the normal form to `tag` first. The answer has the
+keys of the POST, with `removed` in place of `added`.
+
+Errors of both routes: `400` for a missing slug, or a missing or invalid tag; `404` for a
+wine that does not exist, or a DELETE of a tag that the wine does not have; `409` for a
+POST of a tag that the wine has; `503` for a database error.
+
+## Build all clusters — plan 65
+
+### `POST /api/clusters/build-all`
+
+Starts the queue of `Build all clusters` on `/clusters`: a thread of the lab server builds
+`clusters.json` of each embedding entry with no configuration error, one at a time, in the
+order of `config.yaml`. The request has no body. The answer is HTTP 202 with
+`{"queue": <queue>}`. Errors: `409` while a queue runs; `400` when each entry has a
+configuration error. A `GET` of this path is the detail of an entry named `build-all`.
+
+`GET /api/clusters` holds the key `queue`: null before the first queue, else
+`{state, names, index, current, waiting, results, started_t, ended_t, message}`. `state`
+is `running`, `done`, or `failed`. `waiting` tells why the build of `current` waits (its
+embedding build runs), or is null. `results` holds one `{name, state, counts, message}`
+for each entry that ended; `state` is `done`, `skipped` (for example no index), or
+`failed`. A restart of the server ends the queue and clears it.

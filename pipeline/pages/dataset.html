@@ -126,6 +126,33 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .describe-raw .fail { color: var(--neg); }
+/* The label descriptions of plan 61: one block for each row, the latest first. */
+.label-desc { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; }
+.label-desc[hidden], .label-desc-editor[hidden] { display: none; }
+.label-desc h3 { margin: 0 0 4px; font-size: 14px; }
+.label-desc-status { color: var(--muted); line-height: 1.5; }
+.label-desc .fail { color: var(--neg); }
+.label-desc-row { margin-top: 8px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 8px; }
+.label-desc-row > summary { cursor: pointer; color: var(--muted); overflow-wrap: anywhere; }
+.label-desc-row > summary:hover { color: var(--text); }
+.label-desc-row .latest { color: var(--accent); font-weight: 700; }
+.label-desc-row pre {
+  margin: 6px 0 0; padding: 8px; max-height: 320px; overflow: auto;
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.label-desc-row .settings { margin-top: 6px; color: var(--muted); line-height: 1.5; overflow-wrap: anywhere; }
+.label-desc-row details { margin-top: 6px; color: var(--muted); }
+.label-desc-row details summary { cursor: pointer; }
+.label-desc-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.label-desc-buttons .primary { border-color: var(--accent); }
+.label-desc-editor textarea {
+  display: block; width: 100%; min-height: 240px; margin-top: 8px; resize: vertical;
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 6px 8px;
+  font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
 /* The indicator of the watcher in the header bar: working, idle, waiting, or stopped. */
 .vlm-status {
   display: inline-flex; gap: 6px; align-items: center; align-self: center; padding: 3px 10px;
@@ -279,6 +306,8 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .alternative-drop:hover, .alternative-drop.drag {
   color: var(--text); border-color: var(--accent); background: var(--grp-a);
 }
+/* The focused paste tile takes ⌘V. */
+.alternative-paste:focus { color: var(--text); border-color: var(--accent); background: var(--grp-a); }
 .alternative-actions { display: flex; gap: 6px; margin-top: 7px; }
 .alternative-actions button { flex: 1 1 auto; padding: 3px 6px; font-size: 11px; }
 .alternative-actions .apply { border-color: var(--accent); font-weight: 700; }
@@ -311,12 +340,23 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .atlas-binding-editor .barcode-value code { overflow-wrap: anywhere; }
 .atlas-binding-editor .barcode-values { align-items: flex-start; flex-direction: column; }
 .barcode-value .atlas-source { color: var(--muted); font-size: 10px; }
+.barcode-value .approve { padding: 0 5px; font-size: 10px; color: var(--pos); border-color: var(--pos); }
 .barcode-value .copy { padding: 0 5px; font-size: 10px; }
 .barcode-value .open-product { padding: 0 3px; font-size: 10px; }
 .barcode-value .shared-code { padding: 0 6px; font-size: 10px; cursor: help; white-space: nowrap; }
 .qr-url-editor .barcode-values { align-items: flex-start; flex-direction: column; }
 .qr-url-editor .barcode-value { max-width: 100%; padding-left: 4px; }
 .qr-url-editor .barcode-value code { min-width: 0; overflow-wrap: anywhere; }
+/* The similar wines of a card (plan 62). */
+.similar-editor { margin-top: 8px; }
+.similar-editor .barcode-values { align-items: flex-start; flex-direction: column; }
+.similar-editor .barcode-value { max-width: 100%; flex-wrap: wrap; }
+.similar-editor .barcode-value a { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+                                   overflow-wrap: anywhere; }
+.similar-editor .similar-name { color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+.similar-editor .similar-input { width: min(360px, 100%); }
+/* The tags of a card (plan 63). The shared classes of the code editors do the rest. */
+.wine-tag-editor { margin-top: 8px; }
 .barcode-remove {
   width: 18px; height: 18px; padding: 0; border: 0; border-radius: 999px;
   color: var(--exc); background: transparent; font-size: 16px; font-weight: 750;
@@ -812,6 +852,21 @@ button.preview-thumb:hover { border-color: var(--accent); }
       <summary>Raw VLM reply</summary>
       <div id="describe-raw-body"></div>
     </details>
+    <section class="label-desc" id="label-desc" aria-labelledby="label-desc-title" hidden>
+      <h3 id="label-desc-title">Label description</h3>
+      <div class="label-desc-status" id="label-desc-status"></div>
+      <div id="label-desc-list"></div>
+      <div class="label-desc-buttons"><button id="label-desc-add" type="button" hidden>Add manual</button></div>
+      <div class="label-desc-editor" id="label-desc-editor" hidden>
+        <textarea id="label-desc-text" rows="14" spellcheck="false"
+          aria-label="The label description as a JSON object"></textarea>
+        <div class="label-desc-buttons">
+          <button id="label-desc-cancel" type="button">Cancel edit</button>
+          <button id="label-desc-save" class="primary" type="button">Save as new</button>
+        </div>
+      </div>
+      <div class="wine-form-error" id="label-desc-error" role="alert" hidden></div>
+    </section>
     <div class="wine-form-error" id="describe-error" role="alert" hidden></div>
     <div class="validation-actions">
       <button id="describe-cancel" type="button">Cancel</button>
@@ -876,7 +931,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
     </div>
     <div class="image-preview-stage">
       <button class="image-preview-arrow previous" id="image-preview-previous" type="button"
-        aria-label="Previous image" title="Previous image (Left or Up arrow)">←</button>
+        aria-label="Previous image" title="Previous image of this wine (Left arrow)">←</button>
       <div class="image-preview-main">
         <div class="image-preview-frame"><img id="image-preview-image" src="" alt=""><svg
           class="image-preview-cut-layer" id="image-preview-cut-layer" preserveAspectRatio="none"
@@ -891,7 +946,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
         <div class="image-preview-thumbs" id="image-preview-thumbs"></div>
       </div>
       <button class="image-preview-arrow next" id="image-preview-next" type="button"
-        aria-label="Next image" title="Next image (Right or Down arrow)">→</button>
+        aria-label="Next image" title="Next image of this wine (Right arrow)">→</button>
     </div>
   </section>
 </div>
@@ -924,9 +979,15 @@ const DRAFT_QR_URLS = new Map();
 const BUSY_QR_URLS = new Set();
 const DRAFT_ATLAS_BINDINGS = new Map();
 const BUSY_ATLAS_BINDINGS = new Set();
+// slug -> the draft slug of a new similar wine; the slugs that save now: plan 62.
+const DRAFT_SIMILAR = new Map();
+const BUSY_SIMILAR = new Set();
 const DRAFT_COMMENTS = new Map();
 const BUSY_COMMENTS = new Set();
 const BUSY_FAVORITES = new Set();
+// slug -> the draft of a new tag; the slugs that save now: plan 63.
+const DRAFT_TAGS = new Map();
+const BUSY_TAGS = new Set();
 // slug -> the wine type that the page saves now ("" is no type): plan 52.
 const BUSY_TYPES = new Map();
 // state -> the buttons of a wine in that state, as [action, label].
@@ -1084,9 +1145,9 @@ function showImagePreview(slug, kind, mode = "push", sha256 = "") {
   $("#image-preview-close").focus();
   return true;
 }
-// Make one image the item of the preview: the title, the position, the arrows, and the
-// page path follow it (see `showImagePreview` for `mode`). The image and the thumbnails
-// do not change. Return {record, photo}, or null when the current list holds no such image.
+// Make one image the item of the preview: the title and the page path follow it (see
+// `showImagePreview` for `mode`). The image and the thumbnails do not change. Return
+// {record, photo}, or null when the current list holds no such image.
 function setPreviewItem(slug, kind, mode, sha256) {
   const items = imagePreviewItems(kind);
   const index = imagePreviewIndex(items, slug, sha256);
@@ -1097,9 +1158,6 @@ function setPreviewItem(slug, kind, mode, sha256) {
   IMAGE_PREVIEW = {slug, kind, sha256: photo ? photo.sha256 : ""};
   $("#image-preview-title").textContent = `${label} · ${record.name || slug}`;
   $("#image-preview-file").textContent = slug;
-  $("#image-preview-position").textContent = `${index + 1} / ${items.length}`;
-  $("#image-preview-previous").disabled = index === 0;
-  $("#image-preview-next").disabled = index === items.length - 1;
   $("#image-preview-image").alt = `${label} · ${record.name || slug}`;
   const path = imagePreviewPath(slug, kind, IMAGE_PREVIEW.sha256);
   if (mode === "push") history.pushState({imagePreview: true}, "", path);
@@ -1121,14 +1179,31 @@ function closeImagePreview() {
   if (history.state && history.state.imagePreview) history.back();
   else if (imagePreviewOfPath()) history.replaceState(null, "", "/dataset");
 }
+// Left and Right step through the available files of the current wine. The buttons are
+// the source of truth because two thumbnails can name the same catalogue item: its
+// original file and its processed file.
 function stepImagePreview(step) {
   if (!IMAGE_PREVIEW) return;
-  const items = imagePreviewItems(IMAGE_PREVIEW.kind);
-  const index = imagePreviewIndex(items, IMAGE_PREVIEW.slug, IMAGE_PREVIEW.sha256);
-  const target = items[index + step];
-  if (target) {
-    showImagePreview(target.record.slug, IMAGE_PREVIEW.kind, "replace",
-                     target.photo ? target.photo.sha256 : "");
+  const buttons = [...$("#image-preview-thumbs").querySelectorAll("[data-preview-thumb]")];
+  const index = buttons.findIndex(button => button.classList.contains("on"));
+  const target = buttons[index + step];
+  if (target) showPreviewThumb(target);
+}
+// Up and Down step through the visible wines. A target wine opens at its first available
+// file. Wines without an available file do not stop the step.
+function stepImagePreviewWine(step) {
+  if (!IMAGE_PREVIEW) return;
+  let index = ROWS.findIndex(record => record.slug === IMAGE_PREVIEW.slug);
+  while (index >= 0) {
+    index += step;
+    const record = ROWS[index];
+    if (!record) return;
+    const first = previewThumbs(record).find(thumb => thumb.url);
+    if (!first) continue;
+    if (!showImagePreview(record.slug, first.kind, "replace", first.sha256)) continue;
+    const button = $("#image-preview-thumbs").querySelector("[data-preview-thumb]");
+    if (button) showPreviewThumb(button);
+    return;
   }
 }
 // The thumbnails below the preview, the same for each kind of preview: the `main` image
@@ -1173,6 +1248,13 @@ function previewThumbs(record) {
   });
   return thumbs;
 }
+function updatePreviewControls() {
+  const buttons = [...$("#image-preview-thumbs").querySelectorAll("[data-preview-thumb]")];
+  const index = buttons.findIndex(button => button.classList.contains("on"));
+  $("#image-preview-position").textContent = index < 0 ? "" : `${index + 1} / ${buttons.length}`;
+  $("#image-preview-previous").disabled = index <= 0;
+  $("#image-preview-next").disabled = index < 0 || index === buttons.length - 1;
+}
 function renderPreviewThumbs(record, src) {
   PREVIEW_THUMBS = previewThumbs(record);
   // The thumbnail of the item in view is on, also when two files of the wine have the
@@ -1189,6 +1271,7 @@ function renderPreviewThumbs(record, src) {
       : `<div class="preview-thumb none" title="The wine has no ${thumb.label} image"><span
           class="preview-thumb-image">none</span><span>${thumb.label}</span></div>`;
   }).join("");
+  updatePreviewControls();
   // A strip that scrolls shows the thumbnail that is on in its center. The width of a
   // thumbnail is known when its image is loaded.
   const strip = $("#image-preview-thumbs");
@@ -1215,6 +1298,7 @@ function showPreviewThumb(button) {
   for (const other of $("#image-preview-thumbs").querySelectorAll("[data-preview-thumb]")) {
     other.classList.toggle("on", other === button);
   }
+  updatePreviewControls();
   const image = $("#image-preview-image");
   if (image.getAttribute("src") === thumb.url) return;
   $("#image-preview-size").textContent = "reading size…";
@@ -1371,6 +1455,9 @@ function alternativeEditor(r) {
   const drop = configured
     ? '<button class="alternative-drop" type="button" data-alternative-pick>Drop photos here<br>or choose files</button>'
     : '<div class="alternative-drop">alternative_dir is not configured</div>';
+  const paste = configured
+    ? '<button class="alternative-drop alternative-paste" type="button" data-alternative-paste>Paste image<br>click or ⌘V</button>'
+    : "";
   const changed = lab ? pending.removes.size : pending.adds.length || pending.removes.size;
   const actions = changed ? `<div class="alternative-actions">
     <button class="apply${busy ? " busy" : ""}" type="button" data-alternative-apply
@@ -1380,7 +1467,7 @@ function alternativeEditor(r) {
   return `<aside class="alternative-editor" data-slug="${esc(r.slug)}">
     <div class="alternative-head"><strong>Alternative photos</strong><span>${
       (r._alternatives || []).length} active</span></div>
-    <div class="alternative-grid">${existing}${additions}${drop}</div>${actions}
+    <div class="alternative-grid">${existing}${additions}${drop}${paste}</div>${actions}
     <div class="alternative-note">Added views enter the matcher index after an index rebuild.</div>
     <input class="alternative-input" type="file" multiple
       accept="image/jpeg,image/png,image/webp,image/gif,image/bmp">
@@ -1556,7 +1643,10 @@ function atlasBindingEditor(r) {
          ? `<button class="barcode-remove" type="button" data-atlas-binding-remove="${esc(product)}"
              aria-label="Remove ${esc(source)} Atlas binding ${esc(product)}"
              title="Remove ${esc(source)} binding" ${busy ? "disabled" : ""}>×</button>` : ""}<code>${esc(product)}</code>
-       <span class="atlas-source">${esc(source)}</span>
+       <span class="atlas-source">${esc(source)}</span>${removable && source === "automatic"
+         ? `<button class="approve" type="button" data-atlas-binding-approve="${esc(product)}"
+             aria-label="Approve Atlas binding ${esc(product)}"
+             title="Confirm the match: the source becomes manual" ${busy ? "disabled" : ""}>approve</button>` : ""}
        <button class="copy" type="button" data-copy="${esc(product)}">copy</button>
        <a class="open-product" href="${esc(productUrl)}" target="_blank"
           rel="noopener">open</a>${sharedCodeBadge(r, "atlas", product)}</span>`;
@@ -1579,6 +1669,90 @@ function atlasBindingEditor(r) {
         ${!configured || editing ? "disabled" : ""}>${replaces ? "edit" : "+"}</button></div>
     ${existing}${entry}
   </div>`;
+}
+// The similar wines of a wine (plan 62). The pair has no direction: it shows on both
+// cards. The lab server sends `similar_pairs` and `_similar`; the review tool does not.
+function similarOn() { return "similar_pairs" in DATA; }
+function similarEditor(r) {
+  const partners = r._similar || [];
+  const editing = DRAFT_SIMILAR.has(r.slug);
+  const busy = BUSY_SIMILAR.has(r.slug);
+  const existing = partners.length ? `<div class="barcode-values">${partners.map(slug => {
+    const other = DATA.records.find(item => item.slug === slug);
+    return `<span class="barcode-value"><button class="barcode-remove" type="button"
+        data-similar-remove="${esc(slug)}" aria-label="Remove the hard case ${esc(slug)}"
+        title="Remove the pair" ${busy ? "disabled" : ""}>×</button><a
+        href="/dataset#${esc(encodeURIComponent(slug))}" target="_blank" rel="noopener"
+        data-similar-open="${esc(slug)}" title="Go to the card">${esc(slug)}</a>${other?.name
+        ? `<span class="similar-name">${esc(other.name)}</span>` : ""}</span>`;
+  }).join("")}</div>` : '<div class="barcode-empty">none</div>';
+  const entry = editing ? `<div class="barcode-new">
+    <input class="similar-input" type="text" list="similar-slugs" autocomplete="off"
+      aria-label="Slug of a hard case" placeholder="Wine slug or name"
+      value="${esc(DRAFT_SIMILAR.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
+    <button class="accept" type="button" data-similar-save aria-label="Save the hard case"
+      title="Save the pair" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
+    <button class="cancel" type="button" data-similar-cancel aria-label="Cancel the hard case"
+      title="Cancel" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
+  </div>` : "";
+  return `<div class="similar-editor" data-slug="${esc(r.slug)}">
+    <div class="barcode-head"><strong>Hard cases</strong>
+      <span class="count">${partners.length}</span>
+      <button class="barcode-add" type="button" data-similar-add aria-label="Add a hard case"
+        title="Add a hard case: a wine that is hard to distinguish from this one"
+        ${editing ? "disabled" : ""}>+</button></div>
+    ${existing}${entry}
+  </div>`;
+}
+// The list of the input of a similar wine: one option for each wine, made at the first
+// use. A choice by the name puts the slug in the input.
+function ensureSimilarList() {
+  if (document.getElementById("similar-slugs")) return;
+  const list = document.createElement("datalist");
+  list.id = "similar-slugs";
+  list.innerHTML = DATA.records.map(item =>
+    `<option value="${esc(item.slug)}">${esc(item.name || "")}</option>`).join("");
+  document.body.append(list);
+}
+// The free-form tags of a wine (plan 63), for example `generic` or `vintage:2017`. The lab
+// server sends `wine_tags` and `_tags`; the review tool does not.
+function tagsOn() { return "wine_tags" in DATA; }
+function tagEditor(r) {
+  const tags = r._tags || [];
+  const editing = DRAFT_TAGS.has(r.slug);
+  const busy = BUSY_TAGS.has(r.slug);
+  const existing = tags.length ? `<div class="barcode-values">${tags.map(tag =>
+    `<span class="barcode-value"><button class="barcode-remove" type="button"
+        data-tag-remove="${esc(tag)}" aria-label="Remove the tag ${esc(tag)}"
+        title="Remove the tag" ${busy ? "disabled" : ""}>×</button><code>${esc(tag)}</code></span>`
+  ).join("")}</div>` : '<div class="barcode-empty">none</div>';
+  const entry = editing ? `<div class="barcode-new">
+    <input class="wine-tag-input" type="text" list="wine-tag-list" autocomplete="off"
+      maxlength="64" aria-label="New tag" placeholder="generic, vintage:2017"
+      value="${esc(DRAFT_TAGS.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
+    <button class="accept" type="button" data-tag-save aria-label="Save the tag"
+      title="Save the tag" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
+    <button class="cancel" type="button" data-tag-cancel aria-label="Cancel the tag"
+      title="Cancel" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
+  </div>` : "";
+  return `<div class="wine-tag-editor" data-slug="${esc(r.slug)}">
+    <div class="barcode-head"><strong>Tags</strong>
+      <span class="count">${tags.length}</span>
+      <button class="barcode-add" type="button" data-tag-add aria-label="Add a tag"
+        title="Add a tag" ${editing ? "disabled" : ""}>+</button></div>
+    ${existing}${entry}
+  </div>`;
+}
+// The list of the tag input: each tag that the page holds, made again at each open.
+function refreshTagList() {
+  let list = document.getElementById("wine-tag-list");
+  if (!list) {
+    list = document.createElement("datalist");
+    list.id = "wine-tag-list";
+    document.body.append(list);
+  }
+  const tags = [...new Set(DATA.records.flatMap(item => item._tags || []))].sort();
+  list.innerHTML = tags.map(tag => `<option value="${esc(tag)}"></option>`).join("");
 }
 // The Comments editor belongs to the lab server. The review tool sends no `comments`.
 function commentsOn() { return "comments" in DATA; }
@@ -1729,7 +1903,41 @@ async function loadDescribeRaw() {
     box.dataset.loaded = "";
   }
 }
-function openDescribe(sha, slug, src) {
+// The page path of an open description dialog: `/dataset/<slug>/describe/<sha256>`.
+// Both servers serve this page at the path.
+function describePath(slug, sha) {
+  return `/dataset/${encodeURIComponent(slug)}/describe/${sha}`;
+}
+// Return {slug, sha256} of the description dialog that the page path names, or null.
+function describeOfPath() {
+  const match = location.pathname.match(/^\/dataset\/([^/]+)\/describe\/([0-9a-f]{64})$/);
+  if (!match) return null;
+  try { return {slug: decodeURIComponent(match[1]), sha256: match[2]}; }
+  catch (_) { return null; }
+}
+// The file that the description button of the image `sha` on the card of `slug` opens:
+// the catalogue original, the patch, or an alternative photo. "" when the card has none.
+function describeSrc(slug, sha) {
+  const record = DATA.records.find(r => r.slug === slug);
+  if (!record) return "";
+  if (shaOfUrl(record.main_image_original_url) === sha) return record.main_image_original_url;
+  if (shaOfUrl(record._patch_url) === sha) return record._patch_url;
+  const photo = (record._alternatives || []).find(
+    photo => photo && typeof photo === "object" && photo.sha256 === sha);
+  return photo ? photo.url : "";
+}
+// Open the dialog that the page path names, with no change of the path. Return false when
+// the path names no dialog, or an image that no card holds.
+function openDescribeOfPath() {
+  const target = describeOfPath();
+  const src = target && describeOn() ? describeSrc(target.slug, target.sha256) : "";
+  if (!src) return false;
+  openDescribe(target.sha256, target.slug, src, "none");
+  return true;
+}
+// `mode` is the change of the page URL, as in `showImagePreview`: "push" adds a history
+// entry, so Back closes the dialog; "none" keeps the URL.
+function openDescribe(sha, slug, src, mode = "push") {
   const values = DATA.image_description_values || {};
   const row = (DATA.image_descriptions || {})[sha] || null;
   DESCRIBE_TARGET = {sha, slug};
@@ -1758,12 +1966,21 @@ function openDescribe(sha, slug, src) {
   $("#describe-error").hidden = true;
   $("#describe-save").disabled = false;
   $("#describe-save").textContent = "Save";
+  loadLabelDescriptions(sha);
   $("#describe-modal").hidden = false;
   form.elements.package_type.focus();
+  if (mode === "push") history.pushState({describe: true}, "", describePath(slug, sha));
 }
-function closeDescribe() {
+function hideDescribe() {
   $("#describe-modal").hidden = true;
   DESCRIBE_TARGET = null;
+}
+// Close the dialog and give the page its path `/dataset` again, as `closeImagePreview`
+// does.
+function closeDescribe() {
+  hideDescribe();
+  if (history.state && history.state.describe) history.back();
+  else if (describeOfPath()) history.replaceState(null, "", "/dataset");
 }
 // `unknown` stands alone in `content_roles`.
 function checkDescribeRole(box) {
@@ -1806,6 +2023,169 @@ async function saveDescribe() {
     $("#describe-save").textContent = "Save";
   }
 }
+// The label descriptions of plan 61: the answers of `DESCRIBE_PROMPT` of the cluster
+// rules (stage 3 of the watcher) and the copies that the owner edited. The dialog loads
+// the rows of its image when it opens; the first row is the latest, the effective one.
+// `Edit as new` and `Add manual` save a new manual row. `Remove` deletes one row; after the
+// last row, the watcher describes the image again.
+let LABEL_SHA = "";
+let LABEL_VIEW = null;
+// The seven keys of `DESCRIBE_PROMPT`, for `Add manual`.
+const LABEL_TEMPLATE = {texts: [], numbers: [], vintage: null, colours: [], design: "",
+  marks: [], bottle: ""};
+function labelRowSummary(row, latest) {
+  const parts = [`#${row.id}`];
+  if (latest) parts.push('<span class="latest">latest</span>');
+  parts.push(row.created_by === "vlm" ? "VLM" : "manual", esc(row.created_at));
+  if (row.created_by === "vlm") {
+    parts.push(`${esc(row.vlm_name)}${row.vlm_served_model ? ` (${esc(row.vlm_served_model)})` : ""}`,
+      `max_tokens ${esc(row.max_tokens)}`, `thinking ${row.thinking ? "on" : "off"}`);
+  }
+  return parts.join(" · ");
+}
+function labelRowSettings(row) {
+  if (row.created_by !== "vlm") return "Written or edited by hand.";
+  const q = row.vlm_request || {};
+  const r = row.vlm_reply || {};
+  const usage = r.usage || {};
+  const lines = [
+    `Endpoint: ${row.vlm_endpoint} · model ${row.vlm_model}`,
+    `Input: ${q.input_kind || "?"} file ${row.input_sha256 || "?"} · sent ${
+      (q.sent_size || []).join(" × ")} px ${q.image_format || ""} (long side ${q.describe_side ?? "?"})`,
+    `Request: temperature ${q.temperature} · response_format ${JSON.stringify(q.response_format)}${
+      q.repetition_penalty ? ` · repetition_penalty ${q.repetition_penalty}` : ""} · timeout ${
+      q.timeout_s} s · ${q.prompt || "?"} (sha256 ${(q.prompt_sha256 || "").slice(0, 12)}) · settings ${
+      q.settings_sha || "?"}`,
+    `Reply: finish_reason ${r.finish_reason || "?"}${usage.prompt_tokens != null
+      ? ` · tokens ${usage.prompt_tokens} prompt + ${usage.completion_tokens} completion` : ""}${
+      r.ms != null ? ` · ${(r.ms / 1000).toFixed(1)} s` : ""}${r.cached ? " · cache hit" : ""}${
+      r.loop_guard ? " · loop guard" : ""}`,
+  ];
+  if ((r.repairs || []).length) {
+    lines.push(`Key repair: ${r.repairs.map(([from, to]) => `${from} → ${to}`).join(", ")}`);
+  }
+  return lines.map(esc).join("<br>");
+}
+function labelStatus(view) {
+  const rows = view.rows || [];
+  const lines = [];
+  if (rows.length) {
+    const latest = rows[0];
+    lines.push(`${rows.length} label description${rows.length === 1 ? "" : "s"} · the latest: #${
+      latest.id}, ${latest.created_by === "vlm" ? "VLM" : "manual"}, ${esc(latest.created_at)}`);
+  } else {
+    lines.push("No label description yet. The watcher describes each image that has none.");
+  }
+  const failure = view.failure;
+  if (!rows.length && failure && failure.attempts) {
+    const stopped = failure.attempts >= view.max_attempts;
+    lines.push(`<span class="fail">VLM: failed ${failure.attempts} of ${view.max_attempts} times${
+      stopped ? "; the watcher stopped for this image" : ""}: ${esc(failure.error || "")}</span>`);
+  }
+  return lines.join("<br>");
+}
+function renderLabelDescriptions(view) {
+  LABEL_VIEW = view;
+  const rows = view.rows || [];
+  $("#label-desc-status").innerHTML = labelStatus(view);
+  $("#label-desc-list").innerHTML = rows.map((row, index) => `
+    <details class="label-desc-row"${index === 0 ? " open" : ""}>
+      <summary>${labelRowSummary(row, index === 0)}</summary>
+      <pre>${esc(JSON.stringify(row.description, null, 2))}</pre>
+      <div class="settings">${labelRowSettings(row)}</div>
+      ${row.vlm_reply && row.vlm_reply.raw != null ? `<details><summary>Raw VLM answer</summary>
+        <pre>${esc(row.vlm_reply.raw)}</pre></details>` : ""}
+      <div class="label-desc-buttons">
+        <button type="button" data-label-edit="${row.id}">Edit as new</button>
+        <button type="button" data-label-remove="${row.id}">Remove</button>
+      </div>
+    </details>`).join("");
+  $("#label-desc-add").hidden = rows.length > 0;
+}
+async function loadLabelDescriptions(sha) {
+  LABEL_SHA = sha;
+  LABEL_VIEW = null;
+  $("#label-desc").hidden = false;
+  $("#label-desc-editor").hidden = true;
+  $("#label-desc-error").hidden = true;
+  $("#label-desc-add").hidden = true;
+  $("#label-desc-list").innerHTML = "";
+  $("#label-desc-status").textContent = "Loading the label descriptions…";
+  try {
+    const response = await fetch(`/api/image-label-descriptions?sha256=${encodeURIComponent(sha)}`);
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    if (LABEL_SHA === sha) renderLabelDescriptions(out);
+  } catch (error) {
+    if (LABEL_SHA !== sha) return;
+    $("#label-desc-status").innerHTML = `<span class="fail">Cannot load the label descriptions: ${
+      esc(error.message)}</span>`;
+  }
+}
+function labelError(message) {
+  $("#label-desc-error").textContent = message;
+  $("#label-desc-error").hidden = false;
+}
+// Open the editor with the JSON of the row `id`, or with LABEL_TEMPLATE for `null`.
+function editLabelDescription(id) {
+  const row = ((LABEL_VIEW || {}).rows || []).find(item => item.id === id);
+  $("#label-desc-text").value = JSON.stringify(row ? row.description : LABEL_TEMPLATE, null, 2);
+  $("#label-desc-error").hidden = true;
+  $("#label-desc-save").disabled = false;
+  $("#label-desc-editor").hidden = false;
+  $("#label-desc-text").focus();
+}
+function cancelLabelEdit() {
+  $("#label-desc-editor").hidden = true;
+  $("#label-desc-error").hidden = true;
+}
+async function sendLabel(method, body) {
+  const response = await fetch("/api/image-label-description", {
+    method, headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+  const out = await response.json();
+  if (!response.ok) throw new Error(out.error || response.status);
+  return out;
+}
+async function saveLabelDescription() {
+  const sha = LABEL_SHA;
+  let description;
+  try {
+    description = JSON.parse($("#label-desc-text").value);
+  } catch (error) {
+    labelError(`The text is not JSON: ${error.message}`);
+    return;
+  }
+  if (!description || typeof description !== "object" || Array.isArray(description)) {
+    labelError("The text must be one JSON object.");
+    return;
+  }
+  $("#label-desc-save").disabled = true;
+  try {
+    const out = await sendLabel("POST", {sha256: sha, description});
+    if (LABEL_SHA !== sha) return;
+    $("#label-desc-editor").hidden = true;
+    $("#label-desc-error").hidden = true;
+    renderLabelDescriptions(out);
+  } catch (error) {
+    if (LABEL_SHA === sha) labelError(`Cannot save the label description: ${error.message}`);
+  } finally {
+    $("#label-desc-save").disabled = false;
+  }
+}
+async function removeLabelDescription(id) {
+  const sha = LABEL_SHA;
+  const last = ((LABEL_VIEW || {}).rows || []).length === 1;
+  if (!confirm(`Remove the label description #${id}?${
+    last ? " It is the last one, so the VLM describes the image again." : ""}`)) return;
+  try {
+    const out = await sendLabel("DELETE", {id});
+    if (LABEL_SHA !== sha) return;
+    $("#label-desc-error").hidden = true;
+    renderLabelDescriptions(out);
+  } catch (error) {
+    if (LABEL_SHA === sha) labelError(`Cannot remove the label description: ${error.message}`);
+  }
+}
 // The indicator of the watcher: `GET /api/image-description-status` every 5 s while the
 // tab is visible. The cards do not change; a reload shows the new descriptions.
 const VLM_POLL_MS = 5000;
@@ -1818,11 +2198,15 @@ function vlmStatusView(s) {
   const speed = s.seconds_per_image ? ` · ${Number(s.seconds_per_image).toFixed(1)} s` : "";
   // Stage 2 of plan 29: the details of the images.
   const details = `details ${vlmCount(s.details_done)} / ${vlmCount(s.details_eligible)}`;
+  // Stage 3 of plan 61: the label descriptions. `labels_vlm` is set when the stage is on.
+  const labels = `labels ${vlmCount(s.labels_done)} / ${vlmCount(s.labels_linked)}`;
   if (s.state === "working" && s.stage === "detail") return ["working", `VLM ${details}${speed}`];
+  if (s.state === "working" && s.stage === "label") return ["working", `VLM ${labels}${speed}`];
   if (s.state === "working") return ["working", `VLM ${vlmCount(s.described)} / ${vlmCount(s.linked)}${speed}`];
   if (s.state === "idle") {
     return ["idle", s.pending ? `VLM idle · ${vlmCount(s.pending)} pending`
-      : `VLM all ${vlmCount(s.described)} described${s.details_eligible ? ` · ${details}` : ""}`];
+      : `VLM all ${vlmCount(s.described)} described${s.details_eligible ? ` · ${details}` : ""}${
+        s.labels_vlm ? ` · ${labels}` : ""}`];
   }
   if (s.state === "waiting") {
     // The full error: a cut at 40 characters showed the port 18081 as 1808 (plan 49).
@@ -1843,7 +2227,8 @@ function vlmAge(seconds) {
 }
 function vlmCallHtml(c, s, note) {
   const what = c.stage === "detail"
-    ? `detail · ${c.prompt_kind || "?"} prompt · ${c.package_type || "?"}` : "class";
+    ? `detail · ${c.prompt_kind || "?"} prompt · ${c.package_type || "?"}`
+    : c.stage === "label" ? `label description · ${c.input_kind || "?"} file` : "class";
   const thumb = c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener"
       data-failure-preview data-slug="${esc(c.slug || "")}" data-sha="${esc(c.sha256)}"
       title="Show the file that the VLM gets"><img src="${esc(c.url)}"
@@ -1866,6 +2251,7 @@ function renderVlmDialog(s) {
     ["Requests", s.timeout_seconds ? `timeout ${s.timeout_seconds} s · ${vlmCount(s.workers)} workers` : "?"],
     ["Classes", `${vlmCount(s.described)} of ${vlmCount(s.linked)} · pending ${vlmCount(s.pending)} · failed ${vlmCount(s.failed)}`],
     ["Details", s.details_eligible !== undefined ? `${vlmCount(s.details_done)} of ${vlmCount(s.details_eligible)} · pending ${vlmCount(s.details_pending)} · failed ${vlmCount(s.details_failed)}` : "?"],
+    ["Labels", s.labels_linked !== undefined ? `${vlmCount(s.labels_done)} of ${vlmCount(s.labels_linked)} · pending ${vlmCount(s.labels_pending)} · failed ${vlmCount(s.labels_failed)}${s.labels_vlm ? ` · vlm ${s.labels_vlm}` : " · stage 3 off"}` : "?"],
     ["Speed", s.seconds_per_image ? `${Number(s.seconds_per_image).toFixed(2)} s per image (last 20)` : "—"],
   ];
   const dl = rows => `<dl class="vlm-facts">${rows.map(([name, value]) =>
@@ -1920,6 +2306,7 @@ function renderVlmStatus(s) {
     s.state === "working" ? `Now: ${s.slug || s.sha256 || "?"}` : "",
     `Described ${vlmCount(s.described)} of ${vlmCount(s.linked)} · pending ${vlmCount(s.pending)} · failed ${vlmCount(s.failed)}`,
     s.details_eligible !== undefined ? `Details ${vlmCount(s.details_done)} of ${vlmCount(s.details_eligible)} · pending ${vlmCount(s.details_pending)} · failed ${vlmCount(s.details_failed)}` : "",
+    s.labels_linked !== undefined ? `Labels ${vlmCount(s.labels_done)} of ${vlmCount(s.labels_linked)} · pending ${vlmCount(s.labels_pending)} · failed ${vlmCount(s.labels_failed)}${s.labels_vlm ? ` · vlm ${s.labels_vlm}` : " · stage 3 off"}` : "",
     s.seconds_per_image ? `Speed: ${Number(s.seconds_per_image).toFixed(2)} s per image (last 20)` : "",
     s.state === "waiting" && s.error ? `Error: ${s.error}` : "",
     s.updated_at ? `Last step: ${s.updated_at}` : "",
@@ -2073,6 +2460,8 @@ function recordHtml(r) {
       ${barcodesOn() ? barcodeEditor(r) : ""}
       ${qrUrlEditor(r)}
       ${atlasBindingEditor(r)}
+      ${similarOn() ? similarEditor(r) : ""}
+      ${tagsOn() ? tagEditor(r) : ""}
       ${commentsOn() ? commentEditor(r) : ""}
       ${match.method || r.match ? `<div class="match">Image match: ${esc(match.method || r.match)}${
         match.confidence ? ` · ${esc(match.confidence)}` : ""}</div>` : ""}
@@ -2487,6 +2876,19 @@ function scrollToCard(slug) {
     requestAnimationFrame(() => requestAnimationFrame(scroll));
   });
 }
+// A click on a similar wine goes to its card. A card that the filters hide goes in just
+// below the card `slug` of the click (owner message of 2026-09-27T20:22:30+0300). The
+// next full render applies the filters again and takes it out.
+function openSimilarCard(slug, other) {
+  const record = DATA.records.find(item => item.slug === other);
+  const card = document.getElementById(slug);
+  if (!document.getElementById(other) && record && card) {
+    card.insertAdjacentHTML("afterend", recordHtml(record));
+    ROWS.splice(ROWS.findIndex(item => item.slug === slug) + 1, 0, record);
+    renderHead();
+  }
+  scrollToCard(other);
+}
 async function copyValue(button) {
   const value = button.dataset.copy || "";
   try { await navigator.clipboard.writeText(value); }
@@ -2578,6 +2980,31 @@ function stageAlternativeFiles(slug, files) {
   // patch. A photo added by mistake is removed with × and Apply.
   if (DATA.alternative_editor) { renderCard(slug); uploadAlternatives(slug); }
   else render();
+}
+// The owner asked on 2026-09-27 for a paste tile after the drop tile. A click reads the
+// clipboard: Chrome asks for the permission once, Safari shows its own Paste button. ⌘V on
+// the focused tile needs no permission (the second "paste" listener).
+const CLIPBOARD_IMAGE_TYPES = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp",
+  "image/gif": "gif", "image/bmp": "bmp"};
+async function pasteAlternativeImage(slug, tile) {
+  tile.focus();
+  let items;
+  try {
+    items = await navigator.clipboard.read();
+  } catch (error) {
+    // No clipboard API or no permission: ⌘V on the focused tile still works.
+    tile.innerHTML = "Paste image<br>press ⌘V";
+    return;
+  }
+  for (const item of items) {
+    const type = item.types.find(type => type in CLIPBOARD_IMAGE_TYPES);
+    if (!type) continue;
+    const blob = await item.getType(type);
+    const name = `clipboard-${Date.now()}.${CLIPBOARD_IMAGE_TYPES[type]}`;
+    stageAlternativeFiles(slug, [new File([blob], name, {type})]);
+    return;
+  }
+  alert("The clipboard holds no JPEG, PNG, WebP, GIF, or BMP image.");
 }
 function dropPendingAlternatives(slug) {
   const pending = PENDING_ALTERNATIVES.get(slug);
@@ -3206,6 +3633,143 @@ async function removeAtlasBinding(slug, product) {
     renderCodeCard(slug);
   }
 }
+// A person confirms an automatic Atlas binding. The lab server changes its source to
+// manual; the UUID keeps its place in the list.
+async function approveAtlasBinding(slug, product) {
+  const record = DATA.records.find(item => item.slug === slug);
+  if (!record || BUSY_ATLAS_BINDINGS.has(slug)) return;
+  BUSY_ATLAS_BINDINGS.add(slug);
+  renderCodeCard(slug);
+  try {
+    const response = await fetch("/api/dataset-atlas-binding-approve", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, product_uuid: product})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    record._atlas_products = out.products || [];
+    DATA.atlas_bindings = Number(out.total) || 0;
+    DATA.atlas_manual_bindings = Number(out.manual) || 0;
+  } catch (error) {
+    alert(`Cannot approve the Atlas binding: ${error.message}`);
+  } finally {
+    BUSY_ATLAS_BINDINGS.delete(slug);
+    renderCodeCard(slug);
+  }
+}
+function focusSimilar(slug) {
+  requestAnimationFrame(() => {
+    const editor = [...document.querySelectorAll(".similar-editor")]
+      .find(item => item.dataset.slug === slug);
+    const input = editor?.querySelector(".similar-input");
+    if (input) { input.focus(); input.select(); }
+  });
+}
+// Keep the answer of `/api/dataset-similar` and draw again the card of the other wine.
+function applySimilar(out) {
+  for (const [slug, list] of [[out.slug, out.similar], [out.other, out.other_similar]]) {
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._similar = list || [];
+  }
+  DATA.similar_pairs = Number(out.total) || 0;
+  if (document.getElementById(out.other)) renderCard(out.other);
+}
+async function saveSimilar(slug) {
+  if (!DRAFT_SIMILAR.has(slug) || BUSY_SIMILAR.has(slug)) return;
+  const other = (DRAFT_SIMILAR.get(slug) || "").trim();
+  if (!other) { focusSimilar(slug); return; }
+  BUSY_SIMILAR.add(slug);
+  renderCodeCard(slug);
+  try {
+    const response = await fetch("/api/dataset-similar", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, other})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    applySimilar(out);
+    DRAFT_SIMILAR.delete(slug);
+  } catch (error) {
+    alert(`Cannot add the hard case: ${error.message}`);
+  } finally {
+    BUSY_SIMILAR.delete(slug);
+    renderCodeCard(slug);
+    if (DRAFT_SIMILAR.has(slug)) focusSimilar(slug);
+  }
+}
+async function removeSimilar(slug, other) {
+  if (BUSY_SIMILAR.has(slug)) return;
+  if (!confirm(`Remove the hard case pair ${slug} and ${other}?`)) return;
+  BUSY_SIMILAR.add(slug);
+  renderCodeCard(slug);
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}&other=${encodeURIComponent(other)}`;
+    const response = await fetch("/api/dataset-similar" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    applySimilar(out);
+  } catch (error) {
+    alert(`Cannot remove the hard case: ${error.message}`);
+  } finally {
+    BUSY_SIMILAR.delete(slug);
+    renderCodeCard(slug);
+  }
+}
+function focusTag(slug) {
+  requestAnimationFrame(() => {
+    const editor = [...document.querySelectorAll(".wine-tag-editor")]
+      .find(item => item.dataset.slug === slug);
+    const input = editor?.querySelector(".wine-tag-input");
+    if (input) { input.focus(); input.select(); }
+  });
+}
+// Keep the answer of `/api/dataset-tag`: the tags of the wine and the total.
+function applyTags(out) {
+  const record = DATA.records.find(item => item.slug === out.slug);
+  if (record) record._tags = out.tags || [];
+  DATA.wine_tags = Number(out.total) || 0;
+}
+async function saveTag(slug) {
+  if (!DRAFT_TAGS.has(slug) || BUSY_TAGS.has(slug)) return;
+  const tag = (DRAFT_TAGS.get(slug) || "").trim();
+  if (!tag) { focusTag(slug); return; }
+  BUSY_TAGS.add(slug);
+  renderCodeCard(slug);
+  try {
+    const response = await fetch("/api/dataset-tag", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, tag})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    applyTags(out);
+    DRAFT_TAGS.delete(slug);
+  } catch (error) {
+    alert(`Cannot add the tag: ${error.message}`);
+  } finally {
+    BUSY_TAGS.delete(slug);
+    renderCodeCard(slug);
+    if (DRAFT_TAGS.has(slug)) focusTag(slug);
+  }
+}
+async function removeTag(slug, tag) {
+  if (BUSY_TAGS.has(slug)) return;
+  if (!confirm(`Remove the tag ${tag} of ${slug}?`)) return;
+  BUSY_TAGS.add(slug);
+  renderCodeCard(slug);
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}&tag=${encodeURIComponent(tag)}`;
+    const response = await fetch("/api/dataset-tag" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    applyTags(out);
+  } catch (error) {
+    alert(`Cannot remove the tag: ${error.message}`);
+  } finally {
+    BUSY_TAGS.delete(slug);
+    renderCodeCard(slug);
+  }
+}
 function focusComment(slug) {
   requestAnimationFrame(() => {
     const editor = [...document.querySelectorAll(".comment-editor")]
@@ -3354,8 +3918,11 @@ $("#list").addEventListener("click", event => {
   if (atlasBinding) {
     const slug = atlasBinding.dataset.slug;
     const remove = event.target.closest("[data-atlas-binding-remove]");
+    const approve = event.target.closest("[data-atlas-binding-approve]");
     if (remove) {
       removeAtlasBinding(slug, remove.dataset.atlasBindingRemove);
+    } else if (approve) {
+      approveAtlasBinding(slug, approve.dataset.atlasBindingApprove);
     } else if (event.target.closest("[data-atlas-binding-edit]")) {
       // The lab adds a new UUID. The review tool edits its one UUID.
       const record = DATA.records.find(item => item.slug === slug);
@@ -3367,6 +3934,50 @@ $("#list").addEventListener("click", event => {
       saveAtlasBinding(slug);
     } else if (event.target.closest("[data-atlas-binding-cancel]")) {
       DRAFT_ATLAS_BINDINGS.delete(slug);
+      renderCodeCard(slug);
+    }
+    return;
+  }
+  const similar = event.target.closest(".similar-editor");
+  if (similar) {
+    const slug = similar.dataset.slug;
+    const remove = event.target.closest("[data-similar-remove]");
+    const open = event.target.closest("[data-similar-open]");
+    if (remove) {
+      removeSimilar(slug, remove.dataset.similarRemove);
+    } else if (open && DATA.records.some(item => item.slug === open.dataset.similarOpen)) {
+      // Go to the card of the partner, also when the filters hide it. An unknown slug
+      // keeps the link: it opens in a new tab.
+      event.preventDefault();
+      openSimilarCard(slug, open.dataset.similarOpen);
+    } else if (event.target.closest("[data-similar-add]")) {
+      ensureSimilarList();
+      DRAFT_SIMILAR.set(slug, "");
+      renderCodeCard(slug);
+      focusSimilar(slug);
+    } else if (event.target.closest("[data-similar-save]")) {
+      saveSimilar(slug);
+    } else if (event.target.closest("[data-similar-cancel]")) {
+      DRAFT_SIMILAR.delete(slug);
+      renderCodeCard(slug);
+    }
+    return;
+  }
+  const tagged = event.target.closest(".wine-tag-editor");
+  if (tagged) {
+    const slug = tagged.dataset.slug;
+    const remove = event.target.closest("[data-tag-remove]");
+    if (remove) {
+      removeTag(slug, remove.dataset.tagRemove);
+    } else if (event.target.closest("[data-tag-add]")) {
+      refreshTagList();
+      DRAFT_TAGS.set(slug, "");
+      renderCodeCard(slug);
+      focusTag(slug);
+    } else if (event.target.closest("[data-tag-save]")) {
+      saveTag(slug);
+    } else if (event.target.closest("[data-tag-cancel]")) {
+      DRAFT_TAGS.delete(slug);
       renderCodeCard(slug);
     }
     return;
@@ -3438,6 +4049,8 @@ $("#list").addEventListener("click", event => {
       recutAlternative(slug, event.target.closest("[data-alternative-recut]").dataset.alternativeRecut);
     } else if (event.target.closest("[data-alternative-pick]")) {
       alternative.querySelector(".alternative-input").click();
+    } else if (event.target.closest("[data-alternative-paste]")) {
+      pasteAlternativeImage(slug, event.target.closest("[data-alternative-paste]"));
     } else if (remove) {
       const filename = remove.dataset.alternativeRemove;
       if (pending.removes.has(filename)) pending.removes.delete(filename);
@@ -3510,6 +4123,15 @@ $("#list").addEventListener("paste", event => {
   input.setRangeText(product, input.selectionStart, input.selectionEnd, "end");
   DRAFT_ATLAS_BINDINGS.set(input.closest(".atlas-binding-editor").dataset.slug, input.value);
 });
+// ⌘V on the focused paste tile of Alternative photos. It needs no clipboard permission.
+$("#list").addEventListener("paste", event => {
+  const tile = event.target.closest("[data-alternative-paste]");
+  if (!tile || !alternativeEditorOn()) return;
+  event.preventDefault();
+  const files = [...(event.clipboardData?.files || [])];
+  if (!files.length) { alert("The clipboard holds no image."); return; }
+  stageAlternativeFiles(tile.closest(".alternative-editor").dataset.slug, files);
+});
 $("#list").addEventListener("input", event => {
   if (event.target.matches(".gtin-input")) {
     const editor = event.target.closest(".gtin-editor");
@@ -3525,6 +4147,12 @@ $("#list").addEventListener("input", event => {
   } else if (event.target.matches(".atlas-binding-input")) {
     const editor = event.target.closest(".atlas-binding-editor");
     DRAFT_ATLAS_BINDINGS.set(editor.dataset.slug, event.target.value);
+  } else if (event.target.matches(".similar-input")) {
+    const editor = event.target.closest(".similar-editor");
+    DRAFT_SIMILAR.set(editor.dataset.slug, event.target.value);
+  } else if (event.target.matches(".wine-tag-input")) {
+    const editor = event.target.closest(".wine-tag-editor");
+    DRAFT_TAGS.set(editor.dataset.slug, event.target.value);
   } else if (event.target.matches(".comment-input")) {
     const editor = event.target.closest(".comment-editor");
     DRAFT_COMMENTS.set(editor.dataset.slug, event.target.value);
@@ -3569,6 +4197,26 @@ $("#list").addEventListener("keydown", event => {
     } else if (event.key === "Escape") {
       event.preventDefault();
       DRAFT_ATLAS_BINDINGS.delete(editor.dataset.slug);
+      renderCodeCard(editor.dataset.slug);
+    }
+  } else if (event.target.matches(".similar-input")) {
+    const editor = event.target.closest(".similar-editor");
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveSimilar(editor.dataset.slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_SIMILAR.delete(editor.dataset.slug);
+      renderCodeCard(editor.dataset.slug);
+    }
+  } else if (event.target.matches(".wine-tag-input")) {
+    const editor = event.target.closest(".wine-tag-editor");
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveTag(editor.dataset.slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_TAGS.delete(editor.dataset.slug);
       renderCodeCard(editor.dataset.slug);
     }
   } else if (event.target.matches(".comment-input")) {
@@ -3708,6 +4356,15 @@ $("#describe-save").addEventListener("click", saveDescribe);
 $("#describe-form").addEventListener("submit", event => { event.preventDefault(); saveDescribe(); });
 $("#describe-roles").addEventListener("change", event => checkDescribeRole(event.target));
 $("#describe-raw").addEventListener("toggle", loadDescribeRaw);
+$("#label-desc").addEventListener("click", event => {
+  const edit = event.target.closest("[data-label-edit]");
+  const remove = event.target.closest("[data-label-remove]");
+  if (edit) editLabelDescription(Number(edit.dataset.labelEdit));
+  else if (remove) removeLabelDescription(Number(remove.dataset.labelRemove));
+});
+$("#label-desc-add").addEventListener("click", () => editLabelDescription(null));
+$("#label-desc-cancel").addEventListener("click", cancelLabelEdit);
+$("#label-desc-save").addEventListener("click", saveLabelDescription);
 $("#advanced-toggle").addEventListener("click", toggleAdvancedFilters);
 $("#package-filter").addEventListener("change", changeAdvancedFilter);
 $("#identifier-filter").addEventListener("change", changeAdvancedFilter);
@@ -3726,20 +4383,23 @@ $("#image-preview-thumbs").addEventListener("click", event => {
   const button = event.target.closest("[data-preview-thumb]");
   if (button) showPreviewThumb(button);
 });
-// Back and Forward open or close the preview that the page path names.
+// Back and Forward open or close the preview and the description dialog that the page
+// path names.
 window.addEventListener("popstate", () => {
   const target = imagePreviewOfPath();
   if (!target || !showImagePreview(target.slug, target.kind, "none", target.sha256)) {
     hideImagePreview();
   }
+  if (!openDescribeOfPath()) hideDescribe();
 });
 document.addEventListener("keydown", event => {
   if (!$("#image-preview-modal").hidden) {
     if (CUT_EDIT && cutKey(event)) return;
     if (event.key === "Escape") closeImagePreview();
-    // Up and Down step to the previous and the next wine too (owner, 2026-09-25).
-    else if (event.key === "ArrowLeft" || event.key === "ArrowUp") stepImagePreview(-1);
-    else if (event.key === "ArrowRight" || event.key === "ArrowDown") stepImagePreview(1);
+    else if (event.key === "ArrowLeft") stepImagePreview(-1);
+    else if (event.key === "ArrowRight") stepImagePreview(1);
+    else if (event.key === "ArrowUp") stepImagePreviewWine(-1);
+    else if (event.key === "ArrowDown") stepImagePreviewWine(1);
     else return;
     event.preventDefault();
     return;
@@ -3781,6 +4441,11 @@ window.addEventListener("beforeunload", event => {
     if (preview && showImagePreview(preview.slug, preview.kind, "none", preview.sha256)) {
       scrollToCard(preview.slug);
     } else if (preview) history.replaceState(null, "", "/dataset");
+    // A link to `/dataset/<slug>/describe/<sha256>` opens the description dialog of that
+    // image over the card of the wine. An image that no card holds gives the plain page.
+    const describing = describeOfPath();
+    if (openDescribeOfPath()) scrollToCard(describing.slug);
+    else if (describing) history.replaceState(null, "", "/dataset");
     if (validationOn()) loadValidation().catch(() => {});
     if (describeOn()) pollVlmStatus();
   } catch (error) {

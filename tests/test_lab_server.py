@@ -68,12 +68,14 @@ class LabServerTest(unittest.TestCase):
 
     def test_dataset_preview_paths_send_the_page(self):
         for path in ("/dataset/wine-a", "/dataset/wine-a/patch", "/dataset/wine%20a",
-                     "/dataset/wine-a/alternative/" + "a" * 64):
+                     "/dataset/wine-a/alternative/" + "a" * 64,
+                     "/dataset/wine-a/describe/" + "a" * 64):
             status, _, body = self.request(path)
             self.assertEqual(status, 200, path)
             self.assertEqual(body, lab_pages.page("dataset.html"), path)
         for path in ("/dataset/", "/dataset/wine-a/other", "/dataset/wine-a/patch/x",
-                     "/dataset/wine-a/alternative", "/dataset/wine-a/alternative/abc"):
+                     "/dataset/wine-a/alternative", "/dataset/wine-a/alternative/abc",
+                     "/dataset/wine-a/describe", "/dataset/wine-a/describe/abc"):
             self.assertEqual(self.request(path)[0], 404, path)
 
     def test_api_dataset_sends_the_wines_in_import_order(self):
@@ -556,6 +558,38 @@ class LabServerTest(unittest.TestCase):
         self.assertEqual(self.request("/api/dataset-atlas-binding", "PUT")[0], 503)
         self.assertEqual(self.atlas_rows(), [("wine-b", "automatic", self.UUID_1)])
 
+    def approve_atlas(self, slug, product_uuid):
+        status, _, body = self.request("/api/dataset-atlas-binding-approve", "POST",
+                                       json.dumps({"slug": slug,
+                                                   "product_uuid": product_uuid}).encode())
+        return status, json.loads(body)
+
+    def test_approve_makes_an_automatic_product_manual(self):
+        self.add_automatic("wine-b", self.UUID_1)
+        self.add_automatic("wine-b", self.UUID_2)
+        status, body = self.approve_atlas("wine-b", self.UUID_2.upper())
+        self.assertEqual(status, 200)
+        # The approved product keeps its place in the list.
+        self.assertEqual(body, {"ok": True, "slug": "wine-b", "approved": self.UUID_2,
+                                "source": "manual",
+                                "products": [
+                                    {"product_uuid": self.UUID_1, "source": "automatic"},
+                                    {"product_uuid": self.UUID_2, "source": "manual"}],
+                                "total": 2, "manual": 1})
+        record = json.loads(self.request("/api/dataset")[2])["records"][0]
+        self.assertEqual(record["_atlas_products"], body["products"])
+        cases = ((self.approve_atlas("wine-b", self.UUID_2), 409, "is already manual"),
+                 (self.approve_atlas("wine-b", self.UUID_3), 404, "has no Atlas product"),
+                 (self.approve_atlas("wine-b", "not-a-uuid"), 400, "not a valid UUID"),
+                 (self.approve_atlas("", self.UUID_1), 400, "no wine slug"),
+                 (self.approve_atlas("wine-none", self.UUID_1), 404, "no wine"))
+        for (status, body), code, message in cases:
+            self.assertEqual(status, code, message)
+            self.assertIn(message, body["error"])
+        self.assertEqual(self.request("/api/dataset-atlas-binding-approve", "DELETE")[0], 503)
+        self.assertEqual(self.atlas_rows(), [("wine-b", "automatic", self.UUID_1),
+                                             ("wine-b", "manual", self.UUID_2)])
+
     # The comments of a wine: plan 17.
     def post_comment(self, slug, text, **extra):
         status, _, body = self.request("/api/dataset-comment", "POST", json.dumps(
@@ -985,6 +1019,124 @@ class LabServerTest(unittest.TestCase):
             answer = json.loads(self.request(route + sha)[2])
         self.assertEqual((answer["found"], answer["reason"]),
                          (False, "no record in data/cache/ matches this image"))
+
+
+class SimilarRouteTest(unittest.TestCase):
+    """The manual pairs of two similar wines: plan 62."""
+
+    setUp = LabServerTest.setUp
+    tearDown = LabServerTest.tearDown
+    request = LabServerTest.request
+
+    def post_similar(self, slug, other):
+        status, _, body = self.request("/api/dataset-similar", "POST", json.dumps(
+            {"slug": slug, "other": other}).encode())
+        return status, json.loads(body)
+
+    def delete_similar(self, slug, other):
+        query = urllib.parse.urlencode({"slug": slug, "other": other})
+        status, _, body = self.request("/api/dataset-similar?" + query, "DELETE")
+        return status, json.loads(body)
+
+    def dataset(self):
+        return json.loads(self.request("/api/dataset")[2])
+
+    def test_a_pair_shows_on_both_wines(self):
+        data = self.dataset()
+        self.assertEqual((data["similar_editor"], data["similar_pairs"]), (True, 0))
+        self.assertEqual([r["_similar"] for r in data["records"]], [[], []])
+        # wine-a is Removed. A pair MAY hold a wine of each state.
+        status, body = self.post_similar("wine-b", "wine-a")
+        self.assertEqual((status, body), (200, {
+            "ok": True, "slug": "wine-b", "other": "wine-a", "added": ["wine-a", "wine-b"],
+            "similar": ["wine-a"], "other_similar": ["wine-b"], "total": 1}))
+        data = self.dataset()
+        self.assertEqual(data["similar_pairs"], 1)
+        self.assertEqual({r["slug"]: r["_similar"] for r in data["records"]},
+                         {"wine-b": ["wine-a"], "wine-a": ["wine-b"]})
+        # The pair has no direction: the other order is the same pair.
+        self.assertEqual(self.post_similar("wine-a", "wine-b")[0], 409)
+        status, body = self.delete_similar("wine-a", "wine-b")
+        self.assertEqual((status, body["removed"], body["similar"], body["other_similar"],
+                          body["total"]), (200, ["wine-a", "wine-b"], [], [], 0))
+        self.assertEqual([r["_similar"] for r in self.dataset()["records"]], [[], []])
+
+    def test_similar_errors(self):
+        cases = ((self.post_similar("", "wine-a"), 400, "two wine slugs"),
+                 (self.post_similar("wine-a", None), 400, "two wine slugs"),
+                 (self.post_similar("wine-a", "wine-a"), 400, "itself"),
+                 (self.post_similar("wine-none", "wine-a"), 404, "no wine with the slug wine-none"),
+                 (self.post_similar("wine-a", "wine-none"), 404, "no wine with the slug wine-none"),
+                 (self.delete_similar("wine-a", "wine-b"), 404, "are not similar"))
+        for (status, body), code, text in cases:
+            with self.subTest(text=text):
+                self.assertEqual(status, code)
+                self.assertIn(text, body["error"])
+        self.assertEqual(self.request("/api/dataset-similar", "POST", b"not json")[0], 400)
+        self.assertEqual(self.request("/api/dataset-similar", "PUT")[0], 503)
+        self.assertEqual(self.dataset()["similar_pairs"], 0)
+
+
+class TagRouteTest(unittest.TestCase):
+    """The free-form text tags of a wine: plan 63."""
+
+    setUp = LabServerTest.setUp
+    tearDown = LabServerTest.tearDown
+    request = LabServerTest.request
+
+    def post_tag(self, slug, tag):
+        status, _, body = self.request("/api/dataset-tag", "POST", json.dumps(
+            {"slug": slug, "tag": tag}).encode())
+        return status, json.loads(body)
+
+    def delete_tag(self, slug, tag):
+        query = urllib.parse.urlencode({"slug": slug, "tag": tag})
+        status, _, body = self.request("/api/dataset-tag?" + query, "DELETE")
+        return status, json.loads(body)
+
+    def dataset(self):
+        return json.loads(self.request("/api/dataset")[2])
+
+    def test_tags_show_on_the_wine(self):
+        data = self.dataset()
+        self.assertEqual((data["tag_editor"], data["wine_tags"]), (True, 0))
+        self.assertEqual([r["_tags"] for r in data["records"]], [[], []])
+        # wine-a is Removed. A wine of each state MAY have tags.
+        status, body = self.post_tag("wine-a", " Vintage:2017 ")
+        self.assertEqual((status, body), (200, {
+            "ok": True, "slug": "wine-a", "added": "vintage:2017",
+            "tags": ["vintage:2017"], "total": 1}))
+        self.assertEqual(self.post_tag("wine-a", "generic")[1]["tags"],
+                         ["vintage:2017", "generic"])
+        self.assertEqual(self.post_tag("wine-b", "generic")[1]["total"], 3)
+        data = self.dataset()
+        self.assertEqual(data["wine_tags"], 3)
+        self.assertEqual({r["slug"]: r["_tags"] for r in data["records"]},
+                         {"wine-a": ["vintage:2017", "generic"], "wine-b": ["generic"]})
+        # The normal form: the same tag in capitals is a duplicate.
+        self.assertEqual(self.post_tag("wine-a", "GENERIC")[0], 409)
+        status, body = self.delete_tag("wine-a", "vintage:2017")
+        self.assertEqual((status, body), (200, {
+            "ok": True, "slug": "wine-a", "removed": "vintage:2017",
+            "tags": ["generic"], "total": 2}))
+
+    def test_tag_errors(self):
+        self.post_tag("wine-b", "generic")
+        cases = ((self.post_tag("", "generic"), 400, "no wine slug"),
+                 (self.post_tag("wine-a", None), 400, "the tag is empty"),
+                 (self.post_tag("wine-a", "two words"), 400, "no white space"),
+                 (self.post_tag("wine-a", "x" * 65), 400, "at most 64"),
+                 (self.post_tag("wine-none", "generic"), 404, "no wine with the slug wine-none"),
+                 (self.post_tag("wine-b", "generic"), 409, "has the tag generic"),
+                 (self.delete_tag("wine-a", "generic"), 404, "has no tag generic"),
+                 (self.delete_tag("wine-none", "generic"), 404, "no wine with the slug"))
+        for (status, body), code, text in cases:
+            with self.subTest(text=text):
+                self.assertEqual(status, code)
+                self.assertIn(text, body["error"])
+        self.assertEqual(self.request("/api/dataset-tag", "POST", b"not json")[0], 400)
+        self.assertEqual(self.request("/api/dataset-tag", "PUT")[0], 503)
+        self.assertEqual(self.dataset()["wine_tags"], 1)
 
 
 if __name__ == "__main__":

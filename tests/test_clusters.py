@@ -14,6 +14,7 @@ from embedding_lab import bottle_on_grey, standard_lab
 
 import clusters  # noqa: E402
 import embeddings  # noqa: E402
+import similar_wines  # noqa: E402
 
 
 def unit(values):
@@ -330,6 +331,165 @@ class BuildTest(unittest.TestCase):
         self.assertTrue(detail["status"]["stale"])
         self.assertIn("has no index", detail["status"]["current_error"])
         self.assertIsNotNone(detail["artifact"])
+
+
+class ManualPairTest(unittest.TestCase):
+    """The manual pairs of `wine_similar` in the build (plan 62)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.fixture = ClusterLab(self.tmp.name)
+
+    def tearDown(self):
+        self.fixture.close()
+        self.tmp.cleanup()
+
+    def pair(self, slug, other):
+        with self.fixture.lab.conn:
+            similar_wines.add(self.fixture.lab.conn, slug, other, "2026-09-27T12:00:00Z")
+
+    def build(self):
+        context = clusters.context(self.fixture.settings, "gw")
+        vectors = embeddings.read_vectors(self.fixture.lab.entry_dir(), context["index"])
+        return clusters.build(context, vectors, 0.95, 0.95)
+
+    @staticmethod
+    def members(artifact, space):
+        return {tuple(cluster["slugs"]): cluster for cluster in
+                artifact["spaces"][space]["clusters"]}
+
+    def test_a_pair_merges_two_clusters_in_each_view(self):
+        # The label view has {grey, patched} and {shared, transparent}.
+        self.pair("shared", "patched")
+        artifact = self.build()
+        label = self.members(artifact, "label")
+        self.assertEqual(list(label), [("grey", "patched", "shared", "transparent")])
+        cluster = label[("grey", "patched", "shared", "transparent")]
+        self.assertEqual((cluster["kind"], cluster["signals"]), ("label", ["label", "manual"]))
+        link = next(edge for edge in cluster["links"]
+                    if (edge["a"], edge["b"]) == ("patched", "shared"))
+        self.assertEqual((link["by"], link["spaces"]), (["manual"], {}))
+        # The full view had {grey, shared, transparent}; patched joins it.
+        self.assertEqual(list(self.members(artifact, "full")),
+                         [("grey", "patched", "shared", "transparent")])
+        combined = self.members(artifact, "combined")[("grey", "patched", "shared",
+                                                       "transparent")]
+        self.assertEqual((combined["kind"], combined["signals"]),
+                         ("mixed", ["full", "label", "manual"]))
+
+    def test_a_pair_with_a_vector_link_gets_manual_in_by(self):
+        self.pair("grey", "patched")
+        cluster = self.members(self.build(), "label")[("grey", "patched")]
+        link = next(edge for edge in cluster["links"]
+                    if (edge["a"], edge["b"]) == ("grey", "patched"))
+        self.assertEqual(link["by"], ["label", "manual"])
+        self.assertIn("label", link["spaces"])
+
+    def test_a_pair_of_two_wines_with_no_link_is_a_manual_cluster(self):
+        self.pair("unprocessed", "patched")
+        full = self.members(self.build(), "full")
+        cluster = full[("patched", "unprocessed")]
+        self.assertEqual((cluster["kind"], cluster["signals"], cluster["size"]),
+                         ("manual", ["manual"], 2))
+
+    def test_a_pair_with_a_wine_out_of_the_build_changes_nothing(self):
+        before = clusters.context(self.fixture.settings, "gw")["input_hash"]
+        self.pair("disabled", "unprocessed")
+        context = clusters.context(self.fixture.settings, "gw")
+        self.assertEqual(context["similar"], [])
+        self.assertEqual(context["input_hash"], before)
+        self.assertNotIn(("disabled", "unprocessed"), self.members(self.build(), "full"))
+
+    def test_a_new_pair_makes_the_artifact_stale(self):
+        clusters.build_to_directory(self.fixture.settings, "gw")
+        self.assertFalse(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
+        self.pair("unprocessed", "patched")
+        self.assertTrue(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
+
+
+class GtinLinkTest(unittest.TestCase):
+    """The GTIN links of the wines of a shared GTIN of `wine_code` in the build (plan 64)."""
+
+    GTIN = "04630171632036"
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.fixture = ClusterLab(self.tmp.name)
+
+    def tearDown(self):
+        self.fixture.close()
+        self.tmp.cleanup()
+
+    def code(self, slug, value=GTIN, kind="gtin"):
+        with self.fixture.lab.conn:
+            self.fixture.lab.conn.execute(
+                "INSERT INTO wine_code (wine_slug, kind, value) VALUES (?, ?, ?)",
+                (slug, kind, value))
+
+    def context(self):
+        return clusters.context(self.fixture.settings, "gw")
+
+    def build(self):
+        context = self.context()
+        vectors = embeddings.read_vectors(self.fixture.lab.entry_dir(), context["index"])
+        return clusters.build(context, vectors, 0.95, 0.95)
+
+    members = staticmethod(ManualPairTest.members)
+
+    def test_a_shared_gtin_links_its_wines_in_each_view(self):
+        # The full view has no link between patched and unprocessed.
+        self.code("unprocessed")
+        self.code("patched")
+        self.assertEqual(self.context()["gtin"], [["patched", "unprocessed"]])
+        artifact = self.build()
+        cluster = self.members(artifact, "full")[("patched", "unprocessed")]
+        self.assertEqual((cluster["kind"], cluster["signals"], cluster["size"]),
+                         ("gtin", ["gtin"], 2))
+        self.assertEqual([(e["a"], e["b"], e["by"], e["spaces"]) for e in cluster["links"]],
+                         [("patched", "unprocessed", ["gtin"], {})])
+        for space in clusters.SPACES:
+            links = [e for c in artifact["spaces"][space]["clusters"] for e in c["links"]
+                     if (e["a"], e["b"]) == ("patched", "unprocessed")]
+            self.assertEqual([e["by"] for e in links], [["gtin"]], space)
+
+    def test_a_gtin_on_a_vector_link_gets_gtin_in_by(self):
+        # The label view has the link grey-patched.
+        self.code("grey")
+        self.code("patched")
+        cluster = self.members(self.build(), "label")[("grey", "patched")]
+        link = next(e for e in cluster["links"] if (e["a"], e["b"]) == ("grey", "patched"))
+        self.assertEqual(link["by"], ["label", "gtin"])
+        self.assertIn("label", link["spaces"])
+        self.assertEqual((cluster["kind"], cluster["signals"]), ("label", ["label", "gtin"]))
+
+    def test_a_manual_pair_with_a_shared_gtin_gets_both_values(self):
+        with self.fixture.lab.conn:
+            similar_wines.add(self.fixture.lab.conn, "patched", "unprocessed",
+                              "2026-09-27T12:00:00Z")
+        self.code("unprocessed")
+        self.code("patched")
+        cluster = self.members(self.build(), "full")[("patched", "unprocessed")]
+        self.assertEqual([e["by"] for e in cluster["links"]], [["manual", "gtin"]])
+        self.assertEqual((cluster["kind"], cluster["signals"]),
+                         ("manual", ["manual", "gtin"]))
+
+    def test_no_shared_gtin_keeps_the_input_hash(self):
+        before = self.context()["input_hash"]
+        self.code("unprocessed")  # a GTIN of one wine
+        self.code("patched", "04680074271535")
+        self.code("disabled", "04680074271535")  # a Disabled wine does not count
+        self.code("grey", "https://producer.example/", "qr_url")  # a QR URL gives no link
+        self.code("shared", "https://producer.example/", "qr_url")
+        context = self.context()
+        self.assertEqual(context["gtin"], [])
+        self.assertEqual(context["input_hash"], before)
+
+    def test_a_new_shared_gtin_makes_the_artifact_stale(self):
+        clusters.build_to_directory(self.fixture.settings, "gw")
+        self.code("unprocessed")
+        self.assertFalse(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
+        self.code("patched")
+        self.assertTrue(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
 
 
 if __name__ == "__main__":

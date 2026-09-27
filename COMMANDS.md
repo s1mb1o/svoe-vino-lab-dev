@@ -115,7 +115,19 @@ sqlite3 data/lab.sqlite3 "SELECT prompt_kind, package_type, vlm_at IS NOT NULL, 
     count(*) FROM image_detail GROUP BY 1, 2, 3"           # the progress of the details
 sqlite3 data/lab.sqlite3 "SELECT json(answer) FROM image_detail \
     WHERE sha256 = '<sha256>'"                             # one detail
+python3 pipeline/describe_images.py --label-sha <sha256>   # the label description (plan 61)
+sqlite3 data/lab.sqlite3 "SELECT created_by, count(DISTINCT sha256), count(*) \
+    FROM image_label_description GROUP BY 1"               # the progress of stage 3
+sqlite3 data/lab.sqlite3 "SELECT id, created_at, json(description) FROM \
+    image_label_description WHERE sha256 = '<sha256>' \
+    ORDER BY created_at DESC, id DESC"                     # the label descriptions of one image
 ```
+
+Stage 3 (the label descriptions, plan 61) runs with `image_description.labels: true`, when
+no image waits for a class or a detail. It sends the request of stage 1 of the cluster
+rules; the keys `vlm`, `thinking`, `describe_side`, `describe_max_tokens`, and `timeout_s`
+of the block `label_rules` set it. `--label-sha` skips an image that has a label
+description. `--retry-failed` also gives the failed label descriptions new attempts.
 
 Stage 2 (the details, plan 29) runs with `image_description.details: true`, when no image
 waits for a class. `--retry-failed` also gives the failed details new attempts.
@@ -130,7 +142,7 @@ The state of the watcher is in `work/describe_images.status.json`, and
 `curl -s http://127.0.0.1:8168/api/image-description-status` answers the state with
 the counts. The pill left of `Add wine` on `/dataset` shows the same.
 
-One watcher runs at a time (`work/describe_images.lock`). `--sha`, `--detail-sha`, and `--once` stop with
+One watcher runs at a time (`work/describe_images.lock`). `--sha`, `--detail-sha`, `--label-sha`, and `--once` stop with
 an error while the watcher of the server runs. A run of many images from this Mac needs
 `caffeinate -ims -w <pid of the watcher>`.
 

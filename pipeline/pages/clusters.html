@@ -75,6 +75,10 @@ main { max-width: 1800px; margin: 0 auto; padding: 14px 16px 64px; }
 .badge.full { color: var(--neg); background: var(--neg-bg); }
 .badge.label { color: var(--pos); background: var(--pos-bg); }
 .badge.mixed { color: var(--var); background: var(--var-bg); }
+/* A manual pair of `wine_similar` (plan 62). */
+.badge.manual { color: var(--accent); background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--accent); }
+/* Two wines of one GTIN of `wine_code` (plan 64). */
+.badge.gtin { color: var(--text); background: var(--grp-b); box-shadow: inset 0 0 0 1px var(--muted); }
 .cluster-key { color: var(--muted); font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
 /* The bottle card has the form of the card of the 8154 Clusters page. */
 .members { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px 12px; }
@@ -172,6 +176,8 @@ th { color: var(--muted); font-weight: 600; }
         <option value="label">label</option>
       </select></label>
       <button id="build" type="button" disabled>Build clusters</button>
+      <button id="build-all" type="button" title="Build the clusters of each configuration, one at a time, in the order of config.yaml">Build all clusters</button>
+      <span class="message" id="queue"></span>
       <span class="message" id="message"></span>
     </div>
     <nav class="nav"><a href="/dataset">Dataset</a><a href="/embedding">Embeddings</a><a
@@ -310,10 +316,22 @@ function imageHtml(image, slug) {
     <img src="${esc(shown)}" alt="${esc(title)}" loading="lazy"></button>`;
 }
 
+/* The image of a card: the main image of the wine in the view, `main_patched` or `main`
+   (owner message of 2026-09-27T20:11:15+0300). The server sorts the images by their
+   types, so `full_back` comes first. A wine with no current main image shows the first
+   image of the view. */
+const MAIN_TYPES = ["main_patched", "main"];
+
+function cardImage(card, view) {
+  const images = (card.images || []).filter(item => item.view === view);
+  return images.find(item => (item.image_types || []).some(type => MAIN_TYPES.includes(type)))
+    || images[0];
+}
+
 function memberHtml(slug, index) {
   const card = DATA.cards?.[slug] || {slug};
   const view = imageView();
-  const image = (card.images || []).find(item => item.view === view);
+  const image = cardImage(card, view);
   return `<article class="member"><span class="no">#${index + 1}</span>
     ${image ? imageHtml(image, slug) : `<div class="nobottle">No current ${esc(view)} image.</div>`}
     <div class="nm">${esc(card.name || slug)}</div>
@@ -515,6 +533,7 @@ async function loadList() {
   try {
     const data = await request("/api/clusters");
     ENTRIES = data.embeddings || []; fillEntries();
+    showQueue(data.queue);
     $("#space").value = ["combined", "full", "label"].includes(SPACE) ? SPACE : "combined";
     SPACE = $("#space").value;
     if (!NAME) {
@@ -549,6 +568,52 @@ $("#build").addEventListener("click", async () => {
     setMessage("Clusters built"); await loadList();
   } catch (error) { setMessage(error.message, true); }
   finally { $("#build").disabled = !NAME; }
+});
+/* Build all clusters (plan 65): a queue of the server builds the clusters of each
+   configuration, one at a time. The page polls /api/clusters every 2 s while it runs. */
+let QUEUE_TIMER = null;
+function queueText(queue) {
+  if (!queue) return "";
+  if (queue.state === "running") {
+    return `Build all clusters ${queue.index + 1} / ${queue.names.length}: ${queue.current}`
+      + (queue.waiting ? ` · waiting: ${queue.waiting}` : "");
+  }
+  if (queue.state === "failed") return `Build all clusters failed: ${queue.message || ""}`;
+  const count = state => queue.results.filter(result => result.state === state).length;
+  return `Build all clusters done: ${count("done")} built`
+    + ["skipped", "failed"].filter(count).map(state => ` · ${state} ${count(state)}`).join("");
+}
+function showQueue(queue) {
+  const running = queue?.state === "running";
+  $("#build-all").disabled = running;
+  const span = $("#queue");
+  span.textContent = queueText(queue);
+  span.classList.toggle("error", queue?.state === "failed"
+    || (queue?.results || []).some(result => result.state === "failed"));
+  span.title = (queue?.results || []).map(result =>
+    `${result.name}: ${result.state}${result.message ? ` — ${result.message}` : ""}`).join("\n");
+  if (running && !QUEUE_TIMER) QUEUE_TIMER = setTimeout(pollQueue, 2000);
+}
+async function pollQueue() {
+  QUEUE_TIMER = null;
+  try {
+    const data = await request("/api/clusters");
+    ENTRIES = data.embeddings || []; fillEntries();
+    showQueue(data.queue);
+    if (data.queue?.state !== "running" && NAME) await loadDetail(false);
+  } catch (error) {
+    $("#queue").textContent = error.message; $("#queue").classList.add("error");
+    QUEUE_TIMER = setTimeout(pollQueue, 2000);
+  }
+}
+$("#build-all").addEventListener("click", async () => {
+  $("#build-all").disabled = true;
+  try {
+    showQueue((await request("/api/clusters/build-all", {method: "POST"})).queue);
+  } catch (error) {
+    $("#queue").textContent = error.message; $("#queue").classList.add("error");
+    $("#build-all").disabled = false;
+  }
 });
 $("#preview-close").addEventListener("click", () => $("#preview").close());
 $("#preview-previous").addEventListener("click", () => showPreview(PREVIEW_GROUP, PREVIEW_INDEX - 1));

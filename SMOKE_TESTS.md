@@ -523,10 +523,10 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | D9 | Compare `GET /img/catalog?slug=bukovinka` and `GET /img/patch?slug=bukovinka` | The first body equals `local_path` of the catalogue record. The second body equals `patch_dir/bukovinka.webp`. |
 | D9a | Click a catalogue image or a patch image | A modal opens over the Dataset page. It shows the image on a checkerboard inside a visible boundary. The header shows the natural pixel dimensions and an `open raw image` link. No new tab opens. |
 | D9b | Request `/img/catalog?slug=bukovinka` with `Accept: text/html`, then request it with `raw=1` | The first answer is the HTML preview. The second answer is the original image body even when the request accepts HTML. |
-| D9c | Press the preview arrow buttons, then press the Left and Right keys | The preview moves through images of the same kind in the current filtered and sorted list. It does not close or change the Dataset scroll position. |
+| D9c | Open a wine that has a main image and a patch. Press the preview arrow buttons. Then press Left and Right. | The preview moves through the available original and processed image files of this wine. The position is the image number for this wine. The wine slug does not change. The preview does not close or change the Dataset scroll position. |
 | D9d | Press Escape or the preview close button | The preview closes. The Dataset page stays at its earlier scroll position. |
 | D9e | Open a tall image in the preview | The full checkerboard frame fits below the header. The preview has no horizontal or vertical scrollbar. |
-| D9f | Click a catalogue image, then press the Right key | The address bar shows `/dataset/<slug>` of the wine that the preview shows. A patch image gives `/dataset/<slug>/patch`. The Right key changes the path and adds no history entry. |
+| D9f | Click a catalogue image. Press Right until the patch is in view. Then press Down and Up. | The patch gives `/dataset/<slug>/patch`. Down opens the next visible wine at its first available image. Up returns to the previous visible wine at its first available image. A wine without an available image is skipped. Each step replaces the path and adds no history entry. |
 | D9g | Close the preview, then press Forward and Back of the browser | The close gives the path `/dataset`. Forward opens the same preview again. Back closes it. The Dataset page stays at its earlier scroll position. |
 | D9h | Open `/dataset/bukovinka` in a new tab, then `/dataset/no-such-wine`, then `/dataset/a/b` | The first opens the catalogue image preview over the card of the wine; the close shows that card. The second shows the plain page at `/dataset`. The third answers 404. |
 | D10 | `GET /img/patch` with a slug that has no patch | `404`. The server reads no file outside `patch_dir`. |
@@ -958,6 +958,8 @@ database at schema version 8 with an empty table `wine_code`.
 | WC18 | On `$H/dataset`, hover over a GTIN that is older than schema 026 | The tooltip reads `added: unknown`. |
 | WC19 | Save a new GTIN or a new QR URL, hover over it, then reload the page and hover again | Both tooltips read `added YYYY-MM-DD HH:MM` in local time. `SELECT modified_at FROM wine_code WHERE value = '<value>'` gives the same time in UTC with `Z`. A remove of the new value keeps the tooltips of the other values. |
 | WC20 | `curl -s $H/api/dataset`, and look at one record | The record has `_code_times` with the keys `gtin` and `qr_url`. Each value of `_gtins` and of `_qr_urls` is a key of its map. The lists `_gtins` and `_qr_urls` still hold strings. |
+| WC21 | `python3 -m unittest discover -s tests -p 'test_code_cache_forget.py'`, then the same with `test_model_cache.py` | 4 tests `OK`, then 15 tests `OK`. |
+| WC22 | Take a wine whose test photos have records in `data/cache/barcode/`. Add a valid GTIN to it on `$H/dataset`, then remove that GTIN | After the add, no record of `data/cache/barcode/` holds the sha256 of a test photo of the wine (`test_photo.place` = the slug) in `request.images`. The records of the other photos stay. The answer of each route has the same keys as before. The next barcode run shows `cached: false` in the step `barcode` of these photos. |
 
 ## The Atlas Core product of a wine — `pipeline/seed_atlas_bindings.py` and the Dataset editor
 
@@ -1003,6 +1005,22 @@ the test UUIDs after the check.
 | AL9 | `curl -s -X DELETE "$H/api/dataset-atlas-binding?slug=<slug>&product_uuid=<a UUID the wine does not have>"` | HTTP 404: `the wine … has no Atlas product …`. |
 | AL10 | Switch the system to dark mode during AL4 | The source labels, `×`, `copy`, and `open` are readable. |
 | AL11 | `python3 -m unittest discover -s tests -p 'test_atlas_bindings.py'`, then `test_seed_atlas_bindings.py` | 8 tests `OK`, then 11 tests `OK`. |
+
+## Approve an automatic Atlas Core product
+
+Owner message of 2026-09-27T14:49:04+0300. Use `H=http://127.0.0.1:8168`. An approve
+writes to the database. Make the write cases on a copy of the database, or remove the
+approved UUID and add it again after the check.
+
+| # | Case | Expected result |
+|---|---|---|
+| AA1 | Look at `Atlas Core product` of a wine with one automatic UUID, for example `usadba-perovskih-kaberne-sovinon-merlo-1890-krasnoe-suhoe-13` | The row shows `×`, the UUID, `automatic`, a green `approve`, `copy`, and `open`. |
+| AA2 | Look at a manual UUID | The row has no `approve` button. |
+| AA3 | Press `approve` | No confirm dialog. The label reads `manual`. The `approve` button is gone. The head count of the card and the header count do not change. The UUID keeps its place in the list. |
+| AA4 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"slug":"<slug of AA3>","product_uuid":"<uuid of AA3>"}' $H/api/dataset-atlas-binding-approve` | HTTP 409: `the Atlas product … of the wine … is already manual`. |
+| AA5 | The same with a UUID that the wine does not have, then with `"slug":"no-such-wine"` | HTTP 404: `the wine … has no Atlas product …`, then `no wine with the slug no-such-wine`. |
+| AA6 | Switch the system to dark mode during AA1 | The `approve` button is readable in green. |
+| AA7 | `python3 -m unittest discover -s tests -p 'test_atlas_bindings.py'`, then `test_lab_server.py` | 9 tests `OK`, then 65 tests `OK` (2026-09-27). |
 
 ## The comments of a wine — the Dataset editor `Comments`
 
@@ -1118,6 +1136,13 @@ Use `H=http://127.0.0.1:8168`.
 | EB45 | `sqlite3 data/lab.sqlite3 "SELECT method, count(*) FROM image_derivative WHERE kind = 'label' GROUP BY 1"` after EB33 | Most rows `seg`; the photos with a second body label `crop`: 111 `crop` and 1,910 `seg` on 2026-09-25. Each row has the settings `alternatives.SETTINGS_LABEL`. |
 | EB46 | Open the `label` cut of a wine with two labels one above the other (a row `crop` of EB45) | The cut holds both labels and the glass between them, with no transparent part. |
 | EB47 | Open the `label` cut of a wine with a neck label and one body label | The cut is the segment of the body label alone (`seg`), as before. |
+| EB48 | `python3 -m unittest discover -s tests -p 'test_embedding_routes.py'` | 23 tests, `OK` (2026-09-27). `BuildAllTest`: two entries build one at a time in the order of `config.yaml`; a second `POST` gives 409; a stop ends the queue as `stopped`; a build that runs already is waited for. |
+| EB49 | Open `$H/embedding` | The button `Build All` follows the message of the last build. It is enabled. Its title reads `Build each configuration, one at a time, in the order of config.yaml`. |
+| EB50 | Press `Build All` | The message reads `Build All 1 / 12`, and `Build All` is disabled. One job row runs at a time. When a build ends, the next configuration of the combobox starts, and the position counts up. |
+| EB51 | Close the tab during EB50, and open `$H/embedding` again | The queue runs on. The message shows the present position. |
+| EB52 | Press `Stop` (or `×`) during EB50 | The build reads `stopping`, then the message reads `Build All stopped: <n> / 12`. The next configuration does not start. `Build All` is enabled again. |
+| EB53 | Let EB50 end | The message reads `Build All done: 12 builds`. A failed build adds `· failed <n>` in red; the queue went on after it. The title of the message lists each configuration and its result. |
+| EB54 | `curl -s -X POST $H/api/embeddings/build-all` twice | The first answer is 202 with `queue.state` `running`. The second answer is 409 `Build All runs: <name>, <n> of 12`. |
 
 ## The website import — `pipeline/import_website.py`
 
@@ -1498,6 +1523,25 @@ Read [plan 53](docs/plans/53_disable-barcode-checkbox.md). `$H` is `http://127.0
 | NB9 | `curl -s -X POST $H/api/run-jobs -d '{"configuration":"barcode-siglip2-p256-as-is","set":"my","use_barcode":"no"}'` | HTTP 400 with `use_barcode MUST be true or false`. No job starts. |
 | NB10 | Switch the system to dark mode and repeat NB3, NB4, and NB8 | The checkbox, its greyed state, and the tag follow the dark theme. On 2026-09-26 at 19:53, NB3, NB4, NB8, and the request bodies of NB5 to NB7 passed in a browser check with `POST /api/run-jobs` intercepted, in light and dark mode. |
 
+## The key `rebuild_embeddings_on_run` — `pipeline/rebuild_on_run.py`
+
+Read [plan 59](docs/plans/59_rebuild-embeddings-on-run.md). `$H` is `http://127.0.0.1:8168`.
+`<entry>` is the embedding of the pipeline, for example
+`gx10-siglip2-so400m-patch16-naflex-p256` for `siglip2-p256-crop`. A run sends requests
+to gx10: read `/Users/ashmelev/Admin/GPU_SERVERS.md` first.
+
+| # | Case | Expected result |
+|---|---|---|
+| RB1 | `python3 -m unittest discover -s tests -p test_rebuild_on_run.py` | 17 tests `OK` (2026-09-27). |
+| RB2 | `grep -n '^rebuild_embeddings_on_run' config.yaml` | `rebuild_embeddings_on_run: true`. |
+| RB3 | Open `$H/testset?set=my`, click `Run>`, choose `siglip2-p256-crop`, `first N queries` 3, `Start` | The job row shows `starting` during the build, then the progress of the run. `work/run-jobs/siglip2-p256-crop/job.log` holds two events `log` before the event `start`: `rebuild_embeddings_on_run: the build of <entry> starts` and `the build of <entry> ended: <n> items were current, <n> built, <n> failed, <n> removed, in <s> s`. |
+| RB4 | After RB3, read the end of `data/embeddings/<entry>/build.log`, and open `$H/embedding` | The file ends with the `start` and the `done` of the build of RB3, and the older lines stay above them. The entry shows the state `done`, and `missing` is 0. |
+| RB5 | Press `Build` for `<entry>` on `$H/embedding`, then at once start RB3 again | The job waits: its `job.log` holds `a build of <entry> runs: PID <n>; the run waits for its end`. After the end of that build, the run builds and runs. |
+| RB6 | Press `×` on the job row of a run while its build runs | The build gets SIGTERM and ends `stopped`. The job ends `stopped` with `stopped before the first answer`. The finished items of the build stay. |
+| RB7 | Press `Stop` on `$H/embedding` while the build of a run runs | The job ends `failed` with `the build of <entry> stopped before its end; the run did not start`. |
+| RB8 | Set `rebuild_embeddings_on_run: false`, then repeat RB3 | `job.log` holds no event `log` before `start`, and `build.log` does not change. Set the key back to `true`. |
+| RB9 | `~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py --name siglip2-p256-crop --set my --limit 3` | The first two lines are the lines of RB3. The next line is `index <entry>/vectors-<hex>.npy: <n> current items; 0 stale, 0 missing, <n> failed items stay out`. |
+
 ## The VLM inferences — the key `vlm` and `pipeline/vlm_config.py`
 
 Read the section "The VLM inferences" of `README.md`.
@@ -1548,6 +1592,10 @@ of `README.md`. `H=http://127.0.0.1:8168`.
 | ID28 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"sha256":"<sha256>","values":{"presentation_mode":"table"}}' $H/api/image-description` | HTTP 400 `presentation_mode MUST be one of on_package, flat_surface, other, unknown`. No row changes. |
 | ID29 | `tail work/describe_images.log` after schema 024 | Each class line holds the fifth value after `content_roles`, for example `["front_label"] on_package 7.1 s`, and ends with `package_type kept, subject_scope kept, package_view kept, content_roles kept` for a row of the 024 queue. |
 | ID30 | `sqlite3 data/lab.sqlite3 "SELECT count(*), count(vlm_at), count(presentation_mode) FROM image_description"` after the 024 queue | The three counts are equal. On 2026-09-26 at 20:19 the queue held 2,091 rows. |
+| ID31 | Press `✎` of any image of `$H/dataset` | The address bar shows `/dataset/<wine_slug>/describe/<sha256>` of that image. |
+| ID32 | Copy the path of ID31, open it in a new tab | The page loads, scrolls to the card, and opens the same dialog with the same image and values. |
+| ID33 | In the dialog of ID31, press Cancel, `×`, Esc, or the backdrop; then press `✎` again and press Back | Each close gives the path `/dataset`. Back closes the dialog; Forward opens it again. |
+| ID34 | Open `$H/dataset/<slug>/describe/` followed by 64 zeros, then `$H/dataset/<slug>/describe/abc` | The first shows the plain page at `/dataset` with no dialog. The second answers 404. |
 
 ## The image details — `image_detail` and stage 2 of `pipeline/describe_images.py`
 
@@ -1650,6 +1698,7 @@ Mac.
 | RC9 | Open `$H/recognize` with the system theme dark, then light, and at a width of 390 px | Both themes are readable. No horizontal scroll of the page at 390 px. |
 | RC10 | Recognize the same photo two times, then `ls work/recognize/` | One file `<sha256>.<ext>` for the photo. The second upload keeps the file. |
 | RC11 | Open the step popup on `/runs` (RN23, RN24) | The popup looks and works as before the move of the step view to `steps.css` and `steps.js`. |
+| RC12 | Copy an image (a screenshot to the clipboard, or `Copy Image` in a browser), open `$H/recognize`, press Ctrl+V (Cmd+V on macOS). Then copy a text and press Ctrl+V again | The image goes to the pipeline at once, and the drop area shows its preview and its name (`image.png` in Chromium). The text paste states `The clipboard holds no image` and sends nothing. |
 
 ## The text export of the lab database — plan 50
 
@@ -1730,7 +1779,7 @@ Belmas 135 is `belmas-winery-viogner-katya-vione-beloe-suhoe-135`. Belmas 122 is
 | SC4 | Find a wine with a GTIN of one wine | The GTIN has no badge. |
 | SC5 | Switch the OS to dark mode and reload | The badges use the amber colour of the dark theme. The text is readable. |
 | SC6 | Open the page at 390 px width | The badges wrap inside the card. The page has no horizontal scroll. |
-| SC7 | On `$H/recognize`, choose `barcode-siglip2-p256-crop` and drop a photo of Belmas 122 with the EAN-13 `4630171632036` in view (for example, draw the code beside the test photo `belmas-winery-viognier-belmas-vione-beloe-suhoe-122/01_agent.webp` with `ean13` of `tests/test_barcode.py`) | The card `Decode codes, whole photo` lists the 2 wines of the code. The SAM3, view, embed, search, and score cards follow. The answer holds Belmas 122 and Belmas 135 alone, with cosine scores (122 first, 0.6993, on 2026-09-27). |
+| SC7 | On `$H/recognize`, choose `barcode-siglip2-p256-crop` and drop a photo of Belmas 122 with the EAN-13 `4630171632036` in view (for example, draw the code beside the test photo `belmas-winery-viognier-belmas-vione-beloe-suhoe-122/01_agent.webp` with `ean13` of `tests/test_barcode.py`) | The card `Decode codes, whole photo` lists the 2 wines of the code. The SAM3, view, embed, search, and score cards follow. The answer holds Belmas 122 and Belmas 135 alone, with cosine scores (122 first, 0.6993, on 2026-09-27). Since plan 64 the two wines come first, and the other wines follow: see GR2. |
 | SC8 | The same photo on `siglip2-p256-crop` | No code step. Neither Belmas wine is in the top 5 (2026-09-27). |
 | SC9 | A photo with the QR code of `https://belmaswinery.com/` alone | The barcode step has no hit. The normal match runs, as on the twin with no `barcode`. The trace step `barcode` holds `shared_qr`. |
 
@@ -1881,6 +1930,75 @@ Malformed or multi-line process output MUST NOT prove termination.
 HTTP report regression: missing child timings MUST NOT become zero-duration observations.
 The failed HTTP request stays in the selected quality and deadline denominators.
 
+## Tile `Paste image` of Alternative photos
+
+Owner message of 2026-09-27T08:55:08+0300, answers of about 08:57. `$H` is the lab server.
+
+| # | Case | Expected result |
+|---|---|---|
+| PI1 | Open `$H/dataset` and find any wine | `Alternative photos` holds the tile `Paste image / click or ⌘V` just after the tile `Drop photos here or choose files`. |
+| PI2 | Copy an image (for example a screenshot with ⌃⇧⌘4, or `Copy Image` in a browser). Press the tile of one wine in Chrome, and allow the clipboard permission | That wine alone shows a `processing` card, then the new photo with its type buttons. The source name is `clipboard-<time>.png`. |
+| PI3 | Copy an image. Press the tile, press ⌘V | The same result as PI2. ⌘V needs no permission. |
+| PI4 | Block the clipboard permission of `127.0.0.1:8168` in Chrome. Press the tile | The tile reads `Paste image / press ⌘V` and keeps the focus. No alert. ⌘V then adds the photo. |
+| PI5 | Copy text. Press the tile, or press ⌘V on the focused tile | An alert reads `The clipboard holds no JPEG, PNG, WebP, GIF, or BMP image.` (click) or `The clipboard holds no image.` (⌘V). No upload starts. |
+| PI6 | In Safari, press the tile | Safari shows its own `Paste` button. A press of it adds the photo. |
+| PI7 | Light and dark system theme; a window of 390 px | The tile has the dashed style of the drop tile. The focused tile has the accent border. The page has no horizontal scroll. The Atlas paste of AB14 still gives the UUID alone. |
+
+## Label descriptions — plan 61
+
+Owner message of 2026-09-27T13:55:59+0300, answers of about 14:15 and 14:46:48. Read
+[plan 61](docs/plans/61_label-descriptions.md). `$H` is the lab server.
+
+| # | Case | Expected result |
+|---|---|---|
+| LD1 | `tail work/describe_images.log` after a start of 8168 | The start line holds `labels on (vlm qwen3.5-9b-nvfp4)`. While stage 3 works, lines like `<sha12> label ok package, 6 texts; renamed text -> texts, 14.2 s` follow; a cache hit ends with `(cache)`. |
+| LD2 | Open `$H/dataset` while stage 3 works | The pill reads `VLM labels <done> / <linked> · <seconds> s`. Its title holds `Labels <done> of <linked> · pending <n> · failed <n> · vlm qwen3.5-9b-nvfp4`; the dialog of the pill holds the row `Labels`. |
+| LD3 | Press `✎` of an image that has a label description | Below `Raw VLM reply`, the section `Label description`: a status line `1 label description · the latest: #<id>, VLM, <time>`, then one open block. Its summary names `#<id> · latest · VLM · <time> · qwen3.5-9b-nvfp4 (Qwen3.5-9B-NVFP4) · max_tokens 1500 · thinking off`. The block holds the JSON with the keys `texts`, `numbers`, `vintage`, `colours`, `design`, `marks`, `bottle`, the lines `Endpoint`, `Input`, `Request`, `Reply`, and a closed block `Raw VLM answer`. |
+| LD4 | In LD3, press `Edit as new`, change `design`, press `Save as new` | A second block appears first, `#<new id> · latest · manual`, open; the VLM block below is closed. The class fields of the dialog do not change. |
+| LD5 | In LD4, press `Edit as new`, type `{not json`, press `Save as new`; then `[1, 2]` | A red line `The text is not JSON: …`, then `The text must be one JSON object.` Nothing is saved. `Cancel edit` closes the text area. |
+| LD6 | In LD4, press `Remove` of the manual block and confirm | The manual block goes; the VLM block is the latest again. |
+| LD7 | Press `✎` of an image with no label description | `No label description yet. The watcher describes each image that has none.` and a button `Add manual`. `Add manual` opens a text area with an object of the seven keys. |
+| LD8 | Remove the last label description of an image and confirm (the confirmation names that the VLM describes the image again) | The section shows `No label description yet …`. Within a few minutes the watcher adds a new VLM row (LD1). |
+| LD9 | `curl -s "$H/api/image-label-descriptions?sha256=abc"`, then with the sha256 of an image with no link | HTTP 400 `` `sha256` MUST be 64 lower-case hex digits ``, then HTTP 404 `no wine image with the sha256 …`. |
+| LD10 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"sha256":"<sha256>","description":[1]}' $H/api/image-label-description` | HTTP 400 `` `description` MUST be a JSON object ``. No row changes. |
+| LD11 | `sqlite3 data/lab.sqlite3 "SELECT vlm_name, vlm_endpoint, vlm_model, vlm_served_model, max_tokens, thinking, json_extract(vlm_request, '$.input_kind'), json_extract(vlm_reply, '$.repairs') FROM image_label_description WHERE created_by = 'vlm' LIMIT 3"` | Each row names the entry, the chat URL, the model, the served model, 1500 (3000 after the loop guard), 0, `package` or `original`, and the renames, for example `[["text","texts"]]`. |
+| LD12 | Light and dark system theme; a window of 390 px, with the section of LD3 open | The blocks and the text area fit. The page has no horizontal scroll. |
+
+## Hard cases (the relation `similar`) — plan 62
+
+Read [plan 62](docs/plans/62_similar-wines.md). Use `H=http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| SW1 | `python3 -m unittest discover -s tests -p 'test_similar_wines.py'`, then the same with `test_clusters.py` | 5 and 22 tests `OK` (2026-09-27). |
+| SW2 | Open `$H/dataset` | Each card has the editor `Hard cases` after `Atlas Core product`, with the count `0` and `none`. |
+| SW3 | On card A, press `+`, type a part of the name of wine B, choose B in the list, press Enter | The input holds the slug of B before the save. After the save, card A lists B with its name, and card B lists A. Both counts are `1`. |
+| SW4 | Reload the page | Both cards keep the pair. `curl -s $H/api/dataset` gives `similar_pairs` 1, and `_similar` of each wine holds the other slug. |
+| SW5 | On card B, press `+`, type the slug of A, press Enter | The alert `Cannot add the hard case: the wines … are already similar`. The pair stays one pair. |
+| SW6 | Click the slug of B on card A | The page goes to card B. Search for the slug of A alone, then click B: the card of B goes in just below A, the page scrolls to it, the header reads `2 of <total> records`, and no tab opens. A second click adds no second card. A new search takes B out again. |
+| SW7 | Press `×` next to A on card B and confirm | Both cards show `none`. `similar_pairs` is 0. |
+| SW8 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"slug":"<A>","other":"<A>"}' $H/api/dataset-similar`, then `DELETE "$H/api/dataset-similar?slug=<A>&other=<B>"` with no pair | HTTP 400 `a wine cannot be similar to itself`, then HTTP 404 `the wines … are not similar`. |
+| SW9 | Mark a wine of one cluster similar to a wine with no cluster, then press the build button on `$H/clusters` | Before the build the status reads `stale`. After the build, the cluster of the first wine holds the second wine in each view; the edge of the pair has the badge `manual`, and the head of the cluster has the signal `manual`. |
+| SW10 | Mark two wines with no cluster as similar, then build the clusters | A new cluster of 2 wines with the kind `manual`. |
+| SW11 | Light and dark system theme; a window of 390 px, with the input of SW3 open | The editor and the input fit. The page has no horizontal scroll. The badge `manual` on `/clusters` is readable in both themes. |
+
+## Wine tags — plan 63
+
+Read [plan 63](docs/plans/63_wine-tags.md). Use `H=http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| WT1 | `python3 -m unittest discover -s tests -p 'test_wine_tags.py'`, then the same with `test_lab_server.py` and `test_labdb.py` | 5, 69, and 17 tests `OK` (2026-09-27). |
+| WT2 | Open `$H/dataset` | Each card has the editor `Tags` after `Hard cases`, with the count `0` and `none`, or with its tags. |
+| WT3 | On a card, press `+`, type ` Vintage:2017 `, press Enter | The card lists `vintage:2017` (lower case, no outer spaces). The count grows by 1. |
+| WT4 | On a second card, press `+` | The input suggests each tag of the page, for example `vintage:2017`. |
+| WT5 | Reload the page | The card keeps the tag. `curl -s $H/api/dataset` gives `wine_tags` (the number of rows), and `_tags` of the wine holds the tag. |
+| WT6 | On the card of WT3, add `VINTAGE:2017` again | The alert `Cannot add the tag: the wine … has the tag vintage:2017`. The card keeps one tag. |
+| WT7 | Add `two words` | The alert `Cannot add the tag: a tag holds only letters, digits, and the characters _ - : . (no white space): 'two words'`. |
+| WT8 | Press `×` next to the tag and confirm | The card shows `none` when it has no other tag. `wine_tags` is 1 less. |
+| WT9 | `curl -s -X POST -H 'Content-Type: application/json' -d '{"slug":"no-such-wine","tag":"generic"}' $H/api/dataset-tag`, then `DELETE "$H/api/dataset-tag?slug=<A>&tag=nosuchtag"` | HTTP 404 `no wine with the slug no-such-wine`, then HTTP 404 `the wine <A> has no tag nosuchtag`. |
+| WT10 | Light and dark system theme; a window of 390 px, with the input of WT3 open | The editor and the input fit. The page has no horizontal scroll. |
+
 ## Height of Alternative photos
 
 Owner message of 2026-09-27T19:30:17+0300. `$H` is the lab server.
@@ -1890,6 +2008,22 @@ Owner message of 2026-09-27T19:30:17+0300. `$H` is the lab server.
 | AH1 | Open `$H/dataset` in a window wider than 860 px. Find a wine with 9 alternative photos, for example `fanagoriya-primum-alveus-brut-2017-shardone-igristoe-bryut-beloe-12` | `Alternative photos` shows the 3 rows of photos and the row of the drop and paste tiles. The grid has no scroll bar. |
 | AH2 | A wine with more than 12 alternative photos | The grid shows 4 full rows of photos (620 px). The other rows are available with a scroll of the grid. |
 | AH3 | A window of 860 px or less | The grid has 4 columns and no height limit, as before. |
+
+## Shared GTIN re-rank — plan 64
+
+Owner message of 2026-09-27T17:12:18+0300, answers of 17:16:05 and 19:28:52. `$H` is the
+lab server. Belmas 122 and Belmas 135 are the wines of SC2 and SC3. The rules embedding is
+`gx10-siglip2-so400m-patch16-naflex-p256`.
+
+| # | Case | Expected result |
+|---|---|---|
+| GR1 | `python3 -m unittest discover -s tests -p 'test_barcode_shared.py'`, then the same with `-p 'test_clusters.py'` | All tests `OK`. |
+| GR2 | On `$H/recognize`, choose `barcode-rerank-siglip2-512-crop` and drop the photo of SC7 | The card `Decode codes, whole photo` lists the 2 wines of the code. The answer holds Belmas 122 and Belmas 135 first, and then other wines, up to 10. |
+| GR3 | After a rebuild of the clusters and of the rules of the rules embedding, open `$H/clusters` and search `belmas` | A cluster of 3 wines: Belmas 122, Belmas 135, and `belmas-winery-viognier-katya-belmas-vione-beloe-suhoe-135`. Its signals are `full` and `gtin`. The link of Belmas 122 and Belmas 135 shows the badge `gtin`. |
+| GR4 | The same page, search `shato-pino-shiraz` | A cluster of 2 wines with the kind `manual` and the signals `manual` and `gtin`: the manual pair of plan 62 and the GTIN `04680074271535`. |
+| GR5 | GR2 again, after GR3 | The card `VLM cluster rule` shows a window with Belmas 122 and Belmas 135 alone. The third Belmas wine does not move above them. |
+| GR6 | A photo with no code on `barcode-rerank-siglip2-512-crop` | The answer and the re-rank are the same as before plan 64. |
+| GR7 | GR3 in the light and the dark system theme | The badge `gtin` is readable in both themes. |
 
 ## Badge of a shared Atlas Core product
 
@@ -1904,3 +2038,37 @@ rule of plan 58 (section "Shared codes — plan 58"): it counts the Active wines
 | AS4 | Find `abrau-dyurso-victor-dravigny-bryut` | Its UUID `28ccaee8-…` has no badge: the other wine of that UUID is Removed. |
 | AS5 | Remove the UUID of AS1 on one card | The other card loses its badge with no reload. Add the UUID again: both cards show the badge again. |
 | AS6 | Light and dark system theme; a window of 390 px | The badge uses the amber colours of the GTIN badge. It wraps inside the card. On 2026-09-27, 64 Atlas badges show on 30 shared UUIDs. |
+
+## The card image of `/clusters`
+
+Owner message of 2026-09-27T20:11:15+0300. `$H` is the lab server.
+
+| # | Case | Expected result |
+|---|---|---|
+| CI1 | Open `$H/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256&space=combined` and find the cluster of `fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12` | Each card shows the front of the bottle: the image of the type `main` or `main_patched`. No card shows the back label. |
+| CI2 | Set `Image` to `label` | Each card shows the label cut of its main image. |
+| CI3 | Click a card image, then press Left and Right | The preview opens the image of the card and moves through the images that the cards show. |
+
+## Label cut at the upload of a full photo
+
+Owner message of about 2026-09-27T20:35:00+0300, answers of 21:26:58. `$H` is the lab
+server.
+
+| # | Case | Expected result |
+|---|---|---|
+| UL1 | `python3 -m unittest discover -s tests -p 'test_alternatives.py'`, then `test_manual_wines.py` and `test_import_website.py` | 59 tests and 48 tests, `OK` (2026-09-27). |
+| UL2 | Paste a full photo of a bottle with a paper label in `Alternative photos` of a card of `$H/dataset` | The photo gets `full_front` or `full_back` and no warning. `SELECT settings FROM image_derivative WHERE source_sha256 = '<sha256>' AND kind = 'label'` gives `alternatives.SETTINGS_LABEL`. |
+| UL3 | Press `Build` on `$H/embedding`, then search the wine of UL2 | The `label` cell of the photo is `current` with the badge `vector`, not `failed`. |
+| UL4 | Add a wine with `Add wine` and the photo of a bottle with the text printed on the glass | The wine is stored. The answer holds the warning `The photo is stored with no label cut. …`. |
+| UL5 | Change a label close-up from `LF` to `LB` | The type changes with no error and no SAM3 request. The label cut stays. |
+
+## Build all clusters — plan 65
+
+Owner message of 2026-09-27T21:44:04+0300. `$H` is the lab server.
+
+| # | Case | Expected result |
+|---|---|---|
+| BK1 | `python3 -m unittest discover -s tests -p 'test_cluster_routes.py'` | 13 tests, `OK` (2026-09-27). `BuildAllTest`: the order of `config.yaml`, 409 for a second `POST`, a busy entry is waited for, a failed entry does not stop the queue. |
+| BK2 | Open `$H/clusters` | `Build all clusters` follows `Build clusters`. Its title reads `Build the clusters of each configuration, one at a time, in the order of config.yaml`. It is enabled. |
+| BK3 | Press `Build all clusters` | The button is disabled. The text after it reads `Build all clusters 1 / 12: <name>`, then counts up. The combobox shows the new count of each built configuration. At the end: `Build all clusters done: <n> built`, and the title lists each configuration with its result. |
+| BK4 | Press `Build All` on `$H/embedding`, then at once `Build all clusters` on `$H/clusters` | While the embedding build of the current configuration runs, the text adds ` · waiting: the embedding build of <name> runs`. The cluster build of that configuration starts after the embedding build. |

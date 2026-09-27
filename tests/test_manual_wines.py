@@ -17,10 +17,11 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
 sys.path.insert(0, str(ROOT / "tests"))
+import alternatives  # noqa: E402
 import lab_server as LAB  # noqa: E402
 import labdb  # noqa: E402
 import manual_wines  # noqa: E402
-from test_patches import WINES, DownSam3, FakeSam3  # noqa: E402
+from test_patches import WINES, DownSam3, FakeSam3, NoLabelSam3  # noqa: E402
 
 
 def sha(data):
@@ -236,6 +237,28 @@ class AddWineRouteTest(unittest.TestCase):
         self.assertEqual(record["main_image_url"], record["main_image_original_url"])
         self.assertEqual(self.query("SELECT csv_photo_name FROM wine_catalog "
                                     "WHERE wine_slug = '__my-wine'"), [("a.jpg",)])
+        self.assertIn(alternatives.NO_LABEL_CUT, out["warning"])
+
+    # The main image also gets the label cut of `seed_label_cuts.py` (owner answer of
+    # 2026-09-27T21:26:58+0300), for the view `label` of the Embeddings page.
+
+    def test_add_makes_the_label_cut_of_the_main_image(self):
+        data = picture()
+        status, out = self.add(form(data))
+        self.assertEqual(status, 200, out)
+        self.assertNotIn("warning", out)
+        self.assertEqual(self.query("SELECT method, settings FROM image_derivative WHERE "
+                                    "source_sha256 = ? AND kind = 'label'", sha(data)),
+                         [("seg", alternatives.SETTINGS_LABEL)])
+
+    def test_add_with_no_label_is_stored_with_a_label_warning(self):
+        self.server.segmenter = NoLabelSam3()
+        data = picture()
+        status, out = self.add(form(data))
+        self.assertEqual(status, 200, out)
+        self.assertIn(alternatives.NO_LABEL_CUT, out["warning"])
+        self.assertEqual(self.query("SELECT kind FROM image_derivative WHERE "
+                                    "source_sha256 = ?", sha(data)), [("package",)])
 
     def test_image_with_no_name_gets_the_default_name(self):
         status, out = self.add(form(image_name=None))

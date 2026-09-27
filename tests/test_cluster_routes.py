@@ -1,5 +1,7 @@
 import json
 import tempfile
+import threading
+import time
 import unittest
 from types import SimpleNamespace
 
@@ -147,6 +149,100 @@ class RoutesTest(unittest.TestCase):
         self.assertEqual(self.request(
             "/api/clusters/gw/note", "POST",
             {"space": "wrong", "key": "missing", "text": "x"})[0], 400)
+
+
+class BuildAllTest(unittest.TestCase):
+    """The queue of `Build all clusters` (plan 65)."""
+    request = RoutesTest.request
+
+    def setUp(self):
+        RoutesTest.setUp(self)
+        cluster_routes._QUEUE = None
+        self.old_poll = cluster_routes.QUEUE_POLL_SECONDS
+        cluster_routes.QUEUE_POLL_SECONDS = 0.01
+        self.old_build = clusters.build_to_directory
+
+    def tearDown(self):
+        clusters.build_to_directory = self.old_build
+        cluster_routes.QUEUE_POLL_SECONDS = self.old_poll
+        RoutesTest.tearDown(self)
+
+    def wait_for_end(self):
+        for _ in range(1000):
+            queue = self.request("/api/clusters")[1]["queue"]
+            if queue["state"] != "running":
+                return queue
+            time.sleep(0.01)
+        self.fail("the queue did not end")
+
+    def test_each_entry_builds_in_the_order_of_config_yaml(self):
+        self.assertIsNone(self.request("/api/clusters")[1]["queue"])
+        self.fixture.lab.add_entry("gw2")
+        self.fixture.lab.add_entry("bad", backend="nope")
+        code, body, _, _ = self.request("/api/clusters/build-all", "POST")
+        self.assertEqual(code, 202, body)
+        self.assertEqual(body["queue"]["names"], ["gw", "gw2"])
+        queue = self.wait_for_end()
+        self.assertEqual(queue["state"], "done")
+        self.assertEqual([(r["name"], r["state"]) for r in queue["results"]],
+                         [("gw", "done"), ("gw2", "skipped")])
+        self.assertGreater(queue["results"][0]["counts"]["combined"]["clusters"], 0)
+        self.assertIn("has no index", queue["results"][1]["message"])
+        self.assertIsNone(queue["waiting"])
+        entries = self.request("/api/clusters")[1]["embeddings"]
+        self.assertEqual([entry["exists"] for entry in entries[:2]], [True, False])
+
+    def test_a_second_post_while_the_queue_runs_is_refused(self):
+        release = threading.Event()
+
+        def slow(settings, name):
+            release.wait(5)
+            return self.old_build(settings, name)
+
+        clusters.build_to_directory = slow
+        self.assertEqual(self.request("/api/clusters/build-all", "POST")[0], 202)
+        code, body, _, _ = self.request("/api/clusters/build-all", "POST")
+        self.assertEqual(code, 409)
+        self.assertIn("Build all clusters runs: gw, 1 of 1", body["error"])
+        release.set()
+        self.assertEqual(self.wait_for_end()["state"], "done")
+        self.assertEqual(self.request("/api/clusters/build-all", "POST")[0], 202)
+        self.wait_for_end()
+
+    def test_a_busy_entry_is_waited_for(self):
+        calls = []
+
+        def busy_twice(settings, name):
+            calls.append(name)
+            if len(calls) <= 2:
+                raise clusters.Busy("the embedding build of %s runs" % name)
+            return self.old_build(settings, name)
+
+        clusters.build_to_directory = busy_twice
+        self.request("/api/clusters/build-all", "POST")
+        queue = self.wait_for_end()
+        self.assertEqual(calls, ["gw", "gw", "gw"])
+        self.assertEqual([(r["name"], r["state"]) for r in queue["results"]], [("gw", "done")])
+
+    def test_a_failed_entry_does_not_stop_the_queue(self):
+        self.fixture.lab.add_entry("gw2")
+
+        def broken(settings, name):
+            if name == "gw":
+                raise OSError("disk full")
+            return self.old_build(settings, name)
+
+        clusters.build_to_directory = broken
+        self.request("/api/clusters/build-all", "POST")
+        queue = self.wait_for_end()
+        self.assertEqual([(r["name"], r["state"], r["message"]) for r in queue["results"]],
+                         [("gw", "failed", "disk full"),
+                          ("gw2", "skipped",
+                           "embedding gw2 has no index; build the embedding first")])
+
+    def test_only_a_post_goes_to_the_queue(self):
+        self.assertEqual(self.request("/api/clusters/build-all")[0], 404)
+        self.assertIsNone(self.request("/api/clusters")[1]["queue"])
 
 
 if __name__ == "__main__":

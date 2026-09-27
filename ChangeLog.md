@@ -2,6 +2,116 @@
 
 ## 2026-09-27
 
+- Tags of a wine (plan 63; owner messages of 2026-09-27T17:04:20+0300 and 17:05:11,
+  answers of 17:07:53: free-form text tags, storage and editor only). Schema 029
+  `wine_tag` (one row per tag of a wine, rowid order = add order), new module
+  `pipeline/wine_tags.py` (normal form: no outer white space, lower case; 1 to 64
+  letters, digits, `_ - : .`), routes `POST` and `DELETE /api/dataset-tag`, the keys
+  `tag_editor`, `wine_tags`, and `_tags` of `GET /api/dataset`, and the editor `Tags`
+  after `Hard cases` on each card of `/dataset` (chips with `×`, `+` opens an input that
+  suggests the tags of the page). The pipeline does not read the tags; the use in the match
+  (`generic` / `vintage:YYYY`) is open for a later plan. Schema 029 entered at 17:20:28
+  and migrated; 8168 restarted by 1e at 17:21 (pid 46259). Separate new hunks in
+  `lab_server.py`, `dataset.html`, `test_lab_server.py`, `test_labdb.py`, and
+  `docs/API.md`, agreed with 6b, 2f, d8 [a5ab96], 1d, a8, and 00; the owner allowed the
+  files of the stale sections at 17:15:09. Tests: `test_wine_tags.py` 5,
+  `test_lab_server.py` 69, `test_labdb.py` 17 `OK`; the full suite 1,262 `OK` (5
+  skipped). Browser check on 8168 with the tag writes mocked and each other write blocked,
+  light and dark, 1,440 px and 390 px: 58 of 60. The 2 failures are one old defect: at
+  390 px the page header (`.bar-actions`, `#vlm-status`) makes the page 529 px wide, with
+  or without the editor. Smoke tests WT1 to WT10, `README.md`, `docs/API.md`.
+- The editor `Similar wines` of `/dataset` is now `Hard cases` (owner message of
+  2026-09-27T23:11:41+0300, answers of 23:15:34: visible text only, the name `Hard
+  cases`). A pair of plan 62 holds two wines that are hard to distinguish, not two similar
+  wines. The heading, the tooltips and `aria-label`s of add, remove, input, save, and
+  cancel, the 2 alerts, and the confirmation changed; the `+` tooltip reads `Add a hard
+  case: a wine that is hard to distinguish from this one`. The identifiers keep the name
+  `similar` (`wine_similar`, `/api/dataset-similar`, `_similar`, `similar_pairs`,
+  `similar_wines.py`, the key `similar` of the cluster build, the CSS classes, the
+  `data-similar-*` attributes), so the input hash of the clusters does not change. The
+  error texts of the server keep `similar`. No restart: the server reads the page from
+  disk. The same wording is in `README.md`, `docs/API.md`, `SMOKE_TESTS.md` (the heading,
+  SW2, SW5), and a note at the end of plan 62. Agreed with 2f [0e9cfe], the owner of plan
+  62. Checks: `node --check` of the page script; `test_lab_server.py` 69 and
+  `test_similar_wines.py` 5 tests `OK`; a browser check on 8168 with the writes blocked,
+  light and dark theme, 1440 px and 390 px: 48 of 48.
+- The button `Build all clusters` of `/clusters` (plan 65; owner message of
+  2026-09-27T21:44:04+0300, answers of 22:05:44 and 22:39:01). A thread of the lab server
+  builds `clusters.json` of each configuration, one at a time, in the order of
+  `config.yaml` (`POST /api/clusters/build-all`), as `Build All` of `/embedding` does for
+  the vectors (plan 60). A busy configuration (its embedding build runs) is tried again
+  each second; a configuration with no index is `skipped`; a failed build does not stop
+  the queue. `GET /api/clusters` holds the key `queue`; the page polls it every 2 s and
+  shows `Build all clusters 3 / 12: <name>`, then `Build all clusters done: <n> built`,
+  with the result of each configuration in the title. New code in `cluster_routes.py`;
+  separate new hunks in `clusters.html` (2f "ok"; the owner allowed them next to the
+  uncommitted hunks of the stale 4e). 8168 restarted by 1c at 22:39:33 (pid 53022); only
+  `cluster_routes.py` was newer than the old server. Tests: `test_cluster_routes.py`,
+  `test_clusters.py`, and `test_build_clusters.py` 43 `OK`. Browser check on 8168 with the
+  `POST` mocked and each other write blocked, light and dark, 1,440 px and 390 px: 56 of
+  56. The new controls change neither the page width nor the row of the navigation.
+  Smoke tests BK1 to BK4, `docs/API.md`.
+- Rerun of `barcode-rerank-siglip2-512-crop` on `my-1` with an empty barcode scan cache
+  (owner message of 2026-09-27T22:06:44+0300, answer "Clear barcode cache"). The run is
+  `2026-09-27T191826Z-lab-barcode-rerank-siglip2-512-crop-my-1`. The `Build All` queue of
+  1c [b72be3] built the index first: every `full` cell of
+  `gx10-siglip2-so400m-patch16-512` is current. The pipeline uses the `full` view alone.
+  The 3 failed `label` cells (`no label cut yet`: `__aaaaa` and the 2 rosé bottles with
+  the text on the glass) do not enter this run. The 248 records of `data/cache/barcode/`
+  were backed up to `work/barcode-cache.before-e3-2026-09-27/` and deleted. The run
+  scanned 254 photos again. The 2 cache hits are 2 photos that are test photos of two
+  wines each: `abrau-dyurso-pino-nuar-krasnoe-suhoe-12` and `-125`, and
+  `abrau-dyurso-shardone-beloe-suhoe-12` and `-13`. The
+  fresh scans decode the same codes as the cache on each of the 245 photos of both
+  runs, and no answer changes. `my-1` grew from 247 to 256 queries; the 9 new photos of
+  3 Abrau-Durso Kupazh wines match at rank 1 with no code. R@1 22.4 % (was 19.5 %),
+  R@5 95.3 %, 0 errors. No code change.
+- Each runtime path that adds a full photo also makes its label cut (owner message of
+  about 2026-09-27T20:35:00+0300, answers of 21:26:58). Before, only
+  `seed_label_cuts.py` made the label cut of a full photo. So each `full_front` and
+  `full_back` upload, each manual wine, and each new main image of the website import
+  failed in the view `label` of `/embedding` with `no label cut yet`: 88 items of
+  `gx10-siglip2-so400m-patch16-naflex-p256` at 20:08, 86 of them pasted on 2026-09-27.
+  The new function `alternatives.full_label_cut` applies the label rule of the seed
+  (`SETTINGS_LABEL`). `store_alternative` gives it the SAM3 answer of the detection, so
+  a photo with a label needs no extra request. `set_type` and a second upload of the
+  same photo make a missing label cut (`has_current_cuts`). A change from a label type to
+  a full type replaces the close-up cut, so a change back cuts the label again.
+  `manual_wines.add_wine` and `import_website.write` call the same function; the website
+  import counts `label_cuts` and `no_label_cut`, and the first time that SAM3 does not
+  answer stops its label requests. No label cut gives the warning
+  `alternatives.NO_LABEL_CUT`. `_Down` got `instances`. The rewrite of `set_type` also
+  fixes a `label_front` to `label_back` change of a close-up with a current cut: it
+  wrote an empty label result and failed. The label cut of 98 full photos with no cut
+  was made with `seed_label_cuts.py` (20:38, 54 s): 95 cuts, 3 with no label
+  (`__aaaaa`, and 2 rosé bottles with the text printed on the glass: `5478f9d5…`,
+  `45738caa…`). Backup of the database before the run in the scratchpad of the session.
+  The owner pasted 29 more full photos from 21:05 to 21:25, before the new code was live.
+  8168 restarted by 1c at 22:05:59 (pid 45770); only the three modules of this change
+  were newer than the old server. A second seed at 22:06 made their 29 cuts (18 s). Then
+  `Build All` of `/embedding`: each of the 12 entries built 29 items and failed 3, the 3
+  photos with no label. Tests: `test_alternatives.py` 59, `test_manual_wines.py` and
+  `test_import_website.py` 48, full suite 1,257 `OK` (5 skipped). Plan 22 (note), smoke
+  tests UL1 to UL5.
+- A click on a similar wine of `/dataset` goes to its card also when the filters hide
+  that card (owner message of 2026-09-27T20:22:30+0300 and the answer after it). Before,
+  the link opened `/dataset#<slug>` in a new tab; that tab restored the stored search, so
+  it showed the first wine again. Now a card in the list gets a scroll. A hidden card goes
+  in just below the card of the click, and the page scrolls to it; the new function
+  `openSimilarCard` adds its record to the list after the first wine. The next full
+  render applies the filters again and takes it out. A slug that the page does not know
+  keeps the link. Browser check on 8168, dark and light theme, 1440 px and 390 px, writes
+  blocked: 30 of 30. Smoke test SW6 of plan 62 (agreed with 2f [0e9cfe]).
+- The cards of `/clusters` show the main image of the wine, `main_patched` or `main`
+  (owner message of 2026-09-27T20:11:15+0300, answer of 20:16:16). Before, a card showed
+  the first image of the view, and the server sorts the images by their types, so a
+  `full_back` or a `label_back` came first. The new function `cardImage` of `clusters.html`
+  takes the image of the view whose types hold `main_patched` or `main`, else the first
+  image, as before. The preview follows the cards. Browser check on 8168 in the light and
+  the dark theme, at 1,600 px and 390 px, with each write request blocked: each of the
+  420 cards shows its main image; 23 cards changed in the view `full` (17 `full_back`, 6
+  `full_front`), for example the backs of c001. At 390 px the page scrolls sideways
+  because of the header bar and the nav links; this was so before. Smoke tests CI1 to CI3.
 - An Atlas Core product UUID of 2 or more Active wines shows the badge `N wines` after
   `open` on `/dataset`, as a shared GTIN of plan 58. The tooltip names the other wines
   (owner message of 2026-09-27T20:08:45+0300). The map `codeUsers` of plan 58 has a new
@@ -14,6 +124,31 @@
   d8 [a5ab96] checked its approve button again: 20 of 20. Smoke tests AS1 to AS6. Note:
   the page has a horizontal scroll at 390 px from the header nav and the VLM pill; the
   scroll was there before this change.
+- Plan 64: a shared GTIN re-ranks the top-k (owner message of 2026-09-27T17:12:18+0300,
+  answers of 17:16:05 and 19:28:52). A GTIN of 2 or more Active wines no longer limits
+  the embedding match (plan 58). `Catalogue.rank(..., first=...)` ranks every wine and
+  puts the wines of the GTIN first; each wine keeps its own score, so a wine of the GTIN
+  outside the normal top-k also comes back. A wine of the GTIN with no vector goes after
+  the ranked wines of the GTIN (`CodeFirst.gtin_first`). The trace step `barcode` gets
+  `mode: first` instead of `limit`. With the key `rerank`, the trigger asks that the
+  rank-1 card is a wine of the GTIN, and the window holds only the wines of the GTIN of
+  its cluster, so another card does not move. The cluster build adds a link with
+  `by: ["gtin"]` for each two Active wines of one GTIN of `wine_code`, in each view
+  (`clusters._gtin_pairs`; `manual_links` takes `by`, agreed with 2f). A cluster of GTIN
+  links alone has the kind `gtin`; `/clusters` shows the badge `gtin`. A QR URL gives no
+  link. With no GTIN pair, the input hash stays the same. Live check with `recognize.py`
+  on `barcode-rerank-siglip2-512-crop` (the Belmas 122 test photo with a drawn EAN-13):
+  Belmas 122 at rank 1 (0.9325), Belmas 135 at rank 2 (0.7247), then 8 other wines.
+  Tests: 1,249 OK (5 skipped). Rollout (owner answer "Full rebuild now" of 20:09:06):
+  the clusters of `gx10-siglip2-so400m-patch16-naflex-p256` rebuilt at 20:10:14 (176
+  `combined` clusters; backups in `data/backups/*-before-plan64-*`), then
+  `build_label_rules.py` made 19 rules on QwenCloud (18 `sheet`, 1 `verdict`, 0 errors;
+  stage 1 had 40 cache hits). The Shato Pino Shiraz cluster got the vintage question
+  `2017` for `-14` and `other` for `-135`. 8168 restarted at 20:21:54 (pid 3472); only
+  plan 64 code was new. With the EAN-13 drawn beside the Belmas 122 photo, the VLM window
+  holds the two Belmas GTIN wines alone. The test photo
+  `shato-pino-shiraz-krasnoe-suhoe-14/03_manual.webp` shows `SHIRAZ 2022`, so the rule
+  gives `-135`. Smoke tests GR1 to GR7.
 - `Alternative photos` on `/dataset` shows 4 rows of photos with no scroll. The
   `max-height` of `.alternative-grid` changed from 310 px (2 rows) to 620 px. A row of
   photos is 150 px high and the gap is 6 px, so 4 rows need 618 px. A wide window only;
@@ -21,6 +156,125 @@
   2026-09-27T19:30:17+0300). Browser check on 8168, dark and light theme, with each write
   request blocked: each of the 38 wines with alternative photos shows all rows with no
   scroll; a grid with 15 photos shows 4 full rows and scrolls. Smoke tests AH1 to AH3.
+- The Dataset image preview now uses Left and Right for the available image files of the
+  current wine. The arrow buttons have the same behavior. The preview position counts
+  these files. Up and Down open the previous or next visible wine at its first available
+  image. They skip a wine that has no available image. Each step replaces the preview
+  path and does not add a history entry (owner message and answer `1` of
+  2026-09-27T17:36:35+0300).
+- An add or a remove of a GTIN or a QR URL of a wine deletes the stored barcode scans of
+  the test photos of that wine (owner message of 2026-09-27T16:08:37+0300, answers of
+  16:49:57). A test photo of the wine is a row of `test_photo` with `place` equal to the
+  slug. The new function `model_cache.forget(model, images)` deletes each record of one
+  model whose request sent one of the given sha256 values. `lab_server.forget_scans` calls
+  it for the model `barcode` after the commit of `add_code` and of `remove_code`. The
+  next run scans these photos again. The answers of `/api/dataset-gtin` and
+  `/api/dataset-qr-url` do not change; a record that cannot be deleted gives HTTP 503, and
+  the code change stays. Note: a scan record holds only the decoded codes, and each run
+  looks them up again in `wine_code`, so the deletion costs one fresh scan of each photo.
+  Live check on 8168: the add of a test GTIN to a wine with 2 test photos deleted their 2
+  records and left the other 1,849; the remove left no `wine_code` row. 8168 restarted at
+  17:09:02 (pid 7024). Tests: 1,229 OK (5 skipped). Smoke tests WC21 and WC22.
+- Manual pairs of similar wines (plan 62; owner message of 2026-09-27T15:12:00+0300,
+  answers of 15:22 and 15:31). The new table `wine_similar` (schema 028) holds one row for
+  each pair of two wines. The pair has no direction. The new module `similar_wines.py`
+  and the routes `POST` and `DELETE /api/dataset-similar` write it. `GET /api/dataset`
+  sends `similar_pairs` and `_similar` for each wine. Each card of `/dataset` has the
+  editor `Similar wines` with a slug list, and a save draws both cards again. The cluster
+  build uses each pair of two Active wines with an image as one more link of each view,
+  with the signal `manual`: the other wine joins the cluster, two clusters become one, and
+  a lone pair makes a cluster of the kind `manual`. With no pair the input hash does not
+  change. `/clusters` has the badge `manual`. Migration of `data/lab.sqlite3` at 15:46:57
+  (backup `data/backups/lab-before-028-wine-similar-20260927T124657Z.sqlite3`); 8168
+  restarted at 15:47 (pid 47252, watcher pid 47284). Tests: 1,223 OK (5 skipped).
+  Smoke tests SW1 to SW11.
+- Plan 61, label descriptions of the images. The new table `image_label_description`
+  (schema 027) keeps the answers of `DESCRIBE_PROMPT` of the cluster rules, many rows for
+  each image; the latest row is the effective description. Stage 3 of the watcher
+  `describe_images.py` (`image_description.labels: true`) sends each linked image with no
+  row the exact request of the cluster stage 1: the `package` cut, else the original, as
+  PNG at 2,048 px, `max_tokens` 1,500 with the loop guard at 3,000, thinking off,
+  `json_object`. It repairs obvious key drift (`text` -> `texts`, `number` -> `numbers`,
+  ...), checks the answer against `LABEL_SCHEMA`, and records the endpoint, the model, the
+  served model, `max_tokens`, thinking, the input file, and the other settings of the
+  call. `label_rules.describe` repairs the same drift in each new cluster description; the
+  382 stored cluster descriptions do not change. The dialog `Image description` of
+  `/dataset` shows each row as a block, the latest first, with `Edit as new` (a new manual
+  row) and `Remove`; after the last removal the watcher describes the image again. New
+  routes `GET /api/image-label-descriptions`, `POST` and `DELETE
+  /api/image-label-description`, and `describe_images.py --label-sha`. Migration at
+  15:16:56 (backup `data/backups/lab-before-027-image-label-description-20260927T121654Z.sqlite3`);
+  8168 restarted at 15:17:20 (pid 55047, watcher pid 55081). The backlog ended at 16:49:
+  2,162 of 2,166 images have a label description (358 cache hits, 800 renames `text` ->
+  `texts`); 2 images stopped after 3 schema failures. Tests: 1,211 OK. Smoke tests LD1 to
+  LD12 (owner message of 2026-09-27T13:55:59+0300, answers of about 14:15 and 14:46:48).
+- `/recognize` takes a photo from the clipboard: a paste (Ctrl+V, Cmd+V) anywhere on the
+  page sends the first image of the clipboard to the pipeline, as a drop does. A paste with
+  no image states `The clipboard holds no image` and sends nothing. The drop hint names the
+  paste. No server change, no restart. Smoke test RC12 (owner message of
+  2026-09-27T15:04:13+0300).
+- An automatic Atlas Core product on a Dataset card has a green `approve` button. The
+  button tells that a person confirmed the match. The new route
+  `POST /api/dataset-atlas-binding-approve` changes the source of the row from
+  `automatic` to `manual`, with `atlas_bindings.approve`. The row keeps its rowid, so the
+  UUID keeps its place in the list. A manual UUID answers HTTP 409; a UUID that the wine
+  does not have answers HTTP 404. No schema change. 8168 restarted at 14:57:17
+  (pid 88971). Smoke tests AA1 to AA7 (owner message of 2026-09-27T14:49:04+0300).
+- The button `Build All` of `/embedding` (plan 60) builds each configuration of
+  `config.yaml`, one at a time, in the order of the combobox. The lab server runs the
+  queue in a thread, so a closed tab does not stop it. A restart of the server ends the
+  queue; the build that runs goes on. The new route `POST /api/embeddings/build-all`
+  starts the queue (HTTP 409 while one runs). `GET /api/embedding-jobs` and
+  `GET /api/embeddings` hold the key `queue`. A build that fails does not stop the queue.
+  `Stop`, or the `×` of the job row, stops the build and the queue. A build of the entry
+  that runs already is waited for; then the queue starts its own build. The message after
+  the button reads `Build All 3 / 12`, `Build All done: 12 builds`, or
+  `Build All stopped: 5 / 12`. Its title lists the result of each configuration.
+  `_reap` of `embedding_routes.py` now removes a finished process with `pop`, because a
+  request thread and the queue thread can reap the same process. 8168 restarted at
+  14:44:31 (pid 38527). Smoke tests EB48 to EB54 (owner message of
+  2026-09-27T14:33:25+0300).
+- The page path `/dataset/<wine_slug>/describe/<sha256>` opens the image description
+  dialog of one image. The address bar shows this path while the dialog is open, so a
+  copy of the URL reopens the same dialog. Back closes the dialog; each close gives
+  `/dataset` again. An image that no card holds gives the plain page.
+  `pipeline/lab_pages.py` accepts the path (`DATASET_PREVIEW_ROUTE`); 8168 restarted at
+  14:37:41. Smoke tests ID31 to ID34 (owner message of 2026-09-27T13:49:11+0300).
+- New research report `docs/reports/2026-09-27_my-1-failure-addendum.md` with the
+  read-only script `docs/reports/2026-09-27_my-1-failure-addendum/replay.py`. It adds to
+  the failure analysis of the run `2026-09-27T070800Z-lab-barcode-rerank-siglip2-512-crop-my-1`:
+  a replay of three rule fixes of the re-rank, the cover of the re-rank trigger, the
+  back-label hub images, and the features that separate the confused cards. No code or
+  configuration changed (owner message of 2026-09-27T10:13:36+0300).
+- New research report `docs/reports/2026-09-27_label-fusion.md` with the read-only replay
+  script `docs/reports/2026-09-27_label-fusion/fusion_replay.py`: 23 fusion rules of the
+  views `full` and `label`, replayed on the saved runs of 01:17 and 01:19. No rule beats
+  the full tower after the rerank. No code or configuration changed (owner message of
+  2026-09-27T10:13:59+0300).
+- The new top-level key `rebuild_embeddings_on_run` of `config.yaml` is true (plan 59).
+  Before each run of a pipeline of the backend `embedding`, the run updates the index of
+  the embedding of that pipeline. The new module `pipeline/rebuild_on_run.py` starts
+  `build_embeddings.py`, as the button `Build` of `/embedding` does, and waits for its
+  end. The build does only the stale, missing, and failed items, so a build with no
+  change takes a few seconds. Its output goes to the end of `build.log`, so `/embedding`
+  shows its progress. The run waits for a build of the same embedding that runs already.
+  A build that fails or stops makes the run fail; a failed item does not. An embedding
+  with no index gets no build. `run_job.py` (the button `Run>`) calls it after the check
+  of the set, with events `log` before the event `start`. `embedding_run.py` calls it
+  before it reads the index. A stop of the run sends SIGTERM to the build. At about 09:05,
+  each of the 12 indexes missed 6 to 9 of the 4,192 items, so the next run of each embedding
+  builds 9 to 11 items. No restart of 8168: the server starts `run_job.py` from disk and
+  reads `config.yaml` for each request. Tests: `test_rebuild_on_run.py` 17 OK (one uses
+  the real build script), the full suite 1,164 OK. Smoke tests RB1 to RB9. The owner
+  chose the design in the answers of 08:53:00. Known limit: each build rewrites
+  `index.json`, so `scripts/run_internal_profile_queue.py` marks a completed run
+  `invalid_completion` while the key is true.
+
+- `.gitignore` ignores the artifact folders of the reports (`/docs/reports/*/`). The
+  report `.md` files in `docs/reports/` stay in git. The rule covers the three folders
+  that the checkpoint `c863231` left out (about 1.4 GB). The owner chose this rule over
+  an ignore of the whole `docs/reports/`.
+
 - The table `wine_code` has a new column `modified_at`: the UTC insert time of each row
   (schema `026_wine_code_time.sql`). The trigger `wine_code_insert_time` sets it. A row is
   never updated, so the insert time is the time of the last change. A delete leaves no
@@ -41,6 +295,19 @@
   does not change. The change is in `pipeline/pages/dataset.html` alone. The server and
   the API do not change. The review tool page gets the same behavior. Smoke tests AB14
   and AB15. A Playwright check on 8168 passed 8 of 8 cases; nothing was saved.
+
+- `Alternative photos` on the Dataset page has a `Paste image` tile after the tile
+  `Drop photos here or choose files` (owner message of 2026-09-27T08:55:08+0300, answers
+  of about 08:57). A click on the tile reads the clipboard with
+  `navigator.clipboard.read()`. Chrome asks for the permission one time. Safari shows its
+  own `Paste` button. ⌘V on the focused tile needs no permission. The image goes through
+  `stageAlternativeFiles`, so the lab server stores it at once, as a dropped file. With no
+  permission, the tile reads `press ⌘V` and keeps the focus. A clipboard with no image
+  gives an alert. The tile uses the class of the drop tile, so a file dropped on it is
+  added too. The change is in `pipeline/pages/dataset.html` alone. The tile replaces the
+  unapplied button patch of the section codex-dataset-clipboard (owner message of
+  00:15:16); the owner chose the replacement. Smoke tests PI1 to PI7. A Playwright check
+  on 8168 passed 24 of 24 cases with mocked write requests; nothing was saved.
 
 - Created the test set `my-1` from the R@1 misses of run
   `2026-09-27T011711Z-lab-barcode-rerank-siglip2-512-crop-my`. The set contains 252

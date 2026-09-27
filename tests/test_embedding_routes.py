@@ -321,5 +321,122 @@ class JobStateTest(unittest.TestCase):
             self.assertIsNone(embeddings.job_state(directory)["phase"])
 
 
+class BuildAllTest(unittest.TestCase):
+    """The queue of `Build All` (plan 60)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.gateway = FakeGateway()
+        self.lab = standard_lab(self.tmp.name, self.gateway.base_url)
+        self.lab.add_entry("gw2")
+        self.lab.entries.append({"name": "bad", "backend": "grpc"})
+        self.lab.write_config(python=sys.executable)
+        self.server = types.SimpleNamespace(db_path=self.lab.db_path,
+                                            config_path=self.lab.config_path)
+        self.saved = (embedding_routes.BUILD_SCRIPT, embedding_routes.QUEUE_POLL_SECONDS)
+        embedding_routes.QUEUE_POLL_SECONDS = 0.05
+        self.fast = self.script("fast", 0.3)
+        self.slow = self.script("slow", 20)
+
+    def tearDown(self):
+        # A killed build fails, and the queue starts the next entry: kill until it ends.
+        deadline = time.time() + 10
+        while True:
+            for process in list(embedding_routes._PROCESSES.values()):
+                process.kill()
+                process.wait()
+            queue = embedding_routes.queue_view()
+            if not queue or queue["state"] != "running" or time.time() > deadline:
+                break
+            time.sleep(0.05)
+        embedding_routes._PROCESSES.clear()
+        embedding_routes._QUEUE = None
+        embedding_routes.BUILD_SCRIPT, embedding_routes.QUEUE_POLL_SECONDS = self.saved
+        self.gateway.close()
+        self.lab.close()
+        self.tmp.cleanup()
+
+    def script(self, folder, seconds):
+        """A fake build that ends as `done` after `seconds`, or as `stopped` at SIGTERM."""
+        directory = os.path.join(self.tmp.name, folder)
+        os.makedirs(directory)
+        path = os.path.join(directory, embeddings.BUILD_SCRIPT_NAME)
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(FAKE_BUILD.replace("time.time() + 20", "time.time() + %r" % seconds)
+                     % {"pipeline": os.path.dirname(embeddings.__file__)})
+        return path
+
+    def get(self, path, method="GET"):
+        return embedding_routes.respond(self.server, method, path)
+
+    def queue_ends(self):
+        return wait_for(lambda: embedding_routes.queue_view()["state"] != "running", 15)
+
+    def test_each_entry_is_built_one_at_a_time_in_config_order(self):
+        embedding_routes.BUILD_SCRIPT = self.fast
+        code, body, _, _ = self.get("/api/embeddings/build-all", "POST")
+        self.assertEqual(code, 202, body)
+        # The entry with a configuration error is not in the queue.
+        self.assertEqual(body["queue"]["names"], ["gw", "gw2"])
+        self.assertEqual(body["queue"]["state"], "running")
+        code, body, _, _ = self.get("/api/embeddings/build-all", "POST")
+        self.assertEqual(code, 409)
+        self.assertIn("Build All runs", body["error"])
+        self.assertTrue(self.queue_ends())
+        queue = self.get("/api/embedding-jobs")[1]["queue"]
+        self.assertEqual(queue["state"], "done")
+        self.assertEqual([(r["name"], r["state"], r["built"]) for r in queue["results"]],
+                         [("gw", "done", 5), ("gw2", "done", 5)])
+        self.assertIsNotNone(queue["ended_t"])
+        self.assertEqual(self.get("/api/embeddings")[1]["queue"]["state"], "done")
+        # A GET of the path stays the view of an entry `build-all`.
+        self.assertEqual(self.get("/api/embeddings/build-all")[0], 404)
+        # The queue that ended does not block a new one.
+        self.assertEqual(self.get("/api/embeddings/build-all", "POST")[0], 202)
+        self.assertTrue(self.queue_ends())
+
+    def test_a_stop_of_its_build_stops_the_queue(self):
+        embedding_routes.BUILD_SCRIPT = self.slow
+        self.assertEqual(self.get("/api/embeddings/build-all", "POST")[0], 202)
+        self.assertTrue(wait_for(lambda: embeddings.running_pid(self.lab.entry_dir())))
+        self.assertEqual(self.get("/api/embeddings/gw/stop", "POST")[0], 202)
+        self.assertTrue(self.queue_ends())
+        queue = embedding_routes.queue_view()
+        self.assertEqual(queue["state"], "stopped")
+        self.assertEqual(queue["current"], "gw")
+        self.assertEqual([(r["name"], r["state"]) for r in queue["results"]],
+                         [("gw", "stopped")])
+        self.assertFalse(os.path.exists(os.path.join(self.lab.entry_dir("gw2"),
+                                                     embeddings.LOG)))
+
+    def test_a_build_that_runs_already_is_waited_for(self):
+        embedding_routes.BUILD_SCRIPT = self.slow
+        self.assertEqual(self.get("/api/embeddings/gw/build", "POST")[0], 202)
+        self.assertTrue(wait_for(lambda: embeddings.running_pid(self.lab.entry_dir())))
+        embedding_routes.BUILD_SCRIPT = self.fast
+        self.assertEqual(self.get("/api/embeddings/build-all", "POST")[0], 202)
+        time.sleep(0.3)
+        self.assertEqual(embedding_routes.queue_view()["results"], [])
+        # The stop of the other build does not stop the queue: it builds gw itself.
+        self.assertEqual(self.get("/api/embeddings/gw/stop", "POST")[0], 202)
+        self.assertTrue(self.queue_ends())
+        queue = embedding_routes.queue_view()
+        self.assertEqual(queue["state"], "done")
+        self.assertEqual([(r["name"], r["state"]) for r in queue["results"]],
+                         [("gw", "done"), ("gw2", "done")])
+
+    def test_a_missing_interpreter_is_an_error(self):
+        self.lab.write_config(python=os.path.join(self.tmp.name, "no-python"))
+        code, body, _, _ = self.get("/api/embeddings/build-all", "POST")
+        self.assertEqual(code, 400)
+        self.assertIn("is not a file", body["error"])
+        self.assertIsNone(embedding_routes.queue_view())
+
+    def test_the_page_has_the_button(self):
+        page = self.get("/embedding")[1]
+        self.assertIn('id="build-all"', page)
+        self.assertIn("/api/embeddings/build-all", page)
+
+
 if __name__ == "__main__":
     unittest.main()

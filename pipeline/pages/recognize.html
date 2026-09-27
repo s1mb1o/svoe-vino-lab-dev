@@ -44,8 +44,8 @@ button:disabled { cursor: default; opacity: .5; }
 .message { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .message.err { color: var(--exc); }
 main { max-width: 1180px; margin: 0 auto; padding: 14px 16px 64px; }
-/* The drop area: a drop or a click on it gives one photo, which goes to the server at
-   once. It shows the present photo. */
+/* The drop area: a drop, a paste, or a click on it gives one photo, which goes to the
+   server at once. It shows the present photo. */
 .drop {
   display: flex; gap: 14px; align-items: center; min-height: 110px; padding: 14px 18px;
   background: var(--panel); border: 2px dashed var(--line); border-radius: 12px;
@@ -102,10 +102,10 @@ main { max-width: 1180px; margin: 0 auto; padding: 14px 16px 64px; }
 </header>
 <main>
   <div id="drop" class="drop" role="button" tabindex="0"
-    aria-label="Drop a photo here, or click to open a file">
+    aria-label="Drop a photo here, paste it, or click to open a file">
     <img id="thumb" alt="" hidden>
     <div class="hint">
-      <strong>Drop a photo here</strong>, or click to open a file
+      <strong>Drop a photo here</strong>, paste it (Ctrl+V, ⌘V), or click to open a file
       <div id="file-name" class="file">One image. It goes to the selected pipeline at once.</div>
     </div>
     <input id="file" type="file" accept="image/*" hidden>
@@ -280,6 +280,15 @@ window.addEventListener("drop", ev => {
   ev.preventDefault();
   $("#drop").classList.remove("over");
   setFile((ev.dataTransfer && ev.dataTransfer.files || [])[0]);
+});
+// A paste (Ctrl+V, Cmd+V) of an image anywhere on the page takes the photo, as a drop does.
+window.addEventListener("paste", ev => {
+  const items = [...(ev.clipboardData && ev.clipboardData.items || [])];
+  const item = items.find(i => i.kind === "file" && i.type.startsWith("image/"));
+  const file = item && item.getAsFile();
+  if (!file) { message("The clipboard holds no image", true); return; }
+  ev.preventDefault();
+  setFile(file);
 });
 $("#steps").addEventListener("click", ev => {
   const img = ev.target.closest("img[data-full]");

@@ -5897,6 +5897,300 @@ Owner answer:
 3. Yes, separate hunks
 ```
 
+## 2026-09-27T08:40:19+0300
+
+```text
+add global option in config.yaml - rebuild embeddings on run of pipeline using it
+```
+
+## 2026-09-27T08:40:26+0300
+
+```text
+and make it true
+```
+
+## 2026-09-27T08:53:00+0300
+
+Agent question:
+
+```text
+1. How should a run update the embedding of its pipeline? The new top-level key would be `rebuild_embeddings_on_run: true`.
+   - Update changed items (Recommended): Before the run, run_job.py starts build_embeddings.py for the pipeline's embedding and waits for it. The build does only stale, missing, and failed items, as the Build button of /embedding does. With no change it takes about 1–3 s. With 129 changed items it took 38–119 s today. The vectors equal a full rebuild: the item hash covers the file, the view, the model, the steps, and the cut. The progress shows on /embedding. A pipeline whose embedding has no index stays refused, as now. No restart of 8168.
+   - Also build a missing index: The same as the first option. In addition, Run> accepts a pipeline whose embedding has no index yet, and that run makes the first build. Estimate: 20–60 min for 4,186 items (0.3–0.9 s per item today, but 8 builds ran at the same time). Needs a change in run_jobs.py and a restart of 8168.
+   - Full rebuild each run: Delete the index and embed all 4,186 items before each run. Estimate: 20–60 min per run. I do not recommend it.
+2. Which runs should do the update?
+   - Run> and the CLI (Recommended): run_job.py: the Run> button and the run-job API, which the codex profile queue uses. Also the CLI `pipeline/embedding_run.py --name … --set …`, with a few lines in its main().
+   - Run> only: Only run_job.py. The CLI embedding_run.py keeps its present behavior.
+3. What should happen when the build has a fatal error, or someone stops it on /embedding?
+   - The run fails (Recommended): The job ends `failed` with the build message. A single failed item does not stop the run. An example is the 3 items that fail in each build now. The run uses the current items, as now.
+   - Run on the old index: The job writes a warning line to job.log and runs on the index as it is.
+4. Stale sections list the files I need. May I add separate hunks to them? run_job.py: b4 [aee81a]. config.yaml: ab, 4f, 6c [c91c62], bc, 1b, codex-profile-latency. embedding_run.py (only for the CLI scope): f4 [b39b7b], df, codex-profile-latency.
+   - Yes, separate hunks: I add new hunks only. The lines of the other sections stay byte-identical. The tests go into a new file. I commit nothing without your word.
+   - No, wait: I edit nothing now. My section stays in the state waiting.
+```
+
+Owner answer:
+
+```text
+1. Update changed items (Recommended)
+2. Run> and the CLI (Recommended)
+3. The run fails (Recommended)
+4. Yes, separate hunks
+```
+
+## 2026-09-27T08:55:08+0300
+
+```text
+http://127.0.0.1:8168/dataset
+
+add "Paste image" area, after "Drop photos here of choose file"
+```
+
+Agent questions and owner answers (about 08:57):
+
+```text
+1. How should the "Paste image" tile take the image?
+   - Click + ⌘V (Recommended): A click on the tile reads the clipboard (Chrome asks for permission once; Safari shows its own "Paste" button). ⌘V also works while the tile has focus, and it needs no permission. The image goes through the existing upload flow.
+   - Click only: A click on the tile reads the clipboard with navigator.clipboard.read(). No ⌘V handling. This is the simplest version, but Chrome asks for permission on the first use.
+   - ⌘V only: A click puts the tile in focus with the hint "Press ⌘V". The paste event brings the image. The browser never asks for permission, but you need two actions.
+2. The stale section codex-dataset-clipboard (00:15) holds an unapplied patch with a small "Paste image" button under the grid. What should happen to it?
+   - Replace it (Recommended): The new tile replaces that patch. I remove the section codex-dataset-clipboard from ACTIVE_WORK.md. The patch file in /private/tmp stays untouched.
+   - Keep the section: I leave the stale section as it is. You decide about it later.
+```
+
+Owner answer:
+
+```text
+1. Click + ⌘V (Recommended)
+2. Replace it (Recommended)
+```
+
+## 2026-09-27T10:13:36+0300
+
+```text
+explain of failures [http://127.0.0.1:8168/runs#2026-09-27T070800Z-lab-barcode-rerank-siglip2-512-crop-my-1](http://127.0.0.1:8168/runs#2026-09-27T070800Z-lab-barcode-rerank-siglip2-512-crop-my-1) and how we can fix them
+```
+
+## 2026-09-27T10:13:59+0300
+
+```text
+svoe-vino-lab
+research and think how we can support label-space embeddings and fusion results with full bottle space embeddings in k-top
+```
+
+## 2026-09-27T13:49:11+0300
+
+```text
+http://127.0.0.1:8168/dataset
+
+add additional image properties url slug
+```
+
+The message had one screenshot: the dialog "Image description ·
+agrolayn-mountain-eagle-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135" of a
+back-label image.
+
+Agent question:
+
+```text
+What should the "url slug" image property hold?
+- Source page URL: An editable text field with the URL of the web page the image came from (for example, the shop page of a pasted image). You type or paste it by hand; the VLM does not touch it. Needs a new column (schema 027).
+- Slug of the shown wine: An editable field with the wine slug that the image actually shows, for when it differs from the card it is attached to. Checked against wine_catalog. Needs a new column (schema 027).
+- Read-only info lines: No new data. The dialog shows the image file URL (/images/<folder>/<sha256>.<ext>) and the wine slug, each with a Copy button. Page change only, no schema, no restart.
+```
+
+Owner answer:
+
+```text
+i want be able open same dialog with URL, so url shall contain wine_slug and image id
+```
+
+## 2026-09-27T13:55:59+0300
+
+```text
+add table that holds datasset image VLM description (use same DESCRIBE_PROMPT as for clustem)
+run it for every main image, patch image and additional image. Do it at background, same as you do for image classification (package_type, subject_scope,...). Do not merge with image classification request. These shall be separate requests. Record what VLM was used to get information (endpoint + model + max_tokens + is_thinking + ...) for reference. Also creation date. Use latest one. But show historry of all on image description popup as expandable blocks. Allow manually remove. Allow edit manually. If there is description, then do no autostart VLM description.
+```
+
+The message had one screenshot: the dialog "Image description ·
+agrolayn-mountain-eagle-cabernet-sauvignon-kaberne-sovinon-krasnoe-suhoe-135" of a
+back-label image, with the five class fields, the VLM status lines, and the closed block
+"Raw VLM reply". Session drink-atlas-workspace-6b [e99257].
+
+Agent question:
+
+```text
+1. Which URL form should open the Image description dialog?
+   - Path (Recommended): /dataset/<wine_slug>/describe/<sha256>. Same style as the existing preview links (/dataset/<slug>/alternative/<sha256>). The address bar follows the dialog; Back closes it. Needs a one-line route change in lab_pages.py and a restart of 8168.
+   - Hash: /dataset#<wine_slug>/describe/<sha256>. Page-only change, no restart. The existing /dataset#<slug> scroll link keeps working. A different style from the preview links.
+   - Query: /dataset?wine=<wine_slug>&image=<sha256>. Page-only change, no restart. Easy to read, but a third URL style on the page.
+2. Should the dialog also get a "Copy link" button?
+   - No, address bar only: The address bar shows the link while the dialog is open. You copy it from there.
+   - Yes, add a button: A small "Copy link" button in the dialog, next to the title or the status lines, copies the full URL.
+```
+
+Owner answer:
+
+```text
+1. Path (Recommended)
+2. No, address bar only
+```
+
+## 2026-09-27T14:33:25+0300
+
+```text
+Add "Build All" button that starts build of all embeddings
+```
+
+The message had one screenshot: the header of `/embedding` with the Configuration select
+(`gx10-siglip2-so400m-patch16-naflex-p256 — 4178 / 4236`) and the buttons `Build`,
+`Stop`, and `Log`. Session drink-atlas-workspace-64 [a6a2b4].
+
+Agent question:
+
+```text
+Stale sections list the files I need: 6c [c91c62] (the describe dialog in dataset.html), 41 [501d23] (lab_pages.py), d3/f2/bc (tests/test_lab_server.py). None of them has uncommitted changes in these files. May I add separate hunks there?
+- Yes, separate hunks: I add only my own hunks: the route regex in lab_pages.py, the describe open/close/path functions + popstate + init in dataset.html, one test in test_lab_server.py. I leave the stale sections as they are and tell live sessions a8 and d8 (they have or had dataset.html hunks).
+- No, stop: I do not change these files. The task waits.
+```
+
+Owner answer:
+
+```text
+Yes, separate hunks
+```
+
+Agent question:
+
+```text
+1. How should "Build All" start the 12 builds? 11 configurations use the gx10 gateway (each SigLIP 2 model takes about 7 GB), and 1 runs on this Mac. A configuration with nothing to build ends in about 0.3 s.
+   - One at a time, page (Recommended): Only embedding.html changes, so 8168 does not need a restart. The page starts the builds in config order. Each build starts when the one before it ends as done, stopped, or failed. Stop, or the (x) on the running build, also ends the queue. If you reload or close the tab, the queue ends after the build that is running.
+   - One at a time, server: A new route, POST /api/embeddings/build-all, and a server thread in embedding_routes.py run the queue. The queue keeps running when you close the tab, but any 8168 restart ends it, and other sessions restart 8168 often. The change needs its own 8168 restart. embedding_routes.py is also listed in the uncommitted section of codex-side-sam3-fix.
+   - All at once: The simplest option: the button sends Build for every configuration at the same time. The risk: 11 models load on gx10 together. I don't know whether llama-swap runs them in parallel or swaps them, so gx10 could run out of memory.
+2. The section of session 41 in ACTIVE_WORK.md lists embedding.html for its nav line. That work is not committed, and the session is no longer running. May I add separate hunks to this file (header button, CSS, script) and leave the nav line as it is?
+   - Yes, separate hunks: I add my own hunks and don't change the nav line. At commit time I stage only my own hunks.
+   - No, wait: I wait until the session-41 work is committed or removed.
+```
+
+Owner answer:
+
+```text
+1. One at a time, server
+2. Yes, separate hunks
+```
+
+## 2026-09-27T14:15:00+0300
+
+Agent questions (drink-atlas-workspace-6b [e99257]) about the owner message of
+2026-09-27T13:55:59+0300, and the owner answers:
+
+```text
+Which approach should I use for the image label descriptions?
+- A: stage 3, fresh run (Recommended): Third stage of describe_images.py, separate request. Fresh DESCRIBE_PROMPT call for all 2,136 images (~360 cache hits, ~2-3 h on gx10). image_detail stays as it is.
+- B: second watcher process: Same table and dialog. A new script with its own lock, state file and pill; the lab server starts two watchers. More code, full isolation.
+- C: stage 3 + seed from image_detail: As A, but the 2,069 stage-2 bottle answers (same prompt text, 1,536 px JPEG, JSON Schema) become the first history rows. Only ~67 fresh calls.
+Answer: A: stage 3, fresh run (Recommended)
+
+Which request settings should the new description calls use?
+- Exact cluster request (Recommended): Package cut else original, PNG 2,048 px, max_tokens 1,500 (+ one loop-guard retry at 3,000), thinking off, json_object. Settings read from the label_rules block, so both stay identical and share the cache.
+- Cluster request + JSON Schema: Same, plus a strict JSON Schema of the 7 keys in response_format, as stage 2 does. Stops key drift (some cluster answers use "text" instead of "texts"). No cache hits with the cluster run.
+Answer: exact cluster record, but validate result and try to fix obvious key drifts. Also check that clusters code also try to fix drifts
+
+What happens when you remove the last description of an image?
+- VLM describes it again (Recommended): Follows your rule literally: no description -> the watcher starts. Removing a bad VLM row is then a way to get a fresh one.
+- Stays empty: A removal leaves a marker; the watcher never starts again for that image. A later manual edit can still add a row.
+Answer: VLM describes it again (Recommended)
+
+How should the manual edit work?
+- JSON textarea, new row (Recommended): Edit the pretty-printed JSON of a row; Save adds a new 'manual' row that becomes the latest. The VLM row stays in the history.
+- JSON textarea, in place: Save changes the row itself (created_by stays, an edited_at time is added). No new history row.
+- Form fields, new row: Separate inputs for texts, numbers, vintage, colours, design, marks, bottle. More UI code; key drift answers need a fallback.
+Answer: JSON textarea, new row (Recommended)
+```
+
+## 2026-09-27T14:46:48+0300
+
+Agent questions (drink-atlas-workspace-6b [e99257]) about plan 61, and the owner answers:
+
+```text
+Plan 61 is in docs/plans/61_label-descriptions.md. May I implement it as written?
+- Approve, implement (Recommended): Implement, test on a scratch copy, then schema entry + migration + restart of 8168 + the background backlog (~2-3 h on gx10, caffeinate, GPU_TASKS row).
+- Implement, no deploy yet: Code and tests only (schema file stays in schema_pending/). You decide the deployment later.
+Answer: Approve, implement (Recommended)
+
+The 382 stored cluster descriptions (132 with key 'text', 2 with 'number') are not repaired by the new code. Repair them now?
+- No, new answers only (Recommended): Stored descriptions and rules stay as they are. No cloud calls.
+- Yes, forced describe run: Repairs them from the cache (no GPU), but the rules of the clusters with a changed card become stale; the next rules run re-sends them to qwencloud-qwen3.8-max.
+Answer: No, new answers only (Recommended)
+
+Stale sections (6c [c91c62], bc, f2, d3, 41, 96, codex-side-sam3-fix) still list describe_images.py, image_descriptions.py, lab_server.py, dataset.html, config.yaml, test_labdb.py, test_describe_images.py. Their work is committed in c863231. May I add separate hunks to these files?
+- Yes, separate hunks (Recommended): Only new hunks; the blocks of those sections stay byte-identical.
+- No: Then I cannot add stage 3 or the dialog section.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T14:49:04+0300
+
+```text
+http://127.0.0.1:8168/dataset
+drink atlas uuid was added automatically, add button "approve", so it become manual, this indicating that user confitmed it
+```
+
+## 2026-09-27T14:54:07+0300
+
+Agent questions (drink-atlas-workspace-d8 [a5ab96]) about the Atlas `approve` button, and the owner answers:
+
+```text
+How should "approve" change an automatic Atlas Core product to manual?
+- New approve route (Recommended): New POST /api/dataset-atlas-binding-approve. One UPDATE sets source automatic→manual. The row keeps its place in the list. The button shows on automatic rows only and needs no confirm. The server needs a restart of 8168.
+- Reuse the add POST: There is no new route. If you add a UUID that the wine already has as automatic, the server turns that row into manual instead of answering 409. The button calls the same POST. This changes the present 'already has' error (smoke case AL5).
+- Page only: remove + add: There is no server change and no restart. The button sends DELETE for the automatic row, then POST for a manual row. That is two requests with no transaction, and the UUID moves to the end of the list.
+Answer: New approve route (Recommended)
+
+The stale section bc [2d545a] still claims the Atlas lines in atlas_bindings.py, lab_server.py, dataset.html, and the Atlas tests. Its work is committed in c863231. May I add separate hunks there?
+- Yes, separate hunks (Recommended): I add only new hunks. The lines of the other sessions stay byte-identical. I will also message 6b, 1d, and a8, because their open sections list dataset.html and lab_server.py.
+- No: Then I cannot add the button or the route.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T15:04:13+0300
+
+```text
+http://127.0.0.1:8168/recognize
+add support CTRL+V (CMD+V) to paste image from clipboard
+```
+
+## 2026-09-27T15:12:00+0300
+
+```text
+http://127.0.0.1:8168/dataset
+
+allow bidirectional relation between two wine_slugs - similar
+
+when calculating similar clusters, if include one bottle, then add another one
+```
+
+## 2026-09-27T15:22:00+0300
+
+Agent questions (drink-atlas-workspace-2f [0e9cfe]) about the manual `similar` relation, and the owner answers:
+
+```text
+How should a manual 'similar' pair change the cluster build? Example: A and B are marked similar, A is in cluster C1, and B is in cluster C2.
+- Forced link, merge (Recommended): The pair counts as one more edge in the union-find build. B joins the cluster of A. If B already sits in another cluster, the two clusters become one. Each wine stays in exactly one cluster, which is what cluster notes, label rules and re-rank expect today.
+- Add partner, no merge: Build the clusters from vectors as today. Then add each member's manual partner to that cluster. B can end up in two clusters. That breaks the rule that one wine sits in one cluster, which the notes, rules and re-rank code rely on.
+Answer: Forced link, merge (Recommended)
+
+If neither wine of a pair is in any vector cluster, should the pair form a cluster of its own?
+- Yes, a cluster of 2 (Recommended): A manual pair is enough to make a cluster, like any other edge. It then gets notes and label rules like other clusters.
+- No, only extend clusters: A manual pair adds a wine only to a cluster that already exists from vector similarity. A lone pair is ignored by the build.
+Answer: Yes, a cluster of 2 (Recommended)
+
+Which cluster views should get the manual pairs?
+- All: full, label, combined (Recommended): A person confirmed the wines look alike, so this doesn't depend on the vector space. All three views get the same manual edge.
+- combined only: Only the combined view (the one whose label rules the matcher uses) gets the manual edges. The full and label views stay pure vector results.
+Answer: All: full, label, combined (Recommended)
+```
+
 ## 2026-09-27T15:24:21+0300
 
 Recorded late by session d8 [a08e7a]. The message came between 14:35 and 15:24.
@@ -5923,6 +6217,200 @@ Owner answer to the question of session d8 [a08e7a] of 15:24:21:
 commit
 ```
 
+## 2026-09-27T15:31:00+0300
+
+Agent question (drink-atlas-workspace-2f [0e9cfe]) about the files of the stale sections for plan 62, and the owner answer:
+
+```text
+Stale sections of sessions that no longer run (bc, d3, f2, 6c [c91c62], 41, d1, 96, codex-side-sam3-fix and others) still list dataset.html, lab_server.py, clusters.html, test_lab_server.py, test_labdb.py and docs/API.md. May I add separate new hunks there, keeping their lines byte-identical?
+- Yes, separate hunks (Recommended): I add only new hunks and leave every line of the other sessions as it is. The live sessions 6b, a8, 1d and both d8 sessions got a message and must also agree.
+- No: Then I can't add the Dataset editor, the routes or the tests, and the feature stops at the plan.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T16:08:37+0300
+
+Owner message to session drink-atlas-workspace-00 [8866fa]:
+
+```text
+svoe-vino-lab
+
+if I add barcode or QR code to slug_wine, then invalidate all QR and barcode caches for that wine_slug
+```
+
+## 2026-09-27T16:09:36+0300
+
+Owner message to session drink-atlas-workspace-00 [8866fa]:
+
+```text
+remember, that currently main work project for claude is svoe-vino-lab
+```
+
+## 2026-09-27T16:49:57+0300
+
+Agent question (drink-atlas-workspace-00 [8866fa]) about the invalidation of the barcode cache, and the owner answers:
+
+```text
+How should adding a GTIN or QR URL to a wine clear the barcode cache?
+- Delete that wine's photos (Recommended): In add_code, delete the data/cache/barcode records whose photo sha256 belongs to a test_photo with place = slug. Only that wine's test photos get scanned again on the next run.
+- Delete whole barcode cache: In add_code, delete every record in data/cache/barcode/. Simplest code, but the next barcode run scans all ~1,851 photos from zero.
+- No change, investigate: Leave the cache as it is. The lookup already runs against the current wine_code. Instead, show me the photo or run where the answer stayed wrong after you added a code.
+Answer: Delete that wine's photos (Recommended)
+
+Should removing a code clear the cache too?
+- Add only: Clear the cache only when a code is added, as you asked.
+- Add and remove: Clear the same records when a code is removed too.
+Answer: Add and remove
+```
+
+## 2026-09-27T17:02:48+0300
+
+Agent question (drink-atlas-workspace-00 [8866fa]) about the files of the stale sections, and the owner answer:
+
+```text
+Stale sections (d3, f2, 6c [c91c62], bc, 41, 96, and others) still list pipeline/lab_server.py and docs/API.md. The live sessions 6b, d8 [a5ab96], and 2f agreed. May I add my separate new hunks there, keeping every line of the other sessions byte-identical?
+- Yes, separate hunks (Recommended): I add only new hunks: one import, one helper, the two calls in add_code/remove_code, OSError in the _code except, and one API.md sentence. Every other line stays as it is.
+- No: The model_cache.forget function and its tests stay, but nothing calls it. The feature stops before the lab server.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T17:04:20+0300
+
+```text
+implement tags for wine_slug
+
+ex.: 
+- we need tag to mark among similar variants of one wine (but hasving a few wine_slugs), which is generic, and which covers specific year
+```
+
+## 2026-09-27T17:05:11+0300
+
+```text
+ex.: shato-pino-shiraz-krasnoe-suhoe-135 - no year
+shato-pino-shiraz-krasnoe-suhoe-14 - 2017
+
+so I prefer if photos with 2017 vintage matched to shato-pino-shiraz-krasnoe-suhoe-14  and other to shato-pino-shiraz-krasnoe-suhoe-135 
+
+but how to indicate this? so let's use tags
+```
+
+## 2026-09-27T17:07:53+0300
+
+Agent question (drink-atlas-workspace-1e [7df1e0]) about the tags of `wine_slug`, and the owner answers:
+
+```text
+How should a tag be stored?
+- Free-form text tags (Recommended): Table wine_tag(wine_slug, tag, created_at); one wine MAY have many tags; any text, e.g. `generic`, `vintage:2017`, later `magnum`. The pipeline reads only the forms it knows (`generic`, `vintage:YYYY`). Editor on /dataset: chips with × and a + input, like the Similar wines editor.
+- Fixed vintage field: Table wine_vintage(wine_slug PK, vintage 'generic' or YYYY). Strict CHECK, one value per wine, simplest code. Serves only the vintage use; another kind of tag needs a new table.
+- Key:value, closed keys: Table wine_tag(wine_slug, key, value) with a CHECK on key (first key: `vintage`, values `generic` or YYYY). Validated like the fixed field, and a new key needs only a new schema file. More code than free-form.
+Answer: Free-form text tags (Recommended)
+
+How far should this task go toward the matching result (2017 photos → -14, other photos → -135)?
+- Tags feed label rules (Recommended): Storage + /dataset editor + API, and label_rules.vintage_facts reads the tags first (vintage:YYYY → dated, generic → undated catch-all `other`), ahead of the VLM label year. It reuses the existing VINTAGE_NOTE + re-rank scoring. Takes effect after you rebuild clusters and cluster rules (VLM on gx10). Caveat: stage 2 VLM still decides whether it asks a vintage question; the note only tells it to.
+- Tags + editor only: Storage, /dataset editor, the `_tags` key in GET /api/dataset, tests. No pipeline change now; the use in matching becomes a separate plan.
+- Tags drive re-rank directly: Storage + editor, and cluster_rerank asks a fixed vintage question when the window holds tagged variants: a year match picks the dated card, `other`/`not visible` picks the generic card. Works without a rules rebuild and does not depend on the VLM choosing the question. Most new code; the trigger still needs both wines in one cluster.
+Answer: Tags + editor only
+```
+
+## 2026-09-27T17:12:18+0300
+
+A message to drink-atlas-workspace-4e [ff960b]. The time is the time of the record.
+
+```text
+previously i told you, if there are two or more wines with same barcode, and you detected same GTIN on photos, then fast path for barcode can't be applied. However, still remember this, and when you get top-k, also use that fact that you met barcodes to re-rank barcode matching k-top candidates. 
+
+do you understand idea?
+```
+
+## 2026-09-27T17:15:09+0300
+
+Agent question (drink-atlas-workspace-1e [7df1e0]) about the files of the stale sections, and the owner answer:
+
+```text
+Stale sections (d3, f2, 6c [c91c62], bc, 41, 96, 86, df, ab, 9e, f4 [b39b7b], codex-side-sam3-fix) still list pipeline/lab_server.py, pipeline/pages/dataset.html, tests/test_labdb.py, tests/test_lab_server.py, and docs/API.md. The live sessions 6b, 2f, d8 [a5ab96], 1d, and a8 agreed; 00 has not answered yet. May I add my separate new plan 63 hunks there, keeping every line of the other sessions byte-identical?
+- Yes, separate hunks (Recommended): I add only new hunks next to the plan 62 hunks: the tag docstring paragraph, import, 2 dataset lines, add_tag/remove_tag, the _tag handler and route branch; the Tags editor in dataset.html; VERSION 29 and one table name in test_labdb.py; a new test class; a new API.md section. Every other line stays as it is.
+- No: wine_tags.py, its tests, and the plan stay, but the table is not entered and nothing on the lab server or the page uses the tags. The feature stops before the lab server.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T17:16:05+0300
+
+The owner answer to the question of drink-atlas-workspace-4e [ff960b] about a shared GTIN.
+The time is the time of the record.
+
+Question:
+
+```text
+Options:
+1. Keep plan 58 as it is. No code change.
+2. Soft re-rank (recommended). One embedding pass returns the normal top-k and the scores of all GTIN wines. The GTIN wines go first, in cosine order, including any that fell outside the top-k. The other wines follow, up to k. The VLM cluster re-rank must never move a non-GTIN wine above a GTIN wine.
+3. Option 2, plus the GTIN wines become the VLM re-rank window. The VLM would then compare `-14` and `-135`, for example by year, even when they aren't in one cluster. This overlaps with the tags, so it fits better as a later plan.
+
+Which one do you want?
+```
+
+Answer:
+
+```text
+3
+```
+
+## 2026-09-27T17:36:35+0300
+
+A message to codex-side-dataset-navigation. The time is the time of the record.
+
+```text
+svoe-vino-lab:
+
+[http://127.0.0.1:8168/dataset/shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135](http://127.0.0.1:8168/dataset/shato-pino-kaberne-sovinon-merlo-krasnoe-suhoe-135)
+when view image, arrows left-right shall be moved among images for this wine_slug
+and only up/down to prev/next wine_slug
+```
+
+Agent question (codex-side-dataset-navigation) about Dataset preview navigation, and the
+owner answer:
+
+```text
+Two implementation options:
+
+1. Separate page hunks (recommended): update the existing preview logic in `pipeline/pages/dataset.html`.
+   - ←/→ selects the previous or next available image of the current `wine_slug`.
+   - ↑/↓ selects the previous or next visible `wine_slug` and opens its first available image.
+   - Navigation stops at list ends, matching `/testset`.
+
+2. Wait for the active tags task: another session currently lists `pipeline/pages/dataset.html`, although its planned edits are in different sections.
+
+May I use option 1 with separate, non-overlapping hunks while preserving the active tags changes byte-for-byte?
+
+Answer: 1
+```
+
+## 2026-09-27T19:13:10+0300
+
+A message to drink-atlas-workspace-4e [ff960b]. The time is the time of the record.
+
+```text
+resume
+```
+
+## 2026-09-27T19:28:52+0300
+
+Agent questions (drink-atlas-workspace-4e [ff960b]) about the rule of the GTIN wines and
+the files of the stale sections, and the owner answers:
+
+```text
+Neither shared-GTIN pair is in one cluster today, so the VLM has no rule to compare them with. Where should the VLM rule for the GTIN wines come from?
+- Auto cluster link (Recommended): A shared GTIN becomes a forced link in the cluster build, like a plan 62 'similar' pair. After a clusters rebuild and a rules build, each pair gets a normal rule. For Shato Pino Shiraz, the vintage note should give '2017 -> -14, any other year -> -135'. The rule also helps photos with no decoded code (-14/03_manual.webp: -135 won 0.857 to 0.853). Needs plan 62 (2f, not committed) first.
+- Manual 'similar' link: No automatic cluster change. The VLM compares the GTIN wines only when they already share a rule cluster. You link a pair with 'similar' on /dataset when you want a rule for it. Simplest code. The same rebuilds are needed.
+- Runtime prompt: No rebuilds. A new verdict prompt, built at run time from the catalogue data and the plan 61 label descriptions of the GTIN wines. Less reliable: the small VLM must infer '2017 -> A, other years -> B' from text alone, and the prompt is new.
+Answer: Auto cluster link (Recommended)
+
+Only the stale sections df [46e479] and codex-profile-latency list barcode.py, cluster_rerank.py, and tests/test_barcode_shared.py, and their lines are committed. embedding_run.py is also listed by live c7 [09419d], whose uncommitted plan 59 lines are in another part of the file (I will message c7). May I add separate hunks in these files and keep every line of the other sessions byte-identical?
+- Yes, separate hunks (Recommended): I add only my own hunks in Catalogue.rank, EmbeddingBackend.ask, ClusterRerank, CodeFirst, and the shared-code tests. Every other line stays as it is.
+- No: Then I cannot change the barcode step or the re-rank, and the work stops at the plan.
+Answer: Yes, separate hunks (Recommended)
+```
+
 ## 2026-09-27T19:30:17+0300
 
 A message to drink-atlas-workspace-06 [1b7eb8], with a screenshot.
@@ -5941,4 +6429,438 @@ A message to drink-atlas-workspace-06 [1b7eb8], with a screenshot.
 
 ```text
 if 2+ wines have same drink-atlas uuid, show counter badge near
+```
+
+## 2026-09-27T20:09:06+0300
+
+Agent questions (drink-atlas-workspace-4e [ff960b]) about the rollout and the commit of
+plan 64, and the owner answers:
+
+```text
+The GTIN window acts only after a rebuild of the clusters and the rules of gx10-siglip2-so400m-patch16-naflex-p256. Its clusters.json is already stale: index changes since 2026-09-26 10:33, and your 3 manual 'similar' pairs are not built in. How should I roll it out?
+- Full rebuild now (Recommended): Back up clusters.json and cluster-rules.json. Build the clusters (163 -> 176). Build the 18 rules that are missing: about 37 describe calls to qwen3.5-9b-nvfp4 on gx10 and 18 rule calls to qwencloud-qwen3.8-max. Restart 8168, so /clusters uses the new code (only plan 64 code is new since its 17:58 start). Then check the Belmas photo again.
+- GTIN clusters only: The same clusters rebuild, but rules only for the Belmas and Shato Pino clusters: about 4 describe calls and 2 rule calls. The other 16 new clusters stay without a rule until a later full rules build. Some of them replace clusters that have a rule today, so their wines lose the re-rank until then.
+- Not now: I change no data and do not restart 8168. You run the builds later from /clusters and the rules command. The code waits in the tree.
+Answer: Full rebuild now (Recommended)
+
+My plan 64 changes are not committed. The clusters.py lines need 2f's plan 62 commit first (2f's condition). What should I do about the commit?
+- Leave it (Recommended): Nothing is committed now. I commit only my own hunks through a private git index when you say 'commit', after or together with 2f's plan 62 commit.
+- Commit when 2f is in: I watch for 2f's plan 62 commit, then commit only my own hunks through a private git index with no further question.
+Answer: Leave it (Recommended)
+```
+
+## 2026-09-27T20:11:15+0300
+
+A message to drink-atlas-workspace-4e [ff960b], with a screenshot of the cluster `c001`
+(8 wines of `fanagoriya-primum-alveus`, the kind `mixed`) on `/clusters`: the cards
+#2, #4, and #6 show the back of the bottle. The time is the time of the record.
+
+```text
+http://127.0.0.1:8168/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256&space=combined
+
+prefer to show main(patched) images
+```
+
+## 2026-09-27T20:16:16+0300
+
+Agent question (drink-atlas-workspace-4e [ff960b]) about the card image of `/clusters`,
+and the owner answer:
+
+```text
+The cards on /clusters show the first image of the view, and the server sorts full_back before main and main_patched. I would make the page show the main image (main_patched, else main) of the view, else the first image as now. The change is a new function cardImage and one line in memberHtml of clusters.html, and the preview follows the cards. The stale sections d1 [0feb34] and 41 [501d23] list clusters.html (their work is committed), and so does live 2f (asked). I missed d1 and 41 for my plan 64 CSS line .badge.gtin, which is already in the file. May I keep that line and add this hunk, with every other line byte-identical?
+- Yes, separate hunks (Recommended): I keep the .badge.gtin line and add cardImage plus one line in memberHtml. No restart: the server reads the page from disk. I check it in the browser, in the light and dark themes and at 390 px.
+- No: I remove my .badge.gtin line (the gtin badge then uses the plain badge style), and the cards keep the present image order.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T20:22:30+0300
+
+A message to drink-atlas-workspace-06 [1b7eb8], with a screenshot.
+
+[screenshot: the `/dataset` card of novyj-svet-kaberne-sovinon-polusladkoe; `Similar wines 1` lists the link novyy-svet-dom-shampanskih-vin-igristoe-vino-vyderzhannoe-polusladkoe-krasnoe-novyy-svet-kaberne-sovinon-12]
+
+```text
+if i click on similar wine wine_slug it does not opens its descriptio
+```
+
+## 2026-09-27T20:36:11+0300
+
+Messages to drink-atlas-workspace-1c [b72be3], recorded late: the session recorded them
+at this time. The first two came at about 20:15 to 20:30, the third at about 20:34, the
+fourth at about 20:35.
+
+[screenshot: the `/embedding` card of vinodelnya-myshako-sira-marselan-kyuve-krasnoe-suhoe-136; the `label` cells of `full_front` and `full_back` show `failed` and `no label cut yet`]
+
+```text
+why label generation failed?
+```
+
+```text
+look at http://127.0.0.1:8168/embedding, check all faild cases
+```
+
+```text
+I created wine __aaaaa but it does not appear in list
+```
+
+The owner quoted two lines of the agent answer and added one word:
+
+```text
+> Clear the 86 now: run python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3, then Build the entries. At the measured 1.5 s per photo, that's roughly 2 minutes of SAM3 on gx10. The script writes to the lab database, so I haven't run it; tell me if you want me to.
+> Stop it happening again: change store_alternative and set_type so a full photo also gets its label cut when it's added. That's a code change, so I'll wait for your go-ahead.
+
+Implement
+```
+
+## 2026-09-27T20:34:00+0300
+
+Agent question (drink-atlas-workspace-06 [1b7eb8]) about the link of a similar wine that
+the filters hide, and the owner answer:
+
+```text
+A similar wine that your filters hide: how should its link open it?
+- New tab, shows it (Recommended): Keep the new tab. When a page opens with #<slug> and the filters hide that wine, the search box gets the slug, so the card shows and the page scrolls to it. Your stored search is not overwritten; the first tab keeps its view. This also fixes each other /dataset#<slug> link. Changes only openHash (committed code), not the plan 62 code of 2f.
+- Same tab: No new tab. A click on a hidden partner puts its slug in the search box of the current tab, redraws the list, and scrolls to the card. Your previous search is replaced. Changes the plan 62 click branch of 2f (needs its agreement).
+Answer: i expect that you open that wine card. Can you just check if clicked wine is already visible, then scroll to it, if not visible (because of filters), then show below one where clicked
+```
+
+## 2026-09-27T21:26:58+0300
+
+Agent questions (drink-atlas-workspace-1c [b72be3]) and the owner answers:
+
+```text
+Three runtime paths add a full photo with no label cut: alternative uploads, manual wines (__aaaaa), and the website import. Which fix do you want?
+- Every path (Recommended): alternatives.py (store_alternative, set_type, re-upload), manual_wines.py, and import_website.py each make the label cut after the package cut, the same way patches.py does now. An alternative upload reuses its detection answer, so it needs no extra SAM3 call. A website import takes about 0.6-1.5 s more SAM3 per new main photo.
+- Alternatives only: What I proposed earlier. Manual wines and website imports still leave gaps, so seed_label_cuts.py has to be run by hand after them.
+- At Build time: build_embeddings.py runs the label seed for missing cuts before it builds. One change covers every path. But a Build then needs SAM3 and writes the database, and plan 22 says the cut is made when a photo is stored, not at build time.
+Answer: Every path (Recommended)
+
+Four stale sections (codex-side-sam3-fix, 4f, 96, 86) list pipeline/alternatives.py and tests/test_alternatives.py. Their work is already in commit c863231, the files have no uncommitted changes, and none of those sessions is running. May I change these files?
+- Yes, change them (Recommended): I change the files and record your permission in my ACTIVE_WORK.md section. I leave the stale sections as they are.
+- No: I don't touch alternatives.py. Alternative uploads keep the gap.
+Answer: Yes, change them (Recommended)
+```
+
+## 2026-09-27T21:44:04+0300
+
+A message to drink-atlas-workspace-1c [b72be3].
+
+```text
+http://127.0.0.1:8168/clusters?name=gx10-siglip2-so400m-patch16-naflex-p256&space=combined
+
+add "Build all clusters"
+```
+
+## 2026-09-27T22:05:44+0300
+
+Agent questions (drink-atlas-workspace-1c [b72be3]) and the owner answers:
+
+```text
+How should "Build all clusters" work on /clusters?
+- Page loop (Recommended): A new button next to "Build clusters" calls the existing build route for each configuration, one at a time, in the order of the combobox. The message line shows "Building 3 of 12: <name>…", then a summary with each failure (for example, no vector file, or its embedding build is running). Only clusters.html changes; no server restart. Closing the page stops the loop after the current entry.
+- Server queue: Like "Build All" on /embedding (plan 60): a new route POST /api/clusters/build-all runs a server thread, and the page polls its progress. It keeps running when you close the page. Needs cluster_routes.py, clusters.html, tests, and an 8168 restart.
+- Chain after embeddings: The "Build All" queue of /embedding also builds the clusters of each entry after its vectors. No new button on /clusters. Needs embedding_routes.py (it has other sessions' uncommitted changes) and an 8168 restart.
+Answer: Server queue
+
+clusters.html has uncommitted hunks of live sessions 2f and 4e (I'll message them), and the stale sections d1 [0feb34] and 41 [501d23] also list it. Their work is committed, and neither session is running. May I add my own separate hunks to clusters.html, keeping every other line byte-identical?
+- Yes, separate hunks (Recommended): I add only the new button, its handler, and any CSS it needs. I record your permission in my ACTIVE_WORK.md section.
+- No: I don't change clusters.html.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T22:06:44+0300
+
+A message to drink-atlas-workspace-e3 [c13919].
+
+```text
+rerun http://127.0.0.1:8168/runs#2026-09-27T185537Z-lab-barcode-rerank-siglip2-512-crop-my-1
+and ensure that all embeddings are build for it and all qr and barcode codes removed
+```
+
+## 2026-09-27T22:15:50+0300
+
+Agent question (drink-atlas-workspace-e3 [c13919]) about the codes of the rerun, and the
+owner answer:
+
+```text
+What does "all qr and barcode codes removed" mean for the rerun of barcode-rerank-siglip2-512-crop on my-1? (Facts: in the last run, 6 photos answered from a code (5 GTIN, 1 QR URL); 241 of 247 barcode scans came from data/cache/barcode.)
+- Disable barcode step (Recommended): Run with --no-barcode (the checkbox 'Disable barcode fast path'): no decode and no lookup in wine_code. Each photo goes to the embedding and the cluster re-rank. The database and the cache stay as they are.
+- Clear barcode cache: Back up and delete all 248 records of data/cache/barcode, then run with the barcode step. Each photo gets a fresh decode. The GTINs and QR URLs in the database stay.
+- Mask codes in photos: Paint over the barcode and QR code areas of each photo before the embedding. This is new code (a new view step and a rebuild of the vectors), so I write a plan first.
+- Delete codes from DB: Back up data/lab.sqlite3, then delete all 79 GTINs and 23 QR URLs from wine_code. This destroys the code annotations.
+Answer: Clear barcode cache
+```
+
+## 2026-09-27T22:39:01+0300
+
+Agent question (drink-atlas-workspace-1c [b72be3]) and the owner answer:
+
+```text
+Correction: session 4e [ff960b] is not running (I called it live by mistake). Its section is stale, but its hunks in clusters.html (cardImage, the .badge.gtin line) are NOT committed yet. 2f answered "ok". May I add my separate Build-all hunks to clusters.html, keeping every 4e line byte-identical?
+- Yes, separate hunks (Recommended): I add only my button, status span, one loadList line, and the new functions and listener. Every 4e, 2f, d1, and 41 line stays byte-identical. At commit time I stage only my own hunks.
+- No, wait for 4e's commit: The server queue is ready, but the page gets no button until 4e's hunks are committed.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T23:11:41+0300
+
+A message to drink-atlas-workspace-e3 [c13919].
+
+```text
+"Similar wines" should be not similar, but wines that hard to distinguish (hardcases), please rename
+```
+
+## 2026-09-27T23:15:34+0300
+
+Agent questions (drink-atlas-workspace-e3 [c13919]) about the rename of "Similar wines",
+and the owner answers:
+
+```text
+How deep should the rename of "Similar wines" go? (Plan 62 is session 2f's uncommitted work; sessions 06, 1e, 4e, and 1c have hunks next to it.)
+- Visible text only (Recommended): Change the texts on /dataset (heading, tooltips, alert/confirm), and the wording in docs/API.md, README.md, SMOKE_TESTS.md, and plan 62. Identifiers stay: wine_similar, /api/dataset-similar, _similar, CSS classes. No restart, no schema file, no cluster rebuild. The 2 server error texts ('cannot be similar to itself') stay until a later restart. I ask 2f to agree, because these are its lines.
+- Text + API names: Also rename the route (/api/dataset-hardcase), the keys (_hardcases, hardcase_pairs), the module (hardcase_wines.py), the functions, the server texts, and the tests. The table stays wine_similar. Needs an 8168 restart and changes 2f's uncommitted code next to the hunks of 06, 1e, and 4e.
+- Full rename + table: Everything of the option before, plus a new schema file that renames the table to wine_hardcase, and the key 'similar' of the cluster build. The build hash changes, so clusters.json of naflex-p256 becomes stale and needs a rebuild. Migration, restart, and a clusters rebuild.
+Answer: Visible text only (Recommended)
+
+Which visible name do you want on /dataset?
+- Hard cases (Recommended): Heading 'Hard cases'; tooltip 'Add a hard case: a wine that is hard to distinguish from this one'.
+- Hardcases: Heading 'Hardcases', the one-word form of your message and of HARDCASES.md.
+- Hard to distinguish: Heading 'Hard to distinguish'; it states the meaning with no jargon.
+Answer: Hard cases (Recommended)
+```
+
+## 2026-09-27T23:28:47+0300
+
+A message to drink-atlas-workspace-e3 [c13919], with a screenshot.
+
+[screenshot: the dialog `Failed details` of the label descriptions: the images whose detail
+failed 3 times with the same inputs. The first entry `leto-kollekcziya-leta-2020-suhoe-beloe-1`
+(package prompt, bottle, 3 attempts, last 2026-09-27T20:21:48Z) shows the last error "no answer
+from http://192.168.86.14:18081/v1/chat/completions in 300 s: timed out; a probe of the model
+answered in 0.3 s, so the failure counts against the image" and a log of 10 entries: HTTP 429
+"Too many requests" lines marked "(not counted)", 3 time-outs that count, and a last line
+"label ok package, 15 texts". Next entries: `novyj-svet-kaberne-sovinon-polusladkoe`,
+`shato-taman-kaberne-sovinon`, `zolotoe-pole-kaffa-saperavi-krasnoe-suhoe-14`, each FAILED
+after time-outs.]
+
+```text
+026-09-27T20:01:43Z ea5a284ff9af failed (not counted): HTTP 429: {"error":"Too many requests"}
+2026-09-27T20:02:13Z ea5a284ff9af failed (not counted): HTTP 429: {"error":"Too many requests"}
+
+just re-schedule, do not consider requests failed to VLM
+```
+
+## 2026-09-27T23:40:41+0300
+
+Agent questions (drink-atlas-workspace-e3 [c13919]) about the failed VLM requests, and the
+owner answers:
+
+```text
+Which failed VLM requests should only re-schedule the image and never count toward the 3 attempts of FAILED?
+- All request failures (Recommended): HTTP 429, 5xx, no connection, and time-outs re-schedule the image and never count; the plan 49 probe no longer counts a time-out. Only a bad answer (not JSON, schema mismatch, max_tokens cut) counts. A time-out puts that image back after a delay (for example 10 min) and does not pause the other images, so the 9-hour stall of plan 49 does not come back. The 4 FAILED details get reset and are sent again.
+- HTTP 429 only: A 429 answer is not a failure: no 'failed' log line and no stored error; the log says 'rescheduled', and the image goes back after the backoff. Time-outs keep the plan 49 rule (a probe answers, so it counts). The 4 FAILED details stay FAILED until a --retry-failed.
+Answer: All request failures (Recommended)
+
+The stale section 6c [c91c62] lists pipeline/describe_images.py, and live 6b has uncommitted plan 61 hunks there (I will ask 6b). May I add separate hunks to describe_images.py and tests/test_describe_images.py and keep every line of the other sessions byte-identical?
+- Yes, separate hunks (Recommended): I change only my own lines: post/ask/timeout_error, the three *_one handlers, the run loop, and new tests. I record the permission in my section of ACTIVE_WORK.md.
+- No: I do not change these files; the rule stays as it is.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-27T23:50:37+0300
+
+A message to drink-atlas-workspace-a4 [34c1c5].
+
+```text
+http://127.0.0.1:8168/testset
+
+add support for tags for testset images.
+```
+
+## 2026-09-27T23:54:19+0300
+
+A message to drink-atlas-workspace-31 [e1f2c7].
+
+```text
+how best our pipeline works?
+```
+
+## 2026-09-27T23:53:00+0300
+
+Agent questions (drink-atlas-workspace-a4 [34c1c5]) about the tags of the test photos, and
+the owner answers:
+
+```text
+What does a tag belong to? The DB has 4,585 test photos and 3,459 distinct images. 315 images are in more than one set, and 477 repeat inside one set (for example, a negative in another wine row).
+- Photo of one set (Recommended): New table test_photo_tag(set_name, place, file_name, tag, created_at), keyed like test_photo_comment. A move takes the tags along, and a delete removes them. The same image in another set or another row has its own tags. This matches how labels and photo comments work.
+- The image bytes (sha256): New table image_tag(sha256, tag, created_at). One tag shows on every copy of the image in every set and row. Good for facts about the picture itself (blurry, back label). Wrong for facts that depend on the wine row, for example 'other vintage'.
+Answer: The image bytes (sha256)
+
+Where does the page show and edit the tags?
+- Editor + badge + filter (Recommended): An editor 'Tags on this photo' in the side panel of the large view: chips with ×, and + opens an input that suggests the tags the set already has. Each tile shows a small 'tags' badge, and its tooltip lists the tags. 'Marks' gets the option 'a tag', and a new select 'Tag' shows only the wines with a photo that has that tag.
+- Editor + badge only: The large-view editor and the badge on the tile. No filter.
+- Editor only: Only the editor in the large view. The tile shows nothing.
+Answer: Editor + badge + filter (Recommended)
+
+Do the tags go into the JSON export of a set (review-labels.json) and back in through the import?
+- Yes, field `tags` (Recommended): export_testset.py writes a list `tags` in each label entry, as it writes `comments`. import_testset.py reads it back. Without this, an `import --force` of a set deletes its tags, because it rebuilds test_photo. 'New testset…' on /runs copies the tags of the photos too, as it copies the comments.
+- No, DB only: The tags live only in data/lab.sqlite3 (and in the db_export text dump). An import --force of the set deletes them. Less code.
+Answer: Yes, field `tags` (Recommended)
+```
+
+## 2026-09-27T23:59:59+0300
+
+Agent questions (drink-atlas-workspace-a4 [34c1c5]) about plan 66 and the files of the
+stale sections, and the owner answers:
+
+```text
+Plan 66 is in docs/plans/66_testset-image-tags.md. Summary: new table image_tag(sha256, tag, created_at), schema 030; module pipeline/image_tags.py (the tag form of the wine tags, through wine_tags.normal); routes POST /api/testset-photo-tag and /api/testset-photo-tag-remove; in the large view, the section 'Tags of this image' (chips with ×, an input with suggestions); a badge at the lower right of each tile; 'Marks: a tag'; a new select 'Tag' under 'Additional settings'; the field `tags` in export/import (the import only adds tags and never removes one; a bad `tags` value stops the import). The pipeline and the runs do not read the tags. May I implement it?
+- Implement plan 66 (Recommended): I implement the plan as written, with tests, a browser check (writes mocked), docs, the migration of data/lab.sqlite3 (backup first), and a restart of 8168. The commit waits for your word and for the commits of schema 027-029.
+- Change the plan first: Tell me what to change in 'Other'. I update the plan and ask again.
+Answer: Implement plan 66 (Recommended)
+
+Stale sections (ab, 96, 41, b4, 9e: not in ListAgents) list the testset files: testsets.py, testset_routes.py, pages/testset.html, import_testset.py, export_testset.py, and their tests. Each file is clean against HEAD, so their work is committed. May I change these files?
+- Yes, change them (Recommended): I change them and record your permission in my section of ACTIVE_WORK.md. I do not remove the stale sections.
+- No: I stop before the code. Plan 66 stays a plan.
+Answer: Yes, change them (Recommended)
+```
+
+## 2026-09-28T00:00:54+0300
+
+A message to drink-atlas-workspace-31 [e1f2c7].
+
+```text
+barcode-rerank-siglip2-512-crop it is no flex version, right?
+```
+
+## 2026-09-27T23:58:00+0300
+
+A message to drink-atlas-workspace-49 [549156].
+
+```text
+add selftest function - select embedding and run all images in dataset (main/patched, additional images). Run main/patched and full-front/back through full-package embedding space. Run labels also through full-package embedding space.
+
+Output as run where wine_slug is wine_slug and images are testset. Disable barcode.
+```
+
+## 2026-09-28T00:00:00+0300
+
+A message to drink-atlas-workspace-49 [549156], during the work on the message of 23:58.
+
+```text
+idea is to test that all images are in dataset
+```
+
+## 2026-09-28T00:04:00+0300
+
+Agent questions (drink-atlas-workspace-49 [549156]) about the self-test, and the owner
+answers:
+
+```text
+Where should each image's query vector come from?
+- Real query path (Recommended): Each image goes through the same path as a test photo in embedding_run.py: the SAM3 cut from data/cache/sam3/, the steps of the `full` view, and one call to the model endpoint. This checks that the image is in the index and that the query path finds its own wine. It makes about 2,400 model calls and needs gx10. It takes minutes.
+- Index vectors only: Each image reuses its own stored vector from data/embeddings/<name>/, with no model call and no SAM3 call. A label close-up uses its `label` item vector, searched against the `full` vectors. It takes seconds and runs with gx10 down. It checks index coverage and shared or near-duplicate images, but a full image always matches itself with cosine 1.0.
+Answer: Real query path (Recommended)
+
+Where should the self-test be started from?
+- Button on /embedding + CLI: A `Selftest` button next to `Build` works on the configuration selected in the combo box. It runs as a server job with progress, like `Run>`. The same code is also a script: `pipeline/selftest.py --embedding <name>`. This is more code: a route, a job, and a page hunk.
+- CLI script only: Only `pipeline/selftest.py --embedding <name>`. The run appears on /runs. This is the smallest change: no page change and no 8168 restart.
+Answer: Button on /embedding + CLI
+
+Which input should a label close-up (label_front / label_back) send into the full-package space?
+- The image as it is (Recommended): The same input as the catalogue close-up item, with no steps. The vector is ranked against the `full` (package) vectors of the index. No SAM3 package cut runs on a close-up, where it has little meaning.
+- The full view steps: The same steps as a test photo: the SAM3 package cut, remove background, white background, and resize 1024. The vector is then ranked against the `full` vectors.
+Answer: The image as it is (Recommended)
+
+A wine that has main_patched: should its original `main` also be a query?
+- Both images: Both main_patched and the original main are queries. The index holds only main_patched for such a wine (read_inputs drops main), so the original main checks that it still finds its wine. This adds about 21 queries.
+- Card image only: main_patched replaces main, as it does in the index. Only the images that the index holds are queries.
+Answer: Both images
+```
+
+## 2026-09-28T00:02:56+0300
+
+A message to drink-atlas-workspace-31 [e1f2c7].
+
+```text
+why you use different embedding for rules?
+```
+
+## 2026-09-28T00:04:51+0300
+
+A message to drink-atlas-workspace-31 [e1f2c7], after the agent offered three options
+(a read-only check first; build clusters and rules on the 512 index, then re-run `my`;
+keep it as it is).
+
+```text
+use same embedding for rules and used for embedding
+```
+
+## 2026-09-28T00:06:31+0300
+
+Agent questions (drink-atlas-workspace-31 [e1f2c7]) about the re-rank rules of the
+pipeline embedding, and the owner answers:
+
+```text
+How should I make the re-rank use the same embedding as the search?
+- Code rule (Recommended): Remove the key `rerank.rules`. The re-rank always reads clusters.json and cluster-rules.json from the folder of the pipeline's own `embedding`. A config that still has `rules` fails at start. Changes pipelines.py, cluster_rerank.py, their tests, and the docs. A mismatch cannot happen again.
+- Config only: Change one line: `rules: gx10-siglip2-so400m-patch16-512` in the shared `&rerank-options` block. No code change. The key stays, so a future pipeline can still point to other rules by mistake.
+Answer: Code rule (Recommended)
+
+Stage 1 (a label description for each card) is stored per embedding folder. The 512 folder has none. How do I fill it?
+- Reuse NaFlex texts (Recommended): A description depends on the card image, not on the embedding. I copy the descriptions of the NaFlex p256 file for cards with the same input, and the VLM describes only the new cards. Less load on the gx10 gateway, which already answers HTTP 429 to the label watcher. I first check that the build accepts the copied records as current; if not, I tell you.
+- Describe all again: qwen3.5-9b-nvfp4 on gx10 describes every card of the new clusters. Clean, but it competes with the label watcher on the same gateway. I don't know the duration.
+Answer: Describe all again
+
+How do I measure the change after the build?
+- Two runs on my (Recommended): Run barcode-rerank-siglip2-512-crop on `my` twice on the same current index: once with the old NaFlex p256 rules, once with the new 512 rules. The old 84.7 % used an older index, so only this pair is a fair comparison. Each run makes new VLM calls on gx10.
+- One run with new rules: Run only the new setup on `my` and compare with the old 84.7 %. Faster, but the index changed since that run, so the difference mixes two effects.
+Answer: Two runs on my (Recommended)
+```
+
+## 2026-09-28T00:07:00+0300
+
+Agent question (drink-atlas-workspace-49 [549156]) about plan 67 and the files of the stale
+sections, and the owner answer:
+
+```text
+Plan 67 is in docs/plans/67_embedding-selftest.md. It needs separate hunks in files that stale sections list (the sessions are not in ListAgents): benchmark.py (f4, b4, ab: a `queries` keyword in run_benchmark), run_job.py (b4, c7 whose plan 59 hunk is uncommitted: a `--selftest` flag), run_jobs.py (b4, codex-profile-latency: a `selftest` body key for POST /api/run-jobs), pages/embedding.html (41, and 64 whose plan 60 hunk is uncommitted: the `Selftest` button), tests/test_run_jobs.py (b4). The other hunks stay byte-identical. May I change these files and restart 8168 for run_jobs.py?
+- Yes, separate hunks (Recommended): I add my hunks by patch, keep the hunks of the other sessions unchanged, run the tests of each file, and record your permission in my section. Before the restart, I check that no other session has a pending server file or schema file, for example a4's schema 030.
+- Script only for now: I make only the new files: pipeline/selftest.py (the CLI) and its tests. benchmark.py still needs the `queries` hunk. No button, no job, and no restart.
+- Change the plan first: Tell me what to change in 'Other'. I update the plan and ask again.
+Answer: Yes, separate hunks (Recommended)
+```
+
+## 2026-09-28T00:10:21+0300
+
+Agent questions (drink-atlas-workspace-31 [e1f2c7]) Q1 to Q3 of plan 68, and the owner
+answers:
+
+```text
+Your note on the «Фантом» cluster (the 30/70, 50/50, 70/30 numbers) is in the NaFlex p256 folder. The cluster key is a hash of its wines, so a copy of cluster-notes.json gives the note to a 512 cluster with the same three wines. Copy it?
+- Copy the note (Recommended): I copy cluster-notes.json into the 512 folder before the rule build. Stage 2 then uses your note for that cluster. If the 512 clusters group those wines differently, the note does not apply, and I tell you.
+- No copy: The 512 rules come without any note. You can add notes later on /clusters.
+Answer: Copy the note (Recommended)
+
+The files cluster_rerank.py, embedding_run.py, config.yaml, and pipelines.py are listed by stale sections (4e, df, c7, f4, 1d, 1b, codex-profile-latency). The uncommitted plan 58 and 64 hunks are in the first two files. May I add separate hunks and keep every line of the other sessions byte-identical?
+- Yes, separate hunks (Recommended): I change only OPTION_KEYS, check_options, ClusterRerank.__init__, and the docstring in cluster_rerank.py; build_pipeline_backend in embedding_run.py; the rerank.rules check in pipelines.py; and the &rerank-options block and its comment in config.yaml.
+- No: I stop after the rule build and the two runs, with no code change. The 'Code rule' then waits.
+Answer: Yes, separate hunks (Recommended)
+
+The lab server keeps cluster_rerank.py and pipelines.py in memory, so the code change needs an 8168 restart. Right now no lab code is newer than the server (22:39:33). Sessions 49 and a4 are active and plan restarts too. May I restart 8168 when the code lands?
+- Yes, restart (Recommended): Before the restart, I check again which files are newer than the server and tell the sessions whose pending code would go live. If a file of another session is not finished, I wait and ask you.
+- Ask me first: I land the code, then stop and ask you just before the restart. Until then, the three re-rank pipelines show a config error on the server pages.
+Answer: Yes, restart (Recommended)
+```
+
+## 2026-09-28T00:13:52+0300
+
+Agent question (drink-atlas-workspace-31 [e1f2c7]) about two more test files of plan 68,
+and the owner answer:
+
+```text
+Two more test files pass the removed key `rules`, and they would fail after the change: tests/test_barcode_shared.py (uncommitted plan 64 file of the stale section 4e: 1 line of check_options, 1 call of ClusterRerank) and tests/test_pipeline_workers.py (committed, listed by stale codex-profile-latency: 1 config line). May I change only these lines?
+- Yes, only those lines (Recommended): test_barcode_shared.py: check_options({"vlm": "fake-vlm"}) and the new embedding argument "rules" of ClusterRerank. test_pipeline_workers.py: "rerank": {}. Every other line stays byte-identical.
+- No: I leave both files unchanged. Those tests then fail until their sessions or you update them.
+Answer: Yes, only those lines (Recommended)
 ```

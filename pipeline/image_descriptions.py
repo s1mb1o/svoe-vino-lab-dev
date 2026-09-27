@@ -18,6 +18,7 @@ import tempfile
 
 import comments
 import image_details
+import label_descriptions
 import labdb
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -268,12 +269,24 @@ def call_view(conn, sha256, stage):
     """Return one image of a VLM call of the watcher, for the dialog of `/dataset` (plan
     49): `sha256`, `stage`, `slug` (the first link), `prompt_kind` and `package_type` of
     a detail, `url` (the file that the VLM gets, on the lab server), and `attempts` and
-    `error` of the row for these inputs. A value that is not found is None."""
+    `error` of the row for these inputs. A value that is not found is None. A call of the
+    stage `label` (plan 61) adds `input_kind` (`package` or `original`)."""
     view = {"sha256": sha256, "stage": stage, "slug": None, "prompt_kind": None,
             "package_type": None, "url": None, "attempts": 0, "error": None}
     row = conn.execute("SELECT wine_slug FROM wine_image WHERE sha256 = ? ORDER BY rowid "
                        "LIMIT 1", (sha256,)).fetchone()
     view["slug"] = row[0] if row else None
+    if stage == "label":
+        target = label_descriptions.target(conn, sha256)
+        if target is None:
+            return view
+        _, input_sha256, input_kind, folder, extension = target
+        view.update(input_kind=input_kind,
+                    url="/images/%s/%s.%s" % (folder, input_sha256, extension))
+        failure = label_descriptions.failure(conn, sha256)
+        if failure:
+            view.update(attempts=failure["attempts"], error=failure["error"])
+        return view
     if stage == "detail":
         target = image_details.target(conn, sha256)
         if target is None:
@@ -316,8 +329,9 @@ def log_tail(log_path, count):
 def watcher_status(conn, path=None):
     """Return the state of the watcher and the counts, for `GET
     /api/image-description-status`. A missing file, a state that is not known, or a
-    process that is gone gives the state `stopped`. `stage` (`class` or `detail`) names
-    the stage of a `working` watcher; the `details_*` counts are the counts of plan 29.
+    process that is gone gives the state `stopped`. `stage` (`class`, `detail`, or
+    `label`) names the stage of a `working` watcher; the `details_*` counts are the
+    counts of plan 29, the `labels_*` counts and `labels_vlm` belong to stage 3 (plan 61).
 
     Plan 49: `running` holds a `call_view` of each call that runs, with `started_at` and
     `seconds` (its age). The state `waiting` adds `waiting_since`, `backoff_seconds`,
@@ -330,7 +344,7 @@ def watcher_status(conn, path=None):
     answer = {"state": state, "pid": status.get("pid") if state != "stopped" else None,
               "max_attempts": max_attempts}
     for key in ("vlm", "model", "endpoint", "timeout_seconds", "workers", "started_at",
-                "updated_at", "seconds_per_image", "last"):
+                "updated_at", "seconds_per_image", "last", "labels_vlm"):
         answer[key] = status.get(key)
     now = datetime.datetime.now(datetime.timezone.utc)
     answer["running"] = []
@@ -358,6 +372,7 @@ def watcher_status(conn, path=None):
         answer["slug"] = row[0] if row else None
     answer.update(counts(conn, max_attempts))
     answer.update(image_details.counts(conn, max_attempts))
+    answer.update(label_descriptions.counts(conn, max_attempts))
     return answer
 
 

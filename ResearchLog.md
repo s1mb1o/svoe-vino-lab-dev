@@ -2,6 +2,100 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-27 — Why the view `label` of `/embedding` failed for 88 items
+
+Session drink-atlas-workspace-1c [b72be3]. Plan 22
+([docs/plans/22_label-cut.md](docs/plans/22_label-cut.md)).
+
+- Each of the 88 failed items of `gx10-siglip2-so400m-patch16-naflex-p256` (build of
+  20:07:53) had the error `no label cut yet`. `p512` and `p1024` had the same 88. Each
+  source had a `package` cut and no `label` row, and no absence marker.
+- 86 of them were `full_front` (49) and `full_back` (37) photos: 82 `clipboard-<ms>.png`
+  pastes of 2026-09-27 09:06 to 20:04, and 4 `.jpg` uploads. The cause:
+  `alternatives.store_alternative` made the package cut of a full photo alone. Only
+  `seed_label_cuts.py` made the label cut of a full photo, and it last ran on
+  2026-09-25. Manual wines and the website import had the same gap: the main image of
+  `__aaaaa` had no label cut.
+- 2 were `main` photos of rosé bottles with the text printed on the glass:
+  `5478f9d5…` (Rose Cuvee Prestige De Gai-Kodzor) and `45738caa…` (Rose. Каберне Фран).
+  SAM3 finds no label, and the package prompt finds a bottle, not a packet or box. So
+  they get no absence marker, and each build fails them again. The seed of 2026-09-25
+  reported the same two. A decision is open: a manual cut, or a not-applicable rule for a
+  printed bottle.
+- The seed of 20:38 took 0.55 s for each photo (98 photos, 54 s), with the enrichment
+  frame run on the same SAM3. The seed of 2026-09-25 took 1.5 s for each photo.
+- The entries other than the three naflex ones showed fewer failures only because
+  their last build was older: the new photos were `missing` there, not `failed`.
+- The old `set_type` wrote an empty `derive.Derivatives("label")` when the new type was
+  a label type with a current close-up cut. `write_processed_rows` then read the missing
+  attribute `source_sha256`, and the route failed. A change `label_front` to
+  `label_back` of a close-up gave this error (test on the base code in the scratchpad).
+
+## 2026-09-27 — The cluster describe prompt: key drift, and the cost of close-ups
+
+Session drink-atlas-workspace-6b [e99257]. Plan 61
+([docs/plans/61_label-descriptions.md](docs/plans/61_label-descriptions.md)).
+
+- `label_rules.DESCRIBE_PROMPT` equals `describe_images.detail_prompt("package",
+  "bottle")` of plan 29 character for character. Stage 2 sent it with other settings
+  (JPEG at 1,536 px, strict `json_schema`, `max_tokens` 4,096 or 8,192).
+- The 382 cluster descriptions (`json_object`, no schema): 132 (35 %) have the key `text`
+  instead of `texts`, 2 of them also `number` instead of `numbers`; 1 has an extra
+  top-level key `where`; 1 has no key `bottle`. The item forms vary: 47 `texts` items are
+  strings, 111 `numbers` items are strings or numbers, `marks` items are objects with
+  `description` and `place`, `place` alone, or `text` and `where`. `cluster_rerank.py`
+  reads `texts` alone, so a drifted description gives it no text.
+- The describe request of the cluster run and stage 3 give the same `describe_sha`
+  (`5c76331d3c245e37`), so the records of `data/cache/` are shared.
+- Live check with the exact cluster request (`qwen3.5-9b-nvfp4`, PNG at 2,048 px): 3 of
+  4 answers had `text`. A cache hit of the cluster run took 0.3 s, a main bottle 15 to
+  20 s. A `label_back` close-up reached `max_tokens` 1,500; the loop guard gave 2,021
+  completion tokens at 3,000, 182 s in all.
+- The first 39 rows of the backlog (the newest links first, many close-ups): 11 loop
+  guards, 9 renames, 1 schema failure (no key `marks`), a median of 34 s for each new
+  call with 8 workers while the enrichment frame run shares the model; about 6 images per
+  minute.
+- The full backlog (15:17 to 16:49, 2,162 of 2,166 images): 358 cache hits, 39 loop
+  guards, 800 renames `text` -> `texts` (37 %), 21 renames `number` -> `numbers`. 2 images
+  failed 3 times with a flat answer: repeated top-level `text` and `where` keys, which
+  `json.loads` folds into one pair each. The rate rose from about 6 to about 22 images per
+  minute when the queue left the new close-ups for the older `main` bottles.
+
+## 2026-09-27 — `my-1` failures: the trigger coverage and the data, not the rule logic
+
+Session drink-atlas-workspace-38 [2e502f]. Report:
+[docs/reports/2026-09-27_my-1-failure-addendum.md](docs/reports/2026-09-27_my-1-failure-addendum.md).
+It adds to [docs/reports/2026-09-27_my-1-failure-analysis.md](docs/reports/2026-09-27_my-1-failure-analysis.md).
+
+- `my-1` is the R@1 residue of the same pipeline. 27 of its 30 new hits come from images
+  that entered the index after the source run. 2 come from new `wine_code` rows.
+- A replay of the re-rank on the saved VLM answers reproduces both runs. Three rule
+  fixes (no vintage question, `other` gives 0, abstain on a verdict with no separating
+  feature) change `my` R@1 by -1 to -4 of 1,644. The rule logic is not the lever.
+- 90 of 157 genuine misses have a rank-1 card in no cluster. The confused catalogue pairs
+  have a median NaFlex-p256 cosine of 0.910; the clusters need 0.95.
+- 90 genuine misses differ in colour, sugar, or grape: a front-label text check can
+  separate them. 53 differ only in ABV, vintage, line name, or nothing: a data decision.
+- 4 `full_back` catalogue images win rank 1 for 12 misses. Their removal recovers none.
+
+## 2026-09-27 — label-space fusion: the tower is the limit, not the rule
+
+Session drink-atlas-workspace-d7 [604e28]. Report:
+[docs/reports/2026-09-27_label-fusion.md](docs/reports/2026-09-27_label-fusion.md).
+
+- A replay of 23 fusion rules on the saved per-view top-10 lists of the label run and the
+  reference run of 01:17 and 01:19. No request, no model call.
+- The present mean of `Catalogue.rank` costs 25 R@1 after the rerank in the replay (the
+  real runs: 29). No rule beats the full tower after the rerank. A rule selected on 4
+  folds and scored on the 5th gives 1,380 to 1,382 R@1 against 1,392.
+- The label tower alone: 75.6 % R@1 before the rerank, against 82.2 % for the full tower.
+  It is correct on 93 photos where the full tower is wrong; 48 of them are outside the
+  rerank. The cosines and the margins do not show which tower is correct.
+- Catalogue label cuts have a median long side of 417 px. Query label cuts have about
+  800 to 950 px. This asymmetry is a hypothesis for the weak tower. It is not tested.
+- The +3.4 points of `svoe-vino-matcher` (2026-09-22) came on a weaker base with no
+  cluster rerank.
+
 ## 2026-09-27 — the choice of the SAM3 package instance
 
 Session drink-atlas-workspace-86 [92610a]. The old rule of `Sam3Client.segment` took the

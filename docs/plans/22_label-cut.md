@@ -77,6 +77,17 @@ request, as before. The rule of the measurement is in `ResearchLog.md`.
    label item for each such source. It keeps the full item. The API reports the omitted
    cell as `not_applicable` with its reason. The build does not create a label vector.
 
+Note of 2026-09-27 (drink-atlas-workspace-1c [b72be3]; owner message of about 20:35,
+answers of 21:26:58): the seed ran only by hand, so each full photo that came later had
+no label cut. The view `label` of `/embedding` then failed with `no label cut yet` for 88
+items, 86 of them `full_front` and `full_back` pastes of the same day. Now each runtime
+path that adds a full photo makes its label cut with `alternatives.full_label_cut` and
+the rule of the seed (`SETTINGS_LABEL`): an alternative upload (with the SAM3 answer of
+the detection), a type change and a second upload of the same photo
+(`alternatives.has_current_cuts`), a manual wine, and a new main image of the website
+import. A patch did this already. `seed_label_cuts.py` stays for the photos that were
+stored with SAM3 down, and for a new rule.
+
 ## The vector badge
 
 1. `embedding_routes.entry_view` maps the vectors file that `index.json` names

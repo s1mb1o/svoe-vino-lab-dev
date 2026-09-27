@@ -14,6 +14,7 @@ Rules:
 - A record is a hit only when its request fields equal the request fields of the call.
   A file that cannot be read is a miss.
 - With `READ` off, each lookup is a miss, and `store` still writes the fresh answer.
+- `forget` deletes the records of one model that sent one of the given images.
 - The module imports the standard library alone, so `scripts/` can import it too.
 """
 import base64
@@ -143,3 +144,34 @@ def store(fields, answer, ms):
         if not _warned:
             _warned = True
             sys.stderr.write("model_cache: cannot write %s: %s\n" % (path, exc))
+
+
+def forget(model, images):
+    """Delete each record of `model` whose request sent one of `images`, the sha256 of the
+    sent bytes. Return the count of deleted records. A file that cannot be read stays.
+    An add or a remove of a code of a wine calls it for the barcode scans of the test
+    photos of that wine (owner answers of 2026-09-27T16:49:57+0300)."""
+    images = set(images)
+    directory = os.path.join(ROOT, _UNSAFE.sub("-", model or "") or "-")
+    if not images or not os.path.isdir(directory):
+        return 0
+    count = 0
+    for shard in os.scandir(directory):
+        if not shard.is_dir():
+            continue
+        for entry in os.scandir(shard.path):
+            if not entry.name.endswith(".json"):
+                continue
+            try:
+                with open(entry.path, encoding="utf-8") as fh:
+                    sent = json.load(fh)["request"]["images"]
+                match = isinstance(sent, list) and bool(images.intersection(sent))
+            except (OSError, ValueError, KeyError, TypeError):
+                continue
+            if match:
+                try:
+                    os.remove(entry.path)
+                except FileNotFoundError:
+                    continue
+                count += 1
+    return count
