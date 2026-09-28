@@ -15,6 +15,16 @@
   cache on port 18082 cannot answer for the model. 19 unit tests in
   `tests/test_runner_smoke.py`; the generated EAN-13 decoded 300 of 300 times with
   zxing-cpp 2.3.0. A first run from the Mac: 15 pass, 4 idle, no model load.
+- The runner smoke passed on GitHub after the push of `1e43701` to `github` `main`.
+  Run `36385196334` (default): the job ran on `ct111-svoe-vino-lab-1` as `github-runner`
+  and received the seven variables from the runner `.env`; 16 pass, 3 idle (SigLIP2,
+  Grounding DINO, and the VLM did not run); `/running` of gx10 listed the same models
+  before and after. Run `36385276985` (`load_models=true`, 7 min 49 s, most of it the
+  cold start of `qwen3.5-9b-nvfp4`): 19 pass. SAM3 and Grounding DINO found the bottle
+  with score 0.99 and 0.90, IoU 0.98; SigLIP2 cosine wine 0.108 against cat 0.009; the VLM
+  answered `cf609660 bottle`; `qr-scanner` decoded the random EAN-13. Neither log holds
+  `QWENCLOUD` or a key. The sparse checkout is 3.3 MB. Case RS6 (no `SAM3_ENDPOINT`) gives
+  `FAIL` and exit code 1.
 
 ## 2026-09-27
 
