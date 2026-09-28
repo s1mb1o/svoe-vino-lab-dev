@@ -4,8 +4,9 @@
 
 - Added `.github/workflows/matcher-tests.yml` for the complete matcher test suite. The
   job uses the non-Docker self-hosted runner with the `svoe-vino-lab` label. It verifies
-  the shell harness tools, installs the pinned Python dependencies, runs every test that
-  `unittest` discovers, and rejects a skipped test.
+  the shell harness tools, requires the system Python to be 3.11 or newer, creates an
+  isolated venv, installs the pinned dependencies, runs every test that `unittest`
+  discovers, and rejects a skipped test.
 - Split the repository into the root `matcher/` component and the `workbench/`
   component (plan 73; owner message of 2026-09-28T11:29:26+0300). Every other visible
   root path moved into `workbench/`. Hidden Git, CI, and agent configuration stays at

@@ -141,9 +141,10 @@ runner с labels `self-hosted`, `Linux`, `X64` и `svoe-vino-lab`. Docker runner
 job не нужен.
 
 Workflow проверяет наличие bash, curl, jq, awk и утилиты SHA-256. Он устанавливает
-Python 3.11 и зависимости из `matcher/requirements.txt`. Затем он запускает все тесты,
-которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был запущен или
-был пропущен.
+зависимости из `matcher/requirements.txt` в отдельный venv. Системный Python runner
+должен иметь версию 3.11 или новее. Затем workflow запускает все тесты, которые
+обнаруживает `unittest`. Job завершается с ошибкой, если тест не был запущен или был
+пропущен.
 
 ## GitLab CI
 
