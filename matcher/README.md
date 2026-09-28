@@ -127,6 +127,44 @@ export SVOE_VINO_MATCHER_TOKEN='<secret-token>'
 Если `matcher.token` указан, сервис не запустится без непустой переменной с этим
 именем.
 
+## Docker
+
+Файл matcher/Dockerfile собирает образ сервиса. Контекст сборки — каталог matcher.
+Соберите образ из закоммиченной ревизии в корне svoe-vino-lab:
+
+~~~bash
+REV=$(git rev-parse HEAD)
+git archive "$REV:matcher" | docker build --build-arg REVISION="$REV" \
+  -t "svoe-vino-lab-matcher:$REV" -
+~~~
+
+Label `org.opencontainers.image.revision` образа содержит хеш коммита. Контейнер
+слушает порт 8080. Процесс работает от uid 1000. Образ задаёт две переменные:
+
+- SVOE_VINO_MATCHER_CONFIG=/config/config.yaml;
+- SVOE_VINO_MATCHER_OUTPUT_DIR=/data/requests.
+
+Смонтируйте файл конфигурации только для чтения и каталог данных для записи. Каталог
+данных должен принадлежать uid 1000.
+
+~~~bash
+docker run --rm -p 127.0.0.1:8080:8080 \
+  -v "$PWD/config.yaml:/config/config.yaml:ro" \
+  -v "$PWD/data:/data" \
+  -e SAM3_ENDPOINT='<url>' \
+  "svoe-vino-lab-matcher:$REV"
+~~~
+
+Переменные адресов сервисов моделей необязательны: SIGLIP2_ENDPOINT,
+GROUNDING_DINO_ENDPOINT, SAM3_ENDPOINT, VLM_ENDPOINT, VLM_MODEL, QR_SCANNER_ENDPOINT.
+Образ не задаёт ни одну из них. Текущий mock pipeline их не читает. Внутри контейнера
+адрес 127.0.0.1 указывает на сам контейнер. Для сервиса на хосте укажите LAN-адрес
+хоста.
+
+Развёртывание prod и dev на gx10 через Docker Compose описано в
+`drink-atlas-workspace/deploy/gx10/matcher-prod.md`. Этот каталог не входит в
+git-репозиторий svoe-vino-lab.
+
 ## API
 
 Endpoint POST /v1/eval/predict принимает multipart/form-data. Изображение должно

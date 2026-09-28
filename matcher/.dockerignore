@@ -1,0 +1,8 @@
+# Limits the build context of a directory build, for example `docker build matcher/`.
+# BuildKit does not apply this file to a tar context from stdin (`git archive | docker
+# build -`). The Dockerfile copies the service files by name for this reason.
+tests/
+__pycache__/
+*.pyc
+.venv/
+predictions.jsonl

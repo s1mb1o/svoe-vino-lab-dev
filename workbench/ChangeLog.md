@@ -2,6 +2,20 @@
 
 ## 2026-09-28
 
+- Added `matcher/Dockerfile` and `matcher/.dockerignore` (owner messages of
+  2026-09-28T13:25:39+0300 and 13:31:00). The image uses `python:3.11-slim`, runs as
+  uid 1000, listens on port 8080, and has a health check on `/healthz`. It reads
+  `/config/config.yaml` and writes the request archive to `/data/requests`. The build
+  context is `git archive <commit>:matcher`; the label `org.opencontainers.image.revision`
+  holds the commit. BuildKit does not apply `.dockerignore` to a tar context from stdin, so
+  the Dockerfile copies `*.py` by name. The endpoint variables `SIGLIP2_ENDPOINT`,
+  `GROUNDING_DINO_ENDPOINT`, `SAM3_ENDPOINT`, `VLM_ENDPOINT`, `VLM_MODEL`, and
+  `QR_SCANNER_ENDPOINT` pass through; the mock pipeline reads none of them. `matcher/README.md`
+  has a new section "Docker". The gx10 Compose files and runbooks are in the workspace
+  `deploy/gx10/`. Smoke cases DK1 to DK7 passed on gx10 (`aarch64`, Docker 29.1.3) in a
+  scratch directory: build, health in 6 s, predict over the LAN, archive modes 0700 and 0600,
+  one endpoint variable, a dev update and a dev rollback with the prod container unchanged,
+  and a read-only root file system.
 - Added `.github/workflows/matcher-tests.yml` for the complete matcher test suite. The
   job uses the self-hosted runner with the `docker` label and a disposable
   `python:3.11-slim` container. It retries the image pull, mounts the source read-only,

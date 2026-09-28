@@ -2138,6 +2138,22 @@ Owner messages recorded at 2026-09-28T08:07:43+0300 through 09:40:52.
 | EM15 | Fill two active predict slots and one queued slot. Send one more predict request. | The next request returns HTTP 503 before the upload timeout. `/healthz` stays available. |
 | EM16 | Push a matcher change to GitLab `main`. Open the `matcher-tests` job of the new pipeline. | The Docker executor uses `python:3.11-slim`. `pip check` succeeds. All 37 matcher tests run without a skip and pass. |
 
+## Matcher container
+
+Owner messages recorded at 2026-09-28T13:25:39+0300 and 13:31:00. Run the Docker
+commands on a Docker host, not on the Mac. The Compose files and the runbook are in
+`drink-atlas-workspace/deploy/gx10/`.
+
+| # | Case | Expected result |
+|---|---|---|
+| DK1 | `git archive "$REV:matcher" \| docker build --build-arg REVISION="$REV" -t "svoe-vino-lab-matcher:$REV" -` | The build succeeds on `aarch64` (gx10) and on `x86_64`. The label `org.opencontainers.image.revision` equals `$REV`. The image has no `/app/matcher/tests/`. |
+| DK2 | Start the dev Compose project with a copy of `matcher/tests/config.yaml` and an empty `config/matcher.env`. | `docker compose ps` shows `(healthy)`. `GET /healthz` on port 29000 returns `{"status":"ok","pipeline":"official-eval-mock"}`. The process runs as uid 1000. |
+| DK3 | POST `matcher/tests/data/02eef911.webp` to port 29000. | The slug is `massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16`. `data/requests/<date>/<request-id>/` holds the image and `request.json`, owner uid 1000, mode 0600. |
+| DK4 | Set `SAM3_ENDPOINT` in `config/matcher.env`. Run `docker compose up -d --force-recreate`. | `docker exec svoe-vino-lab-matcher-dev env` shows `SAM3_ENDPOINT`. The five variables that stay commented out are absent. |
+| DK5 | Start prod and dev. Build a new revision, move the tag `:dev`, and run `docker compose up -d` in the dev root. | Compose makes a new dev container with the new revision label. The prod container keeps its ID, its start time, and its revision label. |
+| DK6 | After DK5, move `:dev-prev` back to `:dev` and run `docker compose up -d`. | The dev container runs the previous revision label again. Prod does not change. |
+| DK7 | Write a file in the container outside `/data` and `/tmp`: `docker exec svoe-vino-lab-matcher-dev touch /app/x`. | The command fails with `Read-only file system`. |
+
 ## Standalone matcher bundle — plan 72
 
 Owner message recorded at 2026-09-28T10:01:26+0300.
