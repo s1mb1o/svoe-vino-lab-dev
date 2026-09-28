@@ -11,6 +11,7 @@
 The state tests check automatic submission, single-result resolution, metadata failures, cancellation, stale responses, retries, invalid files, and missing configuration.
 The API health tests check URL derivation, response validation, network failure, and timeout behavior.
 The PWA tests check the Nuxt module configuration, icon dimensions, and API cache exclusions.
+The search-discovery tests check the age overlay, canonical metadata, crawl files, permanent redirects, and static cache policy.
 The contract check uses the unchanged official evaluator and its three images.
 The contract check also checks the home page, compatibility redirects, metadata routes, image routes, manifest, service worker, and PWA icons.
 
@@ -30,6 +31,13 @@ The contract check also checks the home page, compatibility redirects, metadata 
 - Start the matcher. Select «Повторить подключение». Confirm that photo actions become available.
 - Check the system dark theme, keyboard controls, and reduced motion.
 - Open a fresh browser origin. Confirm that the 18+ gate blocks the scanner.
+- Read the raw HTML for `/`. Confirm that it contains `Найти вино по фото` before JavaScript runs.
+- Inspect the hydrated document while the gate is open. Confirm that it contains one page H1 and the scanner content.
+- Confirm that `robots.txt` and `sitemap.xml` return HTTP 200.
+- Confirm that the page contains the apex canonical link, social metadata, and both JSON-LD types.
+- Confirm that `/wines` and `/wines/<slug>` return HTTP 308.
+- Confirm that `/reference/background.webp` returns the configured public cache policy.
+- Confirm that `https://www.chtozavino.ru/` redirects to the apex with HTTP 308.
 - Select the negative age action. Confirm that the blocked state does not store acceptance.
 - Return and confirm age. Reload. Confirm that the accepted state remains in this browser.
 - Build and start the production server. Confirm that the browser offers an install action.

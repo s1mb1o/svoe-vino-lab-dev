@@ -1,5 +1,23 @@
 # Research log
 
+## Search discovery and age gate, 2026-09-28
+
+The age gate previously replaced the complete server-rendered page with a loading element.
+A new visitor then received only the age gate after hydration.
+Decision: always render the scanner page.
+Decision: render the age gate as a fixed overlay before the local storage check.
+The client removes the overlay only after it finds a stored confirmation.
+Decision: make the scanner controls inert while the gate is open.
+This design preserves the mandatory interaction block and keeps the page content available to crawlers.
+The apex and `www` hosts previously returned identical HTML without a canonical signal.
+Decision: use `https://chtozavino.ru/` as the canonical URL.
+Decision: redirect the complete `www` host to the apex with HTTP 308 at Caddy.
+Decision: publish one sitemap URL because the portal has one indexable page.
+Decision: describe the portal as `WebSite` and `WebApplication`.
+The portal does not own indexable wine pages, so it does not publish wine `Product` metadata.
+The reference file names are stable but are not content hashes.
+Decision: cache these files for seven days and allow one day of stale revalidation.
+
 ## Matcher readiness, 2026-09-28
 
 The matcher provides the public `GET /healthz` readiness route.

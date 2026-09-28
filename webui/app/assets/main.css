@@ -512,12 +512,11 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .shelf-frame:has(.shelf-loading) { min-height: 280px; }
 
 /* Mandatory age confirmation. */
-.age-loading { min-height: 100dvh; display: grid; place-items: center; background: var(--paper); }
-.age-gate { min-height: 100dvh; display: grid; place-items: center; padding: 32px 20px; background: radial-gradient(circle at 50% 10%, #efd7c2 0, transparent 42%), var(--paper); }
+.age-gate { position: fixed; z-index: 200; inset: 0; min-height: 100dvh; display: grid; place-items: center; padding: 32px 20px; overflow: auto; background: radial-gradient(circle at 50% 10%, #efd7c2 0, transparent 42%), var(--paper); }
 .age-card { width: min(620px, 100%); padding: 48px; border: 1px solid var(--line); border-radius: 28px; background: var(--paper); text-align: center; box-shadow: 0 30px 90px #321b1220; }
 .age-card>img { width: 160px; height: 40px; object-fit: contain; margin: 0 auto 30px; }
 .age-mark { width: 86px; height: 86px; display: grid; place-items: center; margin: 0 auto 22px; border: 1px solid var(--line); border-radius: 50%; background: var(--cream); color: var(--accent); font: 34px/1 'Playfair Display', Georgia, serif; }
-.age-card h1 { margin: 13px auto; max-width: 470px; font-size: 42px; line-height: 1.18; letter-spacing: -.025em; }
+.age-card h2 { margin: 13px auto; max-width: 470px; font-size: 42px; line-height: 1.18; letter-spacing: -.025em; }
 .age-card>p:not(.step-label):not(.age-warning):not(.age-storage-note) { max-width: 470px; margin: 0 auto; color: var(--muted); font-size: 14px; line-height: 1.7; }
 .age-actions { display: flex; justify-content: center; gap: 10px; margin-top: 28px; }
 .age-storage-note { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 18px; color: var(--muted); font-size: 11px; }
@@ -618,7 +617,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
   .age-gate { padding: 0; align-items: stretch; }
   .age-card { min-height: 100dvh; width: 100%; display: flex; flex-direction: column; justify-content: center; padding: 32px 22px; border: 0; border-radius: 0; }
   .age-card>img { width: 142px; margin-bottom: 28px; }
-  .age-card h1 { font-size: 35px; }
+  .age-card h2 { font-size: 35px; }
   .age-actions { flex-direction: column; }
   .age-actions .button { width: 100%; }
   .age-warning { margin-top: 28px; }

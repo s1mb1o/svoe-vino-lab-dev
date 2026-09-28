@@ -2,6 +2,16 @@
 
 ## 2026-09-28
 
+### Search discovery
+
+- Kept the complete scanner page in server-rendered HTML while the 18+ gate blocks interaction as an overlay.
+- Kept `Найти вино по фото` as the primary page heading.
+- Added the canonical URL, Open Graph metadata, Twitter card metadata, and JSON-LD for the website and web application.
+- Added `robots.txt` and a one-URL sitemap.
+- Changed the legacy catalog redirects to HTTP 308.
+- Added a seven-day cache policy for static reference assets.
+- Added focused search-discovery tests and manual response checks.
+
 ### Matcher availability check
 
 - Added a server-side matcher readiness check to `GET /api/config`.

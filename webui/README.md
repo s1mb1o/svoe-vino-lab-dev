@@ -66,6 +66,14 @@ Photo recognition, wine metadata, and external portal links still require a netw
 The Workbox routes do not store photo uploads or API responses.
 Development mode does not register the service worker.
 
+## Search discovery
+
+The canonical public URL is [https://chtozavino.ru/](https://chtozavino.ru/).
+The page renders the scanner content on the server.
+The 18+ gate blocks interaction as an overlay and keeps that content in the document.
+The portal provides `robots.txt`, `sitemap.xml`, social metadata, and structured data.
+The `www` host redirects to the canonical host at the public edge.
+
 ## Connect the recognition API
 
 Copy `.env.example` to `.env` and set:

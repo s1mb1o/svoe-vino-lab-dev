@@ -13,6 +13,9 @@ The actions MUST NOT call a retailer, geolocation, audio, recommendation, or pro
 
 The gate MUST ask whether the visitor is at least 18 years old.
 The gate MUST block the application until the visitor confirms.
+The application MUST remain in the server-rendered document while the gate is open.
+The gate MUST use an overlay and MUST make the application controls inert.
+The gate MUST NOT replace the primary page heading.
 The confirmation MUST use the local storage key `svoe-vino.age-confirmed.v1`.
 The value MUST be `yes`.
 The portal MUST NOT store a birth date.

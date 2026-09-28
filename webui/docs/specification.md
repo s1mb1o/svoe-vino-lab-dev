@@ -39,6 +39,20 @@ The app shell MAY open without a network connection after one successful online 
 Recognition, metadata, and external links require a network connection.
 Development mode MUST NOT register the service worker.
 
+## Search discovery
+
+The canonical public URL MUST be `https://chtozavino.ru/`.
+The `www` host MUST redirect to the canonical host with HTTP 308.
+The server-rendered page MUST contain the scanner heading and explanatory content.
+The age gate MUST block interaction without removing the scanner from the document.
+The page MUST keep `Найти вино по фото` as its primary heading.
+The page MUST provide a canonical link, Open Graph metadata, Twitter card metadata,
+and JSON-LD for `WebSite` and `WebApplication`.
+The page MUST NOT provide wine `Product` metadata.
+The portal MUST provide `robots.txt` and a one-URL `sitemap.xml`.
+Compatibility redirects from `/wines` and `/wines/<slug>` MUST be permanent.
+Static reference assets SHOULD use a bounded public cache policy.
+
 ## Flow
 
 1. The user selects one photo, takes a photo, drops one file, or selects the demo example.

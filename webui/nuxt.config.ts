@@ -1,3 +1,8 @@
+const siteUrl = 'https://chtozavino.ru/'
+const siteTitle = 'Найти вино по фото — Свое Вино'
+const siteDescription = 'Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».'
+const socialImage = `${siteUrl}icons/pwa-512.png`
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-09-15',
   devtools: { enabled: false },
@@ -10,9 +15,20 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'ru' },
-      title: 'Найти вино по фото — Свое Вино',
+      title: siteTitle,
       meta: [
-        { name: 'description', content: 'Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».' },
+        { name: 'description', content: siteDescription },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: siteTitle },
+        { property: 'og:description', content: siteDescription },
+        { property: 'og:url', content: siteUrl },
+        { property: 'og:image', content: socialImage },
+        { property: 'og:image:alt', content: 'Свое Вино — поиск российского вина по фотографии' },
+        { property: 'og:locale', content: 'ru_RU' },
+        { name: 'twitter:card', content: 'summary' },
+        { name: 'twitter:title', content: siteTitle },
+        { name: 'twitter:description', content: siteDescription },
+        { name: 'twitter:image', content: socialImage },
         { name: 'theme-color', content: '#7b3528' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
@@ -20,9 +36,38 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-title', content: 'Свое Вино' },
       ],
       link: [
+        { rel: 'canonical', href: siteUrl },
         { rel: 'icon', type: 'image/svg+xml', href: '/icons/pwa-icon.svg' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
       ],
+      script: [{
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'WebSite',
+              '@id': `${siteUrl}#website`,
+              url: siteUrl,
+              name: 'Свое Вино — поиск по фото',
+              description: siteDescription,
+              inLanguage: 'ru',
+            },
+            {
+              '@type': 'WebApplication',
+              '@id': `${siteUrl}#webapp`,
+              url: siteUrl,
+              name: 'Найти вино по фото',
+              description: siteDescription,
+              applicationCategory: 'LifestyleApplication',
+              operatingSystem: 'Any',
+              inLanguage: 'ru',
+              isPartOf: { '@id': `${siteUrl}#website` },
+              offers: { '@type': 'Offer', price: '0', priceCurrency: 'RUB' },
+            },
+          ],
+        }),
+      }],
     },
   },
   pwa: {
@@ -76,6 +121,10 @@ export default defineNuxtConfig({
     },
     devOptions: { enabled: false },
   },
-  routeRules: { '/wines': { redirect: '/' }, '/wines/': { redirect: '/' } },
+  routeRules: {
+    '/wines': { redirect: { to: '/', statusCode: 308 } },
+    '/wines/': { redirect: { to: '/', statusCode: 308 } },
+    '/reference/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' } },
+  },
   nitro: { preset: 'node-server' },
 })
