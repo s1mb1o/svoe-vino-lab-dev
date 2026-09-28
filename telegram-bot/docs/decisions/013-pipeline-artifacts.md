@@ -2,6 +2,9 @@
 
 Date: 2026-09-26
 
+Status: Updated by Decision 018 for local development and tests. Production still requires
+safe moderation before full-fidelity artifact storage.
+
 ## Context
 
 The administrator needs to inspect masks, crops, and other recognition inputs.
@@ -48,9 +51,9 @@ Disadvantages:
 ## Decision
 
 Use Option 1.
-Persist derived artifacts only after safe moderation.
+Persist derived artifacts only after safe moderation or an explicit non-production bypass.
 Keep artifact generation advisory.
-Serve an artifact only when the current request remains safe.
+Serve an artifact only when the current request remains safe or has the explicit bypass state.
 
 ## Consequences
 
@@ -65,4 +68,3 @@ An artifact can contain personal or sensitive visual information from a safe ima
 HTTP Basic authentication and LAN restrictions remain mandatory.
 The service MUST use `Cache-Control: no-store`.
 The service MUST NOT serve quarantine images.
-

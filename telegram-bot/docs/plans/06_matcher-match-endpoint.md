@@ -10,15 +10,15 @@ from 2026-09-28T15:49:02+0300 to 2026-09-28T16:04:59+0300.
 ## Goal
 
 The bot becomes a thin client of `svoe-vino-lab/matcher`.
-The bot sends each safe photo to `POST /v1/match?k=4`.
+The production bot sends each safely moderated photo to `POST /v1/match?k=4`.
+Decision 018 permits an explicit bypass only for local development and tests.
 The matcher returns the ranked candidates and a wine card for each candidate.
 The bot does not read a local catalogue or a local wine code map.
 
 ## Owner decisions
 
 1. The bot requests `k=4`.
-2. The prod matcher on gx10 port 28000 runs the pipeline `siglip2-p512-as-is` with
-   bundle format version 2.
+2. The prod matcher on gx10 port 28000 runs its configured temporary pipeline.
 3. The bot gets a new Docker deployment in `/srv/svoe-vino-lab/prod/telegram-bot`.
    The old systemd user services stop.
 4. The owner allowed restarts. Nobody uses the services at the time of the change.
@@ -58,12 +58,12 @@ An answer that breaks a rule fails closed: the request status is `recognition_fa
 ## Code changes
 
 - `matcher.py`: the new request and the new answer parser.
-- `catalog.py` becomes `wine.py`: the `Wine` card, its parser, and the minimal card.
+- The local catalogue module becomes `wine.py`: the `Wine` card, its parser, and the minimal card.
   The catalogue loader, the QR URL normalization, and the sugar rules move to the matcher.
 - `storage.py`: the columns `request_candidates.wine_json` and `requests.matcher_pipeline`,
   and an empty candidate list.
 - `app.py`: no catalogue; the result card and the alternatives come from the candidates.
-- `config.py`: no `MATCHER_PIPELINE`, `CATALOG_FILE`, or `WINE_CODE_MAP_FILE`.
+- `config.py`: no bot-owned pipeline, catalogue, or code-map settings.
   `MATCHER_ENDPOINT` MUST name the path `/v1/match`.
 - `probe.py`: the new matcher client.
 - `Dockerfile`: a new image for the bot and the administration interface.
@@ -72,7 +72,7 @@ An answer that breaks a rule fails closed: the request status is `recognition_fa
 
 The deployment document is `deploy/gx10/telegram-bot-prod.md` in the workspace root.
 
-1. Deploy matcher commit `9ba496d` to prod 28000 with `siglip2-p512-as-is`.
+1. Deploy matcher commit `9ba496d` to prod 28000 with its configured pipeline.
 2. Commit the bot. Build the image on gx10 from `git archive` of that commit.
 3. Stop the old user services `chto-za-vino-bot` and `chto-za-vino-admin`.
 4. Copy the data directory to `/srv/svoe-vino-lab/prod/telegram-bot/data`.

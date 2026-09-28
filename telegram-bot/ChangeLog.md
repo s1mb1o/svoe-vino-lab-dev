@@ -1,7 +1,21 @@
 # Change log
 
+## 2026-09-29
+
+- Represented a disabled moderation check as `safe=null`, `performed=false`, and
+  `bypassed=true` instead of a successful safety verdict.
+- Restricted the moderation bypass to local development and tests. Production MUST keep
+  moderation enabled.
+- Removed the deprecated systemd service assets. Production uses Docker Compose only.
+
 ## 2026-09-28
 
+- Updated production smoke endpoints to ports `28002` and `28003`.
+- Removed legacy matcher, pipeline, endpoint, and port identifiers from active bot material.
+- Marked the pre-Docker port documents as superseded deployment records.
+- Updated the Russian help text for one photo or a Telegram album.
+- Added `moderation.enabled` to `config.yaml`. A false value bypasses ShieldGemma,
+  does not require `MODERATION_ENDPOINT`, and records the category `disabled`.
 - Added the producer to the Telegram result caption.
 - Preserved the JPEG, PNG, or WebP media type of the exact matcher input artifact.
 - Updated the smoke tests for matcher-owned pipeline selection and advisory quality checks.
@@ -10,8 +24,8 @@
 - Switched recognition to `POST /v1/match?k=4` of `svoe-vino-lab/matcher` (plan 06,
   decision 017). The bot sends no pipeline name. The matcher selects the pipeline.
 - Took the wine card of each candidate from the matcher answer. Removed the local
-  catalogue loader, `CATALOG_FILE`, `WINE_CODE_MAP_FILE`, and `MATCHER_PIPELINE`.
-- Renamed `catalog.py` to `wine.py`. The QR URL normalization and the sugar rules moved
+  catalogue loader and the bot-owned catalogue, code-map, and pipeline settings.
+- Replaced the local catalogue module with `wine.py`. The QR URL normalization and sugar rules moved
   to the matcher.
 - Accepted 0 to 4 candidates. An empty answer gives `Не уверен` with status `abstained`.
   An answer that breaks the contract fails closed with status `recognition_failed`.
@@ -38,15 +52,15 @@
 - Added optional QR URLs to matched wine and candidate HTTP API objects.
 - Loaded QR URLs by `wine_slug` from the shared matcher wine code map.
 - Rejected non-HTTP QR URL values and omitted empty QR URL fields.
-- Added a synchronous LAN HTTP recognition API on port `8180`.
+- Added a synchronous LAN HTTP recognition API on a dedicated port.
 - Sent HTTP and Telegram images through one shared FIFO queue.
 - Returned moderation, quality, wine parameters, candidates, profile, and timings as JSON.
 - Kept unmoderated HTTP uploads in bounded memory without temporary files.
 - Added API request source tracking and safe restart handling.
 - Deployed the API on GX10 and verified a complete HTTP 200 recognition response.
 - Verified that matcher timeouts return structured HTTP 502 responses with step timings.
-- Selected `rerank-siglip2-512-crop` explicitly for every matcher request.
-- Added `MATCHER_PIPELINE` with the production profile as its default.
+- Selected a matcher pipeline explicitly for every matcher request.
+- Added a bot-owned pipeline setting with the production profile as its default.
 - Deployed the profile selection to GX10.
 
 ## 2026-09-26
@@ -71,7 +85,7 @@
 - Added persistent `retry_requested` coordination with the bot FIFO queue.
 - Required moderation to run again for every administration retry.
 - Prevented the administration interface from serving accepted source files, quarantine images, or storage paths.
-- Added the `chto-za-vino-admin.service` user service template on port `8172`.
+- Added the `chto-za-vino-admin.service` user service template on a dedicated port.
 - Added an atomic deployment helper for the protected administration environment values.
 - Changed image quality checks from blocking gates to advisory metadata.
 - Continued recognition when SAM3 fails or reports a quality issue.
@@ -123,7 +137,7 @@
 - Added fail-closed image moderation through `llama-swap`.
 - Added separate accepted and quarantine storage.
 - Added SQLite request and identity records.
-- Added wine recognition through `svoe-vino-matcher`.
+- Added wine recognition through the legacy matcher service.
 - Added `/start`, `/help`, `/stats`, and `/privacy`.
 - Added bot profile text synchronization.
 - Added a live moderation and matcher probe.

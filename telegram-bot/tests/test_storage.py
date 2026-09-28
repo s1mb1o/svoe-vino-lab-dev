@@ -131,6 +131,12 @@ def test_artifacts_are_ordered_safe_only_and_replaced_on_retry(tmp_path):
         "second",
     ]
     assert repository.visible_artifact(request_id, "first") is not None
+    repository.update(
+        request_id,
+        moderation_safe=None,
+        moderation_category="disabled",
+    )
+    assert repository.visible_artifact(request_id, "first") is not None
     repository.update(request_id, moderation_safe=0)
     assert repository.visible_artifact(request_id, "first") is None
     repository.upsert_artifacts(
@@ -373,6 +379,25 @@ def test_safe_admin_retry_is_persistent_and_claimed_once(tmp_path):
     assert not repository.claim_retry_request(reservation.request_id)
     assert repository.release_retry_request(reservation.request_id)
     assert repository.admin_request(reservation.request_id).retry_count == 1
+    repository.close()
+
+
+def test_bypassed_admin_retry_is_persistent_and_claimed_once(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    reservation = reserve(repository, 1000, 1)
+    assert reservation.request_id is not None
+    repository.update(
+        reservation.request_id,
+        status="recognized",
+        moderation_safe=None,
+        moderation_category="disabled",
+    )
+
+    assert repository.request_retry(reservation.request_id, 1200) == "requested"
+    assert [item.request_id for item in repository.retry_requests()] == [
+        reservation.request_id
+    ]
+    assert repository.claim_retry_request(reservation.request_id)
     repository.close()
 
 
@@ -791,11 +816,11 @@ def test_matcher_pipeline_is_stored_and_reset_by_an_admin_retry(tmp_path):
         request_id,
         status="recognized",
         moderation_safe=1,
-        matcher_pipeline="siglip2-p512-as-is",
+        matcher_pipeline="test-pipeline",
     )
     repository.replace_candidates(request_id, [CandidateRecord(1, "wine-a", 0.9)])
 
-    assert repository.admin_request(request_id).matcher_pipeline == "siglip2-p512-as-is"
+    assert repository.admin_request(request_id).matcher_pipeline == "test-pipeline"
     assert repository.request_retry(request_id, 1200) == "requested"
     assert repository.admin_request(request_id).matcher_pipeline is None
     assert repository.candidates(request_id) == []

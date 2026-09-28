@@ -36,7 +36,14 @@ from .http_api import (
     create_http_api_app,
 )
 from .matcher import Matcher, RecognitionUnavailable, is_confident
-from .moderation import InvalidImage, ModerationUnavailable, Moderator, make_moderation_jpeg
+from .moderation import (
+    DisabledModerator,
+    InvalidImage,
+    ModerationUnavailable,
+    Moderator,
+    make_moderation_jpeg,
+    make_moderator,
+)
 from .pipeline_artifacts import (
     GeneratedArtifact,
     base_artifacts,
@@ -64,6 +71,7 @@ from .result_card import (
     normalize_result_photo,
 )
 from .storage import (
+    AdminRequestRecord,
     ArtifactStore,
     CandidateRecord,
     ImageStore,
@@ -185,7 +193,7 @@ class Services:
     repository: Repository
     store: ImageStore
     artifact_store: ArtifactStore
-    moderator: Moderator
+    moderator: Moderator | DisabledModerator
     quality_inspector: QualityInspector
     matcher: Matcher
     image_loader: CatalogImageLoader
@@ -335,7 +343,7 @@ class PhotoProcessor:
             image_dhash = difference_hash(body)
         with self._timed_step(job, "image_storage"):
             relative_path, digest = self._services.store.save(
-                job.request_id, job.received_at, body, moderation.safe
+                job.request_id, job.received_at, body, moderation.accepted
             )
         self._services.repository.update(
             job.request_id,
@@ -343,14 +351,14 @@ class PhotoProcessor:
             image_sha256=digest,
             image_phash=image_phash,
             image_dhash=image_dhash,
-            moderation_safe=int(moderation.safe),
+            moderation_safe=moderation.safe,
             moderation_category=moderation.category,
             moderation_confidence=moderation.confidence,
             moderation_reason=moderation.reason,
             storage_path=relative_path,
         )
 
-        if not moderation.safe:
+        if not moderation.accepted:
             try:
                 with self._timed_step(job, "artifact_censored"):
                     self._save_artifacts(
@@ -1356,6 +1364,18 @@ def _wine_api_payload(wine: Wine) -> dict[str, object]:
     return payload
 
 
+def _moderation_api_payload(record: AdminRequestRecord) -> dict[str, object]:
+    bypassed = record.moderation_category == "disabled"
+    return {
+        "performed": not bypassed and record.moderation_safe is not None,
+        "bypassed": bypassed,
+        "safe": None if bypassed else record.moderation_safe,
+        "category": record.moderation_category,
+        "confidence": record.moderation_confidence,
+        "scores": {} if bypassed else _moderation_scores(record.moderation_reason),
+    }
+
+
 def _moderation_scores(reason: str | None) -> dict[str, float] | None:
     if not reason:
         return None
@@ -1409,12 +1429,7 @@ def _http_result_payload(services: Services, request_id: str) -> dict[str, objec
         "error_code": record.error_code,
         "duration_ms": record.duration_ms,
         "matcher_pipeline": record.matcher_pipeline,
-        "moderation": {
-            "safe": record.moderation_safe,
-            "category": record.moderation_category,
-            "confidence": record.moderation_confidence,
-            "scores": _moderation_scores(record.moderation_reason),
-        },
+        "moderation": _moderation_api_payload(record),
         "quality": {
             "acceptable": record.quality_acceptable,
             "issues": (
@@ -1591,7 +1606,13 @@ async def run() -> None:
     client = httpx.AsyncClient(
         limits=httpx.Limits(max_connections=20, max_keepalive_connections=10)
     )
-    moderator = Moderator(settings.moderation_endpoint, client)
+    moderator = make_moderator(
+        settings.moderation_enabled,
+        settings.moderation_endpoint,
+        client,
+    )
+    if not settings.moderation_enabled:
+        LOG.warning("Image moderation is disabled by configuration")
     quality_inspector = QualityInspector(
         settings.sam3_endpoint,
         client,
@@ -1685,6 +1706,7 @@ async def run() -> None:
             "Bot polling and HTTP API started",
             extra={
                 "matcher_endpoint": settings.matcher_endpoint,
+                "moderation_enabled": settings.moderation_enabled,
                 "queue_workers": settings.queue_workers,
                 "queue_capacity": settings.queue_capacity,
                 "restored_jobs": len(pending),

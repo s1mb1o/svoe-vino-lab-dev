@@ -2,6 +2,10 @@
 
 Date: 2026-09-26
 
+Status: Superseded for production deployment by
+[plan 06](06_matcher-match-endpoint.md). The interface remains active on production port
+`28003`. The obsolete systemd assets were removed.
+
 ## Goal
 
 Add a private administration web interface for the Telegram bot.
@@ -29,7 +33,7 @@ Use the existing SQLite database as the shared source of state.
 6. Require a process-local CSRF token for every state-changing form.
 7. Add restrictive browser security headers.
 8. Do not render image bytes or storage paths.
-9. Do not permit retry for an unsafe or unmoderated request.
+9. Do not permit retry for an unsafe request or a request with an incomplete moderation step.
 
 ## Retry flow
 
@@ -43,14 +47,10 @@ Use the existing SQLite database as the shared source of state.
 8. The normal processing pipeline downloads and moderates the image again.
 9. A bot restart restores a claimed request from the `queued` state.
 
-## Deployment
+## Historical deployment
 
-1. Use TCP port `8172`.
-2. Bind the production service to `0.0.0.0`.
-3. Enforce the LAN CIDR allowlist in the application.
-4. Run `chto-za-vino-admin.service` as the existing `ashmelev` user service.
-5. Use the existing protected environment file.
-6. Store the generated password outside the repository.
+This deployment procedure is no longer valid.
+Production uses Docker Compose as specified in [plan 06](06_matcher-match-endpoint.md).
 
 ## Verification
 

@@ -2,8 +2,10 @@ import httpx
 import pytest
 
 from chto_za_vino_bot.moderation import (
+    DisabledModerator,
     ModerationUnavailable,
     Moderator,
+    make_moderator,
     parse_moderation_response,
 )
 
@@ -32,6 +34,9 @@ def test_parse_safe_response():
     result = parse_moderation_response(response())
 
     assert result.safe is True
+    assert result.performed is True
+    assert result.bypassed is False
+    assert result.accepted is True
     assert result.category == "safe"
     assert result.confidence == 0.03
     assert result.scores == {
@@ -106,3 +111,28 @@ async def test_moderator_transport_error_fails_closed():
     async with httpx.AsyncClient(transport=httpx.MockTransport(fail)) as client:
         with pytest.raises(ModerationUnavailable):
             await Moderator("http://moderation/classify", client).classify(b"jpeg")
+
+
+async def test_disabled_moderator_accepts_without_an_http_request():
+    def fail_on_request(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("disabled moderation made an HTTP request")
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(fail_on_request)) as client:
+        moderator = make_moderator(False, None, client)
+        result = await moderator.classify(b"jpeg")
+
+    assert isinstance(moderator, DisabledModerator)
+    assert result.safe is None
+    assert result.performed is False
+    assert result.bypassed is True
+    assert result.accepted is True
+    assert result.category == "disabled"
+    assert result.confidence == 0.0
+    assert result.reason == "moderation_disabled"
+    assert result.scores == {}
+
+
+async def test_enabled_moderation_requires_an_endpoint():
+    async with httpx.AsyncClient() as client:
+        with pytest.raises(ValueError, match="moderation endpoint"):
+            make_moderator(True, None, client)

@@ -19,6 +19,8 @@ async def run(args: argparse.Namespace) -> None:
         moderation = await Moderator(args.moderation_endpoint, client).classify(moderation_jpeg)
         result: dict[str, object] = {
             "moderation": {
+                "performed": moderation.performed,
+                "bypassed": moderation.bypassed,
                 "safe": moderation.safe,
                 "category": moderation.category,
                 "confidence": moderation.confidence,
@@ -26,7 +28,7 @@ async def run(args: argparse.Namespace) -> None:
                 "scores": moderation.scores,
             }
         }
-        if moderation.safe and not args.moderation_only:
+        if moderation.accepted and not args.moderation_only:
             quality = await QualityInspector(
                 args.sam3_endpoint,
                 client,

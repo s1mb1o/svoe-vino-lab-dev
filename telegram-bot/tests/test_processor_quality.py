@@ -7,7 +7,7 @@ from PIL import Image
 
 from chto_za_vino_bot.app import PhotoJob, PhotoProcessor
 from chto_za_vino_bot.matcher import RecognitionCandidate, RecognitionResult
-from chto_za_vino_bot.moderation import ModerationResult
+from chto_za_vino_bot.moderation import DisabledModerator, ModerationResult
 from chto_za_vino_bot.quality import QualityResult, QualityUnavailable
 from chto_za_vino_bot.storage import ArtifactStore, ImageStore, Repository
 from chto_za_vino_bot.wine import Wine
@@ -215,6 +215,26 @@ async def test_quality_issue_continues_to_recognition(tmp_path):
     assert len(artifacts) == 3
     assert next(item for item in timings if item.step == "quality").outcome == "ok"
     assert next(item for item in timings if item.step == "recognition").outcome == "ok"
+
+
+async def test_disabled_moderation_continues_and_records_bypass(tmp_path):
+    row, timings, matcher_calls, photos, _ = await run_processor(
+        tmp_path,
+        AdvisoryQualityInspector(),
+        moderator=DisabledModerator(),
+    )
+
+    assert row[0] == "recognized"
+    assert matcher_calls == 1
+    assert len(photos) == 1
+    assert next(item for item in timings if item.step == "moderation").outcome == "ok"
+    connection = sqlite3.connect(tmp_path / "bot.sqlite3")
+    moderation = connection.execute(
+        "SELECT moderation_safe, moderation_category, moderation_confidence, "
+        "moderation_reason FROM requests"
+    ).fetchone()
+    connection.close()
+    assert moderation == (None, "disabled", 0.0, "moderation_disabled")
 
 
 async def test_artifact_failure_continues_to_recognition(tmp_path):

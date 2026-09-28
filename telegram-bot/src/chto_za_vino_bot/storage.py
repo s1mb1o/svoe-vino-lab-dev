@@ -1217,7 +1217,9 @@ class Repository:
                 FROM request_artifacts AS a
                 JOIN requests AS r ON r.request_id = a.request_id
                 WHERE a.request_id = ? AND (
-                    (r.moderation_safe = 1 AND a.exposure = 'safe') OR
+                    ((r.moderation_safe = 1 OR
+                      (r.moderation_safe IS NULL AND r.moderation_category = 'disabled'))
+                     AND a.exposure = 'safe') OR
                     (r.moderation_safe = 0 AND a.exposure = 'censored')
                 )
                 ORDER BY a.ordinal ASC, a.artifact_key ASC
@@ -1241,7 +1243,9 @@ class Repository:
                 JOIN requests AS r ON r.request_id = a.request_id
                 WHERE a.request_id = ? AND a.artifact_key = ?
                   AND (
-                    (r.moderation_safe = 1 AND a.exposure = 'safe') OR
+                    ((r.moderation_safe = 1 OR
+                      (r.moderation_safe IS NULL AND r.moderation_category = 'disabled'))
+                     AND a.exposure = 'safe') OR
                     (r.moderation_safe = 0 AND a.exposure = 'censored')
                   )
                 """,
@@ -1255,7 +1259,9 @@ class Repository:
                 """
                 SELECT received_at, storage_path
                 FROM requests
-                WHERE request_id = ? AND moderation_safe = 1
+                WHERE request_id = ?
+                  AND (moderation_safe = 1 OR
+                       (moderation_safe IS NULL AND moderation_category = 'disabled'))
                   AND storage_path LIKE 'accepted/%'
                 """,
                 (request_id,),
@@ -1351,7 +1357,7 @@ class Repository:
         with self._lock, self._connection:
             row = self._connection.execute(
                 """
-                SELECT status, moderation_safe, request_source
+                SELECT status, moderation_safe, moderation_category, request_source
                 FROM requests
                 WHERE request_id = ?
                 """,
@@ -1359,7 +1365,13 @@ class Repository:
             ).fetchone()
             if (
                 row is None
-                or row["moderation_safe"] != 1
+                or not (
+                    row["moderation_safe"] == 1
+                    or (
+                        row["moderation_safe"] is None
+                        and row["moderation_category"] == "disabled"
+                    )
+                )
                 or row["request_source"] != "telegram"
             ):
                 return "unavailable"
@@ -1404,7 +1416,9 @@ class Repository:
                     COALESCE(retry_requested_at, received_at) AS received_at,
                     telegram_file_id, feedback_enabled
                 FROM requests
-                WHERE status = 'retry_requested' AND moderation_safe = 1
+                WHERE status = 'retry_requested'
+                  AND (moderation_safe = 1 OR
+                       (moderation_safe IS NULL AND moderation_category = 'disabled'))
                   AND request_source = 'telegram'
                 ORDER BY retry_requested_at ASC, rowid ASC
                 LIMIT ?
@@ -1430,7 +1444,8 @@ class Repository:
                 UPDATE requests SET status = 'queued'
                 WHERE request_id = ?
                   AND status = 'retry_requested'
-                  AND moderation_safe = 1
+                  AND (moderation_safe = 1 OR
+                       (moderation_safe IS NULL AND moderation_category = 'disabled'))
                 """,
                 (request_id,),
             )

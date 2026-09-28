@@ -2,18 +2,21 @@
 
 Date: 2026-09-27
 
-Status: Deployed
+Status: Superseded for production deployment by
+[plan 06](06_matcher-match-endpoint.md). The API remains active on production port `28002`.
+Decision 018 permits an explicit moderation bypass only for local development and tests.
 
 ## Goal
 
 Add a synchronous HTTP API for internal recognition tests.
 The API MUST use the same processing queue as Telegram requests.
-The API MUST use the same moderation, quality, recognition, storage, artifact, and timing steps.
+The API MUST use the same configured moderation or non-production bypass, quality, recognition,
+storage, artifact, and timing steps.
 
 ## Interface
 
 The bot process MUST listen on a separate configurable HTTP port.
-The default port MUST be `8180`.
+The default port MUST be `28002`.
 The production listener MUST be available on the home LAN.
 
 `POST /api/v1/recognize` MUST accept `multipart/form-data`.
@@ -52,8 +55,9 @@ The service MUST not restore an API request as a Telegram request after a restar
 The endpoint MUST enforce `BOT_MAX_IMAGE_BYTES` before processing.
 The endpoint MUST parse the multipart body in memory.
 The endpoint MUST not use a temporary upload file.
-The pipeline MUST moderate the image before persistent image storage.
-The pipeline MUST fail closed when moderation is unavailable.
+The production pipeline MUST moderate the image before persistent image storage.
+The production pipeline MUST fail closed when moderation is unavailable.
+The non-production bypass MUST record no safety verdict.
 The response MUST not expose quarantine files.
 
 ## Network access
@@ -71,7 +75,7 @@ FastAPI MUST publish Swagger UI at `/docs`.
 Add these variables:
 
 - `BOT_HTTP_API_HOST`, with default `127.0.0.1`.
-- `BOT_HTTP_API_PORT`, with default `8180`.
+- `BOT_HTTP_API_PORT`, with default `28002`.
 - `BOT_HTTP_API_ALLOWED_NETWORKS`, with the same default LAN list as the administration UI.
 
 Production MUST set `BOT_HTTP_API_HOST=0.0.0.0`.
@@ -94,7 +98,7 @@ Confirm that the response contains four candidates and step timings.
 
 ## Result
 
-The production service listens on `0.0.0.0:8180` on `gx10`.
+The earlier systemd production service listened on its configured LAN port on `gx10`.
 The API health endpoint and OpenAPI endpoint return HTTP 200 from the home LAN.
 The cached control image returned HTTP 200 in 9.811 seconds.
 The response used status `abstained` because the correct Top-1 margin was below the configured

@@ -2,6 +2,10 @@
 
 Date: 2026-09-28
 
+Status: Accepted for the host choice. The matcher and deployment details were superseded by
+[Decision 017](017-matcher-match-endpoint.md) and
+[plan 06](../plans/06_matcher-match-endpoint.md).
+
 ## Context
 
 The owner asked whether the bot can run on the Selectel VDS `avalon`.
@@ -13,7 +17,7 @@ The bot sends each photo to three services on gx10:
 
 - ShieldGemma moderation through `llama-swap` on `127.0.0.1:18081`;
 - SAM3 through `llama-swap` on `192.168.86.14:18081`;
-- the matcher on `127.0.0.1:8158` with pipeline `rerank-siglip2-512-crop`.
+- the legacy matcher service.
 
 ## Options
 
@@ -23,7 +27,7 @@ The host resources are sufficient.
 The bot needs a Telegram proxy option in `app.py` and the `aiohttp-socks` dependency.
 The proxy port `1080` exists only on the Docker network `monitoring`.
 The bot needs a container on that network or a published `127.0.0.1:1080` port.
-The gx10 reverse tunnel needs new forwards for `18081` and `8158`.
+The gx10 reverse tunnel needs new forwards for the model and matcher services.
 The allowed listen ports of the `matcher-gx10` account were not checked.
 The catalogue, the code map, and the rejection image need a copy on `avalon`.
 The administration interface and the HTTP API become unavailable from the home LAN.
@@ -31,7 +35,7 @@ The administration interface and the HTTP API become unavailable from the home L
 ### Move the prod matcher to the real pipeline first
 
 The reverse tunnel for `28000` exists.
-The prod matcher on `28000` uses the mock pipeline `official-eval-mock` on 2026-09-28.
+The prod matcher on `28000` uses a temporary mock pipeline on 2026-09-28.
 This option still needs a forward for `18081` and the Telegram proxy changes.
 
 ### Keep the bot on gx10

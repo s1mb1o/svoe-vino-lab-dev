@@ -2,6 +2,11 @@
 
 Date: 2026-09-26
 
+Status: Accepted. The production port and deployment procedure were superseded by
+[Decision 017](017-matcher-match-endpoint.md) and
+[plan 06](../plans/06_matcher-match-endpoint.md). The interface now uses production port
+`28003`. The obsolete systemd assets were removed.
+
 ## Context
 
 The Telegram administrator commands show only compact statistics and user data.
@@ -37,7 +42,7 @@ Require password authentication and a LAN CIDR allowlist.
 
 ## Consequences
 
-The deployment has one additional systemd user service.
+The original deployment had one additional systemd user service.
 SQLite remains the coordination point.
 The bot needs a small retry watcher.
 The web service can restart without losing a requested retry.

@@ -2,18 +2,17 @@
 
 ## 2026-09-28
 
-This entry records the threshold check for the matcher pipeline `siglip2-p512-as-is`.
+This entry records the threshold check for the temporary matcher pipeline.
 The source is the lab runs in `svoe-vino-lab/workbench/runs/`. The runs used no bot code.
-The run `2026-09-28T011622Z-lab-siglip2-p512-as-is-my` has 1,647 positive and 579
-negative photos. The run `2026-09-27T011444Z-lab-rerank-siglip2-512-crop-my` is the old
-bot pipeline on the same set.
+The current run has 1,647 positive and 579 negative photos.
+The comparison run uses the previous bot pipeline on the same set.
 
 | Pipeline | Top-1 accuracy | Answered at 0.70 / 0.015 | Precision of the answers |
 |---|---|---|---|
-| `siglip2-p512-as-is` | 0.743 | 0.591 | 0.909 |
-| `rerank-siglip2-512-crop` | 0.832 | 0.723 | 0.922 |
+| Temporary matcher pipeline | 0.743 | 0.591 | 0.909 |
+| Previous bot pipeline | 0.832 | 0.723 | 0.922 |
 
-The median Top-1 cosine of `siglip2-p512-as-is` is 0.791 for a correct and 0.762 for a
+The median Top-1 cosine of the temporary matcher pipeline is 0.791 for a correct and 0.762 for a
 wrong answer. The median margin is 0.0385 for a correct and 0.0069 for a wrong answer.
 The score scale is similar to the old pipeline, so the thresholds 0.70 and 0.015 keep
 the precision. The new pipeline answers fewer photos with confidence.
@@ -22,7 +21,7 @@ accuracy of 0.817. At 0.70 / 0.015 it answers 0.700 of the photos with a precisi
 0.976.
 
 The prod matcher answered `02eef911.webp` on 2026-09-28 with four candidates. Rank 1 had
-the score 0.8199. The answer of `/v1/eval/predict` for the same image was the rank 1 slug.
+the score 0.8199. The legacy prediction endpoint returned the same rank 1 slug.
 
 This entry records a resource and network check of `avalon` as a bot host.
 The decision is in `docs/decisions/016-keep-bot-on-gx10.md`.
@@ -36,7 +35,7 @@ The `cloudzy-ams` tunnel permits only `api.telegram.org:443`.
 This destination covers long polling and Telegram file downloads.
 `app.py` creates `Bot` without a session, so the code has no proxy option.
 The gx10 reverse tunnel to `avalon` forwards only `28000`.
-The prod matcher on `28000` used the mock pipeline `official-eval-mock`.
+The prod matcher on `28000` used a temporary mock pipeline.
 
 This entry lists the recognition dependencies of the bot.
 It prepares a proposal to move recognition to `svoe-vino-lab/matcher/`.
@@ -44,11 +43,11 @@ The bot keeps Telegram handling, moderation, and the administration interface.
 
 The bot calls three recognition services after safe moderation.
 The first service is SAM3 `/segment_multi` in `quality.py`.
-The second service is the matcher `POST /v1/eval/predict?limit=4&pipeline=<name>` in `matcher.py`.
-The third dependency is the local catalogue in `catalog.py`.
-The catalogue reads `CATALOG_FILE` and `WINE_CODE_MAP_FILE`.
+The second service is the legacy prediction endpoint in `matcher.py`.
+The third dependency is the local catalogue module.
+The catalogue reads bot-owned catalogue and code-map settings.
 
-The production matcher on port 8158 is `svoe-vino-matcher/svm/server.py`.
+The production matcher is a legacy service.
 Its response shape depends on `limit`.
 A request without `limit` or with `limit=1` returns `{"slug"}`.
 A request with `limit>1` returns `{"candidates": [{slug, score, rank}], "pipeline", "latency_ms"}`.
@@ -65,7 +64,7 @@ The bot reads these recognition values:
 - SAM3 masks, boxes, prompts, and scores for the pipeline artifacts.
 
 The negative feedback callback reads candidate wine names after the request ends.
-The callback uses `catalog.get(slug)` for ranks 2 through 4.
+The callback uses a local catalogue lookup for ranks 2 through 4.
 A move of the catalogue out of the bot needs a stored wine snapshot or a wine lookup call.
 
 `artifact_backfill.py` calls SAM3 again to rebuild quality artifacts.
@@ -119,8 +118,7 @@ Long and ordinary values then wrapped one character per line.
 A separate detail grid with a 480-pixel minimum card width produces two desktop columns.
 The same grid uses the full available width on a narrow viewport.
 
-TCP port `8172` was absent from the Mac and `gx10` port registries.
-A live `ss` check on `gx10` found no listener on TCP port `8172`.
+A registry check and a live socket check found the selected administration port unused.
 SQLite WAL mode supports the bot process and the administration process on the same host.
 A persistent `retry_requested` status avoids an in-memory cross-process queue dependency.
 The bot can claim this status with a compare-and-set update and use its existing FIFO queue.
@@ -143,7 +141,7 @@ The new instance reports the 86400-second TTL and is ready.
 
 The matcher returns a ranked response when the request includes `limit=4`.
 Each candidate contains `slug`, `score`, and `rank`.
-The measured `barcode-siglip2-448` median score margin is approximately `0.040`
+The measured matcher pipeline median score margin is approximately `0.040`
 for correct Top-1 results and `0.007` for wrong Top-1 results on the inspected run.
 The initial minimum margin is `0.015`.
 This value needs calibration from production feedback.
@@ -164,10 +162,9 @@ A live safe-image probe returned model `shieldgemma-2-4b-it` and threshold `0.5`
 The response contains `dangerous`, `sexual`, and `violence` scores.
 The response also contains a thresholded `flagged` list.
 
-The `gx10` host runs `svoe-vino-matcher` on `127.0.0.1:8158`.
-The matcher health response names `barcode-siglip2-448` as the default pipeline.
-The matcher catalogue is at
-`/mnt/projects/svoe-wino-hackaton/dataset/derived/official-2026-09-17/catalog.jsonl`.
+The `gx10` host runs a legacy matcher service.
+The matcher health response names its configured default pipeline.
+The matcher reads a local catalogue file.
 The catalogue contains `slug`, `name`, and `page_url`.
 The catalogue also contains `image_url`, `category`, `color`, and `grapes`.
 The catalogue image host is `api.vino-svoe.ru`.

@@ -22,11 +22,20 @@ class ModerationUnavailable(RuntimeError):
 
 @dataclass(frozen=True, slots=True)
 class ModerationResult:
-    safe: bool
+    safe: bool | None
     category: str
     confidence: float
     reason: str
     scores: dict[str, float]
+    bypassed: bool = False
+
+    @property
+    def performed(self) -> bool:
+        return not self.bypassed
+
+    @property
+    def accepted(self) -> bool:
+        return self.safe is True or self.bypassed
 
 
 def make_moderation_jpeg(body: bytes, max_side: int = 1024) -> bytes:
@@ -110,3 +119,29 @@ class Moderator:
             raise
         except (httpx.HTTPError, TypeError, ValueError, json.JSONDecodeError) as exc:
             raise ModerationUnavailable("moderation service is unavailable") from exc
+
+
+class DisabledModerator:
+    """Accept a valid image without a call to a moderation service."""
+
+    async def classify(self, jpeg: bytes) -> ModerationResult:
+        return ModerationResult(
+            safe=None,
+            category="disabled",
+            confidence=0.0,
+            reason="moderation_disabled",
+            scores={},
+            bypassed=True,
+        )
+
+
+def make_moderator(
+    enabled: bool,
+    endpoint: str | None,
+    client: httpx.AsyncClient,
+) -> Moderator | DisabledModerator:
+    if not enabled:
+        return DisabledModerator()
+    if endpoint is None:
+        raise ValueError("the moderation endpoint is required when moderation is enabled")
+    return Moderator(endpoint, client)

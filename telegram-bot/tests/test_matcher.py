@@ -28,7 +28,7 @@ def card(slug: str) -> dict[str, object]:
 
 def response() -> dict[str, object]:
     return {
-        "pipeline": "siglip2-p512-as-is",
+        "pipeline": "test-pipeline",
         "latency_ms": 812.5,
         "candidates": [
             {"slug": slug, "score": score, "rank": rank, "wine": card(slug)}
@@ -43,7 +43,7 @@ def response() -> dict[str, object]:
 def test_ranked_response_is_parsed_with_margin_and_cards():
     result = parse_recognition_response(response())
 
-    assert result.pipeline == "siglip2-p512-as-is"
+    assert result.pipeline == "test-pipeline"
     assert result.top.slug == "wine-a"
     assert result.top.score == 0.82
     assert result.margin == pytest.approx(0.06)
@@ -70,7 +70,7 @@ def test_confidence_requires_score_and_margin():
 
 
 def test_an_empty_answer_means_no_match_and_is_not_confident():
-    result = parse_recognition_response({"pipeline": "siglip2-p512-as-is", "candidates": []})
+    result = parse_recognition_response({"pipeline": "test-pipeline", "candidates": []})
 
     assert result.candidates == ()
     assert result.margin == 0.0

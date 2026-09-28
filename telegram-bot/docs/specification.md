@@ -8,7 +8,7 @@ The bot identifies a wine from one Telegram photo or from each photo in a Telegr
 The bot returns the catalogue name and the page URL.
 The service also collects difficult test images for recognition improvement.
 
-## User flow
+## Production user flow
 
 1. The user opens `@ChtoZaVinoBot`.
 2. The bot shows the service purpose, the data notice, and the alcohol notice.
@@ -29,14 +29,18 @@ The service also collects difficult test images for recognition improvement.
 2. The bot MUST accept Telegram photo messages.
 3. The bot MUST limit one Telegram user ID to 50 image requests in a rolling hour.
 4. The rate limit MUST survive a process restart.
-5. The bot MUST moderate an image before it writes the image to disk.
-6. The moderation check MUST use the `dangerous`, `sexual`, and `violence` policies.
-7. A moderation error MUST stop the request before image storage and recognition.
-8. The bot MUST store safe images under `accepted`.
+5. `moderation.enabled` in `config.yaml` MUST control image moderation and MUST default
+to `true`. Production MUST keep it set to `true`. Local development and tests MAY set it
+to `false`. The bot then MUST bypass ShieldGemma, record the moderation category as
+`disabled`, and store no safety verdict.
+6. An enabled moderation check MUST use the `dangerous`, `sexual`, and `violence` policies.
+7. An enabled moderation error MUST stop the request before image storage and recognition.
+8. The bot MUST store an image under `accepted` after safe moderation or an explicit
+non-production moderation bypass.
 9. The bot MUST store unsafe images under `quarantine`.
 10. The bot MUST restrict `quarantine` to the service account.
 11. The bot MUST record the Telegram user ID and the available identity snapshot.
-12. The bot MUST record the recognition result and the moderation result.
+12. The bot MUST record the recognition result and the moderation result or bypass state.
 13. The bot MUST show only the current user's statistics to a non-admin user.
 14. The bot MUST show the current user's hourly use.
 15. The bot MUST return the catalogue `name` and `page_url` for a successful result.
@@ -51,7 +55,7 @@ The service also collects difficult test images for recognition improvement.
 24. The statistics response MUST show the current queue state.
 25. A successful result MUST include a photo.
 26. The result photo SHOULD use the official catalogue image.
-27. The result photo MUST use the submitted safe photo when the catalogue image is unavailable.
+27. The result photo MUST use the submitted accepted photo when the catalogue image is unavailable.
 28. A successful result MUST show the wine color.
 29. A successful result MUST show the sugar class.
 30. A successful result MUST show the grape varieties.
@@ -101,23 +105,25 @@ The service also collects difficult test images for recognition improvement.
 74. Feedback MUST survive a process restart.
 75. Feedback MUST remain linked to the recognition request.
 76. The bot MUST remove the feedback buttons after a successful submission.
-77. The bot MUST use the `shieldgemma-2-4b-it` moderation service.
-78. The bot MUST send the moderation image in a multipart `image` field.
-79. The bot MUST read the moderation endpoint from `endpoints.moderation` in `config.yaml`.
-The endpoint MUST use `/upstream/shieldgemma-2-4b-it/classify` as the moderation path.
-80. The bot MUST use the service `flagged` list at threshold `0.5`.
-81. The moderation response MUST contain one score for each configured policy.
-82. A moderation response with an unknown or inconsistent policy MUST fail closed.
-83. A moderation transport or response error MUST stop storage and recognition.
+77. When moderation is enabled, the bot MUST use the `shieldgemma-2-4b-it` service.
+78. When moderation is enabled, the bot MUST send the moderation image in a multipart
+`image` field.
+79. When moderation is enabled, the bot MUST read the moderation endpoint from
+`endpoints.moderation` in `config.yaml`. The endpoint MUST use
+`/upstream/shieldgemma-2-4b-it/classify` as the moderation path.
+80. When moderation is enabled, the bot MUST use the service `flagged` list at threshold `0.5`.
+81. An enabled moderation response MUST contain one score for each configured policy.
+82. An enabled moderation response with an unknown or inconsistent policy MUST fail closed.
+83. An enabled moderation transport or response error MUST stop storage and recognition.
 84. A rejected image result MUST include the configured rejection illustration.
 85. The rejection illustration MUST reply to the source photo.
 86. The rejection caption MUST state that the content is inappropriate and was not sent to recognition.
 87. The bot MUST remove the temporary processing status after it sends the rejection illustration.
 88. A rejection illustration send failure MUST fall back to a text rejection status.
-89. The bot MUST compute and store a perceptual hash for each moderated image.
-90. The bot MUST compute and store a difference hash for each moderated image.
-91. The bot MUST check blur after moderation and before recognition.
-92. The bot MUST check glare after moderation and before recognition.
+89. The bot MUST compute and store a perceptual hash after moderation or its configured bypass.
+90. The bot MUST compute and store a difference hash after moderation or its configured bypass.
+91. The bot MUST check blur after moderation or its configured bypass and before recognition.
+92. The bot MUST check glare after moderation or its configured bypass and before recognition.
 93. The bot MUST use SAM3 to check for a wine bottle before recognition.
 94. The bot MUST use SAM3 to check for a usable label before recognition.
 95. The SAM3 client MUST read its base URL from `endpoints.sam3` in `config.yaml`.
@@ -169,10 +175,12 @@ recognition metadata, feedback, and candidates.
 135. The administration web service MUST reset one user's current rate-limit window.
 136. A rate-limit reset from the administration web service MUST preserve request history.
 137. The administration web service MUST let the administrator request a safe retry.
-138. A retry action MUST require a prior safe moderation result.
-139. A retry action MUST NOT accept an unsafe or unmoderated request.
+138. A retry action MUST require a prior safe moderation result or explicit non-production
+moderation bypass.
+139. A retry action MUST NOT accept an unsafe request or a request with an incomplete
+moderation step.
 140. The bot MUST send an administration retry through the existing work queue.
-141. The bot MUST run moderation again during an administration retry.
+141. The bot MUST run moderation again during an administration retry when moderation is enabled.
 142. A retry request MUST survive a restart of the web service or bot service.
 143. The administration web service MUST NOT serve accepted source files directly.
 144. The administration web service MUST NOT serve quarantine images.
@@ -180,7 +188,8 @@ recognition metadata, feedback, and candidates.
 146. The production administration service MUST use TCP port `28003` on gx10.
 147. The bot MUST request SAM3 masks during quality inspection.
 148. The bot MUST validate a SAM3 mask against the moderation image dimensions.
-149. The bot MUST persist full-fidelity visual pipeline artifacts only after safe moderation.
+149. The bot MUST persist full-fidelity visual pipeline artifacts only after safe moderation
+or an explicit non-production moderation bypass.
 150. The bot MAY create only a server-side censored preview from an unsafe image.
 151. The pipeline artifacts MUST include the exact matcher input.
 152. The pipeline artifacts MUST include the normalized moderation image.
@@ -192,11 +201,13 @@ recognition metadata, feedback, and candidates.
 158. The pipeline artifacts SHOULD include the final Telegram result image.
 159. An artifact generation failure MUST NOT stop recognition.
 160. A request detail page MUST show the ordered pipeline artifacts.
-161. The administration web service MUST serve an artifact only when the current request has a safe moderation result.
+161. The administration web service MUST serve an artifact only when the current request
+has a safe moderation result or explicit non-production moderation bypass.
 162. An artifact route MUST use the existing authentication and network restrictions.
 163. An artifact route MUST NOT resolve a file outside `BOT_DATA_ROOT/artifacts`.
 164. A request retry MUST replace the artifact index for the request.
-165. The system MUST provide a command that reconstructs artifacts for a previously safe request without sending a Telegram message.
+165. The system MUST provide a command that reconstructs artifacts for a previously accepted
+request without sending a Telegram message.
 166. A censored preview MUST use an irreversible server-side transformation.
 167. A censored preview MUST reduce the longest side to 24 pixels before enlargement.
 168. A censored preview MUST have a maximum longest side of 768 pixels.
@@ -212,11 +223,13 @@ recognition metadata, feedback, and candidates.
 178. The bot process MUST provide `POST /api/v1/recognize` for internal tests.
 179. The endpoint MUST accept one multipart `image` field.
 180. The endpoint MUST use the same FIFO queue as Telegram requests.
-181. The endpoint MUST use the same moderation, quality, recognition, storage, artifact, and timing steps.
+181. The endpoint MUST use the same configured moderation or non-production bypass, quality, recognition,
+storage, artifact, and timing steps.
 182. The endpoint MUST wait for processing to reach a terminal status.
 183. The endpoint MUST return a JSON response.
 184. The JSON response MUST contain the request ID, status, matcher pipeline, moderation metadata,
-quality metadata, recognition metadata, candidates, wine parameters, and step timings.
+quality metadata, recognition metadata, candidates, wine parameters, and step timings. The
+moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fields.
 185. The endpoint MUST enforce `BOT_MAX_IMAGE_BYTES`.
 186. The endpoint MUST keep the unmoderated image in memory.
 187. The endpoint MUST NOT write an unmoderated image to a temporary upload file.

@@ -17,10 +17,11 @@ Keep one Telegram progress message for each accepted photo or album receipt.
 6. The bot MUST store the selected alternative or the empty alternative result.
 7. The bot MUST check blur and glare with deterministic image metrics.
 8. The bot MUST use SAM3 to check for a wine bottle and a usable label.
-9. The quality check MUST run after moderation and before recognition.
+9. The quality check MUST run after moderation or its explicit non-production bypass and
+before recognition.
 10. A quality check result MUST be advisory.
 11. A quality check failure or issue MUST NOT stop recognition.
-12. The bot MUST store a perceptual hash and a difference hash for each moderated image.
+12. The bot MUST store a perceptual hash and a difference hash for each accepted image.
 13. A moderation rejection MUST show `Сообщить об ошибке фильтра`.
 14. The filter error action MUST be available only to the source user.
 15. The filter error action MUST be stored once.

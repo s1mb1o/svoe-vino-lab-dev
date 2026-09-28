@@ -117,6 +117,16 @@
 
 ## Safety
 
+- Set `moderation.enabled` to `false` and remove `MODERATION_ENDPOINT` from a test environment.
+- Start the bot and confirm that the log states that image moderation is disabled.
+- Send a valid test photo and confirm that ShieldGemma receives no request.
+- Confirm that recognition continues and that the moderation category is `disabled`.
+- Confirm that `moderation_safe` is `NULL`.
+- Confirm that the administration page shows `Проверка выполнена: нет`,
+  `Проверка пропущена: да`, and `Безопасно: не проверено`.
+- Submit an HTTP API image and confirm that moderation contains `performed=false`,
+  `bypassed=true`, and `safe=null`.
+- Restore `moderation.enabled` to `true` for the remaining safety checks.
 - Use an internal synthetic unsafe fixture.
 - Do not use real abusive material for the smoke test.
 - Confirm that the bot sends a multipart `image` field to `shieldgemma-2-4b-it`.
@@ -185,7 +195,7 @@
 
 ## Administration web interface
 
-- Open `http://192.168.86.14:8172` from the home LAN.
+- Open `http://192.168.86.14:28003` from the home LAN.
 - Confirm that the browser requires a username and password.
 - Submit an incorrect password.
 - Confirm that access is denied.
@@ -234,7 +244,7 @@
 
 ## HTTP recognition API
 
-- Open `http://192.168.86.14:8180/docs` from the home LAN.
+- Open `http://192.168.86.14:28002/docs` from the home LAN.
 - Confirm that Swagger UI shows `POST /api/v1/recognize`.
 - Open the API from an address outside `BOT_HTTP_API_ALLOWED_NETWORKS`.
 - Confirm that access is denied.
@@ -249,6 +259,8 @@
 - Use a wine without a QR URL.
 - Confirm that its wine object does not contain `qr_urls`.
 - Confirm that the response contains moderation, quality, and step timing objects.
+- Confirm that production moderation contains `performed=true`, `bypassed=false`, and a
+  Boolean `safe` value.
 - Confirm that the request appears in the administration interface with source `HTTP API`.
 - Submit a synthetic unsafe fixture.
 - Confirm that the response has status `quarantined`.
@@ -264,7 +276,7 @@
 
 ## Matcher endpoint `/v1/match`
 
-- Start the bot with `MATCHER_ENDPOINT=http://127.0.0.1:8158/v1/eval/predict`.
+- Start the bot with `MATCHER_ENDPOINT=http://127.0.0.1:28000/v1/not-match`.
 - Confirm that the bot stops at start with an error that names `endpoints.matcher`.
 - Remove one endpoint variable that `config.yaml` references.
 - Confirm that the bot stops at start and names the missing variable without printing its value.
@@ -286,8 +298,8 @@
 
 - Run `docker compose ps` in `/srv/svoe-vino-lab/prod/telegram-bot`.
 - Confirm that both containers are `healthy`.
+- Confirm that the production `config.yaml` sets `moderation.enabled` to `true`.
 - Confirm that `http://192.168.86.14:28003/` asks for the administration password.
 - Confirm that `http://192.168.86.14:28002/healthz` answers `ok`.
 - Restart the bot container while no photo job runs.
 - Confirm that the bot answers a new photo after the restart.
-- Confirm that `systemctl --user is-active chto-za-vino-bot` answers `inactive`.

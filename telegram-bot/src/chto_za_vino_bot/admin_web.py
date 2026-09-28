@@ -68,6 +68,24 @@ def _boolean(value: bool | None) -> str:
     return "да" if value else "нет"
 
 
+def _moderation_performed(record: AdminRequestRecord) -> bool:
+    return record.moderation_category != "disabled" and record.moderation_safe is not None
+
+
+def _moderation_bypassed(record: AdminRequestRecord) -> bool:
+    return record.moderation_category == "disabled"
+
+
+def _moderation_safe(record: AdminRequestRecord) -> str:
+    if _moderation_bypassed(record):
+        return "не проверено"
+    return _boolean(record.moderation_safe)
+
+
+def _moderation_accepted(record: AdminRequestRecord) -> bool:
+    return record.moderation_safe is True or _moderation_bypassed(record)
+
+
 def _name(first_name: str | None, last_name: str | None) -> str:
     value = " ".join(part for part in (first_name, last_name) if part).strip()
     return _text(value)
@@ -501,7 +519,7 @@ def _request_detail(
     retry = ""
     if (
         record.request_source == "telegram"
-        and record.moderation_safe is True
+        and _moderation_accepted(record)
         and record.status not in ACTIVE_STATUSES
     ):
         retry = (
@@ -527,7 +545,9 @@ def _request_detail(
     )
     moderation = _detail_list(
         [
-            ("Безопасно", _boolean(record.moderation_safe)),
+            ("Проверка выполнена", _boolean(_moderation_performed(record))),
+            ("Проверка пропущена", _boolean(_moderation_bypassed(record))),
+            ("Безопасно", _moderation_safe(record)),
             ("Категория", _text(record.moderation_category)),
             ("Вероятность", _text(record.moderation_confidence)),
             ("Причина", _text(record.moderation_reason)),

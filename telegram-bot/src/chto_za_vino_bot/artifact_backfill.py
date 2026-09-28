@@ -9,7 +9,7 @@ from dataclasses import replace
 import httpx
 
 from .config import Settings
-from .moderation import Moderator, make_moderation_jpeg
+from .moderation import make_moderation_jpeg, make_moderator
 from .pipeline_artifacts import (
     base_artifacts,
     censored_artifact,
@@ -40,10 +40,12 @@ async def reconstruct(request_id: str, settings: Settings) -> int:
             body = image_store.read_accepted(relative_path)
             moderation_jpeg = make_moderation_jpeg(body)
             async with httpx.AsyncClient() as client:
-                moderation = await Moderator(settings.moderation_endpoint, client).classify(
-                    moderation_jpeg
-                )
-                if not moderation.safe:
+                moderation = await make_moderator(
+                    settings.moderation_enabled,
+                    settings.moderation_endpoint,
+                    client,
+                ).classify(moderation_jpeg)
+                if not moderation.accepted:
                     raise RuntimeError("current moderation did not approve the source")
                 quality = await QualityInspector(
                     settings.sam3_endpoint,

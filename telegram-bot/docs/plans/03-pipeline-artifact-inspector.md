@@ -2,6 +2,9 @@
 
 Date: 2026-09-26
 
+Status: Updated by Decision 018 for local development and tests. Production still requires
+safe moderation before full-fidelity artifact storage.
+
 ## Goal
 
 Add a visual inspector to the administration request page.
@@ -9,7 +12,8 @@ The inspector shows the image artifacts that each recognition step used or produ
 
 ## Requirements
 
-1. The bot MUST persist artifacts only after moderation reports that the image is safe.
+1. The bot MUST persist artifacts only after safe moderation or an explicit non-production
+moderation bypass.
 2. The bot MUST NOT copy a quarantine image into the artifact store.
 3. The artifact set MUST include the exact matcher input.
 4. The artifact set MUST include the normalized moderation image.
@@ -20,11 +24,12 @@ The inspector shows the image artifacts that each recognition step used or produ
 9. The artifact set MUST include the selected label box crop and masked cutout.
 10. The artifact set SHOULD include the final Telegram result image.
 11. Artifact generation failures MUST NOT stop recognition.
-12. The administration service MUST serve artifacts only when the current request has `moderation_safe = 1`.
+12. The administration service MUST serve safe artifacts only when the current request has
+`moderation_safe = 1` or has `moderation_safe IS NULL` and `moderation_category = 'disabled'`.
 13. The administration service MUST require its existing authentication and network checks for artifact routes.
 14. The administration service MUST NOT serve accepted source files or quarantine files directly.
 15. A processing retry MUST replace the artifact index for the request.
-16. A reconstruction command MUST create artifacts only for a previously safe request.
+16. A reconstruction command MUST create artifacts only for a previously accepted request.
 17. A reconstruction command MUST NOT send a Telegram message.
 
 ## Data model
@@ -45,7 +50,7 @@ Use atomic file replacement.
 3. Keep the validated mask with its segment record.
 4. Select the bottle and label with the existing quality rules.
 5. Generate the visual artifacts from the normalized moderation image.
-6. Store artifacts after safe moderation.
+6. Store artifacts after safe moderation or an explicit non-production bypass.
 7. Store the final result image before Telegram delivery.
 8. Log an artifact error without image bytes and continue the request.
 
@@ -77,4 +82,3 @@ The command does not use Telegram.
 7. Test that artifact generation failure does not stop recognition.
 8. Run the reconstruction command for the reported request.
 9. Inspect the request page at desktop and mobile widths.
-

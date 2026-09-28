@@ -2,6 +2,9 @@
 
 Date: 2026-09-26
 
+Status: Updated by Decision 018 for local development and tests. Production still requires
+safe moderation before a safe artifact is visible.
+
 ## Goal
 
 Show a strongly blurred preview for a quarantined request.
@@ -20,7 +23,9 @@ Do not send the quarantine source to the browser.
 9. The browser MUST NOT receive the quarantine source.
 10. CSS blur MUST NOT be the only censorship control.
 11. The administration service MUST serve a `censored` artifact only when the current request has `moderation_safe = 0`.
-12. The administration service MUST serve a `safe` artifact only when the current request has `moderation_safe = 1`.
+12. The administration service MUST serve a `safe` artifact only when the current request
+has `moderation_safe = 1` or has `moderation_safe IS NULL` and
+`moderation_category = 'disabled'`.
 13. A preview generation failure MUST NOT change the quarantine result.
 14. The reconstruction command MUST create a censored preview for a previously quarantined request.
 15. The reconstruction command MUST NOT call Telegram.
@@ -55,4 +60,3 @@ Existing artifact rows use `safe`.
 4. Test that a preview failure does not stop the rejection response.
 5. Reconstruct the requested quarantined request.
 6. Inspect the page at desktop and mobile widths.
-

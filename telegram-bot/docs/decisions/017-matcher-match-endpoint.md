@@ -4,8 +4,8 @@ Date: 2026-09-28
 
 ## Context
 
-The bot sent each photo to the old matcher `svoe-vino-matcher` on `127.0.0.1:8158`.
-The bot selected the pipeline `rerank-siglip2-512-crop` with `MATCHER_PIPELINE`.
+The bot sent each photo to a legacy prediction endpoint.
+The bot selected a legacy rerank pipeline with a bot-owned setting.
 The bot read the wine cards from a local catalogue file and a local wine code map.
 The owner wants the bot to become a thin client of `svoe-vino-lab/matcher`.
 The matcher has the endpoint `POST /v1/match` since commit `9ba496d` (plan 74).
@@ -15,7 +15,7 @@ The endpoint returns ranked candidates with a wine card for each candidate.
 
 ### Keep the old matcher and the local catalogue
 
-This option keeps the pipeline `rerank-siglip2-512-crop`.
+This option keeps the legacy rerank pipeline.
 The bot keeps two copies of the catalogue data: its own file and the matcher data.
 The catalogue version of the bot and of the matcher can differ.
 
@@ -28,8 +28,8 @@ It adds a second implementation of the same contract in another project.
 
 The matcher owns the catalogue data in its bundle.
 The bot and the matcher always use the same catalogue version.
-The prod pipeline is `siglip2-p512-as-is`. It has a lower accuracy than
-`rerank-siglip2-512-crop` (see `ResearchLog.md`, 2026-09-28).
+The temporary prod pipeline has lower accuracy than the previous bot pipeline
+(see `ResearchLog.md`, 2026-09-28).
 
 ## Decision
 
@@ -48,4 +48,4 @@ A request of the old version has no stored card. Its alternatives show the slug.
 At the same thresholds, the lab run predicts fewer confident answers: about 59 % of the
 positive photos instead of about 72 %, with a precision of about 0.91 in both cases.
 A better matcher pipeline improves the bot without a bot change.
-A rollback to the old matcher needs the previous bot image or the old systemd deployment.
+A rollback needs a previous Docker image.

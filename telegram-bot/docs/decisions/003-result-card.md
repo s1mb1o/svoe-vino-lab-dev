@@ -22,7 +22,7 @@ The bot cannot validate the image before Telegram fetches it.
 This option validates the response as an image.
 This option converts WebP and other supported image formats to JPEG.
 This option controls the image dimensions and file size.
-This option can use the submitted safe photo as a fallback.
+This option can use the submitted accepted photo as a fallback.
 
 ### Read the official image from a local dataset path
 
@@ -37,7 +37,7 @@ Allow only the configured official HTTPS host.
 Limit the downloaded image size.
 Validate the image with Pillow.
 Normalize the image to JPEG before Telegram upload.
-Use the submitted safe photo when the official image is unavailable.
+Use the submitted accepted photo when the official image is unavailable.
 
 Read color and grape data from the catalogue.
 Infer the sugar class only from explicit terms in the slug or wine name.

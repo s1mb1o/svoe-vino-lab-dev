@@ -15,7 +15,7 @@ def settings(tmp_path):
         username="admin",
         password="correct-horse",
         host="127.0.0.1",
-        port=8172,
+        port=28003,
         allowed_networks=("127.0.0.1/32",),
         rate_limit=50,
         rate_window_seconds=3600,
@@ -246,6 +246,33 @@ def test_admin_does_not_offer_retry_for_quarantine(tmp_path):
         )
         assert detail.status_code == 200
         assert "Повторить обработку" not in detail.text
+
+
+def test_admin_shows_bypassed_moderation_as_not_checked(tmp_path):
+    web_settings = settings(tmp_path)
+    request_id = seed_request(web_settings.database_file)
+    repository = Repository(web_settings.database_file)
+    repository.update(
+        request_id,
+        moderation_safe=None,
+        moderation_category="disabled",
+        moderation_confidence=0.0,
+        moderation_reason="moderation_disabled",
+    )
+    repository.close()
+    app = create_app(web_settings)
+
+    with TestClient(app, client=("127.0.0.1", 50000)) as client:
+        detail = client.get(
+            f"/requests/{request_id}",
+            auth=("admin", "correct-horse"),
+        )
+
+    assert detail.status_code == 200
+    assert "Проверка выполнена</dt><dd>нет" in detail.text
+    assert "Проверка пропущена</dt><dd>да" in detail.text
+    assert "Безопасно</dt><dd>не проверено" in detail.text
+    assert "Повторить обработку" in detail.text
 
 
 def test_admin_shows_api_source_without_telegram_retry(tmp_path):

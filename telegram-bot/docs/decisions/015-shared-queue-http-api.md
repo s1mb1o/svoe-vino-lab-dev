@@ -2,18 +2,24 @@
 
 Date: 2026-09-27
 
+Status: Accepted. The production port and deployment procedure were superseded by
+[Decision 017](017-matcher-match-endpoint.md) and
+[plan 06](../plans/06_matcher-match-endpoint.md). The API now uses production port `28002`.
+The obsolete systemd assets were removed.
+Decision 018 permits an explicit moderation bypass only for local development and tests.
+
 ## Context
 
 Internal LLM tests need wine recognition without Telegram.
 The HTTP path must have the same behavior as the Telegram path.
 The service has one queue worker because the upstream models share GPU memory.
-An unmoderated image must not be written to disk.
+Production must not write an unmoderated image to disk.
 
 ## Options
 
 ### Process the image in the administration service
 
-This option reuses port `8172`.
+This option reuses the administration port.
 This option creates a second processing worker in another process.
 It does not share the Telegram FIFO queue.
 It can send concurrent requests to the GPU services.
@@ -34,7 +40,7 @@ It violates the image safety rule.
 ## Decision
 
 Add an HTTP listener to the bot process.
-Use TCP port `8180` in production.
+Use a dedicated TCP port for the API.
 Submit each HTTP image to the existing `WorkQueue` instance.
 Wait for a completion future and return a synchronous JSON response.
 

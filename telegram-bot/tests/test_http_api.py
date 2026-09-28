@@ -155,7 +155,7 @@ async def test_http_submission_uses_work_queue_and_returns_full_result(tmp_path)
             recognition_page_url=wine.page_url,
             recognition_score=0.91,
             recognition_margin=0.12,
-            matcher_pipeline="siglip2-p512-as-is",
+            matcher_pipeline="test-pipeline",
             duration_ms=1500,
         )
         repository.replace_candidates(
@@ -180,7 +180,9 @@ async def test_http_submission_uses_work_queue_and_returns_full_result(tmp_path)
 
     assert result.status_code == 200
     assert result.body["status"] == "recognized"
-    assert result.body["matcher_pipeline"] == "siglip2-p512-as-is"
+    assert result.body["matcher_pipeline"] == "test-pipeline"
+    assert result.body["moderation"]["performed"] is True
+    assert result.body["moderation"]["bypassed"] is False
     assert result.body["moderation"]["safe"] is True
     assert result.body["recognition"]["wine"]["color"] == "Красное"
     assert result.body["recognition"]["wine"]["name"] == "Тестовое вино"
@@ -193,6 +195,39 @@ async def test_http_submission_uses_work_queue_and_returns_full_result(tmp_path)
     ]
     assert "qr_urls" not in result.body["recognition"]["candidates"][1]["wine"]
     assert result.body["timings"][-1]["step"] == "http_response_build"
+
+
+async def test_http_result_exposes_moderation_bypass_without_claiming_safe(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    services = SimpleNamespace(repository=repository)
+
+    async def handler(job):
+        repository.update(
+            job.request_id,
+            status="abstained",
+            moderation_safe=None,
+            moderation_category="disabled",
+            moderation_confidence=0.0,
+            moderation_reason="moderation_disabled",
+        )
+        job.completion.set_result(None)
+
+    queue = WorkQueue(handler, worker_count=1, capacity=2)
+    await queue.start()
+    try:
+        result = await submit_http_image(services, queue, b"image")
+    finally:
+        await queue.stop()
+        repository.close()
+
+    assert result.body["moderation"] == {
+        "performed": False,
+        "bypassed": True,
+        "safe": None,
+        "category": "disabled",
+        "confidence": 0.0,
+        "scores": {},
+    }
 
 
 async def test_http_result_of_an_old_request_uses_minimal_cards(tmp_path):

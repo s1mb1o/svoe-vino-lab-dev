@@ -3,6 +3,7 @@ from chto_za_vino_bot.profile import (
     AGE_GATE_TEXT,
     COMMANDS,
     DESCRIPTION,
+    HELP_TEXT,
     LEGAL_NOTICE,
     SHORT_DESCRIPTION,
 )
@@ -30,3 +31,8 @@ def test_age_gate_contains_required_notice():
     assert "Справочно · не предложение о продаже." in LEGAL_NOTICE
     assert "18+ · Чрезмерное употребление алкоголя вредит вашему здоровью." in LEGAL_NOTICE
     assert "каталоге vino-svoe.ru" in LEGAL_NOTICE
+
+
+def test_help_explains_single_photo_and_album_support():
+    assert "одно фото или альбом" in HELP_TEXT
+    assert "Каждая фотография обрабатывается отдельно" in HELP_TEXT

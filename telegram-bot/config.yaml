@@ -1,5 +1,10 @@
 # The Telegram bot service endpoints. Restart the bot after a change.
 # An endpoint can be an HTTP(S) URL or an exact "{env:NAME}" reference.
+moderation:
+  # false is only for local development and tests. Production MUST keep this true.
+  # A false value skips ShieldGemma and accepts each valid image for recognition.
+  enabled: true
+
 endpoints:
   moderation: "{env:MODERATION_ENDPOINT}"
   sam3: "{env:SAM3_ENDPOINT}"

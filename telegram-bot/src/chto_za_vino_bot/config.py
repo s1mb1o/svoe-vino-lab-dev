@@ -57,7 +57,8 @@ def _resolve_endpoint(
 
 @dataclass(frozen=True, slots=True)
 class EndpointSettings:
-    moderation: str
+    moderation_enabled: bool
+    moderation: str | None
     sam3: str
     matcher: str
 
@@ -79,10 +80,19 @@ class EndpointSettings:
         except (OSError, yaml.YAMLError) as exc:
             raise ConfigError(f"cannot read bot configuration {path}: {exc}") from exc
         root = _mapping(configuration, "configuration")
+        moderation_settings = _mapping(root.get("moderation", {}), "moderation")
+        moderation_enabled = moderation_settings.get("enabled", True)
+        if not isinstance(moderation_enabled, bool):
+            raise ConfigError("moderation.enabled MUST be true or false")
         endpoints = _mapping(root.get("endpoints"), "endpoints")
-        moderation = _resolve_endpoint(
-            endpoints.get("moderation"), "endpoints.moderation", variables
-        )
+        moderation_value = endpoints.get("moderation")
+        if moderation_enabled:
+            moderation = _resolve_endpoint(
+                moderation_value, "endpoints.moderation", variables
+            ).rstrip("/")
+        else:
+            _validate_optional_endpoint(moderation_value, "endpoints.moderation")
+            moderation = None
         sam3 = _resolve_endpoint(endpoints.get("sam3"), "endpoints.sam3", variables)
         matcher = _resolve_endpoint(endpoints.get("matcher"), "endpoints.matcher", variables)
         matcher_parts = urlsplit(matcher)
@@ -90,10 +100,18 @@ class EndpointSettings:
         if not matcher_parts.path.endswith(MATCH_PATH):
             raise ConfigError(f"endpoints.matcher MUST name the matcher endpoint {MATCH_PATH}")
         return cls(
-            moderation=moderation.rstrip("/"),
+            moderation_enabled=moderation_enabled,
+            moderation=moderation,
             sam3=sam3.rstrip("/"),
             matcher=matcher,
         )
+
+
+def _validate_optional_endpoint(value: object, label: str) -> None:
+    """Validate a disabled service endpoint without resolving its environment value."""
+    if value is None or (isinstance(value, str) and ENV_REFERENCE.fullmatch(value)):
+        return
+    _resolve_endpoint(value, label, {})
 
 
 def _positive_int(name: str, default: int) -> int:
@@ -152,7 +170,8 @@ def _positive_float(name: str, default: float) -> float:
 @dataclass(frozen=True, slots=True)
 class Settings:
     telegram_token: str
-    moderation_endpoint: str
+    moderation_enabled: bool
+    moderation_endpoint: str | None
     sam3_endpoint: str
     matcher_endpoint: str
     data_root: Path
@@ -184,9 +203,7 @@ class Settings:
             raise ValueError("TELEGRAM_BOT_TOKEN is required")
         endpoints = EndpointSettings.from_config()
 
-        data_root = Path(
-            os.getenv("BOT_DATA_ROOT", "/mnt/projects/chto-za-vino-bot/data")
-        ).expanduser()
+        data_root = Path(os.getenv("BOT_DATA_ROOT", "data")).expanduser()
         database_file = Path(os.getenv("BOT_DATABASE", str(data_root / "bot.sqlite3"))).expanduser()
 
         queue_workers = _positive_int("BOT_QUEUE_WORKERS", 1)
@@ -209,6 +226,7 @@ class Settings:
 
         return cls(
             telegram_token=token,
+            moderation_enabled=endpoints.moderation_enabled,
             moderation_endpoint=endpoints.moderation,
             sam3_endpoint=endpoints.sam3,
             matcher_endpoint=endpoints.matcher,
@@ -217,8 +235,7 @@ class Settings:
             rejection_image_file=Path(
                 os.getenv(
                     "BOT_REJECTION_IMAGE",
-                    "/mnt/projects/chto-za-vino-bot/assets/"
-                    "content-rejected-monkey-640x640.png",
+                    "assets/content-rejected-monkey-640x640.png",
                 )
             ).expanduser(),
             admin_user_id=_positive_int("BOT_ADMIN_USER_ID", 207286210),
@@ -243,7 +260,7 @@ class Settings:
                 allow_zero=False,
             ),
             http_api_host=http_api_host,
-            http_api_port=_port("BOT_HTTP_API_PORT", 8180),
+            http_api_port=_port("BOT_HTTP_API_PORT", 28002),
             http_api_allowed_networks=http_api_allowed_networks,
             sync_profile=_boolean("BOT_SYNC_PROFILE", True),
             log_level=os.getenv("BOT_LOG_LEVEL", "INFO").upper(),
@@ -265,9 +282,7 @@ class AdminWebSettings:
 
     @classmethod
     def from_env(cls) -> AdminWebSettings:
-        data_root = Path(
-            os.getenv("BOT_DATA_ROOT", "/mnt/projects/chto-za-vino-bot/data")
-        ).expanduser()
+        data_root = Path(os.getenv("BOT_DATA_ROOT", "data")).expanduser()
         username = os.getenv("BOT_ADMIN_WEB_USERNAME", "admin").strip()
         password = os.getenv("BOT_ADMIN_WEB_PASSWORD", "")
         if not username:
@@ -292,7 +307,7 @@ class AdminWebSettings:
             username=username,
             password=password,
             host=os.getenv("BOT_ADMIN_WEB_HOST", "127.0.0.1").strip(),
-            port=_port("BOT_ADMIN_WEB_PORT", 8172),
+            port=_port("BOT_ADMIN_WEB_PORT", 28003),
             allowed_networks=networks,
             rate_limit=_positive_int("BOT_RATE_LIMIT", 50),
             rate_window_seconds=_positive_int("BOT_RATE_WINDOW_SECONDS", 3600),

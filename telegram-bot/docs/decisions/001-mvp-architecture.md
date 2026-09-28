@@ -2,13 +2,14 @@
 
 Date: 2026-09-26
 
-Status: Superseded for moderation by Decision 009.
+Status: Superseded for moderation by Decision 009 and for recognition by
+[Decision 017](017-matcher-match-endpoint.md).
 
 ## Context
 
 The bot must be available on the same day.
 `gx10` already runs `llama-swap` on port `18081`.
-`gx10` already runs `svoe-vino-matcher` on port `8158`.
+`gx10` already runs a matcher service.
 
 ## Options
 

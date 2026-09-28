@@ -31,8 +31,9 @@ The confirmation screen and each successful result show the alcohol notice.
 3. The bot adds the request to the shared FIFO queue.
 4. A queue worker downloads the Telegram photo into memory.
 5. The worker validates and normalizes a moderation copy in memory.
-6. `shieldgemma-2-4b-it` classifies the moderation copy through a multipart request.
-7. The bot fails closed if moderation fails.
+6. In production, `shieldgemma-2-4b-it` classifies the moderation copy
+   through a multipart request.
+7. The production bot fails closed if moderation fails.
 8. The bot writes a safe image under `accepted`.
 9. The bot writes an unsafe image under `quarantine`.
 10. The bot creates an irreversible blurred administration preview for an unsafe image.
@@ -43,7 +44,8 @@ The confirmation screen and each successful result show the alcohol notice.
 15. SAM3 returns full-size masks for the bottle and label prompts.
 16. The bot stores safe pipeline artifacts for the administration inspector.
 17. The bot continues to recognition when the quality check or artifact generation fails.
-18. The bot sends only an image that passed moderation to `POST /v1/match?k=4` of the matcher.
+18. The bot sends an image that passed moderation to `POST /v1/match?k=4` of the matcher.
+    A non-production test can use the explicit moderation bypass.
 19. The matcher returns up to four ranked candidates with scores and wine cards.
 20. The bot answers `Не уверен` when no candidate exists, or when the Top-1 score or the
     score margin is too low.
@@ -51,7 +53,7 @@ The confirmation screen and each successful result show the alcohol notice.
 22. The bot downloads and normalizes the official result image.
 23. The bot detects the bottle area from transparency or a white background.
 24. The bot fits the complete bottle on a white 4:5 canvas with 5% padding.
-25. The bot uses the submitted safe photo when the official image is unavailable.
+25. The bot uses the submitted accepted photo when the official image is unavailable.
 26. The bot sends the result as a Telegram photo with a caption and a URL button.
 27. The bot records the request result and image hashes in SQLite.
 28. A successful single-photo result shows match feedback buttons.
@@ -101,13 +103,14 @@ The interface shows these pages:
 - Moderation filter error reports.
 
 The interface can reset one user's rate limit.
-The interface can request a retry only for a previously safe request.
+The interface can request a retry only for a previously accepted request.
 The bot receives the retry through SQLite and sends it through the shared FIFO queue.
-The bot runs moderation again before recognition.
+The bot runs moderation again before recognition when moderation is enabled.
 
 The request inspector shows the exact matcher input, the moderation image, SAM3 masks,
 the combined mask overlay, bottle and label crops, masked cutouts, and the Telegram result image.
-The interface serves full-fidelity artifacts only for a request with a current safe moderation result.
+The interface serves full-fidelity artifacts only for a request with a current safe
+moderation result or an explicit non-production moderation bypass.
 For a quarantined request, the interface shows one irreversible server-side blurred preview.
 The preview is reduced to 24 pixels on its longest side before enlargement and Gaussian blur.
 The interface does not serve accepted source files or quarantine images directly.
@@ -132,7 +135,9 @@ curl -sS \
 
 The request waits for queue processing to finish.
 The JSON response contains the request status, moderation result, quality metadata,
-wine parameters, up to four ranked candidates, matcher profile, and step timings.
+wine parameters, up to four ranked candidates, matcher pipeline, and step timings.
+The moderation object contains `performed`, `bypassed`, and nullable `safe` fields.
+An explicit bypass gives `performed=false`, `bypassed=true`, and `safe=null`.
 When the matcher wine card has QR URLs, the selected wine and its candidate
 object also contain `qr_urls`.
 The response omits `qr_urls` when no valid URL exists.
@@ -160,14 +165,24 @@ An environment reference reads the named variable when the bot starts.
 The default [config.yaml](config.yaml) contains these entries:
 
 ```yaml
+moderation:
+  enabled: true
+
 endpoints:
   moderation: "{env:MODERATION_ENDPOINT}"
   sam3: "{env:SAM3_ENDPOINT}"
   matcher: "{env:MATCHER_ENDPOINT}"
 ```
 
+Production MUST keep `moderation.enabled` set to `true`.
+Local development and tests MAY set it to `false` to bypass ShieldGemma. The bot then does
+not resolve `endpoints.moderation` and does not send a moderation request. It accepts each
+valid image for recognition. It stores `disabled` as the moderation category and stores no
+safety verdict. The default is `true`.
+
 Copy `.env.example` outside the repository or use a deployment environment file.
 Set the three endpoint variables and `TELEGRAM_BOT_TOKEN` in that protected file.
+`MODERATION_ENDPOINT` is not required when moderation is disabled.
 Do not commit the token.
 
 The example environment uses these service endpoints for `gx10`:
@@ -178,7 +193,7 @@ The example environment uses these service endpoints for `gx10`:
 | `MODERATION_ENDPOINT` | `http://127.0.0.1:18081/upstream/shieldgemma-2-4b-it/classify` |
 | `SAM3_ENDPOINT` | `http://192.168.86.14:18081/upstream/sam3` |
 | `MATCHER_ENDPOINT` | `http://192.168.86.14:28000/v1/match` |
-| `BOT_REJECTION_IMAGE` | `/mnt/projects/chto-za-vino-bot/assets/content-rejected-monkey-640x640.png` |
+| `BOT_REJECTION_IMAGE` | `assets/content-rejected-monkey-640x640.png` |
 | `BOT_ADMIN_USER_ID` | `207286210` |
 | `BOT_RATE_LIMIT` | `50` |
 | `BOT_RATE_WINDOW_SECONDS` | `3600` |
@@ -193,18 +208,20 @@ The example environment uses these service endpoints for `gx10`:
 | `BOT_QUALITY_LABEL_MIN_AREA_RATIO` | `0.015` |
 | `BOT_ADMIN_WEB_USERNAME` | `admin` |
 | `BOT_ADMIN_WEB_HOST` | `127.0.0.1` |
-| `BOT_ADMIN_WEB_PORT` | `8172` |
+| `BOT_ADMIN_WEB_PORT` | `28003` |
 | `BOT_ADMIN_WEB_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128,192.168.86.0/24` |
 | `BOT_HTTP_API_HOST` | `127.0.0.1` |
-| `BOT_HTTP_API_PORT` | `8180` |
+| `BOT_HTTP_API_PORT` | `28002` |
 | `BOT_HTTP_API_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128,192.168.86.0/24` |
 
 `endpoints.matcher` MUST name the matcher path `/v1/match`.
-The bot refuses to start with another path, for example the old `/v1/eval/predict`.
+The bot refuses to start with another path, for example `/v1/not-match`.
 The bot sends `k=4` and no pipeline name. The matcher configuration selects the pipeline.
 
-The Docker image sets `BOT_DATA_ROOT=/data`, `BOT_REJECTION_IMAGE`, and the listen
-addresses `0.0.0.0:8080`. In a container, `127.0.0.1` is the container itself, so the
+The bare-process defaults use the production ports `28003` and `28002`.
+The Docker image sets `BOT_DATA_ROOT=/data`, `BOT_REJECTION_IMAGE`, and both listen addresses
+to `0.0.0.0:8080`. Production publishes the administration interface on `28003` and the
+recognition API on `28002`. In a container, `127.0.0.1` is the container itself, so the
 deployment sets each endpoint to the LAN address of `gx10`.
 
 Set `BOT_ADMIN_WEB_PASSWORD` to a strong random value.
@@ -249,9 +266,7 @@ The data directory is `/srv/svoe-vino-lab/prod/telegram-bot/data`.
 The protected environment file is
 `/srv/svoe-vino-lab/prod/telegram-bot/config/telegram-bot.env`.
 
-The old deployment used the systemd user units in `deploy/` and the directory
-`/mnt/projects/chto-za-vino-bot`. These units are stopped and disabled.
-Keep them only for a rollback.
+Production uses Docker Compose only. This project contains no systemd service units.
 
 Read [the specification](docs/specification.md), [the privacy policy](PRIVACY.ru.md),
 and [the smoke tests](SMOKE_TESTS.md).
