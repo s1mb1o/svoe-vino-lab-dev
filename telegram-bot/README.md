@@ -152,14 +152,29 @@ Use this URL in the BotFather Privacy Policy field.
 
 ## Configuration
 
-Copy `.env.example` outside the repository or use a systemd environment file.
-Set `TELEGRAM_BOT_TOKEN` in that protected file.
+The bot reads the service endpoints from `config.yaml` in its working directory.
+Set `BOT_CONFIG` to use a different file.
+Each endpoint MUST be an HTTP(S) URL or an exact `"{env:NAME}"` reference.
+An environment reference reads the named variable when the bot starts.
+
+The default [config.yaml](config.yaml) contains these entries:
+
+```yaml
+endpoints:
+  moderation: "{env:MODERATION_ENDPOINT}"
+  sam3: "{env:SAM3_ENDPOINT}"
+  matcher: "{env:MATCHER_ENDPOINT}"
+```
+
+Copy `.env.example` outside the repository or use a deployment environment file.
+Set the three endpoint variables and `TELEGRAM_BOT_TOKEN` in that protected file.
 Do not commit the token.
 
-The production defaults use these service endpoints for `gx10`:
+The example environment uses these service endpoints for `gx10`:
 
-| Variable | Default |
+| Variable | Example or default |
 |---|---|
+| `BOT_CONFIG` | `config.yaml` |
 | `MODERATION_ENDPOINT` | `http://127.0.0.1:18081/upstream/shieldgemma-2-4b-it/classify` |
 | `SAM3_ENDPOINT` | `http://192.168.86.14:18081/upstream/sam3` |
 | `MATCHER_ENDPOINT` | `http://192.168.86.14:28000/v1/match` |
@@ -184,7 +199,7 @@ The production defaults use these service endpoints for `gx10`:
 | `BOT_HTTP_API_PORT` | `8180` |
 | `BOT_HTTP_API_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128,192.168.86.0/24` |
 
-`MATCHER_ENDPOINT` MUST name the matcher path `/v1/match`.
+`endpoints.matcher` MUST name the matcher path `/v1/match`.
 The bot refuses to start with another path, for example the old `/v1/eval/predict`.
 The bot sends `k=4` and no pipeline name. The matcher configuration selects the pipeline.
 

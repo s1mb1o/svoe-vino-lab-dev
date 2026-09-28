@@ -270,6 +270,31 @@ python3 -m unittest discover -s tests -p 'test_matcher_bundle.py'
 
 Read `docs/testing/matcher-bundle.md` for the bundle contents and failure checks.
 
+## Matcher catalogue copy (plan 75)
+
+The copy replaces the bundle: the matcher reads `catalog.sqlite3` (the views
+`matcher_wine` and `matcher_wine_image`), `embeddings/<name>/index.json`, and its vector
+file. The script reads `config.yaml` and `data/catalog/`. It refuses a running build and
+an index with an item that is not current. The output path MUST not exist. This command
+writes a new directory. It calls no external service:
+```bash
+python3 scripts/copy_catalog.py --out work/catalog-copy \
+    --embedding gx10-siglip2-so400m-patch16-naflex-p512 --no-images
+```
+
+Without `--embedding`, the copy holds each embedding that has an index. Without
+`--no-images`, it also holds `images/` and `cuts/` (hard links on the same volume). Send
+a copy to a host; rsync sends the changed files alone:
+```bash
+rsync -a --delete work/catalog-copy/ <host>:<path>/
+```
+
+Run the local unit tests. They use temporary data and do not call an external service:
+```bash
+python3 -m unittest discover -s tests -p 'test_catalog_copy.py'
+python3 -m unittest discover -s tests -p 'test_matcher_views.py'
+```
+
 # Кэш вызовов моделей
 
 The SAM3, Grounding DINO, and VLM calls keep their answers in `data/cache/models/<model>/`.

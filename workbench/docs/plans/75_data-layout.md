@@ -1,7 +1,8 @@
 # 75 — Data layout: catalogue, test data, cache
 
 Date: 2026-09-28.
-Status: stage 1 is done (2026-09-28T17:43+0300). Stages 2 to 4 are not started.
+Status: stage 1 is done and committed (`86face6`). Stage 2a is done, not committed.
+Stages 2b, 2c, 3, and 4 are not started.
 
 ## Goal
 
@@ -155,4 +156,123 @@ Until stage 3, the prepared PNG files stay in `catalog/embeddings/<name>/images/
 8. The first git commit after the move MUST record
    the removal of the old paths of `images/main`, `images/patched`, and
    `images/additional`, and the addition of the new paths.
+
+## Stage 2 design
+
+The owner answered `do 1 and 3` on 2026-09-28T18:57:07+0300: start stage 2.
+
+### Goal
+
+The matcher reads a copy of `data/catalog/`. The matcher needs no bundle build. The
+matcher imports no workbench code and does not read the base tables of the lab.
+
+### Parts
+
+1. **2a (this step).** The SQL views, the reader of the matcher, the config keys, the copy
+   script, the tests, and the documents. The bundle support stays. The default pipeline
+   of `matcher/config.yaml` stays the bundle pipeline. No prod change.
+2. **2b (owner approval).** The prod matcher on gx10 reads a copy of the catalogue. The
+   default config, `SETUP.md`, and the deploy documents change.
+3. **2c (owner approval).** The bundle builder, the bundle validator, and the bundle reader
+   are removed.
+
+### The catalogue directory for the matcher
+
+```text
+<catalog>/
+  catalog.sqlite3                      the matcher reads the two views below alone
+  embeddings/<name>/index.json         the items and the name of the vector file
+  embeddings/<name>/vectors-<hash>.npy the vector file that index.json names
+  images/, cuts/                       not necessary for the matcher
+```
+
+### SQL views (schema file `031_matcher_views.sql`)
+
+1. `matcher_wine`: one row for each `Active` wine. The columns: `wine_slug`, `name`,
+   `producer`, `category`, `region`, `color`, `grapes`, `main_source_name` (the
+   `source_name` of the image type `main`, or NULL), and `qr_values` (a JSON array of the
+   values of `wine_code` with the kind `qr_url`).
+2. `matcher_wine_image`: one row for each image of an `Active` wine. The columns:
+   `wine_slug`, `image_type`, `sha256`, and `role` (`full` or `label`). A `main` image is
+   not in the view when the wine has a `main_patched` image. These are the rules of
+   `embeddings.read_inputs`.
+3. A later schema file that changes the base tables MUST keep the columns of the two
+   views.
+
+### Reader of the matcher (`matcher/catalog.py`)
+
+1. `load_catalog(directory, embedding)` returns the same `Bundle` object as `load_bundle`.
+   The rest of the matcher does not change.
+2. The reader opens `catalog.sqlite3` read-only and checks the columns of the two views.
+3. The reader reads `index.json` and the vector file that it names. It checks the name of
+   the file, the type `float32`, the shape, and each row number.
+4. An item `(source_sha256, view)` belongs to each wine with a row of
+   `matcher_wine_image` for this `sha256`. The view `label` takes each role. The view
+   `full` takes the role `full` alone. These are the rules of the bundle builder.
+5. The card of a wine: `page_url` is `https://vino-svoe.ru/wines/` plus the slug;
+   `image_url` is the image prefix of the bundle builder plus the URL-encoded
+   `main_source_name`; `qr_urls` are the normalized, unique, sorted HTTP and HTTPS values;
+   `sugar` comes from the rules of the bot. A wine gets a card only when it owns an item.
+6. `Bundle.embedding` is `config` of `index.json`.
+7. The reader uses each item of `index.json`. It does not check the freshness. The copy
+   script checks it.
+
+### Config of the matcher
+
+A pipeline entry names either `bundle`, or `catalog` together with `embedding`. A
+relative path resolves against the working directory of the process.
+
+### Copy script (`scripts/copy_catalog.py`)
+
+1. `python3 scripts/copy_catalog.py --out <new directory> [--embedding <name>]...
+   [--no-images]`. Without `--embedding`, the script copies each embedding of
+   `config.yaml` that has an index.
+2. The script refuses an `--out` that exists, a running build of a selected embedding,
+   and a selected embedding with a `stale` item. A stale item would reach the matcher with
+   an old vector.
+3. The script reports the `missing` and the `failed` items of each selected embedding.
+4. The script copies `catalog.sqlite3` with the SQLite backup API.
+5. The script copies `index.json`, the vector file, and the cluster files of each
+   selected embedding. It does not copy the prepared PNG files, the logs, and the locks.
+6. The script links the files of `images/` and `cuts/` (a copy on another volume), unless
+   `--no-images`. The image files never change, so a hard link is safe.
+7. The script writes into a temporary sibling directory, loads each embedding with the
+   reader of the matcher, and then renames the directory.
+8. `rsync -a --delete <out>/ <host>:<path>/` sends the copy. rsync sends the changed
+   files alone.
+
+### Stage 2a verification
+
+1. The matcher tests read a fixture catalogue. The workbench tests check the two views
+   and the copy script.
+2. A new bundle and a new catalogue copy of the same data give the same slugs, the same
+   cards, the same vectors of each view and wine, and the same `top1` and `ranked` answers
+   for 300 query vectors.
+
+## Stage 2a result
+
+1. `pipeline/schema/031_matcher_views.sql` adds the two views. The session 66 took the
+   number 031 at 19:14:08. No other section named schema work. The migration of
+   `data/catalog/catalog.sqlite3` ran at 19:14, after the safety copy
+   `data/backups/lab-before-031-matcher-views-20260928T161408Z.sqlite3`. The lab server was
+   down from about 18:48, not by this session. The session 66 started it at 19:14 (pid
+   10583).
+2. On the live data, the views give the rows of `embeddings.read_inputs` (2,392 image
+   rows) and the card fields of the bundle builder (2,099 wines, no difference).
+3. `matcher/catalog.py`, the config keys `catalog` and `embedding`, and
+   `matcher/tests/test_catalog.py` (11 tests) are new. The matcher suite gives 80 tests
+   `OK`.
+4. `pipeline/catalog_copy.py`, `scripts/copy_catalog.py`, `tests/test_catalog_copy.py`
+   (6 tests), and `tests/test_matcher_views.py` (3 tests) are new. The workbench suite
+   gives 1,348 tests with 2 errors: the module `svm` is missing, as before the change.
+5. A new bundle and a copy of the same data gave the same slugs (2,094), cards, embedding
+   config, vectors of each view and wine (2,287 `full` and 2,387 `label` rows), and the
+   same `top1` and `ranked` answers for 600 query vectors in each view.
+6. With the live SigLIP2 endpoint of gx10, a matcher of the bundle and a matcher of the
+   copy gave the same `predict` and `match(k=4)` answers for the 3 photos of
+   `matcher/tests/data`.
+7. A copy of one embedding without images takes about 1.3 s (55 MB). A copy of the 12
+   embeddings with 7,210 linked image files takes about 31 s on the T7.
+8. `matcher/config.yaml`, the prod matcher, `SETUP.md`, and the deploy documents did not
+   change. They belong to stage 2b.
 

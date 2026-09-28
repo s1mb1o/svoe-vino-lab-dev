@@ -3,6 +3,7 @@
 ## Page
 
 Nuxt renders one photo search page at `/`.
+The app shell blocks the page with `AgeGate` until local storage contains the accepted 18+ value.
 The app shell provides the source logo, a scanner label, and a link to the source portal.
 `PhotoScanner` renders the upload, progress, and single-match states.
 `useWineScanner` owns selection, cancellation, prediction, metadata lookup, and preview cleanup.
@@ -32,51 +33,48 @@ The evaluator route and provider configuration stay unchanged.
 The app uses local copies of the approved reference visual assets.
 The Node server runs on the existing loopback port 8153.
 
-## Food recommendations
+## Progressive Web App
 
-The demo data flow is `Web UI -> our portal API -> our server-side service -> response`.
-The browser calls relative portal routes. The browser does not call retailer APIs.
-The service owns store selection, product queries, pairing rules, and response normalization.
-The UI renders the response and manages user interaction.
-The current demo runs the portal API and service in the same Nuxt server.
-This deployment does not imply that a separate backend service is already connected.
-If the service moves to another process, keep the browser-facing portal contract stable.
+`@vite-pwa/nuxt` generates `manifest.webmanifest` and the Workbox service worker.
+`NuxtPwaManifest` adds the generated manifest link to the document head.
+The module registers the service worker only in a production build.
+Workbox precaches the client bundles, install icons, and app-shell reference assets.
+Workbox uses `NetworkFirst` for same-origin page navigation.
+The page route excludes `/api/` and `/v1/`.
+The page route accepts only GET requests.
+It does not store photo uploads or API responses.
+The module applies service-worker updates automatically.
+Recognition and metadata requests require a network connection.
 
-`FoodRecommendations` mounts only for a matched wine with metadata.
-`useFoodRecommendations` owns geolocation, manual store selection, requests, cancellation, and result state.
-The component unmounts when photo search clears the match. Late food responses cannot replace the new wine result.
-`server/utils/food-pairings.ts` maps source pairing labels to distinct food ideas.
-Wine-style defaults fill missing categories. No LLM is required.
-`server/utils/globus.ts` reads the live directory, chooses a store, and queries products in a fresh guest context.
-Each request has separate app and device IDs. Concurrent users do not share a store selection.
-Coordinates remain on the portal server. Globus receives the selected store ID and product queries.
-The client shows source units, card conditions, availability time, and validated product URLs.
-Product images load from the retailer CDN. Product links open the retailer page after a user action.
-These media and navigation requests are separate from the portal data API.
-Only products with positive `quantity_max` and `active=true` qualify.
-Read `docs/food-api.md` for the integration boundary.
+## Result experiences
+
+`WineExperiences` mounts after a resolved wine result.
+It owns one native dialog and four local experience states.
+The product demo uses fictional `shared/experiences.ts` data.
+The simulated permission does not call `navigator.geolocation`.
+The label demo reads grape names from the resolved wine and keeps its Syrah and Viognier copy explicitly illustrative.
+The story demo rotates fictional text without audio or a network request.
+The Abrau-Durso guide uses local map coordinates and public source portal links.
+The previous retailer integration and API routes remain in the repository but are not part of the rendered result flow.
 
 ## Shelf photos
 
-The current page switches between `PhotoScanner` and `ShelfUnavailable`.
+The page switches between `PhotoScanner`, `ShelfScanner`, and `ShelfUnavailable`.
+`ShelfScanner` is available in upstream mode when `NUXT_PREDICTION_ENDPOINT` ends with `/v1/eval/predict`.
+The server derives the upstream `/v1/group/match` URL from that configuration.
 `ShelfUnavailable` does not accept a photo and does not make an API request.
-The default `NUXT_SHELF_MODE=disabled` setting makes `POST /api/shelf/segment` return HTTP 503 before it reads an upload or calls SAM3.
-
-The implemented enabled path switches between `PhotoScanner` and `ShelfScanner`.
 A mode change unmounts the previous scanner and cancels its requests.
-`useShelfScanner` owns the shelf photo, segmentation, selection, and popup state.
-The browser sends the photo to our `POST /api/shelf/segment` route.
-`server/utils/shelf.ts` normalizes the image with Sharp and calls the configured SAM3 service.
-The server validates the response. It clamps detector boxes and suppresses duplicate boxes.
-The response contains the normalized photo, cropped transparent masks, and original-image bottle crops.
+`useShelfScanner` owns the shelf photo, group result, selection, and popup state.
+The browser sends the photo to same-origin `POST /v1/group/match`.
+`server/utils/group.ts` proxies the image to the matcher and validates its response.
+The matcher owns segmentation, wine matching, and any SAM3 access.
+The response contains the preview, masks, normalized bottle boxes, and nullable wine matches.
 The browser positions masks and controls with normalized coordinates.
-Small overlay images avoid a full-frame texture for each bottle.
 The server retains at most 100 bottles and reports truncation.
 
-Selecting a bottle opens a native dialog and passes its JPEG crop to `useWineScanner`.
-The crop follows the browser `POST /api/predict` contract.
-No prediction runs before a bottle selection.
-Closing the popup cancels its recognition and food requests. The segmented shelf remains available.
+Selecting a bottle opens a native dialog with the match already returned for that bottle.
+Selection makes no network request.
+Closing the popup cancels its result-experience requests. The matched shelf remains available.
 Replacing the photo, resetting, and unmounting invalidate late responses and release transient data.
-The server forwards client disconnection signals to segmentation and prediction requests.
-The browser never receives the SAM3 endpoint. It never calls SAM3 directly.
+The server forwards client disconnection signals to the matcher request.
+The browser never receives the private matcher endpoint or a SAM3 endpoint.

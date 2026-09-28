@@ -2631,6 +2631,21 @@ The selected answer:
 1
 ```
 
+## 2026-09-28T18:25:00+0300
+
+```text
+Svoe-vino-lab workbench when add image additional, do qr and barcode search. And fill barcode fields.
+```
+
+## 2026-09-28T18:33:00+0300
+
+The agent asked which of three implementations to use. The recommended implementation
+scans on the server and writes valid GTINs and QR URLs automatically. The answer:
+
+```text
+Use existing qr_barcode decoder
+```
+
 ## 2026-09-26T09:24:34+0300
 
 The agent proposed that a carton-like package with no separate label keeps its full
@@ -7490,6 +7505,116 @@ move /Volumes/T7\_2TB/Projects-T7\_2TB/drink-atlas-workspace/svoe-vino-lab/\* (e
 как теперь настроить домен?
 ```
 
+## 2026-09-28T11:46:30+0300
+
+```text
+Как на на Selectel нужно открыть входящие TCP-порты `80` и `443` и настроить Caddy ?
+```
+
+## 2026-09-28T11:48:32+0300
+
+```text
+и как с 135.106.229.22 на gx10 туннель?
+```
+
+## 2026-09-28T11:49:38+0300
+
+```text
+push to github, ensure that all matcher/ tests run
+```
+
+## 2026-09-28T11:52:12+0300
+
+```text
+`svoe-vino-lab` - там же должно быть 2 runner (один без, а другой с docker), разве не так?
+```
+
+## 2026-09-28T13:17:25+0300
+
+```text
+this is configuration for matcher prod on gx10 (deploy/gx10/matcher-prod.md)
+please, update gx10 seup part, and write details to deploy/gx10/reverse-ssh.md
+```
+
+## 2026-09-28T13:44:29+0300
+
+```text
+setup reverse SSH from gx10 for port 28000 to avalon and princess (/Volumes/T7\_2TB/Projects-T7\_2TB/drink-atlas-workspace/deploy/INFRASRUCTURE.md)
+```
+
+## 2026-09-28T13:25:39+0300
+
+```text
+svoe-vino-lab/matcher
+
+create Dockerfile.
+
+I expect to create docker container from image and mount data dir and config.yaml inside container
+
+Following env vars can be set: 
+- SIGLIP2_ENDPOINT
+- GROUNDING_DINO_ENDPOINT
+- SAM3_ENDPOINT
+- VLM_ENDPOINT
+- VLM_MODEL
+- QR_SCANNER_ENDPOINT
+
+
+Idea is to have self sustained container of svoe-vino-lab/matcher service
+
+also on gx10 i will run two containers. One prod, and one dev. During dev i want update dev and do not touch prod (deploy/gx10/matcher-prod.md, deploy/gx10/matcher-dev.md). So create in deploy also docker compose files
+```
+
+## 2026-09-28T13:31:00+0300
+
+Questions of the agent and the selected answers:
+
+```text
+How should the image get built and reach gx10? = Build on gx10 (Recommended)
+Where should the compose files go? = Workspace deploy/gx10/ (Recommended)
+What is the 'data dir' that gets mounted into the container? = New <env>/matcher/data/ (Recommended)
+What happens to the venv + systemd-unit procedure in matcher-prod.md and matcher-dev.md? = Replace with Docker (Recommended)
+```
+
+## 2026-09-28T13:44:57+0300
+
+Questions of the agent and the selected answers:
+
+```text
+test-docker-srv (192.168.86.23) accepts TCP on port 22 but sends no SSH banner. Where should I build and run the image to verify it (smoke cases DK1–DK7)? = gx10 scratch test (Recommended)
+Should I commit the svoe-vino-lab repo files (matcher/Dockerfile, matcher/.dockerignore, matcher/README.md, and my hunks in workbench/ChangeLog.md and SMOKE_TESTS.md)? = Commit after the test
+```
+
+## 2026-09-28T13:47:54+0300
+
+```text
+write to rules that deploy is in ./deploy, not ./svoe-vino-lab/deploy
+```
+
+## 2026-09-28T13:49:00+0300
+
+```text
+what to do on gx10 with sudo?
+```
+
+## 2026-09-28T13:53:30+0300
+
+```text
+deploy dev and prod on gx10
+```
+
+## 2026-09-28T13:56:44+0300
+
+The message `update deploy/` and the question of the agent with the selected answers:
+
+```text
+update deploy/
+```
+
+```text
+What should "update deploy/" cover? = Fill gx10/COMMANDS.md, uptime-kuma/ dir, Dev check too, Docker check scripts (Recommended)
+```
+
 ## 2026-09-28T14:19:39+0300
 
 Messages of the session `drink-atlas-workspace-e9`, in order. The agent recorded them late.
@@ -7539,6 +7664,48 @@ range, fewer candidates than `k`, pipeline selection, and the mock pipeline. The
 3. ok
 4. нет, только тот пайплайн что в config.yaml
 5. для остальных возвращай все, в случайными score
+```
+
+## 2026-09-28T15:01:00+0300
+
+Messages of the session `drink-atlas-workspace-a0`, in order. The agent recorded them late.
+The exact times of the messages are not known. The heading holds the time of the record.
+
+````text
+there is 
+```
+python3 scripts/build_matcher_bundle.py \
+    --embedding <embedding> \
+    --out <new-directory> \
+    --skip-images
+
+python3 scripts/validate_matcher_bundle.py <bundle-directory>
+```
+
+there is embedding
+svoe-vino-lab/workbench/data/embeddings/gx10-siglip2-so400m-patch16-naflex-p512
+
+export bundle to svoe-vino-lab/matcher/data and create simple pipeline that uses only SigLip2 on provided bundle
+
+test that it @svoe-vino-lab/matcher  able to work with bundle.
+
+commit and push to github
+````
+
+```text
+idea that workbench and matcher are completely independed, and data passed through embedding bundles.
+```
+
+```text
+keep build_matcher_bundle.py excluding images by default, i used --skip-images to mark that images not required
+```
+
+The agent asked three questions. The selected answers:
+
+```text
+Should the 23 MB bundle (vectors.npy is 21 MB) go into git? = Keep out of git
+How should the tests check that the matcher works with the bundle? = Fake server + live check (Recommended)
+Should matcher/config.yaml (the default config) select the new SigLIP2 pipeline? = Yes, add it (Recommended)
 ```
 
 ## 2026-09-28T15:15:54+0300
@@ -7598,20 +7765,51 @@ The agent asked two questions. The selected answers:
 Как выкатывать самого бота? = Новый Docker-деплой в /srv
 ```
 
+## 2026-09-28T16:05:26+0300
+
+```text
+настрой https, включи доступ к matcher
+```
+
+## 2026-09-28T16:07:50+0300
+
+```text
+# AGENTS.md instructions
+
+<INSTRUCTIONS>
+These AGENTS.md instructions replace all previously provided AGENTS.md instructions.
+
+# Global Agent Instructions
+
+- Always check `~/.claude/CLAUDE.md` and the project-level `CLAUDE.md` files for instructions and context before starting work.
+
+## Technical Writing
+
+Write all specifications and technical documents in STE-style. Use short, active sentences. Put one idea or instruction in each sentence. Use one consistent term for each concept. Avoid idioms, phrasal verbs, unnecessary synonyms, and ambiguous pronouns. Preserve exact technical identifiers, API names, UI labels, quotations, and standards terminology. Preserve the requirement keywords MUST, SHOULD, and MAY. Do not claim ASD-STE100 compliance unless the document has been formally checked.
+
+## Shared SAM3 service
+
+- Use `SAM3_ENDPOINT` as the canonical environment variable for every SAM3 client.
+- The GX10 base URL is `http://192.168.86.14:18081/upstream/sam3`.
+- Read the base URL from `SAM3_ENDPOINT` instead of creating a project-specific SAM3 endpoint variable.
+
+## DS1825 storage
+
+Before storing bulk data on ds1825, read
+`/Users/ashmelev/Admin/infra/servers/ds1825/storage-layout.md`.
+</INSTRUCTIONS>
+```
+
+## 2026-09-28T16:08:00+0300
+
+```text
+read /Volumes/T7\_2TB/Projects-T7\_2TB/drink-atlas-workspace/svoe-vino-lab/ - this is code that i will share with hackaton owners. Create README.md, ARCHITECTURE.md and BENCHMARKS.md, and SETUP.md. Use russian language. Keep them brief.
+```
+
 ## 2026-09-28T16:27:00+0300
 
 ```text
 git commit telegram-bot code
-```
-
-## 2026-09-28T17:02:03+0300
-
-The agent asked two things: a commit of its uncommitted documentation hunks, and the
-permission to update `deploy/gx10/matcher-prod.md`, which the section
-`codex-deployment-advice` lists. The answer:
-
-```text
-do it
 ```
 
 ## 2026-09-28T16:16:35+0300
@@ -7642,6 +7840,15 @@ think how can we restructurize them, so we will have directory:
 So we will not need build bundles for matcher, but just copy whole dir witjh catalog, embedings and images.
 ```
 
+## 2026-09-28T16:40:44+0300
+
+Questions of the agent and the selected answers:
+
+```text
+Prod 28000 is moving from the mock to siglip2-p512-as-is (e9, your decision of 16:04:59). What should the prod predict check expect after the switch? = Known-correct image (Recommended)
+What should happen to the empty deploy/uptime-kuma/ (created 13:51)? = Remove it (Recommended)
+```
+
 ## 2026-09-28T16:50:22+0300
 
 The agent proposed a new layout of `data/` (`catalog/`, `testsets/`, `cache/`, `backups/`)
@@ -7656,6 +7863,34 @@ flatten of the schema at the split, and the time of the move. The answer:
 согласен, давай перейдем на такую схему
 ```
 
+## 2026-09-28T17:02:03+0300
+
+The agent asked two things: a commit of its uncommitted documentation hunks, and the
+permission to update `deploy/gx10/matcher-prod.md`, which the section
+`codex-deployment-advice` lists. The answer:
+
+```text
+do it
+```
+
+## 2026-09-28T17:33:00+0300
+
+```text
+изучи проект и составь список проверок и бенчмарков которые стоит запустить сегодня ночью чтобы улучшить исследвоатльсвую часть презентации и README.md
+```
+
+The agent asked:
+
+```text
+Какой вариант выбрать: 1) доказательный набор для README и презентации за одну ночь — рекомендую; 2) полную матрицу экспериментов; 3) быстрый прогон на 2–4 часа?
+```
+
+The selected answer:
+
+```text
+1
+```
+
 ## 2026-09-28T18:57:07+0300
 
 The agent finished stage 1 of plan 75 and asked three questions: 1. commit stage 1
@@ -7666,4 +7901,23 @@ The answer:
 
 ```text
 do 1 and 3
+```
+
+## 2026-09-28T19:07:29+0300
+
+Messages of the session `drink-atlas-workspace-a0` (now named `MATCHER`), in order. The
+heading holds the time of the record.
+
+```text
+what we left?
+```
+
+```text
+check @svoe-vino-lab
+```
+
+The agent asked one question. The selected answer:
+
+```text
+What should the check of svoe-vino-lab cover? = Health + what's-left report (Recommended)
 ```

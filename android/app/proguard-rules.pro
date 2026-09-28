@@ -1,0 +1,2 @@
+-keep class com.google.ai.edge.litert.** { *; }
+-keep class com.google.mlkit.vision.barcode.** { *; }

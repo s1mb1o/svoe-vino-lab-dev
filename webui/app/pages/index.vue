@@ -1,5 +1,6 @@
 <script setup lang="ts">
 useHead({ title: 'Найти вино по фото — Свое Вино' })
+const { data: config } = await useFetch('/api/config', { key: 'portal-config' })
 const scanMode = ref<'bottle' | 'shelf'>('bottle')
 let modeTools: AbortController | undefined
 onMounted(() => {
@@ -22,10 +23,11 @@ onBeforeUnmount(() => modeTools?.abort())
     <section class="hero">
       <p class="eyebrow"><span />ОТКРЫВАЙТЕ РОССИЙСКОЕ ВИНО</p>
       <h1>Найти вино <span>по фото</span></h1>
-      <p class="hero-description">{{ scanMode === 'bottle' ? 'У каждой бутылки своя история. Начните с фотографии этикетки.' : 'Режим обработки полки временно недоступен.' }}</p>
+      <p class="hero-description">{{ scanMode === 'bottle' ? 'У каждой бутылки своя история. Начните с фотографии этикетки.' : config?.shelfAvailable ? 'Снимите полку целиком. Мы найдём бутылки и покажем совпадения.' : 'Режим обработки полки временно недоступен.' }}</p>
     </section>
     <div class="scan-mode-switch" role="group" aria-label="Режим поиска вина"><button :aria-pressed="scanMode === 'bottle'" @click="scanMode = 'bottle'"><AppIcon name="scan" />Одна бутылка</button><button :aria-pressed="scanMode === 'shelf'" @click="scanMode = 'shelf'"><AppIcon name="shelf" />Вся полка</button></div>
     <PhotoScanner v-if="scanMode === 'bottle'" />
+    <ShelfScanner v-else-if="config?.shelfAvailable" />
     <ShelfUnavailable v-else @choose-bottle="scanMode = 'bottle'" />
     <section v-if="scanMode === 'bottle'" class="photo-tips" aria-label="Как сделать хороший снимок">
       <div><span class="tip-number">01</span><p><strong>Этикетка целиком</strong><span>Снимайте бутылку спереди</span></p></div>

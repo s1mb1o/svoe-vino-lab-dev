@@ -8,13 +8,15 @@
 
 - POST /v1/eval/predict возвращает один slug. Это контракт хакатона.
 - POST /v1/match возвращает до `k` кандидатов с карточками вин. Этот endpoint нужен
-  telegram-bot и другим клиентам. Он работает только с bundle версии 2.
+  telegram-bot и другим клиентам. Он работает с bundle версии 2 или с каталогом
+  лаборатории.
 - POST /v1/group/match сегментирует бутылки на фотографии стеллажа. Он возвращает
   координаты, маску и лучшее совпадение с карточкой для каждой бутылки. Он работает
-  только с bundle версии 2 и настроенным `SAM3_ENDPOINT`.
+  с bundle версии 2 или с каталогом лаборатории и с настроенным `SAM3_ENDPOINT`.
 
 Матчер не зависит от workbench. Он не импортирует код workbench и не читает
-`lab.sqlite3`. Данные каталога приходят только через embedding bundle.
+`lab.sqlite3`. Данные каталога приходят через embedding bundle или через копию каталога
+лаборатории: матчер читает из её базы только два фиксированных view.
 
 ## Что делает сервис
 
@@ -152,6 +154,45 @@ Bundle этого embedding без изображений занимает ок�
 не содержит карточек, поэтому POST /v1/match и POST /v1/group/match возвращают для
 него HTTP 503. Формат
 описан в `workbench/docs/testing/matcher-bundle.md`.
+
+### Каталог лаборатории
+
+Вместо bundle pipeline может читать копию каталога лаборатории
+(`workbench/docs/plans/75_data-layout.md`). Поля catalog и embedding заменяют поле
+bundle:
+
+~~~yaml
+pipeline:
+  - name: siglip2-p512-as-is
+    backend: siglip2
+    catalog: workbench/data/catalog
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    endpoint: "{env:SIGLIP2_ENDPOINT}"
+~~~
+
+- Поле catalog задаёт каталог с `catalog.sqlite3` и `embeddings/<embedding>/`.
+  Относительный путь вычисляется от рабочего каталога процесса.
+- Из базы матчер читает только view `matcher_wine` и `matcher_wine_image`. Базовые
+  таблицы лаборатории он не читает.
+- Матчер читает `embeddings/<embedding>/index.json` и файл векторов, который назван в
+  индексе. Имя модели и `extra_body` он берёт из поля `config` индекса.
+- Карточки вин матчер строит по правилам сборщика bundle версии 2. На одних и тех же
+  данных POST /v1/eval/predict и POST /v1/match дают те же ответы, что и с bundle.
+- Pipeline указывает либо bundle, либо catalog вместе с embedding.
+
+Матчер использует каждый элемент индекса. Согласованную копию с актуальными элементами
+делает скрипт workbench:
+
+~~~bash
+cd workbench
+python3 scripts/copy_catalog.py --out <новый каталог> \
+    --embedding gx10-siglip2-so400m-patch16-naflex-p512 --no-images
+rsync -a --delete <новый каталог>/ <host>:<путь>/
+~~~
+
+Скрипт отказывает, если идёт сборка embedding или если индекс содержит неактуальный
+элемент. Базу он копирует через SQLite backup API, поэтому работающая лаборатория не
+мешает копии. Без `--no-images` копия содержит также `images/` и `cuts/`.
 
 Поле matcher.output_dir задаёт каталог изображений и журналов запросов. Оно принимает
 обычный непустой путь или точную строку `"{env:NAME}"`. Во втором случае сервис читает

@@ -2,6 +2,8 @@
 
 ## 2026-09-28
 
+- Added `config.yaml` with the moderation, SAM3, and matcher endpoints. Each endpoint
+  accepts a literal HTTP(S) URL or an exact `"{env:NAME}"` reference.
 - Switched recognition to `POST /v1/match?k=4` of `svoe-vino-lab/matcher` (plan 06,
   decision 017). The bot sends no pipeline name. The matcher selects the pipeline.
 - Took the wine card of each candidate from the matcher answer. Removed the local

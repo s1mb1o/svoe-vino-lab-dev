@@ -103,7 +103,8 @@ The service also collects difficult test images for recognition improvement.
 76. The bot MUST remove the feedback buttons after a successful submission.
 77. The bot MUST use the `shieldgemma-2-4b-it` moderation service.
 78. The bot MUST send the moderation image in a multipart `image` field.
-79. The bot MUST use `/upstream/shieldgemma-2-4b-it/classify` as the moderation path.
+79. The bot MUST read the moderation endpoint from `endpoints.moderation` in `config.yaml`.
+The endpoint MUST use `/upstream/shieldgemma-2-4b-it/classify` as the moderation path.
 80. The bot MUST use the service `flagged` list at threshold `0.5`.
 81. The moderation response MUST contain one score for each configured policy.
 82. A moderation response with an unknown or inconsistent policy MUST fail closed.
@@ -119,11 +120,12 @@ The service also collects difficult test images for recognition improvement.
 92. The bot MUST check glare after moderation and before recognition.
 93. The bot MUST use SAM3 to check for a wine bottle before recognition.
 94. The bot MUST use SAM3 to check for a usable label before recognition.
-95. The SAM3 client MUST read its base URL from `SAM3_ENDPOINT`.
+95. The SAM3 client MUST read its base URL from `endpoints.sam3` in `config.yaml`.
 96. A quality service failure MUST NOT stop recognition.
 97. A detected quality issue MUST NOT stop recognition.
 98. The bot MUST store available quality results as advisory metadata.
-99. The bot MUST request `k=4` ranked candidates from the matcher endpoint `/v1/match`.
+99. The bot MUST read `endpoints.matcher` from `config.yaml` and request `k=4` ranked
+candidates from its `/v1/match` path.
 100. The bot MUST store every returned candidate rank, slug, score, and wine card.
 101. The bot MUST use a configurable minimum Top-1 score.
 102. The bot MUST use a configurable minimum Top-1 score margin.

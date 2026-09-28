@@ -53,9 +53,18 @@ The proxy allows HTTP 200 or 201 and validates `slug`.
 The proxy uses an 8-second upstream timeout.
 The proxy rejects redirects and does not substitute mock output for errors.
 
+In upstream mode, `GET /api/config` derives the matcher readiness URL from `NUXT_PREDICTION_ENDPOINT`.
+It replaces the final `/v1/eval/predict` path with `/healthz`.
+The server sends `GET` to the readiness URL with a 2-second timeout.
+The matcher is available only when the response is HTTP 200 and contains `{"status":"ok"}`.
+The browser does not receive the private matcher URL.
+Mock mode does not send a matcher readiness request.
+The `apiAvailable` field is `true` in mock mode or after a successful readiness request.
+The `shelfAvailable` field is `false` when matcher readiness fails.
+
 ## Portal routes
 
-- `GET /api/config`: return prediction mode, upload limit, catalog mode, and `shelfAvailable`.
+- `GET /api/config`: return prediction mode, matcher availability, upload limit, catalog mode, and `shelfAvailable`.
 - `GET /api/wines`: return demo wine records.
 - `GET /api/wines/<slug>`: return one exact catalog match or HTTP 404.
 - `GET /api/health`: return basic service status.
@@ -77,13 +86,18 @@ The app does not provide a catalog browsing interface.
 The separate [food API](food-api.md) provides live Globus store and product queries.
 It does not change the evaluator prediction contract.
 
-## Shelf segmentation
+## Shelf group match
 
-`POST /api/shelf/segment` accepts one multipart `image` with the existing upload limits.
-The server calls `${SAM3_ENDPOINT}/segment`. The browser does not receive this address.
-Read [the shelf contract](shelf-mode.md) for image normalization, response fields, and limits.
-Successful output contains `image`, `bottles`, `detectedCount`, and `truncated`.
-An empty `bottles` array is a valid result. It does not trigger mock segmentation.
-The route returns 400 for an undecodable image, 503 for missing configuration, 502 for invalid service output, and 504 for timeout.
+`POST /v1/group/match` accepts one multipart `image` with the existing upload limits.
+The browser calls this same-origin portal route.
+The server derives the upstream group URL from `NUXT_PREDICTION_ENDPOINT`.
+It replaces the final `/v1/eval/predict` path with `/v1/group/match`.
+No separate group endpoint variable is required.
+The route is available only in upstream prediction mode with a valid matcher URL.
+Read [the shelf contract](shelf-mode.md) for the complete response contract and limits.
+Successful output contains `pipeline`, `latency_ms`, `image`, `bottles`, `detected_count`, and `truncated`.
+Each bottle contains normalized coordinates, a mask, and a nullable ready match.
+An empty `bottles` array is a valid result.
+Selecting a bottle does not send another prediction request.
+The route returns 400 for an invalid upload, 503 for missing configuration, 502 for invalid matcher output, and 504 for timeout.
 Responses use `Cache-Control: no-store`.
-Wine recognition uses a selected bottle crop through the unchanged evaluator route.

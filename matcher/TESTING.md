@@ -149,6 +149,27 @@ Content-Length без передачи содержимого файла. Пос
   slug кандидатов.
 - Pipeline без карточек даёт HTTP 503.
 
+### Каталог лаборатории
+
+Файл `matcher/tests/test_catalog.py` создаёт маленький каталог во временном
+каталоге: `catalog.sqlite3` с двумя view в виде таблиц, `index.json` и файл векторов.
+Тесты проверяют следующие условия:
+
+- Каталог и bundle тех же данных дают одинаковые slug, векторы каждого view и ответы
+  `top1` и `ranked`.
+- Close-up роли `label` участвует только во view `label`.
+- Карточка содержит `page_url`, `image_url` с URL-кодированием имени файла,
+  нормализованные уникальные `qr_urls` и `sugar`. Вино без элемента индекса не
+  получает карточку.
+- Нет view или другие столбцы, неверное имя или отсутствие файла векторов, номер
+  строки вне матрицы, ненормализованные векторы, другой тип или форма матрицы и
+  неверное имя embedding дают `CatalogError`.
+- Pipeline siglip2 и mock читают поля catalog и embedding. Оба поля bundle и catalog,
+  catalog без embedding и embedding без catalog дают `ConfigError`.
+
+Правила view проверяет `workbench/tests/test_matcher_views.py`. Скрипт копии
+проверяет `workbench/tests/test_catalog_copy.py`.
+
 ### POST /v1/group/match
 
 Файл `matcher/tests/test_group.py` проверяет групповой endpoint без настоящего SAM3.

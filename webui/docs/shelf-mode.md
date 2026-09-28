@@ -1,89 +1,125 @@
 # Shelf photo mode
 
-Date: 2026-09-15. Status: implemented but temporarily disabled.
-Authority: the user requested a second mode for shelf photos with segmented bottles and clickable wine popups.
+Date: 2026-09-28. Status: implemented.
+Authority: the user requested support for matcher `POST /v1/group/match` in the existing «Вся полка» tab.
 
-## Temporary availability
+## Availability
 
-Decision date: 2026-09-28.
-The owner selected a temporary-unavailable view for «Вся полка».
-The switch MUST remain selectable.
-The view MUST show that processing is temporarily unavailable.
-The view MUST NOT show a file input or a camera input.
-The browser MUST NOT call the shelf API from this view.
-The server MUST reject the shelf API before it reads an upload or calls SAM3 when `NUXT_SHELF_MODE` is not `enabled`.
-The Princess deployment MUST set `NUXT_SHELF_MODE=disabled` and MUST omit `SAM3_ENDPOINT`.
+Keep «Одна бутылка» as the default mode.
+Keep «Вся полка» selectable.
+Enable `ShelfScanner` when `NUXT_PREDICTION_MODE=upstream` and `NUXT_PREDICTION_ENDPOINT` is a valid `/v1/eval/predict` URL.
+Derive the matcher group URL by replacing the final `/v1/eval/predict` path with `/v1/group/match`.
+Do not add a separate group endpoint variable.
+Show `ShelfUnavailable` when the matcher configuration is absent or invalid.
 
 ## Experience
 
-The requirements in this section apply when shelf processing is enabled.
-Keep «Одна бутылка» as the default mode. Add «Вся полка» beside it.
 Preserve the existing visual identity, mobile layout, and single-bottle behavior.
-A mode change MUST discard the previous mode's transient photo state and requests.
-The shelf mode accepts a camera photo, a file, or one public example photo.
-Use the existing JPEG, PNG, WebP, and 10 MiB limits.
-Automatically submit a valid photo to our portal API.
+A mode change MUST discard the previous mode photo, result, and pending request.
+The shelf mode accepts a camera photo, one file, or the public example photo.
+Use the existing JPEG, PNG, WebP, and 10 MiB upload limits.
+Automatically submit a valid photo to `POST /v1/group/match` on the portal origin.
 Show progress, cancellation, retry, replacement, and an explicit empty result.
-Show bottle masks and numbered hit areas on the normalized shelf photo.
-Use normalized coordinates so the hit areas track responsive image size.
+Show the returned bottle masks and numbered hit areas on the returned preview.
+Use normalized coordinates so each hit area tracks the responsive image size.
 Provide numbered keyboard-accessible controls for small or overlapping bottles.
 
-Selecting a bottle MUST open a modal wine popup immediately.
-The popup MUST recognize only the selected crop through the existing prediction contract.
-Show loading, the wine title and bottle image, its source portal link, or an explicit error.
-Preserve the slug and link when wine metadata is missing.
-Keep recognition mock disclosure separate from real segmentation.
-Do not claim a successful wine identity from segmentation alone.
-Reuse food recommendations for a selected wine with metadata.
-Close on Escape, a close button, or a backdrop click. Restore focus to the selection control.
+The group request MUST identify all detected bottles in one operation.
+Selecting a bottle MUST NOT send another recognition request.
+Selecting a bottle MUST open its ready matcher result in a modal.
+Show the wine title, producer, region, type, matcher score, image, and source portal link when available.
+Show an explicit unmatched state when `match` is `null`.
+Reuse the local result experiences when the matcher returns wine metadata.
+Close the modal on Escape, a close button, or a backdrop click.
+Restore focus to the selection control.
 Use a bottom sheet on phones and a centered dialog on desktop.
 
 ## Service boundary
 
-The browser MUST call our portal API. It MUST NOT call SAM3 directly.
-`POST /api/shelf/segment` accepts one multipart `image`.
-The server MUST decode the image, apply EXIF orientation, and remove metadata.
-Limit decoded input to 40 megapixels. Resize inside 1600 by 1600 pixels.
-Send the normalized JPEG to `${SAM3_ENDPOINT}/segment`.
-Use `text=wine bottle`, `threshold=0.4`, `mask_threshold=0.5`, and `return_masks=true`.
-Read the base URL only from canonical `SAM3_ENDPOINT`.
-The configured GX10 URL is `http://192.168.86.14:18081/upstream/sam3`.
-Keep service addresses private to the server.
-Allow a 300-second total service budget because the gateway can load the model on demand.
-Retry once on a 5xx, empty body, or transient transport reset or timeout within that same budget.
-Never retry invalid output, permanent address errors, or an aborted request.
-Reject redirects and responses larger than 16 MiB.
-Validate dimensions, scores, boxes, and full-frame PNG masks.
-Keep at most 100 non-duplicate bottles. Report truncation explicitly.
+The browser MUST call the same-origin portal route `POST /v1/group/match`.
+The browser MUST NOT receive a private matcher address.
+The Nuxt route MUST proxy one multipart file field named `image` to the derived matcher URL.
+The matcher owns segmentation and wine matching, including any SAM3 calls.
+The Web UI MUST NOT call SAM3 directly.
+The route MUST reject redirects.
+The route MUST allow a 330-second matcher budget.
+The route MUST reject responses larger than 12 MiB.
+The route MUST validate the complete matcher response before it returns data to the browser.
+The route MUST use `Cache-Control: no-store`.
+The route MUST cancel upstream work when the browser disconnects.
+The Web UI MUST NOT write the upload, preview, masks, or matcher response to disk.
+The matcher can archive the original group photo under its own service policy.
+The UI MUST NOT claim that the original photo is never stored.
 
-The portal response contains `image`, `bottles`, `detectedCount`, and `truncated`.
-`image` contains normalized `width`, `height`, and a JPEG data URL.
-Each bottle contains a stable response-local `id`, normalized `box`, a mask PNG data URL, and a JPEG crop data URL.
-Masks MUST use transparent backgrounds for browser overlays.
-Crop each overlay to its normalized box. Do not return full-frame masks to the browser.
-Clamp detector boxes to the image. Ignore mask fragments outside each detector box.
-Crop the normalized image on the server. Include the whole detected bottle.
-Recognition starts only when the user selects a bottle.
-Submit its server-produced crop as multipart `image` to `POST /api/predict`.
-Keep the existing `slug` response unchanged.
-Do not store user photos, crops, masks, or service responses on disk.
-Use `Cache-Control: no-store`. Cancel upstream work when the client disconnects.
-Do not substitute fake segments after a service error.
+## Response contract
+
+The success response contains `pipeline`, `latency_ms`, `image`, `detected_count`, `truncated`, and `bottles`.
+`image` contains `width`, `height`, and a JPEG `preview` data URL.
+Each bottle contains a response-local `id`, `segmentation_score`, normalized `box`, PNG `mask` data URL, and nullable `match`.
+Each match contains `rank`, `slug`, `score`, and `wine`.
+The wine card contains `name`, `page_url`, nullable descriptive fields, and `qr_urls`.
+
+Example:
+
+```json
+{
+  "pipeline": "sam3+matcher",
+  "latency_ms": 842.4,
+  "image": {
+    "width": 1280,
+    "height": 853,
+    "preview": "data:image/jpeg;base64,..."
+  },
+  "detected_count": 2,
+  "truncated": false,
+  "bottles": [
+    {
+      "id": "b1",
+      "segmentation_score": 0.93,
+      "box": [0.10, 0.05, 0.40, 0.95],
+      "mask": "data:image/png;base64,...",
+      "match": {
+        "rank": 1,
+        "slug": "priboj-marchenko-beloe-polusuhoe",
+        "score": 0.89,
+        "wine": {
+          "name": "Прибой Марченко белое полусухое",
+          "page_url": "https://vino-svoe.ru/wines/priboj-marchenko-beloe-polusuhoe",
+          "producer": "Винодельня Марченко",
+          "category": "Вино",
+          "region": "Кубань",
+          "color": "Белое",
+          "grapes": "Первенец Магарача",
+          "sugar": "Полусухое",
+          "image_url": null,
+          "qr_urls": []
+        }
+      }
+    }
+  ]
+}
+```
+
+An empty `bottles` array is valid.
+`detected_count` MUST be greater than or equal to the number of returned bottles.
+The client MUST reject malformed coordinates, scores, data URLs, duplicate IDs, or incomplete wine cards.
+The server MUST preserve actionable matcher status codes for invalid uploads, unavailability, and timeout.
+The server MUST map malformed matcher output and unexpected statuses to HTTP 502.
 
 ## Verification
 
-- Single-bottle mode and the unchanged evaluator remain functional.
-- A public shelf example returns several real masks through our portal.
-- EXIF rotation, mask dimensions, normalized boxes, duplicate suppression, limits, and invalid service output have checks.
-- Selection, replacement, cancellation, empty results, and popup state have checks.
-- Recognition is deferred until a bottle selection.
-- Late results cannot change a newer photo or popup.
+- The browser sends one group request for one shelf photo.
+- Selecting any returned bottle sends no additional request.
+- Matched and unmatched bottles have explicit modal states.
+- Masks and hit areas use the matcher coordinates.
+- Replacement, cancellation, reset, empty results, invalid output, and stale responses have automated checks.
+- URL derivation, upstream status handling, response limits, and timeout have automated checks.
+- Single-bottle mode and the official evaluator contract remain unchanged.
 - Test fixtures do not use private user photos or user location.
 
 ## Limits
 
-SAM3 segments a visual concept. It does not identify a wine SKU.
-Mock prediction returns the existing fixed demo slug for each selected crop.
-A configured recognition endpoint is necessary for actual wine identity.
-The service can miss occluded or small bottles. The interface must permit a closer new photo.
+The matcher can miss occluded or small bottles.
+The matcher can return `match: null` for a detected bottle.
+The user can submit a closer photo when the result is incomplete.
 A native camera and physical touch interaction need device verification.

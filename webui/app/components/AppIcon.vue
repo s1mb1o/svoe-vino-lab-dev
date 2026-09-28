@@ -19,6 +19,12 @@ const paths: Record<string, string> = {
   image: 'M3 4h18v16H3Z m0 12 5-5 5 5 3-3 5 5 M15 8h.01',
   chevron: 'm6 9 6 6 6-6',
   info: 'M12 11v6 M12 7h.01 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
+  book: 'M4 5a3 3 0 0 1 3-2h5v17H7a3 3 0 0 0-3 2Z M20 5a3 3 0 0 0-3-2h-5v17h5a3 3 0 0 1 3 2Z',
+  story: 'M4 18h16 M6 15V8a6 6 0 0 1 12 0v7 M9 15V9a3 3 0 0 1 6 0v6',
+  map: 'm3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z M9 3v15 M15 6v15',
+  plus: 'M12 5v14 M5 12h14',
+  minus: 'M5 12h14',
+  navigation: 'm12 3 7 18-7-4-7 4Z M12 17V9',
 }
 </script>
 <template><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path :d="paths[name] || paths.info" /></svg></template>

@@ -10,6 +10,7 @@ import re
 import yaml
 
 from .bundle import BundleError, load_bundle
+from .catalog import CatalogError, load_catalog
 from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend, model_input
 
 
@@ -207,15 +208,8 @@ def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
     unknown = entry.get("unknown_slug", "")
     if not isinstance(unknown, str):
         raise ConfigError("pipeline %s unknown_slug MUST be a string" % selected)
-    cards = None
-    if "bundle" in entry:
-        path = entry["bundle"]
-        if not isinstance(path, str) or not path:
-            raise ConfigError("pipeline %s bundle MUST be a non-empty path" % selected)
-        try:
-            cards = load_bundle(path).cards
-        except BundleError as exc:
-            raise ConfigError("pipeline %s bundle: %s" % (selected, exc)) from exc
+    source = _load_source(selected, entry, required=False)
+    cards = source[1].cards if source else None
     return MockMatcher(
         pipeline=selected,
         answers=normalized,
@@ -246,25 +240,54 @@ def _endpoint(value, selected):
     return url
 
 
-def _load_siglip2(selected, entry, output_dir, token):
-    """Load the bundle of one siglip2 pipeline and check it against the backend."""
+def _load_source(selected, entry, required):
+    """Return (label, Bundle) of the vector source of one pipeline entry, or None.
+
+    The source is a bundle (`bundle`) or one embedding of a catalogue directory of the
+    lab (`catalog` and `embedding`, plan 75 of the workbench).
+    """
+    if "bundle" in entry and "catalog" in entry:
+        raise ConfigError("pipeline %s MUST name either bundle or catalog, not both"
+                          % selected)
+    if "catalog" in entry:
+        path, name = entry["catalog"], entry.get("embedding")
+        if not isinstance(path, str) or not path:
+            raise ConfigError("pipeline %s catalog MUST be a non-empty path" % selected)
+        if not isinstance(name, str) or not name:
+            raise ConfigError("pipeline %s embedding MUST name an embedding of the catalog"
+                              % selected)
+        try:
+            return "catalog", load_catalog(path, name)
+        except CatalogError as exc:
+            raise ConfigError("pipeline %s catalog: %s" % (selected, exc)) from exc
+    if "embedding" in entry:
+        raise ConfigError("pipeline %s embedding needs catalog" % selected)
+    if "bundle" not in entry and not required:
+        return None
     path = entry.get("bundle")
     if not isinstance(path, str) or not path:
         raise ConfigError("pipeline %s bundle MUST be a non-empty path" % selected)
-    endpoint = _endpoint(entry.get("endpoint"), selected)
     try:
-        bundle = load_bundle(path)
+        return "bundle", load_bundle(path)
     except BundleError as exc:
         raise ConfigError("pipeline %s bundle: %s" % (selected, exc)) from exc
+
+
+def _load_siglip2(selected, entry, output_dir, token):
+    """Load the vectors of one siglip2 pipeline and check them against the backend."""
+    if "bundle" not in entry and "catalog" not in entry:
+        raise ConfigError("pipeline %s bundle MUST be a non-empty path" % selected)
+    endpoint = _endpoint(entry.get("endpoint"), selected)
+    label, bundle = _load_source(selected, entry, required=True)
     embedding = bundle.embedding
     if embedding.get("backend") != "openai" or not isinstance(embedding.get("model"), str):
-        raise ConfigError("pipeline %s bundle MUST come from an openai embedding with a "
-                          "model name" % selected)
+        raise ConfigError("pipeline %s %s MUST come from an openai embedding with a "
+                          "model name" % (selected, label))
     if not isinstance(embedding.get("extra_body") or {}, dict):
-        raise ConfigError("pipeline %s bundle extra_body MUST be an object" % selected)
+        raise ConfigError("pipeline %s %s extra_body MUST be an object" % (selected, label))
     if SIGLIP2_VIEW not in bundle.views:
-        raise ConfigError("pipeline %s bundle holds no vector of the view %s"
-                          % (selected, SIGLIP2_VIEW))
+        raise ConfigError("pipeline %s %s holds no vector of the view %s"
+                          % (selected, label, SIGLIP2_VIEW))
     return Siglip2Matcher(
         pipeline=selected,
         backend=Siglip2Backend(bundle, endpoint),

@@ -2,6 +2,48 @@
 
 ## 2026-09-28
 
+### Matcher availability check
+
+- Added a server-side matcher readiness check to `GET /api/config`.
+- Derived `/healthz` from `NUXT_PREDICTION_ENDPOINT` without exposing the matcher URL to the browser.
+- Added a 2-second readiness timeout and strict `{"status":"ok"}` validation.
+- Disabled photo selection and shelf mode when the configured matcher is unavailable.
+- Kept mock mode available without an upstream request.
+- Verified all 125 tests, type checks, and the production build.
+
+### Progressive Web App
+
+- Added `@vite-pwa/nuxt` with a generated manifest, Workbox service worker, and automatic updates.
+- Added a network-first page cache and precached the Nuxt bundles and app-shell assets.
+- Added regular, maskable, and Apple touch icons from the Telegram bot wine-glass mark.
+- Excluded photo uploads, `/api/`, and `/v1/` from Workbox runtime caches.
+- Added PWA asset tests and production contract checks.
+- Verified all 117 tests, type checks, the production build, live PWA endpoints, and browser metadata.
+
+### Age gate and result experiences
+
+- Added a mandatory 18+ gate with one local storage value and an explicit blocked state.
+- Added four local actions after a wine result: products, label explanation, story, and product-line guide.
+- Added a simulated SuperLenta flow with three fictional domestic products and one visible promotion label.
+- Added a Syrah and Viognier explanation with an explicit illustrative-content notice.
+- Added rotating fictional stories with a future-audio callout.
+- Added an interactive Abrau-Durso map with zoom, current-wine navigation, selection, and public source links.
+- Removed live retailer and geolocation calls from the rendered result UI.
+- Added focused age and experience data tests.
+- Verified all 115 tests, type checks, the production build, and three evaluator contract requests.
+- Verified the desktop and 390 px mobile layouts in dark mode.
+
+### Shelf group matching
+
+- Connected the existing «Вся полка» tab to same-origin `POST /v1/group/match`.
+- Reused `NUXT_PREDICTION_ENDPOINT` and derived the group path without a new environment variable.
+- Added a bounded server proxy with response validation, timeout handling, and disconnect cancellation.
+- Rendered matcher masks and normalized bottle controls on the returned shelf preview.
+- Opened the ready wine match for each bottle without a second recognition request.
+- Added explicit unmatched, empty, unavailable, retry, and stale-response states.
+- Updated shelf browser tools, contract tests, state tests, and service documentation.
+- Verified 115 tests, type checks, and the production build.
+
 ### Princess deployment preparation
 
 - Kept «Вся полка» selectable and replaced its scanner with a temporary-unavailable view.

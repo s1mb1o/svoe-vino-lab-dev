@@ -27,24 +27,23 @@ Do not edit other `svoe-vino-lab` components for a Web UI task.
 Update `ChangeLog.md`, `ResearchLog.md`, and `SMOKE_TESTS.md` when results change.
 Do not commit secrets, uploads, dependency folders, or generated output.
 
-## Food recommendations
+## Result experiences
 
-The Web UI MUST query our portal API. Our server-side service MUST provide the response.
-Keep store selection, pairing rules, and retailer API calls on the server.
-Use the live Globus guest API for products. See `docs/food-api.md`.
-Do not replace retailer errors with mock products.
-Request location only through the explicit user action. Offer manual store selection.
-Do not log or persist coordinates. Do not send coordinates to the retailer.
-Use fresh guest identity headers for each recommendation request.
-Preserve `price_per` units and promotion conditions. Basket `quantity` is not stock.
+Read `docs/result-experiences.md`.
+The rendered product action is a local demonstration.
+It MUST NOT request real location or call a retailer API.
+The existing Globus integration is retained as inactive reference code.
+Do not render `FoodRecommendations` while the local demonstration is active.
 
 ## Shelf segmentation
 
 Keep «Одна бутылка» as the default. Use «Вся полка» for multi-bottle photos.
 Read `docs/shelf-mode.md` for the contract and limits.
-The browser MUST call our portal API. Only the server may call SAM3.
-Use canonical `SAM3_ENDPOINT`. The GX10 base URL is `http://192.168.86.14:18081/upstream/sam3`.
-Normalize orientation and strip photo metadata before forwarding images.
-Keep photos, masks, and crops in memory. Do not log or persist them.
-Recognize only the crop selected by the user. Preserve the evaluator contract.
-Real segmentation does not imply real wine identity. Retain mock recognition disclosure.
+The browser MUST call the same-origin `POST /v1/group/match` route.
+Derive the upstream group URL from `NUXT_PREDICTION_ENDPOINT`.
+Do not add a separate group endpoint variable.
+Only the matcher may call SAM3.
+Keep photos, masks, and responses out of Web UI disk storage and logs.
+The matcher can archive the original group photo. Do not claim that it is never stored.
+Use the matches returned by the group request. Do not recognize a selected bottle again.
+Preserve the evaluator contract for single-bottle prediction.

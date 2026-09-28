@@ -1,9 +1,10 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { createServer, type Server } from 'node:http'
 import { readFileSync } from 'node:fs'
 import { Buffer } from 'node:buffer'
 import { createApp, eventHandler, toNodeListener } from 'h3'
 import { predict, readImage, predictionMode } from '../server/utils/prediction'
+import { predictionApiAvailable, predictionHealthUrl } from '../server/utils/upstream-health'
 import { MOCK_SLUG } from '../shared/catalog'
 
 let server: Server
@@ -68,6 +69,40 @@ describe('prediction provider', () => {
   it('rejects invalid deployment configuration', async () => {
     expect(() => predictionMode('typo')).toThrow()
     await expect(predict(file(), 'upstream', 'file:///etc/passwd')).rejects.toMatchObject({ statusCode: 503 })
+  })
+})
+
+describe('prediction API health', () => {
+  const endpoint = 'http://matcher.test/upstream/v1/eval/predict'
+
+  it('derives the public health route from the configured prediction endpoint', () => {
+    expect(predictionHealthUrl(endpoint).href).toBe('http://matcher.test/upstream/healthz')
+    expect(predictionHealthUrl('https://matcher.test/v1/eval/predict/').href).toBe('https://matcher.test/healthz')
+  })
+
+  it.each(['', 'not-a-url', 'ftp://matcher.test/v1/eval/predict', 'http://user@matcher.test/v1/eval/predict', 'http://matcher.test/v1/eval/predict?token=x'])('rejects an unusable endpoint: %s', value => {
+    expect(() => predictionHealthUrl(value)).toThrow()
+  })
+
+  it('accepts only a successful matcher readiness response', async () => {
+    const ready = vi.fn().mockResolvedValue(Response.json({ status: 'ok', pipeline: 'test' }))
+    const unhealthy = vi.fn().mockResolvedValue(Response.json({ status: 'starting' }))
+    expect(await predictionApiAvailable(endpoint, { fetch: ready })).toBe(true)
+    expect(await predictionApiAvailable(endpoint, { fetch: unhealthy })).toBe(false)
+    expect((ready.mock.calls[0]![0] as URL).href).toBe('http://matcher.test/upstream/healthz')
+    expect(ready.mock.calls[0]![1]).toMatchObject({ method: 'GET', redirect: 'error', cache: 'no-store' })
+  })
+
+  it('reports HTTP, response, network, and timeout failures as unavailable', async () => {
+    const unavailable = [
+      vi.fn().mockResolvedValue(new Response('', { status: 503 })),
+      vi.fn().mockResolvedValue(new Response('not json')),
+      vi.fn().mockRejectedValue(new TypeError('network failed')),
+      vi.fn((_url: URL, options: RequestInit) => new Promise<Response>((_resolve, reject) => options.signal!.addEventListener('abort', () => reject(new Error('aborted'))))),
+    ]
+    for (const request of unavailable) {
+      expect(await predictionApiAvailable(endpoint, { fetch: request as typeof fetch, timeoutMs: 10 })).toBe(false)
+    }
   })
 })
 

@@ -48,7 +48,10 @@ The route `/api/dataset-patch` stores (POST, the image bytes as the body) and re
 
 The route `/api/dataset-alternative` stores (POST, the image bytes as the body) and removes
 (DELETE) one alternative photo of a wine; `POST /api/dataset-alternative-type` changes its
-type. `alternatives.py` does the work. Read `docs/plans/16_alternative-images.md`.
+type. A POST scans the image with the service at `QR_SCANNER_ENDPOINT`. It adds detected
+GTINs and QR URLs to the wine before it returns the new record. `alternatives.py` stores
+the photo. `qr_barcode.py` scans it. Read `docs/plans/16_alternative-images.md` and
+`docs/plans/76_scan-additional-image-codes.md`.
 
 The route `/api/dataset-alternative-cut` stores (POST, a JSON body with the polygon
 `points`) and removes (DELETE) the manual cut of one alternative photo. A manual cut
@@ -155,6 +158,7 @@ import labdb  # noqa: E402
 import manual_wines  # noqa: E402
 import model_cache  # noqa: E402
 import patches  # noqa: E402
+import qr_barcode  # noqa: E402
 import recognize_routes  # noqa: E402
 import run_jobs  # noqa: E402
 import run_routes  # noqa: E402
@@ -691,10 +695,50 @@ def _alternative_request(db_path, slug, work):
     return answer
 
 
-def store_alternative(db_path, slug, data, name=None, segmenter=None):
-    """Store `data` as an alternative photo of one wine. Return the answer of the POST."""
-    return _alternative_request(db_path, slug, lambda conn: alternatives.store_alternative(
-        conn, db_path, slug, data, name, segmenter))
+def _add_scanned_codes(conn, slug, scanned):
+    """Add the normalized scanner values to `wine_code`. Return the added values."""
+    added = []
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        for item in scanned:
+            cursor = conn.execute(
+                "INSERT INTO wine_code (wine_slug, kind, value) VALUES (?, ?, ?) "
+                "ON CONFLICT DO NOTHING", (slug, item["kind"], item["value"]))
+            if cursor.rowcount:
+                added.append((item["kind"], item["value"]))
+        conn.execute("COMMIT")
+    except BaseException:
+        conn.execute("ROLLBACK")
+        raise
+    return added
+
+
+def store_alternative(db_path, slug, data, name=None, segmenter=None, scanner=None):
+    """Store `data` as an alternative photo of one wine. Scan and add its codes.
+
+    `scanner` is a `qr_barcode.Client`. None disables the scan for a caller that does not
+    configure the service. A scanner failure keeps the photo and adds a warning.
+    """
+    added = []
+
+    def store(conn):
+        result = alternatives.store_alternative(conn, db_path, slug, data, name, segmenter)
+        scanned, scan_warnings = [], []
+        if scanner is not None:
+            try:
+                scanned = scanner.scan(data, name)
+            except qr_barcode.ScanUnavailable as exc:
+                scan_warnings.append(
+                    "QR/barcode scan failed: %s; the photo is stored without new code "
+                    "fields." % exc)
+        added.extend(_add_scanned_codes(conn, slug, scanned))
+        result["warnings"] = list(result.get("warnings") or ()) + scan_warnings
+        return result
+
+    answer = _alternative_request(db_path, slug, store)
+    if added:
+        forget_scans(db_path, slug)
+    return answer
 
 
 def set_alternative_type(db_path, slug, digest, image_type, segmenter=None):
@@ -1619,7 +1663,8 @@ class Handler(BaseHTTPRequestHandler):
             elif self.command == "POST":
                 answer = store_alternative(self.server.db_path, slug, self._image_body(),
                                            (query.get("name") or [None])[0],
-                                           self.server.segmenter)
+                                           self.server.segmenter,
+                                           self.server.code_scanner)
             else:
                 answer = remove_alternative(self.server.db_path, slug,
                                             (query.get("sha256") or [None])[0])
@@ -1691,16 +1736,18 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def make_server(db_path, host="127.0.0.1", port=DEFAULT_PORT, config_path=None,
-                segmenter=None):
+                segmenter=None, code_scanner=None):
     """Return the HTTP server. The caller runs `serve_forever`. The Embeddings page
     reads `config_path`, or the `config.yaml` of the project when it is None. A patch
     and an alternative photo go to `segmenter`, the SAM3 client; None means
-    `derive.Sam3Client()`."""
+    `derive.Sam3Client()`. An alternative upload goes to `code_scanner`; None disables
+    that scan for tests and embedded callers. `main` supplies `qr_barcode.Client`."""
     server = ThreadingHTTPServer((host, port), Handler)
     server.daemon_threads = True
     server.db_path = db_path
     server.config_path = config_path
     server.segmenter = segmenter
+    server.code_scanner = code_scanner
     # The start time that the Health page shows.
     server.started_t = time.time()
     return server
@@ -1775,9 +1822,13 @@ def main(argv=None):
     if not sum(states.values()):
         print("  the catalogue is empty; import it with `python3 pipeline/import_catalog.py`")
     print("disabled pages: %s" % ", ".join(DISABLED_PAGES.values()))
+    code_scanner = qr_barcode.Client()
+    print("QR/barcode scanner: %s (engine %s)" %
+          (code_scanner.endpoint or "not configured", qr_barcode.ENGINE))
 
     try:
-        server = make_server(db_path, args.host, args.port, args.config)
+        server = make_server(db_path, args.host, args.port, args.config,
+                             code_scanner=code_scanner)
     except OSError as exc:
         print("error: cannot listen on %s:%d: %s" % (args.host, args.port, exc),
               file=sys.stderr)

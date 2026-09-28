@@ -1,7 +1,6 @@
-import { computed, onScopeDispose, ref, shallowRef, type Ref } from 'vue'
+import { computed, onScopeDispose, ref, shallowRef } from 'vue'
 import { MAX_IMAGE_BYTES } from '#shared/catalog'
-import { SHELF_TIMEOUT_MS, imageDataUrl, validShelfResult, type ShelfResult } from '#shared/shelf'
-import { useWineScanner } from './useWineScanner'
+import { SHELF_TIMEOUT_MS, groupCandidateWine, validShelfResult, type ShelfResult } from '#shared/shelf'
 
 interface Dependencies {
   fetch?: typeof fetch
@@ -9,17 +8,10 @@ interface Dependencies {
   revokeObjectURL?: (url: string) => void
   timeout?: number
 }
-export function cropFile(crop: string, id: string): File {
-  if (!imageDataUrl(crop, 'jpeg', 1024 * 1024)) throw new Error('Invalid crop')
-  const bytes = Uint8Array.from(atob(crop.slice('data:image/jpeg;base64,'.length)), character => character.charCodeAt(0))
-  return new File([bytes], `${id}.jpg`, { type: 'image/jpeg' })
-}
-
-export function useShelfScanner(mode: Ref<'mock' | 'upstream' | undefined>, dependencies: Dependencies = {}) {
+export function useShelfScanner(dependencies: Dependencies = {}) {
   const request = dependencies.fetch || globalThis.fetch
   const createPreview = dependencies.createObjectURL || ((value: Blob) => URL.createObjectURL(value))
   const releasePreview = dependencies.revokeObjectURL || ((value: string) => URL.revokeObjectURL(value))
-  const wineScanner = useWineScanner(mode, dependencies)
   const file = shallowRef<File | null>(null)
   const preview = ref('')
   const result = shallowRef<ShelfResult | null>(null)
@@ -28,12 +20,15 @@ export function useShelfScanner(mode: Ref<'mock' | 'upstream' | undefined>, depe
   const exampleLoading = ref(false)
   const selectedId = ref('')
   const selectedBottle = computed(() => result.value?.bottles.find(b => b.id === selectedId.value) || null)
+  const selectedMatch = computed(() => selectedBottle.value?.match || null)
+  const selectedWine = computed(() => selectedMatch.value ? groupCandidateWine(selectedMatch.value) : null)
+  const portalUrl = computed(() => selectedMatch.value?.wine.page_url || '')
   const busy = computed(() => exampleLoading.value || phase.value === 'loading')
   const displayImage = computed(() => result.value?.image.preview || preview.value)
   let controller: AbortController | undefined
   let generation = 0
 
-  function closeBottle() { selectedId.value = ''; wineScanner.reset() }
+  function closeBottle() { selectedId.value = '' }
   function cancel() {
     generation++
     controller?.abort(); controller = undefined
@@ -58,10 +53,10 @@ export function useShelfScanner(mode: Ref<'mock' | 'upstream' | undefined>, depe
     phase.value = 'loading'
     try {
       const body = new FormData(); body.set('image', file.value)
-      const response = await request('/api/shelf/segment', { method: 'POST', body, signal: active.signal })
+      const response = await request('/v1/group/match', { method: 'POST', body, signal: active.signal })
       if (!response.ok) {
-        const messages: Record<number, string> = { 400: 'Не удалось прочитать фото. Попробуйте другой снимок.', 413: 'Выберите фото до 10 МБ.', 415: 'Нужен JPEG, PNG или WebP.', 503: 'Режим полки пока не подключён. Попробуйте позже.', 504: 'Выделение бутылок заняло слишком много времени. Попробуйте ещё раз.' }
-        throw new Error(messages[response.status] || 'Сервис не смог выделить бутылки. Попробуйте ещё раз.')
+        const messages: Record<number, string> = { 400: 'Не удалось прочитать фото. Попробуйте другой снимок.', 401: 'Сервис распознавания отклонил запрос.', 413: 'Выберите фото до 10 МБ.', 415: 'Нужен JPEG, PNG или WebP.', 502: 'Сервис не смог распознать полку. Попробуйте ещё раз.', 503: 'Режим полки пока не подключён. Попробуйте позже.', 504: 'Распознавание бутылок заняло слишком много времени. Попробуйте ещё раз.' }
+        throw new Error(messages[response.status] || 'Сервис не смог распознать бутылки. Попробуйте ещё раз.')
       }
       const value = await response.json()
       if (!validShelfResult(value)) throw new Error('Сервис вернул неполный результат. Попробуйте ещё раз.')
@@ -85,14 +80,10 @@ export function useShelfScanner(mode: Ref<'mock' | 'upstream' | undefined>, depe
     file.value = image!; preview.value = createPreview(image!)
     await submit()
   }
-  async function selectBottle(id: string) {
+  function selectBottle(id: string) {
     const bottle = result.value?.bottles.find(b => b.id === id)
     if (!bottle || phase.value !== 'ready') throw new Error('Select a bottle from the current shelf result.')
-    let crop: File
-    try { crop = cropFile(bottle.crop, bottle.id) }
-    catch { error.value = 'Не удалось открыть эту бутылку. Повторите обработку фотографии.'; return }
     selectedId.value = id
-    await wineScanner.select([crop])
   }
   async function example() {
     reset()
@@ -111,5 +102,5 @@ export function useShelfScanner(mode: Ref<'mock' | 'upstream' | undefined>, depe
     } finally { clearTimeout(timer); if (current === generation) { exampleLoading.value = false; controller = undefined } }
   }
   onScopeDispose(reset)
-  return { file, preview, result, phase, error, selectedId, selectedBottle, busy, displayImage, exampleLoading, wineScanner, select, submit, selectBottle, example, closeBottle, cancel, reset }
+  return { file, preview, result, phase, error, selectedId, selectedBottle, selectedMatch, selectedWine, portalUrl, busy, displayImage, exampleLoading, select, submit, selectBottle, example, closeBottle, cancel, reset }
 }

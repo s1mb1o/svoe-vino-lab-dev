@@ -32,6 +32,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_NO_CACHE=1 \
     PATH=/opt/venv/bin:$PATH \
+    BOT_CONFIG=/app/config.yaml \
     BOT_DATA_ROOT=/data \
     BOT_REJECTION_IMAGE=/app/assets/content-rejected-monkey-640x640.png \
     BOT_HTTP_API_HOST=0.0.0.0 \
@@ -44,7 +45,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv==0.8.14
 
 # uv.lock pins every package. --frozen fails the build when the lock is out of date.
-COPY pyproject.toml uv.lock README.md ./
+COPY pyproject.toml uv.lock README.md config.yaml ./
 COPY src ./src
 RUN uv sync --frozen --no-editable
 

@@ -510,3 +510,156 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 }
 
 .shelf-frame:has(.shelf-loading) { min-height: 280px; }
+
+/* Mandatory age confirmation. */
+.age-loading { min-height: 100dvh; display: grid; place-items: center; background: var(--paper); }
+.age-gate { min-height: 100dvh; display: grid; place-items: center; padding: 32px 20px; background: radial-gradient(circle at 50% 10%, #efd7c2 0, transparent 42%), var(--paper); }
+.age-card { width: min(620px, 100%); padding: 48px; border: 1px solid var(--line); border-radius: 28px; background: var(--paper); text-align: center; box-shadow: 0 30px 90px #321b1220; }
+.age-card>img { width: 160px; height: 40px; object-fit: contain; margin: 0 auto 30px; }
+.age-mark { width: 86px; height: 86px; display: grid; place-items: center; margin: 0 auto 22px; border: 1px solid var(--line); border-radius: 50%; background: var(--cream); color: var(--accent); font: 34px/1 'Playfair Display', Georgia, serif; }
+.age-card h1 { margin: 13px auto; max-width: 470px; font-size: 42px; line-height: 1.18; letter-spacing: -.025em; }
+.age-card>p:not(.step-label):not(.age-warning):not(.age-storage-note) { max-width: 470px; margin: 0 auto; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.age-actions { display: flex; justify-content: center; gap: 10px; margin-top: 28px; }
+.age-storage-note { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 18px; color: var(--muted); font-size: 11px; }
+.age-storage-note.error { color: var(--danger); }
+.age-storage-note .icon { width: 14px; height: 14px; }
+.age-warning { margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; letter-spacing: .03em; }
+.age-card>button { margin-top: 25px; }
+
+/* Local result demonstrations. */
+.experience-panel { margin-top: 28px; padding: 30px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); }
+.experience-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.experience-heading h2 { margin-top: 8px; font-size: 32px; line-height: 1.25; }
+.experience-lead { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.experience-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 23px; }
+.experience-action { min-width: 0; min-height: 92px; display: grid; grid-template-columns: 48px 1fr 20px; align-items: center; gap: 14px; padding: 17px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); text-align: left; transition: border-color .2s, transform .2s, background .2s; }
+.experience-action:hover { transform: translateY(-2px); border-color: #bca38a; background: var(--cream); }
+.experience-action>span:nth-child(2) { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.experience-action strong { font-size: 14px; font-weight: 500; }
+.experience-action small { color: var(--muted); font-size: 11px; line-height: 1.5; }
+.experience-action>.icon { width: 17px; height: 17px; color: var(--accent); }
+.experience-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; color: var(--accent); background: var(--paper); border: 1px solid var(--line); }
+.experience-icon .icon { width: 22px; height: 22px; }
+.experience-dialog { position: fixed; inset: 0; width: min(940px, calc(100% - 48px)); max-height: calc(100dvh - 48px); margin: auto; padding: 28px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); color: var(--ink); overflow: auto; overscroll-behavior: contain; box-shadow: 0 28px 110px #180e1750; }
+.experience-dialog::backdrop { background: #1c1716b8; backdrop-filter: blur(5px); }
+.experience-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+.experience-dialog-header h2 { margin-top: 8px; font-size: 34px; line-height: 1.2; }
+.experience-dialog-header h2:focus { outline: none; }
+.dialog-emblem { width: 74px; height: 74px; display: grid; place-items: center; margin: 0 auto 17px; border-radius: 50%; color: var(--accent); background: var(--cream); }
+.dialog-emblem .icon { width: 33px; height: 33px; }
+.dialog-actions { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 24px; }
+.mock-location { max-width: 560px; margin: 48px auto 25px; text-align: center; }
+.mock-location h3, .experience-progress h3 { font: 500 31px/1.25 'Playfair Display', Georgia, serif; }
+.mock-location>p, .experience-progress>p { margin-top: 12px; color: var(--muted); font-size: 13px; line-height: 1.75; }
+.experience-progress { min-height: 360px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.experience-progress .spinner { width: 32px; height: 32px; margin-bottom: 20px; }
+.mock-products { padding-top: 23px; }
+.mock-store { display: flex; align-items: center; gap: 16px; padding: 18px; border-radius: 15px; background: var(--cream); }
+.mock-store h3 { margin: 6px 0 5px; font-size: 18px; font-weight: 500; }
+.mock-store p:last-child { color: var(--muted); font-size: 12px; line-height: 1.6; }
+.demo-callout { display: flex; align-items: flex-start; gap: 10px; margin-top: 17px; padding: 14px 16px; border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; background: var(--cream); color: var(--muted); font-size: 11px; line-height: 1.7; }
+.demo-callout .icon { width: 17px; height: 17px; margin-top: 2px; color: var(--accent); }
+.demo-callout strong { color: var(--ink); font-weight: 500; }
+.mock-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+.mock-product { position: relative; min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.mock-product-symbol { width: 62px; height: 62px; display: grid; place-items: center; margin-bottom: 17px; border-radius: 50%; background: var(--paper); color: var(--accent); }
+.mock-product-symbol .icon { width: 29px; height: 29px; }
+.mock-product h3 { margin: 8px 0; font-size: 16px; font-weight: 500; line-height: 1.45; }
+.mock-product>p:last-child { margin-top: 15px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.product-origin { color: var(--success); font-size: 10px; line-height: 1.6; }
+.promotion-badge { display: inline-block; margin-bottom: 13px; padding: 5px 8px; border-radius: 16px; background: var(--tag); color: var(--accent); font-size: 8px; letter-spacing: .08em; }
+.label-summary { padding: 32px 0 20px; text-align: center; }
+.label-summary h3 { margin: 10px 0; font: 500 32px/1.25 'Playfair Display', Georgia, serif; }
+.label-summary>p:last-child { color: var(--muted); font-size: 13px; line-height: 1.7; }
+.label-compare { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.label-compare article { padding: 23px; background: var(--card); }
+.label-compare article+article { border-left: 1px solid var(--line); }
+.label-compare span { color: #b49477; font: 22px/1 'Playfair Display', Georgia, serif; }
+.label-compare h3 { margin: 14px 0 10px; font-size: 16px; font-weight: 500; }
+.label-compare p { color: var(--muted); font-size: 12px; line-height: 1.75; }
+.story-player { height: 94px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; margin-top: 24px; border-radius: 15px; background: var(--cream); color: var(--accent); }
+.story-wave { height: 40px; display: flex; align-items: center; gap: 4px; }
+.story-wave span { width: 3px; min-height: 5px; border-radius: 3px; background: currentColor; opacity: .68; }
+.story-player>span { font-size: 8px; letter-spacing: .15em; }
+.wine-story { max-width: 670px; margin: 32px auto 0; text-align: center; }
+.wine-story h3 { margin: 11px 0 15px; font: 500 33px/1.25 'Playfair Display', Georgia, serif; }
+.wine-story>p:last-child { color: var(--muted); font: 17px/1.8 'Playfair Display', Georgia, serif; }
+.story-player+.wine-story+.dialog-actions .button { width: auto; }
+.line-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; }
+.line-toolbar p { font-size: 12px; line-height: 1.6; }
+.line-toolbar small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+.line-toolbar>div:last-child { display: flex; gap: 7px; }
+.map-control { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: var(--paper); color: var(--accent); }
+.map-control:hover { background: var(--cream); }
+.map-control .icon { width: 18px; height: 18px; }
+.current-control { background: var(--accent); color: #fff; border-color: var(--accent); }
+.line-viewport { position: relative; min-height: 465px; max-height: 56dvh; overflow: auto; border: 1px solid var(--line); border-radius: 17px; background: linear-gradient(to bottom, #e8d7bf52 0 33%, #e8e1d852 33% 68%, #dce4d652 68%); overscroll-behavior: contain; }
+.line-canvas { position: relative; width: 100%; height: 620px; min-width: 690px; transition: transform .2s; }
+.line-paths { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.line-paths path { fill: none; stroke: #b3987d; stroke-width: .4; stroke-dasharray: 1.2 1.4; vector-effect: non-scaling-stroke; }
+.tier { position: absolute; left: 16px; padding: 5px 8px; border-radius: 14px; background: var(--paper); color: var(--muted); font-size: 8px; letter-spacing: .1em; }
+.tier-premium { top: 13px; }
+.tier-classic { top: 35%; }
+.tier-everyday { top: 70%; }
+.line-node { position: absolute; width: 150px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; transform: translate(-50%, -50%); text-align: center; }
+.line-node strong { padding: 6px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); font-size: 10px; font-weight: 500; line-height: 1.35; box-shadow: 0 5px 16px #5638200b; }
+.line-node small { padding: 4px 7px; border-radius: 10px; background: var(--accent); color: #fff; font-size: 7px; letter-spacing: .08em; }
+.line-node:hover strong, .line-node.selected strong { border-color: var(--accent); color: var(--accent); }
+.line-node.current .mini-bottle { box-shadow: 0 0 0 6px #7b352817; }
+.mini-bottle { width: 23px; height: 61px; position: relative; border-radius: 5px 5px 8px 8px; background: linear-gradient(90deg,#513327,#8d5742 55%,#422b25); box-shadow: 0 7px 11px #3a221626; }
+.mini-bottle:before { content: ''; position: absolute; width: 9px; height: 16px; top: -13px; left: 7px; border-radius: 2px 2px 0 0; background: #3c2924; }
+.mini-bottle:after { content: ''; position: absolute; inset: 19px 3px 13px; border-radius: 2px; background: #ead7bc; }
+.line-selection { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-top: 19px; }
+.line-selection h3 { margin: 6px 0; font-size: 17px; font-weight: 500; }
+.line-selection p:last-child { color: var(--muted); font-size: 11px; line-height: 1.6; }
+.line-selection .button { width: auto; flex-shrink: 0; font-size: 12px; }
+
+@media (max-width: 767px) {
+  .age-gate { padding: 0; align-items: stretch; }
+  .age-card { min-height: 100dvh; width: 100%; display: flex; flex-direction: column; justify-content: center; padding: 32px 22px; border: 0; border-radius: 0; }
+  .age-card>img { width: 142px; margin-bottom: 28px; }
+  .age-card h1 { font-size: 35px; }
+  .age-actions { flex-direction: column; }
+  .age-actions .button { width: 100%; }
+  .age-warning { margin-top: 28px; }
+  .experience-panel { margin-top: 24px; padding: 22px 20px; border-radius: 20px; }
+  .experience-heading { align-items: center; }
+  .experience-heading h2 { font-size: 28px; }
+  .experience-heading>.demo-badge { display: none; }
+  .experience-grid { grid-template-columns: 1fr; gap: 9px; }
+  .experience-action { min-height: 82px; grid-template-columns: 43px 1fr 18px; padding: 14px; }
+  .experience-icon { width: 42px; height: 42px; }
+  .experience-dialog { width: 100%; max-height: 94dvh; margin: auto 0 0; padding: 20px 18px max(20px, env(safe-area-inset-bottom)); border-radius: 22px 22px 0 0; }
+  .experience-dialog-header h2 { font-size: 28px; }
+  .mock-location { margin-top: 35px; }
+  .mock-location h3, .experience-progress h3 { font-size: 28px; }
+  .dialog-actions { flex-direction: column; }
+  .dialog-actions .button { width: 100%; }
+  .mock-store { align-items: flex-start; padding: 15px; }
+  .mock-store>.experience-icon { flex-shrink: 0; }
+  .mock-product-grid { grid-template-columns: 1fr; }
+  .mock-product { padding: 18px; }
+  .mock-product-symbol { width: 52px; height: 52px; float: left; margin: 0 14px 10px 0; }
+  .label-summary h3 { font-size: 28px; }
+  .label-compare { grid-template-columns: 1fr; }
+  .label-compare article+article { border-left: 0; border-top: 1px solid var(--line); }
+  .wine-story { margin-top: 25px; }
+  .wine-story h3 { font-size: 29px; }
+  .wine-story>p:last-child { font-size: 16px; }
+  .line-toolbar { align-items: flex-start; }
+  .line-toolbar>div:first-child { max-width: 195px; }
+  .map-control { width: 40px; height: 40px; }
+  .line-viewport { max-height: 48dvh; }
+  .line-selection { align-items: stretch; flex-direction: column; }
+  .line-selection .button { width: 100%; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .age-gate { background: radial-gradient(circle at 50% 10%, #6a443533 0, transparent 42%), var(--paper); }
+  .age-card>img { filter: brightness(1.9) saturate(.55); }
+  .experience-action:hover { border-color: #806d5b; }
+  .current-control, .line-node small { color: #261c16; }
+  .line-viewport { background: linear-gradient(to bottom, #604a3450 0 33%, #4b423952 33% 68%, #35433552 68%); }
+  .line-paths path { stroke: #9f8268; }
+  .mini-bottle:after { background: #c7aa84; }
+}

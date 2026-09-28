@@ -1,0 +1,6 @@
+# The Telegram bot service endpoints. Restart the bot after a change.
+# An endpoint can be an HTTP(S) URL or an exact "{env:NAME}" reference.
+endpoints:
+  moderation: "{env:MODERATION_ENDPOINT}"
+  sam3: "{env:SAM3_ENDPOINT}"
+  matcher: "{env:MATCHER_ENDPOINT}"

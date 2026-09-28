@@ -13,9 +13,12 @@ The current release uses a mock prediction service and local result metadata.
 - Show one best match bottle and title.
 - Open the result directly on the vino-svoe portal.
 - Cancel, retry, replace the photo, or start again.
-- Find the nearest Globus store after explicit location permission, or select a store manually.
-- Recommend three food products with live store prices, availability, and pairing explanations.
-- Open «Вся полка» and see an explicit temporary-unavailable state without photo upload.
+- Require a local 18+ confirmation before the portal opens.
+- Demonstrate domestic food pairing without requesting coordinates or calling a retailer.
+- Explain label terms and show fictional text stories.
+- Explore an interactive Abrau-Durso product-line map.
+- Upload a shelf photo and inspect masks and ready wine matches for each detected bottle.
+- Install the portal as a Progressive Web App.
 
 The mock service does not recognize wine. The UI MUST state this limitation.
 The mock service MUST use the same HTTP contract as the official evaluator.
@@ -52,6 +55,17 @@ The local commands bind to loopback.
 The production output is `.output/`.
 For another host, run `.output/server/index.mjs` with the required `HOST` and `PORT` values.
 
+## Install the app
+
+The production build includes a web app manifest and a service worker.
+The `@vite-pwa/nuxt` module generates these files with Workbox.
+Use the browser install action to add «Свое Вино» to the device.
+The installed app uses the wine-glass question mark from the Telegram bot.
+The app shell can open without a network connection after one successful online visit.
+Photo recognition, wine metadata, and external portal links still require a network connection.
+The Workbox routes do not store photo uploads or API responses.
+Development mode does not register the service worker.
+
 ## Connect the recognition API
 
 Copy `.env.example` to `.env` and set:
@@ -72,42 +86,37 @@ The result always links to the source portal.
 If metadata is missing or fails, the app preserves the predicted slug and its link.
 Replace `server/data/wines.json` or the metadata routes when complete catalog access becomes available.
 
-## Food recommendations
+## Result experiences
 
-After a match, press «Подобрать 3 продукта к вину».
-The browser requests location permission. The server selects the nearest Globus store by straight-line distance.
-Use «Выбрать магазин вручную» without location permission.
-The food feature uses the live Globus guest API. It requires network access, but no API key or account.
-Recognition stays in mock mode until configured. Food recommendations then refer to the demo wine.
-Product prices and availability come from the selected store. Loyalty price conditions remain visible.
-The app shows fewer products when suitable stock is insufficient. It does not substitute mock products.
-The Globus integration uses application endpoints. Their contract can change.
-The current network directory has limited geographic coverage. A distant store is explicitly marked.
-Geolocation requires HTTPS or a secure localhost origin. Coordinates stay in request memory.
-The server sends only the store ID to Globus. It does not send user coordinates.
-Food selection uses source pairing labels and editorial rules. It does not call an LLM.
-Read [the retailer contract](docs/food-api.md) for routes, evidence, and limits.
+The portal requires an 18+ confirmation before it shows the scanner.
+The browser stores only `svoe-vino.age-confirmed.v1=yes` in local storage.
+After a match, the portal shows four local demonstration actions.
+The product action simulates permission and identifies a fictional nearby SuperLenta store.
+It does not call geolocation or a retailer API.
+The other actions explain a label, rotate fictional wine stories, and show an Abrau-Durso product-line map.
+The map links to public `vino-svoe.ru` wine pages.
+Read [the result experience specification](docs/result-experiences.md) for behavior and compliance limits.
+The previous Globus integration remains in the repository but is not mounted in the current result UI.
 
 ## Shelf photos
 
-Shelf processing is disabled by default.
-Select «Вся полка» to see the temporary-unavailable state.
-The disabled interface has no file or camera control.
-The server rejects `POST /api/shelf/segment` before it reads the upload or calls SAM3.
-
-Set both variables only when shelf processing is approved:
+Shelf processing uses the same matcher configuration as single-bottle prediction.
+Configure the complete single-bottle matcher URL:
 
 ```dotenv
-NUXT_SHELF_MODE=enabled
-SAM3_ENDPOINT=http://192.168.86.14:18081/upstream/sam3
+NUXT_PREDICTION_MODE=upstream
+NUXT_PREDICTION_ENDPOINT=http://127.0.0.1:8080/v1/eval/predict
 ```
 
 Restart the server after the change.
-When enabled, the browser calls our `/api/shelf/segment` route. Only our server calls SAM3.
-The gateway can load the model on demand. The first request can take over one minute.
-The service budget is 300 seconds. A missing endpoint produces an explicit error.
-The server normalizes orientation and removes metadata before segmentation.
-Photos, masks, and crops remain in memory. The server does not write uploads to disk.
+The browser calls same-origin `POST /v1/group/match`.
+The server derives the upstream group URL by replacing `/v1/eval/predict` with `/v1/group/match`.
+There is no `NUXT_GROUP_MATCH_ENDPOINT` variable.
+The matcher returns the shelf preview, bottle masks, coordinates, and ready wine matches.
+Selecting a bottle opens its result without a second recognition request.
+The Web UI does not write uploads or matcher responses to disk.
+The matcher can archive the original group photo under its own service policy.
+A missing or invalid matcher configuration keeps the explicit unavailable view.
 Read [the shelf specification](docs/shelf-mode.md) for limits and the service contract.
 
 ## Verify
@@ -143,11 +152,9 @@ Supported browsers can expose `read_wine_search`, `search_demo_wine_photo`, and 
 These tools use the same state as the visible controls.
 The example tool submits the bundled public photo through the normal upload flow. It requires mock mode.
 The tools do not activate the camera or access a private photo.
-After a match, `read_wine_food_pairings`, `list_wine_food_stores`, and `recommend_wine_food_at_store` are available.
-The store tool uses an explicit store ID. It does not request geolocation or create an order.
 Other browsers use the standard UI without these tools.
-`set_wine_scan_mode` switches between `bottle` and the temporary-unavailable `shelf` view.
-Shelf processing tools are available only when `ShelfScanner` is mounted in an enabled deployment.
+`set_wine_scan_mode` switches between `bottle` and `shelf`.
+Shelf processing tools are available when `ShelfScanner` is mounted with an upstream matcher.
 The shelf example uses the bundled public Wikimedia photo. State tools do not expose photo data.
 
 ## Source authority

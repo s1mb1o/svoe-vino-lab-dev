@@ -1,5 +1,19 @@
+<script setup lang="ts">
+import { hasAgeConfirmation } from '~/utils/age'
+
+const ageChecked = ref(false)
+const ageConfirmed = ref(false)
+onMounted(() => {
+  ageConfirmed.value = hasAgeConfirmation(localStorage)
+  ageChecked.value = true
+})
+</script>
+
 <template>
-  <div class="site-shell">
+  <NuxtPwaManifest />
+  <div v-if="!ageChecked" class="age-loading" aria-label="Проверяем подтверждение возраста" aria-busy="true"><span class="spinner" /></div>
+  <AgeGate v-else-if="!ageConfirmed" @confirmed="ageConfirmed = true" />
+  <div v-else class="site-shell">
     <a class="skip-link" href="#main-content">К поиску вина</a>
     <header class="site-header">
       <NuxtLink to="/" class="logo" aria-label="Свое Вино — поиск по фото"><img src="/reference/logo.svg" alt="Свое Вино" width="160" height="40"></NuxtLink>

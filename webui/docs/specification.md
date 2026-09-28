@@ -12,8 +12,11 @@ The page MUST use the visual identity of `https://vino-svoe.ru/`.
 The page MUST NOT reproduce the source portal catalog experience.
 The page MUST provide «Одна бутылка» and «Вся полка» modes.
 Read [the shelf mode specification](shelf-mode.md) for segmented shelf photos and wine popups.
-The current deployment MUST keep «Вся полка» selectable and show a temporary-unavailable state.
-The current deployment MUST NOT send a shelf photo or call SAM3.
+Read [the result experience specification](result-experiences.md) for the mandatory age gate
+and the local demonstration actions after recognition.
+The deployment MUST enable «Вся полка» when the configured upstream matcher provides `/v1/group/match`.
+The browser MUST send a shelf photo only to the same-origin portal route.
+The matcher MUST return bottle coordinates, masks, matches, and wine descriptions in one response.
 
 ## Visual design
 
@@ -23,6 +26,18 @@ On desktop, place the upload area beside the result area.
 On phones, place the result below the upload area. Keep the upload action prominent.
 Show large touch targets. Prevent horizontal overflow.
 Follow the system dark theme and reduced motion preference.
+
+## Progressive Web App
+
+The production portal MUST provide an installable web app manifest.
+The portal MUST provide 192 by 192 and 512 by 512 PNG icons.
+The portal MUST provide a maskable 512 by 512 PNG icon.
+The icon MUST use the wine-glass question mark from the Telegram bot.
+The service worker MUST store only the app shell and same-origin static assets.
+The service worker MUST NOT store photo uploads or API responses.
+The app shell MAY open without a network connection after one successful online visit.
+Recognition, metadata, and external links require a network connection.
+Development mode MUST NOT register the service worker.
 
 ## Flow
 
@@ -44,6 +59,9 @@ Release the preview URL on replacement, reset, and unmount.
 A valid prediction slug MUST survive metadata failure or timeout.
 If metadata is unavailable, show the slug and its source portal link. Do not invent a bottle or title.
 Show a readable message when configuration or prediction is unavailable.
+In upstream mode, the server MUST check matcher readiness when the browser requests `/api/config`.
+The browser MUST disable photo selection when matcher readiness fails.
+The retry action MUST request `/api/config` again.
 Mock mode MUST be visible before upload and on the result.
 The mock result MUST NOT claim to identify the uploaded image.
 Do not display a confidence score. The evaluator response does not provide one.
@@ -68,6 +86,8 @@ Photos MUST remain in request memory. Do not write photos to disk.
 - Mock disclosure remains visible.
 - Type checks, relevant state tests, and production build pass.
 - The unchanged official evaluator accepts the production mock endpoint.
+- The production page exposes the manifest and registers the service worker.
+- The manifest exposes regular and maskable icons with the declared sizes.
 
 ## Limits
 
@@ -75,57 +95,14 @@ Real prediction is not available yet.
 The metadata fixture contains 12 wines. Unknown slugs use an explicit metadata fallback.
 Physical camera capture needs a supported phone and browser.
 
-## Food recommendations
+## Legacy retailer integration
 
-Date: 2026-09-15. Status: ready for implementation.
-Authority: the user requested three food recommendations and selected a retailer with an accessible API.
+Date: 2026-09-15. Status: retained but not rendered.
 
-Demo boundary clarification, 2026-09-15: the Web UI MUST query our portal API.
-Our server-side service MUST provide the recommendation response.
-The service MUST own retailer integration and pairing logic.
-The browser MUST NOT call retailer data APIs or calculate the product selection.
-The current demo MAY run the service inside the Nuxt server.
-Keep the portal API contract stable if the service moves to a separate backend.
-
-After a match, show «Подобрать 3 продукта к вину».
-Keep the wine result visible while the food request runs.
-Use the Globus guest API. Read its store directory and selected-store catalog.
-Use source wine pairings first. Use wine color when source pairings are absent.
-Do not query products for a wine without metadata.
-Request browser location only after the user presses the location action.
-Calculate straight-line distance on the server. Select the nearest Globus store.
-Send only the selected store ID to Globus. Do not send user coordinates to Globus.
-Offer manual store selection when location is unavailable or denied.
-Show the store name, address, schedule, and distance when distance is known.
-Describe distance as straight-line distance. Do not claim travel time or delivery eligibility.
-For a distant store, state that the selected network has no nearby store.
-Search distinct food categories. Show up to three distinct available products.
-Require `active=true` and `quantity_max>0`. Do not interpret basket `quantity` as stock.
-Show the product name, source image, price per unit, promotion conditions, pairing explanation, and source link.
-Read the product link from its detail response. Validate the retailer URL before display.
-Show fewer than three products explicitly when the API cannot supply three suitable products.
-Show a source error instead of mock products when the retailer request fails.
-Keep prediction mock disclosure separate from live retailer data.
-Cancel and invalidate food requests when the wine changes, the user resets, or the component unmounts.
-Do not persist or log coordinates. Use POST JSON for location input. Use `Cache-Control: no-store`.
-Use a fresh guest context for each recommendation request. Do not share store context between users.
-
-### Food API
-
-`GET /api/food/stores` returns the live Globus directory for manual selection.
-`POST /api/food/pairings` accepts `slug` and exactly one location selector.
-The location selector is `location: { latitude, longitude }` or `storeId`.
-The server resolves wine metadata and validates the store ID against the directory.
-The response contains `provider`, `store`, `distanceKm`, `checkedAt`, `products`, and `complete`.
-Each product contains `id`, `name`, `image`, `url`, `priceLabel`, `conditions`, `food`, and `reason`.
-The API MUST validate inputs, bound upstream response size, reject redirects, and use request timeouts.
-The API MUST NOT create a cart, order, or purchase.
-
-### Food acceptance
-
-- Nearest-store selection uses coordinates from the live directory.
-- Simultaneous users cannot change another user's store context.
-- Three recommendations represent distinct foods and use available products only.
-- Unknown wines, invalid coordinates, source failures, and sparse stock have explicit states.
-- Geolocation denial permits manual selection. Cancellation suppresses late responses.
-- Tests use synthetic coordinates. Live checks use public store coordinates, not the user's location.
+The repository retains the previous Globus integration for reference.
+The current result UI MUST NOT mount `FoodRecommendations`.
+The current `Подобрать продукты` action MUST follow `docs/result-experiences.md`.
+It MUST use fictional local data.
+It MUST NOT request coordinates or call retailer routes.
+The legacy `GET /api/food/stores` and `POST /api/food/pairings` routes MAY remain in the codebase.
+They are outside the active portal flow.

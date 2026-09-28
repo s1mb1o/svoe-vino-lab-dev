@@ -2,6 +2,35 @@
 
 ## 2026-09-28
 
+- Plan 75, stage 2a: the matcher reads a copy of `data/catalog/` (owner answer of
+  2026-09-28T18:57:07). Schema 031 adds the views `matcher_wine` and `matcher_wine_image`:
+  the `Active` wines with the raw card fields, and their images with the rules of
+  `embeddings.read_inputs` (a `main_patched` image replaces `main`; the label types have
+  the role `label`). The views give the same rows as the lab rules (2,392 images, 2,099
+  wines, no card difference). The new `matcher/catalog.py` loads one embedding of a
+  catalogue directory as the same `Bundle` object as `load_bundle`; a pipeline entry
+  names `bundle` or `catalog` with `embedding`. The new `scripts/copy_catalog.py` checks
+  that no build runs and that each index item is current, copies the database with the
+  SQLite backup API, the index, the vector file, and the cluster files, hard-links
+  `images/` and `cuts/` unless `--no-images`, and loads the copy with the matcher reader.
+  Checks: a new bundle and a copy of the same data give the same slugs, cards, vectors,
+  and `top1`/`ranked` answers for 1,200 queries; the live SigLIP2 endpoint gives the same
+  `predict` and `match` answers for the 3 test photos; a full copy of the 12 embeddings
+  with 7,210 linked image files takes 31 s. Matcher tests: 80 `OK` (11 new). Workbench
+  tests: 1,348 tests, 2 errors (the module `svm` is missing, as before). Schema 031
+  was migrated at 19:14 (safety copy
+  `data/backups/lab-before-031-matcher-views-20260928T161408Z.sqlite3`); session 66
+  started 8168 at 19:14 (pid 10583), after a stop at about 18:48 that it did not make.
+  The bundle support and the default pipeline of `matcher/config.yaml` did not change.
+- Each additional-image upload on the Dataset page now uses the existing service at
+  `QR_SCANNER_ENDPOINT` (plan 76). The client calls `POST /scan` with `engine=auto`.
+  It normalizes detected product barcodes with the existing GTIN rules and detected QR
+  URLs with the existing URL rules. It adds missing `wine_code` rows before the upload
+  response builds the card record, so the GTIN and QR URL editors update immediately.
+  Invalid values and duplicates are ignored. A scanner failure keeps the photo and
+  returns a warning. A repeat upload retries the scan. Eight focused tests use fakes and
+  make no network request. A live synthetic EAN-13 check against the configured service
+  found the expected code and normalized it to GTIN-14.
 - Moved `data/` to the layout of plan 75, stage 1 (owner messages of 2026-09-28T16:16:35
   and 16:21:20, answer of 16:50:22). `data/lab.sqlite3` is now `data/catalog/catalog.sqlite3`.
   The catalogue images are in `data/catalog/images/{main,patched,additional}/`, the
@@ -23,6 +52,13 @@
   `catalog/embeddings/<name>/images/` until stage 3. Safety copy:
   `data/backups/lab-before-075-data-layout-20260928T143801Z.sqlite3`. 8168 was down from
   about 17:18 (not stopped by this change); session 66 started it at 17:43 (pid 8280).
+- Added the evidence-first overnight benchmark plan for the presentation and root
+  README. The plan prioritizes one frozen-snapshot p1024 ablation, the real evaluator
+  HTTP path, an annotation and metric audit, no-match behavior, trace strata, and VLM
+  reranker repeatability. It records that the observed p1024 gain over p512 has exact
+  McNemar p-value 0.0918 on the current main-set snapshot and does not repeat on the two
+  smaller checks. It also blocks benchmark starts during the active plan 75 data move.
+  No benchmark job or model request started for this planning task.
 - Finished stage 3 of plan 74 (owner messages of 2026-09-28 from 15:49:02 to 16:27:00).
   Commit `c0d483e` adds `telegram-bot/` to git: the bot calls `POST /v1/match?k=4` and
   takes the wine cards from the matcher. The prod matcher on gx10 port 28000 runs
@@ -32,6 +68,16 @@
   instead of 72 % confident answers at the thresholds 0.70 / 0.015, both with a precision
   of about 0.91. Details: `telegram-bot/ResearchLog.md` and `deploy/ChangeLog.md` in the
   workspace root.
+- Enabled public HTTPS for the matcher at `chtozavino.ru` and `www.chtozavino.ru`.
+  Caddy on Princess terminates automatic Let's Encrypt TLS and proxies through the
+  loopback reverse SSH listener. The public contract allows `GET /healthz`,
+  `POST /v1/eval/predict`, and `POST /v1/match` only. Both POST routes require the
+  Bearer token stored in macOS Keychain. Caddy strips the authorization header before
+  proxying, limits request bodies to 20 MB, redirects HTTP to HTTPS, and returns 404 for
+  unlisted paths. The packaged Caddy `--environ` option was removed before verification.
+  The first generated token was replaced after a failed start logged it. The current
+  token does not occur in the journal. HTTPS, route rejection, authorization rejection,
+  and an authorized matcher validation response pass.
 - Added the matcher endpoint `POST /v1/match` and matcher bundle format version 2
   (plan 74, owner messages recorded from 2026-09-28T14:19:39+0300 to 15:24:13).
   `/v1/match` returns up to `k` ranked candidates (`k` from 1 to 20, default 20) with
@@ -78,6 +124,12 @@
   disk of the CT is full. The GitHub runner `ct112-svoe-vino-lab-docker-1` is a different
   host. GitHub Actions run `36419543068` for commit `15a10d8` passed. It installed NumPy
   2.4.6 on Python 3.11 and printed `matcher tests: discovered=47 run=47 skipped=0`.
+- Installed two restricted reverse SSH tunnels from gx10 to Avalon and Princess for the
+  production matcher on port 28000. Each VDS listener uses `127.0.0.1:28000`. UFW does
+  not expose the port. GX10 uses a separate key and systemd user unit for each VDS.
+  Both tunnels returned the matcher health response. The public VDS addresses did not
+  accept a connection on port 28000. The workspace deployment runbook records the
+  configuration and explains that both tunnels depend on the same gx10 origin.
 - Added `matcher/Dockerfile` and `matcher/.dockerignore` (owner messages of
   2026-09-28T13:25:39+0300 and 13:31:00). The image uses `python:3.11-slim`, runs as
   uid 1000, listens on port 8080, and has a health check on `/healthz`. It reads

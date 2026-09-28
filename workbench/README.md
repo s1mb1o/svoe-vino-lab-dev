@@ -15,6 +15,8 @@ Test data for the Svoe Vino wine scanner.
   - `data/catalog/` is the catalogue: the lab database `catalog.sqlite3`, the images
     of the wines in `images/main/`, `images/patched/`, and `images/additional/`, the
     processed files in `cuts/`, and the embeddings in `embeddings/<name>/`.
+    `scripts/copy_catalog.py` makes a consistent copy of it for the matcher (plan 75,
+    stage 2).
   - `data/testsets/images/` holds the photos of the test sets.
   - `data/cache/models/` holds the model call cache.
   - `data/backups/` holds the copies of the database.
@@ -1688,6 +1690,14 @@ change between front and back keeps the cut. `×` and `Apply` delete the row; th
 stays in `data/catalog/images/additional/`. When SAM3 does not answer, the photo gets
 `full_front`, no processed file, and a warning. The detection rules were fitted to small
 probe sets; their accuracy on real photos is not known, so check the type.
+
+Each additional-photo upload also goes to the existing QR and barcode service at
+`QR_SCANNER_ENDPOINT` (plan 76). The request uses `POST /scan` with `engine=auto`.
+A detected valid product barcode fills `GTINs` in GTIN-14 form. A detected QR code that
+contains an HTTP or HTTPS URL fills `QR URLs`. The response updates both editors on the
+same card. An existing value stays once. A non-GTIN barcode and a non-URL QR code are
+ignored. If the scanner is not configured or does not answer, the photo stays stored and
+the page shows a warning.
 
 The tile `Paste image` follows the drop target. A click on it reads an image from the
 clipboard. Chrome asks for the clipboard permission one time; Safari shows its own

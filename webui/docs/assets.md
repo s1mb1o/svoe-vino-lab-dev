@@ -29,6 +29,15 @@ The implementation uses its own CSS.
 - [favicon.svg](https://vino-svoe.ru/favicon.svg)
 - [background.webp](https://vino-svoe.ru/images/bg/default-layout-bg.webp)
 
+## Progressive Web App icon
+
+- Source: `svoe-vino-lab/telegram-bot/assets/botpic.svg` and `botpic.png` in this workspace.
+- Design: a wine glass and a question mark in burgundy and cream.
+- `public/icons/pwa-icon.svg` keeps the source vector paths and colors.
+- The 192 by 192 and 512 by 512 icons are direct exports of the 1024 px bot icon.
+- The maskable icon scales the mark to the central safe area on a solid cream background.
+- The Apple touch icon uses the same solid cream background.
+
 ## Catalog
 
 The fixture has 12 wines. It is a demo subset.

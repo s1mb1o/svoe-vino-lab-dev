@@ -265,7 +265,9 @@
 ## Matcher endpoint `/v1/match`
 
 - Start the bot with `MATCHER_ENDPOINT=http://127.0.0.1:8158/v1/eval/predict`.
-- Confirm that the bot stops at start with an error that names `MATCHER_ENDPOINT`.
+- Confirm that the bot stops at start with an error that names `endpoints.matcher`.
+- Remove one endpoint variable that `config.yaml` references.
+- Confirm that the bot stops at start and names the missing variable without printing its value.
 - Send a clear wine photo through Telegram.
 - Confirm that the bot answers with a result card or with `Не уверен`.
 - Confirm in the service log that the matcher request went to `/v1/match?k=4`.

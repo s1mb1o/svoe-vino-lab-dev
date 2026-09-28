@@ -1,11 +1,99 @@
 from __future__ import annotations
 
 import os
+import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
 
+import yaml
+
 MATCH_PATH = "/v1/match"
+DEFAULT_CONFIG_FILE = "config.yaml"
+ENV_NAME = r"[A-Za-z_][A-Za-z0-9_]*"
+ENV_REFERENCE = re.compile(rf"\{{env:({ENV_NAME})\}}\Z")
+
+
+class ConfigError(ValueError):
+    """The bot configuration is not valid."""
+
+
+def _mapping(value: object, label: str) -> dict[str, object]:
+    if not isinstance(value, dict):
+        raise ConfigError(f"{label} MUST be a map")
+    return value
+
+
+def _resolve_endpoint(
+    value: object,
+    label: str,
+    variables: Mapping[str, str],
+) -> str:
+    if not isinstance(value, str) or not value:
+        raise ConfigError(f"{label} MUST be an HTTP URL or an exact {{env:NAME}} reference")
+    match = ENV_REFERENCE.fullmatch(value)
+    if match is None:
+        if "{env:" in value:
+            raise ConfigError(
+                f"{label} MUST be an HTTP URL or an exact {{env:NAME}} reference"
+            )
+        endpoint = value.strip()
+    else:
+        name = match.group(1)
+        endpoint = variables.get(name, "").strip()
+        if not endpoint:
+            raise ConfigError(f"{label} environment variable {name} MUST be set")
+    try:
+        parts = urlsplit(endpoint)
+    except ValueError as exc:
+        raise ConfigError(f"{label} MUST be an HTTP URL") from exc
+    if parts.scheme not in {"http", "https"} or not parts.hostname:
+        raise ConfigError(f"{label} MUST be an HTTP URL")
+    if parts.query or parts.fragment:
+        raise ConfigError(f"{label} MUST NOT contain a query or fragment")
+    return endpoint
+
+
+@dataclass(frozen=True, slots=True)
+class EndpointSettings:
+    moderation: str
+    sam3: str
+    matcher: str
+
+    @classmethod
+    def from_config(
+        cls,
+        config_file: str | Path | None = None,
+        *,
+        environ: Mapping[str, str] | None = None,
+    ) -> EndpointSettings:
+        """Load the service endpoints and resolve exact environment references."""
+        variables = os.environ if environ is None else environ
+        path_value = config_file or variables.get("BOT_CONFIG", DEFAULT_CONFIG_FILE)
+        if not isinstance(path_value, (str, Path)) or not str(path_value).strip():
+            raise ConfigError("BOT_CONFIG MUST name a configuration file")
+        path = Path(path_value)
+        try:
+            configuration = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (OSError, yaml.YAMLError) as exc:
+            raise ConfigError(f"cannot read bot configuration {path}: {exc}") from exc
+        root = _mapping(configuration, "configuration")
+        endpoints = _mapping(root.get("endpoints"), "endpoints")
+        moderation = _resolve_endpoint(
+            endpoints.get("moderation"), "endpoints.moderation", variables
+        )
+        sam3 = _resolve_endpoint(endpoints.get("sam3"), "endpoints.sam3", variables)
+        matcher = _resolve_endpoint(endpoints.get("matcher"), "endpoints.matcher", variables)
+        matcher_parts = urlsplit(matcher)
+        # A trailing slash gets a redirect. httpx does not follow it for POST.
+        if not matcher_parts.path.endswith(MATCH_PATH):
+            raise ConfigError(f"endpoints.matcher MUST name the matcher endpoint {MATCH_PATH}")
+        return cls(
+            moderation=moderation.rstrip("/"),
+            sam3=sam3.rstrip("/"),
+            matcher=matcher,
+        )
 
 
 def _positive_int(name: str, default: int) -> int:
@@ -47,20 +135,6 @@ def _ratio(name: str, default: float, *, allow_zero: bool = True) -> float:
     if value < 0.0 or value > 1.0 or (not allow_zero and value == 0.0):
         qualifier = "between zero and one" if allow_zero else "greater than zero and at most one"
         raise ValueError(f"{name} must be {qualifier}")
-    return value
-
-
-def _matcher_endpoint() -> str:
-    value = os.getenv("MATCHER_ENDPOINT", f"http://192.168.86.14:28000{MATCH_PATH}").strip()
-    try:
-        parts = urlsplit(value)
-    except ValueError as exc:
-        raise ValueError("MATCHER_ENDPOINT must be an HTTP URL") from exc
-    if parts.scheme not in {"http", "https"} or not parts.hostname:
-        raise ValueError("MATCHER_ENDPOINT must be an HTTP URL")
-    # A trailing slash gets a redirect from the matcher. httpx does not follow it for POST.
-    if not parts.path.endswith(MATCH_PATH) or parts.query or parts.fragment:
-        raise ValueError(f"MATCHER_ENDPOINT must name the matcher endpoint {MATCH_PATH}")
     return value
 
 
@@ -108,6 +182,7 @@ class Settings:
         token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
         if not token:
             raise ValueError("TELEGRAM_BOT_TOKEN is required")
+        endpoints = EndpointSettings.from_config()
 
         data_root = Path(
             os.getenv("BOT_DATA_ROOT", "/mnt/projects/chto-za-vino-bot/data")
@@ -134,15 +209,9 @@ class Settings:
 
         return cls(
             telegram_token=token,
-            moderation_endpoint=os.getenv(
-                "MODERATION_ENDPOINT",
-                "http://127.0.0.1:18081/upstream/shieldgemma-2-4b-it/classify",
-            ).rstrip("/"),
-            sam3_endpoint=os.getenv(
-                "SAM3_ENDPOINT",
-                "http://192.168.86.14:18081/upstream/sam3",
-            ).rstrip("/"),
-            matcher_endpoint=_matcher_endpoint(),
+            moderation_endpoint=endpoints.moderation,
+            sam3_endpoint=endpoints.sam3,
+            matcher_endpoint=endpoints.matcher,
             data_root=data_root,
             database_file=database_file,
             rejection_image_file=Path(

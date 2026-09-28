@@ -1,5 +1,59 @@
 # Research log
 
+## Matcher readiness, 2026-09-28
+
+The matcher provides the public `GET /healthz` readiness route.
+The readiness response contains `status: "ok"` and the selected pipeline.
+The configured prediction URL can use a private loopback or network address.
+Decision: the Nuxt server checks matcher readiness.
+Decision: derive the health path from the final `/v1/eval/predict` path.
+Decision: do not change the Web UI `GET /api/health` liveness contract.
+Decision: report matcher readiness as `apiAvailable` in `GET /api/config`.
+The prediction request remains the final availability check because readiness can change after the configuration request.
+
+## Progressive Web App, 2026-09-28
+
+The user requested PWA support and the Telegram bot icon.
+The Web UI reuses `telegram-bot/assets/botpic.svg` as the icon source.
+The user selected the PWA module implementation after reviewing the first local implementation.
+Decision: use `@vite-pwa/nuxt` 1.1.1 and its generated Workbox service worker.
+The installed module resolves `vite-plugin-pwa` 1.3.0.
+The package audit reported no vulnerabilities after installation.
+Decision: use automatic service-worker updates and generated manifest registration.
+Decision: precache Nuxt client bundles, install icons, and app-shell reference assets.
+The production Workbox build precaches 22 entries with a total size of 638 KiB.
+Decision: use `NetworkFirst` for page navigation and exclude the `/api/` and `/v1/` route prefixes.
+Workbox runtime routes use GET by default. Photo upload requests do not match a cache route.
+Development mode does not enable the generated service worker.
+The maskable icon uses a solid cream background and keeps the mark in the central safe area.
+Recognition, metadata, and source portal navigation remain online-only operations.
+The production browser loaded the manifest link and the new SVG favicon without warnings or errors.
+The production contract check loaded the service worker, manifest, and all declared PNG icons.
+
+## Local result demonstrations, 2026-09-28
+
+The selected implementation is a fully local demonstration.
+The product action must explain a future coordinate request without invoking browser geolocation.
+Decision: use a fictional SuperLenta store and fictional domestic products.
+Decision: mark paid food priority visibly and do not include an alcohol purchase action.
+The public `vino-svoe.ru` Abrau-Durso catalog provides stable wine detail paths for the product-line demonstration.
+Decision: keep map positions and descriptions local and link each node to its public source page.
+Decision: use a separate normal link for keyboard and touch access in addition to node double click.
+The desktop and 390 px mobile checks confirmed the age gate, result actions, dialogs, product cards, story rotation, and map controls.
+
+## Matcher group endpoint integration, 2026-09-28
+
+The matcher now provides `POST /v1/group/match` on the same service that provides `POST /v1/eval/predict`.
+The group response includes the shelf preview, detected bottle coordinates, segmentation masks, and ready best matches.
+Decision: the browser calls same-origin `/v1/group/match` through the Nuxt server.
+Decision: derive the upstream group URL from the existing `NUXT_PREDICTION_ENDPOINT` origin and path prefix.
+Decision: do not add `NUXT_GROUP_MATCH_ENDPOINT`.
+This keeps one matcher configuration and prevents the browser from receiving a private service address.
+The matcher performs all bottle matching during the group request.
+Bottle selection is now local UI state and does not start another prediction request.
+The matcher can archive the original group photo.
+The Web UI does not claim that the photo is never stored.
+
 ## Princess deployment and shelf suspension, 2026-09-28
 
 Princess has 1 vCPU, 1.9 GiB RAM, and a 25 GB disk.

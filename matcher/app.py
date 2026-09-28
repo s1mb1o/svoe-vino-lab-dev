@@ -370,7 +370,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         cards = matcher.cards
         if cards is None:
             detail = ("the selected pipeline has no wine cards; it needs a bundle of "
-                      "format version 2")
+                      "format version 2 or a catalog")
             _log_rejection(uuid.uuid4().hex, request.client.host if request.client else None,
                            503, detail, perf_counter())
             raise HTTPException(status_code=503, detail=detail)
@@ -425,7 +425,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         cards = matcher.cards
         if cards is None:
             detail = ("the selected pipeline has no wine cards; it needs a bundle of "
-                      "format version 2")
+                      "format version 2 or a catalog")
             _log_rejection(uuid.uuid4().hex, request.client.host if request.client else None,
                            503, detail, perf_counter())
             raise HTTPException(status_code=503, detail=detail)

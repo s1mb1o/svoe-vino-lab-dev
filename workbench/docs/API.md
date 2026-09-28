@@ -235,6 +235,14 @@ upload rules. The server writes `alternative_dir/<slug>/NN_manual.<extension>` a
 returns the active file names of the slug. The Dataset page calls the route only after
 the reviewer presses `Apply`.
 
+The lab server stores the photo in its image store and scans it with
+`POST $QR_SCANNER_ENDPOINT/scan`, with `engine=auto` (plan 76). Each valid barcode is
+normalized as a GTIN-14. Each QR code that contains an HTTP or HTTPS URL is normalized
+as a QR URL. Missing values are added to `wine_code` before the response record is
+built. Invalid values and existing values are ignored. A scanner failure does not
+reject the image. The answer then contains a warning that the photo was stored without
+new code fields.
+
 #### `DELETE /api/dataset-alternative?slug=<slug>&file=<file>`
 
 Remove one active alternative photo. The server moves it to

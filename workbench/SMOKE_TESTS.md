@@ -888,6 +888,11 @@ Make two test photos from one catalogue image: the whole bottle, and a crop of i
 | AL26 | Press a type button, and press `×` of the same photo while the card is dimmed | `×` is disabled until the type change is done. |
 | AL27 | Drop a phone photo with a long side above 1,536 px | `image.width` and `image.height` of the file are its real size, not the size of the SAM3 copy. |
 | AL28 | Open `$H/dataset/vysokij-bereg-risling-zelenaya-seriya/alternative/d9f847bd293aca369dd9232a8550afc78d98b73f617494165ee4fe7e22536b06` and click `label_back · processed` | The cut shows the whole back label with the barcode, not the QR sticker alone. `image_derivative` of the photo (kind `label`) holds `alternatives.SETTINGS_LABEL_CLOSE_UP` and the box 102, 61, 1247, 1553. |
+| AL29 | Run `python3 -m unittest discover -s tests -p 'test_qr_barcode.py'`, then the same with `test_alternative_codes.py` | 5 and 3 tests pass. No test calls a network service. |
+| AL30 | Start the lab server with `QR_SCANNER_ENDPOINT` set. Upload an additional image that contains EAN-13 `4631168664979` and a QR code with `URL:https://Example.test:443/wine/1#label`. | The same card shows GTIN `04631168664979` and QR URL `https://example.test/wine/1` when the upload finishes. Both values are rows of `wine_code`. |
+| AL31 | Upload an additional image that contains Code 128 `LOT-12` and a QR code with plain text. | The photo is stored. No code field changes. The lab stores GTINs and HTTP or HTTPS QR URLs alone. |
+| AL32 | Stop the service at `QR_SCANNER_ENDPOINT`, then upload a valid additional image. | The photo is stored and processed. The page warns `QR/barcode scan failed: …; the photo is stored without new code fields.` |
+| AL33 | Restore the scanner and upload the same file as in AL32. Upload it one more time. | The first retry fills its code fields. The second retry scans again and adds no duplicate row. |
 
 ## The patch editor of the lab server — `/api/dataset-patch`
 
@@ -2226,3 +2231,20 @@ Plan 75, stage 1. Owner answer of 2026-09-28T16:50:22+0300. Run the commands in
 | DL6 | `git check-ignore -v data/catalog/catalog.sqlite3 data/catalog/cuts/x data/catalog/embeddings/x data/testsets/images/x data/cache/models/x data/backups/x` | git names a rule of `.gitignore` for each path. |
 | DL7 | `git check-ignore -q data/catalog/images/main/x.webp; echo $?` | `1`: git keeps the files of `images/main/`. The same for `patched/` and `additional/`. |
 | DL8 | `python3 -m unittest discover -s tests` | No new failure. On 2026-09-28 a scratch copy without `docs/` gave 1,331 tests with the same 5 errors before and after the change. In the workbench after the move: 1,331 tests, 2 errors (the module `svm` is missing). |
+
+## Matcher catalogue copy — plan 75, stage 2a
+
+Plan 75, stage 2a. Owner answer of 2026-09-28T18:57:07+0300. Run the commands in
+`workbench/` unless the case names the repository root. CC7 calls the SigLIP2 model on
+gx10.
+
+| # | Case | Expected result |
+|---|---|---|
+| CC1 | `sqlite3 -readonly data/catalog/catalog.sqlite3 "PRAGMA user_version; SELECT count(*) FROM matcher_wine; SELECT count(*) FROM matcher_wine_image"` | `31` or more, the count of the `Active` wines, and the count of their images after the patch rule. On 2026-09-28: 31, 2099, 2392. |
+| CC2 | `python3 scripts/copy_catalog.py --out work/catalog-copy --embedding gx10-siglip2-so400m-patch16-naflex-p512 --no-images` | One JSON line. On 2026-09-28 the embedding has `current` 4642, `failed` 3, `missing` 0, `wines` 2094, and `rows` `full` 2287 and `label` 2387. The directory holds `catalog.sqlite3`, `copy.json`, and `embeddings/<name>/` with `index.json`, the vector file, and the cluster files; no `images/`. |
+| CC3 | Run CC2 again | Exit 2: `error: the output path exists`. |
+| CC4 | Start a build of the embedding on `/embedding`, then run CC2 with a new `--out` | Exit 2: `a build of … runs; copy after it`. |
+| CC5 | CC2 without `--no-images` and with a new `--out` under `work/` | `image_files` is the count of the files of `data/catalog/images/` and `data/catalog/cuts/` (7210 on 2026-09-28). `stat -f %l` of a copied image gives 2: a hard link. About 30 s on the T7. |
+| CC6 | In the repository root: `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -p 'test_catalog.py'` | 11 tests `OK`. |
+| CC7 | In the repository root: load a siglip2 pipeline with `catalog: workbench/work/catalog-copy` and `embedding: gx10-siglip2-so400m-patch16-naflex-p512`, and one with a new bundle of the same data; call `predict` and `match(k=4)` for each photo of `matcher/tests/data` | The same slugs and scores. On 2026-09-28: 3 of 3. |
+| CC8 | `python3 -m unittest discover -s tests -p 'test_catalog_copy.py'`, then the same with `test_matcher_views.py` | 6 and 3 tests `OK`. |

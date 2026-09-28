@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { MOCK_SLUG } from '#shared/catalog'
 const { data: config, error: configError, refresh } = await useFetch('/api/config', { key: 'portal-config' })
-const mode = computed(() => config.value?.predictionMode)
+const apiUnavailable = computed(() => config.value?.apiAvailable === false)
+const mode = computed(() => config.value?.apiAvailable ? config.value.predictionMode : undefined)
 const scanner = useWineScanner(mode)
 const { file, preview, phase, error, slug, wine, mock, busy, exampleLoading, portalUrl } = scanner
 const fileInput = ref<HTMLInputElement>()
@@ -19,7 +20,7 @@ function selected(event: Event) {
 }
 function dropped(event: DragEvent) {
   dragging.value = false
-  if (event.dataTransfer?.files.length) void scanner.select([...event.dataTransfer.files])
+  if (mode.value && event.dataTransfer?.files.length) void scanner.select([...event.dataTransfer.files])
 }
 watch(phase, async state => {
   if (state !== 'matched') return
@@ -32,15 +33,15 @@ useScannerTools(scanner)
 
 <template>
   <section class="scanner-section" aria-label="Поиск вина по фотографии">
-    <div v-if="configError" class="service-error" role="alert">
+    <div v-if="configError || apiUnavailable" class="service-error" role="alert">
       <AppIcon name="info" /><span>Сервис поиска временно недоступен.</span>
       <button class="text-button" @click="refresh()">Повторить подключение</button>
     </div>
     <div class="scanner-workspace" :class="{ 'with-result': hasResult }">
       <section class="upload-panel" :class="{ dragging }" @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="dropped">
         <div class="panel-heading"><span class="step-label">01 / ВАША ФОТОГРАФИЯ</span><span v-if="file" class="file-size">{{ (file.size / 1024 / 1024).toFixed(2) }} МБ</span><span v-else-if="mode === 'mock'" class="demo-badge">ДЕМО</span></div>
-        <input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" class="file-input" tabindex="-1" aria-label="Выбрать фотографию этикетки" @change="selected">
-        <input ref="cameraInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" class="file-input" tabindex="-1" aria-label="Сфотографировать этикетку" @change="selected">
+        <input ref="fileInput" type="file" accept="image/jpeg,image/png,image/webp" class="file-input" tabindex="-1" aria-label="Выбрать фотографию этикетки" :disabled="!mode" @change="selected">
+        <input ref="cameraInput" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" class="file-input" tabindex="-1" aria-label="Сфотографировать этикетку" :disabled="!mode" @change="selected">
 
         <template v-if="!file">
           <div class="upload-visual" aria-hidden="true"><div class="camera-symbol"><AppIcon name="camera" /></div><span class="frame-corner corner-tl" /><span class="frame-corner corner-tr" /><span class="frame-corner corner-bl" /><span class="frame-corner corner-br" /></div>
@@ -75,6 +76,6 @@ useScannerTools(scanner)
       </section>
     </div>
     <div class="scanner-footnote"><p><AppIcon name="info" />{{ mode === 'mock' ? 'Деморежим: любое фото покажет одну примерную карточку.' : 'Поиск начинается автоматически после выбора фотографии.' }}</p><span>Фото не сохраняется</span></div>
-    <FoodRecommendations v-if="hasResult && wine" :key="slug" :wine="wine" :mock="mock" />
+    <WineExperiences v-if="hasResult && wine" :key="slug" :wine="wine" />
   </section>
 </template>

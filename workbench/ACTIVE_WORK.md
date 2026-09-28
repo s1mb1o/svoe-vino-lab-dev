@@ -1185,6 +1185,40 @@ The form of a section:
   materially improve evaluator usability. The `matcher/` files stayed read-only.
 - Updated for task 11: 2026-09-28T09:10:28+0300.
 
+- Task 12: study the current project evidence, README files, presentation audit, and
+  benchmark tools. Prepare an evidence-first list of checks and benchmarks for the
+  night of 2026-09-28. Do not run the benchmark jobs and do not edit the presentation.
+- Source: owner message recorded at 2026-09-28T17:33:00+0300. The owner selected the
+  evidence-first approach.
+- Files for task 12: `docs/owner-messages.md` (append),
+  `docs/reports/2026-09-28_overnight-research-benchmark-plan.md` (new), my own hunk in
+  `ChangeLog.md`, and this section of `ACTIVE_WORK.md`.
+- State for task 12: done, not committed. The report gives start gates, six prioritized
+  benchmarks, acceptance conditions, estimated times, morning outputs, and work that
+  should not run. The presentation, product code, data, and run artifacts stayed
+  read-only. No model request or benchmark job started. Plan 75 still moves `data/`, and
+  port 8168 is down, so the report blocks benchmark starts until that move completes.
+- Updated for task 12: 2026-09-28T17:44:32+0300.
+
+- Task 13: scan each uploaded additional wine image with the existing QR/barcode
+  service. Store detected GTINs and QR URLs in the wine code fields.
+- Source: owner messages of 2026-09-28T18:25:00+0300 and
+  2026-09-28T18:33:00+0300.
+- Files for task 13: `docs/owner-messages.md` (append),
+  `docs/plans/76_scan-additional-image-codes.md` (new),
+  `pipeline/qr_barcode.py` (new), separate hunks in `pipeline/lab_server.py`,
+  `tests/test_qr_barcode.py` (new), `tests/test_alternative_codes.py` (new), and my own
+  hunks in `docs/API.md`, `README.md`, `SMOKE_TESTS.md`, and `ChangeLog.md`. This section
+  of `ACTIVE_WORK.md` also changes. A restart of port 8168 follows the tests.
+- State for task 13: done, not committed. The upload path scans every valid additional
+  image with `POST /scan` and `engine=auto`. It stores new normalized GTINs and QR URLs
+  before it builds the response record. A scanner failure keeps the image and returns a
+  warning. The 8 new focused tests, 17 code and cache tests, 59 alternative-image tests,
+  and 69 lab-server tests pass. A live synthetic EAN-13 probe found and normalized the
+  expected code. Port 8168 runs the new code in managed session 33711 (pid 9551) and
+  returns HTTP 200.
+- Updated for task 13: 2026-09-28T19:01:00+0300.
+
 ## drink-atlas-workspace-c7 [09419d]
 
 - Task: a global key of `config.yaml` that updates the embedding of a pipeline before
@@ -1859,6 +1893,14 @@ The form of a section:
   tests and 17 schema tests pass. The example configuration opens the schema-30 database.
   All 10 root-relative links resolve. `git diff --check` passes.
 - Updated: 2026-09-28T00:46:17+0300
+- Task 2: create brief Russian submission documents for the complete repository.
+- Source 2: owner message of 2026-09-28T16:08:00+0300.
+- Files 2: `docs/owner-messages.md` (append), `../README.md`, `../ARCHITECTURE.md`,
+  `../BENCHMARKS.md`, `../SETUP.md`, and my section in `ACTIVE_WORK.md`.
+- State 2: done, not committed. Created four brief Russian documents at the repository
+  root. All local Markdown links resolve. Matcher passed 60 tests. Web UI passed typecheck,
+  103 tests, and its production build.
+- Updated 2: 2026-09-28T16:18:00+0300
 
 ## codex-main-scene-ranking
 
@@ -2159,6 +2201,21 @@ The form of a section:
   or empty referenced variables. All 20 config tests and all 37 matcher tests pass with
   no skips. `git diff --check` passes for the changed matcher files.
 - Updated for task 22: 2026-09-28T11:21:32+0300
+- Task 23: add GitHub Actions testing for all matcher tests, push to the `github` remote,
+  and verify the remote run.
+- Source 23: owner messages of 2026-09-28T11:49:38+0300 and 11:52:12+0300.
+- Files 23: `workbench/docs/owner-messages.md` (append),
+  `.github/workflows/matcher-tests.yml` (new), `matcher/tests/run_ci.sh` (new),
+  `matcher/TESTING.md`, my own matcher hunk in `workbench/ChangeLog.md`, and this
+  section of `workbench/ACTIVE_WORK.md`.
+- State 23: done. GitHub reports two online self-hosted runners. The workflow uses
+  `ct112-svoe-vino-lab-docker-1`. Commit `191f77b` replaced the false-positive nested
+  heredoc with `matcher/tests/run_ci.sh`. Commits `191f77b` and `dcae4e4` are on
+  `github/main`. GitHub Actions run `36401705134` passed on the current HEAD:
+  `pip check` passed, and all 37 discovered tests ran with zero skips. The ordinary
+  runner `ct111-svoe-vino-lab-1` stays available for jobs that do not need Docker. No
+  unrelated file was committed.
+- Updated for task 23: 2026-09-28T12:10:21+0300
 
 ## codex-side-commands-rules
 
@@ -2183,16 +2240,48 @@ The form of a section:
 
 ## codex-deployment-advice
 
-- Task: assess deployment of the project on gx10, safe external access, and failover to
-  another server.
+- Task: configure two restricted reverse-SSH tunnels from gx10 port 28000 to the
+  loopback interface of Avalon and Princess. Document the installed configuration.
 - Source: owner messages of 2026-09-28T09:56:48+0300 and
-  2026-09-28T11:23:21+0300.
+  2026-09-28T11:23:21+0300, 2026-09-28T13:17:25+0300, and
+  2026-09-28T13:44:29+0300.
 - Files: `docs/owner-messages.md` (append),
-  `docs/deployment/01_gx10-public-failover-options.md` (new), and this section of
-  `ACTIVE_WORK.md`.
-- State: waiting: the owner decides whether to order the recommended Selectel
-  `VDS 1-2-25`. No service, server, router, DNS, or firewall change was made.
-- Updated: 2026-09-28T11:24:50+0300
+  `docs/deployment/01_gx10-public-failover-options.md` (new),
+  `../deploy/INFRASRUCTURE.md`, `../deploy/gx10/matcher-prod.md`,
+  `../deploy/gx10/reverse-ssh.md` (new),
+  `/Users/ashmelev/Admin/infra/servers/{avalon,princess}/`,
+  `/Users/ashmelev/Admin/infra/servers/{INDEX.md,ChangeLog.md}`, the removal of the
+  mistaken local `deploy/gx10/` copies, my own hunk in `ChangeLog.md`, and this section
+  of `ACTIVE_WORK.md`. Live files: two keys and two systemd user units on gx10, and the
+  `matcher-gx10` account and SSH drop-in on each VDS.
+- State: done, not committed. Both units are enabled and active. Both loopback listeners
+  return the matcher health response after a control restart. Public port 28000 is not
+  reachable on either VDS. The active session 7c lists `../deploy/ChangeLog.md`, so this
+  session did not change that file.
+- Updated: 2026-09-28T14:02:58+0300
+- Task 2: enable HTTPS for `chtozavino.ru` on Princess and publish the matcher through
+  the private reverse SSH listener with an edge security policy.
+- Source 2: owner message of 2026-09-28T16:05:26+0300.
+- Files 2: `docs/owner-messages.md` (append), `../deploy/INFRASRUCTURE.md`,
+  `../deploy/princess/matcher-edge.md` (new), `../deploy/gx10/matcher-prod.md`,
+  `/Users/ashmelev/Admin/infra/servers/princess/{README.md,access.md,services.md,ChangeLog.md}`,
+  `/Users/ashmelev/Admin/infra/servers/ChangeLog.md`, my own hunk in `ChangeLog.md`,
+  `/Users/ashmelev/Admin/infra/websites/chtozavino.ru/**`,
+  `/Users/ashmelev/Admin/infra/websites/{INDEX.md,ChangeLog.md}`,
+  `/Users/ashmelev/Admin/infra/services/svoe-vino-matcher/**`,
+  `/Users/ashmelev/Admin/infra/services/{INDEX.md,ChangeLog.md}`, this section, and live
+  Princess files `/etc/caddy/{Caddyfile,matcher.env}`,
+  `/etc/systemd/system/caddy.service.d/10-matcher-token.conf`, and the Caddy service.
+- State 2: done, not committed. Caddy is enabled and active. HTTP redirects to HTTPS.
+  Both certificates pass client validation. The health route is public. Both POST routes
+  require the Bearer token from Keychain. A request without the token returns HTTP 401.
+  An authorized request without an image reaches the matcher and returns HTTP 422.
+  Unlisted paths return HTTP 404. Public port 28000 stays closed. The first token was
+  rotated. The current token is absent from the Caddy journal. The public health route
+  still reports `official-eval-mock`. Session e9 owns the pending matcher pipeline switch.
+  No full image prediction was sent through the public domain because that data transfer
+  was not authorized.
+- Updated for task 2: 2026-09-28T16:21:39+0300
 
 ## codex-side-matcher-bundle
 
@@ -2211,3 +2300,23 @@ The form of a section:
   4,642 items, 4,674 candidate relations, 2,094 wines, 3 omissions, and vectors of
   dimension 768. No database schema change. No lab-server restart.
 - Updated: 2026-09-28T10:14:00+0300
+
+## drink-atlas-workspace-66 [64fd47]
+
+- Task: plan 75, stage 2a: the matcher reads a copy of `data/catalog/` (fixed SQL views,
+  `index.json`, the vector file); `scripts/copy_catalog.py` replaces the bundle build.
+  Stage 1 is committed: `86face6`.
+- Source: owner messages of 2026-09-28T16:21:20+0300 and 18:57:07+0300 (`do 1 and 3`).
+- Files: `docs/owner-messages.md` (append), `docs/plans/75_data-layout.md`,
+  `pipeline/schema/031_matcher_views.sql` (new, schema 031 taken at 19:14:08),
+  `tests/test_labdb.py` (VERSION 31), `tests/test_matcher_views.py` (new),
+  `pipeline/catalog_copy.py` (new), `scripts/copy_catalog.py` (new),
+  `tests/test_catalog_copy.py` (new), `../matcher/catalog.py` (new),
+  `../matcher/service.py`, `../matcher/app.py` (two 503 messages),
+  `../matcher/tests/test_catalog.py` (new), `../matcher/README.md`, `../matcher/TESTING.md`,
+  `COMMANDS.md`, and my own hunks in `README.md` (one line), `SMOKE_TESTS.md` (section CC),
+  and `ChangeLog.md`.
+- State: stage 2a done, not committed. `data/catalog/catalog.sqlite3` is at schema 31 since
+  19:14; 8168 runs since 19:14 (pid 10583, started by 66). Waiting: the owner decides the
+  commit of 2a, the prod switch (2b), and the removal of the bundle code (2c).
+- Updated: 2026-09-28T19:23:26+0300

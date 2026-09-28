@@ -1,15 +1,27 @@
+from pathlib import Path
+
 import pytest
 
-from chto_za_vino_bot.config import AdminWebSettings, Settings
+from chto_za_vino_bot.config import AdminWebSettings, ConfigError, EndpointSettings, Settings
+
+CONFIG_FILE = Path(__file__).parents[1] / "config.yaml"
+
+
+@pytest.fixture(autouse=True)
+def endpoint_environment(monkeypatch) -> None:
+    monkeypatch.setenv("BOT_CONFIG", str(CONFIG_FILE))
+    monkeypatch.setenv(
+        "MODERATION_ENDPOINT",
+        "http://127.0.0.1:18081/upstream/shieldgemma-2-4b-it/classify",
+    )
+    monkeypatch.setenv("SAM3_ENDPOINT", "http://192.168.86.14:18081/upstream/sam3")
+    monkeypatch.setenv("MATCHER_ENDPOINT", "http://192.168.86.14:28000/v1/match")
 
 
 def test_default_rate_limit_is_50(monkeypatch) -> None:
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
     monkeypatch.delenv("BOT_RATE_LIMIT", raising=False)
     monkeypatch.delenv("BOT_ADMIN_USER_ID", raising=False)
-    monkeypatch.delenv("MODERATION_ENDPOINT", raising=False)
-    monkeypatch.delenv("SAM3_ENDPOINT", raising=False)
-    monkeypatch.delenv("MATCHER_ENDPOINT", raising=False)
     monkeypatch.delenv("BOT_REJECTION_IMAGE", raising=False)
     monkeypatch.delenv("BOT_HTTP_API_HOST", raising=False)
     monkeypatch.delenv("BOT_HTTP_API_PORT", raising=False)
@@ -92,5 +104,88 @@ def test_matcher_endpoint_must_name_the_match_path(monkeypatch, value) -> None:
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
     monkeypatch.setenv("MATCHER_ENDPOINT", value)
 
-    with pytest.raises(ValueError, match="MATCHER_ENDPOINT"):
+    with pytest.raises(ValueError, match="endpoints.matcher"):
         Settings.from_env()
+
+
+def write_config(tmp_path: Path, body: str) -> Path:
+    path = tmp_path / "config.yaml"
+    path.write_text(body, encoding="utf-8")
+    return path
+
+
+def test_endpoint_config_resolves_exact_environment_references() -> None:
+    endpoints = EndpointSettings.from_config(
+        CONFIG_FILE,
+        environ={
+            "MODERATION_ENDPOINT": "https://models.example/moderate",
+            "SAM3_ENDPOINT": "https://models.example/sam3/",
+            "MATCHER_ENDPOINT": "https://matcher.example/v1/match",
+        },
+    )
+
+    assert endpoints.moderation == "https://models.example/moderate"
+    assert endpoints.sam3 == "https://models.example/sam3"
+    assert endpoints.matcher == "https://matcher.example/v1/match"
+
+
+def test_endpoint_config_accepts_literal_urls(tmp_path) -> None:
+    path = write_config(
+        tmp_path,
+        """endpoints:
+  moderation: http://moderation.example/classify
+  sam3: http://sam3.example
+  matcher: http://matcher.example/v1/match
+""",
+    )
+
+    endpoints = EndpointSettings.from_config(path, environ={})
+
+    assert endpoints.moderation == "http://moderation.example/classify"
+    assert endpoints.sam3 == "http://sam3.example"
+    assert endpoints.matcher == "http://matcher.example/v1/match"
+
+
+def test_endpoint_config_requires_referenced_environment_variable(tmp_path) -> None:
+    path = write_config(
+        tmp_path,
+        """endpoints:
+  moderation: "{env:MISSING_ENDPOINT}"
+  sam3: http://sam3.example
+  matcher: http://matcher.example/v1/match
+""",
+    )
+
+    with pytest.raises(ConfigError, match="MISSING_ENDPOINT MUST be set"):
+        EndpointSettings.from_config(path, environ={})
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["{env:}", "{env:9BAD}", "prefix{env:ENDPOINT}", "{env:ENDPOINT}suffix"],
+)
+def test_endpoint_config_rejects_malformed_environment_reference(tmp_path, value) -> None:
+    path = write_config(
+        tmp_path,
+        f"""endpoints:
+  moderation: "{value}"
+  sam3: http://sam3.example
+  matcher: http://matcher.example/v1/match
+""",
+    )
+
+    with pytest.raises(ConfigError, match=r"exact \{env:NAME\} reference"):
+        EndpointSettings.from_config(path, environ={"ENDPOINT": "http://example.test"})
+
+
+def test_endpoint_config_requires_all_endpoints(tmp_path) -> None:
+    path = write_config(
+        tmp_path,
+        """endpoints:
+  moderation: http://moderation.example/classify
+  sam3: http://sam3.example
+""",
+    )
+
+    with pytest.raises(ConfigError, match="endpoints.matcher"):
+        EndpointSettings.from_config(path, environ={})

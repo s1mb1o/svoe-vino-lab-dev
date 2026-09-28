@@ -1,0 +1,46 @@
+# Change Log
+
+## 2026-09-28
+
+- Added Qwen3.5-9B deployment through Ollama on Apple Silicon and NVIDIA GPU hosts.
+- Added OpenAI-compatible Qwen API configuration and loopback access rules.
+- Added core and optional ShieldGemma memory profiles for simultaneous service operation.
+- Documented that only `telegram-bot` needs ShieldGemma for erotic and violent image moderation.
+- Added simultaneous core-profile launch and smoke-test procedures.
+- Clarified that the bootstrap deploys the complete ML infrastructure, libraries, and models required by the service.
+- Added the exact private GitHub repository, `main` branch, clone command, and access requirements to the organizer guide.
+- Added explicit disk, memory, GPU, and internet requirements to the organizer runbooks.
+- Added disk, memory, package repository, and CUDA checks to the Selectel preflight procedure.
+- Removed organizer-facing references to an unused model lifecycle component.
+- Removed the workspace-only deployment path from the standalone bootstrap README.
+- Corrected the model bundle manifest file mode to `0644`.
+- Added the Google Drive distribution folder for `manifest.json` and the four model archives.
+- Added a five-file upload-completion check before model download and installation.
+- Translated the organizer runbooks and benchmark report into Russian.
+- Translated the workspace operational bootstrap runbooks into Russian.
+- Translated `README.md` into Russian.
+- Renamed the directory instruction file from `CLAUDE.md` to `AGENTS.md`.
+- Added `CLAUDE.md` as a symbolic link to `AGENTS.md`.
+- Added the initial native model service bootstrap specification.
+- Selected independent FastAPI services with a small compatibility gateway.
+- Defined offline model tarballs with SHA-256 verification.
+- Defined separate Apple Silicon and Selectel deployment instructions.
+- Added self-contained organizer runbooks under `svoe-vino-lab/docs/bootstrap/`.
+- Added Apple MPS and NVIDIA CUDA device selection.
+- Added the portable `zxing-cpp` QR scanner endpoint.
+- Reused and adapted the GX10 SAM3, ShieldGemma, and SigLIP2 endpoints.
+- Added a model bundle builder that rejects incomplete snapshots.
+- Added a safe model bundle installer and a real smoke-test client.
+- Added installer phase messages and signal cleanup for interrupted extraction.
+- Set generated licensed model archives to mode `0600`.
+- Fixed the installer path that installs all manifest entries without `--model`.
+- Added regression tests for full-manifest and unknown-model selection.
+- Passed the QR smoke test on Apple Silicon and Selectel.
+- Passed a real SAM3 inference smoke test on Apple MPS.
+- Passed real ShieldGemma and both SigLIP2 smoke tests on Apple MPS.
+- Passed real SAM3, ShieldGemma, both SigLIP2, and QR smoke tests on Selectel CUDA.
+- Selected ShieldGemma float32 for MPS and bfloat16 for CUDA after float16 produced non-finite probabilities on both devices.
+- Added a reproducible single-request and parallel-request benchmark client.
+- Added an isolated CUDA benchmark runner.
+- Compared all five endpoints on GX10 and the Selectel RTX 4090.
+- Recorded 640 successful measured inference requests with no request failure.
