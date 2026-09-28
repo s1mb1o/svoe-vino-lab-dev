@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Svoe Vino Matcher API
-  description: Identify one wine from one uploaded package or label image.
-  version: 1.0.0
+  description: Identify wines in one package, label, or shelf image.
+  version: 1.1.0
 paths:
   /healthz:
     get:
@@ -118,8 +118,68 @@ paths:
       security:
       - {}
       - BearerAuth: []
+  /v1/group/match:
+    post:
+      tags:
+        - group
+      summary: Match all bottles in one shelf image
+      description: 'Upload one JPEG, PNG, or WEBP shelf image in the multipart field
+        `image`. The service segments wine bottles with SAM3 and matches every returned
+        bottle against the selected catalogue bundle. The endpoint requires `Authorization:
+        Bearer <token>` when `matcher.token` is configured.'
+      operationId: match_group_image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_match_group_image'
+        required: true
+      responses:
+        '200':
+          description: The segmented bottles and their best catalogue matches.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupMatchResult'
+        '400':
+          description: The uploaded image is empty or cannot be decoded.
+        '413':
+          description: The uploaded image exceeds the configured size limit.
+        '401':
+          description: The bearer token is missing or invalid.
+        '408':
+          description: The request upload exceeded its time limit.
+        '415':
+          description: The uploaded image format is not supported.
+        '502':
+          description: SAM3 failed or returned invalid data.
+        '503':
+          description: The request queue is full, SAM3 is not configured, or the selected
+            pipeline has no wine cards.
+        '504':
+          description: The SAM3 request exceeded its time limit.
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - {}
+      - BearerAuth: []
 components:
   schemas:
+    Body_match_group_image:
+      properties:
+        image:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Image
+          description: Shelf image that can contain multiple wine bottles.
+      type: object
+      required:
+        - image
+      title: Body_match_group_image
     Body_match_image:
       properties:
         image:
@@ -142,6 +202,108 @@ components:
       required:
         - image
       title: Body_predict_image
+    GroupBottle:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Stable response-local bottle identifier.
+        segmentation_score:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Segmentation Score
+          description: SAM3 confidence score for the bottle.
+        box:
+          items:
+            type: number
+          type: array
+          maxItems: 4
+          minItems: 4
+          title: Box
+          description: Normalized [left, top, right, bottom] coordinates in the returned
+            image.
+        mask:
+          type: string
+          title: Mask
+          description: Transparent PNG mask cropped to the bottle box as a data URL.
+        match:
+          anyOf:
+            - $ref: '#/components/schemas/MatchCandidate'
+            - type: 'null'
+          description: Best catalogue match, or null when no match exists.
+      additionalProperties: false
+      type: object
+      required:
+        - id
+        - segmentation_score
+        - box
+        - mask
+        - match
+      title: GroupBottle
+      description: One segmented bottle and its best catalogue match.
+    GroupImage:
+      properties:
+        width:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Width
+          description: Normalized image width in pixels.
+        height:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Height
+          description: Normalized image height in pixels.
+        preview:
+          type: string
+          title: Preview
+          description: Normalized JPEG image as a data URL.
+      additionalProperties: false
+      type: object
+      required:
+        - width
+        - height
+        - preview
+      title: GroupImage
+      description: The normalized shelf image used for bottle coordinates.
+    GroupMatchResult:
+      properties:
+        pipeline:
+          type: string
+          title: Pipeline
+          description: Name of the selected pipeline.
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Processing time of the request in milliseconds.
+        image:
+          $ref: '#/components/schemas/GroupImage'
+        detected_count:
+          type: integer
+          minimum: 0.0
+          title: Detected Count
+          description: Valid SAM3 detections before deduplication and response limits.
+        truncated:
+          type: boolean
+          title: Truncated
+          description: True when a response limit excluded a valid non-duplicate bottle.
+        bottles:
+          items:
+            $ref: '#/components/schemas/GroupBottle'
+          type: array
+          title: Bottles
+          description: Segmented bottles in shelf order and their best matches.
+      additionalProperties: false
+      type: object
+      required:
+        - pipeline
+        - latency_ms
+        - image
+        - detected_count
+        - truncated
+        - bottles
+      title: GroupMatchResult
+      description: Bottle segments and catalogue matches for one shelf image.
     HTTPValidationError:
       properties:
         detail:
@@ -341,5 +503,7 @@ tags:
     description: Official matcher evaluation contract.
   - name: match
     description: Ranked wine candidates with catalogue cards.
+  - name: group
+    description: Segment and match all wine bottles in one shelf image.
   - name: service
     description: Service readiness.

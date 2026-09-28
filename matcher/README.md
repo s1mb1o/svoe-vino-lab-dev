@@ -4,11 +4,14 @@
 винных этикеток. Сервис поддерживает два backend: `siglip2` и `mock`. Конфигурация по
 умолчанию `matcher/config.yaml` выбирает pipeline `siglip2-p512-as-is`.
 
-У сервиса два endpoint распознавания:
+У сервиса три endpoint распознавания:
 
 - POST /v1/eval/predict возвращает один slug. Это контракт хакатона.
 - POST /v1/match возвращает до `k` кандидатов с карточками вин. Этот endpoint нужен
   telegram-bot и другим клиентам. Он работает только с bundle версии 2.
+- POST /v1/group/match сегментирует бутылки на фотографии стеллажа. Он возвращает
+  координаты, маску и лучшее совпадение с карточкой для каждой бутылки. Он работает
+  только с bundle версии 2 и настроенным `SAM3_ENDPOINT`.
 
 Матчер не зависит от workbench. Он не импортирует код workbench и не читает
 `lab.sqlite3`. Данные каталога приходят только через embedding bundle.
@@ -78,11 +81,11 @@ Backend mock вычисляет SHA-256 загруженного изображ�
 answers. Поле unknown_slug задаёт ответ для неизвестного изображения.
 
 Необязательное поле bundle у mock pipeline задаёт bundle с карточками вин для
-POST /v1/match. Для известного изображения mock ставит его slug на первое место со
+POST /v1/match и POST /v1/group/match. Для известного изображения mock ставит его slug на первое место со
 score 1.0. Остальные места получают случайные вина bundle со случайным score в
 диапазоне [0, 1). Для неизвестного изображения все места получают случайные вина. Slug
 без карточки mock пропускает. Эти score ничего не значат. Без поля bundle
-POST /v1/match возвращает HTTP 503.
+POST /v1/match и POST /v1/group/match возвращают HTTP 503.
 
 ### Backend siglip2
 
@@ -116,7 +119,8 @@ Backend выполняет шаги lab pipeline `siglip2-p512-as-is`:
    участвуют.
 6. Возвращает slug вина с лучшим косинусом. При равенстве побеждает меньший slug.
 
-Backend не выполняет сегментацию и не обращается к SAM3. Сервис загружает bundle при
+Backend не выполняет сегментацию для одиночных изображений. POST /v1/group/match
+вызывает SAM3 до передачи отдельных crop в backend. Сервис загружает bundle при
 запуске. Он проверяет формат, версию, SHA-256 файлов `vectors.npy` и `candidates.jsonl`
 и форму матрицы. Для bundle версии 2 он также проверяет SHA-256 файла `wines.jsonl` и
 читает карточки вин. Ошибка endpoint во время запроса даёт HTTP 500.
@@ -145,7 +149,8 @@ Bundle этого embedding без изображений занимает ок�
 Скрипт сборки пишет bundle версии 2. В этой версии `wines.jsonl` содержит карточки вин:
 название, производителя, категорию, регион, цвет, сорта винограда, `page_url`,
 `image_url` и `qr_urls`. Матчер принимает bundle версии 1 и версии 2. Bundle версии 1
-не содержит карточек, поэтому POST /v1/match для него возвращает HTTP 503. Формат
+не содержит карточек, поэтому POST /v1/match и POST /v1/group/match возвращают для
+него HTTP 503. Формат
 описан в `workbench/docs/testing/matcher-bundle.md`.
 
 Поле matcher.output_dir задаёт каталог изображений и журналов запросов. Оно принимает
@@ -161,6 +166,9 @@ Bundle этого embedding без изображений занимает ок�
   переменной сервис читает matcher/config.yaml.
 - SIGLIP2_ENDPOINT — корневой URL шлюза SigLIP2 для matcher/config.yaml, например
   `http://192.168.86.14:18081`. Значение не содержит `/v1`.
+- SAM3_ENDPOINT — корневой URL SAM3. POST /v1/group/match отправляет запрос в
+  `<SAM3_ENDPOINT>/segment`. Канонический адрес GX10 равен
+  `http://192.168.86.14:18081/upstream/sam3`.
 - SVOE_VINO_MATCHER_OUTPUT_DIR — каталог для изображений и журналов запросов в тестовой
   конфигурации. Поле matcher.output_dir ссылается на эту переменную. Сервис создаёт
   каталог, если он отсутствует.
@@ -256,9 +264,10 @@ docker run --rm -p 127.0.0.1:8080:8080 \
 Переменные адресов сервисов моделей необязательны: SIGLIP2_ENDPOINT,
 GROUNDING_DINO_ENDPOINT, SAM3_ENDPOINT, VLM_ENDPOINT, VLM_MODEL, QR_SCANNER_ENDPOINT.
 Образ не задаёт ни одну из них. Pipeline siglip2 читает только ту переменную, на которую
-ссылается его поле endpoint. Mock pipeline не читает ни одну из них. Внутри контейнера
-адрес 127.0.0.1 указывает на сам контейнер. Для сервиса на хосте укажите LAN-адрес
-хоста.
+ссылается его поле endpoint. POST /v1/group/match дополнительно читает
+`SAM3_ENDPOINT` при любом выбранном pipeline. Одиночные запросы mock pipeline не читают
+адреса моделей. Внутри контейнера адрес 127.0.0.1 указывает на сам контейнер. Для
+сервиса на хосте укажите LAN-адрес хоста.
 
 Образ не содержит bundle. Рабочий каталог контейнера — `/app`, поэтому путь
 `matcher/data/<bundle>` из конфигурации означает `/app/matcher/data/<bundle>`.
@@ -356,6 +365,72 @@ curl --form 'image=@matcher/tests/data/02eef911.webp' \
 /v1/eval/predict. Значение `k` вне диапазона даёт HTTP 422. Pipeline без карточек даёт
 HTTP 503.
 
+### POST /v1/group/match
+
+Endpoint POST /v1/group/match принимает фотографию стеллажа в поле `image`. Сервис
+нормализует фотографию, вызывает `${SAM3_ENDPOINT}/segment` и распознаёт каждый
+возвращённый crop. SigLIP2 отправляет все crop в одном embedding-запросе.
+
+~~~bash
+curl --form 'image=@shelf.jpg' \
+  "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/v1/group/match"
+~~~
+
+Ответ содержит нормализованную фотографию для точного совмещения масок:
+
+~~~json
+{
+  "pipeline": "siglip2-p512-as-is",
+  "latency_ms": 3482.1,
+  "image": {
+    "width": 1280,
+    "height": 853,
+    "preview": "data:image/jpeg;base64,..."
+  },
+  "detected_count": 2,
+  "truncated": false,
+  "bottles": [
+    {
+      "id": "b1",
+      "segmentation_score": 0.91,
+      "box": [0.12, 0.08, 0.21, 0.84],
+      "mask": "data:image/png;base64,...",
+      "match": {
+        "rank": 1,
+        "slug": "wine-slug",
+        "score": 0.83,
+        "wine": {
+          "name": "...",
+          "page_url": "https://vino-svoe.ru/wines/wine-slug",
+          "producer": "...",
+          "category": "...",
+          "region": "...",
+          "color": "...",
+          "grapes": "...",
+          "sugar": "Сухое",
+          "image_url": "...",
+          "qr_urls": []
+        }
+      }
+    }
+  ]
+}
+~~~
+
+- `box` содержит нормализованные координаты `[left, top, right, bottom]`.
+- `mask` содержит прозрачный PNG, обрезанный по `box`.
+- `match` равен null, если каталог не дал совпадение.
+- `detected_count` содержит число валидных детекций до удаления дублей и лимитов.
+- `truncated` равен true, если лимит 100 бутылок или 6 МиБ визуальных данных исключил
+  валидную бутылку.
+
+SAM3 получает `text=wine bottle`, `threshold=0.4`, `mask_threshold=0.5` и
+`return_masks=true`. Сервис применяет EXIF-ориентацию и ограничивает изображение
+размером 1600 × 1600. Общий бюджет SAM3 равен 300 секундам. Сервис возвращает HTTP 502
+при ошибке SAM3, HTTP 503 без `SAM3_ENDPOINT` и HTTP 504 при таймауте.
+
+Полный контракт и лимиты находятся в [docs/group-match.md](docs/group-match.md).
+
 ## Проверка готовности
 
 Endpoint GET /healthz показывает готовность процесса и выбранный pipeline:
@@ -372,7 +447,7 @@ curl "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/healthz"
 
 Путь `/healthz` используется как распространённый адрес инфраструктурной readiness
 probe. Он всегда публичный. Страницы документации и `/openapi.json` также публичны.
-Авторизация защищает только POST /v1/eval/predict и POST /v1/match.
+Авторизация защищает POST /v1/eval/predict, POST /v1/match и POST /v1/group/match.
 
 ## Журнал запросов
 
@@ -391,7 +466,8 @@ probe. Он всегда публичный. Страницы документа
 - IP-адрес непосредственного клиента;
 - метод, путь, query string, версию HTTP и заголовки запроса;
 - исходное имя, Content-Type, размер, SHA-256 и путь сохранённого изображения;
-- HTTP status и найденный slug; для POST /v1/match — список slug кандидатов.
+- HTTP status и найденный slug; для POST /v1/match — список slug кандидатов; для
+  POST /v1/group/match — число детекций и slug каждой бутылки.
 
 Значения заголовков authorization, cookie, proxy-authorization, x-api-key и
 x-auth-token заменяются на `<redacted>`. Имена этих заголовков сохраняются. Если сервис
@@ -400,7 +476,9 @@ x-auth-token заменяются на `<redacted>`. Имена этих заг�
 
 Сервис также пишет одну строку `matcher_request` в журнал Uvicorn после обработки.
 Строка содержит request id, IP, SHA-256, размер, длительность, HTTP status, slug и пути
-сохранённых файлов. Для POST /v1/match строка также содержит slug кандидатов. Каталог содержит изображения и данные запросов. Ограничьте доступ к
+сохранённых файлов. Для POST /v1/match строка также содержит slug кандидатов. Сервис
+сохраняет исходную фотографию группового запроса. Он не сохраняет маски и crop.
+Каталог содержит изображения и данные запросов. Ограничьте доступ к
 нему и задайте правила хранения.
 
 Запрос, отклонённый до проверки изображения, создаёт строку `matcher_rejected`. Она
@@ -419,7 +497,8 @@ x-auth-token заменяются на `<redacted>`. Имена этих заг�
 OpenAPI описывает GET /healthz, обязательное multipart-поле image, опциональную схему
 BearerAuth, успешный ответ со строкой slug и ошибки HTTP 400, 401, 408, 413, 415, 422 и
 503. Для POST /v1/match OpenAPI также описывает параметр `k` и схемы `MatchResult`,
-`MatchCandidate` и `WineCard`.
+`MatchCandidate` и `WineCard`. Для POST /v1/group/match OpenAPI описывает схемы
+`GroupMatchResult`, `GroupImage` и `GroupBottle`, а также ошибки HTTP 502 и 504.
 
 ## Тестирование
 

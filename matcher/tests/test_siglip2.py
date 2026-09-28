@@ -123,7 +123,9 @@ class FakeSiglip2:
                 fake.requests.append((self.path, body))
                 if fake.status == 200:
                     payload = {"object": "list", "model": body.get("model"), "data": [
-                        {"object": "embedding", "index": 0, "embedding": fake.vector}]}
+                        {"object": "embedding", "index": index,
+                         "embedding": fake.vector}
+                        for index, _ in enumerate(body.get("input", []))]}
                 else:
                     payload = {"error": "fake failure"}
                 data = json.dumps(payload).encode("utf-8")
@@ -219,6 +221,17 @@ class Siglip2Test(unittest.TestCase):
             self.assertEqual(sent.format, "PNG")
             self.assertEqual(sent.mode, "RGB")
             self.assertEqual(sent.size, (200, 300))
+
+    def test_multiple_images_use_one_embedding_request(self):
+        matcher, fake = self.matcher((1, 0, 0, 0))
+        photo = image_bytes(Image.new("RGB", (20, 30), "red"), "PNG")
+        vectors = matcher.backend.embed_many(
+            [model_input(photo), model_input(photo)])
+        self.assertEqual(len(vectors), 2)
+        self.assertTrue(all(np.allclose(vector, unit((1, 0, 0, 0)))
+                            for vector in vectors))
+        self.assertEqual(len(fake.requests), 1)
+        self.assertEqual(len(fake.requests[0][1]["input"]), 2)
 
     def test_an_endpoint_error_raises_siglip2_error(self):
         for vector, status, pattern in (

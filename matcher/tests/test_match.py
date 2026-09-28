@@ -193,6 +193,19 @@ class RankedMatcherTest(unittest.TestCase):
         # `predict` keeps the Top-1 answer of the bundle, with or without a card.
         self.assertEqual(matcher.predict(photo), "wine-shared-a")
 
+    def test_siglip2_matches_multiple_images_in_one_embedding_request(self):
+        write_bundle_v2(self.directory / "bundle")
+        fake = FakeSiglip2((1, 0, 0, 0))
+        self.addCleanup(fake.close)
+        matcher = load_matcher(write_config(self.directory / "config.yaml", {
+            "name": "match-siglip2", "backend": "siglip2",
+            "bundle": str(self.directory / "bundle"), "endpoint": fake.url}))
+        ranked = matcher.match_many([KNOWN_IMAGE.read_bytes(), KNOWN_IMAGE.read_bytes()], 1)
+        self.assertEqual([[pair[0] for pair in group] for group in ranked],
+                         [["wine-a"], ["wine-a"]])
+        self.assertEqual(len(fake.requests), 1)
+        self.assertEqual(len(fake.requests[0][1]["input"]), 2)
+
 
 def multipart(body, boundary="matcher-match-test"):
     return ("--%s\r\nContent-Disposition: form-data; name=\"image\"; filename=\"photo.webp\""

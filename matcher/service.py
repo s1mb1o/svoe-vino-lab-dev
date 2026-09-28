@@ -88,6 +88,10 @@ class MockMatcher(_MatcherSettings):
                              key=lambda pair: pair[1], reverse=True))
         return ranked
 
+    def match_many(self, images: list[bytes], k: int) -> list[list[tuple[str, float]]]:
+        """Return ranked candidates for each image."""
+        return [self.match(image, k) for image in images]
+
 
 @dataclass(frozen=True, eq=False)
 class Siglip2Matcher(_MatcherSettings):
@@ -109,6 +113,15 @@ class Siglip2Matcher(_MatcherSettings):
     def match(self, image: bytes, k: int) -> list[tuple[str, float]]:
         """Return the `k` best `(slug, cosine)` pairs of wines with a card."""
         vector = self.backend.embed(model_input(image))
+        return self._rank(vector, k)
+
+    def match_many(self, images: list[bytes], k: int) -> list[list[tuple[str, float]]]:
+        """Return ranked candidates for all images after one embedding request."""
+        vectors = self.backend.embed_many([model_input(image) for image in images])
+        return [self._rank(vector, k) for vector in vectors]
+
+    def _rank(self, vector, k: int) -> list[tuple[str, float]]:
+        """Rank one normalized vector against wines that have cards."""
         cards = self.cards
         ranked = self.backend.bundle.ranked(SIGLIP2_VIEW, vector)
         return [pair for pair in ranked if pair[0] in cards][:k]

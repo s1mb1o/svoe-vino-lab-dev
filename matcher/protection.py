@@ -15,7 +15,8 @@ from PIL import Image, UnidentifiedImageError
 LOGGER = logging.getLogger("uvicorn.error")
 PREDICT_PATH = "/v1/eval/predict"
 MATCH_PATH = "/v1/match"
-PROTECTED_PATHS = frozenset({PREDICT_PATH, MATCH_PATH})
+GROUP_MATCH_PATH = "/v1/group/match"
+PROTECTED_PATHS = frozenset({PREDICT_PATH, MATCH_PATH, GROUP_MATCH_PATH})
 SUPPORTED_IMAGE_FORMATS = frozenset({"JPEG", "PNG", "WEBP"})
 
 

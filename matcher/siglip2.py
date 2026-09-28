@@ -68,8 +68,17 @@ class Siglip2Backend:
 
     def embed(self, png):
         """Return the L2-normalized vector of one PNG file. Raise Siglip2Error."""
-        uri = "data:image/png;base64," + base64.b64encode(png).decode("ascii")
-        body = dict(self.extra_body, model=self.model, input=[uri])
+        return self.embed_many([png])[0]
+
+    def embed_many(self, pngs):
+        """Return one L2-normalized vector for each PNG in one request."""
+        if not pngs:
+            return []
+        inputs = [
+            "data:image/png;base64," + base64.b64encode(png).decode("ascii")
+            for png in pngs
+        ]
+        body = dict(self.extra_body, model=self.model, input=inputs)
         request = urllib.request.Request(
             self.url, data=json.dumps(body).encode("utf-8"),
             headers={"Content-Type": "application/json"}, method="POST")
@@ -84,16 +93,26 @@ class Siglip2Backend:
             raise Siglip2Error("no valid answer from %s: %s" % (self.url, exc)) from exc
         try:
             data = answer["data"]
-            if len(data) != 1:
-                raise ValueError("%d vectors for 1 image" % len(data))
-            vector = np.asarray(data[0]["embedding"], dtype=np.float32)
-        except (KeyError, IndexError, TypeError, ValueError) as exc:
-            raise Siglip2Error("the answer of %s is not one embedding: %s"
+            if len(data) != len(inputs):
+                raise ValueError("%d vectors for %d images" % (len(data), len(inputs)))
+            ordered = [None] * len(inputs)
+            for position, item in enumerate(data):
+                index = item.get("index", position)
+                if (type(index) is not int or index < 0 or index >= len(inputs)
+                        or ordered[index] is not None):
+                    raise ValueError("invalid or duplicate vector index %s" % index)
+                ordered[index] = np.asarray(item["embedding"], dtype=np.float32)
+        except (AttributeError, KeyError, IndexError, TypeError, ValueError) as exc:
+            raise Siglip2Error("the answer of %s is not one embedding per image: %s"
                                % (self.url, exc)) from exc
-        if vector.shape != (self.bundle.dimension,):
-            raise Siglip2Error("%s sent a vector of shape %s; the bundle holds %d values"
-                               % (self.url, vector.shape, self.bundle.dimension))
-        norm = float(np.linalg.norm(vector))
-        if not np.isfinite(norm) or norm == 0.0:
-            raise Siglip2Error("%s sent a vector of length %s" % (self.url, norm))
-        return vector / norm
+        vectors = []
+        for vector in ordered:
+            if vector.shape != (self.bundle.dimension,):
+                raise Siglip2Error(
+                    "%s sent a vector of shape %s; the bundle holds %d values"
+                    % (self.url, vector.shape, self.bundle.dimension))
+            norm = float(np.linalg.norm(vector))
+            if not np.isfinite(norm) or norm == 0.0:
+                raise Siglip2Error("%s sent a vector of length %s" % (self.url, norm))
+            vectors.append(vector / norm)
+        return vectors

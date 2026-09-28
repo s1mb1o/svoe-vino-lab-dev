@@ -14,6 +14,7 @@ from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
 from .audit import RequestArchive, safe_headers
+from .group import GroupMatchError, segment_group
 from .protection import ImageRejected, RequestProtectionMiddleware, validate_image
 from .service import load_matcher
 
@@ -84,6 +85,51 @@ class MatchResult(BaseModel):
         description="Up to k candidates, the best first. An empty list means no match.")
 
 
+class GroupImage(BaseModel):
+    """The normalized shelf image used for bottle coordinates."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    width: int = Field(gt=0, description="Normalized image width in pixels.")
+    height: int = Field(gt=0, description="Normalized image height in pixels.")
+    preview: str = Field(description="Normalized JPEG image as a data URL.")
+
+
+class GroupBottle(BaseModel):
+    """One segmented bottle and its best catalogue match."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(description="Stable response-local bottle identifier.")
+    segmentation_score: float = Field(
+        ge=0, le=1, description="SAM3 confidence score for the bottle.")
+    box: list[float] = Field(
+        min_length=4, max_length=4,
+        description=("Normalized [left, top, right, bottom] coordinates in the "
+                     "returned image."),
+    )
+    mask: str = Field(
+        description="Transparent PNG mask cropped to the bottle box as a data URL.")
+    match: MatchCandidate | None = Field(
+        description="Best catalogue match, or null when no match exists.")
+
+
+class GroupMatchResult(BaseModel):
+    """Bottle segments and catalogue matches for one shelf image."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    pipeline: str = Field(description="Name of the selected pipeline.")
+    latency_ms: float = Field(description="Processing time of the request in milliseconds.")
+    image: GroupImage
+    detected_count: int = Field(
+        ge=0, description="Valid SAM3 detections before deduplication and response limits.")
+    truncated: bool = Field(
+        description="True when a response limit excluded a valid non-duplicate bottle.")
+    bottles: list[GroupBottle] = Field(
+        description="Segmented bottles in shelf order and their best matches.")
+
+
 class Health(BaseModel):
     """Service readiness and selected matcher pipeline."""
 
@@ -130,14 +176,17 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
     archive = RequestArchive(output)
     application = FastAPI(
         title="Svoe Vino Matcher API",
-        description="Identify one wine from one uploaded package or label image.",
-        version="1.0.0",
+        description="Identify wines in one package, label, or shelf image.",
+        version="1.1.0",
         openapi_tags=[{
             "name": "evaluation",
             "description": "Official matcher evaluation contract.",
         }, {
             "name": "match",
             "description": "Ranked wine candidates with catalogue cards.",
+        }, {
+            "name": "group",
+            "description": "Segment and match all wine bottles in one shelf image.",
         }, {
             "name": "service",
             "description": "Service readiness.",
@@ -221,16 +270,20 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         except Exception as exc:
             completed_at = datetime.now(timezone.utc)
             duration_ms = round((perf_counter() - started_at) * 1000, 3)
+            status_code = exc.status_code if isinstance(exc, HTTPException) else 500
             record = _record(
                 request_id, received_at, completed_at, duration_ms, client_ip,
                 request_data, image_data,
-                {"status_code": 500, "error_type": type(exc).__name__},
+                {"status_code": status_code, "error_type": type(exc).__name__},
             )
             try:
                 await asyncio.to_thread(archive.save_record, saved, record)
             except Exception:
                 LOGGER.exception("cannot save matcher audit request_id=%s", request_id)
-            LOGGER.exception("matcher_request %s", _log_event(record))
+            if isinstance(exc, HTTPException):
+                LOGGER.warning("matcher_request %s", _log_event(record))
+            else:
+                LOGGER.exception("matcher_request %s", _log_event(record))
             raise
 
         completed_at = datetime.now(timezone.utc)
@@ -336,6 +389,96 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             ],
         )
 
+    @application.post(
+        "/v1/group/match",
+        response_model=GroupMatchResult,
+        response_description="The segmented bottles and their best catalogue matches.",
+        summary="Match all bottles in one shelf image",
+        description=(
+            "Upload one JPEG, PNG, or WEBP shelf image in the multipart field `image`. "
+            "The service segments wine bottles with SAM3 and matches every returned "
+            "bottle against the selected catalogue bundle. The endpoint requires "
+            "`Authorization: Bearer <token>` when `matcher.token` is configured."
+        ),
+        operation_id="match_group_image",
+        tags=["group"],
+        responses={
+            400: {"description": "The uploaded image is empty or cannot be decoded."},
+            413: {"description": "The uploaded image exceeds the configured size limit."},
+            401: {"description": "The bearer token is missing or invalid."},
+            408: {"description": "The request upload exceeded its time limit."},
+            415: {"description": "The uploaded image format is not supported."},
+            502: {"description": "SAM3 failed or returned invalid data."},
+            503: {"description": "The request queue is full, SAM3 is not configured, "
+                                 "or the selected pipeline has no wine cards."},
+            504: {"description": "The SAM3 request exceeded its time limit."},
+        },
+    )
+    async def group_match(
+        request: Request,
+        image: UploadFile = File(
+            ...,
+            description="Shelf image that can contain multiple wine bottles.",
+        ),
+    ) -> GroupMatchResult:
+        """Segment and match all returned bottles in one multipart image."""
+        cards = matcher.cards
+        if cards is None:
+            detail = ("the selected pipeline has no wine cards; it needs a bundle of "
+                      "format version 2")
+            _log_rejection(uuid.uuid4().hex, request.client.host if request.client else None,
+                           503, detail, perf_counter())
+            raise HTTPException(status_code=503, detail=detail)
+
+        def operation(body):
+            try:
+                segmented = segment_group(body, os.environ.get("SAM3_ENDPOINT"))
+            except GroupMatchError as exc:
+                raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+            ranked_groups = matcher.match_many(
+                [bottle.crop for bottle in segmented.bottles], 1)
+            if len(ranked_groups) != len(segmented.bottles):
+                raise RuntimeError("matcher returned a wrong number of group results")
+            audit_bottles = [
+                {"id": bottle.id,
+                 "slug": ranked[0][0] if ranked else None}
+                for bottle, ranked in zip(segmented.bottles, ranked_groups)
+            ]
+            return (segmented, ranked_groups), {
+                "detected_count": segmented.detected_count,
+                "truncated": segmented.truncated,
+                "bottles": audit_bottles,
+            }
+
+        (segmented, ranked_groups), duration_ms = await process_image(
+            request, image, operation)
+        bottles = []
+        for bottle, ranked in zip(segmented.bottles, ranked_groups):
+            candidate = None
+            if ranked:
+                slug, score = ranked[0]
+                candidate = MatchCandidate(
+                    rank=1, slug=slug, score=score, wine=WineCard(**cards[slug]))
+            bottles.append(GroupBottle(
+                id=bottle.id,
+                segmentation_score=bottle.segmentation_score,
+                box=list(bottle.box),
+                mask=bottle.mask,
+                match=candidate,
+            ))
+        return GroupMatchResult(
+            pipeline=matcher.pipeline,
+            latency_ms=duration_ms,
+            image=GroupImage(
+                width=segmented.width,
+                height=segmented.height,
+                preview=segmented.preview,
+            ),
+            detected_count=segmented.detected_count,
+            truncated=segmented.truncated,
+            bottles=bottles,
+        )
+
     _configure_openapi(application)
     return application
 
@@ -433,7 +576,7 @@ def _configure_openapi(application):
             "scheme": "bearer",
             "description": "Required only when matcher.token is configured.",
         }
-        for path in ("/v1/eval/predict", "/v1/match"):
+        for path in ("/v1/eval/predict", "/v1/match", "/v1/group/match"):
             schema["paths"][path]["post"]["security"] = [
                 {},
                 {"BearerAuth": []},
