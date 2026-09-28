@@ -23,6 +23,7 @@ from PIL import Image, ImageOps
 VIEW = "full"
 MAX_SIZE = 1024
 TIMEOUT_SECONDS = 60
+MAX_BATCH_SIZE = 64
 
 
 class Siglip2Error(RuntimeError):
@@ -71,9 +72,14 @@ class Siglip2Backend:
         return self.embed_many([png])[0]
 
     def embed_many(self, pngs):
-        """Return one L2-normalized vector for each PNG in one request."""
+        """Return one L2-normalized vector for each PNG in bounded requests."""
         if not pngs:
             return []
+        if len(pngs) > MAX_BATCH_SIZE:
+            vectors = []
+            for start in range(0, len(pngs), MAX_BATCH_SIZE):
+                vectors.extend(self.embed_many(pngs[start:start + MAX_BATCH_SIZE]))
+            return vectors
         inputs = [
             "data:image/png;base64," + base64.b64encode(png).decode("ascii")
             for png in pngs

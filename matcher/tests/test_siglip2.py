@@ -233,6 +233,16 @@ class Siglip2Test(unittest.TestCase):
         self.assertEqual(len(fake.requests), 1)
         self.assertEqual(len(fake.requests[0][1]["input"]), 2)
 
+    def test_a_large_image_batch_uses_bounded_embedding_requests(self):
+        matcher, fake = self.matcher((1, 0, 0, 0))
+        photo = image_bytes(Image.new("RGB", (20, 30), "red"), "PNG")
+        vectors = matcher.backend.embed_many([photo] * 65)
+
+        self.assertEqual(len(vectors), 65)
+        self.assertEqual([len(request[1]["input"]) for request in fake.requests], [64, 1])
+        self.assertTrue(all(np.allclose(vector, unit((1, 0, 0, 0)))
+                            for vector in vectors))
+
     def test_an_endpoint_error_raises_siglip2_error(self):
         for vector, status, pattern in (
                 ((1, 0, 0, 0), 500, "HTTP 500 from .*fake failure"),

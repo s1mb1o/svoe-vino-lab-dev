@@ -14,6 +14,11 @@ Sequential embedding requests increase network latency for every bottle.
 The OpenAI-compatible embedding contract accepts an input array.
 The SigLIP2 backend now sends all bottle crops in one request and validates one indexed vector per crop.
 
+The production SigLIP2 service accepts at most 64 inputs in one request.
+A shelf photo produced 93 bottle crops and caused an HTTP 400 response from SigLIP2.
+The matcher now splits larger logical batches into transport requests of at most 64 inputs.
+The matcher preserves the input order across these requests.
+
 The response returns a normalized preview.
 This preview makes the coordinates and masks independent of browser EXIF behavior.
 The response returns cropped transparent masks instead of full-frame masks.

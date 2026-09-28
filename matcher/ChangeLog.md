@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-09-29
+
+- Split large SigLIP2 embedding batches into requests of at most 64 images.
+- Fixed shelf matching when SAM3 returns more than 64 bottle crops.
+
 ## 2026-09-28
 
 - Added `POST /v1/group/match` for shelf photos.
