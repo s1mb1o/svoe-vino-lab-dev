@@ -18,6 +18,29 @@ Every bundle contains these files:
 The option `--include-images` also copies the prepared images. The option adds
 `images.jsonl`. This file contains one SHA-256 value and byte size for each image.
 
+## Format versions
+
+The builder writes format version 2. The validator accepts version 1 and version 2.
+The two versions differ only in `wines.jsonl`.
+
+A version 1 wine record has `wine_slug`, `name`, `producer`, `category`, and `region`.
+
+A version 2 wine record also has the wine card fields of the matcher endpoint
+`/v1/match` (plan 74):
+
+| Field | Source | Value |
+|---|---|---|
+| `color` | `wine_catalog.color` | string or `null` |
+| `grapes` | `wine_catalog.grapes` | string or `null` |
+| `page_url` | the slug | `https://vino-svoe.ru/wines/<slug>` |
+| `image_url` | `wine_image.source_name` of the image type `main` | `https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/<name>`, or `null` without a `main` image |
+| `qr_urls` | `wine_code.value` with `kind = 'qr_url'` | a sorted list of unique normalized URLs |
+
+`image_url` uses `main` because `main` is the official catalogue image.
+`main_patched` is a lab image that the catalogue site does not serve.
+The QR URL normalization uses the rules of `telegram-bot`: a lowercase scheme and host,
+no default port, no fragment, and no user information.
+
 ## Build a bundle
 
 Run the builder from the workbench root. The configured database and the embedding index
@@ -66,6 +89,8 @@ The validator checks these properties:
 - The matrix is C-contiguous, finite, and L2-normalized.
 - Vector rows are contiguous and have catalogue candidates.
 - Candidate rows name exported wines and the correct views.
+- A version 2 wine record has all card fields, an HTTPS `page_url`, an HTTPS or `null`
+  `image_url`, and unique normalized `qr_urls`.
 - Optional image paths are safe and identify regular files.
 - Optional image hashes and sizes match the image manifest.
 

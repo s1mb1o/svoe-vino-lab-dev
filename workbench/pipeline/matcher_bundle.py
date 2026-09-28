@@ -13,12 +13,15 @@ import re
 import shutil
 import tempfile
 import time
+from urllib.parse import quote, urlsplit, urlunsplit
 
 import numpy as np
 
 
 FORMAT = "svoe-vino-matcher-bundle"
-FORMAT_VERSION = 1
+# Version 2 adds the wine card fields to `wines.jsonl`. The validator accepts version 1.
+FORMAT_VERSION = 2
+SUPPORTED_VERSIONS = (1, 2)
 MANIFEST = "manifest.json"
 VECTORS = "vectors.npy"
 ITEMS = "items.jsonl"
@@ -33,7 +36,12 @@ ITEM_KEYS = {
     "embedding_hash", "derivative_sha256", "image", "width", "height",
 }
 CANDIDATE_KEYS = {"vector_row", "wine_slug", "view", "image_type"}
-WINE_KEYS = {"wine_slug", "name", "producer", "category", "region"}
+WINE_KEYS_V1 = {"wine_slug", "name", "producer", "category", "region"}
+WINE_KEYS = WINE_KEYS_V1 | {"color", "grapes", "page_url", "image_url", "qr_urls"}
+# The public catalogue pages and images. All 2,103 records of the hackathon catalogue use
+# these forms (check of 2026-09-28, plan 74).
+PAGE_URL_PREFIX = "https://vino-svoe.ru/wines/"
+IMAGE_URL_PREFIX = "https://api.vino-svoe.ru/v1/img/str-api/1920/1920/resize/uploads/"
 OMISSION_KEYS = {
     "source_sha256", "view", "role", "embedding_hash", "state", "error",
 }
@@ -151,6 +159,56 @@ def _exact_keys(value, keys, label):
         raise BundleError("%s has invalid keys (%s)" % (label, "; ".join(parts)))
 
 
+def normalize_qr_url(value):
+    """Return the normalized HTTP or HTTPS URL of one QR value, or None.
+
+    The rules are the rules of `telegram-bot/src/chto_za_vino_bot/catalog.py`.
+    """
+    text = value.strip()
+    if text.startswith("URL:"):
+        text = text[4:].strip()
+    try:
+        parts = urlsplit(text)
+    except ValueError:
+        return None
+    if parts.scheme.lower() not in ("http", "https") or not parts.hostname:
+        return None
+    if parts.username or parts.password:
+        return None
+    try:
+        host = parts.hostname.encode("idna").decode("ascii").lower()
+        port = parts.port
+    except (UnicodeError, ValueError):
+        return None
+    default_port = (parts.scheme.lower() == "http" and port == 80) or (
+        parts.scheme.lower() == "https" and port == 443)
+    netloc = host if port is None or default_port else "%s:%d" % (host, port)
+    return urlunsplit((parts.scheme.lower(), netloc, parts.path or "/", parts.query, ""))
+
+
+def _card_fields(conn):
+    """Return slug -> the card fields that `embeddings.read_inputs` does not read."""
+    cards = {}
+    for slug, color, grapes in conn.execute(
+            "SELECT wine_slug, color, grapes FROM wine_catalog"):
+        cards[slug] = {"color": color, "grapes": grapes,
+                       "page_url": PAGE_URL_PREFIX + quote(slug, safe=""),
+                       "image_url": None, "qr_urls": []}
+    # `main` is the official catalogue image. `main_patched` is a lab image.
+    for slug, name in conn.execute(
+            "SELECT wine_slug, source_name FROM wine_image WHERE image_type = 'main'"):
+        if slug in cards:
+            cards[slug]["image_url"] = IMAGE_URL_PREFIX + quote(name, safe="")
+    for slug, value in conn.execute(
+            "SELECT wine_slug, value FROM wine_code WHERE kind = 'qr_url'"):
+        url = normalize_qr_url(value)
+        if slug in cards and url is not None and url not in cards[slug]["qr_urls"]:
+            cards[slug]["qr_urls"].append(url)
+    for card in cards.values():
+        card["qr_urls"].sort()
+    return cards
+
+
 def _owners(embedding, wines, items):
     """Return (source_sha256, view) -> ordered `(wine, image_type)` owners."""
     import embeddings
@@ -182,6 +240,7 @@ def _build_in(directory, settings, embedding, include_images):
         raise BundleError("the embedding %s has no vector file" % embedding.name)
     with closing(embeddings.open_database(settings.db_path)) as conn:
         wines, sources = embeddings.read_inputs(conn, settings.db_path)
+        cards = _card_fields(conn)
     planned = embeddings.plan_items(embedding, sources)
     status = embeddings.item_status(planned, index, embeddings.image_names(source_dir))
     owners = _owners(embedding, wines, planned)
@@ -251,8 +310,9 @@ def _build_in(directory, settings, embedding, include_images):
     np.save(Path(directory) / VECTORS, matrix, allow_pickle=False)
     _write_jsonl(Path(directory) / ITEMS, item_rows)
     _write_jsonl(Path(directory) / CANDIDATES, candidate_rows)
-    wine_rows = [{key: wine.get(key if key != "wine_slug" else "slug")
-                  for key in ("wine_slug", "name", "producer", "category", "region")}
+    wine_rows = [dict({key: wine.get(key if key != "wine_slug" else "slug")
+                       for key in ("wine_slug", "name", "producer", "category", "region")},
+                      **cards[wine["slug"]])
                  for wine in wines if wine["slug"] in used_slugs]
     _write_jsonl(Path(directory) / WINES, wine_rows)
     _write_jsonl(Path(directory) / OMISSIONS, omissions)
@@ -437,19 +497,23 @@ def _validate_records(root, manifest):
         item_keys.add(key)
         item_by_row[item["vector_row"]] = item
 
+    version = manifest.get("format_version")
     wine_slugs = set()
     for number, wine in enumerate(wines, 1):
         label = "%s line %d" % (WINES, number)
-        _exact_keys(wine, WINE_KEYS, label)
+        _exact_keys(wine, WINE_KEYS if version >= 2 else WINE_KEYS_V1, label)
         slug = wine["wine_slug"]
         if not isinstance(slug, str) or not slug:
             raise BundleError("%s wine_slug MUST be a non-empty string" % label)
         if slug in wine_slugs:
             raise BundleError("%s repeats wine_slug %s" % (WINES, slug))
         wine_slugs.add(slug)
-        for key in WINE_KEYS - {"wine_slug"}:
+        for key in ("name", "producer", "category", "region") + (
+                ("color", "grapes") if version >= 2 else ()):
             if wine[key] is not None and not isinstance(wine[key], str):
                 raise BundleError("%s.%s MUST be a string or null" % (label, key))
+        if version >= 2:
+            _validate_card(wine, label)
 
     used_rows = set()
     used_wines = set()
@@ -494,6 +558,26 @@ def _validate_records(root, manifest):
     return items, candidates, wines, omissions, image_paths
 
 
+def _validate_card(wine, label):
+    """Check the card fields of one version 2 wine record."""
+    if not isinstance(wine["name"], str) or not wine["name"]:
+        raise BundleError("%s.name MUST be a non-empty string" % label)
+    if not isinstance(wine["page_url"], str) or not wine["page_url"].startswith("https://"):
+        raise BundleError("%s.page_url MUST be an HTTPS URL" % label)
+    image_url = wine["image_url"]
+    if image_url is not None and (
+            not isinstance(image_url, str) or not image_url.startswith("https://")):
+        raise BundleError("%s.image_url MUST be an HTTPS URL or null" % label)
+    urls = wine["qr_urls"]
+    if not isinstance(urls, list):
+        raise BundleError("%s.qr_urls MUST be a list" % label)
+    for url in urls:
+        if not isinstance(url, str) or normalize_qr_url(url) != url:
+            raise BundleError("%s.qr_urls MUST hold normalized HTTP or HTTPS URLs" % label)
+    if len(set(urls)) != len(urls):
+        raise BundleError("%s.qr_urls repeats a URL" % label)
+
+
 def _validate_images(root, manifest, image_paths):
     spec = manifest.get("images")
     if not isinstance(spec, dict) or set(spec) != {"included", "manifest", "count"}:
@@ -536,9 +620,9 @@ def validate_bundle(directory):
     manifest = _read_json(root / MANIFEST, MANIFEST)
     if manifest.get("format") != FORMAT:
         raise BundleError("unsupported bundle format: %r" % manifest.get("format"))
-    if manifest.get("format_version") != FORMAT_VERSION:
-        raise BundleError("unsupported bundle format version: %r"
-                          % manifest.get("format_version"))
+    version = manifest.get("format_version")
+    if isinstance(version, bool) or version not in SUPPORTED_VERSIONS:
+        raise BundleError("unsupported bundle format version: %r" % version)
     if not isinstance(manifest.get("source"), dict):
         raise BundleError("manifest.source MUST be an object")
     if not isinstance(manifest.get("embedding"), dict):
@@ -553,7 +637,7 @@ def validate_bundle(directory):
     _validate_images(root, manifest, image_paths)
     return {
         "format": FORMAT,
-        "format_version": FORMAT_VERSION,
+        "format_version": version,
         "items": len(items),
         "candidates": len(candidates),
         "wines": len(wines),

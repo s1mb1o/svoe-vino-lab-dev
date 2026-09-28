@@ -14,6 +14,8 @@ from PIL import Image, UnidentifiedImageError
 
 LOGGER = logging.getLogger("uvicorn.error")
 PREDICT_PATH = "/v1/eval/predict"
+MATCH_PATH = "/v1/match"
+PROTECTED_PATHS = frozenset({PREDICT_PATH, MATCH_PATH})
 SUPPORTED_IMAGE_FORMATS = frozenset({"JPEG", "PNG", "WEBP"})
 
 
@@ -40,7 +42,7 @@ class ImageRejected(ValueError):
 
 
 class RequestProtectionMiddleware:
-    """Protect the prediction endpoint before FastAPI parses multipart data."""
+    """Protect the image endpoints before FastAPI parses multipart data."""
 
     def __init__(self, app, *, max_request_bytes, upload_timeout_seconds,
                  max_inflight_requests, max_queued_requests,
@@ -55,7 +57,7 @@ class RequestProtectionMiddleware:
         self.queued_requests = 0
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] != "http" or scope.get("path") != PREDICT_PATH:
+        if scope["type"] != "http" or scope.get("path") not in PROTECTED_PATHS:
             await self.app(scope, receive, send)
             return
 

@@ -42,12 +42,12 @@ paths:
                 $ref: '#/components/schemas/Prediction'
         '400':
           description: The uploaded image is empty.
+        '413':
+          description: The uploaded image exceeds the configured size limit.
         '401':
           description: The bearer token is missing or invalid.
         '408':
           description: The request upload exceeded its time limit.
-        '413':
-          description: The uploaded image exceeds the configured size limit.
         '415':
           description: The uploaded image format is not supported.
         '503':
@@ -61,8 +61,76 @@ paths:
       security:
       - {}
       - BearerAuth: []
+  /v1/match:
+    post:
+      tags:
+        - match
+      summary: Match one wine
+      description: 'Upload one JPEG, PNG, or WEBP image in the multipart field `image`.
+        The answer holds up to `k` ranked candidates with their catalogue cards. The
+        endpoint requires `Authorization: Bearer <token>` when `matcher.token` is
+        configured.'
+      operationId: match_image
+      parameters:
+        - name: k
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 20
+            minimum: 1
+            description: Maximum number of candidates.
+            default: 20
+            title: K
+          description: Maximum number of candidates.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_match_image'
+      responses:
+        '200':
+          description: The ranked catalogue candidates.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResult'
+        '400':
+          description: The uploaded image is empty.
+        '413':
+          description: The uploaded image exceeds the configured size limit.
+        '401':
+          description: The bearer token is missing or invalid.
+        '408':
+          description: The request upload exceeded its time limit.
+        '415':
+          description: The uploaded image format is not supported.
+        '503':
+          description: The matcher request queue is full, or the selected pipeline
+            has no wine cards.
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - {}
+      - BearerAuth: []
 components:
   schemas:
+    Body_match_image:
+      properties:
+        image:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Image
+          description: Wine package or label image.
+      type: object
+      required:
+        - image
+      title: Body_match_image
     Body_predict_image:
       properties:
         image:
@@ -99,6 +167,57 @@ components:
         - pipeline
       title: Health
       description: Service readiness and selected matcher pipeline.
+    MatchCandidate:
+      properties:
+        rank:
+          type: integer
+          title: Rank
+          description: Rank of the candidate. Rank 1 is the best match.
+        slug:
+          type: string
+          title: Slug
+          description: Catalogue slug of the wine.
+        score:
+          type: number
+          title: Score
+          description: Pipeline score. The score does not increase from one rank to
+            the next.
+        wine:
+          $ref: '#/components/schemas/WineCard'
+      additionalProperties: false
+      type: object
+      required:
+        - rank
+        - slug
+        - score
+        - wine
+      title: MatchCandidate
+      description: One ranked catalogue candidate.
+    MatchResult:
+      properties:
+        pipeline:
+          type: string
+          title: Pipeline
+          description: Name of the selected pipeline.
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Processing time of the request in milliseconds.
+        candidates:
+          items:
+            $ref: '#/components/schemas/MatchCandidate'
+          type: array
+          title: Candidates
+          description: Up to k candidates, the best first. An empty list means no
+            match.
+      additionalProperties: false
+      type: object
+      required:
+        - pipeline
+        - latency_ms
+        - candidates
+      title: MatchResult
+      description: Ranked catalogue candidates of one image.
     Prediction:
       properties:
         slug:
@@ -139,6 +258,79 @@ components:
       - msg
       - type
       title: ValidationError
+    WineCard:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Wine name.
+        page_url:
+          type: string
+          title: Page Url
+          description: Catalogue page of the wine.
+        producer:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Producer
+          description: Producer.
+        category:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Category
+          description: Catalogue category.
+        region:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Region
+          description: Region.
+        color:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Color
+          description: Colour.
+        grapes:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Grapes
+          description: Grape varieties.
+        sugar:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Sugar
+          description: Sugar class that the slug or the name states, or null.
+        image_url:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Image Url
+          description: Official catalogue image, or null.
+        qr_urls:
+          items:
+            type: string
+          type: array
+          title: Qr Urls
+          description: Normalized QR code URLs of the wine.
+      additionalProperties: false
+      type: object
+      required:
+        - name
+        - page_url
+        - producer
+        - category
+        - region
+        - color
+        - grapes
+        - sugar
+        - image_url
+        - qr_urls
+      title: WineCard
+      description: The catalogue card of one wine from the matcher bundle.
   securitySchemes:
     BearerAuth:
       type: http
@@ -147,5 +339,7 @@ components:
 tags:
   - name: evaluation
     description: Official matcher evaluation contract.
+  - name: match
+    description: Ranked wine candidates with catalogue cards.
   - name: service
     description: Service readiness.

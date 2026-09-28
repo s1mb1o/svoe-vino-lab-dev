@@ -1,15 +1,16 @@
-"""Load one configured matcher pipeline and return its Top-1 wine slug."""
+"""Load one configured matcher pipeline and return its Top-1 or ranked wine slugs."""
 
 from dataclasses import dataclass
 import hashlib
 import os
 from pathlib import Path
+import random
 import re
 
 import yaml
 
 from .bundle import BundleError, load_bundle
-from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend
+from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend, model_input
 
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -65,11 +66,27 @@ class MockMatcher(_MatcherSettings):
     unknown_slug: str = ""
     output_dir: str | None = None
     token: str | None = None
+    # slug -> wine card of the optional bundle, or None without a version 2 bundle.
+    cards: dict | None = None
 
     def predict(self, image: bytes) -> str:
         """Return the configured slug for one image body."""
         digest = hashlib.sha256(image).hexdigest()
         return self.answers.get(digest, self.unknown_slug)
+
+    def match(self, image: bytes, k: int) -> list[tuple[str, float]]:
+        """Return up to `k` `(slug, score)` pairs of wines with a card.
+
+        A known image gives its configured slug first with score 1.0. The other pairs
+        are random wines with random scores in [0, 1), the best score first.
+        """
+        known = self.answers.get(hashlib.sha256(image).hexdigest())
+        ranked = [(known, 1.0)] if known in self.cards else []
+        others = [slug for slug in self.cards if slug != known]
+        picked = random.sample(others, min(k - len(ranked), len(others)))
+        ranked.extend(sorted(((slug, random.random()) for slug in picked),
+                             key=lambda pair: pair[1], reverse=True))
+        return ranked
 
 
 @dataclass(frozen=True, eq=False)
@@ -81,9 +98,20 @@ class Siglip2Matcher(_MatcherSettings):
     output_dir: str | None = None
     token: str | None = None
 
+    @property
+    def cards(self) -> dict | None:
+        return self.backend.bundle.cards
+
     def predict(self, image: bytes) -> str:
         """Return the Top-1 slug for one image body."""
         return self.backend.predict(image)
+
+    def match(self, image: bytes, k: int) -> list[tuple[str, float]]:
+        """Return the `k` best `(slug, cosine)` pairs of wines with a card."""
+        vector = self.backend.embed(model_input(image))
+        cards = self.cards
+        ranked = self.backend.bundle.ranked(SIGLIP2_VIEW, vector)
+        return [pair for pair in ranked if pair[0] in cards][:k]
 
 
 def _mapping(value, label):
@@ -166,12 +194,22 @@ def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
     unknown = entry.get("unknown_slug", "")
     if not isinstance(unknown, str):
         raise ConfigError("pipeline %s unknown_slug MUST be a string" % selected)
+    cards = None
+    if "bundle" in entry:
+        path = entry["bundle"]
+        if not isinstance(path, str) or not path:
+            raise ConfigError("pipeline %s bundle MUST be a non-empty path" % selected)
+        try:
+            cards = load_bundle(path).cards
+        except BundleError as exc:
+            raise ConfigError("pipeline %s bundle: %s" % (selected, exc)) from exc
     return MockMatcher(
         pipeline=selected,
         answers=normalized,
         unknown_slug=unknown,
         output_dir=output_dir,
         token=token,
+        cards=cards,
     )
 
 

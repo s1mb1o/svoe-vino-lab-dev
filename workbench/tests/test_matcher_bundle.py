@@ -49,6 +49,79 @@ class MatcherBundleTest(unittest.TestCase):
             self.lab.config_path, "gw", path, include_images=images)
         return path, result
 
+    def rewrite(self, path, name, rows):
+        """Replace one JSONL payload and its manifest record."""
+        payload = path / name
+        payload.write_text("".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n"
+                                   for row in rows), encoding="utf-8")
+        manifest_path = path / matcher_bundle.MANIFEST
+        manifest = json.loads(manifest_path.read_text())
+        manifest["files"][name] = matcher_bundle.file_record(payload)
+        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+        return manifest
+
+    def wines(self, path):
+        return [json.loads(line) for line in
+                (path / matcher_bundle.WINES).read_text(encoding="utf-8").splitlines()]
+
+    def test_version_2_wines_hold_the_card_fields(self):
+        for value in ("https://Example.COM:443/a", "http://example.com",
+                      "https://example.com/a#part"):
+            self.lab.conn.execute(
+                "INSERT INTO wine_code (wine_slug, kind, value) VALUES ('grey', 'qr_url', ?)",
+                (value,))
+        self.lab.conn.commit()
+        path, result = self.build()
+        self.assertEqual(result["format_version"], 2)
+        wines = {wine["wine_slug"]: wine for wine in self.wines(path)}
+        grey = wines["grey"]
+        self.assertEqual(set(grey), matcher_bundle.WINE_KEYS)
+        self.assertEqual(grey["name"], "Name grey")
+        self.assertEqual(grey["color"], "красное")
+        self.assertIsNone(grey["grapes"])
+        self.assertEqual(grey["page_url"], "https://vino-svoe.ru/wines/grey")
+        self.assertEqual(grey["image_url"],
+                         matcher_bundle.IMAGE_URL_PREFIX + self.lab.grey[:8] + ".png")
+        self.assertEqual(grey["qr_urls"], ["http://example.com/", "https://example.com/a"])
+        # The official image of `patched` is its `main`, not the lab `main_patched`.
+        self.assertEqual(wines["patched"]["image_url"],
+                         matcher_bundle.IMAGE_URL_PREFIX + self.lab.patched_main[:8] + ".png")
+        self.assertEqual(wines["transparent"]["qr_urls"], [])
+
+    def test_validator_accepts_a_version_1_bundle(self):
+        path, _ = self.build()
+        rows = [{key: wine[key] for key in matcher_bundle.WINE_KEYS_V1}
+                for wine in self.wines(path)]
+        manifest = self.rewrite(path, matcher_bundle.WINES, rows)
+        manifest["format_version"] = 1
+        (path / matcher_bundle.MANIFEST).write_text(
+            json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+        self.assertEqual(matcher_bundle.validate_bundle(path)["format_version"], 1)
+
+    def test_validator_rejects_a_version_2_wine_without_a_card_field(self):
+        path, _ = self.build()
+        rows = self.wines(path)
+        del rows[0]["qr_urls"]
+        self.rewrite(path, matcher_bundle.WINES, rows)
+        with self.assertRaisesRegex(matcher_bundle.BundleError, "missing: qr_urls"):
+            matcher_bundle.validate_bundle(path)
+
+    def test_validator_rejects_a_qr_url_that_is_not_normalized(self):
+        path, _ = self.build()
+        rows = self.wines(path)
+        rows[0]["qr_urls"] = ["HTTPS://Example.COM/a"]
+        self.rewrite(path, matcher_bundle.WINES, rows)
+        with self.assertRaisesRegex(matcher_bundle.BundleError, "normalized"):
+            matcher_bundle.validate_bundle(path)
+
+    def test_validator_rejects_a_page_url_that_is_not_https(self):
+        path, _ = self.build()
+        rows = self.wines(path)
+        rows[0]["page_url"] = "http://vino-svoe.ru/wines/x"
+        self.rewrite(path, matcher_bundle.WINES, rows)
+        with self.assertRaisesRegex(matcher_bundle.BundleError, "page_url"):
+            matcher_bundle.validate_bundle(path)
+
     def test_bundle_without_images_is_self_contained_metadata(self):
         path, result = self.build()
         self.assertEqual(result["items"], 4)
@@ -150,7 +223,7 @@ class MatcherBundleTest(unittest.TestCase):
             [sys.executable, str(ROOT / "scripts" / "validate_matcher_bundle.py"),
              str(output)], cwd=ROOT, text=True, capture_output=True, check=False)
         self.assertEqual(checked.returncode, 0, checked.stderr)
-        self.assertEqual(json.loads(checked.stdout)["format_version"], 1)
+        self.assertEqual(json.loads(checked.stdout)["format_version"], 2)
 
 
 if __name__ == "__main__":

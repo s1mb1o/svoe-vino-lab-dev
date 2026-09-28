@@ -2,6 +2,29 @@
 
 ## 2026-09-28
 
+- Added the matcher endpoint `POST /v1/match` and matcher bundle format version 2
+  (plan 74, owner messages recorded from 2026-09-28T14:19:39+0300 to 15:24:13).
+  `/v1/match` returns up to `k` ranked candidates (`k` from 1 to 20, default 20) with
+  `rank`, `slug`, `score`, and a `wine` card: `name`, `page_url`, `producer`,
+  `category`, `region`, `color`, `grapes`, `sugar`, `image_url`, `qr_urls`. The pipeline
+  comes only from the config. `/v1/eval/predict` keeps its answer `{"slug"}`; its
+  OpenAPI operation did not change. The bearer token, the size limits, and the request
+  queue now protect both endpoints. A pipeline without cards answers HTTP 503.
+  `Bundle.ranked` uses the scores of `Bundle.top1`; its first wine is the Top-1 wine. A
+  slug without a card is skipped. The mock pipeline has an optional `bundle`: a known
+  image gets its slug first with score 1.0, and the other places get random wines with
+  random scores. `sugar` uses the rules of `telegram-bot`. The builder
+  `pipeline/matcher_bundle.py` writes version 2: `color` and `grapes` from
+  `wine_catalog`, `page_url` from the slug, `image_url` from the `main` image name,
+  and normalized `qr_urls` from `wine_code`. The validator accepts versions 1 and 2. The
+  real bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512` is rebuilt as
+  version 2; the old one stays as `.v1`. `vectors.npy`, `items.jsonl`,
+  `candidates.jsonl`, and `omissions.jsonl` are byte-identical in both. For 300 query
+  vectors, `top1` of the old and the new bundle agreed 300 times, and the first wine of
+  `ranked` equalled `top1` 300 times. All 2,094 wines have a card; 37 have QR URLs. Of 15
+  `main` image names that differ from the hackathon `catalog.jsonl`, all 15 lab URLs
+  answered HTTP 200 and 5 catalogue URLs answered HTTP 400. Tests: 14 bundle tests and 60
+  matcher tests (13 new in `matcher/tests/test_match.py`) pass. No live call to gx10.
 - Added the matcher backend `siglip2` and the default `matcher/config.yaml` (owner
   messages recorded at 2026-09-28T15:01:00+0300). The pipeline `siglip2-p512-as-is` reads
   the bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`. The bundle holds

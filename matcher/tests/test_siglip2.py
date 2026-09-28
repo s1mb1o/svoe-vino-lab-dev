@@ -258,7 +258,7 @@ class Siglip2Test(unittest.TestCase):
         manifest_path = self.bundle / "manifest.json"
         original = manifest_path.read_text(encoding="utf-8")
         for change, pattern in (
-                (lambda m: m.update(format_version=2), "unsupported bundle format"),
+                (lambda m: m.update(format_version=3), "unsupported bundle format"),
                 (lambda m: m["files"]["vectors.npy"].update(sha256="0" * 64),
                  "vectors.npy does not match"),
                 (lambda m: m["vectors"].update(shape=[3, 4]), "declared float32 shape"),

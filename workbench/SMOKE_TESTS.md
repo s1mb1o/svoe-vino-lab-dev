@@ -2121,7 +2121,7 @@ Owner messages recorded at 2026-09-28T08:07:43+0300 through 09:40:52.
 
 | # | Case | Expected result |
 |---|---|---|
-| EM1 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -v` | 47 tests are `OK`. The integration tests use local copies of the official evaluation files, temporary output directories, and ephemeral ports. |
+| EM1 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -v` | 60 tests are `OK` (47 before plan 74). The integration tests use local copies of the official evaluation files, temporary output directories, and ephemeral ports. |
 | EM2 | Run `matcher/tests/participant_test.sh` with `matcher/tests/queries.tsv` and `matcher/tests/data` against POST /v1/eval/predict. | The three rows contain tabia_pino_nuar, massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16, and donum_xxiv for their configured images. The run does not use the sibling evaluation directory. |
 | EM3 | Set `SVOE_VINO_MATCHER_CONFIG=matcher/tests/config.yaml`. Submit an image whose SHA-256 is absent from this file. | The response is `{"slug":""}`. |
 | EM4 | Parse `matcher/openapi.yaml` and `GET /openapi.json`. | The complete parsed documents are equal. They contain GET /healthz, POST /v1/eval/predict, BearerAuth, the multipart field `image`, the response field `slug`, and responses 400, 401, 408, 413, 415, 422, and 503. |
@@ -2193,3 +2193,19 @@ Owner messages recorded at 2026-09-28T15:01:00+0300. Run the commands in the roo
 | SS4 | After SS3, POST `matcher/tests/data/02eef911.webp` to `/v1/eval/predict`. | HTTP 200. The slug is a `wine_slug` of `wines.jsonl` of the bundle. A warm request takes less than 1 s. |
 | SS5 | After SS3, run `matcher/tests/participant_test.sh` with `matcher/tests/queries.tsv` and `matcher/tests/data`. | The output has 3 rows. Each `predicted_slug` is a string, not `null`. |
 | SS6 | Start with `SIGLIP2_ENDPOINT` unset, or with a `bundle` path that does not exist. | The process stops at the start with `ConfigError`. |
+
+## Matcher endpoint /v1/match and bundle version 2
+
+Plan 74. Owner messages recorded from 2026-09-28T14:19:39+0300 to 15:24:13. Run the
+commands in the root of `svoe-vino-lab` unless the case names `workbench/`. MA6 and MA7
+call the SigLIP2 model on gx10.
+
+| # | Case | Expected result |
+|---|---|---|
+| MA1 | In `workbench/`: `python3 -m unittest discover -s tests -p 'test_matcher_bundle.py'` | 14 tests are `OK`. |
+| MA2 | In `workbench/`: build a bundle as in SS1, then read one line of `wines.jsonl` | `format_version` is 2. The line has `wine_slug`, `name`, `producer`, `category`, `region`, `color`, `grapes`, `page_url`, `image_url`, and `qr_urls`. `page_url` is `https://vino-svoe.ru/wines/<slug>`. |
+| MA3 | Validate the backup `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512.v1` with `scripts/validate_matcher_bundle.py` | The validator accepts version 1 and prints `format_version` 1. |
+| MA4 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -p 'test_match.py' -v` | 13 tests are `OK`. No test needs the real bundle or the network. |
+| MA5 | Start uvicorn with `SVOE_VINO_MATCHER_CONFIG=matcher/tests/config.yaml`. POST an image to `/v1/match`. | HTTP 503. The detail names bundle format version 2. `/v1/eval/predict` still answers. |
+| MA6 | Start as in SS3. POST `matcher/tests/data/02eef911.webp` to `/v1/match?k=4`. | HTTP 200. 4 candidates with ranks 1 to 4, scores that do not increase, and a `wine` card each. Candidate 1 has the slug of `/v1/eval/predict` for the same image. |
+| MA7 | After SS3, POST to `/v1/match` without `k`, and with `k=0` and `k=21`. | Without `k`: 20 candidates. `k=0` and `k=21`: HTTP 422. |

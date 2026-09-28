@@ -1,4 +1,4 @@
-"""FastAPI entry point for the official evaluation matcher contract."""
+"""FastAPI entry point for the official evaluation contract and the ranked match API."""
 
 import asyncio
 from datetime import datetime, timezone
@@ -10,7 +10,7 @@ from time import perf_counter
 from typing import Literal
 import uuid
 
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
 from .audit import RequestArchive, safe_headers
@@ -27,6 +27,8 @@ DEFAULT_MAX_INFLIGHT_REQUESTS = 8
 DEFAULT_MAX_QUEUED_REQUESTS = 16
 DEFAULT_QUEUE_TIMEOUT_SECONDS = 0.25
 MULTIPART_OVERHEAD_BYTES = 64 * 1024
+DEFAULT_MATCH_K = 20
+MAX_MATCH_K = 20
 LOGGER = logging.getLogger("uvicorn.error")
 
 
@@ -39,6 +41,47 @@ class Prediction(BaseModel):
         description="Catalogue slug of the Top-1 match, or an empty string if no match exists.",
         examples=["massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16"],
     )
+
+
+class WineCard(BaseModel):
+    """The catalogue card of one wine from the matcher bundle."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(description="Wine name.")
+    page_url: str = Field(description="Catalogue page of the wine.")
+    producer: str | None = Field(description="Producer.")
+    category: str | None = Field(description="Catalogue category.")
+    region: str | None = Field(description="Region.")
+    color: str | None = Field(description="Colour.")
+    grapes: str | None = Field(description="Grape varieties.")
+    sugar: str | None = Field(
+        description="Sugar class that the slug or the name states, or null.")
+    image_url: str | None = Field(description="Official catalogue image, or null.")
+    qr_urls: list[str] = Field(description="Normalized QR code URLs of the wine.")
+
+
+class MatchCandidate(BaseModel):
+    """One ranked catalogue candidate."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    rank: int = Field(description="Rank of the candidate. Rank 1 is the best match.")
+    slug: str = Field(description="Catalogue slug of the wine.")
+    score: float = Field(
+        description="Pipeline score. The score does not increase from one rank to the next.")
+    wine: WineCard
+
+
+class MatchResult(BaseModel):
+    """Ranked catalogue candidates of one image."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    pipeline: str = Field(description="Name of the selected pipeline.")
+    latency_ms: float = Field(description="Processing time of the request in milliseconds.")
+    candidates: list[MatchCandidate] = Field(
+        description="Up to k candidates, the best first. An empty list means no match.")
 
 
 class Health(BaseModel):
@@ -93,6 +136,9 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             "name": "evaluation",
             "description": "Official matcher evaluation contract.",
         }, {
+            "name": "match",
+            "description": "Ranked wine candidates with catalogue cards.",
+        }, {
             "name": "service",
             "description": "Service readiness.",
         }],
@@ -125,35 +171,12 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         """Return readiness and the selected pipeline."""
         return Health(pipeline=matcher.pipeline)
 
-    @application.post(
-        "/v1/eval/predict",
-        response_model=Prediction,
-        response_description="The Top-1 catalogue match.",
-        summary="Predict one wine",
-        description=(
-            "Upload one JPEG, PNG, or WEBP image in the multipart field `image`. "
-            "The endpoint requires `Authorization: Bearer <token>` when "
-            "`matcher.token` is configured."
-        ),
-        operation_id="predict_image",
-        tags=["evaluation"],
-        responses={
-            400: {"description": "The uploaded image is empty."},
-            413: {"description": "The uploaded image exceeds the configured size limit."},
-            401: {"description": "The bearer token is missing or invalid."},
-            408: {"description": "The request upload exceeded its time limit."},
-            415: {"description": "The uploaded image format is not supported."},
-            503: {"description": "The matcher request queue is full."},
-        },
-    )
-    async def predict(
-        request: Request,
-        image: UploadFile = File(
-            ...,
-            description="Wine package or label image.",
-        ),
-    ) -> Prediction:
-        """Return the Top-1 slug for one multipart image."""
+    async def process_image(request, image, operation):
+        """Validate, archive, and process one image.
+
+        `operation(body)` returns the result and the response fields of the audit
+        record. Return the result and the duration in milliseconds.
+        """
         request_id = uuid.uuid4().hex
         received_at = datetime.now(timezone.utc)
         started_at = perf_counter()
@@ -194,7 +217,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             "pixels": image_info.pixels,
         }
         try:
-            slug = await asyncio.to_thread(matcher.predict, body)
+            result, response_data = await asyncio.to_thread(operation, body)
         except Exception as exc:
             completed_at = datetime.now(timezone.utc)
             duration_ms = round((perf_counter() - started_at) * 1000, 3)
@@ -214,11 +237,104 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         duration_ms = round((perf_counter() - started_at) * 1000, 3)
         record = _record(
             request_id, received_at, completed_at, duration_ms, client_ip,
-            request_data, image_data, {"status_code": 200, "slug": slug},
+            request_data, image_data, dict({"status_code": 200}, **response_data),
         )
         metadata_path = await asyncio.to_thread(archive.save_record, saved, record)
         LOGGER.info("matcher_request %s", _log_event(record, metadata_path))
+        return result, duration_ms
+
+    @application.post(
+        "/v1/eval/predict",
+        response_model=Prediction,
+        response_description="The Top-1 catalogue match.",
+        summary="Predict one wine",
+        description=(
+            "Upload one JPEG, PNG, or WEBP image in the multipart field `image`. "
+            "The endpoint requires `Authorization: Bearer <token>` when "
+            "`matcher.token` is configured."
+        ),
+        operation_id="predict_image",
+        tags=["evaluation"],
+        responses={
+            400: {"description": "The uploaded image is empty."},
+            413: {"description": "The uploaded image exceeds the configured size limit."},
+            401: {"description": "The bearer token is missing or invalid."},
+            408: {"description": "The request upload exceeded its time limit."},
+            415: {"description": "The uploaded image format is not supported."},
+            503: {"description": "The matcher request queue is full."},
+        },
+    )
+    async def predict(
+        request: Request,
+        image: UploadFile = File(
+            ...,
+            description="Wine package or label image.",
+        ),
+    ) -> Prediction:
+        """Return the Top-1 slug for one multipart image."""
+        def operation(body):
+            slug = matcher.predict(body)
+            return slug, {"slug": slug}
+
+        slug, _ = await process_image(request, image, operation)
         return Prediction(slug=slug)
+
+    @application.post(
+        "/v1/match",
+        response_model=MatchResult,
+        response_description="The ranked catalogue candidates.",
+        summary="Match one wine",
+        description=(
+            "Upload one JPEG, PNG, or WEBP image in the multipart field `image`. "
+            "The answer holds up to `k` ranked candidates with their catalogue cards. "
+            "The endpoint requires `Authorization: Bearer <token>` when "
+            "`matcher.token` is configured."
+        ),
+        operation_id="match_image",
+        tags=["match"],
+        responses={
+            400: {"description": "The uploaded image is empty."},
+            413: {"description": "The uploaded image exceeds the configured size limit."},
+            401: {"description": "The bearer token is missing or invalid."},
+            408: {"description": "The request upload exceeded its time limit."},
+            415: {"description": "The uploaded image format is not supported."},
+            503: {"description": "The matcher request queue is full, or the selected "
+                                 "pipeline has no wine cards."},
+        },
+    )
+    async def match(
+        request: Request,
+        image: UploadFile = File(
+            ...,
+            description="Wine package or label image.",
+        ),
+        k: int = Query(
+            DEFAULT_MATCH_K, ge=1, le=MAX_MATCH_K,
+            description="Maximum number of candidates.",
+        ),
+    ) -> MatchResult:
+        """Return up to `k` ranked candidates for one multipart image."""
+        cards = matcher.cards
+        if cards is None:
+            detail = ("the selected pipeline has no wine cards; it needs a bundle of "
+                      "format version 2")
+            _log_rejection(uuid.uuid4().hex, request.client.host if request.client else None,
+                           503, detail, perf_counter())
+            raise HTTPException(status_code=503, detail=detail)
+
+        def operation(body):
+            ranked = matcher.match(body, k)
+            return ranked, {"candidates": [slug for slug, _ in ranked]}
+
+        ranked, duration_ms = await process_image(request, image, operation)
+        return MatchResult(
+            pipeline=matcher.pipeline,
+            latency_ms=duration_ms,
+            candidates=[
+                MatchCandidate(rank=rank, slug=slug, score=score, wine=WineCard(**cards[slug]))
+                for rank, (slug, score) in enumerate(ranked, 1)
+            ],
+        )
 
     _configure_openapi(application)
     return application
@@ -288,6 +404,8 @@ def _log_event(record, metadata_path=None):
         "saved_image": record["image"]["saved_path"],
         "metadata_path": str(metadata_path) if metadata_path else None,
     }
+    if "candidates" in record["response"]:
+        event["candidates"] = record["response"]["candidates"]
     return json.dumps(event, ensure_ascii=False, separators=(",", ":"))
 
 
@@ -315,10 +433,11 @@ def _configure_openapi(application):
             "scheme": "bearer",
             "description": "Required only when matcher.token is configured.",
         }
-        schema["paths"]["/v1/eval/predict"]["post"]["security"] = [
-            {},
-            {"BearerAuth": []},
-        ]
+        for path in ("/v1/eval/predict", "/v1/match"):
+            schema["paths"][path]["post"]["security"] = [
+                {},
+                {"BearerAuth": []},
+            ]
         return schema
 
     application.openapi = matcher_openapi
