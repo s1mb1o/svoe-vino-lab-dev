@@ -5,8 +5,10 @@
 - Added `.github/workflows/matcher-tests.yml` for the complete matcher test suite. The
   job uses the self-hosted runner with the `docker` label and a disposable
   `python:3.11-slim` container. It retries the image pull, mounts the source read-only,
-  verifies the shell harness tools, installs the pinned dependencies, runs every test
-  that `unittest` discovers, and rejects a skipped test.
+  and invokes `matcher/tests/run_ci.sh`. The script verifies the shell harness tools,
+  installs the pinned dependencies, runs every test that `unittest` discovers, and
+  rejects a skipped test. The separate script prevents a nested shell heredoc from
+  producing a false-positive green job without running the test body.
 - Split the repository into the root `matcher/` component and the `workbench/`
   component (plan 73; owner message of 2026-09-28T11:29:26+0300). Every other visible
   root path moved into `workbench/`. Hidden Git, CI, and agent configuration stays at
