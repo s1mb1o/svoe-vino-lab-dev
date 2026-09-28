@@ -23,7 +23,8 @@
   100 of these photos, the Top-1 of the matcher equalled the Top-1 of the lab pipeline in
   100 cases. The CI run in `python:3.11-slim` on `test-docker-srv` did not start: the root
   disk of the CT is full. The GitHub runner `ct112-svoe-vino-lab-docker-1` is a different
-  host.
+  host. GitHub Actions run `36419543068` for commit `15a10d8` passed. It installed NumPy
+  2.4.6 on Python 3.11 and printed `matcher tests: discovered=47 run=47 skipped=0`.
 - Added `matcher/Dockerfile` and `matcher/.dockerignore` (owner messages of
   2026-09-28T13:25:39+0300 and 13:31:00). The image uses `python:3.11-slim`, runs as
   uid 1000, listens on port 8080, and has a health check on `/healthz`. It reads
