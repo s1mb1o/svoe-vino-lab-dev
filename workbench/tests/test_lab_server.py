@@ -808,8 +808,12 @@ class LabServerTest(unittest.TestCase):
 
     def test_config_resolves_the_database_against_rootdir(self):
         config = self.root / "config.yaml"
-        config.write_text("rootdir: %s\ndatabase_file: data/lab.sqlite3\n" % self.root)
+        config.write_text("rootdir: %s\ndatabase_file: data/lab.sqlite3\n"
+                          "qr_scanner:\n  endpoint: '{env:QR_SCANNER_ENDPOINT}'\n"
+                          % self.root)
         self.assertEqual(LAB.load_config(str(config)), str(self.root / "data" / "lab.sqlite3"))
+        raw, _db_path = LAB.read_config(str(config))
+        self.assertEqual(raw["qr_scanner"]["endpoint"], "{env:QR_SCANNER_ENDPOINT}")
         config.write_text("rootdir: %s\n" % self.root)
         with self.assertRaisesRegex(LAB.ConfigError, "database_file"):
             LAB.load_config(str(config))

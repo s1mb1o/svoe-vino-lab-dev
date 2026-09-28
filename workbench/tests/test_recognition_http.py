@@ -43,7 +43,9 @@ class Temporary(unittest.TestCase):
         class Worker:
             startup_ms = 100
             ready = {"build_ms": 60, "worker_import_ms": 40, "spec": {"id": "profile"},
-                     "python": "/fake/worker-python", "zxing_version": "fake", "pillow_version": "fake"}
+                     "python": "/fake/worker-python",
+                     "scanner": {"endpoint": "http://scanner.test", "engine": "auto"},
+                     "pillow_version": "fake"}
 
             def __init__(self, options, log, timeout):
                 self.options, self.closed = options, False

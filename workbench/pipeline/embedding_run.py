@@ -203,21 +203,23 @@ def cut_targets(views):
     return {segment_target(steps) for steps in views.values()} - {None}
 
 
-def view_input(image, steps, cuts):
+def view_input(image, steps, cuts, dis_segmenter=None):
     """Return (the model input of one view as an RGB image, None), or (None, the reason)
     when the view has no input. `cuts` is the answer of `cuts_of`. Raise
     `embeddings.ItemError`."""
     target = segment_target(steps)
     if target is None:
-        return embeddings.apply_steps(image, steps, None, _no_cut), None
+        return embeddings.apply_steps(
+            image, steps, None, _no_cut, dis_segmenter=dis_segmenter), None
     cut = cuts.get(target)
     if cut is None:
         return None, "SAM3 found no %s" % target
     box, processed = cut
-    return embeddings.apply_steps(image, steps, box, lambda p=processed: p), None
+    return embeddings.apply_steps(
+        image, steps, box, lambda p=processed: p, dis_segmenter=dis_segmenter), None
 
 
-def query_inputs(image, views, segmenter, scene_selection=False):
+def query_inputs(image, views, segmenter, scene_selection=False, dis_segmenter=None):
     """Return (view -> the model input as an RGB image, view -> the reason of a view with
     no input) of one opened photo. `views` maps a view to its steps. SAM3 cuts the photo
     only for a view whose first step is `segment`. A view with no `segment`, for example
@@ -227,7 +229,7 @@ def query_inputs(image, views, segmenter, scene_selection=False):
                    scene_selection=scene_selection)
     inputs, missing = {}, {}
     for view, steps in views.items():
-        prepared, reason = view_input(image, steps, cuts)
+        prepared, reason = view_input(image, steps, cuts, dis_segmenter)
         if prepared is None:
             missing[view] = reason
         else:
@@ -408,7 +410,7 @@ class EmbeddingBackend:
     the steps of the test photo of that pipeline; None means the steps of the entry."""
 
     def __init__(self, embedding, catalogue, model, segmenter, top_k=DEFAULT_TOP_K,
-                 name=None, views=None, scene_selection=False):
+                 name=None, views=None, scene_selection=False, dis_segmenter=None):
         if top_k < 1:
             raise ValueError("top_k MUST be 1 or more")
         self.embedding = embedding
@@ -420,6 +422,7 @@ class EmbeddingBackend:
         # A view of the photo ranks the catalogue vectors of the same view of the entry.
         self.views = views or embedding.views
         self.scene_selection = scene_selection
+        self.dis_segmenter = dis_segmenter
         # The backend `local` holds one model in the memory of this machine, so it takes
         # one request at a time.
         self._lock = threading.Lock() if embedding.backend == "local" else None
@@ -466,7 +469,8 @@ class EmbeddingBackend:
             sent, missing = {}, {}
             for view, steps in self.views.items():
                 with trace.step("view", view=view) as step:
-                    prepared, reason = view_input(image, steps, cuts)
+                    prepared, reason = view_input(
+                        image, steps, cuts, self.dis_segmenter)
                     if prepared is None:
                         missing[view] = step["skipped"] = reason
                         continue
@@ -519,7 +523,8 @@ def find_pipeline(name, config_path=embeddings.CONFIG_PATH):
 
 def build_backend(entry, db_path, top_k=DEFAULT_TOP_K,
                   make_model=build_embeddings.make_backend, segmenter=None, name=None,
-                  views=None, scene_selection=False):
+                  views=None, scene_selection=False,
+                  make_dis=build_embeddings.make_dis_segmenter_for_views):
     """Return the backend of one embedding entry, for `benchmark.run_benchmark`. Raise
     `embeddings.ConfigError`. `segmenter` is the SAM3 client; None means
     `derive.SAM3_ENDPOINT`. `name` is the name of the pipeline of the run; None means the
@@ -530,9 +535,11 @@ def build_backend(entry, db_path, top_k=DEFAULT_TOP_K,
                                      "alone" % (entry.name, entry.backend, " and ".join(BACKENDS)))
     catalogue = Catalogue(entry, db_path)
     model = make_model(entry)
+    effective_views = views or entry.views
+    dis_segmenter = make_dis(effective_views)
     return EmbeddingBackend(entry, catalogue, model,
                             Sam3Once(segmenter or derive.Sam3Client()), top_k, name, views,
-                            scene_selection)
+                            scene_selection, dis_segmenter)
 
 
 def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
@@ -560,8 +567,9 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
         backend = cluster_rerank.ClusterRerank(backend, pipeline.rerank, pipeline.embedding,
                                                config_path, settings.db_path)
     if getattr(pipeline, "barcode", None) is not None:
-        import barcode  # noqa: E402  (zxing-cpp, on demand)
-        backend = barcode.CodeFirst(backend, pipeline.barcode, settings.db_path)
+        import barcode  # noqa: E402  (HTTP scanner, on demand)
+        backend = barcode.CodeFirst(backend, pipeline.barcode, settings.db_path,
+                                    scanner=getattr(pipeline, "scanner", None))
     return backend
 
 
@@ -574,15 +582,17 @@ def model_inputs(spec, path, candidates=None):
     code lookup (plan 42), so the photo has no model input."""
     first = (candidates or [None])[0]
     if isinstance(first, dict) and first.get("code"):
-        import barcode  # noqa: E402  (the note alone; no zxing-cpp)
+        import barcode  # noqa: E402  (the note alone; no scanner call)
         return {"inputs": [], "notes": [barcode.answer_note(first)]}
     views = spec.get("views") or {}
     endpoint = (spec.get("sam3") or {}).get("endpoint") or derive.SAM3_ENDPOINT
     try:
         image, _ = derive.open_image(path)
+        dis_segmenter = build_embeddings.make_dis_segmenter_for_views(views)
         inputs, missing = query_inputs(image, views, CachedSam3(endpoint),
-                                       bool(spec.get("scene_selection")))
-    except (OSError, derive.Sam3Unavailable, embeddings.ItemError) as exc:
+                                       bool(spec.get("scene_selection")), dis_segmenter)
+    except (OSError, ImportError, ValueError, derive.Sam3Unavailable,
+            embeddings.ItemError) as exc:
         return {"inputs": [], "notes": ["The model input cannot be made again: %s" % exc]}
     items = []
     for view, prepared in inputs.items():
@@ -627,7 +637,7 @@ def candidate_items(spec, cand, db_path):
     code lookup (the key `code`, plan 42) gets no item and one note."""
     import embedding_routes  # here alone: the URL of a prepared image
     if cand.get("code"):
-        import barcode  # noqa: E402  (the note alone; no zxing-cpp)
+        import barcode  # noqa: E402  (the note alone; no scanner call)
         return {"score": cand.get("score"), "views": {}, "items": [],
                 "notes": [barcode.candidate_note(cand)]}
     name = spec.get("embedding")

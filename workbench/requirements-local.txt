@@ -10,10 +10,8 @@
 # processors of `transformers` 5 need `torchvision`. The model files go to the
 # Hugging Face cache, `~/.cache/huggingface/`.
 #
-# The key `barcode` of a pipeline needs `zxing-cpp` (plan 42). Keep 2.3.0: 3.1.1 can stall
-# on an excise mark beside an EAN (svoe-vino-matcher). 2.3.0 has no wheel for Python 3.14,
-# so pip builds it from the source; this needs cmake and a C++ compiler:
-#   ~/.venvs/svoe-vino-lab/bin/pip install --no-binary zxing-cpp zxing-cpp==2.3.0
+# The key `barcode` of a pipeline and additional-image uploads use the HTTP scanner of
+# `qr_scanner` in config.yaml. The workbench does not load zxing-cpp directly.
 pyyaml>=6.0
 numpy>=2.0
 pillow>=10.0
@@ -21,4 +19,4 @@ requests>=2.31
 torch>=2.11
 torchvision>=0.26
 transformers>=5.5
-zxing-cpp==2.3.0
+ai-edge-litert>=2.2,<2.3

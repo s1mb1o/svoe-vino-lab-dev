@@ -14,7 +14,6 @@ import math
 import sys
 import threading
 import time
-import types
 from collections import Counter, deque
 from pathlib import Path
 
@@ -84,24 +83,33 @@ def load_photos(run_dir, images_dir):
 
 
 class MeasuredDecoder(barcode.Decoder):
-    """Count native calls, including speculative parallel work and caught errors."""
+    """Count scanner calls, including speculative parallel work and caught errors."""
 
     def __init__(self, options):
         super().__init__(options)
         self.calls = self.decode_errors = 0
-        lock, native = threading.Lock(), self.zxing.read_barcodes
+        self._measure_lock = threading.Lock()
+        self._instrument()
+
+    def _instrument(self):
+        native = self.scanner.decode
 
         def measured(*args, **kwargs):
-            with lock:
+            with self._measure_lock:
                 self.calls += 1
             try:
                 return native(*args, **kwargs)
             except Exception:
-                with lock:
+                with self._measure_lock:
                     self.decode_errors += 1
                 raise
 
-        self.zxing = types.SimpleNamespace(read_barcodes=measured)
+        self.scanner.decode = measured
+
+    def configure(self, scanner):
+        super().configure(scanner)
+        self._instrument()
+        return self
 
 
 def scan_stages(decoder, image, lookup, stages, pool=None):
@@ -147,7 +155,7 @@ def signature(hit):
 
 def measure_one(row, variant, options, lookup, pool=None, factory=MeasuredDecoder):
     decoder = factory(options)
-    if variant == "whole1":
+    if variant == "whole1" and hasattr(decoder, "binarizers"):
         decoder.binarizers = decoder.binarizers[:1]
     started = time.perf_counter()
     found, hit, cached, error = [], None, False, None
@@ -342,13 +350,17 @@ def main(argv=None):
             raise ValueError("output MUST be separate from production cache and baseline files")
         options = barcode.check_options({k: v for k, v in meta["backend"]["barcode"].items()
                                          if k in barcode.DEFAULTS})
+        scanner = meta["backend"]["barcode"].get("scanner")
+        if not isinstance(scanner, dict):
+            raise ValueError("baseline has no HTTP scanner identity")
+        factory = lambda configured: MeasuredDecoder(configured).configure(scanner)
         rows = load_photos(args.baseline_run, args.images_dir)
         if len(rows) != meta["answered"] or len(rows) != meta["query_set"]["total"]:
             raise ValueError("baseline does not hold a completed result for every query")
         lookup = barcode.CodeLookup.load(meta["options"]["database"])
         identity = {"revision": REVISION, "baseline": str(args.baseline_run.resolve()),
                     "images_dir": str(args.images_dir.resolve()), "options": options,
-                    "zxing_version": barcode.version(barcode.ENGINE), "pillow": barcode.PILLOW_VERSION,
+                    "scanner": scanner, "pillow": barcode.PILLOW_VERSION,
                     "production_cache_revision": barcode.CACHE_REVISION,
                     "files": {name: hashlib.sha256((args.baseline_run / name).read_bytes()).hexdigest()
                               for name in ("run.json", "queries.jsonl", "results.jsonl")},
@@ -370,7 +382,8 @@ def main(argv=None):
                 raise ValueError("stored photo digest differs for %s" % row["query_id"])
         for variant in variants:
             require_finished(args.baseline_run, args.baseline_log)
-            summary = run_variant(variant, rows, options, lookup, output, args.resume)
+            summary = run_variant(variant, rows, options, lookup, output, args.resume,
+                                  factory)
             print(json.dumps({"variant": variant, "summary": summary}), flush=True)
         return 0
     except (OSError, ValueError, KeyError) as exc:

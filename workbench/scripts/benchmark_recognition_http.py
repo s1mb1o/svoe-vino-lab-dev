@@ -93,7 +93,7 @@ class RouteAdapter:
                                   backend_initial_build_ms=ready["build_ms"],
                                   worker_import_ms=ready["worker_import_ms"],
                                   worker_python=ready.get("python", python),
-                                  worker_zxing_version=ready.get("zxing_version"),
+                                  worker_scanner=ready.get("scanner"),
                                   worker_pillow_version=ready.get("pillow_version"),
                                   worker_request_ms=request_ms, cleanup_ms=cleanup_ms,
                                   ask_wall_ms=raw["ask_wall_ms"])
@@ -252,7 +252,7 @@ def worker_identity(config_path, profile):
     python = run_jobs.interpreter(settings, settings.find(profile))
     code = ("import importlib.metadata as m, json, sys; "
             "print(json.dumps({'python': sys.executable, 'python_version': sys.version, "
-            "'zxing': m.version('zxing-cpp'), 'pillow': m.version('Pillow')}))")
+            "'pillow': m.version('Pillow')}))")
     done = subprocess.run([python, "-c", code], stdin=subprocess.DEVNULL, capture_output=True,
                           text=True, timeout=30, cwd=ROOT)
     if done.returncode:

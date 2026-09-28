@@ -487,6 +487,10 @@ def main(argv=None):
             if output == protected or output in protected.parents or protected in output.parents:
                 raise ValueError("output MUST be separate from source images, runs, stage 1 and production cache")
         options = base.barcode.check_options({k: v for k, v in meta["backend"]["barcode"].items() if k in base.barcode.DEFAULTS})
+        scanner = meta["backend"]["barcode"].get("scanner")
+        if not isinstance(scanner, dict):
+            raise ValueError("baseline has no HTTP scanner identity")
+        factory = lambda configured: base.MeasuredDecoder(configured).configure(scanner)
         lookup = base.barcode.CodeLookup.load(meta["options"]["database"])
         lookup_snapshot = require_lookup(lookup, gate["manifest"])
         cache_root = Path(model_cache.ROOT) / derive.SAM3_MODEL
@@ -497,7 +501,7 @@ def main(argv=None):
                     "query_ids": [r["query_id"] for r in rows], "variants": variants,
                     "images_dir": str(args.images_dir.resolve()), "options": options,
                     "sources": {str(p.relative_to(base.ROOT)): digest_file(p) for p in sources},
-                    "zxing": base.barcode.version(base.barcode.ENGINE), "pillow": base.barcode.PILLOW_VERSION,
+                    "scanner": scanner, "pillow": base.barcode.PILLOW_VERSION,
                     "sam3": {"endpoint": os.environ.get("SAM3_ENDPOINT") or derive.SAM3_ENDPOINT, "texts": alternatives.DETECT_TEXTS,
                              "max_side": derive.SAM3_MAX_SIDE, "label_rule": alternatives.SETTINGS_LABEL},
                     "sam3_cache_root": str(cache_root.resolve()),
@@ -540,7 +544,8 @@ def main(argv=None):
                 with path.open("a" if args.resume else "w") as stream:
                     for digest, record in prepared.items():
                         if digest not in by_digest:
-                            by_digest[digest] = scan_prepared(record, variant, options, lookup)
+                            by_digest[digest] = scan_prepared(record, variant, options, lookup,
+                                                              factory)
                             stream.write(json.dumps(by_digest[digest], ensure_ascii=False) + "\n")
                             stream.flush()
                             if len(by_digest) % 25 == 0:

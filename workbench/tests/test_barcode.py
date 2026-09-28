@@ -2,9 +2,8 @@
 `barcode` of `pipeline/pipelines.py`, and the notes of a code answer in
 `pipeline/embedding_run.py`.
 
-A fake decoder and a fake embedding backend test the lookup and the answers. The tests of
-the real decoder need zxing-cpp; they are skipped in a Python with no zxing-cpp. Run them
-with `embedding_python`, for example `~/.venvs/svoe-vino-lab/bin/python`.
+A fake HTTP scanner and a fake embedding backend test the lookup and the answers. No test
+calls the scanner service.
 """
 import json
 import sys
@@ -12,7 +11,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,11 +20,6 @@ import embedding_run  # noqa: E402
 import embeddings  # noqa: E402
 import labdb  # noqa: E402
 import pipelines  # noqa: E402
-
-try:
-    import zxingcpp
-except ModuleNotFoundError:
-    zxingcpp = None
 
 
 def options(**keys):
@@ -79,6 +72,7 @@ class PipelineKeyTest(unittest.TestCase):
 
     def load(self, *entries):
         config = {"rootdir": str(self.root), "database_file": "lab.sqlite3",
+                  "qr_scanner": {"endpoint": "{env:QR_SCANNER_ENDPOINT}"},
                   "embeddings": [EMBED], "pipeline": list(entries)}
         self.path.write_text(json.dumps(config), encoding="utf-8")
         return pipelines.load(str(self.path))
@@ -89,12 +83,22 @@ class PipelineKeyTest(unittest.TestCase):
                               "barcode": {"upscale": True}})
         self.assertIsNone(settings.find("plain").barcode)
         self.assertEqual(settings.find("codes").barcode, options(upscale=True))
+        self.assertEqual(settings.find("codes").scanner,
+                         {"endpoint": "{env:QR_SCANNER_ENDPOINT}", "engine": "auto"})
 
     def test_a_bad_barcode_key_keeps_its_error(self):
         settings = self.load({"name": "codes", "backend": "embedding", "embedding": "gw",
                               "barcode": {"formats": ["UPCE"]}})
         with self.assertRaisesRegex(embeddings.ConfigError, "unknown format UPCE"):
             settings.find("codes")
+
+    def test_a_bad_top_level_scanner_configuration_stops_the_load(self):
+        config = {"rootdir": str(self.root), "database_file": "lab.sqlite3",
+                  "qr_scanner": {"endpoint": "QR_SCANNER_ENDPOINT"},
+                  "embeddings": [EMBED], "pipeline": []}
+        self.path.write_text(json.dumps(config), encoding="utf-8")
+        with self.assertRaisesRegex(embeddings.ConfigError, "qr_scanner.endpoint"):
+            pipelines.load(str(self.path))
 
     def test_the_remote_backend_takes_no_key_barcode(self):
         settings = self.load({"name": "remote", "backend": "svoe-vino-ru",
@@ -106,7 +110,8 @@ class PipelineKeyTest(unittest.TestCase):
         settings = pipelines.load(str(ROOT / "config.yaml"))
         entries = {name: (pipeline, error) for name, pipeline, error in settings.entries}
         plain = [name for name, (pipeline, error) in entries.items()
-                 if pipeline and pipeline.backend == "embedding" and pipeline.barcode is None]
+                 if (pipeline and pipeline.backend == "embedding" and pipeline.barcode is None
+                     and not name.startswith("android-"))]
         self.assertEqual(len(plain), 26)
         for name in plain:
             with self.subTest(name=name):
@@ -116,7 +121,10 @@ class PipelineKeyTest(unittest.TestCase):
                 self.assertEqual(twin.views, entries[name][0].views)
                 self.assertEqual(twin.barcode, options(
                     formats=["EAN13", "Code128"], code128_gtin_only=True, qr=True,
-                    tile_scan=True, max_side=1600, upscale=True))
+                    tile_scan=False, max_side=1600, upscale=True))
+                self.assertEqual(twin.scanner,
+                                 {"endpoint": "{env:QR_SCANNER_ENDPOINT}",
+                                  "engine": "zxing-cpp"})
 
 
 class LookupTest(unittest.TestCase):
@@ -285,7 +293,7 @@ class CodeFirstTest(unittest.TestCase):
     def test_the_spec_records_the_options_and_the_codes(self):
         backend, _ = self.backend(FakeDecoder())
         self.assertEqual(backend.spec["kind"], "embedding")
-        self.assertEqual(backend.spec["barcode"]["engine"], "zxing-cpp")
+        self.assertEqual(backend.spec["barcode"]["engine"], "qr-scanner")
         self.assertEqual(backend.spec["barcode"]["codes"], {"gtin": 1, "qr_url": 0})
         self.assertEqual(backend.spec["barcode"]["max_side"], 1600)
 
@@ -306,74 +314,52 @@ class CodeAnswerNotesTest(unittest.TestCase):
         self.assertIn("The code lookup gave this wine", answer["notes"][0])
 
 
-L = ["0001101", "0011001", "0010011", "0111101", "0100011",
-     "0110001", "0101111", "0111011", "0110111", "0001011"]
-G = ["0100111", "0110011", "0011011", "0100001", "0011101",
-     "0111001", "0000101", "0010001", "0001001", "0010111"]
-R = ["1110010", "1100110", "1101100", "1000010", "1011100",
-     "1001110", "1010000", "1000100", "1001000", "1110100"]
-PARITY = ["LLLLLL", "LLGLGG", "LLGGLG", "LLGGGL", "LGLLGG",
-          "LGGLLG", "LGGGLL", "LGLGLG", "LGLGGL", "LGGLGL"]
+class Scanner:
+    endpoint = "http://scanner.test"
+    endpoint_reference = "{env:QR_SCANNER_ENDPOINT}"
+    engine = "auto"
+
+    def __init__(self, found):
+        self.found = found
+        self.calls = []
+
+    def decode(self, data, name=None):
+        self.calls.append((data, name))
+        return list(self.found)
 
 
-def ean13(code, module=4, height=220, quiet=12):
-    """Draw a valid EAN-13, as `svoe-vino-matcher/scripts/barcode_control.py` does. The
-    writer of zxing-cpp is not the control: the test MUST NOT trust the code under test."""
-    first, left, right = int(code[0]), code[1:7], code[7:]
-    bits = "101"
-    for parity, digit in zip(PARITY[first], left):
-        bits += (L if parity == "L" else G)[int(digit)]
-    bits += "01010" + "".join(R[int(digit)] for digit in right) + "101"
-    pixels = np.full((height, (len(bits) + 2 * quiet) * module), 255, dtype=np.uint8)
-    for number, bit in enumerate(bits):
-        if bit == "1":
-            x = (quiet + number) * module
-            pixels[20:height - 20, x:x + module] = 0
-    return Image.fromarray(pixels).convert("RGB")
-
-
-@unittest.skipIf(zxingcpp is None, "zxing-cpp is not installed; use embedding_python")
 class DecoderTest(unittest.TestCase):
-    """The control of the decoder: it MUST read a code that is known to be there."""
+    """The decoder sends one prepared image to the HTTP scanner and filters its answer."""
 
-    def setUp(self):
-        self.lookup = barcode.CodeLookup({("gtin", "04600682000181"): ["wine-a"],
-                                          ("qr_url", "https://producer.example/wine/1"):
-                                              ["wine-q"]})
+    def decoder(self, found, **keys):
+        decoder = barcode.Decoder(options(**keys))
+        decoder.scanner = Scanner(found)
+        return decoder
 
-    def test_the_decoder_reads_drawn_ean13_codes(self):
-        decoder = barcode.Decoder(options(tile_scan=False))
-        for code in ("4600682000181", "5901234123457", "9780201379624"):
-            with self.subTest(code=code):
-                found, _hit = decoder.scan(ean13(code), barcode.CodeLookup({}))
-                self.assertIn({"kind": "barcode", "format": "EAN13", "text": code}, found)
+    def test_one_whole_image_request_finds_a_gtin_and_a_qr_url(self):
+        lookup = barcode.CodeLookup({("gtin", "04600682000181"): ["wine-a"],
+                                     ("qr_url", "https://producer.example/wine/1"):
+                                         ["wine-q"]})
+        decoder = self.decoder([
+            {"kind": "barcode", "format": "EAN-13", "text": "4600682000181"},
+            {"kind": "qr_code", "format": "QR Code",
+             "text": "https://PRODUCER.example/wine/1"},
+        ])
+        found, hit = decoder.scan(Image.new("RGB", (40, 80), "white"), lookup)
+        self.assertEqual((len(found), hit["slugs"]), (2, ["wine-a"]))
+        self.assertEqual(len(decoder.scanner.calls), 1)
+        self.assertEqual(decoder.scanner.calls[0][1], "query.png")
 
-    def test_a_drawn_ean13_on_a_photo_is_a_hit(self):
-        photo = Image.new("RGB", (1200, 900), (180, 150, 120))
-        photo.paste(ean13("4600682000181", module=3), (700, 500))
-        found, hit = barcode.Decoder(options()).scan(photo, self.lookup)
-        self.assertEqual(hit["slugs"], ["wine-a"])
-        self.assertEqual(hit["code"], "04600682000181")
-
-    def test_a_qr_code_is_a_hit(self):
-        code = zxingcpp.write_barcode(zxingcpp.BarcodeFormat.QRCode,
-                                      "https://PRODUCER.example/wine/1", 300, 300)
-        image = Image.fromarray(np.asarray(code)).convert("RGB")
-        _found, hit = barcode.Decoder(options()).scan(image, self.lookup)
-        self.assertEqual((hit["source"], hit["slugs"]), ("qr_url", ["wine-q"]))
-
-    def test_code128_is_kept_only_as_a_gtin13(self):
-        decoder = barcode.Decoder(options(formats=["EAN13", "Code128"],
-                                          code128_gtin_only=True, tile_scan=False))
-
-        def read(text):
-            code = zxingcpp.write_barcode(zxingcpp.BarcodeFormat.Code128, text, 400, 160)
-            image = Image.fromarray(np.asarray(code)).convert("RGB")
-            return [item["text"] for item in decoder.read(image)]
-
-        self.assertEqual(read("4630171630094"), ["4630171630094", "4630171630094"])
-        self.assertEqual(read("4630171630095"), [])
-        self.assertEqual(read("LOT-2021-0094"), [])
+    def test_formats_qr_and_code128_gtin_filter_apply_to_the_service_answer(self):
+        decoder = self.decoder([
+            {"kind": "barcode", "format": "EAN-13", "text": "4600682000181"},
+            {"kind": "barcode", "format": "Code 128", "text": "4630171630094"},
+            {"kind": "barcode", "format": "Code 128", "text": "LOT-1"},
+            {"kind": "qr_code", "format": "QR Code", "text": "https://example.test"},
+        ], formats=["Code128"], code128_gtin_only=True, qr=False)
+        found = decoder.read(Image.new("RGB", (40, 80), "white"))
+        self.assertEqual(found, [
+            {"kind": "barcode", "format": "Code 128", "text": "4630171630094"}])
 
     def test_upscale_scales_a_small_photo_up_to_max_side(self):
         small = Image.new("RGB", (600, 800), "white")

@@ -35,6 +35,7 @@ from PIL import Image
 import derive
 import labdb
 import alternatives
+import dis_litert
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(ROOT, "config.yaml")
@@ -58,10 +59,13 @@ REQUEST_KEYS = ("model", "input")
 # step -> {option: default}. None marks a required option.
 STEP_OPTIONS = {
     "segment": {"target": None},
+    "segment_dis": {"model": None, "revision": None, "threshold": 0.5, "margin": 0.04},
     "remove_background": {},
     "white_background": {},
+    "square_on_white": {},
     "resize": {"max_size": None, "aspect": "keep", "upscale": False},
 }
+SEGMENT_STEPS = ("segment", "segment_dis")
 TARGETS = ("package", "label")
 ASPECTS = ("keep", "ignore")
 MIN_SIZE, MAX_SIZE = 16, 4096
@@ -149,6 +153,18 @@ def check_steps(view, spec, segment_first=True):
             step[option] = raw.get(option, default)
         if kind == "segment" and step["target"] not in TARGETS:
             raise ConfigError("%s: target MUST be one of: %s" % (where, ", ".join(TARGETS)))
+        if kind == "segment_dis":
+            for option in ("model", "revision"):
+                if not isinstance(step[option], str) or not step[option].strip():
+                    raise ConfigError("%s: %s MUST be a non-empty string" % (where, option))
+            for option in ("threshold", "margin"):
+                value = step[option]
+                if isinstance(value, bool) or not isinstance(value, (int, float)):
+                    raise ConfigError("%s: %s MUST be a number" % (where, option))
+            if not 0 < step["threshold"] < 1:
+                raise ConfigError("%s: threshold MUST be between 0 and 1" % where)
+            if not 0 <= step["margin"] <= 0.5:
+                raise ConfigError("%s: margin MUST be from 0 to 0.5" % where)
         if kind == "resize":
             size = step["max_size"]
             if isinstance(size, bool) or not isinstance(size, int) or not (
@@ -165,8 +181,11 @@ def check_steps(view, spec, segment_first=True):
     if repeated:
         raise ConfigError("view %s: a step MAY occur one time; repeated: %s"
                           % (view, ", ".join(repeated)))
-    if kinds[0] != "segment" and (segment_first or "segment" in kinds):
-        raise ConfigError("view %s: the first step MUST be `segment`" % view)
+    segment_kinds = [kind for kind in kinds if kind in SEGMENT_STEPS]
+    if kinds[0] not in SEGMENT_STEPS and (segment_first or segment_kinds):
+        raise ConfigError("view %s: the first step MUST be `segment` or `segment_dis`" % view)
+    if len(segment_kinds) > 1:
+        raise ConfigError("view %s: one segmentation step is allowed" % view)
     if "remove_background" in kinds:
         position = kinds.index("remove_background")
         if position != 1 or kinds[0] != "segment":
@@ -459,7 +478,8 @@ def plan_items(embedding, sources):
             steps = view_steps if role == "full" else []
             if not_applicable_reason(embedding, source, view):
                 continue
-            cut = source["cuts"].get(steps[0]["target"]) if steps else None
+            cut = (source["cuts"].get(steps[0]["target"])
+                   if steps and steps[0]["step"] == "segment" else None)
             items[(digest, view)] = {
                 "source_sha256": digest, "view": view, "role": role, "steps": steps,
                 "cut": cut,
@@ -509,10 +529,10 @@ def resize(image, step):
     return image.resize(target, Image.Resampling.LANCZOS)
 
 
-def prepare(item, source_path):
+def prepare(item, source_path, dis_segmenter=None):
     """Return the model input of one item as an RGB image. Raise ItemError."""
     steps, cut = item["steps"], item["cut"]
-    if steps and cut is None:
+    if steps and steps[0]["step"] == "segment" and cut is None:
         raise ItemError(NO_CUT[steps[0]["target"]])
     try:
         image, _ = derive.open_image(source_path)
@@ -525,10 +545,10 @@ def prepare(item, source_path):
         except OSError as exc:
             raise ItemError("cannot read the processed file %s: %s" % (cut["path"], exc))
 
-    return apply_steps(image, steps, cut["box"] if cut else None, processed)
+    return apply_steps(image, steps, cut["box"] if cut else None, processed, dis_segmenter)
 
 
-def apply_steps(image, steps, box, processed):
+def apply_steps(image, steps, box, processed, dis_segmenter=None):
     """Apply the steps of one view to an opened source image. Return an RGB image. Raise
     ItemError.
 
@@ -545,6 +565,14 @@ def apply_steps(image, steps, box, processed):
                 raise ItemError("the box %s of the processed file is outside the source "
                                 "of %d x %d pixels" % (box, image.width, image.height))
             image = image.crop(box)
+        elif kind == "segment_dis":
+            if dis_segmenter is None:
+                raise ItemError("the DIS runtime is not available")
+            try:
+                image = dis_segmenter.segment(
+                    image, threshold=step["threshold"], margin=step["margin"])
+            except dis_litert.DisError as exc:
+                raise ItemError(str(exc)) from exc
         elif kind == "remove_background":
             cut = processed()
             if cut.size != image.size:
@@ -553,6 +581,8 @@ def apply_steps(image, steps, box, processed):
             image = cut
         elif kind == "white_background":
             image = on_white(image)
+        elif kind == "square_on_white":
+            image = dis_litert.square_on_white(image)
         elif kind == "resize":
             image = resize(image, step)
     if derive.has_transparency(image):

@@ -23,6 +23,8 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
     POST /api/testset-upload?set=<name>&place=<slug>&name=<file name>
                                   the body is the bytes of one image; place a slug,
                                   __null__, or __drawer__
+    POST /api/testset-fetch       {set, place, url}; safely fetch an image dragged from
+                                  another browser page and add it to the place
     GET  /api/testset-from-run?id=<run id>
                                   the dialog `New testset…` of `/runs`: the set of the
                                   run, the proposed name, the counts of the misses
@@ -39,12 +41,14 @@ import urllib.parse
 from contextlib import closing
 
 import lab_pages
+import remote_images
 import testset_from_run
 import testsets
 
 PAGE_ROUTE = "/testset"
 API = "/api/testset"
 UPLOAD = "/api/testset-upload"
+FETCH = "/api/testset-fetch"
 FROM_RUN = "/api/testset-from-run"
 NEW = "/api/testset-new"
 JSON_TYPE = "application/json; charset=utf-8"
@@ -66,6 +70,8 @@ WRITES = {
     "/api/testset-move": (testsets.move_photo, ("set", "place", "file", "to")),
     # The fields of an upload come from the query; `data` is the body. Read `_upload_body`.
     UPLOAD: (testsets.upload_photo, ("set", "place", "data", "name")),
+    # `respond` fetches the address before the write transaction and adds `data` and `name`.
+    FETCH: (testsets.upload_photo, ("set", "place", "data", "name")),
     NEW: (testsets.create_set, ("name",)),
     # `respond` puts the directory of the runs of the server before these keys.
     FROM_RUN: (testset_from_run.build, ("run", "misses", "name")),
@@ -155,6 +161,14 @@ def respond(server, method, path, read_body, open_database, card_images):
         body, error = _body(read_body)
     if error:
         return error
+    source_url = None
+    if route == FETCH:
+        source_url = body.get("url")
+        try:
+            data, name = remote_images.fetch_image(source_url, testsets.UPLOAD_MAX)
+        except remote_images.RemoteImageError as exc:
+            return _error(400, str(exc))
+        body = dict(body, data=data, name=name)
     write, keys = WRITES[route]
     args = [body.get(key) for key in keys]
     if route == FROM_RUN:
@@ -173,4 +187,6 @@ def respond(server, method, path, read_body, open_database, card_images):
         except BaseException:
             conn.execute("ROLLBACK")
             raise
+    if source_url is not None:
+        answer["source_url"] = source_url
     return _json(200, answer)

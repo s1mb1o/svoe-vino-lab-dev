@@ -204,7 +204,8 @@ def main(argv=None):
             with barcode_cache(cache):
                 started = time.perf_counter()
                 backend = embedding_run.build_pipeline_backend(pipeline, settings.config_path)
-                backend.decoder = scans.MeasuredDecoder(pipeline.barcode)
+                backend.decoder = scans.MeasuredDecoder(pipeline.barcode).configure(
+                    pipeline.scanner)
                 build_ms = round((time.perf_counter() - started) * 1000, 3)
                 run_dir, _ = benchmark.run_benchmark(
                     settings.db_path, set_name, backend, str(ROOT / "runs"),

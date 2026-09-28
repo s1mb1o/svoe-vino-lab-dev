@@ -18,32 +18,25 @@ first (`first`). The other wines stay below them. The cluster re-rank compares o
 wines of the GTIN (`cluster_rerank.py`).
 
 `Decoder.scan_file` stores decoded scan stages in `data/cache/models/barcode/`. A cache hit
-repeats the wine lookup. An incomplete scan resumes when no stored code gives a unique
-hit. The cache key includes the source bytes, options, library versions, and scan
-revision. `model_cache.READ` controls cache reads. Decoder failures are not stored.
+repeats the wine lookup. The cache key includes the source bytes, options, scanner
+endpoint and engine, Pillow version, and scan revision. `model_cache.READ` controls cache
+reads. Scanner failures are not stored.
 
-The decoder is a copy of `svoe-vino-matcher/svm/pipelines/barcode.py`. It uses zxing-cpp
-2.3.0; zxing-cpp 3.1.1 can stall on an excise mark beside an EAN. It scans the whole photo
-first, with two binarizers. When the whole photo gives no hit, it scans overlapping tiles
-at two scales. The differences from the matcher:
+The decoder sends the query image to the shared QR/barcode service through
+`qr_barcode.Client`: `POST <qr_scanner.endpoint>/scan`. The endpoint and engine come from
+the top-level key `qr_scanner` of `config.yaml`; an endpoint MAY be
+`{env:QR_SCANNER_ENDPOINT}`. The production configuration selects the service's named
+`zxing-cpp` engine and sends the whole query once; it does not repeat remote calls for
+local tiles. The lookup behavior differs from the matcher:
 - The lookup reads `wine_code` (`codes.py`), not `code-map.json`. A decoded product code
   becomes its GTIN-14 with `codes.clean_gtin`, and a QR text its normal URL with
   `codes.clean_qr_url`. A value that is not valid for its kind gives no lookup.
-- The formats have no `UPCE`: zxing-cpp gives the 8 compressed digits of a UPC-E, and
-  these are not a GTIN.
-- There is no OpenCV fallback. The control of the matcher read 0 of 3 EAN-13 with OpenCV
-  (`svoe-vino-matcher/docs/barcode-decoder-measurement.md`), and zxing-cpp reads QR.
-
-zxing-cpp is a package of `requirements-local.txt`. `Decoder` imports it, so the lab
-server can check the options with no zxing-cpp. zxing-cpp 2.3.0 has no wheel for Python
-3.14; install it with `pip install --no-binary zxing-cpp zxing-cpp==2.3.0`.
 """
 import io
 import math
 import threading
 import time
 from contextlib import closing
-from importlib.metadata import version
 
 from PIL import Image, __version__ as PILLOW_VERSION
 
@@ -51,17 +44,18 @@ import codes
 import derive
 import embeddings
 import model_cache
+import qr_barcode
 from embeddings import ConfigError
 
-# The zxing-cpp formats of a product code that can hold a GTIN.
+# The scanner-service formats of a product code that can hold a GTIN.
 FORMATS = ("EAN13", "EAN8", "UPCA", "Code128")
-QR_FORMAT = "QRCode"
-# option -> default. The defaults are the defaults of the matcher, less `UPCE`.
+# option -> default. The project configuration turns the old local tile strategy off:
+# the remote service already scans the whole image with its own ensemble and retries.
 DEFAULTS = {"formats": list(FORMATS), "qr": True, "tile_scan": True, "max_side": 1600,
             "upscale": False, "code128_gtin_only": False}
 MIN_SIDE, MAX_SIDE = 64, 8192
-ENGINE = "zxing-cpp"
-CACHE_REVISION = 1
+ENGINE = "qr-scanner"
+CACHE_REVISION = 2
 # The kind of a decoded code -> the kind of `wine_code`.
 LOOKUP_KINDS = {"barcode": "gtin", "qr_code": "qr_url"}
 
@@ -200,46 +194,39 @@ def tiles(image):
 
 
 class Decoder:
-    """The zxing-cpp decoder of one set of options. Raise ConfigError when this Python has
-    no zxing-cpp."""
+    """The HTTP QR/barcode decoder of one set of options."""
 
     def __init__(self, options):
-        try:
-            import zxingcpp
-        except ModuleNotFoundError:
-            raise ConfigError("the key `barcode` needs zxing-cpp 2.3.0 in this Python; "
-                              "install requirements-local.txt into embedding_python")
-        self.zxing = zxingcpp
         self.options = options
-        self.version = version(ENGINE)
+        self.scanner = qr_barcode.Client()
         self._last = threading.local()
-        names = list(options["formats"]) + ([QR_FORMAT] if options["qr"] else [])
-        formats = getattr(zxingcpp.BarcodeFormat, names[0])
-        for name in names[1:]:
-            formats = formats | getattr(zxingcpp.BarcodeFormat, name)
-        self.formats = formats
-        self.binarizers = (zxingcpp.Binarizer.LocalAverage, zxingcpp.Binarizer.FixedThreshold)
+
+    def configure(self, scanner):
+        """Use the checked top-level `qr_scanner` mapping of `config.yaml`."""
+        self.scanner = qr_barcode.Client(**(scanner or {}))
+        return self
 
     def read(self, image):
         """Return each code of one image: a list of `{"kind", "format", "text"}`."""
+        try:
+            decoded = self.scanner.decode(embeddings.png_bytes(image), "query.png")
+        except Exception:
+            self._last.failed = True
+            raise
+        allowed = {"".join(c for c in name.lower() if c.isalnum())
+                   for name in self.options["formats"]}
         out = []
-        for binarizer in self.binarizers:
-            try:
-                results = self.zxing.read_barcodes(image, formats=self.formats,
-                                                   try_downscale=False, binarizer=binarizer)
-            except Exception:  # noqa: BLE001 - the matcher skips a binarizer that raises
-                self._last.failed = True
+        for code in decoded:
+            name = "".join(c for c in code["format"].lower() if c.isalnum())
+            if code["kind"] == "qr_code":
+                if not self.options["qr"]:
+                    continue
+            elif name not in allowed:
                 continue
-            for result in results:
-                text = str(result.text or "").strip()
-                if not text:
-                    continue
-                name = str(result.format).rsplit(".", 1)[-1]
-                if (self.options["code128_gtin_only"] and name == "Code128"
-                        and not is_gtin13(text)):
-                    continue
-                kind = "qr_code" if "qr" in name.lower() else "barcode"
-                out.append({"kind": kind, "format": name, "text": text})
+            if (self.options["code128_gtin_only"] and name == "code128"
+                    and not is_gtin13(code["text"])):
+                continue
+            out.append(code)
         return out
 
     def scaled(self, image):
@@ -286,8 +273,8 @@ class Decoder:
         with open(path, "rb") as source:
             data = source.read()
         fields = model_cache.request_fields(
-            "local://barcode/scan", "barcode",
-            {"revision": CACHE_REVISION, "engine": ENGINE, "version": self.version,
+            (self.scanner.endpoint or "unconfigured://qr-scanner") + "/scan", "barcode",
+            {"revision": CACHE_REVISION, "engine": self.scanner.engine,
              "pillow": PILLOW_VERSION, "options": self.options}, "", [data])
         record = model_cache.lookup(fields)
         batches = record["answer"].get("batches") if (
@@ -347,15 +334,22 @@ class CodeFirst:
     trace of plan 41, with the step `barcode` first. The latency of an answer of `inner`
     holds the time of the decode too."""
 
-    def __init__(self, inner, options, db_path, decoder=None, lookup=None):
+    def __init__(self, inner, options, db_path, decoder=None, lookup=None, scanner=None):
         self.inner = inner
         self.options = options
         self.lookup = lookup if lookup is not None else CodeLookup.load(db_path)
         self.decoder = decoder if decoder is not None else Decoder(options)
+        if decoder is None and scanner is not None:
+            self.decoder.configure(scanner)
         self.id, self.top_k = inner.id, inner.top_k
         # `run_job.build` and `embedding_run.main` read the index state of the run.
         self.catalogue = inner.catalogue
+        client = getattr(self.decoder, "scanner", None)
+        service = ({"engine": client.engine,
+                    "endpoint": client.endpoint or getattr(client, "endpoint_reference", None)}
+                   if client is not None else dict(scanner or {}))
         self.spec = dict(inner.spec, barcode=dict(options, engine=ENGINE,
+                                                  scanner=service,
                                                   codes=self.lookup.counts))
         self.spec["label"] = "%s, after the code lookup" % inner.spec.get("label", self.id)
 

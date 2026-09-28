@@ -1,6 +1,64 @@
 # ChangeLog
 
+## 2026-09-29
+
+- Changed `qr_scanner.engine` from `auto` to `zxing-cpp`, the service path closest to
+  the former local decoder. The four synthetic parity cases returned the same decoded
+  values with both engines, while the named engine took about 0.03--0.08 seconds round
+  trip instead of `auto`'s 2.1--5.7 seconds and does not invoke SAM3 or the VLM. The
+  config-driven live check decoded the expected synthetic EAN-13 with `zxing-cpp`.
+  Port 8168 restarted with SIGTERM and answers `/api/dataset` 200 on PID 50773; its
+  startup report names `engine zxing-cpp`.
+
+- Barcode-first recognition now sends the prepared query image to the shared scanner at
+  `POST <qr_scanner.endpoint>/scan`; it no longer imports `zxing-cpp`. The top-level
+  `qr_scanner` entry of `config.yaml` selects the endpoint and engine and supports an
+  exact `"{env:NAME}"` endpoint reference. Additional-image uploads use the same client.
+  The production barcode twins make one whole-image request with `engine=auto`; their
+  cache identity records the resolved endpoint and engine. The workbench requirement on
+  `zxing-cpp` and the benchmark utilities' local-decoder assumptions were removed. A
+  live config-driven request decoded the expected synthetic EAN-13. Focused barcode,
+  pipeline, upload, benchmark, recognition, embedding-run, and lab-server tests pass
+  (326 checks). Port 8168 was restarted with SIGTERM and answers `/api/dataset` 200 on
+  PID 22522.
+
+- Restored image drops from another browser page onto a row or the Drawer of `/testset`.
+  The page recognizes `text/html`, `text/uri-list`, `DownloadURL`, and plain URL drag
+  data, prefers the dragged `<img>` source over a surrounding link, and unwraps the
+  original `url=` of a Yandex Images viewer. New route `POST /api/testset-fetch` fetches
+  the bytes before its database transaction, validates every redirect against local and
+  non-public addresses, and then uses the existing Testset upload rules. The exact
+  reported Yandex result downloaded as an 82,872-byte WebP. Four fetch-security tests,
+  twelve Testset route tests, the inline JavaScript syntax check, and the focused Python
+  compilation check pass.
+
 ## 2026-09-28
+
+- The advanced `Tag` filter on `/testset` now starts with `All` and `No tag`, then
+  lists only the tags in the selected set. The filter applies to wine rows. `No tag`
+  keeps a wine when at least one of its photos has no tag. A specific tag keeps a wine
+  when at least one photo has that tag. The selection stays in the address and browser
+  storage. On the live clustered `my` view, the options are `All`, `No tag (3436)`,
+  `barcode (571)`, and `qr_code (245)`. `All` shows 422 wines in 177 clusters, `No tag`
+  shows 321 wines in 157 clusters, and `barcode` shows 106 wines in 66 clusters. The
+  `No tag` address restores the selection and row count. The inline script syntax check,
+  4 page tests, and 52 test-set tests pass. The live check used the existing server on
+  port 8168 and did not restart it.
+
+- Added the embedding entries `android-siglip2-base-224-dis-white` and
+  `android-siglip2-base-224-sam3-white` for plan 77. Both entries use the 768-value
+  SigLIP2 Base 224 image tower. Added the `segment_dis` and `square_on_white` image
+  steps. The DIS runtime uses the pinned public LiteRT model and records its model,
+  revision, and runtime version in the embedding index. Added LiteRT 2.2 to the local
+  requirements. The raw DIS output now gets the min-max normalization of the reference
+  inference code before threshold and alpha use. The focused configuration, image-step,
+  build, and pipeline suite has 75 passing tests. The catalogue builds ran sequentially
+  through an isolated GX10 endpoint. Each index has 2,271 normalized 768-value vectors
+  and zero failures. The SAM3 build took 282.1 seconds. The corrected DIS build took
+  3,832.6 seconds. A 32-image LiteRT comparison passed on each index. The lowest cosine
+  value was 0.99999851 after the Android encoder reproduced timm `crop_pct=0.9`.
+  The shared gateway and its SAM3 process did not restart. The isolated endpoint stopped
+  after both builds.
 
 - Plan 75, stage 2a: the matcher reads a copy of `data/catalog/` (owner answer of
   2026-09-28T18:57:07). Schema 031 adds the views `matcher_wine` and `matcher_wine_image`:

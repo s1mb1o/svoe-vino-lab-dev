@@ -48,7 +48,7 @@ The route `/api/dataset-patch` stores (POST, the image bytes as the body) and re
 
 The route `/api/dataset-alternative` stores (POST, the image bytes as the body) and removes
 (DELETE) one alternative photo of a wine; `POST /api/dataset-alternative-type` changes its
-type. A POST scans the image with the service at `QR_SCANNER_ENDPOINT`. It adds detected
+type. A POST scans the image with the `qr_scanner` service of `config.yaml`. It adds detected
 GTINs and QR URLs to the wine before it returns the new record. `alternatives.py` stores
 the photo. `qr_barcode.py` scans it. Read `docs/plans/16_alternative-images.md` and
 `docs/plans/76_scan-additional-image-codes.md`.
@@ -237,8 +237,8 @@ class ConfigError(Exception):
     """The configuration or the database does not allow the server to start."""
 
 
-def load_config(path=CONFIG_PATH):
-    """Return the absolute path of the database that `config.yaml` names."""
+def read_config(path=CONFIG_PATH):
+    """Return `(config, database path)` for the checked `config.yaml`."""
     try:
         with open(path, encoding="utf-8") as fh:
             config = yaml.safe_load(fh) or {}
@@ -247,8 +247,17 @@ def load_config(path=CONFIG_PATH):
     database = config.get("database_file")
     if not database:
         raise ConfigError("%s holds no key `database_file`" % path)
+    try:
+        qr_barcode.check_config(config.get(qr_barcode.CONFIG_KEY))
+    except qr_barcode.ConfigError as exc:
+        raise ConfigError(str(exc)) from exc
     rootdir = config.get("rootdir") or os.path.dirname(os.path.dirname(ROOT))
-    return os.path.abspath(os.path.join(rootdir, database))
+    return config, os.path.abspath(os.path.join(rootdir, database))
+
+
+def load_config(path=CONFIG_PATH):
+    """Return the absolute path of the database that `config.yaml` names."""
+    return read_config(path)[1]
 
 
 def open_database(path, write=False):
@@ -1806,7 +1815,7 @@ def main(argv=None):
     sys.stdout.reconfigure(line_buffering=True)
 
     try:
-        db_path = load_config(args.config)
+        config, db_path = read_config(args.config)
         with closing(open_database(db_path)) as conn:
             version = conn.execute("PRAGMA user_version").fetchone()[0]
             states = state_counts(conn)
@@ -1822,9 +1831,9 @@ def main(argv=None):
     if not sum(states.values()):
         print("  the catalogue is empty; import it with `python3 pipeline/import_catalog.py`")
     print("disabled pages: %s" % ", ".join(DISABLED_PAGES.values()))
-    code_scanner = qr_barcode.Client()
+    code_scanner = qr_barcode.client_from_config(config)
     print("QR/barcode scanner: %s (engine %s)" %
-          (code_scanner.endpoint or "not configured", qr_barcode.ENGINE))
+          (code_scanner.description, code_scanner.engine))
 
     try:
         server = make_server(db_path, args.host, args.port, args.config,

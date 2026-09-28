@@ -10,6 +10,7 @@ import embedding_lab  # noqa: F401  (puts pipeline/ on sys.path)
 from embedding_lab import VIEWS_C_F, standard_lab
 
 import alternatives  # noqa: E402
+import dis_litert  # noqa: E402
 import embeddings  # noqa: E402
 
 
@@ -64,6 +65,26 @@ class ConfigTest(unittest.TestCase):
 
     def test_variant_a_is_allowed(self):
         embeddings.Embedding(entry(views=steps(SEG)))
+
+    def test_dis_step_fills_the_android_defaults(self):
+        embedding = embeddings.Embedding(entry(views=steps({
+            "step": "segment_dis", "model": "dis", "revision": "one"})))
+        self.assertEqual(embedding.views["full"][0], {
+            "step": "segment_dis", "model": "dis", "revision": "one",
+            "threshold": 0.5, "margin": 0.04})
+
+    def test_dis_step_checks_its_contract(self):
+        cases = [
+            ({"step": "segment_dis", "revision": "one"}, "needs the option `model`"),
+            ({"step": "segment_dis", "model": "dis"}, "needs the option `revision`"),
+            ({"step": "segment_dis", "model": "dis", "revision": "one",
+              "threshold": 1}, "threshold MUST be between"),
+            ({"step": "segment_dis", "model": "dis", "revision": "one",
+              "margin": 0.6}, "margin MUST be"),
+        ]
+        for step, message in cases:
+            with self.subTest(message=message):
+                self.assertIn(message, self.error(entry(views=steps(step))))
 
     def test_step_rules(self):
         cases = [
@@ -147,6 +168,42 @@ class StepTest(unittest.TestCase):
         self.assertEqual(out.mode, "RGB")
         self.assertEqual(out.getpixel((0, 0)), (255, 255, 255))
         self.assertEqual(out.getpixel((1, 0)), (10, 20, 30))
+
+    def test_dis_mask_crops_composites_and_squares(self):
+        import numpy as np
+
+        source = Image.new("RGB", (200, 100), (10, 20, 30))
+        mask = np.zeros((dis_litert.SIZE, dis_litert.SIZE), dtype=np.float32)
+        mask[256:768, 256:768] = 0.5
+        cropped = dis_litert.composite_mask(source, mask, margin=0)
+        self.assertEqual(cropped.size, (100, 50))
+        self.assertEqual(cropped.getpixel((50, 25)), (133, 138, 143))
+        squared = dis_litert.square_on_white(cropped)
+        self.assertEqual(squared.size, (100, 100))
+        self.assertEqual(squared.getpixel((0, 0)), (255, 255, 255))
+
+    def test_dis_mask_rejects_empty_and_complete_masks(self):
+        import numpy as np
+
+        source = Image.new("RGB", (10, 20))
+        for value, message in ((0.0, "no main object"), (1.0, "complete image")):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(dis_litert.DisError, message):
+                    dis_litert.composite_mask(
+                        source, np.full((dis_litert.SIZE, dis_litert.SIZE), value,
+                                        dtype=np.float32))
+
+    def test_dis_output_uses_reference_min_max_normalization(self):
+        import numpy as np
+
+        raw = np.linspace(0.5, 0.731, dis_litert.SIZE * dis_litert.SIZE,
+                          dtype=np.float32).reshape(dis_litert.SIZE, dis_litert.SIZE)
+        mask = dis_litert.normalize_mask(raw)
+        self.assertAlmostEqual(float(mask.min()), 0.0)
+        self.assertAlmostEqual(float(mask.max()), 1.0)
+        self.assertAlmostEqual(float(mask[512, 0]), 0.5, places=3)
+        with self.assertRaisesRegex(dis_litert.DisError, "flat mask"):
+            dis_litert.normalize_mask(np.full_like(raw, 0.5))
 
 
 class LabTest(unittest.TestCase):

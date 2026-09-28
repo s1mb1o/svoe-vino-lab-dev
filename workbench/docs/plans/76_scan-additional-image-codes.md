@@ -10,10 +10,12 @@ The lab server MUST store each valid result in the code fields of the wine.
 
 ## Service contract
 
-The client MUST read the service URL from `QR_SCANNER_ENDPOINT`.
-The client MUST send `POST <QR_SCANNER_ENDPOINT>/scan`.
+The client MUST read the service URL and engine from the top-level key `qr_scanner` of
+`config.yaml`. `endpoint` MUST accept an HTTP(S) URL or an exact environment reference
+such as `"{env:QR_SCANNER_ENDPOINT}"`.
+The client MUST send `POST <resolved endpoint>/scan`.
 The request MUST send the image in the multipart field `image`.
-The request MUST send `engine=auto`.
+The request MUST send the configured engine (`zxing-cpp` in the project configuration).
 
 The client MUST read the `instances` list of the response.
 Each instance MUST have a non-empty `text` and `format` string.

@@ -26,6 +26,7 @@ The owner removed the pipeline `mock` and its code on 2026-09-26T00:26:27+0300.
 import barcode
 import cluster_rerank
 import embeddings
+import qr_barcode
 from embeddings import ConfigError
 
 REMOTE_BACKEND = "svoe-vino-ru"
@@ -82,7 +83,7 @@ class Pipeline:
     re-rank (plan 48), or None. Each is None for another backend. `workers` is the
     default number of concurrent queries. A run MAY override `workers`."""
 
-    def __init__(self, raw):
+    def __init__(self, raw, scanner=None):
         if not isinstance(raw, dict):
             raise ConfigError("an entry MUST be a mapping")
         name = raw.get("name")
@@ -99,6 +100,7 @@ class Pipeline:
         self.remote = _remote(raw) if self.backend == REMOTE_BACKEND else None
         self.workers = self.remote["workers"] if self.remote is not None else raw.get("workers", 1)
         self.embedding = self.views = self.barcode = self.rerank = None
+        self.scanner = None
         if self.backend == EMBEDDING_BACKEND:
             if (isinstance(self.workers, bool) or not isinstance(self.workers, int)
                     or self.workers < 1):
@@ -112,6 +114,7 @@ class Pipeline:
                 self.views = _views(raw["views"])
             if "barcode" in raw:
                 self.barcode = barcode.check_options(raw["barcode"])
+                self.scanner = dict(scanner or qr_barcode.check_config(None))
             if "rerank" in raw:
                 self.rerank = cluster_rerank.check_options(raw["rerank"])
 
@@ -157,11 +160,15 @@ def load(path=embeddings.CONFIG_PATH):
     `pipeline` has no pipeline. Raise ConfigError when the file itself does not allow the
     work."""
     path, config, db_path = embeddings.read_config(path)
+    try:
+        scanner = qr_barcode.check_config(config.get(qr_barcode.CONFIG_KEY))
+    except qr_barcode.ConfigError as exc:
+        raise ConfigError(str(exc)) from exc
     models = {name: (embedding, error) for name, embedding, error in
               embeddings.check_entries(config, "embeddings", embeddings.Embedding)}
 
     def make(raw):
-        pipeline = Pipeline(raw)
+        pipeline = Pipeline(raw, scanner)
         if pipeline.embedding is not None:
             if pipeline.embedding not in models:
                 raise ConfigError("the embedding %s is not an entry of the key `embeddings`"

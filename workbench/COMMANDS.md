@@ -189,8 +189,9 @@ Exit status 0: all records are valid; 1: a record holds an error; 2: the run did
 start or stopped, for example because the service refused the number of images.
 
 Run a pipeline with the cluster re-rank (plan 48) on a test set. The key `rerank` names
-the embedding directory of the rules. Use `embedding_python`, because the barcode twin
-needs zxing-cpp:
+the embedding directory of the rules. Use `embedding_python` for the embedding runtime.
+For a `barcode-…` twin, `qr_scanner.endpoint` in `config.yaml` MUST resolve; the project
+configuration reads `QR_SCANNER_ENDPOINT`:
 ```bash
 ~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
     --name rerank-siglip2-512-crop --set my --workers 4 --label bench48
@@ -379,4 +380,23 @@ The same on the runner, through GitHub. Needs `gh` with access to
 gh workflow run runner-smoke.yml -R s1mb1o/svoe-vino-lab-dev
 gh workflow run runner-smoke.yml -R s1mb1o/svoe-vino-lab-dev -f load_models=true
 gh run list -R s1mb1o/svoe-vino-lab-dev -w runner-smoke.yml -L 3
+```
+
+# Android embedding indexes
+
+Install the local DIS runtime once:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/pip install -r requirements-local.txt
+```
+
+Build the two entries in this order. The endpoint in `config.yaml` MUST serve
+`timm/vit_base_patch16_siglip_224.v2_webli` as
+`vit_base_patch16_siglip_224.v2_webli` and MUST use float32.
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name android-siglip2-base-224-sam3-white
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name android-siglip2-base-224-dis-white
 ```

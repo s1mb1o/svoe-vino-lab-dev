@@ -414,7 +414,7 @@ def worker_loop(source, sink, builder=build_experiment):
                 emit({"event": "ready", "build_ms": build_ms, "worker_import_ms": imported_ms,
                       "cache_read": model_cache.READ, "cache_root": model_cache.ROOT,
                       "spec": backend.spec, "python": sys.executable, "python_version": sys.version,
-                      "zxing_version": distribution_version("zxing-cpp"),
+                      "scanner": (backend.spec.get("barcode") or {}).get("scanner"),
                       "pillow_version": distribution_version("Pillow")})
                 for line in source:
                     request = json.loads(line)
@@ -703,7 +703,9 @@ def main(argv=None):
                                       for r in sample], "inputs": inputs,
                         "modes": modes, "variants": variants, "profile": args.profile,
                         "watchdog_s": args.watchdog_s,
-                        "python": sys.version, "zxing": scans.barcode.version(scans.barcode.ENGINE),
+                        "python": sys.version,
+                        "scanner": (baseline.get("backend", {}).get("barcode", {})
+                                    .get("scanner")),
                         "pillow": scans.barcode.PILLOW_VERSION,
                         "sources": {str(p.relative_to(ROOT)): file_hash(p)
                                     for p in sorted(list((ROOT / "pipeline").glob("*.py")) +

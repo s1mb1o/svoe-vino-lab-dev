@@ -1219,6 +1219,23 @@ The form of a section:
   returns HTTP 200.
 - Updated for task 13: 2026-09-28T19:01:00+0300.
 
+- Task 14: extend the advanced tag filter of `/testset` with `All`, `No tag`, and the
+  tags that exist in the selected test set. The filter applies to wine rows. A wine
+  matches `No tag` when at least one of its test photos has no tag.
+- Source: owner message and selected option 1 recorded at
+  2026-09-28T23:11:34+0300.
+- Files for task 14: `docs/owner-messages.md` (append), separate hunks in
+  `pipeline/pages/testset.html`, and my own hunks in `SMOKE_TESTS.md`, `ChangeLog.md`,
+  and this section of `ACTIVE_WORK.md`.
+- State for task 14: done, not committed. `Tag` now lists `All`, `No tag`, and only the
+  tags in the selected set. `No tag` keeps a wine row when one or more of its photos is
+  untagged. A specific tag keeps a wine row when one or more photos has that tag. The
+  live clustered `my` view showed 422 wines for `All`, 321 for `No tag`, and 106 for
+  `barcode`. A direct `No tag` address restored the selection and the count. The inline
+  script syntax check, 4 page tests, and 52 test-set tests pass. No data changed. Port
+  8168 used its existing process and did not restart.
+- Updated for task 14: 2026-09-28T23:18:23+0300.
+
 ## drink-atlas-workspace-c7 [09419d]
 
 - Task: a global key of `config.yaml` that updates the embedding of a pipeline before
@@ -2320,3 +2337,173 @@ The form of a section:
   19:14; 8168 runs since 19:14 (pid 10583, started by 66). Waiting: the owner decides the
   commit of 2a, the prod switch (2b), and the removal of the bundle code (2c).
 - Updated: 2026-09-28T19:23:26+0300
+
+## codex-android-embeddings
+
+- Task: add and build two Android-compatible SigLIP2 Base 224 embeddings. One entry
+  uses DIS. One entry uses the present SAM3 package derivative.
+- Source: owner messages of 2026-09-28T21:41:25+0300,
+  2026-09-28T21:46:16+0300, and 2026-09-28T23:10:10+0300. The owner selected
+  approaches 1 and 2, and asked for a separate Android verification-results document
+  after the builds complete.
+- Files: `docs/owner-messages.md` (append), `docs/plans/77_android-embeddings.md`
+  (new), `config.yaml` (two separate embedding entries), `pipeline/embeddings.py`,
+  `pipeline/build_embeddings.py`, a new DIS helper under `pipeline/`, focused tests,
+  `requirements-local.txt`, and my own hunks in `COMMANDS.md`, `README.md`,
+  `ResearchLog.md`, `SMOKE_TESTS.md`, and `ChangeLog.md`. Runtime output goes to
+  `data/catalog/embeddings/android-*`. The task also adds one active row to
+  `/Users/ashmelev/Admin/GPU_TASKS.md` before a GPU build. The build uses the isolated
+  GX10 endpoint on port 5997. It does not reload the shared gateway while another
+  project uses SAM3. The live probe also fixed the missing reference DIS min-max
+  normalization in `../android/app/src/main/java/com/alolalab/chtozavino/` and its tests.
+  The final files also include `../android/VERIFICATION_RESULTS.md`, its README link,
+  `../android/tools/verify_model_vectors.py`, the timm preprocessing correction, and
+  exact DIS and SigLIP2 SHA-256 checks in the model-pack builder and Android importer.
+- State: done, not committed. Both indices contain 2,271 finite normalized vectors of
+  dimension 768 and zero failures. The SAM3 build took 282.1 seconds. The corrected DIS
+  build took 3,832.6 seconds. A deterministic 32-image LiteRT comparison passed for
+  both indices. The minimum cosine was 0.99999851. The comparison found and corrected
+  the missing timm `crop_pct=0.9` preprocessing in Android. All 75 focused workbench
+  tests pass. Android lint, debug and release unit tests, the debug APK build, and three
+  model-pack builder tests pass. The isolated GX10 endpoint stopped. Port 5997 is
+  closed. The shared gateway and SAM3 process did not restart.
+- Updated: 2026-09-28T23:53:30+0300
+
+## root
+
+- Task: read the `svoe-vino-lab/workbench` project and report its structure, current
+  state, architecture, and developer workflow.
+- Source: owner message of 2026-09-28T23:00:51+0300.
+- Files: `docs/owner-messages.md` (append) and this section of `ACTIVE_WORK.md`.
+- State: done, not committed. The project read was read-only apart from the required
+  owner-message and active-work records. No test, model call, server restart, or data
+  write ran. The existing Android DIS embedding build stayed untouched.
+- Updated: 2026-09-28T23:03:57+0300
+- Task 3: verify whether barcode checking happens when an additional image is added.
+- Source: owner message of 2026-09-28T23:06:00+0300.
+- Files: `docs/owner-messages.md` (append) and this section of `ACTIVE_WORK.md`.
+- State: done, not committed. The implementation and commit history were inspected; 5
+  QR/barcode client tests and 3 additional-upload integration tests pass. The running
+  server log says `QR/barcode scanner: not configured`, so an upload currently keeps the
+  photo and reports a warning instead of filling code fields. No product code or data
+  changed.
+- Updated: 2026-09-28T23:07:00+0300
+- Task 2: add an advanced tag filter to `/testset`. The dropdown shows only tags that
+  exist in the selected test set.
+- Source: owner message of 2026-09-28T23:05:46+0300.
+- Files for task 2: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`.
+- State for task 2: done, not committed. Commit `65a429a3` already contains the filter.
+  The live page lists only `barcode (571)` and `qr_code (245)` for `my`. Selecting
+  `barcode` adds `tag=barcode` to the address and reduces the clustered view from 422
+  to 106 wines. No product file or data changed. No server restart was necessary.
+- Updated for task 2: 2026-09-28T23:07:00+0300
+- Task 4: verify whether `lab_server.py` uses `zxing-cpp` directly for additional-image
+  barcode checks.
+- Source: owner message of 2026-09-28T23:13:17+0300.
+- Files: `docs/owner-messages.md` (append) and this section of `ACTIVE_WORK.md`.
+- State: done, not committed. The path was inspected; the upload uses the remote scanner
+  through `qr_barcode.Client`, while `zxing-cpp` belongs to the separate recognition
+  pipeline in `barcode.py`. No product code or data changed.
+- Updated: 2026-09-28T23:13:17+0300
+- Task 5: run the two Android SigLIP2 Base 224 indices on test set `my` with barcode
+  disabled. Compare the results.
+- Source: owner message of 2026-09-28T23:59:58+0300.
+- Files: `docs/owner-messages.md` (append), this section of `ACTIVE_WORK.md`, two
+  permanent pipeline entries in `config.yaml`, DIS query support in
+  `pipeline/build_embeddings.py`, `pipeline/embedding_run.py`, and
+  `pipeline/run_steps.py`, focused hunks in `tests/test_embedding_run.py` and
+  `tests/test_pipelines.py`, two new run directories under `runs/`, and one comparison
+  report under `docs/reports/`. The task also updates my own hunks in `README.md`,
+  `ChangeLog.md`, and `SMOKE_TESTS.md`.
+- State: active. The owner selected two permanent pipeline entries. Barcode MUST stay
+  absent from both entries and disabled in both runs.
+- Updated: 2026-09-29T00:21:54+0300
+- Task 6: restore dragging an image from the linked Yandex Images result into
+  `/testset?set=my&q=vibes`.
+- Source: owner message of 2026-09-29T00:03:42+0300.
+- Files for task 6: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, a separate drop-handling hunk in `pipeline/pages/testset.html`,
+  `pipeline/testset_routes.py`, new `pipeline/remote_images.py`, focused hunks in
+  `tests/test_testset_routes.py`, new `tests/test_remote_images.py`, and my own hunks
+  in `docs/API.md`, `README.md`, `ChangeLog.md`, and `SMOKE_TESTS.md`.
+- State for task 6: done, not committed. The page accepts the URL/HTML data types of a
+  browser-image drag and unwraps a Yandex Images viewer URL. The new server route fetches
+  public HTTP(S) images before its database transaction and refuses local/private
+  addresses on every redirect. The exact reported 1000 x 1500 image downloaded as an
+  82,872-byte WebP. Tests: 53 Testset, 4 remote-fetch, the lab page/server checks, Python
+  compilation, and inline JavaScript syntax pass. The live page has no console error;
+  its route fetched the exact image against a deliberately missing set and wrote no data.
+  Port 8168 restarted with SIGTERM and answers `/api/dataset` 200 on PID 11528; the
+  invalid local fetch probe answers 400. The restart also loaded the current separate
+  task 7 barcode/config hunks already present in the shared worktree.
+- Updated for task 6: 2026-09-29T00:17:49+0300
+- Agreements for task 6: `drink-atlas-workspace-a4 [34c1c5]` is absent from the
+  current `ListAgents` answer and stale. The owner directly requested this separate
+  drop fix; plan 66 image-tag behavior stays unchanged.
+- Task 7: refactor `pipeline/barcode.py` to decode through HTTP `POST /scan`, and read
+  the scanner endpoint from `config.yaml` with `{env: QR_SCANNER_ENDPOINT}` support.
+- Source: owner message of 2026-09-29T00:05:01+0300.
+- Files for task 7: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `pipeline/barcode.py`, `pipeline/qr_barcode.py`, configuration
+  loading code and focused tests as required, barcode benchmark utilities and their
+  focused tests, `docs/plans/41_run-step-popup.md`, `docs/plans/42_barcode-step.md`,
+  `docs/plans/55_recognize-page.md`, `docs/plans/76_scan-additional-image-codes.md`,
+  separate `config.yaml` hunks, and my own hunks in `README.md`, `docs/API.md`,
+  `ChangeLog.md`, `SMOKE_TESTS.md`, and `COMMANDS.md` if commands change.
+  `requirements-local.txt` only if `zxing-cpp` ceases to be a workbench runtime
+  dependency.
+- State for task 7: done, not committed. Barcode recognition and additional-image
+  uploads use the shared HTTP scanner configured by `qr_scanner` in `config.yaml`; an
+  exact `{env:NAME}` endpoint is resolved when the client is built. The workbench no
+  longer imports or requires `zxing-cpp`. Focused tests pass: 114 barcode, 17 bulk
+  benchmark, 40 recognition benchmark, 40 embedding-run, 69 lab-server, 32 pipeline,
+  11 run-step, and 3 additional-code tests. A live config-driven synthetic EAN-13 scan
+  returned the expected code. Port 8168 restarted with SIGTERM and `/api/dataset`
+  answers 200 on PID 22522.
+- Updated for task 7: 2026-09-29T00:30:08+0300
+- Agreements for task 7: the sections that name `barcode.py`, `config.yaml`, and focused
+  barcode tests are absent from the current `ListAgents` answer and stale. The owner
+  directly requested this refactor of those exact areas; their unrelated lines remain
+  untouched.
+- Task 8: check whether the configured QR scanner engine `auto` matches the previous
+  local `zxing-cpp` barcode behavior.
+- Source: owner message of 2026-09-29T00:40:16+0300.
+- Files for task 8: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`; product code and documentation stay read-only unless the comparison
+  finds a mismatch that requires a correction.
+- State for task 8: done, not committed. `auto` does not match the former runtime
+  behavior: it runs ZXing 3.0.0, zxing-cpp-sr, BoofCV, QR unwarping, and SAM3 +
+  qwen3.5-9b, while the old path used local zxing-cpp 2.3.0 with two binarizers and up
+  to 34 tiles. It did return the same decoded values as the old path on four generated
+  cases (EAN-13, QR, valid-GTIN Code 128, and a small-code composite), but took about
+  2.1--5.7 seconds versus 0.1--0.3 seconds locally; the named service `zxing-cpp`
+  engine took about 0.03--0.08 seconds round trip on those cases. No catalogue photo
+  was sent and no product/configuration file changed.
+- Updated for task 8: 2026-09-29T00:44:18+0300
+- Task 9: test the official participant harness against `matcher` with the R@1 hits from
+  test set `my` and the same pipeline as the matcher. Compare every prediction with the
+  expected slug.
+- Source: owner message of 2026-09-29T00:48:14+0300.
+- Files for task 9: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, and derived test artifacts under
+  `../../svoe-wino-hackaton/dataset/derived/matcher-pipeline-test-2026-09-29/`.
+  The official dataset, the `my` test set, the selected workbench run, the matcher
+  bundle, and matcher code stay read-only.
+- State for task 9: active. The selected source run is
+  `2026-09-28T011622Z-lab-siglip2-p512-as-is-my`. It contains 1,223 positive R@1 hits.
+- Updated for task 9: 2026-09-29T00:48:14+0300
+- Task 10: change the shared QR scanner engine from `auto` to `zxing-cpp` for behavior
+  and performance closer to the former local decoder.
+- Source: owner message of 2026-09-29T00:51:28+0300.
+- Files for task 10: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, a separate hunk in `config.yaml`, focused scanner configuration
+  tests, current scanner documentation, and my own hunk in `ChangeLog.md`. A restart of
+  port 8168 belongs to the change.
+- State for task 10: done, not committed. `config.yaml` now selects `engine: zxing-cpp`;
+  the generic client still accepts all four service engines. The 27 barcode, 32
+  pipeline, and 9 scanner-client tests pass. A config-driven live request decoded the
+  expected synthetic EAN-13 and sent `zxing-cpp`. Port 8168 restarted with SIGTERM;
+  its startup report names `engine zxing-cpp`, and `/api/dataset` answers 200 on PID
+  50773.
+- Updated for task 10: 2026-09-29T00:54:04+0300

@@ -268,7 +268,7 @@ def embedding_rounds(ctx):
     code = records.get(("barcode", None))
     code_answer = any(isinstance(c, dict) and "code" in c for c in row.get("candidates") or ())
     if code or code_answer:
-        part = step("barcode", "Decode codes, whole photo", "local", "zxing-cpp")
+        part = step("barcode", "Decode codes, whole photo", "HTTP", "qr-scanner")
         timed(part, code)
         out = (code or {}).get("out") or {}
         if out.get("skipped"):
@@ -331,6 +331,14 @@ def embedding_rounds(ctx):
                                     selection.get("hands") or 0))
         rounds[1].append(part)
 
+    try:
+        dis_segmenter = build_embeddings.make_dis_segmenter_for_views(views)
+    except (OSError, ImportError, ValueError) as exc:
+        dis_segmenter = None
+        dis_error = "The DIS input cannot be made again: %s." % exc
+    else:
+        dis_error = None
+
     for view, steps in views.items():
         chain = " → ".join(s.get("step", "?") for s in steps)
         part = step("view", "View %s" % view, "local", None, chain, view=view)
@@ -349,9 +357,12 @@ def embedding_rounds(ctx):
             rounds[1].append(part)
             continue
         try:
-            prepared, reason = embedding_run.view_input(photo.image, steps, cuts)
+            prepared, reason = embedding_run.view_input(
+                photo.image, steps, cuts, dis_segmenter)
         except embeddings.ItemError as exc:
             prepared, reason = None, str(exc)
+        if prepared is None and dis_error and steps[0].get("step") == "segment_dis":
+            reason = dis_error
         if prepared is None:
             if reason and reason not in part["notes"]:
                 part["notes"].append(reason)

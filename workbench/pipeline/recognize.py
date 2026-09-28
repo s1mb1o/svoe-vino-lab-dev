@@ -6,8 +6,8 @@ Usage:
         [--config PATH]
 
 `recognize_routes.py` starts this script with `embedding_python` (`run_jobs.interpreter`),
-because a pipeline with the key `barcode` needs zxing-cpp and the backend `local` needs
-torch. The script builds the backend of the pipeline as a run does
+because the backend `local` needs torch. A pipeline with the key `barcode` calls the
+HTTP scanner configured by `qr_scanner` in `config.yaml`. The script builds the backend as a run does
 (`embedding_run.build_pipeline_backend`) and asks it one time. It writes one JSON object
 to stdout:
 

@@ -5,14 +5,18 @@ Date: 2026-09-26
 Source: owner message of 2026-09-26T07:22:10+0300, and the answers of 07:27:08
 (session drink-atlas-workspace-1c [800d92]).
 
+Transport amended on 2026-09-29 by the owner's request: the workbench no longer imports
+`zxing-cpp`. Both this step and additional-image uploads use the shared HTTP scanner from
+the top-level `qr_scanner` key of `config.yaml`.
+
 ## 1. Goal
 
-Copy the barcode recognition of svoe-vino-testset into the lab. Add a barcode step to the
-pipelines of `config.yaml`.
+Add a barcode step to the pipelines of `config.yaml`.
 
 svoe-vino-testset does not decode a barcode itself. Its backend `svm-barcode-siglip2-448`
-sends each photo to the pipeline `barcode-siglip2-448` of svoe-vino-matcher. The decoder
-is `svoe-vino-matcher/svm/pipelines/barcode.py`. This plan copies that decoder.
+sends each photo to the pipeline `barcode-siglip2-448` of svoe-vino-matcher. The lab
+originally copied that local decoder. Since 2026-09-29 it calls the shared `qr-scanner`
+service instead.
 
 ## 2. The decisions of the owner
 
@@ -33,7 +37,7 @@ is `svoe-vino-matcher/svm/pipelines/barcode.py`. This plan copies that decoder.
     formats: [EAN13, Code128]
     code128_gtin_only: true
     qr: true
-    tile_scan: true
+    tile_scan: false
     max_side: 1600
     upscale: true
   views: *as-is-views
@@ -41,16 +45,27 @@ is `svoe-vino-matcher/svm/pipelines/barcode.py`. This plan copies that decoder.
 
 | Option | Default | Meaning |
 |---|---|---|
-| `formats` | `[EAN13, EAN8, UPCA, Code128]` | The zxing-cpp formats of a product code. |
+| `formats` | `[EAN13, EAN8, UPCA, Code128]` | The scanner-service formats of a product code. |
 | `qr` | `true` | Read QR codes too. |
-| `tile_scan` | `true` | Scan overlapping tiles when the whole photo gives no hit. |
+| `tile_scan` | `true` | Legacy experimental mode: send overlapping tiles after a whole-image miss. The project sets `false` to avoid up to 34 additional remote calls. |
 | `max_side` | `1600` | Scale a photo with a longer side down to this side. |
 | `upscale` | `false` | Scale a smaller photo up to `max_side`, with LANCZOS. |
 | `code128_gtin_only` | `false` | Keep a Code 128 only when it holds a valid GTIN-13. |
 
 `barcode: {}` takes each default. `pipeline/barcode.py` (`check_options`) checks the
-options. `pipeline/pipelines.py` calls it. The lab server needs no zxing-cpp for this
-check.
+options. `pipeline/pipelines.py` calls it.
+
+The shared service is configured once:
+
+```yaml
+qr_scanner:
+  endpoint: "{env:QR_SCANNER_ENDPOINT}"
+  engine: zxing-cpp
+```
+
+`endpoint` also accepts a literal HTTP(S) URL. An unresolved environment reference is a
+runtime scanner failure: the embedding still answers, and an additional-image upload
+still stores the photo with a warning.
 
 The 22 twins use the options of `barcode-siglip2-448` of svoe-vino-matcher. The YAML
 anchor `barcode-options` holds them one time. Each twin is named `barcode-<pipeline>`. It
@@ -64,10 +79,11 @@ use this function. For each photo, `CodeFirst.ask` does these steps:
 
 1. Open the photo with `derive.open_image` (the EXIF orientation is applied).
 2. Put a transparent area on white. Scale the photo with `max_side` and `upscale`.
-3. Read the whole photo with zxing-cpp, one time with each binarizer: `LocalAverage`,
-   then `FixedThreshold`.
-4. Look up each code. When no code gives a hit and `tile_scan` is on, read the tiles:
-   3 x 3, then 5 x 5. Stop at the first hit.
+3. Send the whole prepared image to `POST <qr_scanner.endpoint>/scan` with the configured
+   engine. The project uses `zxing-cpp` and `tile_scan: false`, so one uncached query
+   makes one scanner request. This is the service path closest to the former local
+   decoder; the service currently has zxing-cpp 3.0.0 rather than the former 2.3.0.
+4. Normalize the returned format names and look up each decoded code.
 5. A hit gives each wine of the code at score 1.0, in slug order, up to `top_k`. The
    embedding does not run.
 6. A miss asks the embedding backend. Its answer does not change. Its latency gets the
@@ -85,13 +101,11 @@ rule of the matcher: a decode cannot change the answer.
 A decoder error does not stop the photo. The trace records the error, and the embedding
 answers.
 
-## 5. The differences from the matcher
+## 5. The lookup and service rules
 
 1. The lookup reads `wine_code`, not `code-map.json`.
-2. The formats have no `UPCE`. zxing-cpp gives the 8 compressed digits of a UPC-E, and
-   these digits are not a GTIN.
-3. There is no OpenCV fallback. The control of the matcher read 0 of 3 EAN-13 codes with
-   OpenCV (`svoe-vino-matcher/docs/barcode-decoder-measurement.md`). zxing-cpp reads QR.
+2. The allowed formats have no `UPCE`: the compressed digits are not stored as a GTIN.
+3. Decoder choice and image-level retries belong to `qr-scanner`, not the workbench.
 4. A shared code gives each of its wines. The code map of the matcher refuses a shared
    code.
 5. The step records no count of decoded photos. `run.json` is written from the spec at
@@ -100,8 +114,9 @@ answers.
 ## 6. The run files
 
 - `run.json`, the key `backend`: the spec of the embedding backend, and the key `barcode`
-  with the options, `engine: zxing-cpp`, and `codes` (the count of each kind of the
-  lookup). `kind` stays `embedding`.
+  with the options, `engine: qr-scanner`, `scanner` (the resolved endpoint and selected
+  service engine), and `codes` (the count of each kind of the lookup). `kind` stays
+  `embedding`.
 - A candidate of a hit holds `slug`, `score` 1.0, `rank`, `source` (`gtin` or `qr_url`),
   `code` (the stored value), `read` (the text as decoded), and `format`.
 - The trace of plan 41: `CodeFirst.ask` returns five values. The first step is
@@ -123,28 +138,17 @@ answers.
 - `/api/run-candidate` of a candidate of the code lookup: no item, and one note
   (`embedding_run.candidate_items`).
 
-## 7. The package
+## 7. The client dependency
 
-zxing-cpp 2.3.0 goes into `embedding_python` (`~/.venvs/svoe-vino-lab`), and into
-`requirements-local.txt`. The matcher keeps 2.3.0, because 3.1.1 can stall on an excise
-mark beside an EAN. zxing-cpp 2.3.0 has no wheel for Python 3.14, so pip builds it from
-the source. The build needs cmake and a C++ compiler:
-
-```bash
-~/.venvs/svoe-vino-lab/bin/pip install --no-binary zxing-cpp zxing-cpp==2.3.0
-```
-
-The build worked on 2026-09-26 on this Mac. A run of a twin with no zxing-cpp fails at
-the start with a configuration error.
+The workbench uses `requests`, already in `requirements-local.txt`. It does not install
+or import `zxing-cpp`; that decoder and the other engines belong to the scanner service.
 
 ## 8. The tests
 
 `tests/test_barcode.py`: the options, the key of `pipelines.py`, the 22 twins of the
 project config, the lookup on a test database, `CodeFirst` with a fake decoder and a
-fake embedding, the notes of a code answer, and the control of the decoder. The control
-draws EAN-13 codes as `svoe-vino-matcher/scripts/barcode_control.py` does. It MUST
-read them. The decoder tests need zxing-cpp, so they are skipped in system `python3`.
-Run the full file with `embedding_python`.
+fake embedding, the notes of a code answer, and a fake HTTP scanner. The focused tests
+make no network request and need no local barcode-decoder package.
 
 ## 9. Result
 

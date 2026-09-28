@@ -9,6 +9,7 @@ import unittest
 import urllib.error
 import urllib.request
 from pathlib import Path
+from unittest import mock
 
 from PIL import Image
 
@@ -16,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import testset_fixture as FX  # noqa: E402
 import import_testset as IT  # noqa: E402
 import lab_server as LAB  # noqa: E402
+import remote_images as RI  # noqa: E402
 
 
 def jpeg(size):
@@ -208,6 +210,36 @@ class TestsetRoutesTest(unittest.TestCase):
                                     "POST", data)
         self.assertEqual(status, 404)
         self.assertEqual(self.request(route)[0], 405)
+
+    def test_the_browser_image_fetch_route(self):
+        data = jpeg((26, 24))
+        source = "https://images.example/wine%20photo.webp"
+        with mock.patch("testset_routes.remote_images.fetch_image",
+                        return_value=(data, "wine photo.webp")) as fetch:
+            status, answer = self.post("/api/testset-fetch", place="wine-a", url=source)
+        self.assertEqual((status, answer["photo"]["file"], answer["source_url"]),
+                         (200, "wine photo.jpg", source))
+        fetch.assert_called_once_with(source, 20 * 1024 * 1024)
+        with urllib.request.urlopen(self.base + answer["photo"]["url"]) as response:
+            self.assertEqual(response.read(), data)
+
+        # The regular upload rules still decide duplicates, places, and image bytes.
+        with mock.patch("testset_routes.remote_images.fetch_image",
+                        return_value=(data, "again.jpg")):
+            self.assertEqual(self.post("/api/testset-fetch", place="wine-a",
+                                       url="https://images.example/again")[0], 409)
+            status, other = self.post("/api/testset-fetch", place="__drawer__",
+                                      url="https://images.example/again")
+        self.assertEqual((status, other["photo"]["file"]), (200, "wine photo.jpg"))
+
+        with mock.patch("testset_routes.remote_images.fetch_image",
+                        side_effect=RI.RemoteImageError(
+                            "the image address points at a local host: 127.0.0.1")):
+            status, failure = self.post("/api/testset-fetch", place="wine-a",
+                                        url="http://127.0.0.1/private")
+        self.assertEqual(status, 400)
+        self.assertIn("local host", failure["error"])
+        self.assertEqual(self.request("/api/testset-fetch")[0], 405)
 
 
     def test_the_tag_routes(self):

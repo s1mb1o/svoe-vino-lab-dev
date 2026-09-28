@@ -36,8 +36,10 @@ class BarcodeCacheTest(unittest.TestCase):
 
     def decoder(self, found=(), **options):
         decoder = object.__new__(barcode.Decoder)
+        options = dict({"tile_scan": True}, **options)
         decoder.options = barcode.check_options(options)
-        decoder.version = "test-2.3.0"
+        decoder.scanner = types.SimpleNamespace(endpoint="http://scanner.test",
+                                                engine="auto")
         decoder._last = threading.local()
         decoder.read = mock.Mock(return_value=list(found))
         return decoder
@@ -103,7 +105,7 @@ class BarcodeCacheTest(unittest.TestCase):
         self.assertEqual(decoder.scan_file(self.photo, self.lookup), ([], None, True))
         self.assertEqual(decoder.read.call_count, 2)
 
-    def test_source_bytes_options_versions_and_revision_invalidate_cache(self):
+    def test_source_bytes_options_endpoint_engine_and_revision_invalidate_cache(self):
         decoder = self.decoder([CODE])
         decoder.scan_file(self.photo, self.lookup)
         for options in ({"tile_scan": False}, {"max_side": 1024}, {"upscale": True},
@@ -112,7 +114,10 @@ class BarcodeCacheTest(unittest.TestCase):
                 changed = self.decoder([CODE], **options)
                 self.assertFalse(changed.scan_file(self.photo, self.lookup)[2])
                 changed.read.assert_called_once()
-        decoder.version = "test-next"
+        decoder.scanner.endpoint = "http://scanner-next.test"
+        self.assertFalse(decoder.scan_file(self.photo, self.lookup)[2])
+        decoder.scanner.endpoint = "http://scanner.test"
+        decoder.scanner.engine = "zxing-cpp"
         self.assertFalse(decoder.scan_file(self.photo, self.lookup)[2])
         with mock.patch.object(barcode, "CACHE_REVISION", 99):
             self.assertFalse(decoder.scan_file(self.photo, self.lookup)[2])
@@ -146,18 +151,14 @@ class BarcodeCacheTest(unittest.TestCase):
         self.assertFalse(decoder.scan_file(self.photo, self.lookup)[2])
         self.assertTrue(decoder.scan_file(self.photo, self.lookup)[2])
 
-    def test_caught_binarizer_failure_does_not_cache_partial_results(self):
-        decoder = self.decoder(tile_scan=False)
-        decoder.zxing = types.SimpleNamespace(read_barcodes=mock.Mock(
-            side_effect=[RuntimeError("decoder failed"), []]))
-        decoder.formats, decoder.binarizers = None, (1, 2)
-        decoder.read = types.MethodType(barcode.Decoder.read, decoder)
-        self.assertEqual(decoder.scan_file(self.photo, self.lookup), ([], None, False))
+    def test_http_scanner_failure_does_not_cache_a_false_negative(self):
+        decoder = barcode.Decoder(barcode.check_options({"tile_scan": False}))
+        decoder.scanner = types.SimpleNamespace(
+            endpoint="http://scanner.test", engine="auto",
+            decode=mock.Mock(side_effect=RuntimeError("scanner failed")))
+        with self.assertRaisesRegex(RuntimeError, "scanner failed"):
+            decoder.scan_file(self.photo, self.lookup)
         self.assertEqual(self.records(), [])
-        decoder.zxing.read_barcodes.side_effect = None
-        decoder.zxing.read_barcodes.return_value = []
-        self.assertFalse(decoder.scan_file(self.photo, self.lookup)[2])
-        self.assertTrue(decoder.scan_file(self.photo, self.lookup)[2])
 
     def test_four_workers_leave_a_valid_shared_record(self):
         decoder = self.decoder(tile_scan=False)

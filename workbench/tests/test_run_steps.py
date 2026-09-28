@@ -171,7 +171,7 @@ class EmbeddingStepsTest(StepsTest):
         self.assertEqual([part["name"] for part in steps],
                          ["Input photo", "Decode codes, whole photo"])
         decode = steps[1]
-        self.assertEqual((decode["ms"], decode["model"]), (12.5, "zxing-cpp"))
+        self.assertEqual((decode["ms"], decode["model"]), (12.5, "qr-scanner"))
         self.assertEqual([item["slug"] for item in decode["lists"][0]["items"]], ["green"])
         self.assertIn("No embedding model ran.", decode["notes"][0])
 

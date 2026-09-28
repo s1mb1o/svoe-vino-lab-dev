@@ -203,6 +203,17 @@ class ProjectConfigTest(unittest.TestCase):
                 self.assertEqual([step["step"] for step in pipeline.views["full"]], kinds)
                 self.assertEqual(pipeline.views["full"][-1]["max_size"], 1024)
 
+    def test_the_project_config_holds_the_two_android_pipelines_without_barcode(self):
+        settings = pipelines.load()
+        for name in ("android-siglip2-base-224-dis-white",
+                     "android-siglip2-base-224-sam3-white"):
+            with self.subTest(name=name):
+                pipeline = settings.find(name)
+                self.assertEqual((pipeline.backend, pipeline.embedding, pipeline.workers),
+                                 ("embedding", name, 1))
+                self.assertIsNone(pipeline.barcode)
+                self.assertIsNone(pipeline.views)
+
     def test_no_embedding_entry_of_the_project_config_has_a_pipeline_backend(self):
         _, config, _ = embeddings.read_config()
         backends = {entry.get("backend") for entry in config.get("embeddings") or []}

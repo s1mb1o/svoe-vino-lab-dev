@@ -37,10 +37,11 @@ A new page `/recognize` recognizes one photo that the user gives.
    trace. It makes the cuts and the model inputs again from the SAM3 answers of
    `data/cache/sam3/`. It needs `ctx.row`, `ctx.spec`, `ctx.photo`, `ctx.lists`,
    `ctx.notes`, and `ctx.db_path`.
-3. The lab server runs on the Homebrew `python3` 3.14.7. That interpreter has numpy,
-   Pillow, and torch. It has no zxing-cpp. `embedding_python`
-   (`~/.venvs/svoe-vino-lab/bin/python`) has zxing-cpp and torch. So a pipeline with the
-   key `barcode` runs only in `embedding_python`. `run_jobs.interpreter` gives that path.
+3. The lab server runs on the Homebrew `python3` 3.14.7. Barcode decoding originally
+   required `zxing-cpp` in `embedding_python`. Since the transport amendment of plan 42
+   on 2026-09-29, both interpreters use the configured HTTP scanner and the workbench
+   does not import `zxing-cpp`. `run_jobs.interpreter` still selects the interpreter of
+   the embedding model.
 4. A new process of `embedding_python` imports the modules in 0.45 s and builds the
    backend of `barcode-siglip2-512-crop` in 1.0 s (measured on 2026-09-26, 4,058 current
    items). A pipeline of the backend `local` also loads its model in each process.

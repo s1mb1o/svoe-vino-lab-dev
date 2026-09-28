@@ -1,7 +1,9 @@
-"""Tests of the client of the existing QR and barcode scanner service."""
+"""Tests of the configured HTTP QR and barcode scanner client."""
+import os
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import requests
 
@@ -56,6 +58,44 @@ class CleanInstancesTest(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(qr_barcode.ScanUnavailable):
                 qr_barcode.clean_instances(value)
 
+    def test_decode_instances_keeps_raw_lookup_values_and_normalizes_the_kind(self):
+        self.assertEqual(qr_barcode.decode_instances([
+            {"text": "4631168664979", "format": "EAN-13"},
+            {"text": "https://example.test/wine", "format": "QR Code"},
+        ]), [
+            {"kind": "barcode", "format": "EAN-13", "text": "4631168664979"},
+            {"kind": "qr_code", "format": "QR Code",
+             "text": "https://example.test/wine"},
+        ])
+
+
+class ConfigTest(unittest.TestCase):
+    def test_literal_and_environment_endpoints_are_supported(self):
+        literal = qr_barcode.client_from_config({
+            "qr_scanner": {"endpoint": "http://scanner.test/root/", "engine": "zxing-cpp"}})
+        self.assertEqual((literal.endpoint, literal.engine),
+                         ("http://scanner.test/root", "zxing-cpp"))
+        config = {"qr_scanner": {"endpoint": "{env:QR_SCANNER_ENDPOINT}"}}
+        with mock.patch.dict(os.environ, {"QR_SCANNER_ENDPOINT": "https://scanner.test/"}):
+            client = qr_barcode.client_from_config(config)
+        self.assertEqual((client.endpoint, client.engine), ("https://scanner.test", "auto"))
+
+    def test_missing_environment_value_is_a_runtime_scan_error(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            client = qr_barcode.client_from_config({
+                "qr_scanner": {"endpoint": "{env:QR_SCANNER_ENDPOINT}"}})
+        self.assertIn("not resolved", client.description)
+        with self.assertRaisesRegex(qr_barcode.ScanUnavailable,
+                                    "QR_SCANNER_ENDPOINT.*not set"):
+            client.scan(b"image")
+
+    def test_invalid_scanner_config_is_refused_without_exposing_an_env_value(self):
+        for raw in ("http://scanner.test", {}, {"endpoint": "QR_SCANNER_ENDPOINT"},
+                    {"endpoint": "{env:BAD NAME}"}, {"endpoint": "http://x", "engine": "bad"},
+                    {"endpoint": "http://x", "extra": True}):
+            with self.subTest(raw=raw), self.assertRaises(qr_barcode.ConfigError):
+                qr_barcode.check_config(raw)
+
 
 class ClientTest(unittest.TestCase):
     def test_scan_uses_the_existing_service_and_auto_engine(self):
@@ -73,7 +113,7 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(request["timeout"], qr_barcode.TIMEOUT)
 
     def test_no_endpoint_or_no_answer_is_an_error(self):
-        with self.assertRaisesRegex(qr_barcode.ScanUnavailable, "QR_SCANNER_ENDPOINT"):
+        with self.assertRaisesRegex(qr_barcode.ScanUnavailable, "not an HTTP"):
             qr_barcode.Client("", Session()).scan(b"image")
         session = Session(error=requests.ConnectionError("connection refused"))
         with self.assertRaisesRegex(qr_barcode.ScanUnavailable, "did not answer"):

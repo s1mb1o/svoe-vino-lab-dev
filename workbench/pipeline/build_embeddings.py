@@ -37,6 +37,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import embeddings  # noqa: E402
+import dis_litert  # noqa: E402
 
 TIMEOUT = 300           # s; a cold start of a gateway model takes up to about 48 s
 RETRY_WAITS = (2, 4, 8)  # s; the waits after HTTP 429, HTTP 5xx, or no answer
@@ -152,6 +153,24 @@ def make_backend(embedding):
     return LocalBackend(embedding)
 
 
+def make_dis_segmenter_for_views(views):
+    """Return one DIS runtime when `views` use `segment_dis`."""
+    specs = [step for steps in views.values() for step in steps
+             if step["step"] == "segment_dis"]
+    if not specs:
+        return None
+    identities = {(step["model"], step["revision"]) for step in specs}
+    if len(identities) != 1:
+        raise embeddings.ConfigError("all segment_dis steps MUST use one model and revision")
+    model, revision = identities.pop()
+    return dis_litert.Segmenter(model, revision)
+
+
+def make_dis_segmenter(embedding):
+    """Return one DIS runtime when the embedding uses `segment_dis`."""
+    return make_dis_segmenter_for_views(embedding.views)
+
+
 class Stop:
     """The signal handler of SIGTERM and SIGINT. The build stops after the present
     batch."""
@@ -165,7 +184,8 @@ class Stop:
             emit("stopping", signal=signal.Signals(signum).name)
 
 
-def run(embedding, db_path, directory, make_backend=make_backend, stop=None,
+def run(embedding, db_path, directory, make_backend=make_backend,
+        make_dis=make_dis_segmenter, stop=None,
         checkpoint_seconds=CHECKPOINT_SECONDS):
     """Build one embedding. Return the counts of the build."""
     stop = stop or Stop()
@@ -247,7 +267,11 @@ def run(embedding, db_path, directory, make_backend=make_backend, stop=None,
     emit("start", name=embedding.name, pid=os.getpid(), items=len(items), current=current,
          todo=len(todo), pruned=pruned)
     backend = None
+    dis_segmenter = None
     if todo:
+        dis_segmenter = make_dis(embedding)
+        if dis_segmenter is not None:
+            software.update(dis_segmenter.software())
         backend = make_backend(embedding)
         software.update(backend.software())
     last_checkpoint = time.monotonic()
@@ -259,7 +283,8 @@ def run(embedding, db_path, directory, make_backend=make_backend, stop=None,
         for key in batch:
             item = items[key]
             try:
-                image = embeddings.prepare(item, sources[key[0]]["path"])
+                image = embeddings.prepare(
+                    item, sources[key[0]]["path"], dis_segmenter=dis_segmenter)
                 png = embeddings.png_bytes(image)
                 embeddings.write_atomic(
                     os.path.join(images_dir, embeddings.image_name(*key)), png)

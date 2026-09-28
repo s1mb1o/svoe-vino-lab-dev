@@ -2631,6 +2631,49 @@ The selected answer:
 1
 ```
 
+## 2026-09-29T00:40:16+0300
+
+```text
+check that "auto" matches its previous behaviour
+```
+
+## 2026-09-29T00:05:01+0300
+
+```text
+/Volumes/T7\_2TB/Projects-T7\_2TB/drink-atlas-workspace/svoe-vino-lab/workbench/pipeline/barcode.py refactor to use HTTP `POST $QR_SCANNER_ENDPOINT/scan`.
+
+also instead using ` $QR_SCANNER_ENDPOINT`, use from config.yaml (support {env:`QR_SCANNER_ENDPOINT`})
+```
+
+## 2026-09-29T00:03:42+0300
+
+```text
+[http://127.0.0.1:8168/testset?set=my&q=vibes](http://127.0.0.1:8168/testset?set=my\&q=vibes) 
+
+drop from [https://ya.ru/images/search?cbir\_id=7888959%2F7\_KRaBfZ8MEQuQzrGf8dJA9277&cbir\_id=7888959%2F7\_KRaBfZ8MEQuQzrGf8dJA9277&cbird=188&rpt=imageview&rpt=imageview&tabInt=1&url=https%3A%2F%2Favatars.mds.yandex.net%2Fget-images-cbir%2F7888959%2F7\_KRaBfZ8MEQuQzrGf8dJA9277%2Forig](https://ya.ru/images/search?cbir_id=7888959%2F7_KRaBfZ8MEQuQzrGf8dJA9277\&cbir_id=7888959%2F7_KRaBfZ8MEQuQzrGf8dJA9277\&cbird=188\&rpt=imageview\&rpt=imageview\&tabInt=1\&url=https%3A%2F%2Favatars.mds.yandex.net%2Fget-images-cbir%2F7888959%2F7_KRaBfZ8MEQuQzrGf8dJA9277%2Forig) stop working
+```
+
+## 2026-09-28T23:59:58+0300
+
+```text
+прогони их на my и сравни результаты (отключи barcode)
+```
+
+The agent proposed a temporary configuration and two permanent pipeline entries.
+The owner selected the permanent entries.
+
+## 2026-09-29T00:10:11+0300
+
+```text
+Добавить два постоянных pipeline в `config.yaml`, чтобы потом повторять тест через UI.
+```
+
+## 2026-09-28T23:13:17+0300
+
+```text
+do we use zxing-cpp directly from lab_server.py?
+```
+
 ## 2026-09-28T18:25:00+0300
 
 ```text
@@ -7920,4 +7963,109 @@ The agent asked one question. The selected answer:
 
 ```text
 What should the check of svoe-vino-lab cover? = Health + what's-left report (Recommended)
+```
+
+## 2026-09-28T21:41:25+0300
+
+```text
+Создай в workbench новую конфигурацию embedding и назови ее android-..., запусти вычисление
+```
+
+The agent asked which configuration to create. The selected answer:
+
+## 2026-09-28T21:46:16+0300
+
+```text
+1 and 2
+```
+
+## 2026-09-28T22:23:05+0300
+
+```text
+status?
+```
+
+## 2026-09-28T23:00:51+0300
+
+```text
+svoe-vino-lab/workbench
+
+read project
+```
+
+## 2026-09-28T23:05:46+0300
+
+```text
+[http://127.0.0.1:8168/testset?set=my&cluster=gx10-siglip2-so400m-patch16-naflex-p256](http://127.0.0.1:8168/testset?set=my\&cluster=gx10-siglip2-so400m-patch16-naflex-p256)
+
+add advanced filter by tag. Show only existing tags in dropdown list
+```
+
+## 2026-09-28T23:06:00+0300
+
+```text
+svoe-vino-lab/workbench
+
+did we add checking barcode when adding additional image?
+```
+
+## 2026-09-28T23:10:10+0300
+
+```text
+Когда закончится, то
+Добавь в документацию svoe-vino-lab/android что мы проверили совпадение векторов и модели.
+Нужно фикстировать результаты тестов
+
+Лучше не в README.md а в соседнем файле
+Но ссылку из README сделай
+```
+
+## 2026-09-28T23:11:34+0300
+
+```text
+Svoe-vino-lab testset page. Add advanced filter by specific tag. Ex: All - show all values, No tag - no tags, next list of available tags
+```
+
+The agent proposed three filter scopes. The owner selected the row filter. The owner
+also allowed separate hunks in the files of the stale tag task section.
+
+```text
+1
+```
+
+## 2026-09-29T00:48:14+0300
+
+````text
+svoe-vino-lab/matcher
+
+
+
+let's test /Volumes/T7\_2TB/Projects-T7\_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/eval with out matcher.&#x20;
+
+
+
+from "my" testset take only R\@1 candidates. make queries.tsv and pass to ./participant\_test.sh&#x20;
+
+get at the end
+
+predictions.jsonl, по одной JSON-строке на фотографию:
+```json
+{"query_id":"q-000001","image_path":"019c68d0.jpg","image_sha256":"8d9c821e...","predicted_slug":"kokur-suhoe-2025","latency_ms":842}
+```
+
+compare that all matched (because we passed R\@1), it is expected to match.
+
+
+
+Idea is to test pipeline.&#x20;
+
+
+
+For R\@1 candidates use runs results of same pipeline as in matcher.
+````
+
+## 2026-09-29T00:51:28+0300
+
+```text
+`engine: zxing-cpp` for closer performance and behavior.
 ```

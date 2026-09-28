@@ -108,6 +108,17 @@ class FakeSam3:
         return out, 1.0
 
 
+class FakeDis:
+    """A DIS runtime that returns a deterministic crop on white."""
+
+    def __init__(self):
+        self.calls = []
+
+    def segment(self, image, threshold=0.5, margin=0.04):
+        self.calls.append((threshold, margin))
+        return image.crop((10, 20, image.width - 10, image.height - 20))
+
+
 class ColourModel:
     """A model of the tests: the vector of an image is its mean colour. `calls` holds the
     count of the images of each request."""
@@ -471,6 +482,10 @@ class RunTest(Temporary):
 RESIZE_64 = {"step": "resize", "max_size": 64, "aspect": "keep", "upscale": False}
 AS_IS = {"full": [RESIZE_64]}
 CROP = {"full": [{"step": "segment", "target": "package"}, RESIZE_64]}
+DIS = {"full": [
+    {"step": "segment_dis", "model": "dis", "revision": "one",
+     "threshold": 0.5, "margin": 0.04},
+    {"step": "white_background"}, RESIZE_64]}
 
 
 class PipelineViewsTest(Temporary):
@@ -498,6 +513,31 @@ class PipelineViewsTest(Temporary):
         self.assertTrue(np.array_equal(np.asarray(inputs["full"]), np.asarray(expected)))
         self.assertEqual(sam3.calls, 1)  # the package cut alone; no label request
         self.assertNotEqual(inputs["full"].getpixel((0, 0)), (255, 255, 255))
+
+    def test_a_dis_view_uses_the_dis_runtime_and_does_not_use_sam3(self):
+        image = query_photo("red")
+        dis = FakeDis()
+        inputs, missing = embedding_run.query_inputs(
+            image, DIS, FakeSam3(down=True), dis_segmenter=dis)
+        self.assertEqual((list(inputs), missing, dis.calls),
+                         (["full"], {}, [(0.5, 0.04)]))
+        expected = embeddings.resize(
+            image.crop((10, 20, image.width - 10, image.height - 20)), RESIZE_64)
+        self.assertTrue(np.array_equal(np.asarray(inputs["full"]), np.asarray(expected)))
+
+    def test_build_backend_creates_the_dis_runtime_for_the_effective_views(self):
+        dis = FakeDis()
+        seen = []
+
+        def make_dis(views):
+            seen.append(views)
+            return dis
+
+        backend = embedding_run.build_backend(
+            self.embedding, self.lab.db_path, make_model=lambda e: ColourModel(),
+            segmenter=FakeSam3(down=True), name="dis", views=DIS, make_dis=make_dis)
+        self.assertIs(backend.dis_segmenter, dis)
+        self.assertEqual(seen, [DIS])
 
     def run_as_is(self):
         self.model = ColourModel()

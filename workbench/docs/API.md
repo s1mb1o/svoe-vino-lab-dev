@@ -236,7 +236,8 @@ returns the active file names of the slug. The Dataset page calls the route only
 the reviewer presses `Apply`.
 
 The lab server stores the photo in its image store and scans it with
-`POST $QR_SCANNER_ENDPOINT/scan`, with `engine=auto` (plan 76). Each valid barcode is
+`POST <qr_scanner.endpoint>/scan`, with the engine of the top-level `qr_scanner` key of
+`config.yaml` (plan 76). The endpoint MAY be `"{env:QR_SCANNER_ENDPOINT}"`. Each valid barcode is
 normalized as a GTIN-14. Each QR code that contains an HTTP or HTTPS URL is normalized
 as a QR URL. Missing values are added to `wine_code` before the response record is
 built. Invalid values and existing values are ignored. A scanner failure does not
@@ -860,6 +861,26 @@ unknown entry; `409` while the self-test of the entry runs.
 selftest-<embedding>`, `options.set: dataset`, and `use_barcode: false`. Each row has the
 `wine_slug` of its image as the truth, and `image_path` is
 `<wine_slug>/<image_type>-<first 12 hex of sha256>.<extension>`.
+
+## Browser-image drops on the Testset
+
+### `POST /api/testset-fetch`
+
+The body is `{"set", "place", "url"}`. `place` is a wine slug, `__null__`, or
+`__drawer__`. The route fetches an image dragged from another browser page and then
+applies the rules of `POST /api/testset-upload`: supported image type, 20 MB and pixel
+limits, duplicate checks, safe file name, image-store write, and a new unlabelled
+`test_photo`. The answer has the upload answer plus `source_url`.
+
+The fetch happens before the database write transaction. The initial HTTP(S) address
+and each redirect MUST resolve only to public addresses; loopback, private, link-local,
+reserved, multicast, and credential-bearing addresses are refused. The response is read
+only through the 20 MB limit. The image signature, not its URL or response media type,
+decides whether it is a JPEG, PNG, WebP, GIF, or BMP.
+
+Errors: `400` for an absent, unsafe, unreachable, empty, oversized, or non-image address;
+`404` for an unknown set or place; `409` when the place holds the image already; `405`
+for another method; `503` for a database error.
 
 ## Image tags of the Testset — plan 66
 

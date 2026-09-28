@@ -2,6 +2,43 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-28 — Android SigLIP2 Base 224 and DIS contracts
+
+The Android application uses `vit_base_patch16_siglip_224.v2_webli`. The model returns
+768 values. The LiteRT conversion identifies the source checkpoint as
+`timm/vit_base_patch16_siglip_224.v2_webli`. Revision
+`4c3661e5ac879a276ddc5ddc6d3f0ecc78fd5d82` was the present revision during this work.
+
+The GX10 `transformers` backend loads this timm checkpoint through `AutoModel`. It returns
+`pooler_output` with shape 1 by 768. Bfloat16 does not work in the present service because
+the processor returns float32 input while the model bias is bfloat16. Float32 returns a
+finite vector. The service normalizes it to length 1.
+
+The Android LiteRT file is `siglip2_base_224_fp16.tflite` from
+`litert-community/SigLIP2-base-patch16-224` revision
+`509b5cbcf1a849f37696be08f8297c6cd3050bf4`. Its SHA-256 is
+`a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854`.
+The GX10 timm processor uses `crop_pct=0.9`. Thus it resizes a 224 by 224 prepared image
+to 248 by 248 pixels and takes the centered 224 by 224 crop. A 32-image comparison
+without this crop had cosine values from 0.8103079 to 0.9761065. The same comparison
+with this crop had cosine values from 0.9999990 to 0.9999999. The Android encoder now
+uses the same crop.
+
+The Android DIS model is `litert-community/DIS-ISNet-LiteRT`, file `dis.tflite`, at
+revision `1b966dbe2f33bd5ca1299cf94fbab59265210b6b`. It accepts RGB float32 NCHW input
+with shape 1 by 3 by 1024 by 1024. Its normalization is `x / 255 - 0.5`. The output is
+one 1024 by 1024 soft mask. The model card calls this output an alpha mask. The measured
+TFLite output of a real catalogue image was in the interval 0.5 to 0.731. Thus threshold
+0.5 selected the full image. The reference DIS inference code applies per-image min-max
+normalization before it uses the mask. The Android and workbench paths now apply this
+normalization. The crop then uses threshold 0.5, rejects fractions below 0.005 and above
+0.995, adds a 4 percent box margin, composites the normalized soft mask on white, and
+centers the crop on a white square.
+
+The shared llama-swap gateway was not reloaded. Another active project used SAM3. A
+reload would unload that model. The build uses an isolated float32 endpoint on GX10
+port 5997 instead.
+
 ## 2026-09-28 — The content of `data/`, and a split into catalogue, test data, and cache
 
 The owner asked on 2026-09-28T16:21:20+0300 for three directories: one for the catalogue

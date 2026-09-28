@@ -13,7 +13,8 @@
    Dataset page (`wine_comment`); the exclusion went away (plan 51). The right sidebar
    is the Drawer (`__drawer__`): a photo there waits for a wine, and no run uses it. The
    first row of the table is "No Match" (`__null__`): a run uses its photos, and the
-   right answer is no match (plan 36, owner answer of 2026-09-26T00:29:00). The copy, the upload, and the checks of the old page are not here. */
+   right answer is no match (plan 36, owner answer of 2026-09-26T00:29:00). The copy and
+   the checks of the old page are not here. */
 
 /* The catalogue image of a wine with a `main_patched` image: the page shows the patch.
    The mark sits ON the image, in the top right corner. */
@@ -635,7 +636,7 @@ tbody tr.cat-only { background: var(--panel-2); }
     <!-- `Additional settings` shows or hides the row #more (owner answer of 2026-09-26
          01:08:49). The number counts its selects that are not at their default. -->
     <button id="more-btn" type="button" aria-expanded="false" aria-controls="more"
-            title="show or hide Marks and Clusters; the number counts those that are not at their default"
+            title="show or hide Marks, Tag, and Clusters; the number counts those that are not at their default"
             >Additional settings<b id="more-n"></b></button>
     <label>Find <input id="q" type="search" placeholder="slug, name, producer, region"></label>
     <button id="grp-clear" type="button" hidden
@@ -660,8 +661,8 @@ tbody tr.cat-only { background: var(--panel-2); }
       </select>
     </label>
     <label>Tag
-      <select id="tag" title="a photo of the wine shows an image with this tag (plan 66)">
-        <option value="">any</option>
+      <select id="tag" title="show all wines, wines with an untagged photo, or wines with a photo that has one specific tag">
+        <option value="">All</option>
       </select>
     </label>
     <label>Clusters
@@ -677,9 +678,9 @@ tbody tr.cat-only { background: var(--panel-2); }
         title="hide the Drawer (key s)">&times;</button>Drawer
     <span class="n" id="held-n">0</span>
     <div class="sb-help">Drag a photo here to keep it for a later wine; drag it onto a
-      wine row to move it there. Image files from the Finder go here or onto a row too.
-      No run uses a photo of the Drawer. A photo that must give no match goes to the row
-      "No Match".</div>
+      wine row to move it there. Images from the Finder or another browser page go here
+      or onto a row too. No run uses a photo of the Drawer. A photo that must give no
+      match goes to the row "No Match".</div>
   </div>
   <div id="held"></div>
 </aside>
@@ -790,6 +791,8 @@ let LB = null;        // the place of the large view: { wine: index in VIEW, pho
 let TOTAL = 0;
 let EDITED_AT = null; // the time of the last page edit of the set, as the server writes it
 let GROUP_FILTER = "";
+// `~` is not valid in a tag, so this value cannot collide with a tag of an image.
+const TAG_NONE = "~untagged";
 
 const $ = s => document.querySelector(s);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
@@ -1229,7 +1232,11 @@ function render() {
   let rows = ROWS.filter(r => !isSpecialRow(r) && matchFilter(r, filts));
   if (terms.length) rows = rows.filter(r => matchQuery(r, terms));
   const tagWant = $("#tag").value;
-  if (tagWant) rows = rows.filter(r => r.photos.some(p => photoTags(p).includes(tagWant)));
+  if (tagWant === TAG_NONE) {
+    rows = rows.filter(r => r.photos.some(p => !photoTags(p).length));
+  } else if (tagWant) {
+    rows = rows.filter(r => r.photos.some(p => photoTags(p).includes(tagWant)));
+  }
   if (GROUP_FILTER) rows = rows.filter(r => r.group === GROUP_FILTER);
   rows = sortRows(rows, mode);
   let heads = null;
@@ -1791,6 +1798,49 @@ async function moveTo(slug, file, to) {
 function hasPhoto(ev) {
   return !!ev.dataTransfer && [...ev.dataTransfer.types].includes(PHOTO_TYPE);
 }
+
+/* A drag from another page carries an image address, usually as HTML and a URI list.
+   Prefer the IMG address: a linked image can put the surrounding page in the URI list.
+   Yandex Images also keeps the original address in `url=` of its viewer URL. */
+const URL_TYPES = ["text/html", "text/uri-list", "DownloadURL", "text/plain"];
+function hasExternalImage(ev) {
+  if (!ev.dataTransfer || hasPhoto(ev)) return false;
+  const types = [...ev.dataTransfer.types];
+  return types.includes("Files") || URL_TYPES.some(type => types.includes(type));
+}
+function directImageUrl(value) {
+  const raw = (value || "").trim();
+  if (!/^(https?:|data:image\/)/i.test(raw)) return "";
+  try {
+    const parsed = new URL(raw, location.href);
+    const yandex = parsed.hostname === "ya.ru" || parsed.hostname === "yandex.ru" ||
+      parsed.hostname.endsWith(".yandex.ru") || parsed.hostname.endsWith(".yandex.com");
+    const original = yandex && parsed.pathname === "/images/search"
+      ? parsed.searchParams.get("url") : "";
+    if (original && /^(https?:|data:image\/)/i.test(original)) return original;
+    return parsed.href;
+  } catch (e) { return ""; }
+}
+function urlOfDrop(dt) {
+  const html = dt.getData("text/html") || "";
+  if (html) {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const image = doc.querySelector("img[src]");
+    const src = image && directImageUrl(image.getAttribute("src"));
+    if (src) return src;
+  }
+  const download = dt.getData("DownloadURL") || "";
+  const downloadMatch = /^[^:]+:[^:]*:(.+)$/s.exec(download);
+  if (downloadMatch) {
+    const src = directImageUrl(downloadMatch[1]);
+    if (src) return src;
+  }
+  const uri = (dt.getData("text/uri-list") || "").split("\n")
+    .map(value => value.trim()).find(value => value && !value.startsWith("#"));
+  const fromUri = directImageUrl(uri);
+  if (fromUri) return fromUri;
+  return directImageUrl((dt.getData("text/plain") || "").split("\n")[0]);
+}
 function readPhoto(ev) {
   try {
     const raw = ev.dataTransfer.getData(PHOTO_TYPE);
@@ -1814,20 +1864,23 @@ document.addEventListener("dragend", () => {
   $("#side").classList.remove("over");
 });
 $("#side").addEventListener("dragover", ev => {
-  if (!hasPhoto(ev) && !hasFiles(ev)) return;
+  if (!hasPhoto(ev) && !hasExternalImage(ev)) return;
   ev.preventDefault();
-  ev.dataTransfer.dropEffect = hasFiles(ev) ? "copy" : "move";
+  ev.dataTransfer.dropEffect = hasPhoto(ev) ? "move" : "copy";
   $("#side").classList.add("over");
 });
 $("#side").addEventListener("dragleave", ev => {
   if (!$("#side").contains(ev.relatedTarget)) $("#side").classList.remove("over");
 });
 $("#side").addEventListener("drop", ev => {
-  if (hasFiles(ev)) {
+  if (hasExternalImage(ev)) {
     ev.preventDefault();
     ev.stopPropagation();
     $("#side").classList.remove("over");
-    uploadFiles([...ev.dataTransfer.files], DRAWER_SLUG);
+    const files = [...ev.dataTransfer.files];
+    const url = files.length ? "" : urlOfDrop(ev.dataTransfer);
+    if (files.length) uploadFiles(files, DRAWER_SLUG);
+    else if (url) uploadUrl(url, DRAWER_SLUG);
     return;
   }
   if (!hasPhoto(ev)) return;
@@ -1838,34 +1891,37 @@ $("#side").addEventListener("drop", ev => {
   if (d) moveTo(d.slug, d.file, DRAWER_SLUG);
 });
 document.addEventListener("dragover", ev => {
-  if (!hasPhoto(ev) && !hasFiles(ev)) return;
+  if (!hasPhoto(ev) && !hasExternalImage(ev)) return;
   const tr = ev.target.closest && ev.target.closest("tr[data-slug]");
-  // A file dropped out of a target MUST NOT open in the tab and replace the page. The
+  // An external drop out of a target MUST NOT open in the tab and replace the page. The
   // sidebar is a target: its own listener sets the effect.
-  if (!tr && hasFiles(ev) && !$("#side").contains(ev.target)) {
+  if (!tr && hasExternalImage(ev) && !$("#side").contains(ev.target)) {
     ev.preventDefault();
     ev.dataTransfer.dropEffect = "none";
   }
   if (!tr) return;
   ev.preventDefault();
-  ev.dataTransfer.dropEffect = hasFiles(ev) ? "copy" : "move";
+  ev.dataTransfer.dropEffect = hasPhoto(ev) ? "move" : "copy";
   if (!tr.classList.contains("photo-drop")) {
     document.querySelectorAll("tr.photo-drop").forEach(x => x.classList.remove("photo-drop"));
     tr.classList.add("photo-drop");
   }
 });
 document.addEventListener("dragleave", ev => {
-  if (!hasPhoto(ev) && !hasFiles(ev)) return;
+  if (!hasPhoto(ev) && !hasExternalImage(ev)) return;
   const tr = ev.target.closest && ev.target.closest("tr[data-slug]");
   if (tr && !tr.contains(ev.relatedTarget)) tr.classList.remove("photo-drop");
 });
 document.addEventListener("drop", ev => {
-  if (hasFiles(ev)) {
+  if (hasExternalImage(ev)) {
     ev.preventDefault();
     const tr = ev.target.closest && ev.target.closest("tr[data-slug]");
     if (!tr) return;
     tr.classList.remove("photo-drop");
-    uploadFiles([...ev.dataTransfer.files], tr.dataset.slug);
+    const files = [...ev.dataTransfer.files];
+    const url = files.length ? "" : urlOfDrop(ev.dataTransfer);
+    if (files.length) uploadFiles(files, tr.dataset.slug);
+    else if (url) uploadUrl(url, tr.dataset.slug);
     return;
   }
   if (!hasPhoto(ev)) return;
@@ -1877,15 +1933,13 @@ document.addEventListener("drop", ev => {
   if (d) moveTo(d.slug, d.file, tr.dataset.slug);
 });
 
-/* ---- the upload of image files from the file manager ----
+/* ---- uploads from the file manager and another browser page ----
    A drop of files from the macOS Finder onto the sidebar or onto a wine row stores each
-   file in that place (owner answers of 2026-09-25T18:25:10). The new photo has no label.
-   The server refuses an image that the place holds already. */
+   file in that place (owner answers of 2026-09-25T18:25:10). A browser-image drop sends
+   its address to the server, because cross-origin rules prevent the page from reading
+   the bytes. The new photo has no label. The server refuses an image that the place
+   holds already. */
 const UPLOAD_MAX = 20 * 1024 * 1024;   // `testsets.UPLOAD_MAX`
-
-function hasFiles(ev) {
-  return !!ev.dataTransfer && [...ev.dataTransfer.types].includes("Files");
-}
 
 async function uploadFiles(files, to) {
   const dst = ROWS.find(r => r.slug === to);
@@ -1921,6 +1975,38 @@ async function uploadFiles(files, to) {
   if (bad.length) {
     alert(`${bad.length} of ${files.length} file(s) not stored:\n` + bad.join("\n"));
   }
+}
+
+async function uploadUrl(url, to) {
+  const dst = ROWS.find(r => r.slug === to);
+  document.body.classList.add("uploading");
+  let out = {};
+  try {
+    const res = await fetch("/api/testset-fetch", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ set: SET, place: to, url }),
+    });
+    try { out = await res.json(); } catch (e) { out = {}; }
+    if (!res.ok) throw new Error(out.error || ("HTTP " + res.status));
+  } catch (e) {
+    alert(`the image is not stored:\n${url}\n\n${e.message}`);
+    return;
+  } finally {
+    document.body.classList.remove("uploading");
+  }
+  if (!dst) { load(SET, false); return; }           // a wine with no row: draw all again
+  const photo = { ...out.photo };
+  delete photo.place;
+  dst.photos.push(photo);
+  (V[to] = V[to] || {})[photo.file] = entryWithComments(photo);
+  dst.photos.sort(byRank);
+  const confs = dst.photos.map(p => p.conf).filter(c => c !== null && c !== undefined);
+  dst.min_conf = confs.length ? Math.min(...confs) : null;
+  dst.catalog_only = !isSpecialRow(dst) && !dst.photos.length;
+  refreshRow(dst);
+  TOTAL = photoTotal();
+  EDITED_AT = localStamp();
+  stats();
 }
 
 /* Show only the wines of one variant group, or every wine again. */
@@ -2187,14 +2273,19 @@ function tagState(text, cls) {
    change under the pointer after a remove; a load of a set drops it. */
 function renderTagOptions(keep) {
   const n = new Map();
-  for (const r of ROWS) for (const p of r.photos) for (const tag of photoTags(p)) {
-    n.set(tag, (n.get(tag) || 0) + 1);
+  let untagged = 0;
+  for (const r of ROWS) for (const p of r.photos) {
+    const tags = photoTags(p);
+    if (!tags.length) untagged++;
+    for (const tag of tags) n.set(tag, (n.get(tag) || 0) + 1);
   }
   const want = $("#tag").value;
-  if (want && keep && !n.has(want)) n.set(want, 0);
-  $("#tag").innerHTML = `<option value="">any</option>` + [...n.keys()].sort().map(tag =>
-    `<option value="${esc(tag)}">${esc(tag)} (${n.get(tag)})</option>`).join("");
-  $("#tag").value = n.has(want) ? want : "";
+  if (want && want !== TAG_NONE && keep && !n.has(want)) n.set(want, 0);
+  $("#tag").innerHTML = `<option value="">All</option>` +
+    `<option value="${TAG_NONE}">No tag (${untagged})</option>` +
+    [...n.keys()].sort().map(tag =>
+      `<option value="${esc(tag)}">${esc(tag)} (${n.get(tag)})</option>`).join("");
+  $("#tag").value = want === TAG_NONE || n.has(want) ? want : "";
 }
 
 function renderPhotoTags() {

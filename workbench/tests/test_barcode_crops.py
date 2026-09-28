@@ -296,7 +296,9 @@ class CropTest(unittest.TestCase):
         output = self.root / "output"
         source = dict(query(), path="/fake/image.jpg")
         meta = {"answered": 1, "query_set": {"total": 1},
-                "backend": {"barcode": {}}, "options": {"database": "fake"}}
+                "backend": {"barcode": {
+                    "scanner": {"endpoint": "http://scanner.test", "engine": "auto"}}},
+                "options": {"database": "fake"}}
         gate = {"manifest": {"baseline": str(baseline.resolve()), "files": {},
                              "lookup": [["gtin", "04631168664979", ["wine-a"]]]}}
         args = ["--baseline-run", str(baseline), "--baseline-log", str(self.root / "baseline.log"),
@@ -313,7 +315,6 @@ class CropTest(unittest.TestCase):
             stack.enter_context(mock.patch.object(bench, "grouped_rows", return_value=[source]))
             stack.enter_context(mock.patch.object(bench, "verify_source"))
             stack.enter_context(mock.patch.object(bench.model_cache, "ROOT", str(self.root / "production-cache")))
-            stack.enter_context(mock.patch.object(bench.base.barcode, "version", return_value="test-zxing"))
             loading = stack.enter_context(mock.patch.object(bench.base.barcode.CodeLookup, "load", return_value=LOOKUP))
             prepare = stack.enter_context(mock.patch.object(bench, "prepare_one", return_value=prepared()))
             scan = stack.enter_context(mock.patch.object(bench, "scan_prepared", return_value=measured))

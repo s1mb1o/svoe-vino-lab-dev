@@ -888,10 +888,10 @@ Make two test photos from one catalogue image: the whole bottle, and a crop of i
 | AL26 | Press a type button, and press `×` of the same photo while the card is dimmed | `×` is disabled until the type change is done. |
 | AL27 | Drop a phone photo with a long side above 1,536 px | `image.width` and `image.height` of the file are its real size, not the size of the SAM3 copy. |
 | AL28 | Open `$H/dataset/vysokij-bereg-risling-zelenaya-seriya/alternative/d9f847bd293aca369dd9232a8550afc78d98b73f617494165ee4fe7e22536b06` and click `label_back · processed` | The cut shows the whole back label with the barcode, not the QR sticker alone. `image_derivative` of the photo (kind `label`) holds `alternatives.SETTINGS_LABEL_CLOSE_UP` and the box 102, 61, 1247, 1553. |
-| AL29 | Run `python3 -m unittest discover -s tests -p 'test_qr_barcode.py'`, then the same with `test_alternative_codes.py` | 5 and 3 tests pass. No test calls a network service. |
-| AL30 | Start the lab server with `QR_SCANNER_ENDPOINT` set. Upload an additional image that contains EAN-13 `4631168664979` and a QR code with `URL:https://Example.test:443/wine/1#label`. | The same card shows GTIN `04631168664979` and QR URL `https://example.test/wine/1` when the upload finishes. Both values are rows of `wine_code`. |
+| AL29 | Run `python3 -m unittest discover -s tests -p 'test_qr_barcode.py'`, then the same with `test_alternative_codes.py` | 9 and 3 tests pass. No test calls a network service. |
+| AL30 | Set `qr_scanner.endpoint: "{env:QR_SCANNER_ENDPOINT}"` in `config.yaml`, start the lab server with that variable set, and upload an additional image that contains EAN-13 `4631168664979` and a QR code with `URL:https://Example.test:443/wine/1#label`. | The same card shows GTIN `04631168664979` and QR URL `https://example.test/wine/1` when the upload finishes. Both values are rows of `wine_code`. |
 | AL31 | Upload an additional image that contains Code 128 `LOT-12` and a QR code with plain text. | The photo is stored. No code field changes. The lab stores GTINs and HTTP or HTTPS QR URLs alone. |
-| AL32 | Stop the service at `QR_SCANNER_ENDPOINT`, then upload a valid additional image. | The photo is stored and processed. The page warns `QR/barcode scan failed: …; the photo is stored without new code fields.` |
+| AL32 | Stop the service at the resolved `qr_scanner.endpoint`, then upload a valid additional image. | The photo is stored and processed. The page warns `QR/barcode scan failed: …; the photo is stored without new code fields.` |
 | AL33 | Restore the scanner and upload the same file as in AL32. Upload it one more time. | The first retry fills its code fields. The second retry scans again and adds no duplicate row. |
 
 ## The patch editor of the lab server — `/api/dataset-patch`
@@ -1247,7 +1247,7 @@ write cases on a copy: start `python3 pipeline/lab_server.py --port 8174 --no-br
 | TP21 | Open a photo of a wine in the large view | The position reads `wine <i> of <n>`; `<n>` is the count of the wine rows of the table, without `No Match` and the Drawer. |
 | TP22 | Press `0` in the large view of a wine photo | The photo moves to the Drawer; the large view shows the next photo. |
 | TP23 | Add a comment to a photo; then add a wine comment | After the photo comment, the stats line shows the new `last edit` time. The wine comment does not change it: a wine comment belongs to no set (plan 51). |
-| TP24 | Look at the filter row of `/testset` | Three selects `Progress`, `Verdict`, and the button `Additional settings`; `Marks` and `Clusters` stand in the row of the button (TP36). There is no `Show`, no `Slugs`, and no `Wine`. `Progress` holds `all`, `not fully labelled`, `no label yet`, `partly labelled`, `fully labelled`, `no candidate photos`. `Verdict` holds `any`, `positive`, `no positive`, `negative`, `unusable`, `different design`. `Marks` holds `any`, `a comment`, `an agent proposal`, `a deletion mark`, `a box`. `Clusters` holds `No` and each embedding with a `clusters.json`: on 2026-09-26 `gx10-siglip2-so400m-patch16-naflex-p256 (168 clusters)`. |
+| TP24 | Look at the filter row of `/testset` | Three selects `Progress`, `Verdict`, and the button `Additional settings`; `Marks`, `Tag`, and `Clusters` stand in the row of the button (TP36). There is no `Show`, no `Slugs`, and no `Wine`. `Progress` holds `all`, `not fully labelled`, `no label yet`, `partly labelled`, `fully labelled`, `no candidate photos`. `Verdict` holds `any`, `positive`, `no positive`, `negative`, `unusable`, `different design`. `Marks` holds `any`, `a comment`, `an agent proposal`, `a deletion mark`, `a box`, `a tag`. `Tag` holds `All`, `No tag`, and the tags in the selected set. `Clusters` holds `No` and each embedding with a `clusters.json`: on 2026-09-26 `gx10-siglip2-so400m-patch16-naflex-p256 (168 clusters)`. |
 | TP25 | Set `Progress` to `partly labelled` and `Verdict` to `negative` | The table holds the wines that pass both axes. On 2026-09-26 in `my`: 62 of 2105 (184 for `partly labelled` alone, 357 for `negative` alone). The address holds `filter=partial&verdict=has_neg`. |
 | TP26 | Set `Progress` to `no candidate photos`, then `Verdict` to `no positive` | First 412 rows (2026-09-26, `my`), then 0. A wine with no photo in the set shows only when `Verdict`, `Marks`, and `Wine` stand on `any`. |
 | TP27 | Open an address of the old single select: `/testset?filter=has_pos`, `?filter=noted` | The value goes to its axis: `Verdict` `positive`, `Marks` `a comment`. The address changes to `verdict=has_pos`, `marks=noted`. The count equals the count of the old option. |
@@ -1259,11 +1259,12 @@ write cases on a copy: start `python3 pipeline/lab_server.py --port 8174 --no-br
 | TP33 | Click `open on /clusters` of a header | A new tab opens `/clusters` with the view `combined`. The same cluster (same id) is marked and scrolled into view. |
 | TP34 | Reload `/testset` with no query after TP30 | `Clusters` comes back on the embedding of TP30, and the table is grouped again. `?cluster=<embedding>` opens the same view; `?filter=grouped` and `?filter=removed` open with `Clusters` on `No`. |
 | TP35 | Width 390 px and the dark theme with a cluster chosen | The header rows are readable in both themes. No horizontal scroll. |
-| TP36 | Open `/testset` with an empty localStorage | The second row is hidden. The button reads `Additional settings`. A click shows the row with `Marks` and `Clusters` and marks the button; a second click hides it. A reload keeps the open state. |
+| TP36 | Open `/testset` with an empty localStorage | The second row is hidden. The button reads `Additional settings`. A click shows the row with `Marks`, `Tag`, and `Clusters` and marks the button; a second click hides it. A reload keeps the open state. |
 | TP37 | Choose an embedding in `Clusters`, then `a comment` in `Marks`, then hide the row | The button reads `Additional settings · 1`, then `· 2`. With the row hidden, the count stays. |
 | TP38 | With `Clusters` on `No`, open `Sort` | `cluster size, largest first` is disabled. `?sort=cluster_size` alone opens with `slug A-Z`. |
 | TP39 | Choose an embedding in `Clusters` and `cluster size, largest first` in `Sort` | The first headers read `c001 · 8 of 8`, then the clusters of 6 (`c002`, `c003`, `c004` on 2026-09-26). Each size stands before a smaller size; a tie goes by the id. Inside a cluster the rows go by slug. The address holds `sort=cluster_size`. |
 | TP40 | Set `Clusters` back to `No` after TP39 | `Sort` goes to `slug A-Z`, and `cluster size, largest first` is disabled again. |
+| TP41 | Open the reported Yandex Images viewer, then drag its selected image onto the Drawer and onto a wine row | Each target gets its dashed frame. The page reads the image URL from the browser drag, `POST /api/testset-fetch` answers 200, and the 1000 × 1500 WebP appears as an unlabelled card. A reload keeps it. Dropping the same bytes in the same place reports the existing-photo error. |
 
 ### The row "No Match" and the Drawer
 
@@ -1468,12 +1469,12 @@ Read [plan 42](docs/plans/42_barcode-step.md). `$H` is `http://127.0.0.1:8168`.
 
 | # | Case | Expected result |
 |---|---|---|
-| BC1 | `~/.venvs/svoe-vino-lab/bin/python -m unittest discover -s tests -p 'test_barcode.py'` | 28 tests `OK` (2026-09-26). With system `python3`: 28 tests, `OK (skipped=5)`; the decoder tests need zxing-cpp. |
-| BC2 | `~/.venvs/svoe-vino-lab/bin/python -c "import importlib.metadata as m; print(m.version('zxing-cpp'))"` | `2.3.0`. |
+| BC1 | `python3 -m unittest discover -s tests -p 'test_barcode.py'`, then the same with `test_qr_barcode.py` and `test_barcode_cache.py` | 27, 9, and 12 tests are `OK`. No test loads zxing-cpp or calls the network. |
+| BC2 | Set `QR_SCANNER_ENDPOINT=http://scanner.example`, load `config.yaml` with `pipelines.load`, and inspect one barcode twin's `scanner` | `endpoint` stays the config reference `{env:QR_SCANNER_ENDPOINT}` and `engine` is `zxing-cpp`; backend construction resolves the URL for the HTTP client. |
 | BC3 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import pipelines; s = pipelines.load(); print(sum(1 for n, p, e in s.entries if p and p.barcode), [n for n, p, e in s.entries if e])"` | `22 []`: 22 twins `barcode-<pipeline>`, and no entry with an error. |
 | BC4 | Put `barcode: {formats: [UPCE]}` into a copy of a twin and load the copy with `pipelines.load` | The entry has the error `barcode: unknown format UPCE`. |
 | BC5 | After a restart of 8168: open `$H/testset?set=my` and click `Run>` | The dialog lists the 22 twins. A twin is runnable when the entry of its pipeline has an index. |
-| BC6 | Start `barcode-siglip2-p256-as-is` on the set `my` with `first N queries` 10 | The job ends with `10 / 10`. `run.json` holds `backend.barcode` with `engine: zxing-cpp` and the count of the codes. A photo with a code of `wine_code` has candidates with `source`, `code`, `read`, and `format`, and score 1.0. |
+| BC6 | Start `barcode-siglip2-p256-as-is` on the set `my` with `first N queries` 10 | The job ends with `10 / 10`. `run.json` holds `backend.barcode.engine: qr-scanner`, the HTTP scanner endpoint and engine, and the count of the codes. Each uncached photo makes one whole-image `POST /scan`; a photo with a code of `wine_code` has candidates with `source`, `code`, `read`, and `format`, and score 1.0. |
 | BC7 | On `/runs`, open the model inputs of a row that the code lookup answered | No input, and the note `The code lookup answered this photo: gtin ...`. A candidate of that row shows the note `The code lookup gave this wine`. |
 
 ## The cache of the model calls — `pipeline/model_cache.py` and `pipeline/gdino.py`
@@ -2101,9 +2102,12 @@ of the set `my-1` (the second place is `abrau-dyurso-pino-nuar-krasnoe-suhoe-125
 | IT4 | Add `blurry` again, then `two words` | The state reads `not saved: the image … has the tag blurry`, then `not saved: a tag holds only letters, …`. One chip stays. |
 | IT5 | Click in the input | The suggestions hold each tag of the database that the image does not have. |
 | IT6 | Press Esc twice | The first Esc leaves the input, the second closes the view. The row counts of `<A>` show `1 tagged`. |
-| IT7 | `Additional settings`, then `Tag` = `blurry (2)` | The table shows the two wines of the image. The address holds `tag=blurry`. A reload keeps the filter. `Marks` = `a tag` gives the same two wines. |
+| IT7 | Open `Additional settings` and inspect `Tag` | The options start with `All` and `No tag (<photo count>)`. The remaining options are the tags that exist in the selected set, in name order, with photo counts. A tag from another set is absent. |
+| IT7a | Select `No tag` | A wine row shows when at least one photo of that wine has no tag. The address holds `tag=%7Euntagged`. A reload keeps the filter. |
+| IT7b | Select `blurry (2)` | The table shows the two wines of the image. The address holds `tag=blurry`. A reload keeps the filter. `Marks` = `a tag` gives the same two wines. |
+| IT7c | Select `All` | The tag filter does not remove a wine row. The address has no `tag` parameter. |
 | IT8 | Select the set `my` | Each copy of the image in `my` shows the badge `blurry`. |
-| IT9 | In the large view of the second place, press `×` of `blurry` | The state reads `removed blurry`. No card shows the badge. `Tag` holds `any` alone. |
+| IT9 | In the large view of the second place, press `×` of `blurry` | The state reads `removed blurry`. No card shows the badge. `Tag` drops `blurry` when the selected set has no image with that tag. `All` and `No tag` stay. |
 | IT10 | `python3 pipeline/export_testset.py --db data/catalog/catalog.sqlite3 --set my-1 --out <scratch dir>` with a tag on `<A>/<F>` | The entry `<A>/<F>` of `review-labels.json` holds `"tags": ["blurry"]`. An import of the directory into a scratch database adds the tag back. |
 | IT11 | Light and dark system theme; a window of 390 px | The chips, the input, and the badge use the colours of the theme. The large view shows the editor. No page error. |
 
@@ -2248,3 +2252,17 @@ gx10.
 | CC6 | In the repository root: `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -p 'test_catalog.py'` | 11 tests `OK`. |
 | CC7 | In the repository root: load a siglip2 pipeline with `catalog: workbench/work/catalog-copy` and `embedding: gx10-siglip2-so400m-patch16-naflex-p512`, and one with a new bundle of the same data; call `predict` and `match(k=4)` for each photo of `matcher/tests/data` | The same slugs and scores. On 2026-09-28: 3 of 3. |
 | CC8 | `python3 -m unittest discover -s tests -p 'test_catalog_copy.py'`, then the same with `test_matcher_views.py` | 6 and 3 tests `OK`. |
+
+## Android embedding indexes — plan 77
+
+Run the commands in `workbench/`.
+
+| # | Case | Expected result |
+|---|---|---|
+| AE1 | `PYTHONPATH=tests ~/.venvs/svoe-vino-lab/bin/python -m unittest tests.test_embeddings tests.test_build_embeddings tests.test_pipelines` | 75 tests are `OK`. |
+| AE2 | Send one image to the configured SigLIP2 endpoint with model `vit_base_patch16_siglip_224.v2_webli` | The answer has one finite vector with 768 values and L2 norm 1. |
+| AE3 | Build `android-siglip2-base-224-sam3-white` | The index has one `full` item per usable full catalogue source. Each prepared image is RGB, square, and 224 by 224 pixels. |
+| AE4 | Build `android-siglip2-base-224-dis-white` | The index has one `full` item per source that DIS accepts. Each prepared image is RGB, square, and 224 by 224 pixels. A rejected DIS mask is an item failure with a clear reason. |
+| AE5 | Read both vector files | Each matrix has 768 columns. Each value is finite. Each row has L2 norm 1 within float32 tolerance. |
+| AE6 | Open `$H/testset?set=my`, click `Run>`, and select each pipeline whose name starts with `android-siglip2-base-224-` | Both pipelines are runnable. Each pipeline has one worker. The barcode checkbox is disabled because the pipeline has no `barcode` step. |
+| AE7 | `PYTHONPATH=tests ~/.venvs/svoe-vino-lab/bin/python -m unittest test_embedding_run test_pipelines test_embeddings test_run_steps` | 110 tests are `OK`. The DIS query test uses no SAM3 call. |

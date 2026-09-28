@@ -498,15 +498,17 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   `Find` matches each word in
   the slug, the name, the producer, the region, or the grapes, in any order, with the case
   and the accents folded.
-- A drop of image files from the Finder onto the sidebar (the Drawer) or onto a row
-  stores each file in that place with no label (`POST /api/testset-upload`). A new
-  image keeps its file name; a clash with another image of the place gets `_upload<N>`.
+- A drop of image files from the Finder, or of an image from another browser page, onto
+  the sidebar (the Drawer) or onto a row stores each image in that place with no label
+  (`POST /api/testset-upload`, `POST /api/testset-fetch`). A new image keeps its source
+  file name; a clash with another image of the place gets `_upload<N>`.
   An image that the set holds already keeps the file name of the set. The same place
   refuses it (HTTP 409); another place takes it, for example for `negative`. The page
   takes JPEG, PNG, WebP, GIF, and BMP of at most 20 MB. HEIC is refused: Pillow here
-  cannot read it.
-- Not on this page yet: the copy of a photo, the upload by a file button and by URL, the
-  checks (`validate`), the group editor, and the CSV export.
+  cannot read it. A browser-image address is fetched by the server; public HTTP(S)
+  addresses alone are allowed, including after redirects.
+- Not on this page yet: the copy of a photo, the upload by a file button or by a typed
+  URL, the checks (`validate`), the group editor, and the CSV export.
 - The button `Run>` after the selector of the set opens a dialog. The dialog lists every
   pipeline of `config.yaml` (the key `pipeline`, plan 34) and the count of the queries of
   the set. It does not list the entries of `embeddings`. A pipeline with an error is
@@ -573,6 +575,16 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   items, `vectors-<8 hex>.npy` with one float32 row for each item, and
   `images/<source_sha256>_<view>.png`. The PNG is the exact model input. The database
   does not change.
+- The entries `android-siglip2-base-224-dis-white` and
+  `android-siglip2-base-224-sam3-white` use the 768-value image tower
+  `timm/vit_base_patch16_siglip_224.v2_webli`. The first entry runs the pinned DIS
+  LiteRT model on the Mac. It crops the main object, composites the soft mask on white,
+  puts the crop in a white square, and resizes it to 224 by 224 pixels. The second entry
+  applies the same white square and size to the present SAM3 package derivative. Each
+  entry has only the `full` view. Read [plan 77](docs/plans/77_android-embeddings.md).
+  The key `pipeline` has permanent entries with the same two names. The Testset `Run>`
+  dialog can repeat each benchmark. Neither pipeline has a `barcode` step. The DIS
+  pipeline uses one worker because one LiteRT interpreter processes one photo at a time.
 - The inputs are the images of the Active wines. `main_patched` replaces `main`. A file
   that several wines share is one item.
 - The view `full` is variant C: the package cut of plan 09 (`segment`,
@@ -670,18 +682,19 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   with an index. `pipeline/embedding_run.py` makes its runs of a test set (section "The
   runs of the lab"). Read [plan 33](docs/plans/33_embedding-run.md).
 - A pipeline of the backend `embedding` MAY hold the key `barcode` (plan 42). The run
-  decodes the photo with zxing-cpp before the views (`pipeline/barcode.py`, a copy of the
-  decoder of svoe-vino-matcher). A GTIN or a QR URL that `wine_code` holds for one Active
+  sends the photo to `POST <qr_scanner.endpoint>/scan` before the views
+  (`pipeline/barcode.py`). The top-level `qr_scanner` key of `config.yaml` selects the
+  endpoint and engine; `endpoint: "{env:QR_SCANNER_ENDPOINT}"` resolves the URL when the
+  process starts. A GTIN or a QR URL that `wine_code` holds for one Active
   wine answers the photo: the wine at score 1.0, and the embedding does not run. A GTIN of
   2 or more Active wines puts its wines first: the embedding ranks every wine, and the
   other wines stay below them. With the key `rerank`, the VLM then compares only the wines
   of the GTIN ([plan 64](docs/plans/64_shared-gtin-rerank.md)). A QR URL of 2 or more
   wines decides nothing, and the normal match runs. A code of one wine wins over a shared
   GTIN ([plan 58](docs/plans/58_shared-codes.md)). A miss runs the views and the
-  embedding. Each pipeline of the backend `embedding`
-  has a twin `barcode-<pipeline>`. zxing-cpp 2.3.0 MUST be in `embedding_python`; it
-  builds from the source (`requirements-local.txt`). Read
-  [plan 42](docs/plans/42_barcode-step.md).
+  embedding. Each applicable pipeline of the backend `embedding` has a twin
+  `barcode-<pipeline>`. The workbench does not import `zxing-cpp`; decoding belongs to
+  the shared scanner service. Read [plan 42](docs/plans/42_barcode-step.md).
 - A pipeline of the backend `embedding` MAY hold the key `rerank` (plan 48): the cluster
   re-rank of the section "The cluster re-rank". It runs inside the barcode step.
 
@@ -1359,13 +1372,13 @@ python3 pipeline/gdino.py <image> --texts "wine bottle, label" [--model mm-gdino
 - Unit tests set `model_cache.ROOT` to a temporary directory.
 
 Barcode scans use the same cache store in `data/cache/models/barcode/`. The key includes the
-source file SHA-256, all decoder options, the zxing-cpp version, the Pillow version,
-and the scan revision. The record holds decoded codes for the whole image and each
-completed tile. A scan with no code is cached too. Decoder failures are not cached.
+source file SHA-256, all decoder options, the resolved scanner endpoint and engine, the
+Pillow version, and the scan revision. The project configuration sends one whole-image
+request: the scanner service owns its decoder ensemble and retries. A scan with no code
+is cached too. Scanner failures are not cached.
 Each run checks the decoded codes against its current wine lookup. The record holds
-no wine match. If a stored unique code no longer identifies one wine, the decoder
-continues with the remaining tiles. A complete cache hit does not open the image or
-run the decoder. The barcode trace records `cached: true` or `cached: false`.
+no wine match. A complete cache hit does not open the image or call the scanner. The
+barcode trace records `cached: true` or `cached: false`.
 `Use caches` off and `--no-cache` bypass reads and store the fresh scan results.
 Cache writes are atomic, including when four workers scan the same file.
 
@@ -1692,7 +1705,8 @@ stays in `data/catalog/images/additional/`. When SAM3 does not answer, the photo
 probe sets; their accuracy on real photos is not known, so check the type.
 
 Each additional-photo upload also goes to the existing QR and barcode service at
-`QR_SCANNER_ENDPOINT` (plan 76). The request uses `POST /scan` with `engine=auto`.
+`qr_scanner.endpoint` from `config.yaml` (plan 76). The project config uses
+`"{env:QR_SCANNER_ENDPOINT}"`; the request uses `POST /scan` with the configured engine.
 A detected valid product barcode fills `GTINs` in GTIN-14 form. A detected QR code that
 contains an HTTP or HTTPS URL fills `QR URLs`. The response updates both editors on the
 same card. An existing value stays once. A non-GTIN barcode and a non-URL QR code are

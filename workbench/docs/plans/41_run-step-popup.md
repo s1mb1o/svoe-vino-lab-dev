@@ -205,7 +205,7 @@ Embedding run:
 | last | 2 | `score` | Score | local | the answer: the mean of the best cosine of each view |
 
 A SAM3 step and a view step exist only when a view of the run needs them. A pipeline with
-the key `barcode` (plan 42) adds the step `Decode codes, whole photo` (local · zxing-cpp)
+the key `barcode` (plan 42) adds the step `Decode codes, whole photo` (HTTP · qr-scanner)
 after the input photo. When a code of `wine_code` answers the photo, no embedding model
 ran, and the popup shows the photo and this step alone. An old
 embedding run gets the same steps with no time. Its search step lists the candidates of
