@@ -74,7 +74,7 @@ export function useWineScanner(mode: Ref<Mode>, dependencies: Dependencies = {})
     try {
       const body = new FormData()
       body.set('image', file.value)
-      const response = await request('/v1/eval/predict', { method: 'POST', body, signal: activeController.signal })
+      const response = await request('/api/predict', { method: 'POST', body, signal: activeController.signal })
       if (![200, 201].includes(response.status)) {
         const messages: Record<number, string> = {
           400: 'Не удалось прочитать фото. Попробуйте другой снимок.',

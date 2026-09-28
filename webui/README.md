@@ -8,7 +8,7 @@ The current release uses a mock prediction service and local result metadata.
 ## Scope
 
 - Select a label photo, use the mobile camera input, or drop a file.
-- Automatically submit one image to `POST /v1/eval/predict`.
+- Automatically submit one image to the portal `POST /api/predict` route.
 - Show the photo preview and request status.
 - Show one best match bottle and title.
 - Open the result directly on the vino-svoe portal.
@@ -62,7 +62,8 @@ NUXT_PREDICTION_ENDPOINT=http://127.0.0.1:8080/v1/eval/predict
 ```
 
 Replace the example URL with the actual full endpoint URL. Restart the server.
-The browser still calls `POST /v1/eval/predict` on the portal origin.
+The browser calls `POST /api/predict` on the portal origin.
+The evaluator-compatible `POST /v1/eval/predict` route remains available for direct checks and controlled API exposure.
 The server forwards the image to the configured endpoint.
 The server does not expose this URL in public configuration.
 The server does not replace upstream errors with mock results.

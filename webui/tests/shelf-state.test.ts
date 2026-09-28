@@ -25,7 +25,7 @@ describe('shelf UI state', () => {
     expect(scanner.selectedId.value).toBe('')
     await scanner.selectBottle('b2')
     expect(scanner.selectedId.value).toBe('b2')
-    expect(request.mock.calls[1]![0]).toBe('/v1/eval/predict')
+    expect(request.mock.calls[1]![0]).toBe('/api/predict')
     expect(request.mock.calls[1]![1].body.get('image').name).toBe('b2.jpg')
     expect(scanner.wineScanner.wine.value?.name).toBe(wines[0]!.name)
     expect(scanner.wineScanner.mock.value).toBe(true)

@@ -9,7 +9,8 @@ The app shell provides the source logo, a scanner label, and a link to the sourc
 
 ## Prediction
 
-The browser sends one `FormData` image to `POST /v1/eval/predict`.
+The browser sends one `FormData` image to `POST /api/predict`.
+The portal keeps `POST /v1/eval/predict` as an equivalent evaluator route.
 The server selects the existing mock or upstream provider.
 The wire response uses `slug`.
 The browser stores the slug before resolving metadata.
@@ -73,7 +74,7 @@ Small overlay images avoid a full-frame texture for each bottle.
 The server retains at most 100 bottles and reports truncation.
 
 Selecting a bottle opens a native dialog and passes its JPEG crop to `useWineScanner`.
-The crop follows the existing `POST /v1/eval/predict` contract.
+The crop follows the browser `POST /api/predict` contract.
 No prediction runs before a bottle selection.
 Closing the popup cancels its recognition and food requests. The segmented shelf remains available.
 Replacing the photo, resetting, and unmounting invalidate late responses and release transient data.

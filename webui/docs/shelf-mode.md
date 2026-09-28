@@ -64,7 +64,7 @@ Crop each overlay to its normalized box. Do not return full-frame masks to the b
 Clamp detector boxes to the image. Ignore mask fragments outside each detector box.
 Crop the normalized image on the server. Include the whole detected bottle.
 Recognition starts only when the user selects a bottle.
-Submit its server-produced crop as multipart `image` to `POST /v1/eval/predict`.
+Submit its server-produced crop as multipart `image` to `POST /api/predict`.
 Keep the existing `slug` response unchanged.
 Do not store user photos, crops, masks, or service responses on disk.
 Use `Cache-Control: no-store`. Cancel upstream work when the client disconnects.

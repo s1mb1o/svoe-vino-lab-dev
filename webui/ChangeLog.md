@@ -10,6 +10,7 @@
 - Made shelf processing opt-in through `NUXT_SHELF_MODE=enabled`.
 - Recorded the Princess capacity check and deployment boundary.
 - Verified 103 tests, type checks, and the production build.
+- Added `/api/predict` for browser requests so Princess can preserve its protected public evaluator route.
 
 ### Repository integration
 

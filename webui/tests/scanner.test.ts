@@ -24,7 +24,7 @@ describe('automatic photo search', () => {
     await scanner.select([photo()])
     expect(request).toHaveBeenCalledTimes(2)
     const [url, options] = request.mock.calls[0]!
-    expect(url).toBe('/v1/eval/predict')
+    expect(url).toBe('/api/predict')
     expect(options.method).toBe('POST')
     expect([...options.body.keys()]).toEqual(['image'])
     expect(options.body.get('image').name).toBe('label.webp')
@@ -106,7 +106,7 @@ describe('automatic photo search', () => {
       .mockResolvedValueOnce(response({ slug: MOCK_SLUG })).mockResolvedValueOnce(response(wines[0]))
     const { scanner } = setup(request)
     await scanner.example()
-    expect(request.mock.calls.filter(call => call[0] === '/v1/eval/predict')).toHaveLength(1)
+    expect(request.mock.calls.filter(call => call[0] === '/api/predict')).toHaveLength(1)
     expect(scanner.phase.value).toBe('matched')
     expect(scanner.exampleLoading.value).toBe(false)
   })

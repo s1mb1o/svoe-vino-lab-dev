@@ -9,6 +9,10 @@ Checked: 2026-09-28.
 
 `POST /v1/eval/predict`
 
+The official evaluator uses this route.
+The browser uses the equivalent portal route `POST /api/predict`.
+Both routes use the same handler and response contract.
+
 Send `multipart/form-data` with one file field named `image`.
 Let the HTTP client set the multipart boundary.
 Do not send a query ID or a hash field.

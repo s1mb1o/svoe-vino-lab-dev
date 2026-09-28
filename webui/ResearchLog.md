@@ -10,6 +10,8 @@ Decision: Princess can run Caddy and the Nuxt portal for demo and moderate traff
 Decision: keep matcher and SAM3 computation on GX10.
 The existing Princess loopback tunnel provides the compatible `/v1/eval/predict` route on port 28000.
 Its current pipeline is `official-eval-mock`.
+The existing public Caddy API also owns `/v1/eval/predict` and requires a bearer token.
+Decision: keep that route unchanged and send browser photo requests to the equivalent portal `/api/predict` route.
 The owner selected a selectable temporary-unavailable view for «Вся полка».
 The Princess deployment does not set `SAM3_ENDPOINT`.
 The server rejects the disabled shelf route before it reads an upload.
