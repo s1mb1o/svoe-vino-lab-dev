@@ -240,6 +240,8 @@ quality metadata, recognition metadata, candidates, wine parameters, and step ti
 205. The bot MUST read the wine card of each candidate from the matcher answer.
 206. The bot MUST NOT read a local catalogue file or a local wine code map.
 207. A stored candidate without a wine card MUST use its slug as the wine name.
+208. A successful result MUST show the wine producer.
+209. The exact matcher input artifact MUST keep its JPEG, PNG, or WebP media type.
 
 ## Non-functional requirements
 

@@ -4,7 +4,7 @@ This project runs the Telegram bot at [@ChtoZaVinoBot](https://t.me/ChtoZaVinoBo
 The bot accepts one wine photo or a Telegram photo album.
 It processes each photo as a separate request.
 It returns one result per photo.
-Each result contains a result photo, the wine name, color, sugar class,
+Each result contains a result photo, the wine name, producer, color, sugar class,
 grape varieties, and the catalogue page on `vino-svoe.ru`.
 
 The bot runs on `gx10` in Docker with Telegram long polling.
@@ -132,7 +132,7 @@ curl -sS \
 
 The request waits for queue processing to finish.
 The JSON response contains the request status, moderation result, quality metadata,
-wine parameters, four ranked candidates, matcher profile, and step timings.
+wine parameters, up to four ranked candidates, matcher profile, and step timings.
 When the matcher wine card has QR URLs, the selected wine and its candidate
 object also contain `qr_urls`.
 The response omits `qr_urls` when no valid URL exists.

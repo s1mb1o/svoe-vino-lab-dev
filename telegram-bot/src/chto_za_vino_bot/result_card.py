@@ -39,6 +39,7 @@ def format_result_caption(wine: Wine) -> str:
     return (
         "Похоже, это:\n\n"
         f"<b>{_caption_value(wine.name, 140)}</b>\n\n"
+        f"🏡 <b>Винодельня:</b> {_caption_value(wine.producer, 120)}\n"
         f"🍷 <b>Цвет:</b> {_caption_value(color, 120)}\n"
         f"🍬 <b>Сахар:</b> {_caption_value(wine.sugar, 60)}\n"
         f"🍇 <b>Виноград:</b> {_caption_value(wine.grapes, 180)}\n\n"

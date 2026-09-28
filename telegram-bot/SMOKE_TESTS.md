@@ -30,7 +30,7 @@
 
 ## Recognition
 
-- Confirm that the matcher request uses `rerank-siglip2-512-crop`.
+- Confirm that each matcher request uses `k=4` and does not select a pipeline.
 - Send a clear catalogue wine photo.
 - Confirm that the bot first shows the processing status.
 - Confirm that the status shows the queue position and approximate wait.
@@ -41,7 +41,7 @@
 - Confirm that the complete bottle is visible in the Telegram preview.
 - Confirm that the bottle has a small white margin above and below it.
 - Confirm that a very tall source image appears on a 4:5 white canvas.
-- Confirm that the caption contains color, sugar class, and grape varieties.
+- Confirm that the caption contains the producer, color, sugar class, and grape varieties.
 - Confirm that a missing parameter appears as `нет данных`.
 - Confirm that the final message contains a `vino-svoe.ru/wines/` link.
 - Confirm that the final message shows an `Открыть страницу вина` inline button.
@@ -77,13 +77,13 @@
 ## Photo quality
 
 - Send a strongly blurred bottle photo.
-- Confirm that the bot asks for a clearer photo before matcher access.
+- Confirm that the bot stores the blur issue and continues to recognition.
 - Send a bottle photo with a strong clipped glare over the label.
-- Confirm that the bot reports the glare before matcher access.
+- Confirm that the bot stores the glare issue and continues to recognition.
 - Send a scene without a wine bottle.
-- Confirm that the bot reports that the bottle is missing.
+- Confirm that the bot stores the missing-bottle issue and continues to recognition.
 - Send a scene where the bottle label occupies less than the configured area.
-- Confirm that the bot reports that the label is too small.
+- Confirm that the bot stores the small-label issue and continues to recognition.
 - Stop the SAM3 endpoint.
 - Confirm that the bot records the quality-check failure and continues to recognition.
 - Send a photo that triggers one or more quality issues.
@@ -240,11 +240,11 @@
 - Confirm that access is denied.
 - Submit one clear wine image in the multipart `image` field.
 - Confirm that the response has HTTP 200 and status `recognized` or `abstained`.
-- Confirm that the response identifies `rerank-siglip2-512-crop`.
-- Confirm that the response contains four ranked candidates.
+- Confirm that `matcher_pipeline` identifies the pipeline selected by the matcher.
+- Confirm that the response contains up to four ranked candidates.
 - Confirm that each candidate contains the wine name, color, sugar class, grape varieties,
   and catalogue URL when the catalogue has these values.
-- Use a wine with a QR URL in `WINE_CODE_MAP_FILE`.
+- Use a matcher candidate whose wine card contains a QR URL.
 - Confirm that its selected wine object and candidate object contain `qr_urls`.
 - Use a wine without a QR URL.
 - Confirm that its wine object does not contain `qr_urls`.
@@ -270,12 +270,12 @@
 - Confirm that the bot stops at start and names the missing variable without printing its value.
 - Send a clear wine photo through Telegram.
 - Confirm that the bot answers with a result card or with `Не уверен`.
-- Confirm in the service log that the matcher request went to `/v1/match?k=4`.
+- Confirm in the service log that the matcher request went to `/v1/match?k=4` and did not
+  include a pipeline selector.
 - Press `❌ Не совпало` on a result.
 - Confirm that the alternatives show wine names, not slugs.
 - Submit a photo to `POST /api/v1/recognize`.
-- Confirm that `matcher_pipeline` is the pipeline name of the matcher, for example
-  `siglip2-p512-as-is`.
+- Confirm that `matcher_pipeline` is the pipeline name returned by the matcher.
 - Confirm that each candidate has a `wine` object with `name` and `page_url`.
 - Stop the matcher and submit a safe photo.
 - Confirm that the response has HTTP 502 and status `recognition_failed`.

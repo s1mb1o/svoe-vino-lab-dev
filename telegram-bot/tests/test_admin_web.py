@@ -1,5 +1,6 @@
 import re
 
+import pytest
 from fastapi.testclient import TestClient
 
 from chto_za_vino_bot.admin_web import create_app
@@ -87,15 +88,23 @@ def test_admin_pages_do_not_disclose_source_image_paths(tmp_path):
         assert "quarantine/private.jpg" not in response.text
 
 
-def test_admin_serves_only_indexed_artifacts_for_safe_requests(tmp_path):
+@pytest.mark.parametrize(
+    ("artifact_key", "mime_type"),
+    [("sam3_overlay", "image/png"), ("matcher_input", "image/webp")],
+)
+def test_admin_serves_only_indexed_artifacts_for_safe_requests(
+    tmp_path,
+    artifact_key,
+    mime_type,
+):
     web_settings = settings(tmp_path)
     request_id = seed_request(web_settings.database_file)
     body = b"safe-artifact"
     relative_path = ArtifactStore(web_settings.data_root).save(
         request_id,
         1000,
-        "sam3_overlay",
-        "image/png",
+        artifact_key,
+        mime_type,
         body,
     )
     repository = Repository(web_settings.database_file)
@@ -103,11 +112,11 @@ def test_admin_serves_only_indexed_artifacts_for_safe_requests(tmp_path):
         request_id,
         [
             ArtifactWrite(
-                artifact_key="sam3_overlay",
+                artifact_key=artifact_key,
                 step="quality",
-                title="SAM3 overlay",
+                title="Artifact preview",
                 description="Masks and boxes.",
-                mime_type="image/png",
+                mime_type=mime_type,
                 relative_path=relative_path,
                 width=10,
                 height=20,
@@ -120,14 +129,15 @@ def test_admin_serves_only_indexed_artifacts_for_safe_requests(tmp_path):
     repository.close()
     app = create_app(web_settings)
     auth = ("admin", "correct-horse")
-    url = f"/requests/{request_id}/artifacts/sam3_overlay"
+    url = f"/requests/{request_id}/artifacts/{artifact_key}"
     with TestClient(app, client=("127.0.0.1", 50000)) as client:
         assert client.get(url).status_code == 401
         detail = client.get(f"/requests/{request_id}", auth=auth)
-        assert "SAM3 overlay" in detail.text
+        assert "Artifact preview" in detail.text
         assert "img-src 'self'" in detail.headers["content-security-policy"]
         response = client.get(url, auth=auth)
         assert response.status_code == 200
+        assert response.headers["content-type"] == mime_type
         assert response.content == body
         app.state.repository.update(request_id, moderation_safe=0)
         assert client.get(url, auth=auth).status_code == 404

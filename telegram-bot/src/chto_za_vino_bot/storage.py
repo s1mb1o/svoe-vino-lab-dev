@@ -1495,7 +1495,11 @@ class ImageStore:
 
 class ArtifactStore:
     _KEY = re.compile(r"^[a-z0-9][a-z0-9_-]{0,79}$")
-    _EXTENSIONS: ClassVar[dict[str, str]] = {"image/jpeg": "jpg", "image/png": "png"}
+    _EXTENSIONS: ClassVar[dict[str, str]] = {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp",
+    }
 
     def __init__(self, root: Path) -> None:
         self._data_root = root.resolve()

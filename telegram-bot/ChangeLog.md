@@ -2,6 +2,9 @@
 
 ## 2026-09-28
 
+- Added the producer to the Telegram result caption.
+- Preserved the JPEG, PNG, or WebP media type of the exact matcher input artifact.
+- Updated the smoke tests for matcher-owned pipeline selection and advisory quality checks.
 - Added `config.yaml` with the moderation, SAM3, and matcher endpoints. Each endpoint
   accepts a literal HTTP(S) URL or an exact `"{env:NAME}"` reference.
 - Switched recognition to `POST /v1/match?k=4` of `svoe-vino-lab/matcher` (plan 06,

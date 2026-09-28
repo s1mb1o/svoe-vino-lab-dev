@@ -81,6 +81,36 @@ def test_pipeline_artifacts_include_masks_overlay_crops_and_cutouts(tmp_path):
     assert all((tmp_path / item.relative_path).is_file() for item in rows)
 
 
+@pytest.mark.parametrize(
+    ("image_format", "mime_type", "suffix"),
+    [
+        ("JPEG", "image/jpeg", ".jpg"),
+        ("PNG", "image/png", ".png"),
+        ("WEBP", "image/webp", ".webp"),
+    ],
+)
+def test_matcher_input_artifact_preserves_supported_format(
+    tmp_path,
+    image_format,
+    mime_type,
+    suffix,
+):
+    source = encoded_image(format=image_format)
+    artifact = base_artifacts(source, encoded_image())[0]
+
+    assert artifact.body == source
+    assert artifact.mime_type == mime_type
+
+    rows = persist_artifacts(
+        ArtifactStore(tmp_path),
+        request_id="request-1",
+        received_at=1000,
+        artifacts=[artifact],
+    )
+    assert rows[0].mime_type == mime_type
+    assert rows[0].relative_path.endswith(suffix)
+
+
 def test_artifact_store_rejects_paths_outside_artifact_root(tmp_path):
     store = ArtifactStore(tmp_path)
 

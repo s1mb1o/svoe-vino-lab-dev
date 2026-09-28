@@ -28,6 +28,11 @@ COLORS = ("#e53935", "#1e88e5", "#43a047", "#f9a825", "#8e24aa", "#00acc1")
 CENSORED_SAMPLE_MAX = 24
 CENSORED_OUTPUT_MAX = 768
 CENSORED_BLUR_RADIUS = 18
+IMAGE_MIME_TYPES = {
+    "JPEG": "image/jpeg",
+    "PNG": "image/png",
+    "WEBP": "image/webp",
+}
 
 
 def _open_rgb(body: bytes) -> Image.Image:
@@ -36,6 +41,19 @@ def _open_rgb(body: bytes) -> Image.Image:
             image = ImageOps.exif_transpose(source).convert("RGB")
             image.load()
             return image
+    except (UnidentifiedImageError, OSError, ValueError) as exc:
+        raise ValueError("artifact image is invalid") from exc
+
+
+def _open_matcher_input(body: bytes) -> tuple[Image.Image, str]:
+    try:
+        with Image.open(io.BytesIO(body)) as source:
+            mime_type = IMAGE_MIME_TYPES.get(source.format or "")
+            if mime_type is None:
+                raise ValueError("matcher input image format is unsupported")
+            image = ImageOps.exif_transpose(source).convert("RGB")
+            image.load()
+            return image, mime_type
     except (UnidentifiedImageError, OSError, ValueError) as exc:
         raise ValueError("artifact image is invalid") from exc
 
@@ -52,7 +70,7 @@ def _encode(image: Image.Image, mime_type: str) -> bytes:
 
 
 def base_artifacts(matcher_input: bytes, moderation_jpeg: bytes) -> list[GeneratedArtifact]:
-    matcher_image = _open_rgb(matcher_input)
+    matcher_image, matcher_mime_type = _open_matcher_input(matcher_input)
     moderation_image = _open_rgb(moderation_jpeg)
     return [
         GeneratedArtifact(
@@ -60,7 +78,7 @@ def base_artifacts(matcher_input: bytes, moderation_jpeg: bytes) -> list[Generat
             "input",
             "Вход распознавания",
             "Точное изображение, переданное в wine matcher.",
-            "image/jpeg",
+            matcher_mime_type,
             matcher_input,
             matcher_image.width,
             matcher_image.height,

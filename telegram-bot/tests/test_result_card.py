@@ -34,6 +34,7 @@ def test_result_caption_has_image_card_parameters():
     caption = format_result_caption(wine())
 
     assert "Тестовое &amp; вино" in caption
+    assert "Винодельня:</b> Винодельня" in caption
     assert "Цвет:</b> Красное · Рубиновый" in caption
     assert "Сахар:</b> Сухое" in caption
     assert "Виноград:</b> Пино Нуар" in caption
@@ -46,16 +47,24 @@ def test_result_caption_has_image_card_parameters():
 
 def test_result_caption_marks_missing_parameters():
     caption = format_result_caption(
-        wine(category=None, color=None, grapes=None, sugar=None, image_url=None)
+        wine(
+            producer=None,
+            category=None,
+            color=None,
+            grapes=None,
+            sugar=None,
+            image_url=None,
+        )
     )
 
-    assert caption.count("нет данных") == 3
+    assert caption.count("нет данных") == 4
 
 
 def test_result_caption_fits_telegram_limit_with_long_parameters():
     caption = format_result_caption(
         wine(
             name="Н" * 1000,
+            producer="П" * 1000,
             category="К" * 1000,
             color="Ц" * 1000,
             sugar="С" * 1000,

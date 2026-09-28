@@ -444,7 +444,11 @@ def create_app(settings: AdminWebSettings) -> FastAPI:
     )
     async def request_artifact(request_id: str, artifact_key: str) -> FileResponse:
         record = repository.visible_artifact(request_id, artifact_key)
-        if record is None or record.mime_type not in {"image/jpeg", "image/png"}:
+        if record is None or record.mime_type not in {
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+        }:
             raise HTTPException(status_code=404, detail="Artifact not found")
         try:
             path = artifact_store.resolve(record.relative_path)
