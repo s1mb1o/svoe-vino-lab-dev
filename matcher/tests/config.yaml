@@ -8,7 +8,7 @@ matcher:
   # Each test sets this variable to its private temporary archive directory.
   output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
 
-# This list uses the name and backend notation of ../../config.yaml.
+# This list uses the name and backend notation of ../../workbench/config.yaml.
 pipeline:
   - name: official-eval-mock
     backend: mock

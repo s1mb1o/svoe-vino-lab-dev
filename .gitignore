@@ -1,13 +1,13 @@
 # The photo set of every dataset. 491 MB of pictures. It does not belong in git.
-dataset/*/photo/
+workbench/dataset/*/photo/
 
 # A deleted photo is moved here, not unlinked. The directory holds pictures, so
 # it does not belong in git either.
-dataset/*/trash/
+workbench/dataset/*/trash/
 
 # The work directory: the state database, the raw downloads, the logs, the trash.
 # Every file here is rebuilt by the pipeline.
-work/
+workbench/work/
 
 # Python
 __pycache__/
@@ -21,12 +21,13 @@ __pycache__/
 
 # One directory per match run. `scripts/match_run.py` writes it. The output is
 # rebuilt by a new run and does not belong in git.
-runs/
+workbench/runs/
+workbench/dataset/*/runs/
 
 # The artifact folder of a report: images, raw JSON, logs, vectors. On 2026-09-27 three
 # such folders held about 1.4 GB. The owner asked to keep them out of git. The report
 # `.md` file next to a folder stays in git.
-/docs/reports/*/
+/workbench/docs/reports/*/
 
 # The lock file next to a shared JSON file. `scripts/cluster_rules.py` makes it
 # to serialise writes. It holds no data.
@@ -40,9 +41,9 @@ runs/
 # On 2026-09-26 the owner asked to put the main photos, the patches, and the alternative
 # photos in git, and to keep `data/cache/` out. git cannot take back a file of an ignored directory, so the
 # rules ignore the content of `data/` and of `data/images/`, not the directories.
-/data/*
-!/data/images/
-/data/images/*
-!/data/images/main/
-!/data/images/patched/
-!/data/images/additional/
+/workbench/data/*
+!/workbench/data/images/
+/workbench/data/images/*
+!/workbench/data/images/main/
+!/workbench/data/images/patched/
+!/workbench/data/images/additional/

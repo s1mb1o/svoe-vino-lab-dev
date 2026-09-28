@@ -1,5 +1,5 @@
 # Smoke check of the self-hosted runner ct111-svoe-vino-lab-1 (CT 111 on Proxmox x300).
-# The script is scripts/runner_smoke.py. The endpoint variables come from the .env file of
+# The script is workbench/scripts/runner_smoke.py. The endpoint variables come from the .env file of
 # the runner. Start the workflow by hand: Actions > Runner smoke > Run workflow.
 # The box "load_models" makes llama-swap load each gx10 model that does not run.
 name: Runner smoke
@@ -30,8 +30,8 @@ jobs:
           persist-credentials: false
           filter: blob:none
           sparse-checkout: |
-            scripts/runner_smoke.py
-            tests/data/smoke/
+            workbench/scripts/runner_smoke.py
+            workbench/tests/data/smoke/
           sparse-checkout-cone-mode: false
 
       - name: Show the runner
@@ -45,7 +45,7 @@ jobs:
           LOAD_MODELS: ${{ inputs.load_models }}
         run: |
           if [ "$LOAD_MODELS" = "true" ]; then
-            python3 scripts/runner_smoke.py --load-models
+            python3 workbench/scripts/runner_smoke.py --load-models
           else
-            python3 scripts/runner_smoke.py
+            python3 workbench/scripts/runner_smoke.py
           fi

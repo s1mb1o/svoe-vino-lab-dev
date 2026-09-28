@@ -37,7 +37,7 @@ Mock pipeline узнаёт три тестовых изображения по S
 По умолчанию сервис ожидает рабочий файл по пути matcher/config.yaml. Этот файл будет
 добавлен вместе с реальным pipeline. Переменная SVOE_VINO_MATCHER_CONFIG может указать
 другой файл. Формат использует ту же структуру pipeline, что и
-svoe-vino-lab/config.yaml:
+svoe-vino-lab/workbench/config.yaml:
 
 ~~~yaml
 matcher:
@@ -53,7 +53,7 @@ pipeline:
 ~~~
 
 Значение matcher.pipeline должно совпадать с name одной записи в списке pipeline. Поля
-name и backend используют ту же структуру, что и svoe-vino-lab/config.yaml.
+name и backend используют ту же структуру, что и svoe-vino-lab/workbench/config.yaml.
 
 Чтобы включить Bearer-авторизацию, укажите имя переменной окружения с секретом:
 

@@ -1,13 +1,13 @@
 ---
 name: backup-lab-db
-description: Back up the svoe-vino-lab database data/lab.sqlite3 as a text export in db-export/ and commit it together with the image folders data/images/main/, data/images/patched/, and data/images/additional/, so that git keeps the history of each row, each main photo, each patch, and each alternative photo. Also restores an export from the working tree or from any commit into a new database file. Use when asked to back up, snapshot, export, or commit the lab database, to show the history of lab data, or to restore the lab database from git.
+description: Back up the svoe-vino-lab workbench database data/lab.sqlite3 as a text export in db-export/ and commit it together with the image folders data/images/main/, data/images/patched/, and data/images/additional/, so that git keeps the history of each row, each main photo, each patch, and each alternative photo. Also restores an export from the working tree or from any commit into a new database file. Use when asked to back up, snapshot, export, or commit the lab database, to show the history of lab data, or to restore the lab database from git.
 ---
 
 # Back up the lab database to git
 
 `data/lab.sqlite3` is a binary file, and git ignores it. So git cannot keep its history. `pipeline/db_export.py` writes the database as text files into `db-export/`.
 Each row is one line, so `git diff` shows each added, changed, and removed row. Read
-[plan 50](../../../docs/plans/50_lab-db-text-export.md) for the reasons.
+[plan 50](../../../workbench/docs/plans/50_lab-db-text-export.md) for the reasons.
 
 The export directory:
 
@@ -27,10 +27,10 @@ file never changes: git adds a new file or records a removed file. `.gitignore` 
 rest of `data/` out of git: the database file, `data/cache/`, `data/backups/`,
 `data/embeddings/`, and the image folders `cropped/` and `testset/`.
 
-Run every command in the project root:
+Run every command in the workbench root:
 
 ```bash
-cd /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab
+cd /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/workbench
 ```
 
 ## 0. Before you start
