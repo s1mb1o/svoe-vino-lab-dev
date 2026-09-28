@@ -177,6 +177,30 @@ Launcher завершает gateway и остальные дочерние пр�
 Проверка NaFlex отправляет запросы с `max_num_patches=256`, `512` и `1024`.
 Проверка SAM3 требует хотя бы один найденный объект на сгенерированном изображении бутылки.
 
+## Единая проверка совместимости
+
+Задайте адреса внешних ML-сервисов через переменные окружения:
+
+```sh
+export QR_SCANNER_ENDPOINT=http://127.0.0.1:18090/upstream/qr-scanner
+export SAM3_ENDPOINT=http://127.0.0.1:18090/upstream/sam3
+export SIGLIP2_ENDPOINT=http://127.0.0.1:18090
+export VLM_ENDPOINT=http://127.0.0.1:11434/v1
+export VLM_MODEL=qwen3.5:9b
+```
+
+Запустите одну проверку всех обязательных контрактов:
+
+```sh
+.venv/bin/python scripts/check_compatibility.py
+```
+
+Скрипт проверяет QR-сканер, SAM3, NaFlex с `max_num_patches=512` и мультимодальный OpenAI-совместимый Qwen API.
+Задайте `SHIELDGEMMA_ENDPOINT`, чтобы также проверить ShieldGemma.
+Задайте `VLM_API_KEY`, если внешний Qwen endpoint требует Bearer-аутентификацию.
+Скрипт печатает JSON-отчет и возвращает ненулевой код при ошибке обязательного контракта.
+Скрипт не использует API конкретной среды инференса.
+
 ## Бенчмарки
 
 Используйте `scripts/benchmark.py` для измерения одной запущенной модели.

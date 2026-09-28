@@ -63,6 +63,17 @@
 - Do not start the second SigLIP2 model.
 - Add ShieldGemma only for the optional `telegram-bot` profile.
 
+## External endpoint compatibility
+
+- Set `QR_SCANNER_ENDPOINT`, `SAM3_ENDPOINT`, `SIGLIP2_ENDPOINT`, `VLM_ENDPOINT`, and `VLM_MODEL`.
+- Run `scripts/check_compatibility.py`.
+- Confirm that the QR endpoint decodes the generated text.
+- Confirm that the SAM3 endpoint returns at least one wine-bottle instance.
+- Confirm that the SigLIP2 endpoint returns one finite 1,152-value NaFlex vector with `max_num_patches=512`.
+- Confirm that the Qwen endpoint accepts an image through `POST /chat/completions` and returns the requested JSON object.
+- Set `SHIELDGEMMA_ENDPOINT` to include the optional moderation contract.
+- Confirm that the command returns a nonzero exit code when a required contract fails.
+
 ## Performance benchmark
 
 - Start one isolated model process.

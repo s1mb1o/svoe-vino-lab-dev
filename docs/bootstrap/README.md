@@ -35,6 +35,15 @@ Ollama является опорной средой инференса для `q
 Эта среда MUST предоставлять совместимый эндпоинт `POST /v1/chat/completions`.
 Задайте адрес и имя модели через `VLM_ENDPOINT` и `VLM_MODEL`.
 
+После настройки endpoint запустите единую проверку совместимости:
+
+```sh
+.venv/bin/python scripts/check_compatibility.py
+```
+
+Проверка использует только HTTP-контракты.
+Она не зависит от среды инференса Qwen.
+
 ## Получение исходного кода
 
 Исходный код находится в приватном репозитории [s1mb1o/svoe-vino-lab-dev](https://github.com/s1mb1o/svoe-vino-lab-dev).

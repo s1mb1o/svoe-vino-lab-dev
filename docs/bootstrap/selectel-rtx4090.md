@@ -285,13 +285,22 @@ cd /opt/svoe-vino-model-bootstrap
 ```sh
 export SAM3_ENDPOINT=http://127.0.0.1:18090/upstream/sam3
 export QR_SCANNER_ENDPOINT=http://127.0.0.1:18090/upstream/qr-scanner
-export MODERATION_ENDPOINT=http://127.0.0.1:18090/upstream/shieldgemma-2-4b-it/classify
+export SHIELDGEMMA_ENDPOINT=http://127.0.0.1:18090/upstream/shieldgemma-2-4b-it
+export MODERATION_ENDPOINT=${SHIELDGEMMA_ENDPOINT}/classify
 export SIGLIP2_ENDPOINT=http://127.0.0.1:18090
 export VLM_ENDPOINT=http://127.0.0.1:11434/v1
 export VLM_MODEL=qwen3.5:9b
 ```
 
 `MODERATION_ENDPOINT` нужен только для `telegram-bot`.
+
+Проверьте все настроенные внешние ML endpoint одной командой:
+
+```sh
+.venv/bin/python scripts/check_compatibility.py
+```
+
+Удалите `SHIELDGEMMA_ENDPOINT` из окружения, если ShieldGemma не запущена.
 
 ## Остановка и проверка
 

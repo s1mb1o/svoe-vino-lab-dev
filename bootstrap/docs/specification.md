@@ -80,3 +80,10 @@ Ollama MUST run `qwen3.5:9b` from local storage after the initial download.
 52. The gateway health endpoint MUST probe every active model service.
 53. The gateway health endpoint MUST return HTTP 503 when an active model service is not ready.
 54. The launcher MUST stop the gateway when a ready child process exits.
+55. One compatibility command MUST test every required external ML endpoint.
+56. The compatibility command MUST test NaFlex with `max_num_patches=512`.
+57. The compatibility command MUST read the Qwen endpoint and model ID from configuration.
+58. The compatibility command MUST use the OpenAI-compatible Qwen API.
+59. The compatibility command MUST NOT depend on one Qwen inference runtime.
+60. The compatibility command MUST return a nonzero exit code when a required contract fails.
+61. The ShieldGemma compatibility check MUST be optional.

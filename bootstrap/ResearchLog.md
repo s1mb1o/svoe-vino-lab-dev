@@ -124,3 +124,13 @@ The updated Apple SAM3 smoke test found one instance in the generated wine-bottl
 The gateway readiness endpoint returned HTTP 200 while SAM3 was ready.
 The launcher stopped the gateway after the ready SAM3 child process received SIGTERM.
 All 19 static tests passed after these changes.
+
+The unified compatibility command passed against all configured private endpoints.
+The QR request took 0.424 seconds and decoded one value.
+The SAM3 request took 0.652 seconds and found one instance.
+The NaFlex request used 512 patches and took 0.302 seconds.
+It returned 1,152 finite values with norm 0.99999996.
+The Qwen request used the configured model ID and OpenAI-compatible endpoint.
+It returned the required JSON object after 287.79 seconds.
+The ShieldGemma request took 0.618 seconds and returned three finite policy scores.
+All 22 static tests passed after the compatibility command was added.
