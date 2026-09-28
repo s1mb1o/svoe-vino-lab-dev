@@ -133,6 +133,18 @@ bash matcher/tests/participant_test.sh \
 
 Если matcher вернул пустой slug, поле predicted_slug равно null.
 
+## GitHub Actions
+
+Workflow `.github/workflows/matcher-tests.yml` запускается для изменений в `matcher/`,
+для изменений самого workflow и вручную. Job `matcher-tests` использует self-hosted
+runner с labels `self-hosted`, `Linux`, `X64` и `svoe-vino-lab`. Docker runner этому
+job не нужен.
+
+Workflow проверяет наличие bash, curl, jq, awk и утилиты SHA-256. Он устанавливает
+Python 3.11 и зависимости из `matcher/requirements.txt`. Затем он запускает все тесты,
+которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был запущен или
+был пропущен.
+
 ## GitLab CI
 
 Job `matcher-tests` находится в корневом файле `.gitlab-ci.yml`. GitLab использует
