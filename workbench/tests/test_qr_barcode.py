@@ -70,6 +70,13 @@ class CleanInstancesTest(unittest.TestCase):
 
 
 class ConfigTest(unittest.TestCase):
+    def test_environment_is_not_an_implicit_endpoint(self):
+        with mock.patch.dict(
+                os.environ, {"QR_SCANNER_ENDPOINT": "https://scanner.test/"}, clear=True):
+            client = qr_barcode.client_from_config({})
+        self.assertEqual(client.endpoint, "")
+        self.assertIsNone(client.endpoint_reference)
+
     def test_literal_and_environment_endpoints_are_supported(self):
         literal = qr_barcode.client_from_config({
             "qr_scanner": {"endpoint": "http://scanner.test/root/", "engine": "zxing-cpp"}})

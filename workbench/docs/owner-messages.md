@@ -8069,3 +8069,15 @@ For R\@1 candidates use runs results of same pipeline as in matcher.
 ```text
 `engine: zxing-cpp` for closer performance and behavior.
 ```
+
+## 2026-09-29T01:14:22+0300
+
+```text
+check that it not read from `QR_SCANNER_ENDPOINT` directly, but loaded from config.yaml. And config yaml may have {env:`QR_SCANNER_ENDPOINT`}
+```
+
+## 2026-09-29T01:48:17+0300
+
+```text
+git commit
+```

@@ -13,8 +13,9 @@
 - Barcode-first recognition now sends the prepared query image to the shared scanner at
   `POST <qr_scanner.endpoint>/scan`; it no longer imports `zxing-cpp`. The top-level
   `qr_scanner` entry of `config.yaml` selects the endpoint and engine and supports an
-  exact `"{env:NAME}"` endpoint reference. Additional-image uploads use the same client.
-  The production barcode twins make one whole-image request with `engine=auto`; their
+  exact `"{env:NAME}"` endpoint reference. The environment is not an implicit endpoint.
+  Additional-image uploads use the same client. The production barcode twins make one
+  whole-image request with the configured engine; their
   cache identity records the resolved endpoint and engine. The workbench requirement on
   `zxing-cpp` and the benchmark utilities' local-decoder assumptions were removed. A
   live config-driven request decoded the expected synthetic EAN-13. Focused barcode,

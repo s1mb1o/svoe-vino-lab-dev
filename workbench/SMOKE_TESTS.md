@@ -888,7 +888,7 @@ Make two test photos from one catalogue image: the whole bottle, and a crop of i
 | AL26 | Press a type button, and press `×` of the same photo while the card is dimmed | `×` is disabled until the type change is done. |
 | AL27 | Drop a phone photo with a long side above 1,536 px | `image.width` and `image.height` of the file are its real size, not the size of the SAM3 copy. |
 | AL28 | Open `$H/dataset/vysokij-bereg-risling-zelenaya-seriya/alternative/d9f847bd293aca369dd9232a8550afc78d98b73f617494165ee4fe7e22536b06` and click `label_back · processed` | The cut shows the whole back label with the barcode, not the QR sticker alone. `image_derivative` of the photo (kind `label`) holds `alternatives.SETTINGS_LABEL_CLOSE_UP` and the box 102, 61, 1247, 1553. |
-| AL29 | Run `python3 -m unittest discover -s tests -p 'test_qr_barcode.py'`, then the same with `test_alternative_codes.py` | 9 and 3 tests pass. No test calls a network service. |
+| AL29 | Run `python3 -m unittest discover -s tests -p 'test_qr_barcode.py'`, then the same with `test_alternative_codes.py` | 10 and 3 tests pass. No test calls a network service. The scanner client does not use `QR_SCANNER_ENDPOINT` unless `qr_scanner.endpoint` contains the matching `{env:NAME}` reference. |
 | AL30 | Set `qr_scanner.endpoint: "{env:QR_SCANNER_ENDPOINT}"` in `config.yaml`, start the lab server with that variable set, and upload an additional image that contains EAN-13 `4631168664979` and a QR code with `URL:https://Example.test:443/wine/1#label`. | The same card shows GTIN `04631168664979` and QR URL `https://example.test/wine/1` when the upload finishes. Both values are rows of `wine_code`. |
 | AL31 | Upload an additional image that contains Code 128 `LOT-12` and a QR code with plain text. | The photo is stored. No code field changes. The lab stores GTINs and HTTP or HTTPS QR URLs alone. |
 | AL32 | Stop the service at the resolved `qr_scanner.endpoint`, then upload a valid additional image. | The photo is stored and processed. The page warns `QR/barcode scan failed: …; the photo is stored without new code fields.` |
@@ -1469,7 +1469,7 @@ Read [plan 42](docs/plans/42_barcode-step.md). `$H` is `http://127.0.0.1:8168`.
 
 | # | Case | Expected result |
 |---|---|---|
-| BC1 | `python3 -m unittest discover -s tests -p 'test_barcode.py'`, then the same with `test_qr_barcode.py` and `test_barcode_cache.py` | 27, 9, and 12 tests are `OK`. No test loads zxing-cpp or calls the network. |
+| BC1 | `python3 -m unittest discover -s tests -p 'test_barcode.py'`, then the same with `test_qr_barcode.py` and `test_barcode_cache.py` | 27, 10, and 12 tests are `OK`. No test loads zxing-cpp or calls the network. |
 | BC2 | Set `QR_SCANNER_ENDPOINT=http://scanner.example`, load `config.yaml` with `pipelines.load`, and inspect one barcode twin's `scanner` | `endpoint` stays the config reference `{env:QR_SCANNER_ENDPOINT}` and `engine` is `zxing-cpp`; backend construction resolves the URL for the HTTP client. |
 | BC3 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import pipelines; s = pipelines.load(); print(sum(1 for n, p, e in s.entries if p and p.barcode), [n for n, p, e in s.entries if e])"` | `22 []`: 22 twins `barcode-<pipeline>`, and no entry with an error. |
 | BC4 | Put `barcode: {formats: [UPCE]}` into a copy of a twin and load the copy with `pipelines.load` | The entry has the error `barcode: unknown format UPCE`. |
