@@ -18,6 +18,16 @@ Its OpenAPI document did not contain `/v1/group/match`.
 Commit `b752591` added this endpoint after the deployed revision.
 Decision: deploy a committed matcher revision that includes `b752591` before shelf mode stays enabled.
 
+Web UI revision `11ebfbf` preserved HTTP 413 for the JPEG dimension bomb.
+A second 12-request burst returned nine HTTP 200 responses and three HTTP 503 responses.
+The matcher health route stayed at HTTP 200.
+The first shelf request after the route deployment found 93 bottles.
+It failed because the SigLIP2 service accepts at most 64 inputs in one request.
+Matcher revision `013ab56` split larger logical batches into requests of at most 64 inputs.
+The final public shelf request returned HTTP 200 in 2598.775 ms.
+It returned 93 bottles and 93 ready matches.
+The production browser opened bottle 1 as `Траминер` and closed the card without a second recognition request.
+
 ## Search discovery and age gate, 2026-09-28
 
 The age gate previously replaced the complete server-rendered page with a loading element.

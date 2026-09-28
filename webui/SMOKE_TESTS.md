@@ -61,6 +61,12 @@ See `docs/verification-2026-09-15.md` for current results.
 - A bounded production load test passed through eight concurrent recognition requests.
 - The production matcher stayed healthy after the load test.
 - The pre-deployment shelf check found that matcher revision `9ba496d` did not provide `/v1/group/match`.
+- Web UI revision `11ebfbf` is active on Princess.
+- The JPEG dimension bomb returned HTTP 413 through the production Web UI.
+- A 12-request burst returned nine HTTP 200 responses and three HTTP 503 responses.
+- Matcher revision `013ab56` is active on GX10 and passed the production deployment check.
+- The public shelf example returned HTTP 200 with 93 detected and matched bottles.
+- The production browser opened and closed a matched shelf wine card.
 
 ## Results on 2026-09-28
 

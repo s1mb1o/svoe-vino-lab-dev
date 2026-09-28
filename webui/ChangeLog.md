@@ -8,6 +8,9 @@
 - Kept unexpected matcher statuses and invalid responses mapped to HTTP 502.
 - Added regression tests for HTTP 400, 401, 408, 413, 415, 502, 503, and 504.
 - Verified all 138 tests, type checks, and the production build.
+- Deployed revision `11ebfbf` on Princess.
+- Verified HTTP 413 for a JPEG dimension bomb and HTTP 503 for matcher overload.
+- Verified the production shelf flow with 93 selectable and matched bottles.
 
 ## 2026-09-28
 
