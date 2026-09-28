@@ -24,7 +24,7 @@ paths:
         - evaluation
       summary: Predict one wine
       description: 'Upload one JPEG, PNG, or WEBP image in the multipart field `image`.
-        The endpoint requires `Authorization: Bearer <token>` when `matcher.token_env`
+        The endpoint requires `Authorization: Bearer <token>` when `matcher.token`
         is configured.'
       operationId: predict_image
       requestBody:
@@ -143,7 +143,7 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
-      description: Required only when matcher.token_env is configured.
+      description: Required only when matcher.token is configured.
 tags:
   - name: evaluation
     description: Official matcher evaluation contract.

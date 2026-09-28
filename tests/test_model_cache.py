@@ -22,7 +22,7 @@ os.environ.setdefault("SVOE_VINO_REVIEW_CONFIG", str(ROOT / "config.old.yaml"))
 import model_cache  # noqa: E402
 import cluster_rules  # noqa: E402
 
-VERIFY = import_module("04_verify")
+WINE_IDENTITY = import_module("wine_identity_vlm")
 BENCH = import_module("bench_vlm_models")
 
 
@@ -245,12 +245,12 @@ class ClusterRulesVlmTest(CacheCase):
         self.assertEqual((len(fake.requests), vlm.hits), (2, 1))
 
 
-class VerifyAndBenchTest(CacheCase):
-    def test_verify_backend_reads_the_cache(self):
-        backend = VERIFY.Backend("local", "http://vlm.invalid/v1/chat/completions", "m",
-                                 "", 1)
+class WineIdentityAndBenchTest(CacheCase):
+    def test_wine_identity_backend_reads_the_cache(self):
+        backend = WINE_IDENTITY.Backend(
+            "local", "http://vlm.invalid/v1/chat/completions", "m", "", 1)
         fake = FakeUrlopen(chat('{"same_wine": true}'))
-        with mock.patch.object(VERIFY.urllib.request, "urlopen", fake):
+        with mock.patch.object(WINE_IDENTITY.urllib.request, "urlopen", fake):
             first = backend.ask(data_url(b"ref"), data_url(b"cand"), "producer", "title")
             second = backend.ask(data_url(b"ref"), data_url(b"cand"), "producer", "title")
             backend.ask(data_url(b"cand"), data_url(b"ref"), "producer", "title")

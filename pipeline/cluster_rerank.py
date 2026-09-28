@@ -1,10 +1,9 @@
 """The cluster re-rank of a lab pipeline: the key `rerank` (plan 48).
 
 The re-rank reads the label of the test photo with the rule of a cluster. The rules come
-from plan 45: `data/embeddings/<rules>/cluster-rules.json`, the space `label`, for the
-clusters of the view `combined` of `clusters.json` of the same directory. The rules of
-one embedding serve every pipeline: a cluster is a group of catalogue cards that look
-alike.
+from plan 45: `data/embeddings/<pipeline embedding>/cluster-rules.json`, the space
+`label`, for the clusters of the view `combined` of `clusters.json` of the same
+directory. A cluster is a group of catalogue cards that look alike.
 
 How it works (a port of the kind `cluster_rules` of `svoe-vino-matcher`,
 `svm/cluster_rules.py` and `svm/pipelines/cluster_rules.py`):
@@ -49,7 +48,7 @@ import vlm_config
 from embeddings import ConfigError
 
 KIND = "cluster_rules"
-OPTION_KEYS = ("rules", "window", "vlm", "thinking", "side", "max_tokens", "timeout_s")
+OPTION_KEYS = ("window", "vlm", "thinking", "side", "max_tokens", "timeout_s")
 DEFAULTS = {"window": 5, "vlm": "qwen3.5-9b-nvfp4", "thinking": False, "side": 1536,
             "max_tokens": 256, "timeout_s": 180}
 OTHER = "other"
@@ -84,14 +83,13 @@ def check_options(raw):
     ConfigError."""
     if not isinstance(raw, dict):
         raise ConfigError("rerank MUST be a mapping")
+    if "rules" in raw:
+        raise ConfigError("rerank.rules was removed; the re-rank uses the pipeline embedding")
     unknown = sorted(set(raw) - set(OPTION_KEYS))
     if unknown:
         raise ConfigError("rerank has the unknown key %s" % ", ".join(unknown))
     out = dict(DEFAULTS)
     out.update({key: value for key, value in raw.items() if value is not None})
-    rules = out.get("rules")
-    if not isinstance(rules, str) or not embeddings.NAME_RE.match(rules):
-        raise ConfigError("rerank.rules MUST name an entry of the key `embeddings`")
     for key, low in (("window", 2), ("side", 64), ("max_tokens", 1)):
         value = out[key]
         if isinstance(value, bool) or not isinstance(value, int) or value < low:
@@ -325,7 +323,8 @@ class ClusterRerank:
     inner backend: the step `cluster_rules` goes at the end of the trace when the step
     acts. `ask_fn` and `segmenter` are for the tests."""
 
-    def __init__(self, inner, options, config_path, db_path, ask_fn=None, segmenter=None):
+    def __init__(self, inner, options, embedding, config_path, db_path, ask_fn=None,
+                 segmenter=None):
         self.inner = inner
         self.options = options
         try:
@@ -333,7 +332,7 @@ class ClusterRerank:
             self.entry = vlm_config.entry(config, options["vlm"])
         except (embeddings.ConfigError, vlm_config.VlmConfigError) as exc:
             raise ConfigError("rerank: %s" % exc) from exc
-        directory = embeddings.entry_dir(db_path, options["rules"])
+        directory = embeddings.entry_dir(db_path, embedding)
         self.book = RuleBook(directory)
         self.names = catalogue_names(db_path)
         self.ask_fn = ask_fn or label_rules.ask
@@ -341,7 +340,8 @@ class ClusterRerank:
         self.id, self.top_k = inner.id, inner.top_k
         # `run_job.build` and `embedding_run.main` read the index state of the run.
         self.catalogue = getattr(inner, "catalogue", None)
-        self.spec = dict(inner.spec, rerank=dict(options, kind=KIND, **self.book.describe()))
+        self.spec = dict(inner.spec, rerank=dict(options, rules=embedding, kind=KIND,
+                                                **self.book.describe()))
         self.spec["label"] = "%s, then the cluster re-rank" % inner.spec.get("label", self.id)
 
     def picture(self, path):

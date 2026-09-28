@@ -2,6 +2,24 @@
 
 ## 2026-09-28
 
+- Consolidated all current Git-visible matcher and workbench changes into one repository
+  snapshot (owner message of 2026-09-28T11:17:14+0300). The snapshot includes 63 MB of
+  new files. No new file exceeds 20 MB. The secret-pattern check found no high-confidence
+  secret in an added line. Verification passes: 37 matcher tests, 9 bundle tests, 5
+  image-tag tests, 7 scene-selection tests, 15 cache tests, and 20 VLM-configuration
+  tests. The whitespace check reports only four new text files with a blank line at EOF
+  and the generated PDF content.
+- Added the standalone matcher bundle exporter and validator (plan 72; owner message of
+  2026-09-28T10:01:26+0300). The versioned bundle contains a compact C-order `float32`
+  vector matrix, vector-to-wine candidate relations, wine metadata, omissions, payload
+  hashes, and optional prepared images. Shared source images keep one vector and can map
+  to multiple wine slugs. The validator needs only NumPy and the bundle. It verifies
+  checksums, safe paths, vector shape, layout, finite values, L2 normalization, metadata
+  relations, and optional images. Nine bundle tests, 17 embedding-build tests, and 38
+  embedding-run tests pass. Real `gx10-dinov3-vitb16` exports with and without images
+  pass standalone validation: 4,642 items, 4,674 candidate relations, 2,094 wines, 3
+  omissions, and vector dimension 768. The image bundle contains 4,642 images and is
+  1.4 GB. No schema changed. The lab server did not restart.
 - Added the smoke check of the self-hosted GitHub runner `ct111-svoe-vino-lab-1`
   (CT 111): `.github/workflows/runner-smoke.yml` (manual start, box `load_models`) runs
   `scripts/runner_smoke.py` (owner messages of 2026-09-28T08:55:00+0300 through 08:59:00).
@@ -60,8 +78,9 @@
   The test config reads
   `SVOE_VINO_MATCHER_OUTPUT_DIR` through this field. Configs without the field keep the
   old direct environment fallback. Tests reject missing, empty, and malformed
-  references. Optional Bearer authentication uses `matcher.token_env`; YAML stores
-  only `SVOE_VINO_MATCHER_TOKEN`, and the secret stays in the environment. A missing,
+  references. Optional Bearer authentication uses `matcher.token`; YAML stores
+  only the exact `"{env:SVOE_VINO_MATCHER_TOKEN}"` reference, and the secret stays in
+  the environment. A missing,
   malformed, or incorrect token returns HTTP 401. Predict is protected when this field
   is present. `/healthz`, `/docs`, `/redoc`, and `/openapi.json` stay public.
   The prediction middleware limits the complete HTTP body, image bytes, declared
@@ -74,6 +93,84 @@
   shell-client dependencies `curl` and `jq`, checks the pinned Python dependencies, and
   runs the same 37-test command. No fixed port, schema change, or lab-server restart was
   used.
+- Added project rules for developer and component-test commands. `COMMANDS.md` is the
+  root command catalogue. Commands run from the project root and state their required
+  environment. Detailed test guidance belongs in `docs/testing/`. Stable or multi-step
+  commands use executable targets or test scripts. Historical test results stay in
+  `ChangeLog.md`.
+- Removed the obsolete numbered test-set builder and review stages (plan 70; owner
+  messages of 07:36:44 and 07:38:08). The change deletes `scripts/01_search.py` through
+  `scripts/09_apply_moves.py`, `scripts/run_pipeline.py`, and `scripts/finalize.sh`.
+  `pipeline/wine_identity_vlm.py` now holds the prompt, parser, cached backend, and VLM
+  configuration logic that the benchmark and tests still use. The old JSON review tool
+  keeps its Apply action. Current documentation, configuration comments, and smoke tests
+  no longer execute or name a deleted command. The 69 focused tests pass. The complete
+  1,298-test run has 1,292 passes, 5 skips, and one unrelated environment error because
+  the shell sets `SAM3_ENDPOINT` to port 18082 instead of the project value 18081. The
+  affected nine-test module passes with port 18081. No schema changed. The lab server
+  did not restart.
+- Test-set image tags from the shared GX10 SAM3 service (owner messages of
+  2026-09-28T01:42:50+0300 and 01:43:00, resumed at 06:43:16). The preflight showed
+  77 GiB available RAM, 0 % GPU use, and a healthy loaded SAM3 service. A resumable
+  serial pass sent one request for each of 3,474 unique test-set images. Each request
+  used the nouns `barcode, QR code`. The pass completed in 1,739.5 s with zero request
+  failures. It detected `barcode` in 513 images and `QR code` in 248 images. There are
+  548 tagged images, including 213 images with both tags. The database stores the tags
+  as `barcode` and `qr_code`. Verification found that one detected image lacked its two
+  rows after the pass, and added those rows again. The final database rows exactly equal
+  the ledger detections. `PRAGMA integrity_check` is `ok`, the foreign-key check has zero
+  rows, and no tag is outside the test sets. A second run attempted zero images and
+  confirmed all 3,474 checkpoints. Ledger:
+  `work/tag-testset-images-sam3.jsonl`. Backup:
+  `data/backups/lab-before-testset-sam3-tags-20260928T034700Z.sqlite3`.
+- Main-scene package selection for query photos (plan 69; owner message recorded at
+  01:16:11, selected approach at 01:16:13). Configured embedding pipelines now ask SAM3
+  for packages and a hand in one request. `pipeline/main_scene.py` ranks package masks by
+  hand contact, relative area, center position, sharpness, detector confidence, mask fill,
+  shelf isolation, and edge visibility. It gives no package class a fixed priority. The
+  `sam3-package` trace records all signals, contributions, candidate scores, and the
+  selected package. `/recognize` shows this audit in `Result`. The catalogue-image
+  processor keeps its bottle-first rule. Both Abrau Fizz photos select the can and rank
+  `abrau-dyurso-fizz-beloe-bryut` first. New tests are in `test_main_scene.py`, with
+  integration checks in `test_embedding_run.py` and `test_run_steps.py`. The A4 decision
+  map is `output/pdf/main-scene-selection.pdf`. The full suite has 1,298 passing tests
+  and 5 skipped tests. Port 8168 was restarted at 01:39 (PID 2431), and `/api/dataset`
+  returned HTTP 200. Live `/api/recognize` requests for both photos showed `can` in the
+  `Package selection and cut` result, with scene scores 0.972702 and 0.976576. A browser
+  check opened the step result and showed the weights, signals, contributions, and ranked
+  candidates.
+- Tags of a test image (plan 66; owner message of 2026-09-27T23:50:37+0300, answers of
+  23:53:00, 23:59:59, and 00:32:00). Schema 030 `image_tag`: one row per tag of an image,
+  keyed by the SHA-256, so each copy of the image in each place and set shows the same
+  tags. New module `pipeline/image_tags.py` (the tag form of `wine_tags.normal`). Routes
+  `POST /api/testset-photo-tag` and `POST /api/testset-photo-tag-remove`; `GET
+  /api/testset` sends `tags` in each photo and `tag_names`. `/testset`: the section `Tags
+  of this image` in the large view (chips with `×`, an input with suggestions), a badge at
+  the lower right of each tagged card, `N tagged` in the row counts, `Marks: a tag`, and
+  the select `Tag` under `Additional settings` (address key `tag`). The export writes the
+  field `tags`; the import adds it back and never removes a tag. The pipeline does not read
+  the tags. Tests: `test_image_tags.py` 5 (new), and new cases in `test_testsets.py`,
+  `test_testset_routes.py`, `test_import_testset.py`, `test_export_testset.py`; the full
+  suite 1,290 OK (5 skipped). Browser: 60 checks on a scratch server (8175) with a
+  migrated copy of the database, light and dark; 12 read-only checks on 8168. Backup
+  `data/backups/lab-before-030-image-tag-20260927T213243Z.sqlite3`; `data/lab.sqlite3`
+  migrated to 30; 8168 restarted at 00:32:47 (PID 4467).
+- The self-test of one embedding (plan 67; owner messages of 2026-09-27T23:58:00+0300 and
+  2026-09-28T00:00:00+0300, answers of 00:04:00 and 00:07:00). New `pipeline/selftest.py`:
+  each `wine_image` row of an Active wine (`main`, `main_patched` and the original `main`
+  of a patched wine, `full_front`, `full_back`, `label_front`, `label_back`) is one query
+  with its own wine as the truth. A full image goes the query path of a test photo (the
+  SAM3 package cut, the steps of the view `full`); a label close-up goes in as it is. Each
+  query searches the `full` vectors alone, with no barcode step. The run has the set
+  `dataset` and the configuration `selftest-<embedding>`. `benchmark.run_benchmark` got
+  the keyword `queries`; `run_job.py` got `--selftest`; `POST /api/run-jobs` got the body
+  key `selftest`; `/embedding` got the button `Selftest` with a job line and `open run`.
+  Tests: `test_selftest.py` 11 and `test_run_jobs.py` 25 OK; the full suite 1,277 OK
+  (5 skipped); 12 browser checks pass. 8168 restarted at 00:15:47 (PID 52966) for
+  `run_jobs.py`. The first full self-test of `gx10-siglip2-so400m-patch16-512`
+  (`runs/2026-09-27T211801Z-lab-selftest-gx10-siglip2-so400m-patch16-512-dataset/`):
+  2,401 images in 211 s, recall@1 0.9713, recall@5 0.99, no errors. The findings are in
+  `ResearchLog.md`.
 
 ## 2026-09-27
 

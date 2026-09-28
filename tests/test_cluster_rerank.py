@@ -157,10 +157,11 @@ class BackendTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         fixture = Fixture(self.tmp.name, rules)
-        opts = cluster_rerank.check_options(dict({"rules": "rules", "vlm": "fake-vlm"},
+        opts = cluster_rerank.check_options(dict({"vlm": "fake-vlm"},
                                                  **(options or {})))
-        backend = cluster_rerank.ClusterRerank(Inner(answer), opts, fixture.config_path,
-                                               fixture.db_path, ask_fn=vlm)
+        backend = cluster_rerank.ClusterRerank(Inner(answer), opts, "rules",
+                                               fixture.config_path, fixture.db_path,
+                                               ask_fn=vlm)
         backend.picture = lambda path: (b"png", "label")
         return backend
 
@@ -253,13 +254,13 @@ class BackendTest(unittest.TestCase):
 
 class OptionTest(unittest.TestCase):
     def test_the_defaults_and_the_checks(self):
-        opts = cluster_rerank.check_options({"rules": "gw"})
+        opts = cluster_rerank.check_options({})
         self.assertEqual((opts["window"], opts["vlm"], opts["thinking"], opts["side"]),
                          (5, "qwen3.5-9b-nvfp4", False, 1536))
-        for raw, message in (({"rules": "gw", "size": 1}, "unknown key size"),
-                             ({"rules": "gw", "window": 1}, "rerank.window"),
-                             ({}, "rerank.rules"), ({"rules": "gw", "thinking": "no"},
-                                                    "rerank.thinking"), ([], "mapping")):
+        for raw, message in (({"size": 1}, "unknown key size"),
+                             ({"window": 1}, "rerank.window"),
+                             ({"rules": "gw"}, "rerank.rules was removed"),
+                             ({"thinking": "no"}, "rerank.thinking"), ([], "mapping")):
             with self.assertRaises(ConfigError) as caught:
                 cluster_rerank.check_options(raw)
             self.assertIn(message, str(caught.exception))
@@ -272,7 +273,7 @@ class OptionTest(unittest.TestCase):
                 config = yaml.safe_load(path.read_text(encoding="utf-8"))
                 config["pipeline"] = [
                     {"name": "rr", "backend": "embedding", "embedding": "gw",
-                     "rerank": {"rules": "gw", "window": 4}},
+                     "rerank": {"window": 4}},
                     {"name": "bad", "backend": "embedding", "embedding": "gw",
                      "rerank": {"rules": "missing"}}]
                 path.write_text(yaml.safe_dump(config), encoding="utf-8")
@@ -280,7 +281,7 @@ class OptionTest(unittest.TestCase):
                 self.assertEqual(found.find("rr").rerank["window"], 4)
                 with self.assertRaises(ConfigError) as caught:
                     found.find("bad")
-                self.assertIn("rerank.rules names missing", str(caught.exception))
+                self.assertIn("rerank.rules was removed", str(caught.exception))
             finally:
                 lab.close()
 

@@ -124,7 +124,6 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 27 | Set a filter that hides one wine, then open that wine by its address | The filter and the search are cleared, and the view opens. |
 | 28 | Open an address whose slug or file name does not exist | The page opens as usual, with no large view and no error. |
 | 29 | Press the browser Back button after many arrow presses | The page does not step through every photo. The address is written with `replaceState`. |
-| 30 | Run `python3 scripts/08_variants.py --no-image` | It reports 28 groups over 63 wines and writes `derived/variant-groups.json`. |
 | 31 | Restart the tool | The log states `variant groups: 28   wines in a group: 63`. |
 | 32 | Find `abrau-dyurso-pino-nuar-krasnoe-suhoe-12` | Its row and the row of `...-125` stand next to each other and share a background colour. Both rows carry the tag `variant group of 2`. |
 | 33 | Change the sort, then look at the same pair | The two rows stay next to each other in every sort order. |
@@ -137,8 +136,6 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 40 | Press `m` in the large view | The same question is asked for the photo on screen. |
 | 41 | Type a target slug that does not exist | `{"error": "unknown target slug: ..."}`. Nothing is written. |
 | 42 | Type the slug of the photo itself | `{"error": "the target slug is the slug of the photo"}`. |
-| 43 | Run `python3 scripts/09_apply_moves.py` | It lists every recorded move and states `report only`. No file is moved. |
-| 44 | Run it again with `--apply`, then a third time | The files are moved. The third run states `already done` and moves nothing. |
 | 45 | Label a photo, then move it, then clear the label | The `reassign_to` field stays. The entry is removed only when both fields are gone. |
 | 46 | Open the large view | A panel stands at the right of the two images. It names the slug and the file. |
 | 47 | Type a comment, then wait a second | The state line goes `typing...`, `saving...`, `saved`. `review-labels.json` holds the `comment` field. |
@@ -157,7 +154,6 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 60 | Press `apply` and confirm | The file is moved. A report names every move. The table is rebuilt and the counter is gone. |
 | 61 | Look at the moved photo in its new wine | It carries no label. Its comment starts with `до переноса в ... был в ...`. |
 | 62 | Press `apply` with nothing pending | The button is not shown. |
-| 63 | Run `python3 scripts/09_apply_moves.py --apply` twice | The second run states `nothing to move`. |
 | 64 | Click `move` under a photo | A dialog opens with five wines, each with its bottle photo, name, and producer. |
 | 65 | Look at the first row of the dialog for a wine of a variant group | It is a member of that group and carries the tag `variant group`. |
 | 66 | Click a row of the dialog | The move is recorded and the dialog closes. |
@@ -218,7 +214,6 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 121 | Try to group two wines that are each already in a group | The dialog states both group ids and that a merge is not allowed. Nothing is written. |
 | 122 | Group two wines that are already in one group | The dialog states `the two wines are already in one group`. Nothing is written. |
 | 123 | Look at `manual-groups.json` | It holds one record per pair, with `a`, `b` and `ts`. |
-| 124 | Run `python3 scripts/08_variants.py --no-image`, then reload the tool | Every pair made by hand is still in place. |
 | 125 | Press Esc while the group dialog is open | The dialog closes. No pair is written. |
 | 126 | Click `Download` in the menu of a photo | The menu closes and the browser saves the file. No tab opens. |
 | 127 | Look at the saved file | Its name is `<slug>__<file>`, for example `abrau-dyurso-...__01_conf095.jpg`. |
@@ -249,8 +244,6 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 150 | Copy a photo to a wine that already holds a file of that name | The copy is named `<stem>_copy2.<ext>`. The report states the rename. |
 | 151 | Record a copy and a move on one photo, then press `apply` | Both are carried out. The copy is made first, so the copy holds the picture and the source directory no longer does. |
 | 152 | Record a copy, then mark the same photo for deletion, then press `apply` | The photo is deleted and is not copied. |
-| 153 | Run `python3 scripts/09_apply_moves.py` | It states the recorded copies and the recorded moves, then `report only`. No file is touched. |
-| 154 | Run it with `--apply` | The copies run before the moves. The report states how many files were copied and how many were moved. |
 | 155 | Press `validate` in the header | A dialog opens with one line per check. Every check is on. The line states what the check reads and what it cannot find. |
 | 156 | Take every check off and press `run` | The dialog states `choose at least one check` and stays open. |
 | 157 | Press `run` with one check on | The button reads `checking...`. After a few seconds the dialog closes, the filter goes to `failed a check`, and the button `validate` is marked. |
@@ -365,7 +358,6 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | C3 | Set `photo_dir` to a directory that does not exist, then start the tool | The line of `photo_dir` gets the mark `(absent)`. The tool stops with `error: photo set not found`. |
 | C4 | Set `catalog_file` to an absolute path | The path stays as it is. It is not joined to `rootdir`. |
 | C5 | Remove a key from `config.yaml`, then run C1 | The earlier default path is used. No error is raised. |
-| C6 | `python3 scripts/08_variants.py --help` after a change of `variant_groups_file` | The script writes the groups to the configured file. The review tool reads the same file. |
 | C7 | Add a second entry to `dataset`, then `python3 scripts/review_server.py --no-browser` | The line `dataset` reads `default   (of 2: default, <the other name>)`. The paths are those of `default`. |
 | C8 | `python3 scripts/review_server.py --no-browser --dataset <the other name>` | Every dataset path is that of the other entry. `catalog_file` and `backends_file` do not change. The tool reads the photo set and the labels of that dataset alone. |
 | C9 | `python3 scripts/match_run.py --dataset <the other name> --dry-run` | The same paths. The run directory stands under the `runs_dir` of that dataset, and `run.json` holds `options.dataset`. |
@@ -422,7 +414,7 @@ The cases need `bottle_cropped_dir` in `config.yaml`. `$C` is
 | K5 | Change a patch file after the build of the crops, then `GET /api/reload` | The tool serves the patch with its border for that wine. The next start of the tool prints a warning that names the slug and `build_cropped.py`. |
 | K6 | Take `bottle_cropped_dir` out of `config.yaml`, then start the tool | Every picture is the patch or the catalogue photo, with its border. |
 | K7 | Set `bottle_cropped_dir` to a directory that does not exist | The tool prints a warning at the start and serves the pictures with their border. It does not stop. |
-| K8 | `python3 -c "import sys, json; sys.path.insert(0, 'scripts'); import common; c = json.loads(open(common.CATALOG_FILE).readline()); print(common.catalogue_picture(c['slug'], c, common.load_cropped_bottles(), common.load_patches()))"` | A path in `$C`. `scripts/08_variants.py` and `scripts/03_embed.py` embed the same file. |
+| K8 | `python3 -c "import sys, json; sys.path.insert(0, 'scripts'); import common; c = json.loads(open(common.CATALOG_FILE).readline()); print(common.catalogue_picture(c['slug'], c, common.load_cropped_bottles(), common.load_patches()))"` | A path in `$C`. The review tool serves the same file. |
 
 ## Excluded slugs — `excluded-slugs.json`
 
@@ -1548,11 +1540,10 @@ Read the section "The VLM inferences" of `README.md`.
 
 | # | Case | Expected result |
 |---|---|---|
-| VL1 | `python3 -m unittest discover -s tests -p 'test_vlm_config.py'` | 19 tests `OK` (2026-09-25). The test also checks that `config.yaml` and `config.old.yaml` hold the same `vlm` section. |
+| VL1 | `python3 -m unittest discover -s tests -p 'test_vlm_config.py'` | 20 tests `OK` (2026-09-28). The test also checks that `config.yaml` and `config.old.yaml` hold the same `vlm` section and that `pipeline/wine_identity_vlm.py` builds named backends. |
 | VL2 | `SVOE_VINO_REVIEW_CONFIG=config.old.yaml python3 -c "import sys; sys.path.insert(0, 'scripts'); import cluster_rules as c; print(c.MODEL, c.API, c.RULES_MODEL, c.RULES_API, c.RULES_KEY_ENV)"` | `qwen3.5-9b llama.cpp qwen3.8-max qwencloud QWENCLOUD_TOKEN_PLAN_API_KEY`. |
 | VL3 | Put `url: x` into `cluster_rules` of a copy of `config.old.yaml`, and run VL2 with the copy | The import stops with `cluster_rules: the keys vlm and rules_vlm replace the old keys url`. |
 | VL4 | Put `key: sk-test` into an entry of a copy of `config.old.yaml`, and run VL2 with the copy | The import stops with `key MUST be null or {env:NAME}`. The message does not hold `sk-test`. |
-| VL5 | `python3 scripts/04_verify.py --help` with `SVOE_VINO_REVIEW_CONFIG=config.old.yaml` | The help of `--backends` states that a name is an entry of the key `vlm`, for example `qwen3-vl-32b:12`. |
 | VL6 | One chat request to the entry `qwen3.5-9b-nvfp4` with one small image, `chat_template_kwargs.enable_thinking: false`, and JSON mode | HTTP 200, `finish_reason: stop`, the JSON answer, no reasoning text. On 2026-09-25 at about 16:21 the answer took 19.9 s. |
 
 ## The image descriptions — `image_description` and `pipeline/describe_images.py`
@@ -2073,6 +2064,57 @@ Owner message of 2026-09-27T21:44:04+0300. `$H` is the lab server.
 | BK3 | Press `Build all clusters` | The button is disabled. The text after it reads `Build all clusters 1 / 12: <name>`, then counts up. The combobox shows the new count of each built configuration. At the end: `Build all clusters done: <n> built`, and the title lists each configuration with its result. |
 | BK4 | Press `Build All` on `$H/embedding`, then at once `Build all clusters` on `$H/clusters` | While the embedding build of the current configuration runs, the text adds ` · waiting: the embedding build of <name> runs`. The cluster build of that configuration starts after the embedding build. |
 
+## Selftest of an embedding — plan 67
+
+Owner messages of 2026-09-27T23:58:00+0300 and 2026-09-28T00:00:00+0300. `$H` is the lab
+server.
+
+| # | Case | Expected result |
+|---|---|---|
+| SE1 | `python3 -m unittest discover -s tests -p 'test_selftest.py'` | 11 tests, `OK` (2026-09-28). |
+| SE2 | `python3 -m unittest discover -s tests -p 'test_run_jobs.py'` | 25 tests, `OK` (2026-09-28). `SelftestJobTest`: the command, the body checks, the runner, `--set` with and without `--selftest`. |
+| SE3 | Open `$H/embedding`, select a configuration with an index | `Selftest` follows the build message. It is enabled. It is disabled for a configuration with no current item and while its build runs. |
+| SE4 | Press `Selftest` | The button is disabled. The line after it reads `selftest running`, then `selftest running <done> / <todo>`, with a `×` on the same line. `$H/testset` shows the job `selftest-<name>` in its job list. |
+| SE5 | Wait for the end | The line reads `last selftest done: recall@1 <x>, recall@5 <y> · open run`. The button is enabled again. |
+| SE6 | Press `open run` | `/runs?set=dataset#<run id>` opens the run. The filter `Testset` is `dataset`. The run has the pipeline `selftest-<name>` and the tag `no barcode`. The rows are `<wine_slug>/<image_type>-<sha256 prefix>.<extension>`. |
+| SE7 | Press `×` while a self-test runs | The line reads `last selftest stopped: stopped after <n> of <todo> photos · open run`. The run holds the answered rows. |
+| SE8 | `python3 pipeline/selftest.py --embedding <name> --limit 20 --label smoke` | `images: 20, recall@1 …`; the run is `runs/<stamp>-lab-selftest-<name>-dataset-smoke/`. |
+
+## Image tags of the Testset — plan 66
+
+Owner message of 2026-09-27T23:50:37+0300, answers of 23:53:00. Read
+[plan 66](docs/plans/66_testset-image-tags.md). `$H` is the lab server. `<A>/<F>` is a photo
+whose image has a second place, for example `abrau-dyurso-pino-nuar-krasnoe-suhoe-12/01_agent.jpg`
+of the set `my-1` (the second place is `abrau-dyurso-pino-nuar-krasnoe-suhoe-125`).
+
+| # | Case | Expected result |
+|---|---|---|
+| IT1 | `python3 -m unittest discover -s tests -p 'test_image_tags.py'`, then the same with `test_testsets.py`, `test_testset_routes.py`, `test_import_testset.py`, `test_export_testset.py`, and `test_labdb.py` | 5, 31, 11, 18, 9, and 17 tests `OK` (2026-09-28). |
+| IT2 | Open `$H/testset?set=my-1#<A>/<F>` | The large view has `Tags of this image` with `0` and `no tag`, an input, and `Add`. |
+| IT3 | Type ` Blurry ` and press Enter | The chip `blurry` shows, the state reads `added blurry`, the input is empty. The cards of both places of the image get the badge `blurry`. |
+| IT4 | Add `blurry` again, then `two words` | The state reads `not saved: the image … has the tag blurry`, then `not saved: a tag holds only letters, …`. One chip stays. |
+| IT5 | Click in the input | The suggestions hold each tag of the database that the image does not have. |
+| IT6 | Press Esc twice | The first Esc leaves the input, the second closes the view. The row counts of `<A>` show `1 tagged`. |
+| IT7 | `Additional settings`, then `Tag` = `blurry (2)` | The table shows the two wines of the image. The address holds `tag=blurry`. A reload keeps the filter. `Marks` = `a tag` gives the same two wines. |
+| IT8 | Select the set `my` | Each copy of the image in `my` shows the badge `blurry`. |
+| IT9 | In the large view of the second place, press `×` of `blurry` | The state reads `removed blurry`. No card shows the badge. `Tag` holds `any` alone. |
+| IT10 | `python3 pipeline/export_testset.py --db data/lab.sqlite3 --set my-1 --out <scratch dir>` with a tag on `<A>/<F>` | The entry `<A>/<F>` of `review-labels.json` holds `"tags": ["blurry"]`. An import of the directory into a scratch database adds the tag back. |
+| IT11 | Light and dark system theme; a window of 390 px | The chips, the input, and the badge use the colours of the theme. The large view shows the editor. No page error. |
+
+## Main-scene package selection — plan 69
+
+Owner messages recorded at 2026-09-28T01:16:11+0300 and 01:16:13+0300. `$H` is the lab
+server. Use the pipeline `barcode-rerank-siglip2-512-crop`.
+
+| # | Case | Expected result |
+|---|---|---|
+| MS1 | `python3 -m unittest discover -s tests -p 'test_main_scene.py'`, then the same with `test_embedding_run.py` and `test_run_steps.py` | 7, 38, and 11 tests are `OK`. The full suite has 1,298 passing tests and 5 skipped tests (2026-09-28). |
+| MS2 | Open `$H/recognize`. Select the pipeline. Drop `PXL_20260926_175323263.jpg` | The package step is `Package selection and cut`. Its note says that the selector chose `can`. The cut shows the pink can. The answer at rank 1 is `abrau-dyurso-fizz-beloe-bryut`. |
+| MS3 | Repeat MS2 with `PXL_20260926_175335432.jpg` | The package step selects `can`. The cut shows the blue can. The answer at rank 1 is `abrau-dyurso-fizz-beloe-bryut`. |
+| MS4 | Open `Result` in the package step | `selection` holds `version`, `mode`, `texts`, `weights`, `hands`, `candidates`, and `selected`. Each candidate holds its signals, contributions, and `scene_score`. The mask body is absent. |
+| MS5 | Use a photo with many bottles and no hand | `selection.mode` is `scene`. The largest central isolated bottle ranks above similar shelf bottles. |
+| MS6 | Open `output/pdf/main-scene-selection.pdf` | The file has one A4 portrait page. All text, arrows, weights, examples, and fallbacks are readable. |
+
 ## Evaluation matcher — plan 71
 
 Owner messages recorded at 2026-09-28T08:07:43+0300 through 09:40:52.
@@ -2090,11 +2132,22 @@ Owner messages recorded at 2026-09-28T08:07:43+0300 through 09:40:52.
 | EM9 | Load configs with broken YAML, an unknown pipeline, a duplicate pipeline name, an invalid SHA-256, and an unsupported backend. | Every config is rejected with `ConfigError`. |
 | EM10 | Read `matcher/requirements.txt`, then run `~/.venvs/svoe-vino-lab/bin/pip check`. | Every direct dependency has an exact `==` version. `pydantic` and Pillow are listed directly. The installed dependency set is consistent. |
 | EM11 | Set `matcher.output_dir` to a literal path and to `"{env:NAME}"`. Also test a config without the field and invalid or unresolved references. | Literal and resolved paths are used. A config without the field keeps the legacy environment fallback. Missing, empty, and malformed references are rejected without exposing an environment value. |
-| EM12 | Start with `matcher/tests/config.token.yaml` and `SVOE_VINO_MATCHER_TOKEN` set. Call predict without a token, with invalid Authorization values, and with the correct Bearer token. Also call `/healthz` and `/openapi.json` without a token. | Invalid credentials return HTTP 401 and `WWW-Authenticate: Bearer`. The correct token returns the configured slug. Health and OpenAPI stay public. The no-token config keeps predict public. |
+| EM12 | Start with `matcher/tests/config.token.yaml`, which contains `token: "{env:SVOE_VINO_MATCHER_TOKEN}"`, and set `SVOE_VINO_MATCHER_TOKEN`. Call predict without a token, with invalid Authorization values, and with the correct Bearer token. Also call `/healthz` and `/openapi.json` without a token. Load configs with a bare token variable name, malformed references, and the retired key `token_env`. | Invalid credentials return HTTP 401 and `WWW-Authenticate: Bearer`. The correct token returns the configured slug. Health and OpenAPI stay public. The no-token config keeps predict public. Bare names, malformed references, and `token_env` are rejected. |
 | EM13 | Submit a small JPEG that declares 65535 × 65535 pixels, damaged bytes, and a GIF. | The responses are HTTP 413, 422, and 415. The next normal JPEG and `/healthz` succeed. |
 | EM14 | Attempt a 1 GiB sparse upload with Content-Length. Send an oversized chunked body and a slow partial upload. | The sparse and chunked requests return HTTP 413 without consuming the declared body. The slow upload returns HTTP 408. The service stays usable. |
 | EM15 | Fill two active predict slots and one queued slot. Send one more predict request. | The next request returns HTTP 503 before the upload timeout. `/healthz` stays available. |
 | EM16 | Push a matcher change to GitLab `main`. Open the `matcher-tests` job of the new pipeline. | The Docker executor uses `python:3.11-slim`. `pip check` succeeds. All 37 matcher tests run without a skip and pass. |
+
+## Standalone matcher bundle — plan 72
+
+Owner message recorded at 2026-09-28T10:01:26+0300.
+
+| # | Case | Expected result |
+|---|---|---|
+| MB1 | `python3 -m unittest discover -s tests -p 'test_matcher_bundle.py'` | All tests are `OK`. The tests build bundles with and without images. They reject modified vectors, Fortran-order vectors, invalid catalogue metadata, and a modified image. |
+| MB2 | Build `gx10-dinov3-vitb16` without images. Validate it with `scripts/validate_matcher_bundle.py`. | Both commands exit with code 0. The summary reports 4,642 items, 4,674 candidate relations, 2,094 wines, 3 omissions, no images, and vector dimension 768. |
+| MB3 | Build a fixture bundle with `--include-images`. Validate it after removing the source database and embedding directory. | Validation succeeds. Each path in `images.jsonl` identifies a copied regular file with the declared SHA-256 value and byte size. |
+| MB4 | Change one payload byte, one candidate wine slug, or one copied image. Run the validator. | The validator exits with code 2 and identifies the failed checksum or relation. |
 
 ## Runner smoke — the GitHub runner of CT 111
 

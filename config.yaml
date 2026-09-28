@@ -569,18 +569,17 @@ pipeline:
   # The cluster re-rank of plan 48 (owner message of 2026-09-26T13:10:00+0300). When the
   # rank-1 card and another card of its cluster stand in the first `window` positions,
   # the VLM reads the label cut of the photo with the label rule of that cluster, and the
-  # cards of that cluster change their order. `rules` names the embedding directory that
-  # holds `clusters.json` and `cluster-rules.json` (plan 45); the rules of one embedding
-  # serve each pipeline. `vlm` names an entry of the key `vlm`; `side` is the long side of
-  # the picture; `thinking`, `max_tokens`, and `timeout_s` go into the request. With the
-  # key `barcode` too, a code hit answers first and the re-rank does not run. Read
+  # cards of that cluster change their order. The re-rank reads `clusters.json` and
+  # `cluster-rules.json` from the directory of the pipeline embedding (plans 45 and 68).
+  # `vlm` names an entry of the key `vlm`; `side` is the long side of the picture;
+  # `thinking`, `max_tokens`, and `timeout_s` go into the request. With the key `barcode`
+  # too, a code hit answers first and the re-rank does not run. Read
   # docs/plans/48_cluster-rerank.md.
   - name: rerank-siglip2-512-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-512
     views: *crop-views
     rerank: &rerank-options
-      rules: gx10-siglip2-so400m-patch16-naflex-p256
       window: 5
       vlm: qwen3.5-9b-nvfp4
       thinking: false
@@ -590,6 +589,21 @@ pipeline:
   - name: barcode-rerank-siglip2-512-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-512
+    workers: 4
+    barcode: *barcode-options
+    rerank: *rerank-options
+    views: *crop-views
+
+  - name: barcode-rerank-siglip2-p512-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    workers: 4
+    barcode: *barcode-options
+    rerank: *rerank-options
+    views: *crop-views
+  - name: barcode-rerank-siglip2-p1024-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p1024
     workers: 4
     barcode: *barcode-options
     rerank: *rerank-options
@@ -624,9 +638,9 @@ pipeline:
             aspect: keep
 
 # The VLM inferences. One entry: a name, a protocol, the thinking field, an endpoint, a
-# model, and a key. `pipeline/vlm_config.py` reads this key. A script names an entry by
-# its name, for example `scripts/04_verify.py --backends qwen3-vl-32b:12`, or the keys
-# `vlm` and `rules_vlm` of `cluster_rules`. `config.old.yaml` holds the same section.
+# model, and a key. `pipeline/vlm_config.py` reads this key. A client names an entry by
+# its name, or through the keys `vlm` and `rules_vlm` of `cluster_rules`.
+# `config.old.yaml` holds the same section.
 #
 # `protocol: openai` sends `POST <endpoint>/chat/completions`. `thinking_field` tells
 # where the thinking switch goes: `chat_template_kwargs` sends

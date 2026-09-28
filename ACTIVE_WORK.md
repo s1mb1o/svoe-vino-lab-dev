@@ -1088,6 +1088,103 @@ The form of a section:
   artifacts and product code stayed read-only.
 - Updated for task 5: 2026-09-27T10:26:13+0300.
 
+- Task 6: run `barcode-rerank-siglip2-p512-crop` and
+  `barcode-rerank-siglip2-p1024-crop` on every test set through the lab server.
+- Source: owner messages of 2026-09-28T01:22:28+0300 and 01:29:05+0300.
+- Files for task 6: `docs/owner-messages.md` (append), separate new pipeline entries in
+  `config.yaml`, the plan 68 dependency hunks in `pipeline/cluster_rerank.py`,
+  `pipeline/embedding_run.py`, `pipeline/pipelines.py`, `tests/test_cluster_rerank.py`,
+  `tests/test_barcode_shared.py`, and `tests/test_pipeline_workers.py`,
+  `data/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/`
+  (`clusters.json`, `cluster-rules.json`) and the corresponding p1024 directory, new run
+  directories under `runs/` and the configured test-set run directories,
+  `work/run_barcode_rerank_siglip2_all.py`, its log and result ledger, the compatibility
+  removal of `rerank.rules` from `work/full-matrix-20260928-0135/config.yaml`, and this
+  section of `ACTIVE_WORK.md`.
+- State for task 6: active. The owner approved the QwenCloud transmission at 01:34:46.
+  The p512 and p1024 cluster builds completed at 01:29 (208 and 229 combined clusters).
+  The rule builds completed with 0 description errors and 0 rule errors. The p512
+  rulebook has 166 sheet rules and 42 verdict rules. The p1024 rulebook has 184 sheet
+  rules and 45 verdict rules. The plan 68 dependency code and the two pipeline entries
+  are in the tree. The 46 focused tests pass. Port 8168 restarted with PID 2838, and
+  `/api/dataset` answers HTTP 200. The live run API reports both new pipelines as
+  runnable. The other task `Прогнать pipelines на датасетах` owns a 270-run serial
+  matrix that can take 6 to 12 hours. The resumable serial orchestrator in exec session
+  35635 waits for that matrix, then starts the ten requested runs. It writes
+  `work/run_barcode_rerank_siglip2_all.log` and records each completed pair in
+  `work/run_barcode_rerank_siglip2_all-results.jsonl`.
+- Updated for task 6: 2026-09-28T02:33:30+0300.
+
+- Task 7: use GX10 SAM3 to detect barcodes and QR codes in every unique image that a
+  test set references. Add the image tags `barcode` and `qr_code` without removing an
+  existing tag.
+- Source: owner messages received before 2026-09-28T01:42:50+0300 and the scheduled
+  continuation at 2026-09-28T06:43:16+0300.
+- Files for task 7: `docs/owner-messages.md` (append), `data/lab.sqlite3` (new
+  `image_tag` rows), one backup in `data/backups/`,
+  `data/cache/sam3/` (the combined-prompt answers), `work/tag_testset_images_sam3.py`,
+  `work/tag-testset-images-sam3.jsonl`, my own small hunk in `ChangeLog.md`, and this
+  section of `ACTIVE_WORK.md`.
+- State for task 7: done, not committed. The run used the canonical `SAM3_ENDPOINT`.
+  It sent one serial request per unique image with the nouns `barcode, QR code`.
+  It processed 3,474 images in 1,739.5 s with zero request failures. The final rows are
+  513 `barcode` tags and 248 `qr_code` tags on 548 images. There are 213 images with
+  both tags. The ledger has 3,474 unique successful checkpoints and no errors. Its tag
+  pairs exactly equal the database tag pairs. Database integrity, foreign-key, image
+  coverage, and tag-scope checks pass. A no-op rerun attempted zero images.
+- Updated for task 7: 2026-09-28T07:18:41+0300.
+
+- Task 8: determine whether `scripts/01_search.py` through `scripts/09_apply_moves.py`
+  are used. Keep the scripts and product code read-only.
+- Source: owner message of 2026-09-28T07:28:16+0300.
+- Files for task 8: `docs/owner-messages.md` (append), a new findings section in
+  `ResearchLog.md`, and this section of `ACTIVE_WORK.md`.
+- State for task 8: done, not committed. The nine scripts are legacy test-set builder
+  and review-tool commands. The lab server calls none of them. Current references remain
+  in wrappers, documentation, smoke tests, and stage-04 import users. Product code and
+  the scripts stayed unchanged.
+- Updated for task 8: 2026-09-28T07:34:55+0300.
+
+- Task 9: refactor `svoe-vino-lab` to remove `scripts/01_search.py` through
+  `scripts/09_apply_moves.py`.
+- Source: owner message of 2026-09-28T07:36:44+0300.
+- Files for task 9: `docs/owner-messages.md` (append),
+  `docs/plans/70_remove-legacy-testset-stages.md` (new), deletion of
+  `scripts/01_search.py` through `scripts/09_apply_moves.py`, deletion of
+  `scripts/run_pipeline.py` and `scripts/finalize.sh`, new
+  `pipeline/wine_identity_vlm.py`, `scripts/bench_vlm_models.py`,
+  `scripts/common.py`, `scripts/review_server.py`, `pipeline/export_testset.py`,
+  `tests/test_model_cache.py`, `tests/test_vlm_config.py`, `config.yaml`,
+  `config.old.yaml`, `docs/plans/25_model-call-cache.md`, and my own hunks in
+  `README.md`, `SMOKE_TESTS.md`, `ResearchLog.md`, and `ChangeLog.md`. This section of
+  `ACTIVE_WORK.md` also changes.
+- State for task 9: done, not committed. The owner selected focused removal. The eleven
+  legacy files are deleted. The reusable VLM logic has a current module. The 69 focused
+  tests pass. The complete suite ran 1,298 tests: 1,292 passed, 5 skipped, and one
+  unrelated test rejected the shell's port-18082 `SAM3_ENDPOINT`; its nine-test module
+  passes with the required port 18081. No schema changed. Port 8168 did not restart.
+- Updated for task 9: 2026-09-28T07:53:30+0300.
+
+- Task 10: review only the files and documentation in `matcher/` for hackathon
+  submission quality. Ignore that the implementation is a mock. Keep `matcher/`
+  read-only.
+- Source: owner message of 2026-09-28T08:38:54+0300.
+- Files for task 10: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. The review output stays in the conversation.
+- State for task 10: done, not committed. The review found one submission blocker,
+  two important reproducibility issues, and several smaller quality gaps. All four
+  matcher tests pass. The `matcher/` files stayed read-only.
+- Updated for task 10: 2026-09-28T08:41:43+0300.
+
+- Task 11: assess whether a `matcher/Dockerfile` would improve the hackathon
+  submission. Do not change `matcher/`.
+- Source: owner message of 2026-09-28T09:10:28+0300.
+- Files for task 11: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. The answer stays in the conversation.
+- State for task 11: done, not committed. A reproducible one-command container would
+  materially improve evaluator usability. The `matcher/` files stayed read-only.
+- Updated for task 11: 2026-09-28T09:10:28+0300.
+
 ## drink-atlas-workspace-c7 [09419d]
 
 - Task: a global key of `config.yaml` that updates the embedding of a pipeline before
@@ -1666,18 +1763,26 @@ The form of a section:
 ## drink-atlas-workspace-a4 [34c1c5]
 
 - Task: plan 66, the tags of a test image (by `sha256`) on `/testset`.
-- Source: owner message of 2026-09-27T23:50:37+0300, answers of 23:53:00 and 23:59:59. Plan
+- Source: owner message of 2026-09-27T23:50:37+0300, answers of 23:53:00, 23:59:59, and
+  00:32:00. Plan
   `docs/plans/66_testset-image-tags.md`.
 - Files: `docs/owner-messages.md` (append), `docs/plans/66_testset-image-tags.md` (new).
-  `pipeline/schema/NNN_image_tag.sql` (new),
+  `pipeline/schema/030_image_tag.sql` (new; 030 taken at 00:32:20; 1e, 31, and 49 have no schema work),
   `pipeline/image_tags.py` (new), `tests/test_image_tags.py` (new), `pipeline/testsets.py`,
   `pipeline/testset_routes.py`, `pipeline/pages/testset.html`, `pipeline/export_testset.py`,
   `pipeline/import_testset.py`, `tests/test_testsets.py`, `tests/test_testset_routes.py`,
   `tests/test_export_testset.py`, `tests/test_import_testset.py`, `tests/test_labdb.py`
   (VERSION, one table name), and my own hunks in `docs/API.md`, `README.md`,
   `ChangeLog.md`, `SMOKE_TESTS.md`. A migration of `data/lab.sqlite3` and a restart of 8168.
-- State: active. The owner approved plan 66 at 23:59:59.
-- Updated: 2026-09-28T00:01:00+0300
+- State: done, not committed. Waiting: the owner decides the commit. The checkpoint
+  115f5b0 (of 19) holds plans 62, 63, and 66 as a document; the plan 66 code is not in
+  HEAD. Schema 030 is live: backup
+  `data/backups/lab-before-030-image-tag-20260927T213243Z.sqlite3`, migration at
+  00:32:43, 8168 restarted by a4 at 00:32:47 (PID 4467); `/api/dataset`, `/testset`,
+  `/runs`, `/dataset`, `/health` answer 200. Full suite 1,290 OK (5 skipped); browser 60
+  of 60 on the scratch server 8175 (stopped) and 12 of 12 read-only on 8168. Docs: plan
+  66 Result, README, API.md, SMOKE_TESTS IT1-IT11, ChangeLog; `PORTS_USED.md` (8175).
+- Updated: 2026-09-28T00:38:12+0300
 - Agreements: the owner allowed at 23:59:59 the testset files that the stale sections
   ab [539687], 96 [6338a8], 41 [501d23], b4 [aee81a], and 9e [4644ab] list.
   1e [7df1e0] "ok with conditions" at about 00:00: in `tests/test_labdb.py` I MAY change
@@ -1685,6 +1790,8 @@ The form of a section:
   byte-identical. 1e has no pending schema file. Commit chain: plan 62 (028) -> plan 63
   (029) -> plan 66 (030), never alone. The import of `wine_tags.normal` and
   `wine_tags.TagError` is fine; plan 66 states that the image tags follow those rules.
+  The owner allowed at 00:32:00 the change of the 6b [e99257] line of `tests/test_labdb.py`
+  (the name `image_tag` after `image_label_description_failure`).
 
 ## drink-atlas-workspace-31 [e1f2c7]
 
@@ -1705,8 +1812,14 @@ The form of a section:
   `tests/test_pipeline_workers.py` (the `rerank` config). My own hunks in `README.md`,
   `ChangeLog.md`, `SMOKE_TESTS.md`, `ResearchLog.md`. A restart of 8168.
 - State: active. Owner answers of 00:10:21: copy the note; separate hunks allowed in the files
-  of the stale sections; a restart of 8168 allowed. Run A started 00:09 (pid 31115).
-- Updated: 2026-09-28T00:13:52+0300
+  of the stale sections; a restart of 8168 allowed. Run A done (00:09-00:16,
+  `runs/2026-09-27T210917Z-lab-barcode-rerank-siglip2-512-crop-my-plan68-a`, R@1 85.55 %).
+  512 clusters built 00:10:44 (212 combined), note copied. Rule build of the 512 folder
+  runs since 00:16 (pid 56717). The code change is ready in the scratchpad copy of this
+  session, not in the tree; it lands after the rule build. The checkpoint commit 115f5b0 (session 19, owner
+  "commit all") holds the plan 68 draft and my owner-message entries up to 00:13:52; the
+  rest goes in a follow-up commit. Stage 1 done at 00:20 (521 cards, 0 errors); stage 2 runs.
+- Updated: 2026-09-28T00:20:28+0300
 
 ## drink-atlas-workspace-49 [549156]
 
@@ -1721,7 +1834,380 @@ The form of a section:
   `queries`), `pipeline/run_job.py` (`--selftest`), `pipeline/run_jobs.py` (the body key
   `selftest`), `pipeline/pages/embedding.html` (the button and its job line),
   `tests/test_run_jobs.py`, separate hunks. My own hunks in `docs/API.md`, `README.md`,
-  `ChangeLog.md`, `SMOKE_TESTS.md`, `COMMANDS.md`. A restart of 8168 for `run_jobs.py`.
-- State: active. The owner allowed at 00:07:00 separate hunks in the files of the stale
-  sections (f4, b4, ab, c7, codex-profile-latency, 41, 64) and a restart of 8168.
-- Updated: 2026-09-28T00:07:15+0300
+  `ChangeLog.md`, `SMOKE_TESTS.md`, `COMMANDS.md`, `ResearchLog.md`. A restart of 8168 for
+  `run_jobs.py`.
+- State: done; waiting: the owner decides the commit. The code, the tests, and plan 67
+  are in the checkpoint 115f5b0 of session 19. Not committed: the `Selftest` button hunk
+  of `pipeline/pages/embedding.html`, and my hunks in `README.md`, `COMMANDS.md`,
+  `docs/API.md`, `SMOKE_TESTS.md` (SE1 to SE8), `ChangeLog.md` (2026-09-28),
+  `ResearchLog.md` (2026-09-28), and the status line of plan 67. 8168 restarted by 49 at
+  00:15:47 (PID 52966); a4 restarted it at 00:32:47 (PID 4467, schema 030),
+  and the self-test route answers there. Tests: the full suite 1,277 OK (5 skipped); 12 browser checks.
+  Full self-test of `gx10-siglip2-so400m-patch16-512`: 2,401 images, recall@1 0.9713.
+  The owner allowed at 00:07:00 separate hunks in the files of the stale sections (f4,
+  b4, ab, c7, codex-profile-latency, 41, 64) and a restart of 8168.
+- Updated: 2026-09-28T00:38:43+0300
+
+## codex-submission-01
+
+- Task: prepare a small root-ready submission package in `_submission/`.
+- Source: owner messages of 2026-09-28T00:40:00+0300.
+- Files: `docs/owner-messages.md` (append), `_submission/**`, and my section in
+  `ACTIVE_WORK.md`.
+- State: done, not committed. The package has three files and is 10.7 KB. A restore of
+  `db-export/` and the migration from schema 25 to 30 succeeded. The 8 database-export
+  tests and 17 schema tests pass. The example configuration opens the schema-30 database.
+  All 10 root-relative links resolve. `git diff --check` passes.
+- Updated: 2026-09-28T00:46:17+0300
+
+## codex-main-scene-ranking
+
+- Task: select the main package in recognition photos with an observable hybrid scene
+  score. Prefer a package held in a hand. Select the main bottle when many bottles occur.
+  Create an A4 decision diagram.
+- Source: owner messages recorded at 2026-09-28T01:16:11+0300 through
+  2026-09-28T01:16:13+0300. The owner selected approach 1.
+- Files: `docs/owner-messages.md` (append), `docs/plans/69_main-scene-ranking.md` (new),
+  `pipeline/main_scene.py` (new), separate hunks in `pipeline/embedding_run.py` and
+  `pipeline/run_steps.py`, `tests/test_main_scene.py` (new), separate hunks in
+  `tests/test_embedding_run.py` and `tests/test_run_steps.py`,
+  `output/pdf/main-scene-selection.pdf` (new), `scripts/draw_main_scene_selection.py`
+  (new), and my own small hunks in
+  `README.md`, `ResearchLog.md`, `SMOKE_TESTS.md`, and `ChangeLog.md`. A restart of port
+  8168 is required.
+- State: implemented and verified. Both live recognition requests select `can`. The
+  package step exposes the complete audit. A browser check opened the result and showed
+  the weights, signals, contributions, and ranked candidates. The full suite has 1,298
+  passing tests and 5 skipped tests. Port 8168 was restarted at 01:39 (PID 2431), and
+  `/api/dataset` returned HTTP 200. Changes are not committed.
+- Updated: 2026-09-28T01:39:14+0300
+
+## codex-rerank-diagnosis
+
+- Task: explain why the 2024 candidate for the specified Aratti photo moved from rank 1
+  to rank 2 after cluster re-rank.
+- Source: owner message recorded at 2026-09-28T01:43:17+0300.
+- Files: `docs/owner-messages.md` (append), this section of `ACTIVE_WORK.md`, and a small
+  findings entry in `ResearchLog.md` if the diagnosis is material.
+- State: diagnosis complete. The base embedding rank was correct. A one-sided verdict
+  rule treated absent `ПОЛУСУХОЕ` text as proof of the other card. The test photo is a
+  2024 package variant that omits this text. No code changed.
+- Updated: 2026-09-28T01:48:00+0300
+
+## codex-rerank-scores
+
+- Task: replace direct VLM re-rank decisions with VLM evidence scores and deterministic
+  code decisions.
+- Source: owner message recorded at 2026-09-28T01:55:32+0300.
+- Files: `docs/owner-messages.md` (append), this section of `ACTIVE_WORK.md`, a new plan,
+  `pipeline/cluster_rerank.py`, its focused tests, and the relevant project documents.
+- State: waiting for the owner to select the score contract.
+- Updated: 2026-09-28T01:55:32+0300
+
+## codex-side-matcher-api
+
+- Task: add a standalone FastAPI matcher subproject with `POST /v1/eval/predict`, an
+  explicit pipeline configuration, three mock answers, and the official evaluation
+  directory as its test harness.
+- Source: owner messages recorded at 2026-09-28T08:07:45+0300 and the selected option 1.
+- Files: `docs/owner-messages.md` (append),
+  `docs/plans/71_eval-matcher-service.md` (new), `matcher/**` (new), my own small hunks
+  in `ChangeLog.md` and `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State: done, not committed. The FastAPI service, configuration, README, and tests are
+  complete. The official participant_test.sh received all three configured slugs. An
+  unknown image received an empty slug. All 4 matcher tests pass with ResourceWarning
+  treated as an error. No database schema change. No lab-server restart. No fixed port.
+- Updated: 2026-09-28T08:15:34+0300
+- Task 2: rewrite `matcher/README.md` in Russian for a human reader. Keep technical
+  identifiers and commands unchanged.
+- Source 2: owner message of 2026-09-28T08:23:11+0300.
+- State 2: done, not committed. The complete README is in Russian. Commands, paths,
+  configuration keys, environment variables, and API identifiers are unchanged.
+- Updated for task 2: 2026-09-28T08:23:11+0300
+- Task 3: use `SVOE_VINO_MATCHER_PORT` for the matcher port in the documented start
+  command. Keep the host fixed at `127.0.0.1`.
+- Source 3: owner message and answer of 2026-09-28T08:27:14+0300.
+- State 3: done, not committed. The README uses `SVOE_VINO_MATCHER_PORT` in the start,
+  curl, and official-harness commands. The host stays `127.0.0.1`.
+- Updated for task 3: 2026-09-28T08:27:14+0300
+- Task 4: use the project Python environment `~/.venvs/svoe-vino-lab` in the matcher
+  README.
+- Source 4: owner message of 2026-09-28T08:28:51+0300.
+- State 4: done, not committed. Setup, startup, and test commands use the project
+  environment `~/.venvs/svoe-vino-lab`.
+- Updated for task 4: 2026-09-28T08:28:51+0300
+- Task 5: replace the three-line matcher port prompt with one command that keeps an
+  existing `SVOE_VINO_MATCHER_PORT` value and prompts when the value is absent.
+- Source 5: owner message of 2026-09-28T08:32:45+0300.
+- Files 5: `docs/owner-messages.md` (append), `matcher/README.md`, my own matcher hunk
+  in `ChangeLog.md`, and this section of `ACTIVE_WORK.md`.
+- State 5: done, not committed. The one-line command preserves a non-empty value,
+  prompts for an empty value, and exports the result. Both paths pass a shell check.
+- Updated for task 5: 2026-09-28T08:32:45+0300
+- Task 6: put the three matcher sample images in `matcher/tests/data` and use those
+  local files in the README and tests.
+- Source 6: owner message of 2026-09-28T08:34:42+0300.
+- Files 6: `docs/owner-messages.md` (append), `matcher/tests/data/*`,
+  `matcher/tests/test_service.py`, `matcher/tests/test_official_harness.py`,
+  `matcher/README.md`, `docs/plans/71_eval-matcher-service.md`, my own matcher hunk in
+  `ChangeLog.md`, and this section of `ACTIVE_WORK.md`.
+- State 6: done, not committed. The three local files have the official SHA-256 values.
+  The README, unit test, and official-harness test use `matcher/tests/data`. All 4
+  matcher tests pass. `git diff --check` passes.
+- Updated for task 6: 2026-09-28T08:34:42+0300
+- Task 7: put the official `participant_test.sh` in `matcher/tests` and use the local
+  script in the README and integration test.
+- Source 7: owner message of 2026-09-28T08:39:22+0300.
+- Files 7: `docs/owner-messages.md` (append), `matcher/tests/participant_test.sh`,
+  `matcher/tests/test_official_harness.py`, `matcher/README.md`,
+  `docs/plans/71_eval-matcher-service.md`, my own matcher hunk in `ChangeLog.md`, and
+  this section of `ACTIVE_WORK.md`.
+- State 7: done, not committed. The local script is executable and has the official
+  SHA-256 value. The README and integration test use it. All 4 matcher tests pass.
+  `git diff --check` passes.
+- Updated for task 7: 2026-09-28T08:39:22+0300
+- Task 8: reserve `matcher/config.yaml` for the future real configuration. Move the
+  current mock configuration to `matcher/tests/config.yaml` and select it explicitly
+  for API tests.
+- Source 8: owner message of 2026-09-28T08:41:12+0300.
+- Files 8: `docs/owner-messages.md` (append), `matcher/config.yaml` (move),
+  `matcher/tests/config.yaml`, `matcher/tests/test_service.py`,
+  `matcher/tests/test_official_harness.py`, `matcher/README.md`,
+  `docs/plans/71_eval-matcher-service.md`, my own matcher hunks in `ChangeLog.md` and
+  `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 8: done, not committed. `matcher/config.yaml` is free for the future real
+  configuration. The mock is in `matcher/tests/config.yaml`. Unit tests load it by
+  path. The API integration test sets `SVOE_VINO_MATCHER_CONFIG` explicitly. All 4
+  matcher tests pass. `git diff --check` passes.
+- Updated for task 8: 2026-09-28T08:41:12+0300
+- Task 9: add OpenAPI documentation for the matcher API.
+- Source 9: owner message of 2026-09-28T08:55:30+0300.
+- Files 9: `docs/owner-messages.md` (append), `matcher/openapi.yaml`, `matcher/app.py`,
+  `matcher/tests/test_service.py`, `matcher/tests/test_official_harness.py`,
+  `matcher/README.md`,
+  `docs/plans/71_eval-matcher-service.md`, my own matcher hunks in `ChangeLog.md` and
+  `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 9: done, not committed. `matcher/openapi.yaml` documents the request, success,
+  and validation error. FastAPI publishes Swagger UI, ReDoc, and `/openapi.json` with
+  the typed `Prediction` response. The static and live core contracts match. All 5
+  matcher tests pass. `git diff --check` passes.
+- Updated for task 9: 2026-09-28T08:55:30+0300
+- Task 10: add an integration test that verifies the JSONL record written by
+  `matcher/tests/participant_test.sh` against the documented example.
+- Source 10: owner message of 2026-09-28T08:59:53+0300.
+- Files 10: `docs/owner-messages.md` (append),
+  `matcher/tests/test_official_harness.py`, `matcher/README.md`,
+  `docs/plans/71_eval-matcher-service.md`, my own matcher hunks in `ChangeLog.md` and
+  `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 10: done, not committed. The test runs the local shell client and parses the
+  produced file. It checks the exact five-field order, query id, image path, full
+  SHA-256, predicted slug, and integer nonnegative latency. All 6 matcher tests pass.
+  `git diff --check` passes.
+- Updated for task 10: 2026-09-28T08:59:53+0300
+- Task 11: log matcher requests and archive every submitted image with request headers,
+  client IP, result, and processing duration in a required output directory.
+- Source 11: owner message of 2026-09-28T09:07:32+0300.
+- Files 11: `docs/owner-messages.md` (append), `matcher/audit.py` (new),
+  `matcher/app.py`, `matcher/tests/test_official_harness.py`, `matcher/README.md`,
+  `docs/plans/71_eval-matcher-service.md`, my own matcher hunks in `ChangeLog.md` and
+  `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 11: done, not committed. The required output directory gets one private request
+  directory with the exact image and JSON metadata. Metadata holds the direct client
+  IP, all header names, redacted secret values, image properties, timestamps, duration,
+  status, and result. Uvicorn gets a structured completion or error event. All 7 matcher
+  tests pass with ResourceWarning treated as an error. `git diff --check` passes.
+- Updated for task 11: 2026-09-28T09:07:32+0300
+- Task 12: add `GET /health`, local queries.tsv, pinned direct dependencies, bounded
+  non-empty image input, negative tests, and exact static/live OpenAPI verification.
+- Source 12: owner message of 2026-09-28T09:16:48+0300.
+- Files 12: `docs/owner-messages.md` (append), `matcher/tests/queries.tsv` (new),
+  `matcher/requirements.txt`, `matcher/app.py`, `matcher/openapi.yaml`,
+  `matcher/tests/test_service.py`, `matcher/tests/test_official_harness.py`,
+  `matcher/README.md`, `docs/plans/71_eval-matcher-service.md`, my own matcher hunks in
+  `ChangeLog.md` and `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 12: done, not committed. GET /health reports readiness and the selected
+  pipeline. The service rejects empty and oversized files with HTTP 400 and 413; a
+  missing image gets HTTP 422. The official manifest is local and has the source
+  SHA-256. Direct dependencies have exact versions and include pydantic. The five
+  negative configuration cases pass. The complete parsed static and live OpenAPI
+  documents are equal. All 16 matcher tests pass with ResourceWarning treated as an
+  error. `pip check` and `git diff --check` pass. No schema change or lab-server
+  restart.
+- Updated for task 12: 2026-09-28T09:24:26+0300
+- Task 13: test the matcher against decompression bombs, oversized and slow uploads,
+  and request overload. Add stable countermeasures and a repeatable resilience harness.
+- Source 13: owner message of 2026-09-28T09:26:10+0300.
+- Files 13: `docs/owner-messages.md` (append), `matcher/protection.py` (new),
+  `matcher/app.py`, `matcher/requirements.txt`, `matcher/openapi.yaml`,
+  `matcher/tests/test_resilience.py` (new), `matcher/tests/test_official_harness.py`,
+  `matcher/README.md`, `docs/plans/71_eval-matcher-service.md`, my own matcher hunks
+  in `ChangeLog.md` and `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 13: done, not committed. The middleware limits the complete body, image bytes,
+  pixels, upload time, active requests, queued requests, and queue time. Pillow verifies
+  JPEG, PNG, and WEBP. Seven adversarial tests cover a JPEG dimension bomb, a 1 GiB
+  sparse upload, a chunked oversized body, a slow upload, a full queue, a damaged image,
+  and an unsupported format. The service stays usable after every test.
+- Updated for task 13: 2026-09-28T09:57:38+0300
+- Task 14: add optional token authentication to matcher requests. Add positive and
+  negative tests for configurations with and without authentication. Document the
+  purpose of each test configuration in YAML comments.
+- Source 14: owner message of 2026-09-28T09:27:29+0300.
+- Files 14: `docs/owner-messages.md` (append), `matcher/service.py`, `matcher/app.py`,
+  `matcher/tests/config.yaml`, `matcher/tests/config.token.yaml` (new),
+  `matcher/tests/test_service.py`, `matcher/tests/test_auth.py` (new),
+  `matcher/openapi.yaml`, `matcher/README.md`, `docs/plans/71_eval-matcher-service.md`,
+  my own matcher hunks in `ChangeLog.md` and `SMOKE_TESTS.md`, and this section of
+  `ACTIVE_WORK.md`.
+- State 14: done, not committed. `Authorization: Bearer <token>` protects predict when
+  `matcher.token_env` is configured. YAML stores only the environment-variable name.
+  Missing, malformed, and invalid credentials return HTTP 401. `/healthz` and OpenAPI
+  stay public. Both test configs explain their purpose in comments.
+- Updated for task 14: 2026-09-28T09:57:38+0300
+- Task 15: add production-quality Docker support for `matcher/`. Use Python 3.11 slim,
+  a non-root user, port 8080, a `.dockerignore`, README commands, and an automated
+  build-and-run test with local evaluation data.
+- Source 15: owner message of 2026-09-28T09:28:56+0300.
+- Files 15 before the container-contract choice: `docs/owner-messages.md` (append) and
+  this section of `ACTIVE_WORK.md`. Product files will be listed after the owner selects
+  the default container configuration.
+- State 15: waiting: the owner selects the container configuration contract.
+- Updated for task 15: 2026-09-28T09:28:56+0300
+- Task 16: configure the matcher output directory in `config.yaml`. Support the
+  existing project notation `{env:NAME}` for `SVOE_VINO_MATCHER_OUTPUT_DIR`.
+- Source 16: owner message of 2026-09-28T09:29:46+0300.
+- Files 16: `docs/owner-messages.md` (append), `matcher/service.py`, `matcher/app.py`,
+  `matcher/tests/config.yaml`, `matcher/tests/test_service.py`, `matcher/README.md`,
+  `docs/plans/71_eval-matcher-service.md`, my own matcher hunks in `ChangeLog.md` and
+  `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 16: done, not committed. `matcher.output_dir` accepts a literal path or an
+  exact `"{env:NAME}"` reference. The API test config resolves
+  `SVOE_VINO_MATCHER_OUTPUT_DIR` through this field. A config without the field keeps
+  the legacy direct environment fallback. Tests cover literal, resolved, absent,
+  missing, empty, and malformed values. All 23 matcher tests pass with ResourceWarning
+  treated as an error. `pip check` and `git diff --check` pass. No schema change or
+  lab-server restart.
+- Updated for task 16: 2026-09-28T09:39:35+0300
+- Task 17: use the more common infrastructure probe path `/healthz` instead of
+  `/health`.
+- Source 17: owner message of 2026-09-28T09:40:52+0300.
+- Files 17: `docs/owner-messages.md` (append), `matcher/app.py`,
+  `matcher/openapi.yaml`, `matcher/tests/test_service.py`,
+  `matcher/tests/test_official_harness.py`, `matcher/README.md`,
+  `docs/plans/71_eval-matcher-service.md`, my own matcher hunks in `ChangeLog.md` and
+  `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 17: done, not committed. The app, OpenAPI, tests, README, plan, change log, and
+  smoke tests use `/healthz`. The full matcher suite has 37 passing tests.
+- Updated for task 17: 2026-09-28T09:57:38+0300
+- Task 18: commit the completed matcher implementation without the unrelated work of
+  other sessions.
+- Source 18: owner message of 2026-09-28T10:03:35+0300.
+- Files 18: `docs/owner-messages.md` (append), `matcher/**`,
+  `docs/plans/71_eval-matcher-service.md`, my matcher hunks in `ChangeLog.md` and
+  `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 18: done. Commit `43244f7` contains tasks 1 through 14 and 16 through 18. The
+  isolated Git index contained only matcher files and matcher hunks. Task 15 remains
+  waiting and is not part of this commit.
+- Updated for task 18: 2026-09-28T10:09:19+0300
+- Task 19: add a GitLab CI job for the complete matcher test harness, push the matcher
+  commits to GitLab, and verify that the remote pipeline passes.
+- Source 19: owner message of 2026-09-28T10:09:59+0300.
+- Files 19: `docs/owner-messages.md` (append), `.gitlab-ci.yml` (new), my matcher hunks
+  in `ChangeLog.md` and `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State 19: done. Commit `06a947a` adds the `matcher-tests` GitLab CI job. Commits
+  `43244f7` and `06a947a` are on `origin/main`. Pipeline `325`, job `1060`, passed on
+  the Docker runner with `python:3.11-slim`: `pip check` passed and all 37 matcher tests
+  passed with no skips. The local and remote `main` refs are equal. No unrelated hunk
+  was staged or committed. Task 15 remains waiting.
+- Updated for task 19: 2026-09-28T10:20:57+0300
+- Task 20: add `matcher/TESTING.md` and move all code-testing guidance out of
+  `matcher/README.md`.
+- Source 20: owner message of 2026-09-28T10:21:41+0300.
+- Files 20: `docs/owner-messages.md` (append), `matcher/README.md`,
+  `matcher/TESTING.md` (new), and this section of `ACTIVE_WORK.md`.
+- State 20: done, not committed. `matcher/README.md` now contains only runtime and API
+  guidance plus one link to testing. `matcher/TESTING.md` contains the test
+  prerequisites, configurations, data, full unittest command, coverage description,
+  manual official harness, and GitLab CI contract. All 37 matcher tests pass with no
+  skips. No product code changed.
+- Updated for task 20: 2026-09-28T10:25:00+0300
+- Task 21: require the exact `"{env:NAME}"` notation for `matcher.token_env` instead of
+  a bare environment-variable name.
+- Source 21: owner message of 2026-09-28T11:10:38+0300.
+- Files 21: `docs/owner-messages.md` (append), `matcher/service.py`,
+  `matcher/tests/config.token.yaml`, `matcher/tests/test_service.py`,
+  `matcher/README.md`, `matcher/TESTING.md`, `docs/plans/71_eval-matcher-service.md`,
+  my own matcher hunks in `ChangeLog.md` and `SMOKE_TESTS.md`, and this section of
+  `ACTIVE_WORK.md`.
+- State 21: done, not committed. `matcher.token_env` accepts only an exact
+  `"{env:NAME}"` reference. The loader rejects bare names and malformed references.
+  Startup resolves only the referenced variable and rejects a missing or empty value.
+  Configs, README, TESTING, plan, change log, and smoke tests use the same notation.
+  All 20 config tests and all 37 matcher tests pass with no skips.
+- Updated for task 21: 2026-09-28T11:12:36+0300
+- Task 22: rename the matcher configuration key `token_env` to `token`.
+- Source 22: owner answer `ok, rename` at 2026-09-28T11:19:20+0300 after the question
+  `token_env -> token_key ?` and the recommendation to use `token`.
+- Files 22: `docs/owner-messages.md` (append), `matcher/service.py`, `matcher/app.py`,
+  `matcher/openapi.yaml`, `matcher/tests/config.yaml`,
+  `matcher/tests/config.token.yaml`, `matcher/tests/test_service.py`,
+  `matcher/README.md`, `matcher/TESTING.md`, `docs/plans/71_eval-matcher-service.md`,
+  my own matcher hunks in `ChangeLog.md` and `SMOKE_TESTS.md`, and this section of
+  `ACTIVE_WORK.md`.
+- State 22: done, not committed. The config, runtime model, OpenAPI, README, TESTING,
+  plan, change log, and smoke tests use `matcher.token: "{env:NAME}"`. The loader
+  explicitly rejects `matcher.token_env`, bare names, malformed references, and missing
+  or empty referenced variables. All 20 config tests and all 37 matcher tests pass with
+  no skips. `git diff --check` passes for the changed matcher files.
+- Updated for task 22: 2026-09-28T11:21:32+0300
+
+## codex-side-commands-rules
+
+- Task: add the project rules for `COMMANDS.md` and component test commands to
+  `AGENTS.md`.
+- Source: owner message of 2026-09-28T08:13:27+0300.
+- Files: `docs/owner-messages.md` (append), `AGENTS.md`, my own small hunk in
+  `ChangeLog.md`, and this section of `ACTIVE_WORK.md`.
+- State: done, not committed. Rules 29 to 38 define the use and structure of
+  `COMMANDS.md`, detailed testing documents, executable targets, and test scripts.
+- Updated: 2026-09-28T08:15:00+0300.
+
+## drink-atlas-workspace-61 [081a48]
+
+- Task: compare the gx10 service `qr-scanner` with the barcode step of the lab, and
+  propose an explicit choice of the barcode decoder in the key `barcode` of a pipeline.
+- Source: owner messages of 2026-09-28 (about 08:18 and 08:20).
+- Files: `docs/owner-messages.md` (append), `ResearchLog.md` (one entry at the top),
+  this section.
+- State: waiting: the owner selects an approach. No code change.
+- Updated: 2026-09-28T08:22:55+0300
+
+## codex-deployment-advice
+
+- Task: assess deployment of the project on gx10, safe external access, and failover to
+  another server.
+- Source: owner messages of 2026-09-28T09:56:48+0300 and
+  2026-09-28T11:23:21+0300.
+- Files: `docs/owner-messages.md` (append),
+  `docs/deployment/01_gx10-public-failover-options.md` (new), and this section of
+  `ACTIVE_WORK.md`.
+- State: waiting: the owner decides whether to order the recommended Selectel
+  `VDS 1-2-25`. No service, server, router, DNS, or firewall change was made.
+- Updated: 2026-09-28T11:24:50+0300
+
+## codex-side-matcher-bundle
+
+- Task: export a standalone matcher bundle with optional prepared images. Add a
+  separate bundle validator and automated tests.
+- Source: owner message of 2026-09-28T10:01:26+0300. The owner selected the flat bundle
+  approach in the preceding side conversation.
+- Files: `docs/owner-messages.md` (append), `docs/plans/72_matcher-bundle.md` (new),
+  `pipeline/matcher_bundle.py` (new), `scripts/build_matcher_bundle.py` (new),
+  `scripts/validate_matcher_bundle.py` (new), `tests/test_matcher_bundle.py` (new),
+  `docs/testing/matcher-bundle.md` (new), my own hunks in `COMMANDS.md`,
+  `ChangeLog.md`, and `SMOKE_TESTS.md`, and this section of `ACTIVE_WORK.md`.
+- State: done, not committed. Waiting: the owner decides the next integration step.
+  Nine bundle tests, 17 embedding-build tests, and 38 embedding-run tests pass. Real
+  bundles with zero and 4,642 copied images pass standalone validation. Both contain
+  4,642 items, 4,674 candidate relations, 2,094 wines, 3 omissions, and vectors of
+  dimension 768. No database schema change. No lab-server restart.
+- Updated: 2026-09-28T10:14:00+0300

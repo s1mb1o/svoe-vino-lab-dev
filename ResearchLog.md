@@ -2,6 +2,161 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-28 — The gx10 service `qr-scanner` compared with `pipeline/barcode.py`
+
+- The service is `POST http://192.168.86.14:18081/upstream/qr-scanner/scan` on the gx10
+  llama-swap gateway. The documentation is `~/Admin/gx10/docs/inference/qr-scanner.md`.
+- A request has two fields: `image` and `engine`. The values of `engine` are `auto`,
+  `zxing-cpp`, `zxing-cpp-sr`, and `boofcv-qr-cpp`. A request has no other option.
+- The engine `zxing-cpp` of the service is not the decoder of the lab. The service uses
+  zxing-cpp 3.0.0. It calls `read_barcodes(gray)` with the defaults: all formats, one
+  binarizer, and `try_downscale` on. The lab uses zxing-cpp 2.3.0, two binarizers
+  (`LocalAverage`, `FixedThreshold`), `try_downscale=False`, and a list of formats.
+- The lab keeps 2.3.0 because 3.1.1 can stall on an excise mark beside an EAN. No test
+  measured 3.0.0 on that case.
+- The service does not scale the photo and has no tile scan. The lab can scale the photo
+  and cut the tiles before each request.
+- The service cannot read `wine_code`, so it cannot stop at a unique hit. The lab can
+  stop between two tile requests.
+- `auto` always runs the step `sam3-vlm` (SAM3 and qwen3.5-9b, 8–15 s, load on the GPU).
+  Only the server flag `--no-sam3-vlm` stops the step. That flag is in
+  `~/llama-swap/config.yaml` on gx10. Each save of that file unloads every model.
+- `GET /health` gives the library versions. It does not give the version of `server.py`
+  or the server flags (`--sr-max-side`, `--unwarp-budget`, `--no-sam3-vlm`,
+  `--vlm-model`). A cache key of the lab cannot see a change of these flags.
+- The format names are different. The service gives `EAN-13`, `Code 128`, and `QR Code`.
+  The lab uses `EAN13`, `Code128`, and `QRCode`.
+
+## 2026-09-28 — Usage audit of `scripts/01_search.py` to `scripts/09_apply_moves.py`
+
+- The lab server does not import or execute these nine scripts. They belong to the old
+  test-set builder and the old JSON review tool.
+- `scripts/run_pipeline.py` executes stages 02, 03, and 04. `scripts/finalize.sh`
+  executes stages 05, 06, and 07 through the driver and direct calls. The README tells a
+  user to execute stage 01, stage 08, and stage 09 manually.
+- The default lab configuration does not contain the key `dataset`. Stages 01 through 08
+  stop during import when they use the default `config.yaml`. Stage 09 loads the same
+  configuration after its argument parser. The legacy scripts need
+  `SVOE_VINO_REVIEW_CONFIG=config.old.yaml`.
+- The two wrapper scripts do not set `SVOE_VINO_REVIEW_CONFIG`. Their documented commands
+  do not work as written in this repository. All nine scripts accept `--help` when the
+  legacy configuration variable is set.
+- `scripts/04_verify.py` is still a code dependency. `scripts/bench_vlm_models.py`,
+  `tests/test_model_cache.py`, and `tests/test_vlm_config.py` import its prompt, parser,
+  or backend builder. The tests set the legacy configuration variable.
+- `scripts/08_variants.py` and `scripts/09_apply_moves.py` are also part of documented
+  legacy review workflows and smoke tests. The old review server has an Apply action that
+  provides the same move and copy operation as stage 09.
+- Historical logs show real use of stages 01 through 07. Stage 01 searched all 2,018
+  wines and found 141,071 candidates. The stage 2 to 4 logs show completed download,
+  embedding, and verification runs. `work/report_stats.json` records 1,984 kept photos
+  and 1,974 official API checks from stages 05 and 07. The ChangeLog records a stage 06
+  top-up run. The generated variant file has an update time of 2026-09-15.
+- Eight scripts are byte-identical to the copies in `../svoe-vino-testset/scripts/`.
+  Stage 04 differs. The lab copy adds the shared model-call cache and named VLM
+  configuration.
+- The nine files are not dead history, but they are not part of the current lab runtime.
+  A cleanup can remove the legacy builder from this repository only after it changes the
+  wrappers, README, smoke tests, and stage-04 import users, or moves those users to the
+  canonical `svoe-vino-testset` implementation.
+- Plan 70 completed that cleanup. The reusable stage-04 logic now belongs to
+  `pipeline/wine_identity_vlm.py`. The numbered stages and their two drivers are gone.
+  Current source, configuration, README, and smoke-test references are gone. Historical
+  records keep the old names because they describe completed work.
+
+## 2026-09-28 — Aratti 2024 false re-rank
+
+Run `2026-09-27T221032Z-lab-barcode-rerank-siglip2-512-crop-official-real-photos`,
+query `q-000003`.
+
+- The embedding search was correct. `aratti-kaberne-po-belomu-1` was rank 1 at 0.8286.
+  `aratti-kaberne-po-belomu` was rank 2 at 0.8082.
+- Cluster `2d33f12d0b3e` used a verdict rule. The rule assigns the label with
+  `ПОЛУСУХОЕ` to `aratti-kaberne-po-belomu-1`. It assigns a label without the text to
+  `aratti-kaberne-po-belomu`.
+- The catalogue image of `aratti-kaberne-po-belomu-1` shows `2024` and `ПОЛУСУХОЕ`.
+  The test photo shows `2024`, but it does not show `ПОЛУСУХОЕ`.
+- The cached SAM3 label cut is correct. It contains the complete front label and its
+  bottom edge. The missing sugar text is not a crop error.
+- The verdict VLM answered card A, `aratti-kaberne-po-belomu`. The re-ranker moved that
+  card to rank 1 and moved the correct 2024 card to rank 2. The two score positions stay
+  fixed, so the cards received 0.8286 and 0.8082 after the swap.
+- The rule generator did not use `2024`. The catalogue names and slugs do not state
+  vintage years. Its policy forbids a label-only year as a stable product feature.
+- The historical run read the p256 cluster and rule files. The current p512 rule has the
+  same one-sided `ПОЛУСУХОЕ` test. A switch to p512 rules alone does not prevent this
+  failure.
+- The unsafe condition is the use of missing text as positive evidence. A verdict rule
+  with one expected text and one null expected value SHOULD return `unsure` when the
+  text is absent. This keeps the correct embedding order for package variants.
+
+## 2026-09-28 — Main-scene selection for a held can
+
+Plan 69. The two source photos are `PXL_20260926_175323263.jpg` and
+`PXL_20260926_175335432.jpg` from `СуперЛента-20260928`.
+
+- The failure came from the selector, not from SAM3. SAM3 found the can in both photos.
+  The old `derive.package_instance` rule selected a bottle whenever it found a bottle.
+  It ignored a can even when the can was the largest and most confident instance.
+- The first photo has 21 package candidates. The second photo has 25 package candidates.
+  SAM3 also finds one hand in each photo when the prompt includes `hand`.
+- The hybrid selector gives the first can a score of 0.9727. The next shelf bottle gets
+  0.3917. The second can gets 0.9766. Its next shelf bottle gets 0.3459.
+- A package-box and hand-box overlap alone is unsafe. A large hand box contains some
+  small shelf bottles. The hand-contact signal therefore has a relative-area gate.
+- The no-hand branch uses relative area, center position, detector confidence,
+  sharpness, shelf isolation, mask fill, and edge visibility. This branch selects the
+  main bottle when a scene holds many bottles.
+- The complete pipeline `barcode-rerank-siglip2-512-crop` selects the can in both photos.
+  It ranks `abrau-dyurso-fizz-beloe-bryut` first with scores 0.8333 and 0.8997.
+- Live `/api/recognize` responses expose 21 and 25 candidate audit records in the step
+  `Package selection and cut`. Each selected can has all eight signal values and weighted
+  contributions. The mask body is not present in the audit.
+- The catalogue-image processor keeps the old bottle-first rule. The new selector applies
+  to query photos of configured embedding pipelines. A selector version in the run
+  specification keeps old-run replay compatible.
+
+## 2026-09-28 — The first self-test of `gx10-siglip2-so400m-patch16-512`
+
+Session drink-atlas-workspace-49 [549156]. Plan 67
+([docs/plans/67_embedding-selftest.md](docs/plans/67_embedding-selftest.md)). Run
+`runs/2026-09-27T211801Z-lab-selftest-gx10-siglip2-so400m-patch16-512-dataset/`: 2,401
+images of Active wines, 211 s with 4 workers, no errors. The index had 4,622 current and
+3 failed items. Left out: 5 images of Removed wines and 1 of a Disabled wine.
+
+| Image type | Images | Rank 1 | Rank 2 to 5 | Not in top 5 |
+|---|---|---|---|---|
+| `main` | 2,094 | 2,062 | 24 | 8 |
+| `main_patched` | 21 | 21 | 0 | 0 |
+| `full_front` | 100 | 100 | 0 | 0 |
+| `full_back` | 85 | 85 | 0 | 0 |
+| `label_front` | 2 | 2 | 0 | 0 |
+| `label_back` | 99 | 62 | 21 | 16 |
+
+- 69 misses in all: 32 `main` and 37 `label_back`. 27 of the `main` misses are files of
+  2 or more Active wines. A shared file gives
+  the same vector to each wine, so one of the wines is a miss. This is the known list of
+  shared images, not an error of the index.
+- 37 misses are `label_back` close-ups. A close-up searches the package space with the
+  image as it is (owner answer), so a weak result is expected there.
+- 3 misses are the original `main` of a patched wine
+  (`abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut` rank 7,
+  `czitronnyj-magaracha` rank 6, `rubin-golodrigi` rank 2). The index holds the
+  `main_patched` of these wines alone, so the original photo differs from the patch.
+- `vibes-cabernet-franc-pinot-noir-pino-nuar-krasnoe-suhoe-125`: rank 2. Its image and
+  an image of `cabernet-franc-pinot-noir-2022` have the cosine 1.0000, so the two wines
+  hold the same picture in two files. A candidate for a merge or for the relation
+  `similar`.
+- `fanagoriya-tochka-saperavi-krasnoe-suhoe-14` (`main` `9a3efb42…`, 3977 x 8347): not in
+  the top 10, the best cosine is 0.7737. The image is in the index (row 4080 of the view
+  `full`). The cause is a different package cut: the SAM3 answer of the query path
+  (`data/cache/sam3/`, method `seg`) cuts the box `[0, 804, 1994, 8347]`, and the stored
+  catalogue cut (`image_derivative`, kind `package`) has the box `[1768, 0, 3977, 8108]`.
+  The photo seems to hold two bottles, and the two paths took a different one. So a test
+  photo of this wine and the catalogue image can see different bottles. In this run no
+  other full image of one wine misses its wine. A different cut that still ranks the wine
+  first does not show in the self-test.
+
 ## 2026-09-27 — Why the view `label` of `/embedding` failed for 88 items
 
 Session drink-atlas-workspace-1c [b72be3]. Plan 22

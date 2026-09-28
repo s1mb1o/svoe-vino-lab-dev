@@ -446,6 +446,16 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   then a drag on the photo, draws it; `Clear box` removes it. The box is in the pixels of
   the photo after its EXIF orientation. A card with a box gets the badge `box`. The IoU
   of the box against the box of the matcher comes with plan 27.
+- The tags of an image (plan 66, schema 030 `image_tag`). A tag belongs to the image
+  bytes (`sha256`), so each copy of the image, in each wine row and in each set, shows it.
+  The large view has the section `Tags of this image`: the tags as chips with `×`, and an
+  input that suggests each tag of the database; Enter or `Add` adds a tag
+  (`POST /api/testset-photo-tag`, `POST /api/testset-photo-tag-remove`). A tag has the
+  form of a wine tag of plan 63. A card with a tag gets a badge at the lower right of the
+  image; its title lists the tags. The row counts get `N tagged`, `Marks` gets
+  `a tag`, and `Additional settings` gets the select `Tag` (the address keeps it as
+  `tag=`). The export writes the field `tags`; the import adds it back and never removes
+  a tag. The pipeline does not read the tags.
 - Three filter axes take the place of the single select `Show` of the old page (owner
   answers of 2026-09-26 00:26:58). `Progress`: `all`, `not fully labelled`, `no label
   yet`, `partly labelled`, `fully labelled`, `no candidate photos`. `Verdict` (a photo of
@@ -608,6 +618,17 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   stop the queue. `Stop`, or the `×` of the job row, stops the build and the queue. The
   message after the button shows the position (`Build All 3 / 12`) or the result, and its
   title lists the result of each configuration.
+- The button `Selftest` (plan 67) checks that each dataset image is in the index of the
+  selected configuration. Each image of an Active wine is one query: `main`,
+  `main_patched` (the original `main` of a patched wine too), `full_front`, `full_back`,
+  `label_front`, and `label_back`. A full image gets the SAM3 package cut and the steps of
+  the view `full`, as a test photo; a label close-up goes in as it is. Each query searches
+  the `full` vectors alone, with no barcode step. The truth is the wine of the image, so
+  a file of two wines is a miss of one of them. The result is a run of the set `dataset`
+  and the configuration `selftest-<name>` on `/runs`; the line after the button shows the
+  job and `open run`. The button needs a current item and no running build. The same
+  work is `pipeline/selftest.py --embedding <name>`. Read
+  [plan 67](docs/plans/67_embedding-selftest.md).
 - A click on a prepared image of `/embedding` opens the image preview of `/dataset`: the
   image in the center, the title (view and wine), the slug, the column, the image type,
   the status, `<position> / <count>`, the size, and `open raw image` (the original).
@@ -818,34 +839,29 @@ MAY hold `key` and `max_tokens`, and holds no other key:
 
 | Key | Meaning |
 |---|---|
-| `name` | The name that a script uses. The names differ. |
+| `name` | The name that a client uses. The names differ. |
 | `protocol` | `openai`: `POST <endpoint>/chat/completions`. |
 | `thinking_field` | Where the switch `enable_thinking` goes: `chat_template_kwargs` (the gx10 gateway) or `top_level` (QwenCloud and DashScope). In `scripts/cluster_rules.py` it also selects the JSON mode rule and the second attempt of an answer that reached `max_tokens`. |
 | `endpoint` | The base URL, for example `http://192.168.86.14:18081/v1`. |
 | `model` | The model name that the service knows. |
 | `key` | Absent or `null` when the service needs no key, or `{env:NAME}`: the key is read from the shell variable `NAME` at run time. A key value in the file is refused. |
-| `max_tokens` | Absent (8192) or a positive integer: the `max_tokens` of a detail request of `pipeline/describe_images.py` (owner answer of 2026-09-25). A class request keeps 300, and `scripts/cluster_rules.py` and `scripts/04_verify.py` keep their own limits. |
+| `max_tokens` | Absent (8192) or a positive integer: the `max_tokens` of a detail request of `pipeline/describe_images.py` (owner answer of 2026-09-25). A class request keeps 300. `scripts/cluster_rules.py` and `pipeline/wine_identity_vlm.py` keep their own limits. |
 
 | Entry | Service | Key |
 |---|---|---|
 | `qwen3.5-9b-nvfp4` | gx10 gateway; the image descriptions of plan 26 | none |
 | `qwen3.5-9b` | gx10 gateway; stage 1 of the cluster rules | none |
-| `qwen3-vl-32b` | gx10 gateway; the default of `04_verify.py` | none |
+| `qwen3-vl-32b` | gx10 gateway; pairwise wine-identity checks | none |
 | `qwencloud-qwen3.8-max` | QwenCloud Token Plan; stage 2 of the cluster rules | `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}` |
 | `qwencloud-qwen3.8-flash` | QwenCloud Token Plan | `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}` |
 | `dashscope-qwen3.7-flash` | DashScope, pay-as-you-go | `{env:QWENCLOUD_PAYGO_API_KEY}` |
 
-```bash
-# 04_verify.py names the entries in --backends, as name:workers
-SVOE_VINO_REVIEW_CONFIG=config.old.yaml python3 scripts/04_verify.py \
-    --backends qwen3-vl-32b:12,qwencloud-qwen3.8-flash:8
-```
-
-`scripts/04_verify.py` and `scripts/cluster_rules.py` import `scripts/common.py`, which
-needs the key `dataset`. `config.yaml` has no such key, so both scripts run with
-`SVOE_VINO_REVIEW_CONFIG=config.old.yaml`. An entry whose key variable is not set is
-ignored by `04_verify.py`; `cluster_rules.py` refuses the call. `scripts/bench_vlm_models.py`
-keeps its own endpoint and does not read the key `vlm`.
+`pipeline/wine_identity_vlm.py` builds pairwise wine-identity backends from a supplied
+configuration map. It ignores an entry whose key variable is not set.
+`scripts/cluster_rules.py` imports `scripts/common.py`, which needs the key `dataset`, so
+it runs with `SVOE_VINO_REVIEW_CONFIG=config.old.yaml`. It refuses a call whose key
+variable is not set. `scripts/bench_vlm_models.py` keeps its own endpoint and does not
+read the key `vlm`.
 
 ## The image descriptions
 
@@ -1239,6 +1255,13 @@ gives. Read [plan 55](docs/plans/55_recognize-page.md).
   gx10 sends one SAM3 request and one embedding request, and llama-swap loads the
   embedding model when it does not run. A pipeline of the backend `local` loads its model
   in each process: 20 to 26 s on this Mac (measured on 2026-09-26).
+- Configured embedding pipelines use the hybrid main-scene selector of
+  `pipeline/main_scene.py` for the package cut (plan 69). One SAM3 request finds
+  `wine bottle`, `can`, `packet`, `box`, and `hand`. The selector ranks each package by
+  hand contact, relative area, center position, sharpness, detector confidence, mask fill,
+  shelf isolation, and edge visibility. It gives no package class a fixed priority. The
+  package step records each signal, each contribution, the candidate order, and the
+  selected package in `Result`. The catalogue-image processor keeps its bottle-first rule.
 - Below the drop area the page shows the steps of the photo as the step popup of `/runs`
   shows them: the rounds, the cards, the times, and the total of the photo. The head line
   shows the first candidate and the time of the process: the start of Python, the build of
@@ -1318,9 +1341,9 @@ python3 pipeline/gdino.py <image> --texts "wine bottle, label" [--model mm-gdino
 - A success alone is stored: HTTP 200 with a JSON body, and for a VLM at least one entry
   in `choices`. An answer with no instance is a success. A failure asks again next time.
 - The clients: `derive.Sam3Client` (each SAM3 call of `pipeline/`), `gdino.GdinoClient`,
-  `Vlm.ask` of `scripts/cluster_rules.py`, `Backend.ask` of `scripts/04_verify.py`, and
-  `call` of `scripts/bench_vlm_models.py`. A VLM request with an image URL that is not a
-  data URL is not cached.
+  `Vlm.ask` of `scripts/cluster_rules.py`, `Backend.ask` of
+  `pipeline/wine_identity_vlm.py`, and `call` of `scripts/bench_vlm_models.py`. A VLM
+  request with an image URL that is not a data URL is not cached.
 - To send a request again, delete its record, or the directory of its model. Do this
   also after the gateway serves a new checkpoint under the same name: the served name is
   in the key, the checkpoint is not.
@@ -1395,8 +1418,8 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `photo_dir` | `PHOTO_DIR` | Photo set. One directory per wine slug. |
 | `trash_dir` | `TRASH_DIR` | A deleted photo is moved here, not unlinked. |
 | `label_file` | `LABEL_FILE` | Labels of the review tool. |
-| `variant_groups_file` | `VARIANT_GROUPS_FILE` | Variant groups. `scripts/08_variants.py` writes this file. |
-| `manual_groups_file` | `MANUAL_GROUPS_FILE` | Variant pairs made by hand in the review tool. `scripts/08_variants.py` never writes this file. |
+| `variant_groups_file` | `VARIANT_GROUPS_FILE` | Generated variant groups that the review tool reads. |
+| `manual_groups_file` | `MANUAL_GROUPS_FILE` | Variant pairs made by hand in the review tool. |
 | `excluded_slugs_file` | `EXCLUDED_SLUGS_FILE` | Excluded slugs. The photos of an excluded slug are not used for benchmarking. |
 | `runs_dir` | `RUNS_DIR` | One directory per match run. The runs of one dataset stand apart from the runs of another. |
 
@@ -1537,8 +1560,8 @@ dataset of the file when the file holds more than one.
 | Vision checks made | 25,172 |
 | Acceptance rate | 8.6% |
 
-`my/` is written by stage 5. Re-run `python3 scripts/05_report.py --keep 4`
-after any later pass, or the directory keeps the content of the previous run.
+These measures describe the historical test-set build. The canonical test set and its
+builder belong to the sibling project `svoe-vino-testset`.
 
 ## The `my/` set
 
@@ -1551,40 +1574,6 @@ Two filters remove studio renders: a border-whiteness measure, and a vision mode
 
 A wine has fewer than 3 photos when the web holds fewer than 3 usable photos of it.
 `REPORT.md`, `report.html`, and `report.csv` list every wine and every gap.
-
-## Pipeline
-
-| Stage | Script | Work |
-|---|---|---|
-| 1 | `01_search.py` | Collect candidate image URLs from Yandex Images and DuckDuckGo |
-| 2 | `02_download.py` | Rank candidates by text relevance, then download the best ones |
-| 3 | `03_embed.py` | SigLIP2 embedding, cosine similarity against the catalogue photo |
-| 4 | `04_verify.py` | `qwen3-vl-32b` pairwise check: same wine, and studio or not |
-| 5 | `05_report.py` | Copy accepted photos to `my/`, write the report |
-| 6 | `06_topup.py` | Reopen wines that have fewer than 3 photos for a deeper pass |
-| 7 | `07_api_check.py` | Ask the official recognizer about each accepted photo |
-
-Run every stage through the driver:
-
-```bash
-python3 scripts/run_pipeline.py --chunk 150 --per-wine 20 --top 8 --vlm-workers 6
-python3 scripts/05_report.py
-```
-
-Finish the set with one command:
-
-```bash
-scripts/finalize.sh
-```
-
-Stage 1 runs on its own because it is slow and independent:
-
-```bash
-python3 scripts/01_search.py --workers 4
-```
-
-Every stage is resumable. State lives in `work/state.db`.
-Stages 3 and 4 use the llama-swap service on gx10 (`http://192.168.86.14:18081`).
 
 ## Manual labelling tool
 
@@ -1913,27 +1902,13 @@ https://vino-svoe.ru/wines/abrau-dyurso-pino-nuar-krasnoe-suhoe-12
 https://vino-svoe.ru/wines/abrau-dyurso-pino-nuar-krasnoe-suhoe-125
 ```
 
-`scripts/08_variants.py` finds such slugs and writes the file that `variant_groups_file` names in `config.yaml`:
-
-```bash
-python3 scripts/08_variants.py --no-image      # metadata step only, runs at once
-python3 scripts/08_variants.py                 # metadata step and image step
-python3 scripts/08_variants.py --threshold 0.93
-```
-
-The script joins two slugs in two ways:
+The file that `variant_groups_file` names holds generated groups. The lab reads this file
+as an input and does not regenerate it. The groups were built in two ways:
 
 1. Metadata. The same `producer` and the same `name` in `catalog.jsonl`.
    This step is exact and costs nothing. It gives 28 groups over 63 wines of `my/`.
-2. Image. The cosine similarity of the SigLIP2 embeddings of the two catalogue
-   bottle photos, at or above `--threshold`. This step needs the llama-swap service
-   on gx10. It finds the pairs that step 1 misses. Every run embeds the bottle photos
-   again, because the script keeps no embedding cache. Use `--no-image` to skip the
-   step.
-
-The image step MUST NOT run while stage 4 of the pipeline runs. Both use the same
-llama-swap service, and a request for `siglip2` makes the service drop
-`qwen3-vl-32b` and load `siglip2`. The pipeline then stalls.
+2. Image. A high cosine similarity of the SigLIP2 embeddings of two catalogue bottle
+   photos finds pairs that the metadata rule misses.
 
 The review tool reads the variant groups at start. The rows of one group
 stand next to each other, whatever the sort, and share one background colour. The
@@ -1957,8 +1932,8 @@ connected component over the generated groups and these pairs, so:
   undo it. Take one wine out of its group first, by hand in the file.
 - A pair that names two wines of one group changes nothing and says so.
 
-`scripts/08_variants.py` never writes `manual_groups_file`, so a new run of the
-script keeps every pair made by hand.
+The generated file and `manual_groups_file` stay separate. A manual pair does not change
+the generated file.
 
 A perceptual hash was tried first and was dropped: a bottle photo is mostly bottle,
 so the hash of the silhouette hides the label. Read `ResearchLog.md` for the numbers.
@@ -2071,14 +2046,7 @@ The tool does NOT move the file when the move is recorded. The target is written
 the label file as `reassign_to`, and the card gets a dashed outline. The header then
 states `N moves pending` with an `apply` button.
 
-The files move when `apply` is pressed, or when the script is run:
-
-```bash
-python3 scripts/09_apply_moves.py            # report only
-python3 scripts/09_apply_moves.py --apply    # move the files
-```
-
-Both use the same functions of `review_server.py`, so both act the same way.
+The files move when the reviewer presses `apply` and confirms the operation.
 
 #### What a move does to the annotation
 
@@ -2110,13 +2078,8 @@ field for any slug. `clear the copy` removes a recorded copy.
 
 The tool does NOT copy the file when the copy is recorded. The target is written to
 the label file as `copy_to`, and the card gets a dotted outline. The header then
-states `N copies pending` with an `apply` button. The same `apply` button, and the
-same script, carry out the copies, the moves, and the deletions:
-
-```bash
-python3 scripts/09_apply_moves.py            # report only
-python3 scripts/09_apply_moves.py --apply    # move and copy the files
-```
+states `N copies pending` with an `apply` button. The same `apply` button carries out
+the copies, the moves, and the deletions.
 
 The copies run before the moves, because a move takes the source file away.
 
@@ -2517,13 +2480,9 @@ per wine slug, `<slug>.png`. It cuts the patch when the wine has one. The crop h
 the pixels of the source and nothing else. `bottle_cropped_dir` of `config.yaml` names
 the directory.
 
-The crop is the picture that the tool shows and embeds:
+The crop is the picture that the tool shows:
 
 - `GET /img/bottle` serves the crop. The field `bottle_path` of the agent API names it.
-- `scripts/08_variants.py` embeds the crop to find variant groups.
-- `scripts/03_embed.py` embeds the crop as the reference of a wine. The stage scores
-  only the candidates that have no `sim` yet, so a score of an earlier run stays as it
-  is.
 - The pixel checks `candidate_is_catalog_photo` and `catalog_photo_twin` still read the
   catalogue photo of the delivery. They look for a copy of that photo, and a copy
   carries the border.

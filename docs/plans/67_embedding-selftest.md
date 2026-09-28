@@ -1,7 +1,7 @@
 # Plan 67: the self-test of one embedding
 
 Date: 2026-09-28. Session: drink-atlas-workspace-49 [549156].
-Status: approved by the owner on 2026-09-28T00:07:00+0300. In work.
+Status: approved by the owner on 2026-09-28T00:07:00+0300. Done.
 
 Source: owner messages of 2026-09-27T23:58:00+0300 and 2026-09-28T00:00:00+0300, and the
 answers of 00:04:00. The text is in [../owner-messages.md](../owner-messages.md).

@@ -111,6 +111,12 @@ manual Atlas bindings not configured
 ```
 ````
 
+## 2026-09-28T09:07:32+0300
+
+```text
+add logging, saving all submitted images to disk (output folder shall be specified), also save http headers and IP. We needto know who, what and how long request was processed.&#x20;
+```
+
 ## 2026-09-24T22:38:08+0300
 
 ```text
@@ -6385,6 +6391,12 @@ May I use option 1 with separate, non-overlapping hunks while preserving the act
 Answer: 1
 ```
 
+## 2026-09-28T08:13:27+0300
+
+```text
+add these rules to [AGENTS.md](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/AGENTS.md)
+```
+
 ## 2026-09-27T19:13:10+0300
 
 A message to drink-atlas-workspace-4e [ff960b]. The time is the time of the record.
@@ -6865,6 +6877,151 @@ Two more test files pass the removed key `rules`, and they would fail after the 
 Answer: Yes, only those lines (Recommended)
 ```
 
+## 2026-09-28T00:32:00+0300
+
+Agent question (drink-atlas-workspace-a4 [34c1c5]) about `tests/test_labdb.py`, and the
+owner answer:
+
+```text
+tests/test_labdb.py: the table list must hold "image_tag" in name order, after "image_label_description_failure". That name stands in an uncommitted line of the stale session 6b [e99257] (plan 61). The line `"image_label_description_failure", "test_photo",` becomes `"image_label_description_failure", "image_tag",` + a new line `"test_photo",`. 1e already allowed the VERSION change 29 -> 30. May I change the 6b line?
+- Yes, change it (Recommended): Both 6b names stay byte-identical. I record the permission in my section. Then I deploy: backup of data/lab.sqlite3, schema 030, migration, restart of 8168 (SIGTERM; the selftest job of 49 runs in its own session and continues).
+- No: I stop before the deploy. The code stays in my scratch copy, and test_labdb.py would fail after the schema entry.
+Answer: Yes, change it (Recommended)
+```
+
+## 2026-09-28T00:40:00+0300
+
+```text
+This is repo that we need to prepare for submission. Current README and other files are not good. Let's keep them as is and create \_submission/README.md and other files which we then put to repo root.
+```
+
+## 2026-09-28T00:40:30+0300
+
+Agent question and owner answer:
+
+```text
+Which scope should I prepare: 1 minimal, 2 reviewer-ready (recommended), or 3 full release staging?
+Answer: keep them small
+```
+
+## 2026-09-28T01:16:11+0300
+
+```text
+PXL\_20260926\_175323263.jpg · 2199 KB
+**PXL\_20260926\_175335432.jpg**
+
+This is alu can with abrau sparkling wine,&#x20;
+
+I expected that main scene object detection will segment can, that i hold in my hands, instead it chooses bottle on shelf.&#x20;
+
+In dataset, bottles are more than 99% of all packages, so it is reasonable to prefer them over other, although in this specific case, i want you choose one in my hands. And this is "can", not bottle. Find how to resolve this issue. Generate  A4 drawing how you decide what to choose from photo. Also consider case when there are multiple bottles, and you need to choose one that is main on scene.
+```
+
+## 2026-09-28T01:16:12+0300
+
+```text
+implement
+```
+
+## 2026-09-28T01:16:13+0300
+
+Agent question and owner answer:
+
+```text
+I found three viable implementation paths:
+
+1. Hybrid scene ranking — recommended. Detect package candidates, then rank them using hand contact, foreground scale, center position, visible area, sharpness, and shelf-context penalties. This handles cans, bottles, and multiple-bottle scenes without relying on package frequency.
+2. Prompt/reranker change only. Add “product held in hand” and “can” prompts to SigLIP2. This is simpler but less reliable.
+3. Fine-tuned main-product detector. Label held cans and multi-bottle scenes, then train a detector. This is strongest long-term but requires training data and more work.
+
+Which approach should I implement?
+Answer: 1, and make it observable through results in steps in [http://127.0.0.1:8168/recognize](http://127.0.0.1:8168/recognize)
+```
+
+## 2026-09-28T01:22:28+0300
+
+```text
+run barcode-rerank-siglip2-p512-crop
+run barcode-rerank-siglip2-p1024-crop
+[http://127.0.0.1:8168/](http://127.0.0.1:8168/)
+
+on all datasets
+```
+
+## 2026-09-28T01:29:05+0300
+
+```text
+add such pipelines to config and run
+```
+
+## 2026-09-28T01:34:46+0300
+
+Agent question and owner answer:
+
+```text
+The p512 and p1024 clusters are built. No benchmark has started.
+
+Rule generation must send catalogue label cuts and cached descriptions for 208 p512 and 229 p1024 clusters to the external QwenCloud `qwen3.8-max` endpoint.
+
+Do you approve this transmission so I can build the rules and run all ten benchmarks?
+Answer: Yes
+```
+
+## 2026-09-28T01:43:17+0300
+
+```text
+why this failed:
+[http://127.0.0.1:8168/runs#2026-09-27T221032Z-lab-barcode-rerank-siglip2-512-crop-official-real-photos/aratti-kaberne-po-belomu-1/96.31\_09-09-2026\_19-29-01.webp](http://127.0.0.1:8168/runs#2026-09-27T221032Z-lab-barcode-rerank-siglip2-512-crop-official-real-photos/aratti-kaberne-po-belomu-1/96.31_09-09-2026_19-29-01.webp)
+
+candidate was 2024, and initially it was on top, but after re-rank it failed stay on top and become second
+```
+
+## 2026-09-28T01:55:32+0300
+
+```text
+Implement proposed. I think that VLM shall not provide decisions at re-rank, it shall provide scores, and let code handle these scores to decisions
+```
+
+## 2026-09-28T06:43:48+0300
+
+```text
+I added tags support for testset images in svoe-vino-lab, also gx10 has sam3 endpoint. Please go through all images in testset, and add tag"barcode" to each that have "barcode" on image (use SAM3 to detect), same with tag "qr_code" (use correct working for SAM3).  I allow you to send data to gx10
+```
+
+## 2026-09-28T06:43:49+0300
+
+```text
+Wait 5 hours and try
+```
+
+## 2026-09-28T07:28:16+0300
+
+```text
+This is about svoe-vino-lab code cleanup.
+
+Are svoe-vino-lab/scripts/01\_search.py...svoe-vino-lab/scripts/09\_apply\_moves.py used?
+```
+
+## 2026-09-28T07:36:44+0300
+
+```text
+refactor svoe-vino-lab to get rid of these files
+```
+
+## 2026-09-28T07:38:08+0300
+
+Agent question and owner answer:
+
+```text
+Three viable scopes:
+
+1. Focused removal (recommended): delete `01`–`09`, remove obsolete wrappers, clean documentation, and extract the live parts of `04_verify.py` into a small named module for benchmarks and tests.
+2. Delegate to `svoe-vino-testset`: delete the lab copies and point remaining users to the sibling project. This creates cross-repository coupling.
+3. Retire the full legacy subsystem: also remove `review_server.py`, `common.py`, legacy configuration, related tests, and old review documentation. This is much broader.
+
+Which scope should I implement?
+Answer: do 1
+```
 ## 2026-09-28T08:07:43+0300
 
 ```text
@@ -6920,6 +7077,23 @@ Should I implement option 1 in `svoe-vino-lab/matcher/`?
 Answer: 1
 ```
 
+## 2026-09-28T08:18:00+0300
+
+Recorded at 08:23; the time of the message is approximate.
+
+```text
+@svoe-vino-lab  does it uses zxing-cpp and any other API directly?
+```
+
+## 2026-09-28T08:20:00+0300
+
+Recorded at 08:23; the time of the message is approximate.
+
+```text
+there is http://192.168.86.14:18081/ui/#/models/qr-scanner (check ~/Admin for details) that handles qr-code and barcode decodes. What API you missing to use it.
+
+I would like that you explicitly specify what barcode decoding API to use, to have control on it.
+```
 ## 2026-09-28T08:23:11+0300
 
 ```text
@@ -7001,6 +7175,15 @@ do same with "$EVAL/participant\_test.sh"
 later we will have real config.yaml, so current one need to be saved and used for testing API only
 ```
 
+## 2026-09-28T08:49:18+0300
+
+````text
+explain
+```
+Use decoder: zxing-cpp-2.3.0 for the local decoder as it works today. Or use decoder: qr-scanner plus engine: zxing-cpp | zxing-cpp-sr | boofcv-qr-cpp | auto
+```
+````
+
 ## 2026-09-28T08:55:00+0300
 
 ````text
@@ -7052,6 +7235,7 @@ Answer: Commit + push to github main (Recommended)
 ```text
 after you push to git, test that it all works
 ```
+
 ## 2026-09-28T08:59:53+0300
 
 ````text
@@ -7069,12 +7253,6 @@ add test that tests  matcher/tests/participant\_test.sh returns jsonl as example
 ~~~
 ```
 ````
-
-## 2026-09-28T09:07:32+0300
-
-```text
-add logging, saving all submitted images to disk (output folder shall be specified), also save http headers and IP. We needto know who, what and how long request was processed.&#x20;
-```
 
 ## 2026-09-28T09:10:28+0300
 
@@ -7200,6 +7378,24 @@ Answer: `matcher.output_dir` принимает обычный путь или �
 Используй тот что распространенней
 ```
 
+## 2026-09-28T09:56:48+0300
+
+```text
+deployment
+
+how can I deploy project on my internal gx10 and make it accessible from outside without compromising my home network.
+
+also how make it possible to have it fail safe (ex.: have balancer that uses my home, but if not available - other server) ?
+```
+
+## 2026-09-28T10:01:26+0300
+
+```text
+bundle approach with optional images looks fair.&#x20;
+can ypu prepare script in svoe-vino-lab that will build such bundle&#x20;
+and test it. Also we need bundle validation script.
+```
+
 ## 2026-09-28T10:03:35+0300
 
 ```text
@@ -7210,4 +7406,58 @@ commit matcher
 
 ```text
 add gitlab testing for matcher/ and push to git. Check that matcher/ is being tested and tests pass.
+```
+
+## 2026-09-28T10:21:41+0300
+
+```text
+add TESTING.md to matcher/&#x20;
+move there all  from README.md relaed to code testing
+```
+
+## 2026-09-28T11:10:38+0300
+
+```text
+&#x20; token\_env: SVOE\_VINO\_MATCHER\_TOKEN&#x20;
+Поле matcher.token\_env содержит только имя переменной окружения. Секретный токен не
+хранится в YAML.&#x20;
+
+Всегда если нужно обратиться по имени переменной env - используй нотацию {env:SVOE\_VINO\_MATCHER\_TOKEN}
+```
+
+## 2026-09-28T11:17:14+0300
+
+```text
+commit all in svoe-vino-lab
+```
+
+## 2026-09-28T11:19:20+0300
+
+````text
+Question: token_env -> token_key ?
+Answer: Лучше `token`, а не `token_key`:
+
+```yaml
+token: "{env:SVOE_VINO_MATCHER_TOKEN}"
+```
+
+Нотация `{env:...}` уже явно задаёт источник. `token_key` можно ошибочно понять как сам секрет или ключ авторизации. `token` остаётся нейтральным и позже сможет поддерживать другие безопасные источники.
+````
+
+## 2026-09-28T11:19:20+0300
+
+```text
+ok, rename
+```
+
+## 2026-09-28T11:23:21+0300
+
+```text
+what server i need for "Run Caddy on a small, dedicated VPS"? Can I use Selectel?
+```
+
+## 2026-09-28T11:25:51+0300
+
+```text
+VDS vs VPS? 
 ```

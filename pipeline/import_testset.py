@@ -27,6 +27,11 @@ Rules of the set directory:
   not null, stops the import. An entry that is not a JSON object stops it too.
 - The field `comments` of an entry goes into `test_photo_comment`, and so does the old
   field `comment` of the old tool (`testsets.entry_comments`, plan 51).
+- The field `tags` of an entry is a list of tags of the image of the photo (plan 66). The
+  import adds each tag to `image_tag`. The import never removes an image tag, because an
+  image tag belongs to no set. A tag that the image has already is not added again, so a
+  second import adds no row. A `tags` value that is not a list of valid tags stops the
+  import.
 - The text `note` of `review-labels.json` goes into `test_set.label_note`.
 - The old map `wines` of `review-labels.json` and the old file `excluded-slugs.json` go
   into `wine_comment` by the rules of plan 51. A text that the wine has already is not
@@ -59,6 +64,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(1, os.path.join(os.path.dirname(HERE), "scripts"))
 import comments  # noqa: E402
+import image_tags  # noqa: E402
 import imagestore  # noqa: E402
 import labdb  # noqa: E402
 import testsets  # noqa: E402
@@ -99,6 +105,8 @@ class Report:
         self.wine_comments_present = 0         # texts that the wine had already
         self.wine_comments_left_out = 0        # texts of a slug not in wine_catalog
         self.boxes = 0                         # photos with a box of the main object
+        self.image_tags = 0                    # new rows of image_tag
+        self.image_tags_present = 0            # tags that the image had already
         self.extra = 0                         # entries with a field in `extra`
 
 
@@ -139,6 +147,21 @@ def scan_photos(photo_dir):
     return photos, loose
 
 
+def entry_tags(place, name, entry):
+    """Return the normal forms of the field `tags` of one label entry: a list, empty when
+    the entry has no such field. A value that is not a list of valid tags raises
+    `TestsetError`."""
+    if "tags" not in entry:
+        return []
+    value = entry["tags"]
+    if not isinstance(value, list):
+        raise TestsetError("the field tags of the entry %s/%s is not a list" % (place, name))
+    try:
+        return [image_tags.normal(tag) for tag in value]
+    except image_tags.TagError as exc:
+        raise TestsetError("the field tags of the entry %s/%s: %s" % (place, name, exc))
+
+
 def check_not_edited(conn, set_name, force):
     """Raise `TestsetError` when the Testset page edited the set and `force` is false."""
     row = conn.execute("SELECT edited_at FROM test_set WHERE set_name = ?",
@@ -169,6 +192,7 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
         for name, entry in (files or {}).items():
             if entry is not None and not isinstance(entry, dict):
                 raise TestsetError("the label entry %s/%s is not a JSON object" % (place, name))
+            entry_tags(place, name, entry or {})
     for slug, note in wines.items():
         if not isinstance(note, dict):
             raise TestsetError("the note of the wine %s is not a JSON object" % slug)
@@ -197,6 +221,7 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
         now = comments.now_utc()
         new_images = {}   # sha256 -> the row of `image`
         rows, comment_rows = [], []
+        tag_rows = {}     # (sha256, tag) -> None, in the order of the photos
         for place, name, path in photos:
             digest = imagestore.sha256_of(path)
             extension = os.path.splitext(name)[1][1:].lower()
@@ -218,6 +243,10 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
                 new_images[digest] = (digest, FOLDER, extension, width, height)
             entry = (labels.get(place) or {}).get(name) or {}
             entry, notes = testsets.entry_comments(entry, now)
+            # `entry_comments` returns a copy, so the pop leaves `labels` as it is.
+            for tag in entry_tags(place, name, entry):
+                tag_rows[(digest, tag)] = None
+            entry.pop("tags", None)
             size = None
             if "box" in entry:
                 try:
@@ -279,6 +308,13 @@ def import_testset(db_path, set_name, set_dir, log=print, schema_dir=labdb.SCHEM
                                  "?" for _ in range(4 + len(testsets.ENTRY_COLUMNS)))), rows)
             conn.executemany("INSERT INTO test_photo_comment (set_name, place, file_name, "
                              "created_at, source, text) VALUES (?, ?, ?, ?, ?, ?)", comment_rows)
+            for digest, tag in tag_rows:
+                if conn.execute("INSERT INTO image_tag (sha256, tag, created_at) "
+                                "VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
+                                (digest, tag, now)).rowcount:
+                    report.image_tags += 1
+                else:
+                    report.image_tags_present += 1
             for slug, created_at, source, text in wine_rows:
                 if conn.execute("SELECT 1 FROM wine_comment WHERE wine_slug = ? AND text = ?",
                                 (slug, text)).fetchone():
@@ -309,6 +345,8 @@ def print_report(report, set_name, set_dir, db_path):
     print("places that wine_catalog does not hold: %d" % len(report.unknown_places))
     print("slugs in a variant group: %d" % report.variant_slugs)
     print("comments of the photos: %d" % report.photo_comments)
+    print("image tags: %d new, %d there already" % (report.image_tags,
+                                                     report.image_tags_present))
     print("old notes of a whole wine: %d; old exclusions: %d" % (report.wine_notes,
                                                                  report.excluded))
     print("wine comments: %d new, %d there already, %d left out (no wine)"

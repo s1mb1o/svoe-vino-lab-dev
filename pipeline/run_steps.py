@@ -222,21 +222,24 @@ def _index_state(db_path, name):
              for item in index.get("items", [])}, names)
 
 
-def _cut(photo, target, endpoint):
-    """Return (the box, the processed image, None), or (None, None, the reason), of one
-    SAM3 target, made again from the cache."""
+def _cut(photo, target, endpoint, scene_selection=False):
+    """Return `(box, image, reason, result)` for one cached SAM3 target."""
     if photo.image is None:
-        return None, None, photo.error
+        return None, None, photo.error, None
     try:
-        cut = embedding_run.cuts_of(photo.image, {target},
-                                    embedding_run.CachedSam3(endpoint)).get(target)
+        trace = embedding_run.Trace()
+        cut = embedding_run.cuts_of(
+            photo.image, {target}, embedding_run.CachedSam3(endpoint), trace,
+            scene_selection=scene_selection and target == "package").get(target)
+        result = next((record.get("out") for record in trace.steps
+                       if record.get("id") == "sam3-" + target), None)
     except derive.Sam3Unavailable as exc:
-        return None, None, "The cut cannot be made again: %s." % exc
+        return None, None, "The cut cannot be made again: %s." % exc, None
     except (OSError, ValueError) as exc:
-        return None, None, "The cut cannot be made again: %s." % exc
+        return None, None, "The cut cannot be made again: %s." % exc, None
     if cut is None:
-        return None, None, "SAM3 found no %s." % target
-    return cut[0], cut[1], None
+        return None, None, "SAM3 found no %s." % target, result
+    return cut[0], cut[1], None, result
 
 
 def embedding_rounds(ctx):
@@ -248,6 +251,7 @@ def embedding_rounds(ctx):
     views = spec.get("views") or {}
     sam3 = spec.get("sam3") or {}
     endpoint = sam3.get("endpoint") or derive.SAM3_ENDPOINT
+    scene_selection = bool(spec.get("scene_selection"))
     name = spec.get("embedding") or spec.get("id")
     first = step("input", "Input photo")
     timed(first, records.get(("input", None)))
@@ -288,14 +292,16 @@ def embedding_rounds(ctx):
 
     cuts = {}
     for target, label, group, texts, rule in (
-            ("package", "Package cut", "segment", derive.SAM3_TEXTS, sam3.get("package")),
+            ("package", "Package selection and cut" if scene_selection else "Package cut",
+             "segment", sam3.get("package_texts") or derive.SAM3_TEXTS,
+             sam3.get("package")),
             ("label", "Label cut", "instances", alternatives.DETECT_TEXTS, sam3.get("label"))):
         if target not in embedding_run.cut_targets(views):
             continue
         part = step("sam3-" + target, label, service_of(endpoint), derive.SAM3_MODEL, group)
         record = records.get(("sam3-" + target, None))
         timed(part, record)
-        box, processed, reason = _cut(photo, target, endpoint)
+        box, processed, reason, replayed = _cut(photo, target, endpoint, scene_selection)
         cuts[target] = (box, processed) if box is not None else None
         part["settings"] = {"endpoint": endpoint, "texts": texts, "rule": rule}
         if reason:
@@ -314,7 +320,15 @@ def embedding_rounds(ctx):
                 part["notes"].append("The cut made again has the box %s; the run had %s."
                                      % (list(box), recorded["box"]))
         if not part["result"]:
-            part["result"] = {"box": list(box) if box is not None else None}
+            part["result"] = replayed or {"box": list(box) if box is not None else None}
+        selection = part["result"].get("selection") if isinstance(part["result"], dict) else None
+        selected = selection.get("selected") if isinstance(selection, dict) else None
+        if isinstance(selected, dict):
+            part["notes"].append("The main-scene selector chose %s at score %.4f from %d "
+                                 "package candidates and %d detected hands."
+                                 % (selected.get("label"), selected.get("scene_score") or 0,
+                                    len(selection.get("candidates") or ()),
+                                    selection.get("hands") or 0))
         rounds[1].append(part)
 
     for view, steps in views.items():

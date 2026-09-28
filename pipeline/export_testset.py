@@ -11,8 +11,10 @@ replaced; the write is atomic. The export writes no photo file. Read
 
 A label entry comes from the columns of its row of `test_photo` and from `extra` by the
 rule of `testsets.py`. The field `comments` holds the rows of `test_photo_comment` of the
-photo, the oldest first: `{created_at, source, text}`. A row with no field and no comment
-gives no entry, as the old tool removes an entry with no field.
+photo, the oldest first: `{created_at, source, text}`. The field `tags` holds the tags of
+the image of the photo, in the order of the adds (`image_tag`, plan 66). A row with no
+field, no comment, and no tag gives no entry, as the old tool removes an entry with no
+field.
 
 Since plan 51 the export writes no map `wines` and no `excluded-slugs.json`: the comments
 of a whole wine are rows of `wine_comment`, and the exclusion went away. An old
@@ -28,6 +30,7 @@ from pathlib import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import image_tags  # noqa: E402
 import labdb  # noqa: E402
 import testsets  # noqa: E402
 
@@ -52,14 +55,16 @@ LABELS_NOTE = (
     "slug matches NO card of the catalogue. The place is the statement, "
     "so such a photo needs no label; 'positive' confirms it and "
     "'unusable' takes the photo out of the set. "
-    "Field 'reassign_to' names the slug that the photo belongs to; "
-    "scripts/09_apply_moves.py moves the file. "
-    "Field 'copy_to' names a slug that the photo ALSO belongs to; the same "
-    "script copies the file and leaves the source photo where it is. "
+    "Field 'reassign_to' names the slug that the photo belongs to; the review tool "
+    "Apply action moves the file. "
+    "Field 'copy_to' names a slug that the photo ALSO belongs to; the Apply action "
+    "copies the file and leaves the source photo where it is. "
     "The copy carries no label and one comment that names the source slug. "
     "Field 'comments' holds the comments of the reviewer about this photo and "
     "this slug: a list of {created_at, source, text}, the oldest first. "
-    "created_at is a UTC time; source is 'user' or 'script'."
+    "created_at is a UTC time; source is 'user' or 'script'. "
+    "Field 'tags' holds the tags of the image of this photo: the same image "
+    "has the same tags in each place and in each set."
 )
 
 
@@ -90,12 +95,16 @@ def labels_document(conn, set_name):
         raise ExportError("the database holds no test set %r" % set_name)
     labels = {}
     notes = testsets.photo_comments(conn, set_name)
-    for photo in testsets.photo_rows(conn, set_name):
+    photos = testsets.photo_rows(conn, set_name)
+    tags = image_tags.tags(conn, {photo["sha256"] for photo in photos})
+    for photo in photos:
         entry = testsets.entry_of(photo)
         found = notes.get((photo["place"], photo["file_name"]))
         if found:
             entry["comments"] = [{key: note[key] for key in testsets.COMMENT_KEYS}
                                  for note in found]
+        if photo["sha256"] in tags:
+            entry["tags"] = tags[photo["sha256"]]
         if entry:
             labels.setdefault(photo["place"], {})[photo["file_name"]] = entry
     counts = testsets.counts(conn, set_name)
@@ -145,6 +154,8 @@ def main(argv=None):
     print("set: %s" % args.set_name)
     print("label entries: %d in %d places" % (entries, len(labels["labels"])))
     print("comments of the photos: %d" % notes)
+    print("entries with tags: %d" % sum(1 for files in labels["labels"].values()
+                                        for entry in files.values() if entry.get("tags")))
     print("written: %s" % labels_path)
     return 0
 

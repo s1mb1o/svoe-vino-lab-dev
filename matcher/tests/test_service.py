@@ -48,12 +48,15 @@ class MockMatcherTest(unittest.TestCase):
         )
 
     def test_config_without_authentication_has_no_token_environment(self):
-        self.assertIsNone(self.matcher.token_env)
+        self.assertIsNone(self.matcher.token)
         self.assertIsNone(self.matcher.resolved_token({}))
 
-    def test_token_config_names_the_secret_environment_variable(self):
+    def test_token_config_uses_the_secret_environment_reference(self):
         matcher = load_matcher(TOKEN_CONFIG)
-        self.assertEqual(matcher.token_env, "SVOE_VINO_MATCHER_TOKEN")
+        self.assertEqual(
+            matcher.token,
+            "{env:SVOE_VINO_MATCHER_TOKEN}",
+        )
         self.assertEqual(
             matcher.resolved_token({"SVOE_VINO_MATCHER_TOKEN": "test-secret"}),
             "test-secret",
@@ -154,19 +157,28 @@ class MockMatcherTest(unittest.TestCase):
 
     def test_missing_or_empty_token_environment_variable_is_rejected(self):
         config = valid_config()
-        config["matcher"]["token_env"] = "MATCHER_TEST_TOKEN"
+        config["matcher"]["token"] = "{env:MATCHER_TEST_TOKEN}"
         matcher = self.load_config(config)
         for environment in ({}, {"MATCHER_TEST_TOKEN": ""}):
             with self.subTest(environment=environment):
                 with self.assertRaisesRegex(ConfigError, "MATCHER_TEST_TOKEN MUST be set"):
                     matcher.resolved_token(environment)
 
-    def test_invalid_token_environment_name_is_rejected(self):
-        for value in ("", "9BAD", "BAD NAME", "{env:MATCHER_TOKEN}", 12):
+    def test_malformed_token_environment_reference_is_rejected(self):
+        for value in ("", "MATCHER_TOKEN", "{env:}", "{env:9BAD}",
+                      "{env:BAD NAME}", "prefix{env:GOOD}",
+                      "{env:GOOD}suffix", 12):
             with self.subTest(value=value):
                 config = valid_config()
-                config["matcher"]["token_env"] = value
-                self.assert_config_error(config, "token_env MUST be an environment")
+                config["matcher"]["token"] = value
+                self.assert_config_error(
+                    config,
+                    "token MUST be an exact \\{env:NAME\\} reference",
+                )
+
+        config = valid_config()
+        config["matcher"]["token_env"] = "{env:MATCHER_TEST_TOKEN}"
+        self.assert_config_error(config, "token_env was replaced by matcher.token")
 
     def test_broken_yaml_is_rejected(self):
         self.assert_config_error("matcher: [", "cannot read matcher configuration")

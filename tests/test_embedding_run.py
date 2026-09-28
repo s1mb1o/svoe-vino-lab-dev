@@ -538,6 +538,9 @@ class PipelineViewsTest(Temporary):
         crop = types.SimpleNamespace(name="crop", embedding="gw", views=CROP)
         backend = embedding_run.build_pipeline_backend(crop, self.lab.config_path)
         self.assertEqual((backend.views, backend.spec["views"]), (CROP, CROP))
+        self.assertTrue(backend.scene_selection)
+        self.assertEqual(backend.spec["scene_selection"], 1)
+        self.assertIn("hand", backend.spec["sam3"]["package_texts"])
         plain = types.SimpleNamespace(name="pipe", embedding="gw")
         self.assertEqual(embedding_run.build_pipeline_backend(plain, self.lab.config_path).views,
                          self.embedding.views)

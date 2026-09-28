@@ -833,3 +833,64 @@ is `running`, `done`, or `failed`. `waiting` tells why the build of `current` wa
 embedding build runs), or is null. `results` holds one `{name, state, counts, message}`
 for each entry that ended; `state` is `done`, `skipped` (for example no index), or
 `failed`. A restart of the server ends the queue and clears it.
+
+## The self-test of an embedding — plan 67
+
+### `POST /api/run-jobs` with the key `selftest`
+
+Starts the self-test of one entry of `embeddings` (the button `Selftest` of `/embedding`).
+The body is `{"selftest": "<embedding>", "limit", "workers", "use_cache"}`. `limit`,
+`workers`, and `use_cache` have the rules of a run job. The keys `configuration` and `set`
+are not allowed with `selftest`. The server starts `run_job.py --selftest --name
+<embedding>`. The answer is HTTP 202 with `{"name": "selftest-<embedding>", "set":
+"dataset", "state": "running", "pid"}`. Errors: `400` for a bad body, an entry with a
+configuration error, an entry with no index, or a missing `embedding_python`; `404` for an
+unknown entry; `409` while the self-test of the entry runs.
+
+`GET /api/run-jobs` lists the job as `selftest-<embedding>`, and `POST
+/api/run-jobs/selftest-<embedding>/stop` stops it. The run has `configuration:
+selftest-<embedding>`, `options.set: dataset`, and `use_barcode: false`. Each row has the
+`wine_slug` of its image as the truth, and `image_path` is
+`<wine_slug>/<image_type>-<first 12 hex of sha256>.<extension>`.
+
+## Image tags of the Testset — plan 66
+
+The table `image_tag` (schema 030) holds the free-form text tags of an image. The key is
+the SHA-256 of the bytes, so each test photo that holds the bytes shows the same tags, in
+each place and in each set. One image MAY have more than one tag. The pipeline does not
+read the tags. Read [plan 66](plans/66_testset-image-tags.md).
+
+A tag has the form of a wine tag of plan 63 (`wine_tags.normal`): no outer white space,
+lower case, 1 to 64 letters, digits, `_`, `-`, `:`, and `.`.
+
+`GET /api/testset` sends `tags` in each photo: the tags of its image, in the order of the
+adds. It sends `tag_names` too: each tag of `image_tag` once, in text order, as
+`{"tag", "images"}`. Each write answer of a photo holds `photo.tags`.
+
+### `POST /api/testset-photo-tag`
+
+The body is `{"set", "place", "file", "tag"}`. The server adds the tag to the image of the
+photo and sets `test_set.edited_at` of the set. The answer:
+
+```json
+{"ok": true, "set": "my", "place": "wine-a", "file": "01.jpg", "added": "blurry",
+ "sha256": "<sha256>", "tags": ["blurry"], "tag_names": [{"tag": "blurry", "images": 1}],
+ "photo": {"...": "...", "tags": ["blurry"]}, "counts": {"...": "..."}}
+```
+
+`added` is the normal form of the tag. `tags` is the list of the tags of the image after
+the write.
+
+### `POST /api/testset-photo-tag-remove`
+
+The body is `{"set", "place", "file", "tag"}`. The server applies the normal form to `tag`
+and removes it from the image. The answer has the keys of the add, with `removed` in place
+of `added`.
+
+Errors of both routes: `400` for a missing place or file, or a missing or invalid tag;
+`404` for an unknown set or photo, or a remove of a tag that the image does not have;
+`409` for an add of a tag that the image has; `503` for a database error.
+
+The export `pipeline/export_testset.py` writes the field `tags` into the label entry of
+each photo whose image has a tag. The import `pipeline/import_testset.py` adds the tags of
+the field and never removes an image tag.

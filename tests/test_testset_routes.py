@@ -210,6 +210,35 @@ class TestsetRoutesTest(unittest.TestCase):
         self.assertEqual(self.request(route)[0], 405)
 
 
+    def test_the_tag_routes(self):
+        # Plan 66: the tag belongs to the image, so the view shows it on the photo.
+        status, answer = self.post("/api/testset-photo-tag", place="wine-a", file="01.jpg",
+                                   tag=" Blurry")
+        self.assertEqual(status, 200, answer)
+        self.assertEqual((answer["added"], answer["tags"], answer["photo"]["tags"]),
+                         ("blurry", ["blurry"], ["blurry"]))
+        self.assertEqual(answer["tag_names"], [{"tag": "blurry", "images": 1}])
+        view = self.get_view()
+        self.assertEqual(view["tag_names"], [{"tag": "blurry", "images": 1}])
+        photo = [p for r in view["rows"] if r["slug"] == "wine-a" for p in r["photos"]][0]
+        self.assertEqual(photo["tags"], ["blurry"])
+        for body, code in (({"tag": "blurry"}, 409), ({"tag": "two words"}, 400),
+                           ({"tag": ""}, 400), ({}, 400),
+                           ({"tag": "blurry", "file": "99.jpg"}, 404)):
+            with self.subTest(body=body):
+                status, answer = self.post("/api/testset-photo-tag",
+                                           **dict({"place": "wine-a", "file": "01.jpg"}, **body))
+                self.assertEqual(status, code, answer)
+        status, answer = self.post("/api/testset-photo-tag-remove", place="wine-a",
+                                   file="01.jpg", tag="BLURRY")
+        self.assertEqual((status, answer["removed"], answer["tags"]), (200, "blurry", []))
+        status, answer = self.post("/api/testset-photo-tag-remove", place="wine-a",
+                                   file="01.jpg", tag="blurry")
+        self.assertEqual(status, 404, answer)
+        status, _ = self.request("/api/testset-photo-tag")
+        self.assertEqual(status, 405)
+        self.assertEqual(self.get_view()["tag_names"], [])
+
 
 class NewSetRouteTest(unittest.TestCase):
     """Plan 57: `POST /api/testset-new` makes an empty set."""

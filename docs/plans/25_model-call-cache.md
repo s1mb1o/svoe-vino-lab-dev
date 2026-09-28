@@ -13,6 +13,10 @@ by default) turns the reads off in one process. `run_job.py --no-cache` (the che
 `Use caches` of the dialog `Run>`, off) sets it. Each call then asks its service, and the
 fresh answer is stored.
 
+Changed by [plan 70](70_remove-legacy-testset-stages.md) on 2026-09-28: the numbered
+stage scripts were removed. The reusable wine-identity VLM client moved from
+`scripts/04_verify.py` to `pipeline/wine_identity_vlm.py`.
+
 ## Goal
 
 1. A call to GDINO, SAM3, or a VLM that repeats an earlier successful call reads the
@@ -105,10 +109,10 @@ JSON has sorted keys, the separators `,` and `:`, and no ASCII escape.
 3. New `pipeline/gdino.py`: `GdinoClient(model, gateway)` and `detect(image, texts,
    threshold, text_threshold)`. The sent copy and the retries follow the rule of
    `Sam3Client`. A command line prints the answer and states `hit` or `miss`.
-4. `scripts/cluster_rules.py` (`Vlm.ask`), `scripts/04_verify.py` (`Backend.ask`), and
-   `scripts/bench_vlm_models.py` (`call`): a lookup before the request and a store after
-   a success. `Vlm` counts the hits in `hits`. `bench_vlm_models.py` marks a cached
-   line with `"cached": true`.
+4. `scripts/cluster_rules.py` (`Vlm.ask`), `pipeline/wine_identity_vlm.py`
+   (`Backend.ask`), and `scripts/bench_vlm_models.py` (`call`): a lookup before the
+   request and a store after a success. `Vlm` counts the hits in `hits`.
+   `bench_vlm_models.py` marks a cached line with `"cached": true`.
 5. Unit tests set `model_cache.ROOT` to a temporary directory. `tests/test_derive.py`
    does this in `setUpModule`.
 

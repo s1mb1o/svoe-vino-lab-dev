@@ -42,10 +42,11 @@ class StepsTest(TE.Temporary):
         TE.add_set(self.lab)
         self.runs = str(self.root / "runs")
 
-    def run_set(self):
+    def run_set(self, scene_selection=False):
         backend = embedding_run.build_backend(self.embedding, self.lab.db_path,
                                               make_model=lambda e: TE.ColourModel(),
-                                              segmenter=TE.FakeSam3())
+                                              segmenter=TE.FakeSam3(),
+                                              scene_selection=scene_selection)
         run_dir, _ = benchmark.run_benchmark(
             self.lab.db_path, "my", backend, self.runs, embeddings=backend.catalogue.state,
             log=lambda message: None, configuration="gw")
@@ -63,6 +64,19 @@ class StepsTest(TE.Temporary):
 
 
 class EmbeddingStepsTest(StepsTest):
+    def test_the_package_result_explains_the_main_scene_selection(self):
+        run_dir, rows = self.run_set(scene_selection=True)
+        row = rows["green/01.png"]
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        package = next(part for part in self.all_steps(body) if part["id"] == "sam3-package")
+        selection = package["result"]["selection"]
+        self.assertEqual((code, package["name"], selection["version"]),
+                         (200, "Package selection and cut", 1))
+        self.assertEqual(selection["selected"]["label"], "bottle")
+        self.assertTrue(selection["candidates"][0]["selected"])
+        self.assertIn("scene_score", selection["candidates"][0])
+        self.assertIn("main-scene selector chose bottle", package["notes"][-1])
+
     def test_a_traced_row_gives_three_rounds_with_the_step_times(self):
         run_dir, rows = self.run_set()
         row = rows["green/01.png"]

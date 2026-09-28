@@ -1,10 +1,10 @@
 # This config tests optional Bearer authentication for the matcher API.
-# It is not the future real matcher/config.yaml. It stores only an environment variable
-# name. The secret token MUST be in SVOE_VINO_MATCHER_TOKEN at process start.
+# It is not the future real matcher/config.yaml. It stores only an exact environment
+# reference. The secret token MUST be in SVOE_VINO_MATCHER_TOKEN at process start.
 matcher:
   pipeline: official-eval-mock
   output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
-  token_env: SVOE_VINO_MATCHER_TOKEN
+  token: "{env:SVOE_VINO_MATCHER_TOKEN}"
 
 # Keep the same mock answers as config.yaml. This isolates authentication as the only
 # behavior difference between the two test configurations.

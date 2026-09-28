@@ -139,6 +139,9 @@ body.side-off main, body.side-off header { padding-right: 16px; }
 .card.held-card { width: 100%; }
 .card.held-card img { height: 150px; }
 .card.held-card .box-tag { top: 132px; }
+.card.held-card .tags-tag { top: 132px; }
+/* The count of the tagged photos of a row keeps its words in one piece. */
+.tag.tagged-n { white-space: nowrap; word-break: normal; }
 .card .from { font-size: 10px; color: var(--muted); word-break: break-all; margin: 0 2px 4px; }
 /* A row that is ready to take the dragged photo. */
 tr.photo-drop > td { background: var(--panel-2) !important; }
@@ -278,6 +281,14 @@ tbody tr.cat-only { background: var(--panel-2); }
   font-size: 9px; line-height: 1; padding: 3px 7px; font-weight: 700; letter-spacing: .03em;
   pointer-events: none;
 }
+/* The tags of the image of a photo (plan 66). The title lists each tag. */
+.tags-tag {
+  position: absolute; right: 10px; top: 154px; z-index: 3; max-width: calc(100% - 64px);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  background: var(--panel); color: var(--accent); border: 1px solid var(--accent);
+  border-radius: 999px; font-size: 9px; line-height: 1; padding: 2px 6px; font-weight: 700;
+  cursor: default;
+}
 /* A photo that an agent proposed is not a label. It is marked apart. */
 .card.prop { border-style: dashed; border-color: var(--var); }
 .prop-tag {
@@ -392,6 +403,28 @@ tbody tr.cat-only { background: var(--panel-2); }
 }
 .side-foot button:hover { border-color: var(--accent); color: var(--text); }
 #box-mode.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+/* The tags of the image in the large view (plan 66). */
+.tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag-chip {
+  display: inline-flex; align-items: center; gap: 3px; padding: 1px 2px 1px 7px;
+  border: 1px solid var(--accent); border-radius: 999px; color: var(--accent);
+  font-size: 11px; overflow-wrap: anywhere;
+}
+.tag-chip button {
+  font: inherit; font-size: 11px; line-height: 1; padding: 1px 5px; cursor: pointer;
+  background: none; color: var(--muted); border: 0; border-radius: 999px;
+}
+.tag-chip button:hover:not(:disabled) { color: #fff; background: var(--exc); }
+.tag-chip button:disabled { cursor: default; opacity: .5; }
+#tag-in {
+  flex: 1 1 120px; min-width: 0; background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; font: inherit;
+  font-size: 12px;
+}
+#tag-in:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+#tag-state { color: var(--muted); flex: 1 0 100%; }
+#tag-state.saved { color: var(--pos); }
+#tag-state.failed { color: var(--neg); }
 .side-note { font-size: 10px; color: var(--muted); line-height: 1.35; }
 .side-note b { color: var(--text); }
 .lb-fig {
@@ -623,6 +656,12 @@ tbody tr.cat-only { background: var(--panel-2); }
         <option value="proposal">an agent proposal</option>
         <option value="deleted">a deletion mark</option>
         <option value="boxed">a box</option>
+        <option value="tagged">a tag</option>
+      </select>
+    </label>
+    <label>Tag
+      <select id="tag" title="a photo of the wine shows an image with this tag (plan 66)">
+        <option value="">any</option>
       </select>
     </label>
     <label>Clusters
@@ -667,6 +706,15 @@ tbody tr.cat-only { background: var(--panel-2); }
       <button id="cmt-add" type="button"
         title="add the text as a new comment (Cmd+Enter or Ctrl+Enter)">Add</button>
     </div>
+    <div class="side-h">Tags of this image <span class="count" id="tag-n"></span></div>
+    <div class="tag-list" id="tag-list"></div>
+    <div class="side-foot">
+      <input id="tag-in" type="text" list="tag-names" maxlength="64" spellcheck="false"
+        autocomplete="off" aria-label="New tag" placeholder="a new tag, for example blurry">
+      <button id="tag-add" type="button" title="add the tag to this image (Enter)">Add</button>
+      <span id="tag-state"></span>
+    </div>
+    <datalist id="tag-names"></datalist>
     <div class="side-h">Box of the main object</div>
     <div class="side-foot">
       <button id="box-mode" type="button" title="key b: then drag on the photo">Box</button>
@@ -676,8 +724,9 @@ tbody tr.cat-only { background: var(--panel-2); }
     <div class="side-note">Add, Cmd+Enter, or Ctrl+Enter adds the text as a new comment. A
       text that is not added yet is added when you go to another photo or close the view.
       The keys do not act while the cursor is in the field. Press Esc once to leave the
-      field, and Esc again to close the view. The box is optional: draw it around the main
-      item of a scene with several items.</div>
+      field, and Esc again to close the view. A tag belongs to the image: each copy of the
+      image, in each wine row and in each set, shows it. Enter or Add adds a tag. The box
+      is optional: draw it around the main item of a scene with several items.</div>
   </aside>
   <div class="hint"><span id="lb-pos"></span>
     &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
@@ -733,6 +782,8 @@ let SET = "";         // the name of the set on the page
 let SETS = [];        // [{name, photos, labelled, edited_at}]
 let ROWS = [];        // the rows of the set, as `GET /api/testset` sends them
 let V = {};           // slug -> file -> the label entry of the photo, with `comments`
+let TAGS = {};        // sha256 -> the tags of the image (plan 66)
+let TAG_NAMES = [];   // [{tag, images}]: each tag of the database, for the suggestions
 let GROUPS = {};      // group id -> { id, slugs }
 let VIEW = [];        // the rows as the table shows them now: filtered and sorted
 let LB = null;        // the place of the large view: { wine: index in VIEW, photo: index }
@@ -770,9 +821,20 @@ const GLYPH = { positive: "V", negative: "N", unusable: "×", variant: "D" };
 
 function entryOf(slug, file) { return (V[slug] && V[slug][file]) || {}; }
 /* The entry of a photo of a server answer. The page keeps the comments of the photo in
-   the entry, as the JSON field `comments` of the export does (plan 51). */
+   the entry, as the JSON field `comments` of the export does (plan 51). Each answer
+   holds the tags of the image of the photo too; they go into TAGS (plan 66). */
 function entryWithComments(photo) {
+  if (photo.sha256 && Array.isArray(photo.tags)) {
+    if (photo.tags.length) TAGS[photo.sha256] = photo.tags;
+    else delete TAGS[photo.sha256];
+  }
   return { ...(photo.entry || {}), comments: photo.comments || [] };
+}
+/* The tags of the image of one photo object of ROWS. */
+function photoTags(p) { return (p && TAGS[p.sha256]) || []; }
+function photoOf(slug, file) {
+  const r = ROWS.find(x => x.slug === slug);
+  return (r && r.photos.find(x => x.file === file)) || null;
 }
 function labelOf(slug, file) { return entryOf(slug, file).label || null; }
 function movedTo(slug, file) { return entryOf(slug, file).reassign_to || null; }
@@ -793,7 +855,7 @@ function grpOf(r) { return (r.group && GROUPS[r.group]) || null; }
 
 function tally(row) {
   const t = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0, noted: 0,
-              prop: 0, del: 0, box: 0, total: row.photos.length };
+              prop: 0, del: 0, box: 0, tagged: 0, total: row.photos.length };
   for (const p of row.photos) {
     const l = labelOf(row.slug, p.file);
     if (l in SHORT) t[l]++;
@@ -802,6 +864,7 @@ function tally(row) {
     if (proposalOf(row.slug, p.file)) t.prop++;
     if (deleteMarked(row.slug, p.file)) t.del++;
     if (boxOf(row.slug, p.file)) t.box++;
+    if (photoTags(p).length) t.tagged++;
   }
   t.labelled = t.positive + t.negative + t.unusable + t.variant;
   return t;
@@ -824,7 +887,8 @@ function rowTags(t) {
          (t.noted ? `<span class="tag grp">${t.noted} noted</span> ` : "") +
          (t.prop ? `<span class="tag var">${t.prop} proposed</span> ` : "") +
          (t.del ? `<span class="tag exc">${t.del} to delete</span> ` : "") +
-         (t.box ? `<span class="tag grp">${t.box} box</span>` : "");
+         (t.box ? `<span class="tag grp">${t.box} box</span> ` : "") +
+         (t.tagged ? `<span class="tag grp tagged-n">${t.tagged} tagged</span>` : "");
 }
 
 function stateBadge(r) {
@@ -870,6 +934,7 @@ function matchAxis(row, t, mode) {
     case "proposal": return t.prop > 0;
     case "deleted": return t.del > 0;
     case "boxed": return t.box > 0;
+    case "tagged": return t.tagged > 0;
     default: return true;
   }
 }
@@ -997,7 +1062,7 @@ function cardHtml(r, p) {
   const l = labelOf(r.slug, p.file), mv = movedTo(r.slug, p.file);
   const notes = commentsOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
   const dl = deleteMarked(r.slug, p.file), bx = boxOf(r.slug, p.file);
-  const from = entryOf(r.slug, p.file).moved_from;
+  const from = entryOf(r.slug, p.file).moved_from, tg = photoTags(p);
   return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${pr ? "prop" : ""} ${
                  dl ? "del" : ""} ${isDrawerRow(r) ? "held-card" : ""}" draggable="true"
                data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
@@ -1007,6 +1072,8 @@ function cardHtml(r, p) {
       esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
     ${noteBadge(notes)}
     ${bx ? `<span class="box-tag" title="box of the main object: ${bx.join(", ")}">box</span>` : ""}
+    ${tg.length ? `<span class="tags-tag" title="tags of the image: ${esc(tg.join(", "))}">${
+      esc(tg.join(" · "))}</span>` : ""}
     <img loading="lazy" draggable="false" src="${esc(p.url)}" alt="" data-full="1">
     ${isSpecialRow(r) && from ? `<div class="from" title="the place of the photo before the move">from ${
       esc(placeName(from))}</div>` : ""}
@@ -1161,6 +1228,8 @@ function render() {
   const nullRow = ROWS.find(isNullRow) || null, drawerRow = ROWS.find(isDrawerRow) || null;
   let rows = ROWS.filter(r => !isSpecialRow(r) && matchFilter(r, filts));
   if (terms.length) rows = rows.filter(r => matchQuery(r, terms));
+  const tagWant = $("#tag").value;
+  if (tagWant) rows = rows.filter(r => r.photos.some(p => photoTags(p).includes(tagWant)));
   if (GROUP_FILTER) rows = rows.filter(r => r.group === GROUP_FILTER);
   rows = sortRows(rows, mode);
   let heads = null;
@@ -1181,7 +1250,8 @@ function render() {
   for (const r of rows) {
     if (r.group && !gclass.has(r.group)) gclass.set(r.group, (gi++ % 2) ? "grp-b" : "grp-a");
   }
-  const more = ["#marks", "#cluster"].filter(id => $(id).value !== "all").length;
+  const more = ["#marks", "#cluster"].filter(id => $(id).value !== "all").length
+    + ($("#tag").value ? 1 : 0);
   $("#more-n").textContent = more ? "· " + more : "";
   $("#rows").innerHTML = rows.map(r => (heads && heads.has(r)
     ? clusterHeadHtml(heads.get(r), source) : "") + rowHtml(r, gclass)).join("");
@@ -1316,6 +1386,7 @@ function takePhoto(slug, photo) {
       fillFig("#lb-cand", candItem(lr, LB.photo));
       drawBox();
       renderPhotoComments();
+      renderPhotoTags();
     }
   }
 }
@@ -1413,6 +1484,7 @@ function showLightbox(wi, pi) {
     : `wine ${wi - special + 1} of ${VIEW.length - special} — ${r.slug} · `;
   setHash(r.photos.length ? `${r.slug}/${r.photos[pi].file}` : r.slug);
   loadComment(r, pi);
+  loadTags();
   $("#lb").classList.add("open");
   const tr = rowOf(r.slug);
   if (tr) tr.scrollIntoView({ block: "center" });
@@ -2097,6 +2169,105 @@ window.addEventListener("beforeunload", () => {
     body: JSON.stringify({ set: SET, place: CMT_AT.slug, file: CMT_AT.file, text }) });
 });
 
+/* ---- the tags of the image of a photo (plan 66) ----
+   A tag belongs to the image bytes (`image_tag`), so a write changes each photo of the
+   same bytes: the page draws each of their cards again. The input suggests each tag of
+   the database that the image does not have. A text that is not added yet is dropped
+   when the view goes to another photo. */
+const TAG_BUSY = new Set();   // sha256 of an image with a tag write that runs
+
+function tagState(text, cls) {
+  const el = $("#tag-state");
+  el.textContent = text;
+  el.className = cls || "";
+}
+
+/* The options of the select `Tag`: each tag of the photos of the set, with its number of
+   photos. `keep` keeps a chosen tag that no photo shows any more, so the table does not
+   change under the pointer after a remove; a load of a set drops it. */
+function renderTagOptions(keep) {
+  const n = new Map();
+  for (const r of ROWS) for (const p of r.photos) for (const tag of photoTags(p)) {
+    n.set(tag, (n.get(tag) || 0) + 1);
+  }
+  const want = $("#tag").value;
+  if (want && keep && !n.has(want)) n.set(want, 0);
+  $("#tag").innerHTML = `<option value="">any</option>` + [...n.keys()].sort().map(tag =>
+    `<option value="${esc(tag)}">${esc(tag)} (${n.get(tag)})</option>`).join("");
+  $("#tag").value = n.has(want) ? want : "";
+}
+
+function renderPhotoTags() {
+  const at = lbPhoto(), p = at && photoOf(at.slug, at.file), list = photoTags(p);
+  const busy = !!(p && TAG_BUSY.has(p.sha256));
+  $("#tag-n").textContent = p ? String(list.length) : "";
+  $("#tag-list").innerHTML = list.length ? list.map(tag => `<span class="tag-chip">${
+      esc(tag)}<button type="button" data-tag-remove="${esc(tag)}" aria-label="Remove the tag ${
+      esc(tag)}" title="Remove the tag from this image" ${busy ? "disabled" : ""}>×</button></span>`)
+      .join("")
+    : (p ? `<span class="comment-empty">no tag</span>` : "");
+  $("#tag-in").disabled = $("#tag-add").disabled = !p || busy;
+  $("#tag-names").innerHTML = TAG_NAMES.filter(n => !list.includes(n.tag))
+    .map(n => `<option value="${esc(n.tag)}"></option>`).join("");
+}
+
+function loadTags() {
+  $("#tag-in").value = "";
+  tagState("", "");
+  renderPhotoTags();
+}
+
+/* Keep the answer of a tag write: the tags of the image, and draw its cards again. */
+function takeTags(sha, tags) {
+  if (tags.length) TAGS[sha] = tags;
+  else delete TAGS[sha];
+  for (const r of ROWS) {
+    for (const p of r.photos) if (p.sha256 === sha) refreshCard(r.slug, p.file);
+  }
+  renderTagOptions(true);
+}
+
+async function tagWrite(route, tag, done) {
+  const at = lbPhoto(), p = at && photoOf(at.slug, at.file), set = SET;
+  if (!p || !tag || TAG_BUSY.has(p.sha256)) return;
+  const sha = p.sha256;
+  TAG_BUSY.add(sha);
+  tagState(done === "added" ? "adding..." : "removing...", "");
+  renderPhotoTags();
+  try {
+    const out = await post(route, { place: at.slug, file: at.file, tag });
+    if (SET !== set) return;
+    TAG_NAMES = out.tag_names || TAG_NAMES;
+    takeTags(out.sha256, out.tags || []);
+    if (sameAt(at, lbPhoto())) {
+      if (done === "added") $("#tag-in").value = "";
+      tagState(done + " " + (out.added || out.removed), "saved");
+    }
+  } catch (e) {
+    if (sameAt(at, lbPhoto())) tagState("not saved: " + e.message, "failed");
+    else alert("the tag is not saved: " + e.message + "\n\n" + tag);
+  } finally {
+    TAG_BUSY.delete(sha);
+    renderPhotoTags();
+  }
+}
+
+$("#tag-in").addEventListener("input", () => tagState("", ""));
+$("#tag-in").addEventListener("keydown", ev => {
+  if (ev.key === "Enter") {
+    ev.preventDefault();
+    tagWrite("/api/testset-photo-tag", $("#tag-in").value.trim(), "added");
+  }
+});
+$("#tag-add").addEventListener("click", () => {
+  tagWrite("/api/testset-photo-tag", $("#tag-in").value.trim(), "added");
+  $("#tag-in").focus();
+});
+$("#tag-list").addEventListener("click", ev => {
+  const remove = ev.target.closest("[data-tag-remove]");
+  if (remove) tagWrite("/api/testset-photo-tag-remove", remove.dataset.tagRemove, "removed");
+});
+
 /* ---- the address ----
    The query string holds the set, the search, and the selects. The fragment holds the
    open photo: `#<slug>/<file name>`. A control at its default value is left out. */
@@ -2106,6 +2277,7 @@ const VIEW_PARAMS = [
   ["verdict", "#verdict", "all"],
   ["marks", "#marks", "all"],
   ["cluster", "#cluster", "all"],
+  ["tag", "#tag", ""],
   ["sort", "#sort", "slug"],
 ];
 
@@ -2158,6 +2330,7 @@ function openFromHash() {
   if (!VIEW.some(r => r.slug === slug)) {
     for (const id of FILTER_AXES) $(id).value = "all";
     $("#q").value = "";
+    $("#tag").value = "";
     GROUP_FILTER = "";
     render();
   }
@@ -2250,7 +2423,7 @@ document.addEventListener("keydown", ev => {
   }
 });
 
-for (const id of ["#sort", ...FILTER_AXES]) $(id).addEventListener("change", render);
+for (const id of ["#sort", "#tag", ...FILTER_AXES]) $(id).addEventListener("change", render);
 
 /* The row #more of `Additional settings`. Its open state is kept in localStorage. */
 const MORE_KEY = "svl.testset.more";
@@ -2287,10 +2460,13 @@ async function load(name, first) {
   }
   SET = data.set; SETS = data.sets || []; ROWS = data.rows || []; GROUPS = data.groups || {};
   V = {};
+  TAGS = {};
+  TAG_NAMES = data.tag_names || [];
   WC_DRAFT.clear();
   for (const r of ROWS) {
     for (const p of r.photos) (V[r.slug] = V[r.slug] || {})[p.file] = entryWithComments(p);
   }
+  renderTagOptions(false);
   $("#set").innerHTML = SETS.map(s => `<option value="${esc(s.name)}" ${
     s.name === SET ? "selected" : ""}>${esc(s.name)} (${s.photos} photos)</option>`).join("");
   $("#set").insertAdjacentHTML("beforeend", `<option value="${NEW_SET}">Add new testset …</option>`);
@@ -2303,6 +2479,11 @@ async function load(name, first) {
     const kept = !URL_VIEW && HEADER["#cluster"];
     if (typeof kept === "string" && [...$("#cluster").options].some(o => o.value === kept)) {
       $("#cluster").value = kept;
+    }
+    // The options of `Tag` come from the set, after the restore of the header too.
+    const keptTag = !URL_VIEW && HEADER["#tag"];
+    if (typeof keptTag === "string" && [...$("#tag").options].some(o => o.value === keptTag)) {
+      $("#tag").value = keptTag;
     }
     readViewFromUrl();
   }
@@ -2548,7 +2729,7 @@ $("#jobs").addEventListener("click", async ev => {
    `readViewFromUrl` runs later, so a value in the URL wins. A stored set that the server
    does not know gives the default set. The variant group filter is not stored. */
 const HEADER_KEY = "svl.testset.header";
-const HEADER_IDS = ["#q", "#sort", ...FILTER_AXES];
+const HEADER_IDS = ["#q", "#sort", "#tag", ...FILTER_AXES];
 function saveHeader() {
   const value = {set: SET};
   for (const id of HEADER_IDS) value[id] = $(id).value;

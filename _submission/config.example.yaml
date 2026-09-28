@@ -1,0 +1,17 @@
+# Safe local configuration for catalogue review after a clean clone.
+# It does not enable remote models or the image-description watcher.
+
+rootdir: .
+database_file: data/lab.sqlite3
+embedding_python: .venv/bin/python
+rebuild_embeddings_on_run: false
+
+sam3:
+  endpoint: http://127.0.0.1:18081/upstream/sam3
+
+embeddings: []
+pipeline: []
+vlm: []
+
+image_description:
+  watch: false

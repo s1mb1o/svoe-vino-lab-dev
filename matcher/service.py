@@ -26,7 +26,7 @@ class MockMatcher:
     answers: dict[str, str]
     unknown_slug: str = ""
     output_dir: str | None = None
-    token_env: str | None = None
+    token: str | None = None
 
     def predict(self, image: bytes) -> str:
         """Return the configured slug for one image body."""
@@ -50,13 +50,18 @@ class MockMatcher:
 
     def resolved_token(self, environ=None) -> str | None:
         """Read the optional bearer token without storing it in YAML."""
-        if self.token_env is None:
+        if self.token is None:
             return None
+        match = ENV_REFERENCE.fullmatch(self.token)
+        if match is None:
+            raise ConfigError(
+                "matcher.token MUST be an exact {env:NAME} reference")
         variables = os.environ if environ is None else environ
-        value = variables.get(self.token_env)
+        name = match.group(1)
+        value = variables.get(name)
         if not isinstance(value, str) or not value:
-            raise ConfigError("matcher.token_env environment variable %s MUST be set"
-                              % self.token_env)
+            raise ConfigError("matcher.token environment variable %s MUST be set"
+                              % name)
         return value
 
 
@@ -78,11 +83,12 @@ def _output_dir(value):
     return value
 
 
-def _token_env(value):
+def _token(value):
     if value is None:
         return None
-    if not isinstance(value, str) or ENV_NAME.fullmatch(value) is None:
-        raise ConfigError("matcher.token_env MUST be an environment variable name")
+    if not isinstance(value, str) or ENV_REFERENCE.fullmatch(value) is None:
+        raise ConfigError(
+            "matcher.token MUST be an exact {env:NAME} reference")
     return value
 
 
@@ -100,7 +106,9 @@ def load_matcher(config_path) -> MockMatcher:
     if not isinstance(selected, str) or not selected:
         raise ConfigError("matcher.pipeline MUST name one pipeline")
     output_dir = _output_dir(matcher.get("output_dir"))
-    token_env = _token_env(matcher.get("token_env"))
+    if "token_env" in matcher:
+        raise ConfigError("matcher.token_env was replaced by matcher.token")
+    token = _token(matcher.get("token"))
 
     entries = config.get("pipeline")
     if not isinstance(entries, list) or not entries:
@@ -140,5 +148,5 @@ def load_matcher(config_path) -> MockMatcher:
         answers=normalized,
         unknown_slug=unknown,
         output_dir=output_dir,
-        token_env=token_env,
+        token=token,
     )

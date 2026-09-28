@@ -1,6 +1,6 @@
-"""Compare vision models on the stage 4 task: is this photo the wine of this slug?
+"""Compare vision models on the pairwise task: is this photo the wine of this slug?
 
-The benchmark uses the production prompt of `04_verify.py` without a change.
+The benchmark uses the shared prompt of `pipeline/wine_identity_vlm.py` without a change.
 The ground truth is `review-labels.json`, the manual labels of the reviewer.
 The script writes one JSONL line for each call, so a stopped run keeps its results.
 
@@ -25,15 +25,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import data_url  # noqa: E402
-from importlib import import_module  # noqa: E402
 
 # The cache of the model calls is in `pipeline/`. Read docs/plans/25_model-call-cache.md.
 sys.path.append(str(Path(__file__).resolve().parent.parent / "pipeline"))
 import model_cache  # noqa: E402
+import wine_identity_vlm  # noqa: E402
 
-verify = import_module("04_verify")
-PROMPT = verify.PROMPT
-parse = verify.parse
+PROMPT = wine_identity_vlm.PROMPT
+parse = wine_identity_vlm.parse
 
 ROOT = Path(__file__).resolve().parent.parent
 ENDPOINT = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions"

@@ -67,8 +67,7 @@ atlas_bindings_file: svoe-wino-hackaton/dataset/derived/official-2026-09-17/atla
 # the catalogue photo, or from the patch when the wine has one. The border is
 # transparent on most photos, and white on a photo with no alpha channel.
 #
-# Every view of this tool shows the crop in place of the catalogue photo. The
-# stages `03_embed.py` and `08_variants.py` embed the crop as the reference.
+# Every view of this tool shows the crop in place of the catalogue photo.
 # A wine with no crop keeps its patch or its catalogue photo. A patch that
 # changed after its crop wins over the crop, until the crops are built again.
 # `svoe-vino-matcher/config.yaml` indexes the same directory as `dataset.image_dir`.
@@ -161,7 +160,7 @@ cluster_rules:
 #   photo_dir            the photos, one directory per wine slug
 #   trash_dir            a deleted photo is moved here, not unlinked
 #   label_file           the labels of the review tool
-#   variant_groups_file  the variant groups that `scripts/08_variants.py` writes
+#   variant_groups_file  the generated variant groups that the review tool reads
 #   manual_groups_file   the variant pairs that a reviewer joined by hand
 #   excluded_slugs_file  the slugs that are out of the benchmark
 #   runs_dir             one directory per match run
@@ -205,9 +204,9 @@ dataset:
     runs_dir: svoe-vino-testset/dataset/vlmrerank-8b-failed/runs
 
 # The VLM inferences. One entry: a name, a protocol, the thinking field, an endpoint, a
-# model, and a key. `pipeline/vlm_config.py` reads this key. A script names an entry by
-# its name, for example `scripts/04_verify.py --backends qwen3-vl-32b:12`, or the keys
-# `vlm` and `rules_vlm` of `cluster_rules`. `config.yaml` holds the same section.
+# model, and a key. `pipeline/vlm_config.py` reads this key. A client names an entry by
+# its name, or through the keys `vlm` and `rules_vlm` of `cluster_rules`.
+# `config.yaml` holds the same section.
 #
 # `protocol: openai` sends `POST <endpoint>/chat/completions`. `thinking_field` tells
 # where the thinking switch goes: `chat_template_kwargs` sends

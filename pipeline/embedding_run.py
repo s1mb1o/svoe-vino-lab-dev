@@ -56,6 +56,7 @@ import build_embeddings
 import derive
 import embeddings
 import labdb
+import main_scene
 import match_backends
 import rebuild_on_run
 
@@ -156,19 +157,26 @@ PACKAGE_RULES = {derive.SETTINGS_ALPHA: "alpha", derive.SETTINGS_WHITE: "white",
                  derive.SETTINGS_SEG: "sam3"}
 
 
-def cuts_of(image, targets, segmenter, trace=None):
+def cuts_of(image, targets, segmenter, trace=None, scene_selection=False):
     """Return target -> (the box, the processed image) of one opened photo. A target
     that SAM3 did not find is None. Raise `derive.Sam3Unavailable`. `trace` gets the
     steps `sam3-package` and `sam3-label` (plan 41)."""
     out = {}
     if "package" in targets:
         with _step(trace, "sam3-package") as step:
-            method, settings, processed, box = derive.derive_image(image, segmenter)
-            rule = PACKAGE_RULES.get(settings)
+            selection = None
+            if scene_selection:
+                method, settings, processed, box, selection = main_scene.cut(image, segmenter)
+                rule = "main-scene-v%d" % main_scene.VERSION
+            else:
+                method, settings, processed, box = derive.derive_image(image, segmenter)
+                rule = PACKAGE_RULES.get(settings)
             # A transparent photo gives its cut with no SAM3 call.
             step["cached"] = _cached(segmenter) if rule != "alpha" else None
             step["out"] = {"method": method, "rule": rule, "box": list(box),
                            "size": list(processed.size)}
+            if selection is not None:
+                step["out"]["selection"] = selection
         out["package"] = (box, processed)
     if "label" in targets:
         with _step(trace, "sam3-label") as step:
@@ -209,13 +217,14 @@ def view_input(image, steps, cuts):
     return embeddings.apply_steps(image, steps, box, lambda p=processed: p), None
 
 
-def query_inputs(image, views, segmenter):
+def query_inputs(image, views, segmenter, scene_selection=False):
     """Return (view -> the model input as an RGB image, view -> the reason of a view with
     no input) of one opened photo. `views` maps a view to its steps. SAM3 cuts the photo
     only for a view whose first step is `segment`. A view with no `segment`, for example
     of a pipeline with its own `views`, takes the photo as it is into its steps. Raise
     `derive.Sam3Unavailable` and `embeddings.ItemError`."""
-    cuts = cuts_of(image, cut_targets(views), segmenter)
+    cuts = cuts_of(image, cut_targets(views), segmenter,
+                   scene_selection=scene_selection)
     inputs, missing = {}, {}
     for view, steps in views.items():
         prepared, reason = view_input(image, steps, cuts)
@@ -399,7 +408,7 @@ class EmbeddingBackend:
     the steps of the test photo of that pipeline; None means the steps of the entry."""
 
     def __init__(self, embedding, catalogue, model, segmenter, top_k=DEFAULT_TOP_K,
-                 name=None, views=None):
+                 name=None, views=None, scene_selection=False):
         if top_k < 1:
             raise ValueError("top_k MUST be 1 or more")
         self.embedding = embedding
@@ -410,6 +419,7 @@ class EmbeddingBackend:
         self.top_k = top_k
         # A view of the photo ranks the catalogue vectors of the same view of the entry.
         self.views = views or embedding.views
+        self.scene_selection = scene_selection
         # The backend `local` holds one model in the memory of this machine, so it takes
         # one request at a time.
         self._lock = threading.Lock() if embedding.backend == "local" else None
@@ -421,8 +431,12 @@ class EmbeddingBackend:
             "model": embedding.model, "extra_body": embedding.extra_body,
             "views": self.views, "top_k": top_k, "workers": 1, "score": SCORE,
             "sam3": {"endpoint": getattr(segmenter, "endpoint", None),
-                     "package": derive.SETTINGS_SEG, "label": alternatives.SETTINGS_LABEL},
+                     "package": main_scene.SETTINGS if scene_selection else derive.SETTINGS_SEG,
+                     "package_texts": main_scene.TEXTS if scene_selection else derive.SAM3_TEXTS,
+                     "label": alternatives.SETTINGS_LABEL},
         }
+        if scene_selection:
+            self.spec["scene_selection"] = main_scene.VERSION
 
     def _embed(self, images):
         if self._lock is None:
@@ -447,7 +461,8 @@ class EmbeddingBackend:
                     raise embeddings.ItemError("Pillow cannot read the photo %s: %s"
                                                % (path, exc))
                 step["out"] = {"width": image.width, "height": image.height}
-            cuts = cuts_of(image, cut_targets(self.views), self.segmenter, trace)
+            cuts = cuts_of(image, cut_targets(self.views), self.segmenter, trace,
+                           self.scene_selection)
             sent, missing = {}, {}
             for view, steps in self.views.items():
                 with trace.step("view", view=view) as step:
@@ -504,7 +519,7 @@ def find_pipeline(name, config_path=embeddings.CONFIG_PATH):
 
 def build_backend(entry, db_path, top_k=DEFAULT_TOP_K,
                   make_model=build_embeddings.make_backend, segmenter=None, name=None,
-                  views=None):
+                  views=None, scene_selection=False):
     """Return the backend of one embedding entry, for `benchmark.run_benchmark`. Raise
     `embeddings.ConfigError`. `segmenter` is the SAM3 client; None means
     `derive.SAM3_ENDPOINT`. `name` is the name of the pipeline of the run; None means the
@@ -516,7 +531,8 @@ def build_backend(entry, db_path, top_k=DEFAULT_TOP_K,
     catalogue = Catalogue(entry, db_path)
     model = make_model(entry)
     return EmbeddingBackend(entry, catalogue, model,
-                            Sam3Once(segmenter or derive.Sam3Client()), top_k, name, views)
+                            Sam3Once(segmenter or derive.Sam3Client()), top_k, name, views,
+                            scene_selection)
 
 
 def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
@@ -537,12 +553,12 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
                                      "config.yaml does not hold"
                                      % (pipeline.name, pipeline.embedding))
     backend = build_backend(entry, settings.db_path, top_k, name=pipeline.name,
-                            views=getattr(pipeline, "views", None))
+                            views=getattr(pipeline, "views", None), scene_selection=True)
     backend.spec["workers"] = getattr(pipeline, "workers", 1)
     if getattr(pipeline, "rerank", None) is not None:
         import cluster_rerank  # noqa: E402  (plan 48, on demand)
-        backend = cluster_rerank.ClusterRerank(backend, pipeline.rerank, config_path,
-                                               settings.db_path)
+        backend = cluster_rerank.ClusterRerank(backend, pipeline.rerank, pipeline.embedding,
+                                               config_path, settings.db_path)
     if getattr(pipeline, "barcode", None) is not None:
         import barcode  # noqa: E402  (zxing-cpp, on demand)
         backend = barcode.CodeFirst(backend, pipeline.barcode, settings.db_path)
@@ -564,7 +580,8 @@ def model_inputs(spec, path, candidates=None):
     endpoint = (spec.get("sam3") or {}).get("endpoint") or derive.SAM3_ENDPOINT
     try:
         image, _ = derive.open_image(path)
-        inputs, missing = query_inputs(image, views, CachedSam3(endpoint))
+        inputs, missing = query_inputs(image, views, CachedSam3(endpoint),
+                                       bool(spec.get("scene_selection")))
     except (OSError, derive.Sam3Unavailable, embeddings.ItemError) as exc:
         return {"inputs": [], "notes": ["The model input cannot be made again: %s" % exc]}
     items = []

@@ -480,5 +480,106 @@ class CreateSetTest(unittest.TestCase):
         self.assertEqual([s["name"] for s in self.view()["sets"]], ["my"])
 
 
+class PhotoTagsTest(unittest.TestCase):
+    """Plan 66: a tag belongs to the image bytes, so each photo of the same bytes, in each
+    place and in each set, shows it."""
+
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.root = Path(self.directory.name)
+        self.db, self.schema = FX.make_database(self.root)
+        self.same, self.other = jpeg((40, 20)), jpeg((30, 30))
+        photos = {"wine-a/01.jpg": self.same, "wine-b/07.jpg": self.same,
+                  "wine-a/02.jpg": self.other}
+        IT.import_testset(self.db, "my", FX.write_set(self.root, photos, {}),
+                          lambda m: None, self.schema)
+        IT.import_testset(self.db, "two", FX.write_set(self.root, {"wine-c/01.jpg": self.same},
+                                                       {}, name="two"),
+                          lambda m: None, self.schema)
+
+    def tearDown(self):
+        self.directory.cleanup()
+
+    def view(self, set_name="my"):
+        with closing(sqlite3.connect(self.db)) as conn:
+            return TS.set_view(conn, set_name, lambda c: {})
+
+    def tags_of(self, set_name="my"):
+        return {(row["slug"], p["file"]): p["tags"] for row in self.view(set_name)["rows"]
+                for p in row["photos"]}
+
+    def write(self, function, *args, set_name="my"):
+        conn = sqlite3.connect(self.db)
+        conn.isolation_level = None
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            answer = function(conn, set_name, *args)
+            conn.execute("COMMIT")
+            return answer
+        except BaseException:
+            conn.execute("ROLLBACK")
+            raise
+        finally:
+            conn.close()
+
+    def refused(self, code, function, *args):
+        with self.assertRaises(TS.TestsetError) as caught:
+            self.write(function, *args)
+        self.assertEqual(caught.exception.code, code)
+
+    def test_a_tag_shows_on_each_photo_of_the_same_bytes(self):
+        answer = self.write(TS.add_photo_tag, "wine-a", "01.jpg", " Blurry ")
+        self.assertEqual((answer["added"], answer["tags"], answer["photo"]["tags"]),
+                         ("blurry", ["blurry"], ["blurry"]))
+        self.assertEqual(answer["sha256"], answer["photo"]["sha256"])
+        self.assertEqual(answer["tag_names"], [{"tag": "blurry", "images": 1}])
+        self.assertEqual(self.tags_of(), {("wine-a", "01.jpg"): ["blurry"],
+                                          ("wine-b", "07.jpg"): ["blurry"],
+                                          ("wine-a", "02.jpg"): []})
+        self.assertEqual(self.tags_of("two"), {("wine-c", "01.jpg"): ["blurry"]})
+        self.assertEqual(self.view()["tag_names"], [{"tag": "blurry", "images": 1}])
+        # The write marks the set of the request as edited; the entry keeps no `ts`.
+        self.assertTrue(self.view()["edited_at"])
+        self.assertIsNone(self.view("two")["edited_at"])
+        entries = {p["file"]: p["entry"] for row in self.view()["rows"] for p in row["photos"]}
+        self.assertEqual(entries["01.jpg"], {})
+
+    def test_a_tag_of_the_image_is_one_tag_in_each_place(self):
+        self.write(TS.add_photo_tag, "wine-a", "01.jpg", "blurry")
+        self.refused(409, TS.add_photo_tag, "wine-b", "07.jpg", "BLURRY")
+        answer = self.write(TS.add_photo_tag, "wine-b", "07.jpg", "back_label")
+        self.assertEqual(answer["tags"], ["blurry", "back_label"])
+        answer = self.write(TS.remove_photo_tag, "wine-b", "07.jpg", "Blurry")
+        self.assertEqual((answer["removed"], answer["tags"]), ("blurry", ["back_label"]))
+        self.assertEqual(self.tags_of("two"), {("wine-c", "01.jpg"): ["back_label"]})
+
+    def test_tag_errors(self):
+        for tag in ("", None, "two words", "x" * 65):
+            with self.subTest(tag=tag):
+                self.refused(400, TS.add_photo_tag, "wine-a", "01.jpg", tag)
+                self.refused(400, TS.remove_photo_tag, "wine-a", "01.jpg", tag)
+        self.refused(404, TS.add_photo_tag, "wine-a", "99.jpg", "blurry")
+        self.refused(404, TS.remove_photo_tag, "wine-a", "01.jpg", "blurry")
+        self.refused(400, TS.add_photo_tag, "", "01.jpg", "blurry")
+        with self.assertRaises(TS.TestsetError) as caught:
+            self.write(TS.add_photo_tag, "wine-a", "01.jpg", "blurry", set_name="none")
+        self.assertEqual(caught.exception.code, 404)
+        self.assertEqual(self.view()["tag_names"], [])
+        self.assertIsNone(self.view()["edited_at"])
+
+    def test_the_other_writes_send_the_tags_of_the_photo(self):
+        self.write(TS.add_photo_tag, "wine-a", "01.jpg", "blurry")
+        self.assertEqual(self.write(TS.set_label, "wine-a", "01.jpg", "positive")
+                         ["photo"]["tags"], ["blurry"])
+        self.assertEqual(self.write(TS.move_photo, "wine-a", "01.jpg", TS.DRAWER_SLUG)
+                         ["photo"]["tags"], ["blurry"])
+        self.assertEqual(self.write(TS.upload_photo, "wine-c", self.same, "x.jpg")
+                         ["photo"]["tags"], ["blurry"])
+        self.assertEqual(self.write(TS.upload_photo, "wine-c", jpeg((8, 8)), "y.jpg")
+                         ["photo"]["tags"], [])
+        self.assertEqual(self.tags_of()[(TS.DRAWER_SLUG, "01.jpg")], ["blurry"])
+
+
 if __name__ == "__main__":
     unittest.main()

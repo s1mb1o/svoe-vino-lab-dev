@@ -272,6 +272,42 @@ class ImportTestsetTest(unittest.TestCase):
         with self.assertRaisesRegex(IT.TestsetError, "wine-a/01.jpg is not a JSON object"):
             self.run_import(set_dir)
 
+    def test_import_adds_the_tags_of_an_entry_to_the_image(self):
+        # Plan 66: wine-b/02.jpg holds the bytes of wine-a/01.jpg, so both show the tags.
+        labels = {"wine-a": {"01.jpg": {"label": "positive", "tags": ["Blurry", "back"]}},
+                  "wine-b": {"02.jpg": {"tags": ["blurry", "glare"]}}}
+        report = self.run_import(FX.write_set(self.root, PHOTOS, labels))
+        # `blurry` of the two entries is one tag of one image.
+        self.assertEqual((report.image_tags, report.image_tags_present), (3, 0))
+        self.assertEqual(self.query("SELECT sha256, tag FROM image_tag ORDER BY rowid"),
+                         [(sha(b"photo a1"), "blurry"), (sha(b"photo a1"), "back"),
+                          (sha(b"photo a1"), "glare")])
+        # The field leaves the entry: it goes into no column and not into `extra`.
+        self.assertEqual(self.query("SELECT label, extra, ts FROM test_photo WHERE "
+                                    "place = 'wine-b' AND file_name = '02.jpg'"),
+                         [(None, None, None)])
+        self.assertEqual(self.photos()[("wine-a", "01.jpg")][1], "positive")
+        # A second import adds no row, and an import with no tags removes no tag.
+        report = self.run_import(FX.write_set(self.root, PHOTOS, labels, name="again"),
+                                 "two")
+        self.assertEqual((report.image_tags, report.image_tags_present), (0, 3))
+        self.run_import(FX.write_set(self.root, PHOTOS, {}, name="bare"), "three")
+        self.assertEqual(self.query("SELECT count(*) FROM image_tag"), [(3,)])
+
+    def test_a_bad_tags_value_stops_the_import_and_writes_nothing(self):
+        for value, message in (("blurry", "is not a list"), (["two words"], "white space"),
+                               ([""], "empty"), ([7], "empty")):
+            with self.subTest(value=value):
+                set_dir = FX.write_set(self.root, PHOTOS,
+                                       {"wine-a": {"01.jpg": {"tags": value}}},
+                                       name="bad-%s" % len(str(value)))
+                with self.assertRaisesRegex(IT.TestsetError,
+                                            "the field tags of the entry wine-a/01.jpg.*"
+                                            + message):
+                    self.run_import(set_dir)
+        self.assertEqual(self.query("SELECT count(*) FROM test_photo"), [(0,)])
+        self.assertEqual(self.query("SELECT count(*) FROM image_tag"), [(0,)])
+
 
 if __name__ == "__main__":
     unittest.main()

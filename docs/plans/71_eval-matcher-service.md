@@ -52,21 +52,25 @@ compatible with the official evaluation harness.
 14. The service MUST reject a missing or empty referenced environment variable.
 15. A configuration without `matcher.output_dir` MUST keep the legacy
     `SVOE_VINO_MATCHER_OUTPUT_DIR` fallback.
-16. `matcher.token_env` MAY name one environment variable that holds a Bearer token.
+16. `matcher.token` MAY hold one exact `"{env:NAME}"` reference to an environment
+    variable that holds a Bearer token.
 17. A YAML file MUST NOT hold the token value.
-18. The service MUST fail at startup when the named token variable is missing or empty.
-19. `matcher/tests/config.yaml` MUST test the API without authentication.
-20. `matcher/tests/config.token.yaml` MUST test the API with authentication.
-21. Each test configuration MUST start with comments that state its purpose.
+18. The service MUST reject a bare variable name or a malformed environment reference.
+19. The service MUST fail at startup when the referenced token variable is missing or
+    empty.
+20. The service MUST reject the retired key `matcher.token_env`.
+21. `matcher/tests/config.yaml` MUST test the API without authentication.
+22. `matcher/tests/config.token.yaml` MUST test the API with authentication.
+23. Each test configuration MUST start with comments that state its purpose.
 
 ## Authentication
 
 1. `POST /v1/eval/predict` MUST require `Authorization: Bearer <token>` when
-   `matcher.token_env` is configured.
+   `matcher.token` is configured.
 2. The token comparison MUST use a constant-time comparison.
 3. A missing or invalid token MUST return HTTP 401 and `WWW-Authenticate: Bearer`.
 4. `GET /healthz`, `/docs`, `/redoc`, and `/openapi.json` MUST stay public.
-5. A configuration without `matcher.token_env` MUST keep predict public.
+5. A configuration without `matcher.token` MUST keep predict public.
 
 ## Request protection
 

@@ -271,10 +271,11 @@ class RerankFirstTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         fixture = CR.Fixture(self.tmp.name, rules)
-        options = cluster_rerank.check_options({"rules": "rules", "vlm": "fake-vlm"})
+        options = cluster_rerank.check_options({"vlm": "fake-vlm"})
         self.inner = FirstInner(answer)
-        backend = cluster_rerank.ClusterRerank(self.inner, options, fixture.config_path,
-                                               fixture.db_path, ask_fn=vlm)
+        backend = cluster_rerank.ClusterRerank(self.inner, options, "rules",
+                                               fixture.config_path, fixture.db_path,
+                                               ask_fn=vlm)
         backend.picture = lambda path: (b"png", "label")
         return backend
 

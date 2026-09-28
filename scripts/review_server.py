@@ -897,8 +897,7 @@ def picture_path(slug, catalog, kind="package"):
 
 MANUAL_GROUPS_NOTE = (
     "Pairs of wine slugs that a reviewer joined by hand in the review tool. "
-    "`scripts/08_variants.py` never writes this file, so a new run of that script "
-    "keeps these pairs. `load_variants()` reads this file together with the "
+    "`load_variants()` reads this file together with the "
     "generated groups of `variant-groups.json` and joins the two sets. A pair "
     "adds its two slugs to one group."
 )
@@ -946,11 +945,10 @@ def save_manual_pairs(pairs):
 def load_variants():
     """Return slug -> group id, and group id -> the record of the group.
 
-    Two sources join here. `scripts/08_variants.py` writes the groups of
-    `variant-groups.json`. The review tool writes the pairs of
-    `manual-groups.json`. A group is a connected component over both sources, so
-    a manual pair that names a slug of a generated group adds the other slug to
-    that group.
+    Two sources join here. `variant-groups.json` holds generated groups. The review
+    tool writes the pairs of `manual-groups.json`. A group is a connected component
+    over both sources. A manual pair that names a slug of a generated group adds the
+    other slug to that group.
 
     A component that holds a generated group keeps the id of that group. A
     component built from manual pairs alone gets an id `m<NNN>`, numbered by the
@@ -1347,10 +1345,10 @@ def save_state():
             "slug matches NO card of the catalogue. The place is the statement, "
             "so such a photo needs no label; 'positive' confirms it and "
             "'unusable' takes the photo out of the set. "
-            "Field 'reassign_to' names the slug that the photo belongs to; "
-            "scripts/09_apply_moves.py moves the file. "
-            "Field 'copy_to' names a slug that the photo ALSO belongs to; the same "
-            "script copies the file and leaves the source photo where it is. "
+            "Field 'reassign_to' names the slug that the photo belongs to; the "
+            "review tool Apply action moves the file. "
+            "Field 'copy_to' names a slug that the photo ALSO belongs to; the Apply "
+            "action copies the file and leaves the source photo where it is. "
             "The copy carries no label and one comment that names the source slug. "
             "Field 'comment' holds a free text note of the reviewer about this "
             "photo and this slug. The map 'wines' holds one free text note about a "
@@ -2698,9 +2696,8 @@ def check_shared_positive(rows, labels, groups, catalog):
 # the text of the label is then too small for the text step and for the OCR step of
 # the pipeline.
 #
-# The downloader already refuses a picture with a side under `MIN_SIDE` (200), see
-# `scripts/02_download.py`. A smaller picture in the set came in before that rule or
-# by hand, so the set MUST be checked as well.
+# The legacy downloader refused a picture with a side under 200 pixels. A smaller
+# picture in the set came in before that rule or by hand, so the set MUST be checked.
 MODEL_INPUT_PX = 448
 TOO_SMALL_PX = 256
 
@@ -4629,7 +4626,7 @@ class Handler(BaseHTTPRequestHandler):
     def _apply_reassign(self, slug, fn, to):
         """Record that the photo belongs to another slug. The file is not moved.
 
-        `scripts/09_apply_moves.py` moves the files later, on one command.
+        `POST /api/apply-moves` moves the files later.
         """
         # The NULL wine is a target although the catalogue does not hold it and
         # its directory may not be made yet.
@@ -4644,8 +4641,7 @@ class Handler(BaseHTTPRequestHandler):
         """Record that the photo is a photo of another slug too.
 
         The source photo stays where it is, with its label and its comment. The
-        file is not copied here. `POST /api/apply-moves` and
-        `scripts/09_apply_moves.py` copy it later, on one command.
+        file is not copied here. `POST /api/apply-moves` copies it later.
         """
         # A copy states that the photo shows a SECOND wine. NULL is not a wine,
         # so a copy to NULL states nothing. A photo that shows no card of the
@@ -8002,10 +7998,10 @@ $("#vd").addEventListener("click", ev => { if (ev.target.id === "vd") closeValid
 /* ---- the variant group of a whole wine ----
 
    The server keeps the hand-made pairs in `manual-groups.json` and joins them
-   with the groups that `scripts/08_variants.py` generates. A wine that is in no
-   group joins the group of the wine that the reviewer names. Two wines that are
-   each already in a group are refused by the server, and the reason is stated in
-   the dialog. */
+   with the generated groups in `variant-groups.json`. A wine that is in no group
+   joins the group of the wine that the reviewer names. Two wines that are each
+   already in a group are refused by the server, and the reason is stated in the
+   dialog. */
 let GP_AT = null;                       // the slug that the dialog acts on
 
 /* Show only the wines of one variant group, or every wine again. The search and

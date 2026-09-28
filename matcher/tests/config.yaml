@@ -1,6 +1,6 @@
 # This config is only for matcher API tests and the local mock demonstration.
 # It is not the future real matcher/config.yaml.
-# It intentionally has no token_env. The official client can call this API without
+# It intentionally has no token. The official client can call this API without
 # an Authorization header. Authentication tests use config.token.yaml instead.
 matcher:
   # Select one entry of pipeline by name. Restart the matcher after a change.

@@ -224,6 +224,51 @@ pipeline, sends no SAM3 request. `siglip2-p256-as-is` sends no SAM3 request at a
 `local` runs with `~/.venvs/svoe-vino-lab/bin/python`. A run of the set `my` from this Mac
 needs `caffeinate -ims -w <pid>`. Read `docs/plans/33_embedding-run.md`.
 
+Make the self-test of one embedding: each dataset image is a query in the view `full` of
+the index, and its truth is its own wine. The button `Selftest` of `/embedding` starts the
+same work as a job. First a probe of 20 images, then all images:
+```bash
+python3 pipeline/selftest.py --embedding gx10-siglip2-so400m-patch16-512 --limit 20 \
+    --label smoke
+python3 pipeline/selftest.py --embedding gx10-siglip2-so400m-patch16-512
+```
+The run is in `runs/<stamp>-lab-selftest-<embedding>-dataset[-<label>]/`. The Runs page
+shows it under the filter `Testset` = `dataset`. The default is 4 workers. Read
+`docs/plans/67_embedding-selftest.md`.
+
+## Matcher bundle
+
+The builder reads `config.yaml`, `data/lab.sqlite3`, and the selected embedding index.
+The output path MUST not exist. This command writes a new bundle. It calls no external
+service:
+```bash
+python3 scripts/build_matcher_bundle.py \
+    --embedding gx10-dinov3-vitb16 \
+    --out work/matcher-bundles/gx10-dinov3-vitb16
+```
+
+Copy the prepared images into the bundle when the matcher needs them:
+```bash
+python3 scripts/build_matcher_bundle.py \
+    --embedding gx10-dinov3-vitb16 \
+    --out work/matcher-bundles/gx10-dinov3-vitb16-with-images \
+    --include-images
+```
+
+Validate an existing bundle. This command is read-only and does not need the lab
+database or source embedding index:
+```bash
+python3 scripts/validate_matcher_bundle.py \
+    work/matcher-bundles/gx10-dinov3-vitb16
+```
+
+Run the local unit tests. They use temporary data and do not call an external service:
+```bash
+python3 -m unittest discover -s tests -p 'test_matcher_bundle.py'
+```
+
+Read `docs/testing/matcher-bundle.md` for the bundle contents and failure checks.
+
 # Кэш вызовов моделей
 
 The SAM3, Grounding DINO, and VLM calls keep their answers in `data/cache/<model>/`.

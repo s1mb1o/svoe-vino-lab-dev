@@ -16,6 +16,12 @@ rows of `wine_comment` (`comments.py`); they belong to no set. The owner chose t
 2026-09-26T18:08:34+0300 (plan 51). The exclusion of a slug went away with the same
 answer.
 
+The tags of a photo are the tags of its image: the rows of `image_tag`
+(`image_tags.py`, plan 66). The key is the SHA-256, so each photo of each set that holds
+the same bytes shows the same tags. The owner chose this on 2026-09-27T23:53:00+0300. A tag
+write sets `test_set.edited_at` of the set of the request; `ts` of the entry does not
+change.
+
 A function that writes runs in the transaction of the caller. It sets `ts` of the entry
 and `test_set.edited_at`. The other fields of the entry do not change, as `_entry` of
 `scripts/review_server.py` does. When no field of the entry is left, `ts` becomes NULL,
@@ -48,6 +54,7 @@ import time
 from PIL import Image
 
 import comments
+import image_tags
 import imagestore
 
 LABELS = ("positive", "negative", "unusable", "variant")
@@ -352,14 +359,19 @@ def photo_rows(conn, set_name, place=None, file_name=None):
     return [dict(zip(keys, row)) for row in conn.execute(sql, args)]
 
 
-def photo_view(row, notes=()):
-    """Return one photo for the page: its file, its image, its JSON entry, and its
-    comments (`notes`, the list of `photo_comments`)."""
+def photo_view(row, notes=(), tags=()):
+    """Return one photo for the page: its file, its image, its JSON entry, its comments
+    (`notes`, the list of `photo_comments`), and the tags of its image (`tags`)."""
     return {"file": row["file_name"], "sha256": row["sha256"],
             "url": "/images/%s/%s.%s" % (row["folder"], row["sha256"], row["extension"]),
             "width": row["width"], "height": row["height"],
             "conf": photo_conf(row["file_name"]), "entry": entry_of(row),
-            "comments": list(notes)}
+            "comments": list(notes), "tags": list(tags)}
+
+
+def image_tags_of(conn, digest):
+    """Return the list of the tags of one image."""
+    return image_tags.tags(conn, (digest,)).get(digest, [])
 
 
 def counts(conn, set_name):
@@ -442,6 +454,8 @@ def set_view(conn, set_name, card_images):
     ("No Match") stands first, the Drawer row second (plan 36). The other rows are in
     slug order; the page sorts them. `comments` of a row are the comments of the wine
     (`wine_comment`, plan 51); a row that `wine_catalog` does not hold has none.
+    `tags` of a photo are the tags of its image, and `tag_names` lists each tag of
+    `image_tag` with its number of images (plan 66).
     """
     names = set_names(conn)
     if set_name is None:
@@ -455,11 +469,13 @@ def set_view(conn, set_name, card_images):
         "SELECT wine_slug, name, producer, category, color, region, grapes, state "
         "FROM wine_catalog")}
     notes = photo_comments(conn, set_name)
+    photos = photo_rows(conn, set_name)
+    tag_map = image_tags.tags(conn, {row["sha256"] for row in photos})
     by_place = {}
-    for row in sorted(photo_rows(conn, set_name),
-                      key=lambda r: (r["place"], photo_rank(r["file_name"]))):
+    for row in sorted(photos, key=lambda r: (r["place"], photo_rank(r["file_name"]))):
         by_place.setdefault(row["place"], []).append(
-            photo_view(row, notes.get((row["place"], row["file_name"]), ())))
+            photo_view(row, notes.get((row["place"], row["file_name"]), ()),
+                       tag_map.get(row["sha256"], ())))
     cards = card_images(conn)
     wine_notes = comments.comments(conn)
     variant = groups(conn, set_name)
@@ -478,7 +494,8 @@ def set_view(conn, set_name, card_images):
         "SELECT edited_at, source_dir FROM test_set WHERE set_name = ?", (set_name,)).fetchone()
     return {"sets": _sets(conn), "set": set_name, "edited_at": edited_at,
             "source_dir": source_dir, "rows": rows, "counts": counts(conn, set_name),
-            "groups": variant, "labels": list(LABELS), "null_labels": list(NULL_LABELS)}
+            "groups": variant, "labels": list(LABELS), "null_labels": list(NULL_LABELS),
+            "tag_names": image_tags.names(conn)}
 
 
 def _check_set(conn, set_name):
@@ -520,12 +537,13 @@ def _write_photo(conn, set_name, place, file_name, keys, change):
 
 
 def _photo_answer(conn, set_name, place, file_name, row, **fields):
-    """Return the answer of a write to one photo: the photo with its comments, and the
-    counts of the set."""
+    """Return the answer of a write to one photo: the photo with its comments and its
+    tags, and the counts of the set."""
     notes = photo_comments(conn, set_name, place, file_name).get((place, file_name), ())
     answer = {"ok": True, "set": set_name, "place": place, "file": file_name}
     answer.update(fields)
-    answer.update(photo=photo_view(row, notes), counts=counts(conn, set_name))
+    answer.update(photo=photo_view(row, notes, image_tags_of(conn, row["sha256"])),
+                  counts=counts(conn, set_name))
     return answer
 
 
@@ -597,6 +615,41 @@ def remove_photo_comment(conn, set_name, place, file_name, comment_id):
                            % (place, file_name, comment_id))
     _edited(conn, set_name, now_local())
     return _photo_answer(conn, set_name, place, file_name, row, removed=comment_id)
+
+
+def _tag_answer(conn, set_name, place, file_name, row, **fields):
+    """Return the answer of a tag write: the photo, the SHA-256 and the tags of its
+    image, and `tag_names`. The page draws again each photo of the image."""
+    _edited(conn, set_name, now_local())
+    return _photo_answer(conn, set_name, place, file_name, row, sha256=row["sha256"],
+                         tags=image_tags_of(conn, row["sha256"]),
+                         tag_names=image_tags.names(conn), **fields)
+
+
+def add_photo_tag(conn, set_name, place, file_name, tag):
+    """Add one tag to the image of one photo (plan 66). Each photo that holds the same
+    bytes gets the tag. A tag that the image has gives HTTP 409."""
+    row = _photo_row(conn, set_name, place, file_name)
+    try:
+        added = image_tags.add(conn, row["sha256"], tag)
+    except image_tags.TagError as exc:
+        raise TestsetError(400, str(exc))
+    except image_tags.DuplicateError as exc:
+        raise TestsetError(409, str(exc))
+    return _tag_answer(conn, set_name, place, file_name, row, added=added)
+
+
+def remove_photo_tag(conn, set_name, place, file_name, tag):
+    """Remove one tag of the image of one photo (plan 66). A tag that the image does not
+    have gives HTTP 404."""
+    row = _photo_row(conn, set_name, place, file_name)
+    try:
+        clean = image_tags.normal(tag)
+    except image_tags.TagError as exc:
+        raise TestsetError(400, str(exc))
+    if not image_tags.remove(conn, row["sha256"], clean):
+        raise TestsetError(404, "the image of %s/%s has no tag %s" % (place, file_name, clean))
+    return _tag_answer(conn, set_name, place, file_name, row, removed=clean)
 
 
 def set_box(conn, set_name, place, file_name, box):
@@ -681,7 +734,8 @@ def move_photo(conn, set_name, place, file_name, to):
     _edited(conn, set_name, now)
     notes = photo_comments(conn, set_name, to, name).get((to, name), ())
     return {"ok": True, "set": set_name, "from": place, "to": to, "file": file_name,
-            "photo": dict(photo_view(row, notes), place=to), "counts": counts(conn, set_name)}
+            "photo": dict(photo_view(row, notes, image_tags_of(conn, row["sha256"])), place=to),
+            "counts": counts(conn, set_name)}
 
 
 def _known_slug(conn, set_name, slug):
@@ -777,8 +831,10 @@ def upload_photo(conn, set_name, place, data, name):
                  "VALUES (?, ?, ?, ?)", (set_name, place, file_name, digest))
     _edited(conn, set_name, now_local())
     row = photo_rows(conn, set_name, place, file_name)[0]
+    # An image that the database holds already MAY have tags (plan 66).
     return {"ok": True, "set": set_name, "place": place, "file": file_name,
-            "photo": dict(photo_view(row), place=place), "counts": counts(conn, set_name)}
+            "photo": dict(photo_view(row, (), image_tags_of(conn, digest)), place=place),
+            "counts": counts(conn, set_name)}
 
 
 # A set that the page makes (plan 57). The name rule is the `CHECK` of

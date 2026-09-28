@@ -13,6 +13,10 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
                                   one photo; source user (the default) or script
     POST /api/testset-photo-comment-remove
                                   {set, place, file, id}: remove one comment of one photo
+    POST /api/testset-photo-tag   {set, place, file, tag}: a new tag of the image of one
+                                  photo; each photo of the same bytes shows it (plan 66)
+    POST /api/testset-photo-tag-remove
+                                  {set, place, file, tag}: remove one tag of the image
     POST /api/testset-box         {set, place, file, box}; box [l, t, r, b] or null
     POST /api/testset-move        {set, place, file, to}; to a slug, __null__ (the row
                                   "No Match"), or __drawer__ (the Drawer)
@@ -55,6 +59,9 @@ WRITES = {
                                    ("set", "place", "file", "text", "source")),
     "/api/testset-photo-comment-remove": (testsets.remove_photo_comment,
                                           ("set", "place", "file", "id")),
+    "/api/testset-photo-tag": (testsets.add_photo_tag, ("set", "place", "file", "tag")),
+    "/api/testset-photo-tag-remove": (testsets.remove_photo_tag,
+                                      ("set", "place", "file", "tag")),
     "/api/testset-box": (testsets.set_box, ("set", "place", "file", "box")),
     "/api/testset-move": (testsets.move_photo, ("set", "place", "file", "to")),
     # The fields of an upload come from the query; `data` is the body. Read `_upload_body`.

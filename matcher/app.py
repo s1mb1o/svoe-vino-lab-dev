@@ -133,7 +133,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         description=(
             "Upload one JPEG, PNG, or WEBP image in the multipart field `image`. "
             "The endpoint requires `Authorization: Bearer <token>` when "
-            "`matcher.token_env` is configured."
+            "`matcher.token` is configured."
         ),
         operation_id="predict_image",
         tags=["evaluation"],
@@ -313,7 +313,7 @@ def _configure_openapi(application):
         security_schemes["BearerAuth"] = {
             "type": "http",
             "scheme": "bearer",
-            "description": "Required only when matcher.token_env is configured.",
+            "description": "Required only when matcher.token is configured.",
         }
         schema["paths"]["/v1/eval/predict"]["post"]["security"] = [
             {},

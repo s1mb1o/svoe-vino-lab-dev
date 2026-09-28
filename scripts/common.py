@@ -229,10 +229,9 @@ def load_bottle_labels(label_dir):
 # the catalogue photo, or from the patch when the wine has one. The crop holds
 # the same pixels as that photo, without the transparent or white border.
 #
-# The review tool shows the crop in place of the catalogue photo. The stages
-# `03_embed.py` and `08_variants.py` embed the crop as the reference. A wine with
-# no crop keeps its patch or its catalogue photo. The mark `patched` does not
-# change: it still states that the picture comes from a patch.
+# The review tool shows the crop in place of the catalogue photo. A wine with no crop
+# keeps its patch or its catalogue photo. The mark `patched` does not change. It still
+# states that the picture comes from a patch.
 #
 # The pixel checks of the review tool compare a candidate photo with the
 # catalogue photo of the delivery, so they keep reading `local_path`.
@@ -334,11 +333,10 @@ def select_dataset(name=None):
     TRASH_DIR = path("trash_dir", os.path.join(ROOT, "work", "trash"))
     # Labels of the review tool.
     LABEL_FILE = path("label_file", os.path.join(ROOT, "review-labels.json"))
-    # Variant groups. `scripts/08_variants.py` writes this file.
+    # Generated variant groups that the review tool reads.
     VARIANT_GROUPS_FILE = path("variant_groups_file",
                                os.path.join(ROOT, "derived", "variant-groups.json"))
-    # Manual variant pairs. The review tool writes this file. `scripts/08_variants.py`
-    # never writes it, so a new run of that script keeps the hand-made pairs.
+    # Manual variant pairs that the review tool writes.
     MANUAL_GROUPS_FILE = path("manual_groups_file",
                               os.path.join(ROOT, "my", "manual-groups.json"))
     # Excluded slugs. The photos of an excluded slug MUST NOT be used for benchmarking.

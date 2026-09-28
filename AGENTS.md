@@ -88,3 +88,25 @@ breaks the migration of `data/lab.sqlite3`.
     file makes the running server answer HTTP 503 until the migration and the restart.
 28. Do not renumber, rename, or edit a file that is in `pipeline/schema/`. A change is a
     new file with the next number.
+
+## Developer commands
+
+The owner set these rules on 2026-09-28.
+
+29. Store common developer and component-test commands in [COMMANDS.md](COMMANDS.md) at
+    the project root. Do not put the command catalogue in `README.md`.
+30. Group the commands by component and purpose.
+31. Make each command executable from the project root.
+32. State required environment variables and prerequisites immediately before the
+    command.
+33. Separate read-only tests from commands that change data or call an external service.
+34. Use `docs/testing.md` or `docs/testing/<component>.md` for test concepts,
+    prerequisites, and troubleshooting that need detailed text.
+35. Prefer an executable target in `Makefile`, `justfile`, or `Taskfile.yml` when a
+    stable command is shared with CI or is used frequently.
+36. Put multi-step shell logic in `scripts/test_<component>.sh`. Keep `COMMANDS.md` as
+    the entry point for the script.
+37. Record historical test results in `ChangeLog.md`. Do not record them in
+    `COMMANDS.md`.
+38. If `COMMANDS.md` becomes too large, keep the common commands there and move the
+    detailed component instructions to `docs/testing/<component>.md`.

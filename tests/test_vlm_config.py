@@ -17,7 +17,7 @@ import vlm_config  # noqa: E402
 import common  # noqa: E402
 import cluster_rules  # noqa: E402
 
-VERIFY = import_module("04_verify")
+WINE_IDENTITY = import_module("wine_identity_vlm")
 
 GX10_CHAT = "http://192.168.86.14:18081/v1/chat/completions"
 NAMES = ["qwen3.5-9b-nvfp4", "qwen3.5-9b", "qwen3-vl-32b", "qwencloud-qwen3.8-max",
@@ -165,15 +165,15 @@ class ClusterRulesTest(unittest.TestCase):
                          (GX10_CHAT, "qwen3.5-9b", "llama.cpp", ""))
 
 
-class VerifyBackendsTest(unittest.TestCase):
+class WineIdentityBackendsTest(unittest.TestCase):
     def build(self, spec, env=None):
         """Build with `env` added to the shell; without `env`, the key of the Token Plan
         is not set. `patch.dict` restores the shell afterwards."""
         with mock.patch.dict(os.environ, env or {}), \
-                mock.patch.object(VERIFY, "log", lambda message: None):
+                mock.patch.object(WINE_IDENTITY, "log", lambda message: None):
             if env is None:
                 os.environ.pop("QWENCLOUD_TOKEN_PLAN_API_KEY", None)
-            return VERIFY.build_backends(spec, load("config.yaml"))
+            return WINE_IDENTITY.build_backends(spec, load("config.yaml"))
 
     def test_the_default_backend_is_the_old_local_backend(self):
         backend, = self.build("qwen3-vl-32b:12")

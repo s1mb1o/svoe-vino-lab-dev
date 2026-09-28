@@ -23,7 +23,6 @@ Mock pipeline узнаёт три тестовых изображения по S
 - Python 3.11 или новее.
 - Пакеты из matcher/requirements.txt. Файл фиксирует точную версию каждого прямого
   пакета, включая pydantic.
-- bash, curl, jq и awk для официального тестового скрипта.
 
 Используйте Python-окружение проекта и установите зависимости:
 
@@ -33,40 +32,38 @@ Mock pipeline узнаёт три тестовых изображения по S
 
 Команды нужно выполнять из корня svoe-vino-lab.
 
-## Тестовая конфигурация pipeline
+## Конфигурация
 
-Файл matcher/tests/config.yaml содержит mock pipeline для проверки API:
+По умолчанию сервис ожидает рабочий файл по пути matcher/config.yaml. Этот файл будет
+добавлен вместе с реальным pipeline. Переменная SVOE_VINO_MATCHER_CONFIG может указать
+другой файл. Формат использует ту же структуру pipeline, что и
+svoe-vino-lab/config.yaml:
 
 ~~~yaml
 matcher:
-  pipeline: official-eval-mock
+  pipeline: <pipeline-name>
   output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
 
 pipeline:
-  - name: official-eval-mock
+  - name: <pipeline-name>
     backend: mock
     answers:
       <image-sha256>: <slug>
     unknown_slug: ""
 ~~~
 
-Эта конфигурация не требует авторизации. Файл matcher/tests/config.token.yaml проверяет
-тот же pipeline с Bearer-авторизацией:
+Значение matcher.pipeline должно совпадать с name одной записи в списке pipeline. Поля
+name и backend используют ту же структуру, что и svoe-vino-lab/config.yaml.
+
+Чтобы включить Bearer-авторизацию, укажите имя переменной окружения с секретом:
 
 ~~~yaml
 matcher:
-  pipeline: official-eval-mock
-  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
-  token_env: SVOE_VINO_MATCHER_TOKEN
+  token: "{env:SVOE_VINO_MATCHER_TOKEN}"
 ~~~
 
-Поле matcher.token_env содержит только имя переменной окружения. Секретный токен не
-хранится в YAML. Комментарии в начале каждого тестового файла объясняют его назначение.
-
-Будущий рабочий файл будет находиться по пути matcher/config.yaml. Тестовая
-конфигурация не занимает этот путь. Значение matcher.pipeline должно совпадать с name
-одной записи в списке pipeline. Поля name и backend используют ту же структуру, что и
-svoe-vino-lab/config.yaml.
+Поле matcher.token содержит только точную ссылку `"{env:NAME}"` на переменную
+окружения. Секретный токен не хранится в YAML.
 
 Backend mock вычисляет SHA-256 загруженного изображения. Затем он ищет этот SHA-256 в
 answers. Поле unknown_slug задаёт ответ для неизвестного изображения.
@@ -89,7 +86,8 @@ answers. Поле unknown_slug задаёт ответ для неизвестн
   размера одного изображения в байтах. Значение по умолчанию равно 20971520 байтам
   (20 МиБ).
 - SVOE_VINO_MATCHER_TOKEN — секретный Bearer-токен. Сервис читает его, только если
-  выбранная конфигурация содержит `matcher.token_env: SVOE_VINO_MATCHER_TOKEN`.
+  выбранная конфигурация содержит
+  `matcher.token: "{env:SVOE_VINO_MATCHER_TOKEN}"`.
 - SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS — максимальное число пикселей. Значение по
   умолчанию равно 40000000.
 - SVOE_VINO_MATCHER_UPLOAD_TIMEOUT_SECONDS — максимальное время загрузки полного HTTP
@@ -126,7 +124,7 @@ export SVOE_VINO_MATCHER_CONFIG=matcher/tests/config.token.yaml
 export SVOE_VINO_MATCHER_TOKEN='<secret-token>'
 ~~~
 
-Если `matcher.token_env` указан, сервис не запустится без непустой переменной с этим
+Если `matcher.token` указан, сервис не запустится без непустой переменной с этим
 именем.
 
 ## API
@@ -227,63 +225,9 @@ x-auth-token заменяются на `<redacted>`. Имена этих заг�
 
 OpenAPI описывает GET /healthz, обязательное multipart-поле image, опциональную схему
 BearerAuth, успешный ответ со строкой slug и ошибки HTTP 400, 401, 408, 413, 415, 422 и
-503. Автоматический тест сравнивает весь разобранный matcher/openapi.yaml с живым
-`/openapi.json`.
+503.
 
-## Проверка официальным скриптом
+## Тестирование
 
-Копия официального тестового клиента находится в `matcher/tests/participant_test.sh`.
-Копия официального манифеста находится в `matcher/tests/queries.tsv`. Копии трёх
-тестовых изображений находятся в `matcher/tests/data/`. Для тестового запуска не нужен
-соседний репозиторий svoe-wino-hackaton.
-
-Запустите matcher, затем выполните:
-
-~~~bash
-bash matcher/tests/participant_test.sh \
-  --images-dir matcher/tests/data \
-  --manifest matcher/tests/queries.tsv \
-  --endpoint "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/v1/eval/predict" \
-  --output /tmp/svoe-vino-matcher-predictions.jsonl
-~~~
-
-Файл результата не должен существовать до запуска. Скрипт отправляет изображения по
-одному и создаёт одну строку JSON для каждого запроса.
-
-Пример строки результата:
-
-~~~json
-{"query_id":"q-000001","image_path":"019c68d0.jpg","image_sha256":"c975b31e...","predicted_slug":"tabia_pino_nuar","latency_ms":12}
-~~~
-
-Если matcher вернул пустой slug, поле predicted_slug будет равно null.
-
-## Автоматические тесты
-
-Запустите тесты в изолированном окружении:
-
-~~~bash
-~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning \
-  -m unittest discover -s matcher/tests -v
-~~~
-
-Интеграционный тест запускает FastAPI на временном свободном порту. Затем он запускает
-локальную копию participant_test.sh с локальными queries.tsv и тестовыми изображениями.
-Тест проверяет GET /healthz, полный статический и живой OpenAPI, пустой slug и ответы
-HTTP 400, 413 и 422. Отдельный тест проверяет пять полей первой строки JSONL, полный
-SHA-256, ожидаемый slug и целое неотрицательное значение latency_ms. Тест архива
-проверяет изображение, заголовки, IP, SHA-256, результат и длительность. Unit tests
-отклоняют повреждённый YAML, неизвестный pipeline, дублированное имя pipeline, неверный
-SHA-256 и неподдерживаемый backend. Они также проверяют literal output directory,
-ссылку `"{env:NAME}"`, конфигурацию без output_dir, отсутствующую или пустую переменную
-окружения и неверную ссылку.
-
-Тесты авторизации проверяют публичные `/healthz` и OpenAPI, отсутствие токена, неверные
-схемы и значения, а также успешный Bearer-запрос. Тесты устойчивости используют
-локальные сокеты. Они отправляют JPEG с объявленными размерами 65535 × 65535,
-повреждённый файл, GIF, chunked body сверх лимита, медленную загрузку и запрос при
-заполненной очереди. Отдельный тест создаёт sparse-файл размером 1 ГиБ и проверяет
-ранний отказ по Content-Length без передачи файла. После каждого сценария тест
-проверяет `/healthz` и обычный JPEG. Всего выполняются 37 тестов. Тесты явно задают
-SVOE_VINO_MATCHER_CONFIG=matcher/tests/config.yaml, временный
-SVOE_VINO_MATCHER_OUTPUT_DIR и лимит файла.
+Инструкции для автоматических тестов, ручного official harness и GitLab CI находятся в
+файле [TESTING.md](TESTING.md).

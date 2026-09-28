@@ -139,3 +139,28 @@ CREATE TABLE image_tag (
 36. A browser check on 8168 with the tag writes mocked and each other write blocked, in
     the light and the dark theme.
 37. Smoke tests IT1 and later in `SMOKE_TESTS.md`.
+
+## Result
+
+Done on 2026-09-28. The code and the tests were made in a scratch copy of the project,
+with the schema file under its number. They went into the tree at 00:32 with patches at
+zero fuzz. Schema 030 was entered and migrated at 00:32:43, after the backup
+`data/backups/lab-before-030-image-tag-20260927T213243Z.sqlite3`. 8168 was restarted at
+00:32:47 (PID 4467). No session had pending server code at the restart. The self-test job
+of drink-atlas-workspace-49 had ended at 00:21:32.
+
+- `test_image_tags.py` 5, `test_testsets.py` 31, `test_testset_routes.py` 11,
+  `test_import_testset.py` 18, `test_export_testset.py` 9, and `test_labdb.py` 17 tests
+  OK. The full suite gives 1,290 tests OK (5 skipped).
+- A browser check on a scratch server (port 8175) with a migrated copy of the database
+  passed 60 of 60 checks, in the light and the dark theme, at 1,440 px and 390 px. It
+  used the real routes on the copy: add, duplicate, bad tag, suggestions, badges on both
+  places, the filter `Tag` with the address and the header, `Marks: a tag`, the set `my`
+  with 4 copies, and the removes.
+- A read-only browser check on 8168, with each write blocked, passed 12 of 12.
+- No data of the tree held a field `tags` before this plan: no `extra` of `test_photo`,
+  and no entry of the six `review-labels.json` files of `svoe-vino-testset/dataset/` and
+  `dataset/`.
+- One change outside the plan: the row count `N tagged` has the class `tagged-n`
+  (`white-space: nowrap`), because the meta column breaks each word (`word-break`) and
+  the text broke inside `tagged`. The other row counts stay as they were.

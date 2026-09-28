@@ -113,6 +113,24 @@ class ExportTestsetTest(unittest.TestCase):
         self.assertEqual(self.export()["labels"]["wine-a"]["01_conf095.jpg"],
                          {"comments": COMMENTS})
 
+    def test_the_tags_of_the_image_come_back_in_each_entry(self):
+        # Plan 66: the import adds the tags, and the export writes them into each photo of
+        # the same bytes. A photo with a tag alone gets an entry.
+        labels = json.loads(json.dumps(LABELS))
+        labels["wine-a"]["01_conf095.jpg"]["tags"] = ["blurry", "back_label"]
+        photos = dict(PHOTOS, **{"wine-c/03.jpg": b"a1"})
+        set_dir = FX.write_set(self.root, photos, labels, name="tagged")
+        IT.import_testset(self.db, "tagged", set_dir, lambda m: None, self.schema)
+        EX.export_testset(self.db, "tagged", str(self.out), self.schema)
+        exported = json.loads((self.out / EX.LABELS_FILE).read_text(encoding="utf-8"))
+        self.assertEqual(exported["labels"]["wine-a"], labels["wine-a"])
+        self.assertEqual(exported["labels"]["wine-c"],
+                         {"03.jpg": {"tags": ["blurry", "back_label"]}})
+        self.assertIn("Field 'tags'", exported["note"])
+        # The set "my" holds the same bytes, so its export shows the tags too.
+        self.assertEqual(self.export()["labels"]["wine-a"]["01_conf095.jpg"]["tags"],
+                         ["blurry", "back_label"])
+
     def test_the_files_have_the_form_of_the_old_tool(self):
         # An old excluded-slugs.json of the directory stays as it is.
         self.out.mkdir()

@@ -63,7 +63,7 @@ class PipelineWorkersTest(unittest.TestCase):
                      "thinking_field": "chat_template_kwargs",
                      "endpoint": "http://example.test/v1", "model": "m"}],
             "pipeline": [{"name": "profile", "backend": "embedding", "embedding": "gw",
-                          "workers": 4, "barcode": {}, "rerank": {"rules": "gw"}}],
+                          "workers": 4, "barcode": {}, "rerank": {}}],
         }), encoding="utf-8")
 
     def tearDown(self):
@@ -116,10 +116,13 @@ class PipelineWorkersTest(unittest.TestCase):
 
     def test_only_the_requested_profile_changes_its_default(self):
         settings = pipelines.load()
-        for name in ("barcode-rerank-siglip2-512-crop", "rerank-siglip2-512-crop",
+        four = {"barcode-rerank-siglip2-512-crop",
+                "barcode-rerank-siglip2-p512-crop",
+                "barcode-rerank-siglip2-p1024-crop"}
+        for name in (*sorted(four), "rerank-siglip2-512-crop",
                      "barcode-siglip2-512-crop", "siglip2-512-crop"):
             with self.subTest(name=name):
-                expected = 4 if name == "barcode-rerank-siglip2-512-crop" else 1
+                expected = 4 if name in four else 1
                 self.assertEqual(settings.find(name).workers, expected)
 
 

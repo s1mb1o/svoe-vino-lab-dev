@@ -174,10 +174,6 @@ def load(path=embeddings.CONFIG_PATH):
             if other:
                 raise ConfigError("the embedding %s has no view %s"
                                   % (pipeline.embedding, ", ".join(other)))
-            rules = (pipeline.rerank or {}).get("rules")
-            if rules is not None and rules not in models:
-                raise ConfigError("rerank.rules names %s, which is not an entry of the key "
-                                  "`embeddings`" % rules)
         return pipeline
 
     return Pipelines(path, db_path, embeddings.check_entries(config, "pipeline", make))

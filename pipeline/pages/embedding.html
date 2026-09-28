@@ -42,6 +42,8 @@ button:disabled { cursor: default; opacity: .45; }
 #stop:not(:disabled) { color: var(--exc); border-color: var(--exc); font-weight: 700; }
 .jobmsg { color: var(--muted); font-size: 12px; }
 .jobmsg.bad { color: var(--exc); }
+/* The line of `Selftest` (plan 67) keeps its stop button on the same line. */
+#selftestmsg { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 a { color: var(--accent); }
 .jobs { display: grid; gap: 4px; margin-top: 8px; }
 .job {
@@ -300,6 +302,9 @@ button.preview-thumb:hover { border-color: var(--accent); }
       <button id="stop" type="button" disabled>Stop</button>
       <button id="log" type="button" disabled title="Show build.log of the last build">Log</button>
       <span class="jobmsg" id="jobmsg"></span>
+      <button id="selftest" type="button" disabled
+        title="Query each dataset image in the view full of the index of this configuration. The result is a run of the set dataset on /runs.">Selftest</button>
+      <span class="jobmsg" id="selftestmsg"></span>
       <button id="build-all" type="button" disabled
         title="Build each configuration, one at a time, in the order of config.yaml">Build All</button>
       <span class="jobmsg" id="allmsg"></span>
@@ -522,6 +527,7 @@ function selectedJob() {
 }
 
 function buttons() {
+  showSelftest();
   const entry = entryOf(NAME), job = selectedJob();
   const active = !!job && ACTIVE.includes(job.state);
   $("#build").disabled = !entry || !!entry.error || active;
@@ -642,6 +648,77 @@ async function stopJob(button) {
   }
   await pollJobs();
 }
+
+// `Selftest` (plan 67): the self-test of the selected configuration is a run job of
+// `POST /api/run-jobs` with the key `selftest`. Its job is `selftest-<name>` of
+// `GET /api/run-jobs`. The line after the button shows it and polls while it runs. The
+// button needs a current item in the index and no running build of the configuration.
+const SELFTEST_PREFIX = "selftest-";
+let SELFTESTS = {}, SELFTEST_POLL = null;
+function selftestJob() { return NAME ? SELFTESTS[SELFTEST_PREFIX + NAME] || null : null; }
+function showSelftest() {
+  const entry = entryOf(NAME), job = selftestJob(), build = selectedJob();
+  const active = !!job && ACTIVE.includes(job.state);
+  const building = !!build && ACTIVE.includes(build.state);
+  const ready = !!entry && !entry.error && !!entry.counts && entry.counts.current > 0;
+  $("#selftest").disabled = !ready || building || active;
+  const msg = $("#selftestmsg");
+  msg.classList.remove("bad");
+  if (!job || !job.state) { msg.textContent = ""; return; }
+  const count = job.todo == null ? "" : ` ${job.done} / ${job.todo}`;
+  const errors = job.errors ? ` · errors ${job.errors}` : "";
+  if (active) {
+    msg.innerHTML = `selftest ${esc(job.state)}${count}${errors} <button type="button"
+      class="job-stop" data-selftest-stop="${esc(job.name)}" title="stop the selftest of ${
+      esc(NAME)}" aria-label="stop the selftest of ${esc(NAME)}"${
+      job.state === "running" ? "" : " disabled"}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>`;
+    return;
+  }
+  const link = job.run_id ? ` · <a href="/runs?set=dataset#${encodeURIComponent(job.run_id)}">open run</a>` : "";
+  const text = job.message ? `: ${esc(job.message)}` : "";
+  msg.innerHTML = `last selftest ${esc(job.state)}${text}${errors}${link}`;
+  if (job.state === "failed") msg.classList.add("bad");
+}
+async function pollSelftests() {
+  try {
+    const body = await getJson("/api/run-jobs");
+    SELFTESTS = {};
+    for (const job of body.jobs || []) {
+      if (job.name.startsWith(SELFTEST_PREFIX)) SELFTESTS[job.name] = job;
+    }
+  } catch (_) { /* the next poll tries again */ }
+  showSelftest();
+  const running = Object.values(SELFTESTS).some(job => ACTIVE.includes(job.state));
+  if (running && !SELFTEST_POLL) SELFTEST_POLL = setInterval(pollSelftests, 2000);
+  if (!running && SELFTEST_POLL) { clearInterval(SELFTEST_POLL); SELFTEST_POLL = null; }
+}
+async function startSelftest() {
+  if (!NAME) return;
+  $("#selftest").disabled = true;
+  try {
+    await getJson("/api/run-jobs", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({selftest: NAME})});
+  } catch (error) {
+    alert(`Cannot start the selftest of ${NAME}: ${error.message}`);
+  }
+  await pollSelftests();
+}
+async function stopSelftest(button) {
+  const name = button.dataset.selftestStop;
+  button.disabled = true;
+  try {
+    await getJson(`/api/run-jobs/${encodeURIComponent(name)}/stop`, {method: "POST"});
+  } catch (error) {
+    alert(`Cannot stop ${name}: ${error.message}`);
+  }
+  await pollSelftests();
+}
+$("#selftest").addEventListener("click", startSelftest);
+$("#selftestmsg").addEventListener("click", event => {
+  const button = event.target.closest("[data-selftest-stop]");
+  if (button) stopSelftest(button);
+});
+pollSelftests();
 
 // The build log dialog. Each JSON line of build.log is one event; any other line (a
 // Python traceback) stays as it is.
