@@ -1,0 +1,63 @@
+# Administration web interface plan
+
+Date: 2026-09-26
+
+## Goal
+
+Add a private administration web interface for the Telegram bot.
+Run the interface as a separate FastAPI service on `gx10`.
+Use the existing SQLite database as the shared source of state.
+
+## Scope
+
+1. Show aggregate request statistics.
+2. Show a paginated user list.
+3. Show a paginated recent request list.
+4. Show one request with step timings, recognition data, quality data, and candidates.
+5. Show moderation filter error reports.
+6. Reset the current rate-limit window for one user.
+7. Request safe retry processing for one eligible request.
+8. Do not serve accepted or quarantine image files.
+
+## Security
+
+1. Require HTTP Basic authentication for every administration page and action.
+2. Require a non-empty password from `BOT_ADMIN_WEB_PASSWORD`.
+3. Compare credentials with constant-time comparisons.
+4. Restrict client addresses to configured CIDR networks.
+5. Use `127.0.0.1`, `::1`, and `192.168.86.0/24` as the default allowed networks.
+6. Require a process-local CSRF token for every state-changing form.
+7. Add restrictive browser security headers.
+8. Do not render image bytes or storage paths.
+9. Do not permit retry for an unsafe or unmoderated request.
+
+## Retry flow
+
+1. The administrator selects retry for an eligible request.
+2. The web service changes the status to `retry_requested` in one transaction.
+3. The web service clears the old feedback and recognition result.
+4. The web service preserves the old step timing rows.
+5. The bot polls for `retry_requested` rows.
+6. The bot claims one row with a compare-and-set update to `queued`.
+7. The bot submits the request to the existing work queue.
+8. The normal processing pipeline downloads and moderates the image again.
+9. A bot restart restores a claimed request from the `queued` state.
+
+## Deployment
+
+1. Use TCP port `8172`.
+2. Bind the production service to `0.0.0.0`.
+3. Enforce the LAN CIDR allowlist in the application.
+4. Run `chto-za-vino-admin.service` as the existing `ashmelev` user service.
+5. Use the existing protected environment file.
+6. Store the generated password outside the repository.
+
+## Verification
+
+1. Add repository tests for list, detail, retry, claim, and rate-limit reset behavior.
+2. Add web tests for authentication, CIDR checks, CSRF checks, redaction, reset, and retry.
+3. Add bot watcher tests.
+4. Run `uv run ruff check .`.
+5. Run `uv run pytest -q`.
+6. Check the production health endpoint on `gx10`.
+7. Check authenticated pages from the home LAN.

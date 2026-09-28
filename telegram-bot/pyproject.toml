@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "chto-za-vino-bot"
+version = "0.1.0"
+description = "Telegram bot that recognizes wine from a photo."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "aiogram>=3.22,<4",
+  "fastapi>=0.116,<1",
+  "httpx>=0.28,<1",
+  "Pillow>=11,<13",
+  "uvicorn>=0.35,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4,<10",
+  "pytest-asyncio>=1.1,<2",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+chto-za-vino-bot = "chto_za_vino_bot.app:main"
+chto-za-vino-admin = "chto_za_vino_bot.admin_web:main"
+chto-za-vino-profile = "chto_za_vino_bot.profile_sync:main"
+chto-za-vino-probe = "chto_za_vino_bot.probe:main"
+chto-za-vino-artifacts = "chto_za_vino_bot.artifact_backfill:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chto_za_vino_bot"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".uv-cache", ".venv"]

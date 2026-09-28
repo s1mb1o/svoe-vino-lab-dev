@@ -1,0 +1,11 @@
+.env
+.venv/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+data/
+*.sqlite3
+# The root .gitignore ignores *.lock. The Docker build needs uv.lock from git archive.
+!uv.lock

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Что за вино? Пришлите фото бутылки или этикетки">
+  <rect width="640" height="360" rx="28" fill="#FFF8E8"/>
+  <circle cx="144" cy="180" r="108" fill="#FFF8E8" stroke="#6D002B" stroke-width="15"/>
+  <path d="M99 111 C104 158 116 187 144 187 C172 187 184 158 189 111" fill="none" stroke="#6D002B" stroke-width="11" stroke-linecap="round"/>
+  <ellipse cx="144" cy="111" rx="45" ry="11" fill="#FFF8E8" stroke="#6D002B" stroke-width="9"/>
+  <path d="M108 140 C123 130 135 149 152 143 C166 138 174 131 183 137 C178 166 167 179 144 179 C123 179 113 166 108 140 Z" fill="#9B174C"/>
+  <path d="M144 187 C171 192 178 212 159 224 C148 231 143 238 143 248" fill="none" stroke="#6D002B" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="143" cy="266" r="8" fill="#6D002B"/>
+  <text x="278" y="111" fill="#6D002B" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700">Что за вино?</text>
+  <text x="278" y="161" fill="#35272C" font-family="Arial, Helvetica, sans-serif" font-size="23">Пришлите фото бутылки</text>
+  <text x="278" y="195" fill="#35272C" font-family="Arial, Helvetica, sans-serif" font-size="23">или этикетки — получите</text>
+  <text x="278" y="229" fill="#35272C" font-family="Arial, Helvetica, sans-serif" font-size="23">название и ссылку.</text>
+  <rect x="278" y="262" width="218" height="38" rx="19" fill="#6D002B"/>
+  <text x="387" y="288" text-anchor="middle" fill="#FFF8E8" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700">Отправьте фотографию</text>
+</svg>
