@@ -2073,6 +2073,28 @@ Owner message of 2026-09-27T21:44:04+0300. `$H` is the lab server.
 | BK3 | Press `Build all clusters` | The button is disabled. The text after it reads `Build all clusters 1 / 12: <name>`, then counts up. The combobox shows the new count of each built configuration. At the end: `Build all clusters done: <n> built`, and the title lists each configuration with its result. |
 | BK4 | Press `Build All` on `$H/embedding`, then at once `Build all clusters` on `$H/clusters` | While the embedding build of the current configuration runs, the text adds ` · waiting: the embedding build of <name> runs`. The cluster build of that configuration starts after the embedding build. |
 
+## Evaluation matcher — plan 71
+
+Owner messages recorded at 2026-09-28T08:07:43+0300 through 09:40:52.
+
+| # | Case | Expected result |
+|---|---|---|
+| EM1 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -v` | 37 tests are `OK`. The integration tests use local copies of the official evaluation files, temporary output directories, and ephemeral ports. |
+| EM2 | Run `matcher/tests/participant_test.sh` with `matcher/tests/queries.tsv` and `matcher/tests/data` against POST /v1/eval/predict. | The three rows contain tabia_pino_nuar, massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16, and donum_xxiv for their configured images. The run does not use the sibling evaluation directory. |
+| EM3 | Set `SVOE_VINO_MATCHER_CONFIG=matcher/tests/config.yaml`. Submit an image whose SHA-256 is absent from this file. | The response is `{"slug":""}`. |
+| EM4 | Parse `matcher/openapi.yaml` and `GET /openapi.json`. | The complete parsed documents are equal. They contain GET /healthz, POST /v1/eval/predict, BearerAuth, the multipart field `image`, the response field `slug`, and responses 400, 401, 408, 413, 415, 422, and 503. |
+| EM5 | Read the first line written by `matcher/tests/participant_test.sh`. | The line is valid JSON. It contains only `query_id`, `image_path`, `image_sha256`, `predicted_slug`, and `latency_ms`. The values match `q-000001`, `019c68d0.jpg`, its full SHA-256, and `tabia_pino_nuar`. The latency is a nonnegative integer. |
+| EM6 | Set `SVOE_VINO_MATCHER_OUTPUT_DIR` to an empty temporary directory. Submit `019c68d0.jpg` with a custom header and an Authorization header. | The directory contains the exact image and one `request.json`. The record contains the direct client IP, custom header, redacted Authorization value, image SHA-256 and size, result, UTC timestamps, and nonnegative duration. |
+| EM7 | `curl -fsS "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/healthz"` | The response is `{"status":"ok","pipeline":"official-eval-mock"}`. |
+| EM8 | POST without `image`, with an empty image, and with an image one byte above `SVOE_VINO_MATCHER_MAX_IMAGE_BYTES`. | The responses are HTTP 422, 400, and 413. The service reads at most the configured limit plus one byte. |
+| EM9 | Load configs with broken YAML, an unknown pipeline, a duplicate pipeline name, an invalid SHA-256, and an unsupported backend. | Every config is rejected with `ConfigError`. |
+| EM10 | Read `matcher/requirements.txt`, then run `~/.venvs/svoe-vino-lab/bin/pip check`. | Every direct dependency has an exact `==` version. `pydantic` and Pillow are listed directly. The installed dependency set is consistent. |
+| EM11 | Set `matcher.output_dir` to a literal path and to `"{env:NAME}"`. Also test a config without the field and invalid or unresolved references. | Literal and resolved paths are used. A config without the field keeps the legacy environment fallback. Missing, empty, and malformed references are rejected without exposing an environment value. |
+| EM12 | Start with `matcher/tests/config.token.yaml` and `SVOE_VINO_MATCHER_TOKEN` set. Call predict without a token, with invalid Authorization values, and with the correct Bearer token. Also call `/healthz` and `/openapi.json` without a token. | Invalid credentials return HTTP 401 and `WWW-Authenticate: Bearer`. The correct token returns the configured slug. Health and OpenAPI stay public. The no-token config keeps predict public. |
+| EM13 | Submit a small JPEG that declares 65535 × 65535 pixels, damaged bytes, and a GIF. | The responses are HTTP 413, 422, and 415. The next normal JPEG and `/healthz` succeed. |
+| EM14 | Attempt a 1 GiB sparse upload with Content-Length. Send an oversized chunked body and a slow partial upload. | The sparse and chunked requests return HTTP 413 without consuming the declared body. The slow upload returns HTTP 408. The service stays usable. |
+| EM15 | Fill two active predict slots and one queued slot. Send one more predict request. | The next request returns HTTP 503 before the upload timeout. `/healthz` stays available. |
+
 ## Runner smoke — the GitHub runner of CT 111
 
 Owner messages recorded at 2026-09-28T08:55:00+0300 through 08:59:00. The workflow is

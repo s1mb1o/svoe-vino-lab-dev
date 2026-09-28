@@ -25,6 +25,52 @@
   answered `cf609660 bottle`; `qr-scanner` decoded the random EAN-13. Neither log holds
   `QWENCLOUD` or a key. The sparse checkout is 3.3 MB. Case RS6 (no `SAM3_ENDPOINT`) gives
   `FAIL` and exit code 1.
+- Added the standalone FastAPI evaluation matcher (plan 71). The API tests explicitly
+  select `matcher/tests/config.yaml`; `matcher/config.yaml` is reserved for the future
+  real configuration. The test file selects one entry of its top-level pipeline list
+  with matcher.pipeline. The first backend is a deterministic SHA-256 mock. It returns
+  the three owner-specified slugs for the official example images and an empty slug for
+  another image. POST /v1/eval/predict accepts the official multipart field image. The
+  integration test starts the service on an ephemeral port. It runs local copies of the
+  official participant_test.sh, queries.tsv, and sample images. The three sample images
+  are in `matcher/tests/data`. The local client and manifest are
+  `matcher/tests/participant_test.sh` and `matcher/tests/queries.tsv`. The README and
+  tests do not need the sibling evaluation directory.
+  The matcher README is in Russian and is written for a human operator. Its start and
+  harness commands use the environment variable `SVOE_VINO_MATCHER_PORT`. Setup,
+  startup, and test commands use `~/.venvs/svoe-vino-lab`. The port setup command keeps
+  an existing value and prompts only when the variable is empty. GET /healthz reports
+  readiness and the selected pipeline. A checked-in OpenAPI 3.1 contract documents
+  health, the multipart request, success response, and errors. FastAPI publishes it
+  through `/docs`, `/redoc`, and `/openapi.json`. An integration test compares the
+  complete parsed static and live documents.
+  A dedicated integration test verifies the five fields of the first JSONL record, its
+  complete image SHA-256, its predicted slug, and the latency type. The required
+  `SVOE_VINO_MATCHER_OUTPUT_DIR` stores one private directory per request, with the exact
+  submitted image and `request.json`. The record contains timestamps, duration, direct
+  client IP, all header names and safe values, image properties, status, and result.
+  Secret header values are redacted. Uvicorn gets one structured `matcher_request` log
+  event. The audit integration test verifies the stored bytes and metadata. The service
+  reads no more than the configured image limit plus one byte. The default limit is
+  20 MiB. Empty files return HTTP 400, oversized files return HTTP 413, and a missing
+  `image` field returns HTTP 422. Configuration tests reject broken YAML, an unknown
+  pipeline, a duplicate name, an invalid SHA-256, and an unsupported backend. Runtime
+  dependencies have exact versions and name pydantic and Pillow directly.
+  `matcher.output_dir` accepts a literal path or an exact `"{env:NAME}"` reference.
+  The test config reads
+  `SVOE_VINO_MATCHER_OUTPUT_DIR` through this field. Configs without the field keep the
+  old direct environment fallback. Tests reject missing, empty, and malformed
+  references. Optional Bearer authentication uses `matcher.token_env`; YAML stores
+  only `SVOE_VINO_MATCHER_TOKEN`, and the secret stays in the environment. A missing,
+  malformed, or incorrect token returns HTTP 401. Predict is protected when this field
+  is present. `/healthz`, `/docs`, `/redoc`, and `/openapi.json` stay public.
+  The prediction middleware limits the complete HTTP body, image bytes, declared
+  pixels, upload time, active requests, queued requests, and queue time. It validates
+  JPEG, PNG, and WEBP with Pillow before matching. The local-socket harness verifies a
+  JPEG dimension bomb, a 1 GiB sparse upload, an oversized chunked body, a slow upload,
+  a damaged image, an unsupported format, and a full queue. It verifies service health
+  and a normal request after each attack. Rejections get structured logs. All 37 matcher
+  tests pass. No fixed port, schema change, or lab-server restart was used.
 
 ## 2026-09-27
 

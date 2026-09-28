@@ -1,0 +1,20 @@
+# This config is only for matcher API tests and the local mock demonstration.
+# It is not the future real matcher/config.yaml.
+# It intentionally has no token_env. The official client can call this API without
+# an Authorization header. Authentication tests use config.token.yaml instead.
+matcher:
+  # Select one entry of pipeline by name. Restart the matcher after a change.
+  pipeline: official-eval-mock
+  # Each test sets this variable to its private temporary archive directory.
+  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+
+# This list uses the name and backend notation of ../../config.yaml.
+pipeline:
+  - name: official-eval-mock
+    backend: mock
+    # The mock backend identifies an image by the SHA-256 of its bytes.
+    answers:
+      c975b31e13bfa77dbc402d7ae4cd3889609cf85a9dadda45778a63232b4c6acf: tabia_pino_nuar
+      8c760f87c8940934bfd19020d90aa949f843267c47a99180bdd41242a5033a36: massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16
+      f84ac48acf05212cb213db4540b68a0afdb1a16308797d4fa1d5edeb4df8725e: donum_xxiv
+    unknown_slug: ""

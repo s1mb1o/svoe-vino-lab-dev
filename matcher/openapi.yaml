@@ -1,0 +1,151 @@
+openapi: 3.1.0
+info:
+  title: Svoe Vino Matcher API
+  description: Identify one wine from one uploaded package or label image.
+  version: 1.0.0
+paths:
+  /healthz:
+    get:
+      tags:
+        - service
+      summary: Check service readiness
+      description: Return readiness and the selected pipeline.
+      operationId: healthz
+      responses:
+        '200':
+          description: The service is ready.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /v1/eval/predict:
+    post:
+      tags:
+        - evaluation
+      summary: Predict one wine
+      description: 'Upload one JPEG, PNG, or WEBP image in the multipart field `image`.
+        The endpoint requires `Authorization: Bearer <token>` when `matcher.token_env`
+        is configured.'
+      operationId: predict_image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_predict_image'
+        required: true
+      responses:
+        '200':
+          description: The Top-1 catalogue match.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prediction'
+        '400':
+          description: The uploaded image is empty.
+        '401':
+          description: The bearer token is missing or invalid.
+        '408':
+          description: The request upload exceeded its time limit.
+        '413':
+          description: The uploaded image exceeds the configured size limit.
+        '415':
+          description: The uploaded image format is not supported.
+        '503':
+          description: The matcher request queue is full.
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - {}
+      - BearerAuth: []
+components:
+  schemas:
+    Body_predict_image:
+      properties:
+        image:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Image
+          description: Wine package or label image.
+      type: object
+      required:
+        - image
+      title: Body_predict_image
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Health:
+      properties:
+        status:
+          type: string
+          const: ok
+          title: Status
+          default: ok
+        pipeline:
+          type: string
+          title: Pipeline
+      additionalProperties: false
+      type: object
+      required:
+        - pipeline
+      title: Health
+      description: Service readiness and selected matcher pipeline.
+    Prediction:
+      properties:
+        slug:
+          type: string
+          title: Slug
+          description: Catalogue slug of the Top-1 match, or an empty string if no match exists.
+          examples:
+            - massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16
+      additionalProperties: false
+      type: object
+      required:
+        - slug
+      title: Prediction
+      description: Top-1 catalogue match returned by the API.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Required only when matcher.token_env is configured.
+tags:
+  - name: evaluation
+    description: Official matcher evaluation contract.
+  - name: service
+    description: Service readiness.

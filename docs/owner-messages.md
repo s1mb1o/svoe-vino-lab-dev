@@ -6865,6 +6865,142 @@ Two more test files pass the removed key `rules`, and they would fail after the 
 Answer: Yes, only those lines (Recommended)
 ```
 
+## 2026-09-28T08:07:43+0300
+
+```text
+svoe-vino-lab does not have subproject for matcher endpoint as in svoe-wino-hackaton/dataset/official-2026-09-17/eval
+
+could you create it. It shall have own config.yaml where I specify explicitly pipeline in same notation as in&#x20;
+svoe-vino-lab/config.yaml
+
+it shall provide /v1/eval/predict API endpoint that returns answer like {"slug":"kokur-suhoe-2025"} for each Image submitted.
+
+For now let it be always {"slug":"kokur-suhoe-2025"} as mock implementation.
+
+massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16 ащк&#x20;
+
+
+Put there README.md that mostly based on svoe-wino-hackaton/dataset/official-2026-09-17/eval/README.md but refined from POV of matcher running.
+
+Add svoe-wino-hackaton/dataset/official-2026-09-17/eval/participant\_test.sha and svoe-wino-hackaton/dataset/official-2026-09-17/eval/queries as test run example.
+```
+
+## 2026-09-28T08:07:44+0300
+
+```text
+svoe-vino-lab does not have subproject for matcher endpoint as in svoe-wino-hackaton/dataset/official-2026-09-17/eval
+
+could you create it. It shall have own config.yaml where I specify explicitly pipeline in same notation as in&#x20;
+svoe-vino-lab/config.yaml
+
+it shall provide /v1/eval/predict API endpoint that returns answer like {"slug":"kokur-suhoe-2025"} for each Image submitted.
+
+massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16 for svoe-wino-hackaton/dataset/official-2026-09-17/eval/queries/02eef911.webp&#x20;
+019c68d0.jpg - tabia\_pino\_nuar
+096ca74e.jpg - donum\_xxiv
+For now let it be always {"slug":""} if not found
+
+Put there README.md that mostly based on svoe-wino-hackaton/dataset/official-2026-09-17/eval/README.md but refined from POV of matcher running.
+
+Add svoe-wino-hackaton/dataset/official-2026-09-17/eval/ as tests harnes for it.&#x20;
+```
+
+## 2026-09-28T08:08:10+0300
+
+Agent question and owner answer:
+
+```text
+Three implementation options:
+
+1. **Standalone FastAPI subproject (recommended):** `matcher/` with `app.py`, `config.yaml`, README, tests, and compatibility with the official evaluation harness.
+2. **Standard-library server:** no runtime dependencies, but multipart image handling and API testing are more complex.
+3. **Existing lab server route:** add `/v1/eval/predict` to `pipeline/lab_server.py`; simpler deployment, but it is not an independent subproject.
+
+Should I implement option 1 in `svoe-vino-lab/matcher/`?
+Answer: 1
+```
+
+## 2026-09-28T08:23:11+0300
+
+```text
+Rewrite README.md in russian svoe-vino-lab/matcher/README.md
+it is for human
+```
+## 2026-09-28T08:27:13+0300
+
+````text
+```bash
+PORT=<unused-port>
+~/.venvs/svoe-vino-lab-matcher/bin/python -m uvicorn matcher.app:app \
+  --host 127.0.0.1 --port "$PORT"
+```
+
+
+
+i want to add env vars for these
+````
+
+## 2026-09-28T08:27:14+0300
+
+Agent question and owner answer:
+
+```text
+Which variables should I add?
+
+1. `SVOE_VINO_MATCHER_HOST` and `SVOE_VINO_MATCHER_PORT` (recommended, project-specific).
+2. Uvicorn’s standard `UVICORN_HOST` and `UVICORN_PORT`.
+
+Option 2 requires no wrapper code; the service can start with `python -m uvicorn matcher.app:app`.
+Answer: `SVOE_VINO_MATCHER_PORT`
+```
+## 2026-09-28T08:28:51+0300
+
+```text
+use \~/.venvs/svoe-vino-lab/bin/python
+```
+
+## 2026-09-28T08:32:45+0300
+
+```text
+printf 'Свободный порт: '
+read -r SVOE\_VINO\_MATCHER\_PORT
+export SVOE\_VINO\_MATCHER\_PORT
+
+
+rewrite as one-liner that checks if variable set, and if not - then propose to set
+```
+
+## 2026-09-28T08:34:42+0300
+
+````text
+```bash
+curl --form 'image=@../svoe-wino-hackaton/dataset/official-2026-09-17/eval/queries/02eef911.webp' \
+  "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/v1/eval/predict"
+```
+
+
+
+move sample images to svoe-vino-lab/matcher tests data
+````
+
+## 2026-09-28T08:38:54+0300
+
+```text
+review ONLY svoe-vino-lab/matcher subdir, how it is good for hackaton submission (do not take into account that it has mock implementation). I mean files and documentation inside
+```
+
+## 2026-09-28T08:39:22+0300
+
+```text
+do same with "$EVAL/participant\_test.sh"
+```
+
+## 2026-09-28T08:41:12+0300
+
+```text
+later we will have real config.yaml, so current one need to be saved and used for testing API only
+```
+
 ## 2026-09-28T08:55:00+0300
 
 ````text
@@ -6892,6 +7028,12 @@ export QR_SCANNER_ENDPOINT=http://192.168.86.14:18081/upstream/qr-scanner
 3. they works and provide service (some examples that should always pass).
 ````
 
+## 2026-09-28T08:55:30+0300
+
+```text
+add OpenAPI docs to svoe-vino-lab/matcher
+```
+
 ## 2026-09-28T08:58:00+0300
 
 ```text
@@ -6909,4 +7051,157 @@ Answer: Commit + push to github main (Recommended)
 
 ```text
 after you push to git, test that it all works
+```
+## 2026-09-28T08:59:53+0300
+
+````text
+\~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning \\
+
+&#x20; -m unittest discover -s matcher/tests -v
+
+
+
+add test that tests  matcher/tests/participant\_test.sh returns jsonl as example:
+```arduino
+
+~~~json
+{"query_id":"q-000001","image_path":"019c68d0.jpg","image_sha256":"c975b31e...","predicted_slug":"tabia_pino_nuar","latency_ms":12}
+~~~
+```
+````
+
+## 2026-09-28T09:07:32+0300
+
+```text
+add logging, saving all submitted images to disk (output folder shall be specified), also save http headers and IP. We needto know who, what and how long request was processed.&#x20;
+```
+
+## 2026-09-28T09:10:28+0300
+
+```text
+если matcher будет иметь Dockerfile, это повысит привлекательность?
+```
+
+## 2026-09-28T09:16:48+0300
+
+```text
+/healthz ? почему не /health ?
+
+
+
+Нужно скопировать `queries.tsv` в `matcher/tests/`.
+
+
+
+Добавить `pydantic` в [requirements.txt](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/matcher/requirements.txt). Код импортирует его напрямую, но сейчас получает только как транзитивную зависимость FastAPI.
+
+
+
+Ограничить размер входного файла. Сейчас [app.py (line 58)](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/matcher/app.py:58) читает всё изображение в память без ограничения. Также стоит отклонять пустой файл.
+
+
+
+Добавить negative tests:
+
+- отсутствует поле `image` → HTTP 422;
+- повреждённый YAML;
+- неизвестный pipeline;
+- дублированное имя pipeline;
+- неверный SHA-256;
+- неподдерживаемый backend.
+
+
+
+Зафиксировать версии зависимостей или добавить lock-файл. Текущие широкие диапазоны снижают воспроизводимость.
+
+
+
+Автоматически проверять соответствие [openapi.yaml](/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/matcher/openapi.yaml) и живого `/openapi.json`. Сейчас тест сравнивает только основные элементы.
+```
+
+## 2026-09-28T09:26:10+0300
+
+```text
+check how svoe-vino-lab/matcher will survive under heavy load. Send it a jpeg bomb, send very large files, send very slow, try to overload, and create a counter measures for this. This service shall be very robust and stable. Can we somehow implement such tests as part of test harnes for matcher/?
+```
+
+## 2026-09-28T09:27:29+0300
+
+```text
+добавь в matcher/ опциональную поддержку Token Key в заголовках запросов для автооризации
+сделай тесты на работу с config.yaml c ним и без него. Включая негативные
+
+Наверное нужно иметь несколько config.yaml
+А значит в комментариях у каждого нужно описывать для чего они
+```
+
+## 2026-09-28T09:28:56+0300
+
+````text
+Добавь поддержку docker для matcher/
+
+Dockerfile повысит оценку `matcher` как готового инженерного компонента, особенно для технического жюри.
+
+Он даст:
+
+- запуск на чистой машине без `~/.venvs/svoe-vino-lab`;
+- одинаковые версии Python и зависимостей;
+- проверку двумя командами: `docker build` и `docker run`;
+- ясный контракт порта;
+- сигнал, что сервис можно развернуть отдельно от лаборатории.
+
+Но Dockerfile должен быть рабочим, а не декоративным. Рекомендую добавить вместе с ним:
+
+- `matcher/.dockerignore`;
+- базовый образ `python:3.11-slim`;
+- непривилегированного пользователя;
+- внутренний порт `8080`;
+- `uvicorn` с `--host 0.0.0.0`;
+- инструкции сборки, запуска и `curl` в README;
+- автоматический тест собранного образа;
+- локальный `queries.tsv`, чтобы тестирование не зависело от соседнего каталога.
+
+Оптимальный пользовательский сценарий:
+```css
+docker build -t svoe-vino-matcher matcher
+docker run --rm -p 8080:8080 svoe-vino-matcher
+```
+
+Особенно сильный эффект будет у связки: **Dockerfile + автономные тестовые данные + две команды в README**.
+````
+
+## 2026-09-28T09:29:46+0300
+
+```text
+make this configurable through config.yaml
+support {env:SVOE\_VINO\_MATCHER\_OUTPUT\_DIR} in config.yaml
+```
+
+## 2026-09-28T09:35:39+0300
+
+```text
+Question: Which matcher.output_dir setting contract should the matcher use?
+Answer: `matcher.output_dir` принимает обычный путь или точную строку `"{env:NAME}"`.
+```
+
+## 2026-09-28T09:40:52+0300
+
+```text
+**`Authorization: Bearer <token>`****&#x20;— рекомендую.** В YAML хранится только `token_env: SVOE_VINO_MATCHER_TOKEN`; секрет берётся из окружения. `/health` и OpenAPI остаются публичными, `/v1/eval/predict` защищается.
+
+
+
+**Защита внутри matcher — рекомендую.** Ограничение полного HTTP body, таймаут загрузки, лимит одновременных запросов и очереди, проверка формата и числа пикселей через Pillow. Harness проверит JPEG bomb, sparse-файл большого размера, slow upload и перегрузку через локальные сокеты.
+
+
+
+> Готово. Используется `GET /health`; `/healthz` — лишь распространённое имя для инфраструктурных probes.
+
+Используй тот что распространенней
+```
+
+## 2026-09-28T10:03:35+0300
+
+```text
+commit matcher
 ```
