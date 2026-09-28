@@ -79,7 +79,7 @@ class RunRoutesTest(unittest.TestCase):
     def store(self, folder, data, slug=None, image_type=None):
         """Store `data` in the image store. Return its URL on the lab server."""
         digest = hashlib.sha256(data).hexdigest()
-        path = self.root / "images" / folder / ("%s.webp" % digest)
+        path = Path(labdb.image_dir(self.db, folder)) / ("%s.webp" % digest)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
         conn = sqlite3.connect(self.db)

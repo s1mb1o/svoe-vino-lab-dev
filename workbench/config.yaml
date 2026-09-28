@@ -14,8 +14,10 @@
 # An absolute path in this file stays as it is.
 rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
 
-# Database file of the vino-svoe.ru wines.
-database_file: svoe-vino-lab/workbench/data/lab.sqlite3
+# Database file of the vino-svoe.ru wines. Its directory is the catalogue directory
+# `data/catalog/`. The parent of that directory holds `testsets/`, `cache/`, and
+# `backups/`. Read docs/plans/75_data-layout.md.
+database_file: svoe-vino-lab/workbench/data/catalog/catalog.sqlite3
 
 # The Python interpreter that the lab server uses to start an embedding build. The venv
 # holds the packages of requirements-local.txt, `torch` too. Read
@@ -26,9 +28,9 @@ embedding_python: ~/.venvs/svoe-vino-lab/bin/python
 # of the embedding that the key `embedding` of the pipeline names. The build does only the
 # items that are stale, missing, or failed, as the button `Build` of `/embedding` does, so
 # a build with no change takes a few seconds. Its output goes to the end of
-# `data/embeddings/<name>/build.log`, and `/embedding` shows its progress. A build that
-# fails or stops makes the run fail. An embedding with no index gets no build: build it on
-# `/embedding` first. `pipeline/run_job.py` (the button `Run>`) and
+# `data/catalog/embeddings/<name>/build.log`, and `/embedding` shows its progress. A
+# build that fails or stops makes the run fail. An embedding with no index gets no
+# build: build it on `/embedding` first. `pipeline/run_job.py` (the button `Run>`) and
 # `pipeline/embedding_run.py` read this key; a missing key is false. Read
 # docs/plans/59_rebuild-embeddings-on-run.md (owner messages of 2026-09-27T08:40:19+0300
 # and 08:40:26).
@@ -37,15 +39,15 @@ rebuild_embeddings_on_run: true
 # The SAM3 service. `pipeline/derive.py` reads `endpoint` from this file when a module
 # imports it; each SAM3 call of `pipeline/` and the default of each option `--sam3` use
 # the value. The option `--config` of a script does not change it. Without the key, the
-# service of gx10 below stays. The model cache (`data/cache/sam3/`) keys each answer on
-# this URL too: a new URL asks SAM3 again for each image. A run keeps the URL of its
-# own time in `run.json`.
+# service of gx10 below stays. The model cache (`data/cache/models/sam3/`) keys each
+# answer on this URL too: a new URL asks SAM3 again for each image. A run keeps the URL
+# of its own time in `run.json`.
 sam3:
   endpoint: http://192.168.86.14:18081/upstream/sam3
 
 # The embeddings of the Embeddings page. One entry: a name, an endpoint, options, and
 # the steps of each view. `pipeline/build_embeddings.py --name <name>` builds one entry
-# into `data/embeddings/<name>/`.
+# into `data/catalog/embeddings/<name>/`.
 #
 # `backend: openai` sends `POST <base_url>/embeddings`. `extra_body` goes into the body of
 # each request. `backend: local` runs a Hugging Face model on this machine; `extra_body`
@@ -175,10 +177,11 @@ clusters:
   max_cluster_size: 50
 
 # The label rules of the clusters: `pipeline/build_label_rules.py --name <embedding>`
-# writes them into `data/embeddings/<name>/cluster-rules.json`, for the clusters of the
-# view `combined`. Read docs/plans/45_cluster-label-rules.md. `pipeline/label_rules.py`
-# reads this key; a missing key takes the value that is shown here. An unknown key stops
-# the command. The name is not `cluster_rules`: `scripts/cluster_rules.py` reads that key.
+# writes them into `data/catalog/embeddings/<name>/cluster-rules.json`, for the clusters
+# of the view `combined`. Read docs/plans/45_cluster-label-rules.md.
+# `pipeline/label_rules.py` reads this key; a missing key takes the value that is shown
+# here. An unknown key stops the command. The name is not `cluster_rules`:
+# `scripts/cluster_rules.py` reads that key.
 #
 # Stage 1 describes the label of each card: one call for each card, with the package cut
 # of its main image and no card data.

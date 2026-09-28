@@ -221,7 +221,7 @@ def run_embedding(runs_dir, run_id):
 
 def clusters_view(runs_dir, server, query):
     """Answer the clusters of the embedding of one run (plan 43): the view `combined` of
-    `data/embeddings/<name>/clusters.json`, the `label` rule of each cluster from
+    `data/catalog/embeddings/<name>/clusters.json`, the `label` rule of each cluster from
     `cluster-rules.json` of the same directory, and the card name of each cluster slug.
     A run with no embedding, or an embedding with no cluster build, gives no cluster."""
     import clusters as embedding_clusters  # noqa: E402  (numpy, on demand)
@@ -307,7 +307,7 @@ def inputs_view(runs_dir, db_path, query):
         return _error(503, "cannot read the image store: %s" % exc)
     if not hit:
         return _error(404, "the source image of this query is not in the lab image store")
-    path = os.path.join(labdb.image_store(db_path), hit[0], "%s.%s" % (digest, hit[1]))
+    path = os.path.join(labdb.image_dir(db_path, hit[0]), "%s.%s" % (digest, hit[1]))
     if embedded:
         # The steps of run.json and the SAM3 answers of the cache; no request to a model.
         # The candidates tell an answer of the code lookup (plan 42).

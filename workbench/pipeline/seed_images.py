@@ -1,7 +1,7 @@
 """Find the main image of each wine in the Strapi uploads, and store it.
 
 Usage:
-    python3 pipeline/seed_images.py --db data/lab.sqlite3 \\
+    python3 pipeline/seed_images.py --db data/catalog/catalog.sqlite3 \\
         ../../svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads
 
 The script reads the table `wine_catalog` and the flat `uploads` folder of one

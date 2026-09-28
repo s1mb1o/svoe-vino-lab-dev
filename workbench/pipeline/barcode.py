@@ -17,7 +17,7 @@ changes the shared GTIN. The embedding ranks every wine, and the wines of the GT
 first (`first`). The other wines stay below them. The cluster re-rank compares only the
 wines of the GTIN (`cluster_rerank.py`).
 
-`Decoder.scan_file` stores decoded scan stages in `data/cache/barcode/`. A cache hit
+`Decoder.scan_file` stores decoded scan stages in `data/cache/models/barcode/`. A cache hit
 repeats the wine lookup. An incomplete scan resumes when no stored code gives a unique
 hit. The cache key includes the source bytes, options, library versions, and scan
 revision. `model_cache.READ` controls cache reads. Decoder failures are not stored.

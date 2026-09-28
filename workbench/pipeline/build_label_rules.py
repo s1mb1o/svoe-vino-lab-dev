@@ -15,7 +15,7 @@ Clusters page starts the command with it after a note change (plan 45).
 
 The settings come from the block `label_rules` of `config.yaml`. The command does only
 the work that is not current, so a stopped run resumes. It writes
-`data/embeddings/<name>/cluster-rules.json` and prints a JSON summary.
+`data/catalog/embeddings/<name>/cluster-rules.json` and prints a JSON summary.
 
 Exit status: 0 when every call gave a valid record, 1 when a record holds an error, 2
 when the run cannot start or stops (for example, the service refuses the number of

@@ -1,7 +1,7 @@
 """The cluster re-rank of a lab pipeline: the key `rerank` (plan 48).
 
 The re-rank reads the label of the test photo with the rule of a cluster. The rules come
-from plan 45: `data/embeddings/<pipeline embedding>/cluster-rules.json`, the space
+from plan 45: `data/catalog/embeddings/<pipeline embedding>/cluster-rules.json`, the space
 `label`, for the clusters of the view `combined` of `clusters.json` of the same
 directory. A cluster is a group of catalogue cards that look alike.
 

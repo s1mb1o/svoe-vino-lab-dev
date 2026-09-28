@@ -11,13 +11,19 @@ Test data for the Svoe Vino wine scanner.
 - `runs/` holds one directory per match run. It is the history of the measurements.
 - `excluded-slugs.json` names the slugs that are out of the benchmark.
 - `manual-groups.json` names the variant pairs that a reviewer made by hand.
-- `pipeline/` holds the lab database tools. `data/lab.sqlite3` is the lab database.
-  `data/images/` holds the images of the wines. Git ignores `data/`, except
-  `data/images/main/`, `data/images/patched/`, and `data/images/additional/`.
-- `db-export/` holds the text export of `data/lab.sqlite3`, one JSON-lines file for each
-  table. It keeps the history of the database in git. The skill `backup-lab-db` writes
-  and commits it, together with `data/images/main/`, `patched/`, and `additional/`. Read
-  [plan 50](docs/plans/50_lab-db-text-export.md).
+- `pipeline/` holds the lab database tools. `data/` holds the lab data (plan 75):
+  - `data/catalog/` is the catalogue: the lab database `catalog.sqlite3`, the images
+    of the wines in `images/main/`, `images/patched/`, and `images/additional/`, the
+    processed files in `cuts/`, and the embeddings in `embeddings/<name>/`.
+  - `data/testsets/images/` holds the photos of the test sets.
+  - `data/cache/models/` holds the model call cache.
+  - `data/backups/` holds the copies of the database.
+  Git ignores `data/`, except `data/catalog/images/main/`,
+  `data/catalog/images/patched/`, and `data/catalog/images/additional/`.
+- `db-export/` holds the text export of `data/catalog/catalog.sqlite3`, one JSON-lines
+  file for each table. It keeps the history of the database in git. The skill
+  `backup-lab-db` writes and commits it, together with `data/catalog/images/main/`,
+  `patched/`, and `additional/`. Read [plan 50](docs/plans/50_lab-db-text-export.md).
 
 ## The lab database
 
@@ -28,10 +34,10 @@ for the reasons.
 
 ```bash
 # step 1: create the database and its tables
-python3 pipeline/labdb.py data/lab.sqlite3
+python3 pipeline/labdb.py data/catalog/catalog.sqlite3
 
 # step 2: import the Strapi CSV into wine_catalog; the first import adds every wine
-python3 pipeline/import_catalog.py --db data/lab.sqlite3 \
+python3 pipeline/import_catalog.py --db data/catalog/catalog.sqlite3 \
     ../../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv
 ```
 
@@ -50,7 +56,7 @@ python3 pipeline/lab_server.py            # http://127.0.0.1:8168/dataset
 
 `config.yaml` holds two keys: `rootdir` and `database_file`. A relative
 `database_file` is resolved against `rootdir`, so the value is
-`svoe-vino-lab/workbench/data/lab.sqlite3`. The lab server opens the database
+`svoe-vino-lab/workbench/data/catalog/catalog.sqlite3`. The lab server opens the database
 read-only. The Dataset, Embeddings, Clusters, Testset (`/testset`), and Runs pages work.
 `/` redirects to `/dataset`. The navigation order is `Dataset`, `Embeddings`, `Clusters`,
 `Testset`, `Runs`. Each card of the Dataset page holds
@@ -70,7 +76,7 @@ data of the website import of plan 21. The card images come from the table
 `wine_image`: the `main` image at the left and the patch in the patch slot next to it,
 side by side. Each slot shows the processed file with its badge `crop` or `seg`. A
 `crop` whose box is the whole image cut nothing: the slot shows the original and no
-badge. The server sends the files of `data/images/` at
+badge. The server sends the image files (`labdb.image_dir`, plan 75) at
 `/images/<folder>/<sha256>.<extension>`. `Sort` can order the cards by the pixel count
 of the image. The slug of a card links to the page of the wine on vino-svoe.ru. The lab
 server uses port 8168.
@@ -78,7 +84,7 @@ The review tool of `svoe-vino-testset` keeps port 8154, so both can run.
 
 ```bash
 # step 4: find the main image of each wine in the Strapi uploads folder, offline
-python3 pipeline/seed_images.py --db data/lab.sqlite3 \
+python3 pipeline/seed_images.py --db data/catalog/catalog.sqlite3 \
     ../../svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads
 ```
 
@@ -87,10 +93,11 @@ The table `wine_image` holds the images of a wine and the type of each image: `m
 schema 012). A reader such as the Embeddings page uses a `main_patched` image in place of
 the `main` image of the same wine; the card of the Dataset page shows the two side by
 side. `image_derivative` holds one processed file for each original and kind of cut
-(`package` or `label`, schema 017). The files are in `data/images/`:
-`main/`, `patched/`, and `additional/`, each file as `<sha256>.<extension>`. The folder
-`testset/` holds the photos of the test sets (schema 016, see "later: the test sets"
-below).
+(`package` or `label`, schema 017). The files are in `data/catalog/images/`:
+`main/`, `patched/`, and `additional/`, each file as `<sha256>.<extension>`. The
+processed files (folder `cropped`) are in `data/catalog/cuts/`. The photos of the test
+sets (folder `testset`, schema 016, see "later: the test sets" below) are in
+`data/testsets/images/`.
 `seed_images.py` fills `main`. It matches `csv_photo_name` with the upload file names
 by the rule of `build_catalog.py`, and it reads no internet resource. A wine with no
 match gets a console message. Read [plan 08](docs/plans/08_seed-images.md).
@@ -98,7 +105,7 @@ match gets a console message. Read [plan 08](docs/plans/08_seed-images.md).
 The table `image` holds one row for each stored file. Each import also processes each
 image it stores, with `pipeline/derive.py`: an image with a transparent background loses
 its border (`crop`), and SAM3 on gx10 segments the bottle of an image with no
-transparent background (`seg`). The processed file is a PNG in `data/images/cropped/`.
+transparent background (`seg`). The processed file is a PNG in `data/catalog/cuts/`.
 The table `image_derivative` links it to its original by the sha256. The Dataset page
 shows the processed image with the badge `crop` or `seg`. When SAM3 does not answer,
 the image stays unprocessed, and the next import asks again. The key `sam3.endpoint`
@@ -108,7 +115,7 @@ for one import. Read [plan 09](docs/plans/09_image-processing.md).
 
 ```bash
 # step 5: store the patched main images; the file name is the wine slug
-python3 pipeline/seed_patched.py --db data/lab.sqlite3 \
+python3 pipeline/seed_patched.py --db data/catalog/catalog.sqlite3 \
     ../../svoe-wino-hackaton/dataset/patched-official-2026-09-17
 ```
 
@@ -122,7 +129,7 @@ and [plan 14](docs/plans/14_patch-editor.md).
 The patch editor of the Dataset page on the lab server stands next to the card image.
 Drop a JPEG, PNG, or WebP file of at most 20 MiB on it, or press it to choose a file.
 The page sends the file at once; there is no `Apply` step. The editor shows
-`Processing…` while the server stores the file in `data/images/patched/`, writes the
+`Processing…` while the server stores the file in `data/catalog/images/patched/`, writes the
 `main_patched` row, and creates its package cut and label cut. SAM3 can take up to about
 two minutes. When SAM3 does not answer, the patch stays stored. The page shows a warning
 for each missing cut. A patch applied by mistake is removed with the red `Clear` button.
@@ -134,7 +141,7 @@ The editor does not write the patch folder.
 
 ```bash
 # step 6: the GTINs and the QR URLs of the code map of the matcher
-python3 pipeline/seed_codes.py --db data/lab.sqlite3 \
+python3 pipeline/seed_codes.py --db data/catalog/catalog.sqlite3 \
     ../../svoe-vino-matcher/dataset/code-map.json
 ```
 
@@ -171,7 +178,7 @@ time, or `added: unknown` for NULL.
 ```bash
 # step 7: the Atlas Core product of each wine, from the files of svoe-wino-hackaton
 D=../../svoe-wino-hackaton/dataset/derived/official-2026-09-17
-python3 pipeline/seed_atlas_bindings.py --db data/lab.sqlite3 \
+python3 pipeline/seed_atlas_bindings.py --db data/catalog/catalog.sqlite3 \
     --matches $D/atlas-matches.jsonl --manual $D/atlas-bindings.manual.jsonl
 ```
 
@@ -297,7 +304,7 @@ remove a manual wine. The review tool shows no button. Read
 
 ```bash
 # later: compare wine_catalog with the live catalogue of vino-svoe.ru
-python3 pipeline/import_website.py --db data/lab.sqlite3
+python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3
 ```
 
 `import_website.py` reads the JSON API `https://api.vino-svoe.ru/v1`: the list pages,
@@ -342,7 +349,7 @@ close and Back give `/dataset`.
 
 ```bash
 # later: the test sets my, official-real-photos, and vlmrerank-8b-failed
-python3 pipeline/import_testsets.py --db data/lab.sqlite3
+python3 pipeline/import_testsets.py --db data/catalog/catalog.sqlite3
 ```
 
 `import_testsets.py` imports the three test sets of `../../svoe-vino-testset/dataset/` into
@@ -354,19 +361,19 @@ map `wines` and the old `excluded-slugs.json` become rows of `wine_comment`; a s
 import adds no text again (schema 022, plan 51). Since plan 24 the database is the source of the labels: the
 Testset page writes to the rows. So the import refuses a set that holds a page edit;
 `--force` replaces the page edits with the files. A photo is stored as
-`data/images/testset/<sha256>.<extension>`, one time for the same bytes. A photo whose
+`data/testsets/images/<sha256>.<extension>`, one time for the same bytes. A photo whose
 bytes the lab holds already, for example as a patch, keeps that file. `--source` names
 another directory of the sets. `import_testset.py --set <name> <dir>` imports one set.
 Read [plan 12](docs/plans/12_testsets-benchmark.md).
 
 ```bash
 # seed or restore: build the whole lab database again from its sources
-python3 pipeline/seed_from_testset.py --db data/lab.sqlite3
+python3 pipeline/seed_from_testset.py --db data/catalog/catalog.sqlite3
 ```
 
 `seed_from_testset.py` runs the steps of this section in one command: the tables, the
 catalogue, the main images, the patches, the GTINs and QR URLs, the Atlas Core bindings,
-the three test sets, and the label cuts (SAM3 on gx10 through `data/cache/sam3/`). It
+the three test sets, and the label cuts (SAM3 on gx10 through `data/cache/models/sam3/`). It
 builds the new database at `<db>.seeding`, next to `--db`, with the same image store. A
 failed step stops the script, and `--db` does not change; the next run deletes the
 partial file. After the last step, the old database goes to
@@ -376,13 +383,13 @@ the sources alone: a wine state, a comment, a favorite, a manual wine, an altern
 photo, an edit of the Testset page, and an image description are in the backup only. It
 copies no configuration, no run, and no cluster. Read
 [plan 28](docs/plans/28_seed-from-testset.md).
-Git ignores the whole `data/` directory, except `data/images/main/`,
-`data/images/patched/`, and `data/images/additional/` (plan 50).
+Git ignores the whole `data/` directory, except `data/catalog/images/main/`,
+`data/catalog/images/patched/`, and `data/catalog/images/additional/` (plan 50).
 
 ## The Testset page of the lab
 
 The Testset page of the lab server (`/testset`) shows one test set of the database and
-writes the labels of its photos. Each click writes to `data/lab.sqlite3` at once. The page
+writes the labels of its photos. Each click writes to `data/catalog/catalog.sqlite3` at once. The page
 is a port of the Testset page of the review tool, with a smaller scope. Read
 [plan 24](docs/plans/24_testset-page.md).
 
@@ -506,7 +513,7 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   /embedding`; its job runs with `embedding_python`.
   `first N queries` (empty: all) and `workers` (empty: the value of the entry) are
   optional. The checkbox `Use caches` is on at each page load: a model call that repeats
-  an earlier call reads its answer from `data/cache/` (SAM3, GDINO, VLM, LLM). Barcode
+  an earlier call reads its answer from `data/cache/models/` (SAM3, GDINO, VLM, LLM). Barcode
   scans also use this setting. Off, the
   job reads no record, each model call goes to its service, and the latency is real
   time; the fresh answers are still stored (`run_job.py --no-cache`; owner answers of
@@ -533,7 +540,7 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
 
 ```bash
 # write the JSON files of one set from the database (the database is the source)
-python3 pipeline/export_testset.py --db data/lab.sqlite3 --set my --out <directory>
+python3 pipeline/export_testset.py --db data/catalog/catalog.sqlite3 --set my --out <directory>
 ```
 
 The export writes `review-labels.json` into `--out`, in the form of the review tool. The
@@ -560,7 +567,7 @@ python3 -m venv ~/.venvs/svoe-vino-lab
     --name gx10-siglip2-so400m-patch16-naflex-p256
 ```
 
-- A build writes `data/embeddings/<name>/`: `index.json` with the settings and the
+- A build writes `data/catalog/embeddings/<name>/`: `index.json` with the settings and the
   items, `vectors-<8 hex>.npy` with one float32 row for each item, and
   `images/<source_sha256>_<view>.png`. The PNG is the exact model input. The database
   does not change.
@@ -571,7 +578,7 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   is variant F: the same with the label cut. The label cut of a full original is the
   row of the kind `label` of `image_derivative` (plan 22). A patch, a full alternative
   photo, a manual wine, and a new main image of the website import get it when they are
-  stored. `python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3` makes each missing
+  stored. `python3 pipeline/seed_label_cuts.py --db data/catalog/catalog.sqlite3` makes each missing
   one with SAM3 and the label rule of plan 16. If SAM3 finds no label and identifies a printed `packet` or
   `box`, schema 021 records that the label cut is not applicable. The label item is
   omitted, and the full-package vector stays. A bottle or can with no label cut fails
@@ -654,7 +661,7 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   `local`. The entry `vino-svoe-search-by-photo` moved to the key `pipeline` on
   2026-09-26 (owner message of 2026-09-25T23:37:48+0300, plan 34), so `/embedding` and
   `/clusters` do not show it. The owner removed the entry `mock`, its code, and
-  `data/embeddings/mock/` on 2026-09-26 (owner messages of 00:26:27 and 00:29:55). An
+  `data/catalog/embeddings/mock/` on 2026-09-26 (owner messages of 00:26:27 and 00:29:55). An
   entry of `embeddings` with another backend gets an error that names the key
   `pipeline`.
 - A pipeline of the backend `embedding` names an entry of the backend `openai` or `local`
@@ -686,7 +693,7 @@ configuration. Read [plan 30](docs/plans/30_embedding-clusters.md).
     --name gx10-siglip2-so400m-patch16-naflex-p256
 ```
 
-The command writes `data/embeddings/<name>/clusters.json`. The button `Build clusters` of
+The command writes `data/catalog/embeddings/<name>/clusters.json`. The button `Build clusters` of
 the page does the same for the selected configuration. The button `Build all clusters`
 (plan 65, `POST /api/clusters/build-all`) builds each configuration with no configuration
 error, one at a time, in the order of `config.yaml`. A thread of the lab server runs the
@@ -781,7 +788,7 @@ question is valid. The mode is `sheet` when a question is valid, else `verdict` 
 rule text is not empty and names no feature outside the label, else `none`. Each question
 holds `evidence`: the SHA-256 of the picture that stage 2 sent for each card.
 
-`data/embeddings/<name>/cluster-rules.json` holds the descriptions under `cards` (by slug)
+`data/catalog/embeddings/<name>/cluster-rules.json` holds the descriptions under `cards` (by slug)
 and the rules under `spaces.label` (by cluster key). A rule is current while its inputs
 stay the same: the members, the card data, the pictures, the descriptions, the note, and
 the settings of the prompt. A cluster build that keeps the members keeps the rule; the
@@ -796,7 +803,7 @@ questions of the rule (plan 43).
 
 `Save note` also starts the rebuild of the rule of that cluster (owner answer of
 2026-09-26T11:11:00+0300): the route runs `build_label_rules.py --cluster <slug> --wait`
-as a separate process, and its output goes to `data/embeddings/<name>/label-rules.log`.
+as a separate process, and its output goes to `data/catalog/embeddings/<name>/label-rules.log`.
 The rebuild waits for a running rule build. The page shows `Saved · rebuilding the rule…`,
 asks for the rule every 3 s, and replaces the rule block when the rule is current
 (`Rule rebuilt`), usually after 10 to 20 s. After 5 minutes it stops and names the log.
@@ -932,7 +939,7 @@ The table `image_description` describes each image that `wine_image` links to a 
   cards do not change while the page is open; a reload shows the new descriptions.
 - The dialog holds a closed block `Raw VLM reply` for a row that the VLM filled. It
   loads `GET /api/image-description-reply?sha256=<sha256>` when it opens: the record of
-  the call in `data/cache/`, with the model, `finish_reason`, the tokens, the reply text,
+  the call in `data/cache/models/`, with the model, `finish_reason`, the tokens, the reply text,
   the prompt, the full response body, and the request fields. The route builds the key of
   the call again from the image, `max_side`, the `vlm` entry, and the prompt; a change of
   one of them makes an old record unfindable (`found: false`).
@@ -1009,7 +1016,7 @@ newest `created_at`, then the higher `id`) is the effective description.
   `max_tokens` `label_rules.describe_max_tokens` (1,500), thinking off, `json_object`, and
   the VLM entry `label_rules.vlm`. An answer that `max_tokens` cut off is sent once more
   with `repetition_penalty` 1.15 and 3,000 tokens (the loop guard). Stage 3 and the
-  cluster rules share the records of `data/cache/`.
+  cluster rules share the records of `data/cache/models/`.
 - It is a separate request. It does not change the class request of stage 1.
 - The code repairs obvious key drift: `text` becomes `texts`, `number` becomes `numbers`,
   `colors` becomes `colours`, and so on (`label_descriptions.repair`). Then
@@ -1071,7 +1078,7 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   One request to the endpoint of the entry gives the vector of each view. The score of a
   wine is the mean of its best cosine in each view of the photo, over the current items
   of the index; a stale item stays out. When SAM3 finds no label, the photo has the view
-  `full` alone. The SAM3 answers go to `data/cache/sam3/`, so a second run of a set sends
+  `full` alone. The SAM3 answers go to `data/cache/models/sam3/`, so a second run of a set sends
   no SAM3 request. When SAM3 does not answer, the run asks it no more, and each photo
   gets an error. `run.json` holds `configuration: <pipeline>`, and its `backend` holds
   `kind: embedding`, `embedding: <entry>`, the steps of each view, and the SAM3 settings;
@@ -1170,7 +1177,7 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   a slug is its processed patch when the wine has a `main_patched` image (with the mark
   `patched`), else its processed `main` image, as on the card of `/dataset`.
 - The cluster frames and the VLM box read the clusters of the embedding of the open run
-  (plan 43): the view `combined` of `data/embeddings/<name>/clusters.json`, and the
+  (plan 43): the view `combined` of `data/catalog/embeddings/<name>/clusters.json`, and the
   `label` rule of a cluster from `cluster-rules.json` of the same directory. The route is
   `/api/run-clusters?id=<run id>`. A pipeline run names its embedding in
   `backend.embedding` of `run.json`. An older run of an embedding configuration names it
@@ -1182,7 +1189,7 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   old run of the removed pipeline `mock`, states that it has no model input. A run of a
   remote pipeline states that the photo went to the remote matcher as it is. A run of an embedding configuration
   shows the model input of each view: the route makes it again from the steps of
-  `run.json` and the SAM3 answers of `data/cache/sam3/`, and sends no request.
+  `run.json` and the SAM3 answers of `data/cache/models/sam3/`, and sends no request.
 - A click on a candidate image of an embedding run opens the large view with the
   catalogue inputs of that wine in the strip (plan 38, owner message of
   2026-09-26T01:23:11+0300). Each item is the PNG of the index that went to the model,
@@ -1308,7 +1315,7 @@ The check loads no model on gx10:
   The vino-svoe.ru API gets `GET /v1/wines?page=1&perPage=1`; the check sends no photo.
 - The entry of the backend `local` imports torch and transformers in `embedding_python`,
   and looks for the model in the Hugging Face cache. It loads no model.
-- The check does not read `data/cache/`: a health check MUST reach the service.
+- The check does not read `data/cache/models/`: a health check MUST reach the service.
 
 Two pitfalls of the gx10 gateway:
 
@@ -1322,7 +1329,7 @@ Two pitfalls of the gx10 gateway:
 ## The cache of the model calls
 
 A call to SAM3, to Grounding DINO, or to a VLM that repeats an earlier successful call
-reads the answer from `data/cache/` and sends no request. Read
+reads the answer from `data/cache/models/` and sends no request. Read
 [plan 25](docs/plans/25_model-call-cache.md).
 
 ```bash
@@ -1335,7 +1342,7 @@ python3 pipeline/gdino.py <image> --texts "wine bottle, label" [--model mm-gdino
   (the nouns, or the VLM messages), and the sha256 of each sent image. The hash is the
   hash of the sent copy, after the resize. The timeout, the retries, the headers, and
   the API key are not in the key.
-- One record is one JSON file `data/cache/<model>/<key[0:2]>/<key>.json`. It holds the
+- One record is one JSON file `data/cache/models/<model>/<key[0:2]>/<key>.json`. It holds the
   request fields, `created`, `ms`, and the answer as the service sent it. It holds no
   image.
 - A success alone is stored: HTTP 200 with a JSON body, and for a VLM at least one entry
@@ -1349,7 +1356,7 @@ python3 pipeline/gdino.py <image> --texts "wine bottle, label" [--model mm-gdino
   in the key, the checkpoint is not.
 - Unit tests set `model_cache.ROOT` to a temporary directory.
 
-Barcode scans use the same cache store in `data/cache/barcode/`. The key includes the
+Barcode scans use the same cache store in `data/cache/models/barcode/`. The key includes the
 source file SHA-256, all decoder options, the zxing-cpp version, the Pillow version,
 and the scan revision. The record holds decoded codes for the whole image and each
 completed tile. A scan with no code is cached too. Decoder failures are not cached.
@@ -1678,7 +1685,7 @@ the Embeddings page; with no label cut, the answer holds a warning. The badge sh
 `FF`, `LF`, `FB`, `LB` below each photo change the type at once; the filled button is
 the present type. A change between a full type and a label type cuts the photo again; a
 change between front and back keeps the cut. `×` and `Apply` delete the row; the file
-stays in `data/images/additional/`. When SAM3 does not answer, the photo gets
+stays in `data/catalog/images/additional/`. When SAM3 does not answer, the photo gets
 `full_front`, no processed file, and a warning. The detection rules were fitted to small
 probe sets; their accuracy on real photos is not known, so check the type.
 
@@ -1941,7 +1948,7 @@ so the hash of the silhouette hides the label. Read `ResearchLog.md` for the num
 ### Catalogue clusters (retired)
 
 Plan 43 retired the catalogue clusters on 2026-09-26. The lab reads cluster data only
-from `data/embeddings/<name>/`. See
+from `data/catalog/embeddings/<name>/`. See
 [The embedding clusters of the lab](#the-embedding-clusters-of-the-lab) and
 [plan 43](docs/plans/43_embedding-clusters-only.md).
 

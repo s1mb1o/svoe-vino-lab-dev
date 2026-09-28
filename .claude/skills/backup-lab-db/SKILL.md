@@ -1,11 +1,11 @@
 ---
 name: backup-lab-db
-description: Back up the svoe-vino-lab workbench database data/lab.sqlite3 as a text export in db-export/ and commit it together with the image folders data/images/main/, data/images/patched/, and data/images/additional/, so that git keeps the history of each row, each main photo, each patch, and each alternative photo. Also restores an export from the working tree or from any commit into a new database file. Use when asked to back up, snapshot, export, or commit the lab database, to show the history of lab data, or to restore the lab database from git.
+description: Back up the svoe-vino-lab workbench database data/catalog/catalog.sqlite3 as a text export in db-export/ and commit it together with the image folders data/catalog/images/main/, data/catalog/images/patched/, and data/catalog/images/additional/, so that git keeps the history of each row, each main photo, each patch, and each alternative photo. Also restores an export from the working tree or from any commit into a new database file. Use when asked to back up, snapshot, export, or commit the lab database, to show the history of lab data, or to restore the lab database from git.
 ---
 
 # Back up the lab database to git
 
-`data/lab.sqlite3` is a binary file, and git ignores it. So git cannot keep its history. `pipeline/db_export.py` writes the database as text files into `db-export/`.
+`data/catalog/catalog.sqlite3` is a binary file, and git ignores it. So git cannot keep its history. `pipeline/db_export.py` writes the database as text files into `db-export/`.
 Each row is one line, so `git diff` shows each added, changed, and removed row. Read
 [plan 50](../../../workbench/docs/plans/50_lab-db-text-export.md) for the reasons.
 
@@ -21,11 +21,14 @@ Each row keeps its `rowid`. The lab code sorts by `rowid` to keep the import ord
 restore without the `rowid` is not the same database. A changed row is one removed line
 and one added line in `git diff`.
 
-The same commit holds the image files of `data/images/main/`, `data/images/patched/`, and
-`data/images/additional/`. The owner asked for this on 2026-09-26. Each file name is the sha256 of the file, so a
-file never changes: git adds a new file or records a removed file. `.gitignore` keeps the
-rest of `data/` out of git: the database file, `data/cache/`, `data/backups/`,
-`data/embeddings/`, and the image folders `cropped/` and `testset/`.
+The same commit holds the image files of `data/catalog/images/main/`,
+`data/catalog/images/patched/`, and `data/catalog/images/additional/`. The owner asked
+for this on 2026-09-26. Each file name is the sha256 of the file, so a file never
+changes: git adds a new file or records a removed file. `.gitignore` keeps the rest of
+`data/` out of git: the database file, `data/catalog/cuts/`,
+`data/catalog/embeddings/`, `data/testsets/`, `data/cache/`, and `data/backups/`.
+Plan 75 moved the image folders from `data/images/` on 2026-09-28. A commit before the
+move holds them at `data/images/<folder>/`.
 
 Run every command in the workbench root:
 
@@ -57,7 +60,7 @@ the error to the owner.
 - A column holds a BLOB. The export keeps text and numbers alone. A new BLOB column needs
   a change of `pipeline/db_export.py`.
 - A table name is not safe as a file name.
-- `data/lab.sqlite3` does not exist.
+- `data/catalog/catalog.sqlite3` does not exist.
 
 ## 2. Check the export with a round trip
 
@@ -80,7 +83,7 @@ Do not use `git add` or `git commit` with the shared index.
 
 ```bash
 D=$(mktemp -d); IDX="$D/index"
-P=(db-export data/images/main data/images/patched data/images/additional)
+P=(db-export data/catalog/images/main data/catalog/images/patched data/catalog/images/additional)
 OLD=$(git rev-parse HEAD); BRANCH=$(git symbolic-ref HEAD)
 GIT_INDEX_FILE="$IDX" git read-tree "$OLD"
 GIT_INDEX_FILE="$IDX" git add -A -- "${P[@]}"
@@ -91,13 +94,13 @@ else
   K=$(ls db-export/rows | wc -l | tr -d ' ')
   N=$(cat db-export/rows/*.jsonl | wc -l | tr -d ' ')
   { echo "Lab database export (schema $V, $K tables, $N rows)"; echo
-    echo "The skill backup-lab-db exported data/lab.sqlite3 at $(date +%Y-%m-%dT%H:%M:%S%z)."
+    echo "The skill backup-lab-db exported data/catalog/catalog.sqlite3 at $(date +%Y-%m-%dT%H:%M:%S%z)."
     echo "Lines added and removed in each file (a changed row counts in both columns):"
     GIT_INDEX_FILE="$IDX" git diff --cached --numstat "$OLD" -- db-export | grep . \
       || echo "no change"
     echo "Image files (A added, D removed):"
-    GIT_INDEX_FILE="$IDX" git diff --cached --name-status "$OLD" -- data/images \
-      | awk '{split($2, p, "/"); n[$1 " " p[1] "/" p[2] "/" p[3]]++}
+    GIT_INDEX_FILE="$IDX" git diff --cached --name-status "$OLD" -- data/catalog/images \
+      | awk '{split($2, p, "/"); n[$1 " " p[1] "/" p[2] "/" p[3] "/" p[4] "/" p[5]]++}
              END {for (k in n) print n[k], k}' | sort -k2 | grep . || echo "no change"
   } > "$D/message"
   TREE=$(GIT_INDEX_FILE="$IDX" git write-tree)
@@ -171,9 +174,11 @@ To open a restored file, use `labdb.connect`. It applies the newer schema files 
 
 The image files need no restore step while they are in the working tree. A removed image
 comes back from a commit that holds it:
-`git checkout <commit> -- data/images/patched/<sha256>.<extension>`.
+`git checkout <commit> -- data/catalog/images/patched/<sha256>.<extension>`. A commit
+before plan 75 holds the file at `data/images/patched/`: copy it with
+`git show <commit>:workbench/data/images/patched/<file> > data/catalog/images/patched/<file>`.
 
-Do not put a restored file in the place of `data/lab.sqlite3` unless the owner asks for
+Do not put a restored file in the place of `data/catalog/catalog.sqlite3` unless the owner asks for
 it. The swap needs a stop of the lab server and a start again. Follow the rules 22 to 24
-of `AGENTS.md`. Before the swap, copy the present `data/lab.sqlite3` to
+of `AGENTS.md`. Before the swap, copy the present `data/catalog/catalog.sqlite3` to
 `data/backups/lab-before-restore-<UTC time>.sqlite3`.

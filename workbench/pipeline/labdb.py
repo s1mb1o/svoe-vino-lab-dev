@@ -5,7 +5,7 @@ number of the last applied file. `connect` applies each newer file in number ord
 one transaction per file. Read `docs/plans/07_sqlite-lab-database.md`.
 
 Usage:
-    python3 pipeline/labdb.py data/lab.sqlite3
+    python3 pipeline/labdb.py data/catalog/catalog.sqlite3
 """
 import argparse
 import os
@@ -23,6 +23,14 @@ IMAGE_FOLDERS = {"main": "main", "main_patched": "patched", "full_front": "addit
                  "label_back": "additional"}
 # The folder of the processed files. Read `pipeline/schema/007_image_table.sql`.
 DERIVED_FOLDER = "cropped"
+# The folder of the test photos.
+TESTSET_FOLDER = "testset"
+# The layout of the data directory (plan 75). The database file is in the catalogue
+# directory `catalog/`. The parent of that directory is the data root. The data root
+# holds `testsets/`, `cache/`, and `backups/`. A database file in a directory with
+# another name is its own data root, so each file of a unit test stays in the temporary
+# directory of the test.
+CATALOG_DIR = "catalog"
 
 
 class SchemaError(Exception):
@@ -98,9 +106,35 @@ def connect(path, create=False, directory=SCHEMA_DIR):
     return conn
 
 
-def image_store(db_path):
-    """Return the image store of the database at `db_path`: `images/` next to it."""
-    return os.path.join(os.path.dirname(os.path.abspath(db_path)), "images")
+def catalog_dir(db_path):
+    """Return the catalogue directory: the directory of the database file."""
+    return os.path.dirname(os.path.abspath(db_path))
+
+
+def data_root(db_path):
+    """Return the data root of the database at `db_path` (plan 75)."""
+    directory = catalog_dir(db_path)
+    if os.path.basename(directory) == CATALOG_DIR:
+        return os.path.dirname(directory)
+    return directory
+
+
+def image_dir(db_path, folder):
+    """Return the directory of the files of one folder of the table `image`.
+
+    The catalogue images are in `<catalogue>/images/<folder>/`, the processed files in
+    `<catalogue>/cuts/`, and the test photos in `<data root>/testsets/images/`.
+    """
+    if folder == TESTSET_FOLDER:
+        return os.path.join(data_root(db_path), "testsets", "images")
+    if folder == DERIVED_FOLDER:
+        return os.path.join(catalog_dir(db_path), "cuts")
+    return os.path.join(catalog_dir(db_path), "images", folder)
+
+
+def backups_dir(db_path):
+    """Return the directory of the database copies: `<data root>/backups/`."""
+    return os.path.join(data_root(db_path), "backups")
 
 
 def tables(conn):

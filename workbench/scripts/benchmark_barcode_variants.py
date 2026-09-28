@@ -324,7 +324,7 @@ def main(argv=None):
     parser.add_argument("--baseline-run", required=True, type=Path)
     parser.add_argument("--baseline-log", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--images-dir", type=Path, default=ROOT / "data" / "images")
+    parser.add_argument("--images-dir", type=Path, default=ROOT / "data" / "testsets" / "images")
     parser.add_argument("--variants", default=",".join(VARIANTS))
     parser.add_argument("--limit", type=int)
     parser.add_argument("--resume", action="store_true")

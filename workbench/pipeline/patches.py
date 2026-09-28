@@ -55,7 +55,7 @@ class PatchError(Exception):
 
 def file_path(db_path, folder, digest, extension):
     """Return the path of one file of the image store."""
-    return os.path.join(labdb.image_store(db_path), folder, "%s.%s" % (digest, extension))
+    return os.path.join(labdb.image_dir(db_path, folder), "%s.%s" % (digest, extension))
 
 
 def insert_image(conn, digest, extension, width, height, folder=None):

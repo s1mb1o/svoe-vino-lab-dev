@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import testset_fixture as FX  # noqa: E402
 import comments as CM  # noqa: E402
 import import_testset as IT  # noqa: E402
+import labdb  # noqa: E402
 import testsets as TS  # noqa: E402
 
 
@@ -386,7 +387,7 @@ class TestsetsTest(unittest.TestCase):
         self.assertEqual((answer["photo"]["width"], answer["photo"]["entry"]), (25, {}))
         self.assertEqual(answer["counts"]["no_match"], 2)
         digest = answer["photo"]["sha256"]
-        stored = Path(self.db).parent / "images" / "testset" / ("%s.jpg" % digest)
+        stored = Path(labdb.image_dir(self.db, "testset")) / ("%s.jpg" % digest)
         self.assertEqual(stored.read_bytes(), data)
         self.assertEqual(self.query("SELECT folder, extension, width, height FROM image "
                                     "WHERE sha256 = ?", digest),

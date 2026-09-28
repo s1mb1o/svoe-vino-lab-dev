@@ -343,7 +343,7 @@ class DeriveAllTest(unittest.TestCase):
         self.assertEqual(self.conn.execute(
             "SELECT folder, extension, width, height FROM image WHERE sha256 = ?",
             (derived,)).fetchone(), ("cropped", "png", 20, 80))
-        stored = self.root / "images" / "cropped" / (derived + ".png")
+        stored = Path(labdb.image_dir(self.db, labdb.DERIVED_FOLDER)) / (derived + ".png")
         self.assertEqual(hashlib.sha256(stored.read_bytes()).hexdigest(), derived)
         again = self.run_all([(digest, path)], FakeSegmenter(fail=True))
         self.assertEqual((again.processed(), again.present, again.written), (0, 1, 0))

@@ -7,7 +7,7 @@ row of `results.jsonl`. The page draws them as the step view of `drink-atlas-rec
   each view, the embedding, the search in the space of each view, and the score. A row of
   a run after plan 41 holds the key `trace` (`embedding_run.Trace`): the time and the
   result of each step. The images are made again from the SAM3 answers of
-  `data/cache/sam3/` with the code of the run, and each model input is checked against
+  `data/cache/models/sam3/` with the code of the run, and each model input is checked against
   the sha256 of the trace. An older row has no time.
 - A matcher run (`svoe-vino-matcher`): the photo, the model inputs of the matcher, the
   request, and the re-rank steps of its `explain` records, with the order before each.
@@ -130,7 +130,7 @@ class Photo:
                            (digest,)).fetchone() if digest else None
         self.extension = hit[1] if hit else None
         self.url = "/images/%s/%s.%s" % (hit[0], digest, hit[1]) if hit else None
-        self.path = (os.path.join(labdb.image_store(db_path), hit[0],
+        self.path = (os.path.join(labdb.image_dir(db_path, hit[0]),
                                   "%s.%s" % (digest, hit[1])) if hit else None)
         self.image, self.error = None, None
         if not self.path:

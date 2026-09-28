@@ -132,7 +132,7 @@ def main(argv=None):
     parser.add_argument("--workers", type=int, default=None,
                         help="requests at a time; the default is the value of the entry")
     parser.add_argument("--no-cache", dest="use_cache", action="store_false",
-                        help="read no answer of data/cache/: each model call goes to its "
+                        help="read no answer of data/cache/models/: each model call goes to its "
                              "service, so the latency is real time; the fresh answers are "
                              "stored")
     parser.add_argument("--no-barcode", dest="use_barcode", action="store_false",

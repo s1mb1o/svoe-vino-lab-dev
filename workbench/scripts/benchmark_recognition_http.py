@@ -363,7 +363,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("baseline-run", "baseline-log", "stage1", "output"):
         parser.add_argument("--" + name, required=True, type=Path)
-    parser.add_argument("--images-dir", type=Path, default=ROOT / "data/images")
+    parser.add_argument("--images-dir", type=Path, default=ROOT / "data/testsets/images")
     parser.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     parser.add_argument("--profile", default=cli.DEFAULT_PROFILE)
     parser.add_argument("--variants", default="full")

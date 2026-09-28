@@ -155,7 +155,7 @@ class BenchmarkTest(unittest.TestCase):
         # import. The row then keeps its folder, for example `main`.
         row = next(r for r in self.queries()[0] if r["image_path"] == "wine-a/01.jpg")
         source = Path(row["abs_path"])
-        self.assertEqual(source.parent.name, "testset")
+        self.assertEqual(source.parent.parts[-2:], ("testsets", "images"))
         target = Path(self.db).parent / "images" / "main" / source.name
         target.parent.mkdir(parents=True)
         source.rename(target)

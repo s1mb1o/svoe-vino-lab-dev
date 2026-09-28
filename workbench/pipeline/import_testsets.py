@@ -1,9 +1,9 @@
 """Import the three test sets of `svoe-vino-testset/dataset/` into the lab database.
 
 Usage:
-    python3 pipeline/import_testsets.py --db data/lab.sqlite3
-    python3 pipeline/import_testsets.py --db data/lab.sqlite3 --source ../../svoe-vino-testset/dataset
-    python3 pipeline/import_testsets.py --db data/lab.sqlite3 --force
+    python3 pipeline/import_testsets.py --db data/catalog/catalog.sqlite3
+    python3 pipeline/import_testsets.py --db data/catalog/catalog.sqlite3 --source ../../svoe-vino-testset/dataset
+    python3 pipeline/import_testsets.py --db data/catalog/catalog.sqlite3 --force
 
 The sets are `my`, `official-real-photos`, and `vlmrerank-8b-failed`. The set name in the
 database is the name of the directory. Each set is imported with `import_testset.py`, in

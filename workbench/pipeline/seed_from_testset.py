@@ -1,7 +1,7 @@
 """Build the lab database again from svoe-vino-testset and its sources, then swap it in.
 
 Usage:
-    python3 pipeline/seed_from_testset.py --db data/lab.sqlite3
+    python3 pipeline/seed_from_testset.py --db data/catalog/catalog.sqlite3
 
 The script is the seed and the restore of the lab database. A first run fills an empty
 lab. A later run brings the lab back to the state of the files of svoe-vino-testset after
@@ -23,13 +23,14 @@ The steps, in this order. Each step is one tool of `pipeline/`:
 
 Rules:
 - The script builds a new database `<db>.seeding` next to `--db`. So the new database
-  uses the same image store `images/` as `--db`, and a stored file is not copied again.
+  uses the same image directories as `--db`, and a stored file is not copied again.
 - Each step runs as a separate process. A step that exits with a status other than 0
   stops the script. `--db` then does not change. The partial database stays at
   `<db>.seeding` for a check. The next run deletes it.
 - After the last step, the script copies `--db` to `backups/<name>-<UTC time>.sqlite3`
-  next to it. Then it copies the new database into `--db`. The two copies use the SQLite
-  backup API, so a running lab server does not need a restart.
+  in the data root (`labdb.backups_dir`, plan 75). Then it copies the new database
+  into `--db`. The two copies use the SQLite backup API, so a running lab server does
+  not need a restart.
 - The script reads the sources. It never writes to them.
 - The new database holds the data of the sources alone. The data that the lab alone
   holds are not in it, for example a wine state, a comment, a favorite, a wine added by
@@ -45,6 +46,8 @@ import sys
 import time
 from contextlib import closing
 from pathlib import Path
+
+import labdb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 WORKSPACE = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
@@ -128,9 +131,10 @@ def copy_database(source, target):
 
 
 def backup_path(db_path, now):
-    """Return the path of the backup of `db_path`: `backups/<name>-<UTC time>.sqlite3`."""
+    """Return the path of the backup of `db_path`: `backups/<name>-<UTC time>.sqlite3` in
+    the data root."""
     stem = os.path.splitext(os.path.basename(db_path))[0]
-    return os.path.join(os.path.dirname(db_path), "backups",
+    return os.path.join(labdb.backups_dir(db_path),
                         "%s-%s.sqlite3" % (stem, now.strftime("%Y%m%dT%H%M%SZ")))
 
 
@@ -162,7 +166,8 @@ def main(argv=None):
         description="Build the lab database again from svoe-vino-testset and its "
                     "sources. Back up the old database, then swap the new one in.")
     parser.add_argument("--db", required=True,
-                        help="path of the lab database, for example data/lab.sqlite3")
+                        help="path of the lab database, for example "
+                             "data/catalog/catalog.sqlite3")
     args = parser.parse_args(argv)
 
     db_path = os.path.abspath(args.db)

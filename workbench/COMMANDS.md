@@ -1,30 +1,31 @@
 Стереть базу данных:
 ```
 cd svoe-vino-lab/workbench
-rm data/lab.sqlite3
+rm data/catalog/catalog.sqlite3
 ```
-The image files in `data/images/` stay. A new load uses them again.
+The image files in `data/catalog/images/`, `data/catalog/cuts/`, and
+`data/testsets/images/` stay. A new load uses them again.
 
 Создать базу данных (или обновить её схему):
 ```
-python3 pipeline/labdb.py data/lab.sqlite3
+python3 pipeline/labdb.py data/catalog/catalog.sqlite3
 ```
 
 Загрузить данные в базу данных:
 ```
-python3 pipeline/import_catalog.py --db data/lab.sqlite3 \
+python3 pipeline/import_catalog.py --db data/catalog/catalog.sqlite3 \
     ../../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv
 
-python3 pipeline/seed_images.py --db data/lab.sqlite3 \
+python3 pipeline/seed_images.py --db data/catalog/catalog.sqlite3 \
     ../../svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads
 
-python3 pipeline/seed_patched.py --db data/lab.sqlite3 \
+python3 pipeline/seed_patched.py --db data/catalog/catalog.sqlite3 \
     ../../svoe-wino-hackaton/dataset/patched-official-2026-09-17
 
-python3 pipeline/seed_codes.py --db data/lab.sqlite3 \
+python3 pipeline/seed_codes.py --db data/catalog/catalog.sqlite3 \
     ../../svoe-vino-matcher/dataset/code-map.json
 
-python3 pipeline/seed_atlas_bindings.py --db data/lab.sqlite3 \
+python3 pipeline/seed_atlas_bindings.py --db data/catalog/catalog.sqlite3 \
     --matches ../../svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-matches.jsonl \
     --manual ../../svoe-wino-hackaton/dataset/derived/official-2026-09-17/atlas-bindings.manual.jsonl
 ```
@@ -36,7 +37,7 @@ removed on the page. Add `--force` to add the missing rows anyway.
 Загрузить тестовые наборы `my`, `official-real-photos` и `vlmrerank-8b-failed` из
 `svoe-vino-testset/dataset/`:
 ```
-python3 pipeline/import_testsets.py --db data/lab.sqlite3
+python3 pipeline/import_testsets.py --db data/catalog/catalog.sqlite3
 ```
 Each run makes the rows of each set equal to its JSON files again. A second run writes
 no new image file. Since plan 24 the Testset page `/testset` writes the labels to the
@@ -46,22 +47,22 @@ Add `--force` to replace the page edits with the files.
 Собрать базу данных заново из `svoe-vino-testset` и исходных файлов (заполнить пустую
 лабораторию или вернуть её в состояние этих файлов после теста):
 ```
-python3 pipeline/seed_from_testset.py --db data/lab.sqlite3
+python3 pipeline/seed_from_testset.py --db data/catalog/catalog.sqlite3
 ```
 The old database goes to `data/backups/`. The data of the lab alone (states, comments,
 favorites, manual wines, alternative photos, Testset page edits, image descriptions) are
 in that backup only. The label cuts need SAM3 on gx10 for each image that
-`data/cache/sam3/` does not hold. Read `docs/plans/28_seed-from-testset.md`.
+`data/cache/models/sam3/` does not hold. Read `docs/plans/28_seed-from-testset.md`.
 
 Выгрузить тестовый набор из базы в JSON-файлы (`review-labels.json`, `excluded-slugs.json`):
 ```
-python3 pipeline/export_testset.py --db data/lab.sqlite3 --set my --out <directory>
+python3 pipeline/export_testset.py --db data/catalog/catalog.sqlite3 --set my --out <directory>
 ```
 A file of the same name in `--out` is replaced. The export writes no photo file.
 
 Сделать вырезку этикетки для каждого полного фото (вид `label` страницы Embeddings):
 ```
-python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3
+python3 pipeline/seed_label_cuts.py --db data/catalog/catalog.sqlite3
 ```
 The tool asks SAM3 on gx10 for each full original with no label cut, about 0.6 s for
 each photo. A second run continues the first one. `--limit N` makes a short test run.
@@ -70,7 +71,7 @@ After the run, press `Build` on `/embedding` for each entry.
 
 Обновить каталог с сайта vino-svoe.ru:
 ```
-python3 pipeline/import_website.py --db data/lab.sqlite3
+python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3
 ```
 The tool reads the API of the website. It adds the new wines, removes the missing wines,
 restores the wines that came back, and stores a missing main image. Each change gets a
@@ -108,17 +109,17 @@ tail -f work/describe_images.log                          # the watcher at work
 python3 pipeline/describe_images.py --sha <sha256>         # one image, now
 python3 pipeline/describe_images.py --once                 # one pass, then stop
 python3 pipeline/describe_images.py --once --retry-failed  # the failed images again
-sqlite3 data/lab.sqlite3 "SELECT created_by, vlm_at IS NOT NULL, count(*) \
+sqlite3 data/catalog/catalog.sqlite3 "SELECT created_by, vlm_at IS NOT NULL, count(*) \
     FROM image_description GROUP BY 1, 2"                  # the progress
 python3 pipeline/describe_images.py --detail-sha <sha256>  # the detail of one image (plan 29)
-sqlite3 data/lab.sqlite3 "SELECT prompt_kind, package_type, vlm_at IS NOT NULL, \
+sqlite3 data/catalog/catalog.sqlite3 "SELECT prompt_kind, package_type, vlm_at IS NOT NULL, \
     count(*) FROM image_detail GROUP BY 1, 2, 3"           # the progress of the details
-sqlite3 data/lab.sqlite3 "SELECT json(answer) FROM image_detail \
+sqlite3 data/catalog/catalog.sqlite3 "SELECT json(answer) FROM image_detail \
     WHERE sha256 = '<sha256>'"                             # one detail
 python3 pipeline/describe_images.py --label-sha <sha256>   # the label description (plan 61)
-sqlite3 data/lab.sqlite3 "SELECT created_by, count(DISTINCT sha256), count(*) \
+sqlite3 data/catalog/catalog.sqlite3 "SELECT created_by, count(DISTINCT sha256), count(*) \
     FROM image_label_description GROUP BY 1"               # the progress of stage 3
-sqlite3 data/lab.sqlite3 "SELECT id, created_at, json(description) FROM \
+sqlite3 data/catalog/catalog.sqlite3 "SELECT id, created_at, json(description) FROM \
     image_label_description WHERE sha256 = '<sha256>' \
     ORDER BY created_at DESC, id DESC"                     # the label descriptions of one image
 ```
@@ -160,7 +161,7 @@ Build one entry of the key `embeddings` of `config.yaml`:
     --name gx10-siglip2-so400m-patch16-naflex-p256
 ```
 Ctrl+C stops the build after the present batch. A second run continues it.
-The files are in `data/embeddings/<name>/`. The Embeddings page of the lab server
+The files are in `data/catalog/embeddings/<name>/`. The Embeddings page of the lab server
 starts and stops a build too.
 
 Build the clusters of one completed embedding entry:
@@ -168,7 +169,7 @@ Build the clusters of one completed embedding entry:
 ~/.venvs/svoe-vino-lab/bin/python pipeline/build_clusters.py \
     --name gx10-siglip2-so400m-patch16-naflex-p256
 ```
-The command writes `clusters.json` in `data/embeddings/<name>/`. The Clusters page can
+The command writes `clusters.json` in `data/catalog/embeddings/<name>/`. The Clusters page can
 run the same build. The thresholds and the limits come from the block `clusters` of
 `config.yaml`. The options `--full-threshold 0.9 --label-threshold 0.9` replace the
 thresholds for one build. A build over a limit stops and keeps the old file.
@@ -180,7 +181,7 @@ python3 pipeline/build_label_rules.py --name gx10-siglip2-so400m-patch16-naflex-
 caffeinate -ims python3 pipeline/build_label_rules.py \
     --name gx10-siglip2-so400m-patch16-naflex-p256 > work/label-rules-run.json 2> work/label-rules-run.log
 ```
-The command writes `cluster-rules.json` in `data/embeddings/<name>/`. Stage 1 describes
+The command writes `cluster-rules.json` in `data/catalog/embeddings/<name>/`. Stage 1 describes
 each card, stage 2 writes the rule of each cluster. `--stage describe`, `--cluster
 <slug>`, and `--force` limit or repeat the work. The settings come from the block
 `label_rules` of `config.yaml`. A second run makes calls only for the work that changed.
@@ -219,7 +220,7 @@ python3 pipeline/embedding_run.py --name siglip2-p256-crop --set official-real-p
 ```
 The run is in `runs/<stamp>-lab-<pipeline>-<set>[-<label>]/`. A view whose first step is
 `segment` waits for SAM3 on gx10 in the first run of a set: one call for each target and
-photo. The answers stay in `data/cache/sam3/`, so a later run of the set, with any
+photo. The answers stay in `data/cache/models/sam3/`, so a later run of the set, with any
 pipeline, sends no SAM3 request. `siglip2-p256-as-is` sends no SAM3 request at all. An entry of the backend
 `local` runs with `~/.venvs/svoe-vino-lab/bin/python`. A run of the set `my` from this Mac
 needs `caffeinate -ims -w <pid>`. Read `docs/plans/33_embedding-run.md`.
@@ -238,7 +239,7 @@ shows it under the filter `Testset` = `dataset`. The default is 4 workers. Read
 
 ## Matcher bundle
 
-The builder reads `config.yaml`, `data/lab.sqlite3`, and the selected embedding index.
+The builder reads `config.yaml`, `data/catalog/catalog.sqlite3`, and the selected embedding index.
 The output path MUST not exist. This command writes a new bundle. It calls no external
 service:
 ```bash
@@ -271,7 +272,7 @@ Read `docs/testing/matcher-bundle.md` for the bundle contents and failure checks
 
 # Кэш вызовов моделей
 
-The SAM3, Grounding DINO, and VLM calls keep their answers in `data/cache/<model>/`.
+The SAM3, Grounding DINO, and VLM calls keep their answers in `data/cache/models/<model>/`.
 Read `docs/plans/25_model-call-cache.md`.
 
 One Grounding DINO call (the output states `"cache": "miss"` or `"hit"`):
@@ -281,12 +282,12 @@ python3 pipeline/gdino.py <image> --texts "wine bottle, label" [--model mm-gdino
 
 The records and the size of each model:
 ```bash
-du -sh data/cache/*/ && find data/cache -name '*.json' | cut -d/ -f3 | sort | uniq -c
+du -sh data/cache/models/*/ && find data/cache/models -name '*.json' | cut -d/ -f4 | sort | uniq -c
 ```
 
 Send the requests of one model again (for example after a new checkpoint on gx10):
 ```bash
-rm -r data/cache/sam3/
+rm -r data/cache/models/sam3/
 ```
 
 
@@ -295,7 +296,7 @@ rm -r data/cache/sam3/
 cd /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab
 
 # Rebuild the database and swap it in. Took about 8 min this time.
-python3 pipeline/seed_from_testset.py --db data/lab.sqlite3 \
+python3 pipeline/seed_from_testset.py --db data/catalog/catalog.sqlite3 \
     2>&1 | tee work/seed/seed-$(date +%Y%m%dT%H%M%S).log
 
 # Only if 8168 is not running: start it in its own terminal tab, then check it
@@ -305,7 +306,7 @@ curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8168/api/dataset   # e
 # Back up the lab database to git as text (plan 50)
 
 The skill `backup-lab-db` runs these steps, checks a round trip, and commits `db-export/`
-alone through a private git index. Export `data/lab.sqlite3` into `db-export/`:
+alone through a private git index. Export `data/catalog/catalog.sqlite3` into `db-export/`:
 ```bash
 python3 pipeline/db_export.py export
 ```

@@ -69,7 +69,6 @@ class Lab:
         os.makedirs(os.path.dirname(self.db_path))
         self.conn = labdb.connect(self.db_path, create=True)
         self.conn.execute("PRAGMA foreign_keys = ON")
-        self.store = Path(labdb.image_store(self.db_path))
         self.base_url = base_url
         self.entries = []
         self.rowid = 0
@@ -85,7 +84,7 @@ class Lab:
 
     def store_file(self, data, folder, extension):
         digest = hashlib.sha256(data).hexdigest()
-        target = self.store / folder / ("%s.%s" % (digest, extension))
+        target = Path(labdb.image_dir(self.db_path, folder)) / ("%s.%s" % (digest, extension))
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
         with Image.open(io.BytesIO(data)) as image:

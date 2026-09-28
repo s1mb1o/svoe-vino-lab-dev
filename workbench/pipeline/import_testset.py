@@ -1,9 +1,9 @@
 """Import one test set of `dataset/<set>/` into the lab database.
 
 Usage:
-    python3 pipeline/import_testset.py --db data/lab.sqlite3 --set my \
+    python3 pipeline/import_testset.py --db data/catalog/catalog.sqlite3 --set my \
         ../../svoe-vino-testset/dataset/my
-    python3 pipeline/import_testset.py --db data/lab.sqlite3 --set my --force <dir>
+    python3 pipeline/import_testset.py --db data/catalog/catalog.sqlite3 --set my --force <dir>
 
 `pipeline/import_testsets.py` imports the three sets of `svoe-vino-testset/dataset/`
 with one command.

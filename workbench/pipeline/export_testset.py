@@ -1,7 +1,7 @@
 """Export one test set of the lab database to the JSON files of a set directory.
 
 Usage:
-    python3 pipeline/export_testset.py --db data/lab.sqlite3 --set my --out <directory>
+    python3 pipeline/export_testset.py --db data/catalog/catalog.sqlite3 --set my --out <directory>
 
 The database is the source of the labels since plan 24. The export writes one file into
 `--out`, in the form of `scripts/review_server.py`: `review-labels.json` (version 2:

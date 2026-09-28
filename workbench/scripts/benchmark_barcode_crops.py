@@ -456,7 +456,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("baseline-run", "baseline-log", "stage1", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--images-dir", type=Path, default=base.ROOT / "data" / "images")
+    parser.add_argument("--images-dir", type=Path,
+                        default=base.ROOT / "data" / "testsets" / "images")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--variants", default=",".join(VARIANTS))
     parser.add_argument("--resume", action="store_true")

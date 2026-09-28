@@ -1,7 +1,7 @@
 """Seed the table `wine_code` from the structured code map of the matcher.
 
 Usage:
-    python3 pipeline/seed_codes.py --db data/lab.sqlite3 \\
+    python3 pipeline/seed_codes.py --db data/catalog/catalog.sqlite3 \\
         ../../svoe-vino-matcher/dataset/code-map.json
 
 The code map holds the list `wines`. Each record gives `wine_slug`, `barcode`, and

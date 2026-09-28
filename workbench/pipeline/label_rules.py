@@ -21,7 +21,7 @@ The prompts and the check are a port of `svoe-vino-testset/scripts/cluster_rules
 the same prompt texts, and a test compares them. The prompts are sent as they are
 written here. Do not translate them.
 
-The file `data/embeddings/<name>/cluster-rules.json` holds the descriptions under
+The file `data/catalog/embeddings/<name>/cluster-rules.json` holds the descriptions under
 `cards` (by slug) and the rules under `spaces.label` (by cluster key). The rules are for
 the clusters of the view `combined`; the rule space is `label`, because the matcher
 sends a label crop at query time (plans 30 and 43). `clusters.load_rules` reads `spaces`.

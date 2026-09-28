@@ -1,6 +1,6 @@
 """The cache of the model calls: GDINO, SAM3, and the VLMs.
 
-A call that repeats an earlier successful call reads the answer from `data/cache/` and
+A call that repeats an earlier successful call reads the answer from `data/cache/models/` and
 sends no request. Read docs/plans/25_model-call-cache.md.
 
 Rules:
@@ -31,7 +31,7 @@ VERSION = 1
 
 # The directory of the records. A unit test sets this to a temporary directory.
 ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                    "data", "cache")
+                    "data", "cache", "models")
 
 # The reads of the records in this process. `run_job.py --no-cache` (the checkbox `Use
 # caches` of the dialog `Run>`, off) sets it to False before it builds the backend: each

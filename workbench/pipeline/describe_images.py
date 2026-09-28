@@ -629,7 +629,7 @@ def cached_reply(entry, path, row, max_side):
     The prompt of that call held the values that were set before the call. The row does
     not keep which values those were, so each subset of its set values is tried, the
     empty subset first. A record counts only when its reply gives the stored `vlm_answer`:
-    another database can share `data/cache/` and hold a call with another prompt. A fixed
+    another database can share `data/cache/models/` and hold a call with another prompt. A fixed
     fact of the prompt that the owner changed after the call gives no record.
     """
     data_url = image_data_url(path, max_side)

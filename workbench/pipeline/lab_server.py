@@ -66,7 +66,7 @@ key `image_descriptions`. `GET /api/image-description-status` sends the state of
 watcher and the counts for the indicator of the page; `log=<N>` adds the last N lines of
 the watcher log for the dialog of the watcher (plan 49). `GET
 /api/image-description-reply?sha256=` sends the raw VLM reply of one image from
-`data/cache/`, with `describe_images.cached_reply`. `GET /api/image-detail-failures`
+`data/cache/models/`, with `describe_images.cached_reply`. `GET /api/image-detail-failures`
 sends the images whose detail failed, each with its entries of the watcher log
 (`image_descriptions.detail_failures`). When `image_description.watch` of
 `config.yaml` is true,
@@ -631,7 +631,7 @@ def remove_code(db_path, route, slug, value):
 
 
 def forget_scans(db_path, slug):
-    """Delete the stored barcode scans (`barcode.Decoder.scan_file`, `data/cache/barcode/`)
+    """Delete the stored barcode scans (`barcode.Decoder.scan_file`, `data/cache/models/barcode/`)
     of the test photos of one wine: the photos whose `place` is the slug. Return the count
     of deleted records. The next run scans these photos again. An add and a remove of a
     code call it after the commit (owner answers of 2026-09-27T16:49:57+0300). Raise
@@ -1071,13 +1071,13 @@ def image_description_reply(db_path, config_path, sha256):
         entry = vlm_config.entry(config, row["vlm_name"] or cfg["vlm"])
     except (OSError, ValueError, yaml.YAMLError, vlm_config.VlmConfigError) as exc:
         raise ConfigError("cannot read the vlm entry: %s" % exc)
-    path = os.path.join(labdb.image_store(db_path), image[0], "%s.%s" % (sha256, image[1]))
+    path = os.path.join(labdb.image_dir(db_path, image[0]), "%s.%s" % (sha256, image[1]))
     try:
         record = describe_images.cached_reply(entry, path, row, cfg["max_side"])
     except OSError as exc:
         return dict(answer, reason="cannot read the image file: %s" % exc)
     if record is None:
-        return dict(answer, reason="no record in data/cache/ matches this image")
+        return dict(answer, reason="no record in data/cache/models/ matches this image")
     return dict(answer, found=True, key=record.get("key"), created=record.get("created"),
                 ms=record.get("ms"), request=record.get("request"), reply=record["answer"])
 
@@ -1347,7 +1347,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send(404, "not found", "text/plain; charset=utf-8")
             return
         folder, name, extension = match.groups()
-        path = os.path.join(labdb.image_store(self.server.db_path), folder, name)
+        path = os.path.join(labdb.image_dir(self.server.db_path, folder), name)
         try:
             with open(path, "rb") as fh:
                 data = fh.read()

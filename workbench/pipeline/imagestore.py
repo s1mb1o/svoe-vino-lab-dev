@@ -1,7 +1,8 @@
 """The file store of the images.
 
-A stored file is `images/<folder>/<sha256>.<extension>` in the directory of the
-database file. The name is the SHA-256 of the bytes, so a file never changes. Each
+A stored file is `<sha256>.<extension>` in the directory of its folder. The function
+`labdb.image_dir` gives the directory of each folder (plan 75). The name is the
+SHA-256 of the bytes, so a file never changes. Each
 writer of the store uses these functions: `seed_images.py`, `seed_patched.py`, and
 `derive.py`. Read `docs/plans/08_seed-images.md` and `docs/plans/09_image-processing.md`.
 """
@@ -24,7 +25,7 @@ class StoreError(Exception):
 
 def folder_of(db_path, folder):
     """Return the path of one folder of the image store of the database."""
-    return os.path.join(labdb.image_store(db_path), folder)
+    return labdb.image_dir(db_path, folder)
 
 
 def sha256_of(path):

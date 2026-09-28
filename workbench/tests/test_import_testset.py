@@ -93,7 +93,7 @@ class ImportTestsetTest(unittest.TestCase):
         self.assertEqual(self.query("SELECT count(*) FROM image"), [(6,)])
         path = IT.photo_path(self.db, sha(b"photo a1"), "jpg")
         self.assertEqual(Path(path).read_bytes(), b"photo a1")
-        self.assertEqual(Path(path).parent.name, "testset")
+        self.assertEqual(Path(path).parent.parts[-2:], ("testsets", "images"))
         self.assertEqual(self.query("SELECT DISTINCT folder FROM image"), [("testset",)])
 
     def test_a_second_import_follows_the_files(self):

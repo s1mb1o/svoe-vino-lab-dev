@@ -1,7 +1,7 @@
 """Store the patched main images of the wines, and add or replace their `main_patched` rows.
 
 Usage:
-    python3 pipeline/seed_patched.py --db data/lab.sqlite3 \\
+    python3 pipeline/seed_patched.py --db data/catalog/catalog.sqlite3 \\
         ../../svoe-wino-hackaton/dataset/patched-official-2026-09-17
 
 The patch folder is an overlay on a delivery. Each file `<wine_slug>.<extension>`

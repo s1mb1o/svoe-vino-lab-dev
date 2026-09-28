@@ -1,7 +1,7 @@
 """Make the label cut of each full original of the lab database.
 
 Usage:
-    python3 pipeline/seed_label_cuts.py --db data/lab.sqlite3 [--limit N]
+    python3 pipeline/seed_label_cuts.py --db data/catalog/catalog.sqlite3 [--limit N]
 
 A full original is a file of `wine_image` of the type `main`, `main_patched`,
 `full_front`, or `full_back`. Its label cut is the row of `image_derivative` of the kind

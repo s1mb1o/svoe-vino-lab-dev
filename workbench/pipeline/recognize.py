@@ -22,7 +22,7 @@ A failure before the question (an unknown pipeline, no index, a missing package)
 `{"error": ...}` and exits with the status 1. A failure inside the question (SAM3, the
 embedding endpoint) is the answer: the trace holds the failed step, and the status is 0.
 
-The SAM3 answers go to `data/cache/sam3/`, as in a run. The script writes no other file.
+The SAM3 answers go to `data/cache/models/sam3/`, as in a run. The script writes no other file.
 Read docs/plans/55_recognize-page.md.
 """
 import argparse

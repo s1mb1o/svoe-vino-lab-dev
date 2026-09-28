@@ -1,7 +1,7 @@
 """Make one run of a lab pipeline of the backend `embedding` on one test set: each photo
 gets the SAM3 cuts and the steps of the embedding entry, the endpoint of the entry gives
 its vectors, and the vectors rank the wines with the catalogue vectors of
-`data/embeddings/<name>/`.
+`data/catalog/embeddings/<name>/`.
 
 Usage:
     python3 pipeline/embedding_run.py --name <pipeline> --set <set>
@@ -21,7 +21,7 @@ The rules of a run (owner answers of 2026-09-25T23:24:20+0300 and 23:35:19):
   the label cut of `alternatives.label_cut_of`. Then `embeddings.apply_steps` applies the
   steps of the view. These are the functions of the catalogue images, so a test photo gets
   the pixels of a catalogue image. The cuts stay in memory. The SAM3 answers go to
-  `data/cache/sam3/`, so a second run of a set sends no SAM3 request. When SAM3 finds no
+  `data/cache/models/sam3/`, so a second run of a set sends no SAM3 request. When SAM3 finds no
   label, the view `label` has no input.
 - A pipeline MAY hold `views`: the steps of the test photo in place of the steps of the
   entry (owner answers of 2026-09-26T00:52:41+0300). A view with no step `segment` takes
@@ -144,12 +144,12 @@ class Sam3Once:
 
 
 class CachedSam3(derive.Sam3Client):
-    """A SAM3 client that reads the answers of `data/cache/sam3/` alone. It sends no
+    """A SAM3 client that reads the answers of `data/cache/models/sam3/` alone. It sends no
     request, so a page route does not wait for gx10."""
 
     def _send(self, data, form):
         raise derive.Sam3Unavailable("the SAM3 answer of this photo is not in "
-                                     "data/cache/sam3/")
+                                     "data/cache/models/sam3/")
 
 
 # The rule of `derive.derive_image` that gave the package cut, by its settings text.

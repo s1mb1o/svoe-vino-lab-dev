@@ -2,6 +2,27 @@
 
 ## 2026-09-28
 
+- Moved `data/` to the layout of plan 75, stage 1 (owner messages of 2026-09-28T16:16:35
+  and 16:21:20, answer of 16:50:22). `data/lab.sqlite3` is now `data/catalog/catalog.sqlite3`.
+  The catalogue images are in `data/catalog/images/{main,patched,additional}/`, the
+  processed files in `data/catalog/cuts/`, the embeddings in `data/catalog/embeddings/`,
+  the test photos in `data/testsets/images/`, and the model call cache in
+  `data/cache/models/`. `data/backups/` did not move. Each move was a rename on the T7.
+  `labdb.image_dir` maps each folder of the table `image` to its directory, so the folder
+  names, the schema, and the URLs `/images/<folder>/<file>` did not change. A database
+  file outside a directory `catalog/` is its own data root, so a unit test keeps its files
+  in its temporary directory. `clusters._cut_url` took the folder from the directory name;
+  it now uses `labdb.DERIVED_FOLDER`. The benchmark scripts read the test photos from
+  `data/testsets/images/` by default. Checks: the image files of all 10,544 rows of
+  `image`, the 2,376 sources, the 4,642 cuts, and the item states of the 12 embeddings
+  (4,642 current, 3 failed each) are the same before and after the move; the lab server
+  serves a file of each folder, a prepared PNG, 1,243 cluster cut URLs, and the 4,044
+  photo URLs of the set `my`. The unit tests of a scratch copy give 1,331 tests with the
+  same 5 errors before and after the change; in the workbench after the move, 1,331 tests
+  give 2 errors (the module `svm` is missing). The prepared PNG files stay in
+  `catalog/embeddings/<name>/images/` until stage 3. Safety copy:
+  `data/backups/lab-before-075-data-layout-20260928T143801Z.sqlite3`. 8168 was down from
+  about 17:18 (not stopped by this change); session 66 started it at 17:43 (pid 8280).
 - Finished stage 3 of plan 74 (owner messages of 2026-09-28 from 15:49:02 to 16:27:00).
   Commit `c0d483e` adds `telegram-bot/` to git: the bot calls `POST /v1/match?k=4` and
   takes the wine cards from the matcher. The prod matcher on gx10 port 28000 runs

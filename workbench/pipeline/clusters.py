@@ -27,6 +27,7 @@ from contextlib import closing
 import numpy as np
 
 import embeddings
+import labdb
 import similar_wines
 
 VERSION = 1
@@ -678,8 +679,8 @@ def _cut_url(item):
     cut = (item or {}).get("cut")
     if not cut or not (item.get("steps") or []):
         return None
-    path = cut["path"]
-    return "/images/%s/%s" % (os.path.basename(os.path.dirname(path)), os.path.basename(path))
+    # A cut is a file of the folder `cropped`. Its directory has another name since plan 75.
+    return "/images/%s/%s" % (labdb.DERIVED_FOLDER, os.path.basename(cut["path"]))
 
 
 def _current_images(ctx):

@@ -1,7 +1,7 @@
 """Import a Strapi CSV of the catalogue into the table `wine_catalog`.
 
 Usage:
-    python3 pipeline/import_catalog.py --db data/lab.sqlite3 \\
+    python3 pipeline/import_catalog.py --db data/catalog/catalog.sqlite3 \\
         ../../svoe-wino-hackaton/dataset/official-2026-09-17/strapi_output0709.csv
 
 The import handles an added wine and a removed wine. It does not handle a changed

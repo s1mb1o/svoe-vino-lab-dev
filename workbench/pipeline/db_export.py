@@ -1,8 +1,8 @@
 """Export the lab database to text files for git, or restore it from them.
 
-git cannot show the history of `data/lab.sqlite3`: the file is binary, and `/data/` is
-out of git. The export writes text files with one row on each line, so `git diff` shows
-each added, changed, and removed row. Read `docs/plans/50_lab-db-text-export.md`.
+git cannot show the history of `data/catalog/catalog.sqlite3`: the file is binary, and
+the database file is out of git. The export writes text files with one row on each
+line, so `git diff` shows each added, changed, and removed row. Read `docs/plans/50_lab-db-text-export.md`.
 
 The export directory:
     schema.sql          the CREATE TABLE statements, in the order of `sqlite_schema`
@@ -15,7 +15,7 @@ The restore creates the triggers after the rows, so that a trigger does not chan
 restored row.
 
 Usage:
-    python3 pipeline/db_export.py export [--db data/lab.sqlite3] [--out db-export]
+    python3 pipeline/db_export.py export [--db data/catalog/catalog.sqlite3] [--out db-export]
     python3 pipeline/db_export.py restore --from db-export --db <new file>
 """
 import argparse
@@ -26,7 +26,7 @@ import sqlite3
 import sys
 import urllib.request
 
-DEFAULT_DB = "data/lab.sqlite3"
+DEFAULT_DB = "data/catalog/catalog.sqlite3"
 DEFAULT_OUT = "db-export"
 SCHEMA_FILE = "schema.sql"
 AFTER_FILE = "after-rows.sql"

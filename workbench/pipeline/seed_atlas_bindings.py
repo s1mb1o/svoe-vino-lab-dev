@@ -2,7 +2,7 @@
 
 Usage:
     D=../../svoe-wino-hackaton/dataset/derived/official-2026-09-17
-    python3 pipeline/seed_atlas_bindings.py --db data/lab.sqlite3 \\
+    python3 pipeline/seed_atlas_bindings.py --db data/catalog/catalog.sqlite3 \\
         --matches $D/atlas-matches.jsonl --manual $D/atlas-bindings.manual.jsonl
 
 Each line of a file is one JSON object with `wine_slug` and `product_uuid`. The rows of

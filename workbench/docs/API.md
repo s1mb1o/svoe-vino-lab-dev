@@ -304,7 +304,7 @@ field. If the removed URL is the last QR URL, `qr_code` becomes `null`. The answ
 
 The lab server alone (owner answers of 2026-09-27T16:49:57+0300). A successful `POST` or
 `DELETE` of `/api/dataset-gtin` or `/api/dataset-qr-url` deletes the stored barcode scans
-of the test photos of the wine. A stored scan is a record of `data/cache/barcode/`. A test
+of the test photos of the wine. A stored scan is a record of `data/cache/models/barcode/`. A test
 photo of the wine is a row of `test_photo` with `place` equal to the slug. The next run
 scans these photos again. A refused request deletes no record. The answer does not
 change. When a record cannot be deleted, the answer is HTTP 503, and the code change stays.
@@ -445,7 +445,7 @@ run did not store.
 
 A run of a pipeline of the backend `embedding` (`backend.kind` is `embedding`, plan 33)
 gets the model input of each view. The route prepares the photo again with the steps that
-`run.json` records and with the SAM3 answers of `data/cache/sam3/`. It sends no request.
+`run.json` records and with the SAM3 answers of `data/cache/models/sam3/`. It sends no request.
 Each item has `uses: ["Embedding"]`; `pipelines` and `label` hold the view (`full` or
 `label`). A view with no input gets a note. When the cache holds no SAM3 answer of the
 photo, `inputs` is empty, and a note states the reason.
@@ -513,7 +513,7 @@ detail}`; `moved` is the move against the order before the step, positive is up.
 holds the VLM rule answer of a matcher run: `{mode, cluster, window, questions, answers,
 answer, chosen, scores, ms, cached, error, changed}`.
 
-An embedding run makes its images again from the SAM3 answers of `data/cache/sam3/` and
+An embedding run makes its images again from the SAM3 answers of `data/cache/models/sam3/` and
 the steps of `run.json`. A matcher run takes its model inputs from the code of
 `/api/run-inputs` and its re-rank steps from the `explain` records of the candidates.
 
@@ -527,7 +527,7 @@ or `backend.id` for an older run of an embedding configuration. A run of another
 backend has no embedding.
 
 The answer is `{exists, embedding, space, file, built_at, stale, clusters, cards}`.
-`space` is `combined`: the view of `data/embeddings/<embedding>/clusters.json` that the
+`space` is `combined`: the view of `data/catalog/embeddings/<embedding>/clusters.json` that the
 route reads. One cluster holds `{id, key, kind, size, slugs, rule}`. `rule` holds
 `{mode, questions}` of the `label` rule of the cluster in `cluster-rules.json`, or
 `null`. `cards` holds `{name}` of each cluster slug from the lab database. `stale` is

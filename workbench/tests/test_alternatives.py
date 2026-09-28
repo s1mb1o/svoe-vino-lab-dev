@@ -23,6 +23,12 @@ import derive  # noqa: E402
 import lab_server as LAB  # noqa: E402
 import labdb  # noqa: E402
 
+
+def url_file(db_path, url):
+    """Return the stored file of the image URL `/images/<folder>/<name>` (plan 75)."""
+    _, _, folder, name = url.split("/")
+    return Path(labdb.image_dir(db_path, folder)) / name
+
 WINES = [
     ("wine-b", "Вино b", "Винодельня", "Белое", "Соломенный", "Крым",
      "Алиготе", "Описание b", "b.webp", "Active", None),
@@ -331,7 +337,7 @@ class AlternativeRouteTest(unittest.TestCase):
                          ("seg", alternatives.SETTINGS_LABEL_CLOSE_UP))
         self.assertIsNone(self.settings(sha(data)))
         self.assertEqual(self.sam3.segment_calls, 0)
-        cut = Image.open(self.root / photo["image_url"].lstrip("/"))
+        cut = Image.open(url_file(self.db, photo["image_url"]))
         self.assertEqual(cut.mode, "RGBA")
         self.assertLess(cut.height, SIZE[1])
 
@@ -342,7 +348,7 @@ class AlternativeRouteTest(unittest.TestCase):
         self.assertEqual(status, 200, out)
         photo, = out["record"]["_alternatives"]
         self.assertEqual((photo["type"], photo["derivation"]), ("label_front", "seg"))
-        cut = Image.open(self.root / photo["image_url"].lstrip("/"))
+        cut = Image.open(url_file(self.db, photo["image_url"]))
         self.assertGreaterEqual(cut.width, 36)
         self.assertGreaterEqual(cut.height, 72)
 
@@ -578,7 +584,7 @@ class AlternativeRouteTest(unittest.TestCase):
         self.assertEqual((photo["type"], photo["derivation"]), ("label_front", "crop"))
         self.assertEqual(self.settings(sha(data), "label"),
                          ("crop", alternatives.SETTINGS_LABEL_CLOSE_UP))
-        cut = Image.open(self.root / photo["image_url"].lstrip("/"))
+        cut = Image.open(url_file(self.db, photo["image_url"]))
         self.assertEqual((cut.mode, cut.size), ("RGBA", (32, 62)))
         self.assertEqual(cut.getchannel("A").getextrema(), (255, 255))
 
@@ -657,7 +663,7 @@ class ManualCutTest(unittest.TestCase):
                          ("seg", True, POLYGON))
         self.assertEqual(self.settings(sha(data)), self.manual())
         self.assertTrue(derive.is_manual(self.settings(sha(data))[1]))
-        with Image.open(self.root / photo["image_url"].lstrip("/")) as cut:
+        with Image.open(url_file(self.db, photo["image_url"])) as cut:
             self.assertEqual(cut.mode, "RGBA")
             # The box of the polygon (4, 6, 36, 76), with the soft edge of about 3 sigma
             # of `derive.EDGE_BLUR` around it.

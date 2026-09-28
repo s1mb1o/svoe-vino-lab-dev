@@ -119,7 +119,7 @@ class LabServerTest(unittest.TestCase):
         """Store `data` as the processed file of an original. Return its URL."""
         source = original_url.rsplit("/", 1)[1].split(".")[0]
         digest = hashlib.sha256(data).hexdigest()
-        folder = self.root / "images" / labdb.DERIVED_FOLDER
+        folder = Path(labdb.image_dir(self.db, labdb.DERIVED_FOLDER))
         folder.mkdir(parents=True, exist_ok=True)
         (folder / (digest + ".png")).write_bytes(data)
         conn = sqlite3.connect(self.db)
@@ -1018,7 +1018,7 @@ class LabServerTest(unittest.TestCase):
         with mock.patch.object(describe_images, "cached_reply", return_value=None):
             answer = json.loads(self.request(route + sha)[2])
         self.assertEqual((answer["found"], answer["reason"]),
-                         (False, "no record in data/cache/ matches this image"))
+                         (False, "no record in data/cache/models/ matches this image"))
 
 
 class SimilarRouteTest(unittest.TestCase):

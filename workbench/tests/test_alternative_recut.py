@@ -70,7 +70,7 @@ class RecutRouteTest(unittest.TestCase):
                          ("seg", alternatives.SETTINGS_LABEL_CLOSE_UP))
         self.assertEqual(self.box(TA.sha(data), "label"), before)
         photo, = out["record"]["_alternatives"]
-        with Image.open(self.root / photo["image_url"].lstrip("/")) as cut:
+        with Image.open(TA.url_file(self.db, photo["image_url"])) as cut:
             self.assertGreaterEqual(cut.width, 36)
             self.assertGreaterEqual(cut.height, 72)
 

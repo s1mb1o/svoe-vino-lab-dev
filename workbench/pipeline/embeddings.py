@@ -1,5 +1,5 @@
 """The embeddings of the lab: the configuration, the inputs, the steps, the hash, the
-item status, and the files of `data/embeddings/<name>/`.
+item status, and the files of `data/catalog/embeddings/<name>/`.
 
 `build_embeddings.py` builds one embedding. `embedding_routes.py` serves the Embeddings
 page. Both use this module. The module needs no `torch`. Read
@@ -378,7 +378,9 @@ def read_inputs(conn, db_path):
     maps a derivative target to its reason. A file that is a full image of one wine and
     a close-up of another wine is a full image.
     """
-    store = labdb.image_store(db_path)
+    def stored(folder, digest, extension):
+        return os.path.join(labdb.image_dir(db_path, folder), "%s.%s" % (digest, extension))
+
     # kind -> source sha256 -> the processed file. An original has at most one cut of
     # each kind (`package`, `label`); schema 017.
     cuts = {target: {} for target in TARGETS}
@@ -389,7 +391,7 @@ def read_inputs(conn, db_path):
         if kind in cuts:
             cuts[kind][source] = {
                 "sha256": digest, "box": (left, top, right, bottom),
-                "path": os.path.join(store, folder, "%s.%s" % (digest, extension))}
+                "path": stored(folder, digest, extension)}
     absences = {"label": {}}
     for source, settings, reason in conn.execute(
             "SELECT source_sha256, settings, reason FROM image_derivative_absence "
@@ -416,7 +418,7 @@ def read_inputs(conn, db_path):
         source = sources.get(digest)
         if source is None:
             sources[digest] = {
-                "role": role, "path": os.path.join(store, folder, "%s.%s" % (digest, extension)),
+                "role": role, "path": stored(folder, digest, extension),
                 "url": "/images/%s/%s.%s" % (folder, digest, extension),
                 # `pipeline/seed_label_cuts.py` makes the label cut of a full original.
                 "cuts": {target: cuts[target].get(digest) for target in TARGETS},

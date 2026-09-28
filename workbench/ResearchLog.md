@@ -2,6 +2,118 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-28 — The content of `data/`, and a split into catalogue, test data, and cache
+
+The owner asked on 2026-09-28T16:21:20+0300 for three directories: one for the catalogue
+and the embeddings, one for the test data, and one for the caches and the intermediate
+files. A copy of the catalogue directory MUST be enough for the matcher, so that no bundle
+build is necessary. These facts come from a read-only check. The database has schema 30.
+
+### Content
+
+- `data/lab.sqlite3` has a size of 27 MB. Its journal mode is `delete`.
+- The catalogue tables are `wine_catalog` (2,104 rows), `wine_image` (2,421), `wine_code`
+  (136), `wine_atlas_binding` (452), `wine_comment` (173), `wine_beverage_type`,
+  `wine_favorite`, `wine_similar`, `wine_tag`, and `website_refusal`.
+- The image tables are `image` (10,544 rows), `image_derivative` (4,681),
+  `image_description`, `image_detail`, `image_label_description`,
+  `image_derivative_absence`, `image_label_description_failure`, and `image_tag` (761).
+- The test tables are `test_set` (5 rows), `test_photo` (4,600 rows for 3,474 files),
+  `test_photo_comment` (1,637), and `test_variant` (189). They use about 3 MB.
+- The table `image` is one register for all image files. The column `folder` names the
+  directory: `main` 2,071 rows, `patched` 23, `additional` 302, `cropped` 4,674, and
+  `testset` 3,474.
+- `data/images/main` (141 MB), `data/images/patched` (20 MB), and
+  `data/images/additional` (1.2 GB) are in git. `data/images/cropped` (3.2 GB) and
+  `data/images/testset` (0.8 GB) are not in git.
+- `data/embeddings/` has 12 directories. Each directory has `index.json` (2 MB), one
+  vector file (14 MB to 21 MB), `build.log`, and `images/` with 4,642 prepared PNG files
+  (1.4 GB). Four directories also have cluster files.
+- The prepared PNG files are the same in the 12 directories. Each of the 4,642 files has
+  the same size in the 12 directories. A sample file has the same MD5 in the 12
+  directories. The 12 embeddings have the same `views` steps. The 12 copies use 17 GB.
+- `embedding_hash` includes `view_config_hash`. `view_config_hash` includes the backend
+  and the model. Thus `embedding_hash` is different for each embedding. A shared store of
+  prepared PNG files needs a key that does not include the model.
+- `data/cache/` holds the model call cache: `sam3`, `barcode`, `qwen3.5-9b-nvfp4`,
+  `qwen3.8-max`, and `grounding-dino-base`. The code sets `model_cache.ROOT` to
+  `data/cache/`. The configuration cannot change it.
+- `data/backups/` holds 13 copies of the database and 2 copies of cluster files. The
+  total is about 0.2 GB.
+- `labdb.image_store` and `embeddings.embeddings_root` make the other data paths from
+  `database_file` in `config.yaml`. 23 code files use these helpers or
+  `model_cache.ROOT`. 37 code files open SQLite.
+
+### Links between the catalogue and the test data
+
+- `test_photo.place` and `test_variant.wine_slug` hold a wine slug. No foreign key exists.
+  4,596 of the 4,600 `place` values are catalogue slugs.
+- `test_photo.sha256` references `image`. Each of these rows has the folder `testset`.
+- One test photo is also a catalogue image (`wine_image`, type `label_back`). It has one
+  label cut and one row in each description table.
+- One cut file (folder `cropped`) is also a catalogue image (type `main_patched`). It is
+  the source of two other cuts.
+- Each of the 761 `image_tag` rows belongs to a test photo.
+- Six code files use the test tables. Four of these files also use catalogue tables:
+  `pipeline/benchmark.py`, `pipeline/testsets.py`, `pipeline/lab_server.py`, and
+  `pipeline/import_testset.py`.
+
+### Cuts
+
+- SAM3 or the alpha channel made 4,680 of the 4,681 cuts. One cut is a manual polygon.
+  The column `settings` records the parameters of each cut.
+- `embedding_hash` includes the SHA-256 of the cut. A new cut file with different bytes
+  makes the items of all embeddings stale.
+
+### Matcher and copy
+
+- The bundle builder (plans 72 and 74) applies lab rules. It keeps the `Active` wines
+  only. `main_patched` replaces `main`. A close-up is an item of the view `label` only.
+  The builder keeps the current items only. It makes the card fields `page_url`,
+  `image_url`, and `qr_urls`.
+- The prod matcher reads a bundle of 25 MB in
+  `/srv/svoe-vino-lab/prod/matcher/data/bundles/`. The file system `/` on gx10 has
+  336 GB free (check of 2026-09-28).
+- A file copy of the database during a write is not safe in the journal mode `delete`.
+  The copy can hold a part of a transaction. A safe copy uses the SQLite backup API or
+  `VACUUM INTO`, or a stopped lab server.
+- A copy of an embedding directory during a build can get an `index.json` that names a
+  vector file that the build deleted.
+
+### Proposal (waiting for the owner)
+
+The target layout is the same for each approach:
+
+```text
+data/
+  catalog/    catalog.sqlite3, images/{main,patched,additional}/, cuts/, embeddings/<name>/
+  testsets/   testsets.sqlite3, images/
+  cache/      models/ (the model call cache), prepared/ (one prepared PNG per image and steps)
+  backups/    copies of the databases
+```
+
+- Approach A: split the database into `catalog.sqlite3` and `testsets.sqlite3`. The lab
+  attaches the catalogue database to the connection of the test database. The register
+  of the test photos gets a different table name, so that each table name stays unique
+  after `ATTACH`.
+- Approach B: move the files, and keep one database as `catalog/catalog.sqlite3`. The
+  test tables stay in this database. Only the test photo files move to
+  `testsets/images/`. The split of approach A MAY follow later.
+- Approach C: keep one working database. The lab writes `catalog/` as a snapshot after
+  each change. This approach keeps a publish step.
+- In each approach, the matcher reads `catalog.sqlite3` through fixed SQL views, and it
+  reads `index.json` and the vector file of one embedding. Then the bundle builder is not
+  necessary. A copy script refuses a copy during a build, copies the database with the
+  SQLite backup API, and copies the other files with `rsync`.
+
+Open questions: the approach; the place of the cut files (`catalog/cuts/` or `cache/`);
+a flatten of the schema at the split (rule 12); the time of the move, because other
+sessions change the matcher and the deploy files now.
+
+The owner selected approach B now and the split of approach A later
+(2026-09-28T16:50:22+0300). `docs/plans/75_data-layout.md` records the decisions and
+the result of stage 1.
+
 ## 2026-09-28 — The gx10 service `qr-scanner` compared with `pipeline/barcode.py`
 
 - The service is `POST http://192.168.86.14:18081/upstream/qr-scanner/scan` on the gx10

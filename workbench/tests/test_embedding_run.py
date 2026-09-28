@@ -462,7 +462,7 @@ class RunTest(Temporary):
                 self.runs, self.lab.db_path,
                 {"id": [os.path.basename(run_dir)], "query": [rows["red/01.png"]["query_id"]]})
         self.assertEqual((code, body["inputs"]), (200, []))
-        self.assertIn("not in data/cache/sam3/", body["notes"][0])
+        self.assertIn("not in data/cache/models/sam3/", body["notes"][0])
         self.assertFalse((self.root / "empty-cache").exists())
 
 

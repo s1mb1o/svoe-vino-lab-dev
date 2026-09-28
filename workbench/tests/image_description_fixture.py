@@ -73,11 +73,11 @@ class DescriptionCase(unittest.TestCase):
 
     def add_cut(self, slug, kind, color="white"):
         """Store a cut of the kind `package` or `label` for the image of `slug`, as a
-        row of `image_derivative` and a PNG file in `images/cropped/`. A second cut of
+        row of `image_derivative` and a PNG file in the directory of the folder `cropped`. A second cut of
         the same kind replaces the row. Return the sha256 of the cut (plan 29)."""
         data = png(color, size=(20, 40), mode="RGBA")
         digest = hashlib.sha256(data).hexdigest()
-        folder = self.root / "images" / "cropped"
+        folder = Path(labdb.image_dir(self.db, labdb.DERIVED_FOLDER))
         folder.mkdir(parents=True, exist_ok=True)
         (folder / ("%s.png" % digest)).write_bytes(data)
         conn = self.connect()

@@ -1,9 +1,9 @@
 """Import the live catalogue of vino-svoe.ru into the table `wine_catalog`.
 
 Usage:
-    python3 pipeline/import_website.py --db data/lab.sqlite3                  # the CLI
-    python3 pipeline/import_website.py --db data/lab.sqlite3 --prepare DIR    # the UI, step 1
-    python3 pipeline/import_website.py --db data/lab.sqlite3 --apply DIR      # the UI, step 2
+    python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3                  # the CLI
+    python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3 --prepare DIR    # the UI, step 1
+    python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3 --apply DIR      # the UI, step 2
 
 The source is the JSON API `https://api.vino-svoe.ru/v1` and `wines-sitemap.xml` of
 vino-svoe.ru. The `robots.txt` of the API allows `*/img/*` and `*/file-proxy/*` alone;
@@ -314,7 +314,7 @@ def _names(slugs):
 
 def store_path(db_path, folder, digest, extension):
     """Return the path of one file of the image store."""
-    return os.path.join(labdb.image_store(db_path), folder, "%s.%s" % (digest, extension))
+    return os.path.join(labdb.image_dir(db_path, folder), "%s.%s" % (digest, extension))
 
 
 def store_url(folder, digest, extension):

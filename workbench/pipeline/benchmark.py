@@ -1,7 +1,7 @@
 """Send the photos of one test set of the lab database to one match backend.
 
 Usage:
-    python3 pipeline/benchmark.py --db data/lab.sqlite3 --set my --backend svm-siglip2-448
+    python3 pipeline/benchmark.py --db data/catalog/catalog.sqlite3 --set my --backend svm-siglip2-448
 
 The runner writes the run files of `scripts/match_run.py` to `runs/<run id>/`:
 `run.json`, `queries.tsv`, `queries.jsonl`, `predictions.jsonl`, `results.jsonl`,

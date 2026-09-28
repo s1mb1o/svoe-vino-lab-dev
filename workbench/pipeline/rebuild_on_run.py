@@ -9,7 +9,7 @@ before they read the index. With the key true, `before_run` starts
 missing, or failed. An item whose hash did not change stays. So a build with no change
 takes a few seconds, and the vectors are the vectors of a full build.
 
-The output of the build goes to the end of `data/embeddings/<name>/build.log`, so
+The output of the build goes to the end of `data/catalog/embeddings/<name>/build.log`, so
 `/embedding` shows its progress. The run does not truncate the file: a truncation can
 destroy the log of a build that started in the same second.
 

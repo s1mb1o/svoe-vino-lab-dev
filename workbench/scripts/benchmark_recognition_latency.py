@@ -647,7 +647,7 @@ def main(argv=None):
     parser.add_argument("--baseline-log", type=Path)
     parser.add_argument("--stage1", type=Path)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--images-dir", type=Path, default=ROOT / "data/images")
+    parser.add_argument("--images-dir", type=Path, default=ROOT / "data/testsets/images")
     parser.add_argument("--config", type=Path, default=ROOT / "config.yaml")
     parser.add_argument("--profile", default=DEFAULT_PROFILE)
     parser.add_argument("--variants", default="full,whole1,whole,tiles3,photo4")

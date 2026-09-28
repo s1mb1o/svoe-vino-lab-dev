@@ -1,5 +1,5 @@
 """Build one embedding of `config.yaml`: prepare each input image, get its vector, and
-write the files of `data/embeddings/<name>/`.
+write the files of `data/catalog/embeddings/<name>/`.
 
 The build writes one JSON object per line to stdout: `start`, `progress`,
 `item_failed`, `stopping`, and at the end `done`, `stopped`, or `error`. The lab server

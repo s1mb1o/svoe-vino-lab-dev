@@ -7613,3 +7613,57 @@ permission to update `deploy/gx10/matcher-prod.md`, which the section
 ```text
 do it
 ```
+
+## 2026-09-28T16:16:35+0300
+
+```text
+@svoe-vino-lab/workbench  why we store images in @svoe-vino-lab/workbench/data/embeddings ?
+```
+
+## 2026-09-28T16:21:20+0300
+
+```text
+@svoe-vino-lab/workbench/data 
+
+contains
+- lab.sqlite3 that describes both dataset and testsets.
+- backups 
+- cache
+- embeddings with images
+- images (both dataset and testset)
+
+so we mix images, cache, dataset, testsets and embeddings vectors.
+
+think how can we restructurize them, so we will have directory:
+- that describes catalog, embeddings.
+- that contains test data
+- that contains caches and intermediate files.
+
+So we will not need build bundles for matcher, but just copy whole dir witjh catalog, embedings and images.
+```
+
+## 2026-09-28T16:50:22+0300
+
+The agent proposed a new layout of `data/` (`catalog/`, `testsets/`, `cache/`, `backups/`)
+and three approaches: A (split the database now), B (move the files and keep one
+database; the split of A later), and C (a publish step). The agent recommended B now
+and the split of A later, the cut files in `catalog/cuts/`, `backups/` as a fourth
+directory, and the start of the matcher part after the sessions e9, 7c, and
+codex-side-matcher-bundle. The questions: the approach, the place of the cut files, a
+flatten of the schema at the split, and the time of the move. The answer:
+
+```text
+согласен, давай перейдем на такую схему
+```
+
+## 2026-09-28T18:57:07+0300
+
+The agent finished stage 1 of plan 75 and asked three questions: 1. commit stage 1
+through a private index (the commit records the 2,402 moved image paths); 2. change
+the old test image path in line 256 of `deploy/gx10/matcher-prod.md`; 3. start stage 2
+(the matcher reads `catalog/` directly, and a copy script replaces the bundle build).
+The answer:
+
+```text
+do 1 and 3
+```
