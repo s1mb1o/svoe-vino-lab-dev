@@ -2,6 +2,28 @@
 
 ## 2026-09-28
 
+- Added the matcher backend `siglip2` and the default `matcher/config.yaml` (owner
+  messages recorded at 2026-09-28T15:01:00+0300). The pipeline `siglip2-p512-as-is` reads
+  the bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`. The bundle holds
+  4,642 vectors of dimension 1152, 4,674 candidate relations, and 2,094 wines; it has no
+  images. The matcher imports no workbench code: `matcher/bundle.py` reads the bundle.
+  For each photo, `matcher/siglip2.py` applies the photo steps of the lab pipeline
+  `siglip2-p512-as-is` and sends one `POST <SIGLIP2_ENDPOINT>/v1/embeddings`. The bundle
+  manifest gives the model and `max_num_patches`. The best cosine in the view `full`
+  gives the Top-1 slug. `SIGLIP2_ENDPOINT` is the root URL of the gateway, without
+  `/v1`. The bundle stays out of git (`matcher/.gitignore`). The Docker image does not
+  contain it, so the deploy mounts it. NumPy is a new dependency: 2.4.6 for Python 3.11,
+  and 2.5.3 for Python 3.12 and newer. So the shared venv `~/.venvs/svoe-vino-lab`
+  keeps 2.5.3. The 10 tests of `matcher/tests/test_siglip2.py` use a fixture bundle and a
+  fake endpoint. The suite has 47 tests, and all pass. Live check on gx10 18081: the
+  first request took 8.4 s, because the gateway loaded the model. The official harness
+  answered 3 of 3 photos in 334 to 455 ms. Only one of the three mock slugs is in the
+  bundle catalogue, and it was not the Top-1 of its photo. For 400 lab test photos (JPEG,
+  WEBP, PNG), the PNG of the matcher was byte-identical to the PNG of the lab steps. For
+  100 of these photos, the Top-1 of the matcher equalled the Top-1 of the lab pipeline in
+  100 cases. The CI run in `python:3.11-slim` on `test-docker-srv` did not start: the root
+  disk of the CT is full. The GitHub runner `ct112-svoe-vino-lab-docker-1` is a different
+  host.
 - Added `matcher/Dockerfile` and `matcher/.dockerignore` (owner messages of
   2026-09-28T13:25:39+0300 and 13:31:00). The image uses `python:3.11-slim`, runs as
   uid 1000, listens on port 8080, and has a health check on `/healthz`. It reads

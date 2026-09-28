@@ -60,7 +60,7 @@ matcher:
 ~~~
 
 Параметр `-W error::ResourceWarning` преобразует предупреждение о незакрытом ресурсе в
-ошибку теста. Набор содержит 37 тестов.
+ошибку теста. Набор содержит 47 тестов.
 
 ### API и official harness
 
@@ -106,6 +106,37 @@ matcher.token_env также отклоняется.
 Content-Length без передачи содержимого файла. После каждого сценария тест проверяет
 `/healthz` и обработку обычного JPEG.
 
+### Backend siglip2
+
+Файл `matcher/tests/test_siglip2.py` не использует настоящий bundle и шлюз gx10. Тест
+создаёт маленький bundle во временном каталоге в формате
+`workbench/pipeline/matcher_bundle.py`. Локальный fake-сервер отвечает на
+`POST /v1/embeddings` заданным вектором. Поэтому тесты работают в CI без сети.
+
+Тесты проверяют следующие условия:
+
+- Top-1 определяет лучший косинус view `full`. Вектор view `label` не участвует.
+- Изображение двух вин отдаёт Top-1 меньшему slug.
+- Запрос содержит имя модели и `max_num_patches` из bundle и один PNG data URI.
+- PNG имеет белый фон вместо прозрачности и длинную сторону 1024 пикселя.
+- Маленькое изображение не увеличивается. EXIF-ориентация применяется.
+- HTTP 500, вектор другой размерности и нулевой вектор дают `Siglip2Error`.
+- Неверные поля bundle и endpoint, отсутствующая переменная окружения, изменённый payload,
+  другой формат bundle и bundle без view `full` дают `ConfigError`.
+- `matcher/config.yaml` выбирает pipeline `siglip2-p512-as-is`.
+- Official harness получает slug через uvicorn, pipeline siglip2 и fake-сервер.
+
+### Живая проверка siglip2
+
+Живая проверка использует настоящий bundle и шлюз gx10. Она не входит в CI. Запустите
+matcher с `matcher/config.yaml` по инструкции из [README.md](README.md) и выполните
+official harness из следующего раздела.
+
+Ответ Top-1 каждого изображения должен быть slug из `wines.jsonl` bundle. Два из трёх
+ожидаемых slug mock pipeline отсутствуют в каталоге bundle, поэтому живая проверка не
+сравнивает ответы с `queries.tsv`. Результаты проверок записаны в
+`workbench/ChangeLog.md`.
+
 ## Ручная проверка official harness
 
 Копия официального тестового клиента находится в `matcher/tests/participant_test.sh`.
@@ -144,13 +175,13 @@ Workflow повторяет pull образа `python:3.11-slim` до трёх �
 из `matcher/requirements.txt` с помощью `matcher/tests/run_ci.sh`. Затем скрипт запускает
 все тесты, которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был
 запущен или был пропущен. В конце журнала должна быть строка
-`matcher tests: discovered=37 run=37 skipped=0`.
+`matcher tests: discovered=47 run=47 skipped=0`.
 
 ## GitLab CI
 
 Job `matcher-tests` находится в корневом файле `.gitlab-ci.yml`. GitLab использует
 образ `python:3.11-slim`. Job устанавливает curl и jq, устанавливает зависимости из
-`matcher/requirements.txt`, запускает `pip check` и выполняет полный набор из 37 тестов.
+`matcher/requirements.txt`, запускает `pip check` и выполняет полный набор из 47 тестов.
 
 Pipeline должен завершить job `matcher-tests` со статусом passed. В логе должна быть
-строка `Ran 37 tests` и итог `OK`.
+строка `Ran 47 tests` и итог `OK`.

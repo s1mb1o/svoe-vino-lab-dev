@@ -2121,7 +2121,7 @@ Owner messages recorded at 2026-09-28T08:07:43+0300 through 09:40:52.
 
 | # | Case | Expected result |
 |---|---|---|
-| EM1 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -v` | 37 tests are `OK`. The integration tests use local copies of the official evaluation files, temporary output directories, and ephemeral ports. |
+| EM1 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -v` | 47 tests are `OK`. The integration tests use local copies of the official evaluation files, temporary output directories, and ephemeral ports. |
 | EM2 | Run `matcher/tests/participant_test.sh` with `matcher/tests/queries.tsv` and `matcher/tests/data` against POST /v1/eval/predict. | The three rows contain tabia_pino_nuar, massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16, and donum_xxiv for their configured images. The run does not use the sibling evaluation directory. |
 | EM3 | Set `SVOE_VINO_MATCHER_CONFIG=matcher/tests/config.yaml`. Submit an image whose SHA-256 is absent from this file. | The response is `{"slug":""}`. |
 | EM4 | Parse `matcher/openapi.yaml` and `GET /openapi.json`. | The complete parsed documents are equal. They contain GET /healthz, POST /v1/eval/predict, BearerAuth, the multipart field `image`, the response field `slug`, and responses 400, 401, 408, 413, 415, 422, and 503. |
@@ -2136,7 +2136,7 @@ Owner messages recorded at 2026-09-28T08:07:43+0300 through 09:40:52.
 | EM13 | Submit a small JPEG that declares 65535 × 65535 pixels, damaged bytes, and a GIF. | The responses are HTTP 413, 422, and 415. The next normal JPEG and `/healthz` succeed. |
 | EM14 | Attempt a 1 GiB sparse upload with Content-Length. Send an oversized chunked body and a slow partial upload. | The sparse and chunked requests return HTTP 413 without consuming the declared body. The slow upload returns HTTP 408. The service stays usable. |
 | EM15 | Fill two active predict slots and one queued slot. Send one more predict request. | The next request returns HTTP 503 before the upload timeout. `/healthz` stays available. |
-| EM16 | Push a matcher change to GitLab `main`. Open the `matcher-tests` job of the new pipeline. | The Docker executor uses `python:3.11-slim`. `pip check` succeeds. All 37 matcher tests run without a skip and pass. |
+| EM16 | Push a matcher change to GitLab `main`. Open the `matcher-tests` job of the new pipeline. | The Docker executor uses `python:3.11-slim`. `pip check` succeeds. All 47 matcher tests run without a skip and pass. |
 
 ## Matcher container
 
@@ -2179,3 +2179,17 @@ commands are in `COMMANDS.md`, section "Smoke check of the GitHub runner (CT 111
 | RS4 | Open the job summary of RS2 | The summary holds the table `Runner smoke` with one row per check. |
 | RS5 | `gh run view <run id> -R s1mb1o/svoe-vino-lab-dev --log \| grep -c QWENCLOUD` | `0`. The job prints no variable of the environment other than the seven endpoint variables. |
 | RS6 | `env -u SAM3_ENDPOINT python3 scripts/runner_smoke.py` with the other six variables set | The row `variables SAM3_ENDPOINT` is `FAIL not set`. SAM3 gets no `reach` row and no `service` row. The exit code is 1. |
+
+## Matcher pipeline siglip2
+
+Owner messages recorded at 2026-09-28T15:01:00+0300. Run the commands in the root of
+`svoe-vino-lab`. SS3 to SS5 call the SigLIP2 model on gx10.
+
+| # | Case | Expected result |
+|---|---|---|
+| SS1 | In `workbench/`: `python3 scripts/build_matcher_bundle.py --embedding gx10-siglip2-so400m-patch16-naflex-p512 --out ../matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`, then `python3 scripts/validate_matcher_bundle.py` on the directory. | Both commands print JSON with `dimension` 1152 and `images` 0. The directory has no `images/`. `git status` does not show `matcher/data/`. |
+| SS2 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s matcher/tests -p 'test_siglip2.py' -v` | 10 tests are `OK`. No test needs the real bundle or the network. |
+| SS3 | Unset `SVOE_VINO_MATCHER_CONFIG`. Set `SIGLIP2_ENDPOINT=http://192.168.86.14:18081` and `SVOE_VINO_MATCHER_OUTPUT_DIR`. Start uvicorn. Call `GET /healthz`. | The response is `{"status":"ok","pipeline":"siglip2-p512-as-is"}`. |
+| SS4 | After SS3, POST `matcher/tests/data/02eef911.webp` to `/v1/eval/predict`. | HTTP 200. The slug is a `wine_slug` of `wines.jsonl` of the bundle. A warm request takes less than 1 s. |
+| SS5 | After SS3, run `matcher/tests/participant_test.sh` with `matcher/tests/queries.tsv` and `matcher/tests/data`. | The output has 3 rows. Each `predicted_slug` is a string, not `null`. |
+| SS6 | Start with `SIGLIP2_ENDPOINT` unset, or with a `bundle` path that does not exist. | The process stops at the start with `ConfigError`. |

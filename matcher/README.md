@@ -1,7 +1,11 @@
 # Сервис матчера для проверки
 
 Этот подпроект предоставляет HTTP API матчера для официальной проверки распознавания
-винных этикеток. Сейчас сервис использует простой и полностью предсказуемый mock pipeline.
+винных этикеток. Сервис поддерживает два backend: `siglip2` и `mock`. Конфигурация по
+умолчанию `matcher/config.yaml` выбирает pipeline `siglip2-p512-as-is`.
+
+Матчер не зависит от workbench. Он не импортирует код workbench и не читает
+`lab.sqlite3`. Данные каталога приходят только через embedding bundle.
 
 ## Что делает сервис
 
@@ -11,8 +15,8 @@
 {"slug":"massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16"}
 ~~~
 
-Mock pipeline узнаёт три тестовых изображения по SHA-256. Для любого другого изображения
-сервис возвращает пустой slug:
+Тестовый mock pipeline узнаёт три тестовых изображения по SHA-256. Для любого другого
+изображения он возвращает пустой slug:
 
 ~~~json
 {"slug":""}
@@ -34,10 +38,9 @@ Mock pipeline узнаёт три тестовых изображения по S
 
 ## Конфигурация
 
-По умолчанию сервис ожидает рабочий файл по пути matcher/config.yaml. Этот файл будет
-добавлен вместе с реальным pipeline. Переменная SVOE_VINO_MATCHER_CONFIG может указать
-другой файл. Формат использует ту же структуру pipeline, что и
-svoe-vino-lab/workbench/config.yaml:
+По умолчанию сервис читает файл matcher/config.yaml. Этот файл выбирает pipeline
+`siglip2-p512-as-is`. Переменная SVOE_VINO_MATCHER_CONFIG может указать другой файл.
+Формат использует ту же структуру pipeline, что и svoe-vino-lab/workbench/config.yaml:
 
 ~~~yaml
 matcher:
@@ -68,6 +71,59 @@ matcher:
 Backend mock вычисляет SHA-256 загруженного изображения. Затем он ищет этот SHA-256 в
 answers. Поле unknown_slug задаёт ответ для неизвестного изображения.
 
+### Backend siglip2
+
+Backend siglip2 вычисляет один вектор SigLIP2 для фотографии и ищет ближайшее вино в
+embedding bundle:
+
+~~~yaml
+pipeline:
+  - name: siglip2-p512-as-is
+    backend: siglip2
+    bundle: matcher/data/gx10-siglip2-so400m-patch16-naflex-p512
+    endpoint: "{env:SIGLIP2_ENDPOINT}"
+~~~
+
+- Поле bundle задаёт каталог bundle. Относительный путь вычисляется от рабочего каталога
+  процесса.
+- Поле endpoint содержит корневой URL OpenAI-совместимого шлюза или точную ссылку
+  `"{env:NAME}"`. Пример значения: `http://192.168.86.14:18081`. Сервис отправляет
+  `POST <endpoint>/v1/embeddings`.
+- Имя модели и `extra_body` backend берёт из `manifest.json` bundle. Для этого bundle это
+  `siglip2-so400m-patch16-naflex` и `max_num_patches: 512`.
+
+Backend выполняет шаги lab pipeline `siglip2-p512-as-is`:
+
+1. Применяет EXIF-ориентацию.
+2. Кладёт прозрачные пиксели на белый фон.
+3. Уменьшает длинную сторону до 1024 пикселей с сохранением пропорций. Меньшее
+   изображение не увеличивается.
+4. Отправляет PNG в endpoint и нормализует вектор.
+5. Сравнивает вектор с векторами view `full` в bundle. Векторы view `label` не
+   участвуют.
+6. Возвращает slug вина с лучшим косинусом. При равенстве побеждает меньший slug.
+
+Backend не выполняет сегментацию и не обращается к SAM3. Сервис загружает bundle при
+запуске. Он проверяет формат, версию, SHA-256 файлов `vectors.npy` и `candidates.jsonl`
+и форму матрицы. Ошибка endpoint во время запроса даёт HTTP 500.
+
+### Embedding bundle
+
+Bundle не хранится в git. Каталог `matcher/data/` указан в `matcher/.gitignore`.
+Соберите bundle в workbench и проверьте его:
+
+~~~bash
+cd workbench
+python3 scripts/build_matcher_bundle.py \
+    --embedding gx10-siglip2-so400m-patch16-naflex-p512 \
+    --out ../matcher/data/gx10-siglip2-so400m-patch16-naflex-p512
+python3 scripts/validate_matcher_bundle.py \
+    ../matcher/data/gx10-siglip2-so400m-patch16-naflex-p512
+~~~
+
+Скрипт сборки по умолчанию не копирует изображения. Матчеру изображения не нужны.
+Bundle этого embedding без изображений занимает около 23 МБ.
+
 Поле matcher.output_dir задаёт каталог изображений и журналов запросов. Оно принимает
 обычный непустой путь или точную строку `"{env:NAME}"`. Во втором случае сервис читает
 путь из переменной окружения NAME при запуске. Относительный путь вычисляется от
@@ -79,6 +135,8 @@ answers. Поле unknown_slug задаёт ответ для неизвестн
 - SVOE_VINO_MATCHER_PORT — обязательный порт для команд запуска и проверки.
 - SVOE_VINO_MATCHER_CONFIG — необязательный путь к файлу конфигурации. Без этой
   переменной сервис читает matcher/config.yaml.
+- SIGLIP2_ENDPOINT — корневой URL шлюза SigLIP2 для matcher/config.yaml, например
+  `http://192.168.86.14:18081`. Значение не содержит `/v1`.
 - SVOE_VINO_MATCHER_OUTPUT_DIR — каталог для изображений и журналов запросов в тестовой
   конфигурации. Поле matcher.output_dir ссылается на эту переменную. Сервис создаёт
   каталог, если он отсутствует.
@@ -116,6 +174,22 @@ export SVOE_VINO_MATCHER_MAX_IMAGE_BYTES=20971520
 
 Эта команда запускает API с тестовым mock pipeline. Сервис читает конфигурацию только
 при запуске. После изменения выбранного файла конфигурации перезапустите процесс.
+
+Чтобы запустить pipeline siglip2 из matcher/config.yaml, соберите bundle и задайте
+адрес шлюза:
+
+~~~bash
+unset SVOE_VINO_MATCHER_CONFIG
+export SIGLIP2_ENDPOINT=http://192.168.86.14:18081
+export SVOE_VINO_MATCHER_OUTPUT_DIR=work/matcher-requests
+
+~/.venvs/svoe-vino-lab/bin/python -m uvicorn matcher.app:app \
+  --host 127.0.0.1 --port "$SVOE_VINO_MATCHER_PORT"
+~~~
+
+Первый запрос после простоя модели загружает модель в шлюзе. Такой запрос занимает
+несколько секунд и может приблизиться к лимиту official harness в 10 секунд. Следующие
+запросы занимают меньше секунды.
 
 Чтобы включить авторизацию, выберите config.token.yaml и задайте секрет:
 
@@ -157,9 +231,16 @@ docker run --rm -p 127.0.0.1:8080:8080 \
 
 Переменные адресов сервисов моделей необязательны: SIGLIP2_ENDPOINT,
 GROUNDING_DINO_ENDPOINT, SAM3_ENDPOINT, VLM_ENDPOINT, VLM_MODEL, QR_SCANNER_ENDPOINT.
-Образ не задаёт ни одну из них. Текущий mock pipeline их не читает. Внутри контейнера
+Образ не задаёт ни одну из них. Pipeline siglip2 читает только ту переменную, на которую
+ссылается его поле endpoint. Mock pipeline не читает ни одну из них. Внутри контейнера
 адрес 127.0.0.1 указывает на сам контейнер. Для сервиса на хосте укажите LAN-адрес
 хоста.
+
+Образ не содержит bundle. Рабочий каталог контейнера — `/app`, поэтому путь
+`matcher/data/<bundle>` из конфигурации означает `/app/matcher/data/<bundle>`.
+Смонтируйте bundle только для чтения, например
+`-v "$PWD/matcher/data/<bundle>:/app/matcher/data/<bundle>:ro"`. Скрипт сборки создаёт
+каталог bundle с правами 0700. Каталог должен быть доступен для чтения uid 1000.
 
 Развёртывание prod и dev на gx10 через Docker Compose описано в
 `drink-atlas-workspace/deploy/gx10/matcher-prod.md`. Этот каталог не входит в

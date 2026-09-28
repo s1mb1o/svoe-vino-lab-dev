@@ -12,7 +12,12 @@
 #
 # The endpoints of the gx10 model services are optional environment variables:
 # SIGLIP2_ENDPOINT, GROUNDING_DINO_ENDPOINT, SAM3_ENDPOINT, VLM_ENDPOINT, VLM_MODEL,
-# QR_SCANNER_ENDPOINT. The image sets none of them.
+# QR_SCANNER_ENDPOINT. The image sets none of them. The siglip2 pipeline reads the
+# variable of its endpoint field.
+#
+# The image holds no embedding bundle. Mount the bundle read-only at the path of the
+# bundle field; a relative path resolves against /app, for example
+# /app/matcher/data/<bundle>.
 
 FROM python:3.11-slim
 

@@ -8,6 +8,9 @@ import re
 
 import yaml
 
+from .bundle import BundleError, load_bundle
+from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend
+
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ENV_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -18,20 +21,8 @@ class ConfigError(ValueError):
     """The matcher configuration is not valid."""
 
 
-@dataclass(frozen=True)
-class MockMatcher:
-    """A matcher that maps image SHA-256 values to configured slugs."""
-
-    pipeline: str
-    answers: dict[str, str]
-    unknown_slug: str = ""
-    output_dir: str | None = None
-    token: str | None = None
-
-    def predict(self, image: bytes) -> str:
-        """Return the configured slug for one image body."""
-        digest = hashlib.sha256(image).hexdigest()
-        return self.answers.get(digest, self.unknown_slug)
+class _MatcherSettings:
+    """The output directory and token resolution that every backend shares."""
 
     def resolved_output_dir(self, environ=None) -> str | None:
         """Resolve the configured output directory without exposing other variables."""
@@ -65,6 +56,36 @@ class MockMatcher:
         return value
 
 
+@dataclass(frozen=True)
+class MockMatcher(_MatcherSettings):
+    """A matcher that maps image SHA-256 values to configured slugs."""
+
+    pipeline: str
+    answers: dict[str, str]
+    unknown_slug: str = ""
+    output_dir: str | None = None
+    token: str | None = None
+
+    def predict(self, image: bytes) -> str:
+        """Return the configured slug for one image body."""
+        digest = hashlib.sha256(image).hexdigest()
+        return self.answers.get(digest, self.unknown_slug)
+
+
+@dataclass(frozen=True, eq=False)
+class Siglip2Matcher(_MatcherSettings):
+    """A matcher that ranks one SigLIP2 vector of the photo in one bundle."""
+
+    pipeline: str
+    backend: Siglip2Backend
+    output_dir: str | None = None
+    token: str | None = None
+
+    def predict(self, image: bytes) -> str:
+        """Return the Top-1 slug for one image body."""
+        return self.backend.predict(image)
+
+
 def _mapping(value, label):
     if not isinstance(value, dict):
         raise ConfigError("%s MUST be a map" % label)
@@ -92,8 +113,8 @@ def _token(value):
     return value
 
 
-def load_matcher(config_path) -> MockMatcher:
-    """Load and validate the selected mock pipeline."""
+def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
+    """Load and validate the selected pipeline."""
     path = Path(config_path)
     try:
         config = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -126,6 +147,8 @@ def load_matcher(config_path) -> MockMatcher:
     entry = by_name.get(selected)
     if entry is None:
         raise ConfigError("matcher.pipeline names an unknown pipeline: %s" % selected)
+    if entry.get("backend") == "siglip2":
+        return _load_siglip2(selected, entry, output_dir, token)
     if entry.get("backend") != "mock":
         raise ConfigError("pipeline %s uses unsupported backend: %s"
                           % (selected, entry.get("backend")))
@@ -147,6 +170,53 @@ def load_matcher(config_path) -> MockMatcher:
         pipeline=selected,
         answers=normalized,
         unknown_slug=unknown,
+        output_dir=output_dir,
+        token=token,
+    )
+
+
+def _endpoint(value, selected):
+    """Return the endpoint URL of a plain value or of an exact {env:NAME} reference."""
+    label = "pipeline %s endpoint" % selected
+    if not isinstance(value, str) or not value:
+        raise ConfigError("%s MUST be a URL or an exact {env:NAME} reference" % label)
+    match = ENV_REFERENCE.fullmatch(value)
+    if match is None:
+        if "{env:" in value:
+            raise ConfigError("%s MUST be a URL or an exact {env:NAME} reference" % label)
+        url = value
+    else:
+        url = os.environ.get(match.group(1))
+        if not isinstance(url, str) or not url:
+            raise ConfigError("%s environment variable %s MUST be set"
+                              % (label, match.group(1)))
+    if not url.startswith(("http://", "https://")):
+        raise ConfigError("%s MUST start with http:// or https://" % label)
+    return url
+
+
+def _load_siglip2(selected, entry, output_dir, token):
+    """Load the bundle of one siglip2 pipeline and check it against the backend."""
+    path = entry.get("bundle")
+    if not isinstance(path, str) or not path:
+        raise ConfigError("pipeline %s bundle MUST be a non-empty path" % selected)
+    endpoint = _endpoint(entry.get("endpoint"), selected)
+    try:
+        bundle = load_bundle(path)
+    except BundleError as exc:
+        raise ConfigError("pipeline %s bundle: %s" % (selected, exc)) from exc
+    embedding = bundle.embedding
+    if embedding.get("backend") != "openai" or not isinstance(embedding.get("model"), str):
+        raise ConfigError("pipeline %s bundle MUST come from an openai embedding with a "
+                          "model name" % selected)
+    if not isinstance(embedding.get("extra_body") or {}, dict):
+        raise ConfigError("pipeline %s bundle extra_body MUST be an object" % selected)
+    if SIGLIP2_VIEW not in bundle.views:
+        raise ConfigError("pipeline %s bundle holds no vector of the view %s"
+                          % (selected, SIGLIP2_VIEW))
+    return Siglip2Matcher(
+        pipeline=selected,
+        backend=Siglip2Backend(bundle, endpoint),
         output_dir=output_dir,
         token=token,
     )

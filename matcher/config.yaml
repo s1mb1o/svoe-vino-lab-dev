@@ -1,0 +1,21 @@
+# The default matcher configuration. The service reads this file when
+# SVOE_VINO_MATCHER_CONFIG is not set. Restart the matcher after a change.
+matcher:
+  # Select one entry of pipeline by name.
+  pipeline: siglip2-p512-as-is
+  output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+
+# This list uses the name and backend notation of ../workbench/config.yaml.
+pipeline:
+  # One SigLIP2 vector of the photo as it is: no segmentation. The photo steps are the
+  # steps of the lab pipeline siglip2-p512-as-is. The vector ranks the view `full` of
+  # the bundle. Read matcher/README.md.
+  - name: siglip2-p512-as-is
+    backend: siglip2
+    # A bundle of workbench/scripts/build_matcher_bundle.py. The bundle is not in git.
+    # A relative path resolves against the working directory of the process.
+    bundle: matcher/data/gx10-siglip2-so400m-patch16-naflex-p512
+    # The root URL of the OpenAI-compatible gateway, for example
+    # http://192.168.86.14:18081. The service sends POST <endpoint>/v1/embeddings. The
+    # bundle gives the model name.
+    endpoint: "{env:SIGLIP2_ENDPOINT}"
