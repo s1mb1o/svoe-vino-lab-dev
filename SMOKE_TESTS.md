@@ -2094,6 +2094,7 @@ Owner messages recorded at 2026-09-28T08:07:43+0300 through 09:40:52.
 | EM13 | Submit a small JPEG that declares 65535 × 65535 pixels, damaged bytes, and a GIF. | The responses are HTTP 413, 422, and 415. The next normal JPEG and `/healthz` succeed. |
 | EM14 | Attempt a 1 GiB sparse upload with Content-Length. Send an oversized chunked body and a slow partial upload. | The sparse and chunked requests return HTTP 413 without consuming the declared body. The slow upload returns HTTP 408. The service stays usable. |
 | EM15 | Fill two active predict slots and one queued slot. Send one more predict request. | The next request returns HTTP 503 before the upload timeout. `/healthz` stays available. |
+| EM16 | Push a matcher change to GitLab `main`. Open the `matcher-tests` job of the new pipeline. | The Docker executor uses `python:3.11-slim`. `pip check` succeeds. All 37 matcher tests run without a skip and pass. |
 
 ## Runner smoke — the GitHub runner of CT 111
 

@@ -70,7 +70,10 @@
   JPEG dimension bomb, a 1 GiB sparse upload, an oversized chunked body, a slow upload,
   a damaged image, an unsupported format, and a full queue. It verifies service health
   and a normal request after each attack. Rejections get structured logs. All 37 matcher
-  tests pass. No fixed port, schema change, or lab-server restart was used.
+  tests pass. The GitLab job `matcher-tests` uses `python:3.11-slim`, installs the two
+  shell-client dependencies `curl` and `jq`, checks the pinned Python dependencies, and
+  runs the same 37-test command. No fixed port, schema change, or lab-server restart was
+  used.
 
 ## 2026-09-27
 

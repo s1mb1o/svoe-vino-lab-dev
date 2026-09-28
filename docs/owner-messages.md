@@ -7205,3 +7205,9 @@ Answer: `matcher.output_dir` принимает обычный путь или �
 ```text
 commit matcher
 ```
+
+## 2026-09-28T10:09:59+0300
+
+```text
+add gitlab testing for matcher/ and push to git. Check that matcher/ is being tested and tests pass.
+```

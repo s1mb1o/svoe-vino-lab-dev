@@ -1,0 +1,24 @@
+image: python:3.11-slim
+
+stages:
+  - test
+
+variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUNBUFFERED: "1"
+
+matcher-tests:
+  stage: test
+  interruptible: true
+  retry:
+    max: 2
+    when: runner_system_failure
+  before_script:
+    - apt-get update
+    - apt-get install --yes --no-install-recommends curl jq
+    - python -m pip install --no-cache-dir -r matcher/requirements.txt
+    - python -m pip check
+  script:
+    - python -W error::ResourceWarning -m unittest discover -s matcher/tests -v
