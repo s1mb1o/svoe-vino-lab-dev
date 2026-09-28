@@ -276,3 +276,36 @@ The history of the backups, and of the rows of one table:
 git log --stat --format='%h %ad %s' --date=iso -- db-export
 git log -p -- db-export/rows/wine_catalog.jsonl
 ```
+
+# Smoke check of the GitHub runner (CT 111)
+
+`scripts/runner_smoke.py` checks the gx10 endpoint variables of the self-hosted runner
+`ct111-svoe-vino-lab-1`: the variables, the reachability, and one real call of each
+service. The test cases are in `SMOKE_TESTS.md`, section "Runner smoke".
+
+Unit tests. Read-only, no network:
+```bash
+python3 -m unittest discover -s tests -p 'test_runner_smoke.py'
+```
+
+The next commands call the gx10 services. They need `SIGLIP2_ENDPOINT`,
+`GROUNDING_DINO_ENDPOINT`, `SAM3_ENDPOINT`, `VLM_ENDPOINT`, `VLM_MODEL`,
+`SHIELDGEMMA_ENDPOINT`, and `QR_SCANNER_ENDPOINT`. `SIGLIP2_MODEL` is optional; the
+default is `siglip2-so400m-patch16-naflex`. The default run calls only the models that
+run now, and loads no model:
+```bash
+python3 scripts/runner_smoke.py
+```
+
+Load each model that does not run on gx10. `qwen3.5-9b-nvfp4` alone needs about 27 GB:
+```bash
+python3 scripts/runner_smoke.py --load-models
+```
+
+The same on the runner, through GitHub. Needs `gh` with access to
+`s1mb1o/svoe-vino-lab-dev`:
+```bash
+gh workflow run runner-smoke.yml -R s1mb1o/svoe-vino-lab-dev
+gh workflow run runner-smoke.yml -R s1mb1o/svoe-vino-lab-dev -f load_models=true
+gh run list -R s1mb1o/svoe-vino-lab-dev -w runner-smoke.yml -L 3
+```

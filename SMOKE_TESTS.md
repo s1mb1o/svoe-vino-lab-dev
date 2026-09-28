@@ -2072,3 +2072,18 @@ Owner message of 2026-09-27T21:44:04+0300. `$H` is the lab server.
 | BK2 | Open `$H/clusters` | `Build all clusters` follows `Build clusters`. Its title reads `Build the clusters of each configuration, one at a time, in the order of config.yaml`. It is enabled. |
 | BK3 | Press `Build all clusters` | The button is disabled. The text after it reads `Build all clusters 1 / 12: <name>`, then counts up. The combobox shows the new count of each built configuration. At the end: `Build all clusters done: <n> built`, and the title lists each configuration with its result. |
 | BK4 | Press `Build All` on `$H/embedding`, then at once `Build all clusters` on `$H/clusters` | While the embedding build of the current configuration runs, the text adds ` · waiting: the embedding build of <name> runs`. The cluster build of that configuration starts after the embedding build. |
+
+## Runner smoke — the GitHub runner of CT 111
+
+Owner messages recorded at 2026-09-28T08:55:00+0300 through 08:59:00. The workflow is
+`.github/workflows/runner-smoke.yml`. The runner is `ct111-svoe-vino-lab-1`. The
+commands are in `COMMANDS.md`, section "Smoke check of the GitHub runner (CT 111)".
+
+| # | Case | Expected result |
+|---|---|---|
+| RS1 | `python3 -m unittest discover -s tests -p 'test_runner_smoke.py'` | 19 tests are `OK`. 1 is skipped when `zxingcpp` is not installed. |
+| RS2 | `gh workflow run runner-smoke.yml -R s1mb1o/svoe-vino-lab-dev` | The job runs on `ct111-svoe-vino-lab-1` as `github-runner`. The 7 `variables` rows and the 6 `reach` rows are `PASS`. A model that runs gets a `service` row `PASS`. A model that does not run is `IDLE`. The job is green. `GET http://192.168.86.14:18081/running` lists the same models before and after the run. |
+| RS3 | Repeat RS2 with `-f load_models=true` | The 6 `service` rows are `PASS`. `/running` lists the models that the run loaded. |
+| RS4 | Open the job summary of RS2 | The summary holds the table `Runner smoke` with one row per check. |
+| RS5 | `gh run view <run id> -R s1mb1o/svoe-vino-lab-dev --log \| grep -c QWENCLOUD` | `0`. The job prints no variable of the environment other than the seven endpoint variables. |
+| RS6 | `env -u SAM3_ENDPOINT python3 scripts/runner_smoke.py` with the other six variables set | The row `variables SAM3_ENDPOINT` is `FAIL not set`. SAM3 gets no `reach` row and no `service` row. The exit code is 1. |

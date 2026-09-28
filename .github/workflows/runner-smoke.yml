@@ -1,0 +1,51 @@
+# Smoke check of the self-hosted runner ct111-svoe-vino-lab-1 (CT 111 on Proxmox x300).
+# The script is scripts/runner_smoke.py. The endpoint variables come from the .env file of
+# the runner. Start the workflow by hand: Actions > Runner smoke > Run workflow.
+# The box "load_models" makes llama-swap load each gx10 model that does not run.
+name: Runner smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      load_models:
+        description: "Load the gx10 models that do not run, so that each service gets a real call"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runner-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    runs-on: [self-hosted, linux, x64, svoe-vino-lab]
+    timeout-minutes: 30
+    steps:
+      - name: Check out the script and the fixture
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            scripts/runner_smoke.py
+            tests/data/smoke/
+          sparse-checkout-cone-mode: false
+
+      - name: Show the runner
+        run: |
+          echo "runner: $RUNNER_NAME ($RUNNER_OS $RUNNER_ARCH)"
+          echo "user: $(id -un), host: $(hostname)"
+          python3 --version
+
+      - name: Check the endpoints
+        env:
+          LOAD_MODELS: ${{ inputs.load_models }}
+        run: |
+          if [ "$LOAD_MODELS" = "true" ]; then
+            python3 scripts/runner_smoke.py --load-models
+          else
+            python3 scripts/runner_smoke.py
+          fi

@@ -37,3 +37,12 @@ files in this order. The results were measured on 2026-09-24.
 | 3 | `strapi_output0709.v4-changed-field.csv` | error | — | — | no change: `region 'Кубань' -> 'Крым'` |
 | 4 | the official file | 0 | 4 | 3 | Active 2103, Removed 3 (the fake wines) |
 | 5 | the official file again | 0 | 0 | 0 | no change |
+
+## `smoke/bottle.jpg`
+
+The input of the service checks of `scripts/runner_smoke.py` (SAM3, Grounding DINO,
+ShieldGemma, SigLIP2, and the VLM). It is the main catalogue photo
+`data/images/main/005b00a60747deccecd2f003de148a053f4d95e5681803a02ac5df269dfc9112.webp`
+(a bottle of Massandra Muscat), scaled to a height of 900 px and put on a white canvas of
+401 x 1000 px at (80, 50). `BOTTLE_BOX` in the script is the box of the bottle,
+`[97, 50, 304, 923]`. A change of this file needs a new `BOTTLE_BOX`.

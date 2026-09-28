@@ -1,5 +1,21 @@
 # ChangeLog
 
+## 2026-09-28
+
+- Added the smoke check of the self-hosted GitHub runner `ct111-svoe-vino-lab-1`
+  (CT 111): `.github/workflows/runner-smoke.yml` (manual start, box `load_models`) runs
+  `scripts/runner_smoke.py` (owner messages of 2026-09-28T08:55:00+0300 through 08:59:00).
+  The script checks the seven endpoint variables of the runner, the reachability of the
+  gx10 gateways, and one real call of each service with a known answer: SAM3 and Grounding
+  DINO find the bottle of `tests/data/smoke/bottle.jpg`, ShieldGemma flags nothing, SigLIP2
+  ranks "wine" above "cat", the VLM repeats a random word and names the object, and
+  `qr-scanner` decodes a random EAN-13 (engine `zxing-cpp`). The default run follows the
+  rule "Hybrid" of the Health page: it calls only the models that run, and a model that
+  does not run is `idle`, not a failure. Each call sends `Cache-Control: no-cache`, so the
+  cache on port 18082 cannot answer for the model. 19 unit tests in
+  `tests/test_runner_smoke.py`; the generated EAN-13 decoded 300 of 300 times with
+  zxing-cpp 2.3.0. A first run from the Mac: 15 pass, 4 idle, no model load.
+
 ## 2026-09-27
 
 - Tags of a wine (plan 63; owner messages of 2026-09-27T17:04:20+0300 and 17:05:11,

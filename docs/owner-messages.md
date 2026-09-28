@@ -6864,3 +6864,49 @@ Two more test files pass the removed key `rules`, and they would fail after the 
 - No: I leave both files unchanged. Those tests then fail until their sessions or you update them.
 Answer: Yes, only those lines (Recommended)
 ```
+
+## 2026-09-28T08:55:00+0300
+
+````text
+create Smoke job for github, that checks if runner:
+1. has following endpoint env vars defined:
+```
+
+export SIGLIP2_ENDPOINT=http://192.168.86.14:18082
+export GROUNDING_DINO_ENDPOINT=http://192.168.86.14:18082/upstream/grounding-dino-base
+export SAM3_ENDPOINT=http://192.168.86.14:18082/upstream/sam3
+
+# VLM chat API base URL (OpenAI-compatible; client appends /chat/completions)
+export VLM_ENDPOINT=http://192.168.86.14:18081/v1
+# VLM model id on the gx10 gateway (thinking model: send enable_thinking=false)
+export VLM_MODEL=qwen3.5-9b-nvfp4
+
+# ShieldGemma 2 image safety classifier: POST $SHIELDGEMMA_ENDPOINT/classify (multipart "image")
+export SHIELDGEMMA_ENDPOINT=http://192.168.86.14:18081/upstream/shieldgemma-2-4b-it
+# QR code and barcode decoder: POST $QR_SCANNER_ENDPOINT/scan (multipart "image")
+export QR_SCANNER_ENDPOINT=http://192.168.86.14:18081/upstream/qr-scanner
+
+```
+2. they are accessible
+
+3. they works and provide service (some examples that should always pass).
+````
+
+## 2026-09-28T08:58:00+0300
+
+```text
+Question: When a service's model is not loaded on gx10, what should the smoke job do?
+Answer: Hybrid + load checkbox (Recommended)
+
+Question: Which test inputs should the service checks use?
+Answer: Generated + 1 bottle photo (Recommended)
+
+Question: How should the workflow reach GitHub?
+Answer: Commit + push to github main (Recommended)
+```
+
+## 2026-09-28T08:59:00+0300
+
+```text
+after you push to git, test that it all works
+```
