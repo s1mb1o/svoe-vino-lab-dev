@@ -31,14 +31,7 @@ def qr_image(text: str) -> bytes:
     return output.getvalue()
 
 
-def embedding(client: httpx.Client, base: str, model: str) -> dict[str, object]:
-    uri = "data:image/png;base64," + base64.b64encode(sample_image()).decode("ascii")
-    body: dict[str, object] = {"model": model, "input": [uri]}
-    if model.endswith("naflex"):
-        body["max_num_patches"] = 256
-    response = client.post(f"{base}/v1/embeddings", json=body)
-    response.raise_for_status()
-    result = response.json()
+def _validate_embedding(result: dict[str, object]) -> dict[str, object]:
     vector = result["data"][0]["embedding"]
     if len(vector) != 1152 or not all(math.isfinite(value) for value in vector):
         raise AssertionError("SigLIP2 did not return one finite 1,152-value vector")
@@ -46,6 +39,21 @@ def embedding(client: httpx.Client, base: str, model: str) -> dict[str, object]:
     if abs(norm - 1.0) > 0.01:
         raise AssertionError(f"SigLIP2 vector norm is {norm}")
     return {"dimension": len(vector), "norm": norm}
+
+
+def embedding(client: httpx.Client, base: str, model: str) -> dict[str, object]:
+    uri = "data:image/png;base64," + base64.b64encode(sample_image()).decode("ascii")
+    budgets: tuple[int | None, ...] = (256, 512, 1024) if model.endswith("naflex") else (None,)
+    checks: dict[str, object] = {}
+    for budget in budgets:
+        body: dict[str, object] = {"model": model, "input": [uri]}
+        if budget is not None:
+            body["max_num_patches"] = budget
+        response = client.post(f"{base}/v1/embeddings", json=body)
+        response.raise_for_status()
+        key = str(budget) if budget is not None else "fixed"
+        checks[key] = _validate_embedding(response.json())
+    return {"budgets": checks} if model.endswith("naflex") else checks["fixed"]
 
 
 def qr(client: httpx.Client, base: str) -> dict[str, object]:
@@ -89,6 +97,10 @@ def sam3(client: httpx.Client, base: str) -> dict[str, object]:
         raise AssertionError(f"SAM3 response has wrong dimensions: {result}")
     if not isinstance(result["instances"], list):
         raise AssertionError("SAM3 instances is not a list")
+    if result["count"] != len(result["instances"]):
+        raise AssertionError("SAM3 count does not match the instance list")
+    if result["count"] < 1:
+        raise AssertionError("SAM3 did not find the generated wine bottle")
     return {"count": result["count"], "width": result["width"], "height": result["height"]}
 
 
@@ -129,4 +141,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

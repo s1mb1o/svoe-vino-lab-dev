@@ -116,3 +116,11 @@ The Drive connector confirmed `manifest.json` in the folder on 2026-09-28.
 The Drive file matched the local `manifest.json` byte for byte.
 The owner reported that the four model archives were still uploading.
 The organizer runbooks require all five files to be visible before download.
+
+The updated Apple NaFlex smoke test used patch budgets 256, 512, and 1024.
+Each request returned 1,152 finite values.
+The vector norms were 0.99999994, 1.00000003, and 1.00000002.
+The updated Apple SAM3 smoke test found one instance in the generated wine-bottle image.
+The gateway readiness endpoint returned HTTP 200 while SAM3 was ready.
+The launcher stopped the gateway after the ready SAM3 child process received SIGTERM.
+All 19 static tests passed after these changes.

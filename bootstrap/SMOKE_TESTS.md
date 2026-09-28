@@ -17,8 +17,8 @@
 
 - Install the `google/siglip2-so400m-patch16-naflex` bundle.
 - Start `siglip2-so400m-patch16-naflex`.
-- Send one image to `POST /v1/embeddings`.
-- Confirm that the response contains one finite 1,152-value vector.
+- Send one image with `max_num_patches` set to 256, 512, and 1024.
+- Confirm that each response contains one finite 1,152-value vector.
 - Send one text input.
 - Confirm that the response contains one finite 1,152-value vector.
 
@@ -43,6 +43,7 @@
 - Send one image and one text prompt to `POST /upstream/sam3/segment`.
 - Confirm that the response dimensions equal the input dimensions.
 - Confirm that `instances` is a list.
+- Confirm that the generated wine-bottle image returns at least one instance.
 
 ## Qwen3.5-9B through Ollama
 

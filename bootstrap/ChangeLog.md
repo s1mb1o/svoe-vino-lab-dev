@@ -2,6 +2,13 @@
 
 ## 2026-09-28
 
+- Проверка NaFlex теперь выполняет запросы с `max_num_patches=256`, `512` и `1024`.
+- Проверка SAM3 теперь требует хотя бы один найденный объект.
+- Эндпоинт gateway `/health` теперь проверяет готовность каждого активного сервиса.
+- Launcher теперь завершает gateway и остальные процессы при завершении готового дочернего процесса.
+- Уточнено, что рабочий комплект ML-сервисов работает на GX10, а bootstrap позволяет организатору развернуть те же HTTP API на своем хосте.
+- Задокументирована сетевая модель: bootstrap работает без встроенной аутентификации в доверенной частной сети.
+- Уточнено, что модели SigLIP2 взаимно исключают друг друга, а Qwen3.5-9B MAY работать в другой OpenAI-совместимой среде инференса.
 - Added Qwen3.5-9B deployment through Ollama on Apple Silicon and NVIDIA GPU hosts.
 - Added OpenAI-compatible Qwen API configuration and loopback access rules.
 - Added core and optional ShieldGemma memory profiles for simultaneous service operation.

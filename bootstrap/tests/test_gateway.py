@@ -15,7 +15,18 @@ class GatewayTest(unittest.TestCase):
         self.client = TestClient(gateway.app)
 
     def test_lists_active_model(self) -> None:
-        self.assertEqual(self.client.get("/health").json()["active_models"], ["sam3"])
+        with patch.object(gateway, "_readiness_failures", AsyncMock(return_value={})):
+            response = self.client.get("/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["active_models"], ["sam3"])
+
+    def test_health_fails_when_active_model_is_not_ready(self) -> None:
+        failures = {"sam3": "connection refused"}
+        with patch.object(gateway, "_readiness_failures", AsyncMock(return_value=failures)):
+            response = self.client.get("/health")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["status"], "not-ready")
+        self.assertEqual(response.json()["failures"], failures)
 
     def test_unknown_upstream_model_is_not_found(self) -> None:
         self.assertEqual(self.client.get("/upstream/unknown/health").status_code, 404)
@@ -33,4 +44,3 @@ class GatewayTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

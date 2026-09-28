@@ -71,9 +71,12 @@ Ollama MUST run `qwen3.5:9b` from local storage after the initial download.
 43. The test suite MUST test gateway model routing.
 44. The smoke test MUST send one real QR image.
 45. The smoke test MUST send one real inference request to each accelerator model.
-46. A SigLIP2 smoke test MUST verify a 1,152-value finite vector.
+46. A SigLIP2 NaFlex smoke test MUST verify a 1,152-value finite vector at patch budgets 256, 512, and 1024.
 47. A ShieldGemma smoke test MUST verify the policy result structure.
-48. A SAM3 smoke test MUST verify the response dimensions and instance list.
+48. A SAM3 smoke test MUST verify the response dimensions and a nonempty instance list.
 49. ShieldGemma MUST use float32 on MPS.
 50. ShieldGemma MUST use bfloat16 on CUDA.
 51. ShieldGemma MUST reject a non-finite policy score before JSON serialization.
+52. The gateway health endpoint MUST probe every active model service.
+53. The gateway health endpoint MUST return HTTP 503 when an active model service is not ready.
+54. The launcher MUST stop the gateway when a ready child process exits.

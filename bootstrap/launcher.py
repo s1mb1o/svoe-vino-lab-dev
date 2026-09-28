@@ -8,6 +8,7 @@ import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -127,6 +128,23 @@ def _stop(processes: list[subprocess.Popen[bytes]]) -> None:
             process.wait()
 
 
+def _watch_processes(
+    server: uvicorn.Server,
+    processes: dict[str, subprocess.Popen[bytes]],
+    stop: threading.Event,
+    failure: list[tuple[str, int]],
+) -> None:
+    """Stop the gateway when a ready model process exits."""
+
+    while not stop.wait(0.5):
+        for model_id, process in processes.items():
+            code = process.poll()
+            if code is not None:
+                failure.append((model_id, code))
+                server.should_exit = True
+                return
+
+
 def _interrupt_on_hangup(signum: int, frame: object) -> None:
     """Run the normal cleanup path when an SSH session closes."""
     raise KeyboardInterrupt(f"received signal {signum}")
@@ -173,6 +191,7 @@ def main() -> int:
         }
     )
     processes: list[subprocess.Popen[bytes]] = []
+    model_processes: dict[str, subprocess.Popen[bytes]] = {}
     model_targets: dict[str, str] = {}
     try:
         for model_id in selected:
@@ -182,6 +201,7 @@ def main() -> int:
             print(f"Starting {model_id} on 127.0.0.1:{port}", flush=True)
             process = subprocess.Popen(command, cwd=ROOT, env=environment)
             processes.append(process)
+            model_processes[model_id] = process
             target = f"http://127.0.0.1:{port}"
             _wait_until_healthy(process, f"{target}/health", arguments.load_timeout)
             model_targets[model_id] = target
@@ -192,7 +212,31 @@ def main() -> int:
             f"Active models: {', '.join(selected)}",
             flush=True,
         )
-        uvicorn.run(gateway.app, host=arguments.host, port=arguments.port, log_level="info")
+        server = uvicorn.Server(
+            uvicorn.Config(
+                gateway.app,
+                host=arguments.host,
+                port=arguments.port,
+                log_level="info",
+            )
+        )
+        monitor_stop = threading.Event()
+        process_failure: list[tuple[str, int]] = []
+        monitor = threading.Thread(
+            target=_watch_processes,
+            args=(server, model_processes, monitor_stop, process_failure),
+            name="model-process-monitor",
+            daemon=True,
+        )
+        monitor.start()
+        try:
+            server.run()
+        finally:
+            monitor_stop.set()
+            monitor.join(timeout=2)
+        if process_failure:
+            model_id, code = process_failure[0]
+            raise RuntimeError(f"model process {model_id} exited with status {code}")
         return 0
     finally:
         _stop(processes)
