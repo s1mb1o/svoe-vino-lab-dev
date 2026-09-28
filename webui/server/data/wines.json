@@ -1,0 +1,254 @@
+[
+  {
+    "slug": "priboj-marchenko-beloe-polusuhoe",
+    "name": "Прибой Марченко белое полусухое",
+    "producer": "Винодельня Марченко",
+    "region": "Кубань",
+    "grapes": [
+      "Первенец Магарача"
+    ],
+    "color": "Белое",
+    "category": "Полусухое",
+    "rating": 2,
+    "image": "/wines/priboj-marchenko-beloe-polusuhoe.webp",
+    "alcohol": "13%",
+    "servingTemperature": "10-12°C",
+    "pairings": [
+      "Блюда из птицы",
+      "Легкие закуски"
+    ],
+    "description": null,
+    "source": "https://vino-svoe.ru/wines/priboj-marchenko-beloe-polusuhoe"
+  },
+  {
+    "slug": "priboj-marchenko-rozovoe-polusuhoe",
+    "name": "Прибой Марченко розовое полусухое",
+    "producer": "Винодельня Марченко",
+    "region": "Кубань",
+    "grapes": [
+      "Антей магарачский",
+      "Мерло"
+    ],
+    "color": "Розовое",
+    "category": "Полусухое",
+    "rating": 4,
+    "image": "/wines/priboj-marchenko-rozovoe-polusuhoe.webp",
+    "alcohol": "13%",
+    "servingTemperature": "8-10°C",
+    "pairings": [
+      "Азиатская кухня",
+      "Блюда из птицы",
+      "Легкие закуски"
+    ],
+    "description": null,
+    "source": "https://vino-svoe.ru/wines/priboj-marchenko-rozovoe-polusuhoe"
+  },
+  {
+    "slug": "priboj-marchenko-krasnoe-polusuhoe",
+    "name": "Прибой Марченко красное полусухое",
+    "producer": "Винодельня Марченко",
+    "region": "Кубань",
+    "grapes": [
+      "Каберне АЗОС"
+    ],
+    "color": "Красное",
+    "category": "Полусухое",
+    "rating": 5,
+    "image": "/wines/priboj-marchenko-krasnoe-polusuhoe.webp",
+    "alcohol": "13%",
+    "servingTemperature": "14-16°C",
+    "pairings": [
+      "BBQ",
+      "Сыры"
+    ],
+    "description": null,
+    "source": "https://vino-svoe.ru/wines/priboj-marchenko-krasnoe-polusuhoe"
+  },
+  {
+    "slug": "gevyurcztraminer-oranzh",
+    "name": "Гевюрцтраминер Оранж",
+    "producer": "Усадьба Перовских",
+    "region": "Крым",
+    "grapes": [
+      "Гевюрцтраминер"
+    ],
+    "color": "Оранжевое",
+    "category": "Сухое",
+    "rating": 5,
+    "image": "/wines/gevyurcztraminer-oranzh.webp",
+    "alcohol": "12%",
+    "servingTemperature": "10-12°C",
+    "pairings": [
+      "Азиатская кухня",
+      "Запеченные овощи",
+      "Сыры"
+    ],
+    "description": null,
+    "source": "https://vino-svoe.ru/wines/gevyurcztraminer-oranzh"
+  },
+  {
+    "slug": "znoj-denisov-vajneri",
+    "name": "Зной. Денисов Вайнери",
+    "producer": "Denisov Winery",
+    "region": "Самара",
+    "grapes": [
+      "Ркацители",
+      "Цитронный Магарача"
+    ],
+    "color": "Белое",
+    "category": "Сухое",
+    "rating": 4,
+    "image": "/wines/znoj-denisov-vajneri.webp",
+    "alcohol": "12-13.5%",
+    "servingTemperature": "8-12°C",
+    "pairings": [
+      "Блюда из птицы",
+      "Легкие закуски",
+      "Салаты"
+    ],
+    "description": "Аромат: засахаренные дольки и цедра лимона, жёлтая, леденцовая груша с медовыми тонами липового цвета. \n\nВкус: сбалансированный, освежающий вкус, с хорошей кислотностью. Фруктовая палитра, повторяя аромат, раскрывается спелой грушей, сочным персиком и зрелой айвой в послевкусии.\n\nТехнология: машинный сбор, ферментация при t +14 +17, выдержка в стали 6 месяцев.\n",
+    "source": "https://vino-svoe.ru/wines/znoj-denisov-vajneri"
+  },
+  {
+    "slug": "fioletovyj-rannij-petnat",
+    "name": "Фиолетовый Ранний петнат",
+    "producer": "Гусевъ",
+    "region": "Нижняя Волга",
+    "grapes": [
+      "Фиолетовый ранний"
+    ],
+    "color": "Белое",
+    "category": "Экстра брют",
+    "rating": 1,
+    "image": "/wines/fioletovyj-rannij-petnat.webp",
+    "alcohol": null,
+    "servingTemperature": null,
+    "pairings": [],
+    "description": "Аромат: преобладают грушевые ноты с оттенками акации, липового цвета и леденцов.\n\nВкус: оттенки ментола добавляют свежести и готовят к мягкой кислотности и общей легкости с преобладанием кислинки сливы, уходящей в длительное послевкусие.\n\nТехнология: Ручной сбор, Охлаждение винограда до 2-4°С, Мягкое прессование в мембранном прессе, Остановка брожения холодом, Выдержка на осадке 6 месяцев\n",
+    "source": "https://vino-svoe.ru/wines/fioletovyj-rannij-petnat"
+  },
+  {
+    "slug": "muskat-ottonel-gusev",
+    "name": "Мускат Оттонель Гусевъ",
+    "producer": "Гусевъ",
+    "region": "Нижняя Волга",
+    "grapes": [
+      "Мускат Оттонель"
+    ],
+    "color": "Белое",
+    "category": "Брют",
+    "rating": 5,
+    "image": "/wines/muskat-ottonel-gusev.webp",
+    "alcohol": null,
+    "servingTemperature": "8-10°C",
+    "pairings": [],
+    "description": "Аромат: парфюмерный, с оттенками спелого винограда, белых цветов и жёлтой сливы.\n\nВкус: сочный, с умеренной кислотностью и продолжительным сладким послевкусием.\n\nТехнология:  Ручной сбор, Охлаждение винограда до 2-4°С, Мягкое прессование в мембранном прессе, Остановка брожения холодом, Выдержка на осадке 6 месяцев.\n",
+    "source": "https://vino-svoe.ru/wines/muskat-ottonel-gusev"
+  },
+  {
+    "slug": "zakat-denisov-vajneri",
+    "name": "Закат. Денисов Вайнери",
+    "producer": "Denisov Winery",
+    "region": "Самара",
+    "grapes": [
+      "Левокумский",
+      "Шардоне"
+    ],
+    "color": "Розовое",
+    "category": "Сухое",
+    "rating": 4.57,
+    "image": "/wines/zakat-denisov-vajneri.webp",
+    "alcohol": null,
+    "servingTemperature": null,
+    "pairings": [],
+    "description": "Аромат: многослойный яркий раскрывающийся нотами красных ягод спелой садовой земляники, нюансами малины, красной смородины, с тонкими цветочными оттенками лепестков пиона и нераспустившейся розы. \n\nВкус: вино имеет шелковистую текстуру и сочную цветочно-ягодную палитру во вкусе.\n\nТехнология: машинный сбор, ферментация при t +15 +18, выдержка в стали 5 месяцев\n",
+    "source": "https://vino-svoe.ru/wines/zakat-denisov-vajneri"
+  },
+  {
+    "slug": "mont-blanc-blanc-de-blancs",
+    "name": "Mont Blanc, Blanc de Blancs",
+    "producer": "Шато АЛВИСА",
+    "region": "Дагестан",
+    "grapes": [
+      "Ркацители",
+      "Шардоне"
+    ],
+    "color": "Белое",
+    "category": "Брют",
+    "rating": 4.84,
+    "image": "/wines/mont-blanc-blanc-de-blancs.webp",
+    "alcohol": "10-12%",
+    "servingTemperature": "6-8°C",
+    "pairings": [],
+    "description": "Идеальный баланс свежести с фруктовыми оттенками и легкими минеральными нотами, что делает вино замечательным гастрономическим сопровождением. Перляж стойкий и тонкий, долгое приятное послевкусие.  \n\nВ аромате изящные белые цветы, сочный лайм и едва уловимые медовые оттенки. Вкус элегантный, утонченный с оттенками яблока и цитрусовых. Вино демонстрирует утонченность Шардоне и силу Ркацители. Приятное длительное послевкусие.  ",
+    "source": "https://vino-svoe.ru/wines/mont-blanc-blanc-de-blancs"
+  },
+  {
+    "slug": "mont-blanc-cuvee",
+    "name": "Mont Blanc Cuvée",
+    "producer": "Шато АЛВИСА",
+    "region": "Дагестан",
+    "grapes": [
+      "Рислинг Рейнский",
+      "Ркацители"
+    ],
+    "color": "Белое",
+    "category": "Брют",
+    "rating": 4.92,
+    "image": "/wines/mont-blanc-cuvee.webp",
+    "alcohol": "11-12%",
+    "servingTemperature": "6-8°C",
+    "pairings": [
+      "Блюда из рыбы",
+      "Морепродукты",
+      "Сыры"
+    ],
+    "description": "Игристое вино со свежестью цитросовых и фруктовыми оттенками во вкусе, с приятным длительным послевкусием. Перляж стойкий и тонкий. Аромат фруктовый, с тонами цветов белой акации и доминантой цитрусовых тонов (лимон, лайм). \n\n Выдержка на тонком осадке с регулярным батонажем более 90 дней. Метод Шарма.",
+    "source": "https://vino-svoe.ru/wines/mont-blanc-cuvee"
+  },
+  {
+    "slug": "cantiani-cabernet-sauvignon",
+    "name": "Cantiani Cabernet Sauvignon",
+    "producer": "Шато АЛВИСА",
+    "region": "Дагестан",
+    "grapes": [
+      "Каберне Совиньон"
+    ],
+    "color": "Красное",
+    "category": "Сухое",
+    "rating": 4.81,
+    "image": "/wines/cantiani-cabernet-sauvignon.webp",
+    "alcohol": "10-12%",
+    "servingTemperature": "14-16°C",
+    "pairings": [
+      "Запеченные овощи",
+      "Легкие закуски",
+      "Мясное ассорти",
+      "Мясо и стейки"
+    ],
+    "description": "Округлый, хорошо сбалансированный вкус с фруктово-пряными акцентами, мелкозернистыми танинами и стойким послевкусием. Аромат выразительный, с доминирующими оттенками вишни, черники, ежевики, пряностей и черного перца",
+    "source": "https://vino-svoe.ru/wines/cantiani-cabernet-sauvignon"
+  },
+  {
+    "slug": "cantiani-cabernet-sauvignon-reserve-2024",
+    "name": "Cantiani Cabernet Sauvignon Reserve, 2024",
+    "producer": "Шато АЛВИСА",
+    "region": "Дагестан",
+    "grapes": [
+      "Каберне Совиньон"
+    ],
+    "color": "Красное",
+    "category": "Сухое",
+    "rating": 4.86,
+    "image": "/wines/cantiani-cabernet-sauvignon-reserve-2024.webp",
+    "alcohol": "11-12%",
+    "servingTemperature": "14-16°C",
+    "pairings": [
+      "BBQ",
+      "Мясо и стейки",
+      "Шоколад"
+    ],
+    "description": "Вино Cantiani Reserve проходит выдержку в бочках из благородного французского дуба в течение шести месяцев. За это время вино приобретает сложную структуру, развивает свои ароматические характеристики и достигает вершины вкуса. Вино становится многослойным, где фруктовые ноты переплетаются со «вторичными» (древесными) и «третичными» (при старении в бутылке) ароматами. Именно выдержанные в бочках вина чаще всего способны развиваться и в бутылке десятилетиями. Тираж 58 000 бутылок.\n\nВ букете выражены яркие сортовые оттенки винограда Каберне-Совиньон: черная смородина, фрукты: слива, ежевика, вишня, малина, а также древесные и пряные ноты. Вкус гармоничный, с легкой терпкостью и длительным бархатистым послевкусием\n\n",
+    "source": "https://vino-svoe.ru/wines/cantiani-cabernet-sauvignon-reserve-2024"
+  }
+]

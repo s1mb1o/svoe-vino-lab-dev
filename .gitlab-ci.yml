@@ -22,3 +22,19 @@ matcher-tests:
     - python -m pip check
   script:
     - python -W error::ResourceWarning -m unittest discover -s matcher/tests -v
+
+webui-tests:
+  stage: test
+  image: node:24
+  interruptible: true
+  before_script:
+    - cd webui
+  script:
+    - npm ci --no-audit --no-fund
+    - npm run typecheck
+    - npm test
+    - npm run build
+  artifacts:
+    paths:
+      - webui/.output/
+    expire_in: 7 days

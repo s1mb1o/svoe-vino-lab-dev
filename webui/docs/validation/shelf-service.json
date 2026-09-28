@@ -1,0 +1,17 @@
+{
+  "source": "https://commons.wikimedia.org/wiki/File:Sekt-im-supermarkt.jpg",
+  "source_author": "Ralf Roletschek",
+  "source_license": "CC BY 2.5",
+  "image_sha256": "ccc6c12e2e2a79976650b86e8c42b4f33c6698022c2e8f25ea3fd5003e940d0e",
+  "http_status": 200,
+  "request_seconds": 68.162021,
+  "response_bytes": 198183,
+  "width": 1280,
+  "height": 853,
+  "count": 96,
+  "prompt": "wine bottle",
+  "masks_checked": 96,
+  "out_of_frame_boxes": 11,
+  "box_handling": "Clamp detector boxes to the photo. Ignore distant mask fragments outside the box.",
+  "private_user_data_used": false
+}

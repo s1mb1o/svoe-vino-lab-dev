@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-09-14T23:05:32.884Z",
+  "source": "https://commons.wikimedia.org/wiki/File:Sekt-im-supermarkt.jpg",
+  "privateUserDataUsed": false,
+  "httpStatus": 200,
+  "elapsedMs": 13360,
+  "responseBytes": 1115627,
+  "image": {
+    "width": 1280,
+    "height": 853,
+    "metadataRemoved": true
+  },
+  "detectedCount": 94,
+  "displayedBottles": 94,
+  "truncated": false,
+  "validatedMasksAndCrops": 94,
+  "overlayPixels": 504500,
+  "equivalentFullFrameOverlayPixels": 102632960,
+  "prediction": {
+    "bottleId": "b1",
+    "mode": "mock",
+    "slug": "priboj-marchenko-beloe-polusuhoe",
+    "title": "Прибой Марченко белое полусухое",
+    "portalUrl": "https://vino-svoe.ru/wines/priboj-marchenko-beloe-polusuhoe"
+  }
+}

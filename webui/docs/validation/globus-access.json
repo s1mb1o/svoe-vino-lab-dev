@@ -1,0 +1,132 @@
+{
+  "scope": "Live guest API check. Public store 5020. No user location.",
+  "requests": [
+    {
+      "url": "https://digitalone.globus.ru/d1-mobile-bff/api/v1/directories/stores",
+      "method": "GET",
+      "request": null,
+      "status": 200,
+      "observed_at": "2026-09-14T22:27:43Z",
+      "store_count": 22
+    },
+    {
+      "url": "https://digitalone.globus.ru/d1-mobile-bff/api/v1/context",
+      "method": "PATCH",
+      "request": {
+        "context": {
+          "purchase_method": 1,
+          "store_id": 5020
+        }
+      },
+      "status": 200,
+      "observed_at": "2026-09-14T22:27:44Z",
+      "context_selected": true
+    },
+    {
+      "url": "https://digitalone.globus.ru/d1-mobile-bff/api/v6/catalog/search:result",
+      "method": "POST",
+      "request": {
+        "query": "филе индейки",
+        "sort": "default",
+        "pagination": {
+          "page": 1,
+          "per_page": 6
+        },
+        "filter": {
+          "filter": [],
+          "range": []
+        },
+        "include": [
+          "products"
+        ]
+      },
+      "status": 200,
+      "observed_at": "2026-09-14T22:27:44Z",
+      "total": 19,
+      "sample": [
+        {
+          "id": "000000000000778500_ST",
+          "name_optional": "Филе бедра индейки охлажденное Индилайт,",
+          "name_required": "1кг",
+          "active": true,
+          "quantity_max": 277,
+          "price_per": "679,99 ₽ / 1 шт"
+        }
+      ]
+    },
+    {
+      "url": "https://digitalone.globus.ru/d1-mobile-bff/api/v6/catalog/search:result",
+      "method": "POST",
+      "request": {
+        "query": "моцарелла",
+        "sort": "default",
+        "pagination": {
+          "page": 1,
+          "per_page": 6
+        },
+        "filter": {
+          "filter": [],
+          "range": []
+        },
+        "include": [
+          "products"
+        ]
+      },
+      "status": 200,
+      "observed_at": "2026-09-14T22:27:45Z",
+      "total": 47,
+      "sample": [
+        {
+          "id": "000000000000743819_ST",
+          "name_optional": "Сыр Моцарелла Natura мини 45%,",
+          "name_required": "160г",
+          "active": true,
+          "quantity_max": 10,
+          "price_per": "215,99 ₽ / 1 шт"
+        }
+      ]
+    },
+    {
+      "url": "https://digitalone.globus.ru/d1-mobile-bff/api/v6/catalog/search:result",
+      "method": "POST",
+      "request": {
+        "query": "хумус",
+        "sort": "default",
+        "pagination": {
+          "page": 1,
+          "per_page": 6
+        },
+        "filter": {
+          "filter": [],
+          "range": []
+        },
+        "include": [
+          "products"
+        ]
+      },
+      "status": 200,
+      "observed_at": "2026-09-14T22:27:45Z",
+      "total": 14,
+      "sample": [
+        {
+          "id": "000000000000723020_ST",
+          "name_optional": "Хумус Mediterio классический,",
+          "name_required": "180г",
+          "active": true,
+          "quantity_max": 6,
+          "price_per": "169,99 ₽ / 1 шт"
+        }
+      ]
+    },
+    {
+      "url": "https://digitalone.globus.ru/d1-mobile-bff/api/v5/catalog/pdp",
+      "method": "POST",
+      "request": {
+        "id": "000000000000778500_ST"
+      },
+      "status": 200,
+      "observed_at": "2026-09-14T22:27:45Z",
+      "product_url": "https://www.globus.ru/products/000000000000778500_ST"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "at": "2026-09-14T22:34:43.681Z",
+  "scope": "Production live food check with public store coordinates. No user location.",
+  "checks": [
+    {
+      "name": "homepage",
+      "status": 200
+    },
+    {
+      "name": "directory",
+      "status": 200,
+      "stores": 22
+    },
+    {
+      "name": "nearest-store pairings",
+      "status": 200,
+      "ms": 2563,
+      "cacheControl": "no-store",
+      "result": {
+        "provider": "globus",
+        "store": {
+          "id": 5020,
+          "name": "Глобус Медведково",
+          "address": "г. Москва, м. Медведково, ул. Широкая, 2а",
+          "location": {
+            "latitude": 55.887168,
+            "longitude": 37.639079
+          },
+          "schedule": "Круглосуточно"
+        },
+        "distanceKm": 0.11119492664429959,
+        "checkedAt": "2026-09-14T22:34:49.887Z",
+        "products": [
+          {
+            "id": "000000000000778500_ST",
+            "name": "Филе бедра индейки охлажденное Индилайт, 1кг",
+            "image": "https://image.globus.ru/mobile/36/44/4263644.jpg",
+            "url": "https://www.globus.ru/products/000000000000778500_ST",
+            "priceLabel": "679,99 ₽ / 1 шт",
+            "conditions": [
+              "Скидка по карте «Мой Глобус»",
+              "Без карты 859,99 ₽",
+              "Акция до 29 сентября"
+            ],
+            "food": "Индейка с травами",
+            "reason": "Нежное запечённое филе подойдёт к вину, для которого рекомендуют блюда из птицы."
+          },
+          {
+            "id": "000000000000743819_ST",
+            "name": "Сыр Моцарелла Natura мини 45%, 160г",
+            "image": "https://image.globus.ru/mobile/34/96/3463496.jpg",
+            "url": "https://www.globus.ru/products/000000000000743819_ST",
+            "priceLabel": "215,99 ₽ / 1 шт",
+            "conditions": [
+              "Скидка по карте «Мой Глобус»",
+              "Без карты 266,99 ₽",
+              "Акция до 29 сентября"
+            ],
+            "food": "Моцарелла с томатами",
+            "reason": "Мягкий сыр с томатами — лёгкая закуска, которая не перекрывает вкус вина."
+          },
+          {
+            "id": "000000000000723020_ST",
+            "name": "Хумус Mediterio классический, 180г",
+            "image": "https://image.globus.ru/mobile/58/02/3275802.jpg",
+            "url": "https://www.globus.ru/products/000000000000723020_ST",
+            "priceLabel": "169,99 ₽ / 1 шт",
+            "conditions": [],
+            "food": "Хумус с хрустящим хлебом",
+            "reason": "Нежный хумус дополнит вино как лёгкая закуска. Подайте с хлебом или овощами."
+          }
+        ],
+        "complete": true
+      }
+    },
+    {
+      "name": "invalid coordinates",
+      "status": 400
+    },
+    {
+      "name": "unknown wine",
+      "status": 422
+    },
+    {
+      "name": "invalid store",
+      "status": 400
+    }
+  ]
+}
