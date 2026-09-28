@@ -137,14 +137,12 @@ bash matcher/tests/participant_test.sh \
 
 Workflow `.github/workflows/matcher-tests.yml` запускается для изменений в `matcher/`,
 для изменений самого workflow и вручную. Job `matcher-tests` использует self-hosted
-runner с labels `self-hosted`, `Linux`, `X64` и `svoe-vino-lab`. Docker runner этому
-job не нужен.
+runner с labels `self-hosted`, `Linux`, `X64` и `docker`.
 
-Workflow проверяет наличие bash, curl, jq, awk и утилиты SHA-256. Он устанавливает
-зависимости из `matcher/requirements.txt` в отдельный venv. Системный Python runner
-должен иметь версию 3.11 или новее. Затем workflow запускает все тесты, которые
-обнаруживает `unittest`. Job завершается с ошибкой, если тест не был запущен или был
-пропущен.
+Workflow повторяет pull образа `python:3.11-slim` до трёх раз. Он монтирует исходники в
+одноразовый контейнер только для чтения. Контейнер устанавливает curl, jq и зависимости
+из `matcher/requirements.txt`. Затем он запускает все тесты, которые обнаруживает
+`unittest`. Job завершается с ошибкой, если тест не был запущен или был пропущен.
 
 ## GitLab CI
 
