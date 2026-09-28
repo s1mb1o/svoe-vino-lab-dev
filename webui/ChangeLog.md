@@ -1,5 +1,14 @@
 # Change log
 
+## 2026-09-29
+
+### Production response status repair
+
+- Preserved actionable matcher status codes through the single-bottle prediction proxy.
+- Kept unexpected matcher statuses and invalid responses mapped to HTTP 502.
+- Added regression tests for HTTP 400, 401, 408, 413, 415, 502, 503, and 504.
+- Verified all 138 tests, type checks, and the production build.
+
 ## 2026-09-28
 
 ### Search discovery

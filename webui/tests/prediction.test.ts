@@ -31,7 +31,8 @@ beforeAll(async () => {
       const form = await new Response(Buffer.concat(chunks), { headers: { 'content-type': req.headers['content-type']! } }).formData()
       received = [...form.entries()].map(([key, value]) => ({ key, type: typeof value === 'string' ? 'text' : value.type, size: typeof value === 'string' ? value.length : value.size }))
       res.setHeader('Content-Type', 'application/json')
-      if (req.url === '/bad-json') res.end('not json')
+      if (req.url?.startsWith('/status-')) { res.writeHead(Number(req.url.slice('/status-'.length))); res.end() }
+      else if (req.url === '/bad-json') res.end('not json')
       else if (req.url === '/empty') res.end('{"slug":""}')
       else if (req.url === '/wrong-key') res.end('{"wine_slug":"wrong"}')
       else if (req.url === '/large') res.end('x'.repeat(70 * 1024))
@@ -56,6 +57,12 @@ describe('prediction provider', () => {
   })
   it.each(['/fail', '/redirect', '/bad-json', '/empty', '/wrong-key', '/large', '/wrong-status'])('does not substitute mock output for %s', async path => {
     await expect(predict(file(), 'upstream', origin + path)).rejects.toMatchObject({ statusCode: 502 })
+  })
+  it.each([400, 401, 408, 413, 415, 502, 503, 504])('preserves actionable upstream status %i', async status => {
+    await expect(predict(file(), 'upstream', `${origin}/status-${status}`)).rejects.toMatchObject({ statusCode: status })
+  })
+  it('maps an unexpected upstream status to 502', async () => {
+    await expect(predict(file(), 'upstream', origin + '/status-429')).rejects.toMatchObject({ statusCode: 502 })
   })
   it('bounds the complete upstream request time', async () => {
     await expect(predict(file(), 'upstream', origin + '/timeout', 40)).rejects.toMatchObject({ statusCode: 504 })

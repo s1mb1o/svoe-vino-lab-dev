@@ -17,6 +17,11 @@ export function imageType(bytes: Uint8Array): string | null {
   return null
 }
 
+function upstreamError(status = 502) {
+  const allowed = [400, 401, 408, 413, 415, 502, 503, 504]
+  return createError({ statusCode: allowed.includes(status) ? status : 502, statusMessage: 'Recognition service failed. Please retry.' })
+}
+
 function readLimitedBody(event: H3Event): Promise<Buffer> {
   const declared = Number(getHeader(event, 'content-length'))
   if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) {
@@ -88,7 +93,7 @@ export async function predict(file: File, mode: PredictionMode, endpoint: string
     const form = new FormData()
     form.set('image', file)
     const response = await fetch(url, { method: 'POST', body: form, signal, redirect: 'error' })
-    if (![200, 201].includes(response.status)) throw new Error('Upstream status')
+    if (![200, 201].includes(response.status)) throw upstreamError(response.status)
     // Bound the upstream response. A prediction only needs one short string.
     const reader = response.body?.getReader()
     if (!reader) throw new Error('Empty upstream body')
@@ -108,7 +113,9 @@ export async function predict(file: File, mode: PredictionMode, endpoint: string
     const slug = extractSlug(JSON.parse(Buffer.concat(chunks).toString('utf8')))
     if (!slug) throw new Error('Invalid upstream slug')
     return { slug }
-  } catch {
-    throw createError({ statusCode: signal.aborted ? 504 : 502, statusMessage: signal.aborted ? 'Recognition timed out. Please retry.' : 'Recognition service returned an invalid response. Please retry.' })
+  } catch (error) {
+    if (signal.aborted) throw createError({ statusCode: 504, statusMessage: 'Recognition timed out. Please retry.' })
+    if (error && typeof error === 'object' && 'statusCode' in error) throw error
+    throw upstreamError()
   }
 }

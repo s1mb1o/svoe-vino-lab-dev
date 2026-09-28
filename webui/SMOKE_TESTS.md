@@ -52,6 +52,16 @@ The manual checklist is not a completed visual regression suite.
 Physical camera operation and the real recognition service remain untested.
 See `docs/verification-2026-09-15.md` for current results.
 
+## Results on 2026-09-29
+
+- Type checks passed.
+- All 138 tests passed in 11 files.
+- The production build passed.
+- Focused tests confirmed that the prediction proxy preserves actionable matcher status codes.
+- A bounded production load test passed through eight concurrent recognition requests.
+- The production matcher stayed healthy after the load test.
+- The pre-deployment shelf check found that matcher revision `9ba496d` did not provide `/v1/group/match`.
+
 ## Results on 2026-09-28
 
 - Type checks passed.

@@ -1,5 +1,23 @@
 # Research log
 
+## Production resilience verification, 2026-09-29
+
+A bounded public load test sent one, four, eight, and twelve concurrent recognition requests.
+All requests passed through concurrency eight.
+At concurrency twelve, eight requests passed and four requests reached the matcher capacity guard.
+The matcher returned HTTP 503 with `matcher is busy`.
+The Web UI changed this response to HTTP 502.
+The same mapping changed the matcher HTTP 413 JPEG pixel-limit response to HTTP 502.
+Decision: preserve the matcher HTTP status when the status is safe and actionable.
+Decision: do not expose the matcher response body.
+Decision: map an unexpected matcher status or an invalid matcher response to HTTP 502.
+
+The live shelf example returned HTTP 502 from the Web UI.
+The deployed matcher revision was `9ba496d230d23398f76275cbbd187d5a820c4bfe`.
+Its OpenAPI document did not contain `/v1/group/match`.
+Commit `b752591` added this endpoint after the deployed revision.
+Decision: deploy a committed matcher revision that includes `b752591` before shelf mode stays enabled.
+
 ## Search discovery and age gate, 2026-09-28
 
 The age gate previously replaced the complete server-rendered page with a loading element.
