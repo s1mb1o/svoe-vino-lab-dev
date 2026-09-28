@@ -1,7 +1,9 @@
 import copy
+import io
 
 import httpx
 import pytest
+from PIL import Image
 
 from chto_za_vino_bot.matcher import (
     Matcher,
@@ -38,6 +40,12 @@ def response() -> dict[str, object]:
             )
         ],
     }
+
+
+def image_bytes(image_format: str = "JPEG") -> bytes:
+    output = io.BytesIO()
+    Image.new("RGB", (40, 60), "darkred").save(output, format=image_format)
+    return output.getvalue()
 
 
 def test_ranked_response_is_parsed_with_margin_and_cards():
@@ -136,9 +144,19 @@ async def test_matcher_requests_four_candidates_without_a_pipeline():
         return httpx.Response(200, json=response())
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
-        result = await Matcher("http://matcher/v1/match", client).recognize(b"jpeg")
+        result = await Matcher("http://matcher/v1/match", client).recognize(image_bytes())
 
     assert len(result.candidates) == 4
+
+
+async def test_matcher_preserves_png_multipart_type():
+    def respond(request: httpx.Request) -> httpx.Response:
+        assert b'filename="telegram-photo.png"' in request.content
+        assert b"Content-Type: image/png" in request.content
+        return httpx.Response(200, json=response())
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+        await Matcher("http://matcher/v1/match", client).recognize(image_bytes("PNG"))
 
 
 @pytest.mark.parametrize(
@@ -153,4 +171,4 @@ async def test_matcher_errors_fail_closed(reply):
         transport=httpx.MockTransport(lambda request: reply)
     ) as client:
         with pytest.raises(RecognitionUnavailable):
-            await Matcher("http://matcher/v1/match", client).recognize(b"jpeg")
+            await Matcher("http://matcher/v1/match", client).recognize(image_bytes())

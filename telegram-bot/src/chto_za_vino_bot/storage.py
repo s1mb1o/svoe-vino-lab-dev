@@ -7,10 +7,26 @@ import re
 import sqlite3
 import threading
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import ClassVar
+
+from .image_types import detect_image_type
+
+SQLITE_MAX_INTEGER = (1 << 63) - 1
+
+
+def _pagination_offset(page: int, page_size: int) -> int:
+    if page <= 0:
+        raise ValueError("page must be positive")
+    if page_size <= 0:
+        raise ValueError("page size must be positive")
+    offset = (page - 1) * page_size
+    if offset > SQLITE_MAX_INTEGER:
+        raise ValueError("pagination offset exceeds the SQLite integer range")
+    return offset
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,6 +37,13 @@ class Reservation:
     remaining: int
     retry_after_seconds: int
     duplicate: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class DataDeletionPlan:
+    request_count: int
+    paths: tuple[str, ...]
+    artifact_directories: tuple[str, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -931,12 +954,8 @@ class Repository:
         now: int,
         window_seconds: int,
     ) -> tuple[list[UserSummary], int]:
-        if page <= 0:
-            raise ValueError("page must be positive")
-        if page_size <= 0:
-            raise ValueError("page size must be positive")
         cutoff = now - window_seconds
-        offset = (page - 1) * page_size
+        offset = _pagination_offset(page, page_size)
         with self._lock:
             total = int(
                 self._connection.execute(
@@ -1076,10 +1095,6 @@ class Repository:
         status: str | None = None,
         appeals_only: bool = False,
     ) -> tuple[list[AdminRequestRecord], int]:
-        if page <= 0:
-            raise ValueError("page must be positive")
-        if page_size <= 0:
-            raise ValueError("page size must be positive")
         conditions: list[str] = []
         values: list[object] = []
         if status:
@@ -1088,7 +1103,7 @@ class Repository:
         if appeals_only:
             conditions.append("moderation_appeal_at IS NOT NULL")
         where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-        offset = (page - 1) * page_size
+        offset = _pagination_offset(page, page_size)
         with self._lock:
             total = int(
                 self._connection.execute(
@@ -1466,6 +1481,149 @@ class Repository:
         with self._lock:
             self._connection.close()
 
+    def is_healthy(self) -> bool:
+        try:
+            with self._lock:
+                row = self._connection.execute("SELECT 1").fetchone()
+        except sqlite3.Error:
+            return False
+        return row is not None and row[0] == 1
+
+    def user_data_deletion_plan(self, user_id: int) -> DataDeletionPlan:
+        with self._lock:
+            active = int(
+                self._connection.execute(
+                    """
+                    SELECT COUNT(*) FROM requests
+                    WHERE user_id = ?
+                      AND status IN ('received', 'queued', 'processing', 'retry_requested')
+                    """,
+                    (user_id,),
+                ).fetchone()[0]
+            )
+            if active:
+                raise ValueError("user has active requests")
+            request_count = int(
+                self._connection.execute(
+                    "SELECT COUNT(*) FROM requests WHERE user_id = ?",
+                    (user_id,),
+                ).fetchone()[0]
+            )
+            path_rows = self._connection.execute(
+                """
+                SELECT storage_path AS relative_path
+                FROM requests
+                WHERE user_id = ? AND storage_path IS NOT NULL
+                """,
+                (user_id,),
+            ).fetchall()
+            request_rows = self._connection.execute(
+                "SELECT request_id, received_at FROM requests WHERE user_id = ?",
+                (user_id,),
+            ).fetchall()
+        return DataDeletionPlan(
+            request_count=request_count,
+            paths=tuple(str(row["relative_path"]) for row in path_rows),
+            artifact_directories=self._artifact_directories(request_rows),
+        )
+
+    def delete_user_data(self, user_id: int) -> tuple[int, int]:
+        with self._lock, self._connection:
+            active = int(
+                self._connection.execute(
+                    """
+                    SELECT COUNT(*) FROM requests
+                    WHERE user_id = ?
+                      AND status IN ('received', 'queued', 'processing', 'retry_requested')
+                    """,
+                    (user_id,),
+                ).fetchone()[0]
+            )
+            if active:
+                raise ValueError("user has active requests")
+            request_count = int(
+                self._connection.execute(
+                    "SELECT COUNT(*) FROM requests WHERE user_id = ?",
+                    (user_id,),
+                ).fetchone()[0]
+            )
+            self._connection.execute("DELETE FROM requests WHERE user_id = ?", (user_id,))
+            user_cursor = self._connection.execute(
+                "DELETE FROM users WHERE user_id = ?",
+                (user_id,),
+            )
+        return request_count, user_cursor.rowcount
+
+    def delete_expired_data(
+        self,
+        cutoff: int,
+        delete_files: Callable[[DataDeletionPlan], int],
+    ) -> tuple[DataDeletionPlan, int, int]:
+        terminal = "status NOT IN ('received', 'queued', 'processing', 'retry_requested')"
+        with self._lock:
+            try:
+                # Lock out retry requests while the terminal rows and their files are selected.
+                self._connection.execute("BEGIN IMMEDIATE")
+                request_count = int(
+                    self._connection.execute(
+                        f"SELECT COUNT(*) FROM requests "
+                        f"WHERE received_at < ? AND {terminal}",
+                        (cutoff,),
+                    ).fetchone()[0]
+                )
+                path_rows = self._connection.execute(
+                    f"""
+                    SELECT storage_path AS relative_path
+                    FROM requests
+                    WHERE received_at < ? AND {terminal} AND storage_path IS NOT NULL
+                    """,
+                    (cutoff,),
+                ).fetchall()
+                request_rows = self._connection.execute(
+                    f"""
+                    SELECT request_id, received_at
+                    FROM requests
+                    WHERE received_at < ? AND {terminal}
+                    """,
+                    (cutoff,),
+                ).fetchall()
+                plan = DataDeletionPlan(
+                    request_count=request_count,
+                    paths=tuple(str(row["relative_path"]) for row in path_rows),
+                    artifact_directories=self._artifact_directories(request_rows),
+                )
+                deleted_files = delete_files(plan)
+                self._connection.execute(
+                    f"DELETE FROM requests WHERE received_at < ? AND {terminal}",
+                    (cutoff,),
+                )
+                user_cursor = self._connection.execute(
+                    """
+                    DELETE FROM users
+                    WHERE last_seen_at < ?
+                      AND NOT EXISTS (
+                          SELECT 1 FROM requests WHERE requests.user_id = users.user_id
+                      )
+                    """,
+                    (cutoff,),
+                )
+                self._connection.commit()
+            except Exception:
+                self._connection.rollback()
+                raise
+        return plan, user_cursor.rowcount, deleted_files
+
+    @staticmethod
+    def _artifact_directories(rows: list[sqlite3.Row]) -> tuple[str, ...]:
+        return tuple(
+            (
+                Path("artifacts")
+                / datetime.fromtimestamp(int(row["received_at"]), tz=UTC).strftime("%Y/%m/%d")
+                / str(row["request_id"])
+            ).as_posix()
+            for row in rows
+        )
+
 
 class ImageStore:
     def __init__(self, root: Path) -> None:
@@ -1477,13 +1635,14 @@ class ImageStore:
         os.chmod(self._quarantine, 0o700)
 
     def save(self, request_id: str, received_at: int, body: bytes, safe: bool) -> tuple[str, str]:
+        image_type = detect_image_type(body)
         date = datetime.fromtimestamp(received_at, tz=UTC)
         base = self._accepted if safe else self._quarantine
         directory = base / date.strftime("%Y/%m/%d")
         directory.mkdir(parents=True, exist_ok=True, mode=0o750 if safe else 0o700)
         if not safe:
             os.chmod(directory, 0o700)
-        final = directory / f"{request_id}.jpg"
+        final = directory / f"{request_id}.{image_type.extension}"
         temporary = directory / f".{request_id}.{uuid.uuid4().hex}.tmp"
         with temporary.open("xb") as target:
             target.write(body)

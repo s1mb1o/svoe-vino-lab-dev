@@ -16,12 +16,13 @@ def endpoint_environment(monkeypatch) -> None:
     )
     monkeypatch.setenv("SAM3_ENDPOINT", "http://192.168.86.14:18081/upstream/sam3")
     monkeypatch.setenv("MATCHER_ENDPOINT", "http://192.168.86.14:28000/v1/match")
+    monkeypatch.setenv("BOT_ADMIN_USER_ID", "123456789")
+    monkeypatch.setenv("BOT_HTTP_API_TOKEN", "a" * 32)
 
 
 def test_default_rate_limit_is_50(monkeypatch) -> None:
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
     monkeypatch.delenv("BOT_RATE_LIMIT", raising=False)
-    monkeypatch.delenv("BOT_ADMIN_USER_ID", raising=False)
     monkeypatch.delenv("BOT_DATA_ROOT", raising=False)
     monkeypatch.delenv("BOT_DATABASE", raising=False)
     monkeypatch.delenv("BOT_REJECTION_IMAGE", raising=False)
@@ -32,7 +33,8 @@ def test_default_rate_limit_is_50(monkeypatch) -> None:
     settings = Settings.from_env()
 
     assert settings.rate_limit == 50
-    assert settings.admin_user_id == 207286210
+    assert settings.admin_user_id == 123456789
+    assert settings.environment == "production"
     assert settings.data_root == Path("data")
     assert settings.database_file == Path("data/bot.sqlite3")
     assert settings.moderation_enabled is True
@@ -51,6 +53,11 @@ def test_default_rate_limit_is_50(monkeypatch) -> None:
         "::1/128",
         "192.168.86.0/24",
     )
+    assert settings.http_api_token == "a" * 32
+    assert settings.http_api_rate_limit == 10
+    assert settings.http_api_rate_window_seconds == 3600
+    assert settings.http_api_max_in_flight == 2
+    assert settings.data_retention_days == 30
     assert settings.rejection_image_file.as_posix() == (
         "assets/content-rejected-monkey-640x640.png"
     )
@@ -70,6 +77,7 @@ def test_admin_web_defaults(monkeypatch) -> None:
     monkeypatch.delenv("BOT_ADMIN_WEB_HOST", raising=False)
     monkeypatch.delenv("BOT_ADMIN_WEB_PORT", raising=False)
     monkeypatch.delenv("BOT_ADMIN_WEB_ALLOWED_NETWORKS", raising=False)
+    monkeypatch.delenv("BOT_ADMIN_WEB_BEHIND_TLS_PROXY", raising=False)
 
     settings = AdminWebSettings.from_env()
 
@@ -80,8 +88,45 @@ def test_admin_web_defaults(monkeypatch) -> None:
     assert settings.allowed_networks == (
         "127.0.0.1/32",
         "::1/128",
-        "192.168.86.0/24",
     )
+    assert settings.behind_tls_proxy is False
+
+
+def test_admin_web_requires_a_tls_proxy_for_a_non_loopback_listener(monkeypatch) -> None:
+    monkeypatch.setenv("BOT_ADMIN_WEB_PASSWORD", "secret")
+    monkeypatch.setenv("BOT_ADMIN_WEB_HOST", "0.0.0.0")
+    monkeypatch.delenv("BOT_ADMIN_WEB_BEHIND_TLS_PROXY", raising=False)
+
+    with pytest.raises(ValueError, match="BEHIND_TLS_PROXY"):
+        AdminWebSettings.from_env()
+
+    monkeypatch.setenv("BOT_ADMIN_WEB_BEHIND_TLS_PROXY", "true")
+    assert AdminWebSettings.from_env().behind_tls_proxy is True
+
+
+@pytest.mark.parametrize("name", ["BOT_ADMIN_USER_ID", "BOT_HTTP_API_TOKEN"])
+def test_bot_requires_explicit_privileged_credentials(monkeypatch, name) -> None:
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
+    monkeypatch.delenv(name, raising=False)
+
+    with pytest.raises(ValueError, match=name):
+        Settings.from_env()
+
+
+def test_bot_rejects_a_short_http_api_token(monkeypatch) -> None:
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
+    monkeypatch.setenv("BOT_HTTP_API_TOKEN", "short")
+
+    with pytest.raises(ValueError, match="32 characters"):
+        Settings.from_env()
+
+
+def test_production_requires_the_documented_retention_period(monkeypatch) -> None:
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
+    monkeypatch.setenv("BOT_DATA_RETENTION_DAYS", "31")
+
+    with pytest.raises(ValueError, match="BOT_DATA_RETENTION_DAYS=30"):
+        Settings.from_env()
 
 
 @pytest.mark.parametrize(
@@ -251,12 +296,31 @@ endpoints:
     )
     monkeypatch.setenv("BOT_CONFIG", str(path))
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
+    monkeypatch.setenv("BOT_ENVIRONMENT", "development")
     monkeypatch.delenv("MODERATION_ENDPOINT", raising=False)
 
     settings = Settings.from_env()
 
     assert settings.moderation_enabled is False
     assert settings.moderation_endpoint is None
+
+
+def test_production_rejects_disabled_moderation(tmp_path, monkeypatch) -> None:
+    path = write_config(
+        tmp_path,
+        """moderation:
+  enabled: false
+endpoints:
+  sam3: http://sam3.example
+  matcher: http://matcher.example/v1/match
+""",
+    )
+    monkeypatch.setenv("BOT_CONFIG", str(path))
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-token")
+    monkeypatch.setenv("BOT_ENVIRONMENT", "production")
+
+    with pytest.raises(ValueError, match="production requires moderation.enabled=true"):
+        Settings.from_env()
 
 
 @pytest.mark.parametrize("rendered", ['"false"', "0", "null"])

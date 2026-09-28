@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ipaddress
 import os
 import re
 from collections.abc import Mapping
@@ -125,6 +126,28 @@ def _positive_int(name: str, default: int) -> int:
     return value
 
 
+def _required_positive_int(name: str) -> int:
+    raw = os.getenv(name, "").strip()
+    if not raw:
+        raise ValueError(f"{name} is required")
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be an integer") from exc
+    if value <= 0:
+        raise ValueError(f"{name} must be positive")
+    return value
+
+
+def _required_secret(name: str, *, minimum_length: int = 32) -> str:
+    value = os.getenv(name, "").strip()
+    if not value:
+        raise ValueError(f"{name} is required")
+    if len(value) < minimum_length:
+        raise ValueError(f"{name} must contain at least {minimum_length} characters")
+    return value
+
+
 def _port(name: str, default: int) -> int:
     value = _positive_int(name, default)
     if value > 65535:
@@ -170,6 +193,7 @@ def _positive_float(name: str, default: float) -> float:
 @dataclass(frozen=True, slots=True)
 class Settings:
     telegram_token: str
+    environment: str
     moderation_enabled: bool
     moderation_endpoint: str | None
     sam3_endpoint: str
@@ -193,6 +217,11 @@ class Settings:
     http_api_host: str
     http_api_port: int
     http_api_allowed_networks: tuple[str, ...]
+    http_api_token: str
+    http_api_rate_limit: int
+    http_api_rate_window_seconds: int
+    http_api_max_in_flight: int
+    data_retention_days: int
     sync_profile: bool
     log_level: str
 
@@ -202,6 +231,11 @@ class Settings:
         if not token:
             raise ValueError("TELEGRAM_BOT_TOKEN is required")
         endpoints = EndpointSettings.from_config()
+        environment = os.getenv("BOT_ENVIRONMENT", "production").strip().lower()
+        if environment not in {"production", "development", "test"}:
+            raise ValueError("BOT_ENVIRONMENT must be production, development, or test")
+        if environment == "production" and not endpoints.moderation_enabled:
+            raise ValueError("production requires moderation.enabled=true")
 
         data_root = Path(os.getenv("BOT_DATA_ROOT", "data")).expanduser()
         database_file = Path(os.getenv("BOT_DATABASE", str(data_root / "bot.sqlite3"))).expanduser()
@@ -223,9 +257,13 @@ class Settings:
         )
         if not http_api_allowed_networks:
             raise ValueError("BOT_HTTP_API_ALLOWED_NETWORKS is required")
+        retention_days = _positive_int("BOT_DATA_RETENTION_DAYS", 30)
+        if environment == "production" and retention_days != 30:
+            raise ValueError("production requires BOT_DATA_RETENTION_DAYS=30")
 
         return cls(
             telegram_token=token,
+            environment=environment,
             moderation_enabled=endpoints.moderation_enabled,
             moderation_endpoint=endpoints.moderation,
             sam3_endpoint=endpoints.sam3,
@@ -238,7 +276,7 @@ class Settings:
                     "assets/content-rejected-monkey-640x640.png",
                 )
             ).expanduser(),
-            admin_user_id=_positive_int("BOT_ADMIN_USER_ID", 207286210),
+            admin_user_id=_required_positive_int("BOT_ADMIN_USER_ID"),
             rate_limit=_positive_int("BOT_RATE_LIMIT", 50),
             rate_window_seconds=_positive_int("BOT_RATE_WINDOW_SECONDS", 3600),
             queue_workers=queue_workers,
@@ -262,6 +300,13 @@ class Settings:
             http_api_host=http_api_host,
             http_api_port=_port("BOT_HTTP_API_PORT", 28002),
             http_api_allowed_networks=http_api_allowed_networks,
+            http_api_token=_required_secret("BOT_HTTP_API_TOKEN"),
+            http_api_rate_limit=_positive_int("BOT_HTTP_API_RATE_LIMIT", 10),
+            http_api_rate_window_seconds=_positive_int(
+                "BOT_HTTP_API_RATE_WINDOW_SECONDS", 3600
+            ),
+            http_api_max_in_flight=_positive_int("BOT_HTTP_API_MAX_IN_FLIGHT", 2),
+            data_retention_days=retention_days,
             sync_profile=_boolean("BOT_SYNC_PROFILE", True),
             log_level=os.getenv("BOT_LOG_LEVEL", "INFO").upper(),
         )
@@ -279,6 +324,7 @@ class AdminWebSettings:
     rate_limit: int
     rate_window_seconds: int
     log_level: str
+    behind_tls_proxy: bool = False
 
     @classmethod
     def from_env(cls) -> AdminWebSettings:
@@ -293,12 +339,25 @@ class AdminWebSettings:
             item.strip()
             for item in os.getenv(
                 "BOT_ADMIN_WEB_ALLOWED_NETWORKS",
-                "127.0.0.1/32,::1/128,192.168.86.0/24",
+                "127.0.0.1/32,::1/128",
             ).split(",")
             if item.strip()
         )
         if not networks:
             raise ValueError("BOT_ADMIN_WEB_ALLOWED_NETWORKS is required")
+        host = os.getenv("BOT_ADMIN_WEB_HOST", "127.0.0.1").strip()
+        if not host:
+            raise ValueError("BOT_ADMIN_WEB_HOST is required")
+        behind_tls_proxy = _boolean("BOT_ADMIN_WEB_BEHIND_TLS_PROXY", False)
+        try:
+            loopback_host = ipaddress.ip_address(host).is_loopback
+        except ValueError:
+            loopback_host = host.casefold() == "localhost"
+        if not loopback_host and not behind_tls_proxy:
+            raise ValueError(
+                "a non-loopback BOT_ADMIN_WEB_HOST requires "
+                "BOT_ADMIN_WEB_BEHIND_TLS_PROXY=true"
+            )
         return cls(
             data_root=data_root,
             database_file=Path(
@@ -306,10 +365,11 @@ class AdminWebSettings:
             ).expanduser(),
             username=username,
             password=password,
-            host=os.getenv("BOT_ADMIN_WEB_HOST", "127.0.0.1").strip(),
+            host=host,
             port=_port("BOT_ADMIN_WEB_PORT", 28003),
             allowed_networks=networks,
             rate_limit=_positive_int("BOT_RATE_LIMIT", 50),
             rate_window_seconds=_positive_int("BOT_RATE_WINDOW_SECONDS", 3600),
             log_level=os.getenv("BOT_LOG_LEVEL", "INFO").upper(),
+            behind_tls_proxy=behind_tls_proxy,
         )

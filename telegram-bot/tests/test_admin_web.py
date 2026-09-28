@@ -65,10 +65,52 @@ def test_admin_requires_lan_address_and_password(tmp_path):
         assert response.headers["x-frame-options"] == "DENY"
         assert client.get("/", auth=("admin", "wrong")).status_code == 401
         assert client.get("/", auth=("admin", "correct-horse")).status_code == 200
+        assert client.get("/readyz").status_code == 200
 
     blocked_app = create_app(settings(tmp_path / "blocked"))
     with TestClient(blocked_app, client=("10.0.0.10", 50000)) as client:
         assert client.get("/healthz").status_code == 403
+
+
+@pytest.mark.parametrize("path", ["/users", "/requests", "/appeals"])
+def test_admin_list_pages_reject_an_excessive_page_number(tmp_path, path):
+    app = create_app(settings(tmp_path))
+    auth = ("admin", "correct-horse")
+    with TestClient(app, client=("127.0.0.1", 50000)) as client:
+        response = client.get(
+            path,
+            params={"page": "999999999999999999"},
+            auth=auth,
+        )
+
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Page number is too large"}
+
+
+@pytest.mark.parametrize("page", ["0", "-1"])
+def test_admin_request_page_clamps_non_positive_page_numbers(tmp_path, page):
+    app = create_app(settings(tmp_path))
+    with TestClient(app, client=("127.0.0.1", 50000)) as client:
+        response = client.get(
+            "/requests",
+            params={"page": page},
+            auth=("admin", "correct-horse"),
+        )
+
+    assert response.status_code == 200
+    assert "Страница 1 из 1" in response.text
+
+
+def test_admin_request_page_rejects_a_non_numeric_page_number(tmp_path):
+    app = create_app(settings(tmp_path))
+    with TestClient(app, client=("127.0.0.1", 50000)) as client:
+        response = client.get(
+            "/requests",
+            params={"page": "invalid"},
+            auth=("admin", "correct-horse"),
+        )
+
+    assert response.status_code == 422
 
 
 def test_admin_pages_do_not_disclose_source_image_paths(tmp_path):

@@ -1,14 +1,20 @@
 from __future__ import annotations
 
+import asyncio
 import ipaddress
+import math
+import secrets
+import time
+from collections import deque
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from email import policy
 from email.message import Message
 from email.parser import BytesParser
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
+from fastapi.security import HTTPBearer
 
 MAX_MULTIPART_OVERHEAD = 64 * 1024
 
@@ -90,9 +96,21 @@ def create_http_api_app(
     *,
     allowed_networks: tuple[str, ...],
     max_image_bytes: int,
+    api_token: str,
+    rate_limit: int,
+    rate_window_seconds: int,
+    max_in_flight: int,
     recognize: RecognitionCallback,
+    readiness: Callable[[], Awaitable[dict[str, bool]]] | None = None,
 ) -> FastAPI:
+    if len(api_token) < 32:
+        raise ValueError("API token must contain at least 32 characters")
+    if rate_limit <= 0 or rate_window_seconds <= 0 or max_in_flight <= 0:
+        raise ValueError("API request limits must be positive")
     networks = tuple(ipaddress.ip_network(item, strict=False) for item in allowed_networks)
+    requests_by_address: dict[str, deque[float]] = {}
+    state_lock = asyncio.Lock()
+    in_flight = 0
     app = FastAPI(
         title="Что за вино? Recognition API",
         version="1.1.0",
@@ -101,9 +119,11 @@ def create_http_api_app(
             "as the Telegram bot."
         ),
     )
+    bearer_scheme = HTTPBearer(description="BOT_HTTP_API_TOKEN")
 
     @app.middleware("http")
     async def network_middleware(request: Request, call_next):
+        nonlocal in_flight
         host = request.client.host if request.client else ""
         try:
             address = ipaddress.ip_address(host)
@@ -119,7 +139,64 @@ def create_http_api_app(
                     status_code=403,
                 )
             else:
-                response = await call_next(request)
+                protected = request.method == "POST" and request.url.path == "/api/v1/recognize"
+                if protected:
+                    authorization = request.headers.get("authorization", "")
+                    scheme, separator, supplied = authorization.partition(" ")
+                    valid_token = (
+                        separator == " "
+                        and scheme.casefold() == "bearer"
+                        and secrets.compare_digest(
+                            supplied.encode("utf-8"), api_token.encode("utf-8")
+                        )
+                    )
+                    if not valid_token:
+                        response = JSONResponse(
+                            {"error": "unauthorized", "detail": "Bearer token is required"},
+                            status_code=401,
+                            headers={"WWW-Authenticate": "Bearer"},
+                        )
+                    else:
+                        now = time.monotonic()
+                        async with state_lock:
+                            timestamps = requests_by_address.setdefault(host, deque())
+                            cutoff = now - rate_window_seconds
+                            while timestamps and timestamps[0] <= cutoff:
+                                timestamps.popleft()
+                            if len(timestamps) >= rate_limit:
+                                retry_after = max(
+                                    1,
+                                    math.ceil(timestamps[0] + rate_window_seconds - now),
+                                )
+                                response = JSONResponse(
+                                    {
+                                        "error": "rate_limited",
+                                        "detail": "API request limit exceeded",
+                                    },
+                                    status_code=429,
+                                    headers={"Retry-After": str(retry_after)},
+                                )
+                            elif in_flight >= max_in_flight:
+                                response = JSONResponse(
+                                    {
+                                        "error": "too_many_requests",
+                                        "detail": "Too many API requests are in progress",
+                                    },
+                                    status_code=503,
+                                    headers={"Retry-After": "20"},
+                                )
+                            else:
+                                timestamps.append(now)
+                                in_flight += 1
+                                response = None
+                        if response is None:
+                            try:
+                                response = await call_next(request)
+                            finally:
+                                async with state_lock:
+                                    in_flight -= 1
+                else:
+                    response = await call_next(request)
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         return response
@@ -129,9 +206,20 @@ def create_http_api_app(
     async def health() -> str:
         return "ok"
 
+    @app.get("/readyz", include_in_schema=False)
+    @app.get("/api/v1/readyz")
+    async def ready() -> JSONResponse:
+        checks = await readiness() if readiness is not None else {"application": True}
+        ready_now = bool(checks) and all(checks.values())
+        return JSONResponse(
+            {"ready": ready_now, "checks": checks},
+            status_code=200 if ready_now else 503,
+        )
+
     @app.post(
         "/api/v1/recognize",
         response_class=JSONResponse,
+        dependencies=[Depends(bearer_scheme)],
         openapi_extra={
             "requestBody": {
                 "required": True,

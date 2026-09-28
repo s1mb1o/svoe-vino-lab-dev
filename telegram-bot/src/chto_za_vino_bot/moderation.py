@@ -7,6 +7,8 @@ from dataclasses import dataclass
 import httpx
 from PIL import Image, ImageOps, UnidentifiedImageError
 
+from .image_types import UnsupportedImage, detect_image_type
+
 MODEL_NAME = "shieldgemma-2-4b-it"
 POLICIES = ("dangerous", "sexual", "violence")
 MODERATION_THRESHOLD = 0.5
@@ -40,15 +42,14 @@ class ModerationResult:
 
 def make_moderation_jpeg(body: bytes, max_side: int = 1024) -> bytes:
     try:
-        with Image.open(io.BytesIO(body)) as source:
-            source.verify()
+        detect_image_type(body)
         with Image.open(io.BytesIO(body)) as source:
             image = ImageOps.exif_transpose(source).convert("RGB")
             image.thumbnail((max_side, max_side), Image.Resampling.LANCZOS)
             output = io.BytesIO()
             image.save(output, format="JPEG", quality=88, optimize=True)
             return output.getvalue()
-    except (UnidentifiedImageError, OSError, ValueError) as exc:
+    except (UnsupportedImage, UnidentifiedImageError, OSError, ValueError) as exc:
         raise InvalidImage("Telegram file is not a supported image") from exc
 
 

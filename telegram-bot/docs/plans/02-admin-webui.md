@@ -29,11 +29,12 @@ Use the existing SQLite database as the shared source of state.
 2. Require a non-empty password from `BOT_ADMIN_WEB_PASSWORD`.
 3. Compare credentials with constant-time comparisons.
 4. Restrict client addresses to configured CIDR networks.
-5. Use `127.0.0.1`, `::1`, and `192.168.86.0/24` as the default allowed networks.
+5. Use only `127.0.0.1` and `::1` as the default allowed networks.
 6. Require a process-local CSRF token for every state-changing form.
 7. Add restrictive browser security headers.
 8. Do not render image bytes or storage paths.
 9. Do not permit retry for an unsafe request or a request with an incomplete moderation step.
+10. Require a TLS proxy assertion before a non-loopback listener can start.
 
 ## Retry flow
 
@@ -60,4 +61,4 @@ Production uses Docker Compose as specified in [plan 06](06_matcher-match-endpoi
 4. Run `uv run ruff check .`.
 5. Run `uv run pytest -q`.
 6. Check the production health endpoint on `gx10`.
-7. Check authenticated pages from the home LAN.
+7. Check authenticated pages through the configured HTTPS proxy or secure tunnel.

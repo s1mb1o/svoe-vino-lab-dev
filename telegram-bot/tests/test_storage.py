@@ -1,8 +1,29 @@
+import io
 import sqlite3
 
 import pytest
+from PIL import Image
 
-from chto_za_vino_bot.storage import ArtifactWrite, CandidateRecord, Repository, StepTiming
+from chto_za_vino_bot.storage import (
+    SQLITE_MAX_INTEGER,
+    ArtifactWrite,
+    CandidateRecord,
+    ImageStore,
+    Repository,
+    StepTiming,
+)
+
+
+@pytest.mark.parametrize(("image_format", "suffix"), [("JPEG", ".jpg"), ("PNG", ".png"), ("WEBP", ".webp")])
+def test_image_store_preserves_the_validated_image_format(tmp_path, image_format, suffix):
+    output = io.BytesIO()
+    Image.new("RGB", (20, 30), "darkred").save(output, format=image_format)
+    store = ImageStore(tmp_path)
+
+    relative_path, _ = store.save("request-1", 1000, output.getvalue(), True)
+
+    assert relative_path.endswith(suffix)
+    assert (tmp_path / relative_path).read_bytes() == output.getvalue()
 
 
 def reserve(repository, now, message_id=1):
@@ -345,6 +366,23 @@ def test_admin_overview_and_request_listing(tmp_path):
     assert requests[1].recognition_name == "Test wine"
     assert appeal_total == 1
     assert appeals[0].request_id == second.request_id
+    repository.close()
+
+
+def test_admin_lists_reject_a_pagination_offset_outside_the_sqlite_integer_range(tmp_path):
+    repository = Repository(tmp_path / "bot.sqlite3")
+    excessive_page = SQLITE_MAX_INTEGER // 25 + 2
+
+    with pytest.raises(ValueError, match="SQLite integer range"):
+        repository.list_users(
+            page=excessive_page,
+            page_size=25,
+            now=1000,
+            window_seconds=3600,
+        )
+    with pytest.raises(ValueError, match="SQLite integer range"):
+        repository.list_admin_requests(page=excessive_page, page_size=25)
+
     repository.close()
 
 

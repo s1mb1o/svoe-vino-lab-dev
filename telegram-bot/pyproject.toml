@@ -31,6 +31,8 @@ chto-za-vino-admin = "chto_za_vino_bot.admin_web:main"
 chto-za-vino-profile = "chto_za_vino_bot.profile_sync:main"
 chto-za-vino-probe = "chto_za_vino_bot.probe:main"
 chto-za-vino-artifacts = "chto_za_vino_bot.artifact_backfill:main"
+chto-za-vino-delete-user = "chto_za_vino_bot.data_lifecycle:main"
+chto-za-vino-host-demo = "chto_za_vino_bot.host_demo:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/chto_za_vino_bot"]

@@ -59,6 +59,10 @@ class WorkQueue[Job]:
         return self.depth >= self._capacity
 
     @property
+    def accepting(self) -> bool:
+        return self._accepting
+
+    @property
     def next_position(self) -> int:
         return self.depth + 1
 

@@ -117,7 +117,8 @@
 
 ## Safety
 
-- Set `moderation.enabled` to `false` and remove `MODERATION_ENDPOINT` from a test environment.
+- Set `BOT_ENVIRONMENT=test`, set `moderation.enabled` to `false`, and remove
+  `MODERATION_ENDPOINT` from a test environment.
 - Start the bot and confirm that the log states that image moderation is disabled.
 - Send a valid test photo and confirm that ShieldGemma receives no request.
 - Confirm that recognition continues and that the moderation category is `disabled`.
@@ -127,6 +128,8 @@
 - Submit an HTTP API image and confirm that moderation contains `performed=false`,
   `bypassed=true`, and `safe=null`.
 - Restore `moderation.enabled` to `true` for the remaining safety checks.
+- Set `BOT_ENVIRONMENT=production` with `moderation.enabled=false`.
+- Confirm that the bot refuses to start.
 - Use an internal synthetic unsafe fixture.
 - Do not use real abusive material for the smoke test.
 - Confirm that the bot sends a multipart `image` field to `shieldgemma-2-4b-it`.
@@ -169,14 +172,14 @@
 - Send `/stats` as a regular user.
 - Confirm that the response contains only that user's total, daily, recognized, failed, quarantined, and hourly counts.
 - Confirm that the response does not contain participant or queue counts.
-- Send `/stats` as Telegram user ID `207286210` in its private chat.
+- Send `/stats` as the configured `BOT_ADMIN_USER_ID` in its private chat.
 - Confirm that the response contains aggregate, participant, queue, and personal hourly counts.
 
 ## Administrator commands
 
 - Send `/users` as a regular user.
 - Confirm that the bot denies access.
-- Send `/users` as Telegram user ID `207286210` in its private chat.
+- Send `/users` as the configured `BOT_ADMIN_USER_ID` in its private chat.
 - Confirm that the response shows no more than 20 users on one page.
 - Confirm that each entry shows username, name, user ID, request count, hourly use, and last request time in Moscow time.
 - Send `/users 2` when at least 21 users exist.
@@ -195,7 +198,7 @@
 
 ## Administration web interface
 
-- Open `http://192.168.86.14:28003` from the home LAN.
+- Open the administration interface through its configured HTTPS proxy or secure tunnel.
 - Confirm that the browser requires a username and password.
 - Submit an incorrect password.
 - Confirm that access is denied.
@@ -203,6 +206,8 @@
 - Confirm that access is denied.
 - Confirm that the overview shows aggregate statistics and recent requests.
 - Confirm that the user page shows total requests and current hourly use.
+- Open `/users`, `/requests`, and `/appeals` with `page=999999999999999999`.
+- Confirm that each page returns HTTP 400 and that the administration service stays healthy.
 - Reset one test user's rate limit.
 - Confirm that the user can send another photo.
 - Confirm that the reset preserves the request history.
@@ -248,7 +253,8 @@
 - Confirm that Swagger UI shows `POST /api/v1/recognize`.
 - Open the API from an address outside `BOT_HTTP_API_ALLOWED_NETWORKS`.
 - Confirm that access is denied.
-- Submit one clear wine image in the multipart `image` field.
+- Submit one clear wine image in the multipart `image` field with
+  `Authorization: Bearer <BOT_HTTP_API_TOKEN>`.
 - Confirm that the response has HTTP 200 and status `recognized` or `abstained`.
 - Confirm that `matcher_pipeline` identifies the pipeline selected by the matcher.
 - Confirm that the response contains up to four ranked candidates.
@@ -270,6 +276,14 @@
 - Fill the shared queue and submit another API request.
 - Confirm that the endpoint returns HTTP 503 with error `queue_full`.
 - Confirm that an API request and a Telegram photo are processed sequentially by one queue worker.
+- Submit a request without the bearer token and with an incorrect bearer token.
+- Confirm that both requests return HTTP 401 before image processing starts.
+- Exceed `BOT_HTTP_API_RATE_LIMIT` from one client address.
+- Confirm that the next request returns HTTP 429.
+- Fill `BOT_HTTP_API_MAX_IN_FLIGHT` with incomplete requests.
+- Confirm that another request is rejected before its upload body is read.
+- Submit JPEG, PNG, and WebP fixtures.
+- Confirm that storage and matcher multipart requests preserve each source type.
 - Restart the bot while an API request waits in memory.
 - Confirm that the interrupted API request becomes `internal_failed` after restart.
 - Confirm that the service does not attempt to send the interrupted API request to Telegram.
@@ -299,7 +313,20 @@
 - Run `docker compose ps` in `/srv/svoe-vino-lab/prod/telegram-bot`.
 - Confirm that both containers are `healthy`.
 - Confirm that the production `config.yaml` sets `moderation.enabled` to `true`.
-- Confirm that `http://192.168.86.14:28003/` asks for the administration password.
+- Confirm that the HTTPS administration route asks for the administration password.
 - Confirm that `http://192.168.86.14:28002/healthz` answers `ok`.
+- Confirm that `http://192.168.86.14:28002/readyz` reports every dependency as ready.
 - Restart the bot container while no photo job runs.
 - Confirm that the bot answers a new photo after the restart.
+
+## Host verification and data lifecycle
+
+- Run `uv run chto-za-vino-host-demo` without private model services.
+- Confirm that it returns a safe, acceptable, confident `host-demo` result.
+- Create a terminal request older than 30 days with a source image and artifacts.
+- Restart the bot.
+- Confirm that the request, files, artifacts, and inactive user profile are deleted.
+- Create an active request older than 30 days.
+- Confirm that retention does not delete it.
+- Stop the bot and run `uv run chto-za-vino-delete-user USER_ID --confirm`.
+- Confirm that all request rows, source images, artifacts, and the user profile are deleted.

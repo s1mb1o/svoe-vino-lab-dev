@@ -9,8 +9,8 @@ grape varieties, and the catalogue page on `vino-svoe.ru`.
 
 The bot runs on `gx10` in Docker with Telegram long polling.
 The bot does not need a public inbound port.
-The private administration interface listens on LAN port `28003`.
-The internal recognition API listens on LAN port `28002`.
+The private administration interface listens behind a TLS proxy or a secure tunnel.
+The authenticated internal recognition API listens on port `28002`.
 The bot is a thin client of the matcher `svoe-vino-lab/matcher`.
 The matcher returns the ranked candidates and the wine cards.
 The bot does not read a local catalogue.
@@ -84,14 +84,16 @@ The bot restores requests with `received`, `queued`, or `processing` status afte
 | `/users [page]` | Show a paginated user list to the administrator. |
 | `/reset_limit [user_id or @username]` | Reset the current rate use for an administrator-selected user. |
 
-The administrator commands work only for Telegram user ID `207286210` in its private chat.
+The administrator commands work only for the explicitly configured `BOT_ADMIN_USER_ID`
+in its private chat. The bot refuses to start when this value is absent.
 `/reset_limit` without an argument resets the administrator's own limit.
 A limit reset preserves request history and statistics.
 
 ## Administration web interface
 
 The administration interface is a separate FastAPI service.
-Open `http://192.168.86.14:28003` from the home LAN.
+Keep it on loopback and use an SSH tunnel, or put it behind an HTTPS reverse proxy.
+Do not send the HTTP Basic password over a shared plain-HTTP network.
 The browser asks for the configured HTTP Basic username and password.
 
 The interface shows these pages:
@@ -115,13 +117,18 @@ For a quarantined request, the interface shows one irreversible server-side blur
 The preview is reduced to 24 pixels on its longest side before enlargement and Gaussian blur.
 The interface does not serve accepted source files or quarantine images directly.
 The service rejects addresses outside `BOT_ADMIN_WEB_ALLOWED_NETWORKS`.
-Do not expose the administration port `28003` to WAN.
+A non-loopback listener requires `BOT_ADMIN_WEB_BEHIND_TLS_PROXY=true`.
+This flag is an operator assertion. The proxy MUST terminate TLS and MUST be the only
+published route to the application container.
 
 ## HTTP recognition API
 
 The bot process provides a synchronous API for internal tests.
 The API uses the same FIFO queue and the same processing pipeline as Telegram requests.
-The API does not require an API key in the current LAN deployment.
+The API requires `Authorization: Bearer <BOT_HTTP_API_TOKEN>`.
+The token MUST contain at least 32 characters and MUST differ from the Telegram token.
+The API applies a per-client request limit and a global in-flight request limit before it reads
+the upload body. These limits protect the shared Telegram queue.
 The service rejects addresses outside `BOT_HTTP_API_ALLOWED_NETWORKS`.
 Do not expose the recognition API port `28002` to WAN.
 
@@ -129,6 +136,7 @@ Send one image in the multipart `image` field:
 
 ```bash
 curl -sS \
+  -H "Authorization: Bearer $BOT_HTTP_API_TOKEN" \
   -F "image=@wine.jpg" \
   http://192.168.86.14:28002/api/v1/recognize
 ```
@@ -144,6 +152,10 @@ The response omits `qr_urls` when no valid URL exists.
 An unsafe response has status `quarantined` and does not expose the source image.
 OpenAPI is available at `http://192.168.86.14:28002/openapi.json`.
 Swagger UI is available at `http://192.168.86.14:28002/docs`.
+`GET /healthz` is a process liveness check. `GET /readyz` also checks the database,
+queue, and TCP reachability of the configured model services.
+The API accepts JPEG, PNG, and WebP images. It preserves the source format in storage and
+in the matcher multipart request.
 
 Reconstruct artifacts for one previously safe or quarantined request without Telegram output:
 
@@ -181,7 +193,8 @@ valid image for recognition. It stores `disabled` as the moderation category and
 safety verdict. The default is `true`.
 
 Copy `.env.example` outside the repository or use a deployment environment file.
-Set the three endpoint variables and `TELEGRAM_BOT_TOKEN` in that protected file.
+Set the three endpoint variables, `TELEGRAM_BOT_TOKEN`, `BOT_ADMIN_USER_ID`, and
+`BOT_HTTP_API_TOKEN` in that protected file.
 `MODERATION_ENDPOINT` is not required when moderation is disabled.
 Do not commit the token.
 
@@ -189,50 +202,110 @@ The example environment uses these service endpoints for `gx10`:
 
 | Variable | Example or default |
 |---|---|
+| `TELEGRAM_BOT_TOKEN` | Required secret from BotFather. No default. |
 | `BOT_CONFIG` | `config.yaml` |
+| `BOT_ENVIRONMENT` | `production` |
 | `MODERATION_ENDPOINT` | `http://127.0.0.1:18081/upstream/shieldgemma-2-4b-it/classify` |
 | `SAM3_ENDPOINT` | `http://192.168.86.14:18081/upstream/sam3` |
 | `MATCHER_ENDPOINT` | `http://192.168.86.14:28000/v1/match` |
+| `BOT_DATA_ROOT` | `data` for a bare process; `/data` in the image. |
+| `BOT_DATABASE` | `<BOT_DATA_ROOT>/bot.sqlite3` |
 | `BOT_REJECTION_IMAGE` | `assets/content-rejected-monkey-640x640.png` |
-| `BOT_ADMIN_USER_ID` | `207286210` |
+| `BOT_ADMIN_USER_ID` | Required Telegram user ID. No default. |
+| `BOT_DATA_RETENTION_DAYS` | `30`; production requires this value. |
 | `BOT_RATE_LIMIT` | `50` |
 | `BOT_RATE_WINDOW_SECONDS` | `3600` |
 | `BOT_QUEUE_WORKERS` | `1` |
 | `BOT_QUEUE_CAPACITY` | `100` |
 | `BOT_QUEUE_ESTIMATE_SECONDS` | `20` |
+| `BOT_MAX_IMAGE_BYTES` | `20971520` |
 | `BOT_MATCH_MIN_SCORE` | `0.70` |
 | `BOT_MATCH_MIN_MARGIN` | `0.015` |
 | `BOT_QUALITY_BLUR_MIN_VARIANCE` | `80` |
 | `BOT_QUALITY_GLARE_MAX_RATIO` | `0.20` |
 | `BOT_QUALITY_BOTTLE_MIN_AREA_RATIO` | `0.10` |
 | `BOT_QUALITY_LABEL_MIN_AREA_RATIO` | `0.015` |
+| `BOT_SYNC_PROFILE` | `true` |
+| `BOT_LOG_LEVEL` | `INFO` |
 | `BOT_ADMIN_WEB_USERNAME` | `admin` |
+| `BOT_ADMIN_WEB_PASSWORD` | Required strong random secret. No default. |
 | `BOT_ADMIN_WEB_HOST` | `127.0.0.1` |
 | `BOT_ADMIN_WEB_PORT` | `28003` |
-| `BOT_ADMIN_WEB_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128,192.168.86.0/24` |
+| `BOT_ADMIN_WEB_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128` |
+| `BOT_ADMIN_WEB_BEHIND_TLS_PROXY` | `false` |
 | `BOT_HTTP_API_HOST` | `127.0.0.1` |
 | `BOT_HTTP_API_PORT` | `28002` |
 | `BOT_HTTP_API_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128,192.168.86.0/24` |
+| `BOT_HTTP_API_TOKEN` | Required random secret of at least 32 characters. |
+| `BOT_HTTP_API_RATE_LIMIT` | `10` |
+| `BOT_HTTP_API_RATE_WINDOW_SECONDS` | `3600` |
+| `BOT_HTTP_API_MAX_IN_FLIGHT` | `2` |
 
 `endpoints.matcher` MUST name the matcher path `/v1/match`.
 The bot refuses to start with another path, for example `/v1/not-match`.
 The bot sends `k=4` and no pipeline name. The matcher configuration selects the pipeline.
 
 The bare-process defaults use the production ports `28003` and `28002`.
-The Docker image sets `BOT_DATA_ROOT=/data`, `BOT_REJECTION_IMAGE`, and both listen addresses
-to `0.0.0.0:8080`. Production publishes the administration interface on `28003` and the
-recognition API on `28002`. In a container, `127.0.0.1` is the container itself, so the
-deployment sets each endpoint to the LAN address of `gx10`.
+The Docker image sets `BOT_DATA_ROOT=/data`, `BOT_REJECTION_IMAGE`, and the recognition API
+to `0.0.0.0:8080`. The administration interface stays on loopback by default. A deployment can
+set its listener to `0.0.0.0:8080` only behind its TLS proxy and with
+`BOT_ADMIN_WEB_BEHIND_TLS_PROXY=true`. In a container, `127.0.0.1` is the container itself, so
+the deployment sets each model endpoint to the LAN address of `gx10`.
 
 Set `BOT_ADMIN_WEB_PASSWORD` to a strong random value.
 The administration service refuses to start without this value.
 
+Production refuses to start when moderation is disabled. Local development and tests must set
+`BOT_ENVIRONMENT=development` or `BOT_ENVIRONMENT=test` before they use the explicit bypass.
+
+## Data lifecycle
+
+Production keeps request data for 30 days. The bot removes expired terminal requests, source
+images, artifacts, and inactive user profiles at startup and once each day. Active requests are
+not deleted.
+
+Stop the bot before an early user-requested deletion. Then run:
+
+```bash
+uv run chto-za-vino-delete-user TELEGRAM_USER_ID --confirm
+```
+
+The command deletes the user's request rows, source images, pipeline artifacts, and profile.
+
 ## Local verification
+
+Run the complete local verification entry point:
+
+```bash
+./scripts/verify.sh
+```
+
+The script checks the lock file, installs the development extra, runs Ruff, runs all tests,
+and runs the deterministic host demo. A CI service can use the same entry point.
+
+The equivalent individual commands start with:
 
 ```bash
 uv sync --extra dev
 uv run ruff check .
 uv run pytest -q
+```
+
+Run the deterministic host demo without Telegram, model services, or the private LAN:
+
+```bash
+uv run chto-za-vino-host-demo
+```
+
+The command exercises the production request builders, response parsers, confidence logic,
+and catalogue-card validation with local deterministic responses. It returns one recognized
+demonstration wine as JSON.
+
+Run the same host demo in the pinned container without runtime network access:
+
+```bash
+docker compose -f compose.host-demo.yaml up --build \
+  --abort-on-container-exit --exit-code-from host-demo
 ```
 
 Start the bot only after you set a valid token:
@@ -259,7 +332,7 @@ uv run chto-za-vino-probe ./safe-wine-photo.jpg
 ## Deployment
 
 The bot runs in Docker on `gx10` since 2026-09-28.
-The deployment document is `deploy/gx10/telegram-bot-prod.md` in the workspace root.
+The deployment document is `<workspace>/deploy/gx10/telegram-bot-prod.md`.
 The image comes from [Dockerfile](Dockerfile). Build it from a committed revision.
 One image runs two containers: the bot and the administration interface.
 The data directory is `/srv/svoe-vino-lab/prod/telegram-bot/data`.
@@ -267,6 +340,11 @@ The protected environment file is
 `/srv/svoe-vino-lab/prod/telegram-bot/config/telegram-bot.env`.
 
 Production uses Docker Compose only. This project contains no systemd service units.
+
+## License
+
+This project does not grant reuse or distribution rights. Read [LICENSE.md](LICENSE.md).
+The project owner must select another license before an event or distributor requires one.
 
 Read [the specification](docs/specification.md), [the privacy policy](PRIVACY.ru.md),
 and [the smoke tests](SMOKE_TESTS.md).

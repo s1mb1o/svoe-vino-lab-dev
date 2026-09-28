@@ -48,8 +48,9 @@ Keep the unmoderated multipart body in bounded memory.
 Do not use `UploadFile` because it can use a temporary file.
 Parse the bounded multipart body in memory.
 
-Do not require an API key for the current test deployment.
-Restrict clients by configured LAN CIDR networks.
+Require a bearer token for each recognition request.
+Restrict clients by configured CIDR networks.
+Apply client rate and global in-flight limits before reading the upload body.
 
 ## Consequences
 
@@ -57,4 +58,4 @@ Telegram and HTTP recognition cannot run concurrently with one queue worker.
 The API request can keep at most one configured image body in queue memory.
 An interrupted API request cannot resume after a restart.
 The startup recovery marks that request as failed.
-The API must not be exposed to WAN without a new authentication decision.
+The API must not be exposed to WAN.

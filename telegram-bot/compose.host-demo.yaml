@@ -1,0 +1,13 @@
+name: svoe-vino-lab-telegram-bot-host-demo
+
+services:
+  host-demo:
+    build:
+      context: .
+    command: ["chto-za-vino-host-demo"]
+    network_mode: none
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

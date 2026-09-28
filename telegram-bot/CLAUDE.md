@@ -31,7 +31,7 @@ The workspace rules are in `../../CLAUDE.md`.
 10. Fetch catalogue result images only from `https://api.vino-svoe.ru`.
 11. Use the submitted accepted photo when a catalogue result image is unavailable.
 12. Authorize administrator commands only by `BOT_ADMIN_USER_ID` and the private chat ID.
-13. Keep `207286210` as the default administrator user ID.
+13. Require an explicit `BOT_ADMIN_USER_ID`. Do not keep a real account as a default.
 14. Show result feedback only for a successful non-album request.
 15. Accept result feedback only from the source Telegram user ID.
 16. Use `shieldgemma-2-4b-it` for image moderation when moderation is enabled.
@@ -51,7 +51,7 @@ The workspace rules are in `../../CLAUDE.md`.
 30. Do not serve accepted source files or quarantine images from the administration web interface.
 31. Send an administration retry through the shared bot work queue.
 32. Run moderation again for an administration retry when moderation is enabled.
-33. Restrict the administration web interface to configured LAN networks.
+33. Restrict the administration web interface to configured networks.
 34. Persist full-fidelity pipeline artifacts only after safe moderation or an explicit
     non-production moderation bypass.
 35. Treat pipeline artifact generation as advisory.
@@ -71,6 +71,14 @@ The workspace rules are in `../../CLAUDE.md`.
 47. Restrict the HTTP recognition API to configured LAN networks.
 48. Keep TCP port `28002` as the production recognition API port on `gx10`.
 49. Do not restore an interrupted API request as a Telegram request.
+50. Require a bearer token for every recognition API request.
+51. Apply the API rate and in-flight limits before the service reads an upload body.
+52. Keep the administration listener on loopback unless a TLS proxy is the only published route.
+53. Production MUST refuse to start when moderation is disabled.
+54. Production MUST delete terminal request data after 30 days.
+55. Allow only `vino-svoe.ru` and `www.vino-svoe.ru` as result page hosts.
+56. Preserve JPEG, PNG, and WebP source types in storage and matcher requests.
+57. Keep `/healthz` as liveness. Use `/readyz` for database, queue, and upstream reachability.
 
 ## Common mistakes
 

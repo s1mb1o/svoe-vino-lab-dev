@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from html import escape
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -28,6 +29,7 @@ from aiogram.types import (
 )
 
 from .config import Settings
+from .data_lifecycle import purge_expired_data
 from .fingerprints import difference_hash, perceptual_hash
 from .http_api import (
     HttpQueueFull,
@@ -1537,6 +1539,73 @@ async def submit_http_image(
     )
 
 
+async def _endpoint_reachable(endpoint: str, *, timeout: float = 1.5) -> bool:
+    parts = urlsplit(endpoint)
+    host = parts.hostname
+    if host is None:
+        return False
+    port = parts.port or (443 if parts.scheme == "https" else 80)
+    try:
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(
+                host,
+                port,
+            ),
+            timeout=timeout,
+        )
+    except (OSError, TimeoutError):
+        return False
+    del reader
+    writer.close()
+    try:
+        await writer.wait_closed()
+    except OSError:
+        return False
+    return True
+
+
+async def service_readiness(
+    settings: Settings,
+    repository: Repository,
+    work_queue: WorkQueue[PhotoJob],
+) -> dict[str, bool]:
+    endpoint_names = ["sam3", "matcher"]
+    endpoints = [settings.sam3_endpoint, settings.matcher_endpoint]
+    if settings.moderation_endpoint is not None:
+        endpoint_names.insert(0, "moderation")
+        endpoints.insert(0, settings.moderation_endpoint)
+    endpoint_results = await asyncio.gather(
+        *(_endpoint_reachable(endpoint) for endpoint in endpoints)
+    )
+    return {
+        "database": repository.is_healthy(),
+        "queue": work_queue.accepting,
+        **dict(zip(endpoint_names, endpoint_results, strict=True)),
+    }
+
+
+def enforce_data_retention(settings: Settings, repository: Repository) -> None:
+    cutoff = int(time.time()) - settings.data_retention_days * 86400
+    result = purge_expired_data(repository, settings.data_root, cutoff=cutoff)
+    LOG.info(
+        "Data retention completed requests=%s users=%s files=%s",
+        result.requests,
+        result.users,
+        result.files,
+    )
+
+
+async def data_retention_loop(
+    settings: Settings,
+    repository: Repository,
+    *,
+    interval_seconds: float = 86400,
+) -> None:
+    while True:
+        await asyncio.sleep(interval_seconds)
+        await asyncio.to_thread(enforce_data_retention, settings, repository)
+
+
 def enqueue_admin_retries(
     repository: Repository,
     work_queue: WorkQueue[PhotoJob],
@@ -1636,6 +1705,7 @@ async def run() -> None:
         image_loader,
         rejection_image,
     )
+    enforce_data_retention(settings, repository)
 
     bot = Bot(
         token=settings.telegram_token,
@@ -1653,7 +1723,12 @@ async def run() -> None:
     http_api = create_http_api_app(
         allowed_networks=settings.http_api_allowed_networks,
         max_image_bytes=settings.max_image_bytes,
+        api_token=settings.http_api_token,
+        rate_limit=settings.http_api_rate_limit,
+        rate_window_seconds=settings.http_api_rate_window_seconds,
+        max_in_flight=settings.http_api_max_in_flight,
         recognize=lambda body: submit_http_image(services, work_queue, body),
+        readiness=lambda: service_readiness(settings, repository, work_queue),
     )
     api_server = uvicorn.Server(
         uvicorn.Config(
@@ -1668,6 +1743,7 @@ async def run() -> None:
     retry_watcher: asyncio.Task[None] | None = None
     api_task: asyncio.Task[None] | None = None
     polling_task: asyncio.Task[None] | None = None
+    retention_task: asyncio.Task[None] | None = None
     try:
         if settings.sync_profile:
             await sync_profile(bot, settings.admin_user_id)
@@ -1691,6 +1767,10 @@ async def run() -> None:
         retry_watcher = asyncio.create_task(
             watch_admin_retries(repository, work_queue),
             name="admin-retry-watcher",
+        )
+        retention_task = asyncio.create_task(
+            data_retention_loop(settings, repository),
+            name="data-retention",
         )
         api_task = asyncio.create_task(api_server.serve(), name="recognition-http-api")
         polling_task = asyncio.create_task(
@@ -1716,7 +1796,7 @@ async def run() -> None:
             },
         )
         done, _ = await asyncio.wait(
-            {api_task, polling_task},
+            {api_task, polling_task, retention_task},
             return_when=asyncio.FIRST_COMPLETED,
         )
         if api_task in done:
@@ -1725,6 +1805,9 @@ async def run() -> None:
                 raise RuntimeError("Recognition HTTP API stopped unexpectedly")
         if polling_task in done:
             await polling_task
+        if retention_task in done:
+            retention_task.result()
+            raise RuntimeError("Data retention task stopped unexpectedly")
     finally:
         api_server.should_exit = True
         if polling_task is not None and not polling_task.done():
@@ -1736,6 +1819,9 @@ async def run() -> None:
         if retry_watcher is not None:
             retry_watcher.cancel()
             await asyncio.gather(retry_watcher, return_exceptions=True)
+        if retention_task is not None:
+            retention_task.cancel()
+            await asyncio.gather(retention_task, return_exceptions=True)
         await work_queue.stop()
         await client.aclose()
         await bot.session.close()

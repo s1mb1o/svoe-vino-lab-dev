@@ -2,11 +2,28 @@
 
 ## 2026-09-29
 
+- Rejected administration page numbers that exceed the SQLite integer range.
+- Added a repository guard for every paginated administration query.
 - Represented a disabled moderation check as `safe=null`, `performed=false`, and
   `bypassed=true` instead of a successful safety verdict.
-- Restricted the moderation bypass to local development and tests. Production MUST keep
-  moderation enabled.
+- Restricted the moderation bypass to local development and tests.
+- Made production refuse to start when moderation is disabled.
+- Required an explicit Telegram administrator ID and removed the real account default.
+- Required a separate HTTP API bearer token with at least 32 characters.
+- Added API client rate and global in-flight limits before upload parsing.
+- Restricted the administration listener to loopback or an asserted TLS proxy route.
+- Restricted matcher result links to the `vino-svoe.ru` catalogue hosts.
+- Added dependency readiness checks while retaining a separate liveness route.
+- Added 30-day deletion for terminal requests, source images, complete artifact directories,
+  and inactive user profiles.
+- Added an operator command for an early user-requested data deletion.
+- Preserved JPEG, PNG, and WebP types in source storage and matcher requests.
+- Added a deterministic host demo, a restricted host-demo Compose file, and one verification
+  script for local or CI use.
+- Pinned the Docker base images by version and digest and added `.dockerignore`.
+- Documented that the project does not grant reuse or distribution rights.
 - Removed the deprecated systemd service assets. Production uses Docker Compose only.
+- Tests: 224 pass. `ruff check .` passes. The self-contained host demo passes.
 
 ## 2026-09-28
 
@@ -40,8 +57,8 @@
 - Tests: 169 pass (129 before the change). `ruff check .` passes.
 - Deployed commit `c0d483e` in Docker on gx10: HTTP API on port 28002, administration on
   port 28003, data in `/srv/svoe-vino-lab/prod/telegram-bot/data`. The old systemd user
-  units are stopped and disabled. The document is `deploy/gx10/telegram-bot-prod.md` in
-  the workspace root.
+  units are stopped and disabled. The document is
+  `<workspace>/deploy/gx10/telegram-bot-prod.md`.
 - Recorded decision 016: keep the bot on gx10 and do not move it to `avalon`.
 - Moved the project working tree to `svoe-vino-lab/telegram-bot`.
 - Removed the nested Git repository boundary from the imported working tree.
@@ -113,7 +130,7 @@
 - Added persistent request-linked feedback storage.
 - Restricted feedback submission to the source Telegram user.
 - Restricted public `/stats` responses to the current user's data.
-- Added administrator aggregate statistics for Telegram user ID `207286210`.
+- Added administrator aggregate statistics for the configured Telegram administrator.
 - Added administrator-only `/users` and `/reset_limit` commands.
 - Added persistent rate-limit resets that preserve request history.
 - Increased the default and production user rate limit to 50 images per hour.

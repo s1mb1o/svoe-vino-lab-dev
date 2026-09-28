@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from urllib.parse import quote, urlsplit
 
 OPTIONAL_TEXT_FIELDS = ("producer", "category", "color", "grapes", "sugar", "image_url")
+CATALOGUE_PAGE_HOSTS = {"vino-svoe.ru", "www.vino-svoe.ru"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -52,6 +53,21 @@ def _is_web_url(value: str, schemes: tuple[str, ...]) -> bool:
     return parts.scheme in schemes and bool(parts.hostname)
 
 
+def _is_catalogue_page_url(value: str) -> bool:
+    try:
+        parts = urlsplit(value)
+        port = parts.port
+    except ValueError:
+        return False
+    return (
+        parts.scheme == "https"
+        and parts.hostname in CATALOGUE_PAGE_HOSTS
+        and port in {None, 443}
+        and parts.username is None
+        and parts.password is None
+    )
+
+
 def wine_from_card(slug: str, card: object) -> Wine:
     """Return the wine of one matcher card.
 
@@ -63,8 +79,8 @@ def wine_from_card(slug: str, card: object) -> Wine:
     if not isinstance(name, str) or not name.strip():
         raise ValueError("wine card name must be a non-empty string")
     page_url = card.get("page_url")
-    if not isinstance(page_url, str) or not _is_web_url(page_url, ("https",)):
-        raise ValueError("wine card page_url must be an HTTPS URL")
+    if not isinstance(page_url, str) or not _is_catalogue_page_url(page_url):
+        raise ValueError("wine card page_url must use the vino-svoe.ru catalogue")
     raw_qr_urls = card.get("qr_urls", [])
     if not isinstance(raw_qr_urls, list) or not all(
         isinstance(url, str) and _is_web_url(url, ("http", "https")) for url in raw_qr_urls

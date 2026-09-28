@@ -18,7 +18,8 @@ The administrator must reset a rate limit without deleting request history.
 
 Use text commands.
 Authorize the administrator with the Telegram user ID.
-Use `207286210` as the production administrator user ID.
+Require an explicit `BOT_ADMIN_USER_ID` value.
+Do not provide a real Telegram account as a default.
 Use `/users [page]` for a paginated user list.
 Use `/reset_limit [user_id|@username]` for a rate reset.
 Use the administrator user ID when `/reset_limit` has no argument.

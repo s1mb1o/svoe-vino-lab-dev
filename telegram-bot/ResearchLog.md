@@ -1,5 +1,46 @@
 # Research log
 
+## 2026-09-29
+
+This entry records the review from the hackathon host perspective.
+The review covered only `svoe-vino-lab/telegram-bot`.
+
+The recognition API read an upload before it applied a separate caller credential or API limit.
+The selected control is a bearer token with at least 32 characters.
+The API now applies its client rate limit and global in-flight limit before multipart parsing.
+The Telegram rate limit remains separate because API callers use a synthetic user.
+
+HTTP Basic authentication does not protect a password on a plain HTTP network.
+The administration listener now defaults to loopback.
+A non-loopback listener requires an explicit assertion that a TLS proxy is the only published
+route. The CIDR allowlist and CSRF protection remain additional controls.
+
+The matcher controls the wine card, so a matcher response could supply an arbitrary result link.
+The bot now accepts only HTTPS catalogue links on the standard HTTPS port of `vino-svoe.ru` or
+`www.vino-svoe.ru`.
+
+Process liveness cannot show a failed model dependency.
+The new readiness route checks SQLite, queue admission, and TCP reachability for each configured
+model endpoint. The liveness route continues to report only the process state.
+
+The privacy notice promises a 30-day storage period.
+The implementation now deletes terminal request rows, source images, complete per-request
+artifact directories, and inactive profiles. Active requests remain available.
+The separate deletion command requires the bot to be stopped and requires `--confirm`.
+
+Pillow identifies JPEG, PNG, and WebP input from the bytes.
+Storage and matcher multipart requests now use the detected extension and media type.
+
+The host demo uses deterministic local HTTP responses with the production clients and parsers.
+It needs no Telegram token, private network, or model service.
+The container host demo disables runtime network access and drops Linux capabilities.
+
+The official image manifests were checked on 2026-09-29.
+The Dockerfile pins uv `0.8.14` to its manifest digest.
+It pins Python `3.12.14-slim-trixie` to its manifest digest.
+The project keeps `httpx` for production `AsyncClient` use and `httpx2` for FastAPI test client
+compatibility.
+
 ## 2026-09-28
 
 This entry records the threshold check for the temporary matcher pipeline.

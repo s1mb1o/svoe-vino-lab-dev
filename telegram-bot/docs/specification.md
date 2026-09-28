@@ -29,10 +29,12 @@ The service also collects difficult test images for recognition improvement.
 2. The bot MUST accept Telegram photo messages.
 3. The bot MUST limit one Telegram user ID to 50 image requests in a rolling hour.
 4. The rate limit MUST survive a process restart.
-5. `moderation.enabled` in `config.yaml` MUST control image moderation and MUST default
-to `true`. Production MUST keep it set to `true`. Local development and tests MAY set it
-to `false`. The bot then MUST bypass ShieldGemma, record the moderation category as
-`disabled`, and store no safety verdict.
+5. `moderation.enabled` in `config.yaml` MUST control image moderation.
+   The value MUST default to `true`.
+   Production MUST refuse to start when it is `false`.
+   Local development and tests MAY set it to `false`.
+   The bot then MUST bypass ShieldGemma.
+   The bot MUST record the moderation category as `disabled` and store no safety verdict.
 6. An enabled moderation check MUST use the `dangerous`, `sexual`, and `violence` policies.
 7. An enabled moderation error MUST stop the request before image storage and recognition.
 8. The bot MUST store an image under `accepted` after safe moderation or an explicit
@@ -84,7 +86,7 @@ non-production moderation bypass.
 53. The bot MUST continue to process each album photo as a separate request.
 54. The bot MUST continue to return one result for each album photo.
 55. The bot MUST identify the administrator by the configured Telegram user ID.
-56. The production administrator user ID MUST be `207286210`.
+56. `BOT_ADMIN_USER_ID` MUST be explicit. The bot MUST NOT default to a real account.
 57. The administrator `/stats` response MUST show aggregate statistics and personal hourly use.
 58. The `/users` command MUST be available only to the administrator.
 59. The `/users` command MUST show 20 users on one page.
@@ -165,7 +167,7 @@ and result delivery when the step applies.
 126. The administration web service MUST use the existing SQLite database.
 127. The administration web service MUST require password authentication.
 128. The administration web service MUST restrict access to configured CIDR networks.
-129. The default allowed networks MUST include only localhost and `192.168.86.0/24`.
+129. The default allowed networks MUST include only localhost.
 130. The administration web service MUST show aggregate statistics.
 131. The administration web service MUST show a paginated user list.
 132. The administration web service MUST show a paginated recent request list.
@@ -233,7 +235,7 @@ moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fi
 185. The endpoint MUST enforce `BOT_MAX_IMAGE_BYTES`.
 186. The endpoint MUST keep the unmoderated image in memory.
 187. The endpoint MUST NOT write an unmoderated image to a temporary upload file.
-188. The endpoint MUST not require an API key in the internal test deployment.
+188. The endpoint MUST require a bearer token from `BOT_HTTP_API_TOKEN`.
 189. The endpoint MUST restrict access to `BOT_HTTP_API_ALLOWED_NETWORKS`.
 190. The default API networks MUST include only localhost and `192.168.86.0/24`.
 191. The production HTTP recognition API MUST use TCP port `28002` on gx10.
@@ -255,6 +257,22 @@ moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fi
 207. A stored candidate without a wine card MUST use its slug as the wine name.
 208. A successful result MUST show the wine producer.
 209. The exact matcher input artifact MUST keep its JPEG, PNG, or WebP media type.
+210. The service MUST accept result pages only from `vino-svoe.ru` and `www.vino-svoe.ru`.
+     A result page MUST use HTTPS on the standard HTTPS port.
+211. The API MUST apply its client rate limit before it reads an upload body.
+212. The API MUST apply its in-flight request limit before it reads an upload body.
+213. The administration listener MUST use loopback unless a TLS proxy is its only published route.
+214. Production MUST delete terminal request data after 30 days.
+215. Retention MUST delete source files, artifacts, request rows, and inactive user profiles.
+216. Retention MUST NOT delete an active request.
+217. The system MUST provide a command for an early user-requested deletion.
+218. The deletion command MUST delete source files, artifacts, request rows, and the user profile.
+219. The HTTP service MUST provide separate liveness and readiness routes.
+220. Readiness MUST check the database, queue, and configured upstream TCP endpoints.
+221. Source storage and matcher requests MUST preserve JPEG, PNG, and WebP media types.
+222. The project MUST provide a deterministic host demo that needs no private service.
+223. `BOT_HTTP_API_TOKEN` MUST contain at least 32 characters.
+224. Retention MUST delete the complete artifact directory of each expired request.
 
 ## Non-functional requirements
 
@@ -280,4 +298,3 @@ moderation metadata MUST contain `performed`, `bypassed`, and nullable `safe` fi
 
 1. The first release does not accept image documents.
 2. The administration UI is not public.
-3. The first release does not automatically delete collected images.

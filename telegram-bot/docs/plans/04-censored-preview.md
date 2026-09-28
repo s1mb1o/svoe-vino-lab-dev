@@ -50,7 +50,8 @@ Existing artifact rows use `safe`.
 1. Load only artifacts that match the current moderation result.
 2. Show the censored preview in a separate group.
 3. Serve only the derived preview file.
-4. Keep HTTP Basic authentication, LAN restrictions, and `Cache-Control: no-store`.
+4. Keep HTTP Basic authentication, network restrictions, loopback or TLS transport, and
+   `Cache-Control: no-store`.
 
 ## Verification
 

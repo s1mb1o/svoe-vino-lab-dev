@@ -25,6 +25,7 @@ from fastapi.responses import (
 
 from .config import AdminWebSettings
 from .storage import (
+    SQLITE_MAX_INTEGER,
     AdminRequestRecord,
     ArtifactRecord,
     ArtifactStore,
@@ -37,6 +38,7 @@ from .storage import (
 LOG = logging.getLogger("chto_za_vino_bot.admin_web")
 MOSCOW_TIME = ZoneInfo("Europe/Moscow")
 PAGE_SIZE = 25
+MAX_PAGE_NUMBER = SQLITE_MAX_INTEGER // PAGE_SIZE + 1
 ACTIVE_STATUSES = {"received", "queued", "processing", "retry_requested"}
 
 
@@ -188,6 +190,8 @@ def _layout(title: str, body: str, notice: str | None = None) -> HTMLResponse:
 
 
 def _page_number(raw: int) -> int:
+    if raw > MAX_PAGE_NUMBER:
+        raise HTTPException(status_code=400, detail="Page number is too large")
     return max(1, raw)
 
 
@@ -343,6 +347,11 @@ def create_app(settings: AdminWebSettings) -> FastAPI:
     @app.get("/healthz", response_class=PlainTextResponse)
     async def health() -> str:
         return "ok"
+
+    @app.get("/readyz", response_class=PlainTextResponse)
+    async def readiness() -> PlainTextResponse:
+        ready = repository.is_healthy()
+        return PlainTextResponse("ready" if ready else "not ready", status_code=200 if ready else 503)
 
     @app.get("/", response_class=HTMLResponse, dependencies=[authentication])
     async def overview(request: Request, notice: str | None = None) -> HTMLResponse:

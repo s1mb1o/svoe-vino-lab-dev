@@ -70,7 +70,7 @@ An answer that breaks a rule fails closed: the request status is `recognition_fa
 
 ## Deployment
 
-The deployment document is `deploy/gx10/telegram-bot-prod.md` in the workspace root.
+The deployment document is `<workspace>/deploy/gx10/telegram-bot-prod.md`.
 
 1. Deploy matcher commit `9ba496d` to prod 28000 with its configured pipeline.
 2. Commit the bot. Build the image on gx10 from `git archive` of that commit.

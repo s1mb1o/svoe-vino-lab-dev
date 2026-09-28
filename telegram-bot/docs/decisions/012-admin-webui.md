@@ -38,7 +38,8 @@ Run a separate FastAPI service.
 Use the existing SQLite database.
 Use persistent status changes for bot actions.
 Do not serve stored images.
-Require password authentication and a LAN CIDR allowlist.
+Require password authentication and a CIDR allowlist.
+Keep the listener on loopback unless a TLS proxy is its only published route.
 
 ## Consequences
 
@@ -46,5 +47,5 @@ The original deployment had one additional systemd user service.
 SQLite remains the coordination point.
 The bot needs a small retry watcher.
 The web service can restart without losing a requested retry.
-The first version uses HTTP Basic authentication on the trusted home LAN.
-Public exposure is forbidden.
+The service uses HTTP Basic authentication only across loopback or behind a TLS proxy.
+Plain HTTP exposure on a shared LAN is forbidden.

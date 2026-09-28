@@ -7,7 +7,7 @@ from chto_za_vino_bot.app import (
 )
 from chto_za_vino_bot.storage import Repository
 
-ADMIN_USER_ID = 207286210
+ADMIN_USER_ID = 123456789
 
 
 class FakeMessage:

@@ -9,14 +9,14 @@ This decision updates the moderation conditions in Decisions 013 and 015 and in 
 
 ## Context
 
-ShieldGemma can add latency and GPU use. Some deployments need to run recognition without
-the moderation service.
+ShieldGemma can add latency and GPU use. Local development and tests can need to run
+recognition without the moderation service.
 
 ## Decision
 
 Add `moderation.enabled` to `config.yaml`. The default value is `true`.
 
-Production MUST keep the value set to `true`.
+The bot MUST refuse to start in the production environment when the value is `false`.
 
 When the value is `false`, the bot MUST NOT resolve `endpoints.moderation`. The bot MUST
 NOT call ShieldGemma. The bot MUST accept each valid image for the remaining pipeline.

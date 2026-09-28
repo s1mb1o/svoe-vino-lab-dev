@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 import httpx
 
+from .image_types import UnsupportedImage, detect_image_type
 from .wine import Wine, wine_from_card
 
 MATCH_CANDIDATES = 4
@@ -101,9 +102,16 @@ class Matcher:
 
     async def recognize(self, body: bytes) -> RecognitionResult:
         try:
+            image_type = detect_image_type(body)
             response = await self._client.post(
                 self._endpoint,
-                files={"image": ("telegram-photo.jpg", body, "image/jpeg")},
+                files={
+                    "image": (
+                        f"telegram-photo.{image_type.extension}",
+                        body,
+                        image_type.mime_type,
+                    )
+                },
                 params={"k": MATCH_CANDIDATES},
                 timeout=180,
             )
@@ -111,5 +119,5 @@ class Matcher:
             return parse_recognition_response(response.json())
         except RecognitionUnavailable:
             raise
-        except (httpx.HTTPError, json.JSONDecodeError, TypeError) as exc:
+        except (UnsupportedImage, httpx.HTTPError, json.JSONDecodeError, TypeError) as exc:
             raise RecognitionUnavailable("matcher is unavailable") from exc

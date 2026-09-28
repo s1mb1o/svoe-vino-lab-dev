@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from PIL import Image, ImageColor, ImageDraw, ImageFilter, ImageOps, UnidentifiedImageError
 
+from .image_types import UnsupportedImage, detect_image_type
 from .quality import QualityResult, Segment
 from .storage import ArtifactStore, ArtifactWrite
 
@@ -28,13 +29,6 @@ COLORS = ("#e53935", "#1e88e5", "#43a047", "#f9a825", "#8e24aa", "#00acc1")
 CENSORED_SAMPLE_MAX = 24
 CENSORED_OUTPUT_MAX = 768
 CENSORED_BLUR_RADIUS = 18
-IMAGE_MIME_TYPES = {
-    "JPEG": "image/jpeg",
-    "PNG": "image/png",
-    "WEBP": "image/webp",
-}
-
-
 def _open_rgb(body: bytes) -> Image.Image:
     try:
         with Image.open(io.BytesIO(body)) as source:
@@ -47,14 +41,12 @@ def _open_rgb(body: bytes) -> Image.Image:
 
 def _open_matcher_input(body: bytes) -> tuple[Image.Image, str]:
     try:
+        image_type = detect_image_type(body)
         with Image.open(io.BytesIO(body)) as source:
-            mime_type = IMAGE_MIME_TYPES.get(source.format or "")
-            if mime_type is None:
-                raise ValueError("matcher input image format is unsupported")
             image = ImageOps.exif_transpose(source).convert("RGB")
             image.load()
-            return image, mime_type
-    except (UnidentifiedImageError, OSError, ValueError) as exc:
+            return image, image_type.mime_type
+    except (UnsupportedImage, UnidentifiedImageError, OSError, ValueError) as exc:
         raise ValueError("artifact image is invalid") from exc
 
 

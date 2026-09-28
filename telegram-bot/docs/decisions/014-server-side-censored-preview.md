@@ -60,6 +60,6 @@ The exposure check depends on the current moderation result.
 ## Risks
 
 The preview contains coarse image information.
-The administration interface must remain private and LAN-restricted.
+The administration interface must remain private.
+It must use loopback or a TLS proxy and keep its configured network restrictions.
 The transformation constants must not become configurable through a web request.
-

@@ -65,6 +65,6 @@ Old unreferenced artifact files can remain until a later retention task removes 
 ## Risks
 
 An artifact can contain personal or sensitive visual information from a safe image.
-HTTP Basic authentication and LAN restrictions remain mandatory.
+HTTP Basic authentication, network restrictions, and loopback or TLS transport remain mandatory.
 The service MUST use `Cache-Control: no-store`.
 The service MUST NOT serve quarantine images.

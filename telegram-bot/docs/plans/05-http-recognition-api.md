@@ -62,10 +62,11 @@ The response MUST not expose quarantine files.
 
 ## Network access
 
-The API does not require an API key for this test deployment.
+The API MUST require a bearer token from `BOT_HTTP_API_TOKEN`.
 The API MUST restrict clients to `BOT_HTTP_API_ALLOWED_NETWORKS`.
 The default networks MUST be localhost and `192.168.86.0/24`.
 The service MUST not trust proxy headers.
+The service MUST apply client rate and global in-flight limits before it reads an upload body.
 
 FastAPI MUST publish OpenAPI at `/openapi.json`.
 FastAPI MUST publish Swagger UI at `/docs`.
@@ -76,7 +77,11 @@ Add these variables:
 
 - `BOT_HTTP_API_HOST`, with default `127.0.0.1`.
 - `BOT_HTTP_API_PORT`, with default `28002`.
-- `BOT_HTTP_API_ALLOWED_NETWORKS`, with the same default LAN list as the administration UI.
+- `BOT_HTTP_API_ALLOWED_NETWORKS`, with the localhost and production LAN networks.
+- `BOT_HTTP_API_TOKEN`, with no default.
+- `BOT_HTTP_API_RATE_LIMIT`, with default `10`.
+- `BOT_HTTP_API_RATE_WINDOW_SECONDS`, with default `3600`.
+- `BOT_HTTP_API_MAX_IN_FLIGHT`, with default `2`.
 
 Production MUST set `BOT_HTTP_API_HOST=0.0.0.0`.
 

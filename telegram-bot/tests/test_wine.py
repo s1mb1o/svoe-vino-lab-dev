@@ -53,6 +53,9 @@ def test_missing_optional_card_fields_are_empty():
         card(name=None),
         card(page_url="vino-svoe.ru/wines/test-wine"),
         card(page_url="http://vino-svoe.ru/wines/test-wine"),
+        card(page_url="https://attacker.example/wines/test-wine"),
+        card(page_url="https://vino-svoe.ru@attacker.example/wines/test-wine"),
+        card(page_url="https://vino-svoe.ru:8443/wines/test-wine"),
         card(page_url=None),
         card(producer=1),
         card(image_url=["https://api.vino-svoe.ru/a.webp"]),
@@ -70,6 +73,15 @@ def test_stored_card_reads_back_to_the_same_wine():
     wine = wine_from_card("test-wine", card())
 
     assert wine_from_card("test-wine", wine_card(wine)) == wine
+
+
+def test_catalogue_page_accepts_the_www_host():
+    wine = wine_from_card(
+        "test-wine",
+        card(page_url="https://www.vino-svoe.ru/wines/test-wine"),
+    )
+
+    assert wine.page_url == "https://www.vino-svoe.ru/wines/test-wine"
 
 
 def test_unknown_wine_is_a_safe_minimal_card():
