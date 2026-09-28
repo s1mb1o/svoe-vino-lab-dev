@@ -1,7 +1,7 @@
 # 06 — Recognition through the matcher endpoint `/v1/match`
 
 Date: 2026-09-28.
-Status: in progress.
+Status: implemented in commit `c0d483e` and deployed on gx10 on 2026-09-28.
 
 Source: stage 3 of `svoe-vino-lab/workbench/docs/plans/74_match-endpoint.md`.
 The owner messages are in `svoe-vino-lab/workbench/docs/owner-messages.md`,

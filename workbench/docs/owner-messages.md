@@ -7571,3 +7571,45 @@ wine `__aaaaa`. The answer:
 ```text
 git commit
 ```
+
+## 2026-09-28T15:49:02+0300
+
+```text
+implement using /v1/match?k=4 in bot
+```
+
+## 2026-09-28T15:54:39+0300
+
+The agent proposed three rollout options for the bot on `/v1/match` (code, then dev,
+then prod; code and prod at once; code only). The answer:
+
+```text
+cейчас никто сервисами не пользуется, можешь спокойно перезапускать. Старый бот телеграма можешь остановить
+
+Мне главное чтобы ты все правильно сделал в коде.
+```
+
+## 2026-09-28T16:04:59+0300
+
+The agent asked two questions. The selected answers:
+
+```text
+Какой матчер будет отвечать боту на /v1/match? = prod 28000 на siglip2 (Recommended)
+Как выкатывать самого бота? = Новый Docker-деплой в /srv
+```
+
+## 2026-09-28T16:27:00+0300
+
+```text
+git commit telegram-bot code
+```
+
+## 2026-09-28T17:02:03+0300
+
+The agent asked two things: a commit of its uncommitted documentation hunks, and the
+permission to update `deploy/gx10/matcher-prod.md`, which the section
+`codex-deployment-advice` lists. The answer:
+
+```text
+do it
+```

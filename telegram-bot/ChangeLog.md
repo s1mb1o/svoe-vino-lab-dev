@@ -19,6 +19,10 @@
 - Added `Dockerfile`. One image runs the bot and the administration interface.
 - Kept the thresholds 0.70 and 0.015 after a calibration on the lab runs.
 - Tests: 169 pass (129 before the change). `ruff check .` passes.
+- Deployed commit `c0d483e` in Docker on gx10: HTTP API on port 28002, administration on
+  port 28003, data in `/srv/svoe-vino-lab/prod/telegram-bot/data`. The old systemd user
+  units are stopped and disabled. The document is `deploy/gx10/telegram-bot-prod.md` in
+  the workspace root.
 - Recorded decision 016: keep the bot on gx10 and do not move it to `avalon`.
 - Moved the project working tree to `svoe-vino-lab/telegram-bot`.
 - Removed the nested Git repository boundary from the imported working tree.

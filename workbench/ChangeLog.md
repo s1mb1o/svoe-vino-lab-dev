@@ -2,6 +2,15 @@
 
 ## 2026-09-28
 
+- Finished stage 3 of plan 74 (owner messages of 2026-09-28 from 15:49:02 to 16:27:00).
+  Commit `c0d483e` adds `telegram-bot/` to git: the bot calls `POST /v1/match?k=4` and
+  takes the wine cards from the matcher. The prod matcher on gx10 port 28000 runs
+  `siglip2-p512-as-is` at `9ba496d` since 16:23. The bot runs in Docker on ports 28002 and
+  28003 since 16:42; the old systemd bot is stopped. The lab runs predict a lower bot
+  coverage with the new pipeline: Top-1 0.743 instead of 0.832 on the set `my`, and 59 %
+  instead of 72 % confident answers at the thresholds 0.70 / 0.015, both with a precision
+  of about 0.91. Details: `telegram-bot/ResearchLog.md` and `deploy/ChangeLog.md` in the
+  workspace root.
 - Added the matcher endpoint `POST /v1/match` and matcher bundle format version 2
   (plan 74, owner messages recorded from 2026-09-28T14:19:39+0300 to 15:24:13).
   `/v1/match` returns up to `k` ranked candidates (`k` from 1 to 20, default 20) with

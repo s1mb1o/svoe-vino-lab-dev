@@ -1,7 +1,9 @@
 # 74 — Extended matcher endpoint `/v1/match`
 
 Date: 2026-09-28.
-Status: stages 1 and 2 are implemented and tested. Stage 3 (bot) needs its own plan.
+Status: stages 1 and 2 are in commit `9ba496d`. Stage 3 (bot) is in commit `c0d483e`
+(plan `telegram-bot/docs/plans/06_matcher-match-endpoint.md`). The prod matcher and the
+bot run on gx10 since 2026-09-28.
 
 ## Goal
 
