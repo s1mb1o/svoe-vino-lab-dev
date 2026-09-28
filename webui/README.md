@@ -89,10 +89,11 @@ The evaluator-compatible `POST /v1/eval/predict` route remains available for dir
 The server forwards the image to the configured endpoint.
 The server does not expose this URL in public configuration.
 The server does not replace upstream errors with mock results.
-Result metadata remains a 12-wine demo fixture in upstream mode.
+The 12 local wine records provide the mock result and a fast metadata path.
+For another recognized slug, the server requests the exact card from `https://api.vino-svoe.ru/v1/wines/<slug>`.
+The server validates and normalizes the source response before it returns metadata to the browser.
 The result always links to the source portal.
 If metadata is missing or fails, the app preserves the predicted slug and its link.
-Replace `server/data/wines.json` or the metadata routes when complete catalog access becomes available.
 
 ## Result experiences
 
@@ -163,7 +164,7 @@ The tools do not activate the camera or access a private photo.
 Other browsers use the standard UI without these tools.
 `set_wine_scan_mode` switches between `bottle` and `shelf`.
 Shelf processing tools are available when `ShelfScanner` is mounted with an upstream matcher.
-The shelf example uses the bundled public Wikimedia photo. State tools do not expose photo data.
+The shelf examples use three photographs supplied by the project owner. State tools do not expose photo data.
 
 ## Source authority
 

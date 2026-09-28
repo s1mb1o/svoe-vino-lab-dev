@@ -11,7 +11,7 @@ export default defineEventHandler(async event => {
   return {
     predictionMode: mode,
     apiAvailable,
-    catalogMode: 'demo',
+    catalogMode: 'source-fallback',
     maxImageBytes: MAX_IMAGE_BYTES,
     shelfAvailable: apiAvailable && mode === 'upstream' && hasGroupMatchEndpoint(config.predictionEndpoint),
   }

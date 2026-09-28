@@ -4,6 +4,34 @@ export const MAX_SHELF_BOTTLES = 100
 export const SHELF_TIMEOUT_MS = 330000
 export type BottleBox = [number, number, number, number]
 
+export interface ShelfExample {
+  readonly id: string
+  readonly src: string
+  readonly fileName: string
+  readonly alt: string
+}
+
+export const SHELF_EXAMPLES = [
+  {
+    id: 'abrau-close',
+    src: '/reference/shelf-example-abrau-close.webp',
+    fileName: 'Пример полки Абрау-Дюрсо крупным планом.webp',
+    alt: 'Полка с бутылками Абрау-Дюрсо крупным планом',
+  },
+  {
+    id: 'abrau-wide',
+    src: '/reference/shelf-example-abrau-wide.webp',
+    fileName: 'Пример широкой полки Абрау-Дюрсо.webp',
+    alt: 'Широкая полка с бутылками Абрау-Дюрсо и другими напитками',
+  },
+  {
+    id: 'sparkling-display',
+    src: '/reference/shelf-example-sparkling-display.webp',
+    fileName: 'Пример выкладки игристых вин.webp',
+    alt: 'Магазинная выкладка с бутылками и банками игристых вин',
+  },
+] as const satisfies readonly ShelfExample[]
+
 export interface GroupWineCard {
   name: string
   page_url: string

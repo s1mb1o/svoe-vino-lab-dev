@@ -1,6 +1,6 @@
 import { computed, onScopeDispose, ref, shallowRef } from 'vue'
 import { MAX_IMAGE_BYTES } from '#shared/catalog'
-import { SHELF_TIMEOUT_MS, groupCandidateWine, validShelfResult, type ShelfResult } from '#shared/shelf'
+import { SHELF_EXAMPLES, SHELF_TIMEOUT_MS, groupCandidateWine, validShelfResult, type ShelfExample, type ShelfResult } from '#shared/shelf'
 
 interface Dependencies {
   fetch?: typeof fetch
@@ -85,7 +85,7 @@ export function useShelfScanner(dependencies: Dependencies = {}) {
     if (!bottle || phase.value !== 'ready') throw new Error('Select a bottle from the current shelf result.')
     selectedId.value = id
   }
-  async function example() {
+  async function example(example: ShelfExample = SHELF_EXAMPLES[0]!) {
     reset()
     const current = generation
     controller = new AbortController()
@@ -93,10 +93,10 @@ export function useShelfScanner(dependencies: Dependencies = {}) {
     const timer = setTimeout(() => active.abort(), 10000)
     exampleLoading.value = true
     try {
-      const response = await request('/reference/shelf-example.jpg', { signal: active.signal })
+      const response = await request(example.src, { signal: active.signal })
       if (!response.ok) throw new Error('Example unavailable')
       const blob = await response.blob()
-      if (current === generation) await select([new File([blob], 'Пример винной полки.jpg', { type: 'image/jpeg' })])
+      if (current === generation) await select([new File([blob], example.fileName, { type: 'image/webp' })])
     } catch {
       if (current === generation) { error.value = 'Пример не загрузился. Выберите свою фотографию.'; phase.value = 'error' }
     } finally { clearTimeout(timer); if (current === generation) { exampleLoading.value = false; controller = undefined } }

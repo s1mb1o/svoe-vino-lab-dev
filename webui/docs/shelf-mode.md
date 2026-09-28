@@ -16,7 +16,7 @@ Show `ShelfUnavailable` when the matcher configuration is absent or invalid.
 
 Preserve the existing visual identity, mobile layout, and single-bottle behavior.
 A mode change MUST discard the previous mode photo, result, and pending request.
-The shelf mode accepts a camera photo, one file, or the public example photo.
+The shelf mode accepts a camera photo, one file, or one of the owner-supplied example photos.
 Use the existing JPEG, PNG, WebP, and 10 MiB upload limits.
 Automatically submit a valid photo to `POST /v1/group/match` on the portal origin.
 Show progress, cancellation, retry, replacement, and an explicit empty result.

@@ -3,6 +3,7 @@ import { effectScope, type EffectScope } from 'vue'
 import { useShelfScanner } from '../app/composables/useShelfScanner'
 import wines from '../server/data/wines.json'
 import { MAX_IMAGE_BYTES } from '../shared/catalog'
+import { SHELF_EXAMPLES } from '../shared/shelf'
 
 const scopes: EffectScope[] = []
 const preview = 'data:image/jpeg;base64,/9j/2Q=='
@@ -137,12 +138,15 @@ describe('shelf UI state', () => {
     expect(scanner.phase.value).toBe('ready')
   })
 
-  it('uses the public example through the same group-match route', async () => {
+  it.each(SHELF_EXAMPLES)('uses owner-supplied shelf example $id through the same group-match route', async example => {
     const request = vi.fn().mockResolvedValueOnce(new Response('example')).mockResolvedValueOnce(Response.json(shelf))
     const { scanner } = setup(request)
-    await scanner.example()
+    await scanner.example(example)
 
-    expect(request.mock.calls.map(call => call[0])).toEqual(['/reference/shelf-example.jpg', '/v1/group/match'])
+    expect(request.mock.calls.map(call => call[0])).toEqual([example.src, '/v1/group/match'])
+    const uploaded = request.mock.calls[1]![1].body.get('image') as File
+    expect(uploaded.name).toBe(example.fileName)
+    expect(uploaded.type).toBe('image/webp')
     expect(scanner.phase.value).toBe('ready')
   })
 

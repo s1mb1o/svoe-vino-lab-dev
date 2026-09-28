@@ -2,6 +2,25 @@
 
 ## 2026-09-29
 
+### Complete result metadata fallback
+
+- Added an exact server-side wine lookup through the official `api.vino-svoe.ru` JSON endpoint.
+- Kept the 12 local records as the mock and fast metadata path.
+- Validated the returned slug, bottle image path, fields, redirects, response size, and timeout.
+- Normalized source cards into the existing Web UI wine contract.
+- Changed `catalogMode` from `demo` to `source-fallback`.
+- Added source metadata normalization and failure tests.
+- Verified the real Massandra slug through the local production build.
+- Verified all 150 tests, type checks, and the production build.
+
+### Owner-supplied shelf examples
+
+- Replaced the Wikimedia shelf example with three unique photographs from the project owner.
+- Added an accessible example selector before group matching.
+- Converted the photographs to metadata-free WebP files below the upload limit.
+- Kept every example on the same `/v1/group/match` path as an uploaded shelf photograph.
+- Verified all 141 tests, type checks, and the production build.
+
 ### Production response status repair
 
 - Preserved actionable matcher status codes through the single-bottle prediction proxy.

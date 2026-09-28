@@ -1,6 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { MAX_IMAGE_BYTES } from '../shared/catalog'
+import { SHELF_EXAMPLES } from '../shared/shelf'
 
 const publicFile = (path: string) => fileURLToPath(new URL(`../public/${path}`, import.meta.url))
 
@@ -29,5 +31,14 @@ describe('PWA assets', () => {
     await expect(pngSize('icons/pwa-512.png')).resolves.toEqual({ width: 512, height: 512 })
     await expect(pngSize('icons/pwa-maskable-512.png')).resolves.toEqual({ width: 512, height: 512 })
     await expect(pngSize('icons/apple-touch-icon.png')).resolves.toEqual({ width: 180, height: 180 })
+  })
+
+  it('provides each owner-supplied shelf example as an uploadable WebP file', async () => {
+    for (const example of SHELF_EXAMPLES) {
+      const image = await readFile(publicFile(example.src.slice(1)))
+      expect(image.subarray(0, 4).toString()).toBe('RIFF')
+      expect(image.subarray(8, 12).toString()).toBe('WEBP')
+      expect(image.byteLength).toBeLessThan(MAX_IMAGE_BYTES)
+    }
   })
 })

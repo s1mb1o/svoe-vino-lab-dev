@@ -48,13 +48,13 @@ The source alcohol value `108%` for `muskat-ottonel-gusev` is invalid. The UI om
 
 ## Shelf example
 
-- Local file: `public/reference/shelf-example.jpg`.
-- Source: [Sekt-im-supermarkt.jpg](https://commons.wikimedia.org/wiki/File:Sekt-im-supermarkt.jpg).
-- Author: Ralf Roletschek.
-- License: [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/).
-- Copy: the public 1280 × 853 Wikimedia thumbnail. No other image edit was applied.
-- SHA-256: `ccc6c12e2e2a79976650b86e8c42b4f33c6698022c2e8f25ea3fd5003e940d0e`.
+- Source: the project owner supplied four photographs on 2026-09-29.
+- The fourth photograph was a byte-for-byte duplicate of the first photograph. The repository stores one copy.
+- The conversion reduced each unique photograph to 2560 by 1928 pixels.
+- The conversion used WebP quality 86 and removed embedded metadata.
+- `public/reference/shelf-example-abrau-close.webp`: SHA-256 `2bec4ea50d91f40778cf74a347b27196523a061723135c18d07c0e84adb0dc1a`.
+- `public/reference/shelf-example-abrau-wide.webp`: SHA-256 `825aba3b4c122f56fed2467c4e50bb36a5c51d8b3c35e115f17042ed03f52dc8`.
+- `public/reference/shelf-example-sparkling-display.webp`: SHA-256 `530b8026aadd2327000afec44b618514d8b74cce0847c57ca0fed6d7a2555983`.
 
-The UI shows author, source, license, and size-change attribution.
-The photo shows a German supermarket shelf. It does not establish a Russian wine identity.
-The example verifies segmentation. Wine identification remains explicitly mocked.
+The UI lets the visitor select any of the three unique photographs.
+The selected photograph uses the normal group-match route.

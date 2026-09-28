@@ -87,7 +87,10 @@ Do not display a confidence score. The evaluator response does not provide one.
 Previous local wine detail routes MUST redirect to the corresponding source portal page.
 Preserve `POST /v1/eval/predict`: one multipart file named `image`, response `{"slug":"..."}`.
 Preserve the existing mock and upstream provider configuration.
-Use the local metadata fixture to resolve the demo result. Do not display the fixture as a catalog.
+Use the local metadata fixture to resolve the demo result.
+Resolve other valid slugs through the official source JSON API.
+Validate and normalize source metadata on the portal server.
+Do not display either metadata source as a catalog.
 Photos MUST remain in request memory. Do not write photos to disk.
 
 ## Acceptance
@@ -105,8 +108,9 @@ Photos MUST remain in request memory. Do not write photos to disk.
 
 ## Limits
 
-Real prediction is not available yet.
-The metadata fixture contains 12 wines. Unknown slugs use an explicit metadata fallback.
+Real prediction requires a configured upstream matcher.
+The metadata fixture contains 12 wines for the mock and fast local lookup.
+An unknown slug uses the official source API and then the explicit metadata fallback if no valid card is available.
 Physical camera capture needs a supported phone and browser.
 
 ## Legacy retailer integration

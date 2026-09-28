@@ -66,11 +66,15 @@ The `shelfAvailable` field is `false` when matcher readiness fails.
 
 - `GET /api/config`: return prediction mode, matcher availability, upload limit, catalog mode, and `shelfAvailable`.
 - `GET /api/wines`: return demo wine records.
-- `GET /api/wines/<slug>`: return one exact catalog match or HTTP 404.
+- `GET /api/wines/<slug>`: return one exact local or source catalog match, or HTTP 404.
 - `GET /api/health`: return basic service status.
 
 Catalog routes are portal-specific. They are not part of the evaluator contract.
-The first release keeps catalog mode as `demo`, even when prediction mode is `upstream`.
+The portal reports catalog mode `source-fallback`.
+It checks the 12 local records first.
+It requests an unknown valid slug from `https://api.vino-svoe.ru/v1/wines/<slug>`.
+The request has a 2.5-second timeout, a bounded response, no redirects, and a fixed host.
+The portal validates the returned slug and image path before it returns the normalized card.
 
 ## Photo search page
 

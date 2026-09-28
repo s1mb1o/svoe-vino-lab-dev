@@ -1,5 +1,26 @@
 # Research log
 
+## Complete result metadata fallback, 2026-09-29
+
+The upstream recognizer can return more wine slugs than the 12 local Web UI records contain.
+The source portal provides `GET https://api.vino-svoe.ru/v1/wines/<slug>`.
+The endpoint returned the complete card for `massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10`.
+The response includes the title, producer, region, grapes, style, description, and source image path.
+Decision: keep the local records as the first lookup.
+Decision: request an unknown valid slug from the official source JSON API.
+Decision: use a fixed source host and reject redirects, mismatched slugs, untrusted image paths, oversized responses, and invalid records.
+Decision: keep the existing explicit UI fallback when source metadata is unavailable.
+
+## Owner-supplied shelf examples, 2026-09-29
+
+The project owner supplied four supermarket shelf photographs.
+The first and fourth files had the same SHA-256 value.
+Decision: store the three unique photographs.
+Decision: replace the Wikimedia example and its attribution.
+Decision: convert each photograph to a 2560 by 1928 WebP file.
+Decision: remove embedded metadata during conversion.
+Decision: let the visitor select one example before the portal sends it through the normal group-match route.
+
 ## Production resilience verification, 2026-09-29
 
 A bounded public load test sent one, four, eight, and twelve concurrent recognition requests.

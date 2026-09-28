@@ -9,6 +9,7 @@
 5. Run `npm run test:contract` against the production mock endpoint.
 
 The state tests check automatic submission, single-result resolution, metadata failures, cancellation, stale responses, retries, invalid files, and missing configuration.
+The metadata tests check official source normalization, exact slug lookup, fixed image hosting, invalid records, response limits, and timeout handling.
 The API health tests check URL derivation, response validation, network failure, and timeout behavior.
 The PWA tests check the Nuxt module configuration, icon dimensions, and API cache exclusions.
 The search-discovery tests check the age overlay, canonical metadata, crawl files, permanent redirects, and static cache policy.
@@ -21,6 +22,7 @@ The contract check also checks the home page, compatibility redirects, metadata 
 - Check the layout on a phone and desktop.
 - Select a file. Confirm the search starts once without a second submit action.
 - Check the photo preview, progress, and one result with a direct source link.
+- Use a recognized slug that is not in `server/data/wines.json`. Confirm that its source title and bottle image appear.
 - Drop a photo. Confirm the same flow.
 - Select a photo with the camera input on a physical phone.
 - Replace a pending photo. Confirm the older response cannot change the result.
@@ -55,8 +57,9 @@ See `docs/verification-2026-09-15.md` for current results.
 ## Results on 2026-09-29
 
 - Type checks passed.
-- All 138 tests passed in 11 files.
+- All 150 tests passed in 12 files.
 - The production build passed.
+- The three owner-supplied shelf examples passed WebP signature and upload-limit checks.
 - Focused tests confirmed that the prediction proxy preserves actionable matcher status codes.
 - A bounded production load test passed through eight concurrent recognition requests.
 - The production matcher stayed healthy after the load test.
@@ -109,7 +112,8 @@ The product demo did not invoke a browser location permission prompt.
 ## Shelf checks
 
 - Select «Вся полка». Confirm that the single-bottle state is cleared.
-- Upload a shelf photo or use «Попробовать на примере».
+- Select each of the three owner-supplied examples. Confirm that the large preview follows the selected thumbnail.
+- Run each selected example or upload a shelf photo.
 - Confirm that the browser sends one request to same-origin `/v1/group/match`.
 - Confirm that the server derives the upstream group URL from `NUXT_PREDICTION_ENDPOINT`.
 - Confirm that bottle masks and numbered controls track the photo dimensions.
@@ -126,5 +130,5 @@ The product demo did not invoke a browser location permission prompt.
 - Check phone touch controls, zoom scrolling, the bottom sheet, dark mode, and reduced motion.
 
 Automated checks cover group URL derivation, one-request matching, response limits, normalized boxes, malformed data, timeout, cancellation, selection, and stale results.
-The public example has source and license attribution in `docs/assets.md`.
+The owner-supplied examples have conversion details and hashes in `docs/assets.md`.
 Manual camera and visual checks remain unverified unless explicitly recorded in the verification report.

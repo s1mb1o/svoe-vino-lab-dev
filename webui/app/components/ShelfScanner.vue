@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BottleBox } from '#shared/shelf'
+import { SHELF_EXAMPLES, type BottleBox } from '#shared/shelf'
 const scanner = useShelfScanner()
 const { file, result, phase, error, selectedId, selectedBottle, selectedMatch, selectedWine: wine, portalUrl, busy, displayImage, exampleLoading } = scanner
 const upload = ref<HTMLInputElement>()
@@ -8,10 +8,13 @@ const dialog = ref<HTMLDialogElement>()
 const dialogHeading = ref<HTMLElement>()
 const zoomed = ref(false)
 const dragging = ref(false)
+const activeExample = ref(0)
+const shelfExample = computed(() => SHELF_EXAMPLES[activeExample.value] || SHELF_EXAMPLES[0]!)
 let returnFocus: HTMLElement | null = null
 
 function choose(event: Event) { const input = event.target as HTMLInputElement; if (input.files?.length) void scanner.select([...input.files]); input.value = '' }
 function drop(event: DragEvent) { dragging.value = false; if (event.dataTransfer?.files.length) void scanner.select([...event.dataTransfer.files]) }
+function runExample() { void scanner.example(shelfExample.value) }
 function boxStyle(box: BottleBox) { return { left: `${box[0] * 100}%`, top: `${box[1] * 100}%`, width: `${(box[2] - box[0]) * 100}%`, height: `${(box[3] - box[1]) * 100}%` } }
 function backdrop(event: MouseEvent) {
   if (event.target !== dialog.value) return
@@ -41,8 +44,14 @@ useShelfTools(scanner)
     <input ref="upload" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-label="Выбрать фотографию полки" @change="choose">
     <input ref="camera" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" tabindex="-1" aria-label="Сфотографировать винную полку" @change="choose">
     <div v-if="!file" class="shelf-upload" :class="{ dragging }" @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="drop">
-      <div class="shelf-upload-copy"><p class="step-label">НЕСКОЛЬКО ВИН НА ОДНОМ ФОТО</p><h2>Вся полка.<br><span>Ваше вино.</span></h2><p>Снимите полку целиком. Мы выделим бутылки — останется нажать на ту, которая вас заинтересовала.</p><div class="upload-actions"><button class="button primary" :disabled="exampleLoading" @click="upload?.click()"><AppIcon name="upload" />Загрузить фото</button><button class="button secondary camera-action" :disabled="exampleLoading" @click="camera?.click()"><AppIcon name="camera" />Снять полку</button></div><p class="upload-hint">JPEG, PNG, WebP · до 10 МБ<span class="desktop-drop-hint"><br>Можно перетащить фото сюда</span></p><button class="example-button" :disabled="exampleLoading" @click="scanner.example()"><span v-if="exampleLoading" class="spinner" /><AppIcon v-else name="image" />Попробовать на примере<AppIcon name="arrow" /></button></div>
-      <div class="shelf-example-visual"><img src="/reference/shelf-example.jpg" alt="Пример фотографии полок с вином" width="1280" height="853"><div class="shelf-example-caption"><AppIcon name="shelf" /><span>Сначала фото — затем выбор бутылки</span></div></div>
+      <div class="shelf-upload-copy"><p class="step-label">НЕСКОЛЬКО ВИН НА ОДНОМ ФОТО</p><h2>Вся полка.<br><span>Ваше вино.</span></h2><p>Снимите полку целиком. Мы выделим бутылки — останется нажать на ту, которая вас заинтересовала.</p><div class="upload-actions"><button class="button primary" :disabled="exampleLoading" @click="upload?.click()"><AppIcon name="upload" />Загрузить фото</button><button class="button secondary camera-action" :disabled="exampleLoading" @click="camera?.click()"><AppIcon name="camera" />Снять полку</button></div><p class="upload-hint">JPEG, PNG, WebP · до 10 МБ<span class="desktop-drop-hint"><br>Можно перетащить фото сюда</span></p><button class="example-button" :disabled="exampleLoading" @click="runExample"><span v-if="exampleLoading" class="spinner" /><AppIcon v-else name="image" />{{ exampleLoading ? 'Загружаем пример…' : 'Попробовать этот пример' }}<AppIcon name="arrow" /></button></div>
+      <div class="shelf-example-visual">
+        <img :src="shelfExample.src" :alt="shelfExample.alt" width="2560" height="1928">
+        <div class="shelf-example-picker" role="group" aria-label="Примеры фотографий полок">
+          <button v-for="(item, index) in SHELF_EXAMPLES" :key="item.id" type="button" :aria-label="`Выбрать пример ${index + 1}`" :aria-pressed="activeExample === index" @click="activeExample = index"><img :src="item.src" alt=""><span>0{{ index + 1 }}</span></button>
+        </div>
+        <div class="shelf-example-caption"><AppIcon name="shelf" /><span>Пример {{ activeExample + 1 }} из {{ SHELF_EXAMPLES.length }} · затем выберите бутылку</span></div>
+      </div>
     </div>
     <div v-else class="shelf-workspace">
       <div class="shelf-toolbar"><div><p class="step-label">ВАША ВИННАЯ ПОЛКА</p><h2>{{ phase === 'ready' ? result?.bottles.length ? 'Выберите бутылку на фото' : 'Бутылки не найдены' : 'Знакомимся с вашей полкой' }}</h2></div><span v-if="result?.bottles.length" class="shelf-count">{{ result.bottles.length }} в кадре</span><button v-if="phase === 'ready'" class="button secondary zoom-button" :aria-pressed="zoomed" @click="zoomed = !zoomed"><AppIcon name="search" />{{ zoomed ? 'Уместить' : 'Увеличить' }}</button><button class="icon-button" aria-label="Убрать фото полки" @click="scanner.reset()"><AppIcon name="close" /></button></div>
@@ -54,7 +63,7 @@ useShelfTools(scanner)
     </div>
     <div v-if="error" class="inline-error" role="alert"><AppIcon name="info" /><span>{{ error }}</span></div>
     <div class="scanner-footnote"><p><AppIcon name="info" />Нажмите на выделенную бутылку, чтобы узнать о вине.</p><span>Фото передаётся сервису распознавания</span></div>
-    <p class="shelf-attribution">Пример: <a href="https://commons.wikimedia.org/wiki/File:Sekt-im-supermarkt.jpg" target="_blank" rel="noopener noreferrer">Ralf Roletschek / Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/2.5/" target="_blank" rel="noopener noreferrer">CC BY 2.5</a>. Уменьшенная копия.</p>
+    <p class="shelf-attribution">Примеры предоставлены владельцем проекта.</p>
 
     <dialog ref="dialog" class="shelf-dialog" aria-labelledby="shelf-wine-heading" @cancel.prevent="scanner.closeBottle()" @click="backdrop" @close="dialogClosed">
       <div class="shelf-dialog-top"><p class="step-label">ВЫБРАННАЯ БУТЫЛКА {{ selectedId.replace('b', '') }}</p><button class="icon-button" aria-label="Закрыть карточку вина" @click="scanner.closeBottle()"><AppIcon name="close" /></button></div>
