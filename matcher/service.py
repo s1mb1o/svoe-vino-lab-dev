@@ -17,6 +17,16 @@ from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend, model_input
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ENV_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 ENV_REFERENCE = re.compile(r"^\{env:(%s)\}$" % ENV_NAME.pattern[1:-1])
+GROUP_LABEL_VIEW = "label"
+GROUP_FULL_WEIGHT = 0.6
+GROUP_LABEL_WEIGHT = 0.4
+GROUP_VIEW_CANDIDATES = 5
+GROUP_MIN_SCORE = 0.75
+GROUP_MIN_FULL_SCORE = 0.78
+GROUP_MIN_LABEL_SCORE = 0.75
+GROUP_MIN_MARGIN = 0.015
+GROUP_STRONG_FULL_SCORE = 0.925
+GROUP_STRONG_LABEL_SCORE = 0.84
 
 
 class ConfigError(ValueError):
@@ -93,6 +103,13 @@ class MockMatcher(_MatcherSettings):
         """Return ranked candidates for each image."""
         return [self.match(image, k) for image in images]
 
+    def match_group_many(self, images: list[bytes], labels: list[bytes],
+                         k: int) -> list[list[tuple[str, float]]]:
+        """Return mock group candidates without changing the mock contract."""
+        if len(images) != len(labels):
+            raise ValueError("group image and label counts differ")
+        return self.match_many(images, k)
+
 
 @dataclass(frozen=True, eq=False)
 class Siglip2Matcher(_MatcherSettings):
@@ -121,11 +138,65 @@ class Siglip2Matcher(_MatcherSettings):
         vectors = self.backend.embed_many([model_input(image) for image in images])
         return [self._rank(vector, k) for vector in vectors]
 
+    def match_group_many(self, images: list[bytes], labels: list[bytes],
+                         k: int) -> list[list[tuple[str, float]]]:
+        """Rank group crops by their bottle and visible-label views."""
+        if len(images) != len(labels):
+            raise ValueError("group image and label counts differ")
+        if not images:
+            return []
+        if GROUP_LABEL_VIEW not in self.backend.bundle.views:
+            return [[] for _ in images]
+        inputs = [model_input(image) for image in images]
+        inputs.extend(model_input(label) for label in labels)
+        vectors = self.backend.embed_many(inputs)
+        count = len(images)
+        return [self._rank_group(full, label, k)
+                for full, label in zip(vectors[:count], vectors[count:])]
+
     def _rank(self, vector, k: int) -> list[tuple[str, float]]:
         """Rank one normalized vector against wines that have cards."""
         cards = self.cards
         ranked = self.backend.bundle.ranked(SIGLIP2_VIEW, vector)
         return [pair for pair in ranked if pair[0] in cards][:k]
+
+    def _rank_group(self, full_vector, label_vector,
+                    k: int) -> list[tuple[str, float]]:
+        """Return a group match only when bottle and label views agree."""
+        cards = self.cards
+        full_ranked = [pair for pair in self.backend.bundle.ranked(
+            SIGLIP2_VIEW, full_vector) if pair[0] in cards][:GROUP_VIEW_CANDIDATES]
+        label_ranked = [pair for pair in self.backend.bundle.ranked(
+            GROUP_LABEL_VIEW, label_vector) if pair[0] in cards][:GROUP_VIEW_CANDIDATES]
+        full = dict(full_ranked)
+        label = dict(label_ranked)
+        full_positions = {slug: index for index, (slug, _) in enumerate(full_ranked, 1)}
+        label_positions = {slug: index for index, (slug, _) in enumerate(label_ranked, 1)}
+        combined = [
+            (slug, (GROUP_FULL_WEIGHT * full[slug]
+                    + GROUP_LABEL_WEIGHT * label[slug]))
+            for slug in full.keys() & label.keys()
+        ]
+        combined.sort(key=lambda pair: (-pair[1], pair[0]))
+        if not combined:
+            return []
+        slug, score = combined[0]
+        margin = score - combined[1][1] if len(combined) > 1 else 1.0
+        views_align = (
+            (full_positions[slug] == 1 and label_positions[slug] <= 3)
+            or (label_positions[slug] == 1 and full_positions[slug] <= 3)
+        )
+        margin_is_clear = margin >= GROUP_MIN_MARGIN
+        views_are_strong = (
+            full[slug] >= GROUP_STRONG_FULL_SCORE
+            and label[slug] >= GROUP_STRONG_LABEL_SCORE
+        )
+        if (not views_align or score < GROUP_MIN_SCORE
+                or full[slug] < GROUP_MIN_FULL_SCORE
+                or label[slug] < GROUP_MIN_LABEL_SCORE
+                or not (margin_is_clear or views_are_strong)):
+            return []
+        return combined[:k]
 
 
 def _mapping(value, label):

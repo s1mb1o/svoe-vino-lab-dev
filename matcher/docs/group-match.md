@@ -50,8 +50,26 @@ The matcher MUST crop each bottle from the normalized photo.
 The matcher MUST replace pixels outside the bottle mask with white pixels.
 The matcher MUST add padding equal to five percent of the bottle width to each crop side.
 The matcher MUST resize each internal crop inside 640 by 960 pixels without enlargement.
-The matcher MUST match every returned bottle crop.
-The SigLIP2 backend SHOULD embed all bottle crops in one request.
+The matcher MUST also make a masked crop of the selected visible label.
+The label crop MUST have eight percent horizontal padding.
+The label crop MUST fit inside 640 by 640 pixels without enlargement.
+The SigLIP2 backend MUST embed the bottle and label crops in one logical batch.
+
+## Group recognition
+
+Group recognition MUST rank the bottle crop against the bundle view `full`.
+It MUST rank the label crop against the bundle view `label`.
+It MUST consider the first five candidates of each view.
+A candidate MUST occur in both lists.
+The group score MUST be 60 percent of the full-view score plus 40 percent of the label-view score.
+The candidate MUST be first in one view and in the first three candidates of the other view.
+The group score MUST be at least 0.75.
+The full-view score MUST be at least 0.78.
+The label-view score MUST be at least 0.75.
+The score margin over the next common candidate MUST be at least 0.015.
+A full-view score of at least 0.925 and a label-view score of at least 0.84 MAY replace the margin rule.
+The matcher MUST return `match: null` when these rules do not accept a candidate.
+These rules MUST NOT change `POST /v1/eval/predict` or `POST /v1/match`.
 
 ## Response
 
@@ -64,7 +82,7 @@ Each bottle MUST contain `id`, `segmentation_score`, `box`, `mask`, and `match`.
 `box` MUST use `[left, top, right, bottom]` coordinates normalized to the returned image.
 `mask` MUST be a cropped transparent PNG data URL.
 The mask dimensions MUST match the pixel box dimensions.
-`match` MUST contain the best `MatchCandidate` or `null` when no catalogue match exists.
+`match` MUST contain the accepted `MatchCandidate` or `null` when the group recognition rules reject the candidates.
 The candidate MUST contain the existing `WineCard` description.
 
 The response MUST order bottles by shelf band and then from left to right.
@@ -86,5 +104,5 @@ The endpoint MUST NOT store masks or bottle crops.
 
 ## Verification
 
-Automated tests MUST cover image normalization, box clamping, mask cropping, visible-label filtering, relative-size filtering, duplicate suppression, ordering, limits, SAM3 validation, SAM3 retry, batch matching, authorization, and the OpenAPI contract.
+Automated tests MUST cover image normalization, box clamping, mask cropping, visible-label filtering, relative-size filtering, label crops, two-view ranking, uncertain-match rejection, duplicate suppression, ordering, limits, SAM3 validation, SAM3 retry, batch matching, authorization, and the OpenAPI contract.
 The existing `/v1/eval/predict` and `/v1/match` contracts MUST remain unchanged.

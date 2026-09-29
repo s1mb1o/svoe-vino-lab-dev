@@ -2,6 +2,10 @@
 
 ## 2026-09-29
 
+- Added group-only bottle and label view ranking.
+- Added a conservative group acceptance gate based on two-view agreement, score, and margin.
+- Changed uncertain group results from forced Top-1 matches to `match: null`.
+- Added matched and unmatched counts to the internal request audit.
 - Added group-only visible-label and relative-size quality filters.
 - Changed the group SAM3 request to one `segment_multi` call for `wine bottle` and `wine label`.
 - Masked background pixels in group matcher crops.

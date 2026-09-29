@@ -412,7 +412,9 @@ Endpoint POST /v1/group/match принимает фотографию стелл
 нормализует фотографию, вызывает `${SAM3_ENDPOINT}/segment_multi` для `wine bottle`
 и `wine label` и распознаёт только бутылки с видимой этикеткой полезного размера.
 Сервис исключает мелкие объекты относительно их ряда и фрагменты у нижнего края.
-SigLIP2 отправляет все оставшиеся crop в одном логическом embedding-запросе.
+For each retained segment, the service makes one bottle crop and one label crop.
+SigLIP2 ranks the crops against the bundle views `full` and `label` in one logical batch.
+The service returns a card only when the two views give a strong matching result.
 
 ~~~bash
 curl --form 'image=@shelf.jpg' \
@@ -462,7 +464,7 @@ curl --form 'image=@shelf.jpg' \
 
 - `box` содержит нормализованные координаты `[left, top, right, bottom]`.
 - `mask` содержит прозрачный PNG, обрезанный по `box`.
-- `match` равен null, если каталог не дал совпадение.
+- `match` is null when the bottle view and label view do not give a reliable common candidate.
 - `detected_count` содержит число валидных детекций `wine bottle` до фильтров качества,
   удаления дублей и лимитов.
 - `truncated` равен true, если лимит 100 бутылок или 6 МиБ визуальных данных исключил

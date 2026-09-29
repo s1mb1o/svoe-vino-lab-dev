@@ -55,6 +55,7 @@ class SegmentedBottle:
     box: tuple[float, float, float, float]
     mask: str
     crop: bytes
+    label_crop: bytes
 
 
 @dataclass(frozen=True)
@@ -103,12 +104,15 @@ def segment_group(image_bytes: bytes, endpoint: str | None,
     candidates = []
     for instance in valid:
         bottle_mask = _instance_mask(image, instance)
-        if bottle_mask is None or _best_label(bottle_mask, labels) is None:
+        best_label = None if bottle_mask is None else _best_label(bottle_mask, labels)
+        if bottle_mask is None or best_label is None:
             continue
         prepared = _prepare_bottle(image, instance, bottle_mask)
         if prepared is None:
             continue
         box, mask, crop = prepared
+        label_crop = _prepare_match_crop(
+            image, best_label[1], padding_ratio=0.08, maximum_size=(640, 640))
         if box[1] >= MAX_EDGE_FRAGMENT_TOP:
             continue
         if any(_box_overlap(box, bottle.box) >= DUPLICATE_IOU
@@ -121,6 +125,7 @@ def segment_group(image_bytes: bytes, endpoint: str | None,
             box=box,
             mask=mask_url,
             crop=crop,
+            label_crop=label_crop,
         ))
 
     candidates = _filter_relative_scale(candidates)
@@ -389,7 +394,7 @@ def _best_label(bottle, labels):
             continue
         score = instance["score"] * containment
         if score > best_score:
-            best = label
+            best = (instance, label)
             best_score = score
     return best
 
@@ -435,7 +440,20 @@ def _prepare_bottle(image: Image.Image, instance: dict, prepared=None):
     mask_output = BytesIO()
     overlay.save(mask_output, "PNG")
 
-    padding = max(2, round((right - left) * 0.05))
+    crop = _prepare_match_crop(
+        image, prepared, padding_ratio=0.05, maximum_size=(640, 960))
+    return (
+        (left / width, top / height, right / width, bottom / height),
+        mask_output.getvalue(),
+        crop,
+    )
+
+
+def _prepare_match_crop(image: Image.Image, prepared, *, padding_ratio, maximum_size):
+    """Return one masked JPEG crop for matching."""
+    (left, top, right, bottom), mask = prepared
+    width, height = image.size
+    padding = max(2, round((right - left) * padding_ratio))
     crop_box = (
         max(0, left - padding),
         max(0, top - padding),
@@ -446,15 +464,11 @@ def _prepare_bottle(image: Image.Image, instance: dict, prepared=None):
     crop_mask = Image.new("L", crop.size, 0)
     crop_mask.paste(mask, (left - crop_box[0], top - crop_box[1]))
     crop = Image.composite(crop, Image.new("RGB", crop.size, "white"), crop_mask)
-    if crop.width > 640 or crop.height > 960:
-        crop.thumbnail((640, 960), Image.Resampling.LANCZOS)
+    if crop.width > maximum_size[0] or crop.height > maximum_size[1]:
+        crop.thumbnail(maximum_size, Image.Resampling.LANCZOS)
     crop_output = BytesIO()
     crop.save(crop_output, "JPEG", quality=92)
-    return (
-        (left / width, top / height, right / width, bottom / height),
-        mask_output.getvalue(),
-        crop_output.getvalue(),
-    )
+    return crop_output.getvalue()
 
 
 def _box_overlap(a, b) -> float:

@@ -130,6 +130,11 @@ class GroupSegmentationTest(unittest.TestCase):
             self.assertGreater(red, 240)
             self.assertGreater(green, 240)
             self.assertGreater(blue, 240)
+        with Image.open(BytesIO(result.bottles[0].label_crop)) as label_crop:
+            self.assertEqual(label_crop.format, "JPEG")
+            self.assertEqual(label_crop.mode, "RGB")
+            self.assertGreater(label_crop.width, 10)
+            self.assertGreater(label_crop.height, 12)
 
     def test_bottles_without_a_usable_label_are_not_returned(self):
         answer = sam3_answer()
@@ -332,6 +337,8 @@ class GroupEndpointTest(unittest.TestCase):
                    for path in (root / "requests").rglob("request.json")]
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0]["response"]["detected_count"], 3)
+        self.assertEqual(records[0]["response"]["matched_count"], 2)
+        self.assertEqual(records[0]["response"]["unmatched_count"], 0)
         self.assertEqual(len(records[0]["response"]["bottles"]), 2)
 
         self.assertEqual(self.post(port, token=None)[0], 401)
