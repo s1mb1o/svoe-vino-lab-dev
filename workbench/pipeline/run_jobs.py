@@ -8,7 +8,7 @@ docs/plans/34_pipeline-section.md.
     GET  /api/run-jobs                       the job of each pipeline
     POST /api/run-jobs                       start a job: {"configuration", "set",
                                              "limit", "workers", "use_cache",
-                                             "use_barcode"}, or the self-test of one
+                                             "use_barcode", "device_ip"}, or the self-test of one
                                              embedding: {"selftest", "limit",
                                              "workers", "use_cache"}
     POST /api/run-jobs/<name>/stop           stop a job (SIGTERM)
@@ -172,6 +172,7 @@ def job_state(directory):
            "todo": progress.get("todo", start.get("todo")), "done": progress.get("done", 0),
            "errors": progress.get("errors", 0), "limit": start.get("limit"),
            "workers": start.get("workers"), "started_t": start.get("t"),
+           "device_ip": start.get("device_ip"),
            "started_at": start.get("time"), "ended_t": final.get("t"),
            "run_id": final.get("run_id") or named.get("run_id"),
            "message": final.get("message")}
@@ -265,6 +266,7 @@ def configurations_view(settings, jobs_dir, set_name):
         out.append({"name": name, "backend": pipeline.backend if pipeline else None,
                     "runnable": can, "reason": reason,
                     "workers": default_workers(pipeline), "barcode": has_barcode(pipeline),
+                    "device_ip": bool(pipeline and pipeline.device_ip),
                     "job": job(jobs_dir, name)})
     return {"set": set_name, "queries": query_count(settings.db_path, set_name),
             "configurations": out}
@@ -325,6 +327,10 @@ def start(settings, jobs_dir, body, runs_dir=None):
         return 404, {"error": "config.yaml has no pipeline %s" % name}
     except embeddings.ConfigError as exc:
         return 400, {"error": "pipeline %s: %s" % (name, exc)}
+    try:
+        device_ip = pipelines.bind_device_ip(pipeline, body.get("device_ip"))
+    except embeddings.ConfigError as exc:
+        return 400, {"error": str(exc)}
     can, reason = runnable(pipeline, None, settings.db_path)
     if not can:
         return 400, {"error": "%s (backend %s): %s" % (name, pipeline.backend, reason)}
@@ -344,6 +350,8 @@ def start(settings, jobs_dir, body, runs_dir=None):
         command += ["--limit", str(limit)]
     if workers:
         command += ["--workers", str(workers)]
+    if device_ip:
+        command += ["--device-ip", device_ip]
     if not use_cache:
         command.append("--no-cache")
     if not use_barcode and has_barcode(pipeline):
@@ -360,7 +368,8 @@ def start(settings, jobs_dir, body, runs_dir=None):
                                        stderr=subprocess.STDOUT, cwd=embeddings.ROOT,
                                        start_new_session=True)
         _PROCESSES[directory] = process
-    return 202, {"name": name, "set": set_name, "state": "running", "pid": process.pid}
+    return 202, {"name": name, "set": set_name, "state": "running", "pid": process.pid,
+                 "device_ip": device_ip}
 
 
 def start_selftest(settings, jobs_dir, body, runs_dir=None):
@@ -373,6 +382,8 @@ def start_selftest(settings, jobs_dir, body, runs_dir=None):
         return 400, {"error": "selftest MUST name an entry of embeddings"}
     if body.get("configuration") is not None or body.get("set") is not None:
         return 400, {"error": "a self-test takes no configuration and no set"}
+    if body.get("device_ip") is not None:
+        return 400, {"error": "device_ip is not valid for a self-test"}
     try:
         limit = _whole(body.get("limit"), 1, 10 ** 7, "limit")
         workers = _whole(body.get("workers"), 1, MAX_WORKERS, "workers")

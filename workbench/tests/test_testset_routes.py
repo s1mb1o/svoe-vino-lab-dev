@@ -294,5 +294,29 @@ class NewSetRouteTest(unittest.TestCase):
         self.assertEqual(self.request("/api/testset-new")[0], 405)
 
 
+class RenameSetRouteTest(unittest.TestCase):
+    """`POST /api/testset-rename` renames the populated set of the page."""
+    setUp, tearDown = TestsetRoutesTest.setUp, TestsetRoutesTest.tearDown
+    request, post = TestsetRoutesTest.request, TestsetRoutesTest.post
+
+    def test_a_populated_set_is_available_under_its_new_name(self):
+        status, out = self.post("/api/testset-rename", name="test-1")
+        self.assertEqual((status, out),
+                         (200, {"ok": True, "set": "test-1", "old_set": "my"}))
+        self.assertEqual(self.request("/api/testset?set=my")[0], 404)
+        status, text = self.request("/api/testset?set=test-1")
+        self.assertEqual(status, 200, text)
+        view = json.loads(text)
+        self.assertEqual((view["set"], view["counts"]["photos"]),
+                         ("test-1", len(PHOTOS)))
+
+    def test_bad_same_and_present_names_are_refused(self):
+        self.assertEqual(self.post("/api/testset-rename", name="My")[0], 400)
+        self.assertEqual(self.post("/api/testset-rename", name="my")[0], 400)
+        self.assertEqual(self.post("/api/testset-new", name="two")[0], 200)
+        self.assertEqual(self.post("/api/testset-rename", name="two")[0], 409)
+        self.assertEqual(self.request("/api/testset-rename")[0], 405)
+
+
 if __name__ == "__main__":
     unittest.main()

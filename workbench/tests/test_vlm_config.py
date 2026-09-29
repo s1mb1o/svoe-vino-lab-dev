@@ -145,9 +145,9 @@ class ClusterRulesTest(unittest.TestCase):
                                                     self.config)
         self.assertEqual((first.name, second.name), ("local", "cloud"))
 
-    def test_the_default_entry_is_qwen3_5_9b(self):
+    def test_the_default_entry_is_qwen3_5_9b_nvfp4(self):
         first, second = cluster_rules.stage_entries({}, load("config.yaml"))
-        self.assertEqual((first.name, second.name), ("qwen3.5-9b", "qwen3.5-9b"))
+        self.assertEqual((first.name, second.name), ("qwen3.5-9b-nvfp4", "qwen3.5-9b-nvfp4"))
 
     def test_an_old_key_is_refused(self):
         for key in cluster_rules.OLD_VLM_KEYS:

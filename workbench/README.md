@@ -4,9 +4,9 @@ Test data for the Svoe Vino wine scanner.
 
 - `eval/` is the official evaluation set from the organizers. It holds 3 photos.
 - `my/` is a larger set built by this project. It holds real-world photos found on the web.
-- `dataset/abobamakers/` is an independently labelled 54-photo shop set from the
-  AbobaMakers public repository. Read the
-  [benchmark report](docs/reports/2026-09-29_abobamakers-dataset-benchmark.md).
+- `dataset/test-1/` is an independently labelled 54-photo shop set from a public
+  source repository. Read the
+  [benchmark report](docs/reports/2026-09-29_test-1-dataset-benchmark.md).
 - `scripts/` holds the five pipeline stages and the driver.
 - `work/` holds the state database, the downloaded candidates, and the logs. It is disposable.
 - `config.yaml` holds the paths that point out of this project.
@@ -399,9 +399,9 @@ bytes the lab holds already, for example as a patch, keeps that file. `--source`
 another directory of the sets. `import_testset.py --set <name> <dir>` imports one set.
 Read [plan 12](docs/plans/12_testsets-benchmark.md).
 
-The separately reviewed set `dataset/abobamakers/` has 54 public shop photos: 35 with a
+The separately reviewed set `dataset/test-1/` has 54 public shop photos: 35 with a
 catalogue `wine_slug`, 13 confirmed no-match products, and 6 unresolved multi-product
-scenes. Import it with `pipeline/import_testset.py --set abobamakers`. The report also
+scenes. Import it with `pipeline/import_testset.py --set test-1`. The report also
 compares three current recognition profiles and the three WineHack catalogue files.
 
 ```bash
@@ -444,6 +444,10 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   `Create`, the page shows the new set; it is the last set of the combobox. The row of
   `test_set` has `source_dir` `the page /testset` and an `edited_at`, so
   `import_testset.py` does not overwrite it without `--force`. No route deletes a set.
+- `Rename…` beside `Run>` opens the same validated name dialog for the current set. A
+  successful `POST /api/testset-rename` keeps every photo, label, photo comment, variant
+  group, and the place of the set in the selector; a name that another set uses is
+  refused.
 - One row for each `Active` and `Disabled` wine, and one row for each place that holds a
   photo of the set, also when its wine is `Removed` or is not in `wine_catalog`. The first
   row is `No Match` (the place `__null__`), and no filter, sort, or search takes it away.
@@ -618,7 +622,8 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   puts the crop in a white square, and resizes it to 224 by 224 pixels. The second entry
   applies the same white square and size to the present SAM3 package derivative. Each
   entry has only the `full` view. Read [plan 77](docs/plans/77_android-embeddings.md).
-  The key `pipeline` has permanent entries with the same two names. The Testset `Run>`
+  The key `pipeline` has the entries `android-siglip2-base-224-dis-seg` and
+  `android-siglip2-base-224-sam3-seg`. The embedding index names stay as listed above. The Testset `Run>`
   dialog can repeat each benchmark. Neither pipeline has a `barcode` step. The DIS
   pipeline uses one worker because one LiteRT interpreter processes one photo at a time.
 - The inputs are the images of the Active wines. `main_patched` replaces `main`. A file
@@ -933,8 +938,8 @@ MAY hold `key` and `max_tokens`, and holds no other key:
 
 | Entry | Service | Key |
 |---|---|---|
-| `qwen3.5-9b-nvfp4` | gx10 gateway; the image descriptions of plan 26 | none |
-| `qwen3.5-9b` | gx10 gateway; stage 1 of the cluster rules | none |
+| `qwen3.5-9b-nvfp4` | gx10 gateway (pinned); the image descriptions of plan 26; the default entry of the cluster rules since 2026-09-29 | none |
+| `qwen3.5-9b` | gx10 gateway (llama.cpp, on demand, ttl 1 h since 2026-09-29); the default entry of the cluster rules until 2026-09-29 | none |
 | `qwen3-vl-32b` | gx10 gateway; pairwise wine-identity checks | none |
 | `qwencloud-qwen3.8-max` | QwenCloud Token Plan; stage 2 of the cluster rules | `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}` |
 | `qwencloud-qwen3.8-flash` | QwenCloud Token Plan | `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}` |
@@ -1154,6 +1159,16 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   grid of the candidates of each bottle in place of the candidate strip. Each photo of a
   run lands in the prod request archive. Read
   [plan 83](docs/plans/83_matcher-api-pipelines.md).
+- Two pipelines call the debug HTTP server of the Android application (plan 86):
+  `android-device-eval-predict` calls `/v1/eval/predict`, and
+  `android-device-match-k20` calls `/v1/match?k=20`. Their URL contains
+  `{device_ip}`, and their key `device_ip: true` makes New Run show a `device IPv4`
+  field. The dialog validates the IPv4 address and keeps its last value in the browser.
+  The runner replaces the placeholder before it creates the HTTP backend. Use
+  `--device-ip <address>` with `remote_run.py` or `run_job.py`. Use `127.0.0.1` after
+  `adb forward tcp:18088 tcp:18088` when the Wi-Fi network blocks incoming connections
+  to the phone. Both pipelines use one worker and no barcode step. Read
+  [plan 86](docs/plans/86_android-device-http-evaluation.md).
 - `embedding_run.py` makes a run of a pipeline of the backend `embedding` (plan 33; owner
   answers of 2026-09-25T23:24:20+0300, 23:35:19, and 2026-09-26T00:12:24). The key
   `embedding` of the pipeline names an entry of `embeddings:`, and that entry needs its
@@ -1178,7 +1193,7 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   `~/.venvs/svoe-vino-lab/bin/python`. The dialog `Run>` starts such a pipeline with
   `embedding_python` (plan 34); a pipeline whose entry has no index is disabled with the
   note `no index: build it on /embedding`. `config.yaml` holds two such pipelines,
-  `siglip2-p256-as-is` and `siglip2-p256-crop`, of the entry
+  `siglip2-p256` and `siglip2-p256-crop`, of the entry
   `gx10-siglip2-so400m-patch16-naflex-p256` (next bullet). The first pipeline of that
   entry (owner answer of 2026-09-26T00:15:17) had the name of the entry; the owner removed
   it at about 01:07, and its 2 runs count as `no pipeline` (owner answer of 01:19:00).
@@ -1196,7 +1211,20 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   `scripts/benchmark_*.py` do not update the index. Read
   [plan 59](docs/plans/59_rebuild-embeddings-on-run.md).
 
-- `barcode-rerank-siglip2-512-crop-label` adds a second retrieval tower to
+- `barcode-rerank-siglip2-512-seg`, `barcode-rerank-siglip2-p512-seg`, and
+  `barcode-rerank-siglip2-p1024-seg` combine barcode lookup, a segmented package on
+  white, and the cluster rerank. Each uses the same embedding index and rerank settings
+  as its `-crop` counterpart, with four workers. The package view runs `segment`,
+  `remove_background`, `white_background`, and `resize`.
+
+- `barcode-rerank-siglip2-512-rot5-seg` uses the same query steps and options as
+  `barcode-rerank-siglip2-512-seg`. Its index
+  `gx10-siglip2-so400m-patch16-512-rot5` embeds each full reference at 0°, 5°, …,
+  355°. Label references stay unrotated. Retrieval takes the best angle for each
+  reference. The cluster builder uses the 0° vectors and keeps both catalogue views.
+  Build the index, clusters, and label rules before the first run (`COMMANDS.md`).
+
+- `barcode-rerank-siglip2-512-crop-label-seg` adds a second retrieval tower to
   `barcode-rerank-siglip2-512-crop`. The first tower keeps the package rectangle and
   searches the `full` vectors. The second tower uses the existing SAM3 label rule,
   applies the catalogue label steps, and searches only the `label` vectors of
@@ -1210,22 +1238,28 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   the first tower in a photo with multiple bottles. The existing label rule uses a
   mask for one label and an enclosing rectangle for multiple body labels.
 
+- Pipeline names use no suffix for the whole photo, `-crop` for the package rectangle
+  with its background, and `-seg` for the package mask on a white background. The same
+  suffixes apply to barcode and rotated-index pipelines. Saved run records keep their
+  original names. `-crop-label-seg` means a package crop with its background plus
+  a separate segmented label on white.
+
 - A pipeline of the backend `embedding` MAY hold the key `views`: the steps of the test
   photo in each view, in the step language of `embeddings`. The first step MAY be another
   step than `segment`. Without the key, the photo gets the steps of the embedding entry.
   The catalogue side stays the index of the entry; a view of the photo is compared with
   the vectors of the same view of the index. Two basic pipelines of
   `gx10-siglip2-so400m-patch16-naflex-p256` use it (owner message of
-  2026-09-26T00:45:33+0300): `siglip2-p256-as-is` (the photo as it is:
+  2026-09-26T00:45:33+0300): `siglip2-p256` (the photo as it is:
   `white_background`, `resize` 1024) and `siglip2-p256-crop` (`segment` of the package
   with the background of its box, `white_background`, `resize` 1024). `white_background`
   does not change an opaque photo; 60 queries of `my` have transparent pixels.
-- `siglip2-p256-crop-seg` (owner message of 2026-09-26T23:24:00+0300, answers of
+- `siglip2-p256-seg` (owner message of 2026-09-26T23:24:00+0300, answers of
   23:27:00) is `siglip2-p256-crop` with `remove_background` after `segment`: the SAM3
   mask of the package makes the background inside the box white. These are the steps of
-  the view `full` of the index. Its barcode twin is `barcode-siglip2-p256-crop-seg`.
+  the view `full` of the index. Its barcode twin is `barcode-siglip2-p256-seg`.
 - Plan 40 adds the same two pipelines for each other entry of `embeddings`:
-  `<short>-as-is` and `<short>-crop`, for example `siglip2-512-crop` of
+  `<short>` and `<short>-crop`, for example `siglip2-512-crop` of
   `gx10-siglip2-so400m-patch16-512` (20 pipelines; YAML anchors hold the steps one time).
   The benchmark of the 22 pipelines is
   [docs/reports/2026-09-26_embedding-benchmark.md](docs/reports/2026-09-26_embedding-benchmark.md).

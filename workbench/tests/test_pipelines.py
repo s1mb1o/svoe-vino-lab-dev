@@ -194,7 +194,7 @@ class ProjectConfigTest(unittest.TestCase):
 
     def test_the_project_config_holds_the_two_basic_pipelines(self):
         settings = pipelines.load()
-        for name, kinds in (("siglip2-p256-as-is", ["white_background", "resize"]),
+        for name, kinds in (("siglip2-p256", ["white_background", "resize"]),
                             ("siglip2-p256-crop", ["segment", "white_background", "resize"])):
             with self.subTest(name=name):
                 pipeline = settings.find(name)
@@ -205,12 +205,13 @@ class ProjectConfigTest(unittest.TestCase):
 
     def test_the_project_config_holds_the_two_android_pipelines_without_barcode(self):
         settings = pipelines.load()
-        for name in ("android-siglip2-base-224-dis-white",
-                     "android-siglip2-base-224-sam3-white"):
+        for name, embedding in (
+                ("android-siglip2-base-224-dis-seg", "android-siglip2-base-224-dis-white"),
+                ("android-siglip2-base-224-sam3-seg", "android-siglip2-base-224-sam3-white")):
             with self.subTest(name=name):
                 pipeline = settings.find(name)
                 self.assertEqual((pipeline.backend, pipeline.embedding, pipeline.workers),
-                                 ("embedding", name, 1))
+                                 ("embedding", embedding, 1))
                 self.assertIsNone(pipeline.barcode)
                 self.assertIsNone(pipeline.views)
 

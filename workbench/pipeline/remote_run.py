@@ -3,7 +3,7 @@ goes to a remote matcher, for example the official recognizer of vino-svoe.ru.
 
 Usage:
     python3 pipeline/remote_run.py --name vino-svoe-search-by-photo --set my
-        [--workers N] [--limit N] [--label TEXT]
+        [--workers N] [--limit N] [--label TEXT] [--device-ip ADDRESS]
 
 The pipeline is an entry of the key `pipeline` of `config.yaml` with
 `backend: svoe-vino-ru` (`pipelines.py`). Its request keys (`url`, `field`, `response`,
@@ -67,6 +67,8 @@ def main(argv=None):
                         help="requests at a time; the default is `workers` of the entry")
     parser.add_argument("--limit", type=int, default=None, help="send the first N queries alone")
     parser.add_argument("--label", default=None, help="a suffix of the run id")
+    parser.add_argument("--device-ip", default=None,
+                        help="IPv4 address that replaces {device_ip} in a device pipeline")
     parser.add_argument("--config", default=embeddings.CONFIG_PATH, help="path of config.yaml")
     parser.add_argument("--runs-dir", default=benchmark.RUNS_DIR, help="the directory of the runs")
     args = parser.parse_args(argv)
@@ -78,6 +80,7 @@ def main(argv=None):
 
     try:
         entry, db_path = find_entry(args.name, args.config)
+        pipelines.bind_device_ip(entry, args.device_ip)
         backend = build_backend(entry)
         run_dir, met = benchmark.run_benchmark(
             db_path, args.set_name, backend, args.runs_dir, workers=args.workers,

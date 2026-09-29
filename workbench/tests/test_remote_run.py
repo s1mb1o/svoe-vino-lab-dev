@@ -59,6 +59,30 @@ class RemoteEntryTest(unittest.TestCase):
         entry = pipelines.Pipeline(remote_entry(top_k=10, query={"limit": 10}))
         self.assertEqual((entry.remote["top_k"], entry.remote["query"]), (10, {"limit": 10}))
 
+    def test_a_device_entry_requires_and_binds_an_ipv4_address(self):
+        entry = pipelines.Pipeline(remote_entry(
+            url="http://{device_ip}:18088/v1/match", device_ip=True))
+        self.assertTrue(entry.device_ip)
+        self.assertEqual(pipelines.bind_device_ip(entry, "192.168.86.42"), "192.168.86.42")
+        self.assertEqual(entry.remote["url"], "http://192.168.86.42:18088/v1/match")
+        for value in (None, "phone.local", "::1", "224.0.0.1"):
+            with self.subTest(value=value):
+                fresh = pipelines.Pipeline(remote_entry(
+                    url="http://{device_ip}:18088/v1/match", device_ip=True))
+                with self.assertRaisesRegex(embeddings.ConfigError, "device_ip"):
+                    pipelines.bind_device_ip(fresh, value)
+
+    def test_a_device_entry_requires_a_matching_url_placeholder(self):
+        wrong = [
+            ({"device_ip": True}, "url MUST contain"),
+            ({"url": "http://{device_ip}:18088/v1/match"}, "device_ip MUST be true"),
+            ({"device_ip": "yes"}, "true or false"),
+        ]
+        for keys, message in wrong:
+            with self.subTest(keys=keys):
+                with self.assertRaisesRegex(embeddings.ConfigError, message):
+                    pipelines.Pipeline(remote_entry(**keys))
+
     def test_a_remote_entry_refuses_views_and_the_keys_of_a_model(self):
         wrong = [
             ({"views": {"full": None}}, "takes no views"),
@@ -93,6 +117,17 @@ class RemoteEntryTest(unittest.TestCase):
         self.assertEqual(entry.remote["url"],
                          "https://api.vino-svoe.ru/v1/wines/search-by-photo")
         self.assertEqual((entry.remote["top_k"], entry.remote["query"]), (10, {"limit": 10}))
+
+    def test_the_project_config_holds_the_two_android_device_entries(self):
+        for name, suffix, response, top_k in (
+                ("android-device-eval-predict", "/v1/eval/predict", "slug-object", 1),
+                ("android-device-match-k20", "/v1/match", "candidates", 20)):
+            with self.subTest(name=name):
+                entry, _ = RR.find_entry(name)
+                self.assertTrue(entry.device_ip)
+                self.assertEqual(entry.remote["url"], "http://{device_ip}:18088" + suffix)
+                self.assertEqual((entry.remote["response"], entry.remote["top_k"]),
+                                 (response, top_k))
 
 
 class RefusalTest(unittest.TestCase):

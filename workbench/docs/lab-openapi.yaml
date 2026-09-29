@@ -1003,6 +1003,20 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/testset-rename:
+    post:
+      tags: [testsets]
+      operationId: renameTestset
+      summary: Rename one test set and keep all of its contents.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TestsetRename" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/runs:
     get:
       tags: [runs]
@@ -1601,6 +1615,14 @@ components:
       properties:
         name: { type: string }
 
+    TestsetRename:
+      type: object
+      additionalProperties: false
+      required: [set, name]
+      properties:
+        set: { type: string }
+        name: { type: string }
+
     RunJobStart:
       type: object
       additionalProperties: false
@@ -1612,6 +1634,7 @@ components:
         workers: { type: integer, minimum: 1, maximum: 32 }
         use_cache: { type: boolean }
         use_barcode: { type: boolean }
+        device_ip: { type: string, format: ipv4 }
       oneOf:
         - required: [configuration, set]
         - required: [selftest]

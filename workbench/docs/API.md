@@ -552,6 +552,14 @@ A run with no embedding answers `embedding: null` and no cluster. An embedding w
 `clusters.json` answers `exists: false`. A file that cannot be read adds `error`.
 Errors: `404` for an unknown run.
 
+#### `POST /api/testset-rename`
+
+Rename one test set without changing its photos, labels, comments, variant groups,
+source directory, or order in the selector. The body is `{set, name}` and the answer is
+`{ok, set, old_set}`. Both names use `0-9`, `a-z`, `_`, and `-` alone. Errors: `400` for
+an invalid or unchanged new name, `404` for an unknown source set, `409` when the new
+name exists, and `503` when the lab database cannot be written.
+
 #### `GET /api/testset-from-run?id=<id>` and `POST /api/testset-from-run`
 
 The dialog `New testset…` of `/runs` of the lab server (plan 44). The route makes a new
@@ -847,6 +855,20 @@ is `running`, `done`, or `failed`. `waiting` tells why the build of `current` wa
 embedding build runs), or is null. `results` holds one `{name, state, counts, message}`
 for each entry that ended; `state` is `done`, `skipped` (for example no index), or
 `failed`. A restart of the server ends the queue and clears it.
+
+## Android device run parameter — plan 86
+
+`GET /api/run-configurations?set=<set>` adds `device_ip: true` to a pipeline that needs
+an Android device address.
+The other pipelines have `device_ip: false`.
+
+`POST /api/run-jobs` MUST include `device_ip` as an IPv4 string for a pipeline with
+`device_ip: true`.
+The server rejects a missing or invalid address.
+The server also rejects this key for another pipeline or for a self-test.
+The runner replaces `{device_ip}` in the configured URL before it creates the HTTP
+backend.
+The resolved URL is in `run.json` under `backend.url`.
 
 ## The self-test of an embedding — plan 67
 

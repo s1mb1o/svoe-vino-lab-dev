@@ -232,6 +232,27 @@ Read-only tests of the rotated embeddings, the bundle version 3, and the catalog
 python3 -m unittest discover -s tests -p 'test_rotated_embeddings.py'
 ```
 
+Fixed-512 5-degree reference experiment. Prerequisites: the embedding venv above,
+catalogue cuts, and the configured GX10 model services. These commands write the
+new index and its cluster rules. The embedding and rule builds call model services.
+The rule builder also needs the credentials of the configured `label_rules` models.
+
+```bash
+caffeinate -i ~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name gx10-siglip2-so400m-patch16-512-rot5 --workers 6
+python3 pipeline/build_clusters.py --name gx10-siglip2-so400m-patch16-512-rot5
+python3 pipeline/build_label_rules.py --name gx10-siglip2-so400m-patch16-512-rot5
+```
+
+After those builds, run the new preset on `my`. Prerequisites: the model services,
+the QR scanner at `QR_SCANNER_ENDPOINT`, and the `my` test set. This command writes
+a run and calls the configured services. It uses the normal caches.
+
+```bash
+caffeinate -i ~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
+    --name barcode-rerank-siglip2-512-rot5-seg --set my --workers 4
+```
+
 Build the clusters of one completed embedding entry:
 ```bash
 ~/.venvs/svoe-vino-lab/bin/python pipeline/build_clusters.py \
@@ -293,6 +314,35 @@ A row of `matcher-group-match` holds the key `group`. The Runs page shows the ph
 the numbered bottles and the candidates of each bottle. Read
 `docs/plans/83_matcher-api-pipelines.md`.
 
+# Android device API
+
+Install and start the Android debug APK first.
+The debug server MUST answer on port 18088.
+Use the phone Wi-Fi IPv4 address when the host can reach it:
+
+```bash
+curl -fsS http://<device-ip>:18088/healthz
+python3 pipeline/remote_run.py --name android-device-eval-predict \
+    --set my --device-ip <device-ip> --limit 10 --label device-smoke
+python3 pipeline/remote_run.py --name android-device-match-k20 \
+    --set my --device-ip <device-ip> --limit 10 --label device-smoke
+```
+
+Use ADB forwarding when the Wi-Fi network blocks incoming connections.
+Set `ANDROID_SERIAL` when more than one device is connected:
+
+```bash
+adb -s "$ANDROID_SERIAL" forward tcp:18088 tcp:18088
+curl -fsS http://127.0.0.1:18088/healthz
+python3 pipeline/remote_run.py --name android-device-eval-predict \
+    --set my --device-ip 127.0.0.1 --limit 10 --label device-smoke
+python3 pipeline/remote_run.py --name android-device-match-k20 \
+    --set my --device-ip 127.0.0.1 --limit 10 --label device-smoke
+```
+
+The New Run dialog shows the same `device IPv4` parameter for these two pipelines.
+Read `docs/plans/86_android-device-http-evaluation.md`.
+
 Make a run of a pipeline of the backend `embedding` on a test set. Its key `embedding`
 names an entry of `embeddings:`, and that entry needs its index. Each photo gets the steps
 of the key `views` of the pipeline, or else the steps of the entry, and its vectors rank
@@ -305,9 +355,22 @@ python3 pipeline/embedding_run.py --name siglip2-p256-crop --set official-real-p
 The run is in `runs/<stamp>-lab-<pipeline>-<set>[-<label>]/`. A view whose first step is
 `segment` waits for SAM3 on gx10 in the first run of a set: one call for each target and
 photo. The answers stay in `data/cache/models/sam3/`, so a later run of the set, with any
-pipeline, sends no SAM3 request. `siglip2-p256-as-is` sends no SAM3 request at all. An entry of the backend
+pipeline, sends no SAM3 request. `siglip2-p256` sends no SAM3 request at all. An entry of the backend
 `local` runs with `~/.venvs/svoe-vino-lab/bin/python`. A run of the set `my` from this Mac
 needs `caffeinate -ims -w <pid>`. Read `docs/plans/33_embedding-run.md`.
+
+Run the three barcode and rerank presets with package background removal on `my`.
+These commands call external model services and write run files and caches. The three
+embedding indexes and their cluster rules MUST be present. The shell environment
+MUST supply `QR_SCANNER_ENDPOINT`. The configured SAM3, SigLIP2, and VLM endpoints MUST
+be available. Each command uses four workers and updates its embedding index first.
+Run the commands one at a time:
+
+```bash
+caffeinate -ims python3 pipeline/run_job.py --name barcode-rerank-siglip2-512-seg --set my
+caffeinate -ims python3 pipeline/run_job.py --name barcode-rerank-siglip2-p512-seg --set my
+caffeinate -ims python3 pipeline/run_job.py --name barcode-rerank-siglip2-p1024-seg --set my
+```
 
 Make the self-test of one embedding: each dataset image is a query in the view `full` of
 the index, and its truth is its own wine. The button `Selftest` of `/embedding` starts the

@@ -42,6 +42,7 @@ import embedding_run  # noqa: E402
 import embeddings  # noqa: E402
 import rotation_index_build  # noqa: E402
 
+# Keep the saved experiment names for its query files and state keys.
 PIPELINES = ("siglip2-p512-crop", "siglip2-p512-as-is")
 OUT = os.path.join(ROOT, "docs", "reports", "rotation-index-p512-2026-09-29")
 
@@ -199,7 +200,9 @@ def main(argv=None):
     state_path = os.path.join(args.out, "state.json")
     state = json.load(open(state_path, encoding="utf-8")) if os.path.exists(state_path) else {}
     for name in args.pipelines:
-        pipeline, db_path = embedding_run.find_pipeline(name, embeddings.CONFIG_PATH)
+        # The lab renamed its presets on 2026-09-29; saved experiment names stay valid.
+        config_name = name.removesuffix("-as-is").replace("-crop-seg", "-seg")
+        pipeline, db_path = embedding_run.find_pipeline(config_name, embeddings.CONFIG_PATH)
         backend = embedding_run.build_pipeline_backend(pipeline, embeddings.CONFIG_PATH)
         base = backend.catalogue
         index_dir = args.index_dir or os.path.join(rotation_index_build.OUT,

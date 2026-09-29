@@ -1317,8 +1317,181 @@ The form of a section:
   `ACTIVE_WORK.md`, `data/catalog/catalog.sqlite3`, new files under
   `data/catalog/images/main/`, and the embedding artifacts that the Add wine workflow
   updates. Temporary research images stay outside the repository.
-- State for task 19: active. The five source screenshots are read-only.
-- Updated for task 19: 2026-09-29T13:20:30+0300.
+- State for task 19: done, not committed. `balaklava-pino-nuar` already represented
+  the photographed Balaklava Pinot Noir Brut and was not duplicated. The web form
+  created four active cards with clean front product images:
+  `__vysokiy-bereg-kaberne-sovinon-2024`,
+  `__fanagoria-avtorskoe-kaberne-saperavi`, `__balaklava-chardonnay-brut`, and
+  `__chateau-tamagne-reserve-extra-brut-2023`. The Chardonnay label is a separate
+  current product from the existing Reserve-labelled `balaklava-bryut-rezerv` card.
+  The dataset now has 2,117 records. All four new cards are visible as `indexed`; their
+  four full and four label derivatives occupy rows 4,653 through 4,660 of the active
+  4,661-item index. Database `quick_check` is OK. The five source screenshots stayed
+  read-only. Port 8168 used its existing process and did not restart.
+- Updated for task 19: 2026-09-29T13:28:23+0300.
+
+- Task 20: continue tasks 18 and 19 for two more photographed bottles shown from the
+  front and back. Check the exact products against the dataset, find clean front bottle
+  images for missing wines, and create their cards through the lab server.
+- Source: owner message of 2026-09-29T13:30:01+0300.
+- Files for task 20: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `data/catalog/catalog.sqlite3`, new files under
+  `data/catalog/images/main/`, and the embedding artifacts that the Add wine workflow
+  updates. Temporary research images stay outside the repository; the four source
+  screenshots stay read-only.
+- State for task 20: done, not committed. Exact-product checks found neither wine in
+  the catalogue; the Mont de Fleur GTIN visible on the rear label also had no match.
+  The web form created two active cards with clean front product images:
+  `__mont-de-fleur-rose-semi-dry` and `__chateau-pinot-belenkoe-2025`. Both are
+  visible as `indexed`. Their full and label derivatives occupy rows 4,661 through
+  4,664 of the active 4,665-item index. The dataset now has 2,119 records (2,110
+  Active, 4 Disabled, 5 Removed), and database `quick_check` is OK. The four source
+  screenshots stayed read-only. Port 8168 was restarted because its former process
+  stopped; the current server is PID 28433 and `/api/dataset` answers HTTP 200.
+- Updated for task 20: 2026-09-29T13:45:17+0300.
+
+- Task 21: identify whether the photographed Malesan Crémant de Bordeaux Brut Rosé
+  is Russian wine. Do not change catalogue data.
+- Source: owner message of 2026-09-29T14:12:26+0300.
+- Files for task 21: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. The source screenshot stays read-only.
+- State for task 21: done, not committed. The front label identifies a French Crémant
+  de Bordeaux and says `Produit de France`; it is not Russian wine.
+- Updated for task 21: 2026-09-29T14:12:26+0300.
+
+- Task 22: check whether the two photographed Мысхако Игристое 2025 wines (white
+  brut and white semi-sweet) already exist in the dataset. Do not change catalogue
+  data.
+- Source: owner message of 2026-09-29T14:15:50+0300.
+- Files for task 22: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. The source screenshot stays read-only.
+- State for task 22: done, not committed. Both exact products already have Active
+  cards and main catalogue images: `myshako-igristoe-beloe-bryut` and
+  `myshako-igristoe-beloe-polusladkoe`. No catalogue data changed.
+- Updated for task 22: 2026-09-29T14:16:41+0300.
+
+- Task 23: check whether the photographed Усадьба Александровская Cabernet
+  Sauvignon / Merlot / Cabernet Franc wine already exists in the dataset. Do not
+  change catalogue data.
+- Source: owner message of 2026-09-29T14:33:59+0300.
+- Files for task 23: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. The source screenshot stays read-only.
+- State for task 23: done, not committed. The exact photographed blend is absent.
+  The only Active card by the same producer is the different wine `Бубновый Валет`
+  (`usadba-aleksandrovskaya-bubnovyy-valet-kaberne-sovinon-krasnoe-polusladkoe-13`).
+  No catalogue data changed.
+- Updated for task 23: 2026-09-29T14:34:50+0300.
+
+- Task 24: add the absent photographed Усадьба Александровская Cabernet Sauvignon /
+  Merlot / Cabernet Franc wine. Find a clean front bottle image and create its card
+  through the lab server.
+- Source: owner message of 2026-09-29T14:35:35+0300, interpreted as resuming the
+  original add-if-missing workflow after task 23 confirmed the exact wine is absent.
+- Files for task 24: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `data/catalog/catalog.sqlite3`, a new file under
+  `data/catalog/images/main/`, and the embedding artifacts updated by Add wine.
+  Temporary research images stay outside the repository; the source screenshot stays
+  read-only.
+- State for task 24: done, not committed. The web form created the Active card
+  `__usadba-aleksandrovskaya-kaberne-sovinon-merlo-kaberne-fran` with a clean front
+  product image. It is visible as `indexed`; its full and label derivatives occupy
+  rows 4,665 and 4,666 of the active 4,667-item index. The dataset now has 2,120
+  records (2,111 Active), and database `quick_check` is OK. The source screenshot
+  stayed read-only. Port 8168 used its existing process and did not restart.
+- Updated for task 24: 2026-09-29T14:38:51+0300.
+
+- Task 25: identify the photographed wine and check whether the exact product already
+  exists in the dataset. Do not change catalogue data.
+- Source: owner message of 2026-09-29T15:14:49+0300.
+- Files for task 25: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. The source screenshot stays read-only.
+- State for task 25: done, not committed. The bottle is Inkerman Classic Collection
+  `Древний Город`, a Crimean red semi-sweet blend of Saperavi, Cabernet Sauvignon,
+  and Merlot. Exact name and slug searches found no catalogue card. No catalogue data
+  changed.
+- Updated for task 25: 2026-09-29T15:16:35+0300.
+
+- Task 26: add the absent Inkerman Classic Collection `Древний Город` red semi-sweet
+  wine. Find a clean front bottle image and create its card through the lab server.
+- Source: owner message of 2026-09-29T15:24:42+0300.
+- Files for task 26: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `data/catalog/catalog.sqlite3`, a new file under
+  `data/catalog/images/main/`, and the embedding artifacts updated by Add wine.
+  Temporary research images stay outside the repository; the source screenshot stays
+  read-only.
+- State for task 26: done, not committed. The web form created the Active card
+  `__inkerman-drevniy-gorod` with a clean front product image. It is visible as
+  `indexed`; its full and label derivatives occupy rows 4,667 and 4,668 of the active
+  4,669-item index. The dataset now has 2,121 records (2,112 Active), and database
+  `quick_check` is OK. The source screenshot stayed read-only. Port 8168 used its
+  existing process and did not restart.
+- Updated for task 26: 2026-09-29T15:31:04+0300.
+
+- Task 27: rename the imported 58-photo test set to `test-1`, and add a safe rename
+  action to the `/testset` page.
+- Source: owner messages of 2026-09-29T15:33:57+0300, 15:34:11+0300, and
+  15:34:20+0300.
+- Files for task 27: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `data/catalog/catalog.sqlite3` (the live rename), separate hunks in
+  `pipeline/testsets.py`, `pipeline/testset_routes.py`, and
+  `pipeline/pages/testset.html`, focused hunks in `tests/test_testsets.py`,
+  `tests/test_testset_routes.py`, and `tests/test_lab_openapi.py`, the new route in
+  `docs/lab-openapi.yaml`, and my own small hunks in `README.md`, `SMOKE_TESTS.md`, and
+  `ChangeLog.md`. No schema change. A restart of port 8168 follows the tests.
+- Agreements for task 27: `drink-atlas-workspace-c1` lists
+  `pipeline/pages/testset.html`, but its two tasks are done and the session is absent
+  from the current ListAgents answer. The owner directly requested this page feature;
+  any edit will use separate hunks and preserve c1's changes byte-for-byte.
+- State for task 27: done, not committed. The live set is now `test-1`; it keeps its 58
+  photos, 6 variant rows, 2 photo comments, labels, source provenance, and selector
+  position. The previous name is absent, `foreign_key_check` has no row, and
+  `quick_check` is OK. `/testset` now has `Rename…`; the shared dialog validates format, unchanged
+  names, and occupied names, then calls `POST /api/testset-rename`. The page visibly
+  selected `test-1` and kept the counts; its conflict check visibly disabled `Rename`
+  for `my`. Tests: 57 testset tests and 11 OpenAPI tests OK; the page script parses in
+  Node; `git diff --check` passes. Port 8168 restarted with SIGTERM and answers HTTP 200
+  on PID 62346.
+- Updated for task 27: 2026-09-29T15:48:20+0300.
+
+- Task 28: check the complete `svoe-vino-lab/*` tree for every case-insensitive trace
+  of the legacy pre-rename test-set alias, including file names and SQLite values.
+  Report only; do not clean or change product data.
+- Source: owner message of 2026-09-29T16:01:32+0300.
+- Files for task 28: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. All other project files stay read-only.
+- State for task 28: done, not committed. The zero-trace check failed. The live set name
+  was already `test-1`, but its `source_dir` still used the legacy dataset directory.
+  Ten filesystem paths used the legacy alias: the source dataset directory, report
+  directory/file, one backup filename, and six run directories.
+  Nine tracked text files contain references; ignored runtime logs, run metadata,
+  SAM3 cache records, barcode-report artifacts, and `catalog.sqlite3` contain more.
+  `docs/owner-messages.md` is a required historical log and intentionally includes the
+  word. No product/data cleanup was performed.
+- Updated for task 28: 2026-09-29T16:10:01+0300.
+
+- Task 29: replace every operational use of the legacy test-set alias across
+  `svoe-vino-lab` with `test-1`, including paths, metadata, documentation, cache/log
+  artifacts, and the live SQLite source directory. Preserve the mandatory verbatim
+  owner-message history.
+- Source: owner message of 2026-09-29T16:17:46+0300.
+- Files for task 29: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `dataset/*`, `docs/reports/*`, `runs/*`, `work/*`,
+  `data/cache/models/sam3/*`, `data/backups/*`, `data/catalog/catalog.sqlite3`, and
+  tracked documentation or metadata files containing the old name. File and directory
+  paths containing the old name may be renamed. Git history stays unchanged.
+- Agreements for task 29: every other section is absent from the current ListAgents
+  answer. The owner directly requested this cross-tree rename; edits preserve unrelated
+  hunks and the required verbatim history in `docs/owner-messages.md`.
+- State for task 29: done, not committed. All operational paths, tracked documentation,
+  dataset metadata, six run directories and their metadata, cached SAM3/barcode records,
+  logs, the backup filename, and the live database now use `test-1`. The database
+  `source_dir` is `dataset/test-1`; it has 58 photos, `quick_check` is OK, and
+  `foreign_key_check` is empty. `VACUUM` removed stale values from free SQLite pages.
+  A case-insensitive full-tree text search and a path-name search find no legacy alias
+  outside the mandatory verbatim owner-message log; `strings` finds none in the live
+  database. Dataset and run JSON parse with `jq`; `git diff --check` passes. Port 8168
+  restarted on PID 20435; the `test-1` API and `/api/dataset` both answer HTTP 200.
+- Updated for task 29: 2026-09-29T16:46:06+0300.
 
 ## drink-atlas-workspace-c7 [09419d]
 
@@ -2630,7 +2803,7 @@ The form of a section:
   its startup report names `engine zxing-cpp`, and `/api/dataset` answers 200 on PID
   50773.
 - Updated for task 10: 2026-09-29T00:54:04+0300
-- Task 11: import the 54 archived AbobaMakers shop photos as a new test set. Map each
+- Task 11: import the 54 archived test-1 shop photos as a new test set. Map each
   photo to `wine_slug` only after a visible-label and catalogue check. Keep unresolved
   photos outside scored ground truth. Run the current matching pipelines on the
   confirmed subset and compare Top-1, Top-5, latency, and failure groups.
@@ -2638,7 +2811,7 @@ The form of a section:
   one of the three proposed labelling modes and added a comparison task. Continue with
   the recommended model-assisted, independently verified mode.
 - Files for task 11: `docs/owner-messages.md` (append), this section of
-  `ACTIVE_WORK.md`, new `dataset/abobamakers/**`, new rows and images of the test set in
+  `ACTIVE_WORK.md`, new `dataset/test-1/**`, new rows and images of the test set in
   ignored `data/catalog/catalog.sqlite3` and `data/testsets/images/`, a new report under
   `docs/reports/`, and my own hunks in `README.md`, `ResearchLog.md`, and `ChangeLog.md`.
   Existing pipeline code and configuration stay read-only.
@@ -2649,7 +2822,7 @@ The form of a section:
   The set is imported in the lab database. Three profiles completed 162 requests with
   no error. `rerank-siglip2-512-crop` gives family-aware Top-1 71.4% and Top-5 80.0% on
   the 35 catalogue matches, but all 13 no-match photos get a false card. The database
-  backup is `data/backups/catalog-before-abobamakers-20260929T0121+0300.sqlite3`. The
+  backup is `data/backups/catalog-before-test-1-20260929T0121+0300.sqlite3`. The
   58 focused test-set unit tests pass. Export restored all 48 labels and extra accepted
   slugs.
 - Updated for task 11: 2026-09-29T01:26:17+0300
@@ -2858,6 +3031,166 @@ The form of a section:
   automatic selection, the GPU recheck action, version 0.1.4, and the product-site
   link. The complete page rendered correctly in the Pixel 8 dark system theme.
 - Updated for task 24: 2026-09-29T13:18:00+0300
+- Task 25: create the selected eight-image marketing screenshot set on the Pixel 8.
+  Include a bottle image on the main page in light and dark themes. Use only verified
+  working examples. Create source PNG files, website WebP files, and one presentation
+  contact sheet.
+- Source: owner messages recorded at 2026-09-29T13:35:00+0300. The owner selected
+  option 1.
+- Files for task 25: this root section, `docs/owner-messages.md` (append), new files
+  under `../android/docs/screenshots/android-0.1.4/`, one link in `../android/README.md`,
+  and my own Android change-log, research-log, and smoke-test hunks.
+- State for task 25: done, not committed. The set has eight primary screenshots and
+  three detail screenshots. Every screenshot comes from a verified working state on
+  the Pixel 8. The photo flow matched `Пино Нуар` at 91%. The history row persisted.
+  Google Code Scanner read physical EAN-13 `4630037250909`. The local catalogue
+  matched it to `Шато Тамань. Каберне Совиньон` at 100%. The set contains full PNG
+  files, cropped WebP files, and PNG and WebP contact sheets. The Pixel 8 dark theme
+  was restored. System UI demo mode was disabled. The temporary image was removed.
+- Updated for task 25: 2026-09-29T13:48:43+0300
+- Task 26: add the application version to each distribution APK file name and build
+  the versioned APK.
+- Source: owner message recorded at 2026-09-29T13:50:52+0300.
+- Files for task 26: this root section, `docs/owner-messages.md` (append),
+  `../android/app/build.gradle.kts`, and my own Android documentation hunks.
+- State for task 26: done, not committed. The version 0.1.4 distribution file is
+  `chtozavino-0.1.4-debug.apk`. The output directory contains no obsolete unversioned
+  APK. `lintDebug`, debug and release unit tests, and `assembleDebug` passed. The APK
+  has application ID `chtozavino.alolalab.com`, version code 5, version name 0.1.4,
+  `minSdkVersion` 28, and `targetSdkVersion` 36. Its size is 576,503,269 bytes. Its
+  SHA-256 is `e22d166c8922936dd75acb63ec0b860334ef982caf5bbde36c5bb5c079227c26`.
+- Updated for task 26: 2026-09-29T13:55:00+0300
+- Task 27: create the selected full Android application landing page in `../webui`.
+  Add a versioned APK download link. Use verified Pixel 8 screenshots. Explain offline
+  recognition, image search, QR and barcode search, on-device processing, the local
+  catalogue, automatic acceleration, history, themes, and Android 9 support.
+- Source: owner messages recorded at 2026-09-29T14:00:21+0300. The owner selected
+  option 1.
+- Files for task 27: this root section, `docs/owner-messages.md` (append), and files
+  only in `../webui/` for implementation and Web UI documentation.
+- State for task 27: done, not committed. The implementation specification is
+  `../webui/docs/android-landing.md`. The `/android` page includes the configured
+  versioned APK download, verified Pixel 8 screenshots, product benefits, search
+  metadata, and navigation. Type checks passed. All 169 tests passed in 14 files. The
+  production build passed. The local APK route returned the expected HTTP 200 headers.
+  An invalid file name returned HTTP 404. Desktop light and mobile light and dark
+  layouts passed a visual check.
+- Updated for task 27: 2026-09-29T14:11:50+0300
+- Task 28: export the Android model pack from the workbench with transparent segmented
+  package images instead of the large `main` or `main_patched` files. Resize the display
+  images for Android. Document the command in `../android/README.md`.
+- Source: owner message recorded at 2026-09-29T14:46:36+0300. The owner selected
+  option 1.
+- Files for task 28: this root section, `docs/owner-messages.md` (append),
+  `../android/tools/build_catalog_pack.py`, its tests, and my own Android specification,
+  model-pack, README, change-log, research-log, and smoke-test hunks.
+- State for task 28: done, not committed. The exporter now packages the related
+  transparent `image_derivative(kind=package)` cut instead of the large `main` or
+  `main_patched` source image. It writes WebP at quality 80 and limits the long side to
+  1,024 pixels. The verified pack contains 2,093 vectors, wines, and images. It is
+  429,200,870 bytes. Its SHA-256 is
+  `cb181ce8f5583d92c800014c083eb75cc0458fa205407aa24bc032a80b050ec3`.
+  Six focused Python tests passed. The Android documentation records the exporter
+  contract and measured result. The Android Gradle build was deferred to task 29.
+- Updated for task 28: 2026-09-29T15:00:52+0300
+- Task 29: build and verify the Android release variant with the current transparent
+  catalogue pack. Keep the application version in the copied APK file name.
+- Source: owner message recorded at 2026-09-29T15:20:00+0300.
+- Files for task 29: this root section, `docs/owner-messages.md` (append), and my own
+  Android README, change-log, research-log, and smoke-test hunks.
+- State for task 29: done, not committed. Release unit tests, `lintRelease`, R8,
+  resource shrinking, `assembleRelease`, and ZIP alignment verification passed. The
+  versioned file is `chtozavino-0.1.4-release-unsigned.apk`. It is 441,352,932 bytes.
+  Its SHA-256 is
+  `a5cf1ce4a42715c521579a899c5dc9bbeddb32b5ae55c9ad54c82dbd19d765e4`.
+  The embedded model pack matches the verified transparent catalogue pack. The APK is
+  unsigned because the project has no production signing configuration.
+- Updated for task 29: 2026-09-29T15:20:00+0300
+- Task 30: add debug-only Android HTTP endpoints compatible with `/v1/match` and
+  `/v1/eval/predict`. Add two workbench run configurations. Add a device IP parameter
+  to New Run. Run the test set against the Pixel 8.
+- Source: owner message recorded at 2026-09-29T15:41:59+0300.
+- Files for task 30: this root section, `docs/owner-messages.md` (append), Android debug
+  server code, Android build configuration, manifest, tests, Android documentation,
+  workbench `config.yaml`, New Run server and page code, focused tests, and workbench
+  documentation. The external port registry file is
+  `/Users/ashmelev/Admin/mbp2023/PORTS_USED.md`.
+- State for task 30: done, not committed. The debug APK serves `/healthz`,
+  `/v1/eval/predict`, and `/v1/match` on port 18088. NanoHTTPD is absent from the
+  release runtime. Workbench has two permanent device pipelines and a checked New Run
+  IPv4 field. Focused Workbench tests passed: 32, 16, 27, and 11 tests. Android
+  `lintDebug`, `testDebugUnitTest`, `assembleDebug`, and `compileReleaseKotlin` passed.
+  The APK installed on Pixel 8. Both clean 10-query runs had zero errors. Eval gave
+  recall@1 0.3 and median 4,349 ms. Match gave recall@1 0.3, recall@5 0.6, recall@10
+  0.9, and median 4,597 ms. A live run through `POST /api/run-jobs` also completed.
+  Port 8168 restarted and answers HTTP 200. The implementation plan is
+  `docs/plans/86_android-device-http-evaluation.md`.
+- Updated for task 30: 2026-09-29T16:56:52+0300
+- Task 31: document the debug Android bulk-test mechanism in the Android README.
+- Source: owner message recorded at 2026-09-29T16:58:49+0300.
+- Files for task 31: this root section, `docs/owner-messages.md` (append), and
+  `../android/README.md`.
+- State for task 31: done, not committed. The Android README now explains the
+  debug-only bulk-test server, both permanent Workbench pipelines, the UI procedure,
+  CLI commands, Wi-Fi and ADB connection options, the output location, and the
+  full-run duration warning. `git diff --check` passed for the changed documentation.
+- Updated for task 31: 2026-09-29T17:02:00+0300
+- Task 32: keep the debug Android HTTP server off by default. Add a debug-only settings
+  switch that starts or stops the server immediately.
+- Source: owner message recorded at 2026-09-29T17:01:58+0300.
+- Files for task 32: this root section, `docs/owner-messages.md` (append), Android debug
+  application and server settings code, main application state and settings UI, focused
+  Android tests, `../android/README.md`, `../android/docs/specification.md`,
+  `../android/ChangeLog.md`, and `../android/SMOKE_TESTS.md`.
+- State for task 32: done, not committed. A fresh debug installation keeps the server
+  off. The debug settings page has a saved switch that starts and stops port 18088
+  immediately. The release UI hides the switch. The release runtime still has no
+  server implementation or NanoHTTPD dependency. All 21 debug unit tests passed.
+  `lintDebug`, `compileReleaseKotlin`, and `assembleDebug` passed. The updated APK
+  installed on Pixel 8. The off, on, saved-on-after-restart, and off-again states passed.
+  `GET /healthz` returned HTTP 200 while the server was enabled. The Pixel 8 server and
+  switch were left off.
+- Updated for task 32: 2026-09-29T17:13:00+0300
+- Task 33: inspect every unusable photo in test set `official-real-photos` with origin
+  `manual`, and verify whether the catalogue really has no matching wine.
+- Source: owner message recorded at 2026-09-29T17:18:42+0300.
+- Files for task 33: this root section and `docs/owner-messages.md` (append). The
+  catalogue, test-set data, and application stay read-only.
+- State for task 33: done, not committed. All 15 unusable photos were inspected.
+  Two photos have a clear catalogue target, and one ambiguous two-wine photo contains
+  one catalogue target. Twelve photos have no exact local card and image match. The
+  owner clarified that `variant` means skip and is not implemented yet. The Pinot Noir
+  photo can use `positive`. The `Winery Series Red Blend` photo must not move to the
+  regular Red Blend slug. The catalogue and test-set data stayed read-only. The browser
+  remains open on the complete unusable-photo view.
+- Follow-up for task 33: verify the Red Blend slug against the two supplied product
+  images. The black `Noble Selection` bottle is a different product. The regular Red
+  Blend card is also not an exact image match: its front label names Cabernet Sauvignon,
+  Merlot, `Red Blend`, and 2021. The test bottle says `Winery Series Red Blend` and has
+  no grape text on the front label. The exact `Winery Series` card and image are absent.
+- Online verification for task 33: done. Current RBC Wine listings distinguish
+  `Winery Series. Red Blend` 2023 (Cabernet Sauvignon 46%, Merlot 34%, Cabernet Franc
+  20%) from the regular `Red Blend` 2022/2021 (Cabernet Sauvignon and Merlot). The
+  producer describes Winery Series as a separate limited experimental collection.
+  Therefore the test photo must not move to the regular Red Blend slug; the exact
+  Winery Series product is absent from the local catalogue.
+- Updated for task 33: 2026-09-29T18:54:11+0300
+- Task 34: diagnose why the 10-query Pixel 8 Android smoke run reached only 30 percent
+  recall@1.
+- Source: owner message recorded at 2026-09-29T17:24:16+0300.
+- Files for task 34: this root section, `docs/owner-messages.md` (append), and my own
+  findings in `../android/ResearchLog.md`. Add the labelled query collage under
+  `../android/docs/test-results/` and one entry in `../android/ChangeLog.md`. Run files
+  and catalogue data stay read-only.
+- State for task 34: done, not committed. The 10-row limit selected 10 photographs of
+  only four wine SKUs. Six photographs cover two near-identical Abrau-Durso Reserve
+  bottles. Three errors are rank-2 near-ties with gaps from 0.0017 through 0.0042. Two
+  Pinot Noir queries chose another Pinot Noir SKU. One Syrah query chose another Syrah
+  SKU. One query missed the correct wine in the first 20. The same desktop pipeline
+  also produced exactly three rank-1 matches for these 10 photographs. The complete
+  desktop benchmark reached 43.05 percent recall@1 across 1,647 positive queries. A
+  labelled 2,560 by 1,710 pixel collage records all 10 queries and their Android result.
+- Updated for task 34: 2026-09-29T17:29:49+0300
 
 ## drink-atlas-workspace-b6 [088a3a]
 
@@ -3020,35 +3353,6 @@ The form of a section:
 - State: task 1 done, not committed (report `docs/reports/siglip2-alpha-background-2026-09-29.md`). Task 2 dropped at 11:46: b6 started the same three rot5 runs at 11:43:38; c4 stopped its own duplicate chain and removed its partial run directory `runs/2026-09-29T084311Z-lab-siglip2-p512-rot5-as-is-my-plan82`. b6 keeps the rot5 runs and the report section. b6 also stopped its chain at 11:45:48 (messages crossed), removed its partial directory, and restarted one chain at 11:47 with its own logs `work/rotation-index/run-<pipeline>-b6.out`; c4 agreed to start none.
 - Updated: 2026-09-29T11:46:57+0300
 
-## drink-atlas-workspace-62 [6f5a71]
-
-- Task: plan 83, three lab pipelines that call the matcher API of prod
-  (`http://192.168.86.14:28000`) and use no local embeddings: `/v1/eval/predict`,
-  `/v1/match?k=20`, and `/v1/group/match` with a group view on `/runs`. An optional
-  query parameter `k` of `/v1/group/match` in `../matcher/`.
-- Source: owner message of 2026-09-29T11:57:03+0300 and the answers of 12:00:47.
-- Files: `docs/owner-messages.md` (append), `docs/plans/83_matcher-api-pipelines.md` (new),
-  `config.yaml` (one separate hunk: 3 entries after `vino-svoe-search-by-photo`),
-  `scripts/match_backends.py`, `pipeline/pipelines.py` (one hunk: the shape `group`),
-  `pipeline/benchmark.py` (one hunk in `one`: a 6th `ask` value as the row key `group`),
-  `pipeline/run_routes.py` (one hunk in `_row_slugs`), `pipeline/pages/runs.html` (separate
-  hunks: the group view of a result row), `tests/test_matcher_api_pipelines.py` (new),
-  `../matcher/app.py`, `../matcher/openapi.yaml`, `../matcher/tests/test_group.py`
-  (separate hunks: one key-set assertion and new tests of `k`),
-  `../matcher/docs/group-match.md`, and my own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`,
-  `README.md`, `COMMANDS.md`, `../matcher/README.md`, `../matcher/ChangeLog.md`.
-- State: done, not committed. Waiting: the owner decides the commit and the redeploy of the
-  prod matcher (the parameter `k`). 8168 restarted at 12:20:25 (PID 34153). Tests: new 10 OK,
-  matcher 125 OK; full lab suite 3 errors outside plan 83 (see `ChangeLog.md`). b6 fixed
-  the `test_barcode.py` count at about 12:30.
-- Updated: 2026-09-29T12:25:38+0300
-- Agreements: b6 [088a3a] agreed at about 12:07 to my separate hunks in `config.yaml`
-  (3 `pipeline:` entries after `vino-svoe-search-by-photo`) and in `../matcher/README.md`
-  and `../matcher/ChangeLog.md`. b6's hunks stay unchanged. The `new_wine_embedding`
-  hunk of `config.yaml` belongs to the section `/root` (plan 78); I do not touch it.
-  b6 agreed at about 12:10 to my hunk in `pipeline/pipelines.py`. The owner allowed at
-  12:10:02 separate hunks in the files of the stale sections and one restart of 8168.
-
 ## drink-atlas-workspace-c1 [b51d69]
 
 - Task: add the entry `Copy Image` to the right-click menu of a photo on `/testset`. The
@@ -3106,3 +3410,133 @@ The form of a section:
   in `tests/test_manual_wines.py`, the `createWine` summary in `docs/lab-openapi.yaml`,
   `README.md` lines 314-315, `SMOKE_TESTS.md` AW17 and AW19, and 2 new lines in the
   route list of `tests/test_lab_openapi.py`.
+
+## codex-belbek-photo-01
+
+- Task: find a clean high-resolution photo of Belbek Petit Verdot and store it as the wine patch.
+- Source: owner messages recorded at 2026-09-29T15:28:23+0300.
+- Files: `docs/owner-messages.md` (new entries only), `work/belbek-photo/**` (new), one new entry in `ChangeLog.md`; the API writes the patch and cuts for `belbek-belbek-pti-verdo-krasnoe-suhoe-121` in `data/catalog/`.
+- State: done, not committed. The live patch is 999 x 3460 pixels. Source bytes and the package and label derivatives are verified. No API warning. No server restart.
+- Updated: 2026-09-29T15:31:40+0300
+
+## codex-wine-identity-check
+
+- Task: compare the two attached bottle photos and answer whether they show the same wine.
+- Source: owner message of 2026-09-29T16:17:55+0300.
+- Files: `docs/owner-messages.md` (append only).
+- State: done, not committed. The bottles share a producer and grape blend, but differ
+  in named line and vintage, so they are not the same exact wine/SKU.
+- Updated: 2026-09-29T16:19:00+0300
+- Task 2: check whether the second photographed wine is present in the local dataset.
+- Source: owner message of 2026-09-29T16:21:34+0300.
+- Files: `docs/owner-messages.md` (append only); dataset files and databases stay read-only.
+- State: done, not committed. The exact 2024 `Мерло & Каберне Совиньон` is absent;
+  the catalog contains only the related `Каберне Совиньон & Мерло 1890` entry.
+- Updated: 2026-09-29T16:24:30+0300
+- Task 3: create a separate dataset entry for the photographed `Усадьба Перовских`
+  `Мерло & Каберне Совиньон 2024`; find and use a clean frontal product image from
+  the Internet, not the supplied shop photo.
+- Source: owner messages of 2026-09-29T16:34:50+0300 and 16:35:53+0300.
+- Files: `docs/owner-messages.md` (append only), `data/catalog/catalog.sqlite3`, and
+  API-created files under `data/catalog/images/**` and `data/catalog/cuts/**`;
+  `data/catalog/embeddings/gx10-siglip2-so400m-patch16-512/**` (incremental index),
+  `work/perovskih-merlo-cabernet-2024/**` (downloaded candidate and evidence).
+- State: done, not committed. Created `__merlo-kaberne-sovinon-2024` as Active with
+  the clean 479×1500 official winery image. The package and label cuts are present;
+  both new items are current in `gx10-siglip2-so400m-patch16-512`.
+- Updated: 2026-09-29T16:42:30+0300
+- Task 4: answer how to start the workbench lab server.
+- Source: owner message of 2026-09-29T16:46:16+0300.
+- Files: `docs/owner-messages.md` (append only); project files stay read-only.
+- State: done, not committed. Confirmed the foreground and no-browser commands from
+  `COMMANDS.md`; no server process was started by this task.
+- Updated: 2026-09-29T16:47:00+0300
+
+## codex-preset-segment-check
+
+- Task: check whether the four barcode rerank crop presets include segmentation.
+- Source: owner message recorded at 2026-09-29T17:28:00+0300.
+- Files: `docs/owner-messages.md` (this message append only), this section of `ACTIVE_WORK.md`.
+- State: done, not committed. All four presets include package segmentation. The
+  crop variants retain the crop background; crop-label also segments the label and
+  removes its background. No code or configuration change.
+- Updated: 2026-09-29T17:28:18+0300
+
+- Task 2: compare barcode-siglip2-p512-crop, barcode-siglip2-p512-crop-seg, and barcode-rerank-siglip2-p512-crop.
+- Source 2: owner message recorded at 2026-09-29T17:31:41+0300.
+- Files for task 2: `docs/owner-messages.md` (this message append only), this section.
+- State for task 2: done, not committed. Compared the package crop, mask-based
+  background removal, and conditional cluster VLM rerank. The same barcode lookup
+  and SigLIP2 NaFlex p512 index apply to all three. No code change.
+- Updated for task 2: 2026-09-29T17:31:53+0300
+
+- Task 3: rename pipeline presets. Remove `-as-is`; replace `-crop-seg` with `-seg`; keep `-crop`.
+- Source 3: owner message recorded at 2026-09-29T17:38:42+0300.
+- Files for task 3: `docs/owner-messages.md` (this message append only), this section. `config.yaml` (preset names and related comments only), `tests/test_pipelines.py` (the renamed preset reference), `scripts/rotation_index_eval.py` (resolve current config names), `COMMANDS.md`, `README.md`, `SMOKE_TESTS.md` (current names only), and one new entry in `ChangeLog.md`.
+- State for task 3: done, not committed. Renamed 36 presets; 75 focused tests pass.
+  All 77 entries load. Parsed settings are unchanged except for names. Both live
+  selector APIs return the new names. No restart. Saved run records stay unchanged.
+- Scope for task 3: the owner directly requested the preset rename. Existing sections list these shared files; only the requested names and their references change. Other sessions' implementation hunks stay unchanged. Saved reports, run records, and other sessions' sections stay unchanged.
+- Updated for task 3: 2026-09-29T17:42:12+0300
+
+- Task 4: audit all configuration names against their effective image-processing steps and correct mismatches.
+- Source 4: owner message recorded at 2026-09-29T17:42:45+0300.
+- Files for task 4: `docs/owner-messages.md` (this message append only), this section. `config.yaml` (three pipeline names only), `tests/test_pipelines.py` (Android pipeline references), `README.md` and `SMOKE_TESTS.md` (current pipeline names), and one entry in `ChangeLog.md`.
+- State for task 4: done, not committed. Corrected the two Android pipeline names to `-dis-seg` and `-sam3-seg`, and the two-view name to `-crop-label-seg`. All 77 names pass the semantic audit; 75 tests pass. Both live selector APIs show the corrected names. Embedding index names and all processing settings stay unchanged. No restart.
+- Updated for task 4: 2026-09-29T17:45:24+0300
+
+- Task 5: confirm whether a preset combines barcode, rerank, and package segmentation on white.
+- Source 5: owner message recorded at 2026-09-29T17:46:31+0300.
+- Files for task 5: `docs/owner-messages.md` (this message append only), this section.
+- State for task 5: done, not committed. No preset combines barcode, rerank, and package background removal. The crop-label-seg preset removes the label background only. No configuration change.
+- Updated for task 5: 2026-09-29T17:46:40+0300
+
+- Task 6: add barcode-rerank segmentation presets for fixed 512, NaFlex p512, and NaFlex p1024; run each on `my`.
+- Source 6: owner message recorded at 2026-09-29T17:48:09+0300.
+- Files for task 6: `docs/owner-messages.md` (this message append only), this section, `config.yaml` (three new presets), `tests/test_pipeline_workers.py` (preset references), `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`, one new entry in `ChangeLog.md`, `work/barcode-rerank-seg/**`, new run directories in `runs/`, and one row in `/Users/ashmelev/Admin/GPU_TASKS.md`. Standard run jobs may update their embedding indexes, model caches, and dependency artifacts.
+- State for task 6: done, not committed. All three presets are live. Each final run completed 2,232 photos with zero query and trace-step errors. Initial attempts and malformed SAM3 cache records are preserved in `work/barcode-rerank-seg/`. One package response was refreshed; three package and two label responses were quarantined. No inference code change or server restart. All 75 focused tests pass.
+- Updated for task 6: 2026-09-29T18:09:42+0300
+
+- Task 6 results: fixed-512 R@1 84.69%, R@5 97.64%; p512 R@1 82.70%, R@5 96.43%; p1024 R@1 83.79%, R@5 97.04%. Same query manifests; caches enabled. Summary: `work/barcode-rerank-seg/summary.md` and `results.json`.
+
+
+- Task 7: add `barcode-rerank-siglip2-512-rot5-seg`, build fixed-512 reference embeddings at 5-degree steps, and evaluate on `my` against the completed fixed-512 baseline.
+- Source 7: two owner messages recorded at 2026-09-29T18:17:06+0300; the first turn was interrupted before work.
+- Files for task 7: `docs/owner-messages.md` (these two message appends only), this section. `config.yaml` (one new embedding and pipeline), `tests/test_pipeline_workers.py` (new preset), `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`, one new entry in `ChangeLog.md`, `work/fixed512-rot5/**`, `docs/reports/2026-09-29_fixed512-rot5.md`, `data/catalog/embeddings/gx10-siglip2-so400m-patch16-512-rot5/**`, new run directories, relevant model-cache records, and one row in `/Users/ashmelev/Admin/GPU_TASKS.md`.
+- State for task 7: active. Index build PID 87306 (6 workers) started at 18:22:58. The coordinator in `work/fixed512-rot5/finish_trial.py` waits for it, validates the index, builds clusters and rules, and runs all of `my`. The ledger is `work/fixed512-rot5/trial.json`. All 87 focused tests pass. No inference code change or restart.
+- Updated for task 7: 2026-09-29T18:26:54+0300
+
+## codex-catalog-metrics-explanation
+
+- Task: explain recognition metrics for test wines absent from the catalogue.
+- Source: owner message of 2026-09-29T18:06:29+0300.
+- Files: this section and `docs/owner-messages.md` (this message append only).
+- State: done, not committed. Read the local scorer and supplied evaluation rules. No code or data change.
+- Updated: 2026-09-29T18:06:29+0300
+
+- Follow-up: explain R@1, R@5, and F1 formulas for the 60 positive photos.
+- Follow-up state: done, not committed. No code or data change.
+- Follow-up updated: 2026-09-29T18:07:52+0300
+
+## codex-side-services-01
+
+- Task: launch Drink Atlas Core, Web UI, and Matcher, then verify their health.
+- Source: owner message recorded at 2026-09-29T18:11:00+0300.
+- Files: `docs/owner-messages.md` (append) and this section. Runtime logs and PID files
+  MAY be written only in each service's existing runtime or work directory.
+- State: done, not committed. Started the project-owned PostgreSQL cluster and all
+  three documented local launchers. Core is healthy on `127.0.0.1:8156`, Web UI
+  serves `/products` and `/image-search` on `127.0.0.1:8157`, and Matcher is healthy
+  on its generated port `127.0.0.1:54402` with the active SigLIP2 index.
+- Updated: 2026-09-29T18:14:00+0300
+
+- Follow-up task: start the Drink Atlas enrichment service and documented worker pools,
+  then verify their health while preserving the running Core, Web UI, and Matcher.
+- Follow-up source: owner message recorded at 2026-09-29T18:17:41+0300.
+- Follow-up files: `docs/owner-messages.md` (append) and this section. Runtime files
+  MAY be written only in the enrichment project's existing runtime directories.
+- Follow-up state: done, not committed. The catalog coordinator is healthy on
+  `127.0.0.1:50175`; two general workers and eight frame-only workers are online.
+  The detached frame supervisor has PID 80131. The saved queue remains `running`,
+  with 40,180 of 40,180 tasks complete and no current worker task.
+- Follow-up updated: 2026-09-29T18:21:12+0300

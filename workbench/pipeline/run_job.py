@@ -3,8 +3,8 @@ the lab server.
 
 Usage:
     python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N]
-        [--workers N] [--no-cache] [--no-barcode] [--config PATH] [--jobs-dir DIR]
-        [--runs-dir DIR]
+        [--workers N] [--no-cache] [--no-barcode] [--device-ip ADDRESS]
+        [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
     python3 pipeline/run_job.py --selftest --name <embedding> [--limit N] [--workers N]
         [--no-cache] [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
 
@@ -139,6 +139,8 @@ def main(argv=None):
                         help="skip the barcode step of a pipeline with the key `barcode`: "
                              "each photo goes to the embedding; another pipeline ignores "
                              "the flag")
+    parser.add_argument("--device-ip", default=None,
+                        help="IPv4 address that replaces {device_ip} in a device pipeline")
     parser.add_argument("--config", default=embeddings.CONFIG_PATH, help="path of config.yaml")
     parser.add_argument("--jobs-dir", default=run_jobs.JOBS_DIR, help="the directory of the jobs")
     parser.add_argument("--runs-dir", default=benchmark.RUNS_DIR, help="the directory of the runs")
@@ -186,6 +188,7 @@ def main(argv=None):
                 entry = settings.find(args.name)
             except KeyError:
                 raise embeddings.ConfigError("config.yaml has no pipeline %s" % args.name)
+        device_ip = pipelines.bind_device_ip(entry, args.device_ip)
         # None: the pipeline has no barcode step, so the run records nothing about it.
         use_barcode = args.use_barcode if run_jobs.has_barcode(entry) else None
         if use_barcode is False:
@@ -207,7 +210,7 @@ def main(argv=None):
         emit("start", pid=os.getpid(), configuration=name, set=set_name,
              todo=todo, limit=args.limit,
              workers=args.workers or int(backend.spec.get("workers") or 1), seed=seed,
-             use_cache=args.use_cache, use_barcode=use_barcode)
+             use_cache=args.use_cache, use_barcode=use_barcode, device_ip=device_ip)
         counting = Counting(backend, todo)
 
         def log(message):

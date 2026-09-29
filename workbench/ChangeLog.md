@@ -2,6 +2,100 @@
 
 ## 2026-09-29
 
+- Added `barcode-rerank-siglip2-512-rot5-seg` and the fixed-512 reference index
+  `gx10-siglip2-so400m-patch16-512-rot5`. The index uses 72 angles at 5-degree steps
+  for full references and one vector for each label reference. The query steps,
+  barcode lookup, rerank options, and four-worker default match the fixed-512
+  segmentation baseline. All 87 focused tests pass. The index build and subsequent
+  `my` benchmark are in progress; see `docs/reports/2026-09-29_fixed512-rot5.md`.
+  No inference code change or server restart.
+
+- Added `barcode-rerank-siglip2-512-seg`, `barcode-rerank-siglip2-p512-seg`, and
+  `barcode-rerank-siglip2-p1024-seg`. Each uses barcode lookup, a segmented package
+  on white, the existing cluster rerank, and four workers. Updated the preset worker
+  test, README, command catalogue, and smoke checks. All 75 focused tests pass; all
+  80 presets load. No server restart. Ran each preset on the same 2,232 photos of
+  `my` (1,653 positive, 579 negative), with caches enabled. All completed runs have
+  zero query and trace-step errors. Positive-photo R@1 / R@5: fixed-512 84.69% /
+  97.64%; p512 82.70% / 96.43%; p1024 83.79% / 97.04%. The initial attempts stopped
+  on unreadable PNG masks in cached SAM3 responses. Preserved the old records;
+  refreshed one package response and quarantined three package and two label
+  responses so the service regenerates them. No inference code change. The final
+  runs are `2026-09-29T150000Z-lab-barcode-rerank-siglip2-512-seg-my`,
+  `2026-09-29T150434Z-lab-barcode-rerank-siglip2-p512-seg-my`, and
+  `2026-09-29T145449Z-lab-barcode-rerank-siglip2-p1024-seg-my`. The report and preserved
+  attempt logs are in `work/barcode-rerank-seg/`. Cached latency is not a live SLA test.
+
+- Audited all 77 pipeline names against the effective views, including views
+  inherited from embedding entries. Also checked barcode, rerank, local backend,
+  rotation suffixes, and remote endpoint names. Corrected three pipeline names:
+  `android-siglip2-base-224-dis-white` to `android-siglip2-base-224-dis-seg`,
+  `android-siglip2-base-224-sam3-white` to `android-siglip2-base-224-sam3-seg`, and
+  `barcode-rerank-siglip2-512-crop-label` to
+  `barcode-rerank-siglip2-512-crop-label-seg`. Updated current docs and the Android
+  pipeline test. All 77 names now match: 28 whole-photo presets, 33 package-crop
+  presets (one also has a segmented label), 10 package-segmentation presets, and
+  6 remote endpoints. Processing settings and embedding index names are unchanged.
+  Tests: 32 pipeline, 4 worker, 12 recognize-route, and 27 barcode tests pass
+  (75 total). Both live selector APIs return all three corrected names. No restart.
+
+- Renamed 36 lab pipeline presets: removed `-as-is`, replaced `-crop-seg` with
+  `-seg`, and kept `-crop`. Updated the current command, README, smoke-test, and
+  unit-test references. The rotation evaluation script resolves its saved experiment
+  names to the current presets. Saved run records and reports keep their original
+  names. A comparison of the parsed config confirms that all processing settings
+  are unchanged. All 77 pipeline entries load without errors. Tests: 32 pipeline,
+  27 barcode, 4 worker, and 12 recognize-route tests pass (75 total). Live
+  `/api/run-configurations?set=my` and `/api/recognize` return HTTP 200 with the new
+  names and no old suffixes. No server restart.
+
+- Plan 86: added two permanent Android device pipelines:
+  `android-device-eval-predict` and `android-device-match-k20`. Added the remote
+  pipeline key `device_ip: true` and the `{device_ip}` URL placeholder. New Run now
+  shows and validates `device IPv4` only for these pipelines and keeps the last value.
+  Added `--device-ip` to `run_job.py` and `remote_run.py`. Added focused tests for the
+  configuration rules, run API, command generation, response contracts, and dialog
+  field. A live browser check showed the IP field for the Android pipeline, kept Start
+  disabled before a valid address, enabled Start after `192.168.86.51`, hid the field
+  for a normal pipeline, and kept barcode disabled. Restarted port 8168;
+  `/api/dataset` returned HTTP 200 and
+  `/api/run-configurations?set=my` returned both device pipelines. A live
+  `POST /api/run-jobs` completed one Android match query with zero errors and recorded
+  the resolved URL in `run.json`. On Pixel 8, clean
+  10-query runs through both endpoints had zero errors. Eval gave recall@1 0.3 and
+  4,349 ms median latency. Match gave recall@1 0.3, recall@5 0.6, recall@10 0.9, and
+  4,597 ms median latency.
+
+- The default VLM entry of `scripts/cluster_rules.py` is `qwen3.5-9b-nvfp4` (was `qwen3.5-9b`).
+  It applies only when the config has no `vlm` key; `config.yaml` already names
+  `qwen3.5-9b-nvfp4`. The test `test_the_default_entry_is_qwen3_5_9b_nvfp4` replaces the old one.
+  `README.md` updates the entry table. Reason: on 2026-09-29 the gx10 gateway pinned
+  `qwen3.5-9b-nvfp4` and made the llama.cpp `qwen3.5-9b` an on-demand model with a 1 h ttl.
+  Tests: `test_vlm_config.py` 20 `OK`, `test_cluster*.py` 63 `OK`.
+- `/testset` can rename the current test set with `Rename…` (owner messages of
+  15:33:57 to 15:34:20). `POST /api/testset-rename {set, name}` validates the same name
+  grammar as `Add new testset …`, refuses an existing destination, and updates the
+  populated set in one transaction while preserving its selector order, photos,
+  labels, photo comments, and variant groups. The live set is now `test-1`: 58 photos,
+  6 variant rows, and 2 photo comments; the old name has no row,
+  `foreign_key_check` is empty, and `quick_check` is OK. Tests: 57 testset tests and 11
+  OpenAPI tests OK; the page script parses in Node; the live UI rejects the existing
+  name `my`. Port 8168 restarted with PID 62346 and answers HTTP 200.
+- Completed the operational rename to `test-1` across the source dataset directory,
+  reports, six saved runs, caches, logs, documentation, backup filename, and the live
+  database source path. SQLite was vacuumed so the superseded value is absent from free
+  pages. The full-tree text and path checks pass outside the mandatory verbatim owner
+  log; database integrity and JSON parsing pass. Port 8168 runs on PID 20435 and both
+  the `test-1` API and `/api/dataset` answer HTTP 200.
+- Added the patch for `belbek-belbek-pti-verdo-krasnoe-suhoe-121` from the
+  [producer page](https://belbekwine.com/2023/01/14/petitverdot23/).
+  The [original PNG](https://belbekwine.com/wp-content/uploads/2023/01/Пти-Вердо-ЗАМЕНИТЬ.png)
+  is 999 x 3460 pixels with a transparent background and no visible watermark.
+  The file was stored without edits through `POST /api/dataset-patch`. SHA-256:
+  `c26c7d58fdbb669e91ebcc437935edd6bef2761e86032919819bca0324b0a861`.
+  Verification: the live record has `_patched: true`; the served file has the same
+  SHA-256 as the source; the package and label derivatives exist. The API returned no
+  warning. Source and verification records are in `work/belbek-photo/`.
 - Plan 85: the matcher backend `cascade` and the fast answer mode of
   `POST /v1/eval/predict` (owner message of 2026-09-29T11:47:49+0300, answers of 11:59:36
   to 13:53:47). The code is in `../matcher/` (read `../matcher/ChangeLog.md` and
@@ -51,7 +145,7 @@
   The address keeps `origin=manual`; the badge `Additional settings · n` counts the
   select. The search `q=__` cannot do this: the search splits words on `_`.
   `pipeline/pages/testset.html` only; no restart of 8168. Checked in headless Chromium on
-  8168 (`abobamakers`): 3 wines added by hand plus `No Match`, `· 1`, and together with
+  8168 (`test-1`): 3 wines added by hand plus `No Match`, `· 1`, and together with
   `fully labelled` only `No Match`; no page errors. `SMOKE_TESTS.md` TP24, TP36 (the new
   select), TP42-TP43.
 
@@ -186,16 +280,16 @@
   significant (`p=9.01e-09`). DIS had five foreground-mask failures. The report records
   the complete metrics and the excluded run whose catalogue changed during a smoke test.
 
-- Added and imported the `abobamakers` test set from 54 public shop photos at source
+- Added and imported the `test-1` test set from 54 public shop photos at source
   commit `55cfe4c1`. Independent review mapped 35 photos to catalogue slugs, confirmed
   13 no-match products, and left 6 multi-product scenes unscored in the Drawer. Three
   current profiles completed 162 requests with no error. The best profile,
   `rerank-siglip2-512-crop`, gives family-aware Top-1 71.4% and Top-5 80.0% on the 35
   catalogue matches, but 0 of 13 correct open-set refusals. Added the mapping, import
   labels, variant groups, raw evaluation artifacts, and
-  `docs/reports/2026-09-29_abobamakers-dataset-benchmark.md`. The 58 focused test-set
+  `docs/reports/2026-09-29_test-1-dataset-benchmark.md`. The 58 focused test-set
   unit tests pass. The database backup is
-  `data/backups/catalog-before-abobamakers-20260929T0121+0300.sqlite3`.
+  `data/backups/catalog-before-test-1-20260929T0121+0300.sqlite3`.
 
 - Compared WineHack `catalog.csv`, `catalog_enriched.csv`, and `seed_wines.sql` at
   commit `642cb396`. Their 2,103 unique official slugs and eight base fields are the same

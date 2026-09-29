@@ -855,3 +855,25 @@ def create_set(conn, name):
     conn.execute("INSERT INTO test_set (set_name, source_dir, edited_at) VALUES (?, ?, ?)",
                  (name, NEW_SOURCE, now_local()))
     return {"ok": True, "set": name}
+
+
+def rename_set(conn, set_name, name):
+    """Rename `set_name` to `name` in the caller's transaction.
+
+    The two child tables of `test_set` do not have `ON UPDATE CASCADE`, so the foreign
+    keys are deferred for this transaction while their keys are changed. The composite
+    foreign key of `test_photo_comment` cascades with `test_photo`.
+    """
+    _check_set(conn, set_name)
+    if not isinstance(name, str) or not SET_NAME_RE.fullmatch(name):
+        raise TestsetError(400, "a set name MUST hold 0-9, a-z, _ and - alone")
+    if name == set_name:
+        raise TestsetError(400, "the new test set name MUST differ")
+    if conn.execute("SELECT 1 FROM test_set WHERE set_name = ?", (name,)).fetchone():
+        raise TestsetError(409, "the test set %s exists already" % name)
+    conn.execute("PRAGMA defer_foreign_keys = ON")
+    conn.execute("UPDATE test_set SET set_name = ?, edited_at = ? WHERE set_name = ?",
+                 (name, now_local(), set_name))
+    conn.execute("UPDATE test_photo SET set_name = ? WHERE set_name = ?", (name, set_name))
+    conn.execute("UPDATE test_variant SET set_name = ? WHERE set_name = ?", (name, set_name))
+    return {"ok": True, "set": name, "old_set": set_name}

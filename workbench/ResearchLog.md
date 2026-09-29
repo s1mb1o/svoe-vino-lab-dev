@@ -2,6 +2,34 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-29 — Android device HTTP evaluation
+
+- The Pixel 8 debug API used pack `20260929-dis-main` with 2,093 wines.
+- The server listened on `*:18088`.
+- The Pixel 8 Wi-Fi address was `192.168.86.51` during the test.
+- The host could not connect to this Wi-Fi address.
+- ADB forwarding from host port 18088 to device port 18088 worked.
+- The two Workbench runs therefore used `device_ip=127.0.0.1`.
+- The set `my` had 2,232 queries.
+- A first unbounded eval run was stopped after 30 answered queries.
+- The clean eval run used the first 10 queries.
+- It had 10 answers, zero errors, recall@1 0.3, and median latency 4,349 ms.
+- Its run is
+  `runs/2026-09-29T134112Z-lab-android-device-eval-predict-my-pixel8-smoke-10`.
+- The clean match run used the first 10 queries and `k=20`.
+- It had 10 answers, zero errors, recall@1 0.3, recall@5 0.6, recall@10 0.9, and median
+  latency 4,597 ms.
+- Its run is
+  `runs/2026-09-29T134204Z-lab-android-device-match-k20-my-pixel8-smoke-10`.
+- The same Top-1 result appeared through both response contracts.
+- The larger candidate response changed retrieval metrics but did not change model
+  inference.
+- A live `POST /api/run-jobs` started `android-device-match-k20` with
+  `device_ip=127.0.0.1` and `limit=1`.
+- The job finished with one answer and zero errors.
+- Its `run.json` recorded `http://127.0.0.1:18088/v1/match` as the resolved backend URL.
+- Its run is `runs/2026-09-29T135427Z-lab-android-device-match-k20-my`.
+
 ## 2026-09-29 — The slow `Save` of the `Add wine` dialog is a cold start of SigLIP 2 @512
 
 Source: owner message of 2026-09-29T12:28:00+0300. Case: the wine
@@ -216,9 +244,9 @@ No pairwise negative-rejection difference against no segmentation was significan
 No SAM3-versus-DIS negative-rejection difference was significant. Read
 [the model-matrix report](docs/reports/2026-09-29_segmentation-model-matrix.md).
 
-## 2026-09-29 — AbobaMakers shop photos and WineHack catalogue
+## 2026-09-29 — test-1 shop photos and WineHack catalogue
 
-The 54 AbobaMakers shop photos have no source ground truth. Independent review found 35
+The 54 test-1 shop photos have no source ground truth. Independent review found 35
 photos with a catalogue card, 13 identifiable products without a matching card, and 6
 multi-product scenes with no unambiguous target. There are no exact SHA-256 matches with
 the previous lab images. The source's 93.17% result uses synthetic transformations of
@@ -230,7 +258,7 @@ gives 71.4% Top-1 and 80.0% Top-5. Thus the crop and reranker fix ordering and s
 noise, but seven truths remain outside Top-5. All three profiles return a false card for
 all 13 no-match products. Open-set refusal and catalogue coverage are the main field
 gaps. Read
-[the AbobaMakers report](docs/reports/2026-09-29_abobamakers-dataset-benchmark.md).
+[the test-1 report](docs/reports/2026-09-29_test-1-dataset-benchmark.md).
 
 The three WineHack catalogue files use the same 2,103 official slugs as the lab.
 All eight source fields match our catalogue for every official slug. Their source CSV

@@ -25,6 +25,8 @@ The backends:
 
 The owner removed the pipeline `mock` and its code on 2026-09-26T00:26:27+0300.
 """
+import ipaddress
+
 import barcode
 import cluster_rerank
 import embeddings
@@ -39,12 +41,28 @@ BACKENDS = (REMOTE_BACKEND, EMBEDDING_BACKEND)
 # `backends.yaml`, and the defaults of `match_backends.HttpMultipartBackend`. Read
 # docs/plans/31_remote-configuration.md.
 REMOTE_KEYS = ("url", "field", "response", "query", "top_k", "timeout_s", "workers", "headers")
+REMOTE_PARAMETER_KEYS = ("device_ip",)
 REMOTE_DEFAULTS = {"field": "image", "response": "auto", "query": {}, "top_k": 1,
                    "timeout_s": 30, "workers": 1, "headers": {}}
 # The answer shapes of `match_backends.SHAPES`. A test keeps the two lists equal.
 REMOTE_SHAPES = ("auto", "slug-object", "slug-array", "candidates", "group")
-BACKEND_KEYS = {REMOTE_BACKEND: REMOTE_KEYS,
+BACKEND_KEYS = {REMOTE_BACKEND: REMOTE_KEYS + REMOTE_PARAMETER_KEYS,
                 EMBEDDING_BACKEND: ("embedding", "views", "barcode", "rerank", "workers")}
+
+
+def check_device_ip(value):
+    """Return a canonical IPv4 address for an Android device."""
+    if not isinstance(value, str) or not value.strip():
+        raise ConfigError("device_ip MUST be an IPv4 address")
+    try:
+        address = ipaddress.ip_address(value.strip())
+    except ValueError as exc:
+        raise ConfigError("device_ip MUST be an IPv4 address") from exc
+    if not isinstance(address, ipaddress.IPv4Address):
+        raise ConfigError("device_ip MUST be an IPv4 address")
+    if address.is_unspecified or address.is_multicast:
+        raise ConfigError("device_ip MUST be a usable IPv4 address")
+    return str(address)
 
 
 def _remote(raw):
@@ -100,6 +118,16 @@ class Pipeline:
         if unknown:
             raise ConfigError("the backend %s takes no %s" % (self.backend, ", ".join(unknown)))
         self.remote = _remote(raw) if self.backend == REMOTE_BACKEND else None
+        self.device_ip = False
+        if self.remote is not None:
+            self.device_ip = raw.get("device_ip", False)
+            if not isinstance(self.device_ip, bool):
+                raise ConfigError("device_ip MUST be true or false")
+            placeholder = "{device_ip}" in self.remote["url"]
+            if self.device_ip and not placeholder:
+                raise ConfigError("url MUST contain {device_ip} when device_ip is true")
+            if placeholder and not self.device_ip:
+                raise ConfigError("device_ip MUST be true when url contains {device_ip}")
         self.workers = self.remote["workers"] if self.remote is not None else raw.get("workers", 1)
         self.embedding = self.views = self.barcode = self.rerank = None
         self.scanner = None
@@ -119,6 +147,22 @@ class Pipeline:
                 self.scanner = dict(scanner or qr_barcode.check_config(None))
             if "rerank" in raw:
                 self.rerank = cluster_rerank.check_options(raw["rerank"])
+
+
+def bind_device_ip(pipeline, value):
+    """Validate the run parameter and replace `{device_ip}` in a remote URL.
+
+    Return the canonical IPv4 address, or None for a pipeline without this parameter.
+    """
+    if not getattr(pipeline, "device_ip", False):
+        if value is not None:
+            raise ConfigError("device_ip is not valid for the pipeline %s" % pipeline.name)
+        return None
+    if value is None:
+        raise ConfigError("device_ip is required for the pipeline %s" % pipeline.name)
+    address = check_device_ip(value)
+    pipeline.remote["url"] = pipeline.remote["url"].replace("{device_ip}", address)
+    return address
 
 
 def _views(views):

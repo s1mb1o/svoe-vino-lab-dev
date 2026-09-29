@@ -105,6 +105,7 @@ POST /api/testset-fetch
 GET /api/testset-from-run
 POST /api/testset-from-run
 POST /api/testset-new
+POST /api/testset-rename
 GET /api/runs
 GET /api/run
 GET /api/run-clusters

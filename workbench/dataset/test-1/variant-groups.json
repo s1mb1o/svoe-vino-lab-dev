@@ -1,10 +1,10 @@
 {
   "version": 1,
   "updated": "2026-09-29",
-  "note": "Only visually equivalent catalogue cards that occur in the AbobaMakers mapping are grouped.",
+  "note": "Only visually equivalent catalogue cards that occur in the test-1 mapping are grouped.",
   "groups": [
     {
-      "id": "aboba-g001",
+      "id": "test-1-g001",
       "slugs": [
         "belbek-belbek-pino-nuar-krasnoe-suhoe-13",
         "belbek-pino-nuar-krasnoe-suhoe-133"
@@ -13,7 +13,7 @@
       "name": "Пино Нуар"
     },
     {
-      "id": "aboba-g002",
+      "id": "test-1-g002",
       "slugs": [
         "shato-taman-bryut",
         "shato-taman-bryut-1"
@@ -22,7 +22,7 @@
       "name": "Шато Тамань Брют"
     },
     {
-      "id": "aboba-g003",
+      "id": "test-1-g003",
       "slugs": [
         "shato-taman-kaberne",
         "kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125"

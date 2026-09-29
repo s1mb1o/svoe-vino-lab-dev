@@ -1,11 +1,10 @@
-# Проверка набора AbobaMakers
+# Проверка набора test-1
 
 Дата проверки: 2026-09-29.
 
 ## Результат
 
-Набор AbobaMakers добавлен как новый набор `abobamakers`.
-Он содержит 54 магазинных фото.
+Набор `test-1` содержит 54 магазинных фото.
 Исходный репозиторий не содержит эталонную разметку этих фото.
 Поэтому разметка была создана отдельно.
 
@@ -18,14 +17,13 @@
 | Главный товар неоднозначен | 6 | Фото связано с `__drawer__` и исключено из метрики. |
 | Всего | 54 | В метрику входят 48 фото. |
 
-Разметка находится в `dataset/abobamakers/mapping.json`.
-Импортируемый файл находится в `dataset/abobamakers/review-labels.json`.
-Три группы эквивалентных карточек находятся в `dataset/abobamakers/variant-groups.json`.
+Разметка находится в `dataset/test-1/mapping.json`.
+Импортируемый файл находится в `dataset/test-1/review-labels.json`.
+Три группы эквивалентных карточек находятся в `dataset/test-1/variant-groups.json`.
 
 ## Источник и ограничение
 
-Источник находится в репозитории `AbobaMakers/wine-recognition-system`.
-Фото взяты из исторического коммита
+Фото взяты из публичного исходного репозитория, из исторического коммита
 `55cfe4c1aaf51b0f491f851bcb5f22dbc6e337f5`.
 В текущей ветке источника эти 54 фото удалены.
 
@@ -128,12 +126,11 @@ Top-5 после повторного ранжирования не меняет
 
 ## Артефакты
 
-- `dataset/abobamakers/README.md`
-- `dataset/abobamakers/mapping.json`
-- `dataset/abobamakers/review-labels.json`
-- `dataset/abobamakers/variant-groups.json`
-- `docs/reports/2026-09-29_abobamakers/vlm-label-transcription.json`
-- `docs/reports/2026-09-29_abobamakers/text-candidates.json`
-- `docs/reports/2026-09-29_abobamakers/pipeline-candidates.json`
-- `docs/reports/2026-09-29_abobamakers/evaluation.json`
-
+- `dataset/test-1/README.md`
+- `dataset/test-1/mapping.json`
+- `dataset/test-1/review-labels.json`
+- `dataset/test-1/variant-groups.json`
+- `docs/reports/2026-09-29_test-1/vlm-label-transcription.json`
+- `docs/reports/2026-09-29_test-1/text-candidates.json`
+- `docs/reports/2026-09-29_test-1/pipeline-candidates.json`
+- `docs/reports/2026-09-29_test-1/evaluation.json`

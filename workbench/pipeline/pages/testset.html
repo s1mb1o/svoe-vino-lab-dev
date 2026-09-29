@@ -540,6 +540,8 @@ tbody tr.cat-only { background: var(--panel-2); }
 }
 /* The checkbox `Use caches` (plan 39) keeps the size of a checkbox. */
 .run-fields input[type="checkbox"] { width: auto; margin: 0; padding: 0; }
+.run-fields #run-device-ip { width: 145px; }
+.run-fields label[hidden] { display: none; }
 /* The checkbox `Disable barcode fast path` (plan 53) is disabled for a pipeline with no
    barcode step. */
 .run-fields label:has(input:disabled) { opacity: .45; cursor: default; }
@@ -584,6 +586,8 @@ tbody tr.cat-only { background: var(--panel-2); }
     <h1>Test set <select id="set" title="the test set of the page"></select>
       <button id="run-open" class="run-btn" type="button"
               title="run a pipeline of config.yaml on this test set">Run&gt;</button>
+      <button id="rename-set-open" class="run-btn" type="button"
+              title="rename this test set">Rename…</button>
       <span class="sub" id="head-sub"></span></h1>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
@@ -751,6 +755,9 @@ tbody tr.cat-only { background: var(--panel-2); }
       <label>first N queries <input id="run-limit" type="number" min="1" step="1"
              placeholder="all"></label>
       <label>workers <input id="run-workers" type="number" min="1" max="32" step="1"></label>
+      <label id="run-device-label" hidden>device IPv4 <input id="run-device-ip" type="text"
+             inputmode="decimal" autocomplete="off" spellcheck="false"
+             placeholder="192.168.86.123"></label>
       <label title="On: a model call that repeats an earlier call reads its answer from data/cache/ (SAM3, GDINO, VLM, LLM). Off: each model call goes to its service, so the latency is real time; the fresh answers are stored. Plan 39."><input
              id="run-cache" type="checkbox" checked> Use caches</label>
       <label id="run-barcode-label"><input id="run-barcode" type="checkbox" disabled>
@@ -766,7 +773,7 @@ tbody tr.cat-only { background: var(--panel-2); }
 <div id="new-set-dlg" class="run-dlg" hidden>
   <div class="run-panel" role="dialog" aria-modal="true" aria-labelledby="new-set-title">
     <h2 id="new-set-title">Add new testset</h2>
-    <div class="run-sub">The new set is empty. Drop photos on the wine rows to fill it.</div>
+    <div class="run-sub" id="new-set-sub">The new set is empty. Drop photos on the wine rows to fill it.</div>
     <label class="new-set-field">Name <input id="new-set-name" type="text" autocomplete="off"
            spellcheck="false" placeholder="for example my-2"></label>
     <div class="run-sub">A name holds 0-9, a-z, <code>_</code> and <code>-</code> alone.</div>
@@ -2638,6 +2645,7 @@ async function load(name, first) {
 const RUN_ACTIVE = ["running", "stopping"];
 const RUN_SHOW_ENDED_S = 60;
 const RUN_STORE_KEY = "svoe-vino-lab.run-configuration";
+const RUN_DEVICE_STORE_KEY = "svoe-vino-lab.device-ip";
 // The box `Disable barcode fast path` (plan 53; owner answers of 2026-09-26T19:47:40):
 // off by default; it acts on a pipeline with the key `barcode` alone.
 const RUN_BARCODE_TITLE = "On: the run skips the barcode step of the pipeline: no decode "
@@ -2662,6 +2670,18 @@ function runStored() {
 function runRemember(name) {
   try { localStorage.setItem(RUN_STORE_KEY, name); } catch (_) { /* no storage */ }
 }
+function runStoredDeviceIp() {
+  try { return localStorage.getItem(RUN_DEVICE_STORE_KEY) || ""; } catch (_) { return ""; }
+}
+function runRememberDeviceIp(address) {
+  try { localStorage.setItem(RUN_DEVICE_STORE_KEY, address); } catch (_) { /* no storage */ }
+}
+function runValidIpv4(value) {
+  const parts = value.trim().split(".");
+  return parts.length === 4 && parts.every(part => /^(0|[1-9][0-9]{0,2})$/.test(part)
+    && Number(part) <= 255) && value.trim() !== "0.0.0.0"
+    && !(Number(parts[0]) >= 224 && Number(parts[0]) <= 239);
+}
 function runBusy(c) { return !!(c.job && RUN_ACTIVE.includes(c.job.state)); }
 function runChosen() {
   const input = document.querySelector('input[name="run-cfg"]:checked');
@@ -2669,8 +2689,12 @@ function runChosen() {
 }
 function runSyncFields() {
   const c = runChosen();
+  const needsDevice = !!(c && c.device_ip);
+  const validDevice = !needsDevice || runValidIpv4($("#run-device-ip").value);
   $("#run-workers").placeholder = c && c.workers ? String(c.workers) : "";
-  $("#run-start").disabled = !c;
+  $("#run-device-label").hidden = !needsDevice;
+  $("#run-device-ip").setAttribute("aria-invalid", validDevice ? "false" : "true");
+  $("#run-start").disabled = !c || !validDevice;
   $("#run-barcode").disabled = !(c && c.barcode);
   $("#run-barcode-label").title = c && c.barcode ? RUN_BARCODE_TITLE
     : c ? `The pipeline ${c.name} has no barcode step.` : "Select a pipeline first.";
@@ -2685,6 +2709,7 @@ async function openRunDialog() {
   $("#run-list").innerHTML = "";
   $("#run-error").textContent = "";
   $("#run-start").disabled = true;
+  $("#run-device-ip").value = runStoredDeviceIp();
   $("#run-dlg").hidden = false;
   let data;
   try {
@@ -2722,6 +2747,14 @@ async function startRun() {
   const body = { configuration: c.name, set: SET, limit: limit ? Number(limit) : null,
                  workers: workers ? Number(workers) : null,
                  use_cache: $("#run-cache").checked };
+  if (c.device_ip) {
+    const address = $("#run-device-ip").value.trim();
+    if (!runValidIpv4(address)) {
+      $("#run-error").textContent = "device IPv4 MUST be a valid IPv4 address";
+      return;
+    }
+    body.device_ip = address;
+  }
   if (c.barcode) body.use_barcode = !$("#run-barcode").checked;
   $("#run-start").disabled = true;
   $("#run-error").textContent = "";
@@ -2734,6 +2767,7 @@ async function startRun() {
     return;
   }
   runRemember(c.name);
+  if (c.device_ip) runRememberDeviceIp(body.device_ip);
   closeRunDialog();
   pollRunJobs();
 }
@@ -2775,6 +2809,7 @@ $("#run-open").addEventListener("click", openRunDialog);
 $("#run-cancel").addEventListener("click", closeRunDialog);
 $("#run-start").addEventListener("click", startRun);
 $("#run-list").addEventListener("change", runSyncFields);
+$("#run-device-ip").addEventListener("input", runSyncFields);
 $("#run-dlg").addEventListener("click", ev => { if (ev.target === $("#run-dlg")) closeRunDialog(); });
 // While the dialog is open, the keys of the page do not act. Esc closes the dialog.
 window.addEventListener("keydown", ev => {
@@ -2783,41 +2818,52 @@ window.addEventListener("keydown", ev => {
   if (ev.key === "Escape") { ev.preventDefault(); closeRunDialog(); }
 }, true);
 
-/* The dialog `Add new testset …` (plan 57): `POST /api/testset-new` makes an empty set,
-   and the page loads it. The last option of `#set` opens the dialog. Its value cannot be
-   a set name, because a name holds no parentheses; it never reaches the URL or the
-   stored header, because the change handler selects `SET` again. */
+/* The test-set name dialog creates an empty set or renames the current set. The last
+   option of `#set` opens it in create mode. Its value cannot be a set name, because a
+   name holds no parentheses; it never reaches the URL or the stored header, because the
+   change handler selects `SET` again. */
 const NEW_SET = "(new)";
 const SET_NAME_RE = /^[0-9a-z_-]+$/;
-// Return the name of the field when it can be a new set, else null. The error line
-// states the reason.
+let SET_DIALOG_MODE = "new";
+// Return the name of the field when it can be saved, else null. The error line states
+// the reason.
 function newSetName() {
   const name = $("#new-set-name").value.trim();
   const error = !name ? "" : !SET_NAME_RE.test(name) ? "A name holds 0-9, a-z, _ and - alone."
+    : SET_DIALOG_MODE === "rename" && name === SET ? "Choose a different name."
     : SETS.some(s => s.name === name) ? `The set ${name} exists already.` : "";
   $("#new-set-error").textContent = error;
   $("#new-set-create").disabled = !name || !!error;
   return name && !error ? name : null;
 }
-function openNewSetDialog() {
-  $("#new-set-name").value = "";
+function openNewSetDialog(mode = "new") {
+  SET_DIALOG_MODE = mode;
+  const rename = mode === "rename";
+  $("#new-set-title").textContent = rename ? "Rename testset" : "Add new testset";
+  $("#new-set-sub").textContent = rename
+    ? "Every photo, label, comment, and variant group stays in the set."
+    : "The new set is empty. Drop photos on the wine rows to fill it.";
+  $("#new-set-create").textContent = rename ? "Rename" : "Create";
+  $("#new-set-name").value = rename ? SET : "";
   newSetName();
   $("#new-set-dlg").hidden = false;
   $("#new-set-name").focus();
+  if (rename) $("#new-set-name").select();
 }
 function closeNewSetDialog() {
   $("#new-set-dlg").hidden = true;
   $("#set").focus();
 }
-async function createNewSet() {
+async function saveSetName() {
   const name = newSetName();
   if (!name || $("#new-set-create").dataset.busy) return;
   $("#new-set-create").dataset.busy = "1";
   $("#new-set-create").disabled = true;
+  const rename = SET_DIALOG_MODE === "rename";
   try {
-    const response = await fetch("/api/testset-new", {
+    const response = await fetch(rename ? "/api/testset-rename" : "/api/testset-new", {
       method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({name})
+      body: JSON.stringify(rename ? {set: SET, name} : {name})
     });
     const out = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(out.error || `HTTP ${response.status}`);
@@ -2826,15 +2872,16 @@ async function createNewSet() {
     GROUP_FILTER = "";
     load(out.set || name, false);
   } catch (error) {
-    $("#new-set-error").textContent = `Cannot create the set: ${error.message}`;
+    $("#new-set-error").textContent = `Cannot ${rename ? "rename" : "create"} the set: ${error.message}`;
     $("#new-set-create").disabled = false;
   } finally {
     delete $("#new-set-create").dataset.busy;
   }
 }
+$("#rename-set-open").addEventListener("click", () => openNewSetDialog("rename"));
 $("#new-set-name").addEventListener("input", newSetName);
 $("#new-set-cancel").addEventListener("click", closeNewSetDialog);
-$("#new-set-create").addEventListener("click", createNewSet);
+$("#new-set-create").addEventListener("click", saveSetName);
 $("#new-set-dlg").addEventListener("click", ev => {
   if (ev.target === $("#new-set-dlg")) closeNewSetDialog();
 });
@@ -2846,7 +2893,7 @@ window.addEventListener("keydown", ev => {
   if (ev.key === "Escape") { ev.preventDefault(); closeNewSetDialog(); }
   else if (ev.key === "Enter" && ev.target === $("#new-set-name")) {
     ev.preventDefault();
-    createNewSet();
+    saveSetName();
   }
 }, true);
 $("#jobs").addEventListener("click", async ev => {

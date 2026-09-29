@@ -252,6 +252,16 @@ embeddings:
     rotation_step: 10
     views: *views_full_rotated
 
+  # Fixed-512 rotation benchmark. Full reference images get 72 angles. Label vectors
+  # stay unrotated so the cluster rerank keeps both catalogue views.
+  - name: gx10-siglip2-so400m-patch16-512-rot5
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-512
+    batch_size: 36
+    rotation_step: 5
+    views: *views_c_f
+
 # The clusters of the Clusters page (`/clusters`). The values apply to every entry of
 # `embeddings`. `pipeline/clusters.py` reads this key; a missing key takes the value that
 # is shown here. Read docs/plans/30_embedding-clusters.md, decisions D6 and D6a.
@@ -389,6 +399,29 @@ pipeline:
     timeout_s: 60
     workers: 2
 
+  # Plan 86: the debug build of the Android application serves the same response
+  # contracts on port 18088. The New Run dialog asks for the current device IPv4
+  # address and replaces `{device_ip}` before the run starts. Keep one worker because
+  # the application serializes LiteRT inference.
+  - name: android-device-eval-predict
+    backend: svoe-vino-ru
+    url: http://{device_ip}:18088/v1/eval/predict
+    device_ip: true
+    response: slug-object
+    top_k: 1
+    timeout_s: 120
+    workers: 1
+
+  - name: android-device-match-k20
+    backend: svoe-vino-ru
+    url: http://{device_ip}:18088/v1/match
+    device_ip: true
+    response: candidates
+    query: { k: 20 }
+    top_k: 20
+    timeout_s: 120
+    workers: 1
+
   # 3. SAM3 finds each bottle of the photo, and the matcher ranks each bottle. `k` is
   # the number of candidates of each bottle; a matcher before plan 83 ignores it and
   # gives 1. The ranked list of the row is the first candidate of each bottle, the
@@ -406,23 +439,25 @@ pipeline:
   # Android parity pipelines. Both pipelines use the prepared Android SigLIP2 Base 224
   # index. They do not use the barcode step. Keep one worker because one DIS LiteRT
   # interpreter processes one photo at a time.
-  - name: android-siglip2-base-224-dis-white
+  - name: android-siglip2-base-224-dis-seg
     backend: embedding
     embedding: android-siglip2-base-224-dis-white
     workers: 1
 
-  - name: android-siglip2-base-224-sam3-white
+  - name: android-siglip2-base-224-sam3-seg
     backend: embedding
     embedding: android-siglip2-base-224-sam3-white
     workers: 1
 
+  # Pipeline suffixes: no suffix uses the whole photo; `-crop` keeps the background
+  # inside the package box; `-seg` applies the package mask and fills the background white.
   # Two basic pipelines of the embedding `gx10-siglip2-so400m-patch16-naflex-p256` (owner
   # message of 2026-09-26T00:45:33+0300 and the answers of 00:52:41 and 00:57:59). The key `views` holds the steps of the
   # test photo; the catalogue side stays the index of the entry, and the view `full` of
   # the photo is compared with the `full` vectors of the index. `white_background` does
   # not change an opaque photo; a transparent area becomes white.
-  # `siglip2-p256-as-is`: the photo as it is, resized to a long side of 1024 px.
-  - name: siglip2-p256-as-is
+  # `siglip2-p256`: the photo as it is, resized to a long side of 1024 px.
+  - name: siglip2-p256
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p256
     views:
@@ -448,15 +483,15 @@ pipeline:
             max_size: 1024
             aspect: keep
 
-  # `siglip2-p256-crop-seg` (owner message of 2026-09-26T23:24:00+0300, answers of
+  # `siglip2-p256-seg` (owner message of 2026-09-26T23:24:00+0300, answers of
   # 23:27:00): the cut of `siglip2-p256-crop`, and the SAM3 mask of the package makes the
   # background inside the box white (`remove_background`). These are the steps of the
   # view `full` of the index, so the photo gets the pixels of a catalogue image. The YAML
-  # anchor `crop-seg-views` holds the steps for the barcode twin.
-  - name: siglip2-p256-crop-seg
+  # anchor `seg-views` holds the steps for the barcode twin.
+  - name: siglip2-p256-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p256
-    views: &crop-seg-views
+    views: &seg-views
       full:
         steps:
           - step: segment
@@ -469,13 +504,13 @@ pipeline:
 
   # Plan 40 (owner message of 2026-09-26T01:43:59+0300): the two basic pipelines for each
   # other entry of `embeddings`, for the benchmark of the entries. Their steps are the
-  # steps of `siglip2-p256-as-is` and `siglip2-p256-crop`. The YAML anchors `as-is-views`
+  # steps of `siglip2-p256` and `siglip2-p256-crop`. The YAML anchors `full-views`
   # and `crop-views` of the first pair hold the steps one time; the other pairs refer to
   # them. Read docs/plans/40_embedding-benchmark.md.
-  - name: siglip2-p512-as-is
+  - name: siglip2-p512
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
-    views: &as-is-views
+    views: &full-views
       full:
         steps:
           - step: white_background
@@ -494,114 +529,114 @@ pipeline:
           - step: resize
             max_size: 1024
             aspect: keep
-  # Plan 82: `siglip2-p512-crop-seg` is the lab twin of the matcher `hand_selection: true`
+  # Plan 82: `siglip2-p512-seg` is the lab twin of the matcher `hand_selection: true`
   # (the SAM3 main package; its mask makes the background white). The other six pipelines
   # send the three query sides to the rotated entries. No barcode, no rerank; one `full`
   # vector for each photo.
-  - name: siglip2-p512-crop-seg
+  - name: siglip2-p512-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
-    views: *crop-seg-views
-  - name: siglip2-p512-rot5-as-is
+    views: *seg-views
+  - name: siglip2-p512-rot5
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
-    views: *as-is-views
+    views: *full-views
   - name: siglip2-p512-rot5-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     views: *crop-views
-  - name: siglip2-p512-rot5-crop-seg
+  - name: siglip2-p512-rot5-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
-    views: *crop-seg-views
-  - name: siglip2-p512-rot10-as-is
+    views: *seg-views
+  - name: siglip2-p512-rot10
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
-    views: *as-is-views
+    views: *full-views
   - name: siglip2-p512-rot10-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
     views: *crop-views
-  - name: siglip2-p512-rot10-crop-seg
+  - name: siglip2-p512-rot10-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
-    views: *crop-seg-views
-  - name: siglip2-p1024-as-is
+    views: *seg-views
+  - name: siglip2-p1024
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p1024
-    views: *as-is-views
+    views: *full-views
   - name: siglip2-p1024-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p1024
     views: *crop-views
-  - name: siglip2-p14-384-as-is
+  - name: siglip2-p14-384
     backend: embedding
     embedding: gx10-siglip2-so400m-patch14-384
-    views: *as-is-views
+    views: *full-views
   - name: siglip2-p14-384-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch14-384
     views: *crop-views
-  - name: siglip2-256-as-is
+  - name: siglip2-256
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-256
-    views: *as-is-views
+    views: *full-views
   - name: siglip2-256-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-256
     views: *crop-views
-  - name: siglip2-384-as-is
+  - name: siglip2-384
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-384
-    views: *as-is-views
+    views: *full-views
   - name: siglip2-384-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-384
     views: *crop-views
-  - name: siglip2-512-as-is
+  - name: siglip2-512
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-512
-    views: *as-is-views
+    views: *full-views
   - name: siglip2-512-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-512
     views: *crop-views
-  - name: naflexvit-p256-as-is
+  - name: naflexvit-p256
     backend: embedding
     embedding: gx10-naflexvit-so400m-patch16-siglip2-p256
-    views: *as-is-views
+    views: *full-views
   - name: naflexvit-p256-crop
     backend: embedding
     embedding: gx10-naflexvit-so400m-patch16-siglip2-p256
     views: *crop-views
-  - name: pe-core-l14-336-as-is
+  - name: pe-core-l14-336
     backend: embedding
     embedding: gx10-pe-core-l14-336
-    views: *as-is-views
+    views: *full-views
   - name: pe-core-l14-336-crop
     backend: embedding
     embedding: gx10-pe-core-l14-336
     views: *crop-views
-  - name: dinov3-vitb16-as-is
+  - name: dinov3-vitb16
     backend: embedding
     embedding: gx10-dinov3-vitb16
-    views: *as-is-views
+    views: *full-views
   - name: dinov3-vitb16-crop
     backend: embedding
     embedding: gx10-dinov3-vitb16
     views: *crop-views
-  - name: dinov3-vitl16-as-is
+  - name: dinov3-vitl16
     backend: embedding
     embedding: gx10-dinov3-vitl16
-    views: *as-is-views
+    views: *full-views
   - name: dinov3-vitl16-crop
     backend: embedding
     embedding: gx10-dinov3-vitl16
     views: *crop-views
-  - name: local-siglip2-p256-as-is
+  - name: local-siglip2-p256
     backend: embedding
     embedding: local-siglip2-so400m-patch16-naflex-p256
-    views: *as-is-views
+    views: *full-views
   - name: local-siglip2-p256-crop
     backend: embedding
     embedding: local-siglip2-so400m-patch16-naflex-p256
@@ -616,7 +651,7 @@ pipeline:
   # one whole-image request to the named remote `zxing-cpp` engine. The long side is
   # 1600 px and a smaller photo is scaled UP to it. The YAML anchor
   # `barcode-options` holds the options one time. Read docs/plans/42_barcode-step.md.
-  - name: barcode-siglip2-p256-as-is
+  - name: barcode-siglip2-p256
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p256
     barcode: &barcode-options
@@ -626,22 +661,22 @@ pipeline:
       tile_scan: false
       max_side: 1600
       upscale: true
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-p256-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p256
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-siglip2-p256-crop-seg
+  - name: barcode-siglip2-p256-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p256
     barcode: *barcode-options
-    views: *crop-seg-views
-  - name: barcode-siglip2-p512-as-is
+    views: *seg-views
+  - name: barcode-siglip2-p512
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-p512-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
@@ -649,136 +684,136 @@ pipeline:
     views: *crop-views
   # Plan 82: the barcode twins of the seven plan 82 pipelines (the rule of
   # `tests/test_barcode.py`: each plain embedding pipeline has a twin).
-  - name: barcode-siglip2-p512-crop-seg
+  - name: barcode-siglip2-p512-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
     barcode: *barcode-options
-    views: *crop-seg-views
-  - name: barcode-siglip2-p512-rot5-as-is
+    views: *seg-views
+  - name: barcode-siglip2-p512-rot5
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-p512-rot5-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-siglip2-p512-rot5-crop-seg
+  - name: barcode-siglip2-p512-rot5-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     barcode: *barcode-options
-    views: *crop-seg-views
-  - name: barcode-siglip2-p512-rot10-as-is
+    views: *seg-views
+  - name: barcode-siglip2-p512-rot10
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-p512-rot10-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-siglip2-p512-rot10-crop-seg
+  - name: barcode-siglip2-p512-rot10-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
     barcode: *barcode-options
-    views: *crop-seg-views
-  - name: barcode-siglip2-p1024-as-is
+    views: *seg-views
+  - name: barcode-siglip2-p1024
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p1024
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-p1024-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p1024
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-siglip2-p14-384-as-is
+  - name: barcode-siglip2-p14-384
     backend: embedding
     embedding: gx10-siglip2-so400m-patch14-384
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-p14-384-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch14-384
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-siglip2-256-as-is
+  - name: barcode-siglip2-256
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-256
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-256-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-256
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-siglip2-384-as-is
+  - name: barcode-siglip2-384
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-384
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-384-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-384
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-siglip2-512-as-is
+  - name: barcode-siglip2-512
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-512
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-siglip2-512-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-512
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-naflexvit-p256-as-is
+  - name: barcode-naflexvit-p256
     backend: embedding
     embedding: gx10-naflexvit-so400m-patch16-siglip2-p256
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-naflexvit-p256-crop
     backend: embedding
     embedding: gx10-naflexvit-so400m-patch16-siglip2-p256
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-pe-core-l14-336-as-is
+  - name: barcode-pe-core-l14-336
     backend: embedding
     embedding: gx10-pe-core-l14-336
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-pe-core-l14-336-crop
     backend: embedding
     embedding: gx10-pe-core-l14-336
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-dinov3-vitb16-as-is
+  - name: barcode-dinov3-vitb16
     backend: embedding
     embedding: gx10-dinov3-vitb16
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-dinov3-vitb16-crop
     backend: embedding
     embedding: gx10-dinov3-vitb16
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-dinov3-vitl16-as-is
+  - name: barcode-dinov3-vitl16
     backend: embedding
     embedding: gx10-dinov3-vitl16
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-dinov3-vitl16-crop
     backend: embedding
     embedding: gx10-dinov3-vitl16
     barcode: *barcode-options
     views: *crop-views
-  - name: barcode-local-siglip2-p256-as-is
+  - name: barcode-local-siglip2-p256
     backend: embedding
     embedding: local-siglip2-so400m-patch16-naflex-p256
     barcode: *barcode-options
-    views: *as-is-views
+    views: *full-views
   - name: barcode-local-siglip2-p256-crop
     backend: embedding
     embedding: local-siglip2-so400m-patch16-naflex-p256
@@ -812,6 +847,22 @@ pipeline:
     rerank: *rerank-options
     views: *crop-views
 
+  - name: barcode-rerank-siglip2-512-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-512
+    workers: 4
+    barcode: *barcode-options
+    rerank: *rerank-options
+    views: *seg-views
+
+  - name: barcode-rerank-siglip2-512-rot5-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-512-rot5
+    workers: 4
+    barcode: *barcode-options
+    rerank: *rerank-options
+    views: *seg-views
+
   - name: barcode-rerank-siglip2-p512-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
@@ -819,6 +870,14 @@ pipeline:
     barcode: *barcode-options
     rerank: *rerank-options
     views: *crop-views
+
+  - name: barcode-rerank-siglip2-p512-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    workers: 4
+    barcode: *barcode-options
+    rerank: *rerank-options
+    views: *seg-views
   - name: barcode-rerank-siglip2-p1024-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p1024
@@ -827,10 +886,18 @@ pipeline:
     rerank: *rerank-options
     views: *crop-views
 
+  - name: barcode-rerank-siglip2-p1024-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p1024
+    workers: 4
+    barcode: *barcode-options
+    rerank: *rerank-options
+    views: *seg-views
+
   # Two retrieval towers: the package crop searches `full` vectors, and the segmented
   # label searches `label` vectors of the same index. A missing label uses `full` alone.
   # Keep the first tower equal to `barcode-rerank-siglip2-512-crop`.
-  - name: barcode-rerank-siglip2-512-crop-label
+  - name: barcode-rerank-siglip2-512-crop-label-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-512
     workers: 4

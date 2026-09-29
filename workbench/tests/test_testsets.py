@@ -481,6 +481,40 @@ class CreateSetTest(unittest.TestCase):
         self.assertEqual([s["name"] for s in self.view()["sets"]], ["my"])
 
 
+class RenameSetTest(unittest.TestCase):
+    """A rename keeps every row of a populated set under the new name."""
+    setUp, tearDown, view = TestsetsTest.setUp, TestsetsTest.tearDown, TestsetsTest.view
+    write, query = TestsetsTest.write, TestsetsTest.query
+
+    def test_a_populated_set_is_renamed_without_losing_rows(self):
+        before = self.query("SELECT rowid, source_dir FROM test_set WHERE set_name = 'my'")[0]
+        counts = [self.query("SELECT count(*) FROM %s WHERE set_name = 'my'" % table)[0][0]
+                  for table in ("test_photo", "test_variant", "test_photo_comment")]
+        self.assertEqual(self.write(TS.rename_set, "test-1"),
+                         {"ok": True, "set": "test-1", "old_set": "my"})
+        after = self.query(
+            "SELECT rowid, source_dir, edited_at FROM test_set WHERE set_name = 'test-1'")[0]
+        self.assertEqual(after[:2], before)
+        self.assertTrue(after[2])
+        self.assertEqual([self.query(
+            "SELECT count(*) FROM %s WHERE set_name = 'test-1'" % table)[0][0]
+            for table in ("test_photo", "test_variant", "test_photo_comment")], counts)
+        self.assertEqual(self.query("SELECT 1 FROM test_set WHERE set_name = 'my'"), [])
+        self.assertEqual(self.query("PRAGMA foreign_key_check"), [])
+        self.assertEqual(self.view("test-1")["set"], "test-1")
+
+    def test_a_bad_same_or_present_name_is_refused(self):
+        conn = sqlite3.connect(self.db)
+        conn.execute("INSERT INTO test_set (set_name, source_dir) VALUES ('two', 'source')")
+        conn.commit()
+        conn.close()
+        for name, code in (("My", 400), ("my", 400), ("two", 409)):
+            with self.assertRaises(TS.TestsetError) as caught:
+                self.write(TS.rename_set, name)
+            self.assertEqual(caught.exception.code, code, name)
+        self.assertEqual([s["name"] for s in self.view()["sets"]], ["my", "two"])
+
+
 class PhotoTagsTest(unittest.TestCase):
     """Plan 66: a tag belongs to the image bytes, so each photo of the same bytes, in each
     place and in each set, shows it."""

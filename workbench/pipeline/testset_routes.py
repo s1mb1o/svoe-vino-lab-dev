@@ -31,6 +31,7 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
     POST /api/testset-from-run    {run, misses, name}; misses r1 or r5: a new set from
                                   the misses of the run (plan 44, `testset_from_run.py`)
     POST /api/testset-new         {name}: a new empty set (plan 57, `Add new testset …`)
+    POST /api/testset-rename      {set, name}: rename a test set
 
 A write runs in one transaction. `lab_server.py` answers HTTP 503 for an error of the
 database or of the configuration. The comments of a whole wine use the route
@@ -51,6 +52,7 @@ UPLOAD = "/api/testset-upload"
 FETCH = "/api/testset-fetch"
 FROM_RUN = "/api/testset-from-run"
 NEW = "/api/testset-new"
+RENAME = "/api/testset-rename"
 JSON_TYPE = "application/json; charset=utf-8"
 # The largest body of a write, in bytes. The JSON form of a comment of 4,000 characters
 # MAY need 6 bytes for each character.
@@ -73,6 +75,7 @@ WRITES = {
     # `respond` fetches the address before the write transaction and adds `data` and `name`.
     FETCH: (testsets.upload_photo, ("set", "place", "data", "name")),
     NEW: (testsets.create_set, ("name",)),
+    RENAME: (testsets.rename_set, ("set", "name")),
     # `respond` puts the directory of the runs of the server before these keys.
     FROM_RUN: (testset_from_run.build, ("run", "misses", "name")),
 }

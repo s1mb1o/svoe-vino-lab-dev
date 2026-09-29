@@ -156,7 +156,47 @@ class ConfigurationsTest(Lab):
                          (False, embedding_run.NO_INDEX, 1))
         self.assertTrue(rows["broken"]["reason"].startswith("configuration error"))
         self.assertEqual((rows[REMOTE]["runnable"], rows[REMOTE]["workers"]), (True, 2))
+        self.assertFalse(rows[REMOTE]["device_ip"])
         self.assertIsNone(rows[REMOTE]["job"]["state"])
+
+    def test_a_device_pipeline_requires_an_ip_and_puts_it_into_the_command(self):
+        config = json.loads(self.config.read_text(encoding="utf-8"))
+        config["pipeline"].append({
+            "name": "android-device-match-k20", "backend": "svoe-vino-ru",
+            "url": "http://{device_ip}:18088/v1/match", "device_ip": True,
+            "response": "candidates", "query": {"k": 20}, "top_k": 20,
+            "timeout_s": 120, "workers": 1})
+        self.config.write_text(json.dumps(config), encoding="utf-8")
+        settings = self.settings()
+        rows = {row["name"]: row for row in
+                run_jobs.configurations_view(settings, self.jobs, "my")["configurations"]}
+        self.assertTrue(rows["android-device-match-k20"]["device_ip"])
+        for body, text in (({"configuration": "android-device-match-k20", "set": "my"},
+                            "device_ip is required"),
+                           ({"configuration": "android-device-match-k20", "set": "my",
+                             "device_ip": "pixel.local"}, "IPv4"),
+                           ({"configuration": REMOTE, "set": "my",
+                             "device_ip": "192.168.86.42"}, "not valid")):
+            with self.subTest(body=body):
+                code, answer = run_jobs.start(settings, self.jobs, body, self.runs)
+                self.assertEqual(code, 400)
+                self.assertIn(text, answer["error"])
+        with mock.patch.object(run_jobs.subprocess, "Popen") as popen:
+            popen.return_value.pid = 4321
+            popen.return_value.poll.return_value = 0
+            code, answer = run_jobs.start(
+                settings, self.jobs,
+                {"configuration": "android-device-match-k20", "set": "my",
+                 "device_ip": "192.168.86.42"}, self.runs)
+        self.assertEqual(code, 202, answer)
+        command = popen.call_args[0][0]
+        self.assertEqual(command[command.index("--device-ip") + 1], "192.168.86.42")
+        self.assertEqual(answer["device_ip"], "192.168.86.42")
+
+    def test_the_new_run_dialog_has_the_device_ip_parameter(self):
+        page = (Path(run_jobs.__file__).parent / "pages" / "testset.html").read_text("utf-8")
+        self.assertIn('id="run-device-ip"', page)
+        self.assertIn("body.device_ip = address", page)
 
     def test_an_unknown_set_is_an_error(self):
         with self.assertRaises(run_jobs.benchmark.BenchmarkError):
@@ -442,6 +482,8 @@ class SelftestJobTest(Lab):
             ({"selftest": "Bad Name"}, 400, "selftest MUST name"),
             ({"selftest": "gw", "set": "my"}, 400, "no configuration and no set"),
             ({"selftest": "gw", "configuration": "emb"}, 400, "no configuration and no set"),
+            ({"selftest": "gw", "device_ip": "192.168.86.42"}, 400,
+             "not valid for a self-test"),
             ({"selftest": "gw", "limit": 0}, 400, "limit MUST"),
             ({"selftest": "gw", "use_cache": "no"}, 400, "use_cache MUST"),
             ({"selftest": "nope"}, 404, "no embedding nope"),

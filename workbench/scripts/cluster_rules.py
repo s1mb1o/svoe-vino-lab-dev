@@ -76,7 +76,7 @@ def stage_entries(cfg, config):
         raise common.ConfigError(
             "cluster_rules: the keys vlm and rules_vlm replace the old keys %s; name an "
             "entry of the key vlm" % ", ".join(old))
-    first = vlm_config.entry(config, cfg.get("vlm") or "qwen3.5-9b")
+    first = vlm_config.entry(config, cfg.get("vlm") or "qwen3.5-9b-nvfp4")
     return first, vlm_config.entry(config, cfg.get("rules_vlm") or first.name)
 
 

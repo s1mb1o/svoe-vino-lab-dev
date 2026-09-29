@@ -1294,7 +1294,7 @@ write cases on a copy: start `python3 pipeline/lab_server.py --port 8174 --no-br
 | TP39 | Choose an embedding in `Clusters` and `cluster size, largest first` in `Sort` | The first headers read `c001 · 8 of 8`, then the clusters of 6 (`c002`, `c003`, `c004` on 2026-09-26). Each size stands before a smaller size; a tie goes by the id. Inside a cluster the rows go by slug. The address holds `sort=cluster_size`. |
 | TP40 | Set `Clusters` back to `No` after TP39 | `Sort` goes to `slug A-Z`, and `cluster size, largest first` is disabled again. |
 | TP41 | Open the reported Yandex Images viewer, then drag its selected image onto the Drawer and onto a wine row | Each target gets its dashed frame. The page reads the image URL from the browser drag, `POST /api/testset-fetch` answers 200, and the 1000 × 1500 WebP appears as an unlabelled card. A reload keeps it. Dropping the same bytes in the same place reports the existing-photo error. |
-| TP42 | Open `/testset?set=abobamakers`, open `Additional settings`, and choose `added by hand` in `Origin` | The table holds the row `No Match` and the wines added with `Add wine` on `/dataset`: each slug starts with `__`. The Drawer is not a table row. A wine with no photo is listed. The button reads `Additional settings · 1`. The address holds `origin=manual`. On 2026-09-29: `__cli-index-smoke-20260929`, `__vino-shardone-sovinon-blan-kyuve`, `__web-index-smoke-20260929`. A Removed wine (`__aaaaa`) is not listed, as on the plain page. |
+| TP42 | Open `/testset?set=test-1`, open `Additional settings`, and choose `added by hand` in `Origin` | The table holds the row `No Match` and the wines added with `Add wine` on `/dataset`: each slug starts with `__`. The Drawer is not a table row. A wine with no photo is listed. The button reads `Additional settings · 1`. The address holds `origin=manual`. On 2026-09-29: `__cli-index-smoke-20260929`, `__vino-shardone-sovinon-blan-kyuve`, `__web-index-smoke-20260929`. A Removed wine (`__aaaaa`) is not listed, as on the plain page. |
 | TP43 | Keep `added by hand`, then choose `fully labelled` in `Progress` | Only the wines added by hand that have photos and are fully labelled stay. On 2026-09-29 no such wine exists: only `No Match` stays. Choose `any` in `Origin`: the full table returns, and the address has no `origin`. |
 
 ### The row "No Match" and the Drawer
@@ -1432,12 +1432,12 @@ SAM3 and to the gateway of gx10.
 ## The catalogue inputs of a candidate — plan 38
 
 Read [plan 38](docs/plans/38_candidate-inputs.md). `$H` is `http://127.0.0.1:8168`. `$R` is
-a run of `siglip2-p256-as-is` made after plan 38.
+a run of `siglip2-p256` made after plan 38.
 
 | # | Case | Expected result |
 |---|---|---|
 | CI1 | `python3 -m unittest discover -s tests -p 'test_embedding_run.py'` | 33 tests `OK` (2026-09-26); the class `CandidateItemsTest` holds 9. No request goes to gx10. |
-| CI2 | `python3 pipeline/embedding_run.py --name siglip2-p256-as-is --set my --limit 30 --label probe`, then read the first row of `results.jsonl` | Each candidate holds `items`. For `q-000001`, rank 1 `fanagoriya-100-ottenkov-…` has 3 `full` items (0.8141, 0.5488, 0.5293) and 3 `label` items with `cosine` null. |
+| CI2 | `python3 pipeline/embedding_run.py --name siglip2-p256 --set my --limit 30 --label probe`, then read the first row of `results.jsonl` | Each candidate holds `items`. For `q-000001`, rank 1 `fanagoriya-100-ottenkov-…` has 3 `full` items (0.8141, 0.5488, 0.5293) and 3 `label` items with `cosine` null. |
 | CI3 | Open `$H/runs#$R` and click the image of the candidate at rank 1 of the first row | The large view opens. The strip shows the note `score 0.8141: the mean of the best cosine of each view (full 0.8141)`, then 6 items: `full · 0.8141` with the badge `best`, `full · 0.5488`, `full · 0.5293`, and 3 dim items `label · not compared`. The last note reads `The query has no view label, so the run did not compare these items.` |
 | CI4 | Click the second item of CI3 | The PNG of that item becomes the large image. The view stays open. |
 | CI5 | Press the right arrow key in the view of CI3 | The view shows the candidate at rank 2, and the strip shows its items (`full · 0.7794`). |
@@ -1479,9 +1479,9 @@ changed too.
 | # | Case | Expected result |
 |---|---|---|
 | PL1 | `python3 -m unittest discover -s tests -p 'test_pipelines.py'`, then the same with `test_run_jobs.py`, `test_remote_run.py`, and `test_run_routes.py` | 29, 14, 13, and 7 tests `OK` (2026-09-26). |
-| PL2 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import pipelines; print([(n, p.backend) for n, p, e in pipelines.load().entries])"` | `[('vino-svoe-search-by-photo', 'svoe-vino-ru'), ('siglip2-p256-as-is', 'embedding'), ('siglip2-p256-crop', 'embedding')]` (since about 01:07 on 2026-09-26: the owner removed the pipeline `gx10-siglip2-so400m-patch16-naflex-p256`). |
+| PL2 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import pipelines; print([(n, p.backend) for n, p, e in pipelines.load().entries])"` | `[('vino-svoe-search-by-photo', 'svoe-vino-ru'), ('siglip2-p256', 'embedding'), ('siglip2-p256-crop', 'embedding')]` (since about 01:07 on 2026-09-26: the owner removed the pipeline `gx10-siglip2-so400m-patch16-naflex-p256`). |
 | PL3 | After a restart of 8168: open `$H/testset?set=official-real-photos` and click `Run>` | The dialog lists the three pipelines of PL2 alone, with the notes `svoe-vino-ru` and `embedding`. No entry of `embeddings` has a row. `Start` is off until a row is chosen. |
-| PL4 | `curl -s "$H/api/run-configurations?set=official-real-photos"` | The three pipelines with `runnable: true`. `siglip2-p256-as-is` and `siglip2-p256-crop` have `workers: 1`. A pipeline of the backend `embedding` whose entry has no index has `runnable: false` and the reason `no index: build it on /embedding`. |
+| PL4 | `curl -s "$H/api/run-configurations?set=official-real-photos"` | The three pipelines with `runnable: true`. `siglip2-p256` and `siglip2-p256-crop` have `workers: 1`. A pipeline of the backend `embedding` whose entry has no index has `runnable: false` and the reason `no index: build it on /embedding`. |
 | PL5 | Start a pipeline of the backend `embedding` in the dialog, for example `siglip2-p256-crop` with `first N queries` 3 | The job row counts `1 / 3` to `3 / 3`, then `done`. The runner uses `~/.venvs/svoe-vino-lab/bin/python` (`embedding_python`): `lsof -bnPw -p <pid> \| grep -c .venvs/svoe-vino-lab` is above 0 (a framework Python shows the Homebrew path in `ps`). The run sends SAM3 and embedding requests to gx10. |
 | PL6 | `curl -s -X POST $H/api/run-jobs -d '{"configuration":"gx10-dinov3-vitb16","set":"my"}'` | HTTP 404 with `config.yaml has no pipeline gx10-dinov3-vitb16`: an entry of `embeddings` is not a pipeline. |
 | PL7 | Open `$H/runs` in a window 1,440 px wide | `Pipeline` stands in the header, right after the title `Match runs N run(s)`. The table has the column `pipeline`. |
@@ -1491,8 +1491,8 @@ changed too.
 | PL11 | Choose a pipeline with no run | `no run of this pipeline`; `prev` and `next` are off. |
 | PL12 | Open `$H/embedding` and `$H/clusters` | Each combobox lists the 11 entries of `embeddings` alone: no `mock` and no `vino-svoe-search-by-photo`. |
 | PL13 | `curl -s -X POST $H/api/embeddings/mock/build` | HTTP 404 with `config.yaml has no embedding mock`. |
-| PL14 | `python3 pipeline/remote_run.py --name siglip2-p256-as-is --set my` | `error: the pipeline siglip2-p256-as-is has the backend embedding; this script runs the backend svoe-vino-ru alone`, exit code 1. `python3 pipeline/remote_run.py --name mock --set my` gives `error: config.yaml has no pipeline mock`. |
-| PL15 | In the dialog of PL3, choose `siglip2-p256-as-is`, `first N queries` 3, `Start` | The job ends with `3 / 3`. The run sends no SAM3 request and one image for each photo. `run.json` holds `backend.views.full` = `white_background`, `resize`. On `/runs`, the model input of a row is the whole photo, 1024 px on the long side. |
+| PL14 | `python3 pipeline/remote_run.py --name siglip2-p256 --set my` | `error: the pipeline siglip2-p256 has the backend embedding; this script runs the backend svoe-vino-ru alone`, exit code 1. `python3 pipeline/remote_run.py --name mock --set my` gives `error: config.yaml has no pipeline mock`. |
+| PL15 | In the dialog of PL3, choose `siglip2-p256`, `first N queries` 3, `Start` | The job ends with `3 / 3`. The run sends no SAM3 request and one image for each photo. `run.json` holds `backend.views.full` = `white_background`, `resize`. On `/runs`, the model input of a row is the whole photo, 1024 px on the long side. |
 | PL16 | The same with `siglip2-p256-crop` | The job ends with `3 / 3`. The model input of a row is the box of the package with its own background, 1024 px on the long side. A photo with no package found gets the border cut of the white rule. |
 | PL17 | Put `views: {full: {steps: [{step: resize, max_size: 1024}, {step: segment, target: package}]}}` into a copy of a pipeline of the backend `embedding` and load the copy with `pipelines.load` | The entry has the error: view full: the first step MUST be segment. |
 
@@ -1507,7 +1507,7 @@ Read [plan 42](docs/plans/42_barcode-step.md). `$H` is `http://127.0.0.1:8168`.
 | BC3 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import pipelines; s = pipelines.load(); print(sum(1 for n, p, e in s.entries if p and p.barcode), [n for n, p, e in s.entries if e])"` | `22 []`: 22 twins `barcode-<pipeline>`, and no entry with an error. |
 | BC4 | Put `barcode: {formats: [UPCE]}` into a copy of a twin and load the copy with `pipelines.load` | The entry has the error `barcode: unknown format UPCE`. |
 | BC5 | After a restart of 8168: open `$H/testset?set=my` and click `Run>` | The dialog lists the 22 twins. A twin is runnable when the entry of its pipeline has an index. |
-| BC6 | Start `barcode-siglip2-p256-as-is` on the set `my` with `first N queries` 10 | The job ends with `10 / 10`. `run.json` holds `backend.barcode.engine: qr-scanner`, the HTTP scanner endpoint and engine, and the count of the codes. Each uncached photo makes one whole-image `POST /scan`; a photo with a code of `wine_code` has candidates with `source`, `code`, `read`, and `format`, and score 1.0. |
+| BC6 | Start `barcode-siglip2-p256` on the set `my` with `first N queries` 10 | The job ends with `10 / 10`. `run.json` holds `backend.barcode.engine: qr-scanner`, the HTTP scanner endpoint and engine, and the count of the codes. Each uncached photo makes one whole-image `POST /scan`; a photo with a code of `wine_code` has candidates with `source`, `code`, `read`, and `format`, and score 1.0. |
 | BC7 | On `/runs`, open the model inputs of a row that the code lookup answered | No input, and the note `The code lookup answered this photo: gtin ...`. A candidate of that row shows the note `The code lookup gave this wine`. |
 
 ## The cache of the model calls — `pipeline/model_cache.py` and `pipeline/gdino.py`
@@ -1548,11 +1548,11 @@ Read [plan 53](docs/plans/53_disable-barcode-checkbox.md). `$H` is `http://127.0
 | NB2 | `curl -s "$H/api/run-configurations?set=my"` | Each pipeline has the key `barcode`: true for each `barcode-*` pipeline, false for the others. |
 | NB3 | Open `$H/testset?set=my` and click `Run>` | The checkbox `Disable barcode fast path` stands after `Use caches`, unchecked and greyed. After a reload, it is unchecked again. |
 | NB4 | Choose `siglip2-p256-crop`, then `barcode-siglip2-p256-crop` | The box is greyed for the first, with the title `The pipeline siglip2-p256-crop has no barcode step.`, and enabled for the second. |
-| NB5 | Check the box, choose `barcode-siglip2-p256-as-is`, `first N queries` 3, `Start` | `ps` shows `run_job.py ... --no-barcode`. The event `start` in `work/run-jobs/barcode-siglip2-p256-as-is/job.log` and `run.json` hold `"use_barcode": false`. The key `backend` of `run.json` has no key `barcode`, and its label has no `after the code lookup`. The step popup of a photo on `/runs` has no step `barcode`. |
+| NB5 | Check the box, choose `barcode-siglip2-p256`, `first N queries` 3, `Start` | `ps` shows `run_job.py ... --no-barcode`. The event `start` in `work/run-jobs/barcode-siglip2-p256/job.log` and `run.json` hold `"use_barcode": false`. The key `backend` of `run.json` has no key `barcode`, and its label has no `after the code lookup`. The step popup of a photo on `/runs` has no step `barcode`. |
 | NB6 | NB5 with the box unchecked | The event `start` and `run.json` hold `"use_barcode": true`, and the command has no `--no-barcode`. |
-| NB7 | NB5 with `siglip2-p256-as-is` (the box is greyed) | The body of `POST /api/run-jobs` has no `use_barcode`. The event `start` holds `"use_barcode": null`; `run.json` has no key `use_barcode`. |
+| NB7 | NB5 with `siglip2-p256` (the box is greyed) | The body of `POST /api/run-jobs` has no `use_barcode`. The event `start` holds `"use_barcode": null`; `run.json` has no key `use_barcode`. |
 | NB8 | Open `$H/runs` | The run of NB5 has the tag `no barcode` after its id, with a title. The runs of NB6 and NB7 have no tag. |
-| NB9 | `curl -s -X POST $H/api/run-jobs -d '{"configuration":"barcode-siglip2-p256-as-is","set":"my","use_barcode":"no"}'` | HTTP 400 with `use_barcode MUST be true or false`. No job starts. |
+| NB9 | `curl -s -X POST $H/api/run-jobs -d '{"configuration":"barcode-siglip2-p256","set":"my","use_barcode":"no"}'` | HTTP 400 with `use_barcode MUST be true or false`. No job starts. |
 | NB10 | Switch the system to dark mode and repeat NB3, NB4, and NB8 | The checkbox, its greyed state, and the tag follow the dark theme. On 2026-09-26 at 19:53, NB3, NB4, NB8, and the request bodies of NB5 to NB7 passed in a browser check with `POST /api/run-jobs` intercepted, in light and dark mode. |
 
 ## The key `rebuild_embeddings_on_run` — `pipeline/rebuild_on_run.py`
@@ -1723,7 +1723,7 @@ Mac.
 | RC3 | Choose `local-siglip2-p256-crop`, drop the photo `a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135/01_manual.jpg` of set `my` on the page | The message counts the seconds. The answer shows `Round 0` to `Round 2`, the cards `00 Input photo` to `05 Score`, and the total line. The head line shows `#1 a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135` and `process … (start of Python, build of the backend …, recognition …)`. Only `00 Input photo` is open. |
 | RC4 | Choose `barcode-local-siglip2-p256-crop`, press `Recognize` with the photo `abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105/02_manual.jpg` of set `my` | Only the cards `00 Input photo` and `01 Decode codes, whole photo`. The head line has the tag `code lookup`. |
 | RC5 | Click the drop area, choose a file | The file dialog opens. The chosen file goes to the pipeline at once, and the drop area shows its preview and its name. |
-| RC6 | Change the pipeline while a photo is loaded, then reload the page, then open `$H/recognize?pipeline=local-siglip2-p256-as-is` | The change sends nothing and enables `Recognize`. After the reload the select keeps the pipeline. The address wins over the stored value. |
+| RC6 | Change the pipeline while a photo is loaded, then reload the page, then open `$H/recognize?pipeline=local-siglip2-p256` | The change sends nothing and enables `Recognize`. After the reload the select keeps the pipeline. The address wins over the stored value. |
 | RC7 | Open a card, click an image | The card opens and closes with a click. The image opens in the large view; a click or `Esc` closes it. |
 | RC8 | `curl -s -X POST "$H/api/recognize?pipeline=nope" --data-binary @<photo>`, then the same with `pipeline=local-siglip2-p256-crop` and `--data-binary 'text'` | HTTP 400 `config.yaml has no pipeline nope`, then HTTP 400 `the body is not an image that Pillow can read`. |
 | RC9 | Open `$H/recognize` with the system theme dark, then light, and at a width of 390 px | Both themes are readable. No horizontal scroll of the page at 390 px. |
@@ -1783,17 +1783,17 @@ a set in `data/catalog/catalog.sqlite3`; no route removes it.
 | NS8 | Switch the system to dark mode and repeat NS3 | The dialog, the field, and the error line are readable. |
 | NS9 | Open `Run>`, press Escape; open it again and click outside | The Run> dialog closes each time, as before plan 57. |
 
-## The pipeline `siglip2-p256-crop-seg`
+## The pipeline `siglip2-p256-seg`
 
 Owner message of 2026-09-26T23:24:00+0300. `$H` is the lab server.
 
 | # | Case | Expected result |
 |---|---|---|
 | CS1 | `python3 -m unittest discover -s tests -p 'test_barcode.py'` | All tests `OK`. The twin test counts 26 plain pipelines. |
-| CS2 | Open `$H/recognize` and open the select `Pipeline` | `siglip2-p256-crop-seg` comes directly after `siglip2-p256-crop`, and `barcode-siglip2-p256-crop-seg` directly after `barcode-siglip2-p256-crop`. Both are enabled. |
-| CS3 | Choose `siglip2-p256-crop-seg` and drop the photo `a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135/01_manual.jpg` of set `my` | The card `View full` reads `segment → remove_background → white_background → resize`. Its image shows the bottle on white, with no room behind it. `#1` is `a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135` (cosine 0.9098 on 2026-09-26). |
+| CS2 | Open `$H/recognize` and open the select `Pipeline` | `siglip2-p256-seg` comes directly after `siglip2-p256-crop`, and `barcode-siglip2-p256-seg` directly after `barcode-siglip2-p256-crop`. Both are enabled. |
+| CS3 | Choose `siglip2-p256-seg` and drop the photo `a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135/01_manual.jpg` of set `my` | The card `View full` reads `segment → remove_background → white_background → resize`. Its image shows the bottle on white, with no room behind it. `#1` is `a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135` (cosine 0.9098 on 2026-09-26). |
 | CS4 | Choose `siglip2-p256-crop` and press `Recognize` | The image of `View full` keeps the background inside the box. The cosine of `#1` is lower (0.8463 on 2026-09-26). |
-| CS5 | Choose `barcode-siglip2-p256-crop-seg` and press `Recognize` with the same photo | The card `Decode codes, whole photo` comes first. With no code hit, the rounds and `#1` are the rounds and `#1` of CS3. |
+| CS5 | Choose `barcode-siglip2-p256-seg` and press `Recognize` with the same photo | The card `Decode codes, whole photo` comes first. With no code hit, the rounds and `#1` are the rounds and `#1` of CS3. |
 
 ## Shared codes — plan 58
 
@@ -1858,7 +1858,7 @@ The harness is `scripts/benchmark_barcode_variants.py`.
 
 ## Label retrieval tower
 
-Profile: `barcode-rerank-siglip2-512-crop-label`.
+Profile: `barcode-rerank-siglip2-512-crop-label-seg`.
 
 | # | Case | Expected result |
 |---|---|---|
@@ -2321,7 +2321,7 @@ Run the commands in `workbench/`. RR1 and RR2 do not call a model service.
 | RR1 | `python3 -m unittest discover -s tests -p 'test_rotated_embeddings.py'` | 24 tests are `OK`. The tests cover the key `rotation_step`, the hash, the rotated inputs, the build (rows, angles, resume, stop, stale, bad record, workers), the search (max over rows, `angle`), the bundle version 3, and the catalogue copy. |
 | RR2 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s ../matcher/tests -p 'test_rotation.py'` | 6 tests are `OK`: bundle version 3 with `Bundle.angles`, versions 1 and 2 with no angles, a catalogue index with rotated rows, bad rows and angles rejected. |
 | RR3 | Open `/embedding` after a build | `…-p512-rot5` and `…-p512-rot10` show 2,270 current items and no error. |
-| RR4 | `python3 pipeline/embedding_run.py --name siglip2-p512-rot5-as-is --set my --limit 3 --label smoke` | 3 queries; each candidate in `results.jsonl` has `angle`, and each of its items has `angle`. |
+| RR4 | `python3 pipeline/embedding_run.py --name siglip2-p512-rot5 --set my --limit 3 --label smoke` | 3 queries; each candidate in `results.jsonl` has `angle`, and each of its items has `angle`. |
 
 ## Matcher API pipelines — plan 83
 
@@ -2337,3 +2337,45 @@ archive.
 | MP4 | `python3 pipeline/remote_run.py --name matcher-match-k20 --set my --limit 3 --label smoke` | 3 queries; each row has 20 candidates, the highest score first. `/runs` shows the normal candidate strip. |
 | MP5 | `python3 pipeline/remote_run.py --name matcher-group-match --set my --limit 3 --label smoke` | 3 queries; each row holds the key `group` with `bottles` (`n`, `id`, `box`, `candidates`) and no mask or preview. |
 | MP6 | Open the run of MP5 on `/runs`, in the light and the dark theme | Each row shows the photo with one numbered frame for each bottle, and to the right a grid: one line for each bottle, one column for each candidate. The frame and the card of the expected wine are green. A click on a card opens the large view. Checked on 2026-09-29 in headless Chromium on 8168: 6, 1, and 2 bottles, no page error. Before the redeploy of prod with plan 83, each bottle has one candidate. |
+
+## Android device HTTP evaluation — plan 86
+
+Run the commands in `workbench/`.
+AD4 and AD5 call the debug APK on the Android device.
+The debug APK MUST be open and its model pack MUST be ready.
+
+| # | Case | Expected result |
+|---|---|---|
+| AD1 | `python3 -m unittest discover -s tests -p 'test_pipelines.py'` | 32 tests are `OK`. The tests include the `device_ip` schema, IPv4 validation, placeholder binding, and both project entries. |
+| AD2 | `python3 -m unittest discover -s tests -p 'test_remote_run.py'` | 16 tests are `OK`. The tests include both Android device configurations. |
+| AD3 | `python3 -m unittest discover -s tests -p 'test_run_jobs.py'` | 27 tests are `OK`. The tests include New Run metadata, the required IP, self-test rejection, the generated command, and the page field. |
+| AD4 | `adb -s <serial> forward tcp:18088 tcp:18088`, then `curl -fsS http://127.0.0.1:18088/healthz` | HTTP 200. On Pixel 8 on 2026-09-29: pack `20260929-dis-main`, 2,093 wines. |
+| AD5 | Run both commands in `COMMANDS.md`, section `Android device API`, with `--limit 10` | Each run answers 10 requests with zero errors. On Pixel 8 on 2026-09-29: eval recall@1 0.3, median 4,349 ms; match recall@1 0.3, recall@5 0.6, recall@10 0.9, median 4,597 ms. |
+| AD6 | Open `/testset?set=my`, press `Run>`, and select a pipeline whose name starts with `android-device-` | The `device IPv4` field appears. Start stays disabled until the field holds a valid IPv4 address. The barcode checkbox is disabled. Checked in the live browser on 2026-09-29. |
+| AD7 | Select a pipeline that does not use the device | The `device IPv4` field is hidden. A POST that supplies `device_ip` for this pipeline returns HTTP 400. Checked in the live browser and focused tests on 2026-09-29. |
+| AD8 | Restart the lab server and request `/api/run-configurations?set=my` | HTTP 200. Both Android device rows have `device_ip: true`, one worker, and no barcode step. |
+| AD9 | POST one Android pipeline with `limit: 1` and `device_ip` to `/api/run-jobs`, then read `/api/run-jobs` | The job reaches `done`, has one answer and zero errors, keeps `device_ip`, and writes the resolved URL to `run.json`. Checked on Pixel 8 on 2026-09-29. |
+
+## Rename a test set
+
+Run from `workbench/`. These checks write only when the `Rename` button is pressed.
+
+| # | Case | Expected result |
+|---|---|---|
+| TR1 | `python3 -m unittest discover -s tests -p 'test_testset*.py'` | 57 tests are `OK`, including the preservation of photos, comments, and variant groups. |
+| TR2 | Open `/testset`, choose a set, and press `Rename…` | The dialog opens with the current name selected. `Rename` is disabled until the name is valid and different. |
+| TR3 | Enter the name of another set | The dialog reads `The set <name> exists already.` and `Rename` stays disabled. |
+| TR4 | Enter a free name and press Enter | The dialog closes; the selector and URL use the new name, the counts are unchanged, and the old name is absent. |
+
+## Barcode and rerank with package segmentation
+
+Prerequisites: the three configured indexes and cluster rules exist. The model services
+and QR scanner are available. The run commands are in `COMMANDS.md`.
+
+| ID | Action | Expected result |
+| --- | --- | --- |
+| BRS1 | Open the pipeline selectors on `/testset` and `/recognize`. | `barcode-rerank-siglip2-512-seg`, `barcode-rerank-siglip2-p512-seg`, and `barcode-rerank-siglip2-p1024-seg` are present and runnable. |
+| BRS2 | Inspect each preset and compare it with its `-crop` counterpart. | The index, barcode settings, rerank settings, and four-worker default match. The package view also has `remove_background` after `segment`. |
+| BRS3 | Run each preset on `my` with caches enabled. | Each saved run uses the requested preset, retains barcode and rerank steps, and sends the segmented package on white to the embedding model when barcode lookup does not answer. |
+| BRS4 | Build `gx10-siglip2-so400m-patch16-512-rot5` and its clusters and label rules with the commands in `COMMANDS.md`. | Each current full reference has 72 angles, from 0° to 355°. Label references have one vector. Both catalogue views appear in the cluster artifact. |
+| BRS5 | Run `barcode-rerank-siglip2-512-rot5-seg` on `my`. | The run uses the new index, four workers, barcode lookup, package segmentation on white, and cluster reranking. Compare its metrics with the baseline only when the query manifests match. |
