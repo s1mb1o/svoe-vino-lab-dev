@@ -2,6 +2,9 @@
 
 ## 2026-09-29
 
+- Redacted the Telegram bot token and the HTTP API token from every bot log line, including
+  the traceback text (Safety rule 8). An aiogram download error contains the file URL, and that
+  URL contains the bot token.
 - Deleted the earlier `accepted/` copies and full-fidelity artifact directories of a request
   when an administration retry moderates the image as unsafe (Safety rule 5). The deletion
   checks every date directory, because an earlier attempt can use another date directory.

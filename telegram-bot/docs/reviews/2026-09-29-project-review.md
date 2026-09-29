@@ -25,6 +25,7 @@ Column "Check" gives the verification method:
 | # | Status |
 |---|---|
 | H2 | Fixed on 2026-09-29. Regression test: `tests/test_processor_quality.py::test_unsafe_retry_removes_the_earlier_safe_copies`. |
+| H3 | Fixed on 2026-09-29. Regression test: `tests/test_log_redaction.py::test_a_download_failure_log_does_not_contain_the_bot_token`. Limit: the uvicorn loggers keep their own handlers and do not use `SecretRedactingFormatter`. |
 | All other items | Open. |
 
 ## High severity

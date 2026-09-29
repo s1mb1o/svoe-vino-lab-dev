@@ -85,6 +85,22 @@ from .wine import Wine, unknown_wine, wine_card, wine_from_card
 from .work_queue import QueueCapacityError, QueueClosedError, WorkQueue
 
 LOG = logging.getLogger("chto_za_vino_bot")
+LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s %(message)s"
+
+
+class SecretRedactingFormatter(logging.Formatter):
+    """Remove secret values from the formatted record, including the traceback text."""
+
+    def __init__(self, fmt: str, secrets: tuple[str, ...]) -> None:
+        super().__init__(fmt)
+        self._secrets = tuple(secret for secret in secrets if secret)
+
+    def format(self, record: logging.LogRecord) -> str:
+        text = super().format(record)
+        for secret in self._secrets:
+            text = text.replace(secret, "[REDACTED]")
+        return text
+
 
 AGE_CONFIRMATION_KEYBOARD = InlineKeyboardMarkup(
     inline_keyboard=[
@@ -1671,9 +1687,17 @@ async def sync_profile(bot: Bot, admin_user_id: int) -> None:
 
 async def run() -> None:
     settings = Settings.from_env()
+    # An aiogram download error contains the file URL, and that URL contains the bot token.
+    log_handler = logging.StreamHandler()
+    log_handler.setFormatter(
+        SecretRedactingFormatter(
+            LOG_FORMAT,
+            (settings.telegram_token, settings.http_api_token),
+        )
+    )
     logging.basicConfig(
         level=getattr(logging, settings.log_level, logging.INFO),
-        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+        handlers=[log_handler],
     )
     rejection_image = settings.rejection_image_file.read_bytes()
     if not rejection_image:

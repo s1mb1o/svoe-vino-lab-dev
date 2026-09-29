@@ -2,6 +2,18 @@
 
 ## 2026-09-29
 
+This entry records a log leak of the Telegram bot token.
+aiogram 3.31.0 `Bot.download_file` calls `stream_content` with `raise_for_status=True`.
+The download URL is `https://api.telegram.org/file/bot<TOKEN>/<file_path>`.
+An HTTP error status raises `aiohttp.ClientResponseError`.
+In aiohttp 3.14.3, `ClientResponseError.__str__` contains the complete request URL.
+`LOG.exception` in the download handler therefore wrote the token into the service journal.
+The bot now formats every root log record with `SecretRedactingFormatter`.
+The formatter removes the bot token and the HTTP API token from the complete text.
+The complete text includes the traceback.
+The uvicorn 0.54.0 loggers `uvicorn` and `uvicorn.access` keep their own handlers with
+`propagate: False`. These loggers do not use the formatter.
+
 This entry records the review from the hackathon host perspective.
 The review covered only `svoe-vino-lab/telegram-bot`.
 

@@ -84,6 +84,8 @@ The workspace rules are in `../../CLAUDE.md`.
 
 - Do not make a feedback UI update depend on a new database write.
 - A repeated callback MUST restore the correct keyboard after a Telegram edit failure.
+- Do not add a bot log handler without `SecretRedactingFormatter`. An aiogram download error
+  contains the file URL, and that URL contains the bot token.
 
 ## Verification
 
