@@ -108,8 +108,9 @@ class Fixture:
         self.db_path = str(self.root / "data" / "lab.sqlite3")
         os.makedirs(os.path.dirname(self.db_path))
         with closing(sqlite3.connect(self.db_path)) as conn:
-            conn.execute("CREATE TABLE wine_catalog (wine_slug TEXT, name TEXT)")
-            conn.executemany("INSERT INTO wine_catalog VALUES (?, ?)",
+            conn.execute("CREATE TABLE wine_catalog "
+                         "(wine_slug TEXT, name TEXT, name_patched TEXT)")
+            conn.executemany("INSERT INTO wine_catalog (wine_slug, name) VALUES (?, ?)",
                              [(s, "Name " + s) for s in (A, B, C, D)])
             conn.commit()
         self.config_path = str(self.root / "config.yaml")

@@ -70,7 +70,8 @@ the buttons `Disable` / `Enable`, `Remove`, and `Restore` below the catalogue im
 filter; the file does not change. The patch and the alternative photos keep their
 colours. The filter `State` shows `All (except Removed)`, `Disabled`, `Removed`, or `Favorites`
 (each favorite wine, also a removed one; the lab server alone). The lab server writes
-these data alone: the state of a wine; its GTINs and QR URLs (`wine_code`, plan 11); its
+these data alone: the state of a wine; its edited name (`name_patched`, plan 89); its
+GTINs and QR URLs (`wine_code`, plan 11); its
 manual Atlas Core binding (`wine_atlas_binding`, plan 15); its comments (`wine_comment`,
 plan 17); the favorite mark (`wine_favorite`, plan 19); the wine type
 (`wine_beverage_type`, plan 52); a wine added by hand, with a slug
@@ -283,6 +284,20 @@ confirmation. A tag is stored in lower case, with 1 to 64 letters, digits, `_`, 
 or `.`, and no white space. The page writes through `POST` and `DELETE` of
 `/api/dataset-tag`. The pipeline does not read the tags yet. Read
 [plan 63](docs/plans/63_wine-tags.md).
+
+The column `wine_catalog.name_patched` (schema 032) holds the name that a person gives a
+card (owner message of 2026-09-29T22:00:54+0300). The column `name` keeps the value of the
+import. The name in use is `name_patched`, else `name`, as `main_patched` and `main`. The
+imports compare and write `name` alone, so an edit gives no conflict, and an import keeps
+the edit. The button `edit` after `copy` of the card name opens a field with the name in
+use; Enter or the save button saves, and Esc cancels. A card with an edit shows the tag
+`name patched`; its title holds the catalogue name. The button `reset` gives the card the
+catalogue name again. A save of the catalogue name clears the edit. The page writes
+through `POST /api/wine-name`. The Dataset, Clusters, Testset, Runs, and Embeddings pages,
+the label rules, the cluster re-rank, the matcher bundle, and the view `matcher_wine`
+read the name in use. An edit makes no index and no cluster file stale. The next run of
+`pipeline/build_label_rules.py` builds the rule of a cluster with an edited card again.
+Read [plan 89](docs/plans/89_card-name-patch.md).
 
 The table `wine_beverage_type` (schema 023) holds the wine type of a wine. The column
 `beverage_type_code` has the name of the column of Drink Atlas Core: `4` is a wine, `44`

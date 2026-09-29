@@ -181,7 +181,8 @@ class Lists:
         try:
             cards = self.card_images(self.conn)
             names = dict(self.conn.execute(
-                "SELECT wine_slug, name FROM wine_catalog WHERE wine_slug IN (%s)"
+                "SELECT wine_slug, COALESCE(name_patched, name) FROM wine_catalog "
+                "WHERE wine_slug IN (%s)"
                 % ", ".join("?" for _ in self.slugs), sorted(self.slugs)))
         except sqlite3.Error:
             return  # the cards are a help; the slugs still stand

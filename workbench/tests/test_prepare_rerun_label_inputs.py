@@ -28,7 +28,8 @@ class LabelInputTest(unittest.TestCase):
         self.addCleanup(self.conn.close)
         self.conn.executescript("""
             CREATE TABLE wine_catalog (wine_slug TEXT PRIMARY KEY, state TEXT, name TEXT,
-                                       producer TEXT, category TEXT, region TEXT);
+                                       producer TEXT, category TEXT, region TEXT,
+                                       name_patched TEXT);
             CREATE TABLE wine_image (wine_slug TEXT, image_type TEXT, sha256 TEXT, source_name TEXT);
             CREATE TABLE image (sha256 TEXT PRIMARY KEY, folder TEXT, extension TEXT, width INT, height INT);
             CREATE TABLE image_derivative (source_sha256 TEXT, kind TEXT, method TEXT, settings TEXT,
@@ -46,7 +47,7 @@ class LabelInputTest(unittest.TestCase):
         path = self.root / "images" / "main" / (digest + ".bin")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(name.encode())
-        self.conn.execute("INSERT OR IGNORE INTO wine_catalog VALUES (?, ?, ?, '', '', '')", (name, state, name))
+        self.conn.execute("INSERT OR IGNORE INTO wine_catalog VALUES (?, ?, ?, '', '', '', NULL)", (name, state, name))
         self.conn.execute("INSERT INTO image VALUES (?, 'main', 'bin', 2, 2)", (digest,))
         self.conn.execute("INSERT INTO wine_image VALUES (?, ?, ?, ?)", (name, image_type, digest, name))
         return digest

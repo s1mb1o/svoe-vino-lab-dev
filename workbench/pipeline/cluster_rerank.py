@@ -292,7 +292,7 @@ def catalogue_names(db_path):
     uri = "file:%s?mode=ro" % db_path
     with closing(sqlite3.connect(uri, uri=True, timeout=30)) as conn:
         return {slug: name for slug, name in conn.execute(
-            "SELECT wine_slug, name FROM wine_catalog")}
+            "SELECT wine_slug, COALESCE(name_patched, name) FROM wine_catalog")}
 
 
 # ---------------------------------------------------------------- the backend

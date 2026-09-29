@@ -29,6 +29,15 @@
     as the Dockerfile does since `babef66`.
   - Five new tests. All 213 matcher tests pass, and
     `workbench/tests/test_matcher_parity.py` passes (10 tests).
+- Added `eval/` in the svoe-vino-lab root: the organizers' evaluation set of 2026-09-17
+  (`participant_test.sh`, `queries.tsv`, three photos in `queries/`, `checksums.sha256`),
+  copied from `svoe-wino-hackaton/dataset/official-2026-09-17/eval/`. The organizers'
+  `README.md` text stays verbatim. A new section describes the matcher start and the
+  organizers' command with port `8158` instead of `8080`. The `README.md` line of
+  `checksums.sha256` fails because of this section; the other five lines pass.
+  `eval/.gitignore` holds `predictions.jsonl`. The root `README.md` links `eval/README.md`.
+  A local run with `siglip2-p512-as-is` returned a slug for 3 of 3 photos. The details
+  are in `ResearchLog.md`.
 - Measured the backend `cascade` on the gx10 dev matcher (revision `f199e4d`; workbench
   plan 85, step 7; owner answers of 16:34:14 and 17:29:58). `official-real-photos`: R@1
   90.0 % at the cut 2.9 s and at 2.8 s, all answers within 3 s; `packages_first: true`

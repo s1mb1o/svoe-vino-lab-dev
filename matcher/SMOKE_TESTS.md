@@ -1,5 +1,13 @@
 # Matcher smoke tests
 
+## Organizers' eval script
+
+- Start the SigLIP2 matcher on port 8158 as `eval/README.md` states.
+- In `eval/`, run `participant_test.sh` with the organizers' arguments and port 8158.
+- Confirm exit code 0 and three lines in `predictions.jsonl`.
+- Confirm that each line has a non-null `predicted_slug` and `latency_ms` below 10,000.
+- Delete `predictions.jsonl` after the check.
+
 ## Single image regression
 
 - Send a known image to `POST /v1/eval/predict`.

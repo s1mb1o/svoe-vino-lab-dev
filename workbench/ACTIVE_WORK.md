@@ -3251,76 +3251,23 @@ The form of a section:
   Both GitHub APK digests match the local files. The unsigned APK is not published.
 - Updated for task 37: 2026-09-29T20:03:35+0300
 
-## drink-atlas-workspace-b6 [088a3a]
-
-- Task: a rotation test of one catalogue main image: cosine similarity to the indexed
-  `full` vector per angle (5° steps) for the NaFlex p256/p512/p1024 and the fixed
-  256/384/512 embeddings, on a white and on a black background. Read-only for the
-  catalogue and the indexes.
-- Source: owner message of 2026-09-29T01:10:49+0300.
-- Files: `docs/owner-messages.md` (append), `scripts/rotation_similarity.py` (new),
-  `scripts/rotation_similarity_plots.py` (new),
-  `scripts/rotation_multiref.py` (new),
-  `scripts/rotation_refsets.py` (new),
-  `docs/reports/rotation-similarity-2026-09-29.md` (new) and its artifact folder, and my
-  own hunks in `ResearchLog.md`, `ChangeLog.md`.
-- Task 2: Russian charts with bottle thumbnails and a collage of the rotation steps with
-  a black image border (owner message of 2026-09-29T01:23:58+0300).
-- Task 3: the reference side gets 10 vectors (the index image on white, rotated 0° to 45°
-  in steps of 5°); the query rotates 0° to 355° as before; the score is the maximum
-  cosine. The vectors are saved in the report folder, not in the catalogue index (owner
-  message of 2026-09-29T01:34:10+0300).
-- Task 4: five more reference sets (0°–355°/5°, 0°–359°/1°, 0°–45°/1°, 0°–90°/5°,
-  0°–90°/1°), each saved in its own folder (owner message of 2026-09-29T01:44:56+0300).
-- Task 5: full-circle reference sets with the steps 3°, 8°, 9°, 12°, computed from the
-  saved 0°–359° vectors, no new embedding (owner message of 2026-09-29T01:56:01+0300).
-- Task 6: the rotation tests of tasks 1 to 5 with the DINOv3 entries, in a separate folder
-  `docs/reports/rotation-dinov3-2026-09-29/` and the report `docs/reports/rotation-dinov3-2026-09-29.md` (owner message of 2026-09-29T02:02:13+0300). The plot scripts get
-  a layout for any set of entries.
-- Task 7: rotation-augmented catalogue vectors for NaFlex p512 (0-360/1, 0-360/5, 0-180/1,
-  0-180/5) and a run on the test set `my` without barcode and rerank, against
-  `siglip2-p512-crop` and `siglip2-p512-as-is`. Owner answers of 2026-09-29T07:06:38+0300: separate scripts, no
-  change of lab code or config.yaml; stage 1 = the 5° sets, stage 2 (1°) after the owner
-  decides. Files: `scripts/rotation_index_build.py` (new), `scripts/rotation_index_eval.py`
-  (new), `work/rotation-index/` (vectors), `docs/reports/rotation-index-p512-2026-09-29.md`
-  (new) and its folder.
-- Task 8: plan 82, max-over-rotation matching in the lab and the matcher
-  (`docs/plans/82_rotated-reference-embeddings.md`; owner message of about 07:18 and the
-  answers recorded at 2026-09-29T08:17:50+0300; plan approved about 08:12).
-- Files 8: `docs/plans/82_rotated-reference-embeddings.md` (new), `pipeline/embeddings.py`,
-  `pipeline/build_embeddings.py`, `pipeline/embedding_run.py`, `pipeline/matcher_bundle.py`,
-  `config.yaml` (separate hunks: two entries at the end of `embeddings:`, seven pipelines),
-  `scripts/rotation_index_eval.py`, `tests/test_rotated_embeddings.py` (new; the plan
-  named the six present test files, but the new tests went into this one file, and the
-  present test files did not change), `../matcher/bundle.py`, `../matcher/catalog.py`,
-  `../matcher/tests/test_rotation.py` (new), one line of `../matcher/tests/test_siglip2.py`,
-  one line of `tests/test_barcode.py` (the count 26 → 33; the seven barcode twins of the
-  plan 82 pipelines are in `config.yaml` after `barcode-siglip2-p512-crop`),
-  `docs/reports/rotation-index-p512-2026-09-29.md` (new), runtime output in
-  `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512-rot{5,10}/`, and my own
-  hunks in `ChangeLog.md`, `ResearchLog.md`, `SMOKE_TESTS.md`, `COMMANDS.md`, `README.md`,
-  `docs/API.md`, `docs/testing/matcher-bundle.md`, `docs/plans/10_*.md`,
-  `docs/plans/72_matcher-bundle.md`, `../matcher/ChangeLog.md`, `../matcher/README.md`,
-  `../matcher/TESTING.md`.
-- Agreements 8: the owner approval of plan 82 is the permission for the files that the
-  stale sections `drink-atlas-workspace-66`, `codex-side-matcher-bundle`,
-  `codex-android-embeddings`, `drink-atlas-workspace-31`, `codex-main-scene-ranking`, and
-  `root` list (git shows no pending change in those code files). Session e3 answered at
-  about 08:22: its matcher hunks are committed (babef66, 16b059d), its section is removed,
-  the matcher files are free. The owner chose the 8168 restart at 09:59:38.
-- Agreement with c4 (11:45 to 11:47): c4 (this owner conversation, resumed in a new
-  process) and b6 had both started the three rot5 runs at 11:43; both stopped their chains;
-  b6 restarted them at 11:46:41 as the only chain (logs `work/rotation-index/run-<p>-b6.out`)
-  and keeps the runs, their GPU_TASKS row, and the report section; c4 does not edit the report.
-- Agreement with 62 (2026-09-29T12:03:41+0300): b6 agreed that session 62 (plan 83) adds separate hunks in
-  `config.yaml` (3 `pipeline:` entries after `vino-svoe-search-by-photo`) and in
-  `../matcher/README.md` and `../matcher/ChangeLog.md`; my hunks stay unchanged.
-- Committed for task 8: the matcher hunks are in HEAD 0657f46 (session b3, owner request
-  "git commit matcher" at 10:41:37); the workbench files of task 8 stay uncommitted.
-- Also changed for task 8: `scripts/rotation_index_eval.py` (Catalogue attribute
-  `angles`), `tests/test_rotated_embeddings.py` (new).
-- State: task 8 done, not committed (the matcher part is in HEAD 0657f46); waiting: the owner decides the commit of the workbench files. Tasks 1 to 7 done, not committed.
-- Updated: 2026-09-29T12:31:11+0300
+- Task 38: verify that barcodes `4607062864036`, `4600632257016`, `4607062864258`,
+  and `4680140700273` exist in the built-in Android catalogue of both GitHub APK
+  variants. Report the exact wine mapping from the packaged data. Keep APK and
+  catalogue files read-only.
+- Source: owner message recorded at 2026-09-29T20:27:37+0300.
+- Files for task 38: this root section and `docs/owner-messages.md` (append). Android
+  APK files and catalogue data stay read-only.
+- State for task 38: done, not committed. The debug APK and test-signed release APK
+  contain a byte-identical `default_model_pack.zip`. Its SHA-256 is
+  `cb181ce8f5583d92c800014c083eb75cc0458fa205407aa24bc032a80b050ec3`.
+  Android converts each EAN-13 value to a zero-padded GTIN-14 value before lookup.
+  Code `4607062864036` exists as `04607062864036` and maps to
+  `shato-taman-kaberne` (`Шато Тамань. Каберне`, `Кубань-Вино`). Codes
+  `4600632257016`, `4607062864258`, and `4680140700273` do not exist in the
+  packaged catalogue or in the source catalogue database. No APK or catalogue
+  file changed.
+- Updated for task 38: 2026-09-29T20:29:51+0300
 
 ## drink-atlas-workspace-11 [5d8e76]
 
@@ -3462,36 +3409,6 @@ The form of a section:
   committed. 158 runs re-scored; the 7 runs of `test-1` got their old files back.
 - Updated for task 3: 2026-09-29T19:47:37+0300
 
-## drink-atlas-workspace-d7 [685702]
-
-- Task: find why `Save` of the `Add wine` dialog on `/dataset` takes a long time, and
-  propose fixes. Done: a cold start of `siglip2-so400m-patch16-512` on gx10 (37.3 s).
-- Source: owner message of 2026-09-29T12:28:00+0300.
-- Task 2: plan 84, the index build of a new wine in the background; the card tag
-  `indexing…`, `indexed`, `not indexed`.
-- Source 2: owner answer of 2026-09-29T12:41:02+0300.
-- Files: `docs/owner-messages.md` (append), my own entry in `ResearchLog.md`,
-  `docs/plans/84_background-new-wine-index.md` (new). After the approval of plan 84:
-  `pipeline/new_wine_jobs.py` (new), `tests/test_new_wine_jobs.py` (new), and separate
-  hunks in `pipeline/new_wine_workflow.py`, `pipeline/lab_server.py`,
-  `pipeline/pages/dataset.html`, `tests/test_new_wine_workflow.py`,
-  `docs/lab-openapi.yaml`, `docs/plans/78_incremental-new-wine-index.md`,
-  `tests/test_manual_wines.py`, `tests/test_lab_openapi.py`, and my own hunks in
-  `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`. A restart of 8168. The live trial
-  writes `data/catalog/catalog.sqlite3`, one image, and the embedding directory.
-- State: done, not committed. Waiting: the owner decides the commit. 8168 restarted at
-  12:59 (PID 24435). Live trial wine `__web-bg-index-smoke-20260929` is `Disabled`.
-- Updated: 2026-09-29T13:04:00+0300
-- Agreements: the owner allowed at 12:45:37 separate hunks in the files of the section
-  `/root` (a Codex session; no message can reach it). The `/root` lines stay
-  byte-identical. The owner approved the live trial `__web-bg-index-smoke-20260929`.
-  At 2026-09-29T12:49:53+0300 the owner allowed edits of the `/root` lines that state the replaced plan 78
-  behavior: the busy text in `dataset.html` and its assertion in
-  `tests/test_new_wine_workflow.py`, `test_a_server_with_a_config_uses_the_index_workflow`
-  in `tests/test_manual_wines.py`, the `createWine` summary in `docs/lab-openapi.yaml`,
-  `README.md` lines 314-315, `SMOKE_TESTS.md` AW17 and AW19, and 2 new lines in the
-  route list of `tests/test_lab_openapi.py`.
-
 ## codex-belbek-photo-01
 
 - Task: find a clean high-resolution photo of Belbek Petit Verdot and store it as the wine patch.
@@ -3532,6 +3449,13 @@ The form of a section:
 - State: done, not committed. Confirmed the foreground and no-browser commands from
   `COMMANDS.md`; no server process was started by this task.
 - Updated: 2026-09-29T16:47:00+0300
+- Task 5: compare the two `АРАТТИ Каберне по-белому` website entries and check their
+  local dataset records for duplicate identity.
+- Source: owner message of 2026-09-29T21:37:27+0300.
+- Files: `docs/owner-messages.md` (append only); website and dataset stay read-only.
+- State: done, not committed. They are distinct Active wines: 2023 red dry/light salmon
+  and 2024 rosé semi-dry/saturated pink, with different source images and label text.
+- Updated: 2026-09-29T21:39:00+0300
 
 ## codex-preset-segment-check
 
@@ -3634,7 +3558,7 @@ The form of a section:
   the views of the entry `gx10-siglip2-so400m-patch16-naflex-p512-rot5`, the anchor
   `views_full_rotated` moves to the rot10 entry, one new pipeline after
   `barcode-rerank-siglip2-p512-seg`), `tests/test_pipeline_workers.py` (one name in the
-  four-worker set), my own hunks in `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`,
+  four-worker set), my own hunks in `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`, `ResearchLog.md`,
   `ChangeLog.md`, runtime output in
   `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512-rot5/`, a new run
   directory in `runs/`, `work/p512-rot5-rerank/**` (new), one row in
@@ -3642,11 +3566,82 @@ The form of a section:
 - Agreements: the rot5 entry is a plan 82 entry (b6). The owner chose this change at
   20:05:38 with that fact in the question; that answer is the permission. I do not change
   the fixed-512 entries or files of `codex-preset-segment-check`.
-- State: active. The checkpoint commit 3442e65 (another session) holds my `config.yaml`
-  and test hunks. Label build done 20:16 (2,392 built; the 2 known label-cut failures of
-  the p512 base). Clusters 208 (combined). Rules: 205 of 208; 3 error records (QwenCloud
-  HTTP 403 AccessDenied.Unpurchased for `qwencloud-qwen3.8-max`); the owner chose "Run
-  with 205 rules" at 20:19:10. Watcher `work/p512-rot5-rerank/run_when_free.py` (PID
-  31963, caffeinate) waits for the fixed-512 trial and for the active run job
-  `barcode-rerank-siglip2-512-rot5-seg`, then runs the preset on `my` and compares.
-- Updated: 2026-09-29T20:20:17+0300
+- State: done, not committed. Waiting: the owner decides the commit. Checkpoint commits
+  3442e65 and 84035f9 (other sessions) hold my `config.yaml`, test, README, COMMANDS,
+  SMOKE_TESTS, and first ChangeLog hunks. Pending: the result lines in `ChangeLog.md`,
+  the entry in `ResearchLog.md`, `docs/owner-messages.md`, this section. Run
+  `2026-09-29T173650Z-lab-barcode-rerank-siglip2-p512-rot5-seg-my`: R@1 84.15 %,
+  R@5 97.04 %, 0 errors. No restart of 8168.
+- Updated: 2026-09-29T20:41:36+0300
+
+## drink-atlas-workspace-36 [0b6507]
+
+- Task: find why the `/clusters` cluster of `aratti-kaberne-po-belomu` and
+  `aratti-kaberne-po-belomu-1` (`gx10-siglip2-so400m-patch16-naflex-p256`, space
+  `combined`) has no rules. Read-only analysis.
+- Source: owner message of 2026-09-29T21:39:48+0300.
+- Files: `docs/owner-messages.md` (append), this section, my own hunk at the top of
+  `ResearchLog.md`.
+- State: waiting: the owner decides the next step. The analysis is done. No code change,
+  no rebuild, no restart. Not committed.
+- Updated: 2026-09-29T22:27:00+0300
+- Task 2: an opinion on a vintage question when no other difference is found (owner
+  message of 2026-09-29T21:47:53+0300). Read-only.
+- Task 3: plan 89, edit the name of a card on `/dataset` (column `name_patched`).
+- Source 3: owner message of 2026-09-29T22:00:54+0300, answers of 22:05:15 and 22:06:52.
+- Files 3: `docs/plans/89_card-name-patch.md` (new), `pipeline/schema/032_name_patched.sql`
+  (new; 032 taken at 22:10; no other section names pending schema work),
+  `tests/test_wine_name.py` (new), separate hunks in `pipeline/lab_server.py`,
+  `pipeline/pages/dataset.html`, `pipeline/embeddings.py`, `pipeline/clusters.py`,
+  `pipeline/cluster_rerank.py`, `pipeline/run_routes.py`, `pipeline/run_steps.py`,
+  `pipeline/testsets.py`, `scripts/benchmark_bulk_cache.py`, `tests/test_labdb.py`,
+  `tests/test_lab_openapi.py`, `tests/test_cluster_rerank.py` (fixture),
+  `tests/test_prepare_rerun_label_inputs.py` (fixture), `docs/lab-openapi.yaml`,
+  `data/backups/catalog-before-032-20260929T2212.sqlite3` (new), and my own hunks in `README.md`,
+  `SMOKE_TESTS.md`, `ChangeLog.md`. The migration of `data/catalog/catalog.sqlite3` and a
+  restart of 8168.
+- State 3: active. Schema 032 is live: backup
+  `data/backups/catalog-before-032-20260929T2212.sqlite3`, migration at 22:12, 8168
+  restarted by 36 at 22:12:51 (PID 51207, old code). Code done; 8168 restarted by 36 at
+  22:24:22 (PID 83275); `GET /api/dataset` 200. The workbench suite 1,473 OK, 1 skipped;
+  browser check 12/12. Done, not committed. Waiting: the owner decides the commit.
+- Agreements 3: d7 [685702] "ok" at about 22:11 for `lab_server.py` and `dataset.html`,
+  with conditions: `recordHtml` keeps `${stateTag(r)}${wineIndexTag(r)}`;
+  `.wine-index-state` stays inside the card element with id=slug; the `#list` listener for
+  `button[data-index-retry]` stays; no stopPropagation on the `.name` line. b6 [088a3a]
+  "ok" at about 22:12 for the one line in `embeddings.py` `read_inputs`, with the
+  condition that it lands with the migration (done). The other sections that list my
+  files are stale; the owner requested the change directly, git showed the files clean,
+  and I change focused hunks alone.
+
+## drink-atlas-workspace-32 [e1f0e6]
+
+- Task: `/clusters` shows the label rule also as plain text for a person, in the left
+  column below the reviewer note. The JSON block stays.
+- Source: owner message of 2026-09-29T22:44:00+0300 (about).
+- Files: `docs/owner-messages.md` (append), `pipeline/pages/clusters.html` (separate new
+  hunks: the CSS of the text block, a new function `ruleTextHtml`, the left column in
+  `clusterHtml`, the block swap in `watchRule`), my own hunks in `README.md`,
+  `ChangeLog.md`, `SMOKE_TESTS.md`.
+- State: active. The sections that list `clusters.html` (d1 [0feb34], 41 [501d23],
+  2f [0e9cfe], 4e [ff960b], 1c [b72be3]) are stale; git shows the file clean; the owner
+  requested the change directly; I change focused hunks alone.
+- Updated: 2026-09-29T22:48:00+0300
+
+## drink-atlas-workspace-b3 [31b207]
+
+- Task: put the git-ignored data that cannot be rebuilt into git for the second computer
+  (2x RTX 4090) and the jury. First a checkpoint of the pending work of the other sessions,
+  then the data commit, then a push of `main` to `github` and `origin`.
+- Source: owner messages of 2026-09-29 about 21:59 and 22:35, answers of about 22:46.
+- Files: `../.gitignore`, `../matcher/.gitignore`, `../webui/.gitignore`, one comment in
+  `../matcher/config.yaml`, the bundle lines of `../README.md`, `../SETUP.md`, and
+  `../matcher/README.md`, one line of `../.claude/skills/backup-lab-db/SKILL.md`,
+  `db-export/*`, `data/testsets/images/*`, `clusters.json` and `cluster-rules.json` of
+  `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/`, four `runs/*-my/`
+  folders without `results.jsonl`, the `.md` files of `docs/reports/*/` and the small JSON
+  files that they link, `../matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/*`,
+  `../webui/public/presentations/*`, own hunks in `ChangeLog.md`, `../matcher/ChangeLog.md`,
+  `../webui/ChangeLog.md`, and `docs/owner-messages.md`.
+- State: active.
+- Updated: 2026-09-29T22:48:00+0300

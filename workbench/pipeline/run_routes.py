@@ -270,7 +270,8 @@ def clusters_view(runs_dir, server, query):
             for start in range(0, len(wanted), 500):
                 chunk = wanted[start:start + 500]
                 for slug, name in conn.execute(
-                        "SELECT wine_slug, name FROM wine_catalog WHERE wine_slug IN (%s)"
+                        "SELECT wine_slug, COALESCE(name_patched, name) FROM wine_catalog "
+                        "WHERE wine_slug IN (%s)"
                         % ", ".join("?" for _ in chunk), chunk):
                     cards[slug] = {"name": name or ""}
     except sqlite3.Error:

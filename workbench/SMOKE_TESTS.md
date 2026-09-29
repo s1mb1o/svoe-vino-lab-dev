@@ -2395,3 +2395,18 @@ run job on 8168. A stop button in JB5 stops a real job.
 | JB4 | Start a run of a pipeline whose embedding builds, then open `/testset` and `/embedding` | The run row shows `a build of <embedding> runs: PID <pid>; the run waits for its end`, not `starting`. `/embedding` shows `run · <pipeline> · <set>` after the build rows, with the link `open` to `/testset?set=<set>`. A `selftest-` job gets no row on `/embedding`. Checked with a stubbed `/api/run-jobs` in headless Chromium on 2026-09-29. |
 | JB5 | Press × on a build row of `/testset`, and on a run row of `/embedding` | The build row sends `POST /api/embeddings/<name>/stop`. The run row sends `POST /api/run-jobs/<name>/stop`. Checked with stubbed stop routes on 2026-09-29. |
 | JB6 | Restart 8168 while a run job waits for a build | The run row stays on `/testset` with the wait message. Before plan 88 it disappeared. |
+
+## Card name edit — plan 89
+
+Run from `workbench/`. CN1 and CN2 are read-only. CN3 to CN7 change the name of one card
+in `data/catalog/catalog.sqlite3`; CN6 gives the card its catalogue name again.
+
+| # | Case | Expected result |
+|---|---|---|
+| CN1 | `python3 -m unittest discover -s tests -p 'test_wine_name.py'` | 10 tests OK: save, reset by the catalogue name, trim, bad names, unknown slug, a Removed wine, the record keys, `modified_at`, the readers and `matcher_wine`, a website import that keeps the edit. |
+| CN2 | `sqlite3 data/catalog/catalog.sqlite3 'PRAGMA user_version'` | `32` or more. `wine_catalog` has the column `name_patched`. |
+| CN3 | On `/dataset`, press `edit` after `copy` of a card name | A text field with the name in use, a save button, and a cancel button stand in the place of the name. The tags `disabled`, `removed`, and the index tag stay on the line. |
+| CN4 | Change the name and press Enter | The card shows the new name, the tag `name patched`, and the button `reset`. The title of the tag holds the catalogue name. A reload keeps the new name. |
+| CN5 | Open `/clusters` or `/testset` with a cluster or a card of the edited wine | The card shows the new name. |
+| CN6 | Press `reset` and confirm | The card shows the catalogue name. The tag `name patched` and the button `reset` go away. `name_patched` is NULL. |
+| CN7 | Press `edit`, then Esc | The field closes. The name does not change. |

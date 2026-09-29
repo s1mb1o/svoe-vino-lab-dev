@@ -56,6 +56,7 @@ matcher и model endpoint. Полная инструкция находится 
 | `bootstrap/` | Локальные endpoints SigLIP2, SAM3, ShieldGemma 2 и QR scanner. |
 | `matcher-inspector/` | Read-only просмотр запросов и embedding bundles. |
 | `workbench/` | Данные, индексы, эксперименты, benchmarks и сборка bundles. |
+| `eval/` | Скрипт проверки организаторов и три контрольных фотографии. |
 
 ## Документация
 
@@ -63,6 +64,7 @@ matcher и model endpoint. Полная инструкция находится 
 - [Benchmarks](BENCHMARKS.md)
 - [Установка и запуск](SETUP.md)
 - [Matcher API](matcher/README.md)
+- [Проверка организаторов: запуск matcher и `participant_test.sh`](eval/README.md)
 - [Telegram-бот](telegram-bot/README.md)
 - [Web UI](webui/README.md)
 - [Развертывание локальных моделей](docs/bootstrap/README.md)

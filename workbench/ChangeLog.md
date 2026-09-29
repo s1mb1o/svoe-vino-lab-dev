@@ -2,6 +2,22 @@
 
 ## 2026-09-29
 
+- Added the edit of a card name on `/dataset` (plan 89; owner message of 22:00:54,
+  answers of 22:05:15 and 22:06:52). Schema 032 adds `wine_catalog.name_patched`, puts it
+  in the trigger `wine_catalog_update_time`, and makes the view `matcher_wine` send
+  `COALESCE(name_patched, name)` with the same columns. `name` keeps the value of the
+  import; the imports do not read or write `name_patched`. The new route
+  `POST /api/wine-name` sets the edit, or clears it when the value equals `name`.
+  `GET /api/dataset` sends the name in use as `name`, plus `_catalog_name` and
+  `_name_patched`. The card name gets the buttons `edit` and `reset` and the tag
+  `name patched`. `embeddings.read_inputs`, `clusters._catalog` (with the label rules),
+  `cluster_rerank.catalogue_names`, the name queries of `run_routes.py`, `run_steps.py`,
+  `testsets.py`, and `scripts/benchmark_bulk_cache.py` read the name in use. Backup
+  `data/backups/catalog-before-032-20260929T2212.sqlite3`; migration at 22:12; 8168
+  restarted at 22:12:51 and, with the code, at 22:24:22 (PID 83275). Tests: the new
+  `tests/test_wine_name.py` 10 OK; the workbench suite 1,473 tests OK, 1 skipped; a
+  browser check on a scratch server 12 of 12 in light and dark theme. No card name was
+  changed in `data/catalog/catalog.sqlite3`.
 - Fixed three errors of the workbench test suite (owner messages of 21:40:22 and
   22:06:46). `tests/test_run_model_inputs.py` looked for `svoe-vino-matcher` in
   `svoe-vino-lab/`: its `WORKSPACE` was one parent too short since the split of
@@ -25,7 +41,18 @@
   (`test_pipeline_workers`, `test_pipelines`, `test_barcode`, `test_rotated_embeddings`,
   `test_cluster_rerank`, `test_embeddings`, `test_build_embeddings`, `test_clusters`,
   `test_build_clusters`, `test_embedding_run`, `test_matcher_api_pipelines`). The label
-  build, clusters, rules, and the run on `my` are in progress.
+  build ended at 20:16: 2,392 built, 366 s, and the 2 failures of the p512 base ("no
+  label cut yet"). The 0° and label vectors equal the p512 vectors (cosine ≥ 0.99992).
+  Clusters: 208 combined. Rules: 205 of 208. `qwencloud-qwen3.8-max` answered HTTP 403
+  `AccessDenied.Unpurchased` for the 3 new clusters c003, c089, and c195 (11 cards). The
+  owner chose at 20:19:10 to run with 205 rules. Run
+  `2026-09-29T173650Z-lab-barcode-rerank-siglip2-p512-rot5-seg-my`: 2,231 queries,
+  0 errors, 150 s. Paired with `2026-09-29T150434Z-lab-barcode-rerank-siglip2-p512-seg-my`
+  by `image_path` (1,653 positives in both): R@1 82.70 % → 84.15 % (32 gained, 8 lost),
+  R@5 96.43 % → 97.04 % (12 gained, 2 lost), MRR 0.8922 → 0.9019, negative false match
+  at rank 1 107 → 103 of 578. One lost R@1 query touches the 3 clusters with no rule.
+  Scripts and output: `work/p512-rot5-rerank/`. The fixed-512 trial
+  `work/fixed512-rot5/` failed at its rule build with the same HTTP 403.
 
 - Plan 88: `/testset` and `/embedding` show the jobs of both kinds. `/testset` shows each
   running embedding build after its run rows (`build · <embedding>`, the phase,

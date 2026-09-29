@@ -216,8 +216,8 @@ def _assignments(wines, items):
 def _catalog(conn):
     fields = ("wine_slug", "name", "producer", "category", "color", "region", "grapes")
     return {row[0]: dict(zip(fields, row)) for row in conn.execute(
-        "SELECT wine_slug, name, producer, category, color, region, grapes "
-        "FROM wine_catalog WHERE state = 'Active' ORDER BY rowid")}
+        "SELECT wine_slug, COALESCE(name_patched, name), producer, category, color, region, "
+        "grapes FROM wine_catalog WHERE state = 'Active' ORDER BY rowid")}
 
 
 def _gtin_pairs(conn):

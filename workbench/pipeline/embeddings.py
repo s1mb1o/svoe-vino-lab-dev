@@ -468,7 +468,8 @@ def read_inputs(conn, db_path):
     wines, by_slug, sources = [], {}, {}
     for slug, name, producer, category, region, image_type, digest, folder, extension in (
             conn.execute(
-                "SELECT w.wine_slug, w.name, w.producer, w.category, w.region, "
+                "SELECT w.wine_slug, COALESCE(w.name_patched, w.name), w.producer, w.category, "
+                "w.region, "
                 "wi.image_type, wi.sha256, i.folder, i.extension FROM wine_catalog w "
                 "JOIN wine_image wi ON wi.wine_slug = w.wine_slug "
                 "JOIN image i ON i.sha256 = wi.sha256 "

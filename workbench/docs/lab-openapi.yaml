@@ -308,6 +308,23 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/wine-name:
+    post:
+      tags: [dataset]
+      operationId: changeWineName
+      summary: Set or clear the edited name (`name_patched`) of one wine.
+      description: >-
+        Plan 89. The name loses its outer white space. A name equal to the catalogue
+        name clears the edit. The imports keep the edit.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineNameChange" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/dataset-gtin:
     post:
       tags: [dataset]
@@ -1421,6 +1438,14 @@ components:
       properties:
         slug: { type: string }
         action: { type: string, enum: [disable, enable, remove, restore] }
+
+    WineNameChange:
+      type: object
+      additionalProperties: false
+      required: [slug, name]
+      properties:
+        slug: { type: string }
+        name: { type: string, minLength: 1, maxLength: 500 }
 
     WineIndexRetry:
       type: object

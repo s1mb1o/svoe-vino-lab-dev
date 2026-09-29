@@ -319,6 +319,10 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .alternative-input { display: none; }
 .name { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
 .name h2 { margin: 0; font-size: 22px; line-height: 1.2; }
+/* Plan 89: the field of the edited name stands in the place of the name while it is open. */
+.barcode-new.name-new { flex: 1 1 320px; margin-top: 0; max-width: 560px; }
+.barcode-new.name-new input { font-family: inherit; font-size: 16px; }
+.tag.name-patched { color: var(--accent); background: var(--panel-2); cursor: help; }
 .producer { margin-top: 5px; font-size: 18px; line-height: 1.3; }
 .kind, .grapes, .slug, .match { margin-top: 4px; color: var(--muted); font-size: 15px; }
 /* The slug is the first line of a card, above the name. */
@@ -998,6 +1002,9 @@ const DRAFT_SIMILAR = new Map();
 const BUSY_SIMILAR = new Set();
 const DRAFT_COMMENTS = new Map();
 const BUSY_COMMENTS = new Set();
+// Plan 89: slug -> the text of the open name field of the card, and the cards that save.
+const DRAFT_NAMES = new Map();
+const BUSY_NAMES = new Set();
 const BUSY_FAVORITES = new Set();
 // slug -> the draft of a new tag; the slugs that save now: plan 63.
 const DRAFT_TAGS = new Map();
@@ -1350,6 +1357,29 @@ function stateActions(r) {
   return `<div class="state-actions">${actions.map(([action, label]) =>
     `<button type="button" data-state-action="${action}" data-slug="${esc(r.slug)}"
       ${busy ? "disabled" : ""}>${busy ? "…" : label}</button>`).join("")}</div>`;
+}
+// Plan 89: a record of the lab server holds `_catalog_name`. The review tool sends none.
+function nameEditOn(r) { return "_catalog_name" in r; }
+// The name of the card with its buttons, or the open name field.
+function nameHtml(r) {
+  if (DRAFT_NAMES.has(r.slug)) {
+    const busy = BUSY_NAMES.has(r.slug);
+    return `<div class="barcode-new name-new" data-name-slug="${esc(r.slug)}">
+      <input class="name-input" type="text" maxlength="500" autocomplete="off"
+        aria-label="Card name" value="${esc(DRAFT_NAMES.get(r.slug))}" ${busy ? "disabled" : ""}>
+      <button class="accept" type="button" data-name-save aria-label="Save name"
+        title="Save name (Enter)" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
+      <button class="cancel" type="button" data-name-cancel aria-label="Cancel name"
+        title="Cancel (Esc)" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button></div>`;
+  }
+  const edit = nameEditOn(r) ? `<button class="copy" type="button"
+    data-name-edit="${esc(r.slug)}" title="Edit the name of the card">edit</button>` : "";
+  const patched = nameEditOn(r) && r._name_patched ? `<span class="tag name-patched"
+    title="Catalogue name: ${esc(r._catalog_name || "")}">name patched</span><button
+    class="copy" type="button" data-name-reset="${esc(r.slug)}"
+    title="Use the catalogue name: ${esc(r._catalog_name || "")}">reset</button>` : "";
+  return `<h2>${esc(r.name || "Unnamed wine")}</h2>
+        <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>${edit}${patched}`;
 }
 function stateTag(r) {
   if (r.state === "Disabled") return '<span class="tag state-disabled">disabled</span>';
@@ -2528,8 +2558,7 @@ function recordHtml(r) {
         title="Open the page of the wine on vino-svoe.ru">${esc(r.slug)}</a>`}
         <button class="copy" type="button" data-copy="${esc(r.slug)}">copy</button></div>
       ${favoritesOn() ? favoriteStar(r) : ""}
-      <div class="name"><h2>${esc(r.name || "Unnamed wine")}</h2>
-        <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>
+      <div class="name">${nameHtml(r)}
         ${r._patched ? '<span class="tag">patch</span>' : ""}${stateTag(r)}${wineIndexTag(r)}</div>
       <div class="producer">${esc(r.producer || "—")}</div>
       ${where || beverageTypesOn() ? `<div class="kind">${where}${
@@ -3877,6 +3906,61 @@ async function removeTag(slug, tag) {
     renderCodeCard(slug);
   }
 }
+// Plan 89: the edited name of a card. `POST /api/wine-name` stores it in `name_patched`.
+function focusName(slug) {
+  requestAnimationFrame(() => {
+    const input = document.getElementById(slug)?.querySelector(".name-input");
+    if (input) { input.focus(); input.select(); }
+  });
+}
+function openNameEdit(slug) {
+  const record = DATA.records.find(item => item.slug === slug);
+  if (!record) return;
+  DRAFT_NAMES.set(slug, record.name || "");
+  renderCard(slug);
+  focusName(slug);
+}
+// Draw the card again, and each similar card, because it shows the name (plan 62).
+function renderName(slug) {
+  const record = DATA.records.find(item => item.slug === slug);
+  renderCard(slug);
+  for (const other of record?._similar || []) {
+    if (document.getElementById(other)) renderCard(other);
+  }
+}
+async function saveName(slug, value = DRAFT_NAMES.get(slug)) {
+  if (BUSY_NAMES.has(slug) || typeof value !== "string") return;
+  if (!value.trim()) { focusName(slug); return; }
+  BUSY_NAMES.add(slug);
+  renderCard(slug);
+  try {
+    const response = await fetch("/api/wine-name", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, name: value})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) {
+      record.name = out.name;
+      record._catalog_name = out.catalog_name;
+      record._name_patched = !!out.name_patched;
+    }
+    DRAFT_NAMES.delete(slug);
+  } catch (error) {
+    alert(`Cannot save the name: ${error.message}`);
+  } finally {
+    BUSY_NAMES.delete(slug);
+    renderName(slug);
+    if (DRAFT_NAMES.has(slug)) focusName(slug);
+  }
+}
+// A save of the catalogue name clears `name_patched`.
+function resetName(slug) {
+  const record = DATA.records.find(item => item.slug === slug);
+  if (!record || !confirm(`Use the catalogue name?\n\n${record._catalog_name}`)) return;
+  saveName(slug, record._catalog_name);
+}
 function focusComment(slug) {
   requestAnimationFrame(() => {
     const editor = [...document.querySelectorAll(".comment-editor")]
@@ -4003,6 +4087,17 @@ $("#list").addEventListener("click", event => {
   }
   const button = event.target.closest("button[data-copy]");
   if (button) { copyValue(button); return; }
+  const nameEdit = event.target.closest("button[data-name-edit]");
+  if (nameEdit) { openNameEdit(nameEdit.dataset.nameEdit); return; }
+  const nameReset = event.target.closest("button[data-name-reset]");
+  if (nameReset) { resetName(nameReset.dataset.nameReset); return; }
+  const nameField = event.target.closest(".name-new");
+  if (nameField) {
+    const slug = nameField.dataset.nameSlug;
+    if (event.target.closest("[data-name-save]")) saveName(slug);
+    else if (event.target.closest("[data-name-cancel]")) { DRAFT_NAMES.delete(slug); renderCard(slug); }
+    return;
+  }
   const stateButton = event.target.closest("button[data-state-action]");
   if (stateButton) { changeState(stateButton.dataset.slug, stateButton.dataset.stateAction); return; }
   const star = event.target.closest("button[data-favorite-toggle]");
@@ -4267,6 +4362,8 @@ $("#list").addEventListener("input", event => {
   } else if (event.target.matches(".comment-input")) {
     const editor = event.target.closest(".comment-editor");
     DRAFT_COMMENTS.set(editor.dataset.slug, event.target.value);
+  } else if (event.target.matches(".name-input")) {
+    DRAFT_NAMES.set(event.target.closest(".name-new").dataset.nameSlug, event.target.value);
   }
 });
 $("#list").addEventListener("keydown", event => {
@@ -4340,6 +4437,16 @@ $("#list").addEventListener("keydown", event => {
       event.preventDefault();
       DRAFT_COMMENTS.delete(editor.dataset.slug);
       renderCodeCard(editor.dataset.slug);
+    }
+  } else if (event.target.matches(".name-input")) {
+    const slug = event.target.closest(".name-new").dataset.nameSlug;
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveName(slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_NAMES.delete(slug);
+      renderCard(slug);
     }
   }
 });

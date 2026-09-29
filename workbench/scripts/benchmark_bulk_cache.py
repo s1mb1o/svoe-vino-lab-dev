@@ -42,7 +42,8 @@ def catalogue_identity(db_path, set_name):
     with contextlib.closing(embeddings.open_database(db_path)) as conn:
         conn.execute("BEGIN")
         wines, sources = embeddings.read_inputs(conn, db_path)
-        names = dict(conn.execute("SELECT wine_slug, name FROM wine_catalog"))
+        names = dict(conn.execute(
+            "SELECT wine_slug, COALESCE(name_patched, name) FROM wine_catalog"))
         groups = benchmark.load_groups(conn, set_name)
         inputs = {"wines": wines, "sources": sources, "names": names,
                   "groups": {slug: sorted(values) for slug, values in groups.items()}}

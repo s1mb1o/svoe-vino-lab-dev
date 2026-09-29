@@ -4,7 +4,8 @@ The server reads two keys of `config.yaml`: `rootdir` and `database_file`. It op
 the database for each request and checks the schema version. It serves the Dataset
 page and `GET /api/dataset` from the tables `wine_catalog` and `wine_image`. A GET
 opens the database read-only. `POST /api/wine-state` changes the state of one wine; it
-writes the columns `state` and `removed_by` alone. `GET /images/<folder>/<sha256>.<ext>`
+writes the columns `state` and `removed_by` alone. `POST /api/wine-name` sets or clears
+the edited name `name_patched` of one wine (plan 89). `GET /images/<folder>/<sha256>.<ext>`
 sends one file of the image store `images/` next to the database file.
 
 `POST /api/wine` adds one wine by hand, with a slug that starts with `__`, and its `main`
@@ -217,8 +218,10 @@ ACTIONS = {
     "remove": (("Active", "Disabled"), "Removed"),
     "restore": (("Removed",), "Active"),
 }
-# The largest body of `POST /api/wine-state`, in bytes.
+# The largest body of `POST /api/wine-state` and of `POST /api/wine-name`, in bytes.
 MAX_BODY = 4096
+# The longest edited name of a wine, in characters (plan 89).
+MAX_NAME = 500
 # The body of a manual cut holds up to `alternatives.MAX_POINTS` points (plan 56).
 MAX_CUT_BODY = 65536
 # The largest body of a POST of a code, in bytes. A QR URL has at most 4096 characters.
@@ -453,10 +456,15 @@ def dataset_records(conn):
     `_similar` lists the slugs of the similar wines, in the order of the marks (plan 62).
     `_modified_at` and `_website_modified_at` are the two change times of schema 015.
     `_tags` lists the tags of the wine, in the order of the adds (plan 63).
+    `name` is the name in use: `name_patched`, else `name` (plan 89). `_catalog_name` is
+    the column `name`, the value of the import. `_name_patched` tells whether the wine
+    has an edited name.
     """
     images = card_images(conn)
     times = {slug: (changed, website) for slug, changed, website in conn.execute(
         "SELECT wine_slug, modified_at, website_modified_at FROM wine_catalog")}
+    patched_names = dict(conn.execute(
+        "SELECT wine_slug, name_patched FROM wine_catalog WHERE name_patched IS NOT NULL"))
     values = wine_codes(conn)
     added = code_times(conn)
     atlas = atlas_bindings.bindings(conn)
@@ -486,6 +494,10 @@ def dataset_records(conn):
         record["_similar"] = similar.get(record["slug"], [])
         record["_tags"] = tagged.get(record["slug"], [])
         record["_modified_at"], record["_website_modified_at"] = times[record["slug"]]
+        record["_catalog_name"] = record["name"]
+        record["_name_patched"] = record["slug"] in patched_names
+        if record["_name_patched"]:
+            record["name"] = patched_names[record["slug"]]
         records.append(record)
     return records
 
@@ -563,6 +575,40 @@ def change_state(db_path, slug, action):
             conn.execute("ROLLBACK")
             raise
     return {"slug": slug, "state": target, "removed_by": removed_by}
+
+
+def change_name(db_path, slug, name):
+    """Set or clear the edited name of one wine (plan 89). Return the answer of the POST.
+
+    `name` loses its outer white space. A value equal to the column `name` clears
+    `name_patched`, so the wine has no edited name. A wine of each state allows an edit.
+    The imports write the column `name` alone, so they keep the edit."""
+    if not isinstance(slug, str) or not slug:
+        raise StateError(400, "the request holds no wine slug")
+    if not isinstance(name, str):
+        raise StateError(400, "the field `name` MUST be text")
+    clean = name.strip()
+    if not clean:
+        raise StateError(400, "the field `name` is empty")
+    if len(clean) > MAX_NAME:
+        raise StateError(400, "the name has more than %d characters" % MAX_NAME)
+    with closing(open_database(db_path, write=True)) as conn:
+        conn.isolation_level = None
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            row = conn.execute("SELECT name FROM wine_catalog WHERE wine_slug = ?",
+                               (slug,)).fetchone()
+            if row is None:
+                raise StateError(404, "no wine with the slug %s" % slug)
+            patched = None if clean == row[0] else clean
+            conn.execute("UPDATE wine_catalog SET name_patched = ? WHERE wine_slug = ?",
+                         (patched, slug))
+            conn.execute("COMMIT")
+        except BaseException:
+            conn.execute("ROLLBACK")
+            raise
+    return {"slug": slug, "name": patched or row[0], "catalog_name": row[0],
+            "name_patched": patched is not None}
 
 
 def add_wine(db_path, body, segmenter=None, config_path=None, embedding=None,
@@ -1514,6 +1560,19 @@ class Handler(BaseHTTPRequestHandler):
         except (ConfigError, sqlite3.Error) as exc:
             self._json(503, {"error": str(exc)})
 
+    def _wine_name(self):
+        """Answer `POST /api/wine-name` (plan 89)."""
+        body = self._json_body(MAX_BODY)
+        if body is None:
+            return
+        try:
+            self._json(200, change_name(self.server.db_path, body.get("slug"),
+                                        body.get("name")))
+        except StateError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+
     def _new_wine(self):
         """Answer `POST /api/wine`."""
         try:
@@ -1800,6 +1859,8 @@ class Handler(BaseHTTPRequestHandler):
             self._label_descriptions()
         elif route == "/api/wine-state" and self.command == "POST":
             self._wine_state()
+        elif route == "/api/wine-name" and self.command == "POST":
+            self._wine_name()
         elif route == "/api/wine" and self.command == "POST":
             self._new_wine()
         elif route == "/api/wine-index" and self.command == "POST":

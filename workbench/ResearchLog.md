@@ -2,6 +2,60 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-29 — A label rule with a question that one card answers `null`
+
+- Cluster `2d33f12d0b3e` (`aratti-kaberne-po-belomu`, `aratti-kaberne-po-belomu-1`) of
+  `gx10-siglip2-so400m-patch16-naflex-p256` has a rule. The rule has the mode `verdict`
+  and 0 valid questions.
+- The one question asks for the sugar level. The expected answers are `null` (card A)
+  and `semi-dry` (card B, `ПОЛУСУХОЕ`).
+- `check_rule` in `pipeline/label_rules.py` counts only answers that are not `null`. A
+  question is valid only with 2 or more different answers. So this question is not
+  valid, and the mode falls to `verdict` (the rule text alone).
+- The sheet score gives 0 to a `null` expected answer. A sheet with this one question
+  cannot choose card A. The mode `verdict` can choose card A.
+- The model left out the vintage (label 2023 and label 2024). Rule 2a of the prompt and
+  `named_year` allow a vintage question only when the catalogue names state the years.
+  Neither name states a year.
+- The page shows the badge `stale`. The rule was built on 2026-09-26T16:14:59+0300 from
+  the clusters with `input_hash` `f712cff2…`. The present clusters have `05f41a94…`. 176
+  of the 182 rules of this embedding hold `f712cff2…`, so the badge is not specific to
+  this cluster. `RuleBook` in `pipeline/cluster_rerank.py` does not read the stale state.
+  The re-rank uses the rule.
+- The manual pair of these two wines entered `wine_similar` at 2026-09-29T18:38:00Z.
+  The clusters were built again at 21:38:43+0300. The key of the cluster did not change.
+- A vintage fallback (a year question when no other question is valid) changes 3 of the
+  177 `combined` clusters of p256: `c054` (2023/2024), `c116` (2022/2021), and `c117`
+  (2023/2022). The years come from the stage-1 label descriptions. In each cluster the
+  years are consecutive. The next vintage of the older card then shows the year of the
+  newer card, and the fallback sends that photo to the wrong card.
+- Both `official-real-photos` of `aratti-kaberne-po-belomu-1` show `2024`. Only one of
+  them shows `ПОЛУСУХОЕ`. A year question gives card B for both photos. The present
+  verdict rule gives card A for the photo without `ПОЛУСУХОЕ` (entry "Aratti 2024 false
+  re-rank" of 2026-09-28).
+
+## 2026-09-29 — NaFlex p512 rot5 references with barcode and cluster rerank
+
+- Setup: `barcode-rerank-siglip2-p512-rot5-seg` against `barcode-rerank-siglip2-p512-seg`.
+  The query steps, barcode options, rerank options, and workers are equal. Only the
+  reference side changes: 72 angles at 5° steps for each full reference.
+- Paired over 1,653 positives of `my`: R@1 82.70 % → 84.15 % (+24 net: 32 gained,
+  8 lost). R@5 96.43 % → 97.04 % (+10 net). MRR 0.8922 → 0.9019.
+- Negatives (578): false match at rank 1 107 → 103.
+- The rerank step acted on 697 queries. In the baseline it acted on 731 queries.
+- Confound: 3 of 208 clusters had no usable rule (QwenCloud HTTP 403). One of the 8 lost
+  R@1 queries touches these clusters. No gain touches them.
+- Without barcode and rerank, plan 82 measured R@1 +0.97 pp for the masked crop with the
+  rot5 index (79.84 %). Here the gain is +1.45 pp. The query manifests differ (2,226 and
+  2,231 queries). The report is `docs/reports/rotation-index-p512-2026-09-29.md`.
+- The 0° full vectors and the label vectors of the rot5 entry equal those of
+  `gx10-siglip2-so400m-patch16-naflex-p512` (cosine ≥ 0.99992). So the clusters of the
+  two indexes are nearly equal: 203 of 208 combined keys are the same. The 5 other keys
+  come from catalogue changes after the p512 cluster build of 2026-09-28.
+- `qwencloud-qwen3.8-max` (the `rules_vlm` of `label_rules`) answered HTTP 403
+  `AccessDenied.Unpurchased` on 2026-09-29 at about 20:17 and 20:36. A new cluster
+  then gets an error record and no rerank.
+
 ## 2026-09-29 — F1@1 and F1@5 and the photos outside the dataset
 
 - `match_scoring.f1` computes F1 over the positive photos alone.

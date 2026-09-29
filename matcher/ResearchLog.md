@@ -1,5 +1,28 @@
 # Research log
 
+## Organizers' eval script against the local matcher, 2026-09-29
+
+The matcher ran on this Mac on port 8158 with `matcher/config.yaml` (pipeline
+`siglip2-p512-as-is`, bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`,
+2,094 wines). `SIGLIP2_ENDPOINT` was the gx10 gateway `http://192.168.86.14:18081`, with
+`siglip2-so400m-patch16-naflex` already loaded. `eval/participant_test.sh` ran with the
+organizers' arguments and port 8158. Exit code 0. Every photo got a slug.
+
+| `query_id` | Photo (by eye) | `predicted_slug` | `latency_ms` | Wine in the bundle |
+|---|---|---|---:|---|
+| q-000001 | Табия, Пино Нуар полусухое 2025 | `usadba-mezyb-shishka-pino-nuar-rozovoe-suhoe-115` | 499 | No: Табия has 9 wines, no Pinot Noir |
+| q-000002 | Массандра, Мускатель белый 2023 | `massandra-muskat-rozovyy-pozdnego-sbora-rozovoe-sladkoe-10` | 311 | Yes: `massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16` |
+| q-000003 | Aristov, Donum XXIV брют 2023 | `abrau-dyurso-victor-dravigny-extra-brut-shardone-beloe-bryut-125` | 416 | No: no Donum wine |
+
+- The organizers keep the correct answers. The photo names come from a visual check of the
+  labels, not from the organizers.
+- q-000002 is a miss of a wine that the bundle holds. The answer has the same producer.
+- q-000001 and q-000003 show wines outside the bundle. No slug of the bundle can be correct
+  for them. The mock answers `tabia_pino_nuar` and `donum_xxiv` of
+  `matcher/tests/config.yaml` are not catalogue slugs either.
+- The script has `--max-time 10`. A cold SigLIP2 model on the gateway can take longer than
+  that for the first request. Check `GET /running` on the gateway before a run.
+
 ## Backend cascade on gx10 dev: first measurements, 2026-09-29
 
 Plan 85 of the workbench. The dev matcher on gx10 (port 29000, revision `f199e4d`,

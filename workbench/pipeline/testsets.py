@@ -466,7 +466,8 @@ def set_view(conn, set_name, card_images):
     if set_name not in names:
         raise TestsetError(404, "no test set %r" % set_name)
     wines = {row[0]: row[1:] for row in conn.execute(
-        "SELECT wine_slug, name, producer, category, color, region, grapes, state "
+        "SELECT wine_slug, COALESCE(name_patched, name), producer, category, color, region, "
+        "grapes, state "
         "FROM wine_catalog")}
     notes = photo_comments(conn, set_name)
     photos = photo_rows(conn, set_name)

@@ -48,6 +48,7 @@ POST /api/wine
 GET /api/wine-index
 POST /api/wine-index
 POST /api/wine-state
+POST /api/wine-name
 POST /api/dataset-gtin
 DELETE /api/dataset-gtin
 POST /api/dataset-qr-url
