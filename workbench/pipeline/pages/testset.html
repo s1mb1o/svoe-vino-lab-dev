@@ -2771,10 +2771,37 @@ async function startRun() {
   closeRunDialog();
   pollRunJobs();
 }
-function showRunJobs(jobs, now) {
+// Plan 88: the embedding builds of `/embedding` that run appear after the runs, because a
+// run can wait for a build of its embedding before its first photo. The row of such a run
+// shows the message of the wait.
+function runBuildRow(b, queue, now) {
+  const percent = b.todo ? Math.round(100 * b.done / b.todo) : 0;
+  const elapsed = b.started_t ? runDuration(now - b.started_t) : "";
+  // The phase, as on `/embedding`: a model request of 3 s or more, or a retry.
+  const waited = b.phase_t ? now - b.phase_t : 0;
+  const phase = b.phase && (b.phase_event === "retry" || waited >= 3)
+    ? ` · <span title="${esc(b.phase)}">${esc(b.phase.length > 90 ? b.phase.slice(0, 90) + "…"
+      : b.phase)} · ${runDuration(waited)}</span>` : "";
+  let count = b.todo == null ? esc(b.message || "") : `${b.done} / ${b.todo}${phase}`;
+  if (queue && queue.state === "running" && queue.current === b.name) {
+    count += ` · Build All ${queue.index + 1} / ${queue.names.length}`;
+  }
+  const name = `build · ${b.name}`;
+  const stop = `<button type="button" class="run-btn job-stop" data-build-stop="${
+    esc(b.name)}" title="stop the build of ${esc(b.name)}" aria-label="stop the build of ${
+    esc(b.name)}"${b.state === "running" ? "" : " disabled"}><svg viewBox="0 0 20 20"
+    aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>`;
+  return `<div class="job">${stop}<span class="job-name" title="${esc(name)}">${esc(name)}</span>
+    <span class="job-state ${esc(b.state)}">${esc(b.state)}</span><div class="prog"><div
+    style="width:${percent}%"></div></div><span>${count}</span><span>${
+    b.failed ? `failed ${b.failed}` : ""}</span><span>${elapsed}</span><a href="/embedding?name=${
+    encodeURIComponent(b.name)}">open</a></div>`;
+}
+function showRunJobs(jobs, now, builds = [], queue = null) {
   const shown = jobs.filter(j => RUN_ACTIVE.includes(j.state)
     || (j.ended_t && now - j.ended_t < RUN_SHOW_ENDED_S));
-  $("#jobs").hidden = !shown.length;
+  const building = builds.filter(b => RUN_ACTIVE.includes(b.state));
+  $("#jobs").hidden = !shown.length && !building.length;
   $("#jobs").innerHTML = shown.map(j => {
     const active = RUN_ACTIVE.includes(j.state);
     const percent = j.todo ? Math.round(100 * j.done / j.todo) : 0;
@@ -2794,14 +2821,17 @@ function showRunJobs(jobs, now) {
       <span class="job-state ${esc(j.state)}">${esc(j.state)}</span><div class="prog"><div
       style="width:${percent}%"></div></div><span>${count}</span><span>${
       j.errors ? `errors ${j.errors}` : ""}</span><span>${elapsed}</span>${active ? "<span></span>" : link}</div>`;
-  }).join("");
-  if (shown.length && !RUN_POLL) RUN_POLL = setInterval(pollRunJobs, 2000);
-  if (!shown.length && RUN_POLL) { clearInterval(RUN_POLL); RUN_POLL = null; }
+  }).join("") + building.map(b => runBuildRow(b, queue, now)).join("");
+  const poll = shown.length || building.length;
+  if (poll && !RUN_POLL) RUN_POLL = setInterval(pollRunJobs, 2000);
+  if (!poll && RUN_POLL) { clearInterval(RUN_POLL); RUN_POLL = null; }
 }
 async function pollRunJobs() {
   try {
-    const data = await runJson("/api/run-jobs");
-    showRunJobs(data.jobs || [], data.now || Date.now() / 1000);
+    const [data, builds] = await Promise.all([runJson("/api/run-jobs"),
+      runJson("/api/embedding-jobs").catch(() => ({}))]);
+    showRunJobs(data.jobs || [], data.now || Date.now() / 1000, builds.jobs || [],
+                builds.queue || null);
   } catch (_) { /* the next poll tries again */ }
 }
 
@@ -2897,6 +2927,18 @@ window.addEventListener("keydown", ev => {
   }
 }, true);
 $("#jobs").addEventListener("click", async ev => {
+  const build = ev.target.closest("[data-build-stop]");
+  if (build) {
+    build.disabled = true;
+    try {
+      await runJson(`/api/embeddings/${encodeURIComponent(build.dataset.buildStop)}/stop`,
+                    { method: "POST" });
+    } catch (e) {
+      alert(`Cannot stop the build of ${build.dataset.buildStop}: ${e.message}`);
+    }
+    pollRunJobs();
+    return;
+  }
   const button = ev.target.closest("[data-run-stop]");
   if (!button) return;
   button.disabled = true;

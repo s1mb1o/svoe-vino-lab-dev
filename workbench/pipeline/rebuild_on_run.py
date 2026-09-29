@@ -76,11 +76,14 @@ def events_after(path, offset):
 
 
 def wait_for_build(directory, name, log, sleep):
-    """Wait while a build of the embedding runs."""
+    """Wait while a build of the embedding runs. A new build PID gets a new line, so the
+    last line names the build that runs (plan 88)."""
     pid = embeddings.running_pid(directory)
-    if pid:
-        log("a build of %s runs: PID %d; the run waits for its end" % (name, pid))
+    logged = None
     while pid:
+        if pid != logged:
+            log("a build of %s runs: PID %d; the run waits for its end" % (name, pid))
+            logged = pid
         sleep(POLL_SECONDS)
         pid = embeddings.running_pid(directory)
 

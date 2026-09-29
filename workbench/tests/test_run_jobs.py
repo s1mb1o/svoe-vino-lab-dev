@@ -143,6 +143,29 @@ class JobStateTest(unittest.TestCase):
         self.assertEqual(run_jobs.job_state(str(self.dir))["state"], "failed")
         self.assertFalse(run_jobs.runner_alive(os.getpid()))  # this process is no runner
 
+    def test_a_live_runner_with_no_start_event_waits_with_its_last_log_line(self):
+        # Plan 88: the wait for a build of the embedding comes before the event `start`.
+        self.write({"event": "log", "message": "a build of gw runs: PID 1; the run waits",
+                    "t": 1},
+                   {"event": "log", "message": "a build of gw runs: PID 2; the run waits",
+                    "t": 2})
+        with mock.patch.object(run_jobs, "running_pid", return_value=4242):
+            job = run_jobs.job_state(str(self.dir))
+        self.assertEqual((job["state"], job["pid"], job["todo"]), ("running", 4242, None))
+        self.assertEqual(job["message"], "a build of gw runs: PID 2; the run waits")
+
+    def test_a_live_runner_with_no_event_yet_is_starting(self):
+        (self.dir / run_jobs.LOG).write_text("", encoding="utf-8")
+        with mock.patch.object(run_jobs, "running_pid", return_value=4242):
+            job = run_jobs.job_state(str(self.dir))
+        self.assertEqual((job["state"], job["message"]), ("running", "starting"))
+
+    def test_a_stop_during_the_wait_is_stopping(self):
+        self.write({"event": "log", "message": "a build of gw runs: PID 1", "t": 1},
+                   {"event": "stopping", "signal": "SIGTERM", "t": 2})
+        with mock.patch.object(run_jobs, "running_pid", return_value=4242):
+            self.assertEqual(run_jobs.job_state(str(self.dir))["state"], "stopping")
+
 
 class ConfigurationsTest(Lab):
     def test_every_pipeline_is_listed_and_the_valid_ones_are_enabled(self):

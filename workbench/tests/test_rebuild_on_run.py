@@ -224,6 +224,16 @@ class BeforeRunTest(Lab):
         self.assertIn("a build of gw runs: PID 4242", self.lines[0])
         self.assertEqual(len(self.calls()), 1)
 
+    def test_a_new_build_pid_gets_a_new_line(self):
+        # Plan 88: a stop of the build, and a new build of the `Build All` queue.
+        with mock.patch.object(embeddings, "running_pid",
+                               side_effect=[4242, 4242, 5151, None]):
+            self.before_run("emb", sleep=lambda seconds: None)
+        waits = [line for line in self.lines if "the run waits for its end" in line]
+        self.assertEqual(len(waits), 2)
+        self.assertIn("PID 4242", waits[0])
+        self.assertIn("PID 5151", waits[1])
+
     def test_an_embedding_python_that_is_not_a_file_is_an_error(self):
         self.write_config(True, embedding_python=str(self.root / "no-python"))
         with self.assertRaisesRegex(embeddings.ConfigError, "embedding_python .* is not a file"):

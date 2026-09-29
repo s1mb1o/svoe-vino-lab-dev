@@ -2379,3 +2379,17 @@ and QR scanner are available. The run commands are in `COMMANDS.md`.
 | BRS3 | Run each preset on `my` with caches enabled. | Each saved run uses the requested preset, retains barcode and rerank steps, and sends the segmented package on white to the embedding model when barcode lookup does not answer. |
 | BRS4 | Build `gx10-siglip2-so400m-patch16-512-rot5` and its clusters and label rules with the commands in `COMMANDS.md`. | Each current full reference has 72 angles, from 0° to 355°. Label references have one vector. Both catalogue views appear in the cluster artifact. |
 | BRS5 | Run `barcode-rerank-siglip2-512-rot5-seg` on `my`. | The run uses the new index, four workers, barcode lookup, package segmentation on white, and cluster reranking. Compare its metrics with the baseline only when the query manifests match. |
+
+## Jobs of both kinds — plan 88
+
+Run from `workbench/`. JB1 and JB2 are read-only. JB3 to JB6 need a running build or a
+run job on 8168. A stop button in JB5 stops a real job.
+
+| # | Case | Expected result |
+|---|---|---|
+| JB1 | `python3 -m unittest discover -s tests -p 'test_run_jobs.py'` | The class `JobStateTest` includes a live runner with no event `start` (`running` with the last `log` message, or `starting`) and a SIGTERM during the wait (`stopping`). |
+| JB2 | `python3 -m unittest discover -s tests -p 'test_rebuild_on_run.py'` | The test `test_a_new_build_pid_gets_a_new_line` passes: a new build PID gives a new wait line. |
+| JB3 | While a build runs, open `/testset` | The panel shows the row `build · <embedding>` after the run rows, with `done / todo`, the phase, `Build All <n> / <count>` while the queue builds this entry, and the link `open` to `/embedding?name=<embedding>`. Checked in headless Chromium on 2026-09-29, light and dark. |
+| JB4 | Start a run of a pipeline whose embedding builds, then open `/testset` and `/embedding` | The run row shows `a build of <embedding> runs: PID <pid>; the run waits for its end`, not `starting`. `/embedding` shows `run · <pipeline> · <set>` after the build rows, with the link `open` to `/testset?set=<set>`. A `selftest-` job gets no row on `/embedding`. Checked with a stubbed `/api/run-jobs` in headless Chromium on 2026-09-29. |
+| JB5 | Press × on a build row of `/testset`, and on a run row of `/embedding` | The build row sends `POST /api/embeddings/<name>/stop`. The run row sends `POST /api/run-jobs/<name>/stop`. Checked with stubbed stop routes on 2026-09-29. |
+| JB6 | Restart 8168 while a run job waits for a build | The run row stays on `/testset` with the wait message. Before plan 88 it disappeared. |

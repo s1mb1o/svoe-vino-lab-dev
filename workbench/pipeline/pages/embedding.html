@@ -47,7 +47,7 @@ button:disabled { cursor: default; opacity: .45; }
 a { color: var(--accent); }
 .jobs { display: grid; gap: 4px; margin-top: 8px; }
 .job {
-  display: grid; grid-template-columns: auto minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto;
+  display: grid; grid-template-columns: auto minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto auto;
   gap: 10px; align-items: center; font-size: 12px; padding: 4px 8px;
   background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
 }
@@ -552,7 +552,6 @@ function showJobs(jobs) {
     LAST_STATE[job.name] = job.state;
   }
   const running = jobs.filter(job => ACTIVE.includes(job.state));
-  $("#jobs").hidden = !running.length;
   $("#jobs").innerHTML = running.map(job => {
     const percent = job.todo ? Math.round(100 * job.done / job.todo) : 0;
     const elapsed = job.started_t ? duration(Date.now() / 1000 - job.started_t) : "";
@@ -570,10 +569,11 @@ function showJobs(jobs) {
       viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>`;
     return `<div class="job">${stop}<span class="job-name" title="${esc(job.name)}">${esc(job.name)}</span>
       <span class="job-state">${esc(job.state)}</span><div class="prog"><div style="width:${percent}%"></div></div>
-      <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span></div>`;
-  }).join("");
+      <span>${count}</span><span>${job.failed ? `failed ${job.failed}` : ""}</span><span>${elapsed}</span><span></span></div>`;
+  }).join("") + RUNS.map(runRowHtml).join("");
+  $("#jobs").hidden = !running.length && !RUNS.length;
   // Between two builds of `Build All` no build runs for up to 1 s: the queue keeps the poll.
-  const poll = running.length || queueRuns();
+  const poll = running.length || RUNS.length || queueRuns();
   if (poll && !POLL) POLL = setInterval(pollJobs, 2000);
   if (!poll && POLL) { clearInterval(POLL); POLL = null; }
   buttons();
@@ -582,9 +582,45 @@ function showJobs(jobs) {
   }
 }
 
+// Plan 88: the run jobs of `/testset` that run appear in `#jobs` after the builds, because
+// a run can wait for a build of its embedding before its first photo. The Selftest line
+// shows the self-test jobs, so they get no row here.
+let RUNS = [];
+function setRuns(jobs) {
+  RUNS = (jobs || []).filter(job => ACTIVE.includes(job.state)
+    && !job.name.startsWith(SELFTEST_PREFIX));
+}
+function runRowHtml(job) {
+  const percent = job.todo ? Math.round(100 * job.done / job.todo) : 0;
+  const elapsed = job.started_t ? duration(Date.now() / 1000 - job.started_t) : "";
+  // A run that waits has no `todo`; its message names the build that it waits for.
+  const count = job.todo == null ? esc(job.message || "") : `${job.done} / ${job.todo}`;
+  const name = `run · ${job.name} · ${job.set || ""}`;
+  const stop = `<button type="button" class="job-stop" data-run-stop="${esc(job.name)}"
+    title="${job.state === "running" ? `stop the run of ${esc(job.name)}` : "stopping"}"
+    aria-label="stop the run of ${esc(job.name)}"${job.state === "running" ? "" : " disabled"}><svg
+    viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>`;
+  const link = job.set ? `<a href="/testset?set=${encodeURIComponent(job.set)}">open</a>` : "<span></span>";
+  return `<div class="job">${stop}<span class="job-name" title="${esc(name)}">${esc(name)}</span>
+    <span class="job-state">${esc(job.state)}</span><div class="prog"><div style="width:${percent}%"></div></div>
+    <span>${count}</span><span>${job.errors ? `errors ${job.errors}` : ""}</span><span>${elapsed}</span>${link}</div>`;
+}
+async function stopRun(button) {
+  const name = button.dataset.runStop;
+  button.disabled = true;
+  try {
+    await getJson(`/api/run-jobs/${encodeURIComponent(name)}/stop`, {method: "POST"});
+  } catch (error) {
+    alert(`Cannot stop the run of ${name}: ${error.message}`);
+  }
+  await pollJobs();
+}
+
 async function pollJobs() {
   try {
-    const body = await getJson("/api/embedding-jobs");
+    const [body, runs] = await Promise.all([getJson("/api/embedding-jobs"),
+      getJson("/api/run-jobs").catch(() => null)]);
+    if (runs) setRuns(runs.jobs);
     showQueue(body.queue);
     showJobs(body.jobs);
   } catch (_) { /* next poll */ }
@@ -918,6 +954,8 @@ $("#build-all").addEventListener("click", buildAll);
 $("#jobs").addEventListener("click", event => {
   const button = event.target.closest("button[data-stop]");
   if (button && !button.disabled) stopJob(button);
+  const run = event.target.closest("button[data-run-stop]");
+  if (run && !run.disabled) stopRun(run);
 });
 $("#log").addEventListener("click", () => { $("#log-dialog").showModal(); loadLog(); });
 $("#log-refresh").addEventListener("click", loadLog);
@@ -994,7 +1032,8 @@ $("#q").value = INITIAL.has("q") ? INITIAL.get("q") : (typeof HEADER.q === "stri
 $("#filter").addEventListener("change", saveHeader);
 $("#q").addEventListener("input", saveHeader);
 
-loadList().then(loadEntry).then(openPreviewOfUrl).catch(error => {
+// The first poll finds the run jobs of plan 88; the poll goes on while a row is shown.
+loadList().then(() => { pollJobs(); return loadEntry(); }).then(openPreviewOfUrl).catch(error => {
   $("#source").innerHTML = `<div class="err">Cannot read /api/embeddings: ${esc(error.message)}</div>`;
 });
 </script>

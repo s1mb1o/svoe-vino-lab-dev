@@ -159,7 +159,9 @@ def job_state(directory):
     """Return the job of one pipeline from `job.lock` and `job.log`.
 
     `state` is None (no job yet), `running`, `stopping`, `done`, `stopped`, or
-    `failed`. A runner that ended with no final event is `failed`."""
+    `failed`. A runner that ended with no final event is `failed`. A live runner with no
+    event `start` yet is `running`: it waits, for example for a build of its embedding,
+    and `message` is its last event `log`, or `starting` (plan 88)."""
     events = read_events(directory)
     starts = [number for number, event in enumerate(events) if event["event"] == "start"]
     run = events[starts[-1]:] if starts else events
@@ -183,6 +185,11 @@ def job_state(directory):
         # A runner that failed before its `start` event, for example on a wrong option,
         # has a final event too.
         job["state"] = final["event"]
+    elif pid and not start:
+        logs = [e for e in run if e["event"] == "log"]
+        job["state"] = ("stopping" if any(e["event"] == "stopping" for e in run)
+                        else "running")
+        job["message"] = logs[-1].get("message") if logs else "starting"
     elif start:
         job["state"] = "failed"
         job["message"] = "the runner ended with no final event"

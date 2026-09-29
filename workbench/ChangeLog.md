@@ -2,6 +2,27 @@
 
 ## 2026-09-29
 
+- Plan 88: `/testset` and `/embedding` show the jobs of both kinds. `/testset` shows each
+  running embedding build after its run rows (`build · <embedding>`, the phase,
+  `Build All <n> / <count>`, a stop button, and a link to `/embedding`). `/embedding`
+  shows each running run job after its build rows (`run · <pipeline> · <set>`, a stop
+  button, and a link to `/testset`). A run job that waits for a build before its event
+  `start` shows its last `log` line, for example `a build of <embedding> runs: PID <pid>;
+  the run waits for its end`, in place of `starting` (`run_jobs.job_state`). Before, such
+  a job disappeared after a restart of 8168. `rebuild_on_run.wait_for_build` writes a new
+  line when the build PID changes. Cause: the run `barcode-rerank-siglip2-512-rot5-seg`
+  showed `starting` for 33 min while it waited for the rot5 index build. Tests:
+  `test_run_jobs.py` and `test_rebuild_on_run.py` 48 OK; the full suite 1,463 tests, 3
+  errors outside this change (`SAM3_ENDPOINT` of the shell; no module `svm` in system
+  Python). Headless Chromium: the rows in light and dark mode, and the stop requests with
+  stubbed routes. 8168 restarted at 19:50 (PID 49027) with the owner permission; the
+  restart also loaded the uncommitted `pipeline/benchmark.py` of plan 87.
+- The rot5 index build `gx10-siglip2-so400m-patch16-512-rot5`: the owner stopped the
+  Codex build (6 workers) at 19:20. The `Build All` queue started the same entry again
+  with 1 worker (3.7 items/min, about 5.4 h). With the owner answer, the build started
+  again at 19:50:58 with `--workers 6` (PID 50453, 25.5 items/min, 1,157 items left).
+  The Codex trial `work/fixed512-rot5/finish_trial.py` still waits for the index.
+
 - Added `barcode-rerank-siglip2-512-rot5-seg` and the fixed-512 reference index
   `gx10-siglip2-so400m-patch16-512-rot5`. The index uses 72 angles at 5-degree steps
   for full references and one vector for each label reference. The query steps,

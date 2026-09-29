@@ -950,3 +950,22 @@ Errors of both routes: `400` for a missing place or file, or a missing or invali
 The export `pipeline/export_testset.py` writes the field `tags` into the label entry of
 each photo whose image has a tag. The import `pipeline/import_testset.py` adds the tags of
 the field and never removes an image tag.
+
+## The wait of a run job — plan 88
+
+### `GET /api/run-jobs`
+
+A run job can wait before its event `start`. An example is the wait for a build of the
+embedding of its pipeline, with the key `rebuild_embeddings_on_run`. During the wait, the
+job has the state `running`, `todo` is null, and `message` is the text of its last event
+`log`. An example is `a build of <embedding> runs: PID <pid>; the run waits for its end`.
+A job with no event `log` yet has the message `starting`. A SIGTERM during the wait gives
+the state `stopping`. The state comes from `job.lock` and `job.log`, so a restart of the
+server keeps it.
+
+The wait writes a new event `log` each time the PID of the build changes. An example is a
+stop of the build and a new build of the `Build All` queue.
+
+`/testset` shows each running build of `GET /api/embedding-jobs` after its run rows.
+`/embedding` shows each running run job of `GET /api/run-jobs` after its build rows, but
+not the jobs `selftest-<embedding>`.

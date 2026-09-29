@@ -9474,3 +9474,96 @@ checked).
 ```text
 git commit all
 ```
+
+## 2026-09-29T19:11:00+0300
+
+Message of the owner with a screenshot of the job line on `/testset`:
+`barcode-rerank-siglip2-512-rot5-seg`, `running`, `starting`. The time is estimated.
+
+```text
+started but does not progress, what is wrong?
+```
+
+## 2026-09-29T19:15:00+0300
+
+The time is estimated.
+
+```text
+why codex job is not displayed in UI ?
+```
+
+## 2026-09-29T19:20:30+0300
+
+The time is estimated.
+
+```text
+Ok. I stopped embedding
+```
+
+## 2026-09-29T19:22:00+0300
+
+The time is estimated.
+
+```text
+if there is running embeddings and runs, then show both on http://127.0.0.1:8168/embedding and http://127.0.0.1:8168/testset pages, to understand why my job is not started
+```
+
+## 2026-09-29T19:35:06+0300
+
+Answers of the owner to two questions of the agent.
+
+Question 1: How should the two job kinds appear on /embedding and /testset?
+Options: "A: both kinds in #jobs (Recommended)", "B: shared endpoint + jobs.js",
+"C: wait reason only".
+
+```text
+A: both kinds in #jobs (Recommended)
+```
+
+Question 2: Should I stop your waiting run job barcode-rerank-siglip2-512-rot5-seg
+(official-real-photos) now? It will fail after the build anyway.
+Options: "Yes, stop it", "No, leave it".
+
+```text
+Yes, stop it
+```
+
+## 2026-09-29T19:38:58+0300
+
+Answer of the owner to a question of the agent.
+
+Question: Implement plan 88 as written?
+Options: "Yes, implement (Recommended)", "Use a new state `waiting`", "No restart today".
+
+```text
+Yes, implement (Recommended)
+```
+
+## 2026-09-29T19:50:00+0300
+
+Answers of the owner to two questions of the agent.
+
+Question 1: May I restart 8168 now so the run_jobs.py change goes live? The restart also
+loads the uncommitted pipeline/benchmark.py of plan 87 (session c1, done and tested;
+run_job.py uses it already). It ends the Build All queue, but the rot5 build continues.
+The Codex trial only reads files now, so it is not affected.
+Options: "Restart now (Recommended)", "Not now".
+
+```text
+Restart now (Recommended)
+```
+
+Question 2: The rot5 build that the Build All queue restarted runs with 1 worker. The
+Codex build had 6. At 3.7 items/min, about 5.4 h are left, not 80 min. What should
+happen?
+Options: "Leave it", "Restart with 6 workers".
+
+```text
+Restart with 6 workers
+```
+
+## 2026-09-29T19:54:40+0300
+
+```text
+git commit
+```
