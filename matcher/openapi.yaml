@@ -8,16 +8,32 @@ paths:
     get:
       tags:
         - service
-      summary: Check service readiness
-      description: Return readiness and the selected pipeline.
+      summary: Check service liveness
+      description: Return liveness and the selected pipeline.
       operationId: healthz
       responses:
         '200':
-          description: The service is ready.
+          description: The service process is live.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+  /readyz:
+    get:
+      tags:
+        - service
+      summary: Check pipeline readiness
+      description: Check only the dependencies required by the selected pipeline.
+      operationId: readyz
+      responses:
+        '200':
+          description: The selected pipeline is ready.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          description: A dependency of the selected pipeline is unavailable.
   /v1/eval/predict:
     post:
       tags:
@@ -50,8 +66,13 @@ paths:
           description: The request upload exceeded its time limit.
         '415':
           description: The uploaded image format is not supported.
+        '502':
+          description: SigLIP2 or SAM3 failed or returned invalid data.
         '503':
-          description: The matcher request queue is full.
+          description: The matcher request queue is full, or hand selection requires
+            SAM3 configuration.
+        '504':
+          description: A SigLIP2 or SAM3 request exceeded its time limit.
         '422':
           description: Validation Error
           content:
@@ -106,9 +127,13 @@ paths:
           description: The request upload exceeded its time limit.
         '415':
           description: The uploaded image format is not supported.
+        '502':
+          description: SigLIP2 or SAM3 failed or returned invalid data.
         '503':
-          description: The matcher request queue is full, or the selected pipeline
-            has no wine cards.
+          description: The matcher request queue is full, the selected pipeline has
+            no wine cards, or hand selection requires SAM3 configuration.
+        '504':
+          description: A SigLIP2 or SAM3 request exceeded its time limit.
         '422':
           description: Validation Error
           content:
@@ -152,12 +177,12 @@ paths:
         '415':
           description: The uploaded image format is not supported.
         '502':
-          description: SAM3 failed or returned invalid data.
+          description: SigLIP2 or SAM3 failed or returned invalid data.
         '503':
           description: The request queue is full, SAM3 is not configured, or the selected
             pipeline has no wine cards.
         '504':
-          description: The SAM3 request exceeded its time limit.
+          description: A SigLIP2 or SAM3 request exceeded its time limit.
         '422':
           description: Validation Error
           content:
@@ -328,7 +353,7 @@ components:
       required:
         - pipeline
       title: Health
-      description: Service readiness and selected matcher pipeline.
+      description: Service state and selected matcher pipeline.
     MatchCandidate:
       properties:
         rank:
@@ -506,4 +531,4 @@ tags:
   - name: group
     description: Segment and match all wine bottles in one shelf image.
   - name: service
-    description: Service readiness.
+    description: Service liveness and readiness.

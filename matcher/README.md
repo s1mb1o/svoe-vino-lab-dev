@@ -36,13 +36,25 @@
 ## Требования
 
 - Python 3.11 или новее.
-- Пакеты из matcher/requirements.txt. Файл фиксирует точную версию каждого прямого
-  пакета, включая pydantic.
+- Пакеты из matcher/requirements.txt. Файл фиксирует версии прямых зависимостей.
+- Файл matcher/requirements.lock фиксирует полный граф для Python 3.11 на Linux.
+  Файл содержит SHA-256 каждого допустимого дистрибутива.
 
 Используйте Python-окружение проекта и установите зависимости:
 
 ~~~bash
 ~/.venvs/svoe-vino-lab/bin/pip install -r matcher/requirements.txt
+~~~
+
+Docker и `matcher/tests/run_ci.sh` устанавливают `requirements.lock` в режиме
+`--require-hashes`. Обновите lock-файл после изменения прямых зависимостей:
+
+~~~bash
+uv pip compile matcher/requirements.txt \
+  --python-version 3.11 \
+  --python-platform x86_64-unknown-linux-gnu \
+  --generate-hashes \
+  --output-file matcher/requirements.lock
 ~~~
 
 Команды нужно выполнять из корня svoe-vino-lab.
@@ -121,15 +133,38 @@ Backend выполняет шаги lab pipeline `siglip2-p512-as-is`:
    участвуют.
 6. Возвращает slug вина с лучшим косинусом. При равенстве побеждает меньший slug.
 
-Backend не выполняет сегментацию для одиночных изображений. POST /v1/group/match
-вызывает SAM3 до передачи отдельных crop в backend. Сервис загружает bundle при
+By default, the backend does not segment single images. The optional
+`hand_selection: true` step selects one package with SAM3 before embedding.
+`POST /v1/group/match` always segments bottles with SAM3. It ignores hand selection.
+
+Сервис загружает bundle при
 запуске. Он проверяет формат, версию, SHA-256 файлов `vectors.npy` и `candidates.jsonl`
 и форму матрицы. Для bundle версии 2 он также проверяет SHA-256 файла `wines.jsonl` и
-читает карточки вин. Ошибка endpoint во время запроса даёт HTTP 500.
+читает карточки вин. Ошибка SigLIP2 даёт HTTP 502. Таймаут SigLIP2 даёт HTTP 504.
 
 Для POST /v1/match backend ранжирует все вина по тому же косинусу. Первое место всегда
 совпадает с ответом POST /v1/eval/predict. Вино без карточки backend пропускает, и его
 место занимает следующее вино.
+
+### Optional hand-aware selection
+
+Set `hand_selection: true` in the selected `pipeline` entry. The default is `false`.
+Set `SAM3_ENDPOINT` to the SAM3 base URL. Restart the matcher after a configuration
+change. This option applies only to the `siglip2` backend.
+
+Both `POST /v1/match` and `POST /v1/eval/predict` request package and hand detections.
+The selector combines hand-box overlap with package size, position, sharpness, and
+other scene signals. Without a hand, it uses scene ranking. It crops the selected
+package and replaces the background outside its mask with white. Without a usable
+package, it keeps the original image. Hand overlap is a heuristic, not proof of a grip.
+
+The group endpoint ignores this option even when it is enabled. Its SAM3 prompt stays
+`wine bottle`. Every retained bottle crop goes directly to batch embedding. It does
+not detect hands or select one main bottle.
+
+Missing SAM3 configuration gives HTTP 503. Invalid SAM3 data gives HTTP 502. A SAM3
+timeout gives HTTP 504. These failures do not silently use the original photo.
+Read [hand-selection.md](docs/hand-selection.md) for the configuration and behavior.
 
 ### Embedding bundle
 
@@ -277,6 +312,8 @@ export SVOE_VINO_MATCHER_TOKEN='<secret-token>'
 ## Docker
 
 Файл matcher/Dockerfile собирает образ сервиса. Контекст сборки — каталог matcher.
+Dockerfile фиксирует `python:3.11-slim` по OCI digest. Он устанавливает полный граф
+Python-зависимостей из `matcher/requirements.lock` в режиме `--require-hashes`.
 Соберите образ из закоммиченной ревизии в корне svoe-vino-lab:
 
 ~~~bash
@@ -472,9 +509,10 @@ SAM3 получает `text=wine bottle`, `threshold=0.4`, `mask_threshold=0.5` 
 
 Полный контракт и лимиты находятся в [docs/group-match.md](docs/group-match.md).
 
-## Проверка готовности
+## Проверка состояния
 
-Endpoint GET /healthz показывает готовность процесса и выбранный pipeline:
+Endpoint GET /healthz показывает, что процесс работает. Этот endpoint не проверяет
+model endpoint:
 
 ~~~bash
 curl "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/healthz"
@@ -486,9 +524,22 @@ curl "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/healthz"
 {"status":"ok","pipeline":"official-eval-mock"}
 ~~~
 
-Путь `/healthz` используется как распространённый адрес инфраструктурной readiness
-probe. Он всегда публичный. Страницы документации и `/openapi.json` также публичны.
-Авторизация защищает POST /v1/eval/predict, POST /v1/match и POST /v1/group/match.
+Endpoint GET /readyz проверяет зависимости выбранного pipeline:
+
+~~~bash
+curl "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/readyz"
+~~~
+
+Mock pipeline не имеет model dependency. Для него `/readyz` сразу возвращает HTTP 200.
+SigLIP2 pipeline отправляет небольшое изображение в настроенный embedding endpoint.
+При `hand_selection: true` он сначала проверяет `SAM3_ENDPOINT`. Если обязательная
+зависимость недоступна, `/readyz` возвращает HTTP 503. `/healthz` при этом возвращает
+HTTP 200, пока процесс работает.
+
+Docker `HEALTHCHECK` вызывает `/readyz`. Поэтому контейнер не получает состояние
+`healthy`, если обязательная зависимость выбранного pipeline недоступна. Оба endpoint
+всегда публичны. Страницы документации и `/openapi.json` также публичны. Авторизация
+защищает POST /v1/eval/predict, POST /v1/match и POST /v1/group/match.
 
 ## Журнал запросов
 
@@ -535,11 +586,12 @@ x-auth-token заменяются на `<redacted>`. Имена этих заг�
 - ReDoc: `http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/redoc`;
 - OpenAPI JSON: `http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/openapi.json`.
 
-OpenAPI описывает GET /healthz, обязательное multipart-поле image, опциональную схему
-BearerAuth, успешный ответ со строкой slug и ошибки HTTP 400, 401, 408, 413, 415, 422 и
-503. Для POST /v1/match OpenAPI также описывает параметр `k` и схемы `MatchResult`,
+OpenAPI описывает GET /healthz, GET /readyz, обязательное multipart-поле image и
+опциональную схему BearerAuth. Он описывает успешные ответы и ошибки HTTP 400, 401,
+408, 413, 415, 422, 502, 503 и 504.
+Для POST /v1/match OpenAPI также описывает параметр `k` и схемы `MatchResult`,
 `MatchCandidate` и `WineCard`. Для POST /v1/group/match OpenAPI описывает схемы
-`GroupMatchResult`, `GroupImage` и `GroupBottle`, а также ошибки HTTP 502 и 504.
+`GroupMatchResult`, `GroupImage` и `GroupBottle`.
 
 ## Тестирование
 

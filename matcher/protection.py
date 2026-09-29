@@ -17,7 +17,7 @@ PREDICT_PATH = "/v1/eval/predict"
 MATCH_PATH = "/v1/match"
 GROUP_MATCH_PATH = "/v1/group/match"
 PROTECTED_PATHS = frozenset({PREDICT_PATH, MATCH_PATH, GROUP_MATCH_PATH})
-SUPPORTED_IMAGE_FORMATS = frozenset({"JPEG", "PNG", "WEBP"})
+SUPPORTED_IMAGE_FORMATS = frozenset({"JPEG", "MPO", "PNG", "WEBP"})
 
 
 @dataclass(frozen=True)
@@ -234,7 +234,7 @@ def validate_image(body, max_pixels):
                 if image_format not in SUPPORTED_IMAGE_FORMATS:
                     raise ImageRejected(
                         415,
-                        "image format MUST be JPEG, PNG, or WEBP",
+                        "image format MUST be JPEG (including MPO), PNG, or WEBP",
                     )
                 if width <= 0 or height <= 0:
                     raise ImageRejected(422, "image dimensions MUST be positive")

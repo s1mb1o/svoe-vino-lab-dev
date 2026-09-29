@@ -29,7 +29,7 @@ DUPLICATE_IOU = 0.9
 
 
 class GroupMatchError(RuntimeError):
-    """A group match dependency or response is not usable."""
+    """A SAM3 dependency or response is not usable in group or single-image matching."""
 
     def __init__(self, status_code: int, detail: str):
         super().__init__(detail)
@@ -124,6 +124,7 @@ def segment_group(image_bytes: bytes, endpoint: str | None,
 def _normalize_image(image_bytes: bytes) -> tuple[Image.Image, bytes]:
     try:
         with Image.open(BytesIO(image_bytes)) as opened:
+            opened.seek(0)
             image = ImageOps.exif_transpose(opened)
             alpha = image.mode in ("RGBA", "LA", "PA") or (
                 image.mode == "P" and "transparency" in image.info)
@@ -144,9 +145,10 @@ def _normalize_image(image_bytes: bytes) -> tuple[Image.Image, bytes]:
 
 
 def _request_sam3(jpeg: bytes, width: int, height: int, endpoint: str | None,
-                  timeout: float, opener=None) -> list[dict]:
+                  timeout: float, opener=None, *, text="wine bottle",
+                  require_labels=False) -> list[dict]:
     url = _sam3_url(endpoint)
-    body, content_type = _multipart(jpeg)
+    body, content_type = _multipart(jpeg, text)
     request = urllib.request.Request(
         url,
         data=body,
@@ -194,7 +196,7 @@ def _request_sam3(jpeg: bytes, width: int, height: int, endpoint: str | None,
             answer = json.loads(payload)
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise GroupMatchError(502, "SAM3 service returned invalid JSON") from exc
-        return _validate_sam3(answer, width, height)
+        return _validate_sam3(answer, width, height, require_labels=require_labels)
     raise GroupMatchError(502, "SAM3 service is unavailable")
 
 
@@ -213,10 +215,10 @@ def _sam3_url(endpoint: str | None) -> str:
     return endpoint.rstrip("/") + "/segment"
 
 
-def _multipart(jpeg: bytes) -> tuple[bytes, str]:
+def _multipart(jpeg: bytes, text="wine bottle") -> tuple[bytes, str]:
     boundary = "svoe-vino-%s" % uuid.uuid4().hex
     fields = (
-        ("text", b"wine bottle"),
+        ("text", text.encode("utf-8")),
         ("threshold", b"0.4"),
         ("mask_threshold", b"0.5"),
         ("return_masks", b"true"),
@@ -239,7 +241,7 @@ def _multipart(jpeg: bytes) -> tuple[bytes, str]:
     return b"".join(parts), "multipart/form-data; boundary=%s" % boundary
 
 
-def _validate_sam3(answer, width: int, height: int) -> list[dict]:
+def _validate_sam3(answer, width: int, height: int, *, require_labels=False) -> list[dict]:
     if not isinstance(answer, dict):
         raise GroupMatchError(502, "SAM3 response MUST be an object")
     instances = answer.get("instances")
@@ -266,15 +268,27 @@ def _validate_sam3(answer, width: int, height: int) -> list[dict]:
                 or not isinstance(mask, str)
                 or len(mask) > MAX_MASK_BASE64_CHARS):
             raise GroupMatchError(502, "SAM3 response has an invalid instance")
-        validated.append({
+        result = {
             "score": float(score),
             "box": tuple(float(value) for value in box),
             "mask_png_b64": mask,
-        })
+        }
+        if require_labels:
+            label = instance.get("label")
+            area = instance.get("area")
+            if not isinstance(label, str) or not label.strip():
+                raise GroupMatchError(502, "SAM3 response has an invalid label")
+            if area is not None and (
+                    isinstance(area, bool) or not isinstance(area, (int, float))
+                    or not math.isfinite(area) or not 0 <= area <= width * height):
+                raise GroupMatchError(502, "SAM3 response has an invalid area")
+            result.update(label=label.strip().lower(), area=area)
+        validated.append(result)
     return validated
 
 
-def _prepare_bottle(image: Image.Image, instance: dict):
+def _instance_mask(image: Image.Image, instance: dict):
+    """Return a clamped box and its binary mask, or None for an empty segment."""
     width, height = image.size
     raw_box = instance["box"]
     left = max(0, min(width, math.floor(raw_box[0])))
@@ -295,6 +309,15 @@ def _prepare_bottle(image: Image.Image, instance: dict):
         lambda value: 255 if value >= MASK_THRESHOLD else 0)
     if mask.getbbox() is None:
         return None
+    return (left, top, right, bottom), mask
+
+
+def _prepare_bottle(image: Image.Image, instance: dict):
+    prepared = _instance_mask(image, instance)
+    if prepared is None:
+        return None
+    (left, top, right, bottom), mask = prepared
+    width, height = image.size
     overlay = Image.new("RGBA", mask.size, (237, 217, 170, 0))
     overlay.putalpha(mask)
     mask_output = BytesIO()

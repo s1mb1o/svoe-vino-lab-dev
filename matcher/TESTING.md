@@ -6,7 +6,8 @@ official harness. Выполняйте команды из корня `svoe-vino
 ## Требования
 
 - Python 3.11 или новее.
-- Пакеты из `matcher/requirements.txt`.
+- Пакеты из `matcher/requirements.txt` для локальной среды.
+- Полный hash-locked граф из `matcher/requirements.lock` для Python 3.11 на Linux.
 - bash, curl, jq и awk для `participant_test.sh`.
 
 Установите зависимости в Python-окружение проекта:
@@ -59,8 +60,8 @@ matcher:
   -m unittest discover -s matcher/tests -v
 ~~~
 
-Параметр `-W error::ResourceWarning` преобразует предупреждение о незакрытом ресурсе в
-ошибку теста. Набор содержит 69 тестов.
+`-W error::ResourceWarning` treats an unclosed resource warning as an error.
+The suite contains 113 tests.
 
 ### API и official harness
 
@@ -69,7 +70,8 @@ matcher:
 
 Тесты проверяют следующие условия:
 
-- `GET /healthz` возвращает состояние готовности и имя pipeline.
+- `GET /healthz` возвращает состояние процесса и имя pipeline.
+- `GET /readyz` не вызывает внешний сервис для mock pipeline.
 - Неизвестное изображение возвращает пустой slug.
 - Пустой файл возвращает HTTP 400.
 - Слишком большой файл возвращает HTTP 413.
@@ -88,8 +90,9 @@ directory, ссылку `"{env:NAME}"`, конфигурацию без output_d
 ссылку, bare-имя, malformed-ссылки, отсутствующую и пустую переменную. Устаревший ключ
 matcher.token_env также отклоняется.
 
-Тесты авторизации проверяют публичный доступ к `/healthz` и OpenAPI. Они проверяют
-отсутствующий токен, неверную схему, неверное значение и успешный Bearer-запрос.
+Тесты авторизации проверяют публичный доступ к `/healthz`, `/readyz` и OpenAPI.
+Они проверяют отсутствующий токен, неверную схему, неверное значение и успешный
+Bearer-запрос.
 
 ### Устойчивость
 
@@ -120,11 +123,15 @@ Content-Length без передачи содержимого файла. Пос
 - Запрос содержит имя модели и `max_num_patches` из bundle и один PNG data URI.
 - PNG имеет белый фон вместо прозрачности и длинную сторону 1024 пикселя.
 - Маленькое изображение не увеличивается. EXIF-ориентация применяется.
-- HTTP 500, вектор другой размерности и нулевой вектор дают `Siglip2Error`.
+- Ошибка HTTP, вектор другой размерности и нулевой вектор дают `Siglip2Error` со
+  статусом HTTP 502. Таймаут получает статус HTTP 504.
+- API возвращает HTTP 502 для ошибки SigLIP2. Audit record сохраняет тот же статус.
 - Неверные поля bundle и endpoint, отсутствующая переменная окружения, изменённый payload,
   другой формат bundle и bundle без view `full` дают `ConfigError`.
 - `matcher/config.yaml` выбирает pipeline `siglip2-p512-as-is`.
 - Official harness получает slug через uvicorn, pipeline siglip2 и fake-сервер.
+- `/readyz` отправляет небольшое изображение в SigLIP2 для выбранного SigLIP2 pipeline.
+- `/readyz` возвращает HTTP 503 при ошибке обязательной model dependency.
 
 ### POST /v1/match
 
@@ -191,6 +198,29 @@ Unit tests используют fake opener. Интеграционные тес
 - SigLIP2 обрабатывает несколько crop в одном embedding-запросе.
 - Статический OpenAPI совпадает с OpenAPI запущенного приложения.
 
+### Hand-aware selection and group isolation
+
+`matcher/tests/test_hand_selection.py` uses synthetic images and local fake services.
+It does not call a GPU service. It checks the following behavior:
+
+- `hand_selection` defaults to `false` and accepts only YAML booleans.
+- The mock backend rejects enabled hand selection.
+- Both single-image methods use the same selector when the option is enabled.
+- A hand can change the selected package. A hand never becomes a match candidate.
+- Low-confidence hands do not affect selection. Small shelf packages get a reduced
+  hand-contact signal. Without a hand, scene ranking selects the main package.
+- Empty detections or empty package masks preserve the original image.
+- The crop uses a white background outside the selected mask.
+- EXIF orientation and the segmentation size limit stay consistent.
+- Invalid labels, areas, and masks fail explicitly. Timeouts have bounded retries.
+- Both single-image endpoints select the package through local SAM3 and SigLIP2 fakes.
+- Disabled selection needs no SAM3. Missing configuration gives HTTP 503 and the same
+  audit status. Invalid masks give HTTP 502 without an embedding call.
+- Readiness checks SAM3 only when `hand_selection` is enabled.
+- Unauthorized requests reach neither SAM3 nor SigLIP2.
+- With `hand_selection: true`, the group endpoint sends only `wine bottle` to SAM3.
+  It sends every retained crop to batch embedding and makes no hand-selection call.
+
 ### Живая проверка siglip2
 
 Живая проверка использует настоящий bundle и шлюз gx10. Она не входит в CI. Запустите
@@ -224,7 +254,7 @@ bash matcher/tests/participant_test.sh \
 Пример строки результата:
 
 ~~~json
-{"query_id":"q-000001","image_path":"019c68d0.jpg","image_sha256":"c975b31e...","predicted_slug":"tabia_pino_nuar","latency_ms":12}
+{"query_id":"q-000001","image_path":"019c68d0.webp","image_sha256":"c975b31e...","predicted_slug":"tabia_pino_nuar","latency_ms":12}
 ~~~
 
 Если matcher вернул пустой slug, поле predicted_slug равно null.
@@ -237,16 +267,16 @@ runner с labels `self-hosted`, `Linux`, `X64` и `docker`.
 
 Workflow повторяет pull образа `python:3.11-slim` до трёх раз. Он монтирует исходники в
 одноразовый контейнер только для чтения. Контейнер устанавливает curl, jq и зависимости
-из `matcher/requirements.txt` с помощью `matcher/tests/run_ci.sh`. Затем скрипт запускает
+из `matcher/requirements.lock` с обязательной проверкой SHA-256. Затем скрипт запускает
 все тесты, которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был
 запущен или был пропущен. В конце журнала должна быть строка
-`matcher tests: discovered=69 run=69 skipped=0`.
+`matcher tests: discovered=105 run=105 skipped=0`.
 
 ## GitLab CI
 
 Job `matcher-tests` находится в корневом файле `.gitlab-ci.yml`. GitLab использует
 образ `python:3.11-slim`. Job устанавливает curl и jq, устанавливает зависимости из
-`matcher/requirements.txt`, запускает `pip check` и выполняет полный набор из 69 тестов.
+`matcher/requirements.txt`, запускает `pip check` и выполняет полный набор тестов.
 
 Pipeline должен завершить job `matcher-tests` со статусом passed. В логе должна быть
-строка `Ran 69 tests` и итог `OK`.
+строка `Ran 113 tests` и итог `OK`.

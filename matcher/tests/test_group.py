@@ -132,6 +132,19 @@ class GroupSegmentationTest(unittest.TestCase):
         self.assertEqual((result.width, result.height), (20, 30))
         self.assertEqual(result.bottles, ())
 
+    def test_a_multi_picture_jpeg_uses_its_first_frame(self):
+        first = Image.new("RGB", (4, 3), "red")
+        second = Image.new("RGB", (4, 3), "blue")
+        photo = test_siglip2.mpo_bytes(first, second)
+        answer = {"width": 4, "height": 3, "count": 0, "instances": []}
+        result = segment_group(photo, "http://sam3.test", opener=self.opener(answer))
+        preview = base64.b64decode(result.preview.split(",", 1)[1])
+        with Image.open(BytesIO(preview)) as sent:
+            red, green, blue = sent.getpixel((0, 0))
+            self.assertGreater(red, 240)
+            self.assertLess(green, 10)
+            self.assertLess(blue, 10)
+
     def test_empty_response_is_retried_once(self):
         payload = json.dumps(sam3_answer()).encode("utf-8")
         opener = FakeOpener(b"", payload)

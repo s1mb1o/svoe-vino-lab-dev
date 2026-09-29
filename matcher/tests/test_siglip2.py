@@ -155,6 +155,12 @@ def image_bytes(image, format_name, **options):
     return buffer.getvalue()
 
 
+def mpo_bytes(first, second):
+    buffer = BytesIO()
+    first.save(buffer, format="MPO", save_all=True, append_images=[second])
+    return buffer.getvalue()
+
+
 def sent_png(body):
     uri = body["input"][0]
     prefix = "data:image/png;base64,"
@@ -222,6 +228,18 @@ class Siglip2Test(unittest.TestCase):
             self.assertEqual(sent.mode, "RGB")
             self.assertEqual(sent.size, (200, 300))
 
+    def test_a_multi_picture_jpeg_uses_its_first_frame(self):
+        first = Image.new("RGB", (4, 3), "red")
+        second = Image.new("RGB", (4, 3), "blue")
+        photo = mpo_bytes(first, second)
+        with Image.open(BytesIO(model_input(photo))) as sent:
+            self.assertEqual(sent.format, "PNG")
+            self.assertEqual(sent.size, (4, 3))
+            red, green, blue = sent.getpixel((0, 0))
+            self.assertGreater(red, 240)
+            self.assertLess(green, 10)
+            self.assertLess(blue, 10)
+
     def test_multiple_images_use_one_embedding_request(self):
         matcher, fake = self.matcher((1, 0, 0, 0))
         photo = image_bytes(Image.new("RGB", (20, 30), "red"), "PNG")
@@ -232,6 +250,14 @@ class Siglip2Test(unittest.TestCase):
                             for vector in vectors))
         self.assertEqual(len(fake.requests), 1)
         self.assertEqual(len(fake.requests[0][1]["input"]), 2)
+
+    def test_readiness_sends_one_small_embedding_request(self):
+        matcher, fake = self.matcher((1, 0, 0, 0))
+        self.assertIsNone(matcher.check_ready())
+
+        self.assertEqual(len(fake.requests), 1)
+        with sent_png(fake.requests[0][1]) as sent:
+            self.assertEqual(sent.size, (60, 40))
 
     def test_a_large_image_batch_uses_bounded_embedding_requests(self):
         matcher, fake = self.matcher((1, 0, 0, 0))
@@ -250,8 +276,19 @@ class Siglip2Test(unittest.TestCase):
                 ((0, 0, 0, 0), 200, "length")):
             with self.subTest(status=status, vector=vector):
                 matcher, _ = self.matcher(vector, status)
-                with self.assertRaisesRegex(Siglip2Error, pattern):
+                with self.assertRaisesRegex(Siglip2Error, pattern) as caught:
                     matcher.predict(self.photo())
+                self.assertEqual(caught.exception.status_code, 502)
+                self.assertTrue(caught.exception.detail.startswith("SigLIP2 service"))
+
+    def test_an_endpoint_timeout_has_gateway_timeout_status(self):
+        matcher, _ = self.matcher((1, 0, 0, 0))
+        with mock.patch("matcher.siglip2.urllib.request.urlopen",
+                        side_effect=socket.timeout("fake timeout")):
+            with self.assertRaisesRegex(Siglip2Error, "timed out") as caught:
+                matcher.predict(self.photo())
+        self.assertEqual(caught.exception.status_code, 504)
+        self.assertEqual(caught.exception.detail, "SigLIP2 request timed out")
 
     def test_an_invalid_pipeline_entry_is_rejected(self):
         with mock.patch.dict(os.environ, {"MATCHER_TEST_SIGLIP2": ""}):
@@ -310,6 +347,7 @@ class Siglip2Test(unittest.TestCase):
             "backend": "siglip2",
             "bundle": "matcher/data/gx10-siglip2-so400m-patch16-naflex-p512",
             "endpoint": "{env:SIGLIP2_ENDPOINT}",
+            "hand_selection": False,
         }])
 
 
@@ -367,6 +405,10 @@ class Siglip2HarnessTest(unittest.TestCase):
             ["curl", "--silent", "--show-error", "--fail",
              "http://127.0.0.1:%d/healthz" % port],
             capture_output=True, text=True, timeout=10)
+        readiness = subprocess.run(
+            ["curl", "--silent", "--show-error", "--fail",
+             "http://127.0.0.1:%d/readyz" % port],
+            capture_output=True, text=True, timeout=10)
         output = root / "predictions.jsonl"
         completed = subprocess.run(
             ["bash", str(HARNESS), "--images-dir", str(DATA), "--manifest", str(MANIFEST),
@@ -377,10 +419,14 @@ class Siglip2HarnessTest(unittest.TestCase):
         self.assertEqual(health.returncode, 0, health.stdout + health.stderr)
         self.assertEqual(json.loads(health.stdout),
                          {"status": "ok", "pipeline": "harness-siglip2"})
+        self.assertEqual(readiness.returncode, 0,
+                         readiness.stdout + readiness.stderr)
+        self.assertEqual(json.loads(readiness.stdout),
+                         {"status": "ok", "pipeline": "harness-siglip2"})
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
         rows = [json.loads(line) for line in output.read_text().splitlines()]
         self.assertEqual([row["predicted_slug"] for row in rows], ["wine-b"] * 3)
-        self.assertEqual(len(fake.requests), 3)
+        self.assertEqual(len(fake.requests), 4)
         self.assertEqual(len(list((root / "requests").rglob("request.json"))), 3)
 
     @staticmethod

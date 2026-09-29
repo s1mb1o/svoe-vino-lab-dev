@@ -14,7 +14,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = Path(__file__).resolve().parent / "config.token.yaml"
-IMAGE = Path(__file__).resolve().parent / "data" / "019c68d0.jpg"
+IMAGE = Path(__file__).resolve().parent / "data" / "019c68d0.webp"
 TOKEN = "matcher-auth-test-token"
 
 
@@ -42,8 +42,8 @@ def multipart_image(path):
     boundary = "matcher-auth-boundary"
     body = (
         ("--%s\r\n" % boundary).encode("ascii")
-        + b'Content-Disposition: form-data; name="image"; filename="019c68d0.jpg"\r\n'
-        + b"Content-Type: image/jpeg\r\n\r\n"
+        + b'Content-Disposition: form-data; name="image"; filename="019c68d0.webp"\r\n'
+        + b"Content-Type: image/webp\r\n\r\n"
         + path.read_bytes()
         + ("\r\n--%s--\r\n" % boundary).encode("ascii")
     )
@@ -121,6 +121,12 @@ class BearerAuthenticationTest(unittest.TestCase):
 
     def test_healthz_and_openapi_are_public(self):
         status, _, body = self.request("GET", "/healthz")
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body), {
+            "status": "ok",
+            "pipeline": "official-eval-mock",
+        })
+        status, _, body = self.request("GET", "/readyz")
         self.assertEqual(status, 200)
         self.assertEqual(json.loads(body), {
             "status": "ok",

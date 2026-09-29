@@ -13,6 +13,7 @@ catalogue vectors use the same model settings.
 import base64
 import io
 import json
+import socket
 import urllib.error
 import urllib.request
 
@@ -29,10 +30,16 @@ MAX_BATCH_SIZE = 64
 class Siglip2Error(RuntimeError):
     """The SigLIP2 endpoint did not return one valid vector."""
 
+    def __init__(self, status_code: int, message: str, detail: str):
+        super().__init__(message)
+        self.status_code = status_code
+        self.detail = detail
+
 
 def model_input(image_bytes):
     """Return the PNG bytes of one photo after the steps of the lab pipeline."""
     with Image.open(io.BytesIO(image_bytes)) as opened:
+        opened.seek(0)
         image = ImageOps.exif_transpose(opened)
         alpha = image.mode in ("RGBA", "LA", "PA") or (
             image.mode == "P" and "transparency" in image.info)
@@ -67,18 +74,19 @@ class Siglip2Backend:
         """Return the Top-1 slug of one image body."""
         return self.bundle.top1(VIEW, self.embed(model_input(image)))[0]
 
-    def embed(self, png):
+    def embed(self, png, timeout=TIMEOUT_SECONDS):
         """Return the L2-normalized vector of one PNG file. Raise Siglip2Error."""
-        return self.embed_many([png])[0]
+        return self.embed_many([png], timeout=timeout)[0]
 
-    def embed_many(self, pngs):
+    def embed_many(self, pngs, timeout=TIMEOUT_SECONDS):
         """Return one L2-normalized vector for each PNG in bounded requests."""
         if not pngs:
             return []
         if len(pngs) > MAX_BATCH_SIZE:
             vectors = []
             for start in range(0, len(pngs), MAX_BATCH_SIZE):
-                vectors.extend(self.embed_many(pngs[start:start + MAX_BATCH_SIZE]))
+                vectors.extend(self.embed_many(
+                    pngs[start:start + MAX_BATCH_SIZE], timeout=timeout))
             return vectors
         inputs = [
             "data:image/png;base64," + base64.b64encode(png).decode("ascii")
@@ -89,14 +97,40 @@ class Siglip2Backend:
             self.url, data=json.dumps(body).encode("utf-8"),
             headers={"Content-Type": "application/json"}, method="POST")
         try:
-            with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
                 answer = json.load(response)
         except urllib.error.HTTPError as exc:
             with exc:
                 detail = exc.read(300).decode("utf-8", "replace").strip()
-            raise Siglip2Error("HTTP %d from %s: %s" % (exc.code, self.url, detail)) from exc
+            raise Siglip2Error(
+                502,
+                "HTTP %d from %s: %s" % (exc.code, self.url, detail),
+                "SigLIP2 service returned HTTP %d" % exc.code,
+            ) from exc
+        except (TimeoutError, socket.timeout) as exc:
+            raise Siglip2Error(
+                504,
+                "request to %s timed out" % self.url,
+                "SigLIP2 request timed out",
+            ) from exc
+        except urllib.error.URLError as exc:
+            if isinstance(exc.reason, (TimeoutError, socket.timeout)):
+                raise Siglip2Error(
+                    504,
+                    "request to %s timed out" % self.url,
+                    "SigLIP2 request timed out",
+                ) from exc
+            raise Siglip2Error(
+                502,
+                "cannot reach %s: %s" % (self.url, exc),
+                "SigLIP2 service is unavailable",
+            ) from exc
         except (OSError, ValueError) as exc:
-            raise Siglip2Error("no valid answer from %s: %s" % (self.url, exc)) from exc
+            raise Siglip2Error(
+                502,
+                "no valid answer from %s: %s" % (self.url, exc),
+                "SigLIP2 service returned invalid data",
+            ) from exc
         try:
             data = answer["data"]
             if len(data) != len(inputs):
@@ -109,16 +143,26 @@ class Siglip2Backend:
                     raise ValueError("invalid or duplicate vector index %s" % index)
                 ordered[index] = np.asarray(item["embedding"], dtype=np.float32)
         except (AttributeError, KeyError, IndexError, TypeError, ValueError) as exc:
-            raise Siglip2Error("the answer of %s is not one embedding per image: %s"
-                               % (self.url, exc)) from exc
+            raise Siglip2Error(
+                502,
+                "the answer of %s is not one embedding per image: %s" % (self.url, exc),
+                "SigLIP2 service returned invalid embedding data",
+            ) from exc
         vectors = []
         for vector in ordered:
             if vector.shape != (self.bundle.dimension,):
                 raise Siglip2Error(
+                    502,
                     "%s sent a vector of shape %s; the bundle holds %d values"
-                    % (self.url, vector.shape, self.bundle.dimension))
+                    % (self.url, vector.shape, self.bundle.dimension),
+                    "SigLIP2 service returned an embedding with an invalid shape",
+                )
             norm = float(np.linalg.norm(vector))
             if not np.isfinite(norm) or norm == 0.0:
-                raise Siglip2Error("%s sent a vector of length %s" % (self.url, norm))
+                raise Siglip2Error(
+                    502,
+                    "%s sent a vector of length %s" % (self.url, norm),
+                    "SigLIP2 service returned an invalid embedding",
+                )
             vectors.append(vector / norm)
         return vectors

@@ -1,5 +1,45 @@
 # Research log
 
+## Conditional model readiness, 2026-09-29
+
+Three options were considered.
+The first option made `/healthz` call each model dependency.
+The second option kept `/healthz` as liveness and added `/readyz` for dependency checks.
+The third option checked only a lightweight model-list endpoint.
+
+The matcher uses the second option.
+Docker uses `/readyz` for its healthcheck.
+The mock pipeline makes no external request.
+The SigLIP2 pipeline sends one small embedding request.
+A pipeline with `hand_selection: true` also sends one small SAM3 request.
+
+This decision keeps liveness available during a model outage.
+It also validates the configured model and embedding dimension.
+Each dependency probe has an eight-second timeout.
+The Docker healthcheck has a 20-second timeout because a hand-selection probe can use
+both dependencies in sequence.
+
+## Reproducible container dependencies, 2026-09-29
+
+The dependency input has exact direct versions in `requirements.txt`.
+This file does not lock transitive versions or distribution hashes.
+
+Three options were considered.
+The first option keeps the direct requirements and adds a generated lock file.
+The second option replaces the direct requirements with one large locked file.
+The third option adds `pyproject.toml` and `uv.lock`.
+
+The matcher uses the first option.
+`requirements.txt` stays the editable dependency input.
+`requirements.lock` contains the complete Python 3.11 Linux graph and distribution hashes.
+Docker and `matcher/tests/run_ci.sh` use pip with `--require-hashes`.
+The Docker base image uses an OCI digest.
+
+This decision keeps dependency updates explicit.
+An update MUST regenerate the lock file and validate the Docker build.
+The lock file targets the Python 3.11 Linux container and CI environment.
+Local environments with a different Python version use `requirements.txt`.
+
 ## Group photo matching, 2026-09-28
 
 The existing Web UI shelf implementation established the SAM3 request contract.

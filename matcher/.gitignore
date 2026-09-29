@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .venv/
 predictions.jsonl
+!/requirements.lock
 # Embedding bundles. workbench/scripts/build_matcher_bundle.py writes them. A bundle
 # holds a vector file of about 21 MB, so it stays out of git. The deploy supplies it.
 /data/

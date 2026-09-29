@@ -58,6 +58,14 @@ def tiny_gif():
     return output.getvalue()
 
 
+def tiny_mpo():
+    output = BytesIO()
+    with Image.new("RGB", (4, 3), "red") as first:
+        with Image.new("RGB", (4, 3), "blue") as second:
+            first.save(output, format="MPO", save_all=True, append_images=[second])
+    return output.getvalue()
+
+
 def jpeg_dimension_bomb():
     """Make a tiny JPEG that declares 65,535 by 65,535 pixels."""
     body = bytearray(tiny_jpeg())
@@ -205,8 +213,20 @@ class MatcherResilienceTest(unittest.TestCase):
     def test_unsupported_image_format_is_rejected(self):
         status, body = self.predict(tiny_gif())
         self.assertEqual(status, 415)
-        self.assertIn("JPEG, PNG, or WEBP", json.loads(body)["detail"])
+        self.assertIn("JPEG (including MPO), PNG, or WEBP",
+                      json.loads(body)["detail"])
         self.assert_service_survives()
+
+    def test_mpo_is_accepted_as_a_jpeg_family_image(self):
+        status, body = self.predict(tiny_mpo())
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body), {"slug": ""})
+        records = list(Path(self.output_directory.name).rglob("request.json"))
+        self.assertEqual(len(records), 1)
+        record = json.loads(records[0].read_text(encoding="utf-8"))
+        self.assertEqual(record["image"]["format"], "MPO")
+        self.assertEqual((record["image"]["width"], record["image"]["height"]),
+                         (4, 3))
 
     @unittest.skipUnless(shutil.which("curl"), "the sparse upload test needs curl")
     def test_one_gibibyte_sparse_upload_is_rejected_before_transfer(self):

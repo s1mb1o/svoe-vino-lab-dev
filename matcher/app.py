@@ -17,6 +17,7 @@ from .audit import RequestArchive, safe_headers
 from .group import GroupMatchError, segment_group
 from .protection import ImageRejected, RequestProtectionMiddleware, validate_image
 from .service import load_matcher
+from .siglip2 import Siglip2Error
 
 
 ROOT = Path(__file__).resolve().parent
@@ -131,7 +132,7 @@ class GroupMatchResult(BaseModel):
 
 
 class Health(BaseModel):
-    """Service readiness and selected matcher pipeline."""
+    """Service state and selected matcher pipeline."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -189,7 +190,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             "description": "Segment and match all wine bottles in one shelf image.",
         }, {
             "name": "service",
-            "description": "Service readiness.",
+            "description": "Service liveness and readiness.",
         }],
     )
     application.state.matcher = matcher
@@ -211,13 +212,37 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
     @application.get(
         "/healthz",
         response_model=Health,
-        response_description="The service is ready.",
-        summary="Check service readiness",
+        response_description="The service process is live.",
+        summary="Check service liveness",
         operation_id="healthz",
         tags=["service"],
     )
     async def healthz() -> Health:
-        """Return readiness and the selected pipeline."""
+        """Return liveness and the selected pipeline."""
+        return Health(pipeline=matcher.pipeline)
+
+    @application.get(
+        "/readyz",
+        response_model=Health,
+        response_description="The selected pipeline is ready.",
+        summary="Check pipeline readiness",
+        operation_id="readyz",
+        tags=["service"],
+        responses={
+            503: {"description": "A dependency of the selected pipeline is unavailable."},
+        },
+    )
+    async def readyz() -> Health:
+        """Check only the dependencies required by the selected pipeline."""
+        try:
+            await asyncio.to_thread(matcher.check_ready)
+        except (GroupMatchError, Siglip2Error) as exc:
+            LOGGER.warning(
+                "matcher readiness failed pipeline=%s error_type=%s",
+                matcher.pipeline,
+                type(exc).__name__,
+            )
+            raise HTTPException(status_code=503, detail=exc.detail) from exc
         return Health(pipeline=matcher.pipeline)
 
     async def process_image(request, image, operation):
@@ -270,7 +295,8 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         except Exception as exc:
             completed_at = datetime.now(timezone.utc)
             duration_ms = round((perf_counter() - started_at) * 1000, 3)
-            status_code = exc.status_code if isinstance(exc, HTTPException) else 500
+            expected = isinstance(exc, (HTTPException, GroupMatchError, Siglip2Error))
+            status_code = exc.status_code if expected else 500
             record = _record(
                 request_id, received_at, completed_at, duration_ms, client_ip,
                 request_data, image_data,
@@ -280,10 +306,12 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 await asyncio.to_thread(archive.save_record, saved, record)
             except Exception:
                 LOGGER.exception("cannot save matcher audit request_id=%s", request_id)
-            if isinstance(exc, HTTPException):
+            if expected:
                 LOGGER.warning("matcher_request %s", _log_event(record))
             else:
                 LOGGER.exception("matcher_request %s", _log_event(record))
+            if isinstance(exc, (GroupMatchError, Siglip2Error)):
+                raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
             raise
 
         completed_at = datetime.now(timezone.utc)
@@ -314,7 +342,10 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             401: {"description": "The bearer token is missing or invalid."},
             408: {"description": "The request upload exceeded its time limit."},
             415: {"description": "The uploaded image format is not supported."},
-            503: {"description": "The matcher request queue is full."},
+            502: {"description": "SigLIP2 or SAM3 failed or returned invalid data."},
+            503: {"description": "The matcher request queue is full, or hand selection "
+                                 "requires SAM3 configuration."},
+            504: {"description": "A SigLIP2 or SAM3 request exceeded its time limit."},
         },
     )
     async def predict(
@@ -351,8 +382,11 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             401: {"description": "The bearer token is missing or invalid."},
             408: {"description": "The request upload exceeded its time limit."},
             415: {"description": "The uploaded image format is not supported."},
-            503: {"description": "The matcher request queue is full, or the selected "
-                                 "pipeline has no wine cards."},
+            502: {"description": "SigLIP2 or SAM3 failed or returned invalid data."},
+            503: {"description": "The matcher request queue is full, the selected "
+                                 "pipeline has no wine cards, or hand selection "
+                                 "requires SAM3 configuration."},
+            504: {"description": "A SigLIP2 or SAM3 request exceeded its time limit."},
         },
     )
     async def match(
@@ -408,10 +442,10 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             401: {"description": "The bearer token is missing or invalid."},
             408: {"description": "The request upload exceeded its time limit."},
             415: {"description": "The uploaded image format is not supported."},
-            502: {"description": "SAM3 failed or returned invalid data."},
+            502: {"description": "SigLIP2 or SAM3 failed or returned invalid data."},
             503: {"description": "The request queue is full, SAM3 is not configured, "
                                  "or the selected pipeline has no wine cards."},
-            504: {"description": "The SAM3 request exceeded its time limit."},
+            504: {"description": "A SigLIP2 or SAM3 request exceeded its time limit."},
         },
     )
     async def group_match(

@@ -1,6 +1,7 @@
 """Unit tests for the configured mock matcher."""
 
 from pathlib import Path
+import re
 import tempfile
 import unittest
 
@@ -13,12 +14,15 @@ CONFIG = Path(__file__).resolve().parent / "config.yaml"
 TOKEN_CONFIG = Path(__file__).resolve().parent / "config.token.yaml"
 DATA = Path(__file__).resolve().parent / "data"
 OPENAPI = Path(__file__).resolve().parents[1] / "openapi.yaml"
+DOCKERFILE = Path(__file__).resolve().parents[1] / "Dockerfile"
+REQUIREMENTS = Path(__file__).resolve().parents[1] / "requirements.txt"
+REQUIREMENTS_LOCK = Path(__file__).resolve().parents[1] / "requirements.lock"
 
 EXPECTED = {
-    "019c68d0.jpg": "tabia_pino_nuar",
+    "019c68d0.webp": "tabia_pino_nuar",
     "02eef911.webp":
         "massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16",
-    "096ca74e.jpg": "donum_xxiv",
+    "096ca74e.webp": "donum_xxiv",
 }
 
 
@@ -72,6 +76,9 @@ class MockMatcherTest(unittest.TestCase):
     def test_an_unknown_image_has_an_empty_slug(self):
         self.assertEqual(self.matcher.predict(b"not an official query image"), "")
 
+    def test_mock_readiness_needs_no_model_endpoint(self):
+        self.assertIsNone(self.matcher.check_ready())
+
     def test_openapi_document_describes_the_predict_contract(self):
         document = yaml.safe_load(OPENAPI.read_text(encoding="utf-8"))
         operation = document["paths"]["/v1/eval/predict"]["post"]
@@ -89,13 +96,42 @@ class MockMatcherTest(unittest.TestCase):
                          ["slug"])
         self.assertEqual(
             document["paths"]["/healthz"]["get"]["operationId"], "healthz")
+        self.assertEqual(
+            document["paths"]["/readyz"]["get"]["operationId"], "readyz")
+        self.assertIn("503", document["paths"]["/readyz"]["get"]["responses"])
         self.assertEqual(operation["security"], [{}, {"BearerAuth": []}])
         self.assertEqual(
             document["components"]["securitySchemes"]["BearerAuth"]["scheme"],
             "bearer",
         )
-        for status in ("400", "401", "408", "413", "415", "422", "503"):
+        for status in (
+                "400", "401", "408", "413", "415", "422", "502", "503", "504"):
             self.assertIn(status, operation["responses"])
+
+    def test_docker_uses_a_digest_and_the_complete_hash_lock(self):
+        dockerfile = DOCKERFILE.read_text(encoding="utf-8")
+        locked = REQUIREMENTS_LOCK.read_text(encoding="utf-8")
+        direct = REQUIREMENTS.read_text(encoding="utf-8")
+
+        base = re.search(r"(?m)^FROM python:3\.11-slim@sha256:([0-9a-f]{64})$",
+                         dockerfile)
+        self.assertIsNotNone(base)
+        self.assertIn("COPY requirements.txt requirements.lock matcher/", dockerfile)
+        self.assertIn(
+            "pip install --no-cache-dir --require-hashes -r matcher/requirements.lock",
+            dockerfile,
+        )
+        self.assertIn("http://127.0.0.1:8080/readyz", dockerfile)
+        self.assertNotIn("http://127.0.0.1:8080/healthz", dockerfile)
+        direct_names = {name.lower() for name in re.findall(
+            r"(?mi)^([a-z0-9_.-]+)==", direct)}
+        package_starts = list(re.finditer(r"(?mi)^([a-z0-9_.-]+)==", locked))
+        locked_names = {match.group(1).lower() for match in package_starts}
+        self.assertTrue(direct_names <= locked_names)
+        for index, match in enumerate(package_starts):
+            end = (package_starts[index + 1].start()
+                   if index + 1 < len(package_starts) else len(locked))
+            self.assertIn("--hash=sha256:", locked[match.start():end], match.group(1))
 
     def load_config(self, config):
         with tempfile.TemporaryDirectory() as directory:

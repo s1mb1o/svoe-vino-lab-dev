@@ -2,21 +2,38 @@
 
 from dataclasses import dataclass
 import hashlib
+from io import BytesIO
 import os
 from pathlib import Path
 import random
 import re
 
+from PIL import Image
 import yaml
 
 from .bundle import BundleError, load_bundle
 from .catalog import CatalogError, load_catalog
+from .main_scene import select_main_package
 from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend, model_input
 
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ENV_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 ENV_REFERENCE = re.compile(r"^\{env:(%s)\}$" % ENV_NAME.pattern[1:-1])
+READINESS_TIMEOUT_SECONDS = 8.0
+
+
+def _readiness_image() -> bytes:
+    """Return one small deterministic image for dependency probes."""
+    with Image.new("RGB", (60, 40), "white") as image:
+        image.paste((128, 0, 0), (5, 5, 25, 35))
+        image.paste((0, 0, 128), (35, 5, 55, 35))
+        output = BytesIO()
+        image.save(output, "PNG")
+    return output.getvalue()
+
+
+READINESS_IMAGE = _readiness_image()
 
 
 class ConfigError(ValueError):
@@ -75,6 +92,10 @@ class MockMatcher(_MatcherSettings):
         digest = hashlib.sha256(image).hexdigest()
         return self.answers.get(digest, self.unknown_slug)
 
+    def check_ready(self) -> None:
+        """Return immediately because this pipeline has no model dependency."""
+        return None
+
     def match(self, image: bytes, k: int) -> list[tuple[str, float]]:
         """Return up to `k` `(slug, score)` pairs of wines with a card.
 
@@ -102,6 +123,7 @@ class Siglip2Matcher(_MatcherSettings):
     backend: Siglip2Backend
     output_dir: str | None = None
     token: str | None = None
+    hand_selection: bool = False
 
     @property
     def cards(self) -> dict | None:
@@ -109,17 +131,36 @@ class Siglip2Matcher(_MatcherSettings):
 
     def predict(self, image: bytes) -> str:
         """Return the Top-1 slug for one image body."""
-        return self.backend.predict(image)
+        return self.backend.predict(self._single_image(image))
+
+    def check_ready(self) -> None:
+        """Run one small request through each dependency of this pipeline."""
+        image = READINESS_IMAGE
+        if self.hand_selection:
+            image = select_main_package(
+                image,
+                os.environ.get("SAM3_ENDPOINT"),
+                timeout=READINESS_TIMEOUT_SECONDS,
+            )
+        self.backend.embed(
+            model_input(image),
+            timeout=READINESS_TIMEOUT_SECONDS,
+        )
 
     def match(self, image: bytes, k: int) -> list[tuple[str, float]]:
         """Return the `k` best `(slug, cosine)` pairs of wines with a card."""
-        vector = self.backend.embed(model_input(image))
+        vector = self.backend.embed(model_input(self._single_image(image)))
         return self._rank(vector, k)
 
     def match_many(self, images: list[bytes], k: int) -> list[list[tuple[str, float]]]:
-        """Return ranked candidates for all images after one embedding request."""
+        """Match every group crop. Never run single-image hand selection here."""
         vectors = self.backend.embed_many([model_input(image) for image in images])
         return [self._rank(vector, k) for vector in vectors]
+
+    def _single_image(self, image: bytes) -> bytes:
+        if self.hand_selection:
+            return select_main_package(image, os.environ.get("SAM3_ENDPOINT"))
+        return image
 
     def _rank(self, vector, k: int) -> list[tuple[str, float]]:
         """Rank one normalized vector against wines that have cards."""
@@ -189,6 +230,11 @@ def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
     entry = by_name.get(selected)
     if entry is None:
         raise ConfigError("matcher.pipeline names an unknown pipeline: %s" % selected)
+    hand_selection = entry.get("hand_selection", False)
+    if type(hand_selection) is not bool:
+        raise ConfigError("pipeline %s hand_selection MUST be a boolean" % selected)
+    if hand_selection and entry.get("backend") != "siglip2":
+        raise ConfigError("pipeline %s hand_selection requires backend siglip2" % selected)
     if entry.get("backend") == "siglip2":
         return _load_siglip2(selected, entry, output_dir, token)
     if entry.get("backend") != "mock":
@@ -293,4 +339,5 @@ def _load_siglip2(selected, entry, output_dir, token):
         backend=Siglip2Backend(bundle, endpoint),
         output_dir=output_dir,
         token=token,
+        hand_selection=entry.get("hand_selection", False),
     )

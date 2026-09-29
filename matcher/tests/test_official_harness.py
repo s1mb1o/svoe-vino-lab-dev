@@ -23,10 +23,10 @@ MANIFEST = Path(__file__).resolve().parent / "queries.tsv"
 OPENAPI = Path(__file__).resolve().parents[1] / "openapi.yaml"
 MAX_IMAGE_BYTES = 1_500_000
 EXPECTED = {
-    "019c68d0.jpg": "tabia_pino_nuar",
+    "019c68d0.webp": "tabia_pino_nuar",
     "02eef911.webp":
         "massandra-muskatel-belyy-belye-sorta-vinograda-beloe-sladkoe-16",
-    "096ca74e.jpg": "donum_xxiv",
+    "096ca74e.webp": "donum_xxiv",
 }
 TOOLS = ("bash", "curl", "jq", "awk")
 JSONL_FIELDS = (
@@ -129,7 +129,7 @@ class OfficialHarnessTest(unittest.TestCase):
         first = json.loads(lines[0])
         self.assertEqual(tuple(first), JSONL_FIELDS)
         self.assertEqual(first["query_id"], "q-000001")
-        self.assertEqual(first["image_path"], "019c68d0.jpg")
+        self.assertEqual(first["image_path"], "019c68d0.webp")
         self.assertEqual(
             first["image_sha256"],
             "c975b31e13bfa77dbc402d7ae4cd3889609cf85a9dadda45778a63232b4c6acf")
@@ -138,7 +138,7 @@ class OfficialHarnessTest(unittest.TestCase):
         self.assertGreaterEqual(first["latency_ms"], 0)
 
     def test_request_archive_saves_image_headers_ip_and_duration(self):
-        source = DATA / "019c68d0.jpg"
+        source = DATA / "019c68d0.webp"
         response = subprocess.run(
             ["curl", "--silent", "--show-error", "--fail",
              "--header", "X-Matcher-Test: audit-example",
@@ -179,16 +179,19 @@ class OfficialHarnessTest(unittest.TestCase):
         self.assertIn("matcher_request", log_output)
         self.assertIn(record["request_id"], log_output)
 
-    def test_healthz_returns_readiness_and_pipeline(self):
-        response = subprocess.run(
-            ["curl", "--silent", "--show-error", "--fail",
-             "http://127.0.0.1:%d/healthz" % self.port],
-            cwd=ROOT, capture_output=True, text=True, timeout=10)
-        self.assertEqual(response.returncode, 0, response.stdout + response.stderr)
-        self.assertEqual(json.loads(response.stdout), {
-            "status": "ok",
-            "pipeline": "official-eval-mock",
-        })
+    def test_liveness_and_mock_readiness_return_the_pipeline(self):
+        for path in ("healthz", "readyz"):
+            with self.subTest(path=path):
+                response = subprocess.run(
+                    ["curl", "--silent", "--show-error", "--fail",
+                     "http://127.0.0.1:%d/%s" % (self.port, path)],
+                    cwd=ROOT, capture_output=True, text=True, timeout=10)
+                self.assertEqual(
+                    response.returncode, 0, response.stdout + response.stderr)
+                self.assertEqual(json.loads(response.stdout), {
+                    "status": "ok",
+                    "pipeline": "official-eval-mock",
+                })
 
     def test_missing_image_returns_422(self):
         self.assertEqual(self.post_status(["--request", "POST"]), "422")

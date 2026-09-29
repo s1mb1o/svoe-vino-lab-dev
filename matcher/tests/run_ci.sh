@@ -10,7 +10,7 @@ for command_name in bash curl jq awk mktemp; do
 done
 command -v sha256sum >/dev/null || command -v shasum >/dev/null
 
-python -m pip install --no-cache-dir -r matcher/requirements.txt
+python -m pip install --no-cache-dir --require-hashes -r matcher/requirements.lock
 python -m pip check
 
 python -W error::ResourceWarning - <<'PY'

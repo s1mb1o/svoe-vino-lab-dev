@@ -19,3 +19,7 @@ pipeline:
     # http://192.168.86.14:18081. The service sends POST <endpoint>/v1/embeddings. The
     # bundle gives the model name.
     endpoint: "{env:SIGLIP2_ENDPOINT}"
+    # Optional main-package selection with SAM3 package and hand detections.
+    # Requires SAM3_ENDPOINT when true. Applies only to single-image requests.
+    # Group matching always processes all retained bottles and ignores this option.
+    hand_selection: false

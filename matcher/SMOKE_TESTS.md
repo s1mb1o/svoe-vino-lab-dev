@@ -7,6 +7,31 @@
 - Send the same image to `POST /v1/match`.
 - Confirm that the response contains ranked candidates and wine cards.
 
+## SigLIP2 failures
+
+- Make SigLIP2 return HTTP 500. Confirm HTTP 502 from both single-image endpoints.
+- Make SigLIP2 return invalid JSON. Confirm HTTP 502.
+- Make SigLIP2 exceed its request timeout. Confirm HTTP 504.
+- Confirm that each audit record contains the same response status as the API.
+
+## Liveness and readiness
+
+- Select a mock pipeline. Confirm HTTP 200 from `/healthz` and `/readyz` without a
+  model endpoint.
+- Select a SigLIP2 pipeline. Confirm that `/readyz` sends one small embedding request.
+- Stop SigLIP2. Confirm HTTP 503 from `/readyz` and HTTP 200 from `/healthz`.
+- Enable `hand_selection`. Confirm that `/readyz` checks SAM3 before SigLIP2.
+- Disable `hand_selection`. Remove `SAM3_ENDPOINT`. Confirm HTTP 200 from `/readyz`
+  while SigLIP2 is available.
+- Confirm that Docker uses `/readyz` as its healthcheck URL.
+
+## Reproducible image
+
+- Build the matcher image on Linux from the `matcher` directory.
+- Confirm that the base image resolves to the digest in `matcher/Dockerfile`.
+- Confirm that pip uses `matcher/requirements.lock` with `--require-hashes`.
+- Change one hash in a temporary lock file. Confirm that the image build fails.
+
 ## Group match
 
 - Configure a version 2 matcher bundle.
@@ -19,6 +44,24 @@
 - Confirm that each returned wine card links to its catalogue page.
 - Use a shelf photo that produces more than 64 bottle crops.
 - Confirm that the matcher splits the SigLIP2 requests and returns one group response.
+
+## Hand-aware single-image selection
+
+- Set `hand_selection: true` in the selected SigLIP2 pipeline. Set `SAM3_ENDPOINT`.
+- Restart the test matcher. Send a photo of a held package with shelf bottles behind it.
+- Check both `POST /v1/match` and `POST /v1/eval/predict`.
+- Confirm that SAM3 receives `wine bottle, can, packet, box, hand`.
+- Confirm that the embedding input contains the selected package with white pixels
+  outside its mask. A hand overlap is a heuristic, not a guaranteed correct selection.
+- Send a photo without a hand. Confirm that scene ranking still selects a package.
+- Make SAM3 return no packages. Confirm that the original image reaches preprocessing.
+- Send a shelf photo to `POST /v1/group/match` while the option is still enabled.
+- Confirm that SAM3 receives only `wine bottle`, once per successful group request.
+- Confirm that every retained bottle gets a match and no crop triggers hand selection.
+- Set `hand_selection: false` and restart the test matcher. Confirm that both
+  single-image endpoints work without `SAM3_ENDPOINT` and use the full photo.
+- With the option enabled, remove `SAM3_ENDPOINT`. Confirm HTTP 503 on both
+  single-image endpoints. Confirm HTTP 502 for an invalid mask and HTTP 504 for a timeout.
 
 ## Group failures
 
