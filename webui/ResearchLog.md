@@ -13,6 +13,16 @@ Google cannot read noindex when robots.txt blocks a page. A previously discovere
 URL can therefore remain in results. This change prioritizes the requested crawl block.
 Reference: https://developers.google.com/search/docs/crawling-indexing/block-indexing
 
+Published release `0c2f96481ccbbce4c00c593c6d6bc83570b3fbe5` on Princess.
+The previous release `600fd2a` remains available for rollback.
+All 169 tests and type checks passed locally and on Linux. The Linux build passed.
+Staged and public checks confirmed HTTP 200 and robots metadata for the base,
+trailing-slash, and query-string URLs. The header applies to each form.
+The other four pages retain their indexing behavior and contain no incoming link.
+Client navigation from `/hackaton` to `/ideas` removes the noindex metadata.
+Direct access, age confirmation, and platform anchors passed at 320 and 1440 pixels.
+Presentation artifact hashes, public file sizes, service health, and upstream availability passed.
+
 
 ## Hackathon landing publication, 2026-09-29
 

@@ -5,6 +5,8 @@
 - Remove `/hackaton` from the sitemap and public navigation.
 - Add a robots.txt disallow rule and noindex metadata and response headers.
 - Keep the page and its existing age gate available through the direct URL.
+- Published release `0c2f964` on Princess. Local and Linux checks passed all 169 tests and type checks.
+- Verified staged and public headers, HTML metadata, sitemap exclusion, navigation, direct access, and service health.
 
 
 ## 2026-09-29

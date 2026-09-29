@@ -2,6 +2,9 @@
 
 ## Hackathon direct URL
 
+Release `0c2f964` passed the checks below on staging and production on 2026-09-29.
+All 169 existing tests, type checks, and the Linux build passed.
+
 - Request `/hackaton`, `/hackaton/`, and `/hackaton?source=organizers`. Confirm HTTP 200.
 - Confirm the `X-Robots-Tag` header and HTML robots metadata contain `noindex, nofollow, noarchive`.
 - Confirm `robots.txt` contains `Disallow: /hackaton` and still advertises the sitemap.
