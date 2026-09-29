@@ -55,6 +55,10 @@ npm run dev
 Open [the photo search page](http://127.0.0.1:8153/).
 Open [the Android application page](http://127.0.0.1:8153/android).
 Open [the hackathon landing page](http://127.0.0.1:8153/hackaton).
+This page is intended for organizers who receive its direct URL.
+Public navigation and the sitemap do not list it. `robots.txt` disallows its path.
+Its HTML and HTTP headers include `noindex, nofollow, noarchive`.
+These instructions do not authenticate visitors. Anyone with the URL can open it.
 Open [the presentation page](http://127.0.0.1:8153/presentation).
 The page links to the PowerPoint download and the PDF in a new tab.
 Both links stay side by side on phones and desktop screens.
@@ -73,7 +77,7 @@ Until the recording is available, the section shows `Видео появится
 Put the finished recording at `public/presentation/video.mp4`, then rebuild and deploy the Web UI.
 The MP4 stays outside Git. Use browser-compatible MP4 video with H.264 video and AAC audio.
 Below the video, matching cards link to the project GitHub repository and Google Drive folder.
-A full-width card below those links opens `/hackaton`.
+The presentation page does not link to the organizers' `/hackaton` page.
 Open [the ideas landing page](http://127.0.0.1:8153/ideas).
 The page lists three implemented features, four interactive demos, and six concept mockups.
 The demos reuse the result dialogs with three local example wine cards. They do not need a matcher.

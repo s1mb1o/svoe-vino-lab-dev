@@ -136,6 +136,8 @@ export default defineNuxtConfig({
     devOptions: { enabled: false },
   },
   routeRules: {
+    '/hackaton': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
+    '/hackaton/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/wines': { redirect: { to: '/', statusCode: 308 } },
     '/wines/': { redirect: { to: '/', statusCode: 308 } },
     '/reference/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' } },

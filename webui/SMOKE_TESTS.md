@@ -1,5 +1,16 @@
 # Smoke tests
 
+## Hackathon direct URL
+
+- Request `/hackaton`, `/hackaton/`, and `/hackaton?source=organizers`. Confirm HTTP 200.
+- Confirm the `X-Robots-Tag` header and HTML robots metadata contain `noindex, nofollow, noarchive`.
+- Confirm `robots.txt` contains `Disallow: /hackaton` and still advertises the sitemap.
+- Confirm `sitemap.xml` omits `/hackaton` and keeps the other public pages.
+- Confirm `/`, `/android`, `/ideas`, and `/presentation` have no links to `/hackaton`.
+- Confirm those public pages do not receive the hackathon noindex header or metadata.
+- Open `/hackaton` directly, confirm the age gate, and check the platform anchors and links.
+- Navigate from `/hackaton` to `/ideas`. Confirm the robots metadata is removed after navigation.
+
 ## Hackathon publication verification, 2026-09-29
 
 Release `600fd2a` passed 169 tests, type checks, and the Linux production build.
@@ -39,7 +50,7 @@ The check saves local review screenshots in the ignored `reports/presentation/` 
 - Confirm that `Видео о проекте` appears below the file links.
 - Confirm that GitHub and Google Drive cards appear side by side below the video and use the same styles as the presentation cards.
 - Confirm that the resource cards use the exact owner-supplied URLs and open in new tabs.
-- Confirm that the `Все приложения проекта` card fills the content width below the resource cards and links to `/hackaton` in the same tab.
+- Confirm the presentation has no link to the organizers' `/hackaton` page.
 - Without `/presentation/video.mp4`, confirm the placeholder `Видео появится после записи` and no broken player controls.
 - With a valid recording, confirm native playback controls, inline phone playback, and no autoplay.
 - Check that PowerPoint and PDF stay side by side at 320, 390, 768, and 1440 pixel widths without horizontal overflow.
@@ -67,7 +78,7 @@ The check saves local review screenshots in the ignored `reports/presentation/` 
 - Confirm that WebApp and Telegram show their internet requirement.
 - Confirm that the page tells visitors to install Android before going offline.
 - Confirm that the page has one canonical URL, `https://chtozavino.ru/hackaton`.
-- Confirm that `/sitemap.xml` includes `/hackaton`.
+- Confirm that `/sitemap.xml` omits `/hackaton`.
 
 ## Android landing page
 

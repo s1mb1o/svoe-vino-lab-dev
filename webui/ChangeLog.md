@@ -1,5 +1,12 @@
 # Change log
 
+## 2026-09-29 — Hackathon direct URL
+
+- Remove `/hackaton` from the sitemap and public navigation.
+- Add a robots.txt disallow rule and noindex metadata and response headers.
+- Keep the page and its existing age gate available through the direct URL.
+
+
 ## 2026-09-29
 
 ### Hackathon landing publication

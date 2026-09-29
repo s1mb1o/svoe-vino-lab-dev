@@ -130,7 +130,7 @@ const selectedWine = computed(() => demoWines.value.find(wine => wine.slug === s
       </div>
     </section>
 
-    <section class="ideas-outro" aria-labelledby="outro-title"><div><p class="section-kicker">НАЧНИТЕ СО ЗНАКОМСТВА</p><h2 id="outro-title">Узнать вино.<br><em>А потом — чуть больше.</em></h2></div><div><NuxtLink to="/" class="button primary">Открыть сканер<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/hackaton" class="idea-link">Все приложения проекта<AppIcon name="arrow" /></NuxtLink></div></section>
+    <section class="ideas-outro" aria-labelledby="outro-title"><div><p class="section-kicker">НАЧНИТЕ СО ЗНАКОМСТВА</p><h2 id="outro-title">Узнать вино.<br><em>А потом — чуть больше.</em></h2></div><div><NuxtLink to="/" class="button primary">Открыть сканер<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink to="/android" class="idea-link">Приложение для Android<AppIcon name="arrow" /></NuxtLink></div></section>
   </main>
 </template>
 

@@ -1,5 +1,19 @@
 # Research log
 
+## Hackathon direct URL, 2026-09-29
+
+The owner requested crawler exclusion and sitemap removal for `/hackaton`.
+The page is intended for organizers who receive the direct URL.
+Remove inbound links from the presentation page, ideas page, and shared footer.
+Keep the route available without adding a login requirement.
+Add `Disallow: /hackaton`, HTML robots metadata, and the `X-Robots-Tag` header.
+Apply the header to both the base path and its slash form.
+Crawler instructions are voluntary. They do not restrict visitors with the URL.
+Google cannot read noindex when robots.txt blocks a page. A previously discovered
+URL can therefore remain in results. This change prioritizes the requested crawl block.
+Reference: https://developers.google.com/search/docs/crawling-indexing/block-indexing
+
+
 ## Hackathon landing publication, 2026-09-29
 
 The owner requested deployment at `https://chtozavino.ru/hackaton`.

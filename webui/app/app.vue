@@ -30,7 +30,7 @@ onMounted(() => {
     </header>
     <NuxtPage />
     <footer v-if="!isPresentationPage" class="site-footer">
-      <div><span>Что за вино? · {{ isIdeasPage ? 'Больше, чем распознавание' : isHackatonPage ? 'WebApp · Android · Telegram' : isAndroidPage ? 'Приложение для Android' : 'Поиск по фотографии' }}</span><NuxtLink :to="isIdeasPage ? '/hackaton' : '/ideas'">{{ isIdeasPage ? 'Все приложения' : 'Идеи за пределами распознавания' }}<AppIcon name="arrow-up-right" /></NuxtLink><a href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer">Откройте культуру российского вина<AppIcon name="arrow-up-right" /></a><span>18+</span></div>
+      <div><span>Что за вино? · {{ isIdeasPage ? 'Больше, чем распознавание' : isHackatonPage ? 'WebApp · Android · Telegram' : isAndroidPage ? 'Приложение для Android' : 'Поиск по фотографии' }}</span><NuxtLink :to="isIdeasPage ? '/' : '/ideas'">{{ isIdeasPage ? 'Веб-сканер' : 'Идеи за пределами распознавания' }}<AppIcon name="arrow-up-right" /></NuxtLink><a href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer">Откройте культуру российского вина<AppIcon name="arrow-up-right" /></a><span>18+</span></div>
       <p>Чрезмерное употребление алкоголя вредит вашему здоровью</p>
     </footer>
   </div>

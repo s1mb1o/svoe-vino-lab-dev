@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /v1/
+Disallow: /hackaton
 
 Sitemap: https://chtozavino.ru/sitemap.xml
