@@ -35,7 +35,7 @@ useHead({ link: [{ rel: 'canonical', href: 'https://chtozavino.ru/hackaton' }] }
         <a href="#android-app"><AppIcon name="android" />Android App<AppIcon name="chevron" /></a>
         <a href="#telegram-bot"><AppIcon name="telegram" />Telegram Bot<AppIcon name="chevron" /></a>
       </nav>
-      <div class="project-links"><NuxtLink class="presentation-link" to="/presentation"><AppIcon name="desktop" />Смотреть презентацию<AppIcon name="arrow-up-right" /></NuxtLink></div>
+      <div class="project-links"><NuxtLink class="presentation-link" to="/presentation"><AppIcon name="desktop" />Смотреть презентацию<AppIcon name="arrow-up-right" /></NuxtLink><NuxtLink class="presentation-link" to="/ideas"><AppIcon name="book" />Идеи за пределами распознавания<AppIcon name="arrow-up-right" /></NuxtLink></div>
     </section>
 
     <section id="webapp" class="platform-section web-section" aria-labelledby="webapp-title">

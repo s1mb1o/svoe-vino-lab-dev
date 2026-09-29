@@ -7,5 +7,6 @@ node_modules/
 coverage/
 reports/
 public/presentations/
+public/presentation/video.mp4
 .DS_Store
 *.log

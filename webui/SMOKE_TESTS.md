@@ -1,5 +1,23 @@
 # Smoke tests
 
+## Ideas beyond recognition
+
+- Open `/ideas` in a new profile. Confirm that the age gate blocks interaction.
+- Confirm one H1 and the section order: implemented, demo, mock.
+- Check the section links and counts: 3 implemented, 4 demos, 6 mockups.
+- Confirm that implemented cards identify the relevant application.
+- Open all four example dialogs. Close them with Escape, the close button, and a backdrop click.
+- Confirm that focus returns to the dialog opener.
+- Change the example wine. Confirm that the taste and label dialogs use that wine.
+- Confirm that the map remains labeled as an Abrau-Durso demonstration for other producers.
+- Confirm that mockups have no working search, shopping, playback, quiz, or save controls.
+- Check 320, 390, 768, 1024, and 1440 pixel widths in both themes without horizontal overflow.
+- Confirm that images load and all internal page links work.
+- Confirm that demo interactions do not request matcher, retailer, or location endpoints.
+- Confirm `/ideas` links on `/hackaton` and in the shared footer.
+- Confirm one canonical URL, `https://chtozavino.ru/ideas`, and a sitemap entry.
+
+
 ## Presentation files
 
 Run `PLAYWRIGHT_MODULE=<path>/node_modules/playwright/index.mjs npm run test:presentation`
@@ -8,6 +26,9 @@ The check saves local review screenshots in the ignored `reports/presentation/` 
 
 - Open `/presentation` in a new profile. Confirm that the age gate blocks interaction.
 - Accept the age gate and confirm one heading and two file links.
+- Confirm that `Видео о проекте` appears below the file links.
+- Without `/presentation/video.mp4`, confirm the placeholder `Видео появится после записи` and no broken player controls.
+- With a valid recording, confirm native playback controls, inline phone playback, and no autoplay.
 - Check that PowerPoint and PDF stay side by side at 320, 390, 768, and 1440 pixel widths without horizontal overflow.
 - Check that the page stays white with a saved dark theme. Return to `/hackaton` and confirm that the saved theme still applies.
 - Download the PowerPoint and confirm the filename is `chtozavino-presentation.pptx`.

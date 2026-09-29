@@ -1,5 +1,22 @@
 # Research log
 
+## Presentation video, 2026-09-29
+
+The owner requested a video below the presentation links at `/presentation/video.mp4`.
+The owner will record the video later.
+The page uses a native video player with metadata preload, controls, and inline phone playback.
+A media error replaces the player with `Видео появится после записи`.
+The future file belongs at `public/presentation/video.mp4` and stays outside Git.
+The release must be rebuilt after the file is added because Nitro indexes public assets during the build.
+No placeholder recording or external video service is used.
+Type checks and the production build passed.
+The browser check passed at four widths in both themes with the recording absent.
+A temporary local MP4 verified that metadata load replaces the placeholder and that playback works without autoplay.
+The temporary test clip is not part of the application or release.
+Published release `c615490` on the existing `codex/presentation-release` branch.
+All 165 release tests, type checks, and the Linux build passed before activation.
+The public browser check passed at four widths in both themes. Both presentation file hashes still match.
+
 ## Presentation publication, 2026-09-29
 
 The owner requested deployment after reviewing the presentation page.
@@ -38,6 +55,62 @@ The source PowerPoint and public copy also passed a direct byte comparison.
 The PowerPoint download, age gate, canonical URL, and landing-page navigation passed.
 No browser errors or hydration warnings occurred.
 The 320-pixel and 1440-pixel page captures were visually inspected.
+
+## Ideas beyond recognition, 2026-09-29
+
+The user requested a landing page for ideas beyond recognition.
+The user specified implemented features first, demos second, and mockups last.
+Decision: add `/ideas` and keep the scanner at `/`.
+The feature inventory from 2026-09-28 provides the initial concept list.
+The current result component and specification determine the demo status.
+The four result actions remain demos even when metadata rules are implemented.
+The implemented section covers source-card navigation, Android local history, and Telegram feedback.
+The mock section uses static interface sketches for six future scenarios.
+The page labels each status and identifies application-specific limits.
+The demo area reuses `WineExperiences` with three existing local wine cards.
+The page does not need recognition or an external API to open a demo.
+The page reuses existing image assets and the shared light and dark palettes.
+
+Type checks, all 169 existing tests, and the production build passed.
+The first test run could not open a loopback socket in the sandbox.
+The same tests passed with local socket access.
+Chromium checks passed at 320, 390, 768, 1024, and 1440 pixels in both themes.
+The checks covered age gating, section order and counts, metadata, anchors,
+all four dialogs, example selection, focus return, backdrop close, images,
+horizontal overflow, network scope, and internal navigation.
+A 320-pixel overflow from the rotated hero image was fixed before the final check.
+No browser errors or hydration warnings occurred.
+Local review captures are in the ignored `reports/ideas/` directory.
+The desktop, narrow-phone, and dark-theme captures were visually inspected.
+
+
+## Browser presentation, 2026-09-29
+
+The user requested a presentation page based on `/hackaton`.
+The user then specified a white background.
+Decision: create `/presentation` as a browser presentation with five slides.
+Decision: use a local white palette and preserve the saved site theme.
+The cover uses an existing catalogue bottle image.
+The application slides reuse the landing screenshots and the labeled Telegram scenario.
+No new recognition result, performance metric, or external asset was created.
+The final slide reuses the shared Android release metadata and configured APK URL.
+
+The presentation keeps the shared age gate.
+Keyboard navigation must ignore the gate and editable controls.
+The slide index is bounded. URL fragments allow direct links and reloads.
+On small screens, the active slide scrolls while the controls remain visible.
+Horizontal touch gestures change slides. Vertical gestures preserve normal scrolling.
+The fullscreen control appears only when the browser supports the API.
+
+Type checks, all 169 existing tests, and the production build passed.
+The presentation browser check passed at 1920x1080, 1440x900, 1366x768, 1024x768,
+768x1024, 390x844, and 320x740.
+All desktop slides fit without scrolling. Phone slides scroll inside the fixed controls.
+The white palette remained active with a saved dark theme. The dark theme returned on the landing page.
+The production checks covered age gating, keyboard navigation, touch events, stable
+fragments, reloads, fullscreen entry and exit, image decoding, metadata, and links.
+No browser errors or hydration warnings occurred in the production check.
+Desktop and mobile slide screenshots were inspected in `reports/presentation/`.
 
 ## Hackathon landing page, 2026-09-29
 

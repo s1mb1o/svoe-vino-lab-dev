@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { existsSync } from 'node:fs'
 import { mkdir, readFile } from 'node:fs/promises'
 
 assert(process.env.PLAYWRIGHT_MODULE, 'Set PLAYWRIGHT_MODULE to a local playwright/index.mjs.')
@@ -14,7 +15,10 @@ try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'dark', serviceWorkers: 'block' })
   const page = await context.newPage()
   page.on('pageerror', error => errors.push(error.message))
-  page.on('console', message => { if (message.type() === 'error' || /hydration/i.test(message.text())) errors.push(message.text()) })
+  page.on('console', message => {
+    if (message.type() === 'error' && message.location().url === `${origin}/presentation/video.mp4` && message.text().includes('404')) return
+    if (message.type() === 'error' || /hydration/i.test(message.text())) errors.push(message.text())
+  })
   await page.goto(`${origin}/presentation`, { waitUntil: 'networkidle' })
   assert(await page.getByRole('dialog').isVisible())
   assert(await page.locator('.site-shell').evaluate(element => element.inert))
@@ -32,6 +36,9 @@ try {
   assert.equal(await links.nth(0).getAttribute('download'), 'chtozavino-presentation.pptx')
   assert.equal(await links.nth(1).getAttribute('href'), '/presentations/chtozavino-presentation.pdf')
   assert.equal(await links.nth(1).getAttribute('target'), '_blank')
+  const video = page.locator('.presentation-video video')
+  assert.equal(await video.getAttribute('src'), '/presentation/video.mp4')
+  if (!existsSync('public/presentation/video.mp4')) await page.getByRole('status').filter({ hasText: 'Видео появится после записи' }).waitFor()
 
   for (const theme of ['light', 'dark']) {
     await page.evaluate(value => localStorage.setItem('svoe-vino.theme.v1', value), theme)

@@ -23,12 +23,24 @@ The current release uses a mock prediction service and local result metadata.
 - Download the versioned Android APK from a configurable URL.
 - Compare WebApp, Android, and Telegram on the `/hackaton` landing page.
 - Open the project PowerPoint and PDF files from two adjacent links at `/presentation`.
+- Explore ideas beyond recognition at `/ideas`, in implemented, demo, and mock order.
 
 The mock service does not recognize wine. The UI MUST state this limitation.
 The mock service MUST use the same HTTP contract as the official evaluator.
 
 Read [the specification](docs/specification.md), [the API contract](docs/api.md), and [the architecture](ARCHITECTURE.md).
 Read [SMOKE_TESTS.md](SMOKE_TESTS.md) for acceptance checks.
+
+## Cookies and age confirmation
+
+The current Web UI does not use cookies or analytics trackers.
+Cookie consent is therefore not required for this implementation in Russia.
+This statement applies to cookies only. It does not cover the processing of uploaded photos or server logs.
+
+The portal shows an 18+ warning and requires age confirmation before access.
+The browser stores age confirmation and the selected theme in `localStorage`.
+The PWA uses a service worker cache for offline access.
+These storage mechanisms do not use cookies.
 
 ## Run locally
 
@@ -56,6 +68,15 @@ soffice --headless --convert-to pdf:impress_pdf_Export --outdir public/presentat
 ```
 
 The conversion requires LibreOffice. The production build includes both files.
+The video section below the file links uses `/presentation/video.mp4`.
+Until the recording is available, the section shows `Видео появится после записи`.
+Put the finished recording at `public/presentation/video.mp4`, then rebuild and deploy the Web UI.
+The MP4 stays outside Git. Use browser-compatible MP4 video with H.264 video and AAC audio.
+Open [the ideas landing page](http://127.0.0.1:8153/ideas).
+The page lists three implemented features, four interactive demos, and six concept mockups.
+The demos reuse the result dialogs with three local example wine cards. They do not need a matcher.
+The mockups have explicit status labels. They do not call external services or store preferences.
+Read [the ideas page specification](docs/ideas-landing.md) for the status evidence.
 Old `/wines` bookmarks redirect to this page.
 The default mode is `mock`. No API key or database is required.
 The mock returns `priboj-marchenko-beloe-polusuhoe` for every valid image.

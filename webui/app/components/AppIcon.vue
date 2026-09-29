@@ -14,6 +14,7 @@ const paths: Record<string, string> = {
   download: 'M12 3v13 M7 11l5 5 5-5 M4 19v2h16v-2',
   android: 'M7 8a5 5 0 0 1 10 0v9H7Z M5 10v6 M19 10v6 M9 17v4 M15 17v4 M8 4 6.5 2 M16 4l1.5-2 M10 8h.01 M14 8h.01',
   desktop: 'M3 3h18v13H3Z M12 16v5 M8 21h8',
+  fullscreen: 'M8 3H3v5 M16 3h5v5 M21 16v5h-5 M8 21H3v-5',
   phone: 'M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z M10 5h4 M11 19h2',
   telegram: 'm22 3-7 18-4-7-9-4Z M11 14 22 3 M11 14v6l4-3',
   offline: 'M2 8.5a15 15 0 0 1 3.4-2.2 M8.5 4.4A15 15 0 0 1 22 8.5 M5 12a10 10 0 0 1 4-2.3 M12.5 9.1A10 10 0 0 1 19 12 M8.5 15.5a5 5 0 0 1 5.8-1 M12 20h.01 M3 3l18 18',

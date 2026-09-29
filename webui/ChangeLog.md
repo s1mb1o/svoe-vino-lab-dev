@@ -2,6 +2,14 @@
 
 ## 2026-09-29
 
+### Presentation video
+
+- Added a video section below the PowerPoint and PDF links.
+- Use the reserved URL `/presentation/video.mp4` with native controls and inline phone playback.
+- Show a placeholder until the recording is available.
+- Keep the future recording outside Git and document its public file location.
+- Published release `c615490` and verified the public placeholder and presentation downloads.
+
 ### Presentation publication
 
 - Published `/presentation` and both files at `https://chtozavino.ru/presentation`.
@@ -20,6 +28,29 @@
 - Document file preparation for a fresh checkout.
 - Verified type checks, all 169 tests, and the production build.
 - Verified both file responses, PowerPoint download, navigation, and adjacent links at four viewport widths in both themes.
+
+### Ideas beyond recognition
+
+- Added `/ideas` with three implemented scenarios, four interactive demos, and six mockups, in this order.
+- Identify the available application and scope limits for each implemented scenario.
+- Reuse the existing result dialogs with a selector for three local example wine cards.
+- Label future concepts as inactive interface sketches.
+- Add links from `/hackaton` and the shared footer, page metadata, and a sitemap entry.
+- Verified type checks, all 169 existing tests, and the production build.
+- Verified five viewport widths from 320 to 1440 pixels in both themes, all four dialogs, example selection, focus return, and navigation.
+
+
+### Browser presentation
+
+- Added `/presentation` with a cover, WebApp, Android, Telegram, and demo slide.
+- Use a white background in both system themes without changing the saved theme.
+- Reuse the landing page screenshots, product identity, and verified application links.
+- Add keyboard navigation, touch navigation, slide selection, progress, and fullscreen support.
+- Keep the shared age gate and hide the site header and footer on this route.
+- Add a presentation link to `/hackaton` and a sitemap entry.
+- Verified type checks, all 169 existing tests, and the production build.
+- Added `test:presentation`. All five slides passed browser checks at seven viewport sizes from 320 to 1920 pixels.
+- Verified age gating, bounded navigation, direct slide URLs, reloads, touch events, fullscreen, and theme preservation in the production build.
 
 ### Hackathon landing page
 

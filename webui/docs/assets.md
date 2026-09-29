@@ -18,6 +18,16 @@ LibreOffice exports its PDF version from that copy.
 Both files are in the ignored `public/presentations/` directory.
 The `/presentation` page links to these local files.
 
+## Ideas landing page
+
+Date: 2026-09-29
+
+The `/ideas` page reuses the local catalogue bottle images and
+`public/dishes/chudu-s-zelenyu-i-syrom.webp`.
+The image provenance remains the same as the catalogue and dish records below.
+The hero is a composed illustration. The six mock previews use HTML and CSS.
+The page does not introduce new external image assets.
+
 ## Android application screenshots
 
 Date: 2026-09-29
@@ -169,6 +179,13 @@ Create a polished editorial food illustration for a Russian regional cuisine win
 - `public/screenshots/hackaton/web-mobile.jpg`: 432 by 864 CSS pixels at scale 2.5, 1080 by 2160 pixels, JPEG quality 86, SHA-256 `94ab2b8d6378a75d8099039457d073c417f0df15486212f7dda56f1df30c8476`.
 - The `/hackaton` page reuses `public/screenshots/android/04_recognition_result_dark.webp` from the verified Android screenshot set.
 - The Telegram panel is an HTML illustration of the documented bot flow. It is not a screenshot or a recorded recognition result.
+
+## Browser presentation
+
+- `/presentation` reuses the two hackathon WebApp screenshots and the verified Android result screenshot listed above.
+- The cover reuses `public/wines/priboj-marchenko-beloe-polusuhoe.webp` from the existing catalogue fixture.
+- The Telegram panel is an HTML scenario illustration based on the landing page.
+- The presentation uses the existing product logo. It adds no external visual assets.
 
 ## Catalog
 

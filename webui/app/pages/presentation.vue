@@ -1,6 +1,9 @@
 <script setup lang="ts">
 const title = 'Что за вино? — презентация проекта'
 const description = 'Презентация проекта «Что за вино?» в форматах PowerPoint и PDF.'
+const videoUnavailable = ref(true)
+const videoSource = ref<string>()
+onMounted(() => { videoSource.value = '/presentation/video.mp4' })
 
 useSeoMeta({
   title,
@@ -34,6 +37,27 @@ useHead({ link: [{ rel: 'canonical', href: 'https://chtozavino.ru/presentation' 
           <span class="file-action">Открыть<AppIcon name="arrow-up-right" /></span>
         </a>
       </div>
+      <section class="presentation-video" aria-labelledby="video-title">
+        <h2 id="video-title">Видео о проекте</h2>
+        <div class="video-frame">
+          <video
+            v-show="!videoUnavailable"
+            :src="videoSource"
+            controls
+            playsinline
+            preload="metadata"
+            aria-label="Видеопрезентация проекта «Что за вино?»"
+            @error="videoUnavailable = true"
+            @loadedmetadata="videoUnavailable = false"
+          >
+            <a href="/presentation/video.mp4">Открыть видеопрезентацию</a>
+          </video>
+          <div v-if="videoUnavailable" class="video-placeholder" role="status">
+            <span class="video-symbol" aria-hidden="true">▶</span>
+            <p>Видео появится после записи</p>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 </template>
@@ -52,5 +76,11 @@ h1 { margin-top: 18px; font-size: clamp(32px, 5vw, 52px); line-height: 1.15; let
 .file-title { margin-top: 26px; font-size: clamp(16px, 3vw, 23px); font-weight: 500; }
 .file-action { display: flex; align-items: center; gap: 8px; margin-top: 22px; color: var(--accent); font-size: 13px; }
 .file-action .icon { width: 17px; height: 17px; }
+.presentation-video { margin-top: 40px; text-align: left; }
+.presentation-video h2 { margin-bottom: 18px; font-size: clamp(24px, 4vw, 30px); }
+.video-frame { overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: 20px; background: #fcf8ee; }
+.video-frame video { display: block; width: 100%; height: 100%; background: #211e1c; object-fit: contain; }
+.video-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; width: 100%; height: 100%; padding: 20px; text-align: center; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.video-symbol { display: grid; place-items: center; width: 48px; height: 48px; padding-left: 3px; border-radius: 50%; background: #f3e6cf; color: var(--accent); font-size: 18px; }
 @media (prefers-reduced-motion: reduce) { .presentation-file { transition: none; } }
 </style>
