@@ -2,6 +2,16 @@
 
 ## 2026-09-29
 
+- Fixed three errors of the workbench test suite (owner messages of 21:40:22 and
+  22:06:46). `tests/test_run_model_inputs.py` looked for `svoe-vino-matcher` in
+  `svoe-vino-lab/`: its `WORKSPACE` was one parent too short since the split of
+  `22eb086`, so two tests failed with `No module named 'svm'`. The lab code
+  (`run_routes.py`, `run_steps.py`, `review_server.py`) already used the right root.
+  `test_current_profile_uses_only_existing_internal_endpoints` of
+  `tests/test_bulk_cache_benchmark.py` failed when the shell set `SAM3_ENDPOINT` to
+  another gateway (the cache on port 18082); the test now removes the variable. The test
+  of the mismatch guard stays. Test results: the workbench suite 1,463 tests OK, 1
+  skipped (`zxingcpp is not installed`); the matcher suite 213 tests OK at `4f88935`.
 - Added `barcode-rerank-siglip2-p512-rot5-seg` (owner message of 19:57:26), the NaFlex
   twin of `barcode-rerank-siglip2-512-rot5-seg`. Its options are those of
   `barcode-rerank-siglip2-p512-seg`. Its index is

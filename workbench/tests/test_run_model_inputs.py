@@ -8,7 +8,8 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
-WORKSPACE = ROOT.parent
+# ROOT is svoe-vino-lab/workbench; svoe-vino-matcher is a sibling of svoe-vino-lab.
+WORKSPACE = ROOT.parent.parent
 SPEC = importlib.util.spec_from_file_location(
     "run_model_inputs_for_tests", ROOT / "scripts" / "run_model_inputs.py")
 model_inputs = importlib.util.module_from_spec(SPEC)

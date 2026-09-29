@@ -122,7 +122,11 @@ class CompletionTest(unittest.TestCase):
 
     def test_current_profile_uses_only_existing_internal_endpoints(self):
         settings = bulk.embeddings.load_settings()
-        with mock.patch.object(bulk.embedding_run, "build_pipeline_backend") as build:
+        # A developer shell can set SAM3_ENDPOINT to another gateway, for example the cache
+        # on port 18082. The test of the profile does not depend on it.
+        with mock.patch.dict(bulk.os.environ), \
+                mock.patch.object(bulk.embedding_run, "build_pipeline_backend") as build:
+            bulk.os.environ.pop("SAM3_ENDPOINT", None)
             pipeline, entry = bulk.internal_profile(settings, bulk.PROFILE)
         self.assertEqual(pipeline.name, bulk.PROFILE)
         self.assertEqual(entry.backend, "openai")
