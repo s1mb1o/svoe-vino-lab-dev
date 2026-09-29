@@ -17,8 +17,8 @@ from matcher.bundle import infer_sugar, load_bundle
 from matcher.service import load_matcher
 import test_siglip2
 from test_siglip2 import (
-    FakeSiglip2, ROWS, file_record, free_port, unit, wait_for_server, write_bundle,
-    write_jsonl,
+    FakeSiglip2, ROWS, damaged_jpeg, file_record, free_port, unit, wait_for_server,
+    write_bundle, write_jsonl,
 )
 
 
@@ -237,7 +237,7 @@ class MatchEndpointTest(unittest.TestCase):
         wait_for_server(process, port)
         return port, root
 
-    def post(self, port, query="", body=None, token=TOKEN):
+    def post(self, port, query="", body=None, token=TOKEN, path="/v1/match"):
         payload, content_type = multipart(
             KNOWN_IMAGE.read_bytes() if body is None else body)
         headers = {"Content-Type": content_type}
@@ -245,7 +245,7 @@ class MatchEndpointTest(unittest.TestCase):
             headers["Authorization"] = "Bearer %s" % token
         connection = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
         try:
-            connection.request("POST", "/v1/match" + query, body=payload, headers=headers)
+            connection.request("POST", path + query, body=payload, headers=headers)
             response = connection.getresponse()
             return response.status, json.loads(response.read() or b"null")
         finally:
@@ -292,6 +292,27 @@ class MatchEndpointTest(unittest.TestCase):
         status, answer = self.post(port, token=None)
         self.assertEqual(status, 503)
         self.assertIn("format version 2", answer["detail"])
+
+    def test_a_damaged_jpeg_answers_422_on_both_single_image_endpoints(self):
+        fake = FakeSiglip2(unit((1, 0, 0, 0)))
+        self.addCleanup(fake.close)
+        port, root = self.start({"name": "match-siglip2", "backend": "siglip2",
+                                 "bundle": True, "endpoint": fake.url})
+        for endpoint in ("/v1/eval/predict", "/v1/match"):
+            with self.subTest(endpoint=endpoint):
+                status, answer = self.post(port, body=damaged_jpeg(), token=None,
+                                           path=endpoint)
+                self.assertEqual(status, 422, answer)
+                self.assertEqual(answer, {"detail": "image file is invalid or damaged"})
+        self.assertEqual(fake.requests, [])
+
+        records = [json.loads(path.read_text(encoding="utf-8"))
+                   for path in (root / "requests").rglob("request.json")]
+        self.assertEqual(sorted(record["request"]["path"] for record in records),
+                         ["/v1/eval/predict", "/v1/match"])
+        for record in records:
+            self.assertEqual(record["response"],
+                             {"status_code": 422, "error_type": "ImageRejected"})
 
 
 if __name__ == "__main__":

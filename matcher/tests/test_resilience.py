@@ -10,10 +10,15 @@ import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
+from unittest import mock
+import warnings
 
 from PIL import Image
+
+from matcher.protection import ImageRejected, validate_image
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -66,8 +71,8 @@ def tiny_mpo():
     return output.getvalue()
 
 
-def jpeg_dimension_bomb():
-    """Make a tiny JPEG that declares 65,535 by 65,535 pixels."""
+def jpeg_dimension_bomb(width=65535, height=65535):
+    """Make a tiny JPEG that declares `width` by `height` pixels."""
     body = bytearray(tiny_jpeg())
     index = 2
     start_of_frame = {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7,
@@ -78,8 +83,8 @@ def jpeg_dimension_bomb():
             continue
         marker = body[index + 1]
         if marker in start_of_frame:
-            body[index + 5:index + 7] = (65535).to_bytes(2, "big")
-            body[index + 7:index + 9] = (65535).to_bytes(2, "big")
+            body[index + 5:index + 7] = height.to_bytes(2, "big")
+            body[index + 7:index + 9] = width.to_bytes(2, "big")
             return bytes(body)
         if marker in {0xD8, 0xD9} or 0xD0 <= marker <= 0xD7:
             index += 2
@@ -296,6 +301,71 @@ class MatcherResilienceTest(unittest.TestCase):
         response = receive_response(connection)
         self.assertEqual(response_status(response), 413, response)
         self.assert_service_survives()
+
+
+class ImageValidationTest(unittest.TestCase):
+    """Check `validate_image` and the pixel limit setting without a matcher server."""
+
+    def test_parallel_checks_leave_the_warnings_filters_unchanged(self):
+        # Force this order: check A enters, check B enters, A leaves, B leaves. A check
+        # that saves and restores the global filter list leaks the filter of A here.
+        open_image = Image.open
+        a_opened, b_opened, a_done = threading.Event(), threading.Event(), threading.Event()
+
+        def ordered_open(source):
+            if threading.current_thread().name == "a":
+                a_opened.set()
+                b_opened.wait(5)
+            else:
+                b_opened.set()
+                a_done.wait(5)
+            return open_image(source)
+
+        def check_a():
+            try:
+                validate_image(tiny_jpeg(), 1000)
+            finally:
+                a_done.set()
+
+        check_b = threading.Thread(
+            target=validate_image, args=(tiny_jpeg(), 1000), name="b")
+        with warnings.catch_warnings():
+            before = list(warnings.filters)
+            with mock.patch.object(Image, "open", side_effect=ordered_open):
+                check_a_thread = threading.Thread(target=check_a, name="a")
+                check_a_thread.start()
+                self.assertTrue(a_opened.wait(5))
+                check_b.start()
+                check_a_thread.join(5)
+                check_b.join(5)
+            after = list(warnings.filters)
+        self.assertEqual(after, before)
+
+    def test_a_header_above_the_pillow_warning_limit_is_rejected(self):
+        # 100,000,000 pixels: Pillow warns and does not raise. The pixel check rejects it.
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            with self.assertRaises(ImageRejected) as caught:
+                validate_image(jpeg_dimension_bomb(10_000, 10_000), 1_000_000)
+        self.assertEqual(caught.exception.status_code, 413)
+
+    def test_a_pixel_limit_above_the_pillow_limit_stops_the_start(self):
+        limit = Image.MAX_IMAGE_PIXELS
+        for value, stops in ((limit, False), (limit + 1, True)):
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as directory:
+                environment = os.environ.copy()
+                environment["SVOE_VINO_MATCHER_CONFIG"] = str(CONFIG)
+                environment["SVOE_VINO_MATCHER_OUTPUT_DIR"] = directory
+                environment["SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS"] = str(value)
+                result = subprocess.run(
+                    [sys.executable, "-c", "import matcher.app"], cwd=ROOT,
+                    env=environment, capture_output=True, text=True, timeout=60)
+                if stops:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("MUST NOT exceed the Pillow limit %d" % limit,
+                                  result.stderr)
+                else:
+                    self.assertEqual(result.returncode, 0, result.stderr)
 
 
 if __name__ == "__main__":

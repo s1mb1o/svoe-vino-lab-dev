@@ -2,6 +2,26 @@
 
 ## 2026-09-29
 
+- Fixed HTTP 500 for a damaged JPEG, MPO, or WEBP. The admission check reads only the
+  image header, so such a file can pass it. `model_input` now raises `ImageRejected`
+  with HTTP 422 when the decoding fails. `POST /v1/eval/predict` and `POST /v1/match`
+  answer HTTP 422 `image file is invalid or damaged`, as `README.md` documents. The
+  audit record gets status 422 and `error_type` `ImageRejected`. SigLIP2 gets no request.
+  In a fuzz run, 683 damaged files passed the admission check. Their decoding raised
+  only `OSError`.
+- Removed the per-request warnings filter from `validate_image`. The function runs in
+  worker threads, and `warnings.catch_warnings()` changed the filter list of the whole
+  process. Parallel requests could leave the filter installed. The explicit pixel check
+  stays the size limit. A header above the Pillow warning limit still gets HTTP 413.
+- The service now refuses to start when `SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS` exceeds the
+  Pillow limit 89478485. Before this change, a larger value had no effect: each image
+  above the Pillow limit got HTTP 413.
+- Recorded the stalled-upload slot defect in `docs/KNOWN_ISSUES.md` for a later fix.
+  Recorded the HTTP 400 of hand selection for a damaged image there too. Added the code
+  review report `docs/reports/2026-09-29_code-review.md`.
+- Validation: all 118 matcher tests passed with `ResourceWarning` treated as an error.
+  The new thread test failed before the fix. In a scratch copy, the new API test got
+  HTTP 500 when either hunk of the damaged-image fix was reverted.
 - Split process liveness (`GET /healthz`) from pipeline readiness (`GET /readyz`).
 - Made readiness conditional on the selected configuration. Mock does not use an
   external service. SigLIP2 sends a small embedding probe. Enabled hand selection

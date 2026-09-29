@@ -8081,3 +8081,39 @@ check that it not read from `QR_SCANNER_ENDPOINT` directly, but loaded from conf
 ```text
 git commit
 ```
+
+## 2026-09-29T07:30:03+0300
+
+```text
+check @svoe-vino-lab/matcher  code for issues
+```
+
+## 2026-09-29T07:41:59+0300
+
+The agent reported nine findings of a read-only review of `matcher/`. Item 1: a damaged
+JPEG gives HTTP 500; option A catches the decode errors in `model_input` and returns
+HTTP 422. Item 2: eight stalled uploads block all other clients. Item 5: `validate_image`
+changes the process-wide warnings filters in worker threads. The agent asked: "Tell me
+which items to fix and which option to use for each." The owner answered:
+
+```text
+1. A
+2. record as known issues to fix later
+5. fix it
+```
+
+## 2026-09-29T08:04:02+0300
+
+```text
+commit changes
+```
+
+## 2026-09-29T08:13:52+0300
+
+The agent reported that its matcher fixes build on finished but uncommitted matcher work
+of other sessions (the SigLIP2 502/504 mapping, hand selection, and MPO). The agent asked:
+"How should I commit?" The owner selected this answer:
+
+```text
+Two commits (Recommended) — First, one checkpoint commit of the other sessions' finished matcher work: readiness, SigLIP2 errors, hand selection, MPO, the lock file, and the stress-test report. Then my fixes on top, with my owner-message entries. I test each tree alone before I commit it.
+```

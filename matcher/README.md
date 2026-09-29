@@ -255,7 +255,8 @@ rsync -a --delete <новый каталог>/ <host>:<путь>/
   выбранная конфигурация содержит
   `matcher.token: "{env:SVOE_VINO_MATCHER_TOKEN}"`.
 - SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS — максимальное число пикселей. Значение по
-  умолчанию равно 40000000.
+  умолчанию равно 40000000. The value MUST NOT exceed 89478485, the Pillow limit. A
+  larger value stops the service at start.
 - SVOE_VINO_MATCHER_UPLOAD_TIMEOUT_SECONDS — максимальное время загрузки полного HTTP
   body. Значение по умолчанию равно 30 секундам.
 - SVOE_VINO_MATCHER_MAX_INFLIGHT_REQUESTS — максимальное число одновременно
@@ -389,6 +390,10 @@ curl --header "Authorization: Bearer $SVOE_VINO_MATCHER_TOKEN" \
 числа пикселей. Он возвращает HTTP 415 для другого формата. Он возвращает HTTP 422 для
 повреждённого изображения или отсутствующего поля image. Он возвращает HTTP 503, если
 очередь заполнена или запрос ждал в ней слишком долго.
+
+The admission check reads the image header and does not decode the pixels. A damaged
+JPEG, MPO, or WEBP can pass it. The decoding then fails, and the service returns HTTP 422.
+The request archive keeps such an image and its `request.json` record.
 
 Лимит полного HTTP body равен `SVOE_VINO_MATCHER_MAX_IMAGE_BYTES` плюс 64 КиБ для
 multipart-обрамления. Этот лимит действует и для chunked upload без Content-Length.
@@ -597,3 +602,7 @@ OpenAPI описывает GET /healthz, GET /readyz, обязательное m
 
 Инструкции для автоматических тестов, ручного official harness и GitLab CI находятся в
 файле [TESTING.md](TESTING.md).
+
+## Known issues
+
+[docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) lists the known defects that are not fixed yet.

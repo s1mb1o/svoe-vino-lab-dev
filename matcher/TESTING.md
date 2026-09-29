@@ -61,7 +61,7 @@ matcher:
 ~~~
 
 `-W error::ResourceWarning` treats an unclosed resource warning as an error.
-The suite contains 113 tests.
+The suite contains 118 tests.
 
 ### API и official harness
 
@@ -109,6 +109,11 @@ Bearer-запрос.
 Content-Length без передачи содержимого файла. После каждого сценария тест проверяет
 `/healthz` и обработку обычного JPEG.
 
+The class `ImageValidationTest` runs without a server. Two parallel `validate_image`
+calls in a forced order leave the process warnings filters unchanged. A JPEG header of
+100,000,000 pixels gets HTTP 413. A subprocess check confirms that a pixel limit of
+89478486 stops the start and that the Pillow limit 89478485 is accepted.
+
 ### Backend siglip2
 
 Файл `matcher/tests/test_siglip2.py` не использует настоящий bundle и шлюз gx10. Тест
@@ -123,6 +128,8 @@ Content-Length без передачи содержимого файла. Пос
 - Запрос содержит имя модели и `max_num_patches` из bundle и один PNG data URI.
 - PNG имеет белый фон вместо прозрачности и длинную сторону 1024 пикселя.
 - Маленькое изображение не увеличивается. EXIF-ориентация применяется.
+- A JPEG that is cut in half passes `validate_image`. The backend raises `ImageRejected`
+  with status 422 before the embedding request.
 - Ошибка HTTP, вектор другой размерности и нулевой вектор дают `Siglip2Error` со
   статусом HTTP 502. Таймаут получает статус HTTP 504.
 - API возвращает HTTP 502 для ошибки SigLIP2. Audit record сохраняет тот же статус.
@@ -155,6 +162,9 @@ Content-Length без передачи содержимого файла. Пос
   Запрос без токена даёт HTTP 401. Пустой файл даёт HTTP 400. Журнал запроса содержит
   slug кандидатов.
 - Pipeline без карточек даёт HTTP 503.
+- Through uvicorn and a siglip2 pipeline, a damaged JPEG gets HTTP 422 from
+  POST /v1/eval/predict and POST /v1/match. SigLIP2 gets no request. Each audit record
+  has status 422 and `error_type` `ImageRejected`.
 
 ### Каталог лаборатории
 
@@ -270,7 +280,7 @@ Workflow повторяет pull образа `python:3.11-slim` до трёх �
 из `matcher/requirements.lock` с обязательной проверкой SHA-256. Затем скрипт запускает
 все тесты, которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был
 запущен или был пропущен. В конце журнала должна быть строка
-`matcher tests: discovered=105 run=105 skipped=0`.
+`matcher tests: discovered=118 run=118 skipped=0`.
 
 ## GitLab CI
 
@@ -279,4 +289,4 @@ Job `matcher-tests` находится в корневом файле `.gitlab-c
 `matcher/requirements.txt`, запускает `pip check` и выполняет полный набор тестов.
 
 Pipeline должен завершить job `matcher-tests` со статусом passed. В логе должна быть
-строка `Ran 113 tests` и итог `OK`.
+строка `Ran 118 tests` и итог `OK`.

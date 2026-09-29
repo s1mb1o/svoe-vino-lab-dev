@@ -14,6 +14,15 @@
 - Make SigLIP2 exceed its request timeout. Confirm HTTP 504.
 - Confirm that each audit record contains the same response status as the API.
 
+## Damaged images and the pixel limit
+
+- Select a SigLIP2 pipeline. Cut a JPEG in half.
+- Send the damaged JPEG to `POST /v1/eval/predict` and to `POST /v1/match`.
+- Confirm HTTP 422 with `image file is invalid or damaged` from both endpoints.
+- Confirm that SigLIP2 gets no request and that each audit record has status 422.
+- Set `SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS=89478486`. Confirm that the matcher does not
+  start and that the error names the Pillow limit.
+
 ## Liveness and readiness
 
 - Select a mock pipeline. Confirm HTTP 200 from `/healthz` and `/readyz` without a

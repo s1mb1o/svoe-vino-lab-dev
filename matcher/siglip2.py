@@ -20,6 +20,8 @@ import urllib.request
 import numpy as np
 from PIL import Image, ImageOps
 
+from .protection import ImageRejected
+
 
 VIEW = "full"
 MAX_SIZE = 1024
@@ -37,13 +39,20 @@ class Siglip2Error(RuntimeError):
 
 
 def model_input(image_bytes):
-    """Return the PNG bytes of one photo after the steps of the lab pipeline."""
-    with Image.open(io.BytesIO(image_bytes)) as opened:
-        opened.seek(0)
-        image = ImageOps.exif_transpose(opened)
-        alpha = image.mode in ("RGBA", "LA", "PA") or (
-            image.mode == "P" and "transparency" in image.info)
-        image = image.convert("RGBA" if alpha else "RGB")
+    """Return the PNG bytes of one photo after the steps of the lab pipeline.
+
+    `validate_image` does not decode the pixels. A damaged JPEG, MPO, or WEBP can pass it
+    and fail here. Such a photo raises ImageRejected with HTTP status 422.
+    """
+    try:
+        with Image.open(io.BytesIO(image_bytes)) as opened:
+            opened.seek(0)
+            image = ImageOps.exif_transpose(opened)
+            alpha = image.mode in ("RGBA", "LA", "PA") or (
+                image.mode == "P" and "transparency" in image.info)
+            image = image.convert("RGBA" if alpha else "RGB")
+    except (OSError, SyntaxError, ValueError) as exc:
+        raise ImageRejected(422, "image file is invalid or damaged") from exc
     if image.mode == "RGBA":
         white = Image.new("RGBA", image.size, (255, 255, 255, 255))
         image = Image.alpha_composite(white, image).convert("RGB")

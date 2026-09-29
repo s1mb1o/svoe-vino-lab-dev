@@ -21,6 +21,7 @@ import numpy as np
 from PIL import Image
 import yaml
 
+from matcher.protection import ImageRejected, validate_image
 from matcher.service import ConfigError, load_matcher
 from matcher.siglip2 import Siglip2Error, model_input
 
@@ -161,6 +162,13 @@ def mpo_bytes(first, second):
     return buffer.getvalue()
 
 
+def damaged_jpeg():
+    """Return the first half of a noise JPEG: the header is intact, the scan is cut."""
+    pixels = np.random.default_rng(0).integers(0, 256, (200, 300, 3), dtype=np.uint8)
+    photo = image_bytes(Image.fromarray(pixels), "JPEG")
+    return photo[:len(photo) // 2]
+
+
 def sent_png(body):
     uri = body["input"][0]
     prefix = "data:image/png;base64,"
@@ -239,6 +247,16 @@ class Siglip2Test(unittest.TestCase):
             self.assertGreater(red, 240)
             self.assertLess(green, 10)
             self.assertLess(blue, 10)
+
+    def test_a_damaged_photo_is_rejected_before_the_embedding_request(self):
+        matcher, fake = self.matcher((1, 0, 0, 0))
+        # The admission check reads the header alone, so the damaged photo passes it.
+        self.assertEqual(validate_image(damaged_jpeg(), 1_000_000).format, "JPEG")
+        with self.assertRaises(ImageRejected) as caught:
+            matcher.predict(damaged_jpeg())
+        self.assertEqual(caught.exception.status_code, 422)
+        self.assertEqual(caught.exception.detail, "image file is invalid or damaged")
+        self.assertEqual(fake.requests, [])
 
     def test_multiple_images_use_one_embedding_request(self):
         matcher, fake = self.matcher((1, 0, 0, 0))

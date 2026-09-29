@@ -11,6 +11,7 @@ from typing import Literal
 import uuid
 
 from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
+from PIL import Image
 from pydantic import BaseModel, ConfigDict, Field
 
 from .audit import RequestArchive, safe_headers
@@ -161,6 +162,12 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         max_image_bytes, "SVOE_VINO_MATCHER_MAX_IMAGE_BYTES", DEFAULT_MAX_IMAGE_BYTES)
     pixel_limit = _positive_int_setting(
         max_image_pixels, "SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS", DEFAULT_MAX_IMAGE_PIXELS)
+    # Pillow warns above its own limit and raises above twice that limit, so a larger
+    # setting does not work as configured.
+    if pixel_limit > Image.MAX_IMAGE_PIXELS:
+        raise RuntimeError(
+            "SVOE_VINO_MATCHER_MAX_IMAGE_PIXELS MUST NOT exceed the Pillow limit %d"
+            % Image.MAX_IMAGE_PIXELS)
     upload_timeout = _positive_float_setting(
         upload_timeout_seconds, "SVOE_VINO_MATCHER_UPLOAD_TIMEOUT_SECONDS",
         DEFAULT_UPLOAD_TIMEOUT_SECONDS)
@@ -295,7 +302,8 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         except Exception as exc:
             completed_at = datetime.now(timezone.utc)
             duration_ms = round((perf_counter() - started_at) * 1000, 3)
-            expected = isinstance(exc, (HTTPException, GroupMatchError, Siglip2Error))
+            expected = isinstance(
+                exc, (HTTPException, GroupMatchError, ImageRejected, Siglip2Error))
             status_code = exc.status_code if expected else 500
             record = _record(
                 request_id, received_at, completed_at, duration_ms, client_ip,
@@ -310,7 +318,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 LOGGER.warning("matcher_request %s", _log_event(record))
             else:
                 LOGGER.exception("matcher_request %s", _log_event(record))
-            if isinstance(exc, (GroupMatchError, Siglip2Error)):
+            if isinstance(exc, (GroupMatchError, ImageRejected, Siglip2Error)):
                 raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
             raise
 

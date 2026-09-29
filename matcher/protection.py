@@ -7,7 +7,6 @@ import json
 import logging
 import secrets
 from time import perf_counter
-import warnings
 
 from PIL import Image, UnidentifiedImageError
 
@@ -224,23 +223,25 @@ class RequestProtectionMiddleware:
 
 
 def validate_image(body, max_pixels):
-    """Validate an image header and structure without decoding all pixels."""
+    """Validate an image header and structure without decoding all pixels.
+
+    The function runs in worker threads. It MUST NOT change the warnings filters: the
+    filter list is global to the process. The explicit pixel check is the size limit.
+    """
     try:
-        with warnings.catch_warnings():
-            warnings.simplefilter("error", Image.DecompressionBombWarning)
-            with Image.open(BytesIO(body)) as image:
-                image_format = (image.format or "").upper()
-                width, height = image.size
-                if image_format not in SUPPORTED_IMAGE_FORMATS:
-                    raise ImageRejected(
-                        415,
-                        "image format MUST be JPEG (including MPO), PNG, or WEBP",
-                    )
-                if width <= 0 or height <= 0:
-                    raise ImageRejected(422, "image dimensions MUST be positive")
-                if width * height > max_pixels:
-                    raise ImageRejected(413, "image pixel count exceeds the configured limit")
-                image.verify()
+        with Image.open(BytesIO(body)) as image:
+            image_format = (image.format or "").upper()
+            width, height = image.size
+            if image_format not in SUPPORTED_IMAGE_FORMATS:
+                raise ImageRejected(
+                    415,
+                    "image format MUST be JPEG (including MPO), PNG, or WEBP",
+                )
+            if width <= 0 or height <= 0:
+                raise ImageRejected(422, "image dimensions MUST be positive")
+            if width * height > max_pixels:
+                raise ImageRejected(413, "image pixel count exceeds the configured limit")
+            image.verify()
     except ImageRejected:
         raise
     except (Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
