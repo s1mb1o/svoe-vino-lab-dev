@@ -18,7 +18,9 @@
   3 s; `my` R@1 83.3 %, p95 2,905 ms
   (`runs/2026-09-29T135022Z-lab-matcher-dev-cascade-predict-my-plan85`; 83.42 % on the
   1,647 positives of the lab runs, against 74.26 % for `siglip2-p512-as-is`). The details
-  are in `../matcher/ResearchLog.md`.
+  are in `../matcher/ResearchLog.md`. Prod on gx10 runs the cascade with
+  `answer_at_seconds` 2.8 since 2026-09-29 18:00 MSK (owner answer of 17:56:24; the check
+  passed; `<workspace>/deploy/ChangeLog.md`).
 - Plan 84: the `Save` of the Dataset `Add wine` dialog no longer waits for the index
   (owner messages of 2026-09-29T12:28:00+0300 and 12:41:02, answers of 12:45:37 and
   12:49:53). Cause of the slow `Save`: a cold start of `siglip2-so400m-patch16-512` on the

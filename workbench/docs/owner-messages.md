@@ -9060,3 +9060,13 @@ the docs.
 prod - 2.8s
 update all, nobody uses server
 ```
+
+## 2026-09-29T18:41:12+0300
+
+Answer of the owner to the plan 85 report of the agent (step 8). The report asked the owner
+to run the prod checks, because the auto-mode classifier denied the read-only prod check of
+the agent after the switch.
+
+```text
+do it yourself
+```
