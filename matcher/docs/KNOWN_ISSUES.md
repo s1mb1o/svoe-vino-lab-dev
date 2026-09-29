@@ -40,3 +40,22 @@ When a fix is merged, remove its entry and record the fix in [../ChangeLog.md](.
   `siglip2.model_input`. `_normalize_image` maps a decode error to `GroupMatchError(400)`.
   `POST /v1/group/match` documents this HTTP 400.
 - Prod effect: none at present. The prod configuration has `hand_selection: false`.
+
+## 3. DIS can select a graphic element instead of the product
+
+- Found: 2026-09-29, during the segmentation and SigLIP2 model matrix test.
+- Status: open. The owner decided to fix it later.
+- Effect: on a close-up photograph of a wine label, DIS can select one graphic element
+  as the foreground. It can remove the wine name and the other identifying text. The
+  image embedding then describes the graphic element instead of the wine label.
+- Evidence: query `q-000004` in the
+  [segmentation model matrix](../../workbench/docs/reports/2026-09-29_segmentation-model-matrix.md).
+  With SigLIP2 fixed 512, the correct wine had rank 472 after DIS and rank 1 after SAM3.
+- Cause: DIS does not know that the target is a bottle or a complete wine label. On a
+  close-up label, a high-contrast graphic element can look like the main foreground.
+- Risk: the Android DIS pipeline can give a confident wrong match when the input is a
+  close-up label or when a label has one large graphic element.
+- Possible corrections. The owner did not select one.
+  - Use SAM3 for target selection when it is available.
+  - Compare the DIS result with a full-image embedding and keep the safer result.
+  - Reject a DIS crop that removes most of a label or contains too little text context.

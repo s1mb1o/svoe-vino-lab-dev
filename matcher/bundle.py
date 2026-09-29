@@ -16,10 +16,13 @@ import numpy as np
 
 FORMAT = "svoe-vino-matcher-bundle"
 # Version 2 adds the wine cards to `wines.jsonl`. A version 1 bundle has no cards.
-FORMAT_VERSIONS = (1, 2)
+# Version 3 (workbench plan 82) holds the rotated rows of an entry with `rotation_step`:
+# one vector row for each angle of an image, and the angle of each row in `items.jsonl`.
+FORMAT_VERSIONS = (1, 2, 3)
 SCORING = {"similarity": "dot_product", "item_reduction": "max", "view_reduction": "mean"}
 MANIFEST = "manifest.json"
 VECTORS = "vectors.npy"
+ITEMS = "items.jsonl"
 CANDIDATES = "candidates.jsonl"
 WINES = "wines.jsonl"
 # The card fields of a version 2 wine record, in the order of the `/v1/match` answer.
@@ -45,7 +48,11 @@ class Bundle:
     """The catalogue vectors of one bundle, one matrix row per candidate relation.
 
     `views[view]` holds the matrix of the view and the wine number of each row.
-    `slugs` is sorted, so the smallest wine number is the smallest slug.
+    `slugs` is sorted, so the smallest wine number is the smallest slug. A wine scores the
+    best cosine of its rows, so the rotated rows of a version 3 bundle give the maximum
+    over the rotation. `angles[view]` holds the angle of each row of that view (version 3,
+    or a catalogue index with rotated rows), else None; a later feature MAY use it to
+    detect the angle of a candidate bottle.
     """
 
     path: Path
@@ -55,6 +62,8 @@ class Bundle:
     views: dict
     # slug -> the wine card of a version 2 bundle, or None for a version 1 bundle.
     cards: dict | None = None
+    # view -> the angle of each matrix row (int16), or None with no rotated rows.
+    angles: dict | None = None
 
     def top1(self, view, query):
         """Return the slug and the cosine of the wine with the best cosine in `view`.
@@ -145,6 +154,7 @@ def load_bundle(directory):
         raise BundleError("%s does not match the declared float32 shape %r"
                           % (VECTORS, shape))
 
+    angle_of = _read_angles(root, manifest, len(vectors)) if version >= 3 else None
     rows = {}
     try:
         with open(root / CANDIDATES, encoding="utf-8") as source:
@@ -173,8 +183,36 @@ def load_bundle(directory):
         for view, pairs in rows.items()
     }
     cards = _read_cards(root) if version >= 2 else None
+    angles = None
+    if angle_of is not None:
+        angles = {view: np.asarray([angle_of[row] for row, _ in pairs], dtype=np.int16)
+                  for view, pairs in rows.items()}
     return Bundle(path=root, embedding=embedding, dimension=int(vectors.shape[1]),
-                  slugs=slugs, views=views, cards=cards)
+                  slugs=slugs, views=views, cards=cards, angles=angles)
+
+
+def _read_angles(root, manifest, count):
+    """Return the angle of each vector row of a version 3 bundle, from `items.jsonl`."""
+    _check_payload(root, manifest, ITEMS)
+    angle_of = [None] * count
+    try:
+        with open(root / ITEMS, encoding="utf-8") as source:
+            for number, line in enumerate(source, 1):
+                item = json.loads(line)
+                row, angle = item["vector_row"], item["angle"]
+                if (isinstance(row, bool) or not isinstance(row, int) or not 0 <= row < count
+                        or isinstance(angle, bool) or not isinstance(angle, int)
+                        or not 0 <= angle < 360 or angle_of[row] is not None):
+                    raise BundleError("%s line %d has an invalid vector_row or angle"
+                                      % (ITEMS, number))
+                angle_of[row] = angle
+    except BundleError:
+        raise
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise BundleError("cannot read %s: %s" % (ITEMS, exc)) from exc
+    if any(angle is None for angle in angle_of):
+        raise BundleError("%s has no angle for each vector row" % ITEMS)
+    return angle_of
 
 
 def _read_cards(root):

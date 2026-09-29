@@ -61,7 +61,7 @@ matcher:
 ~~~
 
 `-W error::ResourceWarning` treats an unclosed resource warning as an error.
-The suite contains 118 tests.
+The suite contains 124 tests.
 
 ### API и official harness
 
@@ -113,6 +113,13 @@ The class `ImageValidationTest` runs without a server. Two parallel `validate_im
 calls in a forced order leave the process warnings filters unchanged. A JPEG header of
 100,000,000 pixels gets HTTP 413. A subprocess check confirms that a pixel limit of
 89478486 stops the start and that the Pillow limit 89478485 is accepted.
+
+### Повёрнутые строки (план 82 workbench)
+
+Файл `matcher/tests/test_rotation.py` проверяет bundle версии 3 и копию каталога с
+повёрнутыми строками. Вино получает максимум косинуса по своим строкам. `Bundle.angles`
+содержит угол каждой строки; у версий 1 и 2 поле равно None. Неверный угол, пропуск или
+перекрытие строк дают `BundleError` или `CatalogError`. Тест не использует сеть.
 
 ### Backend siglip2
 
@@ -280,7 +287,7 @@ Workflow повторяет pull образа `python:3.11-slim` до трёх �
 из `matcher/requirements.lock` с обязательной проверкой SHA-256. Затем скрипт запускает
 все тесты, которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был
 запущен или был пропущен. В конце журнала должна быть строка
-`matcher tests: discovered=118 run=118 skipped=0`.
+`matcher tests: discovered=124 run=124 skipped=0`.
 
 ## GitLab CI
 
@@ -289,4 +296,4 @@ Job `matcher-tests` находится в корневом файле `.gitlab-c
 `matcher/requirements.txt`, запускает `pip check` и выполняет полный набор тестов.
 
 Pipeline должен завершить job `matcher-tests` со статусом passed. В логе должна быть
-строка `Ran 118 tests` и итог `OK`.
+строка `Ran 124 tests` и итог `OK`.

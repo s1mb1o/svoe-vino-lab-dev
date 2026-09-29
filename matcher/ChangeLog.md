@@ -2,6 +2,15 @@
 
 ## 2026-09-29
 
+- Workbench plan 82 (max-over-rotation matching): `load_bundle` accepts bundle format
+  version 3 (one vector row for each angle of an image) and keeps the angle of each row in
+  the new optional field `Bundle.angles` (None for versions 1 and 2). `load_catalog` reads
+  a catalogue index whose records hold `angles`: each record gives one row for each angle
+  to each owner wine, and the rows MUST cover the vector file one time. The ranking does
+  not change: a wine scores the best cosine of its rows, which is the maximum over the
+  rotation. The API answer does not change. New tests `tests/test_rotation.py` (6); the
+  "unsupported" example of `test_siglip2.py` is version 4 now. 124 tests pass.
+
 - Fixed HTTP 500 for a damaged JPEG, MPO, or WEBP. The admission check reads only the
   image header, so such a file can pass it. `model_input` now raises `ImageRejected`
   with HTTP 422 when the decoding fails. `POST /v1/eval/predict` and `POST /v1/match`
