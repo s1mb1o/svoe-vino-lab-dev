@@ -43,12 +43,16 @@ def mask(width, height, box, stray=False):
 
 def sam3_answer(width=60, height=40):
     instances = [
-        {"score": 0.8, "box": [-2, 3, 15, 34],
+        {"label": "wine bottle", "score": 0.8, "box": [-2, 3, 15, 34],
          "mask_png_b64": mask(width, height, (0, 4, 14, 33), stray=True)},
-        {"score": 0.9, "box": [35, 2, 54, 35],
+        {"label": "wine bottle", "score": 0.9, "box": [35, 2, 54, 35],
          "mask_png_b64": mask(width, height, (36, 3, 53, 34))},
-        {"score": 0.7, "box": [35.1, 2.1, 54.1, 35.1],
+        {"label": "wine bottle", "score": 0.7, "box": [35.1, 2.1, 54.1, 35.1],
          "mask_png_b64": mask(width, height, (36, 3, 53, 34))},
+        {"label": "wine label", "score": 0.88, "box": [2, 15, 12, 27],
+         "mask_png_b64": mask(width, height, (2, 15, 12, 27))},
+        {"label": "wine label", "score": 0.91, "box": [38, 16, 51, 29],
+         "mask_png_b64": mask(width, height, (38, 16, 51, 29))},
     ]
     return {"width": width, "height": height,
             "count": len(instances), "instances": instances}
@@ -100,9 +104,10 @@ class GroupSegmentationTest(unittest.TestCase):
         self.assertEqual(result.bottles[1].box, (35 / 60, 2 / 40, 54 / 60, 35 / 40))
 
         request, timeout = opener.requests[0]
-        self.assertEqual(request.full_url, "http://sam3.test/base/segment")
+        self.assertEqual(request.full_url, "http://sam3.test/base/segment_multi")
         self.assertGreater(timeout, 0)
-        self.assertIn(b'name="text"\r\n\r\nwine bottle', request.data)
+        self.assertIn(
+            b'name="texts"\r\n\r\nwine bottle, wine label', request.data)
         self.assertIn(b'name="threshold"\r\n\r\n0.4', request.data)
         self.assertIn(b'name="mask_threshold"\r\n\r\n0.5', request.data)
         self.assertIn(b'name="return_masks"\r\n\r\ntrue', request.data)
@@ -121,6 +126,65 @@ class GroupSegmentationTest(unittest.TestCase):
         with Image.open(BytesIO(result.bottles[0].crop)) as crop:
             self.assertEqual(crop.format, "JPEG")
             self.assertEqual(crop.mode, "RGB")
+            red, green, blue = crop.getpixel((0, 0))
+            self.assertGreater(red, 240)
+            self.assertGreater(green, 240)
+            self.assertGreater(blue, 240)
+
+    def test_bottles_without_a_usable_label_are_not_returned(self):
+        answer = sam3_answer()
+        answer["instances"] = [
+            instance for instance in answer["instances"]
+            if instance["label"] == "wine bottle"
+        ]
+        answer["count"] = len(answer["instances"])
+        result = segment_group(
+            self.photo(), "http://sam3.test", opener=self.opener(answer))
+        self.assertEqual(result.detected_count, 3)
+        self.assertEqual(result.bottles, ())
+
+    def test_tiny_and_outside_labels_are_not_usable(self):
+        width = height = 100
+        instances = [
+            {"label": "wine bottle", "score": 0.9, "box": [10, 5, 45, 95],
+             "mask_png_b64": mask(width, height, (10, 5, 45, 95))},
+            {"label": "wine label", "score": 0.9, "box": [20, 50, 21, 51],
+             "mask_png_b64": mask(width, height, (20, 50, 21, 51))},
+            {"label": "wine label", "score": 0.9, "box": [60, 45, 80, 65],
+             "mask_png_b64": mask(width, height, (60, 45, 80, 65))},
+        ]
+        answer = {"width": width, "height": height,
+                  "count": len(instances), "instances": instances}
+        photo = image_bytes(Image.new("RGB", (width, height), "red"))
+        result = segment_group(
+            photo, "http://sam3.test", opener=self.opener(answer))
+        self.assertEqual(result.detected_count, 1)
+        self.assertEqual(result.bottles, ())
+
+    def test_rear_scale_and_bottom_edge_fragments_are_filtered(self):
+        width = height = 100
+        instances = [
+            {"label": "wine bottle", "score": 0.95, "box": [5, 10, 35, 80],
+             "mask_png_b64": mask(width, height, (5, 10, 35, 80))},
+            {"label": "wine label", "score": 0.95, "box": [10, 50, 30, 70],
+             "mask_png_b64": mask(width, height, (10, 50, 30, 70))},
+            {"label": "wine bottle", "score": 0.85, "box": [45, 12, 60, 37],
+             "mask_png_b64": mask(width, height, (45, 12, 60, 37))},
+            {"label": "wine label", "score": 0.85, "box": [48, 24, 57, 33],
+             "mask_png_b64": mask(width, height, (48, 24, 57, 33))},
+            {"label": "wine bottle", "score": 0.9, "box": [70, 88, 95, 100],
+             "mask_png_b64": mask(width, height, (70, 88, 95, 100))},
+            {"label": "wine label", "score": 0.9, "box": [75, 91, 90, 99],
+             "mask_png_b64": mask(width, height, (75, 91, 90, 99))},
+        ]
+        answer = {"width": width, "height": height,
+                  "count": len(instances), "instances": instances}
+        photo = image_bytes(Image.new("RGB", (width, height), "red"))
+        result = segment_group(
+            photo, "http://sam3.test", opener=self.opener(answer))
+        self.assertEqual(result.detected_count, 3)
+        self.assertEqual(len(result.bottles), 1)
+        self.assertEqual(result.bottles[0].box, (0.05, 0.1, 0.35, 0.8))
 
     def test_exif_orientation_is_applied_before_sam3(self):
         exif = Image.Exif()
@@ -262,7 +326,7 @@ class GroupEndpointTest(unittest.TestCase):
             self.assertIn("name", bottle["match"]["wine"])
             self.assertIn("page_url", bottle["match"]["wine"])
         self.assertEqual(len(sam3.requests), 1)
-        self.assertEqual(sam3.requests[0][0], "/upstream/sam3/segment")
+        self.assertEqual(sam3.requests[0][0], "/upstream/sam3/segment_multi")
 
         records = [json.loads(path.read_text(encoding="utf-8"))
                    for path in (root / "requests").rglob("request.json")]

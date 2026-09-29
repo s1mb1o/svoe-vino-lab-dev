@@ -2,6 +2,10 @@
 
 ## 2026-09-29
 
+- Added group-only visible-label and relative-size quality filters.
+- Changed the group SAM3 request to one `segment_multi` call for `wine bottle` and `wine label`.
+- Masked background pixels in group matcher crops.
+- Kept `POST /v1/eval/predict` and `POST /v1/match` unchanged.
 - Split large SigLIP2 embedding batches into requests of at most 64 images.
 - Fixed shelf matching when SAM3 returns more than 64 bottle crops.
 

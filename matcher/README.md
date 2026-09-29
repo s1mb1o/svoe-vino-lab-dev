@@ -208,7 +208,7 @@ rsync -a --delete <новый каталог>/ <host>:<путь>/
 - SIGLIP2_ENDPOINT — корневой URL шлюза SigLIP2 для matcher/config.yaml, например
   `http://192.168.86.14:18081`. Значение не содержит `/v1`.
 - SAM3_ENDPOINT — корневой URL SAM3. POST /v1/group/match отправляет запрос в
-  `<SAM3_ENDPOINT>/segment`. Канонический адрес GX10 равен
+  `<SAM3_ENDPOINT>/segment_multi`. Канонический адрес GX10 равен
   `http://192.168.86.14:18081/upstream/sam3`.
 - SVOE_VINO_MATCHER_OUTPUT_DIR — каталог для изображений и журналов запросов в тестовой
   конфигурации. Поле matcher.output_dir ссылается на эту переменную. Сервис создаёт
@@ -409,8 +409,10 @@ HTTP 503.
 ### POST /v1/group/match
 
 Endpoint POST /v1/group/match принимает фотографию стеллажа в поле `image`. Сервис
-нормализует фотографию, вызывает `${SAM3_ENDPOINT}/segment` и распознаёт каждый
-возвращённый crop. SigLIP2 отправляет все crop в одном embedding-запросе.
+нормализует фотографию, вызывает `${SAM3_ENDPOINT}/segment_multi` для `wine bottle`
+и `wine label` и распознаёт только бутылки с видимой этикеткой полезного размера.
+Сервис исключает мелкие объекты относительно их ряда и фрагменты у нижнего края.
+SigLIP2 отправляет все оставшиеся crop в одном логическом embedding-запросе.
 
 ~~~bash
 curl --form 'image=@shelf.jpg' \
@@ -461,12 +463,13 @@ curl --form 'image=@shelf.jpg' \
 - `box` содержит нормализованные координаты `[left, top, right, bottom]`.
 - `mask` содержит прозрачный PNG, обрезанный по `box`.
 - `match` равен null, если каталог не дал совпадение.
-- `detected_count` содержит число валидных детекций до удаления дублей и лимитов.
+- `detected_count` содержит число валидных детекций `wine bottle` до фильтров качества,
+  удаления дублей и лимитов.
 - `truncated` равен true, если лимит 100 бутылок или 6 МиБ визуальных данных исключил
   валидную бутылку.
 
-SAM3 получает `text=wine bottle`, `threshold=0.4`, `mask_threshold=0.5` и
-`return_masks=true`. Сервис применяет EXIF-ориентацию и ограничивает изображение
+SAM3 получает `texts=wine bottle, wine label`, `threshold=0.4`,
+`mask_threshold=0.5` и `return_masks=true`. Сервис применяет EXIF-ориентацию и ограничивает изображение
 размером 1600 × 1600. Общий бюджет SAM3 равен 300 секундам. Сервис возвращает HTTP 502
 при ошибке SAM3, HTTP 503 без `SAM3_ENDPOINT` и HTTP 504 при таймауте.
 

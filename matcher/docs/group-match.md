@@ -18,8 +18,8 @@ The endpoint uses the existing upload size, pixel, format, authorization, and qu
 The selected matcher pipeline MUST contain wine cards.
 
 The matcher MUST read the SAM3 base URL from `SAM3_ENDPOINT`.
-The matcher MUST send the normalized image to `${SAM3_ENDPOINT}/segment`.
-The request MUST use `text=wine bottle`.
+The matcher MUST send the normalized image to `${SAM3_ENDPOINT}/segment_multi`.
+The request MUST use `texts=wine bottle, wine label`.
 The request MUST use `threshold=0.4`.
 The request MUST use `mask_threshold=0.5`.
 The request MUST use `return_masks=true`.
@@ -36,9 +36,18 @@ Each SAM3 mask MUST be a full-frame PNG.
 The matcher MUST clamp each detector box to the normalized image.
 The matcher MUST discard mask pixels outside the detector box.
 The matcher MUST suppress a duplicate box when its intersection-over-union is at least 0.9.
+The matcher MUST return a bottle only when a usable `wine label` mask is inside the bottle mask.
+A usable label MUST have a short side of at least 2.5 percent of the image short side.
+A usable label mask MUST cover at least 0.06 percent of the image area.
+At least 80 percent of a usable label mask MUST be inside the bottle mask.
+The label center MUST be between 20 and 90 percent of the bottle height.
+The matcher MUST discard a bottle fragment that starts in the bottom 15 percent of the image.
+The matcher MUST group bottles by their top coordinate.
+The matcher MUST discard a bottle whose height is less than 65 percent of the median height in its group.
 The matcher MUST keep at most 100 bottles.
 
 The matcher MUST crop each bottle from the normalized photo.
+The matcher MUST replace pixels outside the bottle mask with white pixels.
 The matcher MUST add padding equal to five percent of the bottle width to each crop side.
 The matcher MUST resize each internal crop inside 640 by 960 pixels without enlargement.
 The matcher MUST match every returned bottle crop.
@@ -60,7 +69,7 @@ The candidate MUST contain the existing `WineCard` description.
 
 The response MUST order bottles by shelf band and then from left to right.
 The response MUST keep at most 6 MiB of preview and mask data.
-`detected_count` MUST contain the number of valid SAM3 detections before duplicate suppression and response limits.
+`detected_count` MUST contain the number of valid `wine bottle` SAM3 detections before quality filters, duplicate suppression, and response limits.
 `truncated` MUST be true when a bottle limit or response media limit excludes a valid non-duplicate bottle.
 
 ## Errors
@@ -77,5 +86,5 @@ The endpoint MUST NOT store masks or bottle crops.
 
 ## Verification
 
-Automated tests MUST cover image normalization, box clamping, mask cropping, duplicate suppression, ordering, limits, SAM3 validation, SAM3 retry, batch matching, authorization, and the OpenAPI contract.
+Automated tests MUST cover image normalization, box clamping, mask cropping, visible-label filtering, relative-size filtering, duplicate suppression, ordering, limits, SAM3 validation, SAM3 retry, batch matching, authorization, and the OpenAPI contract.
 The existing `/v1/eval/predict` and `/v1/match` contracts MUST remain unchanged.

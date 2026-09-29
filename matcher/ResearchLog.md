@@ -1,5 +1,27 @@
 # Research log
 
+## Group segment quality, 2026-09-29
+
+A production shelf photo returned 47 `wine bottle` segments.
+The unwanted segments included rear bottles without visible labels, mirror reflections, and small edge fragments.
+The SAM3 confidence scores of useful and unwanted segments overlapped.
+A confidence threshold could not separate the two classes.
+
+The matcher now sends one `segment_multi` request for `wine bottle` and `wine label`.
+It keeps a bottle only when a label of useful size is inside the bottle mask.
+It removes bottom-edge fragments.
+It also compares each bottle height with the median height of bottles that start in the same shelf band.
+This relative comparison keeps useful bottles in shelf bands at different distances.
+
+The owner shelf photo now returns 10 useful segments from 47 raw bottle detections.
+The rejected set includes the reported rear bottles 3, 5, 7, and 8.
+It includes reflections 25 through 29.
+It includes small detections 31 through 47.
+Two other owner shelf photos returned 33 of 84 and 25 of 98 raw bottle detections.
+
+This logic runs only in `POST /v1/group/match`.
+The single-image endpoints do not import or call this logic.
+
 ## Group photo matching, 2026-09-28
 
 The existing Web UI shelf implementation established the SAM3 request contract.
