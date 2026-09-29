@@ -2,6 +2,30 @@
 
 ## 2026-09-29
 
+### Hackathon landing publication
+
+- Publish `/hackaton`, linked `/android` and `/ideas`, and the verified version 0.1.4 APK.
+- Deploy isolated release `600fd2ae25a3eab4d338b2cd3dccbd21e5435b2e` from `codex/hackaton-release`.
+- Preserve the deployed presentation page and both presentation files.
+- Verify 169 tests, type checks, the Linux build, and public browser checks.
+- Set Android release metadata to the published APK bytes and SHA-256.
+
+## 2026-09-29
+
+### Presentation project card
+
+- Added a full-width card below the GitHub and Google Drive cards.
+- Link to `/hackaton` and reuse the presentation card styles.
+- Published release `8d07fad`. Verified 165 tests, type checks, the Linux build, and four public viewport widths.
+- The target `/hackaton` page remains outside the production release and returns HTTP 404.
+
+### Presentation resource links
+
+- Added GitHub and Google Drive cards below the presentation video.
+- Reuse the layout and card styles of the PowerPoint and PDF links.
+- Open the owner-supplied URLs in new tabs.
+- Published release `dbdd3b6`. Verified 165 tests, type checks, the Linux build, and four public viewport widths.
+
 ### Presentation video
 
 - Added a video section below the PowerPoint and PDF links.

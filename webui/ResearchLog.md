@@ -1,5 +1,45 @@
 # Research log
 
+## Hackathon landing publication, 2026-09-29
+
+The owner requested deployment at `https://chtozavino.ru/hackaton`.
+Release `600fd2ae25a3eab4d338b2cd3dccbd21e5435b2e` starts from production revision `8d07fad`.
+It publishes the landing, its linked Android and ideas pages, and the APK download route.
+The current presentation page and its files remain unchanged.
+The APK package metadata and signature passed verification.
+The current 0.1.4 APK has 576,503,447 bytes and SHA-256 `fc4cf0f44b8fefcff5286b04746efb7fa44b9742ec6df282aa0cc959f6777ea2`.
+The release metadata now matches that artifact.
+All 169 tests, type checks, and the Linux build passed on Princess.
+Staged and public browser checks passed at 320, 390, 768, and 1440 pixels in both themes.
+The checks cover the age gate, screenshots, anchors, linked pages, metadata, and the APK GET response.
+No browser errors or hydration warnings occurred.
+Public APK and presentation file SHA-256 values match the verified sources.
+The scanner health, upstream mode, recognition availability, and shelf availability remain active.
+The previous release remains available for rollback. The staging service was stopped.
+See `<workspace>/deploy/princess/webui.md` for server paths and the deployment record.
+
+## Presentation project card, 2026-09-29
+
+The owner requested a wide card below the resource links.
+The card uses the full content width and links to `/hackaton` in the same tab.
+The card reuses the presentation file card styles.
+The current production release does not include `/hackaton`.
+Published release `8d07fad` with the card. Publication of the target page and its related pages remains a separate scope decision.
+Local type checks and the production build passed. All 165 release tests, type checks, and the Linux build passed on Princess.
+Browser checks confirmed the full card width, placement, destination, and no overflow at 320, 390, 768, and 1440 pixels.
+The phone and desktop captures were visually inspected. Both presentation file hashes and service health remain valid.
+
+## Presentation resource links, 2026-09-29
+
+The owner requested GitHub and Google Drive links below the presentation video.
+The cards reuse the presentation file grid and card styles.
+Both links use the exact supplied URLs and open in new tabs with `noopener noreferrer`.
+The content of the linked repository and folder is not copied or embedded.
+Published release `dbdd3b6` from the isolated production branch.
+All 165 release tests, type checks, and the Linux build passed.
+Public browser checks confirmed both URLs, new tabs, placement below the video, matching card styles, and no horizontal overflow at 320, 390, 768, and 1440 pixels.
+The phone and desktop captures were visually inspected.
+
 ## Presentation video, 2026-09-29
 
 The owner requested a video below the presentation links at `/presentation/video.mp4`.

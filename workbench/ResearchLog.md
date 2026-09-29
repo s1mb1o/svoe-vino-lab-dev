@@ -2,6 +2,25 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-29 — F1@1 and F1@5 and the photos outside the dataset
+
+- `match_scoring.f1` computes F1 over the positive photos alone.
+- Precision is the hits at depth k divided by the answered positive photos.
+- Recall is the hits at depth k divided by all positive photos.
+- Every backend of the lab answers each photo. So F1@1 equals R@1, and F1@5 equals R@5.
+- F1@5 is empty when the backend returns fewer than 5 candidates.
+- A `no_match` photo (`__null__`) is not in F1. It has its own block and a rejection rate.
+- 16 of 48 positives of `test-1` are photos of manual wines. The CSV of the organizers
+  does not hold these wines. They stay in the metrics as `Active` wines (owner message of
+  2026-09-29T19:42:59+0300). Without them, F1@5 of the 7 saved `test-1` runs was higher by
+  +0.002 to +0.073.
+- Before plan 87, a positive photo of a `Disabled` wine was a certain miss. The index
+  holds `Active` wines alone (`matcher_wine`, `embeddings.read_inputs`).
+- The removed card `abrau-dyurso-victor-dravigny-brut-shardone-beloe-bryut-12` (page 404)
+  can have an active successor `abrau-dyurso-victor-dravigny-bryut`. Nobody checked
+  this. So a photo of a removed wine is left out, and it does not become a `no_match` query.
+- Read `docs/plans/87_benchmark-dataset-rule.md`.
+
 ## 2026-09-29 — Android device HTTP evaluation
 
 - The Pixel 8 debug API used pack `20260929-dis-main` with 2,093 wines.

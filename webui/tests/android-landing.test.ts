@@ -34,7 +34,7 @@ describe('Android landing page', () => {
       minAndroid: 9,
       catalogueSize: 2093,
       apkFileName: 'chtozavino-0.1.4-debug.apk',
-      apkBytes: 576_503_269,
+      apkBytes: 576_503_447,
     })
     expect(DEFAULT_ANDROID_APK_URL).toBe('/downloads/chtozavino-0.1.4-debug.apk')
     const route = await source('server/routes/downloads/[filename].get.ts')

@@ -23,6 +23,22 @@
   again at 19:50:58 with `--workers 6` (PID 50453, 25.5 items/min, 1,157 items left).
   The Codex trial `work/fixed512-rot5/finish_trial.py` still waits for the index.
 
+- Plan 87: the benchmark leaves out the test photos of a wine outside the dataset: a
+  `Removed` or a `Disabled` wine, or a place that `wine_catalog` does not hold
+  (`benchmark.outside_dataset`, `left_out` of `run.json`). Before, a positive photo of a
+  disabled wine was a certain miss. An `Active` manual (`__…`) wine counts as any other
+  `Active` wine (owner message of 19:42:59; a first version also left it out). `__null__`
+  photos stay `no_match` queries outside F1. New tool `scripts/rescore_runs.py` re-scored
+  158 saved lab runs from `results.jsonl`; the old files stay as
+  `*.before-dataset-rule.*`; 0 runs differed in the check of the full rows. The 7 runs of
+  `test-1` got their old files back. Runs of `my` moved by at most 0.003. Tests:
+  `test_benchmark.py` 16 OK, `test_selftest.py` 11 OK, `test_run_job*.py` 27 OK,
+  `test_embedding_run.py` 40 OK. No restart: `run_job.py` reads `benchmark.py` from disk.
+  With the owner answer of 19:38:55, `work/fixed512-rot5/compare.py` pairs the rot5 trial
+  and its baseline by `image_path` over the photos of both runs, and
+  `finalize_report.py` states both query counts. A new run of `my` has 2,231 queries:
+  the negative photo of the disabled wine `esse-demi-sec-…-115` leaves the set.
+
 - Added `barcode-rerank-siglip2-512-rot5-seg` and the fixed-512 reference index
   `gx10-siglip2-so400m-patch16-512-rot5`. The index uses 72 angles at 5-degree steps
   for full references and one vector for each label reference. The query steps,

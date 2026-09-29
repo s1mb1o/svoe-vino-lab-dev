@@ -230,6 +230,51 @@ class BenchmarkTest(unittest.TestCase):
         self.assertEqual(sum(r["slug"] == "wine-a" for r in rows), 2)
         self.assertNotIn("removed wine", skipped)
 
+    def test_the_photos_of_a_wine_outside_the_dataset_leave_the_run(self):
+        # Plan 87 (owner answer of 2026-09-29T19:25:36+0300): each wine of the jury test
+        # set is in the dataset. A disabled wine and a place that wine_catalog does not
+        # hold are outside it, whatever the label. An Active manual wine is in it, as any
+        # other Active wine (owner message of 2026-09-29T19:42:59+0300).
+        conn = sqlite3.connect(self.db)
+        conn.execute("INSERT INTO wine_catalog (wine_slug, name, producer, category, color, "
+                     "region, description, csv_photo_name) VALUES ('__hand-made', 'n', 'p', "
+                     "'c', 'co', 'r', 'd', 'x.webp')")
+        conn.commit()
+        set_dir = FX.write_set(
+            self.root, {"wine-a/01.jpg": b"oa1", "wine-c/01.jpg": b"oc1",
+                        "wine-c/02.jpg": b"oc2", "__hand-made/01.jpg": b"oh1",
+                        "wine-z/01.jpg": b"oz1"},
+            {"wine-a": {"01.jpg": {"label": "positive"}},
+             "wine-c": {"01.jpg": {"label": "positive"}, "02.jpg": {"label": "negative"}},
+             "__hand-made": {"01.jpg": {"label": "positive"}},
+             "wine-z": {"01.jpg": {"label": "positive"}}}, name="out")
+        IT.import_testset(self.db, "out", set_dir, lambda m: None, self.schema)
+        conn.execute("UPDATE wine_catalog SET state = 'Disabled' WHERE wine_slug = 'wine-c'")
+        conn.commit()
+
+        def queries():
+            db = BM.open_database(self.db, self.schema)
+            try:
+                return BM.build_queries(db, self.db, "out")
+            finally:
+                db.close()
+
+        rows, skipped = queries()
+        self.assertEqual([(r["image_path"], r["truth"]) for r in rows],
+                         [("__hand-made/01.jpg", ["__hand-made"]),
+                          ("wine-a/01.jpg", ["wine-a"])])
+        self.assertEqual(dict(skipped), {"disabled wine": 2, "wine not in the catalogue": 1})
+        conn.execute("UPDATE wine_catalog SET state = 'Active' WHERE wine_slug = 'wine-c'")
+        conn.execute("UPDATE wine_catalog SET state = 'Disabled' "
+                     "WHERE wine_slug = '__hand-made'")
+        conn.commit()
+        conn.close()
+        rows, skipped = queries()
+        self.assertEqual([(r["image_path"], r["label"]) for r in rows],
+                         [("wine-a/01.jpg", "positive"), ("wine-c/01.jpg", "positive"),
+                          ("wine-c/02.jpg", "negative")])
+        self.assertEqual(dict(skipped), {"disabled wine": 1, "wine not in the catalogue": 1})
+
     def query_count(self, place):
         conn = sqlite3.connect(self.db)
         try:

@@ -219,10 +219,14 @@ embeddings:
   # `rotation_step` gives the view `full` of each full image one vector for each angle
   # 0°, step, … below 360° (counter-clockwise, white fill, the canvas grows, the 0° scale
   # of `resize`). The steps are the `full` steps of `*views_c_f`, so the 0° vector is the
-  # vector of `gx10-siglip2-so400m-patch16-naflex-p512`. The view `full` alone: the
-  # pipelines and the matcher rank `full`. `batch_size: 36`: owner message of about 08:19
-  # (gx10 has free capacity); build with `--workers 6`. At the end of the list, so that
-  # Build All builds them last. Read docs/plans/82_rotated-reference-embeddings.md.
+  # vector of `gx10-siglip2-so400m-patch16-naflex-p512`. The pipelines and the matcher
+  # rank `full`. `batch_size: 36`: owner message of about 08:19 (gx10 has free capacity);
+  # build with `--workers 6`. At the end of the list, so that Build All builds them last.
+  # Read docs/plans/82_rotated-reference-embeddings.md.
+  # The rot5 entry also has the view `label` of `*views_c_f` (owner answer of
+  # 2026-09-29T20:05:38+0300). Label vectors stay unrotated. The cluster rerank of
+  # `barcode-rerank-siglip2-p512-rot5-seg` needs both catalogue views. The rot10 entry
+  # has the view `full` alone.
   - name: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     backend: openai
     base_url: http://192.168.86.14:18081/v1
@@ -231,6 +235,16 @@ embeddings:
       max_num_patches: 512
     batch_size: 36
     rotation_step: 5
+    views: *views_c_f
+
+  - name: gx10-siglip2-so400m-patch16-naflex-p512-rot10
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-naflex
+    extra_body:
+      max_num_patches: 512
+    batch_size: 36
+    rotation_step: 10
     views: &views_full_rotated
       full:
         steps:
@@ -241,16 +255,6 @@ embeddings:
           - step: resize
             max_size: 1024
             aspect: keep
-
-  - name: gx10-siglip2-so400m-patch16-naflex-p512-rot10
-    backend: openai
-    base_url: http://192.168.86.14:18081/v1
-    model: siglip2-so400m-patch16-naflex
-    extra_body:
-      max_num_patches: 512
-    batch_size: 36
-    rotation_step: 10
-    views: *views_full_rotated
 
   # Fixed-512 rotation benchmark. Full reference images get 72 angles. Label vectors
   # stay unrotated so the cluster rerank keeps both catalogue views.
@@ -874,6 +878,17 @@ pipeline:
   - name: barcode-rerank-siglip2-p512-seg
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    workers: 4
+    barcode: *barcode-options
+    rerank: *rerank-options
+    views: *seg-views
+
+  # The NaFlex twin of `barcode-rerank-siglip2-512-rot5-seg` (owner message of
+  # 2026-09-29T19:57:26+0300): the options of `barcode-rerank-siglip2-p512-seg`, and
+  # the rot5 index with rotated `full` vectors and unrotated `label` vectors.
+  - name: barcode-rerank-siglip2-p512-rot5-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     workers: 4
     barcode: *barcode-options
     rerank: *rerank-options

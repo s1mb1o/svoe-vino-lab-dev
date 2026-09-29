@@ -58,6 +58,23 @@ useHead({ link: [{ rel: 'canonical', href: 'https://chtozavino.ru/presentation' 
           </div>
         </div>
       </section>
+      <nav class="presentation-resources" aria-label="Материалы проекта">
+        <a class="presentation-file" href="https://github.com/s1mb1o/svoe-vino-lab-dev" target="_blank" rel="noopener noreferrer">
+          <span class="file-format">КОД</span>
+          <span class="file-title">GitHub</span>
+          <span class="file-action">Открыть<AppIcon name="arrow-up-right" /></span>
+        </a>
+        <a class="presentation-file" href="https://drive.google.com/drive/folders/1YfZ9ghYz8yJpznCIEiqgKho64EB3vdHD" target="_blank" rel="noopener noreferrer">
+          <span class="file-format">ФАЙЛЫ</span>
+          <span class="file-title">Google Drive</span>
+          <span class="file-action">Открыть<AppIcon name="arrow-up-right" /></span>
+        </a>
+      </nav>
+      <NuxtLink to="/hackaton" class="presentation-file presentation-hackaton">
+        <span class="file-format">ПРОЕКТ</span>
+        <span class="file-title">Все приложения проекта</span>
+        <span class="file-action">Открыть<AppIcon name="arrow-up-right" /></span>
+      </NuxtLink>
     </div>
   </main>
 </template>
@@ -69,9 +86,10 @@ useHead({ link: [{ rel: 'canonical', href: 'https://chtozavino.ru/presentation' 
 .presentation-kicker { color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: .18em; }
 h1 { margin-top: 18px; font-size: clamp(32px, 5vw, 52px); line-height: 1.15; letter-spacing: -.035em; }
 .presentation-description { margin-top: 18px; color: var(--muted); font-size: 15px; line-height: 1.6; }
-.presentation-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 3vw, 24px); margin-top: 40px; }
+.presentation-links, .presentation-resources { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 3vw, 24px); margin-top: 40px; }
 .presentation-file { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: clamp(18px, 4vw, 32px); border: 1px solid var(--line); border-radius: 20px; text-align: left; transition: border-color .2s, background-color .2s; }
 .presentation-file:hover { border-color: var(--accent); background: #fcf8ee; }
+.presentation-hackaton { margin-top: clamp(12px, 3vw, 24px); }
 .file-format { padding: 7px 10px; border-radius: 8px; background: #f8f2e8; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .06em; }
 .file-title { margin-top: 26px; font-size: clamp(16px, 3vw, 23px); font-weight: 500; }
 .file-action { display: flex; align-items: center; gap: 8px; margin-top: 22px; color: var(--accent); font-size: 13px; }

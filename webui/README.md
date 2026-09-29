@@ -72,6 +72,8 @@ The video section below the file links uses `/presentation/video.mp4`.
 Until the recording is available, the section shows `Видео появится после записи`.
 Put the finished recording at `public/presentation/video.mp4`, then rebuild and deploy the Web UI.
 The MP4 stays outside Git. Use browser-compatible MP4 video with H.264 video and AAC audio.
+Below the video, matching cards link to the project GitHub repository and Google Drive folder.
+A full-width card below those links opens `/hackaton`.
 Open [the ideas landing page](http://127.0.0.1:8153/ideas).
 The page lists three implemented features, four interactive demos, and six concept mockups.
 The demos reuse the result dialogs with three local example wine cards. They do not need a matcher.

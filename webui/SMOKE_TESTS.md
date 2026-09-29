@@ -1,5 +1,15 @@
 # Smoke tests
 
+## Hackathon publication verification, 2026-09-29
+
+Release `600fd2a` passed 169 tests, type checks, and the Linux production build.
+Staged and public browser checks passed at 320, 390, 768, and 1440 pixels in both themes.
+The age gate, both WebApp screenshots, platform anchors, Android download, Telegram link, and related page links passed.
+All screenshots loaded. The pages had no horizontal overflow or browser errors.
+The public APK GET response has the expected attachment name, MIME type, byte count, and SHA-256.
+The existing presentation page and both presentation file hashes remain valid.
+Public service health and upstream availability passed.
+
 ## Ideas beyond recognition
 
 - Open `/ideas` in a new profile. Confirm that the age gate blocks interaction.
@@ -27,6 +37,9 @@ The check saves local review screenshots in the ignored `reports/presentation/` 
 - Open `/presentation` in a new profile. Confirm that the age gate blocks interaction.
 - Accept the age gate and confirm one heading and two file links.
 - Confirm that `Видео о проекте` appears below the file links.
+- Confirm that GitHub and Google Drive cards appear side by side below the video and use the same styles as the presentation cards.
+- Confirm that the resource cards use the exact owner-supplied URLs and open in new tabs.
+- Confirm that the `Все приложения проекта` card fills the content width below the resource cards and links to `/hackaton` in the same tab.
 - Without `/presentation/video.mp4`, confirm the placeholder `Видео появится после записи` and no broken player controls.
 - With a valid recording, confirm native playback controls, inline phone playback, and no autoplay.
 - Check that PowerPoint and PDF stay side by side at 320, 390, 768, and 1440 pixel widths without horizontal overflow.

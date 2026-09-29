@@ -122,6 +122,7 @@ class PipelineWorkersTest(unittest.TestCase):
                 "barcode-rerank-siglip2-512-seg",
                 "barcode-rerank-siglip2-512-rot5-seg",
                 "barcode-rerank-siglip2-p512-seg",
+                "barcode-rerank-siglip2-p512-rot5-seg",
                 "barcode-rerank-siglip2-p1024-seg"}
         for name in (*sorted(four), "rerank-siglip2-512-crop",
                      "barcode-siglip2-512-crop", "siglip2-512-crop"):

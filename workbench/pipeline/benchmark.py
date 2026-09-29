@@ -22,6 +22,11 @@ The query set follows `build_queries` of `match_run.py` with its defaults
   (plan 51); `match_run.py` still reads `excluded-slugs.json`.
 - A photo of `__drawer__` (the Drawer, the sidebar of `/testset`) waits for a wine and
   stays out.
+- A photo of a wine outside the dataset stays out, whatever its label: a `Removed` wine
+  (plan 24), a `Disabled` wine, or a place that `wine_catalog` does not hold. The task
+  states that each wine of the jury test set is in the dataset (plan 87, owner answer of
+  2026-09-29T19:25:36+0300). An `Active` manual wine (plan 20) is in the dataset, as any
+  other `Active` wine (owner message of 2026-09-29T19:42:59+0300).
 - The rows are in the order of `<place>/<file name>`, and the query ids follow it.
 """
 import argparse
@@ -56,18 +61,38 @@ class BenchmarkError(Exception):
     """The set or the backend does not allow the run."""
 
 
+def wine_states(conn):
+    """Return wine slug -> state of `wine_catalog`."""
+    return dict(conn.execute("SELECT wine_slug, state FROM wine_catalog"))
+
+
+def outside_dataset(place, states):
+    """Return the reason why the wine of `place` is outside the dataset, or None.
+
+    The task states that each wine of the jury test set is in the dataset, so a run
+    leaves out each photo of a wine outside it (plan 87). The dataset is the `Active`
+    wines of `wine_catalog`; an `Active` manual wine is one of them. The photos stay in
+    the set: an `enable` or a `restore` gives them back to the next run. `place` is a
+    wine slug, not `__null__` and not `__drawer__`."""
+    state = states.get(place)
+    if state == "Removed":
+        return "removed wine"          # plan 24, owner answer of 2026-09-25T17:13:17+0300
+    if state == "Disabled":
+        return "disabled wine"
+    if state is None:
+        return "wine not in the catalogue"
+    return None
+
+
 def build_queries(conn, db_path, set_name):
     """Return (rows, left out counts) of the set, as `build_queries` of match_run.py.
 
-    Three rules differ from match_run.py: the photos of a `Removed` wine are left out
-    (plan 24), the photos of the Drawer are left out (plan 36), and no slug is excluded
-    (plan 51)."""
+    Three rules differ from match_run.py: the photos of a wine outside the dataset are
+    left out (plans 24 and 87), the photos of the Drawer are left out (plan 36), and no
+    slug is excluded (plan 51)."""
     if conn.execute("SELECT 1 FROM test_set WHERE set_name = ?", (set_name,)).fetchone() is None:
         raise BenchmarkError("the database holds no test set %r" % set_name)
-    # The photos of a Removed wine stay in the set and leave the run until a restore. The
-    # owner chose this on 2026-09-25T17:13:17+0300 (plan 24).
-    removed = {slug for (slug,) in conn.execute(
-        "SELECT wine_slug FROM wine_catalog WHERE state = 'Removed'")}
+    states = wine_states(conn)
     rows, skipped = [], collections.Counter()
     for place, name, digest, label, delete, folder, extension in conn.execute(
             "SELECT p.place, p.file_name, p.sha256, p.label, p.marked_delete, i.folder, "
@@ -91,8 +116,9 @@ def build_queries(conn, db_path, set_name):
             else:
                 rows.append({**row, "label": NO_MATCH, "truth": []})
             continue
-        if place in removed:
-            skipped["removed wine"] += 1
+        reason = outside_dataset(place, states)
+        if reason:
+            skipped[reason] += 1
         elif label not in LABELS_IN_SET:
             skipped["no label" if not label else label] += 1
         elif delete:

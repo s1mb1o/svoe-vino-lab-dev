@@ -283,6 +283,24 @@ pros and cons of each?
 git commit all
 ```
 
+## 2026-09-29T19:07:37+0300
+
+```text
+please, prepare release build and install it on my pixel 8, check if works
+```
+
+## 2026-09-29T19:02:26+0300
+
+```text
+repeat check for dataset
+```
+
+## 2026-09-29T18:58:27+0300
+
+```text
+let's discuss this first. Is my assumption acceptable?
+```
+
 ## 2026-09-29T18:52:21+0300
 
 ```text
@@ -9475,6 +9493,29 @@ checked).
 git commit all
 ```
 
+## 2026-09-29T19:04:22+0300
+
+```text
+check how we calculate metrics, especially F1@1 and F1@5. How it affected by images that have no match in dataset. By task definition all testset data should be in dataset, so if there is wine in testset that has no match in dataset, then we should ignore it
+```
+
+## 2026-09-29T19:10:09+0300
+
+```text
+what happens if we "Disable" wines that added manually? Will their assigned testset images will be exluded from metrics calclulations as they were market "not suitable" or assigned to __null__?
+```
+
+## 2026-09-29T19:16:27+0300
+
+````text
+how do you think, may be this:
+
+- (Removed | Disabled) AND positive => same as __null__ AND (Positibe | Non-Marked)
+?
+
+make me matrix of decisions
+````
+
 ## 2026-09-29T19:11:00+0300
 
 Message of the owner with a screenshot of the job line on `/testset`:
@@ -9508,6 +9549,24 @@ The time is estimated.
 if there is running embeddings and runs, then show both on http://127.0.0.1:8168/embedding and http://127.0.0.1:8168/testset pages, to understand why my job is not started
 ```
 
+## 2026-09-29T19:22:30+0300
+
+```text
+i need to show better metrics, so let's choose those variant, that stills stays correct but gives me higher score
+```
+
+## 2026-09-29T19:25:36+0300
+
+The agent asked two questions. The owner selected these answers.
+
+```text
+Q: Rule chosen: leave out of F1 every test photo whose wine is not in the official catalogue (hand-added `__…`, Removed, or Disabled). `__null__` stays as it is. Re-scoring the saved test-1 runs raises F1@1 in 6 of 7 runs (best: 0.625→0.656, F1@5 0.833→0.906). May I edit `pipeline/benchmark.py` and `tests/test_benchmark.py`? Two old sessions (f4, b4) still list these files, but both are finished and the files have no uncommitted changes.
+A: Yes, edit them (Recommended)
+
+Q: How should the numbers of runs you already have be updated?
+A: Re-score saved runs (Recommended)
+```
+
 ## 2026-09-29T19:35:06+0300
 
 Answers of the owner to two questions of the agent.
@@ -9539,6 +9598,27 @@ Options: "Yes, implement (Recommended)", "Use a new state `waiting`", "No restar
 Yes, implement (Recommended)
 ```
 
+## 2026-09-29T19:38:55+0300
+
+The agent asked one question. The owner selected this answer.
+
+```text
+Q: The new rule clashes with task 7 of the Codex session `codex-preset-segment-check` (the rot5 trial; I can't message a Codex session). Its coordinator (PID 8409) is still waiting for the index build. When its `my` run starts, the job loads the new `benchmark.py`, so the run gets 2,231 queries. The one Disabled-wine negative is left out, and the query ids after it shift by one. Its `work/fixed512-rot5/compare.py` requires the exact `queries.jsonl` bytes of the 2,232-query baseline, so it stops with "The query manifests differ" and the trial ends as failed. The run itself and its metrics would still be valid. What should I do?
+A: Patch compare.py (Recommended)
+```
+
+## 2026-09-29T19:39:45+0300
+
+```text
+ok, where apk will be deployed?
+```
+
+## 2026-09-29T19:42:59+0300
+
+```text
+if manual added wine is active, treat it as any other active wine from catalog
+```
+
 ## 2026-09-29T19:50:00+0300
 
 Answers of the owner to two questions of the agent.
@@ -9562,8 +9642,48 @@ Options: "Leave it", "Restart with 6 workers".
 Restart with 6 workers
 ```
 
+## 2026-09-29T19:50:22+0300
+
+```text
+deploy [https://vino-svoe.ru/downloads/chtozavino-0.1.4-release.apk](https://vino-svoe.ru/downloads/chtozavino-0.1.4-release.apk)
+```
+
 ## 2026-09-29T19:54:40+0300
 
 ```text
 git commit
+```
+
+## 2026-09-29T19:57:26+0300
+
+```text
+create 
+barcode-rerank-siglip2-p512-rot5-seg with naflex
+```
+
+## 2026-09-29T19:57:44+0300
+
+```text
+add android releases to github releases
+```
+
+## 2026-09-29T20:05:38+0300
+
+Answers of the owner to two questions of the agent.
+
+Question 1: The rerank reads clusters.json and cluster-rules.json from the directory of
+its embedding. The NaFlex rot5 index (gx10-siglip2-so400m-patch16-naflex-p512-rot5) has
+only the rotated full view: no label vectors, no clusters, no rules. How should the new
+pipeline get them?
+Options: "Add label view (Recommended)", "Full-only clusters", "Copy p512 files".
+
+```text
+Add label view (Recommended)
+```
+
+Question 2: After I add the pipeline, should I run it on the test set my?
+Options: "Config only", "Run on my after build".
+
+```text
+Run on my after build
 ```

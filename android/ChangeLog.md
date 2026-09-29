@@ -2,6 +2,16 @@
 
 ## 2026-09-29
 
+### GitHub Android pre-release
+
+- Created the private GitHub pre-release `android-v0.1.4`.
+- Attached the optimized test-signed release APK and the debug APK.
+- Attached a SHA-256 checksum file for both APK files.
+- Marked the release as a pre-release because both APK files use the Android debug
+  certificate.
+- Verified the uploaded asset states, byte sizes, and GitHub SHA-256 digests.
+- Kept the unsigned APK out of the installable release assets.
+
 ### Debug device evaluation API
 
 - Added a labelled collage of the 10 Pixel 8 smoke-test photographs.

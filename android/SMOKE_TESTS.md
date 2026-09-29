@@ -12,6 +12,19 @@
 
 ## Verification on 2026-09-29
 
+- GitHub release `android-v0.1.4` exists and is not a draft.
+- The GitHub release is marked as a pre-release.
+- The release tag resolves to the source commit that contains the Android 0.1.4 code.
+- GitHub reports `chtozavino-0.1.4-release-test-signed.apk` as uploaded with size
+  441,392,911 bytes.
+- Its GitHub SHA-256 digest matches
+  `1a846cf82f06fc24f495bb6008b6bc775ef4aae25df175b5c93a6a7a46f1dfd0`.
+- GitHub reports `chtozavino-0.1.4-debug.apk` as uploaded with size 576,503,447 bytes.
+- Its GitHub SHA-256 digest matches
+  `fc4cf0f44b8fefcff5286b04746efb7fa44b9742ec6df282aa0cc959f6777ea2`.
+- `SHA256SUMS-android-v0.1.4.txt` is uploaded.
+- The unsigned release APK is not an installable release asset.
+
 - All 21 debug unit tests passed after the server-switch change.
 - `lintDebug`, `compileReleaseKotlin`, and `assembleDebug` passed.
 - Release dependency inspection found no NanoHTTPD dependency.

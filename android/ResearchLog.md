@@ -2,6 +2,24 @@
 
 ## 2026-09-29
 
+- GitHub repository `s1mb1o/svoe-vino-lab-dev` is private.
+- The Android GitHub release URL is
+  `https://github.com/s1mb1o/svoe-vino-lab-dev/releases/tag/android-v0.1.4`.
+- The release is a pre-release.
+- `chtozavino-0.1.4-release-test-signed.apk` is 441,392,911 bytes.
+- Its SHA-256 is
+  `1a846cf82f06fc24f495bb6008b6bc775ef4aae25df175b5c93a6a7a46f1dfd0`.
+- `chtozavino-0.1.4-debug.apk` is 576,503,447 bytes.
+- Its SHA-256 is
+  `fc4cf0f44b8fefcff5286b04746efb7fa44b9742ec6df282aa0cc959f6777ea2`.
+- GitHub reported both APK assets as `uploaded`.
+- GitHub reported the same SHA-256 values as the local files.
+- Both APK files use the Android debug certificate.
+- The test-signed release APK has no debug HTTP server.
+- The debug APK has the bulk-test server, which is off by default.
+- A future APK that uses a permanent production certificate can require removal of
+  this test version before installation.
+
 - The 10-query Pixel 8 smoke run contains 10 photographs of only four wine SKUs.
 - The run uses the first 10 positive rows of the sorted `my` test set.
 - It is not a balanced or representative sample.

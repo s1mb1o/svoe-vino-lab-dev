@@ -595,3 +595,28 @@ They do not call a model service:
 ```bash
 ~/.venvs/svoe-vino-lab/bin/python -m unittest tests.test_segmentation_model_matrix
 ```
+
+# Benchmark dataset rule (plan 87)
+
+A run leaves out the photos of a wine outside the dataset: a `Removed` or a `Disabled`
+wine, or a place that `wine_catalog` does not hold. An `Active` manual wine stays.
+
+Read-only. Print the change for the saved lab runs:
+
+```bash
+python3 scripts/rescore_runs.py --dry-run
+```
+
+Changes data. Write `metrics.json` and `summary.md` of the saved lab runs again. The
+first write keeps the old files as `*.before-dataset-rule.*`. Run it again after a wine
+changes its state:
+
+```bash
+python3 scripts/rescore_runs.py
+```
+
+Run the tests of the rule:
+
+```bash
+python3 -m unittest discover -s tests -p 'test_benchmark.py'
+```

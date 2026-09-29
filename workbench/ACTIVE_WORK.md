@@ -3154,8 +3154,9 @@ The form of a section:
 - Task 33: inspect every unusable photo in test set `official-real-photos` with origin
   `manual`, and verify whether the catalogue really has no matching wine.
 - Source: owner message recorded at 2026-09-29T17:18:42+0300.
-- Files for task 33: this root section and `docs/owner-messages.md` (append). The
-  catalogue, test-set data, and application stay read-only.
+- Files for task 33: this root section, `docs/owner-messages.md` (append), and
+  `data/catalog/catalog.sqlite3` for the approved test-photo move. The catalogue wine
+  rows and application stay read-only.
 - State for task 33: done, not committed. All 15 unusable photos were inspected.
   Two photos have a clear catalogue target, and one ambiguous two-wine photo contains
   one catalogue target. Twelve photos have no exact local card and image match. The
@@ -3174,7 +3175,18 @@ The form of a section:
   producer describes Winery Series as a separate limited experimental collection.
   Therefore the test photo must not move to the regular Red Blend slug; the exact
   Winery Series product is absent from the local catalogue.
-- Updated for task 33: 2026-09-29T18:54:11+0300
+- Owner-policy discussion for task 33: waiting. The owner asks whether a Winery Series
+  blend with no dedicated catalogue slug may use the sole Golubitskoe Estate Red Blend
+  slug. No move has been made; `variant` remains unused.
+- Repeat review for task 33: done, not committed. The Winery Series Red Blend photo is
+  already `positive` under the regular Red Blend slug (timestamp 19:00:34). Twelve
+  photos remain unusable. Eleven have no suitable catalogue family slug: two Aristov
+  Donum XXIV, Mogzauri Alazanskaya Dolina, AYA Purity in Balance, four Alveus Orange
+  Brut, one multi-product Fanagoria photo, Inkerman Cabernet, and Litavshchuk Cabernet
+  Sauvignon. One two-product Inkerman photo contains the catalogued Shato Ruzh but is
+  ambiguous because Busso is equally prominent. No test-set data changed in this
+  repeat review; `variant` was not used.
+- Updated for task 33: 2026-09-29T19:08:23+0300
 - Task 34: diagnose why the 10-query Pixel 8 Android smoke run reached only 30 percent
   recall@1.
 - Source: owner message recorded at 2026-09-29T17:24:16+0300.
@@ -3191,6 +3203,53 @@ The form of a section:
   desktop benchmark reached 43.05 percent recall@1 across 1,647 positive queries. A
   labelled 2,560 by 1,710 pixel collage records all 10 queries and their Android result.
 - Updated for task 34: 2026-09-29T17:29:49+0300
+
+- Task 35: build the current optimized Android release variant. Sign a separate test
+  copy with the local Android debug key. Install that copy on the Pixel 8. Verify the
+  release application, the embedded catalogue, the release settings, and one complete
+  image-recognition flow.
+- Source: owner message recorded at 2026-09-29T19:07:37+0300.
+- Files for task 35: this root section, `docs/owner-messages.md` (append), and my own
+  Android entries in `../android/ChangeLog.md`, `../android/ResearchLog.md`, and
+  `../android/SMOKE_TESTS.md`. Generated APK files stay outside Git.
+- State for task 35: waiting for the owner to reconnect the Pixel 8 over USB. The
+  release tests, lint, R8, resource shrinking, assembly, APK signing, signature check,
+  and ZIP alignment check passed. The non-incremental install succeeded. The release
+  application started. The first-run consent, main page, built-in catalogue with 2,093
+  images and wines, and automatic GPU/GPU selection passed. The device disconnected
+  during the settings check. A complete release recognition still needs verification.
+- Updated for task 35: 2026-09-29T19:16:30+0300
+
+- Task 36: deploy the production Android APK at
+  `https://vino-svoe.ru/downloads/chtozavino-0.1.4-release.apk`. Use a permanent release
+  signature. Update the Web UI release contract and deployment configuration. Verify
+  the public download body, headers, size, and SHA-256.
+- Source: owner message recorded at 2026-09-29T19:50:22+0300.
+- Files for task 36: this root section, `docs/owner-messages.md` (append), required
+  files under `../webui/`, my own Android release documentation entries, and the
+  applicable website deployment record under `/Users/ashmelev/Admin/infra/` or
+  `<workspace>/deploy/`. Generated APK files stay outside Git.
+- State for task 36: waiting for the owner. The requested host is the separate official
+  `Свое Вино от РСХБ` Nuxt site behind QRATOR at `178.248.236.248`. The requested path
+  returns HTTP 404. The workspace and the infrastructure repository contain no
+  deployment record or credential for this host. The controlled Android landing page
+  is on `chtozavino.ru`. The Android project also has no permanent release key. Only
+  the local Android debug key exists. No public file or service changed.
+- Updated for task 36: 2026-09-29T19:53:41+0300
+
+- Task 37: publish the Android 0.1.4 artifacts through GitHub Releases in
+  `s1mb1o/svoe-vino-lab-dev`. Reuse an existing suitable release when present. Do not
+  publish an unsigned APK as an installable release. Verify every uploaded asset with
+  the GitHub API.
+- Source: owner message recorded at 2026-09-29T19:57:44+0300.
+- Files for task 37: this root section, `docs/owner-messages.md` (append), and my own
+  Android release documentation entries. GitHub release metadata and assets are
+  external writes. Generated APK files stay outside Git.
+- State for task 37: done, not committed. Created private pre-release
+  `android-v0.1.4` at source commit `9bea7d8`. Uploaded the optimized test-signed APK,
+  the debug APK, and their SHA-256 file. GitHub reports all three assets as uploaded.
+  Both GitHub APK digests match the local files. The unsigned APK is not published.
+- Updated for task 37: 2026-09-29T20:03:35+0300
 
 ## drink-atlas-workspace-b6 [088a3a]
 
@@ -3380,6 +3439,28 @@ The form of a section:
   restart of 8168. Headless Chromium on 8168: 3 wines added by hand, no page errors.
   Docs: `ChangeLog.md`, `SMOKE_TESTS.md` TP24, TP36, TP42-TP43.
 - Updated for task 2: 2026-09-29T12:53:55+0300
+- Task 3: read-only check of the F1@1 and F1@5 calculation for test photos with no match
+  in the dataset, and of the effect of `Disable` on the photos of a manual wine.
+- Source for task 3: owner messages of 2026-09-29T19:04:22+0300, 19:10:09+0300,
+  19:16:27+0300, and 19:22:30+0300.
+- Files for task 3: `docs/owner-messages.md` (append), `pipeline/benchmark.py`
+  (`build_queries` and the module docstring), `tests/test_benchmark.py` (new tests),
+  `docs/plans/87_benchmark-dataset-rule.md` (new), `scripts/rescore_runs.py` (new),
+  the files `metrics.json` and `summary.md` of the saved lab runs in `runs/` (the old
+  files are kept as `*.before-dataset-rule.*`), and my own entries in `ChangeLog.md`,
+  `ResearchLog.md`, and `COMMANDS.md` (a new last section). With the owner answer of
+  2026-09-29T19:38:55+0300: `work/fixed512-rot5/compare.py` (pair by `image_path`) and
+  the count text of `work/fixed512-rot5/finalize_report.py` (files of task 7 of
+  `codex-preset-segment-check`; a Codex session gets no message).
+- State for task 3: done, not committed. Waiting: the owner decides the commit. 165 saved
+  runs re-scored (0 mismatches). The rot5 trial scripts pair by `image_path`; a scratch
+  test paired 2,231 photos. The owner allowed the edits of `benchmark.py` and
+  `test_benchmark.py` (listed by the stale sections f4 and b4) and the re-score at
+  2026-09-29T19:25:36+0300, and the patch of the trial scripts at 19:38:55.
+- Task 3b: a manual wine in the state `Active` counts as any other `Active` wine
+  (owner message of 2026-09-29T19:42:59+0300). Same files as task 3. State: done, not
+  committed. 158 runs re-scored; the 7 runs of `test-1` got their old files back.
+- Updated for task 3: 2026-09-29T19:47:37+0300
 
 ## drink-atlas-workspace-d7 [685702]
 
@@ -3540,3 +3621,26 @@ The form of a section:
   The detached frame supervisor has PID 80131. The saved queue remains `running`,
   with 40,180 of 40,180 tasks complete and no current worker task.
 - Follow-up updated: 2026-09-29T18:21:12+0300
+
+## drink-atlas-workspace-ad [139787]
+
+- Task: add the pipeline `barcode-rerank-siglip2-p512-rot5-seg` (NaFlex p512, rot5 index),
+  add an unrotated `label` view to `gx10-siglip2-so400m-patch16-naflex-p512-rot5`, build
+  its label vectors, clusters, and label rules, and run the pipeline on `my` after the
+  fixed-512 rot5 build of `codex-preset-segment-check` ends.
+- Source: owner message recorded at 2026-09-29T19:57:26+0300; owner answers recorded at
+  2026-09-29T20:05:38+0300 ("Add label view", "Run on my after build").
+- Files: `docs/owner-messages.md` (append), this section, `config.yaml` (separate hunks:
+  the views of the entry `gx10-siglip2-so400m-patch16-naflex-p512-rot5`, the anchor
+  `views_full_rotated` moves to the rot10 entry, one new pipeline after
+  `barcode-rerank-siglip2-p512-seg`), `tests/test_pipeline_workers.py` (one name in the
+  four-worker set), my own hunks in `README.md`, `COMMANDS.md`, `SMOKE_TESTS.md`,
+  `ChangeLog.md`, runtime output in
+  `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512-rot5/`, a new run
+  directory in `runs/`, `work/p512-rot5-rerank/**` (new), one row in
+  `/Users/ashmelev/Admin/GPU_TASKS.md`.
+- Agreements: the rot5 entry is a plan 82 entry (b6). The owner chose this change at
+  20:05:38 with that fact in the question; that answer is the permission. I do not change
+  the fixed-512 entries or files of `codex-preset-segment-check`.
+- State: active.
+- Updated: 2026-09-29T20:07:31+0300
