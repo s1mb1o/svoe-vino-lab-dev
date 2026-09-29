@@ -248,6 +248,30 @@ class GroupSegmentationTest(unittest.TestCase):
         self.assertEqual(len(result.bottles), 0)
         self.assertTrue(result.truncated)
 
+    def test_the_limits_keep_the_best_segmentation_scores(self):
+        # Two shelf rows. The upper bottle has the lower score.
+        width = height = 100
+        instances = [
+            {"label": "wine bottle", "score": 0.7, "box": [5, 5, 30, 45],
+             "mask_png_b64": mask(width, height, (5, 5, 30, 45))},
+            {"label": "wine label", "score": 0.9, "box": [8, 15, 27, 35],
+             "mask_png_b64": mask(width, height, (8, 15, 27, 35))},
+            {"label": "wine bottle", "score": 0.95, "box": [50, 40, 75, 80],
+             "mask_png_b64": mask(width, height, (50, 40, 75, 80))},
+            {"label": "wine label", "score": 0.9, "box": [53, 50, 72, 70],
+             "mask_png_b64": mask(width, height, (53, 50, 72, 70))},
+        ]
+        answer = {"width": width, "height": height,
+                  "count": len(instances), "instances": instances}
+        photo = image_bytes(Image.new("RGB", (width, height), "red"))
+        result = segment_group(photo, "http://sam3.test", opener=self.opener(answer))
+        self.assertEqual([bottle.segmentation_score for bottle in result.bottles],
+                         [0.7, 0.95])
+        with mock.patch("matcher.group.MAX_BOTTLES", 1):
+            result = segment_group(photo, "http://sam3.test", opener=self.opener(answer))
+        self.assertTrue(result.truncated)
+        self.assertEqual([bottle.segmentation_score for bottle in result.bottles], [0.95])
+
 
 class FakeSam3:
     """A local SAM3-compatible endpoint for the API integration test."""
@@ -282,13 +306,13 @@ class FakeSam3:
 
 
 class GroupEndpointTest(unittest.TestCase):
-    def start(self, sam3_endpoint, token=True):
+    def start(self, sam3_endpoint, token=True, pipeline=None, rows=test_siglip2.ROWS):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         root = Path(directory.name)
-        write_bundle_v2(root / "bundle")
-        pipeline = {"name": "group-mock", "backend": "mock", "answers": {},
-                    "bundle": str(root / "bundle")}
+        write_bundle_v2(root / "bundle", rows)
+        pipeline = dict(pipeline or {"name": "group-mock", "backend": "mock", "answers": {}},
+                        bundle=str(root / "bundle"))
         config = write_config(root / "config.yaml", pipeline, token)
         environment = os.environ.copy()
         environment["SVOE_VINO_MATCHER_CONFIG"] = str(config)
@@ -388,6 +412,20 @@ class GroupEndpointTest(unittest.TestCase):
         records = [json.loads(path.read_text(encoding="utf-8"))
                    for path in (root / "requests").rglob("request.json")]
         self.assertEqual(records[0]["response"]["status_code"], 503)
+
+    def test_group_endpoint_needs_the_label_view(self):
+        sam3 = FakeSam3()
+        self.addCleanup(sam3.close)
+        # The endpoint answers before SigLIP2 and SAM3, so the SigLIP2 URL gets no request.
+        rows = tuple(row for row in test_siglip2.ROWS if row[0] != "label")
+        port, root = self.start(sam3.url, pipeline={
+            "name": "group-full-only", "backend": "siglip2",
+            "endpoint": "http://127.0.0.1:9"}, rows=rows)
+        status, answer = self.post(port)
+        self.assertEqual(status, 503, answer)
+        self.assertIn("view label", answer["detail"])
+        self.assertEqual(sam3.requests, [])
+        self.assertEqual(list((root / "requests").rglob("request.json")), [])
 
 
 if __name__ == "__main__":

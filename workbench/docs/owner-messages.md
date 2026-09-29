@@ -9701,3 +9701,73 @@ Options: "Run with 205 rules (Recommended)", "Wait for QwenCloud", "Reuse p512 r
 ```text
 Run with 205 rules (Recommended)
 ```
+
+## 2026-09-29T20:47:22+0300
+
+```text
+check whole @svoe-vino-lab/matcher  for issues
+```
+
+Answers of the owner to three questions of the agent.
+
+Question 1: How should I review svoe-vino-lab/matcher?
+Options: "One full pass (Recommended)", "Parallel subagents", "Tools first".
+
+```text
+One full pass (Recommended)
+```
+
+Question 2: Which kinds of issues matter to you?
+Options (multi-select): "Correctness bugs", "Security / robustness", "Docs/spec drift",
+"Tests & deploy".
+
+```text
+Correctness bugs, Security / robustness, Docs/spec drift, Tests & deploy
+```
+
+Question 3: What should I do with the findings?
+Options: "Report only (Recommended)", "Report + KNOWN_ISSUES", "Report + fix".
+
+```text
+Report only (Recommended)
+```
+
+## 2026-09-29T20:59:59+0300
+
+```text
+fix issues
+```
+
+## 2026-09-29T21:07:52+0300
+
+Answers of the owner to four questions of the agent.
+
+Question 1: Which issues should I fix?
+Options: "Findings 1–6 (Recommended)", "1–6 + earlier item 7", "1–6 + items 3, 7, 8".
+
+```text
+1–6 + earlier item 7
+```
+
+Question 2: Finding 2: what should happen when the group index has no view `label`?
+Options: "HTTP 503 per request (Recommended)", "Refuse the start".
+
+```text
+HTTP 503 per request (Recommended)
+```
+
+Question 3: Stale sections (codex-side-matcher-api with matcher/**, root, b6, 66,
+codex-deployment-advice) list these files as "done, not committed", but git shows the
+matcher tree clean. May I edit them?
+Options: "Yes, focused hunks (Recommended)", "Ask b6 first".
+
+```text
+Yes, focused hunks (Recommended)
+```
+
+Question 4: What should I do when the fixes and tests are done?
+Options: "Leave uncommitted (Recommended)", "Commit my hunks".
+
+```text
+Commit my hunks
+```

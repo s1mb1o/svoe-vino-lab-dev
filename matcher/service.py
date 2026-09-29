@@ -103,6 +103,11 @@ class MockMatcher(_MatcherSettings):
     # slug -> wine card of the optional bundle, or None without a version 2 bundle.
     cards: dict | None = None
 
+    @property
+    def can_match_group(self) -> bool:
+        """The mock group ranking reads no bundle view."""
+        return True
+
     def predict(self, image: bytes) -> str:
         """Return the configured slug for one image body."""
         digest = hashlib.sha256(image).hexdigest()
@@ -151,6 +156,11 @@ class Siglip2Matcher(_MatcherSettings):
     @property
     def cards(self) -> dict | None:
         return self.backend.bundle.cards
+
+    @property
+    def can_match_group(self) -> bool:
+        """Tell whether the bundle holds the view `label` that group matching ranks."""
+        return GROUP_LABEL_VIEW in self.backend.bundle.views
 
     def predict(self, image: bytes) -> str:
         """Return the Top-1 slug for one image body."""
@@ -264,6 +274,10 @@ class CascadeMatcher(_MatcherSettings):
     @property
     def cards(self) -> dict:
         return {**(self.group.cards or {}), **self.cascade.cards}
+
+    @property
+    def can_match_group(self) -> bool:
+        return self.group.can_match_group
 
     async def startup(self) -> None:
         await self.cascade.start()

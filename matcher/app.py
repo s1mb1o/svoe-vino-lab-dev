@@ -496,7 +496,8 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             415: {"description": "The uploaded image format is not supported."},
             502: {"description": "SigLIP2 or SAM3 failed or returned invalid data."},
             503: {"description": "The request queue is full, SAM3 is not configured, "
-                                 "or the selected pipeline has no wine cards."},
+                                 "or the selected pipeline has no wine cards or no "
+                                 "vectors of the view `label`."},
             504: {"description": "A SigLIP2 or SAM3 request exceeded its time limit."},
         },
     )
@@ -516,6 +517,12 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         if cards is None:
             detail = ("the selected pipeline has no wine cards; it needs a bundle of "
                       "format version 2 or a catalog")
+            _log_rejection(uuid.uuid4().hex, request.client.host if request.client else None,
+                           503, detail, perf_counter())
+            raise HTTPException(status_code=503, detail=detail)
+        if not matcher.can_match_group:
+            detail = ("the selected pipeline has no vectors of the view label; group "
+                      "matching ranks the label crops in that view")
             _log_rejection(uuid.uuid4().hex, request.client.host if request.client else None,
                            503, detail, perf_counter())
             raise HTTPException(status_code=503, detail=detail)

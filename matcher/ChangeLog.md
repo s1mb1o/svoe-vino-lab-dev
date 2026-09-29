@@ -2,6 +2,33 @@
 
 ## 2026-09-29
 
+- Fixed the findings of the second matcher review of 2026-09-29 (owner message of
+  2026-09-29T20:59:59+0300 and answers of 21:07:52):
+  - `test_the_default_config_selects_the_siglip2_pipeline` checks only the selected entry
+    of `config.yaml`. Since `f199e4d` the file also holds `cascade-p512-rot5`, and the
+    test failed: 207 of 208 tests passed at `84035f9`.
+  - `POST /v1/group/match` answers HTTP 503 before the SAM3 request when the selected
+    pipeline has no vectors of the view `label` (a `siglip2` bundle, or the
+    `group_embedding` of a `cascade` pipeline). Before, it answered HTTP 200 with
+    `match: null` for each bottle. Each matcher has the new property `can_match_group`.
+    The OpenAPI text of the HTTP 503 of the endpoint names the view.
+  - With `packages_first: true`, the whole-photo ranking stays until the package is final.
+    Before, the provisional crop cancelled it. A full SAM3 answer with no package then
+    gave `{"slug": ""}` with no error. `config.yaml` has `packages_first: false`, so prod
+    had no effect.
+  - The bottle limit and the media limit of `POST /v1/group/match` keep the bottles with
+    the highest `segmentation_score`. Before, the row filter gave row order, so a limit
+    could drop a better bottle of a lower row. The response order does not change.
+  - A card field of a wrong type in `wines.jsonl` stops the load with `BundleError`
+    (item 7 of `docs/reports/2026-09-29_code-review.md`). Before, `WineCard` failed with
+    HTTP 500 in each answer that held the wine. The local bundle
+    `gx10-siglip2-so400m-patch16-naflex-p512` passes (2,094 cards).
+  - Ruff passes: two unused imports went out of `audit.py` and `cascade_run.py`, one out
+    of `tests/test_cascade.py`, and `labels.py` uses a function instead of a lambda.
+  - `<workspace>/deploy/gx10/matcher-prod.md` names the image health check `GET /readyz`,
+    as the Dockerfile does since `babef66`.
+  - Five new tests. All 213 matcher tests pass, and
+    `workbench/tests/test_matcher_parity.py` passes (10 tests).
 - Measured the backend `cascade` on the gx10 dev matcher (revision `f199e4d`; workbench
   plan 85, step 7; owner answers of 16:34:14 and 17:29:58). `official-real-photos`: R@1
   90.0 % at the cut 2.9 s and at 2.8 s, all answers within 3 s; `packages_first: true`

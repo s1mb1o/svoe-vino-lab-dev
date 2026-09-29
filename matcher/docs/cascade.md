@@ -50,7 +50,7 @@ pipeline:
 | `matcher.fast_answer.timeout_seconds` | 9.5 | The hard limit. With no answer, the matcher answers `{"slug": ""}`. |
 | `catalog` | required | A catalogue copy of `workbench/scripts/copy_catalog.py`. |
 | `embedding` | required | The index of the single-image search. It gives the model and `extra_body`. |
-| `group_embedding` | `embedding` | The index of `POST /v1/group/match`. It MUST hold the view `label`. |
+| `group_embedding` | `embedding` | The index of `POST /v1/group/match`. It MUST hold the view `label`. Without it, `POST /v1/group/match` answers HTTP 503. |
 | `endpoint` | required | The SigLIP2 gateway root. The client adds `/v1/embeddings`. |
 | `whole_image` | `true` | SigLIP2 of the whole photo at the start. |
 | `barcode.endpoint` | required | The QR scanner root (`…/upstream/qr-scanner`). The client adds `/scan`. |

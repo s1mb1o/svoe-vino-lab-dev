@@ -61,7 +61,7 @@ matcher:
 ~~~
 
 `-W error::ResourceWarning` treats an unclosed resource warning as an error.
-The suite contains 208 tests.
+The suite contains 213 tests.
 
 ### API и official harness
 
@@ -158,6 +158,8 @@ calls in a forced order leave the process warnings filters unchanged. A JPEG hea
   идёт первым. Вино без вектора view `full` не участвует.
 - Bundle версии 1 не содержит карточек. Bundle версии 2 отдаёт карточки с `sugar`.
 - Изменённый `wines.jsonl` отклоняется.
+- Карточка с полем неверного типа (`producer`, `grapes`, `image_url` или элемент
+  `qr_urls`) отклоняется при загрузке bundle.
 - Правила `sugar` совпадают с правилами telegram-bot.
 - Mock ставит slug известного изображения первым со score 1.0 и дополняет список
   случайными винами. Для неизвестного изображения mock отдаёт до `k` случайных вин.
@@ -207,11 +209,14 @@ Unit tests используют fake opener. Интеграционные тес
 - Сервис обрезает прозрачную PNG-маску по box.
 - Сервис удаляет дубли с IoU не меньше 0.9.
 - Сервис сортирует бутылки по полке и слева направо.
-- Лимит бутылок и лимит размера ответа устанавливают `truncated=true`.
+- Лимит бутылок и лимит размера ответа устанавливают `truncated=true`. Лимит оставляет
+  бутылки с лучшим `segmentation_score`, ответ сохраняет порядок полок.
 - Пустой ответ SAM3 вызывает один повторный запрос.
 - Неверный endpoint и неверные данные SAM3 дают явную ошибку.
 - POST /v1/group/match возвращает preview, координаты, маски и карточки вин.
 - Bearer-авторизация защищает групповой endpoint.
+- Pipeline siglip2 без вида `label` даёт HTTP 503. SAM3 не получает запрос, архив
+  запроса не создаётся.
 - SigLIP2 обрабатывает несколько crop в одном embedding-запросе.
 - Статический OpenAPI совпадает с OpenAPI запущенного приложения.
 
@@ -252,11 +257,12 @@ client disconnect. The fake SigLIP2 gives the vector of the dominant colour of e
   package, label, and full-photo codes, a shared GTIN, a shared QR URL, the re-rank, the
   crop, the whole photo), the time budget (`answer_at`, the first answer after it, the
   hard limit), the cancellation of a slow SAM3 or VLM call (the fake sees the disconnect),
-  `packages_first`, a close-up, SAM3 and service failures, a damaged image, a large photo,
-  parallel requests, and readiness.
+  `packages_first` (the whole photo stays until the package is final), a close-up, SAM3
+  and service failures, a damaged image, a large photo, parallel requests, and readiness.
 - `test_cascade_api.py` checks the configuration rules and the API through uvicorn: the
   audit record, the timer of the request headers (a body in two parts with a pause),
-  `POST /v1/match`, codes, readiness, and a SigLIP2 failure.
+  `POST /v1/match`, codes, readiness, a SigLIP2 failure, and a group embedding without the
+  view `label`.
 - `test_codes.py`, `test_labels.py`, and `test_rerank.py` check the ports of the lab
   rules. `test_labels.py` compares the region box with the lab rule on the whole photo.
 - `workbench/tests/test_matcher_parity.py` compares the ports with the lab code. Run it
@@ -315,7 +321,7 @@ Workflow повторяет pull образа `python:3.11-slim` до трёх �
 из `matcher/requirements.lock` с обязательной проверкой SHA-256. Затем скрипт запускает
 все тесты, которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был
 запущен или был пропущен. В конце журнала должна быть строка
-`matcher tests: discovered=208 run=208 skipped=0`.
+`matcher tests: discovered=213 run=213 skipped=0`.
 
 ## GitLab CI
 
@@ -324,4 +330,4 @@ Job `matcher-tests` находится в корневом файле `.gitlab-c
 `matcher/requirements.txt`, запускает `pip check` и выполняет полный набор тестов.
 
 Pipeline должен завершить job `matcher-tests` со статусом passed. В логе должна быть
-строка `Ran 208 tests` и итог `OK`.
+строка `Ran 213 tests` и итог `OK`.

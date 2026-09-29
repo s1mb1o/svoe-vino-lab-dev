@@ -115,6 +115,23 @@ class RankedBundleTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "wines.jsonl does not match"):
             load_bundle(self.directory / "bundle")
 
+    def test_a_card_field_of_a_wrong_type_is_rejected(self):
+        root = self.directory / "bundle"
+        write_bundle_v2(root)
+        wines = [json.loads(line) for line in
+                 (root / "wines.jsonl").read_text(encoding="utf-8").splitlines()]
+        for key, value in (("producer", 5), ("grapes", ["Кокур"]), ("image_url", {}),
+                           ("qr_urls", ["https://example.com/a", 7])):
+            with self.subTest(key=key):
+                write_jsonl(root / "wines.jsonl",
+                            [dict(wine, **{key: value}) if wine["wine_slug"] == "wine-b"
+                             else wine for wine in wines])
+                manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+                manifest["files"]["wines.jsonl"] = file_record(root / "wines.jsonl")
+                (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "line 2 is not a valid wine card"):
+                    load_bundle(root)
+
     def test_the_sugar_rules_match_the_bot_rules(self):
         for slug, name, expected in (
                 ("abrau-extra-brut", "Абрау", "Экстра-брют"),

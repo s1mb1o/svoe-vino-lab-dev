@@ -18,7 +18,7 @@ task: the HTTP client closes the connection of each pending call.
 """
 
 import asyncio
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import functools
 import logging
 from time import perf_counter
@@ -406,7 +406,10 @@ class Run:
         if name == "sam3_packages":
             return not self.package_final
         if name == "whole":
-            return not (self.mode == "predict" and unique) and self.crop_ranking is None
+            # The provisional package of `packages_first` can fall away in the full SAM3
+            # answer. Keep the whole photo until the package is final.
+            return (not (self.mode == "predict" and unique)
+                    and (self.crop_ranking is None or not self.package_final))
         if name.startswith("crop:"):
             return not (self.mode == "predict" and unique)
         if name.startswith("vlm:"):

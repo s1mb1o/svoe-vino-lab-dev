@@ -63,6 +63,11 @@ def _centre_on(box, package, width, height):
             and package[1] - INSIDE * height <= cy <= package[3] + INSIDE * height)
 
 
+def _larger_first(item):
+    """The sort key of the rule: the larger mask first, then the higher score."""
+    return (-int(item.get("area") or 0), -float(item["score"]))
+
+
 def candidates(instances, package, width, height):
     """Return the labels of the rule, the largest first. `package` is the box of the
     selected package, or None for a close-up."""
@@ -75,9 +80,8 @@ def candidates(instances, package, width, height):
             continue
         if item.get("label") == LABEL_NOUN and item.get("mask_png_b64"):
             labels.append(item)
-    order = lambda item: (-int(item.get("area") or 0), -float(item["score"]))
     unique = []
-    for item in sorted(labels, key=order):
+    for item in sorted(labels, key=_larger_first):
         if all(_iou(_box(item), _box(kept)) <= DUPLICATE_IOU for kept in unique):
             unique.append(item)
     if package is None:

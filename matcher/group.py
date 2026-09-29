@@ -128,7 +128,10 @@ def segment_group(image_bytes: bytes, endpoint: str | None,
             label_crop=label_crop,
         ))
 
-    candidates = _filter_relative_scale(candidates)
+    # The row filter returns the bottles in row order. The limits below keep the best
+    # SAM3 scores, and the sort after them gives the shelf order.
+    candidates = sorted(_filter_relative_scale(candidates),
+                        key=lambda bottle: bottle.segmentation_score, reverse=True)
     bottles = []
     truncated = False
     for bottle in candidates:

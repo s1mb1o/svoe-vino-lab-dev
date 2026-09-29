@@ -93,6 +93,8 @@
 - Confirm that the request returns HTTP 401 before SAM3 receives a request.
 - Make SAM3 return invalid dimensions or a non-PNG mask.
 - Confirm that the matcher returns HTTP 502 and does not return fake bottles.
+- Select a SigLIP2 pipeline whose bundle has no view `label`. Confirm that
+  `POST /v1/group/match` returns HTTP 503 and that SAM3 gets no request.
 
 ## Backend cascade and the time budget
 

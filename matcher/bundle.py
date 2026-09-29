@@ -28,6 +28,9 @@ WINES = "wines.jsonl"
 # The card fields of a version 2 wine record, in the order of the `/v1/match` answer.
 CARD_FIELDS = ("name", "page_url", "producer", "category", "region", "color", "grapes",
                "image_url", "qr_urls")
+# The card fields that hold a string or null (the model `WineCard` of `app.py`). `name` and
+# `page_url` MUST be strings, and `qr_urls` MUST be a list of strings.
+OPTIONAL_CARD_FIELDS = ("producer", "category", "region", "color", "grapes", "image_url")
 # The sugar rules of telegram-bot/src/chto_za_vino_bot/catalog.py. The first match wins.
 SUGAR_RULES = (
     ("Экстра-брют", r"\b(?:extra|ekstra|экстра)\s+(?:brut|bryut|брют)\b"),
@@ -226,7 +229,10 @@ def _read_cards(root):
                 if (not isinstance(slug, str) or not slug
                         or not isinstance(wine["name"], str)
                         or not isinstance(wine["page_url"], str)
-                        or not isinstance(wine["qr_urls"], list)):
+                        or not all(wine[key] is None or isinstance(wine[key], str)
+                                   for key in OPTIONAL_CARD_FIELDS)
+                        or not isinstance(wine["qr_urls"], list)
+                        or not all(isinstance(url, str) for url in wine["qr_urls"])):
                     raise BundleError("%s line %d is not a valid wine card" % (WINES, number))
                 card = {key: wine[key] for key in CARD_FIELDS}
                 card["sugar"] = infer_sugar(slug, wine["name"])

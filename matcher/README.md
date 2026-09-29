@@ -139,8 +139,10 @@ By default, the backend does not segment single images. The optional
 
 Сервис загружает bundle при
 запуске. Он проверяет формат, версию, SHA-256 файлов `vectors.npy` и `candidates.jsonl`
-и форму матрицы. Для bundle версии 2 он также проверяет SHA-256 файла `wines.jsonl` и
-читает карточки вин. Ошибка SigLIP2 даёт HTTP 502. Таймаут SigLIP2 даёт HTTP 504.
+и форму матрицы. Для bundle версии 2 он также проверяет SHA-256 файла `wines.jsonl`,
+читает карточки вин и проверяет типы их полей: `name` и `page_url` — строки, `qr_urls` —
+список строк, остальные поля — строка или null. Ошибка SigLIP2 даёт HTTP 502. Таймаут
+SigLIP2 даёт HTTP 504.
 
 Для POST /v1/match backend ранжирует все вина по тому же косинусу. Первое место всегда
 совпадает с ответом POST /v1/eval/predict. Вино без карточки backend пропускает, и его
@@ -578,7 +580,8 @@ curl --form 'image=@shelf.jpg' \
 SAM3 получает `texts=wine bottle, wine label`, `threshold=0.4`,
 `mask_threshold=0.5` и `return_masks=true`. Сервис применяет EXIF-ориентацию и ограничивает изображение
 размером 1600 × 1600. Общий бюджет SAM3 равен 300 секундам. Сервис возвращает HTTP 502
-при ошибке SAM3, HTTP 503 без `SAM3_ENDPOINT` и HTTP 504 при таймауте.
+при ошибке SAM3, HTTP 503 без `SAM3_ENDPOINT` и HTTP 504 при таймауте. Pipeline `siglip2`
+или `cascade` без векторов вида `label` даёт HTTP 503 до запроса SAM3.
 
 Полный контракт и лимиты находятся в [docs/group-match.md](docs/group-match.md).
 

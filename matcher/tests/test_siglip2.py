@@ -360,13 +360,16 @@ class Siglip2Test(unittest.TestCase):
             "pipeline": "siglip2-p512-as-is",
             "output_dir": "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}",
         })
-        self.assertEqual(config["pipeline"], [{
+        # The file holds other entries too, for example `cascade-p512-rot5`. Only the
+        # selected entry is fixed here.
+        entries = {entry["name"]: entry for entry in config["pipeline"]}
+        self.assertEqual(entries["siglip2-p512-as-is"], {
             "name": "siglip2-p512-as-is",
             "backend": "siglip2",
             "bundle": "matcher/data/gx10-siglip2-so400m-patch16-naflex-p512",
             "endpoint": "{env:SIGLIP2_ENDPOINT}",
             "hand_selection": False,
-        }])
+        })
 
 
 def free_port():

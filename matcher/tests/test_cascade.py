@@ -16,9 +16,9 @@ from matcher.protection import ImageRejected
 from matcher.rerank import RuleBook
 from matcher.services import Services
 
-from cascade_fakes import (EAN_FULL, EAN_PACKAGE, EAN_SHARED, LABEL, OTHER_PACKAGE,
-                           PACKAGE, FakeServices, chat_body, dominant, make_bundle, photo,
-                           rules, scene)
+from cascade_fakes import (EAN_FULL, EAN_PACKAGE, EAN_SHARED, OTHER_PACKAGE, PACKAGE,
+                           FakeServices, chat_body, colour_vector, dominant, make_bundle,
+                           photo, rules, scene)
 
 
 def gtin(ean):
@@ -332,6 +332,30 @@ class CascadeRunTest(unittest.IsolatedAsyncioTestCase):
         slug, _ = await cascade.predict(photo(), self.budget(2.0, 5.0))
         self.assertEqual(slug, "wine-a")
         self.assertEqual(len(self.fake.routes("embed")), 1)
+
+    async def test_packages_first_keeps_the_whole_photo_until_the_package_is_final(self):
+        # The provisional crop ranks before the whole photo. Then the full SAM3 answer
+        # has no package, so the whole photo MUST answer.
+        def embed(image):
+            if dominant(image) == "gray":
+                time.sleep(0.6)
+            return colour_vector(image)
+
+        def segment(nouns, size):
+            if "label" in nouns:
+                time.sleep(0.3)
+                return scene(nouns, size, packages=())
+            return scene(nouns, size, packages=(OTHER_PACKAGE,), label=None)
+        self.fake.embed = embed
+        self.fake.segment = segment
+        config = CascadeConfig(whole_image=True, barcode=BarcodeConfig(),
+                               sam3=Sam3Config(packages_first=True))
+        cascade = await self.cascade(config)
+        slug, trace = await cascade.predict(photo(packages=(PACKAGE, OTHER_PACKAGE)),
+                                            self.budget(2.0, 5.0))
+        self.assertEqual((slug, trace["decision"]["source"]), ("wine-b", "whole"))
+        self.assertEqual([stage["status"] for stage in trace["stages"]
+                          if stage["id"] == "whole"], ["ok"])
 
     async def test_a_close_up_with_no_package_uses_the_whole_ranking(self):
         self.fake.segment = lambda nouns, size: scene(nouns, size, packages=())

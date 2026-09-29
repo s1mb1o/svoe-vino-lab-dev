@@ -29,6 +29,10 @@ On 2026-09-29 the owner selected these actions:
 - Item 2: recorded in [../KNOWN_ISSUES.md](../KNOWN_ISSUES.md) for a later fix.
 - Item 5: fixed. `validate_image` does not change the warnings filters. A pixel limit
   above the Pillow limit stops the start.
+- Item 7: fixed later on 2026-09-29 (owner answer of 21:07:52). `_read_cards` checks the
+  type of each card field.
+- Item 4: the deploy document names `GET /readyz` since the same fix. The model requests
+  of the health check are intended: `docs/cascade.md`, section "Limits", states them.
 - The other items have no decision.
 
 The entry of 2026-09-29 in `ChangeLog.md` describes the fixes.

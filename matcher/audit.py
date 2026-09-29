@@ -1,7 +1,6 @@
 """Persist submitted images and request metadata for matcher audit."""
 
 from dataclasses import dataclass
-from datetime import datetime
 import hashlib
 import json
 import os

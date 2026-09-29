@@ -16,6 +16,7 @@ The request MUST use `multipart/form-data`.
 The image MUST be in the `image` field.
 The endpoint uses the existing upload size, pixel, format, authorization, and queue limits.
 The selected matcher pipeline MUST contain wine cards.
+A pipeline of the backend `siglip2` or `cascade` MUST also hold vectors of the view `label`.
 The query parameter `k` MAY set the maximum number of candidates for each bottle.
 The range of `k` is 1 to 20. The default is 1. A value out of the range gives HTTP 422.
 
@@ -94,10 +95,12 @@ The response MUST order bottles by shelf band and then from left to right.
 The response MUST keep at most 6 MiB of preview and mask data.
 `detected_count` MUST contain the number of valid `wine bottle` SAM3 detections before quality filters, duplicate suppression, and response limits.
 `truncated` MUST be true when a bottle limit or response media limit excludes a valid non-duplicate bottle.
+When a limit excludes bottles, the matcher MUST keep the bottles with the highest `segmentation_score`.
 
 ## Errors
 
 The endpoint MUST return HTTP 503 when `SAM3_ENDPOINT` is absent or invalid.
+The endpoint MUST return HTTP 503 before the SAM3 request when the selected pipeline has no vectors of the view `label`.
 The endpoint MUST return HTTP 502 for an invalid or failed SAM3 response.
 The endpoint MUST return HTTP 504 when the 300-second SAM3 budget expires.
 The endpoint MUST retry SAM3 once after a 5xx response, an empty response, or a transient transport failure.

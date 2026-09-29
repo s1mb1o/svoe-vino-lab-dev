@@ -21,7 +21,7 @@ from matcher.service import CascadeMatcher, ConfigError, load_matcher
 
 import test_siglip2
 from cascade_fakes import EAN_FULL, FakeServices, photo, rules
-from test_catalog import EMBEDDING, write_catalog
+from test_catalog import EMBEDDING, ROWS, write_catalog
 from test_match import multipart
 from test_siglip2 import free_port, wait_for_server
 
@@ -175,6 +175,13 @@ class CascadeConfigTest(unittest.TestCase):
                                return_value=[[("wine-a", 0.9)]]) as group:
             self.assertEqual(matcher.match_group_many([b"x"], [b"y"], 3), [[("wine-a", 0.9)]])
         group.assert_called_once()
+
+    def test_group_matching_needs_the_view_label_of_the_group_embedding(self):
+        self.assertTrue(self.load(entry(self.catalog, self.fake)).can_match_group)
+        full_only = write_catalog(self.root / "full-only",
+                                  rows=tuple(row for row in ROWS if row[0] != "label"))
+        matcher = self.load(entry(full_only, self.fake, barcode=None, rerank=None))
+        self.assertFalse(matcher.can_match_group)
 
 
 class CascadeEndpointTest(unittest.TestCase):
