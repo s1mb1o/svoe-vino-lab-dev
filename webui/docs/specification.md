@@ -32,7 +32,7 @@ Follow the system dark theme and reduced motion preference.
 The production portal MUST provide an installable web app manifest.
 The portal MUST provide 192 by 192 and 512 by 512 PNG icons.
 The portal MUST provide a maskable 512 by 512 PNG icon.
-The icon MUST use the wine-glass question mark from the Telegram bot.
+The favicon and install icons MUST use the shared product logo from `../assets/`.
 The service worker MUST store only the app shell and same-origin static assets.
 The service worker MUST NOT store photo uploads or API responses.
 The app shell MAY open without a network connection after one successful online visit.

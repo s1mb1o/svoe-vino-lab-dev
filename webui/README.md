@@ -60,7 +60,7 @@ For another host, run `.output/server/index.mjs` with the required `HOST` and `P
 The production build includes a web app manifest and a service worker.
 The `@vite-pwa/nuxt` module generates these files with Workbox.
 Use the browser install action to add «Свое Вино» to the device.
-The installed app uses the wine-glass question mark from the Telegram bot.
+The favicon and installed app use the shared product logo from the repository-level `assets/` directory.
 The app shell can open without a network connection after one successful online visit.
 Photo recognition, wine metadata, and external portal links still require a network connection.
 The Workbox routes do not store photo uploads or API responses.

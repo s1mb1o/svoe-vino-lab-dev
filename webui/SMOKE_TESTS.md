@@ -43,7 +43,7 @@ The contract check also checks the home page, compatibility redirects, metadata 
 - Select the negative age action. Confirm that the blocked state does not store acceptance.
 - Return and confirm age. Reload. Confirm that the accepted state remains in this browser.
 - Build and start the production server. Confirm that the browser offers an install action.
-- Install the portal. Confirm the Telegram bot wine-glass icon and the standalone window.
+- Install the portal. Confirm the shared bottle-scanner product logo and the standalone window.
 - Open the installed app once while online. Disable the network and reopen it. Confirm that the app shell opens.
 - While offline, submit a photo. Confirm a clear network error and no simulated result.
 - Inspect service-worker cache storage. Confirm that it contains no `/api/`, `/v1/`, or uploaded photo response.

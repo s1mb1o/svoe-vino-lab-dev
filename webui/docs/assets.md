@@ -31,12 +31,14 @@ The implementation uses its own CSS.
 
 ## Progressive Web App icon
 
-- Source: `svoe-vino-lab/telegram-bot/assets/botpic.svg` and `botpic.png` in this workspace.
-- Design: a wine glass and a question mark in burgundy and cream.
-- `public/icons/pwa-icon.svg` keeps the source vector paths and colors.
-- The 192 by 192 and 512 by 512 icons are direct exports of the 1024 px bot icon.
-- The maskable icon scales the mark to the central safe area on a solid cream background.
-- The Apple touch icon uses the same solid cream background.
+- Source: `../assets/product-logo-640x640.png` and `../assets/product-logo-640x640.svg`.
+- Design: a wine bottle with a question mark inside scanner marks.
+- `public/icons/product-logo.svg` is an exact copy of the shared SVG and is the favicon.
+- The 192 by 192 and 512 by 512 install icons are resized from the shared PNG.
+- The maskable icon places a 400 by 400 copy of the shared PNG in the center of a 512 by 512 `#fff8ea` canvas.
+- The Apple touch icon is a 180 by 180 export of the shared PNG.
+- Shared PNG SHA-256: `ebff41f926b210d6ae22250e0ff7e5eb2ff5a680b227cef59208e3f1fc028729`.
+- Shared and public SVG SHA-256: `97153903dba33b7c19b9722fb19aab0da39dedd2ab1f27fbd125a15c2f42d49b`.
 
 ## Catalog
 

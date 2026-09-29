@@ -5,6 +5,7 @@ import { MAX_IMAGE_BYTES } from '../shared/catalog'
 import { SHELF_EXAMPLES } from '../shared/shelf'
 
 const publicFile = (path: string) => fileURLToPath(new URL(`../public/${path}`, import.meta.url))
+const sharedAssetFile = (path: string) => fileURLToPath(new URL(`../../assets/${path}`, import.meta.url))
 
 async function pngSize(path: string) {
   const png = await readFile(publicFile(path))
@@ -27,6 +28,10 @@ describe('PWA assets', () => {
   })
 
   it('provides icons at their declared sizes', async () => {
+    const config = await readFile(fileURLToPath(new URL('../nuxt.config.ts', import.meta.url)), 'utf8')
+    const sharedLogo = await readFile(sharedAssetFile('product-logo-640x640.svg'))
+    expect(config).toContain("{ rel: 'icon', type: 'image/svg+xml', href: '/icons/product-logo.svg' }")
+    await expect(readFile(publicFile('icons/product-logo.svg'))).resolves.toEqual(sharedLogo)
     await expect(pngSize('icons/pwa-192.png')).resolves.toEqual({ width: 192, height: 192 })
     await expect(pngSize('icons/pwa-512.png')).resolves.toEqual({ width: 512, height: 512 })
     await expect(pngSize('icons/pwa-maskable-512.png')).resolves.toEqual({ width: 512, height: 512 })

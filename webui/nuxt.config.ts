@@ -37,7 +37,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'canonical', href: siteUrl },
-        { rel: 'icon', type: 'image/svg+xml', href: '/icons/pwa-icon.svg' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/icons/product-logo.svg' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
       ],
       script: [{
@@ -74,7 +74,7 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     registerWebManifestInRouteRules: true,
     includeAssets: [
-      'icons/pwa-icon.svg',
+      'icons/product-logo.svg',
       'icons/apple-touch-icon.png',
       'reference/logo.svg',
       'reference/background.webp',

@@ -39,6 +39,7 @@ The Node server runs on the existing loopback port 8153.
 `NuxtPwaManifest` adds the generated manifest link to the document head.
 The module registers the service worker only in a production build.
 Workbox precaches the client bundles, install icons, and app-shell reference assets.
+The favicon and install-icon derivatives come from the repository-level shared product logo in `../assets/`.
 Workbox uses `NetworkFirst` for same-origin page navigation.
 The page route excludes `/api/` and `/v1/`.
 The page route accepts only GET requests.

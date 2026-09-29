@@ -2,6 +2,14 @@
 
 ## 2026-09-29
 
+### Shared product branding
+
+- Replaced the Telegram-bot-derived favicon and PWA icon set with the repository-level product logo.
+- Used the shared SVG directly for the favicon and the shared PNG for install, maskable, Apple touch, and social-image derivatives.
+- Kept the source-portal wordmark in the page header.
+- Added a regression check that the published favicon matches the shared SVG exactly.
+- Verified all 165 tests, type checks, and the production build.
+
 ### Complete result metadata fallback
 
 - Added an exact server-side wine lookup through the official `api.vino-svoe.ru` JSON endpoint.

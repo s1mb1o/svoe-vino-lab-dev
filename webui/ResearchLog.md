@@ -1,5 +1,15 @@
 # Research log
 
+## Shared product branding, 2026-09-29
+
+The user designated the repository-level `assets/` directory as the source of Web UI product assets.
+The shared 640 by 640 artwork is a bottle with a question mark inside scanner marks.
+Decision: keep the source-portal wordmark in the page header because it labels the linked portal identity.
+Decision: use the shared product artwork for the favicon, PWA install icons, Apple touch icon, and social preview.
+Decision: copy the shared SVG without modification for the favicon.
+Decision: derive the fixed-size PNG icons from the shared PNG.
+Decision: scale the maskable artwork to 400 by 400 on its original cream background so the visible mark stays inside the safe area.
+
 ## Complete result metadata fallback, 2026-09-29
 
 The upstream recognizer can return more wine slugs than the 12 local Web UI records contain.
