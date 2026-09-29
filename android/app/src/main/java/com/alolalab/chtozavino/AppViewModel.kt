@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
-    private val preferences = application.getSharedPreferences("settings", 0)
+    private val preferences = application.getSharedPreferences(SETTINGS_PREFERENCES, 0)
     private val packManager = ModelPackManager(application)
     private val historyStore = HistoryStore(application)
     private var installedPack: InstalledModelPack? = packManager.current()
@@ -45,6 +45,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             automaticDisAccelerator = automaticDisAccelerator,
             automaticSigLip2Accelerator = automaticSigLip2Accelerator,
             isAcceleratorCheckRunning = installedPack != null && needsInitialAcceleratorCheck,
+            debugHttpServerAvailable = BuildConfig.DEBUG,
+            debugHttpServerEnabled = BuildConfig.DEBUG && isDebugHttpServerEnabled(application),
             history = historyStore.list(),
             isBusy = installedPack == null || needsInitialAcceleratorCheck,
             progressText = when {
@@ -93,6 +95,28 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         sigLip2AcceleratorMode = mode
         preferences.edit().putString(KEY_SIGLIP2_ACCELERATOR_MODE, mode.name).apply()
         mutableState.update { it.copy(sigLip2AcceleratorMode = mode) }
+    }
+
+    fun setDebugHttpServerEnabled(enabled: Boolean) {
+        if (!BuildConfig.DEBUG) return
+        val application = getApplication<Application>()
+        val control = application as? DebugHttpServerControl ?: return
+        runCatching { control.setDebugHttpServerEnabled(enabled) }
+            .onSuccess {
+                saveDebugHttpServerEnabled(application, enabled)
+                mutableState.update {
+                    it.copy(debugHttpServerEnabled = enabled, error = null)
+                }
+            }
+            .onFailure {
+                saveDebugHttpServerEnabled(application, false)
+                mutableState.update { state ->
+                    state.copy(
+                        debugHttpServerEnabled = false,
+                        error = "HTTP-сервер не запущен: ${friendlyMessage(it)}",
+                    )
+                }
+            }
     }
 
     fun redetectAccelerators() {
@@ -385,9 +409,5 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         private const val ACCELERATOR_CHECK_VERSION = 1
         private const val KEY_ACCELERATOR_CHECK_VERSION = "accelerator_check_version"
-        private const val KEY_AUTOMATIC_DIS_ACCELERATOR = "automatic_dis_accelerator"
-        private const val KEY_AUTOMATIC_SIGLIP2_ACCELERATOR = "automatic_siglip2_accelerator"
-        private const val KEY_DIS_ACCELERATOR_MODE = "dis_accelerator_mode"
-        private const val KEY_SIGLIP2_ACCELERATOR_MODE = "siglip2_accelerator_mode"
     }
 }

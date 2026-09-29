@@ -2,6 +2,81 @@
 
 ## 2026-09-29
 
+### Debug device evaluation API
+
+- Added a labelled collage of the 10 Pixel 8 smoke-test photographs.
+- Recorded why the unbalanced 10-query sample reached only 30 percent recall@1.
+- Kept the debug HTTP server off by default.
+- Added the debug-only `HTTP-сервер для тестов` settings switch.
+- Started and stopped the server immediately when the switch changed.
+- Saved the switch value between application starts.
+- Passed 21 debug unit tests, `lintDebug`, `compileReleaseKotlin`, and `assembleDebug`.
+- Verified the default, enabled, persisted, and disabled states on a Google Pixel 8.
+- Added a debug-only NanoHTTPD server on port 18088.
+- Added matcher-compatible `POST /v1/eval/predict` and `POST /v1/match` operations.
+- Added `GET /healthz` with the installed pack state.
+- Used the installed model pack and the saved DIS and SigLIP2 accelerator settings.
+- Limited uploads to 20 MiB and serialized model inference.
+- Kept the server and NanoHTTPD dependency out of the release runtime.
+- Added unit tests for `k` validation and both response shapes.
+- Passed `lintDebug`, `testDebugUnitTest`, `assembleDebug`, and `compileReleaseKotlin`.
+- Built and installed `chtozavino-0.1.4-debug.apk` on a Google Pixel 8.
+- Ran 10 images from Workbench through each endpoint with zero request errors.
+- `/v1/eval/predict` gave recall@1 0.3 with 4,349 ms median latency.
+- `/v1/match?k=20` gave recall@1 0.3, recall@5 0.6, and recall@10 0.9 with
+  4,597 ms median latency.
+
+### Optimized release build
+
+- Ran release unit tests and `lintRelease`.
+- Ran R8 code optimization and resource shrinking.
+- Built the unsigned release APK for version 0.1.4.
+- Added the versioned output copy
+  `chtozavino-0.1.4-release-unsigned.apk`.
+- Verified the package ID, version, SDK levels, ZIP alignment, and embedded model pack.
+- Recorded that production signing is not configured.
+
+### Transparent Android catalogue export
+
+- Changed the workbench exporter to package transparent package cuts.
+- Stopped packaging the large `main` and `main_patched` source images.
+- Kept source image selection only for vector and cut provenance.
+- Converted display images to transparent WebP at quality 80.
+- Limited the display image long side to 1,024 pixels.
+- Added image hash, format, dimension, and transparency validation.
+- Added parallel image conversion and atomic pack replacement.
+- Added tests for transparent export, resize, provenance, and opaque-cut rejection.
+- Exported 2,093 vectors, wines, and images.
+- Reduced the generated pack from 531,950,661 bytes to 429,200,870 bytes.
+
+### Versioned APK file name
+
+- Added the application version to the distribution APK file name.
+- The version 0.1.4 distribution file is `chtozavino-0.1.4-debug.apk`.
+- Kept `versionName` as the single value that supplies the APK file name.
+- Changed the distribution task to `Sync` so that an obsolete APK does not stay in
+  the output directory.
+- Passed `lintDebug`, debug and release unit tests, and `assembleDebug`.
+- Verified version code 5, version name 0.1.4, `minSdkVersion` 28, and
+  `targetSdkVersion` 36 in the versioned APK.
+
+### Verified marketing screenshots
+
+- Added eight primary screenshots from the installed version 0.1.4 application on a
+  Google Pixel 8.
+- Added full PNG source files and cropped WebP website files.
+- Added a high-resolution contact sheet for presentations.
+- Added separate detail views for the crop, white-background, and settings-about
+  sections.
+- Verified the photo example through DIS, SigLIP2, local search, and persistent
+  history.
+- Verified the photo result as `Пино Нуар` at `Сходство: 91%`.
+- Verified a physical EAN-13 camera scan through Google Code Scanner.
+- The code `4630037250909` matched `Шато Тамань. Каберне Совиньон` at
+  `Сходство: 100%`.
+- Restored the Pixel 8 dark system theme after capture.
+- Disabled System UI demo mode and removed the temporary image after capture.
+
 ### Lowercase application ID
 
 - Changed the application ID to `chtozavino.alolalab.com`.
@@ -17,7 +92,7 @@
 - Verified the result link to the exact `vino-svoe.ru/wines/...` page.
 - Verified the settings link to `https://vino-svoe.ru`.
 - Verified all settings values and controls in the Pixel 8 dark system theme.
-- Built the 576,503,269-byte `chtozavino_debug.apk`.
+- Built the 576,503,269-byte `chtozavino-0.1.4-debug.apk`.
 - The APK SHA-256 is
   `e22d166c8922936dd75acb63ec0b860334ef982caf5bbde36c5bb5c079227c26`.
 

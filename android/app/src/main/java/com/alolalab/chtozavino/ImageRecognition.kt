@@ -12,6 +12,7 @@ import android.util.Log
 import com.google.ai.edge.litert.Accelerator
 import com.google.ai.edge.litert.CompiledModel
 import com.google.ai.edge.litert.TensorBuffer
+import java.io.File
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -420,7 +421,9 @@ class RecognitionEngine(private val pack: InstalledModelPack) {
     fun recognize(
         bitmap: Bitmap,
         accelerators: RecognitionAccelerators,
+        limit: Int = 5,
     ): RecognitionOutput {
+        require(limit in 1..20)
         val disStart = System.nanoTime()
         val mask: FloatArray
         val disAccelerator: String
@@ -449,7 +452,7 @@ class RecognitionEngine(private val pack: InstalledModelPack) {
         val embeddingMs = elapsedMs(embeddingStart)
 
         val searchStart = System.nanoTime()
-        val matches = index.search(embedding)
+        val matches = index.search(embedding, limit)
         val searchMs = elapsedMs(searchStart)
         if (matches.isEmpty()) {
             throw ImageRecognitionException("В локальном каталоге нет результата.")
@@ -470,7 +473,12 @@ class RecognitionEngine(private val pack: InstalledModelPack) {
 
 object BitmapLoader {
     fun decode(context: Context, uri: Uri): Bitmap {
-        val source = ImageDecoder.createSource(context.contentResolver, uri)
+        return decode(ImageDecoder.createSource(context.contentResolver, uri))
+    }
+
+    fun decode(file: File): Bitmap = decode(ImageDecoder.createSource(file))
+
+    private fun decode(source: ImageDecoder.Source): Bitmap {
         val decoded = ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
             decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
             val width = info.size.width

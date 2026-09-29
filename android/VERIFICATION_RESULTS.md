@@ -89,6 +89,32 @@ python3 tools/verify_model_vectors.py \
 
 Date: 2026-09-29
 
+The current exporter uses the source `main_patched` or `main` digest only to select a
+compatible vector and package cut.
+It packages the transparent `image_derivative(kind=package)` file instead of the large
+source image.
+
+The current generated pack has these properties:
+
+- Pack version: `20260929-dis-main-alpha`.
+- Pack size: 429,200,870 bytes.
+- Pack SHA-256:
+  `cb181ce8f5583d92c800014c083eb75cc0458fa205407aa24bc032a80b050ec3`.
+- Vector, wine, and image count: 2,093 each.
+- Local code relation count: 135.
+- Transparent `package_crop` image count: 1,939.
+- Transparent `package_seg` image count: 154.
+- Image format: WebP at quality 80.
+- Maximum image long side: 1,024 pixels.
+- `images.zip` size: 59,205,972 bytes.
+- Reduction from the previous pack: 102,749,791 bytes, or 19.3 percent.
+
+Six focused Python tests passed.
+The complete exporter validation passed.
+An Android Gradle build did not run because this host has no JDK.
+
+The following results describe the previous source-image pack.
+
 The refreshed `android-siglip2-base-224-dis-white` index has 2,270 current vectors and
 zero failures.
 The vector file is `vectors-ade2a70e.npy`.
@@ -289,6 +315,7 @@ Date: 2026-09-29
 
 The debug APK has application ID `chtozavino.alolalab.com`.
 It has version code 5 and version name 0.1.4.
+The distribution file is `chtozavino-0.1.4-debug.apk`.
 Its size is 576,503,269 bytes.
 Its SHA-256 is
 `e22d166c8922936dd75acb63ec0b860334ef982caf5bbde36c5bb5c079227c26`.
@@ -342,6 +369,8 @@ This removal also removed the old local application data.
 The unrelated `com.alolalab.storagetracker*` packages stayed unchanged.
 
 `lintDebug`, debug and release unit tests, and `assembleDebug` passed.
+The friendly output directory contains only the versioned APK.
+The Gradle configuration cache stored the successful build configuration.
 
 ## Scope limit
 
@@ -376,3 +405,30 @@ DIS returned no foreground for five queries that represent four unique images.
 SAM3 returned no error.
 
 Read the full [DIS and SAM3 comparison](../workbench/docs/reports/2026-09-29_android-dis-sam3-comparison.md).
+
+## Pixel 8 debug endpoint verification
+
+Date: 2026-09-29
+
+The version 0.1.4 debug APK installed on the Google Pixel 8.
+The application used the full pack `20260929-dis-main` with 2,093 wines.
+`GET /healthz` returned HTTP 200.
+The server listened on device port 18088.
+
+Workbench sent the first 10 queries of `my` to each endpoint.
+Both runs had zero request errors.
+
+| Endpoint | R@1 | R@5 | R@10 | Median latency |
+|---|---:|---:|---:|---:|
+| `/v1/eval/predict` | 0.3 | — | — | 4,349 ms |
+| `/v1/match?k=20` | 0.3 | 0.6 | 0.9 | 4,597 ms |
+
+The Wi-Fi network did not permit a connection to the Pixel address.
+The test used ADB forwarding and supplied `127.0.0.1` as the Workbench device IP.
+This path called the same server and the same Android recognition engine.
+
+The APK is 576,503,447 bytes.
+Its SHA-256 is
+`9066ff9c377305d8eef2880d0c127a276d841bfd52d50af31c16740b53503279`.
+Gradle found NanoHTTPD 2.3.1 in the debug runtime.
+Gradle found no NanoHTTPD dependency in the release runtime.

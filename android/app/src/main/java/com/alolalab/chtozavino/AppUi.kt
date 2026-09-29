@@ -34,6 +34,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -71,6 +72,7 @@ data class AppActions(
     val dismissError: () -> Unit,
     val setDisAcceleratorMode: (AcceleratorMode) -> Unit,
     val setSigLip2AcceleratorMode: (AcceleratorMode) -> Unit,
+    val setDebugHttpServerEnabled: (Boolean) -> Unit,
     val redetectAccelerators: () -> Unit,
 )
 
@@ -389,6 +391,41 @@ private fun SettingsPage(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text("Проверить GPU снова")
+                    }
+                }
+            }
+        }
+        if (state.debugHttpServerAvailable) {
+            item {
+                Card {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text("HTTP-сервер для тестов", fontWeight = FontWeight.Bold)
+                            Text(
+                                "Даёт Workbench доступ к приложению через порт 18088. " +
+                                    "Включайте только на время теста.",
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                            Text(
+                                if (state.debugHttpServerEnabled) {
+                                    "Сервер включён"
+                                } else {
+                                    "Сервер выключен"
+                                },
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        }
+                        Switch(
+                            checked = state.debugHttpServerEnabled,
+                            onCheckedChange = actions.setDebugHttpServerEnabled,
+                        )
                     }
                 }
             }

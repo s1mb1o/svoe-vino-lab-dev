@@ -67,6 +67,7 @@ class MainActivity : ComponentActivity() {
                     dismissError = viewModel::dismissError,
                     setDisAcceleratorMode = viewModel::setDisAcceleratorMode,
                     setSigLip2AcceleratorMode = viewModel::setSigLip2AcceleratorMode,
+                    setDebugHttpServerEnabled = viewModel::setDebugHttpServerEnabled,
                     redetectAccelerators = viewModel::redetectAccelerators,
                 ),
             )

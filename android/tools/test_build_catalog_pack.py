@@ -1,5 +1,6 @@
 import argparse
 import hashlib
+import io
 import json
 from pathlib import Path
 import sqlite3
@@ -9,12 +10,13 @@ from unittest import mock
 import zipfile
 
 import numpy as np
+from PIL import Image
 
 from tools import build_catalog_pack
 
 
 class BuildCatalogPackTest(unittest.TestCase):
-    def test_builds_one_patched_or_main_image_and_vector_per_wine(self):
+    def test_builds_one_transparent_package_image_and_vector_per_wine(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             catalog, dis, siglip = self.make_sources(root)
@@ -32,22 +34,53 @@ class BuildCatalogPackTest(unittest.TestCase):
             with zipfile.ZipFile(output) as pack:
                 manifest = json.loads(pack.read("manifest.json"))
                 self.assertEqual(manifest["format_version"], 2)
-                self.assertEqual(manifest["image_selection"], "main_patched_else_main")
+                self.assertEqual(
+                    manifest["image_selection"], "package_cut_transparent_webp",
+                )
+                self.assertEqual(manifest["image_format"], "webp")
+                self.assertEqual(manifest["image_max_side"], 1024)
+                self.assertTrue(manifest["image_transparent"])
                 wines = [json.loads(line) for line in pack.read("wines.jsonl").splitlines()]
                 self.assertEqual(
                     [(row["wine_slug"], row["image_type"]) for row in wines],
-                    [("main-only", "main"), ("patched", "main_patched")],
+                    [("main-only", "package_crop"), ("patched", "package_seg")],
+                )
+                self.assertEqual(
+                    [row["image_source_type"] for row in wines],
+                    ["main", "main_patched"],
                 )
                 with zipfile.ZipFile(pack.open("images.zip")) as images:
                     self.assertEqual(
                         images.namelist(),
-                        ["images/main-only.jpg", "images/patched.png"],
+                        ["images/main-only.webp", "images/patched.webp"],
                     )
-                    self.assertEqual(images.read("images/patched.png"), b"patched image")
+                    for row in wines:
+                        image_bytes = images.read(row["image_path"])
+                        self.assertEqual(
+                            hashlib.sha256(image_bytes).hexdigest(), row["image_sha256"],
+                        )
+                        with Image.open(io.BytesIO(image_bytes)) as image:
+                            self.assertEqual(image.format, "WEBP")
+                            self.assertLessEqual(max(image.size), 1024)
+                            alpha_min = image.convert("RGBA").getchannel("A").getextrema()[0]
+                            self.assertLess(alpha_min, 255)
+                    with Image.open(images.open("images/main-only.webp")) as image:
+                        self.assertEqual(max(image.size), 1024)
                 vector_bytes = pack.read("vectors.f32")
                 vectors = np.frombuffer(vector_bytes, dtype="<f4").reshape(-1, 768)
                 self.assertEqual(int(np.argmax(vectors[0])), 0)
                 self.assertEqual(int(np.argmax(vectors[1])), 2)
+
+    def test_refuses_an_opaque_package_cut(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "opaque.png"
+            Image.new("RGB", (40, 80), "red").save(source)
+            with self.assertRaisesRegex(
+                build_catalog_pack.CatalogPackError,
+                "no transparent background",
+            ):
+                build_catalog_pack.export_display_image(source, root / "output.webp")
 
     def test_refuses_to_replace_an_existing_pack_without_flag(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -78,6 +111,7 @@ class BuildCatalogPackTest(unittest.TestCase):
     def make_sources(self, root):
         catalog = root / "catalog"
         (catalog / "images" / "main").mkdir(parents=True)
+        (catalog / "images" / "patched").mkdir(parents=True)
         (catalog / "cuts").mkdir(parents=True)
         database = catalog / "catalog.sqlite3"
         connection = sqlite3.connect(database)
@@ -89,6 +123,9 @@ class BuildCatalogPackTest(unittest.TestCase):
             );
             CREATE TABLE image (
                 sha256 TEXT PRIMARY KEY, folder TEXT, extension TEXT
+            );
+            CREATE TABLE image_derivative (
+                source_sha256 TEXT, method TEXT, sha256 TEXT, kind TEXT
             );
             CREATE TABLE wine_image (
                 wine_slug TEXT, image_type TEXT, sha256 TEXT
@@ -105,7 +142,7 @@ class BuildCatalogPackTest(unittest.TestCase):
         for label, data, folder, extension in (
             ("main-only", b"main only", "main", "jpg"),
             ("patched-main", b"old main", "main", "webp"),
-            ("patched", b"patched image", "cropped", "png"),
+            ("patched", b"patched image", "patched", "png"),
         ):
             digest = hashlib.sha256(data).hexdigest()
             sources[label] = digest
@@ -121,6 +158,23 @@ class BuildCatalogPackTest(unittest.TestCase):
                            (sources["patched-main"],))
         connection.execute("INSERT INTO wine_image VALUES ('patched','main_patched',?)",
                            (sources["patched"],))
+        for label, source_label, method, size, color in (
+            ("main-cut", "main-only", "crop", (1600, 800), (180, 30, 60, 255)),
+            ("patched-cut", "patched", "seg", (240, 700), (20, 120, 170, 255)),
+        ):
+            image = Image.new("RGBA", size, (0, 0, 0, 0))
+            image.paste(color, (20, 20, size[0] - 20, size[1] - 20))
+            path = catalog / "cuts" / f"{label}.png"
+            image.save(path)
+            data = path.read_bytes()
+            digest = hashlib.sha256(data).hexdigest()
+            final_path = catalog / "cuts" / f"{digest}.png"
+            path.replace(final_path)
+            connection.execute("INSERT INTO image VALUES (?, 'cropped', 'png')", (digest,))
+            connection.execute(
+                "INSERT INTO image_derivative VALUES (?, ?, ?, 'package')",
+                (sources[source_label], method, digest),
+            )
         connection.execute(
             "INSERT INTO wine_code VALUES ('patched','gtin','04631168664979')"
         )

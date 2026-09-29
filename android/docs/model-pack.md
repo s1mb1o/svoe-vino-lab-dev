@@ -46,6 +46,8 @@ The application searches rows whose view is `full`.
 `wines.jsonl` contains one wine card on each line.
 The required fields are `wine_slug`, `name`, and `page_url`.
 A format version 2 row also contains `image_path`, `image_type`, and `image_sha256`.
+The generated built-in row also contains `image_source_type`, `image_source_sha256`,
+and `image_cut_sha256` for provenance.
 
 `codes.jsonl` contains local barcode and QR relations.
 Each line has `value`, `kind`, and `wine_slug`.
@@ -64,13 +66,22 @@ hash.
 The application rejects an unsafe path, a duplicate path, more than 5,000 images, or
 more than 512 MiB of extracted image data.
 
+The generated built-in pack MUST use transparent WebP package cuts.
+Each package cut MUST come from an `image_derivative` row with `kind=package`.
+The long side of each image MUST be 1,024 pixels or less.
+The exporter MUST verify that each image has a transparent pixel.
+The pack MUST NOT contain the large `main` or `main_patched` source image.
+Those source images identify the matching vector and package cut only.
+
 ## Built-in pack
 
 Use this command from the Android project to build the application pack from the
 workbench catalogue:
 
 ```text
-python3 tools/build_catalog_pack.py --replace --version 20260929-dis-main
+python3 tools/build_catalog_pack.py \
+  --replace \
+  --version 20260929-dis-main-alpha
 ```
 
 The command reads these sources by default:
@@ -80,9 +91,12 @@ The command reads these sources by default:
 - the verified DIS and SigLIP2 LiteRT files in the shared Hugging Face cache
 
 The command selects active wines only.
-The command selects `main_patched` before `main`.
-The command writes one vector, one candidate relation, and one image for each included
-wine.
+The command selects `main_patched` before `main` to find the indexed vector.
+The command writes one vector, one candidate relation, and one transparent package cut
+for each included wine.
+The command converts each cut to transparent WebP at quality 80.
+The command limits the long side to 1,024 pixels.
+The command does not copy `main` or `main_patched` source images.
 The command reports each omitted wine.
 
 The default output is

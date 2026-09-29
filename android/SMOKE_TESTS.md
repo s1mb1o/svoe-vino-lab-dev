@@ -12,6 +12,69 @@
 
 ## Verification on 2026-09-29
 
+- All 21 debug unit tests passed after the server-switch change.
+- `lintDebug`, `compileReleaseKotlin`, and `assembleDebug` passed.
+- Release dependency inspection found no NanoHTTPD dependency.
+- The updated debug APK installed on the Google Pixel 8.
+- The debug HTTP server was off after the update because no saved setting existed.
+- Port 18088 did not listen while the switch was off.
+- The debug settings page showed the switch in its off state.
+- Enabling the switch opened port 18088 immediately.
+- `GET /healthz` returned HTTP 200 with 2,093 wines.
+- The enabled state and HTTP server stayed active after an application restart.
+- Disabling the switch closed port 18088 immediately.
+- The switch and server were left off after the test.
+- The debug APK is 576,503,447 bytes.
+- Its SHA-256 is
+  `fc4cf0f44b8fefcff5286b04746efb7fa44b9742ec6df282aa0cc959f6777ea2`.
+
+- `lintDebug`, `testDebugUnitTest`, `assembleDebug`, and `compileReleaseKotlin` passed
+  after the debug HTTP server change.
+- The debug server unit tests passed for `k` validation and both response shapes.
+- The earlier server-API debug APK was 576,503,447 bytes.
+- Its SHA-256 was
+  `9066ff9c377305d8eef2880d0c127a276d841bfd52d50af31c16740b53503279`.
+- The APK installed on the Google Pixel 8 with serial `41231FDJH002WZ`.
+- `GET /healthz` returned HTTP 200, pack `20260929-dis-main`, and 2,093 wines.
+- A 10-query Workbench run through `/v1/eval/predict` had zero errors and recall@1 0.3.
+- Its median latency was 4,349 ms.
+- A 10-query Workbench run through `/v1/match?k=20` had zero errors.
+- It had recall@1 0.3, recall@5 0.6, and recall@10 0.9.
+- Its median latency was 4,597 ms.
+- NanoHTTPD 2.3.1 was present in `debugRuntimeClasspath`.
+- NanoHTTPD was absent from `releaseRuntimeClasspath`.
+
+- `testReleaseUnitTest`, `lintRelease`, and `assembleRelease` passed.
+- All 18 release unit tests passed.
+- R8 code optimization and resource shrinking passed.
+- ZIP alignment verification passed.
+- The release APK has package ID `chtozavino.alolalab.com`.
+- It has version code 5 and version name 0.1.4.
+- It has `minSdkVersion` 28 and `targetSdkVersion` 36.
+- The versioned file is `chtozavino-0.1.4-release-unsigned.apk`.
+- The release APK is 441,352,932 bytes.
+- Its SHA-256 is
+  `a5cf1ce4a42715c521579a899c5dc9bbeddb32b5ae55c9ad54c82dbd19d765e4`.
+- The embedded pack is 429,200,870 bytes.
+- The embedded pack SHA-256 is
+  `cb181ce8f5583d92c800014c083eb75cc0458fa205407aa24bc032a80b050ec3`.
+- Signature verification correctly reports that the release APK is unsigned.
+- Installation is pending a production signing configuration.
+
+- Six focused Python pack-builder tests passed after the transparent image change.
+- The exporter produced 2,093 vectors, wines, and transparent WebP images.
+- The exporter produced 1,939 `package_crop` and 154 `package_seg` images.
+- The exporter verified each image hash, format, dimension, and alpha channel.
+- Each image has a long side of 1,024 pixels or less.
+- The pack contains no large `main` or `main_patched` source image.
+- The generated `images.zip` is 59,205,972 bytes.
+- The generated pack is 429,200,870 bytes.
+- The pack SHA-256 is
+  `cb181ce8f5583d92c800014c083eb75cc0458fa205407aa24bc032a80b050ec3`.
+- The pack is 102,749,791 bytes and 19.3 percent smaller than the previous pack.
+- A visual check passed for one `package_crop` image and one `package_seg` image.
+- An Android Gradle build did not run for this change because this host has no JDK.
+
 - Five Python pack-builder tests passed.
 - Four catalogue index tests, four DIS mask tests, four SigLIP2 vector tests, and four
   accelerator-selection tests passed
@@ -61,7 +124,10 @@
 - The Pixel 8 run used DIS GPU for 2,546 ms and SigLIP2 GPU for 2,287 ms.
 - The Pixel 8 showed the DIS mask, crop, and white-background debug images.
 - Google Code Scanner opened and showed the manual-input action.
-- A physical EAN-13 camera scan remains pending.
+- Google Code Scanner read the physical EAN-13 code `4630037250909` through the
+  Pixel 8 camera.
+- The local catalogue matched this code to `Шато Тамань. Каберне Совиньон` at
+  `Сходство: 100%`.
 - Version 0.1.3 installed over version 0.1.2 without clearing application data.
 - The main subtitle showed `Не требует интернета`.
 - The recognition and history tabs showed clear 30 dp vector icons.
@@ -77,9 +143,14 @@
 - Its SHA-256 is
   `be7a24ca7db3d182a87c931b6c7d154f69892e28735e7f211a45e4650f55a828`.
 - Version 0.1.4 has application ID `chtozavino.alolalab.com` and version code 5.
+- The version 0.1.4 distribution file is `chtozavino-0.1.4-debug.apk`.
+- The version 0.1.4 APK has `minSdkVersion` 28 and `targetSdkVersion` 36.
 - The version 0.1.4 APK is 576,503,269 bytes.
 - Its SHA-256 is
   `e22d166c8922936dd75acb63ec0b860334ef982caf5bbde36c5bb5c079227c26`.
+- The friendly output directory contains no obsolete unversioned APK.
+- `lintDebug`, debug and release unit tests, and `assembleDebug` passed after the file
+  name change.
 - The old `Chtozavino.alolalab.com` package is absent from the Pixel 8 and Realme.
 - The full version 0.1.4 APK installed on the Pixel 8 with 6.1 GB free before the
   installation.
@@ -97,6 +168,15 @@
 - The settings page showed version 0.1.4 and the product-site link.
 - The complete settings page rendered correctly in the Pixel 8 dark system theme.
 - No application crash was present after the checks.
+- The eight primary marketing screenshots show verified working states.
+- The screenshot set contains light and dark main screens with the same selected
+  bottle.
+- The screenshot set contains the real DIS mask, crop, and white-background images.
+- The screenshot set contains the persistent history row and the physical EAN-13
+  result.
+- The Pixel 8 dark system theme was restored after capture.
+- System UI demo mode was disabled after capture.
+- The temporary source image was removed after capture.
 
 ## Verification on 2026-09-28
 
@@ -166,3 +246,10 @@
 46. Confirm that `Авто` is selected for DIS and SigLIP2.
 47. Confirm that the settings page shows each saved automatic accelerator selection.
 48. Confirm that the settings page shows the application version and product link.
+49. Install the debug APK with clean application data.
+50. Confirm that `HTTP-сервер для тестов` is off.
+51. Confirm that port 18088 does not answer while the switch is off.
+52. Enable the switch and confirm that `GET /healthz` answers on port 18088.
+53. Restart the application and confirm that the enabled setting stays active.
+54. Disable the switch and confirm that port 18088 stops answering.
+55. Confirm that the release settings page does not show the switch.

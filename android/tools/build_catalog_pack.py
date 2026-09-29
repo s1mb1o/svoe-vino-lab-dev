@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Build the built-in Android pack from the workbench catalogue and DIS index."""
+"""Export the built-in Android pack from the workbench catalogue and DIS index."""
 
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
+import io
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -17,6 +19,7 @@ from urllib.parse import quote
 import zipfile
 
 import numpy as np
+from PIL import Image, ImageOps
 
 try:
     from . import build_model_pack
@@ -40,8 +43,13 @@ DEFAULT_SIGLIP_MODEL = (
     "siglip2_base_224_fp16.tflite"
 )
 PACK_VERSION = 2
-IMAGE_SELECTION = "main_patched_else_main"
+IMAGE_SELECTION = "package_cut_transparent_webp"
 IMAGE_ARCHIVE = "images.zip"
+DISPLAY_IMAGE_FORMAT = "webp"
+DISPLAY_IMAGE_MAX_SIDE = 1024
+DISPLAY_IMAGE_QUALITY = 80
+DISPLAY_IMAGE_METHOD = 4
+DISPLAY_IMAGE_WORKERS = 4
 PAYLOADS = build_model_pack.PAYLOADS + (IMAGE_ARCHIVE,)
 SLUG = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 
@@ -68,18 +76,21 @@ def source_rows(database):
             """
             SELECT w.wine_slug, w.name, w.producer, w.category, w.region, w.color,
                    w.grapes,
-                   COALESCE(p.sha256, m.sha256) AS image_sha256,
-                   COALESCE(pi.folder, mi.folder) AS image_folder,
-                   COALESCE(pi.extension, mi.extension) AS image_extension,
+                   COALESCE(p.sha256, m.sha256) AS source_sha256,
                    CASE WHEN p.sha256 IS NOT NULL THEN 'main_patched' ELSE 'main' END
-                       AS image_type
+                       AS source_image_type,
+                   d.method AS cut_method,
+                   d.sha256 AS cut_sha256,
+                   ci.folder AS cut_folder,
+                   ci.extension AS cut_extension
             FROM wine_catalog w
             LEFT JOIN wine_image p
               ON p.wine_slug = w.wine_slug AND p.image_type = 'main_patched'
-            LEFT JOIN image pi ON pi.sha256 = p.sha256
             LEFT JOIN wine_image m
               ON m.wine_slug = w.wine_slug AND m.image_type = 'main'
-            LEFT JOIN image mi ON mi.sha256 = m.sha256
+            LEFT JOIN image_derivative d
+              ON d.source_sha256 = COALESCE(p.sha256, m.sha256) AND d.kind = 'package'
+            LEFT JOIN image ci ON ci.sha256 = d.sha256
             WHERE w.state = 'Active'
             ORDER BY w.wine_slug
             """
@@ -152,6 +163,40 @@ def catalogue_image_path(catalog, folder, digest, extension):
     return base / f"{digest}.{extension}"
 
 
+def has_transparency(image):
+    """Return true when an RGBA image contains at least one transparent pixel."""
+    return image.mode == "RGBA" and image.getchannel("A").getextrema()[0] < 255
+
+
+def export_display_image(source, target):
+    """Write one bounded transparent WebP catalogue image and return its SHA-256."""
+    try:
+        with Image.open(source) as opened:
+            image = ImageOps.exif_transpose(opened).convert("RGBA")
+    except OSError as error:
+        raise CatalogPackError(f"cannot read package cut {source}: {error}") from error
+    if not has_transparency(image):
+        raise CatalogPackError(f"package cut has no transparent background: {source}")
+    box = image.getchannel("A").getbbox()
+    if box is None:
+        raise CatalogPackError(f"package cut has no visible pixels: {source}")
+    image = ImageOps.expand(image.crop(box), border=1, fill=(0, 0, 0, 0))
+    image.thumbnail(
+        (DISPLAY_IMAGE_MAX_SIDE, DISPLAY_IMAGE_MAX_SIDE),
+        Image.Resampling.LANCZOS,
+        reducing_gap=3.0,
+    )
+    target.parent.mkdir(parents=True, exist_ok=True)
+    image.save(
+        target,
+        format="WEBP",
+        quality=DISPLAY_IMAGE_QUALITY,
+        method=DISPLAY_IMAGE_METHOD,
+        exact=False,
+    )
+    return file_digest(target)
+
+
 def archive_digest(archive, name):
     digest = hashlib.sha256()
     with archive.open(name) as source:
@@ -194,6 +239,28 @@ def validate_pack(path):
             if any(PurePosixPath(name).is_absolute() or ".." in PurePosixPath(name).parts
                    for name in image_names):
                 raise CatalogPackError("images.zip contains an unsafe path")
+            for row in wine_rows:
+                name = row["image_path"]
+                if PurePosixPath(name).suffix != ".webp":
+                    raise CatalogPackError("a catalogue display image is not WebP")
+                if row.get("image_type") not in {"package_crop", "package_seg"}:
+                    raise CatalogPackError("a catalogue display image is not a package cut")
+                with images.open(name) as source:
+                    image_bytes = source.read()
+                if hashlib.sha256(image_bytes).hexdigest() != row.get("image_sha256"):
+                    raise CatalogPackError("a catalogue display image hash is invalid")
+                try:
+                    with Image.open(io.BytesIO(image_bytes)) as image:
+                        if image.format != "WEBP" or max(image.size) > DISPLAY_IMAGE_MAX_SIDE:
+                            raise CatalogPackError("a catalogue display image is invalid")
+                        if not has_transparency(image.convert("RGBA")):
+                            raise CatalogPackError(
+                                "a catalogue display image has no transparent background"
+                            )
+                except OSError as error:
+                    raise CatalogPackError(
+                        f"cannot read catalogue display image {name}: {error}"
+                    ) from error
         return {
             "vectors": manifest["vector_count"],
             "wines": manifest["wine_count"],
@@ -223,29 +290,38 @@ def build(args):
     image_sources = []
     for wine in wines:
         slug = wine["wine_slug"]
-        digest = wine["image_sha256"]
-        extension = wine["image_extension"]
-        folder = wine["image_folder"]
+        digest = wine["source_sha256"]
+        cut_digest = wine["cut_sha256"]
+        cut_extension = wine["cut_extension"]
+        cut_folder = wine["cut_folder"]
         if not isinstance(slug, str) or not SLUG.fullmatch(slug):
-            raise CatalogPackError(f"wine_slug is not safe for an image path: {slug!r}")
+            omitted.append({"wine_slug": slug, "reason": "wine_slug is not public"})
+            continue
         reason = None
-        if not digest or not folder or not extension:
+        if not digest:
             reason = "no main_patched or main image"
         elif (digest, "full") not in items:
             reason = "no current full vector in the DIS index"
-        source = catalogue_image_path(catalog, str(folder), digest, str(extension))
-        if reason is None and (source.is_symlink() or not source.is_file()):
-            reason = "selected image file is absent"
+        elif not cut_digest or not cut_folder or not cut_extension:
+            reason = "no package cut for the selected image"
+        source = None
+        if reason is None:
+            source = catalogue_image_path(
+                catalog, str(cut_folder), cut_digest, str(cut_extension),
+            )
+            if source.is_symlink() or not source.is_file():
+                reason = "selected package cut is absent"
         if reason is not None:
             omitted.append({"wine_slug": slug, "reason": reason})
             continue
-        if file_digest(source) != digest:
-            raise CatalogPackError(f"the selected image SHA-256 does not match for {slug}")
+        assert source is not None
+        if file_digest(source) != cut_digest:
+            raise CatalogPackError(f"the package cut SHA-256 does not match for {slug}")
         row = len(selected_vectors)
         selected_vectors.append(vectors[items[(digest, "full")]])
         candidate_rows.append({"vector_row": row, "wine_slug": slug, "view": "full"})
-        image_path = f"images/{slug}.{extension}"
-        wine_rows.append({
+        image_path = f"images/{slug}.{DISPLAY_IMAGE_FORMAT}"
+        wine_row = {
             "wine_slug": slug,
             "name": wine["name"],
             "page_url": "https://vino-svoe.ru/wines/" + quote(slug, safe=""),
@@ -255,10 +331,13 @@ def build(args):
             "color": wine["color"],
             "grapes": wine["grapes"],
             "image_path": image_path,
-            "image_type": wine["image_type"],
-            "image_sha256": digest,
-        })
-        image_sources.append((image_path, source))
+            "image_type": f"package_{wine['cut_method']}",
+            "image_source_type": wine["source_image_type"],
+            "image_source_sha256": digest,
+            "image_cut_sha256": cut_digest,
+        }
+        wine_rows.append(wine_row)
+        image_sources.append((wine_row, image_path, source))
         included_slugs.add(slug)
     if not selected_vectors:
         raise CatalogPackError("the catalogue selection has no wine")
@@ -277,11 +356,22 @@ def build(args):
         shutil.copyfile(siglip_model, root / "siglip2_base_224_fp16.tflite")
         (root / "vectors.f32").write_bytes(matrix.tobytes(order="C"))
         build_model_pack.write_jsonl(root / "candidates.jsonl", candidate_rows)
-        build_model_pack.write_jsonl(root / "wines.jsonl", wine_rows)
         build_model_pack.write_jsonl(root / "codes.jsonl", code_rows)
+
+        def export_one(values):
+            wine_row, image_path, source = values
+            display_path = root / "display-images" / PurePosixPath(image_path).name
+            return wine_row, image_path, display_path, export_display_image(
+                source, display_path,
+            )
+
+        with ThreadPoolExecutor(max_workers=DISPLAY_IMAGE_WORKERS) as executor:
+            display_images = list(executor.map(export_one, image_sources))
         with zipfile.ZipFile(root / IMAGE_ARCHIVE, "w", compression=zipfile.ZIP_STORED) as images:
-            for image_path, source in image_sources:
-                images.write(source, image_path)
+            for wine_row, image_path, display_path, digest in display_images:
+                wine_row["image_sha256"] = digest
+                images.write(display_path, image_path)
+        build_model_pack.write_jsonl(root / "wines.jsonl", wine_rows)
         files = {
             name: {"bytes": (root / name).stat().st_size, "sha256": file_digest(root / name)}
             for name in PAYLOADS
@@ -299,6 +389,11 @@ def build(args):
             "image_count": len(image_sources),
             "omitted_wine_count": len(omitted),
             "image_selection": IMAGE_SELECTION,
+            "image_format": DISPLAY_IMAGE_FORMAT,
+            "image_max_side": DISPLAY_IMAGE_MAX_SIDE,
+            "image_quality": DISPLAY_IMAGE_QUALITY,
+            "image_webp_method": DISPLAY_IMAGE_METHOD,
+            "image_transparent": True,
             "source": {
                 "embedding": args.embedding,
                 "index_updated_at": index.get("updated_at"),

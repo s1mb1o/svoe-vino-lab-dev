@@ -4,6 +4,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val applicationVersionName = "0.1.4"
+
 android {
     namespace = "com.alolalab.chtozavino"
     compileSdk = 36
@@ -13,7 +15,7 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 5
-        versionName = "0.1.4"
+        versionName = applicationVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -64,11 +66,11 @@ android {
 
 val generatedDebugApk = layout.buildDirectory.file("outputs/apk/debug/app-debug.apk")
 
-val copyFriendlyDebugApk by tasks.registering(Copy::class) {
+val copyFriendlyDebugApk by tasks.registering(Sync::class) {
     dependsOn("packageDebug")
     from(generatedDebugApk)
     into(layout.buildDirectory.dir("outputs/apk/friendly"))
-    rename { "chtozavino_debug.apk" }
+    rename("app-debug.apk", "chtozavino-$applicationVersionName-debug.apk")
 }
 
 tasks.matching { it.name == "assembleDebug" }.configureEach {
@@ -99,6 +101,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     implementation("com.google.ai.edge.litert:litert:2.2.0")
+    debugImplementation("org.nanohttpd:nanohttpd:2.3.1")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20260814")

@@ -90,8 +90,10 @@ The application MUST not upload a scanned value.
 The APK MUST contain a built-in format version 2 model pack.
 The built-in pack MUST use the completed
 `android-siglip2-base-224-dis-white` embedding index.
-The built-in pack MUST contain one `main_patched` or `main` image for each included
-wine.
+The built-in pack MUST contain one transparent package cut for each included wine.
+The package cut MUST be WebP with a long side of 1,024 pixels or less.
+The built-in pack MUST NOT contain the large `main_patched` or `main` source image.
+The source image MUST identify the selected vector and package cut only.
 The application MUST install the built-in pack on the first start.
 The application MUST show progress during this operation.
 
@@ -112,7 +114,28 @@ The history page MUST show a clear empty-state message before the first saved re
 
 ## Debug APK
 
-The debug build MUST create a distribution copy named `chtozavino_debug.apk`.
+The debug build MUST create a distribution copy named
+`chtozavino-<version>-debug.apk`.
+The debug build MUST keep its HTTP server off by default.
+The debug settings page MUST provide an `HTTP-сервер для тестов` switch.
+The switch MUST start or stop the server immediately.
+The application MUST save the switch value between starts.
+The server MUST use port `18088` when the switch is on.
+The server MUST listen on all device interfaces.
+The server MUST provide `GET /healthz`.
+The server MUST provide `POST /v1/eval/predict` with the matcher `slug-object` response.
+The server MUST provide `POST /v1/match` with the matcher `candidates` response.
+Both POST operations MUST read the image from multipart field `image`.
+The server MUST reject an image above 20 MiB.
+The optional `k` value of `/v1/match` MUST be an integer from 1 through 20.
+The default `k` value MUST be 20.
+The server MUST use the installed model pack.
+The server MUST use the saved DIS and SigLIP2 accelerator settings.
+The server MUST serialize model inference.
+The debug endpoints MUST not run barcode recognition.
+The debug endpoints MUST not add a history row.
+The release settings page MUST NOT show the HTTP server switch.
+The release build MUST NOT contain the HTTP server or its NanoHTTPD dependency.
 
 ## Product icon
 

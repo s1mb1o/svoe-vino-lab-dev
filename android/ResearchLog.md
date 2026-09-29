@@ -2,6 +2,97 @@
 
 ## 2026-09-29
 
+- The 10-query Pixel 8 smoke run contains 10 photographs of only four wine SKUs.
+- The run uses the first 10 positive rows of the sorted `my` test set.
+- It is not a balanced or representative sample.
+- Six photographs belong to two visually similar Abrau-Durso Reserve bottles.
+- The Pixel 8 result has three matches at rank 1, three at rank 2, three at ranks 6 or
+  9, and one result outside the first 20 candidates.
+- Three rank-2 errors have score gaps of 0.0017, 0.0019, and 0.0042.
+- The catalogue vectors of the two Abrau-Durso Reserve bottles have cosine 0.975512.
+- Their 224 by 224 DIS-preprocessed catalogue images have a mean absolute pixel
+  difference of 2.73 on the 0 through 255 scale.
+- SigLIP2-base at 224 pixels does not reliably separate these two catalogue references.
+- Two Pinot Noir photographs selected another Pinot Noir SKU at rank 1.
+- The correct Pinot Noir SKU was at rank 6 for both Android queries.
+- One label close-up of `Сира Нуво` selected another Syrah SKU at rank 1.
+- The correct `Сира Нуво` SKU was at rank 9.
+- The index holds one `full` catalogue vector for each of these wines.
+- Label close-ups and scene photographs therefore compare against one full-bottle
+  reference.
+- The desktop run of the same `android-siglip2-base-224-dis-white` pipeline also had
+  exactly three rank-1 matches for these same 10 photographs.
+- The low smoke result is not specific to Android GPU or LiteRT execution.
+- The complete desktop benchmark of this pipeline had 43.05 percent recall@1, 73.10
+  percent recall@5, and 80.15 percent recall@10 across 1,647 positive queries.
+- The 30 percent result MUST NOT be used as the final Android accuracy estimate.
+- The labelled collage is
+  [android-pixel8-smoke-10-collage.png](docs/test-results/android-pixel8-smoke-10-collage.png).
+
+- The debug application server listens on `*:18088` on the Pixel 8.
+- `GET /healthz` reported pack `20260929-dis-main` and 2,093 wines.
+- The Pixel 8 Wi-Fi address was `192.168.86.51` during the test.
+- The host could not open the Wi-Fi address because the network blocked the incoming
+  connection.
+- ADB forwarding from host port 18088 to device port 18088 worked.
+- Workbench used `device_ip=127.0.0.1` through this forwarding path.
+- The clean `/v1/eval/predict` run answered 10 of 10 requests with no error.
+- It gave recall@1 0.3 and median latency 4,349 ms.
+- The clean `/v1/match?k=20` run answered 10 of 10 requests with no error.
+- It gave recall@1 0.3, recall@5 0.6, recall@10 0.9, and median latency 4,597 ms.
+- Both runs used the same installed DIS and SigLIP2 pipeline.
+- The new debug APK is 576,503,447 bytes.
+- Its SHA-256 is
+  `9066ff9c377305d8eef2880d0c127a276d841bfd52d50af31c16740b53503279`.
+- Gradle confirmed NanoHTTPD 2.3.1 in `debugRuntimeClasspath`.
+- Gradle found no NanoHTTPD dependency in `releaseRuntimeClasspath`.
+
+- The project has no release signing configuration.
+- `assembleRelease` creates `app-release-unsigned.apk`.
+- The unsigned APK cannot be installed or published before signing.
+- The optimized release APK is 441,352,932 bytes.
+- Its SHA-256 is
+  `a5cf1ce4a42715c521579a899c5dc9bbeddb32b5ae55c9ad54c82dbd19d765e4`.
+- R8 and resource shrinking reduced the APK after the transparent image export.
+- The APK contains the 429,200,870-byte model pack without compression.
+- The embedded pack SHA-256 matches the exported pack SHA-256.
+
+- Android cosine search does not read the catalogue display image.
+- It reads `vectors.f32`, `candidates.jsonl`, and `wines.jsonl`.
+- The application uses the catalogue display image only in the user interface.
+- The Android pack does not need the image that produced an embedding.
+- The Android pack does not need a large non-segmented `main` or `main_patched` image.
+- The exporter uses the selected source image digest to find the compatible vector.
+- It uses the related `image_derivative(kind=package)` file as the display image.
+- The exporter converted 1,939 `crop` cuts and 154 `seg` cuts.
+- All 2,093 exported files are transparent WebP images.
+- Each exported image has a long side of 1,024 pixels or less.
+- The generated `images.zip` is 59,205,972 bytes.
+- The generated model pack is 429,200,870 bytes.
+- Its SHA-256 is
+  `cb181ce8f5583d92c800014c083eb75cc0458fa205407aa24bc032a80b050ec3`.
+- The previous model pack was 531,950,661 bytes.
+- The new pack is 102,749,791 bytes smaller.
+- This change reduced the pack by 19.3 percent.
+- Thirteen active workbench rows use a private slug that starts with `__`.
+- The exporter omitted these private rows because they do not have a public page URL.
+- Five public active wines have no selected source image.
+- The exporter omitted these five wines as before.
+
+- The version 0.1.4 screenshot set uses real states from the installed Pixel 8
+  application.
+- The source screenshots are 1,080 by 2,400 pixel PNG files.
+- The website files are 1,080 by 2,199 pixel WebP files without Android system bars.
+- The photo example matched `Пино Нуар` at score 0.91.
+- The debug views show the real DIS mask, crop, and white-background square from this
+  run.
+- The history page shows the saved `Пино Нуар` row at 91%.
+- Google Code Scanner read physical EAN-13 `4630037250909` through the Pixel 8 camera.
+- The local code index matched this code to `Шато Тамань. Каберне Совиньон` at 100%.
+- The scanner displayed its manual-input fallback before it read the physical code.
+- The capture restored the original Pixel 8 dark theme and disabled System UI demo
+  mode.
+
 - Android treats `Chtozavino.alolalab.com` and `chtozavino.alolalab.com` as different
   application IDs.
 - The Google Pixel 8 did not contain the old application ID before installation.
