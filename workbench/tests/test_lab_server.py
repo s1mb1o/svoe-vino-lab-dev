@@ -823,7 +823,8 @@ class LabServerTest(unittest.TestCase):
         saved, website_import_routes.WORK = website_import_routes.WORK, str(self.root / "work")
         try:
             status, _, body = self.request("/api/website-import")
-            self.assertEqual((status, json.loads(body)), (200, {"state": "none"}))
+            self.assertEqual((status, json.loads(body)),
+                             (200, {"state": "none", "compare_enabled": False}))
             status, headers, _ = self.request("/website-import.js")
             self.assertEqual((status, headers["Content-Type"]),
                              (200, "text/javascript; charset=utf-8"))

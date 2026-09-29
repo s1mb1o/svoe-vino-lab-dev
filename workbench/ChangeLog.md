@@ -2,6 +2,39 @@
 
 ## 2026-09-29
 
+- Corrected the p512 re-rank rule of the Aratti cluster `2d33f12d0b3e` (owner messages of
+  23:28:12 and 23:28:40, answers of 23:31:55). A reviewer note (the new
+  `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/cluster-notes.json`) and a
+  rebuild of this one rule give mode `sheet` with the vintage question (A 2023, B 2024) in
+  place of the one-sided verdict on `ПОЛУСУХОЕ`. The other 207 rules and `clusters.json` do
+  not change. A check with the lab re-rank and the prod options: 6 of 6. The prod copy is
+  not changed; the owner runs the copy and the restart. New SHA-256 of
+  `cluster-rules.json`: `8d7e6b74e18a03858350dbc617c2f330608716b1d51c61da33592b1312ac0f90`.
+- Disabled the website compare in the code (owner message of 23:23, answer of 23:27).
+  `COMPARE_ENABLED = False` in `pipeline/import_website.py`: `_compare` raises
+  `COMPARE_DISABLED` before it makes a client, so the CLI, `--prepare`, and each Python
+  caller of `import_website()` or `prepare()` stop with exit 1 and send no request.
+  `POST /api/website-import/start` answers HTTP 403 and starts no process;
+  `GET /api/website-import` holds `compare_enabled`; `website_import.js` keeps the button
+  `Import from website` hidden, also on `/dataset/website-import`. `--apply` of an existing
+  run directory stays; it sends no request to the website. The search for other start paths
+  found none: `_compare` is the only place that makes the website client, `start` is the
+  only spawner of `--prepare`, and no cron job, LaunchAgent, skill, or script runs the tool.
+  Not changed (the owner chose the compare alone): the `Remote API` check of `/health` and
+  `Validate dataset` of `scripts/review_server.py`. Tests: `test_import_website` 37 OK
+  (3 new), `test_website_import_routes` 7 OK (1 new), `test_lab_server` 69 OK,
+  `test_wine_name` 10 OK, `test_lab_openapi` 11 OK. 8168 restarted at 23:33 (PID 72229);
+  live check: POST 403, the CLI and `--prepare` exit 1, the button stays hidden in headless
+  Chrome.
+- Renamed the slug of the manual wine `__shmelev_shmeleva_risling` (`Шмелев и Шмелева.
+  Рислинг`) to `shmelev_shmeleva_risling` in `data/catalog/catalog.sqlite3` (owner
+  messages of about 23:14-23:18). One transaction changed one row each in `wine_catalog`,
+  `wine_image`, and `wine_beverage_type`; `PRAGMA foreign_key_check` is empty. Backup:
+  `data/backups/catalog-before-slug-rename-20260929T201829Z.sqlite3`. The slug has no
+  `__` prefix now, so `manual_wines.is_manual` is false for it: the next CSV import makes
+  the wine `Removed` (`removed_by` = `import`), and the website import lists it as
+  `missing`, unless the source holds this slug. The embedding index holds no slug, so it
+  needs no change. No restart of 8168.
 - Put the data that cannot be rebuilt into git for the second computer (2x RTX 4090) and
   the jury (owner messages of 2026-09-29 about 22:35 and 22:46): the test photos
   `data/testsets/images/` (3,532 files, 807 MB; a `.gitignore` rule), a new `db-export/`
@@ -10,6 +43,25 @@
   `BENCHMARKS.md` without `results.jsonl`, and the `.md` files of the report folders with
   the small JSON files that they link. The cuts, the vectors, and the prepared PNG files
   stay out: SAM3 and SigLIP2 rebuild them.
+- Added the block `The rule as text` to `/clusters` (owner message of about 22:44). It is
+  in the left column below `Save note` and shows the label rule of the cluster for a
+  person: the state, the mode, the rule text, the letters of the cards, each question
+  with the answer of each card (`#N` is the number of the card on the page), the
+  differences, and the groups that no label feature tells apart. The JSON block
+  `VLM difference rule` stays. A rule rebuild after `Save note` also updates the block.
+  Only `pipeline/pages/clusters.html` changed; 8168 reads the page from disk, so no
+  restart. Tests: `test_lab_pages` 4 OK, `test_cluster_routes` 13 OK, `test_clusters`
+  27 OK; a browser check of 177 clusters in light and dark theme at 1,400 and 390 px
+  with no page error.
+- Built the missing label rules of `gx10-siglip2-so400m-patch16-naflex-p256` (owner
+  messages of about 22:09 and 22:22). The manual pair
+  `denisov_pino_noir_klaret`/`denisov_rubin_klaret_krasnaya_strelka` of 19:58 made the
+  cluster `c076` after the last rule build of 2026-09-27T20:20:46. Seven clusters of
+  `combined` had no rule, two had an old rule. `build_label_rules.py` built 9 rules
+  (5 calls to `qwencloud-qwen3.8-max`, 4 from the model cache; 18 descriptions from the
+  model cache) and wrote the new input hash into 168 rules, in 224 s. Now each of the
+  177 clusters has a current rule. `c038` (three `usadba-mezyb` Вионье cards) got the
+  mode `verdict`: no label feature tells the cards apart.
 - Added the edit of a card name on `/dataset` (plan 89; owner message of 22:00:54,
   answers of 22:05:15 and 22:06:52). Schema 032 adds `wine_catalog.name_patched`, puts it
   in the trigger `wine_catalog_update_time`, and makes the view `matcher_wine` send

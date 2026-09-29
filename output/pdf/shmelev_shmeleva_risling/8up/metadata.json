@@ -1,0 +1,27 @@
+{
+  "wine_slug": "shmelev_shmeleva_risling",
+  "barcode": "4618081983745",
+  "pdf": "shmelev_shmeleva_risling_A4_8_labels.pdf",
+  "page_mm": [
+    210,
+    297
+  ],
+  "columns": 2,
+  "rows": 4,
+  "cell_mm": [
+    105,
+    74.25
+  ],
+  "label_portrait_mm": [
+    74.25,
+    105
+  ],
+  "rotation_degrees": 90,
+  "pairs_per_page": 4,
+  "page_margin_mm": 0,
+  "cell_gap_mm": 0,
+  "artwork_inset_mm": 3.5,
+  "border_inset_mm": 4.2,
+  "print_scale_percent": 100,
+  "grid_assumption": "Eight equal cells. No sheet margins or gaps."
+}

@@ -135,6 +135,14 @@ th { color: var(--muted); font-weight: 600; }
   background: var(--panel-2); border-radius: 6px; font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
   white-space: pre-wrap; overflow-wrap: anywhere;
 }
+/* The label rule as plain text, below the reviewer note. */
+.rule-text { margin-top: 12px; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.rule-text p { margin: 0 0 6px; }
+.rule-text .sentence { font-weight: 600; }
+.rule-text ol { margin: 0 0 6px; padding-left: 18px; }
+.rule-text ol > li { margin-bottom: 5px; }
+.rule-text ul { margin: 2px 0 0; padding-left: 14px; }
+.rule-text .muted, .rule-text .unused { color: var(--muted); }
 /* The dialog is a column: the head takes its own height, and the image fills the rest.
    So a head that wraps or a tall viewport gives no scroll bar. */
 #preview {
@@ -371,6 +379,48 @@ function ruleHtml(rule) {
   return `<div>${state}</div><pre>${esc(JSON.stringify(shown, null, 2))}</pre>`;
 }
 
+/* The label rule of the cluster as plain text for a person (owner message of
+   2026-09-29T22:44:00+0300). #N is the number of the card on the page; the letters are
+   the names of the cards in the rule text. A null answer means that the label does not
+   show the feature. The rerank skips a question that is not valid. */
+function ruleTextHtml(cluster) {
+  const rule = cluster.rule;
+  if (!rule) return "";
+  const number = slug => {
+    const index = cluster.slugs.indexOf(slug);
+    return index < 0 ? "" : `#${index + 1} `;
+  };
+  const byPlace = (a, b) => {
+    const place = slug => { const index = cluster.slugs.indexOf(slug); return index < 0 ? 1e9 : index; };
+    return place(a) - place(b);
+  };
+  const cardText = slug => `${number(slug)}${esc(DATA.cards?.[slug]?.name || slug)}`;
+  const questions = rule.questions || [];
+  const valid = questions.filter(question => question.valid).length;
+  const state = rule.stale ? '<span class="bad">stale</span>' : '<span class="good">current</span>';
+  const parts = [`<h3>The rule as text</h3><p>${state} <span class="muted">· mode ${esc(rule.mode || "none")} · ${valid} of ${questions.length} questions used</span></p>`];
+  if (rule.error) parts.push(`<p class="error">The rule build failed: ${esc(rule.error)}</p>`);
+  if (rule.rule) parts.push(`<p class="sentence">${esc(rule.rule)}</p>`);
+  const letters = Object.entries(rule.letters || {}).sort((a, b) => byPlace(a[1], b[1]));
+  if (letters.length) {
+    parts.push(`<p class="muted">Letters: ${letters.map(([letter, slug]) => `${esc(letter)} = ${esc(number(slug).trim() || slug)}`).join(", ")}.</p>`);
+  }
+  if (questions.length) {
+    parts.push(`<ol>${questions.map(question => {
+      const answers = Object.entries(question.answers || {}).sort((a, b) => byPlace(a[0], b[0]))
+        .map(([slug, answer]) => `<li>${cardText(slug)}: ${answer == null
+          ? '<span class="muted">not on the label</span>' : `<b>${esc(answer)}</b>`}</li>`).join("");
+      const unused = question.valid ? "" : ' <span class="unused">(not used: not valid)</span>';
+      return `<li class="${question.valid ? "" : "unused"}">${esc(question.question)}${unused}<ul>${answers}</ul></li>`;
+    }).join("")}</ol>`);
+  }
+  if (rule.differences) parts.push(`<p><b>Differences:</b> ${esc(rule.differences)}</p>`);
+  (rule.indistinguishable || []).filter(group => group.length).forEach(group => {
+    parts.push(`<p><b>No label feature tells apart:</b> ${[...group].sort(byPlace).map(cardText).join("; ")}.</p>`);
+  });
+  return parts.join("");
+}
+
 function clusterHtml(cluster) {
   const note = cluster.note || {text: ""};
   const inherited = note.inherited
@@ -386,6 +436,7 @@ function clusterHtml(cluster) {
     <div class="review"><div class="note"><h3>Reviewer note</h3>
       <textarea maxlength="4000" data-note="${esc(cluster.key)}">${esc(note.text || "")}</textarea>
       <div class="note-actions"><button type="button" data-save-note="${esc(cluster.key)}">Save note</button>${inherited}<span data-note-status="${esc(cluster.key)}"></span></div>
+      <div class="rule-text">${ruleTextHtml(cluster)}</div>
     </div><div class="rule"><h3>VLM difference rule</h3>${ruleHtml(cluster.rule)}</div></div>
   </section>`;
 }
@@ -500,6 +551,9 @@ async function watchRule(key, before, log) {
     DATA = detail;
     const block = document.querySelector(`[data-note="${key}"]`)?.closest(".cluster")?.querySelector(".rule");
     if (block) block.innerHTML = `<h3>VLM difference rule</h3>${ruleHtml(rule)}`;
+    const cluster = (detail.artifact?.spaces?.[SPACE]?.clusters || []).find(item => item.key === key);
+    const text = document.querySelector(`[data-note="${key}"]`)?.closest(".cluster")?.querySelector(".rule-text");
+    if (text && cluster) text.innerHTML = ruleTextHtml(cluster);
     if (rule.error) noteStatus(key, `The rule build failed: ${rule.error}`, true);
     else noteStatus(key, rule.built_at !== before ? "Rule rebuilt" : "The rule is current");
     return;

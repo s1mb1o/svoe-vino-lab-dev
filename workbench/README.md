@@ -355,6 +355,13 @@ shows no button. Read [plan 20](docs/plans/20_add-wine.md).
 python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3
 ```
 
+The compare is disabled in the code since 2026-09-29 (owner message of 23:23):
+`COMPARE_ENABLED` of `pipeline/import_website.py` is `False`. The CLI and `--prepare`
+exit 1 with `error: the website compare is disabled in the code: …` and send no request.
+`POST /api/website-import/start` answers HTTP 403, and the Dataset page hides the button
+`Import from website`. `--apply` of an existing run directory stays. To enable the compare
+again, set the value to `True` and restart the lab server.
+
 `import_website.py` reads the JSON API `https://api.vino-svoe.ru/v1`: the list pages,
 the card of each new wine, and the original image of each wine through
 `/v1/file-proxy/`. A website wine that the database does not hold is added as `Active`
@@ -899,6 +906,13 @@ The page `/clusters` shows the `label` rule in the views `combined` and `label` 
 block `VLM difference rule`). The rule is `stale` when `clusters.json` has a new input
 hash, or when the note of the cluster changed after the build. The Runs page reads the
 questions of the rule (plan 43).
+
+The block `The rule as text`, below `Save note`, shows the same rule for a person (owner
+message of 2026-09-29T22:44:00+0300): the state, the mode, the rule text, the letters of
+the cards (`A = #1`), each question with the answer of each card, the differences, and
+the groups that no label feature tells apart. `#N` is the number of the card on the
+page. A null answer shows as `not on the label`. A question that is not valid shows as
+`not used`, because the re-rank skips it. The JSON block stays on the right.
 
 `Save note` also starts the rebuild of the rule of that cluster (owner answer of
 2026-09-26T11:11:00+0300): the route runs `build_label_rules.py --cluster <slug> --wait`

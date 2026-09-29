@@ -3613,6 +3613,23 @@ The form of a section:
   condition that it lands with the migration (done). The other sections that list my
   files are stale; the owner requested the change directly, git showed the files clean,
   and I change focused hunks alone.
+- Task 4: check the run of `matcher-match-k20` on `official-real-photos` (owner message of
+  2026-09-29T22:57:03+0300). Read-only; the run was a server job started at 22:56:28.
+- Task 5: was the re-rank used in that run (owner message of 23:06:16). Read-only: the
+  prod audit records on gx10; my entry at the top of `ResearchLog.md`.
+- Task 6: correct the p512 re-rank rule of the Aratti cluster `2d33f12d0b3e` (q-000004)
+  with a reviewer note and a rebuild of this one rule; check it in the lab; give the owner
+  the prod commands. q-000063 and q-000036 are skipped (owner answers of 23:31:55).
+- Source 6: owner messages of 2026-09-29T23:28:12+0300 and 23:28:40, answers of 23:31:55.
+- Files 6: `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/`
+  `cluster-notes.json` (new), `cluster-rules.json` (the entry `2d33f12d0b3e`),
+  `label-rules.log`; my own hunks in `ResearchLog.md`, `ChangeLog.md`. No restart.
+- State 6: done, not committed; waiting: the owner runs the prod copy and restart. Note
+  saved 23:34:02, rule rebuilt 23:35:01 (sheet, vintage), check 6/6. b3 [31b207] "ok" at about 23:36 for `cluster-rules.json` of p512 (its
+  commit a588b42 holds the file; b3 does not change it again). A commit MUST add the new
+  `cluster-notes.json` with `git add -f` (root `.gitignore` rule `/workbench/data/catalog/*`).
+- Agreements: f6 [0be36b] adds one separate hunk to `docs/lab-openapi.yaml` (23:29);
+  condition: my `/api/wine-name` block and `WineNameChange` stay byte-identical.
 
 ## drink-atlas-workspace-32 [e1f0e6]
 
@@ -3623,10 +3640,9 @@ The form of a section:
   hunks: the CSS of the text block, a new function `ruleTextHtml`, the left column in
   `clusterHtml`, the block swap in `watchRule`), my own hunks in `README.md`,
   `ChangeLog.md`, `SMOKE_TESTS.md`.
-- State: active. The sections that list `clusters.html` (d1 [0feb34], 41 [501d23],
-  2f [0e9cfe], 4e [ff960b], 1c [b72be3]) are stale; git shows the file clean; the owner
-  requested the change directly; I change focused hunks alone.
-- Updated: 2026-09-29T22:48:00+0300
+- State: done, not committed. Waiting: the owner decides the commit. Browser check
+  passed (177 clusters, light and dark, 1,400 and 390 px); page tests OK. No restart.
+- Updated: 2026-09-29T23:02:00+0300
 
 ## drink-atlas-workspace-b3 [31b207]
 
@@ -3643,5 +3659,53 @@ The form of a section:
   files that they link, `../matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/*`,
   `../webui/public/presentations/*`, own hunks in `ChangeLog.md`, `../matcher/ChangeLog.md`,
   `../webui/ChangeLog.md`, and `docs/owner-messages.md`.
-- State: active.
-- Updated: 2026-09-29T22:48:00+0300
+- State: waiting: the owner checks the push. Committed: checkpoint `d00591a` (the pending
+  work of the other sessions without the edit of session 32 in `pipeline/pages/clusters.html`
+  and without the Codex files in `../output/` and `../tmp/`), data `a588b42`. The first
+  push to `github` failed at 22:56 (connection reset by peer). The agent cannot read the
+  results of the retry and of the push to `origin`.
+- Updated: 2026-09-29T23:35:00+0300
+- Agreements: 36 [0b6507] asked at about 23:33 to change `cluster-rules.json` of p512 (one
+  rule of the Aratti cluster 2d33f12d0b3e; owner task of 23:28). Answer "ok": my work on the
+  file is done in `a588b42`. Note given: the new `cluster-notes.json` is ignored by
+  `/workbench/data/catalog/*`; add it with `git add -f` at the commit.
+
+## drink-atlas-workspace-f6 [0be36b]
+
+- Task: rename the slug `__shmelev_shmeleva_risling` to `shmelev_shmeleva_risling` in the
+  database.
+- Source: owner messages of 2026-09-29T23:14:30+0300, 23:15:30, and 23:18:00.
+- Files: `docs/owner-messages.md` (append only), `data/catalog/catalog.sqlite3` (the rows
+  of this one wine in `wine_catalog`, `wine_image`, `wine_beverage_type`),
+  `data/backups/catalog-before-slug-rename-*.sqlite3` (new), my own hunk in `ChangeLog.md`.
+- State: done, not committed. The three rows carry the new slug; backup
+  `data/backups/catalog-before-slug-rename-20260929T201829Z.sqlite3`. The ChangeLog hunk
+  is not committed.
+- Updated: 2026-09-29T23:21:00+0300
+- Task 2: disable in the code the start of the website compare (`Import from website` ->
+  `Compare`, `POST /api/website-import/start`, the CLI `pipeline/import_website.py`), and
+  check that no other start path stays.
+- Source 2: owner message of 2026-09-29T23:23:00+0300 and answer of 23:27:00.
+- Files 2: `pipeline/import_website.py` (`COMPARE_ENABLED`, `_compare`, docstring),
+  `pipeline/website_import_routes.py` (`start`, `state_view`, docstring),
+  `pipeline/pages/website_import.js` (the button), `tests/test_import_website.py`,
+  `tests/test_website_import_routes.py`, one assertion in `tests/test_lab_server.py`,
+  one hunk in `docs/lab-openapi.yaml` (asked 36 [0b6507]), my own hunks in `README.md`,
+  `COMMANDS.md`, `SMOKE_TESTS.md`, `ChangeLog.md`, `docs/owner-messages.md` (append).
+  A restart of 8168 after the tests.
+- State 2: done, not committed. `COMPARE_ENABLED = False`; 8168 restarted at 23:33:12
+  (PID 72229); POST start 403, the CLI exit 1, the button hidden. Tests OK.
+- Agreements 2: 36 [0b6507] "ok" at about 23:30 for one hunk in `docs/lab-openapi.yaml`
+  (`/api/website-import` and `/start`), with the condition that its `/api/wine-name` block
+  and `WineNameChange` stay byte-identical and `test_lab_openapi.py` passes (11 OK).
+- Updated: 2026-09-29T23:34:30+0300
+
+## drink-atlas-workspace-ad [139787]
+
+- Task: find why the GTIN of the label of `shmelev_shmeleva_risling` (4618081983745) does
+  not appear in the database. Diagnosis only; no code change.
+- Source: owner message of 2026-09-29T23:26:09+0300.
+- Files: `docs/owner-messages.md` (append only), `ResearchLog.md` (one entry at the top).
+- State: waiting: the owner chooses a fix (manual GTIN, or a change of the upload scan).
+  The diagnosis is in `ResearchLog.md`; not committed.
+- Updated: 2026-09-29T23:40:00+0300

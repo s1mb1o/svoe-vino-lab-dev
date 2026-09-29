@@ -1,0 +1,8 @@
+Tool: built-in ImageGen.
+
+Use case: precise-object-edit.
+Edit image 1, the finished Alola wine bottle product image, with one small change only.
+Image 2 is ONLY a reference for the position and size of the original monogram on the upper silver capsule. Do not copy its wine label or its other branding.
+On image 1's silver capsule, put a plain solid black circular disk exactly where the small monogram is on image 2, with the same apparent radius relative to the capsule width. Center the disk horizontally on the capsule, about 64% down the height of the silver capsule. For image 1's 906 x 1736 canvas this is approximately center x=452, y=201, radius=23 pixels. Make it a clean true black circle, with no letters, no outline, no white marks inside, no symbols, no metallic border.
+This black circle replaces the original reference monogram, and must remain small, about 29% of the capsule width in diameter.
+Preserve absolutely everything else in image 1: the bottle silhouette and proportions, glass, golden wine, highlights, silver capsule texture, exact Alola cream label artwork, all Russian text including 'Шмелев и Шмелева', 'Рислинг', 'Алола', '* 1 *', both bees, lake illustration, red sun and fine gold border, positioning and colors. Do not modify the red sun on the paper label. No wine_slug. Do not change the label or introduce other text. Keep the same framing and genuinely transparent alpha background. Output a high-quality PNG.

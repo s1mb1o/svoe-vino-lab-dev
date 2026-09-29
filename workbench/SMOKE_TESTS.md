@@ -615,6 +615,7 @@ Use `N=gx10-siglip2-so400m-patch16-naflex-p256` and `H=http://127.0.0.1:8168`. R
 | LR3 | `python3 pipeline/build_label_rules.py --name $N --cluster vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145` | At most 3 stage 1 calls and 1 stage 2 call. The rule `a29e59138ed4` has mode `sheet` and a valid ratio question with 30/70, 50/50, and 70/30. The alcohol question is not valid. |
 | LR4 | Run LR3 again | `todo: 0` for both stages, no call. |
 | LR5 | Open `$H/clusters?name=$N&space=combined#vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145` | The block `VLM difference rule` shows `current` and the rule. The view `label` shows the same rule for the same members. The view `full` shows no rule. |
+| LR11 | Open `$H/clusters?name=$N&space=combined#denisov_pino_noir_klaret` | Below `Save note`, the block `The rule as text` shows `current · mode sheet · 1 of 1 questions used`, the rule text, `Letters: A = #1, B = #2.`, and the question with `#1 … : Пино Нуар` and `#2 … : Рубин`. A question that is not valid shows `(not used: not valid)`. The view `full` shows no block. Light and dark theme. |
 | LR6 | Change the note of that cluster and press `Save note` | The status shows `Saved · rebuilding the rule…`. Within about 20 s (longer while a full rule build runs) it shows `Rule rebuilt`, and the rule block shows `current` and the new rule. `data/catalog/embeddings/$N/label-rules.log` holds the command with `--cluster … --wait` and one stage 2 call, no stage 1 call. An open image preview stays open. |
 | LR10 | Press `Save note` while a full run of `build_label_rules.py` runs | The rebuild waits for the full run, then builds the rule. The page keeps `Saved · rebuilding the rule…` until then, at most 5 minutes; then it names the log. |
 | LR7 | Set `rules_max_images: 2` in the block `label_rules`, then run LR3 with `--stage rules --force` (the limit is not an input of a current rule) | The rule gets the error `the cluster needs 3 images, one for each card, and label_rules.rules_max_images is 2 …`, and no call goes out. Set the value back to 20. |
@@ -1162,9 +1163,13 @@ Use `H=http://127.0.0.1:8168`.
 Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 `api.vino-svoe.ru` and takes some minutes.
 
+The compare is disabled in the code since 2026-09-29 (`COMPARE_ENABLED = False` in
+`pipeline/import_website.py`). IW19 checks this state. IW2 to IW18 need the value `True`
+and a restart of the lab server first.
+
 | # | Case | Expected result |
 |---|---|---|
-| IW1 | `python3 -m unittest discover -s tests -p 'test_import_website.py'`, then the same with `test_website_import_routes.py` | 33 tests `OK`, then 6 tests `OK`. No test sends a request to the internet. |
+| IW1 | `python3 -m unittest discover -s tests -p 'test_import_website.py'`, then the same with `test_website_import_routes.py` | 37 tests `OK`, then 7 tests `OK` (2026-09-29). No test sends a request to the internet. |
 | IW2 | `python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3` while the website has a changed text or a changed main image | Exit 1. The `error:` line states `the import stops, and nothing changed`, and one line follows for each problem: `<slug> (<state>): the text changed: <field> <old> -> <new>` or `<slug>: the main image changed: stored … website …`. `data/catalog/catalog.sqlite3` and `data/catalog/images/` do not change. |
 | IW3 | Run IW2 when the website shows no changed text and no changed image | Exit 0. The report states `added`, `restored`, `removed`, and `main images stored` with the slugs, and `result: imported`. Each changed wine has one comment of the source `script` on `/dataset`. |
 | IW4 | Run IW3 again | `result: no change`. No new comment. |
@@ -1182,6 +1187,7 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 | IW16 | In the dialog of IW7, look at the section `Missing on the website`, in light and in dark mode, then click the sign of one row | Each row shows a red prohibition sign on top of the wine image. No other section shows the sign. The click opens the large view of the image without the sign. The checkbox of the row does not change. |
 | IW17 | In the dialog of IW7, look at a conflict of the main image, in light and in dark mode | Each image of the conflict shows its pixel size under it, for example `300×493`, on the `database` side and on the `website` side. The size equals the width and the height of the file. A text conflict and the rows of the changes show no size. |
 | IW18 | On `/dataset`, press `Import from website`, then `×`, then Forward, then Back, then Esc | The open dialog makes the path `/dataset/website-import`. `×`, Back, and Esc close the dialog and give `/dataset`. Forward opens the dialog again. |
+| IW19 | With `COMPARE_ENABLED = False`: run `python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3`, then `curl -s -X POST -w ' %{http_code}' http://127.0.0.1:8168/api/website-import/start`, then open `/dataset` and `/dataset/website-import` | The CLI exits 1 with `error: the website compare is disabled in the code: import_website.COMPARE_ENABLED is False`. The POST answers `403` with the same error, and `work/website-import/` gets no new run directory. `GET /api/website-import` holds `"compare_enabled": false`. Neither page shows the button `Import from website`, and no dialog opens. |
 | IW19 | Open `http://127.0.0.1:8168/dataset/website-import` in a new tab, then press `×` | The dialog opens with the newest run in its present state (a running job, the conflicts and changes, or the result). The list shows all records; no image preview opens. `×` gives `/dataset`. |
 | IW20 | After an apply, press `Reload the page` in the result | The page loads again as `/dataset`; the dialog does not open again. |
 | IW21 | In the dialog of IW7, leave one conflict with no choice, and press `Apply` | The result lists the conflict id under `conflicts with no choice, not written`. The wine keeps its field or its main image. The wine gets no comment and no row in `website_refusal`. The next `Compare` shows the conflict again. |

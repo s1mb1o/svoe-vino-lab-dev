@@ -141,8 +141,11 @@ class WebsiteTestBase(unittest.TestCase):
         self.db = str(self.root / "lab.sqlite3")
         labdb.connect(self.db, create=True).close()
         self.log = []
+        # The code ships with the compare disabled. The tests of the compare enable it.
+        self.saved_compare, IMP.COMPARE_ENABLED = IMP.COMPARE_ENABLED, True
 
     def tearDown(self):
+        IMP.COMPARE_ENABLED = self.saved_compare
         self.directory.cleanup()
 
     def add_wine(self, slug, state="Active", removed_by=None, main=None, **values):
@@ -459,6 +462,41 @@ class ImportWebsiteTest(WebsiteTestBase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DisabledCompareTest(WebsiteTestBase):
+    """The owner disabled the compare in the code (owner message of
+    2026-09-29T23:23:00+0300). Each start path stops and sends no request."""
+
+    def setUp(self):
+        super().setUp()
+        IMP.COMPARE_ENABLED = False
+        self.add_wine("a", main=picture(1))
+        self.client = self.site("an", {"a": picture(1), "n": picture(2)})
+
+    def test_the_code_ships_with_the_compare_disabled(self):
+        self.assertFalse(self.saved_compare)
+
+    def test_the_cli_mode_and_prepare_send_no_request(self):
+        before = self.snapshot()
+        with self.assertRaises(IMP.WebsiteError) as caught:
+            self.run_import(self.client)
+        self.assertEqual(str(caught.exception), IMP.COMPARE_DISABLED)
+        run_dir = self.root / "run"
+        with self.assertRaises(IMP.WebsiteError):
+            IMP.prepare(self.db, str(run_dir), self.client, self.log.append)
+        self.assertEqual(self.client.requests, 0)
+        self.assertFalse(run_dir.exists())
+        self.assertEqual(self.snapshot(), before)
+
+    def test_main_stops_with_the_error(self):
+        for argv in (["--db", self.db], ["--db", self.db, "--prepare", str(self.root / "run")]):
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                status = IMP.main(argv)
+            self.assertEqual(status, 1, argv)
+            self.assertEqual(err.getvalue(), "error: %s\n" % IMP.COMPARE_DISABLED)
+        self.assertFalse((self.root / "run").exists())
 
 
 class UiModeTest(WebsiteTestBase):

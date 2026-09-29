@@ -1165,6 +1165,10 @@ paths:
       tags: [website-import]
       operationId: getWebsiteImportState
       summary: Read the newest website-import job and run.
+      description: >-
+        The object also holds the boolean `compare_enabled`, the value of
+        `import_website.COMPARE_ENABLED`. It is false since 2026-09-29, and the dialog then
+        hides its button.
       responses:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
@@ -1174,8 +1178,12 @@ paths:
       tags: [website-import]
       operationId: startWebsiteImportCompare
       summary: Start a catalogue comparison without applying changes.
+      description: >-
+        The compare is disabled in the code since 2026-09-29: the answer is 403 and no
+        process starts.
       responses:
         "202": { $ref: "#/components/responses/Object" }
+        "403": { $ref: "#/components/responses/Error" }
         default: { $ref: "#/components/responses/Error" }
 
   /api/website-import/stop:

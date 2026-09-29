@@ -10009,3 +10009,101 @@ Question 2: В дереве лежит незакоммиченная работ
 ```text
 Отдельный checkpoint (Recommended)
 ```
+
+## 2026-09-29T22:57:03+0300
+
+```text
+проверь http://127.0.0.1:8168/testset?set=official-real-photos на matcher
+```
+
+## 2026-09-29T23:06:16+0300
+
+```text
+rerank использовался?
+```
+
+## 2026-09-29T23:14:30+0300
+
+```text
+у рислинга "__shmelev_shmeleva_risling" поменяй slug на "shmelev_shmeleva_risling"
+```
+
+## 2026-09-29T23:15:30+0300
+
+```text
+сделай это в БД
+```
+
+## 2026-09-29T23:18:00+0300
+
+```text
+просто замени "__shmelev_shmeleva_risling" поменяй slug на "shmelev_shmeleva_risling"
+```
+
+## 2026-09-29T23:23:00+0300
+
+```text
+Отключи в коде запуск проверки вебсайта, проверь что других пустей запуска проверки не осталось
+```
+
+## 2026-09-29T23:26:09+0300
+
+```text
+Проверь почему не обновляется GTIN у этикетки shmelev_shmeleva_risling 4618081983745
+```
+
+## 2026-09-29T23:27:00+0300
+
+Answer of the owner to a question of the agent. The agent found three website checks in the code: the `Compare` of the website import (`/dataset`, `Import from website`, `POST /api/website-import/start`, the CLI `pipeline/import_website.py`), the `Remote API` check of `/health`, and `Validate dataset` of `scripts/review_server.py`.
+
+Question 1: Какую проверку сайта отключить? В коде я нашёл три запуска. Options (multiple): "Compare импорта с сайта", "Remote API на /health", "Validate в старом review".
+
+```text
+Compare импорта с сайта
+```
+
+Question 2: Как отключить? Options: "Жёстко в коде (Recommended)", "Флаг в config.yaml".
+
+```text
+Жёстко в коде (Recommended)
+```
+
+## 2026-09-29T23:28:12+0300
+
+```text
+Скоректируй правила rerank у этих записей так чтобы выбор прошел
+```
+
+## 2026-09-29T23:28:33+0300
+
+```text
+Скоректируй правила rerank у этих записей так чтобы выбор прошел правильно
+```
+
+## 2026-09-29T23:31:55+0300
+
+Question 1: q-000004 (Aratti 2024, no ПОЛУСУХОЕ, card B): the p512 verdict rule treats a
+missing ПОЛУСУХОЕ as card A. How should I correct the rule of cluster 2d33f12d0b3e?
+Options: "Note + rebuild (Recommended)", "Hand-edit rule JSON", "Years in card names".
+
+```text
+Note + rebuild (Recommended)
+```
+
+Question 2: q-000063 (Usadba Divnomorskoe Yuzhnyy Les Merlot): the true card is not in the
+cluster 32ffcf5fe870 (Kholodnyy Tuman + Solnechnyy Veter), so no rule can choose it. What
+should I do?
+Options: "Skip it (Recommended)", "Hard-case pair + rebuild".
+
+```text
+Skip it (Recommended)
+```
+
+Question 3: Where should the corrected rule go? (q-000036 shows Khrustaleva76 Extra Brut
+Pinot Gris 2025, a wine not in the catalogue; a re-rank only reorders catalogue cards, so no
+rule can make it pass.)
+Options: "Lab + prod commands (Recommended)", "Lab only".
+
+```text
+Lab + prod commands (Recommended)
+```

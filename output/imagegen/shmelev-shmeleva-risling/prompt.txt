@@ -1,0 +1,18 @@
+Tool: built-in ImageGen.
+Intent: product mockup with two reference images.
+
+Use case: product-mockup, reference-based compositing.
+Create a polished photorealistic wine bottle catalog image, like reference image 1, but with the Alola label artwork from reference image 2.
+Input roles: Image 1 is the bottle shape, amber-green glass, silver capsule, straight-on camera angle, studio highlights and isolated silhouette reference. Image 2 is the exact front label design to apply to the bottle.
+Composition: one tall, slender Riesling bottle, upright and perfectly front-facing, entire bottle visible from capsule top to base, centered, narrow portrait composition, no cropping. Same elegant long tapered neck and subtly rounded shoulders as image 1. Golden white wine visible through olive amber glass. Refined vertical softbox reflections, realistic glass thickness and paper texture.
+Background: genuinely transparent alpha PNG, no opaque backdrop, no checkerboard pattern, no scenery, no props, no cast floor shadow.
+Replace all original brand text on the bottle label with the complete artwork of image 2. Use the cream paper, thin double gold border, dark petrol-blue serif type, terracotta red title, paired small bumblebees, centered '* 1 *', and oval fine-line lake landscape with pine trees and red sun. Make the label a portrait rectangle wrapped naturally around the lower bottle body. Preserve the artwork proportions, all elements, and the hierarchy. The label may extend slightly higher than the old label to preserve its portrait layout and legibility.
+Label text must be accurate Cyrillic, verbatim:
+'СЕМЕЙНАЯ КОЛЛЕКЦИЯ'
+'Шмелев и Шмелева'
+'Рислинг'
+'Алола'
+'* 1 *'
+'У каждого вина своя история.'
+'АЛОЛА / ЛИЧНЫЙ РЕЗЕРВ'
+The label must read Шмелев и Шмелева, not Галицкий. No wine_slug, no technical identifiers, no barcode on the front. Remove the original dark emblem from the silver capsule; keep the capsule plain silver. Do not add any year, denomination, alcohol value, other text, or watermark. High-resolution realistic product photography with clean transparent silhouette edges.

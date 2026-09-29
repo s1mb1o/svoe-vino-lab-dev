@@ -54,8 +54,10 @@ class WebsiteImportRoutesTest(unittest.TestCase):
         self.root = Path(self.directory.name)
         script = self.root / "fake_import.py"
         script.write_text(FAKE_SCRIPT, encoding="utf-8")
-        self.saved = ROUTES.WORK, ROUTES.SCRIPT
+        self.saved = ROUTES.WORK, ROUTES.SCRIPT, ROUTES.import_website.COMPARE_ENABLED
         ROUTES.WORK, ROUTES.SCRIPT = str(self.root / "work"), str(script)
+        # The code ships with the compare disabled. The tests of the compare enable it.
+        ROUTES.import_website.COMPARE_ENABLED = True
         self.server = FakeServer(str(self.root / "lab.sqlite3"))
         os.environ.pop("FAKE_SLEEP", None)
         os.environ.pop("FAKE_FAIL", None)
@@ -66,7 +68,7 @@ class WebsiteImportRoutesTest(unittest.TestCase):
                 process.kill()
             process.wait()
         ROUTES._PROCESSES.clear()
-        ROUTES.WORK, ROUTES.SCRIPT = self.saved
+        ROUTES.WORK, ROUTES.SCRIPT, ROUTES.import_website.COMPARE_ENABLED = self.saved
         os.environ.pop("FAKE_SLEEP", None)
         os.environ.pop("FAKE_FAIL", None)
         self.directory.cleanup()
@@ -92,7 +94,17 @@ class WebsiteImportRoutesTest(unittest.TestCase):
             self.assertFalse(ROUTES.handles(route), route)
 
     def test_no_run_gives_the_state_none(self):
-        self.assertEqual(self.call("GET", ROUTES.API)[:2], (200, {"state": "none"}))
+        self.assertEqual(self.call("GET", ROUTES.API)[:2],
+                         (200, {"state": "none", "compare_enabled": True}))
+
+    def test_a_disabled_compare_answers_403_and_starts_nothing(self):
+        ROUTES.import_website.COMPARE_ENABLED = False
+        code, answer, _, _ = self.call("POST", ROUTES.API + "/start")
+        self.assertEqual((code, answer), (403, {"error": ROUTES.import_website.COMPARE_DISABLED}))
+        self.assertEqual(ROUTES._PROCESSES, {})
+        self.assertFalse(Path(ROUTES.WORK).exists())
+        self.assertEqual(self.call("GET", ROUTES.API)[:2],
+                         (200, {"state": "none", "compare_enabled": False}))
 
     def test_a_compare_then_an_apply(self):
         code, answer, _, _ = self.call("POST", ROUTES.API + "/start")

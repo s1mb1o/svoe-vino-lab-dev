@@ -2,6 +2,79 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-29 — The corrected p512 rule of the Aratti cluster `2d33f12d0b3e`
+
+- The owner edited both names at 22:34 (plan 89): `… 2023` for
+  `aratti-kaberne-po-belomu` and `… 2024` for `aratti-kaberne-po-belomu-1`. So rule 2a and
+  `named_year` keep a vintage question. The reviewer note of 23:34:02 says that card B has
+  two labels (with and without `ПОЛУСУХОЕ`) and that a label without `ПОЛУСУХОЕ` does not
+  identify card A.
+- The rebuild (qwencloud-qwen3.8-max, 58 s) gives mode `sheet` with one valid question:
+  "What vintage year is printed on the label?" A `2023`, B `2024`. The sugar question
+  stays not valid (A `null`).
+- A check with `ClusterRerank.rerank` and the prod options (qwen3.5-9b-nvfp4, window 10,
+  side 1536, 256 tokens) on q-000003, q-000004, and the catalogue image of card A, each in
+  both base orders: 6 of 6 give the true card. `matcher/rerank.py` gives the same prompt
+  and the same scores.
+- The rule now depends on the two edited names. A later rebuild with the names of the
+  import drops the vintage question again.
+- q-000063 cannot pass by a rule: the true card is not in the cluster `32ffcf5fe870`.
+  q-000036 cannot pass by a re-rank: the photo shows Khrustaleva76 Extra Brut Pinot Gris
+  2025, a wine that the catalogue does not hold.
+
+## 2026-09-29 — The upload scan does not read the EAN-13 of `shmelev_shmeleva_risling`
+
+- Symptom: the wine `shmelev_shmeleva_risling` has no row in `wine_code`. The back label
+  carries the EAN-13 `4618081983745` (package `../output/pdf/shmelev_shmeleva_risling/`).
+  The check digit is valid. `codes.clean("gtin", ...)` gives `04618081983745`.
+- The lab server log holds no `POST /api/dataset-gtin` for this wine. The GTIN came only
+  from the scan of an additional photo (plan 76). The three uploads at about 23:02
+  (`PXL_20260929_200233535.jpg`, `PXL_20260929_200244848.jpg`,
+  `PXL_20260929_200255002.jpg`, 3072 x 4080) answered HTTP 200.
+- The service `qr-scanner` with the engine `zxing-cpp` returns an empty `instances` list
+  for each of the three full photos. An empty list is not an error, so the upload shows
+  no warning. The page gives no sign that the scan found no code.
+- Probes of the service on the photo `label_back` (`fa35064a…`), engine `zxing-cpp`:
+
+  | Input | Size | Result |
+  |---|---|---|
+  | Full photo | 3072 x 4080 | none |
+  | Full photo scaled to 0.35 and to 0.25 | 1075 x 1428, 768 x 1020 | none |
+  | Strip of full width around the barcode | 3072 x 647 | none |
+  | Lower half, bottom 40 % | full width | none |
+  | Strip of full height, label columns only | 1395 x 4082 | `4618081983745` |
+  | Label area only | 1939 x 3368 | `4618081983745` |
+  | Tight crop of the barcode | 1055 x 374 | `4618081983745` |
+  | Label artwork PNG of the package, 100 % and 50 % | 1890 x 2835 | `4618081983745` |
+
+- The engine `zxing-cpp-sr` on the full photo also returns none. The engine `auto` was not
+  probed, because it loads SAM3 and qwen3.5-9b on the GPU of gx10.
+- Conclusion: the print and the barcode are good. A crop that removes the image content
+  left and right of the label decodes. Every input of full width fails, also at a smaller
+  scale. Hypothesis, not checked in the source of the service: the row binarization of
+  zxing-cpp sees the dark bottle and the bright background on the same row as the
+  barcode.
+- The recognition pipeline `pipeline/barcode.py` scales the photo and cuts tiles. The
+  upload scan of `store_alternative` sends one full photo and has no tile scan
+  (see the entry "The gx10 service `qr-scanner` compared with `pipeline/barcode.py`").
+
+## 2026-09-29 — The VLM re-rank of the prod matcher on `official-real-photos`
+
+- Source: the audit records `response.decision` of the prod request archive on gx10
+  (`/srv/svoe-vino-lab/prod/matcher/data/requests/2026-09-29/`), joined by the image
+  SHA-256 with the runs `2026-09-29T165548Z-…` and `2026-09-29T195628Z-…` of
+  `matcher-match-k20` (pipeline `cascade-p512-rot5`, `POST /v1/match`, no time budget).
+- Both runs give equal decisions: 24 of 84 requests trigger the re-rank (22 `sheet`,
+  2 `verdict`), 60 answer from the crop ranking, and 0 from a code. All 24 VLM calls end
+  `ok`. The VLM median is 4,209 ms in the first run and 2,082 ms in the second.
+- The re-rank changes the order of 3 requests: `q-000079` and `q-000082` get the true
+  card at rank 1 (a gain), and `q-000004` (Aratti 2024, the `verdict` rule of
+  `ПОЛУСУХОЕ`) loses it (see "Aratti 2024 false re-rank" of 2026-09-28). Net +1: R@1
+  90.5 % with the re-rank, 88.9 % without it.
+- Of the other 5 misses at rank 1, `q-000063` triggers a `sheet` rule with no change. The
+  other 4 misses are in no triggered cluster. Of the 3 false matches at rank 1,
+  `q-000036` triggers a `sheet` rule with no change.
+
 ## 2026-09-29 — A label rule with a question that one card answers `null`
 
 - Cluster `2d33f12d0b3e` (`aratti-kaberne-po-belomu`, `aratti-kaberne-po-belomu-1`) of

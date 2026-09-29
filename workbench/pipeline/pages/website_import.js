@@ -468,9 +468,13 @@
   });
 
   // The button appears only on a server with the website import. The review tool of
-  // scripts/review_server.py serves the same page with no such route.
-  fetch(API).then(response => {
+  // scripts/review_server.py serves the same page with no such route. The button stays
+  // hidden while the compare is disabled in the code (`COMPARE_ENABLED` of
+  // import_website.py, owner message of 2026-09-29T23:23:00+0300).
+  fetch(API).then(async response => {
     if (!response.ok) return;
+    const answer = await response.json().catch(() => ({}));
+    if (answer.compare_enabled === false) return;
     button.hidden = false;
     poll().then(() => { if (location.pathname === PATH && modal.hidden) show(); });
   }).catch(() => {});

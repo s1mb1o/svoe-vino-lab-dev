@@ -80,6 +80,9 @@ changes. Fix each named wine by hand, then run the tool again. A run takes some 
 because it downloads the image of each wine. Read `docs/plans/18_import-website.md`.
 The button `Import from website` of the Dataset page runs the same compare, and a dialog
 lets you merge each conflict. Read `docs/plans/21_website-import-ui.md`.
+Disabled since 2026-09-29: `COMPARE_ENABLED = False` in `pipeline/import_website.py`. The
+command exits 1 with `error: the website compare is disabled in the code: …`, and the
+Dataset page shows no button.
 
 # Запуск сервера и WebUI
 

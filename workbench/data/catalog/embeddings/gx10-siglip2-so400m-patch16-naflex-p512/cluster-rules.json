@@ -43729,44 +43729,62 @@
      "aratti-kaberne-po-belomu-1"
     ],
     "input_hash": "81934d384c9cbd5f2e84562a3f25c1102b73dd8bc768b8d84a71681cfaf105bd",
-    "inputs_sha": "33a6157f508c42e5",
-    "note": "",
-    "built_at": "2026-09-28T01:46:22+0300",
+    "inputs_sha": "7aabbc1763c5ce2e",
+    "note": "The card with the category Розовое (aratti-kaberne-po-belomu-1) is sold as vintage 2024. Its label exists in two versions: one prints ПОЛУСУХОЕ under the year 2024, and one prints no sugar level. The card with the category Красное (aratti-kaberne-po-belomu) shows the vintage 2023 on its catalogue label. A label without ПОЛУСУХОЕ does not identify either card. Use the year printed on the label: 2024 is the card with the category Розовое, 2023 is the card with the category Красное. ПОЛУСУХОЕ on the label is the card with the category Розовое.",
+    "built_at": "2026-09-29T23:34:03+0300",
     "vlm": "qwencloud-qwen3.8-max",
     "settings_sha": "12638e6663aca7c3",
-    "mode": "verdict",
+    "mode": "sheet",
     "error": null,
     "letters": {
      "A": "aratti-kaberne-po-belomu",
      "B": "aratti-kaberne-po-belomu-1"
     },
     "max_side": 768,
-    "prompt_tokens_estimate": 3232,
-    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"АРАТТИ Каберне по-белому\"; producer \"АРАТТИ\"; category \"Красное\"; grapes \"Каберне Совиньон\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"СЕМЕЙНАЯ ВИНОДЕЛЬНЯ\", \"where\": \"above the main brand name\"}, {\"text\": \"АРАТТИ\", \"where\": \"center of the label\"}, {\"text\": \"КАБЕРНЕ ПО-БЕЛОМУ\", \"where\": \"below the brand name\"}, {\"text\": \"2023\", \"where\": \"bottom of the label\"}], \"numbers\": [{\"value\": \"2023\", \"where\": \"bottom of the label\"}], \"vintage\": \"2023\", \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with a white background and black text. At the top, there is an illustration of a horse-drawn carriage. The brand name 'АРАТТИ' is prominently displayed in the center, with the text 'СЕМЕЙНАЯ ВИНОДЕЛЬНЯ' above it and 'КАБЕРНЕ ПО-БЕЛОМУ' below it. The year '2023' is printed at the bottom.\", \"marks\": []}\n\nCard B: name \"АРАТТИ Каберне по-белому\"; producer \"АРАТТИ\"; category \"Розовое\"; grapes \"Каберне Совиньон\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"СЕМЕЙНАЯ ВИНОДЕЛЬНЯ\", \"where\": \"top of label\"}, {\"text\": \"АРАТТИ\", \"where\": \"center of label\"}, {\"text\": \"КАБЕРНЕ ПО-БЕЛОМУ\", \"where\": \"below 'АРАТТИ'\"}, {\"text\": \"2024\", \"where\": \"below 'КАБЕРНЕ ПО-БЕЛОМУ'\"}, {\"text\": \"ПОЛУСУХОЕ\", \"where\": \"bottom of label\"}], \"numbers\": [{\"value\": \"2024\", \"where\": \"below 'КАБЕРНЕ ПО-БЕЛОМУ'\"}], \"vintage\": \"2024\", \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with a white background and black text. At the top, there is an illustration of a horse-drawn carriage. The text is arranged in a vertical hierarchy, with 'СЕМЕЙНАЯ ВИНОДЕЛЬНЯ' at the top, followed by the large 'АРАТТИ' in the center, then 'КАБЕРНЕ ПО-БЕЛОМУ', the year '2024', and finally 'ПОЛУСУХОЕ' at the bottom.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
-    "ms": 53788,
+    "prompt_tokens_estimate": 3453,
+    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"АРАТТИ Каберне по-белому 2023\"; producer \"АРАТТИ\"; category \"Красное\"; grapes \"Каберне Совиньон\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"СЕМЕЙНАЯ ВИНОДЕЛЬНЯ\", \"where\": \"above the main brand name\"}, {\"text\": \"АРАТТИ\", \"where\": \"center of the label\"}, {\"text\": \"КАБЕРНЕ ПО-БЕЛОМУ\", \"where\": \"below the brand name\"}, {\"text\": \"2023\", \"where\": \"bottom of the label\"}], \"numbers\": [{\"value\": \"2023\", \"where\": \"bottom of the label\"}], \"vintage\": \"2023\", \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with a white background and black text. At the top, there is an illustration of a horse-drawn carriage. The brand name 'АРАТТИ' is prominently displayed in the center, with the text 'СЕМЕЙНАЯ ВИНОДЕЛЬНЯ' above it and 'КАБЕРНЕ ПО-БЕЛОМУ' below it. The year '2023' is printed at the bottom.\", \"marks\": []}\n\nCard B: name \"АРАТТИ Каберне по-белому 2024\"; producer \"АРАТТИ\"; category \"Розовое\"; grapes \"Каберне Совиньон\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"СЕМЕЙНАЯ ВИНОДЕЛЬНЯ\", \"where\": \"top of label\"}, {\"text\": \"АРАТТИ\", \"where\": \"center of label\"}, {\"text\": \"КАБЕРНЕ ПО-БЕЛОМУ\", \"where\": \"below 'АРАТТИ'\"}, {\"text\": \"2024\", \"where\": \"below 'КАБЕРНЕ ПО-БЕЛОМУ'\"}, {\"text\": \"ПОЛУСУХОЕ\", \"where\": \"bottom of label\"}], \"numbers\": [{\"value\": \"2024\", \"where\": \"below 'КАБЕРНЕ ПО-БЕЛОМУ'\"}], \"vintage\": \"2024\", \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with a white background and black text. At the top, there is an illustration of a horse-drawn carriage. The text is arranged in a vertical hierarchy, with 'СЕМЕЙНАЯ ВИНОДЕЛЬНЯ' at the top, followed by the large 'АРАТТИ' in the center, then 'КАБЕРНЕ ПО-БЕЛОМУ', the year '2024', and finally 'ПОЛУСУХОЕ' at the bottom.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nThe card with the category Розовое (aratti-kaberne-po-belomu-1) is sold as vintage 2024. Its label exists in two versions: one prints ПОЛУСУХОЕ under the year 2024, and one prints no sugar level. The card with the category Красное (aratti-kaberne-po-belomu) shows the vintage 2023 on its catalogue label. A label without ПОЛУСУХОЕ does not identify either card. Use the year printed on the label: 2024 is the card with the category Розовое, 2023 is the card with the category Красное. ПОЛУСУХОЕ on the label is the card with the category Розовое.\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "ms": 58049,
     "usage": {
-     "completion_tokens": 2439,
-     "completion_tokens_details": {
-      "reasoning_tokens": 2211,
-      "text_tokens": 227
-     },
-     "prompt_tokens": 2521,
+     "prompt_tokens": 2689,
+     "total_tokens": 5671,
+     "completion_tokens": 2982,
      "prompt_tokens_details": {
       "cached_tokens": 0,
       "image_tokens": 916,
-      "text_tokens": 1605
+      "text_tokens": 1773
      },
-     "total_tokens": 4960
+     "completion_tokens_details": {
+      "reasoning_tokens": 2715,
+      "text_tokens": 266
+     }
     },
     "model": "qwen3.8-max",
-    "cached": true,
+    "cached": false,
     "finish_reason": "stop",
-    "raw_reply": "{\n  \"differences\": \"The bottom of the label: Card B prints the sugar level 'ПОЛУСУХОЕ' (semi-dry) under the year, while Card A prints no sugar level at all. The labels also show different years (2023 vs 2024), but the vintage is not stated in the catalogue names, so it cannot be used as a card feature. The wine colour (red vs rose) is not stated on either label.\",\n  \"questions\": [\n    {\n      \"question\": \"What sugar level is printed on the label (e.g. dry, semi-dry, semi-sweet)?\",\n      \"answers\": {\n       \"A\": null,\n       \"B\": \"semi-dry\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the sugar level 'ПОЛУСУХОЕ' (semi-dry) at the bottom, it is card B; if no sugar level is printed, it is card A.\",\n  \"indistinguishable\": []\n}",
-    "differences": "The bottom of the label: Card B prints the sugar level 'ПОЛУСУХОЕ' (semi-dry) under the year, while Card A prints no sugar level at all. The labels also show different years (2023 vs 2024), but the vintage is not stated in the catalogue names, so it cannot be used as a card feature. The wine colour (red vs rose) is not stated on either label.",
+    "raw_reply": "{\n  \"differences\": \"The vintage year printed at the bottom of the label: 2023 on card A, 2024 on card B. Card B's label can also print the sugar level ПОЛУСУХОЕ under the year, which card A's label never shows; a label without ПОЛУСУХОЕ alone does not identify a card, so the year is the decisive feature.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed on the label?\",\n      \"answers\": {\n       \"A\": \"2023\",\n       \"B\": \"2024\"\n      }\n    },\n    {\n      \"question\": \"What sugar level is printed on the label (e.g. ПОЛУСУХОЕ)?\",\n      \"answers\": {\n       \"A\": null,\n       \"B\": \"semi-dry\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the year 2024 or the sugar level semi-dry (ПОЛУСУХОЕ), it is card B; if it shows the year 2023, it is card A.\",\n  \"indistinguishable\": []\n}",
+    "differences": "The vintage year printed at the bottom of the label: 2023 on card A, 2024 on card B. Card B's label can also print the sugar level ПОЛУСУХОЕ under the year, which card A's label never shows; a label without ПОЛУСУХОЕ alone does not identify a card, so the year is the decisive feature.",
     "questions": [
      {
       "id": "q1",
-      "question": "What sugar level is printed on the label (e.g. dry, semi-dry, semi-sweet)?",
+      "question": "What vintage year is printed on the label?",
+      "answers": {
+       "aratti-kaberne-po-belomu": "2023",
+       "aratti-kaberne-po-belomu-1": "2024"
+      },
+      "kind": "vintage",
+      "valid": true,
+      "evidence": {
+       "aratti-kaberne-po-belomu": [
+        "90ad15c5c176d0b5f1b532752bc205c0e867d99fd8a84326bac9050542602a26"
+       ],
+       "aratti-kaberne-po-belomu-1": [
+        "f787eb1948df18f6dc11c8593c7343059e95a422c79ae676a6fe16e2b86a46ae"
+       ]
+      }
+     },
+     {
+      "id": "q2",
+      "question": "What sugar level is printed on the label (e.g. ПОЛУСУХОЕ)?",
       "answers": {
        "aratti-kaberne-po-belomu": null,
        "aratti-kaberne-po-belomu-1": "semi-dry"
@@ -43780,20 +43798,27 @@
       }
      }
     ],
-    "rule": "If the label shows the sugar level 'ПОЛУСУХОЕ' (semi-dry) at the bottom, it is card B; if no sugar level is printed, it is card A.",
+    "rule": "If the label shows the year 2024 or the sugar level semi-dry (ПОЛУСУХОЕ), it is card B; if it shows the year 2023, it is card A.",
     "indistinguishable": [],
     "answer": {
-     "differences": "The bottom of the label: Card B prints the sugar level 'ПОЛУСУХОЕ' (semi-dry) under the year, while Card A prints no sugar level at all. The labels also show different years (2023 vs 2024), but the vintage is not stated in the catalogue names, so it cannot be used as a card feature. The wine colour (red vs rose) is not stated on either label.",
+     "differences": "The vintage year printed at the bottom of the label: 2023 on card A, 2024 on card B. Card B's label can also print the sugar level ПОЛУСУХОЕ under the year, which card A's label never shows; a label without ПОЛУСУХОЕ alone does not identify a card, so the year is the decisive feature.",
      "questions": [
       {
-       "question": "What sugar level is printed on the label (e.g. dry, semi-dry, semi-sweet)?",
+       "question": "What vintage year is printed on the label?",
+       "answers": {
+        "A": "2023",
+        "B": "2024"
+       }
+      },
+      {
+       "question": "What sugar level is printed on the label (e.g. ПОЛУСУХОЕ)?",
        "answers": {
         "A": null,
         "B": "semi-dry"
        }
       }
      ],
-     "rule": "If the label shows the sugar level 'ПОЛУСУХОЕ' (semi-dry) at the bottom, it is card B; if no sugar level is printed, it is card A.",
+     "rule": "If the label shows the year 2024 or the sugar level semi-dry (ПОЛУСУХОЕ), it is card B; if it shows the year 2023, it is card A.",
      "indistinguishable": []
     }
    },
@@ -55590,7 +55615,7 @@
   }
  },
  "note": "Label descriptions and cluster rules of one embedding. pipeline/build_label_rules.py writes this file. Read docs/plans/45_cluster-label-rules.md.",
- "updated_at": "2026-09-28T01:53:36+0300",
+ "updated_at": "2026-09-29T23:35:01+0300",
  "settings": {
   "vlm": "qwen3.5-9b-nvfp4",
   "thinking": false,

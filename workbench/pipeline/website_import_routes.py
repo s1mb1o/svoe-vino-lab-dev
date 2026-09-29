@@ -7,8 +7,14 @@ answer. A compare or an apply runs as a separate process, `import_website.py` wi
 so a restart of the server does not lose it. One job runs at a time. Read
 docs/plans/21_website-import-ui.md.
 
-    GET  /api/website-import                              the state of the newest run
-    POST /api/website-import/start                        start a compare (`--prepare`)
+The owner disabled the compare in the code on 2026-09-29: `import_website.COMPARE_ENABLED`
+is False. `start` answers 403 and starts no process. The dialog script hides the button
+`Import from website`.
+
+    GET  /api/website-import                              the state of the newest run and
+                                                          `compare_enabled`
+    POST /api/website-import/start                        start a compare (`--prepare`);
+                                                          403 while the compare is disabled
     POST /api/website-import/stop                         stop the job (SIGTERM)
     GET  /api/website-import/<run>/diff                   `diff.json` of a run, with `renames`
     POST /api/website-import/<run>/apply                  write `choices.json`, start `--apply`
@@ -159,10 +165,11 @@ def run_state(run):
 
 
 def state_view():
+    """Return the state of the newest run and `compare_enabled`. The dialog hides its
+    button when the compare is disabled."""
     runs = _runs()
-    if not runs:
-        return {"state": "none"}
-    return run_state(runs[-1])
+    view = {"state": "none"} if not runs else run_state(runs[-1])
+    return dict(view, compare_enabled=import_website.COMPARE_ENABLED)
 
 
 def _start(server, run, phase, extra=()):
@@ -189,6 +196,8 @@ def _start(server, run, phase, extra=()):
 
 
 def start(server):
+    if not import_website.COMPARE_ENABLED:
+        return _error(403, import_website.COMPARE_DISABLED)
     run = time.strftime("%Y%m%dT%H%M%S")
     if run in _runs():
         return _error(409, "a run %s exists; start again in one second" % run)

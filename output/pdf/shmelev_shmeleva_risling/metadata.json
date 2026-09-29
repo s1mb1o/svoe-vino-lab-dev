@@ -1,0 +1,60 @@
+{
+  "wine_slug": "shmelev_shmeleva_risling",
+  "producer": "Шмелев и Шмелева",
+  "wine_name": "Рислинг Алола",
+  "series_marker": "* 1 *",
+  "barcode": {
+    "format": "EAN-13",
+    "value": "4618081983745",
+    "prefix_requested": "4618081983",
+    "random_suffix": "74",
+    "check_digit": "5",
+    "is_personal_test_code": true
+  },
+  "is_fictional_personal_label": true,
+  "back_label_copy": [
+    "Есть места, которые хочется сохранить в памяти: тихая вода, прохладный воздух и длинный вечер без спешки. Алола для нас именно такое место. Этот семейный выпуск посвящён простым радостям: быть рядом, собирать друзей за одним столом и находить повод для маленького праздника.",
+    "Мы придумали этот рислинг как открытку с берега. В его образе соединились зелёное яблоко, белые цветы, лимонная цедра и лёгкая прохлада утреннего тумана. У этого вина наша история.",
+    "Шмелев и Шмелева: две фамилии на одной этикетке и одна общая история. Первый номер нашей личной коллекции. Открывать в хорошей компании, подавать с интересными историями и оставлять время для разговора. Сохраните этикетку на память о лете, воде и самых близких людях."
+  ],
+  "front": {
+    "width_mm": 90,
+    "height_mm": 120,
+    "image": "shmelev_shmeleva_risling_front.png",
+    "pdf": "shmelev_shmeleva_risling_front.pdf",
+    "image_pixels": [
+      2126,
+      2835
+    ],
+    "sha256": "771973521d48cc48ecf4f8931b243fb821262b9584db1e24a2d6c606f5be45ad"
+  },
+  "back": {
+    "width_mm": 80,
+    "height_mm": 120,
+    "image": "shmelev_shmeleva_risling_back.png",
+    "pdf": "shmelev_shmeleva_risling_back.pdf",
+    "image_pixels": [
+      1890,
+      2835
+    ],
+    "sha256": "6d93fc6f18702236111df8236ab17ca7211cfc2bcbcc371dd759fa744a12162e"
+  },
+  "print": {
+    "file": "shmelev_shmeleva_risling_A4_print.pdf",
+    "page": "A4",
+    "scale_percent": 100,
+    "pairs_per_sheet": 2,
+    "bleed_mm": 2,
+    "cut_line": "gray dashed rectangle"
+  },
+  "image_dpi": 600,
+  "dataset_imported": false,
+  "notes": "The label text is creative copy. No origin, vintage, volume, or alcohol value is asserted.",
+  "validation": {
+    "pdf_page_sizes": "verified",
+    "cyrillic_text": "verified",
+    "visual_layout": "verified",
+    "barcode_decoded": "4618081983745",
+    "barcode_decoder": "OpenCV 4.13.0, EAN_13, rendered PNG at 50 percent"
+  }
+}
