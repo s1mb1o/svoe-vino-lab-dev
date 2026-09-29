@@ -124,6 +124,12 @@
 {"rowid":187,"set_name":"my-1","wine_slug":"vysokij-bereg-risling-zelenaya-seriya","group_no":3}
 {"rowid":188,"set_name":"my-1","wine_slug":"vysokij-bereg-risling-zelenaya-seriya-1","group_no":3}
 {"rowid":189,"set_name":"my-1","wine_slug":"vysokij-bereg-risling-zelenaya-seriya-2","group_no":3}
+{"rowid":190,"set_name":"test-1","wine_slug":"belbek-belbek-pino-nuar-krasnoe-suhoe-13","group_no":0}
+{"rowid":191,"set_name":"test-1","wine_slug":"belbek-pino-nuar-krasnoe-suhoe-133","group_no":0}
+{"rowid":192,"set_name":"test-1","wine_slug":"kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125","group_no":2}
+{"rowid":193,"set_name":"test-1","wine_slug":"shato-taman-bryut","group_no":1}
+{"rowid":194,"set_name":"test-1","wine_slug":"shato-taman-bryut-1","group_no":1}
+{"rowid":195,"set_name":"test-1","wine_slug":"shato-taman-kaberne","group_no":2}
 {"rowid":64,"set_name":"vlmrerank-8b-failed","wine_slug":"abrau-dyurso-pino-nuar-krasnoe-suhoe-12","group_no":4}
 {"rowid":65,"set_name":"vlmrerank-8b-failed","wine_slug":"abrau-dyurso-pino-nuar-krasnoe-suhoe-125","group_no":4}
 {"rowid":66,"set_name":"vlmrerank-8b-failed","wine_slug":"abrau-dyurso-risling-beloe-suhoe-12","group_no":5}

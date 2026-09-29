@@ -1,0 +1,111 @@
+{
+  "counts": {
+    "candidates": 4674,
+    "images": 0,
+    "items": 4642,
+    "omissions": 3,
+    "planned_items": 4645,
+    "wines": 2094
+  },
+  "created_at": "2026-09-28T15:29:03+0300",
+  "embedding": {
+    "backend": "openai",
+    "base_url": "http://192.168.86.14:18081/v1",
+    "batch_size": 16,
+    "extra_body": {
+      "max_num_patches": 512
+    },
+    "model": "siglip2-so400m-patch16-naflex",
+    "name": "gx10-siglip2-so400m-patch16-naflex-p512",
+    "views": {
+      "full": [
+        {
+          "step": "segment",
+          "target": "package"
+        },
+        {
+          "step": "remove_background"
+        },
+        {
+          "step": "white_background"
+        },
+        {
+          "aspect": "keep",
+          "max_size": 1024,
+          "step": "resize",
+          "upscale": false
+        }
+      ],
+      "label": [
+        {
+          "step": "segment",
+          "target": "label"
+        },
+        {
+          "step": "remove_background"
+        },
+        {
+          "step": "white_background"
+        },
+        {
+          "aspect": "keep",
+          "max_size": 1024,
+          "step": "resize",
+          "upscale": false
+        }
+      ]
+    }
+  },
+  "files": {
+    "candidates.jsonl": {
+      "bytes": 588149,
+      "sha256": "cda17fd54bcf63739626effe424be319b919c6ca0898a7d39767ee0dcbfa99b2"
+    },
+    "items.jsonl": {
+      "bytes": 2143055,
+      "sha256": "b4052f22ff9635afcf41228e371b2b23e81f19761baa2bf3a7f198fd3404687c"
+    },
+    "omissions.jsonl": {
+      "bytes": 759,
+      "sha256": "009437c0a45109c31341f2c5bb11154e53a942b59ec36ae9e29e84b99729fbea"
+    },
+    "vectors.npy": {
+      "bytes": 21390464,
+      "sha256": "157fd93810f9d2ef843856e8eb26a9dfd37784329beb4617b03c19030631c99e"
+    },
+    "wines.jsonl": {
+      "bytes": 1174635,
+      "sha256": "cdd53eb8be5dbb8ffbeafda7513398551359c4bb9eedcffe82f249bf455abc70"
+    }
+  },
+  "format": "svoe-vino-matcher-bundle",
+  "format_version": 2,
+  "images": {
+    "count": 0,
+    "included": false,
+    "manifest": null
+  },
+  "scoring": {
+    "item_reduction": "max",
+    "similarity": "dot_product",
+    "view_reduction": "mean"
+  },
+  "source": {
+    "embedding": "gx10-siglip2-so400m-patch16-naflex-p512",
+    "index_updated_at": "2026-09-28T05:04:04+0300",
+    "steps_version": 1,
+    "view_config_hash": {
+      "full": "f690aa1eb9963439e8eed55ca0f8b0277afb787b7e686fabda65dd41231c0745",
+      "label": "c7c6778413ad2ff573f105f4d121e98aaabd53d0ad0227e0c8480dccbd93aee0"
+    }
+  },
+  "vectors": {
+    "dtype": "float32",
+    "file": "vectors.npy",
+    "normalized": "l2",
+    "shape": [
+      4642,
+      1152
+    ]
+  }
+}

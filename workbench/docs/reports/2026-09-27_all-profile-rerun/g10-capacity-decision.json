@@ -1,0 +1,43 @@
+{
+  "recorded_at": "2026-09-27T06:52:49.077137+03:00",
+  "status": "unavailable",
+  "scope": "All four authorized local G10 profiles under the unchanged current queue memory policy. No inference attempt.",
+  "profiles": [
+    "local-siglip2-p256-as-is",
+    "local-siglip2-p256-crop",
+    "barcode-local-siglip2-p256-as-is",
+    "barcode-local-siglip2-p256-crop"
+  ],
+  "raw_observation": {
+    "path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g10-readiness-final.json",
+    "sha256": "2d7757606d3b96501baa0ad6246909279ff45c88eab18f5d046f8f93864c3d3f"
+  },
+  "physical_memory_gib": 32.0,
+  "total_additional_allowance_gib": 16,
+  "reserve_gib": 20,
+  "required_total_gib": 36,
+  "physical_upper_bound_passes": false,
+  "gate_would_pass": false,
+  "estimate_is_measured_peak": false,
+  "reason": "The conservative total additional allowance is16GiB. The unchanged queue gate requires20GiB reserve for each backend. Their36GiB sum exceeds the32GiB physical upper bound even before existing memory use. Current pressure and swap also do not support loading. This is a policy-scoped unavailable outcome, not proof that the model can never run on this Mac.",
+  "secondary_observations": {
+    "pressure_code": 2,
+    "memory_pressure_free_percent": 40,
+    "free_pages_gib": 0.078399658203125,
+    "compressor_occupied_gib": 11.106719970703125,
+    "swap_used_gib": 35.34826171875,
+    "swap_free_gib": 0.65173828125
+  },
+  "not_performed": [
+    "No model or torch load.",
+    "No model metadata request.",
+    "No inference or test image transfer.",
+    "No POST or run attempt.",
+    "No application stop, service change, or policy reduction.",
+    "No weight-payload hashing or child offline-environment verification after capacity failed."
+  ],
+  "policy_evidence": {
+    "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/local-readiness-preliminary.md": "5112ad84f1fd4821bc1bffe73703bfa3553376ffca564f22ca818ac799809690",
+    "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/scripts/run_internal_profile_queue.py": "a048f4f24c4088294e776099ab7d207e534f5a8a25693af756f31ca9c1f8961b"
+  }
+}

@@ -3,6 +3,8 @@ __pycache__/
 .venv/
 predictions.jsonl
 !/requirements.lock
-# Embedding bundles. workbench/scripts/build_matcher_bundle.py writes them. A bundle
-# holds a vector file of about 21 MB, so it stays out of git. The deploy supplies it.
-/data/
+# Embedding bundles. workbench/scripts/build_matcher_bundle.py writes them. On 2026-09-29
+# the owner asked to put the bundle of the default pipeline siglip2-p512-as-is into git
+# (25 MB). A clone can then run the real matcher. Other bundles and old copies stay out.
+/data/*
+!/data/gx10-siglip2-so400m-patch16-naflex-p512/

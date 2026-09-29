@@ -6,7 +6,6 @@ node_modules/
 !.env.example
 coverage/
 reports/
-public/presentations/
 public/presentation/video.mp4
 .DS_Store
 *.log

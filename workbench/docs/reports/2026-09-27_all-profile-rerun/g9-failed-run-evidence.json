@@ -1,0 +1,1095 @@
+{
+  "recorded_at": "2026-09-27T06:45:59.932473+03:00",
+  "scope": "Offline failure preservation only. No retry, row removal, relabeling, rescoring or queue change.",
+  "profile": "siglip2-p14-384-as-is",
+  "run_id": "2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my",
+  "pid_recorded": 77510,
+  "status": "invalid_completion",
+  "success": false,
+  "failure_visible": true,
+  "source_run_directory": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/runs/2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my",
+  "archived_artifact_directory": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g9-failed-run-artifacts",
+  "artifacts": {
+    "run.json": {
+      "source": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/runs/2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my/run.json",
+      "archive": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g9-failed-run-artifacts/run.json",
+      "bytes": 2914,
+      "source_sha256": "3d902cc4cff548f05ba8f8eecb9392a427e0227fba8ce52583dfdcfcfc8d1626",
+      "archive_sha256": "3d902cc4cff548f05ba8f8eecb9392a427e0227fba8ce52583dfdcfcfc8d1626",
+      "source_hash_unchanged_after_copy": true
+    },
+    "metrics.json": {
+      "source": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/runs/2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my/metrics.json",
+      "archive": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g9-failed-run-artifacts/metrics.json",
+      "bytes": 1583,
+      "source_sha256": "fed175a5010c78c1bf1abefb84dc18efe4c15cf47792bc5507d16322a6cf2fb4",
+      "archive_sha256": "fed175a5010c78c1bf1abefb84dc18efe4c15cf47792bc5507d16322a6cf2fb4",
+      "source_hash_unchanged_after_copy": true
+    },
+    "queries.jsonl": {
+      "source": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/runs/2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my/queries.jsonl",
+      "archive": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g9-failed-run-artifacts/queries.jsonl",
+      "bytes": 730084,
+      "source_sha256": "99673ed979606f881fcfa4bf26f0156f9f55d58e061dd3e624b74f2a3bae91dc",
+      "archive_sha256": "99673ed979606f881fcfa4bf26f0156f9f55d58e061dd3e624b74f2a3bae91dc",
+      "source_hash_unchanged_after_copy": true
+    },
+    "results.jsonl": {
+      "source": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/runs/2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my/results.jsonl",
+      "archive": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g9-failed-run-artifacts/results.jsonl",
+      "bytes": 20519187,
+      "source_sha256": "dbc2e77f32af6bc1a595b9184dd29b058d1657be3b37a3ae5c9190825bd4388d",
+      "archive_sha256": "dbc2e77f32af6bc1a595b9184dd29b058d1657be3b37a3ae5c9190825bd4388d",
+      "source_hash_unchanged_after_copy": true
+    },
+    "predictions.jsonl": {
+      "source": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/runs/2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my/predictions.jsonl",
+      "archive": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g9-failed-run-artifacts/predictions.jsonl",
+      "bytes": 632360,
+      "source_sha256": "1b50febec1180f41cf1468ca634e7135dafd0a91e3c9d87af30fb90b0b6ce2bc",
+      "archive_sha256": "1b50febec1180f41cf1468ca634e7135dafd0a91e3c9d87af30fb90b0b6ce2bc",
+      "source_hash_unchanged_after_copy": true
+    }
+  },
+  "queue_snapshot": {
+    "path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/queue.json",
+    "sha256_at_read": "bedd1662654e7f493b87434ed61773e4391663eb27b6280919619acfd49df1cb",
+    "profile": {
+      "name": "siglip2-p14-384-as-is",
+      "backend": "embedding",
+      "embedding": "gx10-siglip2-so400m-patch14-384",
+      "model_backend": "openai",
+      "workers": 4,
+      "use_cache": true,
+      "use_barcode": true,
+      "runnable_at_queue_time": true,
+      "reason_at_queue_time": null,
+      "status": "invalid_completion",
+      "run_id": "2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my",
+      "authorized_to_start": true,
+      "pid": 77510
+    },
+    "selected_attempt_id": "siglip2-p14-384-as-is-a2e911af73cb472db6fafe8794cf0cd5"
+  },
+  "attempt_evidence": {
+    "path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/attempts/siglip2-p14-384-as-is-a2e911af73cb472db6fafe8794cf0cd5/attempt.json",
+    "sha256": "7cc61b32d1b2601411fc12a031eed9f594fe706e5320e95272182dd773db79be",
+    "state": "invalid_completion",
+    "reason": "terminal artifacts do not prove complete, error-free paired coverage",
+    "recorded_process_state": {
+      "state": "absent",
+      "command": "<defunct>",
+      "process_status": "Z",
+      "termination_evidence": "zombie; process exited but parent has not reaped it"
+    },
+    "runner_exit_verified": true,
+    "launch_identity_sha256": "f5aaab2d2b5900f586a3ae10d594f01e76fde494e6e65effeedfde6d61e67c54",
+    "launch_identity_hash_valid": true,
+    "final_event": {
+      "event": "done",
+      "t": 1790480524.281,
+      "time": "2026-09-27T06:42:04+0300",
+      "run_id": "2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my",
+      "message": "recall@1 0.7676, recall@5 0.9319",
+      "answered": 2228,
+      "errors": 8,
+      "recall_at_1": 0.7676,
+      "recall_at_5": 0.9319
+    },
+    "artifact_hashes_were_missing_from_attempt": true,
+    "saved_run_metrics_were_missing_from_attempt": true
+  },
+  "artifact_coverage": {
+    "queries_rows": 2228,
+    "results_rows": 2228,
+    "predictions_rows": 2228,
+    "unique_query_ids": 2228,
+    "unique_image_digests": 1851,
+    "positive_rows": 1644,
+    "negative_rows": 584,
+    "missing_query_ids": [],
+    "extra_query_ids": [],
+    "duplicated_query_ids": [],
+    "result_query_identity_matches_frozen_launch": true,
+    "predictions_match_results": true,
+    "stored_status_counts": {
+      "200": 2220,
+      "null": 8
+    },
+    "top_level_error_rows": 8,
+    "rows_with_error_trace_steps": 8,
+    "outcomes": {
+      "no_answer": 8,
+      "miss": 374,
+      "hit": 1262,
+      "other_slug_at_1": 487,
+      "false_match_at_1": 97
+    }
+  },
+  "raw_run_metadata": {
+    "answered": 2228,
+    "backend": {
+      "embedding": "gx10-siglip2-so400m-patch14-384",
+      "extra_body": {},
+      "id": "siglip2-p14-384-as-is",
+      "kind": "embedding",
+      "label": "lab pipeline siglip2-p14-384-as-is: the embedding gx10-siglip2-so400m-patch14-384",
+      "model": "siglip2-so400m-patch14-384",
+      "model_backend": "openai",
+      "sam3": {
+        "endpoint": "http://192.168.86.14:18081/upstream/sam3",
+        "label": "SAM3 'barcode, bottle, label, bottle neck, can', threshold 0.35, mask 0.5, max side 1536; the largest label that is not the package (build_labels.py), else the largest label; a second label on the bottle, less than 0.8 inside it, with >= 0.25 of its area and >= 0.6 of its width: the box of the labels, no mask; else the mask: mask blur 0.005 of the long side, keep >= 64/255; edge blur 1.0 px",
+        "package": "SAM3 'wine bottle, can, packet, box', threshold 0.35, mask 0.5, max side 1536; 'wine bottle' first, except a bottle printed on a packet or a box (cover 0.9, box area < 0.1); mask blur 0.005 of the long side, keep >= 64/255; edge blur 1.0 px"
+      },
+      "score": "the mean of the best cosine of the wine in each view of the photo; the current items of the index alone",
+      "top_k": 10,
+      "url": "http://192.168.86.14:18081/v1/embeddings",
+      "views": {
+        "full": [
+          {
+            "step": "white_background"
+          },
+          {
+            "aspect": "keep",
+            "max_size": 1024,
+            "step": "resize",
+            "upscale": false
+          }
+        ]
+      },
+      "workers": 1
+    },
+    "based_on": null,
+    "config": {
+      "backends_file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/backends.yaml",
+      "database_file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/data/lab.sqlite3"
+    },
+    "configuration": "siglip2-p14-384-as-is",
+    "embeddings": {
+      "built_at": "2026-09-26T11:44:12+0300",
+      "dim": 1152,
+      "index_file": "gx10-siglip2-so400m-patch14-384/vectors-e312c40e.npy",
+      "items": {
+        "current": 4054,
+        "failed": 2,
+        "missing": 127,
+        "stale": 0
+      },
+      "wines": {
+        "full": 2051,
+        "label": 2047
+      }
+    },
+    "finished": "2026-09-27T06:42:04+0300",
+    "git_commit": "d5f5e8f",
+    "left_out": {
+      "no label": 1487,
+      "unusable": 251,
+      "variant": 77
+    },
+    "options": {
+      "backend": "siglip2-p14-384-as-is",
+      "database": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/data/lab.sqlite3",
+      "dry_run": false,
+      "limit": null,
+      "negative_strict": false,
+      "only": "all",
+      "photos_dir": null,
+      "set": "my",
+      "variants": "off",
+      "workers": 4
+    },
+    "query_set": {
+      "negative": 584,
+      "positive": 1644,
+      "total": 2228
+    },
+    "run_id": "2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my",
+    "started": "2026-09-27T06:39:14+0300",
+    "tool": "pipeline/benchmark.py",
+    "use_cache": true,
+    "wall_s": 169.9
+  },
+  "raw_metrics": {
+    "backend": "siglip2-p14-384-as-is",
+    "has_scores": true,
+    "latency_ms": {
+      "comparable": false,
+      "max": 49806,
+      "median": 138,
+      "p95": 241,
+      "sla_ms": 3000,
+      "within_sla": 2216,
+      "within_sla_share": 0.9946
+    },
+    "negative": {
+      "errors": 0,
+      "false_match_at_1": 97,
+      "false_match_in_top_k": 465,
+      "false_match_scores": {
+        "max": 0.9887,
+        "median": 0.7414
+      },
+      "n": 584,
+      "no_answer": 0,
+      "other_slug_at_1": 487,
+      "slug_rank_histogram": {
+        "1": 97,
+        "2": 133,
+        "3": 75,
+        "4-10": 160,
+        "absent": 119
+      }
+    },
+    "negative_strict": false,
+    "no_match": null,
+    "positive": {
+      "answered": 1636,
+      "errors": 8,
+      "f1_at_1": {
+        "f1": 0.7695,
+        "precision": 0.7714,
+        "recall": 0.7676
+      },
+      "f1_at_5": {
+        "f1": 0.9341,
+        "precision": 0.9364,
+        "recall": 0.9319
+      },
+      "match_share": 0.7676,
+      "mrr": 0.841,
+      "n": 1644,
+      "near_duplicate_confusion": 31,
+      "no_answer": 8,
+      "rank_histogram": {
+        "1": 1262,
+        "2": 177,
+        "3": 57,
+        "4-10": 67,
+        "absent": 81
+      },
+      "recall_at_1": 0.7676,
+      "recall_at_10": 0.9507,
+      "recall_at_5": 0.9319,
+      "score_margin": {
+        "correct_median": 0.04,
+        "wrong_median": 0.006
+      },
+      "target_match_share": 0.9
+    },
+    "queries": {
+      "negative": 584,
+      "no_match": 0,
+      "positive": 1644,
+      "total": 2228,
+      "unlabelled": 0,
+      "variant": 0
+    },
+    "run_id": "2026-09-27T033914Z-lab-siglip2-p14-384-as-is-my",
+    "top_k": 10,
+    "unlabelled": null,
+    "wall_s": 169.9
+  },
+  "failed_query_ids": [
+    "q-000001",
+    "q-000002",
+    "q-000003",
+    "q-000004",
+    "q-000005",
+    "q-000006",
+    "q-000007",
+    "q-000008"
+  ],
+  "failed_strata": {
+    "labels": {
+      "positive": 8
+    },
+    "unique_image_digests": 8,
+    "distinct_place_slugs": 4,
+    "filename_metadata": {
+      "manual": 4,
+      "conf095": 4
+    },
+    "stored_http_status": {
+      "null": 8
+    },
+    "reported_upstream_http_status": {
+      "500": 8
+    },
+    "failed_trace_stage": {
+      "embed": 8
+    },
+    "outcomes": {
+      "no_answer": 8
+    }
+  },
+  "failure_types": [
+    {
+      "count": 8,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}"
+    }
+  ],
+  "raw_failed_results": [
+    {
+      "query_id": "q-000001",
+      "image_path": "a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135/01_manual.jpg",
+      "image_sha256": "8dae77ab414df1a6b25c67b0123023c7dad6b43baf74721132a96b894917e995",
+      "slug": "a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135",
+      "label": "positive",
+      "truth": [
+        "a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135"
+      ],
+      "candidates": [],
+      "predicted_slug": null,
+      "rank_of_truth": null,
+      "outcome": "no_answer",
+      "latency_ms": 49806,
+      "http_status": null,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+      "trace": {
+        "v": 1,
+        "steps": [
+          {
+            "id": "input",
+            "start_ms": 0.0,
+            "out": {
+              "width": 480,
+              "height": 640
+            },
+            "ms": 57.0
+          },
+          {
+            "id": "view",
+            "view": "full",
+            "start_ms": 57.1,
+            "out": {
+              "width": 480,
+              "height": 640,
+              "bytes": 314145,
+              "sha256": "c82d15fe8d1d50de99157fb79acccd31870b8dee450f4ecacd40154e9587c206"
+            },
+            "ms": 36.7
+          },
+          {
+            "id": "embed",
+            "start_ms": 93.7,
+            "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+            "ms": 49711.9
+          }
+        ]
+      }
+    },
+    {
+      "query_id": "q-000002",
+      "image_path": "a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135/02_manual.jpg",
+      "image_sha256": "7eaa1b7d934c606b67795e938e94ec5e65b6fd8086c98c6bfaca6b29119f75c0",
+      "slug": "a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135",
+      "label": "positive",
+      "truth": [
+        "a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135"
+      ],
+      "candidates": [],
+      "predicted_slug": null,
+      "rank_of_truth": null,
+      "outcome": "no_answer",
+      "latency_ms": 49805,
+      "http_status": null,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+      "trace": {
+        "v": 1,
+        "steps": [
+          {
+            "id": "input",
+            "start_ms": 0.0,
+            "out": {
+              "width": 1000,
+              "height": 1000
+            },
+            "ms": 67.4
+          },
+          {
+            "id": "view",
+            "view": "full",
+            "start_ms": 67.4,
+            "out": {
+              "width": 1000,
+              "height": 1000,
+              "bytes": 277926,
+              "sha256": "0768074fce4797b7ee4967b96ef7feb4f73adb3a9ef7931359293ecd04622357"
+            },
+            "ms": 38.2
+          },
+          {
+            "id": "embed",
+            "start_ms": 105.6,
+            "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+            "ms": 49699.8
+          }
+        ]
+      }
+    },
+    {
+      "query_id": "q-000003",
+      "image_path": "a-gordienko-m-nikolaev-sira-nuvo-krasnoe-suhoe-115/01_manual.jpg",
+      "image_sha256": "95decc72625b7cb4b737d18e47deb3d0a014301513f7da5aec118333fea7d829",
+      "slug": "a-gordienko-m-nikolaev-sira-nuvo-krasnoe-suhoe-115",
+      "label": "positive",
+      "truth": [
+        "a-gordienko-m-nikolaev-sira-nuvo-krasnoe-suhoe-115"
+      ],
+      "candidates": [],
+      "predicted_slug": null,
+      "rank_of_truth": null,
+      "outcome": "no_answer",
+      "latency_ms": 49806,
+      "http_status": null,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+      "trace": {
+        "v": 1,
+        "steps": [
+          {
+            "id": "input",
+            "start_ms": 0.0,
+            "out": {
+              "width": 480,
+              "height": 640
+            },
+            "ms": 57.0
+          },
+          {
+            "id": "view",
+            "view": "full",
+            "start_ms": 57.1,
+            "out": {
+              "width": 480,
+              "height": 640,
+              "bytes": 299739,
+              "sha256": "a01de74202ad83a468b24598ebfaa72d4af890ea7bbb9823bde3076360126f4d"
+            },
+            "ms": 35.5
+          },
+          {
+            "id": "embed",
+            "start_ms": 92.6,
+            "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+            "ms": 49713.6
+          }
+        ]
+      }
+    },
+    {
+      "query_id": "q-000004",
+      "image_path": "a-gordienko-m-nikolaev-sira-nuvo-krasnoe-suhoe-115/02_manual.jpg",
+      "image_sha256": "31138ce51acd93c99dc459b4297014bdd91860c6cec7b48de23b0ee7f5e8554d",
+      "slug": "a-gordienko-m-nikolaev-sira-nuvo-krasnoe-suhoe-115",
+      "label": "positive",
+      "truth": [
+        "a-gordienko-m-nikolaev-sira-nuvo-krasnoe-suhoe-115"
+      ],
+      "candidates": [],
+      "predicted_slug": null,
+      "rank_of_truth": null,
+      "outcome": "no_answer",
+      "latency_ms": 49805,
+      "http_status": null,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+      "trace": {
+        "v": 1,
+        "steps": [
+          {
+            "id": "input",
+            "start_ms": 0.0,
+            "out": {
+              "width": 1000,
+              "height": 1000
+            },
+            "ms": 65.1
+          },
+          {
+            "id": "view",
+            "view": "full",
+            "start_ms": 65.5,
+            "out": {
+              "width": 1000,
+              "height": 1000,
+              "bytes": 287474,
+              "sha256": "4866120c7026365476d5768c1e9ef3165b19559bb6a460c359ae8805eb5dcbf4"
+            },
+            "ms": 34.1
+          },
+          {
+            "id": "embed",
+            "start_ms": 99.7,
+            "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+            "ms": 49705.3
+          }
+        ]
+      }
+    },
+    {
+      "query_id": "q-000005",
+      "image_path": "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12/01_conf095.jpg",
+      "image_sha256": "5b782aaea8f11cad314ba3a75ee24b93686934b6e3ed04223771ae2b5ba53a29",
+      "slug": "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12",
+      "label": "positive",
+      "truth": [
+        "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12"
+      ],
+      "candidates": [],
+      "predicted_slug": null,
+      "rank_of_truth": null,
+      "outcome": "no_answer",
+      "latency_ms": 31123,
+      "http_status": null,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+      "trace": {
+        "v": 1,
+        "steps": [
+          {
+            "id": "input",
+            "start_ms": 0.0,
+            "out": {
+              "width": 600,
+              "height": 831
+            },
+            "ms": 3.1
+          },
+          {
+            "id": "view",
+            "view": "full",
+            "start_ms": 3.1,
+            "out": {
+              "width": 600,
+              "height": 831,
+              "bytes": 485781,
+              "sha256": "a91272fec6a2117ec76d2eeb2b175e308704a5c6c65b2d1224a9349f6e1d266b"
+            },
+            "ms": 29.7
+          },
+          {
+            "id": "embed",
+            "start_ms": 32.8,
+            "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+            "ms": 31090.1
+          }
+        ]
+      }
+    },
+    {
+      "query_id": "q-000006",
+      "image_path": "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12/02_conf095.jpg",
+      "image_sha256": "82bc6bc7c8dd53eeb5a71ecde901eb9d6ce9cb733e68436e5c8d0b82cfd4b929",
+      "slug": "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12",
+      "label": "positive",
+      "truth": [
+        "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12"
+      ],
+      "candidates": [],
+      "predicted_slug": null,
+      "rank_of_truth": null,
+      "outcome": "no_answer",
+      "latency_ms": 31124,
+      "http_status": null,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+      "trace": {
+        "v": 1,
+        "steps": [
+          {
+            "id": "input",
+            "start_ms": 0.0,
+            "out": {
+              "width": 1046,
+              "height": 1200
+            },
+            "ms": 9.0
+          },
+          {
+            "id": "view",
+            "view": "full",
+            "start_ms": 9.0,
+            "out": {
+              "width": 893,
+              "height": 1024,
+              "bytes": 1008005,
+              "sha256": "447837a19b23a521476f6343e2148c788c0c186dfbc4b21cba39a02ba94cc12e"
+            },
+            "ms": 70.1
+          },
+          {
+            "id": "embed",
+            "start_ms": 79.2,
+            "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+            "ms": 31044.9
+          }
+        ]
+      }
+    },
+    {
+      "query_id": "q-000007",
+      "image_path": "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115/01_conf095.jpg",
+      "image_sha256": "3b4d56bf1a0298c40b0cbe3b62431dc2d4b2e7654d1ab3823d1555d34483ded1",
+      "slug": "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115",
+      "label": "positive",
+      "truth": [
+        "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115"
+      ],
+      "candidates": [],
+      "predicted_slug": null,
+      "rank_of_truth": null,
+      "outcome": "no_answer",
+      "latency_ms": 31123,
+      "http_status": null,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+      "trace": {
+        "v": 1,
+        "steps": [
+          {
+            "id": "input",
+            "start_ms": 0.0,
+            "out": {
+              "width": 675,
+              "height": 1200
+            },
+            "ms": 8.4
+          },
+          {
+            "id": "view",
+            "view": "full",
+            "start_ms": 8.4,
+            "out": {
+              "width": 576,
+              "height": 1024,
+              "bytes": 849763,
+              "sha256": "da19088dfc3dc6f03266ef54ccec91926a124b7104b9a94a7f1a29d6e80f46ac"
+            },
+            "ms": 47.1
+          },
+          {
+            "id": "embed",
+            "start_ms": 55.6,
+            "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+            "ms": 31067.6
+          }
+        ]
+      }
+    },
+    {
+      "query_id": "q-000008",
+      "image_path": "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115/02_conf095.jpg",
+      "image_sha256": "a2168c1434ead3a2f4ea1f19b80aaa3fbc1893e194aecc456bfb895191516558",
+      "slug": "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115",
+      "label": "positive",
+      "truth": [
+        "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115"
+      ],
+      "candidates": [],
+      "predicted_slug": null,
+      "rank_of_truth": null,
+      "outcome": "no_answer",
+      "latency_ms": 31123,
+      "http_status": null,
+      "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+      "trace": {
+        "v": 1,
+        "steps": [
+          {
+            "id": "input",
+            "start_ms": 0.0,
+            "out": {
+              "width": 719,
+              "height": 1041
+            },
+            "ms": 4.3
+          },
+          {
+            "id": "view",
+            "view": "full",
+            "start_ms": 4.3,
+            "out": {
+              "width": 707,
+              "height": 1024,
+              "bytes": 689030,
+              "sha256": "2ae7ecb5da2d7fa1cd1fae18d632244017ea8b66bb0fe0b781ba4ddd9f965426"
+            },
+            "ms": 59.1
+          },
+          {
+            "id": "embed",
+            "start_ms": 63.4,
+            "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+            "ms": 31059.6
+          }
+        ]
+      }
+    }
+  ],
+  "timestamp_evidence": {
+    "timezone": "Europe/Moscow, UTC+03:00",
+    "intent_at": "2026-09-27T06:39:11.409391+03:00",
+    "run_started": "2026-09-27T06:39:14+0300",
+    "run_finished": "2026-09-27T06:42:04+0300",
+    "runner_wall_s": 169.9,
+    "first_retry_at": "2026-09-27T06:39:38+0300",
+    "last_retry_at": "2026-09-27T06:40:23+0300",
+    "first_error_progress_at": "2026-09-27T06:40:04+0300",
+    "last_error_progress_at": "2026-09-27T06:40:35+0300",
+    "error_increment_progress_events": [
+      {
+        "event": "progress",
+        "t": 1790480404.129,
+        "time": "2026-09-27T06:40:04+0300",
+        "done": 1,
+        "todo": 2228,
+        "errors": 1
+      },
+      {
+        "event": "progress",
+        "t": 1790480404.129,
+        "time": "2026-09-27T06:40:04+0300",
+        "done": 2,
+        "todo": 2228,
+        "errors": 2
+      },
+      {
+        "event": "progress",
+        "t": 1790480404.129,
+        "time": "2026-09-27T06:40:04+0300",
+        "done": 3,
+        "todo": 2228,
+        "errors": 3
+      },
+      {
+        "event": "progress",
+        "t": 1790480404.13,
+        "time": "2026-09-27T06:40:04+0300",
+        "done": 4,
+        "todo": 2228,
+        "errors": 4
+      },
+      {
+        "event": "progress",
+        "t": 1790480435.253,
+        "time": "2026-09-27T06:40:35+0300",
+        "done": 5,
+        "todo": 2228,
+        "errors": 5
+      },
+      {
+        "event": "progress",
+        "t": 1790480435.254,
+        "time": "2026-09-27T06:40:35+0300",
+        "done": 6,
+        "todo": 2228,
+        "errors": 6
+      },
+      {
+        "event": "progress",
+        "t": 1790480435.254,
+        "time": "2026-09-27T06:40:35+0300",
+        "done": 7,
+        "todo": 2228,
+        "errors": 7
+      },
+      {
+        "event": "progress",
+        "t": 1790480435.254,
+        "time": "2026-09-27T06:40:35+0300",
+        "done": 8,
+        "todo": 2228,
+        "errors": 8
+      }
+    ],
+    "first_following_progress_without_new_errors": {
+      "event": "progress",
+      "t": 1790480443.968,
+      "time": "2026-09-27T06:40:43+0300",
+      "done": 9,
+      "todo": 2228,
+      "errors": 8
+    },
+    "per_query_absolute_timestamps_recorded": false
+  },
+  "job_log_evidence": {
+    "path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/attempts/siglip2-p14-384-as-is-a2e911af73cb472db6fafe8794cf0cd5/job.log",
+    "sha256": "5135e146b072a7fd6c36ac712f03ee55f5481d681ec1628c340c0d8d6594a2d2",
+    "event_counts": {
+      "start": 1,
+      "run_dir": 1,
+      "retry": 24,
+      "progress": 2228,
+      "log": 90,
+      "done": 1
+    },
+    "retry_event_count": 24,
+    "retry_attempt_counts": {
+      "1": 8,
+      "2": 8,
+      "3": 8
+    },
+    "retry_groups": [
+      {
+        "time": "2026-09-27T06:39:38+0300",
+        "attempt": 1,
+        "wait_s": 2,
+        "event_count": 4
+      },
+      {
+        "time": "2026-09-27T06:39:44+0300",
+        "attempt": 2,
+        "wait_s": 4,
+        "event_count": 4
+      },
+      {
+        "time": "2026-09-27T06:39:52+0300",
+        "attempt": 3,
+        "wait_s": 8,
+        "event_count": 4
+      },
+      {
+        "time": "2026-09-27T06:40:08+0300",
+        "attempt": 1,
+        "wait_s": 2,
+        "event_count": 4
+      },
+      {
+        "time": "2026-09-27T06:40:15+0300",
+        "attempt": 2,
+        "wait_s": 4,
+        "event_count": 4
+      },
+      {
+        "time": "2026-09-27T06:40:23+0300",
+        "attempt": 3,
+        "wait_s": 8,
+        "event_count": 4
+      }
+    ],
+    "retry_events": [
+      {
+        "event": "retry",
+        "attempt": 1,
+        "wait": 2,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:38+0300",
+        "t": 1790480378.244
+      },
+      {
+        "event": "retry",
+        "attempt": 1,
+        "wait": 2,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:38+0300",
+        "t": 1790480378.244
+      },
+      {
+        "event": "retry",
+        "attempt": 1,
+        "wait": 2,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:38+0300",
+        "t": 1790480378.244
+      },
+      {
+        "event": "retry",
+        "attempt": 1,
+        "wait": 2,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:38+0300",
+        "t": 1790480378.244
+      },
+      {
+        "event": "retry",
+        "attempt": 2,
+        "wait": 4,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:44+0300",
+        "t": 1790480384.146
+      },
+      {
+        "event": "retry",
+        "attempt": 2,
+        "wait": 4,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:44+0300",
+        "t": 1790480384.146
+      },
+      {
+        "event": "retry",
+        "attempt": 2,
+        "wait": 4,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:44+0300",
+        "t": 1790480384.147
+      },
+      {
+        "event": "retry",
+        "attempt": 2,
+        "wait": 4,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:44+0300",
+        "t": 1790480384.147
+      },
+      {
+        "event": "retry",
+        "attempt": 3,
+        "wait": 8,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:52+0300",
+        "t": 1790480392.116
+      },
+      {
+        "event": "retry",
+        "attempt": 3,
+        "wait": 8,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:52+0300",
+        "t": 1790480392.117
+      },
+      {
+        "event": "retry",
+        "attempt": 3,
+        "wait": 8,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:52+0300",
+        "t": 1790480392.119
+      },
+      {
+        "event": "retry",
+        "attempt": 3,
+        "wait": 8,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:39:52+0300",
+        "t": 1790480392.118
+      },
+      {
+        "event": "retry",
+        "attempt": 1,
+        "wait": 2,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:08+0300",
+        "t": 1790480408.192
+      },
+      {
+        "event": "retry",
+        "attempt": 1,
+        "wait": 2,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:08+0300",
+        "t": 1790480408.192
+      },
+      {
+        "event": "retry",
+        "attempt": 1,
+        "wait": 2,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:08+0300",
+        "t": 1790480408.193
+      },
+      {
+        "event": "retry",
+        "attempt": 1,
+        "wait": 2,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:08+0300",
+        "t": 1790480408.194
+      },
+      {
+        "event": "retry",
+        "attempt": 2,
+        "wait": 4,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:15+0300",
+        "t": 1790480415.13
+      },
+      {
+        "event": "retry",
+        "attempt": 2,
+        "wait": 4,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:15+0300",
+        "t": 1790480415.132
+      },
+      {
+        "event": "retry",
+        "attempt": 2,
+        "wait": 4,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:15+0300",
+        "t": 1790480415.132
+      },
+      {
+        "event": "retry",
+        "attempt": 2,
+        "wait": 4,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:15+0300",
+        "t": 1790480415.132
+      },
+      {
+        "event": "retry",
+        "attempt": 3,
+        "wait": 8,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:23+0300",
+        "t": 1790480423.165
+      },
+      {
+        "event": "retry",
+        "attempt": 3,
+        "wait": 8,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:23+0300",
+        "t": 1790480423.166
+      },
+      {
+        "event": "retry",
+        "attempt": 3,
+        "wait": 8,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:23+0300",
+        "t": 1790480423.167
+      },
+      {
+        "event": "retry",
+        "attempt": 3,
+        "wait": 8,
+        "error": "HTTP 500 from http://192.168.86.14:18081/v1/embeddings: {\"error\":\"unspecific error: upstream command exited prematurely\",\"src\":\"llama-swap\"}",
+        "time": "2026-09-27T06:40:23+0300",
+        "t": 1790480423.167
+      }
+    ],
+    "retry_events_have_query_ids": false,
+    "retry_query_attribution": "Not possible from these log records alone. Do not assign individual retry events to query IDs or equate retry records with model process starts."
+  },
+  "validation_limits": [
+    "These hashes were established during this offline audit. The invalid attempt did not contain successful-completion artifact hashes.",
+    "Frozen query identities and saved artifact coverage are verified. Completion-time live catalogue/index identity stability is not claimed after the helper rejected completion.",
+    "The result field http_status is null for the failures. HTTP500 comes from the error text for the embedding upstream.",
+    "The local artifacts establish an embedding-stage upstream failure. They do not establish its remote root cause, OOM, or the number of server restarts.",
+    "The final event says done with 8 errors. It indicates that the runner ended; it does not make the profile a validated success.",
+    "Saved metrics are copied unchanged. Their positive denominator remains 1644 and includes the 8 errors.",
+    "The saved latency summary has comparable=false. Its within_sla field is not a measured fresh sequential HTTP recognition deadline or a correct-within-deadline claim."
+  ],
+  "parent_saved_remote_observations": {
+    "sources": {
+      "g9-startup-observation.json": {
+        "path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g9-startup-observation.json",
+        "sha256": "9b6bbeb61e94607c7f1f7263124bf321eb583a7000ca5428cbbaaed6ce635cda"
+      },
+      "g9-gateway-startup-lines.json": {
+        "path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/docs/reports/2026-09-27_all-profile-rerun/g9-gateway-startup-lines.json",
+        "sha256": "802c693d29b42a57464e89cadecc3985dcf690de9fdfa1580e116029cdd3aebc"
+      }
+    },
+    "gateway_lines_recorded_at": "2026-09-27T06:44:05.697398+03:00",
+    "gateway_premature_exit_lines": 8,
+    "gateway_health_check_pass_lines": 1,
+    "service_observation_recorded_at": "2026-09-27T06:43:24.037264+03:00",
+    "target_state_at_saved_observation": "ready",
+    "model_log_body_character_count": 102400,
+    "model_log_bounded": true,
+    "startup_traceback_present_in_saved_body": false,
+    "root_cause": "Unestablished. No CUDA OOM attribution is supported by these saved observations.",
+    "timestamp_limit": "Individual gateway exit lines have source line numbers but no event timestamps. The recorded_at value is the collection time."
+  }
+}

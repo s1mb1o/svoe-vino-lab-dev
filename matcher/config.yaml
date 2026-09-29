@@ -19,7 +19,7 @@ pipeline:
   # the bundle. Read matcher/README.md.
   - name: siglip2-p512-as-is
     backend: siglip2
-    # A bundle of workbench/scripts/build_matcher_bundle.py. The bundle is not in git.
+    # A bundle of workbench/scripts/build_matcher_bundle.py. The bundle is in git.
     # A relative path resolves against the working directory of the process.
     bundle: matcher/data/gx10-siglip2-so400m-patch16-naflex-p512
     # The root URL of the OpenAI-compatible gateway, for example

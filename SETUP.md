@@ -57,7 +57,7 @@ NUXT_SHELF_MODE=disabled
 
 Реальный matcher требует:
 
-1. Bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`.
+1. Bundle `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512`. Он хранится в Git.
 2. OpenAI-compatible SigLIP2 endpoint.
 3. Environment variable `SIGLIP2_ENDPOINT` без suffix `/v1`.
 

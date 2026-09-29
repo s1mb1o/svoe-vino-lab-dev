@@ -20,13 +20,16 @@ __pycache__/
 .DS_Store
 
 # One directory per match run. `scripts/match_run.py` writes it. The output is
-# rebuilt by a new run and does not belong in git.
+# rebuilt by a new run and does not belong in git. On 2026-09-29 the four runs of
+# BENCHMARKS.md were added with `git add -f`, without `results.jsonl`. Their
+# `queries.jsonl` keeps the label snapshot of 2026-09-27.
 workbench/runs/
 workbench/dataset/*/runs/
 
 # The artifact folder of a report: images, raw JSON, logs, vectors. On 2026-09-27 three
 # such folders held about 1.4 GB. The owner asked to keep them out of git. The report
-# `.md` file next to a folder stays in git.
+# `.md` file next to a folder stays in git. On 2026-09-29 the `.md` files inside the
+# folders and the small JSON files that they link were added with `git add -f`.
 /workbench/docs/reports/*/
 
 # The lock file next to a shared JSON file. `scripts/cluster_rules.py` makes it
@@ -51,3 +54,11 @@ workbench/dataset/*/runs/
 !/workbench/data/catalog/images/main/
 !/workbench/data/catalog/images/patched/
 !/workbench/data/catalog/images/additional/
+# On 2026-09-29 the owner asked to put into git all data that cannot be rebuilt. So the
+# test photos `data/testsets/images/` are in git too. `clusters.json` and
+# `cluster-rules.json` of the embedding gx10-siglip2-so400m-patch16-naflex-p512 were added
+# with `git add -f`: VLM answers and reviewer notes made them. SAM3 and SigLIP2 rebuild
+# the cuts, the vectors, and the prepared PNG files, so these stay out of git.
+!/workbench/data/testsets/
+/workbench/data/testsets/*
+!/workbench/data/testsets/images/

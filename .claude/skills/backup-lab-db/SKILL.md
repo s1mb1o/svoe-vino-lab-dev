@@ -26,7 +26,8 @@ The same commit holds the image files of `data/catalog/images/main/`,
 for this on 2026-09-26. Each file name is the sha256 of the file, so a file never
 changes: git adds a new file or records a removed file. `.gitignore` keeps the rest of
 `data/` out of git: the database file, `data/catalog/cuts/`,
-`data/catalog/embeddings/`, `data/testsets/`, `data/cache/`, and `data/backups/`.
+`data/catalog/embeddings/`, `data/cache/`, and `data/backups/`. Since 2026-09-29 the test
+photos `data/testsets/images/` are in git too. This skill does not commit them.
 Plan 75 moved the image folders from `data/images/` on 2026-09-28. A commit before the
 move holds them at `data/images/<folder>/`.
 

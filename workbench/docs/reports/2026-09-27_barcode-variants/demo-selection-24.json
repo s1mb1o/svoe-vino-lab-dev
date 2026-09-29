@@ -1,0 +1,481 @@
+{
+  "prepared_at": "2026-09-27T02:45:13.359068+03:00",
+  "scope": "Baseline metadata only; no image processing or inference. Compare this fingerprint with the HTTP experiment manifest at launch.",
+  "selection_fingerprint": "0686b5bd8b64fa2be1baf2fb6932e96b80ac554b8f9d14ea99f9591f3f6d53a5",
+  "selection": [
+    {
+      "query_id": "q-001668",
+      "image_sha256": "1e3082b3ade2e769b3795c055c5c2ef1e330e35ddd1f06fdca54d84a70d32add",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001661",
+      "image_sha256": "211e6f859a4ed6fdfe01f7fcdcba81fd91e7d5391931c76a8abcac93b1e3ac4f",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000388",
+      "image_sha256": "2239638a9aebc28525038adb1cb4959988a5ee226c955f4b59c78eb5321bc30c",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000955",
+      "image_sha256": "2501f77ef6e979b0cc656d48dc7bcdbf2d5b78ad6a1ca8de8cbb3722b4e49930",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000021",
+      "image_sha256": "25a4578208d2aaa312e190346ec1f95b69d9693eca3736c7825794f968d37606",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000802",
+      "image_sha256": "29be9b94b0cdd68acb8b1116057fcf8782e1095b69a4be2f36a3cc82018f2ee0",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000819",
+      "image_sha256": "3492a2afb7ecb015009d4257deb5b1731dab1cbe646ec37240be7967fb0632b9",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001855",
+      "image_sha256": "4ec1f54640005a52f63a9ad21cd1b6eb265b0932cc1eb7660e5485a5bf7d795f",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-002159",
+      "image_sha256": "50af3c75a19fb8dd3b8250527bbdb762477153ce8d4aff4ec578a5b7a99776ac",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001602",
+      "image_sha256": "51f449f28c5f6224400fd2a36002521e137b06e234a87dd0e394f1c9ae015268",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-002145",
+      "image_sha256": "5d6ea1226a4ccdd18f507ed48b8e11f253c04bb8b6cf29d2898e0b141da78d4a",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000243",
+      "image_sha256": "5ee266e97fcc09dcab63d9e85509393cced0a7aa1a92781fe6fb155127113dfd",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000962",
+      "image_sha256": "7c302610ab1e4f28e54f970a2a5b96d040ab4151a0d9a603683d3ecbbf576b1f",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000040",
+      "image_sha256": "7c32420c74500cef2dcc2ecfc17f38c1473a9f429c17e9dea60e9b7777d77e74",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-002089",
+      "image_sha256": "7e82acf49054738ca23988f39efc1eecf90e832e9d37816ef3ea60c823a42370",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000946",
+      "image_sha256": "7f9a00c03029edc7a971d4b08afd0a23f62867392134fe0ebcf0866c6e6cebe3",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001047",
+      "image_sha256": "b883e578bd028f51282a984d9876945f17595bf56626c4634eede208126ebbd0",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001319",
+      "image_sha256": "ba593dbe7c4ae520daa746b029e64c5362d93cf99a478bbfb079c084bf640edb",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000342",
+      "image_sha256": "c391aef61bd11a8a2a9b0f637f486e0d8efc2fc91ad3045c5fa195416f390de9",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001507",
+      "image_sha256": "cb53fccdd0e131a839d66ecbfa29976dffdf3abf63ed870919fdcb21be96decf",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-002021",
+      "image_sha256": "d03debabfaa8406771b4f5a9727d45d5606f7aee638cddc105df52c08da5745e",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001318",
+      "image_sha256": "d1b4e5f33e17d5a4ca86ab728c49669436f99e7792b96ff9bc3d66589a13c723",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001620",
+      "image_sha256": "f2f8125929bc8e5fa0675e016ca52252b0459210894492852c10a86584e817b3",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001826",
+      "image_sha256": "fe942be60884a356433bd9cdf89667fec46befa6ea84c09c25da30cbfc7e654f",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "query_id": "q-001668",
+      "image_sha256": "1e3082b3ade2e769b3795c055c5c2ef1e330e35ddd1f06fdca54d84a70d32add",
+      "image_path": "shato-pino-shardone-risling-beloe-suhoe-12/07_manual.jpg",
+      "truth": [
+        "shato-pino-shardone-risling-beloe-suhoe-12"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001661",
+      "image_sha256": "211e6f859a4ed6fdfe01f7fcdcba81fd91e7d5391931c76a8abcac93b1e3ac4f",
+      "image_path": "shato-pino-shardone-beloe-suhoe-125/06_manual.jpg",
+      "truth": [
+        "shato-pino-shardone-beloe-suhoe-125"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000388",
+      "image_sha256": "2239638a9aebc28525038adb1cb4959988a5ee226c955f4b59c78eb5321bc30c",
+      "image_path": "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115/08_manual.webp",
+      "truth": [
+        "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000955",
+      "image_sha256": "2501f77ef6e979b0cc656d48dc7bcdbf2d5b78ad6a1ca8de8cbb3722b4e49930",
+      "image_path": "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115/07_manual.jpg",
+      "truth": [
+        "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000021",
+      "image_sha256": "25a4578208d2aaa312e190346ec1f95b69d9693eca3736c7825794f968d37606",
+      "image_path": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105/02_manual.jpg",
+      "truth": [
+        "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000802",
+      "image_sha256": "29be9b94b0cdd68acb8b1116057fcf8782e1095b69a4be2f36a3cc82018f2ee0",
+      "image_path": "domaine-lipko-blaufrankish-krasnoe-suhoe-126/04_manual.jpg",
+      "truth": [
+        "domaine-lipko-blaufrankish-krasnoe-suhoe-126"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000819",
+      "image_sha256": "3492a2afb7ecb015009d4257deb5b1731dab1cbe646ec37240be7967fb0632b9",
+      "image_path": "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115/04_manual.jpg",
+      "truth": [
+        "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001855",
+      "image_sha256": "4ec1f54640005a52f63a9ad21cd1b6eb265b0932cc1eb7660e5485a5bf7d795f",
+      "image_path": "vaynkraft-pino-nuar-krasnoe-suhoe-13/03_agent.jpg",
+      "truth": [
+        "vaynkraft-pino-nuar-krasnoe-suhoe-13"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-002159",
+      "image_sha256": "50af3c75a19fb8dd3b8250527bbdb762477153ce8d4aff4ec578a5b7a99776ac",
+      "image_path": "vysokij-bereg-risling-zelenaya-seriya/06_manual.jpg",
+      "truth": [
+        "vysokij-bereg-risling-zelenaya-seriya"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001602",
+      "image_sha256": "51f449f28c5f6224400fd2a36002521e137b06e234a87dd0e394f1c9ae015268",
+      "image_path": "shardone-2/06_agent.webp",
+      "truth": [
+        "shardone-2"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-002145",
+      "image_sha256": "5d6ea1226a4ccdd18f507ed48b8e11f253c04bb8b6cf29d2898e0b141da78d4a",
+      "image_path": "vysokij-bereg-risling-zelenaya-seriya-1/06_manual.jpg",
+      "truth": [
+        "vysokij-bereg-risling-zelenaya-seriya-1"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000243",
+      "image_sha256": "5ee266e97fcc09dcab63d9e85509393cced0a7aa1a92781fe6fb155127113dfd",
+      "image_path": "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125/10_manual.webp",
+      "truth": [
+        "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000962",
+      "image_sha256": "7c302610ab1e4f28e54f970a2a5b96d040ab4151a0d9a603683d3ecbbf576b1f",
+      "image_path": "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11/07_manual.jpg",
+      "truth": [
+        "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000040",
+      "image_sha256": "7c32420c74500cef2dcc2ecfc17f38c1473a9f429c17e9dea60e9b7777d77e74",
+      "image_path": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13/06_manual.jpg",
+      "truth": [
+        "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-002089",
+      "image_sha256": "7e82acf49054738ca23988f39efc1eecf90e832e9d37816ef3ea60c823a42370",
+      "image_path": "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145/04_manual.jpg",
+      "truth": [
+        "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000946",
+      "image_sha256": "7f9a00c03029edc7a971d4b08afd0a23f62867392134fe0ebcf0866c6e6cebe3",
+      "image_path": "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115/04_manual.jpg",
+      "truth": [
+        "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001047",
+      "image_sha256": "b883e578bd028f51282a984d9876945f17595bf56626c4634eede208126ebbd0",
+      "image_path": "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12/04_manual.webp",
+      "truth": [
+        "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001319",
+      "image_sha256": "ba593dbe7c4ae520daa746b029e64c5362d93cf99a478bbfb079c084bf640edb",
+      "image_path": "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135/05_manual.jpg",
+      "truth": [
+        "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-000342",
+      "image_sha256": "c391aef61bd11a8a2a9b0f637f486e0d8efc2fc91ad3045c5fa195416f390de9",
+      "image_path": "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12/05_manual.webp",
+      "truth": [
+        "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001507",
+      "image_sha256": "cb53fccdd0e131a839d66ecbfa29976dffdf3abf63ed870919fdcb21be96decf",
+      "image_path": "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11/03_manual.jpg",
+      "truth": [
+        "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-002021",
+      "image_sha256": "d03debabfaa8406771b4f5a9727d45d5606f7aee638cddc105df52c08da5745e",
+      "image_path": "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155/04_manual.jpg",
+      "truth": [
+        "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001318",
+      "image_sha256": "d1b4e5f33e17d5a4ca86ab728c49669436f99e7792b96ff9bc3d66589a13c723",
+      "image_path": "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135/04_manual.jpg",
+      "truth": [
+        "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001620",
+      "image_sha256": "f2f8125929bc8e5fa0675e016ca52252b0459210894492852c10a86584e817b3",
+      "image_path": "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135/04_manual.webp",
+      "truth": [
+        "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    },
+    {
+      "query_id": "q-001826",
+      "image_sha256": "fe942be60884a356433bd9cdf89667fec46befa6ea84c09c25da30cbfc7e654f",
+      "image_path": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13/03_agent.webp",
+      "truth": [
+        "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13"
+      ],
+      "label": "positive",
+      "selection_reasons": [
+        "baseline_barcode_hit"
+      ]
+    }
+  ],
+  "summary": {
+    "query_rows": 24,
+    "unique_images": 24,
+    "labels": {
+      "positive": 24
+    },
+    "selection_reasons": {
+      "baseline_barcode_hit": 24
+    },
+    "baseline_rerank_rows": 0
+  },
+  "baseline_artifact_hashes": {
+    "queries.jsonl": "99673ed979606f881fcfa4bf26f0156f9f55d58e061dd3e624b74f2a3bae91dc",
+    "results.jsonl": "310538b079ce95763602cbbb5278f5c33b19f7959631ecf2a5f65627f5ae52db"
+  },
+  "source_sha256": "4fc6f9b2046e67e0a4a3a7742c32aab7ee32d2c6dab028d0d3776332c68cb452"
+}

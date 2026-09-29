@@ -1,0 +1,125 @@
+{
+  "answered": 2228,
+  "backend": {
+    "barcode": {
+      "code128_gtin_only": true,
+      "codes": {
+        "gtin": 37,
+        "qr_url": 8
+      },
+      "engine": "zxing-cpp",
+      "formats": [
+        "EAN13",
+        "Code128"
+      ],
+      "max_side": 1600,
+      "qr": true,
+      "tile_scan": true,
+      "upscale": true
+    },
+    "embedding": "gx10-siglip2-so400m-patch16-512",
+    "extra_body": {},
+    "id": "barcode-rerank-siglip2-512-crop",
+    "kind": "embedding",
+    "label": "lab pipeline barcode-rerank-siglip2-512-crop: the embedding gx10-siglip2-so400m-patch16-512, then the cluster re-rank, after the code lookup",
+    "model": "siglip2-so400m-patch16-512",
+    "model_backend": "openai",
+    "rerank": {
+      "clusters": 163,
+      "clusters_built_at": "2026-09-26T10:33:43+0300",
+      "clusters_file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/data/embeddings/gx10-siglip2-so400m-patch16-naflex-p256/clusters.json",
+      "error": 0,
+      "kind": "cluster_rules",
+      "max_tokens": 256,
+      "no_rule": 0,
+      "none": 0,
+      "rules": "gx10-siglip2-so400m-patch16-naflex-p256",
+      "rules_file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/data/embeddings/gx10-siglip2-so400m-patch16-naflex-p256/cluster-rules.json",
+      "rules_updated_at": "2026-09-26T17:04:27+0300",
+      "sheet": 131,
+      "side": 1536,
+      "thinking": false,
+      "timeout_s": 180,
+      "verdict": 32,
+      "vlm": "qwen3.5-9b-nvfp4",
+      "window": 5
+    },
+    "sam3": {
+      "endpoint": "http://192.168.86.14:18081/upstream/sam3",
+      "label": "SAM3 'barcode, bottle, label, bottle neck, can', threshold 0.35, mask 0.5, max side 1536; the largest label that is not the package (build_labels.py), else the largest label; a second label on the bottle, less than 0.8 inside it, with >= 0.25 of its area and >= 0.6 of its width: the box of the labels, no mask; else the mask: mask blur 0.005 of the long side, keep >= 64/255; edge blur 1.0 px",
+      "package": "SAM3 'wine bottle, can, packet, box', threshold 0.35, mask 0.5, max side 1536; 'wine bottle' first, except a bottle printed on a packet or a box (cover 0.9, box area < 0.1); mask blur 0.005 of the long side, keep >= 64/255; edge blur 1.0 px"
+    },
+    "score": "the mean of the best cosine of the wine in each view of the photo; the current items of the index alone",
+    "top_k": 10,
+    "url": "http://192.168.86.14:18081/v1/embeddings",
+    "views": {
+      "full": [
+        {
+          "step": "segment",
+          "target": "package"
+        },
+        {
+          "step": "white_background"
+        },
+        {
+          "aspect": "keep",
+          "max_size": 1024,
+          "step": "resize",
+          "upscale": false
+        }
+      ]
+    },
+    "workers": 1
+  },
+  "based_on": null,
+  "config": {
+    "backends_file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/backends.yaml",
+    "database_file": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/data/lab.sqlite3"
+  },
+  "configuration": "barcode-rerank-siglip2-512-crop",
+  "embeddings": {
+    "built_at": "2026-09-26T11:55:57+0300",
+    "dim": 1152,
+    "index_file": "gx10-siglip2-so400m-patch16-512/vectors-9b2403e9.npy",
+    "items": {
+      "current": 4054,
+      "failed": 2,
+      "missing": 127,
+      "stale": 0
+    },
+    "wines": {
+      "full": 2051,
+      "label": 2047
+    }
+  },
+  "finished": "2026-09-27T01:20:44+0300",
+  "git_commit": "f2f13ac",
+  "left_out": {
+    "no label": 1487,
+    "unusable": 251,
+    "variant": 77
+  },
+  "options": {
+    "backend": "barcode-rerank-siglip2-512-crop",
+    "database": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/data/lab.sqlite3",
+    "dry_run": false,
+    "limit": null,
+    "negative_strict": false,
+    "only": "all",
+    "photos_dir": null,
+    "set": "my",
+    "variants": "off",
+    "workers": 1
+  },
+  "query_set": {
+    "negative": 584,
+    "positive": 1644,
+    "total": 2228
+  },
+  "run_id": "2026-09-26T213857Z-lab-barcode-rerank-siglip2-512-crop-my",
+  "started": "2026-09-27T00:38:57+0300",
+  "tool": "pipeline/benchmark.py",
+  "use_barcode": true,
+  "use_cache": true,
+  "wall_s": 2507.1
+}

@@ -1,0 +1,80 @@
+{
+  "backend": "barcode-rerank-siglip2-512-crop",
+  "has_scores": true,
+  "latency_ms": {
+    "comparable": true,
+    "max": 102367,
+    "median": 869,
+    "p95": 2370,
+    "sla_ms": 3000,
+    "within_sla": 2178,
+    "within_sla_share": 0.9776
+  },
+  "negative": {
+    "errors": 0,
+    "false_match_at_1": 90,
+    "false_match_in_top_k": 474,
+    "false_match_scores": {
+      "max": 0.9911,
+      "median": 0.8119
+    },
+    "n": 584,
+    "no_answer": 0,
+    "other_slug_at_1": 494,
+    "slug_rank_histogram": {
+      "1": 90,
+      "2": 132,
+      "3": 83,
+      "4-10": 169,
+      "absent": 110
+    }
+  },
+  "negative_strict": false,
+  "no_match": null,
+  "positive": {
+    "answered": 1644,
+    "errors": 0,
+    "f1_at_1": {
+      "f1": 0.8467,
+      "precision": 0.8467,
+      "recall": 0.8467
+    },
+    "f1_at_5": {
+      "f1": 0.9702,
+      "precision": 0.9702,
+      "recall": 0.9702
+    },
+    "match_share": 0.8467,
+    "mrr": 0.903,
+    "n": 1644,
+    "near_duplicate_confusion": 32,
+    "no_answer": 0,
+    "rank_histogram": {
+      "1": 1392,
+      "2": 148,
+      "3": 39,
+      "4-10": 29,
+      "absent": 36
+    },
+    "recall_at_1": 0.8467,
+    "recall_at_10": 0.9781,
+    "recall_at_5": 0.9702,
+    "score_margin": {
+      "correct_median": 0.0436,
+      "wrong_median": 0.0101
+    },
+    "target_match_share": 0.9
+  },
+  "queries": {
+    "negative": 584,
+    "no_match": 0,
+    "positive": 1644,
+    "total": 2228,
+    "unlabelled": 0,
+    "variant": 0
+  },
+  "run_id": "2026-09-26T213857Z-lab-barcode-rerank-siglip2-512-crop-my",
+  "top_k": 10,
+  "unlabelled": null,
+  "wall_s": 2507.1
+}

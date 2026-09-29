@@ -1,0 +1,5 @@
+{
+  "manifest_fingerprint": "eff919dfbb7493121fa3c63614b28f6bef5abd249ca01b642733bc53f637f5eb",
+  "finished": 1790469814.29651,
+  "scope": "Loopback HTTP request through complete response; excludes browser rendering and remote client network"
+}

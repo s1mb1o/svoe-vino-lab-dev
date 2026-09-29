@@ -1,0 +1,765 @@
+{
+  "recorded_at": "2026-09-27T03:14:14.275248+03:00",
+  "rows": 2228,
+  "unique_digests": 1851,
+  "cold1": {
+    "cache_hits": 377,
+    "cache_misses": 1851,
+    "native_calls": 128004
+  },
+  "cold4": {
+    "cache_hits": 332,
+    "cache_misses": 1896,
+    "native_calls": 131154
+  },
+  "repeat_miss_digests": 44,
+  "extra_miss_rows": 45,
+  "miss_multiplicity": {
+    "2": 43,
+    "3": 1
+  },
+  "native_call_delta": 3150,
+  "native_calls_per_full_scan": 70,
+  "extra_misses_times_calls_per_full_scan": 3150,
+  "all_repeat_miss_rows_have_no_catalogue_hit": true,
+  "cache_write_warning_found": false,
+  "inference": "Concurrent queries for the same digest can both miss before either scan writes its cache record. The implementation has no per-key scan lock. The repeated-miss and native-call counts agree exactly with this explanation.",
+  "evidence_limit": "The traces do not record absolute scan start or completion timestamps. They do not directly establish overlap for each repeated digest. No new concurrency measurement was run.",
+  "cache_integrity_note": "Cache writes use unique temporary files and atomic os.replace. Concurrent writes do not expose a partially written destination record.",
+  "source_sha256": {
+    "pipeline/barcode.py": "4edb281d62dee56e4c714e1f7643ec22c394aa4eb59faf3c66021a1fa3ff77d7",
+    "pipeline/model_cache.py": "d0d6884d1818aa4dff7319e7b466424b77a581ca02df307f22720a204a5e8522"
+  },
+  "repeated_misses": {
+    "b1bb76539921f551432cd15cfadbcdc50d7cf180b90f292be8e576fa3f9bee91": [
+      {
+        "query_id": "q-000029",
+        "cached": false,
+        "barcode_ms": 147.0,
+        "hit": null
+      },
+      {
+        "query_id": "q-000030",
+        "cached": false,
+        "barcode_ms": 148.1,
+        "hit": null
+      }
+    ],
+    "eae9f5cef7e45b7c4db12c5ce8ad9934fbe2d697ec094ef51614452b713e5cf0": [
+      {
+        "query_id": "q-000051",
+        "cached": false,
+        "barcode_ms": 187.1,
+        "hit": null
+      },
+      {
+        "query_id": "q-000052",
+        "cached": false,
+        "barcode_ms": 185.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-000057",
+        "cached": true,
+        "barcode_ms": 0.2,
+        "hit": null
+      },
+      {
+        "query_id": "q-000066",
+        "cached": true,
+        "barcode_ms": 0.6,
+        "hit": null
+      },
+      {
+        "query_id": "q-000073",
+        "cached": true,
+        "barcode_ms": 0.4,
+        "hit": null
+      }
+    ],
+    "f89b2922afe08c7a5111f80c05a1871b1e77aa858f2226e0b50617735681b284": [
+      {
+        "query_id": "q-000225",
+        "cached": false,
+        "barcode_ms": 172.9,
+        "hit": null
+      },
+      {
+        "query_id": "q-000226",
+        "cached": false,
+        "barcode_ms": 149.0,
+        "hit": null
+      }
+    ],
+    "a609082b31dd46d5360cdb128940919339081c0e70a73a75f62688f480c203a6": [
+      {
+        "query_id": "q-000284",
+        "cached": false,
+        "barcode_ms": 237.5,
+        "hit": null
+      },
+      {
+        "query_id": "q-000286",
+        "cached": false,
+        "barcode_ms": 222.2,
+        "hit": null
+      }
+    ],
+    "64c09146bcb360cda18e5b240e8f10821271b56973fef6695fe0fb456fa3aaa4": [
+      {
+        "query_id": "q-000483",
+        "cached": false,
+        "barcode_ms": 764.7,
+        "hit": null
+      },
+      {
+        "query_id": "q-000484",
+        "cached": false,
+        "barcode_ms": 733.1,
+        "hit": null
+      }
+    ],
+    "04c76346707fc0f133cbe6f33d58e4ff84030b7b157bb3b93611c3e4a8cc93f3": [
+      {
+        "query_id": "q-000494",
+        "cached": false,
+        "barcode_ms": 212.3,
+        "hit": null
+      },
+      {
+        "query_id": "q-000496",
+        "cached": false,
+        "barcode_ms": 246.8,
+        "hit": null
+      }
+    ],
+    "fbdd37f4123cc4d6fc469c3c054166a248a2e5754e7bbedd25bebd0cf3787f21": [
+      {
+        "query_id": "q-000625",
+        "cached": false,
+        "barcode_ms": 205.6,
+        "hit": null
+      },
+      {
+        "query_id": "q-000628",
+        "cached": false,
+        "barcode_ms": 205.6,
+        "hit": null
+      }
+    ],
+    "b286e6d0a8a1e1f89cafe49c6c6156186d78d355436908e0ce23b19eaf3d7fc6": [
+      {
+        "query_id": "q-000684",
+        "cached": false,
+        "barcode_ms": 211.3,
+        "hit": null
+      },
+      {
+        "query_id": "q-000685",
+        "cached": false,
+        "barcode_ms": 187.6,
+        "hit": null
+      }
+    ],
+    "18a0d0e8f05408a89bc4f80e5f17e7824ef11d3448ac9ec1717eeb63792ddadd": [
+      {
+        "query_id": "q-000803",
+        "cached": false,
+        "barcode_ms": 190.4,
+        "hit": null
+      },
+      {
+        "query_id": "q-000805",
+        "cached": false,
+        "barcode_ms": 190.4,
+        "hit": null
+      },
+      {
+        "query_id": "q-000809",
+        "cached": true,
+        "barcode_ms": 0.9,
+        "hit": null
+      }
+    ],
+    "2565fcf5d3754eaef1403607acc9fdb46e41e5424947739745b96e78e654c4eb": [
+      {
+        "query_id": "q-000844",
+        "cached": false,
+        "barcode_ms": 234.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-000845",
+        "cached": false,
+        "barcode_ms": 229.7,
+        "hit": null
+      }
+    ],
+    "ff26bb613f14ac21551b442c8758d1b8f9281f7eb2f6f627644a5c95251b699d": [
+      {
+        "query_id": "q-000853",
+        "cached": false,
+        "barcode_ms": 233.7,
+        "hit": null
+      },
+      {
+        "query_id": "q-000855",
+        "cached": false,
+        "barcode_ms": 231.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-000864",
+        "cached": true,
+        "barcode_ms": 0.7,
+        "hit": null
+      },
+      {
+        "query_id": "q-000868",
+        "cached": true,
+        "barcode_ms": 0.5,
+        "hit": null
+      },
+      {
+        "query_id": "q-000869",
+        "cached": true,
+        "barcode_ms": 0.5,
+        "hit": null
+      }
+    ],
+    "2724fa4582ac663395ffee2164a3c038a25a46ca4988a603bce22c8611918712": [
+      {
+        "query_id": "q-000876",
+        "cached": false,
+        "barcode_ms": 241.5,
+        "hit": null
+      },
+      {
+        "query_id": "q-000878",
+        "cached": false,
+        "barcode_ms": 238.2,
+        "hit": null
+      }
+    ],
+    "c5b244904814bfecaf706a0eee438bac01e930f2ec19dab4e968f58e792e88ca": [
+      {
+        "query_id": "q-000877",
+        "cached": false,
+        "barcode_ms": 224.7,
+        "hit": null
+      },
+      {
+        "query_id": "q-000879",
+        "cached": false,
+        "barcode_ms": 230.2,
+        "hit": null
+      }
+    ],
+    "1a1281c9aecc337978b06d7f1559b05e6250565f79404fa0b2f833e58403eb70": [
+      {
+        "query_id": "q-000889",
+        "cached": false,
+        "barcode_ms": 207.0,
+        "hit": null
+      },
+      {
+        "query_id": "q-000890",
+        "cached": false,
+        "barcode_ms": 214.5,
+        "hit": null
+      }
+    ],
+    "31e8e19387e122a34f0ef490a5cef6a685319795f50edf2f7c0eebad8f5c9948": [
+      {
+        "query_id": "q-000964",
+        "cached": false,
+        "barcode_ms": 239.4,
+        "hit": null
+      },
+      {
+        "query_id": "q-000965",
+        "cached": false,
+        "barcode_ms": 246.1,
+        "hit": null
+      }
+    ],
+    "cc8dcf9efcd9c6c4e0ed85401e986caf813afaaf6e9ea84eb245a87ff240bc3e": [
+      {
+        "query_id": "q-001059",
+        "cached": false,
+        "barcode_ms": 208.0,
+        "hit": null
+      },
+      {
+        "query_id": "q-001062",
+        "cached": false,
+        "barcode_ms": 214.4,
+        "hit": null
+      }
+    ],
+    "4fa56b402d5b29282c4d06e8476cc78ced71db9eeec27139fd7ee08ee0af1adc": [
+      {
+        "query_id": "q-001082",
+        "cached": false,
+        "barcode_ms": 276.0,
+        "hit": null
+      },
+      {
+        "query_id": "q-001083",
+        "cached": false,
+        "barcode_ms": 278.9,
+        "hit": null
+      },
+      {
+        "query_id": "q-001085",
+        "cached": false,
+        "barcode_ms": 277.5,
+        "hit": null
+      }
+    ],
+    "c6c2eb8c48d0dc844d5e2536105d0f7fc7a1ca4cea1e4ac4d52cc218ff1e0b82": [
+      {
+        "query_id": "q-001123",
+        "cached": false,
+        "barcode_ms": 208.1,
+        "hit": null
+      },
+      {
+        "query_id": "q-001125",
+        "cached": false,
+        "barcode_ms": 201.5,
+        "hit": null
+      }
+    ],
+    "08953d3d023fae304b5478fb995feadfea72d9ac7c0e83cba8a1ecc64e4fa181": [
+      {
+        "query_id": "q-001159",
+        "cached": false,
+        "barcode_ms": 309.2,
+        "hit": null
+      },
+      {
+        "query_id": "q-001160",
+        "cached": false,
+        "barcode_ms": 305.7,
+        "hit": null
+      }
+    ],
+    "64aca16d99e9f3e49551bd5b5f7070b33c041a040bcfa1a64c6c943982629ed6": [
+      {
+        "query_id": "q-001169",
+        "cached": false,
+        "barcode_ms": 259.6,
+        "hit": null
+      },
+      {
+        "query_id": "q-001172",
+        "cached": false,
+        "barcode_ms": 240.1,
+        "hit": null
+      },
+      {
+        "query_id": "q-001175",
+        "cached": true,
+        "barcode_ms": 0.4,
+        "hit": null
+      },
+      {
+        "query_id": "q-001177",
+        "cached": true,
+        "barcode_ms": 0.6,
+        "hit": null
+      }
+    ],
+    "9bb5450cbed058a7f26434554dbe482169874c4d47fac95b136bf86c6ad5df5f": [
+      {
+        "query_id": "q-001171",
+        "cached": false,
+        "barcode_ms": 236.1,
+        "hit": null
+      },
+      {
+        "query_id": "q-001174",
+        "cached": false,
+        "barcode_ms": 210.6,
+        "hit": null
+      },
+      {
+        "query_id": "q-001179",
+        "cached": true,
+        "barcode_ms": 0.6,
+        "hit": null
+      }
+    ],
+    "ad201381b08a112145064270b69713cbd9db0c64072be17cba225721693cc526": [
+      {
+        "query_id": "q-001185",
+        "cached": false,
+        "barcode_ms": 202.4,
+        "hit": null
+      },
+      {
+        "query_id": "q-001187",
+        "cached": false,
+        "barcode_ms": 213.9,
+        "hit": null
+      }
+    ],
+    "458187832b57492329f2aeb05695036269cde8ce210881d123b3ccc44f13beb7": [
+      {
+        "query_id": "q-001296",
+        "cached": false,
+        "barcode_ms": 223.5,
+        "hit": null
+      },
+      {
+        "query_id": "q-001298",
+        "cached": false,
+        "barcode_ms": 226.2,
+        "hit": null
+      }
+    ],
+    "fa68fb122788bd1224f3236e764da9f65d0d344a9a8afb5714a133a5cb08c0c8": [
+      {
+        "query_id": "q-001306",
+        "cached": false,
+        "barcode_ms": 306.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-001307",
+        "cached": false,
+        "barcode_ms": 309.9,
+        "hit": null
+      }
+    ],
+    "c95ba8cad63dc3c5a9af0a83084b0a1ce00f833c174c31a2a9a9dc2498b0a089": [
+      {
+        "query_id": "q-001356",
+        "cached": false,
+        "barcode_ms": 199.2,
+        "hit": null
+      },
+      {
+        "query_id": "q-001359",
+        "cached": false,
+        "barcode_ms": 205.0,
+        "hit": null
+      }
+    ],
+    "4b9c945a5dca65e37776abbd5176dd49aabbac294ff32b3821d0da32df709c89": [
+      {
+        "query_id": "q-001367",
+        "cached": false,
+        "barcode_ms": 231.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-001368",
+        "cached": false,
+        "barcode_ms": 218.1,
+        "hit": null
+      }
+    ],
+    "581a77a713427fe6ec8f9ec7adf489dea785aadfdc5ae3340fdc7f78752be49b": [
+      {
+        "query_id": "q-001389",
+        "cached": false,
+        "barcode_ms": 132.7,
+        "hit": null
+      },
+      {
+        "query_id": "q-001391",
+        "cached": false,
+        "barcode_ms": 125.2,
+        "hit": null
+      }
+    ],
+    "9a2b5b124633202b4f4f443f4754790676155aead2d1e16666dd85a609e966b0": [
+      {
+        "query_id": "q-001438",
+        "cached": false,
+        "barcode_ms": 154.2,
+        "hit": null
+      },
+      {
+        "query_id": "q-001440",
+        "cached": false,
+        "barcode_ms": 156.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-001442",
+        "cached": true,
+        "barcode_ms": 0.4,
+        "hit": null
+      }
+    ],
+    "70c1c064bc08aa4bca55b69fa62500497eec52850f4fa939e6fa3d04f70298e6": [
+      {
+        "query_id": "q-001469",
+        "cached": false,
+        "barcode_ms": 234.1,
+        "hit": null
+      },
+      {
+        "query_id": "q-001470",
+        "cached": false,
+        "barcode_ms": 227.3,
+        "hit": null
+      }
+    ],
+    "080db32d27d6ed0888d7bdc43f0682193e12f403a277b1cd9b38b03bebafdd48": [
+      {
+        "query_id": "q-001477",
+        "cached": false,
+        "barcode_ms": 217.5,
+        "hit": null
+      },
+      {
+        "query_id": "q-001480",
+        "cached": false,
+        "barcode_ms": 216.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-001488",
+        "cached": true,
+        "barcode_ms": 0.4,
+        "hit": null
+      }
+    ],
+    "ed744633483f6f757d1188ff9933d37e74a21f9ae7e41906698430dd072f1e7b": [
+      {
+        "query_id": "q-001482",
+        "cached": false,
+        "barcode_ms": 140.5,
+        "hit": null
+      },
+      {
+        "query_id": "q-001483",
+        "cached": false,
+        "barcode_ms": 140.1,
+        "hit": null
+      },
+      {
+        "query_id": "q-001487",
+        "cached": true,
+        "barcode_ms": 0.3,
+        "hit": null
+      }
+    ],
+    "075ba78e40b41a8d6c5454d65a5fb352da9a8bfbc40f18891372894ce4a5b53e": [
+      {
+        "query_id": "q-001515",
+        "cached": false,
+        "barcode_ms": 211.3,
+        "hit": null
+      },
+      {
+        "query_id": "q-001517",
+        "cached": false,
+        "barcode_ms": 209.3,
+        "hit": null
+      }
+    ],
+    "8e8af7e86048b3da638a1c365218a944281be8a1ea910e665b21ff33fc2ca434": [
+      {
+        "query_id": "q-001689",
+        "cached": false,
+        "barcode_ms": 177.0,
+        "hit": null
+      },
+      {
+        "query_id": "q-001691",
+        "cached": false,
+        "barcode_ms": 191.9,
+        "hit": null
+      }
+    ],
+    "c77f31495b7803747cbdc50ec781dfed0459f62c243a5aa9e0d7b816512d072e": [
+      {
+        "query_id": "q-001722",
+        "cached": false,
+        "barcode_ms": 248.5,
+        "hit": null
+      },
+      {
+        "query_id": "q-001723",
+        "cached": false,
+        "barcode_ms": 255.3,
+        "hit": null
+      }
+    ],
+    "6cb890c91c5f0a7b774f9a012fe1f681bf7f89ef854112cd0b0cf790c04fff84": [
+      {
+        "query_id": "q-001812",
+        "cached": false,
+        "barcode_ms": 212.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-001813",
+        "cached": false,
+        "barcode_ms": 214.7,
+        "hit": null
+      },
+      {
+        "query_id": "q-001817",
+        "cached": true,
+        "barcode_ms": 0.8,
+        "hit": null
+      }
+    ],
+    "49bb324347dd62e88c3d519a4046af0853c39db9fa75839ee78bbf7c59ea7295": [
+      {
+        "query_id": "q-001847",
+        "cached": false,
+        "barcode_ms": 256.0,
+        "hit": null
+      },
+      {
+        "query_id": "q-001848",
+        "cached": false,
+        "barcode_ms": 252.4,
+        "hit": null
+      }
+    ],
+    "ccc1ce5f258e7c91510510660245edd21c09ee0583dddf842c009d74ee5c6f40": [
+      {
+        "query_id": "q-001869",
+        "cached": false,
+        "barcode_ms": 180.5,
+        "hit": null
+      },
+      {
+        "query_id": "q-001870",
+        "cached": false,
+        "barcode_ms": 179.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-001876",
+        "cached": true,
+        "barcode_ms": 0.5,
+        "hit": null
+      }
+    ],
+    "22198908c9edbc40f723eedb3be77a754b818eae949fee1ad48404698822c8a4": [
+      {
+        "query_id": "q-001906",
+        "cached": false,
+        "barcode_ms": 245.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-001908",
+        "cached": false,
+        "barcode_ms": 256.0,
+        "hit": null
+      },
+      {
+        "query_id": "q-001915",
+        "cached": true,
+        "barcode_ms": 0.8,
+        "hit": null
+      }
+    ],
+    "6816a2a7e2bb956615b183008f5dfef2a490d95f7cf43be0b1097e99099ad3a8": [
+      {
+        "query_id": "q-002052",
+        "cached": false,
+        "barcode_ms": 437.3,
+        "hit": null
+      },
+      {
+        "query_id": "q-002054",
+        "cached": false,
+        "barcode_ms": 300.4,
+        "hit": null
+      }
+    ],
+    "af50b9ad27a2859083b76508d681990d3d6108201c7323d763aad82fe97af156": [
+      {
+        "query_id": "q-002063",
+        "cached": false,
+        "barcode_ms": 250.7,
+        "hit": null
+      },
+      {
+        "query_id": "q-002064",
+        "cached": false,
+        "barcode_ms": 247.6,
+        "hit": null
+      }
+    ],
+    "c2a855c21871675c708a164860ed706bf8b738549b7f08288bf68e1d79d82bcd": [
+      {
+        "query_id": "q-002067",
+        "cached": false,
+        "barcode_ms": 226.9,
+        "hit": null
+      },
+      {
+        "query_id": "q-002069",
+        "cached": false,
+        "barcode_ms": 226.1,
+        "hit": null
+      },
+      {
+        "query_id": "q-002072",
+        "cached": true,
+        "barcode_ms": 1.1,
+        "hit": null
+      }
+    ],
+    "96927f4b95129b73ec8f4bccfd47b46e85c28326ff318edafc66b0fc14c43e4e": [
+      {
+        "query_id": "q-002068",
+        "cached": false,
+        "barcode_ms": 211.8,
+        "hit": null
+      },
+      {
+        "query_id": "q-002070",
+        "cached": false,
+        "barcode_ms": 197.4,
+        "hit": null
+      },
+      {
+        "query_id": "q-002073",
+        "cached": true,
+        "barcode_ms": 0.6,
+        "hit": null
+      }
+    ],
+    "bb09ed1c361773e0b69482216bceea88e94f01cbc991fd922cc4b419c34d208f": [
+      {
+        "query_id": "q-002083",
+        "cached": false,
+        "barcode_ms": 225.2,
+        "hit": null
+      },
+      {
+        "query_id": "q-002084",
+        "cached": false,
+        "barcode_ms": 233.2,
+        "hit": null
+      }
+    ],
+    "44a4905f7362e0e90b188d07f142af3df7ced499fd20c452266fcbd6de185164": [
+      {
+        "query_id": "q-002221",
+        "cached": false,
+        "barcode_ms": 419.6,
+        "hit": null
+      },
+      {
+        "query_id": "q-002223",
+        "cached": false,
+        "barcode_ms": 454.6,
+        "hit": null
+      }
+    ]
+  }
+}

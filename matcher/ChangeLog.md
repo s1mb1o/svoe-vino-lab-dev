@@ -2,6 +2,10 @@
 
 ## 2026-09-29
 
+- The bundle `data/gx10-siglip2-so400m-patch16-naflex-p512/` is in git now (owner
+  messages of 2026-09-29 about 22:35 and 22:46). This replaces the answer "Keep out of
+  git". The bundle is byte-identical to the gx10 prod bundle (6 of 6 SHA-256). A clone
+  can run the real matcher with a SigLIP2 endpoint alone.
 - Fixed the findings of the second matcher review of 2026-09-29 (owner message of
   2026-09-29T20:59:59+0300 and answers of 21:07:52):
   - `test_the_default_config_selects_the_siglip2_pipeline` checks only the selected entry

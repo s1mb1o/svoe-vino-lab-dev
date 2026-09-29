@@ -1,0 +1,74 @@
+{
+  "at": "2026-09-27T03:18:47.878586+03:00",
+  "running": {
+    "running": [
+      {
+        "model": "qwen3.5-9b",
+        "state": "ready",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 9\n/home/ashmelev/llama.cpp/build/bin/llama-server --host 127.0.0.1 --port 5819 -ngl 99 --flash-attn auto --jinja --metrics --path /home/ashmelev/llama-webui-custom\n\n--model /home/ashmelev/.lmstudio/models/lmstudio-community/Qwen3.5-9B-GGUF/Qwen3.5-9B-Q4_K_M.gguf\n--mmproj /home/ashmelev/.lmstudio/models/lmstudio-community/Qwen3.5-9B-GGUF/mmproj-Qwen3.5-9B-BF16.gguf\n-c 32768\n--alias qwen3.5-9b\n",
+        "proxy": "http://localhost:5819",
+        "ttl": 0,
+        "name": "Qwen3.5-9B (pinned default, vision)",
+        "description": "Always-hot light model; chat + simple tools + vision. Reserve ~7 GB \u00b7 32K ctx \u00b7 1 slot \u00b7 36.7 tok/s. Thinking model."
+      },
+      {
+        "model": "qwen3.5-9b-nvfp4",
+        "state": "starting",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 30 /usr/bin/docker compose -f /home/ashmelev/Models/vllm-qwen35-9b-nvfp4/docker-compose.yml up",
+        "proxy": "http://127.0.0.1:8001",
+        "ttl": 3600,
+        "name": "Qwen3.5-9B-NVFP4 (vLLM, bulk vision)",
+        "description": "Qwen3.5-9B NVFP4 (compressed-tensors nvfp4-pack-quantized, ig1). Same weights family as the pinned llama.cpp qwen3.5-9b but 4x its image throughput: 83.0 img/min on 1536x1536 vs 20.8, and lower latency (p50 6.3 s vs 25.1 s at 8 concurrent). Vision tower stays BF16 - quantization_config.ignore excludes every model.visual.* layer - so the 4x is the runtime, not the quant. Reserve ~27 GB (util 0.22), 32K ctx, KV 350,021 tokens = 10.68x @32K. Cold start ~3.5 min. THINKING MODEL: send chat_template_kwargs {enable_thinking:false} or content AND reasoning_content both come back empty. Up to 20 images per request (--limit-mm-per-prompt). Weights on local GX10 NVMe; mirrored on ds1825."
+      },
+      {
+        "model": "sam3",
+        "state": "ready",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 9 /home/ashmelev/comfyui-env/bin/python3 /home/ashmelev/sam3/server.py",
+        "proxy": "http://127.0.0.1:7860",
+        "ttl": 0,
+        "name": "SAM3 (image segmentation, FastAPI)",
+        "description": "Text/box-prompted instance segmentation (facebook/sam3) -> masks + boxes + scores. NOT a chat model: POST /upstream/sam3/segment with multipart image + text. Runs fp16 with a micro-batching queue (1 worker, batch 4): ~3 req/s at ~2.1 s. GET /upstream/sam3/stats for load, /docs for the API. Reserve ~7 GB."
+      },
+      {
+        "model": "shieldgemma-2-4b-it",
+        "state": "ready",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 14\n/usr/bin/env HF_HUB_CACHE=/mnt/ml/hf-archive/hub HF_HUB_OFFLINE=1\n/home/ashmelev/comfyui-env/bin/python /home/ashmelev/shieldgemma2/server.py\n--model google/shieldgemma-2-4b-it\n--port 5823\n",
+        "proxy": "http://127.0.0.1:5823",
+        "ttl": 86400,
+        "name": "ShieldGemma 2 4B (image safety classifier)",
+        "description": "Image -> P(violation) for the policies dangerous, sexual and violence. No OpenAI route: POST /upstream/shieldgemma-2-4b-it/classify (multipart image, optional policies, threshold). Cold ~56 s (NAS) \u00b7 warm ~1.4 s for all three policies \u00b7 Reserve ~12 GB."
+      },
+      {
+        "model": "siglip2-so400m-patch16-512",
+        "state": "ready",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 7\n/usr/bin/env HF_HUB_CACHE=/mnt/ml/hf-archive/hub HF_HUB_OFFLINE=1 /home/ashmelev/comfyui-env/bin/python /home/ashmelev/img-embed/server.py --port 5827\n\n--model google/siglip2-so400m-patch16-512\n--served-name siglip2-so400m-patch16-512\n",
+        "proxy": "http://127.0.0.1:5827",
+        "ttl": 1800,
+        "name": "SigLIP2 SO400M/16 @512 \u00b7 image + text \u00b7 1152-d",
+        "description": "Image AND text -> one shared 1152-d space (L2-normalized). Fixed 512x512 input (squash, no crop; not NaFlex, max_num_patches returns 400). Most image detail (1024 patches, 4x the patches of @256) and the slowest of the three; use for small text and fine detail. Text is padded to 64 tokens. POST /v1/embeddings with data:image/...;base64 URIs or plain text. Cold start ~14 s \u00b7 warm ~130 ms per 2 images \u00b7 Reserve ~7 GB."
+      }
+    ]
+  },
+  "sam3_stats": {
+    "workers": 1,
+    "batch_size": 4,
+    "batch_wait_ms": 15.0,
+    "dtype": "fp16",
+    "device": "cuda",
+    "queued": 0,
+    "running": 0,
+    "window_seconds": 300.0,
+    "requests": 5,
+    "requests_per_minute": 1.0,
+    "batches": 5,
+    "avg_batch_size": 1.0,
+    "avg_queue_wait_ms": 15.7,
+    "avg_latency_ms": 472.0,
+    "load_percent": 0.8
+  },
+  "memory": {
+    "exit": 0,
+    "output": "               total        used        free      shared  buff/cache   available\nMem:     130596581376 75867381760  6321418240   373231616 47968210944 54729199616\nSwap:    68719472640 17959546880 50759925760\n",
+    "error": ""
+  }
+}

@@ -1,0 +1,334 @@
+{
+  "cold-1": {
+    "run_id": "2026-09-26T233743Z-lab-barcode-rerank-siglip2-512-crop-my-barcode-cache-cold-1",
+    "rows": 2228,
+    "unique_image_digests": 1851,
+    "sum_query_ms": 853562,
+    "harness_wall_s": 854.4978204159997,
+    "process_wall_s": 855.785463709035,
+    "steps": {
+      "barcode": {
+        "count": 2228,
+        "total_ms": 360213.0,
+        "median_ms": 191.55,
+        "p95_ms": 273.2,
+        "cached_true": 377,
+        "cached_false": 1851,
+        "cache_state_unreported": 0
+      },
+      "sam3-package": {
+        "count": 2204,
+        "total_ms": 167376.4,
+        "median_ms": 59.650000000000006,
+        "p95_ms": 223.0,
+        "cached_true": 2144,
+        "cached_false": 0,
+        "cache_state_unreported": 0
+      },
+      "embed": {
+        "count": 2204,
+        "total_ms": 143335.4,
+        "median_ms": 44.0,
+        "p95_ms": 61.7,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "cluster_rules": {
+        "count": 585,
+        "total_ms": 107960.3,
+        "median_ms": 165.1,
+        "p95_ms": 301.8,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 585
+      },
+      "view": {
+        "count": 2204,
+        "total_ms": 53048.4,
+        "median_ms": 19.9,
+        "p95_ms": 61.6,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "input": {
+        "count": 2204,
+        "total_ms": 15907.2,
+        "median_ms": 3.0,
+        "p95_ms": 27.3,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "search": {
+        "count": 2204,
+        "total_ms": 3367.9,
+        "median_ms": 1.4,
+        "p95_ms": 2.2,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "score": {
+        "count": 2204,
+        "total_ms": 2269.6,
+        "median_ms": 1.0,
+        "p95_ms": 1.2,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      }
+    },
+    "note": "Use trace step ms only. Do not include cached original inference durations from out fields. With multiple workers, summed query or step times are not elapsed wall time. All startup-containing requests remain included."
+  },
+  "warm-1": {
+    "run_id": "2026-09-26T235320Z-lab-barcode-rerank-siglip2-512-crop-my-barcode-cache-warm-1",
+    "rows": 2228,
+    "unique_image_digests": 1851,
+    "sum_query_ms": 459983,
+    "harness_wall_s": 460.97307504096534,
+    "process_wall_s": 462.2492671670625,
+    "steps": {
+      "sam3-package": {
+        "count": 2204,
+        "total_ms": 169457.3,
+        "median_ms": 60.9,
+        "p95_ms": 227.4,
+        "cached_true": 2144,
+        "cached_false": 0,
+        "cache_state_unreported": 0
+      },
+      "cluster_rules": {
+        "count": 585,
+        "total_ms": 109052.5,
+        "median_ms": 170.3,
+        "p95_ms": 308.0,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 585
+      },
+      "embed": {
+        "count": 2204,
+        "total_ms": 100698.4,
+        "median_ms": 43.6,
+        "p95_ms": 61.2,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "view": {
+        "count": 2204,
+        "total_ms": 53647.0,
+        "median_ms": 20.2,
+        "p95_ms": 63.6,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "input": {
+        "count": 2204,
+        "total_ms": 17543.8,
+        "median_ms": 3.2,
+        "p95_ms": 34.8,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "barcode": {
+        "count": 2228,
+        "total_ms": 3950.2,
+        "median_ms": 1.6,
+        "p95_ms": 3.7,
+        "cached_true": 2228,
+        "cached_false": 0,
+        "cache_state_unreported": 0
+      },
+      "search": {
+        "count": 2204,
+        "total_ms": 3314.2,
+        "median_ms": 1.4,
+        "p95_ms": 2.1,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "score": {
+        "count": 2204,
+        "total_ms": 2312.5,
+        "median_ms": 1.0,
+        "p95_ms": 1.2,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      }
+    },
+    "note": "Use trace step ms only. Do not include cached original inference durations from out fields. With multiple workers, summed query or step times are not elapsed wall time. All startup-containing requests remain included."
+  },
+  "cold-4": {
+    "run_id": "2026-09-27T000234Z-lab-barcode-rerank-siglip2-512-crop-my-barcode-cache-cold-4",
+    "rows": 2228,
+    "unique_image_digests": 1851,
+    "sum_query_ms": 922024,
+    "harness_wall_s": 231.02873754198663,
+    "process_wall_s": 232.35795887501445,
+    "steps": {
+      "barcode": {
+        "count": 2228,
+        "total_ms": 413333.9,
+        "median_ms": 213.2,
+        "p95_ms": 305.4,
+        "cached_true": 332,
+        "cached_false": 1896,
+        "cache_state_unreported": 0
+      },
+      "sam3-package": {
+        "count": 2204,
+        "total_ms": 185401.6,
+        "median_ms": 67.1,
+        "p95_ms": 251.2,
+        "cached_true": 2144,
+        "cached_false": 0,
+        "cache_state_unreported": 0
+      },
+      "cluster_rules": {
+        "count": 585,
+        "total_ms": 120885.9,
+        "median_ms": 180.3,
+        "p95_ms": 365.2,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 585
+      },
+      "embed": {
+        "count": 2204,
+        "total_ms": 119339.1,
+        "median_ms": 49.9,
+        "p95_ms": 81.0,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "view": {
+        "count": 2204,
+        "total_ms": 59156.3,
+        "median_ms": 22.1,
+        "p95_ms": 70.7,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "input": {
+        "count": 2204,
+        "total_ms": 17708.1,
+        "median_ms": 3.3,
+        "p95_ms": 32.0,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "search": {
+        "count": 2204,
+        "total_ms": 3457.9,
+        "median_ms": 1.4,
+        "p95_ms": 2.2,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "score": {
+        "count": 2204,
+        "total_ms": 2634.4,
+        "median_ms": 1.1,
+        "p95_ms": 1.6,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      }
+    },
+    "note": "Use trace step ms only. Do not include cached original inference durations from out fields. With multiple workers, summed query or step times are not elapsed wall time. All startup-containing requests remain included."
+  },
+  "warm-4": {
+    "run_id": "2026-09-27T001146Z-lab-barcode-rerank-siglip2-512-crop-my-barcode-cache-warm-4",
+    "rows": 2228,
+    "unique_image_digests": 1851,
+    "sum_query_ms": 511716,
+    "harness_wall_s": 128.30344479193445,
+    "process_wall_s": 129.63381150003988,
+    "steps": {
+      "sam3-package": {
+        "count": 2204,
+        "total_ms": 179181.2,
+        "median_ms": 63.55,
+        "p95_ms": 238.8,
+        "cached_true": 2144,
+        "cached_false": 0,
+        "cache_state_unreported": 0
+      },
+      "embed": {
+        "count": 2204,
+        "total_ms": 130362.2,
+        "median_ms": 53.8,
+        "p95_ms": 91.2,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "cluster_rules": {
+        "count": 585,
+        "total_ms": 116868.7,
+        "median_ms": 179.6,
+        "p95_ms": 339.0,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 585
+      },
+      "view": {
+        "count": 2204,
+        "total_ms": 56677.4,
+        "median_ms": 21.1,
+        "p95_ms": 67.0,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "input": {
+        "count": 2204,
+        "total_ms": 18869.2,
+        "median_ms": 3.2,
+        "p95_ms": 35.4,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "barcode": {
+        "count": 2228,
+        "total_ms": 3964.7,
+        "median_ms": 1.5,
+        "p95_ms": 3.8,
+        "cached_true": 2228,
+        "cached_false": 0,
+        "cache_state_unreported": 0
+      },
+      "search": {
+        "count": 2204,
+        "total_ms": 3334.5,
+        "median_ms": 1.4,
+        "p95_ms": 2.3,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      },
+      "score": {
+        "count": 2204,
+        "total_ms": 2470.2,
+        "median_ms": 1.0,
+        "p95_ms": 1.5,
+        "cached_true": 0,
+        "cached_false": 0,
+        "cache_state_unreported": 2204
+      }
+    },
+    "note": "Use trace step ms only. Do not include cached original inference durations from out fields. With multiple workers, summed query or step times are not elapsed wall time. All startup-containing requests remain included."
+  }
+}

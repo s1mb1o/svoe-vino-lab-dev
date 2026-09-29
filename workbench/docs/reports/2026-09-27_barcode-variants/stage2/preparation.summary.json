@@ -1,0 +1,31 @@
+{
+  "query_rows": 2228,
+  "unique_images": 1851,
+  "prep_ms_unique": {
+    "median": 58.184,
+    "p95": 217.886,
+    "p99": 347.962,
+    "max": 1144.281,
+    "p50": 58.184
+  },
+  "region_status_unique": {
+    "package": {
+      "available": 1827,
+      "missing_baseline_box": 24
+    },
+    "bottle": {
+      "missing_cache": 1410,
+      "available": 433,
+      "missing_detection": 8
+    },
+    "label": {
+      "missing_cache": 1410,
+      "available": 441
+    },
+    "barcode": {
+      "missing_cache": 1410,
+      "missing_detection": 355,
+      "available": 86
+    }
+  }
+}

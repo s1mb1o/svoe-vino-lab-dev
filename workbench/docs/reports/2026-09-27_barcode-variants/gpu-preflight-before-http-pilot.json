@@ -1,0 +1,102 @@
+{
+  "time": "2026-09-27T03:14:19.549720+03:00",
+  "local_cpu_count": 12,
+  "local_load": [
+    8.82421875,
+    8.91552734375,
+    10.658203125
+  ],
+  "purpose": "Sequential HTTP pilot after all four bulk comparisons",
+  "memory": {
+    "exit": 0,
+    "output": "               total        used        free      shared  buff/cache   available\nMem:     130596581376 55760277504 37172830208   306282496 37585186816 74836303872\nSwap:    68719472640 14152105984 54567366656\n",
+    "error": ""
+  },
+  "gpu": {
+    "exit": 0,
+    "output": "Sun Sep 27 03:14:20 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.142                Driver Version: 580.142        CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GB10                    On  |   0000000F:01:00.0 Off |                  N/A |\n| N/A   51C    P0             11W /  N/A  | Not Supported          |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A          762528      G   ...01304541078 --disable-logging         33MiB |\n|    0   N/A  N/A         1469892      C   ...ma.cpp/build/bin/llama-server       7857MiB |\n|    0   N/A  N/A         1486558      C   ...melev/comfyui-env/bin/python3       5665MiB |\n|    0   N/A  N/A         1519471      C   ...hmelev/comfyui-env/bin/python       9539MiB |\n|    0   N/A  N/A         2100172      C   ...hmelev/comfyui-env/bin/python       2574MiB |\n|    0   N/A  N/A         3051036      G   /usr/lib/xorg/Xorg                      111MiB |\n|    0   N/A  N/A         3051174      G   /usr/bin/gnome-shell                    126MiB |\n|    0   N/A  N/A         3053857      G   /usr/bin/nautilus                        31MiB |\n|    0   N/A  N/A         3054806      G   ...rack-uuid=3190708988185955192         79MiB |\n+-----------------------------------------------------------------------------------------+\n",
+    "error": ""
+  },
+  "processes": {
+    "exit": 0,
+    "output": "    PID %CPU %MEM   RSS COMMAND\n1486558 36.6  9.5 12214700 python3\n3898028  2.1  2.5 3235620 llama-swap\n2100172 27.3  2.4 3169532 python\n   1705  0.0  0.6 819136 polkitd\n1519471  0.6  0.5 653092 python\n2035868  0.2  0.4 625104 python\n3058197  0.3  0.2 367684 claude-desktop\n3058369  0.8  0.2 255852 claude-desktop\n1339186  0.4  0.1 207024 python\n4089598  2.0  0.1 195264 python3\n2043372  0.0  0.1 180540 chto-za-vino-bo\n3057329  0.0  0.1 169552 chrome\n3165786  0.1  0.1 163796 claude\n2039008  0.1  0.1 154448 python\n1339181  0.3  0.1 142392 python\n",
+    "error": ""
+  },
+  "running": {
+    "running": [
+      {
+        "model": "qwen3.5-9b",
+        "state": "ready",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 9\n/home/ashmelev/llama.cpp/build/bin/llama-server --host 127.0.0.1 --port 5819 -ngl 99 --flash-attn auto --jinja --metrics --path /home/ashmelev/llama-webui-custom\n\n--model /home/ashmelev/.lmstudio/models/lmstudio-community/Qwen3.5-9B-GGUF/Qwen3.5-9B-Q4_K_M.gguf\n--mmproj /home/ashmelev/.lmstudio/models/lmstudio-community/Qwen3.5-9B-GGUF/mmproj-Qwen3.5-9B-BF16.gguf\n-c 32768\n--alias qwen3.5-9b\n",
+        "proxy": "http://localhost:5819",
+        "ttl": 0,
+        "name": "Qwen3.5-9B (pinned default, vision)",
+        "description": "Always-hot light model; chat + simple tools + vision. Reserve ~7 GB \u00b7 32K ctx \u00b7 1 slot \u00b7 36.7 tok/s. Thinking model."
+      },
+      {
+        "model": "sam3",
+        "state": "ready",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 9 /home/ashmelev/comfyui-env/bin/python3 /home/ashmelev/sam3/server.py",
+        "proxy": "http://127.0.0.1:7860",
+        "ttl": 0,
+        "name": "SAM3 (image segmentation, FastAPI)",
+        "description": "Text/box-prompted instance segmentation (facebook/sam3) -> masks + boxes + scores. NOT a chat model: POST /upstream/sam3/segment with multipart image + text. Runs fp16 with a micro-batching queue (1 worker, batch 4): ~3 req/s at ~2.1 s. GET /upstream/sam3/stats for load, /docs for the API. Reserve ~7 GB."
+      },
+      {
+        "model": "shieldgemma-2-4b-it",
+        "state": "ready",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 14\n/usr/bin/env HF_HUB_CACHE=/mnt/ml/hf-archive/hub HF_HUB_OFFLINE=1\n/home/ashmelev/comfyui-env/bin/python /home/ashmelev/shieldgemma2/server.py\n--model google/shieldgemma-2-4b-it\n--port 5823\n",
+        "proxy": "http://127.0.0.1:5823",
+        "ttl": 86400,
+        "name": "ShieldGemma 2 4B (image safety classifier)",
+        "description": "Image -> P(violation) for the policies dangerous, sexual and violence. No OpenAI route: POST /upstream/shieldgemma-2-4b-it/classify (multipart image, optional policies, threshold). Cold ~56 s (NAS) \u00b7 warm ~1.4 s for all three policies \u00b7 Reserve ~12 GB."
+      },
+      {
+        "model": "siglip2-so400m-patch16-512",
+        "state": "ready",
+        "cmd": "/home/ashmelev/llama-swap/preflight-ram.sh 7\n/usr/bin/env HF_HUB_CACHE=/mnt/ml/hf-archive/hub HF_HUB_OFFLINE=1 /home/ashmelev/comfyui-env/bin/python /home/ashmelev/img-embed/server.py --port 5827\n\n--model google/siglip2-so400m-patch16-512\n--served-name siglip2-so400m-patch16-512\n",
+        "proxy": "http://127.0.0.1:5827",
+        "ttl": 1800,
+        "name": "SigLIP2 SO400M/16 @512 \u00b7 image + text \u00b7 1152-d",
+        "description": "Image AND text -> one shared 1152-d space (L2-normalized). Fixed 512x512 input (squash, no crop; not NaFlex, max_num_patches returns 400). Most image detail (1024 patches, 4x the patches of @256) and the slowest of the three; use for small text and fine detail. Text is padded to 64 tokens. POST /v1/embeddings with data:image/...;base64 URIs or plain text. Cold start ~14 s \u00b7 warm ~130 ms per 2 images \u00b7 Reserve ~7 GB."
+      }
+    ]
+  },
+  "sam3_stats": {
+    "workers": 1,
+    "batch_size": 4,
+    "batch_wait_ms": 15.0,
+    "dtype": "fp16",
+    "device": "cuda",
+    "queued": 0,
+    "running": 0,
+    "window_seconds": 300.0,
+    "requests": 0,
+    "requests_per_minute": 0.0,
+    "batches": 0,
+    "avg_batch_size": 0.0,
+    "avg_queue_wait_ms": 0.0,
+    "avg_latency_ms": 0.0,
+    "load_percent": 0.0
+  },
+  "available_gib": 69.69673919677734,
+  "ready_models": [
+    "qwen3.5-9b",
+    "sam3",
+    "shieldgemma-2-4b-it",
+    "siglip2-so400m-patch16-512"
+  ],
+  "needed_models": {
+    "qwen3.5-9b-nvfp4": 30,
+    "sam3": 9,
+    "siglip2-so400m-patch16-512": 7
+  },
+  "unloaded_models": {
+    "qwen3.5-9b-nvfp4": 30
+  },
+  "additional_model_estimate_gib": 30,
+  "transient_allowance_gib": 7,
+  "safety_margin_gib": 20,
+  "passed": true,
+  "note": "Only one HTTP request at a time. No per-image cache reads. Charge first cold VLM request where it occurs; after-first does not imply all models are warm. Shared services remain untouched."
+}

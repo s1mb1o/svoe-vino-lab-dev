@@ -1,0 +1,66 @@
+{
+  "recorded_at": "2026-09-27T06:51:39.569670+03:00",
+  "scope": "Fresh G10 capacity check after all49remoteprofiles reached terminal states. No model load, torch import, inference, or network request.",
+  "observations": {
+    "hardware": {
+      "checked_at": "2026-09-27T06:51:39.488308+03:00",
+      "command": [
+        "/usr/sbin/sysctl",
+        "hw.memsize",
+        "hw.model",
+        "hw.ncpu",
+        "vm.swapusage",
+        "kern.memorystatus_vm_pressure_level"
+      ],
+      "exit": 0,
+      "stdout": "hw.memsize: 34359738368\nhw.model: Mac14,5\nhw.ncpu: 12\nvm.swapusage: total = 36864.00M  used = 36196.62M  free = 667.38M  (encrypted)\nkern.memorystatus_vm_pressure_level: 2\n",
+      "stderr": ""
+    },
+    "vm_stat": {
+      "checked_at": "2026-09-27T06:51:39.488410+03:00",
+      "command": [
+        "vm_stat"
+      ],
+      "exit": 0,
+      "stdout": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                     5138.\nPages active:                                 410238.\nPages inactive:                               402619.\nPages speculative:                              6198.\nPages throttled:                                   0.\nPages wired down:                             489836.\nPages purgeable:                                   4.\n\"Translation faults\":                   326744612356.\nPages copy-on-write:                       594437075.\nPages zero filled:                        8120595261.\nPages reactivated:                       12142547898.\nPages purged:                             1020405771.\nFile-backed pages:                            229078.\nAnonymous pages:                              589977.\nPages stored in compressor:                  6272890.\nPages occupied by compressor:                 727890.\nDecompressions:                          13706956426.\nCompressions:                            14767762169.\nPageins:                                   571001000.\nPageouts:                                   25900524.\nSwapins:                                   124899583.\nSwapouts:                                  145272629.\n",
+      "stderr": ""
+    },
+    "memory_pressure": {
+      "checked_at": "2026-09-27T06:51:39.488482+03:00",
+      "command": [
+        "memory_pressure",
+        "-Q"
+      ],
+      "exit": 0,
+      "stdout": "The system has 34359738368 (2097152 pages with a page size of 16384).\nSystem-wide memory free percentage: 40%\n",
+      "stderr": ""
+    },
+    "processes": {
+      "checked_at": "2026-09-27T06:51:39.488648+03:00",
+      "command": [
+        "ps",
+        "-axo",
+        "pid,ppid,stat,rss,command"
+      ],
+      "exit": 0,
+      "stdout": "  PID  PPID STAT    RSS COMMAND\n15146     1 Ss    26128 /opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python pipeline/lab_server.py --no-browser\n66365     1 Ss     5024 /opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python pipeline/lab_server.py --port 8174 --no-browser --config /private/tmp/claude-501/-Volumes-T7-2TB-Projects-T7-2TB-drink-atlas-workspace/50599ad8-2703-416b-ad04-4521fa519a8f/scratchpad/lab/config.yaml\n",
+      "stderr": ""
+    }
+  },
+  "authorized_local_profiles": [
+    "local-siglip2-p256-as-is",
+    "local-siglip2-p256-crop",
+    "barcode-local-siglip2-p256-as-is",
+    "barcode-local-siglip2-p256-crop"
+  ],
+  "policy": {
+    "source": "local-readiness-preliminary.md capacity-policy scope audit; queue helper validate_gate; current heartbeat",
+    "total_additional_allowance_gib": 16,
+    "margin_gib": 20,
+    "required_total_gib": 36,
+    "additional_allowance_is_measured": false,
+    "physical_memory_is_an_upper_bound_not_available_memory": true
+  },
+  "no_active_jobs_check": "passed",
+  "queue_sha256_at_check": "9f33d06dd4075960f781b140ee33de2d1792a397a7a0fd97348404f9947cf040"
+}

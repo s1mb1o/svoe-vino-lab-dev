@@ -2,6 +2,14 @@
 
 ## 2026-09-29
 
+- Put the data that cannot be rebuilt into git for the second computer (2x RTX 4090) and
+  the jury (owner messages of 2026-09-29 about 22:35 and 22:46): the test photos
+  `data/testsets/images/` (3,532 files, 807 MB; a `.gitignore` rule), a new `db-export/`
+  (schema 32, 22 tables, 35,331 rows; the old export had schema 25), `clusters.json` and
+  `cluster-rules.json` of `gx10-siglip2-so400m-patch16-naflex-p512`, the four runs of
+  `BENCHMARKS.md` without `results.jsonl`, and the `.md` files of the report folders with
+  the small JSON files that they link. The cuts, the vectors, and the prepared PNG files
+  stay out: SAM3 and SigLIP2 rebuild them.
 - Added the edit of a card name on `/dataset` (plan 89; owner message of 22:00:54,
   answers of 22:05:15 and 22:06:52). Schema 032 adds `wine_catalog.name_patched`, puts it
   in the trigger `wine_catalog_update_time`, and makes the view `matcher_wine` send

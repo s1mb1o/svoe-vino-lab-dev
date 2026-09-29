@@ -1,0 +1,6319 @@
+{
+  "status": "complete_diagnostic_only",
+  "created_at": "2026-09-27T00:51:37.795903+00:00",
+  "profile": "barcode-rerank-siglip2-512-crop",
+  "mode": "persistent",
+  "selection_fingerprint": "0686b5bd8b64fa2be1baf2fb6932e96b80ac554b8f9d14ea99f9591f3f6d53a5",
+  "selected_rows": 24,
+  "selected_unique_images": 24,
+  "positive_denominator": 24,
+  "negative_denominator": 0,
+  "observations": 72,
+  "hard_timeout_implemented": false,
+  "input_sha256": {
+    "docs/reports/2026-09-27_barcode-variants/http-crop-hits/manifest.json": "2a73c3547f5f84a8cac0ef25269bdde5c28720fd4ad216b88437694da0f21836",
+    "docs/reports/2026-09-27_barcode-variants/http-crop-hits/complete.json": "ca3c07bdb29fd43095f42690b4c36fca57fecafc2bba152680970de703c159df",
+    "docs/reports/2026-09-27_barcode-variants/demo-selection-24.json": "16ce43e893a217f12563899175262edb8a47d3162ef69588384450a44453262a",
+    "docs/reports/2026-09-27_barcode-variants/http-crop-hits/persistent-fresh-bottle.jsonl": "71d0a22153ee8efc969a70190a0e38a7a148bca87bbb03ae25c787fa8733cc08",
+    "docs/reports/2026-09-27_barcode-variants/http-crop-hits/persistent-fresh-label.jsonl": "21ad803ddad3f983922f1322a9bd7d11fd384873a56aeb432cd0dfd20917b44d",
+    "docs/reports/2026-09-27_barcode-variants/http-crop-hits/persistent-fresh-barcode.jsonl": "94c0170644ab6e181033dd40d6feb2bb7da2f56c92d8249e9223b1d7fb84409f"
+  },
+  "generic_report": "docs/reports/2026-09-27_barcode-variants/http-crop-hits-report-final/http-comparison.json",
+  "variants": {
+    "fresh-bottle": {
+      "metrics": {
+        "selected_rows": 24,
+        "selected_unique_images": 24,
+        "positive_denominator": 24,
+        "negative_constraint_denominator": 0,
+        "observed_rows": 24,
+        "observed_positive_rows": 24,
+        "pending_rows": 0,
+        "complete_responses": 24,
+        "successful_within_3s": 23,
+        "complete_within_3s": 23,
+        "complete_within_3s_share": 0.9583333333333334,
+        "correct_within_3s": 18,
+        "correct_within_3s_share": 0.75,
+        "correct_late": 0,
+        "valid_correct_responses": 18,
+        "top1_prediction_correct": 18,
+        "top5_prediction_correct": 18,
+        "negative_forbidden_top1": 0,
+        "negative_forbidden_top1_share": null,
+        "errors": 0,
+        "degraded": 0,
+        "censored_rows": 0,
+        "http_wait_all_attempts_ms": {
+          "observations": 24,
+          "median": 1128.9210414979607,
+          "p95": 2333.6875840323046,
+          "p99": 5373.0114590143785,
+          "max": 5373.0114590143785
+        },
+        "complete_http_wall_ms": {
+          "observations": 24,
+          "median": 1128.9210414979607,
+          "p95": 2333.6875840323046,
+          "p99": 5373.0114590143785,
+          "max": 5373.0114590143785
+        }
+      },
+      "classification_query_ids": {
+        "geometry_available_query_ids": [
+          "q-001668",
+          "q-001661",
+          "q-000388",
+          "q-000021",
+          "q-000802",
+          "q-000819",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-002145",
+          "q-000040",
+          "q-002089",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001318",
+          "q-001620"
+        ],
+        "missing_geometry_query_ids": [
+          "q-000955",
+          "q-000243",
+          "q-000962",
+          "q-000946",
+          "q-001826"
+        ],
+        "geometry_error_query_ids": [],
+        "accepted_code_query_ids": [
+          "q-001668",
+          "q-001661",
+          "q-000388",
+          "q-000021",
+          "q-000802",
+          "q-000819",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-000040",
+          "q-002089",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001318",
+          "q-001620"
+        ],
+        "unique_barcode_return_query_ids": [
+          "q-001668",
+          "q-001661",
+          "q-000388",
+          "q-000021",
+          "q-000802",
+          "q-000819",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-000040",
+          "q-002089",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001318",
+          "q-001620"
+        ],
+        "fallback_query_ids": [
+          "q-000955",
+          "q-002145",
+          "q-000243",
+          "q-000962",
+          "q-000946",
+          "q-001826"
+        ],
+        "fallback_correct_top1_query_ids": [],
+        "fallback_correct_top5_query_ids": [],
+        "available_geometry_without_code_query_ids": [
+          "q-002145"
+        ],
+        "native_decode_error_query_ids": [],
+        "late_query_ids": [
+          "q-000243"
+        ],
+        "late_correct_query_ids": []
+      },
+      "counts": {
+        "geometry_available": 19,
+        "missing_geometry": 5,
+        "geometry_error": 0,
+        "accepted_code": 18,
+        "unique_barcode_return": 18,
+        "fallback": 6,
+        "fallback_correct_top1": 0,
+        "fallback_correct_top5": 0,
+        "available_geometry_without_code": 1,
+        "native_decode_error": 0,
+        "late": 1,
+        "late_correct": 0
+      },
+      "label_method_counts": {},
+      "total_candidate_boxes": 19,
+      "total_scanned_regions": 19,
+      "total_native_decode_calls": 38,
+      "total_native_decode_errors": 0,
+      "sam3_client_requests": 24,
+      "fresh_sam3_ms": {
+        "observations": 24,
+        "median": 672.2023544716649,
+        "p95": 896.2020420003682,
+        "p99": 919.0080420812592,
+        "max": 919.0080420812592,
+        "total": 16294.482376775704
+      },
+      "sent_image_prepare_ms": {
+        "observations": 24,
+        "median": 102.4797290447168,
+        "p95": 161.7174579296261,
+        "p99": 167.64587501529604,
+        "max": 167.64587501529604,
+        "total": 2462.159084971063
+      },
+      "geometry_ms": {
+        "observations": 24,
+        "median": 0.015291501767933369,
+        "p95": 0.0322909327223897,
+        "p99": 0.045625027269124985,
+        "max": 0.045625027269124985,
+        "total": 0.43229071889072657
+      },
+      "crop_decode_ms": {
+        "observations": 24,
+        "median": 41.75114550162107,
+        "p95": 63.837624969892204,
+        "p99": 65.80558291170746,
+        "max": 65.80558291170746,
+        "total": 899.7454575728625
+      },
+      "components": {
+        "startup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 483.21437498088926,
+          "max": 483.21437498088926
+        },
+        "build_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 194.89291706122458,
+          "max": 194.89291706122458
+        },
+        "ask_wall_ms": {
+          "observations": 24,
+          "median": 981.1811044928618,
+          "p95": 1788.4515000041574,
+          "p99": 4811.524459044449,
+          "max": 4811.524459044449
+        },
+        "service_setup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 78.96312500815839,
+          "max": 78.96312500815839
+        },
+        "source_read_ms": {
+          "observations": 24,
+          "median": 1.6573334578424692,
+          "p95": 5.041499971412122,
+          "p99": 9.961250005289912,
+          "max": 9.961250005289912
+        },
+        "json_parse_ms": {
+          "observations": 24,
+          "median": 0.04229153273627162,
+          "p95": 6.265333038754761,
+          "p99": 6.469457992352545,
+          "max": 6.469457992352545
+        },
+        "upload_ms": {
+          "observations": 24,
+          "median": 7.16408301377669,
+          "p95": 69.24595788586885,
+          "p99": 86.17737505119294,
+          "max": 86.17737505119294
+        },
+        "steps_answer_ms": {
+          "observations": 24,
+          "median": 38.40429149568081,
+          "p95": 453.6816250765696,
+          "p99": 465.7201669178903,
+          "max": 465.7201669178903
+        },
+        "process_ms": {
+          "observations": 24,
+          "median": 993.6022495385259,
+          "p95": 1789.095540996641,
+          "p99": 4812.38179106731,
+          "max": 4812.38179106731
+        },
+        "worker_request_ms": {
+          "observations": 24,
+          "median": 981.7326664924622,
+          "p95": 1789.0894160373136,
+          "p99": 4812.371000065468,
+          "max": 4812.371000065468
+        },
+        "cleanup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0,
+          "max": 0.0
+        },
+        "stage_ms": {
+          "barcode": {
+            "observations": 24,
+            "median": 846.95,
+            "p95": 1057.8,
+            "p99": 1075.3,
+            "max": 1075.3
+          },
+          "cluster_rules": {
+            "observations": 1,
+            "median": 3071.6,
+            "p95": 3071.6,
+            "p99": 3071.6,
+            "max": 3071.6
+          },
+          "embed": {
+            "observations": 6,
+            "median": 58.95,
+            "p95": 69.4,
+            "p99": 69.4,
+            "max": 69.4
+          },
+          "input": {
+            "observations": 6,
+            "median": 4.85,
+            "p95": 49.1,
+            "p99": 49.1,
+            "max": 49.1
+          },
+          "sam3-package": {
+            "observations": 6,
+            "median": 593.85,
+            "p95": 703.3,
+            "p99": 703.3,
+            "max": 703.3
+          },
+          "score": {
+            "observations": 6,
+            "median": 1.1,
+            "p95": 1.2,
+            "p99": 1.2,
+            "max": 1.2
+          },
+          "search": {
+            "observations": 6,
+            "median": 2.95,
+            "p95": 9.7,
+            "p99": 9.7,
+            "max": 9.7
+          },
+          "view": {
+            "observations": 6,
+            "median": 28.35,
+            "p95": 105.7,
+            "p99": 105.7,
+            "max": 105.7
+          }
+        },
+        "fresh_crop": {
+          "rows": 24,
+          "status_counts": {
+            "available": 19,
+            "missing_detection": 5
+          },
+          "sam3_wall_ms": {
+            "observations": 24,
+            "median": 672.2023544716649,
+            "p95": 896.2020420003682,
+            "p99": 919.0080420812592,
+            "max": 919.0080420812592
+          },
+          "sent_image_prepare_ms": {
+            "observations": 24,
+            "median": 102.4797290447168,
+            "p95": 161.7174579296261,
+            "p99": 167.64587501529604,
+            "max": 167.64587501529604
+          },
+          "geometry_ms": {
+            "observations": 24,
+            "median": 0.015291501767933369,
+            "p95": 0.0322909327223897,
+            "p99": 0.045625027269124985,
+            "max": 0.045625027269124985
+          },
+          "crop_decode_ms": {
+            "observations": 24,
+            "median": 41.75114550162107,
+            "p95": 63.837624969892204,
+            "p99": 65.80558291170746,
+            "max": 65.80558291170746
+          }
+        }
+      },
+      "first_requests": [
+        {
+          "query_id": "q-001668",
+          "http_wall_ms": 1511.268166010268,
+          "startup_ms": 483.21437498088926,
+          "build_ms": 194.89291706122458,
+          "service_setup_ms": 78.96312500815839,
+          "censored": false
+        }
+      ],
+      "after_first": {
+        "selected_rows": 23,
+        "selected_unique_images": 23,
+        "positive_denominator": 23,
+        "negative_constraint_denominator": 0,
+        "observed_rows": 23,
+        "observed_positive_rows": 23,
+        "pending_rows": 0,
+        "complete_responses": 23,
+        "successful_within_3s": 22,
+        "complete_within_3s": 22,
+        "complete_within_3s_share": 0.9565217391304348,
+        "correct_within_3s": 17,
+        "correct_within_3s_share": 0.7391304347826086,
+        "correct_late": 0,
+        "valid_correct_responses": 17,
+        "top1_prediction_correct": 17,
+        "top5_prediction_correct": 17,
+        "negative_forbidden_top1": 0,
+        "negative_forbidden_top1_share": null,
+        "errors": 0,
+        "degraded": 0,
+        "censored_rows": 0,
+        "http_wait_all_attempts_ms": {
+          "observations": 23,
+          "median": 1120.7142500206828,
+          "p95": 2333.6875840323046,
+          "p99": 5373.0114590143785,
+          "max": 5373.0114590143785
+        },
+        "complete_http_wall_ms": {
+          "observations": 23,
+          "median": 1120.7142500206828,
+          "p95": 2333.6875840323046,
+          "p99": 5373.0114590143785,
+          "max": 5373.0114590143785
+        }
+      },
+      "observations": [
+        {
+          "query_id": "q-001668",
+          "image_sha256": "1e3082b3ade2e769b3795c055c5c2ef1e330e35ddd1f06fdca54d84a70d32add",
+          "truth": [
+            "shato-pino-shardone-risling-beloe-suhoe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1600,
+            2399
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              14,
+              4,
+              1583,
+              2398
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680074270446"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680074270446",
+            "read": "4680074270446",
+            "format": "EAN13",
+            "slugs": [
+              "shato-pino-shardone-risling-beloe-suhoe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shato-pino-shardone-risling-beloe-suhoe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1511.268166010268,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": true,
+          "startup_ms": 483.21437498088926,
+          "build_ms": 194.89291706122458,
+          "ask_ms": 932.773582986556,
+          "upload_ms": 16.895042033866048,
+          "steps_answer_ms": 37.54499997012317,
+          "stage_ms": {
+            "barcode": 932.8
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 699.3812909349799,
+            "sent_image_prepare_ms": 157.13504201266915,
+            "geometry_ms": 0.045625027269124985,
+            "crop_decode_ms": 52.83508391585201,
+            "wall_ms": 909.8853329196572
+          }
+        },
+        {
+          "query_id": "q-001661",
+          "image_sha256": "211e6f859a4ed6fdfe01f7fcdcba81fd91e7d5391931c76a8abcac93b1e3ac4f",
+          "truth": [
+            "shato-pino-shardone-beloe-suhoe-125"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            977,
+            1465
+          ],
+          "sent_size": [
+            977,
+            1465
+          ],
+          "boxes": [
+            [
+              1,
+              6,
+              975,
+              1465
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680074271009"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680074271009",
+            "read": "4680074271009",
+            "format": "EAN13",
+            "slugs": [
+              "shato-pino-shardone-beloe-suhoe-125"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shato-pino-shardone-beloe-suhoe-125",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1082.5127499410883,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1020.1103329891339,
+          "upload_ms": 5.40816702414304,
+          "steps_answer_ms": 19.228499964810908,
+          "stage_ms": {
+            "barcode": 1020.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 896.2020420003682,
+            "sent_image_prepare_ms": 74.02387505862862,
+            "geometry_ms": 0.028415932320058346,
+            "crop_decode_ms": 43.5696670319885,
+            "wall_ms": 1013.8423340395093
+          }
+        },
+        {
+          "query_id": "q-000388",
+          "image_sha256": "2239638a9aebc28525038adb1cb4959988a5ee226c955f4b59c78eb5321bc30c",
+          "truth": [
+            "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1999,
+            3000
+          ],
+          "sent_size": [
+            1023,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              7,
+              1992,
+              2997
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4640005350852"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04640005350852",
+            "read": "4640005350852",
+            "format": "EAN13",
+            "slugs": [
+              "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1196.1290000472218,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 995.5070830183104,
+          "upload_ms": 86.17737505119294,
+          "steps_answer_ms": 75.62091597355902,
+          "stage_ms": {
+            "barcode": 995.5
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 680.9855420142412,
+            "sent_image_prepare_ms": 152.44091709610075,
+            "geometry_ms": 0.01633400097489357,
+            "crop_decode_ms": 61.82991596870124,
+            "wall_ms": 895.2881660079584
+          }
+        },
+        {
+          "query_id": "q-000955",
+          "image_sha256": "2501f77ef6e979b0cc656d48dc7bcdbf2d5b78ad6a1ca8de8cbb3722b4e49930",
+          "truth": [
+            "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115"
+          ],
+          "crop_status": "missing_detection",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            487,
+            1199
+          ],
+          "sent_size": [
+            487,
+            1199
+          ],
+          "boxes": [],
+          "regions_scanned": 0,
+          "native_decode_calls": 0,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "vinodelnya-pokrovskaya-pokrovskoe-sladkoe-krasnoe-kaberne-sovinon-13",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1390.4142499668524,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1201.0515000438318,
+          "upload_ms": 4.446374950930476,
+          "steps_answer_ms": 139.01962491218,
+          "stage_ms": {
+            "barcode": 580.5,
+            "input": 3.2,
+            "sam3-package": 533.1,
+            "view": 20.2,
+            "embed": 57.6,
+            "search": 5.3,
+            "score": 1.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 539.6413339767605,
+            "sent_image_prepare_ms": 35.625416901893914,
+            "geometry_ms": 0.006834045052528381,
+            "crop_decode_ms": 0.0,
+            "wall_ms": 575.2854589372873
+          }
+        },
+        {
+          "query_id": "q-000021",
+          "image_sha256": "25a4578208d2aaa312e190346ec1f95b69d9693eca3736c7825794f968d37606",
+          "truth": [
+            "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              1,
+              2,
+              1064,
+              1598
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4631168664979"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04631168664979",
+            "read": "4631168664979",
+            "format": "EAN13",
+            "slugs": [
+              "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 884.1697499155998,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 817.412415985018,
+          "upload_ms": 9.754083002917469,
+          "steps_answer_ms": 20.75695793610066,
+          "stage_ms": {
+            "barcode": 817.4
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 663.4191669290885,
+            "sent_image_prepare_ms": 102.78412501793355,
+            "geometry_ms": 0.015500001609325409,
+            "crop_decode_ms": 44.461999903433025,
+            "wall_ms": 810.696457978338
+          }
+        },
+        {
+          "query_id": "q-000802",
+          "image_sha256": "29be9b94b0cdd68acb8b1116057fcf8782e1095b69a4be2f36a3cc82018f2ee0",
+          "truth": [
+            "domaine-lipko-blaufrankish-krasnoe-suhoe-126"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              4,
+              3,
+              1065,
+              1597
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "Code128",
+              "text": "4630171630094"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630171630094",
+            "read": "4630171630094",
+            "format": "Code128",
+            "slugs": [
+              "domaine-lipko-blaufrankish-krasnoe-suhoe-126"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "domaine-lipko-blaufrankish-krasnoe-suhoe-126",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1137.1278329752386,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1075.2914579352364,
+          "upload_ms": 4.2749999556690454,
+          "steps_answer_ms": 19.444582983851433,
+          "stage_ms": {
+            "barcode": 1075.3
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 919.0080420812592,
+            "sent_image_prepare_ms": 108.16266702022403,
+            "geometry_ms": 0.021958956494927406,
+            "crop_decode_ms": 43.002207996323705,
+            "wall_ms": 1070.2252079499885
+          }
+        },
+        {
+          "query_id": "q-000819",
+          "image_sha256": "3492a2afb7ecb015009d4257deb5b1731dab1cbe646ec37240be7967fb0632b9",
+          "truth": [
+            "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1229,
+            1229
+          ],
+          "sent_size": [
+            1229,
+            1229
+          ],
+          "boxes": [
+            [
+              1,
+              3,
+              1225,
+              1225
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4660017895493"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04660017895493",
+            "read": "4660017895493",
+            "format": "EAN13",
+            "slugs": [
+              "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 855.3875830257311,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 795.9842910058796,
+          "upload_ms": 5.251750000752509,
+          "steps_answer_ms": 15.497958986088634,
+          "stage_ms": {
+            "barcode": 795.9
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 657.3939999798313,
+            "sent_image_prepare_ms": 78.796208021231,
+            "geometry_ms": 0.014708959497511387,
+            "crop_decode_ms": 54.397959029302,
+            "wall_ms": 790.6198750715703
+          }
+        },
+        {
+          "query_id": "q-001855",
+          "image_sha256": "4ec1f54640005a52f63a9ad21cd1b6eb265b0932cc1eb7660e5485a5bf7d795f",
+          "truth": [
+            "vaynkraft-pino-nuar-krasnoe-suhoe-13"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              5,
+              5,
+              1996,
+              2993
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4631162008182"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04631162008182",
+            "read": "4631162008182",
+            "format": "EAN13",
+            "slugs": [
+              "vaynkraft-pino-nuar-krasnoe-suhoe-13"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vaynkraft-pino-nuar-krasnoe-suhoe-13",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1066.2841249722987,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 971.8589999247342,
+          "upload_ms": 16.079874942079186,
+          "steps_answer_ms": 39.263583021238446,
+          "stage_ms": {
+            "barcode": 971.8
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 749.4842499727383,
+            "sent_image_prepare_ms": 138.73041700571775,
+            "geometry_ms": 0.018582912161946297,
+            "crop_decode_ms": 63.837624969892204,
+            "wall_ms": 952.0921249641106
+          }
+        },
+        {
+          "query_id": "q-002159",
+          "image_sha256": "50af3c75a19fb8dd3b8250527bbdb762477153ce8d4aff4ec578a5b7a99776ac",
+          "truth": [
+            "vysokij-bereg-risling-zelenaya-seriya"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            800
+          ],
+          "sent_size": [
+            600,
+            800
+          ],
+          "boxes": [
+            [
+              96,
+              0,
+              467,
+              784
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4630037251715"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630037251715",
+            "read": "4630037251715",
+            "format": "EAN13",
+            "slugs": [
+              "vysokij-bereg-risling-zelenaya-seriya"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vysokij-bereg-risling-zelenaya-seriya",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 630.7799170026556,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 579.1791669325903,
+          "upload_ms": 2.36587505787611,
+          "steps_answer_ms": 13.159708003513515,
+          "stage_ms": {
+            "barcode": 579.2
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 521.2002909975126,
+            "sent_image_prepare_ms": 27.218875009566545,
+            "geometry_ms": 0.013415934517979622,
+            "crop_decode_ms": 28.594749979674816,
+            "wall_ms": 577.0385829964653
+          }
+        },
+        {
+          "query_id": "q-001602",
+          "image_sha256": "51f449f28c5f6224400fd2a36002521e137b06e234a87dd0e394f1c9ae015268",
+          "truth": [
+            "shardone-2"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1996,
+            3000
+          ],
+          "sent_size": [
+            1022,
+            1536
+          ],
+          "boxes": [
+            [
+              1,
+              7,
+              1993,
+              2995
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680140700228"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680140700228",
+            "read": "4680140700228",
+            "format": "EAN13",
+            "slugs": [
+              "shardone-2"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shardone-2",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1237.4075420666486,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1057.8133340459317,
+          "upload_ms": 62.960583018139005,
+          "steps_answer_ms": 78.48404196556658,
+          "stage_ms": {
+            "barcode": 1057.8
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 773.0080829933286,
+            "sent_image_prepare_ms": 154.32179195340723,
+            "geometry_ms": 0.01337495632469654,
+            "crop_decode_ms": 63.36612498853356,
+            "wall_ms": 990.7257920131087
+          }
+        },
+        {
+          "query_id": "q-002145",
+          "image_sha256": "5d6ea1226a4ccdd18f507ed48b8e11f253c04bb8b6cf29d2898e0b141da78d4a",
+          "truth": [
+            "vysokij-bereg-risling-zelenaya-seriya-1"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            450
+          ],
+          "sent_size": [
+            600,
+            450
+          ],
+          "boxes": [
+            [
+              42,
+              0,
+              568,
+              447
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "perovskih_rose",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1275.7746250135824,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1159.8514160141349,
+          "upload_ms": 1.1841250816360116,
+          "steps_answer_ms": 73.15770792774856,
+          "stage_ms": {
+            "barcode": 606.1,
+            "input": 1.0,
+            "sam3-package": 485.2,
+            "view": 14.8,
+            "embed": 48.8,
+            "search": 2.7,
+            "score": 1.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 552.6084590237588,
+            "sent_image_prepare_ms": 14.628374949097633,
+            "geometry_ms": 0.013208016753196716,
+            "crop_decode_ms": 36.94833302870393,
+            "wall_ms": 604.2115410091355
+          }
+        },
+        {
+          "query_id": "q-000243",
+          "image_sha256": "5ee266e97fcc09dcab63d9e85509393cced0a7aa1a92781fe6fb155127113dfd",
+          "truth": [
+            "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125"
+          ],
+          "crop_status": "missing_detection",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1859,
+            3000
+          ],
+          "sent_size": [
+            952,
+            1536
+          ],
+          "boxes": [],
+          "regions_scanned": 0,
+          "native_decode_calls": 0,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "abrau-dyurso-victor-dravigny-polusladkoe-sovinon-blan-beloe-12",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 5373.0114590143785,
+          "correct_within_3s": false,
+          "complete_within_3s": false,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 4811.524459044449,
+          "upload_ms": 47.82766697462648,
+          "steps_answer_ms": 465.7201669178903,
+          "stage_ms": {
+            "barcode": 829.0,
+            "input": 48.5,
+            "sam3-package": 703.3,
+            "view": 86.8,
+            "embed": 69.4,
+            "search": 1.6,
+            "score": 1.1,
+            "cluster_rules": 3071.6
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 630.893542082049,
+            "sent_image_prepare_ms": 136.4616670180112,
+            "geometry_ms": 0.007541966624557972,
+            "crop_decode_ms": 0.0,
+            "wall_ms": 767.3809160478413
+          }
+        },
+        {
+          "query_id": "q-000962",
+          "image_sha256": "7c302610ab1e4f28e54f970a2a5b96d040ab4151a0d9a603683d3ecbbf576b1f",
+          "truth": [
+            "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11"
+          ],
+          "crop_status": "missing_detection",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            798,
+            1200
+          ],
+          "sent_size": [
+            798,
+            1200
+          ],
+          "boxes": [],
+          "regions_scanned": 0,
+          "native_decode_calls": 0,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "perovskih_rose",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1641.0029580583796,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1336.8036249885336,
+          "upload_ms": 6.109292036853731,
+          "steps_answer_ms": 248.54041694197804,
+          "stage_ms": {
+            "barcode": 669.1,
+            "input": 4.5,
+            "sam3-package": 568.7,
+            "view": 29.7,
+            "embed": 60.3,
+            "search": 3.2,
+            "score": 1.2
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 609.4617920462042,
+            "sent_image_prepare_ms": 53.38291695807129,
+            "geometry_ms": 0.017167069017887115,
+            "crop_decode_ms": 0.0,
+            "wall_ms": 662.9207080695778
+          }
+        },
+        {
+          "query_id": "q-000040",
+          "image_sha256": "7c32420c74500cef2dcc2ecfc17f38c1473a9f429c17e9dea60e9b7777d77e74",
+          "truth": [
+            "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            900,
+            1200
+          ],
+          "sent_size": [
+            900,
+            1200
+          ],
+          "boxes": [
+            [
+              180,
+              2,
+              677,
+              1198
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4760159270261"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04760159270261",
+            "read": "4760159270261",
+            "format": "EAN13",
+            "slugs": [
+              "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 799.206625088118,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 741.8574170442298,
+          "upload_ms": 3.571624984033406,
+          "steps_answer_ms": 16.733249998651445,
+          "stage_ms": {
+            "barcode": 741.8
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 642.3837499460205,
+            "sent_image_prepare_ms": 65.84566691890359,
+            "geometry_ms": 0.027041067369282246,
+            "crop_decode_ms": 28.73370796442032,
+            "wall_ms": 737.0052090846002
+          }
+        },
+        {
+          "query_id": "q-002089",
+          "image_sha256": "7e82acf49054738ca23988f39efc1eecf90e832e9d37816ef3ea60c823a42370",
+          "truth": [
+            "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              13,
+              3,
+              1053,
+              1598
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4605899002690"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04605899002690",
+            "read": "4605899002690",
+            "format": "EAN13",
+            "slugs": [
+              "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1015.180499991402,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 952.6424170471728,
+          "upload_ms": 5.485999980010092,
+          "steps_answer_ms": 19.597375066950917,
+          "stage_ms": {
+            "barcode": 952.6
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 786.5334589732811,
+            "sent_image_prepare_ms": 102.17533307150006,
+            "geometry_ms": 0.01762493047863245,
+            "crop_decode_ms": 52.97520896419883,
+            "wall_ms": 941.717333975248
+          }
+        },
+        {
+          "query_id": "q-000946",
+          "image_sha256": "7f9a00c03029edc7a971d4b08afd0a23f62867392134fe0ebcf0866c6e6cebe3",
+          "truth": [
+            "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115"
+          ],
+          "crop_status": "missing_detection",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1200,
+            1200
+          ],
+          "sent_size": [
+            1200,
+            1200
+          ],
+          "boxes": [],
+          "regions_scanned": 0,
+          "native_decode_calls": 0,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "perovskih_rose",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1788.0222500534728,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1536.476582987234,
+          "upload_ms": 6.445541977882385,
+          "steps_answer_ms": 199.96225007344037,
+          "stage_ms": {
+            "barcode": 825.9,
+            "input": 5.2,
+            "sam3-package": 619.0,
+            "view": 27.0,
+            "embed": 56.8,
+            "search": 1.4,
+            "score": 1.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 735.5134580284357,
+            "sent_image_prepare_ms": 83.03241606336087,
+            "geometry_ms": 0.008041970431804657,
+            "crop_decode_ms": 0.0,
+            "wall_ms": 818.5698339948431
+          }
+        },
+        {
+          "query_id": "q-001047",
+          "image_sha256": "b883e578bd028f51282a984d9876945f17595bf56626c4634eede208126ebbd0",
+          "truth": [
+            "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              1,
+              7,
+              1994,
+              2995
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4603040016992"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04603040016992",
+            "read": "4603040016992",
+            "format": "EAN13",
+            "slugs": [
+              "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1254.0961250197142,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1045.958000002429,
+          "upload_ms": 69.24595788586885,
+          "steps_answer_ms": 97.05304203089327,
+          "stage_ms": {
+            "barcode": 1045.9
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 727.9196659801528,
+            "sent_image_prepare_ms": 167.64587501529604,
+            "geometry_ms": 0.014125020243227482,
+            "crop_decode_ms": 65.80558291170746,
+            "wall_ms": 961.4022920140997
+          }
+        },
+        {
+          "query_id": "q-001319",
+          "image_sha256": "ba593dbe7c4ae520daa746b029e64c5362d93cf99a478bbfb079c084bf640edb",
+          "truth": [
+            "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            946
+          ],
+          "sent_size": [
+            1536,
+            727
+          ],
+          "boxes": [
+            [
+              101,
+              0,
+              2000,
+              878
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4630037251630"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630037251630",
+            "read": "4630037251630",
+            "format": "EAN13",
+            "slugs": [
+              "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 791.3826250005513,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 726.3109169434756,
+          "upload_ms": 7.010833011008799,
+          "steps_answer_ms": 20.28816705569625,
+          "stage_ms": {
+            "barcode": 726.3
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 588.5237499605864,
+            "sent_image_prepare_ms": 93.61312491819263,
+            "geometry_ms": 0.015083001926541328,
+            "crop_decode_ms": 33.52608403656632,
+            "wall_ms": 715.6966250622645
+          }
+        },
+        {
+          "query_id": "q-000342",
+          "image_sha256": "c391aef61bd11a8a2a9b0f637f486e0d8efc2fc91ad3045c5fa195416f390de9",
+          "truth": [
+            "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              3,
+              3,
+              1988,
+              2995
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4640005350784"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04640005350784",
+            "read": "4640005350784",
+            "format": "EAN13",
+            "slugs": [
+              "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1144.2357909400016,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 990.5032090609893,
+          "upload_ms": 52.943874965421855,
+          "steps_answer_ms": 63.23916697874665,
+          "stage_ms": {
+            "barcode": 990.5
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 717.9829999804497,
+            "sent_image_prepare_ms": 150.40449996013194,
+            "geometry_ms": 0.030916999094188213,
+            "crop_decode_ms": 60.135832987725735,
+            "wall_ms": 928.5789160057902
+          }
+        },
+        {
+          "query_id": "q-001507",
+          "image_sha256": "cb53fccdd0e131a839d66ecbfa29976dffdf3abf63ed870919fdcb21be96decf",
+          "truth": [
+            "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1600,
+            1200
+          ],
+          "sent_size": [
+            1536,
+            1152
+          ],
+          "boxes": [
+            [
+              342,
+              2,
+              1163,
+              1197
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4620012637542"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04620012637542",
+            "read": "4620012637542",
+            "format": "EAN13",
+            "slugs": [
+              "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 970.696333097294,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 906.7300839815289,
+          "upload_ms": 7.3173330165445805,
+          "steps_answer_ms": 19.825834082439542,
+          "stage_ms": {
+            "barcode": 906.7
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 727.5072089396417,
+            "sent_image_prepare_ms": 130.55366708431393,
+            "geometry_ms": 0.013707904145121574,
+            "crop_decode_ms": 40.50008300691843,
+            "wall_ms": 898.5912080388516
+          }
+        },
+        {
+          "query_id": "q-002021",
+          "image_sha256": "d03debabfaa8406771b4f5a9727d45d5606f7aee638cddc105df52c08da5745e",
+          "truth": [
+            "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            800
+          ],
+          "sent_size": [
+            600,
+            800
+          ],
+          "boxes": [
+            [
+              74,
+              1,
+              513,
+              797
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4620036812437"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04620036812437",
+            "read": "4620036812437",
+            "format": "EAN13",
+            "slugs": [
+              "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 651.1645839782432,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 598.9254999440163,
+          "upload_ms": 1.809875015169382,
+          "steps_answer_ms": 13.393874978646636,
+          "stage_ms": {
+            "barcode": 598.9
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 539.3407909432426,
+            "sent_image_prepare_ms": 23.207457968965173,
+            "geometry_ms": 0.012958073057234287,
+            "crop_decode_ms": 33.91408291645348,
+            "wall_ms": 596.4872499462217
+          }
+        },
+        {
+          "query_id": "q-001318",
+          "image_sha256": "d1b4e5f33e17d5a4ca86ab728c49669436f99e7792b96ff9bc3d66589a13c723",
+          "truth": [
+            "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            946
+          ],
+          "sent_size": [
+            1536,
+            727
+          ],
+          "boxes": [
+            [
+              0,
+              0,
+              1925,
+              867
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "qr_code",
+              "format": "QRCode",
+              "text": "URL:https://chateautamagne.ru/ru/catalog/wine/111"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "qr_url",
+            "code": "https://chateautamagne.ru/ru/catalog/wine/111",
+            "read": "URL:https://chateautamagne.ru/ru/catalog/wine/111",
+            "format": "QRCode",
+            "slugs": [
+              "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 790.3981250710785,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 722.800042014569,
+          "upload_ms": 7.851375034078956,
+          "steps_answer_ms": 22.764667053706944,
+          "stage_ms": {
+            "barcode": 722.8
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 585.8331250492483,
+            "sent_image_prepare_ms": 98.39462500531226,
+            "geometry_ms": 0.02150004729628563,
+            "crop_decode_ms": 31.57433297019452,
+            "wall_ms": 715.8446670509875
+          }
+        },
+        {
+          "query_id": "q-001620",
+          "image_sha256": "f2f8125929bc8e5fa0675e016ca52252b0459210894492852c10a86584e817b3",
+          "truth": [
+            "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1996,
+            3000
+          ],
+          "sent_size": [
+            1022,
+            1536
+          ],
+          "boxes": [
+            [
+              11,
+              9,
+              1983,
+              3000
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680074271429"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680074271429",
+            "read": "4680074271429",
+            "format": "EAN13",
+            "slugs": [
+              "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1120.7142500206828,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 958.667750004679,
+          "upload_ms": 54.109583026729524,
+          "steps_answer_ms": 69.50162502471358,
+          "stage_ms": {
+            "barcode": 958.6
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 694.0213339403272,
+            "sent_image_prepare_ms": 151.85666701290756,
+            "geometry_ms": 0.0322909327223897,
+            "crop_decode_ms": 59.73687500227243,
+            "wall_ms": 905.663707992062
+          }
+        },
+        {
+          "query_id": "q-001826",
+          "image_sha256": "fe942be60884a356433bd9cdf89667fec46befa6ea84c09c25da30cbfc7e654f",
+          "truth": [
+            "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13"
+          ],
+          "crop_status": "missing_detection",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            2702
+          ],
+          "sent_size": [
+            1137,
+            1536
+          ],
+          "boxes": [],
+          "regions_scanned": 0,
+          "native_decode_calls": 0,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "perovskih_rose",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 2333.6875840323046,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1788.4515000041574,
+          "upload_ms": 44.56470801960677,
+          "steps_answer_ms": 453.6816250765696,
+          "stage_ms": {
+            "barcode": 864.9,
+            "input": 49.1,
+            "sam3-package": 689.9,
+            "view": 105.7,
+            "embed": 67.8,
+            "search": 9.7,
+            "score": 1.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 656.2350000021979,
+            "sent_image_prepare_ms": 161.7174579296261,
+            "geometry_ms": 0.006332993507385254,
+            "crop_decode_ms": 0.0,
+            "wall_ms": 817.9737500613555
+          }
+        }
+      ]
+    },
+    "fresh-label": {
+      "metrics": {
+        "selected_rows": 24,
+        "selected_unique_images": 24,
+        "positive_denominator": 24,
+        "negative_constraint_denominator": 0,
+        "observed_rows": 24,
+        "observed_positive_rows": 24,
+        "pending_rows": 0,
+        "complete_responses": 24,
+        "successful_within_3s": 24,
+        "complete_within_3s": 24,
+        "complete_within_3s_share": 1.0,
+        "correct_within_3s": 18,
+        "correct_within_3s_share": 0.75,
+        "correct_late": 0,
+        "valid_correct_responses": 18,
+        "top1_prediction_correct": 18,
+        "top5_prediction_correct": 19,
+        "negative_forbidden_top1": 0,
+        "negative_forbidden_top1_share": null,
+        "errors": 0,
+        "degraded": 0,
+        "censored_rows": 0,
+        "http_wait_all_attempts_ms": {
+          "observations": 24,
+          "median": 1181.46002094727,
+          "p95": 2098.327082931064,
+          "p99": 2145.807333989069,
+          "max": 2145.807333989069
+        },
+        "complete_http_wall_ms": {
+          "observations": 24,
+          "median": 1181.46002094727,
+          "p95": 2098.327082931064,
+          "p99": 2145.807333989069,
+          "max": 2145.807333989069
+        }
+      },
+      "classification_query_ids": {
+        "geometry_available_query_ids": [
+          "q-001668",
+          "q-001661",
+          "q-000388",
+          "q-000955",
+          "q-000021",
+          "q-000802",
+          "q-000819",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-002145",
+          "q-000243",
+          "q-000962",
+          "q-000040",
+          "q-002089",
+          "q-000946",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001318",
+          "q-001620",
+          "q-001826"
+        ],
+        "missing_geometry_query_ids": [],
+        "geometry_error_query_ids": [],
+        "accepted_code_query_ids": [
+          "q-001668",
+          "q-000388",
+          "q-000021",
+          "q-000802",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-000243",
+          "q-000962",
+          "q-000040",
+          "q-000946",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001620",
+          "q-001826"
+        ],
+        "unique_barcode_return_query_ids": [
+          "q-001668",
+          "q-000388",
+          "q-000021",
+          "q-000802",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-000243",
+          "q-000962",
+          "q-000040",
+          "q-000946",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001620",
+          "q-001826"
+        ],
+        "fallback_query_ids": [
+          "q-001661",
+          "q-000955",
+          "q-000819",
+          "q-002145",
+          "q-002089",
+          "q-001318"
+        ],
+        "fallback_correct_top1_query_ids": [],
+        "fallback_correct_top5_query_ids": [
+          "q-002089"
+        ],
+        "available_geometry_without_code_query_ids": [
+          "q-001661",
+          "q-000955",
+          "q-000819",
+          "q-002145",
+          "q-002089",
+          "q-001318"
+        ],
+        "native_decode_error_query_ids": [],
+        "late_query_ids": [],
+        "late_correct_query_ids": []
+      },
+      "counts": {
+        "geometry_available": 24,
+        "missing_geometry": 0,
+        "geometry_error": 0,
+        "accepted_code": 18,
+        "unique_barcode_return": 18,
+        "fallback": 6,
+        "fallback_correct_top1": 0,
+        "fallback_correct_top5": 1,
+        "available_geometry_without_code": 6,
+        "native_decode_error": 0,
+        "late": 0,
+        "late_correct": 0
+      },
+      "label_method_counts": {
+        "seg": 23,
+        "crop": 1
+      },
+      "total_candidate_boxes": 24,
+      "total_scanned_regions": 24,
+      "total_native_decode_calls": 48,
+      "total_native_decode_errors": 0,
+      "sam3_client_requests": 24,
+      "fresh_sam3_ms": {
+        "observations": 24,
+        "median": 675.4926870344207,
+        "p95": 826.31183299236,
+        "p99": 878.1167500419542,
+        "max": 878.1167500419542,
+        "total": 16264.391415170394
+      },
+      "sent_image_prepare_ms": {
+        "observations": 24,
+        "median": 101.55364603269845,
+        "p95": 162.26216708309948,
+        "p99": 166.58816707786173,
+        "max": 166.58816707786173,
+        "total": 2490.2731250040233
+      },
+      "geometry_ms": {
+        "observations": 24,
+        "median": 31.492353999055922,
+        "p95": 101.18508292362094,
+        "p99": 108.21800003759563,
+        "max": 108.21800003759563,
+        "total": 1087.940747733228
+      },
+      "crop_decode_ms": {
+        "observations": 24,
+        "median": 43.572437542025,
+        "p95": 67.02812504954636,
+        "p99": 83.00291700288653,
+        "max": 83.00291700288653,
+        "total": 1057.773707085289
+      },
+      "components": {
+        "startup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 574.4026249740273,
+          "max": 574.4026249740273
+        },
+        "build_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 173.04070899263024,
+          "max": 173.04070899263024
+        },
+        "ask_wall_ms": {
+          "observations": 24,
+          "median": 1056.3895420636982,
+          "p95": 1750.4977920325473,
+          "p99": 1782.4078749399632,
+          "max": 1782.4078749399632
+        },
+        "service_setup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 2.156791975721717,
+          "max": 2.156791975721717
+        },
+        "source_read_ms": {
+          "observations": 24,
+          "median": 1.712541503366083,
+          "p95": 8.510249899700284,
+          "p99": 28.042250080034137,
+          "max": 28.042250080034137
+        },
+        "json_parse_ms": {
+          "observations": 24,
+          "median": 0.04020845517516136,
+          "p95": 5.710165947675705,
+          "p99": 7.805833010934293,
+          "max": 7.805833010934293
+        },
+        "upload_ms": {
+          "observations": 24,
+          "median": 6.054478988517076,
+          "p95": 65.50575001165271,
+          "p99": 66.51483289897442,
+          "max": 66.51483289897442
+        },
+        "steps_answer_ms": {
+          "observations": 24,
+          "median": 63.50020848913118,
+          "p95": 298.1228749267757,
+          "p99": 310.7667920412496,
+          "max": 310.7667920412496
+        },
+        "process_ms": {
+          "observations": 24,
+          "median": 1068.55122896377,
+          "p95": 1751.1179159628227,
+          "p99": 1783.075958956033,
+          "max": 1783.075958956033
+        },
+        "worker_request_ms": {
+          "observations": 24,
+          "median": 1056.9978125276975,
+          "p95": 1751.114375074394,
+          "p99": 1783.0674590077251,
+          "max": 1783.0674590077251
+        },
+        "cleanup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0,
+          "max": 0.0
+        },
+        "stage_ms": {
+          "barcode": {
+            "observations": 24,
+            "median": 926.5,
+            "p95": 1154.3,
+            "p99": 1164.7,
+            "max": 1164.7
+          },
+          "embed": {
+            "observations": 6,
+            "median": 61.5,
+            "p95": 95.0,
+            "p99": 95.0,
+            "max": 95.0
+          },
+          "input": {
+            "observations": 6,
+            "median": 4.15,
+            "p95": 5.6,
+            "p99": 5.6,
+            "max": 5.6
+          },
+          "sam3-package": {
+            "observations": 6,
+            "median": 662.45,
+            "p95": 751.6,
+            "p99": 751.6,
+            "max": 751.6
+          },
+          "score": {
+            "observations": 6,
+            "median": 1.0,
+            "p95": 1.1,
+            "p99": 1.1,
+            "max": 1.1
+          },
+          "search": {
+            "observations": 6,
+            "median": 2.75,
+            "p95": 7.5,
+            "p99": 7.5,
+            "max": 7.5
+          },
+          "view": {
+            "observations": 6,
+            "median": 51.4,
+            "p95": 74.6,
+            "p99": 74.6,
+            "max": 74.6
+          }
+        },
+        "fresh_crop": {
+          "rows": 24,
+          "status_counts": {
+            "available": 24
+          },
+          "sam3_wall_ms": {
+            "observations": 24,
+            "median": 675.4926870344207,
+            "p95": 826.31183299236,
+            "p99": 878.1167500419542,
+            "max": 878.1167500419542
+          },
+          "sent_image_prepare_ms": {
+            "observations": 24,
+            "median": 101.55364603269845,
+            "p95": 162.26216708309948,
+            "p99": 166.58816707786173,
+            "max": 166.58816707786173
+          },
+          "geometry_ms": {
+            "observations": 24,
+            "median": 31.492353999055922,
+            "p95": 101.18508292362094,
+            "p99": 108.21800003759563,
+            "max": 108.21800003759563
+          },
+          "crop_decode_ms": {
+            "observations": 24,
+            "median": 43.572437542025,
+            "p95": 67.02812504954636,
+            "p99": 83.00291700288653,
+            "max": 83.00291700288653
+          }
+        }
+      },
+      "first_requests": [
+        {
+          "query_id": "q-001668",
+          "http_wall_ms": 1702.000041026622,
+          "startup_ms": 574.4026249740273,
+          "build_ms": 173.04070899263024,
+          "service_setup_ms": 2.156791975721717,
+          "censored": false
+        }
+      ],
+      "after_first": {
+        "selected_rows": 23,
+        "selected_unique_images": 23,
+        "positive_denominator": 23,
+        "negative_constraint_denominator": 0,
+        "observed_rows": 23,
+        "observed_positive_rows": 23,
+        "pending_rows": 0,
+        "complete_responses": 23,
+        "successful_within_3s": 23,
+        "complete_within_3s": 23,
+        "complete_within_3s_share": 1.0,
+        "correct_within_3s": 17,
+        "correct_within_3s_share": 0.7391304347826086,
+        "correct_late": 0,
+        "valid_correct_responses": 17,
+        "top1_prediction_correct": 17,
+        "top5_prediction_correct": 18,
+        "negative_forbidden_top1": 0,
+        "negative_forbidden_top1_share": null,
+        "errors": 0,
+        "degraded": 0,
+        "censored_rows": 0,
+        "http_wait_all_attempts_ms": {
+          "observations": 23,
+          "median": 1167.8769999416545,
+          "p95": 2098.327082931064,
+          "p99": 2145.807333989069,
+          "max": 2145.807333989069
+        },
+        "complete_http_wall_ms": {
+          "observations": 23,
+          "median": 1167.8769999416545,
+          "p95": 2098.327082931064,
+          "p99": 2145.807333989069,
+          "max": 2145.807333989069
+        }
+      },
+      "observations": [
+        {
+          "query_id": "q-001668",
+          "image_sha256": "1e3082b3ade2e769b3795c055c5c2ef1e330e35ddd1f06fdca54d84a70d32add",
+          "truth": [
+            "shato-pino-shardone-risling-beloe-suhoe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1600,
+            2399
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              13,
+              290,
+              1596,
+              2272
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680074270446"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680074270446",
+            "read": "4680074270446",
+            "format": "EAN13",
+            "slugs": [
+              "shato-pino-shardone-risling-beloe-suhoe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shato-pino-shardone-risling-beloe-suhoe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1702.000041026622,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": true,
+          "startup_ms": 574.4026249740273,
+          "build_ms": 173.04070899263024,
+          "ask_ms": 1019.3508749362081,
+          "upload_ms": 38.680374971590936,
+          "steps_answer_ms": 31.858167028985918,
+          "stage_ms": {
+            "barcode": 1019.3
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 754.466750076972,
+            "sent_image_prepare_ms": 123.30937501974404,
+            "geometry_ms": 68.11291608028114,
+            "crop_decode_ms": 53.1404169742018,
+            "wall_ms": 1000.2208750229329
+          }
+        },
+        {
+          "query_id": "q-001661",
+          "image_sha256": "211e6f859a4ed6fdfe01f7fcdcba81fd91e7d5391931c76a8abcac93b1e3ac4f",
+          "truth": [
+            "shato-pino-shardone-beloe-suhoe-125"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            977,
+            1465
+          ],
+          "sent_size": [
+            977,
+            1465
+          ],
+          "boxes": [
+            [
+              640,
+              1086,
+              977,
+              1310
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "vinodelnya-uzunov-shardone-rezerv-beloe-suhoe-135",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 2071.8875840539113,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1750.4977920325473,
+          "upload_ms": 5.215291981585324,
+          "steps_answer_ms": 268.06420902721584,
+          "stage_ms": {
+            "barcode": 934.6,
+            "input": 4.0,
+            "sam3-package": 672.2,
+            "view": 55.4,
+            "embed": 76.0,
+            "search": 7.2,
+            "score": 1.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 799.9397920211777,
+            "sent_image_prepare_ms": 76.78391702938825,
+            "geometry_ms": 21.990832989104092,
+            "crop_decode_ms": 30.014957999810576,
+            "wall_ms": 928.7559590302408
+          }
+        },
+        {
+          "query_id": "q-000388",
+          "image_sha256": "2239638a9aebc28525038adb1cb4959988a5ee226c955f4b59c78eb5321bc30c",
+          "truth": [
+            "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1999,
+            3000
+          ],
+          "sent_size": [
+            1023,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              389,
+              1999,
+              2899
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4640005350852"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04640005350852",
+            "read": "4640005350852",
+            "format": "EAN13",
+            "slugs": [
+              "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1254.2964579770342,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1079.2372500291094,
+          "upload_ms": 65.50575001165271,
+          "steps_answer_ms": 72.90420797653496,
+          "stage_ms": {
+            "barcode": 1079.2
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 671.3770410278812,
+            "sent_image_prepare_ms": 154.17470806278288,
+            "geometry_ms": 100.42670904658735,
+            "crop_decode_ms": 59.70933299977332,
+            "wall_ms": 985.7067499542609
+          }
+        },
+        {
+          "query_id": "q-000955",
+          "image_sha256": "2501f77ef6e979b0cc656d48dc7bcdbf2d5b78ad6a1ca8de8cbb3722b4e49930",
+          "truth": [
+            "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            487,
+            1199
+          ],
+          "sent_size": [
+            487,
+            1199
+          ],
+          "boxes": [
+            [
+              66,
+              307,
+              442,
+              1149
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "vinodelnya-pokrovskaya-pokrovskoe-sladkoe-krasnoe-kaberne-sovinon-13",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1407.7432079939172,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1240.1660829782486,
+          "upload_ms": 3.2646249746903777,
+          "steps_answer_ms": 122.8614579886198,
+          "stage_ms": {
+            "barcode": 622.7,
+            "input": 3.0,
+            "sam3-package": 535.1,
+            "view": 21.8,
+            "embed": 55.2,
+            "search": 1.3,
+            "score": 1.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 545.9347920259461,
+            "sent_image_prepare_ms": 34.945083083584905,
+            "geometry_ms": 9.284583036787808,
+            "crop_decode_ms": 28.39112502988428,
+            "wall_ms": 618.574250023812
+          }
+        },
+        {
+          "query_id": "q-000021",
+          "image_sha256": "25a4578208d2aaa312e190346ec1f95b69d9693eca3736c7825794f968d37606",
+          "truth": [
+            "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              19,
+              58,
+              1067,
+              1583
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4631168664979"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04631168664979",
+            "read": "4631168664979",
+            "format": "EAN13",
+            "slugs": [
+              "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 970.7369580864906,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 899.5274159824476,
+          "upload_ms": 5.262791994027793,
+          "steps_answer_ms": 28.900709003210068,
+          "stage_ms": {
+            "barcode": 899.5
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 679.6083330409601,
+            "sent_image_prepare_ms": 100.88329203426838,
+            "geometry_ms": 29.61766696535051,
+            "crop_decode_ms": 83.00291700288653,
+            "wall_ms": 893.1294999783859
+          }
+        },
+        {
+          "query_id": "q-000802",
+          "image_sha256": "29be9b94b0cdd68acb8b1116057fcf8782e1095b69a4be2f36a3cc82018f2ee0",
+          "truth": [
+            "domaine-lipko-blaufrankish-krasnoe-suhoe-126"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              228,
+              1067,
+              1549
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "Code128",
+              "text": "4630171630094"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630171630094",
+            "read": "4630171630094",
+            "format": "Code128",
+            "slugs": [
+              "domaine-lipko-blaufrankish-krasnoe-suhoe-126"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "domaine-lipko-blaufrankish-krasnoe-suhoe-126",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1128.9004579884931,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1063.6893340852112,
+          "upload_ms": 5.4206670029088855,
+          "steps_answer_ms": 22.898958064615726,
+          "stage_ms": {
+            "barcode": 1063.7
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 878.1167500419542,
+            "sent_image_prepare_ms": 102.22400003112853,
+            "geometry_ms": 31.146042048931122,
+            "crop_decode_ms": 46.72458302229643,
+            "wall_ms": 1058.2318749511614
+          }
+        },
+        {
+          "query_id": "q-000819",
+          "image_sha256": "3492a2afb7ecb015009d4257deb5b1731dab1cbe646ec37240be7967fb0632b9",
+          "truth": [
+            "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1229,
+            1229
+          ],
+          "sent_size": [
+            1229,
+            1229
+          ],
+          "boxes": [
+            [
+              12,
+              25,
+              1214,
+              1189
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "novyj-svet-blan-de-nuar",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 2098.327082931064,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1745.0840420788154,
+          "upload_ms": 4.751292057335377,
+          "steps_answer_ms": 298.1228749267757,
+          "stage_ms": {
+            "barcode": 817.2,
+            "input": 4.3,
+            "sam3-package": 751.6,
+            "view": 74.6,
+            "embed": 95.0,
+            "search": 1.3,
+            "score": 0.9
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 656.5876250388101,
+            "sent_image_prepare_ms": 76.06870797462761,
+            "geometry_ms": 24.36858299188316,
+            "crop_decode_ms": 55.269000004045665,
+            "wall_ms": 812.3139999806881
+          }
+        },
+        {
+          "query_id": "q-001855",
+          "image_sha256": "4ec1f54640005a52f63a9ad21cd1b6eb265b0932cc1eb7660e5485a5bf7d795f",
+          "truth": [
+            "vaynkraft-pino-nuar-krasnoe-suhoe-13"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              54,
+              289,
+              1958,
+              2922
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4631162008182"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04631162008182",
+            "read": "4631162008182",
+            "format": "EAN13",
+            "slugs": [
+              "vaynkraft-pino-nuar-krasnoe-suhoe-13"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vaynkraft-pino-nuar-krasnoe-suhoe-13",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1160.1828340208158,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1072.0927499933168,
+          "upload_ms": 15.904792002402246,
+          "steps_answer_ms": 33.74458407051861,
+          "stage_ms": {
+            "barcode": 1072.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 744.8914579581469,
+            "sent_image_prepare_ms": 149.94529203977436,
+            "geometry_ms": 101.18508292362094,
+            "crop_decode_ms": 57.862209039740264,
+            "wall_ms": 1053.9208750706166
+          }
+        },
+        {
+          "query_id": "q-002159",
+          "image_sha256": "50af3c75a19fb8dd3b8250527bbdb762477153ce8d4aff4ec578a5b7a99776ac",
+          "truth": [
+            "vysokij-bereg-risling-zelenaya-seriya"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            800
+          ],
+          "sent_size": [
+            600,
+            800
+          ],
+          "boxes": [
+            [
+              99,
+              244,
+              461,
+              715
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4630037251715"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630037251715",
+            "read": "4630037251715",
+            "format": "EAN13",
+            "slugs": [
+              "vysokij-bereg-risling-zelenaya-seriya"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vysokij-bereg-risling-zelenaya-seriya",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 653.4630410606042,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 598.7424170598388,
+          "upload_ms": 2.867083065211773,
+          "steps_answer_ms": 13.817208004184067,
+          "stage_ms": {
+            "barcode": 598.7
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 523.2100000139326,
+            "sent_image_prepare_ms": 28.033040929585695,
+            "geometry_ms": 8.196832961402833,
+            "crop_decode_ms": 36.684167105704546,
+            "wall_ms": 596.1410830495879
+          }
+        },
+        {
+          "query_id": "q-001602",
+          "image_sha256": "51f449f28c5f6224400fd2a36002521e137b06e234a87dd0e394f1c9ae015268",
+          "truth": [
+            "shardone-2"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1996,
+            3000
+          ],
+          "sent_size": [
+            1022,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              582,
+              1996,
+              2703
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680140700228"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680140700228",
+            "read": "4680140700228",
+            "format": "EAN13",
+            "slugs": [
+              "shardone-2"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shardone-2",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1333.8072090409696,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1154.3029590975493,
+          "upload_ms": 66.51483289897442,
+          "steps_answer_ms": 75.86870901286602,
+          "stage_ms": {
+            "barcode": 1154.3
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 778.3402920467779,
+            "sent_image_prepare_ms": 147.15750003233552,
+            "geometry_ms": 98.03712496068329,
+            "crop_decode_ms": 67.02812504954636,
+            "wall_ms": 1090.5814579455182
+          }
+        },
+        {
+          "query_id": "q-002145",
+          "image_sha256": "5d6ea1226a4ccdd18f507ed48b8e11f253c04bb8b6cf29d2898e0b141da78d4a",
+          "truth": [
+            "vysokij-bereg-risling-zelenaya-seriya-1"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            450
+          ],
+          "sent_size": [
+            600,
+            450
+          ],
+          "boxes": [
+            [
+              64,
+              46,
+              566,
+              384
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "perovskih_rose",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1281.4932910259813,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1169.2342499736696,
+          "upload_ms": 1.2689580908045173,
+          "steps_answer_ms": 69.15091699920595,
+          "stage_ms": {
+            "barcode": 612.2,
+            "input": 0.9,
+            "sam3-package": 487.6,
+            "view": 15.7,
+            "embed": 47.4,
+            "search": 4.1,
+            "score": 1.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 557.4176670052111,
+            "sent_image_prepare_ms": 15.200958005152643,
+            "geometry_ms": 4.669958027079701,
+            "crop_decode_ms": 33.17062498535961,
+            "wall_ms": 610.4751249076799
+          }
+        },
+        {
+          "query_id": "q-000243",
+          "image_sha256": "5ee266e97fcc09dcab63d9e85509393cced0a7aa1a92781fe6fb155127113dfd",
+          "truth": [
+            "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1859,
+            3000
+          ],
+          "sent_size": [
+            952,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              0,
+              1859,
+              3000
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4607026342402"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04607026342402",
+            "read": "4607026342402",
+            "format": "EAN13",
+            "slugs": [
+              "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1118.3953339932486,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 960.3885420365259,
+          "upload_ms": 49.70941704232246,
+          "steps_answer_ms": 70.22383401636034,
+          "stage_ms": {
+            "barcode": 960.4
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 618.8306249678135,
+            "sent_image_prepare_ms": 139.30166594218463,
+            "geometry_ms": 87.14337495621294,
+            "crop_decode_ms": 60.23687496781349,
+            "wall_ms": 905.5334170116112
+          }
+        },
+        {
+          "query_id": "q-000962",
+          "image_sha256": "7c302610ab1e4f28e54f970a2a5b96d040ab4151a0d9a603683d3ecbbf576b1f",
+          "truth": [
+            "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            798,
+            1200
+          ],
+          "sent_size": [
+            798,
+            1200
+          ],
+          "boxes": [
+            [
+              189,
+              217,
+              605,
+              1170
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "qr_code",
+              "format": "QRCode",
+              "text": "https://www.fanagoria.ru/collection/brule/brule-frizzante-polusladkoe-beloe"
+            },
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4603040021156"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04603040021156",
+            "read": "4603040021156",
+            "format": "EAN13",
+            "slugs": [
+              "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 780.1757500274107,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 723.1768750352785,
+          "upload_ms": 5.275874980725348,
+          "steps_answer_ms": 16.26066700555384,
+          "stage_ms": {
+            "barcode": 723.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 618.3666660217568,
+            "sent_image_prepare_ms": 51.85091693419963,
+            "geometry_ms": 16.659250017255545,
+            "crop_decode_ms": 31.578333931975067,
+            "wall_ms": 718.4693750459701
+          }
+        },
+        {
+          "query_id": "q-000040",
+          "image_sha256": "7c32420c74500cef2dcc2ecfc17f38c1473a9f429c17e9dea60e9b7777d77e74",
+          "truth": [
+            "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            900,
+            1200
+          ],
+          "sent_size": [
+            900,
+            1200
+          ],
+          "boxes": [
+            [
+              237,
+              157,
+              627,
+              1091
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4760159270261"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04760159270261",
+            "read": "4760159270261",
+            "format": "EAN13",
+            "slugs": [
+              "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 796.9439589651302,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 737.5645840074867,
+          "upload_ms": 4.425042076036334,
+          "steps_answer_ms": 15.829375013709068,
+          "stage_ms": {
+            "barcode": 737.5
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 621.4292920194566,
+            "sent_image_prepare_ms": 66.56237493734807,
+            "geometry_ms": 16.082291956990957,
+            "crop_decode_ms": 29.243750032037497,
+            "wall_ms": 733.335500000976
+          }
+        },
+        {
+          "query_id": "q-002089",
+          "image_sha256": "7e82acf49054738ca23988f39efc1eecf90e832e9d37816ef3ea60c823a42370",
+          "truth": [
+            "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              188,
+              1531,
+              831,
+              1600
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "fanagoriya-101-ottenok-krasnogo-kaberne-kaberne-sovinon-krasnoe-suhoe-14",
+          "correct_top1": false,
+          "correct_top5": true,
+          "http_wall_ms": 2145.807333989069,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1782.4078749399632,
+          "upload_ms": 5.354541004635394,
+          "steps_answer_ms": 310.7667920412496,
+          "stage_ms": {
+            "barcode": 974.9,
+            "input": 5.0,
+            "sam3-package": 668.3,
+            "view": 67.2,
+            "embed": 64.5,
+            "search": 1.4,
+            "score": 1.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 826.31183299236,
+            "sent_image_prepare_ms": 99.97704194393009,
+            "geometry_ms": 37.20237500965595,
+            "crop_decode_ms": 4.846125026233494,
+            "wall_ms": 968.3551249327138
+          }
+        },
+        {
+          "query_id": "q-000946",
+          "image_sha256": "7f9a00c03029edc7a971d4b08afd0a23f62867392134fe0ebcf0866c6e6cebe3",
+          "truth": [
+            "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1200,
+            1200
+          ],
+          "sent_size": [
+            1200,
+            1200
+          ],
+          "boxes": [
+            [
+              43,
+              144,
+              461,
+              1167
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4603040021132"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04603040021132",
+            "read": "4603040021132",
+            "format": "EAN13",
+            "slugs": [
+              "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 871.6447500046343,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 810.9855420188978,
+          "upload_ms": 5.833667004480958,
+          "steps_answer_ms": 17.39458297379315,
+          "stage_ms": {
+            "barcode": 811.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 670.530250063166,
+            "sent_image_prepare_ms": 87.34645892400295,
+            "geometry_ms": 21.61962492391467,
+            "crop_decode_ms": 25.011708959937096,
+            "wall_ms": 804.5323750702664
+          }
+        },
+        {
+          "query_id": "q-001047",
+          "image_sha256": "b883e578bd028f51282a984d9876945f17595bf56626c4634eede208126ebbd0",
+          "truth": [
+            "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              743,
+              2001,
+              2646
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4603040016992"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04603040016992",
+            "read": "4603040016992",
+            "format": "EAN13",
+            "slugs": [
+              "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1346.9478340120986,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1164.7808329435065,
+          "upload_ms": 64.35133307240903,
+          "steps_answer_ms": 81.05983305722475,
+          "stage_ms": {
+            "barcode": 1164.7
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 759.4571670051664,
+            "sent_image_prepare_ms": 162.26216708309948,
+            "geometry_ms": 108.21800003759563,
+            "crop_decode_ms": 62.954582972452044,
+            "wall_ms": 1092.9355000844225
+          }
+        },
+        {
+          "query_id": "q-001319",
+          "image_sha256": "ba593dbe7c4ae520daa746b029e64c5362d93cf99a478bbfb079c084bf640edb",
+          "truth": [
+            "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            946
+          ],
+          "sent_size": [
+            1536,
+            727
+          ],
+          "boxes": [
+            [
+              391,
+              0,
+              1688,
+              782
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4630037251630"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630037251630",
+            "read": "4630037251630",
+            "format": "EAN13",
+            "slugs": [
+              "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 825.0524159520864,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 758.4758750163019,
+          "upload_ms": 7.209874922409654,
+          "steps_answer_ms": 23.00316689070314,
+          "stage_ms": {
+            "barcode": 758.4
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 588.9762910082936,
+            "sent_image_prepare_ms": 88.78391701728106,
+            "geometry_ms": 33.34379196166992,
+            "crop_decode_ms": 40.42029206175357,
+            "wall_ms": 751.5412500360981
+          }
+        },
+        {
+          "query_id": "q-000342",
+          "image_sha256": "c391aef61bd11a8a2a9b0f637f486e0d8efc2fc91ad3045c5fa195416f390de9",
+          "truth": [
+            "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              427,
+              1999,
+              2893
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4640005350784"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04640005350784",
+            "read": "4640005350784",
+            "format": "EAN13",
+            "slugs": [
+              "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1259.6217920072377,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1088.5838749818504,
+          "upload_ms": 55.98187504801899,
+          "steps_answer_ms": 70.5374589888379,
+          "stage_ms": {
+            "barcode": 1088.6
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 713.0166249116883,
+            "sent_image_prepare_ms": 154.05995794571936,
+            "geometry_ms": 96.5091249672696,
+            "crop_decode_ms": 63.82429099176079,
+            "wall_ms": 1027.4285409832373
+          }
+        },
+        {
+          "query_id": "q-001507",
+          "image_sha256": "cb53fccdd0e131a839d66ecbfa29976dffdf3abf63ed870919fdcb21be96decf",
+          "truth": [
+            "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            1600,
+            1200
+          ],
+          "sent_size": [
+            1536,
+            1152
+          ],
+          "boxes": [
+            [
+              386,
+              11,
+              1145,
+              983
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4620012637542"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04620012637542",
+            "read": "4620012637542",
+            "format": "EAN13",
+            "slugs": [
+              "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 996.251874952577,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 918.469374999404,
+          "upload_ms": 6.487250095233321,
+          "steps_answer_ms": 33.057458931580186,
+          "stage_ms": {
+            "barcode": 918.4
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 696.0648329695687,
+            "sent_image_prepare_ms": 130.0482499646023,
+            "geometry_ms": 37.44570806156844,
+            "crop_decode_ms": 47.266332898288965,
+            "wall_ms": 910.8438330003992
+          }
+        },
+        {
+          "query_id": "q-002021",
+          "image_sha256": "d03debabfaa8406771b4f5a9727d45d5606f7aee638cddc105df52c08da5745e",
+          "truth": [
+            "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            800
+          ],
+          "sent_size": [
+            600,
+            800
+          ],
+          "boxes": [
+            [
+              106,
+              560,
+              469,
+              745
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4620036812437"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04620036812437",
+            "read": "4620036812437",
+            "format": "EAN13",
+            "slugs": [
+              "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 652.9400419676676,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 600.6645419402048,
+          "upload_ms": 2.226457931101322,
+          "steps_answer_ms": 12.885459000244737,
+          "stage_ms": {
+            "barcode": 600.6
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 539.0062920050696,
+            "sent_image_prepare_ms": 27.374541969038546,
+            "geometry_ms": 7.57625000551343,
+            "crop_decode_ms": 24.501916021108627,
+            "wall_ms": 598.4756670659408
+          }
+        },
+        {
+          "query_id": "q-001318",
+          "image_sha256": "d1b4e5f33e17d5a4ca86ab728c49669436f99e7792b96ff9bc3d66589a13c723",
+          "truth": [
+            "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            946
+          ],
+          "sent_size": [
+            1536,
+            727
+          ],
+          "boxes": [
+            [
+              349,
+              0,
+              1656,
+              780
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "kuban-vino-shato-tamane-rkatsiteli-myuller-turgau-shardone-2025-beloe-suhoe-12",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1921.1455000331625,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1617.7443329943344,
+          "upload_ms": 6.275290972553194,
+          "steps_answer_ms": 256.0272919945419,
+          "stage_ms": {
+            "barcode": 840.8,
+            "input": 5.6,
+            "sam3-package": 656.6,
+            "view": 47.4,
+            "embed": 58.5,
+            "search": 7.5,
+            "score": 1.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 613.7333329534158,
+            "sent_image_prepare_ms": 150.4772499902174,
+            "geometry_ms": 31.838665949180722,
+            "crop_decode_ms": 38.469415972940624,
+            "wall_ms": 834.5399999525398
+          }
+        },
+        {
+          "query_id": "q-001620",
+          "image_sha256": "f2f8125929bc8e5fa0675e016ca52252b0459210894492852c10a86584e817b3",
+          "truth": [
+            "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": "crop",
+          "source": "fresh_sam3",
+          "original_size": [
+            1996,
+            3000
+          ],
+          "sent_size": [
+            1022,
+            1536
+          ],
+          "boxes": [
+            [
+              33,
+              2339,
+              1959,
+              2793
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680074271429"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680074271429",
+            "read": "4680074271429",
+            "format": "EAN13",
+            "slugs": [
+              "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1167.8769999416545,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 982.9726669704542,
+          "upload_ms": 62.46945902239531,
+          "steps_answer_ms": 79.57412500400096,
+          "stage_ms": {
+            "barcode": 982.9
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 717.5957079743966,
+            "sent_image_prepare_ms": 166.58816707786173,
+            "geometry_ms": 2.751207910478115,
+            "crop_decode_ms": 19.415333052165806,
+            "wall_ms": 906.3915410079062
+          }
+        },
+        {
+          "query_id": "q-001826",
+          "image_sha256": "fe942be60884a356433bd9cdf89667fec46befa6ea84c09c25da30cbfc7e654f",
+          "truth": [
+            "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13"
+          ],
+          "crop_status": "available",
+          "crop_method": "seg",
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            2702
+          ],
+          "sent_size": [
+            1137,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              0,
+              2000,
+              2702
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4670086802735"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04670086802735",
+            "read": "4670086802735",
+            "format": "EAN13",
+            "slugs": [
+              "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1195.0430419528857,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1049.0897500421852,
+          "upload_ms": 47.40791697986424,
+          "steps_answer_ms": 57.84949997905642,
+          "stage_ms": {
+            "barcode": 1049.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 691.181999980472,
+            "sent_image_prepare_ms": 156.9145410321653,
+            "geometry_ms": 94.51474994421005,
+            "crop_decode_ms": 59.0072909835726,
+            "wall_ms": 1001.6400830354542
+          }
+        }
+      ]
+    },
+    "fresh-barcode": {
+      "metrics": {
+        "selected_rows": 24,
+        "selected_unique_images": 24,
+        "positive_denominator": 24,
+        "negative_constraint_denominator": 0,
+        "observed_rows": 24,
+        "observed_positive_rows": 24,
+        "pending_rows": 0,
+        "complete_responses": 24,
+        "successful_within_3s": 24,
+        "complete_within_3s": 24,
+        "complete_within_3s_share": 1.0,
+        "correct_within_3s": 22,
+        "correct_within_3s_share": 0.9166666666666666,
+        "correct_late": 0,
+        "valid_correct_responses": 22,
+        "top1_prediction_correct": 22,
+        "top5_prediction_correct": 22,
+        "negative_forbidden_top1": 0,
+        "negative_forbidden_top1_share": null,
+        "errors": 0,
+        "degraded": 0,
+        "censored_rows": 0,
+        "http_wait_all_attempts_ms": {
+          "observations": 24,
+          "median": 1006.8199165398255,
+          "p95": 1528.2627909909934,
+          "p99": 1811.4904169924557,
+          "max": 1811.4904169924557
+        },
+        "complete_http_wall_ms": {
+          "observations": 24,
+          "median": 1006.8199165398255,
+          "p95": 1528.2627909909934,
+          "p99": 1811.4904169924557,
+          "max": 1811.4904169924557
+        }
+      },
+      "classification_query_ids": {
+        "geometry_available_query_ids": [
+          "q-001668",
+          "q-001661",
+          "q-000388",
+          "q-000955",
+          "q-000021",
+          "q-000802",
+          "q-000819",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-002145",
+          "q-000243",
+          "q-000962",
+          "q-000040",
+          "q-002089",
+          "q-000946",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001318",
+          "q-001620",
+          "q-001826"
+        ],
+        "missing_geometry_query_ids": [],
+        "geometry_error_query_ids": [],
+        "accepted_code_query_ids": [
+          "q-001668",
+          "q-001661",
+          "q-000388",
+          "q-000955",
+          "q-000021",
+          "q-000802",
+          "q-000819",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-000243",
+          "q-000962",
+          "q-000040",
+          "q-002089",
+          "q-000946",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001620",
+          "q-001826"
+        ],
+        "unique_barcode_return_query_ids": [
+          "q-001668",
+          "q-001661",
+          "q-000388",
+          "q-000955",
+          "q-000021",
+          "q-000802",
+          "q-000819",
+          "q-001855",
+          "q-002159",
+          "q-001602",
+          "q-000243",
+          "q-000962",
+          "q-000040",
+          "q-002089",
+          "q-000946",
+          "q-001047",
+          "q-001319",
+          "q-000342",
+          "q-001507",
+          "q-002021",
+          "q-001620",
+          "q-001826"
+        ],
+        "fallback_query_ids": [
+          "q-002145",
+          "q-001318"
+        ],
+        "fallback_correct_top1_query_ids": [],
+        "fallback_correct_top5_query_ids": [],
+        "available_geometry_without_code_query_ids": [
+          "q-002145",
+          "q-001318"
+        ],
+        "native_decode_error_query_ids": [],
+        "late_query_ids": [],
+        "late_correct_query_ids": []
+      },
+      "counts": {
+        "geometry_available": 24,
+        "missing_geometry": 0,
+        "geometry_error": 0,
+        "accepted_code": 22,
+        "unique_barcode_return": 22,
+        "fallback": 2,
+        "fallback_correct_top1": 0,
+        "fallback_correct_top5": 0,
+        "available_geometry_without_code": 2,
+        "native_decode_error": 0,
+        "late": 0,
+        "late_correct": 0
+      },
+      "label_method_counts": {},
+      "total_candidate_boxes": 42,
+      "total_scanned_regions": 26,
+      "total_native_decode_calls": 52,
+      "total_native_decode_errors": 0,
+      "sam3_client_requests": 24,
+      "fresh_sam3_ms": {
+        "observations": 24,
+        "median": 664.6482920041308,
+        "p95": 828.4275829792023,
+        "p99": 877.0689578959718,
+        "max": 877.0689578959718,
+        "total": 16138.820543885231
+      },
+      "sent_image_prepare_ms": {
+        "observations": 24,
+        "median": 100.92593793524429,
+        "p95": 157.6364159118384,
+        "p99": 165.09324999060482,
+        "max": 165.09324999060482,
+        "total": 2435.500790947117
+      },
+      "geometry_ms": {
+        "observations": 24,
+        "median": 0.017104437574744225,
+        "p95": 0.042584026232361794,
+        "p99": 0.08729193359613419,
+        "max": 0.08729193359613419,
+        "total": 0.5425020353868604
+      },
+      "crop_decode_ms": {
+        "observations": 24,
+        "median": 28.841499995905906,
+        "p95": 49.91724994033575,
+        "p99": 50.107582937926054,
+        "max": 50.107582937926054,
+        "total": 742.1052480349317
+      },
+      "components": {
+        "startup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 482.4899169616401,
+          "max": 482.4899169616401
+        },
+        "build_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 189.48549998458475,
+          "max": 189.48549998458475
+        },
+        "ask_wall_ms": {
+          "observations": 24,
+          "median": 884.498770989012,
+          "p95": 1181.328249978833,
+          "p99": 1505.8894170215353,
+          "max": 1505.8894170215353
+        },
+        "service_setup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 3.2775410218164325,
+          "max": 3.2775410218164325
+        },
+        "source_read_ms": {
+          "observations": 24,
+          "median": 1.5853755758143961,
+          "p95": 2.7040840359404683,
+          "p99": 11.583207990042865,
+          "max": 11.583207990042865
+        },
+        "json_parse_ms": {
+          "observations": 24,
+          "median": 0.03808352630585432,
+          "p95": 2.0174169912934303,
+          "p99": 2.4824589490890503,
+          "max": 2.4824589490890503
+        },
+        "upload_ms": {
+          "observations": 24,
+          "median": 6.332396005745977,
+          "p95": 62.7954580122605,
+          "p99": 63.5548330610618,
+          "max": 63.5548330610618
+        },
+        "steps_answer_ms": {
+          "observations": 24,
+          "median": 23.548395955003798,
+          "p95": 92.59387501515448,
+          "p99": 257.16445792932063,
+          "max": 257.16445792932063
+        },
+        "process_ms": {
+          "observations": 24,
+          "median": 885.112312505953,
+          "p95": 1457.005999982357,
+          "p99": 1506.5888329409063,
+          "max": 1506.5888329409063
+        },
+        "worker_request_ms": {
+          "observations": 24,
+          "median": 885.1091039832681,
+          "p95": 1181.902042008005,
+          "p99": 1506.5845000790432,
+          "max": 1506.5845000790432
+        },
+        "cleanup_ms": {
+          "observations": 24,
+          "median": 0.0,
+          "p95": 0.0,
+          "p99": 0.0,
+          "max": 0.0
+        },
+        "stage_ms": {
+          "barcode": {
+            "observations": 24,
+            "median": 858.65,
+            "p95": 1006.2,
+            "p99": 1012.1,
+            "max": 1012.1
+          },
+          "embed": {
+            "observations": 2,
+            "median": 50.7,
+            "p95": 52.5,
+            "p99": 52.5,
+            "max": 52.5
+          },
+          "input": {
+            "observations": 2,
+            "median": 3.25,
+            "p95": 5.6,
+            "p99": 5.6,
+            "max": 5.6
+          },
+          "sam3-package": {
+            "observations": 2,
+            "median": 587.25,
+            "p95": 679.9,
+            "p99": 679.9,
+            "max": 679.9
+          },
+          "score": {
+            "observations": 2,
+            "median": 1.0,
+            "p95": 1.0,
+            "p99": 1.0,
+            "max": 1.0
+          },
+          "search": {
+            "observations": 2,
+            "median": 2.75,
+            "p95": 3.5,
+            "p99": 3.5,
+            "max": 3.5
+          },
+          "view": {
+            "observations": 2,
+            "median": 31.5,
+            "p95": 48.5,
+            "p99": 48.5,
+            "max": 48.5
+          }
+        },
+        "fresh_crop": {
+          "rows": 24,
+          "status_counts": {
+            "available": 24
+          },
+          "sam3_wall_ms": {
+            "observations": 24,
+            "median": 664.6482920041308,
+            "p95": 828.4275829792023,
+            "p99": 877.0689578959718,
+            "max": 877.0689578959718
+          },
+          "sent_image_prepare_ms": {
+            "observations": 24,
+            "median": 100.92593793524429,
+            "p95": 157.6364159118384,
+            "p99": 165.09324999060482,
+            "max": 165.09324999060482
+          },
+          "geometry_ms": {
+            "observations": 24,
+            "median": 0.017104437574744225,
+            "p95": 0.042584026232361794,
+            "p99": 0.08729193359613419,
+            "max": 0.08729193359613419
+          },
+          "crop_decode_ms": {
+            "observations": 24,
+            "median": 28.841499995905906,
+            "p95": 49.91724994033575,
+            "p99": 50.107582937926054,
+            "max": 50.107582937926054
+          }
+        }
+      },
+      "first_requests": [
+        {
+          "query_id": "q-001668",
+          "http_wall_ms": 1528.2627909909934,
+          "startup_ms": 482.4899169616401,
+          "build_ms": 189.48549998458475,
+          "service_setup_ms": 3.2775410218164325,
+          "censored": false
+        }
+      ],
+      "after_first": {
+        "selected_rows": 23,
+        "selected_unique_images": 23,
+        "positive_denominator": 23,
+        "negative_constraint_denominator": 0,
+        "observed_rows": 23,
+        "observed_positive_rows": 23,
+        "pending_rows": 0,
+        "complete_responses": 23,
+        "successful_within_3s": 23,
+        "complete_within_3s": 23,
+        "complete_within_3s_share": 1.0,
+        "correct_within_3s": 21,
+        "correct_within_3s_share": 0.9130434782608695,
+        "correct_late": 0,
+        "valid_correct_responses": 21,
+        "top1_prediction_correct": 21,
+        "top5_prediction_correct": 21,
+        "negative_forbidden_top1": 0,
+        "negative_forbidden_top1_share": null,
+        "errors": 0,
+        "degraded": 0,
+        "censored_rows": 0,
+        "http_wait_all_attempts_ms": {
+          "observations": 23,
+          "median": 1002.0153330406174,
+          "p95": 1304.109666030854,
+          "p99": 1811.4904169924557,
+          "max": 1811.4904169924557
+        },
+        "complete_http_wall_ms": {
+          "observations": 23,
+          "median": 1002.0153330406174,
+          "p95": 1304.109666030854,
+          "p99": 1811.4904169924557,
+          "max": 1811.4904169924557
+        }
+      },
+      "observations": [
+        {
+          "query_id": "q-001668",
+          "image_sha256": "1e3082b3ade2e769b3795c055c5c2ef1e330e35ddd1f06fdca54d84a70d32add",
+          "truth": [
+            "shato-pino-shardone-risling-beloe-suhoe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1600,
+            2399
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              12,
+              1948,
+              553,
+              2222
+            ],
+            [
+              43,
+              326,
+              164,
+              550
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680074270446"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680074270446",
+            "read": "4680074270446",
+            "format": "EAN13",
+            "slugs": [
+              "shato-pino-shardone-risling-beloe-suhoe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shato-pino-shardone-risling-beloe-suhoe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1528.2627909909934,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": true,
+          "startup_ms": 482.4899169616401,
+          "build_ms": 189.48549998458475,
+          "ask_ms": 973.9850839832798,
+          "upload_ms": 9.345375001430511,
+          "steps_answer_ms": 25.283000082708895,
+          "stage_ms": {
+            "barcode": 974.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 793.8625829992816,
+            "sent_image_prepare_ms": 128.90695803798735,
+            "geometry_ms": 0.03424996975809336,
+            "crop_decode_ms": 29.44025001488626,
+            "wall_ms": 953.5143329994753
+          }
+        },
+        {
+          "query_id": "q-001661",
+          "image_sha256": "211e6f859a4ed6fdfe01f7fcdcba81fd91e7d5391931c76a8abcac93b1e3ac4f",
+          "truth": [
+            "shato-pino-shardone-beloe-suhoe-125"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            977,
+            1465
+          ],
+          "sent_size": [
+            977,
+            1465
+          ],
+          "boxes": [
+            [
+              0,
+              1084,
+              318,
+              1251
+            ],
+            [
+              0,
+              173,
+              64,
+              302
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680074271009"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680074271009",
+            "read": "4680074271009",
+            "format": "EAN13",
+            "slugs": [
+              "shato-pino-shardone-beloe-suhoe-125"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shato-pino-shardone-beloe-suhoe-125",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1002.0153330406174,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 939.6342089166865,
+          "upload_ms": 4.594166995957494,
+          "steps_answer_ms": 20.311791100539267,
+          "stage_ms": {
+            "barcode": 939.6
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 828.4275829792023,
+            "sent_image_prepare_ms": 76.31191599648446,
+            "geometry_ms": 0.02195802517235279,
+            "crop_decode_ms": 28.969916980713606,
+            "wall_ms": 933.7533330544829
+          }
+        },
+        {
+          "query_id": "q-000388",
+          "image_sha256": "2239638a9aebc28525038adb1cb4959988a5ee226c955f4b59c78eb5321bc30c",
+          "truth": [
+            "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1999,
+            3000
+          ],
+          "sent_size": [
+            1023,
+            1536
+          ],
+          "boxes": [
+            [
+              67,
+              2412,
+              875,
+              2858
+            ],
+            [
+              0,
+              2024,
+              282,
+              2461
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4640005350852"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04640005350852",
+            "read": "4640005350852",
+            "format": "EAN13",
+            "slugs": [
+              "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "agrolayn-mountain-eagle-viognier-vione-beloe-suhoe-115",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1172.8882909519598,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 986.1505830194801,
+          "upload_ms": 58.34574997425079,
+          "steps_answer_ms": 69.4307079538703,
+          "stage_ms": {
+            "barcode": 986.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 705.9448749059811,
+            "sent_image_prepare_ms": 147.61058299336582,
+            "geometry_ms": 0.01650000922381878,
+            "crop_decode_ms": 37.91791689582169,
+            "wall_ms": 891.5042080916464
+          }
+        },
+        {
+          "query_id": "q-000955",
+          "image_sha256": "2501f77ef6e979b0cc656d48dc7bcdbf2d5b78ad6a1ca8de8cbb3722b4e49930",
+          "truth": [
+            "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            487,
+            1199
+          ],
+          "sent_size": [
+            487,
+            1199
+          ],
+          "boxes": [
+            [
+              305,
+              796,
+              399,
+              1016
+            ],
+            [
+              174,
+              824,
+              261,
+              913
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4603040021149"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04603040021149",
+            "read": "4603040021149",
+            "format": "EAN13",
+            "slugs": [
+              "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "fanagoriya-brule-frizzante-brut-rozovoe-merlo-igristoe-bryut-rozovoe-115",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 661.1852500354871,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 600.8216250920668,
+          "upload_ms": 7.716083084233105,
+          "steps_answer_ms": 14.836707967333496,
+          "stage_ms": {
+            "barcode": 600.8
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 536.4462080178782,
+            "sent_image_prepare_ms": 35.2875420358032,
+            "geometry_ms": 0.014791032299399376,
+            "crop_decode_ms": 24.740500026382506,
+            "wall_ms": 596.5005829930305
+          }
+        },
+        {
+          "query_id": "q-000021",
+          "image_sha256": "25a4578208d2aaa312e190346ec1f95b69d9693eca3736c7825794f968d37606",
+          "truth": [
+            "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              698,
+              1367,
+              1059,
+              1544
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4631168664979"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04631168664979",
+            "read": "4631168664979",
+            "format": "EAN13",
+            "slugs": [
+              "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "abrau-dyurso-abrau-estates-kaberne-po-belomu-kaberne-sovinon-beloe-suhoe-105",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 851.6048749443144,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 790.1182500645518,
+          "upload_ms": 6.056667072698474,
+          "steps_answer_ms": 18.395667080767453,
+          "stage_ms": {
+            "barcode": 790.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 651.1193750193343,
+            "sent_image_prepare_ms": 105.91779206879437,
+            "geometry_ms": 0.012542004697024822,
+            "crop_decode_ms": 26.729041012004018,
+            "wall_ms": 783.7919590529054
+          }
+        },
+        {
+          "query_id": "q-000802",
+          "image_sha256": "29be9b94b0cdd68acb8b1116057fcf8782e1095b69a4be2f36a3cc82018f2ee0",
+          "truth": [
+            "domaine-lipko-blaufrankish-krasnoe-suhoe-126"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              336,
+              1301,
+              767,
+              1482
+            ],
+            [
+              20,
+              1295,
+              116,
+              1477
+            ],
+            [
+              977,
+              1290,
+              1063,
+              1471
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "Code128",
+              "text": "4630171630094"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630171630094",
+            "read": "4630171630094",
+            "format": "Code128",
+            "slugs": [
+              "domaine-lipko-blaufrankish-krasnoe-suhoe-126"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "domaine-lipko-blaufrankish-krasnoe-suhoe-126",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1071.8902919907123,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1006.2707499600947,
+          "upload_ms": 4.882915993221104,
+          "steps_answer_ms": 22.998958942480385,
+          "stage_ms": {
+            "barcode": 1006.2
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 877.0689578959718,
+            "sent_image_prepare_ms": 103.0949589330703,
+            "geometry_ms": 0.01716695260256529,
+            "crop_decode_ms": 20.62395797111094,
+            "wall_ms": 1000.8191670058295
+          }
+        },
+        {
+          "query_id": "q-000819",
+          "image_sha256": "3492a2afb7ecb015009d4257deb5b1731dab1cbe646ec37240be7967fb0632b9",
+          "truth": [
+            "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1229,
+            1229
+          ],
+          "sent_size": [
+            1229,
+            1229
+          ],
+          "boxes": [
+            [
+              285,
+              891,
+              508,
+              1015
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4660017895493"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04660017895493",
+            "read": "4660017895493",
+            "format": "EAN13",
+            "slugs": [
+              "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "esse-brut-cuvee-prestige-shardone-beloe-ekstra-bryut-115",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 833.1289580091834,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 775.2723339945078,
+          "upload_ms": 4.471124964766204,
+          "steps_answer_ms": 17.05295906867832,
+          "stage_ms": {
+            "barcode": 775.3
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 667.5576670095325,
+            "sent_image_prepare_ms": 75.06470894441009,
+            "geometry_ms": 0.016208039596676826,
+            "crop_decode_ms": 27.11945795454085,
+            "wall_ms": 769.776500063017
+          }
+        },
+        {
+          "query_id": "q-001855",
+          "image_sha256": "4ec1f54640005a52f63a9ad21cd1b6eb265b0932cc1eb7660e5485a5bf7d795f",
+          "truth": [
+            "vaynkraft-pino-nuar-krasnoe-suhoe-13"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              1274,
+              2509,
+              1914,
+              2883
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4631162008182"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04631162008182",
+            "read": "4631162008182",
+            "format": "EAN13",
+            "slugs": [
+              "vaynkraft-pino-nuar-krasnoe-suhoe-13"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vaynkraft-pino-nuar-krasnoe-suhoe-13",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1050.6865829229355,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 957.6582909794524,
+          "upload_ms": 14.817749965004623,
+          "steps_answer_ms": 42.081500054337084,
+          "stage_ms": {
+            "barcode": 957.6
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 759.5485839992762,
+            "sent_image_prepare_ms": 142.20074994955212,
+            "geometry_ms": 0.013292068615555763,
+            "crop_decode_ms": 34.955166978761554,
+            "wall_ms": 936.7316659772769
+          }
+        },
+        {
+          "query_id": "q-002159",
+          "image_sha256": "50af3c75a19fb8dd3b8250527bbdb762477153ce8d4aff4ec578a5b7a99776ac",
+          "truth": [
+            "vysokij-bereg-risling-zelenaya-seriya"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            800
+          ],
+          "sent_size": [
+            600,
+            800
+          ],
+          "boxes": [
+            [
+              355,
+              352,
+              451,
+              490
+            ],
+            [
+              176,
+              629,
+              352,
+              701
+            ]
+          ],
+          "regions_scanned": 2,
+          "native_decode_calls": 4,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4630037251715"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630037251715",
+            "read": "4630037251715",
+            "format": "EAN13",
+            "slugs": [
+              "vysokij-bereg-risling-zelenaya-seriya"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vysokij-bereg-risling-zelenaya-seriya",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 656.4760829787701,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 605.3064999869093,
+          "upload_ms": 1.645500073209405,
+          "steps_answer_ms": 13.308833003975451,
+          "stage_ms": {
+            "barcode": 605.3
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 524.6102079981938,
+            "sent_image_prepare_ms": 28.431167011149228,
+            "geometry_ms": 0.015166006051003933,
+            "crop_decode_ms": 49.91724994033575,
+            "wall_ms": 602.9892909573391
+          }
+        },
+        {
+          "query_id": "q-001602",
+          "image_sha256": "51f449f28c5f6224400fd2a36002521e137b06e234a87dd0e394f1c9ae015268",
+          "truth": [
+            "shardone-2"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1996,
+            3000
+          ],
+          "sent_size": [
+            1022,
+            1536
+          ],
+          "boxes": [
+            [
+              1619,
+              1884,
+              1873,
+              2431
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680140700228"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680140700228",
+            "read": "4680140700228",
+            "format": "EAN13",
+            "slugs": [
+              "shardone-2"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shardone-2",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1190.024625044316,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1012.1610830537975,
+          "upload_ms": 63.5548330610618,
+          "steps_answer_ms": 75.80733404029161,
+          "stage_ms": {
+            "barcode": 1012.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 770.9140829974785,
+            "sent_image_prepare_ms": 155.0232080044225,
+            "geometry_ms": 0.03604101948440075,
+            "crop_decode_ms": 27.889333083294332,
+            "wall_ms": 953.8844160269946
+          }
+        },
+        {
+          "query_id": "q-002145",
+          "image_sha256": "5d6ea1226a4ccdd18f507ed48b8e11f253c04bb8b6cf29d2898e0b141da78d4a",
+          "truth": [
+            "vysokij-bereg-risling-zelenaya-seriya-1"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            450
+          ],
+          "sent_size": [
+            600,
+            450
+          ],
+          "boxes": [
+            [
+              358,
+              280,
+              518,
+              371
+            ],
+            [
+              518,
+              41,
+              573,
+              176
+            ]
+          ],
+          "regions_scanned": 2,
+          "native_decode_calls": 4,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "perovskih_rose",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1304.109666030854,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1181.328249978833,
+          "upload_ms": 1.1773339938372374,
+          "steps_answer_ms": 80.50729101523757,
+          "stage_ms": {
+            "barcode": 617.6,
+            "input": 0.9,
+            "sam3-package": 494.6,
+            "view": 14.5,
+            "embed": 48.9,
+            "search": 3.5,
+            "score": 1.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 551.7606670036912,
+            "sent_image_prepare_ms": 14.093875070102513,
+            "geometry_ms": 0.018542050383985043,
+            "crop_decode_ms": 50.107582937926054,
+            "wall_ms": 615.9978340147063
+          }
+        },
+        {
+          "query_id": "q-000243",
+          "image_sha256": "5ee266e97fcc09dcab63d9e85509393cced0a7aa1a92781fe6fb155127113dfd",
+          "truth": [
+            "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1859,
+            3000
+          ],
+          "sent_size": [
+            952,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              1896,
+              347,
+              2973
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4607026342402"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04607026342402",
+            "read": "4607026342402",
+            "format": "EAN13",
+            "slugs": [
+              "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1011.6245000390336,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 837.0431670919061,
+          "upload_ms": 57.010209071449935,
+          "steps_answer_ms": 77.79708399903029,
+          "stage_ms": {
+            "barcode": 837.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 607.607000041753,
+            "sent_image_prepare_ms": 147.77758298441768,
+            "geometry_ms": 0.01604191493242979,
+            "crop_decode_ms": 21.520959096960723,
+            "wall_ms": 776.9355840282515
+          }
+        },
+        {
+          "query_id": "q-000962",
+          "image_sha256": "7c302610ab1e4f28e54f970a2a5b96d040ab4151a0d9a603683d3ecbbf576b1f",
+          "truth": [
+            "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            798,
+            1200
+          ],
+          "sent_size": [
+            798,
+            1200
+          ],
+          "boxes": [
+            [
+              426,
+              772,
+              533,
+              1017
+            ],
+            [
+              285,
+              794,
+              380,
+              898
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4603040021156"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04603040021156",
+            "read": "4603040021156",
+            "format": "EAN13",
+            "slugs": [
+              "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "fanagoriya-brule-frizzante-polusladkoe-beloe-pino-nuar-11",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 748.9388750400394,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 692.0857920777053,
+          "upload_ms": 5.243249936029315,
+          "steps_answer_ms": 15.835167025215924,
+          "stage_ms": {
+            "barcode": 692.1
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 603.8178749149665,
+            "sent_image_prepare_ms": 54.438333958387375,
+            "geometry_ms": 0.021915999241173267,
+            "crop_decode_ms": 28.713083011098206,
+            "wall_ms": 687.0088749565184
+          }
+        },
+        {
+          "query_id": "q-000040",
+          "image_sha256": "7c32420c74500cef2dcc2ecfc17f38c1473a9f429c17e9dea60e9b7777d77e74",
+          "truth": [
+            "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            900,
+            1200
+          ],
+          "sent_size": [
+            900,
+            1200
+          ],
+          "boxes": [
+            [
+              243,
+              936,
+              498,
+              1078
+            ],
+            [
+              180,
+              790,
+              199,
+              922
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4760159270261"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04760159270261",
+            "read": "4760159270261",
+            "format": "EAN13",
+            "slugs": [
+              "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 764.464791980572,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 708.0371249467134,
+          "upload_ms": 4.306124988943338,
+          "steps_answer_ms": 15.520582906901836,
+          "stage_ms": {
+            "barcode": 708.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 610.5620419839397,
+            "sent_image_prepare_ms": 64.62974997702986,
+            "geometry_ms": 0.042584026232361794,
+            "crop_decode_ms": 28.566500055603683,
+            "wall_ms": 703.8182500982657
+          }
+        },
+        {
+          "query_id": "q-002089",
+          "image_sha256": "7e82acf49054738ca23988f39efc1eecf90e832e9d37816ef3ea60c823a42370",
+          "truth": [
+            "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1067,
+            1600
+          ],
+          "sent_size": [
+            1024,
+            1536
+          ],
+          "boxes": [
+            [
+              769,
+              1229,
+              1047,
+              1455
+            ],
+            [
+              26,
+              1256,
+              194,
+              1484
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4605899002690"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04605899002690",
+            "read": "4605899002690",
+            "format": "EAN13",
+            "slugs": [
+              "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vinodelnya-vedernikov-fantom-3070-krasnostop-zolotovskiy-krasnoe-suhoe-145",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 927.3748330306262,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 863.9024589210749,
+          "upload_ms": 6.125624990090728,
+          "steps_answer_ms": 19.10091598983854,
+          "stage_ms": {
+            "barcode": 863.9
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 721.5925001073629,
+            "sent_image_prepare_ms": 98.75691693741828,
+            "geometry_ms": 0.017834012396633625,
+            "crop_decode_ms": 36.9150839978829,
+            "wall_ms": 857.2972919791937
+          }
+        },
+        {
+          "query_id": "q-000946",
+          "image_sha256": "7f9a00c03029edc7a971d4b08afd0a23f62867392134fe0ebcf0866c6e6cebe3",
+          "truth": [
+            "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1200,
+            1200
+          ],
+          "sent_size": [
+            1200,
+            1200
+          ],
+          "boxes": [
+            [
+              250,
+              734,
+              380,
+              996
+            ],
+            [
+              943,
+              720,
+              1051,
+              863
+            ],
+            [
+              111,
+              746,
+              202,
+              857
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4603040021132"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04603040021132",
+            "read": "4603040021132",
+            "format": "EAN13",
+            "slugs": [
+              "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "fanagoriya-brule-frizzante-brut-beloe-pino-nuar-bryut-115",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 916.827250039205,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 853.4011250594631,
+          "upload_ms": 5.549499997869134,
+          "steps_answer_ms": 20.41416591964662,
+          "stage_ms": {
+            "barcode": 853.4
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 735.7992089819163,
+            "sent_image_prepare_ms": 85.2415410336107,
+            "geometry_ms": 0.021000043489038944,
+            "crop_decode_ms": 26.41750010661781,
+            "wall_ms": 847.4935829872265
+          }
+        },
+        {
+          "query_id": "q-001047",
+          "image_sha256": "b883e578bd028f51282a984d9876945f17595bf56626c4634eede208126ebbd0",
+          "truth": [
+            "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              1218,
+              2235,
+              2001,
+              2669
+            ],
+            [
+              10,
+              1955,
+              215,
+              2252
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4603040016992"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04603040016992",
+            "read": "4603040016992",
+            "format": "EAN13",
+            "slugs": [
+              "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "fanagoriya-primum-alveus-brut-2014-shardone-igristoe-bryut-beloe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1079.8994170036167,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 910.199916921556,
+          "upload_ms": 62.404375057667494,
+          "steps_answer_ms": 70.54429198615253,
+          "stage_ms": {
+            "barcode": 910.2
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 614.0052910195664,
+            "sent_image_prepare_ms": 165.09324999060482,
+            "geometry_ms": 0.015167053788900375,
+            "crop_decode_ms": 31.67412499897182,
+            "wall_ms": 810.9477090183645
+          }
+        },
+        {
+          "query_id": "q-001319",
+          "image_sha256": "ba593dbe7c4ae520daa746b029e64c5362d93cf99a478bbfb079c084bf640edb",
+          "truth": [
+            "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            946
+          ],
+          "sent_size": [
+            1536,
+            727
+          ],
+          "boxes": [
+            [
+              428,
+              0,
+              676,
+              824
+            ],
+            [
+              445,
+              38,
+              660,
+              436
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4630037251630"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04630037251630",
+            "read": "4630037251630",
+            "format": "EAN13",
+            "slugs": [
+              "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 832.2372090769932,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 763.4711250429973,
+          "upload_ms": 7.055458030663431,
+          "steps_answer_ms": 24.09783296752721,
+          "stage_ms": {
+            "barcode": 763.4
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 639.9528339970857,
+            "sent_image_prepare_ms": 96.39887500088662,
+            "geometry_ms": 0.01704192254692316,
+            "crop_decode_ms": 18.548374995589256,
+            "wall_ms": 754.932584008202
+          }
+        },
+        {
+          "query_id": "q-000342",
+          "image_sha256": "c391aef61bd11a8a2a9b0f637f486e0d8efc2fc91ad3045c5fa195416f390de9",
+          "truth": [
+            "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2001,
+            3000
+          ],
+          "sent_size": [
+            1025,
+            1536
+          ],
+          "boxes": [
+            [
+              96,
+              2408,
+              880,
+              2848
+            ],
+            [
+              25,
+              2031,
+              303,
+              2456
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4640005350784"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04640005350784",
+            "read": "4640005350784",
+            "format": "EAN13",
+            "slugs": [
+              "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "agrolayn-mountain-eagle-chardonnay-shardone-beloe-suhoe-12",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1181.3750839792192,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 997.525000013411,
+          "upload_ms": 53.987457999028265,
+          "steps_answer_ms": 92.59387501515448,
+          "stage_ms": {
+            "barcode": 997.5
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 752.1438749972731,
+            "sent_image_prepare_ms": 150.7212909637019,
+            "geometry_ms": 0.08729193359613419,
+            "crop_decode_ms": 34.90854101255536,
+            "wall_ms": 937.8917500143871
+          }
+        },
+        {
+          "query_id": "q-001507",
+          "image_sha256": "cb53fccdd0e131a839d66ecbfa29976dffdf3abf63ed870919fdcb21be96decf",
+          "truth": [
+            "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1600,
+            1200
+          ],
+          "sent_size": [
+            1536,
+            1152
+          ],
+          "boxes": [
+            [
+              877,
+              674,
+              1133,
+              841
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4620012637542"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04620012637542",
+            "read": "4620012637542",
+            "format": "EAN13",
+            "slugs": [
+              "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "olymp-winery-adagum-pinot-noir-pino-nuar-rozovoe-suhoe-11",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 936.7014579474926,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 874.5528750587255,
+          "upload_ms": 6.5391670214012265,
+          "steps_answer_ms": 18.434791010804474,
+          "stage_ms": {
+            "barcode": 874.5
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 702.2322090342641,
+            "sent_image_prepare_ms": 135.85437508299947,
+            "geometry_ms": 0.013459008187055588,
+            "crop_decode_ms": 27.30366599280387,
+            "wall_ms": 865.417291992344
+          }
+        },
+        {
+          "query_id": "q-002021",
+          "image_sha256": "d03debabfaa8406771b4f5a9727d45d5606f7aee638cddc105df52c08da5745e",
+          "truth": [
+            "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            600,
+            800
+          ],
+          "sent_size": [
+            600,
+            800
+          ],
+          "boxes": [
+            [
+              179,
+              640,
+              412,
+              723
+            ],
+            [
+              119,
+              577,
+              172,
+              664
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4620036812437"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04620036812437",
+            "read": "4620036812437",
+            "format": "EAN13",
+            "slugs": [
+              "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "vinodelnya-myshako-shardone-avtorskaya-tehnologiya-beloe-suhoe-155",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 639.4997080788016,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 586.2502499949187,
+          "upload_ms": 2.5040420005097985,
+          "steps_answer_ms": 15.00029198359698,
+          "stage_ms": {
+            "barcode": 586.2
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 543.1399999652058,
+            "sent_image_prepare_ms": 23.791874991729856,
+            "geometry_ms": 0.023374916054308414,
+            "crop_decode_ms": 17.182915937155485,
+            "wall_ms": 584.1515419306234
+          }
+        },
+        {
+          "query_id": "q-001318",
+          "image_sha256": "d1b4e5f33e17d5a4ca86ab728c49669436f99e7792b96ff9bc3d66589a13c723",
+          "truth": [
+            "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            946
+          ],
+          "sent_size": [
+            1536,
+            727
+          ],
+          "boxes": [
+            [
+              1239,
+              420,
+              1621,
+              750
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [],
+          "barcode_lookup_hit": null,
+          "barcode_unique_return": false,
+          "pipeline_fallback": true,
+          "top1": "kuban-vino-shato-tamane-rkatsiteli-myuller-turgau-shardone-2025-beloe-suhoe-12",
+          "correct_top1": false,
+          "correct_top5": false,
+          "http_wall_ms": 1811.4904169924557,
+          "correct_within_3s": false,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 1505.8894170215353,
+          "upload_ms": 5.694457911886275,
+          "steps_answer_ms": 257.16445792932063,
+          "stage_ms": {
+            "barcode": 716.1,
+            "input": 5.6,
+            "sam3-package": 679.9,
+            "view": 48.5,
+            "embed": 52.5,
+            "search": 2.0,
+            "score": 1.0
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 577.9073340818286,
+            "sent_image_prepare_ms": 92.64166606590152,
+            "geometry_ms": 0.015542027540504932,
+            "crop_decode_ms": 39.017749950289726,
+            "wall_ms": 709.5973750110716
+          }
+        },
+        {
+          "query_id": "q-001620",
+          "image_sha256": "f2f8125929bc8e5fa0675e016ca52252b0459210894492852c10a86584e817b3",
+          "truth": [
+            "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            1996,
+            3000
+          ],
+          "sent_size": [
+            1022,
+            1536
+          ],
+          "boxes": [
+            [
+              1368,
+              2303,
+              1996,
+              2829
+            ],
+            [
+              40,
+              315,
+              263,
+              724
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4680074271429"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04680074271429",
+            "read": "4680074271429",
+            "format": "EAN13",
+            "slugs": [
+              "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "shato-pino-exclusive-kaberne-sovinon-shiraz-krasnoe-suhoe-135",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1137.9994580056518,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 966.4382920600474,
+          "upload_ms": 62.7954580122605,
+          "steps_answer_ms": 68.91429203096777,
+          "stage_ms": {
+            "barcode": 966.4
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 701.0606669355184,
+            "sent_image_prepare_ms": 157.6364159118384,
+            "geometry_ms": 0.02220796886831522,
+            "crop_decode_ms": 39.115000050514936,
+            "wall_ms": 897.8693750686944
+          }
+        },
+        {
+          "query_id": "q-001826",
+          "image_sha256": "fe942be60884a356433bd9cdf89667fec46befa6ea84c09c25da30cbfc7e654f",
+          "truth": [
+            "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13"
+          ],
+          "crop_status": "available",
+          "crop_method": null,
+          "source": "fresh_sam3",
+          "original_size": [
+            2000,
+            2702
+          ],
+          "sent_size": [
+            1137,
+            1536
+          ],
+          "boxes": [
+            [
+              0,
+              1762,
+              519,
+              2692
+            ]
+          ],
+          "regions_scanned": 1,
+          "native_decode_calls": 2,
+          "native_decode_errors": 0,
+          "accepted_codes": [
+            {
+              "kind": "barcode",
+              "format": "EAN13",
+              "text": "4670086802735"
+            }
+          ],
+          "barcode_lookup_hit": {
+            "source": "gtin",
+            "code": "04670086802735",
+            "read": "4670086802735",
+            "format": "EAN13",
+            "slugs": [
+              "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13"
+            ]
+          },
+          "barcode_unique_return": true,
+          "pipeline_fallback": false,
+          "top1": "valeriy-zaharin-avtohtonnoe-vino-kryma-ot-valeriya-zaharina-kefesiya-rezerv-krasnoe-suhoe-13",
+          "correct_top1": true,
+          "correct_top5": true,
+          "http_wall_ms": 1041.3217089371756,
+          "correct_within_3s": true,
+          "complete_within_3s": true,
+          "error": false,
+          "degraded": false,
+          "session_first": false,
+          "startup_ms": 0.0,
+          "build_ms": 0.0,
+          "ask_ms": 894.4446669192985,
+          "upload_ms": 45.89324991684407,
+          "steps_answer_ms": 63.78062500152737,
+          "stage_ms": {
+            "barcode": 894.4
+          },
+          "crop_timing_ms": {
+            "sam3_wall_ms": 661.7389169987291,
+            "sent_image_prepare_ms": 150.5754590034485,
+            "geometry_ms": 0.012584030628204346,
+            "crop_decode_ms": 33.81137503311038,
+            "wall_ms": 846.1515000090003
+          }
+        }
+      ]
+    }
+  },
+  "notes": [
+    "This diagnostic contains only 24 baseline catalogue barcode-hit images. All are positive and all image digests are unique. It has no negatives or ordinary barcode-miss images.",
+    "Barcode retention is measured against these known baseline hits. It is not general image recognition recall or a corpus estimate.",
+    "These variants scan fresh crops only. They do not scan the whole image before or after a crop miss. The existing model pipeline handles the miss.",
+    "Missing detection means no crop was available. Available geometry with no accepted code means a decode miss, not a native decoder exception.",
+    "The records cannot determine whether a crop miss came from the rectangle, crop scale, image quality, or limited decode passes. No images were inspected.",
+    "The crop SAM3 request, sent-image preparation, geometry, and decode costs are inside the barcode stage and HTTP timing. Do not sum nested timers.",
+    "A later fallback package segmentation repeats SAM3. Crop responses are not reused.",
+    "Each variant uses one persistent backend. Its first request includes child startup and backend construction. Service setup is outside HTTP wall. Later rows have zero incremental startup/build.",
+    "After-first does not establish warm remote models. The sample contains only one fallback rerank call.",
+    "HTTP covers loopback upload through complete response read, including steps_answer. Browser rendering, remote client LAN, source-file read, JSON parse, service setup, and final session worker shutdown are outside that timer.",
+    "All 72 observations remain in the denominators. There were no pending, failed, censored, or degraded responses. An incorrect HTTP200 response is still an identification failure.",
+    "Each variant ran once in fixed order. Sample quantiles are descriptive. No hard 3-second deadline is implemented or demonstrated."
+  ]
+}

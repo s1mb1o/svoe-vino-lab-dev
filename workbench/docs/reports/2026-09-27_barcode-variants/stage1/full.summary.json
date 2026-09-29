@@ -1,0 +1,50 @@
+{
+  "photos": 2228,
+  "matched": 24,
+  "missed": 2204,
+  "unique": 24,
+  "shared": 0,
+  "conflicts": 0,
+  "lost_baseline_hits": 0,
+  "same_matches": 2228,
+  "truth_correct": 24,
+  "truth_wrong": 0,
+  "errors": 0,
+  "native_calls": 154394,
+  "cache_hits": 0,
+  "barcode_ms": {
+    "median": 326.69849999999997,
+    "p95": 638.141,
+    "p99": 910.822,
+    "max": 2201.758
+  },
+  "barcode_over_3s": 0,
+  "barcode_within_3s_share": 1.0,
+  "estimated_total_ms": {
+    "median": 725.7585,
+    "p95": 1876.002,
+    "p99": 3513.56,
+    "max": 102470.549
+  },
+  "estimated_total_over_3s": 29,
+  "estimated_total_photos": 2228,
+  "estimated_total_within_3s_share": 0.9869838420107719,
+  "paired_positive_photos": 1644,
+  "paired_correct_delta": 0,
+  "paired_gained": 0,
+  "paired_lost": 0,
+  "image_workers": 1,
+  "decoder_workers": 1,
+  "max_active_decodes": 1,
+  "wall_segments": [
+    {
+      "photos": 2228,
+      "wall_s": 816.885575,
+      "complete": true
+    }
+  ],
+  "elapsed_incomplete": false,
+  "wall_total_s": 816.885575,
+  "photos_per_second": 2.7274321743286993,
+  "note": "Estimated total reuses baseline non-barcode time. It is not a new full recognition measurement."
+}

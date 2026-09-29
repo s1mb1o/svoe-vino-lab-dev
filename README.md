@@ -73,7 +73,8 @@ matcher и model endpoint. Полная инструкция находится 
 
 ## Ограничения
 
-- Model weights и embedding bundle не хранятся в Git.
+- Model weights не хранятся в Git. Bundle standalone matcher хранится в Git:
+  `matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/`.
 - Реальный запуск требует SigLIP2 endpoint и bundle.
 - Shelf mode в Web UI выключен по умолчанию.
 - Лаборатория и inspector не имеют публичной аутентификации. Их нельзя публиковать в WAN.

@@ -1,0 +1,7 @@
+{
+  "recorded_at": "2026-09-27T06:44:05.697398+03:00",
+  "scope": "Read-only filtered gateway log; rg is unavailable on GX10.",
+  "exit": 0,
+  "stdout": "190481:[WARN] group: running siglip2-so400m-patch14-384 exited: upstream command exited prematurely\n190495:[WARN] group: running siglip2-so400m-patch14-384 exited: upstream command exited prematurely\n190509:[WARN] group: running siglip2-so400m-patch14-384 exited: upstream command exited prematurely\n190525:[WARN] group: running siglip2-so400m-patch14-384 exited: upstream command exited prematurely\n190539:[WARN] group: running siglip2-so400m-patch14-384 exited: upstream command exited prematurely\n190555:[WARN] group: running siglip2-so400m-patch14-384 exited: upstream command exited prematurely\n190569:[WARN] group: running siglip2-so400m-patch14-384 exited: upstream command exited prematurely\n190584:[WARN] group: running siglip2-so400m-patch14-384 exited: upstream command exited prematurely\n190603:[INFO] <siglip2-so400m-patch14-384> Health check passed on http://127.0.0.1:5824/health\n192859:[INFO] Request 192.168.86.83 \"GET /logs/stream/siglip2-so400m-patch14-384 HTTP/1.1\" 200 102400 \"\" 3.005400816s\n",
+  "stderr": ""
+}

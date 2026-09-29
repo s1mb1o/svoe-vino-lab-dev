@@ -1,5 +1,10 @@
 # Change log
 
+## 2026-09-29 — Presentation files in git
+
+- `public/presentations/` (pptx and pdf, 56 MB) is in git now. The page `/presentation`
+  works from a clone (owner message of 2026-09-29 about 22:46).
+
 ## 2026-09-29 — Hackathon direct URL
 
 - Remove `/hackaton` from the sitemap and public navigation.

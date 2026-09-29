@@ -170,8 +170,9 @@ Read [hand-selection.md](docs/hand-selection.md) for the configuration and behav
 
 ### Embedding bundle
 
-Bundle не хранится в git. Каталог `matcher/data/` указан в `matcher/.gitignore`.
-Соберите bundle в workbench и проверьте его:
+Bundle `gx10-siglip2-so400m-patch16-naflex-p512` хранится в git с 2026-09-29.
+Другие каталоги `matcher/data/` указаны в `matcher/.gitignore`.
+Новый bundle соберите в workbench и проверьте его:
 
 ~~~bash
 cd workbench

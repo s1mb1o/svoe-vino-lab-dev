@@ -1,7 +1,9 @@
 CREATE TABLE wine_code (
     wine_slug TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
     kind      TEXT NOT NULL CHECK (kind IN ('gtin', 'barcode', 'qr_url')),
-    value     TEXT NOT NULL CHECK (value <> ''),
+    value     TEXT NOT NULL CHECK (value <> ''), modified_at TEXT
+    CHECK (modified_at GLOB
+           '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
     PRIMARY KEY (wine_slug, kind, value),
     CHECK (kind <> 'gtin'
            OR (length(value) = 14 AND value NOT GLOB '*[^0-9]*')),
@@ -52,7 +54,7 @@ CREATE TABLE "wine_catalog" (
     removed_by     TEXT CHECK (removed_by IN ('import', 'person')), website_modified_at TEXT
     CHECK (website_modified_at <> ''), modified_at TEXT
     CHECK (modified_at GLOB
-           '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
+           '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'), name_patched TEXT CHECK (name_patched <> ''),
     CHECK ((state = 'Removed') = (removed_by IS NOT NULL))
 ) STRICT;
 
@@ -212,5 +214,58 @@ CREATE TABLE "wine_atlas_binding" (
         AND product_uuid NOT GLOB '*[^0-9a-f-]*'
         AND product_uuid GLOB '????????-????-????-????-????????????'),
     PRIMARY KEY (wine_slug, product_uuid)
+) STRICT;
+
+CREATE TABLE image_label_description (
+    id               INTEGER PRIMARY KEY,
+    sha256           TEXT NOT NULL REFERENCES image (sha256),
+    description      TEXT NOT NULL CHECK (json_valid(description)
+                         AND json_type(description) = 'object'),
+    created_by       TEXT NOT NULL CHECK (created_by IN ('vlm', 'manual')),
+    created_at       TEXT NOT NULL CHECK (created_at GLOB
+        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
+    vlm_name         TEXT,
+    vlm_endpoint     TEXT,
+    vlm_model        TEXT,
+    vlm_served_model TEXT,
+    max_tokens       INTEGER CHECK (max_tokens IS NULL OR max_tokens > 0),
+    thinking         INTEGER CHECK (thinking IS NULL OR thinking IN (0, 1)),
+    input_sha256     TEXT,
+    vlm_request      TEXT CHECK (vlm_request IS NULL OR json_valid(vlm_request)),
+    vlm_reply        TEXT CHECK (vlm_reply IS NULL OR json_valid(vlm_reply)),
+    CHECK ((created_by = 'vlm') = (vlm_name IS NOT NULL))
+) STRICT;
+
+CREATE TABLE image_label_description_failure (
+    sha256     TEXT PRIMARY KEY REFERENCES image (sha256),
+    attempts   INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+    error      TEXT,
+    updated_at TEXT NOT NULL CHECK (updated_at GLOB
+        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z')
+) STRICT;
+
+CREATE TABLE wine_similar (
+    wine_slug_a TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
+    wine_slug_b TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
+    created_at  TEXT NOT NULL CHECK (created_at GLOB
+        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
+    PRIMARY KEY (wine_slug_a, wine_slug_b),
+    CHECK (wine_slug_a < wine_slug_b)
+) STRICT;
+
+CREATE TABLE wine_tag (
+    wine_slug  TEXT NOT NULL REFERENCES wine_catalog (wine_slug),
+    tag        TEXT NOT NULL CHECK (tag <> '' AND length(tag) <= 64),
+    created_at TEXT NOT NULL CHECK (created_at GLOB
+        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
+    PRIMARY KEY (wine_slug, tag)
+) STRICT;
+
+CREATE TABLE image_tag (
+    sha256     TEXT NOT NULL REFERENCES image (sha256),
+    tag        TEXT NOT NULL CHECK (tag <> '' AND length(tag) <= 64),
+    created_at TEXT NOT NULL CHECK (created_at GLOB
+        '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z'),
+    PRIMARY KEY (sha256, tag)
 ) STRICT;
 

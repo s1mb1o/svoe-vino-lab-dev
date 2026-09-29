@@ -1,0 +1,90 @@
+{
+  "backend": "barcode-siglip2-p1024-crop",
+  "dataset_rule": {
+    "left_out": {
+      "disabled wine": 1,
+      "removed wine": 10
+    },
+    "old_metrics": "metrics.before-dataset-rule.json",
+    "plan": "docs/plans/87_benchmark-dataset-rule.md",
+    "rescored_at": "2026-09-29T19:46:24+0300",
+    "rows_of_the_run": 2228
+  },
+  "has_scores": true,
+  "latency_ms": {
+    "comparable": false,
+    "max": 1329,
+    "median": 171,
+    "p95": 398,
+    "sla_ms": 3000,
+    "within_sla": 2217,
+    "within_sla_share": 1.0
+  },
+  "negative": {
+    "errors": 0,
+    "false_match_at_1": 97,
+    "false_match_in_top_k": 497,
+    "false_match_scores": {
+      "max": 0.9879,
+      "median": 0.7959
+    },
+    "n": 578,
+    "no_answer": 0,
+    "other_slug_at_1": 481,
+    "slug_rank_histogram": {
+      "1": 97,
+      "2": 146,
+      "3": 79,
+      "4-10": 175,
+      "absent": 81
+    }
+  },
+  "negative_strict": false,
+  "no_match": null,
+  "positive": {
+    "answered": 1639,
+    "errors": 0,
+    "f1_at_1": {
+      "f1": 0.8328,
+      "precision": 0.8328,
+      "recall": 0.8328
+    },
+    "f1_at_5": {
+      "f1": 0.9799,
+      "precision": 0.9799,
+      "recall": 0.9799
+    },
+    "match_share": 0.8328,
+    "mrr": 0.8998,
+    "n": 1639,
+    "near_duplicate_confusion": 30,
+    "no_answer": 0,
+    "rank_histogram": {
+      "1": 1365,
+      "2": 172,
+      "3": 39,
+      "4-10": 57,
+      "absent": 6
+    },
+    "recall_at_1": 0.8328,
+    "recall_at_10": 0.9963,
+    "recall_at_5": 0.9799,
+    "score_margin": {
+      "correct_median": 0.0414,
+      "wrong_median": 0.0075
+    },
+    "target_match_share": 0.9
+  },
+  "queries": {
+    "negative": 578,
+    "no_match": 0,
+    "positive": 1639,
+    "total": 2217,
+    "unlabelled": 0,
+    "variant": 0
+  },
+  "run_id": "2026-09-27T023118Z-lab-barcode-siglip2-p1024-crop-my",
+  "top_k": 10,
+  "unlabelled": null,
+  "wall_s": 110.3
+}

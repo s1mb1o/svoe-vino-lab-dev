@@ -1,0 +1,80 @@
+{
+  "query_rows": 2228,
+  "unique_images": 1851,
+  "measured_unique_images": 1851,
+  "match_rows": {
+    "miss": 2205,
+    "unique": 23
+  },
+  "match_unique": {
+    "miss": 1828,
+    "unique": 23
+  },
+  "region_status_rows": {
+    "missing_cache": 1638,
+    "missing_detection": 473,
+    "available": 117
+  },
+  "region_status_unique": {
+    "missing_cache": 1410,
+    "missing_detection": 355,
+    "available": 86
+  },
+  "truth_correct_rows": 23,
+  "truth_wrong_rows": 0,
+  "positive_query_rows": 1644,
+  "unique_images_with_positive_query": 1549,
+  "unique_images_with_correct_positive_query": 23,
+  "unique_images_with_wrong_labeled_query": 0,
+  "same_match_rows": 2227,
+  "same_match_unique": 1850,
+  "baseline_hit_rows": 24,
+  "baseline_hit_unique": 24,
+  "lost_baseline_hit_rows": 1,
+  "lost_baseline_hit_unique": 1,
+  "conflict_rows": 0,
+  "paired_positive_rows": 1644,
+  "paired_correct_delta": -1,
+  "paired_gained_rows": 0,
+  "paired_lost_rows": 1,
+  "native_calls": 3970,
+  "error_unique_images": 0,
+  "scan_ms_unique": {
+    "median": 41.591,
+    "p95": 66.027,
+    "p99": 99.309,
+    "max": 605.901,
+    "p50": 41.591
+  },
+  "wall_ms_unique": {
+    "median": 46.731,
+    "p95": 117.737,
+    "p99": 201.568,
+    "max": 613.7,
+    "p50": 46.731
+  },
+  "load_ms_unique": {
+    "median": 5.729,
+    "p95": 50.169,
+    "p99": 126.898,
+    "max": 379.82,
+    "p50": 5.729
+  },
+  "scan_ms_row_weighted": {
+    "median": 41.863,
+    "p95": 64.83,
+    "p99": 99.309,
+    "max": 605.901,
+    "p50": 41.863
+  },
+  "prep_ms_unique": {
+    "median": 58.184,
+    "p95": 217.886,
+    "p99": 347.962,
+    "max": 1144.281,
+    "p50": 58.184
+  },
+  "barcode_over_3s_unique": 0,
+  "barcode_within_3s_share": 1.0,
+  "note": "Each unique image is scanned once. Row-weighted times are projections, not bulk throughput. Prep time covers all four regions together. Cached SAM3 preparation and barcode time do not measure full new-photo recognition."
+}

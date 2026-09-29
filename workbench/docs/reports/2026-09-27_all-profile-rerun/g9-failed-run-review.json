@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-09-27T06:49:23.570596+03:00",
+  "status": "passed",
+  "author": "review_demo_benchmark",
+  "independent_reviewer": "review_bulk_harness",
+  "parent_review": "Passed; no material issue. Raw metrics are separate from validated successful runs.",
+  "report_sha256": {
+    "g9-failed-run-evidence.md": "4f3a15912f4e8c2b4070903811250853139f29b0ded0d957ab0c60036f9ef26b",
+    "g9-failed-run-evidence.json": "ade690f22ebe8aab56cfcc5af16f4071485f334c4764489f12aeef17fb9715b0"
+  },
+  "checks": [
+    "Five byte-identical artifact copies and hashes.",
+    "2228 rows,1851 digests,1644 positive and584 negative constraints.",
+    "Eight positive failures q-000001 through q-000008 remain in the denominator.",
+    "24 retry events; no per-query attribution.",
+    "Invalid completion retained. Root cause and OOM unestablished.",
+    "No queue attempt, source artifact, label, or score modification by the audit."
+  ]
+}
