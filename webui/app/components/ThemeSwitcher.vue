@@ -2,6 +2,12 @@
 import { THEME_STORAGE_KEY, type ThemePreference } from '#shared/theme'
 
 const preference = ref<ThemePreference>('system')
+const currentTheme = ref<'light' | 'dark' | null>(null)
+const buttonLabel = computed(() => currentTheme.value === null
+  ? 'Переключить цветовую тему'
+  : currentTheme.value === 'dark'
+    ? 'Тёмная тема. Включить светлую'
+    : 'Светлая тема. Включить тёмную')
 let systemTheme: MediaQueryList | undefined
 
 function readPreference(): ThemePreference {
@@ -14,13 +20,15 @@ function readPreference(): ThemePreference {
 
 function applyTheme() {
   const dark = preference.value === 'dark' || (preference.value === 'system' && systemTheme?.matches)
-  document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+  currentTheme.value = dark ? 'dark' : 'light'
+  document.documentElement.dataset.theme = currentTheme.value
   document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach(meta => {
     meta.content = dark ? '#211e1c' : '#7b3528'
   })
 }
 
-function changeTheme() {
+function toggleTheme() {
+  preference.value = currentTheme.value === 'dark' ? 'light' : 'dark'
   applyTheme()
   try { localStorage.setItem(THEME_STORAGE_KEY, preference.value) } catch { /* Keep the selection for this page. */ }
 }
@@ -46,9 +54,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <select v-model="preference" class="theme-switcher" aria-label="Цветовая тема" title="Цветовая тема: автоматически, светлая или тёмная" @change="changeTheme">
-    <option value="system">Авто</option>
-    <option value="light">Светлая</option>
-    <option value="dark">Тёмная</option>
-  </select>
+  <button type="button" class="theme-switcher" :aria-label="buttonLabel" :title="buttonLabel" @click="toggleTheme">
+    <AppIcon name="sun" class="theme-icon-light" />
+    <AppIcon name="moon" class="theme-icon-dark" />
+  </button>
 </template>

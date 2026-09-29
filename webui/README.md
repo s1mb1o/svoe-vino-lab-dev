@@ -57,8 +57,8 @@ For another host, run `.output/server/index.mjs` with the required `HOST` and `P
 
 ## Install the app
 
-The header provides `Авто`, `Светлая`, and `Тёмная` theme choices.
-`Авто` follows the device theme. The browser stores the selected preference locally.
+The header theme button shows the current palette: a sun for light or a crescent moon for dark.
+The first visit follows the device theme. Clicking the button switches the palette and stores that explicit choice locally.
 
 The production build includes a web app manifest and a service worker.
 The `@vite-pwa/nuxt` module generates these files with Workbox.

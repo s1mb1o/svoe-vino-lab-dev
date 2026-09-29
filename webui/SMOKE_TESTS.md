@@ -36,10 +36,13 @@ The contract check also checks the home page, compatibility redirects, metadata 
 - Start upstream mode with an available matcher. Confirm that `/api/config` returns `apiAvailable: true`.
 - Stop the matcher. Reload the page. Confirm the unavailable message and disabled photo actions.
 - Start the matcher. Select «Повторить подключение». Confirm that photo actions become available.
-- Select `Светлая` and `Тёмная` in the header. Check the page, dialogs, and mobile camera action.
-- Reload after each selection. Confirm the saved theme and selector value.
-- Select `Авто`. Change the system theme. Confirm that the palette follows the system.
-- Change the system theme with an explicit selection. Confirm that the selected palette stays active.
+- Open a fresh origin. Confirm the system palette and its current icon: sun for light, crescent moon for dark.
+- Confirm that page load and system theme changes do not write `svoe-vino.theme.v1`.
+- Click the theme icon. Confirm the opposite palette, the matching current icon, and the saved explicit preference.
+- Reload after each click. Confirm the saved theme and matching icon.
+- Change the system theme before an explicit choice. Confirm that the palette and icon follow the system.
+- Change the system theme after an explicit choice. Confirm that the selected palette stays active.
+- Check that existing `light` and `dark` preferences are retained and a legacy `system` value follows the system.
 - Open a second tab. Change the theme in the first tab. Confirm that the second tab follows it.
 - Check keyboard operation, reduced motion, and the header layout at 320px and desktop widths.
 - Open a fresh browser origin. Confirm that the 18+ gate blocks the scanner.

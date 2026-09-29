@@ -1,6 +1,8 @@
 <script setup lang="ts">
 defineProps<{ name: string }>()
 const paths: Record<string, string> = {
+  sun: 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M12 2v2 M12 20v2 M2 12h2 M20 12h2 M4.93 4.93l1.42 1.42 M17.65 17.65l1.42 1.42 M4.93 19.07l1.42-1.42 M17.65 6.35l1.42-1.42',
+  moon: 'M20.9 13.3A9 9 0 0 1 10.7 3.1a9 9 0 1 0 10.2 10.2Z',
   shelf: 'M2 11h20 M2 21h20 M5 2h2v3l1 2v3H4V7l1-2Z M15 2h2v3l1 2v3h-4V7l1-2Z M5 13h2v2l1 2v3H4v-3l1-2Z M15 13h2v2l1 2v3h-4v-3l1-2Z',
   food: 'M4 3v6a3 3 0 0 0 6 0V3 M7 3v18 M18 21V3c-4 2-4 9 0 9',
   location: 'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0 M15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0',

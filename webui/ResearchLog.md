@@ -1,5 +1,14 @@
 # Research log
 
+## Current-theme icon button, 2026-09-29
+
+The user requested a sun or crescent moon instead of the theme select.
+The icon MUST identify the current palette, not the next action.
+Decision: render both decorative icons and let the early `data-theme` attribute select the visible icon.
+Decision: announce the current palette and next action in the button label.
+Decision: use the system palette while there is no explicit preference and write storage only after a click.
+Decision: retain the existing `svoe-vino.theme.v1` key and accept old `light`, `dark`, and `system` values.
+
 ## Product header identity, 2026-09-29
 
 The user requested the product logo and name in place of the source-portal wordmark.

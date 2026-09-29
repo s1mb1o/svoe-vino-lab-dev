@@ -6,7 +6,9 @@ Nuxt renders one photo search page at `/`.
 The app shell blocks the page with `AgeGate` until local storage contains the accepted 18+ value.
 The app shell provides the shared product logo, the `Что за вино?` name, a scanner label, a theme selector, and a link to the source portal.
 `ProductBrand` renders the same product identity in the header and age gate.
-`ThemeSwitcher` stores the theme preference in local storage and listens for system and storage changes.
+`ThemeSwitcher` shows the current palette with a sun or crescent moon and switches it on click.
+It follows the system until the user chooses a theme. Only a click writes the preference to local storage.
+It listens for system and storage changes and retains existing explicit light or dark choices.
 The head initialization script applies the saved palette before first paint.
 The `data-theme` attribute selects the palette for the page and dialogs.
 `PhotoScanner` renders the upload, progress, and single-match states.

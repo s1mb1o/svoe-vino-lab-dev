@@ -26,9 +26,11 @@ Use one photo search workspace. Do not show a catalog grid, filters, sorting, or
 On desktop, place the upload area beside the result area.
 On phones, place the result below the upload area. Keep the upload action prominent.
 Show large touch targets. Prevent horizontal overflow.
-Provide `Авто`, `Светлая`, and `Тёмная` in the page header.
-Default to `Авто`. Follow the system theme only in this mode.
-Store the selected preference in local storage and apply it before first paint.
+Provide one theme button in the page header. Show a sun for the current light palette and a crescent moon for the current dark palette.
+Follow the system theme when there is no explicit saved light or dark preference.
+Do not write a preference on page load or on system theme changes.
+On click, switch to the opposite palette and store the explicit choice in local storage.
+Apply a saved preference before first paint. Keep the visible icon aligned with the palette before hydration.
 Apply the selected palette to the full page and dialogs.
 Follow the reduced motion preference.
 

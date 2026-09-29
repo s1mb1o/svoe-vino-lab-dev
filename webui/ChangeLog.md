@@ -2,6 +2,15 @@
 
 ## 2026-09-29
 
+### Current-theme icon button
+
+- Replaced the theme select with a sun or crescent moon button that shows the current palette.
+- Follow the system theme until an explicit user choice and save only after a click.
+- Retained saved choices, early palette application, and synchronization between tabs.
+- Kept a 44px keyboard-accessible button on desktop and mobile.
+- Verified all 165 tests, type checks, and the production build.
+- Verified 10 system and saved-preference combinations and both icons with reload persistence in the browser.
+
 ### Product name and header logo
 
 - Replaced the source-portal wordmark with the shared bottle-scanner logo and `Что за вино?`.
