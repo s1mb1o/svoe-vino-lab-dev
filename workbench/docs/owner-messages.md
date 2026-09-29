@@ -8791,3 +8791,219 @@ The owner attached five bottle screenshots.
 
 The owner attached five more bottle screenshots. The `My request:` field had no text;
 the message continues the immediately preceding five-bottle dataset task.
+
+## 2026-09-29T11:47:49+0300
+
+```text
+Let's improve matcher.
+
+Important, if matcher used through /v1/eval/predict, it is made by hackaton hosts. There is 10 seconds timeout for each request (from curl start to response), and SLA is 3 seconds. So when request came from this endpoint, enable "fast answer mode".  Make it configurable in config.yaml
+
+"fast answer mode" - if time of request processing close to 3 seconds, and there is some answer (ex. from barcode), then answer it. You should start timer from http connect. (and may be have some reserve ex. 0.1 second - 2.9 seconds instead of 3.0seconds)
+
+1. Photo provided. start timer (its timeout shall be configured in config.yaml)
+2. Start parallel:
+- Send full image to http://192.168.86.14:18081/ui/#/models/qr-scanner for zxing-cpp barcode search
+- SAM3 searches the package and "hand" (hand search configured in options) and label (make configurable). We search label here to have labels in one pass.
+3. siglip2-so400m-patch16-naflex, NaFlex 512 patches, native aspect (make it configurable)
+4. best cosine among all (max cosine per angle of same reference image)
+5. Runs when rank 1 and another card of the same cluster are both in the top 10 (make configurable)
+he VLM qwen3.5-9b-nvfp4 reads the label with that cluster's rule.
+
+If there is enough time, even after you get qr_barcode positive answer, wait for SAM3 to finish. 
+After SAM3 finish and get package segmented, run another 2 barcode searches: on package and on its label.
+```
+
+## 2026-09-29T11:59:36+0300
+
+Answers of the owner to 4 question(s) of the agent (plan mode, plan 85).
+
+Question 1:
+
+```text
+Uncached SAM3 in the lab (1 worker, with the `hand` text) took median 1.5 s and p95 5.9 s. So at the 2.9 s deadline there is often no crop-based answer yet, and fast mode would have nothing to return. Should the matcher also embed the whole photo at t0, as a fallback answer?
+```
+
+Answer 1:
+
+```text
+do 2 SAM3:
+- full request
+- only packages
+
+and do parallel SigLip2 on whole image (it is anyway idle at this moment)
+
+but make this configurable
+```
+
+Question 2:
+
+```text
+The full-photo scan and the package/label scans can find codes of different wines, for example a second bottle in the background. Which code decides the answer?
+```
+
+Answer 2:
+
+```text
+Package/label code wins (Recommended)
+```
+
+Question 3:
+
+```text
+The matcher selects one pipeline for all endpoints. Which endpoints should use the new pipeline?
+```
+
+Answer 3:
+
+```text
+predict fast, match full (Recommended)
+```
+
+Question 4:
+
+```text
+Uncached VLM re-rank calls in the lab runs took a median of 3.1–3.5 s. Those runs used 4 workers, so a single request may be faster; I have not measured that yet. In fast mode the re-rank often cannot finish by 2.9 s. How should it start?
+```
+
+Answer 4:
+
+```text
+Always start, cut at deadline
+```
+
+## 2026-09-29T12:18:09+0300
+
+Answers of the owner to 4 question(s) of the agent (plan mode, plan 85).
+
+Question 1:
+
+```text
+How should the new pipeline be built inside the matcher?
+```
+
+Answer 1:
+
+```text
+Async backend + httpx (Recommended)
+```
+
+Question 2:
+
+```text
+The matcher has no view with GTIN codes (only QR URLs in `matcher_wine.qr_values`). How should it get them?
+```
+
+Answer 2:
+
+```text
+Read wine_code directly
+```
+
+Question 3:
+
+```text
+New finding, checked in code only: with `hand_selection: true`, the matcher sends five nouns in one `text` field to SAM3 `/segment`. That route takes one noun and returns no `label`, so any detection would give HTTP 502. Prod has the option off. What should I do?
+```
+
+Answer 3:
+
+```text
+Fix it in this task (Recommended)
+```
+
+Question 4:
+
+```text
+How large should the end-to-end benchmark on the gx10 dev deployment be? Photos go one at a time, as the harness sends them.
+```
+
+Answer 4:
+
+```text
+official + full my (Recommended)
+```
+
+## 2026-09-29T12:28:19+0300
+
+Answers of the owner to 1 question(s) of the agent (plan mode, plan 85).
+
+Question 1:
+
+```text
+Prod runs `be84a94` (branch `codex/group-quality-filter`, the shelf-photo quality filter on SAM3 `/segment_multi`). `main` does not contain it, and `main` has 3 newer matcher commits, including the rot5 support that the new pipeline needs. The new work goes on `main`, so a prod deploy from `main` would drop the shelf filter. Both sides change the SAM3 transport in `group.py`. What should I do?
+```
+
+Answer 1:
+
+```text
+Merge it into main first (Recommended)
+```
+
+## 2026-09-29T12:40:11+0300
+
+Answers of the owner to 1 question(s) of the agent (plan mode, plan 85).
+
+Question 1:
+
+```text
+The gx10 SAM3 server puts requests that arrive within 15 ms into one batch. It returns every request of the batch only after the whole batch is done (`_run_jobs` in `~/Admin/gx10/scripts/inference/sam3/server.py`). So the "packages only" request comes back at the same moment as the full one, and both come back later: about 1.0 s of encoder time for 2 images against 0.71 s for 1, plus 4 more noun passes. I will keep the option either way. What should its default be?
+```
+
+Answer 1:
+
+```text
+Default off, A/B decides (Recommended)
+```
+
+## 2026-09-29T13:26:26+0300
+
+The owner approved the plan in the plan dialog (plan 85, `docs/plans/85_matcher-cascade-fast-answer.md`). The dialog has no text.
+
+## 2026-09-29T13:33:22+0300
+
+Answer of the owner to 1 question of the agent (plan 85, step 1).
+
+Question 1:
+
+```text
+Correction to my earlier question: `codex/group-quality-filter` has two commits, not one. `be84a94` (in prod) is the shelf filter. `c88464f` (08:47, not in prod) adds a two-view gate for shelf photos: the bottle crop is ranked against `full`, the label crop against `label`, and a bottle gets `match: null` when the views disagree. What should I merge into `main`?
+```
+
+Answer 1:
+
+```text
+The whole branch (Recommended)
+```
+
+## 2026-09-29T13:53:47+0300
+
+Answer of the owner to 1 question of the agent (plan 85, step 1).
+
+Question 1:
+
+```text
+The merge of `codex/group-quality-filter` into `main` is ready in a scratch worktree: 11 matcher files, all 130 matcher tests pass. It keeps plan 83's `k`/`candidates` (the gate gets the query `k`, at most 5 candidates per bottle) and adapts one old hand-selection test to the gate. May I commit it (message "Merge branch 'codex/group-quality-filter'", no Co-Authored-By) and fast-forward `main`?
+```
+
+Answer 1:
+
+```text
+Commit and fast-forward main (Recommended)
+```
+
+## 2026-09-29T14:42:59+0300
+
+Answer of the owner to 1 question of the agent (plan 85, step 7).
+
+Question 1:
+
+```text
+Plan 85 steps 2–6 are done and tested: 208 matcher tests and 10 workbench parity tests pass, and a local smoke against the real gx10 gateway got 17 of 20 photos right, all within 3 s client-side (median 0.8 s, max 2.5 s). The dev deploy needs a commit. How should I commit? (No Co-Authored-By; `ACTIVE_WORK.md` stays uncommitted; only my hunk of `owner-messages.md`, through a private index.)
+```
+
+Answer 1:
+
+```text
+Three commits
+```

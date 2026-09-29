@@ -2,6 +2,14 @@
 
 ## 2026-09-29
 
+- Plan 85: the matcher backend `cascade` and the fast answer mode of
+  `POST /v1/eval/predict` (owner message of 2026-09-29T11:47:49+0300, answers of 11:59:36
+  to 13:53:47). The code is in `../matcher/` (read `../matcher/ChangeLog.md` and
+  `../matcher/docs/cascade.md`). The lab gets the plan `docs/plans/85_matcher-cascade-fast-answer.md`,
+  the new test `tests/test_matcher_parity.py` (10 tests: the matcher ports of the code
+  rules, the label rule, `refine_mask`, and the cluster re-rank give the results of the
+  lab code), and the commands in `COMMANDS.md`. No lab code, no schema change, no 8168
+  restart. The branch `codex/group-quality-filter` is merged into `main` (`6f23290`).
 - Plan 84: the `Save` of the Dataset `Add wine` dialog no longer waits for the index
   (owner messages of 2026-09-29T12:28:00+0300 and 12:41:02, answers of 12:45:37 and
   12:49:53). Cause of the slow `Save`: a cold start of `siglip2-so400m-patch16-512` on the

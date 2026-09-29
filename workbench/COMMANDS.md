@@ -379,6 +379,23 @@ python3 -m unittest discover -s tests -p 'test_catalog_copy.py'
 python3 -m unittest discover -s tests -p 'test_matcher_views.py'
 ```
 
+## Matcher backend cascade (plan 85)
+
+The matcher pipeline `cascade-p512-rot5` needs a copy with both embeddings: the rotated
+index for the photo search and the p512 index for the group route and the cluster rules.
+This command writes a new directory. It calls no external service:
+```bash
+python3 scripts/copy_catalog.py --out work/catalog-copy-cascade --no-images \
+    --embedding gx10-siglip2-so400m-patch16-naflex-p512-rot5 \
+    --embedding gx10-siglip2-so400m-patch16-naflex-p512
+```
+
+Check that the ports of the matcher (codes, labels, cluster re-rank) give the results of
+the lab code. The test uses no external service:
+```bash
+python3 -m unittest discover -s tests -p 'test_matcher_parity.py'
+```
+
 # Кэш вызовов моделей
 
 The SAM3, Grounding DINO, and VLM calls keep their answers in `data/cache/models/<model>/`.
