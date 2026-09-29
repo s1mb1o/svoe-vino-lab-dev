@@ -57,6 +57,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .portal-navigation { display: inline-flex; align-items: center; gap: 9px; font-size: 13px; color: var(--accent); }
 .portal-navigation:hover span { text-decoration: underline; text-underline-offset: 4px; }
 .portal-navigation .icon { width: 18px; height: 18px; }
+.product-navigation { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 13px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); color: var(--accent); font-size: 12px; }
+.product-navigation:hover { background: var(--cream); }
+.product-navigation .icon { width: 18px; height: 18px; }
 .scanner-page { max-width: 1120px; width: calc(100% - 80px); margin: 0 auto; }
 .hero { text-align: center; padding: 42px 0 32px; }
 .eyebrow { display: inline-flex; align-items: center; gap: 8px; letter-spacing: .17em; color: var(--muted); font-size: 10px; font-weight: 500; }
@@ -205,6 +208,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .portal-navigation { width: 44px; height: 44px; justify-content: center; }
   .portal-navigation>span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
   .portal-navigation .icon { width: 20px; height: 20px; }
+  .product-navigation { width: 44px; padding: 0; justify-content: center; }
+  .product-navigation>span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  .product-navigation .icon { width: 20px; height: 20px; }
   .site-shell:before { background-size: 1200px auto; opacity: .6; }
   .hero { padding: 30px 0 25px; }
   .eyebrow { font-size: 8px; letter-spacing: .13em; }

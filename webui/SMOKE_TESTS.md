@@ -1,5 +1,47 @@
 # Smoke tests
 
+## Hackathon landing page
+
+- Open `/hackaton` in a new browser profile and confirm the age gate.
+- Accept the age confirmation. Confirm one H1 and three platform sections.
+- Check widths of 320, 390, 768, 1024, and 1440 pixels in both themes.
+- Confirm that both WebApp screenshots load, stay visible, and open at full size.
+- Follow each platform anchor and confirm that it reaches the correct section.
+- Open WebApp and confirm that the photo scanner loads at `/`.
+- Confirm that the Android section mentions underground parking and local recognition.
+- Confirm that the APK link uses the configured URL and shared release file name.
+- Follow `О приложении` and confirm that `/android` loads.
+- Confirm that the bot links use `https://t.me/ChtoZaVinoBot`.
+- Confirm that WebApp and Telegram show their internet requirement.
+- Confirm that the page tells visitors to install Android before going offline.
+- Confirm that the page has one canonical URL, `https://chtozavino.ru/hackaton`.
+- Confirm that `/sitemap.xml` includes `/hackaton`.
+
+## Android landing page
+
+- Open `/android` in a new browser profile.
+- Confirm that the 18+ overlay blocks interaction and keeps the page content rendered.
+- Accept the age confirmation.
+- Confirm that the hero states offline operation and shows light and dark application
+  screenshots.
+- Confirm that the page shows image search, QR, barcode, on-device processing, 2,093
+  wines, automatic acceleration, history, themes, and Android 9 support.
+- Confirm that the page labels version 0.1.4 as a test version.
+- Confirm that the first and last download actions use
+  `/downloads/chtozavino-0.1.4-debug.apk` by default.
+- Confirm that the local download response uses
+  `application/vnd.android.package-archive`.
+- Confirm that the attachment name is `chtozavino-0.1.4-debug.apk`.
+- Confirm that a missing configured APK returns HTTP 404.
+- Confirm that the header links from `/` to `/android` and back.
+- Confirm that the page has one visible H1 after the age overlay closes.
+- Confirm that the page works at 320 pixels and at a desktop width.
+- Confirm that all page sections use the light and dark themes.
+- Confirm that reduced-motion mode removes hover motion.
+- Confirm that the canonical URL is `https://chtozavino.ru/android`.
+- Confirm that the page publishes `SoftwareApplication` structured data.
+- Confirm that the sitemap includes `/android`.
+
 ## Automated checks
 
 1. Run `npm run typecheck`.
@@ -73,6 +115,17 @@ See `docs/verification-2026-09-15.md` for current results.
 
 ## Results on 2026-09-29
 
+- Android landing page: type checks passed, all 169 tests passed in 14 files, and the
+  production build passed.
+- Android landing page: the local APK route returned HTTP 200 with the Android package
+  content type, 576,503,269-byte content length, and the versioned attachment name.
+- Android landing page: an invalid APK file name returned HTTP 404.
+- Android landing page: the rendered response contained the unique canonical URL and
+  the `SoftwareApplication` structured data.
+- Android landing page: all six public WebP screenshots matched the verified Pixel 8
+  source files byte for byte.
+- Android landing page: desktop light and mobile light and dark layouts passed a visual
+  check.
 - Product identity: type checks, all 165 tests, and the production build passed. The header component preview passed both themes and the 320px layout. The logo loaded without a color filter and the theme selector remained accessible.
 - Header theme selector: type checks, all 165 tests, and the production build passed.
 - Header theme selector: the isolated component preview passed light/dark selection, reload persistence, tab synchronization, system-theme resolution, and header layout at 320px and desktop widths.

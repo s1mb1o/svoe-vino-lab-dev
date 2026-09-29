@@ -19,6 +19,9 @@ The current release uses a mock prediction service and local result metadata.
 - Explore an interactive Abrau-Durso product-line map that marks an exact matched wine from this producer.
 - Upload a shelf photo and inspect masks and ready wine matches for each detected bottle.
 - Install the portal as a Progressive Web App.
+- Open the Android application landing page at `/android`.
+- Download the versioned Android APK from a configurable URL.
+- Compare WebApp, Android, and Telegram on the `/hackaton` landing page.
 
 The mock service does not recognize wine. The UI MUST state this limitation.
 The mock service MUST use the same HTTP contract as the official evaluator.
@@ -37,6 +40,8 @@ npm run dev
 ```
 
 Open [the photo search page](http://127.0.0.1:8153/).
+Open [the Android application page](http://127.0.0.1:8153/android).
+Open [the hackathon landing page](http://127.0.0.1:8153/hackaton).
 Old `/wines` bookmarks redirect to this page.
 The default mode is `mock`. No API key or database is required.
 The mock returns `priboj-marchenko-beloe-polusuhoe` for every valid image.
@@ -72,6 +77,34 @@ The Workbox routes do not store photo uploads or responses of the `/api/` and `/
 A cached page contains the server-rendered `/api/config` payload. An offline start shows the last known service state.
 A new version does not reload an open page. It becomes active after all app pages close.
 Development mode does not register the service worker.
+
+## Android application page
+
+The `/android` page presents the offline Android application.
+It uses verified Pixel 8 screenshots from version 0.1.4.
+It explains image recognition, QR and barcode search, on-device processing, the local
+catalogue, automatic acceleration, history, and theme support.
+
+The local default download route serves this file:
+
+```text
+../android/app/build/outputs/apk/friendly/chtozavino-0.1.4-debug.apk
+```
+
+The APK stays outside Git.
+Set these values for another build or for production:
+
+```dotenv
+NUXT_ANDROID_APK_PATH=/absolute/path/to/chtozavino-0.1.4-debug.apk
+NUXT_PUBLIC_ANDROID_APK_URL=/downloads/chtozavino-0.1.4-debug.apk
+```
+
+`NUXT_ANDROID_APK_PATH` supplies the file for the local download route.
+`NUXT_PUBLIC_ANDROID_APK_URL` supplies the public link on the landing page.
+The public URL MAY point to a different static file host.
+The current file is a test APK that is signed with the development key.
+The page labels it as a test version.
+Read [the Android landing page specification](docs/android-landing.md).
 
 Run the browser check against a production server:
 

@@ -8,6 +8,33 @@ Original rights remain with the source owners. This repository does not relicens
 Source application scripts, analytics, and CSS bundles are not included.
 The implementation uses its own CSS.
 
+## Android application screenshots
+
+Date: 2026-09-29
+
+The Android landing page uses six screenshots from the verified Android 0.1.4 set.
+The source directory is
+`../../android/docs/screenshots/android-0.1.4/web/`.
+The public copies are in `public/screenshots/android/`.
+
+The screenshots came from the installed application on a Google Pixel 8.
+The phone ran Android 17 at API level 37.
+The screenshots show real application states.
+The photo example matched `Пино Нуар` at 91%.
+The barcode example matched `Шато Тамань. Каберне Совиньон` at 100%.
+
+The selected files are:
+
+- `02_bottle_selected_light.webp`
+- `03_bottle_selected_dark.webp`
+- `04_recognition_result_dark.webp`
+- `05_processing_pipeline_dark.webp`
+- `07_settings_dark.webp`
+- `08_barcode_result_dark.webp`
+
+The source and public copies have the same bytes.
+No third-party screenshot or generated marketing mockup is used.
+
 ## Sources
 
 - [PlayfairDisplay-VariableFont_wght.woff2](https://vino-svoe.ru/fonts/Playfair/PlayfairDisplay-VariableFont_wght.woff2)
@@ -123,6 +150,15 @@ Create a polished editorial food illustration for a Russian regional cuisine win
 - `public/screenshots/home-narrow.jpg`: 432 by 768 CSS pixels at scale 2.5, 1080 by 1920 pixels, JPEG quality 84, SHA-256 `6380bfedba98d305bfcedb9b3d9bc478d1b59ad8e38fd6292021409dcdf13d3c`.
 - `public/screenshots/home-wide.jpg`: 1280 by 800 CSS pixels at scale 1.5, 1920 by 1200 pixels, JPEG quality 84, SHA-256 `211710c6fff44d2ef2c4688869a1d55a4f5da6efc9cfbb22c8f1b830d0f5d24f`.
 - Capture new screenshots when the home page layout changes.
+
+## Hackathon landing screenshots
+
+- Source: Playwright captures of the current local WebApp at `http://127.0.0.1:8154/` on 2026-09-29.
+- The captures use the light theme and confirmed age state. They show the current `Что за вино?` header.
+- `public/screenshots/hackaton/web-desktop.jpg`: 1280 by 880 CSS pixels at scale 1.5, 1920 by 1320 pixels, JPEG quality 86, SHA-256 `89d9c8acd8f8292ecf33c02c9bf8c29756b2175c0a978f55307b406cb4cf5ca2`.
+- `public/screenshots/hackaton/web-mobile.jpg`: 432 by 864 CSS pixels at scale 2.5, 1080 by 2160 pixels, JPEG quality 86, SHA-256 `94ab2b8d6378a75d8099039457d073c417f0df15486212f7dda56f1df30c8476`.
+- The `/hackaton` page reuses `public/screenshots/android/04_recognition_result_dark.webp` from the verified Android screenshot set.
+- The Telegram panel is an HTML illustration of the documented bot flow. It is not a screenshot or a recorded recognition result.
 
 ## Catalog
 

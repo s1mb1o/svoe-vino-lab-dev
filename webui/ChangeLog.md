@@ -2,6 +2,36 @@
 
 ## 2026-09-29
 
+### Hackathon landing page
+
+- Added `/hackaton` with WebApp, Android App, and Telegram Bot sections.
+- Show desktop and mobile WebApp screenshots together. Each screenshot opens at full size.
+- Highlight Android recognition without internet, including underground parking.
+- Reuse the configured APK URL and shared release metadata.
+- Link to the WebApp, the Android page, and `@ChtoZaVinoBot`.
+- Keep the shared age gate and theme switcher. Add canonical and social metadata and a sitemap entry.
+- Verified type checks, all 169 tests, and the production build.
+- Verified five viewport widths in both themes, image loading, platform anchors, and navigation.
+- Verified production HTML, image responses, and the APK download response.
+
+### Android application landing page
+
+- Added the `/android` landing page.
+- Added a responsive light and dark layout with verified Pixel 8 screenshots.
+- Added offline, image-search, QR, barcode, privacy, catalogue, accelerator, history,
+  theme, and compatibility benefits.
+- Added a versioned APK download action with configurable file and public URL values.
+- Kept the generated APK outside Git.
+- Added a local streaming route for the versioned APK.
+- Added Android navigation to the shared header and footer context.
+- Added Android search metadata, `SoftwareApplication` structured data, and a sitemap
+  entry.
+- Added automated coverage for content, release metadata, screenshot signatures,
+  download routing, and navigation.
+- Verified type checks, all 169 tests in 14 files, and the production build.
+- Verified the APK response headers and the HTTP 404 response for an invalid file name.
+- Verified the desktop and mobile layouts in the light and dark themes.
+
 ### Current-theme icon button
 
 - Replaced the theme select with a sun or crescent moon button that shows the current palette.

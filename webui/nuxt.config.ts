@@ -1,9 +1,12 @@
+import { fileURLToPath } from 'node:url'
 import { THEME_INIT_SCRIPT } from './shared/theme'
+import { ANDROID_RELEASE, DEFAULT_ANDROID_APK_URL } from './shared/android'
 
 const siteUrl = 'https://chtozavino.ru/'
 const siteTitle = 'Найти вино по фото — Что за вино?'
 const siteDescription = 'Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».'
 const socialImage = `${siteUrl}icons/pwa-512.png`
+const defaultAndroidApkPath = fileURLToPath(new URL(`../android/app/build/outputs/apk/friendly/${ANDROID_RELEASE.apkFileName}`, import.meta.url))
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-09-15',
@@ -11,8 +14,12 @@ export default defineNuxtConfig({
   modules: ['@vite-pwa/nuxt'],
   css: ['~/assets/main.css'],
   runtimeConfig: {
+    androidApkPath: defaultAndroidApkPath,
     predictionMode: 'mock',
     predictionEndpoint: '',
+    public: {
+      androidApkUrl: DEFAULT_ANDROID_APK_URL,
+    },
   },
   app: {
     head: {
@@ -132,6 +139,7 @@ export default defineNuxtConfig({
     '/wines': { redirect: { to: '/', statusCode: 308 } },
     '/wines/': { redirect: { to: '/', statusCode: 308 } },
     '/reference/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' } },
+    '/screenshots/android/**': { headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' } },
   },
   nitro: { preset: 'node-server' },
 })

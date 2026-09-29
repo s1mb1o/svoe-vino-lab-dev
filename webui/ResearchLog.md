@@ -1,5 +1,63 @@
 # Research log
 
+## Hackathon landing page, 2026-09-29
+
+The user requested `/hackaton` with WebApp, Android App, and Telegram Bot sections.
+The WebApp section MUST show desktop and mobile screenshots together.
+The Android section MUST highlight recognition without internet, including parking.
+
+The existing manifest screenshots show the previous header identity.
+Decision: capture the current local WebApp in light mode for the landing page.
+Decision: keep these captures separate from the manifest screenshots.
+The Android result uses the verified 0.1.4 screenshot already in `public/screenshots/android/`.
+The Telegram bot address and supported photo album flow come from `../telegram-bot/README.md`.
+The Telegram illustration describes the interaction. It is labeled as an example scenario.
+The page states that WebApp recognition, Telegram, and source portal links need internet.
+The Android section tells the visitor to install the APK before going offline.
+
+Validation passed: type checks, 169 tests in 14 files, and the production build.
+Chromium checks passed at 320, 390, 768, 1024, and 1440 pixels in both themes.
+The checks covered the age gate, image decoding, horizontal overflow, platform anchors,
+internal navigation, Telegram link targets, release attributes, and unique page metadata.
+No browser errors or hydration warnings occurred.
+The production page and three screenshot URLs returned HTTP 200.
+The APK GET returned HTTP 200 with the Android package content type.
+The production age gate and page hydration passed.
+
+## Android landing page, 2026-09-29
+
+The Android 0.1.4 APK is 576,503,269 bytes.
+The APK is too large to store as a generated Web UI artifact in Git.
+The Android build directory already excludes APK files from Git.
+Decision: stream the local APK from a configured path.
+Decision: allow the public download link to use a different configured URL.
+Decision: use the exact versioned file name in the default route and attachment header.
+
+The current APK uses the Android debug signing key.
+Decision: label the file as a test version on the public page.
+Decision: explain that Android can request permission to install an APK from the
+browser.
+
+The verified Android screenshot set contains light and dark screens and real results.
+Decision: copy six WebP derivatives into the Web UI public directory.
+Decision: keep the source screenshot file names for traceability.
+Decision: do not create artificial phone screens or result values.
+
+The strongest additional benefits are on-device processing, the built-in 2,093-wine
+catalogue, automatic per-model GPU or CPU selection, persistent local history, system
+theme support, Android 9 compatibility, and a direct source-portal link.
+Decision: state that the portal link needs an internet connection.
+Decision: do not describe cosine similarity as a probability or confidence.
+
+The local production route returned the configured Android package with HTTP 200.
+The response used `application/vnd.android.package-archive`.
+The response used the exact size and the versioned attachment name.
+An invalid file name returned HTTP 404.
+The server-rendered page contained one `/android` canonical URL and the application
+structured data.
+All six public screenshot files matched the verified Pixel 8 source files byte for
+byte.
+
 ## Current-theme icon button, 2026-09-29
 
 The user requested a sun or crescent moon instead of the theme select.
