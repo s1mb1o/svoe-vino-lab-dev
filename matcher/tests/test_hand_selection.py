@@ -230,11 +230,14 @@ class FakeHandSam3:
 
 
 class HandSelectionEndpointTest(unittest.TestCase):
-    def start(self, sam3_endpoint, enabled=True, embedding_status=200):
+    def start(self, sam3_endpoint, enabled=True, embedding_status=200, rows=None):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         root = Path(directory.name)
-        write_bundle_v2(root / "bundle")
+        if rows is None:
+            write_bundle_v2(root / "bundle")
+        else:
+            write_bundle_v2(root / "bundle", rows=rows)
         embedding = FakeSiglip2((1, 0, 0, 0), status=embedding_status)
         self.addCleanup(embedding.close)
         pipeline = {"name": "hand-test", "backend": "siglip2", "hand_selection": enabled,
@@ -328,17 +331,21 @@ class HandSelectionEndpointTest(unittest.TestCase):
 
     def test_group_ignores_enabled_hand_selection_and_embeds_every_bottle(self):
         sam3 = self.sam3()
-        port, _, embedding = self.start(sam3.url)
+        # The group gate needs a common candidate of the views `full` and `label`.
+        rows = (("full", (1, 0, 0, 0), ("wine-a",)), ("full", (0, 1, 0, 0), ("wine-b",)),
+                ("label", (1, 0, 0, 0), ("wine-a",)))
+        port, _, embedding = self.start(sam3.url, rows=rows)
         status, answer = self.post(port, "/v1/group/match")
         self.assertEqual(status, 200, answer)
         self.assertEqual(len(answer["bottles"]), 2)
         self.assertEqual(answer["detected_count"], 3)
         self.assertTrue(all(bottle["match"]["slug"] == "wine-a" for bottle in answer["bottles"]))
         self.assertEqual(len(sam3.requests), 1)
-        self.assertIn(b'name="text"\r\n\r\nwine bottle\r\n', sam3.requests[0])
+        self.assertIn(b'name="texts"\r\n\r\nwine bottle, wine label\r\n', sam3.requests[0])
         self.assertNotIn(b", hand", sam3.requests[0])
+        # One request: the crop of each bottle, then the label crop of each bottle.
         self.assertEqual(len(embedding.requests), 1)
-        self.assertEqual(len(embedding.requests[0][1]["input"]), 2)
+        self.assertEqual(len(embedding.requests[0][1]["input"]), 4)
 
     def test_disabled_option_needs_no_sam3_and_keeps_full_photo(self):
         port, _, embedding = self.start(None, enabled=False)

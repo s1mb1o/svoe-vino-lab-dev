@@ -50,6 +50,15 @@
 - Confirm that each bottle has an `id`, `segmentation_score`, normalized `box`, transparent PNG `mask`, and best `match`.
 - Render each mask inside its box over `image.preview`.
 - Confirm that the mask follows the correct bottle.
+- Confirm that each returned bottle has a visible label.
+- Confirm that rear bottles without visible labels are absent.
+- Confirm that mirror reflections and small edge fragments are absent.
+- Confirm that useful bottles from different shelf bands remain present.
+- Confirm that background pixels in matcher crops are white.
+- Confirm that one logical embedding batch contains one bottle crop and one label crop for each retained segment.
+- Confirm that a candidate must agree across the `full` and `label` bundle views.
+- Confirm that foreign products and ambiguous variants have `match: null`.
+- Confirm that a high-confidence two-view candidate keeps its wine card.
 - Confirm that each returned wine card links to its catalogue page.
 - Use a shelf photo that produces more than 64 bottle crops.
 - Confirm that the matcher splits the SigLIP2 requests and returns one group response.

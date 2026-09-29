@@ -3,6 +3,7 @@
 import hashlib
 import http.client
 import json
+import math
 import os
 from pathlib import Path
 import subprocess
@@ -205,6 +206,49 @@ class RankedMatcherTest(unittest.TestCase):
                          [["wine-a"], ["wine-a"]])
         self.assertEqual(len(fake.requests), 1)
         self.assertEqual(len(fake.requests[0][1]["input"]), 2)
+
+    def test_group_matching_embeds_bottles_and_labels_in_one_request(self):
+        rows = (
+            ("full", (1, 0, 0, 0), ("wine-a",)),
+            ("full", (0, 1, 0, 0), ("wine-b",)),
+            ("label", (1, 0, 0, 0), ("wine-a",)),
+            ("label", (0, 1, 0, 0), ("wine-b",)),
+        )
+        write_bundle_v2(self.directory / "bundle", rows=rows)
+        fake = FakeSiglip2((1, 0, 0, 0))
+        self.addCleanup(fake.close)
+        matcher = load_matcher(write_config(self.directory / "config.yaml", {
+            "name": "match-siglip2", "backend": "siglip2",
+            "bundle": str(self.directory / "bundle"), "endpoint": fake.url}))
+        photo = KNOWN_IMAGE.read_bytes()
+        ranked = matcher.match_group_many([photo, photo], [photo, photo], 3)
+        self.assertEqual([group[0][0] for group in ranked], ["wine-a", "wine-a"])
+        self.assertEqual(len(fake.requests), 1)
+        self.assertEqual(len(fake.requests[0][1]["input"]), 4)
+
+    def test_group_matching_rejects_an_ambiguous_two_view_result(self):
+        def vector(score):
+            return (score, math.sqrt(1 - score * score), 0, 0)
+
+        rows = (
+            ("full", vector(0.90), ("wine-a",)),
+            ("full", vector(0.89), ("wine-b",)),
+            ("full", (0, 1, 0, 0), ("wine-c",)),
+            ("label", vector(0.88), ("wine-a",)),
+            ("label", vector(0.87), ("wine-b",)),
+            ("label", (0, 1, 0, 0), ("wine-c",)),
+        )
+        write_bundle_v2(self.directory / "bundle", rows=rows)
+        fake = FakeSiglip2((1, 0, 0, 0))
+        self.addCleanup(fake.close)
+        matcher = load_matcher(write_config(self.directory / "config.yaml", {
+            "name": "match-siglip2", "backend": "siglip2",
+            "bundle": str(self.directory / "bundle"), "endpoint": fake.url}))
+        self.assertEqual(matcher._rank_group(unit((1, 0, 0, 0)),
+                                             unit((1, 0, 0, 0)), 3), [])
+        self.assertEqual(matcher._rank_group(unit((0, 1, 0, 0)),
+                                             unit((0, 1, 0, 0)), 3)[0][0],
+                         "wine-c")
 
 
 def multipart(body, boundary="matcher-match-test"):

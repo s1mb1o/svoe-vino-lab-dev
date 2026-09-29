@@ -486,18 +486,24 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 segmented = segment_group(body, os.environ.get("SAM3_ENDPOINT"))
             except GroupMatchError as exc:
                 raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
-            ranked_groups = matcher.match_many(
-                [bottle.crop for bottle in segmented.bottles], k)
+            ranked_groups = matcher.match_group_many(
+                [bottle.crop for bottle in segmented.bottles],
+                [bottle.label_crop for bottle in segmented.bottles],
+                k,
+            )
             if len(ranked_groups) != len(segmented.bottles):
                 raise RuntimeError("matcher returned a wrong number of group results")
             audit_bottles = [
                 {"id": bottle.id,
-                 "slug": ranked[0][0] if ranked else None}
+                 "slug": ranked[0][0] if ranked else None,
+                 "score": ranked[0][1] if ranked else None}
                 for bottle, ranked in zip(segmented.bottles, ranked_groups)
             ]
             return (segmented, ranked_groups), {
                 "detected_count": segmented.detected_count,
                 "truncated": segmented.truncated,
+                "matched_count": sum(bool(ranked) for ranked in ranked_groups),
+                "unmatched_count": sum(not ranked for ranked in ranked_groups),
                 "bottles": audit_bottles,
             }
 

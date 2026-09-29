@@ -2,6 +2,14 @@
 
 ## 2026-09-29
 
+- Merged the branch `codex/group-quality-filter` (`be84a94`, the prod shelf filter, and
+  `c88464f`, the two-view acceptance gate) into `main` (workbench plan 85, step 1; owner
+  answers of 2026-09-29T12:28:19+0300 and 13:33:22). The gate takes the query `k` of
+  plan 83: each bottle gets up to `k` gated `candidates`, at most 5 (the gate compares
+  the top 5 of the views `full` and `label`), and `match` is the first candidate or null.
+  `_request_sam3` keeps both calls: the group nouns go to `/segment_multi`; a `text`
+  prompt (hand selection) still goes to `/segment`.
+
 - `POST /v1/group/match` accepts the optional query parameter `k` (1 to 20, default 1),
   the maximum number of candidates for each bottle (workbench plan 83, owner message of
   2026-09-29T11:57:03+0300). Each bottle has the new field `candidates`: up to `k`
@@ -74,6 +82,14 @@
   called or restarted for this change.
 - Ran a bounded production stress test for valid WebP, invalid data, the 40-million-pixel limit, and request waves through 32 concurrent clients. Recorded the result in `docs/reports/2026-09-29_production-stress-test.md`.
 - Renamed two WebP test fixtures from `.jpg` to `.webp` and updated all matcher references.
+- Added group-only bottle and label view ranking.
+- Added a conservative group acceptance gate based on two-view agreement, score, and margin.
+- Changed uncertain group results from forced Top-1 matches to `match: null`.
+- Added matched and unmatched counts to the internal request audit.
+- Added group-only visible-label and relative-size quality filters.
+- Changed the group SAM3 request to one `segment_multi` call for `wine bottle` and `wine label`.
+- Masked background pixels in group matcher crops.
+- Kept `POST /v1/eval/predict` and `POST /v1/match` unchanged.
 - Split large SigLIP2 embedding batches into requests of at most 64 images.
 - Fixed shelf matching when SAM3 returns more than 64 bottle crops.
 - Accepted MPO uploads as JPEG-family images. Single-image and group matching process

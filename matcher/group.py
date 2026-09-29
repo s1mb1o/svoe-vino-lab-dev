@@ -13,7 +13,7 @@ import urllib.parse
 import urllib.request
 import uuid
 
-from PIL import Image, ImageOps, UnidentifiedImageError
+from PIL import Image, ImageChops, ImageOps, UnidentifiedImageError
 
 
 MAX_SIDE = 1600
@@ -26,6 +26,15 @@ SAM3_TIMEOUT_SECONDS = 300.0
 DETECTION_THRESHOLD = 0.4
 MASK_THRESHOLD = 128
 DUPLICATE_IOU = 0.9
+GROUP_PROMPTS = ("wine bottle", "wine label")
+MIN_LABEL_CONTAINMENT = 0.8
+MIN_LABEL_SHORT_SIDE_RATIO = 0.025
+MIN_LABEL_AREA_RATIO = 0.0006
+MIN_LABEL_CENTER_Y = 0.2
+MAX_LABEL_CENTER_Y = 0.9
+MAX_EDGE_FRAGMENT_TOP = 0.85
+ROW_TOP_TOLERANCE = 0.15
+MIN_ROW_HEIGHT_RATIO = 0.65
 
 
 class GroupMatchError(RuntimeError):
@@ -46,6 +55,7 @@ class SegmentedBottle:
     box: tuple[float, float, float, float]
     mask: str
     crop: bytes
+    label_crop: bytes
 
 
 @dataclass(frozen=True)
@@ -70,42 +80,67 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 def segment_group(image_bytes: bytes, endpoint: str | None,
                   timeout: float = SAM3_TIMEOUT_SECONDS,
                   opener=None) -> SegmentedGroup:
-    """Normalize one image and return validated SAM3 bottle segments."""
+    """Return bottle segments that contain one usable visible label."""
     image, jpeg = _normalize_image(image_bytes)
     instances = _request_sam3(
         jpeg, image.width, image.height, endpoint, timeout=timeout, opener=opener)
     valid = sorted(
         (instance for instance in instances
-         if instance["score"] >= DETECTION_THRESHOLD),
+         if instance["label"] == GROUP_PROMPTS[0]
+         and instance["score"] >= DETECTION_THRESHOLD),
         key=lambda instance: instance["score"],
         reverse=True,
     )
+    labels = []
+    for instance in instances:
+        if (instance["label"] != GROUP_PROMPTS[1]
+                or instance["score"] < DETECTION_THRESHOLD):
+            continue
+        prepared = _instance_mask(image, instance)
+        if prepared is not None and _label_has_information(image.size, prepared):
+            labels.append((instance, prepared))
     preview = _data_url("image/jpeg", jpeg)
     media_bytes = len(preview.encode("ascii"))
-    bottles = []
-    truncated = False
+    candidates = []
     for instance in valid:
-        prepared = _prepare_bottle(image, instance)
+        bottle_mask = _instance_mask(image, instance)
+        best_label = None if bottle_mask is None else _best_label(bottle_mask, labels)
+        if bottle_mask is None or best_label is None:
+            continue
+        prepared = _prepare_bottle(image, instance, bottle_mask)
         if prepared is None:
             continue
         box, mask, crop = prepared
-        if any(_box_overlap(box, bottle.box) >= DUPLICATE_IOU for bottle in bottles):
+        label_crop = _prepare_match_crop(
+            image, best_label[1], padding_ratio=0.08, maximum_size=(640, 640))
+        if box[1] >= MAX_EDGE_FRAGMENT_TOP:
             continue
-        if len(bottles) >= MAX_BOTTLES:
-            truncated = True
-            break
+        if any(_box_overlap(box, bottle.box) >= DUPLICATE_IOU
+               for bottle in candidates):
+            continue
         mask_url = _data_url("image/png", mask)
-        if media_bytes + len(mask_url.encode("ascii")) > MAX_RESPONSE_MEDIA_BYTES:
-            truncated = True
-            break
-        media_bytes += len(mask_url.encode("ascii"))
-        bottles.append(SegmentedBottle(
+        candidates.append(SegmentedBottle(
             id="",
             segmentation_score=instance["score"],
             box=box,
             mask=mask_url,
             crop=crop,
+            label_crop=label_crop,
         ))
+
+    candidates = _filter_relative_scale(candidates)
+    bottles = []
+    truncated = False
+    for bottle in candidates:
+        if len(bottles) >= MAX_BOTTLES:
+            truncated = True
+            break
+        mask_url = bottle.mask
+        if media_bytes + len(mask_url.encode("ascii")) > MAX_RESPONSE_MEDIA_BYTES:
+            truncated = True
+            break
+        media_bytes += len(mask_url.encode("ascii"))
+        bottles.append(bottle)
 
     bottles.sort(key=lambda bottle: (
         math.floor(bottle.box[1] * 8), bottle.box[0]))
@@ -145,9 +180,16 @@ def _normalize_image(image_bytes: bytes) -> tuple[Image.Image, bytes]:
 
 
 def _request_sam3(jpeg: bytes, width: int, height: int, endpoint: str | None,
-                  timeout: float, opener=None, *, text="wine bottle",
+                  timeout: float, opener=None, *, text=None,
                   require_labels=False) -> list[dict]:
-    url = _sam3_url(endpoint)
+    """Send one SAM3 request and return its validated instances.
+
+    With no `text`, the request sends the group nouns to `/segment_multi`, and each
+    instance MUST carry one of the group labels. With `text`, the request sends one
+    `/segment` prompt; `require_labels` then asks each instance for a label.
+    """
+    multi = text is None
+    url = _sam3_url(endpoint, multi=multi)
     body, content_type = _multipart(jpeg, text)
     request = urllib.request.Request(
         url,
@@ -196,11 +238,13 @@ def _request_sam3(jpeg: bytes, width: int, height: int, endpoint: str | None,
             answer = json.loads(payload)
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise GroupMatchError(502, "SAM3 service returned invalid JSON") from exc
-        return _validate_sam3(answer, width, height, require_labels=require_labels)
+        return _validate_sam3(
+            answer, width, height, labels=GROUP_PROMPTS if multi else None,
+            require_labels=require_labels)
     raise GroupMatchError(502, "SAM3 service is unavailable")
 
 
-def _sam3_url(endpoint: str | None) -> str:
+def _sam3_url(endpoint: str | None, *, multi=False) -> str:
     if not isinstance(endpoint, str) or not endpoint:
         raise GroupMatchError(503, "SAM3_ENDPOINT is not configured")
     try:
@@ -212,13 +256,14 @@ def _sam3_url(endpoint: str | None) -> str:
             raise ValueError("invalid endpoint")
     except ValueError as exc:
         raise GroupMatchError(503, "SAM3_ENDPOINT is not configured correctly") from exc
-    return endpoint.rstrip("/") + "/segment"
+    return endpoint.rstrip("/") + ("/segment_multi" if multi else "/segment")
 
 
-def _multipart(jpeg: bytes, text="wine bottle") -> tuple[bytes, str]:
+def _multipart(jpeg: bytes, text=None) -> tuple[bytes, str]:
     boundary = "svoe-vino-%s" % uuid.uuid4().hex
     fields = (
-        ("text", text.encode("utf-8")),
+        ("texts", ", ".join(GROUP_PROMPTS).encode("utf-8")) if text is None
+        else ("text", text.encode("utf-8")),
         ("threshold", b"0.4"),
         ("mask_threshold", b"0.5"),
         ("return_masks", b"true"),
@@ -241,7 +286,8 @@ def _multipart(jpeg: bytes, text="wine bottle") -> tuple[bytes, str]:
     return b"".join(parts), "multipart/form-data; boundary=%s" % boundary
 
 
-def _validate_sam3(answer, width: int, height: int, *, require_labels=False) -> list[dict]:
+def _validate_sam3(answer, width: int, height: int, *, labels=None,
+                   require_labels=False) -> list[dict]:
     if not isinstance(answer, dict):
         raise GroupMatchError(502, "SAM3 response MUST be an object")
     instances = answer.get("instances")
@@ -273,22 +319,26 @@ def _validate_sam3(answer, width: int, height: int, *, require_labels=False) -> 
             "box": tuple(float(value) for value in box),
             "mask_png_b64": mask,
         }
-        if require_labels:
+        if labels is not None or require_labels:
             label = instance.get("label")
-            area = instance.get("area")
-            if not isinstance(label, str) or not label.strip():
+            if (not isinstance(label, str) or not label.strip()
+                    or (labels is not None and label.strip().lower() not in labels)):
                 raise GroupMatchError(502, "SAM3 response has an invalid label")
+            result["label"] = label.strip().lower()
+        if require_labels:
+            area = instance.get("area")
             if area is not None and (
                     isinstance(area, bool) or not isinstance(area, (int, float))
                     or not math.isfinite(area) or not 0 <= area <= width * height):
                 raise GroupMatchError(502, "SAM3 response has an invalid area")
-            result.update(label=label.strip().lower(), area=area)
+            result["area"] = area
         validated.append(result)
     return validated
 
 
 def _instance_mask(image: Image.Image, instance: dict):
-    """Return a clamped box and its binary mask, or None for an empty segment."""
+    """Return one clamped pixel box and its binary cropped mask, or None for an
+    empty segment."""
     width, height = image.size
     raw_box = instance["box"]
     left = max(0, min(width, math.floor(raw_box[0])))
@@ -312,8 +362,99 @@ def _instance_mask(image: Image.Image, instance: dict):
     return (left, top, right, bottom), mask
 
 
-def _prepare_bottle(image: Image.Image, instance: dict):
-    prepared = _instance_mask(image, instance)
+def _label_has_information(image_size, prepared) -> bool:
+    """Reject a label that is too small for useful visual recognition."""
+    width, height = image_size
+    (left, top, right, bottom), mask = prepared
+    short_side = min(right - left, bottom - top)
+    area = mask.histogram()[255]
+    return (short_side >= min(width, height) * MIN_LABEL_SHORT_SIDE_RATIO
+            and area >= width * height * MIN_LABEL_AREA_RATIO)
+
+
+def _mask_intersection_area(first, second) -> int:
+    first_box, first_mask = first
+    second_box, second_mask = second
+    left = max(first_box[0], second_box[0])
+    top = max(first_box[1], second_box[1])
+    right = min(first_box[2], second_box[2])
+    bottom = min(first_box[3], second_box[3])
+    if right <= left or bottom <= top:
+        return 0
+    first_part = first_mask.crop((
+        left - first_box[0], top - first_box[1],
+        right - first_box[0], bottom - first_box[1],
+    ))
+    second_part = second_mask.crop((
+        left - second_box[0], top - second_box[1],
+        right - second_box[0], bottom - second_box[1],
+    ))
+    return ImageChops.multiply(first_part, second_part).histogram()[255]
+
+
+def _best_label(bottle, labels):
+    """Return the best visible label inside one bottle mask, or None."""
+    bottle_box, bottle_mask = bottle
+    bottle_height = bottle_box[3] - bottle_box[1]
+    best = None
+    best_score = -1.0
+    for instance, label in labels:
+        label_box, label_mask = label
+        center_x = (label_box[0] + label_box[2]) / 2
+        center_y = (label_box[1] + label_box[3]) / 2
+        if not (bottle_box[0] <= center_x < bottle_box[2]
+                and bottle_box[1] <= center_y < bottle_box[3]):
+            continue
+        bottle_x = min(bottle_mask.width - 1, max(0, int(center_x - bottle_box[0])))
+        bottle_y = min(bottle_mask.height - 1, max(0, int(center_y - bottle_box[1])))
+        if bottle_mask.getpixel((bottle_x, bottle_y)) < MASK_THRESHOLD:
+            continue
+        relative_y = (center_y - bottle_box[1]) / max(1, bottle_height)
+        if not MIN_LABEL_CENTER_Y <= relative_y <= MAX_LABEL_CENTER_Y:
+            continue
+        label_area = label_mask.histogram()[255]
+        containment = _mask_intersection_area(bottle, label) / max(1, label_area)
+        if containment < MIN_LABEL_CONTAINMENT:
+            continue
+        score = instance["score"] * containment
+        if score > best_score:
+            best = (instance, label)
+            best_score = score
+    return best
+
+
+def _filter_relative_scale(bottles):
+    """Reject a rear or reflected fragment that is small for its shelf row."""
+    rows = []
+    for bottle in sorted(bottles, key=lambda item: item.box[1]):
+        row = next((items for items in rows
+                    if abs(bottle.box[1] - _median([item.box[1]
+                                                   for item in items]))
+                    <= ROW_TOP_TOLERANCE), None)
+        if row is None:
+            row = []
+            rows.append(row)
+        row.append(bottle)
+    kept = []
+    for row in rows:
+        median_height = _median([item.box[3] - item.box[1] for item in row])
+        kept.extend(item for item in row
+                    if item.box[3] - item.box[1]
+                    >= median_height * MIN_ROW_HEIGHT_RATIO)
+    return kept
+
+
+def _median(values):
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def _prepare_bottle(image: Image.Image, instance: dict, prepared=None):
+    if prepared is None:
+        prepared = _instance_mask(image, instance)
     if prepared is None:
         return None
     (left, top, right, bottom), mask = prepared
@@ -323,7 +464,20 @@ def _prepare_bottle(image: Image.Image, instance: dict):
     mask_output = BytesIO()
     overlay.save(mask_output, "PNG")
 
-    padding = max(2, round((right - left) * 0.05))
+    crop = _prepare_match_crop(
+        image, prepared, padding_ratio=0.05, maximum_size=(640, 960))
+    return (
+        (left / width, top / height, right / width, bottom / height),
+        mask_output.getvalue(),
+        crop,
+    )
+
+
+def _prepare_match_crop(image: Image.Image, prepared, *, padding_ratio, maximum_size):
+    """Return one masked JPEG crop for matching."""
+    (left, top, right, bottom), mask = prepared
+    width, height = image.size
+    padding = max(2, round((right - left) * padding_ratio))
     crop_box = (
         max(0, left - padding),
         max(0, top - padding),
@@ -331,15 +485,14 @@ def _prepare_bottle(image: Image.Image, instance: dict):
         min(height, bottom + padding),
     )
     crop = image.crop(crop_box)
-    if crop.width > 640 or crop.height > 960:
-        crop.thumbnail((640, 960), Image.Resampling.LANCZOS)
+    crop_mask = Image.new("L", crop.size, 0)
+    crop_mask.paste(mask, (left - crop_box[0], top - crop_box[1]))
+    crop = Image.composite(crop, Image.new("RGB", crop.size, "white"), crop_mask)
+    if crop.width > maximum_size[0] or crop.height > maximum_size[1]:
+        crop.thumbnail(maximum_size, Image.Resampling.LANCZOS)
     crop_output = BytesIO()
     crop.save(crop_output, "JPEG", quality=92)
-    return (
-        (left / width, top / height, right / width, bottom / height),
-        mask_output.getvalue(),
-        crop_output.getvalue(),
-    )
+    return crop_output.getvalue()
 
 
 def _box_overlap(a, b) -> float:
