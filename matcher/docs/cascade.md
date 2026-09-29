@@ -163,8 +163,13 @@ API answer does not change.
 ## Limits
 
 - Cold starts are longer than the budget: the VLM about 3.5 min, the NaFlex SigLIP2 about
-  48 s. Warm the models before an evaluation. A request for another model of the llama-swap
-  group `small` stops the VLM.
+  48 s. Warm the models before an evaluation.
+- The gx10 gateway (checked 2026-09-29): llama-swap pins `qwen3.5-9b-nvfp4` in the
+  group `pinned` (no `ttl`, a preload at the llama-swap start) since 16:03 MSK. `sam3`
+  has no `ttl`. `siglip2-so400m-patch16-naflex` and `qr-scanner` have a `ttl` of 24 h. The
+  container health check calls `/readyz` each 30 s, and `/readyz` sends a request to
+  SigLIP2, SAM3, and the scanner. A reload of the llama-swap configuration stops all
+  models: the VLM then needs its cold start again.
 - The load of the rot5 index peaks at about 2.6 GB of memory. The index uses 760 MB.
 - The gx10 SAM3 server answers the requests of one batch together, so `packages_first`
   does not give an earlier crop there.

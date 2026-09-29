@@ -9007,3 +9007,56 @@ Answer 1:
 ```text
 Three commits
 ```
+
+## 2026-09-29T16:34:14+0300
+
+Answer of the owner to 1 question of the agent (plan 85, step 7).
+
+Question 1:
+
+```text
+gx10's OOM rule (GPU_SERVERS.md) says do not launch when free memory < task + 20 GB margin. The dev matcher with the rot5 index needs about 3 GB at load; gx10 has 13 GB available now (107 of 121 GB used; nine image embedders are loaded, most with a 30-min idle TTL). How should I continue with the benchmark (2,307 photos, about 1.5–2 h of gateway load)?
+```
+
+Answer 1:
+
+```text
+Deploy dev on gx10 now
+```
+
+## 2026-09-29T17:18:57+0300
+
+Message of the owner. It answers a question of the agent in the plan 85 report (step 7).
+
+Question of the agent:
+
+```text
+The right value depends on where the hackathon hosts run their harness. Do you know?
+```
+
+Message:
+
+```text
+Do you know? - i think russia
+```
+
+## 2026-09-29T17:29:58+0300
+
+Message of the owner. It answers the plan 85 report of the agent (step 7): score the run
+on `my`, an A/B of `answer_at_seconds` 2.8 on dev, then the results and the prod switch
+commands for the owner.
+
+```text
+do
+```
+
+## 2026-09-29T17:56:24+0300
+
+Answer of the owner to the plan 85 report of the agent (step 8). The report asked two
+questions: the value of `answer_at_seconds` for prod (2.8 s or 2.9 s), and one commit of
+the docs.
+
+```text
+prod - 2.8s
+update all, nobody uses server
+```

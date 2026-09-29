@@ -2,6 +2,14 @@
 
 ## 2026-09-29
 
+- Measured the backend `cascade` on the gx10 dev matcher (revision `f199e4d`; workbench
+  plan 85, step 7; owner answers of 16:34:14 and 17:29:58). `official-real-photos`: R@1
+  90.0 % at the cut 2.9 s and at 2.8 s, all answers within 3 s; `packages_first: true`
+  gave 88.3 %, so the default stays `false`. `my`: R@1 83.3 % (83.42 % on the 1,647
+  positives of the lab runs, against 74.26 % for `siglip2-p512-as-is`). A cut VLM call
+  leaves vLLM within 0.2 s. `docs/cascade.md` now states the model lifetimes of the gx10
+  gateway: `qwen3.5-9b-nvfp4` is pinned since 2026-09-29 16:03 MSK. The details are in
+  `ResearchLog.md`.
 - Added the backend `cascade` (workbench plan 85; owner message of
   2026-09-29T11:47:49+0300 and the answers of 11:59:36 to 13:53:47). At the start, in
   parallel: the barcode scan of the full photo (`qr-scanner`, engine `zxing-cpp`), one

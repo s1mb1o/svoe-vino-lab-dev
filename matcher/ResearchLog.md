@@ -1,5 +1,123 @@
 # Research log
 
+## Backend cascade on gx10 dev: first measurements, 2026-09-29
+
+Plan 85 of the workbench. The dev matcher on gx10 (port 29000, revision `f199e4d`,
+pipeline `cascade-p512-rot5`, `answer_at_seconds` 2.9, `timeout_seconds` 9.5) got the
+photos one at a time from `workbench/pipeline/remote_run.py` on the Mac. The latency is
+the client time on the LAN.
+
+`official-real-photos` (81 photos, 60 positive, 21 negative; 12 MP WebP files):
+
+| `packages_first` | R@1 | False match at 1 | Latency median | p95 | max | Within 3 s |
+|---|---:|---:|---:|---:|---:|---:|
+| false | 90.0 % | 5 | 2,025 ms | 2,907 ms | 2,934 ms | 81 of 81 |
+| true | 88.3 % | 5 | 2,509 ms | 2,908 ms | 2,967 ms | 81 of 81 |
+
+- Lab references on the same set: the present prod pipeline `siglip2-p512-as-is` 81.7 %,
+  `barcode-rerank-siglip2-p512-crop` 91.7 %, the best lab run 93.3 % (other settings).
+
+`my` (run `2026-09-29T135022Z-lab-matcher-dev-cascade-predict-my-plan85`, 2,232 photos:
+1,653 positive, 579 negative; 96 photos of 6 MP or more, the others small):
+
+- R@1 83.3 % (1,377 of 1,653); false match at 1: 101 of 579. The client latency: median
+  902 ms, p95 2,905 ms. The server answered each request within 2,904 ms; 116 answers came
+  at the cut.
+- The same 1,647 positives and 579 negatives as the lab runs (join by `image_path`; the set
+  holds 1,853 distinct images in 2,232 rows):
+
+  | Lab run | Lab R@1 | Cascade R@1 | Right only in the lab | Right only in the cascade | False match: lab, cascade |
+  |---|---:|---:|---:|---:|---:|
+  | `siglip2-p512-as-is` (the present prod) | 74.26 % | 83.42 % | 72 | 223 | 115, 101 |
+  | `siglip2-p512-rot5-crop` (plan 82) | 79.60 % | 83.42 % | 30 | 93 | 100, 101 |
+  | `barcode-rerank-siglip2-p512-crop` | 83.85 % | 83.42 % | 44 | 37 | 110, 101 |
+  | `barcode-rerank-siglip2-512-crop`, the best lab run | 85.55 % | 83.42 % | 121 | 86 | 91, 101 |
+
+  The 6 new positives: 3 right.
+- The answer sources (positives right of positives; negatives with a false match):
+  crop 1,437 (961 of 1,087; 75), VLM re-rank 641 (327 of 444; 22), crop at the cut 113
+  (54 of 82; 4), a code of the package, the label, or the photo 30 (28 of 30; 0), the
+  whole photo 11 (7 of 10; 0).
+- The stages: SAM3 median 613 ms (p90 771 ms); the crop embedding median 69 ms; the
+  full-photo scan median 175 ms; 641 VLM calls completed (median 1,178 ms, p90
+  1,816 ms), 114 were cut.
+- One client timeout (`q-001534`, a photo of 346 × 1200 px): the server answered HTTP 200
+  after 1,179 ms with the right slug (the uvicorn access line at 14:22:54.944 UTC), but the
+  client got no answer in 15 s. The next request worked. The log has no exception. The
+  cause was not found.
+- Answer sources with `packages_first: false`: crop 41 (27 of 29 positives right), whole
+  photo at the cut 19 (12 of 14), VLM re-rank 14 (11 of 12), crop at the cut 7 (4 of 5).
+- `packages_first: true` is worse: both SAM3 requests came back late (median 1,114 ms and
+  1,224 ms against 986 ms for one request), and 24 photos fell back to the whole photo
+  (against 19). The default stays `false`.
+- SAM3 is the limit. In the run, `sam3_full` took a median 986 ms; 18 of 81 calls were
+  still running at the cut (about 2.8 s). The SAM3 statistics of the same 5 minutes: an
+  average queue wait of 1,031 ms at a load of 32 %. A cancelled call closes the
+  connection, but the SAM3 server finishes the job, so the next photo waits behind it.
+  The cuts came in streaks. Correction after the run at 2.8 s (below): the same 81 photos
+  gave a load of 17 % and a queue wait of 17 ms there, with no cut SAM3 call. So other
+  SAM3 work probably ran during this run; the abandoned jobs were not the main cause.
+- The run with `answer_at_seconds: 2.8` (`…-plan85-aa28`, 14:45 UTC, `packages_first:
+  false`): R@1 90.0 % (54 of 60, the same as at 2.9 s), false match at 1: 3 of 21,
+  latency median 1,697 ms, p95 2,808 ms, max 2,820 ms, 81 of 81 within 3 s. Sources: crop
+  56 (36 of 39 positives right), crop at the cut 16 (11 of 13), VLM re-rank 8 (6 of 7),
+  whole photo at the cut 1 (1 of 1). SAM3: 81 of 81 completed, median 1,018 ms. The VLM:
+  15 of 23 calls were cut, against 6 of 20 at 2.9 s; a cut call had run a median 1.25 s,
+  a completed call takes a median 1.34 s. On these 12 MP photos, the earlier cut thus
+  stops more re-ranks. Here it did not change R@1. The lower latency against the run at
+  2.9 s comes mostly from the quiet SAM3, so the two runs do not isolate the effect of the
+  cut on the latency.
+- A direct probe of 12 of these photos, one request at a time, with the six nouns: a SAM3
+  copy of 1,600 px took a median 0.70 s (max 4.23 s on one photo with many instances); a
+  copy of 1,008 px (the model input size) took a median 0.59 s (max 1.00 s on the same
+  photo). A smaller copy removes the heavy tail that starts the queue.
+- On the host, for the three official sample photos (12 MP, 1.25 MB): about 150 ms until
+  the stages start (upload, decode, archive), SAM3 about 0.9 s, the crop embedding about
+  0.1 s, the crop scans 0.15–0.25 s; the answer at 1.32 s from the request headers.
+- The public edge from this Mac (`https://chtozavino.ru/healthz`, 10 samples): DNS 3 ms,
+  TCP 6–11 ms, TLS 14–23 ms, the tunnel round trip 8–15 ms. A client far from Princess
+  pays about three round trips outside the server clock; the reserve of 0.1 s covers a
+  round trip of up to about 30 ms.
+- The same URL from `alphavps-bg` (Bulgaria; ping round trip 68.5 ms; curl 7.81, TLS 1.3,
+  HTTP/2), 13 samples: DNS 28–166 ms, TCP about 70 ms, the TLS handshake 150–260 ms (2 to
+  4 round trips), the first byte 75–80 ms later, the total 0.33–0.56 s for a GET with
+  no body. A client at this distance loses about 0.35–0.55 s outside the server clock;
+  an answer at the cut of 2.9 s then arrives after about 3.3–3.45 s. The reserve MUST
+  follow the network position of the harness.
+- The owner thinks that the harness runs in Russia (2026-09-29T17:18:57+0300). Two
+  Moscow hosts, 10 samples each, the same URL:
+  - `claudette` (Selectel Moscow `ru-7a`; ping 0.46 ms, so Princess is in the same
+    Selectel site): the total 49–53 ms with a cached DNS answer, 66–101 ms with a DNS
+    lookup. The TLS handshake alone takes about 43 ms at this distance: it is CPU work,
+    mostly of the client (curl 8.5, OpenSSL 3.0.13), not network time.
+  - the reg.ru host `u3067741` (another provider; curl 7.61, OpenSSL 1.1.1k; TCP connect
+    3–5 ms): the total 39–53 ms for 7 samples, and 101, 166 (DNS lookup 116 ms), and
+    193 ms (TCP 54 ms, TLS 99 ms) for 3 samples.
+  - A Moscow client thus loses about 40–55 ms outside the server clock, up to about
+    190 ms on an outlier. The reserve of 0.1 s covers the typical case. A cut answer is
+    late on an outlier.
+- An estimate from the stage times of the official run (`packages_first: false`): a cut
+  at 2.8 s instead of 2.9 s changes the answer source of about 1 of the 81 photos
+  (crop to whole). No stage of the other photos ended between 2.8 s and 2.9 s.
+- Caddy on Princess streams the request body to the upstream (`reverse_proxy` without
+  `request_buffers`; `request_body` sets only `max_size`). So the upload time counts in
+  the server clock. This is the documented Caddy default; it was not measured, because
+  a body test through the edge needs the Basic password.
+- The VLM cancellation works (plan 85, verification 8). A cut closes the connection to
+  llama-swap, llama-swap closes its connection to vLLM, and vLLM stops the request. Two
+  checks on the real runs:
+  - The vLLM access log of 13:41 to 13:46 UTC has one line "200 OK" for each of the 14
+    completed VLM calls, 20 to 40 ms before the end of the stage. The 7 cancelled calls
+    have no line. One of them ran 1.66 s before the cut; a completed call takes 1.1 to
+    1.7 s.
+  - A poller on gx10 read `vllm:num_requests_running` from the vLLM port 8001 each 0.2 s
+    for 320 s of the run on `my` (73 VLM calls: 68 completed, 5 cancelled after 1.8 to
+    2.2 s). After each cut, the gauge fell to 0 within 0.2 s. It was never above 1.
+  - The counter `vllm:request_success_total{finished_reason="abort"}` stayed 0. It does
+    not count these aborts. Do not use it for this check.
+- A cancelled VLM call had run a median 1.3 s (max 1.7 s) at the cut. A completed call
+  takes a median 1.3 s. So many cut calls were close to their answer.
+
 ## Backend cascade: design facts, 2026-09-29
 
 Plan 85 of the workbench. Sources: the lab runs on `my`, the gx10 service documents in

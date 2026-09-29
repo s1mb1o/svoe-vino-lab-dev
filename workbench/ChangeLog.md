@@ -10,6 +10,15 @@
   rules, the label rule, `refine_mask`, and the cluster re-rank give the results of the
   lab code), and the commands in `COMMANDS.md`. No lab code, no schema change, no 8168
   restart. The branch `codex/group-quality-filter` is merged into `main` (`6f23290`).
+  Test results of the gx10 dev matcher (`f199e4d`; owner answers of 16:34:14 and
+  17:29:58), one photo at a time: `official-real-photos` R@1 90.0 % at the cut 2.9 s
+  (`runs/2026-09-29T134104Z-lab-matcher-dev-cascade-predict-official-real-photos-plan85-pf0`)
+  and at the cut 2.8 s (`runs/2026-09-29T144518Z-…-plan85-aa28`), 88.3 % with
+  `packages_first: true` (`runs/2026-09-29T134554Z-…-plan85-pf1`), all answers within
+  3 s; `my` R@1 83.3 %, p95 2,905 ms
+  (`runs/2026-09-29T135022Z-lab-matcher-dev-cascade-predict-my-plan85`; 83.42 % on the
+  1,647 positives of the lab runs, against 74.26 % for `siglip2-p512-as-is`). The details
+  are in `../matcher/ResearchLog.md`.
 - Plan 84: the `Save` of the Dataset `Add wine` dialog no longer waits for the index
   (owner messages of 2026-09-29T12:28:00+0300 and 12:41:02, answers of 12:45:37 and
   12:49:53). Cause of the slow `Save`: a cold start of `siglip2-so400m-patch16-512` on the
