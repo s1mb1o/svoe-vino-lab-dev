@@ -61,7 +61,7 @@ matcher:
 ~~~
 
 `-W error::ResourceWarning` treats an unclosed resource warning as an error.
-The suite contains 124 tests.
+The suite contains 131 tests.
 
 ### API и official harness
 
@@ -235,8 +235,11 @@ It does not call a GPU service. It checks the following behavior:
   audit status. Invalid masks give HTTP 502 without an embedding call.
 - Readiness checks SAM3 only when `hand_selection` is enabled.
 - Unauthorized requests reach neither SAM3 nor SigLIP2.
-- With `hand_selection: true`, the group endpoint sends only `wine bottle` to SAM3.
-  It sends every retained crop to batch embedding and makes no hand-selection call.
+- The selector sends its nouns in the field `texts` to `/segment_multi`. An
+  instance label that is not one of the nouns fails explicitly.
+- With `hand_selection: true`, the group endpoint sends only `wine bottle, wine label`
+  to SAM3. It sends every retained bottle crop and label crop to batch embedding and
+  makes no hand-selection call.
 
 ### Живая проверка siglip2
 
@@ -287,7 +290,7 @@ Workflow повторяет pull образа `python:3.11-slim` до трёх �
 из `matcher/requirements.lock` с обязательной проверкой SHA-256. Затем скрипт запускает
 все тесты, которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был
 запущен или был пропущен. В конце журнала должна быть строка
-`matcher tests: discovered=124 run=124 skipped=0`.
+`matcher tests: discovered=131 run=131 skipped=0`.
 
 ## GitLab CI
 
@@ -296,4 +299,4 @@ Job `matcher-tests` находится в корневом файле `.gitlab-c
 `matcher/requirements.txt`, запускает `pip check` и выполняет полный набор тестов.
 
 Pipeline должен завершить job `matcher-tests` со статусом passed. В логе должна быть
-строка `Ran 124 tests` и итог `OK`.
+строка `Ran 131 tests` и итог `OK`.

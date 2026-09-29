@@ -22,7 +22,10 @@ enabled. The default configuration MUST keep the option disabled.
 ## Single-image behavior
 
 - `POST /v1/match` and `POST /v1/eval/predict` MUST use the same selection step.
-- The selector MUST request `wine bottle, can, packet, box, hand` from SAM3.
+- The selector MUST request `wine bottle, can, packet, box, hand` from SAM3 in one
+  `POST <SAM3_ENDPOINT>/segment_multi` request, field `texts`. SAM3 encodes the image
+  one time for all nouns. Each instance MUST carry one of these nouns as its label.
+  `/segment` takes one noun and gives no label, so the selector MUST NOT use it.
 - The selector MUST apply EXIF orientation before segmentation. It MUST limit the
   long side of the segmentation image to 1600 pixels.
 - Detections below confidence 0.4 MUST NOT affect selection.
@@ -44,9 +47,10 @@ enabled. The default configuration MUST keep the option disabled.
 ## Group isolation
 
 `POST /v1/group/match` MUST ignore `hand_selection`, including when its value is
-`true`. The group path MUST request only `wine bottle`. It MUST retain the existing
-deduplication and response limits. It MUST send every retained bottle crop to
-`match_many`. That method MUST NOT select a main package or call SAM3 again.
+`true`. The group path MUST request only `wine bottle, wine label`. It MUST retain
+the existing quality filters, deduplication, and response limits. It MUST send every
+retained bottle crop and its label crop to `match_group_many`. That method MUST NOT
+select a main package or call SAM3 again. Read [group-match.md](group-match.md).
 
 ## Verification
 
@@ -54,6 +58,8 @@ Tests MUST cover strict configuration validation, hand and no-hand ranking, the
 small-package size gate, low-confidence hands, empty detections, invalid masks,
 EXIF orientation, white mask background, and default behavior. API tests MUST cover
 both single-image routes, dependency errors, and request audit status codes.
+A single-image API test MUST verify the route `/segment_multi` and the field `texts`.
 A group API test with `hand_selection: true` MUST verify the exact SAM3 prompt,
-one segmentation request, and one embedding input per retained bottle.
+one segmentation request, and two embedding inputs per retained bottle: the bottle
+crop and the label crop.
 Tests use local fake services. They do not measure recognition quality or GPU latency.

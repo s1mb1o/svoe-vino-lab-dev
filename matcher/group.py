@@ -180,17 +180,15 @@ def _normalize_image(image_bytes: bytes) -> tuple[Image.Image, bytes]:
 
 
 def _request_sam3(jpeg: bytes, width: int, height: int, endpoint: str | None,
-                  timeout: float, opener=None, *, text=None,
-                  require_labels=False) -> list[dict]:
-    """Send one SAM3 request and return its validated instances.
+                  timeout: float, opener=None, *, nouns=GROUP_PROMPTS) -> list[dict]:
+    """Send `nouns` in one `/segment_multi` request and return the validated instances.
 
-    With no `text`, the request sends the group nouns to `/segment_multi`, and each
-    instance MUST carry one of the group labels. With `text`, the request sends one
-    `/segment` prompt; `require_labels` then asks each instance for a label.
+    SAM3 encodes the image one time for all nouns. Each instance MUST carry one of the
+    nouns as its label. `/segment` takes one noun and gives no label, so no caller
+    uses it.
     """
-    multi = text is None
-    url = _sam3_url(endpoint, multi=multi)
-    body, content_type = _multipart(jpeg, text)
+    url = _sam3_url(endpoint)
+    body, content_type = _multipart(jpeg, nouns)
     request = urllib.request.Request(
         url,
         data=body,
@@ -238,13 +236,11 @@ def _request_sam3(jpeg: bytes, width: int, height: int, endpoint: str | None,
             answer = json.loads(payload)
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise GroupMatchError(502, "SAM3 service returned invalid JSON") from exc
-        return _validate_sam3(
-            answer, width, height, labels=GROUP_PROMPTS if multi else None,
-            require_labels=require_labels)
+        return _validate_sam3(answer, width, height, labels=nouns)
     raise GroupMatchError(502, "SAM3 service is unavailable")
 
 
-def _sam3_url(endpoint: str | None, *, multi=False) -> str:
+def _sam3_url(endpoint: str | None) -> str:
     if not isinstance(endpoint, str) or not endpoint:
         raise GroupMatchError(503, "SAM3_ENDPOINT is not configured")
     try:
@@ -256,14 +252,13 @@ def _sam3_url(endpoint: str | None, *, multi=False) -> str:
             raise ValueError("invalid endpoint")
     except ValueError as exc:
         raise GroupMatchError(503, "SAM3_ENDPOINT is not configured correctly") from exc
-    return endpoint.rstrip("/") + ("/segment_multi" if multi else "/segment")
+    return endpoint.rstrip("/") + "/segment_multi"
 
 
-def _multipart(jpeg: bytes, text=None) -> tuple[bytes, str]:
+def _multipart(jpeg: bytes, nouns=GROUP_PROMPTS) -> tuple[bytes, str]:
     boundary = "svoe-vino-%s" % uuid.uuid4().hex
     fields = (
-        ("texts", ", ".join(GROUP_PROMPTS).encode("utf-8")) if text is None
-        else ("text", text.encode("utf-8")),
+        ("texts", ", ".join(nouns).encode("utf-8")),
         ("threshold", b"0.4"),
         ("mask_threshold", b"0.5"),
         ("return_masks", b"true"),
@@ -286,8 +281,8 @@ def _multipart(jpeg: bytes, text=None) -> tuple[bytes, str]:
     return b"".join(parts), "multipart/form-data; boundary=%s" % boundary
 
 
-def _validate_sam3(answer, width: int, height: int, *, labels=None,
-                   require_labels=False) -> list[dict]:
+def _validate_sam3(answer, width: int, height: int, *, labels) -> list[dict]:
+    """Return the checked instances. Each instance MUST carry one of `labels`."""
     if not isinstance(answer, dict):
         raise GroupMatchError(502, "SAM3 response MUST be an object")
     instances = answer.get("instances")
@@ -319,19 +314,15 @@ def _validate_sam3(answer, width: int, height: int, *, labels=None,
             "box": tuple(float(value) for value in box),
             "mask_png_b64": mask,
         }
-        if labels is not None or require_labels:
-            label = instance.get("label")
-            if (not isinstance(label, str) or not label.strip()
-                    or (labels is not None and label.strip().lower() not in labels)):
-                raise GroupMatchError(502, "SAM3 response has an invalid label")
-            result["label"] = label.strip().lower()
-        if require_labels:
-            area = instance.get("area")
-            if area is not None and (
-                    isinstance(area, bool) or not isinstance(area, (int, float))
-                    or not math.isfinite(area) or not 0 <= area <= width * height):
-                raise GroupMatchError(502, "SAM3 response has an invalid area")
-            result["area"] = area
+        label = instance.get("label")
+        if not isinstance(label, str) or label.strip().lower() not in labels:
+            raise GroupMatchError(502, "SAM3 response has an invalid label")
+        area = instance.get("area")
+        if area is not None and (
+                isinstance(area, bool) or not isinstance(area, (int, float))
+                or not math.isfinite(area) or not 0 <= area <= width * height):
+            raise GroupMatchError(502, "SAM3 response has an invalid area")
+        result.update(label=label.strip().lower(), area=area)
         validated.append(result)
     return validated
 

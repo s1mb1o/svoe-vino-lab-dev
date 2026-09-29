@@ -248,8 +248,9 @@ rsync -a --delete <новый каталог>/ <host>:<путь>/
   переменной сервис читает matcher/config.yaml.
 - SIGLIP2_ENDPOINT — корневой URL шлюза SigLIP2 для matcher/config.yaml, например
   `http://192.168.86.14:18081`. Значение не содержит `/v1`.
-- SAM3_ENDPOINT — корневой URL SAM3. POST /v1/group/match отправляет запрос в
-  `<SAM3_ENDPOINT>/segment_multi`. Канонический адрес GX10 равен
+- SAM3_ENDPOINT — корневой URL SAM3. POST /v1/group/match и выбор пакета
+  (`hand_selection: true`) отправляют запрос в `<SAM3_ENDPOINT>/segment_multi`.
+  Канонический адрес GX10 равен
   `http://192.168.86.14:18081/upstream/sam3`.
 - SVOE_VINO_MATCHER_OUTPUT_DIR — каталог для изображений и журналов запросов в тестовой
   конфигурации. Поле matcher.output_dir ссылается на эту переменную. Сервис создаёт

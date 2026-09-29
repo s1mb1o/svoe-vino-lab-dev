@@ -68,14 +68,18 @@
 - Set `hand_selection: true` in the selected SigLIP2 pipeline. Set `SAM3_ENDPOINT`.
 - Restart the test matcher. Send a photo of a held package with shelf bottles behind it.
 - Check both `POST /v1/match` and `POST /v1/eval/predict`.
-- Confirm that SAM3 receives `wine bottle, can, packet, box, hand`.
+- Confirm that SAM3 receives `wine bottle, can, packet, box, hand` in the field
+  `texts` of one `POST <SAM3_ENDPOINT>/segment_multi` request, and that the answer
+  is HTTP 200 (a `/segment` request gives no labels and HTTP 502).
 - Confirm that the embedding input contains the selected package with white pixels
   outside its mask. A hand overlap is a heuristic, not a guaranteed correct selection.
 - Send a photo without a hand. Confirm that scene ranking still selects a package.
 - Make SAM3 return no packages. Confirm that the original image reaches preprocessing.
 - Send a shelf photo to `POST /v1/group/match` while the option is still enabled.
-- Confirm that SAM3 receives only `wine bottle`, once per successful group request.
-- Confirm that every retained bottle gets a match and no crop triggers hand selection.
+- Confirm that SAM3 receives only `wine bottle, wine label`, once per successful group
+  request.
+- Confirm that every retained bottle gets a gated match or `match: null`, and that no
+  crop triggers hand selection.
 - Set `hand_selection: false` and restart the test matcher. Confirm that both
   single-image endpoints work without `SAM3_ENDPOINT` and use the full photo.
 - With the option enabled, remove `SAM3_ENDPOINT`. Confirm HTTP 503 on both

@@ -17,7 +17,8 @@ from .group import (
 )
 
 
-TEXTS = "wine bottle, can, packet, box, hand"
+NOUNS = ("wine bottle", "can", "packet", "box", "hand")
+TEXTS = ", ".join(NOUNS)
 PACKAGE_LABELS = frozenset(("wine bottle", "bottle", "can", "packet", "box"))
 HAND_WEIGHTS = {
     "hand_contact": 0.40, "area": 0.22, "center": 0.14, "sharpness": 0.08,
@@ -35,8 +36,7 @@ def select_main_package(image_bytes: bytes, endpoint: str | None,
     """Return the selected masked crop, or the original bytes when no package exists."""
     image, jpeg = _normalize_image(image_bytes)
     instances = _request_sam3(
-        jpeg, image.width, image.height, endpoint, timeout, opener=opener,
-        text=TEXTS, require_labels=True)
+        jpeg, image.width, image.height, endpoint, timeout, opener=opener, nouns=NOUNS)
     for instance in rank_packages(image, instances):
         prepared = _instance_mask(image, instance)
         if prepared is None:

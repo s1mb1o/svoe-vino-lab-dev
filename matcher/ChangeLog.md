@@ -2,6 +2,15 @@
 
 ## 2026-09-29
 
+- Fixed the SAM3 request of the hand selection (`hand_selection: true`; workbench plan
+  85, step 2; owner answer of 2026-09-29T12:18:09+0300). The selector sent its five
+  nouns in one field `text` to `/segment`. That route takes one noun and gives no
+  `label`, so each detection gave HTTP 502. The selector now sends the nouns in the
+  field `texts` to `/segment_multi`, as the group path does. `_request_sam3` takes the
+  nouns of its caller; `_validate_sam3` requires that each instance carries one of them
+  and checks `area`. `/segment` has no caller now. The fake SAM3 of the tests records
+  the route, and a new test checks the route and the field. The tests had asserted the
+  old field. 131 matcher tests pass.
 - Merged the branch `codex/group-quality-filter` (`be84a94`, the prod shelf filter, and
   `c88464f`, the two-view acceptance gate) into `main` (workbench plan 85, step 1; owner
   answers of 2026-09-29T12:28:19+0300 and 13:33:22). The gate takes the query `k` of

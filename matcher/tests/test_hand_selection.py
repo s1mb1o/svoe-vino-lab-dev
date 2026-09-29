@@ -54,7 +54,8 @@ class HandSelectionTest(unittest.TestCase):
         opener = FakeOpener(json.dumps(answer).encode())
         result = select_main_package(source or photo(), "http://sam3.test", opener=opener)
         self.assertEqual(len(opener.requests), 1)
-        self.assertIn(('name="text"\r\n\r\n%s\r\n' % TEXTS).encode(),
+        self.assertTrue(opener.requests[0][0].full_url.endswith("/segment_multi"))
+        self.assertIn(('name="texts"\r\n\r\n%s\r\n' % TEXTS).encode(),
                       opener.requests[0][0].data)
         return result
 
@@ -97,7 +98,6 @@ class HandSelectionTest(unittest.TestCase):
 
     def test_empty_or_hand_only_detections_keep_original_bytes(self):
         for instances in ([], [scene_answer()["instances"][2]],
-                          [instance("label", (10, 10, 20, 20))],
                           [instance("wine bottle", (5, 5, 20, 35), 0.39)]):
             with self.subTest(instances=len(instances)):
                 answer = dict(scene_answer(), instances=instances, count=len(instances))
@@ -120,7 +120,9 @@ class HandSelectionTest(unittest.TestCase):
         self.assertEqual(self.select(answer, source), source)
 
     def test_invalid_labels_areas_and_masks_are_explicit_errors(self):
-        for field, value in (("label", None), ("label", ""), ("area", float("nan")),
+        # `label` is not one of the nouns of the request, so SAM3 cannot return it.
+        for field, value in (("label", None), ("label", ""), ("label", "label"),
+                             ("area", float("nan")),
                              ("area", -1), ("area", True), ("area", 2401),
                              ("mask_png_b64", "not-base64"),
                              ("mask_png_b64", mask(2, 2, (0, 0, 2, 2)))):
@@ -200,6 +202,7 @@ class FakeHandSam3:
 
     def __init__(self):
         self.requests = []
+        self.paths = []
         self.answer = scene_answer()
         fake = self
 
@@ -207,6 +210,7 @@ class FakeHandSam3:
             def do_POST(self):
                 body = self.rfile.read(int(self.headers["Content-Length"]))
                 fake.requests.append(body)
+                fake.paths.append(self.path)
                 answer = fake.answer if TEXTS.encode() in body else sam3_answer()
                 payload = json.dumps(answer).encode()
                 self.send_response(200)
@@ -297,6 +301,16 @@ class HandSelectionEndpointTest(unittest.TestCase):
                     self.assertEqual(image.getpixel((7, 10)), (0, 0, 255))
         self.assertEqual(len(sam3.requests), 2)
         self.assertEqual(len(embedding.requests), 2)
+
+    def test_single_image_request_sends_all_nouns_to_segment_multi(self):
+        sam3 = self.sam3()
+        port, _, _ = self.start(sam3.url)
+        status, answer = self.post(port, "/v1/eval/predict")
+        self.assertEqual(status, 200, answer)
+        # `/segment` takes one noun and gives no label; the selector needs the labels.
+        self.assertEqual(sam3.paths, ["/segment_multi"])
+        self.assertIn(b'name="texts"\r\n\r\n' + TEXTS.encode() + b"\r\n", sam3.requests[0])
+        self.assertNotIn(b'name="text"\r\n', sam3.requests[0])
 
     def test_readiness_checks_siglip2_and_configured_hand_selection(self):
         sam3 = self.sam3()
