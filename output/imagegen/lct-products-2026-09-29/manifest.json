@@ -1,0 +1,25 @@
+{
+  "mode": "built-in image_gen",
+  "source_presentation_unchanged": true,
+  "source_presentation_sha256": "325d47ddd9a6fc9319912298c194c0dd248f2ac4301b06dafeeb80040d10938b",
+  "assets": [
+    {
+      "file": "variant-1-comparison.png",
+      "width": 1862,
+      "height": 845,
+      "bytes": 1424609
+    },
+    {
+      "file": "variant-2-device-showcase.png",
+      "width": 1893,
+      "height": 831,
+      "bytes": 1348374
+    },
+    {
+      "file": "variant-3-offline-scenario.png",
+      "width": 1915,
+      "height": 821,
+      "bytes": 1409437
+    }
+  ]
+}

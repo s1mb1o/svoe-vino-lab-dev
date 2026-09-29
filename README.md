@@ -13,6 +13,7 @@
 ## Что умеет система
 
 - Принимает JPEG, PNG и WebP через Web UI, Telegram и HTTP API.
+- The Web UI shows an 18+ warning and requires age confirmation before access.
 - Возвращает один slug через `POST /v1/eval/predict`.
 - Возвращает до 20 кандидатов через `POST /v1/match`.
 - Использует SigLIP2 и embedding index из 2 094 вин.
