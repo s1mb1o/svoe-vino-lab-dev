@@ -45,8 +45,14 @@
   rebuild of this one rule give mode `sheet` with the vintage question (A 2023, B 2024) in
   place of the one-sided verdict on `ПОЛУСУХОЕ`. The other 207 rules and `clusters.json` do
   not change. A check with the lab re-rank and the prod options: 6 of 6. The prod copy is
-  not changed; the owner runs the copy and the restart. New SHA-256 of
+  not changed by the agent: the auto mode classifier refused the SSH write. The owner
+  copied the file to prod (23:54:40; backup `cluster-rules.json.before-aratti-20260929`,
+  `104aa30f…`) and restarted the matcher (23:54:41). New SHA-256 of
   `cluster-rules.json`: `8d7e6b74e18a03858350dbc617c2f330608716b1d51c61da33592b1312ac0f90`.
+  Check run `2026-09-29T205615Z-lab-matcher-match-k20-official-real-photos` (no cache):
+  R@1 90.5 % → 92.1 % (58 of 63), R@5 100 %, 3 false matches at rank 1 as before. Only
+  q-000004 changed (rank 2 → 1); the prod audit shows the mode `sheet` for q-000003 and
+  q-000004.
 - Disabled the website compare in the code (owner message of 23:23, answer of 23:27).
   `COMPARE_ENABLED = False` in `pipeline/import_website.py`: `_compare` raises
   `COMPARE_DISABLED` before it makes a client, so the CLI, `--prepare`, and each Python

@@ -3624,8 +3624,8 @@ The form of a section:
 - Files 6: `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/`
   `cluster-notes.json` (new), `cluster-rules.json` (the entry `2d33f12d0b3e`),
   `label-rules.log`; my own hunks in `ResearchLog.md`, `ChangeLog.md`. No restart.
-- State 6: done, not committed; waiting: the owner runs the prod copy and restart (the
-  owner said "do it"; the auto mode classifier refused the SSH write to prod). Note
+- State 6: done, not committed. The owner copied the rule file to prod and restarted the
+  matcher at 23:54; the check run of 23:56 gives R@1 92.1 % (q-000004 at rank 1). Note
   saved 23:34:02, rule rebuilt 23:35:01 (sheet, vintage), check 6/6. b3 [31b207] "ok" at about 23:36 for `cluster-rules.json` of p512 (its
   commit a588b42 holds the file; b3 does not change it again). A commit MUST add the new
   `cluster-notes.json` with `git add -f` (root `.gitignore` rule `/workbench/data/catalog/*`).
@@ -3644,32 +3644,6 @@ The form of a section:
 - State: done, not committed. Waiting: the owner decides the commit. Browser check
   passed (177 clusters, light and dark, 1,400 and 390 px); page tests OK. No restart.
 - Updated: 2026-09-29T23:02:00+0300
-
-## drink-atlas-workspace-b3 [31b207]
-
-- Task: put the git-ignored data that cannot be rebuilt into git for the second computer
-  (2x RTX 4090) and the jury. First a checkpoint of the pending work of the other sessions,
-  then the data commit, then a push of `main` to `github` and `origin`.
-- Source: owner messages of 2026-09-29 about 21:59 and 22:35, answers of about 22:46.
-- Files: `../.gitignore`, `../matcher/.gitignore`, `../webui/.gitignore`, one comment in
-  `../matcher/config.yaml`, the bundle lines of `../README.md`, `../SETUP.md`, and
-  `../matcher/README.md`, one line of `../.claude/skills/backup-lab-db/SKILL.md`,
-  `db-export/*`, `data/testsets/images/*`, `clusters.json` and `cluster-rules.json` of
-  `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/`, four `runs/*-my/`
-  folders without `results.jsonl`, the `.md` files of `docs/reports/*/` and the small JSON
-  files that they link, `../matcher/data/gx10-siglip2-so400m-patch16-naflex-p512/*`,
-  `../webui/public/presentations/*`, own hunks in `ChangeLog.md`, `../matcher/ChangeLog.md`,
-  `../webui/ChangeLog.md`, and `docs/owner-messages.md`.
-- State: waiting: the owner checks the push. Committed: checkpoint `d00591a` (the pending
-  work of the other sessions without the edit of session 32 in `pipeline/pages/clusters.html`
-  and without the Codex files in `../output/` and `../tmp/`), data `a588b42`. The first
-  push to `github` failed at 22:56 (connection reset by peer). The agent cannot read the
-  results of the retry and of the push to `origin`.
-- Updated: 2026-09-29T23:35:00+0300
-- Agreements: 36 [0b6507] asked at about 23:33 to change `cluster-rules.json` of p512 (one
-  rule of the Aratti cluster 2d33f12d0b3e; owner task of 23:28). Answer "ok": my work on the
-  file is done in `a588b42`. Note given: the new `cluster-notes.json` is ignored by
-  `/workbench/data/catalog/*`; add it with `git add -f` at the commit.
 
 ## drink-atlas-workspace-f6 [0be36b]
 
