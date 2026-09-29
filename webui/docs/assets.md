@@ -8,6 +8,16 @@ Original rights remain with the source owners. This repository does not relicens
 Source application scripts, analytics, and CSS bundles are not included.
 The implementation uses its own CSS.
 
+## Presentation files
+
+Date: 2026-09-29
+
+The owner supplied `../../svoe-wino-hackaton/presentation/chtozavino-presentation.pptx`.
+The public PowerPoint copy has the same bytes as the source file.
+LibreOffice exports its PDF version from that copy.
+Both files are in the ignored `public/presentations/` directory.
+The `/presentation` page links to these local files.
+
 ## Android application screenshots
 
 Date: 2026-09-29

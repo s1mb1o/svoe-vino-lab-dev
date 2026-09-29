@@ -6,6 +6,7 @@ const ageConfirmed = ref(false)
 const route = useRoute()
 const isAndroidPage = computed(() => route.path.startsWith('/android'))
 const isHackatonPage = computed(() => route.path === '/hackaton' || route.path === '/hackaton/')
+const isPresentationPage = computed(() => route.path === '/presentation' || route.path === '/presentation/')
 const ageGateOpen = computed(() => !ageChecked.value || !ageConfirmed.value)
 onMounted(() => {
   ageConfirmed.value = hasAgeConfirmation(localStorage)
@@ -15,9 +16,9 @@ onMounted(() => {
 
 <template>
   <NuxtPwaManifest />
-  <div class="site-shell" :inert="ageGateOpen">
+  <div class="site-shell" :class="{ 'presentation-shell': isPresentationPage }" :inert="ageGateOpen">
     <a class="skip-link" href="#main-content">К основному содержанию</a>
-    <header class="site-header">
+    <header v-if="!isPresentationPage" class="site-header">
       <NuxtLink to="/" class="logo" aria-label="Что за вино? — поиск по фото"><ProductBrand /></NuxtLink>
       <span class="header-section"><AppIcon :name="isAndroidPage ? 'android' : 'scan'" />{{ isHackatonPage ? 'Все приложения' : isAndroidPage ? 'Android-приложение' : 'Сканер вина' }}</span>
       <div class="header-actions">
@@ -27,7 +28,7 @@ onMounted(() => {
       </div>
     </header>
     <NuxtPage />
-    <footer class="site-footer">
+    <footer v-if="!isPresentationPage" class="site-footer">
       <div><span>Что за вино? · {{ isHackatonPage ? 'WebApp · Android · Telegram' : isAndroidPage ? 'Приложение для Android' : 'Поиск по фотографии' }}</span><a href="https://vino-svoe.ru/" target="_blank" rel="noopener noreferrer">Откройте культуру российского вина<AppIcon name="arrow-up-right" /></a><span>18+</span></div>
       <p>Чрезмерное употребление алкоголя вредит вашему здоровью</p>
     </footer>

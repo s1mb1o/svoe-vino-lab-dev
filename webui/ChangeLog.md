@@ -2,6 +2,25 @@
 
 ## 2026-09-29
 
+### Presentation publication
+
+- Published `/presentation` and both files at `https://chtozavino.ru/presentation`.
+- Use release `36fb8e2` on the isolated `codex/presentation-release` branch.
+- Base the release on the deployed scanner and keep other pending pages in this working tree.
+- Point the presentation logo to the scanner at `/`.
+- Verified 165 production tests, type checks, the Linux build, public file checksums, and browser behavior.
+
+### Presentation files
+
+- Replaced the browser slideshow at `/presentation` with adjacent PowerPoint and PDF links.
+- Use the exact PowerPoint file supplied by the owner and export all 49 slides to PDF.
+- Keep both links side by side at phone and desktop widths.
+- Keep the white page, product branding, shared age gate, and canonical URL.
+- Keep the presentation files outside Git and include them in the local production build.
+- Document file preparation for a fresh checkout.
+- Verified type checks, all 169 tests, and the production build.
+- Verified both file responses, PowerPoint download, navigation, and adjacent links at four viewport widths in both themes.
+
 ### Hackathon landing page
 
 - Added `/hackaton` with WebApp, Android App, and Telegram Bot sections.

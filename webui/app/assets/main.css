@@ -41,6 +41,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .skip-link:focus { top: 8px; }
 .site-shell { position: relative; isolation: isolate; min-height: 100dvh; }
 .site-shell:before { content: ''; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: url('/reference/background.webp') center top / 1920px auto no-repeat; }
+.site-shell.presentation-shell { color-scheme: light; color: #2c2a28; background: #fff; --ink: #2c2a28; --muted: #716b66; --paper: #fff; --accent: #7b3528; --line: #e8e1d8; }
+.site-shell.presentation-shell:before { display: none; }
 .site-header { max-width: 1320px; margin: 24px auto 0; width: calc(100% - 80px); height: 64px; padding: 0 28px; border-radius: 40px; background: var(--cream); display: flex; align-items: center; gap: 28px; }
 .logo { flex-shrink: 0; }
 .product-brand { display: inline-flex; align-items: center; gap: 10px; }

@@ -22,6 +22,7 @@ The current release uses a mock prediction service and local result metadata.
 - Open the Android application landing page at `/android`.
 - Download the versioned Android APK from a configurable URL.
 - Compare WebApp, Android, and Telegram on the `/hackaton` landing page.
+- Open the project PowerPoint and PDF files from two adjacent links at `/presentation`.
 
 The mock service does not recognize wine. The UI MUST state this limitation.
 The mock service MUST use the same HTTP contract as the official evaluator.
@@ -42,6 +43,19 @@ npm run dev
 Open [the photo search page](http://127.0.0.1:8153/).
 Open [the Android application page](http://127.0.0.1:8153/android).
 Open [the hackathon landing page](http://127.0.0.1:8153/hackaton).
+Open [the presentation page](http://127.0.0.1:8153/presentation).
+The page links to the PowerPoint download and the PDF in a new tab.
+Both links stay side by side on phones and desktop screens.
+The local files are in `public/presentations/`. Generated presentation files stay outside Git.
+Before building a fresh checkout, prepare the files from the workspace source:
+
+```bash
+mkdir -p public/presentations
+cp ../../svoe-wino-hackaton/presentation/chtozavino-presentation.pptx public/presentations/
+soffice --headless --convert-to pdf:impress_pdf_Export --outdir public/presentations public/presentations/chtozavino-presentation.pptx
+```
+
+The conversion requires LibreOffice. The production build includes both files.
 Old `/wines` bookmarks redirect to this page.
 The default mode is `mock`. No API key or database is required.
 The mock returns `priboj-marchenko-beloe-polusuhoe` for every valid image.

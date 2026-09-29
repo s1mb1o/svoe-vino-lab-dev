@@ -1,5 +1,44 @@
 # Research log
 
+## Presentation publication, 2026-09-29
+
+The owner requested deployment after reviewing the presentation page.
+Published revision `36fb8e2d824d10bb5b8dcfed6ebcf67e5d05e837` from branch `codex/presentation-release`.
+The isolated release starts from production revision `459625f` and adds the presentation page.
+Other pending Web UI pages remain in this working tree.
+The presentation logo now returns to the deployed scanner at `/`.
+All 165 tests in that release, type checks, and the Linux production build passed on Princess.
+Staged and public file checks confirmed both content types and matching SHA-256 hashes.
+The public browser check passed at four widths in both themes with no browser errors.
+Health, upstream recognition, and shelf availability remained active.
+The previous release remains available for rollback. The temporary staging service was stopped.
+The deployment record is `<workspace>/deploy/princess/webui.md`.
+
+## Presentation files, 2026-09-29
+
+The user requested `/presentation` with two adjacent links to the supplied PowerPoint and its PDF version.
+The route already contained a browser slideshow.
+Decision: replace that view with the requested file links.
+A local copy of the previous page and its browser check remains in `reports/presentation-files/`.
+The PowerPoint source is `../../svoe-wino-hackaton/presentation/chtozavino-presentation.pptx`.
+No PDF existed in the source presentation directory.
+LibreOffice exported all 49 slides from an unchanged copy of the supplied PowerPoint.
+The PDF preserves the source content, including its draft and template slides.
+All 49 PDF pages were rendered and inspected in contact sheets.
+The public files are in `public/presentations/` and stay outside Git.
+The production build includes the public files. A fresh checkout requires the documented preparation commands.
+The PowerPoint link downloads the file. The PDF link opens a new tab.
+The page keeps the shared age gate and the existing white presentation palette.
+
+Type checks, all 169 existing tests, and the production build passed.
+The sandbox blocked the HTTP test server. The test suite passed with loopback access.
+The production browser check passed at 320, 390, 768, and 1440 pixels in both themes.
+Both file responses returned HTTP 200 with their correct content types and matching SHA-256 hashes.
+The source PowerPoint and public copy also passed a direct byte comparison.
+The PowerPoint download, age gate, canonical URL, and landing-page navigation passed.
+No browser errors or hydration warnings occurred.
+The 320-pixel and 1440-pixel page captures were visually inspected.
+
 ## Hackathon landing page, 2026-09-29
 
 The user requested `/hackaton` with WebApp, Android App, and Telegram Bot sections.

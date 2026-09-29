@@ -35,6 +35,7 @@ useHead({ link: [{ rel: 'canonical', href: 'https://chtozavino.ru/hackaton' }] }
         <a href="#android-app"><AppIcon name="android" />Android App<AppIcon name="chevron" /></a>
         <a href="#telegram-bot"><AppIcon name="telegram" />Telegram Bot<AppIcon name="chevron" /></a>
       </nav>
+      <div class="project-links"><NuxtLink class="presentation-link" to="/presentation"><AppIcon name="desktop" />Смотреть презентацию<AppIcon name="arrow-up-right" /></NuxtLink></div>
     </section>
 
     <section id="webapp" class="platform-section web-section" aria-labelledby="webapp-title">
@@ -137,6 +138,10 @@ useHead({ link: [{ rel: 'canonical', href: 'https://chtozavino.ru/hackaton' }] }
 .platform-nav a:hover { background: var(--cream); border-color: var(--accent); }
 .platform-nav .icon { width: 18px; height: 18px; color: var(--accent); }
 .platform-nav .icon:last-child { width: 13px; height: 13px; margin-left: 5px; }
+.presentation-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; margin-top: 12px; color: var(--accent); font-size: 12px; }
+.project-links { display: flex; justify-content: center; flex-wrap: wrap; column-gap: 24px; }
+.presentation-link .icon { width: 16px; height: 16px; }
+.presentation-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .platform-section { display: grid; grid-template-columns: 1fr 1.2fr; gap: 44px; align-items: center; padding: 54px; border: 1px solid var(--line); border-radius: 30px; margin-bottom: 24px; scroll-margin-top: 24px; }
 .section-copy { position: relative; z-index: 1; min-width: 0; }
 .platform-label { display: flex; align-items: center; gap: 10px; color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: .13em; margin-bottom: 25px; }

@@ -1,5 +1,23 @@
 # Smoke tests
 
+## Presentation files
+
+Run `PLAYWRIGHT_MODULE=<path>/node_modules/playwright/index.mjs npm run test:presentation`
+against a running server. Set `PORTAL_ORIGIN` to override `http://127.0.0.1:8153`.
+The check saves local review screenshots in the ignored `reports/presentation/` directory.
+
+- Open `/presentation` in a new profile. Confirm that the age gate blocks interaction.
+- Accept the age gate and confirm one heading and two file links.
+- Check that PowerPoint and PDF stay side by side at 320, 390, 768, and 1440 pixel widths without horizontal overflow.
+- Check that the page stays white with a saved dark theme. Return to `/hackaton` and confirm that the saved theme still applies.
+- Download the PowerPoint and confirm the filename is `chtozavino-presentation.pptx`.
+- Open the PDF link in a new tab. Confirm that the PDF has all 49 source slides.
+- Confirm that both file URLs return HTTP 200, the correct content type, and the same bytes as their public files.
+- Confirm that the PowerPoint public copy matches the owner-supplied source.
+- Build the production output and repeat the file checks against the production server.
+- Confirm that the canonical URL is `https://chtozavino.ru/presentation`.
+- Open the presentation from the link on `/hackaton`.
+
 ## Hackathon landing page
 
 - Open `/hackaton` in a new browser profile and confirm the age gate.

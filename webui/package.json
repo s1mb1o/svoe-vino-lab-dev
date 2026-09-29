@@ -14,6 +14,7 @@
     "test": "vitest run",
     "test:contract": "node scripts/check-contract.mjs",
     "test:pwa": "node scripts/check-pwa-browser.mjs",
+    "test:presentation": "node scripts/check-presentation-browser.mjs",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
