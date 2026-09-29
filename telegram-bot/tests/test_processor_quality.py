@@ -3,6 +3,7 @@ import json
 import sqlite3
 from types import SimpleNamespace
 
+import pytest
 from PIL import Image
 
 from chto_za_vino_bot.app import PhotoJob, PhotoProcessor, enqueue_admin_retries
@@ -19,10 +20,18 @@ def jpeg() -> bytes:
     return output.getvalue()
 
 
+ADMIN_USER_ID = 700
+
+
 class FakeBot:
     def __init__(self, body: bytes) -> None:
         self.body = body
         self.photos: list[dict[str, object]] = []
+        self.messages: list[str] = []
+
+    async def send_message(self, chat_id: int, text: str, **kwargs: object):
+        self.messages.append(text)
+        return SimpleNamespace(message_id=500 + len(self.messages))
 
     async def get_file(self, file_id: str):
         return SimpleNamespace(file_path=f"{file_id}.jpg")
@@ -116,6 +125,8 @@ async def run_processor(
     moderator=None,
     api_request=False,
     matcher=None,
+    chat_id=100,
+    bot=None,
 ):
     database = tmp_path / "bot.sqlite3"
     repository = Repository(database)
@@ -123,9 +134,9 @@ async def run_processor(
         request_id = repository.create_api_request(now=1000)
     else:
         reservation = repository.reserve(
-            chat_id=100,
+            chat_id=chat_id,
             message_id=10,
-            user_id=200,
+            user_id=chat_id if chat_id == ADMIN_USER_ID else 200,
             username="tester",
             first_name="Test",
             last_name=None,
@@ -138,12 +149,13 @@ async def run_processor(
         assert reservation.request_id is not None
         request_id = reservation.request_id
     matcher = matcher or FakeMatcher()
-    bot = FakeBot(jpeg())
+    bot = bot or FakeBot(jpeg())
     services = SimpleNamespace(
         settings=SimpleNamespace(
             max_image_bytes=20 * 1024 * 1024,
             match_min_score=0.70,
             match_min_margin=0.015,
+            admin_user_id=ADMIN_USER_ID,
         ),
         repository=repository,
         store=ImageStore(tmp_path / "images"),
@@ -159,7 +171,7 @@ async def run_processor(
     await processor.process(
         PhotoJob(
             request_id=request_id,
-            chat_id=100,
+            chat_id=0 if api_request else chat_id,
             source_message_id=10,
             received_at=1000,
             file_id="file-1",
@@ -345,6 +357,61 @@ async def test_one_matcher_candidate_abstains_because_the_margin_is_zero(tmp_pat
     assert photos == []
 
 
+async def test_the_admin_chat_result_shows_the_confidence_values(tmp_path):
+    bot = FakeBot(jpeg())
+
+    row, _, _, photos, _ = await run_processor(
+        tmp_path,
+        AdvisoryQualityInspector(),
+        chat_id=ADMIN_USER_ID,
+        bot=bot,
+    )
+
+    assert row[0] == "recognized"
+    assert photos[0]["caption"].endswith(
+        "\n\nОценка: 0.9000 (порог 0.7) · отрыв: 0.1000 (порог 0.015)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("count", "note"),
+    [
+        (1, "Оценка: 0.9000 (порог 0.7) · отрыв: 0.0000 (порог 0.015)"),
+        (0, "Оценка: нет кандидатов"),
+    ],
+)
+async def test_the_admin_chat_abstention_shows_the_confidence_values(tmp_path, count, note):
+    bot = FakeBot(jpeg())
+
+    row, *_ = await run_processor(
+        tmp_path,
+        AdvisoryQualityInspector(),
+        matcher=FakeMatcher(count=count),
+        chat_id=ADMIN_USER_ID,
+        bot=bot,
+    )
+
+    assert row[0] == "abstained"
+    assert bot.messages[-1].startswith("Не уверен")
+    assert bot.messages[-1].endswith(f"\n\n{note}")
+
+
+@pytest.mark.parametrize("count", [4, 1])
+async def test_another_chat_does_not_show_the_confidence_values(tmp_path, count):
+    bot = FakeBot(jpeg())
+
+    await run_processor(
+        tmp_path,
+        AdvisoryQualityInspector(),
+        matcher=FakeMatcher(count=count),
+        bot=bot,
+    )
+
+    texts = [str(photo["caption"]) for photo in bot.photos] + bot.messages
+    assert texts
+    assert not any("Оценка" in text for text in texts)
+
+
 async def test_unsafe_retry_removes_the_earlier_safe_copies(tmp_path):
     class RetryQueue:
         at_capacity = False
@@ -387,6 +454,7 @@ async def test_unsafe_retry_removes_the_earlier_safe_copies(tmp_path):
             max_image_bytes=20 * 1024 * 1024,
             match_min_score=0.70,
             match_min_margin=0.015,
+            admin_user_id=ADMIN_USER_ID,
         ),
         repository=repository,
         store=ImageStore(data_root),

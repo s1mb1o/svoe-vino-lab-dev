@@ -89,6 +89,12 @@ in its private chat. The bot refuses to start when this value is absent.
 `/reset_limit` without an argument resets the administrator's own limit.
 A limit reset preserves request history and statistics.
 
+In the private chat of the administrator, each result and each `Не уверен` answer ends with
+one confidence line, for example
+`Оценка: 0.8199 (порог 0.7) · отрыв: 0.0412 (порог 0.015)`.
+The line shows the Top-1 score, the margin to rank 2, and the two thresholds.
+Other chats do not get this line.
+
 ## Administration web interface
 
 The administration interface is a separate FastAPI service.

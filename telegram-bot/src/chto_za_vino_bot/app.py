@@ -37,7 +37,7 @@ from .http_api import (
     HttpRecognitionResult,
     create_http_api_app,
 )
-from .matcher import Matcher, RecognitionUnavailable, is_confident
+from .matcher import Matcher, RecognitionResult, RecognitionUnavailable, is_confident
 from .moderation import (
     DisabledModerator,
     InvalidImage,
@@ -115,6 +115,20 @@ CONTENT_REJECTED_TEXT = (
     "Контент признан неподходящим и не передан в распознавание.\n\n"
     "Если фильтр ошибся, сообщите об этом кнопкой ниже."
 )
+
+def confidence_note(
+    result: RecognitionResult,
+    *,
+    min_score: float,
+    min_margin: float,
+) -> str:
+    if not result.candidates:
+        return "Оценка: нет кандидатов"
+    return (
+        f"Оценка: {result.top.score:.4f} (порог {min_score:g}) · "
+        f"отрыв: {result.margin:.4f} (порог {min_margin:g})"
+    )
+
 
 def result_feedback_keyboard(
     request_id: str,
@@ -501,6 +515,7 @@ class PhotoProcessor:
             min_score=self._services.settings.match_min_score,
             min_margin=self._services.settings.match_min_margin,
         )
+        admin_note = self._admin_confidence_note(job, result)
         if not confident:
             # An empty candidate list means that the matcher found no wine.
             top = result.top if result.candidates else None
@@ -515,11 +530,13 @@ class PhotoProcessor:
                 status="abstained",
                 duration_ms=int((time.monotonic() - started) * 1000),
             )
-            await self._set_terminal_status(
-                job,
+            text = (
                 "Не уверен, что правильно распознал вино.\n\n"
-                "Сфотографируйте бутылку целиком и сделайте отдельный чёткий снимок этикетки.",
+                "Сфотографируйте бутылку целиком и сделайте отдельный чёткий снимок этикетки."
             )
+            if admin_note:
+                text = f"{text}\n\n{admin_note}"
+            await self._set_terminal_status(job, text)
             return
 
         wine = result.top.wine
@@ -535,7 +552,19 @@ class PhotoProcessor:
             duration_ms=int((time.monotonic() - started) * 1000),
         )
         with self._timed_step(job, "result_delivery"):
-            await self._send_result(job, wine, body)
+            await self._send_result(job, wine, body, admin_note=admin_note)
+
+    def _admin_confidence_note(self, job: PhotoJob, result: RecognitionResult) -> str | None:
+        """Return the confidence line only for the private chat of the administrator."""
+        settings = self._services.settings
+        # In a private chat, the chat ID is the user ID.
+        if job.chat_id != settings.admin_user_id:
+            return None
+        return confidence_note(
+            result,
+            min_score=settings.match_min_score,
+            min_margin=settings.match_min_margin,
+        )
 
     @contextmanager
     def _timed_step(self, job: PhotoJob, step: str):
@@ -641,8 +670,17 @@ class PhotoProcessor:
 
         await self._finish_status(job)
 
-    async def _send_result(self, job: PhotoJob, wine: Wine, submitted_body: bytes) -> None:
+    async def _send_result(
+        self,
+        job: PhotoJob,
+        wine: Wine,
+        submitted_body: bytes,
+        *,
+        admin_note: str | None = None,
+    ) -> None:
         caption = format_result_caption(wine)
+        if admin_note:
+            caption = f"{caption}\n\n{admin_note}"
         feedback_markup = (
             result_feedback_keyboard(job.request_id, wine.page_url)
             if job.feedback_enabled

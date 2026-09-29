@@ -195,6 +195,11 @@
 - Confirm that the user can send a new photo.
 - Send `/users` from a group as the administrator.
 - Confirm that the bot denies access.
+- Send a wine photo as the administrator in its private chat.
+- Confirm that the result or the `Не уверен` answer ends with
+  `Оценка: … (порог …) · отрыв: … (порог …)`.
+- Send the same photo as a regular user.
+- Confirm that the answer has no `Оценка` line.
 
 ## Administration web interface
 

@@ -2,6 +2,8 @@
 
 ## 2026-09-29
 
+- Added a confidence line to each result and each `Не уверен` answer in the private chat of
+  the administrator. The line shows the Top-1 score, the margin, and both thresholds.
 - Redacted the Telegram bot token and the HTTP API token from every bot log line, including
   the traceback text (Safety rule 8). An aiogram download error contains the file URL, and that
   URL contains the bot token.

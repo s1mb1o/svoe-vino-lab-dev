@@ -138,6 +138,8 @@ candidates from its `/v1/match` path.
 101. The bot MUST use a configurable minimum Top-1 score.
 102. The bot MUST use a configurable minimum Top-1 score margin.
 103. The bot MUST answer `Не уверен` when either confidence condition fails.
+103.1. In the private chat of the administrator, a result and a `Не уверен` answer MUST show
+the Top-1 score, the Top-1 margin, and both thresholds. Other chats MUST NOT show these values.
 104. A negative Top-1 feedback action MUST show the stored candidates at ranks 2 through 4.
 When fewer candidates exist, the action shows the available candidates.
 105. The alternative list MUST include `Ничего из этого`.
