@@ -3624,7 +3624,8 @@ The form of a section:
 - Files 6: `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/`
   `cluster-notes.json` (new), `cluster-rules.json` (the entry `2d33f12d0b3e`),
   `label-rules.log`; my own hunks in `ResearchLog.md`, `ChangeLog.md`. No restart.
-- State 6: done, not committed; waiting: the owner runs the prod copy and restart. Note
+- State 6: done, not committed; waiting: the owner runs the prod copy and restart (the
+  owner said "do it"; the auto mode classifier refused the SSH write to prod). Note
   saved 23:34:02, rule rebuilt 23:35:01 (sheet, vintage), check 6/6. b3 [31b207] "ok" at about 23:36 for `cluster-rules.json` of p512 (its
   commit a588b42 holds the file; b3 does not change it again). A commit MUST add the new
   `cluster-notes.json` with `git add -f` (root `.gitignore` rule `/workbench/data/catalog/*`).
@@ -3709,3 +3710,14 @@ The form of a section:
 - State: waiting: the owner chooses a fix (manual GTIN, or a change of the upload scan).
   The diagnosis is in `ResearchLog.md`; not committed.
 - Updated: 2026-09-29T23:40:00+0300
+
+## drink-atlas-workspace-ad [139787]
+
+- Task: add the result of the official set to the section `Результаты` of the root README
+  (variant C) and fill its TODO line.
+- Source: owner messages of 2026-09-29 about 23:53 to 23:58.
+- Files: the section `Результаты` of `../README.md`, own entries in
+  `docs/owner-messages.md`, and my section in `ACTIVE_WORK.md`.
+- State: done, not committed. The TODO line was removed at 23:57:41 outside this session
+  (probably the owner); the removal stays.
+- Updated: 2026-09-30T00:02:00+0300

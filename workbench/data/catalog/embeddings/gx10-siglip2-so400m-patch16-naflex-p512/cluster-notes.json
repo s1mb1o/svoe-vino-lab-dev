@@ -1,0 +1,15 @@
+{
+ "version": 1,
+ "updated_at": "2026-09-29T23:34:02+0300",
+ "note": "Reviewer notes of the embedding-dependent clusters.",
+ "notes": {
+  "2d33f12d0b3e": {
+   "slugs": [
+    "aratti-kaberne-po-belomu",
+    "aratti-kaberne-po-belomu-1"
+   ],
+   "text": "The card with the category Розовое (aratti-kaberne-po-belomu-1) is sold as vintage 2024. Its label exists in two versions: one prints ПОЛУСУХОЕ under the year 2024, and one prints no sugar level. The card with the category Красное (aratti-kaberne-po-belomu) shows the vintage 2023 on its catalogue label. A label without ПОЛУСУХОЕ does not identify either card. Use the year printed on the label: 2024 is the card with the category Розовое, 2023 is the card with the category Красное. ПОЛУСУХОЕ on the label is the card with the category Розовое.",
+   "updated_at": "2026-09-29T23:34:02+0300"
+  }
+ }
+}

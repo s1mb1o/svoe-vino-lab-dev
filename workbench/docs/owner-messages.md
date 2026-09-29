@@ -10107,3 +10107,112 @@ Options: "Lab + prod commands (Recommended)", "Lab only".
 ```text
 Lab + prod commands (Recommended)
 ```
+
+## 2026-09-29T23:40:40+0300
+
+```text
+do it
+```
+
+## 2026-09-29T23:37:00+0300
+
+```text
+git commit all
+```
+
+## 2026-09-29T23:48:20+0300
+
+```text
+git commit all
+```
+
+## 2026-09-29T23:49:00+0300
+
+```text
+git push all
+```
+
+## 2026-09-29T23:52:15+0300
+
+The answer "2" of the previous turn (the choice to allow SSH writes to gx10) is recorded
+here, because the first record was part of a refused call.
+
+```text
+2
+```
+
+```text
+что сделать на gx10?
+```
+
+## 2026-09-29T23:55:56+0300
+
+```text
+ashmelev@gx10-fb56:/srv/svoe-vino-lab/prod/matcher$ curl -s http://192.168.86.14:28000/readyz  
+{"status":"ok","pipeline":"cascade-p512-rot5"}ashmelev@gx10-fb56:/srv/svoe-vino-lab/prod/matcher$ docker logs --tail 20 svoe-vino-lab-matcher-prod  
+INFO:     172.19.0.1:57860 - "POST /v1/eval/predict HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:37388 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     172.19.0.1:57870 - "POST /v1/match HTTP/1.1" 422 Unprocessable Entity
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1]
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:33398 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     192.168.86.14:39770 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     192.168.86.14:39772 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     172.19.0.1:34944 - "GET /healthz HTTP/1.1" 200 OK
+INFO:     172.19.0.1:45374 - "GET /healthz HTTP/1.1" 200 OK
+INFO:     192.168.86.14:47374 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     192.168.86.14:47380 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36946 - "GET /readyz HTTP/1.1" 200 OK
+INFO:     192.168.86.14:44244 - "GET /readyz HTTP/1.1" 200 OK
+ashmelev@gx10-fb56:/srv/svoe-vino-lab/prod/matcher$ rm /tmp/cluster-rules.aratti.json
+rm: cannot remove '/tmp/cluster-rules.aratti.json': No such file or directory
+]
+```
+
+## 2026-09-29T23:53:40+0300
+
+Session drink-atlas-workspace-ad. The time is the time of the screenshot file (about).
+The owner selected lines 28 to 34 of `../README.md` (section `Результаты`) and pasted them.
+A screenshot of `/runs`, run `2026-09-29T195628Z-lab-matcher-match-k20-official-real-photos`:
+84 queries, match share 90.5%, F1@1 0.905, F1@5 1.000, R@5 100.0%.
+
+```text
+посмотри
+
+как исправить? 
+
+У нас как на картинке
+```
+
+## 2026-09-29T23:55:00+0300
+
+Session drink-atlas-workspace-ad. The time is about.
+
+```text
+Это официальный набор
+```
+
+## 2026-09-29T23:58:00+0300
+
+Answer of the owner to a question of the agent. Session drink-atlas-workspace-ad. The time
+is about.
+
+Question: Which fix of the section `Результаты` of `../README.md`: A (a table of two sets
+and two pipelines, also `../BENCHMARKS.md`), B (A after a prod `/v1/eval/predict` run), or
+C (one line with 90.5% / 100% on the official set and the filled TODO; the rest stays)?
+
+```text
+C
+```
+
+## 2026-09-29T23:57:45+0300
+
+```text
+git puh
+```
