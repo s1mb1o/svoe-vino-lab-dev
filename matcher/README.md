@@ -1,8 +1,8 @@
 # Сервис матчера для проверки
 
 Этот подпроект предоставляет HTTP API матчера для официальной проверки распознавания
-винных этикеток. Сервис поддерживает два backend: `siglip2` и `mock`. Конфигурация по
-умолчанию `matcher/config.yaml` выбирает pipeline `siglip2-p512-as-is`.
+винных этикеток. Сервис поддерживает три backend: `cascade`, `siglip2` и `mock`.
+Конфигурация по умолчанию `matcher/config.yaml` выбирает pipeline `siglip2-p512-as-is`.
 
 У сервиса три endpoint распознавания:
 
@@ -241,6 +241,45 @@ rsync -a --delete <новый каталог>/ <host>:<путь>/
 рабочего каталога процесса. Если поле отсутствует, сервис для обратной совместимости
 читает SVOE_VINO_MATCHER_OUTPUT_DIR напрямую.
 
+### Backend cascade
+
+Backend `cascade` распознаёт фотографию несколькими шагами (план 85 workbench). Подробное
+описание: [docs/cascade.md](docs/cascade.md).
+
+1. С начала запроса параллельно идут: поиск кодов на всей фотографии (`qr-scanner`,
+   engine `zxing-cpp`), один запрос SAM3 `/segment_multi` с упаковкой, рукой и этикеткой и
+   SigLIP2 всей фотографии.
+2. Упаковку выбирает `main_scene.rank_packages`. Её кроп из фотографии полного размера
+   получает свой вектор SigLIP2. После ответа SAM3 ещё два поиска кодов идут по кропу
+   упаковки и по кропу её этикетки.
+3. Оценка вина — лучший косинус по всем строкам его изображений. С индексом `…-rot5`
+   (план 82) это максимум по углам поворота.
+4. Если первое вино и другое вино его кластера стоят в первых `window` местах, VLM
+   `qwen3.5-9b-nvfp4` читает этикетку по правилу кластера.
+
+Порядок ответа: уникальный код упаковки или этикетки, уникальный код всей фотографии,
+общий GTIN, VLM-переранжирование, ранжирование кропа, ранжирование всей фотографии.
+
+Для POST /v1/eval/predict ключ `matcher.fast_answer` задаёт бюджет времени. Отсчёт идёт
+от получения заголовков запроса. В момент `answer_at_seconds` (по умолчанию 2,9 с)
+сервис отвечает, если ответ уже есть, и отменяет остальные запросы к моделям. В момент
+`timeout_seconds` (по умолчанию 9,5 с) без ответа сервис возвращает `{"slug": ""}`.
+POST /v1/match работает без бюджета. POST /v1/group/match использует индекс
+`group_embedding`: ему нужен вид `label`.
+
+Backend `cascade` читает только каталог лаборатории (не bundle). Копия каталога должна
+содержать оба индекса:
+
+~~~bash
+cd workbench
+python3 scripts/copy_catalog.py --out <новый каталог> --no-images \
+    --embedding gx10-siglip2-so400m-patch16-naflex-p512-rot5 \
+    --embedding gx10-siglip2-so400m-patch16-naflex-p512
+~~~
+
+Коды backend читает из таблиц `wine_code` и `wine_catalog` копии каталога. Правила
+кластеров он читает из `embeddings/<rerank.clusters>/`.
+
 ## Переменные окружения
 
 - SVOE_VINO_MATCHER_PORT — обязательный порт для команд запуска и проверки.
@@ -252,6 +291,11 @@ rsync -a --delete <новый каталог>/ <host>:<путь>/
   (`hand_selection: true`) отправляют запрос в `<SAM3_ENDPOINT>/segment_multi`.
   Канонический адрес GX10 равен
   `http://192.168.86.14:18081/upstream/sam3`.
+- QR_SCANNER_ENDPOINT — корневой URL сервиса кодов для backend `cascade`, например
+  `http://192.168.86.14:18081/upstream/qr-scanner`. Сервис отправляет
+  `POST <QR_SCANNER_ENDPOINT>/scan`.
+- VLM_ENDPOINT — корневой URL VLM с `/v1` для backend `cascade`, например
+  `http://192.168.86.14:18081/v1`. Сервис отправляет `POST <VLM_ENDPOINT>/chat/completions`.
 - SVOE_VINO_MATCHER_OUTPUT_DIR — каталог для изображений и журналов запросов в тестовой
   конфигурации. Поле matcher.output_dir ссылается на эту переменную. Сервис создаёт
   каталог, если он отсутствует.
@@ -350,7 +394,8 @@ docker run --rm -p 127.0.0.1:8080:8080 \
 Переменные адресов сервисов моделей необязательны: SIGLIP2_ENDPOINT,
 GROUNDING_DINO_ENDPOINT, SAM3_ENDPOINT, VLM_ENDPOINT, VLM_MODEL, QR_SCANNER_ENDPOINT.
 Образ не задаёт ни одну из них. Pipeline siglip2 читает только ту переменную, на которую
-ссылается его поле endpoint. POST /v1/group/match дополнительно читает
+ссылается его поле endpoint. Pipeline cascade читает переменные своих полей endpoint:
+SIGLIP2_ENDPOINT, SAM3_ENDPOINT, QR_SCANNER_ENDPOINT и VLM_ENDPOINT. POST /v1/group/match дополнительно читает
 `SAM3_ENDPOINT` при любом выбранном pipeline. Одиночные запросы mock pipeline не читают
 адреса моделей. Внутри контейнера адрес 127.0.0.1 указывает на сам контейнер. Для
 сервиса на хосте укажите LAN-адрес хоста.

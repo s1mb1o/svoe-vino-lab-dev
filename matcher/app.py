@@ -1,7 +1,9 @@
 """FastAPI entry point for the official evaluation contract and the ranked match API."""
 
 import asyncio
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+import inspect
 import json
 import logging
 import os
@@ -16,8 +18,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .audit import RequestArchive, safe_headers
 from .group import GroupMatchError, segment_group
-from .protection import ImageRejected, RequestProtectionMiddleware, validate_image
-from .service import load_matcher
+from .protection import (REQUEST_STARTED_AT, ImageRejected, RequestProtectionMiddleware,
+                         validate_image)
+from .service import CascadeMatcher, load_matcher
+from .services import ServiceError
 from .siglip2 import Siglip2Error
 
 
@@ -186,7 +190,20 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         DEFAULT_QUEUE_TIMEOUT_SECONDS)
     token = matcher.resolved_token()
     archive = RequestArchive(output)
+
+    @asynccontextmanager
+    async def lifespan(_application):
+        # The backend `cascade` opens its HTTP client here and closes it at shutdown.
+        if isinstance(matcher, CascadeMatcher):
+            await matcher.startup()
+        try:
+            yield
+        finally:
+            if isinstance(matcher, CascadeMatcher):
+                await matcher.shutdown()
+
     application = FastAPI(
+        lifespan=lifespan,
         title="Svoe Vino Matcher API",
         description="Identify wines in one package, label, or shelf image.",
         version="1.1.0",
@@ -246,8 +263,11 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
     async def readyz() -> Health:
         """Check only the dependencies required by the selected pipeline."""
         try:
-            await asyncio.to_thread(matcher.check_ready)
-        except (GroupMatchError, Siglip2Error) as exc:
+            if isinstance(matcher, CascadeMatcher):
+                await matcher.check_ready_async()
+            else:
+                await asyncio.to_thread(matcher.check_ready)
+        except (GroupMatchError, Siglip2Error, ServiceError) as exc:
             LOGGER.warning(
                 "matcher readiness failed pipeline=%s error_type=%s",
                 matcher.pipeline,
@@ -260,7 +280,8 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         """Validate, archive, and process one image.
 
         `operation(body)` returns the result and the response fields of the audit
-        record. Return the result and the duration in milliseconds.
+        record. An async `operation` runs on the event loop; a plain one runs in a worker
+        thread. Return the result and the duration in milliseconds.
         """
         request_id = uuid.uuid4().hex
         received_at = datetime.now(timezone.utc)
@@ -302,12 +323,16 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             "pixels": image_info.pixels,
         }
         try:
-            result, response_data = await asyncio.to_thread(operation, body)
+            if inspect.iscoroutinefunction(operation):
+                result, response_data = await operation(body)
+            else:
+                result, response_data = await asyncio.to_thread(operation, body)
         except Exception as exc:
             completed_at = datetime.now(timezone.utc)
             duration_ms = round((perf_counter() - started_at) * 1000, 3)
             expected = isinstance(
-                exc, (HTTPException, GroupMatchError, ImageRejected, Siglip2Error))
+                exc, (HTTPException, GroupMatchError, ImageRejected, Siglip2Error,
+                      ServiceError))
             status_code = exc.status_code if expected else 500
             record = _record(
                 request_id, received_at, completed_at, duration_ms, client_ip,
@@ -322,7 +347,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                 LOGGER.warning("matcher_request %s", _log_event(record))
             else:
                 LOGGER.exception("matcher_request %s", _log_event(record))
-            if isinstance(exc, (GroupMatchError, ImageRejected, Siglip2Error)):
+            if isinstance(exc, (GroupMatchError, ImageRejected, Siglip2Error, ServiceError)):
                 raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
             raise
 
@@ -368,9 +393,16 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         ),
     ) -> Prediction:
         """Return the Top-1 slug for one multipart image."""
-        def operation(body):
-            slug = matcher.predict(body)
-            return slug, {"slug": slug}
+        if isinstance(matcher, CascadeMatcher):
+            started_at = _request_started_at(request)
+
+            async def operation(body):
+                slug, trace = await matcher.predict_async(body, started_at)
+                return slug, dict(trace, slug=slug)
+        else:
+            def operation(body):
+                slug = matcher.predict(body)
+                return slug, {"slug": slug}
 
         slug, _ = await process_image(request, image, operation)
         return Prediction(slug=slug)
@@ -421,9 +453,16 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
                            503, detail, perf_counter())
             raise HTTPException(status_code=503, detail=detail)
 
-        def operation(body):
-            ranked = matcher.match(body, k)
-            return ranked, {"candidates": [slug for slug, _ in ranked]}
+        if isinstance(matcher, CascadeMatcher):
+            started_at = _request_started_at(request)
+
+            async def operation(body):
+                ranked, trace = await matcher.match_async(body, k, started_at)
+                return ranked, dict(trace, candidates=[slug for slug, _ in ranked])
+        else:
+            def operation(body):
+                ranked = matcher.match(body, k)
+                return ranked, {"candidates": [slug for slug, _ in ranked]}
 
         ranked, duration_ms = await process_image(request, image, operation)
         return MatchResult(
@@ -606,7 +645,19 @@ def _log_event(record, metadata_path=None):
     }
     if "candidates" in record["response"]:
         event["candidates"] = record["response"]["candidates"]
+    decision = record["response"].get("decision")
+    if isinstance(decision, dict):
+        event["decision"] = {key: decision.get(key)
+                             for key in ("source", "reason", "answered_ms")}
     return json.dumps(event, ensure_ascii=False, separators=(",", ":"))
+
+
+def _request_started_at(request):
+    """Return the `perf_counter` value that the protection middleware noted when the
+    request headers arrived, else the present time."""
+    state = request.scope.get("state")
+    started = state.get(REQUEST_STARTED_AT) if isinstance(state, dict) else None
+    return started if isinstance(started, float) else perf_counter()
 
 
 def _log_rejection(request_id, client_ip, status_code, detail, started_at):

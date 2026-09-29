@@ -93,3 +93,29 @@
 - Confirm that the request returns HTTP 401 before SAM3 receives a request.
 - Make SAM3 return invalid dimensions or a non-PNG mask.
 - Confirm that the matcher returns HTTP 502 and does not return fake bottles.
+
+## Backend cascade and the time budget
+
+Plan 85 of the workbench. Read [docs/cascade.md](docs/cascade.md).
+
+- Make a catalogue copy with both embeddings (`copy_catalog.py --embedding
+  …-naflex-p512-rot5 --embedding …-naflex-p512 --no-images`). Select
+  `cascade-p512-rot5` and enable `matcher.fast_answer`. Set `SIGLIP2_ENDPOINT`,
+  `SAM3_ENDPOINT`, `QR_SCANNER_ENDPOINT`, and `VLM_ENDPOINT`. Read `/running` of the
+  gateway first; the VLM needs about 3.5 min for a cold start.
+- Confirm HTTP 200 from `/readyz`. Confirm that the gateway log shows no VLM request for it.
+- Send a photo of one bottle to `POST /v1/eval/predict`. Confirm the answer and, in
+  `request.json`, `decision.source` and a `stages` list with `scan_full`, `sam3_full`,
+  `whole`, `crop:1`, `scan_package`, and `scan_label`.
+- Send a photo whose package shows a barcode of a catalogue wine. Confirm
+  `decision.source` `code_package` or `code_label`, and `decision.reason` `final`.
+- Send a photo of a wine of a cluster with a rule. Confirm a stage `vlm:<cluster>`. When
+  the VLM is slower than `answer_at_seconds`, confirm `decision.reason` `answer_at`, the
+  stage status `cancelled`, and that the VLM stops the request
+  (`vllm:num_requests_running` of `/upstream/qwen3.5-9b-nvfp4/metrics` falls to 0).
+- Send the same photo to `POST /v1/match`. Confirm that it waits for the VLM, that the
+  scores never increase, and that each candidate has a card.
+- Run `matcher/tests/participant_test.sh` against the matcher. Confirm that each answer
+  comes within 3 s from the client side.
+- Stop SAM3 (or point `SAM3_ENDPOINT` to a closed port). Confirm that
+  `POST /v1/eval/predict` still answers from the whole photo (`decision.source` `whole`).

@@ -18,9 +18,9 @@ import urllib.error
 import urllib.request
 
 import numpy as np
-from PIL import Image, ImageOps
+from PIL import Image
 
-from .protection import ImageRejected
+from .photo import decode
 
 
 VIEW = "full"
@@ -44,26 +44,75 @@ def model_input(image_bytes):
     `validate_image` does not decode the pixels. A damaged JPEG, MPO, or WEBP can pass it
     and fail here. Such a photo raises ImageRejected with HTTP status 422.
     """
-    try:
-        with Image.open(io.BytesIO(image_bytes)) as opened:
-            opened.seek(0)
-            image = ImageOps.exif_transpose(opened)
-            alpha = image.mode in ("RGBA", "LA", "PA") or (
-                image.mode == "P" and "transparency" in image.info)
-            image = image.convert("RGBA" if alpha else "RGB")
-    except (OSError, SyntaxError, ValueError) as exc:
-        raise ImageRejected(422, "image file is invalid or damaged") from exc
-    if image.mode == "RGBA":
-        white = Image.new("RGBA", image.size, (255, 255, 255, 255))
-        image = Image.alpha_composite(white, image).convert("RGB")
+    return model_png(decode(image_bytes))
+
+
+def model_png(image, compress_level=None):
+    """Return the PNG bytes of one decoded RGB photo after the resize step of the lab
+    pipeline: the long side at most 1024 pixels, LANCZOS, no upscale. `compress_level`
+    changes only the file size; PNG keeps the same pixels."""
     if max(image.size) > MAX_SIZE:
         scale = MAX_SIZE / max(image.size)
         size = (max(1, round(image.width * scale)), max(1, round(image.height * scale)))
         if size != image.size:
             image = image.resize(size, Image.Resampling.LANCZOS)
     buffer = io.BytesIO()
-    image.save(buffer, "PNG")
+    if compress_level is None:
+        image.save(buffer, "PNG")
+    else:
+        image.save(buffer, "PNG", compress_level=compress_level)
     return buffer.getvalue()
+
+
+def request_body(pngs, model, extra_body):
+    """Return the JSON body of one embedding request for the PNG files `pngs`."""
+    inputs = [
+        "data:image/png;base64," + base64.b64encode(png).decode("ascii")
+        for png in pngs
+    ]
+    return json.dumps(dict(extra_body, model=model, input=inputs)).encode("utf-8")
+
+
+def parse_vectors(answer, count, dimension, url):
+    """Return the L2-normalized vectors of one embedding answer, in input order.
+
+    Raise Siglip2Error with HTTP status 502 when the answer does not hold one valid
+    vector of `dimension` values for each of the `count` inputs."""
+    try:
+        data = answer["data"]
+        if len(data) != count:
+            raise ValueError("%d vectors for %d images" % (len(data), count))
+        ordered = [None] * count
+        for position, item in enumerate(data):
+            index = item.get("index", position)
+            if (type(index) is not int or index < 0 or index >= count
+                    or ordered[index] is not None):
+                raise ValueError("invalid or duplicate vector index %s" % index)
+            ordered[index] = np.asarray(item["embedding"], dtype=np.float32)
+    except (AttributeError, KeyError, IndexError, TypeError, ValueError) as exc:
+        raise Siglip2Error(
+            502,
+            "the answer of %s is not one embedding per image: %s" % (url, exc),
+            "SigLIP2 service returned invalid embedding data",
+        ) from exc
+    vectors = []
+    for vector in ordered:
+        if vector.shape != (dimension,):
+            raise Siglip2Error(
+                502,
+                "%s sent a vector of shape %s; the bundle holds %d values"
+                % (url, vector.shape, dimension),
+                "SigLIP2 service returned an embedding with an invalid shape",
+            )
+        norm = float(np.linalg.norm(vector))
+        if not np.isfinite(norm) or norm == 0.0:
+            raise Siglip2Error(
+                502,
+                "%s sent a vector of length %s" % (url, norm),
+                "SigLIP2 service returned an invalid embedding",
+            )
+        vectors.append(vector / norm)
+    return vectors
 
 
 class Siglip2Backend:
@@ -97,13 +146,8 @@ class Siglip2Backend:
                 vectors.extend(self.embed_many(
                     pngs[start:start + MAX_BATCH_SIZE], timeout=timeout))
             return vectors
-        inputs = [
-            "data:image/png;base64," + base64.b64encode(png).decode("ascii")
-            for png in pngs
-        ]
-        body = dict(self.extra_body, model=self.model, input=inputs)
         request = urllib.request.Request(
-            self.url, data=json.dumps(body).encode("utf-8"),
+            self.url, data=request_body(pngs, self.model, self.extra_body),
             headers={"Content-Type": "application/json"}, method="POST")
         try:
             with urllib.request.urlopen(request, timeout=timeout) as response:
@@ -140,38 +184,4 @@ class Siglip2Backend:
                 "no valid answer from %s: %s" % (self.url, exc),
                 "SigLIP2 service returned invalid data",
             ) from exc
-        try:
-            data = answer["data"]
-            if len(data) != len(inputs):
-                raise ValueError("%d vectors for %d images" % (len(data), len(inputs)))
-            ordered = [None] * len(inputs)
-            for position, item in enumerate(data):
-                index = item.get("index", position)
-                if (type(index) is not int or index < 0 or index >= len(inputs)
-                        or ordered[index] is not None):
-                    raise ValueError("invalid or duplicate vector index %s" % index)
-                ordered[index] = np.asarray(item["embedding"], dtype=np.float32)
-        except (AttributeError, KeyError, IndexError, TypeError, ValueError) as exc:
-            raise Siglip2Error(
-                502,
-                "the answer of %s is not one embedding per image: %s" % (self.url, exc),
-                "SigLIP2 service returned invalid embedding data",
-            ) from exc
-        vectors = []
-        for vector in ordered:
-            if vector.shape != (self.bundle.dimension,):
-                raise Siglip2Error(
-                    502,
-                    "%s sent a vector of shape %s; the bundle holds %d values"
-                    % (self.url, vector.shape, self.bundle.dimension),
-                    "SigLIP2 service returned an embedding with an invalid shape",
-                )
-            norm = float(np.linalg.norm(vector))
-            if not np.isfinite(norm) or norm == 0.0:
-                raise Siglip2Error(
-                    502,
-                    "%s sent a vector of length %s" % (self.url, norm),
-                    "SigLIP2 service returned an invalid embedding",
-                )
-            vectors.append(vector / norm)
-        return vectors
+        return parse_vectors(answer, len(pngs), self.bundle.dimension, self.url)

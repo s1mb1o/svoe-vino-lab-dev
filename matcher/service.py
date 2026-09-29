@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 import hashlib
 from io import BytesIO
+import math
 import os
 from pathlib import Path
 import random
@@ -12,8 +13,12 @@ from PIL import Image
 import yaml
 
 from .bundle import BundleError, load_bundle
-from .catalog import CatalogError, load_catalog
+from .cascade import (BarcodeConfig, Cascade, CascadeConfig, FastAnswer, RerankConfig,
+                      Sam3Config)
+from .catalog import NAME as EMBEDDING_NAME, CatalogError, load_catalog, load_codes
 from .main_scene import select_main_package
+from .rerank import RuleBook, RuleError
+from .services import Services
 from .siglip2 import VIEW as SIGLIP2_VIEW, Siglip2Backend, model_input
 
 
@@ -241,6 +246,53 @@ class Siglip2Matcher(_MatcherSettings):
         return combined[:k]
 
 
+@dataclass(frozen=True, eq=False)
+class CascadeMatcher(_MatcherSettings):
+    """A matcher of the backend `cascade` (plan 85 of the workbench).
+
+    The single-image endpoints use the async runtime `cascade`. `POST /v1/group/match`
+    uses `group`: the SigLIP2 group ranking of the group embedding, unchanged.
+    """
+
+    pipeline: str
+    cascade: Cascade
+    group: Siglip2Matcher
+    output_dir: str | None = None
+    token: str | None = None
+    fast_answer: FastAnswer | None = None
+
+    @property
+    def cards(self) -> dict:
+        return {**(self.group.cards or {}), **self.cascade.cards}
+
+    async def startup(self) -> None:
+        await self.cascade.start()
+
+    async def shutdown(self) -> None:
+        await self.cascade.close()
+
+    async def predict_async(self, image: bytes, started_at: float) -> tuple[str, dict]:
+        """Return the Top-1 slug and the audit fields. The time budget of
+        `matcher.fast_answer` counts from `started_at`."""
+        return await self.cascade.predict(
+            image, self.cascade.budget(started_at, self.fast_answer))
+
+    async def match_async(self, image: bytes, k: int,
+                          started_at: float) -> tuple[list[tuple[str, float]], dict]:
+        """Return at most `k` ranked pairs with no time budget, and the audit fields."""
+        return await self.cascade.match(image, k, self.cascade.budget(started_at))
+
+    async def check_ready_async(self) -> None:
+        await self.cascade.check_ready(model_input(READINESS_IMAGE))
+
+    def match_many(self, images: list[bytes], k: int) -> list[list[tuple[str, float]]]:
+        return self.group.match_many(images, k)
+
+    def match_group_many(self, images: list[bytes], labels: list[bytes],
+                         k: int) -> list[list[tuple[str, float]]]:
+        return self.group.match_group_many(images, labels, k)
+
+
 def _mapping(value, label):
     if not isinstance(value, dict):
         raise ConfigError("%s MUST be a map" % label)
@@ -285,6 +337,7 @@ def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
     if "token_env" in matcher:
         raise ConfigError("matcher.token_env was replaced by matcher.token")
     token = _token(matcher.get("token"))
+    fast_answer = _fast_answer(matcher.get("fast_answer"))
 
     entries = config.get("pipeline")
     if not isinstance(entries, list) or not entries:
@@ -307,6 +360,10 @@ def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
         raise ConfigError("pipeline %s hand_selection MUST be a boolean" % selected)
     if hand_selection and entry.get("backend") != "siglip2":
         raise ConfigError("pipeline %s hand_selection requires backend siglip2" % selected)
+    if fast_answer is not None and entry.get("backend") != "cascade":
+        raise ConfigError("matcher.fast_answer requires a pipeline of the backend cascade")
+    if entry.get("backend") == "cascade":
+        return _load_cascade(selected, entry, output_dir, token, fast_answer)
     if entry.get("backend") == "siglip2":
         return _load_siglip2(selected, entry, output_dir, token)
     if entry.get("backend") != "mock":
@@ -338,9 +395,9 @@ def load_matcher(config_path) -> MockMatcher | Siglip2Matcher:
     )
 
 
-def _endpoint(value, selected):
+def _endpoint(value, selected, key="endpoint"):
     """Return the endpoint URL of a plain value or of an exact {env:NAME} reference."""
-    label = "pipeline %s endpoint" % selected
+    label = "pipeline %s %s" % (selected, key)
     if not isinstance(value, str) or not value:
         raise ConfigError("%s MUST be a URL or an exact {env:NAME} reference" % label)
     match = ENV_REFERENCE.fullmatch(value)
@@ -397,6 +454,19 @@ def _load_siglip2(selected, entry, output_dir, token):
         raise ConfigError("pipeline %s bundle MUST be a non-empty path" % selected)
     endpoint = _endpoint(entry.get("endpoint"), selected)
     label, bundle = _load_source(selected, entry, required=True)
+    _check_siglip2_source(selected, label, bundle)
+    return Siglip2Matcher(
+        pipeline=selected,
+        backend=Siglip2Backend(bundle, endpoint),
+        output_dir=output_dir,
+        token=token,
+        hand_selection=entry.get("hand_selection", False),
+    )
+
+
+def _check_siglip2_source(selected, label, bundle):
+    """The vectors MUST come from an openai embedding with a model name and hold the
+    view `full`."""
     embedding = bundle.embedding
     if embedding.get("backend") != "openai" or not isinstance(embedding.get("model"), str):
         raise ConfigError("pipeline %s %s MUST come from an openai embedding with a "
@@ -406,10 +476,145 @@ def _load_siglip2(selected, entry, output_dir, token):
     if SIGLIP2_VIEW not in bundle.views:
         raise ConfigError("pipeline %s %s holds no vector of the view %s"
                           % (selected, label, SIGLIP2_VIEW))
-    return Siglip2Matcher(
+
+
+FAST_ANSWER_KEYS = ("enabled", "answer_at_seconds", "timeout_seconds")
+CASCADE_KEYS = ("name", "backend", "catalog", "embedding", "group_embedding", "endpoint",
+                "whole_image", "barcode", "sam3", "rerank")
+BARCODE_KEYS = ("endpoint", "engine", "crops")
+SAM3_KEYS = ("endpoint", "threshold", "hand", "label", "packages_first")
+RERANK_KEYS = ("clusters", "endpoint", "model", "window", "side", "max_tokens",
+               "timeout_seconds")
+SCANNER_ENGINES = ("zxing-cpp", "zxing-cpp-sr", "boofcv-qr-cpp")
+
+
+def _keys(value, allowed, label):
+    value = _mapping(value, label)
+    unknown = sorted(str(key) for key in set(value) - set(allowed))
+    if unknown:
+        raise ConfigError("%s has the unknown key %s" % (label, ", ".join(unknown)))
+    return value
+
+
+def _flag(mapping, key, default, label):
+    value = mapping.get(key, default)
+    if type(value) is not bool:
+        raise ConfigError("%s %s MUST be true or false" % (label, key))
+    return value
+
+
+def _positive(mapping, key, default, label):
+    value = mapping.get(key, default)
+    if (isinstance(value, bool) or not isinstance(value, (int, float))
+            or not math.isfinite(value) or value <= 0):
+        raise ConfigError("%s %s MUST be a number above 0" % (label, key))
+    return float(value)
+
+
+def _integer(mapping, key, default, label, low, high=None):
+    value = mapping.get(key, default)
+    if (isinstance(value, bool) or not isinstance(value, int) or value < low
+            or (high is not None and value > high)):
+        limits = "from %d to %d" % (low, high) if high is not None else "of at least %d" % low
+        raise ConfigError("%s %s MUST be an integer %s" % (label, key, limits))
+    return value
+
+
+def _fast_answer(raw):
+    """Return the checked `matcher.fast_answer`, or None when the key is absent."""
+    if raw is None:
+        return None
+    label = "matcher.fast_answer"
+    raw = _keys(raw, FAST_ANSWER_KEYS, label)
+    answer_at = _positive(raw, "answer_at_seconds", FastAnswer.answer_at_seconds, label)
+    timeout = _positive(raw, "timeout_seconds", FastAnswer.timeout_seconds, label)
+    if answer_at >= timeout:
+        raise ConfigError("%s answer_at_seconds MUST be less than timeout_seconds" % label)
+    return FastAnswer(_flag(raw, "enabled", True, label), answer_at, timeout)
+
+
+def _load_cascade(selected, entry, output_dir, token, fast_answer):
+    """Load one pipeline of the backend `cascade` (plan 85 of the workbench)."""
+    label = "pipeline %s" % selected
+    entry = _keys(entry, CASCADE_KEYS, label)
+    catalog, name = entry.get("catalog"), entry.get("embedding")
+    if not isinstance(catalog, str) or not catalog:
+        raise ConfigError("%s catalog MUST be a non-empty path" % label)
+    if not isinstance(name, str) or not name:
+        raise ConfigError("%s embedding MUST name an embedding of the catalog" % label)
+    group_name = entry.get("group_embedding", name)
+    if not isinstance(group_name, str) or not group_name:
+        raise ConfigError("%s group_embedding MUST name an embedding of the catalog" % label)
+    endpoint = _endpoint(entry.get("endpoint"), selected)
+    whole_image = _flag(entry, "whole_image", True, label)
+
+    barcode = scanner = None
+    if "barcode" in entry:
+        part = label + " barcode"
+        raw = _keys(entry["barcode"], BARCODE_KEYS, part)
+        scanner = _endpoint(raw.get("endpoint"), selected, "barcode endpoint")
+        engine = raw.get("engine", BarcodeConfig.engine)
+        if engine == "auto":
+            raise ConfigError("%s engine MUST NOT be auto: auto runs SAM3 and the VLM "
+                              "for 8 to 15 s" % part)
+        if engine not in SCANNER_ENGINES:
+            raise ConfigError("%s engine MUST be one of %s" % (part, ", ".join(SCANNER_ENGINES)))
+        barcode = BarcodeConfig(engine, _flag(raw, "crops", True, part))
+
+    sam3 = sam3_url = None
+    if "sam3" in entry:
+        part = label + " sam3"
+        raw = _keys(entry["sam3"], SAM3_KEYS, part)
+        sam3_url = _endpoint(raw.get("endpoint"), selected, "sam3 endpoint")
+        threshold = _positive(raw, "threshold", Sam3Config.threshold, part)
+        if threshold >= 1:
+            raise ConfigError("%s threshold MUST be below 1" % part)
+        sam3 = Sam3Config(threshold, _flag(raw, "hand", True, part),
+                          _flag(raw, "label", True, part),
+                          _flag(raw, "packages_first", False, part))
+    if barcode is not None and barcode.crops and sam3 is None:
+        raise ConfigError("%s barcode crops requires sam3" % label)
+
+    rerank = vlm_url = rules = None
+    if "rerank" in entry:
+        part = label + " rerank"
+        raw = _keys(entry["rerank"], RERANK_KEYS, part)
+        clusters = raw.get("clusters")
+        if not isinstance(clusters, str) or not EMBEDDING_NAME.match(clusters):
+            raise ConfigError("%s clusters MUST name an embedding directory of the catalog"
+                              % part)
+        vlm_url = _endpoint(raw.get("endpoint"), selected, "rerank endpoint")
+        model = raw.get("model", RerankConfig.model)
+        if not isinstance(model, str) or not model.strip():
+            raise ConfigError("%s model MUST be a non-empty string" % part)
+        rerank = RerankConfig(
+            model.strip(),
+            _integer(raw, "window", RerankConfig.window, part, 2),
+            _integer(raw, "side", RerankConfig.side, part, 64, 4096),
+            _integer(raw, "max_tokens", RerankConfig.max_tokens, part, 1),
+            _positive(raw, "timeout_seconds", RerankConfig.timeout_seconds, part))
+        try:
+            rules = RuleBook.load(Path(catalog) / "embeddings" / clusters)
+        except RuleError as exc:
+            raise ConfigError("%s: %s" % (part, exc)) from exc
+
+    try:
+        bundle = load_catalog(catalog, name)
+        group_bundle = bundle if group_name == name else load_catalog(catalog, group_name)
+        codes = load_codes(catalog) if barcode is not None else None
+    except CatalogError as exc:
+        raise ConfigError("%s catalog: %s" % (label, exc)) from exc
+    _check_siglip2_source(selected, "catalog embedding", bundle)
+    _check_siglip2_source(selected, "catalog group_embedding", group_bundle)
+    return CascadeMatcher(
         pipeline=selected,
-        backend=Siglip2Backend(bundle, endpoint),
+        cascade=Cascade(CascadeConfig(whole_image, barcode, sam3, rerank), bundle,
+                        Services(siglip2=endpoint, sam3=sam3_url, scanner=scanner,
+                                 vlm=vlm_url),
+                        codes=codes, rules=rules),
+        group=Siglip2Matcher(pipeline=selected,
+                             backend=Siglip2Backend(group_bundle, endpoint)),
         output_dir=output_dir,
         token=token,
-        hand_selection=entry.get("hand_selection", False),
+        fast_answer=fast_answer,
     )

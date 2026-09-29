@@ -4,6 +4,13 @@ matcher:
   # Select one entry of pipeline by name.
   pipeline: siglip2-p512-as-is
   output_dir: "{env:SVOE_VINO_MATCHER_OUTPUT_DIR}"
+  # The time budget of POST /v1/eval/predict (docs/cascade.md). It is valid only with a
+  # pipeline of the backend cascade. The times count from the arrival of the request
+  # headers. Enable it together with `pipeline: cascade-p512-rot5`.
+  # fast_answer:
+  #   enabled: true
+  #   answer_at_seconds: 2.9    # the SLA of 3.0 s minus a reserve of 0.1 s
+  #   timeout_seconds: 9.5      # the harness timeout of 10 s minus a reserve of 0.5 s
 
 # This list uses the name and backend notation of ../workbench/config.yaml.
 pipeline:
@@ -23,3 +30,39 @@ pipeline:
     # Requires SAM3_ENDPOINT when true. Applies only to single-image requests.
     # Group matching always processes all retained bottles and ignores this option.
     hand_selection: false
+
+  # The backend cascade (docs/cascade.md, workbench plan 85): in parallel a barcode scan,
+  # SAM3, and SigLIP2 of the whole photo; then the crop embedding, the scans of the
+  # package and of its label, and the VLM cluster re-rank. It needs a catalogue copy of
+  # workbench/scripts/copy_catalog.py with both embeddings below.
+  - name: cascade-p512-rot5
+    backend: cascade
+    catalog: workbench/data/catalog
+    # SigLIP2 so400m NaFlex p512 with the rotated reference rows of plan 82: a wine
+    # scores the best cosine over the angles of each reference image.
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    # POST /v1/group/match needs the view `label`, which the rot5 index does not hold.
+    group_embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    endpoint: "{env:SIGLIP2_ENDPOINT}"
+    # SigLIP2 of the whole photo at the start: the answer when SAM3 is slow.
+    whole_image: true
+    barcode:
+      endpoint: "{env:QR_SCANNER_ENDPOINT}"   # .../upstream/qr-scanner; never engine auto
+      engine: zxing-cpp
+      crops: true          # scan the package crop and the label crop after SAM3
+    sam3:
+      endpoint: "{env:SAM3_ENDPOINT}"         # .../upstream/sam3
+      threshold: 0.35
+      hand: true
+      label: true
+      # A second request with the package nouns alone. The gx10 SAM3 server answers the
+      # requests of one batch together, so it is off (plan 85, decision 14).
+      packages_first: false
+    rerank:
+      clusters: gx10-siglip2-so400m-patch16-naflex-p512   # clusters.json, cluster-rules.json
+      endpoint: "{env:VLM_ENDPOINT}"          # http://<gateway>/v1
+      model: qwen3.5-9b-nvfp4
+      window: 10
+      side: 1536
+      max_tokens: 256
+      timeout_seconds: 60  # POST /v1/match; POST /v1/eval/predict uses fast_answer

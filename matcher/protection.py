@@ -16,6 +16,8 @@ PREDICT_PATH = "/v1/eval/predict"
 MATCH_PATH = "/v1/match"
 GROUP_MATCH_PATH = "/v1/group/match"
 PROTECTED_PATHS = frozenset({PREDICT_PATH, MATCH_PATH, GROUP_MATCH_PATH})
+# The key of `scope["state"]` that holds the `perf_counter` value of the request start.
+REQUEST_STARTED_AT = "started_at"
 SUPPORTED_IMAGE_FORMATS = frozenset({"JPEG", "MPO", "PNG", "WEBP"})
 
 
@@ -62,6 +64,9 @@ class RequestProtectionMiddleware:
             return
 
         started_at = perf_counter()
+        # The time budget of the backend `cascade` counts from here: uvicorn parsed the
+        # request headers, and the queue, the upload, and the parse follow.
+        scope.setdefault("state", {})[REQUEST_STARTED_AT] = started_at
         if not self._authorized(scope):
             await self._reject(scope, send, 401, "invalid or missing bearer token",
                                started_at, [(b"www-authenticate", b"Bearer")])

@@ -1,5 +1,31 @@
 # Research log
 
+## Backend cascade: design facts, 2026-09-29
+
+Plan 85 of the workbench. Sources: the lab runs on `my`, the gx10 service documents in
+`~/Admin/gx10/docs/inference/`, and the version-controlled copy of the gx10 SAM3 server.
+
+- The gx10 SAM3 server puts the requests that arrive within 15 ms in one batch
+  (`_worker_loop`). `_run_jobs` sets `done` for every request of the batch after the whole
+  batch. So a second, packages-only request for the same photo comes back at the same
+  moment as the full request, and both come later (about 1.0 s of encoder time for two
+  images against 0.71 s for one). `packages_first` is off by default; a benchmark A/B
+  decides.
+- `/segment` takes one noun and gives no `label`; `/segment_multi` encodes the image one
+  time for all nouns and labels each instance. The hand selection sent five nouns to
+  `/segment` and so gave HTTP 502 on any detection (fixed on 2026-09-29).
+- The rot5 index of plan 82 holds only the view `full`. The group gate of `c88464f` needs
+  the view `label`, so a `cascade` pipeline takes `group_embedding` for the group route.
+- The load of `cascade-p512-rot5` from the lab catalogue: 1.2 s, 165,456 rows of 1,152
+  values for 2,105 wines, a peak of 2.6 GB of memory (Mac). One ranking over the rotated
+  rows takes 16 ms after the first call (68 ms). The p512 rule files hold 208 clusters
+  (166 sheet, 42 verdict) of 516 wines; `wine_code` gives 124 values of Active wines, 7
+  of them shared.
+- The lab latencies that shaped the budget: uncached SAM3 median 1.5 s, p95 5.9 s (1
+  worker, with `hand`); SigLIP2 44–87 ms; `zxing-cpp` scans 10–200 ms; a VLM re-rank call
+  0.9–1.5 s at idle, median 2.7 s at 4 in parallel. So at 2.9 s the VLM is often not
+  done, and the whole-photo ranking answers when SAM3 is slow.
+
 ## Conditional model readiness, 2026-09-29
 
 Three options were considered.

@@ -61,7 +61,7 @@ matcher:
 ~~~
 
 `-W error::ResourceWarning` treats an unclosed resource warning as an error.
-The suite contains 131 tests.
+The suite contains 208 tests.
 
 ### API и official harness
 
@@ -241,6 +241,31 @@ It does not call a GPU service. It checks the following behavior:
   to SAM3. It sends every retained bottle crop and label crop to batch embedding and
   makes no hand-selection call.
 
+### Backend cascade (план 85 workbench)
+
+The tests use local fakes and no GPU service. `matcher/tests/cascade_fakes.py` holds one
+HTTP server with the routes of SigLIP2, SAM3, the QR scanner, and the VLM. Each route
+takes an answer function, a delay, and a status. During a delay the server records a
+client disconnect. The fake SigLIP2 gives the vector of the dominant colour of each image.
+
+- `test_cascade.py` checks the task graph of `cascade_run.py`: the answer priority (the
+  package, label, and full-photo codes, a shared GTIN, a shared QR URL, the re-rank, the
+  crop, the whole photo), the time budget (`answer_at`, the first answer after it, the
+  hard limit), the cancellation of a slow SAM3 or VLM call (the fake sees the disconnect),
+  `packages_first`, a close-up, SAM3 and service failures, a damaged image, a large photo,
+  parallel requests, and readiness.
+- `test_cascade_api.py` checks the configuration rules and the API through uvicorn: the
+  audit record, the timer of the request headers (a body in two parts with a pause),
+  `POST /v1/match`, codes, readiness, and a SigLIP2 failure.
+- `test_codes.py`, `test_labels.py`, and `test_rerank.py` check the ports of the lab
+  rules. `test_labels.py` compares the region box with the lab rule on the whole photo.
+- `workbench/tests/test_matcher_parity.py` compares the ports with the lab code. Run it
+  from `workbench/` with the system `python3`:
+
+~~~bash
+python3 -m unittest discover -s tests -p 'test_matcher_parity.py'
+~~~
+
 ### Живая проверка siglip2
 
 Живая проверка использует настоящий bundle и шлюз gx10. Она не входит в CI. Запустите
@@ -290,7 +315,7 @@ Workflow повторяет pull образа `python:3.11-slim` до трёх �
 из `matcher/requirements.lock` с обязательной проверкой SHA-256. Затем скрипт запускает
 все тесты, которые обнаруживает `unittest`. Job завершается с ошибкой, если тест не был
 запущен или был пропущен. В конце журнала должна быть строка
-`matcher tests: discovered=131 run=131 skipped=0`.
+`matcher tests: discovered=208 run=208 skipped=0`.
 
 ## GitLab CI
 
@@ -299,4 +324,4 @@ Job `matcher-tests` находится в корневом файле `.gitlab-c
 `matcher/requirements.txt`, запускает `pip check` и выполняет полный набор тестов.
 
 Pipeline должен завершить job `matcher-tests` со статусом passed. В логе должна быть
-строка `Ran 131 tests` и итог `OK`.
+строка `Ran 208 tests` и итог `OK`.

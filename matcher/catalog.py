@@ -3,9 +3,12 @@
 The lab keeps the catalogue in `workbench/data/catalog/` (plan 75 of the workbench), and
 `workbench/scripts/copy_catalog.py` makes a consistent copy of it. The matcher reads the
 two fixed views `matcher_wine` and `matcher_wine_image` of `catalog.sqlite3`,
-`embeddings/<name>/index.json`, and the vector file that the index names. It reads no
-base table of the lab and imports no workbench code. The result is the same `Bundle`
-object as the result of `load_bundle`.
+`embeddings/<name>/index.json`, and the vector file that the index names. It imports no
+workbench code. The result is the same `Bundle` object as the result of `load_bundle`.
+
+One exception reads base tables: `load_codes` reads `wine_code` and the state in
+`wine_catalog` for the backend `cascade`. No view of the lab holds the GTINs, and the
+owner chose this read on 2026-09-29 (plan 85 of the workbench).
 """
 
 import json
@@ -192,6 +195,38 @@ def _read_views(path):
     finally:
         conn.close()
     return wines, owners
+
+
+def load_codes(directory):
+    """Return the codes of the Active wines of a catalogue directory: (kind, value) ->
+    the sorted slugs of the wines. Raise CatalogError.
+
+    The query is the query of `workbench/pipeline/barcode.py` `CodeLookup.load`. The kinds
+    are `gtin` (GTIN-14) and `qr_url` (the normal form of `codes.clean_qr_url`). A value
+    MAY belong to several wines.
+    """
+    path = Path(directory) / DATABASE
+    if path.is_symlink() or not path.is_file():
+        raise CatalogError("the catalogue database is not a regular file: %s" % path)
+    try:
+        conn = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)
+    except sqlite3.Error as exc:
+        raise CatalogError("cannot open %s: %s" % (path, exc)) from exc
+    try:
+        rows = conn.execute(
+            "SELECT c.kind, c.value, c.wine_slug FROM wine_code c "
+            "JOIN wine_catalog w ON w.wine_slug = c.wine_slug "
+            "WHERE w.state = 'Active' AND c.kind IN ('gtin', 'qr_url')").fetchall()
+    except sqlite3.Error as exc:
+        raise CatalogError("cannot read the codes of %s: %s" % (path, exc)) from exc
+    finally:
+        conn.close()
+    values = {}
+    for kind, value, slug in rows:
+        if not isinstance(value, str) or not value or not isinstance(slug, str):
+            raise CatalogError("wine_code has an invalid row for the wine %r" % (slug,))
+        values.setdefault((kind, value), set()).add(slug)
+    return {key: tuple(sorted(slugs)) for key, slugs in values.items()}
 
 
 def load_catalog(directory, embedding):

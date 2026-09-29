@@ -1,4 +1,5 @@
 fastapi==0.141.1
+httpx==0.28.1
 # NumPy 2.5 has no wheel for Python 3.11, the Python of the Docker image and of CI.
 # Python 3.12 and newer keep 2.5.3, the version of ~/.venvs/svoe-vino-lab.
 numpy==2.4.6; python_version < "3.12"

@@ -2,6 +2,36 @@
 
 ## 2026-09-29
 
+- Added the backend `cascade` (workbench plan 85; owner message of
+  2026-09-29T11:47:49+0300 and the answers of 11:59:36 to 13:53:47). At the start, in
+  parallel: the barcode scan of the full photo (`qr-scanner`, engine `zxing-cpp`), one
+  SAM3 `/segment_multi` request with the package nouns, `hand`, and `label`, an optional
+  packages-only SAM3 request, and SigLIP2 of the whole photo. Then the crop embedding of
+  the selected package (`main_scene.rank_packages`, the refined mask box of the lab), the
+  scans of the package crop and of its label crop, and the VLM cluster re-rank
+  (`qwen3.5-9b-nvfp4`, the lab prompts and rules, window 10). The answer order: a unique
+  code of the package or label, a unique code of the full photo, a shared GTIN, the
+  re-ranked crop ranking, the crop ranking, the whole ranking. New modules `cascade.py`,
+  `cascade_run.py`, `services.py`, `photo.py`, `codes.py`, `labels.py`, `rerank.py`, and
+  `docs/cascade.md`.
+- Added `matcher.fast_answer` for `POST /v1/eval/predict` with a `cascade` pipeline. The
+  protection middleware notes the request start when uvicorn parsed the headers. At
+  `answer_at_seconds` (default 2.9 s) the matcher answers when an answer exists and
+  cancels the pending model calls; the HTTP client closes their connections. At
+  `timeout_seconds` (default 9.5 s) with no answer it answers `{"slug": ""}`.
+  `POST /v1/match` runs the same stages with no budget; its scores never increase.
+- `POST /v1/group/match` of a `cascade` pipeline uses the SigLIP2 group ranking of
+  `group_embedding`: the rot5 index has no view `label`.
+- `catalog.load_codes` reads `wine_code` and `wine_catalog` of the catalogue copy (owner
+  decision of 12:18:09: no new view). `siglip2.py` gives `model_png`, `request_body`, and
+  `parse_vectors`; `model_input` gives the same bytes as before. The audit record gets
+  `decision` and `stages`; the log line gets the decision source, reason, and time.
+- Added `httpx==0.28.1` (and `httpcore`, `certifi` in the lock) for the async clients.
+- New tests `test_cascade.py` (27), `test_cascade_api.py` (13), `test_codes.py` (13),
+  `test_labels.py` (14), `test_rerank.py` (10), with the fakes of `cascade_fakes.py`, and
+  `workbench/tests/test_matcher_parity.py` (10). All 208 matcher tests pass.
+  `matcher/config.yaml` holds the entry `cascade-p512-rot5`; the default selection stays
+  `siglip2-p512-as-is`.
 - Fixed the SAM3 request of the hand selection (`hand_selection: true`; workbench plan
   85, step 2; owner answer of 2026-09-29T12:18:09+0300). The selector sent its five
   nouns in one field `text` to `/segment`. That route takes one noun and gives no
