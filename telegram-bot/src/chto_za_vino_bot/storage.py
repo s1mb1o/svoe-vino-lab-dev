@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sqlite3
 import threading
 import uuid
@@ -13,7 +14,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import ClassVar
 
-from .image_types import detect_image_type
+from .image_types import SUPPORTED_IMAGE_TYPES, detect_image_type
 
 SQLITE_MAX_INTEGER = (1 << 63) - 1
 
@@ -1625,6 +1626,12 @@ class Repository:
         )
 
 
+def _request_path_name(request_id: str) -> str:
+    if request_id in {"", ".", ".."} or Path(request_id).name != request_id:
+        raise ValueError("request ID is not a valid path name")
+    return request_id
+
+
 class ImageStore:
     def __init__(self, root: Path) -> None:
         self._root = root
@@ -1652,6 +1659,21 @@ class ImageStore:
         os.replace(temporary, final)
         relative = final.relative_to(self._root).as_posix()
         return relative, hashlib.sha256(body).hexdigest()
+
+    def delete_accepted(self, request_id: str) -> int:
+        """Delete the accepted copies of one request. Earlier attempts can use other dates."""
+        name = _request_path_name(request_id)
+        deleted = 0
+        for directory in self._accepted.glob("*/*/*"):
+            if not directory.is_dir():
+                continue
+            for image_type in SUPPORTED_IMAGE_TYPES.values():
+                try:
+                    (directory / f"{name}.{image_type.extension}").unlink()
+                except FileNotFoundError:
+                    continue
+                deleted += 1
+        return deleted
 
     def read_accepted(self, relative_path: str) -> bytes:
         return self._read_within(relative_path, self._accepted, "accepted")
@@ -1705,6 +1727,17 @@ class ArtifactStore:
         os.chmod(temporary, 0o640)
         os.replace(temporary, final)
         return final.relative_to(self._data_root).as_posix()
+
+    def delete_request(self, request_id: str) -> int:
+        """Delete the artifact directories of one request. Earlier attempts can use other dates."""
+        name = _request_path_name(request_id)
+        deleted = 0
+        for directory in self._root.glob("*/*/*"):
+            candidate = directory / name
+            if candidate.is_dir():
+                shutil.rmtree(candidate)
+                deleted += 1
+        return deleted
 
     def resolve(self, relative_path: str) -> Path:
         candidate = (self._data_root / relative_path).resolve()

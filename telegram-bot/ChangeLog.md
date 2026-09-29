@@ -2,6 +2,10 @@
 
 ## 2026-09-29
 
+- Deleted the earlier `accepted/` copies and full-fidelity artifact directories of a request
+  when an administration retry moderates the image as unsafe (Safety rule 5). The deletion
+  checks every date directory, because an earlier attempt can use another date directory.
+- Added the project review `docs/reviews/2026-09-29-project-review.md`.
 - Rejected administration page numbers that exceed the SQLite integer range.
 - Added a repository guard for every paginated administration query.
 - Represented a disabled moderation check as `safe=null`, `performed=false`, and

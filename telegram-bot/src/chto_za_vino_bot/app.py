@@ -361,6 +361,15 @@ class PhotoProcessor:
         )
 
         if not moderation.accepted:
+            # An earlier safe attempt of an admin retry left accepted and full-fidelity copies.
+            try:
+                self._services.store.delete_accepted(job.request_id)
+                self._services.artifact_store.delete_request(job.request_id)
+            except Exception:
+                LOG.exception(
+                    "Earlier safe copy removal failed request_id=%s",
+                    job.request_id,
+                )
             try:
                 with self._timed_step(job, "artifact_censored"):
                     self._save_artifacts(

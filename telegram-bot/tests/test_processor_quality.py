@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 from PIL import Image
 
-from chto_za_vino_bot.app import PhotoJob, PhotoProcessor
+from chto_za_vino_bot.app import PhotoJob, PhotoProcessor, enqueue_admin_retries
 from chto_za_vino_bot.matcher import RecognitionCandidate, RecognitionResult
 from chto_za_vino_bot.moderation import DisabledModerator, ModerationResult
 from chto_za_vino_bot.quality import QualityResult, QualityUnavailable
@@ -343,3 +343,82 @@ async def test_one_matcher_candidate_abstains_because_the_margin_is_zero(tmp_pat
 
     assert row[0] == "abstained"
     assert photos == []
+
+
+async def test_unsafe_retry_removes_the_earlier_safe_copies(tmp_path):
+    class RetryQueue:
+        at_capacity = False
+
+        def __init__(self) -> None:
+            self.jobs: list[PhotoJob] = []
+
+        def submit(self, job: PhotoJob) -> None:
+            self.jobs.append(job)
+
+    class StatusBot(FakeBot):
+        async def send_message(self, chat_id: int, text: str, **kwargs: object):
+            return SimpleNamespace(message_id=500)
+
+        async def edit_message_text(self, text: str, **kwargs: object) -> None:
+            return None
+
+        async def delete_message(self, chat_id: int, message_id: int) -> None:
+            return None
+
+    data_root = tmp_path / "images"
+    repository = Repository(tmp_path / "bot.sqlite3")
+    reservation = repository.reserve(
+        chat_id=100,
+        message_id=10,
+        user_id=200,
+        username="tester",
+        first_name="Test",
+        last_name=None,
+        file_id="file-1",
+        file_unique_id="unique-1",
+        now=1000,
+        limit=50,
+        window_seconds=3600,
+    )
+    request_id = reservation.request_id
+    assert request_id is not None
+    services = SimpleNamespace(
+        settings=SimpleNamespace(
+            max_image_bytes=20 * 1024 * 1024,
+            match_min_score=0.70,
+            match_min_margin=0.015,
+        ),
+        repository=repository,
+        store=ImageStore(data_root),
+        artifact_store=ArtifactStore(data_root),
+        moderator=SafeModerator(),
+        quality_inspector=AdvisoryQualityInspector(),
+        matcher=FakeMatcher(),
+        image_loader=None,
+        rejection_image=b"unused",
+    )
+    processor = PhotoProcessor(services, StatusBot(jpeg()))
+    await processor.process(
+        PhotoJob(request_id, 100, 10, 1000, "file-1", None, status_enabled=False)
+    )
+    assert repository.admin_request(request_id).status == "recognized"
+    assert len(list((data_root / "accepted").rglob(f"{request_id}.*"))) == 1
+
+    # The retry comes two days later, so its job uses another date directory.
+    assert repository.request_retry(request_id, 1000 + 2 * 86400) == "requested"
+    queue = RetryQueue()
+    assert enqueue_admin_retries(repository, queue) == 1
+    services.moderator = UnsafeModerator()
+    await processor.process(queue.jobs[0])
+
+    assert repository.admin_request(request_id).status == "quarantined"
+    assert list((data_root / "accepted").rglob(f"{request_id}.*")) == []
+    assert len(list((data_root / "quarantine").rglob(f"{request_id}.*"))) == 1
+    artifact_files = [
+        path.name for path in (data_root / "artifacts").rglob("*") if path.is_file()
+    ]
+    assert artifact_files == ["censored_preview.jpg"]
+    assert [item.artifact_key for item in repository.artifacts(request_id)] == [
+        "censored_preview"
+    ]
+    repository.close()

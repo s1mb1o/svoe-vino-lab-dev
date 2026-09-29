@@ -6,6 +6,7 @@ from PIL import Image
 
 from chto_za_vino_bot.storage import (
     SQLITE_MAX_INTEGER,
+    ArtifactStore,
     ArtifactWrite,
     CandidateRecord,
     ImageStore,
@@ -24,6 +25,16 @@ def test_image_store_preserves_the_validated_image_format(tmp_path, image_format
 
     assert relative_path.endswith(suffix)
     assert (tmp_path / relative_path).read_bytes() == output.getvalue()
+
+
+@pytest.mark.parametrize("request_id", ["", ".", "..", "a/b", "../request-1"])
+def test_request_copy_deletion_rejects_a_request_id_that_is_not_a_path_name(
+    tmp_path, request_id
+):
+    with pytest.raises(ValueError):
+        ImageStore(tmp_path).delete_accepted(request_id)
+    with pytest.raises(ValueError):
+        ArtifactStore(tmp_path).delete_request(request_id)
 
 
 def reserve(repository, now, message_id=1):
