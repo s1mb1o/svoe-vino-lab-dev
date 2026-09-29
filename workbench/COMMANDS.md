@@ -253,6 +253,24 @@ caffeinate -i ~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
     --name barcode-rerank-siglip2-512-rot5-seg --set my --workers 4
 ```
 
+NaFlex p512 5-degree rerank. The entry `gx10-siglip2-so400m-patch16-naflex-p512-rot5`
+has the rotated view `full` and the unrotated view `label`. A build after the rotated
+build embeds only the label items. Prerequisites and effects are those of the fixed-512
+commands above. The copy of `cluster-rules.json` from the p512 index is a cache seed:
+the rule builder checks its input hashes and rebuilds only changed descriptions or
+rules.
+
+```bash
+caffeinate -i ~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name gx10-siglip2-so400m-patch16-naflex-p512-rot5 --workers 3
+python3 pipeline/build_clusters.py --name gx10-siglip2-so400m-patch16-naflex-p512-rot5
+cp -n data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/cluster-rules.json \
+    data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512-rot5/
+python3 pipeline/build_label_rules.py --name gx10-siglip2-so400m-patch16-naflex-p512-rot5
+caffeinate -i ~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
+    --name barcode-rerank-siglip2-p512-rot5-seg --set my --workers 4
+```
+
 Build the clusters of one completed embedding entry:
 ```bash
 ~/.venvs/svoe-vino-lab/bin/python pipeline/build_clusters.py \

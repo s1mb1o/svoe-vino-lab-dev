@@ -3642,5 +3642,11 @@ The form of a section:
 - Agreements: the rot5 entry is a plan 82 entry (b6). The owner chose this change at
   20:05:38 with that fact in the question; that answer is the permission. I do not change
   the fixed-512 entries or files of `codex-preset-segment-check`.
-- State: active.
-- Updated: 2026-09-29T20:07:31+0300
+- State: active. The checkpoint commit 3442e65 (another session) holds my `config.yaml`
+  and test hunks. Label build done 20:16 (2,392 built; the 2 known label-cut failures of
+  the p512 base). Clusters 208 (combined). Rules: 205 of 208; 3 error records (QwenCloud
+  HTTP 403 AccessDenied.Unpurchased for `qwencloud-qwen3.8-max`); the owner chose "Run
+  with 205 rules" at 20:19:10. Watcher `work/p512-rot5-rerank/run_when_free.py` (PID
+  31963, caffeinate) waits for the fixed-512 trial and for the active run job
+  `barcode-rerank-siglip2-512-rot5-seg`, then runs the preset on `my` and compares.
+- Updated: 2026-09-29T20:20:17+0300

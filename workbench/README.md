@@ -756,8 +756,10 @@ row of each candidate and of each candidate image. Only the 0° PNG is written.
 ```
 
 - `gx10-siglip2-so400m-patch16-naflex-p512-rot5` (72 angles) and `…-rot10` (36 angles) are
-  at the end of `embeddings:`, so Build All builds them last. They have the view `full`
-  alone. The pipelines `siglip2-p512-rot{5,10}-{as-is,crop,crop-seg}` use them.
+  at the end of `embeddings:`, so Build All builds them last. The rot10 entry has the view
+  `full` alone. The rot5 entry also has the unrotated view `label` for the cluster rerank
+  of `barcode-rerank-siglip2-p512-rot5-seg`. The pipelines
+  `siglip2-p512-rot{5,10}-{as-is,crop,crop-seg}` use them and rank `full`.
 - `rebuild_embeddings_on_run` builds a missing rotated item before a run, and a run waits
   for a build in progress.
 - A matcher bundle of a rotated entry is format version 3
@@ -1223,6 +1225,12 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   355°. Label references stay unrotated. Retrieval takes the best angle for each
   reference. The cluster builder uses the 0° vectors and keeps both catalogue views.
   Build the index, clusters, and label rules before the first run (`COMMANDS.md`).
+
+- `barcode-rerank-siglip2-p512-rot5-seg` is the NaFlex twin. It uses the query steps and
+  options of `barcode-rerank-siglip2-p512-seg`. Its index
+  `gx10-siglip2-so400m-patch16-naflex-p512-rot5` embeds each full reference at 0°, 5°,
+  …, 355°. Label references stay unrotated. Build the label vectors, clusters, and
+  label rules before the first run (`COMMANDS.md`).
 
 - `barcode-rerank-siglip2-512-crop-label-seg` adds a second retrieval tower to
   `barcode-rerank-siglip2-512-crop`. The first tower keeps the package rectangle and

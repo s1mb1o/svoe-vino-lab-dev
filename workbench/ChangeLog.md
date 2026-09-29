@@ -2,6 +2,21 @@
 
 ## 2026-09-29
 
+- Added `barcode-rerank-siglip2-p512-rot5-seg` (owner message of 19:57:26), the NaFlex
+  twin of `barcode-rerank-siglip2-512-rot5-seg`. Its options are those of
+  `barcode-rerank-siglip2-p512-seg`. Its index is
+  `gx10-siglip2-so400m-patch16-naflex-p512-rot5`. With the owner answer of 20:05:38,
+  that entry also gets the unrotated view `label` of `*views_c_f`, because the cluster
+  rerank needs both catalogue views. The 2,289 rotated `full` items stay current (the
+  hash is per view). The label build adds 2,394 items. The rot10 entry keeps the view
+  `full` alone; the anchor `views_full_rotated` moves to it. The
+  `siglip2-p512-rot5*` pipelines rank `full` and do not change. The checkpoint commit
+  3442e65 holds the `config.yaml` and test hunks. Tests: 230 focused OK
+  (`test_pipeline_workers`, `test_pipelines`, `test_barcode`, `test_rotated_embeddings`,
+  `test_cluster_rerank`, `test_embeddings`, `test_build_embeddings`, `test_clusters`,
+  `test_build_clusters`, `test_embedding_run`, `test_matcher_api_pipelines`). The label
+  build, clusters, rules, and the run on `my` are in progress.
+
 - Plan 88: `/testset` and `/embedding` show the jobs of both kinds. `/testset` shows each
   running embedding build after its run rows (`build · <embedding>`, the phase,
   `Build All <n> / <count>`, a stop button, and a link to `/embedding`). `/embedding`

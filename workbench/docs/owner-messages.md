@@ -9687,3 +9687,17 @@ Options: "Config only", "Run on my after build".
 ```text
 Run on my after build
 ```
+
+## 2026-09-29T20:19:10+0300
+
+Answer of the owner to a question of the agent.
+
+Question: QwenCloud answers HTTP 403 AccessDenied.Unpurchased for rules_vlm
+qwencloud-qwen3.8-max. 3 of 208 clusters of the NaFlex rot5 index (c003 with 7 cards,
+c089, c195) have no usable rule. The p512 baseline has 208 of 208. How should I continue
+with barcode-rerank-siglip2-p512-rot5-seg?
+Options: "Run with 205 rules (Recommended)", "Wait for QwenCloud", "Reuse p512 rules only".
+
+```text
+Run with 205 rules (Recommended)
+```

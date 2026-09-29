@@ -2379,6 +2379,8 @@ and QR scanner are available. The run commands are in `COMMANDS.md`.
 | BRS3 | Run each preset on `my` with caches enabled. | Each saved run uses the requested preset, retains barcode and rerank steps, and sends the segmented package on white to the embedding model when barcode lookup does not answer. |
 | BRS4 | Build `gx10-siglip2-so400m-patch16-512-rot5` and its clusters and label rules with the commands in `COMMANDS.md`. | Each current full reference has 72 angles, from 0° to 355°. Label references have one vector. Both catalogue views appear in the cluster artifact. |
 | BRS5 | Run `barcode-rerank-siglip2-512-rot5-seg` on `my`. | The run uses the new index, four workers, barcode lookup, package segmentation on white, and cluster reranking. Compare its metrics with the baseline only when the query manifests match. |
+| BRS6 | Build the label items, clusters, and label rules of `gx10-siglip2-so400m-patch16-naflex-p512-rot5` with the commands in `COMMANDS.md`. | Each current full reference has 72 angles. Each label reference has one vector. Both catalogue views appear in the cluster artifact. `RuleBook` reports no cluster with no rule and no rule error. |
+| BRS7 | Run `barcode-rerank-siglip2-p512-rot5-seg` on `my`. | The run uses the NaFlex rot5 index, four workers, barcode lookup, package segmentation on white, and cluster reranking. Compare its metrics with `barcode-rerank-siglip2-p512-seg` only when the query manifests match. |
 
 ## Jobs of both kinds — plan 88
 
