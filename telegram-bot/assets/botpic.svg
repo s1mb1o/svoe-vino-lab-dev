@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Wine glass question mark">
-  <circle cx="512" cy="512" r="484" fill="#FFF8E8" stroke="#6D002B" stroke-width="56"/>
-  <path d="M304 238 C320 438 370 552 512 552 C654 552 704 438 720 238" fill="none" stroke="#6D002B" stroke-width="46" stroke-linecap="round"/>
-  <ellipse cx="512" cy="238" rx="208" ry="45" fill="#FFF8E8" stroke="#6D002B" stroke-width="38"/>
-  <path d="M342 370 C414 320 470 410 548 382 C614 358 650 326 689 350 C664 474 612 518 512 518 C418 518 366 472 342 370 Z" fill="#9B174C"/>
-  <path d="M512 552 C635 570 667 659 581 714 C531 746 507 776 507 821" fill="none" stroke="#6D002B" stroke-width="46" stroke-linecap="round"/>
-  <circle cx="507" cy="890" r="34" fill="#6D002B"/>
-</svg>
-

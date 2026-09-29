@@ -4,6 +4,7 @@ from pathlib import Path
 import sqlite3
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 import numpy as np
@@ -18,16 +19,18 @@ class BuildModelPackTest(unittest.TestCase):
             bundle, database, dis, siglip = self.make_sources(root, 768)
             output = root / "out" / "pack.zip"
 
-            result = build_model_pack.build(
+            result = self.build_with_test_models(
                 argparse.Namespace(
                     bundle=str(bundle),
                     catalog_db=str(database),
                     dis_model=str(dis),
                     siglip_model=str(siglip),
-                    confirm_pipeline="dis-white-square-v1",
+                    confirm_pipeline="dis-white-square-timm-crop090-v2",
                     out=str(output),
                     version="test",
-                )
+                ),
+                dis,
+                siglip,
             )
 
             self.assertEqual(result["vectors"], 2)
@@ -40,24 +43,62 @@ class BuildModelPackTest(unittest.TestCase):
                 )
                 manifest = json.loads(archive.read("manifest.json"))
                 self.assertEqual(manifest["vector_dim"], 768)
-                self.assertEqual(manifest["pipeline"], "dis-white-square-v1")
+                self.assertEqual(
+                    manifest["pipeline"],
+                    "dis-white-square-timm-crop090-v2",
+                )
 
     def test_rejects_gx10_vector_dimension(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             bundle, database, dis, siglip = self.make_sources(root, 1152)
             with self.assertRaisesRegex(build_model_pack.PackError, r"\[N,768\]"):
-                build_model_pack.build(
+                self.build_with_test_models(
                     argparse.Namespace(
                         bundle=str(bundle),
                         catalog_db=str(database),
                         dis_model=str(dis),
                         siglip_model=str(siglip),
-                        confirm_pipeline="dis-white-square-v1",
+                        confirm_pipeline="dis-white-square-timm-crop090-v2",
                         out=str(root / "pack.zip"),
                         version="test",
-                    )
+                    ),
+                    dis,
+                    siglip,
                 )
+
+    def test_rejects_a_different_siglip_model(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            bundle, database, dis, siglip = self.make_sources(root, 768)
+            with mock.patch.object(
+                build_model_pack,
+                "DIS_MODEL_SHA256",
+                build_model_pack.sha256_file(dis),
+            ):
+                with self.assertRaisesRegex(
+                    build_model_pack.PackError,
+                    "does not match the verified Android model",
+                ):
+                    build_model_pack.build(
+                        argparse.Namespace(
+                            bundle=str(bundle),
+                            catalog_db=str(database),
+                            dis_model=str(dis),
+                            siglip_model=str(siglip),
+                            confirm_pipeline="dis-white-square-timm-crop090-v2",
+                            out=str(root / "pack.zip"),
+                            version="test",
+                        )
+                    )
+
+    def build_with_test_models(self, args, dis, siglip):
+        with mock.patch.multiple(
+            build_model_pack,
+            DIS_MODEL_SHA256=build_model_pack.sha256_file(dis),
+            SIGLIP_MODEL_SHA256=build_model_pack.sha256_file(siglip),
+        ):
+            return build_model_pack.build(args)
 
     def make_sources(self, root, dimension):
         bundle = root / "bundle"

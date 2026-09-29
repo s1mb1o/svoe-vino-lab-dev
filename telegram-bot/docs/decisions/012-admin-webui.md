@@ -39,6 +39,8 @@ Use the existing SQLite database.
 Use persistent status changes for bot actions.
 Do not serve stored images.
 Require password authentication and a CIDR allowlist.
+Require an administration password with at least 32 characters.
+Limit failed authentication attempts by socket client address.
 Keep the listener on loopback unless a TLS proxy is its only published route.
 
 ## Consequences
@@ -48,4 +50,6 @@ SQLite remains the coordination point.
 The bot needs a small retry watcher.
 The web service can restart without losing a requested retry.
 The service uses HTTP Basic authentication only across loopback or behind a TLS proxy.
+The application does not trust proxy address headers. Requests through one proxy share one
+failed-authentication counter.
 Plain HTTP exposure on a shared LAN is forbidden.

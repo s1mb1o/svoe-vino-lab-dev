@@ -26,15 +26,16 @@ Use the existing SQLite database as the shared source of state.
 ## Security
 
 1. Require HTTP Basic authentication for every administration page and action.
-2. Require a non-empty password from `BOT_ADMIN_WEB_PASSWORD`.
+2. Require at least 32 characters in `BOT_ADMIN_WEB_PASSWORD`.
 3. Compare credentials with constant-time comparisons.
-4. Restrict client addresses to configured CIDR networks.
-5. Use only `127.0.0.1` and `::1` as the default allowed networks.
-6. Require a process-local CSRF token for every state-changing form.
-7. Add restrictive browser security headers.
-8. Do not render image bytes or storage paths.
-9. Do not permit retry for an unsafe request or a request with an incomplete moderation step.
-10. Require a TLS proxy assertion before a non-loopback listener can start.
+4. Limit failed authentication attempts by socket client address.
+5. Restrict client addresses to configured CIDR networks.
+6. Use only `127.0.0.1` and `::1` as the default allowed networks.
+7. Require a process-local CSRF token for every state-changing form.
+8. Add restrictive browser security headers.
+9. Do not render image bytes or storage paths.
+10. Do not permit retry for an unsafe request or a request with an incomplete moderation step.
+11. Require a TLS proxy assertion before a non-loopback listener can start.
 
 ## Retry flow
 

@@ -1,4 +1,4 @@
-# Svoe Vino Web UI
+# Что за вино? Web UI
 
 This portal provides the wine scanner UI for the RSHB Digital hackathon task.
 The UI uses the visual identity of [Свое Вино](https://vino-svoe.ru/).
@@ -14,9 +14,9 @@ The current release uses a mock prediction service and local result metadata.
 - Open the result directly on the vino-svoe portal.
 - Cancel, retry, replace the photo, or start again.
 - Require a local 18+ confirmation before the portal opens.
-- Demonstrate domestic food pairing without requesting coordinates or calling a retailer.
-- Explain label terms and show fictional text stories.
-- Explore an interactive Abrau-Durso product-line map.
+- Derive regional dish pairings without requesting coordinates or calling a retailer.
+- Explain label terms and show an expected taste passport with an international style analogue.
+- Explore an interactive Abrau-Durso product-line map that marks an exact matched wine from this producer.
 - Upload a shelf photo and inspect masks and ready wine matches for each detected bottle.
 - Install the portal as a Progressive Web App.
 
@@ -57,14 +57,30 @@ For another host, run `.output/server/index.mjs` with the required `HOST` and `P
 
 ## Install the app
 
+The header provides `Авто`, `Светлая`, and `Тёмная` theme choices.
+`Авто` follows the device theme. The browser stores the selected preference locally.
+
 The production build includes a web app manifest and a service worker.
 The `@vite-pwa/nuxt` module generates these files with Workbox.
-Use the browser install action to add «Свое Вино» to the device.
+Use the browser install action to add «Что за вино?» to the device.
 The favicon and installed app use the shared product logo from the repository-level `assets/` directory.
-The app shell can open without a network connection after one successful online visit.
+The app shell can open without a network connection after the second successful online visit.
+The first launch of the installed app counts as an online visit.
+The first visit does not fill the page cache because the service worker is not active yet.
 Photo recognition, wine metadata, and external portal links still require a network connection.
-The Workbox routes do not store photo uploads or API responses.
+The Workbox routes do not store photo uploads or responses of the `/api/` and `/v1/` routes.
+A cached page contains the server-rendered `/api/config` payload. An offline start shows the last known service state.
+A new version does not reload an open page. It becomes active after all app pages close.
 Development mode does not register the service worker.
+
+Run the browser check against a production server:
+
+```bash
+PLAYWRIGHT_MODULE=<path>/node_modules/playwright/index.mjs npm run test:pwa
+```
+
+Set `PORTAL_ORIGIN` to check another host. The default is `http://127.0.0.1:8153`.
+Playwright is not a project dependency.
 
 ## Search discovery
 
@@ -98,14 +114,37 @@ If metadata is missing or fails, the app preserves the predicted slug and its li
 ## Result experiences
 
 The portal requires an 18+ confirmation before it shows the scanner.
-The browser stores only `svoe-vino.age-confirmed.v1=yes` in local storage.
-After a match, the portal shows four local demonstration actions.
-The product action simulates permission and identifies a fictional nearby SuperLenta store.
-It does not call geolocation or a retailer API.
-The other actions explain a label, rotate fictional wine stories, and show an Abrau-Durso product-line map.
+The age gate stores `svoe-vino.age-confirmed.v1=yes` in local storage.
+The theme selector separately stores `svoe-vino.theme.v1`.
+After a match, the portal shows four local follow-up actions.
+The Abrau-Durso guide uses the resolved producer and exact wine slug when they match the local map.
+The dish action derives three dishes from different regional cuisines.
+It uses source pairing categories and deterministic style rules.
+The taste passport derives six taste dimensions, aroma families, and one international style analogue.
+It can fill a metadata gap with grape-level aggregates from the public Wine Reviews dataset.
+The UI identifies the dataset, its sample count, and its `CC BY-NC-SA 4.0` license.
+The UI states when the wine has no reliable dataset match.
+The application contains no copied review text and no critic score.
+The default dish result includes three local editorial illustrations.
+The other actions explain a label and show an Abrau-Durso product-line map.
+The map remains a labeled demonstration for wines from other producers.
+The result actions do not call geolocation, a retailer API, or a taste API.
 The map links to public `vino-svoe.ru` wine pages.
 Read [the result experience specification](docs/result-experiences.md) for behavior and compliance limits.
 The previous Globus integration remains in the repository but is not mounted in the current result UI.
+
+Rebuild the aggregate artifact from a local copy of `winemag-data-130k-v2.csv`:
+
+```bash
+python3 scripts/build-wine-style-priors.py \
+  /path/to/winemag-data-130k-v2.csv \
+  shared/data/wine-style-priors.json \
+  --generated-on YYYY-MM-DD
+```
+
+The raw dataset is not stored in this repository.
+The generated aggregate remains subject to the source dataset license.
+Read [the aggregate license notice](shared/data/WINE_STYLE_PRIORS_LICENSE.md) and [the asset provenance](docs/assets.md).
 
 ## Shelf photos
 

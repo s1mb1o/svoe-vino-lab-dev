@@ -2,6 +2,17 @@
 
 ## 2026-09-29
 
+- `POST /v1/group/match` accepts the optional query parameter `k` (1 to 20, default 1),
+  the maximum number of candidates for each bottle (workbench plan 83, owner message of
+  2026-09-29T11:57:03+0300). Each bottle has the new field `candidates`: up to `k`
+  `MatchCandidate` objects, the best first; the first equals `match`, and the list is
+  empty when `match` is null. `match` does not change, so a client that reads only
+  `match` does not change; the portal validator ignores the new field. `openapi.yaml`,
+  `README.md`, and `docs/group-match.md` state the parameter and the field. New test
+  `test_group_endpoint_returns_k_candidates_for_each_bottle` in `tests/test_group.py`
+  (k=3, k=20 gives the 5 wines of the test bundle, k=0/21/x give HTTP 422). 125 tests pass.
+  Prod gets the change only with a redeploy.
+
 - Workbench plan 82 (max-over-rotation matching): `load_bundle` accepts bundle format
   version 3 (one vector row for each angle of an image) and keeps the angle of each row in
   the new optional field `Bundle.angles` (None for versions 1 and 2). `load_catalog` reads

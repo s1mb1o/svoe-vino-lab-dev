@@ -20,12 +20,17 @@ The matcher MUST return bottle coordinates, masks, matches, and wine description
 
 ## Visual design
 
-Use the source logo, Playfair Display headings, burgundy controls, cream surfaces, and grapevine background.
+Use the shared product logo from `../assets/` and the product name `Что за вино?`.
+Use Playfair Display headings, burgundy controls, cream surfaces, and the grapevine background.
 Use one photo search workspace. Do not show a catalog grid, filters, sorting, or local wine detail navigation.
 On desktop, place the upload area beside the result area.
 On phones, place the result below the upload area. Keep the upload action prominent.
 Show large touch targets. Prevent horizontal overflow.
-Follow the system dark theme and reduced motion preference.
+Provide `Авто`, `Светлая`, and `Тёмная` in the page header.
+Default to `Авто`. Follow the system theme only in this mode.
+Store the selected preference in local storage and apply it before first paint.
+Apply the selected palette to the full page and dialogs.
+Follow the reduced motion preference.
 
 ## Progressive Web App
 
@@ -33,9 +38,19 @@ The production portal MUST provide an installable web app manifest.
 The portal MUST provide 192 by 192 and 512 by 512 PNG icons.
 The portal MUST provide a maskable 512 by 512 PNG icon.
 The favicon and install icons MUST use the shared product logo from `../assets/`.
+The manifest SHOULD provide one narrow and one wide JPEG screenshot of the home page.
+The page MUST provide a `theme-color` for the active light or dark theme.
 The service worker MUST store only the app shell and same-origin static assets.
-The service worker MUST NOT store photo uploads or API responses.
-The app shell MAY open without a network connection after one successful online visit.
+The service worker MUST NOT store photo uploads or responses of the `/api/` and `/v1/` routes.
+A cached page MAY contain the server-rendered `/api/config` payload.
+This payload holds only the prediction mode, availability flags, and limits. It holds no photo and no recognition result.
+An offline start can therefore show the last known service state.
+A photo submit without a network connection MUST show a network error.
+The app shell MAY open without a network connection after the second successful online visit.
+The first launch of the installed app counts as an online visit.
+The first visit does not fill the page cache because the service worker is not active during the first navigation.
+An updated service worker MUST NOT reload an open page.
+The updated service worker MUST wait until all app pages close. The next start uses the new version.
 Recognition, metadata, and external links require a network connection.
 Development mode MUST NOT register the service worker.
 
@@ -105,6 +120,8 @@ Photos MUST remain in request memory. Do not write photos to disk.
 - The unchanged official evaluator accepts the production mock endpoint.
 - The production page exposes the manifest and registers the service worker.
 - The manifest exposes regular and maskable icons with the declared sizes.
+- The manifest screenshots have the declared sizes.
+- `npm run test:pwa` passes: no installability errors, offline start after two visits, no cached API route, and no reload after a service-worker update.
 
 ## Limits
 
@@ -119,8 +136,8 @@ Date: 2026-09-15. Status: retained but not rendered.
 
 The repository retains the previous Globus integration for reference.
 The current result UI MUST NOT mount `FoodRecommendations`.
-The current `Подобрать продукты` action MUST follow `docs/result-experiences.md`.
-It MUST use fictional local data.
+The current `Подобрать блюда` action MUST follow `docs/result-experiences.md`.
+It MUST use resolved wine metadata and local deterministic rules.
 It MUST NOT request coordinates or call retailer routes.
 The legacy `GET /api/food/stores` and `POST /api/food/pairings` routes MAY remain in the codebase.
 They are outside the active portal flow.

@@ -2,6 +2,24 @@
 
 ## 2026-09-29
 
+### Product name and header logo
+
+- Replaced the source-portal wordmark with the shared bottle-scanner logo and `Что за вино?`.
+- Reused the product identity in the age gate and footer.
+- Updated the browser title, social metadata, structured data, and installed app name.
+- Preserved the artwork colors in both themes and adapted the header for narrow screens.
+- Verified both header themes, the 320px layout, type checks, all 165 tests, and the production build.
+
+### Header theme selector
+
+- Added `Авто`, `Светлая`, and `Тёмная` to the page header.
+- Store the selection in local storage and apply it before the first paint.
+- Follow system theme changes in `Авто` and synchronize the selection between tabs.
+- Apply the selected theme to dialogs, mobile actions, native controls, and browser theme colors.
+- Keep the header controls within the 320px layout.
+- Verified type checks, all 165 tests, and the production build.
+- Verified both palettes, saved selection, tab synchronization, and the mobile header in a component preview.
+
 ### Shared product branding
 
 - Replaced the Telegram-bot-derived favicon and PWA icon set with the repository-level product logo.
@@ -9,6 +27,63 @@
 - Kept the source-portal wordmark in the page header.
 - Added a regression check that the published favicon matches the shared SVG exactly.
 - Verified all 165 tests, type checks, and the production build.
+
+### Result-aware Abrau-Durso guide
+
+- Connected the product-line guide to the resolved wine producer and slug.
+- Marked an exact Abrau-Durso map match as `ВАШЕ ВИНО`.
+- Changed the fixed fallback marker to `ПРИМЕР · ДЕМО` for other producers.
+- Added a separate result card for an Abrau-Durso wine that does not have one of the six map nodes.
+- Kept that separate wine outside unverified collection tiers.
+- Added producer normalization and exact-slug regression tests.
+- Verified all 165 tests, type checks, and the production build.
+
+### Product-line catalog images
+
+- Replaced the generic bottle silhouettes on the Abrau-Durso line map.
+- Added six local catalog images from the `Своё Вино` 2026-09-17 snapshot.
+- Preferred the `patched` image for `Удельное Ведомство Императорское, брют`.
+- Used the catalog `main` image for the other five map wines.
+- Added transparent WebP exports and image-source regression checks.
+- Verified the dark desktop dialog, all 164 tests, type checks, and the production build.
+
+### Taste inference audit, open data, and dish illustrations
+
+- Corrected sweet and semisweet analogues so they run before dry varietal analogues.
+- Corrected Russian-language inference patterns that used ASCII-only JavaScript word tokens.
+- Reworded the summary to separate the source sugar category from inferred tasting characteristics.
+- Prevented color descriptions from becoming floral or full-body evidence.
+- Kept gentle astringency at the medium tannin level.
+- Added build-time grape aggregates from the public Wine Reviews dataset.
+- Added visible dataset, license, sample-count, and no-match disclosures.
+- Stored no review text and no critic score.
+- Added three generated editorial illustrations for the default regional dish recommendations.
+- Added fixed image dimensions, lazy loading, alternative text, and an image-free fallback.
+- Added regression tests for the corrected inference, aggregates, sweet styles, and pilot images.
+- Verified all 163 tests, type checks, and the production build.
+
+### Taste passport and regional dishes
+
+- Replaced the fictional story action with `Паспорт вкуса`.
+- Added deterministic body, acidity, tannin, sweetness, fruit, and oak estimates.
+- Extracted source-backed aroma families from the resolved `Своё Вино` description.
+- Added one international style analogue with explicit similarity and difference text.
+- Replaced the fictional store products with three named dishes from distinct regional cuisines.
+- Used source pairing categories before local style rules.
+- Labeled every dish result as source-backed or style-derived.
+- Added focused tests for profile bounds, aroma evidence, cuisine diversity, source evidence, and international analogues.
+- Verified all 152 tests, type checks, and the production build.
+
+### PWA review fixes
+
+- Changed `registerType` from `autoUpdate` to `prompt`. An updated service worker now waits and does not reload an open page.
+- Added light and dark `theme-color` metadata.
+- Added narrow and wide home-page screenshots to the manifest.
+- Corrected the offline statement: the app shell opens offline from the second online visit.
+- Documented the server-rendered `/api/config` payload in the cached page.
+- Added `npm run test:pwa`, a Chromium check for install, offline, cache, and update behavior.
+- Added screenshot, update-mode, and theme-color assertions to the PWA tests and the contract check.
+- Verified all 151 tests, type checks, the production build, and `npm run test:pwa`.
 
 ### Complete result metadata fallback
 

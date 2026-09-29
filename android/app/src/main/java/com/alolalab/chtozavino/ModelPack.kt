@@ -6,16 +6,22 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.security.MessageDigest
 import java.util.zip.ZipInputStream
 
 private const val PACK_FORMAT = "svoe-vino-android-model-pack"
-private const val PACK_VERSION = 1
-private const val PIPELINE_ID = "dis-white-square-v1"
+private const val PACK_VERSION_WITH_IMAGES = 2
+private val SUPPORTED_PACK_VERSIONS = setOf(1, PACK_VERSION_WITH_IMAGES)
+private const val PIPELINE_ID = "dis-white-square-timm-crop090-v2"
 private const val SIGLIP_MODEL = "vit_base_patch16_siglip_224.v2_webli"
+private const val DIS_MODEL_SHA256 =
+    "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087"
+private const val SIGLIP_MODEL_SHA256 =
+    "a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854"
 const val VECTOR_DIMENSION = 768
 
-private val REQUIRED_PAYLOADS = setOf(
+private val BASE_PAYLOADS = setOf(
     "dis.tflite",
     "siglip2_base_224_fp16.tflite",
     "vectors.f32",
@@ -23,17 +29,23 @@ private val REQUIRED_PAYLOADS = setOf(
     "wines.jsonl",
     "codes.jsonl",
 )
-private val ALLOWED_ENTRIES = REQUIRED_PAYLOADS + "manifest.json"
+private const val IMAGE_ARCHIVE = "images.zip"
+private const val BUILT_IN_PACK = "default_model_pack.zip"
+private val ALLOWED_ENTRIES = BASE_PAYLOADS + IMAGE_ARCHIVE + "manifest.json"
 private const val MAX_PACK_BYTES = 700L * 1024L * 1024L
+private const val MAX_IMAGE_BYTES = 512L * 1024L * 1024L
+private const val MAX_IMAGE_COUNT = 5_000
 
 class ModelPackException(message: String) : IllegalArgumentException(message)
 
 data class PackFile(val bytes: Long, val sha256: String)
 
 data class ModelPackManifest(
+    val formatVersion: Int,
     val versionName: String,
     val vectorCount: Int,
     val wineCount: Int,
+    val imageCount: Int,
     val installedAt: Long,
     val files: Map<String, PackFile>,
 )
@@ -63,14 +75,25 @@ class ModelPackManager(private val context: Context) {
     }
 
     fun install(uri: Uri): InstalledModelPack {
+        val source = context.contentResolver.openInputStream(uri)
+            ?: throw ModelPackException("Не удалось открыть пакет моделей.")
+        source.use { return install(it) }
+    }
+
+    fun installBuiltIn(): InstalledModelPack {
+        context.assets.open(BUILT_IN_PACK).use { return install(it) }
+    }
+
+    private fun install(source: InputStream): InstalledModelPack {
         modelRoot.mkdirs()
         val staging = File(modelRoot, ".staging-${System.currentTimeMillis()}")
         if (staging.exists()) staging.deleteRecursively()
         check(staging.mkdirs()) { "Не удалось создать временный каталог пакета." }
 
         try {
-            extract(uri, staging)
+            extract(source, staging)
             val installed = validateDirectory(staging, verifyHashes = true)
+            materializeImages(installed)
             // Parse all catalogue payloads before replacing a working pack.
             CatalogueIndex.load(installed)
 
@@ -91,11 +114,9 @@ class ModelPackManager(private val context: Context) {
         }
     }
 
-    private fun extract(uri: Uri, target: File) {
+    private fun extract(source: InputStream, target: File) {
         val found = mutableSetOf<String>()
         var total = 0L
-        val source = context.contentResolver.openInputStream(uri)
-            ?: throw ModelPackException("Не удалось открыть пакет моделей.")
         ZipInputStream(source.buffered()).use { zip ->
             while (true) {
                 val entry = zip.nextEntry ?: break
@@ -121,7 +142,7 @@ class ModelPackManager(private val context: Context) {
                 zip.closeEntry()
             }
         }
-        val missing = ALLOWED_ENTRIES - found
+        val missing = BASE_PAYLOADS + "manifest.json" - found
         if (missing.isNotEmpty()) {
             throw ModelPackException("В пакете нет файлов: ${missing.sorted().joinToString()}.")
         }
@@ -131,7 +152,8 @@ class ModelPackManager(private val context: Context) {
         val manifestFile = File(directory, "manifest.json")
         val json = runCatching { JSONObject(manifestFile.readText()) }
             .getOrElse { throw ModelPackException("Некорректный manifest.json: ${it.message}") }
-        if (json.optString("format") != PACK_FORMAT || json.optInt("format_version") != PACK_VERSION) {
+        val formatVersion = json.optInt("format_version")
+        if (json.optString("format") != PACK_FORMAT || formatVersion !in SUPPORTED_PACK_VERSIONS) {
             throw ModelPackException("Версия формата пакета не поддерживается.")
         }
         if (json.optString("pipeline") != PIPELINE_ID) {
@@ -145,16 +167,29 @@ class ModelPackManager(private val context: Context) {
         }
         val vectorCount = json.optInt("vector_count", -1)
         val wineCount = json.optInt("wine_count", -1)
+        val imageCount = if (formatVersion >= PACK_VERSION_WITH_IMAGES) {
+            json.optInt("image_count", -1)
+        } else {
+            0
+        }
         if (vectorCount <= 0 || wineCount <= 0) {
             throw ModelPackException("Пакет содержит некорректные счётчики каталога.")
+        }
+        if (formatVersion >= PACK_VERSION_WITH_IMAGES && imageCount != wineCount) {
+            throw ModelPackException("Число изображений должно совпадать с числом вин.")
         }
 
         val fileJson = json.optJSONObject("files")
             ?: throw ModelPackException("В manifest.json нет объекта files.")
-        if (fileJson.keys().asSequence().toSet() != REQUIRED_PAYLOADS) {
+        val requiredPayloads = BASE_PAYLOADS + if (formatVersion >= PACK_VERSION_WITH_IMAGES) {
+            setOf(IMAGE_ARCHIVE)
+        } else {
+            emptySet()
+        }
+        if (fileJson.keys().asSequence().toSet() != requiredPayloads) {
             throw ModelPackException("Список файлов в manifest.json не совпадает с контрактом.")
         }
-        val files = REQUIRED_PAYLOADS.associateWith { name ->
+        val files = requiredPayloads.associateWith { name ->
             val record = fileJson.optJSONObject(name)
                 ?: throw ModelPackException("В manifest.json нет записи $name.")
             val bytes = record.optLong("bytes", -1)
@@ -175,17 +210,74 @@ class ModelPackManager(private val context: Context) {
         if (files.getValue("vectors.f32").bytes != expectedVectorBytes) {
             throw ModelPackException("Размер vectors.f32 не совпадает с числом векторов.")
         }
+        if (files.getValue("dis.tflite").sha256 != DIS_MODEL_SHA256) {
+            throw ModelPackException("Пакет содержит другую модель DIS.")
+        }
+        if (files.getValue("siglip2_base_224_fp16.tflite").sha256 != SIGLIP_MODEL_SHA256) {
+            throw ModelPackException("Пакет содержит другую модель SigLIP2.")
+        }
         val installedAt = json.optLong("created_at_epoch_ms", manifestFile.lastModified())
         return InstalledModelPack(
             directory,
             ModelPackManifest(
+                formatVersion = formatVersion,
                 versionName = json.optString("version", "1"),
                 vectorCount = vectorCount,
                 wineCount = wineCount,
+                imageCount = imageCount,
                 installedAt = installedAt,
                 files = files,
             ),
         )
+    }
+
+    private fun materializeImages(pack: InstalledModelPack) {
+        if (pack.manifest.formatVersion < PACK_VERSION_WITH_IMAGES) return
+        val imageRoot = File(pack.directory, "images")
+        if (imageRoot.exists()) imageRoot.deleteRecursively()
+        if (!imageRoot.mkdirs()) {
+            throw ModelPackException("Не удалось создать каталог изображений.")
+        }
+        val rootPath = imageRoot.canonicalPath + File.separator
+        val found = mutableSetOf<String>()
+        var total = 0L
+        ZipInputStream(FileInputStream(pack.file(IMAGE_ARCHIVE)).buffered()).use { zip ->
+            while (true) {
+                val entry = zip.nextEntry ?: break
+                val name = entry.name
+                if (entry.isDirectory || !name.startsWith("images/") ||
+                    name.count { it == '/' } != 1 || '\\' in name || ".." in name.split('/')
+                ) {
+                    throw ModelPackException("Архив изображений содержит недопустимый путь: $name")
+                }
+                if (!found.add(name)) {
+                    throw ModelPackException("Архив изображений повторяет путь: $name")
+                }
+                if (found.size > MAX_IMAGE_COUNT) {
+                    throw ModelPackException("Архив изображений содержит слишком много файлов.")
+                }
+                val target = File(pack.directory, name)
+                if (!target.canonicalPath.startsWith(rootPath)) {
+                    throw ModelPackException("Архив изображений содержит небезопасный путь: $name")
+                }
+                FileOutputStream(target).use { output ->
+                    val buffer = ByteArray(1024 * 1024)
+                    while (true) {
+                        val count = zip.read(buffer)
+                        if (count < 0) break
+                        total += count
+                        if (total > MAX_IMAGE_BYTES) {
+                            throw ModelPackException("Архив изображений превышает 512 МБ.")
+                        }
+                        output.write(buffer, 0, count)
+                    }
+                }
+                zip.closeEntry()
+            }
+        }
+        if (found.size != pack.manifest.imageCount) {
+            throw ModelPackException("Число файлов в архиве изображений не совпадает с manifest.json.")
+        }
     }
 
     private fun sha256(file: File): String {

@@ -21,7 +21,11 @@ import numpy as np
 FORMAT = "svoe-vino-matcher-bundle"
 # Version 2 adds the wine card fields to `wines.jsonl`. The validator accepts version 1.
 FORMAT_VERSION = 2
-SUPPORTED_VERSIONS = (1, 2)
+# Version 3 (plan 82): the bundle of an entry with `rotation_step`. `items.jsonl` has one
+# record for each vector row, and each record has `angle`; the rows of one image repeat its
+# source, view, and image. An entry with no rotation still writes version 2.
+ROTATED_FORMAT_VERSION = 3
+SUPPORTED_VERSIONS = (1, 2, 3)
 MANIFEST = "manifest.json"
 VECTORS = "vectors.npy"
 ITEMS = "items.jsonl"
@@ -35,6 +39,7 @@ ITEM_KEYS = {
     "vector_row", "source_vector_row", "source_sha256", "view", "role",
     "embedding_hash", "derivative_sha256", "image", "width", "height",
 }
+ITEM_KEYS_V3 = ITEM_KEYS | {"angle"}
 CANDIDATE_KEYS = {"vector_row", "wine_slug", "view", "image_type"}
 WINE_KEYS_V1 = {"wine_slug", "name", "producer", "category", "region"}
 WINE_KEYS = WINE_KEYS_V1 | {"color", "grapes", "page_url", "image_url", "qr_urls"}
@@ -244,6 +249,9 @@ def _build_in(directory, settings, embedding, include_images):
     planned = embeddings.plan_items(embedding, sources)
     status = embeddings.item_status(planned, index, embeddings.image_names(source_dir))
     owners = _owners(embedding, wines, planned)
+    # Plan 82: an entry with `rotation_step` writes format version 3, one item row for each
+    # vector row, with its angle.
+    rotated = getattr(embedding, "rotation_step", None) is not None
 
     item_rows = []
     candidate_rows = []
@@ -264,38 +272,48 @@ def _build_in(directory, settings, embedding, include_images):
                 "error": record.get("error") if isinstance(record, dict) else None,
             })
             continue
-        source_row = record.get("row")
-        if (isinstance(source_row, bool) or not isinstance(source_row, int)
-                or not 0 <= source_row < len(vectors)):
-            raise BundleError("the current item %s/%s has no valid vector row" % key)
+        try:
+            span = embeddings.record_rows(record, len(vectors))
+        except ValueError as exc:
+            raise BundleError("the current item %s/%s has no valid vector row: %s"
+                              % (key + (exc,)))
+        if not rotated and span.stop - span.start != 1:
+            raise BundleError("the current item %s/%s has several vector rows, and the "
+                              "entry has no rotation_step" % key)
         item_owners = owners.get(key) or []
         if not item_owners:
             raise BundleError("the current item %s/%s has no active wine" % key)
         image_path = record.get("image")
         relative_image = _relative_path(image_path, "source item image")
-        vector_row = len(item_rows)
-        item_rows.append({
-            "vector_row": vector_row,
-            "source_vector_row": source_row,
-            "source_sha256": key[0],
-            "view": key[1],
-            "role": item["role"],
-            "embedding_hash": record["embedding_hash"],
-            "derivative_sha256": record.get("derivative_sha256"),
-            "image": PurePosixPath(*relative_image.parts).as_posix(),
-            "width": record.get("width"),
-            "height": record.get("height"),
-        })
-        selected_vectors.append(vectors[source_row])
-        for wine, image_type in item_owners:
-            candidate_rows.append({
+        for source_row, angle in zip(range(span.start, span.stop),
+                                     embeddings.record_angles(record)):
+            vector_row = len(item_rows)
+            row = {
                 "vector_row": vector_row,
-                "wine_slug": wine["slug"],
+                "source_vector_row": source_row,
+                "source_sha256": key[0],
                 "view": key[1],
-                "image_type": image_type,
-            })
-            used_slugs.add(wine["slug"])
+                "role": item["role"],
+                "embedding_hash": record["embedding_hash"],
+                "derivative_sha256": record.get("derivative_sha256"),
+                "image": PurePosixPath(*relative_image.parts).as_posix(),
+                "width": record.get("width"),
+                "height": record.get("height"),
+            }
+            if rotated:
+                row["angle"] = angle
+            item_rows.append(row)
+            selected_vectors.append(vectors[source_row])
+            for wine, image_type in item_owners:
+                candidate_rows.append({
+                    "vector_row": vector_row,
+                    "wine_slug": wine["slug"],
+                    "view": key[1],
+                    "image_type": image_type,
+                })
+                used_slugs.add(wine["slug"])
         if include_images:
+            # One copy for each image; the rotated rows of plan 82 share the 0° image.
             source = source_dir / relative_image
             if source.is_symlink() or not source.is_file():
                 raise BundleError("the prepared image is not a regular file: %s" % image_path)
@@ -326,7 +344,7 @@ def _build_in(directory, settings, embedding, include_images):
         source_config = embedding.summary()
     manifest = {
         "format": FORMAT,
-        "format_version": FORMAT_VERSION,
+        "format_version": ROTATED_FORMAT_VERSION if rotated else FORMAT_VERSION,
         "created_at": now(),
         "source": {
             "embedding": embedding.name,
@@ -453,8 +471,14 @@ def _validate_records(root, manifest):
     counts = manifest.get("counts")
     if not isinstance(counts, dict):
         raise BundleError("manifest.counts MUST be an object")
+    version = manifest.get("format_version")
+    # Version 3 (plan 82): one item row for each vector row; a planned item is one source
+    # and view, so the planned items are the distinct (source, view) pairs and the omissions.
+    distinct = (len({(item.get("source_sha256"), item.get("view")) for item in items
+                     if isinstance(item, dict)})
+                if version == ROTATED_FORMAT_VERSION else len(items))
     expected_counts = {
-        "planned_items": len(items) + len(omissions),
+        "planned_items": distinct + len(omissions),
         "items": len(items),
         "candidates": len(candidates),
         "wines": len(wines),
@@ -470,9 +494,15 @@ def _validate_records(root, manifest):
     item_by_row = {}
     item_keys = set()
     image_paths = set()
+    image_owner = {}
     for number, item in enumerate(items, 1):
         label = "%s line %d" % (ITEMS, number)
-        _exact_keys(item, ITEM_KEYS, label)
+        _exact_keys(item, ITEM_KEYS_V3 if version == ROTATED_FORMAT_VERSION else ITEM_KEYS,
+                    label)
+        if version == ROTATED_FORMAT_VERSION:
+            angle = item["angle"]
+            if isinstance(angle, bool) or not isinstance(angle, int) or not 0 <= angle < 360:
+                raise BundleError("%s.angle MUST be an integer from 0 to 359" % label)
         _integer(item["vector_row"], label + ".vector_row")
         _integer(item["source_vector_row"], label + ".source_vector_row")
         if item["vector_row"] != number - 1:
@@ -488,16 +518,22 @@ def _validate_records(root, manifest):
         _integer(item["height"], label + ".height", minimum=1)
         relative = _relative_path(item["image"], label + ".image")
         image_name = PurePosixPath(*relative.parts).as_posix()
-        if image_name in image_paths:
-            raise BundleError("%s repeats image %s" % (ITEMS, image_name))
+        source_view = (item["source_sha256"], item["view"])
+        if version == ROTATED_FORMAT_VERSION:
+            # The rows of one image repeat its image; another source MUST NOT use it.
+            if image_owner.setdefault(image_name, source_view) != source_view:
+                raise BundleError("%s repeats image %s" % (ITEMS, image_name))
+            key = source_view + (item["angle"],)
+        else:
+            if image_name in image_paths:
+                raise BundleError("%s repeats image %s" % (ITEMS, image_name))
+            key = source_view
         image_paths.add(image_name)
-        key = (item["source_sha256"], item["view"])
         if key in item_keys:
-            raise BundleError("%s repeats source/view %s/%s" % ((ITEMS,) + key))
+            raise BundleError("%s repeats source/view %s" % (ITEMS, "/".join(map(str, key))))
         item_keys.add(key)
         item_by_row[item["vector_row"]] = item
 
-    version = manifest.get("format_version")
     wine_slugs = set()
     for number, wine in enumerate(wines, 1):
         label = "%s line %d" % (WINES, number)

@@ -1,0 +1,791 @@
+{
+  "source": {
+    "name": "Wine Reviews, winemag-data-130k-v2.csv",
+    "url": "https://www.kaggle.com/datasets/zynicide/wine-reviews",
+    "license": "CC BY-NC-SA 4.0",
+    "generatedOn": "2026-09-29",
+    "method": "Aggregate descriptor frequencies by grape variety. No review text or critic score is included."
+  },
+  "varieties": {
+    "Aligote": {
+      "sampleCount": 30,
+      "aromas": {
+        "apple_pear": 0.3333,
+        "citrus": 0.4,
+        "floral": 0.0333,
+        "herbs_greens": 0.1333,
+        "honey_dried_fruit": 0.0667,
+        "mineral": 0.0667,
+        "oak_vanilla": 0.1,
+        "spices": 0.2333,
+        "stone_fruit": 0.1667,
+        "tropical": 0.1
+      },
+      "structure": {
+        "body": {
+          "level": 3,
+          "mean": 3.0,
+          "observationCount": 3
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 4.0,
+          "observationCount": 14
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.0,
+          "observationCount": 30
+        },
+        "oak": {
+          "level": 1,
+          "mean": 1.2,
+          "observationCount": 30
+        }
+      }
+    },
+    "Cabernet Franc": {
+      "sampleCount": 1353,
+      "aromas": {
+        "apple_pear": 0.0059,
+        "citrus": 0.017,
+        "cocoa_coffee": 0.2025,
+        "dark_berries": 0.4124,
+        "floral": 0.1412,
+        "herbs_greens": 0.3045,
+        "honey_dried_fruit": 0.0273,
+        "mineral": 0.0414,
+        "oak_vanilla": 0.303,
+        "red_berries": 0.2424,
+        "spices": 0.3777,
+        "stone_fruit": 0.0037
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.655,
+          "observationCount": 238
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.844,
+          "observationCount": 128
+        },
+        "tannin": {
+          "level": 3,
+          "mean": 3.065,
+          "observationCount": 123
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 2.681,
+          "observationCount": 1353
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.615,
+          "observationCount": 1353
+        }
+      }
+    },
+    "Cabernet Sauvignon": {
+      "sampleCount": 9472,
+      "aromas": {
+        "apple_pear": 0.0018,
+        "citrus": 0.0098,
+        "cocoa_coffee": 0.2665,
+        "dark_berries": 0.6541,
+        "floral": 0.0468,
+        "herbs_greens": 0.2781,
+        "honey_dried_fruit": 0.028,
+        "mineral": 0.0428,
+        "oak_vanilla": 0.4544,
+        "red_berries": 0.1372,
+        "spices": 0.3155,
+        "stone_fruit": 0.0007,
+        "tropical": 0.0004
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.76,
+          "observationCount": 1565
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.794,
+          "observationCount": 422
+        },
+        "tannin": {
+          "level": 3,
+          "mean": 3.32,
+          "observationCount": 722
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 2.804,
+          "observationCount": 9472
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.931,
+          "observationCount": 9472
+        }
+      }
+    },
+    "Chardonnay": {
+      "sampleCount": 11753,
+      "aromas": {
+        "apple_pear": 0.4584,
+        "citrus": 0.4173,
+        "cocoa_coffee": 0.0016,
+        "dark_berries": 0.0141,
+        "floral": 0.0946,
+        "herbs_greens": 0.0316,
+        "honey_dried_fruit": 0.0881,
+        "mineral": 0.1331,
+        "oak_vanilla": 0.4638,
+        "red_berries": 0.0006,
+        "spices": 0.1643,
+        "stone_fruit": 0.2225,
+        "tropical": 0.2519
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.601,
+          "observationCount": 1650
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.915,
+          "observationCount": 2834
+        },
+        "tannin": {
+          "level": 3,
+          "mean": 2.667,
+          "observationCount": 9
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.359,
+          "observationCount": 11753
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.946,
+          "observationCount": 11753
+        }
+      }
+    },
+    "Gewurztraminer": {
+      "sampleCount": 1012,
+      "aromas": {
+        "apple_pear": 0.167,
+        "citrus": 0.3814,
+        "cocoa_coffee": 0.003,
+        "dark_berries": 0.0346,
+        "floral": 0.4575,
+        "herbs_greens": 0.0227,
+        "honey_dried_fruit": 0.1868,
+        "mineral": 0.0721,
+        "oak_vanilla": 0.0613,
+        "red_berries": 0.002,
+        "spices": 0.4298,
+        "stone_fruit": 0.2945,
+        "tropical": 0.3389
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.717,
+          "observationCount": 159
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.874,
+          "observationCount": 159
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.215,
+          "observationCount": 1012
+        },
+        "oak": {
+          "level": 1,
+          "mean": 1.123,
+          "observationCount": 1012
+        }
+      }
+    },
+    "Malbec": {
+      "sampleCount": 2652,
+      "aromas": {
+        "apple_pear": 0.0041,
+        "citrus": 0.023,
+        "cocoa_coffee": 0.204,
+        "dark_berries": 0.5909,
+        "floral": 0.0626,
+        "herbs_greens": 0.2798,
+        "honey_dried_fruit": 0.0517,
+        "mineral": 0.0302,
+        "oak_vanilla": 0.319,
+        "red_berries": 0.0965,
+        "spices": 0.3333,
+        "stone_fruit": 0.0023,
+        "tropical": 0.0011
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.903,
+          "observationCount": 392
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.844,
+          "observationCount": 179
+        },
+        "tannin": {
+          "level": 4,
+          "mean": 3.569,
+          "observationCount": 123
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 2.718,
+          "observationCount": 2652
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.653,
+          "observationCount": 2652
+        }
+      }
+    },
+    "Merlot": {
+      "sampleCount": 3102,
+      "aromas": {
+        "apple_pear": 0.0045,
+        "citrus": 0.009,
+        "cocoa_coffee": 0.2553,
+        "dark_berries": 0.472,
+        "floral": 0.0461,
+        "herbs_greens": 0.2447,
+        "honey_dried_fruit": 0.0268,
+        "mineral": 0.03,
+        "oak_vanilla": 0.3801,
+        "red_berries": 0.1863,
+        "spices": 0.3611,
+        "stone_fruit": 0.0013,
+        "tropical": 0.0016
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.619,
+          "observationCount": 457
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.787,
+          "observationCount": 150
+        },
+        "tannin": {
+          "level": 3,
+          "mean": 3.165,
+          "observationCount": 206
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 2.675,
+          "observationCount": 3102
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.774,
+          "observationCount": 3102
+        }
+      }
+    },
+    "Muscat": {
+      "sampleCount": 526,
+      "aromas": {
+        "apple_pear": 0.0932,
+        "citrus": 0.3745,
+        "cocoa_coffee": 0.0209,
+        "dark_berries": 0.0152,
+        "floral": 0.4658,
+        "herbs_greens": 0.1274,
+        "honey_dried_fruit": 0.3365,
+        "mineral": 0.019,
+        "oak_vanilla": 0.1407,
+        "red_berries": 0.0437,
+        "spices": 0.1217,
+        "stone_fruit": 0.4563,
+        "tropical": 0.1426
+      },
+      "structure": {
+        "body": {
+          "level": 3,
+          "mean": 3.171,
+          "observationCount": 35
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.763,
+          "observationCount": 97
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.125,
+          "observationCount": 526
+        },
+        "oak": {
+          "level": 1,
+          "mean": 1.281,
+          "observationCount": 526
+        }
+      }
+    },
+    "Pinot Gris": {
+      "sampleCount": 2507,
+      "aromas": {
+        "apple_pear": 0.568,
+        "citrus": 0.4527,
+        "cocoa_coffee": 0.0024,
+        "dark_berries": 0.0064,
+        "floral": 0.1779,
+        "herbs_greens": 0.0686,
+        "honey_dried_fruit": 0.1057,
+        "mineral": 0.1065,
+        "oak_vanilla": 0.1229,
+        "red_berries": 0.0068,
+        "spices": 0.2054,
+        "stone_fruit": 0.2409,
+        "tropical": 0.126
+      },
+      "structure": {
+        "body": {
+          "level": 3,
+          "mean": 3.347,
+          "observationCount": 314
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.954,
+          "observationCount": 713
+        },
+        "tannin": {
+          "level": 4,
+          "mean": 4.0,
+          "observationCount": 2
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.397,
+          "observationCount": 2507
+        },
+        "oak": {
+          "level": 1,
+          "mean": 1.249,
+          "observationCount": 2507
+        }
+      }
+    },
+    "Pinot Noir": {
+      "sampleCount": 13272,
+      "aromas": {
+        "apple_pear": 0.0108,
+        "citrus": 0.0472,
+        "cocoa_coffee": 0.1018,
+        "dark_berries": 0.2278,
+        "floral": 0.0964,
+        "herbs_greens": 0.1653,
+        "honey_dried_fruit": 0.0133,
+        "mineral": 0.0479,
+        "oak_vanilla": 0.2567,
+        "red_berries": 0.4366,
+        "spices": 0.3404,
+        "stone_fruit": 0.0049,
+        "tropical": 0.0021
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.559,
+          "observationCount": 2067
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.886,
+          "observationCount": 1497
+        },
+        "tannin": {
+          "level": 3,
+          "mean": 3.088,
+          "observationCount": 748
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 2.729,
+          "observationCount": 13272
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.529,
+          "observationCount": 13272
+        }
+      }
+    },
+    "Riesling": {
+      "sampleCount": 5189,
+      "aromas": {
+        "apple_pear": 0.3467,
+        "citrus": 0.671,
+        "cocoa_coffee": 0.0004,
+        "dark_berries": 0.0308,
+        "floral": 0.2318,
+        "herbs_greens": 0.0742,
+        "honey_dried_fruit": 0.1977,
+        "mineral": 0.2428,
+        "oak_vanilla": 0.0251,
+        "red_berries": 0.0046,
+        "spices": 0.1228,
+        "stone_fruit": 0.3095,
+        "tropical": 0.1054
+      },
+      "structure": {
+        "body": {
+          "level": 3,
+          "mean": 3.218,
+          "observationCount": 459
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.985,
+          "observationCount": 1303
+        },
+        "tannin": {
+          "level": 4,
+          "mean": 4.0,
+          "observationCount": 1
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.464,
+          "observationCount": 5189
+        },
+        "oak": {
+          "level": 1,
+          "mean": 1.05,
+          "observationCount": 5189
+        }
+      }
+    },
+    "Rkatsiteli": {
+      "sampleCount": 33,
+      "aromas": {
+        "apple_pear": 0.4242,
+        "citrus": 0.5152,
+        "cocoa_coffee": 0.0303,
+        "floral": 0.3333,
+        "herbs_greens": 0.1212,
+        "honey_dried_fruit": 0.1212,
+        "mineral": 0.1212,
+        "oak_vanilla": 0.1515,
+        "spices": 0.0303,
+        "stone_fruit": 0.5152,
+        "tropical": 0.1212
+      },
+      "structure": {
+        "acidity": {
+          "level": 4,
+          "mean": 4.0,
+          "observationCount": 5
+        },
+        "tannin": {
+          "level": 4,
+          "mean": 4.0,
+          "observationCount": 1
+        },
+        "fruit": {
+          "level": 4,
+          "mean": 3.576,
+          "observationCount": 33
+        },
+        "oak": {
+          "level": 1,
+          "mean": 1.303,
+          "observationCount": 33
+        }
+      }
+    },
+    "Sangiovese": {
+      "sampleCount": 2707,
+      "aromas": {
+        "apple_pear": 0.0052,
+        "citrus": 0.0255,
+        "cocoa_coffee": 0.2058,
+        "dark_berries": 0.4581,
+        "floral": 0.2368,
+        "herbs_greens": 0.3096,
+        "honey_dried_fruit": 0.0277,
+        "mineral": 0.034,
+        "oak_vanilla": 0.2907,
+        "red_berries": 0.2981,
+        "spices": 0.5656,
+        "stone_fruit": 0.0052,
+        "tropical": 0.0004
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.665,
+          "observationCount": 409
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.65,
+          "observationCount": 383
+        },
+        "tannin": {
+          "level": 3,
+          "mean": 3.084,
+          "observationCount": 417
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 2.792,
+          "observationCount": 2707
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.6,
+          "observationCount": 2707
+        }
+      }
+    },
+    "Saperavi": {
+      "sampleCount": 37,
+      "aromas": {
+        "apple_pear": 0.0541,
+        "cocoa_coffee": 0.4865,
+        "dark_berries": 0.8919,
+        "floral": 0.4595,
+        "herbs_greens": 0.2703,
+        "mineral": 0.1081,
+        "oak_vanilla": 0.1892,
+        "red_berries": 0.3784,
+        "spices": 0.2973
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 4.0,
+          "observationCount": 4
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.5,
+          "observationCount": 4
+        },
+        "tannin": {
+          "level": 3,
+          "mean": 3.111,
+          "observationCount": 9
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.324,
+          "observationCount": 37
+        },
+        "oak": {
+          "level": 1,
+          "mean": 1.405,
+          "observationCount": 37
+        }
+      }
+    },
+    "Sauvignon Blanc": {
+      "sampleCount": 4967,
+      "aromas": {
+        "apple_pear": 0.2249,
+        "citrus": 0.6441,
+        "cocoa_coffee": 0.0008,
+        "dark_berries": 0.0219,
+        "floral": 0.0725,
+        "herbs_greens": 0.2994,
+        "honey_dried_fruit": 0.0888,
+        "mineral": 0.1462,
+        "oak_vanilla": 0.1526,
+        "red_berries": 0.0024,
+        "spices": 0.1363,
+        "stone_fruit": 0.1568,
+        "tropical": 0.2235
+      },
+      "structure": {
+        "body": {
+          "level": 3,
+          "mean": 3.275,
+          "observationCount": 603
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.974,
+          "observationCount": 1525
+        },
+        "tannin": {
+          "level": 2,
+          "mean": 2.0,
+          "observationCount": 1
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.272,
+          "observationCount": 4967
+        },
+        "oak": {
+          "level": 1,
+          "mean": 1.309,
+          "observationCount": 4967
+        }
+      }
+    },
+    "Syrah": {
+      "sampleCount": 4978,
+      "aromas": {
+        "apple_pear": 0.0018,
+        "citrus": 0.0372,
+        "cocoa_coffee": 0.2609,
+        "dark_berries": 0.5231,
+        "floral": 0.14,
+        "herbs_greens": 0.2182,
+        "honey_dried_fruit": 0.0263,
+        "mineral": 0.044,
+        "oak_vanilla": 0.2981,
+        "red_berries": 0.1533,
+        "spices": 0.4809,
+        "stone_fruit": 0.002,
+        "tropical": 0.0012
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.813,
+          "observationCount": 1013
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.865,
+          "observationCount": 282
+        },
+        "tannin": {
+          "level": 3,
+          "mean": 3.157,
+          "observationCount": 319
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 2.719,
+          "observationCount": 4978
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.61,
+          "observationCount": 4978
+        }
+      }
+    },
+    "Tempranillo": {
+      "sampleCount": 1976,
+      "aromas": {
+        "apple_pear": 0.003,
+        "citrus": 0.0324,
+        "cocoa_coffee": 0.2348,
+        "dark_berries": 0.5769,
+        "floral": 0.0461,
+        "herbs_greens": 0.2373,
+        "honey_dried_fruit": 0.0835,
+        "mineral": 0.0218,
+        "oak_vanilla": 0.4124,
+        "red_berries": 0.1827,
+        "spices": 0.3623,
+        "stone_fruit": 0.003,
+        "tropical": 0.0015
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.719,
+          "observationCount": 178
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.932,
+          "observationCount": 205
+        },
+        "tannin": {
+          "level": 4,
+          "mean": 3.756,
+          "observationCount": 78
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 2.8,
+          "observationCount": 1976
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.837,
+          "observationCount": 1976
+        }
+      }
+    },
+    "Viognier": {
+      "sampleCount": 996,
+      "aromas": {
+        "apple_pear": 0.2781,
+        "citrus": 0.4247,
+        "cocoa_coffee": 0.005,
+        "dark_berries": 0.003,
+        "floral": 0.3283,
+        "herbs_greens": 0.0532,
+        "honey_dried_fruit": 0.1827,
+        "mineral": 0.0813,
+        "oak_vanilla": 0.3122,
+        "red_berries": 0.003,
+        "spices": 0.1857,
+        "stone_fruit": 0.492,
+        "tropical": 0.255
+      },
+      "structure": {
+        "body": {
+          "level": 4,
+          "mean": 3.645,
+          "observationCount": 166
+        },
+        "acidity": {
+          "level": 4,
+          "mean": 3.946,
+          "observationCount": 166
+        },
+        "tannin": {
+          "level": 4,
+          "mean": 4.0,
+          "observationCount": 1
+        },
+        "fruit": {
+          "level": 3,
+          "mean": 3.447,
+          "observationCount": 996
+        },
+        "oak": {
+          "level": 2,
+          "mean": 1.629,
+          "observationCount": 996
+        }
+      }
+    }
+  }
+}

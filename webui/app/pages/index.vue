@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Найти вино по фото — Свое Вино' })
+useHead({ title: 'Найти вино по фото — Что за вино?' })
 const { data: config } = await useFetch('/api/config', { key: 'portal-config' })
 const scanMode = ref<'bottle' | 'shelf'>('bottle')
 let modeTools: AbortController | undefined

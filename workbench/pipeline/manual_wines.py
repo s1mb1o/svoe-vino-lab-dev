@@ -12,6 +12,8 @@ Rules:
   `wine_catalog` holds already, in any state, is a conflict.
 - Each text value, and `image_name`, MUST be a JSON string that UTF-8 can encode. JSON
   admits a lone surrogate such as `\\ud800`, and SQLite cannot store it.
+- `beverage_type_code`, when present, is `4` (wine) or `44` (sparkling wine) and is
+  stored in `wine_beverage_type`. The Dataset form calls this value Category.
 - Each text value loses its outer white space, as in `import_catalog.py`. An empty
   `grapes` or `description` becomes NULL. Each other field is required. The owner made
   the description optional on 2026-09-25; the schema file `014_description_optional.sql`
@@ -37,6 +39,7 @@ import os
 import re
 
 import alternatives
+import beverage_types
 import derive
 import imagestore
 import labdb
@@ -130,6 +133,14 @@ def read_fields(body):
     return values
 
 
+def read_beverage_type(body):
+    """Return the optional wine category code of the request."""
+    code = body.get("beverage_type_code")
+    if code is not None and (not isinstance(code, str) or code not in beverage_types.CODES):
+        raise WineError(400, '`beverage_type_code` MUST be "4", "44", or null')
+    return code
+
+
 def read_image(body):
     """Return the image bytes of the request. Raise `WineError` 400."""
     image = body.get("image")
@@ -155,6 +166,7 @@ def add_wine(conn, db_path, body, segmenter=None):
     """
     slug = check_slug(body.get("slug"))
     values = read_fields(body)
+    beverage_type = read_beverage_type(body)
     data = read_image(body)
     try:
         extension, width, height = patches.read_image(data)
@@ -189,6 +201,8 @@ def add_wine(conn, db_path, body, segmenter=None):
                      "VALUES (?, %s, ?, 'Active')"
                      % (", ".join(TEXT_FIELDS), ", ".join("?" for _ in TEXT_FIELDS)),
                      [slug] + values + [name])
+        if beverage_type is not None:
+            beverage_types.set_type(conn, slug, beverage_type)
         insert_image(conn, digest, extension, width, height)
         conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
                      "source_name, match_method) VALUES (?, ?, ?, ?, ?)",

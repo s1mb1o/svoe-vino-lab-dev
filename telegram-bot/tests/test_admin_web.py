@@ -1,4 +1,5 @@
 import re
+from dataclasses import replace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -7,13 +8,15 @@ from chto_za_vino_bot.admin_web import create_app
 from chto_za_vino_bot.config import AdminWebSettings
 from chto_za_vino_bot.storage import ArtifactStore, ArtifactWrite, Repository
 
+ADMIN_PASSWORD = "correct-horse-battery-staple-1234"
+
 
 def settings(tmp_path):
     return AdminWebSettings(
         data_root=tmp_path / "data",
         database_file=tmp_path / "bot.sqlite3",
         username="admin",
-        password="correct-horse",
+        password=ADMIN_PASSWORD,
         host="127.0.0.1",
         port=28003,
         allowed_networks=("127.0.0.1/32",),
@@ -64,7 +67,7 @@ def test_admin_requires_lan_address_and_password(tmp_path):
         assert response.headers["www-authenticate"].startswith("Basic")
         assert response.headers["x-frame-options"] == "DENY"
         assert client.get("/", auth=("admin", "wrong")).status_code == 401
-        assert client.get("/", auth=("admin", "correct-horse")).status_code == 200
+        assert client.get("/", auth=("admin", ADMIN_PASSWORD)).status_code == 200
         assert client.get("/readyz").status_code == 200
 
     blocked_app = create_app(settings(tmp_path / "blocked"))
@@ -72,10 +75,42 @@ def test_admin_requires_lan_address_and_password(tmp_path):
         assert client.get("/healthz").status_code == 403
 
 
+def test_admin_rejects_a_short_password_before_opening_the_database(tmp_path):
+    web_settings = replace(settings(tmp_path), password="short")
+
+    with pytest.raises(ValueError, match="32 characters"):
+        create_app(web_settings)
+
+    assert not web_settings.database_file.exists()
+
+
+def test_admin_throttles_failed_authentication_per_client(tmp_path):
+    web_settings = replace(
+        settings(tmp_path),
+        auth_rate_limit=2,
+        auth_rate_window_seconds=60,
+    )
+    app = create_app(web_settings)
+    with TestClient(app, client=("127.0.0.1", 50000)) as client:
+        assert client.get("/").status_code == 401
+        assert client.get("/", auth=("admin", "wrong-1")).status_code == 401
+        assert client.get("/", auth=("admin", ADMIN_PASSWORD)).status_code == 200
+
+        assert client.get("/", auth=("admin", "wrong-1")).status_code == 401
+        assert client.get("/", auth=("admin", "wrong-2")).status_code == 401
+
+        blocked = client.get("/", auth=("admin", "wrong-3"))
+        assert blocked.status_code == 429
+        assert 1 <= int(blocked.headers["retry-after"]) <= 60
+
+        correct_during_cooldown = client.get("/", auth=("admin", ADMIN_PASSWORD))
+        assert correct_during_cooldown.status_code == 429
+
+
 @pytest.mark.parametrize("path", ["/users", "/requests", "/appeals"])
 def test_admin_list_pages_reject_an_excessive_page_number(tmp_path, path):
     app = create_app(settings(tmp_path))
-    auth = ("admin", "correct-horse")
+    auth = ("admin", ADMIN_PASSWORD)
     with TestClient(app, client=("127.0.0.1", 50000)) as client:
         response = client.get(
             path,
@@ -94,7 +129,7 @@ def test_admin_request_page_clamps_non_positive_page_numbers(tmp_path, page):
         response = client.get(
             "/requests",
             params={"page": page},
-            auth=("admin", "correct-horse"),
+            auth=("admin", ADMIN_PASSWORD),
         )
 
     assert response.status_code == 200
@@ -107,7 +142,7 @@ def test_admin_request_page_rejects_a_non_numeric_page_number(tmp_path):
         response = client.get(
             "/requests",
             params={"page": "invalid"},
-            auth=("admin", "correct-horse"),
+            auth=("admin", ADMIN_PASSWORD),
         )
 
     assert response.status_code == 422
@@ -118,7 +153,7 @@ def test_admin_pages_do_not_disclose_source_image_paths(tmp_path):
     request_id = seed_request(web_settings.database_file)
     app = create_app(web_settings)
     with TestClient(app, client=("127.0.0.1", 50000)) as client:
-        response = client.get(f"/requests/{request_id}", auth=("admin", "correct-horse"))
+        response = client.get(f"/requests/{request_id}", auth=("admin", ADMIN_PASSWORD))
         assert response.status_code == 200
         assert "Test wine" in response.text
         assert 'class="detail-grid"' in response.text
@@ -170,7 +205,7 @@ def test_admin_serves_only_indexed_artifacts_for_safe_requests(
     )
     repository.close()
     app = create_app(web_settings)
-    auth = ("admin", "correct-horse")
+    auth = ("admin", ADMIN_PASSWORD)
     url = f"/requests/{request_id}/artifacts/{artifact_key}"
     with TestClient(app, client=("127.0.0.1", 50000)) as client:
         assert client.get(url).status_code == 401
@@ -230,7 +265,7 @@ def test_admin_serves_only_censored_derivative_for_quarantined_request(tmp_path)
     )
     repository.close()
     app = create_app(web_settings)
-    auth = ("admin", "correct-horse")
+    auth = ("admin", ADMIN_PASSWORD)
     with TestClient(app, client=("127.0.0.1", 50000)) as client:
         detail = client.get(f"/requests/{request_id}", auth=auth)
         assert detail.status_code == 200
@@ -250,7 +285,7 @@ def test_admin_reset_and_retry_require_csrf(tmp_path):
     web_settings = settings(tmp_path)
     request_id = seed_request(web_settings.database_file)
     app = create_app(web_settings)
-    auth = ("admin", "correct-horse")
+    auth = ("admin", ADMIN_PASSWORD)
     with TestClient(app, client=("127.0.0.1", 50000), follow_redirects=False) as client:
         users = client.get("/users", auth=auth)
         token = csrf_from(users.text)
@@ -284,7 +319,7 @@ def test_admin_does_not_offer_retry_for_quarantine(tmp_path):
     with TestClient(app, client=("127.0.0.1", 50000)) as client:
         detail = client.get(
             f"/requests/{request_id}",
-            auth=("admin", "correct-horse"),
+            auth=("admin", ADMIN_PASSWORD),
         )
         assert detail.status_code == 200
         assert "Повторить обработку" not in detail.text
@@ -307,7 +342,7 @@ def test_admin_shows_bypassed_moderation_as_not_checked(tmp_path):
     with TestClient(app, client=("127.0.0.1", 50000)) as client:
         detail = client.get(
             f"/requests/{request_id}",
-            auth=("admin", "correct-horse"),
+            auth=("admin", ADMIN_PASSWORD),
         )
 
     assert detail.status_code == 200
@@ -328,9 +363,9 @@ def test_admin_shows_api_source_without_telegram_retry(tmp_path):
     with TestClient(app, client=("127.0.0.1", 50000)) as client:
         detail = client.get(
             f"/requests/{request_id}",
-            auth=("admin", "correct-horse"),
+            auth=("admin", ADMIN_PASSWORD),
         )
-        requests = client.get("/requests", auth=("admin", "correct-horse"))
+        requests = client.get("/requests", auth=("admin", ADMIN_PASSWORD))
 
     assert detail.status_code == 200
     assert "HTTP API" in detail.text

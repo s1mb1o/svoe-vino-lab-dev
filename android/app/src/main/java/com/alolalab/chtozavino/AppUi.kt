@@ -2,7 +2,9 @@
 
 package com.alolalab.chtozavino
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +25,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -43,12 +48,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.io.File
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
+
+private const val PRODUCT_URL = "https://vino-svoe.ru"
 
 data class AppActions(
     val acceptAge: () -> Unit,
@@ -56,14 +65,16 @@ data class AppActions(
     val takePhoto: () -> Unit,
     val chooseImage: () -> Unit,
     val scanCode: () -> Unit,
-    val installPack: () -> Unit,
     val recognize: () -> Unit,
     val openUrl: (String) -> Unit,
     val clearHistory: () -> Unit,
     val dismissError: () -> Unit,
+    val setDisAcceleratorMode: (AcceleratorMode) -> Unit,
+    val setSigLip2AcceleratorMode: (AcceleratorMode) -> Unit,
+    val redetectAccelerators: () -> Unit,
 )
 
-private enum class AppPage { RECOGNITION, HISTORY }
+private enum class AppPage { RECOGNITION, HISTORY, SETTINGS }
 
 private val LightColors = lightColorScheme(
     primary = androidx.compose.ui.graphics.Color(0xff7c2638),
@@ -86,35 +97,77 @@ fun ChtoZaVinoApp(state: UiState, actions: AppActions) {
     val dark = androidx.compose.foundation.isSystemInDarkTheme()
     MaterialTheme(colorScheme = if (dark) DarkColors else LightColors) {
         var page by remember { mutableStateOf(AppPage.RECOGNITION) }
+        BackHandler(enabled = page == AppPage.SETTINGS) { page = AppPage.RECOGNITION }
         Surface(modifier = Modifier.fillMaxSize()) {
             Scaffold(
                 topBar = {
                     TopAppBar(
+                        navigationIcon = {
+                            if (page == AppPage.SETTINGS) {
+                                IconButton(onClick = { page = AppPage.RECOGNITION }) {
+                                    Icon(
+                                        painterResource(R.drawable.ic_arrow_back),
+                                        contentDescription = "Назад",
+                                    )
+                                }
+                            }
+                        },
                         title = {
                             Column {
-                                Text("Что за вино?", fontWeight = FontWeight.SemiBold)
                                 Text(
-                                    "Распознавание на устройстве",
+                                    if (page == AppPage.SETTINGS) "Настройки" else "Что за вино?",
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(
+                                    if (page == AppPage.SETTINGS) {
+                                        "Приложение и локальный каталог"
+                                    } else {
+                                        "Не требует интернета"
+                                    },
                                     style = MaterialTheme.typography.labelSmall,
                                 )
+                            }
+                        },
+                        actions = {
+                            if (page != AppPage.SETTINGS) {
+                                IconButton(onClick = { page = AppPage.SETTINGS }) {
+                                    Icon(
+                                        painterResource(R.drawable.ic_settings),
+                                        contentDescription = "Настройки",
+                                    )
+                                }
                             }
                         },
                     )
                 },
                 bottomBar = {
-                    NavigationBar {
-                        NavigationBarItem(
-                            selected = page == AppPage.RECOGNITION,
-                            onClick = { page = AppPage.RECOGNITION },
-                            icon = { Text("◎") },
-                            label = { Text("Распознать") },
-                        )
-                        NavigationBarItem(
-                            selected = page == AppPage.HISTORY,
-                            onClick = { page = AppPage.HISTORY },
-                            icon = { Text("◷") },
-                            label = { Text("История") },
-                        )
+                    if (page != AppPage.SETTINGS) {
+                        NavigationBar {
+                            NavigationBarItem(
+                                selected = page == AppPage.RECOGNITION,
+                                onClick = { page = AppPage.RECOGNITION },
+                                icon = {
+                                    Icon(
+                                        painterResource(R.drawable.ic_recognize),
+                                        contentDescription = "Распознать",
+                                        modifier = Modifier.size(30.dp),
+                                    )
+                                },
+                                label = { Text("Распознать") },
+                            )
+                            NavigationBarItem(
+                                selected = page == AppPage.HISTORY,
+                                onClick = { page = AppPage.HISTORY },
+                                icon = {
+                                    Icon(
+                                        painterResource(R.drawable.ic_history),
+                                        contentDescription = "История",
+                                        modifier = Modifier.size(30.dp),
+                                    )
+                                },
+                                label = { Text("История") },
+                            )
+                        }
                     }
                 },
             ) { padding ->
@@ -126,6 +179,11 @@ fun ChtoZaVinoApp(state: UiState, actions: AppActions) {
                     )
                     AppPage.HISTORY -> HistoryPage(
                         state.history,
+                        actions,
+                        Modifier.padding(padding),
+                    )
+                    AppPage.SETTINGS -> SettingsPage(
+                        state,
                         actions,
                         Modifier.padding(padding),
                     )
@@ -161,7 +219,6 @@ private fun RecognitionPage(state: UiState, actions: AppActions, modifier: Modif
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item { Spacer(Modifier.height(4.dp)) }
-        item { ModelPackCard(state.modelPack, state.isBusy, actions.installPack) }
         if (state.error != null) {
             item { ErrorCard(state.error, actions.dismissError) }
         }
@@ -182,18 +239,30 @@ private fun RecognitionPage(state: UiState, actions: AppActions, modifier: Modif
                         onClick = actions.takePhoto,
                         enabled = !state.isBusy,
                         modifier = Modifier.weight(1f),
-                    ) { Text("Сфотографировать") }
+                    ) {
+                        Icon(painterResource(R.drawable.ic_camera), contentDescription = null)
+                        Spacer(Modifier.size(8.dp))
+                        Text("Фото")
+                    }
                     OutlinedButton(
                         onClick = actions.chooseImage,
                         enabled = !state.isBusy,
                         modifier = Modifier.weight(1f),
-                    ) { Text("Из галереи") }
+                    ) {
+                        Icon(painterResource(R.drawable.ic_photo_library), contentDescription = null)
+                        Spacer(Modifier.size(8.dp))
+                        Text("Галерея")
+                    }
                 }
                 OutlinedButton(
                     onClick = actions.scanCode,
                     enabled = !state.isBusy && state.modelPack != null,
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("Сканировать штрихкод или QR") }
+                ) {
+                    Icon(painterResource(R.drawable.ic_barcode_scan), contentDescription = null)
+                    Spacer(Modifier.size(8.dp))
+                    Text("Штрихкод или QR")
+                }
             }
         }
         if (state.selectedImage != null) {
@@ -249,26 +318,6 @@ private fun RecognitionPage(state: UiState, actions: AppActions, modifier: Modif
 }
 
 @Composable
-private fun ModelPackCard(pack: ModelPackInfo?, busy: Boolean, install: () -> Unit) {
-    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text("Локальные модели", fontWeight = FontWeight.Bold)
-            if (pack == null) {
-                Text("Для распознавания установите проверенный пакет моделей и каталога.")
-            } else {
-                Text("Версия ${pack.version}: ${pack.vectorCount} изображений, ${pack.wineCount} вин.")
-            }
-            OutlinedButton(onClick = install, enabled = !busy) {
-                Text(if (pack == null) "Установить пакет моделей" else "Заменить пакет моделей")
-            }
-        }
-    }
-}
-
-@Composable
 private fun ErrorCard(message: String, dismiss: () -> Unit) {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
@@ -278,6 +327,121 @@ private fun ErrorCard(message: String, dismiss: () -> Unit) {
             }
         }
     }
+}
+
+@Composable
+private fun SettingsPage(
+    state: UiState,
+    actions: AppActions,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        item { Spacer(Modifier.height(4.dp)) }
+        item {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text("Локальный каталог", fontWeight = FontWeight.Bold)
+                    val pack = state.modelPack
+                    if (pack == null) {
+                        Text(if (state.isBusy) "Подготовка каталога…" else "Каталог недоступен.")
+                    } else {
+                        Text("Версия ${pack.version}")
+                        Text("${pack.vectorCount} изображений · ${pack.wineCount} вин")
+                    }
+                    Text(
+                        "Каталог и модели встроены в приложение. Замена пакета не требуется.",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+        }
+        item {
+            Card {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text("Распознавание", fontWeight = FontWeight.Bold)
+                    Text("DIS выделяет объект. SigLIP2 создаёт вектор из 768 значений.")
+                    AcceleratorPicker(
+                        title = "DIS",
+                        mode = state.disAcceleratorMode,
+                        onChange = actions.setDisAcceleratorMode,
+                    )
+                    AcceleratorPicker(
+                        title = "SigLIP2",
+                        mode = state.sigLip2AcceleratorMode,
+                        onChange = actions.setSigLip2AcceleratorMode,
+                    )
+                    Text(
+                        automaticAcceleratorText(state),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    OutlinedButton(
+                        onClick = actions.redetectAccelerators,
+                        enabled = !state.isBusy,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text("Проверить GPU снова")
+                    }
+                }
+            }
+        }
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    "Версия приложения ${BuildConfig.VERSION_NAME}",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                TextButton(onClick = { actions.openUrl(PRODUCT_URL) }) {
+                    Text("Сайт «Что за вино?»")
+                }
+            }
+        }
+        item { Spacer(Modifier.height(16.dp)) }
+    }
+}
+
+@Composable
+private fun AcceleratorPicker(
+    title: String,
+    mode: AcceleratorMode,
+    onChange: (AcceleratorMode) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(title, style = MaterialTheme.typography.labelLarge)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AcceleratorMode.entries.forEach { candidate ->
+                FilterChip(
+                    selected = mode == candidate,
+                    onClick = { onChange(candidate) },
+                    label = {
+                        Text(
+                            when (candidate) {
+                                AcceleratorMode.AUTO -> "Авто"
+                                AcceleratorMode.GPU -> "GPU"
+                                AcceleratorMode.CPU -> "CPU"
+                            },
+                        )
+                    },
+                )
+            }
+        }
+    }
+}
+
+private fun automaticAcceleratorText(state: UiState): String {
+    if (state.isAcceleratorCheckRunning) return "Идёт проверка GPU на этом устройстве."
+    val dis = state.automaticDisAccelerator?.name ?: "не проверен"
+    val sigLip2 = state.automaticSigLip2Accelerator?.name ?: "не проверен"
+    return "Режим «Авто» проверяет модели на первом запуске. " +
+        "Текущий выбор: DIS — $dis, SigLIP2 — $sigLip2."
 }
 
 @Composable
@@ -298,18 +462,30 @@ private fun ImageCard(title: String, bitmap: android.graphics.Bitmap) {
 
 @Composable
 private fun ResultCard(match: WineMatch, openUrl: (String) -> Unit) {
+    val preview = remember(match.wine.imagePath) {
+        match.wine.imagePath?.takeIf { File(it).isFile }?.let(::decodeFilePreview)
+    }
     Card {
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
+            if (preview != null) {
+                Image(
+                    bitmap = preview.asImageBitmap(),
+                    contentDescription = "Каталожное изображение ${match.wine.name}",
+                    modifier = Modifier.fillMaxWidth().height(180.dp)
+                        .background(androidx.compose.ui.graphics.Color.White, RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Fit,
+                )
+            }
             Text(match.wine.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             match.wine.producer?.let { Text(it) }
             val details = listOfNotNull(match.wine.category, match.wine.color, match.wine.region)
                 .joinToString(" · ")
             if (details.isNotEmpty()) Text(details, style = MaterialTheme.typography.bodySmall)
             Text(
-                "Косинус: ${String.format(Locale.forLanguageTag("ru-RU"), "%.3f", match.score)}",
+                "Сходство: ${formatSimilarityPercent(match.score)}",
                 style = MaterialTheme.typography.labelMedium,
             )
             Button(onClick = { openUrl(match.wine.pageUrl) }) {
@@ -353,7 +529,7 @@ private fun HistoryPage(history: List<HistoryEntry>, actions: AppActions, modifi
             }
         }
         if (history.isEmpty()) {
-            item { Text("Распознанных вин пока нет.") }
+            item { Text("История пока пуста. Здесь появятся результаты распознавания.") }
         }
         items(history, key = { it.id }) { row ->
             HistoryCard(row, actions.openUrl)
@@ -365,7 +541,7 @@ private fun HistoryPage(history: List<HistoryEntry>, actions: AppActions, modifi
 @Composable
 private fun HistoryCard(entry: HistoryEntry, openUrl: (String) -> Unit) {
     val preview = remember(entry.previewPath) {
-        entry.previewPath?.takeIf { File(it).isFile }?.let(BitmapFactory::decodeFile)
+        entry.previewPath?.takeIf { File(it).isFile }?.let(::decodeFilePreview)
     }
     val formatter = remember {
         DateFormat.getDateTimeInstance(
@@ -399,10 +575,31 @@ private fun HistoryCard(entry: HistoryEntry, openUrl: (String) -> Unit) {
                 Text(formatter.format(Date(entry.timestamp)), style = MaterialTheme.typography.bodySmall)
                 Text(
                     if (entry.source == RecognitionSource.CODE) "Штрихкод или QR" else
-                        "Фото · ${String.format(Locale.forLanguageTag("ru-RU"), "%.3f", entry.score)}",
+                        "Фото · сходство ${formatSimilarityPercent(entry.score)}",
                     style = MaterialTheme.typography.labelSmall,
                 )
             }
         }
     }
+}
+
+internal fun formatSimilarityPercent(score: Float): String =
+    "${(score.coerceIn(0f, 1f) * 100f).roundToInt()}%"
+
+private fun decodeFilePreview(path: String, maxSide: Int = 1024): Bitmap? {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(path, bounds)
+    if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+
+    var sample = 1
+    while (bounds.outWidth / sample > maxSide * 2 || bounds.outHeight / sample > maxSide * 2) {
+        sample *= 2
+    }
+    return BitmapFactory.decodeFile(
+        path,
+        BitmapFactory.Options().apply {
+            inSampleSize = sample
+            inPreferredConfig = Bitmap.Config.ARGB_8888
+        },
+    )
 }

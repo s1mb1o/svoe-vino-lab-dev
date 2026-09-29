@@ -15,7 +15,7 @@ function confirm() {
 <template>
   <div class="age-gate" aria-labelledby="age-heading">
     <section class="age-card" role="dialog" aria-modal="true" aria-describedby="age-copy">
-      <img src="/reference/logo.svg" alt="Свое Вино" width="160" height="40">
+      <div class="age-brand"><ProductBrand /></div>
       <div class="age-mark" aria-hidden="true">18+</div>
       <template v-if="!declined">
         <p class="step-label">ПОДТВЕРЖДЕНИЕ ВОЗРАСТА</p>

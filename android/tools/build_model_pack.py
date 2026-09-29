@@ -16,9 +16,11 @@ import numpy as np
 
 PACK_FORMAT = "svoe-vino-android-model-pack"
 PACK_VERSION = 1
-PIPELINE = "dis-white-square-v1"
+PIPELINE = "dis-white-square-timm-crop090-v2"
 MODEL = "vit_base_patch16_siglip_224.v2_webli"
 DIMENSION = 768
+DIS_MODEL_SHA256 = "0c3c93b6a2a65e7c69137ec82596944e6bfb97d982c75bab03acb0738dbaa087"
+SIGLIP_MODEL_SHA256 = "a30ebb7b3ee15eaa68a18f9ab6a2ed740c15c343d25d898dc482317473320854"
 PAYLOADS = (
     "dis.tflite",
     "siglip2_base_224_fp16.tflite",
@@ -158,6 +160,10 @@ def build(args):
     for path in (database, dis_model, siglip_model):
         if not path.is_file():
             raise PackError(f"file does not exist: {path}")
+    if sha256_file(dis_model) != DIS_MODEL_SHA256:
+        raise PackError("dis.tflite does not match the verified Android model")
+    if sha256_file(siglip_model) != SIGLIP_MODEL_SHA256:
+        raise PackError("siglip2_base_224_fp16.tflite does not match the verified Android model")
 
     validate_source_bundle(bundle)
     vectors = load_vectors(bundle / "vectors.npy")

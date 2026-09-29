@@ -1,0 +1,455 @@
+{
+  "files": {
+    "infrastructure/data/catalog.csv": {
+      "bytes": 2952669,
+      "sha256": "12a1b0b620db7a2264b094446861e83940a927708d65a1b7ccffda7ec3aeffee"
+    },
+    "infrastructure/data/catalog_enriched.csv": {
+      "bytes": 2777615,
+      "sha256": "027d4dcf67f98d077bc173fb1bcad94dc593bf9cbe06a50c7b94f4599fc96440"
+    },
+    "infrastructure/data/seed_wines.sql": {
+      "bytes": 7532926,
+      "sha256": "015a9cbdc741e080d75ac1a33788299b54fa74634d2a1bd3b2d12c6e76774aea"
+    }
+  },
+  "source": {
+    "rows": 4147,
+    "columns": [
+      "Название вина",
+      "Категория",
+      "Цвет",
+      "Регион",
+      "Сорт винограда",
+      "Описание",
+      "Винодельня",
+      "Slug",
+      "Название фото"
+    ],
+    "unique_nonempty_slugs": 2103,
+    "blank_slugs": 0,
+    "duplicate_slug_values": 2044,
+    "extra_rows_from_duplicate_slugs": 2044,
+    "complete": {
+      "Название вина": 4147,
+      "Категория": 4147,
+      "Цвет": 4147,
+      "Регион": 4147,
+      "Сорт винограда": 4143,
+      "Описание": 4147,
+      "Винодельня": 4147,
+      "Slug": 4147,
+      "Название фото": 4147
+    },
+    "unique_values": {
+      "Название вина": 1758,
+      "Категория": 4,
+      "Цвет": 826,
+      "Регион": 9,
+      "Сорт винограда": 338,
+      "Описание": 2083,
+      "Винодельня": 135,
+      "Slug": 2103,
+      "Название фото": 2090
+    }
+  },
+  "enriched": {
+    "rows": 2103,
+    "columns": [
+      "Slug",
+      "Название вина",
+      "Категория",
+      "Цвет",
+      "Регион",
+      "Сорт винограда",
+      "Описание",
+      "Винодельня",
+      "Название фото",
+      "S3_Key",
+      "Signed_Image_URL",
+      "Sweetness",
+      "Body",
+      "Acidity",
+      "Oak",
+      "Aroma_Tags",
+      "Flavor_Tags",
+      "Pairings"
+    ],
+    "unique_nonempty_slugs": 2103,
+    "blank_slugs": 0,
+    "duplicate_slug_values": 0,
+    "extra_rows_from_duplicate_slugs": 0,
+    "complete": {
+      "Slug": 2103,
+      "Название вина": 2103,
+      "Категория": 2103,
+      "Цвет": 2103,
+      "Регион": 2103,
+      "Сорт винограда": 2101,
+      "Описание": 2103,
+      "Винодельня": 2103,
+      "Название фото": 2103,
+      "S3_Key": 2103,
+      "Signed_Image_URL": 2103,
+      "Sweetness": 2103,
+      "Body": 2103,
+      "Acidity": 2103,
+      "Oak": 2103,
+      "Aroma_Tags": 2020,
+      "Flavor_Tags": 1988,
+      "Pairings": 2087
+    },
+    "unique_values": {
+      "Slug": 2103,
+      "Название вина": 1758,
+      "Категория": 4,
+      "Цвет": 826,
+      "Регион": 9,
+      "Сорт винограда": 338,
+      "Описание": 2083,
+      "Винодельня": 135,
+      "Название фото": 1954,
+      "S3_Key": 1954,
+      "Signed_Image_URL": 1974,
+      "Sweetness": 4,
+      "Body": 9,
+      "Acidity": 7,
+      "Oak": 4,
+      "Aroma_Tags": 1584,
+      "Flavor_Tags": 543,
+      "Pairings": 11
+    }
+  },
+  "ours": {
+    "rows": 2106,
+    "unique_slugs": 2106,
+    "states": {
+      "Removed": 5,
+      "Disabled": 3,
+      "Active": 2098
+    },
+    "complete": {
+      "wine_slug": 2106,
+      "name": 2106,
+      "producer": 2106,
+      "category": 2106,
+      "color": 2106,
+      "region": 2106,
+      "grapes": 2104,
+      "description": 2106,
+      "csv_photo_name": 2106,
+      "state": 2106,
+      "removed_by": 5,
+      "website_modified_at": 2030,
+      "modified_at": 2106
+    },
+    "image_rows": 2423,
+    "image_wines": 2101,
+    "main_image_wines": 2101,
+    "unique_image_hashes": 2395,
+    "official_slugs_without_any_image": [
+      "polusladkoe-krasnoe-zb-vajn-frizzante",
+      "polusladkoe-krasnoe-zolotaya-balka",
+      "polusuhoe-rozovoe-zb-vajn-frizzante",
+      "suhoe-beloe-zb-vajn-frizzante",
+      "vibes-silvaner-barrel-fermented-2022"
+    ]
+  },
+  "slug_sets": {
+    "source_intersection_ours": 2103,
+    "source_only": [],
+    "ours_only": [
+      "__aaaaa",
+      "__cli-index-smoke-20260929",
+      "__web-index-smoke-20260929"
+    ],
+    "enriched_intersection_ours": 2103,
+    "enriched_only": [],
+    "ours_not_enriched": [
+      "__aaaaa",
+      "__cli-index-smoke-20260929",
+      "__web-index-smoke-20260929"
+    ],
+    "source_not_enriched": [],
+    "enriched_not_source": []
+  },
+  "source_duplicate_conflicts": {
+    "count": 0,
+    "examples": {}
+  },
+  "base_field_changes_source_to_enriched": {
+    "Название фото": 1959
+  },
+  "image_comparison": {
+    "enriched_filename_equals_our_main_source_name": 1735,
+    "enriched_filename_differs_from_our_main_source_name": 363,
+    "enriched_shared_filename_groups": 58,
+    "enriched_slugs_in_shared_filename_groups": 207,
+    "largest_enriched_filename_groups": [
+      {
+        "file": "Risling_6d778a7d72.webp",
+        "count": 18,
+        "slugs": [
+          "aratti-risling-beloe-polusuhoe",
+          "aratti-risling-suhoe",
+          "cru-lermont-risling",
+          "golubitskoe-estate-risling",
+          "green-cape-risling",
+          "katharon-katharon-risling-suhoe",
+          "katharon-mezenka-risling-polusuhoe",
+          "katharon-mezenka-risling-suhoe",
+          "leto-risling-2024",
+          "leto-risling-2024-polusuhoe-vino",
+          "risling",
+          "risling-shato-taman",
+          "vysokij-bereg-risling-zelenaya-seriya",
+          "vysokij-bereg-risling-zelenaya-seriya-1",
+          "vysokij-bereg-risling-zelenaya-seriya-2",
+          "ya-jla-risling",
+          "zb-vajn-risling-polusuhoe-beloe",
+          "zhemchuzhnaya-9-risling-sovinon-blan"
+        ]
+      },
+      {
+        "file": "Shardone_ada18c9eae.webp",
+        "count": 16,
+        "slugs": [
+          "aratti-shardone-beloe-suhoe",
+          "b-yu-rne-sh-ardone-suhoe-beloe",
+          "fanagoriya-fanagoriya-hey-bey-shardone-beloe-suhoe-13",
+          "katharon-katharon-shardone",
+          "leto-shardone-2023-suhoe-beloe",
+          "myshako-green-cape-shardone-beloe-bryut",
+          "shardone",
+          "shardone-balaklava",
+          "shardone-barrel-2023",
+          "shardone-rezerv",
+          "shato-taman-shardone",
+          "twopeters_shardone",
+          "uva-vallis-shardone",
+          "vino-suhoe-beloe-endemy-shardone",
+          "zhemchuzhnaya-9-czitron-shardone",
+          "zhemchuzhnaya-9-czitron-shardone-1"
+        ]
+      },
+      {
+        "file": "sladkoe_df74c29436.webp",
+        "count": 11,
+        "slugs": [
+          "abrau-dyurso-fizz-beloe-polusladkoe",
+          "b-yu-rne-pino-gri-pozdnij-sbor-sladkoe-beloe",
+          "belaya-lvicza",
+          "igristoe-zhemchuzhnoe-vino-polusladkoe-beloe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+          "khrustaleva-76-muscat-polusladkoe-beloe",
+          "myshako-igristoe-beloe-polusladkoe",
+          "polusladkoe-beloe-zolotaya-balka",
+          "shato-taman-polusladkoe",
+          "valerij-zaharin-kokur-i-ko-beloe-polusladkoe",
+          "zb-vajn-moskato-polusladkoe-beloe",
+          "zb-wine-moscato-beloe-polusladkoe"
+        ]
+      },
+      {
+        "file": "Muskat_d58579a0e1.webp",
+        "count": 9,
+        "slugs": [
+          "aratti-muskat-belyj-polusuhoe",
+          "aratti-muskat-belyj-suhoe",
+          "balaklava-muskat",
+          "leto-vecrfn-2024-suhoe-vino",
+          "muskat-avtorskoe-vino",
+          "muskat-ottonel-gusev",
+          "muskat-pozdnego-sbora-rozovyj",
+          "muskatnoe-shato-taman",
+          "zhemchuzhnaya-9-muskat-rozovyj-pino-gri"
+        ]
+      },
+      {
+        "file": "Pino_Nuar_c7e769ab8f.webp",
+        "count": 9,
+        "slugs": [
+          "balaklava-pino-nuar",
+          "denisov_pino_noir_klaret",
+          "pino-nuar",
+          "zhemchuzhnaya-9-kaberne-sovinon-pino-nuar",
+          "zhemchuzhnaya-9-kaberne-sovinon-pino-nuar-1",
+          "zhemchuzhnaya-9-pino-gri-pino-nuar",
+          "zhemchuzhnaya-9-pino-nuar-muskat-rozovyj",
+          "zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-1",
+          "zhemchuzhnaya-9-pino-nuar-muskat-rozovyj-2"
+        ]
+      },
+      {
+        "file": "Kaberne_Fran_d71d65de5d.webp",
+        "count": 8,
+        "slugs": [
+          "cabernet-franc-2024-one-barrel-by-dmitry-maslov-kaberne-fran-2024-uan-barrel-dmitrij-maslov",
+          "kaberne-fran",
+          "katharon-katharon-kaberne-fran",
+          "katharon-mezenka-kaberne-fran",
+          "katharon-mezenka-kaberne-fran-merlo",
+          "leto-kaberne-fran-2021-suhoe-krasnoe",
+          "leto-kaberne-fran-rezerv-2020-suhoe-krasnoe",
+          "leto-kaberne-fran-rezerv-2021-suhoe-krasnoe"
+        ]
+      },
+      {
+        "file": "Kaberne_Sovinon_cecaa1f694.webp",
+        "count": 6,
+        "slugs": [
+          "agora-terruarnoe-kaberne-sovinon",
+          "dnk-kaberne-sovinon",
+          "mancopia-kaberne-sovinon",
+          "millstream-cellar-select-kaberne-sovinon",
+          "shato-taman-kaberne-sovinon",
+          "zhemchuzhnaya-9-muskat-rozovyj-kaberne-sovinon"
+        ]
+      },
+      {
+        "file": "Sovinon_Blan_e82f684de6.webp",
+        "count": 6,
+        "slugs": [
+          "aratti-sovinon-blan-beloe-polusuhoe",
+          "czitronnyj-magaracha-sovinon-blan",
+          "gaj-kodzor-sovinon-blan",
+          "katharon-katharon-sovinon-blan",
+          "katharon-mezenka-sovinon-blan",
+          "zhemchuzhnaya-9-sovinon-blan-aligote"
+        ]
+      },
+      {
+        "file": "Krasnostop_876941a1ad.webp",
+        "count": 6,
+        "slugs": [
+          "b-yu-rne-krasnostop-suhoe-krasnoe-classic",
+          "krasnostop-shato-taman",
+          "kyuve-czimlyanskij-chernyj-i-krasnostop-zolotoj",
+          "millstream-cellar-select-krasnostop-zolotovskij",
+          "miroir-de-talu-merlot-krasnostop",
+          "shato-taman-krasnostop"
+        ]
+      },
+      {
+        "file": "Saperavi_1fe8cca7fc.webp",
+        "count": 6,
+        "slugs": [
+          "aratti-vremena-goda-saperavi-leto",
+          "aratti-vremena-goda-saperavi-merlo-vesna",
+          "aratti-vremena-goda-saperavi-vyderzhannyj-zima",
+          "millstream-cellar-select-saperavi",
+          "saperavi-premium",
+          "shato-taman-saperavi"
+        ]
+      },
+      {
+        "file": "Beloe_bryut_85d083f446.webp",
+        "count": 6,
+        "slugs": [
+          "abrau-dyurso-fizz-beloe-bryut",
+          "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut",
+          "aristov-anima-millesimato-beloe-bryut",
+          "myshako-igristoe-beloe-bryut",
+          "solnechnaya-dolina-meganom-kokur-beloe-bryut",
+          "valerij-zaharin-kokur-i-ko-beloe-bryut"
+        ]
+      },
+      {
+        "file": "Polusladkoe_krasnoe_b2776e879a.webp",
+        "count": 4,
+        "slugs": [
+          "chernaya-lvicza-polusladkoe-krasnoe",
+          "leto-kaberne-fran-2024-polusladkoe-krasnoe",
+          "polusladkoe-krasnoe-zb-vajn-frizzante",
+          "polusladkoe-krasnoe-zolotaya-balka"
+        ]
+      },
+      {
+        "file": "Polusladkoe_rozovoe_594b95aeb6.webp",
+        "count": 4,
+        "slugs": [
+          "igristoe-zhemchuzhnoe-vino-polusladkoe-rozovoe-di-kaspiko-fiori-di-mare-di-caspico-fiori-di-mare",
+          "polusladkoe-rozovoe-zolotaya-balka",
+          "rozovaya-pantera",
+          "zb-vajn-moskato-polusladkoe-rozovoe"
+        ]
+      },
+      {
+        "file": "Appassimento_cbbff6ab39.webp",
+        "count": 3,
+        "slugs": [
+          "appassimento",
+          "appassimento-merlot",
+          "kaberne-sovinon-appasimento"
+        ]
+      },
+      {
+        "file": "hrustal_0c834bca5d.webp",
+        "count": 3,
+        "slugs": [
+          "aya-khrustaleva-76-merlot-organik",
+          "khrustaleva-76-merlot-polusuhoe-rozovoe",
+          "khrustaleva-76-muscat-bryut-beloe"
+        ]
+      }
+    ]
+  },
+  "source_vs_ours_fields": {
+    "Название вина": {
+      "our_field": "name",
+      "common": 2103,
+      "exact_normalized": 2103,
+      "casefold_normalized": 2103
+    },
+    "Категория": {
+      "our_field": "category",
+      "common": 2103,
+      "exact_normalized": 2103,
+      "casefold_normalized": 2103
+    },
+    "Цвет": {
+      "our_field": "color",
+      "common": 2103,
+      "exact_normalized": 2103,
+      "casefold_normalized": 2103
+    },
+    "Регион": {
+      "our_field": "region",
+      "common": 2103,
+      "exact_normalized": 2103,
+      "casefold_normalized": 2103
+    },
+    "Сорт винограда": {
+      "our_field": "grapes",
+      "common": 2103,
+      "exact_normalized": 2103,
+      "casefold_normalized": 2103
+    },
+    "Описание": {
+      "our_field": "description",
+      "common": 2103,
+      "exact_normalized": 2103,
+      "casefold_normalized": 2103
+    },
+    "Винодельня": {
+      "our_field": "producer",
+      "common": 2103,
+      "exact_normalized": 2103,
+      "casefold_normalized": 2103
+    },
+    "Название фото": {
+      "our_field": "csv_photo_name",
+      "common": 2103,
+      "exact_normalized": 2103,
+      "casefold_normalized": 2103
+    }
+  },
+  "sql": {
+    "wine_inserts": 2103,
+    "pairing_inserts": 4533,
+    "parsed_wine_slugs": 2103,
+    "unique_wine_slugs": 2103,
+    "parsed_pairing_slugs": 4533,
+    "slug_set_equals_enriched": true,
+    "price_null_rows": 2103
+  }
+}

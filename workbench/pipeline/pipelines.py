@@ -9,6 +9,8 @@ docs/plans/34_pipeline-section.md.
 The backends:
     svoe-vino-ru   a remote matcher, for example the official recognizer of vino-svoe.ru.
                    `remote_run.py` sends each photo of a test set as it is (plan 31).
+                   The answer shape `group` reads `POST /v1/group/match` of
+                   svoe-vino-matcher; a run row then holds the key `group` (plan 83).
     embedding      the vectors of one entry of the key `embeddings`, named by the key
                    `embedding`; `embedding_run.py` (plan 33). The owner chose this on
                    2026-09-26T00:12:24+0300: `embeddings` prepares and uses the vectors,
@@ -40,7 +42,7 @@ REMOTE_KEYS = ("url", "field", "response", "query", "top_k", "timeout_s", "worke
 REMOTE_DEFAULTS = {"field": "image", "response": "auto", "query": {}, "top_k": 1,
                    "timeout_s": 30, "workers": 1, "headers": {}}
 # The answer shapes of `match_backends.SHAPES`. A test keeps the two lists equal.
-REMOTE_SHAPES = ("auto", "slug-object", "slug-array", "candidates")
+REMOTE_SHAPES = ("auto", "slug-object", "slug-array", "candidates", "group")
 BACKEND_KEYS = {REMOTE_BACKEND: REMOTE_KEYS,
                 EMBEDDING_BACKEND: ("embedding", "views", "barcode", "rerank", "workers")}
 

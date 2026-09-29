@@ -60,12 +60,21 @@ assert(serviceWorkerSource.includes('NetworkFirst'))
 assert(serviceWorkerSource.includes('svoe-vino-pages'))
 assert(serviceWorkerSource.includes('/api/'))
 assert(serviceWorkerSource.includes('/v1/'))
+assert(!serviceWorkerSource.includes('clientsClaim'), 'An updated service worker must not take control of open pages.')
+assert(serviceWorkerSource.includes('SKIP_WAITING'))
 checks.push({ path: '/sw.js', status: serviceWorker.status })
 for (const icon of ['/icons/pwa-192.png', '/icons/pwa-512.png', '/icons/pwa-maskable-512.png', '/icons/apple-touch-icon.png']) {
   const response = await fetch(origin + icon)
   assert.equal(response.status, 200)
   assert(response.headers.get('content-type')?.startsWith('image/png'))
   checks.push({ path: icon, status: response.status })
+}
+assert.equal(webManifest.screenshots.length, 2)
+for (const screenshot of webManifest.screenshots) {
+  const response = await fetch(origin + screenshot.src)
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get('content-type'), screenshot.type)
+  checks.push({ path: screenshot.src, status: response.status })
 }
 const oldDetail = await fetch(`${origin}/wines/priboj-marchenko-beloe-polusuhoe`, { redirect: 'manual' })
 assert.equal(oldDetail.status, 302)

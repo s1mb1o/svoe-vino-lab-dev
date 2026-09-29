@@ -70,3 +70,9 @@ the vector.
 7. A real bundle with 4,642 images passed validation. Its size is 1.4 GB.
 8. The 17 embedding-build tests and 38 embedding-run tests pass.
 9. `git diff --check` passes.
+
+## Note of plan 82 (2026-09-29)
+
+Format version 3 is the bundle of an entry with `rotation_step`: one `items.jsonl` record
+for each vector row, with its `angle`. Read `docs/plans/82_rotated-reference-embeddings.md`
+and `docs/testing/matcher-bundle.md`.

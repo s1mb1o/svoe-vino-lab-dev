@@ -13,13 +13,26 @@ async function pngSize(path: string) {
   return { width: png.readUInt32BE(16), height: png.readUInt32BE(20) }
 }
 
+async function jpegSize(path: string) {
+  const jpeg = await readFile(publicFile(path))
+  expect(jpeg.readUInt16BE(0)).toBe(0xffd8)
+  for (let offset = 2; offset < jpeg.length;) {
+    const marker = jpeg.readUInt16BE(offset)
+    if (marker >= 0xffc0 && marker <= 0xffc2) return { width: jpeg.readUInt16BE(offset + 7), height: jpeg.readUInt16BE(offset + 5) }
+    offset += 2 + jpeg.readUInt16BE(offset + 2)
+  }
+  throw new Error(`${path} has no JPEG frame header`)
+}
+
 describe('PWA assets', () => {
   it('uses the Nuxt PWA module with generated Workbox output', async () => {
     const config = await readFile(fileURLToPath(new URL('../nuxt.config.ts', import.meta.url)), 'utf8')
     const packageJson = JSON.parse(await readFile(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'))
     expect(packageJson.devDependencies['@vite-pwa/nuxt']).toBe('^1.1.1')
     expect(config).toContain("modules: ['@vite-pwa/nuxt']")
-    expect(config).toContain("registerType: 'autoUpdate'")
+    expect(config).toContain("registerType: 'prompt'")
+    expect(config).toContain("{ name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#7b3528' }")
+    expect(config).toContain("{ name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#211e1c' }")
     expect(config).toContain("'_nuxt/**/*.{js,css}'")
     expect(config).toContain('navigateFallback: null')
     expect(config).toContain("!url.pathname.startsWith('/api/')")
@@ -36,6 +49,14 @@ describe('PWA assets', () => {
     await expect(pngSize('icons/pwa-512.png')).resolves.toEqual({ width: 512, height: 512 })
     await expect(pngSize('icons/pwa-maskable-512.png')).resolves.toEqual({ width: 512, height: 512 })
     await expect(pngSize('icons/apple-touch-icon.png')).resolves.toEqual({ width: 180, height: 180 })
+  })
+
+  it('provides manifest screenshots at their declared sizes', async () => {
+    const config = await readFile(fileURLToPath(new URL('../nuxt.config.ts', import.meta.url)), 'utf8')
+    expect(config).toContain("src: '/screenshots/home-narrow.jpg', sizes: '1080x1920', type: 'image/jpeg', form_factor: 'narrow'")
+    expect(config).toContain("src: '/screenshots/home-wide.jpg', sizes: '1920x1200', type: 'image/jpeg', form_factor: 'wide'")
+    await expect(jpegSize('screenshots/home-narrow.jpg')).resolves.toEqual({ width: 1080, height: 1920 })
+    await expect(jpegSize('screenshots/home-wide.jpg')).resolves.toEqual({ width: 1920, height: 1200 })
   })
 
   it('provides each owner-supplied shelf example as an uploadable WebP file', async () => {

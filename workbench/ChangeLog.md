@@ -2,6 +2,234 @@
 
 ## 2026-09-29
 
+- Plan 84: the `Save` of the Dataset `Add wine` dialog no longer waits for the index
+  (owner messages of 2026-09-29T12:28:00+0300 and 12:41:02, answers of 12:45:37 and
+  12:49:53). Cause of the slow `Save`: a cold start of `siglip2-so400m-patch16-512` on the
+  gx10 gateway (`ttl: 1800`); the embedding call took 37.3 s of about 40 s (`ResearchLog.md`).
+  `POST /api/wine` now answers when the wine is in the catalogue. A daemon thread of the
+  new `pipeline/new_wine_jobs.py` runs the plan 78 build and verification. The card shows
+  `indexing…`, then `indexed`, or `not indexed` (error in the tooltip) with a `Retry`
+  button. New routes `GET /api/wine-index?slug=` and `POST /api/wine-index` (`Retry`);
+  `GET /api/dataset` sends `new_wine_index`. The jobs stay in memory. `new_wine_workflow.py`
+  splits `create` into `create_wine` and `update_index`; the CLI still calls `create` and
+  waits. Owner-allowed edits of `/root` lines: the busy text `Creating…` in `dataset.html`
+  and its assertion in `tests/test_new_wine_workflow.py`, the route test
+  `test_a_server_with_a_config_uses_the_index_workflow` in `tests/test_manual_wines.py`, the
+  `createWine` summary in `docs/lab-openapi.yaml`, `README.md` (the busy-text sentence),
+  `SMOKE_TESTS.md` AW17 and AW19, and 2 new routes in `tests/test_lab_openapi.py`. Tests:
+  new-wine jobs 10, workflow 8, manual wines 17, OpenAPI 11, lab server 69, lab pages 4, all
+  OK; `node --check` of the page script OK. Headless Chromium on a scratch server with a
+  fake build: 18 of 18 checks in the light and the dark theme. Port 8168 restarted at
+  12:59 (PID 24435). Live trial `__web-bg-index-smoke-20260929` on 8168 with the model
+  warm: the POST answered in 0.74 s, `indexed` at 2.84 s (2 items built, `vectors-71603780.npy`);
+  the wine is now `Disabled`. `SMOKE_TESTS.md` AW17, AW19, AW23-AW28; `COMMANDS.md`.
+
+- `/testset`: a new advanced filter `Origin` in `Additional settings` (owner message of
+  2026-09-29T12:48:14+0300). `added by hand` shows only the wines that `Add wine` on
+  `/dataset` created: the slug starts with `__` (`pipeline/manual_wines.py`). The rows
+  `No Match` and the Drawer are not wines and do not count. Such a wine often has no test
+  photo yet, so `manual` joins `CATALOG_SCOPE_FILTERS` and a wine with no photo is listed.
+  The address keeps `origin=manual`; the badge `Additional settings · n` counts the
+  select. The search `q=__` cannot do this: the search splits words on `_`.
+  `pipeline/pages/testset.html` only; no restart of 8168. Checked in headless Chromium on
+  8168 (`abobamakers`): 3 wines added by hand plus `No Match`, `· 1`, and together with
+  `fully labelled` only `No Match`; no page errors. `SMOKE_TESTS.md` TP24, TP36 (the new
+  select), TP42-TP43.
+
+- Corrected the Dataset `Add wine` form (owner message of
+  2026-09-29T12:24:33+0300). Category now selects `Wine` or `Sparkling wine` and is
+  stored atomically in `wine_beverage_type`. Color selects `Белое`, `Красное`,
+  `Оранжевое`, or `Розовое` from the imported catalogue; disabled manual smoke records
+  no longer add `Вино` to this list. The detailed Shade is optional and falls back to
+  the broad color. While `Save` is disabled, the dialog names every missing requirement
+  and updates the list after each edit. Tests: manual wines 17, incremental workflow 7,
+  catalogue import 22, OpenAPI 11, all OK. Live Chromium on 8168 verified both category
+  choices, the four color choices, the shrinking missing list, disabled Save, and no
+  page error. Port 8168 restarted at 12:38 (PID 75301) and answers HTTP 200.
+  `SMOKE_TESTS.md` AW1-AW4.
+
+- Plan 83, three lab pipelines that call the prod matcher API
+  `http://192.168.86.14:28000` and use no local embedding (owner message of
+  2026-09-29T11:57:03+0300, answers of 12:00:47 and 12:10:02; plan
+  `docs/plans/83_matcher-api-pipelines.md`). New `config.yaml` entries of the backend
+  `svoe-vino-ru`: `matcher-eval-predict` (`/v1/eval/predict`, `slug-object`, Top-1),
+  `matcher-match-k20` (`/v1/match?k=20`, `candidates`), and `matcher-group-match`
+  (`/v1/group/match?k=5`, the new answer shape `group`). `scripts/match_backends.py`:
+  `group_record` keeps the box and the candidates of each bottle (no mask, no preview, no
+  wine card; `match` when the matcher sends no `candidates`), `group_ranked` gives the
+  ranked list of the row (the first candidate of each bottle, the highest score first,
+  one entry for each slug), `ask` returns the record as a sixth value, and
+  `backends.yaml` refuses the shape `group` (`match_run.py` does not keep the record).
+  `pipeline/benchmark.py` writes the sixth value as the row key `group`;
+  `pipeline/run_routes.py` loads the catalogue images of the group slugs;
+  `pipeline/pipelines.py` accepts the shape. `/runs`: a row with `group` shows the photo
+  with one numbered frame for each bottle and a grid of the candidates of each bottle in
+  place of the candidate strip (light and dark theme). The matcher part (parameter `k` and
+  field `candidates` of `/v1/group/match`) is in `../matcher/ChangeLog.md`; prod gets it
+  only with a redeploy, and until then each bottle has one candidate. New tests
+  `tests/test_matcher_api_pipelines.py` (10 OK); `test_remote_run.py` 13 OK,
+  `test_pipelines.py` 32 OK; matcher 125 OK. The full lab suite: 3 errors, none in a plan
+  83 file: `test_run_model_inputs.py` (2) cannot import `svm`, and
+  `test_bulk_cache_benchmark.py` finds another `SAM3_ENDPOINT` in the environment. (A
+  failure of `test_barcode.py`, the 7 plan 82 pipelines with no barcode twin, was fixed by
+  b6 at about 12:30.) Probe of 3 photos of `my` on prod for each pipeline: R@1 1.0. Headless
+  Chromium on 8168: the group view has no page error, and the frames stand at the box
+  fractions. 8168 restarted at 12:20:25 (PID 34153) for `run_routes.py`.
+  `SMOKE_TESTS.md` MP1-MP6; `COMMANDS.md` and `README.md` updated.
+
+- `/testset`: the right-click menu of a photo has the new first entry `Copy Image` (owner
+  message of 2026-09-29T12:15:11+0300). The entry puts the picture on the clipboard as
+  `image/png`. A JPEG or a WEBP goes through a canvas first. The code is the same as
+  `copyImage` of `scripts/review_server.py`: `ClipboardItem` receives a promise, so Safari
+  keeps the permission of the click during the fetch. The entry reads `copied`, `failed`,
+  or `no clipboard`. `pipeline/pages/testset.html` only; no restart of 8168. Checked in
+  headless Chromium on 8168: the clipboard holds a 721 × 1280 PNG, the size of the source
+  JPEG, and the page has no errors. `SMOKE_TESTS.md` NM9-NM10.
+
+- Added `scripts/alpha_background_probe.py` and the report
+  `docs/reports/siglip2-alpha-background-2026-09-29.md` (owner message of
+  2026-09-29T11:12:54+0300): the alpha-channel test of 2026-09-25 (DINOv3 alone) repeated
+  for the 8 SigLIP 2 entries, plus 40 SAM3 catalogue cuts on white, black, grey, red, blue,
+  and raw RGBA. About 2,600 embeddings through llama-swap 18081, 0 failures. The gateway
+  drops the alpha channel for each SigLIP 2 entry, and the models see the hidden colour.
+  No change of lab code, config, or index.
+
+- Plan 82, max-over-rotation matching (owner messages from about 07:18; plan
+  `docs/plans/82_rotated-reference-embeddings.md`). New entry key `rotation_step`: the view
+  `full` of each full image gets one vector for each angle 0°, step, … below 360° (the
+  SAM3 cut on white, rotated counter-clockwise on a larger white canvas, the 0° scale of
+  `resize`; `embeddings.rotated_inputs`). The index record keeps `row` (0°) and holds
+  `angles`; the hash of a view changes only when the key is set, so the 14 present indexes
+  stay current (checked). `build_embeddings.py`: multi-row records, `--workers N` (a process
+  pool prepares the rotated PNGs; N items at a time), near-equal request chunks with no
+  request of one image, a bad or overlapping record is built again alone, the checkpoint
+  interval grows with the write time, and an unchanged vector file is not written again.
+  `embedding_run.Catalogue`: all rows of a record, the maximum over the rows, one item per
+  image with `angle`, and the candidate `angle` (the argmax of the rotation).
+  `matcher_bundle.py`: format version 3 for a rotated entry (one item record for each
+  vector row, with `angle`). `config.yaml`: the entries
+  `gx10-siglip2-so400m-patch16-naflex-p512-rot5` and `-rot10` (view `full` alone,
+  `batch_size: 36`) and the pipelines `siglip2-p512-crop-seg` and
+  `siglip2-p512-rot{5,10}-{as-is,crop,crop-seg}`. Tests: `tests/test_rotated_embeddings.py`
+  (24) and `../matcher/tests/test_rotation.py` (6). The lab server 8168 restarted at
+  10:00:44 (owner answer of 09:59:38; pid 25758, `/api/dataset` 200). Gate G0 (the offline
+  replay on `my`): `siglip2-p512-as-is` R@1 74.26 % → 77.23 % with the rotated 5° catalogue.
+  Built `…-p512-rot5` (2,270 images, 163,440 vectors, 0 failures, 5,021 s; each row equals
+  the offline row of its angle, cosine ≥ 0.99991; the 0° PNG equals the p512 PNG); the
+  owner stopped the 10° work at 10:17:26, so `…-rot10` holds 767 images. Runs on `my`
+  (label `plan82`, 0 errors): `siglip2-p512-crop-seg` 78.87 % R@1; `rot5-as-is` 77.35 %,
+  `rot5-crop` 79.60 %, `rot5-crop-seg` 79.84 % (the best R@1). Report:
+  `docs/reports/rotation-index-p512-2026-09-29.md`. The seven plan 82 pipelines have
+  barcode twins (the rule of `tests/test_barcode.py`; its count is now 33); the full lab
+  suite has 1,428 tests with 3 old errors that do not come from plan 82 (the module `svm`,
+  the variable `SAM3_ENDPOINT`).
+
+- Added `FIX_LATER.md`, the list of known problems that wait until after the hackathon.
+  Its first item is a shared cache for the prepared PNG files of the embeddings (stage 3
+  of plan 75). The 12 gx10 and local indexes hold the same prepared PNG files. The 12
+  copies use 17.8 GB. The `ResearchLog.md` entry of 2026-09-29 has the evidence. No code
+  or data changed.
+
+- Added rules 39 to 42 to `AGENTS.md` (section "Known problems", owner message of
+  2026-09-29T08:00:44+0300, file name of 08:05:15). A problem that `FIX_LATER.md` or a
+  file `KNOWN_ISSUES.md` lists is a known problem. An agent does not report it as a new
+  problem and does not fix it until the owner asks. An effect that the entry does not
+  state stays a new problem.
+
+- Added a checked-in OpenAPI 3.1 contract for the lab server. `/openapi.yaml` sends
+  the source document, `/openapi.json` sends the same document as JSON, and `/docs`
+  shows pinned Swagger UI 5.33.0 with light and dark themes. The contract covers 98
+  operations in 85 paths. Eleven focused tests check the exact route inventory,
+  duplicate YAML keys, operation IDs, local references, live handler output, method
+  rejection, and missing or invalid documents. The 225 affected route tests pass. The
+  live YAML and JSON documents are equal, and Swagger UI executed `GET /api/health`
+  with HTTP 200. Port 8168 runs the verified code on PID 26110.
+
+- Added the resumable no-segmentation, DIS, and SAM3 model-matrix benchmark of plan 79.
+  It freezes one catalogue and query manifest, prepares one shared image set per input
+  method, embeds six SigLIP2 SO400M variants, calculates wine-level maximum cosine, and
+  writes paired exact McNemar comparisons. The complete `my` run used 2,270 catalogue
+  sources, 2,226 queries, 18 cells, and 80,898 vectors. SAM3 improved R@1 against no
+  segmentation for all six models by 2.73 to 12.33 percentage points. The best cell was
+  SAM3 fixed 512 at 81.42% R@1, 96.66% R@5, and 97.51% R@10. The best result without
+  segmentation was fixed 512 at 78.69% R@1 and 95.75% R@5. It was 4.13 pp better than
+  DIS fixed 512 at R@1. DIS had five segmentation failures. The other two methods had
+  none. Eight unit tests, compilation, and the vector verification pass. No catalogue
+  index, database, or GX10 service configuration changed. The report is
+  `docs/reports/2026-09-29_segmentation-model-matrix.md`.
+
+- Added permanent `android-siglip2-base-224-dis-white` and
+  `android-siglip2-base-224-sam3-white` pipelines. Both use one worker and no barcode
+  step. Added DIS query preprocessing and DIS input reconstruction for run details.
+  The 110 focused tests pass. A controlled 2,226-query `my` comparison used identical
+  query bytes and catalogue coverage. SAM3 reached 49.91% R@1 and 79.36% R@5 on
+  positive photos. DIS reached 43.05% R@1 and 73.10% R@5. The paired R@1 gain was
+  significant (`p=9.01e-09`). DIS had five foreground-mask failures. The report records
+  the complete metrics and the excluded run whose catalogue changed during a smoke test.
+
+- Added and imported the `abobamakers` test set from 54 public shop photos at source
+  commit `55cfe4c1`. Independent review mapped 35 photos to catalogue slugs, confirmed
+  13 no-match products, and left 6 multi-product scenes unscored in the Drawer. Three
+  current profiles completed 162 requests with no error. The best profile,
+  `rerank-siglip2-512-crop`, gives family-aware Top-1 71.4% and Top-5 80.0% on the 35
+  catalogue matches, but 0 of 13 correct open-set refusals. Added the mapping, import
+  labels, variant groups, raw evaluation artifacts, and
+  `docs/reports/2026-09-29_abobamakers-dataset-benchmark.md`. The 58 focused test-set
+  unit tests pass. The database backup is
+  `data/backups/catalog-before-abobamakers-20260929T0121+0300.sqlite3`.
+
+- Compared WineHack `catalog.csv`, `catalog_enriched.csv`, and `seed_wines.sql` at
+  commit `642cb396`. Their 2,103 unique official slugs and eight base fields are the same
+  as ours. The source has 2,044 exact duplicate rows. The enrichment has 58 shared image
+  file groups across 207 slugs. The SQL has 4,533 generated pairings, NULL prices, and
+  an artificial `roskachestvo_score`. Added the machine-readable analysis and
+  `docs/reports/2026-09-29_winehack-catalog-comparison.md`.
+
+- Added the incremental new-wine workflow of plan 78. `scripts/add_wine.py` and the
+  Dataset page `Add wine` form now use the same preflight, catalogue write, incremental
+  build, and active-index verification. `new_wine_embedding` selects the index. The
+  existing builder keeps current vectors. A failure after the catalogue transaction
+  keeps the wine and reports a repair instruction. The focused workflow, manual-wine,
+  lab-server, embedding, builder, and rebuild suites pass 152 tests. A live CLI trial
+  created `__cli-index-smoke-20260929`. A live browser trial created
+  `__web-index-smoke-20260929`. Each wine had two current items in the active
+  `vectors-db0c3a7f.npy` generation. Both records were then set to `Disabled`. The
+  cleanup build pruned the four smoke items and activated `vectors-02636f81.npy` with
+  4,641 items. Port 8168 restarted with SIGTERM and runs the new code on PID 80244.
+
+- Added `scripts/rotation_similarity.py`, a read-only rotation test of one catalogue main
+  image against its indexed `full` vector (owner message of 2026-09-29T01:10:49+0300). Ran
+  it for NaFlex p256/p512/p1024 and fixed 256/384/512, 72 angles, white and black
+  backgrounds: 864 embeddings through llama-swap 18081, 0 failures, about 80 s. The report
+  is `docs/reports/rotation-similarity-2026-09-29.md`. No index, database, or service
+  changed.
+  Added `scripts/rotation_similarity_plots.py` (owner message of 2026-09-29T01:23:58+0300):
+  Russian charts with bottle thumbnails under the angle axis (one panel for each entry,
+  and the six entries for each background), and a collage of the 72 rotation steps for
+  each background, at one common scale, with a black frame on each image.
+  Added `scripts/rotation_multiref.py` (owner messages of 2026-09-29T01:34:10+0300 and
+  01:34:20): 10 reference vectors of the index image (white, 0° to 45°, step 5°), the
+  same 144 queries, the maximum cosine; all vectors saved as `.npz` in the report folder;
+  separate Russian charts. 924 embeddings, 0 failures, 41 s. The plot functions of
+  `rotation_similarity_plots.py` got optional title, subtitle, footer, rank, and band
+  arguments; the charts of part 1 do not change.
+  Added `scripts/rotation_refsets.py` (owner message of 2026-09-29T01:44:56+0300): six
+  reference sets (0°–45°/5°, 0°–90°/5°, 0°–355°/5°, 0°–45°/1°, 0°–90°/1°, 0°–359°/1°),
+  each in its own folder with its vectors, results, and Russian charts, plus summary
+  charts; extra white queries with a +2.5° offset. 3,456 embeddings, 0 failures, 2.5
+  minutes. The plot functions got a `keys` argument and support query angles that are not
+  integers.
+  `rotation_refsets.py --reuse-vectors` (owner message of 2026-09-29T01:56:01+0300):
+  full-circle sets with the steps 3°, 8°, 9°, 12° from the saved vectors, no request; the
+  summary keeps the earlier sets; new charts `chart-full-circle-steps.png` and
+  `chart-tolerance.png` (score by the distance to the nearest reference angle) and
+  `tolerance.csv`.
+- The rotation tests with the DINOv3 entries (owner message of 2026-09-29T02:02:13+0300):
+  report `docs/reports/rotation-dinov3-2026-09-29.md`, artifacts in its own folder. About
+  1,750 embeddings, 0 failures. The plot scripts now draw any set of entries (one to three
+  panels in a row), name the model family in the titles, and lower the cosine axis when a
+  value is below 0.68; the SigLIP2 charts do not change.
+
 - Changed `qr_scanner.engine` from `auto` to `zxing-cpp`, the service path closest to
   the former local decoder. The four synthetic parity cases returned the same decoded
   values with both engines, while the named engine took about 0.03--0.08 seconds round

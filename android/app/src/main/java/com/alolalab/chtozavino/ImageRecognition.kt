@@ -8,6 +8,7 @@ import android.graphics.ImageDecoder
 import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
+import android.util.Log
 import com.google.ai.edge.litert.Accelerator
 import com.google.ai.edge.litert.CompiledModel
 import com.google.ai.edge.litert.TensorBuffer
@@ -15,10 +16,10 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 private const val DIS_SIZE = 1024
 private const val SIGLIP_SIZE = 224
+private const val SIGLIP_TIMM_RESIZE_SIZE = 248
 private const val MASK_THRESHOLD = 0.5f
 private const val MAX_SOURCE_SIDE = 2048
 
@@ -33,34 +34,36 @@ private class LiteRtRunner private constructor(
     private val outputs: List<TensorBuffer> = model.createOutputBuffers()
 
     companion object {
-        fun open(path: String): LiteRtRunner {
-            return try {
-                LiteRtRunner(
-                    CompiledModel.create(
-                        path,
-                        CompiledModel.Options(Accelerator.GPU),
-                        null,
-                    ),
-                    "GPU",
-                )
-            } catch (gpuError: Exception) {
-                try {
-                    LiteRtRunner(
-                        CompiledModel.create(
-                            path,
-                            CompiledModel.Options(Accelerator.CPU),
-                            null,
-                        ),
-                        "CPU",
-                    )
-                } catch (cpuError: Exception) {
-                    cpuError.addSuppressed(gpuError)
-                    throw ImageRecognitionException(
-                        "LiteRT не смог загрузить модель на GPU или CPU.",
-                        cpuError,
-                    )
-                }
+        fun open(path: String, accelerator: ModelAccelerator): LiteRtRunner =
+            when (accelerator) {
+                ModelAccelerator.GPU -> openGpu(path)
+                ModelAccelerator.CPU -> openCpu(path)
             }
+
+        fun openGpu(path: String): LiteRtRunner = try {
+            LiteRtRunner(
+                CompiledModel.create(
+                    path,
+                    CompiledModel.Options(Accelerator.GPU),
+                    null,
+                ),
+                "GPU",
+            )
+        } catch (error: Exception) {
+            throw ImageRecognitionException("LiteRT не смог загрузить модель на GPU.", error)
+        }
+
+        fun openCpu(path: String): LiteRtRunner = try {
+            LiteRtRunner(
+                CompiledModel.create(
+                    path,
+                    CompiledModel.Options(Accelerator.CPU),
+                    null,
+                ),
+                "CPU",
+            )
+        } catch (error: Exception) {
+            throw ImageRecognitionException("LiteRT не смог загрузить модель на CPU.", error)
         }
     }
 
@@ -77,8 +80,12 @@ private class LiteRtRunner private constructor(
     }
 }
 
-private class DisSegmenter(modelPath: String) : AutoCloseable {
-    private val runner = LiteRtRunner.open(modelPath)
+private class DisSegmenter(
+    private val modelPath: String,
+    accelerator: ModelAccelerator,
+    private val allowCpuFallback: Boolean,
+) : AutoCloseable {
+    private var runner = openRunner(modelPath, accelerator, allowCpuFallback, "DIS")
     val accelerator: String get() = runner.accelerator
 
     fun mask(bitmap: Bitmap): FloatArray {
@@ -103,25 +110,70 @@ private class DisSegmenter(modelPath: String) : AutoCloseable {
             input[plane + index] = ((pixel ushr 8) and 0xff) / 255f - 0.5f
             input[2 * plane + index] = (pixel and 0xff) / 255f - 0.5f
         }
-        val output = runner.run(input)
-        if (output.size != plane) {
-            throw ImageRecognitionException("DIS вернул маску неизвестного размера.")
-        }
-        return output
+        return runWithCpuFallback(input, plane)
     }
 
     override fun close() = runner.close()
+
+    private fun runWithCpuFallback(input: FloatArray, expectedSize: Int): FloatArray {
+        try {
+            return validateDisOutput(runner.run(input), expectedSize)
+        } catch (gpuError: Exception) {
+            if (!allowCpuFallback || runner.accelerator != "GPU") throw gpuError
+            Log.w(
+                "ChtoZaVino",
+                "DIS GPU inference returned an invalid result. Retrying on CPU.",
+                gpuError,
+            )
+            runner.close()
+            runner = try {
+                LiteRtRunner.openCpu(modelPath)
+            } catch (cpuOpenError: Exception) {
+                cpuOpenError.addSuppressed(gpuError)
+                throw cpuOpenError
+            }
+            return try {
+                validateDisOutput(runner.run(input), expectedSize)
+            } catch (cpuError: Exception) {
+                cpuError.addSuppressed(gpuError)
+                throw cpuError
+            }
+        }
+    }
 }
 
-private class SigLip2Encoder(modelPath: String) : AutoCloseable {
-    private val runner = LiteRtRunner.open(modelPath)
+private class SigLip2Encoder(
+    private val modelPath: String,
+    accelerator: ModelAccelerator,
+    private val allowCpuFallback: Boolean,
+) : AutoCloseable {
+    private var runner = openRunner(modelPath, accelerator, allowCpuFallback, "SigLIP2")
     val accelerator: String get() = runner.accelerator
 
     fun encode(bitmap: Bitmap): FloatArray {
-        val resized = Bitmap.createScaledBitmap(bitmap, SIGLIP_SIZE, SIGLIP_SIZE, true)
+        // The GX10 timm image processor first receives the saved 224 px square.
+        // It then applies crop_pct=0.9: resize to 248 px and center-crop to 224 px.
+        // Keep both resize operations here so Android and the catalogue use the same input.
+        val square224 = Bitmap.createScaledBitmap(bitmap, SIGLIP_SIZE, SIGLIP_SIZE, true)
+        val expanded = Bitmap.createScaledBitmap(
+            square224,
+            SIGLIP_TIMM_RESIZE_SIZE,
+            SIGLIP_TIMM_RESIZE_SIZE,
+            true,
+        )
+        if (square224 !== bitmap) square224.recycle()
         val pixels = IntArray(SIGLIP_SIZE * SIGLIP_SIZE)
-        resized.getPixels(pixels, 0, SIGLIP_SIZE, 0, 0, SIGLIP_SIZE, SIGLIP_SIZE)
-        if (resized !== bitmap) resized.recycle()
+        val cropOffset = (SIGLIP_TIMM_RESIZE_SIZE - SIGLIP_SIZE) / 2
+        expanded.getPixels(
+            pixels,
+            0,
+            SIGLIP_SIZE,
+            cropOffset,
+            cropOffset,
+            SIGLIP_SIZE,
+            SIGLIP_SIZE,
+        )
+        if (expanded !== bitmap) expanded.recycle()
 
         val plane = SIGLIP_SIZE * SIGLIP_SIZE
         val input = FloatArray(3 * plane)
@@ -131,23 +183,124 @@ private class SigLip2Encoder(modelPath: String) : AutoCloseable {
             input[plane + index] = (((pixel ushr 8) and 0xff) / 127.5f) - 1f
             input[2 * plane + index] = ((pixel and 0xff) / 127.5f) - 1f
         }
-        val output = runner.run(input)
-        if (output.size != VECTOR_DIMENSION) {
-            throw ImageRecognitionException(
-                "SigLIP2 вернул ${output.size} значений вместо $VECTOR_DIMENSION.",
-            )
-        }
-        var normSquared = 0.0
-        for (value in output) normSquared += value * value
-        val norm = sqrt(normSquared).toFloat()
-        if (!norm.isFinite() || norm <= 0f) {
-            throw ImageRecognitionException("SigLIP2 вернул пустой вектор.")
-        }
-        for (index in output.indices) output[index] /= norm
-        return output
+        return runWithCpuFallback(input)
     }
 
     override fun close() = runner.close()
+
+    private fun runWithCpuFallback(input: FloatArray): FloatArray {
+        try {
+            return normalizeSigLipVector(runner.run(input))
+        } catch (gpuError: Exception) {
+            if (!allowCpuFallback || runner.accelerator != "GPU") throw gpuError
+            Log.w(
+                "ChtoZaVino",
+                "SigLIP2 GPU inference returned an invalid result. Retrying on CPU.",
+                gpuError,
+            )
+            runner.close()
+            runner = try {
+                LiteRtRunner.openCpu(modelPath)
+            } catch (cpuOpenError: Exception) {
+                cpuOpenError.addSuppressed(gpuError)
+                throw cpuOpenError
+            }
+            return try {
+                normalizeSigLipVector(runner.run(input))
+            } catch (cpuError: Exception) {
+                cpuError.addSuppressed(gpuError)
+                throw cpuError
+            }
+        }
+    }
+}
+
+private fun openRunner(
+    modelPath: String,
+    accelerator: ModelAccelerator,
+    allowCpuFallback: Boolean,
+    modelName: String,
+): LiteRtRunner = try {
+    LiteRtRunner.open(modelPath, accelerator)
+} catch (gpuError: Exception) {
+    if (!allowCpuFallback || accelerator != ModelAccelerator.GPU) throw gpuError
+    Log.w(
+        "ChtoZaVino",
+        "$modelName GPU initialization failed. Retrying on CPU.",
+        gpuError,
+    )
+    try {
+        LiteRtRunner.openCpu(modelPath)
+    } catch (cpuError: Exception) {
+        cpuError.addSuppressed(gpuError)
+        throw cpuError
+    }
+}
+
+object AcceleratorDetector {
+    fun detect(pack: InstalledModelPack): AcceleratorProbeResult {
+        val disInput = createDisProbeInput()
+        val disPath = pack.file("dis.tflite").absolutePath
+        var disGpuFailure: String? = null
+        val dis = try {
+            LiteRtRunner.openGpu(disPath).use { runner ->
+                validateDisOutput(runner.run(disInput), DIS_SIZE * DIS_SIZE)
+            }
+            ModelAccelerator.GPU
+        } catch (error: Exception) {
+            disGpuFailure = probeMessage(error)
+            LiteRtRunner.openCpu(disPath).use { runner ->
+                validateDisOutput(runner.run(disInput), DIS_SIZE * DIS_SIZE)
+            }
+            ModelAccelerator.CPU
+        }
+
+        val sigLip2Input = FloatArray(3 * SIGLIP_SIZE * SIGLIP_SIZE)
+        val sigLip2Path = pack.file("siglip2_base_224_fp16.tflite").absolutePath
+        var sigLip2GpuFailure: String? = null
+        val sigLip2 = try {
+            LiteRtRunner.openGpu(sigLip2Path).use { runner ->
+                normalizeSigLipVector(runner.run(sigLip2Input))
+            }
+            ModelAccelerator.GPU
+        } catch (error: Exception) {
+            sigLip2GpuFailure = probeMessage(error)
+            LiteRtRunner.openCpu(sigLip2Path).use { runner ->
+                normalizeSigLipVector(runner.run(sigLip2Input))
+            }
+            ModelAccelerator.CPU
+        }
+        return AcceleratorProbeResult(
+            dis = dis,
+            sigLip2 = sigLip2,
+            disGpuFailure = disGpuFailure,
+            sigLip2GpuFailure = sigLip2GpuFailure,
+        )
+    }
+
+    private fun createDisProbeInput(): FloatArray {
+        val plane = DIS_SIZE * DIS_SIZE
+        val input = FloatArray(3 * plane)
+        for (y in 0 until DIS_SIZE) {
+            for (x in 0 until DIS_SIZE) {
+                val index = y * DIS_SIZE + x
+                input[index] = x.toFloat() / (DIS_SIZE - 1) - 0.5f
+                input[plane + index] = y.toFloat() / (DIS_SIZE - 1) - 0.5f
+                input[2 * plane + index] = (x + y).toFloat() / (2 * (DIS_SIZE - 1)) - 0.5f
+            }
+        }
+        return input
+    }
+
+    private fun probeMessage(error: Throwable): String {
+        var current: Throwable? = error
+        while (current != null) {
+            val message = current.message?.trim()
+            if (!message.isNullOrEmpty()) return message
+            current = current.cause
+        }
+        return error.javaClass.simpleName
+    }
 }
 
 private data class PreparedImage(
@@ -264,13 +417,20 @@ class RecognitionEngine(private val pack: InstalledModelPack) {
 
     fun findCode(raw: String): List<WineMatch> = index.findCode(raw)
 
-    fun recognize(bitmap: Bitmap): RecognitionOutput {
+    fun recognize(
+        bitmap: Bitmap,
+        accelerators: RecognitionAccelerators,
+    ): RecognitionOutput {
         val disStart = System.nanoTime()
         val mask: FloatArray
         val disAccelerator: String
-        DisSegmenter(pack.file("dis.tflite").absolutePath).use { dis ->
-            disAccelerator = dis.accelerator
+        DisSegmenter(
+            modelPath = pack.file("dis.tflite").absolutePath,
+            accelerator = accelerators.dis,
+            allowCpuFallback = accelerators.allowDisCpuFallback,
+        ).use { dis ->
             mask = dis.mask(bitmap)
+            disAccelerator = dis.accelerator
         }
         val prepared = DisImageProcessor.prepare(bitmap, mask)
         val disMs = elapsedMs(disStart)
@@ -278,9 +438,13 @@ class RecognitionEngine(private val pack: InstalledModelPack) {
         val embeddingStart = System.nanoTime()
         val embedding: FloatArray
         val embeddingAccelerator: String
-        SigLip2Encoder(pack.file("siglip2_base_224_fp16.tflite").absolutePath).use { encoder ->
-            embeddingAccelerator = encoder.accelerator
+        SigLip2Encoder(
+            modelPath = pack.file("siglip2_base_224_fp16.tflite").absolutePath,
+            accelerator = accelerators.sigLip2,
+            allowCpuFallback = accelerators.allowSigLip2CpuFallback,
+        ).use { encoder ->
             embedding = encoder.encode(prepared.modelInput)
+            embeddingAccelerator = encoder.accelerator
         }
         val embeddingMs = elapsedMs(embeddingStart)
 

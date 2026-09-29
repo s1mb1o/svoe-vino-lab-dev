@@ -8070,6 +8070,46 @@ For R\@1 candidates use runs results of same pipeline as in matcher.
 `engine: zxing-cpp` for closer performance and behavior.
 ```
 
+## 2026-09-29T00:55:59+0300
+
+Recorded at the time of the record. The owner sent this message earlier in the current
+session.
+
+```text
+Возьми датасет AbobaMakers и загрузи к нам как новый датасет, посмотри как перенести их разметку в wine_slug. Прогони тесты на их датасете. Сравни резульаты, сделай выводы
+```
+
+## 2026-09-29T00:55:59+0300
+
+```text
+отдельно сравни у WineHack Три таблицы каталога: исходные и обогащённые записи с нашими.
+```
+
+## 2026-09-29T01:06:34+0300
+
+```text
+perform Incremental end-to-end new-product creation and index activation and test it.
+```
+
+The agent proposed three implementation approaches. The owner selected the operator CLI
+workflow.
+
+```text
+1
+
+also then try create wine using cli and web interface of lab_server.py
+```
+
+## 2026-09-29T01:10:49+0300
+
+```text
+do a test, take main image of wine, that is already in embeddings, and start rotating bottle by 5°, expanding if necessary size of image (do not scale size of bottle down). Check how siglip2-naflex (p256, p512, p1024) and siglip2-256/512/1024 similarity differs depending on angle. 
+a. Use white color as background.
+b. Use black color as background
+
+Original embedding expected to build with white background
+```
+
 ## 2026-09-29T01:14:22+0300
 
 ```text
@@ -8080,6 +8120,157 @@ check that it not read from `QR_SCANNER_ENDPOINT` directly, but loaded from conf
 
 ```text
 git commit
+```
+
+## 2026-09-29T01:23:58+0300
+
+```text
+generate new graphs, 
+add image of bottle in a few points to let person understand wha position of bottle it was.
+
+also give me image collage with set of rotation steps. Use black bounding box to show borders of image
+
+make graphs russian text
+```
+
+## 2026-09-29T01:34:10+0300
+
+```text
+получается важен угол k+0..k+45°, k=0, 90, 180, 270. Потом график начинает расти
+
+А давай теперь исходный embedding (первую картинку) вместо одного варианта, тоже повращаем на интервале от 0...45° с шагом 5° и сохраним все вектора
+
+А вторую раз уже вращаем как раньше
+```
+
+## 2026-09-29T01:34:20+0300
+
+```text
+сделай отдельные графики
+```
+
+## 2026-09-29T01:44:56+0300
+
+```text
+сделай новые тесты:
+1. опорная картинка на всем диапазоне от 0 до 360° с шагом 5°
+2. опорная картинка на всем диапазоне от 0 до 360° с шагом 1°
+3. опорная картинка на всем диапазоне от 0 до 45° с шагом 1°
+4. опорная картинка на всем диапазоне от 0 до 90° с шагом 5°
+4. опорная картинка на всем диапазоне от 0 до 90° с шагом 1°
+сохрани отдельноё
+```
+
+## 2026-09-29T01:50:15+0300
+
+```text
+Do we have OpenAPI documentation for [http://127.0.0.1:8168/](http://127.0.0.1:8168/) ?
+```
+
+## 2026-09-29T01:51:38+0300
+
+```text
+how avoid this issue?
+```
+
+## 2026-09-29T01:53:04+0300
+
+```text
+ok, do it
+```
+
+## 2026-09-29T01:56:01+0300
+
+```text
+сделай новые тесты:
+1. опорная картинка на всем диапазоне от 0 до 360° с шагом 3°
+2. опорная картинка на всем диапазоне от 0 до 360° с шагом 8°
+3. опорная картинка на всем диапазоне от 0 до 360° с шагом 9°
+4. опорная картинка на всем диапазоне от 0 до 360° с шагом 12°
+```
+
+## 2026-09-29T01:56:07+0300
+
+```text
+давай проверим DIS vs SAM3 для других SigLip2 (naflex и обычных) - 256, 512, 1024 (и сопоставимые)
+как они влияют
+
+Да я знаю что это уже не андроид
+```
+
+## 2026-09-29T01:56:08+0300
+
+Question: `Запускаем вариант 1 — полную матрицу с общим кэшем предобработанных изображений?`
+
+```text
+1
+```
+
+## 2026-09-29T02:02:13+0300
+
+```text
+in separate folder try same tests but with  dinov3 models.
+
+and when you finish, create new embedding configurations for siglip2-naflex-p512:
+1. 0-360 1°
+2. 0-360 5°
+3. 0-180 1°
+3. 0-180 5°
+and test agains my dataset without barcode and rerank. and compare with usual siglip2-naflex-p512
+```
+
+## 2026-09-29T02:02:20+0300
+
+```text
+implement OpenAPI documentation for [http://127.0.0.1:8168/](http://127.0.0.1:8168/) 
+```
+
+## 2026-09-29T07:08:33+0300
+
+Question: `Which OpenAPI implementation approach should I use for the lab server?`
+
+```text
+1
+```
+
+## 2026-09-29T03:56:56+0300
+
+```text
+и давай еще проверим вообще без сегментации, на сколько хуже
+```
+
+## 2026-09-29T07:08:03+0300
+
+Question: `Выбираем 1: полный третий ряд матрицы для всех шести моделей?`
+
+```text
+1
+```
+
+## 2026-09-29T07:06:38+0300
+
+The agent asked three questions about the rotated NaFlex p512 indexes. The owner selected
+these answers:
+
+```text
+Как построить повёрнутые индексы NaFlex p512 и прогнать набор my? — Отдельные скрипты (Recommended)
+С каким обычным пайплайном p512 сравнивать (запросная сторона)? — crop и as-is (Recommended)
+В каком порядке строить наборы углов? — Сначала 5°, потом 1° (Recommended)
+```
+
+## 2026-09-29T07:44:57+0300
+
+```text
+@svoe-vino-lab/workbench/data/catalog/embeddings/gx10-siglip2-so400m-patch14-384 
+Look at embeddings data (actually you can use any other embedding too).
+Does storage of embedding data optimal? Is there point to improve it now or we can life with that during hackaton?
+Also @svoe-vino-lab/workbench/data/catalog/embeddings/gx10-siglip2-so400m-patch14-384/images  are input images for embeddings. Are they used after we calculated embedding?
+```
+
+## 2026-09-29T07:50:13+0300
+
+```text
+are these image more cache then catalog?
 ```
 
 ## 2026-09-29T07:30:03+0300
@@ -8102,6 +8293,69 @@ which items to fix and which option to use for each." The owner answered:
 5. fix it
 ```
 
+## 2026-09-29T07:54:44+0300
+
+```text
+add to fix later list
+```
+
+## 2026-09-29T07:59:16+0300
+
+Question: `There is no "fix later" list yet. Where should I put this item (move the prepared PNGs to a shared cache, plan 75 stage 3)?`
+
+```text
+New FIX_LATER.md (Recommended)
+```
+
+## 2026-09-29T08:00:44+0300
+
+```text
+add rule that if something is in FIX_LATER.md or KNOWN_ISSUES.md then do not consider an issue now, because we know about it, just do not want risk last moment refactor
+```
+
+## 2026-09-29T08:04:13+0300
+
+```text
+write me a side-by-side compare of matcher pipeline and best pipiline is lab_server (workbench)
+```
+
+## 2026-09-29T08:05:15+0300
+
+The agent reported that no file `KNOWN_ISSUES.md` exists, and that the only known-issues
+list is `../matcher/docs/known-issues.md`. The owner answered:
+
+```text
+use KNOWN_ISSUES.md
+```
+
+## 2026-09-29T08:06:31+0300
+
+```text
+create script that prepares /Volumes/T7\_2TB/Projects-T7\_2TB/drink-atlas-workspace/svoe-vino-lab/workbench/data/catalog bundle to include in android application. On Android we need only one image (main/patched), not all.
+```
+
+## 2026-09-29T08:09:35+0300
+
+```text
+> Здесь хорошо виден главный риск DIS: на крупном плане этикетки он может выбрать отдельный графический элемент вместо бутылки или всей этикетки.
+
+Запиши в KNOWN\_ISSUES
+```
+
+## 2026-09-29T08:09:47+0300
+
+```text
+\> Здесь хорошо виден главный риск DIS: на крупном плане этикетки он может выбрать отдельный графический элемент вместо бутылки или всей этикетки.
+
+Запиши в KNOWN\\\_ISSUES.md
+```
+
+## 2026-09-29T08:11:27+0300
+
+```text
+finish android application, include DIS'ed embeddings in application
+```
+
 ## 2026-09-29T08:04:02+0300
 
 ```text
@@ -8117,3 +8371,423 @@ of other sessions (the SigLIP2 502/504 mapping, hand selection, and MPO). The ag
 ```text
 Two commits (Recommended) — First, one checkpoint commit of the other sessions' finished matcher work: readiness, SigLIP2 errors, hand selection, MPO, the lock file, and the stress-test report. Then my fixes on top, with my owner-message entries. I test each tree alone before I commit it.
 ```
+
+## 2026-09-29T08:17:50+0300
+
+The messages and answers below came in plan mode (about 07:18 to 08:12). Plan mode allowed
+no file edit, so the session records them now, in their order.
+
+The owner message (received at about 07:18; plan mode):
+
+```text
+Implement:
+
+1. Offline: for each catalog SKU, calculate SigLIP2 embeddings every 5–10°. Add specific option that defines angle
+2. Store all rotated embeddings with the same wine_slug / image_sha256
+3. Online: calculate only one embedding for the detected bottle crop.
+4. Search against the rotated reference embeddings.
+5. Collapse results by wine_skug/image_sha256 using the maximum similarity.
+
+Something like \[
+S(q,x)=\max_{\theta}\cos(E(q), E(R_\theta(x)))
+\]
+
+max-over-rotation matching
+```
+
+The agent asked three questions. The owner selected these answers (about 07:30):
+
+```text
+Где должен работать поиск с максимумом по поворотам (max-over-rotation)? — Лаборатория + матчер
+Какие записи embeddings с поворотом создать для NaFlex p512? — 5° и 10° (Recommended)
+Как заполнить новые индексы? — Сборщиком лаборатории (Recommended)
+```
+
+The agent asked one question. The owner selected this answer (about 07:35):
+
+```text
+Прод-матчер сейчас встраивает всё фото как есть и бутылку не вырезает. Что делать с запросом в матчере? — Выбор в конфиге матчера
+```
+
+The owner message (about 07:55):
+
+```text
+For each rotated image vector, you should store its angle. Later we may use it to detect angle of candidate bottle.
+```
+
+The owner stopped the first plan-approval dialog and sent (about 08:00):
+
+```text
+continue
+```
+
+The agent asked two questions. The owner selected these answers (about 08:07):
+
+```text
+Сборщик лаборатории держит один запрос за раз (около 12.5 картинки/с), поэтому rot5 + rot10 (245 тыс. векторов) займут 3.5–5 ч, а не около 2 ч. Как заполнить новые индексы? — Сборщик + параллельные запросы (Recommended)
+Прод-матчер сейчас читает бандл, но у него есть и путь «копия каталога» (план 75), а удаление кода бандлов (этап 2c) ждёт вашего решения. Что делать в матчере? — Оба пути (Recommended)
+```
+
+The owner messages (about 08:10):
+
+```text
+what ML models used on rotated image?
+```
+
+```text
+did you ensure that source 0° image is already cropped and segmented?
+```
+
+The owner approved the plan of max-over-rotation matching in the plan dialog (about
+08:12). It is `docs/plans/82_rotated-reference-embeddings.md` (the number 81 was taken by
+`81_android-built-in-pack.md` of another session).
+
+## 2026-09-29T08:17:32+0300
+
+The owner sent this message and interrupted it:
+
+```text
+@svoe-vino-lab/proxies 
+implemen SAM3 and SigLip2 (naflex and usual) proxies. That distributes incoming requests among multiple work hosts.
+```
+
+Then the owner sent this message:
+
+```text
+@svoe-vino-lab/proxies 
+implemen SAM3, GDINO and SigLip2 (naflex and usual) proxies. That distributes incoming requests among multiple work hosts.
+
+So idea is to run proxy on this mac, and let it send requests to gx10, a few RTX4090 for speedup segmentation and SigLip during training. Also implement cache.
+It shall support same endpoints API as
+export SIGLIP2_ENDPOINT=http://192.168.86.14:18082
+export GROUNDING_DINO_ENDPOINT=http://192.168.86.14:18082/upstream/grounding-dino-base
+export SAM3_ENDPOINT=http://192.168.86.14:18082/upstream/sam3
+
+so I do not need to change my code, only point to this proxy endpoint.
+```
+
+## 2026-09-29T09:59:38+0300
+
+The agent asked one question (plan 82, step 3). The owner selected this answer:
+
+```text
+Перезапустить сервер лаборатории 8168, чтобы страница Embeddings и диалог Run> увидели новый ключ rotation_step? Перезапуск заодно выкатит незакоммиченный код других сессий: pipeline/lab_server.py, lab_openapi.py, new_wine_workflow.py, pages/dataset.html. — Перезапустить сейчас
+```
+
+## 2026-09-29T10:02:42+0300
+
+The agent asked four questions about the proxies of the owner message of
+2026-09-29T08:17:32+0300. The owner selected these answers:
+
+1. "Which approach should I build?"
+
+```text
+A: Python proxy on Mac (Recommended) — New FastAPI service in proxies/, 127.0.0.1:18092, based on the gx10 cache code. One queue per model; a request goes to the first host with a free slot; a failed request retries on another host. Same paths as gx10 18082.
+```
+
+2. "The RTX 4090 bootstrap listens only on 127.0.0.1:18090. How should the proxy reach each
+   RTX host?"
+
+```text
+Proxy runs SSH tunnels (Recommended) — Each RTX host in the config has an ssh target. The proxy starts `ssh -N -L` for it, restarts it when it drops, and sends no work to that host while its tunnel is down.
+```
+
+3. "The RTX bootstrap has no Grounding DINO service. Where should GDINO requests go?"
+
+```text
+gx10 only, cached (Recommended) — GDINO goes only to gx10, through the proxy cache. No bootstrap change. One config line adds RTX hosts later, once the bootstrap has the service.
+```
+
+4. "Which gx10 port should the proxy use, and should the Mac cache start warm?"
+
+```text
+gx10 via 18082, empty cache (Recommended) — Requests routed to gx10 pass through its existing cache, so old answers still hit there. The Mac cache starts empty. Simplest.
+```
+
+## 2026-09-29T10:03:54+0300
+
+The owner sent this message:
+
+```text
+Ошибка: "Распознование не выполнено, SigLIP2 вернул пустой вектор"
+
+
+
+Также:
+
+1. Добавь настройки (значок шестеренок, 
+```
+
+## 2026-09-29T10:07:17+0300
+
+The owner sent these messages:
+
+```text
+Ошибка: "Распознование не выполнено, SigLIP2 вернул пустой вектор"
+
+
+
+
+
+
+
+Также:
+
+
+
+1. Добавь настройки (значок шестеренок)
+2. Не отображай предложение заменить модель, используем что есть в приложении
+3. Ширина текста на кнопках (сфотографировать) - не помещается в один ряд, лучше использовать иконки
+```
+
+```text
+Сканирование шртихкода через Google Code Scanner не работает, картинка четкая, но на EAN-13 barcode нет реакции
+```
+
+## 2026-09-29T10:14:54+0300
+
+```text
+git push
+```
+
+## 2026-09-29T10:17:26+0300
+
+```text
+если ты сделал прогоны на 5°, то не надо делать 10°
+```
+
+## 2026-09-29T10:35:30+0300
+
+The owner sent these messages:
+
+```text
+use assets from svoe-vino-lab/assets as application icons& If required, convert to appropriate formats
+```
+
+```text
+> GPU SigLIP2 вернул некорректные значения, приложение автоматически повторило вычисление на CPU и получило корректный результат. Тестовое каталожное изображение распознано как «Пино Нуар» с cosine `0,910`; в интерфейсе показано `SigLIP2: CPU`.
+
+also I connected my Google Pixel 8 to USB, please, test on it too.&#x20;
+
+
+
+If there is problem with GPU on some phones, then add settings to select where run models - CPU / GPU.
+
+
+
+On first launch try to detect what to choose.&#x20;
+```
+
+```text
+continue unfinished work
+```
+
+## 2026-09-29T10:41:37+0300
+
+```text
+git commit matcher
+```
+
+## 2026-09-29T11:12:54+0300
+
+```text
+В workbench/ResearchLog.md:1770-1775 записан тест alpha-канала, но на модели dinov3-vitb16, а не на SigLIP 2. Там прямо сказано: «The SigLIP 2 models were not measured». Отдельного отчёта о выборе белого фона я не нашёл. Если такой тест был, его стоит оформить отчётом. 
+
+Сделай для SigLIP2 сейчас
+```
+
+## 2026-09-29T11:28:17+0300
+
+```text
+SAM3 finds the package and crops to its box. The background inside the box stays. Then white background, 1024 px
+
+do you use "hands" to detect hands or something else that holding bottle in case there are a lot of them?
+```
+
+## 2026-09-29T11:28:43+0300
+
+```text
+&#x20;run pixel8 тест
+```
+
+## 2026-09-29T11:35:25+0300
+
+```text
+so is it safe to use "hand" also ?
+```
+
+## 2026-09-29T11:51:48+0300
+
+The owner sent these messages:
+
+```text
+Вместо "Косинус: 0.910" надо написать более понятный обывателю термин
+Может "Схожесть" или "Уверенность"?
+
+Также посмотри на иконки "Распознать" и "История" - они мелкие, их н разобрать
+
+Также давай имя apk понятное, пусть chtozavino\_debug.apk
+
+Также в настройках под версией приложения укажи ссылку на сайт "Что за вино"
+
+Также вместо "Распознавание на устройств" замени на "не требует интернета"
+
+Проверь почему История пустая, почему там нет записей (это на первом телефоне)
+
+Темная тема интерфейса нужна (в зависимости от настроек телефона)
+```
+
+```text
+`Сходство: 91%` 
+```
+
+## 2026-09-29T12:45:14+0300
+
+The owner sent this message:
+
+```text
+сделай `chtozavino.alolalab.com`
+удали с устройства старое приложение
+я подключил Pixel 8, там должно быть достаточно места теперь
+```
+
+## 2026-09-29T13:05:13+0300
+
+The owner sent this message:
+
+```text
+разблокировал
+```
+
+## 2026-09-29T13:12:38+0300
+
+The owner sent this message:
+
+```text
+Проверь что открываются ссылки на сайт свое вино из приложения
+проверь что настройки правильно все отображают
+```
+
+## 2026-09-29T11:57:03+0300
+
+````text
+add to @svoe-vino-lab/workbench  3 pipelines.
+
+They do not use any local embeddings, instead they will call matcher API:
+
+1. /v1/eval/predict - returns { "slug": "..." } - exactly as asked by hackaton hosts
+2. /v1/match - request for 20 k-top
+3. /v1/group/match - in runs display: original image with numbered found bottles, and at right a table each row - found bottle (match order), columns - candidates
+````
+
+## 2026-09-29T12:00:47+0300
+
+The agent asked four questions about the three matcher API pipelines. The owner selected
+these answers:
+
+```text
+How should pipeline 3 get several candidates for each bottle? /v1/group/match returns one match per bottle now.
+= Add k to group API (Recommended)
+Which matcher instance should the 3 pipelines call?
+= Prod :28000 (Recommended)
+For the recall metrics of pipeline 3, which ranked slug list should a run score? The test photo has one expected wine.
+= Best score first (Recommended)
+Where on /runs should the group view (numbered photo + table) appear?
+= In the result row (Recommended)
+```
+
+## 2026-09-29T12:10:02+0300
+
+The agent asked about the files of stale sections for plan 83. The owner selected this
+answer:
+
+```text
+Plan 83 needs separate hunks in files that only stale sections list (f4, 9e, ab, b4, 0f, 41, 1b, 6c, 49, codex-profile-latency, codex-side-matcher-api, /root). All these files are clean in git. May I add my own separate hunks and restart 8168 once (for run_routes.py)?
+= Yes, separate hunks + restart
+```
+
+## 2026-09-29T12:15:11+0300
+
+The owner attached a screenshot of the right-click menu of a photo on `/testset`.
+
+```text
+http://127.0.0.1:8168/testset?set=abobamakers&filter=done#__null__/photo_10_2026-09-27_13-22-30.jpg
+
+Add "Copy Image" - copy image to clipboard buffe
+```
+
+## 2026-09-29T12:24:33+0300
+
+```text
+Category seems incorrect. Why there such values.
+
+Also "Белое", "Красное" ... is color.
+
+
+Also when "Save" is disabled (because not all items entered), then show what is missing.
+```
+
+## 2026-09-29T12:28:00+0300
+
+```text
+http://127.0.0.1:8168/dataset  adding new wine takes long time (from pressing "Save" button)
+```
+
+## 2026-09-29T12:41:02+0300
+
+The agent proposed three fixes for the slow `Save` of the `Add wine` dialog: a warm-up of
+the model when the dialog opens, an index build in the background, or a longer `ttl` of
+the model on gx10. The owner selected the second fix.
+
+```text
+Build the index in the background. Save would answer about 1 s after the wine is created, and the card would show "indexing…" until the result arrives. This undoes a plan 78 choice (Save waits and the card appears only after the index check). It needs more code: a job status, polling, and a way to show a failed build.
+```
+
+## 2026-09-29T12:45:37+0300
+
+The agent asked three questions about plan 84 (the index build of a new wine in the
+background). The owner selected these answers.
+
+```text
+Plan 84 (docs/plans/84_background-new-wine-index.md): Save answers after the catalogue write (~1–2 s); a daemon thread runs the plan 78 build + verify; the card tag goes indexing… → indexed / not indexed (link to /embedding, error in tooltip); jobs live in server memory, so a restart of 8168 drops the tag and the next Run>/Build picks up missing items; the CLI stays synchronous. Approve?
+Answer: Add a Retry button
+
+The Codex section `/root` owns uncommitted plan 78 / task 17 work in new_wine_workflow.py, lab_server.py, dataset.html, test_new_wine_workflow.py, lab-openapi.yaml, and plan 78. A Codex session cannot get a message. May I add separate hunks to these files and keep its lines byte-identical?
+Answer: Yes, separate hunks
+
+Live trial on 8168: create `__web-bg-index-smoke-20260929` through the dialog, measure Save time and time to `indexed`, then set the wine to Disabled (as plan 78 did). The next build prunes its items. Run it?
+Answer: Run the live trial
+```
+
+## 2026-09-29T12:48:14+0300
+
+```text
+http://127.0.0.1:8168/testset?set=abobamakers&q=__
+
+add advanced filter to display custom added wines
+```
+
+## 2026-09-29T12:49:53+0300
+
+The agent asked about the `/root` lines that plan 84 replaces. The owner selected this
+answer.
+
+```text
+I promised to keep the /root lines byte-identical, but 7 of its uncommitted lines state the old wait-for-index behaviour that plan 84 replaces: the busy text "Creating and indexing…" (dataset.html + its assert in test_new_wine_workflow.py), the route test test_a_server_with_a_config_uses_the_index_workflow (test_manual_wines.py, mocks the synchronous create), the createWine summary in lab-openapi.yaml, README lines 314–315, and SMOKE_TESTS AW17/AW19. I also need to add 2 lines to the route list in test_lab_openapi.py. May I edit exactly these /root lines?
+Answer: Yes, edit these lines
+```
+
+## 2026-09-29T13:02:10+0300
+
+The owner attached five bottle screenshots.
+
+```text
+для каждой бутылки - проверь что ее нет в dataset, если нет
+Найди фронтальное изображение бутылки и создай карточку для нее в&#x20;
+[http://127.0.0.1:8168/](http://127.0.0.1:8168/)
+```
+
+## 2026-09-29T13:20:30+0300
+
+The owner attached five more bottle screenshots. The `My request:` field had no text;
+the message continues the immediately preceding five-bottle dataset task.

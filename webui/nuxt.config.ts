@@ -1,5 +1,7 @@
+import { THEME_INIT_SCRIPT } from './shared/theme'
+
 const siteUrl = 'https://chtozavino.ru/'
-const siteTitle = 'Найти вино по фото — Свое Вино'
+const siteTitle = 'Найти вино по фото — Что за вино?'
 const siteDescription = 'Сфотографируйте этикетку российского вина. Найдите название, фото бутылки и карточку на портале «Свое Вино».'
 const socialImage = `${siteUrl}icons/pwa-512.png`
 
@@ -23,24 +25,25 @@ export default defineNuxtConfig({
         { property: 'og:description', content: siteDescription },
         { property: 'og:url', content: siteUrl },
         { property: 'og:image', content: socialImage },
-        { property: 'og:image:alt', content: 'Свое Вино — поиск российского вина по фотографии' },
+        { property: 'og:image:alt', content: 'Что за вино? — поиск российского вина по фотографии' },
         { property: 'og:locale', content: 'ru_RU' },
         { name: 'twitter:card', content: 'summary' },
         { name: 'twitter:title', content: siteTitle },
         { name: 'twitter:description', content: siteDescription },
         { name: 'twitter:image', content: socialImage },
-        { name: 'theme-color', content: '#7b3528' },
+        { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#7b3528' },
+        { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#211e1c' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-        { name: 'apple-mobile-web-app-title', content: 'Свое Вино' },
+        { name: 'apple-mobile-web-app-title', content: 'Что за вино?' },
       ],
       link: [
         { rel: 'canonical', href: siteUrl },
         { rel: 'icon', type: 'image/svg+xml', href: '/icons/product-logo.svg' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
       ],
-      script: [{
+      script: [{ key: 'theme-init', innerHTML: THEME_INIT_SCRIPT, tagPriority: 'critical' }, {
         type: 'application/ld+json',
         innerHTML: JSON.stringify({
           '@context': 'https://schema.org',
@@ -49,7 +52,7 @@ export default defineNuxtConfig({
               '@type': 'WebSite',
               '@id': `${siteUrl}#website`,
               url: siteUrl,
-              name: 'Свое Вино — поиск по фото',
+              name: 'Что за вино? — поиск по фото',
               description: siteDescription,
               inLanguage: 'ru',
             },
@@ -57,7 +60,7 @@ export default defineNuxtConfig({
               '@type': 'WebApplication',
               '@id': `${siteUrl}#webapp`,
               url: siteUrl,
-              name: 'Найти вино по фото',
+              name: 'Что за вино? — поиск по фото',
               description: siteDescription,
               applicationCategory: 'LifestyleApplication',
               operatingSystem: 'Any',
@@ -71,7 +74,7 @@ export default defineNuxtConfig({
     },
   },
   pwa: {
-    registerType: 'autoUpdate',
+    registerType: 'prompt',
     registerWebManifestInRouteRules: true,
     includeAssets: [
       'icons/product-logo.svg',
@@ -82,8 +85,8 @@ export default defineNuxtConfig({
     ],
     manifest: {
       id: '/',
-      name: 'Свое Вино — поиск по фото',
-      short_name: 'Свое Вино',
+      name: 'Что за вино? — поиск по фото',
+      short_name: 'Что за вино?',
       description: 'Поиск российского вина по фотографии этикетки.',
       lang: 'ru',
       start_url: '/',
@@ -95,6 +98,10 @@ export default defineNuxtConfig({
         { src: '/icons/pwa-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
         { src: '/icons/pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
         { src: '/icons/pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      ],
+      screenshots: [
+        { src: '/screenshots/home-narrow.jpg', sizes: '1080x1920', type: 'image/jpeg', form_factor: 'narrow', label: 'Поиск вина по фото на телефоне' },
+        { src: '/screenshots/home-wide.jpg', sizes: '1920x1200', type: 'image/jpeg', form_factor: 'wide', label: 'Поиск вина по фото на компьютере' },
       ],
     },
     workbox: {

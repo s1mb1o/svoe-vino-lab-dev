@@ -13,6 +13,7 @@
     "typecheck": "nuxt typecheck",
     "test": "vitest run",
     "test:contract": "node scripts/check-contract.mjs",
+    "test:pwa": "node scripts/check-pwa-browser.mjs",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {

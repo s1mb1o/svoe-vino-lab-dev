@@ -1,6 +1,7 @@
 package com.alolalab.chtozavino
 
 import org.json.JSONObject
+import java.io.File
 import java.io.FileInputStream
 import java.net.URI
 import java.nio.ByteOrder
@@ -41,6 +42,16 @@ class CatalogueIndex private constructor(
                     region = row.optionalString("region"),
                     color = row.optionalString("color"),
                     grapes = row.optionalString("grapes"),
+                    imagePath = row.optionalString("image_path")?.let { relative ->
+                        val root = File(pack.directory, "images").canonicalPath + File.separator
+                        val image = File(pack.directory, relative)
+                        if (!relative.startsWith("images/") || !image.canonicalPath.startsWith(root) ||
+                            !image.isFile
+                        ) {
+                            throw ModelPackException("Некорректное изображение вина $slug.")
+                        }
+                        image.absolutePath
+                    },
                 )
             }
             if (wines.size != pack.manifest.wineCount) {

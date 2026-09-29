@@ -462,8 +462,11 @@ Endpoint POST /v1/group/match принимает фотографию стелл
 
 ~~~bash
 curl --form 'image=@shelf.jpg' \
-  "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/v1/group/match"
+  "http://127.0.0.1:$SVOE_VINO_MATCHER_PORT/v1/group/match?k=5"
 ~~~
+
+Необязательный параметр `k` задаёт число кандидатов для каждой бутылки: от 1 до 20,
+по умолчанию 1.
 
 Ответ содержит нормализованную фотографию для точного совмещения масок:
 
@@ -500,7 +503,11 @@ curl --form 'image=@shelf.jpg' \
           "image_url": "...",
           "qr_urls": []
         }
-      }
+      },
+      "candidates": [
+        {"rank": 1, "slug": "wine-slug", "score": 0.83, "wine": {"...": "..."}},
+        {"rank": 2, "slug": "other-wine", "score": 0.79, "wine": {"...": "..."}}
+      ]
     }
   ]
 }
@@ -509,6 +516,8 @@ curl --form 'image=@shelf.jpg' \
 - `box` содержит нормализованные координаты `[left, top, right, bottom]`.
 - `mask` содержит прозрачный PNG, обрезанный по `box`.
 - `match` равен null, если каталог не дал совпадение.
+- `candidates` содержит до `k` кандидатов, лучший первым. Первый кандидат равен
+  `match`. Список пуст, если `match` равен null.
 - `detected_count` содержит число валидных детекций до удаления дублей и лимитов.
 - `truncated` равен true, если лимит 100 бутылок или 6 МиБ визуальных данных исключил
   валидную бутылку.

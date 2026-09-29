@@ -284,27 +284,38 @@ class Catalogue:
                     if ((role != "label" or view == "label") and key in items
                             and number not in owners[key]):
                         owners[key].append(number)
-        rows = {view: ([], [], []) for view in embedding.views}
+        # view -> (the vector rows, the wine numbers, the items, the angles) of the matrix.
+        # A record of plan 82 has one vector row for each angle; its rows share one item.
+        rows = {view: ([], [], [], []) for view in embedding.views}
         for key, (state, record) in status.items():
             if state != "current":
                 continue
-            row = record.get("row")
-            if not isinstance(row, int) or not 0 <= row < len(vectors):
+            try:
+                span = embeddings.record_rows(record, len(vectors))
+            except ValueError:
                 raise embeddings.ConfigError("the item %s/%s of %s has no valid vector row"
                                              % (key + (name,)))
+            angles = record.get("angles")
+            count = span.stop - span.start
             for number in owners[key]:
-                rows[key[1]][0].append(row)
-                rows[key[1]][1].append(number)
-                rows[key[1]][2].append({"sha256": key[0], "view": key[1],
-                                        "type": types[(number, key[0])],
-                                        "embedding_hash": record["embedding_hash"]})
+                item = {"sha256": key[0], "view": key[1], "type": types[(number, key[0])],
+                        "embedding_hash": record["embedding_hash"]}
+                rows[key[1]][0].extend(range(span.start, span.stop))
+                rows[key[1]][1].extend([number] * count)
+                rows[key[1]][2].extend([item] * count)
+                rows[key[1]][3].extend(angles if angles is not None else [None] * count)
         self.views = {view: (np.asarray(vectors[np.asarray(picked, dtype=np.int64)],
                                         dtype=np.float32),
                              np.asarray(numbers, dtype=np.int64))
-                      for view, (picked, numbers, _) in rows.items() if picked}
+                      for view, (picked, numbers, _, _) in rows.items() if picked}
         # view -> the item of each matrix row, and view -> wine number -> its matrix rows
         # (plan 38). `rank` records the cosine of each item of a candidate.
         self.items = {view: rows[view][2] for view in self.views}
+        # view -> the angle of each matrix row, for a view with rotated rows (plan 82).
+        self.angles = {view: np.asarray([-1 if a is None else a for a in rows[view][3]],
+                                        dtype=np.int16)
+                       for view in self.views
+                       if any(a is not None for a in rows[view][3])}
         self.rows_of = {}
         for view, (_, numbers) in self.views.items():
             self.rows_of[view] = collections.defaultdict(list)
@@ -324,6 +335,10 @@ class Catalogue:
             "wines": {view: len(set(numbers.tolist()))
                       for view, (_, numbers) in self.views.items()},
         }
+        if getattr(embedding, "rotation_step", None) is not None:
+            self.state["rotation_step"] = embedding.rotation_step
+            self.state["rows"] = {view: int(len(numbers))
+                                  for view, (_, numbers) in self.views.items()}
 
     def items_of(self, number, cosines):
         """Return the key `items` of the candidate `number` (plan 38): each current item of
@@ -332,11 +347,26 @@ class Catalogue:
         another view gets the cosine None."""
         out = []
         for view, items in self.items.items():
-            found = []
+            angles = self.angles.get(view)
+            # The rows of one image (plan 82: one row for each angle) give one item: the
+            # row with the highest cosine, and its angle.
+            best, order = {}, []
             for position in self.rows_of[view].get(number, ()):
-                cosine = (round(float(cosines[view][position]), 4) if view in cosines
-                          else None)
-                found.append(dict(items[position], cosine=cosine))
+                item = items[position]
+                cosine = float(cosines[view][position]) if view in cosines else None
+                seen = best.get(id(item))
+                if seen is None:
+                    order.append(item)
+                    best[id(item)] = (position, cosine)
+                elif cosine is not None and cosine > seen[1]:
+                    best[id(item)] = (position, cosine)
+            found = []
+            for item in order:
+                position, cosine = best[id(item)]
+                entry = dict(item, cosine=round(cosine, 4) if cosine is not None else None)
+                if angles is not None:
+                    entry["angle"] = int(angles[position])
+                found.append(entry)
             if view in cosines:
                 found.sort(key=lambda item: -item["cosine"])
             out.extend(found)
@@ -352,9 +382,12 @@ class Catalogue:
         for number in order:
             position = max(self.rows_of[view][number], key=lambda p: cosines[p])
             item = self.items[view][position]
-            out.append({"slug": self.slugs[number], "cosine": round(float(top[number]), 4),
-                        "sha256": item["sha256"], "type": item["type"],
-                        "embedding_hash": item["embedding_hash"]})
+            hit = {"slug": self.slugs[number], "cosine": round(float(top[number]), 4),
+                   "sha256": item["sha256"], "type": item["type"],
+                   "embedding_hash": item["embedding_hash"]}
+            if view in self.angles:
+                hit["angle"] = int(self.angles[view][position])
+            out.append(hit)
         return out
 
     def rank(self, query, top_k, trace=None, first=None):
@@ -397,6 +430,12 @@ class Catalogue:
                 for view, top in best.items():
                     cand[view] = (round(float(top[number]), 4) if np.isfinite(top[number])
                                   else None)
+                positions = (self.rows_of["full"].get(number)
+                             if "full" in self.angles and "full" in cosines else None)
+                if positions:
+                    # Plan 82: the angle of the best `full` row, the argmax of the rotation.
+                    position = max(positions, key=lambda p: cosines["full"][p])
+                    cand["angle"] = int(self.angles["full"][position])
                 cand["items"] = self.items_of(number, cosines)
                 cands.append(cand)
             step["out"] = {"wines": int(len(present))}

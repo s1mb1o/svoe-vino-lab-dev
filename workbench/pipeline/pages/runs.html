@@ -208,6 +208,27 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
                   color: var(--muted); font-size: 10px; text-align: center; }
 .cand .r { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
 .cand .sl { font-size: 10px; word-break: break-all; line-height: 1.25; margin-top: 2px; }
+/* ---- the group view of a result row (plan 83) ----
+   A row of a run of the answer shape `group` holds the key `group`. The row shows the
+   photo with one numbered frame for each bottle, and to the right a grid: one line for
+   each bottle, one column for each candidate. The grid is of `div`s, not a table, so
+   that `closest("tr")` of the large view finds the result row. The box is a fraction of
+   the photo; the outline of the photo takes no room, so the frames stay in place. */
+.grp { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.grp-photo { position: relative; flex: none; line-height: 0; }
+.grp-photo img { display: block; max-width: 360px; max-height: 440px;
+                 outline: 1px solid var(--line); border-radius: 4px; }
+.grp-box { position: absolute; box-sizing: border-box; pointer-events: none;
+           border: 2px solid var(--accent); border-radius: 3px; }
+.grp-box.hit { border-color: var(--pos); }
+.grp-box span { position: absolute; top: 0; left: 0; min-width: 16px; padding: 0 3px;
+                font-size: 11px; line-height: 16px; font-weight: 650; text-align: center;
+                color: var(--panel); background: var(--accent); }
+.grp-box.hit span { background: var(--pos); }
+.grp-grid { display: grid; gap: 6px 8px; align-items: start; margin-top: 4px; }
+.grp-grid .gh { font-size: 11px; color: var(--muted); font-weight: 600; }
+.grp-grid .gn { font-size: 13px; font-weight: 650; }
+.grp-grid .gn .sm { font-weight: 400; }
 .sm { font-size: 12px; color: var(--muted); word-break: break-all; }
 #more { margin-top: 12px; }
 /* ---- the button `New testset…` and its dialog (plan 44) ----
@@ -944,7 +965,47 @@ function rowHtml(r) {
         } &middot; ${esc(r.previous.outcome || "")}</div>` : ""}
       ${r.error ? `<div class="sm" style="color:var(--exc)">${esc(r.error)}</div>` : ""}
     </td>
-    <td><div class="strip">${strip}</div></td></tr>`;
+    <td>${r.group ? groupHtml(r, truth, forbidden, twins)
+                  : `<div class="strip">${strip}</div>`}</td></tr>`;
+}
+
+/* The group view of one row (plan 83): the photo with the numbered bottles, and the
+   candidates of each bottle in the order of the matcher answer. The frame of a bottle
+   whose first candidate is an expected wine has the colour of the expected wine. */
+function groupHtml(r, truth, forbidden, twins) {
+  const g = r.group;
+  const bottles = g.bottles || [];
+  const cut = v => Math.min(100, Math.max(0, v * 100));
+  const frames = bottles.filter(b => b.box).map(b => {
+    const [l, t, rr, bb] = b.box.map(cut);
+    const hit = (b.candidates || []).length && truth.includes(b.candidates[0].slug);
+    return `<div class="grp-box ${hit ? "hit" : ""}" style="left:${l}%;top:${t}%;width:${
+      rr - l}%;height:${bb - t}%"><span>${b.n}</span></div>`;
+  }).join("");
+  const photo = r.photo_url
+    ? `<div class="grp-photo"><img loading="lazy" src="${esc(r.photo_url)}" alt=""
+         data-full="${esc(r.photo_url)}">${frames}</div>`
+    : `<div class="qphoto nophoto">not in the lab image store</div>`;
+  const cols = Math.max(1, ...bottles.map(b => (b.candidates || []).length));
+  const cells = [`<div class="gh">bottle</div>`,
+                 ...Array.from({ length: cols }, (_, i) => `<div class="gh">#${i + 1}</div>`)];
+  for (const b of bottles) {
+    const seg = typeof b.segmentation_score === "number"
+      ? b.segmentation_score.toFixed(2) : "\u2014";
+    cells.push(`<div class="gn">${b.n}<div class="sm">SAM3 ${seg}</div></div>`);
+    const cands = b.candidates || [];
+    cells.push(...cands.map(c => candCard(c, truth, forbidden, twins)));
+    if (!cands.length) cells.push(`<div class="empty sm">no match</div>`);
+    for (let i = Math.max(cands.length, 1); i < cols; i++) cells.push("<div></div>");
+  }
+  const info = `${bottles.length} bottle${bottles.length === 1 ? "" : "s"} \u00b7 ${
+    numOr(g.detected_count)} SAM3 detections${
+    g.truncated ? " \u00b7 truncated" : ""}`;
+  return `<div class="grp">${photo}<div><div class="sm">${esc(info)}</div>${
+    bottles.length
+      ? `<div class="grp-grid" style="grid-template-columns: auto repeat(${cols}, auto)">${
+          cells.join("")}</div>`
+      : `<div class="empty">${esc(r.error || "no bottle found")}</div>`}</div></div>`;
 }
 
 /* The cards of one photo row get the height of the tallest card of the row (owner

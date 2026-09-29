@@ -32,6 +32,7 @@ DEFAULT_QUEUE_TIMEOUT_SECONDS = 0.25
 MULTIPART_OVERHEAD_BYTES = 64 * 1024
 DEFAULT_MATCH_K = 20
 MAX_MATCH_K = 20
+DEFAULT_GROUP_K = 1
 LOGGER = logging.getLogger("uvicorn.error")
 
 
@@ -114,6 +115,9 @@ class GroupBottle(BaseModel):
         description="Transparent PNG mask cropped to the bottle box as a data URL.")
     match: MatchCandidate | None = Field(
         description="Best catalogue match, or null when no match exists.")
+    candidates: list[MatchCandidate] = Field(
+        description=("Up to k ranked candidates, the best first. The first candidate "
+                     "equals match. An empty list means no match."))
 
 
 class GroupMatchResult(BaseModel):
@@ -439,7 +443,8 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
         description=(
             "Upload one JPEG, PNG, or WEBP shelf image in the multipart field `image`. "
             "The service segments wine bottles with SAM3 and matches every returned "
-            "bottle against the selected catalogue bundle. The endpoint requires "
+            "bottle against the selected catalogue bundle. Each bottle holds up to `k` "
+            "ranked candidates. The endpoint requires "
             "`Authorization: Bearer <token>` when `matcher.token` is configured."
         ),
         operation_id="match_group_image",
@@ -462,6 +467,10 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             ...,
             description="Shelf image that can contain multiple wine bottles.",
         ),
+        k: int = Query(
+            DEFAULT_GROUP_K, ge=1, le=MAX_MATCH_K,
+            description="Maximum number of candidates for each bottle.",
+        ),
     ) -> GroupMatchResult:
         """Segment and match all returned bottles in one multipart image."""
         cards = matcher.cards
@@ -478,7 +487,7 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             except GroupMatchError as exc:
                 raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
             ranked_groups = matcher.match_many(
-                [bottle.crop for bottle in segmented.bottles], 1)
+                [bottle.crop for bottle in segmented.bottles], k)
             if len(ranked_groups) != len(segmented.bottles):
                 raise RuntimeError("matcher returned a wrong number of group results")
             audit_bottles = [
@@ -496,17 +505,17 @@ def create_app(config_path=None, output_dir=None, max_image_bytes=None,
             request, image, operation)
         bottles = []
         for bottle, ranked in zip(segmented.bottles, ranked_groups):
-            candidate = None
-            if ranked:
-                slug, score = ranked[0]
-                candidate = MatchCandidate(
-                    rank=1, slug=slug, score=score, wine=WineCard(**cards[slug]))
+            candidates = [
+                MatchCandidate(rank=rank, slug=slug, score=score, wine=WineCard(**cards[slug]))
+                for rank, (slug, score) in enumerate(ranked[:k], 1)
+            ]
             bottles.append(GroupBottle(
                 id=bottle.id,
                 segmentation_score=bottle.segmentation_score,
                 box=list(bottle.box),
                 mask=bottle.mask,
-                match=candidate,
+                match=candidates[0] if candidates else None,
+                candidates=candidates,
             ))
         return GroupMatchResult(
             pipeline=matcher.pipeline,

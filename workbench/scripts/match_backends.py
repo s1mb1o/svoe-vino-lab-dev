@@ -10,6 +10,11 @@ jury contract and the official API.
 The answer of a backend is parsed into a list of `{"slug": str, "score": float
 or None, "rank": int}`. A backend that states no score gives `score: None`. A
 missing score is never read as a score of zero.
+
+The shape `group` is the answer of `POST /v1/group/match` of svoe-vino-matcher. It is
+for the lab pipelines of the backend `svoe-vino-ru` alone (plan 83): `ask` then returns a
+sixth value, the group record of the photo, and `pipeline/benchmark.py` keeps it. Read
+workbench/docs/plans/83_matcher-api-pipelines.md.
 """
 import datetime as dt
 import json
@@ -27,7 +32,10 @@ LIST_KEYS = ("candidates", "data", "items", "results", "wines", "matches")
 # The keys that may hold the score of one candidate.
 SCORE_KEYS = ("score", "confidence", "similarity", "sim", "probability")
 
-SHAPES = ("auto", "slug-object", "slug-array", "candidates")
+SHAPES = ("auto", "slug-object", "slug-array", "candidates", "group")
+# The shape of `POST /v1/group/match`. `scripts/match_run.py` does not keep the group
+# record, so `backends.yaml` refuses this shape.
+GROUP_SHAPE = "group"
 
 
 class BackendError(Exception):
@@ -57,6 +65,9 @@ def load_backends(path):
         if shape not in SHAPES:
             raise BackendError("backend %r: response MUST be one of %s"
                                % (bid, ", ".join(SHAPES)))
+        if shape == GROUP_SHAPE:
+            raise BackendError("backend %r: the response shape group is for the lab "
+                               "pipelines of config.yaml alone" % bid)
         out[bid] = spec
     return out
 
@@ -142,6 +153,61 @@ def parse_answer(body, shape="auto"):
     return out
 
 
+def group_record(body):
+    """Return the group record of one answer of `POST /v1/group/match`.
+
+    The candidates of a bottle are its list `candidates`, or `[match]` for a matcher
+    with no parameter `k`. The record keeps no mask, no preview, and no wine card. Raise
+    ValueError for an answer that is not a group answer.
+    """
+    if not isinstance(body, dict) or not isinstance(body.get("bottles"), list):
+        raise ValueError("the answer holds no list bottles")
+    image = body.get("image") if isinstance(body.get("image"), dict) else {}
+    bottles = []
+    for n, bottle in enumerate(body["bottles"], 1):
+        if not isinstance(bottle, dict):
+            raise ValueError("bottle %d is not an object" % n)
+        raw = bottle.get("candidates")
+        if not isinstance(raw, list):
+            raw = [bottle["match"]] if isinstance(bottle.get("match"), dict) else []
+        cands = []
+        for rec in raw:
+            slug = _slug_of(rec)
+            if slug:
+                cands.append({"rank": len(cands) + 1, "slug": slug,
+                              "score": _score_of(rec) if isinstance(rec, dict) else None})
+        box = bottle.get("box")
+        if not (isinstance(box, list) and len(box) == 4 and all(
+                isinstance(v, (int, float)) and not isinstance(v, bool) for v in box)):
+            box = None
+        bottles.append({
+            "n": n, "id": bottle.get("id"),
+            "segmentation_score": bottle.get("segmentation_score"),
+            "box": [float(v) for v in box] if box else None,
+            "candidates": cands,
+        })
+    return {"image": {"width": image.get("width"), "height": image.get("height")},
+            "detected_count": body.get("detected_count"),
+            "truncated": body.get("truncated"), "bottles": bottles}
+
+
+def group_ranked(record):
+    """Return the ranked candidates of one group record: the first candidate of each
+    bottle, the highest score first. Bottles with the same score keep the order of the
+    answer. A slug that comes again is dropped."""
+    firsts = [b["candidates"][0] for b in record["bottles"] if b["candidates"]]
+    # `sorted` is stable: the bottles with the same score keep the order of the answer.
+    firsts = sorted(firsts, key=lambda c: -c["score"] if c["score"] is not None
+                    else float("inf"))
+    ranked, seen = [], set()
+    for cand in firsts:
+        if cand["slug"] not in seen:
+            seen.add(cand["slug"])
+            ranked.append({"slug": cand["slug"], "score": cand["score"],
+                           "rank": len(ranked) + 1})
+    return ranked
+
+
 def _multipart(path, field):
     """Return the body and the content type of one multipart form."""
     with open(path, "rb") as fh:
@@ -205,6 +271,8 @@ class HttpMultipartBackend:
 
         The function never raises for a failure of the backend. A failure gives
         an empty candidate list and a text in `error`, and the run goes on.
+        The shape `group` returns two more values: no step trace (None), and the group
+        record of `group_record`, also for an answer with no match (plan 83).
         """
         body, ctype = _multipart(path, self.field)
         headers = dict(self.headers)
@@ -224,6 +292,15 @@ class HttpMultipartBackend:
             answer = json.loads(raw.decode("utf-8", "replace"))
         except ValueError:
             return [], ms, status, "the answer is not JSON"
+        if self.shape == GROUP_SHAPE:
+            try:
+                record = group_record(answer)
+            except ValueError as exc:
+                return [], ms, status, str(exc), None, None
+            cands = group_ranked(record)
+            if not cands:
+                return [], ms, status, "the answer holds no bottle with a match", None, record
+            return cands[:self.top_k], ms, status, None, None, record
         try:
             cands = parse_answer(answer, self.shape)
         except ValueError as exc:

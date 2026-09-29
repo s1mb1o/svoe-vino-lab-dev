@@ -4,6 +4,9 @@ Test data for the Svoe Vino wine scanner.
 
 - `eval/` is the official evaluation set from the organizers. It holds 3 photos.
 - `my/` is a larger set built by this project. It holds real-world photos found on the web.
+- `dataset/abobamakers/` is an independently labelled 54-photo shop set from the
+  AbobaMakers public repository. Read the
+  [benchmark report](docs/reports/2026-09-29_abobamakers-dataset-benchmark.md).
 - `scripts/` holds the five pipeline stages and the driver.
 - `work/` holds the state database, the downloaded candidates, and the logs. It is disposable.
 - `config.yaml` holds the paths that point out of this project.
@@ -83,6 +86,12 @@ badge. The server sends the image files (`labdb.image_dir`, plan 75) at
 of the image. The slug of a card links to the page of the wine on vino-svoe.ru. The lab
 server uses port 8168.
 The review tool of `svoe-vino-testset` keeps port 8154, so both can run.
+
+The lab server publishes its checked-in OpenAPI 3.1 contract at
+`/openapi.yaml` and `/openapi.json`. Open `/docs` for Swagger UI and interactive
+requests. The contract covers the lab pages, image files, and all current API
+operations. The server has no authentication. Keep it on a trusted local host. Read
+[plan 80](docs/plans/80_lab-server-openapi.md).
 
 ```bash
 # step 4: find the main image of each wine in the Strapi uploads folder, offline
@@ -287,22 +296,44 @@ The filter `Type` in the row of `Advanced Filters:` shows `All`, `Wines`,
 of the wine. Read [plan 52](docs/plans/52_wine-beverage-type.md).
 
 The button `Add wine` of the Dataset page adds a wine by hand. The
-dialog asks the slug, the name, the producer, the category, the color, the region, the
-grapes (optional), the description (optional), and the main image (JPEG, PNG, or WebP,
+dialog asks the slug, the name, the producer, the category (`Wine` or `Sparkling wine`),
+the color (`Белое`, `Красное`, `Оранжевое`, or `Розовое`), an optional shade, the region,
+the grapes (optional), the description (optional), and the main image (JPEG, PNG, or WebP,
 at most 20 MB). The slug follows the name (`Южный Лес` -> `yuzhnyy-les`) until you type
 a slug; an empty slug field follows the name again. The image zone is a portrait column at the left of the fields. The slug gets
 the fixed prefix `__`; the rest holds `a-z`, `0-9`, `-`, and `_`,
 and starts with a letter or a digit. No slug of vino-svoe.ru starts with `_`, so a
-manual slug cannot collide with a website wine. The category is a select of the values
-of the loaded records; the producer and the region suggest the values of the loaded
-records. `Save` stays off until each required field and the image are there. The page
+manual slug cannot collide with a website wine. Category uses `wine_beverage_type`;
+Color uses the broad color stored in the catalogue's legacy `category` column. An empty
+Shade stores the broad color as its detailed-color fallback. The producer and the region
+suggest the values of the loaded records. While `Save` is off, the dialog names every
+missing requirement. The page
 sends `POST /api/wine` with JSON and the image in base64. The server stores the wine as
 `Active`, the image as `main` (`match_method` = `manual`, its file name as
-`csv_photo_name`), and processes the image as a patch. A slug that the database holds
-already gets HTTP 409, and the dialog shows the error. The card of a manual wine shows
-the slug with no link to vino-svoe.ru. `import_catalog.py` and `import_website.py` never
-remove a manual wine. The review tool shows no button. Read
-[plan 20](docs/plans/20_add-wine.md).
+`csv_photo_name`), and processes the image as a patch. The top-level key
+`new_wine_embedding` selects the index that `Save` updates. The dialog shows that index
+name and shows `Creating…` until the wine is in the catalogue. The server validates the
+existing active index before it creates the wine. It then uses the incremental builder,
+which keeps each current vector, and verifies every applicable item of the new main
+image in the new active index. A failure after wine creation keeps the wine and returns
+a warning that tells the operator to retry the build on `/embedding`. The operator CLI
+`scripts/add_wine.py` uses the same workflow and result contract. Read
+[plan 78](docs/plans/78_incremental-new-wine-index.md).
+
+The dialog does not wait for the index. `POST /api/wine` answers when the wine is in the
+catalogue, and a background job of the lab server runs the incremental build and the
+verification. The card of the new wine shows `indexing…`, then `indexed`, or
+`not indexed` with the error in its tooltip and a `Retry` button. `GET
+/api/wine-index?slug=<slug>` sends the job, and `POST /api/wine-index` starts it again.
+The jobs stay in memory: a restart of 8168 removes them, and the next `Build` on
+`/embedding` or `Run>` of the embedding adds the missing items. The reason is a cold start
+of the model on gx10: a `Save` that waited for the index took about 40 s. The CLI still
+waits for the index. Read [plan 84](docs/plans/84_background-new-wine-index.md).
+
+A slug that the database holds already gets HTTP 409, and the dialog shows the error.
+The card of a manual wine shows the slug with no link to vino-svoe.ru.
+`import_catalog.py` and `import_website.py` never remove a manual wine. The review tool
+shows no button. Read [plan 20](docs/plans/20_add-wine.md).
 
 ```bash
 # later: compare wine_catalog with the live catalogue of vino-svoe.ru
@@ -367,6 +398,11 @@ Testset page writes to the rows. So the import refuses a set that holds a page e
 bytes the lab holds already, for example as a patch, keeps that file. `--source` names
 another directory of the sets. `import_testset.py --set <name> <dir>` imports one set.
 Read [plan 12](docs/plans/12_testsets-benchmark.md).
+
+The separately reviewed set `dataset/abobamakers/` has 54 public shop photos: 35 with a
+catalogue `wine_slug`, 13 confirmed no-match products, and 6 unresolved multi-product
+scenes. Import it with `pipeline/import_testset.py --set abobamakers`. The report also
+compares three current recognition profiles and the three WineHack catalogue files.
 
 ```bash
 # seed or restore: build the whole lab database again from its sources
@@ -697,6 +733,32 @@ python3 -m venv ~/.venvs/svoe-vino-lab
   the shared scanner service. Read [plan 42](docs/plans/42_barcode-step.md).
 - A pipeline of the backend `embedding` MAY hold the key `rerank` (plan 48): the cluster
   re-rank of the section "The cluster re-rank". It runs inside the barcode step.
+
+### Rotated reference vectors (plan 82)
+
+An entry with the key `rotation_step` (integer degrees, 1 to 180) embeds the view `full` of
+each full catalogue image at the angles 0°, step, 2·step, … below 360°: the SAM3 cut on
+white, rotated counter-clockwise on a larger white canvas, with the scale of the 0°
+`resize`. The query stays one vector. A wine scores the best cosine of all its rows, so the
+score is the maximum over the rotation. The index record keeps `row` (the 0° row) and gets
+`angles`; row `row + i` is the vector of `angles[i]`. A run records the `angle` of the best
+row of each candidate and of each candidate image. Only the 0° PNG is written.
+
+```bash
+# the entries of plan 82 have batch_size 36; --workers N builds N rotated items at a time
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name gx10-siglip2-so400m-patch16-naflex-p512-rot5 --workers 6
+```
+
+- `gx10-siglip2-so400m-patch16-naflex-p512-rot5` (72 angles) and `…-rot10` (36 angles) are
+  at the end of `embeddings:`, so Build All builds them last. They have the view `full`
+  alone. The pipelines `siglip2-p512-rot{5,10}-{as-is,crop,crop-seg}` use them.
+- `rebuild_embeddings_on_run` builds a missing rotated item before a run, and a run waits
+  for a build in progress.
+- A matcher bundle of a rotated entry is format version 3
+  (`docs/testing/matcher-bundle.md`).
+- `scripts/copy_catalog.py` without `--embedding` copies every entry with an index; the two
+  rotated entries add about 1.15 GB.
 
 ## The embedding clusters of the lab
 
@@ -1081,6 +1143,17 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   `run.json` holds `configuration: <name>`, and its `backend` holds `kind: remote`. The
   default of `--workers` is `workers` of the entry (8). A full run of the set `my` sends
   about 2,200 photos to an external API.
+- Three pipelines of the backend `svoe-vino-ru` call the prod matcher API
+  `http://192.168.86.14:28000` and use no local embedding (plan 83):
+  `matcher-eval-predict` (`/v1/eval/predict`, `{"slug": …}`, Top-1 alone),
+  `matcher-match-k20` (`/v1/match?k=20`), and `matcher-group-match`
+  (`/v1/group/match?k=5`, answer shape `group`). A row of a group run holds the key
+  `group`: the box and the candidates of each bottle, with no mask and no preview. The
+  ranked list of the row is the first candidate of each bottle, the highest score first,
+  with one entry for each slug. `/runs` shows the photo with the numbered bottles and a
+  grid of the candidates of each bottle in place of the candidate strip. Each photo of a
+  run lands in the prod request archive. Read
+  [plan 83](docs/plans/83_matcher-api-pipelines.md).
 - `embedding_run.py` makes a run of a pipeline of the backend `embedding` (plan 33; owner
   answers of 2026-09-25T23:24:20+0300, 23:35:19, and 2026-09-26T00:12:24). The key
   `embedding` of the pipeline names an entry of `embeddings:`, and that entry needs its

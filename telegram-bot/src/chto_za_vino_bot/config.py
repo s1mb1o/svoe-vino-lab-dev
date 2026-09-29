@@ -12,6 +12,7 @@ import yaml
 
 MATCH_PATH = "/v1/match"
 DEFAULT_CONFIG_FILE = "config.yaml"
+MINIMUM_SECRET_LENGTH = 32
 ENV_NAME = r"[A-Za-z_][A-Za-z0-9_]*"
 ENV_REFERENCE = re.compile(rf"\{{env:({ENV_NAME})\}}\Z")
 
@@ -139,7 +140,7 @@ def _required_positive_int(name: str) -> int:
     return value
 
 
-def _required_secret(name: str, *, minimum_length: int = 32) -> str:
+def _required_secret(name: str, *, minimum_length: int = MINIMUM_SECRET_LENGTH) -> str:
     value = os.getenv(name, "").strip()
     if not value:
         raise ValueError(f"{name} is required")
@@ -325,16 +326,16 @@ class AdminWebSettings:
     rate_window_seconds: int
     log_level: str
     behind_tls_proxy: bool = False
+    auth_rate_limit: int = 10
+    auth_rate_window_seconds: int = 300
 
     @classmethod
     def from_env(cls) -> AdminWebSettings:
         data_root = Path(os.getenv("BOT_DATA_ROOT", "data")).expanduser()
         username = os.getenv("BOT_ADMIN_WEB_USERNAME", "admin").strip()
-        password = os.getenv("BOT_ADMIN_WEB_PASSWORD", "")
+        password = _required_secret("BOT_ADMIN_WEB_PASSWORD")
         if not username:
             raise ValueError("BOT_ADMIN_WEB_USERNAME is required")
-        if not password:
-            raise ValueError("BOT_ADMIN_WEB_PASSWORD is required")
         networks = tuple(
             item.strip()
             for item in os.getenv(
@@ -372,4 +373,8 @@ class AdminWebSettings:
             rate_window_seconds=_positive_int("BOT_RATE_WINDOW_SECONDS", 3600),
             log_level=os.getenv("BOT_LOG_LEVEL", "INFO").upper(),
             behind_tls_proxy=behind_tls_proxy,
+            auth_rate_limit=_positive_int("BOT_ADMIN_WEB_AUTH_RATE_LIMIT", 10),
+            auth_rate_window_seconds=_positive_int(
+                "BOT_ADMIN_WEB_AUTH_RATE_WINDOW_SECONDS", 300
+            ),
         )

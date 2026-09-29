@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import asyncio
 import base64
 import binascii
 import ipaddress
 import json
 import logging
+import math
 import secrets
 import time
+from collections import deque
 from contextlib import asynccontextmanager
 from datetime import datetime
 from html import escape
@@ -23,7 +26,7 @@ from fastapi.responses import (
     Response,
 )
 
-from .config import AdminWebSettings
+from .config import MINIMUM_SECRET_LENGTH, AdminWebSettings
 from .storage import (
     SQLITE_MAX_INTEGER,
     AdminRequestRecord,
@@ -283,10 +286,18 @@ def _detail_list(items: list[tuple[str, str]]) -> str:
 
 
 def create_app(settings: AdminWebSettings) -> FastAPI:
+    if len(settings.password.strip()) < MINIMUM_SECRET_LENGTH:
+        raise ValueError(
+            f"BOT_ADMIN_WEB_PASSWORD must contain at least {MINIMUM_SECRET_LENGTH} characters"
+        )
+    if settings.auth_rate_limit <= 0 or settings.auth_rate_window_seconds <= 0:
+        raise ValueError("administration authentication limits must be positive")
     networks = tuple(ipaddress.ip_network(item, strict=False) for item in settings.allowed_networks)
     repository = Repository(settings.database_file)
     artifact_store = ArtifactStore(settings.data_root)
     csrf_token = secrets.token_urlsafe(32)
+    authentication_failures: dict[str, deque[float]] = {}
+    authentication_lock = asyncio.Lock()
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):
@@ -326,16 +337,44 @@ def create_app(settings: AdminWebSettings) -> FastAPI:
 
     async def require_authentication(request: Request) -> None:
         credentials = _basic_credentials(request)
-        if credentials is not None:
-            username, password = credentials
-            username_ok = secrets.compare_digest(
-                username.encode("utf-8"), settings.username.encode("utf-8")
+        if credentials is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Authentication required",
+                headers={"WWW-Authenticate": 'Basic realm="ChtoZaVino admin", charset="UTF-8"'},
             )
-            password_ok = secrets.compare_digest(
-                password.encode("utf-8"), settings.password.encode("utf-8")
-            )
-            if username_ok and password_ok:
+        username, password = credentials
+        username_ok = secrets.compare_digest(
+            username.encode("utf-8"), settings.username.encode("utf-8")
+        )
+        password_ok = secrets.compare_digest(
+            password.encode("utf-8"), settings.password.encode("utf-8")
+        )
+        valid = username_ok and password_ok
+
+        host = request.client.host if request.client else "unknown"
+        now = time.monotonic()
+        async with authentication_lock:
+            failures = authentication_failures.setdefault(host, deque())
+            cutoff = now - settings.auth_rate_window_seconds
+            while failures and failures[0] <= cutoff:
+                failures.popleft()
+            if len(failures) >= settings.auth_rate_limit:
+                retry_after = max(
+                    1,
+                    math.ceil(
+                        failures[0] + settings.auth_rate_window_seconds - now
+                    ),
+                )
+                raise HTTPException(
+                    status_code=429,
+                    detail="Too many authentication failures",
+                    headers={"Retry-After": str(retry_after)},
+                )
+            if valid:
+                authentication_failures.pop(host, None)
                 return
+            failures.append(now)
         raise HTTPException(
             status_code=401,
             detail="Authentication required",

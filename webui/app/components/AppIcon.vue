@@ -21,6 +21,7 @@ const paths: Record<string, string> = {
   info: 'M12 11v6 M12 7h.01 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
   book: 'M4 5a3 3 0 0 1 3-2h5v17H7a3 3 0 0 0-3 2Z M20 5a3 3 0 0 0-3-2h-5v17h5a3 3 0 0 1 3 2Z',
   story: 'M4 18h16 M6 15V8a6 6 0 0 1 12 0v7 M9 15V9a3 3 0 0 1 6 0v6',
+  taste: 'M7 3h10l-1 7a4 4 0 0 1-8 0Z M12 14v7 M8 21h8',
   map: 'm3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z M9 3v15 M15 6v15',
   plus: 'M12 5v14 M5 12h14',
   minus: 'M5 12h14',

@@ -16,6 +16,8 @@ The request MUST use `multipart/form-data`.
 The image MUST be in the `image` field.
 The endpoint uses the existing upload size, pixel, format, authorization, and queue limits.
 The selected matcher pipeline MUST contain wine cards.
+The query parameter `k` MAY set the maximum number of candidates for each bottle.
+The range of `k` is 1 to 20. The default is 1. A value out of the range gives HTTP 422.
 
 The matcher MUST read the SAM3 base URL from `SAM3_ENDPOINT`.
 The matcher MUST send the normalized image to `${SAM3_ENDPOINT}/segment`.
@@ -50,13 +52,16 @@ The response MUST contain `pipeline`, `latency_ms`, `image`, `detected_count`, `
 `image` MUST contain `width`, `height`, and `preview`.
 `preview` MUST be a JPEG data URL of the normalized image.
 
-Each bottle MUST contain `id`, `segmentation_score`, `box`, `mask`, and `match`.
+Each bottle MUST contain `id`, `segmentation_score`, `box`, `mask`, `match`, and `candidates`.
 `id` MUST be stable inside one response.
 `box` MUST use `[left, top, right, bottom]` coordinates normalized to the returned image.
 `mask` MUST be a cropped transparent PNG data URL.
 The mask dimensions MUST match the pixel box dimensions.
 `match` MUST contain the best `MatchCandidate` or `null` when no catalogue match exists.
-The candidate MUST contain the existing `WineCard` description.
+`candidates` MUST contain up to `k` ranked `MatchCandidate` objects, the best first.
+The first candidate MUST equal `match`. The list MUST be empty when `match` is `null`.
+Each candidate MUST contain the existing `WineCard` description.
+The field `candidates` was added on 2026-09-29 (workbench plan 83). A client that reads only `match` does not change.
 
 The response MUST order bottles by shelf band and then from left to right.
 The response MUST keep at most 6 MiB of preview and mask data.
@@ -77,5 +82,5 @@ The endpoint MUST NOT store masks or bottle crops.
 
 ## Verification
 
-Automated tests MUST cover image normalization, box clamping, mask cropping, duplicate suppression, ordering, limits, SAM3 validation, SAM3 retry, batch matching, authorization, and the OpenAPI contract.
+Automated tests MUST cover image normalization, box clamping, mask cropping, duplicate suppression, ordering, limits, SAM3 validation, SAM3 retry, batch matching, the parameter `k`, authorization, and the OpenAPI contract.
 The existing `/v1/eval/predict` and `/v1/match` contracts MUST remain unchanged.

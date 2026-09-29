@@ -1,5 +1,26 @@
 # Research log
 
+## Product header identity, 2026-09-29
+
+The user requested the product logo and name in place of the source-portal wordmark.
+The shared artwork is available in `../assets/` and already has an exact public SVG copy.
+The Android app and Telegram bot use the name `Что за вино?`.
+Decision: reuse the existing product artwork without color filters.
+Decision: use one `ProductBrand` component in the header and age gate.
+Decision: align the footer, page title, social metadata, structured data, and installed app name.
+Decision: retain the source-portal name in links and source attribution.
+
+## Header theme selection, 2026-09-29
+
+The user requested a light-mode selector in the Web UI header.
+The previous palette depended only on `prefers-color-scheme`.
+Decision: provide `Авто`, `Светлая`, and `Тёмная` in one native select.
+Decision: keep `Авто` as the default and store the preference under `svoe-vino.theme.v1`.
+Decision: apply the stored preference in the document head before first paint.
+Decision: use `data-theme` for all dark styles, including dialogs and mobile buttons.
+Decision: synchronize browser theme colors and preferences across open tabs.
+Decision: retain the current-page selection if local storage is unavailable.
+
 ## Shared product branding, 2026-09-29
 
 The user designated the repository-level `assets/` directory as the source of Web UI product assets.
@@ -9,6 +30,115 @@ Decision: use the shared product artwork for the favicon, PWA install icons, App
 Decision: copy the shared SVG without modification for the favicon.
 Decision: derive the fixed-size PNG icons from the shared PNG.
 Decision: scale the maskable artwork to 400 by 400 on its original cream background so the visible mark stays inside the safe area.
+
+## Result-aware product-line guide, 2026-09-29
+
+The product-line map contains six curated Abrau-Durso wines.
+The source catalog snapshot contains 57 records with producer `Абрау-Дюрсо`.
+The six-node map cannot assign a verified tier to every source record.
+The resolved wine contains a producer, a slug, an image, and a source URL.
+Decision: normalize punctuation in the producer name before the brand comparison.
+Decision: accept the `abrau-dyurso-` source slug prefix as a fallback brand signal.
+Decision: mark a map node only after an exact slug match.
+Decision: show an unmatched Abrau-Durso result in a separate card.
+Decision: do not place that separate result in a collection tier.
+Decision: keep Victor Dravigny as the fixed example for another producer.
+Decision: label the fixed example as a demonstration and not as the user's wine.
+
+## Product-line image selection, 2026-09-29
+
+The Abrau-Durso map used one generated CSS bottle shape for all six wines.
+The local `Своё Вино` catalog snapshot contains a `main` image for every map wine.
+The patch directory contains a replacement for `abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut`.
+The original catalog match for this wine is shared and does not show the correct package.
+The cropped derivative for this slug was regenerated from the patch.
+The other five selected slugs have no patch.
+Decision: prefer `patched` by exact slug.
+Decision: use `main` when the exact patch does not exist.
+Decision: publish local transparent WebP derivatives for the map.
+Decision: do not request source catalog images from the browser.
+
+## Taste and regional dish inference, 2026-09-29
+
+The source catalog analysis contains 2,103 unique wine records.
+All source records have a description.
+The resolved source cards can also contain broad pairing categories.
+Examples include `Блюда из рыбы`, `Мясо и стейки`, `Сыры`, and `Запеченные овощи`.
+
+The inference audit found two JavaScript regex errors.
+The token `\w` matches ASCII word characters by default.
+It does not match Russian suffixes.
+The token `\b` does not create reliable Russian word boundaries.
+The old patterns could miss inflected Russian terms.
+One broad reverse pattern could also treat `вино насыщенного золотистого цвета` as body evidence.
+The corrected patterns use explicit Cyrillic ranges and contextual exclusions.
+The tests now cover color words and `лёгкая терпкость`.
+
+The public Wine Reviews CSV contains 129,971 rows.
+The source ZIP SHA-256 is `8e6b7df797df88929c34b41b93cf60643cefa4c93b9af7396ff2196efdf47551`.
+The CSV SHA-256 is `52af2643c8ac29f010f0cc629dfbdda1c74aa0f332d11762af9ef3de4e567ac9`.
+The source license is `CC BY-NC-SA 4.0`.
+The build selected 66,562 reviews across 18 grape varieties.
+The aggregate file stores descriptor frequencies, structural levels, observation counts, and sample counts.
+It does not store review text, critic scores, prices, wineries, or bottle names.
+The aggregate file SHA-256 is `09a19fa5be08515fedc4d89fad3d23c6db609308494270399bbd827e103486a9`.
+The raw dataset is not stored in the repository.
+
+An external factual audit confirmed the three pilot dish forms.
+The Russian расстегай has an open center and commonly uses a fish filling.
+The Dagestani чуду can be a thin dry-pan flatbread with cheese and greens.
+The Adyghe халыж or халюж is a fried pastry with Adyghe cheese.
+The generated images show these defining features.
+Sources: `https://www.gastronom.ru/text/amp/1000410`, `https://xn----8sbehgcimb3cfabqj3b.xn--p1ai/recipes/selection/chudu-lepeshki-iz-tonkogo-testa-s-syrom-i-zelenyu/`, and `https://etnografia.kunstkamera.ru/files/etnografia_journal/2026_01/05_kurinskikh_1_31_2026.pdf`.
+The Kaggle dataset page confirmed the `CC BY-NC-SA 4.0` label on 2026-09-29.
+
+Decision: use source descriptions and source pairing categories as the primary evidence.
+Decision: use a matching dataset aggregate only when source evidence does not fill a value.
+Decision: use deterministic grape, color, category, and production-method rules to fill gaps.
+Decision: do not copy a third-party tasting review into the application.
+Decision: do not transfer a foreign critic score to a Russian wine.
+Decision: compare each wine with one international style, not one specific bottle.
+Decision: state one shared property and one possible difference for each comparison.
+Decision: select three dishes from three different cuisines.
+Decision: include Russian, Tatar, Kalmyk, Tuvan, Dagestani, Ossetian, Chechen, Adyghe, Balkar, and Georgian dishes in the local dish rules.
+Decision: show when a source pairing category supports a dish.
+Decision: call the result a gastronomic hypothesis because a recipe can change the pairing.
+Decision: show the dataset source and license even when the wine has no reliable grape mapping.
+Decision: apply sweet-wine rules before dry varietal comparisons.
+Decision: add images only for the three dishes in the default demonstration result.
+Decision: keep all other dish cards complete without an image.
+
+## PWA behavior review, 2026-09-29
+
+A headless Chromium probe checked `https://chtozavino.ru/` with Playwright 1.58.2.
+The live `sw.js` is 2394 bytes. The local production build has the same size.
+Chrome reported no installability errors and no manifest errors.
+The service worker controlled the page after the first visit because of `clientsClaim`.
+The precache held 22 entries. It held no API responses and no shelf example photos.
+An offline reload after one online visit failed with `net::ERR_FAILED`.
+Reason: the first navigation occurs before the service worker is active, so `svoe-vino-pages` stays empty.
+An offline reload after two online visits returned the page from the service worker with HTTP 200.
+The offline page rendered «Найти вино по фото» and loaded the Playfair Display font.
+The README and the specification say that the app shell opens offline after one successful online visit. The probe does not confirm this statement.
+The cached HTML contains the `portal-config` SSR payload. The payload is a copy of the `/api/config` response, for example `apiAvailable: true` and `shelfAvailable: true`.
+An offline start therefore shows the last known service state.
+`registerType: 'autoUpdate'` makes `vite-plugin-pwa` 1.3.0 call `window.location.reload()` when an updated service worker activates.
+The Nuxt module plugin does not pass `onNeedReload`. A reload after a deploy can discard the selected photo and the shown result.
+Live `/sw.js` and `/manifest.webmanifest` use `cache-control: public, max-age=0, must-revalidate`. The manifest uses `application/manifest+json`.
+The maskable icon mark reaches 205.6 px from the center. The safe radius is 204.8 px. The difference is antialiasing only.
+The `theme-color` meta has one value, `#7b3528`. The manifest `background_color` is the light `#fefdfa` also in the dark system theme.
+The owner selected the fixes on 2026-09-29.
+Decision: correct the offline statement in the documents. Do not add page-cache warming code.
+Decision: use `registerType: 'prompt'` without an update banner. Reason: a scanner session is short, and a reload can discard a photo or a result.
+Consequence: an app page that stays open keeps the old version until all app pages close.
+Decision: keep the SSR config payload in the cached page. The specification now states this exception.
+Decision: add a dark `theme-color` with the dark page color `#211e1c`.
+The manifest cannot change `background_color` for the dark theme in current browsers, as far as this review found. The launch screen stays cream.
+Decision: add JPEG manifest screenshots. The Chrome richer install dialog needs screenshots.
+Unhead lists `theme-color` in `MetaTagsArrayable`. Two `theme-color` tags with `media` both render.
+With `prompt`, the generated `sw.js` has no `clientsClaim` and calls `skipWaiting` only for a `SKIP_WAITING` message.
+`scripts/check-pwa-browser.mjs` uses a loopback proxy that appends a comment to `sw.js`. This change starts a real service-worker update without a second build.
+The check passed against the local `prompt` build. It failed against the live `autoUpdate` build with a destroyed execution context, which is a page reload.
 
 ## Complete result metadata fallback, 2026-09-29
 

@@ -134,6 +134,9 @@ def _store_rows(conn, digests):
 def _row_slugs(row):
     """Return the slugs whose catalogue image one row shows."""
     slugs = {c.get("slug") for c in row.get("candidates") or ()}
+    # The candidates of each bottle of a group answer (plan 83).
+    for bottle in (row.get("group") or {}).get("bottles") or ():
+        slugs.update(c.get("slug") for c in bottle.get("candidates") or ())
     slugs.update(row.get("truth") or ())
     slugs.update((row.get("twin") or {}).get("slugs") or ())
     slugs.discard(None)

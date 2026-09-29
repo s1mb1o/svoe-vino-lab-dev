@@ -475,3 +475,9 @@ The page follows the Embedding page of `svoe-vino-testset` (its `README.md`, sec
 4. The SigLIP 2 models were not measured for the alpha channel. Only
    `dinov3-vitb16-pretrain-lvd1689m` was measured. The transparency check applies to
    each backend.
+
+## Note of plan 82 (2026-09-29)
+
+An entry with `rotation_step` has one vector row for each angle of an item of the view
+`full`. The record keeps `row` (the 0° row) and holds `angles`; the rows are contiguous.
+Only the 0° PNG is written. Read `docs/plans/82_rotated-reference-embeddings.md`.

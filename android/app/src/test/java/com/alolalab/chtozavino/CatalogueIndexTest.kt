@@ -36,8 +36,21 @@ class CatalogueIndexTest {
         )
     }
 
-    private fun makeIndex(): CatalogueIndex {
+    @Test
+    fun catalogueImagePathResolvesInsideInstalledPack() {
+        val index = makeIndex(withImage = true)
+
+        val path = index.findCode("4631168664979").first().wine.imagePath
+
+        assertTrue(path != null && File(path).isFile)
+    }
+
+    private fun makeIndex(withImage: Boolean = false): CatalogueIndex {
         val directory = createTempDirectory("catalogue-index-test").toFile()
+        if (withImage) {
+            File(directory, "images").mkdirs()
+            File(directory, "images/first.jpg").writeBytes(byteArrayOf(1, 2, 3))
+        }
         val vectors = Array(3) { FloatArray(VECTOR_DIMENSION) }
         vectors[0][0] = 1f
         vectors[1][1] = 1f
@@ -46,7 +59,7 @@ class CatalogueIndexTest {
         vectors[2][1] = diagonal
         writeVectors(File(directory, "vectors.f32"), vectors)
         File(directory, "wines.jsonl").writeText(
-            """{"wine_slug":"first","name":"Первое","page_url":"https://vino-svoe.ru/wines/first"}
+            """{"wine_slug":"first","name":"Первое","page_url":"https://vino-svoe.ru/wines/first"${if (withImage) ",\"image_path\":\"images/first.jpg\"" else ""}}
 {"wine_slug":"second","name":"Второе","page_url":"https://vino-svoe.ru/wines/second"}
 """,
         )
@@ -63,9 +76,11 @@ class CatalogueIndexTest {
         val pack = InstalledModelPack(
             directory,
             ModelPackManifest(
+                formatVersion = 1,
                 versionName = "test",
                 vectorCount = 3,
                 wineCount = 2,
+                imageCount = 0,
                 installedAt = 0,
                 files = emptyMap(),
             ),

@@ -5,6 +5,7 @@ import pytest
 from chto_za_vino_bot.config import AdminWebSettings, ConfigError, EndpointSettings, Settings
 
 CONFIG_FILE = Path(__file__).parents[1] / "config.yaml"
+ADMIN_PASSWORD = "b" * 32
 
 
 @pytest.fixture(autouse=True)
@@ -71,13 +72,15 @@ def test_admin_web_requires_password(monkeypatch) -> None:
 
 
 def test_admin_web_defaults(monkeypatch) -> None:
-    monkeypatch.setenv("BOT_ADMIN_WEB_PASSWORD", "secret")
+    monkeypatch.setenv("BOT_ADMIN_WEB_PASSWORD", ADMIN_PASSWORD)
     monkeypatch.delenv("BOT_DATA_ROOT", raising=False)
     monkeypatch.delenv("BOT_DATABASE", raising=False)
     monkeypatch.delenv("BOT_ADMIN_WEB_HOST", raising=False)
     monkeypatch.delenv("BOT_ADMIN_WEB_PORT", raising=False)
     monkeypatch.delenv("BOT_ADMIN_WEB_ALLOWED_NETWORKS", raising=False)
     monkeypatch.delenv("BOT_ADMIN_WEB_BEHIND_TLS_PROXY", raising=False)
+    monkeypatch.delenv("BOT_ADMIN_WEB_AUTH_RATE_LIMIT", raising=False)
+    monkeypatch.delenv("BOT_ADMIN_WEB_AUTH_RATE_WINDOW_SECONDS", raising=False)
 
     settings = AdminWebSettings.from_env()
 
@@ -90,10 +93,19 @@ def test_admin_web_defaults(monkeypatch) -> None:
         "::1/128",
     )
     assert settings.behind_tls_proxy is False
+    assert settings.auth_rate_limit == 10
+    assert settings.auth_rate_window_seconds == 300
+
+
+def test_admin_web_rejects_a_short_password(monkeypatch) -> None:
+    monkeypatch.setenv("BOT_ADMIN_WEB_PASSWORD", "short")
+
+    with pytest.raises(ValueError, match="32 characters"):
+        AdminWebSettings.from_env()
 
 
 def test_admin_web_requires_a_tls_proxy_for_a_non_loopback_listener(monkeypatch) -> None:
-    monkeypatch.setenv("BOT_ADMIN_WEB_PASSWORD", "secret")
+    monkeypatch.setenv("BOT_ADMIN_WEB_PASSWORD", ADMIN_PASSWORD)
     monkeypatch.setenv("BOT_ADMIN_WEB_HOST", "0.0.0.0")
     monkeypatch.delenv("BOT_ADMIN_WEB_BEHIND_TLS_PROXY", raising=False)
 

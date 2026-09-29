@@ -229,7 +229,8 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
 
     def one(row):
         # A backend MAY return a fifth value: the step trace of the photo (plan 41). The
-        # row then holds it as `trace`.
+        # row then holds it as `trace`. A sixth value is the group record of a matcher
+        # answer of the shape `group` (plan 83); the row holds it as `group`.
         answer = backend.ask(row["abs_path"])
         cands, ms, status, error = answer[:4]
         verdict = judge(row, cands, False)
@@ -243,6 +244,8 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
         }
         if len(answer) > 4 and answer[4] is not None:
             rec["trace"] = answer[4]
+        if len(answer) > 5 and answer[5] is not None:
+            rec["group"] = answer[5]
         return rec
 
     def write(rec):

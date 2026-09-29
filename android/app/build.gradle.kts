@@ -9,11 +9,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "Chtozavino.alolalab.com"
+        applicationId = "chtozavino.alolalab.com"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 5
+        versionName = "0.1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -53,9 +53,26 @@ android {
         resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
     }
 
+    androidResources {
+        noCompress += "zip"
+    }
+
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
+}
+
+val generatedDebugApk = layout.buildDirectory.file("outputs/apk/debug/app-debug.apk")
+
+val copyFriendlyDebugApk by tasks.registering(Copy::class) {
+    dependsOn("packageDebug")
+    from(generatedDebugApk)
+    into(layout.buildDirectory.dir("outputs/apk/friendly"))
+    rename { "chtozavino_debug.apk" }
+}
+
+tasks.matching { it.name == "assembleDebug" }.configureEach {
+    finalizedBy(copyFriendlyDebugApk)
 }
 
 kotlin {

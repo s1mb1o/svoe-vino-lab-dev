@@ -101,6 +101,14 @@ The administration interface is a separate FastAPI service.
 Keep it on loopback and use an SSH tunnel, or put it behind an HTTPS reverse proxy.
 Do not send the HTTP Basic password over a shared plain-HTTP network.
 The browser asks for the configured HTTP Basic username and password.
+The password must contain at least 32 characters.
+The service limits failed authentication attempts by socket client address.
+The default permits 10 failed attempts in 300 seconds.
+A correct credential clears an address failure history before the limit is reached.
+After the limit is reached, the service rejects all authentication attempts from that address
+until the `Retry-After` period ends.
+The service does not trust proxy address headers. Requests through one TLS proxy share one
+application rate-limit counter.
 
 The interface shows these pages:
 
@@ -234,11 +242,13 @@ The example environment uses these service endpoints for `gx10`:
 | `BOT_SYNC_PROFILE` | `true` |
 | `BOT_LOG_LEVEL` | `INFO` |
 | `BOT_ADMIN_WEB_USERNAME` | `admin` |
-| `BOT_ADMIN_WEB_PASSWORD` | Required strong random secret. No default. |
+| `BOT_ADMIN_WEB_PASSWORD` | Required random secret with at least 32 characters. No default. |
 | `BOT_ADMIN_WEB_HOST` | `127.0.0.1` |
 | `BOT_ADMIN_WEB_PORT` | `28003` |
 | `BOT_ADMIN_WEB_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128` |
 | `BOT_ADMIN_WEB_BEHIND_TLS_PROXY` | `false` |
+| `BOT_ADMIN_WEB_AUTH_RATE_LIMIT` | `10` failed attempts per socket client. |
+| `BOT_ADMIN_WEB_AUTH_RATE_WINDOW_SECONDS` | `300` |
 | `BOT_HTTP_API_HOST` | `127.0.0.1` |
 | `BOT_HTTP_API_PORT` | `28002` |
 | `BOT_HTTP_API_ALLOWED_NETWORKS` | `127.0.0.1/32,::1/128,192.168.86.0/24` |
@@ -258,7 +268,7 @@ set its listener to `0.0.0.0:8080` only behind its TLS proxy and with
 `BOT_ADMIN_WEB_BEHIND_TLS_PROXY=true`. In a container, `127.0.0.1` is the container itself, so
 the deployment sets each model endpoint to the LAN address of `gx10`.
 
-Set `BOT_ADMIN_WEB_PASSWORD` to a strong random value.
+Set `BOT_ADMIN_WEB_PASSWORD` to a random value with at least 32 characters.
 The administration service refuses to start without this value.
 
 Production refuses to start when moderation is disabled. Local development and tests must set

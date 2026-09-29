@@ -1,0 +1,68 @@
+# The configuration of the model proxy of svoe-vino-lab. Read README.md and
+# docs/plans/01_multi-host-model-proxy.md, section "Configuration".
+#
+# The clients use these endpoints:
+#   SIGLIP2_ENDPOINT=http://127.0.0.1:18092
+#   GROUNDING_DINO_ENDPOINT=http://127.0.0.1:18092/upstream/grounding-dino-base
+#   SAM3_ENDPOINT=http://127.0.0.1:18092/upstream/sam3
+
+listen:
+  host: 127.0.0.1
+  port: 18092
+
+# The host for each request that is not pooled: GET /v1/models, GET /running,
+# GET /upstream/<model>/health, and each other path.
+passthrough: gx10
+
+cache:
+  path: ~/.cache/svoe-vino-model-proxy/cache.sqlite3
+  namespace: svoe-vino-model-proxy-v1
+  ttl_days: 30
+  max_size: 10GiB
+  max_response_size: 256MiB
+
+limits:
+  max_request_size: 256MiB
+  queue_limit: 128        # waiting requests for each model; more get HTTP 429
+  queue_timeout: 300      # seconds that a request waits for a free slot
+  upstream_timeout: 300   # seconds for the answer of one host
+  attempts: 3             # hosts that one request tries
+
+health:
+  interval: 10            # seconds between two probes of one host
+  timeout: 5              # seconds for one probe
+
+hosts:
+  # gx10 through its exact-response cache (owner answer of 2026-09-29T10:02:42+0300).
+  # llama-swap admits at most 10 requests in flight for each model. 4 slots leave room
+  # for the other clients of gx10. Grounding DINO runs on gx10 alone.
+  - name: gx10
+    kind: llama-swap
+    url: http://192.168.86.14:18082
+    slots: 4
+    models:
+      - sam3
+      - grounding-dino-base
+      - mm-gdino-base
+      - mm-gdino-base-all
+      - siglip2-so400m-patch16-naflex
+      - siglip2-so400m-patch16-512
+      - siglip2-so400m-patch16-384
+      - siglip2-so400m-patch16-256
+      - siglip2-so400m-patch14-384
+
+  # The Selectel RTX 4090 `kit`. Start the bootstrap on the host first; read
+  # <workspace>/deploy/mbp2023/model-proxy.md. Set `enabled: true` to use the host.
+  # Each further RTX host gets its own entry with the next local port: 18192, 18193, ...
+  - name: kit
+    kind: bootstrap
+    enabled: false
+    ssh:
+      target: root@178.130.51.88
+      local_port: 18191
+      remote_port: 18090
+    slots: 4
+    models:
+      - sam3
+      - siglip2-so400m-patch16-naflex
+      - siglip2-so400m-patch16-512

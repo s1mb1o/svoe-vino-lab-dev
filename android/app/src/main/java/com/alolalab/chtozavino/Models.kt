@@ -11,6 +11,7 @@ data class WineCard(
     val region: String? = null,
     val color: String? = null,
     val grapes: String? = null,
+    val imagePath: String? = null,
 )
 
 data class WineMatch(
@@ -59,6 +60,11 @@ data class HistoryEntry(
 data class UiState(
     val ageAccepted: Boolean = false,
     val modelPack: ModelPackInfo? = null,
+    val disAcceleratorMode: AcceleratorMode = AcceleratorMode.AUTO,
+    val sigLip2AcceleratorMode: AcceleratorMode = AcceleratorMode.AUTO,
+    val automaticDisAccelerator: ModelAccelerator? = null,
+    val automaticSigLip2Accelerator: ModelAccelerator? = null,
+    val isAcceleratorCheckRunning: Boolean = false,
     val selectedImage: Bitmap? = null,
     val matches: List<WineMatch> = emptyList(),
     val debugImages: DebugImages? = null,

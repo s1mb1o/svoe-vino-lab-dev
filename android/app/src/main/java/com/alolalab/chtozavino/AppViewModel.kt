@@ -18,19 +18,87 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val historyStore = HistoryStore(application)
     private var installedPack: InstalledModelPack? = packManager.current()
     private var engine: RecognitionEngine? = null
+    private var acceleratorCheckRunning = false
+
+    private var disAcceleratorMode = AcceleratorMode.fromPreference(
+        preferences.getString(KEY_DIS_ACCELERATOR_MODE, null),
+    )
+    private var sigLip2AcceleratorMode = AcceleratorMode.fromPreference(
+        preferences.getString(KEY_SIGLIP2_ACCELERATOR_MODE, null),
+    )
+    private var automaticDisAccelerator = ModelAccelerator.fromPreference(
+        preferences.getString(KEY_AUTOMATIC_DIS_ACCELERATOR, null),
+    )
+    private var automaticSigLip2Accelerator = ModelAccelerator.fromPreference(
+        preferences.getString(KEY_AUTOMATIC_SIGLIP2_ACCELERATOR, null),
+    )
+    private val needsInitialAcceleratorCheck =
+        preferences.getInt(KEY_ACCELERATOR_CHECK_VERSION, 0) != ACCELERATOR_CHECK_VERSION ||
+            automaticDisAccelerator == null || automaticSigLip2Accelerator == null
 
     private val mutableState = MutableStateFlow(
         UiState(
             ageAccepted = preferences.getBoolean("age_accepted", false),
             modelPack = installedPack?.info,
+            disAcceleratorMode = disAcceleratorMode,
+            sigLip2AcceleratorMode = sigLip2AcceleratorMode,
+            automaticDisAccelerator = automaticDisAccelerator,
+            automaticSigLip2Accelerator = automaticSigLip2Accelerator,
+            isAcceleratorCheckRunning = installedPack != null && needsInitialAcceleratorCheck,
             history = historyStore.list(),
+            isBusy = installedPack == null || needsInitialAcceleratorCheck,
+            progressText = when {
+                installedPack == null -> "Готовим встроенный каталог…"
+                needsInitialAcceleratorCheck -> "Проверяем совместимость GPU…"
+                else -> null
+            },
         ),
     )
     val state: StateFlow<UiState> = mutableState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            val pack = installedPack ?: runCatching {
+                withContext(Dispatchers.IO) { packManager.installBuiltIn() }
+            }.getOrElse {
+                showError("Встроенный каталог не установлен: ${friendlyMessage(it)}.")
+                return@launch
+            }.also {
+                installedPack = it
+                engine = null
+                mutableState.update { state -> state.copy(modelPack = it.info) }
+            }
+            if (needsInitialAcceleratorCheck) {
+                runAcceleratorCheck(pack)
+            } else {
+                mutableState.update {
+                    it.copy(isBusy = false, progressText = null)
+                }
+            }
+        }
+    }
+
     fun acceptAge() {
         preferences.edit().putBoolean("age_accepted", true).apply()
         mutableState.update { it.copy(ageAccepted = true) }
+    }
+
+    fun setDisAcceleratorMode(mode: AcceleratorMode) {
+        disAcceleratorMode = mode
+        preferences.edit().putString(KEY_DIS_ACCELERATOR_MODE, mode.name).apply()
+        mutableState.update { it.copy(disAcceleratorMode = mode) }
+    }
+
+    fun setSigLip2AcceleratorMode(mode: AcceleratorMode) {
+        sigLip2AcceleratorMode = mode
+        preferences.edit().putString(KEY_SIGLIP2_ACCELERATOR_MODE, mode.name).apply()
+        mutableState.update { it.copy(sigLip2AcceleratorMode = mode) }
+    }
+
+    fun redetectAccelerators() {
+        val pack = installedPack ?: return
+        if (acceleratorCheckRunning) return
+        viewModelScope.launch { runAcceleratorCheck(pack) }
     }
 
     fun selectImage(uri: Uri) {
@@ -92,7 +160,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             showError("Сначала установите пакет моделей.")
             return
         }
-        if (mutableState.value.isBusy) return
+        val currentState = mutableState.value
+        if (currentState.isBusy) return
+        val accelerators = recognitionAccelerators(
+            disMode = currentState.disAcceleratorMode,
+            sigLip2Mode = currentState.sigLip2AcceleratorMode,
+            automaticDis = currentState.automaticDisAccelerator,
+            automaticSigLip2 = currentState.automaticSigLip2Accelerator,
+        )
         viewModelScope.launch {
             mutableState.update {
                 it.copy(
@@ -108,9 +183,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             runCatching {
                 withContext(Dispatchers.Default) {
                     val activeEngine = engine ?: RecognitionEngine(pack).also { engine = it }
-                    activeEngine.recognize(bitmap)
+                    activeEngine.recognize(bitmap, accelerators)
                 }
             }.onSuccess { output ->
+                saveAutomaticCpuFallbacks(output)
                 val history = withContext(Dispatchers.IO) {
                     historyStore.add(
                         RecognitionSource.IMAGE,
@@ -196,6 +272,100 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         showError("Сканер не запущен: $message")
     }
 
+    fun startCodeScan() {
+        mutableState.update {
+            it.copy(
+                error = null,
+                technicalText = "Наведите камеру на EAN-13, штрихкод или QR. " +
+                    "Для ручного ввода нажмите значок клавиатуры в сканере.",
+                scannedCode = null,
+            )
+        }
+    }
+
+    fun reportScannerCanceled() {
+        mutableState.update {
+            it.copy(technicalText = "Сканирование отменено.")
+        }
+    }
+
+    private suspend fun runAcceleratorCheck(pack: InstalledModelPack) {
+        if (acceleratorCheckRunning) return
+        acceleratorCheckRunning = true
+        mutableState.update {
+            it.copy(
+                isBusy = true,
+                isAcceleratorCheckRunning = true,
+                progressText = "Проверяем совместимость GPU…",
+                error = null,
+            )
+        }
+        runCatching {
+            withContext(Dispatchers.Default) { AcceleratorDetector.detect(pack) }
+        }.onSuccess { result ->
+            automaticDisAccelerator = result.dis
+            automaticSigLip2Accelerator = result.sigLip2
+            preferences.edit()
+                .putInt(KEY_ACCELERATOR_CHECK_VERSION, ACCELERATOR_CHECK_VERSION)
+                .putString(KEY_AUTOMATIC_DIS_ACCELERATOR, result.dis.name)
+                .putString(KEY_AUTOMATIC_SIGLIP2_ACCELERATOR, result.sigLip2.name)
+                .apply()
+            mutableState.update {
+                it.copy(
+                    automaticDisAccelerator = result.dis,
+                    automaticSigLip2Accelerator = result.sigLip2,
+                    isBusy = false,
+                    isAcceleratorCheckRunning = false,
+                    progressText = null,
+                    technicalText = "Автопроверка: DIS — ${result.dis.name}, " +
+                        "SigLIP2 — ${result.sigLip2.name}.",
+                )
+            }
+        }.onFailure {
+            mutableState.update { state ->
+                state.copy(
+                    isBusy = false,
+                    isAcceleratorCheckRunning = false,
+                    progressText = null,
+                    error = "Проверка ускорителей не выполнена: ${friendlyMessage(it)}. " +
+                        "Выберите CPU в настройках.",
+                )
+            }
+        }
+        acceleratorCheckRunning = false
+    }
+
+    private fun saveAutomaticCpuFallbacks(output: RecognitionOutput) {
+        var changed = false
+        if (
+            disAcceleratorMode == AcceleratorMode.AUTO &&
+            automaticDisAccelerator == ModelAccelerator.GPU &&
+            output.disAccelerator == ModelAccelerator.CPU.name
+        ) {
+            automaticDisAccelerator = ModelAccelerator.CPU
+            changed = true
+        }
+        if (
+            sigLip2AcceleratorMode == AcceleratorMode.AUTO &&
+            automaticSigLip2Accelerator == ModelAccelerator.GPU &&
+            output.embeddingAccelerator == ModelAccelerator.CPU.name
+        ) {
+            automaticSigLip2Accelerator = ModelAccelerator.CPU
+            changed = true
+        }
+        if (!changed) return
+        preferences.edit()
+            .putString(KEY_AUTOMATIC_DIS_ACCELERATOR, automaticDisAccelerator?.name)
+            .putString(KEY_AUTOMATIC_SIGLIP2_ACCELERATOR, automaticSigLip2Accelerator?.name)
+            .apply()
+        mutableState.update {
+            it.copy(
+                automaticDisAccelerator = automaticDisAccelerator,
+                automaticSigLip2Accelerator = automaticSigLip2Accelerator,
+            )
+        }
+    }
+
     private fun showError(message: String) {
         mutableState.update {
             it.copy(isBusy = false, progressText = null, error = message)
@@ -210,5 +380,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             current = current.cause
         }
         return "неизвестная ошибка"
+    }
+
+    companion object {
+        private const val ACCELERATOR_CHECK_VERSION = 1
+        private const val KEY_ACCELERATOR_CHECK_VERSION = "accelerator_check_version"
+        private const val KEY_AUTOMATIC_DIS_ACCELERATOR = "automatic_dis_accelerator"
+        private const val KEY_AUTOMATIC_SIGLIP2_ACCELERATOR = "automatic_siglip2_accelerator"
+        private const val KEY_DIS_ACCELERATOR_MODE = "dis_accelerator_mode"
+        private const val KEY_SIGLIP2_ACCELERATOR_MODE = "siglip2_accelerator_mode"
     }
 }

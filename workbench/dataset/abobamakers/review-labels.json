@@ -1,0 +1,109 @@
+{
+  "counts": {
+    "labelled": 48,
+    "positive": 48,
+    "catalog_match": 35,
+    "no_match": 13,
+    "unlabelled": 6
+  },
+  "note": "Independent 2026-09-29 review. The source repository has no ground-truth manifest. Six multi-product scenes remain unlabelled in __drawer__. A positive label under __null__ means that the visible product has no exact wine_catalog card.",
+  "labels": {
+    "loco-cimbali-risling-risling-reynskiy-beloe-suhoe-13": {
+      "photo_1_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98}
+    },
+    "green-cape-risling": {
+      "photo_3_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98}
+    },
+    "skalistyy-bereg-pesn-holmov-merlo-krasnoe-suhoe-145": {
+      "photo_4_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_5_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_6_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "shato-pino-pino-gridzhio-beloe-suhoe-12": {
+      "photo_7_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_8_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "gavras-areni-krasnoe-suhoe-13": {
+      "photo_12_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98}
+    },
+    "usadba-aleksandrovskaya-bubnovyy-valet-kaberne-sovinon-krasnoe-polusladkoe-13": {
+      "photo_13_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98},
+      "photo_14_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98}
+    },
+    "madera-krymskaya": {
+      "photo_15_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "belbek-belbek-pino-nuar-krasnoe-suhoe-13": {
+      "photo_16_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.95,"accepted_wine_slugs":["belbek-belbek-pino-nuar-krasnoe-suhoe-13","belbek-pino-nuar-krasnoe-suhoe-133"]},
+      "photo_17_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.95,"accepted_wine_slugs":["belbek-belbek-pino-nuar-krasnoe-suhoe-13","belbek-pino-nuar-krasnoe-suhoe-133"]}
+    },
+    "massandra-muskatel-chernyy-krasnye-sorta-vinograda-krasnoe-sladkoe-16": {
+      "photo_18_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "usadba-perovskih-kaberne-sovinon-merlo-1890-krasnoe-suhoe-13": {
+      "photo_21_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_22_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_23_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "zolotaya-balka-zb-wine-sauvignon-blanc-sovinon-blan-beloe-suhoe-125": {
+      "photo_25_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_26_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "winemaker-selection": {
+      "photo_27_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_28_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_29_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "abrau-dyurso-russkoe-igristoe-polusuhoe-rozovoe-pino-nuar-12": {
+      "photo_34_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "abrau-dyurso-victor-dravigny-bryut": {
+      "photo_36_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "shato-taman-bryut": {
+      "photo_38_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.96,"accepted_wine_slugs":["shato-taman-bryut","shato-taman-bryut-1"]}
+    },
+    "inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135": {
+      "photo_39_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.96}
+    },
+    "shardone-balaklava": {
+      "photo_42_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_43_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "cantiani-semisweet": {
+      "photo_44_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98}
+    },
+    "derbent-vino-endemy-risling-beloe-bryut-105-125": {
+      "photo_45_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98}
+    },
+    "vinodelnya-byurne-lyublyu-krasnoe-kaberne-fran-suhoe-135": {
+      "photo_49_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "golubitskoe-estate-kaberne-sovinon-krasnoe-suhoe-137": {
+      "photo_50_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "shato-pino-koldun-belyy-shardone-beloe-suhoe-12": {
+      "photo_51_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99}
+    },
+    "shato-taman-kaberne": {
+      "photo_53_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.96,"accepted_wine_slugs":["shato-taman-kaberne","kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125"]},
+      "photo_54_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.96,"accepted_wine_slugs":["shato-taman-kaberne","kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125"]}
+    },
+    "__null__": {
+      "photo_2_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98},
+      "photo_9_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98},
+      "photo_10_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.90},
+      "photo_11_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.90},
+      "photo_20_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.95},
+      "photo_24_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.90},
+      "photo_30_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98},
+      "photo_31_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98},
+      "photo_32_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98},
+      "photo_33_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98},
+      "photo_46_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_48_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.99},
+      "photo_52_2026-09-27_13-22-30.jpg": {"label":"positive","by":"codex-independent-review-2026-09-29","confidence":0.98}
+    }
+  }
+}
+

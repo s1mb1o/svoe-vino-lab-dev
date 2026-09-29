@@ -168,6 +168,13 @@ and result delivery when the step applies.
 125. The system MUST provide a separate administration web service.
 126. The administration web service MUST use the existing SQLite database.
 127. The administration web service MUST require password authentication.
+127.1. `BOT_ADMIN_WEB_PASSWORD` MUST contain at least 32 characters.
+127.2. The administration web service MUST limit failed authentication attempts by socket client
+address.
+127.3. The service MUST reject all authentication attempts from a limited socket client address
+until the failed-attempt window expires.
+127.4. A correct credential MUST clear a socket client address failure history before the limit is
+reached.
 128. The administration web service MUST restrict access to configured CIDR networks.
 129. The default allowed networks MUST include only localhost.
 130. The administration web service MUST show aggregate statistics.

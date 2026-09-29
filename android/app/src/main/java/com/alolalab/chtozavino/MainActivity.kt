@@ -32,12 +32,6 @@ class MainActivity : ComponentActivity() {
         pendingCameraUri = null
     }
 
-    private val packLauncher = registerForActivityResult(
-        ActivityResultContracts.OpenDocument(),
-    ) { uri ->
-        if (uri != null) viewModel.installModelPack(uri)
-    }
-
     private val codeScanner by lazy {
         val options = GmsBarcodeScannerOptions.Builder()
             .setBarcodeFormats(
@@ -50,6 +44,7 @@ class MainActivity : ComponentActivity() {
                 Barcode.FORMAT_QR_CODE,
             )
             .enableAutoZoom()
+            .allowManualInput()
             .build()
         GmsBarcodeScanning.getClient(this, options)
     }
@@ -66,11 +61,13 @@ class MainActivity : ComponentActivity() {
                     takePhoto = ::takePhoto,
                     chooseImage = { galleryLauncher.launch(arrayOf("image/jpeg", "image/png", "image/webp")) },
                     scanCode = ::scanCode,
-                    installPack = { packLauncher.launch(arrayOf("application/zip", "application/octet-stream")) },
                     recognize = viewModel::recognize,
                     openUrl = ::openUrl,
                     clearHistory = viewModel::clearHistory,
                     dismissError = viewModel::dismissError,
+                    setDisAcceleratorMode = viewModel::setDisAcceleratorMode,
+                    setSigLip2AcceleratorMode = viewModel::setSigLip2AcceleratorMode,
+                    redetectAccelerators = viewModel::redetectAccelerators,
                 ),
             )
         }
@@ -85,14 +82,20 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun scanCode() {
+        viewModel.startCodeScan()
         codeScanner.startScan()
             .addOnSuccessListener { barcode ->
                 val value = barcode.rawValue
-                if (!value.isNullOrBlank()) viewModel.resolveCode(value)
+                if (value.isNullOrBlank()) {
+                    viewModel.reportScannerError("Google Code Scanner вернул пустое значение")
+                } else {
+                    viewModel.resolveCode(value)
+                }
             }
             .addOnFailureListener { error ->
                 viewModel.reportScannerError(error.message ?: "ошибка Google Play services")
             }
+            .addOnCanceledListener(viewModel::reportScannerCanceled)
     }
 
     private fun openUrl(url: String) {

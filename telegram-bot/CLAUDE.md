@@ -79,6 +79,8 @@ The workspace rules are in `../../CLAUDE.md`.
 55. Allow only `vino-svoe.ru` and `www.vino-svoe.ru` as result page hosts.
 56. Preserve JPEG, PNG, and WebP source types in storage and matcher requests.
 57. Keep `/healthz` as liveness. Use `/readyz` for database, queue, and upstream reachability.
+58. Require at least 32 characters in `BOT_ADMIN_WEB_PASSWORD`.
+59. Limit failed administration authentication attempts by socket client address.
 
 ## Common mistakes
 

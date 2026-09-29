@@ -9,6 +9,9 @@ the optional description (owner messages of 12:05:54 and 12:09:52) are live sinc
 12:13:40, with schema 014; `data/lab.sqlite3` is at version 14.
 The owner messages of 2026-09-25T11:30:05+0300 and 11:41:15, and the answers after them,
 are in [owner-messages.md](../owner-messages.md).
+On 2026-09-29 the owner corrected the form semantics: Category is the beverage type;
+`Белое`, `Красное`, `Оранжевое`, and `Розовое` are Color. The form also names every
+missing requirement while Save is disabled.
 
 ## Goal
 
@@ -47,15 +50,16 @@ A button `Add wine` on `/dataset` opens a form. The form creates one new row of
    page shows no button.
 6. The button opens a modal dialog. The dialog uses the classes of the `Validate`
    dialog and the theme variables, so the light and the dark theme both work.
-7. The fields, in the order of `wine_catalog`:
+7. The fields:
 
    | Field | Input | Required |
    |---|---|---|
    | Slug | text after the fixed `__` | yes |
    | Name | text | yes |
    | Producer | text with a list of the producers of the loaded records | yes |
-   | Category | select of the categories of the loaded records | yes |
-   | Color | text | yes |
+   | Category | select: `Wine` (`4`) or `Sparkling wine` (`44`) | yes |
+   | Color | select of the broad colors of the imported records | yes |
+   | Shade | text; an empty value uses Color as the detailed-color fallback | no |
    | Region | text with a list of the regions of the loaded records | yes |
    | Grapes | text | no |
    | Description | multi-line text | no |
@@ -72,9 +76,10 @@ A button `Add wine` on `/dataset` opens a form. The form creates one new row of
    The zone is a portrait column at the left of the fields, because a wine image is a
    portrait image (owner message of 2026-09-25T11:55:02+0300). A screen of at most
    640 px puts the zone above the fields.
-9. `Save` is off until each required field holds a value. `Cancel`, `Escape`, and a
-   click outside the dialog close it. A closed dialog keeps its values until a save
-   succeeds or the page reloads.
+9. `Save` is off until each required field holds a value. A status line beside it names
+   each missing requirement and updates after every edit. `Cancel`, `Escape`, and a click
+   outside the dialog close it. A closed dialog keeps its values until a save succeeds
+   or the page reloads.
 10. An error of the server stays in the dialog. The values stay.
 11. After a save, the page adds the new record at the end of the catalogue order,
     renders the list, closes the dialog, clears the form, and scrolls to the new card
@@ -87,12 +92,13 @@ A button `Add wine` on `/dataset` opens a form. The form creates one new row of
 13. `POST /api/wine` with a JSON body:
 
     ```json
-    {"slug": "__my-wine", "name": "…", "producer": "…", "category": "Белое",
+    {"slug": "__my-wine", "name": "…", "producer": "…",
+     "beverage_type_code": "4", "category": "Белое",
      "color": "…", "region": "…", "grapes": "…", "description": "…",
      "image_name": "IMG_1234.jpg", "image": "<base64 of the file>"}
     ```
 
-    JSON with base64 is used because the form has eight text fields and one file. The
+    JSON with base64 is used because the form has text fields and one file. The
     server has no multipart parser: Python 3.14 has no module `cgi`.
 14. The body has at most `manual_wines.MAX_BODY` bytes: the base64 form of 20 MB plus
     64 KiB. A larger body gets HTTP 413, and the server closes the connection.
@@ -106,8 +112,10 @@ A button `Add wine` on `/dataset` opens a form. The form creates one new row of
 16a. Each text field and `image_name` MUST be a JSON string or absent. Another JSON type,
     or a string with a lone surrogate (JSON admits `\ud800`, UTF-8 does not), gets HTTP
     400. The review of 2026-09-25 found that such a request got no answer.
-17. The server does not check the category against a list. The form offers the values
-    of the loaded records.
+17. `beverage_type_code`, when present, MUST be `"4"`, `"44"`, or null. The form
+    requires it and calls it Category. The imported catalogue calls its broad color
+    `category`; the form calls that field Color and offers the values of non-manual
+    records. The server does not restrict this legacy `category` field to that list.
 18. `csv_photo_name` is the base name of `image_name`, as `patches.source_name` makes
     it. An upload with no name gets `upload`.
 19. The answer is HTTP 200 with `ok`, `slug`, and `record`: the new record in the shape
@@ -122,7 +130,8 @@ A button `Add wine` on `/dataset` opens a form. The form creates one new row of
     not answer: the wine is stored with no processed file, and the answer holds a
     warning.
 22. One write transaction (`BEGIN IMMEDIATE`) writes one row of `wine_catalog`
-    (`state` = `Active`, `removed_by` = NULL), the row of `image`, one row of
+    (`state` = `Active`, `removed_by` = NULL), the optional row of
+    `wine_beverage_type`, the row of `image`, one row of
     `wine_image` (type `main`, `source_name` = rule 18, `match_method` = `manual`), and
     the rows of `image_derivative`. The slug check of rule 16 runs again inside the
     transaction.

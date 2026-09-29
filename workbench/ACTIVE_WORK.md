@@ -1236,6 +1236,90 @@ The form of a section:
   8168 used its existing process and did not restart.
 - Updated for task 14: 2026-09-28T23:18:23+0300.
 
+- Task 15: implement incremental end-to-end manual wine creation and embedding-index
+  activation. Add one operator CLI and connect the `lab_server.py` Add wine form to the
+  same workflow. Test both paths. Then create one wine through each interface.
+- Source: owner messages recorded at 2026-09-29T01:06:34+0300. The owner selected the
+  operator CLI workflow.
+- Files for task 15: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, new `docs/plans/78_incremental-new-wine-index.md`, new
+  `pipeline/new_wine_workflow.py`, new `scripts/add_wine.py`, separate hunks in
+  `pipeline/lab_server.py` and `pipeline/pages/dataset.html`, new
+  `tests/test_new_wine_workflow.py`, focused hunks in `tests/test_manual_wines.py`, and
+  my own hunks in `COMMANDS.md`, `README.md`, `SMOKE_TESTS.md`, and `ChangeLog.md`.
+  The live trial changes `data/catalog/catalog.sqlite3`, image files, and one selected
+  embedding directory. A restart of port 8168 follows the tests.
+- State for task 15: done, not committed. The CLI and web route use one workflow. The
+  focused suites pass 152 tests. The CLI trial created
+  `__cli-index-smoke-20260929`. The browser trial created
+  `__web-index-smoke-20260929`. Each trial activated two current index items. Both
+  records are now `Disabled`, and the cleanup build pruned their four items. The active
+  index has 4,641 items in `vectors-02636f81.npy`. Port 8168 restarted with SIGTERM and
+  runs the new code on PID 80244 in managed session 79039.
+- Updated for task 15: 2026-09-29T01:23:07+0300.
+
+- Task 16: implement OpenAPI documentation for the lab server on port 8168.
+- Source: owner message recorded at 2026-09-29T02:02:20+0300.
+- Files for task 16: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, new `docs/plans/80_lab-server-openapi.md`, new
+  `docs/lab-openapi.yaml`, new `pipeline/lab_openapi.py`, focused hunks in
+  `pipeline/lab_server.py`, new `tests/test_lab_openapi.py`, and my own hunks in
+  `COMMANDS.md`, `README.md`, `SMOKE_TESTS.md`, and `ChangeLog.md`. A restart of port
+  8168 follows the tests.
+- State for task 16: done, not committed. The checked-in OpenAPI 3.1 document covers
+  98 operations in 85 paths. The YAML and JSON endpoints return equal documents.
+  Swagger UI 5.33.0 loads the document and executed `GET /api/health` with HTTP 200.
+  The 11 focused tests and all 225 affected route tests pass. Port 8168 runs the
+  verified code on PID 26110 in managed session 81843.
+- Updated for task 16: 2026-09-29T07:26:00+0300.
+
+- Task 17: correct the Add wine form so category and color are separate concepts, and
+  explain which required fields are missing while Save is disabled.
+- Source: owner message of 2026-09-29T12:24:33+0300.
+- Files for task 17: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, separate hunks in `pipeline/pages/dataset.html` and
+  `pipeline/manual_wines.py`, `scripts/add_wine.py`, focused tests in
+  `tests/test_manual_wines.py` and `tests/test_new_wine_workflow.py`, and my own hunks
+  in `docs/lab-openapi.yaml`, `docs/plans/20_add-wine.md`,
+  `docs/plans/78_incremental-new-wine-index.md`, `COMMANDS.md`, `README.md`,
+  `SMOKE_TESTS.md`, and `ChangeLog.md`.
+- State for task 17: done, not committed. Category stores `Wine` (`4`) or `Sparkling
+  wine` (`44`) in `wine_beverage_type`; Color stores the broad catalogue color; Shade
+  is optional. The disabled Save status names and updates all missing requirements.
+  Tests: 17 manual-wine, 7 incremental-workflow, 22 import, and 11 OpenAPI tests OK;
+  inline JavaScript syntax OK. Live Chromium verified the choices and shrinking status
+  with no page error. Port 8168 restarted at 12:38 on PID 75301 and answers HTTP 200.
+- Updated for task 17: 2026-09-29T12:40:13+0300.
+
+- Task 18: check five photographed bottles against the dataset. Find a front bottle
+  image for each missing wine, and create its card through the lab server.
+- Source: owner message of 2026-09-29T13:02:10+0300.
+- Files for task 18: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `data/catalog/catalog.sqlite3`, new files under
+  `data/catalog/images/main/`, and the embedding artifacts that the Add wine workflow
+  updates. Temporary research images stay outside the repository.
+- State for task 18: done, not committed. Exact-product checks found none of the five
+  photographed wines in the catalogue. The web form created five active cards with
+  front product images: `__rkatsiteli-muskat-oranzh-2025`, `__rozovoe-suhoe-2025`,
+  `__kaberne-sovinon-rezerv-2024`, `__massandra-suhoe-krasnoe-2025`, and
+  `__green-cape-blaufrankish-malolektik-2024`. The dataset now has 2,113 records
+  (2,108 shown with Removed excluded). Each card is visible as `indexed`; their five
+  full and five label derivatives occupy rows 4,643 through 4,652 of the active
+  4,653-item index. The five source screenshots stayed read-only. Port 8168 used its
+  existing process and did not restart.
+- Updated for task 18: 2026-09-29T13:18:03+0300.
+
+- Task 19: continue task 18 for five more photographed bottles. Check exact products
+  against the dataset, find front bottle images for missing wines, and create their
+  cards through the lab server.
+- Source: owner message of 2026-09-29T13:20:30+0300.
+- Files for task 19: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `data/catalog/catalog.sqlite3`, new files under
+  `data/catalog/images/main/`, and the embedding artifacts that the Add wine workflow
+  updates. Temporary research images stay outside the repository.
+- State for task 19: active. The five source screenshots are read-only.
+- Updated for task 19: 2026-09-29T13:20:30+0300.
+
 ## drink-atlas-workspace-c7 [09419d]
 
 - Task: a global key of `config.yaml` that updates the embedding of a pipeline before
@@ -2414,11 +2498,15 @@ The form of a section:
   `pipeline/build_embeddings.py`, `pipeline/embedding_run.py`, and
   `pipeline/run_steps.py`, focused hunks in `tests/test_embedding_run.py` and
   `tests/test_pipelines.py`, two new run directories under `runs/`, and one comparison
-  report under `docs/reports/`. The task also updates my own hunks in `README.md`,
-  `ChangeLog.md`, and `SMOKE_TESTS.md`.
-- State: active. The owner selected two permanent pipeline entries. Barcode MUST stay
-  absent from both entries and disabled in both runs.
-- Updated: 2026-09-29T00:21:54+0300
+  report under `docs/reports/`. The task also updates `../android/VERIFICATION_RESULTS.md`
+  and my own hunks in `README.md`, `ChangeLog.md`, and `SMOKE_TESTS.md`.
+- State: done, not committed. Both permanent pipelines are valid and have no barcode
+  step. The 110 focused tests pass. The controlled final runs have 2,226 identical
+  queries, 2,270 current catalogue items, and 2,093 wines. SAM3 positive R@1 is 49.91%.
+  DIS positive R@1 is 43.05%. The paired gain is 6.86 percentage points with exact
+  McNemar `p=9.01e-09`. DIS has five `no main object` rows. SAM3 has zero errors. The
+  isolated GX10 endpoint is stopped.
+- Updated: 2026-09-29T01:34:00+0300
 - Task 6: restore dragging an image from the linked Yandex Images result into
   `/testset?set=my&q=vibes`.
 - Source: owner message of 2026-09-29T00:03:42+0300.
@@ -2490,9 +2578,44 @@ The form of a section:
   `../../svoe-wino-hackaton/dataset/derived/matcher-pipeline-test-2026-09-29/`.
   The official dataset, the `my` test set, the selected workbench run, the matcher
   bundle, and matcher code stay read-only.
-- State for task 9: active. The selected source run is
+- State for task 9: done, not committed. The selected source run is
   `2026-09-28T011622Z-lab-siglip2-p512-as-is-my`. It contains 1,223 positive R@1 hits.
-- Updated for task 9: 2026-09-29T00:48:14+0300
+  The unchanged official harness wrote 1,223 valid JSONL rows. The matcher returned the
+  expected slug for 1,222 photos. Query `q-000932` returned `null`. Its `.jpg` file is
+  an `MPO` with two frames. The matcher validator returned 415 because it accepts only
+  `JPEG`, `PNG`, and `WEBP`. The temporary matcher stopped. No product code changed.
+- Updated for task 9: 2026-09-29T00:58:30+0300
+- Task 10: recommend how to prevent the MPO rejection that the matcher pipeline test
+  found.
+- Source: owner message of 2026-09-29T01:51:38+0300.
+- Files for task 10: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. Product code stays read-only.
+- State for task 10: done, not committed. The recommended permanent correction is to
+  accept `MPO` as a JPEG-family upload and process frame 0. A regression test must
+  compare an MPO result with the first-frame JPEG result. Filtering MPO from the test
+  set is not recommended because it hides a production input incompatibility.
+- Updated for task 10: 2026-09-29T01:51:38+0300
+- Task 11: accept `MPO` as a JPEG-family matcher upload, process frame 0, add regression
+  tests, and rerun the 1,223-query official harness.
+- Source: owner message of 2026-09-29T01:53:04+0300.
+- Files for task 11: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, `../matcher/protection.py`, `../matcher/siglip2.py`,
+  `../matcher/group.py`, focused hunks in `../matcher/tests/test_resilience.py`,
+  `../matcher/tests/test_siglip2.py`, and `../matcher/tests/test_group.py`, the
+  existing derived artifacts under
+  `../../svoe-wino-hackaton/dataset/derived/matcher-pipeline-test-2026-09-29/`, and my
+  own matcher test-result hunk in `ChangeLog.md` if the file is available.
+- State for task 11: done, not committed. The matcher accepts `MPO`, records the source
+  format in the request audit, and processes frame 0 explicitly in single-image and
+  group paths. All 108 matcher tests pass. The unchanged official harness wrote 1,223
+  valid rows, and all 1,223 predictions match the prior R@1 expected slug. Query
+  `q-000932` now returns `shato-pino-pino-nuar-krasnoe-suhoe-135`. The failed artifacts
+  are preserved under `before-mpo-fix/`. The temporary matcher stopped. Existing
+  unrelated matcher changes stay intact.
+- Agreements for task 11: `codex-side-matcher-api` is absent from the current
+  `ListAgents` result. The owner directly requested this correction after the pipeline
+  test found it. This task changes only the MPO-specific hunks in its listed files.
+- Updated for task 11: 2026-09-29T02:01:40+0300
 - Task 10: change the shared QR scanner engine from `auto` to `zxing-cpp` for behavior
   and performance closer to the former local decoder.
 - Source: owner message of 2026-09-29T00:51:28+0300.
@@ -2507,3 +2630,479 @@ The form of a section:
   its startup report names `engine zxing-cpp`, and `/api/dataset` answers 200 on PID
   50773.
 - Updated for task 10: 2026-09-29T00:54:04+0300
+- Task 11: import the 54 archived AbobaMakers shop photos as a new test set. Map each
+  photo to `wine_slug` only after a visible-label and catalogue check. Keep unresolved
+  photos outside scored ground truth. Run the current matching pipelines on the
+  confirmed subset and compare Top-1, Top-5, latency, and failure groups.
+- Source: owner message recorded at 2026-09-29T00:55:59+0300. The owner did not select
+  one of the three proposed labelling modes and added a comparison task. Continue with
+  the recommended model-assisted, independently verified mode.
+- Files for task 11: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, new `dataset/abobamakers/**`, new rows and images of the test set in
+  ignored `data/catalog/catalog.sqlite3` and `data/testsets/images/`, a new report under
+  `docs/reports/`, and my own hunks in `README.md`, `ResearchLog.md`, and `ChangeLog.md`.
+  Existing pipeline code and configuration stay read-only.
+- State for task 11: done, not committed. The source is the 54-photo historical commit
+  `55cfe4c1aaf51b0f491f851bcb5f22dbc6e337f5`; current upstream removed the photos and
+  published no ground-truth labels. Independent review mapped 35 photos to catalogue
+  slugs, 13 to confirmed no-match, and 6 multi-product scenes to the unscored Drawer.
+  The set is imported in the lab database. Three profiles completed 162 requests with
+  no error. `rerank-siglip2-512-crop` gives family-aware Top-1 71.4% and Top-5 80.0% on
+  the 35 catalogue matches, but all 13 no-match photos get a false card. The database
+  backup is `data/backups/catalog-before-abobamakers-20260929T0121+0300.sqlite3`. The
+  58 focused test-set unit tests pass. Export restored all 48 labels and extra accepted
+  slugs.
+- Updated for task 11: 2026-09-29T01:26:17+0300
+- Task 12: compare the three WineHack catalogue representations
+  (`catalog.csv`, `catalog_enriched.csv`, and `seed_wines.sql`) with the current lab
+  catalogue. Report record and slug coverage, field completeness, transformations,
+  duplicates, and useful enrichment that we do not hold.
+- Source: owner message of 2026-09-29T00:55:59+0300.
+- Files for task 12: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, a new report under `docs/reports/`, and my own hunks in
+  `ResearchLog.md` and `ChangeLog.md`. WineHack sources and our catalogue stay
+  read-only.
+- State for task 12: done, not committed. `origin/main` of `WineHackathon/backend` is
+  current at `642cb396f5c6bcd600937dce24c0e29c0b783d0d`; the separately referenced `infra`
+  and `catalog-service` repositories are not public. Its 2,103 official slugs and eight
+  base fields equal ours. The source has 2,044 exact duplicate rows. The enrichment has
+  58 shared image-file groups across 207 slugs. The SQL has 4,533 generated pairings,
+  NULL prices, and an artificial `roskachestvo_score`. The separate Markdown and JSON
+  reports record the checks and the Pareto recommendation.
+- Updated for task 12: 2026-09-29T01:26:17+0300
+
+- Task 13: compare DIS and SAM3 across six SigLIP2 SO400M image towers on all 2,226
+  queries of `my`. Test NaFlex p256/p512/p1024 and fixed 256/384/512. Treat fixed
+  256/384/512 as the comparable 256/576/1024 patch-token levels. Disable barcode.
+  Reuse each prepared image across models. Report paired retrieval and negative-rejection
+  metrics.
+- Source: owner messages recorded at 2026-09-29T01:56:07+0300 and
+  2026-09-29T01:56:08+0300. The owner selected the complete matrix with shared prepared
+  images.
+- Files for task 13: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, new `docs/plans/79_segmentation-model-matrix.md`, a new benchmark
+  utility under `scripts/`, focused tests under `tests/`, generated artifacts under
+  `runs/segmentation-model-matrix-2026-09-29/`, a new report under `docs/reports/`, and
+  my own hunks in `ResearchLog.md`, `ChangeLog.md`, `SMOKE_TESTS.md`, and `COMMANDS.md`.
+- State for task 13: done, not committed. The complete 12-cell run used 2,270 catalogue
+  sources, 2,226 queries, and 53,922 vectors. SAM3 improved R@1 in all six models. The
+  best cell was SAM3 fixed 512 at 81.42% R@1 and 96.66% R@5. DIS had five segmentation
+  failures. SAM3 had none. Seven tests, compilation, and final vector verification pass.
+  Existing catalogue indices and the test-set database stayed read-only. No GX10 service
+  restarted or changed configuration. The report and generated artifacts are complete.
+- Updated for task 13: 2026-09-29T03:55:18+0300
+
+- Task 14: extend the frozen plan 79 matrix with a path that uses the original image
+  without segmentation. Keep barcode disabled. Compare the new path with DIS and SAM3.
+- Source: owner message of 2026-09-29T03:56:56+0300 and answer of
+  2026-09-29T07:08:03+0300. The owner selected the complete six-model extension.
+- Files for task 14: the task 13 benchmark utility, tests, generated matrix artifacts,
+  report, and my own hunks in the same documentation files.
+- State for task 14: done, not committed. The complete 18-cell run used the frozen
+  2,270-source catalogue and the frozen 2,226-query set. It produced 80,898 vectors.
+  No segmentation with fixed 512 reached 78.69% R@1 and 95.75% R@5. It was 2.73 pp
+  below SAM3 fixed 512 at R@1, but it was 4.13 pp above DIS fixed 512. SAM3 improved
+  R@1 against no segmentation for every model. All six gains were significant. The
+  eight focused tests, compilation, scoring, and vector verification pass. One transient
+  HTTP 429 was repeated successfully. No embedding was lost. No GX10 service restarted
+  or changed configuration.
+- Updated for task 14: 2026-09-29T08:01:00+0300
+
+- Task 15: create a script that prepares an Android catalogue bundle from
+  `data/catalog/`. Include one catalogue image for each wine. Use `main_patched` when it
+  exists. Otherwise, use `main`.
+- Source: owner message of 2026-09-29T08:06:31+0300.
+- Files for task 15: `docs/owner-messages.md` (append) and this section of
+  `ACTIVE_WORK.md`. Add implementation, tests, and documentation after the owner selects
+  the output contract.
+- State for task 15: done as part of task 17. The implemented contract is the Android
+  model-pack format version 2 contract.
+- Updated for task 15: 2026-09-29T08:39:42+0300
+
+- Task 16: record the known DIS failure on a close-up label in `KNOWN_ISSUES.md`.
+- Source: owner messages of 2026-09-29T08:09:35+0300 and 08:09:47+0300.
+- Files for task 16: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, and one new entry in `../matcher/docs/KNOWN_ISSUES.md`.
+- State for task 16: done, not committed. The entry records the effect, cause, evidence,
+  risk, and possible corrections. No code or runtime data changed.
+- Updated for task 16: 2026-09-29T08:09:47+0300
+
+- Task 17: finish the Android application with a built-in offline model pack. Include
+  the `android-siglip2-base-224-dis-white` catalogue vectors. Include one catalogue
+  image per wine. Prefer `main_patched` over `main`. Keep manual model-pack updates.
+- Source: owner message of 2026-09-29T08:11:27+0300.
+- Files for task 17: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, new `docs/plans/81_android-built-in-pack.md`, Android application
+  code and tests under `../android/app/`, Android pack tools and tests under
+  `../android/tools/`, `../android/docs/model-pack.md`, `../android/README.md`,
+  `../android/docs/specification.md`, `../android/ChangeLog.md`,
+  `../android/ResearchLog.md`, `../android/SMOKE_TESTS.md`, and
+  `../android/VERIFICATION_RESULTS.md`. Generated packs and model files stay ignored by
+  Git.
+- State for task 17: done, not committed. The built-in format version 2 pack contains
+  2,093 wines, 2,093 DIS-preprocessed SigLIP2 vectors, 2,093 catalogue images, and 135
+  local code relations. The selection contains 23 `main_patched` images and 2,070
+  `main` images. Five active wines have no eligible image and were omitted. The pack
+  SHA-256 is
+  `da8a079c5e599c663e3a844d743af5103a9b8b896aa15f1660f07c1cdea56684`.
+  The debug APK contains the pack as an uncompressed asset. Five Python tests, Android
+  debug and release unit tests, `lintDebug`, and `assembleDebug` pass. A fresh APK
+  installation and first-start pack installation passed on an arm64 Android 14 phone.
+  The installed manifest and all 2,093 image files were verified. Interactive UI and
+  inference checks are pending because the phone was locked.
+- Updated for task 17: 2026-09-29T08:39:42+0300
+- Agreement for task 17: `codex-android-embeddings` is not a live session. Its section
+  is done. The owner directly requested this follow-up. Preserve its existing changes.
+
+- Task 18: fix the Android SigLIP2 empty-vector error on a physical phone. Add an
+  automatic CPU retry when GPU inference returns an invalid vector. Add a settings page
+  through a gear icon. Remove the manual model-pack replacement action. Replace the
+  long camera and gallery button labels with compact icon buttons.
+- Source: owner messages of 2026-09-29T10:03:54+0300 and 10:07:17+0300.
+- Files for task 18: `docs/owner-messages.md` (append), this section of
+  `ACTIVE_WORK.md`, Android inference code and tests under `../android/app/`, and my own
+  hunks in the Android verification documents.
+- State for task 18: done, not committed. Output validation found a non-finite SigLIP2
+  GPU result on the Realme Android 14 phone. The automatic CPU path matched `Пино Нуар`
+  at cosine 0.910. The settings page, compact image actions, and removal of the pack
+  replacement action passed physical UI checks.
+- Updated for task 18: 2026-09-29T10:56:00+0300
+
+- Task 19: fix EAN-13 scanning through Google Code Scanner. Keep Google Code Scanner.
+  Add explicit scan lifecycle feedback and a manual-input fallback.
+- Source: owner message of 2026-09-29T10:07:17+0300.
+- Files for task 19: this root section, `docs/owner-messages.md` (append), Android scanner
+  code and UI under `../android/app/`, and my own hunks in the Android documentation.
+- State for task 19: done, not committed. The scanner requests supported formats,
+  auto-zoom, and manual input. The application reports scanner start, cancellation,
+  empty output, and failure. Google Code Scanner opened and showed its manual input.
+  A physical camera scan of a printed EAN-13 remains a smoke-test item.
+- Updated for task 19: 2026-09-29T10:56:00+0300
+
+- Task 20: use the shared product logo from `../assets/` for the Android application
+  launcher icon. Convert the asset to Android resource formats when required.
+- Source: owner message recorded at 2026-09-29T10:35:30+0300.
+- Files for task 20: this root section, `docs/owner-messages.md` (append), Android
+  launcher resources and manifest under `../android/app/`, and my own hunks in the
+  Android documentation.
+- State for task 20: done, not committed. The shared source is
+  `../assets/product-logo-640x640.png`. The APK contains adaptive, round, and fallback
+  launcher resources. The manifest uses the new resources.
+- Updated for task 20: 2026-09-29T10:56:00+0300
+
+- Task 21: test DIS and SigLIP2 on the connected Google Pixel 8. Add the model
+  accelerator setting `Авто`, `GPU`, and `CPU`. On the first launch, validate GPU output
+  and save a safe automatic selection. Keep CPU fallback for invalid GPU output.
+- Source: owner messages recorded at 2026-09-29T10:35:30+0300.
+- Files for task 21: this root section, `docs/owner-messages.md` (append), Android
+  inference code, settings UI, preferences, tests, and my own hunks in the Android
+  documentation.
+- State for task 21: done, not committed. The application has separate `Авто`, `GPU`, and `CPU`
+  settings for DIS and SigLIP2. It tests both GPU outputs on the first start and saves
+  the safe selections. The Realme automatic check selected DIS GPU and SigLIP2 CPU.
+  A complete recognition in this mode matched `Пино Нуар` at cosine 0.910. The Pixel 8
+  automatic check selected DIS GPU and SigLIP2 GPU. A complete Pixel 8 recognition
+  matched `Пино Нуар` at cosine 0.909. The Pixel used a compact one-wine pack because the
+  production APK did not fit in 1.2 GB of free storage. The compact pack kept the exact
+  production model files, vector, and image. The temporary application and image were
+  removed after the test.
+- Updated for task 21: 2026-09-29T11:28:43+0300
+
+- Task 22: show the image score as `Сходство: 91%`. Replace the bottom navigation
+  glyphs with clear icons. Name the debug APK `chtozavino_debug.apk`. Add the product
+  website below the application version. Show `Не требует интернета`. Diagnose the
+  empty history on the first phone. Verify the system-controlled dark theme.
+- Source: owner messages recorded at 2026-09-29T11:51:48+0300. The owner selected
+  `Сходство: 91%`.
+- Files for task 22: this root section, `docs/owner-messages.md` (append), Android UI,
+  icon resources, build configuration, tests, and my own hunks in the Android
+  documentation.
+- State for task 22: done, not committed. Version 0.1.3 shows `Сходство: 91%`,
+  uses clear 30 dp tab icons, shows the product site link, and builds
+  `chtozavino_debug.apk`. The history was empty because the earlier device-test rows
+  were cleared. A new `Пино Нуар` row survived an application restart. The Realme
+  followed the system dark setting. Its original light setting was restored. Gradle
+  lint, debug and release unit tests, and assembly passed.
+- Updated for task 22: 2026-09-29T12:07:00+0300
+
+- Task 23: change the application ID to `chtozavino.alolalab.com`. Remove the old
+  `Chtozavino.alolalab.com` installation. Install and test the full application on the
+  connected Pixel 8.
+- Source: owner message recorded at 2026-09-29T12:45:14+0300.
+- Files for task 23: this root section, `docs/owner-messages.md` (append), Android build
+  configuration, specification, change log, research log, smoke tests, verification
+  results, and README.
+- State for task 23: done, not committed. Version 0.1.4 uses
+  `chtozavino.alolalab.com`. The old package was absent from the Pixel 8 and was
+  removed from the Realme with its local data. The full APK installed on the Pixel 8.
+  The installed pack has 2,093 images, wines, and vectors. The automatic check selected
+  GPU for DIS and SigLIP2. The process stayed active with no crash. The Pixel lock
+  screen prevented direct UI interaction. Gradle lint, debug and release unit tests,
+  and assembly passed.
+- Updated for task 23: 2026-09-29T12:55:00+0300
+- Continuation of task 23: the owner unlocked the Pixel 8. Direct UI and full
+  recognition checks passed. The main page shows the automatic GPU selections for DIS
+  and SigLIP2. The full run matched `Пино Нуар` at 91%. DIS GPU used 2,463 ms.
+  SigLIP2 GPU used 2,134 ms. Search used 100 ms. The DIS mask opened. The history row
+  stayed after an application restart.
+- Updated for task 23 continuation: 2026-09-29T13:18:00+0300
+- Task 24: verify the wine-result and product-site links from the Pixel 8 application.
+  Verify all settings-page values and controls on the Pixel 8.
+- Source: owner message recorded at 2026-09-29T13:12:38+0300.
+- Files for task 24: this root section, `docs/owner-messages.md` (append), and my own
+  Android verification, research, change-log, and smoke-test hunks.
+- State for task 24: done, not committed. The wine result opened its exact
+  `vino-svoe.ru/wines/...` URL in Chrome. The settings link opened
+  `https://vino-svoe.ru`. The settings page correctly showed pack version
+  `20260929-dis-main`, both 2,093 counts, selected `Авто` controls, the saved GPU/GPU
+  automatic selection, the GPU recheck action, version 0.1.4, and the product-site
+  link. The complete page rendered correctly in the Pixel 8 dark system theme.
+- Updated for task 24: 2026-09-29T13:18:00+0300
+
+## drink-atlas-workspace-b6 [088a3a]
+
+- Task: a rotation test of one catalogue main image: cosine similarity to the indexed
+  `full` vector per angle (5° steps) for the NaFlex p256/p512/p1024 and the fixed
+  256/384/512 embeddings, on a white and on a black background. Read-only for the
+  catalogue and the indexes.
+- Source: owner message of 2026-09-29T01:10:49+0300.
+- Files: `docs/owner-messages.md` (append), `scripts/rotation_similarity.py` (new),
+  `scripts/rotation_similarity_plots.py` (new),
+  `scripts/rotation_multiref.py` (new),
+  `scripts/rotation_refsets.py` (new),
+  `docs/reports/rotation-similarity-2026-09-29.md` (new) and its artifact folder, and my
+  own hunks in `ResearchLog.md`, `ChangeLog.md`.
+- Task 2: Russian charts with bottle thumbnails and a collage of the rotation steps with
+  a black image border (owner message of 2026-09-29T01:23:58+0300).
+- Task 3: the reference side gets 10 vectors (the index image on white, rotated 0° to 45°
+  in steps of 5°); the query rotates 0° to 355° as before; the score is the maximum
+  cosine. The vectors are saved in the report folder, not in the catalogue index (owner
+  message of 2026-09-29T01:34:10+0300).
+- Task 4: five more reference sets (0°–355°/5°, 0°–359°/1°, 0°–45°/1°, 0°–90°/5°,
+  0°–90°/1°), each saved in its own folder (owner message of 2026-09-29T01:44:56+0300).
+- Task 5: full-circle reference sets with the steps 3°, 8°, 9°, 12°, computed from the
+  saved 0°–359° vectors, no new embedding (owner message of 2026-09-29T01:56:01+0300).
+- Task 6: the rotation tests of tasks 1 to 5 with the DINOv3 entries, in a separate folder
+  `docs/reports/rotation-dinov3-2026-09-29/` and the report `docs/reports/rotation-dinov3-2026-09-29.md` (owner message of 2026-09-29T02:02:13+0300). The plot scripts get
+  a layout for any set of entries.
+- Task 7: rotation-augmented catalogue vectors for NaFlex p512 (0-360/1, 0-360/5, 0-180/1,
+  0-180/5) and a run on the test set `my` without barcode and rerank, against
+  `siglip2-p512-crop` and `siglip2-p512-as-is`. Owner answers of 2026-09-29T07:06:38+0300: separate scripts, no
+  change of lab code or config.yaml; stage 1 = the 5° sets, stage 2 (1°) after the owner
+  decides. Files: `scripts/rotation_index_build.py` (new), `scripts/rotation_index_eval.py`
+  (new), `work/rotation-index/` (vectors), `docs/reports/rotation-index-p512-2026-09-29.md`
+  (new) and its folder.
+- Task 8: plan 82, max-over-rotation matching in the lab and the matcher
+  (`docs/plans/82_rotated-reference-embeddings.md`; owner message of about 07:18 and the
+  answers recorded at 2026-09-29T08:17:50+0300; plan approved about 08:12).
+- Files 8: `docs/plans/82_rotated-reference-embeddings.md` (new), `pipeline/embeddings.py`,
+  `pipeline/build_embeddings.py`, `pipeline/embedding_run.py`, `pipeline/matcher_bundle.py`,
+  `config.yaml` (separate hunks: two entries at the end of `embeddings:`, seven pipelines),
+  `scripts/rotation_index_eval.py`, `tests/test_rotated_embeddings.py` (new; the plan
+  named the six present test files, but the new tests went into this one file, and the
+  present test files did not change), `../matcher/bundle.py`, `../matcher/catalog.py`,
+  `../matcher/tests/test_rotation.py` (new), one line of `../matcher/tests/test_siglip2.py`,
+  one line of `tests/test_barcode.py` (the count 26 → 33; the seven barcode twins of the
+  plan 82 pipelines are in `config.yaml` after `barcode-siglip2-p512-crop`),
+  `docs/reports/rotation-index-p512-2026-09-29.md` (new), runtime output in
+  `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512-rot{5,10}/`, and my own
+  hunks in `ChangeLog.md`, `ResearchLog.md`, `SMOKE_TESTS.md`, `COMMANDS.md`, `README.md`,
+  `docs/API.md`, `docs/testing/matcher-bundle.md`, `docs/plans/10_*.md`,
+  `docs/plans/72_matcher-bundle.md`, `../matcher/ChangeLog.md`, `../matcher/README.md`,
+  `../matcher/TESTING.md`.
+- Agreements 8: the owner approval of plan 82 is the permission for the files that the
+  stale sections `drink-atlas-workspace-66`, `codex-side-matcher-bundle`,
+  `codex-android-embeddings`, `drink-atlas-workspace-31`, `codex-main-scene-ranking`, and
+  `root` list (git shows no pending change in those code files). Session e3 answered at
+  about 08:22: its matcher hunks are committed (babef66, 16b059d), its section is removed,
+  the matcher files are free. The owner chose the 8168 restart at 09:59:38.
+- Agreement with c4 (11:45 to 11:47): c4 (this owner conversation, resumed in a new
+  process) and b6 had both started the three rot5 runs at 11:43; both stopped their chains;
+  b6 restarted them at 11:46:41 as the only chain (logs `work/rotation-index/run-<p>-b6.out`)
+  and keeps the runs, their GPU_TASKS row, and the report section; c4 does not edit the report.
+- Agreement with 62 (2026-09-29T12:03:41+0300): b6 agreed that session 62 (plan 83) adds separate hunks in
+  `config.yaml` (3 `pipeline:` entries after `vino-svoe-search-by-photo`) and in
+  `../matcher/README.md` and `../matcher/ChangeLog.md`; my hunks stay unchanged.
+- Committed for task 8: the matcher hunks are in HEAD 0657f46 (session b3, owner request
+  "git commit matcher" at 10:41:37); the workbench files of task 8 stay uncommitted.
+- Also changed for task 8: `scripts/rotation_index_eval.py` (Catalogue attribute
+  `angles`), `tests/test_rotated_embeddings.py` (new).
+- State: task 8 done, not committed (the matcher part is in HEAD 0657f46); waiting: the owner decides the commit of the workbench files. Tasks 1 to 7 done, not committed.
+- Updated: 2026-09-29T12:31:11+0300
+
+## drink-atlas-workspace-11 [5d8e76]
+
+- Task: a read-only review of the storage of `data/catalog/embeddings/` and of the use of
+  the prepared images; the new list `FIX_LATER.md`; rules 39 to 42 ("Known problems").
+- Source: owner messages of 2026-09-29T07:44:57+0300, 07:50:13 (cache or catalogue data),
+  07:54:44 (add the item to a fix-later list; the owner chose `FIX_LATER.md`), and
+  08:00:44 (a rule: a problem in `FIX_LATER.md` or a known-issues file is not a problem now).
+- Files: `docs/owner-messages.md` (append), `ResearchLog.md` (one new entry at the top),
+  `FIX_LATER.md` (new, owner answer of 07:55), my own hunk in `ChangeLog.md`, and a new
+  last section of `AGENTS.md` (rules 39 and later). No code, no data file.
+- State: done, not committed. e3 renamed the matcher list to
+  `../matcher/docs/KNOWN_ISSUES.md` (owner answer "use KNOWN_ISSUES.md", 08:05:15). Rule 39
+  of `AGENTS.md` names `FIX_LATER.md` and each file `KNOWN_ISSUES.md`, and links the matcher list.
+- Updated: 2026-09-29T08:08:00+0300
+- Agreements: the section `codex-side-commands-rules` lists `AGENTS.md`. Its rules 29 to 38
+  are committed; git shows no pending change in `AGENTS.md`. The owner asked for the new
+  rule directly (08:00:44). I add a new section at the end and change no other line.
+  e3 owns `../matcher/docs/known-issues.md` and its links. I asked e3 at 08:06 for the
+  rename and the link updates. I change none of its files. e3 confirmed the rename and
+  the link updates at 08:07; I checked that no link to the old name is left in `../matcher/`.
+
+## drink-atlas-workspace-a8 [eaf131]
+
+- Task: one model proxy on this Mac (`127.0.0.1:18092`) for SAM3, Grounding DINO, and
+  SigLIP2 (NaFlex and fixed). It keeps the API of the gx10 gateway
+  `http://192.168.86.14:18082`, sends each request to the first host with a free slot
+  (gx10 and RTX 4090 hosts), retries a failed request on another host, runs the SSH
+  tunnels to the RTX hosts, and keeps an SQLite cache on the Mac. GDINO goes to gx10
+  alone. gx10 is reached through `:18082`; the Mac cache starts empty.
+- Source: owner messages of 2026-09-29T08:17:32+0300 and the owner answers of
+  2026-09-29T10:02:42+0300 (options A, proxy-run SSH tunnels, GDINO on gx10 alone,
+  gx10 through 18082 with an empty cache).
+- Files: `docs/owner-messages.md` (append), `../proxies/**` (new project),
+  `<workspace>/deploy/mbp2023/model-proxy.md` (new), my own row in the table
+  "Deployments" of `<workspace>/deploy/README.md`, my own entry in
+  `<workspace>/deploy/ChangeLog.md`, and my own rows (18092, 18191-18199) in
+  `/Users/ashmelev/Admin/mbp2023/PORTS_USED.md`. No other lab file.
+- State: done, not committed; waiting: the owner decides the commit and the next steps
+  (an RTX host, a component row in `../README.md`). 63 unit tests pass. The live tests
+  through scratch proxies on ports 18093 and 18094 passed; both proxies stopped. No
+  proxy runs on port 18092.
+- Updated: 2026-09-29T10:36:00+0300
+- Agreements: `codex-submission-01` lists `../README.md` (done; git shows no pending
+  change). I do not change it; I ask the owner about a component row for `proxies/`.
+
+## drink-atlas-workspace-b3 [45a3fc]
+
+- Task: a read-only side-by-side comparison of the matcher pipeline and the best lab pipeline.
+- Source: owner message of 2026-09-29T08:04:13+0300.
+- Task 2: commit the pending `../matcher/` changes as one scope commit. The commit uses a
+  private git index. It changes no file in the working tree.
+- Source 2: owner message of 2026-09-29T10:41:37+0300.
+- Files: `docs/owner-messages.md` (append), `ResearchLog.md` (one new entry at the top, tasks
+  3 and 4), and this section of `ACTIVE_WORK.md`.
+- State: done, not committed. Task 4: the answer and a follow-up in my `ResearchLog.md`
+  entry. Task 3: the answer and a `ResearchLog.md` entry. Task 2 is commit `0657f46` (8 matcher files of b6 and the Codex entry 3 of
+  `../matcher/docs/KNOWN_ISSUES.md`; 124 matcher tests pass on the tree alone). The empty
+  untracked `../matcher/1.txt` stays out. b6 got a message. My own appends in
+  `docs/owner-messages.md` are not committed.
+- Agreements: b6 confirmed at 10:44:40 that it recorded `0657f46` in its section. It plans no
+  more matcher edits for task 8. A later matcher change is a new commit on top of `0657f46`.
+  c4 lists its own hunks in `ResearchLog.md`. At 11:32:02 I told c4 about my entry at the
+  top of that file, so that c4 reads the file again before it writes.
+- Task 3: explain how the lab step `segment` with `target: package` selects one package
+  when a photo shows several bottles, and whether a hand detection takes part. Read-only.
+- Source 3: owner message of 2026-09-29T11:28:17+0300.
+- Task 4: assess the risk of the hand-aware selection (`main_scene.py`, matcher
+  `hand_selection`): the photos that it breaks, and the SAM3 time with the text `hand`.
+  Read-only.
+- Source 4: owner message of 2026-09-29T11:35:25+0300.
+- Updated: 2026-09-29T11:37:54+0300
+
+## drink-atlas-workspace-c4 [e3b3f5]
+
+- Task: the alpha-channel and background test of the SigLIP 2 models of the gx10 gateway
+  (the test of the ResearchLog entry of 2026-09-25 was made with `dinov3-vitb16` alone),
+  with a report.
+- Source: owner message of 2026-09-29T11:14:13+0300.
+- Files: `docs/owner-messages.md` (append), `scripts/alpha_background_probe.py` (new),
+  `docs/reports/siglip2-alpha-background-2026-09-29.md` (new) and its artifact folder,
+  my own hunks in `ResearchLog.md` (a new entry, and one pointer line in the entry of
+  2026-09-25) and `ChangeLog.md`. No change of lab code or config.yaml.
+- Agreements: this is the same conversation as the section `drink-atlas-workspace-b6
+  [088a3a]` (resumed in a new process). That section keeps task 8 (plan 82); its build of
+  `...-p512-rot5` runs (pid 63208). I change no file of that section.
+- Task 2: continue task 8 of the section b6 (plan 82): the rot5 build ended at 11:41 (0 failures); the runs of the three `siglip2-p512-rot5-*` pipelines on `my` (new run directories in `runs/`) and the rot5 part of `docs/reports/rotation-index-p512-2026-09-29.md`.
+- Agreements 2: the section b6 (the old process of this conversation) edited the rot5 report at 11:44; c4 sent b6 a message at 11:45: c4 runs the three rot5 runs and adds only their section to that report.
+- State: task 1 done, not committed (report `docs/reports/siglip2-alpha-background-2026-09-29.md`). Task 2 dropped at 11:46: b6 started the same three rot5 runs at 11:43:38; c4 stopped its own duplicate chain and removed its partial run directory `runs/2026-09-29T084311Z-lab-siglip2-p512-rot5-as-is-my-plan82`. b6 keeps the rot5 runs and the report section. b6 also stopped its chain at 11:45:48 (messages crossed), removed its partial directory, and restarted one chain at 11:47 with its own logs `work/rotation-index/run-<pipeline>-b6.out`; c4 agreed to start none.
+- Updated: 2026-09-29T11:46:57+0300
+
+## drink-atlas-workspace-62 [6f5a71]
+
+- Task: plan 83, three lab pipelines that call the matcher API of prod
+  (`http://192.168.86.14:28000`) and use no local embeddings: `/v1/eval/predict`,
+  `/v1/match?k=20`, and `/v1/group/match` with a group view on `/runs`. An optional
+  query parameter `k` of `/v1/group/match` in `../matcher/`.
+- Source: owner message of 2026-09-29T11:57:03+0300 and the answers of 12:00:47.
+- Files: `docs/owner-messages.md` (append), `docs/plans/83_matcher-api-pipelines.md` (new),
+  `config.yaml` (one separate hunk: 3 entries after `vino-svoe-search-by-photo`),
+  `scripts/match_backends.py`, `pipeline/pipelines.py` (one hunk: the shape `group`),
+  `pipeline/benchmark.py` (one hunk in `one`: a 6th `ask` value as the row key `group`),
+  `pipeline/run_routes.py` (one hunk in `_row_slugs`), `pipeline/pages/runs.html` (separate
+  hunks: the group view of a result row), `tests/test_matcher_api_pipelines.py` (new),
+  `../matcher/app.py`, `../matcher/openapi.yaml`, `../matcher/tests/test_group.py`
+  (separate hunks: one key-set assertion and new tests of `k`),
+  `../matcher/docs/group-match.md`, and my own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`,
+  `README.md`, `COMMANDS.md`, `../matcher/README.md`, `../matcher/ChangeLog.md`.
+- State: done, not committed. Waiting: the owner decides the commit and the redeploy of the
+  prod matcher (the parameter `k`). 8168 restarted at 12:20:25 (PID 34153). Tests: new 10 OK,
+  matcher 125 OK; full lab suite 3 errors outside plan 83 (see `ChangeLog.md`). b6 fixed
+  the `test_barcode.py` count at about 12:30.
+- Updated: 2026-09-29T12:25:38+0300
+- Agreements: b6 [088a3a] agreed at about 12:07 to my separate hunks in `config.yaml`
+  (3 `pipeline:` entries after `vino-svoe-search-by-photo`) and in `../matcher/README.md`
+  and `../matcher/ChangeLog.md`. b6's hunks stay unchanged. The `new_wine_embedding`
+  hunk of `config.yaml` belongs to the section `/root` (plan 78); I do not touch it.
+  b6 agreed at about 12:10 to my hunk in `pipeline/pipelines.py`. The owner allowed at
+  12:10:02 separate hunks in the files of the stale sections and one restart of 8168.
+
+## drink-atlas-workspace-c1 [b51d69]
+
+- Task: add the entry `Copy Image` to the right-click menu of a photo on `/testset`. The
+  entry copies the picture to the clipboard. The code follows `copyImage` of
+  `scripts/review_server.py`.
+- Source: owner message of 2026-09-29T12:15:11+0300.
+- Files: `docs/owner-messages.md` (append), `pipeline/pages/testset.html` (separate hunks:
+  the helper `photoAsPng`, the helper `copyImage`, one menu line, one click branch), and
+  my own hunks in `ChangeLog.md` and `SMOKE_TESTS.md`.
+- State: done, not committed. Waiting: the owner decides the commit. No restart of 8168:
+  the page is read from disk. Headless Chromium on 8168: `copied`, a 721 x 1280 PNG, no
+  page errors. Docs: `ChangeLog.md`, `SMOKE_TESTS.md` NM9-NM10.
+- Updated: 2026-09-29T12:17:09+0300
+- Agreements: the owner asked for this change directly. The sections that list
+  `pipeline/pages/testset.html` (ab, b4, 41, 96, a4, `/root`, `root`) are stale or done,
+  and the file is clean in git. I change only my separate hunks.
+- Task 2: an advanced filter `Origin` on `/testset` that shows the wines added by hand
+  (manual wines: the slug starts with `__`; `__null__` and `__drawer__` are not wines).
+- Source for task 2: owner message of 2026-09-29T12:48:14+0300.
+- Files for task 2: `docs/owner-messages.md` (append), `pipeline/pages/testset.html`
+  (separate hunks: one select in `#more`, the `#more-btn` title, `FILTER_AXES`,
+  `CATALOG_SCOPE_FILTERS`, one `matchAxis` case, the `#more-n` count, `VIEW_PARAMS`), and my
+  own hunks in `ChangeLog.md` and `SMOKE_TESTS.md`.
+- State for task 2: done, not committed. Waiting: the owner decides the commit. No
+  restart of 8168. Headless Chromium on 8168: 3 wines added by hand, no page errors.
+  Docs: `ChangeLog.md`, `SMOKE_TESTS.md` TP24, TP36, TP42-TP43.
+- Updated for task 2: 2026-09-29T12:53:55+0300
+
+## drink-atlas-workspace-d7 [685702]
+
+- Task: find why `Save` of the `Add wine` dialog on `/dataset` takes a long time, and
+  propose fixes. Done: a cold start of `siglip2-so400m-patch16-512` on gx10 (37.3 s).
+- Source: owner message of 2026-09-29T12:28:00+0300.
+- Task 2: plan 84, the index build of a new wine in the background; the card tag
+  `indexing…`, `indexed`, `not indexed`.
+- Source 2: owner answer of 2026-09-29T12:41:02+0300.
+- Files: `docs/owner-messages.md` (append), my own entry in `ResearchLog.md`,
+  `docs/plans/84_background-new-wine-index.md` (new). After the approval of plan 84:
+  `pipeline/new_wine_jobs.py` (new), `tests/test_new_wine_jobs.py` (new), and separate
+  hunks in `pipeline/new_wine_workflow.py`, `pipeline/lab_server.py`,
+  `pipeline/pages/dataset.html`, `tests/test_new_wine_workflow.py`,
+  `docs/lab-openapi.yaml`, `docs/plans/78_incremental-new-wine-index.md`,
+  `tests/test_manual_wines.py`, `tests/test_lab_openapi.py`, and my own hunks in
+  `README.md`, `SMOKE_TESTS.md`, `ChangeLog.md`. A restart of 8168. The live trial
+  writes `data/catalog/catalog.sqlite3`, one image, and the embedding directory.
+- State: done, not committed. Waiting: the owner decides the commit. 8168 restarted at
+  12:59 (PID 24435). Live trial wine `__web-bg-index-smoke-20260929` is `Disabled`.
+- Updated: 2026-09-29T13:04:00+0300
+- Agreements: the owner allowed at 12:45:37 separate hunks in the files of the section
+  `/root` (a Codex session; no message can reach it). The `/root` lines stay
+  byte-identical. The owner approved the live trial `__web-bg-index-smoke-20260929`.
+  At 2026-09-29T12:49:53+0300 the owner allowed edits of the `/root` lines that state the replaced plan 78
+  behavior: the busy text in `dataset.html` and its assertion in
+  `tests/test_new_wine_workflow.py`, `test_a_server_with_a_config_uses_the_index_workflow`
+  in `tests/test_manual_wines.py`, the `createWine` summary in `docs/lab-openapi.yaml`,
+  `README.md` lines 314-315, `SMOKE_TESTS.md` AW17 and AW19, and 2 new lines in the
+  route list of `tests/test_lab_openapi.py`.

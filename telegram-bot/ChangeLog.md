@@ -11,6 +11,8 @@
   when an administration retry moderates the image as unsafe (Safety rule 5). The deletion
   checks every date directory, because an earlier attempt can use another date directory.
 - Added the project review `docs/reviews/2026-09-29-project-review.md`.
+- Required at least 32 characters in the administration password.
+- Added a configurable per-client limit for failed administration authentication attempts.
 - Rejected administration page numbers that exceed the SQLite integer range.
 - Added a repository guard for every paginated administration query.
 - Represented a disabled moderation check as `safe=null`, `performed=false`, and
@@ -32,7 +34,7 @@
 - Pinned the Docker base images by version and digest and added `.dockerignore`.
 - Documented that the project does not grant reuse or distribution rights.
 - Removed the deprecated systemd service assets. Production uses Docker Compose only.
-- Tests: 224 pass. `ruff check .` passes. The self-contained host demo passes.
+- Tests: 227 pass. `ruff check .` passes. The self-contained host demo passes.
 
 ## 2026-09-28
 

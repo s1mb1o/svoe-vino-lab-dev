@@ -8,7 +8,15 @@ writes the columns `state` and `removed_by` alone. `GET /images/<folder>/<sha256
 sends one file of the image store `images/` next to the database file.
 
 `POST /api/wine` adds one wine by hand, with a slug that starts with `__`, and its `main`
-image, with `manual_wines.py`. Read `docs/plans/20_add-wine.md`.
+image, with `manual_wines.py`. The live server then updates `new_wine_embedding` and
+verifies the active index with `new_wine_workflow.py`. Read `docs/plans/20_add-wine.md`
+and `docs/plans/78_incremental-new-wine-index.md`.
+
+`POST /api/wine` answers when the wine is in the catalogue. The index update runs in a
+background job of `new_wine_jobs.py`. `GET /api/wine-index?slug=<slug>` sends the job,
+`POST /api/wine-index` starts it again (the button `Retry` of the card), and
+`GET /api/dataset` sends the state of each job in `new_wine_index`. Read
+`docs/plans/84_background-new-wine-index.md`.
 
 The routes `/api/dataset-gtin` and `/api/dataset-qr-url` add (POST) and remove (DELETE)
 one row of the table `wine_code`. The lab keeps GTINs alone: it has no barcode route.
@@ -114,6 +122,10 @@ routes. A photo goes to one pipeline of the backend `embedding` in a new process
 `embedding_python` (`recognize.py`), and the page shows its steps as the step popup of
 `/runs` shows them. Read `docs/plans/55_recognize-page.md`.
 
+The OpenAPI 3.1 document is on at `/openapi.yaml` and `/openapi.json`. Swagger UI is on
+at `/docs`. `lab_openapi.py` serves the checked-in `docs/lab-openapi.yaml`. Read
+`docs/plans/80_lab-server-openapi.md`.
+
 Each API route that this text does not name answers HTTP 503 with a JSON error. The
 navigation of every page stays as it is. Read `docs/plans/07_sqlite-lab-database.md`.
 
@@ -153,10 +165,13 @@ import favorites  # noqa: E402
 import health  # noqa: E402
 import image_descriptions  # noqa: E402
 import label_description_routes  # noqa: E402
+import lab_openapi  # noqa: E402
 import lab_pages  # noqa: E402
 import labdb  # noqa: E402
 import manual_wines  # noqa: E402
 import model_cache  # noqa: E402
+import new_wine_jobs  # noqa: E402
+import new_wine_workflow  # noqa: E402
 import patches  # noqa: E402
 import qr_barcode  # noqa: E402
 import recognize_routes  # noqa: E402
@@ -187,8 +202,8 @@ PAGE_KEYS = {"wine_slug": "slug"}
 NAV = (("/dataset", "Dataset"), ("/embedding", "Embeddings"),
        ("/clusters", "Clusters"), ("/testset", "Testset"), ("/runs", "Runs"),
        ("/recognize", "Recognize"), ("/health", "Health"))
-# The disabled pages. `/docs` is the API page of the review tool.
-DISABLED_PAGES = {"/docs": "API docs"}
+# Kept for tests and for a future page that the lab database cannot serve.
+DISABLED_PAGES = {}
 # `GET /` goes to the Dataset page. The owner moved the Testset page to `/testset` on
 # 2026-09-25T17:01:44+0300.
 HOME = "/dataset"
@@ -475,7 +490,7 @@ def dataset_records(conn):
     return records
 
 
-def dataset_view(db_path):
+def dataset_view(db_path, config_path=None):
     """Return the answer of `GET /api/dataset`."""
     with closing(open_database(db_path)) as conn:
         records = dataset_records(conn)
@@ -487,9 +502,12 @@ def dataset_view(db_path):
         descriptions = image_descriptions.descriptions(conn)
         similar_total = similar_wines.count(conn)
         tag_total = wine_tags.count(conn)
+    selected_embedding = (new_wine_workflow.embedding_name(config_path)
+                          if config_path is not None else None)
     return {
         "database_file": db_path,
         "wine_editor": True,
+        "new_wine_embedding": selected_embedding,
         "patch_editor": True, "patches": sum(1 for r in records if r["_patched"]),
         "alternative_editor": True,
         "alternatives": sum(len(r["_alternatives"]) for r in records),
@@ -547,16 +565,51 @@ def change_state(db_path, slug, action):
     return {"slug": slug, "state": target, "removed_by": removed_by}
 
 
-def add_wine(db_path, body, segmenter=None):
-    """Add the wine of the request `body` by hand. Return the answer of the POST: the new
-    record of the wine."""
-    with closing(open_database(db_path, write=True)) as conn:
-        conn.isolation_level = None
-        conn.execute("PRAGMA foreign_keys = ON")
-        result = manual_wines.add_wine(conn, db_path, body, segmenter)
-        slug = result["slug"]
+def add_wine(db_path, body, segmenter=None, config_path=None, embedding=None,
+             build=new_wine_workflow.rebuild_on_run.build):
+    """Create one wine and update its selected index. Return the POST result."""
+    result = new_wine_workflow.create(
+        db_path, body, config_path=config_path, embedding=embedding,
+        segmenter=segmenter, connect=lambda path: open_database(path, write=True),
+        build=build)
+    return wine_answer(db_path, result)
+
+
+def start_wine(db_path, body, jobs, segmenter=None, config_path=None):
+    """Create one wine and start the update of its selected index in the background
+    (plan 84). Return the POST result: its `index` is the job, state `indexing`."""
+    result, selected = new_wine_workflow.create_wine(
+        db_path, body, config_path=config_path, segmenter=segmenter,
+        connect=lambda path: open_database(path, write=True))
+    if selected is not None:
+        result["index"] = jobs.start(result["slug"], selected, config_path)
+    return wine_answer(db_path, result)
+
+
+def retry_wine_index(db_path, config_path, jobs, slug):
+    """Start the index job of one Active wine again: the button `Retry` of the card
+    (plan 84). Return the job."""
+    if not isinstance(slug, str) or not slug:
+        raise StateError(400, "the request holds no wine slug")
+    with closing(open_database(db_path)) as conn:
+        row = conn.execute("SELECT state FROM wine_catalog WHERE wine_slug = ?",
+                           (slug,)).fetchone()
+    if row is None or row[0] != "Active":
+        raise StateError(404, "no Active wine with the slug %s" % slug)
+    if config_path is None:
+        raise StateError(503, "the server has no config.yaml, so it has no new-wine index")
+    return jobs.start(slug, new_wine_workflow.selected_index(db_path, config_path),
+                      config_path)
+
+
+def wine_answer(db_path, result):
+    """Return the answer of `POST /api/wine` for the workflow `result`."""
+    slug = result["slug"]
+    with closing(open_database(db_path)) as conn:
         record = next(r for r in dataset_records(conn) if r["slug"] == slug)
     answer = {"ok": True, "slug": slug, "record": record}
+    if result["index"] is not None:
+        answer["index"] = result["index"]
     if result["warnings"]:
         answer["warning"] = " ".join(result["warnings"])
     return answer
@@ -1320,6 +1373,14 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _openapi(self):
+        """Send the checked-in OpenAPI document or its Swagger UI page."""
+        route = urllib.parse.urlsplit(self.path).path
+        code, body, ctype, cache = lab_openapi.respond(self.command, route)
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
     def _redirect(self, location):
         self.send_response(302)
         self.send_header("Location", location)
@@ -1329,7 +1390,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         route = urllib.parse.urlsplit(self.path).path
-        if embedding_routes.handles(route):
+        if lab_openapi.handles(route):
+            self._openapi()
+        elif embedding_routes.handles(route):
             self._embedding()
         elif cluster_routes.handles(route):
             self._clusters()
@@ -1353,9 +1416,13 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, lab_pages.page("dataset.html"), "text/html; charset=utf-8")
         elif route == "/api/dataset":
             try:
-                self._json(200, dataset_view(self.server.db_path))
-            except (ConfigError, sqlite3.Error) as exc:
+                view = dataset_view(self.server.db_path, self.server.config_path)
+                view["new_wine_index"] = self.server.new_wine_jobs.states()
+                self._json(200, view)
+            except (ConfigError, manual_wines.WineError, sqlite3.Error) as exc:
                 self._json(503, {"error": str(exc)})
+        elif route == "/api/wine-index":
+            self._wine_index()
         elif route in DISABLED_PAGES:
             self._send(503, disabled_page(route), "text/html; charset=utf-8")
         elif route == "/api/image-description-status":
@@ -1463,8 +1530,33 @@ class Handler(BaseHTTPRequestHandler):
         if body is None:
             return
         try:
-            self._json(200, add_wine(self.server.db_path, body, self.server.segmenter))
+            self._json(200, start_wine(self.server.db_path, body,
+                                       self.server.new_wine_jobs, self.server.segmenter,
+                                       self.server.config_path))
         except manual_wines.WineError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+
+    def _wine_index(self):
+        """Answer `GET /api/wine-index` (the job of one wine) and `POST /api/wine-index`
+        (the button `Retry`)."""
+        if self.command in ("GET", "HEAD"):
+            query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+            job = self.server.new_wine_jobs.get((query.get("slug") or [""])[0])
+            if job is None:
+                self._json(404, {"error": "this server process has no index job for "
+                                          "the wine"})
+            else:
+                self._json(200, job)
+            return
+        body = self._json_body(MAX_BODY)
+        if body is None:
+            return
+        try:
+            self._json(200, retry_wine_index(self.server.db_path, self.server.config_path,
+                                             self.server.new_wine_jobs, body.get("slug")))
+        except (StateError, manual_wines.WineError) as exc:
             self._json(exc.code, {"error": str(exc)})
         except (ConfigError, sqlite3.Error) as exc:
             self._json(503, {"error": str(exc)})
@@ -1688,7 +1780,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def _write_route(self):
         route = urllib.parse.urlsplit(self.path).path
-        if embedding_routes.handles(route):
+        if lab_openapi.handles(route):
+            self._openapi()
+        elif embedding_routes.handles(route):
             self._embedding()
         elif cluster_routes.handles(route):
             self._clusters()
@@ -1708,6 +1802,8 @@ class Handler(BaseHTTPRequestHandler):
             self._wine_state()
         elif route == "/api/wine" and self.command == "POST":
             self._new_wine()
+        elif route == "/api/wine-index" and self.command == "POST":
+            self._wine_index()
         elif route in CODE_ROUTES and self.command in ("POST", "DELETE"):
             self._code(route)
         elif route == "/api/dataset-patch" and self.command in ("POST", "DELETE"):
@@ -1757,6 +1853,8 @@ def make_server(db_path, host="127.0.0.1", port=DEFAULT_PORT, config_path=None,
     server.config_path = config_path
     server.segmenter = segmenter
     server.code_scanner = code_scanner
+    # The background index jobs of the new wines (plan 84).
+    server.new_wine_jobs = new_wine_jobs.IndexJobs()
     # The start time that the Health page shows.
     server.started_t = time.time()
     return server
@@ -1830,7 +1928,8 @@ def main(argv=None):
                               ", ".join("%s %d" % item for item in states.items())))
     if not sum(states.values()):
         print("  the catalogue is empty; import it with `python3 pipeline/import_catalog.py`")
-    print("disabled pages: %s" % ", ".join(DISABLED_PAGES.values()))
+    if DISABLED_PAGES:
+        print("disabled pages: %s" % ", ".join(DISABLED_PAGES.values()))
     code_scanner = qr_barcode.client_from_config(config)
     print("QR/barcode scanner: %s (engine %s)" %
           (code_scanner.description, code_scanner.engine))

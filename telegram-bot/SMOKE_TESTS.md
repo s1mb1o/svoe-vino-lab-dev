@@ -205,8 +205,15 @@
 
 - Open the administration interface through its configured HTTPS proxy or secure tunnel.
 - Confirm that the browser requires a username and password.
-- Submit an incorrect password.
-- Confirm that access is denied.
+- Set the failed-authentication limit to `2` in a test environment.
+- Submit an incorrect password two times from one client address.
+- Confirm that both attempts return HTTP 401.
+- Submit the incorrect password again.
+- Confirm that the attempt returns HTTP 429 with a `Retry-After` header.
+- Submit the correct password.
+- Confirm that the correct password also returns HTTP 429 during the `Retry-After` period.
+- Wait for the `Retry-After` period and submit the correct password.
+- Confirm that access succeeds.
 - Open the interface from an address outside the configured CIDR networks.
 - Confirm that access is denied.
 - Confirm that the overview shows aggregate statistics and recent requests.

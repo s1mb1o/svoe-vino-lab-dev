@@ -636,7 +636,7 @@ tbody tr.cat-only { background: var(--panel-2); }
     <!-- `Additional settings` shows or hides the row #more (owner answer of 2026-09-26
          01:08:49). The number counts its selects that are not at their default. -->
     <button id="more-btn" type="button" aria-expanded="false" aria-controls="more"
-            title="show or hide Marks, Tag, and Clusters; the number counts those that are not at their default"
+            title="show or hide Marks, Tag, Origin, and Clusters; the number counts those that are not at their default"
             >Additional settings<b id="more-n"></b></button>
     <label>Find <input id="q" type="search" placeholder="slug, name, producer, region"></label>
     <button id="grp-clear" type="button" hidden
@@ -663,6 +663,12 @@ tbody tr.cat-only { background: var(--panel-2); }
     <label>Tag
       <select id="tag" title="show all wines, wines with an untagged photo, or wines with a photo that has one specific tag">
         <option value="">All</option>
+      </select>
+    </label>
+    <label>Origin
+      <select id="origin" title="show every wine, or only the wines added by hand with Add wine on /dataset (the slug starts with __)">
+        <option value="all">any</option>
+        <option value="manual">added by hand</option>
       </select>
     </label>
     <label>Clusters
@@ -909,11 +915,16 @@ function stateBadge(r) {
 /* The selects of the filter axes. The values of their options are unique across the
    axes, so one switch tests each of them. `#cluster` groups the rows (plan 37); `render`
    does not give it to `matchFilter`. */
-const FILTER_AXES = ["#filter", "#verdict", "#marks", "#cluster"];
+const FILTER_AXES = ["#filter", "#verdict", "#marks", "#origin", "#cluster"];
 
 /* A wine with no photo in the set is not labelling work. `all` lists it, and `nophotos`
-   asks about the catalogue itself. Any other value of an axis hides it. */
-const CATALOG_SCOPE_FILTERS = new Set(["all", "nophotos"]);
+   asks about the catalogue itself. `manual` asks about the catalogue too: a wine added
+   by hand often has no test photo yet. Any other value of an axis hides it. */
+const CATALOG_SCOPE_FILTERS = new Set(["all", "nophotos", "manual"]);
+
+/* The slug of a wine added by hand starts with `__` (`pipeline/manual_wines.py`). The
+   rows `No Match` and the Drawer use the same prefix, but they are not wines. */
+const MANUAL_PREFIX = "__";
 
 function matchFilter(row, modes) {
   if (row.catalog_only && !modes.every(m => CATALOG_SCOPE_FILTERS.has(m))) return false;
@@ -938,6 +949,7 @@ function matchAxis(row, t, mode) {
     case "deleted": return t.del > 0;
     case "boxed": return t.box > 0;
     case "tagged": return t.tagged > 0;
+    case "manual": return !isSpecialRow(row) && row.slug.startsWith(MANUAL_PREFIX);
     default: return true;
   }
 }
@@ -1257,7 +1269,7 @@ function render() {
   for (const r of rows) {
     if (r.group && !gclass.has(r.group)) gclass.set(r.group, (gi++ % 2) ? "grp-b" : "grp-a");
   }
-  const more = ["#marks", "#cluster"].filter(id => $(id).value !== "all").length
+  const more = ["#marks", "#origin", "#cluster"].filter(id => $(id).value !== "all").length
     + ($("#tag").value ? 1 : 0);
   $("#more-n").textContent = more ? "· " + more : "";
   $("#rows").innerHTML = rows.map(r => (heads && heads.has(r)
@@ -1665,10 +1677,44 @@ function ctxDone(btn, text) {
   setTimeout(() => { btn.textContent = old; btn.classList.remove("done"); hideCtxMenu(); }, 700);
 }
 
+/* Read one photo and answer it as PNG. Every browser accepts `image/png` on the
+   clipboard. A JPEG and a WEBP go through a canvas first. */
+async function photoAsPng(src) {
+  const res = await fetch(src);
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const blob = await res.blob();
+  if (blob.type === "image/png") return blob;
+  const bmp = await createImageBitmap(blob);
+  const cv = document.createElement("canvas");
+  cv.width = bmp.width; cv.height = bmp.height;
+  cv.getContext("2d").drawImage(bmp, 0, 0);
+  bmp.close();
+  return await new Promise((ok, bad) =>
+    cv.toBlob(b => b ? ok(b) : bad(new Error("the canvas is empty")), "image/png"));
+}
+
+/* Copy the picture itself. `ClipboardItem` receives the promise, not the blob.
+   Safari drops the permission of the click while the fetch runs, and the promise
+   form keeps it. */
+async function copyImage(slug, file, btn) {
+  if (!navigator.clipboard || !window.ClipboardItem) {
+    ctxDone(btn, "no clipboard"); return;
+  }
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({ "image/png": photoAsPng(photoUrl(slug, file)) }),
+    ]);
+    ctxDone(btn, "copied");
+  } catch (e) {
+    ctxDone(btn, "failed");
+  }
+}
+
 function showCtxMenu(x, y, slug, file) {
   const m = $("#ctxmenu");
   m.innerHTML =
     `<div class="ctx-head">${esc(file)}</div>` +
+    `<button type="button" data-act="copy-image">Copy Image</button>` +
     `<button type="button" data-act="copy-url">Copy Image URL</button>` +
     `<button type="button" data-act="download">Download</button>` +
     `<div class="ctx-sep"></div>` +
@@ -1709,6 +1755,7 @@ document.addEventListener("click", async ev => {
   if (!item) { hideCtxMenu(); return; }
   const m = $("#ctxmenu"), slug = m.dataset.slug, file = m.dataset.file;
   const act = item.dataset.act;
+  if (act === "copy-image") { copyImage(slug, file, item); return; }
   if (act === "copy-url") {
     ctxDone(item, (await copyText(new URL(photoUrl(slug, file), location.href).href))
       ? "copied" : "failed");
@@ -2367,6 +2414,7 @@ const VIEW_PARAMS = [
   ["filter", "#filter", "all"],
   ["verdict", "#verdict", "all"],
   ["marks", "#marks", "all"],
+  ["origin", "#origin", "all"],
   ["cluster", "#cluster", "all"],
   ["tag", "#tag", ""],
   ["sort", "#sort", "slug"],

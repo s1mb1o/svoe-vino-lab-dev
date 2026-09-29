@@ -20,8 +20,16 @@ The option `--include-images` also copies the prepared images. The option adds
 
 ## Format versions
 
-The builder writes format version 2. The validator accepts version 1 and version 2.
-The two versions differ only in `wines.jsonl`.
+The builder writes format version 2. The validator accepts versions 1, 2, and 3.
+Versions 1 and 2 differ only in `wines.jsonl`.
+
+The builder writes format version 3 for an entry with `rotation_step` (plan 82).
+`items.jsonl` then holds one record for each vector row, and each record holds the key
+`angle` (an integer from 0 to 359; 0 for a row with no rotation). The rows of one image
+repeat its `source_sha256`, `view`, and `image`. The unique key of an item record is
+(source, view, angle). `counts.items` counts the records, and `counts.planned_items` counts
+the distinct (source, view) pairs plus the omissions. `images.jsonl` lists each image one
+time. The matcher reads the angle of each row into `Bundle.angles`.
 
 A version 1 wine record has `wine_slug`, `name`, `producer`, `category`, and `region`.
 

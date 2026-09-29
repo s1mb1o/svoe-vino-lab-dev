@@ -805,6 +805,22 @@ Read step 5 of `docs/plans/07_sqlite-lab-database.md`. Use a copy of the lab dat
 | P7 | `python3 -m unittest discover -s tests -p 'test_seed_patched.py'` | 14 tests, `OK`. |
 | P8 | Repeat case P1 on a database that holds `main_patched` rows, with no `--force` | `error: wine_image already holds N rows of the type main_patched; a second run adds back the patches that a person removed on the page; give --force to add the missing rows anyway`. Exit 1. Nothing changes. With `--force` the run is case P2. |
 
+## The lab-server OpenAPI document — `docs/lab-openapi.yaml`
+
+Start the lab server. Use `H=http://127.0.0.1:8168`.
+
+| # | Case | Expected result |
+|---|---|---|
+| LO1 | `python3 tests/test_lab_openapi.py` | 11 tests pass. The tests reject duplicate YAML keys, a missing route, a duplicate operation ID, or a broken local `$ref`. |
+| LO2 | `curl -sS -D - -o /tmp/lab-openapi.yaml $H/openapi.yaml` | HTTP 200, media type `application/yaml`, and `Cache-Control: no-store`. The body equals `docs/lab-openapi.yaml`. |
+| LO3 | `curl -sS $H/openapi.json > /tmp/lab-openapi.json`, then parse both files | Both files describe the same complete document. The JSON title is `Svoe Vino lab API`. |
+| LO4 | Open `$H/docs` | Swagger UI 5.33.0 lists all 98 operations in 85 paths. The page links to each lab page and both specification formats. |
+| LO5 | Change the operating-system theme and reload `$H/docs` | The page follows the light or dark theme. The text stays readable. |
+| LO6 | Use `Try it out` on `GET /api/health` | The request returns HTTP 200 and the lab health object. |
+| LO7 | Send `POST /docs` | HTTP 405 and a JSON error that states that the route answers GET alone. |
+| LO8 | Run the failure tests in `tests/test_lab_openapi.py` | A missing document returns HTTP 404 from both specification routes. Invalid YAML returns HTTP 500 from the JSON route. The YAML route still sends the raw file. |
+| LO9 | Change a route of `pipeline/lab_server.py` or one of its route modules | Update `docs/lab-openapi.yaml` and the exact route inventory in `tests/test_lab_openapi.py` in the same change. |
+
 ## The lab server — `pipeline/lab_server.py`
 
 Start the server with `python3 pipeline/lab_server.py --no-browser`.
@@ -1174,16 +1190,17 @@ Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 
 ## The manual wines — the Dataset button `Add wine`
 
-Read [plan 20](docs/plans/20_add-wine.md). Use `H=http://127.0.0.1:8168`. A wine that
-AW3 adds stays in the database: use a scratch database, or remove the wine with
-`Remove` after the check.
+Read [plan 20](docs/plans/20_add-wine.md) and
+[plan 78](docs/plans/78_incremental-new-wine-index.md). Use
+`H=http://127.0.0.1:8168`. A wine that AW3 adds stays in the database. Use a scratch
+database, or set the wine to `Disabled` and rebuild the selected index after the check.
 
 | # | Case | Expected result |
 |---|---|---|
-| AW1 | `python3 -m unittest discover -s tests -p 'test_manual_wines.py'`, then the same with `test_import_catalog.py` | 12 tests `OK`, then 22 tests `OK`. No test calls the real SAM3 service. |
-| AW2 | Open `$H/dataset` and press `Add wine` | The dialog `Add wine` opens. The image zone is a tall column at the left of the fields. The slug field starts with a fixed `__`. `Category` lists the categories of the records. `Save` is off. |
-| AW3 | Fill each required field, type `Test Wine` as the slug, then `test-wine` | `Test Wine` gets a red border. `Save` stays off until the slug is `test-wine` and an image is dropped or chosen; the image shows as a thumbnail. |
-| AW4 | Press `Save` after AW3 | The dialog closes. The list ends with the card `__test-wine`: the slug is plain text with no link, the image caption reads `main · manual`, and the image has the badge `crop` or `seg`. The header count grows by 1. |
+| AW1 | `python3 -m unittest discover -s tests -p 'test_manual_wines.py'`, then the same with `test_new_wine_workflow.py` and `test_import_catalog.py` | 17 tests `OK`, then 7 tests `OK`, then 22 tests `OK`. No test calls the real SAM3 or embedding service. |
+| AW2 | Open `$H/dataset` and press `Add wine` | The dialog `Add wine` opens. The image zone is a tall column at the left of the fields. The slug field starts with a fixed `__`. `Category` lists `Wine` and `Sparkling wine`. `Color` lists `Белое`, `Красное`, `Оранжевое`, and `Розовое`, but not the `Вино` value of a disabled manual smoke record. `Shade` is optional. `Save` is off. The line beside it names `Slug`, `Name`, `Producer`, `Category`, `Color`, `Region`, and `Main image` as missing. |
+| AW3 | Fill each required field, leave Shade empty, type `Test Wine` as the slug, then `test-wine` | `Test Wine` gets a red border and the missing line asks for a valid slug. The missing line shrinks after each field is filled. `Save` stays off and the line reads `Missing: Main image.` until the slug is `test-wine` and an image is dropped or chosen; the image shows as a thumbnail. The line then disappears and `Save` becomes active. |
+| AW4 | Select Category `Wine` and Color `Красное`, then press `Save` after AW3 | The dialog closes. The list ends with the card `__test-wine`: the slug is plain text with no link, Type reads `Wine`, the category line reads `Красное`, the image caption reads `main · manual`, and the image has the badge `crop` or `seg`. The header count grows by 1. In the database, `wine_beverage_type` holds code `4`; `wine_catalog.category` and the empty-Shade fallback `wine_catalog.color` both hold `Красное`. |
 | AW5 | Press `Add wine`, fill the form again with the slug `test-wine`, and press `Save` | The dialog stays open with `Cannot add the wine: the database holds a wine with the slug __test-wine already`. |
 | AW6 | Press Esc, then open the dialog again | The dialog closes, and it opens again with the values of AW5. |
 | AW7 | Drop a GIF file on the image zone | `Choose a JPEG, PNG, or WebP image up to 20 MB.` The image stays as it was. |
@@ -1197,6 +1214,18 @@ AW3 adds stays in the database: use a scratch database, or remove the wine with
 | AW14 | Save a wine with an empty `Description` | HTTP 200. `sqlite3 data/catalog/catalog.sqlite3 "SELECT description FROM wine_catalog WHERE wine_slug = '__<slug>'"` prints an empty line (NULL). |
 | AW15 | `python3 pipeline/labdb.py data/catalog/catalog.sqlite3` on a database at version 13 | `schema version: 14`. The row counts of `wine_catalog`, `wine_image`, `wine_code`, `wine_atlas_binding`, `wine_comment`, and `wine_favorite` do not change. `PRAGMA foreign_key_check` prints nothing. |
 | AW16 | `curl -s -X POST $H/api/wine -H 'Content-Type: application/json' -d '{"slug":"__null__"}'`, then a valid body with `"image_name":5` | HTTP 400 `the slug __null__ is reserved`, then HTTP 400 that names the field `image_name`. |
+| AW17 | Open the Add wine dialog on the configured lab server | The introduction names `gx10-siglip2-so400m-patch16-512`. After `Save`, the button reads `Creating…` until the wine is in the catalogue (about 1 to 2 s). The dialog does not wait for the index (plan 84). |
+| AW18 | Run `python3 scripts/add_wine.py` with every required option and one valid image | The command prints a result with the prefixed slug and `index.state` = `active`. `index.items` is at least 1. The active index contains each applicable item of the new main image. |
+| AW19 | Save a different wine through the Add wine dialog | The dialog closes when the wine is in the catalogue. The card shows `indexing…`, then `indexed` after the incremental build and verification. Search for the slug. One card shows the wine and its main image. The active index contains each applicable item of that image. |
+| AW20 | Compare the old active vectors before and after AW18 or AW19 | Every current old item has the same vector values. The new generation adds only the missing items and removes only inapplicable items. |
+| AW21 | Use an unknown `--embedding`, or select an embedding with no active index | Exit 2. The message names the bad embedding or the missing index. The database has no new wine. |
+| AW22 | Make the build fail after the catalogue transaction in a scratch environment | The wine stays in the database. The result has `index.state` = `failed`, exit status 1, and a warning that directs the operator to `/embedding`. |
+| AW23 | `python3 -m unittest discover -s tests -p 'test_new_wine_jobs.py'`, then the same with `test_new_wine_workflow.py` | 10 tests `OK`, then 8 tests `OK` (plan 84 adds one workflow test to the 7 of AW1). No test calls the real SAM3 or embedding service. |
+| AW24 | Reload `$H/dataset` while the card of AW19 shows `indexing…` | The card still shows `indexing…`, and then `indexed`. `curl -s "$H/api/wine-index?slug=__<slug>"` sends the job with `state`, `started_at`, and `finished_at`. |
+| AW25 | Make the index update fail in a scratch environment, then save a wine | The card shows `not indexed`. Its tooltip holds the error. A `Retry` button stands next to the tag. Repair the cause and press `Retry`: the tag reads `indexing…`, then `indexed`. The page opens no `alert` for the index failure. |
+| AW26 | `curl -s "$H/api/wine-index?slug=__nothing"`, then `curl -s -X POST $H/api/wine-index -H 'Content-Type: application/json' -d '{"slug":"__nothing"}'` | HTTP 404, then HTTP 404 `no Active wine with the slug __nothing`. |
+| AW27 | Restart 8168 while a card shows `indexing…`, then reload the page | The tag is gone, and `/api/wine-index` answers 404 for the slug. The next `Build` on `/embedding`, or `Run>` of a pipeline of the embedding, adds the missing items. |
+| AW28 | Switch the system to dark mode during AW19 and AW25 | `indexing…` (amber), `indexed` (green), `not indexed` (red), and `Retry` are readable. |
 
 ## The test sets — `pipeline/import_testsets.py`
 
@@ -1247,7 +1276,7 @@ write cases on a copy: start `python3 pipeline/lab_server.py --port 8174 --no-br
 | TP21 | Open a photo of a wine in the large view | The position reads `wine <i> of <n>`; `<n>` is the count of the wine rows of the table, without `No Match` and the Drawer. |
 | TP22 | Press `0` in the large view of a wine photo | The photo moves to the Drawer; the large view shows the next photo. |
 | TP23 | Add a comment to a photo; then add a wine comment | After the photo comment, the stats line shows the new `last edit` time. The wine comment does not change it: a wine comment belongs to no set (plan 51). |
-| TP24 | Look at the filter row of `/testset` | Three selects `Progress`, `Verdict`, and the button `Additional settings`; `Marks`, `Tag`, and `Clusters` stand in the row of the button (TP36). There is no `Show`, no `Slugs`, and no `Wine`. `Progress` holds `all`, `not fully labelled`, `no label yet`, `partly labelled`, `fully labelled`, `no candidate photos`. `Verdict` holds `any`, `positive`, `no positive`, `negative`, `unusable`, `different design`. `Marks` holds `any`, `a comment`, `an agent proposal`, `a deletion mark`, `a box`, `a tag`. `Tag` holds `All`, `No tag`, and the tags in the selected set. `Clusters` holds `No` and each embedding with a `clusters.json`: on 2026-09-26 `gx10-siglip2-so400m-patch16-naflex-p256 (168 clusters)`. |
+| TP24 | Look at the filter row of `/testset` | Three selects `Progress`, `Verdict`, and the button `Additional settings`; `Marks`, `Tag`, `Origin`, and `Clusters` stand in the row of the button (TP36). There is no `Show`, no `Slugs`, and no `Wine`. `Progress` holds `all`, `not fully labelled`, `no label yet`, `partly labelled`, `fully labelled`, `no candidate photos`. `Verdict` holds `any`, `positive`, `no positive`, `negative`, `unusable`, `different design`. `Marks` holds `any`, `a comment`, `an agent proposal`, `a deletion mark`, `a box`, `a tag`. `Tag` holds `All`, `No tag`, and the tags in the selected set. `Origin` holds `any` and `added by hand`. `Clusters` holds `No` and each embedding with a `clusters.json`: on 2026-09-26 `gx10-siglip2-so400m-patch16-naflex-p256 (168 clusters)`. |
 | TP25 | Set `Progress` to `partly labelled` and `Verdict` to `negative` | The table holds the wines that pass both axes. On 2026-09-26 in `my`: 62 of 2105 (184 for `partly labelled` alone, 357 for `negative` alone). The address holds `filter=partial&verdict=has_neg`. |
 | TP26 | Set `Progress` to `no candidate photos`, then `Verdict` to `no positive` | First 412 rows (2026-09-26, `my`), then 0. A wine with no photo in the set shows only when `Verdict`, `Marks`, and `Wine` stand on `any`. |
 | TP27 | Open an address of the old single select: `/testset?filter=has_pos`, `?filter=noted` | The value goes to its axis: `Verdict` `positive`, `Marks` `a comment`. The address changes to `verdict=has_pos`, `marks=noted`. The count equals the count of the old option. |
@@ -1259,12 +1288,14 @@ write cases on a copy: start `python3 pipeline/lab_server.py --port 8174 --no-br
 | TP33 | Click `open on /clusters` of a header | A new tab opens `/clusters` with the view `combined`. The same cluster (same id) is marked and scrolled into view. |
 | TP34 | Reload `/testset` with no query after TP30 | `Clusters` comes back on the embedding of TP30, and the table is grouped again. `?cluster=<embedding>` opens the same view; `?filter=grouped` and `?filter=removed` open with `Clusters` on `No`. |
 | TP35 | Width 390 px and the dark theme with a cluster chosen | The header rows are readable in both themes. No horizontal scroll. |
-| TP36 | Open `/testset` with an empty localStorage | The second row is hidden. The button reads `Additional settings`. A click shows the row with `Marks`, `Tag`, and `Clusters` and marks the button; a second click hides it. A reload keeps the open state. |
+| TP36 | Open `/testset` with an empty localStorage | The second row is hidden. The button reads `Additional settings`. A click shows the row with `Marks`, `Tag`, `Origin`, and `Clusters` and marks the button; a second click hides it. A reload keeps the open state. |
 | TP37 | Choose an embedding in `Clusters`, then `a comment` in `Marks`, then hide the row | The button reads `Additional settings · 1`, then `· 2`. With the row hidden, the count stays. |
 | TP38 | With `Clusters` on `No`, open `Sort` | `cluster size, largest first` is disabled. `?sort=cluster_size` alone opens with `slug A-Z`. |
 | TP39 | Choose an embedding in `Clusters` and `cluster size, largest first` in `Sort` | The first headers read `c001 · 8 of 8`, then the clusters of 6 (`c002`, `c003`, `c004` on 2026-09-26). Each size stands before a smaller size; a tie goes by the id. Inside a cluster the rows go by slug. The address holds `sort=cluster_size`. |
 | TP40 | Set `Clusters` back to `No` after TP39 | `Sort` goes to `slug A-Z`, and `cluster size, largest first` is disabled again. |
 | TP41 | Open the reported Yandex Images viewer, then drag its selected image onto the Drawer and onto a wine row | Each target gets its dashed frame. The page reads the image URL from the browser drag, `POST /api/testset-fetch` answers 200, and the 1000 × 1500 WebP appears as an unlabelled card. A reload keeps it. Dropping the same bytes in the same place reports the existing-photo error. |
+| TP42 | Open `/testset?set=abobamakers`, open `Additional settings`, and choose `added by hand` in `Origin` | The table holds the row `No Match` and the wines added with `Add wine` on `/dataset`: each slug starts with `__`. The Drawer is not a table row. A wine with no photo is listed. The button reads `Additional settings · 1`. The address holds `origin=manual`. On 2026-09-29: `__cli-index-smoke-20260929`, `__vino-shardone-sovinon-blan-kyuve`, `__web-index-smoke-20260929`. A Removed wine (`__aaaaa`) is not listed, as on the plain page. |
+| TP43 | Keep `added by hand`, then choose `fully labelled` in `Progress` | Only the wines added by hand that have photos and are fully labelled stay. On 2026-09-29 no such wine exists: only `No Match` stays. Choose `any` in `Origin`: the full table returns, and the address has no `origin`. |
 
 ### The row "No Match" and the Drawer
 
@@ -1281,6 +1312,8 @@ above.
 | NM6 | `curl -s -X POST http://127.0.0.1:8174/api/testset-label -d '{"set":"official-real-photos","place":"__drawer__","file":"<file>","label":"positive"}'` on a Drawer photo | HTTP 400: `a photo of the Drawer takes no label`. |
 | NM7 | Put one photo in `No Match` with no label and one in the Drawer, then run `python3 -c "import sys; sys.path.insert(0,'pipeline'); import benchmark as b; c=b.open_database('<copy>'); r,s=b.build_queries(c,'<copy>','official-real-photos'); print([x['image_path'] for x in r if x['slug']=='__null__'], dict(s))"` | The `No Match` photo is a row with the label `no_match`. The counts hold `drawer: 1`. Checked on 2026-09-26 on a copy. |
 | NM8 | Open the page in the dark theme and at a width of 390 px | The row `No Match` and the Drawer follow the theme. The Drawer stands above the table as a strip. No horizontal scroll. |
+| NM9 | Right-click any card, then click `Copy Image`. Paste into an image editor | The first menu entry is `Copy Image`. The entry reads `copied`, then the menu closes. The clipboard holds `image/png` with the width and height of the photo. The editor shows the photo. Checked on 2026-09-29 in headless Chromium on 8168: 721 × 1280. |
+| NM10 | Open the large view, right-click the photo, then click `Copy Image` | The same result as NM9. |
 
 ### The comments of a photo and of a wine (plan 51)
 
@@ -2266,3 +2299,41 @@ Run the commands in `workbench/`.
 | AE5 | Read both vector files | Each matrix has 768 columns. Each value is finite. Each row has L2 norm 1 within float32 tolerance. |
 | AE6 | Open `$H/testset?set=my`, click `Run>`, and select each pipeline whose name starts with `android-siglip2-base-224-` | Both pipelines are runnable. Each pipeline has one worker. The barcode checkbox is disabled because the pipeline has no `barcode` step. |
 | AE7 | `PYTHONPATH=tests ~/.venvs/svoe-vino-lab/bin/python -m unittest test_embedding_run test_pipelines test_embeddings test_run_steps` | 110 tests are `OK`. The DIS query test uses no SAM3 call. |
+
+## No-segmentation, DIS, and SAM3 model matrix — plan 79
+
+Run the commands in `workbench/`.
+DM2 and DM3 use saved artifacts and do not call a model service.
+
+| # | Case | Expected result |
+|---|---|---|
+| DM1 | `~/.venvs/svoe-vino-lab/bin/python -m unittest tests.test_segmentation_model_matrix` | 8 tests are `OK`. The tests cover the full-image steps, comparable levels, wine-level maximum cosine, missing vectors, rank retention, error handling, and the exact two-sided McNemar calculation. |
+| DM2 | `~/.venvs/svoe-vino-lab/bin/python scripts/segmentation_model_matrix.py --phase verify` | The command prints `verification passed`. Each of the 36 arrays has the frozen row count. Each finite vector has unit L2 norm within float32 tolerance. |
+| DM3 | Run `--phase score`, then compare `metrics.json` with `docs/reports/2026-09-29_segmentation-model-matrix.md` | The 18 cells use 2,226 queries. SAM3 fixed 512 has 81.42% R@1 and 96.66% R@5. No segmentation fixed 512 has 78.69% R@1 and 95.75% R@5. DIS has five positive preparation errors in every model. The other methods have zero preparation errors. |
+| DM4 | Inspect `manifest.json`, `prepared.jsonl`, and one result file from each input method | The catalogue order and query order are common to all cells. Barcode data is absent. The no-segmentation path has no mask, crop, or object removal. Each result row identifies the source query SHA-256 and the ranked wine candidates. |
+
+## Rotated reference embeddings — plan 82
+
+Run the commands in `workbench/`. RR1 and RR2 do not call a model service.
+
+| # | Case | Expected result |
+|---|---|---|
+| RR1 | `python3 -m unittest discover -s tests -p 'test_rotated_embeddings.py'` | 24 tests are `OK`. The tests cover the key `rotation_step`, the hash, the rotated inputs, the build (rows, angles, resume, stop, stale, bad record, workers), the search (max over rows, `angle`), the bundle version 3, and the catalogue copy. |
+| RR2 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s ../matcher/tests -p 'test_rotation.py'` | 6 tests are `OK`: bundle version 3 with `Bundle.angles`, versions 1 and 2 with no angles, a catalogue index with rotated rows, bad rows and angles rejected. |
+| RR3 | Open `/embedding` after a build | `…-p512-rot5` and `…-p512-rot10` show 2,270 current items and no error. |
+| RR4 | `python3 pipeline/embedding_run.py --name siglip2-p512-rot5-as-is --set my --limit 3 --label smoke` | 3 queries; each candidate in `results.jsonl` has `angle`, and each of its items has `angle`. |
+
+## Matcher API pipelines — plan 83
+
+Run the commands in `workbench/`. MP1 and MP2 do not call a model service. MP3 to MP6 call
+the prod matcher `http://192.168.86.14:28000`; each photo lands in the prod request
+archive.
+
+| # | Case | Expected result |
+|---|---|---|
+| MP1 | `python3 -m unittest discover -s tests -p 'test_matcher_api_pipelines.py'` | 10 tests are `OK`: the group record, the fallback to `match`, the score order and the slug deduplication, the refusal of the shape `group` in `backends.yaml`, the row key `group` of a run, the group slugs of `_row_slugs`, the three entries of `config.yaml`. |
+| MP2 | `~/.venvs/svoe-vino-lab/bin/python -W error::ResourceWarning -m unittest discover -s ../matcher/tests -p 'test_group.py'` | 9 tests are `OK`, with `test_group_endpoint_returns_k_candidates_for_each_bottle`. |
+| MP3 | `python3 pipeline/remote_run.py --name matcher-eval-predict --set my --limit 3 --label smoke` | 3 queries; each row has one candidate with `score: null`. |
+| MP4 | `python3 pipeline/remote_run.py --name matcher-match-k20 --set my --limit 3 --label smoke` | 3 queries; each row has 20 candidates, the highest score first. `/runs` shows the normal candidate strip. |
+| MP5 | `python3 pipeline/remote_run.py --name matcher-group-match --set my --limit 3 --label smoke` | 3 queries; each row holds the key `group` with `bottles` (`n`, `id`, `box`, `candidates`) and no mask or preview. |
+| MP6 | Open the run of MP5 on `/runs`, in the light and the dark theme | Each row shows the photo with one numbered frame for each bottle, and to the right a grid: one line for each bottle, one column for each candidate. The frame and the card of the expected wine are green. A click on a card opens the large view. Checked on 2026-09-29 in headless Chromium on 8168: 6, 1, and 2 bottles, no page error. Before the redeploy of prod with plan 83, each bottle has one candidate. |

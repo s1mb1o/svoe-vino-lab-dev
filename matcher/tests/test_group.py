@@ -238,7 +238,7 @@ class GroupEndpointTest(unittest.TestCase):
         wait_for_server(process, port)
         return port, root
 
-    def post(self, port, token=TOKEN):
+    def post(self, port, token=TOKEN, query=""):
         photo = image_bytes(Image.new("RGB", (60, 40), (220, 30, 20)))
         payload, content_type = multipart(photo)
         headers = {"Content-Type": content_type}
@@ -246,7 +246,8 @@ class GroupEndpointTest(unittest.TestCase):
             headers["Authorization"] = "Bearer %s" % token
         connection = http.client.HTTPConnection("127.0.0.1", port, timeout=30)
         try:
-            connection.request("POST", "/v1/group/match", body=payload, headers=headers)
+            connection.request("POST", "/v1/group/match" + query, body=payload,
+                               headers=headers)
             response = connection.getresponse()
             return response.status, json.loads(response.read() or b"null")
         finally:
@@ -269,9 +270,10 @@ class GroupEndpointTest(unittest.TestCase):
         self.assertEqual([bottle["id"] for bottle in answer["bottles"]], ["b1", "b2"])
         for bottle in answer["bottles"]:
             self.assertEqual(set(bottle), {
-                "id", "segmentation_score", "box", "mask", "match"})
+                "id", "segmentation_score", "box", "mask", "match", "candidates"})
             self.assertTrue(bottle["mask"].startswith("data:image/png;base64,"))
             self.assertEqual(bottle["match"]["rank"], 1)
+            self.assertEqual(bottle["candidates"], [bottle["match"]])
             self.assertIn("name", bottle["match"]["wine"])
             self.assertIn("page_url", bottle["match"]["wine"])
         self.assertEqual(len(sam3.requests), 1)
@@ -284,6 +286,28 @@ class GroupEndpointTest(unittest.TestCase):
         self.assertEqual(len(records[0]["response"]["bottles"]), 2)
 
         self.assertEqual(self.post(port, token=None)[0], 401)
+
+    def test_group_endpoint_returns_k_candidates_for_each_bottle(self):
+        sam3 = FakeSam3()
+        self.addCleanup(sam3.close)
+        port, _root = self.start(sam3.url)
+        status, answer = self.post(port, query="?k=3")
+        self.assertEqual(status, 200, answer)
+        self.assertEqual(len(answer["bottles"]), 2)
+        for bottle in answer["bottles"]:
+            candidates = bottle["candidates"]
+            self.assertEqual([c["rank"] for c in candidates], [1, 2, 3])
+            self.assertEqual(len({c["slug"] for c in candidates}), 3)
+            scores = [c["score"] for c in candidates]
+            self.assertEqual(scores, sorted(scores, reverse=True))
+            self.assertEqual(candidates[0], bottle["match"])
+            self.assertIn("name", candidates[2]["wine"])
+        # The test bundle has 5 wines with a card, so a larger k gives 5 candidates.
+        status, answer = self.post(port, query="?k=20")
+        self.assertEqual(status, 200, answer)
+        self.assertEqual([len(b["candidates"]) for b in answer["bottles"]], [5, 5])
+        for query in ("?k=0", "?k=21", "?k=x"):
+            self.assertEqual(self.post(port, query=query)[0], 422, query)
 
     def test_group_endpoint_requires_sam3(self):
         port, root = self.start(None, token=False)

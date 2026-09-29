@@ -36,6 +36,12 @@ embedding_python: ~/.venvs/svoe-vino-lab/bin/python
 # and 08:40:26).
 rebuild_embeddings_on_run: true
 
+# The manual-wine CLI and the `Add wine` form update this embedding after they create
+# the catalogue row. The update reuses current vectors and atomically replaces the
+# active index after it writes the new vector file. Read
+# docs/plans/78_incremental-new-wine-index.md.
+new_wine_embedding: gx10-siglip2-so400m-patch16-512
+
 # The SAM3 service. `pipeline/derive.py` reads `endpoint` from this file when a module
 # imports it; each SAM3 call of `pipeline/` and the default of each option `--sam3` use
 # the value. The option `--config` of a script does not change it. Without the key, the
@@ -209,6 +215,43 @@ embeddings:
       max_num_patches: 256
     views: *views_c_f
 
+  # Plan 82 (owner messages of 2026-09-29 from about 07:18): max-over-rotation matching.
+  # `rotation_step` gives the view `full` of each full image one vector for each angle
+  # 0°, step, … below 360° (counter-clockwise, white fill, the canvas grows, the 0° scale
+  # of `resize`). The steps are the `full` steps of `*views_c_f`, so the 0° vector is the
+  # vector of `gx10-siglip2-so400m-patch16-naflex-p512`. The view `full` alone: the
+  # pipelines and the matcher rank `full`. `batch_size: 36`: owner message of about 08:19
+  # (gx10 has free capacity); build with `--workers 6`. At the end of the list, so that
+  # Build All builds them last. Read docs/plans/82_rotated-reference-embeddings.md.
+  - name: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-naflex
+    extra_body:
+      max_num_patches: 512
+    batch_size: 36
+    rotation_step: 5
+    views: &views_full_rotated
+      full:
+        steps:
+          - step: segment
+            target: package
+          - step: remove_background
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+
+  - name: gx10-siglip2-so400m-patch16-naflex-p512-rot10
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: siglip2-so400m-patch16-naflex
+    extra_body:
+      max_num_patches: 512
+    batch_size: 36
+    rotation_step: 10
+    views: *views_full_rotated
+
 # The clusters of the Clusters page (`/clusters`). The values apply to every entry of
 # `embeddings`. `pipeline/clusters.py` reads this key; a missing key takes the value that
 # is shown here. Read docs/plans/30_embedding-clusters.md, decisions D6 and D6a.
@@ -320,6 +363,46 @@ pipeline:
     workers: 8
     headers: {}             # a value "env:NAME" reads the environment variable NAME
 
+  # Plan 83 (owner message of 2026-09-29T11:57:03+0300, answers of 12:00:47): three
+  # pipelines that call the API of the prod matcher on gx10
+  # (<workspace>/deploy/gx10/matcher-prod.md). They use no local embedding: the matcher
+  # selects its own pipeline and bundle. Prod has no token on the LAN. Prod keeps each
+  # request image in its request archive. Prod also serves the Telegram bot and the
+  # portal, so the runs use few workers (prod: 8 requests in flight, 16 queued). Read
+  # docs/plans/83_matcher-api-pipelines.md.
+  # 1. The hackathon contract: `{"slug": "..."}`, the Top-1 wine alone.
+  - name: matcher-eval-predict
+    backend: svoe-vino-ru
+    url: http://192.168.86.14:28000/v1/eval/predict
+    response: slug-object
+    top_k: 1
+    timeout_s: 60
+    workers: 2
+
+  # 2. Up to 20 ranked candidates with their wine cards.
+  - name: matcher-match-k20
+    backend: svoe-vino-ru
+    url: http://192.168.86.14:28000/v1/match
+    response: candidates
+    query: { k: 20 }
+    top_k: 20
+    timeout_s: 60
+    workers: 2
+
+  # 3. SAM3 finds each bottle of the photo, and the matcher ranks each bottle. `k` is
+  # the number of candidates of each bottle; a matcher before plan 83 ignores it and
+  # gives 1. The ranked list of the row is the first candidate of each bottle, the
+  # highest score first. `/runs` shows the photo with the numbered bottles and a table
+  # of the candidates of each bottle.
+  - name: matcher-group-match
+    backend: svoe-vino-ru
+    url: http://192.168.86.14:28000/v1/group/match
+    response: group
+    query: { k: 5 }
+    top_k: 20
+    timeout_s: 120
+    workers: 1
+
   # Android parity pipelines. Both pipelines use the prepared Android SigLIP2 Base 224
   # index. They do not use the barcode step. Keep one worker because one DIS LiteRT
   # interpreter processes one photo at a time.
@@ -411,6 +494,38 @@ pipeline:
           - step: resize
             max_size: 1024
             aspect: keep
+  # Plan 82: `siglip2-p512-crop-seg` is the lab twin of the matcher `hand_selection: true`
+  # (the SAM3 main package; its mask makes the background white). The other six pipelines
+  # send the three query sides to the rotated entries. No barcode, no rerank; one `full`
+  # vector for each photo.
+  - name: siglip2-p512-crop-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    views: *crop-seg-views
+  - name: siglip2-p512-rot5-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *as-is-views
+  - name: siglip2-p512-rot5-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *crop-views
+  - name: siglip2-p512-rot5-crop-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *crop-seg-views
+  - name: siglip2-p512-rot10-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
+    views: *as-is-views
+  - name: siglip2-p512-rot10-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
+    views: *crop-views
+  - name: siglip2-p512-rot10-crop-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
+    views: *crop-seg-views
   - name: siglip2-p1024-as-is
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p1024
@@ -532,6 +647,43 @@ pipeline:
     embedding: gx10-siglip2-so400m-patch16-naflex-p512
     barcode: *barcode-options
     views: *crop-views
+  # Plan 82: the barcode twins of the seven plan 82 pipelines (the rule of
+  # `tests/test_barcode.py`: each plain embedding pipeline has a twin).
+  - name: barcode-siglip2-p512-crop-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512
+    barcode: *barcode-options
+    views: *crop-seg-views
+  - name: barcode-siglip2-p512-rot5-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-siglip2-p512-rot5-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-siglip2-p512-rot5-crop-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    barcode: *barcode-options
+    views: *crop-seg-views
+  - name: barcode-siglip2-p512-rot10-as-is
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
+    barcode: *barcode-options
+    views: *as-is-views
+  - name: barcode-siglip2-p512-rot10-crop
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
+    barcode: *barcode-options
+    views: *crop-views
+  - name: barcode-siglip2-p512-rot10-crop-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
+    barcode: *barcode-options
+    views: *crop-seg-views
   - name: barcode-siglip2-p1024-as-is
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p1024

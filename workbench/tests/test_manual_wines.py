@@ -10,6 +10,7 @@ import unittest
 import urllib.error
 import urllib.request
 from pathlib import Path
+from unittest import mock
 
 from PIL import Image, ImageDraw
 
@@ -21,6 +22,7 @@ import alternatives  # noqa: E402
 import lab_server as LAB  # noqa: E402
 import labdb  # noqa: E402
 import manual_wines  # noqa: E402
+import new_wine_workflow  # noqa: E402
 from test_patches import WINES, DownSam3, FakeSam3, NoLabelSam3  # noqa: E402
 
 
@@ -41,12 +43,37 @@ def picture(fmt="PNG", transparent=True):
 def form(data=None, **values):
     """The body of `POST /api/wine`: a valid wine unless `values` change it."""
     body = {"slug": "__my-wine", "name": "Моё вино", "producer": "Винодельня",
-            "category": "Белое", "color": "Соломенный", "region": "Крым",
+            "beverage_type_code": "4", "category": "Белое", "color": "Соломенный",
+            "region": "Крым",
             "grapes": "Алиготе", "description": "Описание",
             "image_name": "IMG_1.png",
             "image": base64.b64encode(picture() if data is None else data).decode("ascii")}
     body.update(values)
     return body
+
+
+class AddWinePageContractTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.page = (ROOT / "pipeline" / "pages" / "dataset.html").read_text(
+            encoding="utf-8")
+
+    def test_category_and_color_are_separate_controls(self):
+        self.assertIn('Category <select name="beverage_type_code">', self.page)
+        self.assertIn('<option value="4">Wine</option>', self.page)
+        self.assertIn('<option value="44">Sparkling wine</option>', self.page)
+        self.assertIn('Color <select name="category">', self.page)
+        self.assertIn('Shade (optional) <input name="color"', self.page)
+        self.assertIn("if (!values.color) values.color = values.category;", self.page)
+        self.assertIn("DATA.records.filter(r => !manualWine(r))", self.page)
+
+    def test_disabled_save_names_every_missing_requirement(self):
+        self.assertIn('id="wine-missing" role="status" aria-live="polite"', self.page)
+        self.assertIn('aria-describedby="wine-missing"', self.page)
+        for label in ("Slug", "Name", "Producer", "Category", "Color", "Region",
+                      "Main image"):
+            self.assertIn('"%s"' % label, self.page)
+        self.assertIn('`Missing: ${missing.join(", ")}.`', self.page)
 
 
 class ManualSlugTest(unittest.TestCase):
@@ -133,6 +160,8 @@ class AddWineRouteTest(unittest.TestCase):
                        "WHERE wine_slug = '__my-wine'"),
             [("__my-wine", "Моё вино", "Винодельня", "Белое", "Соломенный", "Крым",
               "Алиготе", "Описание", "IMG_1.png", "Active", None)])
+        self.assertEqual(self.query("SELECT wine_slug, beverage_type_code "
+                                    "FROM wine_beverage_type"), [("__my-wine", "4")])
         self.assertEqual(
             self.query("SELECT image_type, sha256, source_name, match_method FROM wine_image "
                        "WHERE wine_slug = '__my-wine'"),
@@ -145,8 +174,8 @@ class AddWineRouteTest(unittest.TestCase):
         record = out["record"]
         self.assertEqual((record["slug"], record["state"], record["main_image_type"],
                           record["main_image_original_url"], record["main_image_derivation"],
-                          record["main_image_match_method"]),
-                         ("__my-wine", "Active", "main", url, "crop", "manual"))
+                          record["main_image_match_method"], record["_beverage_type_code"]),
+                         ("__my-wine", "Active", "main", url, "crop", "manual", "4"))
         self.assertTrue(record["main_image_url"].startswith("/images/cropped/"))
         # The new wine is the last record of the catalogue order.
         dataset = json.loads(self.request("/api/dataset")[1])
@@ -196,6 +225,8 @@ class AddWineRouteTest(unittest.TestCase):
             "empty name": (form(name="  "), "`name` is empty"),
             "no producer": (form(producer=None), "`producer` is empty"),
             "field not text": (form(region=5), "`region` MUST be text"),
+            "bad category": (form(beverage_type_code="wine"),
+                             '`beverage_type_code` MUST be "4", "44", or null'),
             "image name not text": (form(image_name=5), "`image_name` MUST be text"),
             "image name a list": (form(image_name=["x"]), "`image_name` MUST be text"),
             # `_json_body` of the lab server refuses a lone surrogate in any JSON body.
@@ -265,6 +296,32 @@ class AddWineRouteTest(unittest.TestCase):
         self.assertEqual(status, 200, out)
         self.assertEqual(self.query("SELECT csv_photo_name FROM wine_catalog "
                                     "WHERE wine_slug = '__my-wine'"), [("upload",)])
+
+    def test_a_server_with_a_config_uses_the_index_workflow(self):
+        # Plan 84: the route creates the wine and starts the index job. It does not
+        # wait for the index.
+        self.server.config_path = "/tmp/test-config.yaml"
+        selected = ("settings", "gw", "before")
+        created = {"slug": "__my-wine", "warnings": [], "index": None}
+
+        def create_wine(db_path, body, **options):
+            self.assertEqual(db_path, self.db)
+            self.assertEqual(body["slug"], "__my-wine")
+            self.assertEqual(options["config_path"], self.server.config_path)
+            # Store with the old primitive. The route then reads its page record.
+            with LAB.closing(LAB.open_database(db_path, write=True)) as conn:
+                conn.isolation_level = None
+                manual_wines.add_wine(conn, db_path, body, options["segmenter"])
+            return dict(created), selected
+
+        with mock.patch.object(new_wine_workflow, "create_wine", side_effect=create_wine), \
+                mock.patch.object(self.server.new_wine_jobs, "start",
+                                  return_value={"slug": "__my-wine", "name": "gw",
+                                                "state": "indexing"}) as start:
+            status, out = self.add(form())
+        self.assertEqual(status, 200, out)
+        self.assertEqual(out["index"]["state"], "indexing")
+        start.assert_called_once_with("__my-wine", selected, self.server.config_path)
 
 
 if __name__ == "__main__":

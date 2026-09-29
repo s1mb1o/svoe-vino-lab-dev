@@ -474,7 +474,10 @@ the highest cosine first inside a view. An item holds `{sha256, view, type,
 embedding_hash, cosine}`. `sha256` is the `source_sha256` of the catalogue image. `type`
 is the image type of the wine column, for example `main` or `main_patched`. `cosine` is
 the cosine to the query vector of the same view, with 4 decimals, or null when the query
-has no vector of this view. `/api/run` removes `items` from its rows.
+has no vector of this view. `/api/run` removes `items` from its rows. For an entry with
+`rotation_step` (plan 82), the rows of one image give one item, and the item holds `angle`:
+the angle of the rotated row with the best cosine. The candidate holds `angle` too: the
+angle of its best `full` row.
 
 The answer holds `{run, query, slug, score, views, items, notes}`. `views` maps each view
 of the query to the best cosine of the candidate. Each item holds the keys above and
@@ -505,7 +508,9 @@ answer. A view with no input holds `skipped`, and a step that raised holds `erro
 trace ends at that step. `view.out` holds `width`, `height`, `bytes`, and `sha256` of the
 PNG that went to the model. `search.out` holds `rows`, `wines`, and `top`: the `top_k`
 wines of that view alone, each with `slug`, `cosine`, and the `sha256`, `type`, and
-`embedding_hash` of its best item. A pipeline with the key `barcode` (plan 42) adds the
+`embedding_hash` of its best item (plan 82: and the `angle` of the best row, for an entry
+with `rotation_step`; `rows` then counts the rotated rows). A pipeline with the key
+`barcode` (plan 42) adds the
 step `barcode` first; on a code hit the trace holds that step alone. `/api/run` removes
 `trace` from its rows.
 

@@ -111,3 +111,20 @@ The owner set these rules on 2026-09-28.
     `COMMANDS.md`.
 38. If `COMMANDS.md` becomes too large, keep the common commands there and move the
     detailed component instructions to `docs/testing/<component>.md`.
+
+## Known problems
+
+The owner set these rules on 2026-09-29. The owner knows the problems in these files. A
+fix of such a problem before the hackathon submission can need a refactor at the last
+moment. The owner does not want this risk.
+
+39. These files list the known problems: [FIX_LATER.md](FIX_LATER.md) and each file with
+    the name `KNOWN_ISSUES.md` in the project `svoe-vino-lab`, for example
+    [../matcher/docs/KNOWN_ISSUES.md](../matcher/docs/KNOWN_ISSUES.md).
+40. A problem that one of these files lists is a known problem. Do not report a known
+    problem as a new problem in a review, an audit, a test report, or an answer. A report
+    MAY name the entry, for example "known: `FIX_LATER.md`, item 1".
+41. Fix a known problem only when the owner asks for the fix. Do not start a refactor
+    because of a known problem.
+42. An effect that the entry does not state is not known. Report this effect as a new
+    problem.

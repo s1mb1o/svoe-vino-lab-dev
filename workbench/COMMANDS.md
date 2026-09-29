@@ -94,9 +94,64 @@ Options:
 - `--port 8170`: use another port.
 - `--config other.yaml`: use another config file.
 
+Open the lab-server API documentation, or read the same checked-in OpenAPI 3.1
+document as YAML or JSON:
+
+```bash
+open http://127.0.0.1:8168/docs
+curl -sS http://127.0.0.1:8168/openapi.yaml | head
+curl -sS http://127.0.0.1:8168/openapi.json | python3 -m json.tool | head
+python3 tests/test_lab_openapi.py
+```
+
 The start report states the schema version and the wine count of each state.
 After a change of the code in `pipeline/`, stop the server and start it again.
 After a new file in `pipeline/schema/`, run `labdb.py` first.
+
+Add one manual wine and activate it in the configured index:
+
+```bash
+python3 scripts/add_wine.py \
+    --slug my-wine \
+    --name "My Wine" \
+    --producer "My Winery" \
+    --beverage-type 4 \
+    --category "Красное" \
+    --color "Рубиновый" \
+    --region "Кубань" \
+    --grapes "Каберне Совиньон" \
+    --description "Dry red wine." \
+    --image /absolute/path/to/my-wine.webp
+```
+
+`new_wine_embedding` in `config.yaml` selects the index. The index MUST already have an
+active `index.json` and vector file. `--embedding <name>` replaces the selected name for
+one command. The command creates the wine only after the preflight succeeds. It reuses
+current vectors, builds the new items, verifies them in the active index, and prints one
+JSON result. Exit status 0 means that the index is active. Exit status 1 means that the
+wine exists but the index activation failed. Retry that index on `/embedding`. Exit
+status 2 means that the preflight or the wine input failed and no wine was created. Read
+`docs/plans/78_incremental-new-wine-index.md`.
+
+The `Add wine` dialog of the Dataset page does not wait for the index: a background job of
+the lab server updates it (plan 84). Read the job of one new wine and run the tests. These
+commands change nothing:
+
+```bash
+curl -sS "http://127.0.0.1:8168/api/wine-index?slug=__my-wine" | python3 -m json.tool
+python3 -m unittest discover -s tests -p 'test_new_wine_jobs.py'
+python3 -m unittest discover -s tests -p 'test_new_wine_workflow.py'
+```
+
+Start the index job of one Active wine again, as the button `Retry` of its card does. The
+command starts an incremental build of `new_wine_embedding`:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8168/api/wine-index \
+    -H 'Content-Type: application/json' -d '{"slug": "__my-wine"}'
+```
+
+Read `docs/plans/84_background-new-wine-index.md`.
 
 # Описания изображений (plan 26)
 
@@ -164,6 +219,19 @@ Ctrl+C stops the build after the present batch. A second run continues it.
 The files are in `data/catalog/embeddings/<name>/`. The Embeddings page of the lab server
 starts and stops a build too.
 
+Build an entry with `rotation_step` (plan 82). The option `--workers` builds 6 rotated
+items at a time. Each item sends about `batch_size` images in one request. The command
+calls the gx10 gateway:
+```bash
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name gx10-siglip2-so400m-patch16-naflex-p512-rot5 --workers 6
+```
+
+Read-only tests of the rotated embeddings, the bundle version 3, and the catalogue copy:
+```bash
+python3 -m unittest discover -s tests -p 'test_rotated_embeddings.py'
+```
+
 Build the clusters of one completed embedding entry:
 ```bash
 ~/.venvs/svoe-vino-lab/bin/python pipeline/build_clusters.py \
@@ -209,6 +277,21 @@ shows it under the filter `Pipeline` = `vino-svoe-search-by-photo`. `--workers 4
 costs no latency; the default 8 of the entry is faster and raises the median latency by
 about 35 percent (`ResearchLog.md`, 2026-09-17). Read
 `docs/plans/31_remote-configuration.md`.
+
+Make a run of the prod matcher API (plan 83). The three pipelines `matcher-eval-predict`
+(`/v1/eval/predict`, Top-1 alone), `matcher-match-k20` (`/v1/match?k=20`), and
+`matcher-group-match` (`/v1/group/match?k=5`) call `http://192.168.86.14:28000`. They use
+no local embedding. Prerequisite: the prod matcher answers `GET /healthz`. Each photo
+lands in the prod request archive. First a probe of 3 photos, then the full set:
+```bash
+curl -fsS http://192.168.86.14:28000/healthz
+python3 pipeline/remote_run.py --name matcher-match-k20 --set my --limit 3 --label smoke
+python3 pipeline/remote_run.py --name matcher-group-match --set my --limit 3 --label smoke
+python3 pipeline/remote_run.py --name matcher-eval-predict --set my
+```
+A row of `matcher-group-match` holds the key `group`. The Runs page shows the photo with
+the numbered bottles and the candidates of each bottle. Read
+`docs/plans/83_matcher-api-pipelines.md`.
 
 Make a run of a pipeline of the backend `embedding` on a test set. Its key `embedding`
 names an entry of `embeddings:`, and that entry needs its index. Each photo gets the steps
@@ -399,4 +482,36 @@ Build the two entries in this order. The endpoint in `config.yaml` MUST serve
     --name android-siglip2-base-224-sam3-white
 ~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
     --name android-siglip2-base-224-dis-white
+```
+
+# No-segmentation, DIS, and SAM3 model matrix
+
+The complete command prepares the full-image path and calls the existing SAM3 cache and
+the GX10 embedding gateway.
+It does not change a catalogue index or the database.
+It writes resumable artifacts under
+`runs/segmentation-model-matrix-2026-09-29/`.
+Check `/Users/ashmelev/Admin/GPU_TASKS.md` and the GX10 memory before a real run.
+
+`SAM3_ENDPOINT` MUST use the canonical shared endpoint.
+The six SigLIP2 entries of plan 79 MUST be present in `config.yaml`.
+
+```bash
+SAM3_ENDPOINT=http://192.168.86.14:18081/upstream/sam3 \
+~/.venvs/svoe-vino-lab/bin/python scripts/segmentation_model_matrix.py \
+    --phase all --batch-size 8
+```
+
+Run the offline scoring and verification again without a model call:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python scripts/segmentation_model_matrix.py --phase score
+~/.venvs/svoe-vino-lab/bin/python scripts/segmentation_model_matrix.py --phase verify
+```
+
+Run the local unit tests.
+They do not call a model service:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python -m unittest tests.test_segmentation_model_matrix
 ```

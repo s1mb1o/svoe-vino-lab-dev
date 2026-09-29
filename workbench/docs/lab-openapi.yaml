@@ -1,0 +1,1625 @@
+openapi: 3.1.0
+
+info:
+  title: Svoe Vino lab API
+  version: "1.0.0"
+  summary: The HTTP contract of pipeline/lab_server.py.
+  description: |
+    This document describes the local Svoe Vino laboratory on port 8168.
+    The server reads and writes the laboratory catalogue, embedding artifacts, test
+    sets, and run artifacts. It has no authentication. Keep it on a trusted local host.
+
+    JSON write operations use UTF-8. Image upload operations send raw image bytes.
+    `HEAD` has the same status and headers as `GET` for every documented GET route.
+  license:
+    name: Not stated
+    identifier: LicenseRef-not-stated
+
+servers:
+  - url: http://127.0.0.1:8168
+    description: Local lab server. The port comes from `--port`; the default is 8168.
+
+tags:
+  - name: documentation
+    description: OpenAPI files and Swagger UI.
+  - name: pages
+    description: Browser pages of the lab.
+  - name: dataset
+    description: Catalogue records and manual wine edits.
+  - name: descriptions
+    description: Image and label descriptions.
+  - name: embeddings
+    description: Embedding indexes and build jobs.
+  - name: clusters
+    description: Embedding clusters and cluster notes.
+  - name: testsets
+    description: Test sets, photos, labels, comments, tags, boxes, and moves.
+  - name: runs
+    description: Saved run artifacts and run jobs.
+  - name: website-import
+    description: Catalogue comparison with vino-svoe.ru.
+  - name: recognize
+    description: Interactive recognition with an embedding pipeline.
+  - name: health
+    description: Lab status and endpoint checks.
+  - name: images
+    description: Stored and prepared image files.
+
+paths:
+  /:
+    get:
+      tags: [pages]
+      operationId: redirectToDataset
+      summary: Redirect to the Dataset page.
+      responses:
+        "302": { $ref: "#/components/responses/Redirect" }
+
+  /docs:
+    get:
+      tags: [documentation]
+      operationId: showSwaggerUi
+      summary: Show this document with Swagger UI.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /openapi.yaml:
+    get:
+      tags: [documentation]
+      operationId: getOpenApiYaml
+      summary: Read the checked-in OpenAPI document as YAML.
+      responses:
+        "200": { $ref: "#/components/responses/Yaml" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /openapi.json:
+    get:
+      tags: [documentation]
+      operationId: getOpenApiJson
+      summary: Read the checked-in OpenAPI document as JSON.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /dataset:
+    get:
+      tags: [pages]
+      operationId: showDatasetPage
+      summary: Show the Dataset page.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
+  /dataset/{slug}:
+    get:
+      tags: [pages]
+      operationId: showDatasetWinePreview
+      summary: Show the Dataset page with one wine selected.
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /dataset/{slug}/patch:
+    get:
+      tags: [pages]
+      operationId: showDatasetPatchPreview
+      summary: Show the Dataset page with one patch selected.
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /dataset/{slug}/{preview}/{sha256}:
+    get:
+      tags: [pages]
+      operationId: showDatasetImagePreview
+      summary: Show an alternative-photo or description preview.
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+        - name: preview
+          in: path
+          required: true
+          schema: { type: string, enum: [alternative, describe] }
+        - $ref: "#/components/parameters/Sha256"
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /embedding:
+    get:
+      tags: [pages]
+      operationId: showEmbeddingsPage
+      summary: Show embedding configurations and build state.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
+  /clusters:
+    get:
+      tags: [pages]
+      operationId: showClustersPage
+      summary: Show embedding clusters.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
+  /testset:
+    get:
+      tags: [pages]
+      operationId: showTestsetPage
+      summary: Show test sets and their photos.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
+  /runs:
+    get:
+      tags: [pages]
+      operationId: showRunsPage
+      summary: Show saved recognition runs.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
+  /recognize:
+    get:
+      tags: [pages]
+      operationId: showRecognizePage
+      summary: Show interactive recognition.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
+  /health:
+    get:
+      tags: [pages]
+      operationId: showHealthPage
+      summary: Show lab and dependency status.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
+  /website-import.js:
+    get:
+      tags: [pages, website-import]
+      operationId: getWebsiteImportScript
+      summary: Read the browser script of the website-import dialog.
+      responses:
+        "200":
+          description: JavaScript source.
+          content:
+            text/javascript:
+              schema: { type: string }
+        default: { $ref: "#/components/responses/Error" }
+
+  /images/{folder}/{sha256}.{extension}:
+    get:
+      tags: [images]
+      operationId: getStoredImage
+      summary: Read one image from the lab image store.
+      parameters:
+        - name: folder
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: "#/components/parameters/Sha256"
+        - $ref: "#/components/parameters/Extension"
+      responses:
+        "200": { $ref: "#/components/responses/Image" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /embeddings/{name}/images/{sha256}_{view}.png:
+    get:
+      tags: [images, embeddings]
+      operationId: getPreparedEmbeddingImage
+      summary: Read one prepared input of an embedding item.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+        - $ref: "#/components/parameters/Sha256"
+        - name: view
+          in: path
+          required: true
+          schema: { type: string, enum: [full, label] }
+      responses:
+        "200": { $ref: "#/components/responses/Image" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /website-import/{run}/images/{sha256}.{extension}:
+    get:
+      tags: [images, website-import]
+      operationId: getWebsiteImportImage
+      summary: Read one immutable website image of an import run.
+      parameters:
+        - $ref: "#/components/parameters/WebsiteRun"
+        - $ref: "#/components/parameters/Sha256"
+        - $ref: "#/components/parameters/Extension"
+      responses:
+        "200": { $ref: "#/components/responses/Image" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /recognize/photo/{sha256}.{extension}:
+    get:
+      tags: [images, recognize]
+      operationId: getRecognitionPhoto
+      summary: Read one image uploaded for interactive recognition.
+      parameters:
+        - $ref: "#/components/parameters/Sha256"
+        - $ref: "#/components/parameters/Extension"
+      responses:
+        "200": { $ref: "#/components/responses/Image" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset:
+    get:
+      tags: [dataset]
+      operationId: getDataset
+      summary: Read all catalogue records and Dataset-page metadata.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/wine:
+    post:
+      tags: [dataset]
+      operationId: createWine
+      summary: Create a manual wine and start the background update of its configured embedding index.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineCreate" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        "400": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
+        "413": { $ref: "#/components/responses/Error" }
+        "503": { $ref: "#/components/responses/Error" }
+
+  /api/wine-index:
+    get:
+      tags: [dataset]
+      operationId: getWineIndexJob
+      summary: Read the background index job of one new wine.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        "404": { $ref: "#/components/responses/Error" }
+    post:
+      tags: [dataset]
+      operationId: retryWineIndexJob
+      summary: Start the background index job of one Active wine again.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineIndexRetry" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/wine-state:
+    post:
+      tags: [dataset]
+      operationId: changeWineState
+      summary: Disable, enable, remove, or restore one wine.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineStateChange" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-gtin:
+    post:
+      tags: [dataset]
+      operationId: addWineGtin
+      summary: Add one normalized GTIN to a wine.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GtinWrite" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeWineGtin
+      summary: Remove one stored GTIN from a wine.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: gtin
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-qr-url:
+    post:
+      tags: [dataset]
+      operationId: addWineQrUrl
+      summary: Add one normalized HTTP or HTTPS QR URL to a wine.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/QrUrlWrite" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeWineQrUrl
+      summary: Remove one stored QR URL from a wine.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: url
+          in: query
+          required: true
+          schema: { type: string, format: uri }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-patch:
+    post:
+      tags: [dataset]
+      operationId: storeWinePatch
+      summary: Store and process one patch image.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - $ref: "#/components/parameters/FileName"
+      requestBody:
+        $ref: "#/components/requestBodies/Image"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        "413": { $ref: "#/components/responses/Error" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeWinePatch
+      summary: Remove the patch image of one wine.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-alternative:
+    post:
+      tags: [dataset]
+      operationId: storeAlternativePhoto
+      summary: Store and process one alternative wine photo.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - $ref: "#/components/parameters/FileName"
+      requestBody:
+        $ref: "#/components/requestBodies/Image"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        "413": { $ref: "#/components/responses/Error" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeAlternativePhoto
+      summary: Remove one alternative photo.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - $ref: "#/components/parameters/Sha256Query"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-alternative-type:
+    post:
+      tags: [dataset]
+      operationId: setAlternativePhotoType
+      summary: Set the matcher role of an alternative photo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AlternativeType" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-alternative-cut:
+    post:
+      tags: [dataset]
+      operationId: setAlternativeManualCut
+      summary: Store a manual polygon for one alternative photo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AlternativeCut" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: resetAlternativeManualCut
+      summary: Remove a manual cut and process the photo again.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - $ref: "#/components/parameters/Sha256Query"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-alternative-recut:
+    post:
+      tags: [dataset]
+      operationId: recutAlternativePhoto
+      summary: Process one alternative photo again without cached segmentation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SlugSha256" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-atlas-binding:
+    post:
+      tags: [dataset]
+      operationId: setAtlasBinding
+      summary: Add one manual Atlas Core product binding.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AtlasBinding" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeAtlasBinding
+      summary: Remove one manual Atlas Core product binding.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - $ref: "#/components/parameters/ProductUuid"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-atlas-binding-approve:
+    post:
+      tags: [dataset]
+      operationId: approveAtlasBinding
+      summary: Convert one automatic Atlas binding to a manual binding.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AtlasBinding" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-comment:
+    post:
+      tags: [dataset]
+      operationId: addWineComment
+      summary: Add one timestamped comment to a wine.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineComment" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeWineComment
+      summary: Remove one wine comment.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - $ref: "#/components/parameters/IdQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-favorite:
+    post:
+      tags: [dataset]
+      operationId: setWineFavorite
+      summary: Mark or unmark one wine as a favorite.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineFavorite" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-beverage-type:
+    post:
+      tags: [dataset]
+      operationId: setWineBeverageType
+      summary: Set or clear the Atlas beverage type of one wine.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineBeverageType" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-similar:
+    post:
+      tags: [dataset]
+      operationId: addHardCase
+      summary: Add a symmetric hard-case relation between two wines.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineRelation" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeHardCase
+      summary: Remove a symmetric hard-case relation.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: other
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-tag:
+    post:
+      tags: [dataset]
+      operationId: addWineTag
+      summary: Add a normalized tag to one wine.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineTag" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeWineTag
+      summary: Remove one wine tag.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: tag
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/image-description:
+    post:
+      tags: [descriptions]
+      operationId: setImageDescription
+      summary: Set the structured manual description of one image.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ImageDescription" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/image-description-status:
+    get:
+      tags: [descriptions]
+      operationId: getImageDescriptionStatus
+      summary: Read watcher progress and optional log lines.
+      parameters:
+        - name: log
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/image-detail-failures:
+    get:
+      tags: [descriptions]
+      operationId: getImageDetailFailures
+      summary: Read failed detail descriptions and their watcher-log lines.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/image-description-reply:
+    get:
+      tags: [descriptions]
+      operationId: getImageDescriptionReply
+      summary: Read the cached raw VLM reply of one image.
+      parameters:
+        - $ref: "#/components/parameters/Sha256Query"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/image-label-descriptions:
+    get:
+      tags: [descriptions]
+      operationId: listImageLabelDescriptions
+      summary: Read all label descriptions of one linked image.
+      parameters:
+        - $ref: "#/components/parameters/Sha256Query"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/image-label-description:
+    post:
+      tags: [descriptions]
+      operationId: addImageLabelDescription
+      summary: Add one manual label-description object.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LabelDescriptionWrite" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [descriptions]
+      operationId: removeImageLabelDescription
+      summary: Remove one label description by row id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/IdBody" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/embeddings:
+    get:
+      tags: [embeddings]
+      operationId: listEmbeddings
+      summary: Read every embedding configuration, item counts, and build state.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/embeddings/build-all:
+    post:
+      tags: [embeddings]
+      operationId: buildAllEmbeddings
+      summary: Start the serial queue that incrementally builds every embedding.
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/embeddings/{name}:
+    get:
+      tags: [embeddings]
+      operationId: getEmbedding
+      summary: Read all wines and item cells of one embedding.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/embeddings/{name}/build:
+    post:
+      tags: [embeddings]
+      operationId: startEmbeddingBuild
+      summary: Start one incremental embedding build.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/embeddings/{name}/stop:
+    post:
+      tags: [embeddings]
+      operationId: stopEmbeddingBuild
+      summary: Send SIGTERM to one running embedding build.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/embeddings/{name}/open:
+    post:
+      tags: [embeddings]
+      operationId: openEmbeddingDirectory
+      summary: Open one embedding directory in Finder on the server host.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/embeddings/{name}/log:
+    get:
+      tags: [embeddings]
+      operationId: getEmbeddingBuildLog
+      summary: Read the text of one embedding build log.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200": { $ref: "#/components/responses/Text" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/embedding-jobs:
+    get:
+      tags: [embeddings]
+      operationId: listEmbeddingJobs
+      summary: Read build jobs and the Build All queue.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/clusters:
+    get:
+      tags: [clusters]
+      operationId: listClusterArtifacts
+      summary: Read every cluster artifact and the Build All queue.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/clusters/build-all:
+    post:
+      tags: [clusters]
+      operationId: buildAllClusterArtifacts
+      summary: Start the serial cluster-build queue.
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/clusters/{name}:
+    get:
+      tags: [clusters]
+      operationId: getClusterArtifact
+      summary: Read one complete cluster artifact and its rules.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/clusters/{name}/build:
+    post:
+      tags: [clusters]
+      operationId: buildClusterArtifact
+      summary: Build one cluster artifact with configured thresholds.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: false }
+      responses:
+        "201": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/clusters/{name}/note:
+    post:
+      tags: [clusters]
+      operationId: setClusterNote
+      summary: Set a cluster note and start its label-rule rebuild.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClusterNote" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset:
+    get:
+      tags: [testsets]
+      operationId: getTestset
+      summary: Read one test set; default to the first set.
+      parameters:
+        - name: set
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-label:
+    post:
+      tags: [testsets]
+      operationId: setTestPhotoLabel
+      summary: Set or clear the label of one test photo.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-delete:
+    post:
+      tags: [testsets]
+      operationId: setTestPhotoDeleted
+      summary: Set or clear the deleted mark of one test photo.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-photo-comment:
+    post:
+      tags: [testsets]
+      operationId: addTestPhotoComment
+      summary: Add one comment to a test photo.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-photo-comment-remove:
+    post:
+      tags: [testsets]
+      operationId: removeTestPhotoComment
+      summary: Remove one comment from a test photo.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-photo-tag:
+    post:
+      tags: [testsets]
+      operationId: addTestPhotoTag
+      summary: Add a tag to every test photo with the same image bytes.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-photo-tag-remove:
+    post:
+      tags: [testsets]
+      operationId: removeTestPhotoTag
+      summary: Remove one image tag.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-box:
+    post:
+      tags: [testsets]
+      operationId: setTestPhotoBox
+      summary: Set or clear one photo bounding box.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-move:
+    post:
+      tags: [testsets]
+      operationId: moveTestPhoto
+      summary: Move a photo to a wine, No Match, or the Drawer.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-upload:
+    post:
+      tags: [testsets]
+      operationId: uploadTestPhoto
+      summary: Upload raw image bytes to one place in a test set.
+      parameters:
+        - $ref: "#/components/parameters/SetQuery"
+        - $ref: "#/components/parameters/PlaceQuery"
+        - $ref: "#/components/parameters/FileNameRequired"
+      requestBody:
+        $ref: "#/components/requestBodies/Image"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-fetch:
+    post:
+      tags: [testsets]
+      operationId: fetchTestPhoto
+      summary: Safely fetch a remote image and add it to one test-set place.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TestsetFetch" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-from-run:
+    get:
+      tags: [testsets, runs]
+      operationId: getTestsetFromRunProposal
+      summary: Read the proposed test-set name and miss counts of one run.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    post:
+      tags: [testsets, runs]
+      operationId: createTestsetFromRun
+      summary: Create a test set from the R@1 or R@5 misses of one run.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TestsetFromRun" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-new:
+    post:
+      tags: [testsets]
+      operationId: createEmptyTestset
+      summary: Create one empty test set.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NameBody" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/runs:
+    get:
+      tags: [runs]
+      operationId: listRuns
+      summary: Read the head of each run and the pipeline configurations.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run:
+    get:
+      tags: [runs]
+      operationId: getRun
+      summary: Read metrics and filtered rows of one run.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+        - name: filter
+          in: query
+          schema: { type: string }
+        - name: sort
+          in: query
+          schema: { type: string }
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: offset
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 1000 }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-clusters:
+    get:
+      tags: [runs, clusters]
+      operationId: getRunClusters
+      summary: Read the cluster frames of one embedding run.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-inputs:
+    get:
+      tags: [runs]
+      operationId: getRunInputs
+      summary: Read the model inputs of one run query.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+        - $ref: "#/components/parameters/QueryId"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-candidate:
+    get:
+      tags: [runs]
+      operationId: getRunCandidate
+      summary: Read the catalogue inputs and cosines of one candidate.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+        - $ref: "#/components/parameters/QueryId"
+        - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-steps:
+    get:
+      tags: [runs]
+      operationId: getRunSteps
+      summary: Read the recorded processing steps of one query.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+        - $ref: "#/components/parameters/QueryId"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-configurations:
+    get:
+      tags: [runs]
+      operationId: listRunConfigurations
+      summary: Read runnable pipeline configurations for one test set.
+      parameters:
+        - $ref: "#/components/parameters/SetQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-jobs:
+    get:
+      tags: [runs]
+      operationId: listRunJobs
+      summary: Read the state of each run job.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    post:
+      tags: [runs]
+      operationId: startRunJob
+      summary: Start a pipeline run or an embedding self-test.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RunJobStart" }
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-jobs/{name}/stop:
+    post:
+      tags: [runs]
+      operationId: stopRunJob
+      summary: Send SIGTERM to one running job.
+      parameters:
+        - $ref: "#/components/parameters/Name"
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/website-import:
+    get:
+      tags: [website-import]
+      operationId: getWebsiteImportState
+      summary: Read the newest website-import job and run.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/website-import/start:
+    post:
+      tags: [website-import]
+      operationId: startWebsiteImportCompare
+      summary: Start a catalogue comparison without applying changes.
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/website-import/stop:
+    post:
+      tags: [website-import]
+      operationId: stopWebsiteImport
+      summary: Send SIGTERM to the current website-import job.
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/website-import/{run}/diff:
+    get:
+      tags: [website-import]
+      operationId: getWebsiteImportDiff
+      summary: Read the prepared diff and possible renames of one run.
+      parameters:
+        - $ref: "#/components/parameters/WebsiteRun"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/website-import/{run}/apply:
+    post:
+      tags: [website-import]
+      operationId: applyWebsiteImport
+      summary: Store review choices and start the apply job.
+      parameters:
+        - $ref: "#/components/parameters/WebsiteRun"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/recognize:
+    get:
+      tags: [recognize]
+      operationId: listRecognitionPipelines
+      summary: Read the embedding pipelines available for interactive recognition.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    post:
+      tags: [recognize]
+      operationId: recognizeImage
+      summary: Run one uploaded image through one embedding pipeline.
+      parameters:
+        - name: pipeline
+          in: query
+          required: true
+          schema: { type: string }
+        - $ref: "#/components/parameters/FileName"
+      requestBody:
+        $ref: "#/components/requestBodies/Image"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/health:
+    get:
+      tags: [health]
+      operationId: getHealth
+      summary: Read lab, database, watcher, job, and dependency status.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/health/check:
+    post:
+      tags: [health]
+      operationId: checkHealthEndpoint
+      summary: Check one configured endpoint without loading an idle gateway model.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/HealthCheck" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+components:
+  parameters:
+    Slug:
+      name: slug
+      in: path
+      required: true
+      schema: { type: string }
+    SlugQuery:
+      name: slug
+      in: query
+      required: true
+      schema: { type: string }
+    Sha256:
+      name: sha256
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[0-9a-f]{64}$" }
+    Sha256Query:
+      name: sha256
+      in: query
+      required: true
+      schema: { type: string, pattern: "^[0-9a-f]{64}$" }
+    Name:
+      name: name
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[A-Za-z0-9][A-Za-z0-9._-]*$" }
+    FileName:
+      name: name
+      in: query
+      required: false
+      schema: { type: string }
+    FileNameRequired:
+      name: name
+      in: query
+      required: true
+      schema: { type: string }
+    Extension:
+      name: extension
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[0-9a-z]+$" }
+    ProductUuid:
+      name: product_uuid
+      in: query
+      required: true
+      schema: { type: string, format: uuid }
+    IdQuery:
+      name: id
+      in: query
+      required: true
+      schema: { type: integer, minimum: 1 }
+    SetQuery:
+      name: set
+      in: query
+      required: true
+      schema: { type: string }
+    PlaceQuery:
+      name: place
+      in: query
+      required: true
+      schema: { type: string }
+    RunIdQuery:
+      name: id
+      in: query
+      required: true
+      schema: { type: string }
+    QueryId:
+      name: query
+      in: query
+      required: true
+      schema: { type: string }
+    WebsiteRun:
+      name: run
+      in: path
+      required: true
+      schema: { type: string, pattern: "^[0-9]{8}T[0-9]{6}$" }
+
+  requestBodies:
+    Image:
+      required: true
+      content:
+        application/octet-stream:
+          schema: { type: string, format: binary }
+        image/jpeg:
+          schema: { type: string, format: binary }
+        image/png:
+          schema: { type: string, format: binary }
+        image/webp:
+          schema: { type: string, format: binary }
+    TestsetPhotoWrite:
+      required: true
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/TestsetPhotoWrite" }
+
+  responses:
+    Object:
+      description: JSON object.
+      content:
+        application/json:
+          schema: { type: object, additionalProperties: true }
+    Error:
+      description: Error response.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Html:
+      description: HTML page.
+      content:
+        text/html:
+          schema: { type: string }
+    Text:
+      description: Plain text.
+      content:
+        text/plain:
+          schema: { type: string }
+    Yaml:
+      description: OpenAPI YAML document.
+      content:
+        application/yaml:
+          schema: { type: string }
+    Image:
+      description: Image bytes.
+      content:
+        image/jpeg:
+          schema: { type: string, format: binary }
+        image/png:
+          schema: { type: string, format: binary }
+        image/webp:
+          schema: { type: string, format: binary }
+        application/octet-stream:
+          schema: { type: string, format: binary }
+    Redirect:
+      description: Redirect to `/dataset`.
+      headers:
+        Location:
+          schema: { type: string, const: /dataset }
+
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error: { type: string }
+
+    WineCreate:
+      type: object
+      additionalProperties: false
+      required: [slug, name, producer, category, color, region, image_name, image]
+      properties:
+        slug: { type: string, pattern: "^__[a-z0-9][a-z0-9_-]*$" }
+        name: { type: string }
+        producer: { type: string }
+        beverage_type_code:
+          type: [string, "null"]
+          enum: ["4", "44", null]
+          description: "Wine category: 4 is wine and 44 is sparkling wine."
+        category: { type: string }
+        color: { type: string }
+        region: { type: string }
+        grapes: { type: string }
+        description: { type: string }
+        image_name: { type: string }
+        image:
+          type: string
+          contentEncoding: base64
+          description: JPEG, PNG, or WebP image bytes.
+
+    WineStateChange:
+      type: object
+      additionalProperties: false
+      required: [slug, action]
+      properties:
+        slug: { type: string }
+        action: { type: string, enum: [disable, enable, remove, restore] }
+
+    WineIndexRetry:
+      type: object
+      additionalProperties: false
+      required: [slug]
+      properties:
+        slug: { type: string }
+
+    GtinWrite:
+      type: object
+      additionalProperties: false
+      required: [slug, gtin]
+      properties:
+        slug: { type: string }
+        gtin: { type: string }
+
+    QrUrlWrite:
+      type: object
+      additionalProperties: false
+      required: [slug, url]
+      properties:
+        slug: { type: string }
+        url: { type: string, format: uri }
+
+    SlugSha256:
+      type: object
+      additionalProperties: false
+      required: [slug, sha256]
+      properties:
+        slug: { type: string }
+        sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+
+    AlternativeType:
+      allOf:
+        - $ref: "#/components/schemas/SlugSha256"
+        - type: object
+          required: [type]
+          properties:
+            type:
+              type: string
+              enum: [full_front, label_front, full_back, label_back]
+
+    AlternativeCut:
+      allOf:
+        - $ref: "#/components/schemas/SlugSha256"
+        - type: object
+          required: [points]
+          properties:
+            points:
+              type: array
+              minItems: 3
+              items:
+                type: array
+                prefixItems:
+                  - { type: number }
+                  - { type: number }
+                minItems: 2
+                maxItems: 2
+
+    AtlasBinding:
+      type: object
+      additionalProperties: false
+      required: [slug, product_uuid]
+      properties:
+        slug: { type: string }
+        product_uuid: { type: string, format: uuid }
+
+    WineComment:
+      type: object
+      additionalProperties: false
+      required: [slug, text]
+      properties:
+        slug: { type: string }
+        text: { type: string, maxLength: 4000 }
+        source: { type: string, enum: [user, script], default: user }
+
+    WineFavorite:
+      type: object
+      additionalProperties: false
+      required: [slug, favorite]
+      properties:
+        slug: { type: string }
+        favorite: { type: boolean }
+
+    WineBeverageType:
+      type: object
+      additionalProperties: false
+      required: [slug, beverage_type_code]
+      properties:
+        slug: { type: string }
+        beverage_type_code:
+          type: [string, "null"]
+          enum: ["4", "44", null]
+
+    WineRelation:
+      type: object
+      additionalProperties: false
+      required: [slug, other]
+      properties:
+        slug: { type: string }
+        other: { type: string }
+
+    WineTag:
+      type: object
+      additionalProperties: false
+      required: [slug, tag]
+      properties:
+        slug: { type: string }
+        tag: { type: string, pattern: "^[^\\s]{1,64}$" }
+
+    ImageDescription:
+      type: object
+      additionalProperties: false
+      required: [sha256, values]
+      properties:
+        sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        values:
+          type: object
+          additionalProperties: true
+
+    LabelDescriptionWrite:
+      type: object
+      additionalProperties: false
+      required: [sha256, description]
+      properties:
+        sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        description: { type: object, additionalProperties: true }
+
+    IdBody:
+      type: object
+      additionalProperties: false
+      required: [id]
+      properties:
+        id: { type: integer, minimum: 1 }
+
+    ClusterNote:
+      type: object
+      additionalProperties: false
+      required: [space, key, text]
+      properties:
+        space: { type: string, enum: [full, label, combined] }
+        key: { type: string }
+        text: { type: [string, "null"] }
+
+    TestsetPhotoWrite:
+      type: object
+      additionalProperties: true
+      required: [set, place, file]
+      properties:
+        set: { type: string }
+        place: { type: string }
+        file: { type: string }
+        label: { type: [string, "null"] }
+        delete: { type: boolean }
+        text: { type: string }
+        source: { type: string, enum: [user, script] }
+        id: { type: integer, minimum: 1 }
+        tag: { type: string }
+        box:
+          type: [array, "null"]
+          prefixItems:
+            - { type: number }
+            - { type: number }
+            - { type: number }
+            - { type: number }
+          minItems: 4
+          maxItems: 4
+        to: { type: string }
+
+    TestsetFetch:
+      type: object
+      additionalProperties: false
+      required: [set, place, url]
+      properties:
+        set: { type: string }
+        place: { type: string }
+        url: { type: string, format: uri }
+
+    TestsetFromRun:
+      type: object
+      additionalProperties: false
+      required: [run, misses, name]
+      properties:
+        run: { type: string }
+        misses: { type: string, enum: [r1, r5] }
+        name: { type: string }
+
+    NameBody:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name: { type: string }
+
+    RunJobStart:
+      type: object
+      additionalProperties: false
+      properties:
+        configuration: { type: string }
+        set: { type: string }
+        selftest: { type: string }
+        limit: { type: [integer, "null"], minimum: 1 }
+        workers: { type: integer, minimum: 1, maximum: 32 }
+        use_cache: { type: boolean }
+        use_barcode: { type: boolean }
+      oneOf:
+        - required: [configuration, set]
+        - required: [selftest]
+
+    HealthCheck:
+      type: object
+      additionalProperties: false
+      required: [kind, name]
+      properties:
+        kind: { type: string, enum: [vlm, embedding, sam3, remote] }
+        name: { type: string }

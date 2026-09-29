@@ -267,6 +267,10 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .state-actions [data-state-action="enable"] { color: var(--pos); }
 .tag.state-disabled { color: var(--unu); background: var(--unu-bg); }
 .tag.state-removed { color: var(--exc); background: var(--exc-bg); }
+.tag.index-busy { color: var(--var); background: var(--var-bg); }
+.tag.index-ok { color: var(--pos); background: var(--pos-bg); }
+.tag.index-bad { color: var(--exc); background: var(--exc-bg); cursor: help; }
+.index-retry { margin-left: 4px; padding: 0 7px; font-size: 11px; }
 .info { flex: 1 1 auto; min-width: 0; padding-top: 1px; }
 .alternative-editor {
   flex: 0 0 330px; min-width: 260px; padding-left: 12px;
@@ -505,6 +509,9 @@ details.record pre {
   font-size: 13px;
 }
 .wine-form-grid input.invalid { border-color: var(--neg); }
+.wine-form-missing {
+  margin: 0 auto 0 0; color: var(--muted); font-size: 12px; line-height: 1.35;
+}
 .wine-form-slug { display: flex; }
 .wine-form-slug span {
   padding: 4px 7px; background: var(--bg); color: var(--muted);
@@ -799,7 +806,8 @@ button.preview-thumb:hover { border-color: var(--accent); }
     </div>
     <p class="validation-intro">A wine that you add by hand gets the slug prefix __.
       The imports never remove it. The slug follows the name until you type a slug.
-      Grapes and Description are optional.</p>
+      Grapes and Description are optional. Save updates the active index
+      <code id="wine-index"></code>.</p>
     <form class="wine-form-body" id="wine-form" novalidate>
       <div class="wine-form-image">Main image
         <button class="wine-form-drop" id="wine-drop" type="button"></button>
@@ -812,8 +820,12 @@ button.preview-thumb:hover { border-color: var(--accent); }
             placeholder="a-z, 0-9, - and _"></span></label>
         <label>Name <input name="name" type="text"></label>
         <label>Producer <input name="producer" type="text" list="wine-producers"></label>
-        <label>Category <select name="category"></select></label>
-        <label>Color <input name="color" type="text"></label>
+        <label>Category <select name="beverage_type_code">
+          <option value="">choose…</option><option value="4">Wine</option>
+          <option value="44">Sparkling wine</option>
+        </select></label>
+        <label>Color <select name="category"></select></label>
+        <label>Shade (optional) <input name="color" type="text"></label>
         <label>Region <input name="region" type="text" list="wine-regions"></label>
         <label class="wide">Grapes (optional) <input name="grapes" type="text"></label>
         <label class="wide">Description (optional) <textarea name="description" rows="6"></textarea></label>
@@ -823,8 +835,10 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <datalist id="wine-regions"></datalist>
     <div class="wine-form-error" id="wine-error" role="alert" hidden></div>
     <div class="validation-actions">
+      <p class="wine-form-missing" id="wine-missing" role="status" aria-live="polite"></p>
       <button id="wine-cancel" type="button">Cancel</button>
-      <button id="wine-save" class="primary" type="button" disabled>Save</button>
+      <button id="wine-save" class="primary" type="button" aria-describedby="wine-missing"
+        disabled>Save</button>
     </div>
   </section>
 </div>
@@ -1343,6 +1357,71 @@ function stateTag(r) {
     return `<span class="tag state-removed">removed${r.removed_by ? ` by ${esc(r.removed_by)}` : ""}</span>`;
   }
   return "";
+}
+// The index job of a new wine (plan 84). `POST /api/wine` answers before the index
+// update ends. The card shows `indexing…` until the job ends, then `indexed`, or
+// `not indexed` with the button `Retry`. `GET /api/dataset` sends the jobs of the server
+// process in `new_wine_index`, so a reload keeps the tag. A restart of the server
+// removes the jobs, and the tag goes away.
+let WINE_INDEX = {};
+let WINE_INDEX_TIMER = null;
+function wineIndexTag(r) {
+  if (!manualWine(r)) return "";
+  const job = WINE_INDEX[r.slug];
+  let html = "";
+  if (job && job.state === "indexing") {
+    html = '<span class="tag index-busy" title="The index update of this wine runs">indexing…</span>';
+  } else if (job && job.state === "active") {
+    html = '<span class="tag index-ok" title="The active index holds this wine">indexed</span>';
+  } else if (job) {
+    html = `<span class="tag index-bad" title="${esc(job.error || "The index update failed")}">not indexed</span>`
+      + `<button class="index-retry" type="button" data-index-retry="${esc(r.slug)}"
+        title="Start the index update of this wine again">Retry</button>`;
+  }
+  return `<span class="wine-index-state">${html}</span>`;
+}
+function updateWineIndexTag(slug) {
+  const record = DATA.records.find(item => item.slug === slug);
+  const place = document.getElementById(slug)?.querySelector(".wine-index-state");
+  if (record && place) place.outerHTML = wineIndexTag(record);
+}
+async function readWineIndex(slug) {
+  try {
+    const response = await fetch(`/api/wine-index?slug=${encodeURIComponent(slug)}`,
+                                 {cache: "no-store"});
+    if (response.status === 404) delete WINE_INDEX[slug];
+    else if (response.ok) WINE_INDEX[slug] = await response.json();
+  } catch (error) {
+    // A network error keeps the tag. The next read tries again.
+  }
+  updateWineIndexTag(slug);
+}
+function busyWineIndex() {
+  return Object.keys(WINE_INDEX).filter(slug => WINE_INDEX[slug].state === "indexing");
+}
+function pollWineIndex() {
+  if (WINE_INDEX_TIMER || !busyWineIndex().length) return;
+  WINE_INDEX_TIMER = setTimeout(async () => {
+    WINE_INDEX_TIMER = null;
+    await Promise.all(busyWineIndex().map(readWineIndex));
+    pollWineIndex();
+  }, 2000);
+}
+async function retryWineIndex(slug) {
+  WINE_INDEX[slug] = {state: "indexing", error: null};
+  updateWineIndexTag(slug);
+  try {
+    const response = await fetch("/api/wine-index", {
+      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({slug})
+    });
+    const out = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(out.error || `HTTP ${response.status}`);
+    WINE_INDEX[slug] = out;
+  } catch (error) {
+    WINE_INDEX[slug] = {state: "failed", error: `Retry failed: ${error.message}`};
+  }
+  updateWineIndexTag(slug);
+  pollWineIndex();
 }
 // The review tool turns the patch editor on with `patch_dir`, the lab server with
 // `patch_editor`.
@@ -2451,7 +2530,7 @@ function recordHtml(r) {
       ${favoritesOn() ? favoriteStar(r) : ""}
       <div class="name"><h2>${esc(r.name || "Unnamed wine")}</h2>
         <button class="copy" type="button" data-copy="${esc(r.name || "")}">copy</button>
-        ${r._patched ? '<span class="tag">patch</span>' : ""}${stateTag(r)}</div>
+        ${r._patched ? '<span class="tag">patch</span>' : ""}${stateTag(r)}${wineIndexTag(r)}</div>
       <div class="producer">${esc(r.producer || "—")}</div>
       ${where || beverageTypesOn() ? `<div class="kind">${where}${
         beverageTypesOn() ? beverageTypeSelect(r, !!where) : ""}</div>` : ""}
@@ -2740,8 +2819,11 @@ async function openValidation() {
 // does not, so its page has no button. A closed form keeps its values until a save.
 // `slugTyped`: a person typed the slug, so the name no longer fills it.
 const WINE_FORM = {file: null, url: "", busy: false, slugTyped: false};
-const WINE_FIELDS = ["name", "producer", "category", "color", "region", "grapes", "description"];
-const WINE_REQUIRED = ["name", "producer", "category", "color", "region"];
+const WINE_FIELDS = ["name", "producer", "beverage_type_code", "category", "color",
+  "region", "grapes", "description"];
+const WINE_REQUIRED = ["name", "producer", "beverage_type_code", "category", "region"];
+const WINE_FIELD_LABELS = {name: "Name", producer: "Producer",
+  beverage_type_code: "Category", category: "Color", region: "Region"};
 const MANUAL_PREFIX = "__";
 // The spelling of each Cyrillic letter in a slug: the most common spelling in the slugs
 // of vino-svoe.ru (ResearchLog, 2026-09-25). A letter that the map does not hold stays.
@@ -2765,13 +2847,31 @@ function wineFormValues() {
   const form = $("#wine-form");
   const values = {slug: MANUAL_PREFIX + $("#wine-slug").value.trim()};
   for (const field of WINE_FIELDS) values[field] = form.elements[field].value.trim();
+  // `wine_catalog.color` is a detailed shade. Use the broad color as a meaningful
+  // fallback when the optional Shade field is empty.
+  if (!values.color) values.color = values.category;
   return values;
+}
+function missingWineFields(values) {
+  const missing = [];
+  const slug = $("#wine-slug").value.trim();
+  if (!slug) missing.push("Slug");
+  else if (!wineSlugOk()) missing.push("Slug (use a-z, 0-9, - or _)");
+  for (const field of WINE_REQUIRED) {
+    if (!values[field]) missing.push(WINE_FIELD_LABELS[field]);
+  }
+  if (!WINE_FORM.file) missing.push("Main image");
+  return missing;
 }
 function updateWineForm() {
   const values = wineFormValues();
-  const ready = wineSlugOk() && WINE_REQUIRED.every(field => values[field]) && WINE_FORM.file;
+  const missing = missingWineFields(values);
+  const ready = !missing.length;
   $("#wine-save").disabled = !ready || WINE_FORM.busy;
-  $("#wine-save").textContent = WINE_FORM.busy ? "Saving…" : "Save";
+  $("#wine-save").textContent = WINE_FORM.busy ? "Creating…" : "Save";
+  const status = $("#wine-missing");
+  status.textContent = WINE_FORM.busy || ready ? "" : `Missing: ${missing.join(", ")}.`;
+  status.hidden = !status.textContent;
   const slug = $("#wine-slug");
   slug.classList.toggle("invalid", !!slug.value.trim() && !wineSlugOk());
 }
@@ -2813,16 +2913,21 @@ function wineChoices(key) {
     .sort(compareText);
 }
 function openWineForm() {
-  const category = $("#wine-form").elements.category;
-  const chosen = category.value;
-  category.innerHTML = '<option value="">choose…</option>'
-    + wineChoices("category").map(value => `<option>${esc(value)}</option>`).join("");
-  category.value = chosen;
+  // The imported catalogue calls the broad color `category`. The separate
+  // `beverage_type_code` is the actual product category (wine or sparkling wine).
+  const color = $("#wine-form").elements.category;
+  const chosen = color.value;
+  color.innerHTML = '<option value="">choose…</option>'
+    + [...new Set(DATA.records.filter(r => !manualWine(r))
+      .map(r => String(r.category || "").trim()).filter(Boolean))].sort(compareText)
+      .map(value => `<option>${esc(value)}</option>`).join("");
+  color.value = chosen;
   $("#wine-producers").innerHTML = wineChoices("producer")
     .map(value => `<option value="${esc(value)}">`).join("");
   $("#wine-regions").innerHTML = wineChoices("region")
     .map(value => `<option value="${esc(value)}">`).join("");
   if (!WINE_FORM.file) renderWineImage();
+  $("#wine-index").textContent = DATA.new_wine_embedding || "is not configured";
   $("#wine-modal").hidden = false;
   updateWineForm();
   $("#wine-slug").focus();
@@ -2850,9 +2955,11 @@ async function saveWine() {
     const out = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(out.error || `HTTP ${response.status}`);
     DATA.records.push({...out.record, _index: DATA.records.length});
+    if (out.index) WINE_INDEX[out.slug] = out.index;
     clearWineForm();
     closeWineForm();
     render();
+    pollWineIndex();
     if (document.getElementById(out.slug)) scrollToCard(out.slug);
     if (out.warning) alert(out.warning);
   } catch (error) {
@@ -3876,6 +3983,10 @@ async function setBeverageType(slug, code) {
   }
 }
 $("#list").addEventListener("click", event => {
+  const button = event.target.closest("button[data-index-retry]");
+  if (button) retryWineIndex(button.dataset.indexRetry);
+});
+$("#list").addEventListener("click", event => {
   const describe = event.target.closest("button[data-describe]");
   if (describe) {
     event.preventDefault();
@@ -4425,6 +4536,7 @@ window.addEventListener("beforeunload", event => {
     if (!response.ok) throw new Error(await response.text());
     DATA = await response.json();
     DATA.records = (DATA.records || []).map((r, index) => ({...r, _index: index}));
+    WINE_INDEX = DATA.new_wine_index || {};
     $("#add-wine").hidden = !wineFormOn();
     $("#validate-dataset").hidden = !validationOn();
     // The review tool sends no comments, so its filter `Show` has no `with comments`.
@@ -4434,6 +4546,7 @@ window.addEventListener("beforeunload", event => {
     initAdvancedFilters();
     restoreHeader();
     render();
+    pollWineIndex();
     openHash();
     // A link to `/dataset/<slug>` opens the preview over the card of that wine. A slug
     // or a photo that the list does not show gives the plain page.

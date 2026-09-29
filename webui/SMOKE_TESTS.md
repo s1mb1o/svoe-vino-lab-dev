@@ -7,11 +7,13 @@
 3. Run `npm run build`.
 4. Start the production server with `npm start`.
 5. Run `npm run test:contract` against the production mock endpoint.
+6. Run `npm run test:pwa` with `PLAYWRIGHT_MODULE` set against the production server.
 
 The state tests check automatic submission, single-result resolution, metadata failures, cancellation, stale responses, retries, invalid files, and missing configuration.
 The metadata tests check official source normalization, exact slug lookup, fixed image hosting, invalid records, response limits, and timeout handling.
 The API health tests check URL derivation, response validation, network failure, and timeout behavior.
-The PWA tests check the Nuxt module configuration, icon dimensions, and API cache exclusions.
+The PWA tests check the Nuxt module configuration, the update mode, both theme colors, icon and screenshot dimensions, and API cache exclusions.
+The PWA browser check uses Chromium. It checks installability, the precache content, offline start after two visits, offline API failure, and a waiting service worker without a page reload after an update.
 The search-discovery tests check the age overlay, canonical metadata, crawl files, permanent redirects, and static cache policy.
 The contract check uses the unchanged official evaluator and its three images.
 The contract check also checks the home page, compatibility redirects, metadata routes, image routes, manifest, service worker, and PWA icons.
@@ -20,6 +22,9 @@ The contract check also checks the home page, compatibility redirects, metadata 
 
 - Open `/`. Confirm the photo search page has no catalog grid or filters.
 - Check the layout on a phone and desktop.
+- Confirm the shared bottle-scanner logo and `Что за вино?` name in the header and age gate.
+- Check brand readability in both themes and beside the theme selector at 320px.
+- Confirm the product name in the page title and app manifest.
 - Select a file. Confirm the search starts once without a second submit action.
 - Check the photo preview, progress, and one result with a direct source link.
 - Use a recognized slug that is not in `server/data/wines.json`. Confirm that its source title and bottle image appear.
@@ -31,7 +36,12 @@ The contract check also checks the home page, compatibility redirects, metadata 
 - Start upstream mode with an available matcher. Confirm that `/api/config` returns `apiAvailable: true`.
 - Stop the matcher. Reload the page. Confirm the unavailable message and disabled photo actions.
 - Start the matcher. Select «Повторить подключение». Confirm that photo actions become available.
-- Check the system dark theme, keyboard controls, and reduced motion.
+- Select `Светлая` and `Тёмная` in the header. Check the page, dialogs, and mobile camera action.
+- Reload after each selection. Confirm the saved theme and selector value.
+- Select `Авто`. Change the system theme. Confirm that the palette follows the system.
+- Change the system theme with an explicit selection. Confirm that the selected palette stays active.
+- Open a second tab. Change the theme in the first tab. Confirm that the second tab follows it.
+- Check keyboard operation, reduced motion, and the header layout at 320px and desktop widths.
 - Open a fresh browser origin. Confirm that the 18+ gate blocks the scanner.
 - Read the raw HTML for `/`. Confirm that it contains `Найти вино по фото` before JavaScript runs.
 - Inspect the hydrated document while the gate is open. Confirm that it contains one page H1 and the scanner content.
@@ -45,6 +55,10 @@ The contract check also checks the home page, compatibility redirects, metadata 
 - Build and start the production server. Confirm that the browser offers an install action.
 - Install the portal. Confirm the shared bottle-scanner product logo and the standalone window.
 - Open the installed app once while online. Disable the network and reopen it. Confirm that the app shell opens.
+- Select a photo in the open installed app. Deploy a new build. Confirm that the page keeps the photo and does not reload.
+- Close all app pages and reopen the app. Confirm that the new build is active.
+- Check the browser install dialog on a phone and on desktop. Confirm the narrow and wide screenshots.
+- Switch the selected theme. Confirm that browser theme metadata uses `#7b3528` in light mode and `#211e1c` in dark mode.
 - While offline, submit a photo. Confirm a clear network error and no simulated result.
 - Inspect service-worker cache storage. Confirm that it contains no `/api/`, `/v1/`, or uploaded photo response.
 
@@ -56,6 +70,21 @@ See `docs/verification-2026-09-15.md` for current results.
 
 ## Results on 2026-09-29
 
+- Product identity: type checks, all 165 tests, and the production build passed. The header component preview passed both themes and the 320px layout. The logo loaded without a color filter and the theme selector remained accessible.
+- Header theme selector: type checks, all 165 tests, and the production build passed.
+- Header theme selector: the isolated component preview passed light/dark selection, reload persistence, tab synchronization, system-theme resolution, and header layout at 320px and desktop widths.
+- Theme initialization: 12 combinations of stored preference, system theme, invalid preference, and blocked storage passed.
+- The production page applied the system dark palette to the age overlay. Recognition flows were not repeated for this appearance change.
+- Result-aware Abrau-Durso guide: type checks passed, all 165 tests passed in 13 files, and the production build passed.
+- Product-line catalog images: the dark desktop dialog passed the visual check, type checks passed, all 164 tests passed in 13 files, and the production build passed.
+- Taste inference audit and dish illustrations: type checks passed, all 163 tests passed in 13 files, and the production build passed.
+- Taste passport and regional dishes: type checks passed, all 152 tests passed in 12 files, and the production build passed.
+- PWA review fixes: type checks passed, and all 151 tests passed in 12 files.
+- PWA review fixes: the production build passed with 22 precache entries.
+- PWA review fixes: `npm run test:pwa` passed against the local production server.
+- PWA review fixes: `npm run test:pwa` failed against the live `autoUpdate` build with a page reload after the update. This result confirms that the check detects the old behavior.
+- PWA review fixes: the manifest, service-worker, icon, and screenshot assertions of `npm run test:contract` passed in a separate run.
+- The full `npm run test:contract` stopped at the home-page assertion for `Проверяем подтверждение возраста`. The committed `AgeGate.vue` has no such text. This failure is older than the PWA review fixes.
 - Type checks passed.
 - All 150 tests passed in 12 files.
 - The production build passed.
@@ -94,20 +123,33 @@ See `docs/verification-2026-09-15.md` for current results.
 ## Result experience checks
 
 - Match a wine. Confirm that all four result actions appear.
-- Open «Подобрать продукты». Confirm that the first view explains the mock permission.
-- Select «Разрешить в демо». Confirm that the browser does not show a location permission prompt.
-- Confirm the fictional SuperLenta store, three domestic products, pairing copy, and promotion label.
+- Open «Подобрать блюда». Confirm that three named dishes from three regional cuisines appear.
+- Confirm that each dish shows either `КАТЕГОРИЯ ИЗ КАРТОЧКИ` or `ВЫВОД ПО СТИЛЮ`.
+- Confirm that a source-backed dish names one pairing category from the resolved source card.
+- Use the default example. Confirm images for the расстегай, чуду, and халюж.
+- Confirm that each dish image has descriptive alternative text and a fixed 640 by 400 aspect ratio.
 - Open «Рассказать об этикетке». Confirm the metadata grape name and illustrative Syrah and Viognier notice.
-- Open «История о вине». Confirm the fiction notice and switch to another story.
+- Open «Паспорт вкуса». Confirm six taste dimensions and source or style labels on aroma families.
+- Use Cabernet Sauvignon without a source description. Confirm the dataset label, 9,472-review sample count, source link, and `CC BY-NC-SA 4.0` license.
+- Use the default example. Confirm the explicit message that its grape has no reliable aggregate match.
+- Confirm that a sweet red wine uses the sweet-style analogue before a dry Cabernet analogue.
+- Confirm that the international analogue includes a similarity, a difference, and a no-quality-comparison notice.
 - Open «Путеводитель по линейке». Confirm the Abrau-Durso tiers and quality-rating notice.
-- Change map zoom. Select another node. Use the direction control to bring the current demo wine into view.
+- Confirm that all six nodes show distinct catalog bottle or can images instead of generic silhouettes.
+- Confirm that «Удельное Ведомство Императорское, брют» shows the yellow-label `patched` image.
+- Confirm that the other five nodes show their `main` images.
+- Resolve one of the six mapped Abrau-Durso slugs. Confirm that its node shows `ВАШЕ ВИНО`.
+- Confirm that the dialog heading says `ЛИНЕЙКА ВАШЕГО ПРОИЗВОДИТЕЛЯ`.
+- Resolve an Abrau-Durso slug outside the six map nodes. Confirm that the result appears above the map without a collection tier.
+- Resolve a wine from another producer. Confirm that Victor Dravigny shows `ПРИМЕР · ДЕМО`.
+- Change map zoom. Select another node. Use the direction control to bring the current node into view.
 - Confirm that the selected node exposes a normal source link.
 - Close every dialog with its close button, Escape, and backdrop. Confirm focus restoration.
 - Check the actions and dialogs at 390 px and on desktop in light and dark themes.
 
-Focused automated tests cover age storage, storage failures, experience fixtures, story rotation, source URLs, and one current map item.
+Focused automated tests cover age storage, storage failures, taste inference, dish diversity, source evidence, style analogues, source URLs, and one current map item.
 The 2026-09-28 browser check covered dark desktop and 390 px mobile layouts.
-The product demo did not invoke a browser location permission prompt.
+The dish demo does not contain a browser location call.
 
 ## Shelf checks
 

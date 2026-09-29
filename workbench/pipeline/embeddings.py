@@ -8,7 +8,9 @@ page. Both use this module. The module needs no `torch`. Read
 The files of one embedding, next to the database file:
     embeddings/<name>/index.json                          the settings and the items
     embeddings/<name>/vectors-<8 hex>.npy                 float32, one row for each item
-    embeddings/<name>/images/<source_sha256>_<view>.png   the model input of one item
+                                                          (plan 82: one row for each angle
+                                                          of an item with `angles`)
+    embeddings/<name>/images/<source_sha256>_<view>.png   the model input of one item (0°)
     embeddings/<name>/build.log                           the output of the last build
     embeddings/<name>/build.lock                          the PID of the running build
 
@@ -49,8 +51,15 @@ NAME_RE = re.compile(r"^%s$" % NAME_PATTERN)
 # docs/plans/34_pipeline-section.md.
 BACKENDS = ("openai", "local")
 VIEWS = ("full", "label")
-ENTRY_KEYS = ("name", "backend", "base_url", "model", "extra_body", "batch_size", "views")
+ENTRY_KEYS = ("name", "backend", "base_url", "model", "extra_body", "batch_size", "views",
+              "rotation_step")
 DEFAULT_BATCH_SIZE = 16
+# Plan 82: an entry with `rotation_step` embeds the view `full` of each full image at the
+# angles 0°, step, 2·step, … below 360°. Raise ROTATION_VERSION when the code of the
+# rotation changes the pixels; only the items of the rotated entries are then stale.
+MAX_ROTATION_STEP = 180
+ROTATION_VERSION = 1
+ROTATION_FILL = (255, 255, 255)
 MAX_BATCH_SIZE = 256
 # The keys of `extra_body` that the local backend gives to the image processor.
 LOCAL_EXTRA_KEYS = ("max_num_patches",)
@@ -256,25 +265,64 @@ class Embedding:
         if other:
             raise ConfigError("unknown view: %s; use %s" % (", ".join(other), " or ".join(VIEWS)))
         self.views = {view: check_steps(view, views[view]) for view in VIEWS if view in views}
+        self.rotation_step = self._rotation_step(raw.get("rotation_step"))
         self._hashes = {}
+
+    def _rotation_step(self, step):
+        """Check the key `rotation_step` (plan 82). Return the step in degrees, or None."""
+        if step is None:
+            return None
+        if isinstance(step, bool) or not isinstance(step, int) or not (
+                1 <= step <= MAX_ROTATION_STEP):
+            raise ConfigError("rotation_step MUST be an integer from 1 to %d (degrees)"
+                              % MAX_ROTATION_STEP)
+        if "full" not in self.views:
+            raise ConfigError("rotation_step needs the view full")
+        kinds = [item["step"] for item in self.views["full"]]
+        for kind in ("square_on_white", "segment_dis"):
+            if kind in kinds:
+                raise ConfigError("rotation_step does not work with the step %s" % kind)
+        if "resize" in kinds and (kinds[-1] != "resize"
+                                  or self.views["full"][-1]["aspect"] != "keep"):
+            raise ConfigError("rotation_step needs the step resize last, with aspect keep")
+        if self.batch_size < 2:
+            raise ConfigError("rotation_step needs batch_size 2 or more: no request holds "
+                              "one image alone")
+        return step
+
+    def angles(self, view, role="full"):
+        """Return the angles of the model inputs of one view, or None when the view does
+        not rotate. Only the view `full` of a full image rotates (plan 82)."""
+        if self.rotation_step is None or view != "full" or role != "full":
+            return None
+        return list(range(0, 360, self.rotation_step))
 
     def view_config_hash(self, view, role="full"):
         """Return the hash of the settings that make the model input and the vector of
-        one view. A close-up (role `label`) goes to the model as it is: no steps."""
+        one view. A close-up (role `label`) goes to the model as it is: no steps. The
+        rotation is in the hash only when the view rotates, so the hash of an entry with
+        no `rotation_step` stays the hash of the builds before plan 82."""
         key = (view, role)
         if key not in self._hashes:
-            self._hashes[key] = sha256_json({
-                "backend": self.backend, "model": self.model,
-                "extra_body": self.extra_body, "view": view,
-                "steps": self.views[view] if role == "full" else [],
-                "steps_version": STEPS_VERSION})
+            value = {"backend": self.backend, "model": self.model,
+                     "extra_body": self.extra_body, "view": view,
+                     "steps": self.views[view] if role == "full" else [],
+                     "steps_version": STEPS_VERSION}
+            if self.angles(view, role) is not None:
+                value["rotation"] = {"rotation_step": self.rotation_step,
+                                     "rotation_version": ROTATION_VERSION}
+            self._hashes[key] = sha256_json(value)
         return self._hashes[key]
 
     def summary(self):
-        """Return the settings of the entry, with each default option filled in."""
-        return {"name": self.name, "backend": self.backend, "base_url": self.base_url,
-                "model": self.model, "extra_body": self.extra_body,
-                "batch_size": self.batch_size, "views": self.views}
+        """Return the settings of the entry, with each default option filled in. The key
+        `rotation_step` is there only when the entry has it."""
+        out = {"name": self.name, "backend": self.backend, "base_url": self.base_url,
+               "model": self.model, "extra_body": self.extra_body,
+               "batch_size": self.batch_size, "views": self.views}
+        if self.rotation_step is not None:
+            out["rotation_step"] = self.rotation_step
+        return out
 
 
 class Settings:
@@ -480,12 +528,19 @@ def plan_items(embedding, sources):
                 continue
             cut = (source["cuts"].get(steps[0]["target"])
                    if steps and steps[0]["step"] == "segment" else None)
-            items[(digest, view)] = {
+            item = {
                 "source_sha256": digest, "view": view, "role": role, "steps": steps,
                 "cut": cut,
                 "embedding_hash": embedding_hash(
                     digest, view, role, embedding.view_config_hash(view, role),
                     cut["sha256"] if cut else None)}
+            # A caller MAY pass an object with `views` and `view_config_hash` alone.
+            angles = (embedding.angles(view, role) if hasattr(embedding, "angles")
+                      else None)
+            if angles is not None:
+                # Plan 82: the item has one model input and one vector for each angle.
+                item["angles"] = angles
+            items[(digest, view)] = item
     return items
 
 
@@ -527,6 +582,46 @@ def resize(image, step):
     if target == image.size:
         return image
     return image.resize(target, Image.Resampling.LANCZOS)
+
+
+def resize_scale(size, step):
+    """Return the scale that one step `resize` (aspect keep) gives an image of `size`:
+    1.0 when the step does not change the image."""
+    if not step["upscale"] and max(size) <= step["max_size"]:
+        return 1.0
+    return step["max_size"] / max(size)
+
+
+def rotate_fixed_scale(image, angle, resize_step, reference_size, fill=ROTATION_FILL):
+    """Rotate `image` counter-clockwise by `angle` degrees on a larger canvas filled with
+    `fill`, then apply the scale that `resize_step` gives the unrotated image of
+    `reference_size` (plan 82). The package keeps the pixel size of the 0° image. At 0°,
+    with the size of `image`, the result is `resize(image, resize_step)`."""
+    if angle % 360:
+        image = image.rotate(angle, resample=Image.Resampling.BICUBIC, expand=True,
+                             fillcolor=fill)
+    if resize_step is None:
+        return image
+    scale = resize_scale(reference_size, resize_step)
+    if scale == 1.0:
+        return image
+    target = (max(1, round(image.width * scale)), max(1, round(image.height * scale)))
+    if target == image.size:
+        return image
+    return image.resize(target, Image.Resampling.LANCZOS)
+
+
+def rotated_inputs(item, source_path, angles):
+    """Return the model input of each angle of one item as RGB images (plan 82).
+
+    The steps before a last step `resize` make the unrotated image as `prepare` does. Each
+    angle then rotates it (counter-clockwise, white fill, a larger canvas) and applies the
+    scale of the 0° `resize`. With `angles[0] == 0`, the first image is the image of
+    `prepare`. Raise ItemError."""
+    steps = item["steps"]
+    resize_step = steps[-1] if steps and steps[-1]["step"] == "resize" else None
+    base = prepare(dict(item, steps=steps[:-1] if resize_step else steps), source_path)
+    return [rotate_fixed_scale(base, angle, resize_step, base.size) for angle in angles]
 
 
 def prepare(item, source_path, dis_segmenter=None):
@@ -636,18 +731,71 @@ def read_index(directory):
     return index
 
 
-def read_vectors(directory, index):
+def record_angles(record):
+    """Return the angle of each vector row of an index record (plan 82): its list
+    `angles`, or [0] for a record of one row."""
+    angles = record.get("angles")
+    return [0] if angles is None else list(angles)
+
+
+def record_rows(record, count):
+    """Return the vector rows of an index record as a slice (plan 82): `row` is the row
+    of 0°, and a record with `angles` has one row for each angle, in the order of
+    `angles`. Raise ValueError when `row` or `angles` is not valid, or when the rows pass
+    `count`, the number of vector rows."""
+    row = record.get("row")
+    if isinstance(row, bool) or not isinstance(row, int) or row < 0:
+        raise ValueError("the record has no valid vector row: %r" % (row,))
+    angles = record.get("angles")
+    if angles is not None and (
+            not isinstance(angles, list) or len(angles) < 2
+            or any(isinstance(a, bool) or not isinstance(a, int) or not 0 <= a < 360
+                   for a in angles)
+            or len(set(angles)) != len(angles) or angles[0] != 0):
+        raise ValueError("the record has no valid list angles: %r" % (angles,))
+    stop = row + (1 if angles is None else len(angles))
+    if stop > count:
+        raise ValueError("the rows %d to %d of the record pass the %d vector rows"
+                         % (row, stop - 1, count))
+    return slice(row, stop)
+
+
+def check_rows(records, count):
+    """Check that the rows of `records` cover the `count` vector rows one time each, with
+    no gap and no overlap (plan 82). Raise ValueError."""
+    spans = sorted((record_rows(record, count) for record in records),
+                   key=lambda span: span.start)
+    expected = 0
+    for span in spans:
+        if span.start != expected:
+            raise ValueError("the index rows have a gap or an overlap at row %d" % expected)
+        expected = span.stop
+    if expected != count:
+        raise ValueError("the index gives %d vector rows; the file holds %d"
+                         % (expected, count))
+
+
+def read_vectors(directory, index, strict=True):
     """Return the vectors that the index names, or None. Raise ValueError when the
-    file does not agree with the index."""
+    file does not agree with the index. An index with a record of several rows (plan 82)
+    MUST cover each row one time; any other index keeps one row for each item. With
+    `strict` false (the build), an index with such records only needs a matrix: the build
+    checks each record with `record_rows` and builds a bad record again, alone."""
     name = (index or {}).get("vectors_file")
     if not name:
         return None
     if not VECTORS_RE.match(name):
         raise ValueError("not a vector file name: %r" % name)
     vectors = np.load(os.path.join(directory, name), allow_pickle=False)
-    if vectors.ndim != 2 or vectors.shape[0] != len(index.get("items", [])):
+    items = index.get("items", [])
+    if any(isinstance(record, dict) and "angles" in record for record in items):
+        if vectors.ndim != 2:
+            raise ValueError("%s holds %s vectors" % (name, vectors.shape))
+        if strict:
+            check_rows(items, vectors.shape[0])
+    elif vectors.ndim != 2 or vectors.shape[0] != len(items):
         raise ValueError("%s holds %s vectors; the index holds %d items"
-                         % (name, vectors.shape, len(index.get("items", []))))
+                         % (name, vectors.shape, len(items)))
     return vectors
 
 
@@ -655,13 +803,18 @@ def write_checkpoint(directory, index, vectors):
     """Write the vectors and the index. Return the index as written.
 
     The new vector file comes first, then the index that names it, then the old vector
-    files are deleted. So a reader never sees an index that names a missing file.
+    files are deleted. So a reader never sees an index that names a missing file. The
+    name of the vector file is the hash of its bytes, so a file of the same name and size
+    holds these vectors already, and the write is skipped (a rotated index of plan 82 is
+    about 0.76 GB).
     """
     buffer = io.BytesIO()
     np.save(buffer, np.asarray(vectors, dtype=np.float32), allow_pickle=False)
-    data = buffer.getvalue()
+    data = buffer.getbuffer()
     name = "vectors-%s.npy" % hashlib.sha256(data).hexdigest()[:8]
-    write_atomic(os.path.join(directory, name), data)
+    path = os.path.join(directory, name)
+    if not (os.path.isfile(path) and os.path.getsize(path) == len(data)):
+        write_atomic(path, data)
     index = dict(index, vectors_file=name)
     text = json.dumps(index, ensure_ascii=False, indent=1) + "\n"
     write_atomic(os.path.join(directory, INDEX), text.encode("utf-8"))

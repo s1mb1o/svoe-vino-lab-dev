@@ -150,9 +150,22 @@ paths:
       summary: Match all bottles in one shelf image
       description: 'Upload one JPEG, PNG, or WEBP shelf image in the multipart field
         `image`. The service segments wine bottles with SAM3 and matches every returned
-        bottle against the selected catalogue bundle. The endpoint requires `Authorization:
-        Bearer <token>` when `matcher.token` is configured.'
+        bottle against the selected catalogue bundle. Each bottle holds up to `k` ranked
+        candidates. The endpoint requires `Authorization: Bearer <token>` when
+        `matcher.token` is configured.'
       operationId: match_group_image
+      parameters:
+        - name: k
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 20
+            minimum: 1
+            description: Maximum number of candidates for each bottle.
+            default: 1
+            title: K
+          description: Maximum number of candidates for each bottle.
       requestBody:
         content:
           multipart/form-data:
@@ -257,6 +270,13 @@ components:
             - $ref: '#/components/schemas/MatchCandidate'
             - type: 'null'
           description: Best catalogue match, or null when no match exists.
+        candidates:
+          items:
+            $ref: '#/components/schemas/MatchCandidate'
+          type: array
+          title: Candidates
+          description: Up to k ranked candidates, the best first. The first candidate
+            equals match. An empty list means no match.
       additionalProperties: false
       type: object
       required:
@@ -265,6 +285,7 @@ components:
         - box
         - mask
         - match
+        - candidates
       title: GroupBottle
       description: One segmented bottle and its best catalogue match.
     GroupImage:

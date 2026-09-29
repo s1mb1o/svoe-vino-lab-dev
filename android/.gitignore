@@ -8,3 +8,4 @@ local.properties
 *.aab
 *.zip
 captures/
+app/src/main/assets/default_model_pack.zip

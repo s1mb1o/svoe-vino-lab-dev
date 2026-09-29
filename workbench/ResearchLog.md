@@ -2,6 +2,342 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-09-29 — The slow `Save` of the `Add wine` dialog is a cold start of SigLIP 2 @512
+
+Source: owner message of 2026-09-29T12:28:00+0300. Case: the wine
+`__vino-shardone-sovinon-blan-kyuve`, created at 12:24:02. Evidence: `build.log` of
+`data/catalog/embeddings/gx10-siglip2-so400m-patch16-512/`, the records of
+`data/cache/models/`, and `GET /logs` of the gx10 gateway 18081.
+
+- `POST /api/wine` runs plan 78: `manual_wines.add_wine`, then `rebuild_on_run.build`
+  for `new_wine_embedding`, then `new_wine_workflow.verify`.
+- The time of each step for this wine:
+  - SAM3 `segment_multi`: 0.57 s.
+  - The build start and the `request` event (2 images): 12:24:02.875 and 12:24:02.918.
+  - `POST /v1/embeddings` to the gateway: 37.31 s. The gateway log shows
+    `<siglip2-so400m-patch16-512> Health check passed` just before this request.
+  - The vector file, `index.json`, and the build `done` event: 12:24:41.058 (0.84 s after
+    the answer).
+- The same 2-image request took about 0.1 s in the plan 78 trials at 01:16 and 01:19.
+- The gateway entry `siglip2-so400m-patch16-512` has `ttl: 1800`. llama-swap stops the
+  model after 30 minutes with no request. The next `Save` then waits for a cold start.
+- The gateway description states "Cold start ~14 s · warm ~130 ms per 2 images". This
+  cold start took 37 s. The cause of the difference is not measured. Possible causes are
+  the weights on the NAS share `/mnt/ml`, `preflight-ram.sh`, and the load of other models
+  on gx10 at the same time.
+- The page sends one POST and renders the new card locally. The page adds no delay.
+- `FIX_LATER.md` and `../matcher/docs/KNOWN_ISSUES.md` do not list this problem.
+
+## 2026-09-29 — The alpha channel and the background fill of the SigLIP 2 models
+
+Source: owner message of 2026-09-29T11:12:54+0300. Report:
+[docs/reports/siglip2-alpha-background-2026-09-29.md](docs/reports/siglip2-alpha-background-2026-09-29.md).
+Script: `scripts/alpha_background_probe.py`. Entries: the 8 SigLIP 2 entries of
+`config.yaml` and `gx10-dinov3-vitb16` (control), gateway 18081.
+
+- The gateway drops the alpha channel for each SigLIP 2 entry: an RGBA PNG and its Pillow
+  `convert("RGB")` form give the cosine 1.000000 (a synthetic image, and 40 SAM3 cuts for
+  each entry). The gateway does not composite on white (0.918–0.964 to the white composite).
+- The SigLIP 2 models see the colour under a transparent pixel: red and blue under the same
+  transparent area give 0.952–0.986 (DINOv3: 0.986).
+- On 40 real cuts, a fill other than white moves the vector by a mean cosine of 0.95–0.98
+  (minimum 0.906). SigLIP 2 reacts more to saturated fills than DINOv3. Black and grey are
+  the fills nearest to white for SigLIP 2.
+- The SAM3 cuts keep different colours under their transparent pixels (1,590 photo pixels
+  or a mix, 362 white, 316 black, of 2,270). A raw RGBA cut gives 0.959–0.969 to its white
+  form. So the step `white_background` and the transparency check are necessary.
+- 1,926 of 2,270 full catalogue images (85 %) have transparent pixels. Of the 344 opaque
+  images, 248 have a white or light border.
+- The choice of white is the convention of plan 10 ("as on the catalogue images"). No
+  retrieval test of another fill exists; the probe measures only the cost of a fill that
+  differs from the index fill.
+
+## 2026-09-29 — Hand-aware package selection of the query photos: effect on `my`
+
+Owner question of 2026-09-29T11:28:17+0300: does the package cut use hands when a photo
+shows several bottles?
+
+- Two rules select the package of a photo.
+  - Rule 1 is `derive.package_instance`. The SAM3 texts are `wine bottle, can, packet,
+    box`. The largest wine bottle wins. A bottle that is printed on a packet or on a box
+    gives the win to that packet or box. With no bottle, the largest instance wins. The
+    catalogue images use this rule.
+  - Rule 2 is `pipeline/main_scene.py` version 1. The SAM3 texts are `wine bottle, can,
+    packet, box, hand`, in one request. A weighted score ranks the packages. With a hand,
+    `hand_contact` has the weight 0.40. Its value is the share of the package box inside a
+    hand box, times 1.5, not more than 1, times the area gate
+    `min(1, relative_area / 0.4)`. Without a hand, the scene weights apply: area 0.28,
+    center 0.24, confidence 0.14, sharpness 0.12, shelf isolation 0.10, mask fill 0.08,
+    edge visibility 0.04. The hand signal is a box overlap. It does not prove a grip.
+- Each configured lab pipeline uses rule 2 for the query photos:
+  `embedding_run.build_pipeline_backend` sets `scene_selection=True`. The runs show rule 2
+  from 2026-09-28T02:06+0300 (working tree). Commit `22eb086` holds it.
+- The best run `2026-09-27T210917Z-lab-barcode-rerank-siglip2-512-crop-my-plan68-a`
+  (R@1 85.55 %) finished at 2026-09-28T00:16+0300. It used rule 1. No run of
+  `barcode-rerank-siglip2-512-crop` on `my` uses rule 2.
+- Run `2026-09-28T012451Z-lab-siglip2-p512-crop-my` (rule 2, 2,226 queries): a hand in 439
+  photos, no hand in 1,715 photos, the alpha or the white rule in 72 photos. One package
+  candidate in 1,782 photos, no candidate in 72 photos, two or more in 372 photos.
+- Two pairs of runs of one pipeline: rule 1 on 2026-09-27, rule 2 on 2026-09-28. The
+  comparison uses the 1,453 positive photos with the same `image_sha256` and slug in both
+  runs. A different package is a box IoU below 0.8.
+
+| Pipeline | Different package | Of these, with a hand | Fixed | Broken | R@1 rule 1 → rule 2 |
+|---|---|---|---|---|---|
+| `siglip2-p512-crop` | 13 | 2 | 2 | 2 | 80.59 % → 81.07 % |
+| `siglip2-p256-crop` | 13 | 2 | 2 | 2 | 76.12 % → 77.49 % |
+
+- On `my`, rule 2 selects a different package for 0.9 % of the photos. Its net effect on
+  R@1 is zero. The R@1 change comes from the photos with the same package. The index
+  changed between the runs: 4,054 current items and 127 missing items on 2026-09-27,
+  4,642 current items and 0 missing items on 2026-09-28.
+- Limit: `my` holds few photos with a hand and several similar bottles. This comparison
+  does not measure rule 2 on shelf photos.
+
+Follow-up (owner question of 2026-09-29T11:35:25+0300: is it safe to use `hand`?):
+
+- The photos with a changed package and a changed result (IoU below 0.8, rank 1 gained or
+  lost). In none of them does the hand signal decide the choice.
+  - `siglip2-p512-crop`: 2 photos broken, 2 photos fixed. Both broken photos have no hand.
+    In both, the scene weight `center` selects a smaller bottle near the center instead of
+    the largest bottle: `vinodelnya-raevskoe-renessans-krasnoe-kaberne-sovinon-suhoe-13/01_conf095.png`
+    (rank 1 → 8) and `fanagoriya-velvet-season-risling-beloe-sladkoe-12/03_conf095.jpg`
+    (rank 1 → 2). One fixed photo has a `box` that wins over the bottle (rule 2 gives no
+    priority to a bottle). The other fixed photo shows a shelf with 52 candidates and 14
+    hands; `hand_contact` is 0.003 for the selected bottle, so `center` and `area` decide.
+  - `siglip2-p256-crop`: the same 2 broken photos. 2 photos fixed; in both, a `box` wins.
+- SAM3 time of the package cut with no cache hit (`sam3-package`, `cached: false`, 1
+  worker): run `2026-09-27T233939Z-lab-siglip2-p256-crop-my` with `hand`, 1,523 calls,
+  median 1,500 ms, p95 5,888 ms. The runs with the old texts have few such calls: 21 in
+  the three runs with 5 or more (medians 2,077 ms to 7,042 ms). These data do not show
+  the time that the text `hand` adds.
+- Crop variants in the lab, rule 2: the box cut is better than the cut with a white
+  background outside the mask. `siglip2-p512-crop` 79.48 % against `siglip2-p512-crop-seg`
+  78.87 %; `siglip2-p256-crop` 75.77 % against `siglip2-p256-crop-seg` 74.98 %;
+  `barcode-siglip2-p256-crop` 77.53 % against `barcode-siglip2-p256-crop-seg` 76.68 %.
+  The matcher option `hand_selection: true` uses the white background outside the mask.
+
+## 2026-09-29 — Max-over-rotation on the real photos of `my` (gate G0 of plan 82)
+
+The offline 5° vectors (`work/rotation-index/`, 2,270 images × 72 angles, 160,560 vectors,
+0 problems, 4,953 s at 32.4 vectors/s) replayed with the saved query vectors of the two
+usual NaFlex p512 pipelines (`scripts/rotation_index_eval.py`; 2,226 queries: 1,647
+positive, 579 negative):
+
+| Query | Catalogue | R@1 | R@5 | False match at 1 |
+|---|---|---:|---:|---:|
+| as-is | 1 vector | 74.26 % | 94.11 % | 115 |
+| as-is | 0°–355°, step 5° | 77.23 % | 95.45 % | 116 |
+| as-is | 0°–180°, step 5° | 76.93 % | 95.39 % | 110 |
+| crop | 1 vector | 79.48 % | 96.11 % | 111 |
+| crop | 0°–355°, step 5° | 79.66 % | 96.17 % | 102 |
+| crop | 0°–180°, step 5° | 79.60 % | 96.11 % | 105 |
+
+The lab runs of plan 82 with the lab index `…-p512-rot5` agree within 2 queries (as-is
+77.35 %, crop 79.60 %) and add the masked crop: `crop-seg` 78.87 % → 79.84 % R@1 (+0.97
+pp), the best R@1 of all configurations. The masked crop is closest to the rotated
+catalogue images (a package on white).
+
+The 1-vector replay repeats the official runs exactly. The rotated catalogue helps the
+whole-photo query most (+2.97 pp R@1, +49 queries). With the SAM3 crop the gain is small
+(+0.18 pp), and the false matches at 1 fall from 111 to 102. The gx10 NaFlex p512 model
+gives about 26–34 images per second; the GPU is at about 96 % during a build, so more
+parallel requests do not make the build faster.
+
+## 2026-09-29 — Storage of `data/catalog/embeddings/` and use of the prepared images
+
+Check of 2026-09-29, 07:50. The directory holds 17 GB. The vectors are small: one
+`vectors-*.npy` of 4,642 float32 rows of 1,152 values is 21 MB. One `index.json` is 2 MB.
+The prepared images in `images/` use almost all of the space: about 1.5 GB (1.4 GiB in
+`du -sh`) for each of the 12 gx10 and local indexes, 55,701 files, 17.8 GB in total.
+
+The prepared images of the 12 indexes are the same images. The `derivative_sha256` of each
+common item is equal in all 12 indexes. A random sample of 40 names had equal bytes in all
+12 directories. There are 4,527 unique derivatives. So about 16 GB are copies. The files
+are separate inodes, not hard links. The T7 volume is APFS and had 582 GB free.
+
+A prepared image is a function of the cut `data/catalog/cuts/<derivative_sha256>.png` and
+of the steps: the white background and the resize. `scripts/rotation_index_build.py`
+makes it again from the cut and compares the pixels (`pixels_equal_index`).
+
+The matching step reads the vectors, not the pixels. The prepared images have these uses:
+
+- `embeddings.item_status` gives the state `current` only when the prepared image exists.
+  The lab catalogue of `embedding_run.py`, `catalog_copy.py`, `matcher_bundle.py`,
+  `clusters.py`, `new_wine_workflow.py`, and the build use this state. If a directory
+  `images/` is deleted, each item becomes `stale`. The lab then has no catalogue vector
+  for that index, and the next build sends each item to the gateway again.
+- The Embeddings page, the cluster pages, and the step popup of `/runs` show them as
+  thumbnails.
+- `scripts/rotation_index_build.py` and `scripts/rotation_similarity.py` read them.
+
+The prod matcher does not read them. `catalog_copy.py` copies no prepared PNG file, and
+`matcher/catalog.py` reads only `catalog.sqlite3`, `index.json`, and the vector file.
+
+By the rules of plan 75, the prepared images are cache data. They are derived data.
+`index.json` records the steps. `catalog/images/` and `catalog/cuts/` hold the inputs. So
+the catalogue directory holds all the data that is necessary to make them again, and the
+matcher does not need them. Stage 3 of plan 75 moves them to `cache/prepared/`, and the
+status of an item then does not depend on its PNG file. Stage 3 is not started. Until
+stage 3, a missing PNG file makes the item `stale`, and a build sends the item to the
+model again. Exception: the index `android-siglip2-base-224-dis-white` runs the DIS model
+in the step `segment_dis`, and no other file stores the DIS result. A new preparation of
+these images runs DIS again. The last full build of this index took 3,833 s for 2,271
+items. That time includes DIS and the embedding.
+
+## 2026-09-29 — No segmentation, DIS, SAM3, and SigLIP2 SO400M compute levels
+
+The complete plan 79 matrix used 2,226 `my` queries and 2,270 catalogue sources.
+Barcode lookup was disabled. The 18 cells produced 80,898 vectors.
+SAM3 improved R@1 against no segmentation for every tested SigLIP2 SO400M model.
+The gains were 2.73 to 12.33 percentage points, and each paired R@1 test was significant.
+SAM3 with fixed 512 was best at 81.42% R@1 and 96.66% R@5.
+
+No segmentation with fixed 512 reached 78.69% R@1 and 95.75% R@5.
+It was 2.73 pp below SAM3 at R@1, but the 0.91 pp R@5 difference was not significant.
+It was 4.13 pp above DIS fixed 512 at R@1.
+No segmentation also had higher R@1 than DIS with fixed 384 and NaFlex p1024.
+Thus DIS did not give a consistent improvement over the full source image.
+
+Model size had different effects on the input methods. DIS and SAM3 had strong gains from
+NaFlex p256 to p512, then small and non-significant R@1 gains from p512 to p1024.
+Without segmentation, the NaFlex p512 to p1024 gain was 5.34 pp and was significant.
+Fixed models kept a significant gain from 384 to 512 with all three input methods.
+Without segmentation, fixed 512 was 1.88 pp better than NaFlex p1024 at the comparable
+high level.
+
+DIS failed to find the object in five positive queries. SAM3 found an object in all
+queries. Only three of these five queries were R@1 hits in the best SAM3 cell. They
+explain 0.18 percentage points of its 6.86 percentage-point gain over DIS. The crop
+difference on shared successful queries caused most of the gain.
+
+Negative rejection had no consistent relation to input method or model size.
+No pairwise negative-rejection difference against no segmentation was significant.
+No SAM3-versus-DIS negative-rejection difference was significant. Read
+[the model-matrix report](docs/reports/2026-09-29_segmentation-model-matrix.md).
+
+## 2026-09-29 — AbobaMakers shop photos and WineHack catalogue
+
+The 54 AbobaMakers shop photos have no source ground truth. Independent review found 35
+photos with a catalogue card, 13 identifiable products without a matching card, and 6
+multi-product scenes with no unambiguous target. There are no exact SHA-256 matches with
+the previous lab images. The source's 93.17% result uses synthetic transformations of
+catalogue photos and is not a field result.
+
+On the 35 catalogue matches, `siglip2-p512-as-is` gives 31.4% family-aware Top-1 and
+51.4% Top-5. The package crop gives 57.1% Top-1 and 80.0% Top-5. The current reranker
+gives 71.4% Top-1 and 80.0% Top-5. Thus the crop and reranker fix ordering and scene
+noise, but seven truths remain outside Top-5. All three profiles return a false card for
+all 13 no-match products. Open-set refusal and catalogue coverage are the main field
+gaps. Read
+[the AbobaMakers report](docs/reports/2026-09-29_abobamakers-dataset-benchmark.md).
+
+The three WineHack catalogue files use the same 2,103 official slugs as the lab.
+All eight source fields match our catalogue for every official slug. Their source CSV
+has 2,044 exact duplicate rows. Their enriched CSV reduces it to 2,103 rows, but 58
+image-file groups assign one file to multiple wines and cover 207 slugs. Its taste
+matrix and pairings are rule-derived. The SQL creates 4,533 pairings and gives all
+2,103 wines a NULL price. Its `roskachestvo_score` is an artificial, process-dependent
+Python hash value. We can reuse the enrichment schema, but not these values or image
+links. Read
+[the WineHack report](docs/reports/2026-09-29_winehack-catalog-comparison.md).
+
+## 2026-09-29 — Limits of the lab index for rotated reference vectors
+
+Source: a read-only code survey for the owner message of 2026-09-29T02:02:13+0300 (rotated
+catalogue indexes of NaFlex p512). Facts, with the code places:
+
+1. An index item is keyed by (source_sha256, view): `embeddings.plan_items`,
+   `embeddings.item_status` (the last record wins), the pruning of
+   `build_embeddings.run`, `embedding_run.Catalogue` and `candidate_items`, `run_steps`,
+   `clusters`, and `matcher_bundle._validate_records` (rejects repeats). So several
+   vectors for one image and one view collapse to one, or are pruned by the automatic
+   rebuild before a run (`rebuild_embeddings_on_run: true`).
+2. The ranking maths already takes the maximum over the rows of a wine
+   (`Catalogue.rank`, `matcher/bundle.py`), so more rows per wine work in the maths.
+3. The builder writes one prepared PNG for each item, and an item is current only when
+   its PNG exists. For 2,270 full images: 360 angles ≈ 817,200 vectors, about 215 GiB of
+   PNG, 3.8 GB of vectors; 72 angles ≈ 163,440 vectors, about 43 GiB of PNG, 0.75 GB.
+4. There is no rotation step. The view names are fixed to `full` and `label`.
+5. `results.jsonl` of a run lists every row of each candidate; with 360 rows per image it
+   would grow to several GB.
+6. No query vector is cached: each new pipeline embeds all photos of `my` again (2,226
+   queries on 2026-09-29: 1,647 positive, 579 negative).
+7. Throughput of p512 on the gateway: 12 to 23 images per second on the model side, so
+   817,200 vectors take about 10 to 19 hours and 163,440 vectors about 2 to 4 hours
+   (estimate).
+8. Latest results on `my` (2026-09-28, one worker): `siglip2-p512-as-is` R@1 74.26 %,
+   R@5 94.11 %; `siglip2-p512-crop` R@1 79.48 %, R@5 96.11 %.
+
+## 2026-09-29 — Rotation tests of DINOv3
+
+Source: owner message of 2026-09-29T02:02:13+0300. Report:
+[docs/reports/rotation-dinov3-2026-09-29.md](docs/reports/rotation-dinov3-2026-09-29.md).
+The tests of the SigLIP2 rotation report, with `gx10-dinov3-vitb16` and
+`gx10-dinov3-vitl16`. With one vector, DINOv3 is much more sensitive to a large rotation
+(mean 0.63–0.65 over the rotated angles; SigLIP2 0.77–0.85) and less sensitive to the
+black background (0.987–0.988 at 0°). With reference vectors over the full circle it
+reaches higher scores than SigLIP2 (step 1°: 0.996–0.997 white with offset, 0.979–0.987
+black), and it tolerates a small angle error better (0.995–0.997 at 0.5°). DINOv3 has no
+difference between one image and a batch in a request.
+
+## 2026-09-29 — Rotation and background sensitivity of SigLIP2 so400m
+
+Source: owner message of 2026-09-29T01:10:49+0300. Report:
+[docs/reports/rotation-similarity-2026-09-29.md](docs/reports/rotation-similarity-2026-09-29.md).
+One catalogue main image (`avtohtonnoe-vino-kryma-beloe-suhoe`, 270 x 1024) was rotated
+counter-clockwise in steps of 5°. The canvas grew to hold the rotated image, and the bottle
+kept its pixel size. The cosine to the indexed `full` vector was measured on a white and on
+a black background.
+
+1. A small rotation costs much. At 1°, the cosine is 0.92 to 0.98. At 5°, it is 0.87 to
+   0.95. The diagonals (115° to 135°, 225° to 235°) give the minimum, 0.70 to 0.78. The
+   lossless angles 90°, 180°, and 270° give peaks of 0.82 to 0.95.
+2. Most of the loss comes from the larger canvas, not from the rotation. The unrotated
+   bottle, padded on white to the 45° canvas, loses 0.09 to 0.19. The rotation adds 0.00
+   to 0.07.
+3. The black background costs 0.017 to 0.032 at 0°, and 0.006 (fixed 256) to 0.034
+   (NaFlex p1024) on average over all angles.
+4. Self-retrieval over the whole index: fixed 256 and fixed 384 keep rank 1 at all 72
+   angles on both backgrounds. NaFlex p512 loses rank 1 at 67 and 69 of 72 angles. The
+   nearest other wine is a red blend of the same producer with the same label design.
+5. There is no fixed-size model "siglip2-1024". The gateway serves the fixed sizes 256,
+   384, and 512.
+6. NaFlex p256 gives another vector when a request holds one image: cosine 0.994173 to the
+   index vector of the same image, and 1.000000 in a batch of 2 or more. The other entries
+   give 0.99981 or more. The matcher and the lab runs send one query image in each
+   request, and the index was built in batches of 16. This was measured on one image. The
+   server cause is not known.
+
+Consequence: a tight, upright crop matters more than the background color. Deskewing a
+rotated bottle before the crop could recover most of the loss. This is not tested.
+
+Part 2 (owner message of 2026-09-29T01:34:10+0300): 10 reference vectors of the same
+image (white, rotated 0° to 45° in steps of 5°), the score is the maximum cosine. The mean
+over the rotated angles rises by 0.10 to 0.15, and the minimum rises from 0.70–0.78 to
+0.84–0.91. The best reference is often the angle with the same canvas size as the query
+(180° − θ has the canvas of θ). The multiples of 90° do not gain: the best reference is
+0°, and 180° stays at 0.87 to 0.92. The rank in this test is optimistic, because only
+this wine got the extra vectors. A fair test needs the extra vectors for every wine.
+
+Part 3 (owner message of 2026-09-29T01:44:56+0300): six reference sets. The range of the
+reference angles matters more than the step: 72 vectors over the full circle (step 5°)
+give a mean of 0.964–0.982 on black and 0.963–0.976 on white with a +2.5° query offset;
+91 vectors over 0°–90° (step 1°) give 0.940–0.954 and 0.958–0.966. The step 1° over the
+full circle raises the white offset queries to 0.981–0.990. On black, the step adds 0.001
+or less: the remaining loss of 0.02–0.04 comes from the background, and more angles cannot
+remove it. White queries on the reference grid are trivial (1.000), so the offset queries
+are necessary for the white case.
+
+Part 4 (owner message of 2026-09-29T01:56:01+0300): full-circle sets with the steps 3°,
+8°, 9°, 12°, computed from the saved 360 vectors. The score by the distance to the
+nearest reference angle falls fastest in the first degree (white: 0.979–0.989 at 0.5°,
+0.967–0.982 at 1°) and is almost flat past 2° (0.950–0.972 at 3° to 4.5°). So 30 vectors
+over the full circle (step 12°) give the same or a higher mean than 91 vectors over
+0°–90° (step 1°). The mean of one set is not monotonic in the step, because the distances
+from the query grid (multiples of 5°) to the reference grid change irregularly; compare
+sets by the distance, not by the step.
+
 ## 2026-09-28 — Android SigLIP2 Base 224 and DIS contracts
 
 The Android application uses `vit_base_patch16_siglip_224.v2_webli`. The model returns
@@ -1557,6 +1893,9 @@ shapes the embedding configuration of the Embeddings page.
   RGBA image with a red and with a blue colour under the transparent pixels gives cos
   0.9750. So the model sees the colour under a transparent pixel. The SigLIP 2 models
   were not measured. The probe script is not kept.
+  (2026-09-29: the SigLIP 2 models are measured; read the entry "The alpha channel and
+  the background fill of the SigLIP 2 models" and
+  `docs/reports/siglip2-alpha-background-2026-09-29.md`.)
 - The llama-swap folder "Image embeddings" holds 12 models: the 9 models of the list
   above and `wemm-embed-2b`, `wemm-embed-4b`, `wemm-embed-9b`.
   `naflexvit_so400m_patch16_siglip.v2_webli` accepts `max_num_patches` (1 to 4096,
