@@ -2419,6 +2419,50 @@ in `data/catalog/catalog.sqlite3`; CN6 gives the card its catalogue name again.
 | CN6 | Press `reset` and confirm | The card shows the catalogue name. The tag `name patched` and the button `reset` go away. `name_patched` is NULL. |
 | CN7 | Press `edit`, then Esc | The field closes. The name does not change. |
 
+## The restart script of the lab server — `scripts/restart_lab_server.sh`
+
+Run from any directory. RS1 and RS2 are read-only. RS3 and RS4 restart 8168; the restart
+loads the uncommitted server code of every session (rules 22 to 24 of `CLAUDE.md`).
+
+| # | Case | Expected result |
+|---|---|---|
+| RS1 | `scripts/restart_lab_server.sh --dry-run` with 8168 running | `lab server: running, pid <N>`, `start check: database …, schema version <V>`, `dry run: nothing was stopped or started`. Exit 0. The pid of 8168 stays the same. |
+| RS2 | A copy of the script with `PORT=18999` in an empty `<dir>/scripts/`: first with no listener, then with `python3 -m http.server 18999` | No listener: the start check fails (`No module named 'lab_server'`) and `Nothing was stopped.` Exit 1. With the listener: `port 18999 belongs to pid …, not to the lab server of <dir>`. Exit 1. The listener still runs. |
+| RS3 | `scripts/restart_lab_server.sh` with 8168 running | `SIGTERM to pid <old>`, `stopped`, `started pid <new>`, `ready: http://127.0.0.1:8168/dataset, pid <new>, pgid <new>`. `ps -o pid,pgid -p <new>` shows PGID = PID. `work/lab_server.log` holds `===== <time> restart_lab_server.sh start` and a new start report. A new watcher `describe_images.py --watch --parent-pid <new>` runs; the old watcher is gone. |
+| RS4 | Stop 8168, then `scripts/restart_lab_server.sh` | `lab server: not running`, then a start as in RS3 with no stop line. |
+
+## The checkbox `generate label` — plan 94
+
+Read [plan 94](docs/plans/94_generate-label-checkbox.md). Use `H=http://127.0.0.1:8168`.
+GL1 and GL2 are read-only. GL3 to GL6 change one image of the lab database; GL3 removes
+its automatic label cut, and only a new SAM3 cut brings it back.
+
+| # | Case | Expected result |
+|---|---|---|
+| GL1 | `python3 -m unittest discover -s tests -p 'test_generate_label.py'` | 19 tests OK: the column and its CHECK, the values `true`/`false`/`null`, no SAM3 request, no warning, the removal of an automatic cut and the stay of a manual cut, `seed_label_cuts.py`, `read_inputs`, a database before schema 033. |
+| GL2 | `sqlite3 data/catalog/catalog.sqlite3 'PRAGMA user_version'` | `33` or more. `image_description` has the column `generate_label`. |
+| GL3 | On `/dataset`, press `✎` of a `label_front` photo with a label cut, clear `generate label`, and press `Save` | The request holds `"generate_label": false`. The answer holds `label_cut_removed: true` and `records`. The card shows the original of the photo in place of the cut. |
+| GL4 | Open the editor of the same photo again | `generate label` is clear. |
+| GL5 | Check `generate label` and press `Save` | The request holds `"generate_label": true`. The answer holds `label_cut_removed: false`. The card does not change until a type change, a recut, or `seed_label_cuts.py` cuts the label again. |
+| GL6 | Open the editor of an image with no row, change no value, and press `Save` | `generate label` is checked. The request has no `generate_label`. The value stays `null`. |
+| GL7 | Open the editor with the system theme dark, then light, and at a width of 390 px | The box is readable in both themes. The page has no horizontal scroll. |
+
+## The drag of a `/testset` image into another app
+
+Owner message of 2026-09-30T22:25:00+0300. Use `H=http://127.0.0.1:8168`. Chrome only
+for DD2: `DownloadURL` is a Chromium drag type. DD1 to DD6 change nothing; DD7 moves one
+photo.
+
+| # | Case | Expected result |
+|---|---|---|
+| DD1 | `python3 -m unittest discover -s tests -p 'test_testsets.py'` | 34 tests OK, with `test_a_row_holds_the_original_of_the_card_image_for_a_drag`. |
+| DD2 | Open `$H/testset?set=my&q=Leto`, drag the catalogue image of `aratti-vremena-goda-saperavi-leto` to the Finder desktop | A file `aratti-vremena-goda-saperavi-leto.webp` appears: the original main photo, not the transparent cut that the row shows. |
+| DD3 | Drag the same image into a Telegram chat, and into a new browser tab | Telegram gets the image or its address; the tab shows the original `.webp`. |
+| DD4 | Drag a card of a test photo to the Finder desktop | A file `<slug>_<file>` with the extension of the stored photo appears. The sidebar opens, as for a move. |
+| DD5 | Open the large view, drag the left and the right photo to the Finder desktop | The left gives the original catalogue image; the right gives the test photo. |
+| DD6 | Press `Box`, then drag on the right photo | The drag draws the box. No file drag starts. |
+| DD7 | Drag a card onto another wine row; drag a catalogue image onto a row; drop a catalogue image on the header | The card moves (`POST /api/testset-move`). The catalogue image imports nothing, and the page stays in the tab. |
+
 ## Static wine images (plan 06 of the repository)
 
 | ID | Step | Expected result |

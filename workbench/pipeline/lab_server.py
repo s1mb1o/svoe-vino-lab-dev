@@ -74,7 +74,9 @@ with a manual cut gets HTTP 409. `alternatives.recut_alternative` does the work.
 
 The route `/api/image-description` sets (POST) the values of one image in the table
 `image_description` by hand, with `image_descriptions.py`; `GET /api/dataset` sends the
-key `image_descriptions`. `GET /api/image-description-status` sends the state of the
+key `image_descriptions`. The value `generate_label` false turns off the SAM3 label cut of
+the image and deletes its automatic label cut (plan 94,
+`docs/plans/94_generate-label-checkbox.md`). `GET /api/image-description-status` sends the state of the
 watcher and the counts for the indicator of the page; `log=<N>` adds the last N lines of
 the watcher log for the dialog of the watcher (plan 49). `GET
 /api/image-description-reply?sha256=` sends the raw VLM reply of one image from
@@ -1154,14 +1156,18 @@ SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 def set_image_description(db_path, sha256, values):
     """Set values of one image by hand. Return the answer of the POST.
 
-    `values` holds 1 to 5 fields of `image_descriptions.FIELDS`. A value is a value of its
-    field, or null to clear it. A field that `values` does not hold stays as it is. The
-    image MUST be linked to a wine (`image_descriptions.is_linked`).
+    `values` holds 1 to 6 fields: the fields of `image_descriptions.FIELDS` and
+    `generate_label` (plan 94). A value is a value of its field, or null to clear it. A
+    field that `values` does not hold stays as it is. The image MUST be linked to a wine
+    (`image_descriptions.is_linked`). `generate_label` false also deletes the automatic
+    label cut of the image (`alternatives.remove_label_cut`) in the same transaction. The
+    answer then holds `label_cut_removed` true and `records`: slug -> the new record of
+    each wine that links the image.
     """
     if not isinstance(sha256, str) or not SHA256_RE.match(sha256):
         raise StateError(400, "`sha256` MUST be 64 lower-case hex digits")
     if not isinstance(values, dict) or not values:
-        raise StateError(400, "`values` MUST hold 1 to 5 fields")
+        raise StateError(400, "`values` MUST hold 1 to 6 fields")
     try:
         checked = {field: image_descriptions.check_value(field, value)
                    for field, value in values.items()}
@@ -1175,11 +1181,20 @@ def set_image_description(db_path, sha256, values):
             if not image_descriptions.is_linked(conn, sha256):
                 raise StateError(404, "no wine image with the sha256 %s" % sha256)
             row = image_descriptions.set_values(conn, sha256, checked)
+            removed = (checked.get(image_descriptions.GENERATE_LABEL) is False
+                       and alternatives.remove_label_cut(conn, sha256))
             conn.execute("COMMIT")
         except BaseException:
             conn.execute("ROLLBACK")
             raise
-    return {"ok": True, "sha256": sha256, "description": row}
+        answer = {"ok": True, "sha256": sha256, "description": row,
+                  "label_cut_removed": removed}
+        if removed:
+            slugs = {slug for (slug,) in conn.execute(
+                "SELECT wine_slug FROM wine_image WHERE sha256 = ?", (sha256,))}
+            answer["records"] = {record["slug"]: record for record in dataset_records(conn)
+                                 if record["slug"] in slugs}
+    return answer
 
 
 def image_description_status(db_path, log=None):

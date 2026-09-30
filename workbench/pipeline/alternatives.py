@@ -32,6 +32,10 @@ Rules:
 - A manual cut (plan 56) is a polygon of the owner on the original. It replaces the cut
   of the kind of the current type, and no automatic run replaces it
   (`derive.is_manual`). `reset_manual_cut` removes it, and SAM3 cuts the photo again.
+- The owner can turn off the label cut of one image (plan 94,
+  `image_description.generate_label = 0`, `label_cut_off`). Then `process_image` makes no
+  label cut and sends no SAM3 request for it, and no warning names the missing cut.
+  `remove_label_cut` deletes the automatic label cut when the owner turns it off.
 
 The store path and the `INSERT INTO image` are each in one function of `patches.py`:
 `file_path` and `insert_image`. `lab_server.alternative_images` builds the URLs.
@@ -179,6 +183,25 @@ def current_absence(conn, digest):
         "SELECT settings, reason FROM image_derivative_absence WHERE source_sha256 = ? "
         "AND kind = 'label'", (digest,)).fetchone()
     return row[1] if row and row[0] == SETTINGS_LABEL_ABSENCE else None
+
+
+def label_cut_off(conn, digest):
+    """Tell whether the owner turned off the label cut of `digest`: the checkbox
+    `generate label` of `/dataset` stored `image_description.generate_label = 0` (plan 94).
+    No row and NULL leave the label cut on."""
+    row = conn.execute("SELECT generate_label FROM image_description WHERE sha256 = ?",
+                       (digest,)).fetchone()
+    return row is not None and row[0] == 0
+
+
+def remove_label_cut(conn, digest):
+    """Delete the automatic label cut of `digest` in the caller's transaction. A manual cut
+    (plan 56) stays. The processed file stays in the store. Return True when a row was
+    deleted."""
+    return conn.execute(
+        "DELETE FROM image_derivative WHERE source_sha256 = ? AND kind = 'label' AND "
+        "substr(settings, 1, ?) <> ?",
+        (digest, len(derive.MANUAL_PREFIX), derive.MANUAL_PREFIX)).rowcount > 0
 
 
 def _box(item):
@@ -434,10 +457,11 @@ def label_derivatives(conn, db_path, digest, image, icc_profile, instances, log,
 def write_processed_rows(conn, derivatives):
     """Write a package or label processing result in the caller's transaction.
 
-    A label result also writes or clears its deliberate-absence marker.
+    A label result also writes or clears its deliberate-absence marker. A turned-off
+    label result (plan 94) keeps the marker as it is.
     """
     derive.write_rows(conn, derivatives)
-    if derivatives.kind != "label":
+    if derivatives.kind != "label" or getattr(derivatives, "turned_off", False):
         return
     reason = getattr(derivatives, "not_applicable", None)
     if reason:
@@ -456,9 +480,16 @@ def process_image(conn, db_path, digest, path, kind, segmenter, warnings, answer
     """Process one original for `kind`. `answer` is the SAM3 answer of the detection, or
     None. `close_up` tells that the original is a label close-up. Return a
     `derive.Derivatives`. Patch uploads also use this function to create their label cut
-    of a full photo."""
+    of a full photo. When the owner turned off the label cut (`label_cut_off`, plan 94),
+    the label result has `turned_off = True`, no SAM3 request, and no row."""
     if kind == "full":
         return derive.derive_all(conn, db_path, {digest: path}, segmenter, warnings.append)
+    if label_cut_off(conn, digest):
+        out = derive.Derivatives("label")
+        out.source_sha256 = digest
+        out.not_applicable = None
+        out.turned_off = True
+        return out
     absence = current_absence(conn, digest)
     if absence:
         out = derive.Derivatives("label")
@@ -512,12 +543,14 @@ def full_label_cut(conn, db_path, digest, path, segmenter, warnings, answer=None
     """Return the label cut of the full photo `digest` as a `derive.Derivatives` of the
     kind `label`, for `write_processed_rows`. The view `label` of the Embeddings page
     starts with this cut (plan 22). `answer` is the SAM3 answer of `DETECT_TEXTS`, or None.
-    A photo with no cut and no not-applicable marker adds `NO_LABEL_CUT` to `warnings`.
-    Manual wines and the website import call this function too."""
+    A photo with no cut, no not-applicable marker, and a label cut that is not turned off
+    adds `NO_LABEL_CUT` to `warnings`. Manual wines and the website import call this
+    function too."""
     notes = []
     label = process_image(conn, db_path, digest, path, "label", segmenter, notes, answer)
     if (label.unavailable or label.unreadable or label.errors
-            or not (label.links or label.present or label.not_applicable)):
+            or not (label.links or label.present or label.not_applicable
+                    or getattr(label, "turned_off", False))):
         warnings.append(NO_LABEL_CUT)
     warnings.extend(notes)
     return label
@@ -526,11 +559,13 @@ def full_label_cut(conn, db_path, digest, path, segmenter, warnings, answer=None
 def has_current_cuts(conn, digest, kind):
     """Tell whether the original `digest` has each current cut of `kind`. A full photo
     needs its package cut and its label cut, or a current not-applicable marker. A label
-    close-up needs its label cut."""
+    close-up needs its label cut. A label cut that the owner turned off (plan 94) counts
+    as present."""
     if kind == "label":
-        return has_current_cut(conn, digest, "label", True)
+        return has_current_cut(conn, digest, "label", True) or label_cut_off(conn, digest)
     return has_current_cut(conn, digest, "full") and (
-        has_current_cut(conn, digest, "label") or current_absence(conn, digest) is not None)
+        has_current_cut(conn, digest, "label") or current_absence(conn, digest) is not None
+        or label_cut_off(conn, digest))
 
 
 def _check_slug(slug):
@@ -554,7 +589,8 @@ def _present_type(conn, slug, digest):
 def _warn(derivatives, warnings, text=NO_PROCESSED_FILE):
     if (derivatives.unavailable or derivatives.unreadable or derivatives.errors
             or not (derivatives.links or derivatives.present
-                    or getattr(derivatives, "not_applicable", None))):
+                    or getattr(derivatives, "not_applicable", None)
+                    or getattr(derivatives, "turned_off", False))):
         warnings.insert(0, text)
 
 

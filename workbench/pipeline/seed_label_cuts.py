@@ -19,6 +19,8 @@ Rules:
 - When the label prompt finds no label, the package prompt distinguishes a printed
   `packet` or `box` from a bottle or can. A packet or box gets a not-applicable marker.
   A bottle or can gets no row, and the next run asks again.
+- An original whose label cut the owner turned off (plan 94,
+  `image_description.generate_label = 0`) gets no request.
 - The run stops at the first time that SAM3 does not answer.
 
 Exit status: 0 when each original has its label cut or no label. 1 when the run cannot
@@ -44,6 +46,7 @@ class Report:
         self.originals = 0    # full originals in the database
         self.present = 0      # originals with a label cut of the present settings
         self.absence_present = 0  # originals with a current not-applicable marker
+        self.turned_off = 0   # originals whose label cut the owner turned off (plan 94)
         self.written = 0      # label cuts written in this run
         self.not_applicable = []  # packets and boxes with no separate label
         self.no_label = []    # sha256 of originals with no label in the SAM3 answer
@@ -82,15 +85,19 @@ def seed_label_cuts(db_path, log=print, segmenter=None, limit=None):
         absences = {row[0] for row in conn.execute(
             "SELECT source_sha256 FROM image_derivative_absence WHERE kind = 'label' AND "
             "settings = ?", (alternatives.SETTINGS_LABEL_ABSENCE,))}
-        present = cuts | absences
+        turned_off = {row[0] for row in conn.execute(
+            "SELECT sha256 FROM image_description WHERE generate_label = 0")}
+        present = cuts | absences | turned_off
         todo = [(digest, path) for digest, path in originals if digest not in present]
         report.present = len(cuts)
         report.absence_present = len(absences)
+        report.turned_off = sum(digest in turned_off for digest, _ in originals)
         if limit is not None:
             todo = todo[:limit]
         log("full originals: %d; with a label cut: %d; label not applicable: %d; "
-            "to do: %d" % (report.originals, report.present,
-                            report.absence_present, len(todo)))
+            "label cut turned off: %d; to do: %d"
+            % (report.originals, report.present, report.absence_present,
+               report.turned_off, len(todo)))
         for number, (digest, path) in enumerate(todo, 1):
             messages = []
             out = alternatives.process_image(conn, db_path, digest, path, "label",
@@ -158,6 +165,7 @@ def main(argv=None):
     print("label cuts present: %d" % report.present)
     print("label cuts written: %d" % report.written)
     print("label not applicable present: %d" % report.absence_present)
+    print("label cut turned off: %d" % report.turned_off)
     print("label not applicable written: %d" % len(report.not_applicable))
     print("no label: %d" % len(report.no_label))
     print("unreadable: %d" % len(report.unreadable))

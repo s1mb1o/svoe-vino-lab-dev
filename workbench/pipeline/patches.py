@@ -141,7 +141,8 @@ def store_patch(conn, db_path, slug, data, name=None, segmenter=None):
                                        label_warnings)
     if (label.unavailable or label.unreadable or label.errors
             or not (label.links or label.present
-                    or getattr(label, "not_applicable", None))):
+                    or getattr(label, "not_applicable", None)
+                    or getattr(label, "turned_off", False))):
         warnings.append(NO_LABEL_CUT)
     warnings.extend(label_warnings)
 

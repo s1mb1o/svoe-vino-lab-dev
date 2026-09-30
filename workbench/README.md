@@ -504,6 +504,15 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   clears the label and keeps the comments, the box, the delete mark, and the proposal;
   `moved_from` gets the old place; a file name that the target holds gets `_moved<N>`.
   No file moves.
+- A drag into another app (the Finder, Telegram, another browser) gives the file of the
+  image (owner message of 2026-09-30T22:25:00+0300): the catalogue image of a row gives the
+  original main photo, or `main_patched` (the key `bottle_original_url` of
+  `GET /api/testset`), not the cut that the row shows; a card and the photo of the large
+  view give the test photo; the catalogue image of the large view gives the original too.
+  The drag carries `DownloadURL` (a file in Chrome), `text/uri-list`, `text/plain`, and
+  `text/html`. A card drag stays a move on the page. The box mode keeps the drag on the
+  photo for the box. A drop of such a drag onto the page has no effect: it imports
+  nothing and does not open the image in the tab.
 - The large view shows the catalogue image and the photo side by side, with the panel
   `Comments on this photo` (plan 51). A photo MAY have more than one comment
   (`test_photo_comment`). The panel lists them, the oldest first, with the time, the
@@ -1005,6 +1014,15 @@ The table `image_description` describes each image that `wine_image` links to a 
 
 - A button `✎` in the bottom right corner of each image of `/dataset` opens the editor
   of that image. A value set by hand stays. `— not set —` clears a value.
+- The checkbox `generate label` of the editor turns the SAM3 label cut of the image on
+  or off ([plan 94](docs/plans/94_generate-label-checkbox.md), schema 033, the column
+  `generate_label`). Not set (NULL) and checked (1) make the label cut as before. Clear
+  (0) stops each writer of a label cut for the image, and the save deletes its automatic
+  label cut; a manual cut stays. The embedding build then marks the label view of the
+  image as not applicable. `Save` sends the value only after a change of the box. A
+  check of the box again makes no SAM3 call: the next type change, recut, or
+  `seed_label_cuts.py` run cuts the label again. A present embedding index keeps the
+  label vector until its next build.
 - The page path names the open editor: `/dataset/<wine_slug>/describe/<sha256>`. A link
   to this path opens the same editor over the card of the wine. Back closes the editor.
   An image that no card holds gives the plain page at `/dataset` (owner message of

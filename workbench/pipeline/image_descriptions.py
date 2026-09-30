@@ -51,8 +51,13 @@ VALUES = {
 # additional.
 IMAGE_TYPES = tuple(labdb.IMAGE_FOLDERS)
 
+# The switch of the label cut of the image (plan 94): None (not set) or True makes the
+# label cut, False turns it off. The owner alone sets it; the VLM does not fill it, so it
+# is not a field of FIELDS. Schema 033 added it after `presentation_mode`.
+GENERATE_LABEL = "generate_label"
+
 COLUMNS = FIELDS + ("created_by", "created_at", "updated_at", "vlm_at", "vlm_name",
-                    "vlm_model", "vlm_answer", "vlm_error", "vlm_attempts")
+                    "vlm_model", "vlm_answer", "vlm_error", "vlm_attempts", GENERATE_LABEL)
 
 
 class DescriptionError(ValueError):
@@ -63,7 +68,12 @@ def check_value(field, value):
     """Return `value` when it is a value of `field`, or None. Raise DescriptionError.
 
     `content_roles` is a list of 1 to 2 different roles; `unknown` stands alone.
+    `generate_label` is true, false, or None.
     """
+    if field == GENERATE_LABEL:
+        if value is None or isinstance(value, bool):
+            return value
+        raise DescriptionError("generate_label MUST be true, false, or null")
     if field not in VALUES:
         raise DescriptionError("unknown field %s" % field)
     if value is None:
@@ -86,6 +96,8 @@ def _row(row):
     for key in ("content_roles", "vlm_answer"):
         if item[key] is not None:
             item[key] = json.loads(item[key])
+    if item[GENERATE_LABEL] is not None:
+        item[GENERATE_LABEL] = bool(item[GENERATE_LABEL])
     return item
 
 
@@ -114,15 +126,18 @@ def set_values(conn, sha256, values, now=None):
 
     A field that `values` does not hold stays as it is. None clears a field. A missing
     row is made with `created_by = 'manual'`. The caller checks the values with
-    `check_value`.
+    `check_value`. `values` MAY hold `generate_label` too: true is stored as 1, false as
+    0.
     """
     now = now or comments.now_utc()
     conn.execute("INSERT INTO image_description (sha256, created_by, created_at, updated_at) "
                  "VALUES (?, 'manual', ?, ?) ON CONFLICT (sha256) DO NOTHING",
                  (sha256, now, now))
-    fields = [field for field in FIELDS if field in values]
+    fields = [field for field in FIELDS + (GENERATE_LABEL,) if field in values]
     stored = [json.dumps(values[f], separators=(",", ":"))
-              if f == "content_roles" and values[f] is not None else values[f] for f in fields]
+              if f == "content_roles" and values[f] is not None
+              else int(values[f]) if f == GENERATE_LABEL and values[f] is not None
+              else values[f] for f in fields]
     conn.execute("UPDATE image_description SET %s updated_at = ? WHERE sha256 = ?"
                  % "".join("%s = ?, " % field for field in fields),
                  stored + [now, sha256])

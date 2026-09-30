@@ -76,6 +76,9 @@ STEP_OPTIONS = {
 }
 SEGMENT_STEPS = ("segment", "segment_dis")
 TARGETS = ("package", "label")
+# The not-applicable reason of the label view of an original whose label cut the owner
+# turned off (plan 94, `image_description.generate_label = 0`).
+LABEL_TURNED_OFF = "the owner turned off the label cut"
 ASPECTS = ("keep", "ignore")
 MIN_SIZE, MAX_SIZE = 16, 4096
 
@@ -465,6 +468,15 @@ def read_inputs(conn, db_path):
             "WHERE kind = 'label'"):
         if settings == alternatives.SETTINGS_LABEL_ABSENCE:
             absences["label"][source] = reason
+    # Plan 94: the owner turned off the label cut of an original. With no label cut (a
+    # manual cut stays), its label view is not applicable. A database before schema 033
+    # has no column `generate_label`.
+    if "generate_label" in {row[1] for row in conn.execute(
+            "PRAGMA table_info(image_description)")}:
+        for (source,) in conn.execute(
+                "SELECT sha256 FROM image_description WHERE generate_label = 0"):
+            if source not in cuts["label"]:
+                absences["label"].setdefault(source, LABEL_TURNED_OFF)
     wines, by_slug, sources = [], {}, {}
     for slug, name, producer, category, region, image_type, digest, folder, extension in (
             conn.execute(

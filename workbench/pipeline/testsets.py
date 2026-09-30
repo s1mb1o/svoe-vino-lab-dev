@@ -432,7 +432,10 @@ def groups(conn, set_name):
 
 def _wine_row(slug, wine, card, photos):
     """Return the row of one wine for the page. `wine` is None for a place that
-    `wine_catalog` does not hold."""
+    `wine_catalog` does not hold. `bottle_url` is the file that the page shows (the
+    processed file, or the original). `bottle_original_url` is the original of the same
+    image, the file of a drag into another app (owner answer of about
+    2026-09-30T22:28+0300)."""
     name, producer, category, color, region, grapes, state = wine or ("",) * 6 + (None,)
     confs = [p["conf"] for p in photos if p["conf"] is not None]
     card = card or {}
@@ -440,6 +443,7 @@ def _wine_row(slug, wine, card, photos):
             "category": category or "", "color": color or "", "region": region or "",
             "grapes": grapes or "", "state": state, "in_catalog": wine is not None,
             "bottle_url": card.get("_patch_image_url") or card.get("main_image_url"),
+            "bottle_original_url": card.get("_patch_url") or card.get("main_image_original_url"),
             "patched": bool(card.get("_patch_url")), "photos": photos,
             "min_conf": min(confs) if confs else None, "catalog_only": not photos}
 

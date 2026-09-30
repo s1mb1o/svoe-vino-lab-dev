@@ -702,8 +702,8 @@ tbody tr.cat-only { background: var(--panel-2); }
 <div id="lb">
   <div id="lb-status"></div>
   <div class="lb-inner">
-    <figure class="lb-fig" id="lb-ref"><img alt=""><figcaption></figcaption></figure>
-    <figure class="lb-fig" id="lb-cand"><img alt="" draggable="false"><div
+    <figure class="lb-fig" id="lb-ref" draggable="true"><img alt="" draggable="false"><figcaption></figcaption></figure>
+    <figure class="lb-fig" id="lb-cand" draggable="true"><img alt="" draggable="false"><div
       class="lb-box" id="lb-box"></div><figcaption></figcaption></figure>
   </div>
   <aside class="lb-side">
@@ -787,8 +787,8 @@ tbody tr.cat-only { background: var(--panel-2); }
 <script>
 const PATCH_TIP = "patched: this catalogue image is the main_patched image of the wine"
   + " in the lab database. The main image is not shown.";
-function picHtml(imgHtml, patched) {
-  return `<div class="pic">${imgHtml}${
+function picHtml(imgHtml, patched, attrs = "") {
+  return `<div class="pic"${attrs}>${imgHtml}${
     patched ? `<span class="patched" title="${PATCH_TIP}">patched</span>` : ""}</div>`;
 }
 
@@ -1123,8 +1123,8 @@ function rowCountsHtml(r) {
 
 function rowHtml(r, gclass) {
   const img = r.bottle_url
-    ? picHtml(`<img class="bottle" loading="lazy" src="${esc(r.bottle_url)}" alt=""
-         data-bottle="1">`, r.patched)
+    ? picHtml(`<img class="bottle" loading="lazy" draggable="false" src="${esc(r.bottle_url)}" alt=""
+         data-bottle="1">`, r.patched, ' draggable="true" data-drag-out="bottle"')
     : `<div class="bottle missing">${r.in_catalog ? "no card<br>image" : "not in<br>catalogue"}</div>`;
   const bottle = isNullRow(r)
     ? `<div class="bottle-col"><div class="bottle null-bottle"
@@ -1793,6 +1793,52 @@ document.addEventListener("scroll", hideCtxMenu, true);
 const PHOTO_TYPE = "application/x-photo";
 let DRAG = null;
 
+/* A drag into another app (owner message of 2026-09-30T22:25+0300): the catalogue image
+   of a row (its original file), a card, and each photo of the large view. `DownloadURL`
+   gives Chrome a file for Finder and the other apps; the URL types serve a browser.
+   OUT_TYPE marks each drag of this page: the page takes no drop of it as an image from
+   outside, and a drop out of a target does not open the address in the tab. */
+const OUT_TYPE = "application/x-svl-drag-out";
+const OUT_MIME = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+                   webp: "image/webp", gif: "image/gif" };
+function setDragOut(dt, url, name) {
+  if (!url) return;
+  const href = new URL(url, location.href).href;
+  const ext = ((/\.([a-z0-9]+)(?:[?#]|$)/i.exec(href) || [])[1] || "").toLowerCase();
+  const file = name.replace(/\.[a-z0-9]+$/i, "").replace(/[^\w.-]+/g, "_") +
+    (ext ? "." + ext : "");
+  dt.setData(OUT_TYPE, "1");
+  dt.setData("DownloadURL", `${OUT_MIME[ext] || "application/octet-stream"}:${file}:${href}`);
+  dt.setData("text/uri-list", href);
+  dt.setData("text/plain", href);
+  dt.setData("text/html", `<img src="${esc(href)}" alt="">`);
+}
+function isDragOut(ev) {
+  return !!ev.dataTransfer && [...ev.dataTransfer.types].includes(OUT_TYPE);
+}
+// The drag of an image that is not a card: the catalogue image of a row, or a photo of
+// the large view. The box mode keeps the drag on the photo for the box.
+function dragOutImage(ev) {
+  const el = ev.target && ev.target.closest ? ev.target : null;
+  const pic = el && el.closest(".pic[data-drag-out]");
+  const fig = el && el.closest("#lb-ref, #lb-cand");
+  if (pic) {
+    const tr = pic.closest("tr[data-slug]");
+    const r = tr && ROWS.find(x => x.slug === tr.dataset.slug);
+    if (!r) return;
+    setDragOut(ev.dataTransfer, r.bottle_original_url || r.bottle_url, r.slug);
+  } else if (fig) {
+    const r = LB && VIEW[LB.wine];
+    if (!r || (fig.id === "lb-cand" && BOX_MODE)) { ev.preventDefault(); return; }
+    const p = r.photos[LB.photo];
+    if (fig.id === "lb-ref") setDragOut(ev.dataTransfer, r.bottle_original_url || r.bottle_url, r.slug);
+    else if (p) setDragOut(ev.dataTransfer, p.url, `${r.slug}_${p.file}`);
+  } else {
+    return;
+  }
+  ev.dataTransfer.effectAllowed = "copy";
+}
+
 function rankOf(file) {
   const m = /^(\d+)_/.exec(file);
   return m ? Number(m[1]) : 9999;
@@ -1858,7 +1904,7 @@ function hasPhoto(ev) {
    Yandex Images also keeps the original address in `url=` of its viewer URL. */
 const URL_TYPES = ["text/html", "text/uri-list", "DownloadURL", "text/plain"];
 function hasExternalImage(ev) {
-  if (!ev.dataTransfer || hasPhoto(ev)) return false;
+  if (!ev.dataTransfer || hasPhoto(ev) || isDragOut(ev)) return false;
   const types = [...ev.dataTransfer.types];
   return types.includes("Files") || URL_TYPES.some(type => types.includes(type));
 }
@@ -1904,11 +1950,15 @@ function readPhoto(ev) {
 }
 document.addEventListener("dragstart", ev => {
   const card = ev.target.closest && ev.target.closest(".card[data-file]");
-  if (!card) return;
+  if (!card) { dragOutImage(ev); return; }
   DRAG = { slug: card.dataset.slug, file: card.dataset.file };
   if (!sideShown()) setSide(true);      // the drop target MUST be on the screen
   ev.dataTransfer.setData(PHOTO_TYPE, JSON.stringify(DRAG));
-  ev.dataTransfer.effectAllowed = "move";
+  // The same drag gives the photo file to another app; a move stays a move on this page.
+  const img = card.querySelector("img[data-full]");
+  setDragOut(ev.dataTransfer, img && img.getAttribute("src"),
+             `${card.dataset.slug}_${card.dataset.file}`);
+  ev.dataTransfer.effectAllowed = "copyMove";
   card.classList.add("dragging");
 });
 document.addEventListener("dragend", () => {
@@ -1945,6 +1995,14 @@ $("#side").addEventListener("drop", ev => {
   if (d) moveTo(d.slug, d.file, DRAWER_SLUG);
 });
 document.addEventListener("dragover", ev => {
+  // A drag of this page carries the address of its file (OUT_TYPE). Out of a target of a
+  // card, its drop MUST NOT open the address in the tab: the drop has no effect.
+  if (isDragOut(ev)) {
+    const el = ev.target && ev.target.closest ? ev.target : null;
+    const onTarget = hasPhoto(ev) && el &&
+      (el.closest("tr[data-slug]") || $("#side").contains(el));
+    if (!onTarget) { ev.preventDefault(); ev.dataTransfer.dropEffect = "none"; return; }
+  }
   if (!hasPhoto(ev) && !hasExternalImage(ev)) return;
   const tr = ev.target.closest && ev.target.closest("tr[data-slug]");
   // An external drop out of a target MUST NOT open in the tab and replace the page. The

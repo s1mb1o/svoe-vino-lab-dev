@@ -111,6 +111,10 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
   display: inline-flex; gap: 5px; align-items: center; margin: 4px 12px 0 0;
   color: var(--text); font-size: 13px;
 }
+/* The checkbox `generate label` (plan 94): the SAM3 label cut of the image. */
+.describe-fields label.describe-check {
+  display: inline-flex; gap: 6px; align-items: center; color: var(--text); font-size: 13px;
+}
 .describe-status { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .describe-status .fail { color: var(--neg); }
 /* The raw VLM reply of the dialog: the `data/cache/` record, loaded when it opens. */
@@ -863,6 +867,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
         <label>package_view <select name="package_view"></select></label>
         <fieldset><legend>content_roles</legend><div id="describe-roles"></div></fieldset>
         <label>presentation_mode <select name="presentation_mode"></select></label>
+        <label class="describe-check" title="Unchecked: no SAM3 label cut for this image. A save removes the automatic label cut. A manual cut stays."><input type="checkbox" name="generate_label"> generate label</label>
       </form>
     </div>
     <div class="describe-status" id="describe-status"></div>
@@ -2062,6 +2067,9 @@ function openDescribe(sha, slug, src, mode = "push") {
   $("#describe-roles").innerHTML = (values.content_roles || []).map(role =>
     `<label><input type="checkbox" name="content_roles" value="${esc(role)}"${
       roles.includes(role) ? " checked" : ""}> ${esc(role)}</label>`).join("");
+  // Plan 94: not set (null) or true is checked; only an explicit false is clear.
+  form.elements.generate_label.checked = !(row && row.generate_label === false);
+  DESCRIBE_TARGET.generate = form.elements.generate_label.checked;
   $("#describe-image").src = src;
   $("#describe-image").alt = `The image ${sha}`;
   $("#describe-title").textContent = `Image description · ${slug}`;
@@ -2111,6 +2119,10 @@ async function saveDescribe() {
   }
   const roles = [...$("#describe-roles").querySelectorAll("input:checked")].map(box => box.value);
   values.content_roles = roles.length ? roles : null;
+  // Send `generate_label` only after a change of the box, so a value that is not set
+  // stays not set (plan 94).
+  const generate = form.elements.generate_label.checked;
+  if (generate !== DESCRIBE_TARGET.generate) values.generate_label = generate;
   $("#describe-save").disabled = true;
   $("#describe-save").textContent = "Saving…";
   try {
@@ -2122,9 +2134,17 @@ async function saveDescribe() {
     if (!response.ok) throw new Error(out.error || response.status);
     DATA.image_descriptions = DATA.image_descriptions || {};
     DATA.image_descriptions[sha] = out.description;
+    // An uncheck of `generate label` removed the automatic label cut: the answer holds
+    // the new record of each wine that links the image.
+    const changed = Object.entries(out.records || {});
+    for (const [other, update] of changed) {
+      const record = DATA.records.find(r => r.slug === other);
+      if (record) Object.assign(record, update);
+    }
     fillPackageFilter();
     closeDescribe();
     renderCard(slug);
+    for (const [other] of changed) if (other !== slug) renderCard(other);
   } catch (error) {
     $("#describe-error").textContent = `Cannot save the description: ${error.message}`;
     $("#describe-error").hidden = false;

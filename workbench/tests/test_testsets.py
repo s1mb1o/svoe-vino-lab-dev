@@ -113,6 +113,18 @@ class TestsetsTest(unittest.TestCase):
         self.assertEqual([s for s, r in by_slug.items() if r["catalog_only"]],
                          ["wine-b", "wine-d"])
 
+    def test_a_row_holds_the_original_of_the_card_image_for_a_drag(self):
+        cut = {"main_image_url": "/images/cropped/x.png",
+               "main_image_original_url": "/images/main/x.webp", "_patch_url": None}
+        row = TS._wine_row("wine-x", None, cut, [])
+        self.assertEqual((row["bottle_url"], row["bottle_original_url"]),
+                         ("/images/cropped/x.png", "/images/main/x.webp"))
+        patched = dict(cut, _patch_image_url="/images/cropped/p.png",
+                       _patch_url="/images/patched/p.webp")
+        self.assertEqual(TS._wine_row("wine-x", None, patched, [])["bottle_original_url"],
+                         "/images/patched/p.webp")
+        self.assertIsNone(TS._wine_row("wine-x", None, None, [])["bottle_original_url"])
+
     def test_a_row_holds_the_card_image_the_group_and_the_photos(self):
         wine_a, wine_c = self.row("wine-a"), self.row("wine-c")
         self.assertEqual((wine_a["bottle_url"], wine_a["patched"]),

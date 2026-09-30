@@ -39,6 +39,57 @@
 
 ## 2026-09-30
 
+- `/testset`: a drag into another app (the Finder, Telegram, another browser) gives the
+  file of the image (owner message of about 22:25; answers of about 22:28). The catalogue
+  image of a row and of the large view gives the original main photo, or `main_patched`,
+  not the cut that the row shows: `testsets._wine_row` adds the key `bottle_original_url`.
+  A card and the photo of the large view give the test photo. The drag carries
+  `DownloadURL`, `text/uri-list`, `text/plain`, and `text/html`, and the marker
+  `application/x-svl-drag-out`. A card drag stays a move (`copyMove`). The box mode keeps
+  its drag. A drop of such a drag onto the page has no effect: no import, and the tab keeps
+  the page. Tests: `test_testsets.py` 34 OK; the test set suites 58 and 21 OK; a Playwright
+  check of a scratch server on a copy of the database passed 19 checks, with real drags
+  (the move of a card, effect `none` over a row for a catalogue image). A drop into the
+  Finder or into Telegram is a manual check (`SMOKE_TESTS.md` DD2 to DD5). The page is live
+  since 22:39. 8168 restarted at 22:41:05 (pid 5170) after the answer (a) of 7d [ca1fd7],
+  whose new routes loaded in the same restart; a read-only check of 8168 then gave the
+  original `/images/main/107bd231…webp` for the Leto row.
+
+- Plan 94: the checkbox `generate label` in the dialog `Image description` of `/dataset`
+  (owner message of about 20:38; answers of about 20:46 and 21:59). Schema 033 adds
+  `image_description.generate_label` (NULL, 1, or 0). NULL and 1 make the SAM3 label cut
+  as before; 0 turns it off. `alternatives.process_image` then sends no SAM3 request and
+  writes no label cut, so each writer skips the image: upload, type change, recut, reset
+  of a manual cut, patch, manual wine, website import, `seed_label_cuts.py`, and
+  `scripts/prepare_rerun_label_inputs.py`. No warning names the missing cut. The save of 0
+  deletes the automatic label cut (`alternatives.remove_label_cut`); a manual cut stays.
+  The answer then holds `label_cut_removed` and the new records, and the page updates each
+  card. `embeddings.read_inputs` marks the label view of a turned-off image with no cut as
+  not applicable, so the embedding build, the matcher bundle, the clusters, and the index
+  of a new wine skip it. The page sends the value only after a change of the box.
+  Backup: `data/backups/lab-before-033-generate-label-20260930T191644Z.sqlite3`; schema
+  033 migrated at 22:16. Tests: 19 new tests in `tests/test_generate_label.py`; the full
+  suite 1543 OK (1 skipped); a Playwright check of a scratch server passed 18 checks (the
+  box, the requests, the card of a close-up, the dark and light theme, 390 px).
+  8168 restarted at 22:22:44 with `scripts/restart_lab_server.sh` (pid 41454), after an
+  agreement with 4e [e29316], whose route `GET /api/local-image` loaded in the same
+  restart. The page hunks went in after the restart. A read-only browser check of 8168:
+  the box is checked for a row with no value, no page error, no write. README "The image
+  descriptions", `docs/lab-openapi.yaml`, `SMOKE_TESTS.md` GL1 to GL7.
+
+- The new script `scripts/restart_lab_server.sh` restarts the lab server on port 8168
+  (owner message of about 19:44; answer of about 19:49). It follows rules 22 to 24: SIGTERM
+  to the listener of the port, a start of `pipeline/lab_server.py --no-browser` in its own
+  session with the log in `work/lab_server.log`, and a wait for HTTP 200 from
+  `GET /api/dataset`. Before it stops the server, it checks that the listener is the lab
+  server of this workbench, and it runs the start check of `lab_server.main` (config and
+  schema version). A pending schema file stops the script, because the server then does
+  not start. `--dry-run` stops nothing. Tests: the dry run on the live server; a scratch
+  copy on port 18999 refused a foreign listener and a failed start check, and stopped
+  nothing. RS3 passed twice: a restart at 19:53:42 by another session and the plan 94
+  restart at 22:22:44 (PGID = PID, the header line in the log). `COMMANDS.md`, section
+  "Запуск сервера и WebUI"; `SMOKE_TESTS.md` RS1 to RS4.
+
 - `/runs` tells why the run list is empty (owner message of 16:56:00, answer "1" of 18:41:00). When
   the filters `Pipeline` and `Testset` match no run, the table holds one row
   `0 runs match: Pipeline X, Testset Y. Reset filters`; the link sets both filters to All,

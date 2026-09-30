@@ -629,6 +629,11 @@ paths:
       tags: [descriptions]
       operationId: setImageDescription
       summary: Set the structured manual description of one image.
+      description: >-
+        Plan 94. `values.generate_label` false turns off the SAM3 label cut of the image
+        and deletes its automatic label cut; a manual cut stays. The answer then holds
+        `label_cut_removed` true and `records`, the new record of each wine that links
+        the image. true or null turns the label cut on again with no SAM3 call.
       requestBody:
         required: true
         content:
@@ -1573,6 +1578,8 @@ components:
         values:
           type: object
           additionalProperties: true
+          properties:
+            generate_label: { type: [boolean, "null"] }
 
     LabelDescriptionWrite:
       type: object

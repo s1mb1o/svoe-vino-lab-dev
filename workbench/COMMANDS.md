@@ -111,6 +111,22 @@ The start report states the schema version and the wine count of each state.
 After a change of the code in `pipeline/`, stop the server and start it again.
 After a new file in `pipeline/schema/`, run `labdb.py` first.
 
+Restart the server on port 8168 in the background (rules 22 to 24 of `CLAUDE.md`). The
+restart loads the uncommitted server code of every session. `--dry-run` is read-only: it
+shows the running server and runs the start check, and it stops nothing.
+
+```bash
+scripts/restart_lab_server.sh --dry-run
+scripts/restart_lab_server.sh
+```
+
+The script stops the listener of port 8168 with SIGTERM and starts
+`python3 pipeline/lab_server.py --no-browser` in its own session. The log goes to
+`work/lab_server.log`. The script ends when `GET /api/dataset` answers HTTP 200. When no
+server runs, the script only starts it. The script stops before it stops the server when
+port 8168 belongs to another process, or when the server cannot start: a pending file in
+`pipeline/schema/` (run `labdb.py` first) or a bad `config.yaml`.
+
 Add one manual wine and activate it in the configured index:
 
 ```bash
