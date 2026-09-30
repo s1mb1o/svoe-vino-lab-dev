@@ -9,6 +9,11 @@ The runner writes the run files of `scripts/match_run.py` to `runs/<run id>/`:
 `scripts/match_scoring.py`, the same code as `match_run.py`. Read
 `docs/plans/12_testsets-benchmark.md`.
 
+A repeat run (plan 96, the option `Repeat last failed` of the dialog `Run>`) starts from
+the last run of the same pipeline and set (`last_run`). It asks the backend again for each
+new query and each query that failed there, and copies the other rows (`repeat_plan`).
+Read `docs/plans/96_repeat-last-failed.md`.
+
 The query set follows `build_queries` of `match_run.py` with its defaults
 (`--variants off`, `--only all`):
 - A photo with the label `positive` or `negative` enters. Its place is its slug.
@@ -144,6 +149,90 @@ def load_groups(conn, set_name):
     return {slug: members[number] for slug, number in rows}
 
 
+# Plan 96: the option `Repeat last failed` of the dialog `Run>`. A row of the last run
+# holds a query as it is now when these keys are equal. Read
+# docs/plans/96_repeat-last-failed.md.
+SAME_QUERY_KEYS = ("image_sha256", "label", "slug", "truth")
+
+
+def failed_at_rank_1(rec):
+    """Tell whether a row of `results.jsonl` failed: a request that failed, a positive
+    photo whose outcome is not `hit`, or a photo that got at rank 1 a wine that it is
+    not (a negative photo, or a photo of `No Match`)."""
+    if rec.get("error"):
+        return True
+    if rec.get("label") == "positive" and rec.get("outcome") != "hit":
+        return True
+    return rec.get("outcome") in ("false_match_at_1", "false_match_in_top_k")
+
+
+def same_query(row, rec):
+    """Tell whether the row `rec` of an earlier run holds the query `row` as it is now."""
+    return all(rec.get(key) == row[key] for key in SAME_QUERY_KEYS)
+
+
+def last_run(runs_dir, configuration, set_name, use_barcode):
+    """Return the directory of the newest run of the pipeline `configuration` on the set
+    `set_name` with the same `use_barcode` (None: the pipeline has no barcode step), or
+    None. The directory MUST hold `run.json` and `results.jsonl`. The name of a run
+    directory starts with its UTC time, so the name order is the time order."""
+    try:
+        names = sorted(os.listdir(runs_dir), reverse=True)
+    except FileNotFoundError:
+        return None
+    for name in names:
+        run_dir = os.path.join(runs_dir, name)
+        if not os.path.isfile(os.path.join(run_dir, "results.jsonl")):
+            continue
+        try:
+            with open(os.path.join(run_dir, "run.json"), encoding="utf-8") as fh:
+                meta = json.load(fh)
+        except (OSError, ValueError):
+            continue
+        if (meta.get("configuration") == configuration
+                and (meta.get("options") or {}).get("set") == set_name
+                and meta.get("use_barcode") == use_barcode):
+            return run_dir
+    return None
+
+
+def read_results(run_dir):
+    """Return image path -> the row of `results.jsonl` of one run."""
+    rows = {}
+    with open(os.path.join(run_dir, "results.jsonl"), encoding="utf-8") as fh:
+        for line in fh:
+            if line.strip():
+                rec = json.loads(line)
+                rows[rec["image_path"]] = rec
+    return rows
+
+
+def repeat_plan(rows, run_dir):
+    """Split the queries `rows` against the earlier run `run_dir`. Return (the copied rows
+    of `results.jsonl`, the rows to ask, the record `repeat_of` of run.json).
+
+    A query is new when the earlier run does not hold it as it is now (`same_query`). A
+    new query and a query that failed there (`failed_at_rank_1`) are asked again. Each
+    other row is copied with the new query id and `copied_from`: the run that asked the
+    backend for it."""
+    earlier = read_results(run_dir)
+    source = os.path.basename(os.path.normpath(run_dir))
+    copied, ask, counts = [], [], collections.Counter()
+    for row in rows:
+        rec = earlier.get(row["image_path"])
+        if rec is None or not same_query(row, rec):
+            counts["new"] += 1
+            ask.append(row)
+        elif failed_at_rank_1(rec):
+            counts["failed"] += 1
+            ask.append(row)
+        else:
+            copied.append(dict(rec, query_id=row["query_id"],
+                               copied_from=rec.get("copied_from") or source))
+    return copied, ask, {"run_id": source, "copied": len(copied), "asked": len(ask),
+                         "failed": counts["failed"], "new": counts["new"]}
+
+
 def open_database(db_path, schema_dir=labdb.SCHEMA_DIR):
     """Open the database read-only. Its schema version MUST equal the schema files."""
     if not os.path.isfile(db_path):
@@ -170,7 +259,8 @@ def git_commit():
 
 def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, limit=None,
                   label=None, embeddings=None, log=print, schema_dir=labdb.SCHEMA_DIR,
-                  configuration=None, use_cache=None, use_barcode=None, queries=None):
+                  configuration=None, use_cache=None, use_barcode=None, queries=None,
+                  repeat_of=None, on_plan=None):
     """Run the set against `backend`. Return (run directory, metrics).
 
     `backend` is a backend of `match_backends.build_backend`: it has `id`, `spec`,
@@ -190,6 +280,12 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
     then uses these rows and reads no test set and no variant group of the database;
     `set_name` still names the set in `run.json`. The self-test of an embedding gives them
     (`selftest.py`). Read `docs/plans/67_embedding-selftest.md`.
+    `repeat_of` is the directory of an earlier run (`last_run`). The run then asks the
+    backend for the new and the failed queries alone and copies the other rows
+    (`repeat_plan`); the files and the metrics still cover every query, and `run.json`
+    holds the key `repeat_of`. `on_plan(record)` gets that record before the first
+    question. With no query to ask, the run is a BenchmarkError and writes no file. Read
+    `docs/plans/96_repeat-last-failed.md`.
     """
     if queries is not None:
         rows, skipped = list(queries[0]), queries[1]
@@ -205,6 +301,12 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
         rows = rows[:limit]
     if not rows:
         raise BenchmarkError("the set %r gives no query" % set_name)
+    copied, ask, repeat = [], rows, None
+    if repeat_of:
+        copied, ask, repeat = repeat_plan(rows, repeat_of)
+        if not ask:
+            raise BenchmarkError("nothing to repeat: the last run %s has no failed and no "
+                                 "new photo" % repeat["run_id"])
     workers = workers or int(backend.spec.get("workers") or 1)
 
     stamp = time.strftime("%Y-%m-%dT%H%M%SZ", time.gmtime())
@@ -247,6 +349,12 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
         meta["use_cache"] = use_cache
     if use_barcode is not None:
         meta["use_barcode"] = use_barcode
+    if repeat is not None:
+        meta["repeat_of"] = repeat
+        log("repeat of %(run_id)s: %(copied)d copied, %(asked)d asked (%(failed)d failed, "
+            "%(new)d new)" % repeat)
+        if on_plan is not None:
+            on_plan(repeat)
 
     results, lock, done = [], threading.Lock(), 0
     t_start = time.time()
@@ -289,17 +397,21 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
         results.append(rec)
         write(rec)
         done += 1
-        if done % 25 == 0 or done == len(rows):
-            log("  %d/%d  elapsed %.0f s" % (done, len(rows), time.time() - t_start))
+        if done % 25 == 0 or done == len(ask):
+            log("  %d/%d  elapsed %.0f s" % (done, len(ask), time.time() - t_start))
 
+    # A repeat run (plan 96) writes the copied rows first; they need no question.
+    for rec in copied:
+        results.append(rec)
+        write(rec)
     try:
         if workers > 1:
             with concurrent.futures.ThreadPoolExecutor(workers) as pool:
-                for rec in pool.map(one, rows):
+                for rec in pool.map(one, ask):
                     with lock:
                         keep(rec)
         else:
-            for row in rows:
+            for row in ask:
                 keep(one(row))
     except KeyboardInterrupt:
         log("stopped by the user after %d photos" % done)

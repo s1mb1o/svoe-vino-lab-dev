@@ -4,7 +4,7 @@ the lab server.
 Usage:
     python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N]
         [--workers N] [--no-cache] [--no-barcode] [--device-ip ADDRESS]
-        [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
+        [--repeat-failed] [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
     python3 pipeline/run_job.py --selftest --name <embedding> [--limit N] [--workers N]
         [--no-cache] [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
 
@@ -36,6 +36,12 @@ With the key `rebuild_embeddings_on_run` of `config.yaml` true, a pipeline of th
 `start`. A build that fails or stops fails the run. Read
 docs/plans/59_rebuild-embeddings-on-run.md.
 
+`--repeat-failed` is the checkbox `Repeat last failed` of the dialog: the job starts from
+the last run of the pipeline on the set with the same `use_barcode`
+(`benchmark.last_run`). It asks again for each photo that failed there and each new
+photo, and copies the other rows. With no such run the job makes a full run, and an event
+`log` says so. The event `start` holds `repeat_of`, and the events `progress` count the
+asked photos alone. Read docs/plans/96_repeat-last-failed.md.
 `--selftest` is the button `Selftest` of `/embedding`: `--name` names an entry of the key
 `embeddings`, and no `--set` is given. Each dataset image is a query in the view `full`
 of its index, with no barcode step (`selftest.py`). The job is `selftest-<embedding>`, and
@@ -141,6 +147,10 @@ def main(argv=None):
                              "the flag")
     parser.add_argument("--device-ip", default=None,
                         help="IPv4 address that replaces {device_ip} in a device pipeline")
+    parser.add_argument("--repeat-failed", action="store_true",
+                        help="start from the last run of the pipeline on the set: ask again "
+                             "for its failed and new photos alone, copy the other rows "
+                             "(plan 96)")
     parser.add_argument("--config", default=embeddings.CONFIG_PATH, help="path of config.yaml")
     parser.add_argument("--jobs-dir", default=run_jobs.JOBS_DIR, help="the directory of the jobs")
     parser.add_argument("--runs-dir", default=benchmark.RUNS_DIR, help="the directory of the runs")
@@ -152,6 +162,9 @@ def main(argv=None):
     if args.selftest == bool(args.set_name):
         emit("failed", message="--selftest takes no --set" if args.selftest
              else "--set is required")
+        return 2
+    if args.selftest and args.repeat_failed:
+        emit("failed", message="--selftest takes no --repeat-failed")
         return 2
     if args.selftest:
         import selftest  # noqa: E402  (plan 67, on demand)
@@ -199,6 +212,13 @@ def main(argv=None):
             todo = min(len(queries[0]), args.limit) if args.limit else len(queries[0])
         else:
             todo = query_total(settings.db_path, args.set_name, args.limit)
+        # Plan 96: the checkbox `Repeat last failed` of the dialog.
+        repeat_of = None
+        if args.repeat_failed:
+            repeat_of = benchmark.last_run(args.runs_dir, name, set_name, use_barcode)
+            if repeat_of is None:
+                emit("log", message="no earlier run of %s on %s: a full run"
+                     % (name, set_name))
         # Plan 59: the key `rebuild_embeddings_on_run` updates the index of the embedding
         # before `build` reads it. The check of the set comes first.
         rebuild_on_run.before_run(entry, settings.config_path,
@@ -210,8 +230,13 @@ def main(argv=None):
         emit("start", pid=os.getpid(), configuration=name, set=set_name,
              todo=todo, limit=args.limit,
              workers=args.workers or int(backend.spec.get("workers") or 1), seed=seed,
-             use_cache=args.use_cache, use_barcode=use_barcode, device_ip=device_ip)
+             use_cache=args.use_cache, use_barcode=use_barcode, device_ip=device_ip,
+             repeat_of=os.path.basename(repeat_of) if repeat_of else None)
         counting = Counting(backend, todo)
+
+        def on_plan(plan):
+            # A repeat run asks the failed and the new photos alone (plan 96).
+            counting.todo = plan["asked"]
 
         def log(message):
             nonlocal run_id
@@ -225,7 +250,8 @@ def main(argv=None):
         run_dir, met = benchmark.run_benchmark(
             settings.db_path, set_name, counting, args.runs_dir, workers=args.workers,
             limit=args.limit, embeddings=state, log=log, configuration=name,
-            use_cache=args.use_cache, use_barcode=use_barcode, queries=queries)
+            use_cache=args.use_cache, use_barcode=use_barcode, queries=queries,
+            repeat_of=repeat_of, on_plan=on_plan)
         run_id = os.path.basename(run_dir)
         pos = met["positive"]
         summary = {"answered": counting.done, "errors": counting.errors,

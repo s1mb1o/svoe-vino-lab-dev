@@ -8,7 +8,8 @@ docs/plans/34_pipeline-section.md.
     GET  /api/run-jobs                       the job of each pipeline
     POST /api/run-jobs                       start a job: {"configuration", "set",
                                              "limit", "workers", "use_cache",
-                                             "use_barcode", "device_ip"}, or the self-test of one
+                                             "use_barcode", "device_ip",
+                                             "repeat_failed"}, or the self-test of one
                                              embedding: {"selftest", "limit",
                                              "workers", "use_cache"}
     POST /api/run-jobs/<name>/stop           stop a job (SIGTERM)
@@ -328,6 +329,13 @@ def start(settings, jobs_dir, body, runs_dir=None):
         use_barcode = True
     if not isinstance(use_barcode, bool):
         return 400, {"error": "use_barcode MUST be true or false"}
+    # The checkbox `Repeat last failed` of the dialog; a missing key is the default, off.
+    # True gives `--repeat-failed` (owner answers of about 2026-09-30T22:52+0300, plan 96).
+    repeat_failed = body.get("repeat_failed")
+    if repeat_failed is None:
+        repeat_failed = False
+    if not isinstance(repeat_failed, bool):
+        return 400, {"error": "repeat_failed MUST be true or false"}
     try:
         pipeline = settings.find(name)
     except KeyError:
@@ -363,6 +371,8 @@ def start(settings, jobs_dir, body, runs_dir=None):
         command.append("--no-cache")
     if not use_barcode and has_barcode(pipeline):
         command.append("--no-barcode")
+    if repeat_failed:
+        command.append("--repeat-failed")
     if runs_dir:
         command += ["--runs-dir", runs_dir]
     with _START:
@@ -376,7 +386,7 @@ def start(settings, jobs_dir, body, runs_dir=None):
                                        start_new_session=True)
         _PROCESSES[directory] = process
     return 202, {"name": name, "set": set_name, "state": "running", "pid": process.pid,
-                 "device_ip": device_ip}
+                 "device_ip": device_ip, "repeat_failed": repeat_failed}
 
 
 def start_selftest(settings, jobs_dir, body, runs_dir=None):
@@ -391,6 +401,8 @@ def start_selftest(settings, jobs_dir, body, runs_dir=None):
         return 400, {"error": "a self-test takes no configuration and no set"}
     if body.get("device_ip") is not None:
         return 400, {"error": "device_ip is not valid for a self-test"}
+    if body.get("repeat_failed"):
+        return 400, {"error": "repeat_failed is not valid for a self-test"}
     try:
         limit = _whole(body.get("limit"), 1, 10 ** 7, "limit")
         workers = _whole(body.get("workers"), 1, MAX_WORKERS, "workers")

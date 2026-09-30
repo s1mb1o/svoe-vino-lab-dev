@@ -762,6 +762,8 @@ tbody tr.cat-only { background: var(--panel-2); }
              id="run-cache" type="checkbox" checked> Use caches</label>
       <label id="run-barcode-label"><input id="run-barcode" type="checkbox" disabled>
              Disable barcode fast path</label>
+      <label title="On: the run starts from the last run of the pipeline on this set (the same choice of the barcode fast path). It asks again for each photo that failed there (wrong at rank 1, or an error) and for each new photo, and copies the other rows. With no last run, the run is a full run. Plan 96."><input
+             id="run-repeat" type="checkbox"> Repeat last failed</label>
     </div>
     <div class="run-error" id="run-error"></div>
     <div class="run-foot">
@@ -2814,6 +2816,7 @@ async function startRun() {
     body.device_ip = address;
   }
   if (c.barcode) body.use_barcode = !$("#run-barcode").checked;
+  if ($("#run-repeat").checked) body.repeat_failed = true;   // plan 96
   $("#run-start").disabled = true;
   $("#run-error").textContent = "";
   try {

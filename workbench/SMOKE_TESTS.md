@@ -2463,6 +2463,20 @@ photo.
 | DD6 | Press `Box`, then drag on the right photo | The drag draws the box. No file drag starts. |
 | DD7 | Drag a card onto another wine row; drag a catalogue image onto a row; drop a catalogue image on the header | The card moves (`POST /api/testset-move`). The catalogue image imports nothing, and the page stays in the tab. |
 
+## The option `Repeat last failed` of the dialog `Run>` — plan 96
+
+Read [plan 96](docs/plans/96_repeat-last-failed.md). Use `H=http://127.0.0.1:8168`. RF1 is
+read-only. RF2 to RF5 start runs; a run of a remote pipeline sends its photos to that
+service.
+
+| # | Case | Expected result |
+|---|---|---|
+| RF1 | `python3 -m unittest discover -s tests -p 'test_benchmark.py'` and `-p 'test_run_jobs.py'` | 22 and 35 tests OK: the failure rule, the choice of the last run, the copied rows, a chain of repeats, `nothing to repeat`, the flag of the route, the job events. |
+| RF2 | Open `$H/testset?set=my`, press `Run>`, choose a pipeline with no earlier run on the set, check `Repeat last failed`, and press `Start` with `first N queries` 20 | The job log says `no earlier run of <pipeline> on my: a full run`. The run answers 20 photos. |
+| RF3 | Start the same pipeline again with `Repeat last failed`, and no limit | The log says `repeat of <RF2 run>: <copied> copied, <asked> asked (<failed> failed, <new> new)`: the new photos are the queries after the first 20. The progress counts the asked photos alone. `run.json` holds `repeat_of`. |
+| RF4 | Relabel one photo that passed in RF3, then start the repeat again | The relabelled photo counts as new and gets a new answer. Each other copied row keeps its `copied_from`. |
+| RF5 | Start the repeat again with no change after a run where each photo passed | The job fails with `nothing to repeat: the last run <run id> has no failed and no new photo`, and `runs/` gets no new directory. |
+
 ## Static wine images (plan 06 of the repository)
 
 | ID | Step | Expected result |

@@ -1675,6 +1675,7 @@ components:
         use_cache: { type: boolean }
         use_barcode: { type: boolean }
         device_ip: { type: string, format: ipv4 }
+        repeat_failed: { type: boolean, description: "Plan 96: repeat the failed and the new photos of the last run." }
       oneOf:
         - required: [configuration, set]
         - required: [selftest]

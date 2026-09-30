@@ -305,6 +305,77 @@ class RunnerTest(Lab):
                 self.assertIs(meta["use_cache"], use_cache)
 
 
+class RepeatFailedTest(Lab):
+    """Plan 96: the checkbox `Repeat last failed` of the dialog `Run>`. The matcher answers
+    wine-a first, so the six photos of wine-a pass and wine-b/01 fails."""
+
+    def command(self, **extra):
+        body = dict({"configuration": REMOTE, "set": "my"}, **extra)
+        with mock.patch.object(run_jobs.subprocess, "Popen") as popen:
+            popen.return_value.pid = 4321
+            popen.return_value.poll.return_value = 0
+            code, answer = run_jobs.start(self.settings(), self.jobs, body, self.runs)
+        self.assertEqual(code, 202, answer)
+        run_jobs._PROCESSES.clear()
+        return popen.call_args[0][0], answer
+
+    def test_repeat_failed_true_gives_the_flag(self):
+        command, answer = self.command(repeat_failed=True)
+        self.assertIn("--repeat-failed", command)
+        self.assertIs(answer["repeat_failed"], True)
+        for extra in ({}, {"repeat_failed": False}, {"repeat_failed": None}):
+            with self.subTest(extra=extra):
+                self.assertNotIn("--repeat-failed", self.command(**extra)[0])
+
+    def test_repeat_failed_MUST_be_a_boolean_and_is_not_for_a_self_test(self):
+        code, answer = run_jobs.start(self.settings(), self.jobs, {
+            "configuration": REMOTE, "set": "my", "repeat_failed": "yes"}, self.runs)
+        self.assertEqual(code, 400)
+        self.assertIn("repeat_failed MUST", answer["error"])
+        code, answer = run_jobs.start(self.settings(), self.jobs, {
+            "selftest": "gw", "repeat_failed": True}, self.runs)
+        self.assertEqual(code, 400)
+        self.assertIn("repeat_failed is not valid for a self-test", answer["error"])
+        self.assertEqual(run_jobs._PROCESSES, {})
+
+    def test_with_no_earlier_run_the_job_makes_a_full_run(self):
+        code, events = self.run_main(REMOTE, "--repeat-failed")
+        self.assertEqual((code, events[-1]["event"]), (0, "done"), events[-1])
+        self.assertIn("no earlier run of %s on my: a full run" % REMOTE,
+                      [e.get("message") for e in events if e["event"] == "log"])
+        start = next(e for e in events if e["event"] == "start")
+        self.assertIsNone(start["repeat_of"])
+        self.assertEqual(events[-1]["answered"], 7)
+
+    def test_a_repeat_job_asks_the_failed_photo_alone(self):
+        code, events = self.run_main(REMOTE)
+        self.assertEqual(code, 0)
+        first = events[-1]["run_id"]
+        time.sleep(1.05)   # a run directory name holds the time to the second
+        code, events = self.run_main(REMOTE, "--repeat-failed")
+        self.assertEqual((code, events[-1]["event"]), (0, "done"), events[-1])
+        self.assertEqual(next(e for e in events if e["event"] == "start")["repeat_of"], first)
+        self.assertIn("repeat of %s: 6 copied, 1 asked (1 failed, 0 new)" % first,
+                      [e.get("message") for e in events if e["event"] == "log"])
+        progress = [e for e in events if e["event"] == "progress"]
+        self.assertEqual([(e["done"], e["todo"]) for e in progress], [(1, 1)])
+        self.assertEqual(events[-1]["answered"], 1)
+        meta = json.loads((Path(self.runs) / events[-1]["run_id"] / "run.json")
+                          .read_text("utf-8"))
+        self.assertEqual(meta["repeat_of"], {"run_id": first, "copied": 6, "asked": 1,
+                                             "failed": 1, "new": 0})
+        self.assertEqual(meta["answered"], 7)
+
+    def test_a_self_test_takes_no_repeat(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = run_job.main(["--config", str(self.config), "--selftest", "--name", "gw",
+                                 "--repeat-failed", "--jobs-dir", self.jobs])
+        self.assertEqual(code, 2)
+        self.assertEqual(json.loads(out.getvalue().splitlines()[-1])["message"],
+                         "--selftest takes no --repeat-failed")
+
+
 class RoutesTest(Lab):
     class Server:
         def __init__(self, config, jobs, runs):

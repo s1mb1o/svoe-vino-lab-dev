@@ -309,5 +309,127 @@ class BenchmarkTest(unittest.TestCase):
         self.assertEqual(skipped["drawer"], 1)
 
 
+def read_jsonl(path):
+    return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+
+
+class RepeatTest(unittest.TestCase):
+    """Plan 96: the option `Repeat last failed`. The first run of the fixture: n1 gets no
+    answer (a pass), a1 is a hit, a2 is a false match, and b1 is a miss."""
+
+    setUp = BenchmarkTest.setUp
+    tearDown = BenchmarkTest.tearDown
+    FIRST = {"a1": ["wine-a"], "a2": ["wine-a"], "b1": ["wine-a", "wine-b"]}
+
+    def bench(self, answers, label, **kwargs):
+        backend = FakeBackend(answers)
+        run_dir, met = BM.run_benchmark(self.db, "my", backend, str(self.runs), embeddings={},
+                                        log=lambda m: None, schema_dir=self.schema,
+                                        label=label, configuration="p1", **kwargs)
+        return backend, run_dir, met
+
+    def asked(self, backend):
+        return sorted(Path(p).read_bytes().decode() for p in backend.asked)
+
+    def test_the_failure_rule_is_rank_1_and_errors(self):
+        failed = BM.failed_at_rank_1
+        self.assertTrue(failed({"label": "positive", "outcome": "miss"}))
+        self.assertTrue(failed({"label": "positive", "outcome": "no_answer"}))
+        self.assertFalse(failed({"label": "positive", "outcome": "hit"}))
+        self.assertTrue(failed({"label": "negative", "outcome": "false_match_at_1"}))
+        self.assertFalse(failed({"label": "negative", "outcome": "other_slug_at_1"}))
+        self.assertFalse(failed({"label": "negative", "outcome": "no_answer"}))
+        self.assertTrue(failed({"label": "no_match", "outcome": "false_match_at_1"}))
+        self.assertFalse(failed({"label": "no_match", "outcome": "no_answer"}))
+        self.assertTrue(failed({"label": "positive", "outcome": "hit", "error": "HTTP 500"}))
+
+    def test_the_last_run_is_the_newest_run_of_the_pipeline_the_set_and_the_barcode(self):
+        def fake(name, configuration="p1", set_name="my", use_barcode=None, results=True):
+            run_dir = self.runs / name
+            run_dir.mkdir(parents=True)
+            meta = {"configuration": configuration, "options": {"set": set_name}}
+            if use_barcode is not None:
+                meta["use_barcode"] = use_barcode
+            (run_dir / "run.json").write_text(json.dumps(meta))
+            if results:
+                (run_dir / "results.jsonl").write_text("")
+            return str(run_dir)
+
+        self.assertIsNone(BM.last_run(str(self.runs), "p1", "my", None))
+        first = fake("2026-09-30T100000Z-lab-p1-my")
+        fake("2026-09-30T110000Z-lab-p1-other", set_name="other")
+        fake("2026-09-30T120000Z-lab-p2-my", configuration="p2")
+        off = fake("2026-09-30T130000Z-lab-p1-my", use_barcode=False)
+        fake("2026-09-30T140000Z-lab-p1-my", results=False)   # a run that did not start
+        (self.runs / "2026-09-30T150000Z-broken").mkdir()      # no run.json
+        self.assertEqual(BM.last_run(str(self.runs), "p1", "my", None), first)
+        self.assertEqual(BM.last_run(str(self.runs), "p1", "my", False), off)
+        self.assertIsNone(BM.last_run(str(self.runs), "p1", "my", True))
+        self.assertIsNone(BM.last_run(str(self.root / "none"), "p1", "my", None))
+
+    def test_a_repeat_asks_the_failed_photos_alone_and_copies_the_others(self):
+        _, first, _ = self.bench(self.FIRST, "r1")
+        plans = []
+        backend, second, met = self.bench({"a2": [], "b1": ["wine-b"]}, "r2",
+                                          repeat_of=first, on_plan=plans.append)
+        self.assertEqual(self.asked(backend), ["a2", "b1"])
+        source = Path(first).name
+        record = {"run_id": source, "copied": 2, "asked": 2, "failed": 2, "new": 0}
+        self.assertEqual(plans, [record])
+        run = json.loads((Path(second) / "run.json").read_text())
+        self.assertEqual(run["repeat_of"], record)
+        self.assertIsNone(run["based_on"])
+        self.assertEqual((run["answered"], run["query_set"]["total"]), (4, 4))
+        results = {r["image_path"]: r for r in read_jsonl(Path(second) / "results.jsonl")}
+        self.assertEqual({p: r.get("copied_from") for p, r in results.items()}, {
+            "__null__/n1.jpg": source, "wine-a/01.jpg": source,
+            "wine-a/02.jpg": None, "wine-b/01.jpg": None})
+        self.assertEqual({p: r["outcome"] for p, r in results.items()}, {
+            "__null__/n1.jpg": "no_answer", "wine-a/01.jpg": "hit",
+            "wine-a/02.jpg": "no_answer", "wine-b/01.jpg": "hit"})
+        self.assertEqual(sorted(r["query_id"] for r in results.values()),
+                         ["q-000001", "q-000002", "q-000003", "q-000004"])
+        self.assertEqual(len(read_jsonl(Path(second) / "predictions.jsonl")), 4)
+        # The metrics cover the whole set: both positives are hits now.
+        self.assertEqual(met["positive"]["recall_at_1"], 1.0)
+        self.assertEqual(json.loads((Path(second) / "metrics.json").read_text())["queries"],
+                         met["queries"])
+
+    def test_a_new_or_changed_photo_is_asked(self):
+        _, first, _ = self.bench(self.FIRST, "r1", limit=2)   # n1 and a1 alone
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("UPDATE test_photo SET label = 'negative' WHERE set_name = 'my' "
+                         "AND place = 'wine-a' AND file_name = '01.jpg'")
+        conn.close()
+        backend, second, _ = self.bench(self.FIRST, "r2", repeat_of=first)
+        self.assertEqual(self.asked(backend), ["a1", "a2", "b1"])
+        run = json.loads((Path(second) / "run.json").read_text())
+        self.assertEqual(run["repeat_of"], {"run_id": Path(first).name, "copied": 1,
+                                            "asked": 3, "failed": 0, "new": 3})
+
+    def test_a_chain_of_repeats_keeps_the_run_that_asked(self):
+        _, first, _ = self.bench(self.FIRST, "r1")
+        _, second, _ = self.bench({"a2": ["wine-a"], "b1": ["wine-b"]}, "r2", repeat_of=first)
+        self.assertEqual(BM.last_run(str(self.runs), "p1", "my", None), second)
+        backend, third, _ = self.bench({"a2": []}, "r3", repeat_of=second)
+        self.assertEqual(self.asked(backend), ["a2"])
+        results = {r["image_path"]: r.get("copied_from")
+                   for r in read_jsonl(Path(third) / "results.jsonl")}
+        self.assertEqual(results, {"__null__/n1.jpg": Path(first).name,
+                                   "wine-a/01.jpg": Path(first).name,
+                                   "wine-b/01.jpg": Path(second).name,
+                                   "wine-a/02.jpg": None})
+
+    def test_nothing_to_repeat_is_an_error_and_writes_no_run(self):
+        _, first, _ = self.bench({"a1": ["wine-a"], "b1": ["wine-b"]}, "r1")
+        before = sorted(p.name for p in self.runs.iterdir())
+        with self.assertRaises(BM.BenchmarkError) as caught:
+            self.bench({}, "r2", repeat_of=first)
+        self.assertIn("nothing to repeat: the last run %s" % Path(first).name,
+                      str(caught.exception))
+        self.assertEqual(sorted(p.name for p in self.runs.iterdir()), before)
+
+
 if __name__ == "__main__":
     unittest.main()

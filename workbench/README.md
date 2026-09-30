@@ -602,6 +602,18 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   (`run_job.py --no-barcode`; owner answers of 2026-09-26T19:47:40+0300,
   [plan 53](docs/plans/53_disable-barcode-checkbox.md)). `run.json` records the state in
   `use_barcode`.
+  The checkbox `Repeat last failed` is off; the page does not store it. On, the run
+  starts from the last run of the same pipeline on the set with the same
+  `use_barcode` (a stopped run, a run with a limit, or an earlier repeat run counts
+  too). It asks again for each photo that failed there (a positive photo that is not a
+  `hit`, a `false_match_at_1`, or an error) and for each new photo (not in that run, or
+  with another sha256, label, slug, or truth), and copies the other rows with
+  `copied_from`. The files and the metrics cover the whole set; `run.json` holds
+  `repeat_of` with the counts. With no last run, the run is a full run. With nothing to
+  ask, the job fails with `nothing to repeat` and writes no run
+  (`run_job.py --repeat-failed`; owner answers of about 2026-09-30T22:52+0300,
+  [plan 96](docs/plans/96_repeat-last-failed.md)). A copied row keeps the result of the
+  code and the configuration of its own run.
   `Start` runs `pipeline/run_job.py` as a separate process, and the run goes
   to `runs/` as a CLI run. With `rebuild_embeddings_on_run: true`, the job first updates
   the index of the embedding, and the job row shows `starting` until the build ends

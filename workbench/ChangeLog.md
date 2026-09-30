@@ -39,6 +39,19 @@
 
 ## 2026-09-30
 
+- Plan 96: the option `Repeat last failed` of the dialog `Run>` of `/testset` (owner message
+  of about 22:45; answers of about 22:52). The run starts from the last run of the same
+  pipeline and set with the same `use_barcode` (`benchmark.last_run`). It asks again for
+  each photo that failed there (a positive photo that is not a `hit`, a
+  `false_match_at_1`, or an error) and for each new photo (`benchmark.repeat_plan`), and
+  copies the other rows with `copied_from`. The run files and the metrics cover the whole
+  set; `run.json` holds `repeat_of`. With no last run the job makes a full run; with
+  nothing to ask it fails with `nothing to repeat`. `POST /api/run-jobs` takes
+  `repeat_failed`, and `run_job.py` takes `--repeat-failed`. Tests: `test_benchmark.py`
+  22 OK (6 new), `test_run_jobs.py` 35 OK (5 new), with a real repeat job on a fake
+  matcher; a browser check of the dialog on a scratch server (5 checks). No run on a
+  real pipeline yet (`SMOKE_TESTS.md` RF2 to RF5).
+
 - `/testset`: a drag into another app (the Finder, Telegram, another browser) gives the
   file of the image (owner message of about 22:25; answers of about 22:28). The catalogue
   image of a row and of the large view gives the original main photo, or `main_patched`,
