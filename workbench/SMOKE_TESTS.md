@@ -648,6 +648,8 @@ Use `H=http://127.0.0.1:8168`. Each page keeps its header controls in its own ke
 | HS3 | On `/testset`, choose a filter, for example `Verdict`; then open `$H/testset?sort=slug` | Each control that the address does not hold shows its default. The stored filter does not come back. After that, a bare `$H/testset` shows the last view. |
 | HS4 | In the browser console, run `localStorage.setItem("svl.testset.header", JSON.stringify({set: "no-such-set"}))`, then reload `$H/testset` | The page opens the default set and shows no error. |
 | HS5 | On `/clusters`, choose `combined` and `Image` `label`; open `$H/clusters?space=combined`, then `$H/clusters` | The address with `space` shows `Image` `full`. The bare address shows `label`. |
+| HS6 | In the browser console, run `localStorage.setItem("svl.runs.header", JSON.stringify({configuration: "siglip2-p512-rot5", set: ""}))` (a pipeline with no run), then reload `$H/runs` | The table holds one row: `0 runs match: Pipeline siglip2-p512-rot5, Testset All. Reset filters`. A click on `Reset filters` sets `Pipeline` and `Testset` to All and lists the runs again. |
+| HS7 | Stop the lab server and reload `$H/runs` from the browser cache, or block `/api/runs` in the developer tools | The table holds one row: `The run list did not load: <error>. Load again`. |
 
 ## The page of the runs — `/runs`
 

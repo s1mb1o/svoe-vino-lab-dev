@@ -37,6 +37,18 @@
   Tests: `test_wine_images.py` (13 new), `test_matcher_bundle.py`, `test_matcher_views.py`,
   `test_matcher_parity.py`, `test_catalog_copy.py`: all pass.
 
+## 2026-09-30
+
+- `/runs` tells why the run list is empty (owner message of 16:56:00, answer "1" of 18:41:00). When
+  the filters `Pipeline` and `Testset` match no run, the table holds one row
+  `0 runs match: Pipeline X, Testset Y. Reset filters`; the link sets both filters to All,
+  in the address and in the stored header. When `GET /api/runs` fails, the row states the
+  error and a `Load again` link. Before, the table stayed empty with no hint: the Pipeline
+  list holds every pipeline of `config.yaml`, and 41 of 92 had no run, so a stored
+  pipeline with no run hid every run. Playwright: 10 of 10 checks pass (default, a stored
+  pipeline with no run, the reset, HTTP 500, a network failure, light and dark). The page
+  loads from disk: no restart.
+
 ## 2026-09-29
 
 - Corrected the p512 re-rank rule of the Aratti cluster `2d33f12d0b3e` (owner messages of

@@ -107,6 +107,7 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 #runs tbody tr { cursor: pointer; }
 #runs tbody tr:hover { background: var(--panel-2); }
 #runs tbody tr.on { background: var(--grp-a); }
+#runs tbody tr.none, #runs tbody tr.none:hover { cursor: default; background: var(--panel); }
 .num { font-variant-numeric: tabular-nums; text-align: right; }
 .muted { color: var(--muted); }
 .empty { color: var(--muted); font-style: italic; }
@@ -491,6 +492,8 @@ const pct = v => v === null || v === undefined ? "\u2014" : (100 * v).toFixed(1)
 const numOr = v => v === null || v === undefined ? "\u2014" : v;
 
 let RUNS = [], CUR = null, OFFSET = 0, TOTAL = 0;
+/* The error of `GET /api/runs`, or "" after a good answer. */
+let RUNS_ERROR = "";
 /* The run.json of the open run, from `/api/run`. */
 let RUN = {};
 /* The pipelines of `config.yaml`, from `/api/runs`, in file order (plan 34). */
@@ -614,7 +617,7 @@ function renderRuns() {
   $("#page-next").disabled = RPAGE >= pages - 1;
   $("#page-info").textContent = shown.length
     ? `${from + 1}\u2013${from + page.length} \u00b7 page ${RPAGE + 1} of ${pages}` : "";
-  $("#runs-body").innerHTML = page.map(r => `
+  $("#runs-body").innerHTML = !page.length ? emptyRuns() : page.map(r => `
     <tr data-id="${esc(r.id)}" class="${CUR === r.id ? "on" : ""}">
       <td>${esc(r.id)} ${r.dry_run ? '<span class="tag dry">dry run</span>' : ""}
         ${r.use_cache === false ? '<span class="tag nocache" title="The box Use caches was off: the run read no cached model answer, so its latency is real time.">no cache</span>' : ""}
@@ -640,7 +643,37 @@ function renderRuns() {
   }
   $("#head-sub").textContent = `${RUNS.length} run(s)`;
   $("#runs-count").textContent = shown.length ? `${shown.length} of ${RUNS.length} run(s)`
-    : "no run of this pipeline and test set";
+    : RUNS_ERROR ? "" : "no run of this pipeline and test set";
+}
+
+/* The one row of an empty run list: the error of `/api/runs`, or the filters that match no
+   run with a link that resets them (owner answer of 2026-09-30T18:41:00+0300). */
+function emptyRuns() {
+  const span = document.querySelectorAll("#runs thead th").length;
+  let text = "No run yet.";
+  if (RUNS_ERROR) {
+    text = `The run list did not load: ${esc(RUNS_ERROR)}. ` +
+           `<a href="#" id="runs-retry">Load again</a>`;
+  } else if (RUNS.length) {
+    const conf = CONF === "" ? "All" : CONF === NO_CONFIG ? "no pipeline" : CONF;
+    const set = TSET === "" ? "All" : TSET === NO_SET ? "no test set" : TSET;
+    text = `0 runs match: Pipeline ${esc(conf)}, Testset ${esc(set)}. ` +
+           `<a href="#" id="runs-reset">Reset filters</a>`;
+  }
+  return `<tr class="none"><td colspan="${span}" class="empty">${text}</td></tr>`;
+}
+
+/* Set the filters `Pipeline` and `Testset` back to All, in the page address and in the
+   stored header too. */
+function resetFilters() {
+  CONF = "";
+  const url = new URL(location.href);
+  url.searchParams.delete("configuration");
+  history.replaceState(null, "", url);
+  $("#configuration").value = "";
+  $("#testset").value = "";
+  setTestset("");
+  saveHeader();
 }
 
 /* A change of a run filter keeps its value in the page address, under the key `param`.
@@ -1065,6 +1098,8 @@ async function loadRun(id, append) {
 }
 
 $("#runs-body").addEventListener("click", ev => {
+  if (ev.target.id === "runs-reset") { ev.preventDefault(); resetFilters(); return; }
+  if (ev.target.id === "runs-retry") { ev.preventDefault(); location.reload(); return; }
   const tr = ev.target.closest("tr[data-id]");
   if (tr) loadRun(tr.dataset.id, false);
 });
@@ -1631,7 +1666,16 @@ $("header").addEventListener("change", saveHeader);
 $("header").addEventListener("input", saveHeader);
 
 (async function init() {
-  const data = await (await fetch("/api/runs")).json();
+  let data;
+  try {
+    const response = await fetch("/api/runs");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    data = await response.json();
+  } catch (error) {
+    RUNS_ERROR = error.message || String(error);
+    renderRuns();
+    return;
+  }
   RUNS = data.runs || [];
   CONFIGS = data.configurations || [];
   renderConfigs();
