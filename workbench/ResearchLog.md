@@ -404,7 +404,7 @@ no earlier run existed, and the build removed the old vector file.
 ## 2026-09-29 — The upload scan does not read the EAN-13 of `shmelev_shmeleva_risling`
 
 - Symptom: the wine `shmelev_shmeleva_risling` has no row in `wine_code`. The back label
-  carries the EAN-13 `4618081983745` (package `../output/pdf/shmelev_shmeleva_risling/`).
+  carries the EAN-13 `4618081983745` (package `../samples/shmelev_shmeleva_risling/`).
   The check digit is valid. `codes.clean("gtin", ...)` gives `04618081983745`.
 - The lab server log holds no `POST /api/dataset-gtin` for this wine. The GTIN came only
   from the scan of an additional photo (plan 76). The three uploads at about 23:02

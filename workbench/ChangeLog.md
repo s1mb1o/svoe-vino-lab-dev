@@ -39,6 +39,13 @@
 
 ## 2026-10-01
 
+- The label package of `shmelev_shmeleva_risling` moved from
+  `output/pdf/shmelev_shmeleva_risling/` to `samples/shmelev_shmeleva_risling/` (owner
+  message of about 12:52). The package holds the front, back, and A4 PDFs, the PNG
+  previews, the 8-up sheet, and the scripts `build_labels.py` and `build_8up.py`. The
+  scripts resolve paths from their own folder, so they work at the new place. The
+  `ResearchLog.md` entry about the EAN-13 `4618081983745` names the new path. The zip
+  `output/pdf/shmelev_shmeleva_risling_complete.zip` stays at its place.
 - A checkpoint commit of all sessions' work (owner message of about 10:40, answers of
   about 10:50). The run directory `workbench/runs/` was renamed to `workbench/runs-1/` on
   2026-09-30 with no record. The root `.gitignore` now ignores `/workbench/runs-1/`
