@@ -111,7 +111,7 @@ class PipelineKeyTest(unittest.TestCase):
         entries = {name: (pipeline, error) for name, pipeline, error in settings.entries}
         plain = [name for name, (pipeline, error) in entries.items()
                  if (pipeline and pipeline.backend == "embedding" and pipeline.barcode is None
-                     and not name.startswith("android-"))]
+                     and not name.startswith(("android-", "competitor-")))]
         self.assertEqual(len(plain), 33)  # plan 82 added 7 pipelines and their twins
         for name in plain:
             with self.subTest(name=name):

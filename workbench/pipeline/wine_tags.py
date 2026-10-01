@@ -5,8 +5,10 @@ the order of the adds. `created_at` is the UTC time of the add, in the form of
 `comments.now_utc`. The first use is to mark the variants of one wine, for example
 `generic` and `vintage:2017`, but the code requires no form of a tag.
 
-The lab server uses these functions. The pipeline does not read the tags. A function
-that writes runs in the transaction of the caller. Read `docs/plans/63_wine-tags.md`.
+The lab server uses these functions. Stage 2 of the cluster label rules
+(`label_rules._run`) reads the vintage tags `2020`, `vintage:2020`, and `no_year`
+(plan 97). The rest of the pipeline does not read the tags. A function that writes runs
+in the transaction of the caller. Read `docs/plans/63_wine-tags.md`.
 """
 import re
 

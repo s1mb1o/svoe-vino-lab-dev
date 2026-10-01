@@ -122,6 +122,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 14px 16px 64px; }
 <div id="lb" role="dialog" aria-modal="true" aria-label="large image"><img id="lb-main" alt=""></div>
 <script>
 /* STEPS_JS */
+/* DROP_JS */
 
 /* The Recognize page (plan 55). The select holds the pipelines of the backend `embedding`
    (`GET /api/recognize`). A photo goes to `POST /api/recognize` at once; the answer is the
@@ -279,7 +280,10 @@ window.addEventListener("dragleave", ev => {
 window.addEventListener("drop", ev => {
   ev.preventDefault();
   $("#drop").classList.remove("over");
-  setFile((ev.dataTransfer && ev.dataTransfer.files || [])[0]);
+  // A drop from the Codex app names a local image; `drop.js` makes a File of it.
+  LocalDrop.files(ev.dataTransfer)
+    .then(files => setFile(files[0]))
+    .catch(error => message(`The image is not read: ${error.message}`, true));
 });
 // A paste (Ctrl+V, Cmd+V) of an image anywhere on the page takes the photo, as a drop does.
 window.addEventListener("paste", ev => {

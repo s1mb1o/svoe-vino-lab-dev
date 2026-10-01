@@ -21,6 +21,8 @@ The backends:
                    `wine_code` answers the photo, and the embedding does not run. The
                    optional key `rerank` re-ranks the cards of one cluster with the
                    label rules of plan 45 (`cluster_rerank.py`, plan 48). The optional
+                   key `competitor` applies the comparable actions of plan 91 after the
+                   embedding retrieval (`competitor_steps.py`). The optional
                    key `workers` sets the number of concurrent queries. The default is 1.
 
 The owner removed the pipeline `mock` and its code on 2026-09-26T00:26:27+0300.
@@ -29,6 +31,7 @@ import ipaddress
 
 import barcode
 import cluster_rerank
+import competitor_steps
 import embeddings
 import qr_barcode
 from embeddings import ConfigError
@@ -47,7 +50,8 @@ REMOTE_DEFAULTS = {"field": "image", "response": "auto", "query": {}, "top_k": 1
 # The answer shapes of `match_backends.SHAPES`. A test keeps the two lists equal.
 REMOTE_SHAPES = ("auto", "slug-object", "slug-array", "candidates", "group")
 BACKEND_KEYS = {REMOTE_BACKEND: REMOTE_KEYS + REMOTE_PARAMETER_KEYS,
-                EMBEDDING_BACKEND: ("embedding", "views", "barcode", "rerank", "workers")}
+                EMBEDDING_BACKEND: ("embedding", "views", "barcode", "rerank",
+                                    "competitor", "workers")}
 
 
 def check_device_ip(value):
@@ -129,7 +133,7 @@ class Pipeline:
             if placeholder and not self.device_ip:
                 raise ConfigError("device_ip MUST be true when url contains {device_ip}")
         self.workers = self.remote["workers"] if self.remote is not None else raw.get("workers", 1)
-        self.embedding = self.views = self.barcode = self.rerank = None
+        self.embedding = self.views = self.barcode = self.rerank = self.competitor = None
         self.scanner = None
         if self.backend == EMBEDDING_BACKEND:
             if (isinstance(self.workers, bool) or not isinstance(self.workers, int)
@@ -147,6 +151,11 @@ class Pipeline:
                 self.scanner = dict(scanner or qr_barcode.check_config(None))
             if "rerank" in raw:
                 self.rerank = cluster_rerank.check_options(raw["rerank"])
+            if "competitor" in raw:
+                self.competitor = competitor_steps.check_options(raw["competitor"])
+                secondary = self.competitor.get("secondary")
+                if secondary is not None and "views" in secondary:
+                    secondary["views"] = _views(secondary["views"])
 
 
 def bind_device_ip(pipeline, value):
@@ -227,6 +236,20 @@ def load(path=embeddings.CONFIG_PATH):
             if other:
                 raise ConfigError("the embedding %s has no view %s"
                                   % (pipeline.embedding, ", ".join(other)))
+            secondary = (pipeline.competitor or {}).get("secondary")
+            if secondary is not None:
+                second_name = secondary["embedding"]
+                if second_name not in models:
+                    raise ConfigError("the secondary embedding %s is not an entry of the key "
+                                      "`embeddings`" % second_name)
+                second_model, second_error = models[second_name]
+                if second_error:
+                    raise ConfigError("the secondary embedding %s is not valid: %s"
+                                      % (second_name, second_error))
+                other = sorted(set(secondary.get("views") or ()) - set(second_model.views))
+                if other:
+                    raise ConfigError("the secondary embedding %s has no view %s"
+                                      % (second_name, ", ".join(other)))
         return pipeline
 
     return Pipelines(path, db_path, embeddings.check_entries(config, "pipeline", make))

@@ -4,15 +4,20 @@
 The lab, the fake SAM3, and the fake model come from `test_embedding_run.py`. No test
 calls gx10 or the matcher.
 """
+import base64
+import io
 import json
 import os
 import sqlite3
 from pathlib import Path
 from unittest import mock
 
+from PIL import Image
+
 import test_embedding_run as TE  # noqa: E402  (puts pipeline/ and scripts/ on sys.path)
 import benchmark  # noqa: E402
 import embedding_run  # noqa: E402
+import embeddings  # noqa: E402
 import run_routes  # noqa: E402
 import run_steps  # noqa: E402
 
@@ -123,6 +128,68 @@ class EmbeddingStepsTest(StepsTest):
         view = next(part for part in self.all_steps(body) if part["id"] == "view")
         self.assertEqual((code, view["artifacts"][0]["check"]), (200, "changed"))
         self.assertIn("differs from the input of the run", view["notes"][-1])
+
+    def test_a_hit_at_an_angle_shows_the_index_image_rotated(self):
+        run_dir, _ = self.run_set()
+        rows = read_rows(run_dir)
+        search = next(part for part in rows[0]["trace"]["steps"]
+                      if part["id"] == "search" and part["view"] == "full")
+        top = search["out"]["top"]
+        top[0]["angle"], top[1]["angle"] = 90, 0
+        write_rows(run_dir, rows)
+        code, body = self.steps(os.path.basename(run_dir), rows[0]["query_id"])
+        part = next(part for part in self.all_steps(body)
+                    if part["name"] == "Search, space full")
+        items = part["lists"][0]["items"]
+        self.assertEqual(code, 200)
+        prefix = "data:image/png;base64,"
+        self.assertTrue(items[0]["image"].startswith(prefix))
+        with Image.open(io.BytesIO(base64.b64decode(items[0]["image"][len(prefix):]))) as rotated, \
+                Image.open(os.path.join(
+                    embeddings.entry_dir(self.lab.db_path, "gw"), embeddings.IMAGES,
+                    embeddings.image_name(top[0]["sha256"], "full"))) as stored:
+            self.assertEqual(rotated.size, (stored.height, stored.width))
+        self.assertTrue(items[1]["image"].startswith("/embeddings/gw/images/"))
+        self.assertEqual([item["detail"].rsplit(" · ", 1)[-1] for item in items[:2]],
+                         ["90°", "0°"])
+        self.assertNotIn("°", items[2]["detail"])
+
+    def test_the_embedding_rerank_step_exposes_option_and_decision_scores(self):
+        run_dir, _ = self.run_set()
+        rows = read_rows(run_dir)
+        row = next(record for record in rows if record["image_path"] == "green/01.png")
+        first, second = row["candidates"][:2]
+        window = [second["slug"], first["slug"]]
+        result = {
+            "kind": "cluster_rules", "cluster": "abc123", "mode": "evidence",
+            "source_mode": "verdict", "window": window,
+            "ranking": [first["slug"], second["slug"]], "picture": "label",
+            "questions": [{"id": "q1", "question": "What sugar level is printed?",
+                           "options": ["semi-dry", "other", "not visible"],
+                           "expected": {second["slug"]: None, first["slug"]: "semi-dry"}}],
+            "option_scores": {"q1": {"semi-dry": 95, "other": 3, "not visible": 2}},
+            "base_scores": {second["slug"]: 0.80, first["slug"]: 0.78},
+            "evidence_scores": {second["slug"]: 0.0, first["slug"]: 0.93},
+            "decision_scores": {second["slug"]: 0.80, first["slug"]: 0.8265},
+            "decision_weight": 0.05, "cached": False, "ms": 1234, "error": None,
+            "changed": True,
+        }
+        row["trace"]["steps"].append({"id": "cluster_rules", "start_ms": 50,
+                                      "ms": 1234, "out": result})
+        first["explain"] = dict(result, base_rank=2, base_score=0.78, inner=None)
+        second["explain"] = dict(result, base_rank=1, base_score=0.80, inner=None)
+        write_rows(run_dir, rows)
+
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        part = self.all_steps(body)[-1]
+        self.assertEqual((code, len(body["rounds"]), part["name"]),
+                         (200, 4, "VLM evidence re-rank"))
+        self.assertEqual(part["vlm"]["option_scores"], result["option_scores"])
+        self.assertEqual(part["vlm"]["evidence_scores"], result["evidence_scores"])
+        self.assertEqual(part["vlm"]["decision_scores"], result["decision_scores"])
+        self.assertIn("embedding 0.7800 · evidence 0.9300 · decision 0.8265",
+                      part["lists"][0]["items"][0]["detail"])
+        self.assertEqual(part["lists"][0]["items"][0]["moved"], 1)
 
     def test_an_old_row_has_the_steps_with_no_time(self):
         run_dir, _ = self.run_set()

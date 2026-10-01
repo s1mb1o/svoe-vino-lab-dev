@@ -288,8 +288,10 @@ class RerankFirstTest(unittest.TestCase):
 
     def test_a_card_that_is_not_a_wine_of_the_gtin_does_not_move(self):
         answer = (CR.cands(CR.A, CR.B, CR.C, CR.D), 30, 200, None, TRACE)
-        # The answer 70/30 fits C alone. With no GTIN, C moves up (plan 48).
-        backend = self.make([CR.sheet_rule()], answer, CR.FakeVlm('{"q1": "70/30"}'))
+        # The option score for 70/30 supports C alone. With no GTIN, C moves up.
+        scores = ('{"q1":{"30/70":0,"50/50":0,"70/30":100,'
+                  '"other":0,"not visible":0}}')
+        backend = self.make([CR.sheet_rule()], answer, CR.FakeVlm(scores))
         self.assertEqual([c["slug"] for c in backend.ask("p")[0]], [CR.C, CR.A, CR.B, CR.D])
         # With the GTIN of A and B, the window holds A and B alone, so C stays.
         out = backend.ask("p", first=[CR.A, CR.B])[0]
@@ -299,20 +301,21 @@ class RerankFirstTest(unittest.TestCase):
 
     def test_the_rule_orders_the_wines_of_the_gtin(self):
         answer = (CR.cands(CR.A, CR.B, CR.C, CR.D), 30, 200, None, TRACE)
-        backend = self.make([CR.sheet_rule()], answer, CR.FakeVlm('{"q1": "50/50"}'))
+        scores = ('{"q1":{"30/70":0,"50/50":100,"70/30":0,'
+                  '"other":0,"not visible":0}}')
+        backend = self.make([CR.sheet_rule()], answer, CR.FakeVlm(scores))
         out, _ms, status, error, trace = backend.ask("p", first=[CR.A, CR.B])
         self.assertEqual([c["slug"] for c in out], [CR.B, CR.A, CR.C, CR.D])
         self.assertEqual((status, error), (200, None))
         self.assertEqual(trace["steps"][-1]["out"]["window"], [CR.A, CR.B])
 
-    def test_a_verdict_for_a_card_outside_the_window_keeps_the_base_order(self):
+    def test_a_direct_verdict_rule_keeps_the_base_order_without_a_vlm_call(self):
         vlm = CR.FakeVlm('{"wine": "C"}')
         backend = self.make([CR.verdict_rule((CR.A, CR.B, CR.C))],
                             (CR.cands(CR.A, CR.B, CR.C), 30, 200, None, TRACE), vlm)
         out = backend.ask("p", first=[CR.A, CR.B])[0]
         self.assertEqual([c["slug"] for c in out], [CR.A, CR.B, CR.C])
-        # The prompt still lists every card of the cluster.
-        self.assertIn("Name wine-c-12", vlm.calls[0]["content"][1]["text"])
+        self.assertEqual(vlm.calls, [])
 
     def test_one_wine_of_the_gtin_in_the_cluster_calls_no_vlm(self):
         vlm = CR.FakeVlm()

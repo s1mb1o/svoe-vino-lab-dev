@@ -8,7 +8,10 @@ Obvious key drift of an answer gets the key of the prompt, for example `text` ->
 
 Stage 2 asks a VLM where the labels of one cluster differ. The call sends one image for
 each card (its label cut), the card data, the stage 1 descriptions, and the note of the
-reviewer. The answer is a difference sheet, which holds questions with the expected
+reviewer. It also sends the label pictures of the additional photos of the cards
+(`extra_pictures`), one at a time across the cards, while the prompt stays within
+`rules_max_images` and the token budget (owner message of 2026-09-30T15:55:42+0300).
+The answer is a difference sheet, which holds questions with the expected
 answer of each card, and a rule text. The code checks the sheet and sets the mode:
 
     sheet    at least one question separates two cards
@@ -20,6 +23,10 @@ The prompts and the check are a port of `svoe-vino-testset/scripts/cluster_rules
 (plans 05 and 06 of `svoe-vino-testset`). The lab copy `scripts/cluster_rules.py` holds
 the same prompt texts, and a test compares them. The prompts are sent as they are
 written here. Do not translate them.
+
+Stage 2 also reads the vintage tags of the wines (table `wine_tag`, plan 97). A tag
+`2020` or `vintage:2020` counts as a year of the catalogue name, and the tag `no_year`
+counts as a name that states no year (`vintage_tags`, `TAG_NOTE`).
 
 The file `data/catalog/embeddings/<name>/cluster-rules.json` holds the descriptions under
 `cards` (by slug) and the rules under `spaces.label` (by cluster key). The rules are for
@@ -48,6 +55,7 @@ import embeddings
 import label_descriptions
 import model_cache
 import vlm_config
+import wine_tags
 
 VERSION = 1
 VIEW = "combined"
@@ -189,6 +197,14 @@ CAPTION_SHARED = (
     "catalogue data of card %(letter)s, take the answers of card %(letter)s from "
     "its catalogue data):"
 )
+# The caption before each additional label picture of a card in stage 2 (owner message
+# of 2026-09-30T15:55:42+0300). `side` is `front` or `back`.
+CAPTION_EXTRA = ("Card %(letter)s, one more picture (the %(side)s label of card %(letter)s "
+                 "in another photo of the same wine):")
+# The additional image types of `wine_image` whose label picture goes to stage 2, and
+# the side that the caption names.
+EXTRA_SIDES = {"full_front": "front", "full_back": "back", "label_front": "front",
+               "label_back": "back"}
 
 # The vintage variants of plan 06 of `svoe-vino-testset`. Only the prompt of a cluster
 # that holds cards that state a year and cards that state none gets this note.
@@ -202,6 +218,19 @@ VINTAGE_NOTE = (
     "year the answer \"other\": it is the card of every vintage that no other card "
     "states. When the cards differ by more than the vintage year, follow rule 2a."
 )
+# The vintage tags of the wines (table `wine_tag`, plan 63; owner message of about
+# 2026-10-01T00:08:00+0300). A tag `2020` or `vintage:2020` counts as a year of the
+# catalogue name. The tag `no_year` counts as a name that states no year. Only the prompt
+# of a cluster with such a tag gets this note, so the other rules stay current. Read
+# docs/plans/97_vintage-tags-in-rules.md.
+TAG_NOTE = (
+    "Vintage tags. The reviewer tagged the vintage of some cards: %(tags)s. For rule "
+    "2a, a tagged year counts as a year of the catalogue name of the card. The tag "
+    "no_year counts as a name that states no year. Take the expected year of a "
+    "tagged card from its tag."
+)
+YEAR_TAG = re.compile(r"^(?:vintage:)?((?:19|20)\d{2})$")
+NO_YEAR_TAG = "no_year"
 # The answer of a card that states no year. The matcher holds the same word.
 OTHER = "other"
 NO_PHOTO = "(no catalogue photo)"
@@ -358,6 +387,48 @@ def card_pictures(wine, sources):
     for picture in (first, second):
         picture["source_sha256"] = main
     return first, second
+
+
+def extra_pictures(wine, sources):
+    """Return the additional label pictures of one card for stage 2, in column order.
+
+    A `full_front` or `full_back` photo gives its `label` cut. Such a photo with no
+    label cut gives nothing. A `label_front` or `label_back` close-up gives its `label`
+    cut, else the original, because a close-up shows the label. The effective main image
+    and a picture that is in the list already give nothing."""
+    if not wine:
+        return []
+    main = next((digest for image_type, digest in wine["columns"]
+                 if image_type in ("main_patched", "main")), None)
+    out = []
+    for image_type, digest in wine["columns"]:
+        source = sources.get(digest)
+        if image_type not in EXTRA_SIDES or digest == main or not source:
+            continue
+        label = (source.get("cuts") or {}).get("label")
+        if label:
+            picture = {"sha256": label["sha256"], "path": label["path"]}
+        elif image_type.startswith("label_"):
+            picture = {"sha256": digest, "path": source["path"]}
+        else:
+            continue
+        if any(picture["sha256"] == old["sha256"] for old in out):
+            continue
+        out.append({"kind": "label", **picture, "source_sha256": digest,
+                    "image_type": image_type})
+    return out
+
+
+def extra_order(letters, extras):
+    """Return the additional pictures of the cards as a list of (slug, picture): the first
+    picture of each card in letter order, then the second picture of each card, and so
+    on. A prefix of the list is the set that fits a smaller limit."""
+    lists = [(slug, (extras or {}).get(slug) or []) for slug in letters.values()]
+    order = []
+    for depth in range(max((len(pictures) for _, pictures in lists), default=0)):
+        order.extend((slug, pictures[depth]) for slug, pictures in lists
+                     if depth < len(pictures))
+    return order
 
 
 # ---------------------------------------------------------------- the VLM
@@ -557,14 +628,37 @@ def card_data(slug, catalog):
     return out
 
 
+def vintage_tags(slug, catalog):
+    """The years of the vintage tags of a card, and True when it has the tag `no_year`.
+
+    The tags are the key `tags` of the `catalog` record of the card (`_run` reads them
+    from the table `wine_tag`)."""
+    tags = ((catalog or {}).get(slug) or {}).get("tags") or []
+    years = {m.group(1) for m in (YEAR_TAG.match(t) for t in tags) if m}
+    return years, NO_YEAR_TAG in tags
+
+
+def tag_note(letters, catalog):
+    """The note of `TAG_NOTE` for a cluster with a vintage tag, or an empty text."""
+    parts = []
+    for letter, slug in letters.items():
+        years, no_year = vintage_tags(slug, catalog)
+        values = sorted(years) + ([NO_YEAR_TAG] if no_year else [])
+        if values:
+            parts.append("Card %s: %s" % (letter, ", ".join(values)))
+    return TAG_NOTE % {"tags": "; ".join(parts)} if parts else ""
+
+
 def vintage_facts(slugs, catalog, cards):
     """The vintage years that each card states, and the cards that state no year.
 
-    A card states a year in its name, in its slug, or on its label: the key `vintage`
-    of its label description. A year of the name or the slug wins over the year of the
-    label. A card states no year when its name and its slug hold no year and its
-    description gives no vintage. A card with an unreadable or an implausible label
-    year, or with no description, is in neither group.
+    A card states a year in its name, in its slug, in a vintage tag (`vintage_tags`),
+    or on its label: the key `vintage` of its label description. A year of the name or
+    the slug wins over the year of a tag, and a tag wins over the label. A card states
+    no year when its name and its slug hold no year and it has the tag `no_year` and no
+    year tag, or when it has no vintage tag and its description gives no vintage. A card
+    with an unreadable or an implausible label year, or with no description, is in
+    neither group.
 
     Return `(dated, undated)`. `dated` maps a slug to `{"years", "where"}`. `undated`
     lists the slugs in the order of `slugs`."""
@@ -573,6 +667,7 @@ def vintage_facts(slugs, catalog, cards):
     for s in slugs:
         name = ((catalog or {}).get(s) or {}).get("name") or ""
         named = set(YEAR.findall(name)) | set(YEAR.findall(s))
+        tagged, no_year = vintage_tags(s, catalog)
         desc = ((cards or {}).get(s) or {}).get("description")
         label, state = None, "unknown"
         if isinstance(desc, dict):
@@ -586,6 +681,10 @@ def vintage_facts(slugs, catalog, cards):
                     state, label = "year", found.pop()
         if named:
             dated[s] = {"years": named, "where": "in the name"}
+        elif tagged:
+            dated[s] = {"years": tagged, "where": "in a tag"}
+        elif no_year:
+            undated.append(s)
         elif label:
             dated[s] = {"years": {label}, "where": "on the label"}
         elif state == "none":
@@ -606,13 +705,17 @@ def vintage_note(letters, catalog, cards):
         "undated": ", ".join("Card %s" % letter[s] for s in undated)}
 
 
-def rules_content(letters, catalog, cards, note_text, pictures, side):
+def rules_content(letters, catalog, cards, note_text, pictures, side, extras=None,
+                  render=picture_png):
     """Return the message content of stage 2, its token estimate, its prompt text, and
-    slug -> the SHA-256 of the file that the request sends for that card.
+    slug -> the list of the SHA-256 values of the files that the request sends for that
+    card.
 
     Each card goes with its label cut, scaled UP or down to `side`. A card with no
     label cut goes with its stage 1 picture, and its caption states that. The caption of
-    a card also names the cards with the same catalogue picture. The key `bottle` of the
+    a card also names the cards with the same catalogue picture. `extras` maps a slug to
+    its chosen additional label pictures; each goes after the picture of its card, with
+    `CAPTION_EXTRA`. `render` is `picture_png` or a cache of it. The key `bottle` of the
     label description stays out: the bottle and the capsule are not on the label."""
     shas = {s: (pictures.get(s) or {}).get("source_sha256") for s in letters.values()}
     content, tokens, blocks, sent = [], 0, [], {}
@@ -628,12 +731,19 @@ def rules_content(letters, catalog, cards, note_text, pictures, side):
             caption = CAPTION % {"letter": letter}
         content.append({"type": "text", "text": caption})
         if picture:
-            png, size = picture_png(picture["path"], side)
+            png, size = render(picture["path"], side)
             content.append({"type": "image_url", "image_url": {"url": data_url(png)}})
             tokens += image_tokens(size)
-            sent[slug] = picture["sha256"]
+            sent[slug] = [picture["sha256"]]
         else:
             content.append({"type": "text", "text": NO_PHOTO})
+        for extra in (extras or {}).get(slug) or []:
+            content.append({"type": "text", "text": CAPTION_EXTRA % {
+                "letter": letter, "side": EXTRA_SIDES[extra["image_type"]]}})
+            png, size = render(extra["path"], side)
+            content.append({"type": "image_url", "image_url": {"url": data_url(png)}})
+            tokens += image_tokens(size)
+            sent.setdefault(slug, []).append(extra["sha256"])
         data = card_data(slug, catalog)
         desc = ((cards or {}).get(slug) or {}).get("description")
         if isinstance(desc, dict):
@@ -647,6 +757,10 @@ def rules_content(letters, catalog, cards, note_text, pictures, side):
     text = RULES_PROMPT % {"n": len(letters), "last": list(letters)[-1],
                            "cards": "\n\n".join(blocks),
                            "notes": (note_text or "").strip() or "none"}
+    tags = tag_note(letters, catalog)
+    if tags:
+        head = "\n\nAnswer with one JSON object:"
+        text = text.replace(head, "\n\n" + tags + head, 1)
     vintage = vintage_note(letters, catalog, cards)
     if vintage:
         head = "\n\nAnswer with one JSON object:"
@@ -685,13 +799,15 @@ def question_kind(text, answers):
 def named_year(answer, slug, catalog):
     """The expected answer of a vintage question when the card data states it, or None.
 
-    The answer stays when it holds a year and the name or the slug of the card holds
-    every year of the answer."""
+    The answer stays when it holds a year and the name, the slug, or a vintage tag of
+    the card holds every year of the answer."""
     if answer is None:
         return None
     years = YEAR.findall(answer)
     name = ((catalog or {}).get(slug) or {}).get("name") or ""
-    return answer if years and all(y in name or y in slug for y in years) else None
+    tagged, _ = vintage_tags(slug, catalog)
+    return answer if years and all(y in name or y in slug or y in tagged
+                                   for y in years) else None
 
 
 def vintage_answer(answer, slug, dated, catch_all):
@@ -718,14 +834,15 @@ def check_rule(value, letters, catalog=None, cards=None, sent=None):
     - A question about a bottle number is never valid.
     - A question about a feature outside the label is never valid, and a rule text about
       such a feature gives mode `none`, not `verdict`.
-    - A vintage question keeps the expected year of a card only when the name or the
-      slug of the card states that year.
+    - A vintage question keeps the expected year of a card only when the name, the
+      slug, or a vintage tag of the card states that year.
     - The vintage variants of `VINTAGE_NOTE`: the mark `other` stays only for a card that
       states no year, when no other question separates it from a card with a year.
     - A question about the alcohol value is valid only when no other question is valid.
 
-    `sent` maps a slug to the SHA-256 of the file that stage 2 sent for it. Each question
-    gets `evidence`: that SHA-256 for each card with an expected answer (plan 30)."""
+    `sent` maps a slug to the list of the SHA-256 values of the files that stage 2 sent
+    for it; one SHA-256 value is allowed too. Each question gets `evidence`: that list for
+    each card with an expected answer (plan 30)."""
     questions = []
     for q in value.get("questions") or []:
         if not isinstance(q, dict):
@@ -762,7 +879,8 @@ def check_rule(value, letters, catalog=None, cards=None, sent=None):
         distinct = {normalize(a) for a in q["answers"].values() if a is not None}
         q["valid"] = (bool(q["question"]) and len(distinct) >= 2
                       and q["kind"] not in ("serial", "bottle"))
-        q["evidence"] = {s: [sent[s]] for s, a in q["answers"].items()
+        q["evidence"] = {s: list(sent[s]) if isinstance(sent[s], list) else [sent[s]]
+                         for s, a in q["answers"].items()
                          if a is not None and (sent or {}).get(s)}
     if any(q["valid"] and q["kind"] in ("feature", "vintage") for q in questions):
         for q in questions:
@@ -787,11 +905,12 @@ def check_rule(value, letters, catalog=None, cards=None, sent=None):
 
 # ---------------------------------------------------------------- stage 2: one rule
 
-def inputs_sha(slugs, catalog, cards, pictures1, pictures2, note_text, cfg):
+def inputs_sha(slugs, catalog, cards, pictures1, pictures2, note_text, cfg, extras=None):
     """The SHA of every input of stage 2. A different value makes a rule stale.
 
     The input hash of `clusters.json` is not in it: a cluster build that keeps the
-    members keeps the rule."""
+    members keeps the rule. The additional pictures (`extras`) and the limits that
+    choose them are in it only when a card of the cluster has one."""
     slugs = sorted(slugs)
     letters = {LETTERS[i]: s for i, s in enumerate(slugs[:len(LETTERS)])}
     inputs = {
@@ -808,18 +927,37 @@ def inputs_sha(slugs, catalog, cards, pictures1, pictures2, note_text, cfg):
     vintage = vintage_note(letters, catalog, cards)
     if vintage:
         inputs["vintage_note"] = vintage
+    # With no vintage tag, the SHA stays the SHA of the rules before plan 97.
+    tags = tag_note(letters, catalog)
+    if tags:
+        inputs["tag_note"] = tags
+    # With no additional picture, the SHA stays the SHA of the rules before the owner
+    # message of 2026-09-30T15:55:42+0300.
+    shown = {s: [[p["sha256"], p["image_type"]] for p in (extras or {}).get(s) or []]
+             for s in slugs}
+    shown = {s: pictures for s, pictures in shown.items() if pictures}
+    if shown:
+        inputs["extras"] = shown
+        inputs["extra_caption"] = CAPTION_EXTRA
+        inputs["extra_limits"] = [cfg["rules_max_images"], cfg["rules_context_tokens"],
+                                  cfg["rules_max_tokens"]]
     return sha(inputs)
 
 
 def build_rule(ask_fn, cfg, slugs, catalog, cards, pictures1, pictures2, note_text,
-               input_hash):
+               input_hash, extras=None):
     """Stage 2 for one cluster. Return the rule record. Raise ImageLimitError when the
-    service refuses the number of images."""
+    service refuses the number of images.
+
+    Each card keeps its own picture. The additional pictures of `extras` follow in the
+    order of `extra_order`, while the images stay within `rules_max_images` and the
+    token estimate at `rules_max_side` stays within the budget. The record lists the
+    sent additional pictures in `extra_pictures` and the others in `extras_dropped`."""
     entry = cfg["rules_entry"]
     slugs = sorted(slugs)
     rec = {"key": clusters.cluster_key(slugs), "slugs": slugs, "input_hash": input_hash,
            "inputs_sha": inputs_sha(slugs, catalog, cards, pictures1, pictures2,
-                                    note_text, cfg),
+                                    note_text, cfg, extras),
            "note": note_text or "", "built_at": now(), "vlm": entry.name,
            "settings_sha": cfg["rules_sha"], "mode": "none", "error": None}
     if len(slugs) > len(LETTERS):
@@ -834,19 +972,45 @@ def build_rule(ask_fn, cfg, slugs, catalog, cards, pictures1, pictures2, note_te
                         "%s); the call is not sent" % (images, CONFIG_KEY,
                                                        cfg["rules_max_images"], entry.name))
         return rec
+    order = extra_order(rec["letters"], extras)
+    keep = order[:cfg["rules_max_images"] - images]
+    rendered = {}
+
+    def render(path, side):
+        if (path, side) not in rendered:
+            rendered[(path, side)] = picture_png(path, side)
+        return rendered[(path, side)]
+
     budget = cfg["rules_context_tokens"] - cfg["rules_max_tokens"] - CONTEXT_MARGIN
     side = cfg["rules_max_side"]
     while True:
+        chosen = {}
+        for slug, picture in keep:
+            chosen.setdefault(slug, []).append(picture)
         try:
             content, estimate, text, sent = rules_content(
-                rec["letters"], catalog, cards, note_text, pictures2, side)
+                rec["letters"], catalog, cards, note_text, pictures2, side, chosen, render)
         except OSError as exc:
             rec["error"] = "cannot read a picture: %s" % exc
             return rec
-        if estimate <= budget or side <= 256:
+        if estimate <= budget:
+            break
+        # An additional picture goes before the pictures of the cards get smaller.
+        if keep:
+            keep.pop()
+            continue
+        if side <= 256:
             break
         side = int(side * 0.75)
     rec.update(max_side=side, prompt_tokens_estimate=estimate, prompt=text)
+    if order:
+        rec["extra_pictures"] = {slug: [{"sha256": p["sha256"], "image_type": p["image_type"],
+                                         "source_sha256": p["source_sha256"]}
+                                        for p in pictures]
+                                 for slug, pictures in chosen.items()}
+        rec["extras_dropped"] = [{"slug": slug, "sha256": p["sha256"],
+                                  "image_type": p["image_type"]}
+                                 for slug, p in order[len(keep):]]
     try:
         out, guarded = ask_guarded(ask_fn, entry, content, cfg["rules_max_tokens"],
                                    cfg["rules_thinking"], cfg["rules_timeout_s"],
@@ -895,7 +1059,8 @@ def save_file(directory, data, cfg):
         "rules_max_side": cfg["rules_max_side"], "rules_sha": cfg["rules_sha"]}
     data["prompts"] = {"describe": DESCRIBE_PROMPT, "rules": RULES_PROMPT, "card": CARD_BLOCK,
                        "captions": [CAPTION, CAPTION_NO_LABEL, CAPTION_SHARED],
-                       "vintage": VINTAGE_NOTE}
+                       "caption_extra": CAPTION_EXTRA, "vintage": VINTAGE_NOTE}
+    data["prompts"]["tag_note"] = TAG_NOTE
     clusters.write_json(os.path.join(directory, clusters.RULES_FILE), data)
 
 
@@ -972,14 +1137,22 @@ def _run(settings, name, cfg, directory, stage, cluster_slug, force, dry_run, as
             raise RuleError("no %s cluster holds the card %s" % (VIEW, cluster_slug))
     wines = {wine["slug"]: wine for wine in ctx["wines"]}
     slugs = sorted({s for c in chosen for s in c["slugs"]})
-    pictures1, pictures2 = {}, {}
+    pictures1, pictures2, extras = {}, {}, {}
     for slug in slugs:
         first, second = card_pictures(wines.get(slug), ctx["sources"])
         if first:
             pictures1[slug], pictures2[slug] = first, second
+        more = extra_pictures(wines.get(slug), ctx["sources"])
+        if more:
+            extras[slug] = more
     catalog = {slug: {"name": rec.get("name"), "producer": rec.get("producer"),
                       "category": rec.get("category"), "grapes": rec.get("grapes")}
                for slug, rec in ctx["catalog"].items()}
+    # The vintage tags of plan 97 go in the key `tags` of the records.
+    with contextlib.closing(embeddings.open_database(settings.db_path)) as conn:
+        for slug, tags in wine_tags.tags(conn).items():
+            if slug in catalog:
+                catalog[slug]["tags"] = tags
     _, notes = clusters.load_notes(directory)
     summary = {"embedding": name, "file": os.path.join(directory, clusters.RULES_FILE),
                "artifact_built_at": artifact.get("built_at"),
@@ -1030,7 +1203,7 @@ def _run(settings, name, cfg, directory, stage, cluster_slug, force, dry_run, as
             members = sorted(cluster["slugs"])
             note_text = clusters.note_for(cluster, notes).get("text") or ""
             value = inputs_sha(members, catalog, data["cards"], pictures1, pictures2,
-                               note_text, cfg)
+                               note_text, cfg, extras)
             old = data["spaces"][RULE_SPACE].get(cluster["key"])
             if not force and rule_current(old, value):
                 if old.get("input_hash") != artifact.get("input_hash") and not dry_run:
@@ -1050,7 +1223,7 @@ def _run(settings, name, cfg, directory, stage, cluster_slug, force, dry_run, as
                 try:
                     rec = build_rule(ask_fn, cfg, members, catalog, data["cards"],
                                      pictures1, pictures2, note_text,
-                                     artifact.get("input_hash"))
+                                     artifact.get("input_hash"), extras)
                 except ImageLimitError as exc:
                     stop.set()
                     raise RuleError(str(exc)) from exc

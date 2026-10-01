@@ -40,6 +40,16 @@ def verdict_rule(slugs=(A, B)):
             "rule": "If the label shows 2024, it is card B.", "error": None, "questions": []}
 
 
+def one_sided_rule(slugs=(A, B)):
+    slugs = sorted(slugs)
+    return {"key": clusters.cluster_key(slugs), "slugs": slugs,
+            "letters": {chr(65 + i): s for i, s in enumerate(slugs)}, "mode": "verdict",
+            "rule": "If the label shows semi-dry, it is card B; otherwise it is card A.",
+            "error": None, "questions": [{
+                "id": "q1", "question": "What sugar level is printed?", "kind": "feature",
+                "valid": False, "answers": {A: None, B: "semi-dry"}}]}
+
+
 def cands(*slugs):
     return [{"slug": s, "score": round(0.9 - 0.01 * i, 4), "rank": i + 1}
             for i, s in enumerate(slugs)]
@@ -89,6 +99,43 @@ class AnswerTest(unittest.TestCase):
         self.assertEqual(schema["properties"]["wine"]["enum"], ["A", "B", "unsure"])
         self.assertEqual(cluster_rerank.verdict_choice(rule, {"wine": "b"}), B)
         self.assertIsNone(cluster_rerank.verdict_choice(rule, {"wine": "unsure"}))
+
+    def test_the_score_schema_requires_every_option(self):
+        rule = sheet_rule()
+        schema = cluster_rerank.score_schema(rule)
+        q1 = schema["properties"]["q1"]
+        self.assertEqual(q1["required"], cluster_rerank.options_of(rule["questions"][0]))
+        self.assertFalse(q1["additionalProperties"])
+        self.assertIn("Do not select a wine or a card", cluster_rerank.score_prompt(rule))
+
+    def test_option_scores_become_candidate_evidence(self):
+        rule = sheet_rule()
+        answer = {"q1": {"30/70": 5, "50/50": 80, "70/30": 5,
+                         "other": 0, "not visible": 10}}
+        checked = cluster_rerank.checked_option_scores(rule, answer)
+        self.assertEqual(cluster_rerank.evidence_scores(rule, checked, rule["slugs"]),
+                         {A: 0.0, B: 0.7, C: 0.0})
+
+    def test_a_one_sided_question_is_scoreable_but_null_stays_neutral(self):
+        rule = one_sided_rule()
+        self.assertEqual([q["id"] for q in cluster_rerank.scoreable_questions(rule)], ["q1"])
+        answer = {"q1": {"semi-dry": 90, "other": 5, "not visible": 5}}
+        scores = cluster_rerank.evidence_scores(
+            rule, cluster_rerank.checked_option_scores(rule, answer), rule["slugs"])
+        self.assertEqual(scores, {A: 0.0, B: 0.85})
+
+    def test_not_visible_removes_positive_evidence(self):
+        rule = one_sided_rule()
+        answer = {"q1": {"semi-dry": 3, "other": 2, "not visible": 95}}
+        scores = cluster_rerank.evidence_scores(
+            rule, cluster_rerank.checked_option_scores(rule, answer), rule["slugs"])
+        self.assertEqual(scores, {A: 0.0, B: 0.0})
+
+    def test_an_invalid_score_total_is_rejected(self):
+        rule = one_sided_rule()
+        with self.assertRaisesRegex(cluster_rerank.label_rules.VlmError, "total 90"):
+            cluster_rerank.checked_option_scores(
+                rule, {"q1": {"semi-dry": 10, "other": 10, "not visible": 70}})
 
     def test_positions_keep_their_scores(self):
         base = cands(B, A, D)
@@ -141,7 +188,8 @@ class Inner:
 
 
 class FakeVlm:
-    def __init__(self, text='{"q1": "50/50"}', fail=None):
+    def __init__(self, text=('{"q1":{"30/70":0,"50/50":100,"70/30":0,'
+                             '"other":0,"not visible":0}}'), fail=None):
         self.text, self.fail, self.calls = text, fail, []
 
     def __call__(self, entry, content, max_tokens, thinking, timeout, schema=None):
@@ -177,34 +225,62 @@ class BackendTest(unittest.TestCase):
         self.assertEqual(explain["window"], [A, B, C])
         self.assertTrue(explain["changed"])
         self.assertEqual(explain["base_rank"], 3)
-        self.assertEqual(explain["scores"], {A: -1, B: 1, C: -1})
+        self.assertEqual(explain["option_scores"]["q1"]["50/50"], 100)
+        self.assertEqual(explain["evidence_scores"], {A: 0.0, B: 1.0, C: 0.0})
+        self.assertEqual(explain["base_scores"][B], 0.88)
+        self.assertEqual(explain["decision_scores"][B], 0.93)
+        self.assertEqual(explain["ranking"], [B, A, C])
         self.assertEqual(explain["questions"][0]["options"][-2:], ["other", "not visible"])
         self.assertNotIn("explain", out[1])
         self.assertEqual(new_trace["steps"][-1]["id"], "cluster_rules")
         self.assertGreaterEqual(ms, 100)
         self.assertEqual((status, error), (200, None))
-        self.assertIsNone(vlm.calls[0]["schema"])
+        self.assertEqual(vlm.calls[0]["schema"]["required"], ["q1"])
         self.assertFalse(vlm.calls[0]["thinking"])
         self.assertEqual(vlm.calls[0]["content"][0]["type"], "image_url")
+        trace_out = new_trace["steps"][-1]["out"]
+        self.assertEqual(trace_out["option_scores"], explain["option_scores"])
+        self.assertEqual(trace_out["decision_scores"], explain["decision_scores"])
 
-    def test_a_verdict_sends_its_schema_and_moves_the_chosen_card(self):
+    def test_a_legacy_verdict_with_no_question_calls_no_vlm(self):
         vlm = FakeVlm('{"wine": "B"}')
-        backend = self.make([verdict_rule()], (cands(A, B, D), 100, 200, None, None), vlm)
-        out = backend.ask("photo.jpg")[0]
-        self.assertEqual([c["slug"] for c in out], [B, A, D])
-        self.assertEqual(vlm.calls[0]["schema"]["properties"]["wine"]["enum"], ["A", "B", "unsure"])
-        self.assertIn("Name wine-a-12", vlm.calls[0]["content"][1]["text"])
-        self.assertIn("LABEL A", vlm.calls[0]["content"][1]["text"])
+        answer = (cands(A, B, D), 100, 200, None, None)
+        backend = self.make([verdict_rule()], answer, vlm)
+        self.assertIs(backend.ask("photo.jpg"), answer)
+        self.assertEqual(vlm.calls, [])
 
-    def test_unsure_and_a_tie_keep_the_base_order(self):
-        backend = self.make([verdict_rule()], (cands(A, B), 100, 200, None, None),
-                            FakeVlm('{"wine": "unsure"}'))
-        self.assertEqual([c["slug"] for c in backend.ask("p")[0]], [A, B])
+    def test_not_visible_and_a_decision_tie_keep_the_base_order(self):
         backend = self.make([sheet_rule()], (cands(A, B), 100, 200, None, None),
-                            FakeVlm('{"q1": "not visible"}'))
+                            FakeVlm('{"q1":{"30/70":0,"50/50":0,"70/30":0,'
+                                    '"other":0,"not visible":100}}'))
         out = backend.ask("p")[0]
         self.assertEqual([c["slug"] for c in out], [A, B])
         self.assertFalse(out[0]["explain"]["changed"])
+
+    def test_aratti_missing_text_keeps_the_2024_base_winner(self):
+        vlm = FakeVlm('{"q1":{"semi-dry":3,"other":2,"not visible":95}}')
+        backend = self.make([one_sided_rule()],
+                            (cands(B, A, D), 100, 200, None, None), vlm)
+        out = backend.ask("aratti-2024.webp")[0]
+        self.assertEqual([candidate["slug"] for candidate in out], [B, A, D])
+        explain = out[0]["explain"]
+        self.assertEqual(explain["source_mode"], "verdict")
+        self.assertEqual(explain["evidence_scores"], {B: 0.0, A: 0.0})
+        self.assertFalse(explain["changed"])
+
+    def test_a_visible_one_sided_feature_can_move_its_card(self):
+        vlm = FakeVlm('{"q1":{"semi-dry":95,"other":3,"not visible":2}}')
+        backend = self.make([one_sided_rule()], (cands(A, B), 100, 200, None, None), vlm)
+        out = backend.ask("semi-dry.webp")[0]
+        self.assertEqual([candidate["slug"] for candidate in out], [B, A])
+        self.assertEqual(out[0]["explain"]["evidence_scores"], {A: 0.0, B: 0.93})
+
+    def test_an_invalid_score_answer_keeps_the_base_order_and_records_the_error(self):
+        vlm = FakeVlm('{"q1":{"semi-dry":10,"other":10,"not visible":70}}')
+        backend = self.make([one_sided_rule()], (cands(A, B), 100, 200, None, None), vlm)
+        out = backend.ask("p")[0]
+        self.assertEqual([candidate["slug"] for candidate in out], [A, B])
+        self.assertIn("total 90", out[0]["explain"]["error"])
 
     def test_a_vlm_failure_keeps_the_base_order_and_records_the_error(self):
         backend = self.make([sheet_rule()], (cands(A, B), 100, 200, None, None),

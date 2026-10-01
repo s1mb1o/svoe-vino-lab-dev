@@ -1,0 +1,12 @@
+{
+  "repeat_metadata": {
+    "asked": 1,
+    "copied": 3,
+    "failed": 1,
+    "new": 0,
+    "run_id": "2026-09-30T211943Z-lab-fake-my-first"
+  },
+  "run_list_has_repeat_of": false,
+  "run_list_subset": null,
+  "summary_mentions_repeat_or_copied": false
+}

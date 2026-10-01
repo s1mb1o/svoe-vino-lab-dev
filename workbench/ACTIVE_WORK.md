@@ -2215,10 +2215,18 @@ The form of a section:
 - Task: replace direct VLM re-rank decisions with VLM evidence scores and deterministic
   code decisions.
 - Source: owner message recorded at 2026-09-28T01:55:32+0300.
-- Files: `docs/owner-messages.md` (append), this section of `ACTIVE_WORK.md`, a new plan,
-  `pipeline/cluster_rerank.py`, its focused tests, and the relevant project documents.
-- State: waiting for the owner to select the score contract.
-- Updated: 2026-09-28T01:55:32+0300
+- Files: `docs/owner-messages.md` (append), this section of `ACTIVE_WORK.md`,
+  `docs/plans/92_rerank-option-scores.md` (new), `pipeline/cluster_rerank.py`,
+  `pipeline/run_steps.py`, `pipeline/pages/steps.js`, `tests/test_cluster_rerank.py`,
+  `tests/test_run_steps.py`, three score-contract updates in `tests/test_barcode_shared.py`,
+  and my own small hunks in `README.md`, `ChangeLog.md`, `ResearchLog.md`, and
+  `SMOKE_TESTS.md`.
+- State: done, not committed. The owner selected option 1, question-option scores. The
+  original Aratti photo keeps the 2024 card at rank 1. The VLM returned `not visible`
+  100, and code gave both cards evidence 0. The full suite has 1,503 passing tests and
+  one skipped test. Port 8168 was restarted at PID 71478. `/api/dataset` returned HTTP
+  200. The server log is `work/lab_server.log`.
+- Updated: 2026-09-30T11:18:14+0300
 
 ## codex-side-matcher-api
 
@@ -3695,3 +3703,510 @@ The form of a section:
 - State: done, not committed. The TODO line was removed at 23:57:41 outside this session
   (probably the owner); the removal stays.
 - Updated: 2026-09-30T00:02:00+0300
+
+## drink-atlas-workspace-c6 [71ef0d]
+
+- Task: create the git tag `hackaton-snapshot-2909` on commit `e8787cf`; push only this
+  tag to `github`.
+- Source: owner messages of 2026-09-30T00:37:18+0300 and 00:41:53+0300.
+- Files: `docs/owner-messages.md` (append), my section in `ACTIVE_WORK.md`. No project
+  file changes; the tag is a git ref.
+- State: done. The tag `hackaton-snapshot-2909` -> `e8787cf` is on `github` (pushed about
+  00:43 after one SSH connection reset; `main` there stays `b533473`). Not pushed to
+  `origin`. The appends to `docs/owner-messages.md` are not committed.
+- Updated: 2026-09-30T00:43:30+0300
+
+## drink-atlas-workspace-5e [fc9c7d]
+
+- Task: a read-only review of `../matcher`, `../matcher-inspector`, and `workbench`:
+  issues, undocumented parts, and improvements. No code change.
+- Source: owner message of 2026-09-30T00:16:49+0100.
+- Files: `docs/owner-messages.md` (append), `docs/reviews/2026-09-30_three-project-review.md`
+  (new), my own entry in `ChangeLog.md`, my section in `ACTIVE_WORK.md`. No restart of a
+  service.
+- State: done, not committed. Waiting: the owner reads the report and decides the
+  commit and the fixes. The report, the owner-message append, and the ChangeLog
+  entry are not committed. No code change; no restart.
+- Updated: 2026-09-30T01:13:35+0100
+## codex-matcher-performance-review
+
+- Task: inspect the matcher pipeline and research latency, throughput, and recognition improvements.
+- Source: owner message of 2026-09-30T00:34:19+01:00.
+- Files: `docs/owner-messages.md` (own append), `../matcher/docs/reports/2026-09-30_pipeline-performance.md` (new), `../matcher/docs/reports/2026-09-30_pipeline-performance/` (benchmark artifacts and experiment harness), own dated entry in `../matcher/ChangeLog.md`, my section in `ACTIVE_WORK.md`.
+- State: done, not committed. Report and 51 evidence artifacts saved. Completed 800 matcher requests, 184 VLM requests, SAM3 cache parity/timing, and 42 passing cascade/API tests. All requests succeeded. Snapshot and artifact hashes pass. No product change, restart, or push. GPU ledger marked complete.
+- Updated: 2026-09-30T01:31:15+01:00
+
+- Test files: `work/performance-20260930/` (scratch inputs, catalogue snapshot, and logs), own row in `/Users/ashmelev/Admin/GPU_TASKS.md`.
+
+## drink-atlas-workspace-5c [5cb8ac]
+
+- Task: plan 93: the VLM of the matcher and of the lab on the QwenCloud Token Plan;
+  compare `qwen3.8-flash`, `deepseek-v4.1-flash`, and `qwen3.8-max` with `qwen3.5-9b-nvfp4`
+  by a replay of recorded re-rank calls; document the VLM configuration in the READMEs.
+- Source: owner messages of about 2026-09-30T00:20+0100 and 00:35+0100; answers of about
+  16:00+0300 and 18:49+0300 (keep `qwen3.5-9b-nvfp4` for the matcher and for the lab).
+- Files: `docs/owner-messages.md` (append); `docs/plans/93_token-plan-vlm.md` (new);
+  `work/token-plan-vlm-20260930/` (new, ignored); the re-rank hunks in
+  `../matcher/rerank.py`, `../matcher/cascade.py` (`RerankConfig`), `../matcher/service.py`
+  (the `rerank` keys), `../matcher/services.py` (the VLM key header),
+  `../matcher/cascade_run.py` (`_vlm`, `_picture`), `../matcher/docs/cascade.md` (the
+  `rerank` rows); `../matcher/tests/test_rerank_vlm.py` (new); own hunks in
+  `../matcher/README.md`, `../matcher/ChangeLog.md`, `../matcher/ResearchLog.md`,
+  `../matcher/SMOKE_TESTS.md`, `README.md` (section "The VLM inferences"), `ChangeLog.md`.
+  `../matcher/config.yaml` and `config.yaml` are unchanged.
+- State: done, not committed. Waiting: the owner decides the commit. Matcher suite 232 OK;
+  parity 10 OK; `test_vlm_config.py` 20 OK. No deploy, no service restart. The row in
+  `GPU_TASKS.md` is COMPLETED.
+- Updated: 2026-09-30T18:58:00+0300
+- Agreements: 8d [a446dc] agreed at about 16:08 to separate re-rank hunks in its matcher
+  files; 8d committed its SAM3 hunks (5c10de4) and removed its section.
+
+## codex-competitor-testsets
+
+- Task: import each usable public competitor query set into the lab in two evidence
+  tiers, then implement comparable atomic and full pipeline adaptations for Stan,
+  Kofeinix, Danya, Anna, and Qacen and benchmark them on one common deduplicated scored
+  set.
+- Source: owner messages of 2026-09-30 in the current Codex task; the owner selected
+  the two-tier import at 2026-09-30T01:12:26+0100 and the atomic plus full comparison at
+  about 2026-09-30T01:41:00+0100.
+- Files: `docs/owner-messages.md` (append), `docs/plans/90_competitor-testset-import.md`
+  (new), `scripts/import_competitor_testsets.py` (new),
+  `tests/test_import_competitor_testsets.py` (new), `docs/testing/competitor-testsets.md`
+  (new), `docs/reports/2026-09-30_competitor-testsets.md` (new), separate hunks in
+  `README.md`, `COMMANDS.md`, `ChangeLog.md`, and `SMOKE_TESTS.md`, ignored files below
+  `data/competitor-testsets/`, `data/catalog/catalog.sqlite3`, and generated run files.
+  The second phase also reserves `docs/plans/91_competitor-pipeline-ablation.md`,
+  `pipeline/competitor_steps.py`, `tests/test_competitor_steps.py`, focused separate
+  hunks in `pipeline/pipelines.py`, `pipeline/embedding_run.py`, `tests/test_pipelines.py`,
+  `tests/test_embedding_run.py`, `tests/test_barcode.py`, `requirements-local.txt`, and
+  `config.yaml`, and a new dated comparison report under `docs/reports/`.
+- State: done, not committed. The importer created 13 source sets with 601 rows from 10
+  competitors. Ten benchmarkable sets completed with `siglip2-p512-rot5-seg`.
+  Three all-unusable sets failed explicitly with `gives no query`. The audit found 100
+  shared SHA-256 values and moved nine conflicting source photos out of `scored`.
+  Import tests: 3 OK. The lab server was started on port 8168; the dataset API and the Danya
+  scored page returned HTTP 200, and the API listed all 13 imported sets. No
+  commit, or push. Plan 91 is complete. The common set has 77 rows (50 positive and 27
+  no-match). Five atomic and five full competitor adaptations are in `config.yaml`.
+  Eleven common-set runs completed with zero errors. The base Top-1 is 86.0%. Atomic
+  Kofeinix OCR keeps Top-1 and raises Top-5 to 100%. Atomic Qacen reject keeps Top-1,
+  rejects 8 of 27 no-match rows, and raises exact decision accuracy from 55.8% to 66.2%.
+  The full report is `docs/reports/2026-09-30_competitor-pipeline-ablation.md`. Tests:
+  10 action tests, 34 parser tests, 27 barcode tests, and 5 importer tests pass. The full
+  suite has 1,494 tests OK and one skipped. Port 8168 restarted with PID 85549 and logs
+  to `work/lab_server.log`. The dataset API, common test-set API, and run configuration
+  API returned HTTP 200. The API listed all ten adaptations.
+- Updated: 2026-09-30T02:33:00+0100
+
+## drink-atlas-workspace-6f [50ed89]
+
+- Task: the step "Search, space …" of the `/runs` step popup shows the index image of the
+  best row of each hit; for a rotation entry (plan 82), the image at the angle of the hit.
+- Source: owner message of about 2026-09-30T09:56:00+0300.
+- Files: `docs/owner-messages.md` (append); one separate hunk in the search loop of
+  `pipeline/run_steps.py` and one new test in `tests/test_run_steps.py`; own hunks in
+  `ChangeLog.md` and `SMOKE_TESTS.md`. The owner chose at 11:37 "Rotate stored PNG" and
+  "Search step only".
+- State: done, not committed. Waiting: the owner decides the commit. Tests: 13 of
+  `test_run_steps.py`; the full suite 1,504 OK, one skipped. 8168 restarted at 11:40:27
+  (PID 22407); only `run_steps.py` of this session was newer than the old start.
+- Updated: 2026-09-30T11:46:00+0300
+- Agreements: `codex-rerank-scores` lists `run_steps.py` and `test_run_steps.py` (done,
+  not committed; a codex section cannot get a message). The owner requested this change
+  directly, so this session changes separate hunks alone (the precedent of root task 11).
+- Task 2: an option `Parallel matching` in the Run dialog of `/testset`: the pipeline
+  processes the candidates of one query in parallel.
+- Source 2: owner message of about 2026-09-30T12:02:00+0300.
+- Task 2 also holds the owner message of about 12:06: a filter in the Run dialog.
+- Files 2: `docs/owner-messages.md` (append); `pipeline/pages/testset.html` (the Run>
+  dialog: markup, CSS, script); own hunks in `ChangeLog.md` and `SMOKE_TESTS.md`. The
+  owner chose at about 12:07 "Several pipelines at once" and "Input boxes + text".
+- State 2: done, not committed. Waiting: the owner decides the commit. The page loads
+  from disk: no restart. Tests: `test_run_jobs.py` 30 OK, `test_lab_server.py` 69 OK,
+  a Playwright check with mocked job starts.
+- Updated 2: 2026-09-30T12:15:00+0300
+- Agreements 2: the sections ab, b4, 41, 96, and others list `testset.html`; their
+  sessions are not in `ListAgents`, and the file has no uncommitted change. The owner
+  requested this change of the dialog directly (the precedent of root task 11).
+  At 14:04, drink-atlas-workspace-40 added a separate CSS hunk in `testset.html`
+  (`#lb-status`, `z-index: 3`, about line 460). 6f agreed: the hunk does not touch
+  the Run> dialog hunks of 6f.
+  At 23:08, drink-atlas-workspace-cf (plan 96) announced two own lines in the Run>
+  dialog: the label `#run-repeat` after `#run-parallel` and `body.repeat_failed` in
+  the per-pipeline loop of `startRun`. 6f agreed and told cf that the line acts on
+  each checked pipeline of `Parallel matching`.
+
+## drink-atlas-workspace-cd [5f7bfa]
+
+- Task: a recoloured render (dark glass) as the `main_patched` image of
+  `denisov_rubin_klaret_krasnaya_strelka`; an incremental build of the p512 index; runs of
+  `siglip2-p512` on `official-real-photos` before and after.
+- Source: owner message of about 2026-09-30T12:07:00+0300; answers of about 12:30 and 12:34
+  ("Исправить данные по конкретным винам"; "Перекрасить рендер"; "Только Красная Стрелка
+  Рубин"; "Да, индекс + прогон").
+- Files: `docs/owner-messages.md` (append); the `main_patched` row of this one wine and its
+  file in `data/catalog/images/patched/` through `POST /api/dataset-patch`;
+  `data/catalog/embeddings/gx10-siglip2-so400m-patch16-naflex-p512/` (`index.json`,
+  `vectors-*.npy`, `images/`, `build.log` only; not the cluster files of section 36); two new
+  run directories under `runs/`; `work/rubin-dark-glass/` (new: the script and a sheet); one entry at the top of `ResearchLog.md`; one entry in
+  `ChangeLog.md`. The prod bundle and gx10 stay unchanged.
+- State: done, not committed. The patch is live in the lab database; runs rubin-before
+  and rubin-after. Waiting: the owner decides the commit and a prod bundle.
+- Updated: 2026-09-30T12:46:00+0300
+## codex-root
+
+- Task: add a standalone utility that reads the existing package/label derivatives for
+  Active `main` catalogue images, writes non-destructive images with neutral dark glass,
+  and show a before/after result for `denisov_rubin_klaret_krasnaya_strelka`.
+- Source: owner messages of about 2026-09-30T12:15:00+0300 and 12:16:00.
+- Files: `docs/owner-messages.md` (append), `scripts/normalize_glass.py` (new),
+  `tests/test_normalize_glass.py` (new), separate own hunks in `COMMANDS.md` and
+  `ChangeLog.md`, generated preview files below `work/glass-normalized-demo/`.
+- State: done, not committed. The two-wine demonstration and a 12-image smoke run
+  completed with no skip. Four focused tests pass; Python compilation passes. The
+  database and catalogue store stayed read-only. Waiting: the owner reviews the visual
+  result and decides whether to use the normalized files in an embedding experiment.
+- Updated: 2026-09-30T12:38:35+0300
+- Agreements: `drink-atlas-workspace-cd` analysed the same example but listed only
+  `ResearchLog.md`; that session is absent from `ListAgents`. This implementation uses
+  new files and separate documentation hunks.
+
+## drink-atlas-workspace-f1 [696785]
+
+- Task 1: find the time bottleneck of the run
+  `2026-09-30T104855Z-lab-siglip2-p512-rot5-seg-official-real-photos`, and tell whether
+  the photos are decoded as JPEG on the CPU. Analysis only. Done, not committed.
+- Task 2: a config key for the PNG zlib level of the SAM3 copy and of the model input;
+  `config.yaml` sets 2; without the key the Pillow default (-1, level 6) stays.
+- Source: owner messages of about 2026-09-30T13:50, 14:02, 15:05 and 15:14 +0300.
+- Files: `docs/owner-messages.md` (append), `ResearchLog.md` (my entry at the top);
+  task 2 adds separate hunks in `pipeline/derive.py` (new `configured_png_level`,
+  `PNG_COMPRESS_LEVEL`, `Sam3Client._sent_copy`), `pipeline/embeddings.py` (`png_bytes`),
+  `config.yaml` (new top-level key `png_compress_level`), `tests/test_derive.py`,
+  `tests/test_embeddings.py`, and my own hunks in `README.md`, `ChangeLog.md`,
+  `SMOKE_TESTS.md`. No restart of 8168.
+- State: done, not committed; waiting: the owner decides the commit. Full suite 1512 OK.
+  No restart of 8168: 8168 uses the key after its next restart.
+- Updated: 2026-09-30T16:03:00+0300
+- Agreements: the owner asked for this change in these files (15:14). The other sections
+  that list `derive.py`, `embeddings.py`, or `config.yaml` claim other functions or
+  entries; `derive.py` and `embeddings.py` have no uncommitted change.
+  e4 [70a894]: f1 answered "ok" at 16:03 to a separate comment hunk of e4 in
+  `config.yaml` (the stage 2 comment lines of `label_rules`, about lines 316-317). My
+  only hunk in `config.yaml` is lines 54-63 (`png_compress_level`).
+
+## drink-atlas-workspace-57 [7f81a8]
+
+- Task: explain the failed build of `android-siglip2-base-224-sam3-white` (port 5997 is
+  closed). The owner installed `vit_base_patch16_siglip_224.v2_webli` on the shared gx10
+  gateway. Move both Android embedding entries to the gateway.
+- Source: owner messages of about 2026-09-30T13:40:00+0300 to 14:02:00+0300.
+- Files: `docs/owner-messages.md` (append), `config.yaml` (the two `base_url` lines of the
+  Android entries alone), own entries at the top of `ChangeLog.md` and `ResearchLog.md`.
+- Agreements: the Android entries came from `codex-android-embeddings` (committed in
+  eb6bae4). The owner approved the `base_url` change in the message of about 14:02. A
+  codex session cannot receive a message.
+  e4 [70a894] asked at about 16:00 for one comment hunk of `config.yaml` (the stage 2
+  comment of `label_rules`, about lines 316-317). My answer: "ok". My two `base_url`
+  lines (now lines 91 and 111) stay byte-identical.
+- Note: the `config.yaml` edit came before this section, against rules 15 and 16.
+- State: done, not committed. The parity check passed: 32 stored images of each Android
+  index against the gateway gave cosine 0.99999988 to 1.00000012. Waiting: the owner
+  starts the build of the 26 missing images of each Android index.
+- Updated: 2026-09-30T16:00:00+0300
+
+## drink-atlas-workspace-40 [712bc1]
+
+- Task: the status pill `#lb-status` of the large view of `/testset` (the label class, for
+  example "kimi proposes positive (86%)") goes under the two images. Put it on top.
+- Source: owner message of about 2026-09-30T14:04:00+0300.
+- Files: `docs/owner-messages.md` (append); one separate CSS hunk in `#lb-status` of
+  `pipeline/pages/testset.html`; own hunks in `ChangeLog.md` and `SMOKE_TESTS.md`.
+- State: done, not committed. Waiting: the owner decides the commit. The page loads
+  from disk: no restart. Playwright check: `#lb-status` is the top element (1500, 900).
+- Updated: 2026-09-30T14:16:00+0300
+- Agreements: 6f [50ed89] lists `testset.html` (the Run> dialog, done, not committed).
+  The owner requested this change directly, so this session changes one separate hunk
+  alone (the precedent of root task 11). 6f answered "no objection" at about 14:14.
+
+## drink-atlas-workspace-e4 [70a894]
+
+- Task: stage 2 of the cluster label rules also sends the label cuts of the additional
+  photos (`full_front`, `full_back`, `label_front`, `label_back`). Each card keeps its
+  main label cut. The extras go in one at a time across the cards while the prompt stays
+  within `rules_max_images` and the token budget. Stage 1 stays the main image. The
+  similarity build already uses the additional photos (no change).
+- Source: owner message of 2026-09-30T15:55:42+0300 and the answers of 16:00:14.
+- Files: `docs/owner-messages.md` (append), `pipeline/label_rules.py`,
+  `tests/test_label_rules.py`, `tests/test_build_label_rules.py`,
+  `docs/plans/45_cluster-label-rules.md` (one dated note at the end), own hunks in `README.md` (the stage 2 row), `ChangeLog.md`, `SMOKE_TESTS.md`.
+  After agreement with f1, 57, 8d: one comment hunk of the block `label_rules` in
+  `config.yaml`. The stale section 6b [e99257] lists `label_rules.py` and
+  `tests/test_label_rules.py`; its work there is committed (`git status` clean), and the
+  owner requested this change directly.
+- State: done, not committed. The code is live on disk (8168 starts
+  `build_label_rules.py` from disk; no restart needed). No rule was built again: a
+  stage 2 rebuild calls `qwencloud-qwen3.8-max`; the owner decides. Agreements: f1
+  [696785], 57 [7f81a8], and 8d [a446dc] answered "ok" at about 16:05 to the comment
+  hunk of `label_rules` in `config.yaml` (lines 318-322); their hunks stay byte-identical.
+  Docs: README row and note, plan 45 note, ChangeLog, SMOKE_TESTS LR1, LR12 to LR14.
+- Agreement: 8d [a446dc] asked at about 00:15 for separate hunks in
+  `pipeline/label_rules.py` and `tests/test_label_rules.py` (wine tags in stage 2:
+  `vintage_facts`, `named_year`, `check_rule`, `rules_content`, `inputs_sha`, `_run`).
+  e4 answered "ok" with conditions: new parameters after mine, as keywords with
+  defaults; my lines stay byte-identical; a commit of 8d's hunks alone is built from HEAD
+  and tested alone; edit in a scratch copy and install in one step.
+- Updated: 2026-10-01T00:15:18+0300
+
+## drink-atlas-workspace-56 [002f29]
+
+- Task: flatten the 14 competitor test sets into one set; a conflicting photo goes to each
+  of its wine_slugs; remove the 14 sets after the merge.
+- Source: owner message of 2026-09-30T18:45:00+0300.
+- Files: `docs/owner-messages.md` (append), `scripts/merge_competitor_testsets.py` (new),
+  `tests/test_merge_competitor_testsets.py` (new), `data/catalog/catalog.sqlite3` (the 14
+  competitor sets and the new set `competitors`), a new copy in `data/backups/`, and my
+  own hunks in `docs/testing/competitor-testsets.md`, `COMMANDS.md`, and `ChangeLog.md`.
+- State: done, not committed. Waiting: the owner decides the commit. The owner selected
+  at 18:58: a one-off script, one photo per source photo, every place kept, the name
+  `competitors`, removal from the database only. The merge ran at 19:11:28: 678 rows to
+  236 photos in 323 rows; the 14 sets are removed from the database; the backup is
+  `data/backups/catalog-before-competitor-merge-20260930T161128Z.sqlite3`. 3 tests OK.
+  No restart of 8168.
+- Updated: 2026-09-30T19:16:00+0300
+- Agreements: the section `codex-competitor-testsets` lists `data/competitor-testsets/`,
+  `data/catalog/catalog.sqlite3`, and `scripts/import_competitor_testsets.py`. That Codex
+  session cannot receive a message. The owner requested this change directly.
+
+## drink-atlas-workspace-7d [ca1fd7]
+
+- Task: "New from Atlas" on `/dataset`: create a wine from a Drink Atlas product URL, with
+  no main photo and the largest photos as additional photos. Move a photo between
+  additional, main, and patched in both directions.
+- Source: owner message of 2026-09-30T22:05:00+0300, answers of 22:22:00 (B: Prepare,
+  then Create; largest of each similar group; swap; prefilled Add wine form).
+- Files: `docs/owner-messages.md` (append), `docs/plans/95_new-from-atlas.md` (new), new
+  `pipeline/atlas_import.py`, `pipeline/atlas_import_routes.py`, `pipeline/photo_moves.py`,
+  `pipeline/pages/atlas_import.js`, `tests/test_atlas_import.py`,
+  `tests/test_photo_moves.py`. Own hunks: `pipeline/lab_server.py` (imports, dispatch
+  branches, `_atlas_import`, `_photo_move`, `start_atlas_wine`, `move_photo`, docstring),
+  `pipeline/pages/dataset.html` (button `New from Atlas`, the script tag, the Atlas mode of
+  the form `Add wine`: `WINE_FORM`, `openWineForm`, `clearWineForm`, `missingWineFields`,
+  `saveWine`, `renderWineImage`; the move buttons in `imageFigure`, `patchEditor`,
+  `alternativeEditor`; one click branch; `movePhoto`), `docs/lab-openapi.yaml`,
+  `tests/test_lab_openapi.py` (`EXPECTED_OPERATIONS`), `README.md`, `ChangeLog.md`,
+  `SMOKE_TESTS.md`, `COMMANDS.md`, `ResearchLog.md`. No schema change. A restart of 8168.
+- State: done, not committed; waiting: the owner decides the commit. The code is live since
+  the 8168 restart by cf at 22:41:05 (pid 5170); the page hunks are on disk since 22:50.
+  Full suite 1573 OK.
+- Updated: 2026-09-30T23:02:00+0300
+- Task 2: `load photos` on each Atlas product row of a card: PDF + crop (no barcodes), then
+  import the largest photo of each similar group as additional photos of that wine.
+- Source 2: owner message of 2026-09-30T23:01:00+0300, answers of 23:04 (A: card button;
+  skip barcodes).
+- Files 2: my own files of task 1 (`atlas_import.py`, `atlas_import_routes.py`,
+  `pages/atlas_import.js`, `tests/test_atlas_import.py`, plan 95), my hunks in
+  `lab_server.py` (`start_atlas_wine`, `_atlas_import`, a new `add_atlas_photos`), one
+  hunk in `dataset.html` (`atlasBindingEditor`: the button), `docs/lab-openapi.yaml`,
+  `tests/test_lab_openapi.py`, and my hunks in `README.md`, `ChangeLog.md`,
+  `SMOKE_TESTS.md`, `COMMANDS.md`. A restart of 8168 for the new route.
+- State 2: done, not committed; waiting: the owner decides the commit. Live since the
+  8168 restart by 7d at 23:07:24 (pid 81464); that restart also loaded cf's run_jobs.py.
+- Updated 2: 2026-09-30T23:12:00+0300
+- Task 3: `load photos` runs no Atlas step: it shows the photos that Atlas has now, then
+  `Import`. `New from Atlas` keeps its three steps. The `barcodes` switch of `advance`
+  goes away (no user).
+- Source 3: owner message of 2026-09-30T23:20:00+0300, answers of 23:22.
+- Files 3: the same files as task 2. A restart of 8168.
+- State 3: done, not committed; waiting: the owner decides the commit. Live since the
+  8168 restart by 7d at 23:22:50 (pid 24051).
+- Updated 3: 2026-09-30T23:25:00+0300
+- Agreements: cf [496c68] "no objection" to my hunks in `lab_server.py`, `dataset.html`,
+  `lab-openapi.yaml`, `test_lab_openapi.py`, and to a restart (22:41). 4e [e29316] "agreed,
+  no overlap": I do not change the `#list` drop, the `#wine-drop` drop, or `/* DROP_JS */`.
+
+## drink-atlas-workspace-4e [e29316]
+
+- Task: accept a drag and drop of an image from the Codex desktop app (an
+  `app://fs/@fs/<absolute path>` item) in the workbench drop areas.
+- Source: owner message of 2026-09-30T22:15:00+0300; owner answers of
+  2026-09-30T22:26:00+0300 (server reads, page gets File; Codex images only; own hunks).
+- Files: `docs/owner-messages.md` (append); new `pipeline/local_images.py`; new
+  `pipeline/pages/drop.js`; `pipeline/lab_pages.py` (`PARTS`, docstring);
+  `pipeline/lab_server.py` (import, one `do_GET` branch, one docstring paragraph);
+  own drop-handler hunks and a `/* DROP_JS */` mark in `pipeline/pages/testset.html`,
+  `pipeline/pages/dataset.html` (the `#list` drop and the `#wine-drop` drop),
+  `pipeline/pages/recognize.html` (the window drop); new `tests/test_local_images.py`;
+  one line in `tests/test_lab_openapi.py`; one path in `docs/lab-openapi.yaml`; one
+  section in `docs/API.md`; own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`. A restart of
+  8168 for the new route `GET /api/local-image`.
+- State: done, not committed; waiting: the owner tests a real drag out of the Codex app
+  and decides the commit. 8168 serves the route since the restart by cf [496c68] at
+  22:22:44 (pid 41454, agreed by message). Tests: 8 new, the related suites OK, 6/6
+  read-only Playwright checks on 8168.
+- Updated: 2026-09-30T22:56:00+0300
+- Agreements: the owner allowed own hunks in the shared files (22:26). A message goes to
+  `drink-atlas-workspace-cf [496c68]` and `drink-atlas-workspace-7d [ca1fd7]` about the
+  `/dataset` drop-handler hunks. cf asked for a restart at about 22:22; 4e answered "ok,
+  restart now"; cf applied its plan 94 hunks of `dataset.html` after the restart and
+  kept the 4e hunks unchanged.
+  At about 22:50, cf announced own hunks in `testset.html` (drag out of `/testset`: a
+  marker type, an early `return false` in `hasExternalImage`, the `dragstart` body) and
+  one more 8168 restart for `testsets.py`. 4e agreed: no overlap with the 4e hunks; 8168
+  may restart at any time for 4e.
+  At about 22:55, 7d [ca1fd7] (plan 95) confirmed: it does not change the `#list` drop,
+  the `#wine-drop` drop, or the `/* DROP_JS */` line of `dataset.html`; it adds one
+  `do_GET` branch next to the 4e branch. 4e agreed; 8168 may restart at any time.
+- Task 2: compare the gateway model `minicpm-v-4.6` with `qwen3.5-9b-nvfp4` for the
+  image descriptions and the cluster re-rank.
+  Source: owner message of 2026-10-01T00:11:00+0300; owner answers of 00:16:00
+  ("Replay + lab run", baseline `qwen3.5-9b-nvfp4`).
+  Files: `docs/owner-messages.md` (append); new `docs/reports/minicpm-vs-qwen35-9b-2026-10-01.md`
+  and its folder `docs/reports/minicpm-vs-qwen35-9b-2026-10-01/` (not in git); own hunks in
+  `ResearchLog.md` and `ChangeLog.md`. No change of `config.yaml` or of the database: the
+  runs use a scratch config copy and scratch run and job directories.
+  State: done, not committed; waiting: the owner reads the report and decides the commit.
+  Result: keep `qwen3.5-9b-nvfp4` for the three description stages and the re-rank.
+  Updated: 2026-10-01T01:31:00+0300
+- Task 3: add the gateway model `minicpm-v-4.5` to the comparison of Task 2 (the same
+  method, the same 100 images, the same lab pipeline).
+  Source: owner message of 2026-10-01T10:34:00+0300.
+  Files: the files of Task 2 (the report, its folder, own hunks in `ResearchLog.md` and
+  `ChangeLog.md`), `docs/owner-messages.md` (append). No change of `config.yaml` or of the
+  database.
+  State: active.
+  Updated: 2026-10-01T10:37:00+0300
+
+## drink-atlas-workspace-08 [380064]
+
+- Task: z-rotation test. 33 turntable photos of `winemaker-selection` (SAM3 package cut
+  on white, the steps of the view `full`) against the catalogue cut `38e6b4e9…` with the
+  six SigLIP2 entries of the 2026-09-29 rotation test; a chart of the cosine. Part 2: the
+  maximum cosine over 13 copies of the cut from `tools/bottle_rotation` (z axis, −30° to
+  +30°).
+- Source: owner messages of about 2026-09-30T23:56:00+0300 and 2026-10-01T00:10:00+0300;
+  owner message of about 00:26:00 and answer of about 00:28:00 (the chart
+  `chart-models-zmax.png` and a clear title of `chart-models.png`); owner message
+  of about 00:31:00 (`chart-gain.png`: the win of the copies).
+- Files: `docs/owner-messages.md` (append); new `scripts/zrotation_similarity.py`; new
+  `docs/reports/zrotation-similarity-2026-10-01.md` and its artifact folder
+  `docs/reports/zrotation-similarity-2026-10-01/` (not in git); own hunks in
+  `ChangeLog.md` and `ResearchLog.md`. The SAM3 answers went to `data/cache/models/sam3/`.
+- Task 2: a fair z-rotation test: copies from `tools/bottle_rotation` (automatic
+  calibration from the SAM3 label cut) for each catalogue full image, NaFlex p512; R@1
+  and R@5 with one vector and with the copies on the set `my` and the turntable photos.
+- Source 2: owner message of about 2026-10-01T08:06:00+0300 ("try that"), answer of
+  about 08:09 ("Full catalogue, p512").
+- Files 2: new `scripts/zrotation_catalogue.py`; new
+  `docs/reports/zrotation-catalogue-2026-10-01.md` and its artifact folder
+  `docs/reports/zrotation-catalogue-2026-10-01/` (not in git); own hunks in `ChangeLog.md`
+  and `ResearchLog.md`. The SAM3 answers of the `my` photos go to `data/cache/models/sam3/`.
+- Task 3: the turntable photos against 360° renders of
+  `tools/bottle_rotation/reconstruction` (read-only use of the tool and of
+  `../output/bottle-reconstruction/winemaker-selection/model/`), six entries.
+- Source 3: owner message of about 2026-10-01T08:30:00+0300.
+- Files 3: new `scripts/zrotation_reconstruction.py`; new
+  `docs/reports/zrotation-reconstruction-2026-10-01.md` and its artifact folder (not in
+  git); own hunks in `ChangeLog.md` and `ResearchLog.md`.
+- State: tasks 1 and 3 done, not committed. Task 2: script written, not run (the owner
+  message of 08:30 changed the test). Waiting: the owner decides task 2 and the commit.
+- Updated: 2026-10-01T08:36:00+0300
+
+## drink-atlas-workspace-8d [a446dc]
+
+- Task: stage 2 of the cluster label rules reads the wine tags. A year tag (`2020`,
+  `vintage:2020`) counts as a year of the catalogue name; `no_year` makes the card a card
+  that states no year. A tag note goes only into the prompt of a cluster with such a tag.
+  Then one stage 2 build of the cluster `3889ddfd95bb` of `naflex-p256`.
+- Source: owner message of about 2026-10-01T00:08:00+0300 and the answers of about 00:14.
+- Files: `docs/owner-messages.md` (append), `pipeline/label_rules.py` (`vintage_facts`,
+  `named_year`, `check_rule`, `rules_content`, `inputs_sha`, `_run`, a new `TAG_NOTE`),
+  `tests/test_label_rules.py` (new tests), `docs/plans/97_vintage-tags-in-rules.md`
+  (new), own hunks in `ChangeLog.md` and `SMOKE_TESTS.md`.
+- State: active. Part 1 done, not committed (installed at about 00:19; the rule of
+  `3889ddfd95bb` of `naflex-p256` is built: mode `sheet`, vintage 2021 / 2020). Part 2
+  (owner message of about 10:50): rebuild the stale rules of the other clusters with a
+  vintage tag in the 6 embeddings (writes `data/catalog/embeddings/*/cluster-rules.json`
+  through `build_label_rules.py --cluster`), and fix the sentence "The pipeline does not
+  read the tags" in `pipeline/wine_tags.py` (docstring), `pipeline/lab_server.py` (line
+  52 of the docstring alone; the owner allowed it), and an own hunk in `README.md` (line
+  291; line 592 is about the image tags and stays).
+- Updated: 2026-10-01T10:52:00+0300
+- Agreements: e4 [70a894] answered "ok" at about 00:19 for separate hunks in
+  `label_rules.py` and `tests/test_label_rules.py`: a new parameter goes after the e4
+  parameters as a keyword with a default; the e4 lines (`evidence`, the extras loop of
+  `rules_content`, the `shown` block of `inputs_sha`, the `extras` lines of `_run`) and
+  `ExtraPictureTest` stay unchanged; a commit holds only HEAD plus my hunks and is tested
+  alone; the file is installed from a scratch copy in one step. e4 recorded it too.
+
+## codex-workbench-pareto-review-20261001
+
+- Task: review the current workbench and rank fixes by impact and effort.
+- Source: owner message recorded at 2026-10-01T00:16:55+03:00.
+- Files: `docs/owner-messages.md` (own append),
+  `docs/reviews/2026-10-01_workbench-pareto-review.md` (new),
+  `docs/reviews/2026-10-01_workbench-pareto-evidence/` (new),
+  one own entry in `ChangeLog.md`, and this section.
+- State: done, not committed. The review and evidence are saved. The full suite passed
+  (1,585 tests, 1 skipped). Product code and live data stayed read-only.
+- Updated: 2026-10-01T00:22:27+03:00
+
+## codex-run-failures-20261001
+
+- Task: wait for run `2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5-seg-official-real-photos` and explain each requested failure.
+- Source: owner message recorded at 2026-10-01T00:44:19+0300.
+- Files: `docs/owner-messages.md` (own append), `ChangeLog.md` (own append), this section. Temporary inspection artifacts are in `/private/tmp/wine-run-failures-20261001/`.
+- State: done, not committed. All 84 rows are final. Reviewed the 5 recorded recognition failures, the original photos, catalogue images, cached model inputs, and VLM replies. The final explanation is in this task. No code or catalogue data changed.
+- Updated: 2026-10-01T01:02:46+0300
+
+## drink-atlas-workspace-bd [c82a92]
+
+- Task: the dialog "Load photos from Atlas" (button `load photos` of a card): a click on a
+  photo opens a preview; `Import` closes the dialog and imports in the background.
+- Source: owner message of 2026-10-01T08:21:51+0300, answers of 08:27:06 (a queue in the
+  page with a status box; the one-photo viewer; own hunks in the 7d file).
+- Files: `docs/owner-messages.md` (append), own hunks in `pipeline/pages/atlas_import.js`,
+  own hunks in `ChangeLog.md`, `ResearchLog.md`, `README.md` (one new paragraph after the
+  7d paragraph of `load photos`), and `SMOKE_TESTS.md` (rows NA11 and NA12 of 7d describe
+  the old status text; new rows NA13 to NA16). Scratch work in the session scratchpad. No
+  server change, no schema change, no 8168 restart.
+- State: done, not committed; waiting: the owner tests the dialog and decides the commit.
+  `atlas_import.js` installed at 08:37 (8168 reads it from disk; a reload of `/dataset`
+  loads it). The file is still untracked: it holds the uncommitted 7d work too. Tests:
+  19/19 read-only Playwright checks in both themes, a 390 px check, 3 related suites OK.
+  Docs done: `README.md`, `SMOKE_TESTS.md` NA11 to NA16, `ChangeLog.md`, `ResearchLog.md`.
+- Updated: 2026-10-01T08:43:00+0300
+- Agreements: `pipeline/pages/atlas_import.js` is listed by the stale section
+  `drink-atlas-workspace-7d [ca1fd7]` (not in `ListAgents`). The owner allowed own hunks
+  at 08:27:06.
+
+## drink-atlas-workspace-5d [029a82]
+
+- Task: a button `Re-run` on `/runs`: start the pipeline of the open run again, with the
+  same parameters, on the present state of its test set.
+- Source: owner message of about 2026-10-01T10:20:00+0300.
+- Files: `docs/owner-messages.md` (append); `pipeline/pages/runs.html` (the button
+  `Re-run`, its dialog, its CSS and script); own hunks in `ChangeLog.md`, `SMOKE_TESTS.md`,
+  `README.md`. No restart of 8168. The owner chose at about 10:25 "Page only", "Ask for
+  the IP", "Full run".
+- State: done, not committed. Waiting: the owner decides the commit. 28 of 29
+  Playwright checks pass (the failed one: the runs table makes `/runs` 1,089 px wide at
+  390 px before the dialog opens). 98 page tests OK. No restart.
+- Updated: 2026-10-01T10:48:00+0300
+
+## codex-dataset-audit-20261001
+
+- Task: inspect the live catalogue for data issues and report the ten most critical findings.
+- Source: owner message recorded at 2026-10-01T10:29:56+0300.
+- Files: `docs/owner-messages.md` (own append), this section, `ChangeLog.md` (own append). `docs/reviews/2026-10-01_dataset-audit-evidence.json` (new). Scratch evidence stays in `/private/tmp/dataset-audit-20261001/`.
+- State: done, not committed. Ranked ten findings with record-level evidence. Read 2,124 wines, checked 11,524 image paths, and fetched all 459 linked Atlas products. Catalogue and product code stayed read-only.
+- Updated: 2026-10-01T10:38:11+0300
+
+## drink-atlas-workspace-24 [d2302b]
+
+- Task: check run `2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5-seg-official-real-photos` for issues; explain the error "the option scores of q2 total 0; expected 100".
+- Source: owner message of 2026-10-01T10:21:00+0300.
+- Files: `docs/owner-messages.md` (own append), this section, own entries in `ResearchLog.md` and `ChangeLog.md`, `work/run-214152Z-check/**` (new: probe scripts and replies). Product code, catalogue, and test sets stay read-only. Up to ten direct VLM probes to `qwen3.5-9b-nvfp4` (no model cache write).
+- State: waiting: the owner selects a fix of the option-score fault (code, prompt, or both). The check is done, not committed: `ResearchLog.md` and `ChangeLog.md` entries, evidence in `work/run-214152Z-check/`. Eight probes used.
+- Updated: 2026-10-01T10:37:52+0300

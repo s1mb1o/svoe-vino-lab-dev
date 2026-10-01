@@ -37,7 +37,127 @@
   Tests: `test_wine_images.py` (13 new), `test_matcher_bundle.py`, `test_matcher_views.py`,
   `test_matcher_parity.py`, `test_catalog_copy.py`: all pass.
 
+## 2026-10-01
+
+- A checkpoint commit of all sessions' work (owner message of about 10:40, answers of
+  about 10:50). The run directory `workbench/runs/` was renamed to `workbench/runs-1/` on
+  2026-09-30 with no record. The root `.gitignore` now ignores `/workbench/runs-1/`
+  (8.1 GB). The four tracked benchmark runs moved with the rename. They stay in git at
+  `workbench/runs-1/<run>/` with the same eight files each, so git records renames. The
+  untracked `tmp/video-transcript/`, `output/bottle-reconstruction/`, and
+  `output/bottle-rotation/` stay out of the commit, with no ignore rule.
+- A check of run `2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5-seg-official-real-photos`
+  (owner message of 10:21). The error "the option scores of q2 total 0" of q-000030 comes
+  from `qwen3.5-9b-nvfp4`: it gives 0 to each option of a vintage question when the label
+  prints a year that no option lists (2024; options `other`, `2022`, `not visible`). The
+  code then refuses the whole answer, also the valid reserve answer, and the expected card
+  stays at rank 2. Eight direct probes reproduced the fault. Two prompt texts gave a valid
+  answer: an explicit instruction for an unlisted year, and the option name `another
+  year`. Other findings: three rot5 cluster rules hold HTTP 403 errors of
+  `qwencloud-qwen3.8-max` (11 cards with no re-rank); the label of q-000063 is wrong; the
+  label of q-000062 needs a check; SAM3 stalls make the latency values unusable. The prod
+  matcher still uses the sheet/verdict re-rank and does not have this fault. Details:
+  `ResearchLog.md`, same date. Evidence: `work/run-214152Z-check/`. No code, catalogue, or
+  test-set change.
+- The button `Re-run` on `/runs` (owner message of about 10:20, answers of about 10:25:
+  "Page only", "Ask for the IP", "Full run"), in `pipeline/pages/runs.html` alone. The
+  button stands after `New testset…`. Its dialog shows the parameters of the open run from
+  `run.json` (`options.limit`, `options.workers`, `use_cache`, `use_barcode`) and the count
+  of the photos of the set now; `Start` sends them to `POST /api/run-jobs`, with no
+  `repeat_failed`. A device pipeline gets the field `Device IPv4`, because `run.json` does
+  not hold the address. The line after the button follows the job every 2 s; at the end
+  the page reads the runs again and opens the new run. No server change and no restart:
+  8168 reads the page from disk. Docs: `README.md`, `SMOKE_TESTS.md` RR1 to RR9. Tests: 29
+  read-only Playwright checks on 8168 with mocked job POSTs and job states (light, dark,
+  390 px); 28 passed. The failed check is the page width at 390 px: the table of the runs
+  makes the page 1,089 px wide before the dialog opens; the dialog fits. `test_lab_server.py`
+  69, `test_run_routes.py` 7, `test_testset_from_run.py` 6, `test_recognize_routes.py`
+  12, `test_lab_pages.py` 4 OK.
+- The dialog `Load photos from Atlas` (the card button `load photos`; owner message of
+  08:21:51, answers of 08:27:06), in `pipeline/pages/atlas_import.js` alone. A click on a
+  photo of the dialog shows it in the image preview of the page, above the dialog: the
+  Atlas rendition `display` (1600 px at most), and `open raw image` for the original
+  `content`. Escape closes the preview alone. `Import` closes the dialog at once. The page
+  sends the imports one after another, and the box `#atlas-jobs` in the lower right corner
+  shows each import: waiting, importing, done, or failed. A done import with no note leaves
+  the box after 8 s; a note or an error stays until its `×`. A reload of the page asks
+  first while an import waits or runs. At the end of an import, a card that the filters
+  hide is not rendered, so the list does not render again. The flag `imported` is gone.
+  No server change and no restart: 8168 reads the script from disk. Docs: `README.md`,
+  `SMOKE_TESTS.md` NA11 to NA16. Tests: 19/19 read-only Playwright checks on 8168 in the
+  dark and the light theme, with a mocked `POST /api/atlas-import/add` (a 390 px check
+  too); `test_atlas_import.py` 15, `test_lab_openapi.py` 11, `test_photo_moves.py` 7 OK.
+- Added `scripts/zrotation_reconstruction.py` (owner message of about
+  2026-10-01T08:30:00+0300): 72 renders (yaw 0° to 355°, step 5°) of the 360°
+  reconstruction of `winemaker-selection` (`tools/bottle_rotation/reconstruction`, the camera
+  of `render_showcase.py`), processed as transparent catalogue images and embedded with
+  the six SigLIP2 entries; compared with the 33 turntable photo vectors of
+  `zrotation-similarity-2026-10-01`, with a control on the catalogue images of the other
+  wines. 432 embeddings, 0 failures, 3 minutes. The report is
+  `docs/reports/zrotation-reconstruction-2026-10-01.md`. No index, database, model, or
+  service changed.
+- Added `scripts/zrotation_catalogue.py` (owner message of about 2026-10-01T08:06:00+0300,
+  answer of about 08:09): the fair z-rotation test with copies of `rotate_bottle.py` for
+  each catalogue image (automatic calibration from the SAM3 label cut), NaFlex p512, the
+  set `my` and the turntable photos. A sample of 16 images rendered correctly. The full run
+  did not start: the owner message of 08:30 changed the test.
+
+- A comparison of the gateway model `minicpm-v-4.6` with `qwen3.5-9b-nvfp4` for the three
+  image description stages and the cluster re-rank (owner message of 00:11; answers of
+  00:16): `docs/reports/minicpm-vs-qwen35-9b-2026-10-01.md`, with the replay scripts, the
+  scratch config, and the three lab runs in the folder of the report (not in git). Result:
+  keep `qwen3.5-9b-nvfp4`. No change of `config.yaml` or of the database.
+- Plan 97: stage 2 of the cluster label rules reads the wine tags (owner message of about
+  00:08; answers of about 00:14). A tag `2020` or `vintage:2020` counts as a year of the
+  catalogue name under rule 2a (`named_year`, `vintage_facts` with `where` = `in a tag`);
+  the tag `no_year` makes the card a card that states no year, also when its label reads
+  a year. A cluster with such a tag gets the new note `TAG_NOTE` before `VINTAGE_NOTE`,
+  and the rendered note enters `inputs_sha` as `tag_note`. `RULES_PROMPT`, `CARD_BLOCK`,
+  and `rules_sha` do not change, so a cluster with no vintage tag keeps its rule. `_run`
+  reads `wine_tags.tags` into the key `tags` of the `catalog` records. The hunks are
+  separate from the uncommitted e4 hunks in the same files (agreed with e4 at about
+  00:19). Tests: `test_label_rules.py` 32 OK (5 new, class `VintageTagTest`),
+  `test_build_label_rules.py` 17 OK, `test_matcher_parity.py` 10 OK. A build of the
+  manual cluster `3889ddfd95bb` of `naflex-p256` (tags `2021` and `2020`, both names
+  «Шардоне Резерв»; stage 1 from the cache, 1 call to `qwencloud-qwen3.8-max`, 103 s) gave
+  mode `sheet` with the valid question "What vintage year is printed on the label?"
+  (2021 / 2020). 4 other clusters of each embedding hold a wine with a vintage tag, so
+  their rules are stale now; they were not built again.
+
+- Added `docs/reviews/2026-10-01_workbench-pareto-review.md` and its probe evidence.
+  The review ranks five fixes and three subsequent improvements by impact and effort.
+  Temporary fixtures reproduced import data loss, benchmark failure paths, stale UI
+  responses, missing write-origin checks, and missing repeat-run provenance in reports.
+  The full workbench suite passed: 1,585 tests, 1 skipped, 230.611 seconds.
+  Product code and the live database were read-only during this review.
+
+- Added `scripts/zrotation_similarity.py`, a read-only z-rotation test (owner messages of
+  about 2026-09-30T23:56:00+0300 and 2026-10-01T00:10:00+0300). 33 turntable photos of
+  `winemaker-selection` (the SAM3 package cut on white, the steps of the view `full`) are
+  compared with the catalogue cut `38e6b4e9…` and with 13 copies of the cut that
+  `tools/bottle_rotation` turns about the vertical axis (−30° to +30°, step 5°; a new
+  calibration of this cut in the script). Entries: NaFlex p256/p512/p1024 and fixed
+  256/384/512. 33 SAM3 requests and 276 embeddings through llama-swap 18081, 0 failures,
+  1 minute 41 seconds. Russian charts and collages. The report is
+  `docs/reports/zrotation-similarity-2026-10-01.md`. No index, database, or service
+  changed. The title of `chart-models.png` now states "one vector, no synthetic
+  rotation", and the new `chart-models-zmax.png` shows the maximum over the copies for the
+  six entries on the same cosine axis (owner message of about 2026-10-01T00:26:00+0300,
+  answer of about 00:28:00). The new `chart-gain.png` shows the gain of the copies for
+  each photo and the photos that get rank 1 only with the copies (owner message of about
+  00:31:00). The gain is +0.007 to +0.034 and is not larger on the matching photos, so the
+  report finds no real win.
+
 ## 2026-09-30
+
+- Plan 95, part 3 changed (owner message of about 23:20; answers of about 23:22): `load
+  photos` of a card runs no Atlas step. The dialog reads `GET /api/atlas-import/photos` at
+  once (the photos that Atlas has now; the answer now also holds `product`), shows them,
+  and `Import` adds them. `Reload` reads them again; the add mode has no `Import now`.
+  `New from Atlas` keeps its three steps. The `barcodes` switch of `advance` is removed.
+  Tests: `test_atlas_import.py` 15 OK, `test_lab_openapi.py` 11 OK; a Playwright run of a
+  scratch server with a fake Atlas saw no Atlas request. 8168 restarted by 7d at 23:22:50
+  (pid 24051).
 
 - Plan 96: the option `Repeat last failed` of the dialog `Run>` of `/testset` (owner message
   of about 22:45; answers of about 22:52). The run starts from the last run of the same
@@ -51,6 +171,51 @@
   22 OK (6 new), `test_run_jobs.py` 35 OK (5 new), with a real repeat job on a fake
   matcher; a browser check of the dialog on a scratch server (5 checks). No run on a
   real pipeline yet (`SMOKE_TESTS.md` RF2 to RF5).
+
+- Plan 95, part 3: the button `load photos` on each Atlas product row of a `/dataset` card
+  (owner message of about 23:01; answers of about 23:04: a card button, no barcodes). It
+  opens the dialog of `New from Atlas` in an add mode with the product URL filled in.
+  `advance` gets `barcodes: false`, so only `Извлечь изображения из PDF` and `Удалить
+  белые поля и полосы` run. `Import` sends the new route `POST /api/atlas-import/add`
+  (`lab_server.add_atlas_photos`): the largest photo of each similar group becomes an
+  additional photo of that wine; a photo that the wine has already is skipped; the main
+  photo and the patch stay. `start_atlas_wine` and `add_atlas_photos` share
+  `_atlas_files` and `_store_atlas_photos`. Tests: `test_atlas_import.py` 16 OK,
+  `test_lab_openapi.py` 11 OK; a Playwright run of a scratch server with a fake Atlas
+  passed. 8168 restarted by 7d at 23:07:24 (pid 81464) with the page hunk; read-only checks
+  after the restart passed.
+
+- Plan 95: `New from Atlas` and photo moves on `/dataset` (owner message of about
+  22:05; answers of about 22:22: B "Prepare, then Create", the largest photo of each
+  similar group, swap, a prefilled `Add wine` form). The new button asks for a Drink Atlas
+  product URL on a loopback host. `Prepare` sends `POST /api/atlas-import/advance` every
+  3 s: stage 1 is `Удалить белые поля и полосы` (`image-auto-clean-v1`) and `Извлечь
+  изображения из PDF` (`pdf-embedded-images-v7`); stage 2, when each stage 1 task is
+  terminal, is `Распознать штрихкоды` (`image-barcode-v3`) on the product as it is then.
+  A step with a task gets no new request. All calls go through the proxy of the Atlas
+  web UI, so the lab keeps no Atlas token. `GET /api/atlas-import/photos` groups similar
+  photos by a Python port of the Atlas rule `Сгруппировать похожие` and selects the best
+  photo of each group. `Create` (all steps terminal) and `Create now` open the form
+  `Add wine` in an Atlas mode: prefilled, no main image required.
+  `POST /api/atlas-import/create` downloads each photo as Atlas shows it (the published
+  crop, the crop, or the oriented original), writes the wine with no main photo
+  (`csv_photo_name` = `atlas-<uuid>`) and a manual Atlas binding, stores each photo as an
+  additional photo (SAM3 type and cuts, the lab code scan), and starts the index job of
+  plan 84. New route `POST /api/dataset-photo-move` (`photo_moves.py`): the buttons `→M`
+  and `→P` of an additional photo and `→ additional` of the main photo and of the patch;
+  a move to a role swaps the old photo of the role into the additional photos as
+  `full_front`. New files: `pipeline/atlas_import.py`, `pipeline/atlas_import_routes.py`,
+  `pipeline/photo_moves.py`, `pipeline/pages/atlas_import.js`,
+  `docs/plans/95_new-from-atlas.md`. No schema change. Tests: `test_atlas_import.py` 14
+  OK, `test_photo_moves.py` 7 OK; `test_lab_openapi.py` 11, `test_manual_wines.py` 17,
+  `test_patches.py` 16, `test_alternatives.py` 59, `test_lab_server.py` 69,
+  `test_new_wine_jobs.py` 10 OK; the full suite 1573 OK (1 skipped). A Playwright run of
+  a scratch server with a fake Atlas
+  and a fake SAM3 passed the whole flow in light and dark theme, with no page error. The
+  grouping of the live product `ffd04eec-…` gave 3 groups (2 originals and 1 PDF image
+  each). The code is live since the 8168 restart by cf at 22:41:05 (pid 5170). On
+  2026-09-30 at 22:51 the 7 Atlas tasks of `a3b3d69b-…` stayed `queued`: no enrichment
+  worker for these profiles ran.
 
 - `/testset`: a drag into another app (the Finder, Telegram, another browser) gives the
   file of the image (owner message of about 22:25; answers of about 22:28). The catalogue
@@ -67,6 +232,27 @@
   since 22:39. 8168 restarted at 22:41:05 (pid 5170) after the answer (a) of 7d [ca1fd7],
   whose new routes loaded in the same restart; a read-only check of 8168 then gave the
   original `/images/main/107bd231…webp` for the Leto row.
+
+- Drops from the Codex desktop app (owner message of about 22:15; answers of about 22:26).
+  A drag of an image out of Codex carries `app://fs/@fs/<absolute path>`, not a file, and
+  the browser cannot open it. The new route `GET /api/local-image?address=...`
+  (`pipeline/local_images.py`) gives the bytes of such an image. It reads only
+  `~/.codex*/generated_images/`, after it resolves symbolic links and `..`, only a PNG,
+  JPEG, WebP, or GIF, and up to 20 MB; another path answers 403. The new shared page
+  script `pipeline/pages/drop.js` (`LocalDrop`, mark `/* DROP_JS */` in
+  `lab_pages.PARTS`) makes a File of the answer and hands it to the usual file flow of
+  the page: the sidebar and wine rows of `/testset`, the additional-photo, patch, and
+  new-wine drop areas of `/dataset`, and `/recognize`. A drop of a real file does not
+  change. Tests: 8 new tests in `tests/test_local_images.py`; `test_lab_openapi`,
+  `test_lab_pages`, `test_lab_server` (69), `test_testset_routes`, `test_recognize_routes`,
+  and `test_remote_images` OK; `node --check` of the three assembled pages OK. A
+  read-only Playwright check of the live 8168 passed 6 checks: a synthetic drop with the
+  real Codex address gives a 2,024,240-byte PNG File on each page (upload functions
+  stubbed, no write), a path out of the Codex folders shows the 403 error, and a real
+  file drop still works. The route loaded with the 8168 restart of cf [496c68] at
+  22:22:44 (pid 41454). A real drag out of the Codex app is not yet tested.
+  `docs/API.md` "Drops from the Codex desktop app", `docs/lab-openapi.yaml`,
+  `SMOKE_TESTS.md` "Drops from the Codex desktop app".
 
 - Plan 94: the checkbox `generate label` in the dialog `Image description` of `/dataset`
   (owner message of about 20:38; answers of about 20:46 and 21:59). Schema 033 adds
@@ -103,6 +289,32 @@
   restart at 22:22:44 (PGID = PID, the header line in the log). `COMMANDS.md`, section
   "Запуск сервера и WebUI"; `SMOKE_TESTS.md` RS1 to RS4.
 
+- The 14 competitor test sets are one flat set `competitors` (owner message of about
+  18:45; answers of about 18:58: a one-off script, one photo per source photo, every
+  place kept, removal from the database only). The new script
+  `scripts/merge_competitor_testsets.py` groups the rows by SHA-256 or by source file
+  stem and keeps the largest copy. A photo goes to each place that a source set gave it:
+  each wine slug, `__null__`, and `__drawer__`. `extra.merged_from` keeps the source
+  rows. The merge read 678 rows and wrote 236 photos in 323 rows (164 positive, 43
+  negative, 116 unusable). 65 photos are in more than one place. The 14 source sets are
+  removed from `data/catalog/catalog.sqlite3`. Their directories below
+  `data/competitor-testsets/` stay. The copy before the merge is
+  `data/backups/catalog-before-competitor-merge-20260930T161128Z.sqlite3`. The lab lists
+  `competitors` with 323 rows; no restart. Tests: 3 OK. The run commands on
+  `competitors-scored-common` in `COMMANDS.md` need a re-run of the importer first.
+
+- Plan 93: the VLM of the matcher and of the lab on the QwenCloud Token Plan (owner
+  messages of about 00:20+0100 and 00:35+0100; answers of about 16:00 and 18:49). The
+  harness `work/token-plan-vlm-20260930/` recorded 596 matcher re-rank cases on 1,937
+  images (`my` and the 84 official queries; 0 errors) and replayed them to
+  `qwen3.5-9b-nvfp4`, `qwen3.8-flash`, `qwen3.8-max`, and `deepseek-v4.1-flash`. No Token
+  Plan model was better; the cloud calls took 2.2 to 7.7 s (median) against 1.2 s, so
+  `POST /v1/eval/predict` would lose the re-rank. The owner kept `qwen3.5-9b-nvfp4` for the
+  matcher and for the lab: `config.yaml` is unchanged. README, section "The VLM
+  inferences": the key of each client and how to move a client to the Token Plan. The
+  numbers are in `../matcher/ResearchLog.md`. The matcher got the `rerank` keys `key`,
+  `thinking_field`, and `format` (`../matcher/ChangeLog.md`).
+
 - `/runs` tells why the run list is empty (owner message of 16:56:00, answer "1" of 18:41:00). When
   the filters `Pipeline` and `Testset` match no run, the table holds one row
   `0 runs match: Pipeline X, Testset Y. Reset filters`; the link sets both filters to All,
@@ -112,6 +324,154 @@
   pipeline with no run hid every run. Playwright: 10 of 10 checks pass (default, a stored
   pipeline with no run, the reset, HTTP 500, a network failure, light and dark). The page
   loads from disk: no restart.
+- Stage 2 of the cluster label rules (`pipeline/build_label_rules.py`) also sends the
+  label pictures of the additional photos (owner message of 15:55:42, answers of 16:00:14:
+  "Stage 2 only", "Trim extras to fit"). A `full_front` or `full_back` photo gives its
+  `label` cut; a `label_front` or `label_back` close-up gives its `label` cut, else the
+  original. Each picture follows the picture of its card, with the new caption
+  `CAPTION_EXTRA`. Each card keeps its own picture; the additional pictures go in one at a
+  time across the cards while the images stay within `rules_max_images` and the prompt
+  estimate at `rules_max_side` stays within the budget. The rule record holds
+  `extra_pictures` and `extras_dropped`, and `evidence` lists every sent picture of a card.
+  Only the `inputs_sha` of a cluster with an additional picture changes, so the other rules
+  stay current. Dry run: `gx10-siglip2-so400m-patch16-naflex-p256` has 21 rules to build
+  (1 before), `gx10-siglip2-so400m-patch16-naflex-p512-rot5` 25 (4 before). No rule was
+  built again yet. A simulation with a fake VLM on the real data: cluster `6407ae522515`
+  (5 cards, 30 additional photos) sends 20 images and drops 15 pictures; the largest
+  estimate is 14,515 tokens, below the budget of 15,744. Stage 1 and the similarity build
+  do not change: `clusters.py` already used the additional photos. Tests: 9 new, 2
+  changed; full suite 1521 OK (1 skipped). Smoke rows LR12 to LR14. Read the note of 2026-09-30 in plan 45.
+- New top-level key `png_compress_level` of `config.yaml` (owner messages of about 15:05
+  and 15:14). It sets the zlib level of each PNG that `pipeline/` sends to a model: the
+  SAM3 copy (`derive.Sam3Client._sent_copy`) and the embedding model input
+  (`embeddings.png_bytes`, query and index build). `derive.PNG_COMPRESS_LEVEL` holds the
+  value. A missing key is -1, the Pillow default (zlib level 6), so the bytes stay as
+  before. The lab `config.yaml` sets 2. On 12 photos of `official-real-photos`, level 2
+  encoded the SAM3 copy in 64 ms against 109 ms (2662 KB against 2549 KB), and the model
+  input in 18 ms against 24 ms. The pixels are the same. Consequence: the SAM3 cache key
+  is the SHA-256 of the sent bytes, so each record of `data/cache/models/sam3/` misses
+  once and the next run asks SAM3 again for each photo. Until then, the step popup of
+  `/runs` cannot make the images of an older run again, and it notes a changed model
+  input for the step `view`. `derive.png_bytes` (the processed files) keeps the Pillow
+  default: a new level there would make each catalogue item stale. 8168 uses the key
+  after its next restart; a run or build job uses it at once. Tests: 4 new, full suite
+  1512 OK. Smoke rows PL1 to PL3.
+- The status pill `#lb-status` of the large view of `/testset` is now on top of the two
+  images (owner message of about 14:04). The pill states the label class, for example
+  `kimi proposes positive (86%)`. It had no `z-index`, and the two image figures come
+  after it in the page, so the tall images painted over it. The rule now has `z-index: 3`,
+  above the box frame `.lb-box` (`z-index: 2`). A Playwright check at widths 1500 and 900
+  found `#lb-status` as the top element at the centre of the pill. Smoke row 15p.
+- Both Android embedding entries (`android-siglip2-base-224-dis-white`,
+  `android-siglip2-base-224-sam3-white`) now use the shared gx10 gateway
+  `http://192.168.86.14:18081/v1` instead of the isolated endpoint on port 5997 (owner
+  messages of about 13:40 to 14:02). Port 5997 was closed after the build of 2026-09-28.
+  Thus the incremental builds at 13:35 failed: 26 of 26 items in each index, `no answer
+  from http://192.168.86.14:5997/v1/embeddings`. The 2,269 current vectors of each index
+  stayed. The owner installed `vit_base_patch16_siglip_224.v2_webli` on the gateway. A
+  parity check sent 32 stored prepared images of each index to the gateway: cosine
+  0.99999988 to 1.00000012 against the stored vectors. `base_url` is not in
+  `view_config_hash`, so the next build computes only the 26 missing items.
+- `denisov_rubin_klaret_krasnaya_strelka` has a `main_patched` image with dark glass
+  (owner message of about 12:07; the owner chose "Перекрасить рендер" and "Только Красная
+  Стрелка Рубин"). The catalogue render shows bright, saturated red glass; the real bottle
+  is dark. `work/rubin-dark-glass/recolour_glass.py` changes the red glass pixels below the
+  capsule: saturation × 0.5, value × 0.62, hue 355°. The values come from the real photo
+  `96.96_…` of `official-real-photos`. The label rectangle (x 428–906, y 1310–1802), the
+  capsule, and the alpha channel stay byte-identical. The file
+  `a54d476e6aee….png` entered through `POST /api/dataset-patch`, with its package crop
+  and label cut. The p512 index built 2 items and removed 2. `siglip2-p512` on
+  `official-real-photos`: recall@1 0.8095 → 0.8254, MRR 0.8819 → 0.8899, false matches
+  at 1 6 → 6 (runs `2026-09-30T094307Z-…-rubin-before` and `2026-09-30T094404Z-…-rubin-after`).
+  The prod bundle is unchanged.
+- Added the standalone read-only utility `scripts/normalize_glass.py` (owner messages of
+  about 12:15 and 12:16). It walks Active catalogue `main` images, restores the existing
+  `package` and `label` derivative alpha masks to source coordinates, protects the label,
+  and maps the remaining bottle pixels to configurable dark neutral-green glass while
+  retaining luminance, reflections, bright closures, and the original alpha channel. It
+  calls no model and changes neither the database nor the image store. Outputs are PNGs
+  named by source SHA-256 plus `manifest.json`; an optional contact sheet shows before and
+  after. The Denisov «Красная Стрелка» and its Pinot Noir sibling both completed.
+  A 12-image smoke run completed with no skipped image. Tests: 4 OK; Python compilation
+  passed.
+- The dialog `Run>` of `/testset`: a filter and the box `Parallel matching` (owner
+  messages of about 12:02 and 12:06; the owner chose "Several pipelines at once" and
+  "Input boxes + text"). The boxes `whole photo`, `crop`, and `seg` show a pipeline by the
+  suffix of its name (OR); a name with neither word is `whole photo`. Each word of the
+  field `words of the name` MUST be in the name. A hidden pipeline is not chosen. With
+  `Parallel matching` on, the list has checkboxes, and `Start N runs` sends one
+  `POST /api/run-jobs` for each checked pipeline; the server already runs the jobs of
+  different pipelines at the same time, so no server code changed. A failed start keeps
+  the dialog open with `Started k of n` and the error of each pipeline. The browser keeps
+  the filter, the box, and the last choice. Tests: `test_run_jobs.py` 30 OK,
+  `test_lab_server.py` 69 OK. A Playwright check of the live page passed, with each job
+  start answered by the test.
+- The step popup of `/runs`: in the step `Search, space …`, a hit of a rotation entry
+  (plan 82) at an angle other than 0° now shows its index image rotated by that angle. The
+  index keeps the 0° PNG alone, so `run_steps.py` rotates the stored PNG as the build
+  rotates it (counter-clockwise, white fill, a larger canvas) and sends a PNG data URI.
+  The build rotates before the last `resize`, so the pixels can differ a little from the
+  model input. The detail line of each hit of a rotation entry shows the angle, for
+  example `full · main · 270°`. A hit of an entry with no rotation keeps the URL of its
+  prepared PNG, which was already the image of the best row, for example the `full_back`
+  image of `shato-taman-kaberne` for `q-000040` of
+  `2026-09-27T233939Z-lab-siglip2-p256-crop-my`. The step `Score` is unchanged. The owner
+  chose "Rotate stored PNG" and "Search step only" (2026-09-30T11:37:50+0300). Tests:
+  `test_run_steps.py` 13 OK; the full suite has 1,504 passing tests and one skipped
+  test. A real `rot5` row answered in 0.33 s. Port 8168 was
+  restarted (PID 22407); `/api/dataset` returned HTTP 200.
+- Replaced direct VLM card decisions in the workbench cluster re-rank with question-option
+  scores (owner selected option 1). The VLM now returns an integer distribution for each
+  rule question. Code calculates candidate evidence and orders the cluster window by
+  `embedding score + 0.05 * evidence score`. Missing or unreadable evidence is neutral.
+  A null expected answer receives no positive evidence. Existing rule files remain
+  readable, including one-sided questions that previously used `verdict` mode. The
+  `/recognize` and `/runs` step view now shows `VLM evidence re-rank` with option,
+  embedding, evidence, and decision scores. The original Aratti photo now keeps the 2024
+  card at rank 1: `not visible` 100, evidence 0 for both cards, decision scores 0.8286 and
+  0.8082. The full suite has 1,503 passing tests and one skipped test. The JavaScript
+  syntax check passed. Port 8168 was restarted, and `/api/dataset` returned HTTP 200.
+  Read [plan 92](docs/plans/92_rerank-option-scores.md).
+- Added plan 91 public competitor architecture adaptations (owner messages of about
+  2026-09-30T01:41+0100). Five atomic configurations measure one action each. Five full
+  configurations combine the public Stan, Kofeinix, Danya, Anna, and Qacen designs with
+  local models. The new checked wrapper supports weighted views, two OCR profiles,
+  global OCR candidate union, a secondary embedding union, SIFT plus RANSAC, and a
+  reject gate. OCR text is cached by SHA-256. The 77-row
+  `competitors-scored-common` set has 50 positive and 27 no-match rows. Eleven runs
+  completed with zero errors. The base gives 86.0% positive Top-1, 98.0% Top-5, and
+  55.8% exact decision accuracy. The atomic Kofeinix OCR step keeps Top-1 and raises
+  Top-5 to 100%. The atomic Qacen reject step keeps Top-1, rejects 8 of 27 no-match
+  rows, and raises exact decision accuracy to 66.2%. The Qacen full adaptation reaches
+  72.7% exact decision accuracy but lowers positive Top-1 to 82.0% and rejects three
+  positive rows. The recommendation is a separately calibrated reject gate plus
+  conditional structured OCR. Full suite: 1,494 tests passed and one test was skipped.
+  Port 8168 restarted with the new configuration. The dataset, common test-set, and run
+  configuration API checks returned HTTP 200.
+  Report:
+  [docs/reports/2026-09-30_competitor-pipeline-ablation.md](docs/reports/2026-09-30_competitor-pipeline-ablation.md).
+- Added the two-tier public competitor test-set import (owner message of
+  2026-09-30T01:12:26+0100). The explicit adapters inspected 57 clones and imported 601
+  rows from 10 competitors into 13 `<competitor>-scored` and
+  `<competitor>-provisional` sets. Pillow and SHA-256 validation found no bad file.
+  The audit found 100 shared image hashes and nine source-photo label conflicts; every
+  conflicting row moved out of `scored`. Ten `siglip2-p512-rot5-seg` runs completed.
+  Three all-unusable sets returned the explicit `gives no query` result. Clean Top-1 is
+  82.76% on Danya, 86.96% on Mishanya, and 88.89% on Qacen. Top-5 is 97.78% to 100%.
+  The pipeline rejected 0 of 27 verified no-match photos. The report recommends a
+  calibrated reject gate first, then selective OCR reranking and bounded candidate
+  union. Tests: 3 importer tests OK. The lab server was started on port 8168 and both
+  `/api/dataset` and `/testset?set=danya213411-scored` returned HTTP 200. No
+  configuration change.
+  Report: [docs/reports/2026-09-30_competitor-testsets.md](docs/reports/2026-09-30_competitor-testsets.md).
+- Added the read-only review of `../matcher`, `../matcher-inspector`, and `workbench`:
+  [docs/reviews/2026-09-30_three-project-review.md](docs/reviews/2026-09-30_three-project-review.md)
+  (owner message of 2026-09-30T00:16:49+0100). No code change. Test results: the matcher
+  suite 213 tests OK (no skip), the inspector suite 7 OK, the workbench suite 1,477 OK and
+  1 skipped. The report ranks 16 priority findings. The first three: no guard between
+  test photos and catalogue images (three links exist; the wines are not Active), the lab
+  upload checks decode every Pillow format inside a write transaction, and the GitLab CI
+  is red for 6 pushes with no workbench job.
 
 ## 2026-09-29
 
@@ -5480,3 +5840,15 @@ Plan: `docs/plans/05_cluster-label-rules.md`.
 - 86,071 candidate images were found by search and never downloaded. Working through
   them would take about a day. The yield curve of the deep pass suggests it would add
   roughly 50 to 100 wines to the group with 3 photos.
+
+## 2026-10-01T01:02:46+0300 — Run failure analysis (Codex)
+
+Reviewed all 84 rows of `2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5-seg-official-real-photos`. The run finished at 00:51:28 +0300. It records two positive misses and three negative top-1 matches. Query 30 loses valid reserve evidence because the vintage scores total zero. A local calculation that uses the valid question puts the expected card first. Query 36 asks only about sugar level and misses the Pinot Gris versus Muscat difference. Query 12 matches ordinary Massandra Saperavi 2025 to the Author wine. Query 63 shows Vechernitsa, but its positive label names Yuzhny Les; its re-rank window cannot promote that expected card. Query 62 shows the returned Shepot Tsvetov wine; its negative label needs review. Inspection used saved run traces, cached VLM replies, original photos, and cached model inputs. No model service calls, code changes, or catalogue changes. The full explanation is in the Codex task.
+
+## 2026-10-01T10:38:11+0300 — Dataset audit (Codex)
+
+- Inspected all 2,124 catalogue records and all 459 referenced Atlas products.
+- Verified SQLite integrity, foreign keys, 11,524 image paths, derivative bounds, and code normalization. These checks passed.
+- Reported ten priority findings: wrong Atlas bindings, five wines without images or codes, six wrong main images, seven vintage mismatches, and four contradictory metadata records.
+- Saved record-level evidence in `docs/reviews/2026-10-01_dataset-audit-evidence.json`.
+- Kept catalogue data and product code unchanged. No restart or push.

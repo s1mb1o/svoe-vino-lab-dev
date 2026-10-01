@@ -9,22 +9,25 @@ How it works (a port of the kind `cluster_rules` of `svoe-vino-matcher`,
 `svm/cluster_rules.py` and `svm/pipelines/cluster_rules.py`):
 
 1. The base backend answers the photo.
-2. The trigger: the rank-1 card is in a cluster whose rule has the mode `sheet` or
-   `verdict`, and at least one other card of that cluster is in the first `window`
-   positions (owner message of 2026-09-26T13:10:00+0300, the design of the answer of
-   13:04). Else the base answer stays, and no VLM call goes out.
+2. The trigger: the rank-1 card is in a cluster whose rule has a scoreable question,
+   and at least one other card of that cluster is in the first `window` positions
+   (owner message of 2026-09-26T13:10:00+0300, the design of the answer of 13:04). Else
+   the base answer stays, and no VLM call goes out.
 3. The picture: the SAM3 label cut of the photo on white, else the whole photo, scaled UP
    or down to the long side `side`.
-4. Mode `sheet`: the VLM answers the valid questions of the rule. An equal answer gives +1
-   to a card, a different answer -1, and `not visible` or a null expected answer 0.
-   Mode `verdict`: the VLM reads the rule text and names one card, or `unsure`.
-5. Only the cards of the cluster inside the window change their order. A card with a
-   strictly better score moves up; a tie keeps the base order. Every position keeps its
-   score.
+4. The VLM gives a 0 to 100 score to each option of each question. It does not select a
+   card. The scores of one question total 100.
+5. Code maps the option scores to evidence scores. A null expected answer and the option
+   `not visible` give no positive evidence. The decision score is the embedding score
+   plus 0.05 times the evidence score.
+6. Only the cards of the cluster inside the window change their order. A card with a
+   strictly better decision score moves up; a tie keeps the base order. Every position
+   keeps its public score.
 
-The VLM always sees every card of the cluster. A VLM failure, an answer that is not JSON,
-or no winner keeps the base order; the failure is recorded, and the photo still gets an
-answer. The prompts are sent as they are written here. Do not translate them.
+Code evaluates every card of the cluster window. A VLM failure, an answer that is not
+JSON, or an invalid score object keeps the base order. The failure is recorded, and the
+photo still gets an answer. The prompts are sent as they are written here. Do not
+translate them.
 
 Plan 64: a photo with a shared GTIN gets `first`, the wines of the GTIN. The base backend
 puts them first. The trigger then asks that the rank-1 card is a wine of the GTIN, and the
@@ -55,6 +58,8 @@ OTHER = "other"
 UNSURE = "unsure"
 NOT_VISIBLE = "not visible"
 YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
+SCORE_TOTAL = 100
+DECISION_WEIGHT = 0.05
 
 # The prompts of `svoe-vino-matcher/svm/cluster_rules.py`, verbatim. A test compares them.
 SHEET_PROMPT = (
@@ -75,6 +80,20 @@ VERDICT_PROMPT = (
     "Which wine is it? Answer with one JSON object: {\"wine\": \"<letter>\"}. Answer "
     "{\"wine\": \"unsure\"} when the photo does not show the feature that tells the "
     "wines apart."
+)
+
+SCORE_PROMPT = (
+    "This is a photo of a wine bottle, or of its label. Score each possible answer by "
+    "looking at the label only.\n"
+    "For each question, give every option an integer score from 0 to 100. The scores "
+    "of one question must total 100.\n"
+    "Use a high score for \"not visible\" when the answer is absent, unreadable, or "
+    "outside the photo. Do not guess.\n"
+    "Use \"other\" only when the label visibly shows a different answer.\n"
+    "Do not select a wine or a card.\n\n"
+    "%(questions)s\n\n"
+    "Answer with one JSON object. Each question id maps every option to its integer "
+    "score."
 )
 
 
@@ -120,6 +139,100 @@ def options_of(question):
             seen.add(n)
             out.append(str(value).strip())
     return out + [o for o in (OTHER, NOT_VISIBLE) if normalize(o) not in seen]
+
+
+def scoreable_questions(rule):
+    """Return the questions that the evidence-score call can use.
+
+    A valid difference-sheet question is scoreable. A one-sided feature or vintage
+    question is scoreable too. It can give evidence to the card that has a value, but a
+    null expected answer stays neutral (plan 92)."""
+    out = []
+    for question in rule.get("questions") or []:
+        if not isinstance(question, dict) or not str(question.get("question") or "").strip():
+            continue
+        distinct = {normalize(value) for value in (question.get("answers") or {}).values()
+                    if normalize(value) is not None}
+        one_sided = (len(distinct) == 1
+                     and question.get("kind") in ("feature", "vintage"))
+        if question.get("valid") or one_sided:
+            out.append(question)
+    return out
+
+
+def score_prompt(rule):
+    """The prompt that asks for option scores. It never asks for a card decision."""
+    lines = []
+    for question in scoreable_questions(rule):
+        opts = ", ".join(json.dumps(option, ensure_ascii=False)
+                         for option in options_of(question))
+        lines.append("%s: %s\nOptions: %s" % (
+            question["id"], question["question"], opts))
+    return SCORE_PROMPT % {"questions": "\n\n".join(lines)}
+
+
+def score_schema(rule):
+    """The JSON Schema of all option scores of the scoreable questions."""
+    properties = {}
+    for question in scoreable_questions(rule):
+        options = options_of(question)
+        properties[question["id"]] = {
+            "type": "object", "additionalProperties": False,
+            "properties": {option: {"type": "integer", "minimum": 0, "maximum": 100}
+                           for option in options},
+            "required": options,
+        }
+    return {"type": "object", "additionalProperties": False,
+            "properties": properties, "required": list(properties)}
+
+
+def checked_option_scores(rule, answer):
+    """Return the checked integer option scores. Raise VlmError on a contract error."""
+    questions = scoreable_questions(rule)
+    if not isinstance(answer, dict):
+        raise label_rules.VlmError("the score answer is not a JSON object")
+    expected_ids = {question["id"] for question in questions}
+    if set(answer) != expected_ids:
+        raise label_rules.VlmError("the score answer has question ids %s; expected %s" % (
+            sorted(answer), sorted(expected_ids)))
+    checked = {}
+    for question in questions:
+        qid = question["id"]
+        values = answer.get(qid)
+        options = options_of(question)
+        if not isinstance(values, dict) or set(values) != set(options):
+            found = sorted(values) if isinstance(values, dict) else type(values).__name__
+            raise label_rules.VlmError("the score answer for %s has options %s; expected %s"
+                                       % (qid, found, sorted(options)))
+        if any(isinstance(value, bool) or not isinstance(value, int)
+               or value < 0 or value > SCORE_TOTAL for value in values.values()):
+            raise label_rules.VlmError("the option scores of %s MUST be integers from 0 to 100"
+                                       % qid)
+        if sum(values.values()) != SCORE_TOTAL:
+            raise label_rules.VlmError("the option scores of %s total %s; expected 100"
+                                       % (qid, sum(values.values())))
+        checked[qid] = {option: values[option] for option in options}
+    return checked
+
+
+def evidence_scores(rule, option_scores, slugs):
+    """Return each card's evidence score from 0 to 1.
+
+    The support of an expected option is reduced by the `not visible` score. A null
+    expected answer has no support and cannot benefit from absent text."""
+    values = {slug: [] for slug in slugs}
+    for question in scoreable_questions(rule):
+        scores = option_scores[question["id"]]
+        invisible = scores[NOT_VISIBLE] / SCORE_TOTAL
+        option_by_value = {normalize(option): option for option in options_of(question)}
+        for slug in slugs:
+            expected = normalize((question.get("answers") or {}).get(slug))
+            if expected is None or expected not in option_by_value:
+                continue
+            support = scores[option_by_value[expected]] / SCORE_TOTAL
+            values[slug].append(max(0.0, support - invisible))
+    return {slug: round(sum(parts) / len(parts), 6) if parts else 0.0
+            for slug, parts in values.items()}
 
 
 def compared_answer(question, got):
@@ -254,7 +367,7 @@ class RuleBook:
                 continue
             mode = rule.get("mode") or "none"
             self.counts[mode] = self.counts.get(mode, 0) + 1
-            if mode in ("sheet", "verdict"):
+            if mode in ("sheet", "verdict") and scoreable_questions(rule):
                 for slug in rule["slugs"]:
                     self.by_slug[slug] = rule
         self.clusters_file = os.path.join(directory, clusters.CLUSTERS_FILE)
@@ -264,10 +377,10 @@ class RuleBook:
 
     def trigger(self, candidates, window, first=None):
         """Return the rule and the window positions of its cards, or (None, []). The
-        re-rank acts when the rank-1 card is in a cluster that holds a rule, and at least
-        one other card of that cluster is in the window. With `first`, the wines of a
-        shared GTIN (plan 64), the rank-1 card MUST be one of them, and the window holds
-        only these wines."""
+        re-rank acts when the rank-1 card is in a cluster that holds a scoreable rule, and
+        at least one other card of that cluster is in the window. With `first`, the wines
+        of a shared GTIN (plan 64), the rank-1 card MUST be one of them, and the window
+        holds only these wines."""
         if not candidates:
             return None, []
         if first is not None and candidates[0]["slug"] not in first:
@@ -365,19 +478,24 @@ class ClusterRerank:
                            else self.book.trigger(cands, size, first))
         if rule is None:
             return None, None
-        mode = rule["mode"]
         window = [cands[i]["slug"] for i in positions]
-        explain = {"kind": KIND, "cluster": rule["key"], "mode": mode, "window": window,
-                   "cached": False, "ms": 0, "error": None, "picture": None}
-        if mode == "sheet":
-            prompt, schema = sheet_prompt(rule), None
-            explain["questions"] = [{"id": q["id"], "question": q["question"],
-                                     "options": options_of(q)}
-                                    for q in rule["questions"] if q.get("valid")]
-        else:
-            prompt = verdict_prompt(rule, self.names, self.book.descriptions)
-            schema = verdict_schema(rule)
-            explain.update(rule=rule["rule"], letters=rule["letters"])
+        questions = scoreable_questions(rule)
+        prompt, schema = score_prompt(rule), score_schema(rule)
+        explain = {
+            "kind": KIND, "cluster": rule["key"], "mode": "evidence",
+            "source_mode": rule["mode"], "window": window, "ranking": list(window),
+            "questions": [{"id": q["id"], "question": q["question"],
+                           "options": options_of(q),
+                           "expected": {slug: (q.get("answers") or {}).get(slug)
+                                        for slug in window}}
+                          for q in questions],
+            "cached": False, "ms": 0, "error": None, "picture": None,
+            "decision_weight": DECISION_WEIGHT,
+        }
+        base_scores = {cands[pos]["slug"]: float(cands[pos]["score"]) for pos in positions}
+        evidence = {slug: 0.0 for slug in window}
+        decisions = dict(base_scores)
+        option_scores = {}
         ranking = list(window)
         try:
             png, kind = self.picture(path)
@@ -392,18 +510,16 @@ class ClusterRerank:
             if answer is None or out["finish_reason"] == "length":
                 raise label_rules.VlmError("the answer is not a JSON object (finish_reason %s)"
                                            % out["finish_reason"])
+            option_scores = checked_option_scores(rule, answer)
+            evidence = evidence_scores(rule, option_scores, window)
+            decisions = {slug: round(base_scores[slug] + DECISION_WEIGHT * evidence[slug], 6)
+                         for slug in window}
+            ranking = sorted(window, key=lambda slug: (-decisions[slug], window.index(slug)))
         except Exception as exc:  # noqa: BLE001 - a failure keeps the base order
             explain["error"] = "%s: %s" % (type(exc).__name__, exc)
-            answer = None
-        if answer is not None and mode == "sheet":
-            scores = sheet_scores(rule, answer, rule["slugs"])
-            explain.update(answers=answer, scores=scores)
-            ranking = sorted(window, key=lambda s: (-scores[s], window.index(s)))
-        elif answer is not None:
-            chosen = verdict_choice(rule, answer)
-            explain.update(answer=answer, chosen=chosen)
-            if chosen in window:
-                ranking = [chosen] + [s for s in window if s != chosen]
+        explain.update(option_scores=option_scores, base_scores=base_scores,
+                       evidence_scores=evidence, decision_scores=decisions,
+                       ranking=ranking)
         explain["changed"] = ranking[0] != window[0]
         return reorder(cands, positions, ranking, explain), explain
 
@@ -424,6 +540,5 @@ class ClusterRerank:
         if isinstance(trace, dict):
             trace = dict(trace, steps=list(trace.get("steps") or []) + [{
                 "id": KIND, "start_ms": round(float(ms), 1), "ms": round(step_ms, 1),
-                "out": {key: explain.get(key) for key in (
-                    "cluster", "mode", "window", "picture", "cached", "changed", "error")}}])
+                "out": dict(explain)}])
         return new, ms + int(round(step_ms)), status, error, trace

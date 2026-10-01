@@ -86,15 +86,26 @@ const Steps = (() => {
       }</div></div>`;
   }
 
-  /* The VLM rule step of a matcher run: the questions and the answers, the score of each
-     wine of the window, the time, and whether the answer changed the order. */
+  /* The VLM rule step: legacy matcher answers or plan 92 option scores, the candidate
+     scores, the time, and whether the code changed the order. */
   function stepVlmHtml(v) {
     const answers = v.answers || {};
     let body = v.error ? `<div class="err">no answer: ${esc(v.error)}. The base order stays.</div>`
       : "";
-    body += (v.questions || []).map(q => `<div class="q">${esc(q.id)} ${esc(q.question)} &rarr;
-      <span class="a">${esc(answers[q.id] == null ? "no answer" : answers[q.id])}</span></div>`)
-      .join("");
+    const optionScores = v.option_scores || {};
+    if (Object.keys(optionScores).length) {
+      body += (v.questions || []).map(q => {
+        const scores = optionScores[q.id] || {};
+        const options = q.options || Object.keys(scores);
+        return `<div class="q">${esc(q.id)} ${esc(q.question)}</div><div class="sc">${
+          options.map(option => `<b>${esc(option)}</b> ${esc(scores[option])}%`).join(" &middot; ")
+        }</div>`;
+      }).join("");
+    } else {
+      body += (v.questions || []).map(q => `<div class="q">${esc(q.id)} ${esc(q.question)} &rarr;
+        <span class="a">${esc(answers[q.id] == null ? "no answer" : answers[q.id])}</span></div>`)
+        .join("");
+    }
     body += Object.keys(answers).filter(k => !(v.questions || []).some(q => q.id === k))
       .map(k => `<div class="q">${esc(k)} &rarr; <span class="a">${esc(answers[k])}</span></div>`)
       .join("");
@@ -107,9 +118,18 @@ const Steps = (() => {
       body += `<div class="sc">scores: ${v.window.map(slug => `<b>${esc(slug)}</b> ${
         (scores[slug] || 0) > 0 ? "+" : ""}${esc(scores[slug] || 0)}`).join(" &middot; ")}</div>`;
     }
+    const base = v.base_scores || {};
+    const evidence = v.evidence_scores || {};
+    const decision = v.decision_scores || {};
+    if (Object.keys(decision).length) {
+      body += `<div class="sc">candidate scores (weight ${esc(v.decision_weight)}): ${
+        (v.window || []).map(slug => `<b>${esc(slug)}</b> embedding ${score4(base[slug])}, ` +
+          `evidence ${score4(evidence[slug])}, decision ${score4(decision[slug])}`)
+          .join(" &middot; ")}</div>`;
+    }
     return `<div class="vlm"><div class="vh">VLM &middot; ${esc(v.mode || "rule")} &middot; cluster ${
       esc(v.cluster || "?")} &middot; ${v.cached ? "from the cache" : dur(v.ms)}</div>${body}
-      <div class="mv">${v.changed ? "the answer changed the order" : "the base order stays"}</div></div>`;
+      <div class="mv">${v.changed ? "the code changed the order" : "the base order stays"}</div></div>`;
   }
 
   function stepDataHtml(title, value, open) {

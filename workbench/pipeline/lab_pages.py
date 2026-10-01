@@ -9,6 +9,10 @@ The step view of one photo (plan 41) is in `pipeline/pages/steps.css` and
 the line `/* STEPS_CSS */` inside its `<style>` element and the line `/* STEPS_JS */`
 inside its `<script>` element, each one time at most. `page` puts the file in place of
 the line. A page with no such line does not change.
+
+The drop of a local image from the Codex desktop app is in `pipeline/pages/drop.js`;
+`/testset`, `/dataset`, and `/recognize` share it. A page MAY hold the line
+`/* DROP_JS */` inside its `<script>` element one time at most, by the same rule.
 """
 import os
 import re
@@ -16,7 +20,8 @@ import re
 PAGES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pages")
 THEME_MARK = "/* THEME_CSS */\n"
 # The optional marks and their files (plan 55).
-PARTS = (("/* STEPS_CSS */\n", "steps.css"), ("/* STEPS_JS */\n", "steps.js"))
+PARTS = (("/* STEPS_CSS */\n", "steps.css"), ("/* STEPS_JS */\n", "steps.js"),
+         ("/* DROP_JS */\n", "drop.js"))
 # The Dataset page with the image preview of one wine open: `/dataset/<slug>` shows the
 # catalogue image, `/dataset/<slug>/patch` the patch image, and
 # `/dataset/<slug>/alternative/<sha256>` one alternative photo. The page reads the path.

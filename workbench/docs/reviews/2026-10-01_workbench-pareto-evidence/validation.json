@@ -1,0 +1,23 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests",
+  "python": "3.14.7",
+  "tests_run": 1585,
+  "skipped": 1,
+  "seconds": 230.611,
+  "result": "OK",
+  "live_database_read_only": {
+    "schema_version": 33,
+    "catalogue_states": {
+      "Active": 2115,
+      "Disabled": 4,
+      "Removed": 5
+    },
+    "test_photo_rows": 5027,
+    "distinct_test_image_sha256": 3660,
+    "test_catalogue_join_rows_by_state": {
+      "Active": 0,
+      "Disabled": 6,
+      "Removed": 1
+    }
+  }
+}

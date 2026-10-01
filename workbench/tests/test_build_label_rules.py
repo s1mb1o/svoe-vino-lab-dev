@@ -45,7 +45,9 @@ class FakeVlm:
         else:
             if self.fail:
                 raise self.fail
-            letters = [text.split()[1].rstrip(":") for text in texts if text.startswith("Card ")]
+            # One caption of a card, or more with `CAPTION_EXTRA`: each letter once.
+            letters = sorted({text.split()[1].rstrip(":,") for text in texts
+                              if text.startswith("Card ")})
             answer = {"differences": "the names", "rule": "Read the name.",
                       "questions": [{"question": "What name is printed on the label?",
                                      "answers": {x: "NAME %s" % x for x in letters}}],
@@ -114,8 +116,10 @@ class BuildTest(unittest.TestCase):
             self.assertIn('"LABEL"', rec["prompt"])
         rules_calls = self.vlm.stage("rules")
         self.assertEqual(len(rules_calls), len(self.combined))
+        # The close-up of `transparent` is one more picture of its cluster.
         self.assertEqual(sorted(call["images"] for call in rules_calls),
-                         sorted(cluster["size"] for cluster in self.combined))
+                         sorted(cluster["size"] + ("transparent" in cluster["slugs"])
+                                for cluster in self.combined))
         self.assertTrue(all(not call["thinking"] for call in self.vlm.calls))
         self.assertEqual({call["max_tokens"] for call in rules_calls}, {2500})
         self.assertEqual(summary["rules"]["modes"], {"sheet": len(self.combined)})
@@ -212,7 +216,70 @@ class BuildTest(unittest.TestCase):
         texts = self.vlm.stage("rules")[0]["texts"]
         self.assertTrue(any("the same catalogue picture as card" in text for text in texts))
         rec = self.stored()["spaces"]["label"][cluster["key"]]
-        self.assertEqual(rec["questions"][0]["evidence"]["transparent"], [cut])
+        self.assertEqual(rec["questions"][0]["evidence"]["transparent"],
+                         [cut, self.fixture.lab.closeup])
+
+    def cluster_of(self, slug):
+        return next(c for c in self.combined if slug in c["slugs"])
+
+    def test_the_additional_label_pictures_go_to_stage_2(self):
+        # The close-up of `transparent` has no label cut: the original goes. The full
+        # back photo of `grey` gets a label cut and goes as that cut.
+        lab = self.fixture.lab
+        cut = lab.store_file(embedding_lab.png(embedding_lab.bottle_on_grey((1, 90, 1))),
+                             "cropped", "png")
+        lab.conn.execute(
+            "INSERT INTO image_derivative (source_sha256, method, settings, sha256, "
+            "box_left, box_top, box_right, box_bottom, kind) "
+            "VALUES (?, 'seg', 'test', ?, 0, 0, 10, 10, 'label')", (self.fixture.extra, cut))
+        lab.conn.commit()
+        cluster = self.cluster_of("transparent")
+        self.assertIn("grey", cluster["slugs"])
+        self.run_rules(cluster_slug="transparent")
+        call = self.vlm.stage("rules")[0]
+        self.assertEqual(call["images"], cluster["size"] + 2)
+        rec = self.stored()["spaces"]["label"][cluster["key"]]
+        self.assertIsNone(rec["error"])
+        letter = {slug: x for x, slug in rec["letters"].items()}
+        for slug, side in (("transparent", "front"), ("grey", "back")):
+            self.assertIn(label_rules.CAPTION_EXTRA % {"letter": letter[slug], "side": side},
+                          call["texts"])
+        self.assertEqual(rec["extra_pictures"], {
+            "transparent": [{"sha256": lab.closeup, "image_type": "label_front",
+                             "source_sha256": lab.closeup}],
+            "grey": [{"sha256": cut, "image_type": "full_back",
+                      "source_sha256": self.fixture.extra}]})
+        self.assertEqual(rec["extras_dropped"], [])
+        evidence = rec["questions"][0]["evidence"]
+        self.assertEqual(evidence["grey"][1:], [cut])
+        self.assertEqual(evidence["transparent"][1:], [lab.closeup])
+
+    def test_the_additional_pictures_are_trimmed_to_the_image_limit(self):
+        cluster = self.cluster_of("transparent")
+        self.set_rules({"rules_max_images": cluster["size"]})
+        self.run_rules(cluster_slug="transparent")
+        self.assertEqual(self.vlm.stage("rules")[0]["images"], cluster["size"])
+        rec = self.stored()["spaces"]["label"][cluster["key"]]
+        self.assertIsNone(rec["error"])
+        self.assertEqual(rec["extra_pictures"], {})
+        self.assertEqual(rec["extras_dropped"], [{"slug": "transparent", "sha256":
+                                                  self.fixture.lab.closeup,
+                                                  "image_type": "label_front"}])
+
+    def test_a_new_additional_photo_builds_only_its_cluster_again(self):
+        self.run_rules()
+        self.vlm.calls.clear()
+        lab = self.fixture.lab
+        cut = lab.store_file(embedding_lab.png(embedding_lab.bottle_on_grey((1, 90, 1))),
+                             "cropped", "png")
+        lab.conn.execute(
+            "INSERT INTO image_derivative (source_sha256, method, settings, sha256, "
+            "box_left, box_top, box_right, box_bottom, kind) "
+            "VALUES (?, 'seg', 'test', ?, 0, 0, 10, 10, 'label')", (self.fixture.extra, cut))
+        lab.conn.commit()
+        summary = self.run_rules(stage="rules")
+        self.assertEqual(summary["rules"]["todo"], 1)
+        self.assertEqual(len(self.vlm.stage("rules")), 1)
 
     def test_the_thinking_and_the_limits_come_from_the_config(self):
         self.set_rules({"rules_thinking": True, "rules_max_tokens": 16000,

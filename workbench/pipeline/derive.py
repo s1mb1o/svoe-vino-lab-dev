@@ -73,6 +73,30 @@ def configured_endpoint(default, path=CONFIG_PATH):
     return endpoint.strip()
 
 
+def configured_png_level(default=-1, path=CONFIG_PATH):
+    """Return the key `png_compress_level` of `config.yaml`, or `default` when the file or
+    the key is absent. -1 is the Pillow default, zlib level 6."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            config = yaml.safe_load(fh) or {}
+    except FileNotFoundError:
+        return default
+    level = config.get("png_compress_level") if isinstance(config, dict) else None
+    if level is None:
+        return default
+    if isinstance(level, bool) or not isinstance(level, int) or not -1 <= level <= 9:
+        raise ValueError("%s: `png_compress_level` MUST be an integer from -1 to 9" % path)
+    return level
+
+
+# The zlib level of the PNG that goes to a model: the SAM3 copy (`Sam3Client._sent_copy`)
+# and the model input (`embeddings.png_bytes`). The pixels are the same at each level; the
+# bytes differ, so a new level misses each record of `data/cache/models/sam3/` once. The
+# processed files of `png_bytes` below keep the Pillow default. Read the ResearchLog entry
+# of 2026-09-30 on the time of a lab query.
+PNG_COMPRESS_LEVEL = configured_png_level()
+
+
 # The SAM3 service and the values of `build_labels.py`. The key `sam3.endpoint` of
 # `config.yaml` names the service; without the key, the service of gx10 stays.
 SAM3_ENDPOINT = configured_endpoint("http://192.168.86.14:18081/upstream/sam3")
@@ -211,7 +235,7 @@ class Sam3Client:
             flat = flat.resize((max(1, round(flat.width * scale)),
                                 max(1, round(flat.height * scale))), Image.Resampling.LANCZOS)
         buffer = io.BytesIO()
-        flat.save(buffer, "PNG")
+        flat.save(buffer, "PNG", compress_level=PNG_COMPRESS_LEVEL)
         return buffer.getvalue(), scale
 
     def instances(self, image, texts, masks=True):

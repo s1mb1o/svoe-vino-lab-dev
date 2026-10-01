@@ -205,6 +205,20 @@ class StepTest(unittest.TestCase):
         with self.assertRaisesRegex(dis_litert.DisError, "flat mask"):
             dis_litert.normalize_mask(np.full_like(raw, 0.5))
 
+    def test_png_bytes_uses_the_configured_level_and_keeps_the_pixels(self):
+        import io
+        import derive
+        image = Image.effect_noise((200, 100), 40).convert("RGB")
+        old = derive.PNG_COMPRESS_LEVEL
+        self.addCleanup(setattr, derive, "PNG_COMPRESS_LEVEL", old)
+        derive.PNG_COMPRESS_LEVEL = 0
+        stored = embeddings.png_bytes(image)
+        derive.PNG_COMPRESS_LEVEL = 9
+        packed = embeddings.png_bytes(image)
+        self.assertGreater(len(stored), len(packed))
+        for data in (stored, packed):
+            self.assertEqual(Image.open(io.BytesIO(data)).tobytes(), image.tobytes())
+
 
 class LabTest(unittest.TestCase):
     def setUp(self):

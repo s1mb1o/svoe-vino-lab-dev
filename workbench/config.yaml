@@ -51,6 +51,16 @@ new_wine_embedding: gx10-siglip2-so400m-patch16-512
 sam3:
   endpoint: http://192.168.86.14:18081/upstream/sam3
 
+# The zlib level (-1 to 9) of each PNG that `pipeline/` sends to a model: the SAM3 copy
+# and the model input of an embedding (query and index build). `pipeline/derive.py`
+# reads the key when a module imports it. Without the key, -1 stays: the Pillow default,
+# zlib level 6. The pixels are the same at each level. Level 2 halves the encode time
+# with almost the same size (owner messages of about 2026-09-30T15:05 and 15:14+0300;
+# read the ResearchLog entry of 2026-09-30 on the time of a lab query). The SAM3 model
+# cache keys each answer on the bytes of the copy: a new level asks SAM3 again once for
+# each image. The processed files of `data/catalog/cuts/` keep the Pillow default.
+png_compress_level: 2
+
 # The shared QR and barcode scanner. `pipeline/barcode.py` uses it before an embedding
 # pipeline, and the Dataset page uses it for each additional-image upload. An exact
 # `{env:NAME}` value reads the endpoint from the environment when the process starts;
@@ -78,7 +88,7 @@ embeddings:
   # The second entry gives a direct comparison with the present SAM3 package cut.
   - name: android-siglip2-base-224-dis-white
     backend: openai
-    base_url: http://192.168.86.14:5997/v1
+    base_url: http://192.168.86.14:18081/v1
     model: vit_base_patch16_siglip_224.v2_webli
     batch_size: 16
     views:
@@ -98,7 +108,7 @@ embeddings:
 
   - name: android-siglip2-base-224-sam3-white
     backend: openai
-    base_url: http://192.168.86.14:5997/v1
+    base_url: http://192.168.86.14:18081/v1
     model: vit_base_patch16_siglip_224.v2_webli
     batch_size: 16
     views:
@@ -305,7 +315,11 @@ clusters:
 #
 # Stage 2 writes the rule of each cluster: one call for each cluster, with one image for
 # each card (its label cut), the card data, the stage 1 descriptions, and the note.
-#   rules_vlm            the entry of the key `vlm` for stage 2; null takes `vlm`. Since the
+# The call also sends the label pictures of the additional photos of the cards, one at a
+# time across the cards, while the images stay within `rules_max_images` and the prompt
+# estimate at `rules_max_side` stays within the context (owner message of
+# 2026-09-30T15:55:42+0300). The rule record lists the dropped pictures.
+#   rules_vlm           the entry of the key `vlm` for stage 2; null takes `vlm`. Since the
 #                        owner message of 2026-09-26T16:01:00+0300 the rules come from
 #                        `qwencloud-qwen3.8-max` (the key: the shell variable of the entry).
 #                        The rules of `qwen3.5-9b-nvfp4` are kept as
@@ -645,6 +659,174 @@ pipeline:
     backend: embedding
     embedding: local-siglip2-so400m-patch16-naflex-p256
     views: *crop-views
+
+  # Plan 91: comparable adaptations of five public competitor architectures.
+  # The `*-atomic` entries change one action relative to siglip2-p512-rot5-seg.
+  # The `*-full` entries combine the public architecture ideas that the workbench can
+  # evaluate on one catalogue. They do not reproduce private weights or training data.
+  - name: competitor-stan-ocr
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    competitor:
+      source: Stan
+      pool: 30
+      actions:
+        - action: ocr_rerank
+          profile: stan
+          top_k: 10
+          alpha: 0.20
+          conflict_penalty: 0.05
+
+  - name: competitor-kofeinix-ocr
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    competitor:
+      source: Kofeinix
+      pool: 50
+      actions:
+        - action: ocr_rerank
+          profile: structured
+          top_k: 50
+          alpha: 0.10
+          conflict_penalty: 0.03
+
+  - name: competitor-danya-ocr-union
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    competitor:
+      source: Danya213411
+      pool: 30
+      actions:
+        - action: ocr_union
+          top_k: 10
+          alpha: 0.50
+
+  - name: competitor-anna-two-view
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *views_c_f
+    competitor:
+      source: annamistery
+      pool: 30
+      actions:
+        - action: view_fusion
+          weights: {full: 0.50, label: 0.50}
+
+  - name: competitor-qacen-reject
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    competitor:
+      source: Qacen
+      pool: 30
+      actions:
+        - action: reject
+          min_score: 0.76
+          min_margin: 0.0
+          score_field: score
+
+  - name: competitor-stan-full
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch14-384
+    views: *views_c_f
+    competitor:
+      source: Stan
+      pool: 30
+      actions:
+        - action: view_fusion
+          weights: {full: 0.50, label: 0.50}
+        - action: ocr_rerank
+          profile: stan
+          top_k: 10
+          alpha: 0.20
+          conflict_penalty: 0.05
+
+  - name: competitor-kofeinix-full
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-384
+    views: *views_c_f
+    competitor:
+      source: Kofeinix
+      pool: 50
+      actions:
+        - action: view_fusion
+          weights: {full: 0.45, label: 0.55}
+        - action: ocr_rerank
+          profile: structured
+          top_k: 50
+          alpha: 0.10
+          conflict_penalty: 0.03
+
+  - name: competitor-danya-full
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *views_c_f
+    competitor:
+      source: Danya213411
+      pool: 30
+      secondary:
+        embedding: gx10-dinov3-vitb16
+        views: *views_c_f
+        top_k: 30
+      actions:
+        - action: secondary_union
+          primary_weight: 0.55
+          secondary_weight: 0.45
+        - action: ocr_union
+          top_k: 10
+          alpha: 0.50
+        - action: ocr_rerank
+          profile: structured
+          top_k: 30
+          alpha: 0.50
+          conflict_penalty: 0.05
+        - action: sift_rerank
+          top_k: 5
+          weight: 0.05
+        - action: reject
+          min_score: 0.4908
+          min_margin: 0.01
+          score_field: score
+
+  - name: competitor-anna-full
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *views_c_f
+    competitor:
+      source: annamistery
+      pool: 30
+      secondary:
+        embedding: gx10-dinov3-vitb16
+        views: *views_c_f
+        top_k: 30
+      actions:
+        - action: view_fusion
+          weights: {full: 0.50, label: 0.50}
+        - action: secondary_union
+          primary_weight: 0.70
+          secondary_weight: 0.30
+        - action: reject
+          min_score: 0.55
+          min_margin: 0.15
+          score_field: primary_score
+
+  - name: competitor-qacen-full
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p1024
+    views: *views_c_f
+    competitor:
+      source: Qacen
+      pool: 30
+      actions:
+        - action: view_fusion
+          weights: {full: 0.50, label: 0.50}
+        - action: reject
+          min_score: 0.76
+          min_margin: 0.0
+          score_field: visual_score
 
   # Plan 42 (owner message of 2026-09-26T07:22:10+0300, answers of 07:27:08): a barcode
   # twin of each embedding pipeline. The key `barcode` sends the photo to the shared

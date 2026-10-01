@@ -909,6 +909,30 @@ Errors: `400` for an absent, unsafe, unreachable, empty, oversized, or non-image
 `404` for an unknown set or place; `409` when the place holds the image already; `405`
 for another method; `503` for a database error.
 
+## Drops from the Codex desktop app
+
+A drag of an image out of the Codex desktop app carries the address
+`app://fs/@fs/<absolute path>`, not a file. The browser cannot open that address. The
+shared page script `pipeline/pages/drop.js` (`LocalDrop`) finds such an address in the
+drop data (`text/html`, `DownloadURL`, `text/uri-list`, or `text/plain`), asks the route
+below for the bytes, and makes a File. The page then uses its usual file flow, so the
+upload rules of the page stay the same. These drop areas use it: the sidebar and the
+wine rows of `/testset`, the additional-photo and patch drop areas and the new-wine
+image of `/dataset`, and the page of `/recognize`. A drop of a real file does not change.
+
+### `GET /api/local-image?address=<app://fs/@fs/... or file://...>`
+
+The answer is the image bytes with the media type of the extension. The server reads a
+file only under `~/.codex*/generated_images/` (owner answers of
+2026-09-30T22:26:00+0300). It resolves symbolic links and `..` before this check. The
+file MUST have the extension `.png`, `.jpg`, `.jpeg`, `.webp`, or `.gif`, and MUST have
+1 byte to 20 MB. The route writes no file and changes no row. `pipeline/local_images.py`
+answers it.
+
+Errors (JSON `{"error"}`): `400` for an absent or non-local address, a wrong extension,
+or an empty file; `403` for a path out of the Codex image folders; `404` for a missing
+file; `413` for a file larger than 20 MB.
+
 ## Image tags of the Testset — plan 66
 
 The table `image_tag` (schema 030) holds the free-form text tags of an image. The key is

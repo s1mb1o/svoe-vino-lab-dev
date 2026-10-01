@@ -49,7 +49,8 @@ more link. Read `docs/plans/62_similar-wines.md`.
 
 The route `/api/dataset-tag` adds (POST `{"slug", "tag"}`) and removes (DELETE
 `?slug=&tag=`) one free-form text tag of one wine in the table `wine_tag` with
-`wine_tags.py`. The pipeline does not read the tags. Read `docs/plans/63_wine-tags.md`.
+`wine_tags.py`. Stage 2 of the cluster label rules reads the vintage tags (plan 97);
+the rest of the pipeline does not read the tags. Read `docs/plans/63_wine-tags.md`.
 
 The route `/api/dataset-patch` stores (POST, the image bytes as the body) and removes
 (DELETE) the `main_patched` image of one wine with `patches.py`. Read
@@ -103,6 +104,12 @@ artifact depends on one embedding build and stays in that embedding directory. R
 The website import is on: `website_import_routes.py` answers each of its routes. Read
 `docs/plans/21_website-import-ui.md`.
 
+"New from Atlas" (plan 95) is on: `atlas_import_routes.py` answers its routes, and
+`start_atlas_wine` creates a wine from one Drink Atlas product with no main photo, and
+`add_atlas_photos` adds the photos of a product to an existing wine. The
+route `POST /api/dataset-photo-move` moves one photo between the additional photos and
+`main` or `main_patched` (`photo_moves.py`). Read `docs/plans/95_new-from-atlas.md`.
+
 The Runs page is on: `run_routes.py` answers each of its routes. It reads the run
 directories of `runs/`; the database does not hold the runs. Read
 `docs/plans/23_runs-page.md`.
@@ -124,6 +131,11 @@ The Recognize page is on at `/recognize`: `recognize_routes.py` answers each of 
 routes. A photo goes to one pipeline of the backend `embedding` in a new process of
 `embedding_python` (`recognize.py`), and the page shows its steps as the step popup of
 `/runs` shows them. Read `docs/plans/55_recognize-page.md`.
+
+The route `GET /api/local-image?address=<app://fs/@fs/... or file://...>` is on:
+`local_images.py` gives the bytes of one image that a drop from the Codex desktop app
+names. It reads only `~/.codex*/generated_images/`. `pipeline/pages/drop.js` makes a
+File of the answer for the drop areas of `/testset`, `/dataset`, and `/recognize`.
 
 The OpenAPI 3.1 document is on at `/openapi.yaml` and `/openapi.json`. Swagger UI is on
 at `/docs`. `lab_openapi.py` serves the checked-in `docs/lab-openapi.yaml`. Read
@@ -158,6 +170,8 @@ import yaml
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import alternatives  # noqa: E402
 import atlas_bindings  # noqa: E402
+import atlas_import  # noqa: E402
+import atlas_import_routes  # noqa: E402
 import beverage_types  # noqa: E402
 import cluster_routes  # noqa: E402
 import codes  # noqa: E402
@@ -171,11 +185,13 @@ import label_description_routes  # noqa: E402
 import lab_openapi  # noqa: E402
 import lab_pages  # noqa: E402
 import labdb  # noqa: E402
+import local_images  # noqa: E402
 import manual_wines  # noqa: E402
 import model_cache  # noqa: E402
 import new_wine_jobs  # noqa: E402
 import new_wine_workflow  # noqa: E402
 import patches  # noqa: E402
+import photo_moves  # noqa: E402
 import qr_barcode  # noqa: E402
 import recognize_routes  # noqa: E402
 import run_jobs  # noqa: E402
@@ -634,6 +650,88 @@ def start_wine(db_path, body, jobs, segmenter=None, config_path=None):
     return wine_answer(db_path, result)
 
 
+def start_atlas_wine(db_path, body, jobs, segmenter=None, scanner=None, config_path=None):
+    """Create one wine from a Drink Atlas product (plan 95): no main photo, and each
+    selected photo as an additional photo. Then start the update of the selected index,
+    as `start_wine` does. Return the answer in the form of `POST /api/wine`.
+
+    The preflight and each download run before the first write, so an index that is not
+    ready or an Atlas error creates no wine. A photo that the store refuses gives a
+    warning, and the wine keeps the other photos."""
+    origin, product_uuid, hidden = atlas_import.parse_url(body.get("url"))
+    slug, values, beverage_type = atlas_import.check_wine(body)
+    selected = None
+    if config_path is not None:
+        selected = new_wine_workflow.selected_index(db_path, config_path)
+    client = atlas_import.AtlasClient(origin, hidden)
+    warnings = []
+    files = _atlas_files(client, product_uuid, body, warnings)
+    with closing(open_database(db_path, write=True)) as conn:
+        conn.isolation_level = None
+        conn.execute("PRAGMA foreign_keys = ON")
+        atlas_import.insert_wine(conn, product_uuid, slug, values, beverage_type)
+    _store_atlas_photos(db_path, slug, files, segmenter, scanner, warnings)
+    result = {"slug": slug, "warnings": warnings, "index": None}
+    if selected is not None:
+        result["index"] = jobs.start(slug, selected, config_path)
+    return wine_answer(db_path, result)
+
+
+def _atlas_files(client, product_uuid, body, warnings):
+    """Download the photos of the product that `body["media_ids"]` names. Return a list
+    of (bytes, source name). A file that the image store does not take adds a warning."""
+    files = []
+    for asset in atlas_import.read_media_ids(body, client.product(product_uuid)):
+        data, name = atlas_import.download(client, asset)
+        try:
+            atlas_import.check_size(data, name)
+        except atlas_import.AtlasError as exc:
+            warnings.append("%s; the photo is skipped." % exc)
+            continue
+        files.append((data, name))
+    if not files:
+        raise atlas_import.AtlasError(413, "no selected Atlas photo fits the image store")
+    return files
+
+
+def _store_atlas_photos(db_path, slug, files, segmenter, scanner, warnings):
+    """Store each file as an additional photo of `slug`, as an upload of the card does.
+    Return the count of new photos. A photo that the store refuses adds a warning."""
+    added = 0
+    for data, name in files:
+        try:
+            answer = store_alternative(db_path, slug, data, name, segmenter, scanner)
+        except patches.PatchError as exc:
+            warnings.append("The photo %s is not stored: %s." % (name, exc))
+            continue
+        added += bool(answer.get("changed"))
+        if answer.get("warning"):
+            warnings.append("%s: %s" % (name, answer["warning"]))
+    return added
+
+
+def add_atlas_photos(db_path, body, segmenter=None, scanner=None):
+    """Add the selected photos of a Drink Atlas product to an existing wine as additional
+    photos: the button `load photos` of an Atlas product of a card (plan 95, owner message
+    of 2026-09-30T23:01). The main photo and the patch do not change. A photo that the wine
+    has already is not added again. Return the new record, `added`, and `warning`."""
+    origin, product_uuid, hidden = atlas_import.parse_url(body.get("url"))
+    slug = body.get("slug")
+    if not isinstance(slug, str) or not slug:
+        raise patches.PatchError(400, "the request holds no wine slug")
+    with closing(open_database(db_path)) as conn:
+        if conn.execute("SELECT 1 FROM wine_catalog WHERE wine_slug = ?",
+                        (slug,)).fetchone() is None:
+            raise patches.PatchError(404, "no wine with the slug %s" % slug)
+    warnings = []
+    files = _atlas_files(atlas_import.AtlasClient(origin, hidden), product_uuid, body,
+                         warnings)
+    added = _store_atlas_photos(db_path, slug, files, segmenter, scanner, warnings)
+    answer = wine_answer(db_path, {"slug": slug, "warnings": warnings, "index": None})
+    answer["added"] = added
+    return answer
+
+
 def retry_wine_index(db_path, config_path, jobs, slug):
     """Start the index job of one Active wine again: the button `Retry` of the card
     (plan 84). Return the job."""
@@ -881,6 +979,13 @@ def recut_alternative(db_path, slug, digest, segmenter=None):
     answer of the POST."""
     return _alternative_request(db_path, slug, lambda conn: alternatives.recut_alternative(
         conn, db_path, slug, digest, segmenter))
+
+
+def move_photo(db_path, slug, digest, source, target, segmenter=None):
+    """Move one photo between the additional photos and `main` or `patched` (plan 95).
+    Return the answer of the POST: the new record of the wine."""
+    return _alternative_request(db_path, slug, lambda conn: photo_moves.move(
+        conn, db_path, slug, digest, source, target, segmenter))
 
 
 def _atlas_products(rows):
@@ -1324,6 +1429,55 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _atlas_import(self):
+        """Send the answer of `atlas_import_routes.respond` (plan 95)."""
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+
+        def create(body):
+            return start_atlas_wine(self.server.db_path, body, self.server.new_wine_jobs,
+                                    self.server.segmenter, self.server.code_scanner,
+                                    self.server.config_path)
+
+        def add(body):
+            return add_atlas_photos(self.server.db_path, body, self.server.segmenter,
+                                    self.server.code_scanner)
+
+        try:
+            code, body, ctype, cache = atlas_import_routes.respond(
+                self.command, self.path, read_body, create, add)
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+            return
+        except Exception as exc:  # noqa: BLE001 - the page needs an answer for each error
+            traceback.print_exc()
+            self._json(500, {"error": "internal error: %s" % exc})
+            return
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
+    def _photo_move(self):
+        """Answer `POST /api/dataset-photo-move` (plan 95)."""
+        body = self._json_body(MAX_BODY)
+        if body is None:
+            return
+        try:
+            self._json(200, move_photo(self.server.db_path, body.get("slug"),
+                                       body.get("sha256"), body.get("from"),
+                                       body.get("to"), self.server.segmenter))
+        except patches.PatchError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+        except Exception as exc:  # noqa: BLE001 - the page needs an answer for each error
+            traceback.print_exc()
+            self._json(500, {"error": "internal error: %s" % exc})
+
     def _runs(self):
         """Send the answer of `run_routes.respond`. The catalogue image of a slug follows
         the rule of `card_images`."""
@@ -1442,6 +1596,11 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _local_image(self):
+        """Send the answer of `local_images.respond`: the bytes of one Codex image."""
+        code, body, ctype, cache = local_images.respond(self.command, self.path)
+        self._send(code, body, ctype, cache)
+
     def _redirect(self, location):
         self.send_response(302)
         self.send_header("Location", location)
@@ -1459,6 +1618,8 @@ class Handler(BaseHTTPRequestHandler):
             self._clusters()
         elif website_import_routes.handles(route):
             self._website_import()
+        elif atlas_import_routes.handles(route):
+            self._atlas_import()
         elif run_routes.handles(route):
             self._runs()
         elif run_jobs.handles(route):
@@ -1471,6 +1632,8 @@ class Handler(BaseHTTPRequestHandler):
             self._recognize()
         elif label_description_routes.handles(route):
             self._label_descriptions()
+        elif local_images.handles(route):
+            self._local_image()
         elif route == "/":
             self._redirect(HOME)
         elif route == "/dataset" or lab_pages.DATASET_PREVIEW_ROUTE.match(route):
@@ -1862,6 +2025,8 @@ class Handler(BaseHTTPRequestHandler):
             self._clusters()
         elif website_import_routes.handles(route):
             self._website_import()
+        elif atlas_import_routes.handles(route):
+            self._atlas_import()
         elif run_jobs.handles(route):
             self._run_jobs()
         elif testset_routes.handles(route):
@@ -1892,6 +2057,8 @@ class Handler(BaseHTTPRequestHandler):
             self._alternative(route)
         elif route == "/api/dataset-alternative-recut" and self.command == "POST":
             self._alternative(route)
+        elif route == "/api/dataset-photo-move" and self.command == "POST":
+            self._photo_move()
         elif route == "/api/dataset-atlas-binding" and self.command in ("POST", "DELETE"):
             self._atlas_binding()
         elif route == "/api/dataset-atlas-binding-approve" and self.command == "POST":

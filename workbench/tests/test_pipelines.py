@@ -128,6 +128,31 @@ class EmbeddingPipelineTest(LoadTest):
                     pipelines.Pipeline({"name": "p", "backend": "embedding", "embedding": "gw",
                                         "workers": value})
 
+    def test_competitor_actions_and_secondary_embedding_are_checked(self):
+        secondary = dict(GW, name="second")
+        settings = self.load(embeddings=[GW, secondary], pipeline=[{
+            "name": "adapted", "backend": "embedding", "embedding": "gw",
+            "competitor": {
+                "source": "anna", "pool": 30,
+                "secondary": {"embedding": "second", "top_k": 20},
+                "actions": [{"action": "secondary_union"}],
+            },
+        }])
+        value = settings.find("adapted").competitor
+        self.assertEqual(value["source"], "anna")
+        self.assertEqual(value["secondary"]["embedding"], "second")
+
+    def test_unknown_secondary_embedding_keeps_an_entry_error(self):
+        settings = self.load(embeddings=[GW], pipeline=[{
+            "name": "adapted", "backend": "embedding", "embedding": "gw",
+            "competitor": {
+                "source": "anna", "secondary": {"embedding": "missing"},
+                "actions": [{"action": "secondary_union"}],
+            },
+        }])
+        with self.assertRaisesRegex(embeddings.ConfigError, "secondary embedding missing"):
+            settings.find("adapted")
+
 
 class QueryViewsTest(LoadTest):
     """The key `views` of a pipeline of the backend `embedding`: the steps of the test

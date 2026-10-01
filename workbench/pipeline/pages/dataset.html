@@ -734,6 +734,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <div class="bar-actions">
       <span class="vlm-status" id="vlm-status" role="status" aria-live="polite" hidden></span>
       <button id="add-wine" class="wine-add-btn" type="button" hidden>Add wine</button>
+      <button id="atlas-new" class="wine-add-btn" type="button" hidden>New from Atlas</button>
       <button id="validate-dataset" class="validate-btn" type="button" hidden>Validate</button>
       <button id="website-import" class="validate-btn" type="button" hidden>Import from website</button>
     </div>
@@ -975,6 +976,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
 </div>
 <script>
 "use strict";
+/* DROP_JS */
 const $ = s => document.querySelector(s);
 let DATA = {records: [], patches: 0, alternatives: 0, gtins: 0, barcodes: 0, qr_urls: 0,
   atlas_bindings: 0};
@@ -1352,7 +1354,12 @@ function imageFigure(r, patch) {
   const describe = present ? describeButton(shaOfUrl(r.main_image_original_url), r.slug,
                                             r.main_image_original_url) : "";
   const box = describe ? `<div class="describe-host">${content}${describe}</div>` : content;
-  return `<figure${gray}>${box}<figcaption><span>${label}</span></figcaption>${stateActions(r)}</figure>`;
+  const move = present && DATA.alternative_editor && r.main_image_original_url
+    ? `<div class="patch-actions"><button type="button" data-photo-move="${
+      esc(shaOfUrl(r.main_image_original_url))}" data-slug="${esc(r.slug)}" data-from="main"
+      data-to="additional" title="Move the main photo to the additional photos">→ additional</button></div>`
+    : "";
+  return `<figure${gray}>${box}<figcaption><span>${label}</span></figcaption>${move}${stateActions(r)}</figure>`;
 }
 function stateActions(r) {
   // A record with no `state` comes from a server with no wine states. It gets no button.
@@ -1505,8 +1512,13 @@ function patchEditor(r) {
       src="${src}" loading="lazy" alt="${esc(r.name || r.slug)} — patch">${badge}</a>${
       describeButton(shaOfUrl(r._patch_url), r.slug, r._patch_url)}`;
     state = '<span class="patch">patched</span>';
+    // Plan 95: the patch moves to the additional photos.
+    const move = DATA.alternative_editor ? `<div class="patch-actions"><button type="button"
+      data-photo-move="${esc(shaOfUrl(r._patch_url))}" data-slug="${esc(r.slug)}"
+      data-from="patched" data-to="additional"
+      title="Move the patch to the additional photos">→ additional</button></div>` : "";
     actions = `<div class="patch-actions single"><button class="clear" type="button"
-      data-patch-remove>Clear</button></div>`;
+      data-patch-remove>Clear</button></div>${move}`;
   } else if (configured) {
     content = '<button class="noimage" type="button" data-patch-pick>Drop an image here<br><span>or choose a file</span></button>';
   } else {
@@ -1558,7 +1570,11 @@ function alternativeEditor(r) {
     const buttons = ALTERNATIVE_TYPES.map(([type, code, name]) => `<button type="button"
       class="${photo.type === type ? "on" : ""}" data-alternative-type="${type}"
       data-sha="${esc(key)}" title="${name}" ${turning || removing ? "disabled" : ""}>${code}</button>`).join("");
-    return `<div class="alternative-item">${card}<div class="alternative-types">${buttons}</div></div>`;
+    // Plan 95: a move to main or to patched swaps with the photo of that role.
+    const moves = lab ? `<div class="alternative-types">${PHOTO_MOVES.map(([to, code, name]) =>
+      `<button type="button" data-photo-move="${esc(key)}" data-slug="${esc(r.slug)}"
+      data-from="additional" data-to="${to}" title="${name}" ${turning || removing ? "disabled" : ""}>${code}</button>`).join("")}</div>` : "";
+    return `<div class="alternative-item">${card}<div class="alternative-types">${buttons}</div>${moves}</div>`;
   }).join("");
   // The lab server stores a new photo at once: a candidate is an upload that runs.
   const additions = pending.adds.map(item => `<div class="alternative-card pending"
@@ -1763,7 +1779,10 @@ function atlasBindingEditor(r) {
              title="Confirm the match: the source becomes manual" ${busy ? "disabled" : ""}>approve</button>` : ""}
        <button class="copy" type="button" data-copy="${esc(product)}">copy</button>
        <a class="open-product" href="${esc(productUrl)}" target="_blank"
-          rel="noopener">open</a>${sharedCodeBadge(r, "atlas", product)}</span>`;
+          rel="noopener">open</a>${DATA.alternative_editor
+         ? `<button class="copy" type="button" data-atlas-load="${esc(product)}"
+             data-slug="${esc(r.slug)}" title="Plan 95: PDF and crop in Atlas, then add the largest photos as additional photos">load photos</button>`
+         : ""}${sharedCodeBadge(r, "atlas", product)}</span>`;
   }).join("")}</div>` : '<div class="barcode-empty">not bound</div>';
   const entry = editing ? `<div class="barcode-new">
     <input class="atlas-binding-input" type="text" maxlength="36" autocomplete="off"
@@ -2867,7 +2886,9 @@ async function openValidation() {
 // The form `Add wine` (plan 20). The lab server sends `wine_editor`; the review tool
 // does not, so its page has no button. A closed form keeps its values until a save.
 // `slugTyped`: a person typed the slug, so the name no longer fills it.
-const WINE_FORM = {file: null, url: "", busy: false, slugTyped: false};
+// `atlas`: the Atlas mode of plan 95, {url, photos} of atlas_import.js, or null. The
+// Atlas mode needs no main image: the photos become additional photos.
+const WINE_FORM = {file: null, url: "", busy: false, slugTyped: false, atlas: null};
 const WINE_FIELDS = ["name", "producer", "beverage_type_code", "category", "color",
   "region", "grapes", "description"];
 const WINE_REQUIRED = ["name", "producer", "beverage_type_code", "category", "region"];
@@ -2909,7 +2930,7 @@ function missingWineFields(values) {
   for (const field of WINE_REQUIRED) {
     if (!values[field]) missing.push(WINE_FIELD_LABELS[field]);
   }
-  if (!WINE_FORM.file) missing.push("Main image");
+  if (!WINE_FORM.file && !WINE_FORM.atlas) missing.push("Main image");
   return missing;
 }
 function updateWineForm() {
@@ -2929,6 +2950,15 @@ function showWineError(text) {
   $("#wine-error").hidden = !text;
 }
 function renderWineImage() {
+  $("#wine-drop").disabled = !!WINE_FORM.atlas;
+  if (WINE_FORM.atlas) {
+    const photos = WINE_FORM.atlas.photos;
+    $("#wine-drop").innerHTML = `<span class="wine-form-atlas">${photos.map(photo =>
+      `<img src="${esc(photo.thumbnail_url)}" alt="media ${esc(photo.media_id)}">`).join("")}</span>
+      <span>No main image. ${photos.length} Atlas photos become additional photos; choose
+      the main photo on the card.</span>`;
+    return;
+  }
   $("#wine-drop").innerHTML = WINE_FORM.file
     ? `<img src="${esc(WINE_FORM.url)}" alt=""><span>${esc(WINE_FORM.file.name)} · drop or choose another file</span>`
     : 'Drop an image here<br><span>or choose a file: JPEG, PNG, or WebP up to 20 MB</span>';
@@ -2953,6 +2983,8 @@ function clearWineForm() {
   WINE_FORM.file = null;
   WINE_FORM.url = "";
   WINE_FORM.slugTyped = false;
+  WINE_FORM.atlas = null;
+  $("#wine-title").textContent = "Add wine";
   showWineError("");
   renderWineImage();
 }
@@ -2982,6 +3014,27 @@ function openWineForm() {
   $("#wine-slug").focus();
 }
 function closeWineForm() { $("#wine-modal").hidden = true; }
+// Plan 95: atlas_import.js opens the form with the values of an Atlas product. The slug
+// follows the name, as for a typed name.
+function openAtlasWineForm(atlas) {
+  clearWineForm();
+  WINE_FORM.atlas = {url: atlas.url, photos: atlas.photos};
+  $("#wine-title").textContent = "Add wine from Atlas";
+  openWineForm();
+  const form = $("#wine-form");
+  for (const [field, value] of Object.entries(atlas.prefill || {})) {
+    const element = form.elements[field];
+    if (!element || !value) continue;
+    // A select keeps a value of Atlas that no catalogue wine has yet.
+    if (element.tagName === "SELECT" && ![...element.options].some(o => o.value === value)) {
+      element.add(new Option(value));
+    }
+    element.value = value;
+  }
+  $("#wine-slug").value = slugOfName(form.elements.name.value);
+  renderWineImage();
+  updateWineForm();
+}
 function fileBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -2996,9 +3049,12 @@ async function saveWine() {
   updateWineForm();
   showWineError("");
   try {
-    const body = {...wineFormValues(), image_name: WINE_FORM.file.name,
-      image: await fileBase64(WINE_FORM.file)};
-    const response = await fetch("/api/wine", {
+    const atlas = WINE_FORM.atlas;
+    const body = atlas
+      ? {...wineFormValues(), url: atlas.url, media_ids: atlas.photos.map(p => p.media_id)}
+      : {...wineFormValues(), image_name: WINE_FORM.file.name,
+         image: await fileBase64(WINE_FORM.file)};
+    const response = await fetch(atlas ? "/api/atlas-import/create" : "/api/wine", {
       method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)
     });
     const out = await response.json().catch(() => ({}));
@@ -3226,6 +3282,40 @@ async function setAlternativeType(slug, sha256, type) {
     renderCard(slug);
   }
 }
+// Plan 95: the moves of one photo between the additional photos and the main photo or the
+// patch. A move to main or to patched swaps: the old photo of that role becomes an
+// additional photo.
+const PHOTO_MOVES = [
+  ["main", "→M", "Make this the main photo. The old main photo becomes an additional photo."],
+  ["patched", "→P", "Make this the patch. The old patch becomes an additional photo."]];
+const BUSY_MOVES = new Set();
+async function movePhoto(slug, sha256, from, to) {
+  const record = DATA.records.find(r => r.slug === slug);
+  if (!record || !sha256 || BUSY_MOVES.has(slug)) return;
+  BUSY_MOVES.add(slug);
+  try {
+    const response = await fetch("/api/dataset-photo-move", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, sha256, from, to})
+    });
+    const out = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(out.error || response.status);
+    if (out.record) Object.assign(record, out.record);
+    if (out.warning) alert(out.warning);
+  } catch (error) {
+    alert(`Cannot move the photo: ${error.message}`);
+  } finally {
+    BUSY_MOVES.delete(slug);
+    renderCard(slug);
+  }
+}
+$("#list").addEventListener("click", event => {
+  const button = event.target.closest("button[data-photo-move]");
+  if (button) {
+    movePhoto(button.dataset.slug, button.dataset.photoMove, button.dataset.from,
+              button.dataset.to);
+  }
+});
 // The button ↻ at the bottom left of an alternative photo of the lab server (owner
 // message of 2026-09-27T00:51:44+0300). SAM3 gets the photo again with no cache read; the
 // fresh answer replaces the cache record, and the server cuts the photo again from it. A
@@ -4496,7 +4586,10 @@ $("#list").addEventListener("drop", event => {
     event.preventDefault();
     alternative.classList.remove("drag");
     const editor = alternative.closest(".alternative-editor");
-    stageAlternativeFiles(editor.dataset.slug, [...event.dataTransfer.files]);
+    // A drop from the Codex app names a local image; `drop.js` makes a File of it.
+    LocalDrop.files(event.dataTransfer)
+      .then(files => stageAlternativeFiles(editor.dataset.slug, files))
+      .catch(error => alert(`The image is not added: ${error.message}`));
     return;
   }
   const surface = event.target.closest("[data-patch-drop]");
@@ -4504,7 +4597,9 @@ $("#list").addEventListener("drop", event => {
   event.preventDefault();
   surface.classList.remove("drag");
   const editor = surface.closest(".patch-editor");
-  stagePatchFile(editor.dataset.slug, [...event.dataTransfer.files][0]);
+  LocalDrop.files(event.dataTransfer)
+    .then(files => stagePatchFile(editor.dataset.slug, files[0]))
+    .catch(error => alert(`The patch is not added: ${error.message}`));
 });
 $("#list").addEventListener("toggle", event => {
   const details = event.target;
@@ -4554,7 +4649,10 @@ $("#validation-x").addEventListener("click", closeValidation);
 $("#validation-modal").addEventListener("click", event => {
   if (event.target === $("#validation-modal")) closeValidation();
 });
-$("#add-wine").addEventListener("click", openWineForm);
+$("#add-wine").addEventListener("click", () => {
+  if (WINE_FORM.atlas) clearWineForm();
+  openWineForm();
+});
 $("#wine-x").addEventListener("click", closeWineForm);
 $("#wine-cancel").addEventListener("click", closeWineForm);
 $("#wine-save").addEventListener("click", saveWine);
@@ -4586,7 +4684,9 @@ $("#wine-drop").addEventListener("dragleave", () => $("#wine-drop").classList.re
 $("#wine-drop").addEventListener("drop", event => {
   event.preventDefault();
   $("#wine-drop").classList.remove("over");
-  stageWineImage(event.dataTransfer.files[0]);
+  LocalDrop.files(event.dataTransfer)
+    .then(files => stageWineImage(files[0]))
+    .catch(error => showWineError(`The image is not added: ${error.message}`));
 });
 $("#describe-x").addEventListener("click", closeDescribe);
 $("#describe-cancel").addEventListener("click", closeDescribe);
@@ -4665,6 +4765,7 @@ window.addEventListener("beforeunload", event => {
     DATA.records = (DATA.records || []).map((r, index) => ({...r, _index: index}));
     WINE_INDEX = DATA.new_wine_index || {};
     $("#add-wine").hidden = !wineFormOn();
+    $("#atlas-new").hidden = !wineFormOn();
     $("#validate-dataset").hidden = !validationOn();
     // The review tool sends no comments, so its filter `Show` has no `with comments`.
     if (!commentsOn()) $('#filter option[value="comments"]').remove();
@@ -4696,5 +4797,6 @@ window.addEventListener("beforeunload", event => {
 })();
 </script>
 <script src="/website-import.js"></script>
+<script src="/atlas-import.js"></script>
 </body>
 </html>

@@ -700,7 +700,7 @@ def apply_steps(image, steps, box, processed, dis_segmenter=None):
 
 def png_bytes(image):
     buffer = io.BytesIO()
-    image.save(buffer, "PNG")
+    image.save(buffer, "PNG", compress_level=derive.PNG_COMPRESS_LEVEL)
     return buffer.getvalue()
 
 

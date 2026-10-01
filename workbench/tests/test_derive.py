@@ -416,5 +416,41 @@ class Sam3InstancesTest(unittest.TestCase):
         self.assertEqual([(f["texts"], f["return_masks"]) for f in forms],
                          [("bottle neck", "false"), (derive.SAM3_TEXTS, "true")])
 
+
+class PngLevelTest(unittest.TestCase):
+    def config(self, text):
+        handle, path = tempfile.mkstemp(suffix=".yaml")
+        with os.fdopen(handle, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        self.addCleanup(os.unlink, path)
+        return path
+
+    def test_the_key_gives_the_level_and_no_key_gives_the_default(self):
+        self.assertEqual(derive.configured_png_level(path=self.config("png_compress_level: 2\n")), 2)
+        self.assertEqual(derive.configured_png_level(path=self.config("rootdir: /x\n")), -1)
+        self.assertEqual(derive.configured_png_level(path="/nonexistent/config.yaml"), -1)
+
+    def test_a_level_outside_minus_1_to_9_is_an_error(self):
+        for value in ("10", "-2", "true", "fast"):
+            with self.assertRaises(ValueError):
+                derive.configured_png_level(path=self.config("png_compress_level: %s\n" % value))
+
+    def test_the_sam3_copy_uses_the_level_and_keeps_the_pixels(self):
+        image = Image.effect_noise((400, 300), 40).convert("RGB")
+        client = derive.Sam3Client("http://sam3.invalid")
+        old = derive.PNG_COMPRESS_LEVEL
+        self.addCleanup(setattr, derive, "PNG_COMPRESS_LEVEL", old)
+        copies = {}
+        for level in (-1, 0, 2):
+            derive.PNG_COMPRESS_LEVEL = level
+            copies[level] = client._sent_copy(image)[0]
+        plain = io.BytesIO()
+        image.save(plain, "PNG")
+        self.assertEqual(copies[-1], plain.getvalue())
+        self.assertEqual(len({copies[0], copies[2], copies[-1]}), 3)
+        for data in copies.values():
+            self.assertEqual(Image.open(io.BytesIO(data)).tobytes(), image.tobytes())
+
+
 if __name__ == "__main__":
     unittest.main()

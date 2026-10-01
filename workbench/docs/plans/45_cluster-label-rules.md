@@ -325,3 +325,29 @@ keeps the renames in `repairs`. 132 of the 382 stored descriptions have the key 
 They do not change: the owner chose "No, new answers only", because a changed description
 makes the rule of its cluster stale. Stage 3 of the watcher sends the same request as stage
 1 of this plan, so both share the records of `data/cache/`.
+
+Note of 2026-09-30 (drink-atlas-workspace-e4 [70a894], owner message of
+2026-09-30T15:55:42+0300 and the answers of 16:00:14): stage 2 also sends the label pictures
+of the additional photos. The owner chose "Stage 2 only" and "Trim extras to fit".
+
+- `extra_pictures` takes the `label` cut of a `full_front` or `full_back` photo. A full
+  photo with no label cut gives nothing. It takes the `label` cut of a `label_front` or
+  `label_back` close-up, else the original close-up.
+- Each additional picture follows the picture of its card, with the caption
+  `CAPTION_EXTRA` («Card A, one more picture (the back label of card A in another photo of
+  the same wine):»). `RULES_PROMPT` does not change, because a test compares it with
+  `scripts/cluster_rules.py`.
+- Each card keeps its own picture. The additional pictures go in one at a time across the
+  cards (`extra_order`): the first picture of each card, then the second one. They stop at
+  `rules_max_images`, and when the prompt estimate at `rules_max_side` passes the budget.
+  Only then do the pictures of the cards get smaller.
+- The rule record holds `extra_pictures` (slug -> the sent pictures) and `extras_dropped`.
+  The `evidence` of a question lists every sent picture of the card.
+- `inputs_sha` holds the additional pictures, `CAPTION_EXTRA`, `rules_max_images`,
+  `rules_context_tokens`, and `rules_max_tokens` only for a cluster with an additional
+  picture. So the other rules stay current. A dry run on 2026-09-30:
+  `gx10-siglip2-so400m-patch16-naflex-p512-rot5` has 23 of 208 clusters with additional
+  pictures (166 pictures, 3 clusters above 20 images); 25 rules to build (4 before).
+  `gx10-siglip2-so400m-patch16-naflex-p256`: 20 of 177; 21 rules to build (1 before).
+- Stage 1 still describes the main image alone. The similarity build of `clusters.py`
+  already used the additional photos before this note.

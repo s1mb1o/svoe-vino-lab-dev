@@ -2,6 +2,385 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-10-01 — The 9B VLM gives 0 to each option of a vintage question when the printed year is not an option
+
+Source: owner message of 2026-10-01T10:21:00+0300. Run
+`2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5-seg-official-real-photos`, error
+"VlmError: the option scores of q2 total 0; expected 100". Evidence:
+`work/run-214152Z-check/` (probe scripts, replies, the label picture, the cache record).
+
+- One photo of the run has the error: q-000030, `golubitskoe-estate-chardonnay`,
+  `93.97_28-08-2026_16-02-48.webp`. The rule of cluster `5bc897dbce33` has two
+  questions. q1 asks about the reserve mark. q2 asks about the vintage year, with the
+  options `other`, `2022`, and `not visible`.
+- The label prints `TAMAGNE / 2024`. `qwen3.5-9b-nvfp4` (thinking off, temperature 0)
+  gave q1 `no` 100. It gave 0 to each option of q2.
+- `checked_option_scores` refuses the whole answer when one question does not total 100
+  (plan 92). So the valid q1 answer was lost too, and the base order stayed. The base
+  order had the expected card at rank 2: 0.8547 against 0.8565.
+- The answer was valid JSON, so `label_rules.ask` stored it in the model cache
+  (`data/cache/models/qwen3.5-9b-nvfp4/09/0940d64769db….json`). A run with caches on
+  reads this answer again.
+- Eight direct probes used the same label picture (sha256 `d760ab26…`, equal to the cached
+  request). The probes did not read or write the model cache.
+  - The original request: q2 0, 0, 0 again. The fault repeats.
+  - q2 without the sentence `Answer "other" if no year is printed.`: 0, 0, 0.
+  - q2 with `Answer "other" if the label shows another year or no year.`: 0, 0, 0.
+  - The option order `2022`, `other`, `not visible`, with and without that sentence:
+    0, 0, 0.
+  - `json_object` with no JSON Schema: 0, 0, 0. So the schema grammar is not the cause.
+  - q2 with `If the label prints a year that is not an option, give "other" 100.`:
+    `other` 100.
+  - The option `another year` in place of `other`: `another year` 100.
+- Conclusion: for this photo, the model does not use a bare `other` for a printed year
+  that no option lists. An explicit instruction, or an option name that states the
+  meaning, gives a valid answer. Only one photo was tested. The effect of such a prompt
+  change on the other questions is not measured.
+- With q2 `other` 100, the decision scores are 0.9047 for the expected card, 0.8658,
+  and 0.8565. With q2 left out and q1 alone, they are 0.9047, 0.8565, and 0.8408. In both
+  cases the expected card goes to rank 1.
+- The re-rank of `gx10-siglip2-so400m-patch16-naflex-p512-rot5` uses 172 rules with 240
+  scoreable questions. 20 of these questions are vintage questions. Each of them can get
+  this answer when a photo shows a vintage that no option lists.
+- Of the 208 clusters, 33 `verdict` rules (67 cards) have no scoreable question, and 3
+  rules hold an error (11 cards). Plan 92 sends no VLM call for these 36 clusters.
+- `matcher/rerank.py` (prod) still uses the modes `sheet` and `verdict`. Its
+  `compared_answer` maps a printed year that no card expects to `other`. So the prod
+  re-rank does not have this fault. The prod cascade uses `window: 10` and the clusters
+  of `gx10-siglip2-so400m-patch16-naflex-p512`. This lab pipeline uses window 5 and the
+  p512-rot5 clusters. So this run does not measure the prod re-rank.
+
+Other findings of the same run:
+
+- Three rules of the p512-rot5 rules file hold an error of 2026-09-29T20:17:06: HTTP 403
+  `AccessDenied.Unpurchased` from `qwencloud-qwen3.8-max`. The clusters `b10964f03878`
+  (Raevskoe Genezis, 2 cards), `d49910d67d5b` (Denisov, 2 cards), and `86fe817475dd`
+  (Balaklava, 7 cards) get no re-rank. This is the value `error: 3` in `run.json`. In this
+  run, q-000008, q-000021, and q-000022 met the trigger in these clusters. All three were
+  hits from the base order.
+- The positive label of q-000063 is wrong. The photo shows `Терруар Вторая линия` with
+  the name `Вечерница`. The expected card
+  `usadba-divnomorskoe-yuzhnyy-les-merlo-krasnoe-suhoe-137` shows `Южный Лес` of the same
+  line. The catalogue has no card for `Вечерница`.
+- The negative photo q-000062 shows the front label of `skalistyj-bereg-shepot-czvetov`
+  (`Шёпот цветов`, yellow flowers). The photo cuts off the lower part of the label. The
+  negative label is correct only when the bottle is another variant. The owner must check
+  it.
+- The re-rank moved the expected card from rank 2 to rank 1 for q-000079, q-000083, and
+  q-000084. It moved no expected card down.
+- The SAM3 step of q-000002 to q-000005 took 210 s to 213 s (00:41:57 to 00:45:28). The
+  call before them took 3 s. Later groups of three or four calls took 30 s to 58 s. No
+  other lab run was active. `GPU_TASKS.md` records a GPU load of 96 % from another job at
+  00:05. The cause is not confirmed. The latency values of this run are not a speed
+  measure.
+- No code was decoded in the 84 photos. Three earlier barcode runs on
+  `official-real-photos` decoded no code either.
+
+## 2026-10-01 — Atlas image parts for a preview, and two modals of the Dataset page
+
+Source: owner message of 2026-10-01T08:21:51+0300 (a preview in the dialog `Load photos
+from Atlas`).
+
+- Drink Atlas Core serves five image parts of an asset: `content` (the stored original),
+  `thumbnail` (JPEG, 512 px), `display` (WebP; `max_dimension` 256 to 4096, default 1600;
+  no enlargement), `crop`, and `crop/thumbnail` (`drink-atlas-core`: `app.py`,
+  `read_contracts.py`). The web UI on 8157 serves them at `/api/v1/assets/<id>/<part>`.
+- Measured for the media 47321 to 47323 (JPEG originals, 1652 × 2338, 146 KB to 501 KB):
+  `content` and `thumbnail` 4 ms to 8 ms; the first `display` 0.18 s to 0.55 s (WebP,
+  34 KB to 241 KB).
+- A photo of `GET /api/atlas-import/photos` holds `thumbnail_url` alone. Its media is
+  `thumbnail_id(asset)`, so `display` and `content` of that media show the image of the
+  tile. `atlas_import.download` selects the imported part by the crop and the orientation
+  of the asset. So for an asset with a crop or a confirmed orientation, the preview can
+  differ from the imported file.
+- The modals of `dataset.html` all have the z-index 50. The modal that comes later in the
+  page is on top. `atlas_import.js` appended its dialog after `#image-preview-modal`, so a
+  preview from the dialog was below the dialog.
+- The inline script of `dataset.html` adds its `keydown` listener before
+  `atlas_import.js` adds its own listener. For an open preview, the first listener calls
+  `preventDefault` on Escape. A later listener can read `event.defaultPrevented`.
+- Playwright mobile emulation (`isMobile: true`) at 390 px gives the Dataset page a layout
+  width of 530 px. A click on `Import` then fails: "`.validation-actions` intercepts
+  pointer events". `elementFromPoint` at the centre of the button finds the button. A
+  plain 390 px viewport has no such error.
+
+## 2026-10-01 — 360° renders of a reconstructed bottle against turntable photos
+
+Source: owner message of about 2026-10-01T08:30:00+0300.
+Report: `docs/reports/zrotation-reconstruction-2026-10-01.md`. One wine
+(`winemaker-selection`), 72 renders of `tools/bottle_rotation/reconstruction`, 33 turntable
+photos, six SigLIP2 entries.
+
+- The best render follows the real turn (about 11° to 12° for each photo) for NaFlex p256,
+  p512, p1024 and fixed 384, 512. The back photos match the yaws near 180°: the models see
+  the reconstructed back label. Fixed 256 follows the turn less well.
+- The back views gain +0.096 to +0.163 of mean cosine (0.66–0.75 to 0.77–0.85). The front
+  views gain +0.02 to +0.06: the reconstruction shows the 2020 front, the photos the 2025
+  front.
+- The renders also raise the cosine of the catalogue images of other wines: +0.040 to
+  +0.073 on average, +0.098 to +0.167 at the 95th percentile, up to +0.31. Most of the top
+  5 % comes from the side renders (50° to 130°, 230° to 310°: mostly dark glass). So 72
+  renders of one wine can attract photos of other wines in an index.
+- The optimistic rank 1 (only this wine has renders) rises from 7–13 to 14–33 of 33 photos.
+  A false-match test with photos of other wines is the next check; it is not done.
+- The catalogue cut is the 2019 edition, the reconstruction the 2020 edition, and the
+  photos the 2025 edition of the same wine.
+
+## 2026-10-01 — minicpm-v-4.6 compared with qwen3.5-9b-nvfp4
+
+Source: owner message of 2026-10-01T00:11:00+0300; owner answers of 00:16:00.
+Report: `docs/reports/minicpm-vs-qwen35-9b-2026-10-01.md`. 100 catalogue images for the
+three description stages; three lab runs on `my` (2479 queries) for the cluster re-rank.
+
+- `minicpm-v-4.6` (1.3 B, llama.cpp) is not a drop-in replacement for `qwen3.5-9b-nvfp4` in
+  any of the four VLM tasks. It is faster for each call: p50 1.7 to 6 times.
+- With `response_format` `json_object`, minicpm answers are not limited to valid JSON and
+  do not keep to the enums of the prompt: stage 1 gave 0/100 valid answers, stage 3 gave
+  16/100. qwen gave 100/100 and 99/100.
+- With a strict `json_schema`, minicpm answers are valid (stage 2: 85/100; the other 15
+  loop to `max_tokens` 8192, about 92 s each). The class values are nearly constant
+  (`front`, `["front_label", "back_label"]` for each image).
+- minicpm reads Latin label text well and Cyrillic label text badly: `КOKVP` for `КОКУР`,
+  `БРИТ` for `БРЮТ`, `ВУТЯЛКАХ` for `БУТЫЛКАХ`. Catalogue name words found in the stage 2
+  texts: 40% against 68% for qwen (85 images with two valid answers).
+- A JSON Schema fixes the keys, not arithmetic. In the re-rank, 619 of 707 minicpm answers
+  failed the check "the option scores total 100" (203 totals of 0). R@1: base 81.26%,
+  qwen re-rank 83.13% (46 fixes, 11 breaks), minicpm re-rank 81.10% (1 fix, 4 breaks).
+- vLLM refuses a JSON Schema with `uniqueItems` (`Grammar error: Unimplemented keys`).
+  llama.cpp accepts it but does not enforce it.
+
+## 2026-10-01 — SigLIP2 and a bottle that turns about its vertical axis
+
+Source: owner messages of about 2026-09-30T23:56:00+0300 and 2026-10-01T00:10:00+0300.
+Report: `docs/reports/zrotation-similarity-2026-10-01.md`. One wine (`winemaker-selection`),
+33 turntable photos, six SigLIP2 entries.
+
+- The cosine to the catalogue cut follows the side of the bottle that faces the camera:
+  0.88 to 0.90 at the front view, 0.59 to 0.79 when the back label is in view.
+- Near the front view, the curve is flat: about 35° of the turn changes the cosine by 0.007
+  to 0.033. The in-plane rotation of 2026-09-29 cost 0.05 to 0.13 at 5°.
+- The wine keeps rank 1 only while the front label is in view: photos 5 to 15 (about ±60°)
+  for five entries, fewer for fixed 256. The catalogue has no back image of this wine.
+- The photographed bottle has a newer label (2025, green band) than the catalogue render
+  (2019, gold band). So the absolute values are low for this wine.
+- 13 copies from `tools/bottle_rotation` (z axis, −30° to +30°) raise the mean cosine by
+  +0.011 to +0.029 and add 0 to 4 photos of rank 1 (an optimistic count). They cannot
+  replace a back image.
+- The gain of the copies is not a better match. On the photos where the wine is not the
+  nearest wine (mostly back views), the gain is as large as on the matching photos, or
+  larger (4 of 6 entries). It comes from the maximum over 13 similar vectors, so each other
+  wine would gain the same from its own copies. A fair test needs copies for each wine and
+  an automatic calibration.
+- For the NaFlex entries, the best copy follows the real turn (+20° to +30° before the front
+  view, −10° to −30° after it). The fixed entries do not follow it (fixed 256 chooses +25°
+  for most photos). The cause is not known.
+- The presets of `tools/bottle_rotation` are other wines. A new cut needs a calibration: a
+  label polygon, and an `ink` layer for a print on the neck. `BottleRotator(image,
+  calibration)` takes the calibration as a dict.
+
+## 2026-09-30 — Drink Atlas: the three product-page actions and the photo groups (plan 95)
+
+Source: plan 95 research. The file and line facts are in `docs/plans/95_new-from-atlas.md`.
+
+- The three buttons of the Atlas product page send one `POST /api/enrichment/requests` to
+  the Node server of the web UI (8157) for each media. The server forwards the request to
+  the coordinator (50175) with its own admin token. A client needs no token. It needs a
+  loopback `Host`, `Origin: http://<host>`, and `X-Atlas-Action: enrichment`.
+- The profiles of the buttons: `image-auto-clean-v1`, `pdf-embedded-images-v7`, and
+  `image-barcode-v3`. `drink-atlas-webui/COMMANDS.md` still names the old barcode profiles
+  `image-barcode-zxing-v2` and `image-barcode-sam3-verify-v2`. The coordinator refuses
+  `image-barcode-zxing-v2` with HTTP 422.
+- The product page does not poll. `GET /api/enrichment/tasks?product_uuid=&media_id=` gives
+  the tasks of one media. The `media_id` column of a task row is usually null, but the
+  filter works.
+- The barcode button covers only the images that the page had when it loaded. A careful
+  run waits for the clean and the PDF tasks, and reads the product again.
+- The clean task creates a new image only when it removes separator bands. Else it
+  stores a crop rectangle, and `GET /api/v1/assets/<id>/crop` renders the PNG.
+- The barcode task never confirms a GTIN. `confirmed_gtins` holds only the GTINs that a
+  person confirmed.
+- The Atlas grouping `Сгруппировать похожие` runs in the browser only. It uses a 32 x 32
+  RGB fingerprint of the thumbnail, with the outer white removed for an original. The
+  limits are 0.07 for the distance and 4 % for the aspect ratio. A directional crop match
+  covers an original and a PDF image. The Python port gives the expected groups for
+  `ffd04eec-…`.
+- On 2026-09-30 at 22:10 only the `frame-gx10-*` enrichment workers ran. They handle only
+  `image-frame-classification-v1`. The tasks of the three buttons stay `queued` until a
+  general worker runs.
+
+## 2026-09-30 — The shared gx10 gateway serves the Android SigLIP2 Base 224 model
+
+Source: owner messages of about 13:40 to 14:02. The isolated endpoint on port 5997 of the
+entry of 2026-09-28 was temporary. Its start command is not in the repository. The owner
+installed `vit_base_patch16_siglip_224.v2_webli` on the shared gateway
+`http://192.168.86.14:18081`. The gateway description states: timm eval transform, short
+side to 248 px bicubic, centre 224 by 224 crop (`crop_pct` 0.9), float32, 768 values
+normalized to length 1, no text tower. The gateway cold start is about 5 s.
+
+Parity check: 32 stored prepared images of each Android index (seed 20260930) went to
+`POST /v1/embeddings` of the gateway. The cosine against the stored vectors was 0.99999988
+to 1.00000012 for `android-siglip2-base-224-sam3-white`, and 1.00000000 to 1.00000012 for
+`android-siglip2-base-224-dis-white`. Thus the gateway gives the same vectors as the
+isolated endpoint. The stored vectors stay valid.
+
+Before the move, the gateway lacked no other gx10 model of `config.yaml` or of
+`matcher/config.yaml`. `litert-community/DIS-ISNet-LiteRT` runs in the build process.
+`google/siglip2-so400m-patch16-naflex` of the `local` entry runs on the Mac. The
+`qwencloud-*` and `dashscope-*` VLM entries use cloud APIs.
+
+## 2026-09-30 — The time of a lab query goes to full-resolution Pillow work on the Mac
+
+Source: owner message of about 13:50. Run
+`2026-09-30T104855Z-lab-siglip2-p512-rot5-seg-official-real-photos`: 84 queries, 1 worker,
+wall time 57.2 s. The sum of the query latencies is 57.15 s, so the run is serial and the
+query steps give all of the time. All 84 SAM3 answers were cache hits: no SAM3 request
+went to gx10.
+
+Step times from `trace` in `results.jsonl`:
+
+| Step | Median ms | Share of the sum |
+|---|---|---|
+| `input` | 87 | 13.2 % |
+| `sam3-package` (cache hit) | 433 | 63.2 % |
+| `view` | 77 | 12.3 % |
+| `embed` (gx10, the only GPU step) | 48 | 7.4 % |
+| `search` (166,464 rows × 1152) | 24 | 3.6 % |
+| `score` | 2 | 0.3 % |
+
+A profile on this Mac (Apple M2 Max, Python 3.14, Pillow 12.2.0, libwebp 1.6.0) with
+`CachedSam3` and 20 photos of the set gave the same `cuts_of` time: 437 ms. The parts of
+`sam3-package` on a cache hit:
+
+| Part | Median ms |
+|---|---|
+| `Sam3Client._sent_copy`: LANCZOS resize 12 MP → 1152×1536 | 106 |
+| `Sam3Client._sent_copy`: PNG encode of that copy (default level) | 108 |
+| `derive.refine_mask`: two `GaussianBlur` on the 12 MP mask | 161 |
+| mask resize to 12 MP, `point`, `getbbox`, `putalpha`, crop | about 48 |
+| `main_scene.rank` (sharpness crops) | 11 |
+| `model_cache.lookup` (`json.load`) | 2 |
+
+Facts:
+
+- The cache key of a SAM3 call is the SHA-256 of the PNG bytes that would be sent. So
+  a cache hit still pays the resize and the PNG encode: about 215 ms of 433 ms.
+- The Pillow `GaussianBlur` time depends on the pixel count, not on the sigma. The sigma
+  of 20 px and the sigma of 1 px each took about 75 ms on a 12 MP `L` image.
+- No PNG encode of the pipeline passes `compress_level`. Pillow then sends -1 to zlib,
+  which means level 6. The Pillow of this Mac uses zlib-ng. The decoded pixels are the
+  same at every level. The medians of 12 photos:
+
+  | Level | SAM3 copy 1152×1536 | Model input about 450×1024 |
+  |---|---|---|
+  | default (6) | 109 ms, 2549 KB | 24 ms, 614 KB |
+  | 0 | 20 ms, 5187 KB | 5 ms, 1327 KB |
+  | 1 | 53 ms, 3738 KB | 14 ms, 865 KB |
+  | 2 | 64 ms, 2662 KB | 18 ms, 632 KB |
+  | 3 | 72 ms, 2601 KB | 22 ms, 622 KB |
+
+- A new level for the SAM3 copy changes its bytes, so every record of
+  `data/cache/models/sam3/` misses once. A new level in `embeddings.png_bytes` does not
+  make the index stale: `embeddings.embedding_hash` does not cover the bytes of the model
+  input. A new level in `derive.png_bytes` changes the derivative SHA-256, so it makes
+  every catalogue item stale.
+- Follow-up (owner messages of about 15:05 and 15:14): the top-level key
+  `png_compress_level` of `config.yaml` now sets the level of the SAM3 copy and of the
+  model input. The lab sets 2. Without the key, -1 stays, and the bytes are the same as
+  before: a check of 5 photos gave the same SAM3 copy bytes and 5 cache hits.
+- All 84 query photos are WebP, 12-16 MP. `derive.open_image` decodes them on the CPU
+  with Pillow (libwebp, through `WebPAnimDecoder`): about 90 ms each. No step of this
+  path decodes or encodes JPEG. The SAM3 copy and the model input are PNG. The `view`
+  step includes a PNG encode of the model input of about 24 ms (600-900 KB).
+- The PNG decode on the gx10 gateway side is inside the 48 ms of `embed`. This test did
+  not measure it separately.
+- A change in `derive.refine_mask` also changes the catalogue derivatives, because
+  `derive.derive_image` uses the same function. A query-side change alone can make the
+  query cut differ from the catalogue cut.
+
+## 2026-09-30 — A catalogue render can show a wrong glass colour
+
+Source: owner message of about 12:07. The owner saw that the catalogue picture of
+`denisov_rubin_klaret_krasnaya_strelka` is a render: a flat label on a drawn bottle. The
+render shows bright, saturated red glass, because the name of the wine is «Рубин». The
+real bottle is dark. The two real photos of `official-real-photos` (`48.98_…`, `96.96_…`)
+show a dark bottle; a dark red tint is visible only at the neck against the light.
+
+Effect on the whole-photo vector. The rival `denisov_pino_noir_klaret` has the same label
+design; only the grape text differs («Пино Нуар» against «Рубин»). Its render has light
+glass.
+
+| Run | `48.98_…` | `96.96_…` |
+|---|---|---|
+| `2026-09-28T011441Z-lab-siglip2-p512-as-is-official-real-photos` | rank 2, 0.7922 against 0.7934 of the rival | rank 4, 0.7226 against 0.7300 |
+| `2026-09-30T090046Z-lab-siglip2-p512-rot5-seg-official-real-photos` | rank 2, 0.8192 against 0.8340 | rank 1, 0.8128 |
+| `2026-09-29T223748Z-lab-matcher-match-k20-official-real-photos` | rank 2, 0.7916 against 0.7949 | rank 1, 0.7621 |
+
+The margins are small. The test below with a recoloured render confirms the effect for
+the close-up photo alone.
+
+Other facts:
+
+- The rules prompt of `pipeline/label_rules.py` already states that some catalogue
+  pictures are drawings, and rule 1a forbids questions about the glass. The VLM re-rank
+  text `_short()` of `matcher/rerank.py` does not send the key `bottle`.
+- The VLM label description of this render repeats the error: "The bottle is made of dark
+  red glass" (`image_label_description` id 531).
+- The label view is not a free fix. On `my` (2,217 queries), F1 top-1 was 0.8475 for
+  `barcode-rerank-siglip2-512-crop` and 0.8298 for `barcode-rerank-siglip2-512-crop-label`
+  (runs of 2026-09-27T011711Z and 2026-09-27T011951Z).
+- For siblings with the same label design, the colour of the liquid can be the only
+  visual difference. A colour-blind vector can lose this cue.
+- The number of renders with a wrong glass colour in the catalogue is not known.
+
+### Test: a recoloured render as `main_patched` (owner choice of about 12:30)
+
+The glass colour on white, median of the body above the label:
+
+| Image | RGB | Saturation | Value |
+|---|---|---|---|
+| Render `83a86b7c2cb7` | (73, 2, 2) | 0.97 | 0.29 |
+| Real photo `96.96_…`, body | (47, 23, 26) | 0.51 | 0.18 |
+| Recoloured `a54d476e6aee` | (45, 23, 25) | 0.49 | 0.18 |
+
+So the render error is mainly the saturation. The brightness error is smaller.
+
+The SAM3 label box of the render (420, 1300, 916, 1814) is about 10 px larger on each
+side than the label paper (428, 1310, 907, 1803). A recolour that protects the SAM3 box
+leaves red bands of glass above and below the label. A rule "inside the box change only
+the dark pixels" is also wrong: it changes the dark cores of the red scribbles and the
+edges of the text. The exact rectangle came from the rows and columns with more than
+40 % bright paper pixels.
+
+Result of `siglip2-p512` (whole photo, no crop) on `official-real-photos`, 63 positive
+photos:
+
+| Query | Before | After |
+|---|---|---|
+| q-000021 `48.98_…` (close-up) | rank 2, 0.7922 against 0.7934 of `denisov_pino_noir_klaret` | rank 1, 0.7966 |
+| q-000022 `96.96_…` (a scene with many bottles) | rank 5, 0.7226 | rank 5, 0.7227 |
+
+No other query changed. recall@1 0.8095 → 0.8254. For the close-up, the glass colour
+decided the rank. For the scene photo, the whole-photo vector hardly depends on the glass
+of one bottle. A before/after test with the SAM3 cut (`siglip2-p512-seg`) was not made:
+no earlier run existed, and the build removed the old vector file.
+
+## 2026-09-30 — Scored evidence fixes the Aratti false re-rank
+
+- The live call used `barcode-rerank-siglip2-512-crop` and the original photo with
+  SHA-256 `2773e71ae7a1953b0a72e816253792c32fbd6d9e16fbb024d896228c04590048`.
+- The base embedding scores were 0.8286 for `aratti-kaberne-po-belomu-1` (2024) and
+  0.8082 for `aratti-kaberne-po-belomu` (2023).
+- The VLM scored the sugar-level options as `semi-dry` 0, `other` 0, and `not visible`
+  100. It did not select a card.
+- Code gave both cards evidence score 0. The decision scores stayed 0.8286 and 0.8082.
+  The 2024 card stayed at rank 1.
+- The earlier direct verdict selected the 2023 card because it interpreted missing
+  `ПОЛУСУХОЕ` text as positive evidence. The scored contract represents the same
+  observation as neutral evidence.
+- The `/recognize` response has a fourth round. Its step `VLM evidence re-rank` holds the
+  option scores, base scores, evidence scores, decision scores, and decision weight.
+- The VLM call took 2,531 ms in this check. The complete recognition had no error.
+
 ## 2026-09-29 — The corrected p512 rule of the Aratti cluster `2d33f12d0b3e`
 
 - The owner edited both names at 22:34 (plan 89): `… 2023` for

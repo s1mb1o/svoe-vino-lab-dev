@@ -2,6 +2,65 @@
 
 Manual test cases. Run them after a change to the tool.
 
+## Drops from the Codex desktop app
+
+1. Run `python3 -m unittest discover -s tests -p test_local_images.py`.
+   Eight tests MUST pass.
+2. Open `/dataset`, press `Add wine`, and drag a generated image out of the Codex app
+   onto the image area. The preview MUST show the image. Close the form with no save.
+3. Open `/recognize` and drag a generated image out of the Codex app onto the page.
+   The page MUST show the photo and start the recognition.
+4. Open `/testset` in a scratch set and drag a generated image out of the Codex app onto
+   the sidebar. A new unlabelled photo MUST appear in the sidebar.
+5. Open `/api/local-image?address=file:///etc/hosts`. The answer MUST be HTTP 403 or
+   HTTP 400 with a JSON error, and MUST NOT hold the file content.
+6. Drag an image file out of the Finder onto the same areas. The result MUST be the
+   same as before this change.
+
+## Competitor test-set import
+
+1. Run `python3 tests/test_import_competitor_testsets.py -v`.
+   All tests MUST pass.
+2. Run the importer with `--prepare-only`.
+   It MUST report 0 failed files and 0 adapter failures for the 2026-09-30 snapshot.
+3. Open `data/competitor-testsets/source-inventory.json`.
+   It MUST list each inspected repository with `imported` or `not_imported`.
+4. Open one `manifest.jsonl` in a scored set.
+   Each row MUST contain the source repository, commit, path, original label, tier
+   reason, SHA-256, and dimensions.
+5. Search every scored manifest for a slug that is absent from `wine_catalog`.
+   The search MUST return no row.
+6. Open `data/competitor-testsets/overlap.json`.
+   It MUST expose shared image bytes instead of counting them as independent evidence.
+7. Run `siglip2-p512-rot5-seg` on one scored set and one provisional set.
+   Each run MUST use its own set name.
+8. Run the pipeline on an all-unusable set such as `abobamakers-provisional`.
+   It MUST return `gives no query`.
+   It MUST NOT score the photos as verified no-match rows.
+
+## Competitor pipeline adaptations
+
+1. Run `python3 tests/test_competitor_steps.py -q`.
+   Ten tests MUST pass.
+2. Run `python3 tests/test_pipelines.py -q` and `python3 tests/test_barcode.py -q`.
+   The parser MUST accept all ten `competitor-*` configurations.
+   The barcode twin test MUST ignore these research configurations.
+3. Inspect the five atomic configurations in `config.yaml`.
+   Each configuration MUST contain exactly one action.
+4. Run `competitor-kofeinix-ocr` on `competitors-scored-common`.
+   The 2026-09-30 snapshot MUST have 50 positive rows, 27 no-match rows, and zero errors.
+5. Run `competitor-qacen-reject` on the same set.
+   The saved result MUST reject a no-match row with an empty candidate list.
+   Its trace MUST retain the rejected candidates.
+6. Run `competitor-danya-full` after installing `requirements-local.txt`.
+   The trace MUST contain secondary retrieval, OCR, SIFT, and reject actions.
+7. Compare every run with the base by query ID.
+   Do not compare runs that have a different query manifest.
+8. Read
+   `docs/reports/2026-09-30_competitor-pipeline-ablation.md`.
+   Treat each configuration as an adaptation, not as a reproduction of a competitor
+   result.
+
 ## Labelling tool — `scripts/review_server.py`
 
 Start the tool with `python3 scripts/review_server.py --no-browser`.
@@ -100,6 +159,7 @@ Use `H=http://127.0.0.1:8154` for the command line cases.
 | 15c | Click a candidate photo of a wine that has no catalogue bottle photo | Only the candidate photo is shown. The layout does not break. |
 | 15d | Click the catalogue bottle in the table | The large view opens at the first photo of that wine. |
 | 15e | On a wide monitor, open the large view | The two images stand next to each other in the middle. They do not sit at the two edges. |
+| 15p | Open `/testset?set=my&filter=untouched#cantiani-semisweet/01_agent.jpg` | The status pill at the top states `kimi proposes positive (86%)`. The pill is on top of the two images. No image hides a part of it. |
 | 15f | Press `Right`, then `Left` | The candidate photo changes inside the wine. The catalogue bottle does not change. The caption counts `photo N of M`. |
 | 15g | Press `Right` at the last photo, `Left` at the first | The view stays at the same photo. |
 | 15h | Press `Down`, then `Up` | The wine changes. The catalogue bottle changes. The view opens at the first photo of that wine. The table behind scrolls to the same wine. |
@@ -610,7 +670,7 @@ Use `N=gx10-siglip2-so400m-patch16-naflex-p256` and `H=http://127.0.0.1:8168`. R
 
 | # | Case | Expected result |
 |---|---|---|
-| LR1 | `python3 tests/test_label_rules.py` and `python3 tests/test_build_label_rules.py` | 19 and 13 tests `OK`. |
+| LR1 | `python3 -m unittest discover -s tests -p 'test_label_rules.py'` and the same for `test_build_label_rules.py` | 27 and 17 tests `OK`. |
 | LR2 | `python3 pipeline/build_label_rules.py --name $N --dry-run` | A JSON summary with `todo` for each stage and `calls: 0`. `cluster-rules.json` does not change. |
 | LR3 | `python3 pipeline/build_label_rules.py --name $N --cluster vinodelnya-vedernikov-fantom-5050-krasnostop-zolotovskiy-krasnoe-suhoe-145` | At most 3 stage 1 calls and 1 stage 2 call. The rule `a29e59138ed4` has mode `sheet` and a valid ratio question with 30/70, 50/50, and 70/30. The alcohol question is not valid. |
 | LR4 | Run LR3 again | `todo: 0` for both stages, no call. |
@@ -621,20 +681,27 @@ Use `N=gx10-siglip2-so400m-patch16-naflex-p256` and `H=http://127.0.0.1:8168`. R
 | LR7 | Set `rules_max_images: 2` in the block `label_rules`, then run LR3 with `--stage rules --force` (the limit is not an input of a current rule) | The rule gets the error `the cluster needs 3 images, one for each card, and label_rules.rules_max_images is 2 …`, and no call goes out. Set the value back to 20. |
 | LR8 | A service that accepts fewer images than a cluster needs | The run stops with exit status 2. The message names the vlm entry, `at most N image(s)`, `--limit-mm-per-prompt`, and `label_rules.rules_max_images`. |
 | LR9 | Put an unknown key, for example `size: 2`, into the block `label_rules` | `error: label_rules: unknown key: size`, exit status 2. Remove the key. |
+| LR12 | `python3 pipeline/build_label_rules.py --name $N --cluster denisov_rubin_klaret_krasnaya_strelka --stage rules` (cluster `d49910d67d5b`: 2 cards, 2 additional photos) | One stage 2 call with 4 images. The prompt holds `Card A, one more picture (the … label of card A in another photo of the same wine):` after the picture of the card. The rule record holds `extra_pictures` with 2 pictures and `extras_dropped: []`. The `evidence` of a question lists 2 or 3 SHA-256 values for the card with the additional photos. |
+| LR13 | `python3 pipeline/build_label_rules.py --name $N --cluster leto-kollekcziya-leta-2020-suhoe-beloe --stage rules` (cluster `6407ae522515`: 5 cards, 30 additional photos) | One stage 2 call with 20 images: 5 card pictures and 15 additional pictures, one at a time across the cards. `extras_dropped` lists the other 15 pictures. No error. |
+| LR14 | `python3 pipeline/build_label_rules.py --name $N --dry-run` after LR12 and LR13 | Only the clusters with additional photos that are not built yet are in `rules.todo`. A cluster with no additional photo keeps its rule. |
+| LR15 | `python3 pipeline/build_label_rules.py --name gx10-siglip2-so400m-patch16-naflex-p256 --cluster alma-valley-shardone-rezerv-beloe-suhoe-14` (manual cluster `3889ddfd95bb`: two «Шардоне Резерв» cards with the tags `2021` and `2020`, plan 97) | One stage 2 call. The prompt holds `Vintage tags. The reviewer tagged the vintage of some cards: Card A: 2021; Card B: 2020.` before `Answer with one JSON object:`. The rule has mode `sheet` and a valid vintage question with the answers 2021 and 2020. |
+| LR16 | Add the tag `no_year` to one card of a cluster whose other card has a year tag, then run LR2 | The cluster is in `rules.todo`. After a build, its prompt holds `TAG_NOTE` and then `VINTAGE_NOTE`, and the vintage question keeps `other` for the `no_year` card. A cluster with no vintage tag is not in `rules.todo`. |
 
 ## The cluster re-rank — the key `rerank` of a pipeline
 
-Read [plan 48](docs/plans/48_cluster-rerank.md). A run that calls the VLM needs a row in
+Read [plan 48](docs/plans/48_cluster-rerank.md) and
+[plan 92](docs/plans/92_rerank-option-scores.md). A run that calls the VLM needs a row in
 `/Users/ashmelev/Admin/GPU_TASKS.md` first.
 
 | # | Case | Expected result |
 |---|---|---|
-| RR1 | `python3 tests/test_cluster_rerank.py` | 19 tests `OK` (one test skips when `svoe-vino-matcher` is not next to the lab). |
+| RR1 | `python3 tests/test_cluster_rerank.py` | 27 tests `OK` (one test skips when `svoe-vino-matcher` is not next to the lab). |
 | RR2 | Open the dialog `Run>` of `$H/testset` | `rerank-siglip2-512-crop` and `barcode-rerank-siglip2-512-crop` are in the list with no error. |
-| RR3 | `~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py --name rerank-siglip2-512-crop --set my --limit 20 --label smoke` | The run ends with exit status 0. In `results.jsonl`, a photo whose rank-1 card and another card of its cluster stand in the top 5 holds `explain` with `kind: cluster_rules` on those cards, and its trace ends with the step `cluster_rules`. |
-| RR4 | Open that run on `$H/runs` | A row with the step shows the box `VLM`: the mode, the cluster, the time or `from the cache`, the answers, and the scores. |
+| RR3 | `~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py --name rerank-siglip2-512-crop --set my --limit 20 --label smoke` | The run ends with exit status 0. In `results.jsonl`, a photo whose rank-1 card and another card of its cluster stand in the top 5 holds `explain` with `kind: cluster_rules` on those cards. The explanation and the final trace step hold `option_scores`, `base_scores`, `evidence_scores`, `decision_scores`, and `decision_weight`. |
+| RR4 | Open that run on `$H/runs`, or run the same photo on `$H/recognize` | The step `VLM evidence re-rank` shows each option score and the embedding, evidence, and decision scores of each candidate. It states whether code changed the order. |
 | RR5 | Run RR3 again | The VLM answers come from the cache (`cached: true`); the ranks do not change. |
 | RR6 | Put `rules: missing` into the key `rerank` of a pipeline | The pipeline gets the error `rerank.rules names missing, which is not an entry of the key embeddings`; the other pipelines stay. Set the value back. |
+| RR7 | On `$H/recognize`, use `barcode-rerank-siglip2-512-crop` for `data/testsets/images/2773e71ae7a1953b0a72e816253792c32fbd6d9e16fbb024d896228c04590048.webp` | The VLM gives `not visible` 100 for the sugar-level question. Both evidence scores are 0. The decision scores stay 0.8286 and 0.8082. `aratti-kaberne-po-belomu-1` stays at rank 1. |
 
 ## The header state of the lab pages — `localStorage`
 
@@ -1399,6 +1466,7 @@ cannot run; RN6, RN8, and RN10 use the 2 old mock runs.
 | RN27 | Open `$H/runs#2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my`, press `load more` once, click the query photo of `q-000117`, then of `q-000014` | The header of the popup has a line under the path: `slug: abrau-dyurso-imperial-kyuve-pino-nuar-rozovoe-bryut-125` for the positive photo, `forbidden slug: abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13` for the negative photo. The label is grey, the slug is monospace. At 390 px the popup has no horizontal scroll (2026-09-26). |
 | RN28 | Open `$H/runs#2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my/abrau-dyurso-imperial-kyuve-pino-nuar-rozovoe-bryut-125/01_conf095.jpg` in a new tab | The run loads and the step popup of `q-000117` opens, with no click. The URL keeps the photo path. The row is on page 2, so the arrow keys do not move the popup. Escape closes the popup and the URL is `#2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my` again (2026-09-27). |
 | RN29 | On the same run, click the query photo of `q-000001`, then press the arrow key down | The URL becomes `#<run>/a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135/01_manual.jpg`, then `…/02_manual.jpg`. A new tab with that URL opens the popup of `q-000002`, and the arrow keys work, because the row is on page 1. `#<run>/no-such-slug/x.jpg` opens the run with no popup and no page error (2026-09-27). |
+| RN30 | Open `$H/runs?configuration=siglip2-p512-rot5-crop-seg#2026-09-29T084930Z-lab-siglip2-p512-rot5-crop-seg-my-plan82/abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13/02_conf095.jpg`, open `04 Search, space full` | Each hit shows its index image at the angle of the hit: #1 `full · full_front · 180°` upside down, #3 `full · main · 270°` with the neck to the right. The card `05 Score` shows the catalogue images as before. On `…-siglip2-p256-crop-my/abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13/06_manual.jpg`, hit #1 is the `full_back` image of `shato-taman-kaberne` with no angle in the detail line (2026-09-30). |
 
 ## The remote configuration — `pipeline/remote_run.py`
 
@@ -1474,6 +1542,25 @@ test set into `data/catalog/catalog.sqlite3`.
 | NT10 | Press `Esc`; open the dialog again and click outside the panel | The dialog closes each time. While it is open, the arrow keys do not move the page. |
 | NT11 | Repeat NT5 in the dark theme | The dialog is dark. Each text is readable. |
 | NT12 | Run the set of NT8 with `Run>` on `/testset` | The run takes each photo of the set; since plan 51 no slug is excluded. Its R@1 is the share of the misses of `$R` that the pipeline answers correctly now. |
+
+## The button `Re-run` of the Runs page
+
+Owner message of 2026-10-01T10:20:00+0300. `$H` is `http://127.0.0.1:8168`. `$R` is
+`2026-09-30T205232Z-lab-siglip2-p512-rot5-seg-competitors`. `$P` is
+`2026-09-30T204250Z-lab-siglip2-p512-rot5-seg-my` (a run with `repeat_of`). RR5 starts a
+real job: it sends each photo of the set to the pipeline and writes a new run directory.
+
+| # | Case | Expected result |
+|---|---|---|
+| RR1 | Open `$H/runs#$R` | The button `Re-run` stands after `New testset…` and is on. Its tooltip names the pipeline `siglip2-p512-rot5-seg` and the test set `competitors`. |
+| RR2 | Open a run whose column `pipeline` is not a pipeline of `config.yaml`, or whose column `testset` holds `—` | The button is off. Its tooltip states the reason. |
+| RR3 | Press `Re-run` on `$R` | The dialog `Re-run` shows `test set competitors: N photo(s) now; the run had 157`, `limit none: every photo`, `workers 1`, `use caches yes`, no device field, and `Start` on. |
+| RR4 | Press `Re-run` on `$P` | The note states that `$P` asked again the failed photos of `2026-09-30T170938Z-…-my`, and that `Re-run` asks every photo of the set. |
+| RR5 | Press `Start` in RR3 | The dialog closes. The line after the button reads `Re-run of siglip2-p512-rot5-seg: K of N photo(s)…` and counts up. At the end the new run opens, and the line reads `… done: <new run id> — recall@1 …`. The new run is in the table with the same pipeline and test set. |
+| RR6 | Open the dialog while a run of the pipeline runs | The error `A run of <pipeline> runs now: PID …`. `Start` is off. |
+| RR7 | Open the dialog for a run of a pipeline with `device_ip` | The field `Device IPv4` holds the stored address. Enter in the field starts the run; the POST body holds `device_ip`. |
+| RR8 | Press `Esc`; open the dialog again and click outside the panel; open it again and press `Cancel` | The dialog closes each time. No job starts. |
+| RR9 | Repeat RR3 in the dark theme and at a width of 390 px | The dialog is dark and fits the width. Each text is readable. |
 
 ## The pipelines — the key `pipeline` and `pipeline/pipelines.py`
 
@@ -1562,6 +1649,21 @@ Read [plan 53](docs/plans/53_disable-barcode-checkbox.md). `$H` is `http://127.0
 | NB8 | Open `$H/runs` | The run of NB5 has the tag `no barcode` after its id, with a title. The runs of NB6 and NB7 have no tag. |
 | NB9 | `curl -s -X POST $H/api/run-jobs -d '{"configuration":"barcode-siglip2-p256","set":"my","use_barcode":"no"}'` | HTTP 400 with `use_barcode MUST be true or false`. No job starts. |
 | NB10 | Switch the system to dark mode and repeat NB3, NB4, and NB8 | The checkbox, its greyed state, and the tag follow the dark theme. On 2026-09-26 at 19:53, NB3, NB4, NB8, and the request bodies of NB5 to NB7 passed in a browser check with `POST /api/run-jobs` intercepted, in light and dark mode. |
+
+## The filter and the box `Parallel matching` of the dialog `Run>` — `testset.html`
+
+Owner messages of about 2026-09-30T12:02 and 12:06, answers of about 12:07. `$H` is
+`http://127.0.0.1:8168`. PM4 and PM5 start real runs; use `first N queries` 3.
+
+| # | Case | Expected result |
+|---|---|---|
+| PM1 | Open `$H/testset?set=official-real-photos` and click `Run>` | Under the line of the queries: the boxes `whole photo`, `crop`, `seg` (all checked), the field `words of the name`, and `92 of 92 shown` (2026-09-30). The box `Parallel matching` stands after `Disable barcode fast path`, unchecked. |
+| PM2 | Uncheck `whole photo`, then type `p512 rot5` | `48 of 92 shown`, then `5 of 92 shown`: `siglip2-p512-rot5-crop`, `siglip2-p512-rot5-seg`, `barcode-siglip2-p512-rot5-crop`, `barcode-siglip2-p512-rot5-seg`, `barcode-rerank-siglip2-p512-rot5-seg`. A chosen pipeline that the filter hides is no longer chosen. |
+| PM3 | Uncheck `crop` and `seg` too | `0 of 92 shown`, the line `No pipeline matches the filter.`, and `Start` is disabled. |
+| PM4 | Check `Parallel matching`, check two pipelines, `first N queries` 3 | The list has checkboxes. The button reads `Start 2 runs`. `Start` sends two `POST /api/run-jobs`, closes the dialog, and the header shows two job rows that run at the same time. |
+| PM5 | PM4 with one pipeline that runs already (start it first with the box off) | The dialog stays open with `Started 1 of 2. <name>: a run of <name> runs: PID …`. The started pipeline is greyed with `running`. |
+| PM6 | Close the dialog, reload the page, click `Run>` | The boxes, the words, `Parallel matching`, and the last chosen pipelines come back (browser storage). With the box off, only the first one is chosen. |
+| PM7 | At 390 px width in dark mode, repeat PM1 | The filter row wraps, the panel has no horizontal scroll, and the colours follow the dark theme. On 2026-09-30 at 12:12, PM1 to PM7 passed in Playwright with each `POST /api/run-jobs` answered by the test (no run started). |
 
 ## The key `rebuild_embeddings_on_run` — `pipeline/rebuild_on_run.py`
 
@@ -2419,6 +2521,17 @@ in `data/catalog/catalog.sqlite3`; CN6 gives the card its catalogue name again.
 | CN6 | Press `reset` and confirm | The card shows the catalogue name. The tag `name patched` and the button `reset` go away. `name_patched` is NULL. |
 | CN7 | Press `edit`, then Esc | The field closes. The name does not change. |
 
+## PNG level of the model images
+
+Run from `workbench/`. PL1 and PL2 are read-only. PL3 sends the photos of one test set to
+SAM3 once, because a new level misses each SAM3 cache record.
+
+| # | Case | Expected result |
+|---|---|---|
+| PL1 | `python3 -m unittest discover -s tests -p 'test_derive.py'` and `-p 'test_embeddings.py'` | `PngLevelTest` and `test_png_bytes_uses_the_configured_level_and_keeps_the_pixels` pass: the key gives the level, no key gives -1, a value outside -1 to 9 is an error, the pixels stay the same. |
+| PL2 | `python3 -c "import sys; sys.path.insert(0, 'pipeline'); import derive; print(derive.PNG_COMPRESS_LEVEL)"` | `2` with the lab `config.yaml`. `-1` when the key `png_compress_level` is absent. |
+| PL3 | Run `siglip2-p512-rot5-seg` on `official-real-photos` two times | The first run asks SAM3 for each photo (`cached: false` in the step `sam3-package`). In the second run each step `sam3-package` is `cached: true` and its median is about 45 ms lower than the 433 ms of run `2026-09-30T104855Z-lab-siglip2-p512-rot5-seg-official-real-photos`. |
+
 ## The restart script of the lab server — `scripts/restart_lab_server.sh`
 
 Run from any directory. RS1 and RS2 are read-only. RS3 and RS4 restart 8168; the restart
@@ -2462,6 +2575,32 @@ photo.
 | DD5 | Open the large view, drag the left and the right photo to the Finder desktop | The left gives the original catalogue image; the right gives the test photo. |
 | DD6 | Press `Box`, then drag on the right photo | The drag draws the box. No file drag starts. |
 | DD7 | Drag a card onto another wine row; drag a catalogue image onto a row; drop a catalogue image on the header | The card moves (`POST /api/testset-move`). The catalogue image imports nothing, and the page stays in the tab. |
+
+## New from Atlas and photo moves — plan 95
+
+Read [plan 95](docs/plans/95_new-from-atlas.md). Use `H=http://127.0.0.1:8168`. NA1 and
+NA2 change nothing. NA3 sends Atlas requests of the product. NA5 creates a wine in the lab
+database. NA6 to NA8 change the photo rows of one wine. NA11, NA12, and NA15 add photos to
+wines.
+
+| # | Case | Expected result |
+|---|---|---|
+| NA1 | `python3 -m unittest discover -s tests -p 'test_atlas_import.py'` and `-p 'test_photo_moves.py'` | 14 and 7 tests OK. |
+| NA2 | `curl -s "$H/api/atlas-import/photos?url=http%3A%2F%2F127.0.0.1%3A8157%2Fproducts%2Fffd04eec-572b-42fe-b06f-83e29f86c329"` | 3 photos. Each `group` holds 2 originals and 1 PDF image. |
+| NA3 | On `/dataset`, press `New from Atlas`, paste `http://127.0.0.1:8157/products/a3b3d69b-71e5-4f38-9a76-411c6203c873`, press `Prepare` | The product name and a table of steps show. A second `Prepare` sends no new Atlas request: `sent now` shows on no row. |
+| NA4 | Wait until each step is terminal (an Atlas enrichment worker must run) | The stage 2 rows `Распознать штрихкоды` appear, also for the new PDF images and published crops. The photos show; `Create` is on. |
+| NA5 | Press `Create` (or `Create now`), fill Region, press `Save` | The form title is `Add wine from Atlas`, with name, producer, Category, and Color prefilled and no main image. The new card has no main photo, one additional photo for each shown photo, and the Atlas product with the source `manual`. |
+| NA6 | On that card, press `→M` of an additional photo | The photo is the main photo. The old main photo, if any, is the last additional photo (`FF`). |
+| NA7 | Press `→P` of another additional photo, then `→ additional` under the patch | The photo is the patch, then an additional photo again. The patch slot is empty. |
+| NA8 | Press `→ additional` under the main photo | The card has no main photo. The photo is the last additional photo. |
+| NA9 | Open the dialog and the card with the system theme dark, then light, and at a width of 390 px | Both are readable in both themes. The page has no horizontal scroll. |
+| NA10 | On a card with an Atlas product, press `load photos` | The title is `Load photos from Atlas: <name>`. The URL is filled in. No step table shows, and no Atlas task is queued. The photos show at once. The buttons are `Reload` and `Import`. |
+| NA11 | Press `Import` | The dialog closes at once. The box in the lower right corner shows the wine with `Importing N photos…`, then `N photos added to the wine.` The card shows the new additional photos. The main photo and the patch do not change. The line leaves the box after 8 s. |
+| NA12 | Press `load photos` of the same product again, then `Import` | The box shows `0 photos added to the wine. N were not added: …`: each photo is on the wine already. The line stays until its `×`. |
+| NA13 | Press `load photos`, then click a photo of the dialog | The image preview opens above the dialog. It shows `Atlas photo · <Atlas product name>`, `media <id>`, the pixel size with `(preview of W × H)` when Atlas made the image smaller (1600 px at most), and `open raw image` (the original). The arrows are off. The page path stays `/dataset`. |
+| NA14 | Press Escape, then Escape again | The first Escape closes the preview, and the dialog stays open. The second Escape closes the dialog. |
+| NA15 | Press `Import` on one wine, then at once `load photos` and `Import` on a second wine | The box shows the first wine with `Importing N photos…` and the second wine with `N photos wait for the import.` The second import starts when the first import ends. |
+| NA16 | Reload the page while an import waits or runs | The browser asks before it leaves the page. |
 
 ## The option `Repeat last failed` of the dialog `Run>` — plan 96
 

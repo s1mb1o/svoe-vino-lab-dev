@@ -598,9 +598,38 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
         raise embeddings.ConfigError("the pipeline %s names the embedding %s, which "
                                      "config.yaml does not hold"
                                      % (pipeline.name, pipeline.embedding))
-    backend = build_backend(entry, settings.db_path, top_k, name=pipeline.name,
+    competitor = getattr(pipeline, "competitor", None)
+    retrieval_top_k = max(top_k, competitor["pool"]) if competitor is not None else top_k
+    backend = build_backend(entry, settings.db_path, retrieval_top_k, name=pipeline.name,
                             views=getattr(pipeline, "views", None), scene_selection=True)
     backend.spec["workers"] = getattr(pipeline, "workers", 1)
+    if competitor is not None:
+        import competitor_steps  # noqa: E402  (optional OCR/SIFT wrapper)
+        secondary = None
+        secondary_options = competitor.get("secondary")
+        if secondary_options is not None:
+            try:
+                secondary_entry = settings.find(secondary_options["embedding"])
+            except KeyError as exc:
+                raise embeddings.ConfigError(
+                    "the pipeline %s names the secondary embedding %s, which config.yaml "
+                    "does not hold" % (pipeline.name, secondary_options["embedding"])
+                ) from exc
+            secondary = build_backend(
+                secondary_entry, settings.db_path, secondary_options["top_k"],
+                name=pipeline.name + "-secondary", views=secondary_options.get("views"),
+                scene_selection=True,
+            )
+        sift = None
+        if any(action["action"] == "sift_rerank" for action in competitor["actions"]):
+            sift = competitor_steps.SiftReranker(embeddings.entry_dir(
+                settings.db_path, pipeline.embedding))
+        backend = competitor_steps.CompetitorSteps(
+            backend, competitor, competitor_steps.load_catalog(settings.db_path), top_k,
+            secondary=secondary, sift=sift,
+            cache_dir=os.path.join(os.path.dirname(settings.db_path), "..", "..", "work",
+                                   "competitor-ocr-cache"),
+        )
     if getattr(pipeline, "rerank", None) is not None:
         import cluster_rerank  # noqa: E402  (plan 48, on demand)
         backend = cluster_rerank.ClusterRerank(backend, pipeline.rerank, pipeline.embedding,

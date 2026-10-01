@@ -4,9 +4,10 @@
 row of `results.jsonl`. The page draws them as the step view of `drink-atlas-recognize`.
 
 - An embedding run (`backend.kind: embedding`): the photo, the SAM3 cuts, the steps of
-  each view, the embedding, the search in the space of each view, and the score. A row of
-  a run after plan 41 holds the key `trace` (`embedding_run.Trace`): the time and the
-  result of each step. The images are made again from the SAM3 answers of
+  each view, the embedding, the search in the space of each view, the score, and the VLM
+  evidence re-rank when it acts. A row of a run after plan 41 holds the key `trace`
+  (`embedding_run.Trace`): the time and the result of each step. The images are made
+  again from the SAM3 answers of
   `data/cache/models/sam3/` with the code of the run, and each model input is checked against
   the sha256 of the trace. An older row has no time.
 - A matcher run (`svoe-vino-matcher`): the photo, the model inputs of the matcher, the
@@ -47,7 +48,8 @@ NO_SPACE_LIST = ("The run kept no top list of this space. The list shows the can
 PHOTO_NOTE = "the photo as it came"
 EMBEDDING_ROUNDS = (PHOTO_NOTE,
                     "the model inputs: the SAM3 cuts and the steps of each view",
-                    "the embedding and the search: each view searches its own space")
+                    "the embedding and the search: each view searches its own space",
+                    "the VLM supplies evidence scores; code decides the final order")
 MATCHER_ROUNDS = (PHOTO_NOTE,
                   "the model inputs of the matcher, made again with the matcher code",
                   "the matcher request",
@@ -262,7 +264,7 @@ def embedding_rounds(ctx):
     first["settings"] = {"photo": row.get("image_path"), "sha256": row.get("image_sha256")}
     if photo.error:
         first["notes"].append(photo.error)
-    rounds = [[first], [], []]
+    rounds = [[first], [], [], []]
 
     # A pipeline with the key `barcode` decodes the photo first. A code of `wine_code`
     # answers the photo, and no embedding model runs: its candidates hold the key `code`.
@@ -413,9 +415,12 @@ def embedding_rounds(ctx):
                 key = (hit.get("sha256"), view)
                 if (present.get(key) == hit.get("embedding_hash")
                         and embeddings.image_name(*key) in names):
-                    image = _item_url(name, hit["sha256"], view, hit["embedding_hash"])
+                    image = _item_image(ctx.db_path, name, hit, view)
+                detail = "%s · %s" % (view, hit.get("type"))
+                if hit.get("angle") is not None:
+                    detail += " · %d°" % hit["angle"]
                 items.append(lists.item(hit.get("slug"), rank, hit.get("cosine"),
-                                        image=image, detail="%s · %s" % (view, hit.get("type"))))
+                                        image=image, detail=detail))
             part["lists"] = [{"title": "the top %d of the space %s" % (len(items), view),
                               "note": None, "items": items}]
             part["result"] = {k: v for k, v in part["result"].items() if k != "top"}
@@ -435,6 +440,49 @@ def embedding_rounds(ctx):
     score["lists"] = [answer_list(lists, row, "the answer", detail=lambda c: " · ".join(
         "%s %s" % (view, _cos(c.get(view))) for view in searched) or None)]
     rounds[2].append(score)
+
+    record = records.get(("cluster_rules", None))
+    if record:
+        result = record.get("out") if isinstance(record.get("out"), dict) else {}
+        part = step("cluster_rules", "VLM evidence re-rank", "VLM",
+                    (spec.get("rerank") or {}).get("vlm"), "option scores")
+        timed(part, record)
+        if result.get("error"):
+            part["notes"].append("The base order stays because the evidence call failed: %s"
+                                 % result["error"])
+        part["vlm"] = {
+            "mode": result.get("mode"), "cluster": result.get("cluster"),
+            "window": result.get("window") or [],
+            "questions": result.get("questions") or [],
+            "option_scores": result.get("option_scores") or {},
+            "base_scores": result.get("base_scores") or {},
+            "evidence_scores": result.get("evidence_scores") or {},
+            "decision_scores": result.get("decision_scores") or {},
+            "decision_weight": result.get("decision_weight"),
+            "ms": result.get("ms"), "cached": bool(result.get("cached")),
+            "error": result.get("error"), "changed": bool(result.get("changed")),
+        }
+
+        def decision_detail(candidate):
+            slug = candidate.get("slug")
+            if slug not in (result.get("window") or []):
+                return None
+            base = (result.get("base_scores") or {}).get(slug)
+            evidence = (result.get("evidence_scores") or {}).get(slug)
+            decision = (result.get("decision_scores") or {}).get(slug)
+            return "embedding %s · evidence %s · decision %s" % (
+                _cos(base), _cos(evidence), _cos(decision))
+
+        part["lists"] = [answer_list(lists, row, "the answer after the evidence decision",
+                                     detail=decision_detail)]
+        by_slug = {candidate.get("slug"): candidate for candidate in cands}
+        for item in part["lists"][0]["items"]:
+            candidate = by_slug.get(item["slug"]) or {}
+            explain = candidate.get("explain") if isinstance(candidate.get("explain"), dict) else {}
+            base_rank = explain.get("base_rank")
+            if base_rank is not None and candidate.get("rank") is not None:
+                item["moved"] = base_rank - candidate["rank"] or None
+        rounds[3].append(part)
     if not trace:
         ctx.notes.append(NO_TIME)
     return [(EMBEDDING_ROUNDS[i], steps) for i, steps in enumerate(rounds) if steps]
@@ -444,6 +492,25 @@ def _item_url(name, digest, view, embedding_hash):
     """Return the URL of the PNG of one catalogue item of the index of `name`."""
     import embedding_routes  # here alone: the URL of a prepared image
     return embedding_routes.image_url(name, digest, view, embedding_hash)
+
+
+def _item_image(db_path, name, hit, view):
+    """Return the image of one search hit: the URL of its prepared PNG. A hit of a rotation
+    entry (plan 82) at an angle other than 0° gets a data URI of that PNG, rotated as the
+    build rotates it. The index keeps the 0° PNG alone, and the build rotates before the
+    last `resize`, so the pixels can differ a little from the model input."""
+    url = _item_url(name, hit["sha256"], view, hit["embedding_hash"])
+    angle = hit.get("angle") or 0
+    if not angle % 360:
+        return url
+    path = os.path.join(embeddings.entry_dir(db_path, name), embeddings.IMAGES,
+                        embeddings.image_name(hit["sha256"], view))
+    try:
+        image, _icc = derive.open_image(path)
+        rotated = embeddings.rotate_fixed_scale(image, angle, None, image.size)
+    except (OSError, ValueError):
+        return url
+    return png_uri(rotated, CUT_SIDE)
 
 
 # ---- the matcher run ----

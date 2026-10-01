@@ -7,6 +7,12 @@ Test data for the Svoe Vino wine scanner.
 - `dataset/test-1/` is an independently labelled 54-photo shop set from a public
   source repository. Read the
   [benchmark report](docs/reports/2026-09-29_test-1-dataset-benchmark.md).
+- `competitors-scored-common` is the deduplicated 77-photo comparison set for public
+  competitor architecture adaptations. `config.yaml` defines five one-action
+  `competitor-*` configurations and five complete adaptations. They use the common lab
+  catalogue and local substitute models. They do not reproduce private competitor
+  weights. Read the
+  [ablation report](docs/reports/2026-09-30_competitor-pipeline-ablation.md).
 - `scripts/` holds the five pipeline stages and the driver.
 - `work/` holds the state database, the downloaded candidates, and the logs. It is disposable.
 - `config.yaml` holds the paths that point out of this project.
@@ -282,8 +288,9 @@ lists the tags. The `+` button opens an input that suggests the tags of the page
 the save button adds the tag, and Esc cancels. The red `×` removes a tag after a
 confirmation. A tag is stored in lower case, with 1 to 64 letters, digits, `_`, `-`, `:`,
 or `.`, and no white space. The page writes through `POST` and `DELETE` of
-`/api/dataset-tag`. The pipeline does not read the tags yet. Read
-[plan 63](docs/plans/63_wine-tags.md).
+`/api/dataset-tag`. Stage 2 of the cluster label rules reads the vintage tags `2020`,
+`vintage:2020`, and `no_year` ([plan 97](docs/plans/97_vintage-tags-in-rules.md)). The
+rest of the pipeline does not read the tags. Read [plan 63](docs/plans/63_wine-tags.md).
 
 The column `wine_catalog.name_patched` (schema 032) holds the name that a person gives a
 card (owner message of 2026-09-29T22:00:54+0300). The column `name` keeps the value of the
@@ -349,6 +356,35 @@ A slug that the database holds already gets HTTP 409, and the dialog shows the e
 The card of a manual wine shows the slug with no link to vino-svoe.ru.
 `import_catalog.py` and `import_website.py` never remove a manual wine. The review tool
 shows no button. Read [plan 20](docs/plans/20_add-wine.md).
+
+The button `New from Atlas` of the Dataset page makes a wine from one Drink Atlas product.
+Paste the product URL, for example `http://127.0.0.1:8157/products/<uuid>`, and press
+`Prepare`. The dialog runs the three buttons of the Atlas product page through the Atlas
+web UI proxy: first `Удалить белые поля и полосы` and `Извлечь изображения из PDF`, then
+`Распознать штрихкоды`. It shows each task and checks again every 3 s. A queued task runs
+only while an Atlas enrichment worker runs. When each step is terminal, the dialog shows
+the best photo of each group of similar photos (the rule of the Atlas button
+`Сгруппировать похожие`). `Create` then opens the form `Add wine` prefilled from Atlas.
+`Create now` does the same at once, with the photos of that moment. The form needs no main
+image: each shown photo becomes an additional photo, and the wine gets a manual Atlas
+binding. Fill the missing fields, often Region, and press `Save`. Then choose the main
+photo on the card: `→M` of an additional photo makes it the main photo, and `→P` makes it
+the patch. `→ additional` under the main photo or the patch moves it back. A move to a
+role swaps the old photo of that role into the additional photos. Read
+[plan 95](docs/plans/95_new-from-atlas.md).
+
+A card with an Atlas product shows `load photos` in each row of `Atlas Core product`. The
+button opens the same dialog for that wine. It runs no Atlas step: it shows the photos
+that Atlas has now, the largest photo of each group of similar photos. `Import` adds them
+as additional photos of the wine. The main photo and the patch stay. A photo that the wine
+has already is not added again.
+
+A click on a photo of the dialog shows it in the image preview, above the dialog. Escape
+closes the preview, and the dialog stays open. `Import` closes the dialog at once. The page
+imports the photos in the background, one wine after another. A box in the lower right
+corner shows each import: waiting, importing, the count of added photos, or the error. So
+you can open the dialog of the next wine while an import runs. A reload of the page asks
+first while an import waits or runs.
 
 ```bash
 # later: compare wine_catalog with the live catalogue of vino-svoe.ru
@@ -420,6 +456,25 @@ Testset page writes to the rows. So the import refuses a set that holds a page e
 bytes the lab holds already, for example as a patch, keeps that file. `--source` names
 another directory of the sets. `import_testset.py --set <name> <dir>` imports one set.
 Read [plan 12](docs/plans/12_testsets-benchmark.md).
+
+Public competitor test sets use two evidence tiers.
+`<competitor>-scored` contains exact or verified labels.
+`<competitor>-provisional` contains development overlap, machine labels, ambiguous
+labels, or unresolved targets.
+The explicit-source importer writes a reproducible snapshot and imports it with the
+same test-set contract:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python scripts/import_competitor_testsets.py \
+  --repos-root /Volumes/T7_2TB/2026_LCT_Hackatons_10 \
+  --research-root /Volumes/T7_2TB/Projects-T7_2TB/2026_LCT_Hackatons/10-Сканер_российских_вин \
+  --db data/catalog/catalog.sqlite3 --out data/competitor-testsets
+```
+
+Do not combine the two tiers.
+Do not treat an unresolved slug as a no-match.
+Read [the procedure](docs/testing/competitor-testsets.md) and
+[the 2026-09-30 report](docs/reports/2026-09-30_competitor-testsets.md).
 
 The separately reviewed set `dataset/test-1/` has 54 public shop photos: 35 with a
 catalogue `wine_slug`, 13 confirmed no-match products, and 6 unresolved multi-product
@@ -893,7 +948,7 @@ python3 pipeline/build_label_rules.py --name <embedding> --force
 | Stage | One VLM call for | Input | Answer |
 |---|---|---|---|
 | 1, `describe` | each card of a cluster | the `package` cut of the effective main image (`main_patched`, else `main`), on white, scaled UP or down to a long side of 2048 pixels; no card data | the label description: the texts and the numbers with their place, the vintage, the colours, the design, the marks, the bottle |
-| 2, `rules` | each cluster | one image for each card: its `label` cut on white, scaled UP or down to 768 pixels (a card with no label cut sends its package cut); the card data; the descriptions without the key `bottle`; the note of the reviewer | the difference sheet (questions with the expected answer of each card), the rule text, and the groups that no feature separates |
+| 2, `rules` | each cluster | one image for each card: its `label` cut on white, scaled UP or down to 768 pixels (a card with no label cut sends its package cut); then the label pictures of the additional photos (the `label` cut of `full_front` and `full_back`; the `label` cut, else the original, of `label_front` and `label_back`), one at a time across the cards, while the images stay within `rules_max_images` and the token budget; the card data; the descriptions without the key `bottle`; the note of the reviewer | the difference sheet (questions with the expected answer of each card), the rule text, and the groups that no feature separates |
 
 The block `label_rules` of `config.yaml` holds the settings, with a comment for each key.
 Stage 1 uses `qwen3.5-9b-nvfp4` with thinking off. Stage 2 uses `qwencloud-qwen3.8-max`
@@ -904,6 +959,10 @@ answer in 12,000 tokens) are kept as `cluster-rules.qwen3.5-9b-nvfp4.2026-09-26T
 The two rule sets give the same benchmark within the noise (plan 48). The service of
 `qwen3.5-9b-nvfp4` accepts at most 20 images in one prompt (`rules_max_images`, the vLLM
 option `--limit-mm-per-prompt`). A cluster with more cards gets an error record and no call.
+The additional pictures fill the room that is left. The rule record lists the sent
+pictures in `extra_pictures` and the others in `extras_dropped` (owner message of
+2026-09-30T15:55:42+0300). Only the rule of a cluster with an additional picture gets a
+new input SHA.
 When the service refuses the number of images, the command stops with a message that
 names the limit of the service.
 
@@ -947,27 +1006,30 @@ for example the colour of a mark.
 ## The cluster re-rank
 
 The key `rerank` of a pipeline uses the label rules at query time. Read
-[plan 48](docs/plans/48_cluster-rerank.md). `pipeline/cluster_rerank.py` is a port of the
-kind `cluster_rules` of `svoe-vino-matcher`, with its prompts verbatim.
+[plan 48](docs/plans/48_cluster-rerank.md) and
+[plan 92](docs/plans/92_rerank-option-scores.md).
 
 1. The base answer of the pipeline comes first. A code hit of the barcode step answers the
    photo, and the re-rank does not run.
-2. The step acts when the rank-1 card is in a cluster with a rule of mode `sheet` or
-   `verdict`, and another card of that cluster stands in the first `window` (5) positions.
-   The clusters and the rules come from the embedding directory that `rerank.rules`
-   names, for every pipeline.
+2. The step acts when the rank-1 card is in a cluster with a scoreable question, and
+   another card of that cluster stands in the first `window` (5) positions. The clusters
+   and the rules come from the embedding directory of the pipeline.
 3. The VLM (`rerank.vlm`, `qwen3.5-9b-nvfp4`, thinking off) gets the SAM3 label cut of the
-   photo on white at 1,536 pixels, and the questions of the rule (`sheet`) or its rule text
-   (`verdict`).
-4. Only the cards of the cluster inside the window change their order. A failure of the VLM
-   keeps the base order.
+   photo on white at 1,536 pixels and the scoreable questions. The VLM gives each option
+   an integer score from 0 to 100. It does not select a card.
+4. Code gives each card an evidence score. A null expected answer and `not visible` give
+   no positive evidence. Code orders the window by
+   `embedding score + 0.05 * evidence score`. A failure or an invalid score object keeps
+   the base order.
 5. A photo with a GTIN of 2 or more wines puts the wines of the GTIN first (the barcode
    step). Then the step acts only when the rank-1 card is a wine of the GTIN, and the
    window holds only the wines of the GTIN of its cluster. Another card does not move
    ([plan 64](docs/plans/64_shared-gtin-rerank.md)).
 
-Each card that the step touched holds `explain` with `kind: cluster_rules`; the VLM box of
-`/runs` shows it. The trace of the photo holds the step `cluster_rules`. The pipelines
+Each card that the step touched holds `explain` with `kind: cluster_rules`. The record
+holds the option scores, embedding scores, evidence scores, decision scores, and both
+orders. The trace of the photo holds the step `cluster_rules`. The step popup of `/runs`
+and the result of `/recognize` show `VLM evidence re-rank` with these scores. The pipelines
 `rerank-siglip2-512-crop` and `barcode-rerank-siglip2-512-crop` use the rules of
 `gx10-siglip2-so400m-patch16-naflex-p256`.
 
@@ -996,6 +1058,30 @@ MAY hold `key` and `max_tokens`, and holds no other key:
 | `qwencloud-qwen3.8-max` | QwenCloud Token Plan; stage 2 of the cluster rules | `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}` |
 | `qwencloud-qwen3.8-flash` | QwenCloud Token Plan | `{env:QWENCLOUD_TOKEN_PLAN_API_KEY}` |
 | `dashscope-qwen3.7-flash` | DashScope, pay-as-you-go | `{env:QWENCLOUD_PAYGO_API_KEY}` |
+
+A client names its entry with one key of `config.yaml`:
+
+| Client | Key in `config.yaml` | Entry on 2026-09-30 |
+|---|---|---|
+| The cluster re-rank of a lab pipeline (plan 48) | `rerank.vlm` of the pipeline entry (the anchor `&rerank-options`) | `qwen3.5-9b-nvfp4` |
+| Stage 1 of the cluster rules (label descriptions) | `cluster_rules.vlm` | `qwen3.5-9b-nvfp4` |
+| Stage 2 of the cluster rules (the rules) | `cluster_rules.rules_vlm` | `qwencloud-qwen3.8-max` |
+| The image-description watcher (plan 26) | `image_description.vlm` | `qwen3.5-9b-nvfp4` |
+
+To move a client to the QwenCloud Token Plan, put the entry name into its key, for example
+`vlm: qwencloud-qwen3.8-flash`, and export `QWENCLOUD_TOKEN_PLAN_API_KEY` in the shell
+that starts the lab server or the script. The access is in the section "QwenCloud Token
+Plan API" of `CREDENTIALS.md` in the workspace root. Restart the lab server on port 8168
+after a change of `image_description` (rules 22 to 24 of `AGENTS.md`); a lab run reads
+`config.yaml` when it starts.
+
+Of the Token Plan models, only `qwen3.8-flash`, `qwen3.8-max`, and `deepseek-v4.1-flash`
+read an image (probe of 2026-09-30). The replay of 596 matcher re-rank cases (plan 93,
+`../matcher/ResearchLog.md`) found no Token Plan model that is better than
+`qwen3.5-9b-nvfp4`: `qwen3.8-flash` gave the same accuracy (410 against 409 of 544) with a
+median of 5.7 s against 1.2 s. The owner kept `qwen3.5-9b-nvfp4` for the lab on
+2026-09-30. A picture of 2 to 3 MB as PNG takes seconds to upload to the Token Plan; the
+matcher has `rerank.format: jpg` for this.
 
 `pipeline/wine_identity_vlm.py` builds pairwise wine-identity backends from a supplied
 configuration map. It ignores an entry whose key variable is not set.
@@ -1430,6 +1516,21 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   `pipeline/testset_from_run.py`. A new seed of the database (`seed_from_testset.py`)
   builds the three source sets alone: a set made from a run stays in the backup of the
   old database only.
+- The button `Re-run` after the button `New testset…` starts the pipeline of the open run
+  again on the test set of the run, as the set is now (owner message of
+  2026-10-01T10:20:00+0300). The dialog shows the parameters from `run.json`: `limit` and
+  `workers` of `options`, `use_cache`, and `use_barcode`; the count of the photos of the set
+  now and of the run. `Start` sends them to `POST /api/run-jobs`, as the dialog `Run>` of
+  `/testset` does. A re-run is a full run: a run with `repeat_of` gives no
+  `repeat_failed`. `run.json` does not hold the device address, so for a pipeline with
+  `device_ip` the dialog asks for `Device IPv4` (the stored address of the dialog `Run>`,
+  else the address of the last job of the pipeline). A pipeline that is not runnable or
+  runs now gives an error, and `Start` is off. After the start the line after the button
+  shows the job every 2 s. At the end the page reads the list of the runs again and opens
+  the new run while the old run is still open; else the line holds a link to it. The
+  button is off for a run that names no test set, for a dry run, and for a run whose
+  `configuration` is no pipeline of `config.yaml` (a run of `scripts/match_run.py`, a
+  self-test). The page alone changed; the server has no new route.
 - The routes are in `pipeline/run_routes.py`; `pipeline/run_files.py` reads the files.
   `lab_server.py` sends each route of the page to `run_routes.py`. The review tool keeps
   its own copy of the run functions.
@@ -1600,6 +1701,7 @@ The file holds two parts. The keys at the top are the same for every dataset. Th
 | `backends_file` | `BACKENDS_FILE` | The match backends of `scripts/match_run.py`. |
 | `pipeline` | `pipelines.load` | The pipelines of the lab: the dialog `Run>` of `/testset` and the filter `Pipeline` of `/runs` show them. The backends are `svoe-vino-ru` and `embedding`; a pipeline of the backend `embedding` names one entry of `embeddings`, and its optional key `views` holds the steps of the test photo. See [The runs of the lab](#the-runs-of-the-lab) and [plan 34](docs/plans/34_pipeline-section.md). |
 | `rebuild_embeddings_on_run` | `rebuild_on_run.enabled` | true: before each run of a pipeline of the backend `embedding`, the run updates the index of its embedding (the stale, missing, and failed items). A missing key is false. The lab `config.yaml` sets true. See [The runs of the lab](#the-runs-of-the-lab) and [plan 59](docs/plans/59_rebuild-embeddings-on-run.md). |
+| `png_compress_level` | `derive.PNG_COMPRESS_LEVEL` | The zlib level, -1 to 9, of each PNG that `pipeline/` sends to a model: the SAM3 copy (`Sam3Client._sent_copy`) and the embedding model input (`embeddings.png_bytes`, query and index build). A missing key is -1, the Pillow default (zlib level 6). The lab `config.yaml` sets 2: the encode time is about one half, and the size is almost the same. The pixels are the same at each level. A new level misses each record of `data/cache/models/sam3/` once, because the cache key is the SHA-256 of the sent bytes. The processed files of `data/catalog/cuts/` keep the Pillow default. |
 | `clusters` | `clusters.config_values` | The thresholds and the limits of the cluster build of an embedding (plan 30). See [The embedding clusters of the lab](#the-embedding-clusters-of-the-lab). |
 | `label_rules` | `label_rules.config_values` | The VLM entries, the thinking switches, the picture sizes, the image limit, the token limits, the workers, and the timeouts of `pipeline/build_label_rules.py` (plan 45). See [The label rules of the clusters](#the-label-rules-of-the-clusters). |
 | `cluster_rules` | `cluster_rules.CFG` | Not set in the lab `config.yaml`. The VLM entries of the two stages (`vlm`, `rules_vlm`), the picture sizes, the rules file, and the notes file of `scripts/cluster_rules.py`. Plan 43 retired its command `scripts/11_cluster_rules.py`. See [Catalogue clusters (retired)](#catalogue-clusters-retired). |

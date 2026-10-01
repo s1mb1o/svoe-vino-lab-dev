@@ -1,0 +1,64 @@
+{
+  "null_only_run": {
+    "exception": "TypeError",
+    "message": "must be real number, not NoneType",
+    "files": [
+      "metrics.json",
+      "predictions.jsonl",
+      "queries.jsonl",
+      "queries.tsv",
+      "results.jsonl",
+      "run.json"
+    ]
+  },
+  "one_query_exception": {
+    "exception": "ValueError",
+    "files": [
+      "predictions.jsonl",
+      "queries.jsonl",
+      "queries.tsv",
+      "results.jsonl"
+    ],
+    "saved_results": 1
+  },
+  "export_force_import": {
+    "before_count": 6,
+    "after_count": 5,
+    "moved_before": [
+      [
+        "wine-b",
+        "01_conf095.jpg",
+        "positive"
+      ]
+    ],
+    "moved_after": [
+      [
+        "wine-a",
+        "01_conf095.jpg",
+        null
+      ]
+    ],
+    "upload_survives": false
+  },
+  "patch_unsupported_format": {
+    "error": "the image is TIFF; a patch MUST be JPEG, PNG, or WebP",
+    "loaded_formats": [
+      "TIFF",
+      "TIFF",
+      "TIFF"
+    ]
+  },
+  "test_photo_unsupported_format": {
+    "error": "the image is TIFF; a photo MUST be JPEG, PNG, WebP, GIF, or BMP",
+    "loaded_formats": [
+      "TIFF",
+      "TIFF",
+      "TIFF"
+    ]
+  },
+  "sam3_env": {
+    "env": "http://127.0.0.1:9/review-test",
+    "actual": "http://192.168.86.14:18081/upstream/sam3"
+  },
+  "pillow_pixel_guard": null
+}

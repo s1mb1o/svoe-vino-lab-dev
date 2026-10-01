@@ -270,6 +270,15 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .nts-foot button:disabled { cursor: default; opacity: .45; border-color: var(--line); }
 .nts-foot button[hidden] { display: none; }
 .nts-foot .primary { border-color: var(--accent); font-weight: 700; }
+/* ---- the button `Re-run` and its dialog (owner message of 2026-10-01T10:20:00+0300) ----
+   The button stands after the button `New testset…`, and the state of the job after it.
+   The dialog takes the classes of the dialog `New testset…`. */
+#rr-open:disabled { cursor: default; opacity: .45; border-color: var(--line); }
+#rr-status { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.rr-params { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px;
+             margin: 0 0 10px; font-size: 13px; }
+.rr-params dt { color: var(--muted); }
+.rr-params dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 #lb { position: fixed; inset: 0; background: rgba(0,0,0,.82); display: none;
       align-items: center; justify-content: center; z-index: 50; padding: 24px; }
 #lb.on { display: flex; }
@@ -428,7 +437,9 @@ body.sp-on { overflow: hidden; }
 
   <div id="detail" hidden>
     <div class="det-head"><h2 id="det-h">Metrics</h2>
-      <button id="nts-open" type="button" disabled>New testset&hellip;</button></div>
+      <button id="nts-open" type="button" disabled>New testset&hellip;</button>
+      <button id="rr-open" type="button" disabled>Re-run</button>
+      <span id="rr-status" aria-live="polite"></span></div>
     <div class="cards" id="met"></div>
     <div id="hists"></div>
     <h2>Photos</h2>
@@ -468,6 +479,22 @@ body.sp-on { overflow: hidden; }
     <div class="nts-foot">
       <button id="nts-cancel" type="button">Cancel</button>
       <button id="nts-create" class="primary" type="button" disabled>Create</button>
+    </div>
+  </div>
+</div>
+<div id="rr-dlg" class="nts-dlg" hidden>
+  <div class="nts-panel" role="dialog" aria-modal="true" aria-labelledby="rr-title">
+    <h2 id="rr-title">Re-run</h2>
+    <div class="nts-sub" id="rr-sub"></div>
+    <dl class="rr-params" id="rr-params"></dl>
+    <p class="nts-note" id="rr-note"></p>
+    <label class="nts-field" id="rr-field" hidden>Device IPv4 <input id="rr-device-ip"
+      type="text" inputmode="decimal" spellcheck="false" autocomplete="off"
+      title="run.json does not hold the address. The address of the device replaces {device_ip} in the URL of the pipeline."></label>
+    <div class="nts-error" id="rr-error"></div>
+    <div class="nts-foot">
+      <button id="rr-cancel" type="button">Cancel</button>
+      <button id="rr-start" class="primary" type="button" disabled>Start</button>
     </div>
   </div>
 </div>
@@ -1087,6 +1114,7 @@ async function loadRun(id, append) {
   if (!append) RUN = data.run || {};
   if (!append) renderMetrics(data.metrics || {}, data.head || {});
   if (!append) ntsButton();
+  if (!append) rrButton();
   $("#res-body").insertAdjacentHTML("beforeend", (data.rows || []).map(rowHtml).join(""));
   evenCards($("#res-body"));
   OFFSET += (data.rows || []).length;
@@ -1270,6 +1298,197 @@ window.addEventListener("keydown", ev => {
   ev.stopPropagation();
   if (ev.key === "Escape") { ev.preventDefault(); closeNts(); }
   else if (ev.key === "Enter" && ev.target === $("#nts-name")) { ev.preventDefault(); createNts(); }
+}, true);
+
+/* ---- the button `Re-run` and its dialog (owner message of 2026-10-01T10:20:00+0300) ----
+
+   The button starts the pipeline of the open run again on the test set of the run, as the
+   set is now. The parameters come from run.json: `limit` and `workers` of `options`,
+   `use_cache`, and `use_barcode`. The POST goes to `/api/run-jobs`, as the dialog `Run>` of
+   /testset sends it. The owner answers of about 2026-10-01T10:25:00+0300: the page alone
+   changes; a re-run is a full run, so a run with `repeat_of` gives no `repeat_failed`;
+   run.json does not hold the device address, so the dialog asks for it for a device
+   pipeline. After the start the page reads the job every 2 s. At its end the page reads
+   the list of the runs again and opens the new run while the old run is still open. */
+const RR_DEVICE_KEY = "svoe-vino-lab.device-ip";   // the key of the dialog `Run>` of /testset
+const RR_ACTIVE = ["running", "stopping"], RR_FINAL = ["done", "stopped", "failed"];
+let RR = null, RR_REQUEST = 0, RR_TIMER = null;
+
+/* The reason why the button is off for the open run, or "". */
+function rrOff() {
+  const options = RUN.options || {};
+  if (!options.set) return "This run names no test set. A run of scripts/match_run.py has none.";
+  if (options.dry_run) return "A dry run holds no answer.";
+  if (!isPipeline(RUN.configuration))
+    return `config.yaml has no pipeline ${RUN.configuration || "for this run"}. A self-test ` +
+      "starts from the button Selftest of /embedding.";
+  return "";
+}
+
+function rrButton() {
+  const off = rrOff(), button = $("#rr-open");
+  button.disabled = Boolean(off);
+  button.title = off || `Start the pipeline ${RUN.configuration} again on the test set ` +
+    `${RUN.options.set} as it is now, with the parameters of this run.`;
+}
+
+/* The body of `POST /api/run-jobs` from run.json. A key that run.json does not hold keeps
+   the default of the server. */
+function rrBody(run) {
+  const options = run.options || {};
+  const body = {configuration: run.configuration, set: options.set,
+                limit: options.limit ?? null, workers: options.workers ?? null,
+                use_cache: run.use_cache !== false};
+  if (typeof run.use_barcode === "boolean") body.use_barcode = run.use_barcode;
+  return body;
+}
+
+function renderRr() {
+  const {conf, body} = RR, busy = conf.job && RR_ACTIVE.includes(conf.job.state);
+  const rows = [
+    ["test set", `${RR.set}: ${RR.queries} photo(s) now; the run had ${numOr(RR.had)}`],
+    ["limit", body.limit ?? "none: every photo"],
+    ["workers", body.workers ?? `the default of the pipeline (${numOr(conf.workers)})`],
+    ["use caches", body.use_cache ? "yes" : "no"]];
+  if (conf.barcode) rows.push(["barcode fast path", body.use_barcode === false ? "off" : "on"]);
+  $("#rr-params").innerHTML = rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`)
+    .join("");
+  $("#rr-note").textContent = RR.repeat_of ? `This run asked again the failed photos of ` +
+    `${RR.repeat_of}. Re-run asks every photo of the set.` : "";
+  $("#rr-field").hidden = !conf.device_ip;
+  if (conf.device_ip) {
+    let kept = "";
+    try { kept = localStorage.getItem(RR_DEVICE_KEY) || ""; } catch (_) { /* no storage */ }
+    $("#rr-device-ip").value = kept || (conf.job && conf.job.device_ip) || "";
+  }
+  const error = !conf.runnable ? `${conf.name}: ${conf.reason}`
+    : busy ? `A run of ${conf.name} runs now: PID ${conf.job.pid}.` : "";
+  $("#rr-error").textContent = error;
+  $("#rr-start").disabled = Boolean(error);
+  if (!error) (conf.device_ip ? $("#rr-device-ip") : $("#rr-start")).focus();
+}
+
+async function openRr() {
+  if (!CUR || rrOff()) return;
+  const request = ++RR_REQUEST, run = RUN, id = CUR;
+  const name = run.configuration, set = run.options.set;
+  RR = null;
+  $("#rr-sub").textContent = `The pipeline ${name} on the test set ${set}, with the ` +
+    `parameters of the run ${id}. The new run reads the test set as it is now.`;
+  $("#rr-params").innerHTML = "";
+  $("#rr-note").textContent = "Reading the pipeline and the test set…";
+  $("#rr-error").textContent = "";
+  $("#rr-field").hidden = true;
+  $("#rr-start").disabled = true;
+  $("#rr-dlg").hidden = false;
+  try {
+    const response = await fetch(`/api/run-configurations?set=${encodeURIComponent(set)}`,
+                                 {cache: "no-store"});
+    const data = await response.json();
+    if (request !== RR_REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    const conf = (data.configurations || []).find(c => c.name === name);
+    if (!conf) throw new Error(`config.yaml has no pipeline ${name}`);
+    RR = {run: id, name, set, conf, queries: data.queries, body: rrBody(run),
+          had: (run.query_set || {}).total, repeat_of: run.repeat_of && run.repeat_of.run_id};
+    renderRr();
+  } catch (error) {
+    if (request !== RR_REQUEST) return;
+    $("#rr-note").textContent = "";
+    $("#rr-error").textContent = `Cannot read the pipeline: ${error.message}`;
+  }
+}
+
+function closeRr() {
+  RR_REQUEST++;
+  RR = null;
+  $("#rr-dlg").hidden = true;
+  $("#rr-open").focus();
+}
+
+async function startRr() {
+  if (!RR || $("#rr-start").disabled) return;
+  const request = RR_REQUEST, view = RR, body = Object.assign({}, view.body);
+  if (view.conf.device_ip) body.device_ip = $("#rr-device-ip").value.trim();
+  $("#rr-start").disabled = true;
+  $("#rr-error").textContent = "";
+  try {
+    const response = await fetch("/api/run-jobs", {
+      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    if (body.device_ip) {
+      try { localStorage.setItem(RR_DEVICE_KEY, body.device_ip); } catch (_) { /* no storage */ }
+    }
+    if (request === RR_REQUEST) closeRr();
+    followRr(view.run, view.name);
+  } catch (error) {
+    if (request !== RR_REQUEST) return;
+    $("#rr-error").textContent = error.message;
+    $("#rr-start").disabled = false;
+  }
+}
+
+/* Read the job of the pipeline `name` every 2 s until a final state. The state stands in
+   `#rr-status`. `source` is the run that the re-run came from. */
+function followRr(source, name) {
+  clearTimeout(RR_TIMER);
+  $("#rr-status").textContent = `Re-run of ${name}: starting…`;
+  const tick = async () => {
+    let job = null;
+    try {
+      const data = await (await fetch("/api/run-jobs", {cache: "no-store"})).json();
+      job = (data.jobs || []).find(j => j.name === name) || null;
+    } catch (_) { /* the next read tries again */ }
+    if (job && RR_FINAL.includes(job.state)) { endRr(source, name, job); return; }
+    if (job) {
+      $("#rr-status").textContent = `Re-run of ${name}: ` + (job.todo != null
+        ? `${job.done} of ${job.todo} photo(s)` : job.message || "starting") +
+        (job.errors ? `, ${job.errors} error(s)` : "") + "…";
+    }
+    RR_TIMER = setTimeout(tick, 2000);
+  };
+  tick();
+}
+
+async function endRr(source, name, job) {
+  const status = $("#rr-status"), id = job.run_id;
+  if (!id) {
+    status.textContent = `Re-run of ${name} ${job.state}: ${job.message || "no run directory"}`;
+    return;
+  }
+  status.innerHTML = `Re-run of ${esc(name)} ${esc(job.state)}: <a href="#${
+    encodeURIComponent(id)}" data-run="${esc(id)}">${esc(id)}</a>${
+    job.message ? ` &mdash; ${esc(job.message)}` : ""}`;
+  try {
+    const data = await (await fetch("/api/runs", {cache: "no-store"})).json();
+    RUNS = data.runs || [];
+    CONFIGS = data.configurations || CONFIGS;
+    renderConfigs();
+    renderSets();
+  } catch (_) { /* the link opens the run all the same */ }
+  if (CUR === source) { pageOfRun(id); await loadRun(id, false); }
+  else renderRuns();
+}
+
+$("#rr-open").addEventListener("click", openRr);
+$("#rr-cancel").addEventListener("click", closeRr);
+$("#rr-start").addEventListener("click", startRr);
+$("#rr-dlg").addEventListener("click", ev => { if (ev.target === $("#rr-dlg")) closeRr(); });
+$("#rr-status").addEventListener("click", ev => {
+  const link = ev.target.closest("a[data-run]");
+  if (!link) return;
+  ev.preventDefault();
+  pageOfRun(link.dataset.run);
+  loadRun(link.dataset.run, false);
+});
+// While the dialog is open, the keys of the page do not act. Esc closes the dialog. Enter
+// in the field `Device IPv4` starts the run.
+window.addEventListener("keydown", ev => {
+  if ($("#rr-dlg").hidden) return;
+  ev.stopPropagation();
+  if (ev.key === "Escape") { ev.preventDefault(); closeRr(); }
+  else if (ev.key === "Enter" && ev.target === $("#rr-device-ip")) { ev.preventDefault(); startRr(); }
 }, true);
 
 /* ---- the large view ---- */

@@ -1,0 +1,1824 @@
+{
+  "audit_time": "2026-10-01T10:37:30.552348+03:00",
+  "database": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/workbench/data/catalog/catalog.sqlite3",
+  "scope": {
+    "catalogue_records": 2124,
+    "active": 2115,
+    "disabled": 4,
+    "removed": 5,
+    "image_rows": 11524,
+    "wine_image_links": 2669,
+    "code_rows": 202,
+    "atlas_bindings": 496,
+    "atlas_unique_products_fetched": 459
+  },
+  "checks": {
+    "sqlite_integrity_check": "ok",
+    "foreign_key_violations": 0,
+    "registered_image_files_missing": 0,
+    "image_rows_missing_dimensions": 0,
+    "derivative_boxes_outside_source_dimensions": 0,
+    "invalid_or_noncanonical_codes": 0
+  },
+  "method": "Read-only SQLite snapshot and live dataset API. All registered file paths checked. All referenced Atlas products fetched read-only. Effective images account for main_patched replacing main. Candidate label contradictions were manually checked in stored images. This is a structured catalogue-wide audit with visual checks of findings, not a manual visual review of every image.",
+  "known_issues_checked": [
+    "workbench/FIX_LATER.md",
+    "matcher/docs/KNOWN_ISSUES.md"
+  ],
+  "findings": [
+    {
+      "rank": 1,
+      "priority": "High",
+      "issue": "Wrong-producer Atlas bindings",
+      "evidence": "Eight shared Atlas IDs span 19 bindings to different catalogue producers. This count identifies collisions, not 19 proven wrong bindings. Four confirmed wrong bindings: the two Krasnostop Reserve cards point to Sober Bash; the two Marselan cards point to Fanagoria. Other groups need producer alias checks.",
+      "impact": "A card opens an unrelated product. Load photos can import images of another producer.",
+      "groups": [
+        {
+          "product_uuid": "04e001a3-8c02-4f4f-89e7-fe8cb8e0c6d2",
+          "atlas_url": "http://127.0.0.1:8157/products/04e001a3-8c02-4f4f-89e7-fe8cb8e0c6d2",
+          "atlas_name": "Российское вино с защищенным географическим указанием «Кубань» сухое красное «Красностоп Резерв 2023»",
+          "atlas_producers": [
+            "Общество с ограниченной ответственностью \"Собер Баш\""
+          ],
+          "catalogue_records": [
+            {
+              "wine_slug": "chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137",
+              "name": "Красностоп Резерв",
+              "producer": "Chateau de Talu",
+              "category": "Красное",
+              "color": "Насыщенно-рубиновый, с интенсивными фиолетовыми бликами.",
+              "region": "Кубань",
+              "grapes": "Красностоп Анапский",
+              "description": "Вкус: Округлый, с немного шероховатыми танинами и пышным длительным послевкусием ягод смородины, клубники, лесной малины. Мягкий, с тонами черноплодной рябины, малины, ежевики, сливы, сладкой ванили, паприки и дыма.",
+              "csv_photo_name": "chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:47:01.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137",
+              "images": [
+                {
+                  "wine_slug": "chateau-de-talu-krasnostop-rezerv-krasnostop-anapskiy-krasnoe-suhoe-137",
+                  "image_type": "main",
+                  "sha256": "892366bf40179aa77124c0855c94d54b571da6ff971080b3b7ab2a75aba2a738",
+                  "source_name": "chateau_de_talu_krasnostop_rezerv_krasnostop_anapskiy_krasnoe_suhoe_137_bcb15093c2.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/892366bf40179aa77124c0855c94d54b571da6ff971080b3b7ab2a75aba2a738.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "bde9bdc2a51f17a01629ce2c2dfc3e42d35f92a27a50d10ee6cbe7e2c26c878e",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-145",
+              "name": "Красностоп Резерв",
+              "producer": "Château Le Grand Vostock",
+              "category": "Красное",
+              "color": "Интенсивный темно-рубиновый цвет с фиолетовыми оттенками.",
+              "region": "Кубань",
+              "grapes": "Красностоп",
+              "description": "Аромат постепенно раскрывается концентрированными нотами черных лесных ягод, повидла из терна, спелого чернослива, легкими оттенками эвкалипта, аниса и изящными пряными акцентами. Вкус насыщенный, яркий, с энергичной кислотностью, мощным, но аккуратным танином и долгим послевкусием. Перед подачей декантировать.",
+              "csv_photo_name": "chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-vyderzhannoe-145.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-09-21T12:07:04.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-145",
+              "images": [
+                {
+                  "wine_slug": "chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-145",
+                  "image_type": "full_back",
+                  "sha256": "1a39c4b7d2ce64dac16498aa8372b946d44a4347b946cb141acba40a99481156",
+                  "source_name": "clipboard-1790538698079.png",
+                  "match_method": "manual",
+                  "folder": "additional",
+                  "extension": "png",
+                  "url": "http://127.0.0.1:8168/images/additional/1a39c4b7d2ce64dac16498aa8372b946d44a4347b946cb141acba40a99481156.png",
+                  "label_cut": [
+                    {
+                      "sha256": "2aae06cf4c44a8398d5dea4e31661b1fca46f57485dabd6738e0297f81d7d67d",
+                      "kind": "label"
+                    }
+                  ]
+                },
+                {
+                  "wine_slug": "chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-145",
+                  "image_type": "full_front",
+                  "sha256": "ba9e9c48f10d6466e83a10c1d0cc1dba593e5e119ce00e0dd293c0c76ddffdc8",
+                  "source_name": "clipboard-1790538693236.png",
+                  "match_method": "manual",
+                  "folder": "additional",
+                  "extension": "png",
+                  "url": "http://127.0.0.1:8168/images/additional/ba9e9c48f10d6466e83a10c1d0cc1dba593e5e119ce00e0dd293c0c76ddffdc8.png",
+                  "label_cut": [
+                    {
+                      "sha256": "97a6c915af236805560b5a89b928248eb1156d503ff62cd865a98573b940e3ce",
+                      "kind": "label"
+                    }
+                  ]
+                },
+                {
+                  "wine_slug": "chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-145",
+                  "image_type": "label_back",
+                  "sha256": "b85eae7e4a62e94a06c7f5b14b62c0a38d874e13c174ac9a04fa71489f2ccca5",
+                  "source_name": "clipboard-1790538705244.png",
+                  "match_method": "manual",
+                  "folder": "additional",
+                  "extension": "png",
+                  "url": "http://127.0.0.1:8168/images/additional/b85eae7e4a62e94a06c7f5b14b62c0a38d874e13c174ac9a04fa71489f2ccca5.png",
+                  "label_cut": [
+                    {
+                      "sha256": "63aec59d4c1283ccc8e2fbba0a3d66cb3f42441b87e2433dbbd0b74a1e24ba3b",
+                      "kind": "label"
+                    }
+                  ]
+                },
+                {
+                  "wine_slug": "chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-145",
+                  "image_type": "main",
+                  "sha256": "e44c2a25efa527fec1d521ba614ae73fb97f3b4b118326f291ea007eeec9cf6f",
+                  "source_name": "chateau_le_grand_vostock_krasnostop_rezerv_krasnoe_suhoe_vyderzhannoe_145_a04e866765.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/e44c2a25efa527fec1d521ba614ae73fb97f3b4b118326f291ea007eeec9cf6f.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "bdf7e0e9a48a87b71b8819bff8c9ea4761378893399272b21673cafb6dc9e45f",
+                      "kind": "label"
+                    }
+                  ]
+                },
+                {
+                  "wine_slug": "chateau-le-grand-vostock-krasnostop-rezerv-krasnoe-suhoe-145",
+                  "image_type": "main_patched",
+                  "sha256": "12957433c8180a6b91e97269ab3666d313b335d092576d6cd0dbcb4458f7c5dc",
+                  "source_name": "12957433c8180a6b91e97269ab3666d313b335d092576d6cd0dbcb4458f7c5dc.png",
+                  "match_method": "manual",
+                  "folder": "patched",
+                  "extension": "png",
+                  "url": "http://127.0.0.1:8168/images/patched/12957433c8180a6b91e97269ab3666d313b335d092576d6cd0dbcb4458f7c5dc.png",
+                  "label_cut": [
+                    {
+                      "sha256": "97a6c915af236805560b5a89b928248eb1156d503ff62cd865a98573b940e3ce",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": [
+                "картинка от shato-ay-danil-grenash-krasnoe-suhoe-12"
+              ]
+            }
+          ]
+        },
+        {
+          "product_uuid": "28fe4d37-3009-45e1-84ce-ab64f8497f50",
+          "atlas_url": "http://127.0.0.1:8157/products/28fe4d37-3009-45e1-84ce-ab64f8497f50",
+          "atlas_name": "Российское вино с защищенным географическим указанием «Кубань» сухое красное «Легато Каберне Фран»",
+          "atlas_producers": [
+            "Акционерое общество \"Скалистый берег\""
+          ],
+          "catalogue_records": [
+            {
+              "wine_slug": "legato-legato-kaberne-fran-krasnoe-suhoe-14",
+              "name": "Легато Каберне Фран",
+              "producer": "LeGato",
+              "category": "Красное",
+              "color": "Темно-рубиновый",
+              "region": "Кубань",
+              "grapes": "Каберне Фран",
+              "description": "Вкус: Преобладают темные ягоды, ноты черники, ежевики, сливы, черешни, с оттенком древесных нот, подлеска, смолы, черного перца, дыма. Выраженные ноты кисло-сладких красных фруктов и ягод, ягодной карамели, кофе, с мягкими танинами и долгим вишнево-ванильным послевкусием.",
+              "csv_photo_name": "legato-legato-kaberne-fran-krasnoe-suhoe-14.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:42:30.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#legato-legato-kaberne-fran-krasnoe-suhoe-14",
+              "images": [
+                {
+                  "wine_slug": "legato-legato-kaberne-fran-krasnoe-suhoe-14",
+                  "image_type": "main",
+                  "sha256": "c1f5ea32eff79163cd9ccbbe1899679ac364d118bf1dfa55ad6a18dc697d9974",
+                  "source_name": "legato_legato_kaberne_fran_krasnoe_suhoe_14_a59d99f1f0.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/c1f5ea32eff79163cd9ccbbe1899679ac364d118bf1dfa55ad6a18dc697d9974.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "22cf78e658e1f919043f479b68229f02356651a8608e9e8c6e61ec57c88a11a5",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "leto-kaberne-fran-2021-suhoe-krasnoe",
+              "name": "LETO Каберне Фран 2021 сухое красное",
+              "producer": "LETO",
+              "category": "Красное",
+              "color": "Насыщенный рубиновый",
+              "region": "Кубань",
+              "grapes": "Каберне Фран",
+              "description": "Выдержка в нейтральной ёмкости - сталь. Аромат напоминает о жарком лете —\nможно почувствовать оттенки малины, спелой черешни, джема из черной смородины, а также луговых трав.\nДля полного раскрытия аромата необходима декантация.\nВкус деликатный и сбалансированный, вторит аромату.\nВино с гладкими танинами и структурным долгим послевкусием.\nИмеет потенциал выдержки ~5 лет.",
+              "csv_photo_name": "Вино сухое красное КАБЕРНЕ ФРАН 2021 .webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-06-26T09:42:57.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#leto-kaberne-fran-2021-suhoe-krasnoe",
+              "images": [
+                {
+                  "wine_slug": "leto-kaberne-fran-2021-suhoe-krasnoe",
+                  "image_type": "main",
+                  "sha256": "14395077c31a3a3a087b746f0264e77f308990921523cdddb5fc2d66790cae7b",
+                  "source_name": "Vino_suhoe_krasnoe_KABERNE_FRAN_3c69650ca3.webp",
+                  "match_method": "website",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/14395077c31a3a3a087b746f0264e77f308990921523cdddb5fc2d66790cae7b.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "92cab5f08a0c0d4203eda483c7bd80aee9cfcb7ede036fa5fcdc0f834a4c2ce6",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": [
+                "Main image from vino-svoe.ru."
+              ]
+            }
+          ]
+        },
+        {
+          "product_uuid": "57183873-163f-4841-b56e-fb173341d427",
+          "atlas_url": "http://127.0.0.1:8157/products/57183873-163f-4841-b56e-fb173341d427",
+          "atlas_name": "вино сухое красное \"Каберне Фран Резерв\", год урожая 2021",
+          "atlas_producers": [
+            "Кондрашов Евгений Владимирович"
+          ],
+          "catalogue_records": [
+            {
+              "wine_slug": "alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15",
+              "name": "Каберне Фран Резерв",
+              "producer": "Alma Valley",
+              "category": "Красное",
+              "color": "Рубиновый",
+              "region": "Крым",
+              "grapes": "Каберне Фран",
+              "description": "В аромате тона малины, специй, табака и графита. Вкус насыщенный пряный с нотками болгарского перца, с ярким послевкусием.",
+              "csv_photo_name": "alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-04-02T12:20:29.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15",
+              "images": [
+                {
+                  "wine_slug": "alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15",
+                  "image_type": "main",
+                  "sha256": "38813de8da0d6b795a919296fba7ad403754aa025190b08ffc438dd3434ca7f5",
+                  "source_name": "alma_valley_kaberne_fran_rezerv_krasnoe_suhoe_15_6ef14d79ec.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/38813de8da0d6b795a919296fba7ad403754aa025190b08ffc438dd3434ca7f5.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "c0a292219ac1a360cb86836bdd4817e5ece58faac05047a7ce30b595535f17ca",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13",
+              "name": "Каберне Фран Резерв",
+              "producer": "Chateau de Talu",
+              "category": "Красное",
+              "color": "Глубокий интенсивно- рубиновый",
+              "region": "Кубань",
+              "grapes": "Каберне Фран",
+              "description": "Вкус: Мощный, яркий с округлыми танинами, сочной кислотностью, тонами ежевики, сливы и черной смородины. Стойкое послевкусие с оттенками жареных тостов, специй и копченостей. Выразительный, с оттенками сливы, ежевики и черной смородины, минеральными тонами, нотками гвоздики, корицы и легкой копчености.",
+              "csv_photo_name": "chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:46:58.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13",
+              "images": [
+                {
+                  "wine_slug": "chateau-de-talu-kaberne-fran-rezerv-krasnoe-suhoe-13",
+                  "image_type": "main",
+                  "sha256": "11f5d6272337f9afb0ba7bf135552f6bb2ee50f56518e70d4c15aa6b5ad6eb1b",
+                  "source_name": "chateau_de_talu_kaberne_fran_rezerv_krasnoe_suhoe_13_6dc8dcf2ec.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/11f5d6272337f9afb0ba7bf135552f6bb2ee50f56518e70d4c15aa6b5ad6eb1b.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "e0a98b0e83c60ab3eed45c77be2957c870fd7cb70d33abde4f57562e80d472c7",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            }
+          ]
+        },
+        {
+          "product_uuid": "5a0daf1c-3881-4d30-b9ab-3ec217d4c8b8",
+          "atlas_url": "http://127.0.0.1:8157/products/5a0daf1c-3881-4d30-b9ab-3ec217d4c8b8",
+          "atlas_name": "Вино сухое красное «Каберне совиньон резерв»",
+          "atlas_producers": [
+            "Глава крестьянского фермерского хозяйства Мухин Михаил Сергеевич"
+          ],
+          "catalogue_records": [
+            {
+              "wine_slug": "alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15",
+              "name": "Каберне Совиньон Резерв",
+              "producer": "Alma Valley",
+              "category": "Красное",
+              "color": "Темно-рубиновый",
+              "region": "Крым",
+              "grapes": "Каберне Совиньон",
+              "description": "В аромате спелая чёрная смородина, черника, сафьяновая кожа, ваниль и легкие специи, сушёные травы. Вкус насыщенный, плодовый, свежий, с бархатистой терпкостью.",
+              "csv_photo_name": "alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-04-02T12:20:30.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15",
+              "images": [
+                {
+                  "wine_slug": "alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15",
+                  "image_type": "main",
+                  "sha256": "dd0ba28a9f6961dd545f2d595ab0abf67e04a48192c1d70f2844a31a916ab63f",
+                  "source_name": "alma_valley_kaberne_sovinon_rezerv_krasnoe_suhoe_15_58f5256504.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/dd0ba28a9f6961dd545f2d595ab0abf67e04a48192c1d70f2844a31a916ab63f.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "ca07a82a1058d667d15d447db4d96e53a6d4564dbb597c5681a92feb47ce8eb5",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14",
+              "name": "Каберне Совиньон Резерв",
+              "producer": "Chateau de Talu",
+              "category": "Красное",
+              "color": "Глубокий интенсивно- рубиновый",
+              "region": "Кубань",
+              "grapes": "Каберне Совиньон",
+              "description": "Вкус: Богатый, с яркими ягодно-фруктовыми тонами, с бархатистыми танинами и оттенками шоколада и дубовой бочки в длительном послевкусии. Насыщенный, с яркими тонами черной смородины, чернослива, ежевики, черного перца, спелой вишни, ментола, шоколада и специй.",
+              "csv_photo_name": "chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:46:59.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14",
+              "images": [
+                {
+                  "wine_slug": "chateau-de-talu-kaberne-sovinon-rezerv-krasnoe-suhoe-14",
+                  "image_type": "main",
+                  "sha256": "5c225d9166cf0f820c1784251e207964ddb326572e78e625b51609fd9f98f446",
+                  "source_name": "chateau_de_talu_kaberne_sovinon_rezerv_krasnoe_suhoe_14_6106a6f6b0.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/5c225d9166cf0f820c1784251e207964ddb326572e78e625b51609fd9f98f446.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "dd90a897b7edb06b337943c7f24b0e8fa196354b96f03e7c25e10b1658964ab8",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "usadba-markoth-kaberne-sovinon-rezerv-krasnoe-suhoe-13",
+              "name": "Каберне Совиньон Резерв",
+              "producer": "Усадьба Маркотх",
+              "category": "Красное",
+              "color": "Вино густого красно-рубинового цвета.",
+              "region": "Кубань",
+              "grapes": "Каберне Совиньон",
+              "description": "Яркий сочный аромат раскрывается тонами черной сливы, вишни, черной смородины, шелковицы, аккуратных специй, увяленных черных ягод, тоном подлеска и сафьяна. Во вкусе полное, округлое, сбалансированное, мощное, с фруктово-джемовым профилем. Долгое фруктово-пряное послевкусие.",
+              "csv_photo_name": "usadba-markoth-kaberne-sovinon-rezerv-krasnoe-suhoe-vyderzhannoe-13.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:24:08.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#usadba-markoth-kaberne-sovinon-rezerv-krasnoe-suhoe-13",
+              "images": [
+                {
+                  "wine_slug": "usadba-markoth-kaberne-sovinon-rezerv-krasnoe-suhoe-13",
+                  "image_type": "main",
+                  "sha256": "bba3a609f6fd25a6410f789a901d1f74f67b5d39e8b49caf474044350b1da751",
+                  "source_name": "usadba_markoth_kaberne_sovinon_rezerv_krasnoe_suhoe_vyderzhannoe_13_77c2e45e25.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/bba3a609f6fd25a6410f789a901d1f74f67b5d39e8b49caf474044350b1da751.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "4b147407ca71dfcc19ed93c5a0aa45a46a31da6a8d55a50f4cba90476221a904",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            }
+          ]
+        },
+        {
+          "product_uuid": "832794b3-9105-4713-aabf-45d5a38e1cae",
+          "atlas_url": "http://127.0.0.1:8157/products/832794b3-9105-4713-aabf-45d5a38e1cae",
+          "atlas_name": "Вино сухое красное \"Пино Нуар Резерв\"",
+          "atlas_producers": [
+            "индивидуальный предприниматель Колесников Михаил Дмитриевич"
+          ],
+          "catalogue_records": [
+            {
+              "wine_slug": "alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14",
+              "name": "Пино Нуар Резерв",
+              "producer": "Alma Valley",
+              "category": "Красное",
+              "color": "Рубиновый",
+              "region": "Крым",
+              "grapes": "Пино Нуар",
+              "description": "В аромате тона ежевики, спелой вишни, джема из лесных чёрных и красных ягод, бальзамических трав, шоколада и легких специй. Вкус плодово-пряный, с бархатистыми танинами.",
+              "csv_photo_name": "alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-04-02T12:20:30.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14",
+              "images": [
+                {
+                  "wine_slug": "alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14",
+                  "image_type": "main",
+                  "sha256": "3f04afa115e86f5433bc82d86a8b699c16442978910c35ac379a84d3c34a77bb",
+                  "source_name": "alma_valley_pino_nuar_rezerv_krasnoe_suhoe_14_c3c0dc1cc6.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/3f04afa115e86f5433bc82d86a8b699c16442978910c35ac379a84d3c34a77bb.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "e39c48e323bb4b19133079049c6fcb126846b6070e5abba274b45fee017d6194",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": [
+                "irec-03: irecommend.ru has NO product entry for this wine. Checked with yandex.ru/images site:irecommend.ru in Russian and in English spellings; irecommend carries only the entry level Alma Valley lines (AV, AV Cuvee, White 2015, Zimnee vino, Osennee vino, Nevinnost, Solntse Vozduh Vinograd, Novyi Ierusalim, Pique Nique) plus one Pinot Blanc Reserve 2017. No Reserve Merlot, Pinot Noir or Chardonnay, and no sparkling."
+              ]
+            },
+            {
+              "wine_slug": "belbek-pino-nuar-rezerv-krasnoe-suhoe-135",
+              "name": "Пино Нуар Резерв",
+              "producer": "Бельбек",
+              "category": "Красное",
+              "color": "Красивый темно-рубиновый",
+              "region": "Крым",
+              "grapes": "Пино Нуар",
+              "description": "Вкус: Сбалансированный и сочный, с элегантными танинами и продолжительным ягодным послевкусием, в котором ощущаются деликатные пряные нотки. Многослойный, с нотами дикой вишни и малины, дополненными тонкими оттенками дубовой выдержки, табачного листа и пряностей.",
+              "csv_photo_name": "belbek-pino-nuar-rezerv-krasnoe-suhoe-135.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:50:17.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#belbek-pino-nuar-rezerv-krasnoe-suhoe-135",
+              "images": [
+                {
+                  "wine_slug": "belbek-pino-nuar-rezerv-krasnoe-suhoe-135",
+                  "image_type": "main",
+                  "sha256": "e2ca9cefe1af1491af39d0fb40e4de4075850632d804fce2583017715b37f995",
+                  "source_name": "belbek_pino_nuar_rezerv_krasnoe_suhoe_135_7e9ad8a8e2.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/e2ca9cefe1af1491af39d0fb40e4de4075850632d804fce2583017715b37f995.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "4cf1ec2ec50ae4727e021e2a9a517c489576f567f427079afb13aa9b66e86fc4",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "chateau-le-grand-vostock-pino-nuar-rezerv-krasnoe-suhoe-14",
+              "name": "Пино Нуар Резерв",
+              "producer": "Château Le Grand Vostock",
+              "category": "Красное",
+              "color": "Вино бледно-рубинового цвета с гранатовым отливом.",
+              "region": "Кубань",
+              "grapes": "Пино Нуар",
+              "description": "Средневыраженный аромат с нотами красных северных ягод, шиповника, терна и легкими землистыми оттенками. Вкус эфемерный, с несколько нервной килотностью и молодыми, пока шероховатыми танинами. В послевкусии ягодные ноты. Перед подачей обязательна аэрация.",
+              "csv_photo_name": "chateau-le-grand-vostock-pino-nuar-rezerv-krasnoe-suhoe-vyderzhannoe-14.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": null,
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#chateau-le-grand-vostock-pino-nuar-rezerv-krasnoe-suhoe-14",
+              "images": [
+                {
+                  "wine_slug": "chateau-le-grand-vostock-pino-nuar-rezerv-krasnoe-suhoe-14",
+                  "image_type": "main",
+                  "sha256": "587ea8ac2252c6aa03bd0d3b73d19540bbf1b2bc935af49bc5104b42634aa86d",
+                  "source_name": "chateau_le_grand_vostock_pino_nuar_rezerv_krasnoe_suhoe_vyderzhannoe_14_16df8a8740.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/587ea8ac2252c6aa03bd0d3b73d19540bbf1b2bc935af49bc5104b42634aa86d.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "258a2e69a12841c1b5135b63ca2dba550ee94e782e51f144712fcf4110ed5036",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "usadba-perovskih-pino-nuar-rezerv-krasnoe-suhoe-122",
+              "name": "Пино Нуар Резерв",
+              "producer": "Усадьба Перовских",
+              "category": "Красное",
+              "color": "Ярко-рубиновый",
+              "region": "Крым",
+              "grapes": "Пино Нуар",
+              "description": "Вкус: Свежий, с мягкими танинами и минеральным послевкусием. Тонкий, с нотками малины, клубничного джема, оттенками специй и пряностей.",
+              "csv_photo_name": "usadba-perovskih-pino-nuar-rezerv-krasnoe-suhoe-122.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:45:48.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#usadba-perovskih-pino-nuar-rezerv-krasnoe-suhoe-122",
+              "images": [
+                {
+                  "wine_slug": "usadba-perovskih-pino-nuar-rezerv-krasnoe-suhoe-122",
+                  "image_type": "main",
+                  "sha256": "2572ec526c3b94971e9bf9c6a9dffceab307b62faf4db8ad82874814ff2f4f06",
+                  "source_name": "usadba_perovskih_pino_nuar_rezerv_krasnoe_suhoe_122_a52f1c4ded.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/2572ec526c3b94971e9bf9c6a9dffceab307b62faf4db8ad82874814ff2f4f06.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "2291641ebaedec99668a070bd8276fbae608255d40ba2a5d61d9014e7bf6c8b0",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            }
+          ]
+        },
+        {
+          "product_uuid": "8e7f9025-722b-417c-bda8-5636b9c4da17",
+          "atlas_url": "http://127.0.0.1:8157/products/8e7f9025-722b-417c-bda8-5636b9c4da17",
+          "atlas_name": "Вино сухое белое \"Пино Гриджио\"",
+          "atlas_producers": [
+            "Общество с ограниченной ответственность \"Долина\""
+          ],
+          "catalogue_records": [
+            {
+              "wine_slug": "shato-pino-pino-gridzhio-beloe-suhoe-12",
+              "name": "Пино Гриджио",
+              "producer": "Шато Пино",
+              "category": "Белое",
+              "color": "Светло-медовый",
+              "region": "Кубань",
+              "grapes": "Пино Гриджио",
+              "description": "Вкус: Послевкусие продолжительное, фруктовое. Пряно-фруктовые ноты зеленых яблок, груши, лайма и персиков.",
+              "csv_photo_name": "shato-pino-pino-gridzhio-beloe-suhoe-12.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:44:59.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#shato-pino-pino-gridzhio-beloe-suhoe-12",
+              "images": [
+                {
+                  "wine_slug": "shato-pino-pino-gridzhio-beloe-suhoe-12",
+                  "image_type": "main",
+                  "sha256": "64f1f236906f1ddcd5733d5d2cbc45627982641998ea2dcdd8b3ccd0b4f27491",
+                  "source_name": "shato_pino_pino_gridzhio_beloe_suhoe_12_4b10c72d3d.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/64f1f236906f1ddcd5733d5d2cbc45627982641998ea2dcdd8b3ccd0b4f27491.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "286e777d39a5f39d58e0411de7ab5ff887a344b399a1471184b9770197a4a516",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "vinodelnya-myshako-pino-gridzhio-beloe-polusuhoe-123",
+              "name": "Пино Гриджио",
+              "producer": "Мысхако",
+              "category": "Белое",
+              "color": "Соломенный",
+              "region": "Кубань",
+              "grapes": "Пино Гри",
+              "description": "Вкус: Гармоничный, свежий, с мягкой кислотностью и приятным послевкусием. Фрукты, цветы.",
+              "csv_photo_name": "vinodelnya-myshako-pino-gridzhio-beloe-polusuhoe-123.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:42:28.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#vinodelnya-myshako-pino-gridzhio-beloe-polusuhoe-123",
+              "images": [
+                {
+                  "wine_slug": "vinodelnya-myshako-pino-gridzhio-beloe-polusuhoe-123",
+                  "image_type": "main",
+                  "sha256": "ca54943005c80850f89227cfff9d677d16d0502d15ef168b31d12fff64270f1b",
+                  "source_name": "vinodelnya_myshako_pino_gridzhio_beloe_polusuhoe_123_b4efce4e31.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/ca54943005c80850f89227cfff9d677d16d0502d15ef168b31d12fff64270f1b.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "e12858df585488b3a2324c1aa294d23e291c77bbbd90d03db52bd9e2d360d097",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            }
+          ]
+        },
+        {
+          "product_uuid": "c32ab40b-872e-4684-b3c4-6b25d99442f0",
+          "atlas_url": "http://127.0.0.1:8157/products/c32ab40b-872e-4684-b3c4-6b25d99442f0",
+          "atlas_name": "РОССИЙСКОЕ ВИНО С ЗАЩИЩЕННЫМ ГЕОГРАФИЧЕСКИМ УКАЗАНИЕМ \"КУБАНЬ\" СУХОЕ КРАСНОЕ \"МАРСЕЛАН\"",
+          "atlas_producers": [
+            "Открытое акционерное общество \"Агропромышленная фирма \"Фанагория\""
+          ],
+          "catalogue_records": [
+            {
+              "wine_slug": "usadba-divnomorskoe-marselan-marselan-krasnoe-suhoe-149",
+              "name": "Marselan",
+              "producer": "Усадьба Дивноморское",
+              "category": "Красное",
+              "color": "Глубокий красный с чернильными оттенками",
+              "region": "Кубань",
+              "grapes": "Марселан",
+              "description": "В аромате доминируют нюансы лесной фиалки, черники, ежевики, какао. Вкус яркий, интенсивный, округлый, маслянистый, со сладкими шелковистыми танинами и приятным оттенком черничного джема в послевкусии.\nХорош к выдержанным сырам, стейку из говядины, ягнёнку, тушёным мясным блюдам.",
+              "csv_photo_name": "usadba-divnomorskoe-marselan-marselan-krasnoe-suhoe-149.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-06-03T23:49:00.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#usadba-divnomorskoe-marselan-marselan-krasnoe-suhoe-149",
+              "images": [
+                {
+                  "wine_slug": "usadba-divnomorskoe-marselan-marselan-krasnoe-suhoe-149",
+                  "image_type": "main",
+                  "sha256": "d91442ce96766e4f4a5a0b8bef32ee9bb090e29b9f3fe04bd6afd3353b8b7396",
+                  "source_name": "usadba_divnomorskoe_marselan_marselan_krasnoe_suhoe_149_cfc4d7c708.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/d91442ce96766e4f4a5a0b8bef32ee9bb090e29b9f3fe04bd6afd3353b8b7396.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "cbb38634a8a2e44c42a9ab115f193579c33a1c37dccc33ec0cbd85996846c53b",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "vinodelnya-myshako-marselan-krasnoe-suhoe-143",
+              "name": "Марселан",
+              "producer": "Мысхако",
+              "category": "Красное",
+              "color": "Рубиново-пурпурный",
+              "region": "Кубань",
+              "grapes": "Марселан",
+              "description": "Вкус: Полный, бархатистый, со сложным послевкусием. Красные ягоды, сливы, ежевика, инжир и увяленные фрукты.",
+              "csv_photo_name": "vinodelnya-myshako-marselan-krasnoe-suhoe-143.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:42:29.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#vinodelnya-myshako-marselan-krasnoe-suhoe-143",
+              "images": [
+                {
+                  "wine_slug": "vinodelnya-myshako-marselan-krasnoe-suhoe-143",
+                  "image_type": "main",
+                  "sha256": "eb3a88e9a114bf80e420183b4226ecaae3b2e1be9e1de42be3a387a2ff6671c7",
+                  "source_name": "vinodelnya_myshako_marselan_krasnoe_suhoe_143_26d0cfdb16.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/eb3a88e9a114bf80e420183b4226ecaae3b2e1be9e1de42be3a387a2ff6671c7.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "8de5d5ef89a1c455f4d05e242ab05c1a9829d9b8c698ca4eb1591410bcf509be",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            }
+          ]
+        },
+        {
+          "product_uuid": "cbe7e361-c9d8-4ebe-9ba3-3bbe17da8020",
+          "atlas_url": "http://127.0.0.1:8157/products/cbe7e361-c9d8-4ebe-9ba3-3bbe17da8020",
+          "atlas_name": "Вино сухое красное «Неббиоло»",
+          "atlas_producers": [
+            "Общество с ограниченной ответственностью \"Вейн унд Вассер\""
+          ],
+          "catalogue_records": [
+            {
+              "wine_slug": "nebbiolo",
+              "name": "Nebbiolo",
+              "producer": "Галицкий и Галицкий",
+              "category": "Красное",
+              "color": "Гранатово-красный",
+              "region": "Кубань",
+              "grapes": "Неббиоло",
+              "description": "Аромат: яркие оттенки малины, сухих цветов, выделанной кожи. Красиво дополняется тонами перечной мяты, экзотических пряностей и древесной смолы.\n\nВкус: объемная текстура, бархатистые танины, великолепный баланс между кислотностью и гастрономической сладостью. Объемное и элегантное одновременно. Финиш у вина яркий и длительный, с преобладанием в послевкусии оттенков ванили, кофе и сладких фиников.\n\nОсобенность винификации\n\nРучной сбор в первой декаде октября.\nПредварительное охлаждение винограда, двойной триаж, полное гребнеотделение. Предферментационная мацерация в течение 5 дней при температуре +8 градусов Цельсия. Брожение при температуре 25-27 градусов Цельсия. Техника винификации - комбинация ремонтажа и делестажа.\nОбщая продолжительность скин-контакта 45 дней. ЯМБ прошло на мезге в стальном резервуаре. Деликатное прессование, выдержка в больших ботти из славонского и французского дуба в течение 25 месяцев.",
+              "csv_photo_name": "неббиоло.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-07-13T20:14:15.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#nebbiolo",
+              "images": [
+                {
+                  "wine_slug": "nebbiolo",
+                  "image_type": "main",
+                  "sha256": "ade6831d9c39d3b7915603825f9992ff1b1a95c48a862da36966404a59c34e5b",
+                  "source_name": "nebbiolo_43312005b9.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/ade6831d9c39d3b7915603825f9992ff1b1a95c48a862da36966404a59c34e5b.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "c5f93ed92c87912920a1557258bebb5116c4903e55eef4823eaa7f19ae291db6",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            },
+            {
+              "wine_slug": "uppa-winery-nebbiolo-krasnoe-suhoe-14",
+              "name": "Неббиоло",
+              "producer": "Uppa Winery",
+              "category": "Красное",
+              "color": "Чистый, прозрачный красный цвет с кирпично-гранатовыми оттенками.",
+              "region": "Крым",
+              "grapes": "Неббиоло",
+              "description": "Аромат раскрывается яркой палитрой красных фруктов и ягод: спелая слива, вяленая вишня, брусника, желе из морошки, кизил и шиповник, дополненные изящными нотами эвкалипта, смолы, пряностей и легкими анималистическими акцентами. Вкус заостренный, элегантный, с бодрой кислотностью, сухим танином и долгим послевкусием. Вино требует аэрации.",
+              "csv_photo_name": "uppa-winery-nebbiolo-krasnoe-suhoe-14.webp",
+              "state": "Active",
+              "removed_by": null,
+              "website_modified_at": "2026-01-12T11:23:39.000Z",
+              "modified_at": "2026-09-26T04:34:30Z",
+              "name_patched": null,
+              "dataset_url": "http://127.0.0.1:8168/dataset#uppa-winery-nebbiolo-krasnoe-suhoe-14",
+              "images": [
+                {
+                  "wine_slug": "uppa-winery-nebbiolo-krasnoe-suhoe-14",
+                  "image_type": "main",
+                  "sha256": "c11861386a332235a6094a79f1b95afd6a8bf3034b1bb8def31c7e83716fbfc3",
+                  "source_name": "uppa_winery_nebbiolo_krasnoe_suhoe_14_2d7e43d3e7.webp",
+                  "match_method": "name-unique",
+                  "folder": "main",
+                  "extension": "webp",
+                  "url": "http://127.0.0.1:8168/images/main/c11861386a332235a6094a79f1b95afd6a8bf3034b1bb8def31c7e83716fbfc3.webp",
+                  "label_cut": [
+                    {
+                      "sha256": "bdc3c9717b380875db84388a370e8569b01d9244d4fa01b5fb8aea959ceb9cad",
+                      "kind": "label"
+                    }
+                  ]
+                }
+              ],
+              "codes": [],
+              "comments": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "priority": "High",
+      "issue": "Five Active wines have no images and no codes",
+      "impact": "The local embedding catalogue excludes these wines. No code lookup can recover them.",
+      "records": [
+        {
+          "wine_slug": "vibes-silvaner-barrel-fermented-2022",
+          "name": "VIBES, Silvaner Barrel Fermented 2022",
+          "producer": "Vibes",
+          "category": "Белое",
+          "color": "Светло-соломенный",
+          "region": "Крым",
+          "grapes": "Сильванер",
+          "description": "В аромате спелые яблоки, сочная айва, зрелая желтая груша, медовые соты. Вкус гармоничный, свежий, с мягкой кислотностью. \n\nСпелые яблоки, сочная айва, зрелая желтая груша, медовые соты, цветки апельсина и бурбонская ваниль. Объемное вино с хорошей кислотностью. Во вкусе напоминает яблочный пирог на хрустящем тесте.\n\nРучной сбор, холодная мацерация, ферментация в новых французских бочках Omega Radoux 225 л при низких температурах, выдержка на тонком осадке 9 месяцев, розлив в инертной среде.",
+          "csv_photo_name": "03-Silvaner-2022-Barrel-Fermented.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#vibes-silvaner-barrel-fermented-2022",
+          "images": [],
+          "codes": [],
+          "comments": []
+        },
+        {
+          "wine_slug": "polusladkoe-krasnoe-zb-vajn-frizzante",
+          "name": "Полусладкое красное ЗБ вайн Фриззанте",
+          "producer": "Золотая Балка",
+          "category": "Красное",
+          "color": "рубиновый",
+          "region": "Крым",
+          "grapes": "Каберне Совиньон",
+          "description": "Богатый аромат спелых ягод с нотами граната. Вкус мягкий, бархатистый, яркий и запоминающийся. Итальянский метод Frizzante.",
+          "csv_photo_name": "Фризанте красное полусладкое.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#polusladkoe-krasnoe-zb-vajn-frizzante",
+          "images": [],
+          "codes": [],
+          "comments": []
+        },
+        {
+          "wine_slug": "polusladkoe-krasnoe-zolotaya-balka",
+          "name": "Полусладкое Красное Золотая Балка",
+          "producer": "Золотая Балка",
+          "category": "Красное",
+          "color": "рубиновый",
+          "region": "Крым",
+          "grapes": "Мерло",
+          "description": "Аромат красных ягод и сладких фруктов, слегка оттененных специями.  Вкус сложный, многогранный, с ярким фруктовым послевкусием.  Создано методом Шарма-Мартинотти.",
+          "csv_photo_name": "Полусладкое красное.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#polusladkoe-krasnoe-zolotaya-balka",
+          "images": [],
+          "codes": [],
+          "comments": []
+        },
+        {
+          "wine_slug": "polusuhoe-rozovoe-zb-vajn-frizzante",
+          "name": "Полусухое розовое ЗБ вайн Фриззанте",
+          "producer": "Золотая Балка",
+          "category": "Розовое",
+          "color": "Нежно-розовый",
+          "region": "Крым",
+          "grapes": "Алиготе",
+          "description": "Аромат спелых красных ягод: малины, земляники, смородины и вишни, с полутонами лепестков чайной розы.  Вкус нежный, легкий с приятным долгим послевкусием. Итальянский метод Frizzante.",
+          "csv_photo_name": "ZB Frizzante Rose Semidry.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#polusuhoe-rozovoe-zb-vajn-frizzante",
+          "images": [],
+          "codes": [],
+          "comments": []
+        },
+        {
+          "wine_slug": "suhoe-beloe-zb-vajn-frizzante",
+          "name": "Сухое белое ЗБ вайн Фриззанте",
+          "producer": "Золотая Балка",
+          "category": "Белое",
+          "color": "Светло-соломенный",
+          "region": "Крым",
+          "grapes": "Ркацители",
+          "description": "Яркий аромат крымских фруктов — спелого персика и абрикоса, груши Дюшес, белой черешни, с переплетением цитрусовых и цветочных нот. Во вкусе спелый персик и абрикос, груша Дюшес",
+          "csv_photo_name": "Фризанте белое сухое.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#suhoe-beloe-zb-vajn-frizzante",
+          "images": [],
+          "codes": [],
+          "comments": []
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "priority": "High",
+      "issue": "Method Classic Kokur has the Pinot Noir 2025 rose image",
+      "evidence": "The label reads ПИНО НУАР 2025. The exact same original is used by pino-nuar-2025.",
+      "verification": "Visually inspected the stored image or its label crop. Each affected wine has only this main image and no patch or alternative.",
+      "impact": "The image matcher indexes a different product under this slug.",
+      "records": [
+        {
+          "wine_slug": "method-classic-kokur",
+          "name": "Method Classic Кокур",
+          "producer": "Винодельня Братьев Мельниковых",
+          "category": "Белое",
+          "color": "Светло-золотистый",
+          "region": "Крым",
+          "grapes": "Кокур",
+          "description": "Аромат спелых крымских персиков, груши дюшес и бриоши. Во вкусе тропические фрукты, ноты спелой айвы со сливочным красивым финишем",
+          "csv_photo_name": "DSC00836.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#method-classic-kokur",
+          "images": [
+            {
+              "wine_slug": "method-classic-kokur",
+              "image_type": "main",
+              "sha256": "97a2bc792481288d6cd4a505b469c66c04096f0afaa30390824c2e95a1b214db",
+              "source_name": "DSC_00836_4070f8fd2f.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/97a2bc792481288d6cd4a505b469c66c04096f0afaa30390824c2e95a1b214db.webp",
+              "label_cut": [
+                {
+                  "sha256": "b2682d08f00ceb63caf793fbcf09b0b5ba3f59c0e54c963cb3549cb2faa093b1",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": []
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "priority": "High",
+      "issue": "Shepot Tsvetov has the Veter v Travah red image",
+      "evidence": "The label reads ВЕТЕР В ТРАВАХ, СУХОЕ КРАСНОЕ 2021. The catalogue card is white Riesling / Sauvignon Blanc.",
+      "verification": "Visually inspected the stored image or its label crop. Each affected wine has only this main image and no patch or alternative.",
+      "impact": "The image matcher indexes a different product under this slug.",
+      "records": [
+        {
+          "wine_slug": "skalistyy-bereg-shyopot-tsvetov-risling-beloe-suhoe-109",
+          "name": "Шёпот цветов",
+          "producer": "Скалистый берег",
+          "category": "Белое",
+          "color": "Светло-соломенный",
+          "region": "Кубань",
+          "grapes": "Рислинг, Совиньон Блан",
+          "description": "В аромате оттенки дюшеса, весенних цветов, цитрусовых фруктов. Вкус свежий, сбалансированный, с приятной гастрономичной кислотностью, оттенками крыжовника, киви и длительным цитрусовым послевкусием.",
+          "csv_photo_name": "skalistyy-bereg-shyopot-tsvetov-risling-beloe-suhoe-109.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-04-02T12:54:38.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#skalistyy-bereg-shyopot-tsvetov-risling-beloe-suhoe-109",
+          "images": [
+            {
+              "wine_slug": "skalistyy-bereg-shyopot-tsvetov-risling-beloe-suhoe-109",
+              "image_type": "main",
+              "sha256": "b5badc7ae0f81b8e015212c14a6e3c2ec4a0152e8e0eee6dcadbaade5e6ef319",
+              "source_name": "skalistyy_bereg_shyopot_tsvetov_risling_beloe_suhoe_109_837159c193.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/b5badc7ae0f81b8e015212c14a6e3c2ec4a0152e8e0eee6dcadbaade5e6ef319.webp",
+              "label_cut": [
+                {
+                  "sha256": "72c7a45374c47caaee08e47345f964d3d2a96e2a709de2267089edde4b882423",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": []
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "priority": "High",
+      "issue": "Burnier Pinot Blanc has the Viognier image",
+      "evidence": "The lower label of the original reads ВИОНЬЕ, белое сухое, 2023. The same original is used by the Viognier card.",
+      "verification": "Visually inspected the stored image or its label crop. Each affected wine has only this main image and no patch or alternative.",
+      "impact": "The image matcher indexes a different product under this slug.",
+      "records": [
+        {
+          "wine_slug": "vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+          "name": "БЮРНЬЕ.ПИНО БЛАН сухое белое",
+          "producer": "Винодельня Бюрнье",
+          "category": "Белое",
+          "color": "Светло-лимонный",
+          "region": "Кубань",
+          "grapes": "Пино Блан",
+          "description": "Свежая, деликатная и нежная ароматика сладких белых цветов, персика и абрикоса, с нюансом сливочного крема. Во вкусе вино гармоничное и сбалансированное, с сочной кислотностью и продолжительным обволакивающим фруктовым послевкусием.",
+          "csv_photo_name": "Вионье 2023.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-04-19T12:33:08.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+          "images": [
+            {
+              "wine_slug": "vinodelnya-byurne-byurne-pino-blan-beloe-suhoe-14",
+              "image_type": "main",
+              "sha256": "e811388ea864f710a37c951de289481426898577b8ba59f63c5c040411fd6308",
+              "source_name": "Vione_2023_13d6c1ebf6.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/e811388ea864f710a37c951de289481426898577b8ba59f63c5c040411fd6308.webp",
+              "label_cut": [
+                {
+                  "sha256": "1136bb370a5be303941499e71bc9214b8c84773da5a75f15460694c68cf1f17a",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": []
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "priority": "High",
+      "issue": "Still Endemy Chardonnay has the sparkling brut image",
+      "evidence": "The label reads ШАРДОНЕ БРЮТ, Вино игристое белое. The same original is used by the brut card.",
+      "verification": "Visually inspected the stored image or its label crop. Each affected wine has only this main image and no patch or alternative.",
+      "impact": "The image matcher indexes a different product under this slug.",
+      "records": [
+        {
+          "wine_slug": "derbent-vino-endemy-shardone-beloe-suhoe-13",
+          "name": "Эндемы Шардоне",
+          "producer": "Дербент Вино",
+          "category": "Белое",
+          "color": "Соломенно-желтый",
+          "region": "Дагестан",
+          "grapes": "Шардоне",
+          "description": "В аромате белые цветы, садовые фрукты, анис, зрелый ананас. Вкус полный, развитый, элегантный и стройный, с маслянистой текстурой, нежной кислотностью и минеральными оттенками в длительном послевкусии.",
+          "csv_photo_name": "derbent-vino-endemy-shardone-beloe-suhoe-13.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-04-02T11:03:00.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#derbent-vino-endemy-shardone-beloe-suhoe-13",
+          "images": [
+            {
+              "wine_slug": "derbent-vino-endemy-shardone-beloe-suhoe-13",
+              "image_type": "main",
+              "sha256": "49af5673d94a8a3dc560d737a38be6b6ef7a0566dba039b06c8956796c9af06a",
+              "source_name": "derbent_vino_endemy_shardone_beloe_suhoe_13_62a14e694a.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/49af5673d94a8a3dc560d737a38be6b6ef7a0566dba039b06c8956796c9af06a.webp",
+              "label_cut": [
+                {
+                  "sha256": "13e57c63c8807ade212e497e4e3d886b920904e67054a96975a25f171af0b514",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": []
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "priority": "High",
+      "issue": "Sober Bash Riesling has the Pukhlyakovskiy image",
+      "evidence": "The label reads ПУХЛЯКОВСКИЙ 2024. The same original is used by the Pukhlyakovskiy card.",
+      "verification": "Visually inspected the stored image or its label crop. Each affected wine has only this main image and no patch or alternative.",
+      "impact": "The image matcher indexes a different product under this slug.",
+      "records": [
+        {
+          "wine_slug": "sober-bash-risling-risling-reynskiy-beloe-suhoe-11",
+          "name": "Рислинг",
+          "producer": "Собер Баш",
+          "category": "Белое",
+          "color": "Светло-соломенный",
+          "region": "Кубань",
+          "grapes": "Рислинг Рейнский",
+          "description": "В аромате ноты зелёного яблока, полевых цветов и цитрусовой группы. Во вкусе хрустящая кислотность и продолжительное послевкусие, цитрусы, цветы.",
+          "csv_photo_name": "sober-bash-risling-risling-reynskiy-beloe-suhoe-11.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-04-29T12:59:06.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#sober-bash-risling-risling-reynskiy-beloe-suhoe-11",
+          "images": [
+            {
+              "wine_slug": "sober-bash-risling-risling-reynskiy-beloe-suhoe-11",
+              "image_type": "main",
+              "sha256": "7da95de3004381dbe1e5062121309d3082808d1dedeb52395b61f5e6cc6f420c",
+              "source_name": "sober_bash_risling_risling_reynskiy_beloe_suhoe_11_3886abbe5d.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/7da95de3004381dbe1e5062121309d3082808d1dedeb52395b61f5e6cc6f420c.webp",
+              "label_cut": [
+                {
+                  "sha256": "18b5ecff02eb5070f85589906de66173a3e7b43d233826c33dc5ac6d67c2438d",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": []
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "priority": "High",
+      "issue": "Novy Svet brut has the semi-sweet image",
+      "evidence": "The label reads ПОЛУСЛАДКОЕ 2020. The same original is used by novyj-svet-polusladkoe.",
+      "verification": "Visually inspected the stored image or its label crop. Each affected wine has only this main image and no patch or alternative.",
+      "impact": "The image matcher indexes a different product under this slug.",
+      "records": [
+        {
+          "wine_slug": "novyj-svet-vyderzhannoe-bryut",
+          "name": "Новый Свет выдержанное брют",
+          "producer": "Новый Свет. Дом шампанских вин",
+          "category": "Белое",
+          "color": "Светло-соломенный",
+          "region": "Крым",
+          "grapes": "Шардоне",
+          "description": "Виноград, рожденный на меловых почвах предгорной зоны западного Крыма, в долине рек Альма и Кача, собирается вручную в прохладные утренние часы и тщательно сортируется. При производстве используется сок только первого отжима — «кюве». Вино выдерживается на осадке не менее 12 месяцев в тоннелях конца XIX века при постоянной температуре +14С. Технологические операции: перекладка, ремюаж — проводятся вручную.\n\nВино светло-соломенного цвета с лимонными отблесками. Окутывает ароматом луговых весенних цветов. Во вкусе груша, персик и яблоко. Нежное минеральное послевкусие.\n\nСорта винограда: Шардоне, Рислинг, Пино Нуар, Пино Гри",
+          "csv_photo_name": "4300_tlKHpEg.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-02-23T15:43:21.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#novyj-svet-vyderzhannoe-bryut",
+          "images": [
+            {
+              "wine_slug": "novyj-svet-vyderzhannoe-bryut",
+              "image_type": "main",
+              "sha256": "fbc54e6b8fd2f53067f9cef90ba4726a363580d7fabe6ac0c6d1aab7c555666b",
+              "source_name": "4300_tl_K_Hp_Eg_0fa0eef9b4.webp",
+              "match_method": "name-identical",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/fbc54e6b8fd2f53067f9cef90ba4726a363580d7fabe6ac0c6d1aab7c555666b.webp",
+              "label_cut": [
+                {
+                  "sha256": "38447cba86853afdcb4c102766f69d23e12b35e295ee2c9c857a1cadeead32e2",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": []
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "priority": "Medium",
+      "issue": "Seven visually confirmed vintage mismatches",
+      "impact": "The card name and image give different years to recognition and label comparison.",
+      "records": [
+        {
+          "wine_slug": "leto-vecrfn-2024-suhoe-vino",
+          "name": "LETO Мускат 2024 сухое белое",
+          "producer": "LETO",
+          "category": "Белое",
+          "color": "Светло-соломенное с золотистым отблеском",
+          "region": "Кубань",
+          "grapes": "Мускат",
+          "description": "Выдержано в емкостях из нержавеющей стали. В аромате цитрусовые - помело, грейпфрут, а также растительные тона - сухая трава, древесная кора.\nВино обладает умеренной кислотностью. Во вкусе цитрусовые оттенки - помело и лайм, а также ореховые тона.",
+          "csv_photo_name": "Белое сухое МУСКАТ.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-06-26T09:14:52.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#leto-vecrfn-2024-suhoe-vino",
+          "images": [
+            {
+              "wine_slug": "leto-vecrfn-2024-suhoe-vino",
+              "image_type": "main",
+              "sha256": "07c24b9a2e7d8c1709b9e0bde515b19a9f3bbc7f78014a5cfefa4306a88141ab",
+              "source_name": "Beloe_suhoe_MUSKAT_7b044897c5.webp",
+              "match_method": "name-identical",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/07c24b9a2e7d8c1709b9e0bde515b19a9f3bbc7f78014a5cfefa4306a88141ab.webp",
+              "label_cut": [
+                {
+                  "sha256": "c3ef50cb7ca6b98485dd3d7cdc694cdf9271eb865fd07779f130f5e79a6bf86c",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "name_year": 2024,
+          "image_year": 2023
+        },
+        {
+          "wine_slug": "shardone-barrel-2023",
+          "name": "Шардоне Баррель, 2023",
+          "producer": "Коммуналка",
+          "category": "Белое",
+          "color": "Золотистый",
+          "region": "Крым",
+          "grapes": "Шардоне",
+          "description": "Тона сочной спелой груши, припудренной ванильным сахаром, жареными орехами и липовым медом. Во вкусе плотное, сливочное, с тонами спелых косточковых фруктов, приятным цитрусовым финишем и хорошей кислотностью.",
+          "csv_photo_name": "Мокап шардоне 2023.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-08-09T17:56:06.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#shardone-barrel-2023",
+          "images": [
+            {
+              "wine_slug": "shardone-barrel-2023",
+              "image_type": "main",
+              "sha256": "1a3bb06e864bd2f85e03563989ff9f223cd78f6182016b416c8a67a6b9746a0f",
+              "source_name": "Mokap_shardone_2023_af03bb23ca.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/1a3bb06e864bd2f85e03563989ff9f223cd78f6182016b416c8a67a6b9746a0f.webp",
+              "label_cut": [
+                {
+                  "sha256": "c0780d5987215c4fa60be6971497ec42d838d1a498ff6c7f45f4b0a522cecfd4",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "name_year": 2023,
+          "image_year": 2024
+        },
+        {
+          "wine_slug": "__rkatsiteli-muskat-oranzh-2025",
+          "name": "Ркацители & Мускат Оранж 2025",
+          "producer": "Усадьба Перовских",
+          "category": "Оранжевое",
+          "color": "Соломенно-золотистый",
+          "region": "Крым",
+          "grapes": "Ркацители 80%, Мускат Оттонель 20%",
+          "description": "Сухое оранжевое вино. Урожай 2025.",
+          "csv_photo_name": "01880296d335c263.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-29T10:11:11Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#__rkatsiteli-muskat-oranzh-2025",
+          "images": [
+            {
+              "wine_slug": "__rkatsiteli-muskat-oranzh-2025",
+              "image_type": "main",
+              "sha256": "03479f9d1416f7caf0247c5e75ee8c632db354d29d7ec514a7494dce71d8a1fa",
+              "source_name": "01880296d335c263.webp",
+              "match_method": "manual",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/03479f9d1416f7caf0247c5e75ee8c632db354d29d7ec514a7494dce71d8a1fa.webp",
+              "label_cut": [
+                {
+                  "sha256": "4d105dfc90edc257a85e60f259bccccd15ec3cd70ba4f3ff7813cfe7b6c9f3c9",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "name_year": 2025,
+          "image_year": 2022
+        },
+        {
+          "wine_slug": "__rozovoe-suhoe-2025",
+          "name": "Розовое сухое 2025",
+          "producer": "Усадьба Перовских",
+          "category": "Розовое",
+          "color": "Нежно-розовый",
+          "region": "Крым",
+          "grapes": "Мерло",
+          "description": "Сухое розовое вино. Урожай 2025.",
+          "csv_photo_name": "6b9ac975e48e6ab5.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-29T10:11:51Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#__rozovoe-suhoe-2025",
+          "images": [
+            {
+              "wine_slug": "__rozovoe-suhoe-2025",
+              "image_type": "main",
+              "sha256": "0e6e78596e25a035488a8fc91f39996f70bb810efd750de84ca0214dcca92a72",
+              "source_name": "6b9ac975e48e6ab5.webp",
+              "match_method": "manual",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/0e6e78596e25a035488a8fc91f39996f70bb810efd750de84ca0214dcca92a72.webp",
+              "label_cut": [
+                {
+                  "sha256": "acfa3aa8c33607af73751793833ae28be13450b633bf419f5a1d759c9ff6bd2c",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "name_year": 2025,
+          "image_year": 2024
+        },
+        {
+          "wine_slug": "__kaberne-sovinon-rezerv-2024",
+          "name": "Каберне Совиньон Резерв 2024",
+          "producer": "Усадьба Перовских",
+          "category": "Красное",
+          "color": "Насыщенный пурпурный",
+          "region": "Крым",
+          "grapes": "Каберне Совиньон",
+          "description": "Сухое красное выдержанное вино. Урожай 2024.",
+          "csv_photo_name": "e503d4bd6238109b.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-29T10:12:37Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#__kaberne-sovinon-rezerv-2024",
+          "images": [
+            {
+              "wine_slug": "__kaberne-sovinon-rezerv-2024",
+              "image_type": "main",
+              "sha256": "e1ed863c4eaab6ebed54775325ebe5acf2b00fc1c359e4cf5a08fe392396fb98",
+              "source_name": "e503d4bd6238109b.webp",
+              "match_method": "manual",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/e1ed863c4eaab6ebed54775325ebe5acf2b00fc1c359e4cf5a08fe392396fb98.webp",
+              "label_cut": [
+                {
+                  "sha256": "5b6fd36aeaf920a3cd5927f2ece1032e9f6510ee55bfa335b7be05379c200ba1",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "name_year": 2024,
+          "image_year": 2022
+        },
+        {
+          "wine_slug": "__massandra-suhoe-krasnoe-2025",
+          "name": "Сухое красное 2025",
+          "producer": "Массандра",
+          "category": "Красное",
+          "color": "Рубиновый",
+          "region": "Крым",
+          "grapes": null,
+          "description": "Ординарное сухое красное вино. Урожай 2025.",
+          "csv_photo_name": "27acb30708c64e18.jpg",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-29T10:13:11Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#__massandra-suhoe-krasnoe-2025",
+          "images": [
+            {
+              "wine_slug": "__massandra-suhoe-krasnoe-2025",
+              "image_type": "main",
+              "sha256": "5e4dfc8e2563d2f2e4390bcbb49541b0af39de365835a5cbf734d8a524682d89",
+              "source_name": "27acb30708c64e18.jpg",
+              "match_method": "manual",
+              "folder": "main",
+              "extension": "jpg",
+              "url": "http://127.0.0.1:8168/images/main/5e4dfc8e2563d2f2e4390bcbb49541b0af39de365835a5cbf734d8a524682d89.jpg",
+              "label_cut": [
+                {
+                  "sha256": "feea42e0406a945e74911842e10da3a4de12d46f3bfe6ce80f5d89552b49553e",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "name_year": 2025,
+          "image_year": 2022
+        },
+        {
+          "wine_slug": "__chateau-pinot-belenkoe-2025",
+          "name": "Château Pinot Беленькое 2025",
+          "producer": "Шато Пино",
+          "category": "Белое",
+          "color": "Светло-соломенный с зеленоватым оттенком",
+          "region": "Кубань, Новороссийск",
+          "grapes": "Шардоне, Совиньон Блан, Гевюрцтраминер, Семильон, Вионье, Рислинг Рейнский, Пино Блан",
+          "description": "Свежее гармоничное белое сухое вино с яркой кислотностью, ароматами зелёного яблока, цитрусовых фруктов и акации. Длительная холодная ферментация каждого сорта в стали, затем выдержка ассамбляжа на тонком осадке.",
+          "csv_photo_name": "7a16f81e0217cc3b.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": null,
+          "modified_at": "2026-09-29T10:43:40Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#__chateau-pinot-belenkoe-2025",
+          "images": [
+            {
+              "wine_slug": "__chateau-pinot-belenkoe-2025",
+              "image_type": "main",
+              "sha256": "0088ed8d72203287fdb11d32d1f4908e1a0697674bf9c9532894bac2c107778d",
+              "source_name": "7a16f81e0217cc3b.webp",
+              "match_method": "manual",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/0088ed8d72203287fdb11d32d1f4908e1a0697674bf9c9532894bac2c107778d.webp",
+              "label_cut": [
+                {
+                  "sha256": "0d59955406809162c7fef3272c86f7d34d1cf8f9a23d04ebfbe51b72af9cfeeb",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "name_year": 2025,
+          "image_year": 2024
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "priority": "Medium",
+      "issue": "Four contradictory colour or grape records",
+      "impact": "Product cards and metadata-based filters give the wrong wine attributes.",
+      "records": [
+        {
+          "wine_slug": "twopeters_kokur",
+          "name": "Кокур",
+          "producer": "Два Петра",
+          "category": "Красное",
+          "color": "Желто-соломенный",
+          "region": "Крым",
+          "grapes": "Саперави",
+          "description": "Выдержка в стали на дрожжевом осадке  6 месяцев + выдержка в  португальских барриках 6-8 месяцев. Аромат: белый персик, абрикосовя косточка. Вкус: мягкий с легкой горчинки.",
+          "csv_photo_name": "product (5).webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-06-20T11:48:12.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#twopeters_kokur",
+          "images": [
+            {
+              "wine_slug": "twopeters_kokur",
+              "image_type": "main",
+              "sha256": "5dd40772673ea9603555cb6da2088fff927efb372d8ea66ea922bd0c0d8b104d",
+              "source_name": "product_5_a2d5dbddf8.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/5dd40772673ea9603555cb6da2088fff927efb372d8ea66ea922bd0c0d8b104d.webp",
+              "label_cut": [
+                {
+                  "sha256": "58d97eb574e23e01d15406d3582887e942f5d00b6104cca83bf0f309718a2daa",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "conflict": "Name and image say Kokur, but grapes is Saperavi. Category is red while color is straw yellow."
+        },
+        {
+          "wine_slug": "uva-vallis-risling",
+          "name": "Uva Vallis Рислинг",
+          "producer": "Uva Vallis",
+          "category": "Красное",
+          "color": "Золотисто-соломенный",
+          "region": "Крым",
+          "grapes": "Рислинг",
+          "description": "Аромат раскрывается классическими для сорта нотами белых цветов, хрустящего белого яблока и груши, дополненными деликатными нюансами специй и воска. \n\nВо вкусе вино строгое и структурное, с яркой, хрустящей и сбалансированной кислотностью, средним телом и выраженным минеральным послевкусием. Классический молодой рислинг с характерной минеральностью, сочностью и гастрономическим потенциалом.",
+          "csv_photo_name": "cu3xjk4e93p2zxvazyl9c3jlidfny9ub.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-08-02T14:23:36.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#uva-vallis-risling",
+          "images": [
+            {
+              "wine_slug": "uva-vallis-risling",
+              "image_type": "main",
+              "sha256": "cc938bd93fa932af38758e7ea9234c99c40a7caae44f85f27e76f457c8d21ec3",
+              "source_name": "cu3xjk4e93p2zxvazyl9c3jlidfny9ub_cf6ed0e9b3.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/cc938bd93fa932af38758e7ea9234c99c40a7caae44f85f27e76f457c8d21ec3.webp",
+              "label_cut": [
+                {
+                  "sha256": "a15f4e7e33a7b578d87d4b135d03eee963f67364daa9441e44612f5c7554fc5c",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "conflict": "Category is red while color is golden straw and name and grapes say Riesling."
+        },
+        {
+          "wine_slug": "perovskih_aligote",
+          "name": "Алиготе. Лимитированная серия",
+          "producer": "Усадьба Перовских",
+          "category": "Красное",
+          "color": "Вино светло-соломенного цвета.",
+          "region": "Крым",
+          "grapes": "Алиготе",
+          "description": "Яркий цветочный аромат с легкими нотками белых фруктов и луговых трав. Свежий гармоничный вкус с тонами трав и изящной горчинкой",
+          "csv_photo_name": "Алиготе_лимитированная.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-06-20T18:36:46.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#perovskih_aligote",
+          "images": [
+            {
+              "wine_slug": "perovskih_aligote",
+              "image_type": "full_back",
+              "sha256": "8970638e0a4970355d4d68c9705dda281ab06fb374e540fda5b4219a2b869dd7",
+              "source_name": "clipboard-1790509375171.png",
+              "match_method": "manual",
+              "folder": "additional",
+              "extension": "png",
+              "url": "http://127.0.0.1:8168/images/additional/8970638e0a4970355d4d68c9705dda281ab06fb374e540fda5b4219a2b869dd7.png",
+              "label_cut": [
+                {
+                  "sha256": "4997291a9d3956f56e756bef6e033057fb4a38d7b0a5bc090f8686aea5cf7637",
+                  "kind": "label"
+                }
+              ]
+            },
+            {
+              "wine_slug": "perovskih_aligote",
+              "image_type": "full_front",
+              "sha256": "13d0fdcfabed45f48afb66faca03665abe57c510f146bec35c2a1805a480fba8",
+              "source_name": "clipboard-1790509369731.png",
+              "match_method": "manual",
+              "folder": "additional",
+              "extension": "png",
+              "url": "http://127.0.0.1:8168/images/additional/13d0fdcfabed45f48afb66faca03665abe57c510f146bec35c2a1805a480fba8.png",
+              "label_cut": [
+                {
+                  "sha256": "a295c0bfddcc0e36a6db8a811f593ba2e006ac55dfb9bf2c616410c5961469bb",
+                  "kind": "label"
+                }
+              ]
+            },
+            {
+              "wine_slug": "perovskih_aligote",
+              "image_type": "label_back",
+              "sha256": "e10365c9930f6048f7d9b6691c5f33c97da6199c6296dc5006b17558b2617a28",
+              "source_name": "clipboard-1790509385644.png",
+              "match_method": "manual",
+              "folder": "additional",
+              "extension": "png",
+              "url": "http://127.0.0.1:8168/images/additional/e10365c9930f6048f7d9b6691c5f33c97da6199c6296dc5006b17558b2617a28.png",
+              "label_cut": [
+                {
+                  "sha256": "08ddc8def29b87284680e2ca948d25117e3dee26568bc802a3fc941b494221e1",
+                  "kind": "label"
+                }
+              ]
+            },
+            {
+              "wine_slug": "perovskih_aligote",
+              "image_type": "main",
+              "sha256": "aad1e24a9b5b88f59f26855fd40db7231d487f89572d32309ef7180e69a899b4",
+              "source_name": "Aligote_limitirovannaya_60fab8c449.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/aad1e24a9b5b88f59f26855fd40db7231d487f89572d32309ef7180e69a899b4.webp",
+              "label_cut": [
+                {
+                  "sha256": "95d08e492e5f4a9d199e64ed7ac4bb9d6de427eff9f99d79324d23a944789e1c",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [
+            {
+              "kind": "gtin",
+              "value": "04630171631046"
+            }
+          ],
+          "comments": [],
+          "conflict": "Category is red while color is light straw. Bound Atlas product explicitly says dry white Aligote."
+        },
+        {
+          "wine_slug": "fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+          "name": "Фанагория. Полусладкое розовое",
+          "producer": "Фанагория",
+          "category": "Красное",
+          "color": "Светло-розовый",
+          "region": "Кубань",
+          "grapes": "Мерло, Пино Нуар, Совиньон Блан, Шардоне",
+          "description": "Аромат свежий, цветочно-ягодный со сливочно-клубничными оттенками. Вкус мягкий, с нотами спелой клубники и земляники. послевкусие нежное, цитрусовое с оттенками лесных ягод.",
+          "csv_photo_name": "fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13.webp",
+          "state": "Active",
+          "removed_by": null,
+          "website_modified_at": "2026-04-02T13:27:12.000Z",
+          "modified_at": "2026-09-26T04:34:30Z",
+          "name_patched": null,
+          "dataset_url": "http://127.0.0.1:8168/dataset#fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+          "images": [
+            {
+              "wine_slug": "fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+              "image_type": "full_back",
+              "sha256": "eb7de1680c5010fcf08f5f7e9efb63189eb9f8358a2d5bf81a8dae64c74305db",
+              "source_name": "clipboard-1790527937015.png",
+              "match_method": "manual",
+              "folder": "additional",
+              "extension": "png",
+              "url": "http://127.0.0.1:8168/images/additional/eb7de1680c5010fcf08f5f7e9efb63189eb9f8358a2d5bf81a8dae64c74305db.png",
+              "label_cut": [
+                {
+                  "sha256": "fbaeba3356e4a58e1906e61d06178206dda2f68fcd231a688f2fc0c100e787a5",
+                  "kind": "label"
+                }
+              ]
+            },
+            {
+              "wine_slug": "fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+              "image_type": "full_front",
+              "sha256": "624ac802bf4a35b63d3ea9688f6a9ae710c93af096ca17437d14c4bd8d848e9e",
+              "source_name": "clipboard-1790527926931.png",
+              "match_method": "manual",
+              "folder": "additional",
+              "extension": "png",
+              "url": "http://127.0.0.1:8168/images/additional/624ac802bf4a35b63d3ea9688f6a9ae710c93af096ca17437d14c4bd8d848e9e.png",
+              "label_cut": [
+                {
+                  "sha256": "0c35c3523260ae960f819ec539b195d4d171a39e1fa6d28c8c5388b422e4267a",
+                  "kind": "label"
+                }
+              ]
+            },
+            {
+              "wine_slug": "fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+              "image_type": "label_back",
+              "sha256": "ede6a86703d36f08972c9f807bf7cd17091a2c864cb44b25bddcff78086a2c01",
+              "source_name": "clipboard-1790527945177.png",
+              "match_method": "manual",
+              "folder": "additional",
+              "extension": "png",
+              "url": "http://127.0.0.1:8168/images/additional/ede6a86703d36f08972c9f807bf7cd17091a2c864cb44b25bddcff78086a2c01.png",
+              "label_cut": [
+                {
+                  "sha256": "914f24542cbbb76f820129c014679bda08096f017e62b2c32aedd3a041ddc1d9",
+                  "kind": "label"
+                }
+              ]
+            },
+            {
+              "wine_slug": "fanagoriya-fanagoriya-polusladkoe-rozovoe-sovinon-blan-krasnoe-11-13",
+              "image_type": "main",
+              "sha256": "84592b13e0b7962dc50d76715947801d5bdcf6005b13314e624b4825400d8de9",
+              "source_name": "fanagoriya_fanagoriya_polusladkoe_rozovoe_sovinon_blan_krasnoe_11_13_f19a8f122b.webp",
+              "match_method": "name-unique",
+              "folder": "main",
+              "extension": "webp",
+              "url": "http://127.0.0.1:8168/images/main/84592b13e0b7962dc50d76715947801d5bdcf6005b13314e624b4825400d8de9.webp",
+              "label_cut": [
+                {
+                  "sha256": "71ee5ad7ed49e485f1eecbdf3eaf675a6b6be94457d7434ce424a1b045666527",
+                  "kind": "label"
+                }
+              ]
+            }
+          ],
+          "codes": [],
+          "comments": [],
+          "conflict": "Category is red while the name, color and bound Atlas product say rose."
+        }
+      ]
+    }
+  ]
+}

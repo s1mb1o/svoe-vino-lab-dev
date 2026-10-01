@@ -295,6 +295,10 @@ class ConfigTest(unittest.TestCase):
         self.assertNotEqual(one["rules_sha"], thinking["rules_sha"])
         self.assertEqual(one["rules_sha"], more["rules_sha"])
         self.assertEqual(one["describe_sha"], thinking["describe_sha"])
+        # The limits of the additional pictures are in the inputs of a rule, not here.
+        images = label_rules.config_values(self.settings({"vlm": "one",
+                                                          "rules_max_images": 5}))
+        self.assertEqual(one["rules_sha"], images["rules_sha"])
 
 
 
@@ -333,6 +337,211 @@ class DescribeRepairTest(unittest.TestCase):
         rec = self.describe(answer)
         self.assertEqual(rec["description"], answer)
         self.assertNotIn("repairs", rec)
+
+
+class VintageTagTest(unittest.TestCase):
+    """A vintage tag of a wine counts as a year of the catalogue name (plan 97, owner
+    message of about 2026-10-01T00:08:00+0300)."""
+
+    QUESTION = {"question": "What vintage year is printed?",
+                "answers": {"A": "2021", "B": "2020"}}
+
+    def test_the_tags_of_a_card(self):
+        catalog = {A: {"tags": ["brut", "2021", "vintage:2019"]}, B: {"tags": ["no_year"]},
+                   C: {"tags": ["vintage:21", "20201"]}}
+        self.assertEqual(label_rules.vintage_tags(A, catalog), ({"2019", "2021"}, False))
+        self.assertEqual(label_rules.vintage_tags(B, catalog), (set(), True))
+        self.assertEqual(label_rules.vintage_tags(C, catalog), (set(), False))
+        self.assertEqual(label_rules.vintage_tags(A, None), (set(), False))
+
+    def test_a_tagged_year_counts_as_a_year_of_the_name(self):
+        names = {A: {"name": "Wine"}, B: {"name": "Wine"}}
+        untagged = label_rules.check_rule(rule([self.QUESTION]), {"A": A, "B": B}, names)
+        self.assertFalse(untagged["questions"][0]["valid"])
+        catalog = {A: {"name": "Wine", "tags": ["2021"]},
+                   B: {"name": "Wine", "tags": ["vintage:2020"]}}
+        out = label_rules.check_rule(rule([self.QUESTION]), {"A": A, "B": B}, catalog)
+        self.assertEqual(out["mode"], "sheet")
+        self.assertTrue(out["questions"][0]["valid"])
+        self.assertEqual(out["questions"][0]["answers"], {A: "2021", B: "2020"})
+
+    def test_the_tag_no_year_makes_the_card_of_every_other_vintage(self):
+        catalog = {A: {"name": "Wine", "tags": ["2021"]}, B: {"name": "Wine", "tags": ["no_year"]}}
+        # The label of B reads a year; the tag wins. With no description, B still counts.
+        for cards in ({B: {"description": {"vintage": 2019}}}, {}):
+            dated, undated = label_rules.vintage_facts([A, B], catalog, cards)
+            self.assertEqual(dated, {A: {"years": {"2021"}, "where": "in a tag"}})
+            self.assertEqual(undated, [B])
+        out = label_rules.check_rule(rule([
+            {"question": "What vintage year is printed?", "answers": {"A": "2021", "B": "other"}},
+        ]), {"A": A, "B": B}, catalog, {})
+        self.assertTrue(out["questions"][0]["valid"])
+        self.assertEqual(out["questions"][0]["answers"], {A: "2021", B: "other"})
+
+    def test_a_year_of_the_name_wins_over_a_tag(self):
+        catalog = {A: {"name": "Wine 2018", "tags": ["2021", "no_year"]}}
+        dated, undated = label_rules.vintage_facts([A], catalog, {})
+        self.assertEqual((dated, undated), ({A: {"years": {"2018"}, "where": "in the name"}}, []))
+
+    def test_only_a_cluster_with_a_vintage_tag_gets_the_tag_note(self):
+        letters = {"A": A, "B": B}
+        pictures = {A: {"kind": "label", "sha256": "sha-a", "path": "a",
+                        "source_sha256": "src-a"},
+                    B: {"kind": "label", "sha256": "sha-b", "path": "b",
+                        "source_sha256": "src-b"}}
+        cfg = {"rules_sha": "s"}
+
+        def render(path, side):
+            return b"png", (side, side)
+
+        def prompt(catalog):
+            return label_rules.rules_content(letters, catalog, {}, "", pictures, 64,
+                                             render=render)[2]
+
+        def inputs(catalog):
+            return label_rules.inputs_sha([A, B], catalog, {}, pictures, pictures, "", cfg)
+
+        plain = {A: {"name": "Wine"}, B: {"name": "Wine"}}
+        other_tags = {A: {"name": "Wine", "tags": ["brut"]}, B: {"name": "Wine"}}
+        tagged = {A: {"name": "Wine", "tags": ["2021"]},
+                  B: {"name": "Wine", "tags": ["vintage:2020", "no_year"]}}
+        self.assertNotIn("Vintage tags.", prompt(plain))
+        self.assertEqual(prompt(other_tags), prompt(plain))
+        self.assertEqual(inputs(other_tags), inputs(plain))
+        note = label_rules.TAG_NOTE % {"tags": "Card A: 2021; Card B: 2020, no_year"}
+        text = prompt(tagged)
+        self.assertIn("\n\n" + note + "\n\nAnswer with one JSON object:", text)
+        self.assertNotEqual(inputs(tagged), inputs(plain))
+        # A card with a year tag and a card with `no_year` also get the vintage note,
+        # after the tag note.
+        mixed = {A: {"name": "Wine", "tags": ["2021"]}, B: {"name": "Wine", "tags": ["no_year"]}}
+        text = prompt(mixed)
+        self.assertLess(text.index("Vintage tags."), text.index("Vintage variants."))
+        self.assertIn("Card A: 2021, in a tag", text)
+
+
+class ExtraPictureTest(unittest.TestCase):
+    """Stage 2 also sends the label pictures of the additional photos (owner message of
+    2026-09-30T15:55:42+0300)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.cfg = {"rules_entry": vlm_config.Entry(
+                        "test-vlm", "openai", "chat_template_kwargs",
+                        "http://127.0.0.1:9/v1", "test-model", ""),
+                    "rules_max_images": 20, "rules_context_tokens": 32768,
+                    "rules_max_tokens": 2500, "rules_max_side": 64,
+                    "rules_thinking": False, "rules_timeout_s": 10, "rules_sha": "s"}
+        self.calls = []
+
+    def file(self, name, colour):
+        path = Path(self.tmp.name) / ("%s.png" % name)
+        Image.new("RGB", (32, 64), colour).save(path)
+        return str(path)
+
+    def picture(self, name, image_type=None):
+        out = {"kind": "label", "sha256": "sha-" + name, "path": self.file(name, "red"),
+               "source_sha256": "src-" + name}
+        if image_type:
+            out["image_type"] = image_type
+        return out
+
+    def ask(self, entry, content, max_tokens, thinking, timeout, extra=None):
+        self.calls.append(content)
+        answer = {"differences": "d", "rule": "r", "indistinguishable": [],
+                  "questions": [{"question": "What name is printed on the label?",
+                                 "answers": {"A": "ONE", "B": "TWO"}}]}
+        return {"text": json.dumps(answer), "ms": 1, "usage": {}, "finish_reason": "stop",
+                "model": "test-model", "cached": False}
+
+    def test_the_pictures_of_the_additional_photos(self):
+        def source(name, label=True):
+            cut = {"sha256": "cut-" + name, "path": "/cut/" + name} if label else None
+            return {"path": "/orig/" + name, "cuts": {"package": None, "label": cut}}
+        sources = {"main": source("main"), "ff": source("ff"), "fb": source("fb", False),
+                   "lf": source("lf", False), "lb": source("lb")}
+        wine = {"columns": [("main", "main"), ("full_front", "ff"), ("full_back", "fb"),
+                            ("label_front", "lf"), ("label_back", "lb")]}
+        out = label_rules.extra_pictures(wine, sources)
+        # A full photo with no label cut gives nothing; a close-up with no cut gives its
+        # original. The main image is not an additional picture.
+        self.assertEqual([(p["image_type"], p["sha256"], p["path"]) for p in out], [
+            ("full_front", "cut-ff", "/cut/ff"), ("label_front", "lf", "/orig/lf"),
+            ("label_back", "cut-lb", "/cut/lb")])
+        self.assertEqual(out[0]["source_sha256"], "ff")
+        self.assertEqual(label_rules.extra_pictures(None, sources), [])
+
+    def test_the_order_takes_one_picture_of_each_card_first(self):
+        extras = {A: ["a1", "a2", "a3"], B: ["b1"], C: ["c1", "c2"]}
+        order = label_rules.extra_order(LETTERS, extras)
+        self.assertEqual([p for _, p in order], ["a1", "b1", "c1", "a2", "c2", "a3"])
+        self.assertEqual(label_rules.extra_order(LETTERS, None), [])
+
+    def test_the_extras_go_after_their_card_with_the_extra_caption(self):
+        letters = {"A": A, "B": B}
+        pictures = {A: self.picture("a"), B: self.picture("b")}
+        extras = {A: [self.picture("a-back", "full_back")]}
+        content, _, _, sent = label_rules.rules_content(letters, {}, {}, "", pictures, 64,
+                                                        extras)
+        kinds = [part["type"] if part["type"] == "image_url" else part["text"]
+                 for part in content[:-1]]
+        self.assertEqual(kinds, [
+            "Card A:", "image_url",
+            label_rules.CAPTION_EXTRA % {"letter": "A", "side": "back"}, "image_url",
+            "Card B:", "image_url"])
+        self.assertEqual(sent, {A: ["sha-a", "sha-a-back"], B: ["sha-b"]})
+
+    def test_the_extras_are_trimmed_to_the_image_limit(self):
+        self.cfg["rules_max_images"] = 3
+        pictures = {A: self.picture("a"), B: self.picture("b")}
+        extras = {A: [self.picture("a1", "full_front"), self.picture("a2", "label_back")],
+                  B: [self.picture("b1", "full_back")]}
+        rec = label_rules.build_rule(self.ask, self.cfg, [A, B], {}, {}, pictures,
+                                     pictures, "", "h", extras)
+        self.assertIsNone(rec["error"])
+        images = sum(1 for part in self.calls[0] if part["type"] == "image_url")
+        self.assertEqual(images, 3)
+        self.assertEqual([p["sha256"] for p in rec["extra_pictures"][A]], ["sha-a1"])
+        self.assertNotIn(B, rec["extra_pictures"])
+        self.assertEqual([(d["slug"], d["sha256"]) for d in rec["extras_dropped"]],
+                         [(B, "sha-b1"), (A, "sha-a2")])
+        self.assertEqual(rec["questions"][0]["evidence"], {A: ["sha-a", "sha-a1"],
+                                                           B: ["sha-b"]})
+
+    def test_the_extras_are_trimmed_to_the_token_budget_first(self):
+        pictures = {A: self.picture("a"), B: self.picture("b")}
+        extras = {A: [self.picture("a1", "full_front")], B: [self.picture("b1", "full_back")]}
+        letters = {"A": A, "B": B}
+        _, one, _, _ = label_rules.rules_content(letters, {}, {}, "", pictures, 64,
+                                                 {A: extras[A]})
+        _, two, _, _ = label_rules.rules_content(letters, {}, {}, "", pictures, 64, extras)
+        self.assertLess(one, two)
+        # The budget holds one additional picture at the configured side.
+        self.cfg["rules_context_tokens"] = (one + self.cfg["rules_max_tokens"]
+                                            + label_rules.CONTEXT_MARGIN)
+        rec = label_rules.build_rule(self.ask, self.cfg, [A, B], {}, {}, pictures,
+                                     pictures, "", "h", extras)
+        self.assertEqual(rec["max_side"], 64)
+        self.assertEqual(rec["prompt_tokens_estimate"], one)
+        self.assertEqual(list(rec["extra_pictures"]), [A])
+        self.assertEqual([d["sha256"] for d in rec["extras_dropped"]], ["sha-b1"])
+
+    def test_a_cluster_with_no_extra_keeps_its_inputs_sha(self):
+        pictures = {A: self.picture("a"), B: self.picture("b")}
+        old = label_rules.inputs_sha([A, B], {}, {}, pictures, pictures, "", self.cfg)
+        # An additional picture of a card outside the cluster changes nothing.
+        other = {C: [self.picture("c1", "full_back")]}
+        self.assertEqual(label_rules.inputs_sha([A, B], {}, {}, pictures, pictures, "",
+                                                self.cfg, other), old)
+        mine = {A: [self.picture("a1", "full_back")]}
+        new = label_rules.inputs_sha([A, B], {}, {}, pictures, pictures, "", self.cfg, mine)
+        self.assertNotEqual(new, old)
+        self.cfg["rules_max_images"] = 5
+        self.assertNotEqual(label_rules.inputs_sha([A, B], {}, {}, pictures, pictures, "",
+                                                   self.cfg, mine), new)
+        self.assertEqual(label_rules.inputs_sha([A, B], {}, {}, pictures, pictures, "",
+                                                self.cfg), old)
 
 
 if __name__ == "__main__":

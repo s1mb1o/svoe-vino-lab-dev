@@ -1,0 +1,16 @@
+{
+  "cross_origin_plain_text_write": {
+    "status": 200,
+    "body": {
+      "slug": "wine-b",
+      "name": "review fixture only",
+      "catalog_name": "\u0412\u0438\u043d\u043e b",
+      "name_patched": true
+    },
+    "stored_name_patched": "review fixture only"
+  },
+  "invalid_photo_move": {
+    "exception": "HTTPError",
+    "message": "HTTP Error 500: Internal Server Error"
+  }
+}

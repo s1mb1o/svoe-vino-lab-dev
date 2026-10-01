@@ -20,3 +20,5 @@ torch>=2.11
 torchvision>=0.26
 transformers>=5.5
 ai-edge-litert>=2.2,<2.3
+opencv-python-headless>=4.12
+rapidfuzz>=3.14

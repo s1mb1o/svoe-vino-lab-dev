@@ -39,10 +39,12 @@ GET /runs
 GET /recognize
 GET /health
 GET /website-import.js
+GET /atlas-import.js
 GET /images/{folder}/{sha256}.{extension}
 GET /embeddings/{name}/images/{sha256}_{view}.png
 GET /website-import/{run}/images/{sha256}.{extension}
 GET /recognize/photo/{sha256}.{extension}
+GET /api/local-image
 GET /api/dataset
 POST /api/wine
 GET /api/wine-index
@@ -61,6 +63,7 @@ POST /api/dataset-alternative-type
 POST /api/dataset-alternative-cut
 DELETE /api/dataset-alternative-cut
 POST /api/dataset-alternative-recut
+POST /api/dataset-photo-move
 POST /api/dataset-atlas-binding
 DELETE /api/dataset-atlas-binding
 POST /api/dataset-atlas-binding-approve
@@ -122,6 +125,10 @@ POST /api/website-import/start
 POST /api/website-import/stop
 GET /api/website-import/{run}/diff
 POST /api/website-import/{run}/apply
+POST /api/atlas-import/advance
+GET /api/atlas-import/photos
+POST /api/atlas-import/create
+POST /api/atlas-import/add
 GET /api/recognize
 POST /api/recognize
 GET /api/health

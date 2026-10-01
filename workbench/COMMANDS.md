@@ -39,6 +39,60 @@ removed on the page. Add `--force` to add the missing rows anyway.
 ```
 python3 pipeline/import_testsets.py --db data/catalog/catalog.sqlite3
 ```
+
+Prepare and import the public competitor sets with separate scored and provisional
+tiers:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python scripts/import_competitor_testsets.py \
+  --repos-root /Volumes/T7_2TB/2026_LCT_Hackatons_10 \
+  --research-root /Volumes/T7_2TB/Projects-T7_2TB/2026_LCT_Hackatons/10-Сканер_российских_вин \
+  --db data/catalog/catalog.sqlite3 --out data/competitor-testsets
+```
+
+Run the requested pipeline on one imported set:
+
+```bash
+SAM3_ENDPOINT=http://192.168.86.14:18081/upstream/sam3 \
+  ~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
+  --name siglip2-p512-rot5-seg --set danya213411-scored --workers 4
+```
+
+Run the plan 91 comparison on the deduplicated common set.
+Use the first command as the base.
+Replace the name in the second command with any of the ten `competitor-*` names in
+`config.yaml`.
+
+```bash
+SAM3_ENDPOINT=http://192.168.86.14:18081/upstream/sam3 \
+  ~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
+  --name siglip2-p512-rot5-seg --set competitors-scored-common --workers 4
+
+SAM3_ENDPOINT=http://192.168.86.14:18081/upstream/sam3 \
+  ~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
+  --name competitor-qacen-reject --set competitors-scored-common --workers 4
+```
+
+Merge the imported competitor sets into the one flat set `competitors`, and remove them
+from the database. The command changes `data/catalog/catalog.sqlite3` and first copies it
+to `data/backups/`. It refuses when the set `competitors` exists. Use `--dry-run` to see
+the counts with no write:
+
+```bash
+python3 scripts/merge_competitor_testsets.py --dry-run
+python3 scripts/merge_competitor_testsets.py
+```
+
+After the merge, the database holds no `danya213411-scored` and no
+`competitors-scored-common`. Run the importer again before the run commands above.
+
+Install the optional OCR and SIFT runtimes before a competitor run:
+
+```bash
+uv pip install --python ~/.venvs/svoe-vino-lab/bin/python -r requirements-local.txt
+```
+
+Read `docs/testing/competitor-testsets.md` before a rebuild.
 Each run makes the rows of each set equal to its JSON files again. A second run writes
 no new image file. Since plan 24 the Testset page `/testset` writes the labels to the
 database, and the database is the source. So the import refuses a set with a page edit.
@@ -68,6 +122,30 @@ The tool asks SAM3 on gx10 for each full original with no label cut, about 0.6 s
 each photo. A second run continues the first one. `--limit N` makes a short test run.
 After the run, press `Build` on `/embedding` for each entry.
 `seed_images.py` prints one `no match: <slug>: …` line for each wine with no image.
+
+Сгенерировать PNG с нейтральным тёмно-зелёным стеклом из `main`-картинок
+активных вин:
+
+```bash
+python3 scripts/normalize_glass.py --db data/catalog/catalog.sqlite3 \
+  --output work/glass-normalized
+```
+
+Команда только читает базу, не запускает SAM3 и не меняет хранилище. Она берёт
+маску бутылки из производной `package`, защищает этикетку маской `label` и пишет
+PNG по SHA-256 и `manifest.json` в каталог `--output`. Пример для одного вина с
+листом «до / после»:
+
+```bash
+python3 scripts/normalize_glass.py --db data/catalog/catalog.sqlite3 \
+  --output work/glass-normalized-demo \
+  --slug denisov_rubin_klaret_krasnaya_strelka \
+  --comparison work/glass-normalized-demo/comparison.png --overwrite
+```
+
+`--category Красное`, repeatable `--slug`, `--limit`, `--target-colour`,
+`--strength` and `--label-margin` narrow or tune a run. Existing outputs stay unless the
+command has `--overwrite`.
 
 Обновить каталог с сайта vino-svoe.ru:
 ```
@@ -171,6 +249,29 @@ curl -sS -X POST http://127.0.0.1:8168/api/wine-index \
 ```
 
 Read `docs/plans/84_background-new-wine-index.md`.
+
+## New from Atlas and photo moves (plan 95)
+
+Run the tests and read the photo selection of one Atlas product. The Atlas web UI must
+answer on port 8157. These commands change nothing:
+
+```bash
+python3 -m unittest discover -s tests -p 'test_atlas_import.py'
+python3 -m unittest discover -s tests -p 'test_photo_moves.py'
+curl -sS "http://127.0.0.1:8168/api/atlas-import/photos?url=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("http://127.0.0.1:8157/products/a3b3d69b-71e5-4f38-9a76-411c6203c873", safe=""))')" | python3 -m json.tool
+```
+
+Send the missing Atlas requests of one product, as `Prepare` of the dialog does. This
+command calls an external service: it queues Atlas enrichment tasks of the product. The
+card button `load photos` sends no such request.
+
+```bash
+curl -sS -X POST http://127.0.0.1:8168/api/atlas-import/advance \
+    -H 'Content-Type: application/json' \
+    -d '{"url": "http://127.0.0.1:8157/products/a3b3d69b-71e5-4f38-9a76-411c6203c873"}' | python3 -m json.tool
+```
+
+Read `docs/plans/95_new-from-atlas.md`.
 
 # Описания изображений (plan 26)
 

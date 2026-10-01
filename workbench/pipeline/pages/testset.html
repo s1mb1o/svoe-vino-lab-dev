@@ -456,8 +456,9 @@ tbody tr.cat-only { background: var(--panel-2); }
   color: #9a9aa6; font-size: 11px;
 }
 #lb .hint b { color: #e9e9ee; }
+/* The pill stays above the two images and the box (z-index 2). */
 #lb-status {
-  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 3;
   padding: 3px 16px; border-radius: 999px; border: 1px solid transparent;
   font-size: 13px; font-weight: 700; letter-spacing: .03em; white-space: nowrap;
   max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis;
@@ -531,6 +532,19 @@ tbody tr.cat-only { background: var(--panel-2); }
 .run-opt.off { cursor: default; color: var(--muted); }
 .run-opt .run-name { font-weight: 650; overflow-wrap: anywhere; }
 .run-opt .run-note { color: var(--muted); font-size: 12px; text-align: right; }
+/* The filter of the pipelines (owner answers of about 2026-09-30T12:07): the boxes of the
+   query input and the words of the name. A pipeline that the filter hides is not chosen. */
+.run-opt[hidden] { display: none; }
+.run-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px;
+              margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+.run-filter label { display: flex; gap: 5px; align-items: center; cursor: pointer; }
+.run-filter input[type="checkbox"] { margin: 0; }
+.run-filter input[type="search"] {
+  flex: 1 1 140px; min-width: 0; background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; padding: 4px 7px; font: inherit;
+  font-size: 13px;
+}
+.run-filter .run-f-count { margin-left: auto; }
 .run-fields { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px; }
 .run-fields label { display: flex; gap: 6px; align-items: center; color: var(--muted);
                     font-size: 12px; }
@@ -750,6 +764,18 @@ tbody tr.cat-only { background: var(--panel-2); }
   <div class="run-panel" role="dialog" aria-modal="true" aria-labelledby="run-title">
     <h2 id="run-title">Run the set</h2>
     <div class="run-sub" id="run-sub"></div>
+    <div class="run-filter" id="run-filter" role="group" aria-label="filter of the pipelines">
+      <label title="A name with neither crop nor seg: the model gets the whole photo."><input
+             id="run-f-whole" type="checkbox" checked> whole photo</label>
+      <label title="The word crop: the package box, with its background."><input
+             id="run-f-crop" type="checkbox" checked> crop</label>
+      <label title="The word seg: the package mask on white."><input
+             id="run-f-seg" type="checkbox" checked> seg</label>
+      <input id="run-f-text" type="search" autocomplete="off" spellcheck="false"
+             placeholder="words of the name" aria-label="words of the name"
+             title="Each word MUST be in the name of the pipeline, for example: barcode p512">
+      <span class="run-f-count" id="run-f-count"></span>
+    </div>
     <div class="run-list" id="run-list"></div>
     <div class="run-fields">
       <label>first N queries <input id="run-limit" type="number" min="1" step="1"
@@ -762,6 +788,8 @@ tbody tr.cat-only { background: var(--panel-2); }
              id="run-cache" type="checkbox" checked> Use caches</label>
       <label id="run-barcode-label"><input id="run-barcode" type="checkbox" disabled>
              Disable barcode fast path</label>
+      <label title="On: the list gets checkboxes, and Start starts one run for each checked pipeline. The runs go at the same time on the set, and each run keeps its own workers. Several runs at once load the gx10 gateway together."><input
+             id="run-parallel" type="checkbox"> Parallel matching</label>
       <label title="On: the run starts from the last run of the pipeline on this set (the same choice of the barcode fast path). It asks again for each photo that failed there (wrong at rank 1, or an error) and for each new photo, and copies the other rows. With no last run, the run is a full run. Plan 96."><input
              id="run-repeat" type="checkbox"> Repeat last failed</label>
     </div>
@@ -787,6 +815,7 @@ tbody tr.cat-only { background: var(--panel-2); }
   </div>
 </div>
 <script>
+/* DROP_JS */
 const PATCH_TIP = "patched: this catalogue image is the main_patched image of the wine"
   + " in the lab database. The main image is not shown.";
 function picHtml(imgHtml, patched, attrs = "") {
@@ -1984,8 +2013,10 @@ $("#side").addEventListener("drop", ev => {
     ev.stopPropagation();
     $("#side").classList.remove("over");
     const files = [...ev.dataTransfer.files];
-    const url = files.length ? "" : urlOfDrop(ev.dataTransfer);
+    const local = files.length ? "" : LocalDrop.address(ev.dataTransfer);
+    const url = files.length || local ? "" : urlOfDrop(ev.dataTransfer);
     if (files.length) uploadFiles(files, DRAWER_SLUG);
+    else if (local) uploadLocal(local, DRAWER_SLUG);
     else if (url) uploadUrl(url, DRAWER_SLUG);
     return;
   }
@@ -2033,8 +2064,10 @@ document.addEventListener("drop", ev => {
     if (!tr) return;
     tr.classList.remove("photo-drop");
     const files = [...ev.dataTransfer.files];
-    const url = files.length ? "" : urlOfDrop(ev.dataTransfer);
+    const local = files.length ? "" : LocalDrop.address(ev.dataTransfer);
+    const url = files.length || local ? "" : urlOfDrop(ev.dataTransfer);
     if (files.length) uploadFiles(files, tr.dataset.slug);
+    else if (local) uploadLocal(local, tr.dataset.slug);
     else if (url) uploadUrl(url, tr.dataset.slug);
     return;
   }
@@ -2089,6 +2122,15 @@ async function uploadFiles(files, to) {
   if (bad.length) {
     alert(`${bad.length} of ${files.length} file(s) not stored:\n` + bad.join("\n"));
   }
+}
+
+/* A drop from the Codex desktop app names a local image (`drop.js`). The lab server
+   reads it, and the image then goes the way of a dropped file. */
+async function uploadLocal(address, to) {
+  let file;
+  try { file = await LocalDrop.file(address); }
+  catch (e) { alert(`the image is not stored:\n${address}\n\n${e.message}`); return; }
+  uploadFiles([file], to);
 }
 
 async function uploadUrl(url, to) {
@@ -2706,6 +2748,7 @@ const RUN_ACTIVE = ["running", "stopping"];
 const RUN_SHOW_ENDED_S = 60;
 const RUN_STORE_KEY = "svoe-vino-lab.run-configuration";
 const RUN_DEVICE_STORE_KEY = "svoe-vino-lab.device-ip";
+const RUN_DIALOG_STORE_KEY = "svoe-vino-lab.run-dialog";
 // The box `Disable barcode fast path` (plan 53; owner answers of 2026-09-26T19:47:40):
 // off by default; it acts on a pipeline with the key `barcode` alone.
 const RUN_BARCODE_TITLE = "On: the run skips the barcode step of the pipeline: no decode "
@@ -2724,11 +2767,27 @@ function runDuration(seconds) {
   const h = Math.floor(seconds / 3600), m = Math.floor(seconds % 3600 / 60), s = seconds % 60;
   return h ? `${h} h ${m} min` : (m ? `${m} min ${s} s` : `${s} s`);
 }
+// The last choice: one name, or the names of a parallel start joined by commas (a name
+// holds no comma).
 function runStored() {
-  try { return localStorage.getItem(RUN_STORE_KEY); } catch (_) { return null; }
+  try { return (localStorage.getItem(RUN_STORE_KEY) || "").split(",").filter(Boolean); }
+  catch (_) { return []; }
 }
-function runRemember(name) {
-  try { localStorage.setItem(RUN_STORE_KEY, name); } catch (_) { /* no storage */ }
+function runRemember(names) {
+  try { localStorage.setItem(RUN_STORE_KEY, names.join(",")); } catch (_) { /* no storage */ }
+}
+// The filter and the box `Parallel matching` (owner answers of about 2026-09-30T12:07).
+function runStoredDialog() {
+  const state = { whole: true, crop: true, seg: true, text: "", parallel: false };
+  try { return Object.assign(state, JSON.parse(localStorage.getItem(RUN_DIALOG_STORE_KEY) || "{}")); }
+  catch (_) { return state; }
+}
+function runRememberDialog() {
+  const state = { whole: $("#run-f-whole").checked, crop: $("#run-f-crop").checked,
+                  seg: $("#run-f-seg").checked, text: $("#run-f-text").value,
+                  parallel: $("#run-parallel").checked };
+  try { localStorage.setItem(RUN_DIALOG_STORE_KEY, JSON.stringify(state)); }
+  catch (_) { /* no storage */ }
 }
 function runStoredDeviceIp() {
   try { return localStorage.getItem(RUN_DEVICE_STORE_KEY) || ""; } catch (_) { return ""; }
@@ -2743,21 +2802,75 @@ function runValidIpv4(value) {
     && !(Number(parts[0]) >= 224 && Number(parts[0]) <= 239);
 }
 function runBusy(c) { return !!(c.job && RUN_ACTIVE.includes(c.job.state)); }
+// The chosen pipelines: one radio button, or the checkboxes of `Parallel matching`.
 function runChosen() {
-  const input = document.querySelector('input[name="run-cfg"]:checked');
-  return input ? RUN_CONFIGS.find(c => c.name === input.value) || null : null;
+  return [...document.querySelectorAll('input[name="run-cfg"]:checked')]
+    .map(input => RUN_CONFIGS.find(c => c.name === input.value)).filter(Boolean);
+}
+// The query input of a pipeline from its name (the suffixes of config.yaml): the word
+// `crop` keeps the package box, the word `seg` applies the package mask, and a name with
+// neither word gives the whole photo.
+function runInputsOf(name) {
+  const words = name.split("-");
+  const crop = words.includes("crop"), seg = words.includes("seg");
+  return { whole: !crop && !seg, crop, seg };
+}
+function runShown(c) {
+  const inputs = runInputsOf(c.name);
+  if (!["whole", "crop", "seg"].some(k => inputs[k] && $("#run-f-" + k).checked)) return false;
+  const name = c.name.toLowerCase();
+  return $("#run-f-text").value.toLowerCase().split(/\s+/).filter(Boolean)
+    .every(word => name.includes(word));
+}
+function runApplyFilter() {
+  let shown = 0;
+  for (const label of document.querySelectorAll("#run-list .run-opt")) {
+    const input = label.querySelector("input");
+    label.hidden = !runShown(RUN_CONFIGS.find(c => c.name === input.value));
+    if (label.hidden) input.checked = false;  // a hidden pipeline does not start
+    else shown++;
+  }
+  $("#run-f-count").textContent = RUN_CONFIGS.length
+    ? `${shown} of ${RUN_CONFIGS.length} shown` : "";
+  const none = $("#run-none");
+  if (none) none.hidden = shown > 0;
+  runRememberDialog();
+  runSyncFields();
+}
+// Draw the list with radio buttons, or with checkboxes for `Parallel matching`. `names`
+// are checked when they can start; a radio button keeps the first one.
+function runRenderList(names) {
+  const parallel = $("#run-parallel").checked;
+  let keep = names.filter(n => RUN_CONFIGS.some(c => c.name === n && c.runnable && !runBusy(c)));
+  if (!parallel) keep = keep.slice(0, 1);
+  $("#run-list").innerHTML = RUN_CONFIGS.length ? RUN_CONFIGS.map(c => {
+    const off = !c.runnable || runBusy(c);
+    const note = runBusy(c) ? "running" : c.runnable ? c.backend
+      : (c.reason || "").startsWith("configuration error") ? "configuration error" : c.reason;
+    return `<label class="run-opt${off ? " off" : ""}" title="${esc(c.reason || c.backend || "")}"><input
+      type="${parallel ? "checkbox" : "radio"}" name="run-cfg" value="${esc(c.name)}"${
+      off ? " disabled" : ""}${keep.includes(c.name) ? " checked" : ""}><span
+      class="run-name">${esc(c.name)}</span><span class="run-note">${esc(note)}</span></label>`;
+  }).join("") + '<div class="run-sub" id="run-none" hidden>No pipeline matches the filter.</div>'
+    : '<div class="run-sub">config.yaml holds no pipeline.</div>';
+  runApplyFilter();
 }
 function runSyncFields() {
-  const c = runChosen();
-  const needsDevice = !!(c && c.device_ip);
+  const chosen = runChosen();
+  const needsDevice = chosen.some(c => c.device_ip);
   const validDevice = !needsDevice || runValidIpv4($("#run-device-ip").value);
-  $("#run-workers").placeholder = c && c.workers ? String(c.workers) : "";
+  const defaults = [...new Set(chosen.map(c => c.workers || ""))];
+  $("#run-workers").placeholder = defaults.length > 1 ? "default" : String(defaults[0] || "");
   $("#run-device-label").hidden = !needsDevice;
   $("#run-device-ip").setAttribute("aria-invalid", validDevice ? "false" : "true");
-  $("#run-start").disabled = !c || !validDevice;
-  $("#run-barcode").disabled = !(c && c.barcode);
-  $("#run-barcode-label").title = c && c.barcode ? RUN_BARCODE_TITLE
-    : c ? `The pipeline ${c.name} has no barcode step.` : "Select a pipeline first.";
+  $("#run-start").disabled = !chosen.length || !validDevice;
+  $("#run-start").textContent = chosen.length > 1 ? `Start ${chosen.length} runs` : "Start";
+  const barcode = chosen.filter(c => c.barcode);
+  $("#run-barcode").disabled = !barcode.length;
+  $("#run-barcode-label").title = barcode.length ? RUN_BARCODE_TITLE + (barcode.length
+    < chosen.length ? ` It acts on ${barcode.length} of the ${chosen.length} pipelines.` : "")
+    : chosen.length === 1 ? `The pipeline ${chosen[0].name} has no barcode step.`
+    : chosen.length ? "No chosen pipeline has a barcode step." : "Select a pipeline first.";
 }
 function closeRunDialog() {
   $("#run-dlg").hidden = true;
@@ -2770,6 +2883,11 @@ async function openRunDialog() {
   $("#run-error").textContent = "";
   $("#run-start").disabled = true;
   $("#run-device-ip").value = runStoredDeviceIp();
+  const state = runStoredDialog();
+  for (const k of ["whole", "crop", "seg"]) $("#run-f-" + k).checked = !!state[k];
+  $("#run-f-text").value = String(state.text || "");
+  $("#run-parallel").checked = !!state.parallel;
+  $("#run-f-count").textContent = "";
   $("#run-dlg").hidden = false;
   let data;
   try {
@@ -2782,55 +2900,59 @@ async function openRunDialog() {
   RUN_CONFIGS = data.configurations || [];
   $("#run-sub").textContent = `${data.queries} queries in the set ${data.set}. Each query is `
     + "one request to the matcher of the pipeline.";
-  $("#run-list").innerHTML = RUN_CONFIGS.map(c => {
-    const off = !c.runnable || runBusy(c);
-    const note = runBusy(c) ? "running" : c.runnable ? c.backend
-      : (c.reason || "").startsWith("configuration error") ? "configuration error" : c.reason;
-    return `<label class="run-opt${off ? " off" : ""}" title="${esc(c.reason || c.backend || "")}"><input
-      type="radio" name="run-cfg" value="${esc(c.name)}"${off ? " disabled" : ""}><span
-      class="run-name">${esc(c.name)}</span><span class="run-note">${esc(note)}</span></label>`;
-  }).join("") || '<div class="run-sub">config.yaml holds no pipeline.</div>';
   // A start sends requests to the matcher, so no pipeline is chosen by itself; the last
-  // choice of this browser comes back.
-  const last = RUN_CONFIGS.find(c => c.name === runStored() && c.runnable && !runBusy(c));
-  if (last) {
-    const input = [...document.querySelectorAll('input[name="run-cfg"]')]
-      .find(i => i.value === last.name);
-    if (input) input.checked = true;
-  }
-  runSyncFields();
+  // choice of this browser comes back, when the filter shows it.
+  runRenderList(runStored());
 }
+// `Parallel matching` starts one job for each chosen pipeline. The server runs the jobs of
+// different pipelines at the same time; each job keeps its own workers.
 async function startRun() {
-  const c = runChosen();
-  if (!c) return;
+  const chosen = runChosen();
+  if (!chosen.length) return;
   const limit = $("#run-limit").value.trim(), workers = $("#run-workers").value.trim();
-  const body = { configuration: c.name, set: SET, limit: limit ? Number(limit) : null,
-                 workers: workers ? Number(workers) : null,
-                 use_cache: $("#run-cache").checked };
-  if (c.device_ip) {
-    const address = $("#run-device-ip").value.trim();
-    if (!runValidIpv4(address)) {
-      $("#run-error").textContent = "device IPv4 MUST be a valid IPv4 address";
-      return;
-    }
-    body.device_ip = address;
-  }
-  if (c.barcode) body.use_barcode = !$("#run-barcode").checked;
-  if ($("#run-repeat").checked) body.repeat_failed = true;   // plan 96
-  $("#run-start").disabled = true;
-  $("#run-error").textContent = "";
-  try {
-    await runJson("/api/run-jobs", { method: "POST", body: JSON.stringify(body),
-                                     headers: { "Content-Type": "application/json" } });
-  } catch (e) {
-    $("#run-error").textContent = e.message;
-    $("#run-start").disabled = false;
+  const address = $("#run-device-ip").value.trim();
+  if (chosen.some(c => c.device_ip) && !runValidIpv4(address)) {
+    $("#run-error").textContent = "device IPv4 MUST be a valid IPv4 address";
     return;
   }
-  runRemember(c.name);
-  if (c.device_ip) runRememberDeviceIp(body.device_ip);
-  closeRunDialog();
-  pollRunJobs();
+  $("#run-start").disabled = true;
+  $("#run-error").textContent = "";
+  const started = [], errors = [];
+  for (const c of chosen) {
+    const body = { configuration: c.name, set: SET, limit: limit ? Number(limit) : null,
+                   workers: workers ? Number(workers) : null,
+                   use_cache: $("#run-cache").checked };
+    if (c.device_ip) body.device_ip = address;
+    if (c.barcode) body.use_barcode = !$("#run-barcode").checked;
+    if ($("#run-repeat").checked) body.repeat_failed = true;   // plan 96
+    try {
+      await runJson("/api/run-jobs", { method: "POST", body: JSON.stringify(body),
+                                       headers: { "Content-Type": "application/json" } });
+      started.push(c);
+    } catch (e) {
+      errors.push(chosen.length > 1 ? `${c.name}: ${e.message}` : e.message);
+    }
+  }
+  if (started.length) {
+    runRemember(chosen.map(c => c.name));
+    if (started.some(c => c.device_ip)) runRememberDeviceIp(address);
+    pollRunJobs();
+  }
+  if (!errors.length) {
+    closeRunDialog();
+    return;
+  }
+  // The started pipelines run now, so they leave the choice.
+  for (const input of document.querySelectorAll('input[name="run-cfg"]')) {
+    if (!started.some(c => c.name === input.value)) continue;
+    input.checked = false;
+    input.disabled = true;
+    input.closest(".run-opt").classList.add("off");
+    input.closest(".run-opt").querySelector(".run-note").textContent = "running";
+  }
+  $("#run-error").textContent = (started.length ? `Started ${started.length} of ${
+    chosen.length}. ` : "") + errors.join("; ");
+  runSyncFields();
 }
 // Plan 88: the embedding builds of `/embedding` that run appear after the runs, because a
 // run can wait for a build of its embedding before its first photo. The row of such a run
@@ -2900,6 +3022,8 @@ $("#run-open").addEventListener("click", openRunDialog);
 $("#run-cancel").addEventListener("click", closeRunDialog);
 $("#run-start").addEventListener("click", startRun);
 $("#run-list").addEventListener("change", runSyncFields);
+$("#run-filter").addEventListener("input", runApplyFilter);
+$("#run-parallel").addEventListener("change", () => runRenderList(runChosen().map(c => c.name)));
 $("#run-device-ip").addEventListener("input", runSyncFields);
 $("#run-dlg").addEventListener("click", ev => { if (ev.target === $("#run-dlg")) closeRunDialog(); });
 // While the dialog is open, the keys of the page do not act. Esc closes the dialog.

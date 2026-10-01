@@ -38,6 +38,8 @@ tags:
     description: Saved run artifacts and run jobs.
   - name: website-import
     description: Catalogue comparison with vino-svoe.ru.
+  - name: atlas-import
+    description: A new wine from one Drink Atlas product (plan 95).
   - name: recognize
     description: Interactive recognition with an embedding pipeline.
   - name: health
@@ -175,6 +177,19 @@ paths:
       responses:
         "200": { $ref: "#/components/responses/Html" }
 
+  /atlas-import.js:
+    get:
+      tags: [pages, atlas-import]
+      operationId: getAtlasImportScript
+      summary: Read the browser script of the dialog New from Atlas.
+      responses:
+        "200":
+          description: JavaScript source.
+          content:
+            text/javascript:
+              schema: { type: string }
+        default: { $ref: "#/components/responses/Error" }
+
   /website-import.js:
     get:
       tags: [pages, website-import]
@@ -241,6 +256,25 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Sha256"
         - $ref: "#/components/parameters/Extension"
+      responses:
+        "200": { $ref: "#/components/responses/Image" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/local-image:
+    get:
+      tags: [images]
+      operationId: getLocalDropImage
+      summary: Read one Codex generated image that a drop from the Codex app names.
+      description: >-
+        A drop from the Codex desktop app carries `app://fs/@fs/<absolute path>`, which
+        the browser cannot open. The server reads only a PNG, JPEG, WebP, or GIF file
+        under `~/.codex*/generated_images/`, up to 20 MB. Another path answers 403.
+      parameters:
+        - name: address
+          in: query
+          required: true
+          description: An `app://fs/@fs/<absolute path>` or `file://<absolute path>` address.
+          schema: { type: string, maxLength: 4096 }
       responses:
         "200": { $ref: "#/components/responses/Image" }
         default: { $ref: "#/components/responses/Error" }
@@ -438,6 +472,31 @@ paths:
         content:
           application/json:
             schema: { $ref: "#/components/schemas/AlternativeType" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-photo-move:
+    post:
+      tags: [dataset]
+      operationId: moveDatasetPhoto
+      summary: Move one photo between the additional photos and main or patched.
+      description: >-
+        One side is `additional`, the other side is `main` or `patched`. A move to main
+        or to patched swaps: the old photo of that role becomes an additional photo of
+        the type `full_front`. The answer holds the new record of the wine and `swapped`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, sha256, from, to]
+              properties:
+                slug: { type: string }
+                sha256: { type: string }
+                from: { type: string, enum: [additional, main, patched] }
+                to: { type: string, enum: [additional, main, patched] }
       responses:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
@@ -1163,6 +1222,99 @@ paths:
         - $ref: "#/components/parameters/Name"
       responses:
         "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/atlas-import/advance:
+    post:
+      tags: [atlas-import]
+      operationId: advanceAtlasImport
+      summary: Send the missing Atlas requests of the three product-page steps.
+      description: >-
+        Stage 1 is the white-field removal and the PDF extraction. Stage 2, when each
+        stage 1 task is terminal, is the barcode recognition. A step with a task gets no
+        new request. The answer holds `stage`, `done`, `steps`, `product`, and `prefill`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url: { type: string, description: "An Atlas product URL on a loopback host." }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/atlas-import/photos:
+    get:
+      tags: [atlas-import]
+      operationId: getAtlasImportPhotos
+      summary: Read the best photo of each group of similar photos of an Atlas product.
+      parameters:
+        - name: url
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/atlas-import/create:
+    post:
+      tags: [atlas-import]
+      operationId: createAtlasWine
+      summary: Create a wine with no main photo from an Atlas product.
+      description: >-
+        The body holds the fields of the form Add wine with no image, `url`, and
+        `media_ids`. Each photo becomes an additional photo. The answer has the form of
+        `POST /api/wine`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, media_ids, slug, name, producer, category, color, region]
+              properties:
+                url: { type: string }
+                media_ids: { type: array, items: { type: integer } }
+                slug: { type: string }
+                name: { type: string }
+                producer: { type: string }
+                beverage_type_code: { type: [string, "null"] }
+                category: { type: string }
+                color: { type: string }
+                region: { type: string }
+                grapes: { type: string }
+                description: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/atlas-import/add:
+    post:
+      tags: [atlas-import]
+      operationId: addAtlasPhotos
+      summary: Add the photos of an Atlas product to an existing wine.
+      description: >-
+        The button `load photos` of an Atlas product of a card. It runs no Atlas step. Each
+        photo becomes an additional photo. The main photo and the patch do not change. A
+        photo that the wine has already is not added again. The answer holds the new record
+        and `added`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug, url, media_ids]
+              properties:
+                slug: { type: string }
+                url: { type: string }
+                media_ids: { type: array, items: { type: integer } }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
   /api/website-import:
