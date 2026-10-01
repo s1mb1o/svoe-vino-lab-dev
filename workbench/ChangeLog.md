@@ -39,6 +39,11 @@
 
 ## 2026-10-01
 
+- `pipeline/pages/dataset.html`: the heading of the Dataset page shows `loading…` until
+  `GET /api/dataset` answers. The old text `loading catalog.jsonl…` was left from the time
+  before the SQLite catalogue (owner messages of about 15:00 and 15:15, option A). The cause
+  of the slow load stays: see `ResearchLog.md`, 2026-10-01, the slow `/api/dataset`.
+
 - `eval/official-real-photos/`: the lab test set `official-real-photos` as an input of
   `eval/participant_test.sh` (`queries.tsv`, 84 photos in `queries/`) and the expected
   output (`expected.jsonl`), with a README and a `jq` scoring command (owner message of

@@ -2,6 +2,38 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-10-01 — The slow `/api/dataset` on 8168 while the Embedding page polls
+
+The owner saw the heading `loading catalog.jsonl…` on `/dataset` for a long time. The text
+was an old placeholder. The page reads `GET /api/dataset`, and `dataset_view()` reads
+`data/catalog/catalog.sqlite3`.
+
+Measurements at about 15:05, during a `Build All` build (`build_embeddings.py --name
+gx10-siglip2-so400m-patch16-512-rot5`, 35 min old, in state `U`):
+
+- `GET /api/dataset` on 8168: no answer in 60 s; a second request answered in 118 s
+  (HTTP 200, 6.0 MB).
+- `dataset_view()` in a separate process on the same database: 0.4 s, JSON 0.1 s,
+  2,126 records. The query is not the cause.
+- `GET /api/run-jobs`: 5.4 s. `GET /api/embedding-jobs`: 1.8 s.
+- `sample` of the server process: about 10 request threads at the same time. Most of them
+  parse JSON (`scan_once_unicode`). The `/api/dataset` thread waits in `take_gil` after
+  each row of `pysqlite_cursor_iternext`. The `_sqlite3` module releases the GIL for each
+  step, and the thread waits for the GIL again after each row.
+- `work/lab_server.log`: the requests come as pairs of `/api/embedding-jobs` and
+  `/api/run-jobs`. This pattern matches `pollJobs` of `pipeline/pages/embedding.html`.
+
+Probable cause: `embedding.html` polls with `setInterval(pollJobs, 2000)`, and it does not
+wait for the previous poll. One poll takes about 5 s, so the polls overlap. The overlap
+gives more threads, and more threads make each poll slower. `testset.html` uses the same
+`setInterval` pattern for `/api/run-jobs`. `clusters.html` schedules the next poll with
+`setTimeout` after the answer. The browser tabs were not checked. The link to the
+Embedding page comes from the request pattern alone.
+
+Workaround: close the Embedding page while `Build All` runs. The owner chose only the text
+fix (option A). A poll fix (`setTimeout` after the answer) and a cheaper `/api/run-jobs`
+are not done.
+
 ## 2026-10-01 — Qwen3.5-9B in vLLM 0.30.0 on an RTX 4090: FP8 at load, MTP-3, and three start faults
 
 Source: owner message of about 2026-10-01T11:26:00+0300, answers of 11:36:00 ("vLLM, FP8").
