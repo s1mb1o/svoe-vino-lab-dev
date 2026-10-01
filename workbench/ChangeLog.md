@@ -39,6 +39,34 @@
 
 ## 2026-10-01
 
+- `eval/official-real-photos/`: the lab test set `official-real-photos` as an input of
+  `eval/participant_test.sh` (`queries.tsv`, 84 photos in `queries/`) and the expected
+  output (`expected.jsonl`), with a README and a `jq` scoring command (owner message of
+  about 14:52, session 17). The local lab database, read-only; the query rule of `Run>`
+  (`pipeline/benchmark.py` `build_queries`): 59 positive, 25 negative. Run on faith with the
+  default endpoint (port 8080, `cascade-p512-rot5`): positive 55 of 59 at rank 1, negative
+  false match 6 of 25, latency p50 1.37 s, max 2.71 s.
+
+- Deployment on the Selectel host `faith` (161.104.55.72, RTX 4090 48 GB), session 17
+  (owner message of about 11:26, answers of 11:36): profile D with a local Qwen3.5-9B,
+  the matcher pipeline `cascade-p512-rot5`, and a second matcher port `127.0.0.1:8080` (the
+  default of `eval/participant_test.sh`). New in `../deploy/`:
+  `selectel-from-scratch.sh` (the whole deployment from the Mac over SSH; steps run as
+  transient units; `--from`, `--only`, `--mount-empty-disk`), the mode `SVOE_VLM=vllm` of
+  `60-vlm.sh` (vLLM 0.30.0, `Qwen/Qwen3.5-9B` at a fixed revision, FP8 at load, MTP-3, unit
+  `svoe-vlm`), the step `65-cascade.sh` (both indexes complete, catalogue copy,
+  `/etc/svoe-vino/matcher.yaml`, warm-up, contract), the units `svoe-matcher-alias.socket`
+  and `.service`, and `localize_workbench_config.py --vlm vllm`. Fixed on the way: the
+  systemd split removed the JSON quotes of the vLLM arguments; `python3.12-dev` for Triton;
+  `VLLM_USE_FLASHINFER_SAMPLER=0` (no `nvcc`); index builds with `--workers` (rot5 took
+  about 4 s per image on one core); step 65 refuses a copy with missing items (an incomplete
+  rot5 copy gave R@1 0.0 %); the runs of steps 50 and 65 get `QR_SCANNER_ENDPOINT`; a code
+  update keeps the localized `config.yaml`. Results: vLLM benchmark (MTP-3 fastest: sheet
+  p50 0.35 s, describe 2.24 s), `my:siglip2-p512` R@1 74.65 %, R@5 94.01 %; the cascade on
+  `official-real-photos` through the matcher R@1 93.65 % (84 photos, p50 1.35 s, max 2.9 s);
+  `participant_test.sh` 3 of 3 on ports 8158 and 8080 (1.2–1.5 s). Docs: `../docs/deploy/` (new page
+  `65-cascade.md`). Journal: `../internal/MY_JOURNEY.md`, `../internal/ISSUES.md`.
+
 - The label package of `shmelev_shmeleva_risling` moved from
   `output/pdf/shmelev_shmeleva_risling/` to `samples/shmelev_shmeleva_risling/` (owner
   message of about 12:52). The package holds the front, back, and A4 PDFs, the PNG

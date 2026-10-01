@@ -2,6 +2,49 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-10-01 — Qwen3.5-9B in vLLM 0.30.0 on an RTX 4090: FP8 at load, MTP-3, and three start faults
+
+Source: owner message of about 2026-10-01T11:26:00+0300, answers of 11:36:00 ("vLLM, FP8").
+Host: Selectel `faith` (RTX 4090 49,140 MiB, driver 580.65.06). Journal:
+`../internal/MY_JOURNEY.md` sections 7 and 8 (git-ignored); procedure:
+`../docs/deploy/60-vlm.md`.
+
+- `Qwen/Qwen3.5-9B` has no FP8 checkpoint from Qwen. vLLM 0.30.0 quantizes the BF16
+  weights at load (`--quantization fp8`) and selects `CutlassFP8ScaledMMLinearKernel` on
+  sm_89. Model memory: 11.07 GiB. NVFP4 (the gx10 variant) needs Blackwell.
+- The checkpoint holds one MTP layer; vLLM loads it as the draft model `Qwen3_5MTP`.
+  Benchmark with the verbatim `SHEET_PROMPT` of `matcher/rerank.py` (1536 px) and
+  `DESCRIBE_PROMPT` of `pipeline/label_rules.py` (2048 px), temperature 0, thinking off:
+  without MTP 81 tokens/s for one stream; MTP-1 114–128; MTP-2 138–161; MTP-3 146–183.
+  p50 at concurrency 1: sheet 0.62 → 0.35 s, describe 3.60 → 2.24 s; at concurrency 4 MTP-3
+  was also the fastest (0.59 s, 2.84 s). Mean acceptance length of MTP-3: 3.22 of 4. All 192
+  answers were valid JSON. For comparison, gx10 gives about 22 tokens/s for each stream.
+- Three faults at the first start of the unit, none of them in the vLLM docs:
+  1. systemd splits an unbraced `$VAR` of `ExecStart` and removes quotes, so
+     `--limit-mm-per-prompt {"image":1,"video":0}` arrived as `{image:1,video:0}`. A shell
+     split (`/bin/sh -c '… $$VAR'`) keeps them.
+  2. Triton compiles a C helper at the first import and needs `Python.h`
+     (`python3.12-dev`). vLLM reports only "Model architectures
+     ['Qwen3_5ForConditionalGeneration'] failed to be inspected".
+  3. vLLM selects the FlashInfer top-k/top-p sampler by default; FlashInfer compiles it at
+     the end of the start and needs `nvcc`. `VLLM_USE_FLASHINFER_SAMPLER=0` selects the
+     PyTorch sampler; attention uses FlashAttention 2 and Triton/FLA in any case.
+- With 20 GiB (`--gpu-memory-utilization 0.42`): KV cache 6.31 GiB, 165,264 tokens, 5.04
+  requests of 32,768 tokens at the same time. A start with the compile cache takes
+  67–115 s.
+- Not measured: BF16, SGLang, the RedHatAI FP8 checkpoint, and the effect of FP8 on the
+  answers of the lab (R@1 of the re-rank).
+- The matcher `cascade-p512-rot5` with this VLM (`rerank.model: qwen3.5-9b`,
+  `fast_answer` 2.9 s / 9.5 s): `official-real-photos` through `matcher-eval-predict`, one
+  photo at a time, R@1 93.65 % (84 photos, 0 errors), latency p50 1,353 ms, p90 1,929 ms, max
+  2,905 ms. gx10 (NVFP4, 2026-09-29): 90.0 %. The re-rank decided 2 of the 4 warm-up and
+  contract requests in 1.5–1.75 s.
+- The rot5 index (2,270 images × 72 angles) took about 1 h on this host with 12 build
+  workers: 0.6 items/s. The GPU was idle most of the time (samples 0–39 %, one 100 %); the
+  SigLIP2 service used about 180 % CPU for the decode and the Hugging Face preprocessing of
+  the PNG copies; one build worker alone took about 4 s per image on one core.
+
+
 ## 2026-10-01 — The 9B VLM gives 0 to each option of a vintage question when the printed year is not an option
 
 Source: owner message of 2026-10-01T10:21:00+0300. Run
