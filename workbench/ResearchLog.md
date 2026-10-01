@@ -73,7 +73,7 @@ Host: Selectel `faith` (RTX 4090 49,140 MiB, driver 580.65.06). Journal:
   contract requests in 1.5–1.75 s.
 - The rot5 index (2,270 images × 72 angles) took about 1 h on this host with 12 build
   workers: 0.6 items/s. The GPU was idle most of the time (samples 0–39 %, one 100 %); the
-  SigLIP2 service used about 180 % CPU for the decode and the Hugging Face preprocessing of
+  SigLIP2 service used about 180 % CPU for the serial decode and the Hugging Face preprocessing of
   the PNG copies; one build worker alone took about 4 s per image on one core.
 
 
