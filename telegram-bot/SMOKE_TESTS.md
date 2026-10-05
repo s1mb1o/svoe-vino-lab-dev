@@ -80,9 +80,19 @@
 - Repeat the flow and select `Ничего из этого`.
 - Confirm that the database stores rank zero and no selected slug.
 - Send a result with a Top-1 score below `BOT_MATCH_MIN_SCORE`.
-- Confirm that the bot answers `Не уверен` and does not show a confident wine card.
+- Confirm that the bot shows the Top-1 wine card with
+  `Пришлите еще фотографию, но скорее всего, это:`.
 - Send a result with a score margin below `BOT_MATCH_MIN_MARGIN`.
-- Confirm that the bot answers `Не уверен` and stores the candidates.
+- Confirm that the bot shows the Top-1 wine card with
+  `У меня есть пара вариантов, скорей всего это:`.
+- Fail both confidence conditions in a test response.
+- Confirm that the card uses the low-score wording.
+- Confirm that each tentative card keeps status `abstained` and stores the candidates.
+- Confirm that the HTTP confidence flag remains false for a tentative card.
+- Confirm that a tentative single-photo card accepts positive and negative feedback.
+- Confirm that negative feedback permits alternative selection.
+- Send an empty matcher answer.
+- Confirm that the bot answers `Не уверен` without a wine card or feedback buttons.
 - Send a JPEG wine photo as a file (a Telegram document without compression).
 - Confirm that the bot shows the queue receipt and then a result card.
 - Send a PDF file.

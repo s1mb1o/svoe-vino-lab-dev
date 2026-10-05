@@ -1,5 +1,19 @@
 # Research log
 
+## 2026-10-05: Tentative wine cards
+
+The owner requested a wine answer when the matcher confidence is low.
+The Top-1 score and score margin now select the caption wording.
+The low-score wording asks for another photo and still identifies the Top-1 wine.
+The low-margin wording states that more than one candidate is plausible.
+The low-score wording takes precedence when both checks fail.
+
+The implementation keeps status `abstained` for a tentative card.
+This preserves accurate confidence metadata in the HTTP API and statistics.
+Feedback requires a non-empty selected slug for an `abstained` request.
+An empty matcher answer cannot receive feedback.
+The implementation does not change moderation or the matcher ranking.
+
 ## 2026-09-29
 
 This entry records a log leak of the Telegram bot token.

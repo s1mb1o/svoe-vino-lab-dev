@@ -532,16 +532,14 @@ class PhotoProcessor:
             min_margin=self._services.settings.match_min_margin,
         )
         admin_note = self._admin_confidence_note(job, result)
-        if not confident:
-            # An empty candidate list means that the matcher found no wine.
-            top = result.top if result.candidates else None
+        if not result.candidates:
             self._services.repository.update(
                 job.request_id,
-                recognition_slug=top.slug if top else None,
-                recognition_name=top.wine.name if top else None,
-                recognition_page_url=top.wine.page_url if top else None,
-                recognition_score=top.score if top else None,
-                recognition_margin=result.margin if top else None,
+                recognition_slug=None,
+                recognition_name=None,
+                recognition_page_url=None,
+                recognition_score=None,
+                recognition_margin=None,
                 matcher_pipeline=result.pipeline,
                 status="abstained",
                 duration_ms=int((time.monotonic() - started) * 1000),
@@ -564,11 +562,18 @@ class PhotoProcessor:
             recognition_score=result.top.score,
             recognition_margin=result.margin,
             matcher_pipeline=result.pipeline,
-            status="recognized",
+            status="recognized" if confident else "abstained",
             duration_ms=int((time.monotonic() - started) * 1000),
         )
+        introduction = "Похоже, это:"
+        if result.top.score < self._services.settings.match_min_score:
+            introduction = "Пришлите еще фотографию, но скорее всего, это:"
+        elif result.margin < self._services.settings.match_min_margin:
+            introduction = "У меня есть пара вариантов, скорей всего это:"
         with self._timed_step(job, "result_delivery"):
-            await self._send_result(job, wine, body, admin_note=admin_note)
+            await self._send_result(
+                job, wine, body, introduction=introduction, admin_note=admin_note,
+            )
 
     def _admin_confidence_note(self, job: PhotoJob, result: RecognitionResult) -> str | None:
         """Return the confidence line only for the private chat of the administrator."""
@@ -692,9 +697,10 @@ class PhotoProcessor:
         wine: Wine,
         submitted_body: bytes,
         *,
+        introduction: str = "Похоже, это:",
         admin_note: str | None = None,
     ) -> None:
-        caption = format_result_caption(wine)
+        caption = format_result_caption(wine, introduction=introduction)
         if admin_note:
             caption = f"{caption}\n\n{admin_note}"
         feedback_markup = (

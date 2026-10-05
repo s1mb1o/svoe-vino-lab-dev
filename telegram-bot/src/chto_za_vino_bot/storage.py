@@ -832,7 +832,7 @@ class Repository:
         with self._lock, self._connection:
             row = self._connection.execute(
                 """
-                SELECT user_id, status, feedback_enabled, feedback_match
+                SELECT user_id, status, feedback_enabled, feedback_match, recognition_slug
                 FROM requests
                 WHERE request_id = ?
                 """,
@@ -841,7 +841,8 @@ class Repository:
             if (
                 row is None
                 or int(row["user_id"]) != user_id
-                or row["status"] != "recognized"
+                or row["status"] not in {"recognized", "abstained"}
+                or (row["status"] == "abstained" and not row["recognition_slug"])
                 or not bool(row["feedback_enabled"])
             ):
                 return "unavailable"
@@ -981,7 +982,7 @@ class Repository:
             row = self._connection.execute(
                 """
                 SELECT user_id, status, feedback_enabled, feedback_match,
-                       feedback_alternative_at
+                       feedback_alternative_at, recognition_slug
                 FROM requests
                 WHERE request_id = ?
                 """,
@@ -990,7 +991,8 @@ class Repository:
             if (
                 row is None
                 or int(row["user_id"]) != user_id
-                or row["status"] != "recognized"
+                or row["status"] not in {"recognized", "abstained"}
+                or (row["status"] == "abstained" and not row["recognition_slug"])
                 or not bool(row["feedback_enabled"])
                 or row["feedback_match"] != 0
             ):

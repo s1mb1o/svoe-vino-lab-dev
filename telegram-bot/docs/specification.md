@@ -147,7 +147,14 @@ candidates from its `/v1/match` path.
 100. The bot MUST store every returned candidate rank, slug, score, and wine card.
 101. The bot MUST use a configurable minimum Top-1 score.
 102. The bot MUST use a configurable minimum Top-1 score margin.
-103. The bot MUST answer `Не уверен` when either confidence condition fails.
+103. The bot MUST show the Top-1 wine card when a candidate exists.
+103.2. When the Top-1 score is below its threshold, the card MUST start with
+`Пришлите еще фотографию, но скорее всего, это:`.
+103.3. When only the score margin is below its threshold, the card MUST start with
+`У меня есть пара вариантов, скорей всего это:`.
+103.4. When both confidence conditions fail, the low-score wording MUST take precedence.
+103.5. A card that fails either confidence condition MUST keep status `abstained`.
+103.6. A tentative single-photo card MUST accept match feedback and alternative selection.
 103.1. In the private chat of the administrator, a result and a `Не уверен` answer MUST show
 the Top-1 score, the Top-1 margin, and both thresholds. Other chats MUST NOT show these values.
 104. A negative Top-1 feedback action MUST show the stored candidates at ranks 2 through 4.

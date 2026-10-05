@@ -5,13 +5,12 @@
 - Accept an image that the user sends as a file: a document with the MIME type
   `image/jpeg`, `image/png`, or `image/webp` goes through the photo pipeline, the age gate,
   and the rate limit. Another document still gets «Пришлите фотографию бутылки или
-  этикетки». Specification FR 2.1–2.2, rule 26.1.
+  этикетки». Specification FR 2.1–2.2, rule 26.5.
 - Reject an image with more than one frame (animated PNG or WebP) with «Файл не похож на
   поддерживаемую фотографию.» (Codex review finding). A document keeps its original bytes,
   and moderation checks only the first frame. Specification FR 221.1. 19 new tests (283 in total).
-- Added the `introduction` argument of `format_result_caption` from `svoe-vino-lab` commit
-  `4ce43a8f0` for the MAX bot. The default keeps «Похоже, это:». This copy does not show
-  tentative cards; the production Telegram bot in `svoe-vino-lab` does.
+- Cherry-picked the `telegram-bot` part of `svoe-vino-lab` commit `4ce43a8f0`: tentative wine
+  cards for a low-confidence match (see 2026-10-05). The `result_card.py` part was already here.
 - Fixed three Codex review findings of the held-photo fix: the minor choice and the adult
   replay no longer depend on a successful callback answer; a held row is removed only after
   its photo was admitted or explicitly rejected, so a restart during the replay loses no
@@ -50,6 +49,17 @@ Fixed the defects of issue #11. The tests of the MAX port found them.
   cannot be saved.
 - Removed the double point at the end of the queue receipt («около 40 сек..»).
 - Tests: 253 pass. `ruff check .` passes.
+
+## 2026-10-05
+
+- Show the Top-1 wine card when a score or margin check fails.
+- Use the owner-selected tentative wording for each failed confidence condition.
+- Give low-score wording precedence when both confidence conditions fail.
+- Keep the `abstained` status and the false HTTP confidence flag for a tentative card.
+- Permit feedback and alternative selection for a tentative single-photo card.
+- Keep an empty matcher answer as a text abstention.
+- Add processor, feedback, and caption length checks.
+- Validation: 252 tests pass. `ruff check .` passes. The deterministic host demo passes.
 
 ## 2026-09-29
 

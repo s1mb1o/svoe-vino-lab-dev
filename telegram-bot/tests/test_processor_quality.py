@@ -98,9 +98,10 @@ def wine(slug: str = "wine-1") -> Wine:
 
 
 class FakeMatcher:
-    def __init__(self, count: int = 4) -> None:
+    def __init__(self, count: int = 4, scores: tuple[float, ...] | None = None) -> None:
         self.calls = 0
         self.count = count
+        self.scores = scores
 
     async def recognize(self, body: bytes) -> RecognitionResult:
         self.calls += 1
@@ -108,7 +109,7 @@ class FakeMatcher:
             tuple(
                 RecognitionCandidate(
                     slug=f"wine-{rank}",
-                    score=1.0 - rank / 10,
+                    score=self.scores[rank - 1] if self.scores else 1.0 - rank / 10,
                     rank=rank,
                     wine=wine(f"wine-{rank}"),
                 )
@@ -347,7 +348,7 @@ async def test_an_empty_matcher_answer_abstains(tmp_path):
     assert candidates == (0,)
 
 
-async def test_one_matcher_candidate_abstains_because_the_margin_is_zero(tmp_path):
+async def test_one_matcher_candidate_has_a_tentative_wine_card(tmp_path):
     row, _, _, photos, _ = await run_processor(
         tmp_path,
         AdvisoryQualityInspector(),
@@ -355,7 +356,37 @@ async def test_one_matcher_candidate_abstains_because_the_margin_is_zero(tmp_pat
     )
 
     assert row[0] == "abstained"
-    assert photos == []
+    assert len(photos) == 1
+    assert photos[0]["caption"].startswith("У меня есть пара вариантов, скорей всего это:")
+    assert "Тестовое вино wine-1" in photos[0]["caption"]
+
+
+@pytest.mark.parametrize(
+    ("scores", "status", "introduction"),
+    [
+        ((0.90, 0.89), "abstained", "У меня есть пара вариантов, скорей всего это:"),
+        ((0.69, 0.50), "abstained", "Пришлите еще фотографию, но скорее всего, это:"),
+        ((0.69, 0.68), "abstained", "Пришлите еще фотографию, но скорее всего, это:"),
+        ((0.70, 0.60), "recognized", "Похоже, это:"),
+        ((0.90, 0.885), "recognized", "Похоже, это:"),
+    ],
+)
+async def test_confidence_changes_the_wording_and_keeps_the_wine_card(
+    tmp_path, scores, status, introduction,
+):
+    row, _, _, photos, _ = await run_processor(
+        tmp_path,
+        AdvisoryQualityInspector(),
+        matcher=FakeMatcher(count=2, scores=scores),
+    )
+
+    assert row[0] == status
+    assert len(photos) == 1
+    assert photos[0]["caption"].startswith(introduction + "\n\n")
+    assert "Тестовое вино wine-1" in photos[0]["caption"]
+    buttons = [button for line in photos[0]["reply_markup"].inline_keyboard for button in line]
+    assert any(button.text == "Открыть страницу вина" for button in buttons)
+    assert any(button.text == "❌ Не совпало" for button in buttons)
 
 
 async def test_the_admin_chat_result_shows_the_confidence_values(tmp_path):
@@ -374,27 +405,46 @@ async def test_the_admin_chat_result_shows_the_confidence_values(tmp_path):
     )
 
 
-@pytest.mark.parametrize(
-    ("count", "note"),
-    [
-        (1, "Оценка: 0.9000 (порог 0.7) · отрыв: 0.0000 (порог 0.015)"),
-        (0, "Оценка: нет кандидатов"),
-    ],
-)
-async def test_the_admin_chat_abstention_shows_the_confidence_values(tmp_path, count, note):
+async def test_an_api_low_confidence_answer_keeps_its_status_without_telegram_delivery(tmp_path):
+    row, _, _, photos, _ = await run_processor(
+        tmp_path,
+        AdvisoryQualityInspector(),
+        matcher=FakeMatcher(count=2, scores=(0.90, 0.89)),
+        api_request=True,
+    )
+
+    assert row[0] == "abstained"
+    assert photos == []
+
+
+async def test_the_admin_chat_tentative_card_shows_the_confidence_values(tmp_path):
+    row, _, _, photos, _ = await run_processor(
+        tmp_path,
+        AdvisoryQualityInspector(),
+        matcher=FakeMatcher(count=1),
+        chat_id=ADMIN_USER_ID,
+    )
+
+    assert row[0] == "abstained"
+    assert photos[0]["caption"].endswith(
+        "\n\nОценка: 0.9000 (порог 0.7) · отрыв: 0.0000 (порог 0.015)"
+    )
+
+
+async def test_the_admin_chat_empty_answer_shows_the_confidence_values(tmp_path):
     bot = FakeBot(jpeg())
 
     row, *_ = await run_processor(
         tmp_path,
         AdvisoryQualityInspector(),
-        matcher=FakeMatcher(count=count),
+        matcher=FakeMatcher(count=0),
         chat_id=ADMIN_USER_ID,
         bot=bot,
     )
 
     assert row[0] == "abstained"
     assert bot.messages[-1].startswith("Не уверен")
-    assert bot.messages[-1].endswith(f"\n\n{note}")
+    assert bot.messages[-1].endswith("\n\nОценка: нет кандидатов")
 
 
 @pytest.mark.parametrize("count", [4, 1])

@@ -51,8 +51,13 @@ The confirmation screen and each successful result show the alcohol notice.
 18. The bot sends an image that passed moderation to `POST /v1/match?k=4` of the matcher.
     A non-production test can use the explicit moderation bypass.
 19. The matcher returns up to four ranked candidates with scores and wine cards.
-20. The bot answers `Не уверен` when no candidate exists, or when the Top-1 score or the
-    score margin is too low.
+20. The bot answers `Не уверен` when no candidate exists.
+    The bot shows the Top-1 wine card when a candidate exists.
+    A low Top-1 score uses `Пришлите еще фотографию, но скорее всего, это:`.
+    A low score margin uses `У меня есть пара вариантов, скорей всего это:`.
+    The low-score wording takes precedence when both confidence conditions fail.
+    A tentative card keeps status `abstained` and permits single-photo feedback.
+    The HTTP recognition result keeps `recognition.confident=false` for this card.
 21. The bot takes the wine parameters and the official image URL from the wine card.
 22. The bot downloads and normalizes the official result image.
 23. The bot detects the bottle area from transparency or a white background.
