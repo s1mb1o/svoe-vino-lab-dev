@@ -366,3 +366,15 @@
 - Confirm that retention does not delete it.
 - Stop the bot and run `uv run chto-za-vino-delete-user USER_ID --confirm`.
 - Confirm that all request rows, source images, artifacts, and the user profile are deleted.
+
+
+## CPU bottleneck changes, 2026-10-06
+
+- Run `.venv/bin/python -m pytest -q`. The local result is 314 passing tests.
+- Run `.venv/bin/ruff check .`. The local result passes.
+- Send a photo in an isolated deployment. Send `/stats` while image processing runs.
+- Confirm that the command responds while image processing runs.
+- Confirm that the quality values and hashes equal the saved control values.
+- Confirm that the administration PNGs show the same masks and cutouts.
+- Confirm that an unsafe photo stays under `quarantine`.
+- Deployment smoke checks remain pending. No runtime was restarted for this change.

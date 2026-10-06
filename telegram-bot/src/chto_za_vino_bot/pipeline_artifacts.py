@@ -55,7 +55,7 @@ def _encode(image: Image.Image, mime_type: str) -> bytes:
     if mime_type == "image/jpeg":
         image.convert("RGB").save(output, format="JPEG", quality=92, optimize=True)
     elif mime_type == "image/png":
-        image.save(output, format="PNG", optimize=True)
+        image.save(output, format="PNG", compress_level=6)
     else:
         raise ValueError("artifact MIME type is invalid")
     return output.getvalue()

@@ -271,3 +271,27 @@ The Telegram Bot API supports long polling through `getUpdates`.
 Telegram gives all photos in one album the same `media_group_id`.
 The Bot API also supports bot commands, a description, and a short description.
 The profile image still requires BotFather interaction.
+
+
+## 2026-10-06: CPU bottleneck measurements
+
+The blur and glare functions used Python pixel loops.
+The perceptual hash repeated each horizontal DCT sum eight times.
+The bot decoded the same photo separately for two hashes.
+The image functions also blocked the event-loop thread.
+The corrections keep the same quality values and hashes.
+The image functions now run in worker threads.
+The storage functions still run after moderation and artifact generation.
+
+Three local photos give blur medians of 25 to 35 ms after the correction.
+The previous blur medians were 98 to 148 ms.
+The hash pair now takes 235 to 287 ms.
+The previous hash pair took 430 to 569 ms.
+These measurements include local image processing.
+These measurements exclude model inference and network calls.
+
+The administration PNG encoder used `optimize=True`.
+Compression level 6 reduces the measured artifact preparation cost.
+All decoded pixels match.
+The raw results are in `../internal/other-bottlenecks-2026-10-06/`.
+The changes are not deployed.

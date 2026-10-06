@@ -50,6 +50,17 @@ Fixed the defects of issue #11. The tests of the MAX port found them.
 - Removed the double point at the end of the queue receipt («около 40 сек..»).
 - Tests: 253 pass. `ruff check .` passes.
 
+## 2026-10-06: Measured CPU bottlenecks
+
+- Compute blur with signed Pillow image arithmetic and an exact value histogram.
+- Compute glare with Pillow channel operations. Preserve all quality values.
+- Reuse horizontal DCT sums. Compute both image hashes after one decode.
+- Run image preparation, hashes, quality processing, artifacts, and result images in worker threads.
+- Keep moderation, storage, recognition, and delivery in the same order.
+- Encode administration PNGs at compression level 6. Preserve every image pixel.
+- Validation: 314 tests pass. `ruff check .` passes. No deployment.
+- Evidence: `../internal/other-bottlenecks-2026-10-06/README.md`.
+
 ## 2026-10-05
 
 - Show the Top-1 wine card when a score or margin check fails.
