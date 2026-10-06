@@ -40,8 +40,11 @@ class RoutesTest(unittest.TestCase):
 
     def request(self, path, method="GET", value=None, raw=None):
         body = raw if raw is not None else json.dumps(value or {}).encode("utf-8")
-        return cluster_routes.respond(
+        code, answer, content_type, cache = cluster_routes.respond(
             self.server, method, path, lambda limit: body if len(body) <= limit else None)
+        if isinstance(answer, bytes) and content_type == cluster_routes.JSON_TYPE:
+            answer = json.loads(answer)
+        return code, answer, content_type, cache
 
     def test_handles_only_cluster_routes(self):
         for route in ("/clusters", "/api/clusters", "/api/clusters/gw",

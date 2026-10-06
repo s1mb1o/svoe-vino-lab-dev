@@ -33,6 +33,7 @@ import embedding_run
 import embeddings
 import labdb
 import run_files
+from checked_read_cache import CheckedReadCache
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MATCHER_ROOT = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "svoe-vino-matcher")
@@ -41,6 +42,7 @@ GATEWAY_HOST = "192.168.86.14:18081"
 MATCHER_PATH = re.compile(r"/v1/pipelines/([^/]+)/predict$")
 # The long side of a cut image in the popup. A model input keeps its size.
 CUT_SIDE = 1024
+THUMBNAILS = CheckedReadCache(max_entries=128, max_bytes=32 * 1024 * 1024)
 NO_TIME = "The run recorded no step time. A run after plan 41 records it."
 NO_SPACE_LIST = ("The run kept no top list of this space. The list shows the candidates of "
                  "the answer by their cosine in this space.")
@@ -455,6 +457,9 @@ def embedding_rounds(ctx):
             "window": result.get("window") or [],
             "questions": result.get("questions") or [],
             "option_scores": result.get("option_scores") or {},
+            "raw_option_scores": result.get("raw_option_scores") or {},
+            "validation_errors": result.get("validation_errors") or {},
+            "attempts": result.get("attempts") or [],
             "base_scores": result.get("base_scores") or {},
             "evidence_scores": result.get("evidence_scores") or {},
             "decision_scores": result.get("decision_scores") or {},
@@ -505,12 +510,16 @@ def _item_image(db_path, name, hit, view):
         return url
     path = os.path.join(embeddings.entry_dir(db_path, name), embeddings.IMAGES,
                         embeddings.image_name(hit["sha256"], view))
-    try:
+    def render():
         image, _icc = derive.open_image(path)
         rotated = embeddings.rotate_fixed_scale(image, angle, None, image.size)
+        return png_uri(rotated, CUT_SIDE)
+
+    try:
+        return THUMBNAILS.get((path, hit["embedding_hash"], angle, CUT_SIDE), [path],
+                              render, copy_value=False)
     except (OSError, ValueError):
         return url
-    return png_uri(rotated, CUT_SIDE)
 
 
 # ---- the matcher run ----

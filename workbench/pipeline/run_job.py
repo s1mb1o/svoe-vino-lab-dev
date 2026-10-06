@@ -4,7 +4,8 @@ the lab server.
 Usage:
     python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N]
         [--workers N] [--no-cache] [--no-barcode] [--device-ip ADDRESS]
-        [--repeat-failed] [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
+        [--endpoint URL] [--repeat-failed] [--drawer-only] [--config PATH] [--jobs-dir DIR]
+        [--runs-dir DIR]
     python3 pipeline/run_job.py --selftest --name <embedding> [--limit N] [--workers N]
         [--no-cache] [--config PATH] [--jobs-dir DIR] [--runs-dir DIR]
 
@@ -42,10 +43,17 @@ the last run of the pipeline on the set with the same `use_barcode`
 photo, and copies the other rows. With no such run the job makes a full run, and an event
 `log` says so. The event `start` holds `repeat_of`, and the events `progress` count the
 asked photos alone. Read docs/plans/96_repeat-last-failed.md.
+`--endpoint` is the matcher base URL field of the dialog. It is valid only for a
+pipeline with `endpoint_override: true`. It replaces the origin of the configured URL
+and keeps the configured request path.
+
 `--selftest` is the button `Selftest` of `/embedding`: `--name` names an entry of the key
 `embeddings`, and no `--set` is given. Each dataset image is a query in the view `full`
 of its index, with no barcode step (`selftest.py`). The job is `selftest-<embedding>`, and
 the set of the run is `dataset`. Read docs/plans/67_embedding-selftest.md.
+
+`--drawer-only` runs the current undeleted photos of `__drawer__` as unlabelled review
+queries. It records `query_scope: drawer`; it does not score, move, or label a photo.
 """
 import argparse
 import json
@@ -134,6 +142,9 @@ def main(argv=None):
     parser.add_argument("--selftest", action="store_true",
                         help="the self-test of the embedding --name: each dataset image is "
                              "a query (plan 67); no --set")
+    parser.add_argument("--drawer-only", action="store_true",
+                        help="match the current, undeleted Drawer photos as unlabelled "
+                             "review suggestions")
     parser.add_argument("--limit", type=int, default=None, help="the first N queries alone")
     parser.add_argument("--workers", type=int, default=None,
                         help="requests at a time; the default is the value of the entry")
@@ -147,6 +158,8 @@ def main(argv=None):
                              "the flag")
     parser.add_argument("--device-ip", default=None,
                         help="IPv4 address that replaces {device_ip} in a device pipeline")
+    parser.add_argument("--endpoint", default=None,
+                        help="HTTP(S) origin that replaces the configured matcher origin")
     parser.add_argument("--repeat-failed", action="store_true",
                         help="start from the last run of the pipeline on the set: ask again "
                              "for its failed and new photos alone, copy the other rows "
@@ -165,6 +178,15 @@ def main(argv=None):
         return 2
     if args.selftest and args.repeat_failed:
         emit("failed", message="--selftest takes no --repeat-failed")
+        return 2
+    if args.selftest and args.drawer_only:
+        emit("failed", message="--selftest takes no --drawer-only")
+        return 2
+    if args.drawer_only and args.repeat_failed:
+        emit("failed", message="--drawer-only takes no --repeat-failed")
+        return 2
+    if args.selftest and args.endpoint is not None:
+        emit("failed", message="--selftest takes no --endpoint")
         return 2
     if args.selftest:
         import selftest  # noqa: E402  (plan 67, on demand)
@@ -201,7 +223,15 @@ def main(argv=None):
                 entry = settings.find(args.name)
             except KeyError:
                 raise embeddings.ConfigError("config.yaml has no pipeline %s" % args.name)
+            if args.drawer_only:
+                conn = benchmark.open_database(settings.db_path)
+                try:
+                    queries = benchmark.build_drawer_queries(conn, settings.db_path,
+                                                             args.set_name)
+                finally:
+                    conn.close()
         device_ip = pipelines.bind_device_ip(entry, args.device_ip)
+        endpoint = pipelines.bind_endpoint(entry, args.endpoint)
         # None: the pipeline has no barcode step, so the run records nothing about it.
         use_barcode = args.use_barcode if run_jobs.has_barcode(entry) else None
         if use_barcode is False:
@@ -231,6 +261,8 @@ def main(argv=None):
              todo=todo, limit=args.limit,
              workers=args.workers or int(backend.spec.get("workers") or 1), seed=seed,
              use_cache=args.use_cache, use_barcode=use_barcode, device_ip=device_ip,
+             endpoint=endpoint,
+             drawer_only=args.drawer_only,
              repeat_of=os.path.basename(repeat_of) if repeat_of else None)
         counting = Counting(backend, todo)
 
@@ -251,7 +283,9 @@ def main(argv=None):
             settings.db_path, set_name, counting, args.runs_dir, workers=args.workers,
             limit=args.limit, embeddings=state, log=log, configuration=name,
             use_cache=args.use_cache, use_barcode=use_barcode, queries=queries,
-            repeat_of=repeat_of, on_plan=on_plan)
+            repeat_of=repeat_of, on_plan=on_plan, endpoint_override=endpoint,
+            label="drawer" if args.drawer_only else None,
+            query_scope="drawer" if args.drawer_only else None)
         run_id = os.path.basename(run_dir)
         pos = met["positive"]
         summary = {"answered": counting.done, "errors": counting.errors,

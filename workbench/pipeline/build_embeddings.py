@@ -146,7 +146,10 @@ class LocalBackend:
             with torch.inference_mode():
                 inputs = self.processor(images=pictures, return_tensors="pt", **self.extra)
                 inputs = inputs.to(self.device)
-                out = self.model.get_image_features(**inputs)
+                if hasattr(self.model, "get_image_features"):
+                    out = self.model.get_image_features(**inputs)
+                else:
+                    out = self.model(**inputs)
                 if not torch.is_tensor(out):
                     out = out.pooler_output
                 return out.float().cpu().numpy()
@@ -155,9 +158,21 @@ class LocalBackend:
 
 
 def make_backend(embedding):
+    projection = None
+    if embedding.arcface is not None:
+        from arcface import Projection
+        try:
+            projection = Projection.load(embedding.arcface, embedding.model, embedding.extra_body)
+        except (OSError, ValueError) as exc:
+            raise embeddings.ConfigError("cannot load ArcFace projection: %s" % exc) from exc
     if embedding.backend == "openai":
-        return OpenAIBackend(embedding)
-    return LocalBackend(embedding)
+        backend = OpenAIBackend(embedding)
+    else:
+        backend = LocalBackend(embedding)
+    if projection is not None:
+        from arcface import ProjectionBackend
+        return ProjectionBackend(backend, projection)
+    return backend
 
 
 def make_dis_segmenter_for_views(views):
@@ -207,11 +222,12 @@ def _chunks(values, size):
     return out
 
 
-def _rotated_pngs(item, source_path):
+def _rotated_pngs(item, source_path, dis_segmenter=None):
     """Return (the PNG bytes of each angle, the size of the 0° image) of one rotated item
     (plan 82). With more than one worker, a worker process calls it: the rotation and the
     PNG encoding hold the GIL. Raise embeddings.ItemError."""
-    images = embeddings.rotated_inputs(item, source_path, item["angles"])
+    images = embeddings.rotated_inputs(
+        item, source_path, item["angles"], dis_segmenter=dis_segmenter)
     return [embeddings.png_bytes(image) for image in images], images[0].size
 
 
@@ -404,13 +420,20 @@ def run(embedding, db_path, directory, make_backend=make_backend,
 
     # Plan 82: the items of a rotated view, one vector for each angle.
     local = threading.local()
+    dis_lock = threading.Lock()
 
     def embed_rotated(key, prep, own_backend):
         """Return (the 0° PNG, its size, the vectors) of one rotated item. A worker
         thread runs it; the main thread records the result."""
         item = items[key]
         path = sources[key[0]]["path"]
-        if prep is None:
+        uses_dis = any(step["step"] == "segment_dis" for step in item["steps"])
+        if uses_dis:
+            # A LiteRT interpreter is not thread-safe and cannot enter the process pool.
+            # Serialize DIS. Other worker threads can send completed batches to the model.
+            with dis_lock:
+                pngs, size = _rotated_pngs(item, path, dis_segmenter)
+        elif prep is None:
             pngs, size = _rotated_pngs(item, path)
         else:
             pngs, size = prep.submit(_rotated_pngs, item, path).result()

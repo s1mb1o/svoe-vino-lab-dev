@@ -27,6 +27,8 @@ import clusters
 import labdb
 import embeddings
 import lab_pages
+from cluster_view_cache import CLUSTER_DETAIL_CACHE, CLUSTER_LIST_CACHE, no_job
+from settings_cache import SETTINGS_CACHE
 
 PAGE = "/clusters"
 API = "/api/clusters"
@@ -110,6 +112,10 @@ def _known(settings, name):
 
 
 def list_view(settings):
+    return CLUSTER_LIST_CACHE.get(settings, None, _read_list_view, no_job, queue_view)
+
+
+def _read_list_view(settings):
     entries = []
     inputs = None
     for name, embedding, error in settings.entries:
@@ -229,14 +235,15 @@ def respond(server, method, path, read_body):
         return 200, lab_pages.page("clusters.html"), HTML_TYPE, NO_STORE
     config_path = getattr(server, "config_path", None) or embeddings.CONFIG_PATH
     try:
-        settings = embeddings.load_settings(config_path)
+        settings = SETTINGS_CACHE.get(config_path, embeddings.load_settings)
     except embeddings.ConfigError as exc:
         return _error(503, str(exc))
     if route == API:
         if method not in ("GET", "HEAD"):
             return _error(405, "use GET")
         try:
-            return _json(200, list_view(settings))
+            return _json(200, CLUSTER_LIST_CACHE.get(
+                settings, None, _read_list_view, no_job, queue_view, encode_json=True))
         except clusters.ClusterError as exc:
             return _error(503, str(exc))
     if route == API_BUILD_ALL and method == "POST":
@@ -252,7 +259,8 @@ def respond(server, method, path, read_body):
         if method not in ("GET", "HEAD"):
             return _error(405, "use GET")
         try:
-            return _json(200, clusters.detail(settings, name))
+            return _json(200, CLUSTER_DETAIL_CACHE.get(
+                settings, name, clusters.detail, no_job, queue_view, encode_json=True))
         except clusters.ClusterError as exc:
             return _error(409, str(exc))
     if method != "POST":

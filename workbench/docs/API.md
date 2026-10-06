@@ -420,6 +420,15 @@ keeps the rows where the answer changed the order. Both read the `explain` recor
 `latency_asc`, `score_desc`, `score_asc`, `path`. `manifest` is the order that the
 backend answered in.
 
+Each run head has `backend_url`. This is the full saved request URL with the saved
+`backend.query` values. It is null when the saved backend has no URL. New override runs
+also have `endpoint_override`, which is the entered origin. A run head has
+`endpoint_override_url`. This field equals `backend_url` when `endpoint_override` is
+present. For an older run without this key, it equals `backend_url` when the run origin
+differs from the current configured origin of an override-enabled pipeline. Otherwise,
+it is null. Each configuration record has `endpoint`, which is the configured origin for
+an override-enabled pipeline or null.
+
 The shape of one row follows the match runner, not this server. Read
 `docs/match-runner.md`.
 
@@ -433,6 +442,43 @@ set. Read `docs/match-runner.md`.
 
 Errors: `400` for a bad identifier, a bad number, or an unknown order. `404` when no
 run holds the identifier.
+
+#### `GET /api/run-predictions?id=<id>`
+
+Export every saved row of `runs/<id>/predictions.jsonl` as UTF-8 JSONL.
+Each line contains `query_id`, `image_path`, `image_sha256`, `predicted_slug`, and
+`latency_ms`, in this order. JSON has no extra spaces. Each row ends with a newline.
+Rows sort by `query_id`, then `image_path`, then `image_sha256`.
+Page filters, sorting, and pagination do not affect the export.
+
+For `official-test-2026-10-01`, the export converts `<wine>/NNN.webp` to
+`eval_photo_NNN.webp`. The photo number sets `query_id` to `q-NNNNNN`.
+A partial run keeps the original photo numbers. Duplicate or invalid photo numbers
+cause an error. Other test sets keep their saved IDs and paths.
+The export keeps the saved hashes, predictions, null values, and latency values.
+The export does not change a run file or call a model.
+
+The content type is `application/x-ndjson; charset=utf-8`.
+Errors: `400` for an invalid run identifier or a path outside the runs directory;
+`404` for a missing run or prediction file; `409` for invalid prediction data;
+`503` when the server cannot read the file.
+
+#### `GET /api/run-expected?id=<id>`
+
+Export every saved row of `runs/<id>/queries.jsonl` in prediction format.
+The five fields and their order equal the `predictions.jsonl` export.
+`predicted_slug` is the one saved truth slug. It is `null` when the saved truth is
+empty, including no-match and negative queries. `latency_ms` is `0` for every row.
+
+The route uses the same stable order and the same `official-test-2026-10-01` filename
+and query-ID conversion as `GET /api/run-predictions`. Page filters, sorting, and
+pagination do not affect the export. The route does not change a run file or call a
+model. It rejects a truth value that is not a list or that contains more than one slug.
+
+The content type is `application/x-ndjson; charset=utf-8`.
+Errors: `400` for an invalid run identifier or a path outside the runs directory;
+`404` for a missing run or query file; `409` for invalid query data; `503` when the
+server cannot read the file.
 
 #### `GET /api/run-inputs?id=<id>&query=<query id>`
 
@@ -492,6 +538,22 @@ no item and a note. The route sends no request to a model.
 
 Errors: `404` for an unknown run or query, and for a slug that is not a candidate of the
 query.
+
+#### `POST /api/run-image-tag`
+
+Add one free-form tag to the source image of a recorded run query. The JSON body is
+`{"id": "<run id>", "query": "<query id>", "tag": "<tag>"}`. The server resolves
+the image SHA-256 from the immutable run record; the request cannot select unrelated
+image bytes. The tag is stored in the shared `image_tag` table, so Testset and every run
+row that uses the same image show it. The run files do not change.
+
+The answer holds `{ok, run, query, sha256, added, tags, tag_names}`. `tags` is the full
+tag list of the image after the write. `tag_names` lists every image tag in the database
+for the Runs-page suggestion list.
+
+Errors: `400` for a missing or invalid tag or request body; `404` for an unknown run,
+query, or image-store row; `409` when the image already has the tag; `503` when the
+database cannot be written.
 
 #### `GET /api/run-steps?id=<id>&query=<query id>`
 
@@ -855,6 +917,47 @@ is `running`, `done`, or `failed`. `waiting` tells why the build of `current` wa
 embedding build runs), or is null. `results` holds one `{name, state, counts, message}`
 for each entry that ended; `state` is `done`, `skipped` (for example no index), or
 `failed`. A restart of the server ends the queue and clears it.
+
+## Matcher endpoint run parameter
+
+`GET /api/run-configurations?set=<set>` sends `endpoint` with the configured matcher
+origin for `matcher-eval-predict` and `matcher-match-k20`. It sends `null` for another
+pipeline.
+
+`POST /api/run-jobs` MAY include `endpoint` for one of these two pipelines. The value
+MUST be an HTTP(S) origin. It MUST contain no path, query, fragment, or credentials.
+The runner replaces the origin of the configured URL. It keeps the configured path and
+the `query` values of the pipeline. The resolved full URL is in `run.json` under
+`backend.url`. The server rejects `endpoint` for another pipeline or for a self-test.
+
+## Drawer matching and review
+
+`GET /api/run-configurations?set=<set>` includes `drawer_queries`, the number of current,
+undeleted photos in `__drawer__`. `POST /api/run-jobs` with
+`{"configuration", "set", "drawer_only": true, ...}` starts the same background runner
+on those photos alone. The saved queries have the label `unlabelled`, and `run.json` has
+`query_scope: "drawer"`; the job does not move or label a photo. `drawer_only` cannot be
+combined with `selftest` or `repeat_failed`.
+
+`GET /api/drawer-runs?set=<set>` returns `{set, runs}` with the completed Drawer-scoped
+runs newest first. A client reads the rows and top-K candidates through `GET /api/run`.
+
+`POST /api/drawer-match-accept` takes
+`{"id": "<run>", "query": "<query id>", "set": "<set>", "to": "<wine_slug>"}`.
+The server verifies that the immutable result belongs to that set and Drawer scope, that
+`to` is one of its recorded candidates and a catalogue wine, and that the same image
+bytes still occupy the recorded Drawer file. It then moves the photo and writes the
+`positive` label in one database transaction. The answer is the Testset photo-write
+answer plus `run`, `query`, `from`, `to`, and `moved_file`. Stale results answer `409`;
+an unrecorded candidate answers `400`.
+
+### `POST /api/testset-drawer-remove`
+
+The body is `{"set", "place": "__drawer__", "file"}`. It permanently removes that
+`test_photo` entry and its photo comments from the Drawer, updates the set edit time, and
+returns `{ok, set, place, file, sha256, counts}`. The immutable image-store object is not
+deleted because another database record may share its bytes. A place other than
+`__drawer__` answers `400`; an unknown set or Drawer photo answers `404`.
 
 ## Android device run parameter — plan 86
 

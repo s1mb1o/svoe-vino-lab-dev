@@ -59,6 +59,7 @@ import labdb
 import main_scene
 import match_backends
 import rebuild_on_run
+from checked_read_cache import CheckedReadCache
 
 KIND = "embedding"
 # The backends of an embedding entry that this runner accepts.
@@ -69,6 +70,7 @@ SCORE = ("the mean of the best cosine of the wine in each view of the photo; the
          "items of the index alone")
 # The version of the key `trace` of a row (plan 41).
 TRACE_VERSION = 1
+CANDIDATE_INDEXES = CheckedReadCache(max_entries=4, max_bytes=32 * 1024 * 1024)
 
 
 class Trace:
@@ -254,11 +256,18 @@ class Catalogue:
     is the slug of a wine. `state` is the key `embeddings` of `run.json`. Raise
     `embeddings.ConfigError` when the index gives no current vector."""
 
-    def __init__(self, embedding, db_path):
+    def __init__(self, embedding, db_path, *, use_cache=True):
+        import catalogue_snapshot
+        if use_cache and catalogue_snapshot.restore(self, embedding, db_path):
+            return
+        before = catalogue_snapshot.identity(embedding, db_path) if use_cache else None
         name = embedding.name
         directory = embeddings.entry_dir(db_path, name)
         try:
             index = embeddings.read_index(directory)
+            vector_file = (index or {}).get("vectors_file")
+            vector_signature = (catalogue_snapshot._file(os.path.join(directory, vector_file))
+                                if isinstance(vector_file, str) else None)
             vectors = embeddings.read_vectors(directory, index) if index else None
         except (OSError, ValueError) as exc:
             raise embeddings.ConfigError("cannot read the index of %s: %s" % (name, exc))
@@ -339,6 +348,9 @@ class Catalogue:
             self.state["rotation_step"] = embedding.rotation_step
             self.state["rows"] = {view: int(len(numbers))
                                   for view, (_, numbers) in self.views.items()}
+        if use_cache:
+            catalogue_snapshot.store(self, embedding, db_path, before,
+                                     vector_file, vector_signature)
 
     def items_of(self, number, cosines):
         """Return the key `items` of the candidate `number` (plan 38): each current item of
@@ -715,13 +727,22 @@ def candidate_items(spec, cand, db_path):
                 "notes": ["run.json names no embedding entry."]}
     try:
         directory = embeddings.entry_dir(db_path, name)
-        index = embeddings.read_index(directory) or {}
-        names = embeddings.image_names(directory)
+        def read():
+            nonlocal index
+            index = embeddings.read_index(directory) or {}
+            names = frozenset(embeddings.image_names(directory))
+            present = {(record["source_sha256"], record["view"]): record
+                       for record in index.get("items", [])}
+            return index, names, present
+
+        index, names, present = CANDIDATE_INDEXES.get(
+            directory, [os.path.join(directory, embeddings.INDEX),
+                        os.path.join(directory, embeddings.IMAGES)], read, copy_value=False)
     except (OSError, ValueError) as exc:
         names = set()
         notes.append("Cannot read the index of %s: %s." % (name, exc))
-    present = {(record["source_sha256"], record["view"]): record
-               for record in index.get("items", [])}
+        present = {(record["source_sha256"], record["view"]): record
+                   for record in index.get("items", [])}
     query_views = [view for view in spec.get("views") or {} if view in cand]
     best = {view: cand.get(view) for view in query_views}
     if isinstance(cand.get("items"), list):

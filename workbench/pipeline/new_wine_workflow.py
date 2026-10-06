@@ -18,6 +18,7 @@ import embeddings
 import labdb
 import manual_wines
 import rebuild_on_run
+from settings_cache import SETTINGS_CACHE
 
 CONFIG_KEY = "new_wine_embedding"
 
@@ -28,6 +29,12 @@ class WorkflowError(manual_wines.WineError):
 
 def embedding_name(config_path, override=None):
     """Return the selected embedding name. Raise `WorkflowError` for no valid name."""
+    if override is not None:
+        return _read_embedding_name(config_path, override)
+    return SETTINGS_CACHE.get(config_path, _read_embedding_name)
+
+
+def _read_embedding_name(config_path, override=None):
     try:
         _path, config, _db_path = embeddings.read_config(config_path)
     except embeddings.ConfigError as exc:
@@ -186,4 +193,3 @@ def create(db_path, body, *, config_path=None, embedding=None, segmenter=None,
     if warning:
         result["warnings"].append(warning)
     return result
-

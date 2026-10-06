@@ -7,9 +7,9 @@ answer. A compare or an apply runs as a separate process, `import_website.py` wi
 so a restart of the server does not lose it. One job runs at a time. Read
 docs/plans/21_website-import-ui.md.
 
-The owner disabled the compare in the code on 2026-09-29: `import_website.COMPARE_ENABLED`
-is False. `start` answers 403 and starts no process. The dialog script hides the button
-`Import from website`.
+`import_website.COMPARE_ENABLED` switches the compare in the code. The owner disabled it on
+2026-09-29 and enabled it again on 2026-10-02. While it is False, `start` answers 403 and
+starts no process, and the dialog script hides the button `Import from website`.
 
     GET  /api/website-import                              the state of the newest run and
                                                           `compare_enabled`

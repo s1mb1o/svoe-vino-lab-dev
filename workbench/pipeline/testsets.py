@@ -29,7 +29,8 @@ and the export writes no entry. A write to a wine of each state is allowed.
 
 `move_photo` gives a photo another place. The right sidebar of the Testset page is the
 Drawer (`__drawer__`): a photo there waits for a wine, it stays there between launches,
-and no run uses it. The NULL place (`__null__`) is the row "No Match" of the table: a run
+and ordinary scored runs omit it. The NULL place (`__null__`) is the row "No Match" of
+the table: a run
 uses its photos, and the right answer is no match. The owner chose the sidebar on
 2026-09-25T18:05:36+0300 and the two places on 2026-09-26T00:29:00 (plan 36). A move
 clears the label, because the label
@@ -51,9 +52,10 @@ import os
 import re
 import time
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 import comments
+import favorites
 import image_tags
 import imagestore
 
@@ -493,8 +495,10 @@ def set_view(conn, set_name, card_images):
     drawer.update(name=DRAWER_NAME, drawer_row=True, catalog_only=False)
     rows = [null, drawer] + [_wine_row(slug, wines.get(slug), cards.get(slug),
                                        by_place.get(slug, [])) for slug in sorted(slugs)]
+    starred = favorites.favorites(conn)
     for row in rows:
-        row.update(group=group_of.get(row["slug"]), comments=wine_notes.get(row["slug"], []))
+        row.update(group=group_of.get(row["slug"]), comments=wine_notes.get(row["slug"], []),
+                   _favorite=row["in_catalog"] and row["slug"] in starred)
     edited_at, source_dir = conn.execute(
         "SELECT edited_at, source_dir FROM test_set WHERE set_name = ?", (set_name,)).fetchone()
     return {"sets": _sets(conn), "set": set_name, "edited_at": edited_at,
@@ -573,6 +577,25 @@ def set_delete(conn, set_name, place, file_name, on):
         raise TestsetError(400, "`delete` MUST be true or false")
     return _write_photo(conn, set_name, place, file_name, ("delete",),
                         lambda row: {"marked_delete": int(on)})
+
+
+def remove_drawer_photo(conn, set_name, place, file_name):
+    """Remove one photo from the Drawer, without deleting its image-store object.
+
+    The explicit `place` guard keeps this destructive write from becoming a generic
+    test-photo deletion endpoint. Photo comments are removed too; the explicit delete
+    makes that true even for callers that did not enable SQLite foreign keys.
+    """
+    if place != DRAWER_SLUG:
+        raise TestsetError(400, "only a photo of the Drawer can be removed")
+    row = _photo_row(conn, set_name, place, file_name)
+    conn.execute("DELETE FROM test_photo_comment WHERE set_name = ? AND place = ? AND "
+                 "file_name = ?", (set_name, place, file_name))
+    conn.execute("DELETE FROM test_photo WHERE set_name = ? AND place = ? AND file_name = ?",
+                 (set_name, place, file_name))
+    _edited(conn, set_name, now_local())
+    return {"ok": True, "set": set_name, "place": place, "file": file_name,
+            "sha256": row["sha256"], "counts": counts(conn, set_name)}
 
 
 def _photo_row(conn, set_name, place, file_name):
@@ -686,6 +709,43 @@ def set_box(conn, set_name, place, file_name, box):
     return _write_photo(conn, set_name, place, file_name, ("box",), change)
 
 
+def crop_photo(conn, set_name, place, file_name, box):
+    """Crop one stored photo and add the crop as a new photo of the same place.
+
+    `box` uses the pixels of the EXIF-oriented photo, like `set_box`. The crop is PNG so
+    that making it does not add another lossy encoding step. It has no label or other
+    entry fields; the source photo stays unchanged.
+    """
+    row = _photo_row(conn, set_name, place, file_name)
+    if not (isinstance(box, list) and len(box) == 4 and all(
+            isinstance(value, int) and not isinstance(value, bool) for value in box)):
+        raise TestsetError(400, "`box` MUST be [left, top, right, bottom] in integer pixels")
+    db_path = conn.execute("PRAGMA database_list").fetchone()[2]
+    path = os.path.join(imagestore.folder_of(db_path, row["folder"]),
+                        "%s.%s" % (row["sha256"], row["extension"]))
+    try:
+        with Image.open(path) as opened:
+            image = ImageOps.exif_transpose(opened)
+            image.load()
+            good = check_box(box, image.size)
+            if good is None:
+                raise TestsetError(400, "the box %s is not inside the photo of %d x %d pixels"
+                                   % (box, image.width, image.height))
+            cropped = image.crop(good)
+            if cropped.mode not in ("1", "L", "LA", "P", "RGB", "RGBA"):
+                cropped = cropped.convert("RGB")
+            output = io.BytesIO()
+            cropped.save(output, "PNG", optimize=True)
+    except TestsetError:
+        raise
+    except (OSError, ValueError, SyntaxError) as exc:
+        raise TestsetError(409, "cannot crop the photo: %s" % exc)
+    stem = os.path.splitext(file_name)[0]
+    answer = upload_photo(conn, set_name, place, output.getvalue(), stem + "_crop.png")
+    answer.update(cropped_from=file_name, box=list(good))
+    return answer
+
+
 def free_name(conn, set_name, place, name, tag="moved"):
     """Return a file name that the place of the set does not hold: `name`, else
     `<stem>_<tag><N><ext>`, as `free_name` of the old tool."""
@@ -741,6 +801,23 @@ def move_photo(conn, set_name, place, file_name, to):
     return {"ok": True, "set": set_name, "from": place, "to": to, "file": file_name,
             "photo": dict(photo_view(row, notes, image_tags_of(conn, row["sha256"])), place=to),
             "counts": counts(conn, set_name)}
+
+
+def accept_drawer_match(conn, set_name, file_name, to, digest=None):
+    """Move one current Drawer photo to `to` and mark it positive in one transaction.
+
+    `digest`, when supplied by a saved matcher result, prevents a stale result from
+    assigning different bytes that later reused the same Drawer file name.
+    """
+    row = _photo_row(conn, set_name, DRAWER_SLUG, file_name)
+    if digest is not None and row["sha256"] != digest:
+        raise TestsetError(409, "the Drawer photo changed since this matching run")
+    moved = move_photo(conn, set_name, DRAWER_SLUG, file_name, to)
+    moved_name = moved["photo"]["file"]
+    labelled = set_label(conn, set_name, to, moved_name, "positive")
+    labelled.update({"from": DRAWER_SLUG, "to": to, "file": file_name,
+                     "moved_file": moved_name})
+    return labelled
 
 
 def _known_slug(conn, set_name, slug):

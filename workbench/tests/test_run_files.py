@@ -72,6 +72,19 @@ class RunFilesTest(unittest.TestCase):
         self.assertEqual((old["configuration"], old["backend"]), (None, "svm-x"))
         self.assertEqual((old["positive"], old["recall_at_1"]), (2, 0.5))
 
+    def test_run_head_holds_the_effective_backend_url(self):
+        run_id = "2026-09-25T120000Z-remote"
+        self.write_run(run_id, {
+            "endpoint_override": "https://matcher.example",
+            "backend": {"url": "https://matcher.example/v1/match?source=lab",
+                        "query": {"k": 20, "words": "red wine"}}
+        }, ROWS[:1])
+        head = RF.run_head(str(self.runs), run_id)
+        self.assertEqual(head["backend_url"],
+                         "https://matcher.example/v1/match?source=lab&k=20&words=red+wine")
+        self.assertEqual(head["endpoint_override"], "https://matcher.example")
+        self.assertIsNone(RF.effective_backend_url({"url": None, "query": {"k": 20}}))
+
     def test_run_head_holds_use_cache_as_a_boolean_alone(self):
         # The checkbox `Use caches` of the dialog `Run>` (plan 39).
         runs = str(self.runs)

@@ -19,6 +19,7 @@ import tempfile
 import comments
 import image_details
 import label_descriptions
+from watcher_count_cache import WATCHER_COUNT_CACHE
 import labdb
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -385,9 +386,8 @@ def watcher_status(conn, path=None):
         row = conn.execute("SELECT wine_slug FROM wine_image WHERE sha256 = ? ORDER BY rowid "
                            "LIMIT 1", (answer["sha256"],)).fetchone()
         answer["slug"] = row[0] if row else None
-    answer.update(counts(conn, max_attempts))
-    answer.update(image_details.counts(conn, max_attempts))
-    answer.update(label_descriptions.counts(conn, max_attempts))
+    answer.update(WATCHER_COUNT_CACHE.get(
+        conn, max_attempts, (counts, image_details.counts, label_descriptions.counts)))
     return answer
 
 

@@ -1,8 +1,9 @@
 """The routes of the Embeddings page of the lab server.
 
 `lab_server.py` sends each route that `handles` accepts to `respond`, and sends the
-answer. The routes read `config.yaml` at each request, so a new entry appears with no
-restart. A build runs as a separate process, `build_embeddings.py`. Its stdout and
+answer. The routes check `config.yaml` at each request. A changed file is read again.
+A new entry appears with no restart. A build runs as a separate process,
+`build_embeddings.py`. Its stdout and
 stderr go to `build.log` in the directory of the entry. The job state comes from
 `build.lock` and `build.log`, so a restart of the server does not lose a running build.
 Read docs/plans/10_embeddings-page.md.
@@ -36,7 +37,9 @@ from contextlib import closing
 import numpy as np
 
 import embeddings
+from embedding_view_cache import ENTRY_VIEW_CACHE, LIST_VIEW_CACHE
 import lab_pages
+from settings_cache import SETTINGS_CACHE
 
 PAGE = "/embedding"
 API_LIST = "/api/embeddings"
@@ -94,7 +97,7 @@ def respond(server, method, path):
             return _error(405, "use GET")
         return 200, lab_pages.page("embedding.html"), HTML, NO_STORE
     try:
-        settings = embeddings.load_settings(config_path)
+        settings = SETTINGS_CACHE.get(config_path, embeddings.load_settings)
     except embeddings.ConfigError as exc:
         return _error(503, str(exc))
     image = IMAGE_ROUTE.match(route)
@@ -106,7 +109,7 @@ def respond(server, method, path):
         if route == API_LIST:
             if method not in ("GET", "HEAD"):
                 return _error(405, "use GET")
-            return _json(200, list_view(settings))
+            return _json(200, list_view(settings, encode_json=True))
         if route == API_JOBS:
             if method not in ("GET", "HEAD"):
                 return _error(405, "use GET")
@@ -120,7 +123,7 @@ def respond(server, method, path):
         if action is None:
             if method not in ("GET", "HEAD"):
                 return _error(405, "use GET")
-            return entry_view(settings, name)
+            return entry_view(settings, name, encode_json=True)
         if action == "/log":
             if method not in ("GET", "HEAD"):
                 return _error(405, "use GET")
@@ -188,7 +191,13 @@ def _inputs(settings):
         return embeddings.read_inputs(conn, settings.db_path)
 
 
-def list_view(settings):
+def list_view(settings, *, encode_json=False):
+    """Return a checked snapshot with fresh job and queue states."""
+    return LIST_VIEW_CACHE.get(settings, None, _read_list_view, job, queue_view,
+                               encode_json=encode_json)
+
+
+def _read_list_view(settings):
     """Return each entry with its settings, its counts, and its job."""
     _, sources = _inputs(settings)
     out = []
@@ -215,7 +224,20 @@ def image_url(name, source_sha256, view, embedding_hash):
         name, embeddings.image_name(source_sha256, view), embedding_hash[:16])
 
 
-def entry_view(settings, name):
+def entry_view(settings, name, *, encode_json=False):
+    """Return a checked entry snapshot with a fresh job state."""
+    _, answer = _lookup(settings, name)
+    if answer:
+        return answer
+    return _json(200, ENTRY_VIEW_CACHE.get(settings, name, _read_entry_body,
+                                           job, queue_view, encode_json=encode_json))
+
+
+def _read_entry_body(settings, name):
+    return _read_entry_view(settings, name)[1]
+
+
+def _read_entry_view(settings, name):
     """Return the wines of one entry. Each column of a wine is one source image, with a
     cell for each view."""
     embedding, answer = _lookup(settings, name)

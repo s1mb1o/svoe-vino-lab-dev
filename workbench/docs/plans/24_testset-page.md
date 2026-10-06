@@ -202,6 +202,7 @@ folder of its row of `image`, because 4 test photos keep the folders `additional
 | `GET /api/testset` | `set=<name>` | `sets` (each name and its counts), `set`, `rows`, `counts`, `groups`. A row holds the wine data, the state, the card image, `excluded`, `group`, `note`, and `photos`. A photo holds `file`, `url`, `sha256`, `width`, `height`, and every column of the table above. |
 | `POST /api/testset-label` | `set`, `place`, `file`, `label` (a label or null) | `photo`, `counts`. HTTP 400 for another label or for `negative` and `variant` on `__null__`. HTTP 404 for an unknown photo. |
 | `POST /api/testset-delete` | `set`, `place`, `file`, `delete` (boolean) | `photo`, `counts`. |
+| `POST /api/testset-drawer-remove` | `set`, `place` (`__drawer__`), `file` | Permanently removes the Drawer entry and its comments; returns `file`, `sha256`, `counts`. The image-store object stays. |
 | `POST /api/testset-comment` | `set`, `place`, `file`, `text` | `photo`, `counts`. An empty text removes the comment. |
 | `POST /api/testset-box` | `set`, `place`, `file`, `box` (`[l, t, r, b]` or null) | `photo`, `counts`. HTTP 400 for a box outside the image. |
 | `POST /api/testset-wine-note` | `set`, `slug`, `text` | `note`, `counts`. |

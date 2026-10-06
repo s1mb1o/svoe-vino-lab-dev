@@ -134,3 +134,28 @@ The VLM returned `semi-dry: 0`, `other: 0`, and `not visible: 100`.
 Both evidence scores were 0.
 The decision scores stayed 0.8286 and 0.8082.
 The 2024 card stayed at rank 1.
+
+## Response validation recovery, 2026-10-02
+
+The owner approved one retry for an invalid evidence response.
+The retry MUST bypass model cache lookup for that call alone.
+The retry MUST include the validation errors and require a complete corrected response.
+The runtime MUST NOT retry a transport failure through this recovery path.
+If the retry is invalid or fails, the base order MUST stay.
+Partial scores MUST NOT contribute to the decision.
+
+Each attempt MUST retain `raw_text`, `raw_option_scores`, `validation_errors`,
+`error`, `cached`, and `ms` in `attempts`.
+Each completed response MUST also record `finish_reason`.
+The explanation MUST expose the last received raw scores and validation errors.
+The accepted scores remain in `option_scores`.
+Fresh invalid responses MUST NOT enter the model cache.
+Existing invalid cache records remain available as diagnostic evidence.
+A cached invalid response still triggers the fresh retry.
+The retry prompt has its own cache key. It does not overwrite the original request.
+
+The row view and the step popup MUST use the same evidence renderer.
+The renderer MUST show the raw scores and mark the rejected question.
+It MUST expose both attempts after a retry.
+An older run without raw scores MUST state that the scores were not recorded.
+It MUST NOT describe a recorded validation failure as an absent model answer.

@@ -26,7 +26,8 @@ The query set follows `build_queries` of `match_run.py` with its defaults
 - No slug is excluded. The owner removed the exclusion on 2026-09-26T18:08:34+0300
   (plan 51); `match_run.py` still reads `excluded-slugs.json`.
 - A photo of `__drawer__` (the Drawer, the sidebar of `/testset`) waits for a wine and
-  stays out.
+  stays out of an ordinary scored run. `build_drawer_queries` supplies the separate
+  unlabelled review run started by the Drawer.
 - A photo of a wine outside the dataset stays out, whatever its label: a `Removed` wine
   (plan 24), a `Disabled` wine, or a place that `wine_catalog` does not hold. The task
   states that each wine of the jury test set is in the dataset (plan 87, owner answer of
@@ -55,7 +56,7 @@ import labdb  # noqa: E402
 import match_backends  # noqa: E402
 import testsets  # noqa: E402
 from match_scoring import (  # noqa: E402
-    LABELS_IN_SET, NO_MATCH, NULL_SLUG, judge, metrics_of, write_summary)
+    LABELS_IN_SET, NO_MATCH, NULL_SLUG, UNLABELLED, judge, metrics_of, write_summary)
 
 BACKENDS_FILE = os.path.join(ROOT, "backends.yaml")
 RUNS_DIR = os.path.join(ROOT, "runs")
@@ -109,7 +110,7 @@ def build_queries(conn, db_path, set_name):
                                         "%s.%s" % (digest, extension)),
                "image_sha256": digest, "slug": place}
         if place == testsets.DRAWER_SLUG:
-            # The Drawer keeps a photo for a later wine; no run uses it (plan 36).
+            # The Drawer keeps a photo for a later wine; ordinary scored runs omit it.
             skipped["drawer"] += 1
             continue
         if place == NULL_SLUG:
@@ -136,6 +137,38 @@ def build_queries(conn, db_path, set_name):
     rows.sort(key=lambda r: r["image_path"])
     for i, row in enumerate(rows, 1):
         row["query_id"] = "q-%06d" % i
+    return rows, skipped
+
+
+def build_drawer_queries(conn, db_path, set_name):
+    """Return the unlabelled, undeleted photos of the Drawer as matcher queries.
+
+    Ordinary benchmark runs deliberately leave the Drawer out.  The Testset page can
+    start a separate, review-only run for these rows; its answers are suggestions and
+    are never scored as truth until the owner chooses a catalogue wine.
+    """
+    if conn.execute("SELECT 1 FROM test_set WHERE set_name = ?", (set_name,)).fetchone() is None:
+        raise BenchmarkError("the database holds no test set %r" % set_name)
+    rows, skipped = [], collections.Counter()
+    for name, digest, delete, folder, extension in conn.execute(
+            "SELECT p.file_name, p.sha256, p.marked_delete, i.folder, i.extension "
+            "FROM test_photo p JOIN image i ON i.sha256 = p.sha256 "
+            "WHERE p.set_name = ? AND p.place = ? ORDER BY p.file_name",
+            (set_name, testsets.DRAWER_SLUG)):
+        if delete:
+            skipped["marked for deletion"] += 1
+            continue
+        rows.append({
+            "image_path": "%s/%s" % (testsets.DRAWER_SLUG, name),
+            "abs_path": os.path.join(imagestore.folder_of(db_path, folder),
+                                     "%s.%s" % (digest, extension)),
+            "image_sha256": digest,
+            "slug": testsets.DRAWER_SLUG,
+            "label": UNLABELLED,
+            "truth": [],
+        })
+    for number, row in enumerate(rows, 1):
+        row["query_id"] = "q-%06d" % number
     return rows, skipped
 
 
@@ -260,7 +293,7 @@ def git_commit():
 def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, limit=None,
                   label=None, embeddings=None, log=print, schema_dir=labdb.SCHEMA_DIR,
                   configuration=None, use_cache=None, use_barcode=None, queries=None,
-                  repeat_of=None, on_plan=None):
+                  repeat_of=None, on_plan=None, endpoint_override=None, query_scope=None):
     """Run the set against `backend`. Return (run directory, metrics).
 
     `backend` is a backend of `match_backends.build_backend`: it has `id`, `spec`,
@@ -276,6 +309,10 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
     checkbox `Disable barcode fast path` of the dialog `Run>`), True when the step ran;
     `run.json` holds it under the key `use_barcode`. None writes no such key. Read
     `docs/plans/53_disable-barcode-checkbox.md`.
+    `endpoint_override` is the matcher origin entered for this run. `run.json` holds it
+    under the same key. None writes no such key.
+    `query_scope` identifies a special source of custom queries.  The Drawer review uses
+    `drawer`; ordinary runs omit it.
     `queries` is (the rows, the left out counts) in the form of `build_queries`. The runner
     then uses these rows and reads no test set and no variant group of the database;
     `set_name` still names the set in `run.json`. The self-test of an embedding gives them
@@ -349,6 +386,10 @@ def run_benchmark(db_path, set_name, backend, runs_dir=RUNS_DIR, workers=None, l
         meta["use_cache"] = use_cache
     if use_barcode is not None:
         meta["use_barcode"] = use_barcode
+    if endpoint_override is not None:
+        meta["endpoint_override"] = endpoint_override
+    if query_scope is not None:
+        meta["query_scope"] = query_scope
     if repeat is not None:
         meta["repeat_of"] = repeat
         log("repeat of %(run_id)s: %(copied)d copied, %(asked)d asked (%(failed)d failed, "

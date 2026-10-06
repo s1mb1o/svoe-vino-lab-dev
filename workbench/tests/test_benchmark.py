@@ -308,6 +308,30 @@ class BenchmarkTest(unittest.TestCase):
         self.assertFalse([r for r in rows if r["image_path"].startswith("__drawer__/")])
         self.assertEqual(skipped["drawer"], 1)
 
+    def test_drawer_queries_are_unlabelled_and_make_a_scoped_review_run(self):
+        conn = sqlite3.connect(self.db)
+        conn.execute("UPDATE test_photo SET place = '__drawer__', label = NULL "
+                     "WHERE place = '__null__' AND file_name = 'n1.jpg'")
+        conn.commit()
+        try:
+            queries = BM.build_drawer_queries(conn, self.db, "my")
+        finally:
+            conn.close()
+        rows, skipped = queries
+        self.assertEqual(dict(skipped), {})
+        self.assertEqual([(row["query_id"], row["image_path"], row["slug"], row["label"],
+                           row["truth"]) for row in rows],
+                         [("q-000001", "__drawer__/n1.jpg", "__drawer__", "unlabelled", [])])
+        run_dir, _ = BM.run_benchmark(
+            self.db, "my", FakeBackend({"n1": ["wine-b", "wine-a"]}), str(self.runs),
+            queries=queries, label="drawer", query_scope="drawer", embeddings={},
+            log=lambda message: None)
+        meta = json.loads((Path(run_dir) / "run.json").read_text(encoding="utf-8"))
+        result = read_jsonl(Path(run_dir) / "results.jsonl")[0]
+        self.assertEqual((meta["query_scope"], meta["query_set"], result["outcome"]),
+                         ("drawer", {"total": 1, "unlabelled": 1}, "answered"))
+        self.assertIn("-my-drawer", Path(run_dir).name)
+
 
 def read_jsonl(path):
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]

@@ -491,7 +491,8 @@ def parse_json(text):
     return value if isinstance(value, dict) else None
 
 
-def ask(entry, content, max_tokens, thinking, timeout, extra=None, schema=None):
+def ask(entry, content, max_tokens, thinking, timeout, extra=None, schema=None,
+        cache_read=True, cache_validator=None):
     """Send one user message with JSON mode and temperature 0. Return a dict: `text`,
     `ms`, `usage`, `finish_reason`, `model`, `cached`. `schema`, when set, asks the
     service to keep to that JSON Schema (`json_schema`), as the verdict of the cluster
@@ -499,7 +500,9 @@ def ask(entry, content, max_tokens, thinking, timeout, extra=None, schema=None):
 
     A call that repeats an earlier complete answer reads `model_cache`. A record is
     stored only for an answer that holds a JSON object and that `max_tokens` did not cut
-    off."""
+    off. `cache_read=False` bypasses lookup for this call alone. `cache_validator`,
+    when supplied, must accept the parsed answer before a fresh response is stored.
+    Rejected responses still return to the caller for diagnostics."""
     response_format = {"type": "json_object"} if schema is None else {
         "type": "json_schema", "json_schema": {"name": "answer", "schema": schema}}
     payload = {"model": entry.model, "temperature": 0, "max_tokens": max_tokens,
@@ -511,7 +514,7 @@ def ask(entry, content, max_tokens, thinking, timeout, extra=None, schema=None):
         payload["chat_template_kwargs"] = {"enable_thinking": thinking}
     payload.update(extra or {})
     fields = model_cache.vlm_fields(entry.url, payload)
-    record = model_cache.lookup(fields) if fields else None
+    record = model_cache.lookup(fields) if fields and cache_read else None
     if record is not None:
         body, ms, cached = record["answer"], record["ms"], True
     else:
@@ -524,7 +527,9 @@ def ask(entry, content, max_tokens, thinking, timeout, extra=None, schema=None):
     except (KeyError, IndexError, TypeError, AttributeError):
         raise VlmError("the body holds no answer: %.300s" % json.dumps(body))
     finish = choice.get("finish_reason")
-    if not cached and fields and finish != "length" and parse_json(text) is not None:
+    parsed = parse_json(text)
+    if (not cached and fields and finish != "length" and parsed is not None
+            and (cache_validator is None or cache_validator(parsed))):
         model_cache.store(fields, body, ms)
     return {"text": text, "ms": round(ms), "usage": body.get("usage") or {},
             "finish_reason": finish, "model": body.get("model") or entry.model,

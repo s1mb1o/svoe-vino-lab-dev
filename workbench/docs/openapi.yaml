@@ -3268,6 +3268,18 @@ components:
       properties:
         id: { type: string }
         backend: { type: string }
+        backend_url:
+          oneOf: [{ type: string, format: uri }, { type: "null" }]
+          description: The saved request URL, including the saved backend query values.
+        endpoint_override:
+          oneOf: [{ type: string, format: uri }, { type: "null" }]
+          description: The matcher origin entered for this run, when recorded.
+        endpoint_override_url:
+          oneOf: [{ type: string, format: uri }, { type: "null" }]
+          description: |
+            The saved request URL when the run records an endpoint override. For an
+            older run, an origin that differs from the configured origin identifies the
+            override. Otherwise, this field is null.
         label: { type: string }
         started: { type: string }
         finished: { type: string }

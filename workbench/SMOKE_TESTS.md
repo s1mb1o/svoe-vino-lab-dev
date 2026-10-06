@@ -2,6 +2,38 @@
 
 Manual test cases. Run them after a change to the tool.
 
+## Drawer removal
+
+1. Run `python3 -m unittest discover -s tests -p 'test_testsets.py'` and the corresponding
+   `test_testset_routes.py` and `test_lab_openapi.py` suites. They MUST pass.
+2. Put a disposable image in the Drawer. Its card MUST show a small red `Remove` button
+   at the upper right without hiding a comment or deletion badge.
+3. Press `Remove`, then cancel the confirmation. The card and counts MUST not change.
+4. Press `Remove` again and confirm. The card MUST disappear and every Drawer/photo count
+   MUST decrease immediately. Reloading the page MUST not bring it back.
+5. A direct `POST /api/testset-drawer-remove` for a wine or `__null__` photo MUST answer
+   HTTP 400 and leave that photo unchanged.
+6. Open `Results`. Every current matched-image panel MUST show the same top-right
+   `Remove` control. Canceling its confirmation changes nothing; confirming removes the
+   whole result row and decreases the Drawer counts immediately.
+
+## Drawer background matching and review
+
+1. Run `python3 -m unittest tests.test_benchmark tests.test_testsets tests.test_run_jobs
+   tests.test_run_routes tests.test_lab_openapi`. The focused tests MUST pass.
+2. Put two photos in the Drawer of `/testset?set=my`, press `Match…`, choose a runnable
+   pipeline, and press `Start`. The job row MUST say `Drawer`, advance in the background,
+   and leave both photos in the Drawer.
+3. Reload the page and press `Results`. The completed run MUST still be selectable. Each
+   waiting Drawer photo MUST show its saved top-K catalogue candidates.
+4. Select either a candidate thumbnail or the left matched-image thumbnail. The preview
+   MUST show the matched Drawer image and catalogue image side by side; the left
+   thumbnail compares against rank 1. Close it with `Back` without changing the set.
+5. Press `V` on one candidate. The result row MUST disappear, the photo MUST leave the
+   Drawer, and its destination card MUST show the positive `V` annotation.
+6. Move or replace another Drawer photo before applying its old result. The server MUST
+   refuse the stale assignment without moving any other photo.
+
 ## Drops from the Codex desktop app
 
 1. Run `python3 -m unittest discover -s tests -p test_local_images.py`.
@@ -1171,7 +1203,7 @@ Use `H=http://127.0.0.1:8168`.
 
 | # | Case | Expected result |
 |---|---|---|
-| EB1 | `python3 -m unittest discover -s tests -p 'test_*embedding*.py'` | 50 tests, `OK`. |
+| EB1 | `python3 -m unittest discover -s tests -p 'test_*embedding*.py'` | 134 tests, `OK`. |
 | EB2 | `$P pipeline/build_embeddings.py --name $N` on an empty `data/catalog/embeddings/$N/` | The first line is `start` with `items` 4036 and `todo` 4036. The last line is `done`. `index.json` holds 2,018 items of the view `full`; `failures` holds the 2,018 label items with `no label cut yet`. `images/` holds 2,018 PNG files `<sha256>_full.png`. |
 | EB3 | Run EB2 again | `start` states `current` 2018. No `progress` line sends an image to gx10: `built` stays 0. The PNG files keep their time stamps. |
 | EB4 | Start EB2 on an empty directory, and press Ctrl+C after about 30 s | The lines `stopping` and `stopped` follow. `index.json` holds the finished items. `build.lock` is gone. |
@@ -1226,15 +1258,18 @@ Use `H=http://127.0.0.1:8168`.
 | EB52 | Press `Stop` (or `×`) during EB50 | The build reads `stopping`, then the message reads `Build All stopped: <n> / 12`. The next configuration does not start. `Build All` is enabled again. |
 | EB53 | Let EB50 end | The message reads `Build All done: 12 builds`. A failed build adds `· failed <n>` in red; the queue went on after it. The title of the message lists each configuration and its result. |
 | EB54 | `curl -s -X POST $H/api/embeddings/build-all` twice | The first answer is 202 with `queue.state` `running`. The second answer is 409 `Build All runs: <name>, <n> of 12`. |
+| EB55 | `python3 tests/test_rotated_embeddings.py` | 26 tests pass. No request goes to an external model service. |
+| EB56 | Load `config.yaml` with `embeddings.load_settings` and select `android-siglip2-base-224-dis-white-rot5`. | The entry is valid. `angles("full")` contains 72 values from 0 through 355 in 5-degree intervals. |
+| EB57 | Build the Android rot5 entry with a fake DIS runtime and three workers. | Each full index record has 72 contiguous vector rows. The shared DIS runtime is not sent to a process worker. The 0-degree PNG is 64 by 64 in the test fixture. |
 
 ## The website import — `pipeline/import_website.py`
 
 Read [plan 18](docs/plans/18_import-website.md). A real run sends requests to
 `api.vino-svoe.ru` and takes some minutes.
 
-The compare is disabled in the code since 2026-09-29 (`COMPARE_ENABLED = False` in
-`pipeline/import_website.py`). IW19 checks this state. IW2 to IW18 need the value `True`
-and a restart of the lab server first.
+`COMPARE_ENABLED` in `pipeline/import_website.py` switches the compare. The owner disabled
+it on 2026-09-29 and enabled it again on 2026-10-02. IW2 to IW18 need the value `True`.
+IW19 needs the value `False` and a restart of the lab server first.
 
 | # | Case | Expected result |
 |---|---|---|
@@ -1430,6 +1465,19 @@ Plan 34 replaces the rows RJ2, RJ4, and RJ9: read the section "The pipelines".
 
 ## The Runs page of the lab server — `/runs` and `pipeline/mock_run.py`
 
+Export checks:
+
+- Open a run. Click `Export predictions.jsonl`. Confirm that the download contains
+  all saved rows and the five prediction fields. A repeated export MUST have equal bytes.
+- Change `Show`, `Sort`, and `Find`. Export again. The download MUST remain equal.
+- Click `Export expected.jsonl`. Confirm that it has the same five fields and row IDs
+  as the prediction export. Each `latency_ms` MUST be `0`. A positive row MUST use its
+  truth slug. A no-match or negative row MUST use `null`.
+- Export `official-test-2026-10-01`. Confirm that the rows use photo-number order,
+  `eval_photo_NNN.webp` paths, and `q-NNNNNN` IDs. Check saved hashes and latency values.
+- Select another run. Confirm that the next download contains the selected run.
+- Open the page in the light and dark themes. Confirm that the export button is legible.
+
 Read [plan 23](docs/plans/23_runs-page.md). `$H` is `http://127.0.0.1:8168`.
 Plan 34 replaces the rows RN4, RN5, RN7, RN12, RN13, RN14, and RN17: read the section
 "The pipelines". The pipeline `mock` and `pipeline/mock_run.py` are removed, so RN1 to RN3
@@ -1467,6 +1515,7 @@ cannot run; RN6, RN8, and RN10 use the 2 old mock runs.
 | RN28 | Open `$H/runs#2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my/abrau-dyurso-imperial-kyuve-pino-nuar-rozovoe-bryut-125/01_conf095.jpg` in a new tab | The run loads and the step popup of `q-000117` opens, with no click. The URL keeps the photo path. The row is on page 2, so the arrow keys do not move the popup. Escape closes the popup and the URL is `#2026-09-26T173050Z-lab-barcode-siglip2-512-crop-my` again (2026-09-27). |
 | RN29 | On the same run, click the query photo of `q-000001`, then press the arrow key down | The URL becomes `#<run>/a-gordienko-m-nikolaev-pino-nuar-krasnoe-suhoe-135/01_manual.jpg`, then `…/02_manual.jpg`. A new tab with that URL opens the popup of `q-000002`, and the arrow keys work, because the row is on page 1. `#<run>/no-such-slug/x.jpg` opens the run with no popup and no page error (2026-09-27). |
 | RN30 | Open `$H/runs?configuration=siglip2-p512-rot5-crop-seg#2026-09-29T084930Z-lab-siglip2-p512-rot5-crop-seg-my-plan82/abrau-dyurso-abrau-estates-krasnoe-kaberne-sovinon-suhoe-13/02_conf095.jpg`, open `04 Search, space full` | Each hit shows its index image at the angle of the hit: #1 `full · full_front · 180°` upside down, #3 `full · main · 270°` with the neck to the right. The card `05 Score` shows the catalogue images as before. On `…-siglip2-p256-crop-my/abrau-dyurso-abrau-kupazh-tyomnyy-suhoe-kaberne-sovinon-krasnoe-13/06_manual.jpg`, hit #1 is the `full_back` image of `shato-taman-kaberne` with no angle in the detail line (2026-09-30). |
+| RN31 | Open a run and inspect a matched-image card; add a new tag below its photo | Existing shared image tags appear as chips. The input suggests the known image tags. `Add` writes the normalized tag, shows it immediately on every visible row with the same bytes, and does not change the run files. A duplicate or invalid tag shows the server error beside the editor. |
 
 ## The remote configuration — `pipeline/remote_run.py`
 
@@ -1590,6 +1639,18 @@ changed too.
 | PL15 | In the dialog of PL3, choose `siglip2-p256`, `first N queries` 3, `Start` | The job ends with `3 / 3`. The run sends no SAM3 request and one image for each photo. `run.json` holds `backend.views.full` = `white_background`, `resize`. On `/runs`, the model input of a row is the whole photo, 1024 px on the long side. |
 | PL16 | The same with `siglip2-p256-crop` | The job ends with `3 / 3`. The model input of a row is the box of the package with its own background, 1024 px on the long side. A photo with no package found gets the border cut of the white rule. |
 | PL17 | Put `views: {full: {steps: [{step: resize, max_size: 1024}, {step: segment, target: package}]}}` into a copy of a pipeline of the backend `embedding` and load the copy with `pipelines.load` | The entry has the error: view full: the first step MUST be segment. |
+
+Endpoint override checks:
+
+| # | Case | Expected result |
+|---|---|---|
+| EO1 | Run `test_pipelines.py`, `test_remote_run.py`, `test_run_jobs.py`, and `test_matcher_api_pipelines.py`. | 34, 18, 39, and 10 tests pass. No request goes to a project matcher. |
+| EO2 | Open the Run dialog and select `matcher-eval-predict`. | `matcher base URL` appears with `http://192.168.86.14:28000` as its placeholder. Another pipeline without `endpoint_override` hides the field. |
+| EO3 | Enter `http://127.0.0.1:28000`, use a limit of 1, and start `matcher-eval-predict`. | The job calls `http://127.0.0.1:28000/v1/eval/predict`. `run.json` records this full URL in `backend.url` and the origin in `endpoint_override`. |
+| EO4 | Select `matcher-eval-predict` and `matcher-match-k20` with `Parallel matching`. Enter one base URL and start both. | Both jobs use that origin. The second job keeps `/v1/match?k=20`. |
+| EO5 | Enter a URL with a path, query, fragment, credentials, or a protocol other than HTTP(S). | `Start` is disabled. A direct API request returns HTTP 400. |
+| EO6 | Open a run of either enabled pipeline and click `Re-run`. | The dialog shows the matcher origin recorded in the open run. Changing it sends `endpoint` to the same run-job API. |
+| EO7 | Complete one enabled pipeline with a different matcher base URL, then open `/runs`. | Its `URL override` cell shows the full request URL. `matcher-match-k20` includes `?k=20`. A run that used the configured origin shows `—`. |
 
 ## The barcode step — the key `barcode` and `pipeline/barcode.py`
 
@@ -2615,6 +2676,15 @@ service.
 | RF3 | Start the same pipeline again with `Repeat last failed`, and no limit | The log says `repeat of <RF2 run>: <copied> copied, <asked> asked (<failed> failed, <new> new)`: the new photos are the queries after the first 20. The progress counts the asked photos alone. `run.json` holds `repeat_of`. |
 | RF4 | Relabel one photo that passed in RF3, then start the repeat again | The relabelled photo counts as new and gets a new answer. Each other copied row keeps its `copied_from`. |
 | RF5 | Start the repeat again with no change after a run where each photo passed | The job fails with `nothing to repeat: the last run <run id> has no failed and no new photo`, and `runs/` gets no new directory. |
+
+## Invalid VLM evidence recovery
+
+| # | Case | Expected result |
+|---|---|---|
+| VR1 | Return a valid variety response and an all-zero color response, then a valid response on retry. | The retry bypasses cache lookup. Both attempts remain in the trace. Only the valid response contributes to ranking. |
+| VR2 | Return an invalid response twice, or fail the retry transport. | The base order stays. The original raw answers and validation errors remain visible. No third attempt occurs. |
+| VR3 | Open a new evidence result in the run row and step popup. Expand both attempts. | The views show the same scores. The rejected question is marked. The raw responses are available. |
+| VR4 | Open an older evidence failure without recorded option scores. | The view states `Raw option scores were not recorded in this run.` It does not claim `no answer`. |
 
 ## Static wine images (plan 06 of the repository)
 

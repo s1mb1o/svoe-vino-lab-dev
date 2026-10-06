@@ -1,0 +1,12 @@
+# Add these entries to the pipeline list of a separate Workbench configuration.
+# Start the native matcher with matcher/config.selective-ocr.example.yaml first.
+# Select its OCR backend with matcher.pipeline. All four backends use the same API.
+pipeline:
+  - name: local-selective-ocr
+    backend: svoe-vino-ru
+    url: http://127.0.0.1:28100/v1/match
+    field: image
+    response: candidates
+    top_k: 10
+    timeout_s: 15
+    workers: 1

@@ -6,6 +6,7 @@ import http.server
 import io
 import json
 import os
+import sqlite3
 import sys
 import tempfile
 import threading
@@ -71,7 +72,7 @@ class Lab(unittest.TestCase):
                 {"name": "gw", "backend": "openai", "base_url": "http://x/v1",
                  "model": "m", "views": STEPS}], "pipeline": [
                 {"name": REMOTE, "backend": "svoe-vino-ru", "url": url, "top_k": 2,
-                 "workers": 2, "query": {"limit": 10}},
+                 "workers": 2, "query": {"limit": 10}, "endpoint_override": True},
                 {"name": "broken", "backend": "nothing"},
                 {"name": "emb", "backend": "embedding", "embedding": "gw"}]}),
             encoding="utf-8")
@@ -180,6 +181,9 @@ class ConfigurationsTest(Lab):
         self.assertTrue(rows["broken"]["reason"].startswith("configuration error"))
         self.assertEqual((rows[REMOTE]["runnable"], rows[REMOTE]["workers"]), (True, 2))
         self.assertFalse(rows[REMOTE]["device_ip"])
+        self.assertEqual(rows[REMOTE]["endpoint"],
+                         "http://127.0.0.1:%d" % self.server.server_port)
+        self.assertIsNone(rows["emb"]["endpoint"])
         self.assertIsNone(rows[REMOTE]["job"]["state"])
 
     def test_a_device_pipeline_requires_an_ip_and_puts_it_into_the_command(self):
@@ -220,6 +224,43 @@ class ConfigurationsTest(Lab):
         page = (Path(run_jobs.__file__).parent / "pages" / "testset.html").read_text("utf-8")
         self.assertIn('id="run-device-ip"', page)
         self.assertIn("body.device_ip = address", page)
+
+    def test_the_run_dialog_has_the_matcher_endpoint_parameter(self):
+        page = (Path(run_jobs.__file__).parent / "pages" / "testset.html").read_text("utf-8")
+        self.assertIn('id="run-endpoint"', page)
+        self.assertIn("body.endpoint = endpoint", page)
+        runs_page = (Path(run_jobs.__file__).parent / "pages" / "runs.html").read_text("utf-8")
+        self.assertIn('id="rr-endpoint"', runs_page)
+        self.assertIn("body.endpoint =", runs_page)
+
+    def test_an_endpoint_override_puts_the_origin_into_the_command(self):
+        settings = self.settings()
+        with mock.patch.object(run_jobs.subprocess, "Popen") as popen:
+            popen.return_value.pid = 4321
+            popen.return_value.poll.return_value = 0
+            code, answer = run_jobs.start(settings, self.jobs, {
+                "configuration": REMOTE, "set": "my",
+                "endpoint": "http://matcher.test:8080/"}, self.runs)
+        self.assertEqual(code, 202, answer)
+        command = popen.call_args[0][0]
+        self.assertEqual(command[command.index("--endpoint") + 1],
+                         "http://matcher.test:8080")
+        self.assertEqual(answer["endpoint"], "http://matcher.test:8080")
+        run_jobs._PROCESSES.clear()
+
+    def test_an_endpoint_override_is_checked_before_the_process_starts(self):
+        for body, text in (({"configuration": REMOTE, "set": "my", "endpoint": "x"},
+                            "endpoint MUST"),
+                           ({"configuration": "emb", "set": "my",
+                             "endpoint": "http://matcher.test"}, "not valid"),
+                           ({"selftest": "gw", "endpoint": "http://matcher.test"},
+                            "not valid for a self-test")):
+            with self.subTest(body=body):
+                with mock.patch.object(embedding_run, "index_ready", return_value=True):
+                    code, answer = run_jobs.start(self.settings(), self.jobs, body, self.runs)
+                self.assertEqual(code, 400)
+                self.assertIn(text, answer["error"])
+        self.assertEqual(run_jobs._PROCESSES, {})
 
     def test_an_unknown_set_is_an_error(self):
         with self.assertRaises(run_jobs.benchmark.BenchmarkError):
@@ -265,8 +306,52 @@ class ConfigurationsTest(Lab):
                 self.assertIn(text, answer["error"])
         self.assertEqual(run_jobs._PROCESSES, {})
 
+    def test_a_drawer_start_counts_only_drawer_photos_and_passes_the_scope(self):
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("UPDATE test_photo SET place = '__drawer__', label = NULL "
+                         "WHERE place = 'wine-a' AND file_name = '01.jpg'")
+        conn.close()
+        view = run_jobs.configurations_view(self.settings(), self.jobs, "my")
+        self.assertEqual(view["drawer_queries"], 1)
+        with mock.patch.object(run_jobs.subprocess, "Popen") as popen:
+            popen.return_value.pid = 4321
+            popen.return_value.poll.return_value = 0
+            code, answer = run_jobs.start(self.settings(), self.jobs, {
+                "configuration": REMOTE, "set": "my", "drawer_only": True}, self.runs)
+        self.assertEqual((code, answer["drawer_only"]), (202, True), answer)
+        self.assertIn("--drawer-only", popen.call_args[0][0])
+        run_jobs._PROCESSES.clear()
+
+    def test_a_drawer_start_refuses_bad_flags_and_an_empty_drawer(self):
+        for body, text in (({"configuration": REMOTE, "set": "my", "drawer_only": "yes"},
+                            "drawer_only MUST"),
+                           ({"configuration": REMOTE, "set": "my", "drawer_only": True,
+                             "repeat_failed": True}, "not valid for a Drawer"),
+                           ({"configuration": REMOTE, "set": "my", "drawer_only": True},
+                            "Drawer of my gives no query")):
+            with self.subTest(body=body):
+                code, answer = run_jobs.start(self.settings(), self.jobs, body, self.runs)
+                self.assertEqual(code, 400)
+                self.assertIn(text, answer["error"])
+
 
 class RunnerTest(Lab):
+    def test_a_drawer_job_writes_unlabelled_review_results(self):
+        conn = sqlite3.connect(self.db)
+        with conn:
+            conn.execute("UPDATE test_photo SET place = '__drawer__', label = NULL "
+                         "WHERE place = 'wine-a' AND file_name = '01.jpg'")
+        conn.close()
+        code, events = self.run_main(REMOTE, "--drawer-only")
+        self.assertEqual((code, events[-1]["event"]), (0, "done"), events[-1])
+        self.assertEqual((events[0]["drawer_only"], events[0]["todo"]), (True, 1))
+        directory = Path(self.runs) / events[-1]["run_id"]
+        meta = json.loads((directory / "run.json").read_text(encoding="utf-8"))
+        result = json.loads((directory / "results.jsonl").read_text(encoding="utf-8"))
+        self.assertEqual((meta["query_scope"], result["image_path"], result["label"]),
+                         ("drawer", "__drawer__/01.jpg", "unlabelled"))
+
     def test_a_remote_run_writes_its_events_and_the_run_files(self):
         code, events = self.run_main(REMOTE, "--limit", "3")
         self.assertEqual(code, 0)
@@ -303,6 +388,21 @@ class RunnerTest(Lab):
                 meta = json.loads((Path(self.runs) / events[-1]["run_id"] / "run.json")
                                   .read_text("utf-8"))
                 self.assertIs(meta["use_cache"], use_cache)
+
+    def test_an_endpoint_override_reaches_the_backend_and_run_json(self):
+        config = json.loads(self.config.read_text(encoding="utf-8"))
+        configured = config["pipeline"][0]["url"]
+        path = configured[configured.index("/v1/"):]
+        config["pipeline"][0]["url"] = "http://127.0.0.1:9" + path
+        self.config.write_text(json.dumps(config), encoding="utf-8")
+        endpoint = "http://127.0.0.1:%d" % self.server.server_port
+        code, events = self.run_main(REMOTE, "--limit", "1", "--endpoint", endpoint)
+        self.assertEqual((code, events[-1]["event"]), (0, "done"), events[-1])
+        self.assertEqual(events[0]["endpoint"], endpoint)
+        meta = json.loads((Path(self.runs) / events[-1]["run_id"] / "run.json")
+                          .read_text("utf-8"))
+        self.assertEqual(meta["backend"]["url"], endpoint + path)
+        self.assertEqual(meta["endpoint_override"], endpoint)
 
 
 class RepeatFailedTest(Lab):

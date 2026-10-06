@@ -952,6 +952,17 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/testset-drawer-remove:
+    post:
+      tags: [testsets]
+      operationId: removeDrawerPhoto
+      summary: Permanently remove one photo entry from the Drawer.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/testset-photo-comment:
     post:
       tags: [testsets]
@@ -994,6 +1005,34 @@ paths:
         $ref: "#/components/requestBodies/TestsetPhotoWrite"
       responses:
         "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-autotag:
+    get:
+      tags: [testsets]
+      operationId: getTestsetAutotag
+      summary: Read the four-category image Autotag job.
+      parameters:
+        - $ref: "#/components/parameters/SetQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    post:
+      tags: [testsets]
+      operationId: startTestsetAutotag
+      summary: Start or resume four-category image Autotag for one test set.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [set]
+              properties:
+                set: { type: string }
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
   /api/testset-box:
@@ -1133,6 +1172,48 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/run-predictions:
+    get:
+      tags: [runs]
+      operationId: exportRunPredictions
+      summary: Export all saved predictions as JSONL in a stable order.
+      description: >-
+        Each line contains query_id, image_path, image_sha256, predicted_slug, and
+        latency_ms in that order. Page filters do not affect the export.
+        The official-test-2026-10-01 set uses eval_photo_NNN.webp names and query IDs
+        from the photo numbers. Other sets retain their saved IDs and paths.
+        The export preserves saved hashes, predictions, and latency values.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+      responses:
+        "200":
+          description: Compact UTF-8 JSON objects, one per line, with a final newline.
+          content:
+            application/x-ndjson:
+              schema: { type: string }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-expected:
+    get:
+      tags: [runs]
+      operationId: exportRunExpected
+      summary: Export all expected answers as prediction-format JSONL.
+      description: >-
+        Each line contains query_id, image_path, image_sha256, predicted_slug, and
+        latency_ms in that order. predicted_slug is the saved query truth, or null for
+        an expected no-match answer. latency_ms is always 0. Page filters do not affect
+        the export. The official-test-2026-10-01 set uses eval_photo_NNN.webp names and
+        query IDs from the photo numbers. Other sets retain their saved IDs and paths.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+      responses:
+        "200":
+          description: Compact UTF-8 JSON objects, one per line, with a final newline.
+          content:
+            application/x-ndjson:
+              schema: { type: string }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/run-clusters:
     get:
       tags: [runs, clusters]
@@ -1165,6 +1246,60 @@ paths:
         - $ref: "#/components/parameters/RunIdQuery"
         - $ref: "#/components/parameters/QueryId"
         - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-image-tag:
+    post:
+      tags: [runs]
+      operationId: addRunImageTag
+      summary: Add a shared image tag to one recorded run query.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [id, query, tag]
+              properties:
+                id: { type: string }
+                query: { type: string }
+                tag: { type: string, minLength: 1, maxLength: 64 }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/drawer-runs:
+    get:
+      tags: [runs, testset]
+      operationId: listDrawerRuns
+      summary: List completed Drawer matching runs for one test set.
+      parameters:
+        - $ref: "#/components/parameters/SetQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/drawer-match-accept:
+    post:
+      tags: [runs, testset]
+      operationId: acceptDrawerMatch
+      summary: Move a Drawer photo to a recorded top-K candidate and mark it positive.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [id, query, set, to]
+              properties:
+                id: { type: string }
+                query: { type: string }
+                set: { type: string }
+                to: { type: string }
       responses:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
@@ -1827,7 +1962,12 @@ components:
         use_cache: { type: boolean }
         use_barcode: { type: boolean }
         device_ip: { type: string, format: ipv4 }
+        endpoint:
+          type: string
+          format: uri
+          description: Optional HTTP(S) origin for a pipeline with endpoint_override enabled.
         repeat_failed: { type: boolean, description: "Plan 96: repeat the failed and the new photos of the last run." }
+        drawer_only: { type: boolean, description: "Match current Drawer photos as unlabelled review suggestions." }
       oneOf:
         - required: [configuration, set]
         - required: [selftest]

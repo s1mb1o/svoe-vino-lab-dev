@@ -698,6 +698,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       href="/testset">Testset</a><a href="/runs">Runs</a><a
       href="/recognize">Recognize</a><a href="/health">Health</a></nav>
+    <a href="/production-errors">Review production errors</a>
   </div>
   <div class="bar">
     <label>Show
@@ -2700,6 +2701,19 @@ function changeAdvancedFilter() {
   $("#advanced-toggle").title = active ? "An advanced filter is active" : "";
   render();
 }
+// Compare all search fields before reusing normalized text. In-place edits stay visible.
+const SEARCH_TEXT = new WeakMap();
+function searchText(r) {
+  const key = JSON.stringify({record: rawRecord(r), gtins: r._gtins || [],
+    barcodes: r._barcodes || [], qr_urls: r._qr_urls || [],
+    atlas_product_uuids: atlasProducts(r).map(item => item.product_uuid),
+    comments: (r._comments || []).map(comment => comment.text)});
+  const cached = SEARCH_TEXT.get(r);
+  if (cached && cached.key === key) return cached.text;
+  const text = norm(key);
+  SEARCH_TEXT.set(r, {key, text});
+  return text;
+}
 function applyView() {
   const filter = $("#filter").value;
   const pack = $("#package-filter").value;
@@ -2716,11 +2730,8 @@ function applyView() {
     if (!inTypeView(r)) return false;
     if ($("#alternative-filter").value === "with" && !hasAlternatives(r)) return false;
     if (!inStateView(r)) return false;
-    const hay = norm(JSON.stringify({record: rawRecord(r), gtins: r._gtins || [],
-      barcodes: r._barcodes || [],
-      qr_urls: r._qr_urls || [],
-      atlas_product_uuids: atlasProducts(r).map(item => item.product_uuid),
-      comments: (r._comments || []).map(comment => comment.text)}));
+    if (!words.length) return true;
+    const hay = searchText(r);
     return words.every(word => hay.includes(word));
   });
   const sort = $("#sort").value;

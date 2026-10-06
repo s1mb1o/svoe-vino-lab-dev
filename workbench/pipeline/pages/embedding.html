@@ -616,15 +616,24 @@ async function stopRun(button) {
   await pollJobs();
 }
 
-async function pollJobs() {
+// Timer polls and button refreshes share each pending request.
+function singlePoll(refresh) {
+  let pending = null;
+  return () => {
+    if (!pending) pending = refresh().finally(() => { pending = null; });
+    return pending;
+  };
+}
+const runJobsStatus = singlePoll(() => getJson("/api/run-jobs"));
+const pollJobs = singlePoll(async () => {
   try {
     const [body, runs] = await Promise.all([getJson("/api/embedding-jobs"),
-      getJson("/api/run-jobs").catch(() => null)]);
+      runJobsStatus().catch(() => null)]);
     if (runs) setRuns(runs.jobs);
     showQueue(body.queue);
     showJobs(body.jobs);
   } catch (_) { /* next poll */ }
-}
+});
 
 // `Build All` (plan 60): the server builds each configuration, one at a time, in the
 // order of config.yaml. A build that ends as `stopped` (Stop, or the × of its row) stops
@@ -715,9 +724,9 @@ function showSelftest() {
   msg.innerHTML = `last selftest ${esc(job.state)}${text}${errors}${link}`;
   if (job.state === "failed") msg.classList.add("bad");
 }
-async function pollSelftests() {
+const pollSelftests = singlePoll(async () => {
   try {
-    const body = await getJson("/api/run-jobs");
+    const body = await runJobsStatus();
     SELFTESTS = {};
     for (const job of body.jobs || []) {
       if (job.name.startsWith(SELFTEST_PREFIX)) SELFTESTS[job.name] = job;
@@ -727,7 +736,7 @@ async function pollSelftests() {
   const running = Object.values(SELFTESTS).some(job => ACTIVE.includes(job.state));
   if (running && !SELFTEST_POLL) SELFTEST_POLL = setInterval(pollSelftests, 2000);
   if (!running && SELFTEST_POLL) { clearInterval(SELFTEST_POLL); SELFTEST_POLL = null; }
-}
+});
 async function startSelftest() {
   if (!NAME) return;
   $("#selftest").disabled = true;

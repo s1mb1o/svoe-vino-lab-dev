@@ -111,8 +111,9 @@ route `POST /api/dataset-photo-move` moves one photo between the additional phot
 `main` or `main_patched` (`photo_moves.py`). Read `docs/plans/95_new-from-atlas.md`.
 
 The Runs page is on: `run_routes.py` answers each of its routes. It reads the run
-directories of `runs/`; the database does not hold the runs. Read
-`docs/plans/23_runs-page.md`.
+directories of `runs/`; the database does not hold the runs. `POST /api/run-image-tag`
+adds a shared `image_tag` to the source image of one recorded query without changing the
+run. Read `docs/plans/23_runs-page.md`.
 
 The Testset page is on at `/testset`: `testset_routes.py` answers each of its routes.
 It shows the test sets of the database and writes the labels of their photos; the
@@ -190,10 +191,12 @@ import manual_wines  # noqa: E402
 import model_cache  # noqa: E402
 import new_wine_jobs  # noqa: E402
 import new_wine_workflow  # noqa: E402
+from dataset_payload_cache import DATASET_PAYLOAD_CACHE  # noqa: E402
 import patches  # noqa: E402
 import photo_moves  # noqa: E402
 import qr_barcode  # noqa: E402
 import recognize_routes  # noqa: E402
+import production_error_routes  # noqa: E402
 import run_jobs  # noqa: E402
 import run_routes  # noqa: E402
 import similar_wines  # noqa: E402
@@ -204,6 +207,8 @@ import wine_tags  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(ROOT, "config.yaml")
+INTERNAL_REPORT_ROUTE = "/internal/wine-atlas-report"
+INTERNAL_REPORT_FILE = Path(ROOT).parent / "internal" / "wine-atlas-side-by-side-report.html"
 # Port 8168 is recorded in `/Users/ashmelev/Admin/mbp2023/PORTS_USED.md`. It is apart
 # from 8154 of `svoe-vino-testset/scripts/review_server.py`, so both can run.
 DEFAULT_PORT = 8168
@@ -1375,14 +1380,30 @@ class Handler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         if self.path.startswith("/api/"):
-            sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
+            try:
+                sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
+            except (OSError, ValueError):
+                # Request logging is best effort. A redirected log on a removable
+                # volume can be revoked while the server still has a valid listener;
+                # failing here would abort the response before its headers are sent.
+                pass
 
     def _send(self, code, body, ctype, cache="no-store"):
         data = body if isinstance(body, bytes) else body.encode("utf-8")
+        compressed = False
+        vary = (code == 200 and self.command in ("GET", "HEAD")
+                and ctype.startswith("application/json") and len(data) >= 65536)
+        if vary:
+            from gzip_response_cache import RESPONSE_CACHE
+            data, compressed = RESPONSE_CACHE.get(data, self.headers.get("Accept-Encoding", ""))
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", cache)
+        if vary:
+            self.send_header("Vary", "Accept-Encoding")
+        if compressed:
+            self.send_header("Content-Encoding", "gzip")
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(data)
@@ -1481,8 +1502,15 @@ class Handler(BaseHTTPRequestHandler):
     def _runs(self):
         """Send the answer of `run_routes.respond`. The catalogue image of a slug follows
         the rule of `card_images`."""
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+
         code, body, ctype, cache = run_routes.respond(self.server, self.command, self.path,
-                                                      card_images)
+                                                      card_images, read_body)
         if isinstance(body, (dict, list)):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
@@ -1501,6 +1529,22 @@ class Handler(BaseHTTPRequestHandler):
                                                         self.path, read_body)
         except (ConfigError, sqlite3.Error) as exc:
             code, body, ctype, cache = 503, {"error": str(exc)}, run_jobs.JSON, "no-store"
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body, ensure_ascii=False)
+        self._send(code, body, ctype, cache)
+
+    def _production_errors(self):
+        def read_body(limit):
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                return None
+            return self.rfile.read(length) if 0 < length <= limit else None
+        try:
+            code, body, ctype, cache = production_error_routes.respond(
+                self.server, self.command, self.path, read_body, open_database)
+        except (ConfigError, sqlite3.Error) as exc:
+            code, body, ctype, cache = 503, {"error": str(exc)}, production_error_routes.JSON, "no-store"
         if isinstance(body, (dict, list)):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
@@ -1624,6 +1668,8 @@ class Handler(BaseHTTPRequestHandler):
             self._runs()
         elif run_jobs.handles(route):
             self._run_jobs()
+        elif production_error_routes.handles(route):
+            self._production_errors()
         elif testset_routes.handles(route):
             self._testset()
         elif health.handles(route):
@@ -1636,13 +1682,21 @@ class Handler(BaseHTTPRequestHandler):
             self._local_image()
         elif route == "/":
             self._redirect(HOME)
+        elif route == INTERNAL_REPORT_ROUTE:
+            try:
+                body = INTERNAL_REPORT_FILE.read_text(encoding="utf-8")
+            except OSError:
+                self._send(404, "report not found", "text/plain; charset=utf-8")
+            else:
+                self._send(200, body, "text/html; charset=utf-8")
         elif route == "/dataset" or lab_pages.DATASET_PREVIEW_ROUTE.match(route):
             self._send(200, lab_pages.page("dataset.html"), "text/html; charset=utf-8")
         elif route == "/api/dataset":
             try:
-                view = dataset_view(self.server.db_path, self.server.config_path)
-                view["new_wine_index"] = self.server.new_wine_jobs.states()
-                self._json(200, view)
+                body = DATASET_PAYLOAD_CACHE.get(
+                    self.server.db_path, self.server.config_path, dataset_view,
+                    self.server.new_wine_jobs.states)
+                self._send(200, body, "application/json; charset=utf-8")
             except (ConfigError, manual_wines.WineError, sqlite3.Error) as exc:
                 self._json(503, {"error": str(exc)})
         elif route == "/api/wine-index":
@@ -2027,8 +2081,12 @@ class Handler(BaseHTTPRequestHandler):
             self._website_import()
         elif atlas_import_routes.handles(route):
             self._atlas_import()
+        elif run_routes.handles(route):
+            self._runs()
         elif run_jobs.handles(route):
             self._run_jobs()
+        elif production_error_routes.handles(route):
+            self._production_errors()
         elif testset_routes.handles(route):
             self._testset()
         elif health.handles(route):

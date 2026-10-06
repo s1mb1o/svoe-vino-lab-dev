@@ -186,33 +186,42 @@ def score_schema(rule):
             "properties": properties, "required": list(properties)}
 
 
-def checked_option_scores(rule, answer):
-    """Return the checked integer option scores. Raise VlmError on a contract error."""
+def option_score_errors(rule, answer):
+    """Return response-level and question-level errors without discarding the answer."""
     questions = scoreable_questions(rule)
     if not isinstance(answer, dict):
-        raise label_rules.VlmError("the score answer is not a JSON object")
+        return {"_response": "the score answer is not a JSON object"}
+    errors = {}
     expected_ids = {question["id"] for question in questions}
     if set(answer) != expected_ids:
-        raise label_rules.VlmError("the score answer has question ids %s; expected %s" % (
-            sorted(answer), sorted(expected_ids)))
-    checked = {}
+        errors["_response"] = "the score answer has question ids %s; expected %s" % (
+            sorted(answer), sorted(expected_ids))
     for question in questions:
         qid = question["id"]
         values = answer.get(qid)
         options = options_of(question)
         if not isinstance(values, dict) or set(values) != set(options):
             found = sorted(values) if isinstance(values, dict) else type(values).__name__
-            raise label_rules.VlmError("the score answer for %s has options %s; expected %s"
-                                       % (qid, found, sorted(options)))
+            errors[qid] = "the score answer for %s has options %s; expected %s" % (
+                qid, found, sorted(options))
+            continue
         if any(isinstance(value, bool) or not isinstance(value, int)
                or value < 0 or value > SCORE_TOTAL for value in values.values()):
-            raise label_rules.VlmError("the option scores of %s MUST be integers from 0 to 100"
-                                       % qid)
+            errors[qid] = "the option scores of %s MUST be integers from 0 to 100" % qid
+            continue
         if sum(values.values()) != SCORE_TOTAL:
-            raise label_rules.VlmError("the option scores of %s total %s; expected 100"
-                                       % (qid, sum(values.values())))
-        checked[qid] = {option: values[option] for option in options}
-    return checked
+            errors[qid] = "the option scores of %s total %s; expected 100" % (
+                qid, sum(values.values()))
+    return errors
+
+
+def checked_option_scores(rule, answer):
+    """Return checked scores. A partial response never contributes to the decision."""
+    errors = option_score_errors(rule, answer)
+    if errors:
+        raise label_rules.VlmError(next(iter(errors.values())))
+    return {q["id"]: {option: answer[q["id"]][option] for option in options_of(q)}
+            for q in scoreable_questions(rule)}
 
 
 def evidence_scores(rule, option_scores, slugs):
@@ -491,6 +500,7 @@ class ClusterRerank:
                           for q in questions],
             "cached": False, "ms": 0, "error": None, "picture": None,
             "decision_weight": DECISION_WEIGHT,
+            "raw_option_scores": {}, "validation_errors": {}, "attempts": [],
         }
         base_scores = {cands[pos]["slug"]: float(cands[pos]["score"]) for pos in positions}
         evidence = {slug: 0.0 for slug in window}
@@ -502,21 +512,54 @@ class ClusterRerank:
             explain["picture"] = kind
             content = [{"type": "image_url", "image_url": {"url": label_rules.data_url(png)}},
                        {"type": "text", "text": prompt}]
-            out = self.ask_fn(self.entry, content, self.options["max_tokens"],
-                              self.options["thinking"], self.options["timeout_s"],
-                              schema=schema)
-            explain.update(cached=out["cached"], ms=out["ms"])
-            answer = label_rules.parse_json(out["text"])
-            if answer is None or out["finish_reason"] == "length":
-                raise label_rules.VlmError("the answer is not a JSON object (finish_reason %s)"
-                                           % out["finish_reason"])
-            option_scores = checked_option_scores(rule, answer)
+            for number in range(2):
+                attempt = {"number": number + 1, "cached": False, "ms": 0,
+                           "raw_text": None, "raw_option_scores": {},
+                           "validation_errors": {}, "error": None}
+                explain["attempts"].append(attempt)
+                started = time.perf_counter()
+                try:
+                    out = self.ask_fn(
+                        self.entry, content, self.options["max_tokens"],
+                        self.options["thinking"], self.options["timeout_s"], schema=schema,
+                        cache_read=number == 0,
+                        cache_validator=lambda value: not option_score_errors(rule, value))
+                except Exception as exc:
+                    attempt.update(ms=round((time.perf_counter() - started) * 1000),
+                                   error="%s: %s" % (type(exc).__name__, exc))
+                    raise
+                answer = label_rules.parse_json(out["text"])
+                errors = option_score_errors(rule, answer)
+                if out["finish_reason"] == "length":
+                    errors["_response"] = "the response reached the token limit"
+                attempt.update(cached=out["cached"], ms=out["ms"], raw_text=out["text"],
+                               raw_option_scores=answer or {}, validation_errors=errors,
+                               finish_reason=out["finish_reason"])
+                explain.update(raw_option_scores=answer or {}, validation_errors=errors)
+                if not errors:
+                    option_scores = checked_option_scores(rule, answer)
+                    break
+                attempt["error"] = "VlmError: " + "; ".join(errors.values())
+                if number == 1:
+                    raise label_rules.VlmError("; ".join(errors.values()))
+                correction = (
+                    "The previous response failed validation: %s.\n"
+                    "Return a corrected complete JSON object for all questions. "
+                    "For EACH question the integer scores MUST total 100, never zero. "
+                    "If the label shows a value absent from the listed options, use other. "
+                    "If the answer is absent or unreadable, use not visible."
+                ) % "; ".join(errors.values())
+                content = content + [{"type": "text", "text": correction}]
             evidence = evidence_scores(rule, option_scores, window)
             decisions = {slug: round(base_scores[slug] + DECISION_WEIGHT * evidence[slug], 6)
                          for slug in window}
             ranking = sorted(window, key=lambda slug: (-decisions[slug], window.index(slug)))
         except Exception as exc:  # noqa: BLE001 - a failure keeps the base order
             explain["error"] = "%s: %s" % (type(exc).__name__, exc)
+        attempts = explain["attempts"]
+        explain["cached"] = bool(attempts) and all(a["cached"] for a in attempts)
+        explain["ms"] = sum(a["ms"] for a in attempts
+                            if not a["cached"] or explain["cached"])
         explain.update(option_scores=option_scores, base_scores=base_scores,
                        evidence_scores=evidence, decision_scores=decisions,
                        ranking=ranking)

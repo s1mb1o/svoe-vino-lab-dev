@@ -38,6 +38,7 @@ import derive
 import labdb
 import alternatives
 import dis_litert
+from job_status_cache import STATUS_CACHE
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(ROOT, "config.yaml")
@@ -52,13 +53,14 @@ NAME_RE = re.compile(r"^%s$" % NAME_PATTERN)
 BACKENDS = ("openai", "local")
 VIEWS = ("full", "label")
 ENTRY_KEYS = ("name", "backend", "base_url", "model", "extra_body", "batch_size", "views",
-              "rotation_step")
+              "rotation_step", "arcface")
 DEFAULT_BATCH_SIZE = 16
 # Plan 82: an entry with `rotation_step` embeds the view `full` of each full image at the
 # angles 0°, step, 2·step, … below 360°. Raise ROTATION_VERSION when the code of the
 # rotation changes the pixels; only the items of the rotated entries are then stale.
 MAX_ROTATION_STEP = 180
 ROTATION_VERSION = 1
+SQUARE_ROTATION_VERSION = 1
 ROTATION_FILL = (255, 255, 255)
 MAX_BATCH_SIZE = 256
 # The keys of `extra_body` that the local backend gives to the image processor.
@@ -256,6 +258,17 @@ class Embedding:
                 raise ConfigError("the backend local accepts only %s in extra_body; found: %s"
                                   % (", ".join(LOCAL_EXTRA_KEYS), ", ".join(other)))
         self.extra_body = extra
+        self.arcface = raw.get("arcface")
+        if self.arcface is not None:
+            spec = self.arcface
+            if (not isinstance(spec, dict) or set(spec) != {"checkpoint", "sha256"}
+                    or not isinstance(spec["checkpoint"], str) or not spec["checkpoint"].strip()
+                    or not isinstance(spec["sha256"], str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", spec["sha256"])):
+                raise ConfigError("arcface MUST hold checkpoint and a lowercase SHA-256 digest")
+            path = os.path.expanduser(spec["checkpoint"])
+            self.arcface = {"checkpoint": os.path.abspath(os.path.join(ROOT, path)),
+                            "sha256": spec["sha256"]}
         batch = raw.get("batch_size", DEFAULT_BATCH_SIZE)
         if isinstance(batch, bool) or not isinstance(batch, int) or not (
                 1 <= batch <= MAX_BATCH_SIZE):
@@ -268,6 +281,7 @@ class Embedding:
         if other:
             raise ConfigError("unknown view: %s; use %s" % (", ".join(other), " or ".join(VIEWS)))
         self.views = {view: check_steps(view, views[view]) for view in VIEWS if view in views}
+        self.rotation_mode = None
         self.rotation_step = self._rotation_step(raw.get("rotation_step"))
         self._hashes = {}
 
@@ -282,12 +296,25 @@ class Embedding:
         if "full" not in self.views:
             raise ConfigError("rotation_step needs the view full")
         kinds = [item["step"] for item in self.views["full"]]
-        for kind in ("square_on_white", "segment_dis"):
-            if kind in kinds:
-                raise ConfigError("rotation_step does not work with the step %s" % kind)
-        if "resize" in kinds and (kinds[-1] != "resize"
-                                  or self.views["full"][-1]["aspect"] != "keep"):
-            raise ConfigError("rotation_step needs the step resize last, with aspect keep")
+        if "square_on_white" in kinds:
+            square = kinds.index("square_on_white")
+            if kinds[square:] != ["square_on_white", "resize"]:
+                raise ConfigError("rotation_step with square_on_white needs the final steps "
+                                  "square_on_white and resize")
+            if self.views["full"][-1]["aspect"] != "ignore":
+                raise ConfigError("rotation_step with square_on_white needs resize with "
+                                  "aspect ignore")
+            if "white_background" not in kinds[:square]:
+                raise ConfigError("rotation_step with square_on_white needs white_background "
+                                  "before square_on_white")
+            self.rotation_mode = "before_square_on_white"
+        else:
+            if "segment_dis" in kinds:
+                raise ConfigError("rotation_step with segment_dis needs square_on_white")
+            if "resize" in kinds and (kinds[-1] != "resize"
+                                      or self.views["full"][-1]["aspect"] != "keep"):
+                raise ConfigError("rotation_step needs the step resize last, with aspect keep")
+            self.rotation_mode = "fixed_scale"
         if self.batch_size < 2:
             raise ConfigError("rotation_step needs batch_size 2 or more: no request holds "
                               "one image alone")
@@ -311,9 +338,17 @@ class Embedding:
                      "extra_body": self.extra_body, "view": view,
                      "steps": self.views[view] if role == "full" else [],
                      "steps_version": STEPS_VERSION}
+            if self.arcface is not None:
+                value["arcface"] = {"sha256": self.arcface["sha256"], "version": 1}
             if self.angles(view, role) is not None:
                 value["rotation"] = {"rotation_step": self.rotation_step,
                                      "rotation_version": ROTATION_VERSION}
+                if self.rotation_mode == "before_square_on_white":
+                    value["rotation"] = {
+                        "rotation_step": self.rotation_step,
+                        "rotation_version": SQUARE_ROTATION_VERSION,
+                        "mode": self.rotation_mode,
+                    }
             self._hashes[key] = sha256_json(value)
         return self._hashes[key]
 
@@ -325,6 +360,8 @@ class Embedding:
                "batch_size": self.batch_size, "views": self.views}
         if self.rotation_step is not None:
             out["rotation_step"] = self.rotation_step
+        if self.arcface is not None:
+            out["arcface"] = dict(self.arcface)
         return out
 
 
@@ -624,16 +661,36 @@ def rotate_fixed_scale(image, angle, resize_step, reference_size, fill=ROTATION_
     return image.resize(target, Image.Resampling.LANCZOS)
 
 
-def rotated_inputs(item, source_path, angles):
+def rotated_inputs(item, source_path, angles, dis_segmenter=None):
     """Return the model input of each angle of one item as RGB images (plan 82).
 
-    The steps before a last step `resize` make the unrotated image as `prepare` does. Each
-    angle then rotates it (counter-clockwise, white fill, a larger canvas) and applies the
-    scale of the 0° `resize`. With `angles[0] == 0`, the first image is the image of
+    The standard mode applies the steps before a final `resize`, rotates the result, and
+    keeps the scale of the 0° image. The fixed-square mode applies the steps before
+    `square_on_white`, rotates the result, and then applies `square_on_white` and the
+    final fixed-size `resize`. With `angles[0] == 0`, the first image is the image of
     `prepare`. Raise ItemError."""
     steps = item["steps"]
+    kinds = [step["step"] for step in steps]
+    if "square_on_white" in kinds:
+        square = kinds.index("square_on_white")
+        before, after = steps[:square], steps[square:]
+        base = prepare(dict(item, steps=before), source_path,
+                       dis_segmenter=dis_segmenter)
+        images = []
+        for angle in angles:
+            image = base
+            if angle % 360:
+                image = image.rotate(
+                    angle,
+                    resample=Image.Resampling.BICUBIC,
+                    expand=True,
+                    fillcolor=ROTATION_FILL,
+                )
+            images.append(apply_steps(image, after, None, lambda: None))
+        return images
     resize_step = steps[-1] if steps and steps[-1]["step"] == "resize" else None
-    base = prepare(dict(item, steps=steps[:-1] if resize_step else steps), source_path)
+    base = prepare(dict(item, steps=steps[:-1] if resize_step else steps), source_path,
+                   dis_segmenter=dis_segmenter)
     return [rotate_fixed_scale(base, angle, resize_step, base.size) for angle in angles]
 
 
@@ -976,6 +1033,11 @@ def _phase(run):
 
 
 def job_state(directory):
+    """Read current job status. Reuse a status only while its inputs stay equal."""
+    return STATUS_CACHE.get(directory, _read_job_state, running_pid, (LOG, LOCK))
+
+
+def _read_job_state(directory):
     """Return the job of an embedding from `build.lock` and `build.log`.
 
     `state` is None (no build yet), `running`, `stopping`, `done`, `stopped`, or

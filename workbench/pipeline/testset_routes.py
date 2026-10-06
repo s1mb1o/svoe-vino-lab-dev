@@ -8,6 +8,8 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
     GET  /api/testset?set=<name>  the rows of one set (the first set without `set`)
     POST /api/testset-label       {set, place, file, label}; label null clears it
     POST /api/testset-delete      {set, place, file, delete}
+    POST /api/testset-drawer-remove
+                                  {set, place, file}; permanently remove one Drawer entry
     POST /api/testset-photo-comment
                                   {set, place, file, text, source?}: a new comment of
                                   one photo; source user (the default) or script
@@ -17,7 +19,12 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
                                   photo; each photo of the same bytes shows it (plan 66)
     POST /api/testset-photo-tag-remove
                                   {set, place, file, tag}: remove one tag of the image
+    GET  /api/testset-autotag?set=<name>
+                                  status of the four-category Autotag batch
+    POST /api/testset-autotag     {set}: start or resume the Autotag batch
     POST /api/testset-box         {set, place, file, box}; box [l, t, r, b] or null
+    POST /api/testset-crop        {set, place, file, box}; crop the photo to box and add
+                                  the crop as a new photo of the same place
     POST /api/testset-move        {set, place, file, to}; to a slug, __null__ (the row
                                   "No Match"), or __drawer__ (the Drawer)
     POST /api/testset-upload?set=<name>&place=<slug>&name=<file name>
@@ -44,7 +51,9 @@ from contextlib import closing
 import lab_pages
 import remote_images
 import testset_from_run
+import testset_autotag
 import testsets
+from testset_payload_cache import TESTSET_PAYLOAD_CACHE
 
 PAGE_ROUTE = "/testset"
 API = "/api/testset"
@@ -53,6 +62,7 @@ FETCH = "/api/testset-fetch"
 FROM_RUN = "/api/testset-from-run"
 NEW = "/api/testset-new"
 RENAME = "/api/testset-rename"
+AUTOTAG = "/api/testset-autotag"
 JSON_TYPE = "application/json; charset=utf-8"
 # The largest body of a write, in bytes. The JSON form of a comment of 4,000 characters
 # MAY need 6 bytes for each character.
@@ -61,6 +71,8 @@ MAX_BODY = 32768
 WRITES = {
     "/api/testset-label": (testsets.set_label, ("set", "place", "file", "label")),
     "/api/testset-delete": (testsets.set_delete, ("set", "place", "file", "delete")),
+    "/api/testset-drawer-remove": (testsets.remove_drawer_photo,
+                                    ("set", "place", "file")),
     "/api/testset-photo-comment": (testsets.add_photo_comment,
                                    ("set", "place", "file", "text", "source")),
     "/api/testset-photo-comment-remove": (testsets.remove_photo_comment,
@@ -69,6 +81,7 @@ WRITES = {
     "/api/testset-photo-tag-remove": (testsets.remove_photo_tag,
                                       ("set", "place", "file", "tag")),
     "/api/testset-box": (testsets.set_box, ("set", "place", "file", "box")),
+    "/api/testset-crop": (testsets.crop_photo, ("set", "place", "file", "box")),
     "/api/testset-move": (testsets.move_photo, ("set", "place", "file", "to")),
     # The fields of an upload come from the query; `data` is the body. Read `_upload_body`.
     UPLOAD: (testsets.upload_photo, ("set", "place", "data", "name")),
@@ -79,7 +92,7 @@ WRITES = {
     # `respond` puts the directory of the runs of the server before these keys.
     FROM_RUN: (testset_from_run.build, ("run", "misses", "name")),
 }
-ROUTES = frozenset((PAGE_ROUTE, API) + tuple(WRITES))
+ROUTES = frozenset((PAGE_ROUTE, API, AUTOTAG) + tuple(WRITES))
 
 
 def handles(route):
@@ -143,11 +156,12 @@ def respond(server, method, path, read_body, open_database, card_images):
             return _error(405, "the route %s answers GET alone" % route)
         query = urllib.parse.parse_qs(parts.query)
         set_name = (query.get("set") or [None])[0] or None
-        with closing(open_database(server.db_path)) as conn:
-            try:
-                return _json(200, testsets.set_view(conn, set_name, card_images))
-            except testsets.TestsetError as exc:
-                return _error(exc.code, str(exc))
+        try:
+            body = TESTSET_PAYLOAD_CACHE.get(
+                server.db_path, set_name, open_database, card_images)
+            return _json(200, body)
+        except testsets.TestsetError as exc:
+            return _error(exc.code, str(exc))
     if route == FROM_RUN and method in ("GET", "HEAD"):
         run_id = (urllib.parse.parse_qs(parts.query).get("id") or [""])[0]
         with closing(open_database(server.db_path)) as conn:
@@ -156,6 +170,33 @@ def respond(server, method, path, read_body, open_database, card_images):
                     conn, testset_from_run.runs_dir_of(server), run_id))
             except testsets.TestsetError as exc:
                 return _error(exc.code, str(exc))
+    if route == AUTOTAG:
+        if method in ("GET", "HEAD"):
+            set_name = (urllib.parse.parse_qs(parts.query).get("set") or [None])[0]
+            with closing(open_database(server.db_path)) as conn:
+                try:
+                    testsets._check_set(conn, set_name)
+                except testsets.TestsetError as exc:
+                    return _error(exc.code, str(exc))
+            return _json(200, testset_autotag.job_view(set_name))
+        if method != "POST":
+            return _error(405, "the route %s answers GET and POST alone" % route)
+        body, error = _body(read_body)
+        if error:
+            return error
+        set_name = body.get("set")
+        with closing(open_database(server.db_path)) as conn:
+            try:
+                testsets._check_set(conn, set_name)
+            except testsets.TestsetError as exc:
+                return _error(exc.code, str(exc))
+        try:
+            status = testset_autotag.start(
+                server.config_path or testset_autotag.CONFIG_PATH,
+                server.db_path, set_name)
+        except testset_autotag.AutotagError as exc:
+            return _error(exc.code, str(exc))
+        return _json(202, status)
     if method != "POST":
         return _error(405, "the route %s answers POST alone" % route)
     if route == UPLOAD:

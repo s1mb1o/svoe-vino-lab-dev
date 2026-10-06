@@ -391,12 +391,13 @@ first while an import waits or runs.
 python3 pipeline/import_website.py --db data/catalog/catalog.sqlite3
 ```
 
-The compare is disabled in the code since 2026-09-29 (owner message of 23:23):
-`COMPARE_ENABLED` of `pipeline/import_website.py` is `False`. The CLI and `--prepare`
-exit 1 with `error: the website compare is disabled in the code: …` and send no request.
-`POST /api/website-import/start` answers HTTP 403, and the Dataset page hides the button
-`Import from website`. `--apply` of an existing run directory stays. To enable the compare
-again, set the value to `True` and restart the lab server.
+`COMPARE_ENABLED` of `pipeline/import_website.py` switches the compare in the code. The
+owner disabled it on 2026-09-29 (owner message of 23:23) and enabled it again on
+2026-10-02 (owner message of 02:07). The value is `True`. While it is `False`, the CLI and
+`--prepare` exit 1 with `error: the website compare is disabled in the code: …` and send no
+request. `POST /api/website-import/start` answers HTTP 403, and the Dataset page hides the
+button `Import from website`. `--apply` of an existing run directory stays. A change of the
+value needs a restart of the lab server.
 
 `import_website.py` reads the JSON API `https://api.vino-svoe.ru/v1`: the list pages,
 the card of each new wine, and the original image of each wine through
@@ -551,7 +552,10 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
     this wine) and `×`.
   - The Drawer, the right sidebar, holds the photos that wait for a wine, also after a
     restart. No run uses them. Its cards have no label buttons; the comments, the box, and
-    the delete mark stay.
+    the delete mark stay. `Remove` asks for confirmation and then deletes that Drawer
+    entry (`POST /api/testset-drawer-remove`); it does not delete the immutable image-store
+    object and cannot remove a photo from any other place. The same control is on the
+    matched-image panel of every current row in the Drawer matching Results dialog.
 - A drag of a photo card onto the sidebar moves the photo to the Drawer; a drag onto the
   row `No Match` or onto a wine row moves it there; the key `0` of the large view moves
   it to the Drawer; the right-click menu holds `Move to the Drawer`, `Move to No Match`,
@@ -642,7 +646,13 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
   whose `embeddings` entry has no index is disabled with the note `no index: build it on
   /embedding`; its job runs with `embedding_python`.
   `first N queries` (empty: all) and `workers` (empty: the value of the entry) are
-  optional. The checkbox `Use caches` is on at each page load: a model call that repeats
+  optional. `matcher-eval-predict` and `matcher-match-k20` also show `matcher base URL`.
+  An empty field uses `http://192.168.86.14:28000`. An HTTP(S) origin in the field
+  replaces this origin for one run and keeps the pipeline path. Thus the first pipeline
+  still calls `/v1/eval/predict`, and the second still calls `/v1/match?k=20`. The field
+  applies to both when parallel matching selects both pipelines. `run.json` records the
+  resolved full URL in `backend.url`.
+  The checkbox `Use caches` is on at each page load: a model call that repeats
   an earlier call reads its answer from `data/cache/models/` (SAM3, GDINO, VLM, LLM). Barcode
   scans also use this setting. Off, the
   job reads no record, each model call goes to its service, and the latency is real
@@ -840,12 +850,14 @@ python3 -m venv ~/.venvs/svoe-vino-lab
 ### Rotated reference vectors (plan 82)
 
 An entry with the key `rotation_step` (integer degrees, 1 to 180) embeds the view `full` of
-each full catalogue image at the angles 0°, step, 2·step, … below 360°: the SAM3 cut on
-white, rotated counter-clockwise on a larger white canvas, with the scale of the 0°
-`resize`. The query stays one vector. A wine scores the best cosine of all its rows, so the
-score is the maximum over the rotation. The index record keeps `row` (the 0° row) and gets
-`angles`; row `row + i` is the vector of `angles[i]`. A run records the `angle` of the best
-row of each candidate and of each candidate image. Only the 0° PNG is written.
+each full catalogue image at the angles 0°, step, 2·step, … below 360°. The standard
+mode rotates the SAM3 cut on a larger white canvas and keeps the scale of the 0° `resize`.
+The fixed-square mode runs DIS and `white_background`, rotates the result, and then runs
+`square_on_white` and the fixed resize. The query stays one vector. A wine scores the best
+cosine of all its rows, so the score is the maximum over the rotation. The index record
+keeps `row` (the 0° row) and gets `angles`; row `row + i` is the vector of `angles[i]`. A
+run records the `angle` of the best row of each candidate and of each candidate image.
+Only the 0° PNG is written.
 
 ```bash
 # the entries of plan 82 have batch_size 36; --workers N builds N rotated items at a time
@@ -858,6 +870,8 @@ row of each candidate and of each candidate image. Only the 0° PNG is written.
   `full` alone. The rot5 entry also has the unrotated view `label` for the cluster rerank
   of `barcode-rerank-siglip2-p512-rot5-seg`. The pipelines
   `siglip2-p512-rot{5,10}-{as-is,crop,crop-seg}` use them and rank `full`.
+- `android-siglip2-base-224-dis-white-rot5` has 72 angles. It is the source index for the
+  built-in Android catalogue pack.
 - `rebuild_embeddings_on_run` builds a missing rotated item before a run, and a run waits
   for a build in progress.
 - A matcher bundle of a rotated entry is format version 3
@@ -1275,6 +1289,15 @@ with `Show`, `Sort`, and `Find`, the candidate images with the cluster frames an
 VLM box, and the large view with the arrow keys and the model inputs. Read
 [plan 23](docs/plans/23_runs-page.md).
 
+The button `Export predictions.jsonl` downloads every saved prediction of the open
+run. Page filters do not affect the file. The export uses compact JSON and a stable
+row order. For `official-test-2026-10-01`, photo numbers set the `eval_photo_NNN.webp`
+names and `q-NNNNNN` IDs. Other test sets keep their saved IDs and paths.
+Hashes and latency values stay as recorded. Exclude `latency_ms` when you compare
+prediction results alone. Read [the export API](docs/API.md#get-apirun-predictionsidid).
+The button `Export expected.jsonl` downloads the saved ground truth in the same format.
+It uses `null` for an expected no-match answer and `0` for each `latency_ms`.
+
 ```bash
 # a run of a remote pipeline (backend svoe-vino-ru): each photo goes to the API as it is
 python3 pipeline/remote_run.py --name vino-svoe-search-by-photo --set my \
@@ -1287,7 +1310,7 @@ python3 pipeline/embedding_run.py --name siglip2-p256-crop --set my \
 
 # the runner of the button Run> of /testset: one JSON event on each line
 python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers N] \
-    [--no-cache]
+    [--no-cache] [--endpoint http://host:port]
 ```
 
 - `remote_run.py` builds the HTTP backend of `scripts/match_backends.py` from the
@@ -1305,7 +1328,9 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   with one entry for each slug. `/runs` shows the photo with the numbered bottles and a
   grid of the candidates of each bottle in place of the candidate strip. Each photo of a
   run lands in the prod request archive. Read
-  [plan 83](docs/plans/83_matcher-api-pipelines.md).
+  [plan 83](docs/plans/83_matcher-api-pipelines.md). The first two entries have
+  `endpoint_override: true`, so the Run dialog can replace their configured matcher
+  origin for one run. The group pipeline keeps its configured endpoint.
 - Two pipelines call the debug HTTP server of the Android application (plan 86):
   `android-device-eval-predict` calls `/v1/eval/predict`, and
   `android-device-match-k20` calls `/v1/match?k=20`. Their URL contains
@@ -1440,6 +1465,11 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   the value (`?set=<name>`), and `localStorage` keeps it in `svl.runs.header`.
 - The table has the column `pipeline`: the key `configuration` of `run.json`, and the
   column `testset`: the key `options.set` of `run.json` (`set` in `/api/runs`).
+- The table has the column `URL override`. It shows the full matcher request URL when
+  `run.json` records an `endpoint_override`. For older runs without this key, it compares
+  the saved origin with the current configured origin of a pipeline with
+  `endpoint_override: true`. The URL includes the configured query, for example `?k=20`.
+  Other runs show `—`.
 - A run whose `run.json` holds `use_cache: false` has the tag `no cache` after its id:
   the checkbox `Use caches` of the dialog `Run>` was off, so the run read no cached
   model answer, and its latency is real time (plan 39). A run with no key gets no tag.
@@ -1531,6 +1561,9 @@ python3 pipeline/run_job.py --name <pipeline> --set <set> [--limit N] [--workers
   button is off for a run that names no test set, for a dry run, and for a run whose
   `configuration` is no pipeline of `config.yaml` (a run of `scripts/match_run.py`, a
   self-test). The page alone changed; the server has no new route.
+  For `matcher-eval-predict` and `matcher-match-k20`, the dialog also shows the matcher
+  base URL that produced the open run. The user can keep it, change it, or clear it to
+  use the configured origin.
 - The routes are in `pipeline/run_routes.py`; `pipeline/run_files.py` reads the files.
   `lab_server.py` sends each route of the page to `run_routes.py`. The review tool keeps
   its own copy of the run functions.

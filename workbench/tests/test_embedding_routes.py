@@ -1,5 +1,6 @@
 import contextlib
 import io
+import json
 import os
 import sys
 import tempfile
@@ -15,6 +16,14 @@ import alternatives  # noqa: E402
 import build_embeddings  # noqa: E402
 import embedding_routes  # noqa: E402
 import embeddings  # noqa: E402
+
+
+def decoded_response(answer):
+    """Decode JSON bytes for the route assertions."""
+    code, body, content_type, cache = answer
+    if isinstance(body, bytes) and content_type == embedding_routes.JSON:
+        body = json.loads(body)
+    return code, body, content_type, cache
 
 # A build that takes its lock, writes `start`, and waits for SIGTERM or 20 s. Its file
 # name is the name of the build script, so the lock check accepts it.
@@ -71,7 +80,7 @@ class RoutesTest(unittest.TestCase):
         self.tmp.cleanup()
 
     def get(self, path, method="GET"):
-        return embedding_routes.respond(self.server, method, path)
+        return decoded_response(embedding_routes.respond(self.server, method, path))
 
     def build(self):
         settings = embeddings.load_settings(self.lab.config_path)
@@ -367,7 +376,7 @@ class BuildAllTest(unittest.TestCase):
         return path
 
     def get(self, path, method="GET"):
-        return embedding_routes.respond(self.server, method, path)
+        return decoded_response(embedding_routes.respond(self.server, method, path))
 
     def queue_ends(self):
         return wait_for(lambda: embedding_routes.queue_view()["state"] != "running", 15)

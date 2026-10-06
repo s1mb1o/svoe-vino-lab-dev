@@ -104,6 +104,27 @@ class TestsetRoutesTest(unittest.TestCase):
             self.assertEqual(response.read(), PHOTOS["wine-b/01.jpg"])
         self.assertEqual(self.request("/api/testset?set=other")[0], 404)
 
+    def test_the_view_shares_the_global_catalog_favorites(self):
+        rows = {row["slug"]: row for row in self.get_view()["rows"]}
+        self.assertFalse(rows["wine-b"]["_favorite"])
+        self.assertFalse(rows["__null__"]["_favorite"])
+        self.assertFalse(rows["__drawer__"]["_favorite"])
+
+        status, text = self.request("/api/dataset-favorite", "POST",
+                                    {"slug": "wine-b", "favorite": True})
+        self.assertEqual(status, 200, text)
+        rows = {row["slug"]: row for row in self.get_view()["rows"]}
+        self.assertTrue(rows["wine-b"]["_favorite"])
+        self.assertFalse(rows["wine-a"]["_favorite"])
+        self.assertFalse(rows["__null__"]["_favorite"])
+        self.assertFalse(rows["__drawer__"]["_favorite"])
+
+        status, text = self.request("/api/dataset-favorite", "POST",
+                                    {"slug": "wine-b", "favorite": False})
+        self.assertEqual(status, 200, text)
+        self.assertFalse(next(row for row in self.get_view()["rows"]
+                              if row["slug"] == "wine-b")["_favorite"])
+
     def test_each_write_route(self):
         status, answer = self.post("/api/testset-label", place="wine-b", file="01.jpg",
                                    label="positive")
@@ -192,6 +213,18 @@ class TestsetRoutesTest(unittest.TestCase):
                                    to="wine-z")
         self.assertEqual(status, 404)
 
+    def test_the_drawer_remove_route(self):
+        status, answer = self.post("/api/testset-move", place="wine-a", file="01.jpg",
+                                   to="__drawer__")
+        self.assertEqual((status, answer["counts"]["drawer"]), (200, 1))
+        status, answer = self.post("/api/testset-drawer-remove", place="__drawer__",
+                                   file="01.jpg")
+        self.assertEqual((status, answer["place"], answer["file"],
+                          answer["counts"]["drawer"]),
+                         (200, "__drawer__", "01.jpg", 0))
+        status, _ = self.post("/api/testset-drawer-remove", place="wine-b", file="01.jpg")
+        self.assertEqual(status, 400)
+
 
     def test_the_upload_route(self):
         data = jpeg((25, 25))
@@ -210,6 +243,40 @@ class TestsetRoutesTest(unittest.TestCase):
                                     "POST", data)
         self.assertEqual(status, 404)
         self.assertEqual(self.request(route)[0], 405)
+
+    def test_the_crop_route_adds_a_png_to_the_same_wine(self):
+        status, answer = self.post("/api/testset-crop", place="wine-a", file="01.jpg",
+                                   box=[10, 5, 50, 35])
+        self.assertEqual((status, answer["photo"]["place"], answer["photo"]["file"]),
+                         (200, "wine-a", "01_crop.png"))
+        self.assertEqual((answer["cropped_from"], answer["box"]),
+                         ("01.jpg", [10, 5, 50, 35]))
+        self.assertEqual((answer["photo"]["width"], answer["photo"]["height"]), (40, 30))
+        self.assertEqual(answer["photo"]["entry"], {})
+        with urllib.request.urlopen(self.base + answer["photo"]["url"]) as response:
+            cropped = response.read()
+        with Image.open(io.BytesIO(cropped)) as image:
+            self.assertEqual((image.format, image.size), ("PNG", (40, 30)))
+        photos = next(row for row in self.get_view()["rows"]
+                      if row["slug"] == "wine-a")["photos"]
+        self.assertEqual({photo["file"] for photo in photos}, {"01.jpg", "01_crop.png"})
+        self.assertEqual(answer["counts"]["photos"], len(PHOTOS) + 1)
+
+        # The same crop is the same image, and a place holds one image once.
+        self.assertEqual(self.post("/api/testset-crop", place="wine-a", file="01.jpg",
+                                   box=[10, 5, 50, 35])[0], 409)
+        for body, code, text in (({"box": [0, 0, 61, 40]}, 400, "not inside"),
+                                 ({"box": [0, 0, 3]}, 400, "MUST be"),
+                                 ({"box": None}, 400, "MUST be"),
+                                 ({"file": "missing.jpg", "box": [0, 0, 3, 3]}, 404,
+                                  "has no photo")):
+            with self.subTest(body=body):
+                status, failure = self.post("/api/testset-crop",
+                                            **dict({"place": "wine-a", "file": "01.jpg"},
+                                                   **body))
+                self.assertEqual(status, code, failure)
+                self.assertIn(text, failure["error"])
+        self.assertEqual(self.request("/api/testset-crop")[0], 405)
 
     def test_the_browser_image_fetch_route(self):
         data = jpeg((26, 24))
@@ -270,6 +337,46 @@ class TestsetRoutesTest(unittest.TestCase):
         status, _ = self.request("/api/testset-photo-tag")
         self.assertEqual(status, 405)
         self.assertEqual(self.get_view()["tag_names"], [])
+
+    def test_the_autotag_status_and_start_routes(self):
+        job = {"state": "running", "set": "my", "job_id": "job-1", "done": 2,
+               "total": 3, "tags": ["label_back", "label_front", "isolated_product",
+                                      "scene_photo"]}
+        with mock.patch("testset_routes.testset_autotag.job_view", return_value=job) as view:
+            status, text = self.request("/api/testset-autotag?set=my")
+        self.assertEqual((status, json.loads(text)), (200, job))
+        view.assert_called_once_with("my")
+
+        with mock.patch("testset_routes.testset_autotag.start", return_value=job) as start:
+            status, answer = self.post("/api/testset-autotag")
+        self.assertEqual((status, answer), (202, job))
+        start.assert_called_once_with(
+            str(Path(__file__).resolve().parents[1] / "config.yaml"), self.db, "my")
+
+        self.assertEqual(self.request("/api/testset-autotag?set=missing")[0], 404)
+        self.assertEqual(self.request("/api/testset-autotag", "POST",
+                                      {"set": "missing"})[0], 404)
+        self.assertEqual(self.request("/api/testset-autotag", "PUT", b"{}")[0], 405)
+
+    def test_the_page_has_the_autotag_button_and_progress_poll(self):
+        status, page = self.request("/testset")
+        self.assertEqual(status, 200)
+        self.assertIn('id="autotag"', page)
+        self.assertIn("/api/testset-autotag", page)
+        self.assertIn('"label_back", "label_front", "isolated_product", "scene_photo"',
+                      page)
+        self.assertIn('new Set(["starting", "running", "waiting"])', page)
+        self.assertIn("Autotag waiting for VLM:", page)
+
+    def test_the_page_filters_the_drawer_and_its_results_by_image_tag(self):
+        status, page = self.request("/testset")
+        self.assertEqual(status, 200)
+        for fragment in ('id="drawer-tag"', 'id="drawer-results-tag"',
+                         'tagFilterMatches(photoTags(photo), want)',
+                         'tagFilterMatches(drawerResultTags(row), want)',
+                         'No Drawer photo matches this tag filter.',
+                         'No waiting Drawer photo matches this tag filter.'):
+            self.assertIn(fragment, page)
 
 
 class NewSetRouteTest(unittest.TestCase):

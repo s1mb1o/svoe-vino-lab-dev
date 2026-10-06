@@ -64,9 +64,9 @@ The owner selected these answers:
 - `scripts/cluster_rules.py`, the port of `svoe-vino-testset`, does not read tags.
   `TAG_NOTE` is not in the prompt comparison of `PromptTest`.
 - The matcher does not need a change. It reads the expected answers of the rule.
-- The docstrings of `pipeline/wine_tags.py` and `pipeline/lab_server.py` still state that
-  the pipeline does not read the tags. The stale section 1e of `ACTIVE_WORK.md` lists
-  `wine_tags.py`, so the owner decides that edit.
+- The rest of the pipeline does not read the tags. On 2026-10-01 at about 10:50 the owner
+  allowed the fix of this sentence in the docstrings of `pipeline/wine_tags.py` and
+  `pipeline/lab_server.py`; `README.md` (section of plan 63) got the same fix.
 
 ## Example
 
@@ -76,3 +76,12 @@ The manual cluster `3889ddfd95bb` of `gx10-siglip2-so400m-patch16-naflex-p256` h
 «Шардоне Резерв». Before the change, rule 2a did not allow a vintage question. After the
 change, the prompt holds `Vintage tags. The reviewer tagged the vintage of some cards:
 Card A: 2021; Card B: 2020. …`, and a vintage question with 2021 and 2020 is valid.
+
+## The rebuild of 2026-10-01
+
+The owner asked at about 10:50 for a rebuild of the stale rules of the clusters with a
+vintage tag. At that time 18 vintage tags existed (12 at 00:08), so 43 clusters of the 6
+embeddings were stale (plus `3889ddfd95bb`, built at 00:21). All 44 rules have mode
+`sheet` and the tag note; 42 have a valid vintage question. One call failed with the
+transient service error `Download multimodal file timed out` (HTTP 400) and passed on
+the retry.

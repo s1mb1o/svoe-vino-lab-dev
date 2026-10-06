@@ -2,6 +2,30 @@
 
 What was learned while this project was built. `ChangeLog.md` records what was done.
 
+## 2026-10-03 — Android fixed-square reference rotation
+
+The existing Android `CatalogueIndex.search` already takes the maximum score for each
+`wine_slug`. The Android runtime can use 72 catalogue rows without a second query vector.
+
+The Android reference pipeline cannot use the original NaFlex rotation order. NaFlex
+rotates a variable-size white-background cut and keeps its 0-degree resize scale. The
+Android SigLIP2 model needs a fixed 224 by 224 square input. The Android pipeline now uses
+this order:
+
+1. Run DIS.
+2. Add the white background.
+3. Rotate the result on a larger white canvas.
+4. Put the result on a square white canvas.
+5. Resize the square to 224 by 224 pixels.
+
+This order keeps the 0-degree frame pixel-equal to the existing Android model input. A
+shared LiteRT interpreter is not thread-safe. The multi-worker builder serializes DIS and
+lets the worker threads send completed angle batches in parallel.
+
+For 2,093 wines, the 72 float32 vectors need 462,938,112 bytes. This value is 456,508,416
+bytes more than the one-vector index. The full index build and the APK build remain
+separate offline operations.
+
 ## 2026-10-01 — The slow `/api/dataset` on 8168 while the Embedding page polls
 
 The owner saw the heading `loading catalog.jsonl…` on `/dataset` for a long time. The text
@@ -33,6 +57,28 @@ Embedding page comes from the request pattern alone.
 Workaround: close the Embedding page while `Build All` runs. The owner chose only the text
 fix (option A). A poll fix (`setTimeout` after the answer) and a cheaper `/api/run-jobs`
 are not done.
+
+## 2026-10-01 — minicpm-v-4.5 added to the VLM comparison
+
+Source: owner message of 2026-10-01T10:34:00+0300.
+Report: `docs/reports/minicpm-vs-qwen35-9b-2026-10-01.md` (now three models). The same 100
+catalogue images as for `minicpm-v-4.6`; four lab runs on `my` with the same index.
+
+- `minicpm-v-4.5` (8.7 B, Qwen3-8B, llama.cpp) gives valid answers where `minicpm-v-4.6`
+  fails: stage 1 100/100 (4.6: 0/100), stage 3 88/100 (4.6: 16/100). Its stage 1 values
+  agree with qwen on all five fields for 91/100 images, as much as two qwen runs agree.
+- It keeps the Russian alphabet (1 mixed-script word in stage 2; 4.6: 64). Its errors are
+  wrong letters inside a word (`СКАЛАИСТЫЙ`, `БРИОТ`). Name words found: 64% against 71%
+  for qwen on the same 85 images.
+- Re-rank on the same index: R@1 base 81.00%, qwen 82.60% (42 fixes, 12 breaks),
+  minicpm-v-4.5 82.55% (41 fixes, 12 breaks), minicpm-v-4.6 81.00%.
+- It is 2 to 3 times slower than qwen for each call (p50 stage 2 48.6 s, stage 3 54.8 s,
+  re-rank 11.7 s). About 1 label call in 10 reached the pipeline timeout of 300 s, with
+  only about 400 completion tokens at the median: the call is slow, it does not loop.
+- The index of `gx10-siglip2-so400m-patch16-naflex-p512-rot5` was rebuilt at 10:46 and its
+  clusters and rules at 11:05 and 11:40. A lab run of the morning is not comparable with a
+  run of the night before. Compare runs only with the same `embeddings.built_at`,
+  `rules_updated_at`, and `clusters_built_at` in `run.json`.
 
 ## 2026-10-01 — Qwen3.5-9B in vLLM 0.30.0 on an RTX 4090: FP8 at load, MTP-3, and three start faults
 
@@ -75,7 +121,6 @@ Host: Selectel `faith` (RTX 4090 49,140 MiB, driver 580.65.06). Journal:
   workers: 0.6 items/s. The GPU was idle most of the time (samples 0–39 %, one 100 %); the
   SigLIP2 service used about 180 % CPU for the serial decode and the Hugging Face preprocessing of
   the PNG copies; one build worker alone took about 4 s per image on one core.
-
 
 ## 2026-10-01 — The 9B VLM gives 0 to each option of a vintage question when the printed year is not an option
 

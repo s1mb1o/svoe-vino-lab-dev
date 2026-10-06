@@ -38,6 +38,7 @@ import lab_pages
 import pipelines
 import run_jobs
 import testsets
+from settings_cache import SETTINGS_CACHE
 
 PAGE = "/recognize"
 API = "/api/recognize"
@@ -88,12 +89,17 @@ def pipelines_view(config_path):
     """Return the answer of `GET /api/recognize`: each pipeline of the backend
     `embedding`, in the order of `config.yaml`. A pipeline with a configuration error
     stays in the list, not runnable, because its backend is not known."""
-    settings = pipelines.load(config_path)
-    out = []
+    settings = SETTINGS_CACHE.get(config_path, pipelines.load)
+    out, readiness = [], {}
     for name, pipeline, error in settings.entries:
         if pipeline is not None and pipeline.backend != pipelines.EMBEDDING_BACKEND:
             continue
-        runnable, reason = run_jobs.runnable(pipeline, error, settings.db_path)
+        if error:
+            runnable, reason = run_jobs.runnable(pipeline, error, settings.db_path)
+        else:
+            if pipeline.embedding not in readiness:
+                readiness[pipeline.embedding] = run_jobs.runnable(pipeline, error, settings.db_path)
+            runnable, reason = readiness[pipeline.embedding]
         out.append({"name": name, "embedding": pipeline.embedding if pipeline else None,
                     "barcode": bool(pipeline and pipeline.barcode is not None),
                     "rerank": bool(pipeline and pipeline.rerank is not None),
@@ -103,7 +109,7 @@ def pipelines_view(config_path):
 
 def find_pipeline(config_path, name):
     """Return (the settings, the pipeline `name`). Raise `RecognizeError`."""
-    settings = pipelines.load(config_path)
+    settings = SETTINGS_CACHE.get(config_path, pipelines.load)
     try:
         pipeline = settings.find(name)
     except KeyError:

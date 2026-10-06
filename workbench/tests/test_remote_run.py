@@ -83,6 +83,31 @@ class RemoteEntryTest(unittest.TestCase):
                 with self.assertRaisesRegex(embeddings.ConfigError, message):
                     pipelines.Pipeline(remote_entry(**keys))
 
+    def test_an_enabled_run_can_replace_the_endpoint_origin(self):
+        entry = pipelines.Pipeline(remote_entry(endpoint_override=True))
+        self.assertTrue(entry.endpoint_override)
+        self.assertEqual(pipelines.endpoint_origin(entry), "https://api.example.test")
+        self.assertEqual(pipelines.bind_endpoint(entry, "http://127.0.0.1:28000/"),
+                         "http://127.0.0.1:28000")
+        self.assertEqual(entry.remote["url"],
+                         "http://127.0.0.1:28000/v1/wines/search-by-photo")
+
+    def test_an_endpoint_override_is_explicit_and_accepts_an_origin_alone(self):
+        with self.assertRaisesRegex(embeddings.ConfigError, "not valid"):
+            pipelines.bind_endpoint(pipelines.Pipeline(remote_entry()), "http://localhost:1")
+        for value in ("", "matcher.local", "ftp://matcher.local",
+                      "http://user:pass@matcher.local", "http://matcher.local/v1",
+                      "http://matcher.local?x=1", "http://matcher.local#part",
+                      "http://matcher.local:99999", "http://[bad",
+                      "http://matcher .local", "http://matcher.local:"):
+            with self.subTest(value=value):
+                entry = pipelines.Pipeline(remote_entry(endpoint_override=True))
+                with self.assertRaisesRegex(embeddings.ConfigError, "endpoint MUST"):
+                    pipelines.bind_endpoint(entry, value)
+        with self.assertRaisesRegex(embeddings.ConfigError,
+                                    "endpoint_override MUST be true or false"):
+            pipelines.Pipeline(remote_entry(endpoint_override="yes"))
+
     def test_a_remote_entry_refuses_views_and_the_keys_of_a_model(self):
         wrong = [
             ({"views": {"full": None}}, "takes no views"),

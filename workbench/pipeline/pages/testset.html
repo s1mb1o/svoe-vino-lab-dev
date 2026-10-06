@@ -11,7 +11,7 @@
    `scripts/review_server.py`: the labels, the delete mark, and the comments of a photo.
    Each click writes to the lab database. A wine row shows the wine comments of the
    Dataset page (`wine_comment`); the exclusion went away (plan 51). The right sidebar
-   is the Drawer (`__drawer__`): a photo there waits for a wine, and no run uses it. The
+   is the Drawer (`__drawer__`): a photo there waits for a wine, and scored runs omit it.
    first row of the table is "No Match" (`__null__`): a run uses its photos, and the
    right answer is no match (plan 36, owner answer of 2026-09-26T00:29:00). The copy and
    the checks of the old page are not here. */
@@ -42,6 +42,9 @@ h1 { font-size: 17px; margin: 0 0 8px; font-weight: 650; letter-spacing: .01em;
 /* The title holds the selector of the test set (owner answer of 2026-09-25 18:05:36). */
 h1 #set { font: inherit; font-size: 16px; padding: 2px 8px; }
 h1 .sub { color: var(--muted); font-weight: 400; }
+h1 .autotag-state { max-width: 360px; font-size: 11px; overflow-wrap: anywhere; }
+h1 .autotag-state.failed { color: var(--neg); }
+h1 .autotag-state.saved { color: var(--pos); }
 .head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
 .head-top h1 { margin-right: auto; }
 .nav { display: flex; gap: 6px; flex: none; flex-wrap: wrap; }
@@ -126,6 +129,15 @@ body.side-off main, body.side-off header { padding-right: 16px; }
 }
 #side .sb-head .n { color: var(--accent); }
 #side .sb-help { color: var(--muted); font-size: 11px; font-weight: 400; margin-top: 4px; }
+.sb-actions { display: flex; align-items: center; gap: 5px; margin-top: 8px; }
+.sb-actions .run-btn { flex: 1 1 0; padding-left: 5px; padding-right: 5px; font-size: 11px; }
+.sb-tag-filter { display: flex; align-items: center; gap: 5px; margin-top: 7px;
+                 color: var(--muted); font-size: 10px; font-weight: 400; }
+.sb-tag-filter select { min-width: 0; flex: 1 1 auto; font: inherit; color: var(--text);
+                        background: var(--panel-2); border: 1px solid var(--line);
+                        border-radius: 5px; padding: 2px 4px; }
+.sb-match-state { display: block; margin-top: 5px; color: var(--muted); font-size: 10px;
+                  font-weight: 400; min-height: 1.35em; }
 #side-hide {
   float: right; font: inherit; font-size: 12px; line-height: 1; padding: 2px 6px;
   border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2);
@@ -141,6 +153,16 @@ body.side-off main, body.side-off header { padding-right: 16px; }
 .card.held-card img { height: 150px; }
 .card.held-card .box-tag { top: 132px; }
 .card.held-card .tags-tag { top: 132px; }
+.drawer-remove {
+  position: absolute; top: 4px; right: 4px; z-index: 4;
+  padding: 2px 6px; border: 1px solid var(--exc); border-radius: 5px;
+  background: var(--panel); color: var(--exc); cursor: pointer;
+  font: inherit; font-size: 9px; font-weight: 700; line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+.drawer-remove:hover:not(:disabled) { background: var(--exc); color: #fff; }
+.drawer-remove:disabled { cursor: progress; opacity: .7; }
+.card.held-card .del-tag { top: 27px; }
 /* The count of the tagged photos of a row keeps its words in one piece. */
 .tag.tagged-n { white-space: nowrap; word-break: normal; }
 .card .from { font-size: 10px; color: var(--muted); word-break: break-all; margin: 0 2px 4px; }
@@ -213,6 +235,13 @@ tbody tr.cat-only { background: var(--panel-2); }
 }
 .copy:hover { border-color: var(--accent); color: var(--text); }
 .copy.done { color: var(--pos); border-color: var(--pos); }
+.favorite-star {
+  border: 0; background: transparent; color: var(--muted); cursor: pointer;
+  font: inherit; font-size: 20px; line-height: 1; padding: 0 2px; margin-right: 4px;
+  vertical-align: -1px; -webkit-user-select: none; user-select: none;
+}
+.favorite-star.on, .favorite-star:hover:not(:disabled) { color: var(--var); }
+.favorite-star:disabled { cursor: progress; opacity: .5; }
 /* The comments: the wine comments of a row (the editor of the Dataset page, plan 17) and
    the comments of a photo in the large view (plan 51). */
 .comment-editor { margin-top: 6px; }
@@ -265,6 +294,15 @@ tbody tr.cat-only { background: var(--panel-2); }
 .card.unu { border-color: var(--unu); background: var(--unu-bg); opacity: .55; }
 .card.var { border-color: var(--var); background: var(--var-bg); }
 .card.moved { outline: 2px dashed var(--accent); outline-offset: 2px; }
+.card-paste {
+  position: absolute; top: 4px; right: 4px; z-index: 4;
+  padding: 2px 6px; border: 1px solid var(--accent); border-radius: 5px;
+  background: var(--panel); color: var(--accent); cursor: pointer;
+  font: inherit; font-size: 9px; font-weight: 700; line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+.card-paste:hover:not(:disabled) { background: var(--accent); color: #fff; }
+.card-paste:disabled { cursor: progress; opacity: .7; }
 /* A card marked for deletion. The mark moves no file. */
 .card.del { outline: 2px solid var(--neg); outline-offset: 2px; opacity: .45; }
 .card.del img { filter: grayscale(1); }
@@ -274,7 +312,9 @@ tbody tr.cat-only { background: var(--panel-2); }
   font-size: 10px; line-height: 1; padding: 3px 7px; font-weight: 700;
   pointer-events: none;
 }
+.card.del .card-paste { right: 38px; }
 .card.del .note-badge { right: 40px; }
+.card.pasteable.del .note-badge { right: 82px; }
 /* A photo with a box of the main object. The large view shows the box. */
 .box-tag {
   position: absolute; left: 10px; top: 154px; z-index: 3;
@@ -327,6 +367,8 @@ tbody tr.cat-only { background: var(--panel-2); }
   background: var(--accent); color: #fff; cursor: default;
   box-shadow: 0 1px 3px rgba(0,0,0,.35);
 }
+.card.pasteable .note-badge { right: 48px; }
+.card.held-card .note-badge, .card.held-card.del .note-badge { right: 58px; }
 .note-badge svg { width: 12px; height: 12px; display: block; }
 .note-pop {
   display: none; position: absolute; top: 24px; right: 0; z-index: 30;
@@ -359,6 +401,90 @@ tbody tr.cat-only { background: var(--panel-2); }
   padding: 4px 10px 6px; color: var(--muted); font-size: 11px;
   border-bottom: 1px solid var(--line); margin-bottom: 4px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* Move chooser: the current photo can go to any typed catalogue slug, while the most
+   likely targets stay one click away. A thumbnail opens a non-destructive preview; the
+   adjacent action is the only part of a suggestion card that moves the photo. */
+.move-dlg {
+  position: fixed; inset: 0; z-index: 80; display: flex; align-items: center;
+  justify-content: center; padding: 18px; background: rgba(0, 0, 0, .68);
+}
+.move-dlg[hidden], .move-preview[hidden] { display: none; }
+.move-panel {
+  width: min(820px, 100%); max-height: calc(100vh - 36px); overflow: auto;
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: var(--shadow); padding: 16px;
+}
+.move-panel h2 { margin: 0 0 3px; font-size: 17px; }
+.move-context, .move-sub, .move-state {
+  color: var(--muted); font-size: 12px; overflow-wrap: anywhere;
+}
+.move-field { display: flex; align-items: flex-end; gap: 8px; margin: 14px 0; }
+.move-field label { flex: 1 1 auto; color: var(--muted); font-size: 12px; }
+.move-field input {
+  display: block; width: 100%; margin-top: 3px; background: var(--panel-2);
+  color: var(--text); border: 1px solid var(--line); border-radius: 6px;
+  padding: 7px 9px; font: inherit; font-size: 13px;
+}
+.move-field input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.move-state { min-height: 1.4em; margin-top: -8px; }
+.move-state.failed { color: var(--neg); }
+.move-candidates {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 8px; margin: 6px 0 14px;
+}
+.move-card {
+  display: flex; min-width: 0; overflow: hidden; border: 1px solid var(--line);
+  border-radius: 8px; background: var(--panel-2);
+}
+.move-thumb {
+  position: relative; flex: 0 0 74px; min-height: 112px; padding: 5px; cursor: zoom-in;
+  border: 0; border-right: 1px solid var(--line); background: var(--panel); color: var(--muted);
+}
+.move-thumb:hover { box-shadow: inset 0 0 0 2px var(--accent); }
+.move-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.move-thumb .patched {
+  position: absolute; top: 5px; right: 5px; padding: 0 3px; border-radius: 4px;
+  color: var(--var); background: var(--var-bg); border: 1px solid var(--var);
+  font-size: 8px; font-weight: 700; line-height: 1.25; text-transform: uppercase;
+}
+.move-no-image { display: grid; place-items: center; height: 100%; font-size: 11px; }
+.move-choice {
+  flex: 1 1 auto; min-width: 0; padding: 8px; border: 0; background: transparent;
+  color: var(--text); cursor: pointer; text-align: left; font: inherit;
+}
+.move-choice:hover { background: var(--panel); }
+.move-choice b, .move-choice span { display: block; overflow-wrap: anywhere; }
+.move-choice b { font-size: 13px; }
+.move-choice span { color: var(--muted); font-size: 11px; }
+.move-choice .move-here { color: var(--accent); margin-top: 5px; font-weight: 650; }
+.move-foot { display: flex; justify-content: flex-end; gap: 8px; }
+.move-btn {
+  font: inherit; font-size: 12px; padding: 6px 12px; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2);
+  color: var(--text);
+}
+.move-btn:hover:not(:disabled) { border-color: var(--accent); }
+.move-btn.primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+.move-btn:disabled { cursor: default; opacity: .45; }
+.move-preview {
+  position: fixed; inset: 0; z-index: 90; display: flex; align-items: center;
+  justify-content: center; padding: 22px; background: rgba(0, 0, 0, .88);
+}
+.move-preview-box {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  max-width: min(860px, 100%); max-height: 100%; min-width: min(360px, 100%);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px; box-shadow: var(--shadow);
+}
+.move-preview img { max-width: 100%; max-height: calc(100vh - 150px); object-fit: contain; }
+.move-preview-caption { margin-top: 8px; text-align: center; overflow-wrap: anywhere; }
+.move-preview-caption span { display: block; color: var(--muted); font-size: 12px; }
+.move-preview-close {
+  position: absolute; top: 7px; right: 7px; width: 30px; height: 30px; z-index: 1;
+  border-radius: 50%; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--text); cursor: pointer; font: inherit; font-size: 20px; line-height: 1;
 }
 
 /* The large view: the catalogue image at the left, the photo at the right, and the
@@ -394,16 +520,16 @@ tbody tr.cat-only { background: var(--panel-2); }
 }
 .lb-side textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .side-foot { display: flex; align-items: center; gap: 8px; font-size: 11px; flex-wrap: wrap; }
-#cmt-state, #box-state { color: var(--muted); flex: 1; }
-#cmt-state.saved, #box-state.saved { color: var(--pos); }
-#cmt-state.failed, #box-state.failed { color: var(--neg); }
+#cmt-state, #box-state, #crop-state, #move-state-inline { color: var(--muted); flex: 1; }
+#cmt-state.saved, #box-state.saved, #crop-state.saved { color: var(--pos); }
+#cmt-state.failed, #box-state.failed, #crop-state.failed { color: var(--neg); }
 .side-foot button {
   font: inherit; font-size: 11px; padding: 3px 9px; cursor: pointer;
   background: var(--panel-2); color: var(--muted);
   border: 1px solid var(--line); border-radius: 6px;
 }
 .side-foot button:hover { border-color: var(--accent); color: var(--text); }
-#box-mode.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+#box-mode.on, #crop-mode.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 /* The tags of the image in the large view (plan 66). */
 .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
 .tag-chip {
@@ -439,13 +565,14 @@ tbody tr.cat-only { background: var(--panel-2); }
   -webkit-user-drag: none; user-select: none;
 }
 /* The box mode: a drag on the photo draws the box of the main object. */
-#lb.boxing #lb-cand img { cursor: crosshair; touch-action: none; }
+#lb.boxing #lb-cand img, #lb.cropping #lb-cand img { cursor: crosshair; touch-action: none; }
 .lb-box {
   position: absolute; z-index: 2; pointer-events: none; display: none;
   border: 2px solid #ffd23f; box-shadow: 0 0 0 1px rgba(0,0,0,.7), inset 0 0 0 1px rgba(0,0,0,.7);
 }
 .lb-box.on { display: block; }
 .lb-box.draft { border-style: dashed; }
+.lb-box.crop { border-color: #5fd98a; }
 .lb-fig figcaption {
   color: #e9e9ee; font-size: 12px; text-align: center; width: 0; min-width: 100%;
   text-shadow: 0 1px 2px #000; overflow-wrap: anywhere;
@@ -555,12 +682,61 @@ tbody tr.cat-only { background: var(--panel-2); }
 /* The checkbox `Use caches` (plan 39) keeps the size of a checkbox. */
 .run-fields input[type="checkbox"] { width: auto; margin: 0; padding: 0; }
 .run-fields #run-device-ip { width: 145px; }
+.run-fields #run-endpoint { width: 260px; }
 .run-fields label[hidden] { display: none; }
 /* The checkbox `Disable barcode fast path` (plan 53) is disabled for a pipeline with no
    barcode step. */
 .run-fields label:has(input:disabled) { opacity: .45; cursor: default; }
 .run-error { color: var(--neg); font-size: 13px; min-height: 1.2em; }
 .run-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+/* Drawer matcher review. A result keeps the photographed item and its top-K catalogue
+   candidates on one line; selecting a thumbnail opens the larger side-by-side check. */
+.drawer-results-panel { width: min(1180px, 100%); }
+.drawer-results-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+                       margin-bottom: 10px; }
+.drawer-results-head h2 { margin-right: auto; }
+.drawer-results-head select { max-width: min(560px, 100%); }
+.drawer-results-list { display: grid; gap: 10px; }
+.drawer-result {
+  display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 12px; padding: 10px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2);
+}
+.drawer-query { position: relative; min-width: 0; }
+.drawer-query > .drawer-remove { top: 4px; right: 4px; }
+.drawer-query button.drawer-preview-open { display: block; width: 100%; padding: 0;
+  border: 0; border-radius: 6px; background: transparent; cursor: zoom-in; }
+.drawer-query img { display: block; width: 100%; height: 190px; object-fit: contain;
+                    border-radius: 6px; background: var(--panel); }
+.drawer-query b, .drawer-candidate b { display: block; overflow-wrap: anywhere; }
+.drawer-query-meta, .drawer-candidate-meta { color: var(--muted); font-size: 11px;
+                                             overflow-wrap: anywhere; }
+.drawer-candidates { display: flex; gap: 8px; overflow-x: auto; align-items: stretch;
+                     padding-bottom: 3px; }
+.drawer-candidate { position: relative; flex: 0 0 150px; min-width: 0; padding: 6px;
+                    border: 1px solid var(--line); border-radius: 7px;
+                    background: var(--panel); }
+.drawer-candidate button.drawer-preview-open { display: block; width: 100%; padding: 0;
+  border: 0; border-radius: 5px; background: transparent; cursor: zoom-in; }
+.drawer-candidate img { display: block; width: 100%; height: 145px; object-fit: contain;
+                        border-radius: 5px; background: var(--panel-2); }
+.drawer-candidate .drawer-v { position: absolute; top: 9px; right: 9px; min-width: 30px;
+  height: 28px; border: 1px solid var(--pos); border-radius: 6px; color: var(--pos);
+  background: var(--pos-bg); font-weight: 800; cursor: pointer; }
+.drawer-candidate .drawer-v:disabled { cursor: default; opacity: .5; }
+.drawer-empty { color: var(--muted); text-align: center; padding: 30px 12px; }
+.drawer-compare-panel { width: min(1000px, 100%); }
+.drawer-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+.drawer-compare figure { margin: 0; min-width: 0; }
+.drawer-compare img { display: block; width: 100%; height: min(60vh, 570px); object-fit: contain;
+                      background: var(--panel-2); border: 1px solid var(--line);
+                      border-radius: 7px; }
+.drawer-compare figcaption { margin-top: 5px; font-size: 12px; overflow-wrap: anywhere; }
+.drawer-compare figcaption span { display: block; color: var(--muted); }
+.drawer-compare-panel .run-foot { flex-wrap: wrap; }
+.drawer-preview-nav { display: flex; align-items: center; gap: 8px; margin-right: auto; }
+.drawer-preview-nav span { color: var(--muted); font-size: 12px; }
+.drawer-preview-move { align-items: center; margin-bottom: 6px; }
+.drawer-preview-move input { width: min(400px, 55vw); }
 .jobs { display: grid; gap: 4px; margin-top: 8px; }
 .job {
   display: grid; grid-template-columns: 22px minmax(180px, 360px) 70px minmax(120px, 1fr) auto auto auto auto;
@@ -588,6 +764,10 @@ tbody tr.cat-only { background: var(--panel-2); }
 @media (max-width: 860px) {
   .job { grid-template-columns: 22px 1fr 1fr; }
   .job > :first-child { grid-row: span 4; align-self: start; }
+  .drawer-result { grid-template-columns: 135px minmax(0, 1fr); }
+  .drawer-query img { height: 145px; }
+  .drawer-compare { grid-template-columns: 1fr; }
+  .drawer-compare img { height: 38vh; }
 }
 /* The dialog `Add new testset …` (plan 57) uses the classes of the Run> dialog. */
 .new-set-field { display: flex; align-items: center; gap: 8px; margin: 10px 0 4px; font-size: 13px; }
@@ -600,8 +780,11 @@ tbody tr.cat-only { background: var(--panel-2); }
     <h1>Test set <select id="set" title="the test set of the page"></select>
       <button id="run-open" class="run-btn" type="button"
               title="run a pipeline of config.yaml on this test set">Run&gt;</button>
+      <button id="autotag" class="run-btn" type="button"
+              title="classify untagged images as label_back, label_front, isolated_product, or scene_photo">Autotag</button>
       <button id="rename-set-open" class="run-btn" type="button"
               title="rename this test set">Rename…</button>
+      <span class="sub autotag-state" id="autotag-state"></span>
       <span class="sub" id="head-sub"></span></h1>
     <nav class="nav"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
@@ -703,8 +886,17 @@ tbody tr.cat-only { background: var(--panel-2); }
     <span class="n" id="held-n">0</span>
     <div class="sb-help">Drag a photo here to keep it for a later wine; drag it onto a
       wine row to move it there. Images from the Finder or another browser page go here
-      or onto a row too. No run uses a photo of the Drawer. A photo that must give no
+      or onto a row too. Scored runs omit Drawer photos. A photo that must give no
       match goes to the row "No Match".</div>
+    <label class="sb-tag-filter">Tag <select id="drawer-tag"
+      title="filter the visible Drawer photos by image tag; Match still uses every Drawer photo">
+      <option value="">All</option>
+    </select></label>
+    <div class="sb-actions"><button id="drawer-match" class="run-btn" type="button"
+      title="run a matcher on every current Drawer photo">Match…</button><button
+      id="drawer-results" class="run-btn" type="button" disabled
+      title="review completed Drawer matching runs">Results</button></div>
+    <span id="drawer-match-state" class="sb-match-state"></span>
   </div>
   <div id="held"></div>
 </aside>
@@ -746,20 +938,63 @@ tbody tr.cat-only { background: var(--panel-2); }
       <button id="box-clear" type="button">Clear box</button>
       <span id="box-state"></span>
     </div>
+    <div class="side-h">Crop as a new photo</div>
+    <div class="side-foot">
+      <button id="crop-mode" type="button" title="key c: then drag on the photo">Crop</button>
+      <span id="crop-state"></span>
+    </div>
+    <div class="side-h">Move this photo</div>
+    <div class="side-foot">
+      <button id="move-open" type="button" title="key m: choose another wine slug">Move…</button>
+      <span id="move-state-inline"></span>
+    </div>
     <div class="side-note">Add, Cmd+Enter, or Ctrl+Enter adds the text as a new comment. A
       text that is not added yet is added when you go to another photo or close the view.
       The keys do not act while the cursor is in the field. Press Esc once to leave the
       field, and Esc again to close the view. A tag belongs to the image: each copy of the
       image, in each wine row and in each set, shows it. Enter or Add adds a tag. The box
-      is optional: draw it around the main item of a scene with several items.</div>
+      is optional: draw it around the main item of a scene with several items. Crop draws
+      a rectangle and adds those pixels as a new photo of the same wine.</div>
   </aside>
   <div class="hint"><span id="lb-pos"></span>
     &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
     <b>1</b> positive &middot; <b>2</b> negative &middot; <b>3</b> unusable &middot;
-    <b>4</b> other design &middot; <b>b</b> box &middot; <b>0</b> to the Drawer &middot;
+    <b>4</b> other design &middot; <b>b</b> box &middot; <b>c</b> crop &middot; <b>m</b> move &middot; <b>0</b> to the Drawer &middot;
     right-click delete &middot; Esc close</div>
 </div>
 <div id="ctxmenu" class="ctxmenu" hidden></div>
+<div id="move-dlg" class="move-dlg" hidden>
+  <div class="move-panel" role="dialog" aria-modal="true" aria-labelledby="move-title">
+    <h2 id="move-title">Move this photo to another wine</h2>
+    <div id="move-context" class="move-context"></div>
+    <div class="move-field">
+      <label>Wine slug
+        <input id="move-slug" type="text" list="move-slugs" autocomplete="off"
+               spellcheck="false" placeholder="type a wine_slug">
+      </label>
+      <button id="move-submit" class="move-btn primary" type="button">Move</button>
+    </div>
+    <datalist id="move-slugs"></datalist>
+    <div id="move-state" class="move-state"></div>
+    <div class="move-sub"><b>Most similar catalogue wines.</b> Variant-group wines,
+      the same producer, shared name words, grapes, and category rank first. Select the
+      text area of a card to move; select its image to preview it.</div>
+    <div id="move-candidates" class="move-candidates"></div>
+    <div class="move-foot">
+      <button id="move-cancel" class="move-btn" type="button">Cancel</button>
+    </div>
+  </div>
+</div>
+<div id="move-preview" class="move-preview" hidden>
+  <div class="move-preview-box" role="dialog" aria-modal="true"
+       aria-labelledby="move-preview-name">
+    <button id="move-preview-close" class="move-preview-close" type="button"
+            aria-label="Close preview">&times;</button>
+    <img id="move-preview-image" alt="">
+    <div class="move-preview-caption"><b id="move-preview-name"></b>
+      <span id="move-preview-meta"></span><span id="move-preview-slug"></span></div>
+  </div>
+</div>
 <div id="run-dlg" class="run-dlg" hidden>
   <div class="run-panel" role="dialog" aria-modal="true" aria-labelledby="run-title">
     <h2 id="run-title">Run the set</h2>
@@ -784,13 +1019,16 @@ tbody tr.cat-only { background: var(--panel-2); }
       <label id="run-device-label" hidden>device IPv4 <input id="run-device-ip" type="text"
              inputmode="decimal" autocomplete="off" spellcheck="false"
              placeholder="192.168.86.123"></label>
+      <label id="run-endpoint-label" hidden>matcher base URL <input id="run-endpoint"
+             type="url" autocomplete="off" spellcheck="false"
+             placeholder="http://192.168.86.14:28000"></label>
       <label title="On: a model call that repeats an earlier call reads its answer from data/cache/ (SAM3, GDINO, VLM, LLM). Off: each model call goes to its service, so the latency is real time; the fresh answers are stored. Plan 39."><input
              id="run-cache" type="checkbox" checked> Use caches</label>
       <label id="run-barcode-label"><input id="run-barcode" type="checkbox" disabled>
              Disable barcode fast path</label>
       <label title="On: the list gets checkboxes, and Start starts one run for each checked pipeline. The runs go at the same time on the set, and each run keeps its own workers. Several runs at once load the gx10 gateway together."><input
              id="run-parallel" type="checkbox"> Parallel matching</label>
-      <label title="On: the run starts from the last run of the pipeline on this set (the same choice of the barcode fast path). It asks again for each photo that failed there (wrong at rank 1, or an error) and for each new photo, and copies the other rows. With no last run, the run is a full run. Plan 96."><input
+      <label id="run-repeat-label" title="On: the run starts from the last run of the pipeline on this set (the same choice of the barcode fast path). It asks again for each photo that failed there (wrong at rank 1, or an error) and for each new photo, and copies the other rows. With no last run, the run is a full run. Plan 96."><input
              id="run-repeat" type="checkbox"> Repeat last failed</label>
     </div>
     <div class="run-error" id="run-error"></div>
@@ -798,6 +1036,48 @@ tbody tr.cat-only { background: var(--panel-2); }
       <button id="run-cancel" class="run-btn" type="button">Cancel</button>
       <button id="run-start" class="run-btn primary" type="button">Start</button>
     </div>
+  </div>
+</div>
+<div id="drawer-results-dlg" class="run-dlg" hidden>
+  <div class="run-panel drawer-results-panel" role="dialog" aria-modal="true"
+       aria-labelledby="drawer-results-title">
+    <div class="drawer-results-head"><h2 id="drawer-results-title">Drawer matching results</h2>
+      <label class="run-sub">Run <select id="drawer-run"></select></label>
+      <label class="run-sub">Tag <select id="drawer-results-tag"
+        title="filter these waiting results by the current image tag"><option value="">All</option>
+      </select></label>
+      <button id="drawer-results-close" class="run-btn" type="button">Close</button></div>
+    <div id="drawer-results-sub" class="run-sub"></div>
+    <div id="drawer-results-error" class="run-error"></div>
+    <div id="drawer-results-list" class="drawer-results-list"></div>
+  </div>
+</div>
+<div id="drawer-preview-dlg" class="run-dlg" hidden>
+  <div class="run-panel drawer-compare-panel" role="dialog" aria-modal="true"
+       aria-labelledby="drawer-preview-title">
+    <h2 id="drawer-preview-title">Matched image and catalog image</h2>
+    <div class="drawer-compare">
+      <figure><img id="drawer-preview-query" alt="Matched image"><figcaption><b>Matched image</b>
+        <span id="drawer-preview-query-meta"></span></figcaption></figure>
+      <figure><img id="drawer-preview-candidate" alt="Catalog image"><figcaption><b>Catalog image</b>
+        <span id="drawer-preview-name"></span><span id="drawer-preview-meta"></span></figcaption></figure>
+    </div>
+    <div class="run-fields drawer-preview-move"><label>Move to wine_slug
+      <input id="drawer-preview-move-slug" type="text" value="__null__"
+        autocomplete="off" spellcheck="false" placeholder="__null__"></label>
+      <button id="drawer-preview-move" class="run-btn" type="button">Move</button></div>
+    <div id="drawer-preview-error" class="run-error"></div>
+    <div class="run-foot"><div class="drawer-preview-nav" aria-label="Wine candidates">
+      <button id="drawer-preview-prev" class="run-btn" type="button"
+        title="Previous wine candidate (←)" aria-label="Previous wine candidate"
+        aria-keyshortcuts="ArrowLeft">←</button>
+      <span id="drawer-preview-position" aria-live="polite"></span>
+      <button id="drawer-preview-next" class="run-btn" type="button"
+        title="Next wine candidate (→)" aria-label="Next wine candidate"
+        aria-keyshortcuts="ArrowRight">→</button>
+    </div><button id="drawer-preview-close" class="run-btn"
+      type="button">Back</button><button id="drawer-preview-accept" class="run-btn primary"
+      type="button">V · Move here and mark positive</button></div>
   </div>
 </div>
 <div id="new-set-dlg" class="run-dlg" hidden>
@@ -835,6 +1115,13 @@ let LB = null;        // the place of the large view: { wine: index in VIEW, pho
 let TOTAL = 0;
 let EDITED_AT = null; // the time of the last page edit of the set, as the server writes it
 let GROUP_FILTER = "";
+const BUSY_FAVORITES = new Set();
+const AUTOTAG_TAGS = ["label_back", "label_front", "isolated_product", "scene_photo"];
+const AUTOTAG_ACTIVE = new Set(["starting", "running", "waiting"]);
+let AUTOTAG_TIMER = null;
+let AUTOTAG_POLLING = false;
+let AUTOTAG_ACTIVE_JOB = "";
+let AUTOTAG_RELOADED_JOB = "";
 // `~` is not valid in a tag, so this value cannot collide with a tag of an image.
 const TAG_NONE = "~untagged";
 
@@ -850,8 +1137,8 @@ const KEY_OF = { "1": "positive", "2": "negative", "3": "unusable", "4": "varian
 const NULL_SLUG = "__null__";
 const NULL_LABELS = ["positive", "unusable"];
 function isNullRow(r) { return !!(r && (r.null_row || r.slug === NULL_SLUG)); }
-/* The Drawer: the sidebar. Its photos wait for a wine, take no label, and no run uses
-   them (plan 36). */
+/* The Drawer: the sidebar. Its photos wait for a wine, take no label, and ordinary
+   scored runs omit them (plan 36). */
 const DRAWER_SLUG = "__drawer__";
 function isDrawerRow(r) { return !!(r && (r.drawer_row || r.slug === DRAWER_SLUG)); }
 function isSpecialRow(r) { return isNullRow(r) || isDrawerRow(r); }
@@ -879,6 +1166,28 @@ function entryWithComments(photo) {
 }
 /* The tags of the image of one photo object of ROWS. */
 function photoTags(p) { return (p && TAGS[p.sha256]) || []; }
+function tagFilterMatches(tags, want) {
+  return !want || (want === TAG_NONE ? !tags.length : tags.includes(want));
+}
+/* Fill one image-tag filter from the images that its view can currently show. A chosen
+   tag stays as a zero-count option after its last image changes or leaves, so the view
+   does not silently change while the owner works in it. */
+function renderImageTagFilter(selector, items, tagsOf) {
+  const select = $(selector), want = select.value, counts = new Map();
+  let untagged = 0;
+  for (const item of items) {
+    const tags = tagsOf(item);
+    if (!tags.length) untagged++;
+    for (const tag of tags) counts.set(tag, (counts.get(tag) || 0) + 1);
+  }
+  if (want && want !== TAG_NONE && !counts.has(want)) counts.set(want, 0);
+  select.innerHTML = `<option value="">All (${items.length})</option>` +
+    `<option value="${TAG_NONE}">No tag (${untagged})</option>` +
+    [...counts.keys()].sort().map(tag =>
+      `<option value="${esc(tag)}">${esc(tag)} (${counts.get(tag)})</option>`).join("");
+  select.value = want === TAG_NONE || counts.has(want) ? want : "";
+  return select.value;
+}
 function photoOf(slug, file) {
   const r = ROWS.find(x => x.slug === slug);
   return (r && r.photos.find(x => x.file === file)) || null;
@@ -1117,9 +1426,16 @@ function cardHtml(r, p) {
   const dl = deleteMarked(r.slug, p.file), bx = boxOf(r.slug, p.file);
   const from = entryOf(r.slug, p.file).moved_from, tg = photoTags(p);
   return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${pr ? "prop" : ""} ${
-                 dl ? "del" : ""} ${isDrawerRow(r) ? "held-card" : ""}" draggable="true"
+                 dl ? "del" : ""} ${isSpecialRow(r) ? "" : "pasteable"} ${
+                 isDrawerRow(r) ? "held-card" : ""}" draggable="true"
                data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
     ${dl ? `<span class="del-tag" title="marked for deletion; the mark moves no file">del</span>` : ""}
+    ${isDrawerRow(r) ? `<button class="drawer-remove" type="button" draggable="false"
+      data-drawer-remove="${esc(p.file)}" aria-label="Remove ${esc(p.file)} from the Drawer"
+      title="Permanently remove this image from the Drawer">Remove</button>` : ""}
+    ${isSpecialRow(r) ? "" : `<button class="card-paste" type="button"
+      data-paste-image="${esc(r.slug)}" aria-label="Paste a clipboard image into ${esc(r.slug)}"
+      title="Paste an image from the clipboard into this wine">Paste</button>`}
     ${pr ? `<span class="prop-tag" title="${esc(pr.by || "agent")} proposes ${
       esc(pr.proposed)}${pr.source_url ? "\nfrom " + esc(pr.source_url) : ""}">${
       esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
@@ -1152,6 +1468,16 @@ function rowCountsHtml(r) {
   return `${t.total} photo(s) ${rowTags(t)}`;
 }
 
+function favoriteStar(r) {
+  if (!r.in_catalog || isSpecialRow(r)) return "";
+  const on = !!r._favorite;
+  const label = on ? "Remove from favorites" : "Add to favorites";
+  return `<button class="favorite-star${on ? " on" : ""}" type="button"
+    data-favorite-toggle="${esc(r.slug)}" aria-pressed="${on}" aria-label="${label}"
+    title="${label}" ${BUSY_FAVORITES.has(r.slug) ? "disabled" : ""}>${
+      on ? "★" : "☆"}</button>`;
+}
+
 function rowHtml(r, gclass) {
   const img = r.bottle_url
     ? picHtml(`<img class="bottle" loading="lazy" draggable="false" src="${esc(r.bottle_url)}" alt=""
@@ -1168,7 +1494,7 @@ function rowHtml(r, gclass) {
     r.catalog_only ? "cat-only" : ""} ${isNullRow(r) ? "null-row" : ""} ${
     r.state === "Removed" ? "tr-removed" : ""}">
     <td class="wine"><div class="wine-inner">${bottle}<div class="meta">
-      <div class="nm">${esc(r.name) || "<span class='empty'>unknown name</span>"}${
+      <div class="nm">${favoriteStar(r)}${esc(r.name) || "<span class='empty'>unknown name</span>"}${
         r.name && !isNullRow(r) ? `<button class="copy" data-copy="${esc(fullName)}"
            title="copy the brand and the name to the clipboard">copy</button>` : ""}${
         stateBadge(r)}</div>
@@ -1343,15 +1669,20 @@ function initSide() {
 }
 function renderSide() {
   const r = ROWS.find(isDrawerRow);
-  const n = r ? r.photos.length : 0;
-  $("#held-n").textContent = n;
+  const photos = r ? r.photos : [], n = photos.length;
+  const want = renderImageTagFilter("#drawer-tag", photos, photoTags);
+  const shown = photos.filter(photo => tagFilterMatches(photoTags(photo), want));
+  $("#held-n").textContent = want ? `${shown.length} / ${n}` : n;
   $("#side-n").textContent = n;
-  $("#held").innerHTML = n ? r.photos.map(p => cardHtml(r, p)).join("")
+  $("#drawer-match").disabled = n === 0;
+  $("#held").innerHTML = shown.length ? shown.map(p => cardHtml(r, p)).join("")
+    : n ? `<div class="empty">No Drawer photo matches this tag filter.</div>`
     : `<div class="empty">Drag a photo or an image file here. It waits for a wine, also ` +
-      `after a restart. No run uses it.</div>`;
+      `after a restart. Scored runs omit it.</div>`;
 }
 $("#side-toggle").addEventListener("click", () => setSide(!sideShown()));
 $("#side-hide").addEventListener("click", () => setSide(false));
+$("#drawer-tag").addEventListener("change", renderSide);
 
 function stats() {
   const all = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0, noted: 0,
@@ -1405,6 +1736,42 @@ function cardOf(slug, file) {
   return $(`.card[data-slug="${CSS.escape(slug)}"][data-file="${CSS.escape(file)}"]`);
 }
 function rowOf(slug) { return $(`tr[data-slug="${CSS.escape(slug)}"]`); }
+
+function syncFavoriteButton(slug) {
+  const r = ROWS.find(row => row.slug === slug);
+  const button = rowOf(slug)?.querySelector("[data-favorite-toggle]");
+  if (!r || !button) return;
+  const on = !!r._favorite;
+  const label = on ? "Remove from favorites" : "Add to favorites";
+  button.classList.toggle("on", on);
+  button.textContent = on ? "★" : "☆";
+  button.setAttribute("aria-pressed", String(on));
+  button.setAttribute("aria-label", label);
+  button.title = label;
+  button.disabled = BUSY_FAVORITES.has(slug);
+}
+
+async function toggleFavorite(slug) {
+  const r = ROWS.find(row => row.slug === slug);
+  if (!r || !r.in_catalog || BUSY_FAVORITES.has(slug)) return;
+  BUSY_FAVORITES.add(slug);
+  syncFavoriteButton(slug);
+  try {
+    const response = await fetch("/api/dataset-favorite", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, favorite: !r._favorite }),
+    });
+    let out = {};
+    try { out = await response.json(); } catch (e) { out = {}; }
+    if (!response.ok) throw new Error(out.error || ("HTTP " + response.status));
+    r._favorite = !!out.favorite;
+  } catch (e) {
+    alert("the favorite is not saved: " + e.message);
+  } finally {
+    BUSY_FAVORITES.delete(slug);
+    syncFavoriteButton(slug);
+  }
+}
 
 /* Draw one card and the counts of its row again, not the whole table, so no row moves
    under the pointer. */
@@ -1464,6 +1831,31 @@ async function markDelete(slug, file, on) {
   } catch (e) { alert("the delete mark is not saved: " + e.message); }
 }
 
+async function removeDrawerPhoto(file, btn) {
+  if (!window.confirm(`Remove "${file}" from the Drawer?`)) return;
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "…";
+  try {
+    await post("/api/testset-drawer-remove", { place: DRAWER_SLUG, file });
+    const row = ROWS.find(isDrawerRow);
+    if (!row) { await load(SET, false); return; }
+    const index = row.photos.findIndex(photo => photo.file === file);
+    if (index >= 0) row.photos.splice(index, 1);
+    if (V[DRAWER_SLUG]) delete V[DRAWER_SLUG][file];
+    const at = LB && lbPhoto();
+    if (at && at.slug === DRAWER_SLUG && at.file === file) closeLightbox();
+    TOTAL = photoTotal();
+    renderSide();
+    stats();
+    if (DRAWER_VIEW) renderDrawerResults();
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = old;
+    alert("the image is not removed: " + e.message);
+  }
+}
+
 function fillFig(id, item) {
   const fig = $(id), img = fig.querySelector("img");
   if (!item) { fig.hidden = true; img.removeAttribute("src"); return; }
@@ -1493,7 +1885,7 @@ function candItem(r, pi) {
          (p.conf === null ? "" : ` &middot; conf ${p.conf}`) +
          (bx ? `<br>box ${bx.join(", ")}` : "") +
          (isNullRow(r) ? `<br>No Match: ${t.labelled} of ${t.total} labelled`
-          : isDrawerRow(r) ? `<br>the Drawer: no run uses this photo`
+          : isDrawerRow(r) ? `<br>the Drawer: scored runs omit this photo`
           : `<br>this wine: ${t.labelled} of ${t.total} labelled`),
   };
 }
@@ -1515,7 +1907,7 @@ function renderLbStatus() {
                  : l === "unusable" ? "unusable — not in the set"
                  : l === "variant" ? "this wine, different design"
                  : isNullRow(r) ? "No Match: a run expects no card for this photo"
-                 : isDrawerRow(r) ? "Drawer: the photo waits for a wine; no run uses it"
+                 : isDrawerRow(r) ? "Drawer: the photo waits for a wine; scored runs omit it"
                  : pr ? `${pr.by || "agent"} proposes ${pr.proposed} (${
                      Math.round((pr.confidence || 0) * 100)}%)`
                  : "not labelled") + (deleteMarked(r.slug, p.file) ? "  · marked for deletion" : "");
@@ -1568,7 +1960,7 @@ function closeLightbox() {
    The box is in the pixels of the photo as the browser shows it, after its EXIF
    orientation: `naturalWidth` and `naturalHeight`. The server checks the box against
    the size of the stored file after the same orientation. */
-let BOX_MODE = false, BOX_DRAG = null;
+let BOX_MODE = false, CROP_MODE = false, BOX_DRAG = null;
 
 function lbPhoto() {
   if (!LB) return null;
@@ -1576,14 +1968,21 @@ function lbPhoto() {
   return p ? { slug: r.slug, file: p.file } : null;
 }
 
-function setBoxMode(on) {
-  BOX_MODE = !!on && !!lbPhoto();
+function setDrawMode(mode) {
+  const active = !!lbPhoto();
+  BOX_MODE = active && mode === "box";
+  CROP_MODE = active && mode === "crop";
   $("#lb").classList.toggle("boxing", BOX_MODE);
+  $("#lb").classList.toggle("cropping", CROP_MODE);
   $("#box-mode").classList.toggle("on", BOX_MODE);
+  $("#crop-mode").classList.toggle("on", CROP_MODE);
   if (BOX_MODE) boxState("drag on the photo to draw the box", "");
-  else if (!BOX_DRAG) boxState(currentBoxText(), "");
+  else boxState(currentBoxText(), "");
+  cropState(CROP_MODE ? "drag on the photo to make a new crop" : "", "");
   BOX_DRAG = null;
 }
+function setBoxMode(on) { setDrawMode(on ? "box" : ""); }
+function setCropMode(on) { setDrawMode(on ? "crop" : ""); }
 
 function currentBoxText() {
   const at = lbPhoto(), b = at && boxOf(at.slug, at.file);
@@ -1592,6 +1991,12 @@ function currentBoxText() {
 
 function boxState(text, cls) {
   const el = $("#box-state");
+  el.textContent = text;
+  el.className = cls || "";
+}
+
+function cropState(text, cls) {
+  const el = $("#crop-state");
   el.textContent = text;
   el.className = cls || "";
 }
@@ -1611,7 +2016,7 @@ function placeFrame(el, box) {
 
 function drawBox() {
   const el = $("#lb-box");
-  el.classList.remove("draft");
+  el.classList.remove("draft", "crop");
   const at = lbPhoto();
   placeFrame(el, at && boxOf(at.slug, at.file));
   if (!BOX_MODE) boxState(currentBoxText(), "");
@@ -1646,30 +2051,59 @@ async function saveBox(box) {
   }
 }
 
+async function saveCrop(box) {
+  const at = lbPhoto();
+  if (!at) return;
+  cropState("cropping...", "");
+  try {
+    const out = await post("/api/testset-crop", { place: at.slug, file: at.file, box });
+    const row = ROWS.find(r => r.slug === at.slug);
+    if (!row) { load(SET, false); return; }
+    const photo = { ...out.photo };
+    delete photo.place;
+    row.photos.push(photo);
+    row.photos.sort(byRank);
+    (V[at.slug] = V[at.slug] || {})[photo.file] = entryWithComments(photo);
+    row.catalog_only = false;
+    refreshRow(row);
+    TOTAL = photoTotal();
+    stats();
+    cropState("saved as " + photo.file, "saved");
+  } catch (e) {
+    cropState("not saved: " + e.message, "failed");
+  } finally {
+    drawBox();
+  }
+}
+
 $("#lb-cand img").addEventListener("pointerdown", ev => {
-  if (!BOX_MODE) return;
+  if (!BOX_MODE && !CROP_MODE) return;
   ev.preventDefault();
   ev.target.setPointerCapture(ev.pointerId);
-  BOX_DRAG = { start: pointAt(ev) };
+  BOX_DRAG = { start: pointAt(ev), mode: CROP_MODE ? "crop" : "box" };
 });
 $("#lb-cand img").addEventListener("pointermove", ev => {
   if (!BOX_DRAG) return;
   const el = $("#lb-box");
   el.classList.add("draft");
+  el.classList.toggle("crop", BOX_DRAG.mode === "crop");
   placeFrame(el, dragBox(BOX_DRAG.start, pointAt(ev)));
 });
 $("#lb-cand img").addEventListener("pointerup", ev => {
   if (!BOX_DRAG) return;
+  const mode = BOX_DRAG.mode;
   const box = dragBox(BOX_DRAG.start, pointAt(ev));
   BOX_DRAG = null;
-  setBoxMode(false);
+  setDrawMode("");
   // A click with no drag draws no box.
   if (box[2] - box[0] < 3 || box[3] - box[1] < 3) { drawBox(); return; }
-  saveBox(box);
+  if (mode === "crop") saveCrop(box);
+  else saveBox(box);
 });
 $("#lb-cand img").addEventListener("load", drawBox);
 window.addEventListener("resize", () => { if (LB) drawBox(); });
 $("#box-mode").addEventListener("click", () => setBoxMode(!BOX_MODE));
+$("#crop-mode").addEventListener("click", () => setCropMode(!CROP_MODE));
 $("#box-clear").addEventListener("click", () => {
   const at = lbPhoto();
   setBoxMode(false);
@@ -1756,8 +2190,7 @@ function showCtxMenu(x, y, slug, file) {
     `<button type="button" data-act="copy-url">Copy Image URL</button>` +
     `<button type="button" data-act="download">Download</button>` +
     `<div class="ctx-sep"></div>` +
-    (slug === NULL_SLUG || slug === DRAWER_SLUG
-      ? `<button type="button" data-act="to-wine">Move to a wine…</button>` : "") +
+    `<button type="button" data-act="to-wine">Move to a wine…</button>` +
     (slug === DRAWER_SLUG ? ""
       : `<button type="button" data-act="to-drawer">Move to the Drawer</button>`) +
     (slug === NULL_SLUG ? ""
@@ -1807,10 +2240,8 @@ document.addEventListener("click", async ev => {
     document.body.appendChild(a); a.click(); a.remove();
   } else if (act === "to-null") moveTo(slug, file, NULL_SLUG);
   else if (act === "to-drawer") moveTo(slug, file, DRAWER_SLUG);
-  else if (act === "to-wine") {
-    const to = (window.prompt("Move " + file + " to the wine with the slug:", "") || "").trim();
-    if (to) moveTo(slug, file, to);
-  } else if (act === "delete") markDelete(slug, file, true);
+  else if (act === "to-wine") openMove(slug, file);
+  else if (act === "delete") markDelete(slug, file, true);
   else if (act === "undelete") markDelete(slug, file, false);
 }, true);
 window.addEventListener("blur", hideCtxMenu);
@@ -1823,6 +2254,113 @@ document.addEventListener("scroll", hideCtxMenu, true);
    The page then draws the two places again, not the whole table. */
 const PHOTO_TYPE = "application/x-photo";
 let DRAG = null;
+let MOVE_AT = null;     // {slug, file}: the photo whose target chooser is open
+let MOVE_BUSY = false;
+
+function moveIntersection(a, b) {
+  const right = new Set(b);
+  return a.reduce((total, word) => total + (right.has(word) ? 1 : 0), 0);
+}
+
+/* Rank the same suggestions as the old review page: variant-group wines first, then the
+   same producer, shared words of the name, grapes, category, and slug. A proposal for
+   this exact photo outranks the heuristic when it names a catalogue wine. */
+function moveCandidates(slug, file, limit = 6) {
+  const source = ROWS.find(r => r.slug === slug);
+  const proposed = (proposalOf(slug, file) || {}).proposed || "";
+  const sourceName = source ? wordsOf(source.name).filter(word => word.length > 1) : [];
+  const sourceSlug = source ? wordsOf(source.slug) : [];
+  const same = (left, right) => !!left && foldText(left) === foldText(right);
+  const ranked = [];
+  for (const row of ROWS) {
+    if (!row.in_catalog || row.slug === slug) continue;
+    let score = row.slug === proposed ? 1000 : 0;
+    if (source) {
+      if (source.group && source.group === row.group) score += 100;
+      if (same(source.producer, row.producer)) score += 40;
+      score += 12 * moveIntersection(sourceName, wordsOf(row.name));
+      if (same(source.grapes, row.grapes)) score += 8;
+      if (same(source.category, row.category)) score += 3;
+      score += 2 * moveIntersection(sourceSlug, wordsOf(row.slug));
+    }
+    if (score > 0) ranked.push({ row, score });
+  }
+  ranked.sort((a, b) => b.score - a.score || a.row.slug.localeCompare(b.row.slug));
+  return ranked.slice(0, limit).map(item => item.row);
+}
+
+function moveCandidateHtml(row) {
+  const name = row.name || row.slug;
+  const thumbnail = row.bottle_url
+    ? `<button class="move-thumb" type="button" data-move-preview="${esc(row.slug)}"
+         aria-label="Preview the catalogue image of ${esc(name)}"
+         title="Preview catalogue image"><img loading="lazy" src="${esc(row.bottle_url)}"
+         alt="">${row.patched ? `<span class="patched">patched</span>` : ""}</button>`
+    : `<div class="move-thumb"><span class="move-no-image">no image</span></div>`;
+  return `<article class="move-card">${thumbnail}<button class="move-choice" type="button"
+      data-move-to="${esc(row.slug)}" title="Move this photo to ${esc(row.slug)}">
+      <b>${esc(name)}</b><span>${esc(row.producer)}${row.category
+        ? " · " + esc(row.category) : ""}</span><span>${esc(row.slug)}</span>
+      <span class="move-here">Move here →</span></button></article>`;
+}
+
+function moveSync() {
+  const target = $("#move-slug").value.trim();
+  const same = MOVE_AT && target === MOVE_AT.slug;
+  $("#move-submit").disabled = MOVE_BUSY || !MOVE_AT || !target || same;
+  $("#move-cancel").disabled = MOVE_BUSY;
+  if (same) {
+    $("#move-state").textContent = "Choose a different wine slug.";
+    $("#move-state").className = "move-state failed";
+  } else if (!MOVE_BUSY) {
+    $("#move-state").textContent = "";
+    $("#move-state").className = "move-state";
+  }
+}
+
+function openMove(slug, file) {
+  if (!photoOf(slug, file)) return;
+  MOVE_AT = { slug, file };
+  MOVE_BUSY = false;
+  $("#move-context").textContent = `Current place: ${placeName(slug)} / ${file}`;
+  $("#move-slug").value = "";
+  $("#move-slugs").innerHTML = ROWS.filter(row => row.in_catalog)
+    .slice().sort((a, b) => a.slug.localeCompare(b.slug)).map(row =>
+      `<option value="${esc(row.slug)}" label="${esc([row.producer, row.name]
+        .filter(Boolean).join(" — "))}"></option>`).join("");
+  const candidates = moveCandidates(slug, file);
+  $("#move-candidates").innerHTML = candidates.length
+    ? candidates.map(moveCandidateHtml).join("")
+    : `<div class="move-sub">No similar catalogue wine was found; type a wine slug.</div>`;
+  $("#move-dlg").hidden = false;
+  moveSync();
+  $("#move-slug").focus();
+}
+
+function closeMove(force = false) {
+  if (MOVE_BUSY && !force) return;
+  closeMovePreview();
+  $("#move-dlg").hidden = true;
+  MOVE_AT = null;
+  MOVE_BUSY = false;
+}
+
+function showMovePreview(slug) {
+  const row = ROWS.find(item => item.slug === slug);
+  if (!row || !row.bottle_url) return;
+  $("#move-preview-image").src = row.bottle_original_url || row.bottle_url;
+  $("#move-preview-name").textContent = row.name || row.slug;
+  $("#move-preview-meta").textContent = [row.producer, row.category, row.region]
+    .filter(Boolean).join(" · ");
+  $("#move-preview-slug").textContent = row.slug;
+  $("#move-preview").hidden = false;
+  $("#move-preview-close").focus();
+}
+
+function closeMovePreview() {
+  $("#move-preview").hidden = true;
+  $("#move-preview-image").removeAttribute("src");
+}
 
 /* A drag into another app (owner message of 2026-09-30T22:25+0300): the catalogue image
    of a row (its original file), a card, and each photo of the large view. `DownloadURL`
@@ -1848,7 +2386,7 @@ function isDragOut(ev) {
   return !!ev.dataTransfer && [...ev.dataTransfer.types].includes(OUT_TYPE);
 }
 // The drag of an image that is not a card: the catalogue image of a row, or a photo of
-// the large view. The box mode keeps the drag on the photo for the box.
+// the large view. A rectangle tool keeps the drag on the photo for the selection.
 function dragOutImage(ev) {
   const el = ev.target && ev.target.closest ? ev.target : null;
   const pic = el && el.closest(".pic[data-drag-out]");
@@ -1860,7 +2398,9 @@ function dragOutImage(ev) {
     setDragOut(ev.dataTransfer, r.bottle_original_url || r.bottle_url, r.slug);
   } else if (fig) {
     const r = LB && VIEW[LB.wine];
-    if (!r || (fig.id === "lb-cand" && BOX_MODE)) { ev.preventDefault(); return; }
+    if (!r || (fig.id === "lb-cand" && (BOX_MODE || CROP_MODE))) {
+      ev.preventDefault(); return;
+    }
     const p = r.photos[LB.photo];
     if (fig.id === "lb-ref") setDragOut(ev.dataTransfer, r.bottle_original_url || r.bottle_url, r.slug);
     else if (p) setDragOut(ev.dataTransfer, p.url, `${r.slug}_${p.file}`);
@@ -1889,7 +2429,7 @@ function refreshRow(r) {
 }
 
 async function moveTo(slug, file, to) {
-  if (!to || slug === to) return;
+  if (!to || slug === to) return false;
   // A comment that is not added yet belongs to the photo at its old place. The server
   // moves the comments of the photo with it.
   if (CMT_AT && CMT_AT.slug === slug && CMT_AT.file === file) {
@@ -1899,9 +2439,9 @@ async function moveTo(slug, file, to) {
   let out;
   try {
     out = await post("/api/testset-move", { place: slug, file, to });
-  } catch (e) { alert("the move is not saved: " + e.message); return; }
+  } catch (e) { alert("the move is not saved: " + e.message); return false; }
   const src = ROWS.find(r => r.slug === slug), dst = ROWS.find(r => r.slug === to);
-  if (!src || !dst) { load(SET, false); return; }   // a wine with no row: draw all again
+  if (!src || !dst) { load(SET, false); return true; }   // a wine with no row: draw all again
   const i = src.photos.findIndex(p => p.file === file);
   const photo = i >= 0 ? src.photos.splice(i, 1)[0] : { url: "", conf: null };
   if (V[slug]) delete V[slug][file];
@@ -1924,7 +2464,54 @@ async function moveTo(slug, file, to) {
       showLightbox(LB.wine, Math.min(LB.photo, src.photos.length - 1));
     } else closeLightbox();
   }
+  return true;
 }
+
+async function commitMove(target) {
+  if (!MOVE_AT || MOVE_BUSY) return;
+  const to = (target || "").trim();
+  if (!to || to === MOVE_AT.slug) { $("#move-slug").value = to; moveSync(); return; }
+  MOVE_BUSY = true;
+  $("#move-slug").value = to;
+  $("#move-state").textContent = "Moving photo…";
+  $("#move-state").className = "move-state";
+  $("#move-submit").disabled = true;
+  $("#move-cancel").disabled = true;
+  const at = { ...MOVE_AT };
+  const moved = await moveTo(at.slug, at.file, to);
+  MOVE_BUSY = false;
+  if (moved) closeMove(true);
+  else {
+    moveSync();
+    $("#move-state").textContent = "The photo was not moved.";
+    $("#move-state").className = "move-state failed";
+  }
+}
+
+$("#move-open").addEventListener("click", () => {
+  const at = lbPhoto();
+  if (at) openMove(at.slug, at.file);
+});
+$("#move-submit").addEventListener("click", () => commitMove($("#move-slug").value));
+$("#move-cancel").addEventListener("click", () => closeMove());
+$("#move-slug").addEventListener("input", moveSync);
+$("#move-slug").addEventListener("keydown", ev => {
+  if (ev.key === "Enter") { ev.preventDefault(); commitMove(ev.target.value); }
+  else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); closeMove(); }
+});
+$("#move-candidates").addEventListener("click", ev => {
+  const preview = ev.target.closest("[data-move-preview]");
+  if (preview) { showMovePreview(preview.dataset.movePreview); return; }
+  const choice = ev.target.closest("[data-move-to]");
+  if (choice) commitMove(choice.dataset.moveTo);
+});
+$("#move-dlg").addEventListener("click", ev => {
+  if (ev.target === $("#move-dlg")) closeMove();
+});
+$("#move-preview-close").addEventListener("click", closeMovePreview);
+$("#move-preview").addEventListener("click", ev => {
+  if (ev.target === $("#move-preview")) closeMovePreview();
+});
 
 function hasPhoto(ev) {
   return !!ev.dataTransfer && [...ev.dataTransfer.types].includes(PHOTO_TYPE);
@@ -1980,6 +2567,10 @@ function readPhoto(ev) {
   return DRAG;
 }
 document.addEventListener("dragstart", ev => {
+  if (ev.target.closest && ev.target.closest("[data-drawer-remove]")) {
+    ev.preventDefault();
+    return;
+  }
   const card = ev.target.closest && ev.target.closest(".card[data-file]");
   if (!card) { dragOutImage(ev); return; }
   DRAG = { slug: card.dataset.slug, file: card.dataset.file };
@@ -2121,6 +2712,36 @@ async function uploadFiles(files, to) {
   }
   if (bad.length) {
     alert(`${bad.length} of ${files.length} file(s) not stored:\n` + bad.join("\n"));
+  }
+}
+
+/* Add the first image of the clipboard to the wine of a candidate card. Clipboard reads
+   require a direct click and a secure context; localhost satisfies the latter. The image
+   follows the same validation, duplicate checks, naming, and row refresh as a file drop. */
+async function pasteClipboardImage(to, btn) {
+  if (!navigator.clipboard || !navigator.clipboard.read) {
+    alert("the browser cannot read images from the clipboard");
+    return;
+  }
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "…";
+  try {
+    const items = await navigator.clipboard.read();
+    let blob = null;
+    for (const item of items) {
+      const type = item.types.find(value => value.startsWith("image/"));
+      if (type) { blob = await item.getType(type); break; }
+    }
+    if (!blob) throw new Error("the clipboard holds no image");
+    const extension = ({ "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp",
+                         "image/gif": "gif", "image/bmp": "bmp" })[blob.type] || "png";
+    await uploadFiles([new File([blob], `clipboard.${extension}`, { type: blob.type })], to);
+  } catch (e) {
+    alert("the image is not pasted:\n" + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
   }
 }
 
@@ -2472,6 +3093,11 @@ function takeTags(sha, tags) {
     for (const p of r.photos) if (p.sha256 === sha) refreshCard(r.slug, p.file);
   }
   renderTagOptions(true);
+  const drawer = ROWS.find(isDrawerRow);
+  if (drawer && drawer.photos.some(photo => photo.sha256 === sha)) renderSide();
+  if (DRAWER_VIEW && (DRAWER_VIEW.rows || []).some(row => row.image_sha256 === sha)) {
+    renderDrawerResults();
+  }
 }
 
 async function tagWrite(route, tag, done) {
@@ -2595,6 +3221,12 @@ window.addEventListener("hashchange", () => {
 });
 
 document.addEventListener("click", ev => {
+  const favorite = ev.target.closest("[data-favorite-toggle]");
+  if (favorite) { toggleFavorite(favorite.dataset.favoriteToggle); return; }
+  const remove = ev.target.closest("[data-drawer-remove]");
+  if (remove) { removeDrawerPhoto(remove.dataset.drawerRemove, remove); return; }
+  const paste = ev.target.closest("[data-paste-image]");
+  if (paste) { pasteClipboardImage(paste.dataset.pasteImage, paste); return; }
   const copy = ev.target.closest(".copy");
   if (copy) { copyFromButton(copy); return; }
   if (ev.target.id === "grp-clear") { showGroup(""); return; }
@@ -2628,6 +3260,13 @@ document.addEventListener("click", ev => {
 });
 
 document.addEventListener("keydown", ev => {
+  if (ev.key === "Escape" && !$("#move-preview").hidden) {
+    ev.preventDefault(); closeMovePreview(); return;
+  }
+  if (ev.key === "Escape" && !$("#move-dlg").hidden) {
+    ev.preventDefault(); closeMove(); return;
+  }
+  if (!$("#move-preview").hidden || !$("#move-dlg").hidden) return;
   const tag = ev.target && ev.target.tagName;
   if (tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT") {
     if (ev.key === "Escape") { ev.target.blur(); ev.stopPropagation(); }
@@ -2635,7 +3274,7 @@ document.addEventListener("keydown", ev => {
   }
   if (ev.key === "Escape") {
     if (!$("#ctxmenu").hidden) hideCtxMenu();
-    else if (BOX_MODE) { setBoxMode(false); drawBox(); }
+    else if (BOX_MODE || CROP_MODE) { setDrawMode(""); drawBox(); }
     else closeLightbox();
     return;
   }
@@ -2654,6 +3293,16 @@ document.addEventListener("keydown", ev => {
   if (ev.key === "b" || ev.key === "B") {
     ev.preventDefault();
     if (at) setBoxMode(!BOX_MODE);
+    return;
+  }
+  if (ev.key === "c" || ev.key === "C") {
+    ev.preventDefault();
+    if (at) setCropMode(!CROP_MODE);
+    return;
+  }
+  if (ev.key === "m" || ev.key === "M") {
+    ev.preventDefault();
+    if (at) openMove(at.slug, at.file);
     return;
   }
   if (ev.key === "0") {
@@ -2692,6 +3341,108 @@ $("#set").addEventListener("change", () => {
   load($("#set").value, false);
 });
 
+/* Autotag is a detached, resumable VLM batch. It classifies each distinct image that
+   has none of the four category tags. The server owns the progress, so closing this
+   page does not stop the run. */
+function autotagText(status) {
+  if (!status || status.state === "idle") return "";
+  const other = status.set && status.set !== SET;
+  if (AUTOTAG_ACTIVE.has(status.state)) {
+    if (other) return `Autotag is ${status.state === "waiting" ? "waiting" : "running"} for ${status.set}`;
+    const total = Number.isInteger(status.total) ? status.total : "?";
+    if (status.state === "waiting") {
+      const retryAt = Date.parse(status.retry_at || "");
+      const fallback = Number.isFinite(status.backoff_seconds) ? status.backoff_seconds : "?";
+      const seconds = Number.isFinite(retryAt) ?
+        Math.max(0, Math.ceil((retryAt - Date.now()) / 1000)) : fallback;
+      return `Autotag waiting for VLM: ${status.done || 0}/${total} · retry in ${seconds}s` +
+        (status.message ? ` · ${status.message}` : "");
+    }
+    return `Autotag ${status.done || 0}/${total}` +
+      (status.errors ? ` · ${status.errors} error${status.errors === 1 ? "" : "s"}` : "");
+  }
+  if (other) return "";
+  if (status.state === "done") {
+    if (!status.total) return "Autotag: nothing to tag";
+    return `Autotag complete: ${status.tagged || 0} tagged` +
+      (status.skipped ? ` · ${status.skipped} skipped` : "") +
+      (status.errors ? ` · ${status.errors} errors; run again to retry` : "");
+  }
+  return `Autotag failed: ${status.message || "read the Autotag log"}`;
+}
+
+function renderAutotag(status) {
+  const active = !!(status && AUTOTAG_ACTIVE.has(status.state));
+  const state = $("#autotag-state");
+  $("#autotag").disabled = active;
+  state.textContent = autotagText(status);
+  state.className = "sub autotag-state" +
+    (status && status.state === "failed" && status.set === SET ? " failed" :
+     status && status.state === "done" && status.set === SET ? " saved" : "");
+  if (active) AUTOTAG_ACTIVE_JOB = status.job_id || String(status.pid || "active");
+}
+
+function scheduleAutotag(milliseconds) {
+  clearTimeout(AUTOTAG_TIMER);
+  AUTOTAG_TIMER = setTimeout(pollAutotag, milliseconds);
+}
+
+async function pollAutotag() {
+  if (!SET || AUTOTAG_POLLING) { scheduleAutotag(1000); return; }
+  AUTOTAG_POLLING = true;
+  const set = SET;
+  let status = null;
+  try {
+    const response = await fetch(`/api/testset-autotag?set=${encodeURIComponent(set)}`);
+    status = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(status.error || `HTTP ${response.status}`);
+    if (SET !== set) return;
+    renderAutotag(status);
+    const job = status.job_id || String(status.pid || "");
+    if (!AUTOTAG_ACTIVE.has(status.state) && job && job === AUTOTAG_ACTIVE_JOB &&
+        AUTOTAG_RELOADED_JOB !== job) {
+      AUTOTAG_RELOADED_JOB = job;
+      await load(set, false);
+      return;
+    }
+  } catch (error) {
+    if (SET === set) {
+      $("#autotag-state").textContent = `Autotag status unavailable: ${error.message}`;
+      $("#autotag-state").className = "sub autotag-state failed";
+    }
+  } finally {
+    AUTOTAG_POLLING = false;
+    scheduleAutotag(status && AUTOTAG_ACTIVE.has(status.state) ? 2000 : 10000);
+  }
+}
+
+async function startAutotag() {
+  if (!SET || $("#autotag").disabled) return;
+  const question = `Autotag every image in ${SET} that does not already have one of:\n\n` +
+    AUTOTAG_TAGS.join(", ") +
+    "\n\nExisting category tags and unrelated manual tags will be kept.";
+  if (!confirm(question)) return;
+  $("#autotag").disabled = true;
+  $("#autotag-state").textContent = "Starting Autotag…";
+  try {
+    const response = await fetch("/api/testset-autotag", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ set: SET }),
+    });
+    const status = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(status.error || `HTTP ${response.status}`);
+    AUTOTAG_ACTIVE_JOB = status.job_id || String(status.pid || "active");
+    renderAutotag(status);
+    scheduleAutotag(500);
+  } catch (error) {
+    $("#autotag").disabled = false;
+    $("#autotag-state").textContent = `Autotag did not start: ${error.message}`;
+    $("#autotag-state").className = "sub autotag-state failed";
+  }
+}
+
+$("#autotag").addEventListener("click", startAutotag);
+
 /* Load the rows of one set. The label entries and the comments of the photos become the
    map of the page. The wine comments stay in the rows (`r.comments`). */
 async function load(name, first) {
@@ -2706,7 +3457,12 @@ async function load(name, first) {
     $("#error").textContent = "cannot load the test set: " + e.message;
     return;
   }
+  if (SET && SET !== data.set) {
+    $("#drawer-tag").value = "";
+    $("#drawer-results-tag").value = "";
+  }
   SET = data.set; SETS = data.sets || []; ROWS = data.rows || []; GROUPS = data.groups || {};
+  $("#drawer-results").disabled = true;
   V = {};
   TAGS = {};
   TAG_NAMES = data.tag_names || [];
@@ -2736,6 +3492,8 @@ async function load(name, first) {
     readViewFromUrl();
   }
   render();
+  syncDrawerRuns();
+  scheduleAutotag(0);
   if (first) openFromHash();
 }
 
@@ -2755,6 +3513,9 @@ const RUN_BARCODE_TITLE = "On: the run skips the barcode step of the pipeline: n
   + "and no lookup in wine_code. The embedding answers each photo, as in the twin pipeline "
   + "with no key barcode. /runs shows the tag no barcode. Plan 53.";
 let RUN_CONFIGS = [], RUN_POLL = null;
+let RUN_SCOPE = "set", RUN_QUERY_TOTAL = 0;
+let DRAWER_RUNS = [], DRAWER_VIEW = null, DRAWER_PREVIEW = null;
+let DRAWER_SYNC_SERIAL = 0, DRAWER_WAS_ACTIVE = false;
 
 async function runJson(url, options) {
   const res = await fetch(url, Object.assign({ cache: "no-store" }, options || {}));
@@ -2800,6 +3561,14 @@ function runValidIpv4(value) {
   return parts.length === 4 && parts.every(part => /^(0|[1-9][0-9]{0,2})$/.test(part)
     && Number(part) <= 255) && value.trim() !== "0.0.0.0"
     && !(Number(parts[0]) >= 224 && Number(parts[0]) <= 239);
+}
+function runValidEndpoint(value) {
+  if (!value.trim()) return true;
+  try {
+    const endpoint = new URL(value.trim());
+    return ["http:", "https:"].includes(endpoint.protocol) && !endpoint.username
+      && !endpoint.password && endpoint.pathname === "/" && !endpoint.search && !endpoint.hash;
+  } catch (_) { return false; }
 }
 function runBusy(c) { return !!(c.job && RUN_ACTIVE.includes(c.job.state)); }
 // The chosen pipelines: one radio button, or the checkboxes of `Parallel matching`.
@@ -2859,11 +3628,19 @@ function runSyncFields() {
   const chosen = runChosen();
   const needsDevice = chosen.some(c => c.device_ip);
   const validDevice = !needsDevice || runValidIpv4($("#run-device-ip").value);
+  const endpoints = [...new Set(chosen.map(c => c.endpoint).filter(Boolean))];
+  const canOverrideEndpoint = endpoints.length > 0;
+  const validEndpoint = !canOverrideEndpoint || runValidEndpoint($("#run-endpoint").value);
   const defaults = [...new Set(chosen.map(c => c.workers || ""))];
   $("#run-workers").placeholder = defaults.length > 1 ? "default" : String(defaults[0] || "");
   $("#run-device-label").hidden = !needsDevice;
   $("#run-device-ip").setAttribute("aria-invalid", validDevice ? "false" : "true");
-  $("#run-start").disabled = !chosen.length || !validDevice;
+  $("#run-endpoint-label").hidden = !canOverrideEndpoint;
+  $("#run-endpoint").placeholder = endpoints.length === 1 ? endpoints[0] : "configured base URL";
+  if (!canOverrideEndpoint) $("#run-endpoint").value = "";
+  $("#run-endpoint").setAttribute("aria-invalid", validEndpoint ? "false" : "true");
+  $("#run-start").disabled = !chosen.length || !validDevice || !validEndpoint
+    || RUN_QUERY_TOTAL === 0;
   $("#run-start").textContent = chosen.length > 1 ? `Start ${chosen.length} runs` : "Start";
   const barcode = chosen.filter(c => c.barcode);
   $("#run-barcode").disabled = !barcode.length;
@@ -2874,19 +3651,25 @@ function runSyncFields() {
 }
 function closeRunDialog() {
   $("#run-dlg").hidden = true;
-  $("#run-open").focus();
+  $(RUN_SCOPE === "drawer" ? "#drawer-match" : "#run-open").focus();
 }
-async function openRunDialog() {
-  $("#run-title").textContent = `Run the set ${SET}`;
+async function openRunDialog(scope = "set") {
+  RUN_SCOPE = scope;
+  const drawer = scope === "drawer";
+  RUN_QUERY_TOTAL = 0;
+  $("#run-title").textContent = drawer ? `Match the Drawer of ${SET}` : `Run the set ${SET}`;
   $("#run-sub").textContent = "Reading the pipelines…";
   $("#run-list").innerHTML = "";
   $("#run-error").textContent = "";
   $("#run-start").disabled = true;
   $("#run-device-ip").value = runStoredDeviceIp();
+  $("#run-endpoint").value = "";
   const state = runStoredDialog();
   for (const k of ["whole", "crop", "seg"]) $("#run-f-" + k).checked = !!state[k];
   $("#run-f-text").value = String(state.text || "");
   $("#run-parallel").checked = !!state.parallel;
+  $("#run-repeat").checked = false;
+  $("#run-repeat-label").hidden = drawer;
   $("#run-f-count").textContent = "";
   $("#run-dlg").hidden = false;
   let data;
@@ -2898,8 +3681,12 @@ async function openRunDialog() {
     return;
   }
   RUN_CONFIGS = data.configurations || [];
-  $("#run-sub").textContent = `${data.queries} queries in the set ${data.set}. Each query is `
-    + "one request to the matcher of the pipeline.";
+  RUN_QUERY_TOTAL = drawer ? data.drawer_queries : data.queries;
+  $("#run-sub").textContent = drawer
+    ? `${RUN_QUERY_TOTAL} current Drawer photos. The run saves top-K suggestions for review; `
+      + "it does not move or label anything by itself."
+    : `${RUN_QUERY_TOTAL} queries in the set ${data.set}. Each query is one request to the `
+      + "matcher of the pipeline.";
   // A start sends requests to the matcher, so no pipeline is chosen by itself; the last
   // choice of this browser comes back, when the filter shows it.
   runRenderList(runStored());
@@ -2911,8 +3698,13 @@ async function startRun() {
   if (!chosen.length) return;
   const limit = $("#run-limit").value.trim(), workers = $("#run-workers").value.trim();
   const address = $("#run-device-ip").value.trim();
+  const endpoint = $("#run-endpoint").value.trim();
   if (chosen.some(c => c.device_ip) && !runValidIpv4(address)) {
     $("#run-error").textContent = "device IPv4 MUST be a valid IPv4 address";
+    return;
+  }
+  if (chosen.some(c => c.endpoint) && !runValidEndpoint(endpoint)) {
+    $("#run-error").textContent = "matcher base URL MUST be an HTTP(S) URL with no path";
     return;
   }
   $("#run-start").disabled = true;
@@ -2922,9 +3714,11 @@ async function startRun() {
     const body = { configuration: c.name, set: SET, limit: limit ? Number(limit) : null,
                    workers: workers ? Number(workers) : null,
                    use_cache: $("#run-cache").checked };
+    if (RUN_SCOPE === "drawer") body.drawer_only = true;
     if (c.device_ip) body.device_ip = address;
+    if (c.endpoint && endpoint) body.endpoint = endpoint;
     if (c.barcode) body.use_barcode = !$("#run-barcode").checked;
-    if ($("#run-repeat").checked) body.repeat_failed = true;   // plan 96
+    if (RUN_SCOPE !== "drawer" && $("#run-repeat").checked) body.repeat_failed = true;
     try {
       await runJson("/api/run-jobs", { method: "POST", body: JSON.stringify(body),
                                        headers: { "Content-Type": "application/json" } });
@@ -2999,7 +3793,7 @@ function showRunJobs(jobs, now, builds = [], queue = null) {
       esc(j.name)}" title="stop the run of ${esc(j.name)}" aria-label="stop the run of ${
       esc(j.name)}"${j.state === "running" ? "" : " disabled"}><svg viewBox="0 0 20 20"
       aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>` : "<span></span>";
-    const name = `${j.name} · ${j.set || ""}`;
+    const name = `${j.name} · ${j.set || ""}${j.drawer_only ? " · Drawer" : ""}`;
     return `<div class="job">${stop}<span class="job-name" title="${esc(name)}">${esc(name)}</span>
       <span class="job-state ${esc(j.state)}">${esc(j.state)}</span><div class="prog"><div
       style="width:${percent}%"></div></div><span>${count}</span><span>${
@@ -3008,6 +3802,7 @@ function showRunJobs(jobs, now, builds = [], queue = null) {
   const poll = shown.length || building.length;
   if (poll && !RUN_POLL) RUN_POLL = setInterval(pollRunJobs, 2000);
   if (!poll && RUN_POLL) { clearInterval(RUN_POLL); RUN_POLL = null; }
+  syncDrawerJobState(jobs);
 }
 async function pollRunJobs() {
   try {
@@ -3018,13 +3813,297 @@ async function pollRunJobs() {
   } catch (_) { /* the next poll tries again */ }
 }
 
-$("#run-open").addEventListener("click", openRunDialog);
+/* Drawer matching uses ordinary persisted run files, with query_scope `drawer`. The
+   run never changes the set. Only the explicit V action below atomically moves the
+   current Drawer image to a recorded top-K catalogue candidate and labels it positive. */
+async function syncDrawerRuns() {
+  if (!SET) return;
+  const serial = ++DRAWER_SYNC_SERIAL, setName = SET;
+  try {
+    const data = await runJson("/api/drawer-runs?set=" + encodeURIComponent(setName));
+    if (serial !== DRAWER_SYNC_SERIAL || SET !== setName) return;
+    DRAWER_RUNS = data.runs || [];
+    $("#drawer-results").disabled = !DRAWER_RUNS.length;
+    if (!DRAWER_WAS_ACTIVE) {
+      $("#drawer-match-state").textContent = DRAWER_RUNS.length
+        ? `latest: ${DRAWER_RUNS[0].configuration || DRAWER_RUNS[0].backend}` : "no results yet";
+    }
+  } catch (e) {
+    if (serial !== DRAWER_SYNC_SERIAL || SET !== setName) return;
+    DRAWER_RUNS = [];
+    $("#drawer-results").disabled = true;
+    if (!DRAWER_WAS_ACTIVE) $("#drawer-match-state").textContent = "cannot read results";
+  }
+}
+
+function syncDrawerJobState(jobs) {
+  const active = jobs.filter(j => j.drawer_only && j.set === SET && RUN_ACTIVE.includes(j.state));
+  const was = DRAWER_WAS_ACTIVE;
+  DRAWER_WAS_ACTIVE = active.length > 0;
+  if (active.length) {
+    const done = active.reduce((n, job) => n + (job.done || 0), 0);
+    const todo = active.reduce((n, job) => n + (job.todo || 0), 0);
+    $("#drawer-match-state").textContent = `matching ${done} / ${todo || "?"}`;
+  } else if (was) {
+    syncDrawerRuns();
+  }
+}
+
+function drawerFile(row) {
+  const prefix = DRAWER_SLUG + "/", path = row.image_path || "";
+  return path.startsWith(prefix) ? path.slice(prefix.length) : path;
+}
+function drawerWine(slug) { return ROWS.find(row => row.slug === slug && row.in_catalog); }
+function drawerPhoto(row) {
+  const source = ROWS.find(isDrawerRow), file = drawerFile(row);
+  return source && source.photos.find(photo => photo.file === file
+    && photo.sha256 === row.image_sha256);
+}
+function drawerCurrent(row) { return !!drawerPhoto(row); }
+function drawerResultTags(row) {
+  const photo = drawerPhoto(row);
+  return photo ? photoTags(photo) : (Array.isArray(row.tags) ? row.tags : []);
+}
+function drawerCandidates(row) {
+  const seen = new Set();
+  return (row.candidates || []).filter(candidate => {
+    if (!candidate || !candidate.slug || seen.has(candidate.slug)) return false;
+    seen.add(candidate.slug);
+    return true;
+  });
+}
+function drawerCandidateHtml(row, candidate) {
+  const wine = drawerWine(candidate.slug);
+  const image = (DRAWER_VIEW.bottles || {})[candidate.slug] || (wine && wine.bottle_url) || "";
+  const score = Number.isFinite(candidate.score) ? ` · ${candidate.score.toFixed(3)}` : "";
+  return `<article class="drawer-candidate"><button class="drawer-preview-open" type="button"
+    data-drawer-preview="${esc(row.query_id)}" data-drawer-slug="${esc(candidate.slug)}"
+    title="preview matched image and catalog image" aria-label="Preview matched image and ${
+      esc((wine && wine.name) || candidate.slug)} catalog image"><img loading="lazy"
+      src="${esc(image)}" alt=""></button>
+    <button class="drawer-v" type="button" data-drawer-accept="${esc(row.query_id)}"
+      data-drawer-slug="${esc(candidate.slug)}" title="move to this wine and mark positive">V</button>
+    <b>${esc((wine && wine.name) || candidate.slug)}</b><div class="drawer-candidate-meta">#${
+      esc(candidate.rank == null ? "?" : candidate.rank)}${score}<br>${esc(candidate.slug)}</div></article>`;
+}
+function renderDrawerResults() {
+  if (!DRAWER_VIEW) return;
+  const current = (DRAWER_VIEW.rows || []).filter(drawerCurrent);
+  const want = renderImageTagFilter("#drawer-results-tag", current, drawerResultTags);
+  const rows = current.filter(row => tagFilterMatches(drawerResultTags(row), want));
+  const resolved = (DRAWER_VIEW.rows || []).length - current.length;
+  const filter = want === TAG_NONE ? " · filter: no tag" : want ? ` · filter: ${want}` : "";
+  $("#drawer-results-sub").textContent = `${DRAWER_VIEW.head.configuration || "pipeline"} · ${
+    rows.length}${want ? ` of ${current.length}` : ""} waiting in the Drawer${filter}${
+      resolved ? ` · ${resolved} already moved or changed` : ""}. `
+    + "Select an image to compare side by side; V moves it and records a positive annotation.";
+  $("#drawer-results-list").innerHTML = rows.length ? rows.map(row => {
+    const candidates = drawerCandidates(row);
+    const tags = drawerResultTags(row);
+    const top = candidates[0];
+    const matchedImage = top
+      ? `<button class="drawer-preview-open drawer-query-preview" type="button"
+          data-drawer-preview="${esc(row.query_id)}" data-drawer-slug="${esc(top.slug)}"
+          title="preview matched image and rank-1 catalog image"
+          aria-label="Preview matched image and rank-1 catalog image"><img loading="lazy"
+          src="${esc(row.photo_url || "")}" alt=""></button>`
+      : `<img loading="lazy" src="${esc(row.photo_url || "")}" alt="">`;
+    const error = row.error ? `<div class="drawer-empty">${esc(row.error)}</div>`
+      : '<div class="drawer-empty">No catalogue candidate was returned.</div>';
+    return `<section class="drawer-result" data-drawer-query="${esc(row.query_id)}"><div
+      class="drawer-query">${matchedImage}<button class="drawer-remove" type="button"
+      data-drawer-remove="${esc(drawerFile(row))}" aria-label="Remove ${
+        esc(drawerFile(row))} from the Drawer"
+      title="Permanently remove this image from the Drawer">Remove</button><b>${
+      esc(drawerFile(row))}</b><div class="drawer-query-meta">${esc(row.image_sha256 || "")}<br>${
+        tags.length ? `tags: ${esc(tags.join(", "))}` : "no tag"}</div></div>
+      <div class="drawer-candidates">${candidates.length
+        ? candidates.map(candidate => drawerCandidateHtml(row, candidate)).join("") : error}</div></section>`;
+  }).join("") : `<div class="drawer-empty">${current.length
+    ? "No waiting Drawer photo matches this tag filter."
+    : "Every photo from this run was already moved, removed, or changed."}</div>`;
+}
+async function loadDrawerRun(runId) {
+  $("#drawer-results-error").textContent = "";
+  $("#drawer-results-list").innerHTML = '<div class="drawer-empty">Loading results…</div>';
+  try {
+    const data = await runJson(`/api/run?id=${encodeURIComponent(runId)}&limit=1000`);
+    if ((data.run || {}).query_scope !== "drawer" || (data.head || {}).set !== SET) {
+      throw new Error("this run is not a Drawer match of the current set");
+    }
+    DRAWER_VIEW = data;
+    renderDrawerResults();
+  } catch (e) {
+    DRAWER_VIEW = null;
+    $("#drawer-results-list").innerHTML = "";
+    $("#drawer-results-error").textContent = "cannot load the results: " + e.message;
+  }
+}
+async function openDrawerResults() {
+  await syncDrawerRuns();
+  if (!DRAWER_RUNS.length) return;
+  $("#drawer-run").innerHTML = DRAWER_RUNS.map(run => `<option value="${esc(run.id)}">${
+    esc(run.configuration || run.backend)} · ${esc(run.finished || run.started || run.id)}</option>`).join("");
+  $("#drawer-results-dlg").hidden = false;
+  loadDrawerRun(DRAWER_RUNS[0].id);
+}
+function closeDrawerResults() {
+  closeDrawerPreview();
+  $("#drawer-results-dlg").hidden = true;
+  $("#drawer-results").focus();
+}
+function findDrawerChoice(queryId, slug) {
+  const row = DRAWER_VIEW && (DRAWER_VIEW.rows || []).find(item => item.query_id === queryId);
+  const candidate = row && drawerCandidates(row).find(item => item.slug === slug);
+  return row && candidate ? {row, candidate} : null;
+}
+function openDrawerPreview(queryId, slug) {
+  const choice = findDrawerChoice(queryId, slug);
+  if (!choice) return;
+  const wine = drawerWine(slug), bottles = DRAWER_VIEW.bottles || {};
+  const sameQuery = DRAWER_PREVIEW && DRAWER_PREVIEW.query === queryId;
+  DRAWER_PREVIEW = {query: queryId, slug};
+  if (!sameQuery) $("#drawer-preview-move-slug").value = NULL_SLUG;
+  $("#drawer-preview-query").src = choice.row.photo_url || "";
+  $("#drawer-preview-candidate").src = bottles[slug] || (wine && wine.bottle_url) || "";
+  $("#drawer-preview-query-meta").textContent = drawerFile(choice.row);
+  $("#drawer-preview-name").textContent = (wine && wine.name) || slug;
+  $("#drawer-preview-meta").textContent = `${slug} · rank ${choice.candidate.rank || "?"}`;
+  $("#drawer-preview-error").textContent = "";
+  $("#drawer-preview-accept").disabled = false;
+  $("#drawer-preview-dlg").hidden = false;
+  syncDrawerPreviewNavigation();
+}
+function syncDrawerPreviewNavigation() {
+  const choice = DRAWER_PREVIEW && findDrawerChoice(DRAWER_PREVIEW.query, DRAWER_PREVIEW.slug);
+  const candidates = choice ? drawerCandidates(choice.row) : [];
+  const index = candidates.findIndex(candidate => candidate.slug === DRAWER_PREVIEW.slug);
+  const busy = $("#drawer-preview-accept").disabled;
+  $("#drawer-preview-prev").disabled = busy || index <= 0;
+  $("#drawer-preview-next").disabled = busy || index < 0 || index >= candidates.length - 1;
+  $("#drawer-preview-position").textContent = index < 0 ? "" : `${index + 1} / ${candidates.length}`;
+  const to = $("#drawer-preview-move-slug").value.trim();
+  $("#drawer-preview-move-slug").disabled = busy;
+  $("#drawer-preview-move").disabled = busy || !choice || !to || to === DRAWER_SLUG;
+}
+function stepDrawerPreview(step) {
+  if (!DRAWER_PREVIEW || $("#drawer-preview-dlg").hidden || $("#drawer-preview-accept").disabled) return;
+  const choice = findDrawerChoice(DRAWER_PREVIEW.query, DRAWER_PREVIEW.slug);
+  if (!choice) return;
+  const candidates = drawerCandidates(choice.row);
+  const index = candidates.findIndex(candidate => candidate.slug === DRAWER_PREVIEW.slug);
+  const candidate = candidates[index + step];
+  if (index >= 0 && candidate) openDrawerPreview(DRAWER_PREVIEW.query, candidate.slug);
+}
+function closeDrawerPreview() {
+  DRAWER_PREVIEW = null;
+  $("#drawer-preview-dlg").hidden = true;
+}
+async function moveDrawerPreview() {
+  if (!DRAWER_PREVIEW || $("#drawer-preview-dlg").hidden || $("#drawer-preview-accept").disabled) return;
+  const choice = findDrawerChoice(DRAWER_PREVIEW.query, DRAWER_PREVIEW.slug);
+  const to = $("#drawer-preview-move-slug").value.trim();
+  if (!choice || !to || to === DRAWER_SLUG) return;
+  if (!drawerCurrent(choice.row)) {
+    $("#drawer-preview-error").textContent = "This Drawer photo was already moved or changed.";
+    return;
+  }
+  const rowEl = $("#drawer-results-list").querySelector(
+    `[data-drawer-query="${CSS.escape(DRAWER_PREVIEW.query)}"]`);
+  const buttons = rowEl ? [...rowEl.querySelectorAll("button")] : [];
+  for (const button of buttons) button.disabled = true;
+  $("#drawer-preview-accept").disabled = true;
+  syncDrawerPreviewNavigation();
+  $("#drawer-preview-error").textContent = "";
+  try {
+    await post("/api/testset-move", {place: DRAWER_SLUG, file: drawerFile(choice.row), to});
+    closeDrawerPreview();
+    await load(SET, false);
+    renderDrawerResults();
+  } catch (e) {
+    for (const button of buttons) button.disabled = false;
+    $("#drawer-preview-accept").disabled = false;
+    syncDrawerPreviewNavigation();
+    if (!$("#drawer-preview-dlg").hidden) $("#drawer-preview-error").textContent = e.message;
+    else $("#drawer-results-error").textContent = "the move is not saved: " + e.message;
+  }
+}
+async function acceptDrawerChoice(queryId, slug, button) {
+  if (!DRAWER_VIEW) return;
+  const runId = DRAWER_VIEW.head.id;
+  const rowEl = $("#drawer-results-list").querySelector(`[data-drawer-query="${CSS.escape(queryId)}"]`);
+  const buttons = rowEl ? [...rowEl.querySelectorAll("button")] : [];
+  for (const item of buttons) item.disabled = true;
+  if (button) button.disabled = true;
+  $("#drawer-preview-accept").disabled = true;
+  syncDrawerPreviewNavigation();
+  $("#drawer-preview-error").textContent = "";
+  try {
+    await runJson("/api/drawer-match-accept", {method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({id: runId, query: queryId, set: SET, to: slug})});
+    closeDrawerPreview();
+    await load(SET, false);
+    renderDrawerResults();
+  } catch (e) {
+    for (const item of buttons) item.disabled = false;
+    $("#drawer-preview-accept").disabled = false;
+    syncDrawerPreviewNavigation();
+    if (!$("#drawer-preview-dlg").hidden) $("#drawer-preview-error").textContent = e.message;
+    else $("#drawer-results-error").textContent = "the annotation is not saved: " + e.message;
+  }
+}
+
+$("#run-open").addEventListener("click", () => openRunDialog("set"));
+$("#drawer-match").addEventListener("click", () => openRunDialog("drawer"));
+$("#drawer-results").addEventListener("click", openDrawerResults);
+$("#drawer-results-close").addEventListener("click", closeDrawerResults);
+$("#drawer-run").addEventListener("change", ev => loadDrawerRun(ev.target.value));
+$("#drawer-results-tag").addEventListener("change", renderDrawerResults);
+$("#drawer-results-list").addEventListener("click", ev => {
+  const preview = ev.target.closest("[data-drawer-preview]");
+  if (preview) openDrawerPreview(preview.dataset.drawerPreview, preview.dataset.drawerSlug);
+  const accept = ev.target.closest("[data-drawer-accept]");
+  if (accept) acceptDrawerChoice(accept.dataset.drawerAccept, accept.dataset.drawerSlug, accept);
+});
+$("#drawer-preview-close").addEventListener("click", closeDrawerPreview);
+$("#drawer-preview-prev").addEventListener("click", () => stepDrawerPreview(-1));
+$("#drawer-preview-next").addEventListener("click", () => stepDrawerPreview(1));
+$("#drawer-preview-move").addEventListener("click", moveDrawerPreview);
+$("#drawer-preview-move-slug").addEventListener("input", syncDrawerPreviewNavigation);
+$("#drawer-preview-accept").addEventListener("click", ev => {
+  if (DRAWER_PREVIEW) acceptDrawerChoice(DRAWER_PREVIEW.query, DRAWER_PREVIEW.slug, ev.target);
+});
+$("#drawer-results-dlg").addEventListener("click", ev => {
+  if (ev.target === $("#drawer-results-dlg")) closeDrawerResults();
+});
+$("#drawer-preview-dlg").addEventListener("click", ev => {
+  if (ev.target === $("#drawer-preview-dlg")) closeDrawerPreview();
+});
+window.addEventListener("keydown", ev => {
+  if (!$("#drawer-preview-dlg").hidden) {
+    ev.stopPropagation();
+    if (ev.key === "Escape") { ev.preventDefault(); closeDrawerPreview(); }
+    else if (ev.target === $("#drawer-preview-move-slug")) {
+      if (ev.key === "Enter") { ev.preventDefault(); moveDrawerPreview(); }
+    }
+    else if (!ev.metaKey && !ev.ctrlKey && !ev.altKey
+             && (ev.key === "ArrowLeft" || ev.key === "ArrowRight")) {
+      ev.preventDefault();
+      stepDrawerPreview(ev.key === "ArrowLeft" ? -1 : 1);
+    }
+  } else if (!$("#drawer-results-dlg").hidden) {
+    ev.stopPropagation();
+    if (ev.key === "Escape") { ev.preventDefault(); closeDrawerResults(); }
+  }
+}, true);
 $("#run-cancel").addEventListener("click", closeRunDialog);
 $("#run-start").addEventListener("click", startRun);
 $("#run-list").addEventListener("change", runSyncFields);
 $("#run-filter").addEventListener("input", runApplyFilter);
 $("#run-parallel").addEventListener("change", () => runRenderList(runChosen().map(c => c.name)));
 $("#run-device-ip").addEventListener("input", runSyncFields);
+$("#run-endpoint").addEventListener("input", runSyncFields);
 $("#run-dlg").addEventListener("click", ev => { if (ev.target === $("#run-dlg")) closeRunDialog(); });
 // While the dialog is open, the keys of the page do not act. Esc closes the dialog.
 window.addEventListener("keydown", ev => {

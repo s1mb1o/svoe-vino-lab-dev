@@ -466,7 +466,9 @@ if __name__ == "__main__":
 
 class DisabledCompareTest(WebsiteTestBase):
     """The owner disabled the compare in the code (owner message of
-    2026-09-29T23:23:00+0300). Each start path stops and sends no request."""
+    2026-09-29T23:23:00+0300) and enabled it again (owner message of
+    2026-10-02T02:07:56+0300). With the value False, each start path stops and sends no
+    request."""
 
     def setUp(self):
         super().setUp()
@@ -474,8 +476,8 @@ class DisabledCompareTest(WebsiteTestBase):
         self.add_wine("a", main=picture(1))
         self.client = self.site("an", {"a": picture(1), "n": picture(2)})
 
-    def test_the_code_ships_with_the_compare_disabled(self):
-        self.assertFalse(self.saved_compare)
+    def test_the_code_ships_with_the_compare_enabled(self):
+        self.assertTrue(self.saved_compare)
 
     def test_the_cli_mode_and_prepare_send_no_request(self):
         before = self.snapshot()

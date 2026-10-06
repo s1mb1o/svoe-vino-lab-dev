@@ -32,7 +32,7 @@ Rules of the compare:
   or an HTTP error after the retries stops the run at once.
 
 The modes:
-- The compare is disabled in the code: `COMPARE_ENABLED` is False. The CLI and
+- `COMPARE_ENABLED` switches the compare in the code. While it is False, the CLI and
   `--prepare` stop with the error `COMPARE_DISABLED` and send no request.
 - The CLI stops on a problem or a conflict. The error lists all of them, and nothing
   changes. With none, it applies each plain change.
@@ -101,10 +101,10 @@ SITEMAP_NS = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 PER_PAGE = 30  # the maximum of the API
 USER_AGENT = "svoe-vino-lab import_website.py"
 # The owner disabled the compare in the code (owner message of 2026-09-29T23:23:00+0300,
-# answer of 23:27:00). `_compare` refuses each start while the value is False: the CLI,
-# `--prepare`, and the button `Compare` of the Dataset page. `--apply` reads only a run
-# directory and stays.
-COMPARE_ENABLED = False
+# answer of 23:27:00) and enabled it again (owner message of 2026-10-02T02:07:56+0300).
+# `_compare` refuses each start while the value is False: the CLI, `--prepare`, and the
+# button `Compare` of the Dataset page. `--apply` reads only a run directory and stays.
+COMPARE_ENABLED = True
 COMPARE_DISABLED = ("the website compare is disabled in the code: "
                     "import_website.COMPARE_ENABLED is False")
 # The pause between two requests, the retries, and the timeout of one request. The

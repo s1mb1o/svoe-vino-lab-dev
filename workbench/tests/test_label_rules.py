@@ -237,6 +237,40 @@ class VlmTest(unittest.TestCase):
         self.assertEqual(request["temperature"], 0)
         self.assertEqual(request["repetition_penalty"], 1.15)
 
+    def test_one_call_can_bypass_cache_without_disabling_other_cache_reads(self):
+        service = Service([(200, chat_body('{"a": 1}')), (200, chat_body('{"a": 2}'))])
+        try:
+            label_rules.ask(service.entry, content(1), 100, False, 10)
+            fresh = label_rules.ask(service.entry, content(1), 100, False, 10,
+                                    cache_read=False)
+            cached = label_rules.ask(service.entry, content(1), 100, False, 10)
+        finally:
+            service.close()
+        self.assertFalse(fresh["cached"])
+        self.assertTrue(cached["cached"])
+        self.assertEqual(cached["text"], '{"a": 2}')
+        self.assertEqual(len(service.requests), 2)
+        self.assertNotIn("cache_read", service.requests[1])
+
+    def test_rejected_complete_json_is_returned_but_not_stored(self):
+        service = Service([(200, chat_body('{"a": 0}')), (200, chat_body('{"a": 100}'))])
+        validator = lambda value: value.get("a") == 100
+        try:
+            rejected = label_rules.ask(service.entry, content(1), 100, False, 10,
+                                       cache_validator=validator)
+            self.assertEqual(list(Path(self.cache.name).rglob("*.json")), [])
+            accepted = label_rules.ask(service.entry, content(1), 100, False, 10,
+                                       cache_validator=validator)
+            cached = label_rules.ask(service.entry, content(1), 100, False, 10,
+                                     cache_validator=validator)
+        finally:
+            service.close()
+        self.assertEqual(rejected["text"], '{"a": 0}')
+        self.assertFalse(accepted["cached"])
+        self.assertTrue(cached["cached"])
+        self.assertEqual(cached["text"], '{"a": 100}')
+        self.assertNotIn("cache_validator", service.requests[0])
+
 
 class PictureTest(unittest.TestCase):
     def test_a_small_transparent_picture_is_enlarged_on_white(self):

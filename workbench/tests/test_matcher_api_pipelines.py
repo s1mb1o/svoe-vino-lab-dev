@@ -194,6 +194,7 @@ class ProjectConfigTest(unittest.TestCase):
                 self.assertEqual(remote["url"], "http://192.168.86.14:28000" + path)
                 self.assertEqual((remote["response"], remote["query"], remote["top_k"]),
                                  (shape, query, top_k))
+                self.assertIs(entry.endpoint_override, name != "matcher-group-match")
 
 
 if __name__ == "__main__":

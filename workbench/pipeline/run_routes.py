@@ -1,13 +1,16 @@
 """The routes of the Runs page of the lab server.
 
 The page reads the run directories of `runs/` with `run_files.py`. The runs stay files;
-the lab database does not hold them. Each route is GET and writes nothing:
+the lab database does not hold them. The read routes are GET and do not change a run
+file:
 
     GET /runs                                   the page
     GET /api/runs                               the head of each run, and the
                                                 pipelines of `config.yaml`
     GET /api/run?id=&filter=&sort=&q=&offset=&limit=
                                                 the metrics and the rows of one run
+    GET /api/run-predictions?id=                all saved predictions as JSONL
+    GET /api/run-expected?id=                   all expected answers as JSONL
     GET /api/run-clusters?id=                   the clusters of the embedding of one run
                                                 and their card names (plan 43)
     GET /api/run-inputs?id=&query=              the model inputs of one row
@@ -15,6 +18,8 @@ the lab database does not hold them. Each route is GET and writes nothing:
                                                 an embedding run and their cosines
     GET /api/run-steps?id=&query=               the steps of one row for the step popup
                                                 (plan 41, `run_steps.py`)
+    POST /api/run-image-tag                     add a shared image tag to one recorded
+                                                query image
 
 A pipeline is one entry of the key `pipeline` of `config.yaml` (`pipelines.py`, plan
 34). The key `configuration` of `run.json` names it. The images come from the image
@@ -22,8 +27,10 @@ store of the lab database, through the route `/images/<folder>/<sha256>.<ext>`: 
 of a row by its `image_sha256`, and the catalogue image of a slug by the rule of
 `card_images` of `lab_server.py`. Read `docs/plans/23_runs-page.md`.
 """
+import json
 import copy
 import os
+import re
 import sqlite3
 import sys
 import urllib.parse
@@ -32,25 +39,33 @@ from functools import lru_cache
 from pathlib import Path
 
 import embeddings
+import image_tags
 import lab_pages
 import labdb
 import pipelines
 import run_files
 import run_page_cache
+import testsets
+from checked_read_cache import CheckedReadCache
+from settings_cache import SETTINGS_CACHE
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS_DIR = os.path.join(ROOT, "runs")
 MATCHER_ROOT = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "svoe-vino-matcher")
 ROUTES = ("/runs", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
-          "/api/run-candidate", "/api/run-steps")
+          "/api/run-candidate", "/api/run-steps", "/api/run-predictions",
+          "/api/run-expected", "/api/run-image-tag", "/api/drawer-runs",
+          "/api/drawer-match-accept")
 JSON_TYPE = "application/json; charset=utf-8"
 MAX_LIMIT = 1000
+TAG_BODY_MAX = 4096
 # The keys of a cluster rule that the VLM box of the page reads.
 RULE_KEYS = ("mode", "questions")
 # The view of `clusters.json` that the page shows, as on the Testset page (plan 37), and
 # the rule space of `cluster-rules.json`: the matcher sends a label crop (plan 30).
 CLUSTER_SPACE = "combined"
 RULE_SPACE = "label"
+CLUSTER_HINT_INPUTS = CheckedReadCache(max_entries=8, max_bytes=32 * 1024 * 1024)
 
 
 def handles(route):
@@ -66,7 +81,7 @@ def _error(code, message):
     return _json(code, {"error": message})
 
 
-def respond(server, method, path, card_images):
+def respond(server, method, path, card_images, read_body=None):
     """Answer one request. Return (HTTP code, body, content type, Cache-Control).
 
     `card_images(conn)` is `lab_server.card_images`: slug -> the images of the card.
@@ -74,15 +89,43 @@ def respond(server, method, path, card_images):
     parts = urllib.parse.urlsplit(path)
     route = parts.path
     query = urllib.parse.parse_qs(parts.query)
+    runs_dir = getattr(server, "runs_dir", None) or RUNS_DIR
+    if route == "/api/drawer-match-accept":
+        if method != "POST":
+            return _error(405, "the route %s answers POST alone" % route)
+        raw = read_body(TAG_BODY_MAX) if read_body else None
+        if raw is None:
+            return _error(400, "the body MUST be a JSON object")
+        try:
+            body = json.loads(raw)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return _error(400, "the body MUST be a JSON object")
+        return accept_drawer_match(runs_dir, server.db_path, body)
+    if route == "/api/run-image-tag":
+        if method != "POST":
+            return _error(405, "the route %s answers POST alone" % route)
+        raw = read_body(TAG_BODY_MAX) if read_body else None
+        if raw is None:
+            return _error(400, "the body MUST be a JSON object")
+        try:
+            body = json.loads(raw)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return _error(400, "the body MUST be a JSON object")
+        return add_run_image_tag(runs_dir, server.db_path, body)
     if method not in ("GET", "HEAD"):
         return _error(405, "the route %s answers GET alone" % route)
-    runs_dir = getattr(server, "runs_dir", None) or RUNS_DIR
     if route == "/runs":
         return 200, lab_pages.page("runs.html"), "text/html; charset=utf-8", "no-store"
     if route == "/api/runs":
         return _json(200, runs_view(runs_dir, server.config_path or embeddings.CONFIG_PATH))
+    if route == "/api/drawer-runs":
+        return drawer_runs_view(runs_dir, query)
     if route == "/api/run":
         return run_view(runs_dir, server.db_path, query, card_images)
+    if route == "/api/run-predictions":
+        return predictions_view(runs_dir, query)
+    if route == "/api/run-expected":
+        return expected_view(runs_dir, query)
     if route == "/api/run-clusters":
         return clusters_view(runs_dir, server, query)
     if route == "/api/run-candidate":
@@ -92,8 +135,151 @@ def respond(server, method, path, card_images):
     return inputs_view(runs_dir, server.db_path, query)
 
 
+def drawer_runs_view(runs_dir, query):
+    """Return the completed Drawer-scoped runs of one test set, newest first."""
+    set_name = _one(query, "set")
+    if not set_name:
+        return _error(400, "name the set: ?set=<set>")
+    runs = []
+    for run_id in run_files.run_dirs(runs_dir):
+        meta = run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {}
+        if meta.get("query_scope") != "drawer" or run_files.test_set_of(meta) != set_name:
+            continue
+        runs.append(run_files.run_head(runs_dir, run_id))
+    return _json(200, {"set": set_name, "runs": runs})
+
+
+def accept_drawer_match(runs_dir, db_path, body):
+    """Apply one recorded top-K Drawer suggestion as a positive test-set photo.
+
+    The run supplies the source file and digest.  The destination must be one of that
+    immutable result's candidates and a current catalogue row.  The database move and
+    positive label are committed together.
+    """
+    if not isinstance(body, dict):
+        return _error(400, "the body MUST be a JSON object")
+    run_id, query_id = body.get("id"), body.get("query")
+    set_name, target = body.get("set"), body.get("to")
+    if not isinstance(run_id, str) or run_id not in run_files.run_dirs(runs_dir):
+        return _error(404, "unknown run")
+    if not isinstance(query_id, str) or not query_id:
+        return _error(400, "the request holds no query")
+    if not isinstance(set_name, str) or not set_name:
+        return _error(400, "the request holds no set")
+    if not isinstance(target, str) or not target:
+        return _error(400, "the request holds no catalogue wine")
+    meta = run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {}
+    if meta.get("query_scope") != "drawer":
+        return _error(409, "this is not a Drawer matching run")
+    if run_files.test_set_of(meta) != set_name:
+        return _error(409, "the run belongs to another test set")
+    record = run_files.run_result(runs_dir, run_id, query_id)
+    if record is None:
+        return _error(404, "unknown query")
+    if not any(isinstance(candidate, dict) and candidate.get("slug") == target
+               for candidate in record.get("candidates") or ()):
+        return _error(400, "the wine is not a candidate of this result")
+    image_path = record.get("image_path")
+    prefix = testsets.DRAWER_SLUG + "/"
+    file_name = image_path[len(prefix):] if isinstance(image_path, str) and image_path.startswith(prefix) else ""
+    if not file_name or "/" in file_name or "\\" in file_name:
+        return _error(409, "the result does not name a Drawer photo")
+    digest = record.get("image_sha256")
+    if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+        return _error(409, "the result holds no image SHA-256")
+    try:
+        with closing(labdb.connect(db_path)) as conn:
+            conn.isolation_level = None
+            conn.execute("PRAGMA foreign_keys = ON")
+            conn.execute("BEGIN IMMEDIATE")
+            try:
+                if conn.execute("SELECT 1 FROM wine_catalog WHERE wine_slug = ?",
+                                (target,)).fetchone() is None:
+                    raise testsets.TestsetError(404, "no catalogue wine with the slug %s" % target)
+                answer = testsets.accept_drawer_match(conn, set_name, file_name, target,
+                                                       digest)
+                conn.execute("COMMIT")
+            except BaseException:
+                conn.execute("ROLLBACK")
+                raise
+    except testsets.TestsetError as exc:
+        return _error(exc.code, str(exc))
+    except (OSError, sqlite3.Error, labdb.SchemaError) as exc:
+        return _error(503, "cannot apply the Drawer match: %s" % exc)
+    answer.update({"run": run_id, "query": query_id})
+    return _json(200, answer)
+
+
 def _one(query, key, default=""):
     return (query.get(key) or [default])[0]
+
+
+def _export_view(runs_dir, query, source_name, make_row):
+    """Export `source_name` as prediction-format JSONL in a stable order."""
+    run_id = _one(query, "id")
+    path = run_files.run_path(runs_dir, run_id, source_name)
+    if not path:
+        return _error(400, "bad run id")
+    if run_id not in run_files.run_dirs(runs_dir):
+        return _error(404, "unknown run")
+    meta = run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {}
+    official = run_files.test_set_of(meta) == "official-test-2026-10-01"
+    rows, photo_numbers = [], set()
+    try:
+        with open(path, encoding="utf-8") as source:
+            for line in source:
+                if not line.strip():
+                    continue
+                saved = json.loads(line)
+                row = make_row(saved)
+                if official:
+                    # This set imports eval_photo_NNN.webp as <wine>/NNN.webp.
+                    # Keep the source number, including gaps in a partial run.
+                    match = re.fullmatch(r"(?:eval_photo_)?([0-9]{3})\.webp",
+                                         os.path.basename(row["image_path"]))
+                    if not match:
+                        raise ValueError("a photo has no official photo number")
+                    number = int(match[1])
+                    if number < 1 or number in photo_numbers:
+                        raise ValueError("official photo numbers MUST be positive and unique")
+                    photo_numbers.add(number)
+                    row["query_id"] = "q-%06d" % number
+                    row["image_path"] = "eval_photo_%03d.webp" % number
+                rows.append(row)
+        rows.sort(key=lambda row: (row["query_id"], row["image_path"], row["image_sha256"]))
+        body = "".join(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n"
+                       for row in rows)
+    except FileNotFoundError:
+        return _error(404, "this run has no %s" % source_name)
+    except (ValueError, KeyError, TypeError) as exc:
+        return _error(409, "cannot export %s: %s" % (source_name, exc))
+    except OSError:
+        return _error(503, "cannot read %s" % source_name)
+    return 200, body, "application/x-ndjson; charset=utf-8", "no-store"
+
+
+def predictions_view(runs_dir, query):
+    """Export all saved predictions in a stable order. Do not change the run files."""
+    fields = ("query_id", "image_path", "image_sha256", "predicted_slug", "latency_ms")
+    return _export_view(runs_dir, query, "predictions.jsonl",
+                        lambda saved: {key: saved[key] for key in fields})
+
+
+def _expected_row(saved):
+    """Return one prediction-format row from one saved query."""
+    truth = saved["truth"]
+    if not isinstance(truth, list) or len(truth) > 1:
+        raise ValueError("truth MUST be a list with at most one slug")
+    if truth and (not isinstance(truth[0], str) or not truth[0]):
+        raise ValueError("the truth slug MUST be a non-empty string")
+    return {"query_id": saved["query_id"], "image_path": saved["image_path"],
+            "image_sha256": saved["image_sha256"],
+            "predicted_slug": truth[0] if truth else None, "latency_ms": 0}
+
+
+def expected_view(runs_dir, query):
+    """Export the saved query truth as prediction-format JSONL with zero latency."""
+    return _export_view(runs_dir, query, "queries.jsonl", _expected_row)
 
 
 def _read_configurations(config_path):
@@ -104,6 +290,10 @@ def _read_configurations(config_path):
     except embeddings.ConfigError as exc:
         return [], str(exc)
     return [{"name": name, "backend": pipeline.backend if pipeline else None,
+             # The configured origin identifies an endpoint override. Device pipelines
+             # do not opt in to endpoint overrides and therefore expose no value here.
+             "endpoint": (pipelines.endpoint_origin(pipeline)
+                          if pipeline and pipeline.endpoint_override else None),
              "error": error} for name, pipeline, error in settings.entries], None
 
 
@@ -124,12 +314,40 @@ def configurations(config_path):
     return copy.deepcopy(_configuration_snapshot(path, revision))
 
 
+def _url_origin(url):
+    """Return a comparable `(scheme, host, port)` origin, or None."""
+    if not isinstance(url, str) or not url:
+        return None
+    try:
+        parts = urllib.parse.urlsplit(url)
+        port = parts.port
+    except ValueError:
+        return None
+    if parts.scheme not in ("http", "https") or not parts.hostname:
+        return None
+    if port is None:
+        port = 80 if parts.scheme == "http" else 443
+    return parts.scheme, parts.hostname.lower(), port
+
+
 def runs_view(runs_dir, config_path):
     """Return the head of each run, the newest first, and the pipelines."""
     entries, error = configurations(config_path)
+    endpoints = {entry["name"]: entry["endpoint"] for entry in entries
+                 if entry["endpoint"]}
+    runs = []
+    for run_id in run_files.run_dirs(runs_dir):
+        head = run_files.run_head(runs_dir, run_id)
+        actual = head.get("backend_url")
+        configured = endpoints.get(head.get("configuration"))
+        head["endpoint_override_url"] = (
+            actual if actual and (head.get("endpoint_override")
+                                  or (configured and _url_origin(actual)
+                                      and _url_origin(actual) != _url_origin(configured)))
+            else None)
+        runs.append(head)
     return {"runs_dir": runs_dir,
-            "runs": [run_files.run_head(runs_dir, run_id)
-                     for run_id in run_files.run_dirs(runs_dir)],
+            "runs": runs,
             "configurations": entries, "config_error": error}
 
 
@@ -164,14 +382,21 @@ def _row_slugs(row):
 
 
 def add_images(conn, rows, card_images):
-    """Add `photo_url` to each row. Return (slug -> catalogue image URL, the slugs with
-    a patch). The photo URL takes the folder of the `image` row: most test photos are
-    in `testset`, and a photo whose bytes were a lab image before keeps that folder."""
-    store = _store_rows(conn, {r.get("image_sha256") for r in rows if r.get("image_sha256")})
+    """Add `photo_url` and the shared image `tags` to each row.
+
+    Return (slug -> catalogue image URL, the slugs with a patch). The photo URL takes
+    the folder of the `image` row: most test photos are in `testset`, and a photo whose
+    bytes were a lab image before keeps that folder.
+    """
+    digests = {r.get("image_sha256") for r in rows if r.get("image_sha256")}
+    store = _store_rows(conn, digests)
+    tagged = image_tags.tags(conn, digests)
     for row in rows:
-        hit = store.get(row.get("image_sha256") or "")
+        digest = row.get("image_sha256") or ""
+        hit = store.get(digest)
         row["photo_url"] = ("/images/%s/%s.%s" % (hit[0], row["image_sha256"], hit[1])
                             if hit else None)
+        row["tags"] = tagged.get(digest, [])
     wanted = set().union(*(_row_slugs(r) for r in rows)) if rows else set()
     cards = card_images(conn)
     bottles, patched = {}, []
@@ -218,27 +443,68 @@ def run_view(runs_dir, db_path, query, card_images):
         row.pop("trace", None)
         for cand in row.get("candidates") or ():
             cand.pop("items", None)
-    bottles, patched, images_error = {}, [], None
+    bottles, patched, tag_names, images_error = {}, [], [], None
     try:
         with closing(_connect(db_path)) as conn:
             bottles, patched = add_images(conn, rows, card_images)
+            tag_names = image_tags.names(conn)
     except sqlite3.Error as exc:
         images_error = "cannot read the image store: %s" % exc
         for row in rows:
             row.setdefault("photo_url", None)
+            row.setdefault("tags", [])
     page = {
         "run": run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {},
         "metrics": run_files.read_json(
             run_files.run_path(runs_dir, run_id, "metrics.json")) or {},
         "head": run_files.run_head(runs_dir, run_id),
         "filter": mode, "sort": sort, "total": total, "offset": offset, "limit": limit,
-        "rows": rows, "bottles": bottles, "patched": patched, "images_error": images_error,
+        "rows": rows, "bottles": bottles, "patched": patched, "tag_names": tag_names,
+        "images_error": images_error,
     }
     if page_key == run_page_cache.token(runs_dir, run_id, db_path, card_images, options):
         body = run_page_cache.store(page_key, page)
         if body is not None:
             return _json(200, body)
     return _json(200, page)
+
+
+def add_run_image_tag(runs_dir, db_path, body):
+    """Add one shared image tag to a recorded query and return its present tags.
+
+    The run and query resolve the digest server-side, so a caller cannot tag unrelated
+    image bytes by inventing a SHA-256. The immutable run files are not changed.
+    """
+    if not isinstance(body, dict):
+        return _error(400, "the body MUST be a JSON object")
+    run_id, query_id, text = body.get("id"), body.get("query"), body.get("tag")
+    if not isinstance(run_id, str) or run_id not in run_files.run_dirs(runs_dir):
+        return _error(404, "unknown run")
+    if not isinstance(query_id, str) or not query_id:
+        return _error(400, "the request holds no query")
+    record = run_files.run_result(runs_dir, run_id, query_id)
+    if record is None:
+        return _error(404, "unknown query")
+    digest = record.get("image_sha256")
+    if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+        return _error(404, "the query holds no image SHA-256")
+    try:
+        with closing(labdb.connect(db_path)) as conn:
+            if conn.execute("SELECT 1 FROM image WHERE sha256 = ?", (digest,)).fetchone() is None:
+                return _error(404, "the query image is not in the lab image store")
+            try:
+                with conn:
+                    added = image_tags.add(conn, digest, text)
+            except image_tags.TagError as exc:
+                return _error(400, str(exc))
+            except image_tags.DuplicateError as exc:
+                return _error(409, str(exc))
+            return _json(200, {"ok": True, "run": run_id, "query": query_id,
+                               "sha256": digest, "added": added,
+                               "tags": image_tags.tags(conn, (digest,)).get(digest, []),
+                               "tag_names": image_tags.names(conn)})
+    except (OSError, sqlite3.Error, labdb.SchemaError) as exc:
+        return _error(503, "cannot write the image tag: %s" % exc)
 
 
 def run_embedding(runs_dir, run_id):
@@ -271,15 +537,21 @@ def clusters_view(runs_dir, server, query):
     directory = embeddings.entry_dir(server.db_path, name)
     answer["file"] = os.path.join(directory, embedding_clusters.CLUSTERS_FILE)
     try:
-        artifact = embedding_clusters.load_artifact(directory)
-        rules = embedding_clusters.load_rules(directory).get(RULE_SPACE) or {}
+        artifact = CLUSTER_HINT_INPUTS.get(
+            (directory, "artifact"), [answer["file"]],
+            lambda: embedding_clusters.load_artifact(directory), copy_value=False)
+        rule_path = os.path.join(directory, embedding_clusters.RULES_FILE)
+        rules = CLUSTER_HINT_INPUTS.get(
+            (directory, "rules"), [rule_path],
+            lambda: embedding_clusters.load_rules(directory), copy_value=False).get(RULE_SPACE) or {}
     except embedding_clusters.ClusterError as exc:
         return _json(200, dict(answer, error=str(exc)))
     if artifact is None:
         return _json(200, answer)
     try:
-        settings = embeddings.load_settings(server.config_path or embeddings.CONFIG_PATH)
-        answer["stale"] = embedding_clusters.artifact_status(settings, name)["stale"]
+        settings = SETTINGS_CACHE.get(server.config_path or embeddings.CONFIG_PATH,
+                                      embeddings.load_settings)
+        answer["stale"] = embedding_clusters.artifact_status(settings, name, artifact=artifact)["stale"]
     except (embedding_clusters.ClusterError, embeddings.ConfigError, OSError,
             sqlite3.Error, ValueError):
         pass  # the status is a hint of the frame; `null` means "not known"
@@ -290,8 +562,8 @@ def clusters_view(runs_dir, server, query):
         rule = rules.get(cluster.get("key"))
         clusters.append({"id": cluster.get("id"), "key": cluster.get("key"),
                          "kind": cluster.get("kind"),
-                         "size": cluster.get("size", len(slugs)), "slugs": slugs,
-                         "rule": {k: rule.get(k) for k in RULE_KEYS}
+                         "size": cluster.get("size", len(slugs)), "slugs": list(slugs),
+                         "rule": {k: copy.deepcopy(rule.get(k)) for k in RULE_KEYS}
                          if isinstance(rule, dict) else None})
     answer.update(exists=True, built_at=artifact.get("built_at"), clusters=clusters)
     wanted = sorted({slug for cluster in clusters for slug in cluster["slugs"]})

@@ -66,6 +66,17 @@ class LabServerTest(unittest.TestCase):
         self.assertIn("text/html", headers["Content-Type"])
         self.assertIn(lab_pages.theme_css(), body)
 
+    def test_internal_wine_atlas_report(self):
+        report = self.root / "wine-atlas-report.html"
+        report.write_text("<h1>Atlas report</h1>", encoding="utf-8")
+        with mock.patch.object(LAB, "INTERNAL_REPORT_FILE", report):
+            status, headers, body = self.request(LAB.INTERNAL_REPORT_ROUTE)
+            self.assertEqual(status, 200)
+            self.assertIn("text/html", headers["Content-Type"])
+            self.assertEqual(body, "<h1>Atlas report</h1>")
+        with mock.patch.object(LAB, "INTERNAL_REPORT_FILE", self.root / "missing.html"):
+            self.assertEqual(self.request(LAB.INTERNAL_REPORT_ROUTE)[0], 404)
+
     def test_dataset_preview_paths_send_the_page(self):
         for path in ("/dataset/wine-a", "/dataset/wine-a/patch", "/dataset/wine%20a",
                      "/dataset/wine-a/alternative/" + "a" * 64,
@@ -97,6 +108,15 @@ class LabServerTest(unittest.TestCase):
         self.assertNotIn("barcodes", data)
         # The page shows the Barcodes editor only for an answer with `barcode_file`.
         self.assertNotIn("barcode_file", data)
+
+    def test_api_response_survives_a_revoked_request_log(self):
+        revoked = mock.Mock()
+        revoked.write.side_effect = OSError("revoked")
+        with mock.patch.object(LAB.sys, "stderr", revoked):
+            status, _, body = self.request("/api/dataset")
+        self.assertEqual(status, 200)
+        self.assertEqual(len(json.loads(body)["records"]), len(WINES))
+        revoked.write.assert_called_once()
 
     def add_image(self, slug, image_type, data, extension="webp", size=(None, None)):
         """Store `data` as an image of `slug`. Return its URL on the lab server."""
@@ -824,7 +844,7 @@ class LabServerTest(unittest.TestCase):
         try:
             status, _, body = self.request("/api/website-import")
             self.assertEqual((status, json.loads(body)),
-                             (200, {"state": "none", "compare_enabled": False}))
+                             (200, {"state": "none", "compare_enabled": True}))
             status, headers, _ = self.request("/website-import.js")
             self.assertEqual((status, headers["Content-Type"]),
                              (200, "text/javascript; charset=utf-8"))

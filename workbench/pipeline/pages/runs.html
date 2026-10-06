@@ -108,6 +108,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 #runs tbody tr:hover { background: var(--panel-2); }
 #runs tbody tr.on { background: var(--grp-a); }
 #runs tbody tr.none, #runs tbody tr.none:hover { cursor: default; background: var(--panel); }
+#runs .endpoint-url { min-width: 220px; max-width: 360px; font: 11px/1.35 var(--mono);
+                      overflow-wrap: anywhere; }
 .num { font-variant-numeric: tabular-nums; text-align: right; }
 .muted { color: var(--muted); }
 .empty { color: var(--muted); font-style: italic; }
@@ -153,6 +155,30 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 /* A photo whose bytes are not in the image store of the lab database. */
 .qphoto.nophoto { display: flex; align-items: center; justify-content: center;
                   color: var(--muted); font-size: 11px; text-align: center; }
+.qtags { margin-top: 7px; font-size: 10px; }
+.qtag-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-height: 18px; }
+.qtag-label { color: var(--muted); }
+.qtag-chip {
+  padding: 1px 6px; border: 1px solid var(--accent); border-radius: 999px;
+  background: var(--panel-2); color: var(--accent); overflow-wrap: anywhere;
+}
+.qtag-none { color: var(--muted); font-style: italic; }
+.qtag-add { display: flex; gap: 4px; margin-top: 4px; }
+.qtag-add input {
+  flex: 1 1 auto; min-width: 0; width: 100%; padding: 3px 6px;
+  border: 1px solid var(--line); border-radius: 5px; background: var(--panel-2);
+  color: var(--text); font: inherit; font-size: 10px;
+}
+.qtag-add input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.qtag-add button {
+  flex: none; padding: 3px 7px; border: 1px solid var(--accent); border-radius: 5px;
+  background: var(--panel-2); color: var(--accent); cursor: pointer;
+  font: inherit; font-size: 10px; font-weight: 650;
+}
+.qtag-add button:hover:not(:disabled) { background: var(--accent); color: #fff; }
+.qtag-add button:disabled, .qtag-add input:disabled { cursor: progress; opacity: .55; }
+.qtag-state { display: block; min-height: 1.3em; margin-top: 2px; color: var(--muted); }
+.qtag-state.err { color: var(--exc); }
 /* The count and the pages of the table of the runs. */
 .runs-bar { margin: 0 0 8px; }
 .pager { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; }
@@ -275,6 +301,8 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
    The dialog takes the classes of the dialog `New testset…`. */
 #rr-open:disabled { cursor: default; opacity: .45; border-color: var(--line); }
 #rr-status { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+#export-status { color: var(--muted); font-size: 12px; }
+#export-predictions:disabled, #export-expected:disabled { cursor: default; opacity: .45; }
 .rr-params { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px;
              margin: 0 0 10px; font-size: 13px; }
 .rr-params dt { color: var(--muted); }
@@ -424,6 +452,7 @@ body.sp-on { overflow: hidden; }
     <th data-k="configuration">pipeline</th>
     <th data-k="set">testset</th>
     <th data-k="backend">backend</th>
+    <th title="The full matcher request URL when the run used an endpoint override.">URL override</th>
     <th data-k="started">started</th>
     <th data-k="queries" class="num">queries</th>
     <th data-k="match_share" class="num">match share</th>
@@ -439,6 +468,11 @@ body.sp-on { overflow: hidden; }
     <div class="det-head"><h2 id="det-h">Metrics</h2>
       <button id="nts-open" type="button" disabled>New testset&hellip;</button>
       <button id="rr-open" type="button" disabled>Re-run</button>
+      <button id="export-predictions" type="button" disabled
+        title="Export every saved prediction. Page filters and sorting do not affect the file.">Export predictions.jsonl</button>
+      <button id="export-expected" type="button" disabled
+        title="Export every saved expected answer with zero latency. Page filters and sorting do not affect the file.">Export expected.jsonl</button>
+      <span id="export-status" role="status"></span>
       <span id="rr-status" aria-live="polite"></span></div>
     <div class="cards" id="met"></div>
     <div id="hists"></div>
@@ -447,6 +481,7 @@ body.sp-on { overflow: hidden; }
       <th class="qcell">matched image</th>
       <th>candidates, the highest score first</th>
     </tr></thead><tbody id="res-body"></tbody></table>
+    <datalist id="run-image-tag-names"></datalist>
     <button id="more" hidden>load more</button>
   </div>
 </main>
@@ -491,6 +526,9 @@ body.sp-on { overflow: hidden; }
     <label class="nts-field" id="rr-field" hidden>Device IPv4 <input id="rr-device-ip"
       type="text" inputmode="decimal" spellcheck="false" autocomplete="off"
       title="run.json does not hold the address. The address of the device replaces {device_ip} in the URL of the pipeline."></label>
+    <label class="nts-field" id="rr-endpoint-field" hidden>Matcher base URL <input
+      id="rr-endpoint" type="url" spellcheck="false" autocomplete="off"
+      title="This origin replaces the configured matcher origin. The pipeline keeps its request path."></label>
     <div class="nts-error" id="rr-error"></div>
     <div class="nts-foot">
       <button id="rr-cancel" type="button">Cancel</button>
@@ -545,6 +583,9 @@ const isPatched = slug => PATCHED.has(slug);
 /* The cluster of each slug for the open run, from `/api/run-clusters?id=` (plan 43): the
    view `combined` of `clusters.json` of the embedding of that run. A slug stands in one
    cluster at most. A run with no lab embedding has no cluster. */
+let LOAD_VERSION = 0;
+let ROW_KEY = 0, HINT_PENDING = false;
+const SHOWN_ROWS = new Map();
 let CLUSTER = {};
 /* The card names of `/api/run-clusters`, by slug, for the box of the rule step. */
 let CARDNAME = {};
@@ -562,6 +603,13 @@ try {
 } catch (e) { /* private mode */ }
 const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var",
                     unlabelled: "unl" };
+let IMAGE_TAG_NAMES = [];
+
+function syncImageTagNames(names) {
+  IMAGE_TAG_NAMES = (names || []).map(item => item.tag).filter(Boolean);
+  $("#run-image-tag-names").innerHTML = IMAGE_TAG_NAMES.map(tag =>
+    `<option value="${esc(tag)}"></option>`).join("");
+}
 
 /* ---- the table of the runs ---- */
 function sortedRuns() {
@@ -653,6 +701,8 @@ function renderRuns() {
       <td>${r.configuration ? esc(r.configuration) : '<span class="muted">—</span>'}</td>
       <td>${r.set ? esc(r.set) : '<span class="muted">—</span>'}</td>
       <td>${esc(r.backend)}</td>
+      <td class="endpoint-url">${r.endpoint_override_url ? esc(r.endpoint_override_url)
+        : '<span class="muted">—</span>'}</td>
       <td class="sm">${esc((r.started || "").replace("T", " ").slice(0, 19))}</td>
       <td class="num">${numOr(r.queries)}</td>
       <td class="num">${pct(r.match_share)}</td>
@@ -854,6 +904,24 @@ function renderMetrics(met, head) {
    photo stands in the same run as `positive` for another wine, that wine is the
    true wine of the photo. The true wine gets a dashed green frame and the wrong
    wine keeps the red frame. The true wine SHOULD stand above the wrong wine. */
+function imageTagLine(tags) {
+  return tags.length ? tags.map(tag => `<span class="qtag-chip">${esc(tag)}</span>`).join("")
+                     : '<span class="qtag-none">none</span>';
+}
+
+function imageTagsHtml(row) {
+  if (!row.photo_url || !row.image_sha256) return "";
+  const tags = Array.isArray(row.tags) ? row.tags : [];
+  return `<div class="qtags" data-image-sha="${esc(row.image_sha256)}">
+    <div class="qtag-line"><span class="qtag-label">tags</span>
+      <span class="qtag-values">${imageTagLine(tags)}</span></div>
+    <div class="qtag-add"><input type="text" list="run-image-tag-names" maxlength="64"
+      autocomplete="off" spellcheck="false" placeholder="add tag"
+      aria-label="Add a tag to ${esc(row.image_path || row.query_id || "this image")}">
+      <button type="button" data-image-tag-add>Add</button></div>
+    <span class="qtag-state" role="status"></span></div>`;
+}
+
 function candCard(c, truth, forbidden, twins) {
   const isTruth = truth.includes(c.slug);
   const isBad = forbidden && c.slug === forbidden;
@@ -919,6 +987,7 @@ function ruleStep(r) {
 const RULE_MODE = { sheet: "difference sheet", verdict: "verdict rule" };
 
 function vlmHtml(e, cands) {
+  if (e.mode === "evidence") return Steps.vlm(e);
   const win = e.window || [];
   const cl = CLUSTER[win[0]] || {};
   const rule = cl.rule || {};
@@ -963,7 +1032,7 @@ function twinGhost(slug, apart) {
     <div class="sl">${esc(slug)}</div></div>`;
 }
 
-function rowHtml(r) {
+function rowHtml(r, viewKey = "") {
   /* A run of `--photos-dir` holds photos with no ground truth. Their path is the
      path against that directory, not `<slug>/<file>`. The photo itself comes from the
      image store of the lab database by its `image_sha256`: `/api/run` sends
@@ -1000,7 +1069,7 @@ function rowHtml(r) {
   /* No answer of an unlabelled photo is wrong, because no answer is known. */
   const bad = !unl && ((r.label === "negative" && r.outcome === "false_match_at_1") ||
                        (r.label !== "negative" && r.rank_of_truth !== 1));
-  return `<tr data-query-id="${esc(r.query_id || "")}">
+  return `<tr data-query-id="${esc(r.query_id || "")}" data-row-key="${esc(viewKey)}">
     <td class="qcell">
       ${src ? `<img class="qphoto" loading="lazy" src="${esc(src)}" alt="" data-full="${esc(src)}"
            data-query-id="${esc(r.query_id || "")}"
@@ -1016,6 +1085,7 @@ function rowHtml(r) {
       ${unl ? "" : `<div class="sm">${esc(slug)}</div>`}
       <div class="sm">${esc(unl ? r.image_path : file)} &middot; ${esc(rank)} &middot; ${numOr(r.latency_ms)} ms<span
         class="qres"></span></div>
+      ${imageTagsHtml(r)}
       ${twins.length ? `<div class="sm">true wine: ${esc(twins.join(", "))} &middot; ${
         twin.rank ? "rank " + twin.rank : "not in the list"}${
         twin.forbidden_rank ? " &middot; this slug: rank " + twin.forbidden_rank : ""
@@ -1086,36 +1156,83 @@ function evenCards(root) {
 /* ---- loading ---- */
 /* Read the clusters of the embedding of run `id` (plan 43). The frame is a hint, so a
    failure leaves no cluster and MUST NOT stop the page. */
-async function loadClusters(id) {
-  CLUSTER = {}; CARDNAME = {}; CLUSTER_SRC = { embedding: null, stale: null };
+async function loadClusters(id, version) {
   try {
     const cls = await (await fetch(`/api/run-clusters?id=${encodeURIComponent(id)}`)).json();
+    if (CUR !== id || LOAD_VERSION !== version) return false;
     for (const cl of cls.clusters || [])
       for (const s of cl.slugs || []) CLUSTER[s] = cl;
     for (const [s, k] of Object.entries(cls.cards || {})) CARDNAME[s] = k.name || s;
     CLUSTER_SRC = { embedding: cls.embedding || null, stale: cls.stale ?? null };
+    return true;
   } catch (e) { /* the frame is a hint; its absence MUST NOT stop the page */ }
+  return false;
+}
+
+function refreshClusterHints() {
+  for (const tr of $("#res-body").querySelectorAll("tr[data-row-key]")) {
+    const row = SHOWN_ROWS.get(tr.dataset.rowKey);
+    if (!row) continue;
+    const temporary = document.createElement("tbody");
+    temporary.innerHTML = rowHtml(row);
+    // Replace only the candidate cell. Keep photo tags and their pending edits.
+    tr.children[1].innerHTML = temporary.firstElementChild.children[1].innerHTML;
+  }
+  evenCards($("#res-body"));
 }
 
 async function loadRun(id, append) {
   CUR = id;
+  if (!append) {
+    LOAD_VERSION++;
+    ROW_KEY = 0;
+    HINT_PENDING = true;
+    SHOWN_ROWS.clear();
+    CLUSTER = {}; CARDNAME = {}; CLUSTER_SRC = { embedding: null, stale: null };
+  }
+  const version = LOAD_VERSION;
+  if (!append) {
+    for (const selector of ["#export-predictions", "#export-expected"]) {
+      $(selector).disabled = true;
+      delete $(selector).dataset.runId;
+    }
+    $("#export-status").textContent = "";
+  }
   if (!append) { OFFSET = 0; $("#res-body").innerHTML = ""; }
   const url = `/api/run?id=${encodeURIComponent(id)}&filter=${$("#filter").value}` +
               `&sort=${$("#sort").value}` +
               `&q=${encodeURIComponent($("#q").value.trim())}&offset=${OFFSET}&limit=100`;
   // The clusters of a new run load while its rows load.
-  const clustersRead = append ? null : loadClusters(id);
+  const clustersRead = append ? null : loadClusters(id, version);
+  if (clustersRead) void clustersRead.then(loaded => {
+    if (CUR !== id || LOAD_VERSION !== version) return;
+    if (loaded) refreshClusterHints();
+    HINT_PENDING = false;
+    SHOWN_ROWS.clear();
+  });
   const data = await (await fetch(url)).json();
-  await clustersRead;
+  if (CUR !== id || LOAD_VERSION !== version) return;
   if (data.error) { alert(data.error); return; }
   TOTAL = data.total;
   Object.assign(BOTTLES, data.bottles || {});
   for (const s of data.patched || []) PATCHED.add(s);
+  syncImageTagNames(data.tag_names || []);
   if (!append) RUN = data.run || {};
   if (!append) renderMetrics(data.metrics || {}, data.head || {});
   if (!append) ntsButton();
   if (!append) rrButton();
-  $("#res-body").insertAdjacentHTML("beforeend", (data.rows || []).map(rowHtml).join(""));
+  if (!append) {
+    for (const selector of ["#export-predictions", "#export-expected"]) {
+      $(selector).dataset.runId = id;
+      $(selector).disabled = false;
+    }
+  }
+  const rowsHtml = (data.rows || []).map(row => {
+    const key = String(ROW_KEY++);
+    if (HINT_PENDING) SHOWN_ROWS.set(key, row);
+    return rowHtml(row, key);
+  }).join("");
+  $("#res-body").insertAdjacentHTML("beforeend", rowsHtml);
   evenCards($("#res-body"));
   OFFSET += (data.rows || []).length;
   $("#count").textContent = `${OFFSET} of ${TOTAL} photo(s) shown`;
@@ -1132,6 +1249,37 @@ $("#runs-body").addEventListener("click", ev => {
   if (tr) loadRun(tr.dataset.id, false);
 });
 $("#more").addEventListener("click", () => loadRun(CUR, true));
+async function exportRun(selector, route, filename) {
+  const button = $(selector), id = button.dataset.runId;
+  if (!id || button.disabled) return;
+  button.disabled = true;
+  $("#export-status").textContent = "Exporting…";
+  try {
+    const response = await fetch(`${route}?id=${encodeURIComponent(id)}`,
+                                 {cache: "no-store"});
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || `Export failed (${response.status})`);
+    }
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    if (button.dataset.runId === id) $("#export-status").textContent = `Exported ${filename}`;
+  } catch (error) {
+    if (button.dataset.runId === id) $("#export-status").textContent = error.message;
+  } finally {
+    if (button.dataset.runId === id) button.disabled = false;
+  }
+}
+$("#export-predictions").addEventListener("click", () =>
+  exportRun("#export-predictions", "/api/run-predictions", "predictions.jsonl"));
+$("#export-expected").addEventListener("click", () =>
+  exportRun("#export-expected", "/api/run-expected", "expected.jsonl"));
 $("#configuration").addEventListener("change", ev => setConfig(ev.target.value));
 $("#testset").addEventListener("change", ev => setTestset(ev.target.value));
 $("#filter").addEventListener("change", () => CUR && loadRun(CUR, false));
@@ -1343,6 +1491,29 @@ function rrBody(run) {
   return body;
 }
 
+function rrRunEndpoint(run) {
+  try { return new URL((run.backend || {}).url || "").origin; }
+  catch (_) { return ""; }
+}
+
+function rrValidEndpoint(value) {
+  if (!value.trim()) return true;
+  try {
+    const endpoint = new URL(value.trim());
+    return ["http:", "https:"].includes(endpoint.protocol) && !endpoint.username
+      && !endpoint.password && endpoint.pathname === "/" && !endpoint.search && !endpoint.hash;
+  } catch (_) { return false; }
+}
+
+function rrSyncEndpoint() {
+  if (!RR) return;
+  const valid = !RR.conf.endpoint || rrValidEndpoint($("#rr-endpoint").value);
+  $("#rr-endpoint").setAttribute("aria-invalid", valid ? "false" : "true");
+  $("#rr-error").textContent = RR.blocked || (valid ? "" :
+    "Matcher base URL MUST be an HTTP(S) URL with no path.");
+  $("#rr-start").disabled = Boolean(RR.blocked) || !valid;
+}
+
 function renderRr() {
   const {conf, body} = RR, busy = conf.job && RR_ACTIVE.includes(conf.job.state);
   const rows = [
@@ -1361,11 +1532,15 @@ function renderRr() {
     try { kept = localStorage.getItem(RR_DEVICE_KEY) || ""; } catch (_) { /* no storage */ }
     $("#rr-device-ip").value = kept || (conf.job && conf.job.device_ip) || "";
   }
+  $("#rr-endpoint-field").hidden = !conf.endpoint;
+  $("#rr-endpoint").placeholder = conf.endpoint || "";
+  $("#rr-endpoint").value = conf.endpoint ? rrRunEndpoint(RR.source) : "";
   const error = !conf.runnable ? `${conf.name}: ${conf.reason}`
     : busy ? `A run of ${conf.name} runs now: PID ${conf.job.pid}.` : "";
-  $("#rr-error").textContent = error;
-  $("#rr-start").disabled = Boolean(error);
-  if (!error) (conf.device_ip ? $("#rr-device-ip") : $("#rr-start")).focus();
+  RR.blocked = error;
+  rrSyncEndpoint();
+  if (!error) (conf.device_ip ? $("#rr-device-ip")
+    : conf.endpoint ? $("#rr-endpoint") : $("#rr-start")).focus();
 }
 
 async function openRr() {
@@ -1379,6 +1554,7 @@ async function openRr() {
   $("#rr-note").textContent = "Reading the pipeline and the test set…";
   $("#rr-error").textContent = "";
   $("#rr-field").hidden = true;
+  $("#rr-endpoint-field").hidden = true;
   $("#rr-start").disabled = true;
   $("#rr-dlg").hidden = false;
   try {
@@ -1389,7 +1565,7 @@ async function openRr() {
     if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
     const conf = (data.configurations || []).find(c => c.name === name);
     if (!conf) throw new Error(`config.yaml has no pipeline ${name}`);
-    RR = {run: id, name, set, conf, queries: data.queries, body: rrBody(run),
+    RR = {run: id, name, set, conf, queries: data.queries, body: rrBody(run), source: run,
           had: (run.query_set || {}).total, repeat_of: run.repeat_of && run.repeat_of.run_id};
     renderRr();
   } catch (error) {
@@ -1410,6 +1586,9 @@ async function startRr() {
   if (!RR || $("#rr-start").disabled) return;
   const request = RR_REQUEST, view = RR, body = Object.assign({}, view.body);
   if (view.conf.device_ip) body.device_ip = $("#rr-device-ip").value.trim();
+  if (view.conf.endpoint && $("#rr-endpoint").value.trim()) {
+    body.endpoint = $("#rr-endpoint").value.trim();
+  }
   $("#rr-start").disabled = true;
   $("#rr-error").textContent = "";
   try {
@@ -1474,6 +1653,7 @@ async function endRr(source, name, job) {
 $("#rr-open").addEventListener("click", openRr);
 $("#rr-cancel").addEventListener("click", closeRr);
 $("#rr-start").addEventListener("click", startRr);
+$("#rr-endpoint").addEventListener("input", rrSyncEndpoint);
 $("#rr-dlg").addEventListener("click", ev => { if (ev.target === $("#rr-dlg")) closeRr(); });
 $("#rr-status").addEventListener("click", ev => {
   const link = ev.target.closest("a[data-run]");
@@ -1483,12 +1663,14 @@ $("#rr-status").addEventListener("click", ev => {
   loadRun(link.dataset.run, false);
 });
 // While the dialog is open, the keys of the page do not act. Esc closes the dialog. Enter
-// in the field `Device IPv4` starts the run.
+// in a run parameter field starts the run.
 window.addEventListener("keydown", ev => {
   if ($("#rr-dlg").hidden) return;
   ev.stopPropagation();
   if (ev.key === "Escape") { ev.preventDefault(); closeRr(); }
-  else if (ev.key === "Enter" && ev.target === $("#rr-device-ip")) { ev.preventDefault(); startRr(); }
+  else if (ev.key === "Enter" && [$("#rr-device-ip"), $("#rr-endpoint")].includes(ev.target)) {
+    ev.preventDefault(); startRr();
+  }
 }, true);
 
 /* ---- the large view ---- */
@@ -1700,7 +1882,42 @@ function closeLb() {
   LBI = null;
 }
 
+function showImageTags(digest, tags) {
+  document.querySelectorAll(`.qtags[data-image-sha="${CSS.escape(digest)}"]`)
+    .forEach(box => { box.querySelector(".qtag-values").innerHTML = imageTagLine(tags); });
+}
+
+async function addQueryImageTag(btn) {
+  const box = btn.closest(".qtags"), tr = btn.closest("tr[data-query-id]");
+  const input = box && box.querySelector("input"), state = box && box.querySelector(".qtag-state");
+  const tag = input ? input.value.trim() : "";
+  if (!box || !tr || !input || !state || !tag || !CUR) { if (input) input.focus(); return; }
+  const runId = CUR;
+  input.disabled = true; btn.disabled = true;
+  state.textContent = "adding…"; state.className = "qtag-state";
+  try {
+    const response = await fetch("/api/run-image-tag", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({id: runId, query: tr.dataset.queryId, tag}),
+    });
+    const out = await response.json();
+    if (!response.ok || out.error) throw new Error(out.error || `HTTP ${response.status}`);
+    if (CUR !== runId) return;
+    showImageTags(out.sha256, out.tags || []);
+    syncImageTagNames(out.tag_names || []);
+    input.value = "";
+    state.textContent = `added ${out.added}`;
+  } catch (error) {
+    state.textContent = error.message;
+    state.className = "qtag-state err";
+  } finally {
+    input.disabled = false; btn.disabled = false;
+  }
+}
+
 document.addEventListener("click", ev => {
+  const addTag = ev.target.closest("[data-image-tag-add]");
+  if (addTag) { addQueryImageTag(addTag); return; }
   const input = ev.target.closest("[data-model-input]");
   if (input) { $("#lb-main").src = input.dataset.modelInput; return; }
   // The query photo of a row opens the step popup (plan 41, owner message of
@@ -1717,6 +1934,12 @@ document.addEventListener("click", ev => {
     return;
   }
   if (ev.target.closest("#lb")) closeLb();
+});
+$("#res-body").addEventListener("keydown", ev => {
+  const input = ev.target.closest(".qtag-add input");
+  if (input && ev.key === "Enter") {
+    ev.preventDefault(); addQueryImageTag(input.closest(".qtag-add").querySelector("button"));
+  }
 });
 document.addEventListener("keydown", ev => {
   const large = $("#lb").classList.contains("on");

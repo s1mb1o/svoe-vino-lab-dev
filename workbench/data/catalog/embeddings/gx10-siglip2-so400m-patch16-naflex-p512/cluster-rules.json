@@ -36849,6 +36849,426 @@
    "model": "Qwen3.5-9B-NVFP4",
    "cached": true,
    "finish_reason": "stop"
+  },
+  "twopeters_sauvignon": {
+   "source_sha256": "88f3a3899801a558eec9576b4ea8ccc859da8a8294c04cf0af94538b5f31f7cc",
+   "picture_sha256": "9188792f5133a8de80dd325672d79160e1f87abc2882ea1bdd61df641dfbf5a2",
+   "picture_kind": "package",
+   "settings_sha": "5c76331d3c245e37",
+   "vlm": "qwen3.5-9b-nvfp4",
+   "built_at": "2026-10-02T08:14:05+0300",
+   "description": {
+    "texts": [
+     {
+      "text": "WINE OF CRIMEA",
+      "where": "top of label"
+     },
+     {
+      "text": "ДВА ПЕТРА",
+      "where": "center of label"
+     },
+     {
+      "text": "SAUVIGNON",
+      "where": "below ДВА ПЕТРА"
+     },
+     {
+      "text": "Белое сухое",
+      "where": "below SAUVIGNON"
+     },
+     {
+      "text": "2024",
+      "where": "below Белое сухое"
+     },
+     {
+      "text": "№3996",
+      "where": "near bottom center"
+     }
+    ],
+    "numbers": [
+     {
+      "value": "3996",
+      "where": "in №3996"
+     },
+     {
+      "value": "2024",
+      "where": "vintage year"
+     }
+    ],
+    "vintage": "2024",
+    "colours": [
+     "black",
+     "gold",
+     "white"
+    ],
+    "design": "The label features a black background with gold and white text. It includes two illustrated portraits of men in suits on either side, with a golden wing-like design at the bottom. The text is arranged hierarchically with the brand name prominently displayed in the center.",
+    "marks": [
+     {
+      "place": "neck of bottle",
+      "description": "circular seal with 'SP' logo"
+     },
+     {
+      "place": "left side of label",
+      "description": "circular seal with 'SP' logo"
+     }
+    ],
+    "bottle": {
+     "colour": "dark green",
+     "shape": "standard wine bottle shape",
+     "capsule": "black with gold square detail"
+    }
+   },
+   "error": null,
+   "sent_size": [
+    522,
+    2048
+   ],
+   "ms": 25653,
+   "usage": {
+    "completion_tokens": 463,
+    "prompt_tokens": 1286,
+    "prompt_tokens_details": null,
+    "total_tokens": 1749
+   },
+   "model": "Qwen3.5-9B-NVFP4",
+   "cached": true,
+   "finish_reason": "stop"
+  },
+  "twopeters_risling": {
+   "source_sha256": "f7f8ad386163abe50f424bad8badd96894ca2c72627708615c9e9ca45f6289dc",
+   "picture_sha256": "963db328751cc10cd7d82365a4518ef6db22ccc596102dd975d5d3bc0215757c",
+   "picture_kind": "package",
+   "settings_sha": "5c76331d3c245e37",
+   "vlm": "qwen3.5-9b-nvfp4",
+   "built_at": "2026-10-02T08:14:05+0300",
+   "description": {
+    "texts": [
+     {
+      "text": "WINE OF CRIMEA",
+      "where": "top of label"
+     },
+     {
+      "text": "ДВА ПЕТРА",
+      "where": "center of label"
+     },
+     {
+      "text": "RIESLING",
+      "where": "below ДВА ПЕТРА"
+     },
+     {
+      "text": "Белое сухое",
+      "where": "below RIESLING"
+     },
+     {
+      "text": "2024",
+      "where": "below Белое сухое"
+     },
+     {
+      "text": "№2598",
+      "where": "small oval near bottom center"
+     }
+    ],
+    "numbers": [
+     {
+      "value": "2024",
+      "where": "vintage year"
+     },
+     {
+      "value": "2598",
+      "where": "in №2598"
+     }
+    ],
+    "vintage": "2024",
+    "colours": [
+     "black",
+     "gold",
+     "white"
+    ],
+    "design": "The label features a black background with gold and white text. The central design includes two illustrated portraits of men in suits and hats, one on each side. A golden stylized bird or wing symbol is centered below the portraits. The text is arranged hierarchically with the brand name prominently displayed in large gold letters.",
+    "marks": [
+     {
+      "place": "neck of bottle",
+      "description": "circular seal with 'SP' logo"
+     },
+     {
+      "place": "left side of label",
+      "description": "circular seal with 'SP' logo"
+     }
+    ],
+    "bottle": {
+     "colour": "dark green",
+     "shape": "standard wine bottle shape",
+     "capsule": "black"
+    }
+   },
+   "error": null,
+   "sent_size": [
+    528,
+    2048
+   ],
+   "ms": 26284,
+   "usage": {
+    "completion_tokens": 469,
+    "prompt_tokens": 1286,
+    "prompt_tokens_details": null,
+    "total_tokens": 1755
+   },
+   "model": "Qwen3.5-9B-NVFP4",
+   "cached": true,
+   "finish_reason": "stop"
+  },
+  "twopeters_saperavi": {
+   "source_sha256": "8e67f8e892c3d2b6f3e94cdae7c62fc6fd8be6962a86863e684da0c0c5936451",
+   "picture_sha256": "a3cc6b08b048be9225b1787f47c1c62c21bedd560f6a97dc119234953a3e01e6",
+   "picture_kind": "package",
+   "settings_sha": "5c76331d3c245e37",
+   "vlm": "qwen3.5-9b-nvfp4",
+   "built_at": "2026-10-02T08:14:05+0300",
+   "description": {
+    "texts": [
+     "SP",
+     "WINE OF CRIMEA",
+     "TWO",
+     "PETERS",
+     "When the skill,",
+     "mastery and ambition",
+     "of two brothers are laid upon the fertile",
+     "and sun-soaked Crimean soil, a truly",
+     "unique wine is born.",
+     "A legend is born.",
+     "2021",
+     "SAPERAVI",
+     "Nº 6000"
+    ],
+    "numbers": [
+     "2021",
+     "6000"
+    ],
+    "vintage": 2021,
+    "colours": [
+     "black",
+     "gold",
+     "white"
+    ],
+    "design": "The label features a black background with gold and white text. It includes illustrations of two men in suits, one wearing a hat, and a gold emblem on the left side. The text is arranged centrally with the title 'TWO PETERS' prominently displayed in gold.",
+    "marks": [
+     {
+      "place": "neck",
+      "description": "SP logo"
+     },
+     {
+      "place": "left side",
+      "description": "gold emblem with SP logo"
+     }
+    ],
+    "bottle": {
+     "colour": "dark",
+     "shape": "standard wine bottle",
+     "capsule": "black"
+    }
+   },
+   "error": null,
+   "sent_size": [
+    531,
+    2048
+   ],
+   "ms": 16278,
+   "usage": {
+    "completion_tokens": 244,
+    "prompt_tokens": 1350,
+    "prompt_tokens_details": null,
+    "total_tokens": 1594
+   },
+   "model": "Qwen3.5-9B-NVFP4",
+   "cached": true,
+   "finish_reason": "stop",
+   "repairs": [
+    [
+     "text",
+     "texts"
+    ]
+   ]
+  },
+  "twopeters_kaberne_sovinion": {
+   "source_sha256": "294861648f6c4f9c84226d83f04df254640f2ef03c4996d31cbec1bc9e54b66f",
+   "picture_sha256": "65c6a7db2d832889b6a980f31a4eb542b90695a2b6fa39d288c1c1bb9029d9ab",
+   "picture_kind": "package",
+   "settings_sha": "5c76331d3c245e37",
+   "vlm": "qwen3.5-9b-nvfp4",
+   "built_at": "2026-10-02T08:14:05+0300",
+   "description": {
+    "texts": [
+     {
+      "text": "SP",
+      "where": "neck label"
+     },
+     {
+      "text": "WINE OF CRIMEA",
+      "where": "top of main label"
+     },
+     {
+      "text": "TWO",
+      "where": "center of main label"
+     },
+     {
+      "text": "PETERS",
+      "where": "center of main label"
+     },
+     {
+      "text": "When the skill, mastery and ambition of two brothers are laid upon the fertile and sun-soaked Crimean soil, a truly unique wine is born. A legend is born.",
+      "where": "middle of main label"
+     },
+     {
+      "text": "2021",
+      "where": "below text block"
+     },
+     {
+      "text": "CABERNET SAUVIGNON",
+      "where": "bottom of main label"
+     },
+     {
+      "text": "№ 4500",
+      "where": "bottom of main label"
+     },
+     {
+      "text": "SP",
+      "where": "repeated along top edge of main label"
+     }
+    ],
+    "numbers": [
+     {
+      "value": "2021",
+      "where": "vintage year"
+     },
+     {
+      "value": "4500",
+      "where": "batch number"
+     }
+    ],
+    "vintage": "2021",
+    "colours": [
+     "black",
+     "white",
+     "gold"
+    ],
+    "design": "The label features a dark background with white and gold text. It includes illustrations of two men in suits on either side, with the brand name 'TWO PETERS' prominently displayed in the center. The design is elegant and sophisticated, with a focus on the heritage and quality of the wine.",
+    "marks": [
+     {
+      "place": "neck label",
+      "description": "Circular seal with 'SP' and 'WINE OF CRIMEA'"
+     },
+     {
+      "place": "main label",
+      "description": "Circular seal with 'SP' and 'WINE OF CRIMEA'"
+     }
+    ],
+    "bottle": {
+     "colour": "dark glass",
+     "shape": "standard wine bottle shape",
+     "capsule": "black capsule"
+    }
+   },
+   "error": null,
+   "sent_size": [
+    497,
+    2048
+   ],
+   "ms": 32933,
+   "usage": {
+    "completion_tokens": 579,
+    "prompt_tokens": 1286,
+    "prompt_tokens_details": null,
+    "total_tokens": 1865
+   },
+   "model": "Qwen3.5-9B-NVFP4",
+   "cached": true,
+   "finish_reason": "stop"
+  },
+  "twopeters_shardone": {
+   "source_sha256": "b1dc8353bab6c8aa7cf4c83833f546215b88c45be1a089769b45265309e8f097",
+   "picture_sha256": "2031e4436e07c91e6b57dd8bb60a41cec454d114729df34a32758d3facaf0174",
+   "picture_kind": "package",
+   "settings_sha": "5c76331d3c245e37",
+   "vlm": "qwen3.5-9b-nvfp4",
+   "built_at": "2026-10-02T08:14:05+0300",
+   "description": {
+    "texts": [
+     {
+      "text": "WINE OF CRIMEA",
+      "where": "top center of label"
+     },
+     {
+      "text": "ДВА",
+      "where": "center of label"
+     },
+     {
+      "text": "ПЕТРА",
+      "where": "center of label"
+     },
+     {
+      "text": "2024",
+      "where": "below ДВА ПЕТРА"
+     },
+     {
+      "text": "CHARDONNAY",
+      "where": "below 2024"
+     },
+     {
+      "text": "Белое сухое",
+      "where": "below CHARDONNAY"
+     },
+     {
+      "text": "№1051",
+      "where": "bottom center of label"
+     }
+    ],
+    "numbers": [
+     {
+      "value": "2024",
+      "where": "below ДВА ПЕТРА"
+     },
+     {
+      "value": "1051",
+      "where": "bottom center of label"
+     }
+    ],
+    "vintage": 2024,
+    "colours": [
+     "black",
+     "gold",
+     "white"
+    ],
+    "design": "The label features a black background with gold and white text. The central design includes two illustrated portraits of men in historical attire, one on each side. The text is arranged hierarchically with 'WINE OF CRIMEA' at the top, followed by 'ДВА ПЕТРА' in large gold letters, then the year '2024', 'CHARDONNAY', and 'Белое сухое' in smaller fonts. A gold emblem is present at the bottom center.",
+    "marks": [
+     {
+      "place": "neck of the bottle",
+      "description": "Circular seal with 'SP' logo"
+     },
+     {
+      "place": "left side of label",
+      "description": "Circular seal with 'SP' logo"
+     }
+    ],
+    "bottle": {
+     "colour": "dark glass",
+     "shape": "standard wine bottle",
+     "capsule": "black"
+    }
+   },
+   "error": null,
+   "sent_size": [
+    532,
+    2048
+   ],
+   "ms": 20878,
+   "usage": {
+    "completion_tokens": 380,
+    "prompt_tokens": 1350,
+    "prompt_tokens_details": null,
+    "total_tokens": 1730
+   },
+   "model": "Qwen3.5-9B-NVFP4",
+   "cached": true,
+   "finish_reason": "stop"
   }
  },
  "spaces": {
@@ -39961,9 +40381,9 @@
      "vibes-cabernet-franc-pinot-noir-pino-nuar-krasnoe-suhoe-125"
     ],
     "input_hash": "81934d384c9cbd5f2e84562a3f25c1102b73dd8bc768b8d84a71681cfaf105bd",
-    "inputs_sha": "3328326c83dbabd1",
+    "inputs_sha": "607bfd72778034bf",
     "note": "",
-    "built_at": "2026-09-28T01:41:32+0300",
+    "built_at": "2026-10-01T11:03:20+0300",
     "vlm": "qwencloud-qwen3.8-max",
     "settings_sha": "12638e6663aca7c3",
     "mode": "sheet",
@@ -39974,36 +40394,56 @@
      "C": "vibes-cabernet-franc-pinot-noir-pino-nuar-krasnoe-suhoe-125"
     },
     "max_side": 768,
-    "prompt_tokens_estimate": 3684,
-    "prompt": "You see the label pictures of 3 wine cards, Card A to Card C. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Cabernet Franc-Pinot Noir 2021\"; producer \"Vibes\"; category \"Красное\"; grapes \"Каберне Фран\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"VIBES\", \"where\": \"center of label\"}, {\"text\": \"Cabernet Franc - Pinot Noir 2021\", \"where\": \"bottom of label\"}], \"numbers\": [{\"value\": \"2021\", \"where\": \"bottom of label\"}], \"vintage\": 2021, \"colours\": [\"black\", \"red\", \"purple\", \"white\"], \"design\": \"The label features an abstract design with red and purple shapes on a black background, transitioning to a white section at the bottom where the text is printed.\", \"marks\": []}\n\nCard B: name \"Cabernet Franc-Pinot Noir 2022\"; producer \"Vibes\"; category \"Красное\"; grapes \"Каберне Фран\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"VIBES\", \"where\": \"center of label\"}, {\"text\": \"Cabernet Franc - Pinot Noir 2022\", \"where\": \"below 'VIBES' on label\"}], \"numbers\": [{\"value\": \"2022\", \"where\": \"bottom right of label\"}], \"vintage\": 2022, \"colours\": [\"white\", \"black\", \"red\", \"purple\", \"blue\", \"brown\"], \"design\": \"The label features an abstract artistic design with splashes of red, purple, and blue over a black background. Below the artwork is a white section with bold black text reading 'VIBES' and smaller text below it indicating the grape varieties and vintage.\", \"marks\": []}\n\nCard C: name \"Cabernet Franc – Pinot Noir\"; producer \"Vibes\"; category \"Красное\"; grapes \"Пино Нуар\"; alcohol \"12.5 %\" (the number at the end of the catalogue slug).\nLabel description of card C: {\"texts\": [{\"text\": \"VIBES\", \"where\": \"center of label\"}, {\"text\": \"Cabernet Franc - Pinot Noir 2022\", \"where\": \"below 'VIBES' on label\"}], \"numbers\": [{\"value\": \"2022\", \"where\": \"bottom right of label\"}], \"vintage\": 2022, \"colours\": [\"white\", \"black\", \"red\", \"purple\", \"blue\", \"brown\"], \"design\": \"The label features an abstract artistic design with splashes of red, purple, and blue over a black background. Below the artwork is a white section with bold black text reading 'VIBES' and smaller text below it indicating the grape varieties and vintage.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
-    "ms": 108001,
+    "prompt_tokens_estimate": 4959,
+    "prompt": "You see the label pictures of 3 wine cards, Card A to Card C. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Cabernet Franc-Pinot Noir 2021\"; producer \"Vibes\"; category \"Красное\"; grapes \"Каберне Фран\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"VIBES\", \"where\": \"center of label\"}, {\"text\": \"Cabernet Franc - Pinot Noir 2021\", \"where\": \"bottom of label\"}], \"numbers\": [{\"value\": \"2021\", \"where\": \"bottom of label\"}], \"vintage\": 2021, \"colours\": [\"black\", \"red\", \"purple\", \"white\"], \"design\": \"The label features an abstract design with red and purple shapes on a black background, transitioning to a white section at the bottom where the text is printed.\", \"marks\": []}\n\nCard B: name \"Cabernet Franc-Pinot Noir 2022\"; producer \"Vibes\"; category \"Красное\"; grapes \"Каберне Фран\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"VIBES\", \"where\": \"center of label\"}, {\"text\": \"Cabernet Franc - Pinot Noir 2022\", \"where\": \"below 'VIBES' on label\"}], \"numbers\": [{\"value\": \"2022\", \"where\": \"bottom right of label\"}], \"vintage\": 2022, \"colours\": [\"white\", \"black\", \"red\", \"purple\", \"blue\", \"brown\"], \"design\": \"The label features an abstract artistic design with splashes of red, purple, and blue over a black background. Below the artwork is a white section with bold black text reading 'VIBES' and smaller text below it indicating the grape varieties and vintage.\", \"marks\": []}\n\nCard C: name \"Cabernet Franc – Pinot Noir\"; producer \"Vibes\"; category \"Красное\"; grapes \"Пино Нуар\"; alcohol \"12.5 %\" (the number at the end of the catalogue slug).\nLabel description of card C: {\"texts\": [{\"text\": \"VIBES\", \"where\": \"center of label\"}, {\"text\": \"Cabernet Franc - Pinot Noir 2022\", \"where\": \"below 'VIBES' on label\"}], \"numbers\": [{\"value\": \"2022\", \"where\": \"bottom right of label\"}], \"vintage\": 2022, \"colours\": [\"white\", \"black\", \"red\", \"purple\", \"blue\", \"brown\"], \"design\": \"The label features an abstract artistic design with splashes of red, purple, and blue over a black background. Below the artwork is a white section with bold black text reading 'VIBES' and smaller text below it indicating the grape varieties and vintage.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage tags. The reviewer tagged the vintage of some cards: Card A: 2021; Card C: 2022. For rule 2a, a tagged year counts as a year of the catalogue name of the card. The tag no_year counts as a name that states no year. Take the expected year of a tagged card from its tag.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "extra_pictures": {
+     "cabernet-franc-pinot-noir-2022": [
+      {
+       "sha256": "ae850cb38190f9415f4dd426fcf51c71289523cf970e4d1608faab2bdafc5ee6",
+       "image_type": "full_front",
+       "source_sha256": "7614b71801a2e2882e50af078bc96a5a64e5ef26c94dd2b8bca9de62c6b2e2e2"
+      },
+      {
+       "sha256": "06015900165b137f72984d95fd1e868487f5ec81b2976dc9f66875735d3fe93a",
+       "image_type": "full_back",
+       "source_sha256": "689c87e4e4112213a3865c3fe3a94c8def7fa54a8881b43fa9e9186dc60f6d45"
+      },
+      {
+       "sha256": "16ce58d92a3b3d70c6d01a70f0aad66d2bf1f92905890d2dc222c0bf1a697807",
+       "image_type": "label_back",
+       "source_sha256": "b52f8a014f2c44d3fe462a35da5e0e8227265f67246083387ba72f17156ee506"
+      }
+     ]
+    },
+    "extras_dropped": [],
+    "ms": 191377,
     "usage": {
-     "completion_tokens": 5493,
+     "completion_tokens": 10614,
      "completion_tokens_details": {
-      "reasoning_tokens": 5243,
-      "text_tokens": 249
+      "reasoning_tokens": 10246,
+      "text_tokens": 367
      },
-     "prompt_tokens": 2836,
+     "prompt_tokens": 4134,
      "prompt_tokens_details": {
-      "cached_tokens": 0,
-      "image_tokens": 1230,
-      "text_tokens": 1606
+      "cached_tokens": 4096,
+      "image_tokens": 2388,
+      "text_tokens": 1746
      },
-     "total_tokens": 8329
+     "total_tokens": 14748
     },
     "model": "qwen3.8-max",
     "cached": true,
     "finish_reason": "stop",
-    "raw_reply": "{\n  \"differences\": \"The only major printed difference is the vintage year in the bottom line 'Cabernet Franc - Pinot Noir ...': Card A's label ends with 2021, Card B's label ends with 2022, and Card C's catalogue name states no vintage year, so its label carries no year (its catalogue picture is a duplicate of Card B's). All other printed text ('VIBES', the grape names) is identical on every card.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed at the bottom of the label after 'Cabernet Franc - Pinot Noir'?\",\n      \"answers\": {\n       \"A\": \"2021\",\n       \"B\": \"2022\",\n       \"C\": null\n      }\n    }\n  ],\n  \"rule\": \"If the bottom line of the label ends with 2021, it is card A; if it ends with 2022, it is card B; if the bottom line shows no year at all, it is card C.\",\n  \"indistinguishable\": []\n}",
-    "differences": "The only major printed difference is the vintage year in the bottom line 'Cabernet Franc - Pinot Noir ...': Card A's label ends with 2021, Card B's label ends with 2022, and Card C's catalogue name states no vintage year, so its label carries no year (its catalogue picture is a duplicate of Card B's). All other printed text ('VIBES', the grape names) is identical on every card.",
+    "raw_reply": "{\n  \"differences\": \"The front label vintage: card A prints 2021 after the grape names, cards B and C print 2022. Cards B and C have identical front labels (VIBES, Cabernet Franc - Pinot Noir 2022), identical back-label wine style (dry red, 0.75 l), and differ only in the alcohol strength printed on the back label: card B's back label shows 12,3 %, while card C's catalogue alcohol is 12.5 %. No kosher, reserve or other marks appear on any label.\",\n  \"questions\": [\n    {\n      \"question\": \"What year is printed on the label after the grape variety names (Cabernet Franc - Pinot Noir)?\",\n      \"answers\": {\n       \"A\": \"2021\",\n       \"B\": \"2022\",\n       \"C\": \"2022\"\n      }\n    },\n    {\n      \"question\": \"What alcohol percentage is printed on the label (back label, 'Объемная доля этилового спирта')?\",\n      \"answers\": {\n       \"A\": null,\n       \"B\": \"12,3 %\",\n       \"C\": \"12.5 %\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the year 2021, it is card A; if the label shows 2022 and the alcohol is 12,3 %, it is card B; if the label shows 2022 and the alcohol is 12.5 %, it is card C.\",\n  \"indistinguishable\": []\n}",
+    "differences": "The front label vintage: card A prints 2021 after the grape names, cards B and C print 2022. Cards B and C have identical front labels (VIBES, Cabernet Franc - Pinot Noir 2022), identical back-label wine style (dry red, 0.75 l), and differ only in the alcohol strength printed on the back label: card B's back label shows 12,3 %, while card C's catalogue alcohol is 12.5 %. No kosher, reserve or other marks appear on any label.",
     "questions": [
      {
       "id": "q1",
-      "question": "What vintage year is printed at the bottom of the label after 'Cabernet Franc - Pinot Noir'?",
+      "question": "What year is printed on the label after the grape variety names (Cabernet Franc - Pinot Noir)?",
       "answers": {
        "cabernet-franc-pinot-noir-2021": "2021",
        "cabernet-franc-pinot-noir-2022": "2022",
-       "vibes-cabernet-franc-pinot-noir-pino-nuar-krasnoe-suhoe-125": null
+       "vibes-cabernet-franc-pinot-noir-pino-nuar-krasnoe-suhoe-125": "2022"
       },
       "kind": "vintage",
       "valid": true,
@@ -40012,26 +40452,62 @@
         "eac35e0c930c0c127226349a3cb9ae82fa8380a9241bcb106f65aef0766c1567"
        ],
        "cabernet-franc-pinot-noir-2022": [
-        "6bc876f64cf669720c46b7285dc15f0f4b3e5df6f641f4e8f4755426fdb7ee95"
+        "6bc876f64cf669720c46b7285dc15f0f4b3e5df6f641f4e8f4755426fdb7ee95",
+        "ae850cb38190f9415f4dd426fcf51c71289523cf970e4d1608faab2bdafc5ee6",
+        "06015900165b137f72984d95fd1e868487f5ec81b2976dc9f66875735d3fe93a",
+        "16ce58d92a3b3d70c6d01a70f0aad66d2bf1f92905890d2dc222c0bf1a697807"
+       ],
+       "vibes-cabernet-franc-pinot-noir-pino-nuar-krasnoe-suhoe-125": [
+        "4908ed42db46081899eef2bf8c50fc6bb2aa4805ae2ddcbdc6521440ad125c39"
+       ]
+      }
+     },
+     {
+      "id": "q2",
+      "question": "What alcohol percentage is printed on the label (back label, 'Объемная доля этилового спирта')?",
+      "answers": {
+       "cabernet-franc-pinot-noir-2021": null,
+       "cabernet-franc-pinot-noir-2022": "12,3 %",
+       "vibes-cabernet-franc-pinot-noir-pino-nuar-krasnoe-suhoe-125": "12.5 %"
+      },
+      "kind": "alcohol",
+      "valid": false,
+      "evidence": {
+       "cabernet-franc-pinot-noir-2022": [
+        "6bc876f64cf669720c46b7285dc15f0f4b3e5df6f641f4e8f4755426fdb7ee95",
+        "ae850cb38190f9415f4dd426fcf51c71289523cf970e4d1608faab2bdafc5ee6",
+        "06015900165b137f72984d95fd1e868487f5ec81b2976dc9f66875735d3fe93a",
+        "16ce58d92a3b3d70c6d01a70f0aad66d2bf1f92905890d2dc222c0bf1a697807"
+       ],
+       "vibes-cabernet-franc-pinot-noir-pino-nuar-krasnoe-suhoe-125": [
+        "4908ed42db46081899eef2bf8c50fc6bb2aa4805ae2ddcbdc6521440ad125c39"
        ]
       }
      }
     ],
-    "rule": "If the bottom line of the label ends with 2021, it is card A; if it ends with 2022, it is card B; if the bottom line shows no year at all, it is card C.",
+    "rule": "If the label shows the year 2021, it is card A; if the label shows 2022 and the alcohol is 12,3 %, it is card B; if the label shows 2022 and the alcohol is 12.5 %, it is card C.",
     "indistinguishable": [],
     "answer": {
-     "differences": "The only major printed difference is the vintage year in the bottom line 'Cabernet Franc - Pinot Noir ...': Card A's label ends with 2021, Card B's label ends with 2022, and Card C's catalogue name states no vintage year, so its label carries no year (its catalogue picture is a duplicate of Card B's). All other printed text ('VIBES', the grape names) is identical on every card.",
+     "differences": "The front label vintage: card A prints 2021 after the grape names, cards B and C print 2022. Cards B and C have identical front labels (VIBES, Cabernet Franc - Pinot Noir 2022), identical back-label wine style (dry red, 0.75 l), and differ only in the alcohol strength printed on the back label: card B's back label shows 12,3 %, while card C's catalogue alcohol is 12.5 %. No kosher, reserve or other marks appear on any label.",
      "questions": [
       {
-       "question": "What vintage year is printed at the bottom of the label after 'Cabernet Franc - Pinot Noir'?",
+       "question": "What year is printed on the label after the grape variety names (Cabernet Franc - Pinot Noir)?",
        "answers": {
         "A": "2021",
         "B": "2022",
-        "C": null
+        "C": "2022"
+       }
+      },
+      {
+       "question": "What alcohol percentage is printed on the label (back label, 'Объемная доля этилового спирта')?",
+       "answers": {
+        "A": null,
+        "B": "12,3 %",
+        "C": "12.5 %"
        }
       }
      ],
-     "rule": "If the bottom line of the label ends with 2021, it is card A; if it ends with 2022, it is card B; if the bottom line shows no year at all, it is card C.",
+     "rule": "If the label shows the year 2021, it is card A; if the label shows 2022 and the alcohol is 12,3 %, it is card B; if the label shows 2022 and the alcohol is 12.5 %, it is card C.",
      "indistinguishable": []
     }
    },
@@ -41067,9 +41543,9 @@
      "pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132"
     ],
     "input_hash": "81934d384c9cbd5f2e84562a3f25c1102b73dd8bc768b8d84a71681cfaf105bd",
-    "inputs_sha": "700e04bbbee99a26",
+    "inputs_sha": "e96f3d22f1d5f15c",
     "note": "",
-    "built_at": "2026-09-28T01:41:44+0300",
+    "built_at": "2026-10-01T11:03:21+0300",
     "vlm": "qwencloud-qwen3.8-max",
     "settings_sha": "12638e6663aca7c3",
     "mode": "sheet",
@@ -41080,32 +41556,84 @@
      "C": "pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132"
     },
     "max_side": 768,
-    "prompt_tokens_estimate": 3892,
-    "prompt": "You see the label pictures of 3 wine cards, Card A to Card C. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Golubitskoe Estate Chardonnay\"; producer \"Поместье Голубицкое\"; category \"Белое\"; grapes \"Шардоне\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"GOLUBITSKOE ESTATE\", \"where\": \"top of label\"}, {\"text\": \"CHARDONNAY\", \"where\": \"middle of label\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"bottom of label\"}, {\"text\": \"TAMAGNE\", \"where\": \"bottom of label\"}], \"numbers\": [], \"vintage\": null, \"colours\": [\"white\", \"green\", \"black\"], \"design\": \"Minimalist label with a white background and green accents. The text is centered and arranged vertically. There is a subtle pattern in the background of the label.\", \"marks\": [{\"text\": \"green dove logo\", \"where\": \"top of label and neck of bottle\"}]}\n\nCard B: name \"Шардоне Резерв\"; producer \"Golubitskoe Estate\"; category \"Белое\"; grapes \"Шардоне\"; alcohol \"13.5 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"ESTATE\", \"where\": \"top of the bottle neck\"}, {\"text\": \"GOLUBITSKOE ESTATE\", \"where\": \"center of the label\"}, {\"text\": \"CHARDONNAY\", \"where\": \"below the main text on the label\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"bottom of the label\"}, {\"text\": \"TAMAGNE\", \"where\": \"bottom of the label\"}], \"numbers\": [], \"vintage\": null, \"colours\": [\"black\", \"gold\", \"white\"], \"design\": \"The label features a black background with gold and white text. The central design includes a circular emblem with a stylized bird motif surrounded by ornate patterns. The text is arranged in a clean, modern font with the producer's name prominently displayed.\", \"marks\": []}\n\nCard C: name \"Шардоне Резерв\"; producer \"Golubitskoe Estate\"; category \"Белое\"; grapes \"Шардоне\"; alcohol \"13.2 %\" (the number at the end of the catalogue slug).\nLabel description of card C: {\"texts\": [\"RESERVE\", \"GOLUBITSKOE\", \"ESTATE\", \"CHARDONNAY\", \"GOLUBITSKAYA STRELKA\", \"TAMAGNE\", \"2022\"], \"numbers\": [{\"value\": \"2022\", \"where\": \"bottom of the label\"}], \"vintage\": 2022, \"colours\": [\"black\", \"gold\"], \"design\": \"The label features a central ornate gold wreath with a bird in the middle, surrounded by intricate floral patterns. The text is arranged in a clean, modern layout with 'RESERVE' at the top, followed by the producer name 'GOLUBITSKOE ESTATE', the varietal 'CHARDONNAY', and additional details at the bottom.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage variants. The catalogue data or the label descriptions state a vintage year for these cards: Card C: 2022, on the label. They state no vintage year for these cards: Card A, Card B. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
-    "ms": 65817,
+    "prompt_tokens_estimate": 7878,
+    "prompt": "You see the label pictures of 3 wine cards, Card A to Card C. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Golubitskoe Estate Chardonnay\"; producer \"Поместье Голубицкое\"; category \"Белое\"; grapes \"Шардоне\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"GOLUBITSKOE ESTATE\", \"where\": \"top of label\"}, {\"text\": \"CHARDONNAY\", \"where\": \"middle of label\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"bottom of label\"}, {\"text\": \"TAMAGNE\", \"where\": \"bottom of label\"}], \"numbers\": [], \"vintage\": null, \"colours\": [\"white\", \"green\", \"black\"], \"design\": \"Minimalist label with a white background and green accents. The text is centered and arranged vertically. There is a subtle pattern in the background of the label.\", \"marks\": [{\"text\": \"green dove logo\", \"where\": \"top of label and neck of bottle\"}]}\n\nCard B: name \"Шардоне Резерв\"; producer \"Golubitskoe Estate\"; category \"Белое\"; grapes \"Шардоне\"; alcohol \"13.5 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"ESTATE\", \"where\": \"top of the bottle neck\"}, {\"text\": \"GOLUBITSKOE ESTATE\", \"where\": \"center of the label\"}, {\"text\": \"CHARDONNAY\", \"where\": \"below the main text on the label\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"bottom of the label\"}, {\"text\": \"TAMAGNE\", \"where\": \"bottom of the label\"}], \"numbers\": [], \"vintage\": null, \"colours\": [\"black\", \"gold\", \"white\"], \"design\": \"The label features a black background with gold and white text. The central design includes a circular emblem with a stylized bird motif surrounded by ornate patterns. The text is arranged in a clean, modern font with the producer's name prominently displayed.\", \"marks\": []}\n\nCard C: name \"Шардоне Резерв\"; producer \"Golubitskoe Estate\"; category \"Белое\"; grapes \"Шардоне\"; alcohol \"13.2 %\" (the number at the end of the catalogue slug).\nLabel description of card C: {\"texts\": [\"RESERVE\", \"GOLUBITSKOE\", \"ESTATE\", \"CHARDONNAY\", \"GOLUBITSKAYA STRELKA\", \"TAMAGNE\", \"2022\"], \"numbers\": [{\"value\": \"2022\", \"where\": \"bottom of the label\"}], \"vintage\": 2022, \"colours\": [\"black\", \"gold\"], \"design\": \"The label features a central ornate gold wreath with a bird in the middle, surrounded by intricate floral patterns. The text is arranged in a clean, modern layout with 'RESERVE' at the top, followed by the producer name 'GOLUBITSKOE ESTATE', the varietal 'CHARDONNAY', and additional details at the bottom.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage tags. The reviewer tagged the vintage of some cards: Card B: no_year; Card C: 2022. For rule 2a, a tagged year counts as a year of the catalogue name of the card. The tag no_year counts as a name that states no year. Take the expected year of a tagged card from its tag.\n\nVintage variants. The catalogue data or the label descriptions state a vintage year for these cards: Card C: 2022, in a tag. They state no vintage year for these cards: Card A, Card B. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "extra_pictures": {
+     "golubitskoe-estate-chardonnay": [
+      {
+       "sha256": "f7cd9ec7a959ae720a3f9a2cd04c67a9221939c2c7256f6ba14563e2e476fdbb",
+       "image_type": "full_front",
+       "source_sha256": "df054a5c5aec5b116edea1ef0fad77d2903e156bbd73e70d4024879bdfcee146"
+      },
+      {
+       "sha256": "4cfc6ef4b91e77f7a11ffc55f5221be637a617ea08f14d01e810893438f1835e",
+       "image_type": "full_front",
+       "source_sha256": "8ffe9b5d3acfed5028dcc703b1504a12506053250861e5d2e86123a7f9a5b589"
+      },
+      {
+       "sha256": "0095715f4ea6c6be0c2572fc75ea3c81272dff8c1574bd52d9aba5659c1ef444",
+       "image_type": "full_front",
+       "source_sha256": "59c40e61cb29be1ded14e3e2edd33ded9be8aac04eb30c156d88ed11f14f23ea"
+      },
+      {
+       "sha256": "92dc4f152c3e2f0ac60cb44c11bcc3e58b51899887e4eb302c14c25671a60aa7",
+       "image_type": "full_front",
+       "source_sha256": "a0a0d2178b1ebfbd514f3787d6c46a1dd02085e876bbe6420e8bf4d7211e9c39"
+      },
+      {
+       "sha256": "c92427e82ac464ac9183a2886db786064d398a3d9fe0b021d35bfa3e9a965bc3",
+       "image_type": "label_front",
+       "source_sha256": "63fce020aa70998f3482618cfbec848f1cf4d555a630a8cf38d71af38e77a556"
+      }
+     ],
+     "golubitskoe-estate-shardone-rezerv-beloe-suhoe-135": [
+      {
+       "sha256": "98d9f0bf72415adf71aaaff8ab2af37ab12f5d209f7d42d88e7ccff417b25f4e",
+       "image_type": "full_front",
+       "source_sha256": "b34b82b0b19c323e44a03a92983a929a36b46a8e43c74ea7257befaca9112111"
+      },
+      {
+       "sha256": "9faeb487578341a8bc44de158a7c8592ae997c4dc19cf4aaaca180403e2b86b9",
+       "image_type": "full_front",
+       "source_sha256": "45c4e8df3e77c4b9eb9267793bbff912624304d3655d414a8290acdf655ff2b3"
+      },
+      {
+       "sha256": "8a31ce831a934a2c8fae248d1ac2b2ab3274e0422689b1a50ea83d34763e7306",
+       "image_type": "label_back",
+       "source_sha256": "99eef66447c123c47e33cd27b793b185014890b44e466aa1823fca89c64e0391"
+      },
+      {
+       "sha256": "c5eba63816d59ca1191a76ddd99634b7238d80c60df5a697f404ff0610b15729",
+       "image_type": "label_back",
+       "source_sha256": "368827be0136fa20de12b35cf08510a8954e9aba1843d24a207f9f04cb4c7b81"
+      }
+     ]
+    },
+    "extras_dropped": [],
+    "ms": 162956,
     "usage": {
-     "prompt_tokens": 2910,
-     "total_tokens": 6325,
-     "completion_tokens": 3415,
-     "prompt_tokens_details": {
-      "cached_tokens": 0,
-      "image_tokens": 1086,
-      "text_tokens": 1824
-     },
+     "completion_tokens": 8144,
      "completion_tokens_details": {
-      "reasoning_tokens": 3159,
-      "text_tokens": 255
-     }
+      "reasoning_tokens": 7818,
+      "text_tokens": 325
+     },
+     "prompt_tokens": 6935,
+     "prompt_tokens_details": {
+      "cached_tokens": 6912,
+      "image_tokens": 4848,
+      "text_tokens": 2087
+     },
+     "total_tokens": 15079
     },
     "model": "qwen3.8-max",
-    "cached": false,
+    "cached": true,
     "finish_reason": "stop",
-    "raw_reply": "{\n  \"differences\": \"Card A carries no reserve mark, while Cards B and C print the word RESERVE at the top of the label. Card C prints the vintage year 2022 at the bottom of the label, while Cards A and B print no vintage year.\",\n  \"questions\": [\n    {\n      \"question\": \"Does the label show a reserve mark (the word RESERVE)?\",\n      \"answers\": {\n       \"A\": \"no\",\n       \"B\": \"yes\",\n       \"C\": \"yes\"\n      }\n    },\n    {\n      \"question\": \"What vintage year is printed on the label? Answer \\\"other\\\" if no year is printed.\",\n      \"answers\": {\n       \"A\": \"other\",\n       \"B\": \"other\",\n       \"C\": \"2022\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows no RESERVE mark, it is card A; if it shows RESERVE and the year 2022, it is card C; if it shows RESERVE and no year, it is card B.\",\n  \"indistinguishable\": []\n}",
-    "differences": "Card A carries no reserve mark, while Cards B and C print the word RESERVE at the top of the label. Card C prints the vintage year 2022 at the bottom of the label, while Cards A and B print no vintage year.",
+    "raw_reply": "{\n  \"differences\": \"Card A has a white minimalist label with a green dove and no RESERVE wording; Cards B and C have black labels with a gold wreath, a gold bird and the word RESERVE at the top. B and C look alike except the vintage: Card B's catalogue name states no year (its photos show 2020), Card C is tagged and printed 2022. Alcohol (A 12,5%, B 13,5%, C 13,2%) varies with vintage and is not used.\",\n  \"questions\": [\n    {\n      \"question\": \"Does the label show the word RESERVE?\",\n      \"answers\": {\n       \"A\": \"no\",\n       \"B\": \"yes\",\n       \"C\": \"yes\"\n      }\n    },\n    {\n      \"question\": \"What vintage year is printed on the label? Answer 'other' if the label shows no year or a year other than 2022.\",\n      \"answers\": {\n       \"A\": \"other\",\n       \"B\": \"other\",\n       \"C\": \"2022\"\n      }\n    }\n  ],\n  \"rule\": \"If the label does not show the word RESERVE, it is card A; if it shows RESERVE and the vintage 2022, it is card C; if it shows RESERVE and another year or no year, it is card B.\",\n  \"indistinguishable\": []\n}",
+    "differences": "Card A has a white minimalist label with a green dove and no RESERVE wording; Cards B and C have black labels with a gold wreath, a gold bird and the word RESERVE at the top. B and C look alike except the vintage: Card B's catalogue name states no year (its photos show 2020), Card C is tagged and printed 2022. Alcohol (A 12,5%, B 13,5%, C 13,2%) varies with vintage and is not used.",
     "questions": [
      {
       "id": "q1",
-      "question": "Does the label show a reserve mark (the word RESERVE)?",
+      "question": "Does the label show the word RESERVE?",
       "answers": {
        "golubitskoe-estate-chardonnay": "no",
        "golubitskoe-estate-shardone-rezerv-beloe-suhoe-135": "yes",
@@ -41115,10 +41643,19 @@
       "valid": true,
       "evidence": {
        "golubitskoe-estate-chardonnay": [
-        "38ef5cebd2ff85cc3945f323970458533852049bc8c43e93e0479464dbd10ae4"
+        "38ef5cebd2ff85cc3945f323970458533852049bc8c43e93e0479464dbd10ae4",
+        "f7cd9ec7a959ae720a3f9a2cd04c67a9221939c2c7256f6ba14563e2e476fdbb",
+        "4cfc6ef4b91e77f7a11ffc55f5221be637a617ea08f14d01e810893438f1835e",
+        "0095715f4ea6c6be0c2572fc75ea3c81272dff8c1574bd52d9aba5659c1ef444",
+        "92dc4f152c3e2f0ac60cb44c11bcc3e58b51899887e4eb302c14c25671a60aa7",
+        "c92427e82ac464ac9183a2886db786064d398a3d9fe0b021d35bfa3e9a965bc3"
        ],
        "golubitskoe-estate-shardone-rezerv-beloe-suhoe-135": [
-        "f2a90821da8f45c0b7f1d4ce8bda4348f5453837eec537aebdf1d45283510732"
+        "f2a90821da8f45c0b7f1d4ce8bda4348f5453837eec537aebdf1d45283510732",
+        "98d9f0bf72415adf71aaaff8ab2af37ab12f5d209f7d42d88e7ccff417b25f4e",
+        "9faeb487578341a8bc44de158a7c8592ae997c4dc19cf4aaaca180403e2b86b9",
+        "8a31ce831a934a2c8fae248d1ac2b2ab3274e0422689b1a50ea83d34763e7306",
+        "c5eba63816d59ca1191a76ddd99634b7238d80c60df5a697f404ff0610b15729"
        ],
        "pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132": [
         "eeb68555588538c62c689dd93139e7a19d96b39a45ec5cb5fac191a5b16bfee8"
@@ -41127,7 +41664,7 @@
      },
      {
       "id": "q2",
-      "question": "What vintage year is printed on the label? Answer \"other\" if no year is printed.",
+      "question": "What vintage year is printed on the label? Answer 'other' if the label shows no year or a year other than 2022.",
       "answers": {
        "golubitskoe-estate-chardonnay": null,
        "golubitskoe-estate-shardone-rezerv-beloe-suhoe-135": "other",
@@ -41137,7 +41674,11 @@
       "valid": true,
       "evidence": {
        "golubitskoe-estate-shardone-rezerv-beloe-suhoe-135": [
-        "f2a90821da8f45c0b7f1d4ce8bda4348f5453837eec537aebdf1d45283510732"
+        "f2a90821da8f45c0b7f1d4ce8bda4348f5453837eec537aebdf1d45283510732",
+        "98d9f0bf72415adf71aaaff8ab2af37ab12f5d209f7d42d88e7ccff417b25f4e",
+        "9faeb487578341a8bc44de158a7c8592ae997c4dc19cf4aaaca180403e2b86b9",
+        "8a31ce831a934a2c8fae248d1ac2b2ab3274e0422689b1a50ea83d34763e7306",
+        "c5eba63816d59ca1191a76ddd99634b7238d80c60df5a697f404ff0610b15729"
        ],
        "pomeste-golubitskoe-shardone-rezerv-beloe-suhoe-132": [
         "eeb68555588538c62c689dd93139e7a19d96b39a45ec5cb5fac191a5b16bfee8"
@@ -41145,13 +41686,13 @@
       }
      }
     ],
-    "rule": "If the label shows no RESERVE mark, it is card A; if it shows RESERVE and the year 2022, it is card C; if it shows RESERVE and no year, it is card B.",
+    "rule": "If the label does not show the word RESERVE, it is card A; if it shows RESERVE and the vintage 2022, it is card C; if it shows RESERVE and another year or no year, it is card B.",
     "indistinguishable": [],
     "answer": {
-     "differences": "Card A carries no reserve mark, while Cards B and C print the word RESERVE at the top of the label. Card C prints the vintage year 2022 at the bottom of the label, while Cards A and B print no vintage year.",
+     "differences": "Card A has a white minimalist label with a green dove and no RESERVE wording; Cards B and C have black labels with a gold wreath, a gold bird and the word RESERVE at the top. B and C look alike except the vintage: Card B's catalogue name states no year (its photos show 2020), Card C is tagged and printed 2022. Alcohol (A 12,5%, B 13,5%, C 13,2%) varies with vintage and is not used.",
      "questions": [
       {
-       "question": "Does the label show a reserve mark (the word RESERVE)?",
+       "question": "Does the label show the word RESERVE?",
        "answers": {
         "A": "no",
         "B": "yes",
@@ -41159,7 +41700,7 @@
        }
       },
       {
-       "question": "What vintage year is printed on the label? Answer \"other\" if no year is printed.",
+       "question": "What vintage year is printed on the label? Answer 'other' if the label shows no year or a year other than 2022.",
        "answers": {
         "A": "other",
         "B": "other",
@@ -41167,7 +41708,7 @@
        }
       }
      ],
-     "rule": "If the label shows no RESERVE mark, it is card A; if it shows RESERVE and the year 2022, it is card C; if it shows RESERVE and no year, it is card B.",
+     "rule": "If the label does not show the word RESERVE, it is card A; if it shows RESERVE and the vintage 2022, it is card C; if it shows RESERVE and another year or no year, it is card B.",
      "indistinguishable": []
     }
    },
@@ -41606,9 +42147,9 @@
      "usadba-mezyb-vione-beloe-suhoe-118"
     ],
     "input_hash": "81934d384c9cbd5f2e84562a3f25c1102b73dd8bc768b8d84a71681cfaf105bd",
-    "inputs_sha": "2b9a05f3325447e1",
+    "inputs_sha": "24e4bc4c80569e8a",
     "note": "",
-    "built_at": "2026-09-28T01:42:58+0300",
+    "built_at": "2026-10-01T11:03:23+0300",
     "vlm": "qwencloud-qwen3.8-max",
     "settings_sha": "12638e6663aca7c3",
     "mode": "sheet",
@@ -41619,38 +42160,38 @@
      "C": "usadba-mezyb-vione-beloe-suhoe-118"
     },
     "max_side": 768,
-    "prompt_tokens_estimate": 3964,
-    "prompt": "You see the label pictures of 3 wine cards, Card A to Card C. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Мезыбь. Вионье\"; producer \"Усадьба Мезыбь\"; category \"Белое\"; grapes \"Вионье\"; alcohol \"13 %\" (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [\"ВИОНЬЕ\", \"РОССИЙСКОЕ\", \"ВИНО СУХОЕ\", \"БЕЛОЕ\", \"УСАДЬБА\", \"МЕЗЫБЬ\", \"2023\"], \"numbers\": [\"2023\"], \"vintage\": 2023, \"colours\": [\"white\", \"black\", \"gold\"], \"design\": \"The label features a minimalist design with a white background and black text. The top section includes the word 'ВИОНЬЕ' in gold, followed by 'РОССИЙСКОЕ', 'ВИНО СУХОЕ', and 'БЕЛОЕ' in black. The bottom section displays 'УСАДЬБА' in small black text, 'МЕЗЫБЬ' in large black text, and '2023' in gold. There is an embossed tree design on the right side of the label.\", \"marks\": []}\n\nCard B: name \"Усадьба Мезыбь. Вионье\"; producer \"Усадьба Мезыбь\"; category \"Белое\"; grapes \"Вионье\"; alcohol \"11.8 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"ВИОНЬЕ\", \"where\": \"top left\"}, {\"text\": \"РОССИЙСКОЕ\", \"where\": \"below ВИОНЬЕ\"}, {\"text\": \"ВИНО СУХОЕ\", \"where\": \"below РОССИЙСКОЕ\"}, {\"text\": \"БЕЛОЕ\", \"where\": \"below ВИНО СУХОЕ\"}, {\"text\": \"УСАДЬБА\", \"where\": \"bottom left\"}, {\"text\": \"МЕЗЫБЬ\", \"where\": \"bottom left\"}, {\"text\": \"2024\", \"where\": \"bottom left\"}], \"numbers\": [{\"value\": \"2024\", \"where\": \"bottom left\"}], \"vintage\": 2024, \"colours\": [\"white\", \"gold\", \"black\"], \"design\": \"Minimalist label with a textured white background, featuring an embossed tree design on the right side. Text is arranged in a clean, modern font with gold and black colors.\", \"marks\": []}\n\nCard C: name \"Вионье\"; producer \"Усадьба Мезыбь\"; category \"Белое\"; grapes \"Вионье\"; alcohol \"11.8 %\" (the number at the end of the catalogue slug).\nLabel description of card C: {\"texts\": [{\"text\": \"ВИОНЬЕ\", \"where\": \"top left\"}, {\"text\": \"РОССИЙСКОЕ\", \"where\": \"below ВИОНЬЕ\"}, {\"text\": \"ВИНО СУХОЕ\", \"where\": \"below РОССИЙСКОЕ\"}, {\"text\": \"БЕЛОЕ\", \"where\": \"below ВИНО СУХОЕ\"}, {\"text\": \"УСАДЬБА\", \"where\": \"bottom left\"}, {\"text\": \"МЕЗЫБЬ\", \"where\": \"bottom left\"}, {\"text\": \"2023\", \"where\": \"bottom left\"}], \"numbers\": [{\"value\": \"2023\", \"where\": \"bottom left\"}], \"vintage\": 2023, \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with text on the left side and an embossed tree illustration on the right. The text is in Russian, and the layout is clean and modern.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
-    "ms": 155791,
+    "prompt_tokens_estimate": 4080,
+    "prompt": "You see the label pictures of 3 wine cards, Card A to Card C. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Мезыбь. Вионье\"; producer \"Усадьба Мезыбь\"; category \"Белое\"; grapes \"Вионье\"; alcohol \"13 %\" (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [\"ВИОНЬЕ\", \"РОССИЙСКОЕ\", \"ВИНО СУХОЕ\", \"БЕЛОЕ\", \"УСАДЬБА\", \"МЕЗЫБЬ\", \"2023\"], \"numbers\": [\"2023\"], \"vintage\": 2023, \"colours\": [\"white\", \"black\", \"gold\"], \"design\": \"The label features a minimalist design with a white background and black text. The top section includes the word 'ВИОНЬЕ' in gold, followed by 'РОССИЙСКОЕ', 'ВИНО СУХОЕ', and 'БЕЛОЕ' in black. The bottom section displays 'УСАДЬБА' in small black text, 'МЕЗЫБЬ' in large black text, and '2023' in gold. There is an embossed tree design on the right side of the label.\", \"marks\": []}\n\nCard B: name \"Усадьба Мезыбь. Вионье\"; producer \"Усадьба Мезыбь\"; category \"Белое\"; grapes \"Вионье\"; alcohol \"11.8 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"ВИОНЬЕ\", \"where\": \"top left\"}, {\"text\": \"РОССИЙСКОЕ\", \"where\": \"below ВИОНЬЕ\"}, {\"text\": \"ВИНО СУХОЕ\", \"where\": \"below РОССИЙСКОЕ\"}, {\"text\": \"БЕЛОЕ\", \"where\": \"below ВИНО СУХОЕ\"}, {\"text\": \"УСАДЬБА\", \"where\": \"bottom left\"}, {\"text\": \"МЕЗЫБЬ\", \"where\": \"bottom left\"}, {\"text\": \"2024\", \"where\": \"bottom left\"}], \"numbers\": [{\"value\": \"2024\", \"where\": \"bottom left\"}], \"vintage\": 2024, \"colours\": [\"white\", \"gold\", \"black\"], \"design\": \"Minimalist label with a textured white background, featuring an embossed tree design on the right side. Text is arranged in a clean, modern font with gold and black colors.\", \"marks\": []}\n\nCard C: name \"Вионье\"; producer \"Усадьба Мезыбь\"; category \"Белое\"; grapes \"Вионье\"; alcohol \"11.8 %\" (the number at the end of the catalogue slug).\nLabel description of card C: {\"texts\": [{\"text\": \"ВИОНЬЕ\", \"where\": \"top left\"}, {\"text\": \"РОССИЙСКОЕ\", \"where\": \"below ВИОНЬЕ\"}, {\"text\": \"ВИНО СУХОЕ\", \"where\": \"below РОССИЙСКОЕ\"}, {\"text\": \"БЕЛОЕ\", \"where\": \"below ВИНО СУХОЕ\"}, {\"text\": \"УСАДЬБА\", \"where\": \"bottom left\"}, {\"text\": \"МЕЗЫБЬ\", \"where\": \"bottom left\"}, {\"text\": \"2023\", \"where\": \"bottom left\"}], \"numbers\": [{\"value\": \"2023\", \"where\": \"bottom left\"}], \"vintage\": 2023, \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with text on the left side and an embossed tree illustration on the right. The text is in Russian, and the layout is clean and modern.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage tags. The reviewer tagged the vintage of some cards: Card A: 2023; Card B: 2024; Card C: 2023. For rule 2a, a tagged year counts as a year of the catalogue name of the card. The tag no_year counts as a name that states no year. Take the expected year of a tagged card from its tag.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "ms": 84767,
     "usage": {
-     "completion_tokens": 7784,
+     "completion_tokens": 4789,
      "completion_tokens_details": {
-      "reasoning_tokens": 7490,
-      "text_tokens": 293
+      "reasoning_tokens": 4525,
+      "text_tokens": 263
      },
-     "prompt_tokens": 3249,
+     "prompt_tokens": 3335,
      "prompt_tokens_details": {
       "cached_tokens": 0,
       "image_tokens": 1446,
-      "text_tokens": 1803
+      "text_tokens": 1889
      },
-     "total_tokens": 11033
+     "total_tokens": 8124
     },
     "model": "qwen3.8-max",
     "cached": true,
     "finish_reason": "stop",
-    "raw_reply": "{\n  \"differences\": \"The three labels print the same texts (ВИОНЬЕ, РОССИЙСКОЕ ВИНО СУХОЕ БЕЛОЕ, УСАДЬБА МЕЗЫБЬ) with the same embossed tree design; the only visible variation is the vintage year (2023 on A and C, 2024 on B), which is not a card feature because no catalogue name states a year (rule 2a). The only catalogue feature that separates the wines is the alcohol strength: 13 % for card A versus 11.8 % for cards B and C, so alcohol is used as the last-resort feature (rule 10).\",\n  \"questions\": [\n    {\n      \"question\": \"What alcohol strength is printed on the label?\",\n      \"answers\": {\n       \"A\": \"13%\",\n       \"B\": \"11.8%\",\n       \"C\": \"11.8%\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows 13% alcohol, it is card A; if it shows 11.8%, it is card B or card C, which the label cannot tell apart.\",\n  \"indistinguishable\": [\n    [\n      \"B\",\n      \"C\"\n    ]\n  ]\n}",
-    "differences": "The three labels print the same texts (ВИОНЬЕ, РОССИЙСКОЕ ВИНО СУХОЕ БЕЛОЕ, УСАДЬБА МЕЗЫБЬ) with the same embossed tree design; the only visible variation is the vintage year (2023 on A and C, 2024 on B), which is not a card feature because no catalogue name states a year (rule 2a). The only catalogue feature that separates the wines is the alcohol strength: 13 % for card A versus 11.8 % for cards B and C, so alcohol is used as the last-resort feature (rule 10).",
+    "raw_reply": "{\n  \"differences\": \"The only major feature printed on the labels that differs is the vintage year at the bottom: 2023 on Cards A and C, 2024 on Card B. The grape (ВИОНЬЕ), the stated colour and sugar (БЕЛОЕ, ВИНО СУХОЕ) and the line name (УСАДЬБА МЕЗЫБЬ) are identical on all three labels; the alcohol strength (13 % vs 11.8 %) is not shown on the label pictures.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed on the label under the name МЕЗЫБЬ?\",\n      \"answers\": {\n       \"A\": \"2023\",\n       \"B\": \"2024\",\n       \"C\": \"2023\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the vintage 2024, it is card B; if it shows 2023, it is card A or card C, which the label cannot tell apart.\",\n  \"indistinguishable\": [\n    [\"A\", \"C\"]\n  ]\n}",
+    "differences": "The only major feature printed on the labels that differs is the vintage year at the bottom: 2023 on Cards A and C, 2024 on Card B. The grape (ВИОНЬЕ), the stated colour and sugar (БЕЛОЕ, ВИНО СУХОЕ) and the line name (УСАДЬБА МЕЗЫБЬ) are identical on all three labels; the alcohol strength (13 % vs 11.8 %) is not shown on the label pictures.",
     "questions": [
      {
       "id": "q1",
-      "question": "What alcohol strength is printed on the label?",
+      "question": "What vintage year is printed on the label under the name МЕЗЫБЬ?",
       "answers": {
-       "usadba-mezyb-mezyb-vione-beloe-suhoe-13": "13%",
-       "usadba-mezyb-usadba-mezyb-vione-beloe-suhoe-118": "11.8%",
-       "usadba-mezyb-vione-beloe-suhoe-118": "11.8%"
+       "usadba-mezyb-mezyb-vione-beloe-suhoe-13": "2023",
+       "usadba-mezyb-usadba-mezyb-vione-beloe-suhoe-118": "2024",
+       "usadba-mezyb-vione-beloe-suhoe-118": "2023"
       },
-      "kind": "alcohol",
+      "kind": "vintage",
       "valid": true,
       "evidence": {
        "usadba-mezyb-mezyb-vione-beloe-suhoe-13": [
@@ -41665,29 +42206,29 @@
       }
      }
     ],
-    "rule": "If the label shows 13% alcohol, it is card A; if it shows 11.8%, it is card B or card C, which the label cannot tell apart.",
+    "rule": "If the label shows the vintage 2024, it is card B; if it shows 2023, it is card A or card C, which the label cannot tell apart.",
     "indistinguishable": [
      [
-      "usadba-mezyb-usadba-mezyb-vione-beloe-suhoe-118",
+      "usadba-mezyb-mezyb-vione-beloe-suhoe-13",
       "usadba-mezyb-vione-beloe-suhoe-118"
      ]
     ],
     "answer": {
-     "differences": "The three labels print the same texts (ВИОНЬЕ, РОССИЙСКОЕ ВИНО СУХОЕ БЕЛОЕ, УСАДЬБА МЕЗЫБЬ) with the same embossed tree design; the only visible variation is the vintage year (2023 on A and C, 2024 on B), which is not a card feature because no catalogue name states a year (rule 2a). The only catalogue feature that separates the wines is the alcohol strength: 13 % for card A versus 11.8 % for cards B and C, so alcohol is used as the last-resort feature (rule 10).",
+     "differences": "The only major feature printed on the labels that differs is the vintage year at the bottom: 2023 on Cards A and C, 2024 on Card B. The grape (ВИОНЬЕ), the stated colour and sugar (БЕЛОЕ, ВИНО СУХОЕ) and the line name (УСАДЬБА МЕЗЫБЬ) are identical on all three labels; the alcohol strength (13 % vs 11.8 %) is not shown on the label pictures.",
      "questions": [
       {
-       "question": "What alcohol strength is printed on the label?",
+       "question": "What vintage year is printed on the label under the name МЕЗЫБЬ?",
        "answers": {
-        "A": "13%",
-        "B": "11.8%",
-        "C": "11.8%"
+        "A": "2023",
+        "B": "2024",
+        "C": "2023"
        }
       }
      ],
-     "rule": "If the label shows 13% alcohol, it is card A; if it shows 11.8%, it is card B or card C, which the label cannot tell apart.",
+     "rule": "If the label shows the vintage 2024, it is card B; if it shows 2023, it is card A or card C, which the label cannot tell apart.",
      "indistinguishable": [
       [
-       "B",
+       "A",
        "C"
       ]
      ]
@@ -42902,9 +43443,9 @@
      "abrau-dyurso-pino-nuar-krasnoe-suhoe-125"
     ],
     "input_hash": "81934d384c9cbd5f2e84562a3f25c1102b73dd8bc768b8d84a71681cfaf105bd",
-    "inputs_sha": "2f3a89f2ca35d46d",
+    "inputs_sha": "02cd5e56dc4dfd30",
     "note": "",
-    "built_at": "2026-09-28T01:45:20+0300",
+    "built_at": "2026-10-01T11:03:24+0300",
     "vlm": "qwencloud-qwen3.8-max",
     "settings_sha": "12638e6663aca7c3",
     "mode": "sheet",
@@ -42914,32 +43455,62 @@
      "B": "abrau-dyurso-pino-nuar-krasnoe-suhoe-125"
     },
     "max_side": 768,
-    "prompt_tokens_estimate": 3630,
-    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Абрау-Дюрсо Пино Нуар\"; producer \"Абрау-Дюрсо\"; category \"Красное\"; grapes \"Пино Нуар\"; alcohol \"13 %\" (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"РУССКИЙ ВИННЫЙ ДОМ\", \"where\": \"top center of label\"}, {\"text\": \"осн. 1870 году\", \"where\": \"below 'РУССКИЙ ВИННЫЙ ДОМ'\"}, {\"text\": \"Ибрау-Дюрсо\", \"where\": \"center of label\"}, {\"text\": \"ПИНО НУАР\", \"where\": \"below 'Ибрау-Дюрсо'\"}, {\"text\": \"Тираж 10000 / Бут. № 01551\", \"where\": \"below 'ПИНО НУАР'\"}, {\"text\": \"ВИНО СУХОЕ КРАСНОЕ\", \"where\": \"bottom of label\"}], \"numbers\": [{\"value\": \"1870\", \"where\": \"in 'осн. 1870 году'\"}, {\"value\": \"10000\", \"where\": \"in 'Тираж 10000'\"}, {\"value\": \"01551\", \"where\": \"in 'Бут. № 01551'\"}], \"vintage\": null, \"colours\": [\"white\", \"red\"], \"design\": \"The label features a white background with red text and a red double-headed eagle emblem on the left side. The text is arranged in a centered layout with decorative lines above and below the main title.\", \"marks\": [{\"place\": \"left side of label\", \"description\": \"double-headed eagle emblem\"}]}\n\nCard B: name \"Пино Нуар\"; producer \"Абрау-Дюрсо\"; category \"Красное\"; grapes \"Пино Нуар\"; alcohol \"12.5 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"РУССКИЙ ВИННЫЙ ДОМ\", \"where\": \"top center of label\"}, {\"text\": \"Ибрау-Дюрсо\", \"where\": \"center of label\"}, {\"text\": \"ПИНО НУАР\", \"where\": \"below Ибрау-Дюрсо\"}, {\"text\": \"Тираж 10000 / Бут. № 01551\", \"where\": \"below ПИНО НУАР\"}, {\"text\": \"ВИНО СУХОЕ КРАСНОЕ\", \"where\": \"bottom center of label\"}, {\"text\": \"1970\", \"where\": \"below РУССКИЙ ВИННЫЙ ДОМ\"}, {\"text\": \"2024\", \"where\": \"bottom right of label\"}], \"numbers\": [{\"value\": \"1870\", \"where\": \"below РУССКИЙ ВИННЫЙ ДОМ\"}, {\"value\": \"10000\", \"where\": \"in Тираж 10000\"}, {\"value\": \"01551\", \"where\": \"in Бут. № 01551\"}, {\"value\": \"2024\", \"where\": \"bottom right of label\"}], \"vintage\": 2024, \"colours\": [\"white\", \"red\"], \"design\": \"The label features a white background with red text and a red double-headed eagle emblem on the left side. The text is arranged in a structured layout with the brand name prominently displayed in the center.\", \"marks\": [{\"place\": \"left side of label\"}]}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage variants. The catalogue data or the label descriptions state a vintage year for these cards: Card B: 2024, on the label. They state no vintage year for these cards: Card A. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
-    "ms": 48656,
+    "prompt_tokens_estimate": 6208,
+    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Абрау-Дюрсо Пино Нуар\"; producer \"Абрау-Дюрсо\"; category \"Красное\"; grapes \"Пино Нуар\"; alcohol \"13 %\" (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"РУССКИЙ ВИННЫЙ ДОМ\", \"where\": \"top center of label\"}, {\"text\": \"осн. 1870 году\", \"where\": \"below 'РУССКИЙ ВИННЫЙ ДОМ'\"}, {\"text\": \"Ибрау-Дюрсо\", \"where\": \"center of label\"}, {\"text\": \"ПИНО НУАР\", \"where\": \"below 'Ибрау-Дюрсо'\"}, {\"text\": \"Тираж 10000 / Бут. № 01551\", \"where\": \"below 'ПИНО НУАР'\"}, {\"text\": \"ВИНО СУХОЕ КРАСНОЕ\", \"where\": \"bottom of label\"}], \"numbers\": [{\"value\": \"1870\", \"where\": \"in 'осн. 1870 году'\"}, {\"value\": \"10000\", \"where\": \"in 'Тираж 10000'\"}, {\"value\": \"01551\", \"where\": \"in 'Бут. № 01551'\"}], \"vintage\": null, \"colours\": [\"white\", \"red\"], \"design\": \"The label features a white background with red text and a red double-headed eagle emblem on the left side. The text is arranged in a centered layout with decorative lines above and below the main title.\", \"marks\": [{\"place\": \"left side of label\", \"description\": \"double-headed eagle emblem\"}]}\n\nCard B: name \"Пино Нуар\"; producer \"Абрау-Дюрсо\"; category \"Красное\"; grapes \"Пино Нуар\"; alcohol \"12.5 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"РУССКИЙ ВИННЫЙ ДОМ\", \"where\": \"top center of label\"}, {\"text\": \"Ибрау-Дюрсо\", \"where\": \"center of label\"}, {\"text\": \"ПИНО НУАР\", \"where\": \"below Ибрау-Дюрсо\"}, {\"text\": \"Тираж 10000 / Бут. № 01551\", \"where\": \"below ПИНО НУАР\"}, {\"text\": \"ВИНО СУХОЕ КРАСНОЕ\", \"where\": \"bottom center of label\"}, {\"text\": \"1970\", \"where\": \"below РУССКИЙ ВИННЫЙ ДОМ\"}, {\"text\": \"2024\", \"where\": \"bottom right of label\"}], \"numbers\": [{\"value\": \"1870\", \"where\": \"below РУССКИЙ ВИННЫЙ ДОМ\"}, {\"value\": \"10000\", \"where\": \"in Тираж 10000\"}, {\"value\": \"01551\", \"where\": \"in Бут. № 01551\"}, {\"value\": \"2024\", \"where\": \"bottom right of label\"}], \"vintage\": 2024, \"colours\": [\"white\", \"red\"], \"design\": \"The label features a white background with red text and a red double-headed eagle emblem on the left side. The text is arranged in a structured layout with the brand name prominently displayed in the center.\", \"marks\": [{\"place\": \"left side of label\"}]}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage tags. The reviewer tagged the vintage of some cards: Card A: no_year; Card B: 2024. For rule 2a, a tagged year counts as a year of the catalogue name of the card. The tag no_year counts as a name that states no year. Take the expected year of a tagged card from its tag.\n\nVintage variants. The catalogue data or the label descriptions state a vintage year for these cards: Card B: 2024, in a tag. They state no vintage year for these cards: Card A. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "extra_pictures": {
+     "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13": [
+      {
+       "sha256": "1901738c9c5023b694ef88f1e4ec60f09f9b03cecabc55ab6e526c347d27f8ac",
+       "image_type": "full_front",
+       "source_sha256": "31f052e64856d365fd72c06aa5e58e7a8e85f2815324cf5dc00b5e955380f3d0"
+      },
+      {
+       "sha256": "74f38a61ad2083370c525e3bd40e8d297cce76e614dda84669fb1983218e02d8",
+       "image_type": "full_front",
+       "source_sha256": "45a5f4d3ca1dbb5671ed254377cf89a46e8b1d174cdc99a313c95181a3a44d22"
+      },
+      {
+       "sha256": "70c9c91359314cfecee12987afc62a15993ccf7d3c766ca1007cbe1c7ca73e24",
+       "image_type": "full_front",
+       "source_sha256": "7624ece2da8fb99a246e290a7dc7df42fc2afe145294aeda80fdbcad00604032"
+      },
+      {
+       "sha256": "69cb6d3388f763d1de7277f3fafd66387e97fef9b1837d9a8de94bba452873ed",
+       "image_type": "full_back",
+       "source_sha256": "e35a8ce56af32c3ff8a9ce506d60957c0db9bb28c4b79214336fe40b0a88721b"
+      },
+      {
+       "sha256": "cce83f55e55511c2bb2a753e7ce6f936282729e9e5e85364471226f9eeb36420",
+       "image_type": "label_back",
+       "source_sha256": "31871fb6d98595844cdf5d151d377e9a957528ba008a716e8ee2bfc630f33e54"
+      }
+     ]
+    },
+    "extras_dropped": [],
+    "ms": 65269,
     "usage": {
-     "prompt_tokens": 2873,
-     "total_tokens": 5387,
-     "completion_tokens": 2514,
+     "prompt_tokens": 5462,
+     "total_tokens": 8714,
+     "completion_tokens": 3252,
      "prompt_tokens_details": {
-      "cached_tokens": 0,
-      "image_tokens": 964,
-      "text_tokens": 1909
+      "cached_tokens": 2048,
+      "image_tokens": 3374,
+      "text_tokens": 2088
      },
      "completion_tokens_details": {
-      "reasoning_tokens": 2280,
-      "text_tokens": 233
+      "reasoning_tokens": 3029,
+      "text_tokens": 222
      }
     },
     "model": "qwen3.8-max",
     "cached": false,
     "finish_reason": "stop",
-    "raw_reply": "{\n  \"differences\": \"Card B's label carries an extra vintage line under 'ВИНО СУХОЕ КРАСНОЕ' ('урож. 2024 года', year 2024); Card A's label has no vintage year at all. All other printed features (brand 'Абрау-Дюрсо', grape 'ПИНО НУАР', 'ВИНО СУХОЕ КРАСНОЕ', 'осн. 1870 году') are identical.\",\n  \"questions\": [\n    {\n      \"question\": \"Какой год урожая (винтаж) напечатан на этикетке?\",\n      \"answers\": {\n       \"A\": \"other\",\n       \"B\": \"2024\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the vintage year 2024 (line 'урож. 2024 года'), it is card B; if the label shows no vintage year, it is card A.\",\n  \"indistinguishable\": []\n}",
-    "differences": "Card B's label carries an extra vintage line under 'ВИНО СУХОЕ КРАСНОЕ' ('урож. 2024 года', year 2024); Card A's label has no vintage year at all. All other printed features (brand 'Абрау-Дюрсо', grape 'ПИНО НУАР', 'ВИНО СУХОЕ КРАСНОЕ', 'осн. 1870 году') are identical.",
+    "raw_reply": "{\n  \"differences\": \"The only major difference is the vintage year line on the label: Card B carries the vintage 2024, while Card A is the wine of every other vintage (its pictures show 2020, 2025 or no year line at all). All other major features (grape Pinot Noir, dry red wine, name texts) are identical on both labels.\",\n  \"questions\": [\n    {\n      \"question\": \"Which vintage year is printed on the label (in the line 'урож. ... года' below 'ВИНО СУХОЕ КРАСНОЕ')?\",\n      \"answers\": {\n       \"A\": \"other\",\n       \"B\": \"2024\"\n      }\n    }\n  ],\n  \"rule\": \"If the label states the vintage year 2024, it is card B; if it states any other year or no year at all, it is card A.\",\n  \"indistinguishable\": []\n}",
+    "differences": "The only major difference is the vintage year line on the label: Card B carries the vintage 2024, while Card A is the wine of every other vintage (its pictures show 2020, 2025 or no year line at all). All other major features (grape Pinot Noir, dry red wine, name texts) are identical on both labels.",
     "questions": [
      {
       "id": "q1",
-      "question": "Какой год урожая (винтаж) напечатан на этикетке?",
+      "question": "Which vintage year is printed on the label (in the line 'урож. ... года' below 'ВИНО СУХОЕ КРАСНОЕ')?",
       "answers": {
        "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13": "other",
        "abrau-dyurso-pino-nuar-krasnoe-suhoe-125": "2024"
@@ -42948,7 +43519,12 @@
       "valid": true,
       "evidence": {
        "abrau-dyurso-abrau-dyurso-pino-nuar-krasnoe-suhoe-13": [
-        "4cf17a635ad3d2a61de3eb51769926d1da87d8c3002fe1f0e7d821663ae8aaf2"
+        "4cf17a635ad3d2a61de3eb51769926d1da87d8c3002fe1f0e7d821663ae8aaf2",
+        "1901738c9c5023b694ef88f1e4ec60f09f9b03cecabc55ab6e526c347d27f8ac",
+        "74f38a61ad2083370c525e3bd40e8d297cce76e614dda84669fb1983218e02d8",
+        "70c9c91359314cfecee12987afc62a15993ccf7d3c766ca1007cbe1c7ca73e24",
+        "69cb6d3388f763d1de7277f3fafd66387e97fef9b1837d9a8de94bba452873ed",
+        "cce83f55e55511c2bb2a753e7ce6f936282729e9e5e85364471226f9eeb36420"
        ],
        "abrau-dyurso-pino-nuar-krasnoe-suhoe-125": [
         "85c3537498259b24139d7ecd14ee52bfd77733a0d26db84528297c1adfe9b8c1"
@@ -42956,20 +43532,20 @@
       }
      }
     ],
-    "rule": "If the label shows the vintage year 2024 (line 'урож. 2024 года'), it is card B; if the label shows no vintage year, it is card A.",
+    "rule": "If the label states the vintage year 2024, it is card B; if it states any other year or no year at all, it is card A.",
     "indistinguishable": [],
     "answer": {
-     "differences": "Card B's label carries an extra vintage line under 'ВИНО СУХОЕ КРАСНОЕ' ('урож. 2024 года', year 2024); Card A's label has no vintage year at all. All other printed features (brand 'Абрау-Дюрсо', grape 'ПИНО НУАР', 'ВИНО СУХОЕ КРАСНОЕ', 'осн. 1870 году') are identical.",
+     "differences": "The only major difference is the vintage year line on the label: Card B carries the vintage 2024, while Card A is the wine of every other vintage (its pictures show 2020, 2025 or no year line at all). All other major features (grape Pinot Noir, dry red wine, name texts) are identical on both labels.",
      "questions": [
       {
-       "question": "Какой год урожая (винтаж) напечатан на этикетке?",
+       "question": "Which vintage year is printed on the label (in the line 'урож. ... года' below 'ВИНО СУХОЕ КРАСНОЕ')?",
        "answers": {
         "A": "other",
         "B": "2024"
        }
       }
      ],
-     "rule": "If the label shows the vintage year 2024 (line 'урож. 2024 года'), it is card B; if the label shows no vintage year, it is card A.",
+     "rule": "If the label states the vintage year 2024, it is card B; if it states any other year or no year at all, it is card A.",
      "indistinguishable": []
     }
    },
@@ -43729,9 +44305,9 @@
      "aratti-kaberne-po-belomu-1"
     ],
     "input_hash": "81934d384c9cbd5f2e84562a3f25c1102b73dd8bc768b8d84a71681cfaf105bd",
-    "inputs_sha": "7aabbc1763c5ce2e",
+    "inputs_sha": "f44767d57cebea85",
     "note": "The card with the category Розовое (aratti-kaberne-po-belomu-1) is sold as vintage 2024. Its label exists in two versions: one prints ПОЛУСУХОЕ under the year 2024, and one prints no sugar level. The card with the category Красное (aratti-kaberne-po-belomu) shows the vintage 2023 on its catalogue label. A label without ПОЛУСУХОЕ does not identify either card. Use the year printed on the label: 2024 is the card with the category Розовое, 2023 is the card with the category Красное. ПОЛУСУХОЕ on the label is the card with the category Розовое.",
-    "built_at": "2026-09-29T23:34:03+0300",
+    "built_at": "2026-10-01T11:04:30+0300",
     "vlm": "qwencloud-qwen3.8-max",
     "settings_sha": "12638e6663aca7c3",
     "mode": "sheet",
@@ -43741,28 +44317,28 @@
      "B": "aratti-kaberne-po-belomu-1"
     },
     "max_side": 768,
-    "prompt_tokens_estimate": 3453,
-    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"АРАТТИ Каберне по-белому 2023\"; producer \"АРАТТИ\"; category \"Красное\"; grapes \"Каберне Совиньон\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"СЕМЕЙНАЯ ВИНОДЕЛЬНЯ\", \"where\": \"above the main brand name\"}, {\"text\": \"АРАТТИ\", \"where\": \"center of the label\"}, {\"text\": \"КАБЕРНЕ ПО-БЕЛОМУ\", \"where\": \"below the brand name\"}, {\"text\": \"2023\", \"where\": \"bottom of the label\"}], \"numbers\": [{\"value\": \"2023\", \"where\": \"bottom of the label\"}], \"vintage\": \"2023\", \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with a white background and black text. At the top, there is an illustration of a horse-drawn carriage. The brand name 'АРАТТИ' is prominently displayed in the center, with the text 'СЕМЕЙНАЯ ВИНОДЕЛЬНЯ' above it and 'КАБЕРНЕ ПО-БЕЛОМУ' below it. The year '2023' is printed at the bottom.\", \"marks\": []}\n\nCard B: name \"АРАТТИ Каберне по-белому 2024\"; producer \"АРАТТИ\"; category \"Розовое\"; grapes \"Каберне Совиньон\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"СЕМЕЙНАЯ ВИНОДЕЛЬНЯ\", \"where\": \"top of label\"}, {\"text\": \"АРАТТИ\", \"where\": \"center of label\"}, {\"text\": \"КАБЕРНЕ ПО-БЕЛОМУ\", \"where\": \"below 'АРАТТИ'\"}, {\"text\": \"2024\", \"where\": \"below 'КАБЕРНЕ ПО-БЕЛОМУ'\"}, {\"text\": \"ПОЛУСУХОЕ\", \"where\": \"bottom of label\"}], \"numbers\": [{\"value\": \"2024\", \"where\": \"below 'КАБЕРНЕ ПО-БЕЛОМУ'\"}], \"vintage\": \"2024\", \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with a white background and black text. At the top, there is an illustration of a horse-drawn carriage. The text is arranged in a vertical hierarchy, with 'СЕМЕЙНАЯ ВИНОДЕЛЬНЯ' at the top, followed by the large 'АРАТТИ' in the center, then 'КАБЕРНЕ ПО-БЕЛОМУ', the year '2024', and finally 'ПОЛУСУХОЕ' at the bottom.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nThe card with the category Розовое (aratti-kaberne-po-belomu-1) is sold as vintage 2024. Its label exists in two versions: one prints ПОЛУСУХОЕ under the year 2024, and one prints no sugar level. The card with the category Красное (aratti-kaberne-po-belomu) shows the vintage 2023 on its catalogue label. A label without ПОЛУСУХОЕ does not identify either card. Use the year printed on the label: 2024 is the card with the category Розовое, 2023 is the card with the category Красное. ПОЛУСУХОЕ on the label is the card with the category Розовое.\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
-    "ms": 58049,
+    "prompt_tokens_estimate": 3564,
+    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"АРАТТИ Каберне по-белому 2023\"; producer \"АРАТТИ\"; category \"Красное\"; grapes \"Каберне Совиньон\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"СЕМЕЙНАЯ ВИНОДЕЛЬНЯ\", \"where\": \"above the main brand name\"}, {\"text\": \"АРАТТИ\", \"where\": \"center of the label\"}, {\"text\": \"КАБЕРНЕ ПО-БЕЛОМУ\", \"where\": \"below the brand name\"}, {\"text\": \"2023\", \"where\": \"bottom of the label\"}], \"numbers\": [{\"value\": \"2023\", \"where\": \"bottom of the label\"}], \"vintage\": \"2023\", \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with a white background and black text. At the top, there is an illustration of a horse-drawn carriage. The brand name 'АРАТТИ' is prominently displayed in the center, with the text 'СЕМЕЙНАЯ ВИНОДЕЛЬНЯ' above it and 'КАБЕРНЕ ПО-БЕЛОМУ' below it. The year '2023' is printed at the bottom.\", \"marks\": []}\n\nCard B: name \"АРАТТИ Каберне по-белому 2024\"; producer \"АРАТТИ\"; category \"Розовое\"; grapes \"Каберне Совиньон\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"СЕМЕЙНАЯ ВИНОДЕЛЬНЯ\", \"where\": \"top of label\"}, {\"text\": \"АРАТТИ\", \"where\": \"center of label\"}, {\"text\": \"КАБЕРНЕ ПО-БЕЛОМУ\", \"where\": \"below 'АРАТТИ'\"}, {\"text\": \"2024\", \"where\": \"below 'КАБЕРНЕ ПО-БЕЛОМУ'\"}, {\"text\": \"ПОЛУСУХОЕ\", \"where\": \"bottom of label\"}], \"numbers\": [{\"value\": \"2024\", \"where\": \"below 'КАБЕРНЕ ПО-БЕЛОМУ'\"}], \"vintage\": \"2024\", \"colours\": [\"white\", \"black\"], \"design\": \"The label features a minimalist design with a white background and black text. At the top, there is an illustration of a horse-drawn carriage. The text is arranged in a vertical hierarchy, with 'СЕМЕЙНАЯ ВИНОДЕЛЬНЯ' at the top, followed by the large 'АРАТТИ' in the center, then 'КАБЕРНЕ ПО-БЕЛОМУ', the year '2024', and finally 'ПОЛУСУХОЕ' at the bottom.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nThe card with the category Розовое (aratti-kaberne-po-belomu-1) is sold as vintage 2024. Its label exists in two versions: one prints ПОЛУСУХОЕ under the year 2024, and one prints no sugar level. The card with the category Красное (aratti-kaberne-po-belomu) shows the vintage 2023 on its catalogue label. A label without ПОЛУСУХОЕ does not identify either card. Use the year printed on the label: 2024 is the card with the category Розовое, 2023 is the card with the category Красное. ПОЛУСУХОЕ on the label is the card with the category Розовое.\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage tags. The reviewer tagged the vintage of some cards: Card A: 2023; Card B: 2024. For rule 2a, a tagged year counts as a year of the catalogue name of the card. The tag no_year counts as a name that states no year. Take the expected year of a tagged card from its tag.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "ms": 46853,
     "usage": {
-     "prompt_tokens": 2689,
-     "total_tokens": 5671,
-     "completion_tokens": 2982,
+     "prompt_tokens": 2766,
+     "total_tokens": 5510,
+     "completion_tokens": 2744,
      "prompt_tokens_details": {
-      "cached_tokens": 0,
+      "cached_tokens": 1024,
       "image_tokens": 916,
-      "text_tokens": 1773
+      "text_tokens": 1850
      },
      "completion_tokens_details": {
-      "reasoning_tokens": 2715,
-      "text_tokens": 266
+      "reasoning_tokens": 2494,
+      "text_tokens": 249
      }
     },
     "model": "qwen3.8-max",
     "cached": false,
     "finish_reason": "stop",
-    "raw_reply": "{\n  \"differences\": \"The vintage year printed at the bottom of the label: 2023 on card A, 2024 on card B. Card B's label can also print the sugar level ПОЛУСУХОЕ under the year, which card A's label never shows; a label without ПОЛУСУХОЕ alone does not identify a card, so the year is the decisive feature.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed on the label?\",\n      \"answers\": {\n       \"A\": \"2023\",\n       \"B\": \"2024\"\n      }\n    },\n    {\n      \"question\": \"What sugar level is printed on the label (e.g. ПОЛУСУХОЕ)?\",\n      \"answers\": {\n       \"A\": null,\n       \"B\": \"semi-dry\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the year 2024 or the sugar level semi-dry (ПОЛУСУХОЕ), it is card B; if it shows the year 2023, it is card A.\",\n  \"indistinguishable\": []\n}",
-    "differences": "The vintage year printed at the bottom of the label: 2023 on card A, 2024 on card B. Card B's label can also print the sugar level ПОЛУСУХОЕ under the year, which card A's label never shows; a label without ПОЛУСУХОЕ alone does not identify a card, so the year is the decisive feature.",
+    "raw_reply": "{\n  \"differences\": \"The vintage year printed at the bottom of the label (2023 on card A, 2024 on card B) and the sugar level word ПОЛУСУХОЕ (semi-dry) printed under the year only on card B; card A never prints a sugar level.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed on the label?\",\n      \"answers\": {\n       \"A\": \"2023\",\n       \"B\": \"2024\"\n      }\n    },\n    {\n      \"question\": \"What sugar level (dry, semi-dry, semi-sweet, sweet) is printed on the label?\",\n      \"answers\": {\n       \"A\": null,\n       \"B\": \"semi-dry\"\n      }\n    }\n  ],\n  \"rule\": \"If the label prints the year 2023, it is card A; if it prints the year 2024 or the word ПОЛУСУХОЕ (semi-dry), it is card B.\",\n  \"indistinguishable\": []\n}",
+    "differences": "The vintage year printed at the bottom of the label (2023 on card A, 2024 on card B) and the sugar level word ПОЛУСУХОЕ (semi-dry) printed under the year only on card B; card A never prints a sugar level.",
     "questions": [
      {
       "id": "q1",
@@ -43784,7 +44360,7 @@
      },
      {
       "id": "q2",
-      "question": "What sugar level is printed on the label (e.g. ПОЛУСУХОЕ)?",
+      "question": "What sugar level (dry, semi-dry, semi-sweet, sweet) is printed on the label?",
       "answers": {
        "aratti-kaberne-po-belomu": null,
        "aratti-kaberne-po-belomu-1": "semi-dry"
@@ -43798,10 +44374,10 @@
       }
      }
     ],
-    "rule": "If the label shows the year 2024 or the sugar level semi-dry (ПОЛУСУХОЕ), it is card B; if it shows the year 2023, it is card A.",
+    "rule": "If the label prints the year 2023, it is card A; if it prints the year 2024 or the word ПОЛУСУХОЕ (semi-dry), it is card B.",
     "indistinguishable": [],
     "answer": {
-     "differences": "The vintage year printed at the bottom of the label: 2023 on card A, 2024 on card B. Card B's label can also print the sugar level ПОЛУСУХОЕ under the year, which card A's label never shows; a label without ПОЛУСУХОЕ alone does not identify a card, so the year is the decisive feature.",
+     "differences": "The vintage year printed at the bottom of the label (2023 on card A, 2024 on card B) and the sugar level word ПОЛУСУХОЕ (semi-dry) printed under the year only on card B; card A never prints a sugar level.",
      "questions": [
       {
        "question": "What vintage year is printed on the label?",
@@ -43811,14 +44387,14 @@
        }
       },
       {
-       "question": "What sugar level is printed on the label (e.g. ПОЛУСУХОЕ)?",
+       "question": "What sugar level (dry, semi-dry, semi-sweet, sweet) is printed on the label?",
        "answers": {
         "A": null,
         "B": "semi-dry"
        }
       }
      ],
-     "rule": "If the label shows the year 2024 or the sugar level semi-dry (ПОЛУСУХОЕ), it is card B; if it shows the year 2023, it is card A.",
+     "rule": "If the label prints the year 2023, it is card A; if it prints the year 2024 or the word ПОЛУСУХОЕ (semi-dry), it is card B.",
      "indistinguishable": []
     }
    },
@@ -47636,9 +48212,9 @@
      "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143"
     ],
     "input_hash": "81934d384c9cbd5f2e84562a3f25c1102b73dd8bc768b8d84a71681cfaf105bd",
-    "inputs_sha": "59c5df036f391ff2",
+    "inputs_sha": "5932e27324d5df45",
     "note": "",
-    "built_at": "2026-09-28T01:49:59+0300",
+    "built_at": "2026-10-01T11:05:18+0300",
     "vlm": "qwencloud-qwen3.8-max",
     "settings_sha": "12638e6663aca7c3",
     "mode": "sheet",
@@ -47648,32 +48224,52 @@
      "B": "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143"
     },
     "max_side": 768,
-    "prompt_tokens_estimate": 3327,
-    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Каберне Совиньон Резерв\"; producer \"Golubitskoe Estate\"; category \"Красное\"; grapes \"Каберне Совиньон\"; alcohol \"12.5 %\" (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"ESTATE\", \"where\": \"neck label, top left\"}, {\"text\": \"GOLUBITSKOE ESTATE\", \"where\": \"main label, center\"}, {\"text\": \"CABERNET SAUVIGNON\", \"where\": \"main label, below estate name\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"main label, bottom\"}, {\"text\": \"TAMAGNE\", \"where\": \"main label, very bottom\"}, {\"text\": \"RESERVE\", \"where\": \"main label, above central emblem\"}], \"numbers\": [], \"vintage\": null, \"colours\": [\"black\", \"gold\"], \"design\": \"The label features a black background with gold accents. The central design is an ornate circular emblem with a stylized bird motif surrounded by floral patterns. The text is arranged in a hierarchical manner with 'RESERVE' at the top, followed by the estate name, grape variety, and origin details. The overall design is elegant and sophisticated.\", \"marks\": [{\"place\": \"neck label\"}]}\n\nCard B: name \"Каберне Совиньон Резерв\"; producer \"Golubitskoe Estate\"; category \"Красное\"; grapes \"Каберне Совиньон\"; alcohol \"14.3 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"RESERVE\", \"where\": \"top of the label\"}, {\"text\": \"GOLUBITSKOE\", \"where\": \"middle of the label\"}, {\"text\": \"ESTATE\", \"where\": \"middle of the label\"}, {\"text\": \"CABERNET\", \"where\": \"lower middle of the label\"}, {\"text\": \"SAUVIGNON\", \"where\": \"lower middle of the label\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"bottom of the label\"}, {\"text\": \"TAMAGNE\", \"where\": \"bottom of the label\"}], \"numbers\": [{\"value\": \"2022\", \"where\": \"bottom of the label\"}], \"vintage\": \"2022\", \"colours\": [\"black\", \"gold\"], \"design\": \"The label features a central ornate design with a bird motif surrounded by floral patterns. The text is arranged in a vertical layout with 'RESERVE' at the top, followed by the estate name, grape variety, and additional details at the bottom.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage variants. The catalogue data or the label descriptions state a vintage year for these cards: Card B: 2022, on the label. They state no vintage year for these cards: Card A. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
-    "ms": 57920,
+    "prompt_tokens_estimate": 4618,
+    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Каберне Совиньон Резерв\"; producer \"Golubitskoe Estate\"; category \"Красное\"; grapes \"Каберне Совиньон\"; alcohol \"12.5 %\" (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"ESTATE\", \"where\": \"neck label, top left\"}, {\"text\": \"GOLUBITSKOE ESTATE\", \"where\": \"main label, center\"}, {\"text\": \"CABERNET SAUVIGNON\", \"where\": \"main label, below estate name\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"main label, bottom\"}, {\"text\": \"TAMAGNE\", \"where\": \"main label, very bottom\"}, {\"text\": \"RESERVE\", \"where\": \"main label, above central emblem\"}], \"numbers\": [], \"vintage\": null, \"colours\": [\"black\", \"gold\"], \"design\": \"The label features a black background with gold accents. The central design is an ornate circular emblem with a stylized bird motif surrounded by floral patterns. The text is arranged in a hierarchical manner with 'RESERVE' at the top, followed by the estate name, grape variety, and origin details. The overall design is elegant and sophisticated.\", \"marks\": [{\"place\": \"neck label\"}]}\n\nCard B: name \"Каберне Совиньон Резерв\"; producer \"Golubitskoe Estate\"; category \"Красное\"; grapes \"Каберне Совиньон\"; alcohol \"14.3 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"RESERVE\", \"where\": \"top of the label\"}, {\"text\": \"GOLUBITSKOE\", \"where\": \"middle of the label\"}, {\"text\": \"ESTATE\", \"where\": \"middle of the label\"}, {\"text\": \"CABERNET\", \"where\": \"lower middle of the label\"}, {\"text\": \"SAUVIGNON\", \"where\": \"lower middle of the label\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"bottom of the label\"}, {\"text\": \"TAMAGNE\", \"where\": \"bottom of the label\"}], \"numbers\": [{\"value\": \"2022\", \"where\": \"bottom of the label\"}], \"vintage\": \"2022\", \"colours\": [\"black\", \"gold\"], \"design\": \"The label features a central ornate design with a bird motif surrounded by floral patterns. The text is arranged in a vertical layout with 'RESERVE' at the top, followed by the estate name, grape variety, and additional details at the bottom.\", \"marks\": []}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage tags. The reviewer tagged the vintage of some cards: Card B: 2022. For rule 2a, a tagged year counts as a year of the catalogue name of the card. The tag no_year counts as a name that states no year. Take the expected year of a tagged card from its tag.\n\nVintage variants. The catalogue data or the label descriptions state a vintage year for these cards: Card B: 2022, in a tag. They state no vintage year for these cards: Card A. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "extra_pictures": {
+     "golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125": [
+      {
+       "sha256": "83bdb9920af9ce6315e3ec90412128f81fdd088595871b26975051aec62f69d3",
+       "image_type": "full_front",
+       "source_sha256": "b0bcb506c846809ccf672595f9c3c961af4c8a3499cded6de3cd21733c46d03e"
+      },
+      {
+       "sha256": "e0bddb24c440553d7b4c371b84ad86f827e0c9e8665986e9c242fb9241644b13",
+       "image_type": "full_back",
+       "source_sha256": "bc58787b62f35649512d48464adf43cc6b71d933596856135d626c831d1480e3"
+      },
+      {
+       "sha256": "36feb0d1f467e17bb1af481a4ea7c4b0833956aed9747c37d2d6d576c3315013",
+       "image_type": "label_back",
+       "source_sha256": "cc7d52967b3784be50096710a137df6a1658a28977ef05bcc79caae7db324b67"
+      }
+     ]
+    },
+    "extras_dropped": [],
+    "ms": 65194,
     "usage": {
-     "completion_tokens": 2852,
+     "completion_tokens": 3276,
      "completion_tokens_details": {
-      "reasoning_tokens": 2672,
-      "text_tokens": 179
+      "reasoning_tokens": 3010,
+      "text_tokens": 265
      },
-     "prompt_tokens": 2413,
+     "prompt_tokens": 3726,
      "prompt_tokens_details": {
       "cached_tokens": 0,
-      "image_tokens": 700,
-      "text_tokens": 1713
+      "image_tokens": 1882,
+      "text_tokens": 1844
      },
-     "total_tokens": 5265
+     "total_tokens": 7002
     },
     "model": "qwen3.8-max",
     "cached": true,
     "finish_reason": "stop",
-    "raw_reply": "{\n  \"differences\": \"Only the vintage year: Card B's label prints the year 2022 at the bottom (below 'TAMAGNE'), while Card A's label shows no vintage year at all. All other major features (name, producer, grape, reserve mark) are identical on both labels.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed on the label?\",\n      \"answers\": {\n       \"A\": \"other\",\n       \"B\": \"2022\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the vintage year 2022, it is card B; if the label shows no vintage year (or any other year), it is card A.\",\n  \"indistinguishable\": []\n}",
-    "differences": "Only the vintage year: Card B's label prints the year 2022 at the bottom (below 'TAMAGNE'), while Card A's label shows no vintage year at all. All other major features (name, producer, grape, reserve mark) are identical on both labels.",
+    "raw_reply": "{\n  \"differences\": \"The only major difference is the vintage year printed at the bottom of the front label under 'TAMAGNE': Card B's label states 2022 (confirmed by its tag and photo), while Card A's catalogue data states no year and its photos show 2020, i.e. a vintage other than 2022. The catalogue alcohol values (12.5% vs 14.3%) merely follow the vintage and are not used. All other major features (producer, RESERVE line mark, grape Cabernet Sauvignon, red dry wine, 0.75 L) are identical.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed on the label below the word 'TAMAGNE'?\",\n      \"answers\": {\n       \"A\": \"other\",\n       \"B\": \"2022\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the vintage 2022, it is card B; if it shows another year (such as 2020) or no year at all, it is card A.\",\n  \"indistinguishable\": []\n}",
+    "differences": "The only major difference is the vintage year printed at the bottom of the front label under 'TAMAGNE': Card B's label states 2022 (confirmed by its tag and photo), while Card A's catalogue data states no year and its photos show 2020, i.e. a vintage other than 2022. The catalogue alcohol values (12.5% vs 14.3%) merely follow the vintage and are not used. All other major features (producer, RESERVE line mark, grape Cabernet Sauvignon, red dry wine, 0.75 L) are identical.",
     "questions": [
      {
       "id": "q1",
-      "question": "What vintage year is printed on the label?",
+      "question": "What vintage year is printed on the label below the word 'TAMAGNE'?",
       "answers": {
        "golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125": "other",
        "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143": "2022"
@@ -47682,7 +48278,10 @@
       "valid": true,
       "evidence": {
        "golubitskoe-estate-kaberne-sovinon-rezerv-krasnoe-suhoe-125": [
-        "daed656ebeadcefcd5e77fe4ae04388061be67207b71e56b4c9c3df2d7a77110"
+        "daed656ebeadcefcd5e77fe4ae04388061be67207b71e56b4c9c3df2d7a77110",
+        "83bdb9920af9ce6315e3ec90412128f81fdd088595871b26975051aec62f69d3",
+        "e0bddb24c440553d7b4c371b84ad86f827e0c9e8665986e9c242fb9241644b13",
+        "36feb0d1f467e17bb1af481a4ea7c4b0833956aed9747c37d2d6d576c3315013"
        ],
        "pomeste-golubitskoe-kaberne-sovinon-rezerv-krasnoe-suhoe-143": [
         "197764bd9f64f0914ccaf96b1cab781120c96af8537b7c8dadbf9c7febc55179"
@@ -47690,20 +48289,20 @@
       }
      }
     ],
-    "rule": "If the label shows the vintage year 2022, it is card B; if the label shows no vintage year (or any other year), it is card A.",
+    "rule": "If the label shows the vintage 2022, it is card B; if it shows another year (such as 2020) or no year at all, it is card A.",
     "indistinguishable": [],
     "answer": {
-     "differences": "Only the vintage year: Card B's label prints the year 2022 at the bottom (below 'TAMAGNE'), while Card A's label shows no vintage year at all. All other major features (name, producer, grape, reserve mark) are identical on both labels.",
+     "differences": "The only major difference is the vintage year printed at the bottom of the front label under 'TAMAGNE': Card B's label states 2022 (confirmed by its tag and photo), while Card A's catalogue data states no year and its photos show 2020, i.e. a vintage other than 2022. The catalogue alcohol values (12.5% vs 14.3%) merely follow the vintage and are not used. All other major features (producer, RESERVE line mark, grape Cabernet Sauvignon, red dry wine, 0.75 L) are identical.",
      "questions": [
       {
-       "question": "What vintage year is printed on the label?",
+       "question": "What vintage year is printed on the label below the word 'TAMAGNE'?",
        "answers": {
         "A": "other",
         "B": "2022"
        }
       }
      ],
-     "rule": "If the label shows the vintage year 2022, it is card B; if the label shows no vintage year (or any other year), it is card A.",
+     "rule": "If the label shows the vintage 2022, it is card B; if it shows another year (such as 2020) or no year at all, it is card A.",
      "indistinguishable": []
     }
    },
@@ -47792,9 +48391,9 @@
      "golubitskoe-estate-risling-beloe-suhoe-125"
     ],
     "input_hash": "81934d384c9cbd5f2e84562a3f25c1102b73dd8bc768b8d84a71681cfaf105bd",
-    "inputs_sha": "fb43483ecc0d5998",
+    "inputs_sha": "15b20423a4693321",
     "note": "",
-    "built_at": "2026-09-28T01:49:59+0300",
+    "built_at": "2026-10-01T11:05:19+0300",
     "vlm": "qwencloud-qwen3.8-max",
     "settings_sha": "12638e6663aca7c3",
     "mode": "sheet",
@@ -47804,32 +48403,67 @@
      "B": "golubitskoe-estate-risling-beloe-suhoe-125"
     },
     "max_side": 768,
-    "prompt_tokens_estimate": 3498,
-    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Golubitskoe Estate Рислинг\"; producer \"Golubitskoe Estate\"; category \"Белое\"; grapes \"Рислинг\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [\"GOLUBITSKOE\", \"ESTATE\", \"RIESLING\", \"GOLUBITSKAYA STRELKA\", \"TAMAGNE\"], \"numbers\": [], \"vintage\": null, \"colours\": [\"white\", \"green\", \"black\"], \"design\": \"The label is a white rectangular design with a subtle patterned background. The text is arranged in a clean, modern layout with the producer name at the top, followed by the grape variety in the center, and the vineyard name and region at the bottom. A green dove logo is prominently displayed in the center of the label.\", \"marks\": [{\"place\": \"neck\"}, {\"place\": \"center of label\"}]}\n\nCard B: name \"Рислинг\"; producer \"Golubitskoe Estate\"; category \"Белое\"; grapes \"Рислинг\"; alcohol \"12.5 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"GOLUBITSKOE ESTATE\", \"where\": \"top of label\"}, {\"text\": \"RIESLING\", \"where\": \"middle of label\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"bottom of label\"}, {\"text\": \"TAMAGNE\", \"where\": \"bottom of label\"}, {\"text\": \"2021\", \"where\": \"bottom right of label\"}], \"numbers\": [{\"value\": \"2021\", \"where\": \"bottom right of label\"}], \"vintage\": 2021, \"colours\": [\"white\", \"green\", \"black\"], \"design\": \"The label features a minimalist design with a white background and green text. The top section displays the producer's name 'GOLUBITSKOE ESTATE' in bold, uppercase letters. Below this, there is a stylized green bird logo. The middle section prominently features the word 'RIESLING' in large, uppercase letters. At the bottom, the text 'GOLUBITSKAYA STRELKA' and 'TAMAGNE' are written in smaller uppercase letters, followed by the year '2021' on the right side.\", \"marks\": [{\"place\": \"neck of the bottle\", \"description\": \"Green bird logo\"}]}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage variants. The catalogue data or the label descriptions state a vintage year for these cards: Card B: 2021, on the label. They state no vintage year for these cards: Card A. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
-    "ms": 56818,
+    "prompt_tokens_estimate": 6297,
+    "prompt": "You see the label pictures of 2 wine cards, Card A to Card B. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Golubitskoe Estate Рислинг\"; producer \"Golubitskoe Estate\"; category \"Белое\"; grapes \"Рислинг\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [\"GOLUBITSKOE\", \"ESTATE\", \"RIESLING\", \"GOLUBITSKAYA STRELKA\", \"TAMAGNE\"], \"numbers\": [], \"vintage\": null, \"colours\": [\"white\", \"green\", \"black\"], \"design\": \"The label is a white rectangular design with a subtle patterned background. The text is arranged in a clean, modern layout with the producer name at the top, followed by the grape variety in the center, and the vineyard name and region at the bottom. A green dove logo is prominently displayed in the center of the label.\", \"marks\": [{\"place\": \"neck\"}, {\"place\": \"center of label\"}]}\n\nCard B: name \"Рислинг\"; producer \"Golubitskoe Estate\"; category \"Белое\"; grapes \"Рислинг\"; alcohol \"12.5 %\" (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"GOLUBITSKOE ESTATE\", \"where\": \"top of label\"}, {\"text\": \"RIESLING\", \"where\": \"middle of label\"}, {\"text\": \"GOLUBITSKAYA STRELKA\", \"where\": \"bottom of label\"}, {\"text\": \"TAMAGNE\", \"where\": \"bottom of label\"}, {\"text\": \"2021\", \"where\": \"bottom right of label\"}], \"numbers\": [{\"value\": \"2021\", \"where\": \"bottom right of label\"}], \"vintage\": 2021, \"colours\": [\"white\", \"green\", \"black\"], \"design\": \"The label features a minimalist design with a white background and green text. The top section displays the producer's name 'GOLUBITSKOE ESTATE' in bold, uppercase letters. Below this, there is a stylized green bird logo. The middle section prominently features the word 'RIESLING' in large, uppercase letters. At the bottom, the text 'GOLUBITSKAYA STRELKA' and 'TAMAGNE' are written in smaller uppercase letters, followed by the year '2021' on the right side.\", \"marks\": [{\"place\": \"neck of the bottle\", \"description\": \"Green bird logo\"}]}\n\nNotes of the reviewer about these cards:\nnone\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nVintage tags. The reviewer tagged the vintage of some cards: Card A: no_year; Card B: 2021. For rule 2a, a tagged year counts as a year of the catalogue name of the card. The tag no_year counts as a name that states no year. Take the expected year of a tagged card from its tag.\n\nVintage variants. The catalogue data or the label descriptions state a vintage year for these cards: Card B: 2021, in a tag. They state no vintage year for these cards: Card A. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "extra_pictures": {
+     "golubitskoe-estate-risling": [
+      {
+       "sha256": "fb15f964451626ae894949dd5c0a79fb9c4850d9ad8d7945f6765fafb742bed3",
+       "image_type": "full_front",
+       "source_sha256": "164729328593f7883d12f2fa712ea22e3f9b970c4b7a7d548ab322703c0e8153"
+      },
+      {
+       "sha256": "576d492b56c6658a35882ef4a2b90c07af7c1e7d778cd7a261593088c31b1a5b",
+       "image_type": "full_front",
+       "source_sha256": "04308dad4b3649f4237acad9490ce3c2b9520d29103733acb02190d69fa20ef0"
+      },
+      {
+       "sha256": "0837ba695a51072bf8a6e1913ff5713a9d353ae1a5928cc38f647cebf9902832",
+       "image_type": "full_front",
+       "source_sha256": "fcaa4172e8f29833562bba69181e80097cc93b0d00c13c9385adb67db8a27d2a"
+      },
+      {
+       "sha256": "815848d70dc75c3c6ea074e8f9942a5cfff1081638c81d5e97c0bd29e038ba33",
+       "image_type": "full_back",
+       "source_sha256": "150831a53fcf06dfd5e2c9a3c6b90cdca4fc2b057495757ac0d3ce12b74050b9"
+      },
+      {
+       "sha256": "94692e6613390dd1f8b0cbcfb249efae7a1431cda01ed4b6c10899f9059bbba0",
+       "image_type": "label_front",
+       "source_sha256": "fe71818fa5112ca670daf637238ef2fd365381e5ec69e7097e2b3577ac971efe"
+      },
+      {
+       "sha256": "150202478b166840fa11998b95d6fa52f541f450caeeb3d4bc135832817b4296",
+       "image_type": "label_back",
+       "source_sha256": "8b1c9cb377eed6f692edf2aff9c6bab17ac7afc0f7de2233257bfae9bd7e4df4"
+      }
+     ]
+    },
+    "extras_dropped": [],
+    "ms": 62695,
     "usage": {
-     "completion_tokens": 2959,
+     "completion_tokens": 3361,
      "completion_tokens_details": {
-      "reasoning_tokens": 2773,
-      "text_tokens": 185
+      "reasoning_tokens": 3121,
+      "text_tokens": 239
      },
-     "prompt_tokens": 2591,
+     "prompt_tokens": 5443,
      "prompt_tokens_details": {
-      "cached_tokens": 0,
-      "image_tokens": 940,
-      "text_tokens": 1651
+      "cached_tokens": 5120,
+      "image_tokens": 3592,
+      "text_tokens": 1851
      },
-     "total_tokens": 5550
+     "total_tokens": 8804
     },
     "model": "qwen3.8-max",
     "cached": true,
     "finish_reason": "stop",
-    "raw_reply": "{\n  \"differences\": \"The bottom line of the label: Card B prints the vintage year 2021 (in green) after 'TAMAGNE /', while Card A shows no vintage year at that place.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed on the label (bottom right, after 'TAMAGNE /')? Answer 'other' if the label shows no year.\",\n      \"answers\": {\n       \"A\": \"other\",\n       \"B\": \"2021\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the year 2021 at the bottom right, it is card B; if the label shows no vintage year (or any other year), it is card A.\",\n  \"indistinguishable\": []\n}",
-    "differences": "The bottom line of the label: Card B prints the vintage year 2021 (in green) after 'TAMAGNE /', while Card A shows no vintage year at that place.",
+    "raw_reply": "{\n  \"differences\": \"The only major difference is the vintage year printed at the bottom right of the front label (after 'TAMAGNE /'): Card B carries 2021, while Card A carries any other vintage (its photos show 2022 and 2023). All other major features (producer, grape Riesling, white dry, line 'GOLUBITSKAYA STRELKA / TAMAGNE', volume 0.75 L) are identical.\",\n  \"questions\": [\n    {\n      \"question\": \"What vintage year is printed on the label (bottom right, after 'TAMAGNE /')?\",\n      \"answers\": {\n       \"A\": \"other\",\n       \"B\": \"2021\"\n      }\n    }\n  ],\n  \"rule\": \"If the label shows the vintage year 2021, it is Card B; if it shows any other year (e.g. 2022 or 2023), it is Card A.\",\n  \"indistinguishable\": []\n}",
+    "differences": "The only major difference is the vintage year printed at the bottom right of the front label (after 'TAMAGNE /'): Card B carries 2021, while Card A carries any other vintage (its photos show 2022 and 2023). All other major features (producer, grape Riesling, white dry, line 'GOLUBITSKAYA STRELKA / TAMAGNE', volume 0.75 L) are identical.",
     "questions": [
      {
       "id": "q1",
-      "question": "What vintage year is printed on the label (bottom right, after 'TAMAGNE /')? Answer 'other' if the label shows no year.",
+      "question": "What vintage year is printed on the label (bottom right, after 'TAMAGNE /')?",
       "answers": {
        "golubitskoe-estate-risling": "other",
        "golubitskoe-estate-risling-beloe-suhoe-125": "2021"
@@ -47838,7 +48472,13 @@
       "valid": true,
       "evidence": {
        "golubitskoe-estate-risling": [
-        "71d63b4d4b4f839ffcf7c247bfd42ca96ae10006e53d01def1f9f93f0b13e585"
+        "71d63b4d4b4f839ffcf7c247bfd42ca96ae10006e53d01def1f9f93f0b13e585",
+        "fb15f964451626ae894949dd5c0a79fb9c4850d9ad8d7945f6765fafb742bed3",
+        "576d492b56c6658a35882ef4a2b90c07af7c1e7d778cd7a261593088c31b1a5b",
+        "0837ba695a51072bf8a6e1913ff5713a9d353ae1a5928cc38f647cebf9902832",
+        "815848d70dc75c3c6ea074e8f9942a5cfff1081638c81d5e97c0bd29e038ba33",
+        "94692e6613390dd1f8b0cbcfb249efae7a1431cda01ed4b6c10899f9059bbba0",
+        "150202478b166840fa11998b95d6fa52f541f450caeeb3d4bc135832817b4296"
        ],
        "golubitskoe-estate-risling-beloe-suhoe-125": [
         "91d894e6fb55be7882ce912ed8f9409dbdb54803f9cdc57270383da78ead1ad4"
@@ -47846,20 +48486,20 @@
       }
      }
     ],
-    "rule": "If the label shows the year 2021 at the bottom right, it is card B; if the label shows no vintage year (or any other year), it is card A.",
+    "rule": "If the label shows the vintage year 2021, it is Card B; if it shows any other year (e.g. 2022 or 2023), it is Card A.",
     "indistinguishable": [],
     "answer": {
-     "differences": "The bottom line of the label: Card B prints the vintage year 2021 (in green) after 'TAMAGNE /', while Card A shows no vintage year at that place.",
+     "differences": "The only major difference is the vintage year printed at the bottom right of the front label (after 'TAMAGNE /'): Card B carries 2021, while Card A carries any other vintage (its photos show 2022 and 2023). All other major features (producer, grape Riesling, white dry, line 'GOLUBITSKAYA STRELKA / TAMAGNE', volume 0.75 L) are identical.",
      "questions": [
       {
-       "question": "What vintage year is printed on the label (bottom right, after 'TAMAGNE /')? Answer 'other' if the label shows no year.",
+       "question": "What vintage year is printed on the label (bottom right, after 'TAMAGNE /')?",
        "answers": {
         "A": "other",
         "B": "2021"
        }
       }
      ],
-     "rule": "If the label shows the year 2021 at the bottom right, it is card B; if the label shows no vintage year (or any other year), it is card A.",
+     "rule": "If the label shows the vintage year 2021, it is Card B; if it shows any other year (e.g. 2022 or 2023), it is Card A.",
      "indistinguishable": []
     }
    },
@@ -55611,11 +56251,178 @@
      "rule": "If the label shows РИСЛИНГ below KRYOS, it is card A; if it shows СОВИНЬОН БЛАН, it is card B.",
      "indistinguishable": []
     }
+   },
+   "f8cdf7d024fe": {
+    "key": "f8cdf7d024fe",
+    "slugs": [
+     "twopeters_kaberne_sovinion",
+     "twopeters_risling",
+     "twopeters_saperavi",
+     "twopeters_sauvignon",
+     "twopeters_shardone"
+    ],
+    "input_hash": "5b0b665714ae58147437ba0989467da5f4d24c84a28e2f2a0cf81479d4a0f2dc",
+    "inputs_sha": "1f3793af8f231ab7",
+    "note": ".",
+    "built_at": "2026-10-02T08:15:24+0300",
+    "vlm": "qwencloud-qwen3.8-max",
+    "settings_sha": "12638e6663aca7c3",
+    "mode": "sheet",
+    "error": null,
+    "letters": {
+     "A": "twopeters_kaberne_sovinion",
+     "B": "twopeters_risling",
+     "C": "twopeters_saperavi",
+     "D": "twopeters_sauvignon",
+     "E": "twopeters_shardone"
+    },
+    "max_side": 768,
+    "prompt_tokens_estimate": 5542,
+    "prompt": "You see the label pictures of 5 wine cards, Card A to Card E. Each picture shows the label of the catalogue picture of one card. A recognizer confuses these cards, because their bottles look alike. Some catalogue pictures are drawings, not photos. In a drawing, only the label is drawn correctly.\n\nThe catalogue data and the label description of each card:\n\nCard A: name \"Каберне Совиньон\"; producer \"Два Петра\"; category \"Красное\"; grapes \"Саперави\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card A: {\"texts\": [{\"text\": \"SP\", \"where\": \"neck label\"}, {\"text\": \"WINE OF CRIMEA\", \"where\": \"top of main label\"}, {\"text\": \"TWO\", \"where\": \"center of main label\"}, {\"text\": \"PETERS\", \"where\": \"center of main label\"}, {\"text\": \"When the skill, mastery and ambition of two brothers are laid upon the fertile and sun-soaked Crimean soil, a truly unique wine is born. A legend is born.\", \"where\": \"middle of main label\"}, {\"text\": \"2021\", \"where\": \"below text block\"}, {\"text\": \"CABERNET SAUVIGNON\", \"where\": \"bottom of main label\"}, {\"text\": \"№ 4500\", \"where\": \"bottom of main label\"}, {\"text\": \"SP\", \"where\": \"repeated along top edge of main label\"}], \"numbers\": [{\"value\": \"2021\", \"where\": \"vintage year\"}, {\"value\": \"4500\", \"where\": \"batch number\"}], \"vintage\": \"2021\", \"colours\": [\"black\", \"white\", \"gold\"], \"design\": \"The label features a dark background with white and gold text. It includes illustrations of two men in suits on either side, with the brand name 'TWO PETERS' prominently displayed in the center. The design is elegant and sophisticated, with a focus on the heritage and quality of the wine.\", \"marks\": [{\"place\": \"neck label\", \"description\": \"Circular seal with 'SP' and 'WINE OF CRIMEA'\"}, {\"place\": \"main label\", \"description\": \"Circular seal with 'SP' and 'WINE OF CRIMEA'\"}]}\n\nCard B: name \"Рислинг\"; producer \"Два Петра\"; category \"Красное\"; grapes \"Саперави\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card B: {\"texts\": [{\"text\": \"WINE OF CRIMEA\", \"where\": \"top of label\"}, {\"text\": \"ДВА ПЕТРА\", \"where\": \"center of label\"}, {\"text\": \"RIESLING\", \"where\": \"below ДВА ПЕТРА\"}, {\"text\": \"Белое сухое\", \"where\": \"below RIESLING\"}, {\"text\": \"2024\", \"where\": \"below Белое сухое\"}, {\"text\": \"№2598\", \"where\": \"small oval near bottom center\"}], \"numbers\": [{\"value\": \"2024\", \"where\": \"vintage year\"}, {\"value\": \"2598\", \"where\": \"in №2598\"}], \"vintage\": \"2024\", \"colours\": [\"black\", \"gold\", \"white\"], \"design\": \"The label features a black background with gold and white text. The central design includes two illustrated portraits of men in suits and hats, one on each side. A golden stylized bird or wing symbol is centered below the portraits. The text is arranged hierarchically with the brand name prominently displayed in large gold letters.\", \"marks\": [{\"place\": \"neck of bottle\", \"description\": \"circular seal with 'SP' logo\"}, {\"place\": \"left side of label\", \"description\": \"circular seal with 'SP' logo\"}]}\n\nCard C: name \"Саперави\"; producer \"Два Петра\"; category \"Красное\"; grapes \"Саперави\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card C: {\"texts\": [\"SP\", \"WINE OF CRIMEA\", \"TWO\", \"PETERS\", \"When the skill,\", \"mastery and ambition\", \"of two brothers are laid upon the fertile\", \"and sun-soaked Crimean soil, a truly\", \"unique wine is born.\", \"A legend is born.\", \"2021\", \"SAPERAVI\", \"Nº 6000\"], \"numbers\": [\"2021\", \"6000\"], \"vintage\": 2021, \"colours\": [\"black\", \"gold\", \"white\"], \"design\": \"The label features a black background with gold and white text. It includes illustrations of two men in suits, one wearing a hat, and a gold emblem on the left side. The text is arranged centrally with the title 'TWO PETERS' prominently displayed in gold.\", \"marks\": [{\"place\": \"neck\", \"description\": \"SP logo\"}, {\"place\": \"left side\", \"description\": \"gold emblem with SP logo\"}]}\n\nCard D: name \"Совиньон\"; producer \"Два Петра\"; category \"Красное\"; grapes \"Саперави\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card D: {\"texts\": [{\"text\": \"WINE OF CRIMEA\", \"where\": \"top of label\"}, {\"text\": \"ДВА ПЕТРА\", \"where\": \"center of label\"}, {\"text\": \"SAUVIGNON\", \"where\": \"below ДВА ПЕТРА\"}, {\"text\": \"Белое сухое\", \"where\": \"below SAUVIGNON\"}, {\"text\": \"2024\", \"where\": \"below Белое сухое\"}, {\"text\": \"№3996\", \"where\": \"near bottom center\"}], \"numbers\": [{\"value\": \"3996\", \"where\": \"in №3996\"}, {\"value\": \"2024\", \"where\": \"vintage year\"}], \"vintage\": \"2024\", \"colours\": [\"black\", \"gold\", \"white\"], \"design\": \"The label features a black background with gold and white text. It includes two illustrated portraits of men in suits on either side, with a golden wing-like design at the bottom. The text is arranged hierarchically with the brand name prominently displayed in the center.\", \"marks\": [{\"place\": \"neck of bottle\", \"description\": \"circular seal with 'SP' logo\"}, {\"place\": \"left side of label\", \"description\": \"circular seal with 'SP' logo\"}]}\n\nCard E: name \"Шардоне\"; producer \"Два Петра\"; category \"Красное\"; grapes \"Саперави\"; alcohol unknown (the number at the end of the catalogue slug).\nLabel description of card E: {\"texts\": [{\"text\": \"WINE OF CRIMEA\", \"where\": \"top center of label\"}, {\"text\": \"ДВА\", \"where\": \"center of label\"}, {\"text\": \"ПЕТРА\", \"where\": \"center of label\"}, {\"text\": \"2024\", \"where\": \"below ДВА ПЕТРА\"}, {\"text\": \"CHARDONNAY\", \"where\": \"below 2024\"}, {\"text\": \"Белое сухое\", \"where\": \"below CHARDONNAY\"}, {\"text\": \"№1051\", \"where\": \"bottom center of label\"}], \"numbers\": [{\"value\": \"2024\", \"where\": \"below ДВА ПЕТРА\"}, {\"value\": \"1051\", \"where\": \"bottom center of label\"}], \"vintage\": 2024, \"colours\": [\"black\", \"gold\", \"white\"], \"design\": \"The label features a black background with gold and white text. The central design includes two illustrated portraits of men in historical attire, one on each side. The text is arranged hierarchically with 'WINE OF CRIMEA' at the top, followed by 'ДВА ПЕТРА' in large gold letters, then the year '2024', 'CHARDONNAY', and 'Белое сухое' in smaller fonts. A gold emblem is present at the bottom center.\", \"marks\": [{\"place\": \"neck of the bottle\", \"description\": \"Circular seal with 'SP' logo\"}, {\"place\": \"left side of label\", \"description\": \"Circular seal with 'SP' logo\"}]}\n\nNotes of the reviewer about these cards:\n.\n\nTask: find the features of the label that tell the cards apart. Later, a model will look at the label of a customer photo of ONE of these bottles and answer your questions. That model sees only the label. The answers MUST identify the card.\n\nRules:\n1. Write 1 to 3 short questions about the label. A person MUST be able to answer each question by looking at the label alone.\n1a. Use only features that are printed on the label. Do not ask about the glass, the colour of the liquid, the capsule, the cork or the shape of the bottle.\n2. Use only MAJOR differences between the wines: the grape varieties, a kosher mark, the wine name or the name of the line, the colour of the wine as the label states it (red, white, rose, orange), the sugar level (brut, extra brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special edition mark, the volume of the bottle, and the vintage year under rule 2a. A different design, colour shade, background, font or pattern is NOT a major difference. Do not use it, unless the notes of the reviewer name it.\n2a. Ask about the vintage year only when the catalogue names of at least two cards state two different years. Take the expected year of each card from its name, and give null to a card whose name states no year. A year that only the picture shows is not a feature of the card, because the next bottle of the same wine can show the next vintage.\n3. For each question, give the expected answer of each card as a short text, such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card does not show this feature. Write a name, a grape variety or another text exactly as the label prints it, in its own alphabet. Do not translate it and do not transliterate it. When the picture of a card is the picture of another card, write the text as the catalogue data of the card writes it. Give a sugar level or a colour of the wine with the words of rule 2.\n3a. A mark that only some cards carry, such as a kosher mark or a reserve mark, gets a yes/no question, for example \"Does the label show a kosher mark?\". Give \"yes\" or \"no\" for each card, and not null.\n4. Use a question only when at least two cards have different answers.\n5. The notes of the reviewer are correct. Use them first.\n6. Do not use a bottle number, a batch number, a lot number or a serial number, such as «Бут. №» or «Тираж». These numbers change from bottle to bottle.\n7. The catalogue data is correct. A catalogue picture can be too small to show a small text. Then take the value from the catalogue data, for example a year, a grape or a ratio in the name.\n8. A model wrote the label descriptions, and they can hold errors. Use a feature only when you see it in the pictures, or when the catalogue data or the notes of the reviewer state it.\n9. Two texts that differ only by their alphabet, such as ФАНТОМ and PHANTOM, are the same text and are not a difference.\n10. The alcohol value can change between two vintages of one wine. Use it only when no other feature differs.\n11. List the groups of cards that no major feature tells apart in \"indistinguishable\".\n12. Also write the rule as one short plain text, for example: \"If the label shows 30/70, it is card A; otherwise it is card B.\"\n\nAnswer with one JSON object:\n{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": \"...\", \"answers\": {\"A\": \"...\", \"B\": null}}], \"rule\": \"...\", \"indistinguishable\": [[\"A\", \"B\"]]}",
+    "ms": 74284,
+    "usage": {
+     "prompt_tokens": 4301,
+     "total_tokens": 8636,
+     "completion_tokens": 4335,
+     "prompt_tokens_details": {
+      "cached_tokens": 3072,
+      "image_tokens": 1546,
+      "text_tokens": 2755
+     },
+     "completion_tokens_details": {
+      "reasoning_tokens": 3835,
+      "text_tokens": 499
+     }
+    },
+    "model": "qwen3.8-max",
+    "cached": false,
+    "finish_reason": "stop",
+    "raw_reply": "{\n  \"differences\": \"The grape/wine name printed in large capitals on the main label differs on every card: CABERNET SAUVIGNON (A), RIESLING (B), SAPERAVI (C), SAUVIGNON (D), CHARDONNAY (E). In addition, cards B, D and E state the colour and sugar level 'Белое сухое' (white dry), while cards A and C state no colour or sugar level. The brand line name (TWO PETERS / ДВА ПЕТРА) and the vintage years on the pictures (2021/2024) are not usable differences (same name in two alphabets; catalogue names state no years).\",\n  \"questions\": [\n    {\n      \"question\": \"What grape variety / wine name is printed in large capital letters in the middle of the main label?\",\n      \"answers\": {\n       \"A\": \"CABERNET SAUVIGNON\",\n       \"B\": \"RIESLING\",\n       \"C\": \"SAPERAVI\",\n       \"D\": \"SAUVIGNON\",\n       \"E\": \"CHARDONNAY\"\n      }\n    },\n    {\n      \"question\": \"What sugar level does the label state (dry, semi-dry, semi-sweet, sweet)?\",\n      \"answers\": {\n       \"A\": null,\n       \"B\": \"dry\",\n       \"C\": null,\n       \"D\": \"dry\",\n       \"E\": \"dry\"\n      }\n    },\n    {\n      \"question\": \"What colour of wine does the label state (red, white, rose, orange)?\",\n      \"answers\": {\n       \"A\": null,\n       \"B\": \"white\",\n       \"C\": null,\n       \"D\": \"white\",\n       \"E\": \"white\"\n      }\n    }\n  ],\n  \"rule\": \"Read the grape name on the label: CABERNET SAUVIGNON is card A, RIESLING is card B, SAPERAVI is card C, SAUVIGNON is card D, CHARDONNAY is card E; the white-dry statement ('Белое сухое') only confirms B, D or E against A and C.\",\n  \"indistinguishable\": []\n}",
+    "differences": "The grape/wine name printed in large capitals on the main label differs on every card: CABERNET SAUVIGNON (A), RIESLING (B), SAPERAVI (C), SAUVIGNON (D), CHARDONNAY (E). In addition, cards B, D and E state the colour and sugar level 'Белое сухое' (white dry), while cards A and C state no colour or sugar level. The brand line name (TWO PETERS / ДВА ПЕТРА) and the vintage years on the pictures (2021/2024) are not usable differences (same name in two alphabets; catalogue names state no years).",
+    "questions": [
+     {
+      "id": "q1",
+      "question": "What grape variety / wine name is printed in large capital letters in the middle of the main label?",
+      "answers": {
+       "twopeters_kaberne_sovinion": "CABERNET SAUVIGNON",
+       "twopeters_risling": "RIESLING",
+       "twopeters_saperavi": "SAPERAVI",
+       "twopeters_sauvignon": "SAUVIGNON",
+       "twopeters_shardone": "CHARDONNAY"
+      },
+      "kind": "feature",
+      "valid": true,
+      "evidence": {
+       "twopeters_kaberne_sovinion": [
+        "17b3df1e05c7103cea2e03ee930e329c3f20480b3bf9a31f1da115607dbcf908"
+       ],
+       "twopeters_risling": [
+        "d264150827a4a83a1316020e295812e099b0192bf6291da608e8d51a23686880"
+       ],
+       "twopeters_saperavi": [
+        "9d8cfa9d7e83dec42b0d284ecf1b905d2a72a46b48d595e0a91d7ead623cb9bd"
+       ],
+       "twopeters_sauvignon": [
+        "1656303752dd06945e38d557d3688096038a1312b233189dc5d59faef79151d9"
+       ],
+       "twopeters_shardone": [
+        "963e21c93df5f35150aa2d6ae179038b67ab21df2782ad941719de125354dda7"
+       ]
+      }
+     },
+     {
+      "id": "q2",
+      "question": "What sugar level does the label state (dry, semi-dry, semi-sweet, sweet)?",
+      "answers": {
+       "twopeters_kaberne_sovinion": null,
+       "twopeters_risling": "dry",
+       "twopeters_saperavi": null,
+       "twopeters_sauvignon": "dry",
+       "twopeters_shardone": "dry"
+      },
+      "kind": "feature",
+      "valid": false,
+      "evidence": {
+       "twopeters_risling": [
+        "d264150827a4a83a1316020e295812e099b0192bf6291da608e8d51a23686880"
+       ],
+       "twopeters_sauvignon": [
+        "1656303752dd06945e38d557d3688096038a1312b233189dc5d59faef79151d9"
+       ],
+       "twopeters_shardone": [
+        "963e21c93df5f35150aa2d6ae179038b67ab21df2782ad941719de125354dda7"
+       ]
+      }
+     },
+     {
+      "id": "q3",
+      "question": "What colour of wine does the label state (red, white, rose, orange)?",
+      "answers": {
+       "twopeters_kaberne_sovinion": null,
+       "twopeters_risling": "white",
+       "twopeters_saperavi": null,
+       "twopeters_sauvignon": "white",
+       "twopeters_shardone": "white"
+      },
+      "kind": "feature",
+      "valid": false,
+      "evidence": {
+       "twopeters_risling": [
+        "d264150827a4a83a1316020e295812e099b0192bf6291da608e8d51a23686880"
+       ],
+       "twopeters_sauvignon": [
+        "1656303752dd06945e38d557d3688096038a1312b233189dc5d59faef79151d9"
+       ],
+       "twopeters_shardone": [
+        "963e21c93df5f35150aa2d6ae179038b67ab21df2782ad941719de125354dda7"
+       ]
+      }
+     }
+    ],
+    "rule": "Read the grape name on the label: CABERNET SAUVIGNON is card A, RIESLING is card B, SAPERAVI is card C, SAUVIGNON is card D, CHARDONNAY is card E; the white-dry statement ('Белое сухое') only confirms B, D or E against A and C.",
+    "indistinguishable": [],
+    "answer": {
+     "differences": "The grape/wine name printed in large capitals on the main label differs on every card: CABERNET SAUVIGNON (A), RIESLING (B), SAPERAVI (C), SAUVIGNON (D), CHARDONNAY (E). In addition, cards B, D and E state the colour and sugar level 'Белое сухое' (white dry), while cards A and C state no colour or sugar level. The brand line name (TWO PETERS / ДВА ПЕТРА) and the vintage years on the pictures (2021/2024) are not usable differences (same name in two alphabets; catalogue names state no years).",
+     "questions": [
+      {
+       "question": "What grape variety / wine name is printed in large capital letters in the middle of the main label?",
+       "answers": {
+        "A": "CABERNET SAUVIGNON",
+        "B": "RIESLING",
+        "C": "SAPERAVI",
+        "D": "SAUVIGNON",
+        "E": "CHARDONNAY"
+       }
+      },
+      {
+       "question": "What sugar level does the label state (dry, semi-dry, semi-sweet, sweet)?",
+       "answers": {
+        "A": null,
+        "B": "dry",
+        "C": null,
+        "D": "dry",
+        "E": "dry"
+       }
+      },
+      {
+       "question": "What colour of wine does the label state (red, white, rose, orange)?",
+       "answers": {
+        "A": null,
+        "B": "white",
+        "C": null,
+        "D": "white",
+        "E": "white"
+       }
+      }
+     ],
+     "rule": "Read the grape name on the label: CABERNET SAUVIGNON is card A, RIESLING is card B, SAPERAVI is card C, SAUVIGNON is card D, CHARDONNAY is card E; the white-dry statement ('Белое сухое') only confirms B, D or E against A and C.",
+     "indistinguishable": []
+    }
    }
   }
  },
  "note": "Label descriptions and cluster rules of one embedding. pipeline/build_label_rules.py writes this file. Read docs/plans/45_cluster-label-rules.md.",
- "updated_at": "2026-09-29T23:35:01+0300",
+ "updated_at": "2026-10-02T08:16:39+0300",
  "settings": {
   "vlm": "qwen3.5-9b-nvfp4",
   "thinking": false,
@@ -55635,6 +56442,8 @@
    "Card %(letter)s (the whole catalogue picture, because no label crop exists):",
    "Card %(letter)s (the same catalogue picture as card %(twins)s. The catalogue can reuse the picture of another card. Where the picture contradicts the catalogue data of card %(letter)s, take the answers of card %(letter)s from its catalogue data):"
   ],
-  "vintage": "Vintage variants. The catalogue data or the label descriptions state a vintage year for these cards: %(dated)s. They state no vintage year for these cards: %(undated)s. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a."
+  "caption_extra": "Card %(letter)s, one more picture (the %(side)s label of card %(letter)s in another photo of the same wine):",
+  "vintage": "Vintage variants. The catalogue data or the label descriptions state a vintage year for these cards: %(dated)s. They state no vintage year for these cards: %(undated)s. Check these years in the pictures. When a card that states no year and one or more cards that state a year differ only by the vintage year, rule 2a does not apply to them. Then ask a vintage question. Give each card that states a year that year. Give each card that states no year the answer \"other\": it is the card of every vintage that no other card states. When the cards differ by more than the vintage year, follow rule 2a.",
+  "tag_note": "Vintage tags. The reviewer tagged the vintage of some cards: %(tags)s. For rule 2a, a tagged year counts as a year of the catalogue name of the card. The tag no_year counts as a name that states no year. Take the expected year of a tagged card from its tag."
  }
 }

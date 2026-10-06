@@ -158,9 +158,9 @@ changes. Fix each named wine by hand, then run the tool again. A run takes some 
 because it downloads the image of each wine. Read `docs/plans/18_import-website.md`.
 The button `Import from website` of the Dataset page runs the same compare, and a dialog
 lets you merge each conflict. Read `docs/plans/21_website-import-ui.md`.
-Disabled since 2026-09-29: `COMPARE_ENABLED = False` in `pipeline/import_website.py`. The
-command exits 1 with `error: the website compare is disabled in the code: …`, and the
-Dataset page shows no button.
+`COMPARE_ENABLED` in `pipeline/import_website.py` switches the compare. It is `True` since
+2026-10-02. With `False`, the command exits 1 with
+`error: the website compare is disabled in the code: …`, and the Dataset page shows no button.
 
 # Запуск сервера и WebUI
 
@@ -721,7 +721,7 @@ Install the local DIS runtime once:
 ~/.venvs/svoe-vino-lab/bin/pip install -r requirements-local.txt
 ```
 
-Build the two entries in this order. The endpoint in `config.yaml` MUST serve
+Build the three entries in this order. The endpoint in `config.yaml` MUST serve
 `timm/vit_base_patch16_siglip_224.v2_webli` as
 `vit_base_patch16_siglip_224.v2_webli` and MUST use float32.
 
@@ -730,7 +730,13 @@ Build the two entries in this order. The endpoint in `config.yaml` MUST serve
     --name android-siglip2-base-224-sam3-white
 ~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
     --name android-siglip2-base-224-dis-white
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+    --name android-siglip2-base-224-dis-white-rot5 --workers 6
 ```
+
+The rot5 entry creates 72 reference vectors for each full image.
+The build calls the remote embedding endpoint.
+Check `/Users/ashmelev/Admin/GPU_TASKS.md` before this build.
 
 # No-segmentation, DIS, and SAM3 model matrix
 
@@ -787,4 +793,51 @@ Run the tests of the rule:
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_benchmark.py'
+```
+
+
+## DINOv3 + ArcFace
+
+Run each command from the Workbench root. The training command needs the packages
+in `requirements-local.txt` and a built source DINOv3 index. Use new output names
+for each run. Read `docs/arcface.md` for data selection and validation limits.
+
+Read-only tests use temporary catalogue files and loopback fake servers. They need
+no gateway or model weights:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python -m unittest discover -s tests -p test_arcface.py
+```
+
+Train a 512-dimensional projection on frozen ViT-L features. This command writes
+a new local checkpoint, report, configuration, and catalogue index. It sends no
+images to an external service. The source index stays available:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python pipeline/train_arcface.py \
+  --name gx10-dinov3-vitl16 \
+  --output-name gx10-dinov3-vitl16-arcface-new \
+  --output-dir data/models/dinov3-vitl16-arcface-new \
+  --dim 512 --epochs 30 --export-index
+```
+
+The completed 2026-10-06 artifact uses the configuration below. A recognition run
+needs the existing DINOv3 and SAM3 endpoints. It sends query images to those services
+and writes a new run. Before sending files, apply the timestamp rule in
+`../internal/AGENTS.md`. This is an evaluation command, not part of local training:
+
+```bash
+SAM3_ENDPOINT=http://192.168.86.14:18081/upstream/sam3 \
+  ~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
+  --config data/models/dinov3-vitl16-arcface-20261006-v2/config.yaml \
+  --name gx10-dinov3-vitl16-arcface-v2-crop --set official-test-2026-10-01
+```
+
+Update this ArcFace catalogue after new source images arrive. This command sends
+new model inputs to the configured embedding endpoint. It writes new index rows:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python pipeline/build_embeddings.py \
+  --config data/models/dinov3-vitl16-arcface-20261006-v2/config.yaml \
+  --name gx10-dinov3-vitl16-arcface-v2
 ```

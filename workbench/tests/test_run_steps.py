@@ -173,6 +173,10 @@ class EmbeddingStepsTest(StepsTest):
             "decision_scores": {second["slug"]: 0.80, first["slug"]: 0.8265},
             "decision_weight": 0.05, "cached": False, "ms": 1234, "error": None,
             "changed": True,
+            "raw_option_scores": {"q1": {"semi-dry": 95, "other": 3, "not visible": 2}},
+            "validation_errors": {},
+            "attempts": [{"number": 1, "raw_text": "{invalid}",
+                          "validation_errors": {"q1": "total 0; expected 100"}}],
         }
         row["trace"]["steps"].append({"id": "cluster_rules", "start_ms": 50,
                                       "ms": 1234, "out": result})
@@ -187,6 +191,9 @@ class EmbeddingStepsTest(StepsTest):
         self.assertEqual(part["vlm"]["option_scores"], result["option_scores"])
         self.assertEqual(part["vlm"]["evidence_scores"], result["evidence_scores"])
         self.assertEqual(part["vlm"]["decision_scores"], result["decision_scores"])
+        self.assertEqual(part["vlm"]["raw_option_scores"], result["raw_option_scores"])
+        self.assertEqual(part["vlm"]["validation_errors"], result["validation_errors"])
+        self.assertEqual(part["vlm"]["attempts"], result["attempts"])
         self.assertIn("embedding 0.7800 · evidence 0.9300 · decision 0.8265",
                       part["lists"][0]["items"][0]["detail"])
         self.assertEqual(part["lists"][0]["items"][0]["moved"], 1)

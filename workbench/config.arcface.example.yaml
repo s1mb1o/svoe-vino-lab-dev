@@ -1,0 +1,30 @@
+# This is an entry example. The trainer writes a complete runnable config.yaml.
+# Copy the base embedding's views. Replace the checkpoint and digest after training.
+# Relative checkpoint paths resolve from the Workbench root.
+embeddings:
+  - name: gx10-dinov3-vitl16-arcface
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: dinov3-vitl16-pretrain-lvd1689m
+    batch_size: 16
+    arcface:
+      checkpoint: data/models/dinov3-vitl16-arcface-20261006/projection.npz
+      sha256: REPLACE_WITH_CHECKPOINT_SHA256
+    views:
+      full:
+        steps:
+          - {step: segment, target: package}
+          - {step: remove_background}
+          - {step: white_background}
+          - {step: resize, max_size: 1024, aspect: keep, upscale: false}
+      label:
+        steps:
+          - {step: segment, target: label}
+          - {step: remove_background}
+          - {step: white_background}
+          - {step: resize, max_size: 1024, aspect: keep, upscale: false}
+
+pipeline:
+  - name: dinov3-arcface-crop
+    backend: embedding
+    embedding: gx10-dinov3-vitl16-arcface

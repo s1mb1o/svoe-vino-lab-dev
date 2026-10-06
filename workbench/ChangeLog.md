@@ -37,6 +37,237 @@
   Tests: `test_wine_images.py` (13 new), `test_matcher_bundle.py`, `test_matcher_views.py`,
   `test_matcher_parity.py`, `test_catalog_copy.py`: all pass.
 
+## 2026-10-05
+
+- Autotag now treats HTTP 429/5xx responses, connection failures, and service timeouts
+  as temporary VLM outages. It stops starting requests, commits any successful calls
+  already in flight, exposes a `waiting` state with a retry countdown, and retries the
+  same image after exponential backoff from 30 seconds to 10 minutes. A temporary
+  outage increments retry/wait telemetry but does not increment image progress or the
+  error count. Validation: all 10 Autotag and 20 Testset route tests pass, including
+  repeated failures and an in-flight concurrent success; Python compilation, Ruff,
+  JavaScript syntax, and the diff check pass. Port 8168 restarted with SIGTERM from PID
+  75002 to PID 99071; `GET /api/dataset` returned HTTP 200. The earlier failed run and
+  its 2,416 completed tags remain intact; no live Autotag batch was restarted.
+
+- Added independent image-tag filters to the Testset Drawer and its matching-results
+  dialog. Each selector shows `All`, `No tag`, and every current tag with its image
+  count. The sidebar reports shown versus total photos while filtered, but `Match…`
+  deliberately continues to process the full Drawer. Matching results use the current
+  shared image tags, show those tags below each query image, and keep moved or changed
+  results out as before. Validation: all 20 Testset route and 19 Drawer/run-route tests
+  pass; JavaScript syntax, Ruff, and the diff check pass. Port 8168 restarted with
+  SIGTERM from PID 48236 to PID 75002; `GET /api/dataset` returned HTTP 200. On the live
+  `my` set, choosing `barcode` reduced the Drawer from 9,744 to 11 cards while leaving
+  full-Drawer matching available, and independently reduced the latest matching results
+  from 958 to 11 rows. Their tag metadata was visible and the browser reported no
+  warnings or errors. No photo, tag, or matching decision changed during verification.
+
+- Added a Testset `Autotag` action that classifies every distinct image in the selected
+  set that lacks an Autotag category. The detached, resumable batch uses the configured
+  vision-language model with a strict four-value JSON response: `label_back`,
+  `label_front`, `isolated_product`, or `scene_photo`. It preserves unrelated/manual
+  tags and already classified images, reports live progress, continues past individual
+  image failures, and leaves failed images pending for a later retry. The page polls the
+  new status/start API and remains safe to close while a run is active. Validation: all
+  7 Autotag, 19 Testset route, 11 OpenAPI, 37 Testset model, and 71 lab-server tests
+  pass; Python compilation, Ruff, JavaScript syntax, and the diff check pass. Port 8168
+  restarted with SIGTERM from PID 57933 to PID 48236; `GET /api/dataset` returned HTTP
+  200. The live `my` Testset shows one enabled Autotag control with the expected help
+  text and no browser warnings or errors. No Autotag batch was started during
+  verification, so live tags were not changed.
+
+## 2026-10-03
+
+- Drawer cards and the matched-image panel of every current matching Results row now have
+  a small red `Remove` button. After confirmation it permanently
+  removes only that `__drawer__` test-photo entry and its comments, refreshes the card and
+  all counts immediately, and removes stale rows from an open matching-results view. The
+  new transaction rejects catalog and No Match photos and preserves the shared immutable
+  image-store object. Validation: all 37 Testset model, 17 Testset HTTP route, and 11
+  OpenAPI tests pass; Python compilation, JavaScript syntax, and the diff check pass.
+  Port 8168 was restarted, finally from PID 20619 to PID 29980. The live `my` Drawer
+  shows 9,786 non-overlapping Remove controls in the requested position with no page or
+  console errors. The Results extension passed JavaScript parsing and the diff check;
+  port 8168 restarted from PID 29980 to PID 30913. The live completed run shows one
+  non-overlapping Remove control on each of its 10 current matched-image panels, with no
+  browser warning or error. The Drawer count remained 9,786 because no live deletion was
+  confirmed.
+
+- Every thumbnail in Drawer matching Results now opens the comparison preview. A
+  catalogue-candidate thumbnail compares that candidate with the matched Drawer image;
+  the left matched-image thumbnail opens the same preview against rank 1. The preview
+  labels the two panes explicitly as `Matched image` and `Catalog image`. Validation:
+  all 19 run-route tests pass; JavaScript syntax and the diff check pass. Port 8168 was
+  restarted from PID 30358 to PID 85490. The live completed Drawer run opens both
+  images from the left result thumbnail with no browser warnings or errors; no `V`
+  annotation was submitted during verification.
+
+- The Testset Drawer now starts persisted background matching runs through the existing
+  pipeline job system and reviews their top-K catalogue candidates in a dedicated view.
+  Candidate thumbnails open a side-by-side Drawer/catalogue preview; `V` atomically
+  moves the unchanged Drawer photo to that recorded candidate and adds a positive
+  annotation. Completed Drawer runs survive reloads, multiple pipeline results remain
+  selectable, stale or forged assignments are refused, and ordinary scored runs still
+  exclude Drawer photos. Validation: 131 focused Drawer/run/OpenAPI tests and 97
+  adjacent run-file/lab-server/remote-run tests pass; Python compilation, JavaScript
+  syntax, and the diff check pass. Port 8168 restarted with SIGTERM from PID 8816 to
+  PID 30358; the live `my` Testset shows both Drawer controls and opens the two-photo,
+  92-pipeline matching dialog. No matcher was started and no live `V` assignment was
+  submitted during browser verification.
+
+- Runs photo cards now show the shared tags attached to each query image and include an
+  add-tag picker populated from the existing tag vocabulary. `POST /api/run-image-tag`
+  resolves the immutable run/query record to its image SHA-256 before writing, so the
+  tag is shared with Testset even when the original photo path has moved. Duplicate,
+  malformed, missing-run, missing-query, and missing-image writes are rejected.
+  Validation: all 17 run-route tests, all 11 lab OpenAPI tests, and all 40 embedding-run
+  compatibility tests pass; Python compilation, JavaScript syntax, and the diff check
+  pass. Port 8168 restarted with SIGTERM from PID 57926 to PID 8816; `GET /api/dataset`
+  returned HTTP 200. The live Runs view for `balaklava-muskat/04_conf095.jpg` shows its
+  current tag state, add control, and eight tag suggestions with no console errors. No
+  live tag was added during browser verification.
+
+- Every regular Testset candidate card now has a small top-right `Paste` button. A click
+  reads the first clipboard image and uploads it to that card's wine through the same
+  path as a dropped file, preserving image validation, duplicate rejection, generated
+  names, counts, and immediate row refresh. The control stays off the Drawer and No
+  Match cards, reports missing clipboard support or image data, and shifts the existing
+  comment/delete badges to avoid overlap. Validation: all 16 Testset HTTP route tests
+  and all 34 Testset model tests pass; JavaScript syntax and the diff check pass. Port
+  8168 restarted with SIGTERM from PID 23083 to PID 57926; `GET /api/dataset` returned
+  HTTP 200. The live partial Testset view shows 846 candidate Paste buttons with the
+  requested layout and none on special cards. No clipboard upload was submitted during
+  browser verification.
+
+- Reimplemented Testset photo Move as a chooser available from the viewer button, the
+  `m` key, and every photo's context menu. The chooser accepts a destination
+  `wine_slug` and ranks six catalogue cards by variant group, producer, name words,
+  grapes, category, and an existing proposal. Selecting a card's text moves through
+  the existing `POST /api/testset-move` route; selecting only its thumbnail opens a
+  larger catalogue-image preview. Validation: all 16 Testset HTTP route tests and all
+  34 Testset model tests pass; JavaScript syntax and the diff check pass. Port 8168
+  restarted with SIGTERM from PID 82427 to PID 23083; `GET /api/dataset` returned HTTP
+  200. The live linked `balaklava-muskat/04_conf095.jpg` view shows six ranked targets,
+  opens and closes the first thumbnail preview, and leaves the source photo in place.
+  No move was submitted during browser verification.
+
+- Testset catalogue-wine rows now show a persistent `☆` / `★` Favorites toggle beside
+  the wine name. It reads and writes the same global favorite state as Dataset through
+  `wine_favorite` and `POST /api/dataset-favorite`; the virtual No Match and Drawer rows
+  have no control. The toggle exposes its saved state and action to assistive technology
+  and disables itself while a request is in flight. Validation: all 16 Testset HTTP
+  route tests and all 34 Testset model tests pass; Python compilation, JavaScript syntax,
+  and the diff check pass. Port 8168 restarted with SIGTERM from PID 54519 to PID 82427;
+  `GET /api/dataset` returned HTTP 200. The live Testset page shows the control for the
+  linked Bakla Vines wine, preserves an existing favorite from Dataset, has no browser
+  console errors, and exposes no Favorite control for the special rows. Live favorite
+  data was not changed during browser verification.
+
+- The Testset photo viewer has a `Crop` rectangle tool (button or the `c` key). A drag
+  sends EXIF-oriented pixel coordinates to `POST /api/testset-crop`; the server makes a
+  lossless PNG and adds it as an unlabelled photo of the same wine without changing the
+  source. The page updates the row and photo totals immediately. Invalid and duplicate
+  crops are refused. Validation: all 15 route tests and all 34 testset model tests pass;
+  Python compilation, JavaScript syntax, and the diff check pass. Port 8168 restarted
+  with SIGTERM from PID 9774 to PID 52810, then from PID 52810 to PID 54519 so output
+  uses the required `work/lab_server.log`; `GET /api/dataset` returned HTTP 200. The live
+  linked `02_agent.jpg` view shows the Crop control and enters rectangle mode.
+
+- Added `android-siglip2-base-224-dis-white-rot5` with `rotation_step: 5`.
+- Added fixed-square rotated inputs for the Android DIS pipeline.
+- Applied DIS and `white_background` before rotation.
+- Applied `square_on_white` and the fixed 224 by 224 resize after rotation.
+- Kept the 0-degree input equal to the existing Android input.
+- Serialized the shared DIS LiteRT runtime during a multi-worker rotated build.
+- Kept the existing NaFlex rotation behavior and hashes unchanged.
+- Passed all 26 tests in `tests/test_rotated_embeddings.py`.
+- Passed all 134 tests selected by `test_*embedding*.py`.
+- Loaded all Android embedding configurations without an error.
+
+## 2026-10-02
+
+- The wine `__sovinon-blan-premium-beloe-polusladkoe-vino` is deleted from
+  `data/catalog/catalog.sqlite3` (owner request of 2026-10-02T22:28:07+0300, method
+  "Hard delete wine + images"). The Atlas import made it at 22:23 from Atlas product
+  `3503e756-2c67-487e-9719-c5dae526ec40`. The Atlas product is not changed. One
+  transaction deleted the rows of `wine_catalog`, `wine_image` (6), `wine_code` (1),
+  `wine_beverage_type` (1), and `wine_atlas_binding` (1). It also deleted the 6 source
+  images and their 10 cuts in `image`, with their rows in `image_derivative` (10),
+  `image_description` (6), `image_detail` (6), and `image_label_description` (6). No
+  other wine or test photo used these images. The 16 files in `images/additional/` and
+  `cuts/` are deleted. The foreign-key check and `quick_check` pass. `GET /api/dataset`
+  returns HTTP 200. The index `gx10-siglip2-so400m-patch16-512` keeps the 20 stale items
+  until its next build. The search ignores them, because it plans the items from the
+  database. Backups: `data/backups/lab-before-delete-sovinon-blan-premium-beloe-polusladkoe-vino-20261002T203348Z.sqlite3`
+  and the file `…-files.tar` with the same name.
+
+- The Testset Run dialog and the Runs page Re-run dialog allow a matcher base URL
+  override for `matcher-eval-predict` and `matcher-match-k20`. The optional HTTP(S)
+  origin replaces `http://192.168.86.14:28000` for one run. Each pipeline keeps its
+  configured path and query values. One value applies to both pipelines during a
+  parallel start. The API and runner reject invalid origins and reject an override for
+  another pipeline. The resolved full URL stays in `run.json` under `backend.url`.
+  The Runs table has a `URL override` column. It shows the full saved request URL,
+  including query values, when the run records an override. New runs record the entered
+  origin as `endpoint_override` in `run.json`, so later configuration changes do not
+  change this indication. For older runs, a changed origin identifies the override.
+  Runs that used the configured origin show `—`.
+  Validation: 116 focused tests, Python compilation, both page syntax checks, and the
+  OpenAPI checks passed. The live API exposes the configured origin for the two enabled
+  pipelines and `null` for `matcher-group-match`. Both live dialogs show the field and
+  validate it. The table follow-up passed 101 relevant tests, Python compilation,
+  JavaScript syntax, YAML parsing, and the diff check. The live table shows the override
+  URL for three existing runs and includes `?k=20` for the match pipeline. Port 8168
+  restarted from PID 90675 to PID 37568. `GET /api/dataset` returned HTTP 200.
+
+- The test set `official-test-2026-10-01` keeps both byte-identical query pairs as
+  separate rows with their original SHA-256 values. `020.webp` and `046.webp` now
+  reference `00008a…d1239`. `031.webp` and `077.webp` now reference `93cc45…c4b2ff`.
+  The file names, wine placements, labels, source image files, and the other 96 rows
+  remain unchanged. The live Testset API displays 100 photos. The benchmark query
+  builder returns 100 rows with both duplicate pairs. SQLite integrity and foreign-key
+  checks pass. A complete database backup is in
+  `data/backups/duplicate-test-photos/20261002T115251Z/`. Completed run artifacts keep
+  their recorded hashes. A new run reads the corrected test-set hashes.
+
+- The Runs page has `Export predictions.jsonl` and `Export expected.jsonl` buttons.
+  The read-only routes `/api/run-predictions?id=<id>` and
+  `/api/run-expected?id=<id>` export compact JSON with a fixed field order and a
+  stable row order. Page filters do not affect the exports. The expected export uses
+  each saved truth slug as `predicted_slug`. It uses `null` for no-match and negative
+  rows. It uses `0` for each `latency_ms`.
+  For `official-test-2026-10-01`, photo numbers set the sample filenames and query IDs.
+  Other test sets keep their saved IDs and paths. Saved hashes, predictions, null
+  values, and latency values remain unchanged. Invalid records cause an error.
+  API documentation and smoke checks describe the exports. Validation: 15 run route
+  tests, 11 OpenAPI tests, four page tests, and JavaScript syntax passed. The live
+  prediction export matches the sample IDs and paths. The target run expected export
+  has 100 rows: 95 truth slugs and five null values. All expected latency values are
+  zero. The expected and prediction row identities match. The source run files are
+  unchanged. Port 8168 restarted with SIGTERM from PID 78862 to PID 40884.
+  `GET /api/dataset` and the live expected export returned HTTP 200. The browser button
+  is enabled and reports `Exported expected.jsonl`.
+
+- The lab evidence reranker retries an invalid response once with validation feedback
+  and cache lookup disabled for the retry. It preserves raw answers, per-question
+  errors, and both attempts. Fresh invalid responses are not cached. Only a fully
+  valid response changes the ranking. The run row and step popup use one evidence
+  renderer. Older runs identify missing recorded scores correctly. Validation: 107
+  focused tests passed across cluster rerank, label rules, shared barcodes, run steps,
+  page assembly, and retry rendering. JavaScript syntax passed. Port 8168 was restarted
+  with its existing system Python; dataset and page checks passed.
+
+- The website compare is enabled again (owner message of 02:07, "return back button to sync
+  with website"). `COMPARE_ENABLED = True` in `pipeline/import_website.py`. The button
+  `Import from website` shows again on `/dataset`. `POST /api/website-import/start`, the
+  CLI, and `--prepare` work again. The switch of 2026-09-29 stays in the code: the value
+  `False` disables the compare again. Docstrings, `README.md`, `COMMANDS.md`, and
+  `SMOKE_TESTS.md` (IW section) follow the change. The test
+  `test_the_code_ships_with_the_compare_enabled` replaces the test of the disabled default,
+  and one assertion of `tests/test_lab_server.py` expects `"compare_enabled": true`. Tests:
+  `test_import_website` 37 OK, `test_website_import_routes` 7 OK, `test_lab_server` 70 OK.
+
 ## 2026-10-01
 
 - `pipeline/pages/dataset.html`: the heading of the Dataset page shows `loading…` until
@@ -52,6 +283,12 @@
   default endpoint (port 8080, `cascade-p512-rot5`): positive 55 of 59 at rank 1, negative
   false match 6 of 25, latency p50 1.37 s, max 2.71 s.
 
+- The root `.gitignore` ignores `tmp/` and `output/` (owner message of about 14:05). The
+  rules have no leading slash, so they also cover `workbench/tmp/` and
+  `workbench/output/`. The untracked `tmp/video-transcript/`,
+  `output/bottle-reconstruction/`, and `output/bottle-rotation/` no longer show in
+  `git status`. The 15 files that git tracked before stay tracked, for example
+  `output/imagegen/` and `workbench/output/pdf/main-scene-selection.pdf`. No commit.
 - Deployment on the Selectel host `faith` (161.104.55.72, RTX 4090 48 GB), session 17
   (owner message of about 11:26, answers of 11:36): profile D with a local Qwen3.5-9B,
   the matcher pipeline `cascade-p512-rot5`, and a second matcher port `127.0.0.1:8080` (the
@@ -72,6 +309,17 @@
   `participant_test.sh` 3 of 3 on ports 8158 and 8080 (1.2–1.5 s). Docs: `../docs/deploy/` (new page
   `65-cascade.md`). Journal: `../internal/MY_JOURNEY.md`, `../internal/ISSUES.md`.
 
+- The root `.gitignore` has one rule `workbench/runs*` for all run directories (owner
+  message of about 13:40). It replaces the rules `workbench/runs/` and
+  `/workbench/runs-1/`. The 32 files of the four BENCHMARKS.md runs in `runs-1/` stay
+  tracked; they were added with `git add -f`.
+
+- The VLM comparison report holds `minicpm-v-4.5` too (owner message of 10:34):
+  `docs/reports/minicpm-vs-qwen35-9b-2026-10-01.md`. The same 100 images; four lab re-rank
+  runs on `my` with the index of 10:46 (base, qwen, minicpm-v-4.6, minicpm-v-4.5). Result:
+  minicpm-v-4.5 is valid and close to qwen (re-rank R@1 82.55% against 82.60%), but 2 to 3
+  times slower for each call; keep `qwen3.5-9b-nvfp4`. No change of `config.yaml` or of the
+  database.
 - The label package of `shmelev_shmeleva_risling` moved from
   `output/pdf/shmelev_shmeleva_risling/` to `samples/shmelev_shmeleva_risling/` (owner
   message of about 12:52). The package holds the front, back, and A4 PDFs, the PNG
@@ -79,6 +327,28 @@
   scripts resolve paths from their own folder, so they work at the new place. The
   `ResearchLog.md` entry about the EAN-13 `4618081983745` names the new path. The zip
   `output/pdf/shmelev_shmeleva_risling_complete.zip` stays at its place.
+- Removed the Web UI mock prediction and the test wine `__aaaaa` (owner messages of about
+  12:20 and 12:24, answers of 12:30 and 12:37). Details are in `../webui/ChangeLog.md`
+  and `../matcher/ChangeLog.md`. `../README.md` has a new section «Быстрый запуск с
+  реальным распознаванием» (matcher + Web UI). `../SETUP.md` has no Web UI section without
+  models. `../eval/README.md` states that the bundle is tracked in Git.
+
+- The root `.gitignore` ignores the directory `internal/` in the project root (owner
+  message of about 11:23). The rule is `/internal/`. The directory was empty, and git
+  tracked no file in it.
+
+- Plan 97, part 2 (owner message of about 10:50): the rules of all clusters with a vintage
+  tag are built again. 18 vintage tags (12 at 00:08) made 43 clusters of the 6 embeddings
+  stale; `build_label_rules.py --cluster … --wait` built each one (43 calls to
+  `qwencloud-qwen3.8-max`, about 2.5 min each, 3 embeddings at a time). One call failed
+  with the transient service error `Download multimodal file timed out` (HTTP 400) and
+  passed on the retry. All 44 tagged rules have mode `sheet` and the tag note; 42 hold a
+  valid vintage question, for example 2023 / 2024 / `other` (`a5f80f0af1f8`). A dry run
+  of each tagged cluster gives `todo: 0`. The sentence "The pipeline does not read the
+  tags" is fixed in the docstrings of `pipeline/wine_tags.py` and `pipeline/lab_server.py`
+  (the owner allowed it) and in `README.md` (section of plan 63). No restart: a docstring
+  change of `lab_server.py` needs none.
+
 - A checkpoint commit of all sessions' work (owner message of about 10:40, answers of
   about 10:50). The run directory `workbench/runs/` was renamed to `workbench/runs-1/` on
   2026-09-30 with no record. The root `.gitignore` now ignores `/workbench/runs-1/`
@@ -5893,6 +6163,82 @@ Reviewed all 84 rows of `2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5
 - Saved record-level evidence in `docs/reviews/2026-10-01_dataset-audit-evidence.json`.
 - Kept catalogue data and product code unchanged. No restart or push.
 
+## 2026-10-01T13:28:31.941012+03:00 — Dataset audit recheck (Codex)
+
+- Rechecked 2,125 catalogue records, 12,254 image paths, and 481 referenced Atlas products. SQLite integrity, foreign keys, image existence, and code validation passed.
+- Confirmed five removals, three replacement patches, four removed wrong Atlas links, and one resolved cross-producer collision from the earlier audit.
+- Confirmed 12 remaining wrong-producer Atlas bindings from product photos. Reported the unresolved Endemy identity and code mismatch, one image-less Active wine, the Sober Bash image mismatch, dry/semi-dry Kokur, seven vintage mismatches, and four metadata contradictions.
+- Saved the ten current findings in `../internal/dataset-audit-recheck-20261001.json`. Catalogue and product code stayed read-only.
+
+## 2026-10-01T13:53:45+03:00 — Dataset deep audit (Codex)
+
+- Rechecked all 2,125 catalogue records, 516 Atlas bindings to 482 products, and 249 stored codes. All 12,278 registered image files (7.44 GB) decoded and matched their stored SHA-256 and dimensions. SQLite integrity, foreign keys, derivative bounds and code normalization passed.
+- Ranked ten current record-level issues, prioritizing wrong unique barcodes and wrong image references. Newly verified the retained Viognier barcode on corrected Burnier Pinot Blanc, LETO sugar/blend mixing, wrong Sober Bash Cabernet Franc and KD/Zhemchuzhnaya grape labels, and other identity conflicts.
+- Saved full evidence in `../internal/dataset-audit-deep-20261001.json`, including 32 confirmed wrong Atlas bindings and additional metadata contradictions. The two recent removals and both corrected Nebbiolo bindings were excluded from unresolved findings.
+- Catalogue and application code stayed read-only; no model service calls, rebuilds, benchmark runs, restart, commit or push.
+
+## 2026-10-01T14:31:16+03:00 — Repeat dataset deep audit (Codex)
+
+- Checked the snapshot at 2026-10-01T14:28:34+03:00: 2,126 wines (2,109 Active), 12,319 image files, 246 codes and 512 bindings to 478 Atlas products. Database integrity, foreign keys, file hashes, decoding, dimensions, code syntax and Dataset API parity passed.
+- Confirmed three new QR ownership faults. Shared ESSE, Wine Guide and Perovsky URLs are unique to wrong target records in the catalogue. Independent OpenCV decoding and the actual `barcode.CodeLookup` reproduced all three wrong selections.
+- Confirmed the Burnier barcode correction and removal of the two reported LETO sugar/blend conflicts. Seven previous first-ten findings remain. Rechecked the 32 other wrong Atlas bindings.
+- Saved the ranked ten findings and evidence in `../internal/dataset-audit-20261001-142051.json`. No catalogue change, application change, model call, restart, commit or push.
+
+## 2026-10-01T14:52:42+03:00 — Repeat dataset deep audit (Codex)
+
+- Checked the snapshot at 2026-10-01T14:48:40+03:00: 2,126 wines (2,109 Active), 12,359 registered image files, 245 codes, and 514 bindings to 480 Atlas products. Integrity, foreign keys, file hashes, decoding, dimensions, crop bounds, code syntax, and Dataset API identity/code/binding parity passed.
+- Reproduced the Perovsky shared QR fault after its move from Cabernet Franc to Semillon. ESSE and AGORA shared QR mappings and the Chateau Pinot Chardonnay/Riesling Atlas binding are fixed. Six earlier image/metadata findings remain.
+- Scanned 2,877 effective reference images for QR codes, with a second pass on 776 alternatives. Eight images decoded; no additional direct-reference conflict was found. This limited decode coverage does not prove all other QR ownership is correct.
+- Reconfirmed 31 wrong Atlas bindings. Visually checked three severe producer/product-type mismatches for the ranked ten. Added evidence for Two Peters Sauvignon red/Saperavi metadata and three indistinguishable Soyuz Vino box references.
+- Saved evidence in `../internal/dataset-audit-20261001-143759.json`. Catalogue and application code stayed read-only. No remote model call, restart, benchmark run, commit, or push.
+
+## 2026-10-03T23:18:00+0300 — Dataset API survives a revoked request log (Codex)
+
+- Fixed the repeated empty reply from `/api/dataset`: API request logging no longer
+  aborts an HTTP response when redirected stderr has been revoked or closed.
+- Added a regression that makes the request log raise `OSError` and verifies that the
+  Dataset API still returns HTTP 200.
+- All 71 `tests/test_lab_server.py` tests pass. Restarted the lab server with SIGTERM;
+  PID 9554 serves `/api/dataset` and `/dataset` with HTTP 200.
+
+
+## 2026-10-06 — DINOv3 + ArcFace
+
+- Inspected Pomelkin/vinishko revision `cbb148703bb33aa302c9916f0165e33a1ae975ab`.
+  Added a frozen DINOv3 projection trainer with sub-center ArcFace, class-frequency
+  margins, balanced class sampling, PCA initialization, and source-disjoint
+  validation. The trainer excludes conflicting catalogue IDs and groups exact
+  duplicate derivatives. It does not read benchmark query labels or send images.
+- Added an optional `arcface` checkpoint to embedding entries. The catalogue build
+  and query runner apply the same NumPy projection. The checkpoint hash enters the
+  cache hash. Checkpoint loading verifies its bytes and base model settings.
+  Local DINOv3 inference now supports `pooler_output` without `get_image_features`.
+- Trained a 512-dimensional ViT-L/16 projection for 30 epochs on 5,909 current
+  unambiguous vectors from 2,028 wine identities. The validation split contains
+  489 rows from 294 source groups. The metrics score 487 rows; two rows have no
+  same-view training reference. There are 1,798 identities with one source group
+  and no independent validation query. Epoch 24 was selected. Weighted validation
+  R@1/R@5/R@10 increased from 32.25/59.90/67.41% to 43.34/80.20/89.76%.
+  These are checkpoint-selection validation results, not untouched test results.
+- Saved the complete artifact in `data/models/dinov3-vitl16-arcface-20261006-v2/`.
+  Its separate index has 5,939 vectors of 512 values. The generated configuration
+  contains full-photo and crop pipelines. The shared lab configuration and
+  production endpoints stay unchanged. Preserved the first attempt in
+  `work/arcface/first-attempt/` after a report serialization error was corrected.
+- Validation: all 17 ArcFace, 28 embedding configuration, 17 catalogue build, and
+  40 retrieval runner tests pass (102 total). Ruff, Python compilation, and the
+  diff check pass. The saved checkpoint hash, normalized vectors, two pipeline
+  entries, zero split overlap, and 64 catalogue projection parity cases pass.
+  Added the workflow to `docs/arcface.md` and commands to `COMMANDS.md`.
+
+
+## 2026-10-06T15:27:16+03:00 — Drawer comparison controls (Codex)
+
+- Added previous and next candidate buttons, arrow keyboard shortcuts, and a candidate counter. Navigation keeps the matched photo fixed and stops at the first and last candidate.
+- Added an editable `Move to wine_slug` field with `__null__` as its default. Move or Enter uses the existing Testset move route. The move clears the annotation and preserves the photo comments and image tags.
+- Disabled navigation and move controls during a save. Arrow keys edit the destination field while it has focus. Stale Drawer photos cannot be moved through this control.
+- Validation: all 20 Testset route tests and 4 page tests pass. JavaScript syntax and behavior checks cover navigation, destination payload, empty destinations, save locking, errors, and stale photos. The live page serves both controls without a restart.
+
 
 ## 2026-10-06T18:32:38+0300 — Workbench bottlenecks
 
@@ -5925,3 +6271,18 @@ Reviewed all 84 rows of `2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5
 - Select only this session's run index, persistent summary, cluster, configuration, and response cache changes for the local commit. Preserve other sessions' changes in the working tree.
 - Validation: an isolated copy of the committed baseline with the selected changes passes 101 tests, including HTTP run routes and cache freshness checks. The shared checkout passed 153 focused tests; all seven response-cache tests pass again after the compatibility adjustment. Evidence: ../internal/workbench-bottlenecks-20261006/tests-commit-baseline.json.
 - The response source revision includes image_tags.py when present and works without that separate feature. No push.
+
+
+## 2026-10-06T20:21:31+0300 — Verify reviewed dataset adapter
+
+- The owner requested the reviewed dataset adapter in lab_server.py. The complete patch was already applied and live by another session; git apply --reverse --check confirms both hunks. Preserve the current server source and listener PID 45198.
+- Validation: all 11 dataset-cache tests pass. Two live /api/dataset requests return HTTP 200 with identical 6,648,486-byte bodies. Elapsed reads: 0.655 s and 0.307 s. No additional server restart. Evidence: ../internal/workbench-bottlenecks-20261006/dataset-adapter-live-verification.json.
+
+
+## 2026-10-06T21:07:54+03:00 — Remaining Workbench bottleneck audit
+
+- Read the request, page, run-detail, recognition, embedding-build, and cache paths. Profile local reads and test private reuse experiments. Production code and catalogue data stay unchanged. No server restart or new model call by this audit.
+- The Runs page waits for an optional cluster hint before showing rows. Checked artifact and configuration reuse changes the hint function from 396 to 14 ms. Recognition choices change from 582 to 7 ms by reusing configuration and deduplicating readiness scans. Candidate popups change from 166 to 14 ms by reusing checked index and image membership data.
+- Rotated-thumbnail reuse changes the tested step popup from 3645 to 771 ms. The actual Dataset filter in Node changes from 445 to 53 ms for an empty query. Output hashes and selected record order match in the tested cases. Production cache limits and mutation invalidation still need tests.
+- A private checked JSON and NPY snapshot loads and ranks in 17.78 ms, versus 720 ms for catalogue construction alone. Three query results match. This comparison excludes process imports, model loading, and inference. Cached gzip variants reduce list response bytes by 78 to 83 percent. Full card DOM rendering still needs browser measurement.
+- Host contention affects wall time. Paired CPU measurements also fall. These are private prototype results, not deployed endpoint timings. Evidence and recommended order: ../internal/workbench-bottlenecks-20261006/remaining-audit/audit-summary.json.

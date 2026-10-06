@@ -8,7 +8,7 @@ docs/plans/34_pipeline-section.md.
     GET  /api/run-jobs                       the job of each pipeline
     POST /api/run-jobs                       start a job: {"configuration", "set",
                                              "limit", "workers", "use_cache",
-                                             "use_barcode", "device_ip",
+                                             "use_barcode", "device_ip", "endpoint",
                                              "repeat_failed"}, or the self-test of one
                                              embedding: {"selftest", "limit",
                                              "workers", "use_cache"}
@@ -45,6 +45,8 @@ import urllib.parse
 import benchmark
 import embeddings
 import pipelines
+from job_status_cache import STATUS_CACHE
+from settings_cache import SETTINGS_CACHE
 
 JOBS_DIR = os.path.join(embeddings.ROOT, "work", "run-jobs")
 RUNNER_NAME = "run_job.py"
@@ -157,6 +159,11 @@ def read_events(directory):
 
 
 def job_state(directory):
+    """Read current job status. Reuse a status only while its inputs stay equal."""
+    return STATUS_CACHE.get(directory, _read_job_state, running_pid, (LOG, LOCK))
+
+
+def _read_job_state(directory):
     """Return the job of one pipeline from `job.lock` and `job.log`.
 
     `state` is None (no job yet), `running`, `stopping`, `done`, `stopped`, or
@@ -172,10 +179,11 @@ def job_state(directory):
     named = next((e for e in reversed(run) if e["event"] == "run_dir"), {})
     pid = running_pid(directory)
     job = {"state": None, "pid": pid, "set": start.get("set"),
+           "drawer_only": bool(start.get("drawer_only")),
            "todo": progress.get("todo", start.get("todo")), "done": progress.get("done", 0),
            "errors": progress.get("errors", 0), "limit": start.get("limit"),
            "workers": start.get("workers"), "started_t": start.get("t"),
-           "device_ip": start.get("device_ip"),
+           "device_ip": start.get("device_ip"), "endpoint": start.get("endpoint"),
            "started_at": start.get("time"), "ended_t": final.get("t"),
            "run_id": final.get("run_id") or named.get("run_id"),
            "message": final.get("message")}
@@ -265,6 +273,16 @@ def query_count(db_path, set_name):
     return len(rows)
 
 
+def drawer_query_count(db_path, set_name):
+    """Return the number of current, undeleted photos waiting in the Drawer."""
+    conn = benchmark.open_database(db_path)
+    try:
+        rows, _ = benchmark.build_drawer_queries(conn, db_path, set_name)
+    finally:
+        conn.close()
+    return len(rows)
+
+
 def configurations_view(settings, jobs_dir, set_name):
     """Return each pipeline of `settings` (`pipelines.Pipelines`) with its job, and the
     count of the queries of the set."""
@@ -275,8 +293,11 @@ def configurations_view(settings, jobs_dir, set_name):
                     "runnable": can, "reason": reason,
                     "workers": default_workers(pipeline), "barcode": has_barcode(pipeline),
                     "device_ip": bool(pipeline and pipeline.device_ip),
+                    "endpoint": (pipelines.endpoint_origin(pipeline)
+                                 if pipeline and pipeline.endpoint_override else None),
                     "job": job(jobs_dir, name)})
     return {"set": set_name, "queries": query_count(settings.db_path, set_name),
+            "drawer_queries": drawer_query_count(settings.db_path, set_name),
             "configurations": out}
 
 
@@ -336,6 +357,13 @@ def start(settings, jobs_dir, body, runs_dir=None):
         repeat_failed = False
     if not isinstance(repeat_failed, bool):
         return 400, {"error": "repeat_failed MUST be true or false"}
+    drawer_only = body.get("drawer_only")
+    if drawer_only is None:
+        drawer_only = False
+    if not isinstance(drawer_only, bool):
+        return 400, {"error": "drawer_only MUST be true or false"}
+    if drawer_only and repeat_failed:
+        return 400, {"error": "repeat_failed is not valid for a Drawer match"}
     try:
         pipeline = settings.find(name)
     except KeyError:
@@ -344,6 +372,7 @@ def start(settings, jobs_dir, body, runs_dir=None):
         return 400, {"error": "pipeline %s: %s" % (name, exc)}
     try:
         device_ip = pipelines.bind_device_ip(pipeline, body.get("device_ip"))
+        endpoint = pipelines.bind_endpoint(pipeline, body.get("endpoint"))
     except embeddings.ConfigError as exc:
         return 400, {"error": str(exc)}
     can, reason = runnable(pipeline, None, settings.db_path)
@@ -354,19 +383,26 @@ def start(settings, jobs_dir, body, runs_dir=None):
     except embeddings.ConfigError as exc:
         return 400, {"error": str(exc)}
     try:
-        if not query_count(settings.db_path, set_name):
-            return 400, {"error": "the set %s gives no query" % set_name}
+        total = (drawer_query_count(settings.db_path, set_name) if drawer_only
+                 else query_count(settings.db_path, set_name))
+        if not total:
+            return 400, {"error": ("the Drawer of %s gives no query" if drawer_only
+                                   else "the set %s gives no query") % set_name}
     except benchmark.BenchmarkError as exc:
         return 404, {"error": str(exc)}
     directory = job_dir(jobs_dir, name)
     command = [python, RUNNER, "--config", settings.config_path, "--name", name,
                "--set", set_name, "--jobs-dir", jobs_dir]
+    if drawer_only:
+        command.append("--drawer-only")
     if limit:
         command += ["--limit", str(limit)]
     if workers:
         command += ["--workers", str(workers)]
     if device_ip:
         command += ["--device-ip", device_ip]
+    if endpoint:
+        command += ["--endpoint", endpoint]
     if not use_cache:
         command.append("--no-cache")
     if not use_barcode and has_barcode(pipeline):
@@ -386,7 +422,8 @@ def start(settings, jobs_dir, body, runs_dir=None):
                                        start_new_session=True)
         _PROCESSES[directory] = process
     return 202, {"name": name, "set": set_name, "state": "running", "pid": process.pid,
-                 "device_ip": device_ip, "repeat_failed": repeat_failed}
+                 "device_ip": device_ip, "endpoint": endpoint,
+                 "repeat_failed": repeat_failed, "drawer_only": drawer_only}
 
 
 def start_selftest(settings, jobs_dir, body, runs_dir=None):
@@ -401,6 +438,8 @@ def start_selftest(settings, jobs_dir, body, runs_dir=None):
         return 400, {"error": "a self-test takes no configuration and no set"}
     if body.get("device_ip") is not None:
         return 400, {"error": "device_ip is not valid for a self-test"}
+    if body.get("endpoint") is not None:
+        return 400, {"error": "endpoint is not valid for a self-test"}
     if body.get("repeat_failed"):
         return 400, {"error": "repeat_failed is not valid for a self-test"}
     try:
@@ -481,7 +520,10 @@ def respond(server, method, path, read_body):
     config_path = getattr(server, "config_path", None) or embeddings.CONFIG_PATH
     jobs_dir = getattr(server, "run_jobs_dir", None) or JOBS_DIR
     try:
-        settings = pipelines.load(config_path)
+        if route == API_JOBS and method in ("GET", "HEAD"):
+            SETTINGS_CACHE.check(config_path, pipelines.load)
+        else:
+            settings = SETTINGS_CACHE.get(config_path, pipelines.load)
     except embeddings.ConfigError as exc:
         return 503, {"error": str(exc)}, JSON, NO_STORE
 

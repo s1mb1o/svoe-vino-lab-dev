@@ -192,9 +192,10 @@ class FakeVlm:
                              '"other":0,"not visible":0}}'), fail=None):
         self.text, self.fail, self.calls = text, fail, []
 
-    def __call__(self, entry, content, max_tokens, thinking, timeout, schema=None):
+    def __call__(self, entry, content, max_tokens, thinking, timeout, schema=None,
+                 cache_read=True, cache_validator=None):
         self.calls.append({"content": content, "schema": schema, "thinking": thinking,
-                           "max_tokens": max_tokens})
+                           "max_tokens": max_tokens, "cache_read": cache_read})
         if self.fail:
             raise self.fail
         return {"text": self.text, "ms": 7, "usage": {}, "finish_reason": "stop",
@@ -281,6 +282,66 @@ class BackendTest(unittest.TestCase):
         out = backend.ask("p")[0]
         self.assertEqual([candidate["slug"] for candidate in out], [A, B])
         self.assertIn("total 90", out[0]["explain"]["error"])
+        explain = out[0]["explain"]
+        self.assertEqual(len(vlm.calls), 2)
+        self.assertFalse(vlm.calls[1]["cache_read"])
+        self.assertEqual(len(explain["attempts"]), 2)
+        self.assertEqual(explain["raw_option_scores"]["q1"]["semi-dry"], 10)
+        self.assertEqual(explain["option_scores"], {})
+        self.assertIn("total 90", explain["validation_errors"]["q1"])
+
+    def test_a_retry_corrects_a_zero_sum_without_losing_the_first_answers(self):
+        rule = sheet_rule(slugs=(A, B), answers={A: "SAUVIGNON", B: "SAPERAVI"})
+        rule["questions"] += [
+            {"id": "q2", "question": "Sugar?", "kind": "feature", "valid": False,
+             "answers": {A: "dry", B: None}},
+            {"id": "q3", "question": "Colour?", "kind": "feature", "valid": False,
+             "answers": {A: "white", B: None}}]
+        raw = {"q1": {"SAUVIGNON": 0, "SAPERAVI": 100, "other": 0, "not visible": 0},
+               "q2": {"dry": 100, "other": 0, "not visible": 0},
+               "q3": {"white": 0, "other": 0, "not visible": 0}}
+        calls = []
+
+        def ask(*args, **kwargs):
+            calls.append((args, kwargs))
+            reply = json.loads(json.dumps(raw))
+            if len(calls) == 2:
+                reply["q3"]["other"] = 100
+            self.assertEqual(kwargs["cache_validator"](reply), len(calls) == 2)
+            return {"text": json.dumps(reply), "cached": len(calls) == 1,
+                    "ms": 11842 if len(calls) == 1 else 100, "finish_reason": "stop"}
+
+        base = [{"slug": A, "score": 0.8608, "rank": 1},
+                {"slug": B, "score": 0.8316, "rank": 2}]
+        backend = self.make([rule], (base, 10, 200, None, None), ask)
+        out = backend.ask("p")[0]
+        self.assertEqual([c["slug"] for c in out], [B, A])
+        explain = out[0]["explain"]
+        self.assertIsNone(explain["error"])
+        self.assertEqual(explain["decision_scores"], {A: 0.877467, B: 0.8816})
+        self.assertEqual(explain["attempts"][0]["raw_option_scores"], raw)
+        self.assertEqual(set(explain["attempts"][0]["validation_errors"]), {"q3"})
+        self.assertIn("q3 total 0", calls[1][0][1][-1]["text"])
+        self.assertFalse(calls[1][1]["cache_read"])
+        self.assertEqual(explain["ms"], 100)  # Cached latency is not charged to the retry.
+        self.assertFalse(explain["cached"])
+
+    def test_retry_transport_failure_preserves_the_rejected_response(self):
+        vlm = FakeVlm('{"q1":{"semi-dry":0,"other":0,"not visible":0}}')
+
+        def ask(*args, **kwargs):
+            if vlm.calls:
+                raise RuntimeError("retry unavailable")
+            return vlm(*args, **kwargs)
+
+        backend = self.make([one_sided_rule()], (cands(A, B), 10, 200, None, None), ask)
+        out = backend.ask("p")[0]
+        explain = out[0]["explain"]
+        self.assertEqual(out[0]["slug"], A)
+        self.assertIn("retry unavailable", explain["error"])
+        self.assertEqual(explain["raw_option_scores"]["q1"]["semi-dry"], 0)
+        self.assertEqual(len(explain["attempts"]), 2)
+        self.assertIn("total 0", explain["attempts"][0]["error"])
 
     def test_a_vlm_failure_keeps_the_base_order_and_records_the_error(self):
         backend = self.make([sheet_rule()], (cands(A, B), 100, 200, None, None),

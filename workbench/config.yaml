@@ -84,8 +84,30 @@ qr_scanner:
 # close-up goes to the view `label` as it is. The entries are the image embedding models
 # of gx10 on the screenshot of the owner of 2026-09-25.
 embeddings:
-  # Android application parity. The first entry uses its DIS LiteRT preprocessing.
-  # The second entry gives a direct comparison with the present SAM3 package cut.
+  # Android application parity. The rotated entry is the production Android index.
+  # It creates 72 reference vectors for each image at 5-degree intervals. The plain
+  # entry stays available for comparison. The SAM3 entry compares package cuts.
+  - name: android-siglip2-base-224-dis-white-rot5
+    backend: openai
+    base_url: http://192.168.86.14:18081/v1
+    model: vit_base_patch16_siglip_224.v2_webli
+    batch_size: 16
+    rotation_step: 5
+    views:
+      full:
+        steps:
+          - step: segment_dis
+            model: litert-community/DIS-ISNet-LiteRT
+            revision: 1b966dbe2f33bd5ca1299cf94fbab59265210b6b
+            threshold: 0.5
+            margin: 0.04
+          - step: white_background
+          - step: square_on_white
+          - step: resize
+            max_size: 224
+            aspect: ignore
+            upscale: true
+
   - name: android-siglip2-base-224-dis-white
     backend: openai
     base_url: http://192.168.86.14:18081/v1
@@ -402,6 +424,7 @@ pipeline:
   - name: matcher-eval-predict
     backend: svoe-vino-ru
     url: http://192.168.86.14:28000/v1/eval/predict
+    endpoint_override: true
     response: slug-object
     top_k: 1
     timeout_s: 60
@@ -411,6 +434,7 @@ pipeline:
   - name: matcher-match-k20
     backend: svoe-vino-ru
     url: http://192.168.86.14:28000/v1/match
+    endpoint_override: true
     response: candidates
     query: { k: 20 }
     top_k: 20
@@ -452,6 +476,18 @@ pipeline:
     query: { k: 5 }
     top_k: 20
     timeout_s: 120
+    workers: 1
+
+  # SAM3 bottle masks, SigLIP2 p512 rot5, and Qwen 9B label verification.
+  # The remote route uses matcher.group_pipeline on GX10. Production currently
+  # selects this named pipeline. Keep one worker and allow time for the label reads.
+  - name: siglip2-p512-rot5-seg-vlm9b
+    backend: svoe-vino-ru
+    url: http://192.168.86.14:28000/v1/group/match
+    response: group
+    query: { k: 5 }
+    top_k: 20
+    timeout_s: 300
     workers: 1
 
   # Android parity pipelines. Both pipelines use the prepared Android SigLIP2 Base 224

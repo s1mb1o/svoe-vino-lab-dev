@@ -15,6 +15,7 @@ the key `embeddings` of `config.yaml`. A run with no such key has no configurati
 """
 import json
 import os
+import urllib.parse
 from collections import OrderedDict
 from threading import Lock
 
@@ -79,6 +80,29 @@ def test_set_of(meta):
     return value if isinstance(value, str) and value else None
 
 
+def effective_backend_url(spec):
+    """Return the full request URL of one saved or configured backend.
+
+    `HttpMultipartBackend` appends the `query` mapping to `url`. Keep the same rule here,
+    so the Runs table shows the URL that the backend used, including values such as
+    `?k=20`.
+    """
+    if not isinstance(spec, dict):
+        return None
+    url = spec.get("url")
+    if not isinstance(url, str) or not url:
+        return None
+    query = spec.get("query")
+    if isinstance(query, dict) and query:
+        try:
+            join = "&" if urllib.parse.urlsplit(url).query else "?"
+        except ValueError:
+            return url
+        url += join + urllib.parse.urlencode({key: str(value)
+                                              for key, value in query.items()})
+    return url
+
+
 def run_head(runs_dir, run_id):
     """Return the short record of one run for the table of the runs."""
     meta = read_json(run_path(runs_dir, run_id, "run.json")) or {}
@@ -86,12 +110,17 @@ def run_head(runs_dir, run_id):
     pos = met.get("positive") or {}
     neg = met.get("negative") or {}
     lat = met.get("latency_ms") or {}
+    endpoint_override = meta.get("endpoint_override")
     return {
         "id": run_id,
         "configuration": configuration_of(meta),
         "set": test_set_of(meta),
+        "query_scope": meta.get("query_scope") if isinstance(meta.get("query_scope"), str) else None,
         "backend": (met.get("backend") or (meta.get("options") or {}).get("backend")
                     or "—"),
+        "backend_url": effective_backend_url(meta.get("backend")),
+        "endpoint_override": (endpoint_override if isinstance(endpoint_override, str)
+                              and endpoint_override else None),
         "label": (meta.get("backend") or {}).get("label", ""),
         "started": meta.get("started") or "",
         "finished": meta.get("finished") or "",

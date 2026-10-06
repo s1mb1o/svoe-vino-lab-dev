@@ -28,6 +28,7 @@ The backends:
 The owner removed the pipeline `mock` and its code on 2026-09-26T00:26:27+0300.
 """
 import ipaddress
+import urllib.parse
 
 import barcode
 import cluster_rerank
@@ -44,7 +45,7 @@ BACKENDS = (REMOTE_BACKEND, EMBEDDING_BACKEND)
 # `backends.yaml`, and the defaults of `match_backends.HttpMultipartBackend`. Read
 # docs/plans/31_remote-configuration.md.
 REMOTE_KEYS = ("url", "field", "response", "query", "top_k", "timeout_s", "workers", "headers")
-REMOTE_PARAMETER_KEYS = ("device_ip",)
+REMOTE_PARAMETER_KEYS = ("device_ip", "endpoint_override")
 REMOTE_DEFAULTS = {"field": "image", "response": "auto", "query": {}, "top_k": 1,
                    "timeout_s": 30, "workers": 1, "headers": {}}
 # The answer shapes of `match_backends.SHAPES`. A test keeps the two lists equal.
@@ -123,10 +124,14 @@ class Pipeline:
             raise ConfigError("the backend %s takes no %s" % (self.backend, ", ".join(unknown)))
         self.remote = _remote(raw) if self.backend == REMOTE_BACKEND else None
         self.device_ip = False
+        self.endpoint_override = False
         if self.remote is not None:
             self.device_ip = raw.get("device_ip", False)
             if not isinstance(self.device_ip, bool):
                 raise ConfigError("device_ip MUST be true or false")
+            self.endpoint_override = raw.get("endpoint_override", False)
+            if not isinstance(self.endpoint_override, bool):
+                raise ConfigError("endpoint_override MUST be true or false")
             placeholder = "{device_ip}" in self.remote["url"]
             if self.device_ip and not placeholder:
                 raise ConfigError("url MUST contain {device_ip} when device_ip is true")
@@ -172,6 +177,49 @@ def bind_device_ip(pipeline, value):
     address = check_device_ip(value)
     pipeline.remote["url"] = pipeline.remote["url"].replace("{device_ip}", address)
     return address
+
+
+def check_endpoint_origin(value):
+    """Return a canonical HTTP(S) origin for a run endpoint override."""
+    if not isinstance(value, str) or not value.strip():
+        raise ConfigError("endpoint MUST be an HTTP(S) origin")
+    try:
+        parts = urllib.parse.urlsplit(value.strip())
+        parts.port  # Validate a numeric port in the range accepted by URL parsers.
+    except ValueError as exc:
+        raise ConfigError("endpoint MUST be a valid HTTP(S) origin") from exc
+    if (parts.scheme not in ("http", "https") or not parts.netloc or parts.hostname is None
+            or parts.username is not None or parts.password is not None
+            or any(char.isspace() for char in value.strip()) or parts.netloc.endswith(":")
+            or parts.path not in ("", "/") or parts.query or parts.fragment):
+        raise ConfigError("endpoint MUST be an HTTP(S) origin with no path, query, "
+                          "fragment, or credentials")
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, "", "", ""))
+
+
+def endpoint_origin(pipeline):
+    """Return the configured origin of a remote pipeline."""
+    parts = urllib.parse.urlsplit(pipeline.remote["url"])
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, "", "", ""))
+
+
+def bind_endpoint(pipeline, value):
+    """Replace the origin of a remote pipeline URL for one run.
+
+    Return the canonical override, or None when this run uses the configured URL.
+    """
+    if not getattr(pipeline, "endpoint_override", False):
+        if value is not None:
+            raise ConfigError("endpoint is not valid for the pipeline %s" % pipeline.name)
+        return None
+    if value is None:
+        return None
+    origin = check_endpoint_origin(value)
+    source, override = (urllib.parse.urlsplit(url)
+                        for url in (pipeline.remote["url"], origin))
+    pipeline.remote["url"] = urllib.parse.urlunsplit(
+        (override.scheme, override.netloc, source.path, source.query, source.fragment))
+    return origin
 
 
 def _views(views):

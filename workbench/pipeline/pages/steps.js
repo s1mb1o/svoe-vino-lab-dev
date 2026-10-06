@@ -88,23 +88,52 @@ const Steps = (() => {
 
   /* The VLM rule step: legacy matcher answers or plan 92 option scores, the candidate
      scores, the time, and whether the code changed the order. */
+  function optionScoresHtml(questions, optionScores, errors = {}) {
+    return (questions || []).map(q => {
+      const scores = optionScores[q.id];
+      const values = scores && typeof scores === "object" && !Array.isArray(scores)
+        ? (q.options || Object.keys(scores)).map(option => `<b>${esc(option)}</b> ${
+            scores[option] === undefined ? "missing" : esc(JSON.stringify(scores[option])) + "%"
+          }`).join(" &middot; ")
+        : "no score object returned";
+      return `<div class="q">${esc(q.id)} ${esc(q.question)}</div><div class="sc">${values}</div>${
+        errors[q.id] ? `<div class="err">Rejected: ${esc(errors[q.id])}</div>` : ""}`;
+    }).join("") + (errors._response
+      ? `<div class="err">${esc(errors._response)}</div>` : "");
+  }
+
   function stepVlmHtml(v) {
     const answers = v.answers || {};
-    let body = v.error ? `<div class="err">no answer: ${esc(v.error)}. The base order stays.</div>`
+    const raw = v.raw_option_scores || {};
+    const attempts = v.attempts || [];
+    const hasResponse = Object.keys(raw).length || attempts.some(a => a.raw_text != null);
+    let body = v.error ? `<div class="err">${hasResponse ? "Response rejected" : "VLM error"}: ${
+      esc(v.error)}. The base order stays.</div>`
       : "";
-    const optionScores = v.option_scores || {};
+    const accepted = v.option_scores || {};
+    const optionScores = Object.keys(accepted).length ? accepted : raw;
     if (Object.keys(optionScores).length) {
-      body += (v.questions || []).map(q => {
-        const scores = optionScores[q.id] || {};
-        const options = q.options || Object.keys(scores);
-        return `<div class="q">${esc(q.id)} ${esc(q.question)}</div><div class="sc">${
-          options.map(option => `<b>${esc(option)}</b> ${esc(scores[option])}%`).join(" &middot; ")
-        }</div>`;
-      }).join("");
+      if (!Object.keys(accepted).length) {
+        body += '<div class="snote">Raw response. These scores were not used for ranking.</div>';
+      }
+      body += optionScoresHtml(v.questions, optionScores, v.validation_errors);
+    } else if (v.mode === "evidence") {
+      body += '<div class="snote">Raw option scores were not recorded in this run.</div>';
     } else {
       body += (v.questions || []).map(q => `<div class="q">${esc(q.id)} ${esc(q.question)} &rarr;
         <span class="a">${esc(answers[q.id] == null ? "no answer" : answers[q.id])}</span></div>`)
         .join("");
+    }
+    if (attempts.length > 1) {
+      body += `<div class="snote">${v.error ? "Retry did not produce a valid response."
+        : "Response accepted after one retry."}</div>`;
+    }
+    if (attempts.length) {
+      body += attempts.map(a => `<details class="data"><summary>Attempt ${esc(a.number)} · ${
+        a.cached ? "from the cache" : dur(a.ms)} · ${a.error ? "rejected or failed" : "accepted"}</summary>${
+        a.error ? `<div class="err">${esc(a.error)}</div>` : ""}${
+        optionScoresHtml(v.questions, a.raw_option_scores || {}, a.validation_errors)}${
+        stepDataHtml("Raw response", a.raw_text, false)}</details>`).join("");
     }
     body += Object.keys(answers).filter(k => !(v.questions || []).some(q => q.id === k))
       .map(k => `<div class="q">${esc(k)} &rarr; <span class="a">${esc(answers[k])}</span></div>`)
@@ -114,7 +143,7 @@ const Steps = (() => {
         v.chosen ? ` = <b>${esc(v.chosen)}</b>` : ""}</div>`;
     }
     const scores = v.scores || {};
-    if ((v.window || []).length) {
+    if ((v.window || []).length && v.mode !== "evidence") {
       body += `<div class="sc">scores: ${v.window.map(slug => `<b>${esc(slug)}</b> ${
         (scores[slug] || 0) > 0 ? "+" : ""}${esc(scores[slug] || 0)}`).join(" &middot; ")}</div>`;
     }
@@ -198,5 +227,5 @@ const Steps = (() => {
     else openKeys.add(card.dataset.key);
   }
 
-  return { html, toggle, dur };
+  return { html, toggle, dur, vlm: stepVlmHtml };
 })();

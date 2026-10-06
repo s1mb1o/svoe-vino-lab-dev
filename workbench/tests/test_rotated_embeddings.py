@@ -45,6 +45,26 @@ def raw_entry(**values):
     return entry
 
 
+ANDROID_VIEWS = {
+    "full": {"steps": [
+        {"step": "segment_dis", "model": "fake-dis", "revision": "test"},
+        {"step": "white_background"},
+        {"step": "square_on_white"},
+        {"step": "resize", "max_size": 64, "aspect": "ignore", "upscale": True},
+    ]},
+}
+
+
+class FakeDis:
+    def software(self):
+        return {"dis": "fake"}
+
+    def segment(self, image, threshold, margin):
+        left = image.width // 4
+        right = max(left + 1, image.width - left)
+        return image.convert("RGBA").crop((left, 0, right, image.height))
+
+
 class ConfigTest(unittest.TestCase):
     def test_the_angles_of_the_view_full(self):
         embedding = embeddings.Embedding(raw_entry())
@@ -85,15 +105,24 @@ class ConfigTest(unittest.TestCase):
                                      {"step": "white_background"},
                                      {"step": "resize", "max_size": 64,
                                       "aspect": "ignore"}]}}
+        dis_without_square = {"full": {"steps": [
+            {"step": "segment_dis", "model": "fake-dis", "revision": "test"},
+            {"step": "white_background"},
+            {"step": "resize", "max_size": 64},
+        ]}}
         for values in ({"rotation_step": True}, {"rotation_step": 0},
                        {"rotation_step": 181}, {"rotation_step": "5"},
                        {"rotation_step": 5.0}, {"views": {"label": VIEWS_C_F["label"]}},
-                       {"views": square}, {"views": ignore}, {"batch_size": 1}):
+                       {"views": square}, {"views": ignore},
+                       {"views": dis_without_square}, {"batch_size": 1}):
             with self.subTest(values=values):
                 with self.assertRaises(embeddings.ConfigError):
                     embeddings.Embedding(raw_entry(**values))
         self.assertEqual(embeddings.Embedding(raw_entry(views=full_only)).angles("full")[:2],
                          [0, 90])
+        android = embeddings.Embedding(raw_entry(views=ANDROID_VIEWS, rotation_step=5))
+        self.assertEqual(android.rotation_mode, "before_square_on_white")
+        self.assertEqual(len(android.angles("full")), 72)
 
 
 class RecordRowsTest(unittest.TestCase):
@@ -143,7 +172,8 @@ class RotatedLab(unittest.TestCase):
     def embedding(self, name="rot"):
         return embeddings.load_settings(self.lab.config_path).find(name)
 
-    def build(self, name="rot", stop=None, make_backend=quiet_backend, workers=1):
+    def build(self, name="rot", stop=None, make_backend=quiet_backend, workers=1,
+              make_dis=build_embeddings.make_dis_segmenter):
         """Run one build. Return (counts, events)."""
         settings = embeddings.load_settings(self.lab.config_path)
         embedding = settings.find(name)
@@ -153,7 +183,7 @@ class RotatedLab(unittest.TestCase):
         with contextlib.redirect_stdout(out):
             counts = build_embeddings.run(embedding, settings.db_path, directory,
                                           make_backend=make_backend, stop=stop,
-                                          workers=workers)
+                                          workers=workers, make_dis=make_dis)
         return counts, [json.loads(line) for line in out.getvalue().splitlines()]
 
     def index(self, name="rot"):
@@ -202,8 +232,39 @@ class RotatedInputsTest(RotatedLab):
         # The corners of the larger canvas are white.
         self.assertEqual(images[1].getpixel((0, 0)), (255, 255, 255))
 
+    def test_android_dis_rotates_before_the_square_and_keeps_0_degrees(self):
+        self.add(views=ANDROID_VIEWS, rotation_step=5)
+        embedding = self.embedding()
+        conn = embeddings.open_database(self.lab.db_path)
+        try:
+            _, sources = embeddings.read_inputs(conn, self.lab.db_path)
+        finally:
+            conn.close()
+        item = embeddings.plan_items(embedding, sources)[(self.lab.grey, "full")]
+        segmenter = FakeDis()
+        images = embeddings.rotated_inputs(
+            item, sources[self.lab.grey]["path"], item["angles"], segmenter)
+        prepared = embeddings.prepare(item, sources[self.lab.grey]["path"], segmenter)
+        self.assertEqual(len(images), 72)
+        self.assertTrue(all(image.size == (64, 64) for image in images))
+        self.assertTrue(np.array_equal(np.asarray(images[0]), np.asarray(prepared)))
+        self.assertFalse(np.array_equal(np.asarray(images[0]), np.asarray(images[1])))
+
 
 class RotatedBuildTest(RotatedLab):
+    def test_android_dis_builds_72_rows_with_multiple_workers(self):
+        self.add("android", views=ANDROID_VIEWS, rotation_step=5, batch_size=16)
+        counts, events = self.build(
+            "android", workers=3, make_dis=lambda embedding: FakeDis())
+        self.assertEqual(events[-1]["event"], "done")
+        index, vectors = self.index("android")
+        records = self.full_records(index)
+        self.assertEqual(len(records), 4)
+        self.assertTrue(all(record["angles"] == list(range(0, 360, 5))
+                            for record in records.values()))
+        self.assertEqual(len(vectors), 4 * 72)
+        self.assertEqual(counts["vectors"], 4 * 72)
+
     def test_each_full_item_has_one_row_for_each_angle(self):
         self.add()
         counts, events = self.build()

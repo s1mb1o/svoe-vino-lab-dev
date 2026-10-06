@@ -65,6 +65,25 @@ matcher backend of plan 31. They stand in `config.yaml` after
 3. The run of each pipeline is a run of `pipeline/remote_run.py`, or a job of the dialog
    `Run>` of `/testset`.
 
+### Endpoint override
+
+1. `matcher-eval-predict` and `matcher-match-k20` have `endpoint_override: true`.
+2. The Testset Run dialog and the Runs page Re-run dialog show `matcher base URL` for
+   these pipelines.
+3. An empty field uses the configured origin `http://192.168.86.14:28000`.
+4. An override MUST be an HTTP(S) origin with no path, query, fragment, or credentials.
+5. The runner replaces the URL origin. It keeps `/v1/eval/predict` or `/v1/match` and
+   the configured query values.
+6. A parallel start applies one entered origin to both pipelines. Re-run starts with
+   the origin that produced the open run.
+7. `matcher-group-match` does not allow an override.
+8. `run.json` records the resolved full URL in `backend.url`. A new override run also
+   records the entered origin in `endpoint_override`.
+9. The Runs table shows the full request URL in `URL override` when the run records an
+   override. For an older run without this record, a saved origin that differs from the
+   current configured origin identifies the override. The URL includes `?k=20` for
+   `matcher-match-k20`.
+
 ## Answer shape `group`
 
 `scripts/match_backends.py` parses the answer of `/v1/group/match`.

@@ -348,6 +348,43 @@ class TestsetsTest(unittest.TestCase):
                           answer["counts"]["no_match"]), (TS.DRAWER_SLUG, 0, 2))
         self.assertEqual([c["text"] for c in answer["photo"]["comments"]], ["later"])
 
+    def test_removing_a_drawer_photo_keeps_the_image_store_object(self):
+        moved = self.write(TS.move_photo, "wine-a", "02_conf080.jpg", TS.DRAWER_SLUG)
+        digest = moved["photo"]["sha256"]
+        self.write(TS.add_photo_comment, TS.DRAWER_SLUG, "02_conf080.jpg", "discard")
+        answer = self.write(TS.remove_drawer_photo, TS.DRAWER_SLUG, "02_conf080.jpg")
+        self.assertEqual((answer["place"], answer["file"], answer["sha256"],
+                          answer["counts"]["drawer"]),
+                         (TS.DRAWER_SLUG, "02_conf080.jpg", digest, 0))
+        self.assertEqual(self.row(TS.DRAWER_SLUG)["photos"], [])
+        self.assertEqual(self.query("SELECT 1 FROM test_photo_comment WHERE file_name = ?",
+                                    "02_conf080.jpg"), [])
+        self.assertEqual(self.query("SELECT 1 FROM image WHERE sha256 = ?", digest), [(1,)])
+        for place, code in (("wine-a", 400), (TS.DRAWER_SLUG, 404)):
+            with self.assertRaises(TS.TestsetError) as caught:
+                self.write(TS.remove_drawer_photo, place, "02_conf080.jpg")
+            self.assertEqual(caught.exception.code, code)
+
+    def test_accepting_a_drawer_match_moves_and_labels_in_one_write(self):
+        moved = self.write(TS.move_photo, "wine-a", "01_conf095.jpg", TS.DRAWER_SLUG)
+        digest = moved["photo"]["sha256"]
+        answer = self.write(TS.accept_drawer_match, "01_conf095.jpg", "wine-b", digest)
+        self.assertEqual((answer["from"], answer["to"], answer["file"],
+                          answer["moved_file"], answer["photo"]["entry"]["label"]),
+                         (TS.DRAWER_SLUG, "wine-b", "01_conf095.jpg",
+                          "01_conf095.jpg", "positive"))
+        self.assertEqual(self.row(TS.DRAWER_SLUG)["photos"], [])
+        self.assertEqual(self.row("wine-b")["photos"][0]["entry"]["label"], "positive")
+
+    def test_accepting_a_stale_drawer_match_changes_nothing(self):
+        moved = self.write(TS.move_photo, "wine-a", "01_conf095.jpg", TS.DRAWER_SLUG)
+        with self.assertRaises(TS.TestsetError) as caught:
+            self.write(TS.accept_drawer_match, "01_conf095.jpg", "wine-b", "0" * 64)
+        self.assertEqual(caught.exception.code, 409)
+        self.assertEqual(self.row(TS.DRAWER_SLUG)["photos"][0]["sha256"],
+                         moved["photo"]["sha256"])
+        self.assertTrue(self.row("wine-b")["catalog_only"])
+
     def test_an_upload_to_the_drawer(self):
         answer = self.write(TS.upload_photo, TS.DRAWER_SLUG, jpeg((25, 15)), "d.jpg")
         self.assertEqual((answer["place"], answer["file"], answer["counts"]["drawer"]),
