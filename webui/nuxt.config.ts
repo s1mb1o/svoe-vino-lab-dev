@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import { THEME_INIT_SCRIPT } from './shared/theme'
 import { ANDROID_RELEASE, DEFAULT_ANDROID_APK_URL } from './shared/android'
+import { METRIKA_INIT_SCRIPT, METRIKA_NOSCRIPT } from './shared/metrika'
 
 const siteUrl = 'https://chtozavino.ru/'
 const siteTitle = 'Найти вино по фото — Что за вино?'
@@ -50,7 +51,12 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/svg+xml', href: '/icons/product-logo.svg' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
       ],
+      noscript: [{ key: 'yandex-metrika', innerHTML: METRIKA_NOSCRIPT, tagPosition: 'bodyOpen' }],
       script: [{ key: 'theme-init', innerHTML: THEME_INIT_SCRIPT, tagPriority: 'critical' }, {
+        key: 'yandex-metrika',
+        type: 'text/javascript',
+        innerHTML: METRIKA_INIT_SCRIPT,
+      }, {
         type: 'application/ld+json',
         innerHTML: JSON.stringify({
           '@context': 'https://schema.org',

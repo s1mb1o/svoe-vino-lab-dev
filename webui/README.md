@@ -31,11 +31,13 @@ The mock service MUST use the same HTTP contract as the official evaluator.
 Read [the specification](docs/specification.md), [the API contract](docs/api.md), and [the architecture](ARCHITECTURE.md).
 Read [SMOKE_TESTS.md](SMOKE_TESTS.md) for acceptance checks.
 
-## Cookies and age confirmation
+## Analytics and age confirmation
 
-The current Web UI does not use cookies or analytics trackers.
-Cookie consent is therefore not required for this implementation in Russia.
-This statement applies to cookies only. It does not cover the processing of uploaded photos or server logs.
+The Web UI uses the owner-supplied Yandex.Metrika counter `113460637` on every page.
+The counter enables Session Replay, click maps, link tracking, accurate bounce tracking,
+and the `dataLayer` ecommerce integration. It can use cookies.
+The shared HTML includes the initialization script and a no-JavaScript image fallback.
+Client navigation sends a page view with the previous page URL as the referrer.
 
 The portal shows an 18+ warning and requires age confirmation before access.
 The browser stores age confirmation and the selected theme in `localStorage`.

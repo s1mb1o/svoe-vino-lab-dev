@@ -1,5 +1,21 @@
 # Research log
 
+## Yandex.Metrika, 2026-10-06
+
+The owner supplied counter `113460637` and requested installation on `chtozavino.ru`.
+This request authorizes this counter in addition to the existing product scope.
+Use the supplied script in the shared Nuxt head configuration. Keep every supplied option.
+Place the supplied no-JavaScript image in a body-start noscript tag.
+The script sends the initial page view. Register client navigation tracking after app mounting.
+Send a `hit` only after successful navigation to a different URL.
+Include the previous page URL as `referer`. Do not send a second initial page view.
+Reference: https://yandex.ru/support/metrica/en/code/counter-spa-setup
+
+The script probe confirmed every initialization option, the asynchronous loader,
+the duplicate-load guard, and the fallback URL.
+Prepare the isolated release from the active production source revision `de1c7ae`.
+The active release also contains a recorded presentation video. Preserve that file.
+
 ## Hackathon direct URL, 2026-09-29
 
 The owner requested crawler exclusion and sitemap removal for `/hackaton`.

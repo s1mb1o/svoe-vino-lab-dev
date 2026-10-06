@@ -1,5 +1,17 @@
 # Smoke tests
 
+## Yandex.Metrika
+
+- Request `/`, `/android`, `/ideas`, `/presentation`, and `/hackaton`.
+- Confirm one counter initialization script in each server-rendered HTML response.
+- Confirm every supplied initialization option and counter ID `113460637`.
+- Confirm one body-start noscript image with `https://mc.yandex.ru/watch/113460637`.
+- Open a page in a new browser context. Confirm one asynchronous Metrika loader.
+- Navigate through internal links. Confirm one `hit` for each successful URL change.
+- Confirm that app mounting does not send a second initial page view.
+- Block the external Metrika loader. Confirm that the page and navigation still work.
+- Confirm the existing age gate, service health, and presentation artifacts.
+
 ## Hackathon direct URL
 
 Release `0c2f964` passed the checks below on staging and production on 2026-09-29.

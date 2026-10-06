@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-06 — Yandex.Metrika
+
+- Add the owner-supplied counter `113460637` to all pages.
+- Preserve the supplied initialization settings and asynchronous loader.
+- Add the no-JavaScript image fallback at the start of the body.
+- Send page views after successful client navigation. Keep the initial page view in the supplied script.
+- Update the analytics documentation.
+
 ## 2026-09-29 — Presentation files in git
 
 - `public/presentations/` (pptx and pdf, 56 MB) is in git now. The page `/presentation`
