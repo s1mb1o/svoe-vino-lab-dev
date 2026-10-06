@@ -2,6 +2,11 @@
 
 ## Yandex.Metrika
 
+Release `10632011` passed these checks on staging and production on 2026-10-06.
+All 169 tests, type checks, and the Linux build passed.
+The real Metrika loader and both verified page-view requests returned HTTP 200.
+The presentation files and video remain byte-identical to the previous release.
+
 - Request `/`, `/android`, `/ideas`, `/presentation`, and `/hackaton`.
 - Confirm one counter initialization script in each server-rendered HTML response.
 - Confirm every supplied initialization option and counter ID `113460637`.

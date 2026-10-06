@@ -7,6 +7,9 @@
 - Add the no-JavaScript image fallback at the start of the body.
 - Send page views after successful client navigation. Keep the initial page view in the supplied script.
 - Update the analytics documentation.
+- Publish isolated release `10632011` on Princess. All 169 tests, type checks, and the Linux build passed.
+- Verify all five public pages, client navigation, the fallback image, and blocked-loader behavior.
+- Confirm HTTP 200 from the real Metrika loader and page-view endpoint.
 
 ## 2026-09-29 — Presentation files in git
 

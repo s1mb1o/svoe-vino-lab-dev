@@ -13,8 +13,17 @@ Reference: https://yandex.ru/support/metrica/en/code/counter-spa-setup
 
 The script probe confirmed every initialization option, the asynchronous loader,
 the duplicate-load guard, and the fallback URL.
-Prepare the isolated release from the active production source revision `de1c7ae`.
-The active release also contains a recorded presentation video. Preserve that file.
+Published isolated release `106320119585fb741dec0fcddd5b8c7ac140aa6c` from production source revision `de1c7ae`.
+The previous release is `de1c7aead4cf3f039f9f2bb3080f5615bbb02247-video-20260929`.
+The presentation files and recorded video remain byte-identical to the previous release.
+All 169 tests, type checks, and the Linux production build passed.
+Staged and public browser checks confirmed one initializer on all five pages,
+one page view per successful client navigation, no duplicate initial page view,
+the no-JavaScript fallback request, and navigation with a blocked external loader.
+The real Metrika loader returned HTTP 200. Yandex returned HTTP 200 for the initial
+page view and the client-navigation page view. Each page view was sent once.
+Public health, upstream recognition availability, and shelf availability passed.
+The temporary staging service and verification tunnel were stopped after verification.
 
 ## Hackathon direct URL, 2026-09-29
 
