@@ -24,6 +24,7 @@ import time
 import urllib.parse
 
 import clusters
+import labdb
 import embeddings
 import lab_pages
 
@@ -110,11 +111,13 @@ def _known(settings, name):
 
 def list_view(settings):
     entries = []
+    inputs = None
     for name, embedding, error in settings.entries:
         record = {"name": name, "error": error}
         if embedding is not None:
             directory = embeddings.entry_dir(settings.db_path, name)
-            artifact = clusters.load_artifact(directory)
+            artifact = clusters.artifact_metadata(directory, os.path.join(
+                labdb.data_root(settings.db_path), "cache", "clusters"))
             record.update(directory=directory, exists=artifact is not None)
             if artifact is not None:
                 record.update(
@@ -122,7 +125,9 @@ def list_view(settings):
                     counts={space: ((artifact.get("spaces") or {}).get(space) or {}).get(
                         "counts") or {} for space in clusters.SPACES})
                 try:
-                    status = clusters.artifact_status(settings, name)
+                    if inputs is None:
+                        inputs = clusters.catalog_inputs(settings)
+                    status = clusters.artifact_status(settings, name, inputs, artifact)
                 except clusters.ClusterError as exc:
                     record.update(stale=True, status_error=str(exc))
                 else:

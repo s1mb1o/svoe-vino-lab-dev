@@ -1,9 +1,11 @@
 import json
 import os
+import sqlite3
 import tempfile
 import unittest
 from contextlib import closing
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 import yaml
@@ -202,6 +204,100 @@ class BuildTest(unittest.TestCase):
             "UPDATE wine_catalog SET state = 'Disabled' WHERE wine_slug = 'grey'")
         self.fixture.lab.conn.commit()
         self.assertTrue(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
+
+    def test_status_cache_reuses_identity_but_returns_independent_counts(self):
+        clusters.build_to_directory(self.fixture.settings, "gw")
+        first = clusters.artifact_status(self.fixture.settings, "gw")
+        with patch.object(clusters, "context", wraps=clusters.context) as context:
+            second = clusters.artifact_status(self.fixture.settings, "gw")
+        self.assertEqual(context.call_count, 0)
+        self.assertEqual(first, second)
+        first["current_status"]["current"] = -1
+        self.assertGreater(clusters.artifact_status(self.fixture.settings, "gw")[
+            "current_status"]["current"], 0)
+
+    def test_artifact_metadata_reuses_files_and_detects_replacement(self):
+        artifact = clusters.build_to_directory(self.fixture.settings, "gw")
+        directory = Path(self.fixture.lab.entry_dir())
+        first = clusters.artifact_metadata(directory)
+        with patch.object(clusters, "load_artifact", wraps=clusters.load_artifact) as read:
+            second = clusters.artifact_metadata(directory)
+        self.assertEqual(read.call_count, 0)
+        self.assertEqual(first, second)
+        first["spaces"]["full"]["counts"]["clusters"] = -1
+        self.assertGreater(clusters.artifact_metadata(directory)["spaces"]["full"][
+            "counts"]["clusters"], 0)
+        artifact["built_at"] = "new build"
+        clusters.write_json(directory / clusters.CLUSTERS_FILE, artifact)
+        self.assertEqual(clusters.artifact_metadata(directory)["built_at"], "new build")
+
+    def test_disk_status_survives_restart_and_observes_database_edits(self):
+        clusters.build_to_directory(self.fixture.settings, "gw")
+        expected = clusters.artifact_status(self.fixture.settings, "gw")
+        with clusters._CATALOG_LOCK:
+            clusters._CATALOG_CACHE["conn"].close()
+            clusters._CATALOG_CACHE = None
+        clusters._STATUS_CACHE.clear()
+        clusters._ARTIFACT_CACHE.clear()
+        with patch.object(clusters, "context", wraps=clusters.context) as compute, \
+                patch.object(embeddings, "read_inputs", wraps=embeddings.read_inputs) as read:
+            actual = clusters.artifact_status(self.fixture.settings, "gw")
+        self.assertEqual(compute.call_count, 0)
+        self.assertEqual(read.call_count, 0)
+        self.assertEqual(actual, expected)
+        self.fixture.lab.conn.execute("UPDATE wine_catalog SET state = 'Disabled'")
+        self.fixture.lab.conn.commit()
+        clusters._STATUS_CACHE.clear()
+        self.assertTrue(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
+
+    def test_status_cache_tracks_prepared_images_index_and_config(self):
+        clusters.build_to_directory(self.fixture.settings, "gw")
+        first = clusters.artifact_status(self.fixture.settings, "gw")
+        directory = Path(self.fixture.lab.entry_dir())
+        image = next((directory / embeddings.IMAGES).iterdir())
+        image.unlink()
+        after = clusters.artifact_status(self.fixture.settings, "gw")
+        self.assertEqual(after["current_status"]["current"],
+                         first["current_status"]["current"] - 1)
+        index = embeddings.read_index(directory)
+        index["items"][0]["embedding_hash"] = "different"
+        embeddings.write_atomic(directory / embeddings.INDEX,
+                                json.dumps(index).encode())
+        self.assertTrue(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
+        changed = self.fixture.settings.find("gw")
+        changed.model = "another-model"
+        changed._hashes.clear()
+        status = clusters.artifact_status(self.fixture.settings, "gw")
+        self.assertTrue(status["stale"])
+        self.assertEqual(status["current_status"]["current"], 0)
+
+    def test_catalogue_cache_detects_wal_commits_and_database_replacement(self):
+        conn = self.fixture.lab.conn
+        conn.execute("PRAGMA journal_mode = WAL")
+        clusters.build_to_directory(self.fixture.settings, "gw")
+        self.assertFalse(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
+        db = Path(self.fixture.lab.db_path)
+        stat = db.stat()
+        conn.execute("UPDATE wine_catalog SET state = 'Disabled' WHERE wine_slug = 'grey'")
+        conn.commit()
+        self.assertEqual(db.stat().st_mtime_ns, stat.st_mtime_ns)
+        self.assertTrue(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
+        inputs = clusters.catalog_inputs(self.fixture.settings)
+        replacement = db.with_suffix(".replacement")
+        with closing(sqlite3.connect(replacement)) as new:
+            conn.backup(new)
+            new.execute("PRAGMA journal_mode = DELETE")
+            new.execute("UPDATE wine_catalog SET state = 'Active' WHERE wine_slug = 'grey'")
+            new.commit()
+        # Close both old handles and checkpoint WAL before the replacement.
+        with clusters._CATALOG_LOCK:
+            clusters._CATALOG_CACHE["conn"].close()
+        conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        conn.execute("PRAGMA journal_mode = DELETE")
+        replacement.replace(db)
+        updated = clusters.catalog_inputs(self.fixture.settings)
+        self.assertIsNot(updated.revision, inputs.revision)
+        self.assertFalse(clusters.artifact_status(self.fixture.settings, "gw")["stale"])
 
     def test_a_too_large_cluster_stops_the_build_and_keeps_the_old_file(self):
         clusters.build_to_directory(self.fixture.settings, "gw")

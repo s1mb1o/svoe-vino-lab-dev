@@ -4,6 +4,10 @@ import threading
 import time
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
+from pathlib import Path
+
+import yaml
 
 import embedding_lab  # noqa: F401  (puts pipeline/ on sys.path)
 from test_clusters import ClusterLab
@@ -84,6 +88,39 @@ class RoutesTest(unittest.TestCase):
         shown = self.request("/api/clusters/gw")[1]
         note = shown["artifact"]["spaces"]["full"]["clusters"][0]["note"]
         self.assertEqual(note["text"], "Review this pair.")
+
+    def test_list_reads_catalogue_once_and_keeps_next_request_fresh(self):
+        self.request("/api/clusters/gw/build", "POST", {})
+        path = Path(self.fixture.lab.config_path)
+        config = yaml.safe_load(path.read_text())
+        entry = dict(config["embeddings"][0], name="other")
+        config["embeddings"].append(entry)
+        path.write_text(yaml.safe_dump(config))
+        directory = Path(self.fixture.lab.entry_dir()).with_name("other")
+        directory.mkdir()
+        (directory / clusters.CLUSTERS_FILE).write_text(
+            (Path(self.fixture.lab.entry_dir()) / clusters.CLUSTERS_FILE).read_text())
+        # Both artifacts request current inputs. The second index is missing.
+        with patch.object(clusters.embeddings, "read_inputs",
+                          wraps=clusters.embeddings.read_inputs) as read:
+            first = self.request("/api/clusters")[1]
+            first_reads = read.call_count
+            self.assertLessEqual(first_reads, 1)
+            self.assertFalse(first["embeddings"][0]["stale"])
+            self.assertTrue(first["embeddings"][1]["stale"])
+            self.fixture.lab.conn.execute("UPDATE wine_catalog SET state = 'Disabled'")
+            self.fixture.lab.conn.commit()
+            second = self.request("/api/clusters")[1]
+            self.assertEqual(read.call_count, first_reads + 1)
+            self.assertTrue(second["embeddings"][0]["stale"])
+
+    def test_detail_reads_current_context_once(self):
+        self.request("/api/clusters/gw/build", "POST", {})
+        with patch.object(clusters, "context", wraps=clusters.context) as read:
+            detail = self.request("/api/clusters/gw")[1]
+        self.assertEqual(read.call_count, 1)
+        self.assertFalse(detail["status"]["stale"])
+        self.assertTrue(detail["cards"])
 
     def test_a_note_write_starts_the_rule_rebuild(self):
         self.request("/api/clusters/gw/build", "POST", {})

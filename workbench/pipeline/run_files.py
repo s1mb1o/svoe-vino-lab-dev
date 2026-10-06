@@ -2,7 +2,9 @@
 
 A run is one directory `runs/<run id>/` of `scripts/match_run.py` or
 `pipeline/benchmark.py`: `run.json`, `metrics.json`, `results.jsonl`, and more. The lab
-database does not hold the runs. This module reads the files alone and writes nothing.
+database does not hold the runs. This module keeps run files unchanged. It writes
+disposable row summaries in `data/cache/run-index/` for the standard runs directory.
+Custom runs directories use the hidden directory `.row-index-cache/`.
 
 The functions are the run functions of `scripts/review_server.py`. Each one takes the
 directory of the runs as an argument, not as a global. The old tool keeps its own copy.
@@ -13,6 +15,10 @@ the key `embeddings` of `config.yaml`. A run with no such key has no configurati
 """
 import json
 import os
+from collections import OrderedDict
+from threading import Lock
+
+import summary_cache
 
 # The orders that `/runs` offers for the photo rows. `manifest` is the order of
 # `queries.tsv`, which is the order that the backend answered in.
@@ -167,7 +173,169 @@ def _row_sort_key(rec, mode):
 # The index reads one run only. A photo whose twin was not in the run has no twin
 # here. This keeps the report a report of that run and of nothing else.
 
-_TWIN_CACHE = {}
+_RESULT_CACHE = OrderedDict()
+_QUERY_CACHE = OrderedDict()
+_RESULT_CACHE_LOCK = Lock()
+_MAX_CACHED_RUNS = 3
+_MAX_CACHED_ROWS = 50000
+_SUMMARY_KEYS = ("query_id", "image_path", "predicted_slug", "image_sha256", "slug",
+                 "label", "rank_of_truth", "outcome", "latency_ms")
+
+
+def _cache_directory(path):
+    runs = os.path.dirname(os.path.dirname(path))
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if os.path.realpath(runs) == os.path.realpath(os.path.join(root, "runs")):
+        return os.path.join(root, "data", "cache", "run-index")
+    return os.path.join(runs, ".row-index-cache")
+
+
+def _remember_result(path, key, result):
+    with _RESULT_CACHE_LOCK:
+        _RESULT_CACHE[path] = (key, result)
+        _RESULT_CACHE.move_to_end(path)
+        while (len(_RESULT_CACHE) > _MAX_CACHED_RUNS or
+               sum(len(value[1]["rows"]) for value in _RESULT_CACHE.values())
+               > _MAX_CACHED_ROWS):
+            _RESULT_CACHE.popitem(last=False)
+
+
+def _remember_queries(path, key, queries):
+    with _RESULT_CACHE_LOCK:
+        _QUERY_CACHE[path] = (key, queries)
+        _QUERY_CACHE.move_to_end(path)
+        while (len(_QUERY_CACHE) > _MAX_CACHED_RUNS or
+               sum(len(value[1]) for value in _QUERY_CACHE.values()) > _MAX_CACHED_ROWS):
+            _QUERY_CACHE.popitem(last=False)
+
+
+def _save_queries(path, key, queries):
+    if len(queries) <= _MAX_CACHED_ROWS:
+        _remember_queries(path, key, queries)
+        # Pairs preserve JSON scalar query types and the first duplicate's offset.
+        summary_cache.store(_cache_directory(path), "queries-v1", path, key,
+                            list(queries.items()))
+
+
+def _compact_candidates(row):
+    """After twin ranks are computed, filters need only the top score and rule flag."""
+    candidates = row["candidates"]
+    step = rule_step(row)
+    row["candidates"] = ([{"score": candidates[0].get("score"), "explain": step}]
+                         if candidates else [])
+
+
+def _file_key(path, stat):
+    return (path, stat.st_dev, stat.st_ino, stat.st_size,
+            stat.st_mtime_ns, stat.st_ctime_ns)
+
+
+def _saved_result_index(path, key, fh):
+    """Load a checked row summary without building an absent index."""
+    directory = _cache_directory(path)
+    saved = summary_cache.load(directory, "rows-v2", path, key)
+    migrate = saved is summary_cache.MISS
+    if migrate:
+        saved = summary_cache.load(directory, "rows-v1", path, key)
+    if (isinstance(saved, dict) and isinstance(saved.get("rows"), list)
+            and isinstance(saved.get("twins"), dict)
+            and key == _file_key(path, os.fstat(fh.fileno()))):
+        saved["queries"] = {}
+        for offset, row in saved["rows"]:
+            if migrate:
+                _compact_candidates(row)
+            saved["queries"].setdefault(row.get("query_id"), offset)
+        if len(saved["rows"]) <= _MAX_CACHED_ROWS:
+            _remember_result(path, key, saved)
+        if migrate:
+            summary_cache.store(directory, "rows-v2", path, key,
+                                {"rows": saved["rows"], "twins": saved["twins"]})
+        if len(saved["queries"]) <= _MAX_CACHED_ROWS:
+            _remember_queries(path, key, saved["queries"])
+        return saved
+    return None
+
+
+def _query_index(path, key, fh):
+    with _RESULT_CACHE_LOCK:
+        hit = _QUERY_CACHE.get(path)
+        if hit is not None and hit[0] == key:
+            _QUERY_CACHE.move_to_end(path)
+            return hit[1]
+    saved = summary_cache.load(_cache_directory(path), "queries-v1", path, key)
+    if isinstance(saved, list) and key == _file_key(path, os.fstat(fh.fileno())):
+        try:
+            queries = dict(saved)
+        except (TypeError, ValueError):
+            pass
+        else:
+            _remember_queries(path, key, queries)
+            return queries
+    # Upgrade an existing row summary without scanning results.jsonl again.
+    result = _saved_result_index(path, key, fh)
+    if result is None:
+        return None
+    _save_queries(path, key, result["queries"])
+    return result["queries"]
+
+
+def _result_index(path, fh):
+    """Index row filters and byte offsets. Keep full traces on disk.
+
+    Use the open file identity to invalidate appends, rewrites, and replacements.
+    The cache holds at most three runs and 50,000 row summaries in total.
+    """
+    key = _file_key(path, os.fstat(fh.fileno()))
+    with _RESULT_CACHE_LOCK:
+        hit = _RESULT_CACHE.get(path)
+        if hit is not None and hit[0] == key:
+            _RESULT_CACHE.move_to_end(path)
+            return hit[1]
+    saved = _saved_result_index(path, key, fh)
+    if saved is not None:
+        return saved
+    directory = _cache_directory(path)
+    rows, queries, twins = [], {}, {}
+    fh.seek(0)
+    while True:
+        offset = fh.tell()
+        line = fh.readline()
+        if not line:
+            break
+        try:
+            rec = json.loads(line)
+        except (ValueError, UnicodeDecodeError):
+            continue
+        if not isinstance(rec, dict):
+            continue
+        summary = {field: rec.get(field) for field in _SUMMARY_KEYS}
+        summary["error"] = bool(rec.get("error"))
+        summary["candidates"] = []
+        for candidate in rec.get("candidates") or ():
+            item = {field: candidate.get(field) for field in ("slug", "rank", "score")}
+            step = candidate.get("explain")
+            if isinstance(step, dict) and step.get("kind") == "cluster_rules":
+                item["explain"] = {"kind": "cluster_rules", "changed": step.get("changed")}
+            summary["candidates"].append(item)
+        rows.append((offset, summary))
+        # Match the first result when the file holds a duplicate query id.
+        queries.setdefault(rec.get("query_id"), offset)
+        sha, slug, label = (rec.get(field) for field in ("image_sha256", "slug", "label"))
+        if sha and slug and label in ("positive", "negative"):
+            slot = twins.setdefault(sha, {"positive": set(), "negative": set()})
+            slot[label].add(slug)
+    for slot in twins.values():
+        slot["positive"] = sorted(slot["positive"])
+        slot["negative"] = sorted(slot["negative"])
+    for _, summary in rows:
+        add_twin(summary, twins)
+        _compact_candidates(summary)
+    result = {"rows": rows, "queries": queries, "twins": twins}
+    if key == _file_key(path, os.fstat(fh.fileno())) and len(rows) <= _MAX_CACHED_ROWS:
+        _remember_result(path, key, result)
+        summary_cache.store(directory, "rows-v2", path, key, {"rows": rows, "twins": twins})
+        _save_queries(path, key, queries)
+    return result
 
 
 def twin_index(runs_dir, run_id):
@@ -175,40 +343,13 @@ def twin_index(runs_dir, run_id):
 
     The lists hold the distinct slugs of the rows of this run whose photo holds these
     exact bytes. The label `variant` is left out: it states no truth about the photo.
-    The result is cached by the size and the time of `results.jsonl`.
+    The result shares the bounded row index of `results.jsonl`.
     """
     path = run_path(runs_dir, run_id, "results.jsonl")
     if not path or not os.path.exists(path):
         return {}
-    try:
-        st = os.stat(path)
-    except OSError:
-        return {}
-    key = (path, st.st_mtime_ns, st.st_size)
-    hit = _TWIN_CACHE.get(path)
-    if hit and hit[0] == key:
-        return hit[1]
-    index = {}
-    with open(path, encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                rec = json.loads(line)
-            except ValueError:
-                continue
-            sha, slug, label = rec.get("image_sha256"), rec.get("slug"), rec.get("label")
-            if not sha or not slug or label not in ("positive", "negative"):
-                continue
-            slot = index.setdefault(sha, {"positive": set(), "negative": set()})
-            slot[label].add(slug)
-    for slot in index.values():
-        slot["positive"] = sorted(slot["positive"])
-        slot["negative"] = sorted(slot["negative"])
-    _TWIN_CACHE.clear()
-    _TWIN_CACHE[path] = (key, index)
-    return index
+    with open(path, "rb") as fh:
+        return _result_index(path, fh)["twins"]
 
 
 def first_rank(candidates, slug):
@@ -250,7 +391,7 @@ def add_twin(rec, index):
         "forbidden_rank": None,
         "verdict": None,
         "conflict": conflict,
-        "conflict_slugs": {"positive": positive, "both": both} if conflict else None,
+        "conflict_slugs": {"positive": list(positive), "both": both} if conflict else None,
     }
     if rec.get("label") == "negative" and slugs:
         ranks = [r for r in (first_rank(rec.get("candidates"), s) for s in slugs)
@@ -333,28 +474,24 @@ def run_rows(runs_dir, run_id, mode="all", query="", limit=200, offset=0,
     if not path or not os.path.exists(path):
         return [], 0
     query = (query or "").strip().lower()
-    index = twin_index(runs_dir, run_id)
-    kept = []
-    with open(path, encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                rec = json.loads(line)
-            except ValueError:
-                continue
-            add_twin(rec, index)
-            if not row_matches(rec, mode):
-                continue
-            if query and query not in ((rec.get("image_path") or "") + " " +
-                                       (rec.get("predicted_slug") or "")).lower():
-                continue
-            kept.append(rec)
-    total = len(kept)
-    if sort and sort != "manifest" and sort in ROW_SORTS:
-        kept.sort(key=lambda rec: _row_sort_key(rec, sort))
-    return kept[offset:offset + limit], total
+    with open(path, "rb") as fh:
+        index = _result_index(path, fh)
+        if mode == "all" and not query and sort == "manifest":
+            kept = index["rows"]
+        else:
+            kept = [(position, rec) for position, rec in index["rows"]
+                    if row_matches(rec, mode) and
+                    (not query or query in ((rec.get("image_path") or "") + " " +
+                                           (rec.get("predicted_slug") or "")).lower())]
+        total = len(kept)
+        if sort and sort != "manifest" and sort in ROW_SORTS:
+            kept.sort(key=lambda item: _row_sort_key(item[1], sort))
+        rows = []
+        for position, _ in kept[offset:offset + limit]:
+            fh.seek(position)
+            rec = json.loads(fh.readline())
+            rows.append(add_twin(rec, index["twins"]))
+    return rows, total
 
 
 def run_result(runs_dir, run_id, query_id):
@@ -362,12 +499,26 @@ def run_result(runs_dir, run_id, query_id):
     path = run_path(runs_dir, run_id, "results.jsonl")
     if not query_id or not path or not os.path.isfile(path):
         return None
-    with open(path, encoding="utf-8") as fh:
-        for line in fh:
-            try:
-                record = json.loads(line)
-            except ValueError:
-                continue
-            if record.get("query_id") == query_id:
-                return record
+    with open(path, "rb") as fh:
+        key = _file_key(path, os.fstat(fh.fileno()))
+        with _RESULT_CACHE_LOCK:
+            hit = _RESULT_CACHE.get(path)
+            index = hit[1] if hit is not None and hit[0] == key else None
+            if index is not None:
+                _RESULT_CACHE.move_to_end(path)
+        queries = index["queries"] if index is not None else _query_index(path, key, fh)
+        if queries is not None:
+            position = queries.get(query_id)
+            if position is not None:
+                fh.seek(position)
+                return json.loads(fh.readline())
+        else:
+            # A direct trace request for an early row must not first index the run.
+            for line in fh:
+                try:
+                    record = json.loads(line)
+                except (ValueError, UnicodeDecodeError):
+                    continue
+                if isinstance(record, dict) and record.get("query_id") == query_id:
+                    return record
     return None

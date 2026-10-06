@@ -5892,3 +5892,36 @@ Reviewed all 84 rows of `2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5
 - Reported ten priority findings: wrong Atlas bindings, five wines without images or codes, six wrong main images, seven vintage mismatches, and four contradictory metadata records.
 - Saved record-level evidence in `docs/reviews/2026-10-01_dataset-audit-evidence.json`.
 - Kept catalogue data and product code unchanged. No restart or push.
+
+
+## 2026-10-06T18:32:38+0300 — Workbench bottlenecks
+
+- Index run results with bounded row summaries and byte offsets. Repeat page reads decode only the selected records. Preserve complete traces, filter results, sort results, and twin results. Invalidate appends, rewrites, and replacements.
+- Reuse cluster catalogue inputs until SQLite reports a commit. Detect WAL commits and database replacement. Cache small status and artifact summaries. Read the detail context once. Keep schema and prepared-image checks.
+- Cache checked Runs configuration summaries until config.yaml changes. Return independent copies.
+- Validation: 137 focused tests pass. All five measured live routes return HTTP 200 and byte-identical responses before and after the restart. Repeat cluster requests: 8.212 s to 0.079 s. Repeat large-run page requests: 5.123 s to 0.108 s. Repeat Runs list requests: 0.137 s to 0.023 s. Initial reads still calculate the indexes and statuses.
+- Restarted port 8168 with SIGTERM. The new lab-server PID is 65922. No catalogue, historical run, schema, model-service, or GitHub state changed. The final pass found no further avoidable repeated work in the measured paths. Evidence: ../internal/workbench-bottlenecks-20261006/summary.json.
+
+
+## 2026-10-06T19:18:08+0300 — Persistent workbench summaries
+
+- The earlier caches existed only in memory, so every restart rebuilt the run row index and cluster status. Persist checked compact summaries with atomic replacement. A missing, stale, corrupt, or unwritable cache falls back to the original source.
+- Keep row offsets, twin ranks, filter fields, and top-score/rule flags in the saved index. The large run summary is 4,123,794 bytes. Complete selected records stay in results.jsonl. Persist catalogue snapshots with DB/WAL identity checks and reuse cluster status by content fingerprint; keep live SQLite commit and schema checks.
+- Validation: 142 focused tests pass. All five HTTP routes match their baseline response hashes after a SIGTERM restart on port 8168 (PID 18750). A fresh process decodes one row summary plus 200 displayed rows and performs zero catalogue reads or cluster context calculations.
+- The complete cold run response uses 0.415 s CPU versus 4.443 s elapsed during host contention. New or changed source data still requires one build. Timing and operation evidence: ../internal/workbench-bottlenecks-20261006/persistent-summary.json.
+
+
+## 2026-10-06T19:56:35+0300 — Cold query and run response reuse
+
+- Persist checked query-to-offset pairs. A late cold lookup now decodes two documents instead of 9,786. The private lookup changes from 1.517 s to 0.012 s with the same result hash. Preserve early reads when no index exists, duplicate-query behavior, source freshness, and cache bounds.
+- Skip the filter scan for unfiltered manifest pages. Cache one unchanged run response per run. Validate run files, DB/WAL signatures, request options, and loaded source revision. Keep at most three responses and 6 MiB in memory. Skip caching responses over 2 MiB and failed image lookups.
+- Cache immutable JSON bytes. A fresh-process route read takes 10.013 ms with one JSON decode; a warm read takes 3.925 ms with zero decodes. The final live reads are 0.423 s and 0.149 s with the original response hash. Host contention affects complete HTTP timings.
+- Validation: all 153 focused tests pass. Five route hashes match the baseline; the final byte-cache activation preserves the changed run route hash. Port 8168 was restarted with SIGTERM; verified listener PID 69529. Evidence: ../internal/workbench-bottlenecks-20261006/followup-summary.json.
+- The remaining dataset cache adapter passes 92 current integration tests in a private process and applies cleanly. It remains unapplied: lab_server.py is reserved by another session under AGENTS.md rule 17. Owner approval is pending.
+
+
+## 2026-10-06T20:17:46+0300 — Commit workbench cache fixes
+
+- Select only this session's run index, persistent summary, cluster, configuration, and response cache changes for the local commit. Preserve other sessions' changes in the working tree.
+- Validation: an isolated copy of the committed baseline with the selected changes passes 101 tests, including HTTP run routes and cache freshness checks. The shared checkout passed 153 focused tests; all seven response-cache tests pass again after the compatibility adjustment. Evidence: ../internal/workbench-bottlenecks-20261006/tests-commit-baseline.json.
+- The response source revision includes image_tags.py when present and works without that separate feature. No push.

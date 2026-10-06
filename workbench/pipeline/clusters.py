@@ -14,6 +14,9 @@ and the cluster re-rank of a photo with that GTIN can compare them. A QR URL giv
 link. Read `docs/plans/64_shared-gtin-rerank.md`.
 """
 import collections
+import copy
+import sqlite3
+import threading
 import contextlib
 import fcntl
 import hashlib
@@ -23,12 +26,14 @@ import os
 import tempfile
 import time
 from contextlib import closing
+from pathlib import Path
 
 import numpy as np
 
 import embeddings
 import labdb
 import similar_wines
+import summary_cache
 
 VERSION = 1
 CLUSTERS_FILE = "clusters.json"
@@ -236,7 +241,135 @@ def _gtin_pairs(conn):
     return sorted(pairs)
 
 
-def context(settings, name):
+class CatalogInputs(tuple):
+    """A catalogue snapshot with a unique revision for status cache keys."""
+
+
+_CATALOG_LOCK = threading.Lock()
+_CATALOG_CACHE = None
+_STATUS_LOCK = threading.Lock()
+_STATUS_CACHE = collections.OrderedDict()
+_ARTIFACT_CACHE = collections.OrderedDict()
+
+
+def _file_signature(path):
+    try:
+        stat = os.stat(path)
+    except FileNotFoundError:
+        return None
+    return (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+
+
+def _database_signature(path):
+    return (_file_signature(path), _file_signature(path + "-wal"))
+
+
+def catalog_inputs(settings):
+    """Reuse a read-only snapshot until SQLite reports a database change.
+
+    Keep one connection with no open transaction. PRAGMA data_version detects commits
+    from other connections, including WAL commits. The inode detects DB replacement.
+    """
+    global _CATALOG_CACHE
+    path = os.path.abspath(settings.db_path)
+    signature = _file_signature(path)
+    identity = (path, signature[:2] if signature else None)
+    with _CATALOG_LOCK:
+        if _CATALOG_CACHE is None or _CATALOG_CACHE["identity"] != identity:
+            if _CATALOG_CACHE is not None:
+                _CATALOG_CACHE["conn"].close()
+                _CATALOG_CACHE = None
+            # Keep the existing schema checks before opening the shared connection.
+            with closing(embeddings.open_database(path)):
+                pass
+            conn = sqlite3.connect(Path(path).as_uri() + "?mode=ro", uri=True,
+                                   check_same_thread=False)
+            _CATALOG_CACHE = {"identity": identity, "conn": conn, "version": None}
+        conn = _CATALOG_CACHE["conn"]
+        if conn.execute("PRAGMA user_version").fetchone()[0] != len(labdb.schema_files()):
+            with closing(embeddings.open_database(path)):
+                pass
+        version = conn.execute("PRAGMA data_version").fetchone()[0]
+        if version != _CATALOG_CACHE["version"]:
+            directory = os.path.join(labdb.data_root(path), "cache", "clusters")
+            disk_key = _database_signature(path)
+            saved = summary_cache.load(directory, "catalog-v1", path, disk_key)
+            if (isinstance(saved, dict) and isinstance(saved.get("inputs"), list)
+                    and len(saved["inputs"]) == 5 and isinstance(saved.get("fingerprint"), str)
+                    and disk_key == _database_signature(path)
+                    and version == conn.execute("PRAGMA data_version").fetchone()[0]):
+                inputs = CatalogInputs(saved["inputs"])
+                for wine in inputs[0]:
+                    wine["columns"] = [tuple(column) for column in wine["columns"]]
+                for source in inputs[1].values():
+                    for cut in source["cuts"].values():
+                        if cut is not None and isinstance(cut.get("box"), list):
+                            cut["box"] = tuple(cut["box"])
+                inputs[3][:] = [tuple(pair) for pair in inputs[3]]
+                inputs[4][:] = [tuple(pair) for pair in inputs[4]]
+                inputs.revision = object()
+                inputs.fingerprint = saved["fingerprint"]
+                _CATALOG_CACHE.update(version=version, inputs=inputs)
+                return inputs
+            conn.execute("BEGIN")
+            try:
+                wines, sources = embeddings.read_inputs(conn, path)
+                inputs = CatalogInputs((wines, sources, _catalog(conn),
+                                        similar_wines.pairs(conn), _gtin_pairs(conn)))
+                inputs.revision = object()
+                inputs.fingerprint = sha256_json(inputs)
+            finally:
+                conn.rollback()
+            _CATALOG_CACHE.update(version=version, inputs=inputs)
+            if (disk_key == _database_signature(path)
+                    and version == conn.execute("PRAGMA data_version").fetchone()[0]):
+                summary_cache.store(directory, "catalog-v1", path, disk_key,
+                                    {"inputs": inputs, "fingerprint": inputs.fingerprint})
+        return _CATALOG_CACHE["inputs"]
+
+
+def _status_context(settings, name, inputs):
+    """Cache only context hashes and counts. Keep full contexts request-local."""
+    embedding = _settings_entry(settings, name)
+    directory = embeddings.entry_dir(settings.db_path, name)
+    def key():
+        return (getattr(inputs, "revision", None), directory,
+                canonical(embedding.summary()),
+                tuple(embedding.view_config_hash(view, role)
+                      for view in embedding.views for role in ("full", "label")),
+                _file_signature(os.path.join(directory, embeddings.INDEX)),
+                _file_signature(os.path.join(directory, embeddings.IMAGES)))
+    before = key()
+    disk_key = (getattr(inputs, "fingerprint", None),) + before[1:]
+    cache_directory = os.path.join(labdb.data_root(settings.db_path), "cache", "clusters")
+    # A caller can pass an ordinary tuple. Such inputs have no revision to cache.
+    if before[0] is not None:
+        with _STATUS_LOCK:
+            hit = _STATUS_CACHE.get(before)
+            if hit is not None:
+                _STATUS_CACHE.move_to_end(before)
+                return hit
+    if disk_key[0] is not None:
+        saved = summary_cache.load(cache_directory, "status-v1", directory, disk_key)
+        if isinstance(saved, dict) and "input_hash" in saved and "status_counts" in saved:
+            with _STATUS_LOCK:
+                _STATUS_CACHE[before] = saved
+                while len(_STATUS_CACHE) > 64:
+                    _STATUS_CACHE.popitem(last=False)
+            return saved
+    ctx = context(settings, name, inputs)
+    result = {"input_hash": ctx["input_hash"], "status_counts": ctx["status_counts"]}
+    if before[0] is not None and before == key():
+        with _STATUS_LOCK:
+            _STATUS_CACHE[before] = result
+            while len(_STATUS_CACHE) > 64:
+                _STATUS_CACHE.popitem(last=False)
+        if disk_key[0] is not None:
+            summary_cache.store(cache_directory, "status-v1", directory, disk_key, result)
+    return result
+
+
+def context(settings, name, inputs=None):
     """Read the current index identity and database assignments without its vectors."""
     embedding = _settings_entry(settings, name)
     directory = embeddings.entry_dir(settings.db_path, name)
@@ -246,11 +379,8 @@ def context(settings, name):
         raise ClusterError("cannot read the index of %s: %s" % (name, exc)) from exc
     if not index:
         raise ClusterError("embedding %s has no index; build the embedding first" % name)
-    with closing(embeddings.open_database(settings.db_path)) as conn:
-        wines, sources = embeddings.read_inputs(conn, settings.db_path)
-        catalog = _catalog(conn)
-        pairs = similar_wines.pairs(conn)
-        gtin_pairs = _gtin_pairs(conn)
+    wines, sources, catalog, pairs, gtin_pairs = (
+        catalog_inputs(settings) if inputs is None else inputs)
     # A manual pair counts only when both wines are in the build (plan 62).
     known = {wine["slug"] for wine in wines}
     similar = [[a, b] for a, b in pairs if a in known and b in known]
@@ -574,11 +704,39 @@ def load_artifact(directory):
     return read_json(os.path.join(directory, CLUSTERS_FILE))
 
 
-def artifact_status(settings, name):
-    """Return artifact metadata and its current input status."""
-    embedding = _settings_entry(settings, name)
-    directory = embeddings.entry_dir(settings.db_path, embedding.name)
+def artifact_metadata(directory, cache_directory=None):
+    """Read only the summary fields that the cluster list and status need."""
+    path = os.path.join(directory, CLUSTERS_FILE)
+    key = (path, _file_signature(path))
+    with _STATUS_LOCK:
+        if key in _ARTIFACT_CACHE:
+            _ARTIFACT_CACHE.move_to_end(key)
+            return copy.deepcopy(_ARTIFACT_CACHE[key])
+    saved = summary_cache.load(cache_directory, "artifact-v1", path, key)
+    if saved is not summary_cache.MISS:
+        with _STATUS_LOCK:
+            _ARTIFACT_CACHE[key] = saved
+            while len(_ARTIFACT_CACHE) > 64:
+                _ARTIFACT_CACHE.popitem(last=False)
+        return copy.deepcopy(saved)
     artifact = load_artifact(directory)
+    metadata = None if artifact is None else {
+        "built_at": artifact.get("built_at"), "input_hash": artifact.get("input_hash"),
+        "settings": artifact.get("settings") or {},
+        "spaces": {space: {"counts": (data or {}).get("counts") or {}}
+                   for space, data in (artifact.get("spaces") or {}).items()},
+    }
+    if key == (path, _file_signature(path)):
+        with _STATUS_LOCK:
+            _ARTIFACT_CACHE[key] = metadata
+            while len(_ARTIFACT_CACHE) > 64:
+                _ARTIFACT_CACHE.popitem(last=False)
+        summary_cache.store(cache_directory, "artifact-v1", path, key, metadata)
+    return copy.deepcopy(metadata)
+
+
+def _artifact_status(directory, artifact, ctx=None, error=None):
+    """Return status from the artifact and context of the same request."""
     if artifact is None:
         return {"exists": False, "directory": directory, "file":
                 os.path.join(directory, CLUSTERS_FILE), "stale": None}
@@ -588,15 +746,29 @@ def artifact_status(settings, name):
         "built_at": artifact.get("built_at"), "input_hash": artifact.get("input_hash"),
         "settings": artifact.get("settings") or {},
     }
-    try:
-        ctx = context(settings, name)
-    except ClusterError as exc:
-        answer.update(stale=True, current_error=str(exc), current_input_hash=None)
+    if error is not None:
+        answer.update(stale=True, current_error=str(error), current_input_hash=None)
     else:
         answer.update(stale=artifact.get("input_hash") != ctx["input_hash"],
                       current_error=None, current_input_hash=ctx["input_hash"],
-                      current_status=ctx["status_counts"])
+                      current_status=dict(ctx["status_counts"]))
     return answer
+
+
+def artifact_status(settings, name, inputs=None, artifact=None):
+    """Return artifact metadata and its current input status."""
+    embedding = _settings_entry(settings, name)
+    directory = embeddings.entry_dir(settings.db_path, embedding.name)
+    if artifact is None:
+        artifact = artifact_metadata(directory, os.path.join(
+            labdb.data_root(settings.db_path), "cache", "clusters"))
+    if artifact is None:
+        return _artifact_status(directory, None)
+    try:
+        ctx = _status_context(settings, name, catalog_inputs(settings) if inputs is None else inputs)
+    except ClusterError as exc:
+        return _artifact_status(directory, artifact, error=exc)
+    return _artifact_status(directory, artifact, ctx)
 
 
 def load_notes(directory):
@@ -718,12 +890,14 @@ def detail(settings, name):
     if artifact is None:
         return {"embedding": embedding.summary(), "status": artifact_status(settings, name),
                 "artifact": None, "cards": {}}
+    current_error = None
     try:
         ctx = context(settings, name)
-    except ClusterError:
+    except ClusterError as exc:
         # Keep a stored artifact readable when its current index is absent or invalid.
         # `artifact_status` gives the exact current error to the page.
         ctx = None
+        current_error = exc
     notes_data, notes = load_notes(directory)
     rules = load_rules(directory)
     wanted = {slug for space in (artifact.get("spaces") or {}).values()
@@ -752,7 +926,7 @@ def detail(settings, name):
                 cluster["rule"] = None
     return {
         "embedding": embedding.summary(),
-        "status": artifact_status(settings, name),
+        "status": _artifact_status(directory, artifact, ctx, current_error),
         "artifact": shown,
         "cards": cards,
         "notes_updated_at": notes_data.get("updated_at"),

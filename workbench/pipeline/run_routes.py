@@ -22,11 +22,13 @@ store of the lab database, through the route `/images/<folder>/<sha256>.<ext>`: 
 of a row by its `image_sha256`, and the catalogue image of a slug by the rule of
 `card_images` of `lab_server.py`. Read `docs/plans/23_runs-page.md`.
 """
+import copy
 import os
 import sqlite3
 import sys
 import urllib.parse
 from contextlib import closing
+from functools import lru_cache
 from pathlib import Path
 
 import embeddings
@@ -34,6 +36,7 @@ import lab_pages
 import labdb
 import pipelines
 import run_files
+import run_page_cache
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS_DIR = os.path.join(ROOT, "runs")
@@ -93,7 +96,7 @@ def _one(query, key, default=""):
     return (query.get(key) or [default])[0]
 
 
-def configurations(config_path):
+def _read_configurations(config_path):
     """Return (the pipelines of `config.yaml`, in file order, the error of the file or
     None). An entry that is not valid keeps its name and its error."""
     try:
@@ -102,6 +105,23 @@ def configurations(config_path):
         return [], str(exc)
     return [{"name": name, "backend": pipeline.backend if pipeline else None,
              "error": error} for name, pipeline, error in settings.entries], None
+
+
+@lru_cache(maxsize=8)
+def _configuration_snapshot(path, revision):
+    """Reuse checked pipeline summaries while the config file is unchanged."""
+    return _read_configurations(path)
+
+
+def configurations(config_path):
+    """Return fresh pipeline summaries. Invalidate edits and atomic replacements."""
+    path = os.path.abspath(config_path)
+    try:
+        stat = os.stat(path)
+    except OSError:
+        return _read_configurations(path)
+    revision = (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+    return copy.deepcopy(_configuration_snapshot(path, revision))
 
 
 def runs_view(runs_dir, config_path):
@@ -183,6 +203,12 @@ def run_view(runs_dir, db_path, query, card_images):
     sort = _one(query, "sort", "manifest")
     if sort not in run_files.ROW_SORTS:
         return _error(400, "sort MUST be one of %s" % ", ".join(run_files.ROW_SORTS))
+    options = (mode, (_one(query, "q") or "").strip().lower(), limit, offset, sort)
+    page_key = run_page_cache.token(runs_dir, run_id, db_path, card_images, options)
+    page = run_page_cache.load(page_key)
+    if (page is not None and page_key == run_page_cache.token(
+            runs_dir, run_id, db_path, card_images, options)):
+        return _json(200, page)
     rows, total = run_files.run_rows(runs_dir, run_id, mode, _one(query, "q"), limit,
                                      offset, sort)
     # The items of a candidate of an embedding run come through `/api/run-candidate`
@@ -200,14 +226,19 @@ def run_view(runs_dir, db_path, query, card_images):
         images_error = "cannot read the image store: %s" % exc
         for row in rows:
             row.setdefault("photo_url", None)
-    return _json(200, {
+    page = {
         "run": run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {},
         "metrics": run_files.read_json(
             run_files.run_path(runs_dir, run_id, "metrics.json")) or {},
         "head": run_files.run_head(runs_dir, run_id),
         "filter": mode, "sort": sort, "total": total, "offset": offset, "limit": limit,
         "rows": rows, "bottles": bottles, "patched": patched, "images_error": images_error,
-    })
+    }
+    if page_key == run_page_cache.token(runs_dir, run_id, db_path, card_images, options):
+        body = run_page_cache.store(page_key, page)
+        if body is not None:
+            return _json(200, body)
+    return _json(200, page)
 
 
 def run_embedding(runs_dir, run_id):
