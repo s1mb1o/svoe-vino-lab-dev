@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import html
 import io
 from urllib.parse import urlparse
@@ -174,4 +175,4 @@ class CatalogImageLoader:
             raise
         except (httpx.HTTPError, ValueError) as exc:
             raise CatalogImageUnavailable("catalogue image is unavailable") from exc
-        return prepare_catalog_result_photo(b"".join(chunks))
+        return await asyncio.to_thread(prepare_catalog_result_photo, b"".join(chunks))

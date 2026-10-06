@@ -14,6 +14,25 @@ Feedback requires a non-empty selected slug for an `abstained` request.
 An empty matcher answer cannot receive feedback.
 The implementation does not change moderation or the matcher ranking.
 
+The checkout implementation is commit `4ce43a8f0`.
+The deployed source was older than the checkout source.
+Source hash checks confirmed deployed base `49fb414`.
+The production patch is commit `874fbd6` with parent `49fb414`.
+This patch excludes the separate checkout changes to administration and configuration.
+The checkout tests passed 252 cases.
+The exact production patch tests passed 244 cases.
+Both lint checks and both deterministic host demos passed.
+The deployment replaced the bot and administration containers at an idle queue.
+The deployment preserved the environment file and database schema.
+Both containers passed readiness and retained HTTP authentication.
+The previous image has rollback tag `prod-before-tentative-20261005`.
+The live check of query 043 returned a wine photo with the low-margin wording.
+The recorded Top-1 score was `0.840186` and the margin was `0.0`.
+The request kept status `abstained`.
+The deployed source hashes matched the production commit.
+The matcher container stayed unchanged.
+The evidence is in `<workspace>/svoe-wino-hackaton/dataset/derived/telegram-tentative-replies-2026-10-05/`.
+
 ## 2026-09-29
 
 This entry records a log leak of the Telegram bot token.

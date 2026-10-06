@@ -60,6 +60,11 @@ Fixed the defects of issue #11. The tests of the MAX port found them.
 - Keep an empty matcher answer as a text abstention.
 - Add processor, feedback, and caption length checks.
 - Validation: 252 tests pass. `ruff check .` passes. The deterministic host demo passes.
+- Deploy production patch `874fbd6` from deployed base `49fb414` at 10:16 MSK.
+  Validate the exact production patch with 244 tests and an isolated image demo.
+  Verify bot readiness, administration readiness, and HTTP authentication.
+- Verify the live tentative wine card for query 043 with margin `0.0`.
+  Verify that the deployed source matches the production commit and the matcher stays unchanged.
 
 ## 2026-09-29
 

@@ -34,7 +34,7 @@ from aiogram.types import (
 
 from .config import Settings
 from .data_lifecycle import purge_expired_data
-from .fingerprints import difference_hash, perceptual_hash
+from .fingerprints import image_hashes
 from .http_api import (
     HttpQueueFull,
     HttpQueueUnavailable,
@@ -361,7 +361,7 @@ class PhotoProcessor:
 
         try:
             with self._timed_step(job, "image_prepare"):
-                moderation_jpeg = make_moderation_jpeg(body)
+                moderation_jpeg = await asyncio.to_thread(make_moderation_jpeg, body)
         except InvalidImage:
             self._services.repository.update(
                 job.request_id, status="invalid_image", error_code="decode"
@@ -387,8 +387,7 @@ class PhotoProcessor:
             return
 
         with self._timed_step(job, "fingerprints"):
-            image_phash = perceptual_hash(body)
-            image_dhash = difference_hash(body)
+            image_phash, image_dhash = await asyncio.to_thread(image_hashes, body)
         with self._timed_step(job, "image_storage"):
             relative_path, digest = self._services.store.save(
                 job.request_id, _storage_time(job), body, moderation.accepted
@@ -420,7 +419,7 @@ class PhotoProcessor:
                 with self._timed_step(job, "artifact_censored"):
                     self._save_artifacts(
                         job,
-                        [censored_artifact(moderation_jpeg)],
+                        [await asyncio.to_thread(censored_artifact, moderation_jpeg)],
                         replace=True,
                     )
             except Exception:
@@ -441,7 +440,7 @@ class PhotoProcessor:
             with self._timed_step(job, "artifact_base"):
                 self._save_artifacts(
                     job,
-                    base_artifacts(body, moderation_jpeg),
+                    await asyncio.to_thread(base_artifacts, body, moderation_jpeg),
                     replace=True,
                 )
         except Exception:
@@ -485,7 +484,7 @@ class PhotoProcessor:
                 with self._timed_step(job, "artifact_quality"):
                     self._save_artifacts(
                         job,
-                        quality_artifacts(moderation_jpeg, quality),
+                        await asyncio.to_thread(quality_artifacts, moderation_jpeg, quality),
                     )
             except Exception:
                 LOG.exception(
@@ -720,7 +719,7 @@ class PhotoProcessor:
                 LOG.warning("Catalog image unavailable", extra={"request_id": job.request_id})
         if image is None:
             try:
-                image = normalize_result_photo(submitted_body)
+                image = await asyncio.to_thread(normalize_result_photo, submitted_body)
             except CatalogImageUnavailable:
                 LOG.exception("Submitted result image is invalid", extra={"request_id": job.request_id})
 
@@ -736,7 +735,7 @@ class PhotoProcessor:
 
         try:
             with self._timed_step(job, "artifact_result"):
-                self._save_artifacts(job, [result_artifact(image)])
+                self._save_artifacts(job, [await asyncio.to_thread(result_artifact, image)])
         except Exception:
             LOG.exception(
                 "Result artifact generation failed",
