@@ -22,8 +22,11 @@ import os
 import re
 import sqlite3
 import sys
+import threading
 import urllib.parse
+from collections import OrderedDict
 from contextlib import closing
+from copy import deepcopy
 from pathlib import Path
 
 import alternatives
@@ -32,8 +35,10 @@ import derive
 import embedding_run
 import embeddings
 import labdb
+import main_scene
+import model_cache
 import run_files
-from checked_read_cache import CheckedReadCache
+from checked_read_cache import CheckedReadCache, signature
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MATCHER_ROOT = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "svoe-vino-matcher")
@@ -136,12 +141,15 @@ class Photo:
         self.url = "/images/%s/%s.%s" % (hit[0], digest, hit[1]) if hit else None
         self.path = (os.path.join(labdb.image_dir(db_path, hit[0]),
                                   "%s.%s" % (digest, hit[1])) if hit else None)
-        self.image, self.error = None, None
+        self.image, self.error, self.source_state = None, None, None
         if not self.path:
             self.error = "the photo of this query is not in the lab image store"
             return
         try:
+            self.source_state = signature(self.path)
             self.image, _icc = derive.open_image(self.path)
+            if signature(self.path) != self.source_state:
+                self.source_state = None
         except OSError as exc:
             self.error = "Pillow cannot read the photo: %s" % exc
 
@@ -227,14 +235,200 @@ def _index_state(db_path, name):
              for item in index.get("items", [])}, names)
 
 
-def _cut(photo, target, endpoint, scene_selection=False):
+class VisualInputsCache:
+    """Keep encoded artifacts with the identities of every file read to make them."""
+
+    def __init__(self, max_entries=8, max_bytes=64 * 1024 * 1024):
+        self.max_entries, self.max_bytes = max_entries, max_bytes
+        self._entries = OrderedDict()
+        self._bytes = 0
+        self._lock = threading.Lock()
+
+    def clear(self):
+        with self._lock:
+            self._entries.clear()
+            self._bytes = 0
+
+    @staticmethod
+    def state(paths):
+        try:
+            return tuple(signature(path) for path in paths)
+        except OSError:
+            return None
+
+    @staticmethod
+    def size(value):
+        # The payload holds dictionaries, lists, scalar values, and PNG URI strings.
+        if isinstance(value, dict):
+            return sys.getsizeof(value) + sum(VisualInputsCache.size(k) + VisualInputsCache.size(v)
+                                             for k, v in value.items())
+        if isinstance(value, (list, tuple)):
+            return sys.getsizeof(value) + sum(VisualInputsCache.size(v) for v in value)
+        return sys.getsizeof(value)
+
+    def _remove(self, key):
+        item = self._entries.pop(key, None)
+        if item is not None:
+            self._bytes -= item[3]
+
+    def get(self, key, loader):
+        with self._lock:
+            item = self._entries.get(key)
+            if item is not None:
+                paths, state, value, _size = item
+                if self.state(paths) == state:
+                    result = deepcopy(value)
+                    if self.state(paths) == state:
+                        self._entries.move_to_end(key)
+                        return result
+                self._remove(key)
+        value, sources, cacheable = loader()
+        paths, state = tuple(sources), tuple(sources.values())
+        if not cacheable or None in state or self.state(paths) != state:
+            return value
+        size = self.size(value) + self.size(key) + self.size(paths) + self.size(state)
+        if self.max_entries <= 0 or size > self.max_bytes:
+            return value
+        saved = deepcopy(value)
+        with self._lock:
+            if self.state(paths) != state:
+                return value
+            self._remove(key)
+            self._entries[key] = (paths, state, saved, size)
+            self._bytes += size
+            while len(self._entries) > self.max_entries or self._bytes > self.max_bytes:
+                self._remove(next(iter(self._entries)))
+        return value
+
+
+VISUAL_INPUTS = VisualInputsCache()
+
+
+def _source(sources, path):
+    path = os.path.abspath(path)
+    try:
+        state = signature(path)
+    except OSError:
+        state = None
+    # A second read MUST NOT replace the identity from before the first read.
+    sources.setdefault(path, state)
+
+
+def _visual_key(photo, views, endpoint, scene_selection):
+    constants = {}
+    for module in (derive, alternatives, embeddings, main_scene):
+        for name, value in vars(module).items():
+            if name.isupper():
+                try:
+                    constants[module.__name__ + '.' + name] = model_cache.canonical(value)
+                except (TypeError, ValueError):
+                    continue
+    return (photo.path, getattr(photo, "source_state", None), endpoint, bool(scene_selection), CUT_SIDE, model_cache.ROOT,
+            model_cache.READ, model_cache.canonical(views), model_cache.canonical(constants),
+            embedding_run.CachedSam3, embedding_run.cuts_of, embedding_run.view_input,
+            derive.open_image, embeddings.apply_steps, png_uri,
+            build_embeddings.make_dis_segmenter_for_views, model_cache.lookup,
+            getattr(embedding_run.CachedSam3, "_sent_copy", None),
+            getattr(embedding_run.CachedSam3, "_post", None))
+
+
+def _tracked_segmenter(endpoint, sources):
+    client = embedding_run.CachedSam3(endpoint)
+    if not isinstance(client, derive.Sam3Client):
+        return client, False
+    original = client._post
+    original_copy = client._sent_copy
+    sent = []
+
+    def sent_copy(image):
+        # Both target requests use the same unchanged photo in this reconstruction.
+        if not sent or sent[0] is not image:
+            sent[:] = [image, original_copy(image)]
+        return sent[1]
+
+    client._sent_copy = sent_copy
+
+    def post(data, texts=derive.SAM3_TEXTS, return_masks=True):
+        params = {"threshold": str(derive.SAM3_THRESHOLD),
+                  "mask_threshold": str(derive.SAM3_MASK_THRESHOLD),
+                  "return_masks": "true" if return_masks else "false"}
+        fields = model_cache.request_fields(client.endpoint + "/segment_multi",
+                                            derive.SAM3_MODEL, params, texts, [data])
+        _source(sources, model_cache.path_of(fields))
+        return original(data, texts, return_masks)
+
+    client._post = post
+    return client, True
+
+
+def _reconstruct_inputs(photo, views, endpoint, scene_selection):
+    """Cache image artifacts alone. Read names, trace times, and comparisons each time."""
+    def load():
+        sources = {}
+        if photo.path:
+            sources[os.path.abspath(photo.path)] = getattr(photo, "source_state", None)
+        for module in (sys.modules[__name__], derive, alternatives, embedding_run,
+                       embeddings, main_scene, model_cache, build_embeddings):
+            _source(sources, module.__file__)
+        segmenter, cacheable = _tracked_segmenter(endpoint, sources)
+        cuts, out = {}, {"cuts": {}, "views": {}}
+        targets = embedding_run.cut_targets(views)
+        for target in (target for target in ("package", "label") if target in targets):
+            box, processed, reason, result = _cut(photo, target, endpoint, scene_selection,
+                                                   segmenter=segmenter)
+            cuts[target] = (box, processed) if box is not None else None
+            item = {"box": box, "reason": reason, "result": result}
+            if box is not None:
+                item.update(src=png_uri(processed, CUT_SIDE), width=processed.width,
+                            height=processed.height, alpha=processed.mode == "RGBA")
+            out["cuts"][target] = item
+            cacheable = cacheable and reason is None
+        try:
+            dis_segmenter = build_embeddings.make_dis_segmenter_for_views(views)
+        except (OSError, ImportError, ValueError) as exc:
+            dis_segmenter = None
+            dis_error = "The DIS input cannot be made again: %s." % exc
+        else:
+            dis_error = None
+        for view, steps in views.items():
+            target = embedding_run.segment_target(steps)
+            if photo.image is None or (target is not None and cuts.get(target) is None):
+                out["views"][view] = None
+                cacheable = False
+                continue
+            try:
+                prepared, reason = embedding_run.view_input(photo.image, steps, cuts, dis_segmenter)
+            except embeddings.ItemError as exc:
+                prepared, reason = None, str(exc)
+            if prepared is None and dis_error and steps[0].get("step") == "segment_dis":
+                reason = dis_error
+            item = {"reason": reason}
+            if prepared is not None:
+                data = embeddings.png_bytes(prepared)
+                item.update(src=build_embeddings.data_uri(data), width=prepared.width,
+                            height=prepared.height, bytes=len(data),
+                            sha256=hashlib.sha256(data).hexdigest())
+            else:
+                cacheable = False
+            out["views"][view] = item
+        # DIS weights have separate runtime state. Keep its existing reconstruction path.
+        cacheable = cacheable and model_cache.READ and not any(
+            s.get("step") == "segment_dis" for steps in views.values() for s in steps)
+        if isinstance(segmenter, derive.Sam3Client):
+            segmenter.session.close()
+        return out, sources, cacheable
+
+    return VISUAL_INPUTS.get(_visual_key(photo, views, endpoint, scene_selection), load)
+
+
+def _cut(photo, target, endpoint, scene_selection=False, *, segmenter=None):
     """Return `(box, image, reason, result)` for one cached SAM3 target."""
     if photo.image is None:
         return None, None, photo.error, None
     try:
         trace = embedding_run.Trace()
         cut = embedding_run.cuts_of(
-            photo.image, {target}, embedding_run.CachedSam3(endpoint), trace,
+            photo.image, {target}, segmenter or embedding_run.CachedSam3(endpoint), trace,
             scene_selection=scene_selection and target == "package").get(target)
         result = next((record.get("out") for record in trace.steps
                        if record.get("id") == "sam3-" + target), None)
@@ -295,7 +489,7 @@ def embedding_rounds(ctx):
         if code_answer:
             return [(EMBEDDING_ROUNDS[0], rounds[0])]
 
-    cuts = {}
+    visual = _reconstruct_inputs(photo, views, endpoint, scene_selection)
     for target, label, group, texts, rule in (
             ("package", "Package selection and cut" if scene_selection else "Package cut",
              "segment", sam3.get("package_texts") or derive.SAM3_TEXTS,
@@ -306,8 +500,8 @@ def embedding_rounds(ctx):
         part = step("sam3-" + target, label, service_of(endpoint), derive.SAM3_MODEL, group)
         record = records.get(("sam3-" + target, None))
         timed(part, record)
-        box, processed, reason, replayed = _cut(photo, target, endpoint, scene_selection)
-        cuts[target] = (box, processed) if box is not None else None
+        cut = visual["cuts"][target]
+        box, reason, replayed = cut["box"], cut["reason"], cut["result"]
         part["settings"] = {"endpoint": endpoint, "texts": texts, "rule": rule}
         if reason:
             part["notes"].append(reason)
@@ -316,10 +510,10 @@ def embedding_rounds(ctx):
             box_art = photo.artifact("%02d-%s-box.%s" % (number, target, photo.extension or "jpg"),
                                      [box])
             part["artifacts"] = [a for a in [box_art] if a] + [{
-                "src": png_uri(processed, CUT_SIDE), "caption": "%02d-%s-cut.png · %d × %d" % (
-                    number, target, processed.width, processed.height),
-                "width": processed.width, "height": processed.height, "boxes": [],
-                "check": None, "alpha": processed.mode == "RGBA"}]
+                "src": cut["src"], "caption": "%02d-%s-cut.png · %d × %d" % (
+                    number, target, cut["width"], cut["height"]),
+                "width": cut["width"], "height": cut["height"], "boxes": [],
+                "check": None, "alpha": cut["alpha"]}]
             recorded = (record or {}).get("out") or {}
             if recorded.get("box") and list(recorded["box"]) != list(box):
                 part["notes"].append("The cut made again has the box %s; the run had %s."
@@ -336,14 +530,6 @@ def embedding_rounds(ctx):
                                     selection.get("hands") or 0))
         rounds[1].append(part)
 
-    try:
-        dis_segmenter = build_embeddings.make_dis_segmenter_for_views(views)
-    except (OSError, ImportError, ValueError) as exc:
-        dis_segmenter = None
-        dis_error = "The DIS input cannot be made again: %s." % exc
-    else:
-        dis_error = None
-
     for view, steps in views.items():
         chain = " → ".join(s.get("step", "?") for s in steps)
         part = step("view", "View %s" % view, "local", None, chain, view=view)
@@ -355,40 +541,34 @@ def embedding_rounds(ctx):
             rounds[1].append(part)
             continue
         target = embedding_run.segment_target(steps)
-        if target is not None and cuts.get(target) is None:
+        if target is not None and visual["cuts"][target]["box"] is None:
             if part["state"] != "skipped":
                 part["notes"].append("The model input needs the %s cut, which cannot be "
                                      "shown." % target)
             rounds[1].append(part)
             continue
-        try:
-            prepared, reason = embedding_run.view_input(
-                photo.image, steps, cuts, dis_segmenter)
-        except embeddings.ItemError as exc:
-            prepared, reason = None, str(exc)
-        if prepared is None and dis_error and steps[0].get("step") == "segment_dis":
-            reason = dis_error
-        if prepared is None:
+        prepared = visual["views"][view]
+        if "src" not in prepared:
+            reason = prepared["reason"]
             if reason and reason not in part["notes"]:
                 part["notes"].append(reason)
             rounds[1].append(part)
             continue
-        data = embeddings.png_bytes(prepared)
-        digest = hashlib.sha256(data).hexdigest()
+        digest = prepared["sha256"]
         recorded = ((record or {}).get("out") or {}).get("sha256")
         check = None if not recorded else ("same" if recorded == digest else "changed")
         number = len(rounds[0]) + len(rounds[1])
-        part["artifacts"] = [{"src": build_embeddings.data_uri(data),
+        part["artifacts"] = [{"src": prepared["src"],
                               "caption": "%02d-view-%s.png · %d × %d" % (
-                                  number, view, prepared.width, prepared.height),
-                              "width": prepared.width, "height": prepared.height,
+                                  number, view, prepared["width"], prepared["height"]),
+                              "width": prepared["width"], "height": prepared["height"],
                               "boxes": [], "check": check, "sha256": digest}]
         if check == "changed":
             part["notes"].append("The model input made again differs from the input of the "
                                  "run: the code, the cache, or the photo changed.")
         if not part["result"]:
-            part["result"] = {"width": prepared.width, "height": prepared.height,
-                              "bytes": len(data), "sha256": digest}
+            part["result"] = {"width": prepared["width"], "height": prepared["height"],
+                              "bytes": prepared["bytes"], "sha256": digest}
         rounds[1].append(part)
 
     local = spec.get("model_backend") == "local"

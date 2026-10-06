@@ -56,6 +56,9 @@ main { max-width: 1500px; margin: 0 auto; padding: 14px 16px 64px; }
      about 2,100 cards, so a change of one card no longer lays out the whole list. */
   content-visibility: auto; contain-intrinsic-size: auto 406px;
 }
+/* Deferred cards keep their list position without creating off-screen controls. */
+.wine[data-deferred] { display: block; overflow: hidden; }
+.wine[data-deferred] .deferred-title { margin: 0; font-size: 15px; }
 .wine:target { outline: 2px solid var(--accent); outline-offset: 2px; }
 .pictures { display: flex; flex: 0 0 auto; gap: 8px; align-items: flex-start; }
 .pictures figure { width: 158px; margin: 0; }
@@ -2752,10 +2755,68 @@ function applyView() {
   });
 }
 const EMPTY_VIEW = '<div class="empty">No catalogue record matches this view.</div>';
+// Keep every slug and list position. Build full controls near the viewport only.
+// Keep edited cards mounted so focus, file inputs, and open details survive scrolling.
+const CARD_HEIGHTS = new Map();
+let CARD_RECORDS = new Map();
+let CARD_OBSERVER = null;
+const DEFER_CARDS = typeof IntersectionObserver !== "undefined";
+function keepCardMounted(card) {
+  const slug = card.id;
+  return card.contains(document.activeElement) || !!card.querySelector("details[open]")
+    || [PENDING_PATCHES, PENDING_ALTERNATIVES, DRAFT_GTINS, DRAFT_BARCODES,
+      DRAFT_QR_URLS, DRAFT_ATLAS_BINDINGS, DRAFT_SIMILAR, DRAFT_TAGS,
+      DRAFT_COMMENTS, DRAFT_NAMES].some(drafts => drafts.has(slug));
+}
+function deferredCardHtml(record) {
+  const height = CARD_HEIGHTS.get(record.slug) || 428;
+  return `<article class="wine" id="${esc(record.slug)}" data-slug="${esc(record.slug)}"
+    data-deferred="" style="height:${height}px">
+    <h2 class="deferred-title">${esc(record.name || record.slug)}</h2>
+    <span>${esc(record.producer || "")} · ${esc(record.slug)}</span></article>`;
+}
+function replaceObservedCard(card, html) {
+  CARD_OBSERVER?.unobserve(card);
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  const next = template.content.firstElementChild;
+  card.replaceWith(next);
+  CARD_OBSERVER?.observe(next);
+  return next;
+}
+function mountCard(card) {
+  if (!card?.hasAttribute("data-deferred")) return card;
+  const record = CARD_RECORDS.get(card.id);
+  return record ? replaceObservedCard(card, recordHtml(record)) : card;
+}
+function observeCards() {
+  if (!DEFER_CARDS) return;
+  CARD_OBSERVER = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      const card = entry.target;
+      // A filter or a single-card update can replace an observed element.
+      if (!card.isConnected || !CARD_RECORDS.has(card.id)) continue;
+      if (entry.isIntersecting) mountCard(card);
+      else if (!card.hasAttribute("data-deferred") && !keepCardMounted(card)) {
+        CARD_HEIGHTS.set(card.id, Math.max(1, entry.boundingClientRect.height));
+        replaceObservedCard(card, deferredCardHtml(CARD_RECORDS.get(card.id)));
+      }
+    }
+  }, {rootMargin: "1000px 0px"});
+  for (const card of $("#list").children) if (card.matches("article.wine")) CARD_OBSERVER.observe(card);
+}
 function render() {
   CODE_USERS = null;
   applyView();
-  $("#list").innerHTML = ROWS.length ? ROWS.map(recordHtml).join("") : EMPTY_VIEW;
+  CARD_OBSERVER?.disconnect();
+  CARD_OBSERVER = null;
+  const retained = DEFER_CARDS ? new Map([...$("#list").children]
+    .filter(card => card.matches("article.wine") && !card.hasAttribute("data-deferred") && keepCardMounted(card))
+    .map(card => [card.id, card])) : new Map();
+  CARD_RECORDS = new Map(ROWS.map(record => [record.slug, record]));
+  $("#list").innerHTML = ROWS.length ? ROWS.map(DEFER_CARDS ? deferredCardHtml : recordHtml).join("") : EMPTY_VIEW;
+  for (const [slug, card] of retained) document.getElementById(slug)?.replaceWith(card);
+  observeCards();
   renderHead();
 }
 function renderHead() {
@@ -2781,14 +2842,19 @@ function renderCard(slug) {
   const card = document.getElementById(slug);
   const record = DATA.records.find(item => item.slug === slug);
   if (!card || !record) { render(); return; }
+  CARD_RECORDS.set(slug, record);
+  CARD_HEIGHTS.delete(slug);
   if (!inStateView(record) || !inTypeView(record)) {
+    CARD_OBSERVER?.unobserve(card);
+    CARD_RECORDS.delete(slug);
     card.remove();
     ROWS = ROWS.filter(item => item !== record);
     if (!ROWS.length) $("#list").innerHTML = EMPTY_VIEW;
     renderHead();
     return;
   }
-  card.outerHTML = recordHtml(record);
+  replaceObservedCard(card, card.hasAttribute("data-deferred")
+    ? deferredCardHtml(record) : recordHtml(record));
 }
 function validationDetails(title, value) {
   if (!value || (Array.isArray(value) && !value.length)) return "";
@@ -3093,7 +3159,7 @@ function scrollToCard(slug) {
   // A card out of view has an estimated height (`content-visibility`). The first scroll
   // renders the cards near the target, and their true heights move it. The second
   // scroll, two frames later, puts the card at its place.
-  const scroll = () => document.getElementById(slug)?.scrollIntoView();
+  const scroll = () => mountCard(document.getElementById(slug))?.scrollIntoView();
   requestAnimationFrame(() => {
     scroll();
     requestAnimationFrame(() => requestAnimationFrame(scroll));
@@ -3106,7 +3172,9 @@ function openSimilarCard(slug, other) {
   const record = DATA.records.find(item => item.slug === other);
   const card = document.getElementById(slug);
   if (!document.getElementById(other) && record && card) {
-    card.insertAdjacentHTML("afterend", recordHtml(record));
+    CARD_RECORDS.set(other, record);
+    card.insertAdjacentHTML("afterend", DEFER_CARDS ? deferredCardHtml(record) : recordHtml(record));
+    CARD_OBSERVER?.observe(document.getElementById(other));
     ROWS.splice(ROWS.findIndex(item => item.slug === slug) + 1, 0, record);
     renderHead();
   }
