@@ -378,3 +378,16 @@
 - Confirm that the administration PNGs show the same masks and cutouts.
 - Confirm that an unsafe photo stays under `quarantine`.
 - Deployment smoke checks remain pending. No runtime was restarted for this change.
+
+
+## Photo persistence worker, 2026-10-06
+
+- Run `.venv/bin/python -m pytest -q`. The local result is 326 passing tests.
+- Run `.venv/bin/ruff check .`. The local result passes.
+- In an isolated deployment, send `/stats` while a photo write runs.
+- Confirm that the command responds while the photo write runs.
+- Confirm that an unsafe photo remains under `quarantine`.
+- Confirm that a failed moderation request creates no image file.
+- Confirm that completed photo files and artifact metadata remain readable after restart.
+- Stop processing during a delayed write. Confirm that the write finishes before shutdown completes.
+- Deployment smoke checks remain pending. No runtime was restarted.

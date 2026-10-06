@@ -50,6 +50,16 @@ Fixed the defects of issue #11. The tests of the MAX port found them.
 - Removed the double point at the end of the queue receipt («около 40 сек..»).
 - Tests: 253 pass. `ruff check .` passes.
 
+## 2026-10-06: Photo persistence worker
+
+- Run photo writes, artifact writes, unsafe-copy cleanup, and photo-processing database writes in worker threads.
+- Serialize these operations through one persistence lock per photo processor.
+- Wait for an active persistence operation before cancellation returns.
+- Keep moderation order, file synchronization, atomic replacement, and artifact metadata order.
+- Record step timings through the same persistence worker.
+- Validation: all 326 bot tests pass. `ruff check .` passes. No deployment.
+- Evidence: `../internal/queue-persistence-2026-10-06/README.md`.
+
 ## 2026-10-06: Measured CPU bottlenecks
 
 - Compute blur with signed Pillow image arithmetic and an exact value histogram.

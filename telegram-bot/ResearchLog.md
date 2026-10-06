@@ -295,3 +295,21 @@ Compression level 6 reduces the measured artifact preparation cost.
 All decoded pixels match.
 The raw results are in `../internal/other-bottlenecks-2026-10-06/`.
 The changes are not deployed.
+
+
+## 2026-10-06: Persistence responsiveness
+
+Photo processing called file synchronization and database writes on the event-loop thread.
+The persistence worker now runs these operations outside the event-loop thread.
+One persistence lock limits the photo processor to one active storage operation.
+Cancellation waits for an active operation to finish.
+The next storage operation cannot start before the active operation finishes.
+
+A local probe adds an artificial 100 ms delay to `fsync`.
+The direct-call median event-loop delay is 116.457 ms.
+The persistence-worker median event-loop delay is 0.839 ms.
+These values measure responsiveness under an artificial disk delay.
+These values do not measure production request latency.
+Stored photo bytes match the input bytes.
+All 326 bot tests and the Ruff check pass.
+The changes are not deployed.
