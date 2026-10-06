@@ -103,7 +103,7 @@ class EmbeddingStepsTest(StepsTest):
                          ("fake-sam3", "sam3", "segment"))
         self.assertEqual(package["artifacts"][0]["boxes"],
                          [row["trace"]["steps"][1]["out"]["box"]])
-        self.assertTrue(package["artifacts"][1]["src"].startswith("data:image/png;base64,"))
+        self.assertTrue(package["artifacts"][1]["src"].startswith("/api/run-artifact?"))
         for view in steps[3:5]:
             self.assertEqual(view["artifacts"][0]["check"], "same", view)
         full = steps[6]["lists"][0]

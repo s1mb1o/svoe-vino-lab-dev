@@ -39,7 +39,7 @@ import labdb
 import main_scene
 import model_cache
 import run_files
-from checked_read_cache import CheckedReadCache, signature
+from checked_read_cache import CheckedReadCache, ReadFlights, signature
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MATCHER_ROOT = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "svoe-vino-matcher")
@@ -144,6 +144,7 @@ class Photo:
         self.path = (os.path.join(labdb.image_dir(db_path, hit[0]),
                                   "%s.%s" % (digest, hit[1])) if hit else None)
         self.image, self.error, self.source_state = None, None, None
+        self.artifact_sources = {}
         if not self.path:
             self.error = "the photo of this query is not in the lab image store"
             return
@@ -268,9 +269,12 @@ class VisualInputsCache:
         self._entries = OrderedDict()
         self._bytes = 0
         self._lock = threading.Lock()
+        self._flights = ReadFlights()
+        self._epoch = 0
 
     def clear(self):
         with self._lock:
+            self._epoch += 1
             self._entries.clear()
             self._bytes = 0
 
@@ -296,7 +300,16 @@ class VisualInputsCache:
         if item is not None:
             self._bytes -= item[3]
 
-    def get(self, key, loader):
+    def get(self, key, loader, *, sources_sink=None):
+        with self._lock:
+            epoch = self._epoch
+        # Source paths are discovered by the loader. Each caller checks these
+        # dependencies before cache publication, including after a shared read.
+        def shared():
+            return self._flights.run((key, epoch), loader)
+        return self._get(key, shared, epoch, sources_sink)
+
+    def _get(self, key, loader, epoch, sources_sink):
         with self._lock:
             item = self._entries.get(key)
             if item is not None:
@@ -305,25 +318,29 @@ class VisualInputsCache:
                     result = deepcopy(value)
                     if self.state(paths) == state:
                         self._entries.move_to_end(key)
+                        if sources_sink is not None:
+                            sources_sink.update(zip(paths, state))
                         return result
                 self._remove(key)
         value, sources, cacheable = loader()
+        if sources_sink is not None:
+            sources_sink.update(sources)
         paths, state = tuple(sources), tuple(sources.values())
         if not cacheable or None in state or self.state(paths) != state:
-            return value
+            return deepcopy(value)
         size = self.size(value) + self.size(key) + self.size(paths) + self.size(state)
         if self.max_entries <= 0 or size > self.max_bytes:
-            return value
+            return deepcopy(value)
         saved = deepcopy(value)
         with self._lock:
-            if self.state(paths) != state:
-                return value
+            if self._epoch != epoch or self.state(paths) != state:
+                return deepcopy(value)
             self._remove(key)
             self._entries[key] = (paths, state, saved, size)
             self._bytes += size
             while len(self._entries) > self.max_entries or self._bytes > self.max_bytes:
                 self._remove(next(iter(self._entries)))
-        return value
+        return deepcopy(value)
 
 
 VISUAL_INPUTS = VisualInputsCache()
@@ -348,7 +365,9 @@ def _visual_key(photo, views, endpoint, scene_selection):
                     constants[module.__name__ + '.' + name] = model_cache.canonical(value)
                 except (TypeError, ValueError):
                     continue
-    return (photo.path, getattr(photo, "source_state", None), endpoint, bool(scene_selection), CUT_SIDE, model_cache.ROOT,
+    source_state = getattr(photo, "source_state", None)
+    identity = source_state if source_state is not None else ("unverified", id(photo.image))
+    return (photo.path, identity, endpoint, bool(scene_selection), CUT_SIDE, model_cache.ROOT,
             model_cache.READ, model_cache.canonical(views), model_cache.canonical(constants),
             embedding_run.CachedSam3, embedding_run.cuts_of, embedding_run.view_input,
             derive.open_image, embeddings.apply_steps, png_uri,
@@ -443,7 +462,8 @@ def _reconstruct_inputs(photo, views, endpoint, scene_selection):
             segmenter.session.close()
         return out, sources, cacheable
 
-    return VISUAL_INPUTS.get(_visual_key(photo, views, endpoint, scene_selection), load)
+    return VISUAL_INPUTS.get(_visual_key(photo, views, endpoint, scene_selection), load,
+                             sources_sink=getattr(photo, "artifact_sources", None))
 
 
 def _cut(photo, target, endpoint, scene_selection=False, *, segmenter=None):
@@ -980,7 +1000,8 @@ def _run_data(runs_dir, run_id, query_id):
     return row, meta, spec
 
 
-def steps_view(runs_dir, db_path, run_id, query_id, card_images, *, card_images_for_slugs=None):
+def steps_view(runs_dir, db_path, run_id, query_id, card_images, *, card_images_for_slugs=None,
+               artifact_only=False):
     """Return the answer of `/api/run-steps`. Raise `StepError`."""
     row, meta, spec = _run_data(runs_dir, run_id, query_id)
     kind = run_kind(spec)
@@ -998,7 +1019,15 @@ def steps_view(runs_dir, db_path, run_id, query_id, card_images, *, card_images_
                 part["n"] = number
                 number += 1
             rounds.append({"n": n, "title": "Round %d" % n, "note": note, "steps": steps})
-        ctx.lists.finish(rounds)
+        if artifact_only:
+            sources = ctx.photo.artifact_sources
+            if (ctx.photo.path is None or ctx.photo.source_state is None or
+                    VisualInputsCache.state([ctx.photo.path]) != (ctx.photo.source_state,) or
+                    any(state is not None and VisualInputsCache.state([path]) != (state,)
+                        for path, state in sources.items())):
+                raise StepError(404, "artifact changed while it was read")
+        else:
+            ctx.lists.finish(rounds)
     return {
         "run": run_id, "query": query_id, "kind": kind,
         "configuration": run_files.configuration_of(meta),
@@ -1008,3 +1037,49 @@ def steps_view(runs_dir, db_path, run_id, query_id, card_images, *, card_images_
         "recorded": isinstance(row.get("trace"), dict),
         "rounds": rounds, "notes": ctx.notes,
     }
+
+
+def _artifact_token(run_id, query_id, part, index, artifact):
+    return hashlib.sha256(model_cache.canonical(
+        [run_id, query_id, part["id"], part.get("view"), part["n"], index, artifact]
+    ).encode("utf-8")).hexdigest()
+
+
+def defer_artifacts(answer):
+    """Replace reconstructed PNGs with checked URLs; keep their captions and checks."""
+    for round_ in answer["rounds"]:
+        for part in round_["steps"]:
+            for index, artifact in enumerate(part["artifacts"]):
+                if not artifact.get("src", "").startswith("data:image/png;base64,"):
+                    continue
+                token = _artifact_token(answer["run"], answer["query"], part, index, artifact)
+                artifact["src"] = "/api/run-artifact?" + urllib.parse.urlencode({
+                    "id": answer["run"], "query": answer["query"], "step": part["n"],
+                    "artifact": index, "token": token})
+                artifact["deferred"] = True
+    return answer
+
+
+def artifact_image(runs_dir, db_path, run_id, query_id, number, index, token):
+    """Read one recorded artifact. URLs cannot name arbitrary files or model requests."""
+    try:
+        number, index = int(number), int(index)
+        if number < 0 or index < 0:
+            raise ValueError()
+    except (ValueError, TypeError):
+        raise StepError(400, "invalid artifact")
+    _run_data(runs_dir, run_id, query_id)  # validate identifiers before resolving paths
+    paths = [run_files.run_path(runs_dir, run_id, file) for file in ("run.json", "results.jsonl")]
+    before = VisualInputsCache.state(paths)
+    answer = steps_view(runs_dir, db_path, run_id, query_id, lambda conn: {}, artifact_only=True)
+    if before is None or VisualInputsCache.state(paths) != before:
+        raise StepError(404, "run changed while the artifact was read")
+    part = next((part for round_ in answer["rounds"] for part in round_["steps"]
+                 if part["n"] == number), None)
+    if part is None or index >= len(part["artifacts"]):
+        raise StepError(404, "unknown artifact")
+    artifact = part["artifacts"][index]
+    if (not artifact.get("src", "").startswith("data:image/png;base64,") or
+            token != _artifact_token(run_id, query_id, part, index, artifact)):
+        raise StepError(404, "artifact changed since the popup opened")
+    return base64.b64decode(artifact["src"].split(",", 1)[1])

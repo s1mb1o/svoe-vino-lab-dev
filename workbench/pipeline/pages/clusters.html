@@ -539,13 +539,16 @@ function noteStatus(key, text, error=false) {
    rule of the cluster is current (owner answer of 2026-09-26T11:11:00+0300). Then swap
    only the rule block of that cluster, so an open preview stays as it is. */
 async function watchRule(key, before, log) {
+  const name = NAME, space = SPACE, selection = DETAIL_REQUEST;
   noteStatus(key, "Saved · rebuilding the rule…");
   const deadline = Date.now() + 5 * 60 * 1000;
   while (Date.now() < deadline) {
     await new Promise(resolve => setTimeout(resolve, 3000));
+    if (name !== NAME || space !== SPACE || selection !== DETAIL_REQUEST) return;
     let detail;
-    try { detail = await request(`/api/clusters/${encodeURIComponent(NAME)}`); }
+    try { detail = await request(`/api/clusters/${encodeURIComponent(name)}`); }
     catch (error) { continue; }
+    if (name !== NAME || space !== SPACE || selection !== DETAIL_REQUEST) return;
     const rule = ruleOf(detail, key);
     if (!rule || rule.stale) continue;
     DATA = detail;
@@ -558,6 +561,7 @@ async function watchRule(key, before, log) {
     else noteStatus(key, rule.built_at !== before ? "Rule rebuilt" : "The rule is current");
     return;
   }
+  if (name !== NAME || space !== SPACE || selection !== DETAIL_REQUEST) return;
   noteStatus(key, `The rule is not rebuilt yet. The log is ${log}`, true);
 }
 
@@ -570,13 +574,20 @@ function openHash() {
   if (cluster) { cluster.classList.add("target"); cluster.scrollIntoView({block: "start"}); }
 }
 
+let DETAIL_REQUEST = 0, DETAIL_ABORT = null;
 async function loadDetail(showMessage=true) {
+  const requestId = ++DETAIL_REQUEST, name = NAME;
+  DETAIL_ABORT?.abort();
+  const controller = DETAIL_ABORT = new AbortController();
   if (!NAME) return;
   if (showMessage) setMessage("Loading…");
   try {
-    DATA = await request(`/api/clusters/${encodeURIComponent(NAME)}`);
+    const data = await request(`/api/clusters/${encodeURIComponent(name)}`, {signal: controller.signal});
+    if (requestId !== DETAIL_REQUEST || name !== NAME) return;
+    DATA = data;
     setMessage(""); render(); updateUrl();
   } catch (error) {
+    if (requestId !== DETAIL_REQUEST || name !== NAME || controller.signal.aborted) return;
     DATA = null; setMessage(error.message, true);
     $("#summary").innerHTML = `<div class="error">${esc(error.message)}</div>`;
     $("#list").innerHTML = "";

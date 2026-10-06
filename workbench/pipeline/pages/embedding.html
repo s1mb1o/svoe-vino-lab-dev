@@ -366,6 +366,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
   </section>
 </div>
 <script>
+/* VISIBLE_CARDS_JS */
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -422,7 +423,11 @@ async function loadList() {
   showJobs(LIST.filter(entry => entry.job).map(entry => Object.assign({name: entry.name}, entry.job)));
 }
 
+let ENTRY_REQUEST = 0, ENTRY_ABORT = null;
 async function loadEntry() {
+  const request = ++ENTRY_REQUEST, name = NAME;
+  ENTRY_ABORT?.abort();
+  const controller = ENTRY_ABORT = new AbortController();
   DATA = null;
   const entry = entryOf(NAME);
   if (!entry) {
@@ -435,8 +440,11 @@ async function loadEntry() {
   }
   $("#source").textContent = `Reading ${entry.name}…`;
   try {
-    DATA = await getJson("/api/embeddings/" + encodeURIComponent(NAME));
+    const data = await getJson("/api/embeddings/" + encodeURIComponent(name), {signal: controller.signal});
+    if (request !== ENTRY_REQUEST || name !== NAME) return;
+    DATA = data;
   } catch (error) {
+    if (request !== ENTRY_REQUEST || name !== NAME || controller.signal.aborted) return;
     $("#source").innerHTML = `<div class="err">Cannot read the embedding: ${esc(error.message)}</div>`;
   }
   showSource(); render(); buttons();
@@ -506,8 +514,9 @@ function hasStatus(record, status) {
   return record.columns.some(column => Object.values(column.cells).some(cell => cell.status === status));
 }
 
+const ENTRY_CARDS = VisibleCards.create($("#list"), {height: 360});
 function render() {
-  if (!DATA) { $("#list").innerHTML = ""; return; }
+  if (!DATA) { ENTRY_CARDS.set([], record => record.slug, () => ""); return; }
   const views = Object.keys(DATA.embedding.views);
   const filter = $("#filter").value;
   const words = $("#q").value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
@@ -517,8 +526,8 @@ function render() {
     return words.every(word => hay.includes(word));
   });
   SHOWN = rows;
-  $("#list").innerHTML = rows.length ? rows.map(record => wineHtml(record, views)).join("")
-    : '<div class="empty-list">No wine matches this view.</div>';
+  ENTRY_CARDS.set(rows, record => record.slug, record => wineHtml(record, views),
+    '<div class="empty-list">No wine matches this view.</div>');
 }
 
 function selectedJob() {

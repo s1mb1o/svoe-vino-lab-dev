@@ -202,6 +202,49 @@ class RunCutTraceFreshnessTest(TS.StepsTest):
         self.assertEqual(set(names), {'Current name'})
 
 
+
+class VisualFlightTest(TE.Temporary):
+    def test_concurrent_reconstruction_shares_work_and_clear_blocks_publication(self):
+        from concurrent.futures import ThreadPoolExecutor, Future
+        import threading
+        source = self.root/'source'
+        source.write_text('one')
+        cache = run_steps.VisualInputsCache()
+        joined, started, release = threading.Event(), threading.Event(), threading.Event()
+        calls = []
+        class ObservedFuture(Future):
+            def result(self, *args, **kwargs):
+                joined.set()
+                return super().result(*args, **kwargs)
+        def loader():
+            calls.append(1)
+            started.set()
+            self.assertTrue(release.wait(5))
+            return {'values': []}, {str(source): signature(source)}, True
+        with patch('checked_read_cache.Future', ObservedFuture), ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(cache.get, 'key', loader)
+            self.assertTrue(started.wait(5))
+            second = pool.submit(cache.get, 'key', loader)
+            try:
+                self.assertTrue(joined.wait(5))
+                cache.clear()
+            finally:
+                release.set()
+            a, b = first.result(), second.result()
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(cache._entries, {})
+        a['values'].append('change')
+        self.assertEqual(b, {'values': []})
+        self.assertEqual(cache._flights._pending, {})
+
+    def test_unverified_in_memory_photos_do_not_share_a_key(self):
+        from PIL import Image
+        a = SimpleNamespace(path=None,image=Image.new('RGB',(3,3),'red'),source_state=None)
+        b = SimpleNamespace(path=None,image=Image.new('RGB',(3,3),'green'),source_state=None)
+        self.assertNotEqual(run_steps._visual_key(a,{},'fixture',False),
+                            run_steps._visual_key(b,{},'fixture',False))
+
+
 if __name__ == '__main__':
     import unittest
     unittest.main()

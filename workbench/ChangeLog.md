@@ -6326,3 +6326,26 @@ Reviewed all 84 rows of `2026-09-30T214152Z-lab-barcode-rerank-siglip2-p512-rot5
 - Three fresh production-handler servers per mode reduce first popup HTTP median from 870.235 to 248.832 ms. Warm median changes from 88.588 to 12.728 ms. Gzip bytes fall from 2,573,171 to 570,685. These are metadata timings before Search opens, with warm OS file caches and varying host load. Ten serial deferred previews take 352 to 507 ms afterward.
 - All 332 regression checks pass with zero skips. Ruff, Python compilation, and diff checks pass. All metadata and ten preview PNGs match the previous output exactly. The live browser sends zero preview requests for closed Search, loads ten images when opened, retains images on reopen, and reports no console errors. Full-image viewing passes.
 - Restart only port 8168 with SIGTERM, from PID 96795 to PID 9336. GET /api/dataset returns HTTP 200. The first live popup response takes 391 ms; the next three take 19 to 25 ms. No model request, catalogue or run data change, commit, or push. Evidence: ../internal/workbench-popup-previews-20261006/summary.json.
+
+
+## 2026-10-07T02:02:52+03:00 — Audit remaining Workbench tests and improvements
+
+- Reproduce a response-order bug with the exact source loaders of Embeddings, Clusters, and Testset. Request A first and B second. Let B finish first. Each loader then accepts A and replaces B. Add request-generation checks and tests for old successes, old failures, rapid selection, and polling.
+- Measure the live Testset at 85,431 DOM nodes. The Drawer alone has 70,092 nodes and 9,703 photo cards. A populated Embeddings view has 72,334 nodes and 6,118 images. The Testset table render also rebuilds the complete unchanged Drawer. Prioritize Drawer reuse and visible-card mounting, then Embedding row mounting. Test drag, labels, comments, deep links, and keyboard preview navigation.
+- The remaining popup response contains two inline cut/input PNGs. They use 731,920 of 747,914 decoded bytes while their steps are closed. A private URL projection changes HTML from 1,490,072 to 26,712 bytes and compact JSON to 15,197 bytes. The route remains unimplemented. No reconstruction CPU gain is claimed. Test checked source identities, exact pixels, input hashes, failed-step evidence, and full-image viewing.
+- Eight simultaneous cold popup reads reconstruct the same cut eight times. Eight simultaneous requests for one preview encode the same PNG eight times. A private shared-load prototype reduces each count to one with equal output hashes. Aggregate metadata CPU changes from 1,745 to 436 ms, and preview CPU from 569 to 115 ms in one burst. These are private probes with warm OS file caches. Test failure wake-up, source replacement, clear, eviction, independent keys, and memory bounds before production use.
+- Add long navigation and filter soak tests with retained-memory and p95 latency measurements. Eight production source hashes match HEAD. The browser has no console warnings or errors, and the embedding selection is restored. No model request, production source or data change, server restart, commit, or push. Evidence: ../internal/workbench-next-audit-20261007/summary.json.
+
+## 2026-10-07T02:46:18+03:00 — Remaining Workbench rendering and read improvements
+
+Discard stale successes and errors in Embeddings, Clusters, and Testset. Abort obsolete requests and popup reads. Keep cluster rule polls bound to their selection, including timeout errors.
+
+Mount Drawer cards and Embeddings rows near the viewport. Keep measured placeholder heights. Reuse unchanged Drawer slots on table filters. Preserve focused and dragged cards. Mount offscreen Drawer cards for preview navigation and deep links.
+
+Replace inline cut and model-input PNGs in recorded popups with checked artifact URLs. Load them when their step opens. Keep failed steps open, captions, dimensions, alpha, and current input/hash checks. GET and HEAD keep exact PNG bytes. Changed or missing sources and changed trace comparisons reject old URLs. Recognition keeps its existing inline artifacts.
+
+Share concurrent cold loads per key. Bound pending ownership to 32 keys per cache. Keep unrelated keys independent. Release waiters after failures. Keep caller copies, byte/entry limits, source checks, and clear generations. Unverified uploads have separate identities.
+
+All 355 broad regressions and 42 final focused checks pass. The 240-cycle, 10,000-card controller soak mounts at most 13 cards; post-GC heap growth is 50,256 bytes and p95 is 13.09 ms in its simulated DOM. Live browser filter counts stay stable. The populated Embeddings DOM falls from 72,334 to 2,310 nodes; Testset falls from 85,431 to 25,090. Popup metadata falls from 747,914 to 16,388 bytes (gzip 570,685 to 4,435). Eight cold concurrent requests perform one reconstruction and one index read; candidate previews decode and encode once. PNG bytes and other metadata match the saved response exactly.
+
+Port 8168 restarted with SIGTERM as PID 1236; Dataset returns 200. Browser checks cover full viewers, offscreen navigation, tag filters, popup cleanup, and the mobile Drawer. Cold reconstruction and source-photo decoding remain. Browser paint time and browser heap were not measured. Evidence: `internal/workbench-next-audit-20261007/implementation.json`.

@@ -77,5 +77,103 @@ class CheckedReadCacheTest(unittest.TestCase):
         self.assertGreater(self.cache._bytes, 0)
 
 
+
+class SharedLoadsTest(unittest.TestCase):
+    setUp = CheckedReadCacheTest.setUp
+    get = CheckedReadCacheTest.get
+    def test_eight_cold_readers_share_one_loader_and_keep_independent_copies(self):
+        import threading
+        from concurrent.futures import Future
+        from unittest.mock import patch
+        started, joined, release = threading.Event(), threading.Event(), threading.Event()
+        lock, waiting = threading.Lock(), []
+        class ObservedFuture(Future):
+            def result(self, *args, **kwargs):
+                with lock:
+                    waiting.append(1)
+                    if len(waiting) == 7:
+                        joined.set()
+                return super().result(*args, **kwargs)
+        def load():
+            self.reads += 1
+            started.set()
+            self.assertTrue(release.wait(5))
+            return {'value': []}
+        with patch('checked_read_cache.Future', ObservedFuture), ThreadPoolExecutor(max_workers=8) as pool:
+            leader = pool.submit(self.cache.get, 'key', [self.path], load)
+            self.assertTrue(started.wait(5))
+            others = [pool.submit(self.cache.get, 'key', [self.path], load) for _ in range(7)]
+            try:
+                self.assertTrue(joined.wait(5))
+            finally:
+                release.set()
+            results = [leader.result()] + [one.result() for one in others]
+        self.assertEqual(self.reads, 1)
+        results[0]['value'].append('edit')
+        self.assertTrue(all(result == {'value': []} for result in results[1:]))
+        self.assertEqual(self.cache._flights._pending, {})
+
+    def test_shared_failure_releases_waiters_and_next_attempt_can_succeed(self):
+        import threading
+        from concurrent.futures import Future
+        from unittest.mock import patch
+        joined, started = threading.Event(), threading.Event()
+        class ObservedFuture(Future):
+            def result(self, *args, **kwargs):
+                joined.set()
+                return super().result(*args, **kwargs)
+        def fail():
+            self.reads += 1
+            started.set()
+            self.assertTrue(joined.wait(5))
+            raise ValueError('failed read')
+        with patch('checked_read_cache.Future', ObservedFuture), ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(self.cache.get, 'key', [self.path], fail)
+            self.assertTrue(started.wait(5))
+            second = pool.submit(self.cache.get, 'key', [self.path], fail)
+            for future in (first, second):
+                with self.assertRaisesRegex(ValueError, 'failed read'):
+                    future.result(timeout=5)
+        self.assertEqual(self.reads, 1)
+        self.assertEqual(self.cache._flights._pending, {})
+        self.assertEqual(self.get(), {'text': 'one'})
+
+    def test_clear_during_load_prevents_old_publication(self):
+        import threading
+        started, release = threading.Event(), threading.Event()
+        def old():
+            started.set()
+            self.assertTrue(release.wait(5))
+            return 'old'
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(self.cache.get, 'key', [self.path], old)
+            self.assertTrue(started.wait(5))
+            self.cache.clear()
+            current = self.cache.get('key', [self.path], lambda: 'new')
+            release.set()
+            self.assertEqual(first.result(), 'old')
+        self.assertEqual(current, 'new')
+        self.assertEqual(self.cache.get('key', [self.path], lambda: 'wrong'), 'new')
+
+    def test_flight_bound_independent_keys_and_recursive_owner(self):
+        import threading
+        from checked_read_cache import ReadFlights
+        flights = ReadFlights(max_pending=1)
+        started, release = threading.Event(), threading.Event()
+        def slow():
+            started.set()
+            self.assertTrue(release.wait(5))
+            return 'a'
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            first = pool.submit(flights.run, 'a', slow)
+            self.assertTrue(started.wait(5))
+            self.assertEqual(pool.submit(flights.run, 'b', lambda: 'b').result(timeout=1), 'b')
+            self.assertEqual(len(flights._pending), 1)
+            release.set()
+            self.assertEqual(first.result(), 'a')
+        self.assertEqual(flights.run('a', lambda: flights.run('a', lambda: 'nested')), 'nested')
+        self.assertEqual(flights._pending, {})
+
+
 if __name__ == "__main__":
     unittest.main()

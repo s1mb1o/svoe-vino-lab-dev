@@ -1969,7 +1969,7 @@ document.addEventListener("keydown", ev => {
    input photo is open at the start; the other cards are closed, and a failed card is
    always open. `SP_OPEN` keeps the open cards while the popup moves from photo to photo
    with the arrow keys up and down. */
-let SP = null, SP_REQUEST = 0;
+let SP = null, SP_REQUEST = 0, SP_ABORT = null;
 const SP_OPEN = new Set(["input:"]);
 /* STEPS_JS */
 
@@ -2022,6 +2022,8 @@ async function openSteps(tr, queryId) {
   const query = tr ? tr.dataset.queryId : queryId;
   if (!query || !CUR) return;
   const request = ++SP_REQUEST;
+  SP_ABORT?.abort();
+  const controller = SP_ABORT = new AbortController();
   SP = { row: tr || null };
   document.body.classList.add("sp-on");
   $("#sp").hidden = false;
@@ -2029,7 +2031,7 @@ async function openSteps(tr, queryId) {
   $("#sp-body").innerHTML = `<p class="sp-note">Reading the steps…</p>`;
   try {
     const response = await fetch(`/api/run-steps?id=${encodeURIComponent(CUR)}` +
-                                 `&query=${encodeURIComponent(query)}`, {cache: "no-store"});
+                                 `&query=${encodeURIComponent(query)}`, {cache: "no-store", signal: controller.signal});
     const data = await response.json();
     if (request !== SP_REQUEST) return;
     if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
@@ -2045,6 +2047,8 @@ async function openSteps(tr, queryId) {
 }
 
 function closeSteps() {
+  SP_ABORT?.abort();
+  SP_ABORT = null;
   SP_REQUEST++;
   SP = null;
   $("#sp").hidden = true;

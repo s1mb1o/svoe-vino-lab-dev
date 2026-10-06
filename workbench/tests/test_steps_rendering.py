@@ -107,3 +107,20 @@ process.stdout.write(JSON.stringify({requested, full: attrs.get('data-full'),
         self.assertNotIn("<unsafe>", html)
         self.assertEqual(Images(html).images[0]["data-step-src"], item["image"])
         self.assertEqual(Images(html).images[0]["data-step-fallback"], item["image_fallback"])
+
+class ArtifactRenderingTest(unittest.TestCase):
+    run_js = StepsRenderingTest.run_js
+    fixture = StepsRenderingTest.fixture
+    render = StepsRenderingTest.render
+    def test_checked_artifacts_fetch_only_when_open_or_failed(self):
+        data=self.fixture()
+        part=data['rounds'][0]['steps'][0]
+        part.update(id='model-input',artifacts=[{'src':'/api/run-artifact?token=x&step=2',
+                                                'caption':'input.png','deferred':True}])
+        part['lists']=[]
+        image=Images(self.render(data)).images[0]
+        self.assertNotIn('src',image)
+        self.assertEqual(image['data-step-src'],image['data-full'])
+        self.assertIn('src',Images(self.render(data,['model-input:full'])).images[0])
+        part['state']='failed'
+        self.assertIn('src',Images(self.render(data)).images[0])

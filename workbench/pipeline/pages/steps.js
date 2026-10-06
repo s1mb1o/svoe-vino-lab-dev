@@ -54,7 +54,7 @@ const Steps = (() => {
       saved >= 1 ? ` · saved in parallel ${dur(saved)}` : ""}</em></span>`;
   }
 
-  function artifactHtml(a) {
+  function artifactHtml(a, deferImages) {
     const boxes = (a.boxes || []).length && a.width && a.height;
     const svg = boxes ? `<svg viewBox="0 0 ${a.width} ${a.height}" preserveAspectRatio="xMidYMid meet"
         aria-hidden="true">${a.boxes.map(b => `<rect x="${b[0]}" y="${b[1]}" width="${
@@ -62,7 +62,7 @@ const Steps = (() => {
     const check = a.check ? `<br><span class="chk ${esc(a.check)}" title="${esc(CHECK_TIP[a.check] ||
         "")}">${esc(CHECK_TEXT[a.check] || a.check)}</span>` : "";
     return `<figure class="${boxes ? "wide" : ""}"><div class="frame"><img loading="lazy"
-        src="${esc(a.src)}" alt="" data-full="${esc(a.src)}"${a.alpha ? ' class="alpha"' : ""}>${
+        ${deferImages && a.deferred ? "data-step-src" : "src"}="${esc(a.src)}" alt="" data-full="${esc(a.src)}"${a.alpha ? ' class="alpha"' : ""}>${
         svg}</div><figcaption>${esc(a.caption)}${check}</figcaption></figure>`;
   }
 
@@ -179,7 +179,7 @@ const Steps = (() => {
     let body = s.error ? `<div class="err">${esc(s.error)}</div>` : "";
     body += (s.notes || []).map(n => `<div class="snote">${esc(n)}</div>`).join("");
     if ((s.artifacts || []).length) {
-      body += `<div class="artifacts">${s.artifacts.map(artifactHtml).join("")}</div>`;
+      body += `<div class="artifacts">${s.artifacts.map(a => artifactHtml(a, !open)).join("")}</div>`;
     }
     if (s.vlm) body += stepVlmHtml(s.vlm);
     body += (s.lists || []).map(list => stepListHtml(list, s.id === "search" && !open)).join("");
