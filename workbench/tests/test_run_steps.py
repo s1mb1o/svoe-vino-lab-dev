@@ -4,7 +4,6 @@
 The lab, the fake SAM3, and the fake model come from `test_embedding_run.py`. No test
 calls gx10 or the matcher.
 """
-import base64
 import io
 import json
 import os
@@ -142,9 +141,12 @@ class EmbeddingStepsTest(StepsTest):
                     if part["name"] == "Search, space full")
         items = part["lists"][0]["items"]
         self.assertEqual(code, 200)
-        prefix = "data:image/png;base64,"
-        self.assertTrue(items[0]["image"].startswith(prefix))
-        with Image.open(io.BytesIO(base64.b64decode(items[0]["image"][len(prefix):]))) as rotated, \
+        self.assertTrue(items[0]["image"].startswith("/api/run-preview?"))
+        self.assertTrue(items[0]["image_deferred"])
+        query = run_steps.urllib.parse.parse_qs(run_steps.urllib.parse.urlsplit(items[0]["image"]).query)
+        status, data, content_type, _ = run_routes.preview_view(self.runs, self.lab.db_path, query)
+        self.assertEqual((status, content_type), (200, "image/png"))
+        with Image.open(io.BytesIO(data)) as rotated, \
                 Image.open(os.path.join(
                     embeddings.entry_dir(self.lab.db_path, "gw"), embeddings.IMAGES,
                     embeddings.image_name(top[0]["sha256"], "full"))) as stored:

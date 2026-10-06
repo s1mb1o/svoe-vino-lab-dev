@@ -18,6 +18,7 @@ file:
                                                 an embedding run and their cosines
     GET /api/run-steps?id=&query=               the steps of one row for the step popup
                                                 (plan 41, `run_steps.py`)
+    GET /api/run-preview?id=&query=&view=&rank=&token= one recorded candidate preview
     POST /api/run-image-tag                     add a shared image tag to one recorded
                                                 query image
 
@@ -53,7 +54,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS_DIR = os.path.join(ROOT, "runs")
 MATCHER_ROOT = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "svoe-vino-matcher")
 ROUTES = ("/runs", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
-          "/api/run-candidate", "/api/run-steps", "/api/run-predictions",
+          "/api/run-candidate", "/api/run-steps", "/api/run-preview", "/api/run-predictions",
           "/api/run-expected", "/api/run-image-tag", "/api/drawer-runs",
           "/api/drawer-match-accept")
 JSON_TYPE = "application/json; charset=utf-8"
@@ -81,7 +82,7 @@ def _error(code, message):
     return _json(code, {"error": message})
 
 
-def respond(server, method, path, card_images, read_body=None):
+def respond(server, method, path, card_images, read_body=None, *, card_images_for_slugs=None):
     """Answer one request. Return (HTTP code, body, content type, Cache-Control).
 
     `card_images(conn)` is `lab_server.card_images`: slug -> the images of the card.
@@ -131,7 +132,10 @@ def respond(server, method, path, card_images, read_body=None):
     if route == "/api/run-candidate":
         return candidate_view(runs_dir, server.db_path, query)
     if route == "/api/run-steps":
-        return steps_view(runs_dir, server.db_path, query, card_images)
+        return steps_view(runs_dir, server.db_path, query, card_images,
+                          card_images_for_slugs=card_images_for_slugs)
+    if route == "/api/run-preview":
+        return preview_view(runs_dir, server.db_path, query)
     return inputs_view(runs_dir, server.db_path, query)
 
 
@@ -637,15 +641,28 @@ def inputs_view(runs_dir, db_path, query):
     return _json(200, {"run": run_id, "query": query_id, **answer})
 
 
-def steps_view(runs_dir, db_path, query, card_images):
+def steps_view(runs_dir, db_path, query, card_images, *, card_images_for_slugs=None):
     """Answer the steps of one recorded query for the step popup (plan 41):
     `run_steps.steps_view`."""
     import run_steps  # noqa: E402  (PIL, numpy, and the SAM3 cuts, on demand)
     try:
         return _json(200, run_steps.steps_view(runs_dir, db_path, _one(query, "id"),
-                                               _one(query, "query"), card_images))
+                                               _one(query, "query"), card_images,
+                                               card_images_for_slugs=card_images_for_slugs))
     except run_steps.StepError as exc:
         return _error(exc.code, str(exc))
+
+
+def preview_view(runs_dir, db_path, query):
+    """Return one checked rotated candidate PNG. Keep failure responses as JSON."""
+    import run_steps
+    try:
+        data = run_steps.preview_image(runs_dir, db_path, _one(query, "id"),
+                                       _one(query, "query"), _one(query, "view"),
+                                       _one(query, "rank"), _one(query, "token"))
+    except run_steps.StepError as exc:
+        return _error(exc.code, str(exc))
+    return 200, data, "image/png", "no-store"
 
 
 def candidate_view(runs_dir, db_path, query):

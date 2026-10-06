@@ -66,12 +66,15 @@ const Steps = (() => {
         svg}</div><figcaption>${esc(a.caption)}${check}</figcaption></figure>`;
   }
 
-  function stepItemHtml(it) {
+  function stepItemHtml(it, deferImages) {
     const moved = it.moved ? `<span class="${it.moved > 0 ? "mv-up" : "mv-down"}" title="${
       it.moved > 0 ? "up" : "down"} ${Math.abs(it.moved)} against the order before the step">${
       it.moved > 0 ? "▲" : "▼"}${Math.abs(it.moved)}</span>` : "";
-    const picture = it.image ? `<img loading="lazy" src="${esc(it.image)}" alt=""
-        data-full="${esc(it.image)}">` : `<div class="nobottle">no catalogue image</div>`;
+    const source = `${deferImages ? "data-step-src" : "src"}="${esc(it.image)}"`;
+    const fallback = it.image_fallback ? ` data-step-fallback="${esc(it.image_fallback)}"
+        onerror="Steps.imageError(this)"` : "";
+    const picture = it.image ? `<img loading="lazy" ${source} alt=""
+        data-full="${esc(it.image)}"${fallback}>` : `<div class="nobottle">no catalogue image</div>`;
     return `<div class="cand ${it.truth ? "truth" : ""} ${it.forbidden ? "forbidden" : ""}"
         title="${esc(it.name || it.slug)}">${picture}
       <div class="r"><span>#${esc(it.rank)}${moved}</span><span>${score4(it.score)}</span></div>
@@ -79,10 +82,11 @@ const Steps = (() => {
         : ""}</div>`;
   }
 
-  function stepListHtml(list) {
+  function stepListHtml(list, deferImages) {
     return `<div class="slist"><h4>${esc(list.title)}</h4>${list.note
       ? `<div class="snote">${esc(list.note)}</div>` : ""}<div class="srow">${
-      (list.items || []).map(stepItemHtml).join("") || '<span class="snote">no candidate</span>'
+      (list.items || []).map(item => stepItemHtml(item, deferImages)).join("")
+        || '<span class="snote">no candidate</span>'
       }</div></div>`;
   }
 
@@ -178,7 +182,7 @@ const Steps = (() => {
       body += `<div class="artifacts">${s.artifacts.map(artifactHtml).join("")}</div>`;
     }
     if (s.vlm) body += stepVlmHtml(s.vlm);
-    body += (s.lists || []).map(stepListHtml).join("");
+    body += (s.lists || []).map(list => stepListHtml(list, s.id === "search" && !open)).join("");
     body += stepDataHtml("Step settings", s.settings, false);
     body += stepDataHtml("Result", s.result, s.state === "failed");
     return `<section class="step" data-key="${esc(key)}"${lane === undefined ? ""
@@ -224,8 +228,23 @@ const Steps = (() => {
     body.hidden = !body.hidden;
     head.setAttribute("aria-expanded", String(!body.hidden));
     if (body.hidden) openKeys.delete(card.dataset.key);
-    else openKeys.add(card.dataset.key);
+    else {
+      openKeys.add(card.dataset.key);
+      for (const image of body.querySelectorAll("img[data-step-src]")) {
+        image.src = image.getAttribute("data-step-src");
+        image.removeAttribute("data-step-src");
+      }
+    }
   }
 
-  return { html, toggle, dur, vlm: stepVlmHtml };
+  function imageError(image) {
+    const fallback = image.getAttribute("data-step-fallback");
+    if (!fallback) return;
+    image.removeAttribute("data-step-fallback");
+    image.removeAttribute("onerror");
+    image.setAttribute("data-full", fallback);
+    image.src = fallback;
+  }
+
+  return { html, toggle, imageError, dur, vlm: stepVlmHtml };
 })();

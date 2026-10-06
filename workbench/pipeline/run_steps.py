@@ -16,6 +16,7 @@ row of `results.jsonl`. The page draws them as the step view of `drink-atlas-rec
 
 The module reads files and the lab database. It writes nothing and sends no request.
 """
+import base64
 import hashlib
 import io
 import os
@@ -48,6 +49,7 @@ MATCHER_PATH = re.compile(r"/v1/pipelines/([^/]+)/predict$")
 # The long side of a cut image in the popup. A model input keeps its size.
 CUT_SIDE = 1024
 THUMBNAILS = CheckedReadCache(max_entries=128, max_bytes=32 * 1024 * 1024)
+INDEX_STATES = CheckedReadCache(max_entries=8, max_bytes=32 * 1024 * 1024)
 NO_TIME = "The run recorded no step time. A run after plan 41 records it."
 NO_SPACE_LIST = ("The run kept no top list of this space. The list shows the candidates of "
                  "the answer by their cosine in this space.")
@@ -170,10 +172,11 @@ class Photo:
 class Lists:
     """The candidate cards of the steps: the catalogue image and the name of each slug."""
 
-    def __init__(self, conn, row, card_images):
+    def __init__(self, conn, row, card_images, card_images_for_slugs=None):
         self.row = row
         self.conn = conn
         self.card_images = card_images
+        self.card_images_for_slugs = card_images_for_slugs
         self._cards = None
         self.slugs = set()
 
@@ -191,7 +194,8 @@ class Lists:
         if not self.slugs:
             return
         try:
-            cards = self.card_images(self.conn)
+            cards = (self.card_images_for_slugs(self.conn, slugs=self.slugs)
+                     if self.card_images_for_slugs else self.card_images(self.conn))
             names = dict(self.conn.execute(
                 "SELECT wine_slug, COALESCE(name_patched, name) FROM wine_catalog "
                 "WHERE wine_slug IN (%s)"
@@ -203,8 +207,10 @@ class Lists:
                 for group in part["lists"]:
                     for item in group["items"]:
                         card = cards.get(item["slug"]) or {}
-                        item["image"] = item["image"] or (card.get("_patch_image_url")
-                                                          or card.get("main_image_url"))
+                        fallback = card.get("_patch_image_url") or card.get("main_image_url")
+                        item["image"] = item["image"] or fallback
+                        if item.get("image_deferred"):
+                            item["image_fallback"] = fallback
                         item["name"] = names.get(item["slug"])
 
 
@@ -223,16 +229,35 @@ def _cos(value):
 # ---- the embedding run ----
 
 def _index_state(db_path, name):
-    """Return (sha256, view) -> embedding_hash of the present index of the entry, and the
-    image file names of its directory."""
+    """Return current item hashes. Check the index file before each reuse."""
     try:
         directory = embeddings.entry_dir(db_path, name)
-        index = embeddings.read_index(directory) or {}
-        names = embeddings.image_names(directory)
-    except (OSError, ValueError):
-        return {}, set()
-    return ({(item["source_sha256"], item["view"]): item["embedding_hash"]
-             for item in index.get("items", [])}, names)
+        path = os.path.join(directory, embeddings.INDEX)
+        def load():
+            index = embeddings.read_index(directory) or {}
+            return {(item["source_sha256"], item["view"]): item["embedding_hash"]
+                    for item in index.get("items", [])}
+        return INDEX_STATES.get((path, embeddings.read_index), [path], load, copy_value=False)
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+
+
+def _item_available(db_path, name, hit, view, present):
+    """Check the recorded item hash and its required path. Scan no directory."""
+    digest = hit.get("sha256")
+    if not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest):
+        return False
+    if view not in embeddings.VIEWS:
+        return False
+    key = (digest, view)
+    if key not in present or present[key] != hit.get("embedding_hash"):
+        return False
+    try:
+        path = os.path.join(embeddings.entry_dir(db_path, name), embeddings.IMAGES,
+                            embeddings.image_name(digest, view))
+        return os.path.isfile(path)
+    except (OSError, ValueError, TypeError):
+        return False
 
 
 class VisualInputsCache:
@@ -579,7 +604,7 @@ def embedding_rounds(ctx):
                          "url": spec.get("url"), "extra_body": spec.get("extra_body")}
     rounds[2].append(embed)
 
-    present, names = _index_state(ctx.db_path, name) if name else ({}, set())
+    present = _index_state(ctx.db_path, name) if name else {}
     cands = row.get("candidates") or []
     searched = [view for view in views if (("search", view) in records
                                            or any(view in c for c in cands))]
@@ -594,15 +619,22 @@ def embedding_rounds(ctx):
             items = []
             for rank, hit in enumerate(top, 1):
                 image = None
-                key = (hit.get("sha256"), view)
-                if (present.get(key) == hit.get("embedding_hash")
-                        and embeddings.image_name(*key) in names):
-                    image = _item_image(ctx.db_path, name, hit, view)
+                deferred = False
+                if _item_available(ctx.db_path, name, hit, view, present):
+                    preview_query = getattr(ctx, "preview_query", None)
+                    if preview_query and (hit.get("angle") or 0) % 360:
+                        image = _preview_url(*preview_query, name, hit, view, rank)
+                        deferred = True
+                    else:
+                        image = _item_image(ctx.db_path, name, hit, view)
                 detail = "%s · %s" % (view, hit.get("type"))
                 if hit.get("angle") is not None:
                     detail += " · %d°" % hit["angle"]
-                items.append(lists.item(hit.get("slug"), rank, hit.get("cosine"),
-                                        image=image, detail=detail))
+                item = lists.item(hit.get("slug"), rank, hit.get("cosine"),
+                                  image=image, detail=detail)
+                if deferred:
+                    item["image_deferred"] = True
+                items.append(item)
             part["lists"] = [{"title": "the top %d of the space %s" % (len(items), view),
                               "note": None, "items": items}]
             part["result"] = {k: v for k, v in part["result"].items() if k != "top"}
@@ -677,6 +709,55 @@ def _item_url(name, digest, view, embedding_hash):
     """Return the URL of the PNG of one catalogue item of the index of `name`."""
     import embedding_routes  # here alone: the URL of a prepared image
     return embedding_routes.image_url(name, digest, view, embedding_hash)
+
+
+def _preview_token(name, hit, view):
+    fields = {"embedding": name, "sha256": hit.get("sha256"), "view": view,
+              "embedding_hash": hit.get("embedding_hash"), "angle": hit.get("angle") or 0}
+    return hashlib.sha256(model_cache.canonical(fields).encode("utf-8")).hexdigest()
+
+
+def _preview_url(run_id, query_id, name, hit, view, rank):
+    return "/api/run-preview?" + urllib.parse.urlencode({
+        "id": run_id, "query": query_id, "view": view, "rank": rank,
+        "token": _preview_token(name, hit, view)})
+
+
+def preview_image(runs_dir, db_path, run_id, query_id, view, rank, token):
+    """Resolve a recorded search hit. Render only a current prepared image."""
+    if (view not in embeddings.VIEWS or not isinstance(rank, str)
+            or not re.fullmatch(r"[1-9][0-9]{0,4}", rank)
+            or not isinstance(token, str) or not re.fullmatch(r"[a-f0-9]{64}", token)):
+        raise StepError(400, "invalid preview")
+    row, _meta, spec = _run_data(runs_dir, run_id, query_id)
+    if run_kind(spec) != "embedding" or view not in (spec.get("views") or {}):
+        raise StepError(404, "unknown preview")
+    record = next((part for part in (row.get("trace") or {}).get("steps") or ()
+                   if part.get("id") == "search" and part.get("view") == view), None)
+    top = ((record or {}).get("out") or {}).get("top")
+    index = int(rank) - 1
+    if not isinstance(top, list) or index >= len(top) or not isinstance(top[index], dict):
+        raise StepError(404, "unknown preview")
+    hit = top[index]
+    name = spec.get("embedding") or spec.get("id")
+    if not name or token != _preview_token(name, hit, view) or not (hit.get("angle") or 0) % 360:
+        raise StepError(404, "preview changed since the popup opened")
+    if not _item_available(db_path, name, hit, view, _index_state(db_path, name)):
+        raise StepError(404, "preview is no longer in the index")
+    path = os.path.join(embeddings.entry_dir(db_path, name), embeddings.IMAGES,
+                        embeddings.image_name(hit["sha256"], view))
+    try:
+        before = signature(path)
+        uri = _item_image(db_path, name, hit, view)
+        stable = signature(path) == before
+    except OSError as exc:
+        raise StepError(404, "cannot read the prepared image") from exc
+    if not stable or not _item_available(db_path, name, hit, view, _index_state(db_path, name)):
+        raise StepError(404, "preview changed while it was read")
+    prefix = "data:image/png;base64,"
+    if not uri.startswith(prefix):
+        raise StepError(404, "cannot read the prepared image")
+    return base64.b64decode(uri[len(prefix):])
 
 
 def _item_image(db_path, name, hit, view):
@@ -881,15 +962,14 @@ BUILDERS = {"embedding": embedding_rounds, "matcher": matcher_rounds,
 
 
 class Context:
-    def __init__(self, db_path, conn, row, spec, kind, card_images):
+    def __init__(self, db_path, conn, row, spec, kind, card_images, card_images_for_slugs=None):
         self.db_path, self.conn, self.row, self.spec, self.kind = db_path, conn, row, spec, kind
         self.photo = Photo(conn, db_path, row)
-        self.lists = Lists(conn, row, card_images)
+        self.lists = Lists(conn, row, card_images, card_images_for_slugs)
         self.notes = []
 
 
-def steps_view(runs_dir, db_path, run_id, query_id, card_images):
-    """Return the answer of `/api/run-steps`. Raise `StepError`."""
+def _run_data(runs_dir, run_id, query_id):
     if run_id not in run_files.run_dirs(runs_dir):
         raise StepError(404, "unknown run")
     row = run_files.run_result(runs_dir, run_id, query_id)
@@ -897,13 +977,20 @@ def steps_view(runs_dir, db_path, run_id, query_id, card_images):
         raise StepError(404, "unknown query")
     meta = run_files.read_json(run_files.run_path(runs_dir, run_id, "run.json")) or {}
     spec = meta.get("backend") if isinstance(meta.get("backend"), dict) else {}
+    return row, meta, spec
+
+
+def steps_view(runs_dir, db_path, run_id, query_id, card_images, *, card_images_for_slugs=None):
+    """Return the answer of `/api/run-steps`. Raise `StepError`."""
+    row, meta, spec = _run_data(runs_dir, run_id, query_id)
     kind = run_kind(spec)
     try:
         conn = sqlite3.connect(Path(os.path.abspath(db_path)).as_uri() + "?mode=ro", uri=True)
     except sqlite3.Error as exc:
         raise StepError(503, "cannot read the lab database: %s" % exc)
     with closing(conn):
-        ctx = Context(db_path, conn, row, spec, kind, card_images)
+        ctx = Context(db_path, conn, row, spec, kind, card_images, card_images_for_slugs)
+        ctx.preview_query = (run_id, query_id)
         built = BUILDERS[kind](ctx)
         rounds, number = [], 0
         for n, (note, steps) in enumerate(built):

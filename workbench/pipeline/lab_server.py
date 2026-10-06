@@ -342,7 +342,7 @@ def cut_nothing(method, box, width, height):
             and box[2:] in ((width, height), (height, width)))
 
 
-def card_images(conn):
+def card_images(conn, slugs=None):
     """Return wine slug -> the images of the card, as a dict of `CARD_IMAGE_KEYS`.
 
     The keys `main_image_*` describe the `main` image. The keys `_patch_url`,
@@ -352,8 +352,16 @@ def card_images(conn):
     image on the card. Each slot shows the processed file of its image when
     `image_derivative` holds one, else the original. A `crop` that cut nothing counts as
     no processing (`cut_nothing`). The size is the size of the file that the card shows.
-    A wine with neither image has no key.
+    A wine with neither image has no key. With `slugs`, read those wines alone.
     """
+    selected = tuple(sorted(set(slugs))) if slugs is not None else None
+    if selected == ():
+        return {}
+    where = ""
+    parameters = CARD_IMAGE_TYPES
+    if selected is not None:
+        where = " AND w.wine_slug IN (%s)" % ", ".join("?" for _ in selected)
+        parameters = tuple(CARD_IMAGE_TYPES) + selected
     images = {}
     for (slug, image_type, match, digest, folder, extension, width, height, derivation,
          p_digest, p_folder, p_extension, p_width, p_height, *box) in conn.execute(
@@ -364,9 +372,9 @@ def card_images(conn):
             "JOIN image o ON o.sha256 = w.sha256 "
             "LEFT JOIN image_derivative d ON d.source_sha256 = w.sha256 "
             "AND d.kind = 'package' "
-            "LEFT JOIN image p ON p.sha256 = d.sha256 "
-            "WHERE w.image_type IN (%s)" % ", ".join("?" for _ in CARD_IMAGE_TYPES),
-            CARD_IMAGE_TYPES):
+            "LEFT JOIN image p ON p.sha256 = d.sha256 " +
+            ("WHERE w.image_type IN (%s)" % ", ".join("?" for _ in CARD_IMAGE_TYPES)) + where,
+            parameters):
         original = "/images/%s/%s.%s" % (folder, digest, extension)
         shown, method = original, None
         if p_digest is not None and not cut_nothing(derivation, tuple(box), width, height):
@@ -1510,7 +1518,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.rfile.read(length) if 0 < length <= limit else None
 
         code, body, ctype, cache = run_routes.respond(self.server, self.command, self.path,
-                                                      card_images, read_body)
+                                                      card_images, read_body,
+                                                      card_images_for_slugs=card_images)
         if isinstance(body, (dict, list)):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
