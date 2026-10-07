@@ -14,7 +14,7 @@ from PIL import Image, ImageChops
 
 import derive
 
-VERSION = 3
+VERSION = 4
 MIN_MASK_FILL = 0.05
 MIN_FRAME_COVER = 0.95
 MAX_FRAME_MASK_FILL = 0.25
@@ -52,9 +52,12 @@ SETTINGS_V2 = SETTINGS_V1.replace("selector v1", "selector v2") + (
     "covers >= %s of each image side and mask fill < %s; "
     "use white-border crop when no valid package remains"
     % (MIN_MASK_FILL, MIN_FRAME_COVER, MAX_FRAME_MASK_FILL))
-SETTINGS = SETTINGS_V2.replace("selector v2", "selector v%d" % VERSION) + (
+SETTINGS_V3 = SETTINGS_V2.replace("selector v2", "selector v3") + (
     "; without hands, reject a package detector score >= %s below the strongest "
     "detector score of the same package class" % CONFIDENCE_GAP_LIMIT)
+SETTINGS = SETTINGS_V3.replace("selector v3", "selector v%d" % VERSION) + (
+    "; restore enclosed holes in bottle and can masks before edge refinement; "
+    "background connected to the image border uses 8-connectivity")
 SETTINGS_REJECTED = ("white < %d, opening %d px; main-scene selector v%d rejected "
                      "all package masks with fill < %s"
                      % (derive.WHITE_LEVEL, derive.OPEN_SIZE, VERSION, MIN_MASK_FILL))
@@ -66,14 +69,15 @@ SETTINGS_CONTEXT = ("white < %d, opening %d px; main-scene selector v%d preserve
 def selector_version(version):
     """Use the current selector for True and the saved selector for a version number."""
     version = VERSION if version is True else version
-    if version not in (1, 2, VERSION):
+    if version not in (1, 2, 3, VERSION):
         raise ValueError("unsupported main-scene selector version: %r" % version)
     return version
 
 
 def settings_for(version):
     """Return the settings text of the saved selector version."""
-    return {1: SETTINGS_V1, 2: SETTINGS_V2, VERSION: SETTINGS}[selector_version(version)]
+    return {1: SETTINGS_V1, 2: SETTINGS_V2, 3: SETTINGS_V3,
+            VERSION: SETTINGS}[selector_version(version)]
 
 
 def _clip(value):
@@ -295,6 +299,28 @@ def _white_cut(image):
     return "crop", derive.SETTINGS_WHITE, image.crop(box), box
 
 
+def _restore_mask_holes(mask):
+    """Restore pixels enclosed by the silhouette of a solid package.
+
+    SAM3 can classify printed label text and artwork as background. Flood only
+    border-connected background, including diagonal paths, so exterior gaps stay
+    transparent and disconnected packages are never joined. Padding handles masks
+    whose foreground touches every image edge.
+    """
+    import cv2
+
+    foreground = np.asarray(mask, dtype=np.uint8)
+    flooded = np.pad((foreground > 0).astype(np.uint8), 1)
+    cv2.floodFill(flooded, None, (0, 0), 2, flags=8)
+    holes = (flooded[1:-1, 1:-1] == 0)
+    count = int(np.count_nonzero(holes))
+    if not count:
+        return mask, 0
+    restored = foreground.copy()
+    restored[holes] = 255
+    return Image.fromarray(restored), count
+
+
 def cut(image, segmenter, version=VERSION):
     """Return `(method, settings, processed, box, audit)` for one query photo."""
     version = selector_version(version)
@@ -342,6 +368,12 @@ def cut(image, segmenter, version=VERSION):
     if mask.size != image.size:
         mask = mask.resize(image.size, Image.Resampling.BILINEAR)
     mask = mask.point(lambda value: 255 if value >= 128 else 0)
+    if version >= 4 and str(selected.get("label") or "").strip().lower() in (
+            derive.BOTTLE_LABEL, "bottle", "can"):
+        mask, restored = _restore_mask_holes(mask)
+        audit["mask_holes_restored_pixels"] = restored
+        if restored:
+            audit["mask_policy"] = "restore_enclosed_holes"
     alpha = derive.refine_mask(mask)
     if image.mode == "RGBA":
         alpha = ImageChops.darker(alpha, image.getchannel("A"))

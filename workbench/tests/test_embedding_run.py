@@ -512,7 +512,7 @@ class PipelineViewsTest(Temporary):
         views = {"full": [{"step": "segment", "target": "package"},
                           {"step": "remove_background"}, {"step": "white_background"}]}
         hashes = []
-        for version in (1, 2, main_scene.VERSION):
+        for version in (1, 2, 3, main_scene.VERSION):
             spec = {"views": views, "scene_selection": version, "model": "fake-model"}
             with mock.patch.object(embedding_run, "CachedSam3", SparseSam3):
                 body = embedding_run.model_inputs(spec, str(path))

@@ -92,6 +92,19 @@ class EmbeddingStepsTest(StepsTest):
         self.assertIs(type(package_call.kwargs["scene_selection"]), int)
         self.assertEqual(package_call.kwargs["scene_selection"], 1)
 
+    def test_the_package_result_explains_restored_mask_holes(self):
+        run_dir, rows = self.run_set(scene_selection=True)
+        saved = read_rows(run_dir)
+        for row in saved:
+            for record in row["trace"]["steps"]:
+                if record["id"] == "sam3-package":
+                    record["out"]["selection"]["mask_holes_restored_pixels"] = 120
+        write_rows(run_dir, saved)
+        code, body = self.steps(os.path.basename(run_dir), rows["green/01.png"]["query_id"])
+        self.assertEqual(code, 200, body)
+        package = next(part for part in self.all_steps(body) if part["id"] == "sam3-package")
+        self.assertTrue(any("Restored 120 pixels" in note for note in package["notes"]))
+
     def test_the_visual_cache_separates_selector_versions(self):
         photo = types.SimpleNamespace(path="/fake/photo.png", image=Image.new("RGB", (20, 20)))
         key1 = run_steps._visual_key(photo, {}, "http://fake-sam3", 1)
@@ -99,6 +112,7 @@ class EmbeddingStepsTest(StepsTest):
         self.assertNotEqual(key1, key2)
         self.assertEqual(key2, run_steps._visual_key(photo, {}, "http://fake-sam3", True))
         self.assertNotEqual(key2, run_steps._visual_key(photo, {}, "http://fake-sam3", 2))
+        self.assertNotEqual(key2, run_steps._visual_key(photo, {}, "http://fake-sam3", 3))
 
     def test_a_traced_row_gives_three_rounds_with_the_step_times(self):
         run_dir, rows = self.run_set()

@@ -188,6 +188,59 @@ class MainSceneRankTest(unittest.TestCase):
 
 
 class MainSceneCutTest(unittest.TestCase):
+    def test_label_holes_are_restored_without_joining_external_background(self):
+        size = (200, 200)
+        image = scene(size)
+        mask = Image.new("L", size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.rectangle((20, 10, 179, 189), fill=255)
+        draw.rectangle((65, 70, 135, 140), fill=0)  # Printed label removed by SAM3.
+        draw.rectangle((20, 25, 45, 55), fill=0)  # Exterior gap stays transparent.
+        buffer = io.BytesIO()
+        mask.save(buffer, "PNG")
+        item = instance("wine bottle", size, (20, 10, 180, 190), area=22000)
+        item["mask_png_b64"] = base64.b64encode(buffer.getvalue()).decode("ascii")
+        _method, _settings, new, box, audit = main_scene.cut(image, FakeSegmenter([item]))
+        self.assertEqual(audit["mask_policy"], "restore_enclosed_holes")
+        self.assertEqual(audit["mask_holes_restored_pixels"], 71 * 71)
+        alpha = new.getchannel("A")
+        self.assertEqual(alpha.getpixel((100-box[0], 100-box[1])), 255)
+        self.assertEqual(alpha.getpixel((30-box[0], 40-box[1])), 0)
+        for version in (1, 2, 3):
+            _method, settings, old, old_box, old_audit = main_scene.cut(
+                image, FakeSegmenter([item]), version=version)
+            self.assertEqual(settings, main_scene.settings_for(version))
+            self.assertEqual(old.getchannel("A").getpixel(
+                (100-old_box[0], 100-old_box[1])), 0)
+            self.assertNotIn("mask_holes_restored_pixels", old_audit)
+
+    def test_diagonally_connected_background_is_not_a_hole(self):
+        mask = Image.new("L", (20, 20), 255)
+        draw = ImageDraw.Draw(mask)
+        draw.rectangle((5, 5, 10, 10), fill=0)
+        for i in range(5):
+            mask.putpixel((i, i), 0)
+        repaired, restored = main_scene._restore_mask_holes(mask)
+        self.assertEqual(restored, 0)
+        self.assertEqual(repaired.tobytes(), mask.tobytes())
+
+    def test_mask_holes_do_not_change_box_or_packet_handle_cutouts(self):
+        size = (200, 200)
+        mask = Image.new("L", size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.rectangle((20, 10, 179, 189), fill=255)
+        draw.rectangle((65, 70, 135, 140), fill=0)
+        buffer = io.BytesIO()
+        mask.save(buffer, "PNG")
+        for label in ("box", "packet"):
+            item = instance(label, size, (20, 10, 180, 190), area=22000)
+            item["mask_png_b64"] = base64.b64encode(buffer.getvalue()).decode("ascii")
+            _method, _settings, processed, box, audit = main_scene.cut(
+                scene(size), FakeSegmenter([item]))
+            self.assertEqual(processed.getchannel("A").getpixel(
+                (100-box[0], 100-box[1])), 0)
+            self.assertNotIn("mask_holes_restored_pixels", audit)
+
     def test_sparse_detection_keeps_the_label_photo(self):
         image = scene((200, 200))
         sparse = instance("wine bottle", image.size, (0, 0, 200, 200), area=80)

@@ -575,6 +575,10 @@ def embedding_rounds(ctx):
                                     len(selection.get("candidates") or ()),
                                     selection.get("hands") or 0))
         if isinstance(selection, dict):
+            restored = selection.get("mask_holes_restored_pixels") or 0
+            if restored:
+                part["notes"].append("Restored %d pixels in enclosed package-mask holes "
+                                     "to preserve printed label text and artwork." % restored)
             reason = selection.get("fallback_reason")
             if reason == "no_valid_package_mask":
                 part["notes"].append("The package masks were too sparse. The photo context "
