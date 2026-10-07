@@ -8,6 +8,7 @@ import io
 import json
 import os
 import sqlite3
+import types
 from pathlib import Path
 from unittest import mock
 
@@ -17,6 +18,7 @@ import test_embedding_run as TE  # noqa: E402  (puts pipeline/ and scripts/ on s
 import benchmark  # noqa: E402
 import embedding_run  # noqa: E402
 import embeddings  # noqa: E402
+import main_scene  # noqa: E402
 import run_routes  # noqa: E402
 import run_steps  # noqa: E402
 
@@ -75,11 +77,28 @@ class EmbeddingStepsTest(StepsTest):
         package = next(part for part in self.all_steps(body) if part["id"] == "sam3-package")
         selection = package["result"]["selection"]
         self.assertEqual((code, package["name"], selection["version"]),
-                         (200, "Package selection and cut", 1))
+                         (200, "Package selection and cut", main_scene.VERSION))
         self.assertEqual(selection["selected"]["label"], "bottle")
         self.assertTrue(selection["candidates"][0]["selected"])
         self.assertIn("scene_score", selection["candidates"][0])
         self.assertIn("main-scene selector chose bottle", package["notes"][-1])
+
+    def test_the_step_replay_keeps_the_saved_selector_version(self):
+        run_dir, rows = self.run_set(scene_selection=1)
+        with mock.patch.object(embedding_run, "cuts_of", wraps=embedding_run.cuts_of) as cut:
+            code, body = self.steps(os.path.basename(run_dir), rows["green/01.png"]["query_id"])
+        self.assertEqual(code, 200, body)
+        package_call = next(call for call in cut.call_args_list if "package" in call.args[1])
+        self.assertIs(type(package_call.kwargs["scene_selection"]), int)
+        self.assertEqual(package_call.kwargs["scene_selection"], 1)
+
+    def test_the_visual_cache_separates_selector_versions(self):
+        photo = types.SimpleNamespace(path="/fake/photo.png", image=Image.new("RGB", (20, 20)))
+        key1 = run_steps._visual_key(photo, {}, "http://fake-sam3", 1)
+        key2 = run_steps._visual_key(photo, {}, "http://fake-sam3", main_scene.VERSION)
+        self.assertNotEqual(key1, key2)
+        self.assertEqual(key2, run_steps._visual_key(photo, {}, "http://fake-sam3", True))
+        self.assertNotEqual(key2, run_steps._visual_key(photo, {}, "http://fake-sam3", 2))
 
     def test_a_traced_row_gives_three_rounds_with_the_step_times(self):
         run_dir, rows = self.run_set()

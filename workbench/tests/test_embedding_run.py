@@ -33,6 +33,7 @@ import embeddings  # noqa: E402
 import import_testset as IT  # noqa: E402
 import labdb  # noqa: E402
 import model_cache  # noqa: E402
+import main_scene  # noqa: E402
 import run_routes  # noqa: E402
 
 GREY = (128, 128, 128)
@@ -496,6 +497,34 @@ class PipelineViewsTest(Temporary):
         add_set(self.lab)
         self.runs = str(self.root / "runs")
 
+    def test_saved_selector_version_replays_the_original_input(self):
+        class SparseSam3(FakeSam3):
+            def instances(self, image, texts, masks=True):
+                mask = np.zeros((image.height, image.width), dtype=bool)
+                mask[30:40, 30:40] = True
+                return [{"label": "wine bottle", "box": [0, 0, *image.size],
+                         "score": 0.95, "area": int(mask.sum()),
+                         "mask_png_b64": mask_b64(mask)}], 1.0
+
+        image = query_photo("red")
+        path = self.root / "sparse-query.png"
+        image.save(path)
+        views = {"full": [{"step": "segment", "target": "package"},
+                          {"step": "remove_background"}, {"step": "white_background"}]}
+        hashes = []
+        for version in (1, 2, main_scene.VERSION):
+            spec = {"views": views, "scene_selection": version, "model": "fake-model"}
+            with mock.patch.object(embedding_run, "CachedSam3", SparseSam3):
+                body = embedding_run.model_inputs(spec, str(path))
+            expected, _ = embedding_run.query_inputs(
+                image, views, SparseSam3(), scene_selection=version)
+            data = embeddings.png_bytes(expected["full"])
+            self.assertEqual(body["notes"], [])
+            self.assertEqual(body["inputs"][0]["sha256"], hashlib.sha256(data).hexdigest())
+            hashes.append(body["inputs"][0]["sha256"])
+        self.assertNotEqual(hashes[0], hashes[-1])
+        self.assertEqual(hashes[1], hashes[-1])
+
     def test_a_view_with_no_segment_takes_the_photo_as_it_is(self):
         image = query_photo("red")
         # A SAM3 that fails on each call: the view sends no request.
@@ -579,7 +608,7 @@ class PipelineViewsTest(Temporary):
         backend = embedding_run.build_pipeline_backend(crop, self.lab.config_path)
         self.assertEqual((backend.views, backend.spec["views"]), (CROP, CROP))
         self.assertTrue(backend.scene_selection)
-        self.assertEqual(backend.spec["scene_selection"], 1)
+        self.assertEqual(backend.spec["scene_selection"], main_scene.VERSION)
         self.assertIn("hand", backend.spec["sam3"]["package_texts"])
         plain = types.SimpleNamespace(name="pipe", embedding="gw")
         self.assertEqual(embedding_run.build_pipeline_backend(plain, self.lab.config_path).views,

@@ -14,7 +14,11 @@ from PIL import Image, ImageChops
 
 import derive
 
-VERSION = 1
+VERSION = 3
+MIN_MASK_FILL = 0.05
+MIN_FRAME_COVER = 0.95
+MAX_FRAME_MASK_FILL = 0.25
+CONFIDENCE_GAP_LIMIT = 0.50
 TEXTS = derive.SAM3_TEXTS + ", hand"
 HAND_LABEL = "hand"
 PACKAGE_LABELS = frozenset((derive.BOTTLE_LABEL, "bottle", "can", "packet", "box"))
@@ -38,11 +42,38 @@ SCENE_WEIGHTS = {
     "mask_fill": 0.08,
     "edge_visibility": 0.04,
 }
-SETTINGS = ("SAM3 %r; hybrid main-scene selector v%d; no package-class priority; "
+SETTINGS_V1 = ("SAM3 %r; hybrid main-scene selector v%d; no package-class priority; "
             "hand weights %r; no-hand weights %r; mask blur %s of the long side, "
             "keep >= %d/255; edge blur %s px"
-            % (TEXTS, VERSION, HAND_WEIGHTS, SCENE_WEIGHTS, derive.MASK_BLUR,
+            % (TEXTS, 1, HAND_WEIGHTS, SCENE_WEIGHTS, derive.MASK_BLUR,
                derive.MASK_KEEP, derive.EDGE_BLUR))
+SETTINGS_V2 = SETTINGS_V1.replace("selector v1", "selector v2") + (
+    "; reject package mask fill < %s; preserve photo context when the package box "
+    "covers >= %s of each image side and mask fill < %s; "
+    "use white-border crop when no valid package remains"
+    % (MIN_MASK_FILL, MIN_FRAME_COVER, MAX_FRAME_MASK_FILL))
+SETTINGS = SETTINGS_V2.replace("selector v2", "selector v%d" % VERSION) + (
+    "; without hands, reject a package detector score >= %s below the strongest "
+    "detector score of the same package class" % CONFIDENCE_GAP_LIMIT)
+SETTINGS_REJECTED = ("white < %d, opening %d px; main-scene selector v%d rejected "
+                     "all package masks with fill < %s"
+                     % (derive.WHITE_LEVEL, derive.OPEN_SIZE, VERSION, MIN_MASK_FILL))
+SETTINGS_CONTEXT = ("white < %d, opening %d px; main-scene selector v%d preserves "
+                    "photo context for a full-frame package with mask fill < %s"
+                    % (derive.WHITE_LEVEL, derive.OPEN_SIZE, VERSION, MAX_FRAME_MASK_FILL))
+
+
+def selector_version(version):
+    """Use the current selector for True and the saved selector for a version number."""
+    version = VERSION if version is True else version
+    if version not in (1, 2, VERSION):
+        raise ValueError("unsupported main-scene selector version: %r" % version)
+    return version
+
+
+def settings_for(version):
+    """Return the settings text of the saved selector version."""
+    return {1: SETTINGS_V1, 2: SETTINGS_V2, VERSION: SETTINGS}[selector_version(version)]
 
 
 def _clip(value):
@@ -130,12 +161,14 @@ def _peer_count(candidate, packages, height):
     return peers
 
 
-def rank(image, instances, scale):
+def rank(image, instances, scale, version=VERSION):
     """Return `(selected instance, audit)` for the SAM3 `instances` of `image`."""
+    version = selector_version(version)
     sent_width = max(1, round(image.width * scale))
     sent_height = max(1, round(image.height * scale))
     hands = []
     packages = []
+    rejected = []
     for source_index, item in enumerate(instances):
         label = str(item.get("label") or "").strip().lower()
         box = _box(item, sent_width, sent_height)
@@ -145,14 +178,31 @@ def rank(image, instances, scale):
             hands.append(box)
         elif label in PACKAGE_LABELS and item.get("mask_png_b64"):
             original = _original_box(box, scale, image)
+            area = _area(item, box)
+            # SAM3 reports foreground pixels in the sent image. A zero-area mask
+            # MUST NOT use the box area as evidence that it contains a package.
+            if version >= 2 and item.get("area") == 0:
+                area = 0.0
+            fill = area / ((box[2] - box[0]) * (box[3] - box[1]))
+            if version >= 2 and fill < MIN_MASK_FILL:
+                rejected.append({"source_index": source_index, "label": label,
+                                 "box": original, "detector_score": item.get("score"),
+                                 "mask_fill": round(fill, 6),
+                                 "reason": "mask_fill_below_minimum"})
+                continue
             packages.append({"source_index": source_index, "instance": item, "label": label,
                              "box": box, "original_box": original,
-                             "area_raw": _area(item, box)})
+                             "area_raw": area})
     weights = HAND_WEIGHTS if hands else SCENE_WEIGHTS
-    audit = {"version": VERSION, "mode": "hand" if hands else "scene", "texts": TEXTS,
+    audit = {"version": version, "mode": "hand" if hands else "scene", "texts": TEXTS,
              "image_size": [image.width, image.height],
              "sam3_size": [sent_width, sent_height], "hands": len(hands),
              "weights": dict(weights), "candidates": [], "selected": None}
+    if version >= 2:
+        audit.update(min_mask_fill=MIN_MASK_FILL, min_frame_cover=MIN_FRAME_COVER,
+                     max_frame_mask_fill=MAX_FRAME_MASK_FILL, rejected=rejected)
+    if version >= 3:
+        audit["confidence_gap_limit"] = CONFIDENCE_GAP_LIMIT
     if not packages:
         return None, audit
 
@@ -188,6 +238,30 @@ def rank(image, instances, scale):
         item.update(signals=signals, contributions=contributions, peers=peers,
                     sharpness_raw=sharp_raw, scene_score=sum(contributions.values()))
 
+    if version >= 3 and not hands:
+        # Apply eligibility after signal calculation. A rejected secondary detection
+        # MUST NOT change the scene scores of the other candidates.
+        strongest = {}
+        for item in packages:
+            label = derive.BOTTLE_LABEL if item["label"] == "bottle" else item["label"]
+            confidence = item["signals"]["confidence"]
+            strongest[label] = max(strongest.get(label, 0.0), confidence)
+        eligible = []
+        for item in packages:
+            label = derive.BOTTLE_LABEL if item["label"] == "bottle" else item["label"]
+            confidence = item["signals"]["confidence"]
+            gap = strongest[label] - confidence
+            if gap >= CONFIDENCE_GAP_LIMIT:
+                rejected.append({"source_index": item["source_index"], "label": item["label"],
+                                 "box": item["original_box"], "detector_score": confidence,
+                                 "scene_score": round(item["scene_score"], 6),
+                                 "strongest_detector_score": strongest[label],
+                                 "confidence_gap": round(gap, 6),
+                                 "reason": "detector_confidence_gap"})
+            else:
+                eligible.append(item)
+        packages = eligible
+
     packages.sort(key=lambda item: (item["scene_score"], item["area_raw"],
                                     item["signals"]["confidence"], -item["source_index"]),
                   reverse=True)
@@ -221,23 +295,43 @@ def _white_cut(image):
     return "crop", derive.SETTINGS_WHITE, image.crop(box), box
 
 
-def cut(image, segmenter):
+def cut(image, segmenter, version=VERSION):
     """Return `(method, settings, processed, box, audit)` for one query photo."""
+    version = selector_version(version)
     full = (0, 0, image.width, image.height)
     if derive.has_transparency(image):
         mask = np.asarray(image.getchannel("A")) > derive.ALPHA_THRESHOLD
         box = derive.package_box(mask) or full
-        audit = {"version": VERSION, "mode": "alpha", "texts": None,
+        audit = {"version": version, "mode": "alpha", "texts": None,
                  "image_size": [image.width, image.height], "sam3_size": None,
                  "hands": 0, "weights": {}, "candidates": [], "selected": None}
         return "crop", derive.SETTINGS_ALPHA, image.crop(box), box, audit
 
     instances, scale = segmenter.instances(image, TEXTS)
-    selected, audit = rank(image, instances, scale)
+    selected, audit = rank(image, instances, scale, version)
     if selected is None:
         audit["mode"] = "white"
         method, settings, processed, box = _white_cut(image)
+        if audit.get("rejected"):
+            audit["fallback_reason"] = "no_valid_package_mask"
+            settings = SETTINGS_REJECTED.replace("selector v%d" % VERSION,
+                                                 "selector v%d" % version)
         return method, settings, processed, box, audit
+
+    if version >= 2:
+        candidate = audit["candidates"][0]
+        x1, y1, x2, y2 = candidate["box"]
+        if ((x2 - x1) >= MIN_FRAME_COVER * image.width
+                and (y2 - y1) >= MIN_FRAME_COVER * image.height
+                and candidate["signals"]["mask_fill"] < MAX_FRAME_MASK_FILL):
+            # A full-frame bottle detection can mask the glass and exclude its label.
+            # Preserve the photo instead of removing most of its recognition context.
+            audit["mask_policy"] = "preserve_context"
+            audit["fallback_reason"] = "full_frame_low_mask_fill"
+            method, _settings, processed, box = _white_cut(image)
+            settings = SETTINGS_CONTEXT.replace("selector v%d" % VERSION,
+                                                 "selector v%d" % version)
+            return method, settings, processed, box, audit
 
     try:
         raw = base64.b64decode(selected["mask_png_b64"])
@@ -254,4 +348,4 @@ def cut(image, segmenter):
     box = alpha.point(lambda value: 255 if value > 0 else 0).getbbox() or full
     out = image.convert("RGBA")
     out.putalpha(alpha)
-    return "seg", SETTINGS, out.crop(box), box, audit
+    return "seg", settings_for(version), out.crop(box), box, audit

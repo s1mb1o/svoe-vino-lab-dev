@@ -168,8 +168,10 @@ def cuts_of(image, targets, segmenter, trace=None, scene_selection=False):
         with _step(trace, "sam3-package") as step:
             selection = None
             if scene_selection:
-                method, settings, processed, box, selection = main_scene.cut(image, segmenter)
-                rule = "main-scene-v%d" % main_scene.VERSION
+                version = main_scene.selector_version(scene_selection)
+                method, settings, processed, box, selection = main_scene.cut(
+                    image, segmenter, version)
+                rule = "main-scene-v%d" % version
             else:
                 method, settings, processed, box = derive.derive_image(image, segmenter)
                 rule = PACKAGE_RULES.get(settings)
@@ -472,7 +474,8 @@ class EmbeddingBackend:
         self.top_k = top_k
         # A view of the photo ranks the catalogue vectors of the same view of the entry.
         self.views = views or embedding.views
-        self.scene_selection = scene_selection
+        self.scene_selection = (main_scene.selector_version(scene_selection)
+                                if scene_selection else False)
         self.dis_segmenter = dis_segmenter
         # The backend `local` holds one model in the memory of this machine, so it takes
         # one request at a time.
@@ -485,12 +488,13 @@ class EmbeddingBackend:
             "model": embedding.model, "extra_body": embedding.extra_body,
             "views": self.views, "top_k": top_k, "workers": 1, "score": SCORE,
             "sam3": {"endpoint": getattr(segmenter, "endpoint", None),
-                     "package": main_scene.SETTINGS if scene_selection else derive.SETTINGS_SEG,
+                     "package": (main_scene.settings_for(self.scene_selection)
+                                 if scene_selection else derive.SETTINGS_SEG),
                      "package_texts": main_scene.TEXTS if scene_selection else derive.SAM3_TEXTS,
                      "label": alternatives.SETTINGS_LABEL},
         }
         if scene_selection:
-            self.spec["scene_selection"] = main_scene.VERSION
+            self.spec["scene_selection"] = self.scene_selection
 
     def _embed(self, images):
         if self._lock is None:
@@ -670,7 +674,7 @@ def model_inputs(spec, path, candidates=None):
         image, _ = derive.open_image(path)
         dis_segmenter = build_embeddings.make_dis_segmenter_for_views(views)
         inputs, missing = query_inputs(image, views, CachedSam3(endpoint),
-                                       bool(spec.get("scene_selection")), dis_segmenter)
+                                       spec.get("scene_selection", False), dis_segmenter)
     except (OSError, ImportError, ValueError, derive.Sam3Unavailable,
             embeddings.ItemError) as exc:
         return {"inputs": [], "notes": ["The model input cannot be made again: %s" % exc]}

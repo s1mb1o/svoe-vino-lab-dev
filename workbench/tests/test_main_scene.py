@@ -4,6 +4,7 @@ import io
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from PIL import Image, ImageDraw
 
@@ -48,6 +49,90 @@ class FakeSegmenter:
 
 
 class MainSceneRankTest(unittest.TestCase):
+    def test_a_weak_glass_detection_does_not_beat_a_strong_bottle_detection(self):
+        size = (800, 479)
+        bottle = instance("wine bottle", size, (90, 0, 261, 477), 0.952637)
+        glass = instance("wine bottle", size, (423, 155, 581, 396), 0.370605)
+        with mock.patch.object(main_scene, "_sharpness", side_effect=[18.9153, 19.9781]):
+            selected, audit = main_scene.rank(scene(size), [bottle, glass], 1.0)
+        self.assertIs(selected, bottle)
+        self.assertEqual(audit["rejected"][0]["reason"], "detector_confidence_gap")
+        self.assertAlmostEqual(audit["rejected"][0]["confidence_gap"], 0.582032)
+        for version in (1, 2):
+            with mock.patch.object(main_scene, "_sharpness", side_effect=[18.9153, 19.9781]):
+                old, old_audit = main_scene.rank(scene(size), [bottle, glass], 1.0, version)
+            self.assertIs(old, glass)
+            self.assertEqual(old_audit["version"], version)
+            self.assertNotIn("confidence_gap_limit", old_audit)
+
+    def test_a_confidence_gap_does_not_create_package_class_priority(self):
+        size = (400, 600)
+        can = instance("can", size, (110, 70, 300, 570), 0.4)
+        bottle = instance("wine bottle", size, (330, 500, 370, 585), 0.99)
+        selected, audit = main_scene.rank(scene(size), [can, bottle], 1.0)
+        self.assertIs(selected, can)
+        self.assertEqual(audit["rejected"], [])
+
+    def test_hand_scene_keeps_a_held_bottle_with_low_detector_confidence(self):
+        size = (400, 600)
+        held = instance("wine bottle", size, (110, 70, 300, 570), 0.4)
+        shelf = instance("wine bottle", size, (330, 40, 370, 200), 0.99)
+        hand = instance("hand", size, (40, 250, 390, 600), 0.97)
+        selected, audit = main_scene.rank(scene(size), [held, shelf, hand], 1.0)
+        self.assertIs(selected, held)
+        self.assertEqual(audit["rejected"], [])
+
+    def test_a_lone_low_confidence_package_remains_eligible(self):
+        size = (200, 200)
+        bottle = instance("wine bottle", size, (50, 0, 150, 200), 0.36)
+        selected, audit = main_scene.rank(scene(size), [bottle], 1.0)
+        self.assertIs(selected, bottle)
+        self.assertEqual(audit["rejected"], [])
+
+    def test_a_rejected_secondary_detection_keeps_other_scene_scores(self):
+        size = (400, 600)
+        candidates = [instance("wine bottle", size, (130, 35, 275, 585), 0.95),
+                      instance("wine bottle", size, (10, 20, 65, 230), 0.93),
+                      instance("wine bottle", size, (0, 0, 400, 600), 0.36)]
+        image = scene(size)
+        _selected, old = main_scene.rank(image, candidates, 1.0, version=2)
+        _selected, new = main_scene.rank(image, candidates, 1.0)
+        old_by_box = {tuple(c["box"]): c for c in old["candidates"]}
+        self.assertEqual(len(new["rejected"]), 1)
+        for candidate in new["candidates"]:
+            previous = old_by_box[tuple(candidate["box"])]
+            self.assertEqual(candidate["signals"], previous["signals"])
+            self.assertEqual(candidate["scene_score"], previous["scene_score"])
+
+    def test_a_sparse_mask_cannot_win_with_full_relative_area_credit(self):
+        size = (200, 200)
+        sparse = instance("wine bottle", size, (0, 0, 200, 200), 0.99, area=80)
+        selected, audit = main_scene.rank(scene(size), [sparse], 1.0)
+        self.assertIsNone(selected)
+        self.assertEqual(audit["candidates"], [])
+        self.assertEqual(audit["rejected"][0]["reason"], "mask_fill_below_minimum")
+        self.assertAlmostEqual(audit["rejected"][0]["mask_fill"], 0.002)
+        old, old_audit = main_scene.rank(scene(size), [sparse], 1.0, version=1)
+        self.assertIs(old, sparse)
+        self.assertEqual(old_audit["version"], 1)
+        self.assertNotIn("rejected", old_audit)
+
+    def test_a_valid_package_remains_after_a_sparse_mask_is_rejected(self):
+        size = (200, 200)
+        sparse = instance("wine bottle", size, (0, 0, 200, 200), 0.99, area=80)
+        valid = instance("can", size, (60, 20, 140, 180), 0.8)
+        selected, audit = main_scene.rank(scene(size), [sparse, valid], 1.0)
+        self.assertIs(selected, valid)
+        self.assertEqual(len(audit["rejected"]), 1)
+
+    def test_an_empty_mask_is_rejected(self):
+        size = (200, 200)
+        empty = instance("wine bottle", size, (0, 0, 200, 200))
+        empty["area"] = 0
+        selected, audit = main_scene.rank(scene(size), [empty], 1.0)
+        self.assertIsNone(selected)
+        self.assertEqual(audit["rejected"][0]["mask_fill"], 0)
+
     def test_a_held_can_beats_many_shelf_bottles(self):
         size = (400, 600)
         candidates = [
@@ -103,6 +188,54 @@ class MainSceneRankTest(unittest.TestCase):
 
 
 class MainSceneCutTest(unittest.TestCase):
+    def test_sparse_detection_keeps_the_label_photo(self):
+        image = scene((200, 200))
+        sparse = instance("wine bottle", image.size, (0, 0, 200, 200), area=80)
+        method, settings, processed, box, audit = main_scene.cut(
+            image, FakeSegmenter([sparse]))
+        self.assertEqual((method, settings, box, audit["selected"]),
+                         ("crop", main_scene.SETTINGS_REJECTED, (0, 0, 200, 200), None))
+        self.assertEqual(processed.tobytes(), image.tobytes())
+        self.assertEqual(audit["fallback_reason"], "no_valid_package_mask")
+
+    def test_a_full_frame_mask_that_removes_the_label_keeps_context(self):
+        size = (200, 200)
+        image = scene(size)
+        # The glass surrounds a large label. SAM3 excludes the label from its mask.
+        mask = Image.new("L", size, 255)
+        ImageDraw.Draw(mask).rectangle((10, 10, 189, 189), fill=0)
+        buffer = io.BytesIO()
+        mask.save(buffer, "PNG")
+        item = instance("wine bottle", size, (0, 0, 200, 200), area=7600)
+        item["mask_png_b64"] = base64.b64encode(buffer.getvalue()).decode("ascii")
+        method, settings, processed, box, audit = main_scene.cut(
+            image, FakeSegmenter([item]))
+        self.assertEqual((method, settings, box),
+                         ("crop", main_scene.SETTINGS_CONTEXT, (0, 0, 200, 200)))
+        self.assertEqual(processed.tobytes(), image.tobytes())
+        self.assertEqual(audit["mask_policy"], "preserve_context")
+        old_method, old_settings, old_image, _box, old_audit = main_scene.cut(
+            image, FakeSegmenter([item]), version=1)
+        self.assertEqual((old_method, old_settings, old_audit["version"]),
+                         ("seg", main_scene.SETTINGS_V1, 1))
+        self.assertLess(old_image.getchannel("A").getpixel((100, 100)), 10)
+
+    def test_a_full_frame_dense_mask_still_segments(self):
+        size = (200, 200)
+        item = instance("wine bottle", size, (0, 0, 200, 200), area=35000)
+        method, settings, _processed, _box, audit = main_scene.cut(
+            scene(size), FakeSegmenter([item]))
+        self.assertEqual((method, settings), ("seg", main_scene.SETTINGS))
+        self.assertNotIn("fallback_reason", audit)
+
+    def test_a_diagonal_bottle_with_background_still_segments(self):
+        size = (200, 200)
+        item = instance("wine bottle", size, (10, 10, 190, 190), area=6500)
+        method, _settings, _processed, _box, audit = main_scene.cut(
+            scene(size), FakeSegmenter([item]))
+        self.assertEqual(method, "seg")
+        self.assertNotIn("fallback_reason", audit)
+
     def test_the_selected_mask_makes_the_package_cut(self):
         size = (240, 360)
         can = instance("can", size, (70, 40, 180, 345), 0.95)

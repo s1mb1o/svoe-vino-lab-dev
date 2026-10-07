@@ -357,6 +357,7 @@ def _source(sources, path):
 
 
 def _visual_key(photo, views, endpoint, scene_selection):
+    version = main_scene.selector_version(scene_selection) if scene_selection else False
     constants = {}
     for module in (derive, alternatives, embeddings, main_scene):
         for name, value in vars(module).items():
@@ -367,7 +368,7 @@ def _visual_key(photo, views, endpoint, scene_selection):
                     continue
     source_state = getattr(photo, "source_state", None)
     identity = source_state if source_state is not None else ("unverified", id(photo.image))
-    return (photo.path, identity, endpoint, bool(scene_selection), CUT_SIDE, model_cache.ROOT,
+    return (photo.path, identity, endpoint, version, CUT_SIDE, model_cache.ROOT,
             model_cache.READ, model_cache.canonical(views), model_cache.canonical(constants),
             embedding_run.CachedSam3, embedding_run.cuts_of, embedding_run.view_input,
             derive.open_image, embeddings.apply_steps, png_uri,
@@ -474,7 +475,7 @@ def _cut(photo, target, endpoint, scene_selection=False, *, segmenter=None):
         trace = embedding_run.Trace()
         cut = embedding_run.cuts_of(
             photo.image, {target}, segmenter or embedding_run.CachedSam3(endpoint), trace,
-            scene_selection=scene_selection and target == "package").get(target)
+            scene_selection=scene_selection if target == "package" else False).get(target)
         result = next((record.get("out") for record in trace.steps
                        if record.get("id") == "sam3-" + target), None)
     except derive.Sam3Unavailable as exc:
@@ -495,7 +496,7 @@ def embedding_rounds(ctx):
     views = spec.get("views") or {}
     sam3 = spec.get("sam3") or {}
     endpoint = sam3.get("endpoint") or derive.SAM3_ENDPOINT
-    scene_selection = bool(spec.get("scene_selection"))
+    scene_selection = spec.get("scene_selection", False)
     name = spec.get("embedding") or spec.get("id")
     first = step("input", "Input photo")
     timed(first, records.get(("input", None)))
@@ -573,6 +574,15 @@ def embedding_rounds(ctx):
                                  % (selected.get("label"), selected.get("scene_score") or 0,
                                     len(selection.get("candidates") or ()),
                                     selection.get("hands") or 0))
+        if isinstance(selection, dict):
+            reason = selection.get("fallback_reason")
+            if reason == "no_valid_package_mask":
+                part["notes"].append("The package masks were too sparse. The photo context "
+                                     "was preserved with a white-border crop.")
+            elif reason == "full_frame_low_mask_fill":
+                part["notes"].append("The package box covered almost the whole photo, but "
+                                     "its mask removed most of the photo. The photo "
+                                     "context was preserved with a white-border crop.")
         rounds[1].append(part)
 
     for view, steps in views.items():
