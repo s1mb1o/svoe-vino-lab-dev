@@ -56,6 +56,19 @@ class VisibleCardsTest(unittest.TestCase):
     def test_mount_reuse_eviction_pin_refresh_removal_and_stale_observer(self):
         self.run_js(HARNESS)
 
+    def test_initial_cards_start_before_observer_and_keep_scroll_position(self):
+        code=HARNESS[:HARNESS.index('const controller=VisibleCards.create')]
+        code+="""
+const controller=VisibleCards.create(container,{root:container,initial:4});
+controller.set(rows,r=>r.key,render);assert.equal(calls,4);
+const first=container.children[0].firstElementChild;
+observer.cb([{target:container.children[0],isIntersecting:true}]);
+assert.strictEqual(container.children[0].firstElementChild,first);assert.equal(calls,4);
+controller.destroy();container.scrollTop=5000;calls=0;
+controller.set(rows,r=>r.key,render);assert.equal(calls,0);
+"""
+        self.run_js(code)
+
     def test_missing_observer_renders_every_card(self):
         code=HARNESS[:HARNESS.index('const IntersectionObserver=class')]+HARNESS[HARNESS.index('const container=new Slot();'):HARNESS.index('controller.set(rows,r=>r.key,render);')]
         code+='controller.set(rows,r=>r.key,render);assert.equal(calls,10000);'

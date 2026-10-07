@@ -182,6 +182,7 @@ import embedding_routes  # noqa: E402
 import favorites  # noqa: E402
 import health  # noqa: E402
 import image_descriptions  # noqa: E402
+import image_thumbnails  # noqa: E402
 import label_description_routes  # noqa: E402
 import lab_openapi  # noqa: E402
 import lab_pages  # noqa: E402
@@ -1755,6 +1756,17 @@ class Handler(BaseHTTPRequestHandler):
             return
         folder, name, extension = match.groups()
         path = os.path.join(labdb.image_dir(self.server.db_path, folder), name)
+        query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+        if query.get("thumbnail") == ["1"]:
+            cache = os.path.join(labdb.data_root(self.server.db_path), "cache", "image-thumbnails")
+            try:
+                data = image_thumbnails.get(path, cache)
+            except (OSError, ValueError):
+                # A preview is optional. Preserve the image when a decoder or cache fails.
+                pass
+            else:
+                self._send(200, data, "image/webp", IMAGE_CACHE)
+                return
         try:
             with open(path, "rb") as fh:
                 data = fh.read()

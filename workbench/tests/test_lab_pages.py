@@ -48,6 +48,15 @@ class MarksTest(unittest.TestCase):
 
 
 class RealPagesTest(unittest.TestCase):
+    def test_layout_deferral_is_shared_by_the_large_row_views(self):
+        css = Path(lab_pages.PAGES_DIR, "page_rendering.css").read_text(encoding="utf-8")
+        for name in ("testset.html", "clusters.html"):
+            text = lab_pages.page(name)
+            self.assertEqual(text.count(css), 1)
+            self.assertLess(text.index(css), text.index("</style>"))
+        for name in ("dataset.html", "embedding.html", "runs.html", "recognize.html", "health.html"):
+            self.assertNotIn(css, lab_pages.page(name), name)
+
     def test_no_page_keeps_a_mark(self):
         for name in sorted(os.listdir(lab_pages.PAGES_DIR)):
             if not name.endswith(".html"):

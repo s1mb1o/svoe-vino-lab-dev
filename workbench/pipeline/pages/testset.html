@@ -1670,7 +1670,7 @@ function initSide() {
   try { want = localStorage.getItem(SIDE_KEY); } catch (e) { /* private mode */ }
   setSide(want !== "0", false);
 }
-const DRAWER_CARDS = VisibleCards.create($("#held"), {root: $("#held"), height: 230, slotClass: "held-slot"});
+const DRAWER_CARDS = VisibleCards.create($("#held"), {root: $("#held"), height: 230, slotClass: "held-slot", initial: 4});
 function renderSide() {
   const r = ROWS.find(isDrawerRow);
   const photos = r ? r.photos : [], n = photos.length;
@@ -3502,6 +3502,23 @@ async function load(name, first) {
     }
     readViewFromUrl();
   }
+  if (first && sideShown()) {
+    // Show the first Drawer photos before constructing every wine row. Bound the
+    // wait so an absent or slow image cannot hold the rest of the page.
+    renderSide();
+    VIEW = [ROWS.find(isDrawerRow)].filter(Boolean);
+    await new Promise(resolve => {
+      let done = false;
+      const finish = () => { if (!done) { done = true; clearTimeout(timer); resolve(); } };
+      const timer = setTimeout(finish, 180);
+      requestAnimationFrame(() => {
+        const images = [...$("#held").querySelectorAll("img")].slice(0, 4);
+        Promise.allSettled(images.map(image => image.decode())).then(finish);
+      });
+    });
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    if (request !== LOAD_REQUEST) return;
+  }
   render();
   syncDrawerRuns();
   scheduleAutotag(0);
@@ -3897,20 +3914,36 @@ function drawerCandidateHtml(row, candidate) {
     <b>${esc((wine && wine.name) || candidate.slug)}</b><div class="drawer-candidate-meta">#${
       esc(candidate.rank == null ? "?" : candidate.rank)}${score}<br>${esc(candidate.slug)}</div></article>`;
 }
+const DRAWER_RESULTS = VisibleCards.create($("#drawer-results-list"), {
+  root: $("#drawer-results-dlg .drawer-results-panel"), height: 320, initial: 1,
+});
 function renderDrawerResults() {
   if (!DRAWER_VIEW) return;
-  const current = (DRAWER_VIEW.rows || []).filter(drawerCurrent);
-  const want = renderImageTagFilter("#drawer-results-tag", current, drawerResultTags);
-  const rows = current.filter(row => tagFilterMatches(drawerResultTags(row), want));
+  // Resolve current photos once per render. Keep the file and hash check so a
+  // moved, replaced, or removed photo cannot be accepted from an old run.
+  const source = ROWS.find(isDrawerRow);
+  const photos = new Map((source ? source.photos : []).map(photo => [photo.file, photo]));
+  const photoOf = row => {
+    const photo = photos.get(drawerFile(row));
+    return photo && photo.sha256 === row.image_sha256 ? photo : null;
+  };
+  const tagsOf = row => {
+    const photo = photoOf(row);
+    return photo ? photoTags(photo) : (Array.isArray(row.tags) ? row.tags : []);
+  };
+  const current = (DRAWER_VIEW.rows || []).filter(row => !!photoOf(row));
+  const want = renderImageTagFilter("#drawer-results-tag", current, tagsOf);
+  const rows = current.filter(row => tagFilterMatches(tagsOf(row), want));
   const resolved = (DRAWER_VIEW.rows || []).length - current.length;
   const filter = want === TAG_NONE ? " · filter: no tag" : want ? ` · filter: ${want}` : "";
   $("#drawer-results-sub").textContent = `${DRAWER_VIEW.head.configuration || "pipeline"} · ${
     rows.length}${want ? ` of ${current.length}` : ""} waiting in the Drawer${filter}${
       resolved ? ` · ${resolved} already moved or changed` : ""}. `
     + "Select an image to compare side by side; V moves it and records a positive annotation.";
-  $("#drawer-results-list").innerHTML = rows.length ? rows.map(row => {
+  DRAWER_RESULTS.destroy();
+  DRAWER_RESULTS.set(rows, row => row.query_id, row => {
     const candidates = drawerCandidates(row);
-    const tags = drawerResultTags(row);
+    const tags = tagsOf(row);
     const top = candidates[0];
     const matchedImage = top
       ? `<button class="drawer-preview-open drawer-query-preview" type="button"
@@ -3930,12 +3963,13 @@ function renderDrawerResults() {
         tags.length ? `tags: ${esc(tags.join(", "))}` : "no tag"}</div></div>
       <div class="drawer-candidates">${candidates.length
         ? candidates.map(candidate => drawerCandidateHtml(row, candidate)).join("") : error}</div></section>`;
-  }).join("") : `<div class="drawer-empty">${current.length
+  }, `<div class="drawer-empty">${current.length
     ? "No waiting Drawer photo matches this tag filter."
-    : "Every photo from this run was already moved, removed, or changed."}</div>`;
+    : "Every photo from this run was already moved, removed, or changed."}</div>`);
 }
 async function loadDrawerRun(runId) {
   $("#drawer-results-error").textContent = "";
+  DRAWER_RESULTS.destroy();
   $("#drawer-results-list").innerHTML = '<div class="drawer-empty">Loading results…</div>';
   try {
     const data = await runJson(`/api/run?id=${encodeURIComponent(runId)}&limit=1000`);
@@ -3946,7 +3980,7 @@ async function loadDrawerRun(runId) {
     renderDrawerResults();
   } catch (e) {
     DRAWER_VIEW = null;
-    $("#drawer-results-list").innerHTML = "";
+    DRAWER_RESULTS.destroy();
     $("#drawer-results-error").textContent = "cannot load the results: " + e.message;
   }
 }

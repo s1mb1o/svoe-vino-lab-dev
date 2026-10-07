@@ -6349,3 +6349,38 @@ Share concurrent cold loads per key. Bound pending ownership to 32 keys per cach
 All 355 broad regressions and 42 final focused checks pass. The 240-cycle, 10,000-card controller soak mounts at most 13 cards; post-GC heap growth is 50,256 bytes and p95 is 13.09 ms in its simulated DOM. Live browser filter counts stay stable. The populated Embeddings DOM falls from 72,334 to 2,310 nodes; Testset falls from 85,431 to 25,090. Popup metadata falls from 747,914 to 16,388 bytes (gzip 570,685 to 4,435). Eight cold concurrent requests perform one reconstruction and one index read; candidate previews decode and encode once. PNG bytes and other metadata match the saved response exactly.
 
 Port 8168 restarted with SIGTERM as PID 1236; Dataset returns 200. Browser checks cover full viewers, offscreen navigation, tag filters, popup cleanup, and the mobile Drawer. Cold reconstruction and source-photo decoding remain. Browser paint time and browser heap were not measured. Evidence: `internal/workbench-next-audit-20261007/implementation.json`.
+
+
+## 2026-10-07T03:55:54+03:00 — Pipeline timing and bottleneck research
+
+Inventory all 93 configurations. Run 48 configurations on six frozen photos each, with local model-cache reads off and on. Complete 96 runs and 576 photo timings with one worker. One remote group request times out. Two group responses on the negative photo have no matched bottle. Hold 42 model or remote configurations for the GPU memory reserve. Two Android debug APIs are unavailable. The official external API awaits explicit image-export approval after automatic review rejection.
+
+Measure catalogue startup and ranking for all 17 used embedding indexes. The snapshot writer saves an oversized array before checking its 256 MiB cap, then discards it. Three isolated early-size guards change startup from 27.26/14.34/24.54 seconds to 1.87/1.53/2.13 seconds. All three rank checks match. These pairs use warm filesystem caches and varying host load. Product code remains unchanged.
+
+The Danya compound pipeline repeats package and label preparation in its secondary backend. It sends four SAM3 calls per uncached photo and has an 11.13-second photo median. Cached preparation still spends CPU time in resize, mask blur, PNG encoding, and WebP decoding. Six prepared-image hashes match the original run. Local model construction takes 12.6 to 20.2 seconds; loaded unsegmented photo medians are 0.17 to 0.25 seconds.
+
+The group matcher returns a shelf photo with 41 detections and 18 bottles in 118.53 seconds. Its repeat times out at 120.01 seconds, but server work continues to 141.41 seconds and overlaps the next query. Performance aggregates show 53 successful primary reads, 22 successful detail reads, and five JSONDecodeError failures across 12 requests. Recommend shared preparation, loaded-backend reuse, and propagated request deadlines after the early snapshot guard. Detailed production-audit export is blocked; save numeric performance aggregates alone.
+
+The shared GPU is 93 to 96 percent busy. Available memory falls from about 26 GiB to 13.9 GiB, with about 16.3 GiB of swap used. These are diagnostic production-load timings. Defer the four-worker throughput probe. The six-photo cohort does not support a quality estimate or stable p95. Existing indexes stay frozen. Incremental index rebuild and web run-job scheduling are outside the timing scope.
+
+All 96 source hashes, 18 index hashes, 18 vector signatures, private database/config, six original photos, six timestamped copies, and all 576 frozen identities and labels validate. Preserve all baseline loaded models. Unload only the two test-owned DINO loads; both responses are HTTP 200. Remove both temporary Android forwards. No deployment or service restart. Evidence: ../internal/workbench-pipeline-timing-20261007/README.md and validation.json.
+
+## 2026-10-07T04:20:06+03:00 — Faster Testset and Clusters page updates
+
+Measure 70 final browser transitions across all seven navigation pages. Alternate the previous and current styles over five cycles. Wait for page data and mounted visible controls, then two animation frames. The large Testset has 2,185 wines, 14,055 photos, and 127,858 DOM elements. Its median update takes 1360.4 ms. Most of the delay follows DOM construction.
+
+Add shared CSS through the page assembler. Defer layout and paint of offscreen Testset row contents and Clusters sections. Keep the complete DOM, drafts, controls, table layout, and mobile layout. Render hovered and focused groups, drag targets, and linked clusters without paint containment. Testset median falls to 935.9 ms, a 31.2 percent reduction. Clusters median falls from 225.7 ms to 184.9 ms, an 18.1 percent reduction. The other five pages keep the same HTML. Their timing differences are sampling variation.
+
+All 5 page tests, 15 Cluster route tests, and 20 Testset route tests pass. All seven assembled-page parity checks pass. Browser checks cover desktop and mobile photo layouts, last-row controls, unsaved comment retention and cancellation, and a link to the last cluster. Preserve the original Runs tab URL. Restart only port 8168 with SIGTERM as PID 19674. Dataset returns HTTP 200. Row virtualization remains a measured opportunity. Evidence: ../internal/workbench-page-switch-20261007/README.md and summary.json.
+
+## 2026-10-07T04:55:51+03:00 — First card images
+
+Added bounded, cached WebP previews to Dataset, Testset, and Runs cards. Keep full-image sources and viewer links. Preserve alpha, EXIF orientation, and colour profiles. Fall back to source bytes if preview generation fails. Limit cold conversion work to one image. The live Dataset median falls from 489.9 to 248.9 ms over five browser samples. All 112 focused checks pass.
+
+A private Testset patch starts Drawer images before the wine table and mounts Results near the viewport. It resolves current photos once per render. Prototype medians fall from 1243.7 to 284.6 ms for Drawer and from 1822.4 to 549.1 ms for Results. The patch awaits approval for the old codex-root file claim under AGENTS.md rule 17. Evidence: internal/workbench-first-images-20261007/README.md. No source images, annotations, labels, or inference state changed. No commit or push.
+
+## 2026-10-07T07:45:10+03:00 — Approved Drawer and Results first-image patch
+
+Apply the owner-approved Testset patch. Start the first four Drawer images before the wine table. Mount Results near the viewport and resolve current file/hash/tag data once per render. Preserve Autotag, candidate arrows, full-image viewing, and the No Match destination. Update the existing route-test assertion for the cached tag helper. No server restart is needed; port 8168 serves the exact assembled applied page.
+
+The current five-sample comparison gives Drawer medians of 2373.3 to 518.7 ms and Results medians of 1654.1 to 564.2 ms. Image HTTP caching is disabled and the preview cache is warm. Retain every sample, including the slow first applied navigation. All 41 focused rechecks pass. Renderer behavior, JavaScript syntax, and diff checks pass. Live checks reach the final Results photo with only five rows mounted; tag filtering, rank navigation, full-resolution URLs, and the __null__ destination pass. Temporary measurement proxies and the browser tab are removed. No source images, labels, annotations, or inference state changed. No commit or push. Evidence: ../internal/workbench-first-images-20261007/README.md and applied-summary.json.

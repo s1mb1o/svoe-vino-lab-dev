@@ -373,7 +373,7 @@ class TestsetRoutesTest(unittest.TestCase):
         self.assertEqual(status, 200)
         for fragment in ('id="drawer-tag"', 'id="drawer-results-tag"',
                          'tagFilterMatches(photoTags(photo), want)',
-                         'tagFilterMatches(drawerResultTags(row), want)',
+                         'tagFilterMatches(tagsOf(row), want)',
                          'No Drawer photo matches this tag filter.',
                          'No waiting Drawer photo matches this tag filter.'):
             self.assertIn(fragment, page)

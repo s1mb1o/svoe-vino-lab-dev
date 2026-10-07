@@ -1,0 +1,18 @@
+/* Defer layout and paint of offscreen content. Keep controls, drafts, and search in
+   the DOM. The browser remembers the height after it renders each group. */
+#rows .wine-inner, #rows .cards {
+  content-visibility: auto;
+  contain-intrinsic-height: auto 240px;
+}
+#list > .cluster {
+  content-visibility: auto;
+  contain-intrinsic-height: auto 640px;
+}
+/* Let notes, focused controls, drag targets, and linked clusters extend outside their
+   group. content-visibility: auto otherwise adds paint containment. */
+#rows > tr:hover .wine-inner, #rows > tr:hover .cards,
+#rows > tr:focus-within .wine-inner, #rows > tr:focus-within .cards,
+#rows > tr.photo-drop .wine-inner, #rows > tr.photo-drop .cards,
+#list > .cluster:hover, #list > .cluster:focus-within, #list > .cluster.target {
+  content-visibility: visible;
+}

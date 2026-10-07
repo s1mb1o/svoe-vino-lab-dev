@@ -22,6 +22,10 @@ THEME_MARK = "/* THEME_CSS */\n"
 # The optional marks and their files (plan 55).
 PARTS = (("/* STEPS_CSS */\n", "steps.css"), ("/* STEPS_JS */\n", "steps.js"),
          ("/* DROP_JS */\n", "drop.js"), ("/* VISIBLE_CARDS_JS */\n", "visible_cards.js"))
+# These views retain complete offscreen rows. Share browser layout deferral without
+# changing the row DOM or the existing table and mobile layouts.
+DEFER_LAYOUT_PAGES = frozenset(("testset.html", "clusters.html"))
+CARD_PREVIEW_PAGES = frozenset(("dataset.html", "testset.html", "runs.html"))
 # The Dataset page with the image preview of one wine open: `/dataset/<slug>` shows the
 # catalogue image, `/dataset/<slug>/patch` the patch image, and
 # `/dataset/<slug>/alternative/<sha256>` one alternative photo. The page reads the path.
@@ -54,4 +58,13 @@ def page(name):
     for mark, part in PARTS:
         if mark in text:
             text = text.replace(mark, _read(part))
+    if name in DEFER_LAYOUT_PAGES:
+        if "</style>" not in text:
+            raise ValueError("%s MUST hold a style element" % name)
+        text = text.replace("</style>", _read("page_rendering.css") + "</style>", 1)
+    if name in CARD_PREVIEW_PAGES:
+        if "</head>" not in text:
+            raise ValueError("%s MUST hold a head element" % name)
+        text = text.replace("</head>", "<script>" + _read("first_images.js")
+                            + "</script></head>", 1)
     return text

@@ -1,7 +1,7 @@
 /* Mount cards near the viewport. Keep keyed slots and measured heights so ordinary
    filters can reuse the Drawer and full-view navigation can mount any offscreen card. */
 const VisibleCards = (() => {
-  function create(container, {root = null, height = 240, slotClass = "visible-slot"} = {}) {
+  function create(container, {root = null, height = 240, slotClass = "visible-slot", initial = 0} = {}) {
     let records = new Map(), order = [], render = null, observer = null;
     const supported = typeof IntersectionObserver !== "undefined";
     function pinned(slot) {
@@ -63,6 +63,11 @@ const VisibleCards = (() => {
         if (keys.length) container.replaceChildren(...keys.map(key => records.get(key).slot));
         else container.innerHTML = empty;
         order = keys;
+        // Start a few first-screen images in this task. Waiting for the observer
+        // also waits for layout of the rest of the large page.
+        if (!(root && root.scrollTop)) {
+          for (const key of keys.slice(0, initial)) mount(records.get(key));
+        }
         observe();
       } else if (!keys.length && container.innerHTML !== empty) container.innerHTML = empty;
       for (const item of records.values()) {
