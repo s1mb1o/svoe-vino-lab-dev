@@ -6420,3 +6420,13 @@ All 87 focused tests, Ruff, Python compilation, and diff checks pass. Offline re
 - Update the patch UI with actual bottle crops, source and crop dimensions, and separate ranking and overlay labels. Verify the supplied Shardone/Sovinon Blan query in the live viewer.
 - Pass 37 patch tests and 37 UI, page, and step-view checks. Ruff, Python compilation, and JavaScript syntax checks pass. Restart only port 8168 after no active jobs. Final server PID: 77069. Dataset returns HTTP 200.
 - Evidence: `svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md`, local `internal/patch-retrieval-20261014/cropped/` in the experiment copy, and `svoe-vino-lab/internal/patch-retrieval-ui-20261014/cropped-patch-viewer.jpg`.
+
+
+## 2026-10-14T12:49:37+03:00 — Separate patch image panels
+
+- Replace the composite patch PNG in the step popup with four separate page images. Show the reference crop, query crop, reference patch weights, and query patch weights. Keep captions and the color legend in HTML.
+- Serve checked image panels through `panel=reference|query|reference_weights|query_weights`. Share query image files across candidates. Return normalized correspondence coordinates. Draw the RANSAC overlay with SVG at the displayed image bounds. Update the overlay after image loading and candidate selection.
+- Verify four loaded image elements and 13 aligned correspondence lines for the second candidate. Return the viewer to the first candidate. Verify all four image endpoints and unchanged candidate scores.
+- Pass 37 patch tests and 48 patch API, OpenAPI, page, and step-view tests. Ruff and JavaScript syntax checks pass. The isolated HTTP tests need loopback permission.
+- Restart only Workbench port 8168 with SIGTERM after no active recognition or embedding jobs. PID: 77069 to 13799. Dataset returns HTTP 200.
+- Evidence: `internal/patch-retrieval-ui-20261014/four-panel-patch-viewer.jpg`, `four-panels-api-verification.json`, and `four-panels-restart.json` in the source lab. Keep the standalone historical report figure in local evidence.

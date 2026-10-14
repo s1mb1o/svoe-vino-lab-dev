@@ -141,10 +141,20 @@ details.data pre { margin: 8px 0 0; background: var(--panel-2); border-radius: 8
   .step .meta { white-space: normal; overflow-wrap: anywhere; }
 }
 
-/* Original patch diagnostics. Keep the full figure visible at the panel width. */
+/* Original patch diagnostics. Each crop is a separate page image. */
 .patch-inspection { margin: 16px 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
 .patch-inspection h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; }
 .patch-inspection p { line-height: 1.5; font-size: 13px; color: var(--muted); }
 .patch-inspection select { display: block; width: 100%; max-width: 780px; margin: 8px 0; }
-.patch-inspection .patch-figure { display: block; width: 100%; max-width: 1100px; height: auto; border-radius: 8px; cursor: zoom-in; }
 .patch-inspection .patch-summary { font-family: var(--mono); font-size: 12px; }
+.patch-image-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; position: relative; margin: 16px 0; }
+.patch-image-panel { min-width: 0; margin: 0; }
+.patch-image-panel figcaption { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+.patch-image-frame { height: clamp(220px, 35vw, 380px); display: flex; align-items: center; justify-content: center; padding: 10px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; }
+.patch-inspection .patch-figure { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; cursor: zoom-in; }
+.patch-correspondences { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.patch-correspondences line { stroke: #238f84; stroke-width: 1; }
+.patch-correspondences circle { fill: #097769; }
+@media (max-width: 600px) {
+  .patch-image-pair { grid-template-columns: minmax(0, 1fr); }
+}

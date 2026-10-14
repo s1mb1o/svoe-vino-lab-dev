@@ -1319,10 +1319,14 @@ paths:
         - in: query
           name: candidate
           schema: { type: integer, minimum: 0, maximum: 9 }
-          description: Read the PNG for one ready experiment candidate.
+          description: Read one image panel for a ready experiment candidate.
+        - in: query
+          name: panel
+          schema: { type: string, enum: [reference, query, reference_weights, query_weights], default: reference }
+          description: Select one cropped original image or patch-weight image.
       responses:
         "200":
-          description: Local job status, ready diagnostics, or a checked original-patch figure.
+          description: Local job status, ready diagnostics, or a checked crop or patch-weight image.
           content:
             application/json:
               schema: { type: object, additionalProperties: true }

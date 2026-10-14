@@ -106,11 +106,15 @@ def respond(db_path, path, runs_dir=None):
                 number = int(picture)
                 if number < 0 or number >= len(result["candidates"]):
                     raise ValueError("unknown candidate")
-                image = directory / result["candidates"][number]["image"]
+                panel = _one(query, "panel") if "panel" in query else "reference"
+                if panel not in ("reference", "query", "reference_weights", "query_weights"):
+                    raise ValueError("unknown patch image panel")
+                image = directory / result["candidates"][number]["images"][panel]
                 return 200, image.read_bytes(), "image/png"
             result["cache_key"] = key
             for number, candidate in enumerate(result["candidates"]):
-                candidate["src"] = "/api/run-patches?" + urllib.parse.urlencode({"id":run,"query":identity,"candidate":number})
+                candidate["images"] = {panel: "/api/run-patches?" + urllib.parse.urlencode(
+                    {"id":run,"query":identity,"candidate":number,"panel":panel}) for panel in candidate["images"]}
             return 200, result, JSON_TYPE
         if (directory / "error.json").exists():
             return 200, json.loads((directory / "error.json").read_text()), JSON_TYPE

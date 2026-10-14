@@ -238,10 +238,46 @@ const Steps = (() => {
 
   function patchCandidate(select) {
     const panel = select.closest(".patch-inspection"), item = panel._patches.candidates[Number(select.value)];
-    const geometry = item.geometry;
-    const crop = item.crop;
+    const geometry = item.geometry, crop = item.crop;
+    panel._patchResizeObserver?.disconnect();
+    const image = (key, label) => `<figure class="patch-image-panel"><figcaption>${label}</figcaption>
+      <div class="patch-image-frame"><img class="patch-figure" src="${esc(item.images[key])}" data-full="${esc(item.images[key])}" data-patch-image="${key}" alt="${label}"></div></figure>`;
     panel.querySelector(".patch-candidate").innerHTML = `<p>Reference crop: ${esc(crop?.source_size?.join(" × "))} source → ${esc(crop?.input_size?.join(" × "))} input · ${esc(crop?.status)}</p><p>RANSAC ${geometry.reliable ? "accepted" : "rejected"} · ${geometry.inliers || 0} inliers · ${item.hidden_reference_patches} reference patches behind query occlusion
-      ${geometry.reason ? ` · ${esc(geometry.reason)}` : ""}</p><img class="patch-figure" loading="lazy" src="${esc(item.src)}" data-full="${esc(item.src)}" alt="Reference and query bottle crops, patch weights, and RANSAC correspondences">`;
+      ${geometry.reason ? ` · ${esc(geometry.reason)}` : ""}</p>
+      <div class="patch-image-pair patch-originals">${image("reference", "Reference: bottle crop")}${image("query", "Query: bottle crop")}
+        <svg class="patch-correspondences" aria-hidden="true" preserveAspectRatio="none"></svg></div>
+      <div class="patch-image-pair">${image("reference_weights", "Reference: patch weights")}${image("query_weights", "Query: patch weights")}</div>
+      <p class="patch-legend">Blue: low weight · Green: weight 1 · Yellow: stronger text · Red: excluded occlusion</p>`;
+    panel._patchCorrespondences = item.correspondences || [];
+    const redraw = () => patchLines(panel);
+    panel.querySelectorAll(".patch-originals img").forEach(img => img.addEventListener("load", redraw));
+    panel._patchResizeObserver = new ResizeObserver(redraw);
+    panel._patchResizeObserver.observe(panel.querySelector(".patch-originals"));
+    redraw();
+  }
+
+  function patchLines(panel) {
+    if (!panel.isConnected) { panel._patchResizeObserver?.disconnect(); return; }
+    const pair = panel.querySelector(".patch-originals"), svg = pair.querySelector("svg");
+    const reference = pair.querySelector('[data-patch-image="reference"]'), query = pair.querySelector('[data-patch-image="query"]');
+    svg.replaceChildren();
+    if (!reference.naturalWidth || !query.naturalWidth) return;
+    const bounds = pair.getBoundingClientRect(), rb = reference.getBoundingClientRect(), qb = query.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    svg.setAttribute("viewBox", `0 0 ${bounds.width} ${bounds.height}`);
+    const point = (xy, rect) => [rect.left-bounds.left+xy[0]*rect.width, rect.top-bounds.top+xy[1]*rect.height];
+    for (const match of panel._patchCorrespondences) {
+      if (![...(match.reference || []), ...(match.query || [])].every(Number.isFinite) || match.reference?.length !== 2 || match.query?.length !== 2) continue;
+      const a = point(match.reference, rb), b = point(match.query, qb);
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      ["x1", "y1", "x2", "y2"].forEach((key, i) => line.setAttribute(key, [...a, ...b][i]));
+      svg.append(line);
+      for (const p of [a, b]) {
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", p[0]); dot.setAttribute("cy", p[1]); dot.setAttribute("r", "3");
+        svg.append(dot);
+      }
+    }
   }
 
   /* The notes, the rounds, and the total line of one answer. The total line compares the

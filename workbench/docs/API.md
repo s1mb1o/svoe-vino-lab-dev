@@ -1133,3 +1133,22 @@ The weight overlays display the experimental weights.
 The selected blend reduces validation Top-1 and stays experimental.
 The cache key includes the index and worker source bytes.
 The crop correction therefore uses a separate diagnostic cache generation.
+
+
+## Separate patch image panels
+
+The ready response uses `image_layout: four-panels-v1`.
+Each candidate supplies an `images` map with four URLs.
+The keys are `reference`, `query`, `reference_weights`, and `query_weights`.
+Each URL includes `candidate=<index>` and `panel=<key>`.
+A candidate request without `panel` returns the reference crop.
+Unknown panel values and duplicate panel parameters return HTTP 400.
+The query crop and query weight image are shared between candidates.
+
+Each candidate supplies `correspondences` as normalized reference and query patch centers.
+The page displays four separate image elements with HTML captions.
+An SVG overlay maps the correspondence centers to the displayed original crops.
+The overlay updates after image loading, candidate selection, and layout size changes.
+The images retain the source crop resolution.
+The existing image preview opens each panel independently.
+The worker does not create a composite figure for the UI.

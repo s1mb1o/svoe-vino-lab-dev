@@ -73,8 +73,10 @@ class PatchInspectionTests(unittest.TestCase):
         sidecar = self.root / "annotation.json"
         sidecar.write_text('{}')
         def run(directory, _photo, _sidecar):
-            (directory / "candidate-00.png").write_bytes(b"PNG evidence")
-            (directory / "inspection.json").write_text(json.dumps({"status":"ready", "candidates":[{"image":"candidate-00.png", "slug":"wine"}]}))
+            images = {panel: panel+".png" for panel in ("reference", "query", "reference_weights", "query_weights")}
+            for panel, name in images.items():
+                (directory / name).write_bytes(("PNG "+panel).encode())
+            (directory / "inspection.json").write_text(json.dumps({"status":"ready", "candidates":[{"images":images, "slug":"wine"}]}))
         with mock.patch.object(PI, "_sidecar", return_value=sidecar), mock.patch.object(PI, "_run", side_effect=run) as worker:
             self.request("&start=1")
             for thread in PI._JOBS.values():
@@ -82,9 +84,14 @@ class PatchInspectionTests(unittest.TestCase):
             code, data, _kind = self.request("&start=1")
             self.assertEqual(code, 200)
             self.assertEqual(data["status"], "ready")
-            self.assertIn("candidate=0", data["candidates"][0]["src"])
+            self.assertEqual(len(data["candidates"][0]["images"]), 4)
+            self.assertIn("candidate=0", data["candidates"][0]["images"]["reference"])
             code, pixels, kind = self.request("&candidate=0")
-            self.assertEqual((code, pixels, kind), (200, b"PNG evidence", "image/png"))
+            self.assertEqual((code, pixels, kind), (200, b"PNG reference", "image/png"))
+            for panel in ("reference", "query", "reference_weights", "query_weights"):
+                self.assertEqual(self.request("&candidate=0&panel="+panel)[1], ("PNG "+panel).encode())
+            self.assertEqual(self.request("&candidate=0&panel=../secret")[0], 400)
+            self.assertEqual(self.request("&candidate=0&panel=query&panel=reference")[0], 400)
             self.assertEqual(self.request("&candidate=-1")[0], 400)
             self.assertEqual(self.request("&candidate=10")[0], 400)
             worker.assert_called_once()
