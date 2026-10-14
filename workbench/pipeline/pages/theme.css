@@ -45,3 +45,83 @@
     --shadow: 0 1px 2px rgba(0,0,0,.5);
   }
 }
+
+
+/* Compact headers keep navigation and controls in two sticky rows. */
+header.compact-header { position: sticky; top: 0; padding: 10px 16px; }
+.compact-header .compact-top {
+  display: flex; align-items: center; flex-wrap: nowrap; gap: 10px; margin: 0 0 8px;
+}
+.compact-header .compact-top h1 {
+  margin: 0; font-size: 15px; font-weight: 650; flex: none; white-space: nowrap;
+}
+.compact-header .compact-top .nav {
+  display: flex; flex: 1; min-width: 0; width: auto; margin: 0; gap: 6px;
+  flex-wrap: nowrap; overflow-x: auto;
+}
+.compact-header .nav a { flex: none; white-space: nowrap; }
+.compact-header .compact-filters {
+  display: flex; align-items: center; flex-wrap: nowrap; gap: 10px;
+  margin: 0; overflow-x: auto;
+}
+.compact-header .compact-filters > label {
+  display: flex; align-items: center; flex-wrap: nowrap; gap: 5px; flex: none; margin: 0;
+  font-size: 12px; color: var(--muted); white-space: nowrap;
+}
+.compact-header .compact-filters select { width: 155px; max-width: none; font-size: 13px; }
+.compact-header .compact-filters .compact-config select { width: 260px; }
+.compact-header .compact-filters .compact-set select { width: 180px; }
+.compact-header .compact-filters .compact-short select { width: 100px; }
+.compact-header .compact-filters .pick { flex: 1; min-width: 160px; }
+.compact-header .compact-filters .pick select { width: 100%; min-width: 0; max-width: 520px; }
+.compact-header .compact-filters .compact-search { flex: 1; min-width: 200px; }
+.compact-header .compact-search input[type=search] { width: 100%; min-width: 160px; max-width: none; }
+.compact-header .compact-filters > button, .compact-header .compact-top > button {
+  flex: none; white-space: nowrap;
+}
+.compact-header .compact-panel {
+  position: absolute; top: 100%; right: 16px; z-index: 12;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  width: min(680px, calc(100vw - 32px)); max-height: 50vh; overflow: auto;
+  margin: 0; padding: 14px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 8px; box-shadow: var(--shadow);
+}
+.compact-header .compact-panel[hidden] { display: none; }
+.compact-header [data-header-toggle][aria-expanded="true"],
+.compact-header [data-header-toggle].active { color: var(--accent); border-color: var(--accent); }
+.compact-header .compact-actions { position: relative; flex: none; margin: 0; }
+.compact-header .compact-actions > summary {
+  padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--panel-2); color: var(--text); font-size: 13px; cursor: pointer;
+}
+.compact-header .compact-actions > summary:hover { border-color: var(--accent); }
+.compact-header .compact-actions > .compact-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 13;
+  display: grid; gap: 8px; min-width: 190px; padding: 10px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+.compact-header .compact-top > a { flex: none; white-space: nowrap; font-size: 13px; }
+.compact-summary, .compact-stats {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 12px;
+  color: var(--muted); font-size: 12px;
+}
+.compact-stats .stat-chip, .compact-summary > .stat-chip {
+  padding: 3px 9px; font: inherit; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--panel-2); color: var(--muted); cursor: pointer;
+}
+.compact-stats .stat-chip[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+.compact-summary .progress { margin: 0; width: 100%; }
+.compact-summary .compact-stats { margin: 0; }
+.compact-status:empty { display: none; }
+.compact-jobs { margin-bottom: 12px; }
+.compact-jobs[hidden] { display: none; }
+header.compact-header.compact-testset { padding-right: 244px; }
+.compact-testset .compact-panel { right: 244px; width: min(680px, calc(100vw - 260px)); }
+body.side-off header.compact-header.compact-testset { padding-right: 16px; }
+body.side-off .compact-testset .compact-panel { right: 16px; width: min(680px, calc(100vw - 32px)); }
+@media (max-width: 720px) {
+  header.compact-header.compact-testset { padding-right: 16px; }
+  .compact-testset .compact-panel { right: 16px; width: min(680px, calc(100vw - 32px)); }
+}
+@media (max-width: 440px) { header.compact-header { padding-left: 10px; padding-right: 10px; } }

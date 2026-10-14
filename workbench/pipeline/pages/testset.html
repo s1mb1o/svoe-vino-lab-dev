@@ -777,24 +777,37 @@ tbody tr.cat-only { background: var(--panel-2); }
 </style>
 </head>
 <body>
-<header>
-  <div class="head-top">
-    <h1>Test set <select id="set" title="the test set of the page"></select>
-      <button id="run-open" class="run-btn" type="button"
-              title="run a pipeline of config.yaml on this test set">Run&gt;</button>
-      <button id="autotag" class="run-btn" type="button"
-              title="classify untagged images as label_back, label_front, isolated_product, or scene_photo">Autotag</button>
-      <button id="rename-set-open" class="run-btn" type="button"
-              title="rename this test set">Rename…</button>
-      <span class="sub autotag-state" id="autotag-state"></span>
-      <span class="sub" id="head-sub"></span></h1>
-    <nav class="nav"><a href="/dataset">Dataset</a><a
+<header class="compact-header compact-testset">
+<div class="compact-top"><h1>Test set</h1><nav class="nav" aria-label="Main navigation"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       class="on" href="/testset">Testset</a><a href="/runs">Runs</a><a
-      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
-  </div>
-  <div class="bar">
-    <label>Sort
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav><button id="side-toggle" type="button"
+              title="show or hide the Drawer (key s)">drawer <b id="side-n">0</b></button><details class="compact-actions"><summary>Actions</summary><div class="compact-menu"><button id="run-open" class="run-btn" type="button"
+              title="run a pipeline of config.yaml on this test set">Run&gt;</button><button id="autotag" class="run-btn" type="button"
+              title="classify untagged images as label_back, label_front, isolated_product, or scene_photo">Autotag</button><button id="rename-set-open" class="run-btn" type="button"
+              title="rename this test set">Rename…</button></div></details></div>
+<div class="bar compact-filters"><label class="compact-set">Testset <select id="set" title="the test set of the page"></select></label><label class="compact-short">Progress
+      <select id="filter" title="how far the labelling of the photos of the wine is">
+        <option value="all">all</option>
+        <option value="todo">not fully labelled</option>
+        <option value="untouched">no label yet</option>
+        <option value="partial">partly labelled</option>
+        <option value="done">fully labelled</option>
+        <option value="nophotos">no candidate photos</option>
+      </select>
+    </label><label class="compact-short">Verdict
+      <select id="verdict" title="a photo of the wine holds this label">
+        <option value="all">any</option>
+        <option value="has_pos">positive</option>
+        <option value="no_pos">no positive</option>
+        <option value="has_neg">negative</option>
+        <option value="has_unu">unusable</option>
+        <option value="has_var">different design</option>
+      </select>
+    </label><label class="compact-search">Find <input id="q" type="search" placeholder="Search wines"></label><button id="more-btn" data-header-toggle type="button" aria-expanded="false" aria-controls="more"
+            title="Show advanced filters and their active count"
+            >Advanced Filters <b id="more-n">(0)</b></button></div>
+<div class="bar more compact-panel" id="more" hidden><label>Sort
       <select id="sort">
         <option value="slug">slug A-Z</option>
         <option value="slug_desc">slug Z-A</option>
@@ -813,46 +826,6 @@ tbody tr.cat-only { background: var(--panel-2); }
                 >cluster size, largest first</option>
       </select>
     </label>
-    <!-- The filter axes (owner answers of 2026-09-26 00:26:58). A wine passes when it
-         passes every axis. The page has no filter of the benchmark scope: the owner
-         removed the select Slugs (message of 2026-09-26T00:39:13+0300). -->
-    <label>Progress
-      <select id="filter" title="how far the labelling of the photos of the wine is">
-        <option value="all">all</option>
-        <option value="todo">not fully labelled</option>
-        <option value="untouched">no label yet</option>
-        <option value="partial">partly labelled</option>
-        <option value="done">fully labelled</option>
-        <option value="nophotos">no candidate photos</option>
-      </select>
-    </label>
-    <label>Verdict
-      <select id="verdict" title="a photo of the wine holds this label">
-        <option value="all">any</option>
-        <option value="has_pos">positive</option>
-        <option value="no_pos">no positive</option>
-        <option value="has_neg">negative</option>
-        <option value="has_unu">unusable</option>
-        <option value="has_var">different design</option>
-      </select>
-    </label>
-    <!-- `Additional settings` shows or hides the row #more (owner answer of 2026-09-26
-         01:08:49). The number counts its selects that are not at their default. -->
-    <button id="more-btn" type="button" aria-expanded="false" aria-controls="more"
-            title="show or hide Marks, Tag, Origin, and Clusters; the number counts those that are not at their default"
-            >Additional settings<b id="more-n"></b></button>
-    <label>Find <input id="q" type="search" placeholder="slug, name, producer, region"></label>
-    <button id="grp-clear" type="button" hidden
-            title="the table shows one variant group; click to show every wine again"
-            >variant group <b id="grp-clear-id"></b> &times;</button>
-    <div class="progress">
-      <span id="stat"></span>
-      <span class="meter"><i id="meter"></i></span>
-      <button id="side-toggle" type="button"
-              title="show or hide the Drawer (key s)">drawer <b id="side-n">0</b></button>
-    </div>
-  </div>
-  <div class="bar more" id="more" hidden>
     <label>Marks
       <select id="marks" title="a photo of the wine holds this mark">
         <option value="all">any</option>
@@ -880,7 +853,6 @@ tbody tr.cat-only { background: var(--panel-2); }
       </select>
     </label>
   </div>
-  <div class="jobs" id="jobs" hidden></div>
 </header>
 <aside id="side">
   <div class="sb-head"><button id="side-hide" type="button"
@@ -903,6 +875,11 @@ tbody tr.cat-only { background: var(--panel-2); }
   <div id="held"></div>
 </aside>
 <main>
+<div class="compact-summary"><button class="stat-chip" id="head-sub" type="button"
+          title="Show all wines and clear filters"></button><span class="sub autotag-state compact-status" id="autotag-state"></span>
+          <div class="progress"><span class="compact-stats" id="stat"></span><span class="meter"><i id="meter"></i></span></div>
+          <button id="grp-clear" type="button" hidden title="Show every variant group">variant group <b id="grp-clear-id"></b> &times;</button></div>
+          <div class="jobs compact-jobs" id="jobs" hidden></div>
   <p id="error"></p>
   <p id="count"></p>
   <table><tbody id="rows"></tbody></table>
@@ -1638,7 +1615,9 @@ function render() {
   }
   const more = ["#marks", "#origin", "#cluster"].filter(id => $(id).value !== "all").length
     + ($("#tag").value ? 1 : 0);
-  $("#more-n").textContent = more ? "· " + more : "";
+  const advancedCount = more + Number($("#sort").value !== "slug");
+  $("#more-n").textContent = `(${advancedCount})`;
+  $("#more-btn").classList.toggle("active", advancedCount > 0);
   $("#rows").innerHTML = rows.map(r => (heads && heads.has(r)
     ? clusterHeadHtml(heads.get(r), source) : "") + rowHtml(r, gclass)).join("");
   const gf = GROUP_FILTER && GROUPS[GROUP_FILTER];
@@ -1702,8 +1681,8 @@ function stats() {
   const noMatch = nullRow ? nullRow.photos.length : 0;
   const held = drawerRow ? drawerRow.photos.length : 0;
   $("#stat").innerHTML = `labelled <b>${labelled}</b>/<b>${TOTAL}</b> photos &middot; ` +
-    rowTags({ ...all, moved: 0, noted: 0, prop: 0 }) + ` &middot; ` +
-    `<b>${doneWines}</b>/<b>${reviewRows().length}</b> wines done` +
+    testsetStatChips(all) + ` &middot; ` +
+    `<button class="stat-chip" type="button" data-testset-stat="filter:done" aria-pressed="${$("#filter").value === "done"}">${doneWines}/${reviewRows().length} wines done</button>` +
     (noMatch ? ` &middot; <b>${noMatch}</b> <span class="muted">in No Match</span>` : "") +
     (held ? ` &middot; <b>${held}</b> <span class="muted">in the Drawer</span>` : "") +
     // The time of the last edit stands here, not in the title: a long title line pushes
@@ -4295,6 +4274,74 @@ else load(HEADER.set, true).then(() => {
   if (SET !== HEADER.set) { $("#error").textContent = ""; load("", true); }
 });
 pollRunJobs();
+</script>
+<script>
+
+// Close header panels with Escape or an outside click. Keep focus on the control.
+(() => {
+  const header = document.querySelector(".compact-header");
+  const actions = header.querySelector(".compact-actions");
+  const toggle = header.querySelector("[data-header-toggle]");
+  const panel = toggle && document.getElementById(toggle.getAttribute("aria-controls"));
+  function closePanel() {
+    if (!panel) return;
+    if (toggle.id === "more-btn") setMore(false);
+    else { panel.hidden = true; toggle.setAttribute("aria-expanded", "false"); }
+  }
+  if (toggle && toggle.id !== "more-btn") toggle.addEventListener("click", () => {
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute("aria-expanded", String(!panel.hidden));
+  });
+  if (toggle) toggle.addEventListener("click", () => {
+    if (panel.hidden) return;
+    if (actions) actions.open = false;
+    [...panel.querySelectorAll("select")].find(node => !node.closest("label")?.hidden)?.focus();
+  });
+  if (actions) {
+    actions.addEventListener("toggle", () => { if (actions.open) closePanel(); });
+    actions.querySelector(".compact-menu").addEventListener("click", event => {
+      if (event.target.closest("button,a")) actions.open = false;
+    });
+  }
+  document.addEventListener("click", event => {
+    if (panel && !panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target)) closePanel();
+    if (actions && !actions.contains(event.target)) actions.open = false;
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    if (panel && !panel.hidden) { closePanel(); toggle.focus(); }
+    else if (actions?.open) { actions.open = false; actions.querySelector("summary").focus(); }
+    else return;
+    event.preventDefault();
+  });
+})();
+
+function testsetStatChips(all) {
+  return [["positive", "verdict", "has_pos", "positive"], ["negative", "verdict", "has_neg", "negative"],
+    ["unusable", "verdict", "has_unu", "unusable"], ["variant", "verdict", "has_var", "different design"],
+    ["del", "marks", "deleted", "to delete"], ["box", "marks", "boxed", "boxes"]]
+    .filter(([key]) => all[key]).map(([key, axis, value, label]) => `<button class="stat-chip" type="button"
+      data-testset-stat="${axis}:${value}" aria-pressed="${$("#" + axis).value === value}"
+      title="Show wines with ${label} photos">${all[key]} ${label}</button>`).join(" ");
+}
+function applyTestsetStat(axis, value) {
+  clearTimeout(QT);
+  const active = axis && $("#" + axis).value === value;
+  for (const id of FILTER_AXES) $(id).value = "all";
+  $("#tag").value = ""; $("#q").value = ""; GROUP_FILTER = "";
+  if (axis && !active) $("#" + axis).value = value;
+  render();
+}
+$("#stat").addEventListener("click", event => {
+  const chip = event.target.closest("[data-testset-stat]");
+  if (chip) {
+    const stat = chip.dataset.testsetStat;
+    applyTestsetStat(...stat.split(":"));
+    document.querySelector(`[data-testset-stat="${stat}"]`)?.focus();
+  }
+});
+$("#head-sub").addEventListener("click", () => applyTestsetStat());
+
 </script>
 </body>
 </html>

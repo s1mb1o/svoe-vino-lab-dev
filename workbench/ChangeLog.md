@@ -6538,3 +6538,34 @@ The validation cohort is previously inspected.
 The viewer continues to show standard ranking.
 The report is in <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
 Evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/full-gallery/benchmarks/20261014-query-label/.
+
+## 2026-10-14T19:53:33+0300: Dataset header usability
+
+- Apply the owner-approved header patch. Keep two sticky rows.
+- Put navigation, compact VLM state, and Actions in the first row.
+- Put primary filters and Advanced Filters in the second row.
+- Show statistic chips below the header. Each chip selects the corresponding filter.
+- Add failed image details to Show. Match original image SHA-256 values across linked wines.
+- Show the active advanced-filter count. Open advanced filters over the list.
+- Set the search placeholder to `Search all fields`. Let the search field use the remaining row width.
+- Preserve the VLM detail dialog and failure log action. Preserve the search cache and card rendering.
+- All 10 existing tests and 49 filter behavior checks pass. Assembled JavaScript syntax and scoped diff checks pass.
+- The live header is 86.6875 px at a 1280 px viewport width. The advanced panel does not increase header height.
+- The 16 failed images belong to 15 visible wines. Live filter checks pass. The browser console has no errors.
+- Restore the original saved header controls after verification. No catalogue data change or lab-server restart.
+- Save evidence in internal/dataset-header-20261014/verification.json, live.jpg, and live-failed.jpg.
+
+## 2026-10-14T20:18:18+0300: Compact headers on six pages
+
+- Extend the approved Dataset header pattern to Embeddings, Clusters, Testset, Runs, Recognize, and Health.
+- Use two sticky rows. Keep navigation in the first row and primary controls in the second row.
+- Put Embeddings, Clusters, and Testset secondary actions in Actions. Move jobs and long status messages below the header.
+- Add counted advanced-filter panels to Testset and Runs. Move Testset Sort into its advanced panel.
+- Add clickable Embeddings status chips and Testset statistic chips. Preserve keyboard focus after filtering.
+- Use short search placeholders and flexible search fields. Preserve space for the Testset Drawer.
+- Add scoped header styles to the shared theme. Preserve all existing control IDs and page actions.
+- All 19 focused tests pass. All 14 assembled scripts pass syntax checks. Control-ID and scoped diff checks pass.
+- Desktop headers measure 84.6875 to 87.6875 px at 1280 px width. All six narrow headers stay within two rows at 390 x 957.
+- Live statistics, active counts, Escape focus, Actions, loaded selectors, and Drawer spacing pass browser checks. The browser console has no errors.
+- Restore saved selections after verification. No catalogue or annotation write, model/build/run action, or lab-server restart.
+- Save evidence in internal/compact-headers-20261014/verification.json, browser-checks.json, and the six live JPG files.

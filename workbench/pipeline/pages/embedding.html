@@ -293,39 +293,26 @@ button.preview-thumb:hover { border-color: var(--accent); }
 </style>
 </head>
 <body>
-<header>
-  <div class="head">
-    <h1>Embeddings</h1>
-    <div class="bar">
-      <label>Configuration <select id="emb"></select></label>
-      <button id="build" type="button" disabled>Build</button>
-      <button id="stop" type="button" disabled>Stop</button>
-      <button id="log" type="button" disabled title="Show build.log of the last build">Log</button>
-      <span class="jobmsg" id="jobmsg"></span>
-      <button id="selftest" type="button" disabled
-        title="Query each dataset image in the view full of the index of this configuration. The result is a run of the set dataset on /runs.">Selftest</button>
-      <span class="jobmsg" id="selftestmsg"></span>
-      <button id="build-all" type="button" disabled
-        title="Build each configuration, one at a time, in the order of config.yaml">Build All</button>
-      <span class="jobmsg" id="allmsg"></span>
-    </div>
-    <nav class="nav"><a href="/dataset">Dataset</a><a
+<header class="compact-header">
+<div class="compact-top"><h1>Embeddings</h1><nav class="nav" aria-label="Main navigation"><a href="/dataset">Dataset</a><a
       class="on" href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       href="/testset">Testset</a><a href="/runs">Runs</a><a
-      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
-  </div>
-  <div class="bar">
-    <label>Show <select id="filter">
-      <option value="all">all wines</option>
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav><details class="compact-actions"><summary>Actions</summary><div class="compact-menu"><button id="build" type="button" disabled>Build</button><button id="stop" type="button" disabled>Stop</button><button id="log" type="button" disabled title="Show build.log of the last build">Log</button><button id="selftest" type="button" disabled
+        title="Query each dataset image in the view full of the index of this configuration. The result is a run of the set dataset on /runs.">Selftest</button><button id="build-all" type="button" disabled
+        title="Build each configuration, one at a time, in the order of config.yaml">Build All</button></div></details></div>
+<div class="bar compact-filters"><label class="compact-config">Configuration <select id="emb"></select></label><label>Show <select id="filter">
+      <option value="all">all wines</option><option value="current">with a current image</option>
       <option value="failed">with a failed image</option>
       <option value="missing">with a missing image</option>
       <option value="stale">with a stale image</option>
-    </select></label>
-    <label>Search <input id="q" type="search" placeholder="name, producer, slug"></label>
-  </div>
-  <div class="jobs" id="jobs" hidden></div>
+    </select></label><label class="compact-search">Search <input id="q" type="search" placeholder="Search wines"></label></div>
+
 </header>
 <main>
+<div class="compact-summary"><span class="jobmsg compact-status" id="jobmsg"></span>
+          <span class="jobmsg compact-status" id="selftestmsg"></span><span class="jobmsg compact-status" id="allmsg"></span></div>
+          <div class="jobs compact-jobs" id="jobs" hidden></div>
+          <div class="compact-stats" id="embedding-stats" role="group" aria-label="Embedding statistics"></div>
   <div class="source" id="source">Reading config.yaml…</div>
   <div class="list" id="list"></div>
 </main>
@@ -526,6 +513,7 @@ function render() {
     return words.every(word => hay.includes(word));
   });
   SHOWN = rows;
+  renderEmbeddingStats();
   ENTRY_CARDS.set(rows, record => record.slug, record => wineHtml(record, views),
     '<div class="empty-list">No wine matches this view.</div>');
 }
@@ -1045,7 +1033,7 @@ function saveHeader() {
 }
 const HEADER = storedHeader();
 const START_FILTER = INITIAL.get("filter") || HEADER.filter;
-if (["all", "failed", "missing", "stale"].includes(START_FILTER)) $("#filter").value = START_FILTER;
+if (["all", "current", "failed", "missing", "stale"].includes(START_FILTER)) $("#filter").value = START_FILTER;
 $("#q").value = INITIAL.has("q") ? INITIAL.get("q") : (typeof HEADER.q === "string" ? HEADER.q : "");
 $("#filter").addEventListener("change", saveHeader);
 $("#q").addEventListener("input", saveHeader);
@@ -1054,6 +1042,69 @@ $("#q").addEventListener("input", saveHeader);
 loadList().then(() => { pollJobs(); return loadEntry(); }).then(openPreviewOfUrl).catch(error => {
   $("#source").innerHTML = `<div class="err">Cannot read /api/embeddings: ${esc(error.message)}</div>`;
 });
+</script>
+<script>
+
+// Close header panels with Escape or an outside click. Keep focus on the control.
+(() => {
+  const header = document.querySelector(".compact-header");
+  const actions = header.querySelector(".compact-actions");
+  const toggle = header.querySelector("[data-header-toggle]");
+  const panel = toggle && document.getElementById(toggle.getAttribute("aria-controls"));
+  function closePanel() {
+    if (!panel) return;
+    if (toggle.id === "more-btn") setMore(false);
+    else { panel.hidden = true; toggle.setAttribute("aria-expanded", "false"); }
+  }
+  if (toggle && toggle.id !== "more-btn") toggle.addEventListener("click", () => {
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute("aria-expanded", String(!panel.hidden));
+  });
+  if (toggle) toggle.addEventListener("click", () => {
+    if (panel.hidden) return;
+    if (actions) actions.open = false;
+    [...panel.querySelectorAll("select")].find(node => !node.closest("label")?.hidden)?.focus();
+  });
+  if (actions) {
+    actions.addEventListener("toggle", () => { if (actions.open) closePanel(); });
+    actions.querySelector(".compact-menu").addEventListener("click", event => {
+      if (event.target.closest("button,a")) actions.open = false;
+    });
+  }
+  document.addEventListener("click", event => {
+    if (panel && !panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target)) closePanel();
+    if (actions && !actions.contains(event.target)) actions.open = false;
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    if (panel && !panel.hidden) { closePanel(); toggle.focus(); }
+    else if (actions?.open) { actions.open = false; actions.querySelector("summary").focus(); }
+    else return;
+    event.preventDefault();
+  });
+})();
+
+function renderEmbeddingStats() {
+  if (!DATA) return;
+  const c = DATA.embedding.counts;
+  const block = document.querySelector("#embedding-stats");
+  const focused = block.contains(document.activeElement) ? document.activeElement.dataset.embeddingStat : null;
+  const html = [["all", DATA.embedding.items, "items"],
+    ...["current", "stale", "missing", "failed"].map(status => [status, c[status] || 0, status])]
+    .map(([value, count, label]) => `<button class="stat-chip" type="button" data-embedding-stat="${value}"
+      aria-pressed="${$("#filter").value === value}" title="${value === "all" ? "Show all wines and clear search" : `Show wines with ${label} images`}">${count} ${label}</button>`).join("");
+  if (block.innerHTML !== html) block.innerHTML = html;
+  if (focused) block.querySelector(`[data-embedding-stat="${focused}"]`)?.focus();
+}
+document.querySelector("#embedding-stats").addEventListener("click", event => {
+  const chip = event.target.closest("[data-embedding-stat]");
+  if (!chip) return;
+  $("#filter").value = $("#filter").value === chip.dataset.embeddingStat ? "all" : chip.dataset.embeddingStat;
+  $("#q").value = "";
+  saveHeader(); render();
+  document.querySelector(`[data-embedding-stat="${chip.dataset.embeddingStat}"]`)?.focus();
+});
+
 </script>
 </body>
 </html>

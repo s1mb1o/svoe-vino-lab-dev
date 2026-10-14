@@ -381,20 +381,15 @@ body.sp-on { overflow: hidden; }
 </style>
 </head>
 <body>
-<header>
-  <div class="head-top">
-    <h1>Match runs <span class="sub" id="head-sub"></span></h1>
-    <label class="head-conf">Pipeline <select id="configuration"
-      title="A pipeline is one entry of `pipeline` in config.yaml. The key `configuration` of run.json names it."></select></label>
-    <label class="head-conf">Testset <select id="testset"
-      title="The test set of the run. The key `options.set` of run.json names it. A run of scripts/match_run.py has no test set."></select></label>
-    <nav class="nav"><a href="/dataset">Dataset</a><a
+<header class="compact-header">
+<div class="compact-top"><h1>Match runs</h1><nav class="nav" aria-label="Main navigation"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       href="/testset">Testset</a><a class="on" href="/runs">Runs</a><a
-      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
-  </div>
-  <div class="bar">
-    <label>Show
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav><a id="charts-link" href="/runs/charts">Charts →</a></div>
+<div class="bar compact-filters"><label class="compact-config">Pipeline <select id="configuration"
+      title="A pipeline is one entry of `pipeline` in config.yaml. The key `configuration` of run.json names it."></select></label><label class="compact-short">Testset <select id="testset"
+      title="The test set of the run. The key `options.set` of run.json names it. A run of scripts/match_run.py has no test set."></select></label><label class="compact-search">Find <input id="q" type="search" placeholder="Search slugs"></label><button id="run-advanced-toggle" type="button" data-header-toggle aria-expanded="false" aria-controls="run-advanced">Advanced Filters (0)</button></div>
+<div class="bar compact-panel" id="run-advanced" hidden><label>Show
       <select id="filter">
         <option value="all">every photo</option>
         <option value="miss">positive: the true slug is not at rank 1</option>
@@ -415,8 +410,7 @@ body.sp-on { overflow: hidden; }
         <option value="rule_changed">rule step: the VLM answer changed the order</option>
         <option value="error">the request failed</option>
       </select>
-    </label>
-    <label>Sort
+    </label><label>Sort
       <select id="sort">
         <option value="manifest">the order of the run</option>
         <option value="worst">the most wrong first</option>
@@ -427,12 +421,10 @@ body.sp-on { overflow: hidden; }
         <option value="latency_asc">the fastest answer first</option>
         <option value="path">the photo path, A-Z</option>
       </select>
-    </label>
-    <label>Find <input id="q" type="search" placeholder="slug or predicted slug"></label>
-    <span class="muted" id="count"></span>
-  </div>
+    </label></div>
 </header>
 <main>
+<div class="compact-summary"><button class="stat-chip" id="head-sub" type="button" title="Show all pipelines and testsets"></button><span id="count" class="muted"></span></div>
   <h2>Runs</h2>
   <div class="bar runs-bar">
     <span class="muted" id="runs-count"></span>
@@ -2138,6 +2130,60 @@ $("header").addEventListener("input", saveHeader);
   if (first) await loadRun(first.id, false);
   if (first && photo && first.id === want) openPhoto(photo);
 })();
+</script>
+<script>
+
+// Close header panels with Escape or an outside click. Keep focus on the control.
+(() => {
+  const header = document.querySelector(".compact-header");
+  const actions = header.querySelector(".compact-actions");
+  const toggle = header.querySelector("[data-header-toggle]");
+  const panel = toggle && document.getElementById(toggle.getAttribute("aria-controls"));
+  function closePanel() {
+    if (!panel) return;
+    if (toggle.id === "more-btn") setMore(false);
+    else { panel.hidden = true; toggle.setAttribute("aria-expanded", "false"); }
+  }
+  if (toggle && toggle.id !== "more-btn") toggle.addEventListener("click", () => {
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute("aria-expanded", String(!panel.hidden));
+  });
+  if (toggle) toggle.addEventListener("click", () => {
+    if (panel.hidden) return;
+    if (actions) actions.open = false;
+    [...panel.querySelectorAll("select")].find(node => !node.closest("label")?.hidden)?.focus();
+  });
+  if (actions) {
+    actions.addEventListener("toggle", () => { if (actions.open) closePanel(); });
+    actions.querySelector(".compact-menu").addEventListener("click", event => {
+      if (event.target.closest("button,a")) actions.open = false;
+    });
+  }
+  document.addEventListener("click", event => {
+    if (panel && !panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target)) closePanel();
+    if (actions && !actions.contains(event.target)) actions.open = false;
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    if (panel && !panel.hidden) { closePanel(); toggle.focus(); }
+    else if (actions?.open) { actions.open = false; actions.querySelector("summary").focus(); }
+    else return;
+    event.preventDefault();
+  });
+})();
+
+function updateRunAdvancedCount() {
+  const count = Number($("#filter").value !== "all") + Number($("#sort").value !== "manifest");
+  $("#run-advanced-toggle").textContent = `Advanced Filters (${count})`;
+  $("#run-advanced-toggle").classList.toggle("active", count > 0);
+}
+for (const id of ["#filter", "#sort"]) $(id).addEventListener("change", updateRunAdvancedCount);
+updateRunAdvancedCount();
+$("#head-sub").addEventListener("click", () => {
+  $("#configuration").value = ""; $("#testset").value = "";
+  setConfig(""); setTestset(""); saveHeader();
+});
+
 </script>
 </body>
 </html>

@@ -169,35 +169,23 @@ th { color: var(--muted); font-weight: 600; }
 </style>
 </head>
 <body>
-<header>
-  <div class="head">
-    <h1>Clusters</h1>
-    <div class="bar" style="margin-top:0">
-      <label>Configuration <select id="embedding"></select></label>
-      <label>Space <select id="space">
+<header class="compact-header">
+<div class="compact-top"><h1>Clusters</h1><nav class="nav" aria-label="Main navigation"><a href="/dataset">Dataset</a><a href="/embedding">Embeddings</a><a
+      class="on" href="/clusters">Clusters</a><a href="/testset">Testset</a><a
+      href="/runs">Runs</a><a
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav><details class="compact-actions"><summary>Actions</summary><div class="compact-menu"><button id="build" type="button" disabled>Build clusters</button><button id="build-all" type="button" title="Build the clusters of each configuration, one at a time, in the order of config.yaml">Build all clusters</button></div></details></div>
+<div class="bar compact-filters"><label class="compact-config">Configuration <select id="embedding"></select></label><label class="compact-short">Space <select id="space">
         <option value="combined">combined</option>
         <option value="full">full</option>
         <option value="label">label</option>
-      </select></label>
-      <label title="The image of the card in the space combined">Image <select id="image">
+      </select></label><label class="compact-short" title="The image of the card in the space combined">Image <select id="image">
         <option value="full">full</option>
         <option value="label">label</option>
-      </select></label>
-      <button id="build" type="button" disabled>Build clusters</button>
-      <button id="build-all" type="button" title="Build the clusters of each configuration, one at a time, in the order of config.yaml">Build all clusters</button>
-      <span class="message" id="queue"></span>
-      <span class="message" id="message"></span>
-    </div>
-    <nav class="nav"><a href="/dataset">Dataset</a><a href="/embedding">Embeddings</a><a
-      class="on" href="/clusters">Clusters</a><a href="/testset">Testset</a><a
-      href="/runs">Runs</a><a
-      href="/recognize">Recognize</a><a href="/health">Health</a></nav>
-  </div>
-  <div class="bar">
-    <label>Search <input id="search" type="search" placeholder="name, producer, slug"></label>
-  </div>
+      </select></label><label class="compact-search">Search <input id="search" type="search" placeholder="Search all fields"></label></div>
+
 </header>
 <main>
+<div class="compact-summary"><span class="message compact-status" id="queue"></span><span class="message compact-status" id="message"></span></div>
   <section class="summary" id="summary">Reading configurations…</section>
   <section class="list" id="list"></section>
 </main>
@@ -694,6 +682,48 @@ document.addEventListener("keydown", event => {
 });
 window.addEventListener("hashchange", openHash);
 loadList();
+</script>
+<script>
+
+// Close header panels with Escape or an outside click. Keep focus on the control.
+(() => {
+  const header = document.querySelector(".compact-header");
+  const actions = header.querySelector(".compact-actions");
+  const toggle = header.querySelector("[data-header-toggle]");
+  const panel = toggle && document.getElementById(toggle.getAttribute("aria-controls"));
+  function closePanel() {
+    if (!panel) return;
+    if (toggle.id === "more-btn") setMore(false);
+    else { panel.hidden = true; toggle.setAttribute("aria-expanded", "false"); }
+  }
+  if (toggle && toggle.id !== "more-btn") toggle.addEventListener("click", () => {
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute("aria-expanded", String(!panel.hidden));
+  });
+  if (toggle) toggle.addEventListener("click", () => {
+    if (panel.hidden) return;
+    if (actions) actions.open = false;
+    [...panel.querySelectorAll("select")].find(node => !node.closest("label")?.hidden)?.focus();
+  });
+  if (actions) {
+    actions.addEventListener("toggle", () => { if (actions.open) closePanel(); });
+    actions.querySelector(".compact-menu").addEventListener("click", event => {
+      if (event.target.closest("button,a")) actions.open = false;
+    });
+  }
+  document.addEventListener("click", event => {
+    if (panel && !panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target)) closePanel();
+    if (actions && !actions.contains(event.target)) actions.open = false;
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    if (panel && !panel.hidden) { closePanel(); toggle.focus(); }
+    else if (actions?.open) { actions.open = false; actions.querySelector("summary").focus(); }
+    else return;
+    event.preventDefault();
+  });
+})();
+
 </script>
 </body>
 </html>

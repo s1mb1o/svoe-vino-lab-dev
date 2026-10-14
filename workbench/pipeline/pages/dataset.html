@@ -17,11 +17,10 @@ header {
   background: var(--panel); border-bottom: 1px solid var(--line);
   padding: 10px 16px; box-shadow: var(--shadow);
 }
-h1 { font-size: 15px; margin: 0 0 8px; font-weight: 650; }
-h1 .sub { color: var(--muted); font-weight: 400; }
-.head-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-.head-top h1 { margin-right: auto; }
-.nav { display: flex; gap: 6px; flex: none; }
+h1 { font-size: 15px; margin: 0; font-weight: 650; flex: none; }
+.head-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.nav { display: flex; gap: 6px; flex: 1; min-width: 0; overflow-x: auto; }
+.nav a { flex: none; white-space: nowrap; }
 .nav a {
   color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600;
   padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px;
@@ -31,9 +30,13 @@ h1 .sub { color: var(--muted); font-weight: 400; }
 .nav a.on { color: var(--text); border-color: var(--accent); background: var(--panel); }
 .bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
 .bar label { color: var(--muted); font-size: 12px; display: flex; gap: 5px; align-items: center; }
-/* The row of the advanced filters. The button has the accent border while the row is open
-   or an advanced filter is active, also when the row is closed. */
-.advanced-bar { margin-top: 8px; }
+/* The advanced filters open over the list. The header keeps two rows. */
+.advanced-bar {
+  position: absolute; top: 100%; right: 16px; z-index: 11;
+  width: min(680px, calc(100vw - 32px)); padding: 14px;
+  max-height: 50vh; overflow-y: auto; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow);
+}
 .advanced-bar[hidden] { display: none; }
 #advanced-toggle[aria-expanded="true"], #advanced-toggle.active { border-color: var(--accent); }
 #advanced-toggle.active { color: var(--accent); font-weight: 650; }
@@ -42,6 +45,34 @@ select, input[type=search], input[type=text], button {
   border-radius: 6px; padding: 4px 8px; font: inherit; font-size: 13px;
 }
 input[type=search] { min-width: 280px; }
+header .filter-bar { flex-wrap: nowrap; gap: 10px; overflow-x: auto; }
+.filter-bar > label { flex: none; white-space: nowrap; }
+.filter-bar select { width: 155px; }
+.filter-bar #sort { width: 220px; }
+.filter-bar .search-label { flex: 1; min-width: 220px; }
+.filter-bar input[type=search] { width: 100%; min-width: 170px; }
+.filter-bar > button { flex: none; white-space: nowrap; }
+.dataset-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.stat-chip { padding: 3px 9px; border-radius: 999px; font-size: 12px; color: var(--muted); }
+.stat-chip[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+.stat-chip.failed { color: var(--neg); }
+.stat-chip[hidden], .filter-error[hidden] { display: none; }
+.filter-error { width: 100%; margin: 0; color: var(--neg); }
+.action-menu { position: relative; flex: none; font-size: 13px; }
+.action-menu > summary {
+  cursor: pointer; padding: 4px 8px; border: 1px solid var(--line);
+  border-radius: 6px; background: var(--panel-2);
+}
+.action-menu > summary:hover { border-color: var(--accent); }
+.action-menu .bar-actions {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 12;
+  display: grid; gap: 8px; min-width: 230px; padding: 10px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+.action-menu .bar-actions button[hidden] { display: none; }
+.action-menu .bar-actions > a { padding: 4px 8px; }
+header .vlm-status { flex: none; white-space: nowrap; max-width: none; }
 button { cursor: pointer; }
 button:hover:not(:disabled) { border-color: var(--accent); }
 button:disabled { opacity: .45; cursor: default; }
@@ -696,14 +727,24 @@ button.preview-thumb:hover { border-color: var(--accent); }
 <body>
 <header>
   <div class="head-top">
-    <h1>Dataset <span class="sub" id="head-sub">loading…</span></h1>
-    <nav class="nav"><a class="on" href="/dataset">Dataset</a><a
+    <h1>Dataset</h1>
+    <nav class="nav" aria-label="Main navigation"><a class="on" href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       href="/testset">Testset</a><a href="/runs">Runs</a><a
       href="/recognize">Recognize</a><a href="/health">Health</a></nav>
-    <a href="/production-errors">Review production errors</a>
+    <span class="vlm-status" id="vlm-status" role="status" aria-live="polite" hidden></span>
+    <details class="action-menu" id="dataset-actions">
+      <summary>Actions</summary>
+      <div class="bar-actions">
+        <button id="add-wine" class="wine-add-btn" type="button" hidden>Add wine</button>
+        <button id="atlas-new" class="wine-add-btn" type="button" hidden>New from Atlas</button>
+        <button id="validate-dataset" class="validate-btn" type="button" hidden>Validate</button>
+        <button id="website-import" class="validate-btn" type="button" hidden>Import from website</button>
+        <a href="/production-errors">Review production errors</a>
+      </div>
+    </details>
   </div>
-  <div class="bar">
+  <div class="bar filter-bar">
     <label>Show
       <select id="filter">
         <option value="all">all records</option>
@@ -711,6 +752,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
         <option value="unpatched">without a patch</option>
         <option value="missing">without a catalogue image</option>
         <option value="comments">with comments</option>
+        <option value="failed">with failed image details</option>
       </select>
     </label>
     <label>State
@@ -732,16 +774,9 @@ button.preview-thumb:hover { border-color: var(--accent); }
         <option value="website-changed">changed on vino-svoe.ru, newest first</option>
       </select>
     </label>
-    <label>Search <input id="q" type="search" placeholder="name, producer, slug, any field"></label>
+    <label class="search-label">Search <input id="q" type="search" placeholder="Search all fields"></label>
     <button id="advanced-toggle" type="button" aria-expanded="false" aria-controls="advanced-bar"
-      hidden>Advanced Filters:</button>
-    <div class="bar-actions">
-      <span class="vlm-status" id="vlm-status" role="status" aria-live="polite" hidden></span>
-      <button id="add-wine" class="wine-add-btn" type="button" hidden>Add wine</button>
-      <button id="atlas-new" class="wine-add-btn" type="button" hidden>New from Atlas</button>
-      <button id="validate-dataset" class="validate-btn" type="button" hidden>Validate</button>
-      <button id="website-import" class="validate-btn" type="button" hidden>Import from website</button>
-    </div>
+      hidden>Advanced Filters (0)</button>
   </div>
   <div class="bar advanced-bar" id="advanced-bar" hidden>
     <label id="package-filter-label" hidden>Package
@@ -750,6 +785,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
       <select id="identifier-filter">
         <option value="all">All</option>
         <option value="gtin">has GTIN</option>
+        <option value="barcode">has barcode</option>
         <option value="qr-url">has QR URL</option>
         <option value="atlas">has Drink Atlas</option>
       </select>
@@ -771,6 +807,29 @@ button.preview-thumb:hover { border-color: var(--accent); }
   </div>
 </header>
 <main>
+  <div class="dataset-stats" id="dataset-stats" role="group" aria-label="Dataset statistics">
+    <button class="stat-chip" id="head-sub" type="button" data-stat="records" aria-pressed="false"
+      title="Show all records and clear filters">loading…</button>
+    <button class="stat-chip" type="button" data-stat="patches" aria-pressed="false" hidden
+      title="Show wines with a patch"></button>
+    <button class="stat-chip" type="button" data-stat="alternatives" aria-pressed="false" hidden
+      title="Show wines with alternative photos"></button>
+    <button class="stat-chip" type="button" data-stat="gtins" aria-pressed="false" hidden
+      title="Show wines with GTINs"></button>
+    <button class="stat-chip" type="button" data-stat="barcodes" aria-pressed="false" hidden
+      title="Show wines with barcodes"></button>
+    <button class="stat-chip" type="button" data-stat="qr_urls" aria-pressed="false" hidden
+      title="Show wines with QR URLs"></button>
+    <button class="stat-chip" type="button" data-stat="atlas_bindings" aria-pressed="false" hidden
+      title="Show wines with Atlas bindings"></button>
+    <button class="stat-chip" type="button" data-stat="comments" aria-pressed="false" hidden
+      title="Show wines with comments"></button>
+    <button class="stat-chip" type="button" data-stat="favorites" aria-pressed="false" hidden
+      title="Show favorite wines"></button>
+    <button class="stat-chip failed" type="button" data-stat="failed" aria-pressed="false" hidden
+      title="Show wines with failed image details"></button>
+    <p class="filter-error" id="filter-error" role="alert" hidden></p>
+  </div>
   <div class="list" id="list"></div>
 </main>
 <div class="modal" id="validation-modal" role="dialog" aria-modal="true"
@@ -2345,6 +2404,9 @@ let VLM_TIMER = null;
 // The last HTML of the indicator. A poll writes only a new HTML, so the button
 // `N details failed` keeps the focus.
 let VLM_HTML = "";
+let DETAIL_FAILED_COUNT = null;
+let DETAIL_FAILED_SHAS = new Set();
+let DETAIL_FAILURE_REQUEST = null;
 function vlmCount(value) { return Number(value || 0).toLocaleString("en-US"); }
 function vlmStatusView(s) {
   const speed = s.seconds_per_image ? ` · ${Number(s.seconds_per_image).toFixed(1)} s` : "";
@@ -2409,7 +2471,8 @@ function renderVlmDialog(s) {
   const dl = rows => `<dl class="vlm-facts">${rows.map(([name, value]) =>
     `<dt>${esc(name)}</dt><dd>${esc(value)}</dd>`).join("")}</dl>`;
   let html = `<section class="validation-result"><h3>State <span class="status ${badge}">${
-    esc(s.state || "stopped")}</span></h3>${dl(facts)}${
+    esc(s.state || "stopped")}</span></h3>${dl(facts)}${s.details_failed ? `<p><button
+      type="button" data-detail-failures>View ${vlmCount(s.details_failed)} failed details</button></p>` : ""}${
     s.error ? `<p>Error</p><pre>${esc(s.error)}</pre>` : ""}</section>`;
   if (s.state === "waiting") {
     html += `<section class="validation-result"><h3>Backoff and retry</h3>${dl([
@@ -2449,9 +2512,6 @@ function openVlm() {
 function closeVlm() { $("#vlm-modal").hidden = true; }
 function renderVlmStatus(s) {
   const [kind, text] = vlmStatusView(s);
-  const failed = (s.failed ? ` · <span class="failed">${vlmCount(s.failed)} failed</span>` : "")
-    + (s.details_failed ? ` · <button class="failed" type="button" data-detail-failures
-      title="Show the failed details and their log">${vlmCount(s.details_failed)} details failed</button>` : "");
   const lines = [
     s.pid ? `Watcher pid ${s.pid} · vlm ${s.vlm || "?"}${s.model ? ` (${s.model})` : ""}`
       : "The watcher does not run. The lab server starts it when image_description.watch is true.",
@@ -2466,10 +2526,12 @@ function renderVlmStatus(s) {
   const el = $("#vlm-status");
   el.className = `vlm-status ${kind}`;
   const html = `<button class="vlm-open" type="button" data-vlm-open aria-haspopup="dialog"><span
-    class="dot"></span>${esc(text)}</button>${failed}`;
+    class="dot"></span>VLM ${esc(kind)}</button>`;
   if (html !== VLM_HTML) el.innerHTML = VLM_HTML = html;
-  el.title = lines.join("\n");
+  el.title = [text, ...lines].join("\n");
   el.hidden = false;
+  DETAIL_FAILED_COUNT = Number(s.details_failed || 0);
+  renderHead();
   if (!$("#vlm-modal").hidden) renderVlmDialog(s);
 }
 async function pollVlmStatus() {
@@ -2573,6 +2635,7 @@ $("#vlm-status").addEventListener("click", event => {
   else if (event.target.closest("[data-vlm-open]")) openVlm();
 });
 $("#vlm-body").addEventListener("click", event => {
+  if (event.target.closest("[data-detail-failures]")) { openDetailFailures(); return; }
   const link = event.target.closest("[data-failure-preview]");
   if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
   event.preventDefault();
@@ -2634,7 +2697,7 @@ function inStateView(record) {
   if (state === "favorites") return !!record._favorite;
   return record.state !== "Removed";
 }
-// The advanced filters: the row under the bar that the button "Advanced Filters:" shows.
+// The advanced filters open in a panel below the header.
 // Package is the `package_type` of the patched image when the wine has one, else of the
 // main image; "" is a wine whose image has no `package_type` yet ("not described").
 function packageOf(record) {
@@ -2644,6 +2707,8 @@ function packageOf(record) {
   return row && row.package_type || "";
 }
 function initAdvancedFilters() {
+  if (!barcodesOn()) $('#identifier-filter option[value="barcode"]').remove();
+  if (!describeOn()) $('#filter option[value="failed"]').remove();
   // The filter `Type` needs the wine types of the lab server (plan 52).
   if (beverageTypesOn()) {
     $("#type-filter-label").hidden = false;
@@ -2674,12 +2739,17 @@ function toggleAdvancedFilters() {
   const bar = $("#advanced-bar");
   bar.hidden = !bar.hidden;
   $("#advanced-toggle").setAttribute("aria-expanded", String(!bar.hidden));
+  if (!bar.hidden) {
+    $("#dataset-actions").open = false;
+    [...bar.querySelectorAll("select")].find(select => !select.closest("label").hidden)?.focus();
+  }
 }
 // Identifier keeps the wines that have at least one value of the chosen kind: a GTIN, a
 // QR URL, or a Drink Atlas Core product (a manual or an automatic binding). Owner message
 // of 2026-09-26T07:48:00+0300.
 function hasIdentifier(record, kind) {
   if (kind === "gtin") return !!(record._gtins || []).length;
+  if (kind === "barcode") return !!(record._barcodes || []).length;
   if (kind === "qr-url") return !!(record._qr_urls || []).length;
   if (kind === "atlas") return atlasProducts(record).length > 0;
   return true;
@@ -2696,13 +2766,71 @@ function inTypeView(record) {
 // Alternatives keeps the wines with at least one active alternative photo (owner message
 // of 2026-09-27T00:39:59+0300).
 function hasAlternatives(record) { return !!(record._alternatives || []).length; }
+function updateAdvancedFilterCount() {
+  const count = Number(describeOn() && $("#package-filter").value !== "all")
+    + Number($("#identifier-filter").value !== "all") + Number(typeFilterActive())
+    + Number($("#alternative-filter").value !== "all");
+  $("#advanced-toggle").textContent = `Advanced Filters (${count})`;
+  $("#advanced-toggle").classList.toggle("active", count > 0);
+  $("#advanced-toggle").title = `${count} active advanced filter${count === 1 ? "" : "s"}`;
+}
 function changeAdvancedFilter() {
-  const active = $("#package-filter").value !== "all"
-    || $("#identifier-filter").value !== "all" || typeFilterActive()
-    || $("#alternative-filter").value !== "all";
-  $("#advanced-toggle").classList.toggle("active", active);
-  $("#advanced-toggle").title = active ? "An advanced filter is active" : "";
+  updateAdvancedFilterCount();
   render();
+}
+// The failed details API uses the original image SHA-256. Include every wine that
+// links that image, also when the API names a different wine for the same image.
+function recordHasFailedDetails(record) {
+  const shas = [shaOfUrl(record.main_image_original_url), shaOfUrl(record.main_image_url),
+    shaOfUrl(record._patch_url), ...(record._alternatives || []).map(photo => photo.sha256)];
+  return shas.some(sha => DETAIL_FAILED_SHAS.has(sha));
+}
+async function loadDetailFailureFilter() {
+  if (!DETAIL_FAILURE_REQUEST) {
+    DETAIL_FAILURE_REQUEST = (async () => {
+      const response = await fetch("/api/image-detail-failures", {cache: "no-store"});
+      const out = await response.json();
+      if (!response.ok) throw new Error(out.error || response.status);
+      const failures = out.failures || [];
+      DETAIL_FAILED_SHAS = new Set(failures.map(item => item.sha256));
+      DETAIL_FAILED_COUNT = failures.length;
+    })().finally(() => { DETAIL_FAILURE_REQUEST = null; });
+  }
+  return DETAIL_FAILURE_REQUEST;
+}
+async function changeRecordFilter() {
+  $("#filter-error").hidden = true;
+  if ($("#filter").value === "failed") {
+    try { await loadDetailFailureFilter(); }
+    catch (error) {
+      if ($("#filter").value !== "failed") return;
+      $("#filter").value = "all";
+      $("#filter-error").textContent = `Cannot read failed image details: ${error.message}`;
+      $("#filter-error").hidden = false;
+      saveHeader();
+    }
+  }
+  render();
+}
+const STAT_FILTERS = {
+  patches: ["filter", "patched"], alternatives: ["alternative-filter", "with"],
+  gtins: ["identifier-filter", "gtin"], barcodes: ["identifier-filter", "barcode"],
+  qr_urls: ["identifier-filter", "qr-url"], atlas_bindings: ["identifier-filter", "atlas"],
+  comments: ["filter", "comments"], favorites: ["state", "favorites"], failed: ["filter", "failed"],
+};
+function applyStatFilter(stat) {
+  clearTimeout(SEARCH_TIMER);
+  const target = STAT_FILTERS[stat];
+  const active = target && $("#" + target[0]).value === target[1];
+  for (const id of ["filter", "package-filter", "identifier-filter", "type-filter", "alternative-filter"]) {
+    $("#" + id).value = "all";
+  }
+  $("#state").value = "present";
+  $("#q").value = "";
+  if (target && !active) $("#" + target[0]).value = target[1];
+  updateAdvancedFilterCount();
+  saveHeader();
+  return changeRecordFilter();
 }
 // Compare all search fields before reusing normalized text. In-place edits stay visible.
 const SEARCH_TEXT = new WeakMap();
@@ -2728,6 +2856,7 @@ function applyView() {
     if (filter === "unpatched" && r._patched) return false;
     if (filter === "missing" && catalogImageUrl(r)) return false;
     if (filter === "comments" && !(r._comments || []).length) return false;
+    if (filter === "failed" && !recordHasFailedDetails(r)) return false;
     if (pack !== "all" && packageOf(r) !== pack) return false;
     if (!hasIdentifier(r, identifier)) return false;
     if (!inTypeView(r)) return false;
@@ -2820,7 +2949,27 @@ function render() {
   renderHead();
 }
 function renderHead() {
-  $("#head-sub").textContent = `${ROWS.length} of ${DATA.records.length} records · ${DATA.patches} patches · ${DATA.alternatives || 0} alternatives · ${gtinsOn() ? `${DATA.gtins || 0} GTINs · ` : ""}${barcodesOn() ? `${DATA.barcodes || 0} barcodes · ` : ""}${DATA.qr_urls || 0} QR URLs · ${DATA.atlas_bindings || 0} Atlas bindings${commentsOn() ? ` · ${DATA.comments || 0} comments` : ""}${favoritesOn() ? ` · ${DATA.favorites || 0} favorites` : ""}`;
+  const records = $("#head-sub");
+  records.textContent = `${ROWS.length} of ${DATA.records.length} records`;
+  records.setAttribute("aria-pressed", String($("#filter").value === "all"
+    && $("#state").value === "present" && !$("#q").value.trim()
+    && ["package-filter", "identifier-filter", "type-filter", "alternative-filter"]
+      .every(id => $("#" + id).value === "all")));
+  const stats = [
+    ["patches", "patches", true], ["alternatives", "alternatives", true],
+    ["gtins", "GTINs", gtinsOn()], ["barcodes", "barcodes", barcodesOn()],
+    ["qr_urls", "QR URLs", true], ["atlas_bindings", "Atlas bindings", true],
+    ["comments", "comments", commentsOn()], ["favorites", "favorites", favoritesOn()],
+    ["failed", "failed", describeOn() && DETAIL_FAILED_COUNT !== null],
+  ];
+  for (const [key, label, visible] of stats) {
+    const chip = $(`[data-stat="${key}"]`);
+    chip.hidden = !visible;
+    chip.textContent = `${key === "failed" ? DETAIL_FAILED_COUNT : DATA[key] || 0} ${label}`;
+    if (key === "failed") chip.title = `${DETAIL_FAILED_COUNT} images have failed details. Show affected wines.`;
+    const [id, value] = STAT_FILTERS[key];
+    chip.setAttribute("aria-pressed", String($("#" + id).value === value));
+  }
 }
 // A code editor changes its own card, and the counts of the head line. A code change can
 // add or remove the badge of a shared code on other cards (plan 58): the cards that show a
@@ -4688,7 +4837,8 @@ $("#list").addEventListener("toggle", event => {
   pre.textContent = JSON.stringify(rawRecord(record), null, 2);
   details.append(pre);
 }, true);
-for (const id of ["filter", "state", "sort"]) $("#" + id).addEventListener("change", render);
+$("#filter").addEventListener("change", changeRecordFilter);
+for (const id of ["state", "sort"]) $("#" + id).addEventListener("change", render);
 /* The header controls are kept in localStorage and come back at the next page load (owner
    message of 2026-09-26T00:30:00+0300). A stored value that is no longer an option is
    ignored. The listeners of each control run first; the header listener then stores. */
@@ -4783,6 +4933,26 @@ $("#label-desc-add").addEventListener("click", () => editLabelDescription(null))
 $("#label-desc-cancel").addEventListener("click", cancelLabelEdit);
 $("#label-desc-save").addEventListener("click", saveLabelDescription);
 $("#advanced-toggle").addEventListener("click", toggleAdvancedFilters);
+$("#dataset-stats").addEventListener("click", event => {
+  const chip = event.target.closest("[data-stat]");
+  if (chip) applyStatFilter(chip.dataset.stat);
+});
+$("#dataset-actions").addEventListener("toggle", () => {
+  if ($("#dataset-actions").open) {
+    $("#advanced-bar").hidden = true;
+    $("#advanced-toggle").setAttribute("aria-expanded", "false");
+  }
+});
+$("#dataset-actions .bar-actions").addEventListener("click", event => {
+  if (event.target.closest("button, a")) $("#dataset-actions").open = false;
+});
+document.addEventListener("click", event => {
+  if (!event.target.closest("#advanced-bar, #advanced-toggle")) {
+    $("#advanced-bar").hidden = true;
+    $("#advanced-toggle").setAttribute("aria-expanded", "false");
+  }
+  if (!event.target.closest("#dataset-actions")) $("#dataset-actions").open = false;
+});
 $("#package-filter").addEventListener("change", changeAdvancedFilter);
 $("#identifier-filter").addEventListener("change", changeAdvancedFilter);
 $("#type-filter").addEventListener("change", changeAdvancedFilter);
@@ -4810,6 +4980,19 @@ window.addEventListener("popstate", () => {
   if (!openDescribeOfPath()) hideDescribe();
 });
 document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !$("#advanced-bar").hidden) {
+    $("#advanced-bar").hidden = true;
+    $("#advanced-toggle").setAttribute("aria-expanded", "false");
+    $("#advanced-toggle").focus();
+    event.preventDefault();
+    return;
+  }
+  if (event.key === "Escape" && $("#dataset-actions").open) {
+    $("#dataset-actions").open = false;
+    $("#dataset-actions summary").focus();
+    event.preventDefault();
+    return;
+  }
   if (!$("#image-preview-modal").hidden) {
     if (CUT_EDIT && cutKey(event)) return;
     if (event.key === "Escape") closeImagePreview();
@@ -4852,6 +5035,8 @@ window.addEventListener("beforeunload", event => {
     if (!favoritesOn()) $('#state option[value="favorites"]').remove();
     initAdvancedFilters();
     restoreHeader();
+    updateAdvancedFilterCount();
+    if ($("#filter").value === "failed") await changeRecordFilter();
     render();
     pollWineIndex();
     openHash();

@@ -92,21 +92,17 @@ details ul { margin: 4px 0 0; padding-left: 16px; font: 11px/1.45 ui-monospace, 
 </style>
 </head>
 <body>
-<header>
-  <div class="head">
-    <h1>Health</h1>
-    <nav class="nav"><a href="/dataset">Dataset</a><a
+<header class="compact-header">
+<div class="compact-top"><h1>Health</h1><nav class="nav" aria-label="Main navigation"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       href="/testset">Testset</a><a href="/runs">Runs</a><a
       href="/recognize">Recognize</a><a class="on"
-      href="/health">Health</a></nav>
-  </div>
-  <div class="bar">
-    <button id="check" type="button" disabled>Check</button>
-    <span id="message" class="message" aria-live="polite">Loading the status…</span>
-  </div>
+      href="/health">Health</a></nav></div>
+<div class="bar compact-filters"><button id="check" type="button" disabled>Check</button></div>
+
 </header>
 <main>
+<p id="message" class="message" aria-live="polite">Loading the status…</p>
   <h2>Status <span id="status-time" class="message"></span></h2>
   <div id="cards" class="cards"></div>
   <h2>Endpoints</h2>
@@ -344,6 +340,48 @@ async function checkAll() {
 
 $("check").addEventListener("click", () => { if (!checking) checkAll(); });
 loadStatus();
+</script>
+<script>
+
+// Close header panels with Escape or an outside click. Keep focus on the control.
+(() => {
+  const header = document.querySelector(".compact-header");
+  const actions = header.querySelector(".compact-actions");
+  const toggle = header.querySelector("[data-header-toggle]");
+  const panel = toggle && document.getElementById(toggle.getAttribute("aria-controls"));
+  function closePanel() {
+    if (!panel) return;
+    if (toggle.id === "more-btn") setMore(false);
+    else { panel.hidden = true; toggle.setAttribute("aria-expanded", "false"); }
+  }
+  if (toggle && toggle.id !== "more-btn") toggle.addEventListener("click", () => {
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute("aria-expanded", String(!panel.hidden));
+  });
+  if (toggle) toggle.addEventListener("click", () => {
+    if (panel.hidden) return;
+    if (actions) actions.open = false;
+    [...panel.querySelectorAll("select")].find(node => !node.closest("label")?.hidden)?.focus();
+  });
+  if (actions) {
+    actions.addEventListener("toggle", () => { if (actions.open) closePanel(); });
+    actions.querySelector(".compact-menu").addEventListener("click", event => {
+      if (event.target.closest("button,a")) actions.open = false;
+    });
+  }
+  document.addEventListener("click", event => {
+    if (panel && !panel.hidden && !panel.contains(event.target) && !toggle.contains(event.target)) closePanel();
+    if (actions && !actions.contains(event.target)) actions.open = false;
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    if (panel && !panel.hidden) { closePanel(); toggle.focus(); }
+    else if (actions?.open) { actions.open = false; actions.querySelector("summary").focus(); }
+    else return;
+    event.preventDefault();
+  });
+})();
+
 </script>
 </body>
 </html>
