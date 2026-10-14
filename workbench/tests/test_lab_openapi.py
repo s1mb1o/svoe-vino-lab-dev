@@ -124,6 +124,7 @@ POST /api/run-image-tag
 GET /api/drawer-runs
 POST /api/drawer-match-accept
 GET /api/run-steps
+GET /api/run-patches
 GET /api/run-configurations
 GET /api/run-jobs
 POST /api/run-jobs

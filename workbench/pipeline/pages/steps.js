@@ -199,6 +199,50 @@ const Steps = (() => {
       <div class="body"${open ? "" : " hidden"}>${body}</div></section>`;
   }
 
+
+  function patchPanel(data) {
+    if (!data.run || !data.query) return "";
+    return `<section class="patch-inspection" data-run="${esc(data.run)}" data-query="${esc(data.query)}">
+      <h3>Original patch inspection <span class="pill">Experiment</span></h3>
+      <p>Compare original pixels, patch weights, and RANSAC correspondences. This calculation uses the patch experiment and preserves the saved run result.</p>
+      <button type="button" onclick="Steps.loadPatches(this)">Inspect patches</button>
+      <div class="patch-output" aria-live="polite"></div></section>`;
+  }
+
+  async function loadPatches(button) {
+    const panel = button.closest(".patch-inspection"), output = panel.querySelector(".patch-output");
+    const url = `/api/run-patches?id=${encodeURIComponent(panel.dataset.run)}&query=${encodeURIComponent(panel.dataset.query)}`;
+    button.disabled = true;
+    output.textContent = "Computing original patches locally…";
+    try {
+      let value;
+      for (let attempt = 0; attempt < 120; attempt++) {
+        if (!panel.isConnected) return;
+        const response = await fetch(url+(attempt === 0 ? "&start=1" : ""), {cache: "no-store"});
+        value = await response.json();
+        if (!response.ok || value.error || value.status === "failed") throw new Error(value.error || `HTTP ${response.status}`);
+        if (value.status === "ready") break;
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+      if (value.status !== "ready") throw new Error("Calculation continues. Select Inspect patches again to read its result.");
+      panel._patches = value;
+      output.innerHTML = `<p>${esc(value.notice)}</p><label>Reference candidate <select onchange="Steps.patchCandidate(this)">
+        ${value.candidates.map((item,i) => `<option value="${i}">#${item.rank} ${esc(item.slug)} · ${score4(item.score)}</option>`).join("")}</select></label>
+        <p class="patch-summary">${value.query_patches} query patches · ${value.excluded_query_patches} excluded · ${esc(value.foreground)}<br>Occlusion: ${esc(value.occlusion || "unknown")}<br>
+        Glass ${esc(value.weights.bottle)} · label ${esc(value.weights.label)} · background ${esc(value.weights.background)} · weighted score share ${esc(value.weighted_share)}</p>
+        <div class="patch-candidate"></div>`;
+      patchCandidate(output.querySelector("select"));
+    } catch(error) { output.textContent = `Cannot inspect patches: ${error.message}`; }
+    finally { button.disabled = false; }
+  }
+
+  function patchCandidate(select) {
+    const panel = select.closest(".patch-inspection"), item = panel._patches.candidates[Number(select.value)];
+    const geometry = item.geometry;
+    panel.querySelector(".patch-candidate").innerHTML = `<p>RANSAC ${geometry.reliable ? "accepted" : "rejected"} · ${geometry.inliers || 0} inliers · ${item.hidden_reference_patches} reference patches behind query occlusion
+      ${geometry.reason ? ` · ${esc(geometry.reason)}` : ""}</p><img class="patch-figure" loading="lazy" src="${esc(item.src)}" data-full="${esc(item.src)}" alt="Original reference and query pixels, patch weights, and RANSAC correspondences">`;
+  }
+
   /* The notes, the rounds, and the total line of one answer. The total line compares the
      time of the whole photo with the sum of the step times. */
   function html(data, openKeys) {
@@ -217,6 +261,7 @@ const Steps = (() => {
       ? `<div class="sp-total">Total of the photo <strong>${dur(row.latency_ms)}</strong> · sum of steps ${
           dur(sum)} · outside the steps ${dur(Math.max(0, (row.latency_ms || 0) - sum))}</div>`
       : `<div class="sp-total">Total of the photo <strong>${dur(row.latency_ms)}</strong> · the run recorded no time of each step</div>`;
+    out += patchPanel(data);
     return out;
   }
 
@@ -246,5 +291,5 @@ const Steps = (() => {
     image.src = fallback;
   }
 
-  return { html, toggle, imageError, dur, vlm: stepVlmHtml };
+  return { html, toggle, imageError, dur, loadPatches, patchCandidate, vlm: stepVlmHtml };
 })();

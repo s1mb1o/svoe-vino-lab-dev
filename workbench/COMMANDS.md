@@ -841,3 +841,17 @@ new model inputs to the configured embedding endpoint. It writes new index rows:
   --config data/models/dinov3-vitl16-arcface-20261006-v2/config.yaml \
   --name gx10-dinov3-vitl16-arcface-v2
 ```
+
+## Original patch inspection tests
+
+Run from the Workbench root.
+Use the existing Workbench Python environment with Pillow, NumPy, PyYAML, and jsonschema.
+The tests use temporary directories, mock workers, and isolated loopback servers.
+The tests make no model-service request.
+
+```sh
+PYTHONPATH=pipeline:tests python3 -m unittest test_patch_inspection test_lab_openapi -q
+```
+
+Use `Inspect patches` in the Runs step popup for the local diagnostic.
+Read [the experiment report](../../svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md).

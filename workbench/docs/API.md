@@ -1096,3 +1096,18 @@ stop of the build and a new build of the `Build All` queue.
 `/testset` shows each running build of `GET /api/embedding-jobs` after its run rows.
 `/embedding` shows each running run job of `GET /api/run-jobs` after its build rows, but
 not the jobs `selftest-<embedding>`.
+
+## Original patch inspection
+
+`GET /api/run-patches?id=<run>&query=<query>` reads local patch-job status.
+Use `start=1` to start one local diagnostic worker.
+A status read alone does not start a worker.
+The ready response contains ten experiment candidates, role weights, mask provenance, and RANSAC statistics.
+Use `candidate=<zero-based-index>` to read one checked PNG figure.
+The route validates the saved run and query before it resolves the image.
+The route uses approved masks or existing local SAM3 cuts.
+The route sends no model-service request.
+The historical run files and catalogue stay unchanged.
+Set `PATCH_INSPECTION_PYTHON` only when another installed model environment is required.
+The default model environment is `~/.venvs/svoe-vino-lab/bin/python`.
+The route requires the local experiment index at `svoe-vino-lab-experiments/internal/patch-retrieval-20261014/index-tuned/`.

@@ -1674,6 +1674,12 @@ class Handler(BaseHTTPRequestHandler):
             self._website_import()
         elif atlas_import_routes.handles(route):
             self._atlas_import()
+        elif route == "/api/run-patches":
+            import patch_inspection
+            code, body, ctype = patch_inspection.respond(self.server.db_path, self.path)
+            if isinstance(body, dict):
+                body = json.dumps(body, ensure_ascii=False)
+            self._send(code, body, ctype, "no-store")
         elif run_routes.handles(route):
             self._runs()
         elif run_jobs.handles(route):

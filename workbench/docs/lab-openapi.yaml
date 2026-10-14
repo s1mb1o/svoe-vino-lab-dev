@@ -1304,6 +1304,32 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/run-patches:
+    get:
+      tags: [runs]
+      operationId: inspectOriginalRunPatches
+      summary: Read or compute local experimental patch diagnostics for a saved query.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+        - $ref: "#/components/parameters/QueryId"
+        - in: query
+          name: start
+          schema: { type: integer, enum: [1] }
+          description: Start one local diagnostic worker if no result exists.
+        - in: query
+          name: candidate
+          schema: { type: integer, minimum: 0, maximum: 9 }
+          description: Read the PNG for one ready experiment candidate.
+      responses:
+        "200":
+          description: Local job status, ready diagnostics, or a checked original-patch figure.
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+            image/png:
+              schema: { type: string, format: binary }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/run-steps:
     get:
       tags: [runs]
