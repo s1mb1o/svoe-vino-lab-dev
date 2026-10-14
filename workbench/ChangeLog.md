@@ -6478,3 +6478,19 @@ Verify all four images at source resolution in the open Chardonnay/Sauvignon Cuv
 All 7 patch inspection component tests pass.
 Ruff and both JavaScript syntax checks pass.
 Local visual evidence is in <workspace>/svoe-vino-lab/internal/patch-retrieval-ui-20261014/palette-viewer.png.
+
+
+## 2026-10-14 Unknown-label background overlay
+
+Correct the unknown-label diagnostic overlay fallback.
+Keep weight 1 inside the bottle.
+Retain the configured background weight and occlusion exclusions.
+Report effective query and reference overlay weights.
+The open query has 77 full background patches and 106 boundary patches.
+Full background patches receive weight 0.25.
+Boundary patch weights use bottle-mask coverage.
+The ranking fallback still uses exact standard scores for unknown label masks.
+All 12 full-gallery tests and 7 patch inspection component tests pass.
+Ruff and both JavaScript syntax checks pass.
+Verify the corrected four-panel view in the live UI and update the report.
+Local visual evidence is in <workspace>/svoe-vino-lab/internal/patch-retrieval-ui-20261014/background-fallback-viewer.png.
