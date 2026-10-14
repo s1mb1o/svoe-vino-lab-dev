@@ -6515,3 +6515,26 @@ Restart port 8168 with SIGTERM after empty active-job checks.
 The listener changes from PID 54599 to PID 98078.
 Dataset readiness returns HTTP 200.
 Local evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/full-gallery/viewer-queries/140f59b5834bd14f258e3e93385751daa1bd23b18a9bef5c69364e533fab95a5/.
+
+
+## 2026-10-14 Patch benchmark repeat
+
+Benchmark the frozen 2,166-wine gallery with fixed selected weights and a 512-patch budget.
+Calculate fresh retrieval and native weighted scores for all 24 calibration and 63 validation photos.
+Calibration Top-1: standard 16/24; patch re-rank 18/24.
+Validation Top-1: standard 43/63; patch re-rank 45/63.
+Validation Top-5: standard 61/63; patch re-rank 62/63.
+Validation Top-10: 63/63 for both methods.
+Neither cohort loses a correct standard Top-1 answer.
+One validation answer changes from rank 2 to rank 6.
+Benchmark the displayed query before and after label segmentation separately.
+The correct wine remains at rank 1.
+The score gap increases from 0.0134 to 0.0327.
+All 20 query candidate pairs become eligible for weighted deltas after segmentation.
+The vector-file checksum, prepared image hashes, and mask hashes pass.
+An independent score and rank calculation passes.
+The fixed selection, source files, gallery, and calibration and validation inputs remain unchanged.
+The validation cohort is previously inspected.
+The viewer continues to show standard ranking.
+The report is in <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
+Evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/full-gallery/benchmarks/20261014-query-label/.
