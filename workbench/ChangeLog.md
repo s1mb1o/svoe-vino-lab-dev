@@ -6465,3 +6465,16 @@ Local evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrie
 The port-8168 restart uses SIGTERM after empty matching and embedding job checks.
 Dataset returns HTTP 200.
 The standard matcher configuration and historical run results remain unchanged.
+
+
+## 2026-10-14 Patch overlay palette
+
+Use violet for reduced patch weights, gold for weight 1, cyan for boosted weights, and red for excluded patches.
+Use distinct hue categories instead of the blue-to-green gradient.
+Show color samples and numeric weight ranges in the Steps legend.
+Use the same palette in standalone inspection figures.
+Update the report and its live UI screenshot.
+Verify all four images at source resolution in the open Chardonnay/Sauvignon Cuvee example.
+All 7 patch inspection component tests pass.
+Ruff and both JavaScript syntax checks pass.
+Local visual evidence is in <workspace>/svoe-vino-lab/internal/patch-retrieval-ui-20261014/palette-viewer.png.

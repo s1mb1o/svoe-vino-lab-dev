@@ -247,7 +247,10 @@ const Steps = (() => {
       <div class="patch-image-pair patch-originals">${image("reference", "Reference: bottle crop")}${image("query", "Query: bottle crop")}
         <svg class="patch-correspondences" aria-hidden="true" preserveAspectRatio="none"></svg></div>
       <div class="patch-image-pair">${image("reference_weights", "Reference: patch weights")}${image("query_weights", "Query: patch weights")}</div>
-      <p class="patch-legend">Blue: low weight · Green: weight 1 · Yellow: stronger text · Red: excluded occlusion</p>`;
+      <p class="patch-legend"><span><span aria-hidden="true" style="color:#855eeb">■</span> Violet: reduced (0 &lt; weight &lt; 1)</span> ·
+        <span><span aria-hidden="true" style="color:#ffd03c">■</span> Gold: weight 1</span> ·
+        <span><span aria-hidden="true" style="color:#00d2e0">■</span> Cyan: boosted (weight &gt; 1)</span> ·
+        <span><span aria-hidden="true" style="color:#eb4155">■</span> Red: excluded (0)</span></p>`;
     panel._patchCorrespondences = item.correspondences || [];
     const redraw = () => patchLines(panel);
     panel.querySelectorAll(".patch-originals img").forEach(img => img.addEventListener("load", redraw));
