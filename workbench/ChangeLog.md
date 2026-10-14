@@ -6569,3 +6569,19 @@ Evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20
 - Live statistics, active counts, Escape focus, Actions, loaded selectors, and Drawer spacing pass browser checks. The browser console has no errors.
 - Restore saved selections after verification. No catalogue or annotation write, model/build/run action, or lab-server restart.
 - Save evidence in internal/compact-headers-20261014/verification.json, browser-checks.json, and the six live JPG files.
+
+
+## 2026-10-15 Full my patch benchmark
+
+Benchmark the frozen current my cohort in the experiments checkout.
+Apply the current SOURCE accepted-answer rule to 2,374 positive and 534 negative assignments.
+Process 2,497 distinct images against the same frozen 2,166-wine gallery and 512-patch budget.
+Standard Top-1/5/10: 2,048/2,327/2,347 positive hits.
+Fixed patch weights: 2,058/2,337/2,348 positive hits.
+Record 80 Top-1 gains and 70 Top-1 regressions. Named negative false matches change from 82 to 85.
+Outside the earlier 87-photo sample, the net Top-1 gain is three assignments.
+All independent score, alias, fallback, and source-integrity checks pass.
+The 454-vector local MPS audit changes no ranking boundary or metric outcome.
+Keep standard ranking as the default recommendation.
+The full report is <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
+The evidence is <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/my-full/.
