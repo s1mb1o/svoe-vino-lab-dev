@@ -47,6 +47,17 @@ def _run(directory, photo, sidecar):
             (directory / "error.json").write_text(json.dumps({"status": "failed", "error": str(exc)}))
 
 
+def _viewer_row(source_sha):
+    """Read a stored viewer mask without changing the frozen benchmark inputs."""
+    path = EVIDENCE / "viewer-queries" / source_sha / "prepared.json"
+    if not path.is_file():
+        return None
+    row = json.loads(path.read_text())
+    if row.get("source_sha256") != source_sha:
+        raise ValueError("stored viewer mask source hash differs from the query")
+    return row
+
+
 def _sidecar(photo, spec, directory):
     """Use approved masks or existing local cuts. Never request SAM3 inference."""
     import run_steps
@@ -54,6 +65,11 @@ def _sidecar(photo, spec, directory):
     from PIL import Image
     import embeddings
     source_sha = hashlib.sha256(Path(photo.path).read_bytes()).hexdigest()
+    viewer = _viewer_row(source_sha)
+    if viewer is not None:
+        sidecar = directory / "prepared.json"
+        sidecar.write_text(json.dumps(dict(viewer, image=photo.path)))
+        return sidecar
     for item in json.loads((EVIDENCE / "queries.json").read_text())["items"]:
         if item["source_sha256"] == source_sha:
             sidecar = directory / "prepared.json"
@@ -113,6 +129,11 @@ def respond(db_path, path, runs_dir=None):
         if not index.is_file() or not selection.is_file():
             return 503, {"error": "The full-gallery comparison is not available."}, JSON_TYPE
         digest = hashlib.sha256(Path(photo.path).read_bytes())
+        viewer = _viewer_row(digest.hexdigest())
+        if viewer is not None:
+            digest.update(json.dumps(viewer, sort_keys=True).encode())
+            for role in ("input", "bottle", "label", "occlusion", "rotation_base"):
+                digest.update(Path(viewer[role]).read_bytes())
         for item in [index, selection, EVIDENCE / "queries.json", Path(__file__), *sorted((EXPERIMENT / "patch_pipeline").glob("*.py"))]:
             digest.update(item.read_bytes())
         digest.update(json.dumps([run,identity],ensure_ascii=False).encode())

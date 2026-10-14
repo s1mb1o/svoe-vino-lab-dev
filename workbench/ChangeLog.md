@@ -6494,3 +6494,24 @@ All 12 full-gallery tests and 7 patch inspection component tests pass.
 Ruff and both JavaScript syntax checks pass.
 Verify the corrected four-panel view in the live UI and update the report.
 Local visual evidence is in <workspace>/svoe-vino-lab/internal/patch-retrieval-ui-20261014/background-fallback-viewer.png.
+
+
+## 2026-10-14 Query label segmentation
+
+Send the one owner-approved 276 × 1024 query crop to the existing SAM3 endpoint with the label prompt.
+Store the main-label and neck-band masks under the query source hash in viewer-queries/.
+The mask covers 52.5% of bottle pixels and 40.0% of native query patches.
+The reference label covers 39.3% of native patches.
+Use bottle and background weights of 0.25, label weight 1, and configured semantic text weights.
+Read stored viewer masks before frozen cohort masks.
+Include the prepared record and mask bytes in the viewer cache digest.
+Preserve original query pixels and frozen benchmark inputs.
+The rebuilt standard query vector has cosine 0.99999994 with its earlier vector.
+The correct wine remains at standard rank 1 with 85 RANSAC inliers.
+All 10 patch inspection component tests pass in each copy.
+Ruff passes in each copy.
+Update the report and the live four-panel screenshot.
+Restart port 8168 with SIGTERM after empty active-job checks.
+The listener changes from PID 54599 to PID 98078.
+Dataset readiness returns HTTP 200.
+Local evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/full-gallery/viewer-queries/140f59b5834bd14f258e3e93385751daa1bd23b18a9bef5c69364e533fab95a5/.

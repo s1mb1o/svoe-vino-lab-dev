@@ -1,5 +1,6 @@
 """Check local patch jobs, saved-query validation, and figure selection."""
 
+import hashlib
 import json
 from pathlib import Path
 import sqlite3
@@ -95,6 +96,53 @@ class PatchInspectionTests(unittest.TestCase):
             worker.assert_called_once()
             self.photo.write_bytes(b"new source bytes")
             self.assertEqual(self.request()[1]["status"], "idle")
+
+    def stored_viewer(self):
+        source_sha = hashlib.sha256(self.photo.read_bytes()).hexdigest()
+        directory = self.evidence / "viewer-queries" / source_sha
+        directory.mkdir(parents=True)
+        row = {"key":"fresh-viewer", "source_sha256":source_sha, "image":"previous/path"}
+        for role in ("input", "bottle", "label", "occlusion", "rotation_base"):
+            path = directory / (role+".png")
+            Image.new("L", (10,20), 255).save(path)
+            row[role] = str(path)
+        (directory / "prepared.json").write_text(json.dumps(row))
+        return row
+
+    def test_stored_viewer_label_precedes_frozen_cohort_without_inference(self):
+        row = self.stored_viewer()
+        (self.evidence / "queries.json").write_text(json.dumps({"items":[
+            {"source_sha256":row["source_sha256"], "key":"frozen-cohort"}]}))
+        target = self.root / "prepared"
+        target.mkdir()
+        photo = types.SimpleNamespace(path=str(self.photo))
+        with mock.patch.object(run_steps, "_cut") as cut:
+            result = json.loads(PI._sidecar(photo, {}, target).read_text())
+        self.assertEqual(result["key"], "fresh-viewer")
+        self.assertEqual(result["image"], str(self.photo))
+        self.assertEqual(result["label"], row["label"])
+        cut.assert_not_called()
+
+    def test_stored_viewer_source_mismatch_is_rejected(self):
+        row = self.stored_viewer()
+        directory = Path(row["label"]).parent
+        row["source_sha256"] = "different-source"
+        (directory / "prepared.json").write_text(json.dumps(row))
+        code, value, _kind = self.request()
+        self.assertEqual(code, 400)
+        self.assertIn("source hash differs", value["error"])
+
+    def test_stored_viewer_mask_bytes_invalidate_ready_result(self):
+        row = self.stored_viewer()
+        def run(directory, _photo, _sidecar):
+            (directory / "inspection.json").write_text('{"status":"ready","candidates":[]}')
+        with mock.patch.object(PI, "_run", side_effect=run):
+            self.request("&start=1")
+            for thread in PI._JOBS.values():
+                thread.join(5)
+            self.assertEqual(self.request()[1]["status"], "ready")
+        Image.new("L", (10,20), 0).save(row["label"])
+        self.assertEqual(self.request()[1]["status"], "idle")
 
     def test_missing_full_gallery_is_an_explicit_error(self):
         (self.evidence / "gallery.json").unlink()
