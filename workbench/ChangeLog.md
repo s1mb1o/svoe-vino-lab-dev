@@ -6409,3 +6409,14 @@ All 87 focused tests, Ruff, Python compilation, and diff checks pass. Offline re
 - Validation: 31 patch tests, 17 patch UI and OpenAPI tests, and 31 existing step-view tests pass. Ruff, JavaScript syntax, and Python compilation checks pass. The tuned index contains 138 original patch bundles, 414 global vectors, and no rotated patch bundle.
 - Restart only Workbench on port 8168 after the active-job check. Final PID: 62287. The first model-environment startup lacked jsonschema; restore the existing system Python for the server. Dataset returns HTTP 200. No additional SAM3 upload occurs.
 - Evidence: `svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md`, local `internal/patch-retrieval-20261014/tuning/` evidence in the experiment copy, and local `svoe-vino-lab/internal/patch-retrieval-ui-20261014/` verification.
+
+
+## 2026-10-14T12:36:00+03:00 — Bottle crop and patch-weight rebuild
+
+- Crop reference and query images before native patch allocation. Use bottle-mask bounds and a 2% margin. Store source coordinates, crop metadata, and the actual cropped input. Reject earlier full-canvas indexes.
+- Rebuild 138 reference sources, 414 global vectors, 24 calibration queries, and 63 validation queries. Store 138 original reference patch bundles and no rotated patch bundle. Verify all source crop pixels and bundle hashes.
+- Select glass 0.25, label 1.00, background 1.00, and a 50% weighted score share on calibration only. Calibration Top-1 increases from 20/24 to 21/24. Validation Top-1 decreases from 44/63 to 39/63. Set cropped standard pooling as the default. Positive RANSAC strengths lose one calibration result; retain zero score contribution.
+- Complete one reference and ten validation bottle masks with recorded manual outlines. Use approved or cached masks for the other images. Make no additional SAM3 upload. Preserve source images, catalogue records, matcher configuration, and historical rankings.
+- Update the patch UI with actual bottle crops, source and crop dimensions, and separate ranking and overlay labels. Verify the supplied Shardone/Sovinon Blan query in the live viewer.
+- Pass 37 patch tests and 37 UI, page, and step-view checks. Ruff, Python compilation, and JavaScript syntax checks pass. Restart only port 8168 after no active jobs. Final server PID: 77069. Dataset returns HTTP 200.
+- Evidence: `svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md`, local `internal/patch-retrieval-20261014/cropped/` in the experiment copy, and `svoe-vino-lab/internal/patch-retrieval-ui-20261014/cropped-patch-viewer.jpg`.

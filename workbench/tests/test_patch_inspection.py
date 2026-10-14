@@ -30,7 +30,7 @@ class PatchInspectionTests(unittest.TestCase):
         (self.evidence / "tuning").mkdir()
         (self.evidence / "index-tuned/index.json").write_text('{}')
         (self.evidence / "tuning/selected.json").write_text('{}')
-        for name in ("queries-fresh.json", "references-fresh.json"):
+        for name in ("queries-fresh.json", "references-confusers-fresh.json", "tuning-validation.json"):
             (self.evidence / name).write_text('{"items": []}')
         self.patches = [mock.patch.object(PI, "EVIDENCE", self.evidence),
                         mock.patch.object(PI, "EXPERIMENT", self.root),

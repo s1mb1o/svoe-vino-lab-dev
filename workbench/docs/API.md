@@ -1111,3 +1111,25 @@ The historical run files and catalogue stay unchanged.
 Set `PATCH_INSPECTION_PYTHON` only when another installed model environment is required.
 The default model environment is `~/.venvs/svoe-vino-lab/bin/python`.
 The route requires the local experiment index at `svoe-vino-lab-experiments/internal/patch-retrieval-20261014/index-tuned/`.
+
+
+## Bottle crop patch inspection
+
+The patch worker uses `svoe-vino-lab-experiments/internal/patch-retrieval-20261014/cropped/index-tuned/`.
+This path replaces the earlier full-canvas index path.
+The worker crops reference and query inputs to bottle-mask bounds with a 2% margin.
+The crop occurs before native patch extraction.
+The response contains `query_crop` and each candidate's `crop`.
+Each crop contains `source_size`, `input_size`, `box`, `status`, and the crop contract.
+Patch boxes refer to the crop. Source polygons refer to the full source image.
+The figure displays the actual cropped `input.png` pixels.
+The figure canvas also contains display spacing for correspondence lines.
+That display spacing is outside the model input.
+
+`ranking_mode` is `cropped standard SigLIP2`.
+`weighted_share` is zero for the current candidate ranking.
+`experimental_weighted_share` is 0.50 for the calibration-selected comparison.
+The weight overlays display the experimental weights.
+The selected blend reduces validation Top-1 and stays experimental.
+The cache key includes the index and worker source bytes.
+The crop correction therefore uses a separate diagnostic cache generation.

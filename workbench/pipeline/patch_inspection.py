@@ -17,7 +17,7 @@ _LOCK = threading.Lock()
 _WORKER_LOCK = threading.Lock()
 ROOT = Path(__file__).resolve().parents[2]
 EXPERIMENT = ROOT if (ROOT / "patch_pipeline").is_dir() else ROOT.parent / "svoe-vino-lab-experiments"
-EVIDENCE = EXPERIMENT / "internal/patch-retrieval-20261014"
+EVIDENCE = EXPERIMENT / "internal/patch-retrieval-20261014/cropped"
 JSON_TYPE = "application/json; charset=utf-8"
 
 
@@ -52,7 +52,7 @@ def _sidecar(photo, spec, directory):
     import run_steps
     import derive
     from PIL import Image
-    for name in ("queries-fresh.json", "references-fresh.json"):
+    for name in ("queries-fresh.json", "references-confusers-fresh.json", "tuning-validation.json"):
         for item in json.loads((EVIDENCE / name).read_text())["items"]:
             if Path(item["image"]).name == Path(photo.path).name and item.get("annotation"):
                 return Path(item["annotation"])

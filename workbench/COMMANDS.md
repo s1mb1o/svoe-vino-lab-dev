@@ -855,3 +855,20 @@ PYTHONPATH=pipeline:tests python3 -m unittest test_patch_inspection test_lab_ope
 
 Use `Inspect patches` in the Runs step popup for the local diagnostic.
 Read [the experiment report](../../svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md).
+
+
+## Bottle crop UI verification
+
+Run from this Workbench root.
+Use the existing server Python environment with jsonschema.
+These checks use local fixtures and make no model-service request.
+
+```sh
+PYTHONPATH=pipeline:tests /opt/homebrew/bin/python3 -m unittest test_patch_inspection test_lab_pages test_run_steps -q
+```
+
+The `Inspect patches` worker uses the cropped 138-wine experiment gallery.
+Candidate ranking uses cropped standard SigLIP2.
+The overlays display the rejected experimental weights.
+The panel displays source and crop dimensions for both bottles.
+Read [the current report](../../svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md).

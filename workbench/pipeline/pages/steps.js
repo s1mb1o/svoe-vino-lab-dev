@@ -204,7 +204,7 @@ const Steps = (() => {
     if (!data.run || !data.query) return "";
     return `<section class="patch-inspection" data-run="${esc(data.run)}" data-query="${esc(data.query)}">
       <h3>Original patch inspection <span class="pill">Experiment</span></h3>
-      <p>Compare original pixels, patch weights, and RANSAC correspondences. This calculation uses the patch experiment and preserves the saved run result.</p>
+      <p>Compare bottle crops, patch weights, and RANSAC correspondences. This calculation uses the patch experiment and preserves the saved run result.</p>
       <button type="button" onclick="Steps.loadPatches(this)">Inspect patches</button>
       <div class="patch-output" aria-live="polite"></div></section>`;
   }
@@ -213,7 +213,7 @@ const Steps = (() => {
     const panel = button.closest(".patch-inspection"), output = panel.querySelector(".patch-output");
     const url = `/api/run-patches?id=${encodeURIComponent(panel.dataset.run)}&query=${encodeURIComponent(panel.dataset.query)}`;
     button.disabled = true;
-    output.textContent = "Computing original patches locally…";
+    output.textContent = "Computing cropped bottle patches locally…";
     try {
       let value;
       for (let attempt = 0; attempt < 120; attempt++) {
@@ -229,7 +229,7 @@ const Steps = (() => {
       output.innerHTML = `<p>${esc(value.notice)}</p><label>Reference candidate <select onchange="Steps.patchCandidate(this)">
         ${value.candidates.map((item,i) => `<option value="${i}">#${item.rank} ${esc(item.slug)} · ${score4(item.score)}</option>`).join("")}</select></label>
         <p class="patch-summary">${value.query_patches} query patches · ${value.excluded_query_patches} excluded · ${esc(value.foreground)}<br>Occlusion: ${esc(value.occlusion || "unknown")}<br>
-        Glass ${esc(value.weights.bottle)} · label ${esc(value.weights.label)} · background ${esc(value.weights.background)} · weighted score share ${esc(value.weighted_share)}</p>
+        Query crop: ${esc(value.query_crop?.source_size?.join(" × "))} source → ${esc(value.query_crop?.input_size?.join(" × "))} input · ${esc(value.query_crop?.status)}<br>Ranking: ${esc(value.ranking_mode || "experimental")}<br>Overlay weights: glass ${esc(value.weights.bottle)} · label ${esc(value.weights.label)} · background ${esc(value.weights.background)} · experimental weighted share ${esc(value.experimental_weighted_share ?? value.weighted_share)}</p>
         <div class="patch-candidate"></div>`;
       patchCandidate(output.querySelector("select"));
     } catch(error) { output.textContent = `Cannot inspect patches: ${error.message}`; }
@@ -239,8 +239,9 @@ const Steps = (() => {
   function patchCandidate(select) {
     const panel = select.closest(".patch-inspection"), item = panel._patches.candidates[Number(select.value)];
     const geometry = item.geometry;
-    panel.querySelector(".patch-candidate").innerHTML = `<p>RANSAC ${geometry.reliable ? "accepted" : "rejected"} · ${geometry.inliers || 0} inliers · ${item.hidden_reference_patches} reference patches behind query occlusion
-      ${geometry.reason ? ` · ${esc(geometry.reason)}` : ""}</p><img class="patch-figure" loading="lazy" src="${esc(item.src)}" data-full="${esc(item.src)}" alt="Original reference and query pixels, patch weights, and RANSAC correspondences">`;
+    const crop = item.crop;
+    panel.querySelector(".patch-candidate").innerHTML = `<p>Reference crop: ${esc(crop?.source_size?.join(" × "))} source → ${esc(crop?.input_size?.join(" × "))} input · ${esc(crop?.status)}</p><p>RANSAC ${geometry.reliable ? "accepted" : "rejected"} · ${geometry.inliers || 0} inliers · ${item.hidden_reference_patches} reference patches behind query occlusion
+      ${geometry.reason ? ` · ${esc(geometry.reason)}` : ""}</p><img class="patch-figure" loading="lazy" src="${esc(item.src)}" data-full="${esc(item.src)}" alt="Reference and query bottle crops, patch weights, and RANSAC correspondences">`;
   }
 
   /* The notes, the rounds, and the total line of one answer. The total line compares the
