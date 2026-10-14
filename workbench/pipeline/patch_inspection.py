@@ -17,7 +17,7 @@ _LOCK = threading.Lock()
 _WORKER_LOCK = threading.Lock()
 ROOT = Path(__file__).resolve().parents[2]
 EXPERIMENT = ROOT if (ROOT / "patch_pipeline").is_dir() else ROOT.parent / "svoe-vino-lab-experiments"
-EVIDENCE = EXPERIMENT / "internal/patch-retrieval-20261014/cropped"
+EVIDENCE = EXPERIMENT / "internal/patch-retrieval-20261014/cropped/padding-tight"
 JSON_TYPE = "application/json; charset=utf-8"
 
 

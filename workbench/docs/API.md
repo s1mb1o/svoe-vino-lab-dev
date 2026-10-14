@@ -1152,3 +1152,16 @@ The overlay updates after image loading, candidate selection, and layout size ch
 The images retain the source crop resolution.
 The existing image preview opens each panel independently.
 The worker does not create a composite figure for the UI.
+
+
+## Exact pixel-padding crops
+
+The patch worker uses `svoe-vino-lab-experiments/internal/patch-retrieval-20261014/cropped/padding-tight/index-tuned/`.
+The current crop contract is `bottle-bounds-v2`.
+White, black, and transparent padding crops use zero margin.
+Alpha greater than zero counts as content.
+Detected and explicit bottle masks retain the 2% margin.
+The response crop metadata records `method` and `margin_fraction`.
+The page reports `pixel padding bounds` or `bottle mask bounds`.
+Historical `bottle-bounds-v1` indexes use their original query crop policy.
+The crop update does not change the four-image layout or the active matcher configuration.

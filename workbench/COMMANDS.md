@@ -872,3 +872,17 @@ Candidate ranking uses cropped standard SigLIP2.
 The overlays display the rejected experimental weights.
 The panel displays source and crop dimensions for both bottles.
 Read [the current report](../../svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md).
+
+
+## Exact pixel-padding crop viewer
+
+Run from this Workbench root with the existing server Python environment.
+These checks use local fixtures and make no model-service request.
+
+```sh
+PYTHONPATH=pipeline:tests /opt/homebrew/bin/python3 -m unittest test_patch_inspection test_lab_pages test_run_steps -q
+```
+
+The viewer uses `cropped/padding-tight/index-tuned` in the experiment evidence.
+Pixel-padding crops have zero margin.
+Bottle-mask crops retain the detector margin.

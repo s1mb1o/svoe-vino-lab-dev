@@ -6430,3 +6430,13 @@ All 87 focused tests, Ruff, Python compilation, and diff checks pass. Offline re
 - Pass 37 patch tests and 48 patch API, OpenAPI, page, and step-view tests. Ruff and JavaScript syntax checks pass. The isolated HTTP tests need loopback permission.
 - Restart only Workbench port 8168 with SIGTERM after no active recognition or embedding jobs. PID: 77069 to 13799. Dataset returns HTTP 200.
 - Evidence: `internal/patch-retrieval-ui-20261014/four-panel-patch-viewer.jpg`, `four-panels-api-verification.json`, and `four-panels-restart.json` in the source lab. Keep the standalone historical report figure in local evidence.
+
+
+## 2026-10-14T13:21:46+03:00 — Exact pixel-padding crop bounds
+
+- Remove the safety margin for alpha, white-padding, and black-padding crops. Retain alpha values greater than zero. Keep the 2% margin for detected and explicit bottle masks. Record the crop method and margin. Add black-padding detection for reference images. Keep query background detection conservative.
+- Add `bottle-bounds-v2`. Build new indexes with the new policy. Historical v1 indexes use their recorded query policy. Preserve full-canvas rejection, source pixels, and original-only patch storage.
+- Rebuild 138 references and 414 global vectors. Use zero margin for 125 references. Change 91 crop boxes. Verify 87 query crops and masks as pixel-identical to the prior inputs. Reuse those query embeddings for the comparison. Verify bundle hashes and exact source crop pixels.
+- Reuse the prior weights without tuning. Calibration standard and combined Top-1 both obtain 20/24. Validation standard and combined Top-1 both obtain 45/63. Standard Top-5 obtains 59/63; combined Top-5 obtains 58/63. Keep standard ranking as the default. The reference label-mask inconsistency remains unresolved.
+- Pass 42 patch tests and 37 patch UI, page, and step-view checks. Ruff passes. Load the rebuilt index in the live four-panel viewer. Restart only port 8168 after no active jobs, PID 13799 to 62517. Dataset returns HTTP 200. No additional image upload.
+- Evidence: `svoe-vino-lab-experiments/internal/patch-retrieval-20261014/cropped/padding-tight/evaluation.json`, `storage-audit.json`, and source-lab `internal/patch-retrieval-ui-20261014/tight-padding-viewer.jpg`.
