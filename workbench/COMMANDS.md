@@ -886,3 +886,17 @@ PYTHONPATH=pipeline:tests /opt/homebrew/bin/python3 -m unittest test_patch_inspe
 The viewer uses `cropped/padding-tight/index-tuned` in the experiment evidence.
 Pixel-padding crops have zero margin.
 Bottle-mask crops retain the detector margin.
+
+## Full-gallery patch comparison
+
+These commands use the installed SigLIP2 checkpoint and local mask files.
+The commands write local experiment evidence.
+The commands do not send model-service requests.
+Calibration writes a selection lock and rejects a second selection.
+Validation MUST use the selection lock.
+
+```sh
+cd ../../svoe-vino-lab-experiments
+~/.venvs/svoe-vino-lab/bin/python -m patch_pipeline.full_comparison --gallery internal/patch-retrieval-20261014/full-gallery --phase calibration
+~/.venvs/svoe-vino-lab/bin/python -m patch_pipeline.full_comparison --gallery internal/patch-retrieval-20261014/full-gallery --phase validation
+```

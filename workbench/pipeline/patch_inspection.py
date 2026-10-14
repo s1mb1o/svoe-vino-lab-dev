@@ -17,7 +17,7 @@ _LOCK = threading.Lock()
 _WORKER_LOCK = threading.Lock()
 ROOT = Path(__file__).resolve().parents[2]
 EXPERIMENT = ROOT if (ROOT / "patch_pipeline").is_dir() else ROOT.parent / "svoe-vino-lab-experiments"
-EVIDENCE = EXPERIMENT / "internal/patch-retrieval-20261014/cropped/padding-tight"
+EVIDENCE = EXPERIMENT / "internal/patch-retrieval-20261014/full-gallery"
 JSON_TYPE = "application/json; charset=utf-8"
 
 
@@ -35,12 +35,12 @@ def _run(directory, photo, sidecar):
             worker_python = os.environ.get("PATCH_INSPECTION_PYTHON") or str(Path.home()/".venvs/svoe-vino-lab/bin/python")
             if not Path(worker_python).is_file():
                 worker_python = sys.executable
-            command = [worker_python, "-m", "patch_pipeline.inspection", "--index", str(EVIDENCE / "index-tuned"),
-                       "--image", photo, "--annotation", str(sidecar), "--output", str(directory),
-                       "--selection", str(EVIDENCE / "tuning/selected.json")]
+            command = [worker_python, "-m", "patch_pipeline.full_inspection", "--gallery", str(EVIDENCE),
+                       "--prepared", str(sidecar), "--output", str(directory),
+                       "--selection", str(EVIDENCE / "selection.lock.json")]
             with (directory / "worker.log").open("wb") as log:
                 process = subprocess.run(command, cwd=EXPERIMENT, env=environment,
-                                         stdout=log, stderr=log, timeout=240)
+                                         stdout=log, stderr=log, timeout=600)
             if process.returncode:
                 raise RuntimeError("Local patch computation failed. Read the local worker log.")
         except Exception as exc:
@@ -52,14 +52,17 @@ def _sidecar(photo, spec, directory):
     import run_steps
     import derive
     from PIL import Image
-    for name in ("queries-fresh.json", "references-confusers-fresh.json", "tuning-validation.json"):
-        for item in json.loads((EVIDENCE / name).read_text())["items"]:
-            if Path(item["image"]).name == Path(photo.path).name and item.get("annotation"):
-                return Path(item["annotation"])
-    masks = {}
+    import embeddings
+    source_sha = hashlib.sha256(Path(photo.path).read_bytes()).hexdigest()
+    for item in json.loads((EVIDENCE / "queries.json").read_text())["items"]:
+        if item["source_sha256"] == source_sha:
+            sidecar = directory / "prepared.json"
+            sidecar.write_text(json.dumps(dict(item, image=photo.path)))
+            return sidecar
     sam3 = spec.get("sam3") or {}
     endpoint = sam3.get("endpoint") or derive.SAM3_ENDPOINT
-    for role, target in (("bottle", "package"), ("label", "label")):
+    cuts = {}
+    for target in ("package", "label"):
         options = {"label_mask_union": sam3.get("label_mask_union", True),
                    "label_focus": sam3.get("label_focus") == "main"}
         supported = inspect.signature(run_steps._cut).parameters
@@ -67,13 +70,30 @@ def _sidecar(photo, spec, directory):
         box, cut, _reason, _result = run_steps._cut(photo, target, endpoint,
                                                   spec.get("scene_selection", False), **options)
         if box is not None and cut is not None:
-            mask = Image.new("L", photo.image.size, 0)
-            mask.paste(cut.convert("RGBA").getchannel("A"), (int(box[0]), int(box[1])))
-            mask.save(directory / (role + ".png"))
-            masks[role] = role + ".png"
-    sidecar = directory / "annotation.json"
-    sidecar.write_text(json.dumps({"size": list(photo.image.size), "masks": masks,
-                       "provenance": {"scope": "Existing local SAM3 cache only. Hand and finger masks are unavailable for this photo."}}))
+            cuts[target] = (list(map(int, box)), cut.convert("RGBA"))
+    if "package" not in cuts:
+        raise ValueError("The standard bottle cut is absent from the local cache. No model request was sent.")
+    box, package = cuts["package"]
+    gallery = json.loads((EVIDENCE / "gallery.json").read_text())
+    steps = gallery["config"]["views"]["full"]
+    pixels = embeddings.apply_steps(photo.image, steps, box, lambda: package)
+    bottle = package.getchannel("A").resize(pixels.size, Image.Resampling.BOX)
+    label = Image.new("L", photo.image.size, 0)
+    if "label" in cuts:
+        label_box, label_cut = cuts["label"]
+        label.paste(label_cut.getchannel("A"), (label_box[0], label_box[1]))
+    label = label.crop(box).resize(pixels.size, Image.Resampling.BOX)
+    for name, image in (("input", pixels), ("bottle", bottle), ("label", label),
+                        ("occlusion", Image.new("L", pixels.size, 0))):
+        image.save(directory / (name+".png"))
+    package.save(directory / "rotation-base.png")
+    row = {"key": "viewer-"+source_sha, "image": photo.path, "source_sha256": source_sha,
+           "source_size": list(photo.image.size), "package_box": box,
+           "package_source": "standard cached package cut", "label_source": "cached full-label cut" if "label" in cuts else "unknown full-label region"}
+    row.update({name: str(directory / (name+".png")) for name in ("input", "bottle", "label", "occlusion")})
+    row["rotation_base"] = str(directory / "rotation-base.png")
+    sidecar = directory / "prepared.json"
+    sidecar.write_text(json.dumps(row))
     return sidecar
 
 
@@ -88,12 +108,12 @@ def respond(db_path, path, runs_dir=None):
             photo = run_steps.Photo(connection, db_path, row)
         if not photo.path or photo.image is None:
             return 404, {"error": "The saved query image is unavailable."}, JSON_TYPE
-        index = EVIDENCE / "index-tuned/index.json"
-        selection = EVIDENCE / "tuning/selected.json"
+        index = EVIDENCE / "gallery.json"
+        selection = EVIDENCE / "selection.lock.json"
         if not index.is_file() or not selection.is_file():
-            return 503, {"error": "The tuned patch index is not available."}, JSON_TYPE
+            return 503, {"error": "The full-gallery comparison is not available."}, JSON_TYPE
         digest = hashlib.sha256(Path(photo.path).read_bytes())
-        for item in [index, selection, Path(__file__), *sorted((EXPERIMENT / "patch_pipeline").glob("*.py"))]:
+        for item in [index, selection, EVIDENCE / "queries.json", Path(__file__), *sorted((EXPERIMENT / "patch_pipeline").glob("*.py"))]:
             digest.update(item.read_bytes())
         digest.update(json.dumps([run,identity],ensure_ascii=False).encode())
         key = digest.hexdigest()
@@ -122,6 +142,9 @@ def respond(db_path, path, runs_dir=None):
             if key not in _JOBS and query.get("start") == ["1"]:
                 directory.mkdir(parents=True, exist_ok=True)
                 sidecar = _sidecar(photo, spec, directory)
+                prepared = json.loads(sidecar.read_text())
+                prepared["expected"] = row.get("slug")
+                sidecar.write_text(json.dumps(prepared))
                 thread = threading.Thread(target=_run,args=(directory,photo.path,sidecar),daemon=True)
                 _JOBS[key] = thread
                 thread.start()

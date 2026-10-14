@@ -6440,3 +6440,28 @@ All 87 focused tests, Ruff, Python compilation, and diff checks pass. Offline re
 - Reuse the prior weights without tuning. Calibration standard and combined Top-1 both obtain 20/24. Validation standard and combined Top-1 both obtain 45/63. Standard Top-5 obtains 59/63; combined Top-5 obtains 58/63. Keep standard ranking as the default. The reference label-mask inconsistency remains unresolved.
 - Pass 42 patch tests and 37 patch UI, page, and step-view checks. Ruff passes. Load the rebuilt index in the live four-panel viewer. Restart only port 8168 after no active jobs, PID 13799 to 62517. Dataset returns HTTP 200. No additional image upload.
 - Evidence: `svoe-vino-lab-experiments/internal/patch-retrieval-20261014/cropped/padding-tight/evaluation.json`, `storage-audit.json`, and source-lab `internal/patch-retrieval-ui-20261014/tight-padding-viewer.jpg`.
+
+## 2026-10-14 Full-label patch comparison
+
+Use one frozen standard gallery with 2,166 wines, 2,898 sources, 512 patches, and 72 rotations.
+Use complete label masks instead of OCR boxes.
+Preserve standard scores for unknown label regions and failed native alignment checks.
+Re-rank the standard top 20 and preserve the order outside that window.
+Calibration Top-1 improves from 16/24 to 18/24.
+Corrected validation Top-1 improves from 43/63 to 45/63.
+Validation Top-5 improves from 61/63 to 62/63.
+Validation Top-10 remains 63/63.
+No correct baseline Top-1 answer becomes incorrect.
+Keep standard ranking in the four-panel UI.
+Show full gallery size, full label coverage, and neutral overlays for unknown labels.
+The open Chardonnay/Sauvignon Cuvee example now returns its wine at rank 1.
+The source Workbench passes 45 component checks.
+The patch package passes 54 tests.
+Ruff and JavaScript syntax checks pass.
+The owner-approved 37 SAM3 crop requests produce 36 label regions and one explicit fallback.
+Reference bundles retain original source pixels and no rotated patches.
+The report is in <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
+Local evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/full-gallery/.
+The port-8168 restart uses SIGTERM after empty matching and embedding job checks.
+Dataset returns HTTP 200.
+The standard matcher configuration and historical run results remain unchanged.

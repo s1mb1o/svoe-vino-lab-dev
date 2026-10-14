@@ -26,12 +26,10 @@ class PatchInspectionTests(unittest.TestCase):
         self.photo = self.root / "query.png"
         Image.new("RGB", (40, 30), "white").save(self.photo)
         self.evidence = self.root / "evidence"
-        (self.evidence / "index-tuned").mkdir(parents=True)
-        (self.evidence / "tuning").mkdir()
-        (self.evidence / "index-tuned/index.json").write_text('{}')
-        (self.evidence / "tuning/selected.json").write_text('{}')
-        for name in ("queries-fresh.json", "references-confusers-fresh.json", "tuning-validation.json"):
-            (self.evidence / name).write_text('{"items": []}')
+        (self.evidence).mkdir(parents=True)
+        (self.evidence / "gallery.json").write_text('{}')
+        (self.evidence / "selection.lock.json").write_text('{}')
+        (self.evidence / "queries.json").write_text('{"items": []}')
         self.patches = [mock.patch.object(PI, "EVIDENCE", self.evidence),
                         mock.patch.object(PI, "EXPERIMENT", self.root),
                         mock.patch.object(run_steps, "_run_data", return_value=({}, {}, {})),
@@ -98,8 +96,8 @@ class PatchInspectionTests(unittest.TestCase):
             self.photo.write_bytes(b"new source bytes")
             self.assertEqual(self.request()[1]["status"], "idle")
 
-    def test_missing_tuned_index_is_an_explicit_error(self):
-        (self.evidence / "index-tuned/index.json").unlink()
+    def test_missing_full_gallery_is_an_explicit_error(self):
+        (self.evidence / "gallery.json").unlink()
         code, data, _kind = self.request("&start=1")
         self.assertEqual(code, 503)
         self.assertIn("not available", data["error"])
@@ -109,9 +107,30 @@ class PatchInspectionTests(unittest.TestCase):
         target = self.root / "masks"
         target.mkdir()
         with mock.patch.object(run_steps, "_cut", return_value=(None,None,"no cached mask",None)) as cut:
-            sidecar = PI._sidecar(photo, {}, target)
-        self.assertEqual(json.loads(sidecar.read_text())["masks"], {})
+            with self.assertRaisesRegex(ValueError, "standard bottle cut is absent"):
+                PI._sidecar(photo, {}, target)
         self.assertEqual(cut.call_count, 2)
+
+    def test_cached_full_label_uses_standard_model_coordinates(self):
+        source = Image.new("RGBA", (40, 30), "gray")
+        photo = types.SimpleNamespace(path=str(self.photo), image=source)
+        target = self.root / "prepared"
+        target.mkdir()
+        (self.evidence / "gallery.json").write_text(json.dumps({"config": {"views": {"full": [
+            {"step": "segment", "target": "package"}, {"step": "remove_background"},
+            {"step": "white_background"}, {"step": "resize", "max_size": 10, "upscale": False, "aspect": "keep"}]}}}))
+        package = Image.new("RGBA", (10, 20), "gray")
+        label = Image.new("RGBA", (8, 10), "white")
+        with mock.patch.object(run_steps, "_cut", side_effect=[([10, 0, 20, 20], package, None, None),
+                                                            ([11, 5, 19, 15], label, None, None)]):
+            row = json.loads(PI._sidecar(photo, {}, target).read_text())
+        with Image.open(row["input"]) as image:
+            self.assertEqual(image.size, (5, 10))
+        with Image.open(row["label"]) as mask:
+            self.assertEqual(mask.size, (5, 10))
+            self.assertIsNotNone(mask.getbbox())
+        self.assertEqual(row["package_box"], [10, 0, 20, 20])
+        self.assertEqual(row["label_source"], "cached full-label cut")
 
 
 if __name__ == "__main__":

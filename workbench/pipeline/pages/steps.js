@@ -204,7 +204,7 @@ const Steps = (() => {
     if (!data.run || !data.query) return "";
     return `<section class="patch-inspection" data-run="${esc(data.run)}" data-query="${esc(data.query)}">
       <h3>Original patch inspection <span class="pill">Experiment</span></h3>
-      <p>Compare bottle crops, patch weights, and RANSAC correspondences. This calculation uses the patch experiment and preserves the saved run result.</p>
+      <p>Compare bottle crops, patch weights, and RANSAC correspondences. This comparison uses the full standard gallery and preserves the saved run result.</p>
       <button type="button" onclick="Steps.loadPatches(this)">Inspect patches</button>
       <div class="patch-output" aria-live="polite"></div></section>`;
   }
@@ -228,8 +228,8 @@ const Steps = (() => {
       panel._patches = value;
       output.innerHTML = `<p>${esc(value.notice)}</p><label>Reference candidate <select onchange="Steps.patchCandidate(this)">
         ${value.candidates.map((item,i) => `<option value="${i}">#${item.rank} ${esc(item.slug)} · ${score4(item.score)}</option>`).join("")}</select></label>
-        <p class="patch-summary">${value.query_patches} query patches · ${value.excluded_query_patches} excluded · ${esc(value.foreground)}<br>Occlusion: ${esc(value.occlusion || "unknown")}<br>
-        Query crop: ${esc(value.query_crop?.source_size?.join(" × "))} source → ${esc(value.query_crop?.input_size?.join(" × "))} input · ${esc(value.query_crop?.status)}<br>Ranking: ${esc(value.ranking_mode || "experimental")}<br>Overlay weights: glass ${esc(value.weights.bottle)} · label ${esc(value.weights.label)} · background ${esc(value.weights.background)} · experimental weighted share ${esc(value.experimental_weighted_share ?? value.weighted_share)}</p>
+        <p class="patch-summary">${value.query_patches} query patches · ${value.excluded_query_patches} excluded · ${esc(value.foreground)}<br>Occlusion: ${esc(typeof value.occlusion === "object" ? value.occlusion?.rule : (value.occlusion || "unknown"))}<br>
+        Query crop: ${esc(value.query_crop?.source_size?.join(" × "))} source → ${esc(value.query_crop?.input_size?.join(" × "))} input · ${esc(value.query_crop?.status)}<br>Ranking: ${esc(value.ranking_mode || "experimental")}<br>Gallery: ${value.gallery?.wines ?? "unknown"} wines · patch budget ${value.patch_budget ?? "unknown"} · ${value.reference_rotations ?? "unknown"} reference rotations<br>Query full label: ${value.query_label_valid ? "available" : "unknown"} · coverage ${((value.query_label_coverage || 0)*100).toFixed(1)}%${value.query_label_valid ? "" : " · neutral overlay weights"}<br>Overlay weights: glass ${esc(value.weights.bottle)} · label ${esc(value.weights.label)} · background ${esc(value.weights.background)} · experimental weighted share ${esc(value.experimental_weighted_share ?? value.weighted_share)}</p>
         <div class="patch-candidate"></div>`;
       patchCandidate(output.querySelector("select"));
     } catch(error) { output.textContent = `Cannot inspect patches: ${error.message}`; }
@@ -243,7 +243,7 @@ const Steps = (() => {
     const image = (key, label) => `<figure class="patch-image-panel"><figcaption>${label}</figcaption>
       <div class="patch-image-frame"><img class="patch-figure" src="${esc(item.images[key])}" data-full="${esc(item.images[key])}" data-patch-image="${key}" alt="${label}"></div></figure>`;
     panel.querySelector(".patch-candidate").innerHTML = `<p>Reference crop: ${esc(crop?.source_size?.join(" × "))} source → ${esc(crop?.input_size?.join(" × "))} input · ${esc(crop?.status)}</p><p>RANSAC ${geometry.reliable ? "accepted" : "rejected"} · ${geometry.inliers || 0} inliers · ${item.hidden_reference_patches} reference patches behind query occlusion
-      ${geometry.reason ? ` · ${esc(geometry.reason)}` : ""}</p>
+      ${geometry.reason ? ` · ${esc(geometry.reason)}` : ""}<br>Reference full label: ${item.label_valid ? "available" : "unknown"} · coverage ${((item.label_coverage || 0)*100).toFixed(1)}%${item.label_valid ? "" : " · neutral overlay weights"}</p>
       <div class="patch-image-pair patch-originals">${image("reference", "Reference: bottle crop")}${image("query", "Query: bottle crop")}
         <svg class="patch-correspondences" aria-hidden="true" preserveAspectRatio="none"></svg></div>
       <div class="patch-image-pair">${image("reference_weights", "Reference: patch weights")}${image("query_weights", "Query: patch weights")}</div>

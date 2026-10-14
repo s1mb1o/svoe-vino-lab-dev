@@ -1165,3 +1165,19 @@ The response crop metadata records `method` and `margin_fraction`.
 The page reports `pixel padding bounds` or `bottle mask bounds`.
 Historical `bottle-bounds-v1` indexes use their original query crop policy.
 The crop update does not change the four-image layout or the active matcher configuration.
+
+### Full-gallery patch comparison metadata
+
+`GET /api/run-patches` now uses the frozen standard full-view gallery.
+The response retains the `four-panels-v1` image layout.
+`gallery` records reference, wine, vector-row, and stored full label counts.
+`patch_budget` is 512.
+`reference_rotations` is 72.
+`query_label_valid` and candidate `label_valid` identify usable complete label masks.
+`query_label_coverage` and candidate `label_coverage` record mean native patch coverage.
+`label_quality` records the guard for tiny masks and neck-only masks.
+`ranking_mode` identifies standard ranking in Workbench.
+The standalone inspection command MAY use the locked experimental re-rank.
+Unknown full label regions preserve standard scores.
+The worker uses existing local cuts and approved cohort masks only.
+The worker sends no SAM3 request.
