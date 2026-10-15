@@ -17,8 +17,8 @@ Official premium statements support the relevant group descriptions. Other tier 
 
 ## Catalog and image checks
 
-The builder selects the exact producer field. It preserves every selected slug. Each local WebP is copied without re-encoding. The crosswalk records its SHA-256 hash.
-Official bottle images use only the exact product page or product PDF. The asset preparation uses proportional resizing and WebP encoding. It does not replace the bottle or edit the label.
+The builder selects the exact producer field. It preserves every selected slug. The initial import copied each local WebP without re-encoding. The crosswalk records current SHA-256 hashes and later transformations.
+Official bottle images use only the exact product page or product PDF. The initial asset preparation used proportional resizing and WebP encoding. Later background extraction is documented below.
 
 ## Grouping notes
 
@@ -91,3 +91,14 @@ Every check compared the official product with all 97 rows for the exact produce
 - Absence basis: The snapshot High Coast Graphite Rose card belongs to Graphite. No Resto card exists. The official Resto rose label differs and the leaflet identifies Syrah explicitly.
 - Image: https://kuban-vino.ru/upload/iblock/eff/j4rza7j3vjyesgm7mlw2s8okod0qfyii/Высокий Берег Ресто сухое розовое_Сира.pdf PDF page 1.
 - Preparation: Extracted the bottle image from PDF page 1. Proportional resize to at most 480 pixels. WebP encoding. No retouching.
+
+## Background extraction, 2026-10-16
+
+50 display images use transparent cutouts from the built-in `image_gen` tool.
+Read [imagegen-cutouts.json](imagegen-cutouts.json) for every exact prompt, source hash, generated PNG hash, output hash, and review note.
+The review checks product identity, main label text, cap, color, and artwork at the UI display size.
+Imagegen resamples fine print and reflections. The generated images are not evidence for label microtext.
+The product facts remain sourced from the catalog and official pages.
+The final frame excludes faint transparent outliers. The conversion preserves alpha and fits the cropped image into 720 px height before padding.
+The WebP quality is 88. The alpha quality is 100. Each file has 6 px transparent padding.
+Unedited images retain their previous bytes. Original edited-image bytes remain in Git revision `89aa3780`.

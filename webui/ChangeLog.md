@@ -37,6 +37,13 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Kuban Vino bottle cutouts
+
+- Replace 50 background images with reviewed transparent imagegen display assets.
+- Fit the bottle frame and optimize WebP transfer size for desktop and mobile.
+- Record exact prompts, source hashes, output hashes, and imagegen limitations.
+- Reuse one generated cutout only for the two byte-identical source files.
+
 ## 2026-10-16 — Fanagoria bottle cutouts
 
 - Replace 14 background images with reviewed transparent imagegen display assets.

@@ -208,9 +208,18 @@
       "catalog_name": "Аристов 8 Бьянко 0.7",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_8_byanko_07_shardone_beloe_suhoe_8_b4ce26c4c3.webp",
-      "asset_sha256": "7d93b6a71ba7690a62cf4324ef871966f4793d15a256e0447a32d9cb99586ed1",
+      "asset_sha256": "d60e6c9cb90162b0f846dc0bfd797d7f4710a9f2e68ea25525eb05e83a0202ba",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-8-byanko-07-shardone-beloe-suhoe-8",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_8_byanko_07_shardone_beloe_suhoe_8_b4ce26c4c3.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_8_byanko_07_shardone_beloe_suhoe_8_b4ce26c4c3.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "7d93b6a71ba7690a62cf4324ef871966f4793d15a256e0447a32d9cb99586ed1",
+        "output_asset_sha256": "d60e6c9cb90162b0f846dc0bfd797d7f4710a9f2e68ea25525eb05e83a0202ba",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-8-byanko-shardone-beloe-suhoe-8",
@@ -219,9 +228,18 @@
       "catalog_name": "Аристов 8 Бьянко",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_8_byanko_shardone_beloe_suhoe_8_c4aa32acf7.webp",
-      "asset_sha256": "8b9d8b6b9d2ad523a00f7dadd27c234e340a81dcb9f2862933faeb4d9b90ced8",
+      "asset_sha256": "f7ef9caf808c6fdf8471c2fb4e4029b6c662539977ec94c01e02c9d7659a46b0",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-8-byanko-shardone-beloe-suhoe-8",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_8_byanko_shardone_beloe_suhoe_8_c4aa32acf7.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_8_byanko_shardone_beloe_suhoe_8_c4aa32acf7.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "8b9d8b6b9d2ad523a00f7dadd27c234e340a81dcb9f2862933faeb4d9b90ced8",
+        "output_asset_sha256": "f7ef9caf808c6fdf8471c2fb4e4029b6c662539977ec94c01e02c9d7659a46b0",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-8-roze-07-merlo-rozovoe-suhoe-8",
@@ -230,9 +248,18 @@
       "catalog_name": "Аристов 8 Розе 0.7",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_8_roze_07_merlo_rozovoe_suhoe_8_59ddc8b8bd.webp",
-      "asset_sha256": "471f0d2d4e6de5fc5d5205756481686e281057b50df091eae14a5189bf2a002b",
+      "asset_sha256": "89ea8b77704b5e8334fb172512c55ca4116f82c652af344dde2a1ac00068923f",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-8-roze-07-merlo-rozovoe-suhoe-8",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_8_roze_07_merlo_rozovoe_suhoe_8_59ddc8b8bd.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_8_roze_07_merlo_rozovoe_suhoe_8_59ddc8b8bd.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "471f0d2d4e6de5fc5d5205756481686e281057b50df091eae14a5189bf2a002b",
+        "output_asset_sha256": "89ea8b77704b5e8334fb172512c55ca4116f82c652af344dde2a1ac00068923f",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-8-roze-merlo-rozovoe-suhoe-8",
@@ -241,9 +268,18 @@
       "catalog_name": "Аристов 8 Розе",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_8_roze_merlo_rozovoe_suhoe_8_a0208632d6.webp",
-      "asset_sha256": "9617d5d7cbfbc87bd0609f16b182ce21b524310e77dea6b3ae82eac814c493b3",
+      "asset_sha256": "018535e0c94659bcbc6739929eb6c9d0387555d30bf480796d00cf354cca61b0",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-8-roze-merlo-rozovoe-suhoe-8",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_8_roze_merlo_rozovoe_suhoe_8_a0208632d6.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_8_roze_merlo_rozovoe_suhoe_8_a0208632d6.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "9617d5d7cbfbc87bd0609f16b182ce21b524310e77dea6b3ae82eac814c493b3",
+        "output_asset_sha256": "018535e0c94659bcbc6739929eb6c9d0387555d30bf480796d00cf354cca61b0",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-amata-byanko-shardone-beloe-suhoe-125",
@@ -252,9 +288,18 @@
       "catalog_name": "Аристов Амата Бьянко",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_amata_byanko_shardone_beloe_suhoe_125_2c9f48a496.webp",
-      "asset_sha256": "2d4158d2cb52e5c9044a179ec0892eadbc899f32a645b03c144c5f2aa4a0b25b",
+      "asset_sha256": "3f50834339e2b83b034b01d582fc7516bca3d36c8bafaa3fbdc63a93688d099e",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-amata-byanko-shardone-beloe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_amata_byanko_shardone_beloe_suhoe_125_2c9f48a496.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_amata_byanko_shardone_beloe_suhoe_125_2c9f48a496.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "2d4158d2cb52e5c9044a179ec0892eadbc899f32a645b03c144c5f2aa4a0b25b",
+        "output_asset_sha256": "3f50834339e2b83b034b01d582fc7516bca3d36c8bafaa3fbdc63a93688d099e",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-amata-rosso-kaberne-sovinon-krasnoe-suhoe-145",
@@ -263,9 +308,18 @@
       "catalog_name": "Аристов Амата Россо",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_amata_rosso_kaberne_sovinon_krasnoe_suhoe_145_40d0ae1b20.webp",
-      "asset_sha256": "0e437520fac8ec0c5e418977a0c6369038729b198e9d81f8a0da3be5f6c0f91c",
+      "asset_sha256": "ac48855b7a3cf0fd1c312b5cc2f7ea77bd2b1a0afef21277ba9b3f779f44e363",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-amata-rosso-kaberne-sovinon-krasnoe-suhoe-145",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_amata_rosso_kaberne_sovinon_krasnoe_suhoe_145_40d0ae1b20.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_amata_rosso_kaberne_sovinon_krasnoe_suhoe_145_40d0ae1b20.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "0e437520fac8ec0c5e418977a0c6369038729b198e9d81f8a0da3be5f6c0f91c",
+        "output_asset_sha256": "ac48855b7a3cf0fd1c312b5cc2f7ea77bd2b1a0afef21277ba9b3f779f44e363",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-amata-roze-kaberne-sovinon-rozovoe-suhoe-13",
@@ -274,9 +328,18 @@
       "catalog_name": "Аристов Амата Розе",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_amata_roze_kaberne_sovinon_rozovoe_suhoe_13_520459ddc4.webp",
-      "asset_sha256": "b99a8244fe60d5fed0dbc9610b2e15310324fb90ed60d0c54fbc6e0e9eb4e71f",
+      "asset_sha256": "3130a7b3ed9440eafc0be0a43007f4bb282e94990c1445229c6bb01891639c69",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-amata-roze-kaberne-sovinon-rozovoe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_amata_roze_kaberne_sovinon_rozovoe_suhoe_13_520459ddc4.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_amata_roze_kaberne_sovinon_rozovoe_suhoe_13_520459ddc4.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "b99a8244fe60d5fed0dbc9610b2e15310324fb90ed60d0c54fbc6e0e9eb4e71f",
+        "output_asset_sha256": "3130a7b3ed9440eafc0be0a43007f4bb282e94990c1445229c6bb01891639c69",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-anima-michela-2023-sandzhoveze-krasnoe-suhoe-115",
@@ -285,9 +348,18 @@
       "catalog_name": "Аристов Анима Мичела 2023",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_anima_michela_2023_sandzhoveze_krasnoe_suhoe_115_6e5381d827.webp",
-      "asset_sha256": "15146041bf21fc1818380c46e6bc42ff748be548f204c98d06faa9ace491392f",
+      "asset_sha256": "985b5d3e3de00e5e58b5e263aad6488a78c8e8d9ee9196d4b1d3b22aa8f51745",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-anima-michela-2023-sandzhoveze-krasnoe-suhoe-115",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_anima_michela_2023_sandzhoveze_krasnoe_suhoe_115_6e5381d827.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_anima_michela_2023_sandzhoveze_krasnoe_suhoe_115_6e5381d827.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "15146041bf21fc1818380c46e6bc42ff748be548f204c98d06faa9ace491392f",
+        "output_asset_sha256": "985b5d3e3de00e5e58b5e263aad6488a78c8e8d9ee9196d4b1d3b22aa8f51745",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-anima-pino-gridzhio-beloe-suhoe-12",
@@ -296,9 +368,18 @@
       "catalog_name": "Аристов Анима Пино Гриджио",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_anima_pino_gridzhio_beloe_suhoe_12_2b93e769db.webp",
-      "asset_sha256": "4e43607a0c771282fde2e8dee366d34c7d07812d165b5465c4b023b9feb070a0",
+      "asset_sha256": "5fa0fbda1225277468dc845adb43191394bc4a1f4ce52898942cdd5243543dc4",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-anima-pino-gridzhio-beloe-suhoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_anima_pino_gridzhio_beloe_suhoe_12_2b93e769db.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_anima_pino_gridzhio_beloe_suhoe_12_2b93e769db.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "4e43607a0c771282fde2e8dee366d34c7d07812d165b5465c4b023b9feb070a0",
+        "output_asset_sha256": "5fa0fbda1225277468dc845adb43191394bc4a1f4ce52898942cdd5243543dc4",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-anima-pino-gridzhio-blash-rozovoe-suhoe-125",
@@ -307,9 +388,18 @@
       "catalog_name": "Аристов Анима Пино Гриджио Блаш",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_anima_pino_gridzhio_blash_rozovoe_suhoe_125_c6ac2c7f10.webp",
-      "asset_sha256": "def3ee0968c534ba60c1dc962b019f2beb1002fafd615e74188e86738634b8b6",
+      "asset_sha256": "9391173f5c3b727044d05ae2ce82eaf318f693c03aa6d1005fe4bdf4e5eef833",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-anima-pino-gridzhio-blash-rozovoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_anima_pino_gridzhio_blash_rozovoe_suhoe_125_c6ac2c7f10.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_anima_pino_gridzhio_blash_rozovoe_suhoe_125_c6ac2c7f10.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "def3ee0968c534ba60c1dc962b019f2beb1002fafd615e74188e86738634b8b6",
+        "output_asset_sha256": "9391173f5c3b727044d05ae2ce82eaf318f693c03aa6d1005fe4bdf4e5eef833",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-anima-pino-nero-sandzhoveze-pino-nuar-krasnoe-suhoe-125",
@@ -318,9 +408,18 @@
       "catalog_name": "Аристов Анима Пино Неро Санджовезе",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_anima_pino_nero_sandzhoveze_pino_nuar_krasnoe_suhoe_125_6fc8b03351.webp",
-      "asset_sha256": "89ac38ed5def6963f869c82a6ad8abbe43def8031a04534d242c78cab044b5a9",
+      "asset_sha256": "18f886bf56a5174e01fdccf3391b2ecb766392cdee055141702d95c0c1d9cde7",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-anima-pino-nero-sandzhoveze-pino-nuar-krasnoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_anima_pino_nero_sandzhoveze_pino_nuar_krasnoe_suhoe_125_6fc8b03351.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_anima_pino_nero_sandzhoveze_pino_nuar_krasnoe_suhoe_125_6fc8b03351.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "89ac38ed5def6963f869c82a6ad8abbe43def8031a04534d242c78cab044b5a9",
+        "output_asset_sha256": "18f886bf56a5174e01fdccf3391b2ecb766392cdee055141702d95c0c1d9cde7",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-byanko-polusladkoe-shardone-beloe-13",
@@ -329,9 +428,18 @@
       "catalog_name": "Аристов Бьянко Полусладкое",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_byanko_polusladkoe_shardone_beloe_13_4167038d66.webp",
-      "asset_sha256": "ab2bca8a32412be863afa84f6beabd9bdfb292ba2cff1d02168af09dcb2d4704",
+      "asset_sha256": "2a97447ae8d5b4f8c8ed4eb8f3fc9f1710112d1984807b571843d8efdc1e2a86",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-byanko-polusladkoe-shardone-beloe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_byanko_polusladkoe_shardone_beloe_13_4167038d66.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_byanko_polusladkoe_shardone_beloe_13_4167038d66.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "ab2bca8a32412be863afa84f6beabd9bdfb292ba2cff1d02168af09dcb2d4704",
+        "output_asset_sha256": "2a97447ae8d5b4f8c8ed4eb8f3fc9f1710112d1984807b571843d8efdc1e2a86",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-byanko-shardone-beloe-suhoe-13",
@@ -340,9 +448,18 @@
       "catalog_name": "Аристов Бьянко",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_byanko_shardone_beloe_suhoe_13_4ffd5831ff.webp",
-      "asset_sha256": "71b1a45e1f65f7f54493a1b2678a1adab3e460425fa38c6eaad9232a2cd896f2",
+      "asset_sha256": "338e775efacd7fc48a3fc4c395fed9f25003cf9fe419fe5dccd9225338e9f219",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-byanko-shardone-beloe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_byanko_shardone_beloe_suhoe_13_4ffd5831ff.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_byanko_shardone_beloe_suhoe_13_4ffd5831ff.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "71b1a45e1f65f7f54493a1b2678a1adab3e460425fa38c6eaad9232a2cd896f2",
+        "output_asset_sha256": "338e775efacd7fc48a3fc4c395fed9f25003cf9fe419fe5dccd9225338e9f219",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-kaberne-sovinon-krasnoe-suhoe-13",
@@ -351,9 +468,18 @@
       "catalog_name": "Аристов Каберне Совиньон",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_kaberne_sovinon_krasnoe_suhoe_13_5e123aa5be.webp",
-      "asset_sha256": "8825c2e7de67af860e18b7c166cb1be7eaf3d2f45ef0f26098dfeace1bad2e5b",
+      "asset_sha256": "df2a3746e17fd89f09ef980ea077087a9105132cad38c5ed60b1a0592003a88c",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-kaberne-sovinon-krasnoe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_kaberne_sovinon_krasnoe_suhoe_13_5e123aa5be.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_kaberne_sovinon_krasnoe_suhoe_13_5e123aa5be.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "8825c2e7de67af860e18b7c166cb1be7eaf3d2f45ef0f26098dfeace1bad2e5b",
+        "output_asset_sha256": "df2a3746e17fd89f09ef980ea077087a9105132cad38c5ed60b1a0592003a88c",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-kaberne-sovinon-roze-2020-rozovoe-suhoe-12",
@@ -362,9 +488,18 @@
       "catalog_name": "Аристов Каберне Совиньон Розе 2020",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_kaberne_sovinon_roze_2020_rozovoe_suhoe_12_0f93b0dc29.webp",
-      "asset_sha256": "9171a94f4a9ee73394c1fa0a3b5da985ae243e8c37039c1b467a49310f58a659",
+      "asset_sha256": "a1430cd6f9d2674908270e00d5d0a719df38ea901b8319a905be0ccd99a648e5",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-kaberne-sovinon-roze-2020-rozovoe-suhoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_kaberne_sovinon_roze_2020_rozovoe_suhoe_12_0f93b0dc29.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_kaberne_sovinon_roze_2020_rozovoe_suhoe_12_0f93b0dc29.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "9171a94f4a9ee73394c1fa0a3b5da985ae243e8c37039c1b467a49310f58a659",
+        "output_asset_sha256": "a1430cd6f9d2674908270e00d5d0a719df38ea901b8319a905be0ccd99a648e5",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-kaberne-sovinon-roze-rozovoe-suhoe-12",
@@ -373,9 +508,18 @@
       "catalog_name": "Аристов Каберне Совиньон Розе",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_kaberne_sovinon_roze_rozovoe_suhoe_12_486d2e1918.webp",
-      "asset_sha256": "9171a94f4a9ee73394c1fa0a3b5da985ae243e8c37039c1b467a49310f58a659",
+      "asset_sha256": "a1430cd6f9d2674908270e00d5d0a719df38ea901b8319a905be0ccd99a648e5",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-kaberne-sovinon-roze-rozovoe-suhoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_kaberne_sovinon_roze_rozovoe_suhoe_12_486d2e1918.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_kaberne_sovinon_roze_rozovoe_suhoe_12_486d2e1918.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "9171a94f4a9ee73394c1fa0a3b5da985ae243e8c37039c1b467a49310f58a659",
+        "output_asset_sha256": "a1430cd6f9d2674908270e00d5d0a719df38ea901b8319a905be0ccd99a648e5",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-kyuve-aleksandr-blanc-de-blancs-36-shardone-beloe-ekstra-bryut-12",
@@ -417,9 +561,18 @@
       "catalog_name": "Аристов Рислинг",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_risling_beloe_suhoe_115_137cf12705.webp",
-      "asset_sha256": "6075c5c2a3c5561e058ef3c9fca11f74028cbd05a8106474f5cbee7cbe2d0c3f",
+      "asset_sha256": "9a86b44b58a32fb4f5e3e3af8653bb277643b7b75dc69b9fc82f8e5e5441e29f",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-risling-beloe-suhoe-115",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_risling_beloe_suhoe_115_137cf12705.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_risling_beloe_suhoe_115_137cf12705.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "6075c5c2a3c5561e058ef3c9fca11f74028cbd05a8106474f5cbee7cbe2d0c3f",
+        "output_asset_sha256": "9a86b44b58a32fb4f5e3e3af8653bb277643b7b75dc69b9fc82f8e5e5441e29f",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-rosso-polusladkoe-saperavi-krasnoe-13",
@@ -428,9 +581,18 @@
       "catalog_name": "Аристов Россо Полусладкое",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_rosso_polusladkoe_saperavi_krasnoe_13_ed04238b6b.webp",
-      "asset_sha256": "69ba73e1d990c37939bc066e97191d3cb78716056ccbe509edbdaa57e406d53d",
+      "asset_sha256": "e63c9d4a8952a064e0a2362b7e9fb8c58a77e246c284f16888189175419ede67",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-rosso-polusladkoe-saperavi-krasnoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_rosso_polusladkoe_saperavi_krasnoe_13_ed04238b6b.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_rosso_polusladkoe_saperavi_krasnoe_13_ed04238b6b.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "69ba73e1d990c37939bc066e97191d3cb78716056ccbe509edbdaa57e406d53d",
+        "output_asset_sha256": "e63c9d4a8952a064e0a2362b7e9fb8c58a77e246c284f16888189175419ede67",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-sandzhoveze-krasnoe-suhoe-13",
@@ -439,9 +601,18 @@
       "catalog_name": "Аристов Санджовезе",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_sandzhoveze_krasnoe_suhoe_13_346f0e6195.webp",
-      "asset_sha256": "e63bb2544caf1ae535b881928ce2a7d4ab7073bd5ebe468afe3bf76368ca2971",
+      "asset_sha256": "9bba560772ab4d7cbadeba04a1aabf58f584f4ee6b6847a01378445439392234",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-sandzhoveze-krasnoe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_sandzhoveze_krasnoe_suhoe_13_346f0e6195.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_sandzhoveze_krasnoe_suhoe_13_346f0e6195.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "e63bb2544caf1ae535b881928ce2a7d4ab7073bd5ebe468afe3bf76368ca2971",
+        "output_asset_sha256": "9bba560772ab4d7cbadeba04a1aabf58f584f4ee6b6847a01378445439392234",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-shardone-318-beloe-suhoe-115",
@@ -450,9 +621,18 @@
       "catalog_name": "Аристов Шардоне 318",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_shardone_318_beloe_suhoe_115_da1c20930f.webp",
-      "asset_sha256": "813265e5b093789398bf4076a61f41b950961801c9ee3f4d002d09270b9ea487",
+      "asset_sha256": "0c05f33bf25c6e3b390e37f06b2857d6581c7674349b48a960127c29acce53aa",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-shardone-318-beloe-suhoe-115",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_shardone_318_beloe_suhoe_115_da1c20930f.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_shardone_318_beloe_suhoe_115_da1c20930f.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "813265e5b093789398bf4076a61f41b950961801c9ee3f4d002d09270b9ea487",
+        "output_asset_sha256": "0c05f33bf25c6e3b390e37f06b2857d6581c7674349b48a960127c29acce53aa",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-tsvaygelt-320-rozovoe-suhoe-125",
@@ -461,9 +641,18 @@
       "catalog_name": "Аристов Цвайгельт 320",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_tsvaygelt_320_rozovoe_suhoe_125_42f977144e.webp",
-      "asset_sha256": "ffe3046b53edb6364eee5d6320f0da0436db65f4dfba4bf5b2545d4090d968a6",
+      "asset_sha256": "86113a1ec3d54eb2e272122cf05cc0e5157bb1fc8f0d154662555a13124b09d2",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-tsvaygelt-320-rozovoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_tsvaygelt_320_rozovoe_suhoe_125_42f977144e.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_tsvaygelt_320_rozovoe_suhoe_125_42f977144e.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "ffe3046b53edb6364eee5d6320f0da0436db65f4dfba4bf5b2545d4090d968a6",
+        "output_asset_sha256": "86113a1ec3d54eb2e272122cf05cc0e5157bb1fc8f0d154662555a13124b09d2",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-aristov-verde-muskat-beloe-polusuhoe-11",
@@ -472,9 +661,18 @@
       "catalog_name": "Аристов Верде",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_aristov_verde_muskat_beloe_polusuhoe_11_3240688a5c.webp",
-      "asset_sha256": "6406c8cbee727ee48cb95a074b646e2ab02c370717826aabc3e81e01fd174011",
+      "asset_sha256": "bac900feab4ae73ed93ed4c322637d0d843cbbd113029ad1ee527603754891dc",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-aristov-verde-muskat-beloe-polusuhoe-11",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_verde_muskat_beloe_polusuhoe_11_3240688a5c.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_aristov_verde_muskat_beloe_polusuhoe_11_3240688a5c.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "6406c8cbee727ee48cb95a074b646e2ab02c370717826aabc3e81e01fd174011",
+        "output_asset_sha256": "bac900feab4ae73ed93ed4c322637d0d843cbbd113029ad1ee527603754891dc",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-flyor-dyu-syud-blan-de-tamane-tsvetochnyy-beloe-suhoe-115",
@@ -483,9 +681,18 @@
       "catalog_name": "Флёр дю Сюд Блан де Тамань",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_flyor_dyu_syud_blan_de_tamane_tsvetochnyy_beloe_suhoe_115_bbb18fb1e2.webp",
-      "asset_sha256": "54407c9f31ed28ebdec0b90c7c59a674e460b7ee0ce48a37c05be2f82017b4a4",
+      "asset_sha256": "6180205b75820cb536cbbec9d5b715e24e0cc78b158c5a027df029adcd70653f",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-flyor-dyu-syud-blan-de-tamane-tsvetochnyy-beloe-suhoe-115",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_flyor_dyu_syud_blan_de_tamane_tsvetochnyy_beloe_suhoe_115_bbb18fb1e2.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_flyor_dyu_syud_blan_de_tamane_tsvetochnyy_beloe_suhoe_115_bbb18fb1e2.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "54407c9f31ed28ebdec0b90c7c59a674e460b7ee0ce48a37c05be2f82017b4a4",
+        "output_asset_sha256": "6180205b75820cb536cbbec9d5b715e24e0cc78b158c5a027df029adcd70653f",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-flyor-dyu-syud-roze-de-tamane-traminer-rozovyy-rozovoe-suhoe-125",
@@ -494,9 +701,18 @@
       "catalog_name": "Флёр дю Сюд Розе де Тамань",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_flyor_dyu_syud_roze_de_tamane_traminer_rozovyy_rozovoe_suhoe_125_7be05745b7.webp",
-      "asset_sha256": "12de60f71eeef7aadc36d12c5a938d120ac5d4ab8b59c0fb57619ef05fb29f47",
+      "asset_sha256": "85af8a68875fe07e9c5bea8902acfa2ba64ad62ff7b02959f082939fd2be5218",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-flyor-dyu-syud-roze-de-tamane-traminer-rozovyy-rozovoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_flyor_dyu_syud_roze_de_tamane_traminer_rozovyy_rozovoe_suhoe_125_7be05745b7.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_flyor_dyu_syud_roze_de_tamane_traminer_rozovyy_rozovoe_suhoe_125_7be05745b7.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "12de60f71eeef7aadc36d12c5a938d120ac5d4ab8b59c0fb57619ef05fb29f47",
+        "output_asset_sha256": "85af8a68875fe07e9c5bea8902acfa2ba64ad62ff7b02959f082939fd2be5218",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-flyor-dyu-syud-ruzh-de-tamane-rubin-golodrigi-krasnoe-suhoe-12",
@@ -505,9 +721,18 @@
       "catalog_name": "Флёр дю Сюд Руж де Тамань",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_flyor_dyu_syud_ruzh_de_tamane_rubin_golodrigi_krasnoe_suhoe_12_c3a85b7901.webp",
-      "asset_sha256": "e1943394a1b7fbfee8e7b31857692b919a3a7bcdcdceab2093681daa13c8e340",
+      "asset_sha256": "40d7a42e40eeb5dff04eee67b23835a972f8c93679889a60fe9c73785d2c9718",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-flyor-dyu-syud-ruzh-de-tamane-rubin-golodrigi-krasnoe-suhoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_flyor_dyu_syud_ruzh_de_tamane_rubin_golodrigi_krasnoe_suhoe_12_c3a85b7901.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_flyor_dyu_syud_ruzh_de_tamane_rubin_golodrigi_krasnoe_suhoe_12_c3a85b7901.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "e1943394a1b7fbfee8e7b31857692b919a3a7bcdcdceab2093681daa13c8e340",
+        "output_asset_sha256": "40d7a42e40eeb5dff04eee67b23835a972f8c93679889a60fe9c73785d2c9718",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125",
@@ -516,9 +741,18 @@
       "catalog_name": "Каберне де Тамань",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_kaberne_de_tamane_kaberne_sovinon_krasnoe_suhoe_125_d65b4385ed.webp",
-      "asset_sha256": "8830245eb7360fa6951c93ab8d6cdcb7f692bf6d9273115cadd1ff52b665dc3f",
+      "asset_sha256": "0830b88ec38167d98cbe22f8b109b23e28ac84246ea9be72b9d3de23b3a30b6a",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-kaberne-de-tamane-kaberne-sovinon-krasnoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_kaberne_de_tamane_kaberne_sovinon_krasnoe_suhoe_125_d65b4385ed.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_kaberne_de_tamane_kaberne_sovinon_krasnoe_suhoe_125_d65b4385ed.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "8830245eb7360fa6951c93ab8d6cdcb7f692bf6d9273115cadd1ff52b665dc3f",
+        "output_asset_sha256": "0830b88ec38167d98cbe22f8b109b23e28ac84246ea9be72b9d3de23b3a30b6a",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-krasnostop-de-tamane-krasnostop-anapskiy-krasnoe-suhoe-13",
@@ -527,9 +761,18 @@
       "catalog_name": "Красностоп де Тамань",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_krasnostop_de_tamane_krasnostop_anapskiy_krasnoe_suhoe_13_84762b109b.webp",
-      "asset_sha256": "276c4afb542612cf35db93dd185107073498b460ddd6fc448ad5d19683e9fcd3",
+      "asset_sha256": "7083a233058f95b54c913d05daf645f2134122f262e0c8ceada5fc98bace1349",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-krasnostop-de-tamane-krasnostop-anapskiy-krasnoe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_krasnostop_de_tamane_krasnostop_anapskiy_krasnoe_suhoe_13_84762b109b.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_krasnostop_de_tamane_krasnostop_anapskiy_krasnoe_suhoe_13_84762b109b.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "276c4afb542612cf35db93dd185107073498b460ddd6fc448ad5d19683e9fcd3",
+        "output_asset_sha256": "7083a233058f95b54c913d05daf645f2134122f262e0c8ceada5fc98bace1349",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-saperavi-de-tamane-krasnoe-suhoe-125",
@@ -538,9 +781,18 @@
       "catalog_name": "Саперави де Тамань",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_saperavi_de_tamane_krasnoe_suhoe_125_66c688690c.webp",
-      "asset_sha256": "eabd7990eca262388a6d9b8c5e257580eb95214b04ec7a2a540511d8edf7e2f4",
+      "asset_sha256": "f546ec2d7a742ee4d2ef77199210b2b56ea3fdb88e450eabaf551af45abc7534",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-saperavi-de-tamane-krasnoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_saperavi_de_tamane_krasnoe_suhoe_125_66c688690c.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_saperavi_de_tamane_krasnoe_suhoe_125_66c688690c.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "eabd7990eca262388a6d9b8c5e257580eb95214b04ec7a2a540511d8edf7e2f4",
+        "output_asset_sha256": "f546ec2d7a742ee4d2ef77199210b2b56ea3fdb88e450eabaf551af45abc7534",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-aligote-beloe-suhoe-13",
@@ -549,9 +801,18 @@
       "catalog_name": "Шато Тамань Алиготе",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_aligote_beloe_suhoe_13_5af831fbbc.webp",
-      "asset_sha256": "d3d83c56c07fb5b3f253e4d98e37109e59004850795f77f49181ede15f666496",
+      "asset_sha256": "fa90f3cee3f9c0500bfa87439e58017640800ad8d64f53160d8ef1263e505cd0",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-aligote-beloe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_aligote_beloe_suhoe_13_5af831fbbc.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_aligote_beloe_suhoe_13_5af831fbbc.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "d3d83c56c07fb5b3f253e4d98e37109e59004850795f77f49181ede15f666496",
+        "output_asset_sha256": "fa90f3cee3f9c0500bfa87439e58017640800ad8d64f53160d8ef1263e505cd0",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-delikeyt-roze-2024-bianka-rozovoe-suhoe-95",
@@ -560,9 +821,18 @@
       "catalog_name": "Шато Тамань Деликейт Розе 2024",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_delikeyt_roze_2024_bianka_rozovoe_suhoe_95_ba22a88d2e.webp",
-      "asset_sha256": "17832083f75516262e04fc604f95c83edcd93f8b53828c2c1b5f5bb3b74b1747",
+      "asset_sha256": "eddee96a850a9c3d4d3356feeee931358f8be32ca2cd0a307a4b7a4f67758487",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-delikeyt-roze-2024-bianka-rozovoe-suhoe-95",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_delikeyt_roze_2024_bianka_rozovoe_suhoe_95_ba22a88d2e.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_delikeyt_roze_2024_bianka_rozovoe_suhoe_95_ba22a88d2e.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "17832083f75516262e04fc604f95c83edcd93f8b53828c2c1b5f5bb3b74b1747",
+        "output_asset_sha256": "eddee96a850a9c3d4d3356feeee931358f8be32ca2cd0a307a4b7a4f67758487",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-kaberne-limited-edishn-2015-kaberne-sovinon-krasnoe-suhoe-13",
@@ -571,9 +841,18 @@
       "catalog_name": "Шато Тамань Резерв Каберне Лимитед Эдишн 2015",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_kaberne_limited_edishn_2015_kaberne_sovinon_krasnoe_suhoe_13_ba74d4f88e.webp",
-      "asset_sha256": "5ea62f9626dc83758f0a53a7e08d1595521a6143acd45836ddde0743004fba80",
+      "asset_sha256": "c2fd4a216950adeec62284e63879261a38012d958a0e71e2a9fceb555b2a8a71",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-kaberne-limited-edishn-2015-kaberne-sovinon-krasnoe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_kaberne_limited_edishn_2015_kaberne_sovinon_krasnoe_suhoe_13_ba74d4f88e.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_kaberne_limited_edishn_2015_kaberne_sovinon_krasnoe_suhoe_13_ba74d4f88e.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "5ea62f9626dc83758f0a53a7e08d1595521a6143acd45836ddde0743004fba80",
+        "output_asset_sha256": "c2fd4a216950adeec62284e63879261a38012d958a0e71e2a9fceb555b2a8a71",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-kaberne-limited-edishn-2022-kaberne-sovinon-krasnoe-suhoe-14",
@@ -582,9 +861,18 @@
       "catalog_name": "Шато Тамань Резерв Каберне Лимитед Эдишн 2022",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_kaberne_limited_edishn_2022_kaberne_sovinon_krasnoe_suhoe_14_93a50f2cf1.webp",
-      "asset_sha256": "63053f63c95083d3d248b6f02c94ad1481bec04aa00d6ddcb05552863e5dff18",
+      "asset_sha256": "1c41c0c51e99883abb6ac645c5562beba50c08f2211d02509427d11da7b1bdb8",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-kaberne-limited-edishn-2022-kaberne-sovinon-krasnoe-suhoe-14",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_kaberne_limited_edishn_2022_kaberne_sovinon_krasnoe_suhoe_14_93a50f2cf1.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_kaberne_limited_edishn_2022_kaberne_sovinon_krasnoe_suhoe_14_93a50f2cf1.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "63053f63c95083d3d248b6f02c94ad1481bec04aa00d6ddcb05552863e5dff18",
+        "output_asset_sha256": "1c41c0c51e99883abb6ac645c5562beba50c08f2211d02509427d11da7b1bdb8",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-kollekshn-saperavi-2015-krasnoe-suhoe-13",
@@ -593,9 +881,18 @@
       "catalog_name": "Шато Тамань Резерв Коллекшн Саперави 2015",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_kollekshn_saperavi_2015_krasnoe_suhoe_13_22ef176871.webp",
-      "asset_sha256": "8c65180d83e3832d8f32e9aa79515ee10cbde1577499a90d30ad0dd11e89ba41",
+      "asset_sha256": "962276dc2f74065fa8267b87a7a3bb838f0572d3c455acd1b1812fb1847ef698",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-kollekshn-saperavi-2015-krasnoe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_kollekshn_saperavi_2015_krasnoe_suhoe_13_22ef176871.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_kollekshn_saperavi_2015_krasnoe_suhoe_13_22ef176871.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "8c65180d83e3832d8f32e9aa79515ee10cbde1577499a90d30ad0dd11e89ba41",
+        "output_asset_sha256": "962276dc2f74065fa8267b87a7a3bb838f0572d3c455acd1b1812fb1847ef698",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-kollekshn-shardone-beloe-suhoe-125",
@@ -604,9 +901,18 @@
       "catalog_name": "Шато Тамань Резерв Коллекшн Шардоне",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_kollekshn_shardone_beloe_suhoe_125_94788e57d9.webp",
-      "asset_sha256": "99aa597b693ae811fb43fefac8ee34b6bc2069a038e24bcf081b0bcbce39120d",
+      "asset_sha256": "5779ebdb0ba8601481abfa00248ade818cfddfee217c8ae7c702e577042f09a3",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-kollekshn-shardone-beloe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_kollekshn_shardone_beloe_suhoe_125_94788e57d9.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_kollekshn_shardone_beloe_suhoe_125_94788e57d9.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "99aa597b693ae811fb43fefac8ee34b6bc2069a038e24bcf081b0bcbce39120d",
+        "output_asset_sha256": "5779ebdb0ba8601481abfa00248ade818cfddfee217c8ae7c702e577042f09a3",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-krasnostop-krasnostop-anapskiy-krasnoe-suhoe-135",
@@ -615,9 +921,18 @@
       "catalog_name": "Шато Тамань Резерв Красностоп",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_krasnostop_krasnostop_anapskiy_krasnoe_suhoe_135_97bb10192f.webp",
-      "asset_sha256": "5fb328cb0878050052c800f820689997de157fbbd43e0c3249616f104b4e5203",
+      "asset_sha256": "46c25b9974c9fb4d95fae4d1d5968df6ae309c7936b72f53f91ccf5f050451db",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-krasnostop-krasnostop-anapskiy-krasnoe-suhoe-135",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_krasnostop_krasnostop_anapskiy_krasnoe_suhoe_135_97bb10192f.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_krasnostop_krasnostop_anapskiy_krasnoe_suhoe_135_97bb10192f.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "5fb328cb0878050052c800f820689997de157fbbd43e0c3249616f104b4e5203",
+        "output_asset_sha256": "46c25b9974c9fb4d95fae4d1d5968df6ae309c7936b72f53f91ccf5f050451db",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-merlo-limited-edishn-2018-krasnoe-suhoe-125",
@@ -626,9 +941,18 @@
       "catalog_name": "Шато Тамань Резерв Мерло Лимитед Эдишн 2018",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_merlo_limited_edishn_2018_krasnoe_suhoe_125_ca32657ab3.webp",
-      "asset_sha256": "0d4cde1003b14c4915c08f3e0f4f25d880c91bc35ad69c45c216bf4e1ae2a843",
+      "asset_sha256": "72bb6c6eec35878ea454aa24267912322e81cb63a86f04cc5a2056b8cb923a89",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-merlo-limited-edishn-2018-krasnoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_merlo_limited_edishn_2018_krasnoe_suhoe_125_ca32657ab3.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_merlo_limited_edishn_2018_krasnoe_suhoe_125_ca32657ab3.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "0d4cde1003b14c4915c08f3e0f4f25d880c91bc35ad69c45c216bf4e1ae2a843",
+        "output_asset_sha256": "72bb6c6eec35878ea454aa24267912322e81cb63a86f04cc5a2056b8cb923a89",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-myuller-turgau-limited-edishn-2021-beloe-suhoe-12",
@@ -637,9 +961,18 @@
       "catalog_name": "Шато Тамань Резерв Мюллер-Тургау Лимитед Эдишн 2021",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_myuller_turgau_limited_edishn_2021_beloe_suhoe_12_5454c6baa4.webp",
-      "asset_sha256": "a947a7edcbb40f1b8c608d8dab6c3030bfdfdd8294cf9f8c80fc0c5602833543",
+      "asset_sha256": "1f46d763cbe10d7fcc907572b5452cdddcf5679aa474259ecce91baf5cdb0a66",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-myuller-turgau-limited-edishn-2021-beloe-suhoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_myuller_turgau_limited_edishn_2021_beloe_suhoe_12_5454c6baa4.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_myuller_turgau_limited_edishn_2021_beloe_suhoe_12_5454c6baa4.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "a947a7edcbb40f1b8c608d8dab6c3030bfdfdd8294cf9f8c80fc0c5602833543",
+        "output_asset_sha256": "1f46d763cbe10d7fcc907572b5452cdddcf5679aa474259ecce91baf5cdb0a66",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-myuller-turgau-limited-edishn-beloe-suhoe-13",
@@ -648,9 +981,18 @@
       "catalog_name": "Шато Тамань Резерв Мюллер-Тургау Лимитед Эдишн",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_myuller_turgau_limited_edishn_beloe_suhoe_13_0155273bff.webp",
-      "asset_sha256": "8ecb2e02c19b39f2a6ea5e239842558f5afbc4fb6417cfc2be8fc2d614ab1290",
+      "asset_sha256": "51328d041018b0626dfc2d76900a710e71a339680c1d2ae7f7325612f87c2c52",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-myuller-turgau-limited-edishn-beloe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_myuller_turgau_limited_edishn_beloe_suhoe_13_0155273bff.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_myuller_turgau_limited_edishn_beloe_suhoe_13_0155273bff.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "8ecb2e02c19b39f2a6ea5e239842558f5afbc4fb6417cfc2be8fc2d614ab1290",
+        "output_asset_sha256": "51328d041018b0626dfc2d76900a710e71a339680c1d2ae7f7325612f87c2c52",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-premer-ruzh-kaberne-sovinon-krasnoe-suhoe-13",
@@ -659,9 +1001,18 @@
       "catalog_name": "Шато Тамань Резерв Премьер Руж",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_premer_ruzh_kaberne_sovinon_krasnoe_suhoe_13_e883e5bf18.webp",
-      "asset_sha256": "a3c990245f37f9981cefc3fb177b4993b200957c732ec8f4638aa725f7690941",
+      "asset_sha256": "f56fef1885001a3a0e21398a1b82c978976ca0c4612f6ccd13e6ddad912b2408",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-premer-ruzh-kaberne-sovinon-krasnoe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_premer_ruzh_kaberne_sovinon_krasnoe_suhoe_13_e883e5bf18.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_premer_ruzh_kaberne_sovinon_krasnoe_suhoe_13_e883e5bf18.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "a3c990245f37f9981cefc3fb177b4993b200957c732ec8f4638aa725f7690941",
+        "output_asset_sha256": "f56fef1885001a3a0e21398a1b82c978976ca0c4612f6ccd13e6ddad912b2408",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rezerv-red-blend-kaberne-sovinon-krasnoe-suhoe-125",
@@ -670,9 +1021,18 @@
       "catalog_name": "Шато Тамань Резерв Ред Бленд",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rezerv_red_blend_kaberne_sovinon_krasnoe_suhoe_125_6efe35b973.webp",
-      "asset_sha256": "4c8e3ee2e9fab90f0f06045ceef7e1b6f193a3e9fd7cf8f8286e99f71ca994d8",
+      "asset_sha256": "7d887dae650e43deb01c711ae92a392090933295be38fee6df68c0a6c9df64a4",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rezerv-red-blend-kaberne-sovinon-krasnoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_red_blend_kaberne_sovinon_krasnoe_suhoe_125_6efe35b973.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rezerv_red_blend_kaberne_sovinon_krasnoe_suhoe_125_6efe35b973.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "4c8e3ee2e9fab90f0f06045ceef7e1b6f193a3e9fd7cf8f8286e99f71ca994d8",
+        "output_asset_sha256": "7d887dae650e43deb01c711ae92a392090933295be38fee6df68c0a6c9df64a4",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-rkatsiteli-myuller-turgau-shardone-2025-beloe-suhoe-12",
@@ -681,9 +1041,18 @@
       "catalog_name": "Шато Тамань Ркацители-Мюллер Тургау-Шардоне 2025",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_rkatsiteli_myuller_turgau_shardone_2025_beloe_suhoe_12_a4e548cd8e.webp",
-      "asset_sha256": "46f93746b7b62654934eea7c5a1daca4168258fd5f883a64bd70d059cf14e3d7",
+      "asset_sha256": "e03657b544ba6d3be31b69fd5dfc6b357218c9451ad29fc16a90bd2b844edb48",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-rkatsiteli-myuller-turgau-shardone-2025-beloe-suhoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rkatsiteli_myuller_turgau_shardone_2025_beloe_suhoe_12_a4e548cd8e.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_rkatsiteli_myuller_turgau_shardone_2025_beloe_suhoe_12_a4e548cd8e.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "46f93746b7b62654934eea7c5a1daca4168258fd5f883a64bd70d059cf14e3d7",
+        "output_asset_sha256": "e03657b544ba6d3be31b69fd5dfc6b357218c9451ad29fc16a90bd2b844edb48",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-ruzh-2023-tsvaygelt-krasnoe-suhoe-12",
@@ -692,9 +1061,18 @@
       "catalog_name": "Шато Тамань Руж 2023",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_ruzh_2023_tsvaygelt_krasnoe_suhoe_12_39edda6f34.webp",
-      "asset_sha256": "ed1455d7a3af2f9700adc1c4163914e0e48e4c768f0a23c54e77c86a929a1e5f",
+      "asset_sha256": "7cff1e66326982c04c3af8df72fe9534ac818e31db3ea1998f6cd9fd5cb74f99",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-ruzh-2023-tsvaygelt-krasnoe-suhoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_ruzh_2023_tsvaygelt_krasnoe_suhoe_12_39edda6f34.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_ruzh_2023_tsvaygelt_krasnoe_suhoe_12_39edda6f34.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "ed1455d7a3af2f9700adc1c4163914e0e48e4c768f0a23c54e77c86a929a1e5f",
+        "output_asset_sha256": "7cff1e66326982c04c3af8df72fe9534ac818e31db3ea1998f6cd9fd5cb74f99",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135",
@@ -703,9 +1081,18 @@
       "catalog_name": "Шато Тамань Селект Оранж",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_selekt_oranzh_tsitronnyy_magaracha_oranzhevoe_suhoe_135_4e83f61d0a.webp",
-      "asset_sha256": "f187675c377bfb33f4b54e294945f2171641ce198a8f650b425ce7fc9bb82ac2",
+      "asset_sha256": "e900b2a6d2f0323328e8c345f4bfdb198a3fc1fe72cc1068e8fcd03816ea5c61",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-selekt-oranzh-tsitronnyy-magaracha-oranzhevoe-suhoe-135",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_selekt_oranzh_tsitronnyy_magaracha_oranzhevoe_suhoe_135_4e83f61d0a.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_selekt_oranzh_tsitronnyy_magaracha_oranzhevoe_suhoe_135_4e83f61d0a.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "f187675c377bfb33f4b54e294945f2171641ce198a8f650b425ce7fc9bb82ac2",
+        "output_asset_sha256": "e900b2a6d2f0323328e8c345f4bfdb198a3fc1fe72cc1068e8fcd03816ea5c61",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-selekt-ruzh-saperavi-krasnoe-suhoe-125",
@@ -714,9 +1101,18 @@
       "catalog_name": "Шато Тамань Селект Руж",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_selekt_ruzh_saperavi_krasnoe_suhoe_125_0e518aaf8c.webp",
-      "asset_sha256": "0ba55232b36a917ed4b3af3c8150a28f78526028e4e179d73078a5f7f8a42cd6",
+      "asset_sha256": "9713da5edc2b16007b05e3f347469a5a4b68707f474cb26d5301830bdf12900c",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-selekt-ruzh-saperavi-krasnoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_selekt_ruzh_saperavi_krasnoe_suhoe_125_0e518aaf8c.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_selekt_ruzh_saperavi_krasnoe_suhoe_125_0e518aaf8c.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "0ba55232b36a917ed4b3af3c8150a28f78526028e4e179d73078a5f7f8a42cd6",
+        "output_asset_sha256": "9713da5edc2b16007b05e3f347469a5a4b68707f474cb26d5301830bdf12900c",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-shardone-beloe-suhoe-12",
@@ -725,9 +1121,18 @@
       "catalog_name": "Шато Тамань Шардоне",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_shardone_beloe_suhoe_12_93dd8fa05c.webp",
-      "asset_sha256": "768b38265c6568feb87022289d6fa4995f6cff569ca7cd3d7f605b27c613750a",
+      "asset_sha256": "0f1b3ee56dd09e5eb2c0c1f59f4bd71d8042327a8a8ff977c4f2a7f1936bf35d",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-shardone-beloe-suhoe-12",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_shardone_beloe_suhoe_12_93dd8fa05c.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_shardone_beloe_suhoe_12_93dd8fa05c.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "768b38265c6568feb87022289d6fa4995f6cff569ca7cd3d7f605b27c613750a",
+        "output_asset_sha256": "0f1b3ee56dd09e5eb2c0c1f59f4bd71d8042327a8a8ff977c4f2a7f1936bf35d",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-terruar-krasnostop-saperavi-2022-krasnoe-suhoe-125",
@@ -736,9 +1141,18 @@
       "catalog_name": "Шато Тамань Терруар Красностоп-Саперави 2022",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_terruar_krasnostop_saperavi_2022_krasnoe_suhoe_125_2e0c0b569c.webp",
-      "asset_sha256": "812e2638151abaffa900c920c82f1a3ac93a8055971bd2f54857a4053f440865",
+      "asset_sha256": "6375f52a9f3f910db900f60438ecba48e3dbd5eae73e47fd83ce19aa2341ca3e",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-terruar-krasnostop-saperavi-2022-krasnoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_terruar_krasnostop_saperavi_2022_krasnoe_suhoe_125_2e0c0b569c.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_terruar_krasnostop_saperavi_2022_krasnoe_suhoe_125_2e0c0b569c.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "812e2638151abaffa900c920c82f1a3ac93a8055971bd2f54857a4053f440865",
+        "output_asset_sha256": "6375f52a9f3f910db900f60438ecba48e3dbd5eae73e47fd83ce19aa2341ca3e",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-shato-tamane-terruar-krasnostop-saperavi-2023-krasnoe-suhoe-125",
@@ -747,9 +1161,18 @@
       "catalog_name": "Шато Тамань Терруар Красностоп-Саперави 2023",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_shato_tamane_terruar_krasnostop_saperavi_2023_krasnoe_suhoe_125_ebc334a55f.webp",
-      "asset_sha256": "5142261ae96ce7a0545630e17095da271079ef68c41cca059c16736bbb15b493",
+      "asset_sha256": "9b96e0b1736ecf094ed9ff893438f233d67f2286f0d6b859c7b8b1826669e97a",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-shato-tamane-terruar-krasnostop-saperavi-2023-krasnoe-suhoe-125",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_terruar_krasnostop_saperavi_2023_krasnoe_suhoe_125_ebc334a55f.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_shato_tamane_terruar_krasnostop_saperavi_2023_krasnoe_suhoe_125_ebc334a55f.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "5142261ae96ce7a0545630e17095da271079ef68c41cca059c16736bbb15b493",
+        "output_asset_sha256": "9b96e0b1736ecf094ed9ff893438f233d67f2286f0d6b859c7b8b1826669e97a",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-vysokiy-bereg-grafit-roze-kaberne-sovinon-rozovoe-suhoe-12",
@@ -769,9 +1192,18 @@
       "catalog_name": "Высокий Берег Мерло",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_vysokiy_bereg_merlo_krasnoe_suhoe_135_d7f7724ccd.webp",
-      "asset_sha256": "e2fc25951eb77aaa931998c86114f14420c76757880a84f0388a75bcd4e6c273",
+      "asset_sha256": "99c5c4d95414e423e2917a33327c62e658097d69a20e7c13885b894da15cfdb5",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-vysokiy-bereg-merlo-krasnoe-suhoe-135",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_vysokiy_bereg_merlo_krasnoe_suhoe_135_d7f7724ccd.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_vysokiy_bereg_merlo_krasnoe_suhoe_135_d7f7724ccd.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "e2fc25951eb77aaa931998c86114f14420c76757880a84f0388a75bcd4e6c273",
+        "output_asset_sha256": "99c5c4d95414e423e2917a33327c62e658097d69a20e7c13885b894da15cfdb5",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "kuban-vino-vysokiy-bereg-myuller-turgau-beloe-suhoe-13",
@@ -780,9 +1212,18 @@
       "catalog_name": "Высокий Берег Мюллер-Тургау",
       "catalog_producer": "Кубань-Вино",
       "source_image": "kuban_vino_vysokiy_bereg_myuller_turgau_beloe_suhoe_13_5cc1c08279.webp",
-      "asset_sha256": "2f9727ee11e25ff0d0e019e2737861a3610cb9f2045122d69bad80d6a6fc55ba",
+      "asset_sha256": "e5160a5407653182d1899b0be3cdbfefed86a15455a545ab9a09aeed7df39222",
       "catalog_url": "https://vino-svoe.ru/wines/kuban-vino-vysokiy-bereg-myuller-turgau-beloe-suhoe-13",
-      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_vysokiy_bereg_myuller_turgau_beloe_suhoe_13_5cc1c08279.webp"
+      "source_image_local_path": "/Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-wino-hackaton/dataset/official-2026-09-17/prod-svoe-vino-strapi/prod-svoe-vino/strapi/uploads/kuban_vino_vysokiy_bereg_myuller_turgau_beloe_suhoe_13_5cc1c08279.webp",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "2f9727ee11e25ff0d0e019e2737861a3610cb9f2045122d69bad80d6a6fc55ba",
+        "output_asset_sha256": "e5160a5407653182d1899b0be3cdbfefed86a15455a545ab9a09aeed7df39222",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "lesnaya-proseka",
@@ -1082,8 +1523,17 @@
       "absence_reason": "The snapshot has several ordinary Chateau Tamagne Saperavi cards. Their bottle labels were inspected and differ from the official NUDE NON FILTERED SAPERAVI label. No Nude card or Nude production description is present.",
       "image_source_url": "https://kuban-vino.ru/upload/iblock/d43/9imq8isxmtbbplviev3j4sjz9ubzqeu0/ШТ сухое красное Саперави НЮД.pdf",
       "image_pdf_page": 1,
-      "asset_sha256": "b5d6472807c2e7fcda4231de9c3a9d1ad3c2dfd496c56d96188eaa373b86b81a",
-      "asset_preparation": "Extracted the bottle image from PDF page 1. Proportional resize to at most 480 pixels. WebP encoding. No retouching."
+      "asset_sha256": "63ce994d85def166f8cbc947d5afc70ef8d9f8881cb53066b97298d855a0c435",
+      "asset_preparation": "Extracted the bottle image from PDF page 1. Proportional resize to at most 480 pixels. WebP encoding. No retouching.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "b5d6472807c2e7fcda4231de9c3a9d1ad3c2dfd496c56d96188eaa373b86b81a",
+        "output_asset_sha256": "63ce994d85def166f8cbc947d5afc70ef8d9f8881cb53066b97298d855a0c435",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "product_id": "official-kuban-nude-rkatsiteli",
@@ -1166,11 +1616,12 @@
     "exact_slug_set_match": true,
     "catalog_descriptions_preserved": true,
     "catalog_grapes_preserved": true,
-    "catalog_assets_byte_identical": true,
+    "catalog_assets_byte_identical": false,
     "official_additions": 6,
     "all_asset_paths_present": true,
     "schema_validator": "validateProductLineMap from webui/shared/product-line-map.ts",
-    "schema_errors": []
+    "schema_errors": [],
+    "catalog_asset_note": "Unedited assets retain source bytes. imagegen-cutouts.json records generated display derivatives and source hashes."
   },
   "official_absence_search": {
     "absent_name_description_tokens": [
