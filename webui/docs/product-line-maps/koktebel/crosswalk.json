@@ -1,0 +1,283 @@
+{
+  "producer_id": "koktebel",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "ЗМВ Коктебель",
+  "entries": [
+    {
+      "wine_slug": "koktebel-casa-belyj-kupazh",
+      "product_id": "wine-koktebel-casa-belyj-kupazh",
+      "group_id": "casa",
+      "catalog_name": "Коктебель Casa белый купаж",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "ZMV_Koktebel_Kaza_belyj_kupazh_251c6cd270.webp",
+      "asset_sha256": "92f23369a97fa20fb05ba95345c7540b2ee93f4de6d6043e770a0b30deb436bb",
+      "group_evidence": "CASA collection name on the saved product bottle label. The card name is abbreviated for four wines."
+    },
+    {
+      "wine_slug": "zmv-koktebel-atmosfera-aligote-rkatsiteli-shardone-beloe-suhoe-11",
+      "product_id": "wine-zmv-koktebel-atmosfera-aligote-rkatsiteli-shardone-beloe-suhoe-11",
+      "group_id": "atmosphere",
+      "catalog_name": "Атмосфера - Алиготе, Ркацители, Шардоне",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_atmosfera_aligote_rkatsiteli_shardone_beloe_suhoe_11_c621a4aae9.webp",
+      "asset_sha256": "3663827a1b2949d9d98d8af5e3206660d8a209de965e41963413db1dbab00dc5",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-atmosfera-kaberne-sovinon-kaberne-fran-merlo-bastardo-magarachskiy-krasnoe-suhoe-13",
+      "product_id": "wine-zmv-koktebel-atmosfera-kaberne-sovinon-kaberne-fran-merlo-bastardo-magarachskiy-krasnoe-suhoe-13",
+      "group_id": "atmosphere",
+      "catalog_name": "Атмосфера - Каберне Совиньон, Каберне Фран, Мерло, Бастардо Магарачский",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_atmosfera_kaberne_sovinon_kaberne_fran_merlo_bastardo_magarachskiy_krasnoe_suhoe_13_e6f84956bb.webp",
+      "asset_sha256": "1aa94b4c3e7f4c2757f996a8ee55da5913226f2a12e9b041558e14c959055333",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-atmosfera-kaberne-sovinon-merlo-pino-chernyy-krasnoe-polusladkoe-13",
+      "product_id": "wine-zmv-koktebel-atmosfera-kaberne-sovinon-merlo-pino-chernyy-krasnoe-polusladkoe-13",
+      "group_id": "atmosphere",
+      "catalog_name": "Атмосфера - Каберне Совиньон, Мерло, Пино Черный",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_atmosfera_kaberne_sovinon_merlo_pino_chernyy_krasnoe_polusladkoe_13_542fe78f22.webp",
+      "asset_sha256": "3359011dc483fc50872b10ec0bb8a2106d32e46693769ac61f354e481c830d57",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-atmosfera-rkatsiteli-aligote-kokur-muskat-belyy-shardone-beloe-polusladkoe-11",
+      "product_id": "wine-zmv-koktebel-atmosfera-rkatsiteli-aligote-kokur-muskat-belyy-shardone-beloe-polusladkoe-11",
+      "group_id": "atmosphere",
+      "catalog_name": "Атмосфера - Ркацители, Алиготе, Кокур, Мускат Белый, Шардоне",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_atmosfera_rkatsiteli_aligote_kokur_muskat_belyy_shardone_beloe_polusladkoe_11_773cbbcc47.webp",
+      "asset_sha256": "df4f3c529e5ae5431da5a8c65d6a3d17c0f443c00dabf7eb6b5585a10c7fbf37",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-atmosfera-shardone-merlo-rkatsiteli-muskat-rozovyy-muskat-gamburgskiy-rozovoe-polusuhoe-12",
+      "product_id": "wine-zmv-koktebel-atmosfera-shardone-merlo-rkatsiteli-muskat-rozovyy-muskat-gamburgskiy-rozovoe-polusuhoe-12",
+      "group_id": "atmosphere",
+      "catalog_name": "Атмосфера - Шардоне, Мерло, Ркацители, Мускат Розовый, Мускат Гамбургский",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_atmosfera_shardone_merlo_rkatsiteli_muskat_rozovyy_muskat_gamburgskiy_rozovoe_polusuhoe_12_5fd10c99b4.webp",
+      "asset_sha256": "5bf1912e3539737ef2ff17b56ac6f639856c48989f8db083abfd8865d5f6985a",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-bastardo-krasnoe-suhoe-14",
+      "product_id": "wine-zmv-koktebel-bastardo-krasnoe-suhoe-14",
+      "group_id": "casa",
+      "catalog_name": "Бастардо",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_bastardo_krasnoe_suhoe_14_493c75d397.webp",
+      "asset_sha256": "850516a2927bc81dfcd5912d906db6519750c1b17ca8c91102a4982003badafd",
+      "group_evidence": "CASA collection name on the saved product bottle label. The card name is abbreviated for four wines."
+    },
+    {
+      "wine_slug": "zmv-koktebel-blan-aligote-beloe-suhoe-12",
+      "product_id": "wine-zmv-koktebel-blan-aligote-beloe-suhoe-12",
+      "group_id": "magnetism",
+      "catalog_name": "Блан, Алиготе",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_blan_aligote_beloe_suhoe_12_b350503764.webp",
+      "asset_sha256": "f52a81574c9997f989fcb7b1548752d2c14b4a4de32996d2d2008023e7f37ae6",
+      "group_evidence": "Exact color-name and variety pairing is listed under Магнетизм on official catalog page 1."
+    },
+    {
+      "wine_slug": "zmv-koktebel-grand-kupazh-kaberne-sovinon-krasnoe-suhoe-13",
+      "product_id": "wine-zmv-koktebel-grand-kupazh-kaberne-sovinon-krasnoe-suhoe-13",
+      "group_id": "casa",
+      "catalog_name": "Гранд Купаж",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_grand_kupazh_kaberne_sovinon_krasnoe_suhoe_13_df6b6621b0.webp",
+      "asset_sha256": "bc0adee738609f7b53bc3a1e307d22fa71cbc9141519fe988a5be437a2af8902",
+      "group_evidence": "CASA collection name on the saved product bottle label. The card name is abbreviated for four wines."
+    },
+    {
+      "wine_slug": "zmv-koktebel-kagor-vysshego-kachestva-kaberne-sovinon-krasnoe-sladkoe-16",
+      "product_id": "wine-zmv-koktebel-kagor-vysshego-kachestva-kaberne-sovinon-krasnoe-sladkoe-16",
+      "group_id": "kagor",
+      "catalog_name": "Кагор Высшего Качества",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_kagor_vysshego_kachestva_kaberne_sovinon_krasnoe_sladkoe_16_d2bf326549.webp",
+      "asset_sha256": "8bea19b141d6259188241dda561e90b41ce3bf3995d54a082b19cb75ddc81e5f",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-kokur-bryut-beloe-11",
+      "product_id": "wine-zmv-koktebel-kokur-bryut-beloe-11",
+      "group_id": "sparkling",
+      "catalog_name": "Кокур брют",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_kokur_bryut_beloe_11_b59c6723b7.webp",
+      "asset_sha256": "d993b27d45146fd9266e75ee21ebf2015f9b9c0a83c891d326a49fc16153e0ae",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-madera-albilo-beloe-sladkoe-19",
+      "product_id": "wine-zmv-koktebel-madera-albilo-beloe-sladkoe-19",
+      "group_id": "1879",
+      "catalog_name": "Мадера",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_madera_albilo_beloe_sladkoe_19_5ce87b8df7.webp",
+      "asset_sha256": "e5ac90fe156da6f0d9ddf61a3f410be75b726e140083cde85980fde86f369888",
+      "group_evidence": "1879 collection name on saved bottle label and in official catalog."
+    },
+    {
+      "wine_slug": "zmv-koktebel-merlo-krasnoe-suhoe-13",
+      "product_id": "wine-zmv-koktebel-merlo-krasnoe-suhoe-13",
+      "group_id": "casa",
+      "catalog_name": "Мерло",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_merlo_krasnoe_suhoe_13_a8d634f782.webp",
+      "asset_sha256": "87ca8af2066186f7507b91957ac179a78b2e632f8916c0e5fe250838c2e0d4ee",
+      "group_evidence": "CASA collection name on the saved product bottle label. The card name is abbreviated for four wines."
+    },
+    {
+      "wine_slug": "zmv-koktebel-muskat-desertnyy-rozovoe-sladkoe-16",
+      "product_id": "wine-zmv-koktebel-muskat-desertnyy-rozovoe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Мускат десертный",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_muskat_desertnyy_rozovoe_sladkoe_16_42c8ac5c99.webp",
+      "asset_sha256": "1aefbed71598fbc795181a12db15b4687c1207bd0b3364386d2217b6814c23af",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-muskat-yantarnyy-desertnyy-beloe-sladkoe-16",
+      "product_id": "wine-zmv-koktebel-muskat-yantarnyy-desertnyy-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "catalog_name": "Мускат янтарный десертный",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_muskat_yantarnyy_desertnyy_beloe_sladkoe_16_b191b9e48e.webp",
+      "asset_sha256": "c97bcc1255363cbe2c186c81383a87def2a55c21f28c459c2e5a3fd927711312",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-oranzh-rkatsiteli-beloe-suhoe-125",
+      "product_id": "wine-zmv-koktebel-oranzh-rkatsiteli-beloe-suhoe-125",
+      "group_id": "magnetism",
+      "catalog_name": "Оранж, Ркацители",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_oranzh_rkatsiteli_beloe_suhoe_125_43fc87e7b1.webp",
+      "asset_sha256": "489df4c0ec4f89be9b29426d273bc8089aa2e805b0f19de237cf7ca103415689",
+      "group_evidence": "Exact color-name and variety pairing is listed under Магнетизм on official catalog page 1."
+    },
+    {
+      "wine_slug": "zmv-koktebel-pino-gri-desertnoe-beloe-sladkoe-16",
+      "product_id": "wine-zmv-koktebel-pino-gri-desertnoe-beloe-sladkoe-16",
+      "group_id": "precious",
+      "catalog_name": "Пино гри десертное",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_pino_gri_desertnoe_beloe_sladkoe_16_b61dc2f497.webp",
+      "asset_sha256": "f598991fc761f9b9abc91070d61b4a37f3fa1931f5d4721d0764ba0698f4109e",
+      "group_evidence": "Драгоценности collection name, 8 years in oak, and limited release printed on the saved product bottle label."
+    },
+    {
+      "wine_slug": "zmv-koktebel-pino-nuar-bryut-rozovoe-11",
+      "product_id": "wine-zmv-koktebel-pino-nuar-bryut-rozovoe-11",
+      "group_id": "sparkling",
+      "catalog_name": "Пино Нуар брют",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_pino_nuar_bryut_rozovoe_11_ef31c55be7.webp",
+      "asset_sha256": "56d12bbba48efad291389ded5719cbd42c49bd839695e30d00a435b48da6de97",
+      "group_evidence": "Explicit snapshot name or conservative navigation group; no price rank asserted."
+    },
+    {
+      "wine_slug": "zmv-koktebel-portveyn-beloe-kreplyonoe-aligote-sladkoe-17",
+      "product_id": "wine-zmv-koktebel-portveyn-beloe-kreplyonoe-aligote-sladkoe-17",
+      "group_id": "1879",
+      "catalog_name": "Портвейн - белое креплёное",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_portveyn_beloe_kreplyonoe_aligote_sladkoe_17_f0222852d9.webp",
+      "asset_sha256": "43c1ad122c22d9cdfcbaaca611e6bf3b9043d70e5f26a4bce3b082f34bc51e15",
+      "group_evidence": "1879 collection name on saved bottle label and in official catalog."
+    },
+    {
+      "wine_slug": "zmv-koktebel-portveyn-krasnoe-kreplyonoe-kaberne-sovinon-sladkoe-17",
+      "product_id": "wine-zmv-koktebel-portveyn-krasnoe-kreplyonoe-kaberne-sovinon-sladkoe-17",
+      "group_id": "1879",
+      "catalog_name": "Портвейн - красное креплёное",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_portveyn_krasnoe_kreplyonoe_kaberne_sovinon_sladkoe_17_ffc534359d.webp",
+      "asset_sha256": "6bc2f9e1d1fce538172c1e5914b8c29dcd449e6948aebbe4079d7c976dcf66be",
+      "group_evidence": "1879 collection name on saved bottle label and in official catalog."
+    },
+    {
+      "wine_slug": "zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+      "product_id": "wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+      "group_id": "precious",
+      "catalog_name": "Ркацители",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_rkatsiteli_beloe_likernoe_vyderzhannoe_135_7a0a924213.webp",
+      "asset_sha256": "dfa49bf60ca526c709f5b86ee7ae732cd75bf1c579b56d8a29cccd6bdfc6f1bf",
+      "group_evidence": "Драгоценности collection name, 8 years in oak, and limited release printed on the saved product bottle label."
+    },
+    {
+      "wine_slug": "zmv-koktebel-rkatsiteli-desertnoe-beloe-sladkoe-16",
+      "product_id": "wine-zmv-koktebel-rkatsiteli-desertnoe-beloe-sladkoe-16",
+      "group_id": "precious",
+      "catalog_name": "Ркацители десертное",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_rkatsiteli_desertnoe_beloe_sladkoe_16_8d34f665f3.webp",
+      "asset_sha256": "8bfcbdfc3eda62cabd0b94ff4aabf3c891ee76836b2ba0d459644746b4034b5d",
+      "group_evidence": "Драгоценности collection name, 8 years in oak, and limited release printed on the saved product bottle label."
+    },
+    {
+      "wine_slug": "zmv-koktebel-roze-merlo-rozovoe-suhoe-12",
+      "product_id": "wine-zmv-koktebel-roze-merlo-rozovoe-suhoe-12",
+      "group_id": "magnetism",
+      "catalog_name": "Розе, Мерло",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_roze_merlo_rozovoe_suhoe_12_d19cc5e53f.webp",
+      "asset_sha256": "953a217a698b422fe79f0a6d546467587f7f2178656dce2ef59e7fc9f5903f8b",
+      "group_evidence": "Exact color-name and variety pairing is listed under Магнетизм on official catalog page 1."
+    },
+    {
+      "wine_slug": "zmv-koktebel-ruzh-rubinovyy-magaracha-krasnoe-suhoe-135",
+      "product_id": "wine-zmv-koktebel-ruzh-rubinovyy-magaracha-krasnoe-suhoe-135",
+      "group_id": "magnetism",
+      "catalog_name": "Руж, Рубиновый Магарача",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_ruzh_rubinovyy_magaracha_krasnoe_suhoe_135_2dfb2547d6.webp",
+      "asset_sha256": "c77bb19b0d909e3c20b374da1bfc8652d1850ca4861ca7eddbd99c9101396325",
+      "group_evidence": "Exact color-name and variety pairing is listed under Магнетизм on official catalog page 1."
+    },
+    {
+      "wine_slug": "zmv-koktebel-shardone-beloe-suhoe-12",
+      "product_id": "wine-zmv-koktebel-shardone-beloe-suhoe-12",
+      "group_id": "casa",
+      "catalog_name": "Шардоне",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_shardone_beloe_suhoe_12_99fb11b6c4.webp",
+      "asset_sha256": "adf1ce379938ae04f244f9c8e16de21faf051c1070aa3a9905b32caee23e53d0",
+      "group_evidence": "CASA collection name on the saved product bottle label. The card name is abbreviated for four wines."
+    },
+    {
+      "wine_slug": "zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16",
+      "product_id": "wine-zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16",
+      "group_id": "precious",
+      "catalog_name": "Траминер десертное",
+      "catalog_producer": "ЗМВ Коктебель",
+      "source_image": "zmv_koktebel_traminer_desertnoe_beloe_sladkoe_16_be1e195feb.webp",
+      "asset_sha256": "43b58124d74ad7ab38bda325435cd109605fc26dae3f558f9cc524e9c4e25b6e",
+      "group_evidence": "Драгоценности collection name, 8 years in oak, and limited release printed on the saved product bottle label."
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-geometry-pinot-gris",
+      "source_url": "https://vinokoktebel.ru/catalog/index.php?ELEMENT_ID=628&SECTION_ID=",
+      "image_url": "https://vinokoktebel.ru/upload/iblock/315/3158aff686ac339298555c3b465d8eaf.jpg",
+      "absence_check": "All 26 producer cards inspected by name and bottle label. Pinot Gris is present only as Precious dessert wine. Traminer is present only as Precious dessert wine. Neither addition matches those collection, style, or package identities.",
+      "asset_sha256": "97b7c6d04585ed7f288c4ddfa6581a2943cd66ed79dc32a0f7de684196dd5cf6"
+    },
+    {
+      "product_id": "official-planerskoe-traminer-magnum",
+      "source_url": "https://vinokoktebel.ru/catalog/index.php?ELEMENT_ID=463&SECTION_ID=",
+      "image_url": "https://vinokoktebel.ru/upload/resize_cache/iblock/c22/450_450_0/c22324663426223c6721b3be3dfe701f.jpg",
+      "absence_check": "All 26 producer cards inspected by name and bottle label. Pinot Gris is present only as Precious dessert wine. Traminer is present only as Precious dessert wine. Neither addition matches those collection, style, or package identities.",
+      "asset_sha256": "b196153eaa2afa0748dba5be672c37ac9dc8e4fd92fcda06f035461417fe5623"
+    }
+  ]
+}

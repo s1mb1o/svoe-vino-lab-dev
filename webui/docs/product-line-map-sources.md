@@ -244,3 +244,9 @@ It does not claim complete live assortment coverage.
 Read [vedernikov sources](product-line-maps/vedernikov/sources.md).
 The map includes 43 snapshot cards and 2 verified additions in 10 groups.
 It does not claim complete live assortment coverage.
+
+## ЗМВ Коктебель extension, 2026-10-16
+
+Read [koktebel sources](product-line-maps/koktebel/sources.md).
+The map includes 26 snapshot cards and 2 verified additions in 10 groups.
+It does not claim complete live assortment coverage.

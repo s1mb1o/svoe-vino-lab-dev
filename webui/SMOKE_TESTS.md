@@ -408,3 +408,8 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/vedernikov?wine=rkacziteli-beloe-suhoe`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## ЗМВ Коктебель map
+
+Open `/lineup/koktebel?wine=koktebel-casa-belyj-kupazh`.
+Check the selected catalog wine, a gray product, and the mobile popup.

@@ -1,0 +1,922 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "koktebel",
+    "name": "ЗМВ Коктебель",
+    "aliases": [
+      "Коктебель",
+      "Завод марочных вин Коктебель",
+      "Завод марочных вин «Коктебель»"
+    ],
+    "slug_prefixes": [
+      "zmv-koktebel-",
+      "koktebel-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "koktebel-catalog",
+      "label": "Коктебель: официальный каталог",
+      "url": "https://vinokoktebel.ru/catalog/"
+    },
+    {
+      "id": "koktebel-magnetism",
+      "label": "Магнетизм: Руж Рубиновый Магарача",
+      "url": "https://vinokoktebel.ru/catalog/index.php?ELEMENT_ID=409&SECTION_ID="
+    },
+    {
+      "id": "koktebel-1879",
+      "label": "1879: Мадера",
+      "url": "https://vinokoktebel.ru/catalog/index.php?ELEMENT_ID=419&SECTION_ID="
+    },
+    {
+      "id": "koktebel-geometry-pinot",
+      "label": "Геометрия: Пино Гри",
+      "url": "https://vinokoktebel.ru/catalog/index.php?ELEMENT_ID=628&SECTION_ID="
+    },
+    {
+      "id": "koktebel-planerskoe-traminer",
+      "label": "Планерское: Траминер 1,5 л",
+      "url": "https://vinokoktebel.ru/catalog/index.php?ELEMENT_ID=463&SECTION_ID="
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "limited-aged",
+      "label": "Лимитированные выдержанные",
+      "rank": 3,
+      "description": "Редакционный уровень для коллекции с явно указанными на этикетках восемью годами выдержки и ограниченным выпуском.",
+      "price_label": "Коллекционная выдержка",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "aged",
+      "label": "Выдержанные коллекции",
+      "rank": 2,
+      "description": "Коллекция CASA. На проверенных этикетках указана выдержка в дубе и бутылке. Ценовое положение — редакционный ориентир.",
+      "price_label": "Выдержанная коллекция",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "formats",
+      "label": "Другие коллекции и форматы",
+      "rank": 0,
+      "description": "Коллекции без проверенного сравнения цен. Расположение внутри этого уровня не задаёт ранг.",
+      "price_label": "Без ценового ранга",
+      "source_ids": [
+        "koktebel-catalog",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "precious",
+      "name": "Драгоценности",
+      "tier_id": "limited-aged",
+      "method": "Выдержка в дубовой бочке 8 лет",
+      "description": "Десертные вина с выдержкой восемь лет и ограниченным выпуском. Название и выдержка прочитаны на этикетках.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "casa",
+      "name": "CASA",
+      "tier_id": "aged",
+      "method": "Зависит от выпуска",
+      "description": "Коллекция CASA. Название подтверждено исходными этикетками, включая карточки с сокращёнными именами.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "magnetism",
+      "name": "Магнетизм",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Блан Алиготе, Оранж Ркацители, Розе Мерло и Руж Рубиновый Магарача.",
+      "source_ids": [
+        "koktebel-catalog",
+        "koktebel-magnetism"
+      ]
+    },
+    {
+      "id": "atmosphere",
+      "name": "Атмосфера",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Пять купажей серии «Атмосфера» из сохранённого каталога.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "1879",
+      "name": "1879",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Мадера и белый и красный портвейны. Серия подтверждена каталогом и этикетками.",
+      "source_ids": [
+        "koktebel-catalog",
+        "koktebel-1879"
+      ]
+    },
+    {
+      "id": "dessert",
+      "name": "Десертные вина",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Навигационная группа для мускатных десертных вин. Совпадение с текущей официальной коллекцией не установлено.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "kagor",
+      "name": "Кагор Высшего Качества",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Отдельное креплёное десертное красное вино. Название подтверждено этикеткой и официальным каталогом.",
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog"
+      ]
+    },
+    {
+      "id": "sparkling",
+      "name": "Выдержанные игристые",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Кокур брют и Пино Нуар брют из сохранённого каталога. Общая текущая серия не установлена.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "geometry",
+      "name": "Геометрия",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Серия из официального каталога производителя.",
+      "source_ids": [
+        "koktebel-geometry-pinot"
+      ]
+    },
+    {
+      "id": "planerskoe",
+      "name": "Планерское",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Серия из официального каталога. Формат 1,5 л сохранён отдельным продуктом.",
+      "source_ids": [
+        "koktebel-planerskoe-traminer"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-koktebel-casa-belyj-kupazh",
+      "group_id": "casa",
+      "name": "Коктебель Casa белый купаж",
+      "variant": "",
+      "wine_slug": "koktebel-casa-belyj-kupazh",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-koktebel-casa-belyj-kupazh.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Кокур Белый",
+        "Ркацители"
+      ],
+      "description": "Аромат включает в себя полевые цветы, белые фрукты, нюансы цветочного мёда. Вкус фруктовый, сбалансированный, с лёгким фруктовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-atmosfera-aligote-rkatsiteli-shardone-beloe-suhoe-11",
+      "group_id": "atmosphere",
+      "name": "Атмосфера - Алиготе, Ркацители, Шардоне",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-atmosfera-aligote-rkatsiteli-shardone-beloe-suhoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-aligote-rkatsiteli-shardone-beloe-suhoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Аромат цветочно-фруктовый с нюансами полевых цветов. Вкус свежий, цветочно фруктовый с нюансами желтого яблока. Освежающее сбалансированное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-atmosfera-kaberne-sovinon-kaberne-fran-merlo-bastardo-magarachskiy-krasnoe-suhoe-13",
+      "group_id": "atmosphere",
+      "name": "Атмосфера - Каберне Совиньон, Каберне Фран, Мерло, Бастардо Магарачский",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-atmosfera-kaberne-sovinon-kaberne-fran-merlo-bastardo-magarachskiy-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-kaberne-sovinon-kaberne-fran-merlo-bastardo-magarachskiy-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо Магарачский",
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Мерло"
+      ],
+      "description": "В аромате вишня и слива. Вкус фруктовый, мягкий с оттенками вишни, сливы, пряностей. Мягкая кислотность, фруктовое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-atmosfera-kaberne-sovinon-merlo-pino-chernyy-krasnoe-polusladkoe-13",
+      "group_id": "atmosphere",
+      "name": "Атмосфера - Каберне Совиньон, Мерло, Пино Черный",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-atmosfera-kaberne-sovinon-merlo-pino-chernyy-krasnoe-polusladkoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-kaberne-sovinon-merlo-pino-chernyy-krasnoe-polusladkoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Пино черный"
+      ],
+      "description": "В аромате виишня и слива. Вкус фруктовый, мягкий, сбалансированный, объемный, продолжительный с оттенками вишни, сливы,\nпряности. Мягкая кислотность, приятное фруктовое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-atmosfera-rkatsiteli-aligote-kokur-muskat-belyy-shardone-beloe-polusladkoe-11",
+      "group_id": "atmosphere",
+      "name": "Атмосфера - Ркацители, Алиготе, Кокур, Мускат Белый, Шардоне",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-atmosfera-rkatsiteli-aligote-kokur-muskat-belyy-shardone-beloe-polusladkoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-rkatsiteli-aligote-kokur-muskat-belyy-shardone-beloe-polusladkoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Кокур",
+        "Мускат Белый",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "В аромате мёд, цветы, с нюансами белых фруктов. Вкус свежий, цветочно-фруктовый с нюансами белых фруктов. Полевые травы с легкими медовыми оттенками и цветами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-atmosfera-shardone-merlo-rkatsiteli-muskat-rozovyy-muskat-gamburgskiy-rozovoe-polusuhoe-12",
+      "group_id": "atmosphere",
+      "name": "Атмосфера - Шардоне, Мерло, Ркацители, Мускат Розовый, Мускат Гамбургский",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-atmosfera-shardone-merlo-rkatsiteli-muskat-rozovyy-muskat-gamburgskiy-rozovoe-polusuhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-atmosfera-shardone-merlo-rkatsiteli-muskat-rozovyy-muskat-gamburgskiy-rozovoe-polusuhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло",
+        "Мускат Гамбургский",
+        "Мускат Розовый",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "В аромате цветочные оттенки, ягодные оттенки с нюансами муската и тропических фруктов. Вкус свежий, цветочный с нюансами ягод и тропических фруктов. Приятное свежее послевкусие сочных фруктов",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-bastardo-krasnoe-suhoe-14",
+      "group_id": "casa",
+      "name": "Бастардо",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-bastardo-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-bastardo-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо"
+      ],
+      "description": "Аромат красных фруктов, слива, вишнёвые оттенки, нюансы специй, лёгких черносливовых оттенков. Во вкусе прослеживается красные фрукты, слива,\nвишня. Приятное сочное и фруктовое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-blan-aligote-beloe-suhoe-12",
+      "group_id": "magnetism",
+      "name": "Блан, Алиготе",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-blan-aligote-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-blan-aligote-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Аромат с выраженными нотами тропических фруктов, грейпфрута и дыни. Вкус Гладкий пластичный с выраженной структурой. Долгое послевкусие с чистыми нотами тропических фруктов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog",
+        "koktebel-magnetism"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-grand-kupazh-kaberne-sovinon-krasnoe-suhoe-13",
+      "group_id": "casa",
+      "name": "Гранд Купаж",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-grand-kupazh-kaberne-sovinon-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-grand-kupazh-kaberne-sovinon-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо",
+        "Каберне Совиньон",
+        "Мерло",
+        "Рубиновый Магарача"
+      ],
+      "description": "В аромате лёгкие ноты фиалки, джемовые ноты, специи, чернослив, красные фрукты. Во вкусе чернослив, пряная вишня. Послевкусие продолжительное фруктовое.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-kagor-vysshego-kachestva-kaberne-sovinon-krasnoe-sladkoe-16",
+      "group_id": "kagor",
+      "name": "Кагор Высшего Качества",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-kagor-vysshego-kachestva-kaberne-sovinon-krasnoe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-kagor-vysshego-kachestva-kaberne-sovinon-krasnoe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Бастардо",
+        "Каберне Совиньон",
+        "Каберне Фран"
+      ],
+      "description": "В аромате джемовые тона, ноты чернослива, красных и чёрных ягод, шоколада. Вкус бархатистый, послевкусие долгое, обволакивающие, умеренная танинность, оттенки свежих и сушеных красных и черных ягод.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-kokur-bryut-beloe-11",
+      "group_id": "sparkling",
+      "name": "Кокур брют",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-kokur-bryut-beloe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-kokur-bryut-beloe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур"
+      ],
+      "description": "Аромат вежий, цветочный, фруктовый  с минеральными акцентами и тонкими хлебными нотами. Вкус полный, гармоничный, фруктовый, минеральный с хорошо сбалансированной выраженной кислотностью. Освежающее длительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-madera-albilo-beloe-sladkoe-19",
+      "group_id": "1879",
+      "name": "Мадера",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-madera-albilo-beloe-sladkoe-19",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-madera-albilo-beloe-sladkoe-19.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Альбильо",
+        "Вердельо",
+        "Ркацители",
+        "Шабаш"
+      ],
+      "description": "В аромате ноты сухофруктов, медовые и ореховые оттенки. Вкус гармоничный, приятный остро-жгучий, фруктовые оттенки, ноты сухофруктов, чернослива, ржаной корочки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog",
+        "koktebel-1879"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-merlo-krasnoe-suhoe-13",
+      "group_id": "casa",
+      "name": "Мерло",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-merlo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-merlo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате красные фрукты, слива, вишнёвые оттенки. Во вкусе вишня, слива, приятное сочное и фруктовое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-muskat-desertnyy-rozovoe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Мускат десертный",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-muskat-desertnyy-rozovoe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-muskat-desertnyy-rozovoe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "К аромате фруктовые цукаты. де вкусе гармоничный оттенки сухофруктов и фруктовые нюансы и мягкая сладость.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-muskat-yantarnyy-desertnyy-beloe-sladkoe-16",
+      "group_id": "dessert",
+      "name": "Мускат янтарный десертный",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-muskat-yantarnyy-desertnyy-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-muskat-yantarnyy-desertnyy-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "В аромате ноты сухофруктов, медовые и ореховые оттенки. Вкус гармоничный, приятный остро-жгучий, фруктовые оттенки, ноты сухофруктов, чернослива, ржаной корочки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-oranzh-rkatsiteli-beloe-suhoe-125",
+      "group_id": "magnetism",
+      "name": "Оранж, Ркацители",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-oranzh-rkatsiteli-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-oranzh-rkatsiteli-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате оттенки трав, специй и сухофруктов. Аромат насыщенный, достаточно танинный, с фруктово-пряными оттенками. Долгое приятное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog",
+        "koktebel-magnetism"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-pino-gri-desertnoe-beloe-sladkoe-16",
+      "group_id": "precious",
+      "name": "Пино гри десертное",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-pino-gri-desertnoe-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-pino-gri-desertnoe-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "В аромате варенье из инжира, алычи, белой черешни, гречишный мед, пряные оттенки. Во вкусе белая черешня, айва, инжир, варенье из крыжовника. Продолжительное сбалансированное послевкусие.",
+      "release_status": "limited",
+      "badges": [
+        "Выдержка 8 лет"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-pino-nuar-bryut-rozovoe-11",
+      "group_id": "sparkling",
+      "name": "Пино Нуар брют",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-pino-nuar-bryut-rozovoe-11",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-pino-nuar-bryut-rozovoe-11.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате ягоды, сливочные и хлебные оттенки. Во вкусе оттенки свежих ягод, тонкие ноты красных леденцов и морозной брусники. Мягкая кислотность. Продолжительное ягодное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-portveyn-beloe-kreplyonoe-aligote-sladkoe-17",
+      "group_id": "1879",
+      "name": "Портвейн - белое креплёное",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-portveyn-beloe-kreplyonoe-aligote-sladkoe-17",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-portveyn-beloe-kreplyonoe-aligote-sladkoe-17.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе",
+        "Ркацители",
+        "Шабаш"
+      ],
+      "description": "Аромат спелых фруктов с тонами сухофруктов, тонкие ноты грибов. Медовые оттенки и цветение плодовых деревьев. Во вкусе тона белых пряностей, сухофрукты, мёд. Приятное длительное послевкусие с нюансами елея и смолы фруктовых деревьев.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog",
+        "koktebel-1879"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-portveyn-krasnoe-kreplyonoe-kaberne-sovinon-sladkoe-17",
+      "group_id": "1879",
+      "name": "Портвейн - красное креплёное",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-portveyn-krasnoe-kreplyonoe-kaberne-sovinon-sladkoe-17",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-portveyn-krasnoe-kreplyonoe-kaberne-sovinon-sladkoe-17.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Молдова"
+      ],
+      "description": "В аромате лёгкие плодовые тона красных спелых фруктов, тона чёрной смородины и чёрной сливы, пряных специй. Вкус бархатистый, пряный, с мягкими танинами, приятное согревающее послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog",
+        "koktebel-1879"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+      "group_id": "precious",
+      "name": "Ркацители",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-rkatsiteli-beloe-sladkoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-beloe-sladkoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Мягкий, тягучий, завораживающий аромат с нотами засахаренных фруктов, карамели, липового чая с медом, розы, густого айвового варенья и изюма. Вкус сладкий, мягкий, с тягучим послевкусием и многогранными цветочными акцентами. Прекрасный дижестив.",
+      "release_status": "limited",
+      "badges": [
+        "Выдержка 8 лет"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-rkatsiteli-desertnoe-beloe-sladkoe-16",
+      "group_id": "precious",
+      "name": "Ркацители десертное",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-rkatsiteli-desertnoe-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-rkatsiteli-desertnoe-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "В аромате айва, мед, сливочная карамель. Во вкусе инжир, гречишный мёд. Продолжительное сбалансированное послевкусие.",
+      "release_status": "limited",
+      "badges": [
+        "Выдержка 8 лет"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-roze-merlo-rozovoe-suhoe-12",
+      "group_id": "magnetism",
+      "name": "Розе, Мерло",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-roze-merlo-rozovoe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-roze-merlo-rozovoe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате земляника со сливками. Вкус освежающий, с гармоничной структурой и минеральностью, послевкусие с приятной кислинкой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog",
+        "koktebel-magnetism"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-ruzh-rubinovyy-magaracha-krasnoe-suhoe-135",
+      "group_id": "magnetism",
+      "name": "Руж, Рубиновый Магарача",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-ruzh-rubinovyy-magaracha-krasnoe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-ruzh-rubinovyy-magaracha-krasnoe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Рубиновый Магарача"
+      ],
+      "description": "В аромате тона увяленных засахаренных красных фруктов, пряные оттенки и нюансы тёмного шоколада. Вкус асыщенный, мягкий, гармоничный с фруктово-пряными акцентами, хорошим балансом и структурой, отлично интегрированными и приятно бархатистыми танинами. Долгое сухое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "koktebel-catalog",
+        "koktebel-magnetism"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-shardone-beloe-suhoe-12",
+      "group_id": "casa",
+      "name": "Шардоне",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-shardone-beloe-suhoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-shardone-beloe-suhoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате цветение плодовых деревьев, персики, абрикосы, цитрусовые оттенки, инжир, груша, яблоко. Вкус комплексный, с тонами жёлтых фруктов и цветочного мёда. Послевкусие свежее, в меру округлое, продолжительное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16",
+      "group_id": "precious",
+      "name": "Траминер десертное",
+      "variant": "",
+      "wine_slug": "zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/wine-zmv-koktebel-traminer-desertnoe-beloe-sladkoe-16.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Траминер"
+      ],
+      "description": "В аромате варенье из инжира, алычи, белой черешни, гречишный мёд, пряные оттенки. Во вкусе белая черешня, айва, инжир, варенье из крыжовника. Продолжительное сбалансированное послевкусие.",
+      "release_status": "limited",
+      "badges": [
+        "Выдержка 8 лет"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "official-geometry-pinot-gris",
+      "group_id": "geometry",
+      "name": "Геометрия · Пино Гри · 0,75 л",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/official-geometry-pinot-gris.webp",
+        "source_id": "koktebel-geometry-pinot"
+      },
+      "category": "Вино",
+      "style": "Белое сухое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "Белое сухое вино серии «Геометрия», 0,75 л. В аромате и вкусе производитель отмечает цветочные и яблочно-грушевые оттенки.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "koktebel-geometry-pinot"
+      ]
+    },
+    {
+      "id": "official-planerskoe-traminer-magnum",
+      "group_id": "planerskoe",
+      "name": "Планерское · Траминер · 1,5 л",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/koktebel/official-planerskoe-traminer-magnum.webp",
+        "source_id": "koktebel-planerskoe-traminer"
+      },
+      "category": "Вино",
+      "style": "Белое полусладкое",
+      "grapes": [
+        "Траминер"
+      ],
+      "description": "Белое полусладкое вино серии «Планерское» в бутылке 1,5 л. Производитель отмечает цветочный аромат.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "koktebel-planerskoe-traminer"
+      ]
+    }
+  ]
+}
