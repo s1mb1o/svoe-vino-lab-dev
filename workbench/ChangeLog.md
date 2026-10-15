@@ -6607,3 +6607,14 @@ Check query masks, 396 image assets, 3,549 cached-input hashes, and frozen proto
 Keep scores, embeddings, masks, labels, source data, and production code unchanged. No inference request or service restart.
 Report: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/my-full/regression-review/REPORT.md.
 Summary: <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
+
+## 2026-10-15T05:23:51+0300 — Record the cap, neck, and label region experiment
+
+The experiment checkout tracks cap, neck, main label, glass, and unresolved bottle regions.
+The primary profile reaches 2,067/2,374 Top-1 hits. Cropped standard SigLIP2 reaches 2,048 and the previous patch weights reach 2,058.
+Named negative errors increase from 82 to 87. The paired interval includes zero. Keep standard ranking as the default.
+The report covers all 68 negative comparisons against standard or previous weights and 165 inspection cases.
+All 60 patch tests, all-assignment arithmetic, source-integrity checks, 342-vector local MPS checks, and inspection-asset checks pass.
+No live ranking, catalogue, source photo, service, or shared UI change.
+Report: <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
+Evidence: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/region-weights-20261015/.
