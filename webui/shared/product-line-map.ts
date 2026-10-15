@@ -1,5 +1,5 @@
-/// <reference types="vite/client" />
 import abrauData from './data/product-line-maps/abrau-durso.json'
+import registeredProducerMaps from './data/product-line-maps'
 import type { Wine } from './catalog'
 import { sourceWineUrl } from './catalog'
 
@@ -36,8 +36,7 @@ export interface ProductLineMapData {
 export interface LineEdge { source: string; target: string; type: 'contains' }
 
 export const ABRAU_PRODUCT_LINE = abrauData as ProductLineMapData
-const producerFiles = import.meta.glob<ProductLineMapData>('./data/product-line-maps/*.json', { eager: true, import: 'default' })
-export const PRODUCT_LINE_MAPS: ProductLineMapData[] = Object.values(producerFiles)
+export const PRODUCT_LINE_MAPS: ProductLineMapData[] = (registeredProducerMaps as ProductLineMapData[])
   .sort((a, b) => a.producer.name.localeCompare(b.producer.name, 'ru'))
 
 const normalizedProducer = (value: string) => value.toLocaleLowerCase('ru').replace(/[^a-zа-яё0-9]/g, '')

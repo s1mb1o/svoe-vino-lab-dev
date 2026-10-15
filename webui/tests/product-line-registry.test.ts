@@ -51,6 +51,16 @@ describe('producer map registry', () => {
     if (line.producer.id === 'abrau-durso') continue
     it(`${line.producer.id}: covers the saved catalog crosswalk`, () => {
       const crosswalk = JSON.parse(readFileSync(new URL(`../docs/product-line-maps/${line.producer.id}/crosswalk.json`, import.meta.url), 'utf8'))
+      const baseline = JSON.parse(readFileSync(new URL(`../docs/product-line-maps/${line.producer.id}/catalog-baseline.json`, import.meta.url), 'utf8'))
+      expect(baseline.source_sha256).toMatch(/^[a-f0-9]{64}$/)
+      expect(baseline.records).toHaveLength(baseline.expected_count)
+      expect(line.products.filter(product => product.wine_slug).map(product => product.wine_slug).sort()).toEqual(baseline.records.map((record: { slug: string }) => record.slug).sort())
+      for (const record of baseline.records) {
+        const product = line.products.find(product => product.wine_slug === record.slug)!
+        expect(product.name).toBe(record.name)
+        expect(product.description).toBe(record.description || 'Описание в сохранённом каталоге не указано.')
+        expect(product.grapes).toEqual((record.grapes || '').split(/[,;]/).map((value: string) => value.trim()).filter(Boolean))
+      }
       const linked = line.products.filter(product => product.wine_slug)
       expect(linked.map(product => product.wine_slug).sort()).toEqual(crosswalk.entries.map((entry: { wine_slug: string }) => entry.wine_slug).sort())
       for (const entry of crosswalk.entries) {

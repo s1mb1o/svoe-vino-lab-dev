@@ -69,7 +69,7 @@
 
 ## 2026-10-16 — Additional producer map support
 
-- Load each producer JSON from the map data directory.
+- Load each producer JSON through an explicit registry that works in both Vite and Nitro.
 - Validate producer names, slug prefixes, and exact slugs across maps.
 - Resolve exact catalog identities before producer metadata.
 - Show an explicit placeholder when a verified image is unavailable.

@@ -55,6 +55,15 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Shared module loading, 2026-10-16
+
+Nitro preserves import.meta.glob in this shared module path.
+The initial production preview returned HTTP 500 even though unit tests and type checks passed.
+The map registry now uses explicit JSON imports.
+A registry test requires every producer JSON to be registered.
+The production browser checks verify actual server rendering before selection.
+Independent per-producer source extracts preserve names, descriptions, grapes, exact slugs, and the full source SHA-256.
+
 ## Массандра, 2026-10-16
 
 The map covers 44 exact catalog slugs from 2026-09-17.

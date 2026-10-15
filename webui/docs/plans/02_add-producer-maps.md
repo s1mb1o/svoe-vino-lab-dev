@@ -33,7 +33,8 @@ Record per-producer provenance and a catalog crosswalk.
 
 ## Integration
 
-Register JSON maps automatically from the producer data directory.
+Register JSON maps through explicit imports in `shared/data/product-line-maps/index.ts`.
+Tests MUST require every producer JSON to appear in the registry.
 Validate every graph and cross-producer slug identity.
 Resolve exact slugs before producer aliases or prefixes.
 Keep the recognition API unchanged.
