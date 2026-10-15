@@ -6624,3 +6624,7 @@ Evidence: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-2026101
 The experiment branch measures standard Cropped SigLIP2 with zero-margin pixel-padding cleanup and query alignment at five degrees or more. The objective minimizes enclosing crop area and maximizes mask-to-crop IoU. Frozen my Top1 baseline/cleanup/cleanup-plus-alignment is 2048/2049/2045 of 2374. Named negative errors are 82/80/80 of 534. All 2898 reference inputs stay unchanged. The rule rotates 171 of 2497 queries.
 
 All 2908 baseline judgements reproduce. All 182 changed vectors pass MPS verification. The input audit checks 18674 files. All 65 patch tests pass. Review all 16 changed positive photos with separate before/after images. Preserve source images, the frozen truth, the gallery, the live selector, and the server. The experiment report is <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md. Private evidence is <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/tight-crop-min5-20261015/.
+
+## 2026-10-15T08:09:30+03:00 — Confirm maximum crop IoU objective
+
+The owner confirms maximum mask-to-crop IoU. The frozen tight-crop benchmark already uses this objective. Record the clarification. Preserve the algorithm, metrics, gallery, and live configuration. No inference or test rerun is required.
