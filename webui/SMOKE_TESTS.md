@@ -418,3 +418,8 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/fanagoria?wine=cru-lermont-risling`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Кубань-Вино map
+
+Open `/lineup/kuban-vino?wine=aristov-anima-millesimato`.
+Check the selected catalog wine, a gray product, and the mobile popup.

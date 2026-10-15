@@ -256,3 +256,9 @@ It does not claim complete live assortment coverage.
 Read [fanagoria sources](product-line-maps/fanagoria/sources.md).
 The map includes 102 snapshot cards and 6 verified additions in 25 groups.
 It does not claim complete live assortment coverage.
+
+## Кубань-Вино extension, 2026-10-16
+
+Read [kuban-vino sources](product-line-maps/kuban-vino/sources.md).
+The map includes 97 snapshot cards and 6 verified additions in 26 groups.
+It does not claim complete live assortment coverage.
