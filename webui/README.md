@@ -304,6 +304,9 @@ The map validates IDs, aliases, references, and asset paths at module load.
 Open `/lineup/abrau-durso` for a direct review.
 Add `?wine=abrau-dyurso-victor-dravigny-bryut` to select the verified legacy alias.
 This route does not perform recognition. The scanner supplies real result slugs to the same component.
+Desktop shows a side card. At widths up to 767 px, product details open in a centered popup.
+Tap a bottle or «О выбранном вине» to open the popup.
+Close the popup to continue from the same map position and scale.
 Run `npm test`, `npm run typecheck`, and `npm run build` before release.
 Run `PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs PORTAL_ORIGIN=http://127.0.0.1:18553 npm run test:line-map` for browser checks.
 Set `PLAYWRIGHT_BROWSER=webkit` to run the same suite in WebKit.

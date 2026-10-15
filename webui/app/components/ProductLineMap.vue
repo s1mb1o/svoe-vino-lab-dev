@@ -23,7 +23,9 @@ const selectedId = ref<string | null>(null)
 const selectedUnknown = ref(false)
 const expandedGroups = ref(new Set<string>())
 const showDetails = ref(true)
-const mobileExpanded = ref(false)
+const isMobile = ref(false)
+const mobileDetailsOpen = ref(false)
+const mobileDetailsTrigger = ref<HTMLElement>()
 const navigationGroup = ref('')
 const isDragging = ref(false)
 const initialProduct = computed(() => props.initialSlug ? findLineProduct(props.line, props.initialSlug) : undefined)
@@ -55,6 +57,122 @@ const canvasStyle = computed(() => ({ width: `${CANVAS_WIDTH}px`, transform: `sc
 let observer: ResizeObserver | undefined
 let pointer: { id: number; x: number; y: number; left: number; top: number; moved: boolean } | null = null
 let suppressClickUntil = 0
+let mobileMedia: MediaQueryList | undefined
+let mobileOpener: HTMLElement | undefined
+let openGeneration = 0
+let mobileFocusListenerAttached = false
+type ScrollSnapshot = { elements: { element: HTMLElement; left: number; top: number }[]; x: number; y: number }
+let mobileScroll: ScrollSnapshot | undefined
+
+function captureScroll(): ScrollSnapshot {
+  const elements: ScrollSnapshot['elements'] = []
+  let element = viewport.value
+  while (element) {
+    elements.push({ element, left: element.scrollLeft, top: element.scrollTop })
+    element = element.parentElement || undefined
+  }
+  return { elements, x: window.scrollX, y: window.scrollY }
+}
+function restoreScroll(snapshot?: ScrollSnapshot) {
+  if (!snapshot) return
+  for (const { element, left, top } of snapshot.elements) {
+    if (element.isConnected) element.scrollTo({ left, top, behavior: 'instant' })
+  }
+  window.scrollTo({ left: snapshot.x, top: snapshot.y, behavior: 'instant' })
+}
+function mobileDialog() {
+  return detailPanel.value?.tagName === 'DIALOG' ? detailPanel.value as HTMLDialogElement : undefined
+}
+function containMobileFocus(event: FocusEvent) {
+  const dialog = mobileDialog()
+  if (!isMobile.value || !dialog?.open || !document.hasFocus() || (event.target instanceof Node && dialog.contains(event.target))) return
+  detailHeading.value?.focus({ preventScroll: true })
+  restoreScroll(mobileScroll)
+  // A programmatic focus call can scroll its target after dispatching focusin.
+  queueMicrotask(() => {
+    if (dialog === mobileDialog() && dialog.open && mobileDetailsOpen.value) restoreScroll(mobileScroll)
+  })
+}
+function removeMobileFocusGuard() {
+  if (!mobileFocusListenerAttached) return
+  document.removeEventListener('focusin', containMobileFocus)
+  mobileFocusListenerAttached = false
+}
+function finishMobileClose(restoreFocus = true) {
+  removeMobileFocusGuard()
+  const opener = mobileOpener
+  const scroll = mobileScroll
+  mobileDetailsOpen.value = false
+  mobileOpener = undefined
+  mobileScroll = undefined
+  if (restoreFocus) {
+    const target = opener?.isConnected ? opener : mobileDetailsTrigger.value
+    target?.focus({ preventScroll: true })
+  }
+  restoreScroll(scroll)
+}
+function closeMobileDetails(restoreFocus = true) {
+  openGeneration++
+  removeMobileFocusGuard()
+  const dialog = mobileDialog()
+  if (dialog?.open) dialog.close()
+  if (mobileDetailsOpen.value || mobileScroll) finishMobileClose(restoreFocus)
+}
+function mobileClosed(event: Event) {
+  // Ignore a queued close event after a new popup or a layout change.
+  if (event.target === detailPanel.value && !mobileDialog()?.open && mobileDetailsOpen.value) finishMobileClose()
+}
+function detailBackdrop(event: MouseEvent) {
+  const dialog = mobileDialog()
+  if (!dialog?.open || event.target !== dialog) return
+  const rect = dialog.getBoundingClientRect()
+  if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeMobileDetails()
+}
+function trapMobileTab(event: KeyboardEvent) {
+  const dialog = mobileDialog()
+  if (!isMobile.value || !dialog?.open || event.key !== 'Tab' || event.altKey || event.ctrlKey || event.metaKey) return
+  const controls = Array.from(dialog.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]'))
+    .filter(element => element.tabIndex >= 0 && !element.matches(':disabled, [aria-disabled="true"]') && element.getClientRects().length > 0 && getComputedStyle(element).visibility === 'visible')
+  const index = controls.findIndex(element => element === document.activeElement)
+  const next = index < 0 ? (event.shiftKey ? controls.length - 1 : 0) : (index + (event.shiftKey ? -1 : 1) + controls.length) % controls.length
+  // WebKit can otherwise move focus into an underlying shelf dialog.
+  event.preventDefault()
+  event.stopPropagation()
+  ;(controls[next] || detailHeading.value)?.focus({ preventScroll: true })
+}
+async function openMobileDetails(opener?: HTMLElement) {
+  const generation = ++openGeneration
+  await nextTick()
+  const dialog = mobileDialog()
+  if (generation !== openGeneration || !isMobile.value || !dialog?.isConnected || (!selectedProduct.value && !activeUnknown.value)) return
+  if (!dialog.open) {
+    mobileOpener = opener || mobileDetailsTrigger.value
+    mobileScroll = captureScroll()
+    dialog.showModal()
+    dialog.querySelector<HTMLElement>('.plm-detail-scroll')?.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    mobileDetailsOpen.value = true
+    document.addEventListener('focusin', containMobileFocus)
+    mobileFocusListenerAttached = true
+  }
+  detailHeading.value?.focus({ preventScroll: true })
+  restoreScroll(mobileScroll)
+}
+async function updateMobileLayout() {
+  const next = Boolean(mobileMedia?.matches)
+  if (next === isMobile.value) return
+  const hadDetailFocus = Boolean(detailPanel.value?.contains(document.activeElement))
+  const wasOpen = mobileDetailsOpen.value
+  const scroll = mobileScroll || captureScroll()
+  closeMobileDetails(false)
+  isMobile.value = next
+  if (!next && wasOpen) showDetails.value = true
+  await nextTick()
+  if (hadDetailFocus || wasOpen) {
+    const target = next ? mobileDetailsTrigger.value : detailHeading.value
+    target?.focus({ preventScroll: true })
+  }
+  restoreScroll(scroll)
+}
 
 function groupsForTier(id: string) { return props.line.groups.filter(group => group.tier_id === id) }
 function groupProducts(group: LineGroup) { return productsInGroup(props.line, group.id) }
@@ -142,26 +260,26 @@ async function jumpToGroup(event: Event) {
   expandGroup(id)
   await centerElement(id, 'group')
 }
-function revealOnMobile(element?: HTMLElement) {
-  if (window.matchMedia('(max-width: 767px)').matches) {
-    element?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' })
-  }
-}
-async function selectProduct(product: LineProduct) {
+async function selectProduct(product: LineProduct, event: MouseEvent) {
+  const opener = event.currentTarget as HTMLElement
   selectedId.value = product.id
   selectedUnknown.value = false
   showDetails.value = true
-  mobileExpanded.value = false
   navigationGroup.value = product.group_id
-  await nextTick()
-  detailHeading.value?.focus({ preventScroll: true })
-  revealOnMobile(detailPanel.value)
+  if (isMobile.value) await openMobileDetails(opener)
+  else {
+    await nextTick()
+    detailHeading.value?.focus({ preventScroll: true })
+  }
 }
-async function reopenDetails() {
+async function reopenDetails(event: MouseEvent) {
+  const opener = event.currentTarget as HTMLElement
   showDetails.value = true
-  await nextTick()
-  detailHeading.value?.focus({ preventScroll: true })
-  revealOnMobile(detailPanel.value)
+  if (isMobile.value) await openMobileDetails(opener)
+  else {
+    await nextTick()
+    detailHeading.value?.focus({ preventScroll: true })
+  }
 }
 async function centerInitial() {
   const product = initialProduct.value
@@ -171,13 +289,11 @@ async function centerInitial() {
     navigationGroup.value = product.group_id
     expandGroup(product.group_id)
     showDetails.value = true
-    mobileExpanded.value = false
     await centerElement(product.id)
   } else if (props.unmatchedWine) {
     selectedId.value = null
     selectedUnknown.value = true
     showDetails.value = true
-    mobileExpanded.value = false
     viewport.value?.scrollTo({ top: 0, left: 0 })
   } else if (selectedProduct.value) {
     expandGroup(selectedProduct.value.group_id)
@@ -195,10 +311,9 @@ async function changeZoom(change: number) {
   frame.scrollTo({ left: x * next - frame.clientWidth / 2, top: y * next - frame.clientHeight / 2 })
 }
 async function returnToMap() {
+  if (isMobile.value) { closeMobileDetails(); return }
   showDetails.value = false
-  mobileExpanded.value = false
   await nextTick()
-  revealOnMobile(viewport.value)
   const target = selectedProduct.value && mapElement(selectedProduct.value.id)
   ;(target && target.offsetParent !== null ? target : viewport.value)?.focus({ preventScroll: true })
 }
@@ -240,18 +355,26 @@ function keyboardPan(event: KeyboardEvent) {
   viewport.value?.scrollBy({ left: offset[0], top: offset[1] })
 }
 
-watch([() => props.line, () => props.initialSlug, () => props.unmatchedWine], () => {
+watch([() => props.line, () => props.initialSlug, () => props.unmatchedWine], async () => {
+  const wasOpen = mobileDetailsOpen.value
+  closeMobileDetails(false)
   const product = initialProduct.value
   selectedId.value = product?.id || null
   selectedUnknown.value = Boolean(props.unmatchedWine && !initialProduct.value)
   expandedGroups.value = new Set(product ? [product.group_id] : [])
   navigationGroup.value = product?.group_id || ''
   showDetails.value = true
-  mobileExpanded.value = false
   zoom.value = 1
+  if (wasOpen) {
+    await nextTick()
+    mobileDetailsTrigger.value?.focus({ preventScroll: true })
+  }
 }, { immediate: true })
 
 onMounted(async () => {
+  mobileMedia = window.matchMedia('(max-width: 767px)')
+  mobileMedia.addEventListener('change', updateMobileLayout)
+  await updateMobileLayout()
   observer = new ResizeObserver(measureCanvas)
   if (canvas.value) observer.observe(canvas.value)
   measureCanvas()
@@ -260,7 +383,11 @@ onMounted(async () => {
   }
   await centerInitial()
 })
-onBeforeUnmount(() => observer?.disconnect())
+onBeforeUnmount(() => {
+  closeMobileDetails(false)
+  mobileMedia?.removeEventListener('change', updateMobileLayout)
+  observer?.disconnect()
+})
 defineExpose({ centerInitial })
 </script>
 
@@ -283,6 +410,7 @@ defineExpose({ centerInitial })
             <button type="button" class="plm-locate" :aria-label="recognized ? 'Показать ваше вино' : 'Показать исходное вино'" :title="recognized ? 'Ваше вино' : 'Начальный выбор'" :disabled="!initialProduct && !unmatchedWine" @click="centerInitial"><AppIcon name="navigation" /></button>
           </div>
         </div>
+        <button v-if="isMobile" ref="mobileDetailsTrigger" type="button" class="plm-mobile-details-trigger" :disabled="!selectedProduct && !activeUnknown" aria-haspopup="dialog" :aria-expanded="mobileDetailsOpen" :aria-controls="`${mapId}-details`" @click="reopenDetails">О выбранном вине<AppIcon name="arrow" /></button>
         <p :id="`${mapId}-navigation-help`" class="plm-navigation-help"><span><AppIcon name="map" />Перемещайте карту · откройте коллекцию</span><span class="plm-overview-controls"><button type="button" :aria-expanded="allGroupsOpen" :aria-controls="`${mapId}-canvas`" @click="toggleAllGroups">{{ allGroupsOpen ? 'Свернуть все' : 'Открыть все' }}</button><button type="button" class="plm-fit" aria-label="Обзор карты" title="Обзор карты в читаемом масштабе" @click="fitWidth"><AppIcon name="fullscreen" /><span>Обзор</span></button></span></p>
         <div ref="viewport" data-map-viewport class="plm-viewport" :class="{ 'is-dragging': isDragging }" tabindex="0" role="region" aria-label="Холст с коллекциями и винами" :aria-describedby="`${mapId}-navigation-help`" @pointerdown="pointerDown" @pointermove="pointerMove" @pointerup="pointerEnd" @pointercancel="pointerEnd" @lostpointercapture="pointerEnd" @click.capture="suppressDraggedClick" @keydown="keyboardPan" @dragstart.prevent>
           <div class="plm-surface" :style="surfaceStyle">
@@ -297,7 +425,7 @@ defineExpose({ centerInitial })
                     <p v-if="group.method && group.method !== 'Не указан в источнике'" class="plm-group-method">{{ group.method }}</p>
                     <template v-if="!expandedGroups.has(group.id)"><button type="button" class="plm-group-preview" :aria-label="`Открыть коллекцию ${group.name}`" @click="toggleGroup(group, true)"><img v-for="product in groupProducts(group).slice(0, 4)" :key="product.id" :src="product.image.src" :alt="product.name" :class="{ 'is-unavailable': isUnavailable(product) }" width="60" height="106" draggable="false" loading="lazy" decoding="async"><span class="plm-preview-label">Все вина <AppIcon name="arrow" /></span></button><p class="plm-group-description">{{ group.description }}</p></template>
                     <div v-show="expandedGroups.has(group.id)" :id="`${mapId}-products-${group.id}`" class="plm-products" role="group" :aria-label="`Вина коллекции ${group.name}`">
-                      <button v-for="product in groupProducts(group)" :key="product.id" type="button" class="plm-product" :class="{ 'is-unavailable': isUnavailable(product), 'is-selected': selectedId === product.id, 'is-initial': isInitial(product) }" :data-product-id="product.id" :data-selected="selectedId === product.id || undefined" :data-recognized="recognized && isInitial(product) || undefined" :aria-pressed="selectedId === product.id" :aria-label="`${product.name}${product.variant ? `, ${product.variant}` : ''}${isUnavailable(product) ? '. Нет карточки на Свое Вино' : ''}${recognized && isInitial(product) ? '. Ваше вино' : ''}`" @click="selectProduct(product)">
+                      <button v-for="product in groupProducts(group)" :key="product.id" type="button" class="plm-product" :class="{ 'is-unavailable': isUnavailable(product), 'is-selected': selectedId === product.id, 'is-initial': isInitial(product) }" :data-product-id="product.id" :data-selected="selectedId === product.id || undefined" :data-recognized="recognized && isInitial(product) || undefined" :aria-pressed="selectedId === product.id" :aria-label="`${product.name}${product.variant ? `, ${product.variant}` : ''}${isUnavailable(product) ? '. Нет карточки на Свое Вино' : ''}${recognized && isInitial(product) ? '. Ваше вино' : ''}`" @click="selectProduct(product, $event)">
                         <span class="plm-product-bottle"><img :src="product.image.src" :alt="product.name" width="70" height="112" loading="lazy" decoding="async" draggable="false"></span><span v-if="recognized && isInitial(product)" class="plm-current-marker">ВАШЕ ВИНО</span><strong>{{ product.variant || product.name }}</strong><span class="plm-product-style">{{ product.style }}</span><span v-if="isUnavailable(product)" class="plm-unavailable-marker">Нет в каталоге</span><span v-else-if="selectedId === product.id" class="plm-selected-marker">Выбрано</span>
                       </button>
                     </div>
@@ -310,10 +438,11 @@ defineExpose({ centerInitial })
         <p class="plm-position-note"><AppIcon name="info" /><span>{{ line.price_positioning.disclaimer }}</span></p>
       </div>
 
-      <aside ref="detailPanel" class="plm-details" data-product-detail :data-selected-product="selectedProduct?.id || (activeUnknown ? 'unmatched' : '')" :class="{ 'is-compact': !showDetails, 'is-mobile-expanded': mobileExpanded }" aria-label="Выбранное вино">
-        <template v-if="showDetails && (selectedProduct || activeUnknown)">
-          <div class="plm-detail-summary"><div class="plm-detail-image"><img v-if="selectedImage" :src="selectedImage" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async"></div><div class="plm-detail-heading"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><h3 ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
-          <button type="button" class="plm-mobile-expand" :aria-expanded="mobileExpanded" @click="mobileExpanded = !mobileExpanded">{{ mobileExpanded ? 'Свернуть описание' : 'Подробнее о вине' }}<AppIcon name="chevron" /></button>
+      <component :is="isMobile ? 'dialog' : 'aside'" :id="`${mapId}-details`" ref="detailPanel" class="plm-details" data-product-detail :data-product-dialog="isMobile || undefined" :data-selected-product="selectedProduct?.id || (activeUnknown ? 'unmatched' : '')" :class="{ 'is-compact': !isMobile && !showDetails, 'plm-mobile-dialog': isMobile }" aria-label="Выбранное вино" :aria-labelledby="isMobile && selectedName ? `${mapId}-detail-title` : undefined" @cancel.prevent.stop="closeMobileDetails()" @close.stop="mobileClosed" @click.stop="detailBackdrop" @keydown="trapMobileTab">
+        <template v-if="(isMobile || showDetails) && (selectedProduct || activeUnknown)">
+          <div v-if="isMobile" class="plm-popup-header"><span>О вине</span><button type="button" class="plm-popup-close" aria-label="Закрыть информацию о вине" @click="closeMobileDetails()"><AppIcon name="close" /></button></div>
+          <div class="plm-detail-scroll">
+          <div class="plm-detail-summary"><div class="plm-detail-image"><img v-if="selectedImage" :src="selectedImage" :alt="selectedName" :class="{ 'is-unavailable': selectedProduct && isUnavailable(selectedProduct) }" width="120" height="176" decoding="async"></div><div class="plm-detail-heading"><p class="plm-kicker">{{ recognized && (selectionIsInitial || activeUnknown) ? 'ВАШЕ ВИНО' : activeUnknown ? 'ВЫБРАННОЕ ВИНО' : 'ВЫБРАНО НА КАРТЕ' }}</p><h3 :id="`${mapId}-detail-title`" ref="detailHeading" tabindex="-1">{{ selectedName }}</h3><p v-if="selectedProduct" class="plm-detail-style">{{ selectedProduct.style }}</p><p v-else-if="activeUnknown" class="plm-detail-style">{{ [activeUnknown.color, activeUnknown.category].filter(Boolean).join(' · ') }}</p></div></div>
           <div class="plm-detail-content">
             <template v-if="selectedProduct">
               <div class="plm-detail-badges"><span v-if="selectedTier">{{ selectedTier.label }}</span><span v-if="releaseLabel(selectedProduct)">{{ releaseLabel(selectedProduct) }}</span><span v-for="badge in selectedProduct.badges" :key="badge">{{ badge }}</span></div>
@@ -323,11 +452,12 @@ defineExpose({ centerInitial })
             </template>
             <template v-else-if="activeUnknown"><div class="plm-availability"><AppIcon name="info" /><p>Это вино производителя {{ line.producer.name }}. Отдельной позиции на карте пока нет. Коллекция и ценовой уровень не определены.</p></div><p v-if="activeUnknown.description" class="plm-detail-description">{{ activeUnknown.description }}</p><dl class="plm-facts"><div v-if="activeUnknown.grapes.length"><dt>Сорта винограда</dt><dd>{{ activeUnknown.grapes.join(', ') }}</dd></div><div v-if="activeUnknown.alcohol"><dt>Алкоголь</dt><dd>{{ activeUnknown.alcohol }}</dd></div></dl></template>
           </div>
+          </div>
           <div class="plm-detail-actions"><a v-if="selectedUrl" :href="selectedUrl" class="button primary plm-portal-link" target="_blank" rel="noopener noreferrer">На «Свое Вино»<AppIcon name="arrow-up-right" /></a><p v-else class="plm-no-link">Нет карточки на «Свое Вино»</p><button type="button" class="plm-return" @click="returnToMap"><AppIcon name="back" />Вернуться к карте</button></div>
         </template>
         <template v-else-if="selectedProduct || activeUnknown"><p class="plm-kicker">ВАШ ВЫБОР СОХРАНЁН</p><h3>{{ selectedName }}</h3><button type="button" class="plm-reopen" @click="reopenDetails">Показать карточку<AppIcon name="arrow" /></button></template>
         <div v-else class="plm-empty-selection"><AppIcon name="map" /><p class="plm-kicker">ЗНАКОМСТВО С ПРОИЗВОДИТЕЛЕМ</p><h3>Найдите своё вино<br>на карте коллекций</h3><p>Откройте коллекцию и выберите бутылку. Здесь появятся её особенности, способ производства и место в линейке.</p><span>Премиальные коллекции — выше.<br>Форматы и напитки — отдельно.</span></div>
-      </aside>
+      </component>
     </div>
   </section>
 </template>
@@ -408,6 +538,7 @@ defineExpose({ centerInitial })
 .plm-position-note { display: flex; gap: 7px; margin: 11px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
 .plm-position-note>.icon { width: 14px; height: 14px; margin-top: 1px; }
 .plm-details { display: flex; flex-direction: column; min-width: 0; max-height: calc(58dvh + 82px); overflow: hidden; padding: 20px; border: 1px solid var(--line); border-radius: 17px; background: var(--paper); scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.plm-detail-scroll { display: contents; }
 .plm-detail-summary { flex-shrink: 0; }
 .plm-detail-content { min-height: 0; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 .plm-detail-image { display: flex; justify-content: center; align-items: center; height: 190px; margin: -4px 0 14px; background: radial-gradient(ellipse at center bottom, var(--cream), transparent 65%); }
@@ -433,7 +564,10 @@ defineExpose({ centerInitial })
 .plm-no-link { padding: 10px 7px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font-size: 11px; line-height: 1.5; text-align: center; }
 .plm-details.is-compact h3 { margin: 9px 0; font: 500 22px/1.3 'Playfair Display', Georgia, serif; }
 .plm-reopen { padding: 0; }
-.plm-mobile-expand { display: none; }
+.plm-mobile-details-trigger { display: inline-flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; margin-top: 10px; padding: 10px 13px; border: 1px solid var(--line); border-radius: 12px; color: var(--accent); background: var(--paper); font-size: 12px; }
+.plm-mobile-details-trigger:disabled { color: var(--muted); opacity: .6; cursor: default; }
+.plm-mobile-details-trigger .icon { width: 17px; height: 17px; }
+:global(body:has(.plm-mobile-dialog[open])) { overflow: hidden; }
 .plm-empty-selection>.icon { width: 30px; height: 30px; color: var(--accent); margin: 5px 0 24px; }
 .plm-empty-selection h3 { margin: 9px 0 16px; font: 500 26px/1.25 'Playfair Display', Georgia, serif; }
 .plm-empty-selection>p:not(.plm-kicker) { color: var(--muted); font-size: 12px; line-height: 1.75; }
@@ -461,34 +595,36 @@ defineExpose({ centerInitial })
   .plm-overview-controls button { min-height: 40px; }
   .plm-viewport { height: clamp(280px, 43dvh, 420px); border-radius: 13px; }
   .plm-position-note { font-size: 10px; }
-  .plm-details { position: relative; width: 100%; max-height: none; overflow: visible; padding: 14px; border-radius: 14px; box-shadow: 0 -8px 26px var(--plm-shadow); }
-  .plm-empty-selection { display: none; }
-  .plm-details:has(.plm-empty-selection) { display: none; }
-  .plm-detail-summary { display: grid; grid-template-columns: 57px minmax(0, 1fr); gap: 12px; align-items: center; }
-  .plm-detail-image { height: 82px; margin: 0; }
-  .plm-detail-image img { height: 80px; max-width: 52px; }
-  .plm-detail-heading h3 { font-size: 20px; margin: 5px 0; }
+  aside.plm-details { display: none; }
+  .plm-detail-summary { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; align-items: center; }
+  .plm-detail-image { height: 112px; margin: 0; }
+  .plm-detail-image img { height: 108px; max-width: 68px; }
+  .plm-detail-heading h3 { font-size: 23px; margin: 6px 0; }
   .plm-detail-style { font-size: 12px; }
-  .plm-detail-heading .plm-kicker { font-size: 8px; }
-  .plm-detail-content { display: none; overflow: visible; }
-  .plm-details.is-mobile-expanded .plm-detail-content { display: block; }
-  .plm-mobile-expand { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; min-height: 38px; padding: 5px 0; margin-top: 7px; color: var(--accent); font-size: 12px; }
-  .plm-mobile-expand>.icon { width: 15px; height: 15px; }
-  .plm-details.is-mobile-expanded .plm-mobile-expand>.icon { transform: rotate(180deg); }
-  .plm-detail-actions { display: grid; grid-template-columns: 1.2fr 1fr; gap: 9px; align-items: center; margin-top: 7px; }
-  .plm-portal-link { min-height: 44px; font-size: 11px; gap: 6px; padding: 9px; }
-  .plm-portal-link>.icon { width: 14px; height: 14px; }
-  .plm-return { font-size: 11px; gap: 5px; padding: 0; }
-  .plm-return>.icon { width: 14px; height: 14px; }
+  .plm-detail-heading .plm-kicker { font-size: 9px; }
+  .plm-detail-badges span, .plm-facts dt, .plm-availability { font-size: 11px; }
+  .plm-detail-description, .plm-facts dd { font-size: 13px; }
+  .plm-detail-actions { display: grid; grid-template-columns: 1.2fr 1fr; gap: 9px; align-items: center; }
+  .plm-portal-link { min-height: 44px; font-size: 12px; gap: 6px; padding: 10px; }
+  .plm-portal-link>.icon { width: 15px; height: 15px; }
+  .plm-return { min-height: 44px; font-size: 12px; gap: 5px; padding: 0; }
+  .plm-return>.icon { width: 15px; height: 15px; }
   .plm-no-link { font-size: 11px; padding: 8px; }
-  .plm-details.is-compact { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; }
-  .plm-details.is-compact .plm-kicker { grid-column: 1; font-size: 8px; }
-  .plm-details.is-compact h3 { grid-column: 1; margin: 4px 0 0; font-size: 17px; }
-  .plm-details.is-compact .plm-reopen { grid-column: 2; grid-row: 1 / 3; font-size: 11px; }
 }
 @media (max-height: 800px) {
   .plm-details { max-height: none; overflow: visible; }
   .plm-detail-content { overflow: visible; }
 }
+.plm-mobile-dialog { position: fixed; inset: 0; width: min(440px, calc(100% - 28px)); max-width: none; max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: hidden; overscroll-behavior: contain; color: var(--ink); border-radius: 20px; box-shadow: 0 24px 80px #00000040; }
+.plm-mobile-dialog:not([open]) { display: none; }
+.plm-mobile-dialog[open] { display: flex; }
+.plm-mobile-dialog::backdrop { background: #211a17a6; }
+.plm-popup-header { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 10px 6px 18px; color: var(--muted); font-size: 12px; }
+.plm-popup-close { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 50%; color: var(--ink); }
+.plm-popup-close:hover { background: var(--cream); }
+.plm-popup-close .icon { width: 21px; height: 21px; }
+.plm-mobile-dialog .plm-detail-scroll { display: block; flex: 1 1 auto; min-height: 0; padding: 0 18px 18px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.plm-mobile-dialog .plm-detail-content { display: block; overflow: visible; }
+.plm-mobile-dialog .plm-detail-actions { margin-top: 0; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--paper); }
 @media (prefers-reduced-motion: reduce) { .plm *, .plm *:before, .plm *:after { scroll-behavior: auto !important; transition: none !important; } }
 </style>

@@ -62,7 +62,12 @@ Do not infer numeric prices from premium tiers or slug suffixes.
 The preview route MUST NOT claim that its selection came from recognition.
 Center the map after the native dialog is visible.
 Use viewport-specific scrolling when locating a product.
-On mobile, reveal details after product selection. Reveal the canvas after Return.
-Do not cap the height of the in-flow mobile details panel.
+At widths up to 767 px, open product details in a native modal popup after a product tap.
+Keep the initial product selected without opening the popup on map entry.
+Keep the «О выбранном вине» control available for the current selection.
+Closing the popup MUST preserve the map position and restore its opener.
+Keep the parent map and shelf dialogs open when the popup closes.
+Keep explicit Tab cycling inside the mobile popup. WebKit can reach the underlying shelf dialog without it.
+Keep popup content scrollable and actions reachable in short viewports.
 Record the clicked dialog opener through `event.currentTarget`. WebKit may not focus clicked buttons.
 Run `npm run test:line-map` with the documented browser environment after map interaction changes.

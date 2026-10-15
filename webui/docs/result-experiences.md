@@ -1,6 +1,6 @@
 # Result experience specification
 
-Status: Product-line guide updated on 2026-10-15. See `plans/01_product-line-map.md`.
+Status: Product-line guide updated on 2026-10-16. See `plans/01_product-line-map.md`.
 
 ## Scope
 
@@ -105,7 +105,10 @@ An unsupported producer MUST receive an explicit unavailable state.
 The unavailable state MAY link to the separate Abrau-Durso preview.
 The guide MUST support zoom, touch scrolling, mouse dragging, group navigation, and keyboard controls.
 The guide MUST preserve canvas position when the user returns from a product card.
-The guide MUST use a desktop side card and a mobile bottom card.
+The guide MUST use a desktop side card and a centered mobile modal popup.
+At widths up to 767 px, a product tap or «О выбранном вине» MUST open the popup.
+The initial selection MUST remain visible on the map without an automatic popup.
+Popup closure MUST preserve canvas state and restore focus. Parent dialogs MUST remain open.
 The preview route MUST use noindex metadata and headers.
 The preview route MUST NOT describe query selection as recognition.
 

@@ -55,6 +55,45 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Mobile wine popup, 2026-10-16
+
+The owner replaced the mobile bottom card with a popup widget.
+A native modal dialog provides focus containment and top-layer display.
+A fixed-position panel would need separate focus and parent-dialog handling.
+The mobile popup reuses the same product details as the desktop side card.
+The popup stays closed on map entry. The recognized product stays selected and centered.
+This lets the user inspect the map before opening details.
+This also avoids opening a child modal before the parent map dialog becomes visible.
+A product tap or «О выбранном вине» opens the popup.
+Popup closure preserves the map state and restores the explicit opener.
+The earlier notes about an in-flow mobile panel describe the previous design.
+
+A reopened dialog can retain its internal reading position.
+Reset only the popup scroll body before focusing the product heading.
+Do not reset the canvas or outer scroll containers.
+Native dialog Tab navigation can move focus to browser chrome.
+In the browser checks, that transition sets `document.hasFocus()` to false.
+The checks permit that transition. They reject focus on an underlying page control.
+The checks also verify that Tab returns to the popup and that background focus is blocked.
+
+WebKit exposed an additional case with three native dialogs.
+With shelf, map, and wine dialogs open, Tab reached the shelf Return control.
+The mobile popup now cycles plain Tab and Shift+Tab through its own visible controls.
+The handler leaves browser shortcuts and desktop behavior unchanged.
+The regression check rejects focus on an underlying shelf or map control.
+WebKit also allowed a programmatic `focus()` call to reach the underlying map.
+A temporary `focusin` listener now returns outside focus to the popup heading.
+The listener preserves the saved map and page scroll positions.
+The component removes the listener before closure and during cleanup.
+An attachment flag keeps cleanup safe during server rendering.
+
+Final validation passed in Chromium and WebKit on 2026-10-16.
+The strict shelf case also attempts focus on the outer shelf Return control.
+Both attempts remain inside the popup after the correction.
+Both complete suites report no browser errors or hydration warnings.
+The 320/390 px popup screenshots were inspected in light and dark themes.
+These results use browser emulation. No physical phone test was performed.
+
 ## Producer product-line map, 2026-10-15
 
 The owner selected groups on a common canvas.

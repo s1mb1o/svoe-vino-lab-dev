@@ -37,6 +37,16 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Mobile wine popup
+
+- Replace the mobile bottom card with a centered modal popup.
+- Open full product details from a bottle or «О выбранном вине».
+- Keep the initial recognized product selected without covering the map on entry.
+- Preserve the map position and scale when the popup closes.
+- Keep the desktop side card and the parent map and shelf dialogs.
+- Prevent WebKit keyboard focus from reaching the underlying shelf dialog.
+- Verify 176 unit tests, type checks, the production build, and both complete browser suites.
+
 ## 2026-10-16 — Product-line map review completion
 
 - Resolve the seven implementation review findings from Claude Opus 5.5 Max.

@@ -42,7 +42,15 @@ A locate control MUST return to the recognized product.
 An unmatched product of a known producer MUST use a separate selected card. It MUST NOT receive an invented tier.
 An unsupported producer MUST show an explicit unavailable state.
 Desktop MUST show the selected product card beside the canvas.
-Mobile MUST show the selected product card below the canvas.
+At widths up to 767 px, mobile MUST show product details in a centered modal popup.
+The initial product MUST remain selected and centered. The popup MUST stay closed on map entry.
+A product tap or the «О выбранном вине» control MUST open the popup.
+The popup MUST show the complete description without a separate expansion step.
+The popup MUST support its close control, Escape, backdrop, and «Вернуться к карте».
+Closing the popup MUST preserve the selected product, scale, and canvas position.
+Closing the popup MUST restore focus to the opener. It MUST NOT close the parent map or shelf dialog.
+The popup MUST retain keyboard focus and fit the available viewport height.
+At widths of 768 px or more, the details MUST use the desktop side card.
 A card MUST provide a return control that preserves the canvas position and scale.
 A portal link MUST exist only when the product has a verified `wine_slug`.
 The link MUST use `https://vino-svoe.ru/wines/` and the encoded slug.
@@ -76,7 +84,8 @@ Leave the local review server running on a registered free port.
 ## Design decision
 
 The options were grouped nodes and a flat canvas with every product.
-The owner selected grouped nodes with a desktop side card and a mobile bottom card.
+The owner selected grouped nodes with a desktop side card.
+On 2026-10-16, the owner replaced the mobile bottom card with a popup widget.
 Grouping reduces the initial number of visible products.
 A neutral formats section avoids unsupported price comparisons between bottles, cans, and alcohol-free drinks.
 The implementation uses native scroll surfaces and Vue components. It does not need a new graph dependency.

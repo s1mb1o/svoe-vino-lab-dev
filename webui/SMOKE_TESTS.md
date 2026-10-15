@@ -346,12 +346,24 @@ Manual camera and visual checks remain unverified unless explicitly recorded in 
 
 15. At 844 by 390 and 667 by 375 px, select linked and gray products. Confirm that detail actions remain reachable.
 16. At 700, 701, 767, and 768 px, confirm that the page has no horizontal overflow.
-17. On mobile, select a product. Confirm that details become visible. Return to the map. Confirm that the map becomes visible and retains its internal scroll position.
-18. In WebKit, close the inner map dialog and then the shelf card. Confirm that each dialog restores its explicit opener.
+17. On mobile, confirm that the initial product is selected and that no bottom card appears. Tap «О выбранном вине» or a product. Confirm a centered modal popup with full details. Close with Return, the close control, Escape, and the backdrop. Confirm the same selection, canvas position, scale, and opener focus.
+18. In the mobile popup, use Tab and Shift+Tab. Confirm that focus stays inside the popup. Confirm that content scrolls and that actions remain reachable at 320 px and in short landscape windows.
+19. Resize across 767/768 px with the popup open. Confirm that the desktop side card works and that no modal backdrop or scroll lock remains.
+20. In WebKit, close the wine popup, the map dialog, and then the shelf card. Confirm that each close affects only the top dialog and restores its explicit opener.
 
-19. At 800 by 650 and 1440 by 720 px, select the Cuvée Alexander II gift box. Confirm that the description has nonzero height and all actions remain reachable in the preview and scanner dialog.
+21. At 800 by 650 and 1440 by 720 px, select the Cuvée Alexander II gift box. Confirm that the description has nonzero height and all actions remain reachable in the preview and scanner dialog.
 
 Validation completed on 2026-10-16: all 176 tests, type checks, and the production build passed.
 Chromium passed desktop and mobile checks in both themes.
 WebKit passed the phone, landscape, breakpoint, and nested-dialog checks.
 Read `docs/reviews/2026-10-15-product-line-map-resolution.md` for the evidence and limits.
+
+Mobile popup validation completed on 2026-10-16:
+Both complete Chromium and WebKit suites passed against the rebuilt preview.
+The checks cover 320/390 px light and dark layouts, close/reopen, linked and gray products,
+reading reset, 767/768 px transitions, short viewports, and scanner/shelf integration.
+The three-dialog shelf case retains Tab, Shift+Tab, and programmatic focus inside the popup.
+Closing each dialog restores its opener and the saved map/page scroll state.
+The final browser runs reported no browser errors or hydration warnings.
+The 176 unit tests, type checks, and production build passed.
+Screenshots use browser emulation. These checks do not replace physical-device testing.
