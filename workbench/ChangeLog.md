@@ -7484,3 +7484,23 @@ browser-verification.json, claude-review.json, and live-comparison.jpg at reposi
   Verify a 125-case browser copy in a temporary database from the second page.
   Verify the live dialog and cancel. Restart idle port 8168 with SIGTERM.
   Preserve schema version 36 and the real testset names.
+
+
+## 2026-10-16T00:06:39+03:00: Add wine bottle recognition and duplicate checks
+
+- Read a staged Main image with the configured VLM. Fill empty fields. Preserve manual
+  changes and copied values. Reject stale responses. Add progress, retry and cancel.
+- Show similar wines from every catalogue state in a right column. Open a read-only
+  candidate card. Copy values fills empty controls and preserves the image and slug.
+- Warn about exact duplicates, different vintages and one absent vintage. Check the
+  current catalogue before Save. Repeat the check inside each create transaction.
+- Store optional sweetness and vintage values as visible catalogue tags. Generate
+  distinct automatic slugs for vintages. Preserve typed slugs. No schema migration.
+- Bound recognition requests and validate image bytes, pixels and structured output.
+  Cache identity parsing by actual record values. Preserve fresh catalogue checks.
+- Update API contracts, route inventory, smoke cases and identity decisions. Correct
+  the navigation regression assertion to accept accessibility attributes.
+- Verification: 194 selected checks pass across the clean source build and final
+  draft checks. Ruff and assembled JavaScript checks pass. Live browser checks cover
+  recognition, similar cards, empty-only Copy and cancelled duplicate confirmations.
+  No live catalogue card was created.

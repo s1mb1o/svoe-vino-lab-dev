@@ -282,7 +282,7 @@ class LabServerTest(unittest.TestCase):
         pages["/testset"] = self.request("/testset")[2]
         pages["/health"] = self.request("/health")[2]
         for name, body in pages.items():
-            nav = re.search(r'<nav class="nav">(.*?)</nav>', body, re.S).group(1)
+            nav = re.search(r'<nav class="nav"[^>]*>(.*?)</nav>', body, re.S).group(1)
             self.assertEqual(re.findall(r'href="([^"]*)"', nav), hrefs, name)
 
     def test_other_api_routes_are_disabled(self):

@@ -164,9 +164,12 @@ def add_wine(conn, db_path, body, segmenter=None):
     `conn` is a write connection with `isolation_level` None. `segmenter` is the SAM3
     client; None means `derive.Sam3Client()`.
     """
+    import wine_draft
+
     slug = check_slug(body.get("slug"))
     values = read_fields(body)
     beverage_type = read_beverage_type(body)
+    wine_draft.read_values(body)
     data = read_image(body)
     try:
         extension, width, height = patches.read_image(data)
@@ -174,6 +177,7 @@ def add_wine(conn, db_path, body, segmenter=None):
         raise WineError(exc.code, str(exc))
     name = patches.source_name(_text(body, "image_name"))
     _check_new(conn, slug)
+    wine_draft.guard(conn, body)
 
     digest = hashlib.sha256(data).hexdigest()
     row = conn.execute("SELECT folder, extension FROM image WHERE sha256 = ?",
@@ -197,12 +201,14 @@ def add_wine(conn, db_path, body, segmenter=None):
     conn.execute("BEGIN IMMEDIATE")
     try:
         _check_new(conn, slug)
+        wine_draft.guard(conn, body)
         conn.execute("INSERT INTO wine_catalog (wine_slug, %s, csv_photo_name, state) "
                      "VALUES (?, %s, ?, 'Active')"
                      % (", ".join(TEXT_FIELDS), ", ".join("?" for _ in TEXT_FIELDS)),
                      [slug] + values + [name])
         if beverage_type is not None:
             beverage_types.set_type(conn, slug, beverage_type)
+        wine_draft.store_tags(conn, slug, body)
         insert_image(conn, digest, extension, width, height)
         conn.execute("INSERT INTO wine_image (wine_slug, image_type, sha256, "
                      "source_name, match_method) VALUES (?, ?, ?, ?, ?)",

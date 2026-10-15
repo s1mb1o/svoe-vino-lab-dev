@@ -51,6 +51,8 @@ GET /api/local-image
 GET /api/dataset
 POST /api/dataset-attributes
 POST /api/wine
+POST /api/wine-draft-recognize
+POST /api/wine-draft-similar
 GET /api/wine-merge
 POST /api/wine-merge
 GET /api/wine-index

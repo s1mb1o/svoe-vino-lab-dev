@@ -333,6 +333,48 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/wine-draft-recognize:
+    post:
+      tags: [dataset]
+      operationId: recognizeWineDraft
+      summary: Read visible bottle fields without creating a catalogue card.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image: { type: string, contentEncoding: base64 }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        "400": { $ref: "#/components/responses/Error" }
+        "413": { $ref: "#/components/responses/Error" }
+        "429": { $ref: "#/components/responses/Error" }
+        "503": { $ref: "#/components/responses/Error" }
+
+  /api/wine-draft-similar:
+    post:
+      tags: [dataset]
+      operationId: findSimilarWineDrafts
+      summary: Compare partial draft fields with all catalogue states.
+      description: |
+        Return ranked matches, complete duplicate conflicts, and an acknowledgement.
+        Exact identity requires equal normalized names, known grape sets, and known
+        sweetness. A differing year or one absent year has a separate relation.
+        The acknowledgement binds the draft and every current conflict.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineDraft" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        "400": { $ref: "#/components/responses/Error" }
+        "413": { $ref: "#/components/responses/Error" }
+        "503": { $ref: "#/components/responses/Error" }
+
   /api/wine:
     post:
       tags: [dataset]
@@ -1704,6 +1746,10 @@ paths:
                 region: { type: string }
                 grapes: { type: string }
                 description: { type: string }
+                sweetness: { type: string, enum: ["", dry, semi_dry, semi_sweet, sweet, brut, extra_brut, brut_nature, extra_dry] }
+                vintage: { type: string }
+                check_duplicates: { type: boolean }
+                duplicate_acknowledgement: { type: string }
       responses:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
@@ -1989,6 +2035,18 @@ components:
       properties:
         error: { type: string }
 
+    WineDraft:
+      type: object
+      properties:
+        name: { type: string, maxLength: 4000 }
+        producer: { type: string, maxLength: 4000 }
+        beverage_type_code: { type: string, enum: ["", "4", "44"] }
+        category: { type: string, maxLength: 4000 }
+        region: { type: string, maxLength: 4000 }
+        grapes: { type: string, maxLength: 4000 }
+        sweetness: { type: string, enum: ["", dry, semi_dry, semi_sweet, sweet, brut, extra_brut, brut_nature, extra_dry] }
+        vintage: { type: string }
+
     WineCreate:
       type: object
       additionalProperties: false
@@ -2006,6 +2064,12 @@ components:
         region: { type: string }
         grapes: { type: string }
         description: { type: string }
+        sweetness:
+          type: string
+          enum: ["", dry, semi_dry, semi_sweet, sweet, brut, extra_brut, brut_nature, extra_dry]
+        vintage: { type: string, description: "Harvest year as four digits, or empty." }
+        check_duplicates: { type: boolean, description: "Recheck duplicate identity in the create transaction." }
+        duplicate_acknowledgement: { type: string, description: "Acknowledgement from the current draft comparison." }
         image_name: { type: string }
         image:
           type: string

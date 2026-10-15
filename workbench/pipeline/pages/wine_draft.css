@@ -1,0 +1,21 @@
+#wine-modal .wine-form-dialog { width: min(1180px, 96vw); max-width: 1180px; }
+.wine-draft-layout { display: grid; grid-template-columns: minmax(0, 1fr) 265px; gap: 18px; }
+.wine-draft-ribbon { border-left: 1px solid var(--line, #8885); padding-left: 16px; min-width: 0; }
+.wine-draft-ribbon h3 { margin: 0 0 8px; }
+#wine-similar-list { display: flex; flex-direction: column; gap: 8px; max-height: 64vh; overflow: auto; }
+.wine-draft-candidate { display: flex; gap: 10px; text-align: left; padding: 10px; width: 100%; }
+.wine-draft-candidate img { width: 45px; height: 90px; object-fit: contain; background: white; border-radius: 4px; }
+.wine-draft-candidate span { min-width: 0; overflow-wrap: anywhere; }
+.wine-draft-candidate small { display: block; margin-top: 5px; }
+#wine-recognition-status, #wine-similar-status { font-size: 13px; line-height: 1.4; }
+#wine-duplicate-warning { border: 1px solid #bd8d35; border-radius: 6px; padding: 10px; }
+#wine-similar-modal { z-index: 1100; }
+#wine-similar-modal .validation-dialog { width: min(720px, 94vw); }
+.wine-draft-card-image { width: 120px; max-height: 300px; object-fit: contain; float: right; margin-left: 18px; background: white; }
+#wine-similar-card dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 16px; overflow-wrap: anywhere; }
+#wine-similar-card dd { margin: 0; white-space: pre-wrap; }
+@media (max-width: 800px) {
+  .wine-draft-layout { grid-template-columns: minmax(0, 1fr); }
+  .wine-draft-ribbon { border-left: 0; border-top: 1px solid var(--line, #8885); padding: 16px 0 0; }
+  #wine-similar-list { max-height: 280px; }
+}

@@ -2763,6 +2763,23 @@ Read [the protocol](docs/testing/label-only-benchmark.md).
 - Require no horizontal overflow at widths 1050, 736, 360, and 320.
 - Check light and dark themes.
 
+
+## Add wine recognition and duplicate checks
+
+1. Open Dataset, Actions, Add wine. Drop a readable bottle into Main image.
+2. Check recognition progress. Check the filled fields against the image.
+3. Type a value during recognition. Check that the value stays. Replace the image.
+   Check that only unchanged recognized values can change.
+4. Check the Similar wines column. Open a candidate. Close the popup with Escape.
+   Check that Add wine stays open and focus returns to the candidate.
+5. Open the candidate again. Select Copy values. Check that only empty fields change.
+6. In a temporary test catalogue, save an exact duplicate. Cancel the confirmation.
+   Check that no card was created. Confirm a different-year card and check its tags.
+7. Check the dialog at a narrow viewport. The candidate column moves below the form.
+8. Check recognition failure and Cancel recognition. The user can still enter values.
+
+Do not create smoke-test cards in the live catalogue.
+
 ## Static wine images (plan 06 of the repository)
 
 | ID | Step | Expected result |

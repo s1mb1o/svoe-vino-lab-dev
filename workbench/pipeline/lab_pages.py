@@ -20,7 +20,9 @@ import re
 PAGES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pages")
 THEME_MARK = "/* THEME_CSS */\n"
 # The optional marks and their files (plan 55).
-PARTS = (("/* ATTRIBUTE_COMPARISON_CSS */\n", "attribute_comparison.css"),
+PARTS = (("/* WINE_DRAFT_CSS */\n", "wine_draft.css"),
+         ("/* WINE_DRAFT_JS */\n", "wine_draft.js"),
+         ("/* ATTRIBUTE_COMPARISON_CSS */\n", "attribute_comparison.css"),
          ("/* ATTRIBUTE_COMPARISON_JS */\n", "attribute_comparison.js"),
          ("/* STEPS_CSS */\n", "steps.css"), ("/* STEPS_JS */\n", "steps.js"),
          ("/* DROP_JS */\n", "drop.js"), ("/* VISIBLE_CARDS_JS */\n", "visible_cards.js"),

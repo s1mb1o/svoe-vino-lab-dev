@@ -208,6 +208,7 @@ import testset_routes  # noqa: E402
 import vlm_config  # noqa: E402
 import website_import_routes  # noqa: E402
 import wine_tags  # noqa: E402
+import wine_draft  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(ROOT, "config.yaml")
@@ -693,7 +694,7 @@ def start_atlas_wine(db_path, body, jobs, segmenter=None, scanner=None, config_p
     with closing(open_database(db_path, write=True)) as conn:
         conn.isolation_level = None
         conn.execute("PRAGMA foreign_keys = ON")
-        atlas_import.insert_wine(conn, product_uuid, slug, values, beverage_type)
+        atlas_import.insert_wine(conn, product_uuid, slug, values, beverage_type, draft=body)
     _store_atlas_photos(db_path, slug, files, segmenter, scanner, warnings)
     result = {"slug": slug, "warnings": warnings, "index": None}
     if selected is not None:
@@ -1915,6 +1916,32 @@ class Handler(BaseHTTPRequestHandler):
         except (ConfigError, sqlite3.Error) as exc:
             self._json(503, {"error": str(exc)})
 
+    def _wine_draft(self, route):
+        """Read one staged bottle or compare partial draft fields. No catalogue write."""
+        limit = manual_wines.MAX_BODY if route.endswith("recognize") else 65536
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            length = 0
+        if length > limit:
+            self.close_connection = True
+            self._json(413, {"error": "the draft request is too large"})
+            return
+        body = self._json_body(limit)
+        if body is None:
+            return
+        try:
+            if route.endswith("recognize"):
+                result = wine_draft.recognize(body, self.server.config_path)
+            else:
+                with closing(open_database(self.server.db_path)) as conn:
+                    result = wine_draft.compare(body, dataset_records(conn))
+            self._json(200, result)
+        except manual_wines.WineError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error, OSError) as exc:
+            self._json(503, {"error": str(exc)})
+
     def _new_wine(self):
         """Answer `POST /api/wine`."""
         try:
@@ -2229,6 +2256,8 @@ class Handler(BaseHTTPRequestHandler):
             self._wine_state()
         elif route == "/api/wine-name" and self.command == "POST":
             self._wine_name()
+        elif route in ("/api/wine-draft-recognize", "/api/wine-draft-similar") and self.command == "POST":
+            self._wine_draft(route)
         elif route == "/api/wine" and self.command == "POST":
             self._new_wine()
         elif route == "/api/wine-index" and self.command == "POST":

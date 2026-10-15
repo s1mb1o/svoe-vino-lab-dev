@@ -1506,3 +1506,27 @@ The response holds `ok`, `set`, `source`, `selected`, `photos`, `support_photos`
 
 Historical `variant` and `unlabelled` snapshot labels cannot be validated by the
 current scored-run query builder. The preview reports a specific conflict.
+
+
+## Add wine draft recognition
+
+`POST /api/wine-draft-recognize` accepts a JSON `image` with base64 JPEG, PNG, or
+WebP bytes. The request uses the manual-image byte and pixel limits. It returns
+`values`, `model`, and `image_sha256`. The route reads printed facts with the
+configured VLM. It does not create a catalogue card. The timeout is 45 seconds.
+A concurrent recognition returns HTTP 429. Recognition errors return HTTP 503.
+
+`POST /api/wine-draft-similar` accepts partial Add wine fields. It returns `matches`,
+`total`, `conflicts`, and `acknowledgement`. Each match holds a catalogue `record`,
+editable `values`, a `relation`, `reasons`, and a `score`. The relations are `exact`,
+`different_vintage`, `unknown_vintage`, and `similar`. The route checks all catalogue
+states. The ribbon limit does not limit `conflicts`.
+
+`POST /api/wine` and `POST /api/atlas-import/create` accept optional `sweetness` and
+`vintage` fields. Creation stores these fields as visible `wine_tag` entries. An
+empty field stores no tag. The Add wine dialog sends `check_duplicates: true` and
+`duplicate_acknowledgement`. Creation checks this acknowledgement inside its write
+transaction. A changed conflict returns HTTP 409. Existing API callers MAY omit
+`check_duplicates` to retain their prior behavior.
+
+Read [wine-draft.md](testing/wine-draft.md) for identity decisions and verification.

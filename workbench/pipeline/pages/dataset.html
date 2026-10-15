@@ -727,6 +727,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
   .image-preview-arrow.previous { left: 12px; margin: 0; transform: none; }
   .image-preview-arrow.next { right: 12px; margin: 0; transform: none; }
 }
+/* WINE_DRAFT_CSS */
 /* ATTRIBUTE_COMPARISON_CSS */
 </style>
 </head>
@@ -896,10 +897,14 @@ button.preview-thumb:hover { border-color: var(--accent); }
       The imports never remove it. The slug follows the name until you type a slug.
       Grapes and Description are optional. Save updates the active index
       <code id="wine-index"></code>.</p>
+    <div class="wine-draft-layout"><div>
     <form class="wine-form-body" id="wine-form" novalidate>
       <div class="wine-form-image">Main image
         <button class="wine-form-drop" id="wine-drop" type="button"></button>
         <input id="wine-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        <p id="wine-recognition-status" role="status" aria-live="polite"></p>
+        <button id="wine-recognition-retry" type="button" hidden>Retry recognition</button>
+        <button id="wine-recognition-cancel" type="button" hidden>Cancel recognition</button>
       </div>
       <div class="wine-form-grid">
         <label>Slug
@@ -916,9 +921,20 @@ button.preview-thumb:hover { border-color: var(--accent); }
         <label>Shade (optional) <input name="color" type="text"></label>
         <label>Region <input name="region" type="text" list="wine-regions"></label>
         <label class="wide">Grapes (optional) <input name="grapes" type="text"></label>
+        <label>Sweetness (optional) <select name="sweetness"><option value="">unknown</option>
+          <option value="dry">Dry</option><option value="semi_dry">Semi-dry</option>
+          <option value="semi_sweet">Semi-sweet</option><option value="sweet">Sweet</option>
+          <option value="brut">Brut</option><option value="extra_brut">Extra brut</option>
+          <option value="brut_nature">Brut nature</option><option value="extra_dry">Extra dry</option></select></label>
+        <label>Year (optional) <input name="vintage" type="text" inputmode="numeric" maxlength="4" placeholder="Harvest year"></label>
         <label class="wide">Description (optional) <textarea name="description" rows="6"></textarea></label>
       </div>
     </form>
+    <p id="wine-duplicate-warning" role="status" hidden></p>
+    </div><aside class="wine-draft-ribbon" aria-label="Similar wines">
+      <h3>Similar wines</h3><p id="wine-similar-status" role="status" aria-live="polite">Drop a bottle or enter a name.</p>
+      <div id="wine-similar-list"></div>
+    </aside></div>
     <datalist id="wine-producers"></datalist>
     <datalist id="wine-regions"></datalist>
     <div class="wine-form-error" id="wine-error" role="alert" hidden></div>
@@ -927,6 +943,14 @@ button.preview-thumb:hover { border-color: var(--accent); }
       <button id="wine-cancel" type="button">Cancel</button>
       <button id="wine-save" class="primary" type="button" aria-describedby="wine-missing"
         disabled>Save</button>
+    </div>
+  </section>
+</div>
+<div class="modal" id="wine-similar-modal" role="dialog" aria-modal="true" aria-labelledby="wine-similar-title" hidden>
+  <section class="validation-dialog"><div class="validation-head"><h2 id="wine-similar-title"></h2></div>
+    <div id="wine-similar-card"></div><div class="validation-actions">
+      <button id="wine-similar-close" type="button">Close</button>
+      <button id="wine-similar-copy" type="button">Copy values</button>
     </div>
   </section>
 </div>
@@ -3185,7 +3209,7 @@ async function openValidation() {
 // Atlas mode needs no main image: the photos become additional photos.
 const WINE_FORM = {file: null, url: "", busy: false, slugTyped: false, atlas: null};
 const WINE_FIELDS = ["name", "producer", "beverage_type_code", "category", "color",
-  "region", "grapes", "description"];
+  "region", "grapes", "description", "sweetness", "vintage"];
 const WINE_REQUIRED = ["name", "producer", "beverage_type_code", "category", "region"];
 const WINE_FIELD_LABELS = {name: "Name", producer: "Producer",
   beverage_type_code: "Category", category: "Color", region: "Region"};
@@ -3229,10 +3253,11 @@ function missingWineFields(values) {
   return missing;
 }
 function updateWineForm() {
+  wineDraft.suggestSlug();
   const values = wineFormValues();
   const missing = missingWineFields(values);
   const ready = !missing.length;
-  $("#wine-save").disabled = !ready || WINE_FORM.busy;
+  $("#wine-save").disabled = !ready || WINE_FORM.busy || wineDraft.busy;
   $("#wine-save").textContent = WINE_FORM.busy ? "Creating…" : "Save";
   const status = $("#wine-missing");
   status.textContent = WINE_FORM.busy || ready ? "" : `Missing: ${missing.join(", ")}.`;
@@ -3259,7 +3284,7 @@ function renderWineImage() {
     : 'Drop an image here<br><span>or choose a file: JPEG, PNG, or WebP up to 20 MB</span>';
 }
 function stageWineImage(file) {
-  if (!file) return;
+  if (!file || WINE_FORM.busy || WINE_FORM.atlas) return;
   const allowed = new Set(["image/jpeg", "image/png", "image/webp"]);
   if ((file.type && !allowed.has(file.type)) || file.size <= 0 || file.size > 20 * 1024 * 1024) {
     showWineError("Choose a JPEG, PNG, or WebP image up to 20 MB.");
@@ -3271,8 +3296,10 @@ function stageWineImage(file) {
   showWineError("");
   renderWineImage();
   updateWineForm();
+  wineDraft.recognize(file);
 }
 function clearWineForm() {
+  wineDraft.reset();
   $("#wine-form").reset();
   if (WINE_FORM.url) URL.revokeObjectURL(WINE_FORM.url);
   WINE_FORM.file = null;
@@ -3307,8 +3334,13 @@ function openWineForm() {
   $("#wine-modal").hidden = false;
   updateWineForm();
   $("#wine-slug").focus();
+  wineDraft.open();
 }
-function closeWineForm() { $("#wine-modal").hidden = true; }
+function closeWineForm() {
+  if (WINE_FORM.busy) return;
+  wineDraft.close();
+  $("#wine-modal").hidden = true;
+}
 // Plan 95: atlas_import.js opens the form with the values of an Atlas product. The slug
 // follows the name, as for a typed name.
 function openAtlasWineForm(atlas) {
@@ -3329,6 +3361,7 @@ function openAtlasWineForm(atlas) {
   $("#wine-slug").value = slugOfName(form.elements.name.value);
   renderWineImage();
   updateWineForm();
+  wineDraft.open();
 }
 function fileBase64(file) {
   return new Promise((resolve, reject) => {
@@ -3341,22 +3374,26 @@ function fileBase64(file) {
 async function saveWine() {
   if (WINE_FORM.busy || $("#wine-save").disabled) return;
   WINE_FORM.busy = true;
+  $("#wine-form").inert = true;
   updateWineForm();
   showWineError("");
   try {
+    const acknowledgement = await wineDraft.beforeSave();
+    if (!acknowledgement) return;
     const atlas = WINE_FORM.atlas;
     const body = atlas
       ? {...wineFormValues(), url: atlas.url, media_ids: atlas.photos.map(p => p.media_id)}
       : {...wineFormValues(), image_name: WINE_FORM.file.name,
          image: await fileBase64(WINE_FORM.file)};
     const response = await fetch(atlas ? "/api/atlas-import/create" : "/api/wine", {
-      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)
+      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({...body, ...acknowledgement})
     });
     const out = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(out.error || `HTTP ${response.status}`);
     DATA.records.push({...out.record, _index: DATA.records.length});
     if (out.index) WINE_INDEX[out.slug] = out.index;
     clearWineForm();
+    WINE_FORM.busy = false;
     closeWineForm();
     render();
     pollWineIndex();
@@ -3366,6 +3403,7 @@ async function saveWine() {
     showWineError(`Cannot add the wine: ${error.message}`);
   } finally {
     WINE_FORM.busy = false;
+    $("#wine-form").inert = false;
     updateWineForm();
   }
 }
@@ -5011,6 +5049,7 @@ for (const id of ["state", "sort"]) $("#" + id).addEventListener("change", rende
 /* The header controls are kept in localStorage and come back at the next page load (owner
    message of 2026-09-26T00:30:00+0300). A stored value that is no longer an option is
    ignored. The listeners of each control run first; the header listener then stores. */
+/* WINE_DRAFT_JS */
 /* ATTRIBUTE_COMPARISON_JS */
 const HEADER_KEY = "svl.dataset.header";
 const HEADER_IDS = ["filter", "state", "sort", "q", "package-filter", "identifier-filter",

@@ -575,7 +575,7 @@ def check_wine(body):
             manual_wines.read_beverage_type(body))
 
 
-def insert_wine(conn, product_uuid, slug, values, beverage_type_code):
+def insert_wine(conn, product_uuid, slug, values, beverage_type_code, draft=None):
     """Write the wine `slug` with no image, and its manual Atlas binding, in one write
     transaction. `conn` is a write connection with `isolation_level` None. Raise
     `manual_wines.WineError` 409 for a slug that the catalogue holds."""
@@ -585,10 +585,16 @@ def insert_wine(conn, product_uuid, slug, values, beverage_type_code):
             raise manual_wines.WineError(409, "the database holds a wine with the slug %s "
                                               "already" % slug)
 
+    import wine_draft
+
+    if draft is not None:
+        wine_draft.read_values(draft)
     check_new()
     conn.execute("BEGIN IMMEDIATE")
     try:
         check_new()
+        if draft is not None:
+            wine_draft.guard(conn, draft)
         fields = manual_wines.TEXT_FIELDS
         conn.execute("INSERT INTO wine_catalog (wine_slug, %s, csv_photo_name, state) "
                      "VALUES (?, %s, ?, 'Active')"
@@ -596,6 +602,8 @@ def insert_wine(conn, product_uuid, slug, values, beverage_type_code):
                      [slug] + list(values) + [PHOTO_NAME % product_uuid])
         if beverage_type_code is not None:
             beverage_types.set_type(conn, slug, beverage_type_code)
+        if draft is not None:
+            wine_draft.store_tags(conn, slug, draft)
         atlas_bindings.add_manual(conn, slug, product_uuid)
         conn.execute("COMMIT")
     except BaseException:
