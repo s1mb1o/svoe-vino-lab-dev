@@ -552,10 +552,19 @@ is a port of the Testset page of the review tool, with a smaller scope. Read
     this wine) and `×`.
   - The Drawer, the right sidebar, holds the photos that wait for a wine, also after a
     restart. No run uses them. Its cards have no label buttons; the comments, the box, and
-    the delete mark stay. `Remove` asks for confirmation and then deletes that Drawer
+    the delete mark stay. `Remove` immediately deletes that Drawer
     entry (`POST /api/testset-drawer-remove`); it does not delete the immutable image-store
     object and cannot remove a photo from any other place. The same control is on the
     matched-image panel of every current row in the Drawer matching Results dialog.
+    The Results `Sort` control keeps the original run order by default. `Top 1: fewest
+    positives` uses the positive count of the first candidate wine in the current test
+    set. `Top 3: fewest positives (total)` adds the positive counts of the first three
+    distinct candidate wines. `Best score (candidate 1)` and `Worst score (candidate 1)`
+    use the full score of the first candidate, in descending and ascending order.
+    `Closest scores (1 vs 2)` uses the smallest absolute score gap between the first
+    two distinct candidates. A result with missing candidate data or scores goes last.
+    Equal values keep the original run order. Sorting keeps the current tag filter and
+    does not change a result or its candidate ranks.
 - A drag of a photo card onto the sidebar moves the photo to the Drawer; a drag onto the
   row `No Match` or onto a wine row moves it there; the key `0` of the large view moves
   it to the Drawer; the right-click menu holds `Move to the Drawer`, `Move to No Match`,

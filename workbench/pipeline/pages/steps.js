@@ -76,6 +76,7 @@ const Steps = (() => {
     const picture = it.image ? `<img loading="lazy" ${source} alt=""
         data-full="${esc(it.image)}"${fallback}>` : `<div class="nobottle">no catalogue image</div>`;
     return `<div class="cand ${it.truth ? "truth" : ""} ${it.forbidden ? "forbidden" : ""}"
+        data-wine-slug="${esc(it.slug)}"
         title="${esc(it.name || it.slug)}">${picture}
       <div class="r"><span>#${esc(it.rank)}${moved}</span><span>${score4(it.score)}</span></div>
       <div class="sl">${esc(it.slug)}</div>${it.detail ? `<div class="dt">${esc(it.detail)}</div>`
@@ -96,17 +97,18 @@ const Steps = (() => {
     return (questions || []).map(q => {
       const scores = optionScores[q.id];
       const values = scores && typeof scores === "object" && !Array.isArray(scores)
-        ? (q.options || Object.keys(scores)).map(option => `<b>${esc(option)}</b> ${
+        ? `<ul class="option-scores">${(q.options || Object.keys(scores)).map(option => `<li><b>${esc(option)}</b> ${
             scores[option] === undefined ? "missing" : esc(JSON.stringify(scores[option])) + "%"
-          }`).join(" &middot; ")
-        : "no score object returned";
-      return `<div class="q">${esc(q.id)} ${esc(q.question)}</div><div class="sc">${values}</div>${
-        errors[q.id] ? `<div class="err">Rejected: ${esc(errors[q.id])}</div>` : ""}`;
+          }</li>`).join("")}</ul>`
+        : '<div class="sc">no score object returned</div>';
+      const label = /^q\d+$/i.test(q.id) ? q.id.toUpperCase() : q.id;
+      return `<div class="question-block"><div class="q"><b>${esc(label)}:</b> ${esc(q.question)}</div>${values}${
+        errors[q.id] ? `<div class="err">Rejected: ${esc(errors[q.id])}</div>` : ""}</div>`;
     }).join("") + (errors._response
       ? `<div class="err">${esc(errors._response)}</div>` : "");
   }
 
-  function stepVlmHtml(v) {
+  function stepVlmHtml(v, model) {
     const answers = v.answers || {};
     const raw = v.raw_option_scores || {};
     const attempts = v.attempts || [];
@@ -155,13 +157,17 @@ const Steps = (() => {
     const evidence = v.evidence_scores || {};
     const decision = v.decision_scores || {};
     if (Object.keys(decision).length) {
-      body += `<div class="sc">candidate scores (weight ${esc(v.decision_weight)}): ${
-        (v.window || []).map(slug => `<b>${esc(slug)}</b> embedding ${score4(base[slug])}, ` +
-          `evidence ${score4(evidence[slug])}, decision ${score4(decision[slug])}`)
-          .join(" &middot; ")}</div>`;
+      body += `<div class="candidate-scores"><div class="sc">Candidate scores (weight ${esc(v.decision_weight)})</div>
+        <div class="score-scroll"><table class="score-table" aria-label="VLM candidate scores">
+        <thead><tr><th scope="col">Candidate</th><th scope="col">Embedding</th>
+          <th scope="col">Evidence</th><th scope="col">Decision</th></tr></thead><tbody>${
+        (v.window || []).map(slug => `<tr><td><b>${esc(slug)}</b></td><td>${score4(base[slug])}</td>` +
+          `<td>${score4(evidence[slug])}</td><td>${score4(decision[slug])}</td></tr>`)
+          .join("")}</tbody></table></div></div>`;
     }
     return `<div class="vlm"><div class="vh">VLM &middot; ${esc(v.mode || "rule")} &middot; cluster ${
-      esc(v.cluster || "?")} &middot; ${v.cached ? "from the cache" : dur(v.ms)}</div>${body}
+      esc(v.cluster || "?")} &middot; ${v.cached ? "from the cache" : dur(v.ms)}</div>
+      <div class="vm">Model: <b>${esc(v.model || model || "not recorded")}</b></div>${body}
       <div class="mv">${v.changed ? "the code changed the order" : "the base order stays"}</div></div>`;
   }
 

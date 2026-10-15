@@ -21,6 +21,7 @@ import embeddings  # noqa: E402
 import main_scene  # noqa: E402
 import run_routes  # noqa: E402
 import run_steps  # noqa: E402
+import variant_attributes  # noqa: E402
 
 EMBEDDING_NAMES = ["Input photo", "Package cut", "Label cut", "View full", "View label",
                    "Embedding", "Search, space full", "Search, space label", "Score"]
@@ -48,11 +49,12 @@ class StepsTest(TE.Temporary):
         TE.add_set(self.lab)
         self.runs = str(self.root / "runs")
 
-    def run_set(self, scene_selection=False):
+    def run_set(self, scene_selection=False, label_gate=None):
         backend = embedding_run.build_backend(self.embedding, self.lab.db_path,
                                               make_model=lambda e: TE.ColourModel(),
                                               segmenter=TE.FakeSam3(),
-                                              scene_selection=scene_selection)
+                                              scene_selection=scene_selection,
+                                              label_gate=label_gate)
         run_dir, _ = benchmark.run_benchmark(
             self.lab.db_path, "my", backend, self.runs, embeddings=backend.catalogue.state,
             log=lambda message: None, configuration="gw")
@@ -70,6 +72,206 @@ class StepsTest(TE.Temporary):
 
 
 class EmbeddingStepsTest(StepsTest):
+    def test_local_distance_cards_use_native_value_and_lower_direction(self):
+        run_dir, rows = self.run_set()
+        row = rows["green/01.png"]
+        candidate = row["candidates"][0]
+        bottle_score = candidate["score"]
+        ref = next(i for i in candidate["items"] if i["view"] == "label")
+        candidate["comparison"] = {"field": "aligned_distance", "value": .12,
+            "bottle_rank": 2, "bottle_score": bottle_score,
+            "reference": dict(ref, source_sha256=ref["sha256"])}
+        row["trace"]["steps"].append({"id": "local-comparison", "out": {
+            "applied": True, "field": "aligned_distance", "higher_is_better": False,
+            "cached_pairs": 18, "fresh_pairs": 2}})
+        meta_path = Path(run_dir) / "run.json"
+        meta = json.loads(meta_path.read_text())
+        meta["backend"]["local_comparison"] = {"method": "lpips-aligned_distance", "index": "gw"}
+        meta_path.write_text(json.dumps(meta))
+        write_rows(run_dir, [row if r["query_id"] == row["query_id"] else r for r in read_rows(run_dir)])
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        self.assertEqual(code, 200)
+        part = next(s for s in self.all_steps(body) if s["id"] == "local-comparison")
+        card = part["lists"][0]["items"][0]
+        self.assertEqual(card["score"], .12)
+        self.assertIn("lower better", card["detail"])
+        self.assertIn("bottle rank 2", card["detail"])
+        self.assertTrue(card["image"].startswith("/embeddings/gw/images/"))
+        self.assertEqual(candidate["score"], bottle_score)
+        self.assertTrue(any("18 cached pairs; 2 fresh pairs" in n for n in part["notes"]))
+
+    def test_local_comparison_failure_explains_bottle_fallback(self):
+        run_dir, rows = self.run_set()
+        row = rows["green/01.png"]
+        row["trace"]["steps"].append({"id": "local-comparison", "out": {
+            "applied": False, "reason": "comparison_failed", "error": "local model failed"}})
+        meta_path = Path(run_dir) / "run.json"
+        meta = json.loads(meta_path.read_text())
+        meta["backend"]["local_comparison"] = {"method": "dinov2-score", "index": "gw"}
+        meta_path.write_text(json.dumps(meta))
+        write_rows(run_dir, [row if r["query_id"] == row["query_id"] else r for r in read_rows(run_dir)])
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        self.assertEqual(code, 200)
+        part = next(s for s in self.all_steps(body) if s["id"] == "local-comparison")
+        self.assertIn("Bottle fallback: comparison_failed", part["notes"])
+        self.assertIn("Comparison error: local model failed", part["notes"])
+
+    def test_variant_details_show_each_attribute_match_and_conflict(self):
+        run_dir, rows = self.run_set()
+        row = rows["green/01.png"]
+        original = row["candidates"][:3]
+        first, second, third = [c["slug"] for c in original]
+        catalogue = {first: {"name": "Брют Rose Reserve", "grapes": "Мерло"},
+                     second: {"name": "Брют Red Reserve", "grapes": "Мерло"},
+                     third: {"name": "Полусладкое White", "grapes": "Каберне Совиньон"}}
+        answer, evidence = variant_attributes.verify(original,
+            [{"text": "BRUT MERLOT RED RESERVE", "confidence": 98}], catalogue,
+            {"window": 10, "min_confidence": 70})
+        row["candidates"] = answer
+        row["trace"]["steps"].append({"id": "label-text", "out": evidence})
+        write_rows(run_dir, [row if r["query_id"] == row["query_id"] else r for r in read_rows(run_dir)])
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        self.assertEqual(code, 200)
+        part = next(s for s in self.all_steps(body) if s["id"] == "label-text")
+        items = part["lists"][0]["items"]
+        self.assertEqual(items[0]["slug"], second)
+        self.assertEqual(items[0]["moved"], 1)
+        self.assertEqual(items[0]["score"], original[1]["score"])
+        self.assertIn("Grapes: merlot · match", items[0]["detail"])
+        self.assertIn("Colour: red · match", items[0]["detail"])
+        self.assertIn("Product line: reserve · match", items[0]["detail"])
+        self.assertIn("Colour: rose · conflict", items[1]["detail"])
+        self.assertTrue(any("distinguishes shortlisted variants" in note for note in part["notes"]))
+
+    def test_shared_normalization_details_keep_raw_ocr_and_show_correction(self):
+        run_dir, rows = self.run_set()
+        row = rows["green/01.png"]
+        original = row["candidates"][:2]
+        first, second = [c["slug"] for c in original]
+        words = [{"text": "MYCKАТ", "confidence": 97.78}]
+        answer, evidence = variant_attributes.verify(original, words,
+            {first: {"grapes": "Саперави"}, second: {"grapes": "Мускат"}},
+            {"window": 10, "min_confidence": 70})
+        row["candidates"] = answer
+        row["trace"]["steps"].append({"id": "label-text", "out": evidence})
+        write_rows(run_dir, [row if r["query_id"] == row["query_id"] else r for r in read_rows(run_dir)])
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        self.assertEqual(code, 200)
+        part = next(s for s in self.all_steps(body) if s["id"] == "label-text")
+        self.assertEqual(part["result"]["words"], words)
+        self.assertTrue(any("MYCKАТ → мускат" in note and "97.78" in note for note in part["notes"]))
+
+    def test_variant_details_show_unknown_and_unused_fields_without_reordering(self):
+        run_dir, rows = self.run_set()
+        row = rows["green/01.png"]
+        original = row["candidates"][:3]
+        catalogue = {c["slug"]: {"name": "Brut", "grapes": "Мерло"} for c in original}
+        row["candidates"], evidence = variant_attributes.verify(original,
+            [{"text": "MERLOT", "confidence": 99}], catalogue, {"window": 10, "min_confidence": 70})
+        self.assertFalse(evidence["applied"])
+        row["trace"]["steps"].append({"id": "label-text", "out": evidence})
+        write_rows(run_dir, [row if r["query_id"] == row["query_id"] else r for r in read_rows(run_dir)])
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        self.assertEqual(code, 200)
+        part = next(s for s in self.all_steps(body) if s["id"] == "label-text")
+        items = part["lists"][0]["items"]
+        self.assertEqual([i["slug"] for i in items], [c["slug"] for c in original])
+        self.assertIn("Grapes: merlot · unused", items[0]["detail"])
+        self.assertIn("Colour: unknown · unused", items[0]["detail"])
+        self.assertTrue(all(not item.get("moved") for item in items))
+
+    def test_paddle_text_details_show_recorded_evidence_and_reordered_answer(self):
+        run_dir, rows = self.run_set()
+        row = rows["green/01.png"]
+        original = row["candidates"][:3]
+        reordered = [original[2], original[0], original[1]]
+        visual_ranks = {c["slug"]: c["rank"] for c in original}
+        for rank, candidate in enumerate(reordered, 1):
+            candidate["variant_text"] = {"expected": "brut", "status": "match",
+                                         "visual_rank": visual_ranks[candidate["slug"]]}
+            candidate["rank"] = rank
+        row["candidates"] = reordered
+        row["trace"]["steps"].append({"id": "label-text", "out": {
+            "observed_sugar": "brut", "applied": True, "reason": "explicit_variant_text",
+            "words": [{"text": "БРЮТ", "confidence": 82.68}]}})
+        path = Path(run_dir) / "run.json"
+        meta = json.loads(path.read_text())
+        meta["backend"]["main_label"] = {"ocr": "paddleocr", "min_confidence": 70}
+        path.write_text(json.dumps(meta))
+        write_rows(run_dir, [row if r["query_id"] == row["query_id"] else r
+                             for r in read_rows(run_dir)])
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        self.assertEqual(code, 200, body)
+        part = next(s for s in self.all_steps(body) if s["id"] == "label-text")
+        self.assertEqual(part["model"], "PaddleOCR PP-OCRv5 East Slavic")
+        self.assertEqual(part["result"]["words"], [{"text": "БРЮТ", "confidence": 82.68}])
+        first = part["lists"][0]["items"][0]
+        self.assertEqual((first["slug"], first["rank"], first["moved"]),
+                         (original[2]["slug"], 1, 2))
+        self.assertEqual(first["score"], original[2]["score"])
+
+    def test_gated_steps_show_quality_and_routing_without_a_rejected_label_input(self):
+        run_dir, rows = self.run_set(label_gate={})
+        row = rows["green/01.png"]
+        code, body = self.steps(os.path.basename(run_dir), row["query_id"])
+        self.assertEqual(code, 200, body)
+        parts = self.all_steps(body)
+        quality = next(part for part in parts if part["id"] == "label-quality")
+        route = next(part for part in parts if part["id"] == "label-route")
+        label = next(part for part in parts if part["id"] == "view" and part["view"] == "label")
+        self.assertFalse(quality["result"]["passed"])
+        self.assertEqual(quality["name"], "Label crop quality · Rejected")
+        self.assertTrue(any("minimum 128 px on each side" in note for note in quality["notes"]))
+        self.assertIn("The label input is skipped. Matching falls back to the bottle space.",
+                      quality["notes"])
+        self.assertIn("insufficient_native_detail", quality["result"]["reasons"])
+        self.assertEqual(route["result"]["selected_view"], "full")
+        self.assertEqual(route["settings"]["label_gate"]["min_score"], .90)
+        self.assertTrue(any("bottle ranking" in note for note in route["notes"]))
+        self.assertEqual((label["state"], label["artifacts"]), ("skipped", []))
+        self.assertFalse(any(part["id"] == "search" and part.get("view") == "label"
+                             for part in parts))
+        score = next(part for part in parts if part["id"] == "score")
+        self.assertEqual(score["result"]["selected_view"], "full")
+
+    def test_accepted_crop_details_do_not_claim_that_labels_were_selected(self):
+        run_dir, rows = self.run_set(label_gate={"min_native_side": 1, "min_input_side": 1,
+                                               "min_purity": 0, "min_sharpness": 0,
+                                               "min_margin": 2})
+        code, body = self.steps(os.path.basename(run_dir), rows["green/01.png"]["query_id"])
+        self.assertEqual(code, 200, body)
+        parts = self.all_steps(body)
+        quality = next(part for part in parts if part["id"] == "label-quality")
+        route = next(part for part in parts if part["id"] == "label-route")
+        self.assertEqual(quality["name"], "Label crop quality · Accepted")
+        self.assertIn("Similarity and margin are checked next.", quality["notes"][-1])
+        self.assertEqual(route["name"], "Select retrieval space · Bottle")
+        self.assertTrue(any("insufficient lead" in note for note in route["notes"]))
+        self.assertTrue(any("Label margin:" in note and "minimum 2.0000" in note
+                            for note in route["notes"]))
+
+    def test_crop_details_use_recorded_signals_and_thresholds(self):
+        result = {"passed": False, "reasons": ["unrelated_content"], "signals": {
+            "purity": .37023, "detector_score": .95166, "native_label_size": [699.22, 720.70],
+            "input_label_size": [447, 462], "sharpness": 6236.3755, "package_overlap": 1.0,
+        }}
+        options = {"min_purity": .85, "min_detector_score": .7, "min_native_side": 128,
+                   "min_input_side": 128, "min_sharpness": 80, "min_package_overlap": .8}
+        part = run_steps.quality_step({"out": result}, options)
+        self.assertEqual(part["result"], result)
+        self.assertEqual(part["group"], "label content 37.0%")
+        self.assertIn("FAIL · Label content: 37.0% (minimum 85.0%).", part["notes"])
+        self.assertIn("PASS · Detector confidence: 0.9517 (minimum 0.7000).", part["notes"])
+        self.assertIn("Rejected: The crop contains too much glass or other unrelated content.",
+                      part["notes"])
+
+    def test_absent_crop_measurements_are_not_presented_as_zero_or_passed(self):
+        part = run_steps.quality_step({"out": {"passed": False, "reasons": ["no_label"]}}, {})
+        self.assertEqual(part["name"], "Label crop quality · Rejected")
+        self.assertIn("Label content: not measured.", part["notes"])
+        self.assertFalse(any(note.startswith("PASS") for note in part["notes"]))
+        self.assertIn("Rejected: No label was detected.", part["notes"])
+
     def test_the_package_result_explains_the_main_scene_selection(self):
         run_dir, rows = self.run_set(scene_selection=True)
         row = rows["green/01.png"]

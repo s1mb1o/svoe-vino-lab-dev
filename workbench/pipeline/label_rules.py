@@ -93,13 +93,19 @@ DESCRIBE_PROMPT = (
     "read, write \"unreadable\" for it.\n"
     "Write each text exactly as it is printed, in its own alphabet. Do not "
     "translate it and do not transliterate it.\n"
+    "Describe the printed background colour of the main label. Also describe each "
+    "separate coloured region, such as a square that contains a blend ratio. State "
+    "its position, shape, printed contents, and observed colour in design. Include "
+    "these label colours in colours. Keep label colours separate from bottle and "
+    "capsule colours. Do not infer a printed colour through glare or deep shadow.\n"
     "Answer with one JSON object with these keys:\n"
     "\"texts\": a list of every text that you can read, each as {\"text\": "
     "\"...\", \"where\": \"...\"};\n"
     "\"numbers\": a list of every number that you can read, such as a year, a "
     "ratio or a percentage, each as {\"value\": \"...\", \"where\": \"...\"};\n"
     "\"vintage\": the vintage year if the label shows one, else null;\n"
-    "\"colours\": the main colours of the label;\n"
+    "\"colours\": a list of the printed label colours, including the colours of "
+    "small separate regions;\n"
     "\"design\": a short description of the design and the layout of the label;\n"
     "\"marks\": a list of stickers, medals, seals and other marks, each with its "
     "place;\n"
@@ -135,14 +141,30 @@ RULES_PROMPT = (
     "kosher mark, the wine name or the name of the line, the colour of the wine as "
     "the label states it (red, white, rose, orange), the sugar level (brut, extra "
     "brut, dry, semi-dry, semi-sweet, sweet), a blend ratio, a reserve or special "
-    "edition mark, the volume of the bottle, and the vintage year under rule 2a. A "
-    "different design, colour shade, background, font or pattern is NOT a major "
-    "difference. Do not use it, unless the notes of the reviewer name it.\n"
+    "edition mark, the volume of the bottle, the vintage year under rule 2a, and a "
+    "distinctive printed colour of the label or of a specific label region. A "
+    "printed colour is a major difference when it separates cards in this cluster. "
+    "Use it without requiring a reviewer note. Do not omit this feature only "
+    "because a printed text also separates the cards. Minor font, pattern, or "
+    "layout differences require a reviewer note.\n"
     "2a. Ask about the vintage year only when the catalogue names of at least two "
     "cards state two different years. Take the expected year of each card from its "
     "name, and give null to a card whose name states no year. A year that only the "
     "picture shows is not a feature of the card, because the next bottle of the "
     "same wine can show the next vintage.\n"
+    "2b. For a colour question, name the exact label region by its position and "
+    "contents or shape. For a whole-label colour, name the main label background. "
+    "Give the expected printed colour of that region for each card. Give null "
+    "when the region or its colour cannot be established. Do not invent colour "
+    "differences from catalogue data that does not state a label colour.\n"
+    "2c. Compare the available cards. If only one card has a blue region, lighter "
+    "and darker blue appearances can support that card. If cards differ by light "
+    "blue versus dark blue, keep that distinction and state that poor lighting "
+    "can make it uncertain. A yellow region can appear brown in dim or warm "
+    "light. This appearance is compatible with yellow only when the image "
+    "supports that lighting explanation. The absence of a brown card alone is "
+    "not evidence for yellow. Do not treat exposure, glare, or an illumination "
+    "colour cast as a printed colour difference.\n"
     "3. For each question, give the expected answer of each card as a short text, "
     "such as \"2019\", \"30/70\" or \"brut\". Give null when the label of the card "
     "does not show this feature. Write a name, a grape variety or another text "
@@ -171,7 +193,9 @@ RULES_PROMPT = (
     "11. List the groups of cards that no major feature tells apart in "
     "\"indistinguishable\".\n"
     "12. Also write the rule as one short plain text, for example: \"If the label "
-    "shows 30/70, it is card A; otherwise it is card B.\"\n"
+    "shows 30/70, it is card A; otherwise it is card B.\" Include each distinctive "
+    "colour region that the questions use. State uncertainty when lighting "
+    "prevents a reliable colour distinction.\n"
     "\n"
     "Answer with one JSON object:\n"
     "{\"differences\": \"where the labels differ\", \"questions\": [{\"question\": "
@@ -503,6 +527,14 @@ def ask(entry, content, max_tokens, thinking, timeout, extra=None, schema=None,
     off. `cache_read=False` bypasses lookup for this call alone. `cache_validator`,
     when supplied, must accept the parsed answer before a fresh response is stored.
     Rejected responses still return to the caller for diagnostics."""
+    if entry.protocol in ("laya-v", "laya-ocr"):
+        import laya_v
+        import laya_ocr
+        try:
+            adapter = laya_ocr if entry.protocol == "laya-ocr" else laya_v
+            return adapter.ask(entry, content, timeout, schema, cache_read, cache_validator)
+        except laya_v.LayaVError as exc:
+            raise VlmError(str(exc)) from exc
     response_format = {"type": "json_object"} if schema is None else {
         "type": "json_schema", "json_schema": {"name": "answer", "schema": schema}}
     payload = {"model": entry.model, "temperature": 0, "max_tokens": max_tokens,

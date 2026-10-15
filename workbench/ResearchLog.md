@@ -4362,3 +4362,534 @@ Two rules follow.
    `work/hunt/cigarpro/HOWTO.md` now says so.
 2. Resume by recomputing from `review-labels.json`, never by re-running a whole slice.
    Re-running would make duplicate proposals for wines that were already done.
+
+
+## 2026-10-11T00:28:05+03:00 — Фантом colour questions in saved cluster rules
+
+The owner asked whether the cluster rules use the colour of the area that contains
+the blend ratio. This check read the saved rules and notes. This check made no model
+request and changed no rule. The cluster key is `a29e59138ed4`.
+
+- `gx10-siglip2-so400m-patch16-naflex-p256` has two valid feature questions. One
+  question reads the blend ratio. One question reads the background colour of the
+  bottom-left square. The expected pairs are 30/70 with pink, 50/50 with dark red,
+  and 70/30 with purple. The reviewer note names both features and excludes alcohol.
+- `gx10-siglip2-so400m-patch16-naflex-p512` and
+  `gx10-siglip2-so400m-patch16-naflex-p512-rot5` have one valid alcohol question.
+  These rules have no blend-ratio question and no background-colour question. Both
+  rules have an empty note. Both `cluster-notes.json` files have no exact note for
+  this cluster. Both rules were built at `2026-09-28T01:44:32+0300`.
+- Rule 2 of `pipeline/label_rules.py:RULES_PROMPT` excludes design, colour shade,
+  and background differences unless the reviewer note names the difference.
+- `pipeline/cluster_rerank.py:sheet_scores` gives each valid question the same
+  score contribution. `evidence_scores` averages question support. Neither
+  function assigns a higher weight to the background-colour question.
+
+This check confirms local saved artifacts. This check does not establish which
+artifact a remote service currently uses.
+
+
+## 2026-10-11T00:31:19+03:00 — Label colour under variable lighting
+
+The owner asked how to use label colour for Фантом and Виктор Дравиньи when
+lighting changes the observed colour. This check made no model request and
+changed no prompt, rule, configuration, or scorer.
+
+### Current artifacts
+
+The saved p512-rot5 rules for `3346ef764c41`, `46b347dd36a3`, and
+`5a3f9ba794f6` contain Victor Dravigny cards. These rules ask about sugar level
+and the stated wine colour. These rules do not ask about the printed label
+background colour. These rules have empty reviewer notes.
+
+`pipeline/cluster_rerank.py:SCORE_PROMPT` already requests option scores and
+a `not visible` score. `evidence_scores` averages question support. These
+model scores are not measured calibrated probabilities.
+
+`pipeline/label_rules.py:picture_png` composites transparent pixels on white.
+This white background is synthetic. This background is not an illumination
+reference from the source photograph.
+
+### Sources
+
+[Fast Fourier Color Constancy](https://research.google/pubs/fast-fourier-color-constancy/)
+estimates illumination and returns a distribution over possible illuminants.
+The paper supports explicit illumination uncertainty.
+
+[OpenCV Color Correction Model](https://docs.opencv.org/4.12.0/d1/dc1/tutorial_ccm_color_correction_model.html)
+uses observed chart patches and known reference values for colour correction.
+A known neutral region on a label can support an approximate white-balance
+correction. This last application is a design inference. A neutral region
+does not provide full chart calibration.
+
+### Proposed approach
+
+1. Permit large printed colour differences in the rule prompt. Name the
+   discriminating label region. Retain text features as independent evidence.
+2. Use broad colour classes and actual reference photographs. Do not use
+   exact RGB values as identification rules.
+3. Reduce the colour contribution when glare, clipping, mixed illumination,
+   or overlapping colour classes make the feature uncertain. Permit abstention.
+4. First test a prompt change on real warm, cool, dim, and glare photographs.
+   If the prompt change is insufficient, test an explicit region colour
+   scorer with optional illumination correction from a real neutral region.
+5. Validate confidence and feature weights on held-out photographs. Synthetic
+   brightness and white-balance variants can supplement real photographs.
+   Do not infer a reliable operating threshold from model self-confidence alone.
+
+These are proposals. This check establishes no measured improvement.
+
+
+## 2026-10-11T00:35:04+03:00 — Owner requirement for distinctive label colour
+
+The owner requires a rule to use a distinctive printed colour. The colour can
+cover the label or a specific label region. The rule MUST identify the region
+when the colour belongs to a region.
+
+The previous discussion establishes that the comparison SHOULD account for
+plausible illumination changes and the available candidate colours. A darker
+appearance does not by itself establish a different printed colour.
+
+The current `RULES_PROMPT` excludes background and colour-shade differences
+unless reviewer notes name the difference. This restriction does not express
+the owner requirement. No prompt or saved rule was changed in this turn.
+
+
+## 2026-10-11 — Distinctive label colour prompt test
+
+The original rule prompt omits colour with an empty reviewer note.
+The new rule prompt asks about the Фантом square and the Виктор Дравиньи main label.
+QwenCloud correctly maps all seven expected catalogue colours.
+Qwen9B still describes the pink Фантом region as red during package description.
+Retain the cluster label images as rule-generation evidence.
+
+The fixed-rule query test has 27 paired cases.
+With the existing validation correction, the original prompt has 17 unique correct results.
+The new prompt has 16 unique correct results.
+Unique wrong evidence winners decrease from two to one.
+Ties increase from four to seven.
+This result does not establish an accuracy gain.
+
+The generated-rule test with runtime SAM3 image preparation has six paired real-photo cases.
+Unique correct evidence results increase from two to three.
+Neither version has a unique wrong evidence winner in this test.
+The new version has two ties and one abstention.
+The current score rule gives colour and text equal weight.
+A wrong colour observation can make a correct text observation ambiguous.
+
+The real 30/70 Фантом square appears red rather than catalogue pink.
+The neutral label area does not show a strong warm cast.
+Do not assume that every catalogue-to-photo colour difference is an illumination effect.
+The green semi-sweet Виктор Дравиньи photograph has strong warm lighting.
+Qwen9B keeps the green/yellow distinction uncertain after runtime cropping.
+
+Use larger independent photo coverage before claiming a general accuracy improvement.
+This task does not change catalogue rules or the score algorithm.
+Read [the protocol and results](docs/testing/label-colour-prompts.md).
+Read the artifacts in `../internal/colour-prompts-20261011/`.
+
+
+## 2026-10-11 — Proposal for rule self-calibration
+
+The owner proposes an iterative rule generation and recognition test.
+The test augments the generation images.
+A failure report guides the next rule revision.
+The owner also requests additional front photographs for evaluation.
+
+### Current implementation
+
+`label_rules.build_rule` generates a rule and validates its structure.
+The current builder does not evaluate recognition accuracy before saving the rule.
+`label_rules.extra_pictures` accepts `full_front`, `label_front`, `full_back`, and `label_back`.
+A full-package additional photograph needs a stored label crop to enter that helper's result.
+A label close-up can use its original image when no label crop exists.
+`cluster_rerank.ClusterRerank.picture` creates a runtime label crop.
+The runtime method otherwise uses the whole photograph.
+The recognition test SHOULD reuse the runtime image method and score validation.
+The recognition test SHOULD use the deployed Qwen9B model and query prompt.
+QwenCloud SHOULD generate and revise the cluster rule.
+
+### Front image inventory
+
+The seven reference wines have five additional `full_front` images and no additional `label_front` image.
+All five source descriptions state `package_view=front`.
+Visual inspection confirms that each image shows the front label.
+The five images cover Фантом 50/50 and all four Виктор Дравиньи reference wines.
+Фантом 30/70 and 70/30 have no additional front catalogue image.
+None of the five images was used in the preceding six-photo real-image test.
+The inventory is in `../internal/rule-self-calibration-20261011/front-inventory.json`.
+
+The additional extra-brut Виктор Дравиньи image has a brown-looking label.
+The main catalogue reference has a dark-grey label.
+This observation does not establish whether the difference is printed ink or illumination.
+A rule MUST consider both observations.
+A rule MUST NOT assume that a brown appearance always belongs to the yellow-label candidate.
+
+### Proposed prototype
+
+1. Select generation, calibration, and final evaluation sources before the first call.
+2. Use only verified front sources for recognition tests.
+   Accept `full_front` and `label_front`. Exclude back and unknown views.
+   Check conflicting view descriptions and the wine association before use.
+3. Retain the original and create deterministic label-preserving augmentations.
+   Test exposure, moderate white balance, blur, resolution, perspective, and limited occlusion.
+   Do not edit printed text or arbitrarily replace printed colours.
+4. Freeze the calibration cases for every rule revision.
+   Run the production recognizer without the expected wine identity.
+   Save per-question scores, evidence, ties, abstentions, and validation failures.
+5. Give QwenCloud the current rule and calibration failure evidence.
+   Give the expected wine, recognizer output, affected feature, and failed image when needed.
+   Require observed label evidence for every revised question and expected answer.
+6. Evaluate the new rule on every calibration case.
+   Include the previously successful cases. Reject revisions that introduce incorrect choices.
+7. Keep the best rule. Limit the prototype to three candidate rules per cluster.
+   Stop at the limit or when a revision cannot improve the selected objective.
+8. Evaluate the selected rule on independent front photographs and new augmentation seeds.
+   Split by source photograph before augmentation.
+   Keep related crops and duplicate photographs in the same source group.
+   Do not expose the final evaluation sources to generation or revision.
+
+### Success conditions
+
+A recoverable case SHOULD have one correct evidence winner.
+A case without an identifying feature SHOULD return uncertainty.
+A tie does not prove successful recognition.
+An invalid JSON response does not prove successful recognition.
+Do not require a wine identity after an augmentation removes all identifying information.
+Prefer fewer incorrect unique choices before more confident recognition.
+Report unique correct choices and abstentions separately.
+Do not optimize only agreement between the generator and recognizer.
+Use the source wine association as the expected identity.
+Flag contradictory source evidence for inspection.
+
+The prototype does not change model weights or probability calibration.
+The prototype can refine region wording, acceptable colour observations, and feature selection.
+The present production schema gives scoreable questions equal weight.
+A rule-text change alone does not change that score rule.
+A requirement for conditional colour-versus-text priority would need a separate runtime contract.
+
+### Options and decision status
+
+Option 1 is an isolated two-cluster prototype. This option is recommended.
+Option 2 adds an opt-in loop to the production rule builder.
+Option 3 records the design without inference or implementation.
+The owner has been asked to select the scope.
+No self-calibration loop has been implemented.
+No additional image has been sent to a model in this task.
+The preceding approval covers the seven reference-image payload only.
+Any new external payload needs authorization for its actual images and metadata.
+
+### Primary research context
+
+[ProTeGi](https://arxiv.org/abs/2305.03495) uses labelled examples to produce error feedback and edit prompts.
+[OPRO](https://arxiv.org/abs/2309.03409) evaluates candidate instructions and gives prior candidates and scores to the next generation step.
+These papers support the general feedback-loop design.
+These papers do not establish robustness for these wine images or this Qwen model pair.
+
+## 2026-10-11 — Approved rule self-calibration prototype
+
+The owner selected the recommended isolated prototype with `Ok, let's do it`.
+The implementation uses the seven previously approved reference cards.
+The implementation separates five additional front photographs before augmentation.
+All five additional photographs passed metadata and visual front checks.
+SAM3 detected a label in each additional photograph through the existing runtime method.
+
+The frozen calibration partition has 56 identification cases and seven blank controls.
+The frozen final partition has ten cases from five source photographs.
+The final partition covers Фантом 50/50 and all four Виктор Дравиньи reference wines.
+Фантом 30/70 and 70/30 have no additional final photograph.
+
+The prototype calls the production recognition method with equal base scores.
+The prototype keeps runtime score validation and one correction attempt.
+The generator receives automated calibration feedback separately from trusted reviewer notes.
+The generator receives no final image or final recognition result.
+The loop permits at most three candidates per cluster.
+The selection guard rejects lost correct cases and new unsafe decisions.
+
+All 14 offline safeguard tests pass.
+Ruff checks pass for the prototype and its tests.
+The live inference run uses sequential requests to resident Qwen3.5-9B and QwenCloud qwen3.8-max.
+The implementation preserves production catalogue rules and service configuration.
+Live results are pending.
+
+### Completed prototype results
+
+The selected rules improve calibration recognition from 41/56 to 45/56.
+The selected rules have no unique wrong calibration choice.
+All seven blank controls remain safe.
+Виктор Дравиньи improves from 28/32 to 32/32.
+The selected rule clarifies illumination handling and adds a printed neck-label seal question.
+All previously correct calibration cases remain correct.
+
+Фантом keeps the initial rule at 13/24, with 11 abstentions.
+The first revision reaches 19/24 but introduces five wrong choices.
+The second revision reaches 18/24 but introduces six wrong choices.
+The validator excludes the second revision's alcohol question.
+Both candidates fail the regression guard.
+More identifications alone do not establish a better rule.
+
+Both initial and selected rules pass all ten final cases from five additional front photographs.
+The final comparison confirms no regression on this cohort.
+The final comparison does not show an accuracy gain.
+The cohort lacks additional photographs for Фантом 30/70 and 70/30.
+The Виктор Дравиньи cohort covers only four wines from the six-wine combined cluster.
+The test measures rule evidence, not complete matcher accuracy.
+
+Before final recognition, visual inspection found that the unseen-light transform changed the synthetic background.
+The correction applies lighting to the SAM3 alpha crop before the runtime white composite.
+The correction uses five cached SAM3 results.
+All calibration cases, original final crops, recognition functions, and selected rules remain equal.
+The original preparation and unused variants remain archived.
+The final recognition run uses only corrected variants.
+
+All 15 offline safeguards and lint checks pass.
+The result audit verifies source separation, raw-response evidence, candidate limits, and selection.
+All 12 source files keep their bytes and modification times.
+The run records 173 recognition results, 169 live requests, and one successful validation correction.
+Three live generator revisions use 46,716 tokens.
+The aggregate live recognition and revision times are 19.3 and 8.4 minutes.
+Production catalogue rules and services remain unchanged.
+Read [the complete report](docs/testing/rule-self-calibration.md).
+
+### Фантом manual comparison, 2026-10-11
+
+The owner requested a report for manual bottle differentiation.
+The comparison shows the lower-left label region from all 24 calibration images.
+The comparison also shows both cases from the additional Фантом 50/50 photograph.
+The comparison hides catalogue identities and model results until the owner requests the answers.
+Each displayed region preserves the source pixels with lossless WebP encoding.
+The retained rule returns `not visible: 100` for the ratio question in all 24 calibration cases.
+Colour evidence therefore supplies all 13 correct calibration identities.
+The retained rule abstains on all eight Фантом 50/50 calibration cases.
+The retained rule also abstains on Фантом 70/30 under dim light, warm light, and perspective.
+Both rejected revisions introduce wrong choices.
+The region comparison does not change the experiment images or recorded results.
+All ten condition choices, 26 images, reveal controls, and desktop/mobile layouts pass browser checks.
+No model request occurs.
+The source hashes, crop boxes, and verification results are in `internal/rule-self-calibration-20261011/manual-review/` from the repository root.
+
+### Фантом Revision 2 failure explanations, 2026-10-11
+
+Keep the owner's case numbers in this order: `A-warm`, `B-original`, `B-cool`, `B-blur`, `B-low-resolution`, `C-warm`.
+The colour scores determine all six wrong identities.
+The alcohol question has `valid: false`.
+The plain rule text does not enter recognition.
+The alcohol fallback in that text therefore does not operate.
+The revision does not include a blend-ratio question.
+The saved responses contain option scores without a model rationale.
+An explanation of an internal model error remains an inference.
+The option scores are not calibrated probabilities.
+
+1. Case 1: Фантом 30/70 under warm light receives maroon 65, pink 25, and purple 10. The warm transform reduces blue more than red. The pink region becomes darker and redder. Both earlier rules recognize the same image correctly.
+2. Case 2: Original Фантом 50/50 receives purple 100. No augmentation occurs. Revision 1 chooses maroon on the same image. The dark burgundy region has purple tones. The cross-revision difference supports unstable colour categorization.
+3. Case 3: Фантом 50/50 under cool light receives purple 100. The cool transform reduces red more than blue. The burgundy region becomes more blue or purple. Both revisions choose Фантом 70/30.
+4. Case 4: Blurred Фантом 50/50 receives pink 95 and maroon 5. Gaussian blur softens small detail without a colour cast. The region remains close to its original colour. Revision 1 chooses purple. Revision 2 chooses pink. The saved responses do not explain this inconsistent reading.
+5. Case 5: Low-resolution Фантом 50/50 receives pink 85, maroon 10, and purple 5. The transform reduces the image to a 384-pixel long side and then enlarges it. Small text detail degrades. The region remains close to its original colour. Both revisions choose pink.
+6. Case 6: Фантом 70/30 under warm light receives pink 85, maroon 10, and purple 5. The warm transform reduces blue more than red. The violet region becomes redder. Both revisions choose Фантом 30/70.
+
+The six source image hashes match the frozen manifest.
+Read exact responses and comparisons in `internal/rule-self-calibration-20261011/manual-review/revision-2-cases.json` from the repository root.
+Read the source-pixel region comparison in `revision-2-case-regions.png` in the same directory.
+No model request occurs.
+
+### Proposed next Фантом experiment, 2026-10-11
+
+Status: Recommendation only. No recognition test or production change occurs.
+
+The catalogue label sources have dimensions 246 × 454, 246 × 454, and 247 × 454 pixels.
+The calibration preparation enlarges these sources to a 1536-pixel long side.
+This enlargement does not restore source text detail.
+A 90-degree rotation of the small coloured region exposes the orientation of the ratio digits.
+Test a region close-up with the ratio in a readable orientation.
+Preserve the original label image as context.
+Obtain higher-resolution catalogue references when the source digits remain unreadable.
+
+Keep a scoreable ratio question and a scoreable colour question.
+Ask about the digits in the coloured rectangle.
+Do not describe the ratio digits only as logo symbols.
+Represent decision priority in executable code.
+The existing equal-question average does not implement the priority stated in plain rule text.
+Use a clearly readable ratio as the main identity feature.
+Use reliable colour evidence when the ratio is unreadable.
+Check disagreement between text and reliable colour evidence before assigning an identity.
+Give no identity when the available evidence cannot distinguish the wines.
+Do not enable alcohol as a general discriminator across vintages.
+
+Test colour correction with a visible neutral region on the printed label.
+For these references, inspect the white vertical strip next to the coloured rectangle.
+Exclude the synthetic white crop background from illumination estimation.
+Skip colour correction when the neutral region is hidden, clipped, or under inconsistent illumination.
+Compare corresponding reference and query regions after the same preparation.
+This recommendation targets the cast-related cases 1, 3, and 6.
+Reference comparison and region close-ups also target the unstable readings in cases 2, 4, and 5.
+These targets do not establish that the proposed method fixes any case.
+
+Colour-constancy research separates illumination estimation from surface colour.
+Read [Convolutional Color Constancy](https://openaccess.thecvf.com/content_iccv_2015/html/Barron_Convolutional_Color_Constancy_ICCV_2015_paper.html) for this concept.
+The source does not validate this wine-recognition proposal.
+
+Give the revision loop the compiled scoreable questions and excluded questions.
+Do not evaluate a claimed text fallback that the validator excludes.
+Test all 24 calibration cases and all three blank controls.
+Preserve every previously correct case.
+Use fresh front photographs for each of the three wines for independent final evaluation.
+The previously inspected additional photograph is no longer an unseen cohort for a new proposal.
+
+
+## 2026-10-11 — Label-only benchmark preparation
+
+The owner selected the targeted comparison and the official-test evaluation.
+The current description stage uses the effective main image package crop.
+The current rule stage uses the label crop when a label crop exists.
+The current recognition stage uses the query label crop when a label crop exists.
+Both later stages permit a whole-image fallback.
+The current description prompt also requests bottle and capsule features.
+The rule prompt removes the `bottle` description key.
+Other description fields can still include neck-label or capsule observations.
+The first Виктор Дравиньи pair records this difference.
+The package description includes neck-label text and a neck seal in `design`.
+The strict description focuses on the main label.
+This observation does not establish an accuracy improvement.
+
+The prepared cohort has 57 catalogue wines and 19 clusters.
+All selected catalogue wines have label crops.
+All 93 recognition cases have label crops.
+The live comparison mainly changes the description stage.
+The local safeguards test the strict missing-label policy.
+The official cohort has 20 triggered cases in 18 clusters.
+The historical result is 17/20 for these cases and 90/95 overall.
+The new comparison freezes initial scores and retains the other 75 results.
+The new comparison is a replay rather than a complete pipeline run.
+
+The overlap check found five additional generation references from the targeted evaluation photographs.
+The prepared contract was corrected before all rule requests.
+Both arms exclude these five references.
+The corrected payload retains 38 additional label references.
+The earlier description-phase contract is preserved.
+No description image or description prompt changed during this correction.
+
+Automatic approval review rejected the expanded Cloud request.
+The stated reason was that the earlier explicit approval covered seven wines.
+A specific approval question covers 57 wines, up to 43 additional label crops, metadata, descriptions, and reviewer notes.
+The corrected payload is smaller than that upper limit.
+LAN description generation continues while this approval is pending.
+No Cloud rule-generation request has occurred.
+
+Artifacts: [protocol](../internal/label-only-benchmark-20261011/SPEC.md), [payload review](../internal/label-only-benchmark-20261011/cloud-payload-review.md), and [test documentation](docs/testing/label-only-benchmark.md).
+
+
+### Label input preview check
+
+Inspect a composited request PNG rather than raw RGBA pixels.
+The extra-brut reference stores bottle RGB values under zero opacity.
+The raw preview displayed these hidden values.
+The actual transmitted image composites that region on white.
+The request hash confirms the checked image was the transmitted image.
+The initial crop-failure interpretation was incorrect.
+One own description client was stopped and then resumed.
+One LAN SAM3 diagnostic confirmed the existing mask.
+No input crop changed.
+A new safeguard checks that zero-opacity glass becomes white.
+All ten safeguards and Ruff pass.
+Cloud rules and paired recognition remain pending expanded Cloud approval.
+
+
+## 2026-10-11 — Synthetic rule benchmark design
+
+Use augmented verified labels to test observation robustness.
+Use controlled fictional label clusters to test rule generation.
+Keep real-photo evaluation separate.
+Render exact text and feature regions from structured specifications.
+Do not use an unchecked generative image as exact ground truth.
+
+The proposed pilot uses 43 observation-condition images for each source label.
+Seven source labels produce 301 variants.
+Fifty-seven source labels produce 2,451 variants.
+These variants remain correlated with their source labels.
+The counts are proposed rather than completed tests.
+
+Feature-visibility interventions require an observable candidate set.
+A known source identity can remain ambiguous after distinctive regions disappear.
+For Фантом, test grape-share text and the colour region separately.
+Use the same neutral fill to remove colour evidence while preserving digit pixels.
+A grayscale conversion can retain a distinguishing brightness difference.
+
+Evaluate accepted compiled questions rather than plain-text rule claims.
+Separate score aggregation, VLM perception, and combined generation tests.
+The current reranker has no explicit abstention result.
+Use not-visible answers and unsupported score changes to evaluate ambiguity.
+A retained retrieval winner does not prove rule recognition.
+
+Split source photographs before augmentation.
+Keep revision feedback away from the final query set.
+Use a bounded revision budget.
+Test unseen combinations and independent real front photographs.
+Synthetic improvements alone do not establish real-photo improvements.
+
+Decision: Recommend real-label augmentations and deterministic fictional label rendering first.
+Camera and material rendering can follow after severity ranges are validated.
+No new benchmark or model request was started for this design.
+The separate LAN description job continues under its earlier scope.
+
+Sources: [ImageNet-C and ImageNet-P](https://arxiv.org/abs/1903.12261), [Shortcut Learning in Deep Neural Networks](https://arxiv.org/abs/2004.07780), and the local rule compiler and reranker.
+Proposal: [synthetic tests](../internal/label-only-benchmark-20261011/synthetic-tests-proposal.md).
+
+
+## 2026-10-11T14:40:36+03:00 — Completed synthetic rule benchmark pilot
+
+Implement the owner-requested pilot for three Фантом and four Виктор Дравиньи wines.
+Freeze ten fresh rules before all query evaluation.
+Use only label pixels for rule generation and matching.
+Use equal initial scores to measure rule-supported identity evidence.
+Keep source images and production artifacts unchanged.
+
+Complete 301 real source-identity cases and seven real blank controls.
+Фантом scores 23/129 correct: two wrong, five tied, and 99 with zero evidence.
+Виктор Дравиньи scores 161/172 correct: eight wrong, two tied, and one score-validation error.
+All seven blank controls are safe.
+The original labels score 1/3 for Фантом and 4/4 for Виктор Дравиньи.
+The Фантом ratio question has zero candidate-answer evidence in 117/129 cases.
+The Фантом colour question has zero candidate-answer evidence in 99/129 cases.
+Both real rules have accepted distinguishing questions for every candidate pair.
+
+Complete 127 unique controlled-label cases in eight fictional clusters.
+The controlled suite passes 111/127 checks.
+All 36 text-only checks pass.
+Fourteen identical-label cases need no recognition request.
+The controlled failures include five wrong choices, six ties, one zero-evidence result, three unsafe ambiguous results, and one unsafe unknown-colour result.
+Feature-removal cases use a common grey field.
+That field can resemble a candidate colour.
+These cases test decisions under feature loss rather than prove a perception defect.
+
+Assign stable failure numbers after completion.
+Фантом failures are 1–106.
+Виктор Дравиньи failures are 107–117.
+Controlled failures are 118–133.
+Case 81 has wrong ratio evidence that reverses the correct colour evidence.
+Cases 111 and 114 have correct sugar text outweighed by two incorrect colour answers.
+Case 118 returns `other: 90` and `maroon: 10`.
+Residual candidate evidence creates an unsupported unique winner in case 118.
+The runtime has no native abstention result.
+The benchmark's zero-evidence result does not guarantee a runtime refusal.
+
+Verify all 435 query hashes, 35 references, 22 frozen source records, rule hashes, request options, parsed answers, and score calculations.
+Record 467 fresh requests: 28 fictional descriptions, ten rules, and 429 recognition requests.
+Recognition includes eight validation retries.
+The two real rules use the previously approved seven-wine `qwen3.8-max` payload.
+Fictional generation and recognition use resident `qwen3.5-9b-nvfp4`.
+No transport request fails.
+One recognition case remains invalid after its retry.
+The 13 local safeguards, Ruff, and report audit pass.
+The browser loads all 133 failure cases.
+Desktop/mobile layouts and dark/light themes pass with no runtime error.
+GX10 has 58 GiB available after inference.
+Move only this completed benchmark row in the shared GPU tracker.
+Do not load a model or change a service.
+
+These derivatives remain correlated with seven catalogue labels.
+This pilot has no old-rule comparison arm.
+Do not claim an improvement on independent real photographs.
+Do not revise rules from these query failures.
+The larger paired 57-wine Cloud benchmark still waits for its separate payload approval.
+
+Evidence: [full report](../internal/synthetic-rule-benchmark-20261011/REPORT.md), [numbered failure viewer](../internal/synthetic-rule-benchmark-20261011/report.html), and [protocol](docs/testing/synthetic-rule-benchmark.md).

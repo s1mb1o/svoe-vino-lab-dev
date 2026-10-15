@@ -158,10 +158,17 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .qtags { margin-top: 7px; font-size: 10px; }
 .qtag-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; min-height: 18px; }
 .qtag-label { color: var(--muted); }
+.qtag-values { display: flex; flex-wrap: wrap; gap: 4px; }
 .qtag-chip {
+  display: inline-flex; align-items: center; gap: 4px; max-width: 100%;
   padding: 1px 6px; border: 1px solid var(--accent); border-radius: 999px;
   background: var(--panel-2); color: var(--accent); overflow-wrap: anywhere;
 }
+.qtag-remove { flex: none; border: 0; padding: 0; min-width: 14px; min-height: 16px;
+  background: transparent; color: inherit; font: inherit; font-size: 13px;
+  line-height: 1; cursor: pointer; }
+.qtag-remove:hover:not(:disabled) { color: var(--neg); }
+.qtag-remove:disabled { cursor: progress; opacity: .55; }
 .qtag-none { color: var(--muted); font-style: italic; }
 .qtag-add { display: flex; gap: 4px; margin-top: 4px; }
 .qtag-add input {
@@ -227,6 +234,14 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 .vlm .sc, .vlm .mv, .vlm .src { margin-top: 3px; color: var(--muted); }
 .vlm .sc b, .vlm .mv b { color: var(--text); font-weight: 600; }
 .vlm .err { margin-top: 3px; color: var(--exc); }
+.vlm-with-input { max-width: 490px; }
+.vlm-input { margin: 0 0 8px; }
+.vlm-input img { display: block; width: 100%; max-width: 220px; height: 220px;
+  object-fit: contain; background: white; border: 1px solid var(--line); border-radius: 6px;
+  cursor: zoom-in; }
+.vlm-input figcaption { margin-top: 4px; color: var(--muted); font-size: 11px; }
+img[src^="/api/run-vlm-image?"][hidden] { display: none; }
+.step[data-key="cluster_rules:"] .artifacts img { max-height: 260px; }
 .cand img, .cand .nobottle {
   width: 92px; height: 116px; object-fit: contain; display: block;
   background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
@@ -303,6 +318,10 @@ tbody tr + tr td { border-top: 1px solid var(--line); }
 #rr-status { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 #export-status { color: var(--muted); font-size: 12px; }
 #export-predictions:disabled, #export-expected:disabled { cursor: default; opacity: .45; }
+.wine-merge-open { margin-top: 6px; padding: 2px 6px; font-size: 10px; }
+.wine-merged { display: block; margin-top: 6px; font-size: 10px; color: var(--muted);
+               overflow-wrap: anywhere; }
+#wm-dlg { z-index: 70; }
 .rr-params { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 12px;
              margin: 0 0 10px; font-size: 13px; }
 .rr-params dt { color: var(--muted); }
@@ -378,6 +397,16 @@ body.sp-on { overflow: hidden; }
   #sp { padding: 8px; }
   .sp-body { padding: 0 10px 12px; }
 }
+.run-progress { border: 1px solid var(--line); border-radius: 8px; padding: 14px;
+  margin-bottom: 20px; background: var(--panel); }
+.run-progress h2 { margin: 0 0 10px; font-size: 16px; }
+.run-progress-job + .run-progress-job { margin-top: 14px; }
+.run-progress-heading { display: flex; flex-wrap: wrap; gap: 6px 14px;
+  align-items: baseline; }
+.run-progress-heading strong { overflow-wrap: anywhere; }
+.run-progress progress { display: block; width: min(100%, 650px); height: 14px;
+  margin: 8px 0; accent-color: var(--accent); }
+.run-progress-error { margin: 10px 0 0; }
 </style>
 </head>
 <body>
@@ -425,6 +454,11 @@ body.sp-on { overflow: hidden; }
 </header>
 <main>
 <div class="compact-summary"><button class="stat-chip" id="head-sub" type="button" title="Show all pipelines and testsets"></button><span id="count" class="muted"></span></div>
+  <section id="run-progress" class="run-progress" aria-label="Recognition progress" hidden>
+    <h2>Recognition</h2>
+    <div id="run-progress-jobs" aria-live="polite" aria-atomic="true"></div>
+    <p id="run-progress-error" class="run-progress-error sm" role="status" hidden></p>
+  </section>
   <h2>Runs</h2>
   <div class="bar runs-bar">
     <span class="muted" id="runs-count"></span>
@@ -451,6 +485,7 @@ body.sp-on { overflow: hidden; }
     <th data-k="f1_at_1" class="num">F1@1</th>
     <th data-k="f1_at_5" class="num">F1@5</th>
     <th data-k="recall_at_5" class="num">R@5</th>
+    <th data-k="recall_at_10" class="num">R@10</th>
     <th data-k="false_match_at_1" class="num">false match @1</th>
     <th data-k="within_sla_share" class="num">within SLA</th>
     <th data-k="latency_median" class="num">median ms</th>
@@ -506,6 +541,25 @@ body.sp-on { overflow: hidden; }
     <div class="nts-foot">
       <button id="nts-cancel" type="button">Cancel</button>
       <button id="nts-create" class="primary" type="button" disabled>Create</button>
+    </div>
+  </div>
+</div>
+<div id="wm-dlg" class="nts-dlg" hidden>
+  <div class="nts-panel" role="dialog" aria-modal="true" aria-labelledby="wm-title">
+    <h2 id="wm-title">Merge wine</h2>
+    <div class="nts-sub" id="wm-source"></div>
+    <p class="nts-note" id="wm-counts">Reading assigned images…</p>
+    <label class="nts-field">Destination wine_slug <input id="wm-target" type="text"
+      list="wm-targets" autocomplete="off" spellcheck="false" maxlength="200"
+      placeholder="existing wine_slug" disabled></label>
+    <datalist id="wm-targets"></datalist>
+    <p class="nts-note" id="wm-note">Transfer all assigned testset images and their annotations.
+      Keep both photos when filenames match. Permanently remove the source wine from the database.</p>
+    <div class="nts-done" id="wm-result" role="status"></div>
+    <div class="nts-error" id="wm-error" role="alert"></div>
+    <div class="nts-foot">
+      <button id="wm-cancel" type="button">Cancel</button>
+      <button id="wm-merge" class="primary" type="button" disabled>Merge and remove source</button>
     </div>
   </div>
 </div>
@@ -596,6 +650,8 @@ try {
 const LABEL_TAG = { positive: "pos", negative: "neg", variant: "var",
                     unlabelled: "unl" };
 let IMAGE_TAG_NAMES = [];
+let WM = null;
+const MERGED_WINES = new Map();
 
 function syncImageTagNames(names) {
   IMAGE_TAG_NAMES = (names || []).map(item => item.tag).filter(Boolean);
@@ -674,6 +730,10 @@ function pageOfRun(id) {
 }
 
 function renderRuns() {
+  const charts = new URLSearchParams();
+  if (TSET && TSET !== NO_SET) charts.set("set", TSET);
+  if (CONF && CONF !== NO_CONFIG) charts.set("pipeline", CONF);
+  $("#charts-link").href = "/runs/charts" + (charts.size ? "?" + charts : "");
   const shown = visibleRuns();
   const pages = RSIZE ? Math.max(1, Math.ceil(shown.length / RSIZE)) : 1;
   RPAGE = Math.max(0, Math.min(RPAGE, pages - 1));
@@ -701,6 +761,7 @@ function renderRuns() {
       <td class="num">${r.f1_at_1 === null || r.f1_at_1 === undefined ? "—" : r.f1_at_1.toFixed(3)}</td>
       <td class="num">${r.f1_at_5 === null || r.f1_at_5 === undefined ? "—" : r.f1_at_5.toFixed(3)}</td>
       <td class="num">${pct(r.recall_at_5)}</td>
+      <td class="num">${pct(r.recall_at_10)}</td>
       <td class="num">${numOr(r.false_match_at_1)}</td>
       <td class="num">${pct(r.within_sla_share)}</td>
       <td class="num">${numOr(r.latency_median)}</td>
@@ -897,7 +958,9 @@ function renderMetrics(met, head) {
    true wine of the photo. The true wine gets a dashed green frame and the wrong
    wine keeps the red frame. The true wine SHOULD stand above the wrong wine. */
 function imageTagLine(tags) {
-  return tags.length ? tags.map(tag => `<span class="qtag-chip">${esc(tag)}</span>`).join("")
+  return tags.length ? tags.map(tag => `<span class="qtag-chip"><span>${esc(tag)}</span>
+    <button type="button" class="qtag-remove" data-image-tag-remove="${esc(tag)}"
+      title="Remove ${esc(tag)} tag" aria-label="Remove ${esc(tag)} tag">×</button></span>`).join("")
                      : '<span class="qtag-none">none</span>';
 }
 
@@ -923,8 +986,128 @@ function candCard(c, truth, forbidden, twins) {
       isTwin ? "twin" : ""}">
     ${bottleHtml(c.slug, true)}
     <div class="r"><span>#${c.rank}</span><span>${score}</span></div>
-    <div class="sl">${esc(c.slug)}</div></div>`;
+    <div class="sl">${esc(c.slug)}</div>${wineMergeButton(c.slug)}</div>`;
 }
+
+function wineMergeButton(slug) {
+  if (MERGED_WINES.has(slug)) return `<span class="wine-merged">Merged into ${
+    esc(MERGED_WINES.get(slug))}</span>`;
+  return typeof slug === "string" && slug.startsWith("__")
+    && !["__null__", "__drawer__"].includes(slug)
+    ? `<button type="button" class="wine-merge-open" data-wine-merge="${esc(slug)}"
+        aria-label="Merge ${esc(slug)} into another wine">Merge…</button>` : "";
+}
+
+function addWineMergeButtons(root) {
+  for (const card of root.querySelectorAll(".cand[data-wine-slug]"))
+    card.insertAdjacentHTML("beforeend", wineMergeButton(card.dataset.wineSlug));
+}
+
+function syncWineMergeTarget() {
+  if (!WM || WM.busy || WM.done) return;
+  const target = $("#wm-target").value.trim();
+  const valid = WM.targets && WM.targets.has(target);
+  $("#wm-target").setAttribute("aria-invalid", target && !valid ? "true" : "false");
+  $("#wm-merge").disabled = !valid;
+}
+
+async function openWineMerge(button) {
+  if (WM?.busy) return;
+  const view = WM = {slug: button.dataset.wineMerge, trigger: button};
+  $("#wm-source").textContent = view.slug;
+  $("#wm-counts").textContent = "Reading assigned images…";
+  $("#wm-target").value = "";
+  $("#wm-target").disabled = true;
+  $("#wm-target").setAttribute("aria-invalid", "false");
+  $("#wm-targets").replaceChildren();
+  $("#wm-error").textContent = "";
+  $("#wm-result").textContent = "";
+  $("#wm-note").hidden = false;
+  $("#wm-merge").hidden = false;
+  $("#wm-merge").disabled = true;
+  $("#wm-cancel").textContent = "Cancel";
+  $("#wm-cancel").disabled = false;
+  $("#wm-dlg").hidden = false;
+  try {
+    const response = await fetch(`/api/wine-merge?slug=${encodeURIComponent(view.slug)}`,
+                                 {cache: "no-store"});
+    const data = await response.json();
+    if (WM !== view) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    view.targets = new Set((data.targets || []).map(wine => wine.slug));
+    $("#wm-source").textContent = `${data.source.name} · ${view.slug}`;
+    const sets = (data.testsets || []).map(set => `${set.name}: ${set.photos}`).join(" · ");
+    $("#wm-counts").textContent = `${data.photos} testset image(s) across ${
+      (data.testsets || []).length} set(s)${sets ? ` (${sets})` : ""}; ${
+      data.catalogue_images} catalogue image(s).`;
+    $("#wm-targets").innerHTML = (data.targets || []).map(wine =>
+      `<option value="${esc(wine.slug)}" label="${esc(wine.name)} · ${esc(wine.state)}"></option>`)
+      .join("");
+    $("#wm-target").disabled = false;
+    $("#wm-target").focus();
+  } catch (error) {
+    if (WM === view) $("#wm-error").textContent = error.message;
+  }
+}
+
+function closeWineMerge() {
+  if (WM?.busy) return;
+  const trigger = WM?.trigger;
+  WM = null;
+  $("#wm-dlg").hidden = true;
+  if (trigger?.isConnected) trigger.focus();
+}
+
+async function submitWineMerge() {
+  const view = WM;
+  if (!view || view.busy || view.done || $("#wm-merge").disabled) return;
+  view.busy = true;
+  $("#wm-target").disabled = $("#wm-cancel").disabled = $("#wm-merge").disabled = true;
+  $("#wm-error").textContent = "";
+  $("#wm-result").textContent = "Merging…";
+  try {
+    const response = await fetch("/api/wine-merge", {method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug: view.slug, to: $("#wm-target").value.trim()})});
+    const data = await response.json();
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    MERGED_WINES.set(data.from, data.to);
+    for (const button of document.querySelectorAll("[data-wine-merge]")) {
+      if (button.dataset.wineMerge !== data.from) continue;
+      const note = document.createElement("span");
+      note.className = "wine-merged";
+      note.textContent = `Merged into ${data.to}`;
+      button.replaceWith(note);
+    }
+    view.done = true;
+    $("#wm-note").hidden = true;
+    $("#wm-merge").hidden = true;
+    $("#wm-cancel").textContent = "Close";
+    $("#wm-result").innerHTML = `${data.photos} testset image(s) and their annotations moved to
+      <a href="/dataset/${encodeURIComponent(data.to)}">${esc(data.to)}</a>. Source wine removed.
+      Rebuild affected embedding indexes before new matches. Saved run results keep their original slugs.`;
+  } catch (error) {
+    $("#wm-result").textContent = "";
+    $("#wm-error").textContent = error.message;
+  } finally {
+    view.busy = false;
+    $("#wm-cancel").disabled = false;
+    $("#wm-target").disabled = Boolean(view.done);
+    syncWineMergeTarget();
+  }
+}
+
+$("#wm-target").addEventListener("input", syncWineMergeTarget);
+$("#wm-merge").addEventListener("click", submitWineMerge);
+$("#wm-cancel").addEventListener("click", closeWineMerge);
+$("#wm-dlg").addEventListener("click", ev => {
+  if (ev.target.id === "wm-dlg") closeWineMerge();
+});
+document.addEventListener("keydown", ev => {
+  if (!WM) return;
+  ev.stopPropagation();
+  if (ev.key === "Escape") { ev.preventDefault(); closeWineMerge(); }
+}, true);
 
 /* The catalogue image of one slug. A slug with no image in the lab store gets a text
    card. The arrow keys of the large view step over a text card. The image of a candidate
@@ -978,8 +1161,16 @@ function ruleStep(r) {
 
 const RULE_MODE = { sheet: "difference sheet", verdict: "verdict rule" };
 
-function vlmHtml(e, cands) {
-  if (e.mode === "evidence") return Steps.vlm(e);
+function vlmHtml(e, cands, queryId) {
+  if (e.mode === "evidence") {
+    const rerank = (RUN.backend || {}).rerank || {};
+    const src = `/api/run-vlm-image?id=${encodeURIComponent(CUR)}&query=${encodeURIComponent(queryId)}`;
+    const kind = (e.input_image || {}).kind || e.picture;
+    const input = kind ? `<figure class="vlm-input"><img loading="lazy" src="${esc(src)}"
+      data-full="${esc(src)}" alt="Image sent to VLM during re-rank"><figcaption>Image sent to VLM · ${
+      kind === "label" ? "label crop" : "whole photo"}</figcaption></figure>` : "";
+    return `<div class="vlm-with-input">${input}${Steps.vlm(e, rerank.model || rerank.vlm)}</div>`;
+  }
   const win = e.window || [];
   const cl = CLUSTER[win[0]] || {};
   const rule = cl.rule || {};
@@ -1048,7 +1239,7 @@ function rowHtml(r, viewKey = "") {
   }
   const step = ruleStep(r);
   strip += candStrip(r.candidates || [], truth, forbidden, twins,
-                     step ? vlmHtml(step, r.candidates || []) : "");
+                     step ? vlmHtml(step, r.candidates || [], r.query_id) : "");
   // the true wine of a negative photo, which never came back. It stands after the
   // answer, apart from it, because it holds no rank in the answer.
   const gone = twins.filter(s => !(r.candidates || []).some(c => c.slug === s));
@@ -1879,16 +2070,24 @@ function showImageTags(digest, tags) {
     .forEach(box => { box.querySelector(".qtag-values").innerHTML = imageTagLine(tags); });
 }
 
-async function addQueryImageTag(btn) {
+function setImageTagBusy(digest, busy) {
+  document.querySelectorAll(`.qtags[data-image-sha="${CSS.escape(digest)}"]`)
+    .forEach(box => box.querySelectorAll("input, button")
+      .forEach(control => { control.disabled = busy; }));
+}
+
+async function writeQueryImageTag(btn, remove = false) {
   const box = btn.closest(".qtags"), tr = btn.closest("tr[data-query-id]");
   const input = box && box.querySelector("input"), state = box && box.querySelector(".qtag-state");
-  const tag = input ? input.value.trim() : "";
+  const tag = remove ? btn.dataset.imageTagRemove : input ? input.value.trim() : "";
   if (!box || !tr || !input || !state || !tag || !CUR) { if (input) input.focus(); return; }
+  if (input.disabled || btn.disabled) return;
   const runId = CUR;
-  input.disabled = true; btn.disabled = true;
-  state.textContent = "adding…"; state.className = "qtag-state";
+  const digest = box.dataset.imageSha;
+  setImageTagBusy(digest, true);
+  state.textContent = remove ? "removing…" : "adding…"; state.className = "qtag-state";
   try {
-    const response = await fetch("/api/run-image-tag", {
+    const response = await fetch(remove ? "/api/run-image-tag-remove" : "/api/run-image-tag", {
       method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify({id: runId, query: tr.dataset.queryId, tag}),
     });
@@ -1897,19 +2096,32 @@ async function addQueryImageTag(btn) {
     if (CUR !== runId) return;
     showImageTags(out.sha256, out.tags || []);
     syncImageTagNames(out.tag_names || []);
-    input.value = "";
-    state.textContent = `added ${out.added}`;
+    if (!remove) input.value = "";
+    state.textContent = remove ? `removed ${out.removed}` : `added ${out.added}`;
   } catch (error) {
     state.textContent = error.message;
     state.className = "qtag-state err";
   } finally {
-    input.disabled = false; btn.disabled = false;
+    setImageTagBusy(digest, false);
   }
 }
 
+document.addEventListener("error", ev => {
+  const img = ev.target;
+  if (img.tagName !== "IMG" || !img.getAttribute("src")?.startsWith("/api/run-vlm-image?")) return;
+  img.hidden = true;
+  img.removeAttribute("data-full");
+  const caption = img.closest("figure")?.querySelector("figcaption");
+  if (caption) caption.textContent = "VLM input image unavailable in the local cache";
+}, true);
+
 document.addEventListener("click", ev => {
+  const mergeWine = ev.target.closest("[data-wine-merge]");
+  if (mergeWine) { openWineMerge(mergeWine); return; }
   const addTag = ev.target.closest("[data-image-tag-add]");
-  if (addTag) { addQueryImageTag(addTag); return; }
+  if (addTag) { writeQueryImageTag(addTag); return; }
+  const removeTag = ev.target.closest("[data-image-tag-remove]");
+  if (removeTag) { writeQueryImageTag(removeTag, true); return; }
   const input = ev.target.closest("[data-model-input]");
   if (input) { $("#lb-main").src = input.dataset.modelInput; return; }
   // The query photo of a row opens the step popup (plan 41, owner message of
@@ -1930,7 +2142,7 @@ document.addEventListener("click", ev => {
 $("#res-body").addEventListener("keydown", ev => {
   const input = ev.target.closest(".qtag-add input");
   if (input && ev.key === "Enter") {
-    ev.preventDefault(); addQueryImageTag(input.closest(".qtag-add").querySelector("button"));
+    ev.preventDefault(); writeQueryImageTag(input.closest(".qtag-add").querySelector("button"));
   }
 });
 document.addEventListener("keydown", ev => {
@@ -1987,6 +2199,7 @@ function renderSteps(data) {
   $("#sp-sub").textContent = `${data.query} · ${data.run} · ${
     data.configuration || "no pipeline"} · ${data.kind} run`;
   $("#sp-body").innerHTML = Steps.html(data, SP_OPEN);
+  addWineMergeButtons($("#sp-body"));
 }
 
 /* The hash of the page: `#<run>`, or `#<run>/<image path>` while the popup shows a photo
@@ -2102,6 +2315,146 @@ function saveHeader() {
 })();
 $("header").addEventListener("change", saveHeader);
 $("header").addEventListener("input", saveHeader);
+
+/* Show recognition jobs started from any page. Read status only; never start a run.
+   Keep photo rows and draft edits in place while progress changes. */
+const RUN_PROGRESS_ACTIVE = ["running", "stopping"];
+const RUN_PROGRESS_FINAL = ["done", "stopped", "failed"];
+let RUN_PROGRESS_JOBS = [], RUN_PROGRESS_ERROR = "";
+let RUN_PROGRESS_TIMER = null, RUN_PROGRESS_ABORT = null;
+const RUN_PROGRESS_RECENT = new Map();
+
+function runProgressCount(value) {
+  return Number.isFinite(value) && value >= 0 ? Math.floor(value) : null;
+}
+
+function runProgressVisible(job) {
+  return (!CONF || (CONF === NO_CONFIG ? !isPipeline(job.name) : job.name === CONF))
+    && (!TSET || (TSET === NO_SET ? !job.set : !job.set || job.set === TSET));
+}
+
+function runProgressHtml(job) {
+  const done = runProgressCount(job.done) ?? 0, total = runProgressCount(job.todo);
+  const errors = runProgressCount(job.errors) ?? 0;
+  const known = total !== null && total > 0;
+  const percent = known ? Math.min(100, 100 * done / total).toFixed(1) + "%" : "";
+  const states = {running: "Recognizing", stopping: "Stopping", done: "Completed",
+                  stopped: "Stopped", failed: "Failed"};
+  const end = RUN_PROGRESS_FINAL.includes(job.state) && Number.isFinite(job.ended_t)
+    ? job.ended_t * 1000 : Date.now();
+  const seconds = Number.isFinite(job.started_t)
+    ? Math.max(0, Math.floor((end - job.started_t * 1000) / 1000)) : null;
+  const elapsed = seconds === null ? "" : `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  const result = job.run_id && (RUN_PROGRESS_FINAL.includes(job.state)
+    || RUNS.some(run => run.id === job.run_id))
+    ? ` · <a href="#${esc(encodeURIComponent(job.run_id))}" data-progress-run="${
+        esc(job.run_id)}">View results</a>` : "";
+  const message = job.message ? `<div class="sm muted">${esc(job.message)}</div>` : "";
+  return `<div class="run-progress-job">
+    <div class="run-progress-heading"><strong>${esc(job.name)}</strong>
+      <span>${esc(job.state === "running" && total === null ? "Preparing" :
+        states[job.state] || "Preparing")}${percent ? " · " + percent : ""}</span>
+      <span class="sm muted">${esc(job.set || "testset not available yet")}${
+        elapsed ? " · " + elapsed : ""}${result}</span></div>
+    <progress aria-label="${esc(job.name)}: processed photos"${
+      known ? ` max="${total}" value="${Math.min(done, total)}"` : ""}></progress>
+    <div class="sm">${done}${total === null ? " photo(s) processed" +
+      (RUN_PROGRESS_ACTIVE.includes(job.state) ? " · preparing" : "") :
+      ` of ${total} photo(s)`}${errors ? ` · ${errors} error(s)` : ""}</div>${message}
+  </div>`;
+}
+
+function renderRunProgress() {
+  const now = Date.now();
+  for (const [name, item] of RUN_PROGRESS_RECENT)
+    if (item.until <= now) RUN_PROGRESS_RECENT.delete(name);
+  const jobs = RUN_PROGRESS_JOBS.filter(job => RUN_PROGRESS_ACTIVE.includes(job.state));
+  for (const {job} of RUN_PROGRESS_RECENT.values()) jobs.push(job);
+  const visible = jobs.filter(runProgressVisible);
+  const html = visible.map(runProgressHtml).join("");
+  const body = $("#run-progress-jobs");
+  if (body.innerHTML !== html) body.innerHTML = html;
+  const error = $("#run-progress-error");
+  error.hidden = !RUN_PROGRESS_ERROR;
+  error.textContent = RUN_PROGRESS_ERROR;
+  $("#run-progress").hidden = !visible.length && !RUN_PROGRESS_ERROR;
+}
+
+async function refreshProgressRunList() {
+  const response = await fetch("/api/runs", {cache: "no-store"});
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const data = await response.json();
+  RUNS = data.runs || [];
+  CONFIGS = data.configurations || CONFIGS;
+  renderConfigs();
+  renderSets();
+  renderRuns();
+  renderRunProgress();
+}
+
+function scheduleRunProgress(delay) {
+  clearTimeout(RUN_PROGRESS_TIMER);
+  RUN_PROGRESS_TIMER = null;
+  if (!document.hidden) RUN_PROGRESS_TIMER = setTimeout(pollRunProgress, delay);
+}
+
+async function pollRunProgress() {
+  if (document.hidden || RUN_PROGRESS_ABORT) return;
+  const controller = new AbortController();
+  RUN_PROGRESS_ABORT = controller;
+  const deadline = setTimeout(() => controller.abort(), 10000);
+  let finished = false;
+  try {
+    const response = await fetch("/api/run-jobs", {cache: "no-store", signal: controller.signal});
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    if (!Array.isArray(data.jobs)) throw new Error("Invalid job status");
+    if (document.hidden || controller.signal.aborted) return;
+    const previous = new Map(RUN_PROGRESS_JOBS.map(job => [job.name, job]));
+    for (const job of data.jobs) {
+      if (RUN_PROGRESS_ACTIVE.includes(job.state)) RUN_PROGRESS_RECENT.delete(job.name);
+      else if (RUN_PROGRESS_FINAL.includes(job.state)
+        && RUN_PROGRESS_ACTIVE.includes(previous.get(job.name)?.state)) {
+        RUN_PROGRESS_RECENT.set(job.name, {job, until: Date.now() + 60000});
+        finished = true;
+      }
+    }
+    RUN_PROGRESS_JOBS = data.jobs;
+    RUN_PROGRESS_ERROR = "";
+    renderRunProgress();
+  } catch (error) {
+    if (!document.hidden) {
+      RUN_PROGRESS_ERROR = "Cannot update recognition progress. Retrying…";
+      renderRunProgress();
+    }
+  } finally {
+    clearTimeout(deadline);
+    RUN_PROGRESS_ABORT = null;
+    scheduleRunProgress(RUN_PROGRESS_JOBS.some(job => RUN_PROGRESS_ACTIVE.includes(job.state))
+      ? 2000 : 10000);
+  }
+  if (finished) {
+    try { await refreshProgressRunList(); }
+    catch (_) { /* The completed job keeps its direct results link. */ }
+  }
+}
+
+$("#run-progress-jobs").addEventListener("click", ev => {
+  const link = ev.target.closest("a[data-progress-run]");
+  if (!link) return;
+  ev.preventDefault();
+  pageOfRun(link.dataset.progressRun);
+  loadRun(link.dataset.progressRun, false);
+});
+for (const id of ["#configuration", "#testset"])
+  $(id).addEventListener("change", renderRunProgress);
+document.addEventListener("visibilitychange", () => {
+  clearTimeout(RUN_PROGRESS_TIMER);
+  RUN_PROGRESS_TIMER = null;
+  if (document.hidden) RUN_PROGRESS_ABORT?.abort();
+  else scheduleRunProgress(0);
+});
+scheduleRunProgress(0);
 
 (async function init() {
   let data;

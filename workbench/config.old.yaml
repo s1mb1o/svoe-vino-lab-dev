@@ -235,6 +235,18 @@ vlm:
     endpoint: http://192.168.86.14:18081/v1
     model: qwen3-vl-32b
 
+  - name: laya-v
+    protocol: laya-v
+    thinking_field: none
+    endpoint: http://192.168.86.14:18081/upstream/laya-v/v1
+    model: laya-v
+
+  - name: paddle-laya
+    protocol: laya-ocr
+    thinking_field: none
+    endpoint: http://192.168.86.14:18081/upstream/laya/v1
+    model: multilingual
+
   # The QwenCloud Token Plan. Read the section "QwenCloud Token Plan API" of
   # CREDENTIALS.md in the workspace root.
   - name: qwencloud-qwen3.8-max

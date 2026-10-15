@@ -19,7 +19,7 @@ import clusters  # noqa: E402
 import pipelines  # noqa: E402
 from embeddings import ConfigError  # noqa: E402
 
-MATCHER = Path(__file__).resolve().parents[3] / "svoe-vino-matcher" / "svm" / "cluster_rules.py"
+MATCHER = Path(__file__).resolve().parents[2] / "matcher" / "rerank.py"
 A, B, C, D = "wine-a-12", "wine-b-12", "wine-c-12", "wine-d-12"
 
 
@@ -425,7 +425,7 @@ class OptionTest(unittest.TestCase):
 
 
 class PromptTest(unittest.TestCase):
-    @unittest.skipUnless(MATCHER.exists(), "svoe-vino-matcher is not next to the lab")
+    @unittest.skipUnless(MATCHER.exists(), "the native matcher is not next to the workbench")
     def test_the_prompts_equal_the_prompts_of_the_matcher(self):
         tree = ast.parse(MATCHER.read_text(encoding="utf-8"))
         found = {node.targets[0].id: node.value.value for node in tree.body
@@ -434,6 +434,7 @@ class PromptTest(unittest.TestCase):
                  and isinstance(node.value, ast.Constant)}
         self.assertEqual(cluster_rerank.SHEET_PROMPT, found["SHEET_PROMPT"])
         self.assertEqual(cluster_rerank.VERDICT_PROMPT, found["VERDICT_PROMPT"])
+        self.assertEqual(cluster_rerank.SCORE_PROMPT, found["SCORE_PROMPT"])
 
 
 if __name__ == "__main__":

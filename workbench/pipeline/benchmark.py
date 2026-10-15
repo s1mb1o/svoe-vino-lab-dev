@@ -95,7 +95,11 @@ def build_queries(conn, db_path, set_name):
 
     Three rules differ from match_run.py: the photos of a wine outside the dataset are
     left out (plans 24 and 87), the photos of the Drawer are left out (plan 36), and no
-    slug is excluded (plan 51)."""
+    slug is excluded (plan 51).
+
+    Each eligible positive assignment accepts all eligible positive wine slugs for
+    the same image SHA-256 in this set. Keep each assignment as a separate query.
+    Other labels do not supply accepted answers."""
     if conn.execute("SELECT 1 FROM test_set WHERE set_name = ?", (set_name,)).fetchone() is None:
         raise BenchmarkError("the database holds no test set %r" % set_name)
     states = wine_states(conn)
@@ -134,6 +138,13 @@ def build_queries(conn, db_path, set_name):
         else:
             rows.append({**row, "label": label,
                          "truth": [place] if label == "positive" else []})
+    accepted = collections.defaultdict(set)
+    for row in rows:
+        if row["label"] == "positive":
+            accepted[row["image_sha256"]].add(row["slug"])
+    for row in rows:
+        if row["label"] == "positive":
+            row["truth"] = sorted(accepted[row["image_sha256"]])
     rows.sort(key=lambda r: r["image_path"])
     for i, row in enumerate(rows, 1):
         row["query_id"] = "q-%06d" % i

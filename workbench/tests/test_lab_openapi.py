@@ -36,6 +36,7 @@ GET /embedding
 GET /clusters
 GET /testset
 GET /runs
+GET /runs/charts
 GET /recognize
 GET /health
 GET /website-import.js
@@ -47,6 +48,8 @@ GET /recognize/photo/{sha256}.{extension}
 GET /api/local-image
 GET /api/dataset
 POST /api/wine
+GET /api/wine-merge
+POST /api/wine-merge
 GET /api/wine-index
 POST /api/wine-index
 POST /api/wine-state
@@ -98,6 +101,7 @@ POST /api/clusters/{name}/note
 GET /api/testset
 POST /api/testset-label
 POST /api/testset-delete
+POST /api/testset-photo-remove
 POST /api/testset-drawer-remove
 POST /api/testset-photo-comment
 POST /api/testset-photo-comment-remove
@@ -107,6 +111,7 @@ GET /api/testset-autotag
 POST /api/testset-autotag
 POST /api/testset-box
 POST /api/testset-move
+POST /api/testset-duplicate
 POST /api/testset-upload
 POST /api/testset-fetch
 GET /api/testset-from-run
@@ -121,10 +126,12 @@ GET /api/run-clusters
 GET /api/run-inputs
 GET /api/run-candidate
 POST /api/run-image-tag
+POST /api/run-image-tag-remove
 GET /api/drawer-runs
 POST /api/drawer-match-accept
 GET /api/run-steps
 GET /api/run-patches
+GET /api/run-vlm-image
 GET /api/run-configurations
 GET /api/run-jobs
 POST /api/run-jobs

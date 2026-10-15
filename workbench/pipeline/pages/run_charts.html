@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Svoe Vino run charts</title>
+<style>
+/* THEME_CSS */
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+a { color: var(--accent); }
+header { background: var(--panel); border-bottom: 1px solid var(--line); padding: 16px 24px; }
+.head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { margin: 0; font-size: 21px; } h2 { margin: 0 0 4px; font-size: 16px; }
+nav, .views { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+nav a, .views a, .views span { padding: 4px 10px; border: 1px solid var(--line);
+  border-radius: 5px; text-decoration: none; }
+nav .on, .views span { color: var(--text); background: var(--panel-2); }
+.views { margin-top: 12px; }
+main { max-width: 1600px; padding: 20px 24px 40px; margin: auto; }
+.controls { display: flex; gap: 12px 20px; flex-wrap: wrap; align-items: end; }
+label.control { display: flex; gap: 4px; flex-direction: column; }
+select, button { font: inherit; border: 1px solid var(--line); color: var(--text);
+  background: var(--panel); border-radius: 5px; padding: 6px 9px; }
+select { max-width: 100%; } button { cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.note { color: var(--muted); font-size: 12px; margin: 8px 0; }
+#status { margin: 12px 0; } #status.error { color: var(--exc); }
+fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; margin: 16px 0; }
+legend { color: var(--muted); padding: 0 5px; }
+#pipeline-list { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 8px; }
+#pipeline-list label { display: flex; gap: 6px; align-items: center; overflow-wrap: anywhere; }
+#pipeline-list input { accent-color: var(--accent); }
+#charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+#charts.single { grid-template-columns: minmax(0, 1fr); }
+.plot { border: 1px solid var(--line); border-radius: 10px; padding: 16px; background: var(--panel); min-width: 0; }
+.plot .scroll { overflow: auto; }
+.plot svg { display: block; width: 100%; min-width: 570px; }
+.plot svg text { fill: var(--muted); font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.plot svg .label, .plot svg .value { fill: var(--text); }
+.plot svg .grid { stroke: var(--line); stroke-width: 1; }
+.plot svg a:focus { outline: none; } .plot svg a:focus circle { stroke: var(--text); stroke-width: 3; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin: 8px 0 12px; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px;
+  background: var(--series); margin-right: 5px; border-radius: 2px; }
+.empty { padding: 30px 0; color: var(--muted); text-align: center; }
+.table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+th, td { border-bottom: 1px solid var(--line); padding: 9px 10px; text-align: left; }
+th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.table-wrap th:first-child, .table-wrap td:first-child { min-width: 220px; }
+.run-choice { min-width: 300px; max-width: 340px; width: 100%; font-size: 12px; }
+.settings { min-width: 180px; color: var(--muted); }
+[hidden] { display: none !important; }
+@media (max-width: 900px) { #charts { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) { header, main { padding: 14px; } .controls label { width: 100%; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="head"><h1>Run charts</h1>
+    <nav aria-label="Lab pages"><a href="/dataset">Dataset</a><a href="/embedding">Embeddings</a>
+      <a href="/clusters">Clusters</a><a href="/testset">Testset</a><a class="on" href="/runs">Runs</a>
+      <a href="/recognize">Recognize</a><a href="/health">Health</a></nav>
+  </div>
+  <div class="views" aria-label="Runs views"><a id="results-link" href="/runs">Results</a><span>Charts</span></div>
+</header>
+<main>
+  <div class="controls">
+    <label class="control">Testset<select id="testset" aria-label="Testset"></select></label>
+    <label class="control">View<select id="mode" aria-label="View"><option value="pipelines">Compare pipelines</option>
+      <option value="history">Pipeline over time</option></select></label>
+    <label class="control" id="history-picker" hidden>Pipeline<select id="pipeline" aria-label="Pipeline"></select></label>
+    <label class="control">Metrics<select id="metric" aria-label="Metrics"><option value="overview">Overview</option></select></label>
+    <label class="control">Model cache<select id="cache" aria-label="Model cache"><option value="all">All runs</option>
+      <option value="off">Cache off</option><option value="on">Cache on</option>
+      <option value="unknown">Not recorded</option></select></label>
+    <button id="refresh" type="button">Refresh</button>
+  </div>
+  <p class="note">Stored metrics use each run’s original testset snapshot. Query counts, cache settings,
+    barcode settings, and endpoints can differ between runs. Dry runs, Drawer runs, subset runs,
+    and runs without metrics are excluded.</p>
+  <div id="status" role="status" aria-live="polite">Reading runs…</div>
+  <fieldset id="compare-picker" hidden><legend>Pipelines to compare</legend>
+    <button id="all" type="button">Select all</button> <button id="none" type="button">Clear</button>
+    <div id="pipeline-list"></div>
+  </fieldset>
+  <div id="charts"></div>
+  <section id="records" hidden>
+    <h2 id="records-title">Compared runs</h2>
+    <p id="records-note" class="note"></p>
+    <div class="table-wrap"><table aria-label="Chart data">
+      <thead><tr><th>Pipeline</th><th>Run / started</th><th class="num">Queries</th><th class="num">Positive</th>
+        <th class="num">Negative</th><th class="num">R@1</th><th class="num">R@5</th><th class="num">R@10</th>
+        <th class="num">F1@1</th><th class="num">F1@5</th><th class="num">Match share</th>
+        <th class="num">Within SLA</th><th class="num">Median ms</th><th class="num">False match @1</th><th>Run settings</th></tr></thead>
+      <tbody id="data"></tbody>
+    </table></div>
+  </section>
+</main>
+<script>
+/* Pure selection and chart functions also used by the offline behavior checks. */
+const RunCharts = (() => {
+  const metrics = [
+    {key: "recall_at_1", label: "R@1", unit: "percent"},
+    {key: "recall_at_5", label: "R@5", unit: "percent"},
+    {key: "recall_at_10", label: "R@10", unit: "percent"},
+    {key: "f1_at_1", label: "F1@1", unit: "score"},
+    {key: "f1_at_5", label: "F1@5", unit: "score"},
+    {key: "match_share", label: "Match share", unit: "percent"},
+    {key: "within_sla_share", label: "Within SLA", unit: "percent"},
+    {key: "latency_median", label: "Median latency", unit: "ms", lower: true},
+    {key: "false_match_at_1", label: "False match @1", unit: "count", lower: true}
+  ];
+  const overview = [
+    {title: "Recall", keys: ["recall_at_1", "recall_at_5", "recall_at_10"]},
+    {title: "F1", keys: ["f1_at_1", "f1_at_5"]},
+    {title: "Median latency", keys: ["latency_median"]},
+    {title: "Within SLA", keys: ["within_sla_share"]}
+  ];
+  const colors = ["var(--accent)", "var(--neg)", "var(--pos)"];
+  const esc = s => String(s ?? "").replace(/[&<>"']/g,
+    c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+  const metric = key => metrics.find(m => m.key === key);
+  const value = (run, m) => Number.isFinite(run[m.key]) && run[m.key] >= 0
+    && (!["percent", "score"].includes(m.unit) || run[m.key] <= 1) ? run[m.key] : null;
+  const format = (v, m) => v === null ? "—" : m.unit === "percent" ? (v * 100).toFixed(1) + "%"
+    : m.unit === "score" ? v.toFixed(3) : m.unit === "ms" ? Math.round(v).toLocaleString() + " ms" : String(v);
+  const epoch = r => { const n = Date.parse(r.started); return Number.isFinite(n) ? n : null; };
+  const date = r => epoch(r) === null ? "date not recorded" : new Date(epoch(r)).toLocaleString();
+  const chronological = (a, b) => {
+    const x = epoch(a), y = epoch(b);
+    if (x === null && y !== null) return -1;
+    if (y === null && x !== null) return 1;
+    return (x ?? 0) - (y ?? 0) || String(a.id).localeCompare(String(b.id));
+  };
+  function eligible(runs, set, cache = "all") {
+    return runs.filter(r => r.set === set && r.configuration && r.has_metrics && !r.dry_run
+      && r.query_scope !== "drawer" && !r.subset
+      && (cache === "all" || cache === "off" && r.use_cache === false
+        || cache === "on" && r.use_cache === true || cache === "unknown" && r.use_cache == null));
+  }
+  function group(runs) {
+    const groups = new Map();
+    for (const r of runs.slice().sort(chronological).reverse()) {
+      if (!groups.has(r.configuration)) groups.set(r.configuration, []);
+      groups.get(r.configuration).push(r);
+    }
+    return new Map([...groups].sort(([a], [b]) => a.localeCompare(b)));
+  }
+  const comparison = (groups, selected, choices) => [...groups]
+    .filter(([name]) => selected.has(name)).map(([name, runs]) =>
+      runs.find(r => r.id === choices.get(name)) || runs[0]);
+  const timeline = (runs, pipeline) => runs.filter(r => r.configuration === pipeline && epoch(r) !== null)
+    .slice().sort(chronological);
+  const href = r => "/runs#" + encodeURIComponent(r.id);
+  function ceiling(rows, ms) {
+    if (["percent", "score"].includes(ms[0].unit)) return 1;
+    const max = Math.max(0, ...rows.flatMap(r => ms.map(m => value(r, m) ?? 0)));
+    if (!max) return 1;
+    const scale = 10 ** Math.floor(Math.log10(max));
+    return [1, 2, 5, 10].find(n => n * scale >= max) * scale;
+  }
+  const tooltip = (r, m) => esc(`${r.configuration} · ${date(r)}\n${m.label}: ${format(value(r, m), m)}\n${r.queries ?? "?"} queries\n${r.id}`);
+  function bars(rows, ms) {
+    const width = 800, left = 260, right = 82, top = 34, step = ms.length * 18 + 16;
+    const height = top + rows.length * step + 18, plot = width - left - right, max = ceiling(rows, ms);
+    let body = "";
+    for (let i = 0; i <= 4; i++) {
+      const x = left + plot * i / 4;
+      body += `<line class="grid" x1="${x}" x2="${x}" y1="26" y2="${height - 10}"/>
+        <text x="${x}" y="15" text-anchor="middle">${esc(format(max * i / 4, ms[0]))}</text>`;
+    }
+    rows.forEach((r, i) => {
+      const y = top + i * step;
+      body += `<a href="${esc(href(r))}"><title>${esc(r.configuration + " · " + r.id)}</title>
+        <text class="label" x="${left - 12}" y="${y + ms.length * 9}" text-anchor="end">${esc(
+          r.configuration.length > 35 ? r.configuration.slice(0, 32) + "…" : r.configuration)}</text></a>`;
+      ms.forEach((m, j) => {
+        const v = value(r, m), by = y + j * 18;
+        body += `<a href="${esc(href(r))}" aria-label="${tooltip(r, m)}"><title>${tooltip(r, m)}</title>${v === null ? ""
+          : `<rect x="${left}" y="${by}" width="${plot * v / max}" height="12" rx="2" fill="${colors[j]}"/>`}
+          <text class="value" x="${left + (v === null ? 0 : plot * v / max) + 5}" y="${by + 10}">${esc(format(v, m))}</text></a>`;
+      });
+    });
+    return `<svg viewBox="0 0 ${width} ${height}" role="group" aria-label="Pipeline metric comparison">${body}</svg>`;
+  }
+  function lines(rows, ms) {
+    const width = 800, height = 310, left = 70, right = 28, top = 20, bottom = 60;
+    const plotW = width - left - right, plotH = height - top - bottom, max = ceiling(rows, ms);
+    let start = epoch(rows[0]), end = epoch(rows[rows.length - 1]);
+    if (start === end) { start -= 1800000; end += 1800000; }
+    const x = r => left + (epoch(r) - start) / (end - start) * plotW;
+    const y = v => top + plotH * (1 - v / max);
+    let body = "";
+    for (let i = 0; i <= 4; i++) {
+      const yy = y(max * i / 4);
+      body += `<line class="grid" x1="${left}" x2="${width - right}" y1="${yy}" y2="${yy}"/>
+        <text x="${left - 8}" y="${yy + 4}" text-anchor="end">${esc(format(max * i / 4, ms[0]))}</text>`;
+    }
+    for (let i = 0; i <= 3; i++) {
+      const xx = left + plotW * i / 3, dt = new Date(start + (end - start) * i / 3);
+      const anchor = i === 0 ? "start" : i === 3 ? "end" : "middle";
+      body += `<text x="${xx}" y="${height - bottom + 24}" text-anchor="${anchor}">${esc(dt.toLocaleDateString())}</text>
+        <text x="${xx}" y="${height - bottom + 40}" text-anchor="${anchor}">${esc(dt.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}))}</text>`;
+    }
+    ms.forEach((m, j) => {
+      // A missing metric breaks the line instead of implying an unrecorded result.
+      let path = "", open = false;
+      rows.forEach(r => {
+        const v = value(r, m);
+        if (v === null) { open = false; return; }
+        path += `${open ? "L" : "M"}${x(r)},${y(v)} `; open = true;
+      });
+      body += `<path d="${path}" fill="none" stroke="${colors[j]}" stroke-width="2"/>`;
+      rows.forEach(r => {
+        const v = value(r, m);
+        if (v !== null) body += `<a href="${esc(href(r))}" aria-label="${tooltip(r, m)}"><title>${tooltip(r, m)}</title>
+          <circle cx="${x(r)}" cy="${y(v)}" r="4.5" fill="${colors[j]}" stroke="var(--panel)" stroke-width="1.5"/></a>`;
+      });
+    });
+    return `<svg viewBox="0 0 ${width} ${height}" role="group" aria-label="Metrics by run start time">${body}</svg>`;
+  }
+  function plots(rows, mode, selectedMetric) {
+    const specs = selectedMetric === "overview" ? overview
+      : [{title: metric(selectedMetric).label, keys: [selectedMetric]}];
+    return specs.map(spec => {
+      const ms = spec.keys.map(metric), available = rows.some(r => ms.some(m => value(r, m) !== null));
+      return `<section class="plot"><h2>${esc(spec.title)}</h2><div class="note">${ms[0].lower ? "Lower" : "Higher"} is better${
+        ms[0].unit === "ms" ? " · milliseconds" : ""}</div><div class="legend">${ms.map((m, i) =>
+        `<span style="--series:${colors[i]}">${esc(m.label)}</span>`).join("")}</div><div class="scroll">${available
+        ? mode === "history" ? lines(rows, ms) : bars(rows, ms)
+        : '<div class="empty">This metric was not recorded in the selected runs.</div>'}</div></section>`;
+    }).join("");
+  }
+  return {metrics, esc, metric, value, format, epoch, date, chronological, eligible, group,
+    comparison, timeline, href, plots};
+})();
+
+/* Page state uses the existing run-head API. No chart request runs an inference. */
+const $ = s => document.querySelector(s), C = RunCharts;
+let RUNS = [], GROUPS = new Map(), SELECTED = new Set(), CHOICES = new Map(), REQUEST = 0;
+const params = new URLSearchParams(location.search);
+let SET = params.get("set") || "", MODE = params.get("mode") === "history" ? "history" : "pipelines";
+let METRIC = params.get("metric") || "overview", PIPELINE = params.get("pipeline") || "";
+let CACHE = params.get("cache") || "all";
+if (!C.metric(METRIC) && METRIC !== "overview") METRIC = "overview";
+if (!["all", "on", "off", "unknown"].includes(CACHE)) CACHE = "all";
+$("#metric").insertAdjacentHTML("beforeend", C.metrics.map(m =>
+  `<option value="${m.key}">${m.label}${m.unit === "ms" ? " (ms)" : ""}</option>`).join(""));
+$("#mode").value = MODE; $("#metric").value = METRIC; $("#cache").value = CACHE;
+function updateUrl() {
+  const p = new URLSearchParams({set: SET, mode: MODE, metric: METRIC});
+  if (PIPELINE) p.set("pipeline", PIPELINE);
+  if (CACHE !== "all") p.set("cache", CACHE);
+  history.replaceState(null, "", location.pathname + "?" + p);
+  $("#results-link").href = "/runs" + (SET ? "?" + new URLSearchParams({set: SET}) : "");
+}
+function regroup(reset) {
+  GROUPS = C.group(C.eligible(RUNS, SET, CACHE));
+  if (reset) { SELECTED = new Set(GROUPS.keys()); CHOICES.clear(); }
+  else SELECTED = new Set([...SELECTED].filter(name => GROUPS.has(name)));
+  if (!GROUPS.has(PIPELINE)) PIPELINE = GROUPS.keys().next().value || "";
+  $("#pipeline").innerHTML = [...GROUPS].map(([name, runs]) =>
+    `<option value="${C.esc(name)}">${C.esc(name)} · ${runs.length} run(s)</option>`).join("");
+  $("#pipeline").value = PIPELINE;
+  $("#pipeline-list").innerHTML = [...GROUPS].map(([name]) =>
+    `<label><input type="checkbox" data-pipeline="${C.esc(name)}"${SELECTED.has(name) ? " checked" : ""}>${C.esc(name)}</label>`).join("");
+}
+function settings(r) {
+  const state = v => v === true ? "on" : v === false ? "off" : "not recorded";
+  return `cache ${state(r.use_cache)} · barcode ${state(r.use_barcode)}${r.sla_ms != null ? ` · SLA ${r.sla_ms} ms` : ""}${
+    r.endpoint_override_url ? ` · endpoint ${r.endpoint_override_url}` : ""}`;
+}
+function table(rows) {
+  $("#records").hidden = !rows.length;
+  $("#records-title").textContent = MODE === "history" ? "Run history" : "Compared runs";
+  $("#records-note").textContent = MODE === "history" ? "Dates are shown in your local time. Open a chart point or run link to inspect the saved result."
+    : "Each pipeline defaults to its newest scored run. Choose another run below to compare it. Open a bar or run link to inspect the saved result.";
+  const keys = ["recall_at_1", "recall_at_5", "recall_at_10", "f1_at_1", "f1_at_5", "match_share", "within_sla_share", "latency_median", "false_match_at_1"];
+  $("#data").innerHTML = rows.map(r => `<tr><td>${C.esc(r.configuration)}</td><td>${MODE === "history" ? ""
+    : `<select class="run-choice" aria-label="Run for ${C.esc(r.configuration)}" data-run-pipeline="${C.esc(r.configuration)}">${
+      GROUPS.get(r.configuration).map(candidate => `<option value="${C.esc(candidate.id)}"${candidate.id === r.id ? " selected" : ""}>${
+        C.esc(C.date(candidate))} · ${C.esc(candidate.queries ?? "?")} queries · ${C.esc(candidate.id)}</option>`).join("")}</select><br>`}
+    <a href="${C.esc(C.href(r))}">${C.esc(MODE === "history" ? C.date(r) : "Open run")}</a></td>${
+      [r.queries, r.positive, r.negative].map(v => `<td class="num">${C.esc(v ?? "—")}</td>`).join("")}${
+      keys.map(key => `<td class="num">${C.esc(C.format(C.value(r, C.metric(key)), C.metric(key)))}</td>`).join("")}
+    <td class="settings">${C.esc(settings(r))}</td></tr>`).join("");
+}
+function render() {
+  updateUrl();
+  $("#history-picker").hidden = MODE !== "history";
+  $("#compare-picker").hidden = MODE !== "pipelines" || !GROUPS.size;
+  const scoped = C.eligible(RUNS, SET, CACHE);
+  const rows = MODE === "history" ? C.timeline(scoped, PIPELINE) : C.comparison(GROUPS, SELECTED, CHOICES);
+  const undated = MODE === "history" ? scoped.filter(r => r.configuration === PIPELINE && C.epoch(r) === null).length : 0;
+  $("#status").className = "";
+  $("#status").textContent = !scoped.length ? `No scored runs for ${SET || "this testset"} with these cache settings.`
+    : !rows.length ? MODE === "history" ? "No runs with a recorded start date for this pipeline." : "Select at least one pipeline."
+    : `${MODE === "history" ? `${PIPELINE} · ${rows.length} run(s), oldest first` : `${rows.length} pipeline(s) · one selected run per pipeline`}${
+      undated ? ` · ${undated} undated run(s) excluded from the time chart` : ""}`;
+  $("#charts").className = METRIC === "overview" ? "" : "single";
+  $("#charts").innerHTML = rows.length ? C.plots(rows, MODE, METRIC) : "";
+  table(rows);
+}
+async function load() {
+  const version = ++REQUEST;
+  $("#refresh").disabled = true;
+  $("#status").textContent = "Reading runs…";
+  try {
+    const response = await fetch("/api/runs", {cache: "no-store"});
+    const data = await response.json();
+    if (version !== REQUEST) return;
+    if (!response.ok || data.error) throw new Error(data.error || `HTTP ${response.status}`);
+    RUNS = data.runs || [];
+    const sets = [...new Set(RUNS.map(r => r.set).filter(Boolean))].sort();
+    if (!SET) SET = RUNS.find(r => r.set && C.eligible([r], r.set).length)?.set || sets[0] || "";
+    if (SET && !sets.includes(SET)) sets.push(SET);
+    $("#testset").innerHTML = sets.map(name => `<option value="${C.esc(name)}">${C.esc(name)}</option>`).join("");
+    $("#testset").value = SET;
+    regroup(!SELECTED.size && !GROUPS.size); render();
+  } catch (error) {
+    if (version !== REQUEST) return;
+    $("#status").className = "error";
+    $("#status").textContent = `Cannot read run charts: ${error.message}`;
+    $("#charts").replaceChildren(); $("#records").hidden = true; $("#compare-picker").hidden = true;
+  } finally { if (version === REQUEST) $("#refresh").disabled = false; }
+}
+$("#testset").addEventListener("change", () => { SET = $("#testset").value; regroup(true); render(); });
+$("#mode").addEventListener("change", () => { MODE = $("#mode").value; render(); });
+$("#metric").addEventListener("change", () => { METRIC = $("#metric").value; render(); });
+$("#cache").addEventListener("change", () => { CACHE = $("#cache").value; regroup(true); render(); });
+$("#pipeline").addEventListener("change", () => { PIPELINE = $("#pipeline").value; render(); });
+$("#pipeline-list").addEventListener("change", ev => {
+  const input = ev.target.closest("[data-pipeline]"); if (!input) return;
+  if (input.checked) SELECTED.add(input.dataset.pipeline); else SELECTED.delete(input.dataset.pipeline);
+  render();
+});
+$("#data").addEventListener("change", ev => {
+  const select = ev.target.closest("[data-run-pipeline]"); if (!select) return;
+  CHOICES.set(select.dataset.runPipeline, select.value); render();
+});
+$("#all").addEventListener("click", () => { regroup(true); render(); });
+$("#none").addEventListener("click", () => { SELECTED.clear(); regroup(false); render(); });
+$("#refresh").addEventListener("click", load);
+load();
+</script>
+</body>
+</html>

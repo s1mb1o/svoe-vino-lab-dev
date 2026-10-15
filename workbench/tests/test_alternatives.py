@@ -169,6 +169,42 @@ class SideTest(unittest.TestCase):
 
 
 class LabelInstanceTest(unittest.TestCase):
+    def test_close_up_label_survives_when_alternative_is_a_shelf_price_tag(self):
+        # The real label fills most of the bottle, so the old bottle-IoU test
+        # discarded it before the out-of-bottle price tag was considered.
+        label = instance("label", (5, 4, 35, 49))
+        tag = instance("label", (0, 56, 40, 78), score=0.99)
+        answer = [instance("bottle", (4, 0, 36, 50)), label, tag]
+        self.assertIs(alternatives.label_instance(answer), label)
+        self.assertIs(alternatives.label_instance(answer, on_main_bottle=False), tag)
+        method, _cut, box = alternatives.label_cut_of(Image.new("RGB", SIZE), answer)
+        self.assertEqual(method, "seg")
+        self.assertLess(box[3], tag["box"][1])
+
+    def test_a_larger_price_tag_cannot_replace_a_smaller_on_bottle_label(self):
+        label = instance("label", (10, 18, 30, 38))
+        answer = [instance("bottle", (4, 0, 36, 50)), label,
+                  instance("label", (0, 56, 40, 78), score=0.99)]
+        self.assertIs(alternatives.label_instance(answer), label)
+
+    def test_price_tags_alone_do_not_supply_a_bottle_label(self):
+        answer = [instance("bottle", (4, 0, 36, 50)),
+                  instance("label", (0, 56, 40, 78))]
+        self.assertIsNone(alternatives.label_instance(answer))
+        self.assertIsNone(alternatives.label_cut_of(Image.new("RGB", SIZE), answer))
+
+    def test_label_of_another_bottle_cannot_win_by_area(self):
+        label = instance("label", (6, 28, 22, 48))
+        answer = [instance("bottle", (0, 0, 24, 80)), label,
+                  instance("bottle", (26, 0, 40, 60)),
+                  instance("label", (26, 0, 40, 58))]
+        self.assertIs(alternatives.label_instance(answer), label)
+
+    def test_without_a_detected_bottle_the_largest_label_still_wins(self):
+        label = instance("label", (4, 10, 36, 64))
+        answer = [instance("label", (10, 20, 24, 36)), label]
+        self.assertIs(alternatives.label_instance(answer), label)
+
     def test_a_label_that_is_the_bottle_gives_way_to_a_smaller_label(self):
         answer = [instance("bottle", (0, 0, 40, 80)), instance("label", (0, 0, 40, 80)),
                   instance("label", (4, 20, 36, 60))]
@@ -218,7 +254,7 @@ class MigrationTest(unittest.TestCase):
                                  [("front", a), ("label_back", b)])
                 conn.executemany("INSERT INTO image_derivative VALUES (?, 'seg', ?, ?, 0, 0, 5, 5)",
                                  [(a, derive.SETTINGS_SEG, cut),
-                                  (b, alternatives.SETTINGS_LABEL, cut)])
+                                  (b, alternatives.LEGACY_SETTINGS_LABEL, cut)])
             conn.close()
             conn = labdb.connect(db)
             try:
@@ -573,20 +609,37 @@ class AlternativeRouteTest(unittest.TestCase):
                          alternatives.SETTINGS_LABEL_CLOSE_UP)
 
 
-    # A second body label gives the box of the labels (owner answer of 2026-09-25T19:16:44).
+    # A second body label keeps both masks (owner request of 2026-10-07).
 
-    def test_two_body_labels_give_the_box_of_the_labels_with_no_mask(self):
+    def test_two_body_labels_are_segmented_on_upload(self):
         self.sam3.answer = TWO_LABELS
         data = picture(transparent=False)
         status, out = self.upload("wine-b", data)
         self.assertEqual(status, 200, out)
         photo, = out["record"]["_alternatives"]
-        self.assertEqual((photo["type"], photo["derivation"]), ("label_front", "crop"))
+        self.assertEqual((photo["type"], photo["derivation"]), ("label_front", "seg"))
         self.assertEqual(self.settings(sha(data), "label"),
-                         ("crop", alternatives.SETTINGS_LABEL_CLOSE_UP))
+                         ("seg", alternatives.SETTINGS_LABEL_CLOSE_UP))
         cut = Image.open(url_file(self.db, photo["image_url"]))
-        self.assertEqual((cut.mode, cut.size), ("RGBA", (32, 62)))
-        self.assertEqual(cut.getchannel("A").getextrema(), (255, 255))
+        self.assertEqual(cut.mode, "RGBA")
+        self.assertEqual(cut.getchannel("A").getextrema(), (0, 255))
+
+    def test_old_label_rule_requires_refresh_and_preserves_manual_cuts(self):
+        self.sam3.answer = TWO_LABELS
+        data = picture(transparent=False)
+        status, _ = self.upload("wine-b", data)
+        self.assertEqual(status, 200)
+        digest = sha(data)
+        with labdb.connect(self.db) as conn:
+            for close_up, settings in (
+                    (False, alternatives.LEGACY_SETTINGS_LABEL),
+                    (True, alternatives.LEGACY_SETTINGS_LABEL_CLOSE_UP)):
+                conn.execute("UPDATE image_derivative SET settings = ?, method = 'crop' "
+                             "WHERE source_sha256 = ? AND kind = 'label'", (settings, digest))
+                self.assertFalse(alternatives.has_current_cut(conn, digest, "label", close_up))
+            conn.execute("UPDATE image_derivative SET settings = 'manual polygon' "
+                         "WHERE source_sha256 = ? AND kind = 'label'", (digest,))
+            self.assertTrue(alternatives.has_current_cut(conn, digest, "label", True))
 
 
 # A close-up with two labels one above the other, as wide as each other.
@@ -625,6 +678,48 @@ class BodyLabelsTest(unittest.TestCase):
         image = Image.new("RGB", (80, 160), "white")
         cut, box = alternatives.label_box_cut(image, TWO_LABELS[1:], 0.5)
         self.assertEqual((box, cut.size, cut.mode), ((8, 20, 72, 144), (64, 124), "RGBA"))
+
+    def test_mask_union_keeps_both_labels_and_removes_the_glass_between(self):
+        image = Image.new("RGB", SIZE, (20, 30, 40))
+        draw = ImageDraw.Draw(image)
+        draw.rectangle((4, 10, 35, 35), fill=(210, 50, 20))
+        draw.rectangle((6, 50, 33, 73), fill=(20, 50, 210))
+        answer = [instance("bottle", (0, 0, 40, 80)), instance("label", (4, 10, 36, 36)),
+                  instance("label", (6, 50, 34, 74))]
+        method, cut, box = alternatives.label_cut_of(image, answer)
+        self.assertEqual(method, "seg")
+        x, y = box[:2]
+        self.assertEqual(cut.getpixel((20-x, 25-y)), (210, 50, 20, 255))
+        self.assertEqual(cut.getpixel((20-x, 60-y)), (20, 50, 210, 255))
+        self.assertEqual(cut.getpixel((20-x, 44-y))[3], 0)
+        background = Image.new("RGBA", cut.size, "white")
+        self.assertEqual(Image.alpha_composite(background, cut).getpixel((20-x, 44-y)),
+                         (255, 255, 255, 255))
+        legacy, rectangle, _ = alternatives.label_cut_of(image, answer, mask_union=False)
+        self.assertEqual((legacy, rectangle.getchannel("A").getextrema()), ("crop", (255, 255)))
+
+    def test_mask_union_maps_service_masks_to_source_size(self):
+        image = Image.new("RGB", (80, 160), (20, 30, 40))
+        answer = [instance("bottle", (0, 0, 40, 80)), instance("label", (4, 10, 36, 36)),
+                  instance("label", (6, 50, 34, 74))]
+        _, cut, box = alternatives.label_cut_of(image, answer, mask_union=True)
+        x, y = box[:2]
+        self.assertEqual(cut.getpixel((40-x, 50-y))[3], 255)
+        self.assertEqual(cut.getpixel((40-x, 120-y))[3], 255)
+        self.assertEqual(cut.getpixel((40-x, 88-y))[3], 0)
+
+    def test_mask_union_preserves_existing_source_transparency(self):
+        image = Image.new("RGBA", SIZE, (20, 30, 40, 255))
+        ImageDraw.Draw(image).rectangle((15, 15, 24, 24), fill=(20, 30, 40, 0))
+        _, cut, box = alternatives.label_cut_of(image, TWO_LABELS, mask_union=True)
+        self.assertEqual(cut.getpixel((20-box[0], 20-box[1]))[3], 0)
+
+    def test_mask_union_keeps_single_label_bytes_and_absence_equal(self):
+        image = Image.new("RGB", SIZE, (20, 30, 40))
+        old = alternatives.label_cut_of(image, FULL, mask_union=False)
+        new = alternatives.label_cut_of(image, FULL)
+        self.assertEqual((old[0], old[2], old[1].tobytes()), (new[0], new[2], new[1].tobytes()))
+        self.assertIsNone(alternatives.label_cut_of(image, [], mask_union=True))
 
 
 

@@ -6,6 +6,7 @@
 <title>Svoe Vino recognize</title>
 <style>
 /* THEME_CSS */
+/* CONFIGURATION_PICKER_CSS */
 
 /* STEPS_CSS */
 
@@ -90,11 +91,12 @@ main { max-width: 1180px; margin: 0 auto; padding: 14px 16px 64px; }
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       href="/testset">Testset</a><a href="/runs">Runs</a><a class="on"
       href="/recognize">Recognize</a><a href="/health">Health</a></nav></div>
-<div class="bar compact-filters"><label class="pick compact-config">Pipeline <select id="pipeline" disabled></select></label><button id="go" type="button" disabled
+<div class="bar compact-filters"><div class="pick compact-config config-control"><span id="pipeline-label">Pipeline</span><select id="pipeline" aria-labelledby="pipeline-label" disabled></select></div><button id="go" type="button" disabled
       title="Send the present photo again with the selected pipeline">Recognize</button></div>
 
 </header>
 <main>
+<section id="configuration-summary" class="configuration-summary" aria-label="Selected configuration" hidden></section>
 <p id="message" class="message" aria-live="polite">Loading the pipelines…</p>
   <div id="drop" class="drop" role="button" tabindex="0"
     aria-label="Drop a photo here, paste it, or click to open a file">
@@ -116,6 +118,7 @@ main { max-width: 1180px; margin: 0 auto; padding: 14px 16px 64px; }
 </main>
 <div id="lb" role="dialog" aria-modal="true" aria-label="large image"><img id="lb-main" alt=""></div>
 <script>
+/* CONFIGURATION_PICKER_JS */
 /* STEPS_JS */
 /* DROP_JS */
 
@@ -128,6 +131,10 @@ const $ = s => document.querySelector(s);
 const esc = s => (s == null ? "" : String(s)).replace(/[&<>"']/g,
   c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const PIPELINE_KEY = "svl.recognize.pipeline";
+const configurationPicker = ConfigurationPicker.create({select: $("#pipeline"),
+  summary: $("#configuration-summary"), label: "Pipeline", storage: "pipelines",
+  links: item => item.embedding ? [{text: "Open embedding index →", href: `/embedding?name=${encodeURIComponent(item.embedding)}`}] : []
+});
 // The open cards; the card of the input photo is open at the start, as in the popup.
 const OPEN = new Set(["input:"]);
 let FILE = null, THUMB = null, REQUEST = 0, TIMER = null;
@@ -162,6 +169,7 @@ async function loadPipelines() {
     first && p.name === first.name ? " selected" : ""}>${esc(p.name)}${p.runnable ? ""
     : ` — ${esc(p.reason)}`}</option>`).join("");
   $("#pipeline").disabled = !list.length;
+  configurationPicker.update(list.map(item => ({...ConfigurationPicker.pipelineItem(item), embedding: item.embedding})));
   message(first ? `${list.filter(p => p.runnable).length} of ${list.length} pipelines can run`
     : "No pipeline can run: build an index on /embedding first", !first);
   syncButton();

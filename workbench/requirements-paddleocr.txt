@@ -1,0 +1,4 @@
+# Separate Python 3.12 CPU environment; do not install into the lab runtime.
+paddleocr==3.7.0
+paddlepaddle==3.3.1
+paddlex==3.7.2

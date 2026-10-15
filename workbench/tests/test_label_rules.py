@@ -6,6 +6,7 @@ import json
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -51,6 +52,23 @@ def rule(questions, text="", groups=()):
 
 
 class CheckTest(unittest.TestCase):
+    def test_a_label_colour_region_separates_cards_and_suppresses_alcohol(self):
+        out = label_rules.check_rule(rule([
+            {"question": "What is the printed colour of the bottom-left square "
+                          "that contains the blend ratio?",
+             "answers": {"A": "pink", "B": "dark red", "C": "purple"}},
+            {"question": "What alcohol percentage is printed?",
+             "answers": {"A": "14.4%", "B": "14.5%", "C": "14.7%"}},
+        ], text="The bottom-left square is pink for A, dark red for B, and purple for C."),
+            LETTERS, sent={A: ["label-a"], B: ["label-b"], C: ["label-c"]})
+        self.assertEqual(out["mode"], "sheet")
+        colour, alcohol = out["questions"]
+        self.assertTrue(colour["valid"])
+        self.assertEqual(colour["kind"], "feature")
+        self.assertEqual(colour["evidence"],
+                         {A: ["label-a"], B: ["label-b"], C: ["label-c"]})
+        self.assertFalse(alcohol["valid"])
+
     def test_a_feature_question_gives_the_mode_sheet_and_evidence(self):
         out = label_rules.check_rule(rule([
             {"question": "What ratio is printed on the label?",
@@ -333,6 +351,18 @@ class ConfigTest(unittest.TestCase):
         images = label_rules.config_values(self.settings({"vlm": "one",
                                                           "rules_max_images": 5}))
         self.assertEqual(one["rules_sha"], images["rules_sha"])
+
+    def test_changed_prompts_invalidate_the_corresponding_stage(self):
+        settings = self.settings({"vlm": "one"})
+        old = label_rules.config_values(settings)
+        with patch.object(label_rules, "RULES_PROMPT", label_rules.RULES_PROMPT + "\nNew rule."):
+            changed = label_rules.config_values(settings)
+        self.assertNotEqual(old["rules_sha"], changed["rules_sha"])
+        self.assertEqual(old["describe_sha"], changed["describe_sha"])
+        with patch.object(label_rules, "DESCRIBE_PROMPT", label_rules.DESCRIBE_PROMPT + "\nNew description."):
+            changed = label_rules.config_values(settings)
+        self.assertNotEqual(old["describe_sha"], changed["describe_sha"])
+        self.assertEqual(old["rules_sha"], changed["rules_sha"])
 
 
 

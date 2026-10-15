@@ -24,6 +24,8 @@ The backends:
                    key `competitor` applies the comparable actions of plan 91 after the
                    embedding retrieval (`competitor_steps.py`). The optional
                    key `workers` sets the number of concurrent queries. The default is 1.
+                   The optional key `label_gate` selects one retrieval space after
+                   crop-quality and label-confidence checks. Read docs/testing/label-gate.md.
 
 The owner removed the pipeline `mock` and its code on 2026-09-26T00:26:27+0300.
 """
@@ -34,6 +36,9 @@ import barcode
 import cluster_rerank
 import competitor_steps
 import embeddings
+import label_gate
+import main_label_match
+import local_comparison
 import qr_barcode
 from embeddings import ConfigError
 
@@ -52,7 +57,8 @@ REMOTE_DEFAULTS = {"field": "image", "response": "auto", "query": {}, "top_k": 1
 REMOTE_SHAPES = ("auto", "slug-object", "slug-array", "candidates", "group")
 BACKEND_KEYS = {REMOTE_BACKEND: REMOTE_KEYS + REMOTE_PARAMETER_KEYS,
                 EMBEDDING_BACKEND: ("embedding", "views", "barcode", "rerank",
-                                    "competitor", "workers")}
+                                    "competitor", "workers", "label_gate", "main_label", "local_comparison",
+                                    "bottle_orientation")}
 
 
 def check_device_ip(value):
@@ -139,8 +145,15 @@ class Pipeline:
                 raise ConfigError("device_ip MUST be true when url contains {device_ip}")
         self.workers = self.remote["workers"] if self.remote is not None else raw.get("workers", 1)
         self.embedding = self.views = self.barcode = self.rerank = self.competitor = None
+        self.label_gate = None
+        self.main_label = None
+        self.local_comparison = None
+        self.bottle_orientation = False
         self.scanner = None
         if self.backend == EMBEDDING_BACKEND:
+            self.bottle_orientation = raw.get("bottle_orientation", False)
+            if not isinstance(self.bottle_orientation, bool):
+                raise ConfigError("bottle_orientation MUST be true or false")
             if (isinstance(self.workers, bool) or not isinstance(self.workers, int)
                     or self.workers < 1):
                 raise ConfigError("workers MUST be an integer of 1 or more")
@@ -151,6 +164,20 @@ class Pipeline:
             self.embedding = model
             if "views" in raw:
                 self.views = _views(raw["views"])
+            if "local_comparison" in raw:
+                self.local_comparison = local_comparison.check_options(raw["local_comparison"])
+                if any(key in raw for key in ("main_label", "label_gate", "competitor", "rerank", "barcode")):
+                    raise ConfigError("local_comparison cannot be combined with other rerankers or gates")
+                if self.workers != 1:
+                    raise ConfigError("local_comparison requires workers: 1 for local model memory")
+            if "main_label" in raw:
+                self.main_label = main_label_match.check_options(raw["main_label"])
+                if "competitor" in raw or "rerank" in raw:
+                    raise ConfigError("main_label cannot be combined with competitor or rerank")
+            if "label_gate" in raw:
+                self.label_gate = label_gate.check_options(raw["label_gate"])
+                if "competitor" in raw:
+                    raise ConfigError("label_gate cannot be combined with competitor")
             if "barcode" in raw:
                 self.barcode = barcode.check_options(raw["barcode"])
                 self.scanner = dict(scanner or qr_barcode.check_config(None))
@@ -280,10 +307,21 @@ def load(path=embeddings.CONFIG_PATH):
             if error:
                 raise ConfigError("the embedding %s is not valid: %s"
                                   % (pipeline.embedding, error))
+            if pipeline.bottle_orientation:
+                full = (pipeline.views or model.views).get("full", [])
+                if (not full or full[0].get("target") != "package" or
+                        not any(step["step"] == "remove_background" for step in full)):
+                    raise ConfigError("bottle_orientation requires a masked full package view")
             other = sorted(set(pipeline.views or ()) - set(model.views))
             if other:
                 raise ConfigError("the embedding %s has no view %s"
                                   % (pipeline.embedding, ", ".join(other)))
+            if pipeline.label_gate is not None:
+                label_gate.check_views(pipeline.views or model.views)
+            if pipeline.main_label is not None:
+                label_steps = (pipeline.views or model.views).get("label") or []
+                if not label_steps or label_steps[0] != {"step": "segment", "target": "label"}:
+                    raise ConfigError("main_label requires a segmented label view")
             secondary = (pipeline.competitor or {}).get("secondary")
             if secondary is not None:
                 second_name = secondary["embedding"]

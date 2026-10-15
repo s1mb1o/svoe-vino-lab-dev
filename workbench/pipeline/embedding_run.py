@@ -31,7 +31,9 @@ The rules of a run (owner answers of 2026-09-25T23:24:20+0300 and 23:35:19):
   (`build_embeddings.OpenAIBackend` or `LocalBackend`).
 - The current items of the index alone count. The score of a wine is the mean of its best
   cosine in each view of the photo. For a wine with both views, the order is the order of
-  the sum of the two cosines.
+  the sum of the two cosines. An optional `label_gate` selects the complete label ranking
+  when crop quality, top cosine, and margin pass. Otherwise it selects the complete
+  bottle ranking. The gate does not average scores from different spaces.
 
 `benchmark.run_benchmark` writes the run files, so the files and the metrics are the files
 and the metrics of a `benchmark.py` run. `run.json` holds `configuration: <pipeline>`, and
@@ -56,7 +58,10 @@ import build_embeddings
 import derive
 import embeddings
 import labdb
+import label_gate as label_routing
 import main_scene
+import bottle_orientation
+import main_label_match
 import match_backends
 import rebuild_on_run
 from checked_read_cache import CheckedReadCache
@@ -159,7 +164,9 @@ PACKAGE_RULES = {derive.SETTINGS_ALPHA: "alpha", derive.SETTINGS_WHITE: "white",
                  derive.SETTINGS_SEG: "sam3"}
 
 
-def cuts_of(image, targets, segmenter, trace=None, scene_selection=False):
+def cuts_of(image, targets, segmenter, trace=None, scene_selection=False, label_gate=None,
+            *, label_mask_union=True, label_focus=False, offline_package_fallback=False,
+            label_on_main_bottle=True):
     """Return target -> (the box, the processed image) of one opened photo. A target
     that SAM3 did not find is None. Raise `derive.Sam3Unavailable`. `trace` gets the
     steps `sam3-package` and `sam3-label` (plan 41)."""
@@ -169,8 +176,16 @@ def cuts_of(image, targets, segmenter, trace=None, scene_selection=False):
             selection = None
             if scene_selection:
                 version = main_scene.selector_version(scene_selection)
-                method, settings, processed, box, selection = main_scene.cut(
-                    image, segmenter, version)
+                try:
+                    method, settings, processed, box, selection = main_scene.cut(
+                        image, segmenter, version)
+                except derive.Sam3Unavailable:
+                    if not offline_package_fallback:
+                        raise
+                    method, settings, processed, box = main_scene._white_cut(image)
+                    selection = {"version": version, "mode": "white",
+                                 "fallback_reason": "no_cached_package_segmentation",
+                                 "selected": None, "candidates": []}
                 rule = "main-scene-v%d" % version
             else:
                 method, settings, processed, box = derive.derive_image(image, segmenter)
@@ -184,12 +199,28 @@ def cuts_of(image, targets, segmenter, trace=None, scene_selection=False):
         out["package"] = (box, processed)
     if "label" in targets:
         with _step(trace, "sam3-label") as step:
-            instances, _scale = segmenter.instances(image, alternatives.DETECT_TEXTS)
-            cut = alternatives.label_cut_of(image, instances)
+            instances, cut, error = [], None, None
+            try:
+                instances, _scale = segmenter.instances(image, alternatives.DETECT_TEXTS)
+                cut = (main_label_match.cut_of(image, instances, on_main_bottle=label_on_main_bottle)
+                       if label_focus else alternatives.label_cut_of(image, instances,
+                           mask_union=label_mask_union, on_main_bottle=label_on_main_bottle))
+            except (derive.Sam3Unavailable, embeddings.ItemError, OSError, ValueError) as exc:
+                if label_gate is None:
+                    raise
+                error = "label_unavailable: %s" % exc
+                step["skipped"] = error
             step["cached"] = _cached(segmenter)
             step["out"] = ({"found": True, "method": cut[0], "box": list(cut[2]),
                             "size": list(cut[1].size)} if cut else {"found": False})
+            step["out"]["label_selection_version"] = 2 if label_on_main_bottle else 1
         out["label"] = (cut[2], cut[1]) if cut else None
+        if label_gate is not None:
+            out["_label_context"] = {"instances": instances, "cut": cut,
+                                     "on_main_bottle": label_on_main_bottle,
+                                     "package_box": (out.get("package") or [None])[0]}
+            if error is not None:
+                out["_label_context"]["error"] = error
     return out
 
 
@@ -219,21 +250,30 @@ def view_input(image, steps, cuts, dis_segmenter=None):
     if cut is None:
         return None, "SAM3 found no %s" % target
     box, processed = cut
+    image, box = bottle_orientation.embedding_source(image, steps, box, processed)
     return embeddings.apply_steps(
         image, steps, box, lambda p=processed: p, dis_segmenter=dis_segmenter), None
 
 
-def query_inputs(image, views, segmenter, scene_selection=False, dis_segmenter=None):
+def query_inputs(image, views, segmenter, scene_selection=False, dis_segmenter=None,
+                 label_gate=None, *, label_mask_union=True, label_focus=False,
+                 label_on_main_bottle=True):
     """Return (view -> the model input as an RGB image, view -> the reason of a view with
     no input) of one opened photo. `views` maps a view to its steps. SAM3 cuts the photo
     only for a view whose first step is `segment`. A view with no `segment`, for example
     of a pipeline with its own `views`, takes the photo as it is into its steps. Raise
     `derive.Sam3Unavailable` and `embeddings.ItemError`."""
     cuts = cuts_of(image, cut_targets(views), segmenter,
-                   scene_selection=scene_selection)
+                   scene_selection=scene_selection, label_gate=label_gate,
+                   label_mask_union=label_mask_union, label_focus=label_focus,
+                   label_on_main_bottle=label_on_main_bottle)
     inputs, missing = {}, {}
     for view, steps in views.items():
         prepared, reason = view_input(image, steps, cuts, dis_segmenter)
+        if view == "label" and label_gate is not None:
+            quality = label_routing.measure(image, prepared, cuts.get("_label_context"), label_gate)
+            if not quality["passed"]:
+                prepared, reason = None, "label quality: " + ", ".join(quality["reasons"])
         if prepared is None:
             missing[view] = reason
         else:
@@ -404,12 +444,13 @@ class Catalogue:
             out.append(hit)
         return out
 
-    def rank(self, query, top_k, trace=None, first=None):
+    def rank(self, query, top_k, trace=None, first=None, label_gate=None, label_quality=None):
         """Return the candidates of the unit vectors `query` (view -> vector). `trace` gets
         one step `search` for each view, with the top list of that view, and the step
         `score` (plan 41). `first`, when set, holds the slugs that go first: the wines of a
         shared GTIN (plan 64). The wines of `first` and the other wines each keep the score
-        order, so a wine of `first` outside the normal top-k also comes back."""
+        order, so a wine of `first` outside the normal top-k also comes back. `label_gate`
+        selects one space before this order; other pipelines use the mean score."""
         total = np.zeros(len(self.slugs))
         count = np.zeros(len(self.slugs), dtype=np.int64)
         best, cosines = {}, {}
@@ -430,9 +471,25 @@ class Catalogue:
                 if trace is not None:
                     step["out"] = {"rows": int(len(numbers)), "wines": int(found.sum()),
                                    "top": self.view_top(view, top, cosines[view], top_k)}
+        route = None
+        if label_gate is not None:
+            with _step(trace, "label-route") as step:
+                label_top = (self.view_top("label", best["label"], cosines["label"], 2)
+                             if "label" in best else [])
+                route = label_routing.choose(best, label_top, label_quality, label_gate)
+                full_top = (self.view_top("full", best["full"], cosines["full"], 1)
+                            if "full" in best else [])
+                route["winner_disagreement"] = bool(label_top and full_top
+                    and label_top[0]["slug"] != full_top[0]["slug"])
+                step["out"] = route
         with _step(trace, "score") as step:
-            present = np.flatnonzero(count)
-            score = total[present] / count[present]
+            if route is None:
+                present = np.flatnonzero(count)
+                score = total[present] / count[present]
+            else:
+                chosen = best.get(route["selected_view"], np.full(len(self.slugs), -np.inf))
+                present = np.flatnonzero(np.isfinite(chosen))
+                score = chosen[present]
             order = sorted(range(len(present)),
                            key=lambda i: (self.slugs[present[i]] not in wanted, -score[i],
                                           self.slugs[present[i]]))[:top_k]
@@ -453,6 +510,8 @@ class Catalogue:
                 cand["items"] = self.items_of(number, cosines)
                 cands.append(cand)
             step["out"] = {"wines": int(len(present))}
+            if route is not None:
+                step["out"]["selected_view"] = route["selected_view"]
         return cands
 
 
@@ -463,7 +522,8 @@ class EmbeddingBackend:
     the steps of the test photo of that pipeline; None means the steps of the entry."""
 
     def __init__(self, embedding, catalogue, model, segmenter, top_k=DEFAULT_TOP_K,
-                 name=None, views=None, scene_selection=False, dis_segmenter=None):
+                 name=None, views=None, scene_selection=False, dis_segmenter=None,
+                 label_gate=None):
         if top_k < 1:
             raise ValueError("top_k MUST be 1 or more")
         self.embedding = embedding
@@ -477,6 +537,12 @@ class EmbeddingBackend:
         self.scene_selection = (main_scene.selector_version(scene_selection)
                                 if scene_selection else False)
         self.dis_segmenter = dis_segmenter
+        self.label_focus = False
+        self.label_verifier = None
+        self.offline_package_fallback = False
+        self.label_gate = label_routing.check_options(label_gate) if label_gate is not None else None
+        if self.label_gate is not None:
+            label_routing.check_views(self.views)
         # The backend `local` holds one model in the memory of this machine, so it takes
         # one request at a time.
         self._lock = threading.Lock() if embedding.backend == "local" else None
@@ -491,10 +557,16 @@ class EmbeddingBackend:
                      "package": (main_scene.settings_for(self.scene_selection)
                                  if scene_selection else derive.SETTINGS_SEG),
                      "package_texts": main_scene.TEXTS if scene_selection else derive.SAM3_TEXTS,
-                     "label": alternatives.SETTINGS_LABEL},
+                     "label": alternatives.SETTINGS_LABEL, "label_mask_union": True,
+                     "label_selection_version": 2},
         }
         if scene_selection:
             self.spec["scene_selection"] = self.scene_selection
+        if self.scene_selection == main_scene.ORIENTATION_VERSION:
+            self.spec["bottle_orientation"] = True
+        if label_gate is not None:
+            self.spec["label_gate"] = dict(self.label_gate)
+            self.spec["score"] = label_routing.SCORE
 
     def _embed(self, images):
         if self._lock is None:
@@ -520,12 +592,21 @@ class EmbeddingBackend:
                                                % (path, exc))
                 step["out"] = {"width": image.width, "height": image.height}
             cuts = cuts_of(image, cut_targets(self.views), self.segmenter, trace,
-                           self.scene_selection)
+                           self.scene_selection, self.label_gate, label_focus=self.label_focus,
+                           offline_package_fallback=self.offline_package_fallback)
             sent, missing = {}, {}
+            quality = None
             for view, steps in self.views.items():
                 with trace.step("view", view=view) as step:
                     prepared, reason = view_input(
                         image, steps, cuts, self.dis_segmenter)
+                    if view == "label" and self.label_gate is not None:
+                        with trace.step("label-quality") as quality_step:
+                            quality = label_routing.measure(
+                                image, prepared, cuts.get("_label_context"), self.label_gate)
+                            quality_step["out"] = quality
+                        if not quality["passed"]:
+                            prepared, reason = None, "label quality: " + ", ".join(quality["reasons"])
                     if prepared is None:
                         missing[view] = step["skipped"] = reason
                         continue
@@ -553,8 +634,14 @@ class EmbeddingBackend:
                                                             "length %s" % norm)
                     query[view] = vector / norm
                 step["out"] = {"views": views, "dim": self.catalogue.dim}
-            cands = self.catalogue.rank(query, self.top_k, trace, first)
-            return cands, ms(), 200, None, trace.value()
+            if self.label_gate is None:
+                cands = self.catalogue.rank(query, self.top_k, trace, first)
+            else:
+                cands = self.catalogue.rank(query, self.top_k, trace, first,
+                                            label_gate=self.label_gate, label_quality=quality)
+            if self.label_verifier is not None and not first:
+                cands = self.label_verifier(cands, sent.get("label"), trace)
+            return cands[:getattr(self, "output_top_k", self.top_k)], ms(), 200, None, trace.value()
         except (derive.Sam3Unavailable, embeddings.ItemError,
                 build_embeddings.BackendError) as exc:
             return [], ms(), None, str(exc), trace.value()
@@ -579,7 +666,7 @@ def find_pipeline(name, config_path=embeddings.CONFIG_PATH):
 def build_backend(entry, db_path, top_k=DEFAULT_TOP_K,
                   make_model=build_embeddings.make_backend, segmenter=None, name=None,
                   views=None, scene_selection=False,
-                  make_dis=build_embeddings.make_dis_segmenter_for_views):
+                  make_dis=build_embeddings.make_dis_segmenter_for_views, label_gate=None):
     """Return the backend of one embedding entry, for `benchmark.run_benchmark`. Raise
     `embeddings.ConfigError`. `segmenter` is the SAM3 client; None means
     `derive.SAM3_ENDPOINT`. `name` is the name of the pipeline of the run; None means the
@@ -594,7 +681,7 @@ def build_backend(entry, db_path, top_k=DEFAULT_TOP_K,
     dis_segmenter = make_dis(effective_views)
     return EmbeddingBackend(entry, catalogue, model,
                             Sam3Once(segmenter or derive.Sam3Client()), top_k, name, views,
-                            scene_selection, dis_segmenter)
+                            scene_selection, dis_segmenter, label_gate)
 
 
 def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
@@ -616,9 +703,22 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
                                      % (pipeline.name, pipeline.embedding))
     competitor = getattr(pipeline, "competitor", None)
     retrieval_top_k = max(top_k, competitor["pool"]) if competitor is not None else top_k
+    main_label = getattr(pipeline, "main_label", None)
+    if main_label is not None:
+        retrieval_top_k = max(retrieval_top_k, main_label["window"])
+    scene_selection = (main_scene.ORIENTATION_VERSION
+                       if getattr(pipeline, "bottle_orientation", False) else True)
     backend = build_backend(entry, settings.db_path, retrieval_top_k, name=pipeline.name,
-                            views=getattr(pipeline, "views", None), scene_selection=True)
+                            views=getattr(pipeline, "views", None), scene_selection=scene_selection,
+                            label_gate=getattr(pipeline, "label_gate", None))
+    if main_label is not None:
+        backend = main_label_match.configure(backend, main_label, settings.db_path)
+        backend.output_top_k = top_k
     backend.spec["workers"] = getattr(pipeline, "workers", 1)
+    comparison = getattr(pipeline, "local_comparison", None)
+    if comparison is not None:
+        import local_comparison
+        backend = local_comparison.Comparison(backend, comparison, settings.db_path)
     if competitor is not None:
         import competitor_steps  # noqa: E402  (optional OCR/SIFT wrapper)
         secondary = None
@@ -634,7 +734,7 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
             secondary = build_backend(
                 secondary_entry, settings.db_path, secondary_options["top_k"],
                 name=pipeline.name + "-secondary", views=secondary_options.get("views"),
-                scene_selection=True,
+                scene_selection=scene_selection,
             )
         sift = None
         if any(action["action"] == "sift_rerank" for action in competitor["actions"]):
@@ -657,6 +757,16 @@ def build_pipeline_backend(pipeline, config_path, top_k=DEFAULT_TOP_K):
     return backend
 
 
+def saved_label_mask_union(spec):
+    """Old runs use their recorded rectangle. New runs record mask union explicitly."""
+    return (spec.get("sam3") or {}).get("label_mask_union") is True
+
+
+def saved_label_on_main_bottle(spec):
+    """Reproduce old inputs with their old global fallback, without rewriting runs."""
+    return (spec.get("sam3") or {}).get("label_selection_version", 1) >= 2
+
+
 def model_inputs(spec, path, candidates=None):
     """Return `{"inputs", "notes"}` of one photo of a run of `kind: embedding`: the model
     input of each view, made again with the steps of `spec` (the key `backend` of
@@ -674,7 +784,11 @@ def model_inputs(spec, path, candidates=None):
         image, _ = derive.open_image(path)
         dis_segmenter = build_embeddings.make_dis_segmenter_for_views(views)
         inputs, missing = query_inputs(image, views, CachedSam3(endpoint),
-                                       spec.get("scene_selection", False), dis_segmenter)
+                                       spec.get("scene_selection", False), dis_segmenter,
+                                       spec.get("label_gate"),
+                                       label_mask_union=saved_label_mask_union(spec),
+                                       label_focus=(spec.get("sam3") or {}).get("label_focus") == "main",
+                                       label_on_main_bottle=saved_label_on_main_bottle(spec))
     except (OSError, ImportError, ValueError, derive.Sam3Unavailable,
             embeddings.ItemError) as exc:
         return {"inputs": [], "notes": ["The model input cannot be made again: %s" % exc]}
@@ -747,13 +861,41 @@ def candidate_items(spec, cand, db_path):
         notes.append("Cannot read the index of %s: %s." % (name, exc))
         present = {(record["source_sha256"], record["view"]): record
                    for record in index.get("items", [])}
+    view_indexes = spec.get("view_indexes") or {}
+    sources = {name: (names, present)}
+    for source_name in dict.fromkeys(view_indexes.values()):
+        if source_name == name:
+            continue
+        try:
+            directory = embeddings.entry_dir(db_path, source_name)
+
+            def read_source():
+                source_index = embeddings.read_index(directory) or {}
+                source_names = frozenset(embeddings.image_names(directory))
+                records = {(r["source_sha256"], r["view"]): r
+                           for r in source_index.get("items", [])}
+                return source_index, source_names, records
+
+            sources[source_name] = CANDIDATE_INDEXES.get(
+                directory, [os.path.join(directory, embeddings.INDEX),
+                            os.path.join(directory, embeddings.IMAGES)], read_source,
+                copy_value=False)[1:]
+        except (OSError, ValueError) as exc:
+            sources[source_name] = (set(), {})
+            notes.append("Cannot read the index of %s: %s." % (source_name, exc))
+    present = {key: record for source_name, (_, records) in sources.items()
+               for key, record in records.items()
+               if view_indexes.get(key[1], name) == source_name}
+    names_by_view = {view: sources[view_indexes.get(view, name)][0]
+                     for view in embeddings.VIEWS}
     query_views = [view for view in spec.get("views") or {} if view in cand]
     best = {view: cand.get(view) for view in query_views}
     if isinstance(cand.get("items"), list):
         items = []
         for item in cand["items"]:
             record = present.get((item["sha256"], item["view"]))
-            if record is None or embeddings.image_name(item["sha256"], item["view"]) not in names:
+            if (record is None or embeddings.image_name(item["sha256"], item["view"])
+                    not in names_by_view[item["view"]]):
                 state = "gone"
             elif record["embedding_hash"] != item["embedding_hash"]:
                 state = "changed"
@@ -775,7 +917,8 @@ def candidate_items(spec, cand, db_path):
         record = present.get((item["sha256"], item["view"]))
         shown = item["state"] in ("same", "current")
         item["best"] = item["cosine"] is not None and item["cosine"] == best.get(item["view"])
-        item["url"] = (embedding_routes.image_url(name, item["sha256"], item["view"],
+        item["url"] = (embedding_routes.image_url(view_indexes.get(item["view"], name),
+                                                  item["sha256"], item["view"],
                                                   item["embedding_hash"]) if shown else None)
         item["width"] = record.get("width") if shown else None
         item["height"] = record.get("height") if shown else None

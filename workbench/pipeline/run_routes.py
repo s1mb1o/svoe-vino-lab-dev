@@ -5,6 +5,7 @@ the lab database does not hold them. The read routes are GET and do not change a
 file:
 
     GET /runs                                   the page
+    GET /runs/charts                            pipeline comparisons and run history
     GET /api/runs                               the head of each run, and the
                                                 pipelines of `config.yaml`
     GET /api/run?id=&filter=&sort=&q=&offset=&limit=
@@ -21,6 +22,10 @@ file:
     GET /api/run-preview?id=&query=&view=&rank=&token= one recorded candidate preview
     POST /api/run-image-tag                     add a shared image tag to one recorded
                                                 query image
+    POST /api/run-image-tag-remove              remove a shared image tag from one
+                                                recorded query image
+    GET /api/wine-merge?slug=                   preview a manual wine merge
+    POST /api/wine-merge                        transfer and delete a manual wine
 
 A pipeline is one entry of the key `pipeline` of `config.yaml` (`pipelines.py`, plan
 34). The key `configuration` of `run.json` names it. The images come from the image
@@ -47,16 +52,17 @@ import pipelines
 import run_files
 import run_page_cache
 import testsets
+import wine_merge
 from checked_read_cache import CheckedReadCache
 from settings_cache import SETTINGS_CACHE
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS_DIR = os.path.join(ROOT, "runs")
 MATCHER_ROOT = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "svoe-vino-matcher")
-ROUTES = ("/runs", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
-          "/api/run-candidate", "/api/run-steps", "/api/run-preview", "/api/run-artifact", "/api/run-predictions",
-          "/api/run-expected", "/api/run-image-tag", "/api/drawer-runs",
-          "/api/drawer-match-accept")
+ROUTES = ("/runs", "/runs/charts", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
+          "/api/run-candidate", "/api/run-steps", "/api/run-preview", "/api/run-artifact", "/api/run-vlm-image", "/api/run-predictions",
+          "/api/run-expected", "/api/run-image-tag", "/api/run-image-tag-remove", "/api/drawer-runs",
+          "/api/drawer-match-accept", "/api/wine-merge")
 JSON_TYPE = "application/json; charset=utf-8"
 MAX_LIMIT = 1000
 TAG_BODY_MAX = 4096
@@ -91,6 +97,29 @@ def respond(server, method, path, card_images, read_body=None, *, card_images_fo
     route = parts.path
     query = urllib.parse.parse_qs(parts.query)
     runs_dir = getattr(server, "runs_dir", None) or RUNS_DIR
+    if route == "/api/wine-merge":
+        try:
+            if method == "GET":
+                return _json(200, wine_merge.preview(server.db_path, _one(query, "slug")))
+            if method != "POST":
+                return _error(405, "the route %s answers GET and POST alone" % route)
+            raw = read_body(TAG_BODY_MAX) if read_body else None
+            try:
+                body = json.loads(raw) if raw is not None else None
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                body = None
+            if not isinstance(body, dict):
+                return _error(400, "the body MUST be a JSON object")
+            slug = wine_merge.source_slug(body.get("slug"))
+            jobs = getattr(server, "new_wine_jobs", None)
+            job = jobs.get(slug) if jobs else None
+            if job and job.get("state") == "indexing":
+                return _error(409, "the source wine is still indexing; wait for it to finish")
+            return _json(200, wine_merge.merge(server.db_path, body))
+        except wine_merge.MergeError as exc:
+            return _error(exc.code, str(exc))
+        except (OSError, sqlite3.Error, labdb.SchemaError) as exc:
+            return _error(503, "cannot merge the wine: %s" % exc)
     if route == "/api/drawer-match-accept":
         if method != "POST":
             return _error(405, "the route %s answers POST alone" % route)
@@ -102,7 +131,7 @@ def respond(server, method, path, card_images, read_body=None, *, card_images_fo
         except (UnicodeDecodeError, json.JSONDecodeError):
             return _error(400, "the body MUST be a JSON object")
         return accept_drawer_match(runs_dir, server.db_path, body)
-    if route == "/api/run-image-tag":
+    if route in ("/api/run-image-tag", "/api/run-image-tag-remove"):
         if method != "POST":
             return _error(405, "the route %s answers POST alone" % route)
         raw = read_body(TAG_BODY_MAX) if read_body else None
@@ -112,11 +141,14 @@ def respond(server, method, path, card_images, read_body=None, *, card_images_fo
             body = json.loads(raw)
         except (UnicodeDecodeError, json.JSONDecodeError):
             return _error(400, "the body MUST be a JSON object")
-        return add_run_image_tag(runs_dir, server.db_path, body)
+        return write_run_image_tag(runs_dir, server.db_path, body,
+                                   remove=route == "/api/run-image-tag-remove")
     if method not in ("GET", "HEAD"):
         return _error(405, "the route %s answers GET alone" % route)
     if route == "/runs":
         return 200, lab_pages.page("runs.html"), "text/html; charset=utf-8", "no-store"
+    if route == "/runs/charts":
+        return 200, lab_pages.page("run_charts.html"), "text/html; charset=utf-8", "no-store"
     if route == "/api/runs":
         return _json(200, runs_view(runs_dir, server.config_path or embeddings.CONFIG_PATH))
     if route == "/api/drawer-runs":
@@ -136,6 +168,8 @@ def respond(server, method, path, card_images, read_body=None, *, card_images_fo
                           card_images_for_slugs=card_images_for_slugs)
     if route == "/api/run-artifact":
         return artifact_view(runs_dir, server.db_path, query)
+    if route == "/api/run-vlm-image":
+        return vlm_image_view(runs_dir, server.db_path, query)
     if route == "/api/run-preview":
         return preview_view(runs_dir, server.db_path, query)
     return inputs_view(runs_dir, server.db_path, query)
@@ -475,8 +509,8 @@ def run_view(runs_dir, db_path, query, card_images):
     return _json(200, page)
 
 
-def add_run_image_tag(runs_dir, db_path, body):
-    """Add one shared image tag to a recorded query and return its present tags.
+def write_run_image_tag(runs_dir, db_path, body, *, remove=False):
+    """Add or remove one shared image tag and return the present tags of the query.
 
     The run and query resolve the digest server-side, so a caller cannot tag unrelated
     image bytes by inventing a SHA-256. The immutable run files are not changed.
@@ -500,13 +534,18 @@ def add_run_image_tag(runs_dir, db_path, body):
                 return _error(404, "the query image is not in the lab image store")
             try:
                 with conn:
-                    added = image_tags.add(conn, digest, text)
+                    if remove:
+                        tag = image_tags.normal(text)
+                        image_tags.remove(conn, digest, tag)
+                        change = {"removed": tag}
+                    else:
+                        change = {"added": image_tags.add(conn, digest, text)}
             except image_tags.TagError as exc:
                 return _error(400, str(exc))
             except image_tags.DuplicateError as exc:
                 return _error(409, str(exc))
             return _json(200, {"ok": True, "run": run_id, "query": query_id,
-                               "sha256": digest, "added": added,
+                               "sha256": digest, **change,
                                "tags": image_tags.tags(conn, (digest,)).get(digest, []),
                                "tag_names": image_tags.names(conn)})
     except (OSError, sqlite3.Error, labdb.SchemaError) as exc:
@@ -648,11 +687,63 @@ def steps_view(runs_dir, db_path, query, card_images, *, card_images_for_slugs=N
     `run_steps.steps_view`."""
     import run_steps  # noqa: E402  (PIL, numpy, and the SAM3 cuts, on demand)
     try:
-        return _json(200, run_steps.defer_artifacts(run_steps.steps_view(runs_dir, db_path, _one(query, "id"),
+        answer = run_steps.defer_artifacts(run_steps.steps_view(runs_dir, db_path, _one(query, "id"),
                                                _one(query, "query"), card_images,
-                                               card_images_for_slugs=card_images_for_slugs)))
+                                               card_images_for_slugs=card_images_for_slugs))
+        for round_ in answer["rounds"]:
+            for part in round_["steps"]:
+                result = part.get("result") or {}
+                if part["id"] == "cluster_rules" and (result.get("picture") or result.get("input_image")):
+                    info = result.get("input_image") or {}
+                    kind = info.get("kind") or result.get("picture")
+                    part["artifacts"].append({
+                        "src": "/api/run-vlm-image?" + urllib.parse.urlencode({
+                            "id": answer["run"], "query": answer["query"]}),
+                        "caption": "Image sent to VLM · " + ("label crop" if kind == "label" else "whole photo"),
+                        "width": info.get("width"), "height": info.get("height"),
+                        "deferred": True})
+        return _json(200, answer)
     except run_steps.StepError as exc:
         return _error(exc.code, str(exc))
+
+
+def vlm_image_view(runs_dir, db_path, query):
+    """Serve only a saved run's recorded or locally verified VLM input PNG."""
+    import hashlib
+    import rerank_images
+    import run_steps
+    try:
+        run_id, query_id = _one(query, "id"), _one(query, "query")
+        paths = [run_files.run_path(runs_dir, run_id, name) for name in ("run.json", "results.jsonl")]
+        if any(path is None for path in paths):
+            return _error(400, "bad run id")
+        before = run_steps.VisualInputsCache.state(paths)
+        row, _meta, spec = run_steps._run_data(runs_dir, run_id, query_id)
+        result = rerank_images.evidence(row)
+        if not result:
+            return _error(404, "This query has no recorded VLM re-rank.")
+        hit = rerank_images.saved(result)
+        if hit:
+            data = hit[0]
+        else:
+            with closing(_connect(db_path)) as conn:
+                photo = run_steps.Photo(conn, db_path, row)
+            if not photo.path or not photo.source_state:
+                return _error(404, "The original photo is unavailable for VLM input recovery.")
+            if hashlib.sha256(Path(photo.path).read_bytes()).hexdigest() != row.get("image_sha256"):
+                return _error(404, "The original photo differs from the saved run.")
+            data, _info = rerank_images.resolve(result, spec, photo.path)
+            if run_steps.VisualInputsCache.state([photo.path]) != (photo.source_state,):
+                return _error(404, "The original photo changed during VLM input recovery.")
+        if before is None or run_steps.VisualInputsCache.state(paths) != before:
+            return _error(404, "The run changed during VLM input recovery.")
+    except run_steps.StepError as exc:
+        return _error(exc.code, str(exc))
+    except rerank_images.ImageUnavailable as exc:
+        return _error(404, str(exc))
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        return _error(404, "Cannot read the VLM input image: %s" % exc)
+    return 200, data, "image/png", "no-store"
 
 
 def artifact_view(runs_dir, db_path, query):

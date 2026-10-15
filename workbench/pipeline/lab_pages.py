@@ -21,7 +21,9 @@ PAGES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pages")
 THEME_MARK = "/* THEME_CSS */\n"
 # The optional marks and their files (plan 55).
 PARTS = (("/* STEPS_CSS */\n", "steps.css"), ("/* STEPS_JS */\n", "steps.js"),
-         ("/* DROP_JS */\n", "drop.js"), ("/* VISIBLE_CARDS_JS */\n", "visible_cards.js"))
+         ("/* DROP_JS */\n", "drop.js"), ("/* VISIBLE_CARDS_JS */\n", "visible_cards.js"),
+         ("/* CONFIGURATION_PICKER_CSS */\n", "configuration_picker.css"),
+         ("/* CONFIGURATION_PICKER_JS */\n", "configuration_picker.js"))
 # These views retain complete offscreen rows. Share browser layout deferral without
 # changing the row DOM or the existing table and mobile layouts.
 DEFER_LAYOUT_PAGES = frozenset(("testset.html", "clusters.html"))

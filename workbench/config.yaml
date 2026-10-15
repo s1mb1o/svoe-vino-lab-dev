@@ -603,6 +603,341 @@ pipeline:
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
     views: *seg-views
+
+  - name: siglip2-p512-rot5-seg-upright
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    bottle_orientation: true
+
+  # Local comparison suite: live bottle shortlist, segmented main labels, and pinned local models.
+  - name: lab-compare-bottle
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: bottle
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-tesseract
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: tesseract
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-paddleocr
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: paddleocr
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-lightglue-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: lightglue-score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-superglue-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: superglue-score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-loftr-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: loftr-score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-dinov2-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: dinov2-score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-dinov2-patch-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: dinov2-patch_score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-dinov3-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: dinov3-score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-dinov3-patch-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: dinov3-patch_score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-lpips-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: lpips-score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-lpips-aligned-distance
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: lpips-aligned_distance
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-dists-score
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: dists-score
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-dists-aligned-distance
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: dists-aligned_distance
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-siglip-main
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: siglip-main
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-siglip-main-frozen
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: siglip-main-frozen
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-siglip-label-gate
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: siglip-label-gate
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-siglip-main-tesseract
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: siglip-main-tesseract
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-siglip-gated-tesseract
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: siglip-gated-tesseract
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-siglip-main-paddleocr
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: siglip-main-paddleocr
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+  - name: lab-compare-siglip-gated-paddleocr
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *seg-views
+    workers: 1
+    local_comparison:
+      method: siglip-gated-paddleocr
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      window: 10
+      references: 2
+      device: mps
+
+  # Compare the same catalogue in its two separate spaces. The label-only preset
+  # is a diagnostic: a photo with no detected label has no retrieval input.
+  - name: siglip2-p512-rot5-label-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views:
+      label:
+        steps:
+          - step: segment
+            target: label
+          - step: remove_background
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+
+  # Opt-in experiment: a separate local supplementary index compares the largest
+  # label mask alone. The neck emblem is excluded. Text verification uses local
+  # rus+eng OCR and preserves visual scores; it never averages retrieval spaces.
+  - name: siglip2-p512-main-label-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    main_label:
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+    views: &main_label_views
+      label:
+        steps:
+          - step: segment
+            target: label
+          - step: remove_background
+          - step: white_background
+          - step: resize
+            max_size: 1024
+            aspect: keep
+
+  - name: siglip2-p512-main-label-text
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    main_label:
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      verify_text: true
+      window: 10
+      min_confidence: 70
+    views: *main_label_views
+
+  - name: siglip2-p512-main-label-paddleocr
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    main_label:
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      verify_text: true
+      ocr: paddleocr
+      window: 10
+      min_confidence: 70
+    views: *main_label_views
+
+  - name: siglip2-p512-main-label-gated
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    main_label:
+      index: gx10-siglip2-so400m-patch16-naflex-p512-rot5-main-label
+      verify_text: true
+    views: *views_c_f
+    label_gate:
+      min_score: 0.90
+      min_margin: 0.01
+      min_purity: 0.80
+      min_detector_score: 0.70
+      min_native_side: 128
+      min_input_side: 128
+      min_sharpness: 80.0
+      min_package_overlap: 0.80
+
+  # Each crop searches only its matching space. The existing scorer averages the
+  # best bottle and label cosines per wine; a missing label uses the bottle alone.
+  - name: siglip2-p512-rot5-bottle-label-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *views_c_f
+
+  # Trial thresholds, not calibrated confidence. Reject unusable label crops before
+  # embedding; otherwise select the label ranking only when its score and margin pass.
+  - name: siglip2-p512-rot5-label-first-gated
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    views: *views_c_f
+    label_gate:
+      min_score: 0.90
+      min_margin: 0.01
+      min_purity: 0.80
+      min_detector_score: 0.70
+      min_native_side: 128
+      min_input_side: 128
+      min_sharpness: 80.0
+      min_package_overlap: 0.80
   - name: siglip2-p512-rot10
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot10
@@ -1111,6 +1446,26 @@ pipeline:
     barcode: *barcode-options
     rerank: *rerank-options
     views: *seg-views
+  # The same retrieval and cluster scoring with Jev choice probabilities from Laya-V.
+  - name: barcode-rerank_laya_v-siglip2-p512-rot5-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    workers: 4
+    barcode: *barcode-options
+    rerank:
+      <<: *rerank-options
+      vlm: laya-v
+    views: *seg-views
+  # The same retrieval, with local PaddleOCR text evaluated by multilingual Laya.
+  - name: barcode-rerank_paddle_laya-siglip2-p512-rot5-seg
+    backend: embedding
+    embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+    workers: 4
+    barcode: *barcode-options
+    rerank:
+      <<: *rerank-options
+      vlm: paddle-laya
+    views: *seg-views
   - name: barcode-rerank-siglip2-p1024-crop
     backend: embedding
     embedding: gx10-siglip2-so400m-patch16-naflex-p1024
@@ -1190,6 +1545,18 @@ vlm:
     thinking_field: chat_template_kwargs
     endpoint: http://192.168.86.14:18081/v1
     model: qwen3-vl-32b
+
+  - name: laya-v
+    protocol: laya-v
+    thinking_field: none
+    endpoint: http://192.168.86.14:18081/upstream/laya-v/v1
+    model: laya-v
+
+  - name: paddle-laya
+    protocol: laya-ocr
+    thinking_field: none
+    endpoint: http://192.168.86.14:18081/upstream/laya/v1
+    model: multilingual
 
   # The QwenCloud Token Plan. Read the section "QwenCloud Token Plan API" of
   # CREDENTIALS.md in the workspace root.

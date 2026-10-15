@@ -22,14 +22,13 @@ import time
 from contextlib import closing
 from pathlib import Path
 
-from PIL import Image
-
 try:
     from rapidfuzz.distance import Levenshtein as RapidLevenshtein
 except ImportError:  # The lab server does not need the optional fast benchmark runtime.
     RapidLevenshtein = None
 
 import embeddings
+import wine_terms
 from embeddings import ConfigError
 
 
@@ -66,14 +65,6 @@ GROUPS = {
         "white": ("white", "beloe", "belyi"),
         "rose": ("rose", "roze", "rozovoe", "rozovyi"),
         "orange": ("orange", "oranzhevoe", "oranzhevyi"),
-    },
-    "sugar": {
-        "brut": ("brut", "bryut"),
-        "extra_brut": ("extra brut", "ekstra bryut"),
-        "dry": ("dry", "suhoe", "sukhoi"),
-        "semi_dry": ("semi dry", "polusuhoe", "polusukhoi"),
-        "semi_sweet": ("semi sweet", "polusladkoe"),
-        "sweet": ("sweet", "sladkoe"),
     },
 }
 
@@ -206,7 +197,7 @@ def load_catalog(db_path):
 
 
 def normalize_text(value):
-    value = str(value or "").lower().replace("ё", "е").translate(CYRILLIC)
+    value = wine_terms.normalize(value).translate(CYRILLIC)
     return " ".join(TOKEN.findall(value))
 
 
@@ -260,6 +251,15 @@ def _group_values(values):
         for value, spellings in choices.items():
             if any(normalize_text(spelling) in text for spelling in spellings):
                 found.setdefault(group, set()).add(value)
+    sugar_text = wine_terms.base_text(wine_terms.normalize(text))
+    sugar = set()
+    for kind, pattern in wine_terms.SUGAR:
+        bounded = r"\b(?:" + pattern + r")\b"
+        if re.search(bounded, sugar_text):
+            sugar.add(kind)
+            sugar_text = re.sub(bounded, " ", sugar_text)
+    if sugar:
+        found["sugar"] = sugar
     years = {value for value in values if YEAR.match(value)}
     if years:
         found["year"] = years
@@ -580,6 +580,8 @@ class CompetitorSteps:
         self.spec = dict(inner.spec)
         self.spec["top_k"] = top_k
         self.spec["competitor"] = options
+        if any(action["action"].startswith("ocr_") for action in options["actions"]):
+            self.spec["ocr_normalization"] = dict(wine_terms.IDENTITY)
 
     def ask(self, path, first=None):
         started = time.perf_counter()
@@ -604,11 +606,13 @@ class CompetitorSteps:
                         action["alpha"], action["conflict_penalty"],
                     )
                     output["ocr_text"] = ocr_text
+                    output["ocr_normalization"] = dict(wine_terms.IDENTITY, text=wine_terms.normalize(ocr_text))
                 elif name == "ocr_union":
                     ocr_text = self.ocr(path) if ocr_text is None else ocr_text
                     candidates = ocr_union(candidates, ocr_text, self.catalog,
                                            action["top_k"], action["alpha"])
                     output["ocr_text"] = ocr_text
+                    output["ocr_normalization"] = dict(wine_terms.IDENTITY, text=wine_terms.normalize(ocr_text))
                 elif name == "secondary_union":
                     if secondary_answer is None:
                         if self.secondary is None:

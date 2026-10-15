@@ -1,0 +1,83 @@
+# Separate runnable Workbench configuration for Laya-V cluster reranking.
+# Based on barcode-rerank-siglip2-p512-rot5-seg in config.yaml.
+# Jev answer mode: choice for each label question, with all option probabilities.
+# The adapter converts the probabilities to integer option scores that total 100.
+# score (ordered levels) and noul (binary decisions) are not used.
+# Laya-V does not use the rerank thinking or max_tokens chat settings.
+# One worker matches the serial inference executor of the deployed service.
+# Read docs/laya-v-rerank.md.
+rootdir: /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace
+database_file: svoe-vino-lab/workbench/data/catalog/catalog.sqlite3
+embedding_python: ~/.venvs/svoe-vino-lab/bin/python
+rebuild_embeddings_on_run: true
+sam3:
+  endpoint: http://192.168.86.14:18081/upstream/sam3
+png_compress_level: 2
+qr_scanner:
+  endpoint: '{env:QR_SCANNER_ENDPOINT}'
+  engine: zxing-cpp
+embeddings:
+- name: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+  backend: openai
+  base_url: http://192.168.86.14:18081/v1
+  model: siglip2-so400m-patch16-naflex
+  extra_body:
+    max_num_patches: 512
+  batch_size: 36
+  rotation_step: 5
+  views:
+    full:
+      steps:
+      - step: segment
+        target: package
+      - step: remove_background
+      - step: white_background
+      - step: resize
+        max_size: 1024
+        aspect: keep
+    label:
+      steps:
+      - step: segment
+        target: label
+      - step: remove_background
+      - step: white_background
+      - step: resize
+        max_size: 1024
+        aspect: keep
+pipeline:
+- name: barcode-rerank-siglip2-p512-rot5-seg-laya-v
+  backend: embedding
+  embedding: gx10-siglip2-so400m-patch16-naflex-p512-rot5
+  workers: 1
+  barcode:
+    formats:
+    - EAN13
+    - Code128
+    code128_gtin_only: true
+    qr: true
+    tile_scan: false
+    max_side: 1600
+    upscale: true
+  rerank:
+    window: 5
+    vlm: laya-v
+    thinking: false
+    side: 1536
+    max_tokens: 256
+    timeout_s: 180
+  views:
+    full:
+      steps:
+      - step: segment
+        target: package
+      - step: remove_background
+      - step: white_background
+      - step: resize
+        max_size: 1024
+        aspect: keep
+vlm:
+- name: laya-v
+  protocol: laya-v
+  thinking_field: none
+  endpoint: http://192.168.86.14:18081/upstream/laya-v/v1
+  model: laya-v

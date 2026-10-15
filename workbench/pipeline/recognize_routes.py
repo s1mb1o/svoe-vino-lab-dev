@@ -19,6 +19,7 @@ answer has the keys of `/api/run-steps`, and in addition `pipeline`, `sha256`, `
 The module writes no file other than the upload, deletes no upload, and changes no row
 of the lab database. Read docs/plans/55_recognize-page.md.
 """
+import copy
 import hashlib
 import io
 import json
@@ -90,6 +91,7 @@ def pipelines_view(config_path):
     `embedding`, in the order of `config.yaml`. A pipeline with a configuration error
     stays in the list, not runnable, because its backend is not known."""
     settings = SETTINGS_CACHE.get(config_path, pipelines.load)
+    embedding_settings = SETTINGS_CACHE.get(config_path, embeddings.load_settings)
     out, readiness = [], {}
     for name, pipeline, error in settings.entries:
         if pipeline is not None and pipeline.backend != pipelines.EMBEDDING_BACKEND:
@@ -100,7 +102,19 @@ def pipelines_view(config_path):
             if pipeline.embedding not in readiness:
                 readiness[pipeline.embedding] = run_jobs.runnable(pipeline, error, settings.db_path)
             runnable, reason = readiness[pipeline.embedding]
+        model = embedding_settings.find(pipeline.embedding) if pipeline is not None else None
         out.append({"name": name, "embedding": pipeline.embedding if pipeline else None,
+                    "backend": pipeline.backend if pipeline else None,
+                    "embedding_backend": model.backend if model else None,
+                    "model": model.model if model else None,
+                    "views": copy.deepcopy(pipeline.views if pipeline.views is not None else model.views)
+                    if pipeline is not None and model is not None else {},
+                    "bottle_orientation": bool(pipeline and pipeline.bottle_orientation),
+                    "stages": (["Local comparison: " + pipeline.local_comparison["method"]]
+                               if pipeline and pipeline.local_comparison else [])
+                    + (["Main label step"] if pipeline and pipeline.main_label else [])
+                    + (["Label gate"] if pipeline and pipeline.label_gate else [])
+                    + (["Competitor step"] if pipeline and pipeline.competitor else []),
                     "barcode": bool(pipeline and pipeline.barcode is not None),
                     "rerank": bool(pipeline and pipeline.rerank is not None),
                     "runnable": runnable, "reason": reason})

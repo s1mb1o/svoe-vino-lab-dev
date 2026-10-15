@@ -2686,6 +2686,83 @@ service.
 | VR3 | Open a new evidence result in the run row and step popup. Expand both attempts. | The views show the same scores. The rejected question is marked. The raw responses are available. |
 | VR4 | Open an older evidence failure without recorded option scores. | The view states `Raw option scores were not recorded in this run.` It does not claim `no answer`. |
 
+## Distinctive label colour
+
+1. Run the focused label-rule and cluster-rerank unit suites. All tests MUST pass.
+2. Compare old and new rules for Фантом with an empty reviewer note.
+   The new rule MUST include the bottom-left square colour and the blend ratio.
+3. Compare old and new rules for the four-card Виктор Дравиньи subset.
+   The new rule MUST include the main label background and sugar level.
+4. Check dim and warm-dim query results. Record errors, ties, and abstentions.
+   Do not infer accuracy from the instruction to allow illumination changes.
+5. Check source hashes and modification times. The source images MUST remain equal.
+
+Read [the protocol and results](docs/testing/label-colour-prompts.md).
+
+## Rule self-calibration
+
+1. Run `python3 -m unittest discover -s ../internal/rule-self-calibration-20261011 -p test_prototype.py -v` from `workbench/`.
+   All offline safeguards MUST pass.
+2. Read `../internal/rule-self-calibration-20261011/manifest.json`.
+   The manifest MUST contain 63 calibration cases and ten final cases.
+   No source photograph may occur in both partitions.
+3. Read the saved calibration traces and revision feedback.
+   Recognition requests MUST exclude the expected wine and case identifier.
+   Revision feedback MUST exclude final photographs and final recognition results.
+4. Read `selection.json` and the saved candidate results.
+   Each cluster MUST have at most three candidates.
+   An accepted revision MUST preserve every previously correct case.
+   An accepted revision MUST introduce no unique wrong choice or unsafe blank control.
+5. Run `python3 ../internal/rule-self-calibration-20261011/prototype.py report`.
+   Frozen source hashes, source modification times, implementation, configuration, and prepared inputs MUST remain equal.
+   Calibration and final metrics MUST be separate.
+6. Run `python3 ../internal/rule-self-calibration-20261011/audit.py`.
+   All completed-experiment checks MUST pass.
+   The selected calibration result MUST be 45/56 with seven safe blank controls.
+   Initial and selected rules MUST each recognize all ten saved final cases.
+
+Read [the protocol and results](docs/testing/rule-self-calibration.md).
+
+## Label-only benchmark
+
+1. Run the ten local safeguards in `internal/label-only-benchmark-20261011/test_benchmark.py`.
+   A missing query label MUST keep initial retrieval and MUST NOT call a VLM.
+   The saved 20 official candidate orders and scores MUST restore exactly.
+   The five additional evaluation photographs MUST be absent from generation references.
+   Zero-opacity bottle-glass pixels MUST become white in the transmitted label PNG.
+2. Run `python3 ../internal/label-only-benchmark-20261011/audit.py`.
+   Every transmitted image hash MUST match its frozen stage input.
+   Every strict input MUST have kind `label`.
+3. After approved model execution, run the audit with `--complete`.
+   Both arms MUST have 57 descriptions, 19 rules, and 93 recognition records.
+   Every official base score MUST equal its saved value.
+   Source bytes and modification times MUST remain equal.
+4. Read `summary.json` and `paired-cases.json`.
+   Blank controls and additional front photographs MUST have separate metrics.
+   The official replay MUST retain the 75 cases outside the triggered subset.
+   The report MUST state description, rule, and recognition errors.
+
+Read [the protocol](docs/testing/label-only-benchmark.md).
+
+
+## Synthetic rule benchmark
+
+- Run the 13 local safeguards in `../internal/synthetic-rule-benchmark-20261011/test_benchmark.py`.
+- Check the 43-condition count and all transformation parameters.
+- Check that hidden RGB values under zero opacity cannot change any transmitted augmentation.
+- Check that colour changes preserve alpha and white padding.
+- Check that feature removal preserves the remaining printed text.
+- Check observable candidate sets, unknown controls, conflicting controls, and neutral evidence.
+- Check that frozen image mutation fails verification.
+- After inference, run `../internal/synthetic-rule-benchmark-20261011/report.py`.
+- Require all 435 unique result records and exact request, rule, image, source, and score checks.
+- Check the numbered report and original/tested images at desktop and mobile widths.
+- Run `qa-report.js` against the absolute final `report.html` path.
+- Require `checkedCaseCount` to equal the 133 numbered failures in this pilot.
+- Require all original/tested images to load without a browser runtime error.
+- Require no horizontal overflow at widths 1050, 736, 360, and 320.
+- Check light and dark themes.
+
 ## Static wine images (plan 06 of the repository)
 
 | ID | Step | Expected result |

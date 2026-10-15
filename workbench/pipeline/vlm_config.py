@@ -3,9 +3,10 @@
 The key holds a list. One entry is one named VLM inference:
 
     name            the name that a script uses for the entry; the names differ
-    protocol        `openai`: `POST <endpoint>/chat/completions`
+    protocol        `openai`: `POST <endpoint>/chat/completions`;
+                    `laya-v` or `laya-ocr`: `POST <endpoint>/systemone` for reranking
     thinking_field  `chat_template_kwargs` or `top_level`: where the switch
-                    `enable_thinking` goes in the request
+                    `enable_thinking` goes in the request; `none` for Laya protocols
     endpoint        the base URL, for example `http://192.168.86.14:18081/v1`
     model           the model name that the service knows
     key             absent or null (the service needs no key), or `{env:NAME}`: the key
@@ -24,8 +25,8 @@ import collections
 import os
 import re
 
-PROTOCOLS = ("openai",)
-THINKING_FIELDS = ("chat_template_kwargs", "top_level")
+PROTOCOLS = ("openai", "laya-v", "laya-ocr")
+THINKING_FIELDS = ("chat_template_kwargs", "top_level", "none")
 REQUIRED = ("name", "protocol", "thinking_field", "endpoint", "model")
 KEYS = REQUIRED + ("key", "max_tokens")
 # The owner chose 8192 on 2026-09-25.
@@ -47,8 +48,9 @@ class Entry(collections.namedtuple(
 
     @property
     def url(self):
-        """The chat route of the protocol `openai`."""
-        return self.endpoint.rstrip("/") + "/chat/completions"
+        """The inference route of the selected protocol."""
+        route = "/systemone" if self.protocol in ("laya-v", "laya-ocr") else "/chat/completions"
+        return self.endpoint.rstrip("/") + route
 
     def api_key(self):
         """Return the key from the shell, or "" when the entry needs no key or the
@@ -78,6 +80,8 @@ def _entry(item, index):
     if item["thinking_field"] not in THINKING_FIELDS:
         raise VlmConfigError("%s: thinking_field MUST be one of %s"
                              % (where, ", ".join(THINKING_FIELDS)))
+    if (item["protocol"] in ("laya-v", "laya-ocr")) != (item["thinking_field"] == "none"):
+        raise VlmConfigError("%s: only Laya protocols MUST use thinking_field none" % where)
     if not item["endpoint"].startswith(("http://", "https://")):
         raise VlmConfigError("%s: endpoint MUST be an http or https URL" % where)
     key = item.get("key")

@@ -162,6 +162,9 @@ def before_run(pipeline, config_path, log, sleep=time.sleep):
     is false, the pipeline has no embedding (the backend `svoe-vino-ru`), or the
     embedding has no index. `log(message)` gets one line for each state. Raise
     ConfigError."""
+    if getattr(pipeline, "local_comparison", None) is not None:
+        log("local comparison: use the fixed saved catalogue; all query embeddings are local")
+        return None
     name = getattr(pipeline, "embedding", None)
     if not name or not enabled(config_path):
         return None

@@ -1,0 +1,363 @@
+{
+  "schema": 1,
+  "grapes": [
+    {
+      "id": "cabernet_sauvignon",
+      "canonical": "каберне-совиньон",
+      "pattern": "(?:каберне|cabernet|caberne|kaberne)\\s+(?:совинь?он|sauvignon|sovinon)",
+      "ocr_aliases": [
+        "каберне савиньон",
+        "каберне савиньо"
+      ]
+    },
+    {
+      "id": "cabernet_franc",
+      "canonical": "каберне-фран",
+      "pattern": "(?:каберне|cabernet|caberne|kaberne)\\s+(?:фран|franc|fran)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "sauvignon_blanc",
+      "canonical": "совиньон-блан",
+      "pattern": "(?:совинь?он|sauvignon|sovinon)\\s+(?:блан|blanc|blan)",
+      "ocr_aliases": [
+        "Са8иньо бланк",
+        "савиньо бланк",
+        "савиньон бланк",
+        "совиньо бланк",
+        "совиньон бланк",
+        "савиньон блан",
+        "савиньо блан"
+      ]
+    },
+    {
+      "id": "pinot_noir",
+      "canonical": "пино-нуар",
+      "pattern": "(?:пино|pinot|pino)\\s+(?:нуар|noir|nuar)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "pinot_blanc",
+      "canonical": "пино-блан",
+      "pattern": "(?:пино|pinot|pino)\\s+(?:блан|blanc|blan)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "pinot_gris",
+      "canonical": "пино-гри",
+      "pattern": "(?:пино|pinot|pino)\\s+(?:гри|gris|grigio)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "pinot_franc",
+      "canonical": "пино-фран",
+      "pattern": "(?:пино|pinot|pino)\\s+(?:фран|franc|fran)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "krasnostop_zolotovsky",
+      "canonical": "красностоп-золотовский",
+      "pattern": "(?:красностоп|krasnostop)\\s+(?:золотовский|zolotovsk(?:iy|y|i))",
+      "ocr_aliases": []
+    },
+    {
+      "id": "krasnostop_anapsky",
+      "canonical": "красностоп-анапский",
+      "pattern": "(?:красностоп|krasnostop)\\s+(?:анапский|anapsk(?:iy|y|i))",
+      "ocr_aliases": []
+    },
+    {
+      "id": "muscat_white",
+      "canonical": "мускат-белый",
+      "pattern": "(?:мускат|muscat|muskat)\\s+(?:белый|белого|white|blanc)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "muscat_ottonel",
+      "canonical": "мускат-оттонель",
+      "pattern": "(?:мускат|muscat|muskat)\\s+(?:оттонель|ottonel)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "kokur_white",
+      "canonical": "кокур-белый",
+      "pattern": "(?:кокур|kokur)\\s+(?:белый|белого|white|blanc)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "traminer_pink",
+      "canonical": "траминер-розовый",
+      "pattern": "(?:траминер|traminer)\\s+(?:розовый|розового|pink|rose)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "tsimlyansky_black",
+      "canonical": "цимлянский-черный",
+      "pattern": "цимлянский\\s+черный|tsimlyansk(?:iy|y)\\s+(?:cherny(?:y|i)|black)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "sary_pandas",
+      "canonical": "сары-пандас",
+      "pattern": "сары\\s+пандас|sary\\s+pandas",
+      "ocr_aliases": []
+    },
+    {
+      "id": "citronny_magaracha",
+      "canonical": "цитронный-магарача",
+      "pattern": "цитронный\\s+магарача|citronny\\s+magaracha",
+      "ocr_aliases": []
+    },
+    {
+      "id": "welschriesling",
+      "canonical": "рислинг-итальянский",
+      "pattern": "рислинг\\s+итальянский|welschriesling",
+      "ocr_aliases": []
+    },
+    {
+      "id": "riesling",
+      "canonical": "рислинг",
+      "pattern": "рислинг(?:\\s+рейнский)?|riesling|risling",
+      "ocr_aliases": []
+    },
+    {
+      "id": "muller_thurgau",
+      "canonical": "мюллер-тургау",
+      "pattern": "мюллер\\s+тургау|мюлер\\s+тургау|muller\\s+(?:thurgau|turgau)",
+      "ocr_aliases": []
+    },
+    {
+      "id": "chardonnay",
+      "canonical": "шардоне",
+      "pattern": "шардоне|chardonnay|shardone",
+      "ocr_aliases": [
+        "шардонне",
+        "шардонэ"
+      ]
+    },
+    {
+      "id": "merlot",
+      "canonical": "мерло",
+      "pattern": "мерло|мерлот|merlot|merlo",
+      "ocr_aliases": []
+    },
+    {
+      "id": "krasnostop",
+      "canonical": "красностоп",
+      "pattern": "красностоп|краснтоп|krasnostop",
+      "ocr_aliases": [
+        "краснтоп"
+      ]
+    },
+    {
+      "id": "saperavi",
+      "canonical": "саперави",
+      "pattern": "саперави|saperavi",
+      "ocr_aliases": []
+    },
+    {
+      "id": "syrah",
+      "canonical": "сира",
+      "pattern": "сира|шираз|syrah|shiraz",
+      "ocr_aliases": []
+    },
+    {
+      "id": "rkatsiteli",
+      "canonical": "ркацители",
+      "pattern": "ркацители|rkatsiteli|rkaciteli",
+      "ocr_aliases": [
+        "ркацетели"
+      ]
+    },
+    {
+      "id": "aligote",
+      "canonical": "алиготе",
+      "pattern": "алиготе|aligote",
+      "ocr_aliases": []
+    },
+    {
+      "id": "viognier",
+      "canonical": "вионье",
+      "pattern": "вионье|viognier",
+      "ocr_aliases": []
+    },
+    {
+      "id": "malbec",
+      "canonical": "мальбек",
+      "pattern": "мальбек|malbec",
+      "ocr_aliases": []
+    },
+    {
+      "id": "kefesia",
+      "canonical": "кефесия",
+      "pattern": "кефесия|kefesia",
+      "ocr_aliases": []
+    },
+    {
+      "id": "gewurztraminer",
+      "canonical": "гевюрцтраминер",
+      "pattern": "гевюрцтраминер|gewurztraminer",
+      "ocr_aliases": []
+    },
+    {
+      "id": "traminer",
+      "canonical": "траминер",
+      "pattern": "траминер|traminer",
+      "ocr_aliases": []
+    },
+    {
+      "id": "muscat",
+      "canonical": "мускат",
+      "pattern": "мускат|muscat|muskat",
+      "ocr_aliases": [
+        "MYCKAT",
+        "MYCKАТ",
+        "МУСКАТ",
+        "мускатт"
+      ]
+    },
+    {
+      "id": "kokur",
+      "canonical": "кокур",
+      "pattern": "кокур|kokur",
+      "ocr_aliases": []
+    },
+    {
+      "id": "cabernet",
+      "canonical": "каберне",
+      "pattern": "каберне|cabernet|caberne|kaberne",
+      "ocr_aliases": [
+        "кабернет"
+      ]
+    },
+    {
+      "id": "sauvignon",
+      "canonical": "совиньон",
+      "pattern": "совинь?он|sauvignon|sovinon",
+      "ocr_aliases": [
+        "савиньон",
+        "савиньо",
+        "совиньо"
+      ]
+    },
+    {
+      "id": "pinot",
+      "canonical": "пино",
+      "pattern": "пино|pinot|pino",
+      "ocr_aliases": []
+    }
+  ],
+  "sugar": [
+    {
+      "id": "extra_brut",
+      "canonical": "экстра-брют",
+      "pattern": "(?:экстра|extra)\\s+(?:брют|brut)",
+      "ocr_aliases": [
+        "ekstra bryut",
+        "ekstra brut"
+      ]
+    },
+    {
+      "id": "brut_nature",
+      "canonical": "брют-натюр",
+      "pattern": "(?:брют|brut)\\s+(?:натюр|nature)|pas\\s+dose|dosage\\s+zero",
+      "ocr_aliases": [
+        "bryut natyur"
+      ]
+    },
+    {
+      "id": "extra_dry",
+      "canonical": "экстра-драй",
+      "pattern": "(?:extra|экстра)\\s+(?:dry|драй|sec)",
+      "ocr_aliases": [
+        "ekstra drai"
+      ]
+    },
+    {
+      "id": "demi_sec",
+      "canonical": "деми-сек",
+      "pattern": "demi\\s*sec|деми\\s*сек",
+      "ocr_aliases": [
+        "demi sek"
+      ]
+    },
+    {
+      "id": "semi_dry",
+      "canonical": "полусухое",
+      "pattern": "полусух(?:ое|ой|ая)|semi\\s+dry|polusuhoe|polusukhoe",
+      "ocr_aliases": [
+        "полу сухое",
+        "полу сухой",
+        "semi dry",
+        "полусухой",
+        "polusukhoi"
+      ]
+    },
+    {
+      "id": "semi_sweet",
+      "canonical": "полусладкое",
+      "pattern": "полусладк(?:ое|ий|ая)|semi\\s+sweet|polusladkoe",
+      "ocr_aliases": [
+        "полу сладкое",
+        "полу сладкий",
+        "semi sweet"
+      ]
+    },
+    {
+      "id": "brut",
+      "canonical": "брют",
+      "pattern": "брют|brut|bryut",
+      "ocr_aliases": [
+        "БPЮT",
+        "BPYT",
+        "брут"
+      ]
+    },
+    {
+      "id": "dry",
+      "canonical": "сухое",
+      "pattern": "сух(?:ое|ой|ая)|dry|suhoe|sukhoe",
+      "ocr_aliases": [
+        "сухой",
+        "сухая",
+        "sukhoi"
+      ]
+    },
+    {
+      "id": "sweet",
+      "canonical": "сладкое",
+      "pattern": "сладк(?:ое|ий|ая)|sweet",
+      "ocr_aliases": [
+        "sladkoe",
+        "sladkii"
+      ]
+    },
+    {
+      "id": "sec",
+      "canonical": "sec",
+      "pattern": "sec",
+      "ocr_aliases": []
+    },
+    {
+      "id": "doux",
+      "canonical": "doux",
+      "pattern": "doux",
+      "ocr_aliases": []
+    }
+  ],
+  "grape_parents": {
+    "cabernet_sauvignon": "cabernet",
+    "cabernet_franc": "cabernet",
+    "sauvignon_blanc": "sauvignon",
+    "pinot_noir": "pinot",
+    "pinot_blanc": "pinot",
+    "pinot_gris": "pinot",
+    "pinot_franc": "pinot",
+    "krasnostop_zolotovsky": "krasnostop",
+    "krasnostop_anapsky": "krasnostop",
+    "muscat_white": "muscat",
+    "muscat_ottonel": "muscat",
+    "kokur_white": "kokur",
+    "traminer_pink": "traminer"
+  }
+}

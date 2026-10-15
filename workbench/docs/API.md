@@ -555,6 +555,32 @@ Errors: `400` for a missing or invalid tag or request body; `404` for an unknown
 query, or image-store row; `409` when the image already has the tag; `503` when the
 database cannot be written.
 
+#### `POST /api/run-image-tag-remove`
+
+Remove one shared image tag from a recorded run query. The JSON body is
+`{"id": "<run id>", "query": "<query id>", "tag": "<tag>"}`. The server selects
+the image from the run record. The removal affects every copy of these image bytes.
+The run files do not change. A tag that is already absent gives the same success answer.
+
+The answer holds `{ok, run, query, sha256, removed, tags, tag_names}`. `removed` is the
+normalized tag. `tags` and `tag_names` hold the current lists after the write.
+
+Errors: `400` for an invalid tag or request body; `404` for an unknown run, query, or
+image-store row; `503` when the database cannot be written.
+
+#### `GET /api/run-vlm-image?id=<id>&query=<query id>`
+
+Read the PNG sent to the VLM re-rank of a recorded query. The route returns `image/png`.
+It reads a recorded input image when available. For an older run, it reconstructs the
+recorded label crop or whole photo from local SAM3 caches. The PNG hash MUST match a
+saved VLM request with the recorded questions and response. The current VLM endpoint
+address MAY locate that cached request; it does not supply historical evidence.
+The route makes no model request and does not change the saved run.
+
+Errors: `400` for an invalid run id; `404` for an unknown run or query, absent VLM
+evidence, or an input that cannot be verified. The route does not substitute another
+crop or the original photo. The Runs page shows an unavailable message for these cases.
+
 #### `GET /api/run-steps?id=<id>&query=<query id>`
 
 The steps of one result row for the step popup of the Runs page (plan 41). The page reads
@@ -800,6 +826,13 @@ The pipelines of the backend `embedding` of `config.yaml`, in the order of the f
 configuration error or its embedding has no index; `reason` states why. A pipeline of
 another backend is not in the list.
 
+Each entry also has selection metadata. `backend` names the pipeline backend.
+`embedding_backend` and `model` name the index backend and model. `views` holds the
+query input steps. It uses the pipeline override when present. Otherwise, it uses the
+index steps. `bottle_orientation` states whether the upright step is enabled. `stages`
+holds the names of additional comparison and label steps. An invalid pipeline has no
+model metadata. The selector shows the reason and prevents selection.
+
 #### `POST /api/recognize?pipeline=<name>&name=<file name>`
 
 The body is the image, 1 byte to 20 MB. `name` is the file name that the page shows; it
@@ -951,6 +984,16 @@ bytes still occupy the recorded Drawer file. It then moves the photo and writes 
 answer plus `run`, `query`, `from`, `to`, and `moved_file`. Stale results answer `409`;
 an unrecorded candidate answers `400`.
 
+### `POST /api/testset-photo-remove`
+
+The body is `{"set", "place", "file"}`. It immediately removes the selected
+`test_photo` entry and its photo comments from that set and updates its edit time.
+The Testset candidate menu calls this route for **Delete**, including photos that
+already have a deletion mark. It returns `{ok, set, place, file, sha256, counts}`.
+Shared image-store bytes, image tags, catalogue records, and entries in other sets
+remain available. A missing place or file answers `400`; an unknown set or photo
+answers `404`. The legacy `/api/testset-delete` route still sets or clears a mark.
+
 ### `POST /api/testset-drawer-remove`
 
 The body is `{"set", "place": "__drawer__", "file"}`. It permanently removes that
@@ -1097,6 +1140,81 @@ stop of the build and a new build of the `Build All` queue.
 `/embedding` shows each running run job of `GET /api/run-jobs` after its build rows, but
 not the jobs `selftest-<embedding>`.
 
+
+## Merge a manual wine
+
+The Runs candidate cards and step-popup candidate cards show `Merge…` for a wine
+whose slug starts with `__`. The dialog takes an existing destination `wine_slug`.
+The places `__null__` and `__drawer__` cannot be a source or destination.
+
+### `GET /api/wine-merge?slug=<manual wine_slug>`
+
+Read the source wine, assigned-photo counts for every testset, catalogue-image count,
+and available destination wines. The answer holds `{source, photos, testsets,
+catalogue_images, targets}`. This request changes no data.
+
+### `POST /api/wine-merge`
+
+The body is `{"slug": "__source", "to": "destination-wine_slug"}`. Both wines MUST
+exist. The source MUST be a manual wine. The source and destination MUST differ.
+The write uses one `BEGIN IMMEDIATE` transaction. Recheck both wines in this transaction.
+
+Move every assigned test photo across all testsets. Keep its SHA-256, label, proposal,
+confidence, box, source URL, timestamps, extra fields, and comments. A filename conflict
+gets the first free `_merged<N>` suffix. Keep both records, including equal-image records
+with different annotations. Comment IDs stay unchanged. Shared image tags stay unchanged.
+Live `reassign_to` references follow the destination. Historical provenance fields stay
+unchanged. Mark each affected testset as edited.
+
+Transfer catalogue images, wine comments, codes, Atlas bindings, favorites, and wine
+tags. Keep the destination catalogue fields, beverage type, and main image when present.
+Source main images and their patches become `full_front` images when the destination
+has a main image. Keep an existing destination value for a duplicate relation. Transfer
+similar-wine pairs; remove self-pairs. When the wines belong to different variant groups
+in the same set, join the groups under the destination group number.
+
+Delete import-refusal records for the source. Delete its catalogue row completely.
+A database error rolls back every transfer. Image files, processed-image records, and
+saved run files stay unchanged. Rebuild affected embedding indexes before new matches;
+saved run results keep their original slugs.
+
+The success answer holds `{ok, from, to, photos, testsets, catalogue_images,
+renamed_files, removed, rebuild_embeddings}`. Errors: `400` for an invalid request,
+reserved place, or equal source and destination; `404` for an absent wine; `409` while
+the source wine's background index job runs; `503` for a database error. A repeated
+request after a successful merge gives `404` because the source is absent.
+
+## Runs charts
+
+`GET /runs/charts` shows a read-only Runs subpage. The `Charts` link in Runs keeps
+the selected testset and pipeline. The page reads the existing `GET /api/runs` heads;
+it changes no saved run and calls no inference service.
+
+Select one testset. `Compare pipelines` draws grouped bars for the newest scored run
+of each selected pipeline. The table allows a different run for each pipeline.
+`Pipeline over time` draws one pipeline's runs against their recorded start times,
+oldest first. A bar, chart point, or run link opens the original Runs result.
+
+The overview charts show R@1/R@5/R@10, F1@1/F1@5, median latency, and the share within
+SLA. The metric selector also offers match share and the false-match count at rank 1.
+Fractions use a fixed zero-to-one scale. Latency and counts use separate axes. A
+missing value stays absent; it is never plotted as zero and breaks a time-series line.
+The table provides every chart metric, query/positive/negative counts, cache/barcode
+settings, SLA threshold, and any endpoint override.
+
+Dry runs, Drawer runs, subset runs, runs without metrics, and runs with no pipeline
+or testset are excluded. The time view excludes undated runs and reports their count.
+Historical pipeline names remain available even when absent from current configuration.
+`Model cache` filters runs with cache on, off, or not recorded. Stored metrics reflect
+each run's original testset snapshot; matching testset names do not guarantee identical
+query counts or labels over time.
+
+The address keeps `set`, `mode=pipelines|history`, `metric=overview|<metric key>`,
+`pipeline`, and optional `cache=on|off|unknown`. For example:
+`/runs/charts?set=my&mode=history&pipeline=siglip2-p512-rot5-seg`.
+Pipeline checkboxes and per-pipeline run choices apply to the current page session.
+
+
 ## Original patch inspection
 
 `GET /api/run-patches?id=<run>&query=<query>` reads local patch-job status.
@@ -1181,3 +1299,40 @@ The standalone inspection command MAY use the locked experimental re-rank.
 Unknown full label regions preserve standard scores.
 The worker uses existing local cuts and approved cohort masks only.
 The worker sends no SAM3 request.
+
+### Query bottle rotation in Steps
+
+An embedding pipeline MAY set `bottle_orientation: true`. The `full` view MUST start with package segmentation and include `remove_background`. The pipeline uses main-scene selector v5. A pipeline without this flag keeps selector v4. The reference index is unchanged.
+
+`GET /api/run-steps` can return a `bottle-orientation` step after package selection. Its result includes `angle_degrees`, `direction_confident`, `neck_width_ratio`, `input_size`, `output_size`, `mask_crop_iou_before`, `mask_crop_iou_after`, and `crop_area_ratio`. Fields that cannot be measured are absent or null. `used_in_saved_embedding` distinguishes recorded v5 processing from a local preview on an old run. The step has two deferred artifacts for the segmented crop and aligned crop. It uses the existing checked `/api/run-artifact` route.
+
+The long axis is portrait. A clear width profile puts the neck at the top. An unclear profile does not force a half turn. The source rectangle remains in source coordinates. The embedding uses the rotated image's local rectangle before resize. Rotation time is included in package-cut timing. Old result rows and rankings do not change.
+
+
+### `POST /api/testset-duplicate`
+
+The body is `{"set", "place", "file", "sha256"?}`.
+The route creates a separate unlabelled photo entry in the same place.
+The new entry uses the same image SHA-256 and image-store object.
+The route does not write another image file.
+The new entry keeps the source box and source URL.
+The new entry shares image tags through the image SHA-256.
+The new entry does not copy the source label, deletion mark, proposal, or comments.
+The source entry stays intact.
+
+A duplicate gets the name `<source file>.duplicate<N>.<image extension>`.
+The original file name stays at the start of the duplicate name.
+This preserves the source rank and confidence and keeps the entries adjacent.
+The route records the source place and source file in the new entry.
+The answer is the Testset photo-write answer plus `duplicated_from`.
+
+The optional `sha256` MUST match the current source image.
+A mismatch answers HTTP 409.
+An unknown set or photo answers HTTP 404.
+A missing place or file answers HTTP 400.
+The route uses one write transaction.
+
+The Testset context menu calls this route for `Duplicate`.
+The page inserts the new card beside the source card.
+The existing move actions can move the new entry to `Drawer` or another wine slug.
+The original entry stays in its place.

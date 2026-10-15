@@ -31,7 +31,9 @@ from copy import deepcopy
 from pathlib import Path
 
 import alternatives
+import variant_attributes
 import build_embeddings
+import bottle_orientation
 import derive
 import embedding_run
 import embeddings
@@ -130,6 +132,75 @@ def timed(out, record):
     if isinstance(record.get("out"), dict):
         out["result"] = record["out"]
     return out
+
+
+QUALITY_REASONS = {
+    "no_label": "No label was detected.",
+    "empty_label_mask": "The label mask is empty.",
+    "main_label_outside_crop": "The main label is outside the crop.",
+    "empty_content": "The crop contains no nonwhite content.",
+    "weak_detection": "Label detector confidence is too low.",
+    "insufficient_native_detail": "The label is too small in the source photo.",
+    "insufficient_input_detail": "The label is too small in the model input.",
+    "unrelated_content": "The crop contains too much glass or other unrelated content.",
+    "insufficient_sharpness": "The label has insufficient sharpness.",
+    "label_on_other_package": "The label does not overlap the selected package enough.",
+    "invalid_label_data": "The cached label data cannot be measured.",
+}
+
+
+def quality_step(record, options):
+    """Show the recorded gate outcome and checks without opening the raw JSON."""
+    part = step("label-quality", "Label crop quality")
+    timed(part, record)
+    part["settings"] = {"label_gate": options}
+    result = part["result"]
+    verdict = ("Accepted" if result.get("passed") else "Rejected") if "passed" in result else "Not recorded"
+    part["name"] += " · " + verdict
+    signals, options = result.get("signals") or {}, options or {}
+    purity = signals.get("purity")
+    if purity is not None:
+        part["group"] = "label content %.1f%%" % (100 * purity)
+    part["notes"].append("Crop quality: %s." % verdict.lower())
+
+    def check(title, value, threshold, render):
+        if value is None:
+            part["notes"].append("%s: not measured." % title)
+            return
+        if threshold is None:
+            part["notes"].append("%s: %s. Threshold not recorded." % (title, render(value)))
+            return
+        tested = min(value) if isinstance(value, (list, tuple)) else value
+        status = "PASS" if tested >= threshold else "FAIL"
+        limit = "%s px on each side" % threshold if isinstance(value, (list, tuple)) else render(threshold)
+        part["notes"].append("%s · %s: %s (minimum %s)." % (status, title, render(value), limit))
+
+    def percent(value):
+        return "%.1f%%" % (value * 100)
+
+    def size(value):
+        return "%.1f × %.1f px" % tuple(value)
+
+    check("Label content", purity, options.get("min_purity"), percent)
+    check("Detector confidence", signals.get("detector_score"), options.get("min_detector_score"),
+          lambda value: "%.4f" % value)
+    check("Native label size", signals.get("native_label_size"), options.get("min_native_side"), size)
+    check("Input label size", signals.get("input_label_size"), options.get("min_input_side"), size)
+    check("Sharpness", signals.get("sharpness"), options.get("min_sharpness"),
+          lambda value: "%.1f" % value)
+    check("Package overlap", signals.get("package_overlap"), options.get("min_package_overlap"), percent)
+    if signals.get("source_frame_edges"):
+        part["notes"].append("The label touches %s source-frame edges. This flag alone does not reject it."
+                             % signals["source_frame_edges"])
+    for reason in result.get("reasons") or []:
+        message = ("Label detection is unavailable." if reason.startswith("label_unavailable:")
+                   else QUALITY_REASONS.get(reason, reason))
+        part["notes"].append("Rejected: " + message)
+    if result.get("passed"):
+        part["notes"].append("The crop can use label matching. Similarity and margin are checked next.")
+    elif "passed" in result:
+        part["notes"].append("The label input is skipped. Matching falls back to the bottle space.")
+    return part
 
 
 class Photo:
@@ -356,10 +427,11 @@ def _source(sources, path):
     sources.setdefault(path, state)
 
 
-def _visual_key(photo, views, endpoint, scene_selection):
+def _visual_key(photo, views, endpoint, scene_selection, label_mask_union=True, label_focus=False,
+                label_on_main_bottle=True):
     version = main_scene.selector_version(scene_selection) if scene_selection else False
     constants = {}
-    for module in (derive, alternatives, embeddings, main_scene):
+    for module in (derive, alternatives, embeddings, main_scene, bottle_orientation):
         for name, value in vars(module).items():
             if name.isupper():
                 try:
@@ -368,7 +440,7 @@ def _visual_key(photo, views, endpoint, scene_selection):
                     continue
     source_state = getattr(photo, "source_state", None)
     identity = source_state if source_state is not None else ("unverified", id(photo.image))
-    return (photo.path, identity, endpoint, version, CUT_SIDE, model_cache.ROOT,
+    return (photo.path, identity, endpoint, version, label_mask_union, label_focus, label_on_main_bottle, CUT_SIDE, model_cache.ROOT,
             model_cache.READ, model_cache.canonical(views), model_cache.canonical(constants),
             embedding_run.CachedSam3, embedding_run.cuts_of, embedding_run.view_input,
             derive.open_image, embeddings.apply_steps, png_uri,
@@ -406,26 +478,50 @@ def _tracked_segmenter(endpoint, sources):
     return client, True
 
 
-def _reconstruct_inputs(photo, views, endpoint, scene_selection):
+def _reconstruct_inputs(photo, views, endpoint, scene_selection, label_mask_union=True, label_focus=False,
+                        label_on_main_bottle=True):
     """Cache image artifacts alone. Read names, trace times, and comparisons each time."""
     def load():
         sources = {}
         if photo.path:
             sources[os.path.abspath(photo.path)] = getattr(photo, "source_state", None)
         for module in (sys.modules[__name__], derive, alternatives, embedding_run,
-                       embeddings, main_scene, model_cache, build_embeddings):
+                       embeddings, main_scene, model_cache, build_embeddings,
+                       embedding_run.main_label_match, bottle_orientation):
             _source(sources, module.__file__)
         segmenter, cacheable = _tracked_segmenter(endpoint, sources)
         cuts, out = {}, {"cuts": {}, "views": {}}
         targets = embedding_run.cut_targets(views)
         for target in (target for target in ("package", "label") if target in targets):
             box, processed, reason, result = _cut(photo, target, endpoint, scene_selection,
-                                                   segmenter=segmenter)
+                                                   segmenter=segmenter,
+                                                   label_mask_union=label_mask_union,
+                                                   label_focus=label_focus,
+                                                   label_on_main_bottle=label_on_main_bottle)
             cuts[target] = (box, processed) if box is not None else None
             item = {"box": box, "reason": reason, "result": result}
             if box is not None:
                 item.update(src=png_uri(processed, CUT_SIDE), width=processed.width,
                             height=processed.height, alpha=processed.mode == "RGBA")
+                selection = (result or {}).get("selection") or {}
+                selected = selection.get("selected") or {}
+                label = str(selected.get("label") or "").lower()
+                if target == "package" and (label in ("bottle", "wine bottle") or
+                                             "orientation" in selection):
+                    used = bool(scene_selection and
+                                main_scene.selector_version(scene_selection) >= main_scene.ORIENTATION_VERSION)
+                    if used:
+                        _, _, before, _, _ = main_scene.cut(photo.image, segmenter, version=4)
+                        after, audit = processed, selection.get("orientation")
+                    else:
+                        before = processed
+                        after, audit = bottle_orientation.normalize(before)
+                    if audit is not None and (used or audit.get("angle_degrees")):
+                        item["orientation"] = {"audit": audit, "used_in_run": used,
+                            "before": {"src": png_uri(before, CUT_SIDE),
+                                       "width": before.width, "height": before.height},
+                            "after": {"src": png_uri(after, CUT_SIDE),
+                                      "width": after.width, "height": after.height}}
             out["cuts"][target] = item
             cacheable = cacheable and reason is None
         try:
@@ -463,11 +559,13 @@ def _reconstruct_inputs(photo, views, endpoint, scene_selection):
             segmenter.session.close()
         return out, sources, cacheable
 
-    return VISUAL_INPUTS.get(_visual_key(photo, views, endpoint, scene_selection), load,
+    return VISUAL_INPUTS.get(_visual_key(photo, views, endpoint, scene_selection,
+                                        label_mask_union, label_focus, label_on_main_bottle), load,
                              sources_sink=getattr(photo, "artifact_sources", None))
 
 
-def _cut(photo, target, endpoint, scene_selection=False, *, segmenter=None):
+def _cut(photo, target, endpoint, scene_selection=False, *, segmenter=None,
+         label_mask_union=True, label_focus=False, label_on_main_bottle=True):
     """Return `(box, image, reason, result)` for one cached SAM3 target."""
     if photo.image is None:
         return None, None, photo.error, None
@@ -475,7 +573,9 @@ def _cut(photo, target, endpoint, scene_selection=False, *, segmenter=None):
         trace = embedding_run.Trace()
         cut = embedding_run.cuts_of(
             photo.image, {target}, segmenter or embedding_run.CachedSam3(endpoint), trace,
-            scene_selection=scene_selection if target == "package" else False).get(target)
+            scene_selection=scene_selection if target == "package" else False,
+            label_mask_union=label_mask_union, label_focus=label_focus,
+            label_on_main_bottle=label_on_main_bottle).get(target)
         result = next((record.get("out") for record in trace.steps
                        if record.get("id") == "sam3-" + target), None)
     except derive.Sam3Unavailable as exc:
@@ -535,7 +635,10 @@ def embedding_rounds(ctx):
         if code_answer:
             return [(EMBEDDING_ROUNDS[0], rounds[0])]
 
-    visual = _reconstruct_inputs(photo, views, endpoint, scene_selection)
+    visual = _reconstruct_inputs(photo, views, endpoint, scene_selection,
+                                  embedding_run.saved_label_mask_union(spec),
+                                  sam3.get("label_focus") == "main",
+                                  embedding_run.saved_label_on_main_bottle(spec))
     for target, label, group, texts, rule in (
             ("package", "Package selection and cut" if scene_selection else "Package cut",
              "segment", sam3.get("package_texts") or derive.SAM3_TEXTS,
@@ -588,6 +691,76 @@ def embedding_rounds(ctx):
                                      "its mask removed most of the photo. The photo "
                                      "context was preserved with a white-border crop.")
         rounds[1].append(part)
+        if target == "package" and cut.get("orientation"):
+            rotation = cut["orientation"]
+            audit = rotation["audit"]
+            used = rotation["used_in_run"]
+            angle = audit.get("angle_degrees", 0)
+            rotation_name = "Query bottle rotation · %+.2f°" % angle
+            if not used:
+                rotation_name += " · preview only"
+            part = step("bottle-orientation", rotation_name, group="portrait alignment")
+            part["start_ms"], part["ms"] = None, None
+            part["state"] = "done" if used and audit.get("applied") else "skipped"
+            part["settings"] = {"geometry": "minimum-area enclosing mask rectangle",
+                "angle_search": "0.5 degree search; 0.05 degree refinement",
+                "direction": "visible neck at top; unknown direction has no forced half turn",
+                "order": "mask and image rotate together; tight crop before model resize"}
+            recorded = ((record or {}).get("out") or {}).get("selection") or {}
+            part["result"] = dict(audit, used_in_saved_embedding=used,
+                                  recorded_orientation=recorded.get("orientation"))
+            for key, caption in (("before", "Before rotation · segmented query"),
+                                 ("after", "After rotation · upright crop" if audit.get("applied")
+                                  else "Query crop retained")):
+                artifact = dict(rotation[key], caption=caption, boxes=[], check=None, alpha=True)
+                part["artifacts"].append(artifact)
+            if not used:
+                part["notes"].append("This saved run did not use bottle rotation. The alignment "
+                                     "preview does not change its embedding or ranking.")
+            elif audit.get("applied"):
+                part["notes"].append("Rotated the image and its mask by %+.2f° before resize "
+                                     "and embedding." % angle)
+                part["notes"].append("Rotation time is included in package selection and cut timing.")
+            else:
+                part["notes"].append("Kept the query crop: %s." % audit.get("reason", "no rotation needed"))
+            if audit.get("direction_confident"):
+                part["notes"].append("The mask width profile places the visible neck at the top; "
+                                     "neck/body width ratio %.3f." % audit["neck_width_ratio"])
+            else:
+                part["notes"].append("No clear neck direction. The geometry does not force a 180° flip.")
+            if "mask_crop_iou_before" in audit:
+                part["notes"].append("Mask/crop IoU %.3f → %.3f. Crop area %.1f%% of the camera crop."
+                    % (audit["mask_crop_iou_before"], audit["mask_crop_iou_after"],
+                       100*audit["crop_area_ratio"]))
+            rounds[1].append(part)
+
+    quality = records.get(("label-quality", None))
+    if quality:
+        rounds[1].append(quality_step(quality, spec.get("label_gate") or
+                                     (spec.get("local_comparison") or {}).get("gate")))
+
+    prepared_label = records.get(("comparison-label", None))
+    if prepared_label:
+        part = step("comparison-label", "Segmented main label for local comparison")
+        timed(part, prepared_label)
+        result = part["result"]
+        digest = result.get("sha256")
+        if isinstance(digest, str) and re.fullmatch(r"[a-f0-9]{64}", digest):
+            path = Path(ROOT) / "work/local-comparison/queries" / (digest + ".png")
+            try:
+                data = path.read_bytes()
+                if hashlib.sha256(data).hexdigest() != digest:
+                    raise ValueError("saved label input changed")
+                from PIL import Image
+                with Image.open(io.BytesIO(data)) as image:
+                    part["artifacts"] = [{"src": build_embeddings.data_uri(data),
+                        "caption": "masked main label · white background",
+                        "width": image.width, "height": image.height,
+                        "boxes": [], "check": "same", "sha256": digest}]
+            except (OSError, ValueError) as exc:
+                part["notes"].append(str(exc))
+        part["result"] = {k: v for k, v in result.items() if k != "path"}
+        rounds[1].append(part)
 
     for view, steps in views.items():
         chain = " → ".join(s.get("step", "?") for s in steps)
@@ -595,12 +768,32 @@ def embedding_rounds(ctx):
         record = records.get(("view", view))
         timed(part, record)
         part["settings"] = {"steps": steps}
+        saved_input = False
+        digest = ((record or {}).get("out") or {}).get("sha256")
+        if spec.get("local_comparison") and isinstance(digest, str) and re.fullmatch(r"[a-f0-9]{64}", digest):
+            path = Path(ROOT) / "work/local-comparison/bottle-inputs" / (digest + ".png")
+            try:
+                data = path.read_bytes()
+                if hashlib.sha256(data).hexdigest() != digest:
+                    raise ValueError("saved local model input changed")
+                from PIL import Image
+                with Image.open(io.BytesIO(data)) as image:
+                    visual["views"][view] = {"src": build_embeddings.data_uri(data),
+                        "sha256": digest, "width": image.width, "height": image.height,
+                        "bytes": len(data)}
+                saved_input = True
+                part["notes"].append("Exact saved local model input; its byte hash matches the run.")
+            except (OSError, ValueError):
+                pass
+        if spec.get("label_gate") is not None and part["state"] == "skipped":
+            rounds[1].append(part)
+            continue
         if photo.image is None:
             part["notes"].append(photo.error)
             rounds[1].append(part)
             continue
         target = embedding_run.segment_target(steps)
-        if target is not None and visual["cuts"][target]["box"] is None:
+        if target is not None and visual["cuts"][target]["box"] is None and not saved_input:
             if part["state"] != "skipped":
                 part["notes"].append("The model input needs the %s cut, which cannot be "
                                      "shown." % target)
@@ -643,24 +836,26 @@ def embedding_rounds(ctx):
     searched = [view for view in views if (("search", view) in records
                                            or any(view in c for c in cands))]
     for view in searched:
-        part = step("search", "Search, space %s" % view, "local", name, "view %s" % view,
+        search_name = (spec.get("view_indexes") or {}).get(view, name)
+        view_present = _index_state(ctx.db_path, search_name) if search_name != name else present
+        part = step("search", "Search, space %s" % view, "local", search_name, "view %s" % view,
                     view=view)
         record = records.get(("search", view))
         timed(part, record)
-        part["settings"] = {"index": name, "view": view, "top_k": spec.get("top_k")}
+        part["settings"] = {"index": search_name, "view": view, "top_k": spec.get("top_k")}
         top = ((record or {}).get("out") or {}).get("top")
         if isinstance(top, list):
             items = []
             for rank, hit in enumerate(top, 1):
                 image = None
                 deferred = False
-                if _item_available(ctx.db_path, name, hit, view, present):
+                if _item_available(ctx.db_path, search_name, hit, view, view_present):
                     preview_query = getattr(ctx, "preview_query", None)
                     if preview_query and (hit.get("angle") or 0) % 360:
                         image = _preview_url(*preview_query, name, hit, view, rank)
                         deferred = True
                     else:
-                        image = _item_image(ctx.db_path, name, hit, view)
+                        image = _item_image(ctx.db_path, search_name, hit, view)
                 detail = "%s · %s" % (view, hit.get("type"))
                 if hit.get("angle") is not None:
                     detail += " · %d°" % hit["angle"]
@@ -682,9 +877,40 @@ def embedding_rounds(ctx):
                                         for i, c in enumerate(ordered, 1)]}]
         rounds[2].append(part)
 
+    route = records.get(("label-route", None))
+    if route:
+        part = step("label-route", "Select retrieval space")
+        timed(part, route)
+        route_options = spec.get("label_gate") or (spec.get("local_comparison") or {}).get("gate")
+        part["settings"] = {"label_gate": route_options}
+        selected = part["result"].get("selected_view")
+        if selected:
+            part["name"] += " · " + ("Label" if selected == "label" else "Bottle")
+        part["notes"].append("Use the %s ranking and its cosine scores."
+                             % ("label" if selected == "label" else "bottle")
+                             if selected else "No retrieval space is available.")
+        reasons = {
+            "label_quality_rejected": "The crop-quality gate rejected the label input.",
+            "no_label_ranking": "No label ranking is available.",
+            "label_score_below_threshold": "Label similarity is below the threshold.",
+            "label_margin_below_threshold": "The label winner has insufficient lead over the second wine.",
+            "no_fallback_ranking": "No bottle ranking is available for fallback.",
+        }
+        part["notes"].extend(reasons.get(reason, reason) for reason in part["result"].get("reasons") or [])
+        for key, title, threshold in (("label_score", "Label similarity", "min_score"),
+                                      ("label_margin", "Label margin", "min_margin")):
+            value = part["result"].get(key)
+            minimum = (route_options or {}).get(threshold)
+            if value is not None:
+                part["notes"].append("%s: %.4f%s." % (
+                    title, value, " (minimum %.4f)" % minimum if minimum is not None else ""))
+        rounds[2].append(part)
+
     score = step("score", "Score", "local")
     timed(score, records.get(("score", None)))
     score["settings"] = {"score": spec.get("score")}
+    if spec.get("local_comparison"):
+        score["settings"]["score"] = "Selected visual cosine; native metric or variant text may determine rank."
     score["lists"] = [answer_list(lists, row, "the answer", detail=lambda c: " · ".join(
         "%s %s" % (view, _cos(c.get(view))) for view in searched) or None)]
     rounds[2].append(score)
@@ -700,6 +926,8 @@ def embedding_rounds(ctx):
                                  % result["error"])
         part["vlm"] = {
             "mode": result.get("mode"), "cluster": result.get("cluster"),
+            "model": (result.get("model") or (spec.get("rerank") or {}).get("model")
+                      or (spec.get("rerank") or {}).get("vlm")),
             "window": result.get("window") or [],
             "questions": result.get("questions") or [],
             "option_scores": result.get("option_scores") or {},
@@ -734,9 +962,128 @@ def embedding_rounds(ctx):
             if base_rank is not None and candidate.get("rank") is not None:
                 item["moved"] = base_rank - candidate["rank"] or None
         rounds[3].append(part)
+    text_record = records.get(("label-text", None))
+    if text_record:
+        engine = ((text_record.get("out") or {}).get("engine") or
+                  (spec.get("main_label") or {}).get("ocr", "tesseract"))
+        model = "PaddleOCR PP-OCRv5 East Slavic" if engine == "paddleocr" else "Tesseract rus+eng"
+        part = step("label-text", "Verify variant text", "local", model)
+        timed(part, text_record)
+        part["settings"] = spec.get("main_label") or spec.get("local_comparison") or {}
+        result = part["result"]
+        part["notes"].append("Read sugar level: %s. %s" % (
+            result.get("observed_sugar") or "unreadable",
+            "Explicit matches move ahead of conflicting variants; visual scores stay unchanged."
+            if result.get("applied") else "The visual order stays unchanged."))
+        observed = result.get("observed_attributes")
+        if isinstance(observed, dict):
+            active = result.get("discriminating_fields") or []
+            for field in variant_attributes.FIELDS:
+                value = ", ".join(observed.get(field) or []) or "unknown"
+                state = "distinguishes shortlisted variants" if field in active else "unused for this shortlist"
+                part["notes"].append("%s read: %s · %s." % (variant_attributes.LABELS[field], value, state))
+            if result.get("ranking_policy") == variant_attributes.RANKING_POLICY:
+                part["notes"].append("Reliable contradictions rank last; compatible and unknown metadata keep visual order. "
+                                     "An explicitly read product line can promote its named candidate. Missing text remains unknown.")
+            else:
+                part["notes"].append("Complete matches precede partial matches, unknowns and explicit conflicts. "
+                                     "Missing text and absent product-line terms remain unknown.")
+        part["notes"].append("Variant text verifies distinguishing attributes; it does not establish complete wine identity.")
+        normalization = result.get("normalization")
+        if isinstance(normalization, dict):
+            part["notes"].append("Shared wine-term normalization: %s." % (normalization.get("text") or "unreadable"))
+            for correction in normalization.get("corrections") or []:
+                part["notes"].append("OCR term: %s → %s (original confidence %s)." % (
+                    correction["raw"], correction["normalized"], correction["confidence"]))
+        if result.get("applied") or isinstance(result.get("candidate_attributes"), dict):
+            def variant_detail(candidate):
+                evidence = candidate.get("variant_text") or {}
+                fields = (result.get("candidate_attributes") or {}).get(candidate.get("slug")) or evidence.get("attributes")
+                if isinstance(fields, dict):
+                    parts = []
+                    for field in variant_attributes.FIELDS:
+                        item = fields.get(field) or {}
+                        expected = ", ".join(item.get("expected") or []) or "unknown"
+                        parts.append("%s: %s · %s" % (variant_attributes.LABELS[field], expected,
+                                                      item.get("status") or "unknown"))
+                    return "; ".join(parts)
+                return "Sugar level: %s · %s" % (evidence.get("expected") or "unknown",
+                                                 evidence.get("status") or "unknown")
+
+            group = answer_list(lists, row, "the answer after variant-text verification",
+                                note="Original visual scores are preserved; text evidence determines this order.",
+                                detail=variant_detail)
+            for item, candidate in zip(group["items"], cands):
+                before = (candidate.get("variant_text") or {}).get("visual_rank") if result.get("applied") else None
+                if before is not None and candidate.get("rank") is not None:
+                    item["moved"] = before - candidate["rank"] or None
+            part["lists"] = [group]
+        rounds[3].append(part)
+    local_record = records.get(("local-comparison", None))
+    global_record = records.get(("comparison-label-search", None))
+    if global_record:
+        options = spec.get("local_comparison") or {}
+        part = step("comparison-label-search", "Search, space main label", "local", "SigLIP2 p512")
+        timed(part, global_record)
+        found = (global_record.get("out") or {}).get("top") or []
+        items = []
+        for c in found:
+            hit = next((i for i in c.get("items", []) if i.get("view") == "label"), None)
+            image = _item_image(ctx.db_path, options.get("index"), hit, "label") if hit else None
+            items.append(lists.item(c.get("slug"), c.get("rank"), c.get("score"), image=image,
+                                    detail="segmented main label · local cosine"))
+        part["lists"] = [{"title": "the top %d of the space main label" % len(items),
+                          "note": "Recorded before the quality gate and variant text.", "items": items}]
+        part["result"] = {k: v for k, v in part["result"].items() if k != "top"}
+        rounds[2].append(part)
+    if local_record or global_record:
+        options = spec.get("local_comparison") or {}
+        method = options.get("method")
+        part = step("local-comparison", "Local comparison · %s" % method, "local", method)
+        if local_record:
+            timed(part, local_record)
+        else:
+            part["result"] = {"applied": True, "method": method}
+            part["notes"].append("This displays the selected ranking. Retrieval time appears in the main-label search step.")
+        part["settings"] = options
+        result = part["result"]
+        if result.get("reason"):
+            part["notes"].append("Bottle fallback: " + result["reason"])
+        if result.get("error"):
+            part["notes"].append("Comparison error: " + result["error"])
+        metric = result.get("field") or ("selected visual cosine" if global_record else "label cosine")
+        direction = "higher" if result.get("higher_is_better", True) else "lower"
+        part["notes"].append("%s: %s values rank first. Bottle cosines remain separate." % (metric, direction))
+        if "cached_pairs" in result:
+            part["notes"].append("%s cached pairs; %s fresh pairs." %
+                                 (result["cached_pairs"], result["fresh_pairs"]))
+        entries = []
+        for c in cands:
+            detail = c.get("comparison") or {}
+            ref = detail.get("reference")
+            image = None
+            if ref:
+                hit = dict(ref, sha256=ref.get("source_sha256"))
+                image = _item_image(ctx.db_path, options.get("index"), hit, "label")
+            elif global_record and c.get("label") is not None:
+                hit = next((i for i in c.get("items", []) if i.get("view") == "label"), None)
+                if hit:
+                    image = _item_image(ctx.db_path, options.get("index"), hit, "label")
+            value = detail.get("value") if detail else c.get("score")
+            entries.append(lists.item(c.get("slug"), c.get("rank"), value, image=image,
+                detail=("%s · %s better · bottle rank %s / cosine %s" %
+                       (detail.get("field"), direction, detail.get("bottle_rank"),
+                        _cos(detail.get("bottle_score"))) if detail else "selected ranking")))
+        part["lists"] = [{"title": "the top %d after %s" % (len(entries), method),
+                          "note": "Raw distances and inlier counts are not probabilities.", "items": entries}]
+        part["result"] = {k: v for k, v in result.items() if k not in ("top", "measurements")}
+        rounds[3].append(part)
     if not trace:
         ctx.notes.append(NO_TIME)
-    return [(EMBEDDING_ROUNDS[i], steps) for i, steps in enumerate(rounds) if steps]
+    titles = list(EMBEDDING_ROUNDS)
+    if spec.get("local_comparison"):
+        titles[3] = "local comparison and variant text determine the final order"
+    return [(titles[i], steps) for i, steps in enumerate(rounds) if steps]
 
 
 def _item_url(name, digest, view, embedding_hash):
@@ -932,6 +1279,7 @@ def matcher_rounds(ctx):
         if not questions and record.get("answers"):
             part["notes"].append("The run holds the answers alone, with no question text.")
         part["vlm"] = {"mode": record.get("mode"), "cluster": record.get("cluster"),
+                       "model": record.get("model"),
                        "window": record.get("window") or [], "questions": questions,
                        "answers": record.get("answers") or {},
                        "answer": record.get("answer"), "chosen": record.get("chosen"),

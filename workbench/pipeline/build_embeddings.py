@@ -233,7 +233,7 @@ def _rotated_pngs(item, source_path, dis_segmenter=None):
 
 def run(embedding, db_path, directory, make_backend=make_backend,
         make_dis=make_dis_segmenter, stop=None,
-        checkpoint_seconds=CHECKPOINT_SECONDS, workers=1):
+        checkpoint_seconds=CHECKPOINT_SECONDS, workers=1, target=None):
     """Build one embedding. Return the counts of the build.
 
     An item with one vector goes to the model in batches of `batch_size` items. An item
@@ -254,12 +254,37 @@ def run(embedding, db_path, directory, make_backend=make_backend,
     os.makedirs(images_dir, exist_ok=True)
     try:
         index = embeddings.read_index(directory) or {}
-        vectors = embeddings.read_vectors(directory, index, strict=False)
+        vectors = embeddings.read_vectors(directory, index, strict=target is not None)
+        if target is not None and index.get("items"):
+            if vectors is None:
+                raise ValueError("the old index has no vectors file")
+            embeddings.check_rows(index["items"], len(vectors))
     except (ValueError, OSError) as exc:
+        if target is not None:
+            raise embeddings.ItemError("cannot retry with an unreadable index: %s" % exc) from exc
         emit("warning", message="the old index cannot be read, so each item is built "
                                 "again: %s" % exc)
         index, vectors = {}, None
     status = embeddings.item_status(items, index, embeddings.image_names(directory))
+
+    retry_error = None
+    if target is not None:
+        if target not in status or status[target][0] != "failed":
+            raise embeddings.ItemError("the selected item is no longer failed")
+        emit("start", name=embedding.name, pid=os.getpid(), items=len(items), todo=1,
+             current=sum(state == "current" for state, _ in status.values()), pruned=0)
+        if stop.requested:
+            emit("stopped", built=0, failed=0, done=0, todo=1)
+            return dict(built=0, failed=0, done=0, todo=1)
+        from embedding_retry import repair_cut
+        try:
+            repair_cut(embedding, db_path, *target, log=emit)
+        except embeddings.ItemError as exc:
+            retry_error = str(exc)
+        with closing(embeddings.open_database(db_path)) as conn:
+            _wines, sources = embeddings.read_inputs(conn, db_path)
+        items = embeddings.plan_items(embedding, sources)
+        status = embeddings.item_status(items, index, embeddings.image_names(directory))
 
     # The vectors that stay: the current items, and the stale items until the build
     # replaces them. Each value is a matrix: one row, or one row for each angle (plan 82).
@@ -268,13 +293,13 @@ def run(embedding, db_path, directory, make_backend=make_backend,
     taken = np.zeros(len(vectors) if vectors is not None else 0, dtype=bool)
     for record in index.get("items", []):
         key = (record["source_sha256"], record["view"])
-        if key in items:
+        if key in items or (target is not None and key != target):
             if vectors is not None:
                 try:
                     rows = embeddings.record_rows(record, len(vectors))
                 except ValueError:
                     continue  # a record with no valid rows; its item is built again
-                if (status[key][0] == "current" and embeddings.record_angles(record)
+                if (target is None and status[key][0] == "current" and embeddings.record_angles(record)
                         != items[key].get("angles", [0])):
                     continue  # the hash is current, the rows are not; build it again
                 if taken[rows].any():
@@ -289,9 +314,15 @@ def run(embedding, db_path, directory, make_backend=make_backend,
             pass
     failures = {key: record for key, (state, record) in status.items() if state == "failed"}
     todo = [key for key, (state, _) in status.items() if state != "current"]
+    if target is not None:
+        failures = {(record["source_sha256"], record["view"]): record
+                    for record in index.get("failures", [])}
+        if target not in items:
+            failures.pop(target, None)
+        todo = [key for key in todo if key == target]
     plain = [key for key in todo if "angles" not in items[key]]
     rotated = [key for key in todo if "angles" in items[key]]
-    current = len(items) - len(todo)
+    current = sum(state == "current" for state, _ in status.values())
     dim = index.get("dim") if kept else None
     software = {"python": platform.python_version(), "numpy": np.__version__,
                 "pillow": Image.__version__}
@@ -311,7 +342,8 @@ def run(embedding, db_path, directory, make_backend=make_backend,
         emit("item_failed", source_sha256=key[0], view=key[1], **names, error=error)
 
     def checkpoint():
-        order = [key for key in items if key in kept
+        keys = dict.fromkeys(list(items) + (list(kept) + list(failures) if target is not None else []))
+        order = [key for key in keys if key in kept
                  and (dim is None or kept[key][1].shape[1] == dim)]
         records, blocks, offset = [], [], 0
         for key in order:
@@ -338,7 +370,7 @@ def run(embedding, db_path, directory, make_backend=make_backend,
             "host": socket.gethostname(),
             "software": software,
             "items": records,
-            "failures": [failures[key] for key in items if key in failures],
+            "failures": [failures[key] for key in keys if key in failures],
         }, matrix)
 
     timer = {"last": time.monotonic(), "seconds": 0.0}
@@ -352,11 +384,12 @@ def run(embedding, db_path, directory, make_backend=make_backend,
             timer["last"] = time.monotonic()
             timer["seconds"] = timer["last"] - begun
 
-    emit("start", name=embedding.name, pid=os.getpid(), items=len(items), current=current,
-         todo=len(todo), pruned=pruned)
+    if target is None:
+        emit("start", name=embedding.name, pid=os.getpid(), items=len(items), current=current,
+             todo=len(todo), pruned=pruned)
     backend = None
     dis_segmenter = None
-    if todo:
+    if todo and retry_error is None:
         dis_segmenter = make_dis(embedding)
         if dis_segmenter is not None:
             software.update(dis_segmenter.software())
@@ -370,6 +403,8 @@ def run(embedding, db_path, directory, make_backend=make_backend,
         for key in batch:
             item = items[key]
             try:
+                if retry_error is not None:
+                    raise embeddings.ItemError(retry_error)
                 image = embeddings.prepare(
                     item, sources[key[0]]["path"], dis_segmenter=dis_segmenter)
                 png = embeddings.png_bytes(image)
@@ -425,6 +460,8 @@ def run(embedding, db_path, directory, make_backend=make_backend,
     def embed_rotated(key, prep, own_backend):
         """Return (the 0° PNG, its size, the vectors) of one rotated item. A worker
         thread runs it; the main thread records the result."""
+        if retry_error is not None:
+            raise embeddings.ItemError(retry_error)
         item = items[key]
         path = sources[key[0]]["path"]
         uses_dis = any(step["step"] == "segment_dis" for step in item["steps"])
@@ -539,6 +576,8 @@ def run(embedding, db_path, directory, make_backend=make_backend,
     checkpoint()
     seconds = round(time.monotonic() - started, 1)
     counts.update(current=current, pruned=pruned, todo=len(todo), seconds=seconds)
+    if target is not None and target not in items:
+        counts.update(done=1, todo=1, not_applicable=1)
     if position < len(plain) or finished < len(rotated):
         emit("stopped", **counts)
     else:
@@ -552,7 +591,14 @@ def main(argv=None):
     parser.add_argument("--config", default=embeddings.CONFIG_PATH, help="path of config.yaml")
     parser.add_argument("--workers", type=int, default=1,
                         help="rotated items at a time (plan 82); the default is 1")
+    parser.add_argument("--retry-sha256", help="retry this failed source and view only")
+    parser.add_argument("--retry-view", choices=embeddings.VIEWS)
     args = parser.parse_args(argv)
+    if bool(args.retry_sha256) != bool(args.retry_view):
+        parser.error("--retry-sha256 and --retry-view MUST be used together")
+    if args.retry_sha256 and (len(args.retry_sha256) != 64 or
+            any(ch not in "0123456789abcdef" for ch in args.retry_sha256)):
+        parser.error("--retry-sha256 MUST be a lowercase SHA-256")
     if args.workers < 1:
         parser.error("--workers MUST be 1 or more")
     if hasattr(sys.stdout, "reconfigure"):
@@ -578,7 +624,8 @@ def main(argv=None):
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
     try:
-        run(embedding, settings.db_path, directory, stop=stop, workers=args.workers)
+        run(embedding, settings.db_path, directory, stop=stop, workers=args.workers,
+            target=(args.retry_sha256, args.retry_view) if args.retry_sha256 else None)
     except embeddings.ConfigError as exc:
         emit("error", message=str(exc))
         return 2

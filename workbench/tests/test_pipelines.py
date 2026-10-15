@@ -90,6 +90,42 @@ class EmbeddingPipelineTest(LoadTest):
     """The backend `embedding`: a pipeline names one entry of the key `embeddings` (owner
     answer of 2026-09-26T00:12:24+0300)."""
 
+    def test_label_gate_resolves_both_views_and_trial_defaults(self):
+        model = dict(GW, views=dict(GW["views"], label={
+            "steps": [{"step": "segment", "target": "label"}]}))
+        settings = self.load(embeddings=[model], pipeline=[{
+            "name": "gated", "backend": "embedding", "embedding": "gw", "label_gate": {},
+        }])
+        profile = settings.find("gated")
+        self.assertEqual((profile.label_gate["min_score"], profile.label_gate["min_margin"]),
+                         (.90, .01))
+        self.assertIsNone(profile.views)  # Both views come from the embedding entry.
+        self.assertIsNone(pipelines.Pipeline(REMOTE).label_gate)
+
+    def test_label_gate_requires_both_query_views(self):
+        settings = self.load(embeddings=[GW], pipeline=[{
+            "name": "gated", "backend": "embedding", "embedding": "gw", "label_gate": {},
+        }])
+        with self.assertRaisesRegex(embeddings.ConfigError, "requires both full and label"):
+            settings.find("gated")
+
+    def test_label_gate_refuses_geometry_that_has_no_correct_mask_mapping(self):
+        model = dict(GW, views=dict(GW["views"], label={
+            "steps": [{"step": "segment", "target": "label"},
+                      {"step": "white_background"}, {"step": "square_on_white"}]}))
+        settings = self.load(embeddings=[model], pipeline=[{
+            "name": "gated", "backend": "embedding", "embedding": "gw", "label_gate": {},
+        }])
+        with self.assertRaisesRegex(embeddings.ConfigError, "supports label crop, background and resize"):
+            settings.find("gated")
+
+    def test_label_gate_refuses_a_wrapper_that_can_mix_scores(self):
+        with self.assertRaisesRegex(embeddings.ConfigError, "cannot be combined with competitor"):
+            pipelines.Pipeline({"name": "gated", "backend": "embedding", "embedding": "gw",
+                                "label_gate": {}, "competitor": {"source": "anna",
+                                "actions": [{"action": "secondary_union"}],
+                                "secondary": {"embedding": "gw"}}})
+
     def test_a_pipeline_names_a_valid_embedding_entry(self):
         settings = self.load(embeddings=[GW], pipeline=[
             {"name": "gw", "backend": "embedding", "embedding": "gw"}])

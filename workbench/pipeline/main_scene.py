@@ -13,8 +13,10 @@ import numpy as np
 from PIL import Image, ImageChops
 
 import derive
+import bottle_orientation
 
 VERSION = 4
+ORIENTATION_VERSION = 5
 MIN_MASK_FILL = 0.05
 MIN_FRAME_COVER = 0.95
 MAX_FRAME_MASK_FILL = 0.25
@@ -55,9 +57,14 @@ SETTINGS_V2 = SETTINGS_V1.replace("selector v1", "selector v2") + (
 SETTINGS_V3 = SETTINGS_V2.replace("selector v2", "selector v3") + (
     "; without hands, reject a package detector score >= %s below the strongest "
     "detector score of the same package class" % CONFIDENCE_GAP_LIMIT)
-SETTINGS = SETTINGS_V3.replace("selector v3", "selector v%d" % VERSION) + (
+SETTINGS_V4 = SETTINGS_V3.replace("selector v3", "selector v4") + (
     "; restore enclosed holes in bottle and can masks before edge refinement; "
     "background connected to the image border uses 8-connectivity")
+SETTINGS_ORIENTED = SETTINGS_V4.replace("selector v4", "selector v5") + (
+    "; align query bottle mask to its minimum-area portrait rectangle; "
+    "neck at top when the width profile is clear; orientation v%d"
+    % bottle_orientation.VERSION)
+SETTINGS = SETTINGS_V4
 SETTINGS_REJECTED = ("white < %d, opening %d px; main-scene selector v%d rejected "
                      "all package masks with fill < %s"
                      % (derive.WHITE_LEVEL, derive.OPEN_SIZE, VERSION, MIN_MASK_FILL))
@@ -69,7 +76,7 @@ SETTINGS_CONTEXT = ("white < %d, opening %d px; main-scene selector v%d preserve
 def selector_version(version):
     """Use the current selector for True and the saved selector for a version number."""
     version = VERSION if version is True else version
-    if version not in (1, 2, 3, VERSION):
+    if version not in (1, 2, 3, VERSION, ORIENTATION_VERSION):
         raise ValueError("unsupported main-scene selector version: %r" % version)
     return version
 
@@ -77,7 +84,7 @@ def selector_version(version):
 def settings_for(version):
     """Return the settings text of the saved selector version."""
     return {1: SETTINGS_V1, 2: SETTINGS_V2, 3: SETTINGS_V3,
-            VERSION: SETTINGS}[selector_version(version)]
+            VERSION: SETTINGS, ORIENTATION_VERSION: SETTINGS_ORIENTED}[selector_version(version)]
 
 
 def _clip(value):
@@ -331,7 +338,15 @@ def cut(image, segmenter, version=VERSION):
         audit = {"version": version, "mode": "alpha", "texts": None,
                  "image_size": [image.width, image.height], "sam3_size": None,
                  "hands": 0, "weights": {}, "candidates": [], "selected": None}
-        return "crop", derive.SETTINGS_ALPHA, image.crop(box), box, audit
+        processed, settings = image.crop(box), derive.SETTINGS_ALPHA
+        if version >= ORIENTATION_VERSION:
+            normalized, orientation = bottle_orientation.normalize(processed)
+            # An alpha-only query has no package class. Require a visible neck.
+            if orientation.get("direction_confident"):
+                processed = normalized
+                audit["orientation"] = orientation
+                settings += "; bottle orientation v%d" % bottle_orientation.VERSION
+        return "crop", settings, processed, box, audit
 
     instances, scale = segmenter.instances(image, TEXTS)
     selected, audit = rank(image, instances, scale, version)
@@ -380,4 +395,9 @@ def cut(image, segmenter, version=VERSION):
     box = alpha.point(lambda value: 255 if value > 0 else 0).getbbox() or full
     out = image.convert("RGBA")
     out.putalpha(alpha)
-    return "seg", settings_for(version), out.crop(box), box, audit
+    processed = out.crop(box)
+    if version >= ORIENTATION_VERSION and str(selected.get("label") or "").strip().lower() in (
+            derive.BOTTLE_LABEL, "bottle"):
+        processed, orientation = bottle_orientation.normalize(processed)
+        audit["orientation"] = orientation
+    return "seg", settings_for(version), processed, box, audit

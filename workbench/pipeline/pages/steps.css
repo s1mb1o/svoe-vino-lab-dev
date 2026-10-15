@@ -119,6 +119,29 @@
 :where(.step) .vlm .sc, :where(.step) .vlm .mv { margin-top: 3px; color: var(--muted); }
 :where(.step) .vlm .sc b, :where(.step) .vlm .mv b { color: var(--text); font-weight: 600; }
 :where(.step) .vlm .err { margin-top: 3px; color: var(--exc); }
+/* Shared VLM evidence layout for the Runs table and the step views. */
+.vlm .vm { margin: 8px 0 12px; color: var(--muted); }
+.vlm .vm b { color: var(--text); font-weight: 600; }
+.vlm .question-block { margin: 12px 0; }
+.vlm .question-block .q { margin: 0 0 5px; overflow-wrap: anywhere; }
+.vlm .option-scores { margin: 0; padding-left: 21px; color: var(--muted); }
+.vlm .option-scores li { display: list-item; margin: 3px 0; overflow-wrap: anywhere; }
+.vlm .option-scores b { color: var(--text); font-weight: 600; }
+.vlm .candidate-scores { margin: 12px 0; }
+.vlm .candidate-scores .sc { margin: 0 0 5px; }
+.vlm .score-scroll { max-width: 100%; overflow-x: auto; }
+.vlm .score-table { width: 100%; border-collapse: collapse; font-size: inherit; }
+.vlm .score-table th, .vlm .score-table td {
+  position: static; padding: 5px 8px; border: 0; border-bottom: 1px solid var(--line);
+  background: transparent; text-align: right; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.vlm .score-table th { color: var(--muted); font-weight: 600; }
+.vlm .score-table th:first-child, .vlm .score-table td:first-child {
+  padding-left: 0; text-align: left; white-space: normal; overflow-wrap: anywhere;
+}
+.vlm .score-table tbody tr:last-child td { border-bottom: 0; }
+.vlm .data { margin: 8px 0; }
 .slist h4 { font-size: 12px; margin: 0 0 6px; font-weight: 600; color: var(--muted); }
 .slist .snote { margin: 0 0 6px; }
 .srow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; align-items: stretch; }

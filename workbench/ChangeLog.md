@@ -37,6 +37,55 @@
   Tests: `test_wine_images.py` (13 new), `test_matcher_bundle.py`, `test_matcher_views.py`,
   `test_matcher_parity.py`, `test_catalog_copy.py`: all pass.
 
+## 2026-10-11
+
+- Prepare the paired label-only benchmark for the owner-selected scopes.
+  Freeze 57 catalogue wines, 19 clusters, and 93 recognition cases per arm.
+  Restore the initial scores for 20 official rule-triggered photos.
+  Exclude five evaluation photographs from additional generation references.
+  Add ten local safeguards and an image-request audit.
+  Start LAN descriptions.
+  Keep expanded Cloud generation pending explicit payload approval after automatic approval review rejects the broader scope.
+  Preserve production artifacts and services.
+
+- Document a proposed next experiment for the Фантом failures.
+  Inspect catalogue source resolution and ratio orientation.
+  Keep the proposal separate from completed recognition results.
+  Preserve production code and make no model request.
+- Record the six numbered Фантом Revision 2 failures for manual review.
+  Preserve exact colour scores and comparisons with the earlier rules.
+  Separate recorded decisions from inferred visual causes.
+  Verify the six source image hashes and preserve experiment files.
+- Add a manual Фантом comparison from the saved calibration results.
+  Show 24 calibration regions and two regions from the additional front photograph.
+  Hide identities until the owner requests the answers.
+  Verify lossless region pixels and all ten condition choices.
+  Preserve frozen experiment files and make no model request.
+- Add and test an isolated rule self-calibration prototype for two wine families.
+  Keep five verified front photographs separate from calibration feedback.
+  Limit each cluster to three candidates and reject recognition regressions.
+  Виктор Дравиньи improves from 28/32 to 32/32 calibration cases.
+  Фантом retains its initial rule at 13/24 because both revisions introduce wrong choices.
+  All seven blank controls stay safe.
+  Initial and selected rules both pass all ten final cases from five front photographs.
+  All 15 safeguards, lint checks, and the complete result audit pass.
+  Preserve production rules, source images, annotations, vectors, and services.
+  Read [the prototype report](docs/testing/rule-self-calibration.md).
+- Permit distinctive printed label colour and named colour regions in cluster rules.
+  Record small colour regions in label descriptions.
+  Add candidate-dependent lighting uncertainty to all three query prompts.
+  Synchronize the current generator CLI and native matcher prompts.
+  Preserve all non-prompt implementation code and the existing score rule.
+- Test three Фантом and four Виктор Дравиньи reference cards.
+  Both new QwenCloud rules retain the expected colour region and a text question.
+  The focused Workbench suites pass 92 tests. The native suite passes 32 tests.
+  With runtime image preparation, generated-rule evidence improves from 2/6 to 3/6.
+  The fixed-question stress test changes from 17/27 to 16/27.
+  These focused tests do not establish a general accuracy improvement.
+  All 13 tracked source images retain their bytes and modification times.
+  Existing catalogue rules, annotations, vectors, and runtime services remain unchanged.
+  Read [the test report](docs/testing/label-colour-prompts.md).
+
 ## 2026-10-05
 
 - Autotag now treats HTTP 429/5xx responses, connection failures, and service timeouts
@@ -6385,6 +6434,34 @@ Apply the owner-approved Testset patch. Start the first four Drawer images befor
 
 The current five-sample comparison gives Drawer medians of 2373.3 to 518.7 ms and Results medians of 1654.1 to 564.2 ms. Image HTTP caching is disabled and the preview cache is warm. Retain every sample, including the slow first applied navigation. All 41 focused rechecks pass. Renderer behavior, JavaScript syntax, and diff checks pass. Live checks reach the final Results photo with only five rows mounted; tag filtering, rank navigation, full-resolution URLs, and the __null__ destination pass. Temporary measurement proxies and the browser tab are removed. No source images, labels, annotations, or inference state changed. No commit or push. Evidence: ../internal/workbench-first-images-20261007/README.md and applied-summary.json.
 
+## 2026-10-07T08:38:53+03:00 — Drawer Results sorting
+
+Add five sorting options and keep original run order as the default. Top 1 uses the first candidate wine's positive count in the current test set. Top 3 uses the total for three distinct candidates. Best and worst use the full first-candidate score. Closest scores uses the absolute gap between the first two distinct candidates. Missing metrics go last; equal values keep run order. Count each wine and compute each sort metric once. Score sorts need no label scan or extra request. Keep tag filters, candidate ranks, and viewport mounting.
+
+All 53 focused checks, assembled JavaScript syntax checks, and the diff check pass. All 897 live result slots match an independent order calculation for all six options. Browser checks cover tag filtering, full-resolution viewing, candidate arrows, and the __null__ destination. Port 8168 serves the edited HTML without a restart. No saved run, source image, label, annotation, or inference state changes. Evidence: ../internal/workbench-drawer-sorting-20261007/README.md.
+
+## 2026-10-07T08:54:13+03:00 — Immediate Drawer removal
+
+Remove the Drawer Remove confirmation, as the owner requests. Sidebar and Results use the same immediate handler. Keep busy-button state, current-view refresh, server guards, and failure handling. The fake-API handler check and all 20 Testset route checks pass. The live HTML and JavaScript syntax checks pass. No restart or real-photo removal. Existing tabs need a refresh.
+
+## 2026-10-07T12:06:41+03:00 — Remove image tags in Runs
+
+Add an × button to each image tag in the Runs page. Add `POST /api/run-image-tag-remove`. Resolve the image from the recorded run query. Remove the shared tag from all copies of that image. Update every displayed copy after a successful save. Disable all tag controls for that image while saving. Preserve a typed tag draft during removal. Show a save error beside the controls.
+
+All 21 Run route tests, 11 OpenAPI tests, 5 image-tag tests, and 5 page tests pass. HTTP fixture tests cover normalization, repeated removal, shared copies, unrelated tags, invalid requests, and unchanged original run files. JavaScript syntax and behavior checks cover add, remove, shared updates, saving state, and failure state. Restart only port 8168 with SIGTERM from PID 70451 to PID 35623. Dataset returns HTTP 200. The live run shows an enabled × button on the scene_photo tag. Browser console has no errors. Evidence: `../internal/run-tag-removal-20261007.jpg`. Tests use temporary data. No live tag is removed during verification.
+
+## 2026-10-07T14:36:47+03:00 — R@10 in the Runs table
+
+Add R@10 after R@5. Use the existing `recall_at_10` summary value, percentage format, and column sorting. Missing values show an em dash. The live run `2026-10-07T103007Z-lab-siglip2-p512-rot5-seg-my` shows 99.5%. Both sort directions and 15 cells per row pass the browser check. All 5 page tests, JavaScript syntax, and the diff check pass. No server restart. Existing tabs need a refresh. Evidence: `../internal/run-r10-table-20261007.jpg`.
+
+## 2026-10-07T15:08:32+03:00 — Merge manual wines
+
+Add `Merge…` to `__`-prefixed wine candidates in Runs and its step popup. Add `GET /api/wine-merge` for a read-only preview and `POST /api/wine-merge` for the write. Choose an existing destination slug. Exclude `__null__` and `__drawer__`. Transfer assigned photos from every testset in one database transaction. Preserve labels, proposals, boxes, URLs, timestamps, extras, shared image tags, and comment IDs. Rename a colliding filename with a free `_merged<N>` suffix, keeping both records even when their bytes match.
+
+Transfer catalogue images, comments, codes, bindings, favorites, tags, and similar-wine pairs. Keep the destination's catalogue fields and existing main image. Join variant groups and redirect live reassignment references. Delete source import refusals and the source catalogue row completely. Roll back every transfer on an error. Preserve image files, processed images, annotation provenance, and saved runs. Rebuild affected embedding indexes before new matches.
+
+All 9 merge tests, 23 Run route tests, 11 OpenAPI tests, and 5 page tests pass. Checks cover complete annotation retention, filename conflicts, reserved and missing slugs, late-failure rollback, competing merges, unchanged saved runs, and cached Dataset/Testset refresh. JavaScript syntax and behavior checks cover target validation, saving locks, retryable errors, cancellation, and success updates. The live dialog for `__chateau-pinot-belenkoe-2025` shows 3 photos across `my` and `test-1`, and accepts `belenkoe-beloe`. Browser console has no errors. This check submits no live merge. The current server already serves the new endpoint; this chat makes no restart. Existing tabs need a refresh. Evidence: `../internal/wine-merge-20261007/dialog.jpg`.
+
 ## 2026-10-07T15:24:33+03:00 — Preserve label photos and reject weak glass detections
 
 Selector v3 rejects package masks with fill below 5 percent and preserves photo context when a full-frame mask retains less than 25 percent. For scenes without hands, reject candidates whose detector confidence is at least 0.50 below the strongest detection of the same package class. Compute scene scores before rejection so surviving scores stay equal. Keep package classes independent and preserve hand-scene selection.
@@ -6393,6 +6470,14 @@ Save and replay the actual selector version. Historical versions 1 and 2 keep th
 
 All 83 focused tests pass. The label guards affect only the three reported label photos in the 2,542-query trace. The confidence guard changes only the reported Raevskoe glass selection relative to v2, selecting the real bottle. Approved SigLIP2 comparisons recover truth rank 1 for Abrau (1266 before), Agora (outside Top 10 before), and Cantiani Chardonnay (outside Top 10 before), using the same catalogue. Raevskoe crop validation uses cached detections; no new retrieval rank is claimed. Port 8168 runs v3, and live historical previews match the saved input hashes. Evidence: `../internal/label-illustration-segmentation-20261007/`.
 
+## 2026-10-07T15:33:05+03:00 — Runs charts
+
+Add `/runs/charts` under Runs. Select one testset and compare pipelines with grouped bars, or draw one pipeline's metrics against recorded start times. The comparison defaults to the newest scored run for each pipeline; the table allows another run for each pipeline. The overview shows R@1/R@5/R@10, F1@1/F1@5, median latency, and the share within SLA. Individual metric choices include match share and false matches at rank 1. Filter model-cache on, off, or not recorded. Bars, points, and run links open saved results.
+
+Use the existing run-head API. Exclude dry runs, Drawer runs, subset runs, and unscored runs. Exclude undated records from the time plot and report their count. Keep zero values, leave missing metrics absent, and break lines at missing values. Show original query/positive/negative counts, cache and barcode settings, SLA thresholds, and endpoint overrides in the data table. The Runs Charts link retains the selected testset and pipeline. Preserve stored metrics and every original result file.
+
+All 7 chart behavior tests, 24 Run route tests, 11 OpenAPI tests, and 5 shared-page tests pass. Assembled JavaScript syntax and diff checks pass. Browser checks cover 17 pipeline representatives, an alternate run choice, testset/metric/cache changes, empty states, two `my` pipelines, seven dated SigLIP2 runs, and keyboard navigation to a saved run and back to Charts. The browser console has no errors. Restore the original Runs header filter and close temporary tabs. Restart only port 8168 with SIGTERM from PID 69757 to PID 23013; Dataset and Charts return HTTP 200. Existing tabs need a refresh. No live run, annotation, or inference state changes. Evidence: `../internal/run-charts-20261007/README.md`, `pipelines.jpg`, and `history.jpg`.
+
 ## 2026-10-07T16:11:17+03:00 — Review all failures and preserve enclosed label detail
 
 Visually review all 464 failures of `2026-10-07T103007Z-lab-siglip2-p512-rot5-seg-my`: 367 positive misses and 97 negative false matches. Save each original, exact historical input, true/forbidden and predicted catalogue references, diagnosis, confidence, and next action in `../internal/run-failure-review-20261007/`. Group 164 sibling-variant confusions, 131 probable catalogue overlaps, 63 packaging gaps, 65 negative identities needing verification, 15 annotation/reference conflicts, 8 destructive masks, 6 rear-label coverage cases, 5 partial labels, 4 ambiguous multi-bottle scenes, 2 wrong-object selections, and 1 cross-producer confusion. Record 79 catalogue pairs; three pairs share an identical full embedding reference. One byte-identical image has a positive truth equal to its forbidden negative identity. Change no annotation or catalogue row.
@@ -6400,6 +6485,450 @@ Visually review all 464 failures of `2026-10-07T103007Z-lab-siglip2-p512-rot5-se
 Selector v4 restores enclosed holes in bottle and can masks before edge refinement, preserving printed text and artwork wrongly treated as background. Keep 8-connected exterior background and preserve packet/box handle cutouts. Restore Gravity grape/vintage text and the two failed Petnat Pinot Gris query inputs. Explain restored-pixel counts in the step viewer. Versions 1–3 and their cache/replay contracts remain supported.
 
 All 87 focused tests, Ruff, Python compilation, and diff checks pass. Offline replay of all 2,542 queries (2,138 distinct images) matches every historical v1 input SHA256 and keeps every v3 primary object selection. New inputs differ for 231 queries: 35 misses, 9 false matches, 151 hits and 36 other-slug negative results. One refined crop edge changes by one pixel. Local Tesseract recovers Cabernet Sauvignon, Cabernet Franc, Saperavi and 2022 on repaired Gravity; the decorative Petnat font remains difficult for this OCR engine. New retrieval ranks and accuracy gains are not claimed. Restart only port 8168 with SIGTERM from PID 23013 to PID 89204; Dataset gives HTTP 200 and live historical previews for q-000141, q-000382 and q-001848 retain their saved hashes. No remote inference request is made.
+
+## 2026-10-07 — Bottle and label retrieval
+
+- Added `siglip2-p512-rot5-label-seg` and `siglip2-p512-rot5-bottle-label-seg`. Both reuse the current rot5 catalogue: labels query only label vectors, and bottles query only full vectors. The combined preset uses the existing mean of the best available per-view cosines and falls back to the bottle when no label is detected. The existing bottle preset stays intact. Validation: all 34 pipeline tests and 41 embedding-runner tests pass; configuration parsing and diff checks pass. Prepared the exact Victor Dravigny inputs locally. The owner-approved Victor Dravigny comparison reproduces bottle rank 6 (0.8970); current label rank is 5 (0.8870), and combined rank is 6 (0.8920). Inspection shows that the query label crop retains shoulder-to-front bottle glass while the correct main reference is a tight front label. Both presets are runnable in the live selector without a restart. No catalogue change. A tight-label diagnostic awaits its separately required image-transfer approval.
+
+## 2026-10-07T21:22:31+03:00 — Experimental label quality and routing
+
+Add `siglip2-p512-rot5-label-first-gated`. Check detector confidence, native detail,
+input detail, label-mask purity, masked sharpness, and selected-package overlap.
+Exclude neutral white padding from the purity denominator. Record source-frame
+contact as a flag. Skip a rejected label before embedding. Select the complete label
+ranking when crop quality passes, the top cosine is at least 0.90, and the lead over
+the second wine is at least 0.01. Otherwise select the complete bottle ranking and
+its scores. Do not average spaces. Keep these thresholds as uncalibrated trial values.
+Show quality measurements and routing reasons in the Runs step popup. Hide a
+rejected label from the model-input artifacts. Refuse unsupported label-view geometry
+and a competitor wrapper that can combine scores. Preserve existing presets.
+
+All 139 focused checks pass: 18 label-gate tests, 44 runner tests, 38 pipeline tests,
+17 step-viewer tests, and 22 main-scene tests. Ruff, Python compilation, and the diff
+check pass. Local replay through the configured factory uses only saved query vectors
+and prohibits HTTP requests. The Victor Dravigny body-label crop has purity 0.370230
+and falls back to the unchanged bottle result: truth rank 6, cosine 0.8970. Its saved
+label ranking also fails the margin check at 0.0011. The prepared tight crop has purity
+0.926496 and passes local crop checks. Its retrieval rank remains unmeasured.
+No accuracy gain is claimed. No new image is sent to a model service.
+
+Restart only port 8168 with SIGTERM from PID 89204 to PID 6770. Dataset returns
+HTTP 200, and the live Run selector marks the new preset runnable. Refresh existing
+tabs. Detailed concepts: `docs/testing/label-gate.md`. Local replay evidence:
+`../internal/victor-dravigny-rank6-20261007/label-gate-replay.json`.
+
+## 2026-10-07T21:38:28+03:00 — Crop-quality results in matching details
+
+Show `Label crop quality · Accepted` or `Label crop quality · Rejected` in the matching
+step heading. Show label-content percentage in its metadata. Expand the step to see
+PASS/FAIL, the measured values, recorded minimum thresholds, readable rejection
+reasons, and the effect on the label input. Missing values say `not measured`.
+Name the selected retrieval space in the routing heading. Show label similarity
+and margin beside their recorded thresholds. Crop acceptance does not claim that
+label matching won the routing decision. Preserve the recorded result and shared
+renderer. Historical runs without a gate record get no invented gate result.
+
+All 20 step-viewer and 7 shared-renderer tests pass. Ruff, Python compilation, and
+the diff check pass. Browser verification uses the exact saved Victor Dravigny local
+replay with the shared renderer: Rejected, label content 37.0 percent against minimum
+80.0 percent, and bottle fallback. Browser console has no errors. Screenshot:
+`../internal/victor-dravigny-rank6-20261007/quality-details.jpg`.
+Restart only port 8168 with SIGTERM from PID 6770 to PID 60695. Dataset returns
+HTTP 200. Existing tabs need a refresh. No model request or stored-run change.
+
+## 2026-10-07T22:11:10+03:00 — Label mask union experiment
+
+Add `mask_union=True` to `alternatives.label_cut_of`. Combine the masks of the main
+label and accepted body labels at source resolution. Preserve both label regions
+and their relative positions. Apply the existing edge refinement and preserve the
+source alpha. The glass between labels becomes transparent, then white in the
+embedding input. Keep the default preparation and stored derivative settings.
+A single label keeps identical input bytes.
+
+Prepare four local previews from cached SAM3 masks. The attached 2016 Victor
+Dravigny example has two accepted labels. Its purity rises from 0.373856 to
+0.906678. The saved 2020 query rises from 0.370230 to 0.914013. The Extra Brut
+reference rises from 0.379586 to 0.899783. The correct Brut reference has one
+accepted label and keeps identical bytes. Purity after masking checks preparation
+against the detector mask; it does not prove correct segmentation or recognition.
+
+All 125 focused tests pass: 63 alternative-image tests, 44 embedding-runner tests,
+and 18 label-gate tests. New cases check both components, the white glass gap,
+service-mask scaling, source alpha, and unchanged single-label preparation.
+Ruff passes with the existing E731 lambda excluded. Python compilation and the
+diff check pass. No model request, catalogue/index write, or runtime restart.
+The Run presets keep the existing preparation. Recognition with changed inputs
+remains unmeasured. Apply the same masking option to query and reference inputs
+and rebuild changed label vectors before activating it in matching.
+Evidence: `../internal/victor-dravigny-rank6-20261007/mask-union-results.json`.
+
+## 2026-10-07T22:31:10+03:00 — Standard label segmentation and local vector refresh
+
+Make mask union the standard automatic label preparation. Keep the main label and
+accepted body-label masks. Remove the glass between them. Version the derivative
+rule as `label mask union v1`. Old rectangular derivatives need a refresh. Preserve
+manual cuts. New runs record `sam3.label_mask_union: true`. Historical input and
+step reconstruction use the old rectangular rule when this flag is absent. Include
+the flag in the visual-input cache key.
+
+The owner's 2022 Brut attachment matches the old local reference input pixel-for-pixel.
+Its purity rises from 0.353667 to 0.919023 with the two label masks. Prepare all
+170 stored rectangular label derivatives from cached SAM3 answers. Send no new
+SAM3 request. Refresh 148 full-photo label vectors in the local
+`gx10-siglip2-so400m-patch16-naflex-p512-rot5` index. Keep every other index record
+and vector unchanged. Verify all 209,376 full-vector rows and 3,143 other label
+vectors against the saved original. The new vector file is `vectors-b5273315.npy`.
+All refreshed labels are current. No rectangular label derivative remains.
+Database `quick_check` returns `ok`. Keep the original index, vector file, prepared
+label images, and derivative rows in the owned evidence directory for recovery.
+
+The owner requires local embedding updates only. Use five inference requests to
+the configured SigLIP2 endpoint to compute 148 vectors. Make no change to its model,
+configuration, service, deployment, or remote files. Store the vectors only locally.
+Automatic review approved inference after the owner clarified this requirement.
+
+All 156 focused tests pass: 64 alternative-image tests, 45 embedding-runner tests,
+20 step-viewer tests, 18 label-gate tests, and 9 label-seeding tests. New tests verify
+segmentation on upload, outdated derivative settings, manual-cut preservation,
+white glass gaps, and exact historical input replay. Ruff passes with the existing
+E731 lambda excluded. Python compilation and the diff check pass.
+
+Restart only the local Workbench on port 8168 with SIGTERM from PID 60695 to
+PID 78885. Dataset returns HTTP 200. The live server returns the exact refreshed
+2022 reference PNG and marks the label-first gated preset runnable. Existing tabs
+need a refresh. No benchmark or recognition-accuracy gain is claimed.
+Evidence: `../internal/victor-dravigny-rank6-20261007/standard-label-segmentation/`.
+
+## 2026-10-07T23:39:36+03:00 — Main-label experiment prepared; inference approval pending
+
+Add opt-in main-label visual, text-verification and gated presets, with a separate local supplementary index. Query and reference preparation retain the largest accepted label mask alone. Record focused input hashes and reference freshness; show variant-text evidence in matching details. Explicit OCR attribute matches reorder only the shortlist and keep cosine scores unchanged; unclear words preserve the visual order. Restore the mask-union/historical-replay helper contract found missing during regression checks.
+
+Prepare 3,291 references locally; 148 inputs change and 3,143 vectors can be reused. Both Victor Dravigny query main labels are prepared. Local Tesseract does not read the full sugar word on these two pilots; its conservative check abstains. No new recognition gain is claimed. All 195 focused tests, Ruff (with existing alternatives E731 excluded), Python compilation and diff checks pass.
+
+Automatic approval review rejected the 148-reference image transfer as insufficiently authorized. An explicit approval request covers these references and two query labels (150 inputs total). No embedding call, standard-index update, remote service change or lab-server restart occurs. The supplementary vectors, live ranking experiment and activation remain pending. Evidence: `../internal/victor-dravigny-rank6-20261007/main-label-experiment-status.json`.
+
+
+## 2026-10-07T23:53:19+03:00 — Main-label pilot measured and activated locally
+
+The owner explicitly approved the 150 prepared inference inputs. Compute 148 changed catalogue main-label vectors and two query vectors at the existing SigLIP2 endpoint in six requests; publish only the separate local main-label supplement. Verify all 3,143 reused vectors bit-for-bit, published normalization, and the unchanged standard index. Make no remote service, model, configuration or deployment changes.
+
+The 2020 Victor Dravigny Brut query ranks first at 0.9200. The pale 2016 screenshot query improves from fourth to third at 0.9299; semidry and semisweet variants remain above it. Local Tesseract misses the complete БРЮТ word on both, so variant verification preserves visual order. Both real cached crops pass quality. Margins of 0.0212 and 0.0005 select labels for 2020 and bottles for 2016 under the trial confidence gate. Do not claim a correct 2016 bottle fallback or catalogue-wide accuracy gain. Historical 2020 scores are context, not a controlled comparison against the later mask-union index.
+
+Validate production preparation and saved-input reconstruction against exact approved query hashes, reusing the real saved query vectors without more inference. Verify matching-detail OCR evidence, supplementary search URLs, and candidate-image index selection. Correct candidate details to resolve each view from its recorded index; add checks for mixed bottle/main-label previews and missing/stale supplementary records. All 197 focused checks pass (12 main-label, 45 runner, 38 pipeline, 20 step viewer, 18 gate, 64 alternative-image checks), including rerunning the affected main-label and runner suites. Ruff and the scoped diff check pass.
+
+Activate all three opt-in presets locally. Restart only port 8168, 78885 → 31829, then 31829 → 48394 after the preview correction. Dataset and preset endpoints return HTTP 200; reference PNGs served by the local lab match indexed prepared files byte-for-byte. Existing tabs need a refresh. Evidence: `../internal/victor-dravigny-rank6-20261007/main-label-results.md` and its associated JSON files. No commit or GitHub state change.
+
+
+## 2026-10-08T00:37:27+03:00 — Local PaddleOCR trial resolves both Victor Dravigny pilots
+
+Add the opt-in `siglip2-p512-main-label-paddleocr` preset. Keep the same prepared label pixels, catalogue vectors, ten-candidate window and trial 70/100 threshold. PaddleOCR 3.7.0, PaddlePaddle 3.3.1 and PaddleX 3.7.2 run locally in a separate Python 3.12 CPU environment. Pin PP-OCRv5 mobile detection and the East Slavic recognizer; require local model paths for ordinary inference. Bootstrap alone downloads public weights. Reader cache identity separates image content, models, package versions and schema from Tesseract. Invalid output and failures preserve visual ranking.
+
+Paddle reads БРЮТ at 82.68/100 on the pale 2016 label and 91.99/100 on 2020. Both correct wines rank first after sugar-level verification; the 2016 result moves from third to first. The saved-vector comparison preserves the original 0.9299 and 0.9200 scores. Record complete recognized lines and polygons, native score units, model identity and original visual rank. Matching details now show the reordered answer, explicit matches/conflicts and movement. Paddle line scores are not calibrated against Tesseract word scores. Do not infer catalogue-wide accuracy from two pilots.
+
+All 79 relevant checks pass: 15 main-label, 5 Paddle result, 38 pipeline and 21 step-viewer checks. Real local OCR also succeeds under the restricted network profile with downloaded model paths. Production replay uses exact approved query hashes and saved real vectors, verifies both first-place results, reference previews and input reconstruction, and preserves all 3,143 reused label vectors. Ruff and scoped diff checks pass.
+
+Restart only the local lab on port 8168, 48394 → 81596. Health returns HTTP 200 and the preset is runnable. Live Recognize validation returns the 2016 Brut first, with the +2 movement and preserved within-request visual score 0.9300. This uses one ordinary inference request with the exact previously approved main-label PNG; SAM3 is cached and PaddleOCR remains local. Initial automatic review rejected the local source-photo upload after interpreting it as the upstream payload. A source audit and cached-input preflight proved the label-only data path and exact approved hash; the same live action was then approved and passed. No remote service, reference vector, catalogue row, GitHub state or commit change. Evidence: `../internal/victor-dravigny-rank6-20261007/paddleocr-results.md` and associated JSON files.
+
+## 2026-10-08T01:00:35+03:00 — Local pairwise main-label trial
+
+Ran SuperPoint + LightGlue, SuperPoint + SuperGlue, LoFTR, DINOv2, DINOv3, LPIPS and DISTS on the preserved 2016 and 2020 Victor Dravigny Brut main labels. Each method uses the same saved top 10 wines and up to two front-label references per wine. All 34 reference slots have measured scores. LightGlue alignment followed by LPIPS ranks the correct wine first for both queries. With one reference per wine, aligned LPIPS ranks both second. The trial does not establish a production threshold. Seven geometry and ranking checks, complete result validation and Ruff pass. Local catalogue index hashes are unchanged. There was no remote inference, service change, server restart, default pipeline change or GitHub state change. Evidence: `../internal/victor-dravigny-rank6-20261007/pairwise/results.md`, `summary.json`, `models.json`, `inputs.json`, `validation.json` and the seven method JSON files.
+
+
+## 2026-10-08T01:18:27+03:00 — Compare distinguishing wine attributes in local text presets
+
+Extend the shortlist verifier from sugar alone to explicit sugar, grape, wine-colour and product-line terms. Use only confidently read fields that differ among candidates; common brand text and dates do not confirm variants. Keep partial grape reads compatible with blends and broad families; infer missing-grape conflicts only from fully understood catalogue grape lists. Ignore descriptive colours and grape-name colours. Reserve, Grand Reserve, Kosher and Collection provide positive evidence; absent terms remain unknown. Prefer an explicit catalogue-name sugar class over legacy slug suffixes such as Extra Brut followed by broad brut.
+
+Order complete matches, partial matches, unknowns and explicit contradictions without averaging or changing cosine scores. One contradiction dominates other positive fields; visual order resolves equal evidence. Matching details show all four fields and candidate-level status, including when no reorder is applied. Historical sugar-only traces remain readable.
+
+All 101 focused checks pass: 20 attribute, 15 main-label, 23 step-viewer, 5 Paddle result and 38 pipeline checks. Ruff and scoped diff checks pass. Production replay with exact saved label inputs, real saved vectors and local Paddle caches keeps both Victor Dravigny Brut queries first and validates new matching details. Only sugar is clearly read in these two examples; no multi-attribute recognition gain or catalogue-wide accuracy claim is made. Catalogue parser coverage is recorded separately from accuracy.
+
+Restart only port 8168 with SIGTERM, 81596 → 26378. Dataset and recognition-preset endpoints return HTTP 200; the PaddleOCR preset is runnable. No remote inference request, remote service change, embedding-index update, catalogue write, GitHub change or commit. Evidence: `../internal/victor-dravigny-rank6-20261007/variant-attributes/results.md` and its validation JSON files.
+
+
+## 2026-10-08T05:47:28+03:00 — Complete local benchmark of label matching approaches
+
+Benchmark Tesseract, PaddleOCR, SuperPoint + LightGlue, SuperPoint + SuperGlue, LoFTR, DINOv2, DINOv3, LPIPS and DISTS, plus SigLIP2 label retrieval and fixed gate/OCR combinations. All 21 rules retain the 2,553 frozen rows from the saved `2026-10-07T144842Z-lab-siglip2-p512-rot5-seg-my` run: 2,007 positive and 546 negative. Report overall and common label-ready accuracy, recall, ranks, fixes/regressions, coverage, negative named-wine ranks, local stage latency, one-reference sensitivity and paired image-bootstrap intervals. The same frozen top-ten bottle shortlists and up to two front references supply 20,532 unique pairwise comparisons.
+
+The label quality/score/margin gate leads at 83.76% top-1 against 82.06% for the saved bottle baseline, fixing 59 positive rows and regressing 25. LoFTR is the best tested pairwise rule at 69.36%, with 105 fixes and 360 regressions. PaddleOCR on the bottle shortlist reaches 81.86% (51 fixes, 55 regressions); adding it after the label gate reaches 83.31%. Aligned LPIPS succeeds on all five earlier linked examples but reaches only 69.11% overall. Preserve these development-run results without tuning thresholds or changing production defaults.
+
+Use only existing local SAM3 masks and pretrained local model caches. Missing labels preserve bottle rankings. Recompute both SigLIP2 query and reference vectors together in the experiment directory after two saved-vector parity checks differ; do not publish or mix them into catalogue indexes. Correct the omitted `main_patched` front-reference type before full scoring and verify query pixels, truth and bottle order unchanged. Correct the effective SuperPoint decoder cap and retry failed SuperGlue attempts, retaining their history. Bound LoFTR Metal-cache growth with serial workers of at most 2,000 new pairs, preserving model settings and all successful results. Its latency retains the earlier memory-pressure episode and repeated cache preparation; do not treat it as isolated throughput.
+
+All ten engines finish with zero current runtime errors. Nine bounded LoFTR workers pass cached/direct and eight-pair parity checks. Ten ranking/denominator/scheduler checks, Ruff and final output checks pass. Audit all 7,043 image files, 68 pinned checkpoint/configuration files, frozen input/index hashes and six verifier/preparation module hashes. All 21 per-query result files retain the complete row IDs and reconcile with CSV metrics. Decoded RGB audit finds no query/reference overlap, three duplicate-encoding groups and catalogue-reference ambiguity in 19 positive shortlists.
+
+Record OCR regressions separately: incomplete catalogue attributes can promote a wrong wine, some contradictions require text/catalogue review, and canonical wine colour in `category` is unused by the current verifier. These are future isolated experiments; no verifier correction is folded into this frozen benchmark. Photos include prior debugging cases, so independent validation is still required. No production pipeline/index write, remote inference, remote-service modification, server restart, GitHub state change or new commit. Evidence: `../internal/victor-dravigny-rank6-20261007/benchmark/results.md`, `comparison.csv`, `summary.json`, `query-results/`, `audit.json`, `output-validation.json`, `ocr-diagnostics.json`, `execution-deviations.md` and `reproduce.md`.
+
+
+## 2026-10-08T08:45:54+03:00 — Run every local comparison approach on current my
+
+Create 21 opt-in lab-compare pipeline configurations and execute each through the normal lab job runner on the same 2,565 current scored cases (2,018 positive, 547 negative). Complete 53,865 results with zero query or comparison/model errors. Include the bottle control, Tesseract and PaddleOCR variant verification, SuperPoint + LightGlue, SuperPoint + SuperGlue, LoFTR, DINOv2/v3 global and patch features, LPIPS/DISTS raw and geometrically aligned distances, SigLIP2 main-label retrieval, fixed-shortlist label comparisons, and label gate/OCR combinations.
+
+The label quality/score/margin gate leads at 84.29% positive R@1 against 82.56% for the bottle control; R@5 is 99.21% against 98.76%, and both R@10 values are 99.80%. Both have 93 negative false matches at rank 1. The Victor Dravigny 07_manual.webp case is first, with a genuinely masked main label, accepted crop quality, label cosine 0.9228 and margin 0.0261. Pairwise rerankers retain their native metrics and direction instead of disguising their values as cosine scores; missing label/reference inputs explicitly preserve bottle fallback. Matching details show input hashes, masked previews, gate decisions, independent label top-ten cards, native comparison results, original bottle ranks, and OCR engine. Count global label-search timing only once and use a local-comparison heading for these presets.
+
+Query SigLIP2 inference is local float32 p512 against the fixed saved bottle catalogue vectors; this is a documented new local-query baseline, not an exact replay of the earlier remote-query run. Main-label queries and references share the local model space. Successful pixel/model-keyed caches are shared, so the displayed run latency is not cold model latency. Existing saved SAM masks are reused offline; these runs make no new remote model requests. The initial three-query connection-refused attempt is preserved separately and excluded from the 21 completed runs. Input bytes and both saved catalogue vector files are unchanged; original timestamps of all 2,160 unique source files are restored from the first captured occurrence.
+
+All 145 focused unit checks, seven fresh model parity checks, eight live Victor checks, Ruff and scoped diff checks pass. Complete audits cover current source hashes, label/truth/order equality, native score ordering, fallback identity and OCR engine selection. Browser verification confirms the comparison chart has 21 completed configurations with 2,565 cases each and all ten main-label card images load; no browser warnings/errors. Restart only port 8168 with SIGTERM to load server changes, including final restarts 32953 → 44792 → 60604; GET /api/dataset returns HTTP 200. No changes to the remote SigLIP2 service, GitHub state or commits. Evidence: ../internal/victor-dravigny-rank6-20261007/lab-pipelines/ (suite-status.json, audit.json, comparison.json, verification.json, catalogue-integrity.json, source-integrity.json, browser-verification.json and preview.jpg).
+
+
+## 2026-10-08T09:10:00+03:00 — Analyze failures shared by most current-my approaches
+
+Join the 21 completed comparison runs by query ID, image hash and frozen truth/label. Of 2,565 case rows, 527 fail a strict majority (at least 11): 465 positive and 62 negative, representing 491 unique image hashes. All 21 fail on 137 rows (117 positive, 20 negative). Negative failure means the named rejected entry ranks first; it does not reveal actual wine identity. Shared inputs and fallback make these correlated alternatives, not 21 independent judgments.
+
+Inspect all 137 universal cases visually, plus nine targeted probes. Preserve 23 detailed case observations and nine exclusive trace-based primary groups. Among positive majority failures, bottle matching is already correct on 156; 298 of the 309 wrong bottle results share the producer. Missing cached label inputs affect 69 positive and six negative cases, all universal failures. Quality rejects 50 positives. Same-name different-slug confusions occur on 48 positives and exact shared front references on seven; these flags overlap. Only four positives lack accepted truth in the bottle top ten.
+
+Confirm price-tag, watermark, neck-capsule and neighboring-bottle selections, and presentation-box/package mismatches. Demonstrate a local saved-text parsing defect: Paddle reads MYCKAT at 97.78 confidence, but extracts no grape; replacing only that token with МУСКАТ makes the existing parser extract muscat. Save before/after evidence without recomputing rankings or editing production parsing. Flag Endemy Saperavi negative identity/design ambiguity for policy review, preserving every human annotation.
+
+Publish only a derived read-only case report on new loopback port 8173, PID 31194. Include filters, actual masked inputs, expected or named rejected references, bottle rank-one images, all 21 method ranks/statuses and normal lab detail links. Verify 527/137/117/20 filter counts, four loaded example images, 21 approach rows, written-analysis HTTP 200 and zero browser warnings/errors. Validate 1,442 referenced image assets and the 527-row CSV; all 21 original result SHA-256 values match. Restore and verify bytes and original timestamps of all 2,160 unique query files. No model inference, remote service modification, ranking/index/catalogue/annotation change, existing server restart, GitHub write or commit.
+
+Evidence: ../internal/victor-dravigny-rank6-20261007/lab-pipelines/failures/ (report.html, cases.json, cases.csv, summary.json, text-normalization-probe.json, sheets/, verification.json, browser-verification.json and preview.jpg).
+
+
+## 2026-10-08T14:10:15+03:00 — Price-tag label selection
+
+- Fix q-000011: SAM3 detected the real Ркацители & Мускат Оранж 2025 label, but the global bottle-IoU exclusion discarded it and selected a shelf price tag. Associate labels with the main bottle before exclusion/fallback, so the close-up label survives and off-bottle tags/neighbour labels cannot win. Explicit label close-ups and images without a detected bottle retain their behavior.
+- Version new query selection as sam3.label_selection_version=2; historical matching inputs retain version 1, and preparation/visual caches cannot mix them. Version automatic derivative settings; preserve legacy migration settings and manual cuts.
+- Exact cached-mask replay selects [78,60,542,705] instead of the price tag [435,816,692,939]. The white-background label input passes quality: purity 0.942626, package overlap 1.0. All 201 affected tests pass; five previous problem cases keep their label selections. Historical results/report hashes and original input hash/nanosecond timestamps pass.
+- Restart only port 8168 with SIGTERM: 60604 → 67304; dataset API returns 200 and no lab job was active. No remote model request, service modification or catalogue-vector update. Fresh local ranking validation exceeded the 240-second MPS worker timeout; no new rank/accuracy claim. Evidence: internal/victor-dravigny-rank6-20261007/price-tag-fix/.
+
+
+## 2026-10-09T00:11:35+03:00 — Shared OCR grape and sugar normalization
+
+- Add `pipeline/wine_terms.json` and `wine_terms.py` as the shared 36-grape/11-sugar vocabulary for Tesseract, PaddleOCR and legacy OCR comparison actions. Canonicalize reviewed aliases and vocabulary-bounded visual lookalikes: MYCKАТ → мускат, Са8иньо бланк → совиньон-блан, ПОЛYСЛАДК0Е → полусладкое; recognize Müller-Thurgau and preserve distinct compound sugar classes.
+- Keep raw OCR text, confidence, polygons and reader caches unchanged. Normalize complete and confidence-filtered reads; show original-to-canonical corrections and confidence in matching details. Record dictionary/algorithm hashes and verification policy; historical runs retain their saved policy explanations.
+- Cached replay exposed metadata-completeness promotion. Make unknown catalogue fields neutral, preserve compatible/unknown visual order, rank reliable contradictions last and retain explicit product-line positive evidence. No cosine averaging or score rewrite.
+- All 190 affected tests pass, as do Ruff and scoped diff checks. Read-only cached replay of 2,565 saved rows per engine: Tesseract 14 positive fixes/6 regressions and 2 named-negative fixes/1 regression; PaddleOCR 33/10 and 9/3. These development comparisons use fixed bottle shortlists, cached OCR and current metadata; no new inference or held-out accuracy claim. All 21 historical result hashes match.
+- Restart only port 8168 with SIGTERM, PID 67304 → 82082; no active jobs, dataset API HTTP 200. Preserve remote services, catalogue vectors, annotations and source images. No GitHub write or commit.
+
+Dictionary usage and tests: `docs/testing/wine-terms.md`. Evidence: `../internal/victor-dravigny-rank6-20261007/ocr-normalization/summary.json`, `replay.json`, `tests.json` and `server.json`.
+
+
+## 2026-10-09T00:50:24.467308+03:00 — Repeat all 21 local wine comparison variants
+
+Repeated the frozen 2,553-row cohort with current main-label selection and shared grape/sugar normalization. Reused inference only for unchanged pixel hashes and inference contracts. Ran fresh local inference for 28 label images per image engine and 352 pairs per visual engine. Recomputed all 21 ranking variants. Gate and gate + PaddleOCR tie at 83.76% top-1. PaddleOCR on the bottle shortlist improves from 81.86% to 83.06%. Saved the separate campaign in `../internal/victor-dravigny-rank6-20261007/benchmark-repeat-20261009/`.
+
+Saved the full wine and photo intersection: 122 positive photos across 98 wines, plus 20 named-negative false matches across 17 targets. Three previous universal failures resolve; five new ones appear. The report separates label coverage, changed label rejection and OCR policy changes. All 14 focused checks pass. Audit verifies 7,041 image files, 68 pinned model/OCR files, 91 unchanged original reports and 5,439 restored original image times. All engines have zero current runtime errors. Remote services, production indexes, annotations and GitHub state remain unchanged.
+
+
+## 2026-10-09T01:05:25.494286+03:00 — YOLO26 label training research prepared
+
+Verified both requested Roboflow projects use the same 12 field-region classes. RF100 names the first project as its source. Prepared five training configurations, a credential-suppressing download wrapper, duplicate-aware dataset preparation and an isolated trainer. Downloaded and hashed five official YOLO26 checkpoints. All five pass local MPS inference. A 12-class gradient smoke check and four preparation tests pass; Ruff passes. Wine training and measured SAM3 comparison wait for an exported dataset or a local Roboflow key path. Saved geometry, OCR extraction and fair-comparison research in internal/victor-dravigny-rank6-20261007/yolo26-label-research/README.md. No service restart, remote inference or service change, production index change, annotation change, original photo change or GitHub write.
+
+## 2026-10-09T01:22:51+03:00 — Cylindrical label rectification prototype
+
+Flattened the two owner-selected labels with a local classical CV method. It estimates camera roll from the label mask and projected radius from the bottle silhouette, fits the upper and lower curved boundaries, and samples the original RGB pixels once with a cylindrical arc-length map. Saved native Inkerman 387x394 and Andryus 159x163 outputs, rotation-only comparisons, assumed-radius variants, geometry JSON, an image comparison and an interactive HTML report in `../internal/victor-dravigny-rank6-20261007/rectification-prototype-20261009/`. The Andryus body silhouette comes from source alpha and is a proxy. No neural model was trained.
+
+Eighteen independently rendered synthetic cases pass; largest p95 coordinate error is 2.022 flat pixels. Empty, diamond and invalid-prior inputs reject. Both real sampling maps are finite with no folds. Ruff passes. Local fixed PaddleOCR on six native and six uniformly enlarged images shows mixed gains: Inkerman gains small text but the spaced grape word splits, while Andryus gains the correct surname at 4x scale and still loses the small grape line. These are geometry/OCR checks, not matching-accuracy results. All twelve OCR hashes, four source/prepared hashes and restored times, and 91 historical report hashes pass. Original photos, existing reports, annotations, services, indexes and matching defaults remain unchanged. No remote request or GitHub write.
+
+## 2026-10-09T11:00:03+03:00 — Opt-in OCR phrase recovery experiment
+
+Add `pipeline/wine_term_recovery.py` and an offline replay driver. Search the shared
+47-identity vocabulary independently of the shortlist. Recover split and fused
+terms. Compare Levenshtein and Damerau-Levenshtein with bounded edits and a margin
+between canonical identities. Preserve atomic grape names, broad families, raw
+OCR, native confidence, geometry and scores. Require line evidence for cross-word
+joins. Protect exact terms and sugar qualifiers. Fuzzy evidence cannot establish
+a new contradiction. Independent exact contradictions remain effective.
+
+The frozen replay retains 2,553 queries per reader: 2,007 positives and 546 named
+negatives. PaddleOCR whitespace recovery increases positive top-1 from 1,667 to
+1,668 (83.0593% to 83.1091%). It causes zero measured positive regressions. Named
+negative errors remain 91. Tesseract top-1 remains 1,637 (81.5645%), with 97 named
+negative errors. Fuzzy recovery increases usable attribute rows from 487 to 503
+for Tesseract and from 1,071 to 1,108 for PaddleOCR. It adds no top-1 gain beyond
+whitespace recovery. Both distance metrics produce identical rankings. New
+contradictions against accepted positive truths remain zero. These are development
+replays. Real span correction precision is unmeasured. No new abstention policy
+is applied. The existing catalogue-completeness assumption remains in use.
+
+All 51 focused tests and Ruff pass. All 27 frozen source files and the original
+parser/dictionary bytes remain unchanged. The live matcher has no recovery import.
+No model inference, server restart, catalogue/vector/annotation change or GitHub
+write occurs. Evidence: `../internal/ocr-recovery-20261009/decision.json`,
+`results-final/summary.json`, `manual-review.json` and `validation.json` in that
+evidence directory.
+
+
+## 2026-10-09T11:07:17+03:00 — Start the workbench
+
+Started the local lab server with the standard startup script because port 8168 had no listener. The start check passed with database schema 34. PID 78187 serves the Dataset page. Both /dataset and /api/dataset returned HTTP 200. The Codex app queued the requested Dataset browser tab for this side conversation. No source, configuration or benchmark job changed.
+
+
+## 2026-10-09T11:12:30+03:00 — Local YOLO26 and SAM3 field benchmarks started
+
+Downloaded the public RF100 author mirror at pinned revision d71741576660c41403e43972e07796e55ca292eb without credentials. The original COCO archive contains 4,643 stretched 640×640 images and 12 field-box classes. Converted boxes without clipping or class relabelling. Excluded the unused superclass. Grouped near duplicates before training; 46 images move splits and all 4,643 remain, with 3,131 train / 863 validation / 649 test images. No cross-group wine-family holdout claim.
+
+Started YOLO26n training on local MPS with the prepared 100-epoch maximum and patience 15. The detached coordinator queues YOLO26s and the full field evaluation, then local zero-shot SAM3 on the frozen 32-image validation / 128-image common test subsets. All three use the same box scorer. One native MPS SAM3 validation smoke passes; the local checkpoint has zero missing or mismatched keys. All six metric tests and Ruff pass. Full comparative test results are pending training, not completed accuracy claims.
+
+The live report and provenance are in ../internal/victor-dravigny-rank6-20261007/yolo26-label-benchmark-20261009/. Whole-label segmentation/detection, role and price-tag rejection, upright landmarks, real rectification and OCR extraction accuracy lack the required additional truth annotations. A six-image annotation review also shows multiple text roles under Maker-Name; field AP measures the supplied labels. Existing source photographs, remote services, production embeddings and indexes, lab processes and GitHub state are unchanged.
+
+
+## 2026-10-09T11:34:16+03:00 — Immediate candidate Delete
+
+The Testset candidate menu now removes the selected photo entry and its comments from the current set immediately. Delete remains available for already marked photos; the old mark can be cleared separately. The row, header, counts, Drawer results and open candidate view update after a successful write. Duplicate clicks send one request; failed writes retain the candidate. The new /api/testset-photo-remove route uses the existing transaction and payload-cache invalidation. Shared image objects and tags, catalogue wines, other set entries and historical runs remain intact.
+
+Validation: 86 focused candidate, Testset, route, OpenAPI and Drawer sorting checks pass, plus Ruff, Python/JavaScript syntax and scoped diff checks. All deletions used temporary test databases. Port 8168 restarted with SIGTERM from PID 78187 to 97023 after verifying no active run jobs. Dataset HTTP 200 and new route method handling verified. The live requested wine still has five candidates. Browser inspection confirms Delete is available on its previously marked photo. Evidence: ../internal/candidate-delete-20261009/verification.json and delete-menu.png.
+
+
+## 2026-10-09T17:44:18+03:00 — YOLO26n benchmark recovery
+
+The original nano process exited mid-epoch 47; its log has no Python traceback, so the cause remains unknown. Verified and backed up the epoch-46 last checkpoint, best checkpoint, CSV and args. Native MPS training has resumed at epoch 47 with optimizer/EMA and the original 100-epoch schedule. Restore early-stopping history to best epoch 44 and validation fitness 0.346. Frozen data/config remain the same; native resume is not a bitwise replay of interrupted augmentation RNG. Best pre-interruption validation mAP50 is 51.025%, mAP50–95 34.6%; no test result exists yet. The detached coordinator owns the recovery child and queues YOLO26s and SAM3 as before. Ruff and compilation pass; actual epoch-47 batches advance with finite losses. Remote services and production indexes are not changed by this recovery.
+
+
+## 2026-10-09T19:21:31+03:00 — Wine-term recovery audit
+
+Audited five PaddleOCR misses with new fuzzy attributes. Found one visible Sauvignon ranking failure, a wrong Abrau reference assignment that affects two queries, and two unresolved Arie ageing annotations. Exact visual-text probes put Sauvignon and semi-dry Abrau at rank 1. The Arie probes do not change rank. All 46 reviewed source hashes and 14 existing experiment artifact hashes pass. The comparison passes 15 tab states at widths 736, 360 and 320. No browser runtime error was found. Catalogue, annotations, matching code and live service were not changed. Evidence: `../internal/ocr-recovery-20261009/audit/report.md`.
+
+
+## 2026-10-09T21:49:16+03:00 — Structure VLM evidence output
+
+- Show the recorded VLM model below the evidence heading. Older runs use the saved VLM configuration name when the model name is absent.
+- Show Q1/Q2/Q3 labels and each option score in a bullet list. Keep validation errors and retry details.
+- Show candidate embedding, evidence and decision scores in table columns. Keep the recorded values and ranking decisions.
+- Record the request model in new evidence traces and run backend metadata. Pass model identity into the shared step renderer.
+- Verification: all 64 focused checks pass. The exact cached screenshot fixture preserves every answer and candidate score. Recorded model assertions, assembled JavaScript syntax, Python syntax and the scoped diff check pass. The live Runs table and step popup show the requested structure. Browser console has no errors.
+- Restart only port 8168 with SIGTERM from PID 97023 to PID 15153. Dataset returns HTTP 200. Restore the original Runs header filters and close the temporary review tab.
+- Evidence: `../internal/vlm-evidence-layout-20261009/questions.jpg`, `candidate-scores.jpg` and `verification.json`.
+
+
+## 2026-10-09T23:30:15+03:00 — Laya-V rerank configuration
+
+- Added the separate `config.laya-v.yaml` configuration and the pipeline
+  `barcode-rerank-siglip2-p512-rot5-seg-laya-v`. It uses the existing p512 rot5
+  retrieval, barcode options, cluster rules, and rerank window. One worker matches
+  the serial service executor.
+- Added the `laya-v` protocol and a typed `/v1/systemone` adapter. Each label question
+  uses Jev `choice`. The adapter validates the complete response and converts its
+  probabilities to integer option scores with a total of 100. The existing visible
+  support, bounded bonus, public scores, and failure behavior apply. Valid Jev
+  responses use the existing image-aware cache. Other VLM tasks refuse this protocol.
+- Validation: 98 focused tests, Ruff, configuration loading, and the diff check pass.
+  The live synthetic-image contract check returns a valid response in 54 ms. The
+  blue-image answer is incorrect: blue 15 percent, not visible 38 percent. Wine
+  accuracy is not measured. Evidence: `internal/laya-v-rerank-20261009/summary.json`
+  at the repository root. No shared preset change, inference benchmark, or restart.
+
+
+## 2026-10-09T23:31:59+03:00 — Show the VLM rerank input image
+
+- Show the sent label crop or whole photo beside the VLM evidence in Runs and in step 07. Click it to enlarge.
+- Add `GET /api/run-vlm-image`, with stored-image support and cache-only historical recovery. Verify the source photo and sent PNG hash against the saved request, questions and response. Missing or unverifiable inputs show an unavailable caption.
+- Reuse the shared step artifact renderer and preserve the recorded answers, candidate scores and ranking. No inference rerun or annotation change.
+- Verification: all 47 focused checks pass, including no-network recovery, wrong-crop rejection, route errors, deferred artifacts and OpenAPI. Assembled JavaScript syntax, Ruff, Python syntax and scoped diff checks pass. The live screenshot fixture returns HTTP 200 PNG at 1146 × 1536 with the verified sent-image hash. Preview and click to enlarge work. Browser console has no errors.
+- Restart only port 8168 with SIGTERM from PID 15153 to PID 81504. Dataset returns HTTP 200. Restore Runs filters and close the temporary tab. No cross-chat messaging was needed.
+- Evidence: `../internal/vlm-input-image-20261009/README.md`, `preview.jpg`, `enlarged.jpg` and `verification.json`.
+
+
+## 2026-10-09T23:47:46+03:00 — Laya-V preset and official test
+
+- Added `barcode-rerank_laya_v-siglip2-p512-rot5-seg` to the main Workbench
+  configuration. It copies the requested Qwen preset and changes only `rerank.vlm`.
+  Both configuration versions contain the same Laya-V protocol entry.
+- Completed all 95 scored official-test photos with four workers and barcode scanning.
+  Top-1: 86/95 (90.53 percent). Top-5 and Top-10: 95/95. No request or rerank errors.
+  All 20 Laya-V reads are fresh. The reranker changes three Top-1 answers, with one
+  correction and one regression against the visual ranking. Query median/p95:
+  2.220/7.278 seconds with retrieval caches enabled. Query wall time: 67 seconds.
+- The preceding Qwen run has Top-1 90/95 (94.74 percent). All 95 query hashes, truths,
+  and visual Top-1 answers match. All 20 rerank base-score maps match. Laya-V corrects
+  one Qwen error and regresses five Qwen successes. Index state differs only in its
+  build timestamp. This comparison uses a preceding run.
+- The frozen benchmark stages original image bytes with pre-cutoff timestamps and
+  does not rebuild the shared index. All 95 original hashes and modification times,
+  frozen truths, and four catalogue artifact hashes pass post-run verification.
+  Validation: 31 focused tests, Ruff, configuration checks, and the diff check pass.
+- Reloaded only port 8168 with SIGTERM: PID 81504 to PID 95927. No active jobs at
+  reload. Dataset returns HTTP 200. The live selector shows the runnable preset and
+  its completed 95-photo job. The Runs panel is open for this configuration and set.
+  Run: `2026-10-09T204047Z-lab-barcode-rerank_laya_v-siglip2-p512-rot5-seg-official-test-2026-10-01`. Evidence: `internal/laya-v-rerank-20261009/official-test/summary.json`
+  at the repository root.
+
+## 2026-10-10T00:33:50+03:00 — PaddleOCR text evaluated by multilingual Laya
+
+- Added opt-in preset `barcode-rerank_paddle_laya-siglip2-p512-rot5-seg` and the `laya-ocr` adapter. The local pinned PaddleOCR reader recognizes the same label PNG; Laya receives only raw text, line confidence and relative positions. Strict Jev choice probabilities use the existing 0.05 evidence weight. Retrieval, questions, score policy, source photos and prior runs are preserved.
+- All 95 official scored photos complete: Top-1 85/95 (89.47 percent), Top-5/10 95/95. Twenty fresh valid Laya reads, zero request/evaluator errors. One visual error fixed, two correct winners regressed, one wrong winner changed to another wrong winner. Earlier Qwen and image Laya-V score 90/95 and 86/95.
+- All twenty OCR PNG hashes match the image Laya-V run. All 95 source hashes and nanosecond modification times, frozen truths, and four catalogue artifact hashes pass. The run does not rebuild the shared index. The multilingual checkpoint revision and CUDA metadata stay unchanged.
+- OCR preparation takes 128.18 seconds including setup, with median recognition 4.305 seconds/image. The subsequent cached query phase takes 38.3 seconds; median/p95 1.240/3.651 seconds exclude cold OCR. The recorded rerank median is 57.5 ms with prepared OCR.
+- All 106 affected tests, Ruff and scoped diff checks pass. Reloaded only port 8168 with SIGTERM from PID 95927 to 15153; no active jobs, Dataset HTTP 200. The selector marks the preset runnable and its job complete at 95/95. No remote service configuration or GitHub state change.
+- Run: `2026-10-09T212759Z-lab-barcode-rerank_paddle_laya-siglip2-p512-rot5-seg-official-test-2026-10-01`. Evidence: `internal/laya-v-rerank-20261009/paddle-laya/summary.json`, `cases.json`, `validation.json` at the repository root.
+
+
+## 2026-10-11T10:43:01+03:00 — Synthetic rule benchmark proposal
+
+- Save a design for deterministic label augmentations and controlled fictional label clusters.
+- Define feature visibility, ambiguous cases, compiled-rule checks, and separate calibration and final evaluation sets.
+- Propose 301 observation-condition variants for the seven-wine pilot.
+- Verify the proposal counts, evidence paths, and source references.
+- Do not generate synthetic images or start new inference for this research follow-up.
+- Evidence: `internal/label-only-benchmark-20261011/synthetic-tests-proposal.md`.
+
+
+## 2026-10-11T14:40:36+03:00 — Synthetic rule benchmark pilot completed
+
+- Add isolated deterministic real-label augmentations and controlled fictional label fixtures.
+- Freeze rules, prompts, source records, exact query images, and recognition options.
+- Complete all 435 cases with fresh requests and no production change.
+- Record Фантом 23/129 and Виктор Дравиньи 161/172 correct.
+- Verify all seven real blank controls and 111/127 controlled checks.
+- Save 133 stable failure numbers with original/tested images and exact answer evidence.
+- Pass 13 safeguards, Ruff, the complete audit, and every failure-viewer case at desktop/mobile widths in light/dark themes.
+- Preserve one final score-validation error and all failed response attempts.
+- Save evidence in `internal/synthetic-rule-benchmark-20261011/`.
+- Document interpretation limits in `docs/testing/synthetic-rule-benchmark.md`.
+
+
+## 2026-10-11T22:23:47+03:00 — Testset candidate-photo filter
+
+Add `has candidate photos` to the Progress select. Show each wine with one or more candidate photos in the selected test set, with any label status. Keep the other filter axes in effect. The approved patch adds two lines.
+
+JavaScript syntax and scoped diff checks pass. Live payload checks select 92 wine slugs in official-test-2026-10-01 and 1838 in my. No server restart. The browser permission review blocks the visual check because localhost access was previously denied. Evidence: `../internal/candidate-photo-filter-20261011/verification.json`.
+
+
+## 2026-10-11T23:22:04+03:00 — Post-VLM vintage matching
+
+The owner approved the reviewed vintage patch in the shared Workbench reranker.
+The OpenAI VLM path reads the actual printed year string, or null.
+The prompt does not supply catalogue years as choices. Code then prefers an exact
+vintage in the triggered wine cluster. If none exists in the retrieved rerank window,
+code prefers a confirmed undated variant. A null vintage gives no preference.
+Other question scores and Laya contracts retain their existing behavior.
+
+All 49 local checks pass: 20 vintage integration checks and 29 existing rerank checks.
+Ruff and the diff check pass. Three fresh serial requests to resident Qwen pass:
+ESTER returns 2020 and selects the undated fallback; blank returns null; synthetic
+2024 returns 2024 and selects the exact variant. These are bounded controls, not a
+full retrieval benchmark. Direct requests do not read or write the shared model cache.
+
+Restarted only port 8168 with SIGTERM, PID 84204 to 36853.
+Dataset, run jobs, embedding jobs and recognition configuration return HTTP 200.
+The rollout makes no catalogue, historical-run or native matcher changes.
+New raw-vintage trace fields remain in saved results; the existing score panel is unchanged.
+Evidence: `internal/vintage-match-20261011/rollout-verification.json` at repository root.
+
+## 2026-10-12T00:11:27+03:00 — Recognition progress on Runs
+
+The owner approved the reviewed progress panel in the shared Runs page. The page
+now shows active recognition jobs started from any page, filtered by pipeline and
+testset. It shows processed/total photos, percentage, errors and elapsed time, with
+an indeterminate state during preparation. Status updates every two seconds while
+active and every ten seconds while idle; hidden pages pause polling. Failed status
+reads retain counters with a retry notice. Observed final states show a results link
+and refresh the run list once, while photo rows and draft edits stay in place.
+
+All seventeen progress controls pass on HTML served by port 8168. The installed
+Runs loader race/draft test and five shared-page assembly tests pass. The served
+HTML equals the installed page assembly and reviewed source. Runs and job status
+return HTTP 200; no active recognition job was present during verification. No
+server restart, inference request or historical-run change. Browser visual inspection
+was not performed after the local file preview was rejected by the browser policy.
+Evidence: `internal/runs-recognition-progress-20261011/rollout.json` at repository root.
+
+## 2026-10-12T00:43:39+03:00 — Failed embedding item refresh
+
+- Add a Refresh button to each failed Embeddings cell. Retry missing segmentation, image preparation, and the vector for one source and view in one configuration. Keep each unrelated vector and failure. Keep manual cuts. Reuse the build lock, job progress, Stop button, and log. Reject duplicate jobs. Keep configuration changes safe during a request.
+- The owner approved the reviewed patch and the rule 17 coordination. Preserve the existing cache adapters, ArcFace backend, Build, and Build All behavior.
+- Validation: 78 Python tests pass against installed source. All 23 page controls pass on served HTML. Three page-loader tests, Ruff, and diff checks pass. The served page equals the installed assembly.
+- Restart port 8168 with SIGTERM after no active build or run jobs. New PID: 68075. GET /api/dataset and /embedding return HTTP 200. GET on the retry route returns HTTP 405. No actual item retry, external inference, catalogue index change, or GitHub change.
+- Evidence: internal/embedding-item-refresh-20261012/README.md and rollout.json.
+
 
 ## 2026-10-14T11:07:22+03:00 — Patch weights and original patch inspection
 
@@ -6441,6 +6970,23 @@ All 87 focused tests, Ruff, Python compilation, and diff checks pass. Offline re
 - Pass 42 patch tests and 37 patch UI, page, and step-view checks. Ruff passes. Load the rebuilt index in the live four-panel viewer. Restart only port 8168 after no active jobs, PID 13799 to 62517. Dataset returns HTTP 200. No additional image upload.
 - Evidence: `svoe-vino-lab-experiments/internal/patch-retrieval-20261014/cropped/padding-tight/evaluation.json`, `storage-audit.json`, and source-lab `internal/patch-retrieval-ui-20261014/tight-padding-viewer.jpg`.
 
+## 2026-10-14: Optional query bottle orientation prototype
+
+- Add `pipeline/bottle_orientation.py`. Minimize the enclosing mask rectangle area. Put the long axis in portrait orientation. Put a clear neck at the top. Preserve unknown direction when no neck is visible. Rotate soft alpha and colour pixels together. Crop before model resize.
+- Prepare the optional selector v5 integration. Keep default v4 and saved versions 1 to 4. The two-line `embedding_run.py` adapter awaits owner approval under rule 17 because another chat reserves the file. The isolated CLI can run the prepared implementation now.
+- All 120 focused checks pass. The synthetic test covers 72 orientations. Cached real-mask tests cover 12 sources and 60 controlled rotations. At 45 degrees, median crop area falls 57.15%; mask/crop IoU rises from 0.311 to 0.725.
+- Calculate 30 p512 vectors from five owner photos at 0, 45 and 180 degrees. Search 2,166 wines with 209,232 full-view rows. Exclude all 72 rows of each query source. Mean rotation cosine rises from 0.861 to 0.998. Top1 changes from 1/15 to 0/15; Top5 stays at 9/15. Keep the feature experimental.
+- Evidence: `../internal/bottle-orientation-20261014/report.html`. Source bytes and dates are preserved. No reference rebuild, active pipeline change, service restart or GitHub write.
+
+## 2026-10-14: Real bottle-orientation benchmark and Steps details
+
+- Apply the optional v5 selector and its embedding adapter under the owner follow-up. Add `bottle_orientation: true` to an embedding pipeline with a masked full package view. The new `siglip2-p512-rot5-seg-upright` entry uses the existing reference index. Default v4 and saved versions remain supported.
+- Show `Query bottle rotation` in Steps with signed angle, neck evidence, input/output bounds, IoU, crop-area ratio and before/after mask previews. Old runs explicitly show a preview that was not used for their saved embedding. Rotation timing is included in the package-cut timing. Preserve the patch inspection renderer.
+- Freeze 256 positive `my` photos from 233 wines, including `21_manual.webp`. Use cached masks only. Exclude all query images already in the gallery. Both paths search one 2,166-wine gallery with 209,232 full-view rows. Calculate 349 unique p512 inputs. Top1 changes from 206/256 (80.47%) to 203/256 (79.30%); Top5 and Top10 change from 251/256 (98.05%) to 252/256 (98.44%). Two Top1 gains and five regressions. Keep alignment optional. The batched test measures retrieval quality, not complete request latency.
+- The example rotates -65.55 degrees. IoU changes from .350 to .659; crop area is 53.1% of the prior crop. Its true wine moves from outside Top10 to rank4. Its fragmented mask has no clear neck signal.
+- All 165 focused tests pass. Verify exact replay of all 93 changed model inputs. Live old/new Steps and all four deferred crop images return HTTP 200. Verify the expanded popup in the browser and save `../internal/bottle-orientation-20261014/steps-rotation-live.jpg`.
+- Restart only Workbench port 8168 through SIGTERM as PIDs 50001 and 54599. Dataset readiness is HTTP 200. Preserve all source image bytes and timestamps, gallery vectors, labels, and historical results. Evidence: `../internal/bottle-orientation-20261014/real-benchmark/comparison.json`.
+
 ## 2026-10-14 Full-label patch comparison
 
 Use one frozen standard gallery with 2,166 wines, 2,898 sources, 512 patches, and 72 rotations.
@@ -6480,6 +7026,18 @@ Ruff and both JavaScript syntax checks pass.
 Local visual evidence is in <workspace>/svoe-vino-lab/internal/patch-retrieval-ui-20261014/palette-viewer.png.
 
 
+## 2026-10-14: Manual accepted answers
+
+- Accept each eligible positive wine slug for the same image SHA-256 in one testset.
+- Preserve each assignment as a separate query. Preserve query count and order.
+- Exclude other labels, deleted assignments, inactive wines, and other testsets from the accepted list.
+- Preserve negative, No Match, and Drawer evaluation rules.
+- Preserve historical run files. A changed accepted list invalidates repeat verdict reuse.
+- Keep the vintage matcher unchanged. New Workbench run processes read the updated query builder.
+- All 76 manual-answer, benchmark, and run-job tests pass. Ruff passes.
+- The first integration test attempt could not create localhost sockets or inspect processes in the sandbox. The integration tests pass with localhost access.
+
+
 ## 2026-10-14 Unknown-label background overlay
 
 Correct the unknown-label diagnostic overlay fallback.
@@ -6494,6 +7052,16 @@ All 12 full-gallery tests and 7 patch inspection component tests pass.
 Ruff and both JavaScript syntax checks pass.
 Verify the corrected four-panel view in the live UI and update the report.
 Local visual evidence is in <workspace>/svoe-vino-lab/internal/patch-retrieval-ui-20261014/background-fallback-viewer.png.
+- Read-only catalogue audit checks all 11 testsets. It expands truth for 195 assignment rows. Query counts, order, other fields, and excluded counts are preserved. The `my` set has 73 exact images with multiple accepted wine slugs across 150 assignment rows.
+
+
+## 2026-10-14: Testset paste card
+
+- Replace per-photo Paste buttons with one dashed Paste image card per wine row.
+- Show the card in empty wine rows. Support a click and native image paste on the focused card.
+- Preserve file upload validation and special-row behavior.
+- All 12 behavior checks, five page tests, JavaScript syntax checks, and patch checks pass.
+- Apply the reviewed patch after the owner approves shared-file coordination. The page loader reads the updated file on each request. No server restart.
 
 
 ## 2026-10-14 Query label segmentation
@@ -6539,6 +7107,20 @@ The viewer continues to show standard ranking.
 The report is in <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md.
 Evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/full-gallery/benchmarks/20261014-query-label/.
 
+
+## 2026-10-14: Testset Duplicate
+
+- Add Duplicate to the image context menu. Insert the new unlabelled card beside the source card.
+- Create a separate Testset entry in one transaction. Reuse the same image SHA-256 and image-store object.
+- Preserve the source entry. Keep the source rank, confidence, box, and source URL in the new entry. Share image tags.
+- Preserve independent labels and move actions. Do not copy the source verdict, comments, proposal, or deletion mark.
+- Add the duplicate API operation and its tests. Reject a stale source image SHA-256.
+- All 45 installed backend/API/page tests and eight UI checks pass. Ruff and scoped diff checks pass.
+- Restart Workbench on port 8168 with SIGTERM from PID 98078 to 71706. The active run and build finished before the restart. No active queue or worker was interrupted.
+- Dataset and Testset return HTTP 200. The live menu and OpenAPI show Duplicate. Route guards return HTTP 405 and HTTP 404. Verification creates no real photo entry.
+- Save rollout evidence in internal/testset-duplicate-20261014/rollout.json and live-menu.png. Existing tabs need a refresh.
+
+
 ## 2026-10-14T19:53:33+0300: Dataset header usability
 
 - Apply the owner-approved header patch. Keep two sticky rows.
@@ -6555,6 +7137,7 @@ Evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20
 - Restore the original saved header controls after verification. No catalogue data change or lab-server restart.
 - Save evidence in internal/dataset-header-20261014/verification.json, live.jpg, and live-failed.jpg.
 
+
 ## 2026-10-14T20:18:18+0300: Compact headers on six pages
 
 - Extend the approved Dataset header pattern to Embeddings, Clusters, Testset, Runs, Recognize, and Health.
@@ -6569,6 +7152,24 @@ Evidence is in <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20
 - Live statistics, active counts, Escape focus, Actions, loaded selectors, and Drawer spacing pass browser checks. The browser console has no errors.
 - Restore saved selections after verification. No catalogue or annotation write, model/build/run action, or lab-server restart.
 - Save evidence in internal/compact-headers-20261014/verification.json, browser-checks.json, and the six live JPG files.
+
+
+## 2026-10-14 — Searchable configuration selection
+
+- Add a shared configuration picker to Embeddings, Clusters, and Recognize.
+- Search names, model IDs, backends, input steps, and readiness messages.
+- Keep favorites and eight recent choices in browser storage. Share embedding preferences between Embeddings and Clusters.
+- Show readable names, exact configuration IDs, actual backend and query steps, and readiness. Keep unavailable pipeline reasons visible.
+- Add links between the selected Embeddings and Clusters configuration. Keep existing native selection handlers and page actions.
+- Keep image paste and drop actions outside the modal picker. Search accepts pasted text.
+- All 18 focused metadata, cache, and Recognize route tests pass. All six assembled scripts pass syntax checks.
+- All 117 pipeline records preserve their existing response fields. Browser selection, favorites, recent choices, disabled choices, empty states, reload, focus, links, and narrow layout checks pass.
+- Save the prepared patch and review evidence in internal/configuration-selection-20261014/.
+- Apply the approved bundle. Restart Workbench with SIGTERM from PID 71706 to PID 40061 after all build and run queues are idle.
+- Dataset and the three updated pages return HTTP 200. Live search, favorites, keyboard selection, summaries, links, and page contents pass verification.
+- Make Escape close the picker on the first key press, including a nonempty search. Return focus to the selector button.
+- Preserve the original page selections. Remove the temporary test favorite. Close the temporary browser tabs and preview server.
+- Save installed verification in internal/configuration-selection-20261014/installed-verification.json and live-selector.jpg.
 
 
 ## 2026-10-15 Full my patch benchmark
@@ -6640,3 +7241,17 @@ Report: <workspace>/svoe-vino-lab-experiments/PATCH_PIPELINE_REPORT.md. Private 
 ## 2026-10-15T08:40:15+03:00 — Show failure-review wine slugs
 
 Update the private experiment failure-review page and its generator. Show accepted and returned wine_slugs in case text. Show exact reference wine_slugs in image captions. Verify all 303 case cards and preserve frozen data and scores. JavaScript syntax, escaping, pagination, slug search, and case navigation pass. No inference or service restart. Evidence: <workspace>/svoe-vino-lab-experiments/internal/patch-retrieval-20261014/my-full/failure-review/slug-ui-20261015/audit.json.
+
+
+## 2026-10-15T09:27:23+03:00 — Show shared Testset image assignments
+
+Show a corner count when an image belongs to two or more distinct wine slugs in the selected Testset.
+Use the image SHA-256 to recognize copies with different filenames.
+Add "Show wines with this image" to the image context menu. The corner count applies the same filter.
+Accept `img:<filename>` and `img:<sha256>` in Find. Combine image filters with normal wine search.
+Count each wine slug once. Exclude the Drawer and No Match from the count.
+Verify 22 behavior checks and all assembled JavaScript scripts.
+Verify both example assignments, filename aliases, hash search, the corner count, and the viewer context menu in a read-only browser preview.
+The browser reports no warnings or errors. No schema or server change is required.
+Verify the applied change on port 8168. Both example cards show 2. The context-menu filter and duplicate filename search return both wine slugs.
+Restore the original example search after verification. No server restart is required.

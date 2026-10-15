@@ -34,6 +34,7 @@ import import_testset as IT  # noqa: E402
 import labdb  # noqa: E402
 import model_cache  # noqa: E402
 import main_scene  # noqa: E402
+import label_gate  # noqa: E402
 import run_routes  # noqa: E402
 
 GREY = (128, 128, 128)
@@ -334,6 +335,61 @@ class RunTest(Temporary):
             rows = {json.loads(line)["image_path"]: json.loads(line) for line in fh}
         return run_dir, met, rows
 
+    def gated_backend(self, sam3=None, options=None):
+        model = ColourModel()
+        backend = embedding_run.build_backend(
+            self.embedding, self.lab.db_path, make_model=lambda e: model,
+            segmenter=sam3 or FakeSam3(), label_gate=label_gate.check_options(options or {}))
+        return backend, model
+
+    def test_quality_rejected_labels_are_not_embedded_or_shown_as_model_inputs(self):
+        backend, model = self.gated_backend()
+        path = self.root / "query.png"
+        path.write_bytes(png(query_photo("green")))
+        cands, _, status, error, trace = backend.ask(str(path))
+        self.assertEqual((status, error, cands[0]["slug"]), (200, None, "green"))
+        self.assertEqual(model.calls, [1])
+        quality = next(s["out"] for s in trace["steps"] if s["id"] == "label-quality")
+        self.assertIn("insufficient_native_detail", quality["reasons"])
+        route = next(s["out"] for s in trace["steps"] if s["id"] == "label-route")
+        self.assertEqual(route["selected_view"], "full")
+        prepared, missing = embedding_run.query_inputs(
+            query_photo("green"), backend.views, FakeSam3(), label_gate=backend.label_gate)
+        self.assertEqual(set(prepared), {"full"})
+        self.assertIn("label quality", missing["label"])
+        self.assertEqual(backend.spec["score"], label_gate.SCORE)
+
+    def test_usable_labels_select_label_scores_and_keep_both_model_inputs(self):
+        options = {"min_native_side": 1, "min_input_side": 1, "min_sharpness": 0,
+                   "min_purity": 0, "min_margin": 0}
+        backend, model = self.gated_backend(options=options)
+        path = self.root / "query.png"
+        path.write_bytes(png(query_photo("green")))
+        cands, _, status, error, trace = backend.ask(str(path))
+        self.assertEqual((status, error, model.calls), (200, None, [2]))
+        self.assertTrue(all(c["score"] == c["label"] for c in cands))
+        route = next(s["out"] for s in trace["steps"] if s["id"] == "label-route")
+        self.assertEqual(route["selected_view"], "label")
+        prepared, missing = embedding_run.query_inputs(
+            query_photo("green"), backend.views, FakeSam3(), label_gate=backend.label_gate)
+        self.assertEqual(set(prepared), {"full", "label"})
+        self.assertFalse(missing)
+
+    def test_missing_label_service_falls_back_only_when_gate_is_enabled(self):
+        class MissingLabel(FakeSam3):
+            def instances(self, image, texts, masks=True):
+                raise derive.Sam3Unavailable("label detection unavailable")
+        backend, model = self.gated_backend(sam3=MissingLabel())
+        path = self.root / "query.png"
+        path.write_bytes(png(query_photo("green")))
+        cands, _, status, error, trace = backend.ask(str(path))
+        self.assertEqual((status, error, model.calls), (200, None, [1]))
+        self.assertEqual(cands[0]["slug"], "green")
+        legacy = embedding_run.build_backend(
+            self.embedding, self.lab.db_path, make_model=lambda e: ColourModel(),
+            segmenter=MissingLabel())
+        self.assertIn("label detection unavailable", legacy.ask(str(path))[3])
+
     def test_each_photo_ranks_its_wine_first(self):
         run_dir, met, rows = self.run_set()
         self.assertEqual((met["positive"]["n"], met["positive"]["recall_at_1"]), (4, 1.0))
@@ -414,7 +470,7 @@ class RunTest(Temporary):
         _, _, rows = self.run_set()
         steps = rows["red/02.png"]["trace"]["steps"]
         self.assertEqual(next(s for s in steps if s["id"] == "sam3-label")["out"],
-                         {"found": False})
+                         {"found": False, "label_selection_version": 2})
         label = next(s for s in steps if s.get("view") == "label" and s["id"] == "view")
         self.assertEqual((label["skipped"], "out" in label), ("SAM3 found no label", False))
         self.assertEqual([s.get("view") for s in steps if s["id"] == "search"], ["full"])
@@ -496,6 +552,40 @@ class PipelineViewsTest(Temporary):
         self.embedding = build(self.lab)
         add_set(self.lab)
         self.runs = str(self.root / "runs")
+
+    def test_new_label_masks_remove_glass_and_old_run_inputs_keep_the_rectangle(self):
+        class TwoLabelsSam3(FakeSam3):
+            def instances(self, image, texts, masks=True):
+                out = []
+                for noun, box in (("bottle", (0, 0, 80, 160)),
+                                  ("label", (8, 20, 72, 65)),
+                                  ("label", (12, 105, 68, 150))):
+                    mask = np.zeros((160, 80), dtype=bool)
+                    x1, y1, x2, y2 = box
+                    mask[y1:y2, x1:x2] = True
+                    out.append({"label": noun, "box": list(box), "score": .95,
+                                "mask_png_b64": mask_b64(mask)})
+                return out, 1.0
+
+        image = Image.new("RGB", (80, 160), (20, 30, 40))
+        path = self.root / "two-label-query.png"
+        image.save(path)
+        views = {"label": [{"step": "segment", "target": "label"},
+                           {"step": "remove_background"}, {"step": "white_background"}]}
+        current, _ = embedding_run.query_inputs(image, views, TwoLabelsSam3())
+        legacy, _ = embedding_run.query_inputs(image, views, TwoLabelsSam3(),
+                                               label_mask_union=False)
+        self.assertEqual(current["label"].getpixel((32, 60)), (255, 255, 255))
+        self.assertEqual(legacy["label"].getpixel((32, 60)), (20, 30, 40))
+        for union, expected in ((False, legacy), (True, current)):
+            spec = {"views": views, "model": "fake-model", "sam3": {}}
+            if union:
+                spec["sam3"]["label_mask_union"] = True
+            with mock.patch.object(embedding_run, "CachedSam3", TwoLabelsSam3):
+                body = embedding_run.model_inputs(spec, str(path))
+            digest = hashlib.sha256(embeddings.png_bytes(expected["label"])).hexdigest()
+            self.assertEqual(body["notes"], [])
+            self.assertEqual(body["inputs"][0]["sha256"], digest)
 
     def test_saved_selector_version_replays_the_original_input(self):
         class SparseSam3(FakeSam3):

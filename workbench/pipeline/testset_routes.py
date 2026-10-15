@@ -8,6 +8,8 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
     GET  /api/testset?set=<name>  the rows of one set (the first set without `set`)
     POST /api/testset-label       {set, place, file, label}; label null clears it
     POST /api/testset-delete      {set, place, file, delete}
+    POST /api/testset-photo-remove
+                                  {set, place, file}; remove one photo entry from the set
     POST /api/testset-drawer-remove
                                   {set, place, file}; permanently remove one Drawer entry
     POST /api/testset-photo-comment
@@ -27,6 +29,7 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
                                   the crop as a new photo of the same place
     POST /api/testset-move        {set, place, file, to}; to a slug, __null__ (the row
                                   "No Match"), or __drawer__ (the Drawer)
+    POST /api/testset-duplicate   {set, place, file, sha256?}; duplicate one image entry
     POST /api/testset-upload?set=<name>&place=<slug>&name=<file name>
                                   the body is the bytes of one image; place a slug,
                                   __null__, or __drawer__
@@ -53,6 +56,7 @@ import remote_images
 import testset_from_run
 import testset_autotag
 import testsets
+import testset_duplicate
 from testset_payload_cache import TESTSET_PAYLOAD_CACHE
 
 PAGE_ROUTE = "/testset"
@@ -71,6 +75,7 @@ MAX_BODY = 32768
 WRITES = {
     "/api/testset-label": (testsets.set_label, ("set", "place", "file", "label")),
     "/api/testset-delete": (testsets.set_delete, ("set", "place", "file", "delete")),
+    "/api/testset-photo-remove": (testsets.remove_photo, ("set", "place", "file")),
     "/api/testset-drawer-remove": (testsets.remove_drawer_photo,
                                     ("set", "place", "file")),
     "/api/testset-photo-comment": (testsets.add_photo_comment,
@@ -83,6 +88,8 @@ WRITES = {
     "/api/testset-box": (testsets.set_box, ("set", "place", "file", "box")),
     "/api/testset-crop": (testsets.crop_photo, ("set", "place", "file", "box")),
     "/api/testset-move": (testsets.move_photo, ("set", "place", "file", "to")),
+    "/api/testset-duplicate": (testset_duplicate.duplicate_photo,
+                                  ("set", "place", "file", "sha256")),
     # The fields of an upload come from the query; `data` is the body. Read `_upload_body`.
     UPLOAD: (testsets.upload_photo, ("set", "place", "data", "name")),
     # `respond` fetches the address before the write transaction and adds `data` and `name`.

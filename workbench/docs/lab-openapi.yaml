@@ -161,6 +161,14 @@ paths:
       responses:
         "200": { $ref: "#/components/responses/Html" }
 
+  /runs/charts:
+    get:
+      tags: [pages]
+      operationId: showRunChartsPage
+      summary: Compare pipeline metrics or one pipeline's run history for a testset.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
   /recognize:
     get:
       tags: [pages]
@@ -284,6 +292,35 @@ paths:
       tags: [dataset]
       operationId: getDataset
       summary: Read all catalogue records and Dataset-page metadata.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/wine-merge:
+    get:
+      tags: [dataset]
+      operationId: previewWineMerge
+      summary: Read manual wine merge counts and available destination wines.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    post:
+      tags: [dataset]
+      operationId: mergeManualWine
+      summary: Transfer a manual wine and its testset annotations, then delete its catalogue row.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [slug, to]
+              properties:
+                slug: { type: string, minLength: 3, maxLength: 200, pattern: "^__[a-z0-9][a-z0-9_-]*$" }
+                to: { type: string, minLength: 1, maxLength: 200 }
       responses:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
@@ -952,6 +989,17 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/testset-photo-remove:
+    post:
+      tags: [testsets]
+      operationId: removeTestPhoto
+      summary: Immediately remove one photo entry and its comments from a test set.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/testset-drawer-remove:
     post:
       tags: [testsets]
@@ -1051,6 +1099,17 @@ paths:
       tags: [testsets]
       operationId: moveTestPhoto
       summary: Move a photo to a wine, No Match, or the Drawer.
+      requestBody:
+        $ref: "#/components/requestBodies/TestsetPhotoWrite"
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-duplicate:
+    post:
+      tags: [testsets]
+      operationId: duplicateTestPhoto
+      summary: Create an unlabelled entry for the same image in the same place.
       requestBody:
         $ref: "#/components/requestBodies/TestsetPhotoWrite"
       responses:
@@ -1271,6 +1330,27 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/run-image-tag-remove:
+    post:
+      tags: [runs]
+      operationId: removeRunImageTag
+      summary: Remove a shared image tag from one recorded run query.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [id, query, tag]
+              properties:
+                id: { type: string }
+                query: { type: string }
+                tag: { type: string, minLength: 1, maxLength: 64 }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/drawer-runs:
     get:
       tags: [runs, testset]
@@ -1302,6 +1382,23 @@ paths:
                 to: { type: string }
       responses:
         "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-vlm-image:
+    get:
+      tags: [runs]
+      operationId: getRunVlmImage
+      summary: Read the verified PNG sent to the VLM re-rank of one saved query.
+      description: Uses recorded input bytes or local cache recovery with a matching sent-image hash. Makes no model request. Returns 404 when the input cannot be verified.
+      parameters:
+        - $ref: "#/components/parameters/RunIdQuery"
+        - $ref: "#/components/parameters/QueryId"
+      responses:
+        "200":
+          description: The verified VLM input PNG.
+          content:
+            image/png:
+              schema: { type: string, format: binary }
         default: { $ref: "#/components/responses/Error" }
 
   /api/run-patches:
@@ -1946,6 +2043,7 @@ components:
           minItems: 4
           maxItems: 4
         to: { type: string }
+        sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
 
     TestsetFetch:
       type: object

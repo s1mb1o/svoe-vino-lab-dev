@@ -17,6 +17,7 @@ queue. A restart of the server ends the queue; the running build goes on.
     GET  /api/embeddings/<name>                       the wines and the cells of one entry
     POST /api/embeddings/build-all                    start the queue of `Build All`
     POST /api/embeddings/<name>/build                 start a build
+    POST /api/embeddings/<name>/retry/<sha256>/<view> retry one failed item
     POST /api/embeddings/<name>/stop                  stop a build (SIGTERM)
     POST /api/embeddings/<name>/open                  open the directory in Finder
     GET  /api/embeddings/<name>/log                   the text of `build.log`
@@ -49,6 +50,8 @@ API_JOBS = "/api/embedding-jobs"
 API_BUILD_ALL = API_LIST + "/build-all"
 ENTRY_ROUTE = re.compile(r"^/api/embeddings/(%s)(/build|/stop|/open|/log)?$"
                          % embeddings.NAME_PATTERN)
+RETRY_ROUTE = re.compile(r"^/api/embeddings/(%s)/retry/([0-9a-f]{64})/(%s)$"
+                         % (embeddings.NAME_PATTERN, "|".join(embeddings.VIEWS)))
 # The command that opens a directory in Finder. The lab server runs on the Mac of the
 # owner, so the window opens there.
 OPEN_COMMAND = ("open",)
@@ -116,6 +119,12 @@ def respond(server, method, path):
             return _json(200, {"jobs": jobs_view(settings), "queue": queue_view()})
         if route == API_BUILD_ALL and method == "POST":
             return build_all(settings)
+        retry = RETRY_ROUTE.match(route)
+        if retry:
+            if method != "POST":
+                return _error(405, "use POST")
+            name, digest, view = retry.groups()
+            return start(settings, name, target=(digest, view))
         entry = ENTRY_ROUTE.match(route)
         if not entry:
             return _error(404, "not found")
@@ -303,7 +312,7 @@ def jobs_view(settings):
     return out
 
 
-def start(settings, name):
+def start(settings, name, target=None):
     """Start a build of one entry. HTTP 409 when a build of it runs."""
     embedding, answer = _lookup(settings, name)
     if answer:
@@ -317,14 +326,32 @@ def start(settings, name):
         state = job(directory)
         if state["state"] in ("running", "stopping"):
             return _error(409, "a build of %s runs: PID %s" % (name, state["pid"]))
+        command = [python, BUILD_SCRIPT, "--config", settings.config_path, "--name", name]
+        if target is not None:
+            with closing(embeddings.open_database(settings.db_path)) as conn:
+                _wines, sources = embeddings.read_inputs(conn, settings.db_path)
+            items = embeddings.plan_items(embedding, sources)
+            if target not in items:
+                return _error(404, "the selected source and view have no embedding item")
+            try:
+                index = embeddings.read_index(directory)
+                status = embeddings.item_status(items, index, embeddings.image_names(directory))
+            except (ValueError, OSError) as exc:
+                return _error(409, "cannot read the index: %s" % exc)
+            if status[target][0] != "failed":
+                return _error(409, "the selected item is no longer failed; refresh the page")
+            command.extend(["--retry-sha256", target[0], "--retry-view", target[1]])
         os.makedirs(directory, exist_ok=True)
         with open(os.path.join(directory, embeddings.LOG), "wb") as log:
             process = subprocess.Popen(
-                [python, BUILD_SCRIPT, "--config", settings.config_path, "--name", name],
+                command,
                 stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
                 cwd=embeddings.ROOT, start_new_session=True)
         _PROCESSES[directory] = process
-    return _json(202, {"name": name, "state": "running", "pid": process.pid})
+    result = {"name": name, "state": "running", "pid": process.pid}
+    if target is not None:
+        result.update(source_sha256=target[0], view=target[1])
+    return _json(202, result)
 
 
 def stop(settings, name):

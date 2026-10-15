@@ -64,6 +64,15 @@ class OptionsTest(unittest.TestCase):
 
 
 class ActionTest(unittest.TestCase):
+    def test_legacy_ocr_uses_shared_grapes_sugar_and_numbers(self):
+        self.assertEqual(competitor_steps.normalize_text("MYCKАТ 2025"), "muskat 2025")
+        self.assertEqual(competitor_steps.normalize_text("Са8иньо бланк"),
+                         competitor_steps.normalize_text("Sauvignon Blanc"))
+        for raw, value in (("ЭКСТРА БPЮT", "extra_brut"), ("ПОЛYСЛАДК0Е", "semi_sweet"),
+                           ("BRUT NATURE", "brut_nature"), ("extra dry", "extra_dry"),
+                           ("demi-sec", "demi_sec")):
+            self.assertEqual(competitor_steps._group_values(competitor_steps.tokens(raw))["sugar"], {value})
+
     def test_view_fusion_changes_only_the_order_and_diagnostics(self):
         out = competitor_steps.view_fusion(cands(), {"full": 0.3, "label": 0.7})
         self.assertEqual([row["slug"] for row in out],

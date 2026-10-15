@@ -48,6 +48,7 @@ import clusters
 import embeddings
 import label_rules
 import vlm_config
+import vintage_matching
 from embeddings import ConfigError
 
 KIND = "cluster_rules"
@@ -67,6 +68,17 @@ SHEET_PROMPT = (
     "looking at the label only.\n"
     "If the photo does not show the answer, or you cannot read it, answer "
     "\"not visible\". Do not guess.\n"
+    "For a printed colour, inspect the label region named in the question. "
+    "Compare its appearance with the listed colours. Allow plausible changes in "
+    "brightness and illumination. Light blue can appear dark blue, and yellow "
+    "can appear brown in dim or warm light. These are possible appearances, not "
+    "automatic substitutions. Check real neutral regions on the label for a "
+    "consistent lighting change. The white background added around a crop is "
+    "not an illumination reference. If several listed colours remain plausible, "
+    "or glare or darkness prevents a distinction, answer \"not visible\". Do not "
+    "choose a colour only because the options omit the observed colour. Use "
+    "\"other\" only for a visible colour that cannot plausibly match any listed "
+    "colour.\n"
     "Choose each answer from its options.\n\n"
     "%(questions)s\n\n"
     "Answer with one JSON object that maps each question id to its answer, for "
@@ -77,6 +89,15 @@ VERDICT_PROMPT = (
     "This is a photo of a wine bottle, or of its label. It shows one of these wines:\n\n"
     "%(cards)s\n\n"
     "Rule: %(rule)s\n\n"
+    "For a printed colour, inspect the label region named in the rule. Compare "
+    "its appearance with the candidate colours. Allow plausible brightness and "
+    "illumination changes. Light blue can appear dark blue, and yellow can "
+    "appear brown in dim or warm light. Do not apply these substitutions "
+    "automatically. Check real neutral label regions for a consistent lighting "
+    "change. Ignore the white background added around a crop. The absence of a "
+    "candidate with the observed colour does not establish another candidate. "
+    "Use readable text as additional evidence. If colour remains ambiguous and "
+    "no other feature identifies one candidate, answer {\"wine\": \"unsure\"}.\n\n"
     "Which wine is it? Answer with one JSON object: {\"wine\": \"<letter>\"}. Answer "
     "{\"wine\": \"unsure\"} when the photo does not show the feature that tells the "
     "wines apart."
@@ -87,9 +108,22 @@ SCORE_PROMPT = (
     "looking at the label only.\n"
     "For each question, give every option an integer score from 0 to 100. The scores "
     "of one question must total 100.\n"
+    "For a printed colour, inspect the label region named in the question. "
+    "Compare its appearance with the listed colours. Allow plausible changes "
+    "in brightness and illumination. Light blue can appear dark blue, and "
+    "yellow can appear brown in dim or warm light. These are possible "
+    "appearances, not automatic substitutions. Check real neutral regions on "
+    "the label for a consistent lighting change. The white background added "
+    "around a crop is not an illumination reference. If several listed colours "
+    "remain plausible, distribute support across them. If the photo cannot "
+    "distinguish the colours because of glare, darkness, or an uncertain "
+    "illumination colour cast, give a high score to \"not visible\". Do not "
+    "support a colour only because the options omit the observed colour.\n"
     "Use a high score for \"not visible\" when the answer is absent, unreadable, or "
     "outside the photo. Do not guess.\n"
-    "Use \"other\" only when the label visibly shows a different answer.\n"
+    "Use \"other\" only when the label visibly shows a different answer. For "
+    "colour, this answer must not plausibly match any listed colour under the "
+    "lighting in the photo.\n"
     "Do not select a wine or a card.\n\n"
     "%(questions)s\n\n"
     "Answer with one JSON object. Each question id maps every option to its integer "
@@ -457,12 +491,13 @@ class ClusterRerank:
         directory = embeddings.entry_dir(db_path, embedding)
         self.book = RuleBook(directory)
         self.names = catalogue_names(db_path)
+        self.vintage_catalogue = vintage_matching.load_catalogue(db_path)
         self.ask_fn = ask_fn or label_rules.ask
         self.segmenter = segmenter or getattr(inner, "segmenter", None)
         self.id, self.top_k = inner.id, inner.top_k
         # `run_job.build` and `embedding_run.main` read the index state of the run.
         self.catalogue = getattr(inner, "catalogue", None)
-        self.spec = dict(inner.spec, rerank=dict(options, rules=embedding, kind=KIND,
+        self.spec = dict(inner.spec, rerank=dict(options, model=self.entry.model, rules=embedding, kind=KIND,
                                                 **self.book.describe()))
         self.spec["label"] = "%s, then the cluster re-rank" % inner.spec.get("label", self.id)
 
@@ -489,9 +524,18 @@ class ClusterRerank:
             return None, None
         window = [cands[i]["slug"] for i in positions]
         questions = scoreable_questions(rule)
-        prompt, schema = score_prompt(rule), score_schema(rule)
+        rule = dict(rule, questions=questions)
+        extract_vintage = self.entry.protocol == 'openai'
+        score_rule = vintage_matching.feature_rule(rule) if extract_vintage else rule
+        prompt = (vintage_matching.readout_prompt(rule, score_prompt(score_rule))
+                  if extract_vintage else score_prompt(rule))
+        schema = (vintage_matching.readout_schema(rule, score_schema(score_rule))
+                  if extract_vintage else score_schema(rule))
+        validate_response = (
+            (lambda value: vintage_matching.response_errors(rule, value, option_score_errors))
+            if extract_vintage else (lambda value: option_score_errors(rule, value)))
         explain = {
-            "kind": KIND, "cluster": rule["key"], "mode": "evidence",
+            "kind": KIND, "cluster": rule["key"], "mode": "evidence", "model": self.entry.model,
             "source_mode": rule["mode"], "window": window, "ranking": list(window),
             "questions": [{"id": q["id"], "question": q["question"],
                            "options": options_of(q),
@@ -523,21 +567,27 @@ class ClusterRerank:
                         self.entry, content, self.options["max_tokens"],
                         self.options["thinking"], self.options["timeout_s"], schema=schema,
                         cache_read=number == 0,
-                        cache_validator=lambda value: not option_score_errors(rule, value))
+                        cache_validator=lambda value: not validate_response(value))
                 except Exception as exc:
                     attempt.update(ms=round((time.perf_counter() - started) * 1000),
                                    error="%s: %s" % (type(exc).__name__, exc))
                     raise
                 answer = label_rules.parse_json(out["text"])
-                errors = option_score_errors(rule, answer)
+                errors = validate_response(answer)
                 if out["finish_reason"] == "length":
                     errors["_response"] = "the response reached the token limit"
+                raw_scores = ((vintage_matching.feature_answers(rule, answer)
+                               if extract_vintage else answer) or {})
+                raw_years = (vintage_matching.year_answers(rule, answer)
+                             if extract_vintage else {})
                 attempt.update(cached=out["cached"], ms=out["ms"], raw_text=out["text"],
-                               raw_option_scores=answer or {}, validation_errors=errors,
+                               raw_option_scores=raw_scores, raw_vintage_years=raw_years,
+                               validation_errors=errors,
                                finish_reason=out["finish_reason"])
-                explain.update(raw_option_scores=answer or {}, validation_errors=errors)
+                explain.update(raw_option_scores=raw_scores, raw_vintage_years=raw_years,
+                               validation_errors=errors)
                 if not errors:
-                    option_scores = checked_option_scores(rule, answer)
+                    option_scores = checked_option_scores(score_rule, raw_scores)
                     break
                 attempt["error"] = "VlmError: " + "; ".join(errors.values())
                 if number == 1:
@@ -549,11 +599,24 @@ class ClusterRerank:
                     "If the label shows a value absent from the listed options, use other. "
                     "If the answer is absent or unreadable, use not visible."
                 ) % "; ".join(errors.values())
+                if extract_vintage and vintage_matching.vintage_questions(rule):
+                    correction = (
+                        "The previous response failed validation: %s. "
+                        "Return all requested ids. A VINTAGE value MUST be the actual "
+                        "printed four-digit year string or null. Do not give vintage scores. "
+                        "For other questions, integer option scores MUST total 100.") % (
+                            "; ".join(errors.values()))
                 content = content + [{"type": "text", "text": correction}]
-            evidence = evidence_scores(rule, option_scores, window)
+            evidence = evidence_scores(score_rule, option_scores, window)
             decisions = {slug: round(base_scores[slug] + DECISION_WEIGHT * evidence[slug], 6)
                          for slug in window}
             ranking = sorted(window, key=lambda slug: (-decisions[slug], window.index(slug)))
+            if extract_vintage and vintage_matching.vintage_questions(rule):
+                dated, undated = label_rules.vintage_facts(
+                    window, self.vintage_catalogue, self.book.descriptions)
+                ranking, vintage_audit = vintage_matching.prefer_year(
+                    ranking, raw_years, dated, undated)
+                explain["vintage_match"] = vintage_audit
         except Exception as exc:  # noqa: BLE001 - a failure keeps the base order
             explain["error"] = "%s: %s" % (type(exc).__name__, exc)
         attempts = explain["attempts"]

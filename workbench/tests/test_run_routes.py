@@ -8,6 +8,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest import mock
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -147,6 +148,20 @@ class RunRoutesTest(unittest.TestCase):
         self.assertEqual(data["configurations"][1]["endpoint"], "http://127.0.0.1:9")
         self.assertIsNone(data["config_error"])
 
+    def test_run_charts_page_and_method_contract(self):
+        status, headers, body = self.request("/runs/charts?set=my&mode=history&pipeline=mock")
+        self.assertEqual(status, 200)
+        self.assertEqual(body, lab_pages.page("run_charts.html"))
+        self.assertIn("text/html", headers["Content-Type"])
+        self.assertEqual(headers["Cache-Control"], "no-store")
+        nav = re.search(r'<nav[^>]*>(.*?)</nav>', body, re.S).group(1)
+        self.assertEqual(re.findall(r'href="([^"]*)"', nav), [href for href, _ in LAB.NAV])
+        status, _, body = self.request("/runs/charts", method="HEAD")
+        self.assertEqual((status, body), (200, ""))
+        status, _, body = self.request("/runs/charts", method="POST")
+        self.assertEqual(status, 405)
+        self.assertIn("GET alone", json.loads(body)["error"])
+
     def test_api_runs_marks_only_a_changed_endpoint_origin(self):
         default = "2026-09-25T120000Z-lab-remote-my"
         override = "2026-09-25T130000Z-lab-remote-my"
@@ -258,10 +273,103 @@ class RunRoutesTest(unittest.TestCase):
                 self.assertIn(text, json.loads(raw)["error"])
         self.assertEqual(self.request(route)[0], 405)
 
+    def test_removing_a_run_image_tag_updates_shared_copies_and_preserves_other_tags(self):
+        original = {path: path.read_bytes() for path in self.runs.rglob("*") if path.is_file()}
+        for tag in ("blurry", "label_front"):
+            self.assertEqual(self.request("/api/run-image-tag", "POST", {
+                "id": MOCK_RUN, "query": "q-1", "tag": tag,
+            })[0], 200)
+        unrelated = hashlib.sha256(b"a main").hexdigest()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("INSERT INTO image_tag (sha256, tag, created_at) VALUES (?, ?, ?)",
+                         (unrelated, "blurry", "2026-09-25T10:00:00Z"))
+
+        route = "/api/run-image-tag-remove"
+        body = {"id": MOCK_RUN, "query": "q-1", "tag": " Blurry ", "sha256": unrelated}
+        # The recorded query selects the image. A supplied digest cannot redirect removal.
+        for _ in range(2):
+            status, _, raw = self.request(route, "POST", body)
+            answer = json.loads(raw)
+            self.assertEqual((status, answer["removed"], answer["tags"]),
+                             (200, "blurry", ["label_front"]))
+            self.assertEqual(answer["sha256"], hashlib.sha256(b"photo bytes").hexdigest())
+        for run in (MOCK_RUN, OLD_RUN):
+            self.assertEqual(self.get_json("/api/run?id=" + run)[1]["rows"][0]["tags"],
+                             ["label_front"])
+        with sqlite3.connect(self.db) as conn:
+            self.assertEqual(conn.execute("SELECT tag FROM image_tag WHERE sha256 = ?",
+                                          (unrelated,)).fetchall(), [("blurry",)])
+        # GET may create a derived page cache. Every original run file stays identical.
+        self.assertEqual({path: path.read_bytes() for path in original}, original)
+
+    def test_run_image_tag_removal_checks_the_query_and_tag(self):
+        route = "/api/run-image-tag-remove"
+        for body, code in (({}, 404), ([], 400), ("not an object", 400),
+                           ({"id": "unknown", "query": "q-1", "tag": "blurry"}, 404),
+                           ({"id": MOCK_RUN, "tag": "blurry"}, 400),
+                           ({"id": MOCK_RUN, "query": "missing", "tag": "blurry"}, 404),
+                           ({"id": MOCK_RUN, "query": "q-2", "tag": "blurry"}, 404),
+                           ({"id": MOCK_RUN, "query": "q-1", "tag": "two words"}, 400)):
+            with self.subTest(body=body):
+                self.assertEqual(self.request(route, "POST", body)[0], code)
+        self.assertEqual(self.request(route)[0], 405)
+
     def test_the_test_photo_folder_is_served(self):
         status, headers, _ = self.request(self.photo)
         self.assertEqual(status, 200)
         self.assertEqual(headers["Content-Type"], "image/webp")
+
+    def test_wine_merge_preview_and_write_transfer_a_manual_wine(self):
+        source = "__manual-wine"
+        digest = hashlib.sha256(b"photo bytes").hexdigest()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute("INSERT INTO wine_catalog (wine_slug,name,producer,category,color,"
+                         "region,csv_photo_name) VALUES (?, 'Manual', 'p','c','co','r','x.jpg')",
+                         (source,))
+            conn.execute("INSERT INTO test_set (set_name,source_dir) VALUES ('my','my')")
+            conn.execute("INSERT INTO test_photo (set_name,place,file_name,sha256,label) "
+                         "VALUES ('my',?,'01.jpg',?,'positive')", (source, digest))
+        original = {path: path.read_bytes() for path in self.runs.rglob("*") if path.is_file()}
+        config = json.loads(self.config.read_text(encoding="utf-8"))
+        config["new_wine_embedding"] = "gw"
+        self.config.write_text(json.dumps(config), encoding="utf-8")
+        cached_dataset = self.get_json("/api/dataset")[1]
+        self.assertIn(source, [wine["slug"] for wine in cached_dataset["records"]])
+        before = self.get_json("/api/testset?set=my")[1]
+        self.assertEqual(next(row for row in before["rows"] if row["slug"] == source)
+                         ["photos"][0]["entry"]["label"], "positive")
+        status, data = self.get_json("/api/wine-merge?slug=" + source)
+        self.assertEqual((status, data["source"]["wine_slug"], data["photos"]), (200, source, 1))
+        self.assertEqual({wine["slug"] for wine in data["targets"]}, {"wine-a", "wine-b"})
+        with mock.patch.object(self.server.new_wine_jobs, "get", return_value={"state": "indexing"}):
+            self.assertEqual(self.request("/api/wine-merge", "POST",
+                                          {"slug": source, "to": "wine-a"})[0], 409)
+        status, _, raw = self.request("/api/wine-merge", "POST", {"slug": source, "to": "wine-a"})
+        result = json.loads(raw)
+        self.assertEqual((status, result["from"], result["to"], result["removed"]),
+                         (200, source, "wine-a", True))
+        with sqlite3.connect(self.db) as conn:
+            self.assertIsNone(conn.execute("SELECT 1 FROM wine_catalog WHERE wine_slug = ?",
+                                           (source,)).fetchone())
+            self.assertEqual(conn.execute("SELECT place,label FROM test_photo").fetchone(),
+                             ("wine-a", "positive"))
+        self.assertEqual(self.get_json("/api/wine-merge?slug=" + source)[0], 404)
+        after = self.get_json("/api/testset?set=my")[1]
+        self.assertNotIn(source, [row["slug"] for row in after["rows"]])
+        self.assertEqual(next(row for row in after["rows"] if row["slug"] == "wine-a")
+                         ["photos"][0]["entry"]["label"], "positive")
+        self.assertNotIn(source, [wine["slug"] for wine in
+                                  self.get_json("/api/dataset")[1]["records"]])
+        self.assertEqual({path: path.read_bytes() for path in original}, original)
+
+    def test_wine_merge_rejects_invalid_requests(self):
+        self.assertEqual(self.get_json("/api/wine-merge")[0], 400)
+        self.assertEqual(self.get_json("/api/wine-merge?slug=__null__")[0], 400)
+        self.assertEqual(self.get_json("/api/wine-merge?slug=__missing")[0], 404)
+        for body in ({}, [], {"slug": "wine-a", "to": "wine-b"},
+                     {"slug": "__drawer__", "to": "wine-a"}):
+            self.assertEqual(self.request("/api/wine-merge", "POST", body)[0], 400)
+        self.assertEqual(self.request("/api/wine-merge", "DELETE")[0], 405)
 
     def test_api_run_checks_its_parameters(self):
         self.assertEqual(self.get_json("/api/run?id=..")[0], 400)

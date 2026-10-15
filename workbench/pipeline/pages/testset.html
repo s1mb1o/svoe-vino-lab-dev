@@ -295,15 +295,31 @@ tbody tr.cat-only { background: var(--panel-2); }
 .card.unu { border-color: var(--unu); background: var(--unu-bg); opacity: .55; }
 .card.var { border-color: var(--var); background: var(--var-bg); }
 .card.moved { outline: 2px dashed var(--accent); outline-offset: 2px; }
-.card-paste {
-  position: absolute; top: 4px; right: 4px; z-index: 4;
-  padding: 2px 6px; border: 1px solid var(--accent); border-radius: 5px;
-  background: var(--panel); color: var(--accent); cursor: pointer;
-  font: inherit; font-size: 9px; font-weight: 700; line-height: 1.2;
-  box-shadow: 0 1px 3px rgba(0,0,0,.35);
+/* Count distinct wine slugs for the same image. Keep other corner badges visible. */
+.image-wine-count {
+  position: absolute; top: 8px; left: 8px; z-index: 4;
+  min-width: 25px; height: 25px; padding: 0 6px;
+  border: 1px solid var(--accent); border-radius: 999px;
+  background: var(--panel); color: var(--accent); box-shadow: 0 1px 4px #0008;
+  font: 700 12px/23px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
 }
-.card-paste:hover:not(:disabled) { background: var(--accent); color: #fff; }
-.card-paste:disabled { cursor: progress; opacity: .7; }
+.card.prop .image-wine-count { top: 27px; }
+.image-wine-count:hover, .image-wine-count:focus-visible {
+  color: var(--text); outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.paste-card {
+  flex: 0 0 172px; width: 172px; height: 184px; padding: 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px dashed var(--accent); border-radius: 8px;
+  background: var(--grp-a); color: var(--text); cursor: pointer;
+  font: inherit; font-size: 14px; line-height: 1.45; text-align: center;
+}
+.paste-card:hover, .paste-card:focus-visible {
+  border-color: var(--accent); background: var(--panel-2);
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.paste-card:disabled { cursor: progress; opacity: .7; }
 /* A card marked for deletion. The mark moves no file. */
 .card.del { outline: 2px solid var(--neg); outline-offset: 2px; opacity: .45; }
 .card.del img { filter: grayscale(1); }
@@ -313,9 +329,7 @@ tbody tr.cat-only { background: var(--panel-2); }
   font-size: 10px; line-height: 1; padding: 3px 7px; font-weight: 700;
   pointer-events: none;
 }
-.card.del .card-paste { right: 38px; }
 .card.del .note-badge { right: 40px; }
-.card.pasteable.del .note-badge { right: 82px; }
 /* A photo with a box of the main object. The large view shows the box. */
 .box-tag {
   position: absolute; left: 10px; top: 154px; z-index: 3;
@@ -368,7 +382,6 @@ tbody tr.cat-only { background: var(--panel-2); }
   background: var(--accent); color: #fff; cursor: default;
   box-shadow: 0 1px 3px rgba(0,0,0,.35);
 }
-.card.pasteable .note-badge { right: 48px; }
 .card.held-card .note-badge, .card.held-card.del .note-badge { right: 58px; }
 .note-badge svg { width: 12px; height: 12px; display: block; }
 .note-pop {
@@ -384,6 +397,7 @@ tbody tr.cat-only { background: var(--panel-2); }
 /* The right-click menu of one photo. */
 .ctxmenu {
   position: fixed; z-index: 60; min-width: 172px; padding: 4px;
+  max-height: calc(100vh - 16px); overflow-y: auto;
   background: var(--panel-2); border: 1px solid var(--line);
   border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .45);
   font-size: 13px;
@@ -793,6 +807,7 @@ tbody tr.cat-only { background: var(--panel-2); }
         <option value="untouched">no label yet</option>
         <option value="partial">partly labelled</option>
         <option value="done">fully labelled</option>
+        <option value="hasphotos">has candidate photos</option>
         <option value="nophotos">no candidate photos</option>
       </select>
     </label><label class="compact-short">Verdict
@@ -804,7 +819,7 @@ tbody tr.cat-only { background: var(--panel-2); }
         <option value="has_unu">unusable</option>
         <option value="has_var">different design</option>
       </select>
-    </label><label class="compact-search">Find <input id="q" type="search" placeholder="Search wines"></label><button id="more-btn" data-header-toggle type="button" aria-expanded="false" aria-controls="more"
+    </label><label class="compact-search">Find <input id="q" type="search" placeholder="Wines or img:…" title="Search wine fields. Use img:filename or img:sha256 to find the same image."></label><button id="more-btn" data-header-toggle type="button" aria-expanded="false" aria-controls="more"
             title="Show advanced filters and their active count"
             >Advanced Filters <b id="more-n">(0)</b></button></div>
 <div class="bar more compact-panel" id="more" hidden><label>Sort
@@ -1024,6 +1039,15 @@ tbody tr.cat-only { background: var(--panel-2); }
       <label class="run-sub">Run <select id="drawer-run"></select></label>
       <label class="run-sub">Tag <select id="drawer-results-tag"
         title="filter these waiting results by the current image tag"><option value="">All</option>
+      </select></label>
+      <label class="run-sub">Sort <select id="drawer-results-sort"
+        title="Positive counts use the current test set. Top 3 uses the total for three distinct wines. Missing candidates or scores go last.">
+        <option value="run">Original run order</option>
+        <option value="pos1">Top 1: fewest positives</option>
+        <option value="pos3">Top 3: fewest positives (total)</option>
+        <option value="score_desc">Best score (candidate 1)</option>
+        <option value="score_asc">Worst score (candidate 1)</option>
+        <option value="gap">Closest scores (1 vs 2)</option>
       </select></label>
       <button id="drawer-results-close" class="run-btn" type="button">Close</button></div>
     <div id="drawer-results-sub" class="run-sub"></div>
@@ -1270,6 +1294,7 @@ function matchAxis(row, t, mode) {
     case "has_neg": return t.negative > 0;
     case "has_unu": return t.unusable > 0;
     case "has_var": return t.variant > 0;
+    case "hasphotos": return row.photos.length > 0;
     case "nophotos": return row.photos.length === 0;
     case "noted": return t.noted > 0;
     case "proposal": return t.prop > 0;
@@ -1354,6 +1379,83 @@ function matchQuery(r, terms) {
   return terms.every(t => ws.some(w => w.includes(t)));
 }
 
+/* Shared images belong to the selected testset. Duplicate entries in one wine count once. */
+let IMAGE_INDEX = {wines: new Map(), files: new Map()};
+function buildImageIndex(rows) {
+  const wines = new Map(), files = new Map();
+  for (const row of rows) for (const photo of row.photos) {
+    const hash = String(photo.sha256 || "").toLowerCase();
+    if (!hash) continue;
+    if (!wines.has(hash)) wines.set(hash, new Set());
+    if (!isSpecialRow(row)) wines.get(hash).add(row.slug);
+    const file = foldText(photo.file);
+    if (!files.has(file)) files.set(file, new Set());
+    files.get(file).add(hash);
+  }
+  return {wines, files};
+}
+function imageSearchHashes(value, index) {
+  const key = foldText(value).trim();
+  if (!key) return new Set();
+  if (index.wines.has(key)) return new Set([key]);
+  if (index.files.has(key)) return index.files.get(key);
+  if (/^[a-f0-9]{8,64}$/.test(key)) {
+    return new Set([...index.wines.keys()].filter(hash => hash.startsWith(key)));
+  }
+  const hashes = new Set();
+  for (const [file, values] of index.files) {
+    if (file.includes(key)) for (const hash of values) hashes.add(hash);
+  }
+  return hashes;
+}
+function testsetSearch(value, index) {
+  const images = [];
+  const ordinary = String(value || "").replace(/(^|\s)img:(?:"([^"]*)"|'([^']*)'|(\S*))/gi,
+    (_, space, double, single, plain) => {
+      images.push(imageSearchHashes(double ?? single ?? plain ?? "", index));
+      return space;
+    });
+  return {terms: wordsOf(ordinary), images};
+}
+function matchImageSearch(row, images) {
+  return images.every(hashes => row.photos.some(photo =>
+    hashes.has(String(photo.sha256 || "").toLowerCase())));
+}
+function imageWineBadge(photo) {
+  const hash = String(photo.sha256 || "").toLowerCase();
+  const count = IMAGE_INDEX.wines.get(hash)?.size || 0;
+  if (count < 2) return "";
+  const title = `Same image in ${count} wine slugs in ${SET}. Show these wines.`;
+  return `<button type="button" class="image-wine-count" data-image-wines="${esc(hash)}"
+    draggable="false" title="${esc(title)}" aria-label="Show ${count} wine slugs with this image">${count}</button>`;
+}
+function syncImageWineBadges() {
+  IMAGE_INDEX = buildImageIndex(ROWS);
+  for (const card of document.querySelectorAll(".card[data-image-sha]")) {
+    const hash = card.dataset.imageSha, badge = card.querySelector(".image-wine-count");
+    const count = IMAGE_INDEX.wines.get(hash)?.size || 0;
+    if (count < 2) { badge?.remove(); continue; }
+    if (!badge) card.insertAdjacentHTML("afterbegin", imageWineBadge({sha256: hash}));
+    else {
+      badge.textContent = count;
+      badge.title = `Same image in ${count} wine slugs in ${SET}. Show these wines.`;
+      badge.setAttribute("aria-label", `Show ${count} wine slugs with this image`);
+    }
+  }
+}
+function showImageWines(slug, file) {
+  const photo = photoOf(slug, file);
+  if (!photo?.sha256) return;
+  clearTimeout(QT);
+  if (LB) closeLightbox();
+  for (const id of FILTER_AXES) $(id).value = "all";
+  $("#tag").value = ""; GROUP_FILTER = "";
+  $("#q").value = `img:${photo.sha256}`;
+  render();
+  $("#q").focus();
+}
+/* End of shared-image search. */
+
 /* The local time of a stored UTC time `YYYY-MM-DDTHH:MM:SSZ`, as `YYYY-MM-DD HH:MM`, as
    the Dataset page shows it. */
 function commentTime(value) {
@@ -1406,16 +1508,14 @@ function cardHtml(r, p) {
   const dl = deleteMarked(r.slug, p.file), bx = boxOf(r.slug, p.file);
   const from = entryOf(r.slug, p.file).moved_from, tg = photoTags(p);
   return `<div class="card ${SHORT[l] || ""} ${mv ? "moved" : ""} ${pr ? "prop" : ""} ${
-                 dl ? "del" : ""} ${isSpecialRow(r) ? "" : "pasteable"} ${
+                 dl ? "del" : ""} ${
                  isDrawerRow(r) ? "held-card" : ""}" draggable="true"
-               data-slug="${esc(r.slug)}" data-file="${esc(p.file)}">
+               data-slug="${esc(r.slug)}" data-file="${esc(p.file)}" data-image-sha="${esc(String(p.sha256 || "").toLowerCase())}">
+    ${imageWineBadge(p)}
     ${dl ? `<span class="del-tag" title="marked for deletion; the mark moves no file">del</span>` : ""}
     ${isDrawerRow(r) ? `<button class="drawer-remove" type="button" draggable="false"
       data-drawer-remove="${esc(p.file)}" aria-label="Remove ${esc(p.file)} from the Drawer"
       title="Permanently remove this image from the Drawer">Remove</button>` : ""}
-    ${isSpecialRow(r) ? "" : `<button class="card-paste" type="button"
-      data-paste-image="${esc(r.slug)}" aria-label="Paste a clipboard image into ${esc(r.slug)}"
-      title="Paste an image from the clipboard into this wine">Paste</button>`}
     ${pr ? `<span class="prop-tag" title="${esc(pr.by || "agent")} proposes ${
       esc(pr.proposed)}${pr.source_url ? "\nfrom " + esc(pr.source_url) : ""}">${
       esc(pr.proposed).slice(0, 3)} ${Math.round((pr.confidence || 0) * 100)}%</span>` : ""}
@@ -1435,12 +1535,16 @@ function cardHtml(r, p) {
 }
 
 function cardsHtml(r) {
+  const paste = isSpecialRow(r) ? "" : `<button class="paste-card" type="button"
+    data-paste-image="${esc(r.slug)}" aria-label="Paste a clipboard image into ${esc(r.slug)}"
+    aria-keyshortcuts="Meta+V Control+V" title="Paste an image into this wine: click or ⌘V"
+    draggable="false"><span>Paste image<br>click or ⌘V</span></button>`;
   if (!r.photos.length) {
-    return `<span class="empty">${isNullRow(r)
+    return paste || `<span class="empty">${isNullRow(r)
       ? "no photo yet: drag here a photo that must give no match"
       : "no photo of this wine in the set " + esc(SET)}</span>`;
   }
-  return r.photos.map(p => cardHtml(r, p)).join("");
+  return r.photos.map(p => cardHtml(r, p)).join("") + paste;
 }
 
 function rowCountsHtml(r) {
@@ -1577,16 +1681,19 @@ function clusterHeadHtml(h, name) {
 }
 
 function render() {
+  IMAGE_INDEX = buildImageIndex(ROWS);
   const source = $("#cluster").value;
   // The sort `cluster size` needs clusters (owner answer of 2026-09-26 01:08:49).
   $('#sort option[value="cluster_size"]').disabled = source === "all";
   if (source === "all" && $("#sort").value === "cluster_size") $("#sort").value = "slug";
   const mode = $("#sort").value;
   const filts = FILTER_AXES.filter(id => id !== "#cluster").map(id => $(id).value);
-  const terms = wordsOf($("#q").value);
+  const query = testsetSearch($("#q").value, IMAGE_INDEX);
+  const terms = query.terms;
   const nullRow = ROWS.find(isNullRow) || null, drawerRow = ROWS.find(isDrawerRow) || null;
   let rows = ROWS.filter(r => !isSpecialRow(r) && matchFilter(r, filts));
   if (terms.length) rows = rows.filter(r => matchQuery(r, terms));
+  if (query.images.length) rows = rows.filter(r => matchImageSearch(r, query.images));
   const tagWant = $("#tag").value;
   if (tagWant === TAG_NONE) {
     rows = rows.filter(r => r.photos.some(p => !photoTags(p).length));
@@ -1667,6 +1774,7 @@ $("#side-hide").addEventListener("click", () => setSide(false));
 $("#drawer-tag").addEventListener("change", renderSide);
 
 function stats() {
+  syncImageWineBadges();
   const all = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0, noted: 0,
                 prop: 0, del: 0, box: 0 };
   let doneWines = 0;
@@ -1814,8 +1922,46 @@ async function markDelete(slug, file, on) {
   } catch (e) { alert("the delete mark is not saved: " + e.message); }
 }
 
+const PHOTO_REMOVE_BUSY = new Set();
+async function removePhoto(slug, file) {
+  const set = SET, key = JSON.stringify([set, slug, file]);
+  if (PHOTO_REMOVE_BUSY.has(key)) return;
+  PHOTO_REMOVE_BUSY.add(key);
+  try {
+    if (CMT_AT && CMT_AT.slug === slug && CMT_AT.file === file) await flushComment();
+    await post("/api/testset-photo-remove", { set, place: slug, file });
+    if (SET !== set) return;
+    const row = ROWS.find(r => r.slug === slug);
+    if (!row) { await load(SET, false); return; }
+    // Save the lightbox identity before removing an item from its indexed array.
+    const at = LB && lbPhoto();
+    const index = row.photos.findIndex(photo => photo.file === file);
+    if (index >= 0) row.photos.splice(index, 1);
+    if (V[slug]) delete V[slug][file];
+    if (CMT_AT && CMT_AT.slug === slug && CMT_AT.file === file) {
+      CMT_AT = null;
+      $("#cmt").value = "";
+    }
+    const confs = row.photos.map(p => p.conf).filter(c => c !== null && c !== undefined);
+    row.min_conf = confs.length ? Math.min(...confs) : null;
+    row.catalog_only = !isSpecialRow(row) && !row.photos.length;
+    refreshRow(row);
+    TOTAL = photoTotal();
+    stats();
+    if (LB && VIEW[LB.wine] === row) {
+      if (at && at.file === file) closeLightbox();
+      else if (at) showLightbox(LB.wine, row.photos.findIndex(p => p.file === at.file));
+      else showLightbox(LB.wine, -1);
+    }
+    if (isDrawerRow(row) && DRAWER_VIEW) renderDrawerResults();
+  } catch (e) {
+    alert("the photo is not removed: " + e.message);
+  } finally {
+    PHOTO_REMOVE_BUSY.delete(key);
+  }
+}
+
 async function removeDrawerPhoto(file, btn) {
-  if (!window.confirm(`Remove "${file}" from the Drawer?`)) return;
   const old = btn.textContent;
   btn.disabled = true;
   btn.textContent = "…";
@@ -2165,13 +2311,43 @@ async function copyImage(slug, file, btn) {
   }
 }
 
+/* A duplicate has a separate entry. The stored image and image tags stay shared. */
+const PHOTO_DUPLICATE_BUSY = new Set();
+async function duplicatePhoto(slug, file) {
+  const set = SET, key = `${set}/${slug}/${file}`;
+  if (PHOTO_DUPLICATE_BUSY.has(key)) return;
+  const source = ROWS.find(row => row.slug === slug)?.photos.find(photo => photo.file === file);
+  if (!source) return;
+  PHOTO_DUPLICATE_BUSY.add(key);
+  try {
+    const out = await post("/api/testset-duplicate", { place: slug, file, sha256: source.sha256 });
+    if (SET !== set) return;
+    const row = ROWS.find(row => row.slug === slug);
+    if (!row) { await load(SET, false); return; }
+    const at = row.photos.findIndex(photo => photo.file === file);
+    row.photos.splice(at < 0 ? row.photos.length : at + 1, 0, out.photo);
+    row.catalog_only = false;
+    (V[slug] = V[slug] || {})[out.photo.file] = entryWithComments(out.photo);
+    if (LB && VIEW[LB.wine]?.slug === slug && at >= 0 && LB.photo > at) LB.photo++;
+    refreshRow(row);
+    TOTAL = photoTotal();
+    stats();
+  } catch (e) {
+    alert("the image is not duplicated:\n" + e.message);
+  } finally {
+    PHOTO_DUPLICATE_BUSY.delete(key);
+  }
+}
+
 function showCtxMenu(x, y, slug, file) {
   const m = $("#ctxmenu");
   m.innerHTML =
     `<div class="ctx-head">${esc(file)}</div>` +
     `<button type="button" data-act="copy-image">Copy Image</button>` +
+    `<button type="button" data-act="duplicate">Duplicate</button>` +
     `<button type="button" data-act="copy-url">Copy Image URL</button>` +
     `<button type="button" data-act="download">Download</button>` +
+    `<button type="button" data-act="filter-image">Show wines with this image</button>` +
     `<div class="ctx-sep"></div>` +
     `<button type="button" data-act="to-wine">Move to a wine…</button>` +
     (slug === DRAWER_SLUG ? ""
@@ -2180,8 +2356,8 @@ function showCtxMenu(x, y, slug, file) {
       : `<button type="button" data-act="to-null">Move to No Match</button>`) +
     `<div class="ctx-sep"></div>` +
     (deleteMarked(slug, file)
-      ? `<button type="button" data-act="undelete">Keep this photo</button>`
-      : `<button type="button" class="danger" data-act="delete">Delete</button>`);
+      ? `<button type="button" data-act="undelete">Clear deletion mark</button>` : "") +
+    `<button type="button" class="danger" data-act="delete">Delete</button>`;
   m.dataset.slug = slug;
   m.dataset.file = file;
   m.hidden = false;
@@ -2221,10 +2397,12 @@ document.addEventListener("click", async ev => {
     a.href = photoUrl(slug, file);
     a.download = `${slug}__${file}`;
     document.body.appendChild(a); a.click(); a.remove();
-  } else if (act === "to-null") moveTo(slug, file, NULL_SLUG);
+  } else if (act === "filter-image") showImageWines(slug, file);
+  else if (act === "duplicate") duplicatePhoto(slug, file);
+  else if (act === "to-null") moveTo(slug, file, NULL_SLUG);
   else if (act === "to-drawer") moveTo(slug, file, DRAWER_SLUG);
   else if (act === "to-wine") openMove(slug, file);
-  else if (act === "delete") markDelete(slug, file, true);
+  else if (act === "delete") removePhoto(slug, file);
   else if (act === "undelete") markDelete(slug, file, false);
 }, true);
 window.addEventListener("blur", hideCtxMenu);
@@ -2698,19 +2876,38 @@ async function uploadFiles(files, to) {
   }
 }
 
-/* Add the first image of the clipboard to the wine of a candidate card. Clipboard reads
-   require a direct click and a secure context; localhost satisfies the latter. The image
-   follows the same validation, duplicate checks, naming, and row refresh as a file drop. */
-async function pasteClipboardImage(to, btn) {
-  if (!navigator.clipboard || !navigator.clipboard.read) {
-    alert("the browser cannot read images from the clipboard");
-    return;
-  }
-  const old = btn.textContent;
+/* The paste card accepts a click or a native paste event. Native paste needs no
+   clipboard-read permission. Both paths use the existing file upload validation. */
+async function pasteImageFiles(to, btn, files) {
+  if (btn.disabled) return;
+  const old = btn.innerHTML;
   btn.disabled = true;
   btn.textContent = "…";
   try {
-    const items = await navigator.clipboard.read();
+    await uploadFiles(files, to);
+  } catch (e) {
+    alert("the image is not pasted:\n" + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = old;
+  }
+}
+
+async function pasteClipboardImage(to, btn) {
+  if (btn.disabled) return;
+  btn.focus();
+  const old = btn.innerHTML;
+  btn.disabled = true;
+  let items;
+  try {
+    items = await navigator.clipboard.read();
+  } catch (e) {
+    btn.innerHTML = "<span>Paste image<br>press ⌘V</span>";
+    btn.disabled = false;
+    btn.focus();
+    return;
+  }
+  try {
     let blob = null;
     for (const item of items) {
       const type = item.types.find(value => value.startsWith("image/"));
@@ -2719,14 +2916,27 @@ async function pasteClipboardImage(to, btn) {
     if (!blob) throw new Error("the clipboard holds no image");
     const extension = ({ "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp",
                          "image/gif": "gif", "image/bmp": "bmp" })[blob.type] || "png";
-    await uploadFiles([new File([blob], `clipboard.${extension}`, { type: blob.type })], to);
+    btn.disabled = false;
+    await pasteImageFiles(to, btn,
+      [new File([blob], `clipboard.${extension}`, { type: blob.type })]);
   } catch (e) {
     alert("the image is not pasted:\n" + e.message);
   } finally {
     btn.disabled = false;
-    btn.textContent = old;
+    btn.innerHTML = old;
   }
 }
+
+document.addEventListener("paste", ev => {
+  const btn = ev.target.closest?.("[data-paste-image]");
+  if (!btn) return;
+  ev.preventDefault();
+  if (btn.disabled) return;
+  const files = [...(ev.clipboardData?.files || [])]
+    .filter(file => file.type.startsWith("image/"));
+  if (!files.length) { alert("the clipboard holds no image"); return; }
+  pasteImageFiles(btn.dataset.pasteImage, btn, files);
+});
 
 /* A drop from the Codex desktop app names a local image (`drop.js`). The lab server
    reads it, and the image then goes the way of a dropped file. */
@@ -3204,6 +3414,12 @@ window.addEventListener("hashchange", () => {
 });
 
 document.addEventListener("click", ev => {
+  const imageWines = ev.target.closest("[data-image-wines]");
+  if (imageWines) {
+    const card = imageWines.closest(".card");
+    showImageWines(card.dataset.slug, card.dataset.file);
+    return;
+  }
   const favorite = ev.target.closest("[data-favorite-toggle]");
   if (favorite) { toggleFavorite(favorite.dataset.favoriteToggle); return; }
   const remove = ev.target.closest("[data-drawer-remove]");
@@ -3451,6 +3667,7 @@ async function load(name, first) {
     $("#drawer-results-tag").value = "";
   }
   SET = data.set; SETS = data.sets || []; ROWS = data.rows || []; GROUPS = data.groups || {};
+  IMAGE_INDEX = buildImageIndex(ROWS);
   $("#drawer-results").disabled = true;
   V = {};
   TAGS = {};
@@ -3893,6 +4110,41 @@ function drawerCandidateHtml(row, candidate) {
     <b>${esc((wine && wine.name) || candidate.slug)}</b><div class="drawer-candidate-meta">#${
       esc(candidate.rank == null ? "?" : candidate.rank)}${score}<br>${esc(candidate.slug)}</div></article>`;
 }
+function drawerResultSortValue(row, mode, positives) {
+  const candidates = drawerCandidates(row);
+  if (mode === "pos1" || mode === "pos3") {
+    const count = mode === "pos1" ? 1 : 3;
+    const top = candidates.slice(0, count);
+    return top.length === count && top.every(candidate => positives.has(candidate.slug))
+      ? top.reduce((sum, candidate) => sum + positives.get(candidate.slug), 0) : null;
+  }
+  const score = candidates[0] && candidates[0].score;
+  if (!Number.isFinite(score)) return null;
+  if (mode === "gap") {
+    const second = candidates[1] && candidates[1].score;
+    return Number.isFinite(second) ? Math.abs(score - second) : null;
+  }
+  return score;
+}
+function sortDrawerResults(rows, mode) {
+  if (!["pos1", "pos3", "score_desc", "score_asc", "gap"].includes(mode)) return rows;
+  // Count each current-set wine once. Do not scan photos inside the sort comparator.
+  const positives = new Map();
+  if (mode === "pos1" || mode === "pos3") {
+    for (const wine of ROWS) if (wine.in_catalog) {
+      positives.set(wine.slug, wine.photos.reduce((count, photo) =>
+        count + (labelOf(wine.slug, photo.file) === "positive" ? 1 : 0), 0));
+    }
+  }
+  const direction = mode === "score_desc" ? -1 : 1;
+  return rows.map((row, index) => ({row, index, value: drawerResultSortValue(row, mode, positives)}))
+    .sort((a, b) => {
+      if (a.value === null || b.value === null) {
+        return (a.value === null) - (b.value === null) || a.index - b.index;
+      }
+      return direction * (a.value - b.value) || a.index - b.index;
+    }).map(item => item.row);
+}
 const DRAWER_RESULTS = VisibleCards.create($("#drawer-results-list"), {
   root: $("#drawer-results-dlg .drawer-results-panel"), height: 320, initial: 1,
 });
@@ -3912,7 +4164,8 @@ function renderDrawerResults() {
   };
   const current = (DRAWER_VIEW.rows || []).filter(row => !!photoOf(row));
   const want = renderImageTagFilter("#drawer-results-tag", current, tagsOf);
-  const rows = current.filter(row => tagFilterMatches(tagsOf(row), want));
+  const rows = sortDrawerResults(current.filter(row => tagFilterMatches(tagsOf(row), want)),
+                                 $("#drawer-results-sort").value);
   const resolved = (DRAWER_VIEW.rows || []).length - current.length;
   const filter = want === TAG_NONE ? " · filter: no tag" : want ? ` · filter: ${want}` : "";
   $("#drawer-results-sub").textContent = `${DRAWER_VIEW.head.configuration || "pipeline"} · ${
@@ -4084,6 +4337,10 @@ $("#drawer-results").addEventListener("click", openDrawerResults);
 $("#drawer-results-close").addEventListener("click", closeDrawerResults);
 $("#drawer-run").addEventListener("change", ev => loadDrawerRun(ev.target.value));
 $("#drawer-results-tag").addEventListener("change", renderDrawerResults);
+$("#drawer-results-sort").addEventListener("change", () => {
+  $("#drawer-results-dlg .drawer-results-panel").scrollTop = 0;
+  renderDrawerResults();
+});
 $("#drawer-results-list").addEventListener("click", ev => {
   const preview = ev.target.closest("[data-drawer-preview]");
   if (preview) openDrawerPreview(preview.dataset.drawerPreview, preview.dataset.drawerSlug);

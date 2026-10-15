@@ -20,7 +20,7 @@ import cluster_rules  # noqa: E402
 WINE_IDENTITY = import_module("wine_identity_vlm")
 
 GX10_CHAT = "http://192.168.86.14:18081/v1/chat/completions"
-NAMES = ["qwen3.5-9b-nvfp4", "qwen3.5-9b", "qwen3-vl-32b", "qwencloud-qwen3.8-max",
+NAMES = ["qwen3.5-9b-nvfp4", "qwen3.5-9b", "qwen3-vl-32b", "laya-v", "paddle-laya", "qwencloud-qwen3.8-max",
          "qwencloud-qwen3.8-flash", "dashscope-qwen3.7-flash"]
 
 

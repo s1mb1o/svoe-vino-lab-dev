@@ -588,6 +588,11 @@ def remove_drawer_photo(conn, set_name, place, file_name):
     """
     if place != DRAWER_SLUG:
         raise TestsetError(400, "only a photo of the Drawer can be removed")
+    return remove_photo(conn, set_name, place, file_name)
+
+
+def remove_photo(conn, set_name, place, file_name):
+    """Remove one set entry and its comments; keep shared image bytes and tags."""
     row = _photo_row(conn, set_name, place, file_name)
     conn.execute("DELETE FROM test_photo_comment WHERE set_name = ? AND place = ? AND "
                  "file_name = ?", (set_name, place, file_name))

@@ -842,6 +842,377 @@ new model inputs to the configured embedding endpoint. It writes new index rows:
   --name gx10-dinov3-vitl16-arcface-v2
 ```
 
+## Local visual and OCR comparisons
+
+Read-only regression checks; run from the workbench root. Requires the lab Python
+packages. The embedding tests bind temporary loopback HTTP fixtures. These checks
+send no request to a configured model endpoint and change no catalogue or test set.
+
+```sh
+scripts/test_local_comparison.sh
+```
+
+For local weights, cache contracts, the 21 runnable presets and normal lab job usage,
+read [local-comparison.md](docs/testing/local-comparison.md).
+
+## Shared OCR wine term normalization
+
+Run from `workbench` with the lab Python environment. These checks use local
+fixtures and raw OCR caches; no real model or remote embedding calls are made.
+The matching-detail tests bind temporary loopback fake services.
+
+```sh
+python3 -m unittest discover -s tests -p test_wine_terms.py -q
+python3 -m unittest discover -s tests -p test_variant_attributes.py -q
+python3 -m unittest discover -s tests -p test_main_label_match.py -q
+python3 -m unittest discover -s tests -p test_competitor_steps.py -q
+python3 -m unittest discover -s tests -p test_run_steps.py -q
+```
+
+Read-only normalization of a string, without OCR inference or cache changes:
+
+```sh
+PYTHONPATH=pipeline python3 -c 'import wine_terms; print(wine_terms.normalize("MYCKАТ Са8иньо бланк ПОЛYСЛАДК0Е"))'
+```
+
+Dictionary structure, provenance, confidence and historical behavior:
+[docs/testing/wine-terms.md](docs/testing/wine-terms.md).
+
+
+## YOLO26 label and field training research
+
+Read [the isolated experiment protocol](../internal/victor-dravigny-rank6-20261007/yolo26-label-research/README.md) before downloading or training. The protocol separates field boxes, label masks, landmarks and the SAM3 comparison. Dataset downloads require a local Roboflow key; training writes only `work/label-yolo26/`.
+
+Read-only preparation checks from the workbench root:
+
+```sh
+work/label-yolo26/venv/bin/python -m unittest discover -s ../internal/victor-dravigny-rank6-20261007/yolo26-label-research -p 'test_*.py' -v
+```
+
+## Cylindrical label rectification prototype
+
+Run from the workbench root. The experiment uses copied inputs and cached masks.
+It writes only its own experiment directory. It changes no pipeline or index.
+
+```sh
+work/label-yolo26/venv/bin/python ../internal/victor-dravigny-rank6-20261007/rectification-prototype-20261009/run_experiment.py
+work/label-yolo26/venv/bin/python ../internal/victor-dravigny-rank6-20261007/rectification-prototype-20261009/validate.py
+```
+
+To repeat the local PaddleOCR comparison and rebuild the report:
+
+```sh
+work/label-yolo26/venv/bin/python ../internal/victor-dravigny-rank6-20261007/rectification-prototype-20261009/run_ocr.py
+work/label-yolo26/venv/bin/python ../internal/victor-dravigny-rank6-20261007/rectification-prototype-20261009/write_report.py
+```
+
+Read [the comparison report](../internal/victor-dravigny-rank6-20261007/rectification-prototype-20261009/report.html) for the assumed camera geometry, radius alternatives, source provenance and OCR limits. The reusable `rectify.py` accepts a same-size label mask plus an optional full-photo bottle mask and crop box. A radius inferred from a bottle silhouette differs from a radius assumed from an angular prior.
+
+## Wine term recovery experiment
+
+These commands run from the workbench root. They require Python 3. They use the
+standard library. No environment variable is required.
+
+Read-only contract tests:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_wine_term*.py'
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p test_variant_attributes.py
+```
+
+Offline replay writes only a new result directory. The default input campaign and
+raw OCR cache MUST exist. No model or service is required. Select a new output
+directory for each code or input identity.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 scripts/replay_wine_term_recovery.py --output ../internal/ocr-recovery-20261009/reproduce
+```
+
+See [the recovery policy](docs/testing/wine-term-recovery.md) for input identities,
+confidence and geometry requirements, metrics, and limitations.
+
+
+## YOLO26 and SAM3 field benchmark
+
+Run from the workbench root. Prerequisites: the isolated label-yolo26 environment,
+the pinned public RF100 author export and protocol, and local SAM3 weights.
+The current coordinator already owns this run. Do not start a second coordinator.
+No Roboflow key is needed for this public author mirror.
+
+Read-only progress and metric tests:
+
+```sh
+work/label-yolo26/venv/bin/python -m json.tool ../internal/victor-dravigny-rank6-20261007/yolo26-label-benchmark-20261009/progress.json
+PYTHONDONTWRITEBYTECODE=1 work/label-yolo26/venv/bin/python -m unittest discover -s ../internal/victor-dravigny-rank6-20261007/yolo26-label-benchmark-20261009 -p 'test_*.py'
+```
+
+After training has completed, the evaluator writes only its benchmark outputs.
+It refuses a YOLO test run without the training completion record. The SAM3 test
+run requires the frozen SAM3 validation run first. No remote request is made.
+
+```sh
+work/label-yolo26/venv/bin/python ../internal/victor-dravigny-rank6-20261007/yolo26-label-benchmark-20261009/evaluate.py --model yolo26n --checkpoint work/label-yolo26/runs/rf100-fields-n-20261009/weights/best.pt --split test
+work/label-yolo26/venv/bin/python ../internal/victor-dravigny-rank6-20261007/yolo26-label-benchmark-20261009/evaluate.py --model yolo26s --checkpoint work/label-yolo26/runs/rf100-fields-s-20261009/weights/best.pt --split test
+work/label-yolo26/venv/bin/python ../internal/victor-dravigny-rank6-20261007/yolo26-label-benchmark-20261009/evaluate.py --model sam3 --checkpoint work/label-yolo26/sam3-hf-local-20261009/facebook--sam3 --split val
+work/label-yolo26/venv/bin/python ../internal/victor-dravigny-rank6-20261007/yolo26-label-benchmark-20261009/evaluate.py --model sam3 --checkpoint work/label-yolo26/sam3-hf-local-20261009/facebook--sam3 --split test
+```
+
+See the live local report in
+`../internal/victor-dravigny-rank6-20261007/yolo26-label-benchmark-20261009/report.html`.
+Whole-label masks, role classes, ordered landmarks, text transcripts and wine
+identities require their own annotations. Field-box AP does not measure them.
+
+
+## Laya-V cluster rerank
+
+Read-only component checks require `~/.venvs/svoe-vino-lab`. Run from the Workbench root:
+
+```sh
+~/.venvs/svoe-vino-lab/bin/python -m unittest discover -s tests -p test_vlm_config.py -q
+~/.venvs/svoe-vino-lab/bin/python -m unittest discover -s tests -p test_laya_v.py -q
+```
+
+The run command calls external model services and writes run and cache files.
+The configured index rebuild can update catalogue vectors.
+The gateway MUST have Laya-V, SAM3, SigLIP2 NaFlex, and the QR scanner ready.
+Submitted input files MUST have timestamps earlier than 2026-09-29 at 23:59:00.
+Set `QR_SCANNER_ENDPOINT` before the run:
+
+```sh
+QR_SCANNER_ENDPOINT=http://192.168.86.14:18081/upstream/qr-scanner \
+  ~/.venvs/svoe-vino-lab/bin/python pipeline/run_job.py \
+  --name barcode-rerank_laya_v-siglip2-p512-rot5-seg \
+  --set official-test-2026-10-01 --workers 4
+```
+
+Read `docs/laya-v-rerank.md` for the typed answer contract and staged benchmark method.
+
+## PaddleOCR + multilingual Laya reranking
+
+Read-only adapter checks use fake services and temporary caches:
+
+```sh
+python3 -m unittest discover -s tests -p 'test_laya*.py'
+```
+
+The named preset requires the installed `work/main-label-paddle` CPU environment and
+both local OCR model directories. Set `QR_SCANNER_ENDPOINT` to the configured scanner
+URL. The Laya text, SAM3, SigLIP2 and barcode services must be available. This command
+calls those services, writes caches and a new run, and follows the normal configured
+embedding rebuild policy:
+
+```sh
+python3 pipeline/run_job.py --name barcode-rerank_paddle_laya-siglip2-p512-rot5-seg \
+  --set official-test-2026-10-01 --workers 4 --config config.yaml
+```
+
+The frozen comparison driver and staged inputs are documented in
+`docs/laya-v-rerank.md`; its evidence is under
+`../internal/laya-v-rerank-20261009/paddle-laya/`.
+
+## Label colour prompt comparison
+
+Run the isolated test from the repository root:
+
+```bash
+python3 internal/colour-prompts-20261011/probe.py descriptions
+python3 internal/colour-prompts-20261011/probe.py rules
+python3 internal/colour-prompts-20261011/probe.py queries
+python3 internal/colour-prompts-20261011/probe.py retries
+python3 internal/colour-prompts-20261011/probe.py generated
+SAM3_ENDPOINT=http://192.168.86.14:18081/upstream/sam3 \
+  python3 internal/colour-prompts-20261011/probe.py cropped
+python3 internal/colour-prompts-20261011/probe.py summary
+```
+
+The test reads the catalogue database. The test writes isolated artifacts.
+The test sends images to the configured description and rule services.
+The saved rule test uses the seven-image payload approved on 2026-10-11.
+A completed phase skips existing records.
+Read [the protocol and results](docs/testing/label-colour-prompts.md).
+
+Run the focused unit suites from `workbench/`:
+
+```bash
+python3 -m unittest discover -s tests -p test_label_rules.py
+python3 -m unittest discover -s tests -p test_build_label_rules.py
+python3 -m unittest discover -s tests -p test_cluster_rerank.py
+python3 -m unittest discover -s tests -p test_matcher_parity.py
+```
+
+Run the native suite from the repository root:
+
+```bash
+python3 -m unittest discover -s matcher/tests -p test_option_score_rerank.py
+```
+
+A production rule rebuild writes `cluster-rules.json`.
+Use `pipeline/build_label_rules.py --cluster <slug> --dry-run` to inspect a targeted rebuild.
+This command needs `--name <embedding-name>`.
+The dry run does not generate or replace a rule.
+
+## Rule self-calibration prototype
+
+Run the isolated phases from `workbench/`:
+
+```bash
+SAM3_ENDPOINT=http://192.168.86.14:18081/upstream/sam3 \
+  python3 ../internal/rule-self-calibration-20261011/prototype.py prepare
+python3 ../internal/rule-self-calibration-20261011/prototype.py calibrate
+python3 ../internal/rule-self-calibration-20261011/prototype.py final
+python3 ../internal/rule-self-calibration-20261011/prototype.py report
+```
+
+Run each phase only after the previous phase succeeds.
+`prepare` writes isolated image derivatives and calls the shared SAM3 service.
+`calibrate` calls the configured LAN recognizer and QwenCloud generator.
+`final` calls the recognizer with five independent front photographs.
+`report` reads saved results and verifies frozen inputs.
+Do not generate a new revision after final recognition.
+These commands preserve production catalogue rules and source photographs.
+Completed recognition cases resume from their saved records.
+Use a new artifact directory for a changed protocol or configuration.
+The manifest rejects changed source files, code, configuration, or prepared inputs.
+
+Run the offline safeguards from `workbench/`:
+
+```bash
+python3 -m unittest discover -s ../internal/rule-self-calibration-20261011 \
+  -p test_prototype.py -v
+```
+
+Read [the protocol and results](docs/testing/rule-self-calibration.md).
+
+Audit the saved completed experiment from `workbench/`:
+
+```bash
+python3 ../internal/rule-self-calibration-20261011/audit.py
+```
+
+The audit is read-only except for its `audit.json` report.
+The audit checks both saved freeze records and the recorded preparation correction.
+The audit makes no service request.
+
+## Label-only benchmark
+
+Read [the protocol](docs/testing/label-only-benchmark.md).
+Use the project Python environment with Pillow and the Workbench dependencies.
+Run from `workbench/`.
+
+These checks make no service request:
+
+```bash
+python3 -m unittest discover -s ../internal/label-only-benchmark-20261011 -p 'test_*.py'
+python3 ../internal/label-only-benchmark-20261011/audit.py
+```
+
+The following command calls only the configured resident LAN description model:
+
+```bash
+python3 ../internal/label-only-benchmark-20261011/benchmark.py describe
+```
+
+The next command sends the reviewed catalogue payload to QwenCloud.
+The command requires explicit approval of that payload.
+The command waits for the paired LAN descriptions.
+It uses at most two Cloud requests at a time.
+The command MAY run while the LAN description client runs.
+
+```bash
+python3 ../internal/label-only-benchmark-20261011/rules_job.py
+```
+
+After descriptions and rules are complete, the next command runs paired recognition.
+Wait for the LAN description client to exit before this command.
+The command can resume incomplete generation.
+It requires the same approval if a Cloud rule is absent.
+
+```bash
+python3 ../internal/label-only-benchmark-20261011/benchmark.py run
+python3 ../internal/label-only-benchmark-20261011/audit.py --complete
+```
+
+
+## Synthetic rule benchmark
+
+Use the `svoe-vino-lab` Python environment.
+Run each command from the Workbench root.
+The evidence directory is frozen after preparation.
+Do not edit its benchmark code or `SPEC.md` during an inference run.
+
+Local safeguards do not call a model:
+
+```sh
+python ../internal/synthetic-rule-benchmark-20261011/test_benchmark.py
+```
+
+Prepare synthetic images or verify an existing manifest.
+Preparation writes only the isolated evidence directory.
+These commands do not call a model:
+
+```sh
+python ../internal/synthetic-rule-benchmark-20261011/benchmark.py prepare
+python ../internal/synthetic-rule-benchmark-20261011/benchmark.py verify
+```
+
+The next command sends the seven approved real label references, metadata, and descriptions to configured QwenCloud `qwen3.8-max`.
+It requires `QWENCLOUD_TOKEN_PLAN_API_KEY`.
+Do not use this command for a broader unapproved payload.
+
+```sh
+python ../internal/synthetic-rule-benchmark-20261011/benchmark.py generate --suite real
+```
+
+The next command uses resident LAN Qwen3.5-9B for fictional descriptions and rules.
+Read the GPU tracker and check the 20 GiB reserve first.
+Do not load another model or restart a service.
+Use one LAN request at a time:
+
+```sh
+python ../internal/synthetic-rule-benchmark-20261011/benchmark.py generate --suite controlled
+```
+
+The matching job waits until every rule record exists.
+Then it evaluates both suites through the same resident LAN model.
+It resumes saved cases without repeating completed requests:
+
+```sh
+python ../internal/synthetic-rule-benchmark-20261011/match_job.py
+```
+
+After all 435 cases finish, audit results and create the numbered failure report.
+This command makes no model request:
+
+```sh
+python ../internal/synthetic-rule-benchmark-20261011/report.py
+```
+
+Read [synthetic-rule-benchmark.md](docs/testing/synthetic-rule-benchmark.md) for scope and interpretation.
+
+Verify every numbered failure in the completed local report.
+Use the bundled Node.js runtime with Playwright available.
+Pass the absolute report path:
+
+```sh
+node ../internal/synthetic-rule-benchmark-20261011/qa-report.js /Volumes/T7_2TB/Projects-T7_2TB/drink-atlas-workspace/svoe-vino-lab/internal/synthetic-rule-benchmark-20261011/report.html
+```
+
+
+## Vintage matching tests
+
+Prerequisites: the Workbench Python environment at `~/.venvs/svoe-vino-lab` with
+Pillow and PyYAML. Run from the Workbench root.
+These local tests use temporary databases and fake VLM responses.
+They make no model or network request and do not change catalogue data.
+
+```sh
+~/.venvs/svoe-vino-lab/bin/python -m unittest discover -s tests -p test_vintage_matching.py
+~/.venvs/svoe-vino-lab/bin/python -m unittest discover -s tests -p test_cluster_rerank.py
+```
+
+See [the test concept](docs/testing/vintage-matching.md).
+
+
 ## Original patch inspection tests
 
 Run from the Workbench root.
@@ -900,3 +1271,71 @@ cd ../../svoe-vino-lab-experiments
 ~/.venvs/svoe-vino-lab/bin/python -m patch_pipeline.full_comparison --gallery internal/patch-retrieval-20261014/full-gallery --phase calibration
 ~/.venvs/svoe-vino-lab/bin/python -m patch_pipeline.full_comparison --gallery internal/patch-retrieval-20261014/full-gallery --phase validation
 ```
+
+## Optional query bottle orientation experiment
+
+Run from the workbench root. Use `~/.venvs/svoe-vino-lab/bin/python` with the Workbench dependencies. The optional integration is active as `siglip2-p512-rot5-seg-upright`. The default pipeline keeps selector v4. The helper CLI uses its isolated saved implementation.
+
+Read-only validation. No model service is needed.
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python ../internal/bottle-orientation-20261014/test_integration.py
+```
+
+Local preparation. This command writes only its output directory. It reads cached SAM3 masks and sends no model request. The query MUST have an alpha mask or a cached segmentation answer.
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python ../internal/bottle-orientation-20261014/query.py \
+  --image /absolute/query.png \
+  --output ../internal/bottle-orientation-20261014/query-output \
+  --prepare-only
+```
+
+Query embedding and retrieval. Omit `--prepare-only` from the preceding command. This sends one image to the configured p512 embedding service and reads the existing gallery. Add `--allow-segmentation` only to allow a missing SAM3 mask to be requested. The gallery is not rebuilt.
+
+Paired retrieval benchmark. This command reads the frozen 256-photo manifest, reuses saved query vectors when present, and writes two new Runs entries. It can call the p512 service for absent vectors. It uses cached masks only and does not rebuild the gallery. Complete request latency is not measured.
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python ../internal/bottle-orientation-20261014/benchmark_real.py
+```
+
+To run the optional pipeline on the current full test set through the standard runner:
+
+```bash
+~/.venvs/svoe-vino-lab/bin/python pipeline/embedding_run.py \
+  --name siglip2-p512-rot5-seg-upright --set my
+```
+
+This standard run can request absent SAM3 masks and query embeddings. It writes a normal Runs result.
+
+
+## Manual accepted answers: local tests
+
+Prerequisites: Python with the Workbench dependencies.
+The job tests need localhost sockets and process inspection.
+The tests use temporary databases and a temporary HTTP server.
+The tests do not modify the catalogue or call a model service.
+Run these commands from the Workbench root.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=pipeline:scripts:tests python3 -m unittest test_manual_accepted_answers test_benchmark test_run_jobs -q
+ruff check pipeline/benchmark.py tests/test_manual_accepted_answers.py
+```
+
+Read [the test concept](docs/testing/manual-accepted-answers.md).
+
+
+## Testset Duplicate: local integration tests
+
+Prerequisites: Python with the Workbench dependencies.
+The tests need localhost sockets.
+The tests use temporary databases and localhost HTTP servers.
+The tests do not modify the live catalogue or call a model service.
+Run these commands from the Workbench root.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=pipeline:scripts:tests python3 -m unittest test_testset_duplicate test_testset_routes test_lab_openapi test_lab_pages -q
+ruff check pipeline/testset_duplicate.py pipeline/testset_routes.py tests/test_testset_duplicate.py
+```
+
+Read [the test concept](docs/testing/testset-duplicate.md).

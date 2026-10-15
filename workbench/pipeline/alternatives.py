@@ -97,6 +97,9 @@ CAN_HEIGHT, CAN_ASPECT = 0.9, 2.0
 BOTTLE_IOU, BOTTLE_COVER, BOTTLE_COVER_IOU = 0.80, 0.80, 0.40
 DUPLICATE_IOU = 0.90
 MIN_BOX_SIDE = 8
+# Compare labels on the main bottle before testing whether a label resembles the
+# whole bottle. Otherwise a close-up's real label is discarded and a shelf tag wins.
+LABEL_ON_BOTTLE = 0.50
 # A second body label on the bottle of the main label, owner answer of
 # 2026-09-25T19:16:44+0300: a label counts when its centre lies on the largest bottle,
 # when less than `PART_COVER` of it lies inside the main label, and when it has at least
@@ -110,20 +113,32 @@ BODY_AREA, BODY_WIDTH, PART_COVER = 0.25, 0.60, 0.80
 _LABEL_HEAD = ("SAM3 %r, threshold %s, mask %s, max side %d; "
                % (DETECT_TEXTS, derive.SAM3_THRESHOLD, derive.SAM3_MASK_THRESHOLD,
                   derive.SAM3_MAX_SIDE))
-_LABEL_TAIL = (
+_LEGACY_LABEL_TAIL = (
     "; a second label on the bottle, less than %s inside it, with >= %s of its area and "
     ">= %s of its width: the box of the labels, no mask; else the mask: mask blur %s of "
     "the long side, keep >= %d/255; edge blur %s px"
     % (PART_COVER, BODY_AREA, BODY_WIDTH, derive.MASK_BLUR, derive.MASK_KEEP,
        derive.EDGE_BLUR))
-SETTINGS_LABEL = (_LABEL_HEAD + "the largest label that is not the package "
-                  "(build_labels.py), else the largest label" + _LABEL_TAIL)
+_LABEL_TAIL = (
+    "; label mask union v1; a second label on the bottle, less than %s inside it, "
+    "with >= %s of its area and >= %s of its width: the union of label masks; "
+    "mask blur %s of the long side, keep >= %d/255; edge blur %s px"
+    % (PART_COVER, BODY_AREA, BODY_WIDTH, derive.MASK_BLUR, derive.MASK_KEEP,
+       derive.EDGE_BLUR))
+_LEGACY_LABEL_MAIN = "the largest label that is not the package (build_labels.py), else the largest label"
+_LABEL_MAIN = ("label selection v2: labels with >= %s box coverage by the main bottle; "
+               "the largest that is not the package, else the largest on that bottle; "
+               "without a bottle, the largest label" % LABEL_ON_BOTTLE)
+SETTINGS_LABEL = _LABEL_HEAD + _LABEL_MAIN + _LABEL_TAIL
+LEGACY_SETTINGS_LABEL = _LABEL_HEAD + _LEGACY_LABEL_MAIN + _LEGACY_LABEL_TAIL
 # A label close-up (`label_front`, `label_back`): the largest label wins, with no bottle
 # test. Owner message of 2026-09-26T19:38:53+0300: in a close-up the bottle fills the
 # frame, so the box of the real label is close to the box of the bottle (IoU 0.84 on
 # `d9f847bd…`). The bottle test dropped that label and kept a small QR sticker.
 SETTINGS_LABEL_CLOSE_UP = (_LABEL_HEAD + "a label close-up: the largest label, with no "
                            "bottle test" + _LABEL_TAIL)
+LEGACY_SETTINGS_LABEL_CLOSE_UP = (_LABEL_HEAD + "a label close-up: the largest label, with no "
+                                  "bottle test" + _LEGACY_LABEL_TAIL)
 SETTINGS_LABEL_ABSENCE = (
     "SAM3 %r found no label; SAM3 %r classified the package as packet or box; "
     "threshold %s, mask %s, max side %d"
@@ -277,16 +292,16 @@ def side(instances, width, height):
     return "front"
 
 
-def label_instance(instances, close_up=False):
+def label_instance(instances, close_up=False, *, on_main_bottle=True):
     """Return the label instance of a photo, or None.
 
-    The rule of `build_labels.py`: of two instances of one region the larger one stays;
-    a label that is the bottle, or that holds the bottle, is the package and not a label;
-    the largest mask wins, not the best score. When the rule leaves no label, the largest
-    label counts. In a label close-up (`close_up`) the label can fill the frame and equal
-    the bottle box, so the largest label wins with no bottle test.
+    Labels must lie on the main bottle when one is detected. Within that group, a
+    label that is the bottle or holds it gives way to a smaller label; when that test
+    leaves none, retain the largest on-bottle label. Shelf tags and neighbouring
+    bottles never supply that fallback. With no bottle, the largest label wins.
+    An explicit label close-up (`close_up`) keeps the largest with no bottle test.
     """
-    candidates, _bottles = _label_candidates(instances, close_up)
+    candidates, _bottles = _label_candidates(instances, close_up, on_main_bottle=on_main_bottle)
     return candidates[0] if candidates else None
 
 
@@ -305,7 +320,7 @@ def label_absence_reason(instances):
     return "the %s has no separate label" % item["label"]
 
 
-def _label_candidates(instances, close_up=False):
+def _label_candidates(instances, close_up=False, *, on_main_bottle=True):
     """Return (the labels of the rule of `label_instance`, the largest first; the bottle
     boxes). With `close_up`, no label is dropped by the bottle test."""
     labels, bottles = [], []
@@ -324,6 +339,10 @@ def _label_candidates(instances, close_up=False):
     for item in sorted(labels, key=order):
         if all(_iou(_box(item), _box(kept)) <= DUPLICATE_IOU for kept in unique):
             unique.append(item)
+    if on_main_bottle and not close_up and bottles:
+        bottle = max(bottles, key=_area)
+        unique = [item for item in unique
+                  if _covers(bottle, _box(item)) >= LABEL_ON_BOTTLE]
     kept = [item for item in unique
             if not any(_iou(_box(item), bottle) > BOTTLE_IOU
                        or (_covers(_box(item), bottle) > BOTTLE_COVER
@@ -340,11 +359,11 @@ def _centre_on(box, package, width, height):
             and package[1] - INSIDE * height <= cy <= package[3] + INSIDE * height)
 
 
-def body_labels(instances, main, width, height):
+def body_labels(instances, main, width, height, *, on_main_bottle=True):
     """Return the other labels of `instances` that count next to the label `main` (the
     rule of `BODY_AREA`), the largest first. The boxes are in the pixels of the sent copy
     of `width` × `height` pixels. With no bottle, each label can count."""
-    candidates, bottles = _label_candidates(instances)
+    candidates, bottles = _label_candidates(instances, on_main_bottle=on_main_bottle)
     bottle = max(bottles, key=_area) if bottles else None
     main_box, main_area = _box(main), float(main.get("area") or 0)
     out = []
@@ -381,10 +400,8 @@ def label_box_cut(image, items, scale):
     return image.convert("RGBA").crop(box), box
 
 
-def label_cut(image, instance):
-    """Return (the label cut as an RGBA image, its box in the pixels of `image`)."""
-    with Image.open(io.BytesIO(base64.b64decode(instance["mask_png_b64"]))) as mask:
-        mask = mask.convert("L")
+def _label_mask_cut(image, mask):
+    """Apply a label mask, refine its edges, and preserve the source alpha."""
     if mask.size != image.size:
         mask = mask.resize(image.size, Image.Resampling.BILINEAR)
     alpha = derive.refine_mask(mask.point(lambda value: 255 if value >= 128 else 0))
@@ -397,21 +414,44 @@ def label_cut(image, instance):
     return out.crop(box), box
 
 
-def label_cut_of(image, instances, close_up=False):
+def label_cut(image, instance):
+    """Return (the label cut as an RGBA image, its box in the pixels of `image`)."""
+    with Image.open(io.BytesIO(base64.b64decode(instance["mask_png_b64"]))) as mask:
+        mask = mask.convert("L")
+    return _label_mask_cut(image, mask)
+
+
+def label_masks_cut(image, instances):
+    """Keep the union of accepted label masks, with transparent glass between them."""
+    if not instances:
+        raise ValueError("at least one label mask is required")
+    combined = Image.new("L", image.size, 0)
+    for instance in instances:
+        with Image.open(io.BytesIO(base64.b64decode(instance["mask_png_b64"]))) as mask:
+            mask = mask.convert("L")
+        if mask.size != image.size:
+            mask = mask.resize(image.size, Image.Resampling.BILINEAR)
+        combined = ImageChops.lighter(combined, mask)
+    return _label_mask_cut(image, combined)
+
+
+def label_cut_of(image, instances, close_up=False, *, mask_union=True, on_main_bottle=True):
     """Return (the method, the label cut as an RGBA image, its box in the pixels of
     `image`), or None when the SAM3 answer `instances` of `DETECT_TEXTS` holds no label.
 
-    One label gets its mask (`seg`). A label with other body labels gets the box around
-    them all (`crop`). `label_derivatives` and the embedding runner of plan 33 use this
-    function, so a test photo gets the cut of a catalogue image. `close_up` selects the
-    main label of a label close-up (`label_instance`).
+    Keep accepted label masks (`seg`). Queries and catalogue images share this rule.
+    `mask_union=False` restores the old rectangular rule for historical replay.
     """
-    instance = label_instance(instances, close_up)
+    instance = label_instance(instances, close_up, on_main_bottle=on_main_bottle)
     if instance is None:
         return None
     scale = _copy_scale(image, instance)
-    others = body_labels(instances, instance, image.width * scale, image.height * scale)
+    others = body_labels(instances, instance, image.width * scale, image.height * scale,
+                         on_main_bottle=on_main_bottle)
     if others:
+        if mask_union:
+            result, box = label_masks_cut(image, [instance] + others)
+            return "seg", result, box
         result, box = label_box_cut(image, [instance] + others, scale)
         return "crop", result, box
     result, box = label_cut(image, instance)
