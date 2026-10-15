@@ -7429,3 +7429,43 @@ The Dataset API returns HTTP 200. The initial facts and queue counts stay unchan
 
 Complete the Claude Opus 5.5 xhigh review. Address all blocking findings.
 Verify the final validation correction with the 277 installed checks.
+
+
+## 2026-10-15 — Compare saved run cases
+
+Add Compare runs on the Runs page. Keep the selected run as candidate B.
+Default to Differences. Show both succeed, regressions, improvements, and both fail.
+Show query images, accepted answers, saved predictions, ranks, latency, and step links.
+Support rank 1, Top 5, Top 10, search, run swapping, and paginated cases.
+Check saved image identities and annotations. Do not trust a testset name alone.
+Use saved paths to distinguish repeated image assignments. Permit reordered query IDs.
+Block pass/fail comparison for changed snapshots until unchanged cases are selected.
+Keep changed or absent cases, operational errors, and unscored labels separate.
+Require saved query snapshots. Keep current testset labels out of historical scoring.
+Use a bounded read cache with file identity checks. Change no saved run or annotation.
+All 92 scoped comparison, Runs, chart, API, and page tests pass.
+Fix the stale navigation assertion so it accepts the existing aria-label.
+The saved 256-case orientation pair reproduces 201 both succeed, five regressions,
+two improvements, and 48 both fail. A different 2632-case snapshot requires opt-in.
+The private browser verifies group filters, pagination, swap, rank selection,
+compatibility guards, common-case opt-in, and exact saved-step links.
+Review the implementation with Claude Opus 5.5 at xhigh (Very High).
+Keep private test and review evidence in internal/run-comparison-20261015.
+
+Claude Opus 5.5 at xhigh approves the implementation with no blocking defects.
+Apply the small review suggestions. Clear common-case opt-in when run defaults change.
+Keep the inspected run as candidate B. Preserve keyboard focus after a result reload.
+Search both saved paths and all saved candidates. Report extra result records and
+shallow Top-K output. Keep missing legacy image locations out of parameter errors.
+Add regression tests and verify the existing run-head fields through HTTP.
+
+Apply the 13-file patch after shared-file hash checks. No active job is present.
+Restart port 8168 with SIGTERM from PID 37103 to PID 5726.
+The Dataset API and comparison API return HTTP 200. Schema stays 036.
+All 92 installed-source tests pass. Ruff, assembled scripts, and diff checks pass.
+The live browser verifies the groups, compatibility guard, explicit common-case
+selection, search, keyboard focus, and candidate-B entry link. No browser errors.
+Keep saved runs and annotations intact. No inference request or migration is needed.
+Stop the private preview and close the temporary verification tabs.
+Evidence: internal/run-comparison-20261015/rollout.json, installed-checks.log,
+browser-verification.json, claude-review.json, and live-comparison.jpg at repository root.

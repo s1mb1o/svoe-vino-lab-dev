@@ -50,6 +50,7 @@ import lab_pages
 import labdb
 import pipelines
 import run_files
+import run_compare
 import run_page_cache
 import testsets
 import wine_merge
@@ -59,7 +60,7 @@ from settings_cache import SETTINGS_CACHE
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNS_DIR = os.path.join(ROOT, "runs")
 MATCHER_ROOT = os.path.join(os.path.dirname(os.path.dirname(ROOT)), "svoe-vino-matcher")
-ROUTES = ("/runs", "/runs/charts", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
+ROUTES = ("/runs", "/runs/charts", "/runs/compare", "/api/run-compare", "/api/runs", "/api/run", "/api/run-clusters", "/api/run-inputs",
           "/api/run-candidate", "/api/run-steps", "/api/run-preview", "/api/run-artifact", "/api/run-vlm-image", "/api/run-predictions",
           "/api/run-expected", "/api/run-image-tag", "/api/run-image-tag-remove", "/api/drawer-runs",
           "/api/drawer-match-accept", "/api/wine-merge")
@@ -149,6 +150,11 @@ def respond(server, method, path, card_images, read_body=None, *, card_images_fo
         return 200, lab_pages.page("runs.html"), "text/html; charset=utf-8", "no-store"
     if route == "/runs/charts":
         return 200, lab_pages.page("run_charts.html"), "text/html; charset=utf-8", "no-store"
+    if route == "/runs/compare":
+        return 200, lab_pages.page("run_compare.html"), "text/html; charset=utf-8", "no-store"
+    if route == "/api/run-compare":
+        code, body = run_compare.respond(runs_dir, server.db_path, query)
+        return _json(code, body)
     if route == "/api/runs":
         return _json(200, runs_view(runs_dir, server.config_path or embeddings.CONFIG_PATH))
     if route == "/api/drawer-runs":

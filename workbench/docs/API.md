@@ -1428,3 +1428,47 @@ Catalogue metadata and previous descriptions are unchanged.
 Extraction states are `ready`, `pending`, `running`, `failed`, `missing`, `not_tracked`,
 `not_queued`, and `older_extractor`. The Result column is independent of extraction state.
 The raw heartbeat time lets clients expire cached worker-liveness values.
+
+
+## Run case comparison
+
+`GET /runs/compare` serves the read-only comparison page. The Runs page links to it.
+The link keeps the selected run as B and keeps the selected testset.
+Select A as the baseline and B as the candidate. The default filter is `differences`.
+Four groups show both succeed, regressions (A succeeds), improvements (B succeeds),
+and both fail. Select rank 1, Top 5, or Top 10 for positive and variant cases.
+Any saved accepted wine can satisfy a positive case. No Match succeeds only with
+no returned wine. A negative-only label does not establish a correct answer.
+Operational errors, missing results, and unscored cases have separate groups.
+The page shows each query, accepted answers, both predictions, rank, latency,
+and links to the existing step inspector. It paginates 50 cases at a time.
+Search matches saved image identities, photo paths, wine placements, accepted wines,
+and displayed candidates. Counts describe the full selected cohort before search.
+
+`GET /api/run-compare?a=<id>&b=<id>` returns the comparison.
+Optional parameters are `group`, `k=1|5|10`, `common=0|1`, `q`, `offset`, and `limit`.
+The limit defaults to 50 and permits 1 through 200. The offset starts at zero.
+The groups are `differences`, `both_succeed`, `regressions`, `improvements`,
+`both_fail`, `all`, `errors`, `unscored`, and `not_compared`.
+
+Compatibility uses each run's saved `queries.jsonl`. It matches image SHA-256 and
+wine placement. It uses the saved photo path to distinguish repeated assignments
+of the same image to the same wine. Query order and query identifiers can differ.
+Labels and accepted answers MUST agree. Accepted-answer order does not matter.
+An exact snapshot permits comparison. A different snapshot reports changed labels
+and cases present in only one run. It blocks pass/fail comparison until `common=1`
+explicitly selects unchanged cases. Changed cases stay in `not_compared`.
+Testset names alone never establish compatibility. A renamed testset can retain
+an exact snapshot. Missing or ambiguous snapshots cannot establish compatibility.
+
+The response holds `a`, `b`, `compatibility`, `comparison_enabled`, `counts`,
+`rows`, `total`, `offset`, `limit`, `group`, `k`, `common`, `warnings`, and
+`images_error`. Each row holds `a` and `b` side records, image identity, group,
+and any incompatibility reason. Each side holds the recorded annotation, computed
+status, rank, saved candidates, total candidate count, latency, and inspector URL.
+Settings remain visible. Cache settings can affect latency interpretation.
+The comparison sends no inference request. It changes no saved run or annotation.
+
+Errors: `400` for invalid parameters or the same run twice; `404` for an unknown
+run; `409` for an unfinished run or a file that changes during the read; `422`
+for an absent or invalid saved snapshot, ambiguous identity, or invalid JSON.

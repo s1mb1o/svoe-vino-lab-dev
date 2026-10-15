@@ -130,7 +130,7 @@ class RunRoutesTest(unittest.TestCase):
         self.assertIn('id="configuration"', body)
         self.assertIn("URL override", body)
         self.assertIn("r.endpoint_override_url", body)
-        nav = re.search(r'<nav class="nav">(.*?)</nav>', body, re.S).group(1)
+        nav = re.search(r'<nav class="nav"[^>]*>(.*?)</nav>', body, re.S).group(1)
         self.assertEqual(re.findall(r'href="([^"]*)"', nav), [href for href, _ in LAB.NAV])
         self.assertNotIn("/runs", LAB.DISABLED_PAGES)
 

@@ -169,6 +169,14 @@ paths:
       responses:
         "200": { $ref: "#/components/responses/Html" }
 
+  /runs/compare:
+    get:
+      tags: [pages]
+      operationId: showRunComparisonPage
+      summary: Compare saved cases from two runs.
+      responses:
+        "200": { $ref: "#/components/responses/Html" }
+
   /recognize:
     get:
       tags: [pages]
@@ -1266,6 +1274,34 @@ paths:
       tags: [runs]
       operationId: listRuns
       summary: Read the head of each run and the pipeline configurations.
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/run-compare:
+    get:
+      tags: [runs]
+      operationId: compareRuns
+      summary: Compare saved query snapshots and case outcomes from two finished runs.
+      description: >-
+        Exact image identities and annotations establish compatibility. Different
+        snapshots require common=1 to compare unchanged cases. Changed or absent
+        cases, operational errors, and negative-only labels stay separate.
+        This route makes no inference call and changes no saved run.
+      parameters:
+        - { name: a, in: query, required: true, schema: { type: string } }
+        - { name: b, in: query, required: true, schema: { type: string } }
+        - name: group
+          in: query
+          schema:
+            type: string
+            default: differences
+            enum: [differences, both_succeed, regressions, improvements, both_fail, all, errors, unscored, not_compared]
+        - { name: k, in: query, schema: { type: integer, enum: [1, 5, 10], default: 1 } }
+        - { name: common, in: query, schema: { type: integer, enum: [0, 1], default: 0 } }
+        - { name: q, in: query, schema: { type: string, maxLength: 1000 } }
+        - { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
       responses:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }

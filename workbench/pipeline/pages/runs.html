@@ -414,7 +414,7 @@ body.sp-on { overflow: hidden; }
 <div class="compact-top"><h1>Match runs</h1><nav class="nav" aria-label="Main navigation"><a href="/dataset">Dataset</a><a
       href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a
       href="/testset">Testset</a><a class="on" href="/runs">Runs</a><a
-      href="/recognize">Recognize</a><a href="/health">Health</a></nav><a id="charts-link" href="/runs/charts">Charts →</a></div>
+      href="/recognize">Recognize</a><a href="/health">Health</a></nav><a id="charts-link" href="/runs/charts">Charts →</a><a id="compare-link" href="/runs/compare">Compare runs →</a></div>
 <div class="bar compact-filters"><label class="compact-config">Pipeline <select id="configuration"
       title="A pipeline is one entry of `pipeline` in config.yaml. The key `configuration` of run.json names it."></select></label><label class="compact-short">Testset <select id="testset"
       title="The test set of the run. The key `options.set` of run.json names it. A run of scripts/match_run.py has no test set."></select></label><label class="compact-search">Find <input id="q" type="search" placeholder="Search slugs"></label><button id="run-advanced-toggle" type="button" data-header-toggle aria-expanded="false" aria-controls="run-advanced">Advanced Filters (0)</button></div>
@@ -734,6 +734,10 @@ function renderRuns() {
   if (TSET && TSET !== NO_SET) charts.set("set", TSET);
   if (CONF && CONF !== NO_CONFIG) charts.set("pipeline", CONF);
   $("#charts-link").href = "/runs/charts" + (charts.size ? "?" + charts : "");
+  const compareParams = new URLSearchParams();
+  if (TSET && TSET !== NO_SET) compareParams.set("set", TSET);
+  if (CUR) compareParams.set("b", CUR);
+  $("#compare-link").href = "/runs/compare" + (compareParams.size ? "?" + compareParams : "");
   const shown = visibleRuns();
   const pages = RSIZE ? Math.max(1, Math.ceil(shown.length / RSIZE)) : 1;
   RPAGE = Math.max(0, Math.min(RPAGE, pages - 1));

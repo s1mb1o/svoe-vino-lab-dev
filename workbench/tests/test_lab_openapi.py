@@ -37,6 +37,8 @@ GET /clusters
 GET /testset
 GET /runs
 GET /runs/charts
+GET /runs/compare
+GET /api/run-compare
 GET /recognize
 GET /health
 GET /website-import.js

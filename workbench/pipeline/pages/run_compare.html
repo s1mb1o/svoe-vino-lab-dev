@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare runs · Svoe Vino</title>
+<style>
+/* THEME_CSS */
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui,sans-serif; }
+a { color:var(--accent); } button,select,input { font:inherit; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:6px 9px; }
+button { cursor:pointer; } button:disabled { opacity:.5; cursor:default; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+header { position:sticky; top:0; z-index:5; background:var(--panel); border-bottom:1px solid var(--line); padding:10px 20px; }
+.top,.pickers,.controls,.groups,.pager { display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
+.top { justify-content:space-between; margin-bottom:9px; } h1 { margin:0; font-size:19px; }
+nav { display:flex; gap:10px; flex-wrap:wrap; } nav a { text-decoration:none; }
+.pickers label { display:flex; gap:7px; align-items:center; flex:1 1 280px; min-width:0; white-space:nowrap; }
+.pickers select { width:100%; min-width:0; }
+main { max-width:1700px; margin:auto; padding:18px 20px 40px; }
+.controls { margin-bottom:12px; } .controls label { display:flex; align-items:center; gap:6px; }
+#search { width:min(350px,70vw); } .muted,.note { color:var(--muted); } .note { font-size:12px; }
+#compatibility { border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin-bottom:14px; background:var(--panel); }
+#compatibility.warning { border-color:var(--exc); } #compatibility p { margin:3px 0; }
+#compatibility label { display:block; margin-top:9px; }
+.groups { margin-bottom:13px; } .groups button { text-align:left; }
+.groups button[aria-pressed="true"] { border-color:var(--accent); background:var(--panel-2); box-shadow:inset 0 -2px var(--accent); }
+.groups strong { margin-left:7px; font-variant-numeric:tabular-nums; }
+#status { margin:10px 0; } #status.error { color:var(--exc); }
+.table-wrap { overflow:auto; border:1px solid var(--line); border-radius:9px; background:var(--panel); }
+table { width:100%; border-collapse:collapse; table-layout:fixed; }
+th,td { padding:12px 15px; text-align:left; vertical-align:top; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+th { background:var(--panel-2); } th:first-child { width:30%; } th:not(:first-child) { width:35%; }
+.query { display:flex; align-items:flex-start; gap:12px; } .query img { width:85px; height:125px; object-fit:contain; background:white; border-radius:5px; }
+.query .placeholder { width:85px; flex-shrink:0; color:var(--muted); }
+.badge { display:inline-block; border:1px solid var(--line); border-radius:4px; padding:2px 7px; margin-bottom:6px; font-weight:600; }
+.pass { color:var(--pos); background:var(--pos-bg); } .fail,.error { color:var(--exc); }
+.candidate { display:block; margin:5px 0; } .expected { margin:6px 0; } .result-note { margin:6px 0; }
+td ol { padding-left:23px; margin:5px 0; } td details { margin:7px 0; }
+.pager { justify-content:flex-end; margin-top:14px; } .empty { padding:28px; text-align:center; color:var(--muted); }
+.run-heading { font-size:12px; font-weight:400; margin-top:4px; }
+[hidden] { display:none !important; }
+@media(max-width:740px) { header,main { padding:12px; } .pickers label { flex-basis:100%; } table { min-width:720px; } .query { display:block; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="top"><h1>Compare runs</h1><nav aria-label="Main navigation"><a href="/dataset">Dataset</a><a href="/embedding">Embeddings</a><a href="/clusters">Clusters</a><a href="/testset">Testset</a><a href="/runs">Runs</a><a href="/runs/charts">Charts</a><a href="/recognize">Recognize</a><a href="/health">Health</a></nav></div>
+  <form id="pickers" class="pickers"><label>A · baseline<select id="run-a" aria-label="Run A baseline" required></select></label>
+    <button id="swap" type="button" title="Swap baseline and candidate" aria-label="Swap runs">⇄</button>
+    <label>B · candidate<select id="run-b" aria-label="Run B candidate" required></select></label>
+    <button id="compare" type="submit">Compare</button></form>
+</header>
+<main>
+  <div class="controls"><label>Testset<select id="testset" aria-label="Testset"></select></label>
+    <label>Success<select id="rank" aria-label="Success criterion"><option value="1">Correct at rank 1</option><option value="5">Correct in Top 5</option><option value="10">Correct in Top 10</option></select></label>
+    <label>Search<input id="search" type="search" placeholder="Wine slug or photo filename"></label></div>
+  <section id="compatibility" aria-label="Dataset compatibility" hidden></section>
+  <div id="groups" class="groups" aria-label="Comparison groups"></div>
+  <p class="note">Positive cases accept any saved expected wine. No Match succeeds only when no wine is returned.
+    Negative-only labels do not establish success. Errors and unscored cases stay separate. Group counts are before search. Saved runs are never changed.</p>
+  <div id="status" role="status" aria-live="polite">Reading runs…</div>
+  <section id="results" hidden><div class="table-wrap"><table aria-label="Run comparison cases"><thead><tr><th>Query / expected answer</th><th>A · baseline<div id="heading-a" class="run-heading"></div></th><th>B · candidate<div id="heading-b" class="run-heading"></div></th></tr></thead><tbody id="cases"></tbody></table></div>
+    <div class="pager"><button id="prev" type="button">← Previous</button><span id="page-info"></span><button id="next" type="button">Next →</button></div></section>
+</main>
+<script>
+const RunCompare = (() => {
+  const labels = {differences:"Differences",both_succeed:"Both succeed",regressions:"Regressions · A only",improvements:"Improvements · B only",both_fail:"Both fail",all:"All compared",errors:"Errors / missing results",unscored:"Unscored",not_compared:"Not compared"};
+  const esc = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const eligible = runs => runs.filter(r=>r.set && r.finished && !r.dry_run && r.query_scope!=="drawer");
+  const title = r => `${r.configuration || "Unnamed pipeline"} · ${r.started || r.id} · ${r.queries ?? "?"} cases`;
+  const parameters = state => new URLSearchParams({a:state.a,b:state.b,group:state.group||"differences",k:String(state.k||1),common:state.common?"1":"0",q:state.q||"",offset:String(state.offset||0),limit:"50"});
+  function side(row) {
+    if (!row) return '<span class="muted">Case absent from this snapshot</span>';
+    const badge = {pass:"Success",fail:"Failed",error:"Error",unscored:"Unscored"}[row.status] || "Unknown";
+    const candidates = row.candidates || [],top=candidates[0];
+    const rank = row.rank_of_truth ? `Expected at rank ${row.rank_of_truth}` : row.label==="no_match" ? "Expected: no answer" : "Expected wine absent from returned candidates";
+    return `<span class="badge ${esc(row.status)}">${esc(badge)}</span><div>${esc(row.outcome)}</div>
+      <div class="candidate">${top ? `<b>#1</b> ${esc(top.slug)}` : '<span class="muted">No answer</span>'}</div>
+      <div class="note">${esc(row.label==="negative" || row.label==="unlabelled" ? "No positive truth recorded" : rank)} · ${row.latency_ms==null?"Latency not recorded":esc(row.latency_ms)+" ms"}</div>
+      ${row.note?`<p class="result-note">${esc(row.note)}</p>`:""}
+      ${candidates.length>1?`<details><summary>First ${candidates.length} of ${row.candidate_count ?? candidates.length} saved candidates</summary><ol>${candidates.map(c=>`<li>${esc(c.slug)}${c.score==null?"":` <span class="note">${esc(c.score)}</span>`}</li>`).join("")}</ol></details>`:""}
+      <a href="${esc(row.inspect_url)}" target="_blank" rel="noopener">Inspect steps ↗</a>`;
+  }
+  function expected(row) {
+    if (!row) return "Absent";
+    return row.label==="no_match" ? "No Match" : row.label==="negative" ? "Forbidden: "+row.slug : row.label==="unlabelled" ? "Not labelled" : row.truth.join(" · ");
+  }
+  function row(data) {
+    const image = data.photo_url ? `<a href="${esc(data.photo_url)}" target="_blank" rel="noopener"><img src="${esc(data.photo_url)}" alt="Query photo" loading="lazy"></a>` : '<span class="placeholder">Image unavailable</span>';
+    const different = data.a && data.b && expected(data.a)!==expected(data.b);
+    return `<tr><td><div class="query">${image}<div><span class="badge">${esc(labels[data.group])}</span><div>${esc(data.image_path)}</div>
+      <div class="expected">${different?`<b>A:</b> ${esc(expected(data.a))}<br><b>B:</b> ${esc(expected(data.b))}`:`<b>Expected:</b> ${esc(expected(data.a||data.b))}`}</div>
+      ${data.reason?`<p>${esc(data.reason)}</p>`:""}<details class="note"><summary>Image identity</summary>${esc(data.image_sha256)}</details></div></div></td><td>${side(data.a)}</td><td>${side(data.b)}</td></tr>`;
+  }
+  return {labels,esc,eligible,title,parameters,row};
+})();
+/* Page state uses only the saved-run APIs. */
+const $ = s=>document.querySelector(s),esc=RunCompare.esc;
+const initial = new URLSearchParams(location.search);
+let runs=[],serial=0,controller=null,total=0,searchTimer=null;
+let state={a:initial.get("a")||"",b:initial.get("b")||"",group:initial.get("group")||"differences",k:Number(initial.get("k")||1),common:initial.get("common")==="1",q:initial.get("q")||"",offset:0};
+if (!RunCompare.labels[state.group]) state.group="differences";
+if (![1,5,10].includes(state.k)) state.k=1;
+function saveURL() {
+  const params=RunCompare.parameters(state);params.delete("offset");params.delete("limit");params.set("set",$("#testset").value);
+  history.replaceState(null,"",location.pathname+"?"+params);
+}
+function invalidate() {
+  clearTimeout(searchTimer);serial++;controller?.abort();$("#results").hidden=true;$("#compatibility").hidden=true;$("#groups").innerHTML="";
+  $("#status").textContent="Select two runs and compare.";$("#status").className="";
+}
+function choices() {
+  const set=$("#testset").value, pool=runs.filter(r=>!set||r.set===set).sort((a,b)=>(Date.parse(b.started)||0)-(Date.parse(a.started)||0)||b.id.localeCompare(a.id));
+  const previousA=state.a,previousB=state.b;
+  let replaced=false;
+  for (const key of ["a","b"]) {
+    if(state[key]&&!pool.some(r=>r.id===state[key])) {state[key]="";replaced=true;}
+  }
+  if(!state.b)state.b=pool.find(r=>r.id!==state.a)?.id||"";
+  if(!state.a)state.a=pool.find(r=>r.id!==state.b)?.id||"";
+  if(replaced||previousA!==state.a||previousB!==state.b)state.common=false;
+  for (const [id,key] of [["#run-a","a"],["#run-b","b"]]) {
+    $(id).innerHTML=pool.map(r=>`<option value="${esc(r.id)}">${esc(RunCompare.title(r))}</option>`).join("");
+    $(id).value=state[key];
+  }
+  $("#compare").disabled=pool.length<2;
+  if (pool.length<2) $("#status").textContent="This testset needs two finished runs.";
+}
+function compatibility(data) {
+  const c=data.compatibility,box=$("#compatibility");box.hidden=false;box.className=c.exact?"":"warning";
+  box.innerHTML=`<b>${c.exact?"Compatible · identical saved cases and annotations":c.status==="partial"?"Dataset snapshots differ":"Incompatible · no unchanged cases"}</b>
+    <p>${c.a_cases} cases in A · ${c.b_cases} in B · ${c.unchanged} unchanged · ${c.changed} changed labels · ${c.only_a} only in A · ${c.only_b} only in B.</p>
+    ${data.warnings.map(w=>`<p class="note">${esc(w)}</p>`).join("")}
+    ${c.exact?"":`<p>Changed and absent cases cannot establish a regression or improvement.</p><label><input id="common" type="checkbox" ${state.common?"checked":""} ${c.unchanged?"":"disabled"}> Compare unchanged cases only (${c.unchanged})</label>`}
+    ${data.images_error?`<p class="note">${esc(data.images_error)}</p>`:""}`;
+  if ($("#common")) $("#common").addEventListener("change",()=>{state.common=$("#common").checked;state.offset=0;load();});
+}
+function show(data) {
+  compatibility(data);
+  $("#groups").innerHTML=Object.entries(RunCompare.labels).map(([key,label])=>`<button type="button" data-group="${key}" aria-pressed="${state.group===key}" ${!data.comparison_enabled&&key!=="not_compared"?"disabled":""}>${esc(label)}<strong>${data.counts[key]||0}</strong></button>`).join("");
+  const names=[data.a,data.b].map(r=>`${r.configuration||"Unnamed pipeline"} · ${r.started||r.id} · cache ${r.use_cache==null?"not recorded":r.use_cache?"on":"off"} · barcode ${r.use_barcode==null?"not recorded":r.use_barcode?"on":"off"}`);
+  $("#heading-a").textContent=names[0];$("#heading-b").textContent=names[1];
+  total=data.total;$("#results").hidden=false;
+  $("#cases").innerHTML=data.rows.map(RunCompare.row).join("")||`<tr><td colspan="3" class="empty">${!data.comparison_enabled&&state.group!=="not_compared"?data.compatibility.unchanged?"Review compatibility above, then explicitly select unchanged cases to compare.":"No unchanged cases can be compared. Select another pair of runs.":state.q?"No cases match this search.":state.group==="differences"?"No success/failure differences in the compared cases.":"No cases in this group."}</td></tr>`;
+  $("#status").className="";$("#status").textContent=`${RunCompare.labels[state.group]} · ${total} case(s)${state.q?" matching search":""}${data.common&&!data.compatibility.exact?" · unchanged cases only":""}${data.counts.errors?` · ${data.counts.errors} case(s) have errors or missing results`:""}`;
+  $("#page-info").textContent=total?`${state.offset+1}–${Math.min(state.offset+50,total)} of ${total}`:"0 cases";
+  $("#prev").disabled=state.offset===0;$("#next").disabled=state.offset+50>=total;
+}
+async function load() {
+  clearTimeout(searchTimer);state.q=$("#search").value;
+  const active=document.activeElement;
+  const focusGroup=active?.dataset?.group,focusID=["prev","next","common"].includes(active?.id)?active.id:null;
+  const version=++serial;controller?.abort();controller=new AbortController();
+  $("#status").className="";$("#status").textContent="Comparing saved runs…";$("#results").hidden=true;$("#groups").innerHTML="";$("#compatibility").hidden=true;
+  saveURL();
+  try {
+    const response=await fetch("/api/run-compare?"+RunCompare.parameters(state),{signal:controller.signal,cache:"no-store"}),data=await response.json();
+    if(version!==serial)return;
+    if(!response.ok)throw Error(data.error||`HTTP ${response.status}`);
+    show(data);
+    if(active&&(document.activeElement===document.body||document.activeElement===active)) {
+      let focus=focusGroup?$(`[data-group="${focusGroup}"]`):focusID?$("#"+focusID):null;
+      if(focus?.disabled&&["prev","next"].includes(focusID))focus=$(focusID==="next"?"#prev":"#next");
+      if(focus&&!focus.disabled)focus.focus({preventScroll:true});
+    }
+  } catch(error) {if(version!==serial||error.name==="AbortError")return;$("#status").className="error";$("#status").textContent=error.message;}
+}
+$("#pickers").addEventListener("submit",event=>{event.preventDefault();state.a=$("#run-a").value;state.b=$("#run-b").value;state.offset=0;load();});
+for (const key of ["a","b"]) $("#run-"+key).addEventListener("change",()=>{state[key]=$("#run-"+key).value;state.common=false;state.offset=0;invalidate();});
+$("#testset").addEventListener("change",()=>{state.common=false;state.offset=0;invalidate();choices();});
+$("#swap").addEventListener("click",()=>{[state.a,state.b]=[state.b,state.a];$("#run-a").value=state.a;$("#run-b").value=state.b;state.offset=0;load();});
+$("#rank").addEventListener("change",()=>{state.k=Number($("#rank").value);state.offset=0;load();});
+$("#search").addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{state.q=$("#search").value;state.offset=0;load();},250);});
+$("#groups").addEventListener("click",event=>{const button=event.target.closest("[data-group]");if(!button||button.disabled)return;state.group=button.dataset.group;state.offset=0;load();});
+$("#prev").addEventListener("click",()=>{state.offset=Math.max(0,state.offset-50);load();});
+$("#next").addEventListener("click",()=>{state.offset+=50;load();});
+(async function init(){
+  try {
+    const response=await fetch("/api/runs",{cache:"no-store"});if(!response.ok)throw Error(`Cannot read runs: HTTP ${response.status}`);
+    runs=RunCompare.eligible((await response.json()).runs||[]);
+    const sets=[...new Set(runs.map(r=>r.set))].sort();
+    $("#testset").innerHTML='<option value="">All testsets</option>'+sets.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join("");
+    const requested=[state.a,state.b].filter(Boolean);
+    const left=runs.find(r=>r.id===state.a),right=runs.find(r=>r.id===state.b);
+    let wanted=initial.has("set")?initial.get("set"):left&&right&&left.set!==right.set?"":left?.set||runs[0]?.set;
+    if([left,right].some(r=>r&&wanted&&r.set!==wanted))wanted="";
+    if(wanted===""||sets.includes(wanted))$("#testset").value=wanted;
+    $("#rank").value=String(state.k);$("#search").value=state.q;
+    choices();
+    if(requested.some(id=>!runs.some(r=>r.id===id)))throw Error("A requested run is unavailable or not finished. Select two available runs.");
+    if(state.a&&state.b&&state.a!==state.b)await load();
+    else $("#status").textContent="Select two different finished runs.";
+  }catch(error){$("#status").className="error";$("#status").textContent=error.message;}
+})();
+</script>
+</body>
+</html>
