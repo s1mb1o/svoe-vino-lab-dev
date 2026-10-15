@@ -1,7 +1,5 @@
-import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import type { Wine } from '../shared/catalog'
-import { ABRAU_DEMO_CURRENT_SLUG, ABRAU_LINE, findAbrauLineWine, isAbrauWine } from '../shared/experiences'
 import { deriveWineTasteExperience } from '../shared/taste'
 import wines from '../server/data/wines.json'
 
@@ -111,33 +109,6 @@ describe('local result experiences', () => {
   it('does not use Kabinett as a sweetness category', () => {
     const result = deriveWineTasteExperience({ ...baseWine, grapes: ['Рислинг'], color: 'Белое', category: 'Полусухое' })
     expect(result.twin.name).toBe('German off-dry Riesling')
-  })
-
-  it('uses source portal links and a stable demonstration item', () => {
-    expect(ABRAU_LINE.every(item => item.url.startsWith('https://vino-svoe.ru/wines/'))).toBe(true)
-    expect(ABRAU_LINE.every(item => item.image.startsWith('/line-wines/') && item.image.endsWith('.webp'))).toBe(true)
-    expect(ABRAU_LINE.filter(item => item.imageSource === 'patched').map(item => item.name)).toEqual(['Удельное Ведомство Императорское, брют'])
-    expect(ABRAU_LINE.filter(item => item.imageSource === 'main')).toHaveLength(5)
-    expect(ABRAU_LINE.some(item => item.slug === ABRAU_DEMO_CURRENT_SLUG)).toBe(true)
-    expect(ABRAU_LINE.filter(item => item.current)).toHaveLength(0)
-    expect(new Set(ABRAU_LINE.map(item => item.tier))).toEqual(new Set(['Премиальная коллекция', 'Классическая коллекция', 'На каждый день']))
-  })
-
-  it('connects an Abrau-Durso result to its exact map node', () => {
-    const exact = { producer: 'Абрау—Дюрсо', slug: 'abrau-dyurso-fizz-beloe-bryut' }
-    expect(isAbrauWine(exact)).toBe(true)
-    expect(findAbrauLineWine(exact)?.slug).toBe(exact.slug)
-    expect(isAbrauWine({ producer: '', slug: 'abrau-dyurso-risling-beloe-suhoe-12' })).toBe(true)
-    expect(findAbrauLineWine({ producer: 'Абрау-Дюрсо', slug: 'abrau-dyurso-risling-beloe-suhoe-12' })).toBeUndefined()
-    expect(isAbrauWine({ producer: 'Винодельня Марченко', slug: baseWine.slug })).toBe(false)
-  })
-
-  it('ships every product-line image as a WebP asset', () => {
-    for (const item of ABRAU_LINE) {
-      const image = readFileSync(new URL(`../public${item.image}`, import.meta.url))
-      expect(image.subarray(0, 4).toString('ascii')).toBe('RIFF')
-      expect(image.subarray(8, 12).toString('ascii')).toBe('WEBP')
-    }
   })
 
   it('attaches the three pilot images to the mock recommendations', () => {

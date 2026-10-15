@@ -55,6 +55,48 @@ After the fix, four navigations each sent one hit with the title of its own page
 the link, browser Back, the in-page anchor `#implemented`, and `/IDEAS?utm_source=campaign` → `/ideas`.
 Production release `10632011` still has the defect.
 
+## Producer product-line map, 2026-10-15
+
+The owner selected groups on a common canvas.
+The owner selected a desktop side card and a mobile bottom card.
+Read `docs/plans/01_product-line-map.md` for the requirements and decision.
+Read `docs/product-line-map-sources.md` for source paths and identity rules.
+
+The six prepared sheets cover 52 unique products and packages in 14 families.
+The drink-sheet manifest says 14 packages. The renderer and image show 16 packages.
+Two Fizz packages occur on two sheets. The map includes each package once.
+The catalog snapshot provides 32 canonical slugs and 3 equivalent aliases.
+The map preserves 20 products without a verified catalog match.
+The source materials contain no numeric retail prices.
+The intermediate relative price tiers are editorial assignments.
+A separate neutral section avoids unsupported price comparisons across package formats.
+
+The previous map contained six fixed nodes.
+Its scale transform did not resize the horizontal scroll surface.
+The new map sizes the scroll surface from the rendered canvas and current scale.
+The scanner and shelf result both use `WineExperiences.vue`.
+The guide retains that native dialog and uses an internal details panel.
+This avoids another nested dialog inside the shelf result.
+The parent centers the initial product after the native dialog becomes visible.
+The preview reads the same static graph. It does not fetch remote wine metadata.
+
+Claude Code accepted `claude-opus-5-5` with effort `max`.
+The probe response identified the canonical model as `claude-opus-5-5`.
+The review uses a sanitized prompt, disabled tools, and safe mode.
+The owner explicitly requested external plan and implementation review.
+The reviews receive no credentials.
+Read `docs/reviews/2026-10-15-product-line-map-resolution.md` for review decisions and validation.
+
+WebKit does not consistently focus a pointer-clicked button.
+Record `event.currentTarget` when a dialog opens. Do not rely only on `document.activeElement`.
+A mobile detail panel in normal document flow does not need a viewport-height cap.
+Such a cap can hide fixed-size action controls in landscape.
+The standalone header must use the same mobile breakpoint as global full-width buttons.
+A long gift-box title can consume the full capped side panel in a compact desktop window.
+The final CSS removes that cap at widths up to 1100 px and heights up to 800 px.
+The normal wide and tall desktop layout retains the bounded panel.
+Both complete browser suites passed after this correction on 2026-10-16.
+
 ## Yandex.Metrika, 2026-10-06
 
 The owner supplied counter `113460637` and requested installation on `chtozavino.ru`.

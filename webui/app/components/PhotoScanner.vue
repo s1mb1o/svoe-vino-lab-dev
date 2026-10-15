@@ -79,6 +79,6 @@ useScannerTools(scanner)
       </section>
     </div>
     <div class="scanner-footnote"><p><AppIcon name="info" />{{ mode === 'mock' ? 'Деморежим: любое фото покажет одну примерную карточку.' : 'Поиск начинается автоматически после выбора фотографии.' }}</p><span>Фото не сохраняется</span></div>
-    <WineExperiences v-if="hasResult && wine" :key="slug" :wine="wine" />
+    <WineExperiences v-if="hasResult && wine" :key="slug" :wine="wine" :recognized="!mock" />
   </section>
 </template>

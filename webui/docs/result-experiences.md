@@ -1,13 +1,13 @@
 # Result experience specification
 
-Status: implemented and browser-verified on 2026-09-28.
+Status: Product-line guide updated on 2026-10-15. See `plans/01_product-line-map.md`.
 
 ## Scope
 
 The portal MUST show a mandatory age confirmation before it shows the application.
 The portal MUST show four follow-up actions after it resolves wine metadata.
-The actions MUST use demonstration content by default.
-The product-line action MAY use the resolved wine when its producer is `Абрау-Дюрсо`.
+The food, label, and taste actions retain their documented demonstration limits.
+The product-line action MUST use the verified local producer graph when a graph exists.
 All four actions MUST run in the browser.
 The actions MUST NOT call a retailer, geolocation, taste, recommendation, or product-line API.
 The actions MAY use the resolved wine metadata in the browser.
@@ -36,8 +36,9 @@ The result MUST show these actions:
 Each action MUST open one native dialog.
 The dialog MUST close with its close control, Escape, and a backdrop click.
 The dialog MUST return focus to the action that opened it.
-Every dialog MUST identify demonstration content.
-The product-line dialog MUST identify result-backed content when the resolved producer is `Абрау-Дюрсо`.
+Each demonstration dialog MUST identify demonstration content.
+The product-line dialog MUST identify its source snapshot.
+The product-line dialog MUST distinguish recognized wines from preview selections.
 
 ## Dish demonstration
 
@@ -84,23 +85,29 @@ The dialog MUST state that the result is an expected profile and not a tasting e
 
 ## Product-line guide
 
-The dialog MUST show a map for `Абрау-Дюрсо`.
-The map MUST place premium examples at the top and mass-market examples at the bottom.
-The map MUST state that this placement is not a quality rating.
-Each map node MUST show the selected `main` or `patched` catalog image for that wine.
-The image selection MUST prefer `patched` when a patch exists for the wine slug.
-The image selection MUST use `main` when a patch does not exist.
-The map MUST use local image copies and MUST NOT request the catalog image at runtime.
-The user MUST be able to zoom in and zoom out.
-The application MUST detect `Абрау-Дюрсо` from the resolved producer or source slug.
-When the resolved slug equals one map slug, the matching node MUST show `ВАШЕ ВИНО`.
-The direction control MUST move that matching node into view.
-When the producer matches but the map does not contain the resolved slug, the dialog MUST show the resolved wine separately.
-The dialog MUST NOT assign an unverified collection tier to that separate wine.
-When the producer does not match, the map MUST use the fixed demonstration node.
-The fixed node MUST show `ПРИМЕР · ДЕМО` and MUST NOT call itself the user's wine.
-A double click on a node MUST open its `vino-svoe.ru` page.
-The selected node MUST also show a normal link for keyboard and touch users.
+Read [the product-line map specification](plans/01_product-line-map.md).
+Read [the product-line source record](product-line-map-sources.md).
+The graph MUST use one JSON file per producer in `shared/data/product-line-maps/`.
+The Abrau-Durso graph contains 14 groups and 52 products or package variants.
+The graph uses the six sheets dated 2026-09-20.
+Each product MUST have a stable ID. A product MAY have a null `wine_slug`.
+Null-slug products MUST remain selectable. These products MUST appear gray.
+Only a product with a `wine_slug` MUST show a portal link.
+The guide MUST use local images. It MUST NOT fetch catalog images at runtime.
+The guide MUST show relative premium and price positioning. It MUST NOT invent numeric prices.
+The guide MUST state that positioning is not a quality rating.
+Products without a comparable price basis MUST use a neutral formats section.
+The guide MUST select and locate the recognized product when its exact slug or explicit alias is present.
+The guide MUST retain separate recognized and selected states.
+An unmatched product of a known producer MUST remain in a separate selected card.
+The guide MUST NOT assign an unverified group to that product.
+An unsupported producer MUST receive an explicit unavailable state.
+The unavailable state MAY link to the separate Abrau-Durso preview.
+The guide MUST support zoom, touch scrolling, mouse dragging, group navigation, and keyboard controls.
+The guide MUST preserve canvas position when the user returns from a product card.
+The guide MUST use a desktop side card and a mobile bottom card.
+The preview route MUST use noindex metadata and headers.
+The preview route MUST NOT describe query selection as recognition.
 
 ## Privacy and compliance
 

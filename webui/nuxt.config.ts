@@ -142,6 +142,7 @@ export default defineNuxtConfig({
     devOptions: { enabled: false },
   },
   routeRules: {
+    '/lineup/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/hackaton': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/hackaton/**': { headers: { 'x-robots-tag': 'noindex, nofollow, noarchive' } },
     '/wines': { redirect: { to: '/', statusCode: 308 } },

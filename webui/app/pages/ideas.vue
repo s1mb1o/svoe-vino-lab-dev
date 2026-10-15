@@ -16,7 +16,7 @@ const demos = [
   { icon: 'food', title: 'Блюда с местным характером', description: 'Три региональные кухни и объяснение каждого сочетания. Подбор учитывает карточку вина и правила стиля.', limit: 'Гастрономическая гипотеза: рецепт и соус могут изменить сочетание.' },
   { icon: 'book', title: 'Этикетка понятным языком', description: 'Показать сорта из карточки и объяснить, как читать короткие надписи на бутылке.', limit: 'Объяснение Сира и Вионье — фиксированный пример, а не разбор любой этикетки.' },
   { icon: 'taste', title: 'Вкус до первого глотка', description: 'Шесть характеристик, семейства ароматов и международный ориентир по стилю.', limit: 'Ожидаемый профиль по карточке, правилам и открытым данным. Не дегустационная оценка.' },
-  { icon: 'map', title: 'Место в линейке', description: 'Карта помогает разобраться в коллекциях производителя и перейти к соседним винам.', limit: 'Шесть примеров Абрау-Дюрсо. Для других производителей открывается демонстрационная карта.' },
+  { icon: 'map', title: 'Место в линейке', description: 'Карта помогает разобраться в коллекциях производителя и перейти к соседним винам.', limit: '52 вина и варианта упаковки Абрау-Дюрсо в 14 линейках. Карта использует материалы от 20 сентября 2026 года.' },
 ]
 
 const mockups = [
@@ -105,7 +105,7 @@ const selectedWine = computed(() => demoWines.value.find(wine => wine.slug === s
             <img :src="selectedWine.image" width="72" height="96" alt="" loading="lazy">
             <div><label for="idea-wine">Вино для примера</label><select id="idea-wine" v-model="selectedSlug"><option v-for="wine in demoWines" :key="wine.slug" :value="wine.slug">{{ wine.name }}</option></select><p>Это готовая карточка из каталога, а не результат распознавания вашей фотографии.</p></div>
           </div>
-          <WineExperiences :key="selectedWine.slug" :wine="selectedWine" />
+          <WineExperiences :key="selectedWine.slug" :wine="selectedWine" :recognized="false" />
         </template>
         <div v-else class="example-unavailable" role="status"><p>Не удалось загрузить карточку для примера.</p><button class="button secondary" :disabled="status === 'pending'" @click="refresh()">{{ status === 'pending' ? 'Загружаем…' : 'Загрузить пример' }}</button></div>
       </div>

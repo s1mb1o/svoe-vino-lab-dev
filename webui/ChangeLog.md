@@ -37,6 +37,32 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Product-line map review completion
+
+- Resolve the seven implementation review findings from Claude Opus 5.5 Max.
+- Record the follow-up approval with non-blocking notes.
+- Keep long product details accessible in compact desktop windows.
+- Add shared browser regressions for 767/768 px and compact desktop cards.
+
+## 2026-10-15 — Producer product-line map
+
+- Replace the six-example Abrau-Durso map with a grouped product graph.
+- Store 52 products and package variants in one producer JSON file.
+- Preserve 14 families, 32 catalog slugs, 3 verified aliases, and 20 products without catalog links.
+- Select and locate the recognized product when the guide opens.
+- Keep the recognized marker when the user selects another product.
+- Add selectable gray products, source dates, and relative price positioning.
+- Add desktop side details and mobile bottom details.
+- Add mouse pan, native touch pan, keyboard navigation, zoom, and a return control.
+- Add a direct noindex review route at `/lineup/abrau-durso`.
+- Add local source images and graph validation tests.
+- Restore shelf-dialog focus from the clicked opener in WebKit.
+- Keep mobile and short-height detail actions reachable through normal scrolling.
+- Preserve keyboard focus when groups and details change.
+- Anchor expand-all to the visible group after canvas movement.
+- Improve gray product text contrast in both themes.
+- Verify 176 unit tests, type checks, a production build, and the Chromium and WebKit browser suites.
+
 ## 2026-10-06 — Yandex.Metrika
 
 - Add the owner-supplied counter `113460637` to all pages.

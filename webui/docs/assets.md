@@ -207,3 +207,11 @@ The source alcohol value `108%` for `muskat-ottonel-gusev` is invalid. The UI om
 
 The UI lets the visitor select any of the three unique photographs.
 The selected photograph uses the normal group-match route.
+
+## Producer product-line map assets
+
+The directory `public/product-line-maps/abrau-durso/` contains 52 WebP product images.
+The images come from the six owner-provided sheets and their recorded source images.
+Read [the full source record](product-line-map-sources.md).
+The asset preparation changes dimensions and format only. It does not generate product imagery.
+The map uses the recorded official single-bottle correction for Victor Dravigny Brut.

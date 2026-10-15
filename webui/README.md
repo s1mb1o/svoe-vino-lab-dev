@@ -290,3 +290,31 @@ The public portal defines the visual reference.
 The attached task document supplies product context. It does not authorize unrelated actions.
 
 The source evaluator is `../../svoe-wino-hackaton/dataset/official-2026-09-17/eval/participant_test.sh`.
+
+## Producer product-line map
+
+The map uses one JSON file for each producer in `shared/data/product-line-maps/`.
+The first graph contains 52 Abrau-Durso products and packages in 14 groups.
+Read [the specification](docs/plans/01_product-line-map.md) and [the source record](docs/product-line-map-sources.md).
+Add a producer file and register the file in `shared/product-line-map.ts`.
+Use stable product IDs. Use `wine_slug: null` when the saved catalog has no verified match.
+Keep verified equivalent slugs in `wine_slug_aliases`. Do not merge distinct packages or kosher products.
+The map validates IDs, aliases, references, and asset paths at module load.
+
+Open `/lineup/abrau-durso` for a direct review.
+Add `?wine=abrau-dyurso-victor-dravigny-bryut` to select the verified legacy alias.
+This route does not perform recognition. The scanner supplies real result slugs to the same component.
+Run `npm test`, `npm run typecheck`, and `npm run build` before release.
+Run `PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs PORTAL_ORIGIN=http://127.0.0.1:18553 npm run test:line-map` for browser checks.
+Set `PLAYWRIGHT_BROWSER=webkit` to run the same suite in WebKit.
+Install the matching Playwright browser or set `PLAYWRIGHT_BROWSERS_PATH` to an existing browser cache.
+WebKit skips only the Chromium CDP touch-swipe check.
+
+For this isolated checkout, use local port 18553:
+
+```sh
+npm run dev -- --port 18553
+```
+
+The local review process can use the configured upstream matcher through `NUXT_PREDICTION_MODE` and `NUXT_PREDICTION_ENDPOINT`.
+The product-line preview does not require the matcher.

@@ -1,0 +1,1653 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "abrau-durso",
+    "name": "Абрау-Дюрсо",
+    "aliases": [
+      "Абрау Дюрсо",
+      "Abrau-Durso",
+      "Abrau Durso"
+    ],
+    "slug_prefixes": [
+      "abrau-dyurso-"
+    ]
+  },
+  "scope": {
+    "label": "Игристые вина и напитки",
+    "as_of": "2026-09-20",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "prepared-sheets-2026-09-20",
+      "label": "Подготовленные листы от 20 сентября 2026 года",
+      "url": ""
+    },
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Своё Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-catalog-2025",
+      "label": "Официальный каталог «Абрау-Дюрсо» 2025",
+      "url": "https://abrau.ru/upload/files/2025_RUS_WEB.PDF"
+    },
+    {
+      "id": "annual-report-2024",
+      "label": "Официальный отчёт «Абрау-Дюрсо» за 2024 год",
+      "url": "https://abrau.ru/upload/iblock/f10/hrgisznqswbf2io0qm0uym8rqj1szdg5/Otchet-emitenta-za-12-mesyatsev-2024-goda-PAO-Abrau-_-Dyurso.pdf"
+    },
+    {
+      "id": "zero-dosage-release-image",
+      "label": "Официальное изображение Victor Dravigny Zero Dosage",
+      "url": "https://www.abraudurso.ru/upload/iblock/808/6x3mkw02mnh8vn6xk14ndbcs6h3c12r1/fp_first_bg_desktop_3000px-_-1688px.jpg"
+    },
+    {
+      "id": "cuvee-box-image",
+      "label": "Изображение Cuvée Alexander II в подарочной коробке: Vino.ru",
+      "url": "https://vino.ru/upload/iblock/bb8/plcbume5g527ilh4dvmy9ao2iqc6lhgq/j3ytl6nr1yvmkdzdpl8rqe4dl2wf4lik.png"
+    },
+    {
+      "id": "russian-brut-image",
+      "label": "Изображение «Русское игристое» белое брют: Роскачество",
+      "url": "https://rskrf.ru/upload/iblock/53f/fjmyd0c0xs9epxjtqfesvl3kjgefwcno.jpg"
+    },
+    {
+      "id": "spumante-brut-image",
+      "label": "Изображение Abrau Spumante белое брют: Купер",
+      "url": "https://imgproxy.kuper.ru/imgproxy/size-500-500/czM6Ly9zYi1vYnMtcHJvZC1jb250ZW50LWltYWdlczAxL3Byb2R1Y3RzLzM5NDQ5OTAyL29yaWdpbmFsLzEvMjAyNS0wMS0xNSUyMDEzJTNBNTMlM0E0OC4zOTA3MDQlMkIwMCUzQTAwLzM5NDQ5OTAyXzEuanBn.jpg"
+    },
+    {
+      "id": "spumante-semi-dry-image",
+      "label": "Изображение Abrau Spumante белое полусухое: Роскачество",
+      "url": "https://rskrf.ru/upload/resize_cache/iblock/1d1/660_668_240cd750bba9870f18aada2478b24840a/rx3f9qty46thotasgt6ms7jcz4lrom4b.jpg"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative_editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительные ценовые сегменты внутри линейки, а не актуальные цены. Расположение не является рейтингом качества. Для банок и напитков ценовой уровень не сопоставляется с бутылками вина."
+  },
+  "tiers": [
+    {
+      "id": "premium",
+      "label": "Премиальные коллекции",
+      "rank": 4,
+      "description": "Cuvée Alexander II, «Империал» и Brut d’Or. Премиальное позиционирование отмечено на подготовленных листах.",
+      "price_label": "Премиальный сегмент · ₽₽₽₽",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "classic",
+      "label": "Классический метод",
+      "rank": 3,
+      "description": "Victor Dravigny. Вторичное брожение в бутылке. Относительный ценовой уровень задан редакционно.",
+      "price_label": "Выше среднего · ₽₽₽",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "charmat",
+      "label": "Резервуарные коллекции",
+      "rank": 2,
+      "description": "Reserve, «Императорское» и архивное «Удельное ведомство». Метод Шарма. Относительный ценовой уровень задан редакционно.",
+      "price_label": "Средний сегмент · ₽₽",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "accessible",
+      "label": "Доступные коллекции",
+      "rank": 1,
+      "description": "«Русское игристое» и Abrau Spumante. Доступное позиционирование отмечено на подготовленных листах.",
+      "price_label": "Доступный сегмент · ₽",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "formats",
+      "label": "Другие форматы и напитки",
+      "rank": 0,
+      "description": "Банки, искристые напитки и варианты 0%. Объём и категория различаются. Ценовое сравнение с бутылками игристого вина не задано.",
+      "price_label": "Не сопоставляется",
+      "source_ids": [
+        "prepared-sheets-2026-09-20",
+        "official-catalog-2025"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "cuvee-alexander-ii",
+      "name": "Cuvée Alexander II",
+      "tier_id": "premium",
+      "method": "Не указан в источнике",
+      "description": "Премиальная линейка. На листах представлены Magnum и бутылка 0,75 л в подарочной коробке.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "imperial",
+      "name": "Империал",
+      "tier_id": "premium",
+      "method": "Не указан в источнике",
+      "description": "Премиальная линейка. Четыре варианта, включая Brut Vintage и специальный выпуск Brut L’Art Nouveau.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "brut-dor",
+      "name": "Brut d’Or",
+      "tier_id": "premium",
+      "method": "Не указан в источнике",
+      "description": "Премиальная линейка. Blanc de Blancs, Blanc de Noirs, Riesling и Rosé.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "tier_id": "classic",
+      "method": "Классический метод",
+      "description": "Классический метод. Белые, розовое и красное игристые вина. Кошерный брют и лимитированный Zero Dosage представлены отдельно.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "reserve",
+      "name": "Abrau-Durso Reserve",
+      "tier_id": "charmat",
+      "method": "Метод Шарма",
+      "description": "Резервуарная линейка. Белое Reserve Brut и розовое Brut Rosé Reserve.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "imperatorskoe",
+      "name": "Императорское",
+      "tier_id": "charmat",
+      "method": "Метод Шарма",
+      "description": "Резервуарная линейка. Белые брют, полусухое и полусладкое.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "udelnoe-vedomstvo",
+      "name": "Удельное ведомство",
+      "tier_id": "charmat",
+      "method": "Метод Шарма",
+      "description": "Архивные варианты упаковки. Белые брют и полусладкое сохранены как отдельные продукты.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "russian-sparkling",
+      "name": "Русское игристое",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "Доступная линейка. Белые, розовое и красное игристые вина. Стандартный и кошерный брют представлены отдельно.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "spumante",
+      "name": "Abrau Spumante",
+      "tier_id": "accessible",
+      "method": "Не указан в источнике",
+      "description": "Доступная линейка. Белые брют и полусухое, а также Brut Rosé.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "fizz",
+      "name": "Abrau Fizz",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Игристое вино в алюминиевой банке. Четыре варианта в официальном каталоге. Два белых варианта есть в снимке «Своё Вино».",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "light",
+      "name": "Abrau Light",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Искристые напитки в бутылке. На листе показаны фиолетовая и розовая этикетки.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "fiori",
+      "name": "Abrau Fiori",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Четыре варианта упаковки: красное, розовое и два белых. Белые варианты различаются оформлением этикетки.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "collection",
+      "name": "Abrau Collection",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Банки White и Rosé из официального каталога 2025 года.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "light-zero",
+      "name": "Abrau Light Zero",
+      "tier_id": "formats",
+      "method": "Не указан в источнике",
+      "description": "Безалкогольные искристые напитки. Два варианта этикетки, каждый в бутылке и в банке.",
+      "source_ids": [
+        "prepared-sheets-2026-09-20"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "cuvee-alexander-ii-magnum",
+      "group_id": "cuvee-alexander-ii",
+      "name": "Cuvée Alexander II",
+      "variant": "Magnum",
+      "wine_slug": "abrau-dyurso-aleksandr-ii-magnum-shardone-beloe-bryut-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-magnum.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате фруктовые ноты с деликатными тонами бриоши. Вкус мягкий, нежный, с выразительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [
+        "Magnum"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "cuvee-alexander-ii-gift-box",
+      "group_id": "cuvee-alexander-ii",
+      "name": "Cuvée Alexander II",
+      "variant": "0,75 л · подарочная коробка",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/cuvee-alexander-ii-gift-box.webp",
+        "source_id": "cuvee-box-image"
+      },
+      "category": "Игристое вино",
+      "style": "Игристое вино",
+      "grapes": [],
+      "description": "Бутылка 0,75 л в подарочной коробке. Этот формат показан в официальном каталоге 2025 года. Magnum представлен отдельным продуктом.",
+      "release_status": "catalog",
+      "badges": [
+        "0,75 л",
+        "Подарочная коробка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20",
+        "cuvee-box-image"
+      ]
+    },
+    {
+      "id": "imperial-brut-lart-nouveau",
+      "group_id": "imperial",
+      "name": "Империал",
+      "variant": "Brut L’Art Nouveau",
+      "wine_slug": "abrau-dyurso-imperial-brut-lart-nouveau-shardone-beloe-bryut-105",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/imperial-brut-lart-nouveau.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Пино Блан",
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате цитрусовые ноты, персик, груша. Вкус свежий, сочный, с длительным ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [
+        "Спецвыпуск"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "imperial-brut-vintage",
+      "group_id": "imperial",
+      "name": "Империал",
+      "variant": "Brut Vintage",
+      "wine_slug": "abrau-dyurso-imperial-brut-vintage-shardone-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/imperial-brut-vintage.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате бриошь, яблочное варенье, топленые сливки, подсолнечные семяна, цитрусовая цедра. Вкус свежий, бодрый, яблочно-цитрусовый и минеральный.",
+      "release_status": "catalog",
+      "badges": [
+        "Винтаж"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "imperial-brut-rose",
+      "group_id": "imperial",
+      "name": "Империал",
+      "variant": "Brut Rosé",
+      "wine_slug": "abrau-dyurso-imperial-brut-rose-pino-nuar-rozovoe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/imperial-brut-rose.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое брют",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате малина, лавровый лист. Вкус структурированный, идеальный баланс кислотности. Послевкусие продолжительное, минеральное, с выраженными мягкими танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "imperial-cuvee-rose",
+      "group_id": "imperial",
+      "name": "Империал",
+      "variant": "Cuvée Rosé",
+      "wine_slug": "abrau-dyurso-imperial-kyuve-pino-nuar-rozovoe-bryut-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/imperial-cuvee-rose.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое брют",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Влекущий аромат с нотами малины, брусники, барбариса, гибискуса и средиземноморских трав. Вкус элегантный, развитый, с легкой округлостью. Бодрая кислотность и сочное ягодное послевкусие в обрамлении легких пекарских нот. Элегантно, стройно, выверенно.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "brut-dor-blanc-de-blancs",
+      "group_id": "brut-dor",
+      "name": "Brut d’Or",
+      "variant": "Blanc de Blancs",
+      "wine_slug": "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-125",
+      "wine_slug_aliases": [
+        "abrau-dyurso-brut-dor-blanc-de-blancs-shardone-beloe-bryut-12"
+      ],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/brut-dor-blanc-de-blancs.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате ноты бриоши, сливочного масла, тона белых цветов и фруктов. Вкус мягкий, свежий, с нотами минеральности в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "brut-dor-blanc-de-noirs",
+      "group_id": "brut-dor",
+      "name": "Brut d’Or",
+      "variant": "Blanc de Noirs",
+      "wine_slug": "abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-125",
+      "wine_slug_aliases": [
+        "abrau-dyurso-brut-dor-blanc-de-noirs-pino-nuar-beloe-bryut-115"
+      ],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/brut-dor-blanc-de-noirs.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате тона смородины, земляники и вишни, ноты пастилы и зефира. Вкус яркий, полный и округлый с кремовой текстурой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "brut-dor-riesling",
+      "group_id": "brut-dor",
+      "name": "Brut d’Or",
+      "variant": "Riesling",
+      "wine_slug": "abrau-dyurso-brut-dor-riesling-risling-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/brut-dor-riesling.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате цитрусовые, белые цветы, груши и зеленые яблоки. минеральность. Во вкусе баланс кислотности, ноты яблока, дюшеса и желтой сливы. Послевкусие яркое и продолжительное.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "brut-dor-rose",
+      "group_id": "brut-dor",
+      "name": "Brut d’Or",
+      "variant": "Rosé",
+      "wine_slug": "abrau-dyurso-brut-dor-rose-pino-nuar-rozovoe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/brut-dor-rose.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое брют",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате красная смородина, малина и клюква, цветочные ноты и тонкие ароматы специй. Вкус яркий, с насыщенной текстурой, с выраженной кислотностью. Ноты зефира, домашней пастилы, клюквы в сахаре, кизилового джема.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "victor-dravigny-brut",
+      "group_id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "variant": "Brut",
+      "wine_slug": "abrau-dyurso-victor-dravigny-brut-shardone-beloe-bryut-12",
+      "wine_slug_aliases": [
+        "abrau-dyurso-victor-dravigny-bryut"
+      ],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-brut.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Пино Блан",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате белые цветы, персики, абрикосы, груши, тона бриоши и сливочного масла. Вкус фруктовый, с тонкой минеральной горчинкой в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20",
+        "official-catalog-2025"
+      ]
+    },
+    {
+      "id": "victor-dravigny-extra-brut",
+      "group_id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "variant": "Extra Brut",
+      "wine_slug": "abrau-dyurso-victor-dravigny-extra-brut-shardone-beloe-bryut-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-extra-brut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое экстра-брют",
+      "grapes": [
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате минеральные ноты, абрикос, лимон, горький апельсин. Вкус яркий, освежающий, с хрустящей кислотностью, оттенками груши, яблока и цитрусовых.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "victor-dravigny-brut-rose",
+      "group_id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "variant": "Brut Rosé",
+      "wine_slug": "abrau-dyurso-victor-dravigny-brut-rose-pino-nuar-rozovoe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-brut-rose.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое брют",
+      "grapes": [
+        "Пино Нуар",
+        "Пино фран",
+        "Шардоне"
+      ],
+      "description": "В аромате красная смородина, земляника, красные апельсины. Вкус насыщенный, освежающий и бодрящий, цитрусовые и смородиновые тона, минеральное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "victor-dravigny-semi-dry",
+      "group_id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "variant": "Полусухое",
+      "wine_slug": "abrau-dyurso-victor-dravigny-polusuhoe-pino-blan-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-semi-dry.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусухое",
+      "grapes": [
+        "Пино Блан",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате цитрусовые цукаты, яблочный конфитюр и сладкая сдоба. Вкус яркий, баланс кислотности и сладости.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "victor-dravigny-semi-sweet",
+      "group_id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "variant": "Полусладкое",
+      "wine_slug": "abrau-dyurso-victor-dravigny-polusladkoe-sovinon-blan-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-semi-sweet.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусладкое",
+      "grapes": [
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате абрикосы, персики, тропические фрукты, личи, гуава. Вкус яркий и насыщенный, со сбалансированной сладостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "victor-dravigny-red-semi-sweet",
+      "group_id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "variant": "Красное полусладкое",
+      "wine_slug": "abrau-dyurso-victor-dravigny-krasnoe-polusladkoe-kaberne-sovinon-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-red-semi-sweet.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Красное полусладкое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате клубничный конфитюр и чернослив. Во вкусе сладость, ягодная свежесть, бархатные танины.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "victor-dravigny-kosher-brut",
+      "group_id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "variant": "Кошерное брют",
+      "wine_slug": "abrau-dyurso-victor-dravigny-koshernoe-bryut-shardone-beloe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-kosher-brut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Пино Блан",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате белые цветы, персики, абрикосы, груши. тона бриоши, сливочного масла. Вкус фруктовый, приятный и полный, с тонкой минеральной горчинкой в послевкусии.",
+      "release_status": "catalog",
+      "badges": [
+        "Кошерное"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "victor-dravigny-zero-dosage",
+      "group_id": "victor-dravigny",
+      "name": "Victor Dravigny",
+      "variant": "Zero Dosage · 2020",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/victor-dravigny-zero-dosage.webp",
+        "source_id": "zero-dosage-release-image"
+      },
+      "category": "Игристое вино",
+      "style": "Zero Dosage",
+      "grapes": [],
+      "description": "Zero Dosage урожая 2020 года. Лимитированный выпуск указан в официальном отчёте за 2024 год. Этот выпуск не входит в официальный каталог 2025 года.",
+      "release_status": "limited",
+      "badges": [
+        "2020",
+        "Лимитированный выпуск 2024"
+      ],
+      "price": null,
+      "source_ids": [
+        "annual-report-2024",
+        "prepared-sheets-2026-09-20",
+        "zero-dosage-release-image"
+      ]
+    },
+    {
+      "id": "reserve-brut",
+      "group_id": "reserve",
+      "name": "Abrau-Durso Reserve",
+      "variant": "Brut",
+      "wine_slug": "abrau-dyurso-abrau-durso-reserve-brut-shardone-beloe-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/reserve-brut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Пино Блан",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате тона зеленого яблока, груши вильямс и цветов акации, оттенки пряных трав и меда. Вкус структурный, кислотный. Ноты зеленого яблока, цедры лайма и лимона.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "reserve-brut-rose",
+      "group_id": "reserve",
+      "name": "Abrau-Durso Reserve",
+      "variant": "Brut Rosé",
+      "wine_slug": "abrau-dyurso-abrau-durso-brut-rose-reserve-pino-nuar-beloe-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/reserve-brut-rose.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое брют",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Мерло",
+        "Пино Нуар",
+        "Пино фран"
+      ],
+      "description": "В аромате красные лесные ягоды — малина, вишня и земляника, оттенки пенки малинового варенья и клубники со сливками. Вкус округлый и мягкий, свежая кислотность, пряные травы в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "imperatorskoe-brut",
+      "group_id": "imperatorskoe",
+      "name": "Императорское",
+      "variant": "Брют",
+      "wine_slug": "abrau-dyurso-imperatorskoe-bryut-shardone-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/imperatorskoe-brut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате фрукты с тонкими нюансами пряностей. Вкус насыщенный, с тонкой сливочной текстурой, ноты желтого яблока, дюшеса и крыжовника. Баланс яркой кислотности и сладости.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "imperatorskoe-semi-dry",
+      "group_id": "imperatorskoe",
+      "name": "Императорское",
+      "variant": "Полусухое",
+      "wine_slug": "abrau-dyurso-imperatorskoe-polusuhoe-shardone-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/imperatorskoe-semi-dry.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусухое",
+      "grapes": [
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате ноты фруктов, оттенки пряностей. Во вкусе ноты желтого яблока, дюшеса и крыжовника.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "imperatorskoe-semi-sweet",
+      "group_id": "imperatorskoe",
+      "name": "Императорское",
+      "variant": "Полусладкое",
+      "wine_slug": "abrau-dyurso-imperatorskoe-polusladkoe-shardone-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/imperatorskoe-semi-sweet.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусладкое",
+      "grapes": [
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате тропические фрукты, с медовыми и джемовыми оттенками. Во вкусе ноты ананаса, личи, манго, акациевого меда и цукатов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "udelnoe-vedomstvo-brut",
+      "group_id": "udelnoe-vedomstvo",
+      "name": "Удельное ведомство",
+      "variant": "Брют",
+      "wine_slug": "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/udelnoe-vedomstvo-brut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Великолепное вино, искрящееся множеством мелких пузырьков, имеющее нежный цветочно-фруктовый аромат и свежий вкус с душистым, привлекательным послевкусием. Благодаря универсальному характеру, игристое вино станет не только восхитительным аперитивом, но и составит пару широкому спектру блюд. Абрау-Дюрсо, Брют — одно из лучших российских игристых вин. Оно произведено мастерами Русского Шампанского Дома Абрау-Дюрсо по французской технологии методом Шарма из купажа тщательно отобранного винограда. Метод Шарма был разработан в Италии директором института энологии города Асти Федерико Мартинотти. Особенность технологии заключается в проведении вторичной ферментации в больших герметичных цистернах, после чего вино фильтруется, стабилизируется и разливается под давлением в отдельные бутылки. Вино имеет неограниченный срок хранения, в зависимости от длительности выдержки крепость вина может колебаться от 10,5 до 12,5%.",
+      "release_status": "archive",
+      "badges": [
+        "Архив"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "udelnoe-vedomstvo-semi-sweet",
+      "group_id": "udelnoe-vedomstvo",
+      "name": "Удельное ведомство",
+      "variant": "Полусладкое",
+      "wine_slug": "abrau-dyurso-udelnoe-vedomstvo-imperatorskoe-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/udelnoe-vedomstvo-semi-sweet.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусладкое",
+      "grapes": [
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Великолепное свежее игристое вино, искрящееся золотистыми живыми пузырьками, имеющее яркий ароматный букет с нотками цитрусовых фруктов, яблока и груши и прекрасно сбалансированный вкус с длительным послевкусием. Полусладкое от Абрау-Дюрсо — одно из лучших российских игристых вин, завоевавшее четыре медали на международных винных конкурсах. Оно произведено мастерами Русского Шампанского Дома Абрау-Дюрсо по французской технологии методом Шарма из купажа тщательно отобранного винограда. Метод Шарма был разработан в Италии директором института энологии города Асти Федерико Мартинотти. Особенность технологии заключается в проведении вторичной ферментации в больших герметичных цистернах, после чего вино фильтруется, стабилизируется и разливается под давлением в отдельные бутылки. Вино имеет неограниченный срок хранения, в зависимости от длительности выдержки крепость вина может колебаться от 10,5 до 12,5%.",
+      "release_status": "archive",
+      "badges": [
+        "Архив"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "russian-sparkling-semi-dry-white",
+      "group_id": "russian-sparkling",
+      "name": "Русское игристое",
+      "variant": "Белое полусухое",
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-polusuhoe-shardone-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-dry-white.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусухое",
+      "grapes": [
+        "Алиготе",
+        "Пино Блан",
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате цветочно-плодовые тона и оттенки сладких тропических фруктов. Вкус сбалансированный, свежий, со сладковато-медовым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "russian-sparkling-semi-sweet-white",
+      "group_id": "russian-sparkling",
+      "name": "Русское игристое",
+      "variant": "Белое полусладкое",
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-polusladkoe-shardone-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-sweet-white.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусладкое",
+      "grapes": [
+        "Алиготе",
+        "Пино Блан",
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "В аромате цитрусовые плоды, желтые яблоки и груши. Вкус полусладкий, фруктовый с долгим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "russian-sparkling-semi-dry-rose",
+      "group_id": "russian-sparkling",
+      "name": "Русское игристое",
+      "variant": "Розовое полусухое",
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-polusuhoe-rozovoe-pino-nuar-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-dry-rose.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое полусухое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Пино Нуар",
+        "Пино фран"
+      ],
+      "description": "В аромате тона красных лесных ягод, оттенки малины и земляники. Вкус полный и шелковистый с балансом фруктовой сладости и кислотности, с приятным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "russian-sparkling-semi-sweet-red",
+      "group_id": "russian-sparkling",
+      "name": "Русское игристое",
+      "variant": "Красное полусладкое",
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-polusladkoe-krasnoe-kaberne-sovinon-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-semi-sweet-red.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Красное полусладкое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Пино Нуар",
+        "Сира"
+      ],
+      "description": "В аромате тона свежевыжатого сока граната и перетертой черной смородины. Вкус ягодный, с бархатной текстурой и легкой терпкостью в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "russian-sparkling-kosher-brut",
+      "group_id": "russian-sparkling",
+      "name": "Русское игристое",
+      "variant": "Кошерное брют",
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-koshernoe-bryut-shardone-beloe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-kosher-brut.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Алиготе",
+        "Пино Блан",
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате цветочные и фруктовые оттенки. Вкус свежий, бодрящий, с приятным ароматическим послевкусием.",
+      "release_status": "catalog",
+      "badges": [
+        "Кошерное"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "russian-sparkling-kosher-semi-sweet",
+      "group_id": "russian-sparkling",
+      "name": "Русское игристое",
+      "variant": "Кошерное полусладкое",
+      "wine_slug": "abrau-dyurso-russkoe-igristoe-koshernoe-polusladkoe-shardone-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-kosher-semi-sweet.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусладкое",
+      "grapes": [
+        "Алиготе",
+        "Пино Блан",
+        "Пино Нуар",
+        "Рислинг",
+        "Шардоне"
+      ],
+      "description": "В аромате цитрусовые плоды, желтые яблоки и груши. Вкус полусладкий, с ароматическим послевкусием.",
+      "release_status": "catalog",
+      "badges": [
+        "Кошерное"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "russian-sparkling-brut-white",
+      "group_id": "russian-sparkling",
+      "name": "Русское игристое",
+      "variant": "Белое брют",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-brut-white.webp",
+        "source_id": "russian-brut-image"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [],
+      "description": "Стандартное белое брют из официального каталога 2025 года. Кошерный брют представлен отдельным продуктом.",
+      "release_status": "catalog",
+      "badges": [
+        "Стандартный вариант"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20",
+        "russian-brut-image"
+      ]
+    },
+    {
+      "id": "russian-sparkling-dry-white",
+      "group_id": "russian-sparkling",
+      "name": "Русское игристое",
+      "variant": "Белое сухое",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/russian-sparkling-dry-white.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Игристое вино",
+      "style": "Белое сухое",
+      "grapes": [],
+      "description": "Русское игристое · Белое сухое. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "spumante-brut-rose",
+      "group_id": "spumante",
+      "name": "Abrau Spumante",
+      "variant": "Brut Rosé",
+      "wine_slug": "abrau-dyurso-spumante-bryut-roze-shardone-rozovoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/spumante-brut-rose.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое брют",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате ноты красных садовых ягод, розового персика, грейпфрута и цедры. Вкус легкий, воздушный, с хорошим балансом кислотности на фоне стройного пластичного тела. В послевкусии ягодная свежесть.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "spumante-brut-white",
+      "group_id": "spumante",
+      "name": "Abrau Spumante",
+      "variant": "Белое брют",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/spumante-brut-white.webp",
+        "source_id": "spumante-brut-image"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [],
+      "description": "Abrau Spumante · Белое брют. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20",
+        "spumante-brut-image"
+      ]
+    },
+    {
+      "id": "spumante-semi-dry-white",
+      "group_id": "spumante",
+      "name": "Abrau Spumante",
+      "variant": "Белое полусухое",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/spumante-semi-dry-white.webp",
+        "source_id": "spumante-semi-dry-image"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусухое",
+      "grapes": [],
+      "description": "Abrau Spumante · Белое полусухое. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20",
+        "spumante-semi-dry-image"
+      ]
+    },
+    {
+      "id": "abrau-fizz-brut-white",
+      "group_id": "fizz",
+      "name": "Abrau Fizz",
+      "variant": "Brut White",
+      "wine_slug": "abrau-dyurso-fizz-beloe-bryut",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-fizz-brut-white.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Игристое вино",
+      "style": "Белое брют",
+      "grapes": [
+        "Августин",
+        "Бианка",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Легкое игристое вино от российского винного дома Абрау-Дюрсо, созданное в стиле «жемчужного» брюта. Это довольно универсальное игристое вино, которое отлично впишется и в атмосферу праздника, и подойдет для повседневного наслаждения жарким вечером буднего дня. Удобная и симпатичная баночка с ее игристым содержимым - идеальный вариант для дружеской встречи на природе или пикника весной и летом, которая подарит ощущение легкости, свежести и светлое настроение.",
+      "release_status": "catalog",
+      "badges": [
+        "Банка"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20",
+        "official-catalog-2025"
+      ]
+    },
+    {
+      "id": "abrau-fizz-brut-rose",
+      "group_id": "fizz",
+      "name": "Abrau Fizz",
+      "variant": "Brut Rosé",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-fizz-brut-rose.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое брют",
+      "grapes": [],
+      "description": "Abrau Fizz · Brut Rosé. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [
+        "Банка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-fizz-semi-sweet-white",
+      "group_id": "fizz",
+      "name": "Abrau Fizz",
+      "variant": "Semi-Sweet White",
+      "wine_slug": "abrau-dyurso-fizz-beloe-polusladkoe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-fizz-semi-sweet-white.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Игристое вино",
+      "style": "Белое полусладкое",
+      "grapes": [
+        "Августин",
+        "Бианка",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Легкое игристое полусладкое вино от российского винного дома Абрау‑Дюрсо, созданное в жемчужном стиле. Для его производства используется виноград сортов Бианка, Шардоне и Ркацители. Это довольно универсальное игристое вино, которое отлично впишется и в атмосферу праздника, и подойдет для повседневного наслаждения жарким вечером буднего дня. Удобная и симпатичная баночка с ее содержимым - идеальный вариант для дружеской встречи на природе или пикника весной и летом, которая подарит ощущение легкости, свежести и светлое настроение.",
+      "release_status": "catalog",
+      "badges": [
+        "Банка"
+      ],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "prepared-sheets-2026-09-20",
+        "official-catalog-2025"
+      ]
+    },
+    {
+      "id": "abrau-fizz-semi-sweet-rose",
+      "group_id": "fizz",
+      "name": "Abrau Fizz",
+      "variant": "Semi-Sweet Rosé",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-fizz-semi-sweet-rose.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Игристое вино",
+      "style": "Розовое полусладкое",
+      "grapes": [],
+      "description": "Abrau Fizz · Semi-Sweet Rosé. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [
+        "Банка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-light-purple",
+      "group_id": "light",
+      "name": "Abrau Light",
+      "variant": "Фиолетовая этикетка",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-light-purple.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Искристый напиток",
+      "style": "Стиль не уточнён",
+      "grapes": [],
+      "description": "Abrau Light · Фиолетовая этикетка. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-light-pink",
+      "group_id": "light",
+      "name": "Abrau Light",
+      "variant": "Розовая этикетка",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-light-pink.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Искристый напиток",
+      "style": "Стиль не уточнён",
+      "grapes": [],
+      "description": "Abrau Light · Розовая этикетка. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-fiori-red",
+      "group_id": "fiori",
+      "name": "Abrau Fiori",
+      "variant": "Красное",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-fiori-red.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Искристый напиток",
+      "style": "Красное",
+      "grapes": [],
+      "description": "Abrau Fiori · Красное. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-fiori-white-green",
+      "group_id": "fiori",
+      "name": "Abrau Fiori",
+      "variant": "Белое · зелёное оформление",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-fiori-white-green.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Искристый напиток",
+      "style": "Белое",
+      "grapes": [],
+      "description": "Abrau Fiori · Белое · зелёное оформление. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-fiori-rose",
+      "group_id": "fiori",
+      "name": "Abrau Fiori",
+      "variant": "Розовое",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-fiori-rose.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Искристый напиток",
+      "style": "Розовое",
+      "grapes": [],
+      "description": "Abrau Fiori · Розовое. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-fiori-white-purple",
+      "group_id": "fiori",
+      "name": "Abrau Fiori",
+      "variant": "Белое · фиолетовое оформление",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-fiori-white-purple.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Искристый напиток",
+      "style": "Белое",
+      "grapes": [],
+      "description": "Abrau Fiori · Белое · фиолетовое оформление. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-collection-white",
+      "group_id": "collection",
+      "name": "Abrau Collection",
+      "variant": "White",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-collection-white.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Категория не уточнена",
+      "style": "Белое",
+      "grapes": [],
+      "description": "Abrau Collection · White. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [
+        "Банка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-collection-rose",
+      "group_id": "collection",
+      "name": "Abrau Collection",
+      "variant": "Rosé",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-collection-rose.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Категория не уточнена",
+      "style": "Розовое",
+      "grapes": [],
+      "description": "Abrau Collection · Rosé. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [
+        "Банка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-light-zero-purple-bottle",
+      "group_id": "light-zero",
+      "name": "Abrau Light Zero",
+      "variant": "Бутылка · фиолетовая этикетка",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-light-zero-purple-bottle.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Безалкогольный искристый напиток",
+      "style": "Стиль не уточнён",
+      "grapes": [],
+      "description": "Abrau Light Zero · Бутылка · фиолетовая этикетка. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [
+        "0%",
+        "Бутылка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-light-zero-pink-bottle",
+      "group_id": "light-zero",
+      "name": "Abrau Light Zero",
+      "variant": "Бутылка · розовая этикетка",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-light-zero-pink-bottle.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Безалкогольный искристый напиток",
+      "style": "Стиль не уточнён",
+      "grapes": [],
+      "description": "Abrau Light Zero · Бутылка · розовая этикетка. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [
+        "0%",
+        "Бутылка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-light-zero-purple-can",
+      "group_id": "light-zero",
+      "name": "Abrau Light Zero",
+      "variant": "Банка · фиолетовая этикетка",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-light-zero-purple-can.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Безалкогольный искристый напиток",
+      "style": "Стиль не уточнён",
+      "grapes": [],
+      "description": "Abrau Light Zero · Банка · фиолетовая этикетка. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [
+        "0%",
+        "Банка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    },
+    {
+      "id": "abrau-light-zero-pink-can",
+      "group_id": "light-zero",
+      "name": "Abrau Light Zero",
+      "variant": "Банка · розовая этикетка",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/abrau-durso/abrau-light-zero-pink-can.webp",
+        "source_id": "official-catalog-2025"
+      },
+      "category": "Безалкогольный искристый напиток",
+      "style": "Стиль не уточнён",
+      "grapes": [],
+      "description": "Abrau Light Zero · Банка · розовая этикетка. Вариант показан в официальном каталоге «Абрау-Дюрсо» 2025 года.",
+      "release_status": "catalog",
+      "badges": [
+        "0%",
+        "Банка"
+      ],
+      "price": null,
+      "source_ids": [
+        "official-catalog-2025",
+        "prepared-sheets-2026-09-20"
+      ]
+    }
+  ]
+}

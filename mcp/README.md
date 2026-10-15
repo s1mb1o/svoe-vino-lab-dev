@@ -112,8 +112,9 @@ Inbound messages are limited to 64 KiB. Structured results are limited to 128 Ki
 ## Product-line mock and follow-up
 
 The owner explicitly requested the existing mock until the product-line map merges.
-The adapter imports `ABRAU_LINE` from `webui/shared/experiences.ts`.
-It does not copy or fabricate a new map.
+The adapter imports `ABRAU_LINE` from `mcp/src/abrau-demo.mjs`.
+This file keeps the unchanged demo data of the removed `webui/shared/experiences.ts`.
+It does not fabricate a new map.
 Only an exact matching node has `current: true`.
 An Abrau wine outside those six nodes has `exact_node_found: false`.
 An item outside the matcher catalog has a null catalog slug and no source link.

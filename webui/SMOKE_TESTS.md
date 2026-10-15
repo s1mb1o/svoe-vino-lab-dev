@@ -72,7 +72,7 @@ Public service health and upstream availability passed.
 - Open all four example dialogs. Close them with Escape, the close button, and a backdrop click.
 - Confirm that focus returns to the dialog opener.
 - Change the example wine. Confirm that the taste and label dialogs use that wine.
-- Confirm that the map remains labeled as an Abrau-Durso demonstration for other producers.
+- Confirm that unsupported producers show an unavailable state with a separate Abrau-Durso preview link.
 - Confirm that mockups have no working search, shopping, playback, quiz, or save controls.
 - Check 320, 390, 768, 1024, and 1440 pixel widths in both themes without horizontal overflow.
 - Confirm that images load and all internal page links work.
@@ -295,20 +295,11 @@ See `docs/verification-2026-09-15.md` for current results.
 - Use the default example. Confirm the explicit message that its grape has no reliable aggregate match.
 - Confirm that a sweet red wine uses the sweet-style analogue before a dry Cabernet analogue.
 - Confirm that the international analogue includes a similarity, a difference, and a no-quality-comparison notice.
-- Open «Путеводитель по линейке». Confirm the Abrau-Durso tiers and quality-rating notice.
-- Confirm that all six nodes show distinct catalog bottle or can images instead of generic silhouettes.
-- Confirm that «Удельное Ведомство Императорское, брют» shows the yellow-label `patched` image.
-- Confirm that the other five nodes show their `main` images.
-- Resolve one of the six mapped Abrau-Durso slugs. Confirm that its node shows `ВАШЕ ВИНО`.
-- Confirm that the dialog heading says `ЛИНЕЙКА ВАШЕГО ПРОИЗВОДИТЕЛЯ`.
-- Resolve an Abrau-Durso slug outside the six map nodes. Confirm that the result appears above the map without a collection tier.
-- Resolve a wine from another producer. Confirm that Victor Dravigny shows `ПРИМЕР · ДЕМО`.
-- Change map zoom. Select another node. Use the direction control to bring the current node into view.
-- Confirm that the selected node exposes a normal source link.
+- Run the checks in the “Producer product-line map” section for graph coverage, selection, links, and navigation.
 - Close every dialog with its close button, Escape, and backdrop. Confirm focus restoration.
 - Check the actions and dialogs at 390 px and on desktop in light and dark themes.
 
-Focused automated tests cover age storage, storage failures, taste inference, dish diversity, source evidence, style analogues, source URLs, and one current map item.
+Focused automated tests cover age storage, storage failures, taste inference, dish diversity, source evidence, style analogues, source URLs, graph identity, aliases, and product selection.
 The 2026-09-28 browser check covered dark desktop and 390 px mobile layouts.
 The dish demo does not contain a browser location call.
 
@@ -335,3 +326,32 @@ The dish demo does not contain a browser location call.
 Automated checks cover group URL derivation, one-request matching, response limits, normalized boxes, malformed data, timeout, cancellation, selection, and stale results.
 The owner-supplied examples have conversion details and hashes in `docs/assets.md`.
 Manual camera and visual checks remain unverified unless explicitly recorded in the verification report.
+
+## Producer product-line map
+
+1. Open `/lineup/abrau-durso`. Confirm the age gate. Check light and dark themes.
+2. Check desktop, 390 px, and 320 px widths. Confirm that the page has no horizontal overflow.
+3. Select a group. Select a linked product. Check the description and portal link.
+4. Select a gray product. Check the description. Confirm that no portal link exists.
+5. Recognize an Abrau-Durso wine. Open the guide. Confirm that its group opens and its product is selected.
+6. Use the legacy Victor Dravigny slug. Confirm that the standard Brut product is selected.
+7. Select another product. Return to the map. Confirm that zoom and canvas position remain unchanged.
+8. Use the locate control. Confirm that the initial product is selected and visible again.
+9. Drag with a mouse. Scroll with touch. Change zoom. Check the outermost groups at both zoom limits.
+10. Open the guide with the keyboard. Use group controls and product controls. Press Escape. Confirm that focus returns to the opener.
+11. Open the guide from a shelf result. Confirm that closing the guide retains the shelf result.
+12. Use an unknown Abrau-Durso slug. Confirm that the separate card has no inferred tier.
+13. Use another producer. Confirm the unavailable state and the explicit preview link.
+14. Check that the preview uses noindex headers and does not claim recognition.
+
+15. At 844 by 390 and 667 by 375 px, select linked and gray products. Confirm that detail actions remain reachable.
+16. At 700, 701, 767, and 768 px, confirm that the page has no horizontal overflow.
+17. On mobile, select a product. Confirm that details become visible. Return to the map. Confirm that the map becomes visible and retains its internal scroll position.
+18. In WebKit, close the inner map dialog and then the shelf card. Confirm that each dialog restores its explicit opener.
+
+19. At 800 by 650 and 1440 by 720 px, select the Cuvée Alexander II gift box. Confirm that the description has nonzero height and all actions remain reachable in the preview and scanner dialog.
+
+Validation completed on 2026-10-16: all 176 tests, type checks, and the production build passed.
+Chromium passed desktop and mobile checks in both themes.
+WebKit passed the phone, landscape, breakpoint, and nested-dialog checks.
+Read `docs/reviews/2026-10-15-product-line-map-resolution.md` for the evidence and limits.

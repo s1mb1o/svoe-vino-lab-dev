@@ -740,3 +740,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .line-viewport { background: linear-gradient(to bottom, #604a3450 0 33%, #4b423952 33% 68%, #35433552 68%); }
   .line-paths path { stroke: #9f8268; }
 }
+
+/* Keep the page fixed while a result experience dialog is open. */
+body:has(.experience-dialog[open]) { overflow: hidden; }

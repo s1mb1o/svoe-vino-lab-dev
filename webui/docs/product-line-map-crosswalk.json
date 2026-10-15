@@ -1,0 +1,329 @@
+{
+  "source_date": "2026-09-20",
+  "entries": [
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "CUVÉE ALEXANDER II · MAGNUM",
+      "source_image": "abrau_dyurso_aleksandr_ii_magnum_shardone_beloe_bryut_125_256840c1d1.webp",
+      "product_id": "cuvee-alexander-ii-magnum"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "BRUT · L’ART NOUVEAU",
+      "source_image": "abrau_dyurso_imperial_brut_lart_nouveau_shardone_beloe_bryut_105_71076b0053.webp",
+      "product_id": "imperial-brut-lart-nouveau"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "BRUT VINTAGE",
+      "source_image": "abrau_dyurso_imperial_brut_vintage_shardone_beloe_bryut_12_8f6dbe7a71.webp",
+      "product_id": "imperial-brut-vintage"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "BRUT ROSÉ",
+      "source_image": "abrau_dyurso_imperial_brut_rose_pino_nuar_rozovoe_bryut_12_3eafe20e40.webp",
+      "product_id": "imperial-brut-rose"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "CUVÉE ROSÉ",
+      "source_image": "abrau_dyurso_imperial_kyuve_pino_nuar_igristoe_bryut_rozovoe_125_99fe198335.webp",
+      "product_id": "imperial-cuvee-rose"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "BLANC DE BLANCS",
+      "source_image": "abrau_dyurso_brut_dor_blanc_de_blancs_shardone_beloe_bryut_125_cf97076f41.webp",
+      "product_id": "brut-dor-blanc-de-blancs"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "BLANC DE NOIRS",
+      "source_image": "abrau_dyurso_brut_dor_blanc_de_noirs_pino_nuar_beloe_bryut_125_2d16522a48.webp",
+      "product_id": "brut-dor-blanc-de-noirs"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "RIESLING",
+      "source_image": "abrau_dyurso_brut_dor_riesling_risling_beloe_bryut_12_45b9c81ea5.webp",
+      "product_id": "brut-dor-riesling"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-1.png",
+      "label": "ROSÉ",
+      "source_image": "abrau_dyurso_brut_dor_rose_pino_nuar_rozovoe_bryut_12_8b5bd155e6.webp",
+      "product_id": "brut-dor-rose"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-2.png",
+      "label": "BRUT",
+      "source_image": "official-abrau-catalog-2025-assets/selected/victor-dravigny-brut.png",
+      "product_id": "victor-dravigny-brut"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-2.png",
+      "label": "EXTRA BRUT",
+      "source_image": "abrau_dyurso_victor_dravigny_extra_brut_shardone_beloe_bryut_125_86dc223df3.webp",
+      "product_id": "victor-dravigny-extra-brut"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-2.png",
+      "label": "BRUT ROSÉ",
+      "source_image": "abrau_dyurso_victor_dravigny_brut_rose_pino_nuar_rozovoe_bryut_12_c7199512eb.webp",
+      "product_id": "victor-dravigny-brut-rose"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-2.png",
+      "label": "ПОЛУСУХОЕ",
+      "source_image": "abrau_dyurso_victor_dravigny_polusuhoe_pino_blan_beloe_12_7b6de7aca6.webp",
+      "product_id": "victor-dravigny-semi-dry"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-2.png",
+      "label": "ПОЛУСЛАДКОЕ",
+      "source_image": "abrau_dyurso_victor_dravigny_polusladkoe_sovinon_blan_beloe_12_ec087df76c.webp",
+      "product_id": "victor-dravigny-semi-sweet"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-2.png",
+      "label": "КРАСНОЕ · ПОЛУСЛАДКОЕ",
+      "source_image": "abrau_dyurso_victor_dravigny_krasnoe_polusladkoe_kaberne_sovinon_125_f0e4d2775c.webp",
+      "product_id": "victor-dravigny-red-semi-sweet"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-2.png",
+      "label": "BRUT",
+      "source_image": "abrau_dyurso_victor_dravigny_koshernoe_bryut_shardone_beloe_125_662e4e2b51.webp",
+      "product_id": "victor-dravigny-kosher-brut"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "RESERVE BRUT",
+      "source_image": "abrau_dyurso_abrau_durso_reserve_brut_shardone_beloe_bryut_115_c2d789063b.webp",
+      "product_id": "reserve-brut"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "BRUT ROSÉ · RESERVE",
+      "source_image": "abrau_dyurso_abrau_durso_brut_rose_reserve_pino_nuar_beloe_bryut_12_bb364de705.webp",
+      "product_id": "reserve-brut-rose"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "ИМПЕРАТОРСКОЕ · БРЮТ",
+      "source_image": "abrau_dyurso_imperatorskoe_bryut_shardone_beloe_12_d6c7ebb073.webp",
+      "product_id": "imperatorskoe-brut"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "ИМПЕРАТОРСКОЕ · ПОЛУСУХОЕ",
+      "source_image": "abrau_dyurso_imperatorskoe_polusuhoe_shardone_beloe_12_51385573f2.webp",
+      "product_id": "imperatorskoe-semi-dry"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "ИМПЕРАТОРСКОЕ · ПОЛУСЛАДКОЕ",
+      "source_image": "abrau_dyurso_imperatorskoe_polusladkoe_shardone_beloe_12_956aaee80d.webp",
+      "product_id": "imperatorskoe-semi-sweet"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "УДЕЛЬНОЕ ВЕДОМСТВО · БРЮТ",
+      "source_image": "Abrau_Dyurso_Udelnoe_vedomtsvo_bryut_80a96f319c.webp",
+      "product_id": "udelnoe-vedomstvo-brut"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "УДЕЛЬНОЕ ВЕДОМСТВО · ПОЛУСЛАДКОЕ",
+      "source_image": "Abrau_Dyurso_Udelnoe_Vedomstvo_Imperatorskoe_beloe_polusladkoe_fac98a6538.webp",
+      "product_id": "udelnoe-vedomstvo-semi-sweet"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "БЕЛОЕ · ПОЛУСУХОЕ",
+      "source_image": "abrau_dyurso_russkoe_igristoe_polusuhoe_shardone_beloe_12_1dd99a0a33.webp",
+      "product_id": "russian-sparkling-semi-dry-white"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "БЕЛОЕ · ПОЛУСЛАДКОЕ",
+      "source_image": "abrau_dyurso_russkoe_igristoe_polusladkoe_shardone_beloe_12_a8752d67f6.webp",
+      "product_id": "russian-sparkling-semi-sweet-white"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "РОЗОВОЕ · ПОЛУСУХОЕ",
+      "source_image": "abrau_dyurso_russkoe_igristoe_polusuhoe_rozovoe_pino_nuar_12_dafb6d988e.webp",
+      "product_id": "russian-sparkling-semi-dry-rose"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "КРАСНОЕ · ПОЛУСЛАДКОЕ",
+      "source_image": "abrau_dyurso_russkoe_igristoe_polusladkoe_krasnoe_kaberne_sovinon_12_d7c8d1c042.webp",
+      "product_id": "russian-sparkling-semi-sweet-red"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "БРЮТ",
+      "source_image": "abrau_dyurso_russkoe_igristoe_koshernoe_bryut_shardone_beloe_13_8b9ee7f9fe.webp",
+      "product_id": "russian-sparkling-kosher-brut"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "ПОЛУСЛАДКОЕ",
+      "source_image": "abrau_dyurso_russkoe_igristoe_koshernoe_polusladkoe_shardone_beloe_12_cce09fd580.webp",
+      "product_id": "russian-sparkling-kosher-semi-sweet"
+    },
+    {
+      "sheet": "sparkling-wines-a4-page-3.png",
+      "label": "ABRAU SPUMANTE · BRUT ROSÉ",
+      "source_image": "abrau_dyurso_spumante_bryut_roze_shardone_igristoe_bryut_rozovoe_12_36f26aa26f.webp",
+      "product_id": "spumante-brut-rose"
+    },
+    {
+      "sheet": "sparkling-wines-missing-from-svoe-vino-a4.png",
+      "label": "CUVÉE ALEXANDER II · 0,75 Л · ПОДАРОЧНАЯ КОРОБКА",
+      "source_image": "official-abrau-catalog-2025-assets/selected/cuvee-alexander-ii-075-box.png",
+      "product_id": "cuvee-alexander-ii-gift-box"
+    },
+    {
+      "sheet": "sparkling-wines-missing-from-svoe-vino-a4.png",
+      "label": "VICTOR DRAVIGNY · ZERO DOSAGE · 2020",
+      "source_image": "official-abrau-catalog-2025-assets/selected/victor-dravigny-zero-dosage.png",
+      "product_id": "victor-dravigny-zero-dosage"
+    },
+    {
+      "sheet": "sparkling-wines-missing-from-svoe-vino-a4.png",
+      "label": "БЕЛОЕ БРЮТ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/russian-sparkling-brut.png",
+      "product_id": "russian-sparkling-brut-white"
+    },
+    {
+      "sheet": "sparkling-wines-missing-from-svoe-vino-a4.png",
+      "label": "БЕЛОЕ СУХОЕ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/russian-sparkling-dry.png",
+      "product_id": "russian-sparkling-dry-white"
+    },
+    {
+      "sheet": "sparkling-wines-missing-from-svoe-vino-a4.png",
+      "label": "БЕЛОЕ БРЮТ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-spumante-brut.png",
+      "product_id": "spumante-brut-white"
+    },
+    {
+      "sheet": "sparkling-wines-missing-from-svoe-vino-a4.png",
+      "label": "БЕЛОЕ ПОЛУСУХОЕ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-spumante-semi-dry.png",
+      "product_id": "spumante-semi-dry-white"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "ФИОЛЕТОВАЯ ЭТИКЕТКА",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-light-purple.png",
+      "product_id": "abrau-light-purple"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "РОЗОВАЯ ЭТИКЕТКА",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-light-pink.png",
+      "product_id": "abrau-light-pink"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "КРАСНОЕ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-fiori-red.png",
+      "product_id": "abrau-fiori-red"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "БЕЛОЕ · 1",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-fiori-white-green.png",
+      "product_id": "abrau-fiori-white-green"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "РОЗОВОЕ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-fiori-rose.png",
+      "product_id": "abrau-fiori-rose"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "БЕЛОЕ · 2",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-fiori-white-purple.png",
+      "product_id": "abrau-fiori-white-purple"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "WHITE",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-collection-white.png",
+      "product_id": "abrau-collection-white"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "ROSÉ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-collection-rose.png",
+      "product_id": "abrau-collection-rose"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "BRUT WHITE",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-fizz-brut-white.png",
+      "product_id": "abrau-fizz-brut-white"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "BRUT ROSÉ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-fizz-brut-rose.png",
+      "product_id": "abrau-fizz-brut-rose"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "SEMI-SWEET WHITE",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-fizz-semi-sweet-white.png",
+      "product_id": "abrau-fizz-semi-sweet-white"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "SEMI-SWEET ROSÉ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-fizz-semi-sweet-rose.png",
+      "product_id": "abrau-fizz-semi-sweet-rose"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "БУТЫЛКА · ФИОЛЕТОВАЯ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-light-zero-purple-bottle.png",
+      "product_id": "abrau-light-zero-purple-bottle"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "БУТЫЛКА · РОЗОВАЯ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-light-zero-pink-bottle.png",
+      "product_id": "abrau-light-zero-pink-bottle"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "БАНКА · ФИОЛЕТОВАЯ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-light-zero-purple-can.png",
+      "product_id": "abrau-light-zero-purple-can"
+    },
+    {
+      "sheet": "abrau-sparkling-drinks-a4.png",
+      "label": "БАНКА · РОЗОВАЯ",
+      "source_image": "official-abrau-catalog-2025-assets/selected/abrau-light-zero-pink-can.png",
+      "product_id": "abrau-light-zero-pink-can"
+    },
+    {
+      "sheet": "abrau-fizz-a4.png",
+      "label": "БЕЛОЕ БРЮТ",
+      "source_image": "Abrau_Dyurso_fizz_bryut_2a15c7f74f.webp",
+      "product_id": "abrau-fizz-brut-white"
+    },
+    {
+      "sheet": "abrau-fizz-a4.png",
+      "label": "БЕЛОЕ ПОЛУСЛАДКОЕ",
+      "source_image": "Abrau_Dyurso_fizz_polusladkoe_031d93d5e0.webp",
+      "product_id": "abrau-fizz-semi-sweet-white"
+    }
+  ]
+}
