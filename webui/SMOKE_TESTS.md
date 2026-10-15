@@ -393,3 +393,8 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/alma-valley?wine=alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Инкерман map
+
+Open `/lineup/inkerman?wine=inkerman-muskatnoe-beloe`.
+Check the selected catalog wine, a gray product, and the mobile popup.

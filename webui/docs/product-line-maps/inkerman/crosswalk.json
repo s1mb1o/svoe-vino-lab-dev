@@ -1,0 +1,241 @@
+{
+  "producer_id": "inkerman",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Инкерманский ЗМВ",
+  "entries": [
+    {
+      "wine_slug": "inkerman-muskatnoe-beloe",
+      "product_id": "wine-inkerman-muskatnoe-beloe",
+      "group_id": "base-still",
+      "catalog_name": "Inkerman Мускатное белое",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "Inkerman_muskatnoe_beloe_polusladkoe_092002be0d.webp",
+      "asset_sha256": "bacdc364bb8d221386ba13a699267bb6ec78c564dc975e6f96af94c60c9ee23e",
+      "group_source_ids": [
+        "official-base-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkerman-shato-blan",
+      "product_id": "wine-inkerman-shato-blan",
+      "group_id": "base-still",
+      "catalog_name": "Инкерман Шато Блан",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "Inkerman_Shato_Blan_beloe_polusuhoe_526e6530b9.webp",
+      "asset_sha256": "6c4cfe90f50a41dfe30bdcc1352654173fdc1c02242d531e8ad882a487a308cc",
+      "group_source_ids": [
+        "official-base-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkerman-shato-ruzh",
+      "product_id": "wine-inkerman-shato-ruzh",
+      "group_id": "base-still",
+      "catalog_name": "Inkerman Шато Руж",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "Inkerman_Shato_Ruzh_85fa6ee9ce.webp",
+      "asset_sha256": "397fcc6c032bcfb2c94ad0c6afe2273f0598dc35708f3cd511477bab4222cdb4",
+      "group_source_ids": [
+        "official-base-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-inkerman-bryut-rkatsiteli-beloe-12",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-bryut-rkatsiteli-beloe-12",
+      "group_id": "sparkling",
+      "catalog_name": "Инкерман Брют",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_inkerman_bryut_rkatsiteli_beloe_12_d9607fd400.webp",
+      "asset_sha256": "489498bc1c52e1102d4df5ce58122fdac44743ebab6fd4b8dda917ea6e991d9d",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135",
+      "group_id": "sparkling",
+      "catalog_name": "Inkerman брют",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_inkerman_bryut_shardone_igristoe_bryut_beloe_135_e40fffb0b1.webp",
+      "asset_sha256": "5c7fe319c750a3b6c535ca0f25874cf96065667fd7f7e4a0582a7127e969b74f",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-inkerman-muskat-polusladkoe-beloe-13",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-muskat-polusladkoe-beloe-13",
+      "group_id": "sparkling",
+      "catalog_name": "Инкерман Мускат полусладкое",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_inkerman_muskat_polusladkoe_beloe_13_7b92ce68f8.webp",
+      "asset_sha256": "fd00a5783254fee4f4b7798766c5dc85b2705d5eaddddb3febef778dd29fcfe8",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-inkerman-pino-blan-zero-dozazh-beloe-ekstra-bryut-12",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-pino-blan-zero-dozazh-beloe-ekstra-bryut-12",
+      "group_id": "sparkling",
+      "catalog_name": "Инкерман Пино Блан Зеро Дозаж",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_inkerman_pino_blan_zero_dozazh_beloe_ekstra_bryut_12_8502401e55.webp",
+      "asset_sha256": "9211a3cd9a9dd6849adb8b41b7ac2ecda4faa2f00d3518c0593716e7c810b7b5",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-inkerman-polusladkoe-rkatsiteli-beloe-13",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-polusladkoe-rkatsiteli-beloe-13",
+      "group_id": "sparkling",
+      "catalog_name": "Инкерман полусладкое",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_inkerman_polusladkoe_rkatsiteli_beloe_13_5e5f1aa9c4.webp",
+      "asset_sha256": "8b1b479d817c69536b5e47a52bc1e4e74be5c5d287e1512506b0d12a70c5f16f",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135",
+      "group_id": "sparkling",
+      "catalog_name": "Inkerman полусладкое розе",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_inkerman_polusladkoe_roze_aligote_igristoe_polusladkoe_rozovoe_135_1956dabf85.webp",
+      "asset_sha256": "a4bd55c5371ad466620a5be9b95d4a20a947e02fdf13731a31956cbf53f6381e",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-inkerman-roze-zero-dozazh-kokur-rozovoe-ekstra-bryut-12",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-roze-zero-dozazh-kokur-rozovoe-ekstra-bryut-12",
+      "group_id": "sparkling",
+      "catalog_name": "Инкерман Розе Зеро Дозаж",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_inkerman_roze_zero_dozazh_kokur_rozovoe_ekstra_bryut_12_2c38685dfc.webp",
+      "asset_sha256": "9b97fec7bc73c7bff5703fc672cd10fb5d762a32d3c32bf064d31747ddf921a3",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-inkerman-rozovoe-polusladkoe-rkatsiteli-12",
+      "product_id": "wine-inkermanskiy-zmv-inkerman-rozovoe-polusladkoe-rkatsiteli-12",
+      "group_id": "sparkling",
+      "catalog_name": "Инкерман Розовое полусладкое",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_inkerman_rozovoe_polusladkoe_rkatsiteli_12_2cbe882a16.webp",
+      "asset_sha256": "d7f755e65e1455c07e7e706f1fd871271161df948da8a1d87e8e4b9e050ec22e",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-kokur-belyy-ekstra-bryut-beloe-135",
+      "product_id": "wine-inkermanskiy-zmv-kokur-belyy-ekstra-bryut-beloe-135",
+      "group_id": "sparkling",
+      "catalog_name": "Кокур Белый экстра брют",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_kokur_belyy_ekstra_bryut_igristoe_ekstra_bryut_beloe_135_742967a765.webp",
+      "asset_sha256": "e80956802a6e53d5da16074bb85747fe4c964ac31c47c72bbe344b08b2752e08",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-special-reserve-rkatsiteli-beloe-suhoe-13",
+      "product_id": "wine-inkermanskiy-zmv-special-reserve-rkatsiteli-beloe-suhoe-13",
+      "group_id": "special-reserve",
+      "catalog_name": "Special Reserve. Ркацители",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_special_reserve_rkatsiteli_beloe_suhoe_vyderzhannoe_13_0f63a24569.webp",
+      "asset_sha256": "d24570a8bf4f7846be37951d3f4d61467b35faaf2ea4c1a69349df04bdc7489b",
+      "group_source_ids": [
+        "official-special-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12",
+      "product_id": "wine-inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12",
+      "group_id": "winemaker-sparkling",
+      "catalog_name": "Winemaker's Selection Саперави",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "inkermanskiy_zmv_winemakers_selection_saperavi_igristoe_polusladkoe_krasnoe_12_b8254979b2.webp",
+      "asset_sha256": "4fd5052ef334c37a37a191c8a6b9a1b470b7beccdc3b5038647b56fffdc8718c",
+      "group_source_ids": [
+        "official-winemaker-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "winemaker-selection",
+      "product_id": "wine-winemaker-selection",
+      "group_id": "winemaker-still",
+      "catalog_name": "Winemaker selection",
+      "catalog_producer": "Инкерманский ЗМВ",
+      "source_image": "PU_Sjv7dn_M_Nil_H25_TO_9_Bcb_M8_AKD_4_B2_Y2_Z_Siq4lp0vl_NDQ_1_Im_Kjlu_Vnc_Wpupc0tii_Ai_C0_S_Jlrf_F34yl_QF_Vb_Wx_BQ_6bf5975f02.webp",
+      "asset_sha256": "3c0b5db86a3c01c2ec03d0411a2d14d5afe9650caf5c019e550d7f08d9e5e96a",
+      "group_source_ids": [
+        "official-winemaker-still"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-grand-reserve-cabernet",
+      "wine_slug": null,
+      "official_url": "https://inkerman.ru/catalog/grand-reserve/cabernet-kachinskoe-grand-reserve/",
+      "official_image_url": "https://inkerman.ru/upload/iblock/517/8b41ownq14b7ql92i87e2td7nlyumiox/kaberne.png",
+      "absence_basis": "No Inkerman snapshot card names Grand Reserve or Cabernet Kachinskoe. Grand Reserve cards from other producers in the full snapshot are unrelated.",
+      "checked_at": "2026-10-16",
+      "asset_sha256": "aa24e5848606585cc944d777241db980216e4105982d8214701aaa00c765a1a4",
+      "original_image_sha256": "700ef56d1c6406ca6b138616ea76f364155d0cd7f23180e459c8c79b04c1278b",
+      "image_dimensions": [
+        500,
+        750
+      ],
+      "image_conversion": "Lossless WebP conversion. No crop or resize."
+    },
+    {
+      "product_id": "official-grand-reserve-pearl",
+      "wine_slug": null,
+      "official_url": "https://inkerman.ru/catalog/grand-reserve/zhemchuzhina-inkermana-grand-reserve/",
+      "official_image_url": "https://inkerman.ru/upload/iblock/25d/uniztzx7zr028r0gt2g7sgn1y3xqunyy/zhemchuzhina.png",
+      "absence_basis": "No Inkerman snapshot card names Zhemchuzhina or Grand Reserve. The existing Special Reserve Rkatsiteli has a different collection and must remain a linked product.",
+      "checked_at": "2026-10-16",
+      "asset_sha256": "14a3f1912c3676d288b427237ca644ba71017e6e58069a75c4d40228e30debe2",
+      "original_image_sha256": "be8d385ff01d43034569e4f0dca9d1f39f6cfd31fb8e1c1cf5b0ee766f7d812f",
+      "image_dimensions": [
+        500,
+        750
+      ],
+      "image_conversion": "Lossless WebP conversion. No crop or resize."
+    }
+  ],
+  "mapping_notes": [
+    "The exact catalog producer field is Инкерманский ЗМВ. All 15 rows are included.",
+    "The Saperavi Winemaker Selection card is sparkling. Both its description and the official sparkling collection confirm the classification.",
+    "The generic Winemaker selection card has a Riesling label. It belongs to the still collection.",
+    "The old green brut and pink semi-sweet bottle designs remain in the sparkling collection. They are not merged with newer cards.",
+    "The shared Rkatsiteli grape does not make Special Reserve and Grand Reserve Zhemchuzhina the same product."
+  ]
+}

@@ -226,3 +226,9 @@ It does not claim complete live assortment coverage.
 Read [alma-valley sources](product-line-maps/alma-valley/sources.md).
 The map includes 39 snapshot cards and 2 verified additions in 8 groups.
 It does not claim complete live assortment coverage.
+
+## Инкерман extension, 2026-10-16
+
+Read [inkerman sources](product-line-maps/inkerman/sources.md).
+The map includes 15 snapshot cards and 2 verified additions in 6 groups.
+It does not claim complete live assortment coverage.

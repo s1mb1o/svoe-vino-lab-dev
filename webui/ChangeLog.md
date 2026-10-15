@@ -37,6 +37,12 @@
   Metrika now records the title of the new page, not the title of the previous page (#40).
   Production release `10632011` does not have this fix.
 
+## 2026-10-16 — Инкерман map
+
+- Add 6 groups and 17 product nodes in `inkerman.json`.
+- Cover all 15 saved catalog cards. Add 2 verified products without catalog links.
+- Record collection sources, exact catalog crosswalks, and asset provenance.
+
 ## 2026-10-16 — Alma Valley map
 
 - Add 8 groups and 41 product nodes in `alma-valley.json`.

@@ -1,0 +1,636 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "inkerman",
+    "name": "Инкерман",
+    "aliases": [
+      "Инкерманский ЗМВ",
+      "Inkerman",
+      "Инкерманский завод марочных вин"
+    ],
+    "slug_prefixes": [
+      "inkerman-",
+      "inkermanskiy-zmv-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Инкерман: официальные коллекции",
+      "url": "https://inkerman.ru/catalog/"
+    },
+    {
+      "id": "official-special-reserve",
+      "label": "Инкерман: special-reserve",
+      "url": "https://inkerman.ru/catalog/special-reserve/"
+    },
+    {
+      "id": "official-grand-reserve",
+      "label": "Инкерман: grand-reserve",
+      "url": "https://inkerman.ru/catalog/grand-reserve/"
+    },
+    {
+      "id": "official-winemaker-still",
+      "label": "Инкерман: winemaker-still",
+      "url": "https://inkerman.ru/catalog/winemakers-selection/"
+    },
+    {
+      "id": "official-winemaker-sparkling",
+      "label": "Инкерман: winemaker-sparkling",
+      "url": "https://inkerman.ru/catalog/winemaker-s-selection/"
+    },
+    {
+      "id": "official-base-still",
+      "label": "Инкерман: base-still",
+      "url": "https://inkerman.ru/catalog/kollektsiya-molodykh-vin/"
+    },
+    {
+      "id": "official-sparkling",
+      "label": "Инкерман: sparkling",
+      "url": "https://inkerman.ru/catalog/igristye-vina/"
+    },
+    {
+      "id": "official-grand-cabernet",
+      "label": "Официальная карточка: Grand Reserve · Каберне",
+      "url": "https://inkerman.ru/catalog/grand-reserve/cabernet-kachinskoe-grand-reserve/"
+    },
+    {
+      "id": "official-grand-pearl",
+      "label": "Официальная карточка: Grand Reserve · Жемчужина",
+      "url": "https://inkerman.ru/catalog/grand-reserve/zhemchuzhina-inkermana-grand-reserve/"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "premium",
+      "label": "Премиальный резерв",
+      "rank": 4,
+      "description": "Special Reserve прямо названа производителем премиальной коллекцией. Ранг задан редакционно.",
+      "price_label": "Премиальный ориентир · ₽₽₽₽",
+      "source_ids": [
+        "official-special-reserve"
+      ]
+    },
+    {
+      "id": "reserve",
+      "label": "Марочная выдержка",
+      "rank": 3,
+      "description": "Grand Reserve с выдержкой более 18 месяцев. Ценовая ступень относительно базовой коллекции задана редакционно.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-grand-reserve"
+      ]
+    },
+    {
+      "id": "selected",
+      "label": "Сортовая коллекция",
+      "rank": 2,
+      "description": "Winemaker’s Selection сохраняет сортовой характер без дубовой выдержки. Положение задано редакционно.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-winemaker-still"
+      ]
+    },
+    {
+      "id": "everyday",
+      "label": "Базовые тихие вина",
+      "rank": 1,
+      "description": "Официальная базовая коллекция. Относительная ступень задана редакционно.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-base-still"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Игристые коллекции",
+      "rank": 0,
+      "description": "Игристые коллекции показаны отдельно. Их ценовое соотношение с тихими винами не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-sparkling",
+        "official-winemaker-sparkling"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "special-reserve",
+      "name": "Special Reserve",
+      "tier_id": "premium",
+      "method": "Выдержка в новых бочках из французского дуба",
+      "description": "Официально премиальная коллекция ограниченных партий. Отбор винограда и фракций сусла дополняется индивидуальным номером бутылки.",
+      "source_ids": [
+        "official-special-reserve"
+      ]
+    },
+    {
+      "id": "grand-reserve",
+      "name": "Grand Reserve",
+      "tier_id": "reserve",
+      "method": "Выдержка в дубе более 18 месяцев",
+      "description": "Марочные Каберне и Жемчужина из винограда Севастопольской зоны. Официальные страницы сохраняют прежние названия «Каберне Качинское Гранд Резерв» и «Жемчужина Инкермана Гранд Резерв».",
+      "source_ids": [
+        "official-grand-reserve"
+      ]
+    },
+    {
+      "id": "winemaker-still",
+      "name": "Winemaker’s Selection · тихие",
+      "tier_id": "selected",
+      "method": "Без выдержки в дубовых бочках",
+      "description": "Сортовая коллекция, которая сохраняет аромат и вкус винограда. Карточка Winemaker selection в снимке относится к Рислингу.",
+      "source_ids": [
+        "official-winemaker-still"
+      ]
+    },
+    {
+      "id": "base-still",
+      "name": "Базовая коллекция",
+      "tier_id": "everyday",
+      "method": "Тихие вина",
+      "description": "Сортовые и купажные вина. Снимок включает Мускатное белое, Шато Блан и Шато Руж.",
+      "source_ids": [
+        "official-base-still"
+      ]
+    },
+    {
+      "id": "sparkling",
+      "name": "Игристые вина",
+      "tier_id": "neutral",
+      "method": "Метод не указан в источнике",
+      "description": "Белые и розовые игристые вина: брют, экстра брют и полусладкие варианты. Кокур, Пино Блан и розовое Zero Dosage сохранены как отдельные продукты.",
+      "source_ids": [
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "winemaker-sparkling",
+      "name": "Winemaker’s Selection · игристые",
+      "tier_id": "neutral",
+      "method": "Метод не указан в источнике",
+      "description": "Отдельная игристая коллекция Winemaker’s Selection. Красное полусладкое Саперави из снимка относится к этому направлению.",
+      "source_ids": [
+        "official-winemaker-sparkling"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-inkerman-muskatnoe-beloe",
+      "group_id": "base-still",
+      "name": "Inkerman Мускатное белое",
+      "variant": "",
+      "wine_slug": "inkerman-muskatnoe-beloe",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkerman-muskatnoe-beloe.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат Янтарный",
+        "Ркацители"
+      ],
+      "description": "Аромат тонкий, с нотками экзотических цветов, персика и цитрона, вкус гармоничный, мягкий.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base-still"
+      ]
+    },
+    {
+      "id": "wine-inkerman-shato-blan",
+      "group_id": "base-still",
+      "name": "Инкерман Шато Блан",
+      "variant": "",
+      "wine_slug": "inkerman-shato-blan",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkerman-shato-blan.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Вкус вина легкий, свежий, с ненавязчивой, гармоничной сладостью. Вино обладает тонким ароматом с оттенками белых цветов.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base-still"
+      ]
+    },
+    {
+      "id": "wine-inkerman-shato-ruzh",
+      "group_id": "base-still",
+      "name": "Inkerman Шато Руж",
+      "variant": "",
+      "wine_slug": "inkerman-shato-ruzh",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkerman-shato-ruzh.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Пино Нуар"
+      ],
+      "description": "Аромат фруктовый с оттенками смородины и вишни, вкус гармоничный, ягодно-фруктовый, с умеренной свежестью и приятной терпкостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-base-still"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-inkerman-bryut-rkatsiteli-beloe-12",
+      "group_id": "sparkling",
+      "name": "Инкерман Брют",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-inkerman-bryut-rkatsiteli-beloe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-rkatsiteli-beloe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур",
+        "Рислинг",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Аромат свежий, с нотами белых цветов, зелёного яблока и лёгкой минеральностью; вкус лёгкий, с хрустящей кислотностью и освежающим послевкусием. Отличный аперитив, к морепродуктам и рыбным блюдам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135",
+      "group_id": "sparkling",
+      "name": "Inkerman брют",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-bryut-shardone-beloe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Тонкая игра мелких пузырьков. Аромат легкий и простой, с тонами желтой груши, фруктовой пастилы, цитрусовых леденцов и сушеного яблока. Вкус простой, фруктовый, с дружелюбной кислотностью. Идеально для дачи.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-inkerman-muskat-polusladkoe-beloe-13",
+      "group_id": "sparkling",
+      "name": "Инкерман Мускат полусладкое",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-inkerman-muskat-polusladkoe-beloe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-muskat-polusladkoe-beloe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Аромат мускатный, с нотами белых цветов, персика и мёда; вкус нежный, с характерной мускатной пряностью и приятной сладостью. К фруктовым десертам, мороженому, лёгкой выпечке.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-inkerman-pino-blan-zero-dozazh-beloe-ekstra-bryut-12",
+      "group_id": "sparkling",
+      "name": "Инкерман Пино Блан Зеро Дозаж",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-inkerman-pino-blan-zero-dozazh-beloe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-pino-blan-zero-dozazh-beloe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "Аромат тонкий, с нотами белых цветов, цитруса и лёгкой минеральности; вкус свежий, с живой кислотностью, чистый и элегантный. Идеальный аперитив, к устрицам, морепродуктам, нежной рыбе.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-inkerman-polusladkoe-rkatsiteli-beloe-13",
+      "group_id": "sparkling",
+      "name": "Инкерман полусладкое",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-inkerman-polusladkoe-rkatsiteli-beloe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-polusladkoe-rkatsiteli-beloe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур",
+        "Рислинг",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Аромат фруктовый, с нотами спелых яблок, груши и цветов; вкус гармоничный, с приятной натуральной сладостью и освежающей кислотностью. К лёгким десертам, фруктам, мягким пирожным.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135",
+      "group_id": "sparkling",
+      "name": "Inkerman полусладкое розе",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-polusladkoe-roze-aligote-rozovoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Алиготе"
+      ],
+      "description": "Аромат яркий, ягодный, с нотами красной смородины, спелой вишни, малинового джема с апельсиновой цедрой и оттенком ягодного зефира. Вкус простой, с фруктово-ягодной ноткой и мягким сладковатым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-inkerman-roze-zero-dozazh-kokur-rozovoe-ekstra-bryut-12",
+      "group_id": "sparkling",
+      "name": "Инкерман Розе Зеро Дозаж",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-inkerman-roze-zero-dozazh-kokur-rozovoe-ekstra-bryut-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-roze-zero-dozazh-kokur-rozovoe-ekstra-bryut-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Кокур",
+        "Мерло",
+        "Пино Нуар"
+      ],
+      "description": "Аромат деликатный — красные ягоды, розовый персик, лёгкая цветочная нота; вкус свежий, с хорошей кислотностью и чистым ягодным послевкусием. К морепродуктам, лёгким закускам, зелёным салатам.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-inkerman-rozovoe-polusladkoe-rkatsiteli-12",
+      "group_id": "sparkling",
+      "name": "Инкерман Розовое полусладкое",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-inkerman-rozovoe-polusladkoe-rkatsiteli-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-inkerman-rozovoe-polusladkoe-rkatsiteli-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Кокур",
+        "Мерло",
+        "Пино Нуар",
+        "Рислинг",
+        "Ркацители",
+        "Шардоне"
+      ],
+      "description": "Аромат фруктовый, с нотами спелых яблок, груши и цветов; вкус гармоничный, с приятной натуральной сладостью и освежающей кислотностью. К лёгким десертам, фруктам, мягким пирожным.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-kokur-belyy-ekstra-bryut-beloe-135",
+      "group_id": "sparkling",
+      "name": "Кокур Белый экстра брют",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-kokur-belyy-ekstra-bryut-beloe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-kokur-belyy-ekstra-bryut-beloe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур Белый"
+      ],
+      "description": "Игра пузырьков изящная и непрерывная. Аромат легкий и тонкий: раскрывается нотами свежести утреннх луговых трав, белых цветов, сочной мякоти белого нектарина и легким оттенком дынного мармелада. Вкус легкий и звонкий, с живой кислотностью и чистым послевкусием. Идеальный аперитив.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-special-reserve-rkatsiteli-beloe-suhoe-13",
+      "group_id": "special-reserve",
+      "name": "Special Reserve. Ркацители",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-special-reserve-rkatsiteli-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-special-reserve-rkatsiteli-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Аромат с оттенками спелого яблока, груши Дюшес, абрикоса, пряных трав, фруктового джема и дуба. Вкус с умеренной свежестью и тонами выдержки, тонкими нюансами тостов и ванили в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-special-reserve"
+      ]
+    },
+    {
+      "id": "wine-inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12",
+      "group_id": "winemaker-sparkling",
+      "name": "Winemaker's Selection Саперави",
+      "variant": "",
+      "wine_slug": "inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-inkermanskiy-zmv-winemakers-selection-saperavi-krasnoe-polusladkoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Саперави"
+      ],
+      "description": "Игра мелких настойчивых пузырьков. Аромат узнаваемый сортовой: черная пряная вишня, зрелый кизил, тона черной смородины и граната. Простой и понятный вкус сладких черных фруктов уравновешен заметной кислотностью и приятной терпкостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-winemaker-sparkling"
+      ]
+    },
+    {
+      "id": "wine-winemaker-selection",
+      "group_id": "winemaker-still",
+      "name": "Winemaker selection",
+      "variant": "",
+      "wine_slug": "winemaker-selection",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/wine-winemaker-selection.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "Вино обладает свежим сортовым ароматом с яркими цветочными нотами, легкими оттенками экзотических фруктов и цветочного мёда.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-winemaker-still"
+      ]
+    },
+    {
+      "id": "official-grand-reserve-cabernet",
+      "group_id": "grand-reserve",
+      "name": "Grand Reserve · Каберне",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/official-grand-reserve-cabernet.webp",
+        "source_id": "official-grand-cabernet"
+      },
+      "category": "Марочное тихое вино",
+      "style": "Красное · сухое",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "Вино из Каберне Совиньон Качинской долины. Выдерживается более 18 месяцев в кавказском дубе. В аромате фиалка, сафьян и пряности; вкус полный с бархатистым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-grand-cabernet"
+      ]
+    },
+    {
+      "id": "official-grand-reserve-pearl",
+      "group_id": "grand-reserve",
+      "name": "Grand Reserve · Жемчужина",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/inkerman/official-grand-reserve-pearl.webp",
+        "source_id": "official-grand-pearl"
+      },
+      "category": "Марочное тихое вино",
+      "style": "Белое · сухое",
+      "grapes": [
+        "Ркацители"
+      ],
+      "description": "Белое вино из Ркацители Качинской долины. Выдерживается более 18 месяцев в бутах и бочках из кавказского дуба. Цветочно-медовые и пряные оттенки переходят в длительное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-grand-pearl"
+      ]
+    }
+  ]
+}
