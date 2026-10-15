@@ -75,11 +75,20 @@
       "catalog_name": "Брют Розовое Золотая Балка",
       "catalog_producer": "Золотая Балка",
       "source_image": "Bryut_rozovoe_0ab1422bb8.webp",
-      "asset_sha256": "6254ab8ea754f5e385964a544489995f1eda9b09e2f4d138e6254dd5fcbeae3a",
+      "asset_sha256": "e7fdbff9f013d6f1a5b390652ea0424b641e6c042aee72adbc0c56f15e295899",
       "group_source_ids": [
         "official-zb-classic"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "6254ab8ea754f5e385964a544489995f1eda9b09e2f4d138e6254dd5fcbeae3a",
+        "output_asset_sha256": "e7fdbff9f013d6f1a5b390652ea0424b641e6c042aee72adbc0c56f15e295899",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "cuvee-de-vitmer-brut",
@@ -101,11 +110,20 @@
       "catalog_name": "Полусладкое Белое Золотая Балка",
       "catalog_producer": "Золотая Балка",
       "source_image": "Polusladkoe_beloe_7d49885ec0.webp",
-      "asset_sha256": "3cee7bd8d5e75fa5d5efda407c1ba217346a0df3bc679defb21f3df6057528c1",
+      "asset_sha256": "a73b26e16da418bafd086a319d6184519b058d1404ba2895db8fa561151f36fc",
       "group_source_ids": [
         "official-zb-classic"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "3cee7bd8d5e75fa5d5efda407c1ba217346a0df3bc679defb21f3df6057528c1",
+        "output_asset_sha256": "a73b26e16da418bafd086a319d6184519b058d1404ba2895db8fa561151f36fc",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "polusladkoe-krasnoe-zb-vajn-frizzante",
@@ -153,11 +171,20 @@
       "catalog_name": "Полусухое Белое Золотая Балка",
       "catalog_producer": "Золотая Балка",
       "source_image": "Polusuhoe_beloe_b1d39f3c20.webp",
-      "asset_sha256": "e92b7947aa8271b010250788383eda206a73a5f96374cec0db60e64b75f035b4",
+      "asset_sha256": "5d1df8b6571327831b64fa5a82580e18083a7289243829aacfbe2bba2161c157",
       "group_source_ids": [
         "official-zb-classic"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "e92b7947aa8271b010250788383eda206a73a5f96374cec0db60e64b75f035b4",
+        "output_asset_sha256": "5d1df8b6571327831b64fa5a82580e18083a7289243829aacfbe2bba2161c157",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "polusuhoe-rozovoe-zb-vajn-frizzante",
@@ -257,11 +284,20 @@
       "catalog_name": "ЗБ вайн МОСКАТО полусладкое белое",
       "catalog_producer": "Золотая Балка",
       "source_image": "Moskato_beloe_polusladkoe_bce522a309.webp",
-      "asset_sha256": "7d5336cb738ecd8b242cc548f36d7d37aae46505bf136c6cc2c9c96f46594783",
+      "asset_sha256": "e65c6a7d75e45c30396127849a5eff0aa36d8a4eab9bcc0c80f0c791ce63443c",
       "group_source_ids": [
         "official-zb-moscato"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "7d5336cb738ecd8b242cc548f36d7d37aae46505bf136c6cc2c9c96f46594783",
+        "output_asset_sha256": "e65c6a7d75e45c30396127849a5eff0aa36d8a4eab9bcc0c80f0c791ce63443c",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "zb-vajn-moskato-polusladkoe-rozovoe",
@@ -270,11 +306,20 @@
       "catalog_name": "ЗБ вайн МОСКАТО полусладкое розовое",
       "catalog_producer": "Золотая Балка",
       "source_image": "Moskato_Rozovyj_11e3beb581.webp",
-      "asset_sha256": "de79c567c3ec7f728d46824fa0a49f9d5ed8dd04ffc18b4dbd6bf01902da7d78",
+      "asset_sha256": "24e6e5bffdd439cd26b5635a0e59cc74de3f21d3264e0f514e62d01af440b1d4",
       "group_source_ids": [
         "official-zb-moscato"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "de79c567c3ec7f728d46824fa0a49f9d5ed8dd04ffc18b4dbd6bf01902da7d78",
+        "output_asset_sha256": "24e6e5bffdd439cd26b5635a0e59cc74de3f21d3264e0f514e62d01af440b1d4",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "zb-vajn-risling-polusuhoe-beloe",
@@ -309,11 +354,20 @@
       "catalog_name": "ЗБ вайн СПУМАНТЕ Брют белое",
       "catalog_producer": "Золотая Балка",
       "source_image": "Spumante_belyj_bryut_d34e854a7b.webp",
-      "asset_sha256": "8fa20dbf26c2e8e697fcd7f978ffa7e57b077d167bc17b7bf6532a315a8ec688",
+      "asset_sha256": "59dfd1a5778a8cc854406d3b2a2665837b869bc2ee97a7ff782961725bc7f136",
       "group_source_ids": [
         "official-zb-spumante"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "8fa20dbf26c2e8e697fcd7f978ffa7e57b077d167bc17b7bf6532a315a8ec688",
+        "output_asset_sha256": "59dfd1a5778a8cc854406d3b2a2665837b869bc2ee97a7ff782961725bc7f136",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "zb-vajn-spumante-bryut-rozovoe",
@@ -322,11 +376,20 @@
       "catalog_name": "ЗБ вайн СПУМАНТЕ Брют розовое",
       "catalog_producer": "Золотая Балка",
       "source_image": "Spumante_rozovyj_bryut_3e35043a8d.webp",
-      "asset_sha256": "20d350f3865ce975cd531c099e4869cd12da1fff058a4a211702292265c221bb",
+      "asset_sha256": "dfeb057696f8e0ddb24f27aaa857dcd9814dc95b734bfd61a09b90232a36728b",
       "group_source_ids": [
         "official-zb-spumante"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "20d350f3865ce975cd531c099e4869cd12da1fff058a4a211702292265c221bb",
+        "output_asset_sha256": "dfeb057696f8e0ddb24f27aaa857dcd9814dc95b734bfd61a09b90232a36728b",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "zb-vajn-spumante-polusuhoe-beloe",
@@ -348,11 +411,20 @@
       "catalog_name": "ЗБ вайн ВАЙТ сухое белое",
       "catalog_producer": "Золотая Балка",
       "source_image": "convertio_in_L1002571_8cf9459a5e.webp",
-      "asset_sha256": "5cc76f5d1d3b784050b7542474fd56b7beb74d8f6e3e23654c4eb83245b690a9",
+      "asset_sha256": "29b02b8222b2713759f00e0d37962e5acf04256a87f7b0ff0002ffdd6b2e239e",
       "group_source_ids": [
         "official-zb-still"
       ],
-      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "5cc76f5d1d3b784050b7542474fd56b7beb74d8f6e3e23654c4eb83245b690a9",
+        "output_asset_sha256": "29b02b8222b2713759f00e0d37962e5acf04256a87f7b0ff0002ffdd6b2e239e",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "wine_slug": "zb-wine-moscato-beloe-polusladkoe",
@@ -545,13 +617,22 @@
       "official_image_url": "https://zolotayabalka.ru/upload/resize_cache/iblock/cfc/800_800_0/nvjnssh23cmwtfk2xssu0jvro95mlj9k.jpg",
       "absence_basis": "No Zolotaya Balka catalog card names the More & Nebo collection. The full 2,103-row search only finds an unrelated Locantita More card from Skalisty Bereg. Syrah alone does not identify this product.",
       "checked_at": "2026-10-16",
-      "asset_sha256": "8ce8a24b33ee2f4e7f790abcd207a14f8cc1caefecb4e4c0aedc8606a62cf729",
+      "asset_sha256": "bf2293e553e40c35ec10b4a803e3143c99e8144abb059b4f6aebdf4b44265016",
       "original_image_sha256": "00ead17dff1358d117afd1ff69fb683db65e7c6c02832258d48d8bdd0d50d6f8",
       "image_dimensions": [
         218,
         800
       ],
-      "image_conversion": "Lossless WebP conversion. No crop or resize."
+      "image_conversion": "Lossless WebP conversion. No crop or resize.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "8ce8a24b33ee2f4e7f790abcd207a14f8cc1caefecb4e4c0aedc8606a62cf729",
+        "output_asset_sha256": "bf2293e553e40c35ec10b4a803e3143c99e8144abb059b4f6aebdf4b44265016",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "product_id": "official-more-nebo-white-brut",
@@ -560,13 +641,22 @@
       "official_image_url": "https://zolotayabalka.ru/upload/resize_cache/iblock/beb/800_800_0/qz5af68fwwyxn9crel1nuxkimqdm94ae.jpg",
       "absence_basis": "The More & Nebo collection is absent from all 41 producer cards. Other white bruts have different brand labels. No equivalent identity is asserted.",
       "checked_at": "2026-10-16",
-      "asset_sha256": "150490a12d5d3b4933bafae6c0a2531db9216b5bb989dccc64f41009d571498e",
+      "asset_sha256": "e05d3162f2435baa4804acc5df22c4b08beb905a61314f9908a061853567a3de",
       "original_image_sha256": "b35336689c33efcd3f258326f28e358beb9b49f11d79b70e8fb8f4cf70b32ebc",
       "image_dimensions": [
         229,
         800
       ],
-      "image_conversion": "Lossless WebP conversion. No crop or resize."
+      "image_conversion": "Lossless WebP conversion. No crop or resize.",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "150490a12d5d3b4933bafae6c0a2531db9216b5bb989dccc64f41009d571498e",
+        "output_asset_sha256": "e05d3162f2435baa4804acc5df22c4b08beb905a61314f9908a061853567a3de",
+        "record": "imagegen-cutouts.json"
+      }
     }
   ],
   "mapping_notes": [
