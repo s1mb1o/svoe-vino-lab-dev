@@ -6,11 +6,15 @@
 flowchart LR
     U[Пользователь] --> W[Web UI]
     U --> T[Telegram-бот]
+    U --> X[MAX-бот]
     W --> M[Matcher API]
     W --> G[API «Глобус»]
     T --> S[ShieldGemma 2]
     T --> A[SAM3]
     T --> M
+    X --> S
+    X --> A
+    X --> M
     M --> E[SigLIP2 endpoint]
     M --> B[Embedding bundle]
     L[Workbench] --> B
@@ -31,6 +35,14 @@ Web UI также содержит food recommendations и выключенны�
 Бот принимает одиночные фотографии и albums. ShieldGemma 2 выполняет moderation.
 SAM3 проверяет бутылку и этикетку. Затем бот запрашивает четыре кандидата через
 `POST /v1/match?k=4`. Score и margin управляют ответом `Не уверен`.
+
+### MAX-бот
+
+MAX-бот повторяет функциональность Telegram-бота. Ядро обработки (очередь, moderation,
+quality, matcher client, артефакты, HTTP API, административный интерфейс) — проверяемая копия
+модулей Telegram-бота. Транспорт, хранилище и настройки написаны для MAX Bot API.
+В production бот получает события через webhook, в разработке — через long polling.
+Подробности: `max-bot/README.md`.
 
 ### Matcher
 

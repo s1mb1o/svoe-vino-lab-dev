@@ -6,6 +6,7 @@
 Решение создано для задачи #10 от РСХБ.Цифра "Сканер российских вин с описанием на платформе Свое Вино". Репозиторий содержит:
 - Web UI, 
 - Telegram-бота, 
+- MAX-бота, 
 - HTTP matcher, 
 - локальные model service, 
 - сервис для обработки датасетов и проведения экспериментов.
@@ -71,6 +72,7 @@ matcher и model endpoint. Полная инструкция находится 
 | --- | --- |
 | `webui/` | Nuxt Web UI, evaluator route и рекомендации еды. |
 | `telegram-bot/` | Бот [@ChtoZaVinoBot](https://t.me/ChtoZaVinoBot), moderation и очередь. |
+| `max-bot/` | Бот MAX «Что за вино?» [@se14697933_bot](https://max.ru/se14697933_bot) с той же функциональностью. |
 | `matcher/` | FastAPI matcher с Top-1 и ranked API. |
 | `bootstrap/` | Локальные endpoints SigLIP2, SAM3, ShieldGemma 2 и QR scanner. |
 | `matcher-inspector/` | Read-only просмотр запросов и embedding bundles. |
@@ -85,6 +87,7 @@ matcher и model endpoint. Полная инструкция находится 
 - [Matcher API](matcher/README.md)
 - [Проверка организаторов: запуск matcher и `participant_test.sh`](eval/README.md)
 - [Telegram-бот](telegram-bot/README.md)
+- [MAX-бот](max-bot/README.md)
 - [Web UI](webui/README.md)
 - [Развертывание локальных моделей](docs/bootstrap/README.md)
 - [Эндпоинты моделей на Apple Silicon](docs/bootstrap/apple-silicon.md)

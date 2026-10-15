@@ -91,6 +91,25 @@ set +a
 uv run chto-za-vino-bot
 ```
 
+## MAX-бот
+
+```bash
+cd max-bot
+uv sync --extra dev
+cp .env.example ../../max-bot.env
+```
+
+Задайте `MAX_BOT_TOKEN`, `BOT_ADMIN_USER_ID`, `BOT_HTTP_API_TOKEN`, endpoints и data paths.
+Для production задайте webhook: `MAX_WEBHOOK_URL` (HTTPS, порт 443 через TLS proxy) и
+`MAX_WEBHOOK_SECRET`. Не добавляйте файл окружения в Git.
+
+```bash
+set -a
+. ../../max-bot.env
+set +a
+uv run chto-za-vino-max-bot
+```
+
 ## Проверка
 
 ```bash
@@ -107,6 +126,10 @@ npm run build
 cd ../telegram-bot
 uv run ruff check .
 uv run pytest -q
+
+# MAX-бот
+cd ../max-bot
+./scripts/verify.sh
 ```
 
 Подробности находятся в `matcher/README.md`, `webui/README.md` и

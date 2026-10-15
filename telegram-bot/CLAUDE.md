@@ -89,6 +89,12 @@ The workspace rules are in `../../CLAUDE.md`.
 - Do not add a bot log handler without `SecretRedactingFormatter`. An aiogram download error
   contains the file URL, and that URL contains the bot token.
 
+## MAX bot
+
+`../max-bot` is the MAX messenger port of this bot. It copies the core modules of this package
+with `../max-bot/scripts/sync_shared.py`. After a change to a module in its `SHARED_MODULES`
+list, run `python ../max-bot/scripts/sync_shared.py` and the MAX bot tests.
+
 ## Verification
 
 Run these commands before deployment:
