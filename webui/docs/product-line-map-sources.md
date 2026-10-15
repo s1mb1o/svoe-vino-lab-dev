@@ -220,3 +220,9 @@ It does not claim complete live assortment coverage.
 Read [zolotaya-balka sources](product-line-maps/zolotaya-balka/sources.md).
 The map includes 41 snapshot cards and 2 verified additions in 10 groups.
 It does not claim complete live assortment coverage.
+
+## Alma Valley extension, 2026-10-16
+
+Read [alma-valley sources](product-line-maps/alma-valley/sources.md).
+The map includes 39 snapshot cards and 2 verified additions in 8 groups.
+It does not claim complete live assortment coverage.

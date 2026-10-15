@@ -388,3 +388,8 @@ Check the selected catalog wine, a gray product, and the mobile popup.
 
 Open `/lineup/zolotaya-balka?wine=balaklava-bryut-rezerv`.
 Check the selected catalog wine, a gray product, and the mobile popup.
+
+## Alma Valley map
+
+Open `/lineup/alma-valley?wine=alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14`.
+Check the selected catalog wine, a gray product, and the mobile popup.

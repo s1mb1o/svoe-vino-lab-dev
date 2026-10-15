@@ -1,0 +1,555 @@
+{
+  "producer_id": "alma-valley",
+  "catalog_snapshot": "official-2026-09-17",
+  "catalog_producer": "Alma Valley",
+  "entries": [
+    {
+      "wine_slug": "alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14",
+      "product_id": "wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "gravity",
+      "catalog_name": "Альма Гравити. Пино Нуар - Мерло - Каберне Совиньон",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_alma_graviti_pino_nuar_merlo_kaberne_sovinon_krasnoe_suhoe_14_aed5a84143.webp",
+      "asset_sha256": "164efe0c843060963bfe31f133505bfc501e27844a527e07b947f8c7052af30e",
+      "group_source_ids": [
+        "official-gravity"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-graviti-kaberne-sovinon-krasnoe-suhoe-15",
+      "product_id": "wine-alma-valley-graviti-kaberne-sovinon-krasnoe-suhoe-15",
+      "group_id": "gravity",
+      "catalog_name": "Гравити",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_graviti_kaberne_sovinon_krasnoe_suhoe_15_018520df79.webp",
+      "asset_sha256": "01d712057745e31a808d3088b1da2864dc406d929c380610a978cfe2fc037ac6",
+      "group_source_ids": [
+        "official-gravity"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-graviti-pino-blan-beloe-suhoe-135",
+      "product_id": "wine-alma-valley-graviti-pino-blan-beloe-suhoe-135",
+      "group_id": "gravity",
+      "catalog_name": "Гравити",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_graviti_pino_blan_beloe_suhoe_135_78180c873a.webp",
+      "asset_sha256": "7eca3f60a2d2a850a8e3c70e2ed903db6206aede3993b97e26d5060610d59aee",
+      "group_source_ids": [
+        "official-gravity"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-kaberne-fran-krasnoe-suhoe-145",
+      "product_id": "wine-alma-valley-kaberne-fran-krasnoe-suhoe-145",
+      "group_id": "varietal",
+      "catalog_name": "Каберне Фран",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_kaberne_fran_krasnoe_suhoe_145_f987d71edd.webp",
+      "asset_sha256": "5e1a450cd284587236f9889da5f9ed752f746d547f1b955991cc49973b447a36",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15",
+      "product_id": "wine-alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15",
+      "group_id": "reserve",
+      "catalog_name": "Каберне Фран Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_kaberne_fran_rezerv_krasnoe_suhoe_15_6ef14d79ec.webp",
+      "asset_sha256": "38813de8da0d6b795a919296fba7ad403754aa025190b08ffc438dd3434ca7f5",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15",
+      "product_id": "wine-alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15",
+      "group_id": "reserve",
+      "catalog_name": "Каберне Совиньон Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_kaberne_sovinon_rezerv_krasnoe_suhoe_15_58f5256504.webp",
+      "asset_sha256": "dd0ba28a9f6961dd545f2d595ab0abf67e04a48192c1d70f2844a31a916ab63f",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-kokur-beloe-suhoe-14",
+      "product_id": "wine-alma-valley-kokur-beloe-suhoe-14",
+      "group_id": "varietal",
+      "catalog_name": "Кокур",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_kokur_beloe_suhoe_14_b8bafe9cd7.webp",
+      "asset_sha256": "6239bbc833b9b75e4458de3b2db1b0546607a488118a6c3be5794ad8732423f4",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-kolombar-beloe-polusuhoe-135",
+      "product_id": "wine-alma-valley-kolombar-beloe-polusuhoe-135",
+      "group_id": "varietal",
+      "catalog_name": "Коломбар",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_kolombar_beloe_polusuhoe_135_c5b227e252.webp",
+      "asset_sha256": "caf686de1854d7f075ebf0d4d08165912396884c3bc8fe6efc67a02bc5dfece6",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-locantita-merlot-cabernet-franc",
+      "product_id": "wine-alma-valley-locantita-merlot-cabernet-franc",
+      "group_id": "locantita",
+      "catalog_name": "Alma Valley Locantita Merlot-Cabernet Franc",
+      "catalog_producer": "Alma Valley",
+      "source_image": "Alma_Velli_Lokantino_7ad51d416c.webp",
+      "asset_sha256": "1d62bcc09e41449361cf1a288d300eca955916e14eb04571dd3a2f777c78f3d1",
+      "group_source_ids": [
+        "svoe-vino-2026-09-17"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-merlo-krasnoe-suhoe-13",
+      "product_id": "wine-alma-valley-merlo-krasnoe-suhoe-13",
+      "group_id": "varietal",
+      "catalog_name": "Мерло",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_merlo_krasnoe_suhoe_13_51d2488815.webp",
+      "asset_sha256": "33d22d7100871f700330cf544620e696f5972b52492ca065032eb13d7be5d852",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-merlo-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-alma-valley-merlo-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Мерло Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_merlo_rezerv_krasnoe_suhoe_vyderzhannoe_14_ea3e8292cb.webp",
+      "asset_sha256": "4c222b224e91e045d462caf7a9919c9f6f4f8afc6c2c002df79773ab5784e3c5",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-merlo-rezerv-krasnoe-suhoe-15",
+      "product_id": "wine-alma-valley-merlo-rezerv-krasnoe-suhoe-15",
+      "group_id": "reserve",
+      "catalog_name": "Мерло Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_merlo_rezerv_krasnoe_suhoe_15_6f1a4e1e17.webp",
+      "asset_sha256": "388116c6f2306449a449bc47b4c452c057e8dd4afe6214ba74c300c51b5fa3ae",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-petit-arvin-beloe-suhoe-13",
+      "product_id": "wine-alma-valley-petit-arvin-beloe-suhoe-13",
+      "group_id": "varietal",
+      "catalog_name": "Петит Арвин",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_petit_arvin_beloe_suhoe_13_863e81595b.webp",
+      "asset_sha256": "6a3e6d264b9fdf7823e3b988e0b5014e2a682c93bfa714d44aa7889f2a42a759",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-pino-blan-beloe-suhoe-14",
+      "product_id": "wine-alma-valley-pino-blan-beloe-suhoe-14",
+      "group_id": "varietal",
+      "catalog_name": "Пино Блан",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_pino_blan_beloe_suhoe_14_8798dea7ca.webp",
+      "asset_sha256": "30b91c76184e8090b85464cc58fdcd3058dcbfb2b0adf356c623caaa5450153b",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-pino-blan-rezerv-beloe-suhoe-14",
+      "product_id": "wine-alma-valley-pino-blan-rezerv-beloe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Пино Блан Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_pino_blan_rezerv_beloe_suhoe_14_1be9ab6c2a.webp",
+      "asset_sha256": "523765d175a975bf2678bffb8214edec24e45e513ab868a8f0fd8de09a8d7f89",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-pino-gri-beloe-polusuhoe-15",
+      "product_id": "wine-alma-valley-pino-gri-beloe-polusuhoe-15",
+      "group_id": "varietal",
+      "catalog_name": "Пино Гри",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_pino_gri_beloe_polusuhoe_15_4e288bc898.webp",
+      "asset_sha256": "b34f44bcba3f81216be87c04dcf946fb7d2bf13f2bfb916e7ed50cbb454b0012",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-pino-nuar-beloe-ekstra-bryut-115",
+      "product_id": "wine-alma-valley-pino-nuar-beloe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "catalog_name": "Пино Нуар",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_pino_nuar_beloe_ekstra_bryut_115_e3cb51cf8f.webp",
+      "asset_sha256": "95cf1bace2f3013701d35366b7e0c83b91c7336088824ec78362fa4e75385b53",
+      "group_source_ids": [
+        "official-sparkling"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-pino-nuar-krasnoe-suhoe-13",
+      "product_id": "wine-alma-valley-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "varietal",
+      "catalog_name": "Пино Нуар",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_pino_nuar_krasnoe_suhoe_13_a898042e38.webp",
+      "asset_sha256": "7b70c16cef6dfb98282e8388682e40bf130ec8fdd2d97f076f92a15c32480ee1",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Пино Нуар Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_pino_nuar_rezerv_krasnoe_suhoe_14_c3c0dc1cc6.webp",
+      "asset_sha256": "3f04afa115e86f5433bc82d86a8b699c16442978910c35ac379a84d3c34a77bb",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-rislaner-beloe-polusladkoe-125",
+      "product_id": "wine-alma-valley-rislaner-beloe-polusladkoe-125",
+      "group_id": "varietal",
+      "catalog_name": "Рисланер",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_rislaner_beloe_polusladkoe_125_01d472fe7c.webp",
+      "asset_sha256": "ef287aa8058928e008795a5fde8cfb1d7ef74020a5fbe78c3ce7385933c222d3",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-risling-beloe-polusuhoe-125",
+      "product_id": "wine-alma-valley-risling-beloe-polusuhoe-125",
+      "group_id": "varietal",
+      "catalog_name": "Рислинг",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_risling_beloe_polusuhoe_125_88fc981d53.webp",
+      "asset_sha256": "f675005b46adaf06e0e46b6e05be85642a215884cfb9f2826969f8357bdf93a8",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-semilon-beloe-suhoe-135",
+      "product_id": "wine-alma-valley-semilon-beloe-suhoe-135",
+      "group_id": "varietal",
+      "catalog_name": "Семильон",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_semilon_beloe_suhoe_135_12953499e0.webp",
+      "asset_sha256": "3b282bbde17b2e249e81639e509915d64662d665a33da2235664b2e5f68f8aa5",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-shardone-beloe-suhoe-135",
+      "product_id": "wine-alma-valley-shardone-beloe-suhoe-135",
+      "group_id": "varietal",
+      "catalog_name": "Шардоне",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_shardone_beloe_suhoe_135_c577ccd0a1.webp",
+      "asset_sha256": "f9e09f579dfcfead923ecb82955d8b9447949222589b7c9b8b94f38dc7f3d132",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-shardone-rezerv-beloe-suhoe-135",
+      "product_id": "wine-alma-valley-shardone-rezerv-beloe-suhoe-135",
+      "group_id": "reserve",
+      "catalog_name": "Шардоне Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_shardone_rezerv_beloe_suhoe_vyderzhannoe_135_3c92719654.webp",
+      "asset_sha256": "dd0d158dc6b482705b05393cd3fd097ce9ef9b1bce09c83295b08a24d1584809",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-shardone-rezerv-beloe-suhoe-14",
+      "product_id": "wine-alma-valley-shardone-rezerv-beloe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Шардоне Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_shardone_rezerv_beloe_suhoe_14_e93f9dbbf9.webp",
+      "asset_sha256": "4064e6e16c44ffbeeee3687da8e00d85327a88d5e720badd116f8a9db6fc6834",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-shiraz-krasnoe-suhoe-13",
+      "product_id": "wine-alma-valley-shiraz-krasnoe-suhoe-13",
+      "group_id": "varietal",
+      "catalog_name": "Шираз",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_shiraz_krasnoe_suhoe_13_cac190e3fc.webp",
+      "asset_sha256": "fc61e88cc371260fba74e82c22881db4474193b4cd90fc0401a157354e0b314e",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-shiraz-sira-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-alma-valley-shiraz-sira-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Шираз (Сира) Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_shiraz_sira_rezerv_krasnoe_suhoe_14_8929b4c449.webp",
+      "asset_sha256": "021eb879688205dd9e10bb5788f6acb14547234a51e290be694d711df871149f",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+      "product_id": "wine-alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+      "group_id": "svv",
+      "catalog_name": "Солнце, воздух, виноград",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_solntse_vozduh_vinograd_kokur_beloe_polusladkoe_13_e1b2a15be1.webp",
+      "asset_sha256": "a8ecbe6dd3c56d0539b6865cad1065533363e3c00b20d6c64c3271461db59410",
+      "group_source_ids": [
+        "official-svv"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14",
+      "product_id": "wine-alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14",
+      "group_id": "svv",
+      "catalog_name": "Солнце, воздух, виноград",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_solntse_vozduh_vinograd_merlo_krasnoe_polusladkoe_14_6111b648a4.webp",
+      "asset_sha256": "43f6c802dfb2a886e28bd66bdf4156bf3c4bc78e72295074129ae36d4bad2443",
+      "group_source_ids": [
+        "official-svv"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-shardone-beloe-polusuhoe-13",
+      "product_id": "wine-alma-valley-solntse-vozduh-vinograd-shardone-beloe-polusuhoe-13",
+      "group_id": "svv",
+      "catalog_name": "Солнце, воздух, виноград",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_solntse_vozduh_vinograd_shardone_beloe_polusuhoe_13_532db72561.webp",
+      "asset_sha256": "8e69a9398e2107876428c04a9f091e55e831a83caa5a8fe2fb85ade00ef79072",
+      "group_source_ids": [
+        "official-svv"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-sira-shiraz-krasnoe-polusuhoe-135",
+      "product_id": "wine-alma-valley-solntse-vozduh-vinograd-sira-shiraz-krasnoe-polusuhoe-135",
+      "group_id": "svv",
+      "catalog_name": "Солнце, воздух, виноград",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_solntse_vozduh_vinograd_sira_shiraz_krasnoe_polusuhoe_135_7cd3395fb2.webp",
+      "asset_sha256": "718135b75c672e8d44afb12b10c7d95505a0bc86408feab01053516b99e407f9",
+      "group_source_ids": [
+        "official-svv"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12",
+      "product_id": "wine-alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12",
+      "group_id": "svv",
+      "catalog_name": "Солнце, воздух, виноград",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_solntse_vozduh_vinograd_sira_shiraz_rozovoe_polusladkoe_12_ace425804f.webp",
+      "asset_sha256": "3ab90991e3db34eb059cc501b2ad95bd9c4b31cad5cc5b2086b1f2a0cc988f81",
+      "group_source_ids": [
+        "official-svv"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-sovinon-blan-beloe-suhoe-14",
+      "product_id": "wine-alma-valley-sovinon-blan-beloe-suhoe-14",
+      "group_id": "varietal",
+      "catalog_name": "Совиньон Блан",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_sovinon_blan_beloe_suhoe_14_a30a0144ff.webp",
+      "asset_sha256": "0a93ef2d18b2d56ab15aec0860d51a73c79c309f4953c1d0306796ec0282b0bb",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-sovinon-blan-rezerv-beloe-suhoe-14",
+      "product_id": "wine-alma-valley-sovinon-blan-rezerv-beloe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Совиньон Блан Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_sovinon_blan_rezerv_beloe_suhoe_14_67049e90d5.webp",
+      "asset_sha256": "5f76c5a5c325970b8cac337d642e33f63ecabb6d4642ddbf905ab64b0d37d58a",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-tba-sovinon-sovinon-blan-beloe-sladkoe-75",
+      "product_id": "wine-alma-valley-tba-sovinon-sovinon-blan-beloe-sladkoe-75",
+      "group_id": "sweet-special",
+      "catalog_name": "ТБА Совиньон",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_tba_sovinon_sovinon_blan_beloe_sladkoe_75_571c20333f.webp",
+      "asset_sha256": "b230f96b0d5574cbe79058783b035de8c4873c6dfdf215baee426ee5d37b0a8c",
+      "group_source_ids": [
+        "official-sweet-special"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-tempranilo-krasnoe-suhoe-13",
+      "product_id": "wine-alma-valley-tempranilo-krasnoe-suhoe-13",
+      "group_id": "varietal",
+      "catalog_name": "Темпранильо",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_tempranilo_krasnoe_suhoe_13_9f66826c6d.webp",
+      "asset_sha256": "92bc67d1be0b7ce78126a822c6dc858554eee6f7427b3ea5f86a8342a340eb39",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-tempranilo-rezerv-krasnoe-suhoe-14",
+      "product_id": "wine-alma-valley-tempranilo-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "catalog_name": "Темпранильо Резерв",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_tempranilo_rezerv_krasnoe_suhoe_14_36d4dbc6c0.webp",
+      "asset_sha256": "33d9ef362ec09e72c3dd6e8c061db2be747d167649fc2b450f9772d3be676584",
+      "group_source_ids": [
+        "official-reserve"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "alma-valley-traminer-beloe-suhoe-125",
+      "product_id": "wine-alma-valley-traminer-beloe-suhoe-125",
+      "group_id": "varietal",
+      "catalog_name": "Траминер",
+      "catalog_producer": "Alma Valley",
+      "source_image": "alma_valley_traminer_beloe_suhoe_125_535f55a570.webp",
+      "asset_sha256": "98edd06f1365377a61e34a2fd33970235a9a97ba6b307b024cc5b113dc59d1fe",
+      "group_source_ids": [
+        "official-varietal"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    },
+    {
+      "wine_slug": "locantita-sauvignon-blanc-chardonnay",
+      "product_id": "wine-locantita-sauvignon-blanc-chardonnay",
+      "group_id": "locantita",
+      "catalog_name": "Locantita Sauvignon Blanc-Chardonnay",
+      "catalog_producer": "Alma Valley",
+      "source_image": "ru_pim_263023001001_01_d63898ec2e.webp",
+      "asset_sha256": "06734f2b6f6f6973ffe13a01e54f23121983ac474d0dd1cb9f827d96b9a0323d",
+      "group_source_ids": [
+        "svoe-vino-2026-09-17"
+      ],
+      "mapping_basis": "Catalog name and collection identity. See sources.md for explicit label and historical exceptions."
+    }
+  ],
+  "official_additions": [
+    {
+      "product_id": "official-alma-x-cabernet-saperavi",
+      "wine_slug": null,
+      "official_url": "https://www.alma-valley.ru/X_CS_S.html",
+      "official_image_url": "https://www.alma-valley.ru/img/catalog/all/X_CS_S.png",
+      "absence_basis": "No Alma X name or slug occurs in the full snapshot. No Alma Valley card names a Cabernet Sauvignon-Saperavi blend. Existing Gravity red cards name Pinot Noir-Merlot-Cabernet Sauvignon. Locantita red names Merlot-Cabernet Franc. The general grape list in Locantita does not establish identity with this named Alma X product.",
+      "checked_at": "2026-10-16",
+      "asset_sha256": "93379ad0089024796bae635dca51a190940ae20e1b02cd3003adbc39c9e9269a",
+      "original_image_sha256": "8e8789d4c9c0c21c48c4f22c73efdb1236fa234adcdb21fc821d2a20113de7b3",
+      "image_dimensions": [
+        263,
+        1000
+      ],
+      "image_conversion": "Lossless WebP conversion. No crop or resize."
+    },
+    {
+      "product_id": "official-muscat-appassimento",
+      "wine_slug": null,
+      "official_url": "https://www.alma-valley.ru/o3_App_M.html",
+      "official_image_url": "https://www.alma-valley.ru/img/catalog/all/o3_App_M.png",
+      "absence_basis": "No Alma Valley snapshot card names Muscat or Appassimento. The existing TBA Sauvignon has another grape and production method. Appassimento cards from other producers are not equivalent.",
+      "checked_at": "2026-10-16",
+      "asset_sha256": "c0c69d63995016bfefaf8e5d979aeff67f2978f7e1efcb8191d67ff873990b0f",
+      "original_image_sha256": "7991b71827b251f80ffeeeba9f7d7934767274f5c784ec106831aab90bab1d6e",
+      "image_dimensions": [
+        217,
+        1000
+      ],
+      "image_conversion": "Lossless WebP conversion. No crop or resize."
+    }
+  ],
+  "mapping_notes": [
+    "The official Alma X white page names Pinot Blanc and Riesling, but its image also names Pinot Gris. The white candidate is excluded because the snapshot already contains Gravity white with that trio. No equivalence is asserted.",
+    "The local Pinot Noir sparkling bottle label reads BLANC DE NOIR BRUT NATURE. The original catalog name stays unchanged.",
+    "The snapshot attributes both Locantita cards to Alma Valley. The current official collection index and other-wines page do not verify this producer attribution or a current Alma Valley collection. Both cards remain in a neutral group. The group description states this limit.",
+    "Reserve Merlot and Reserve Chardonnay have multiple snapshot cards. They remain separate products without aliases.",
+    "Technology examples apply only to the named wine. They are not copied as fixed aging durations for all reserve or Gravity wines.",
+    "Sweet wines and sparkling wines have no numeric price comparison with still wines.",
+    "The varietal collection and Sun, Air, Grapes use one rank-1 tier named core. The two previous tiers had equal ranks. No evidence established a price order between them. The merge changes navigation only and does not introduce a new price rank."
+  ]
+}

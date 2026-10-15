@@ -1,0 +1,1277 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "id": "alma-valley",
+    "name": "Alma Valley",
+    "aliases": [
+      "Альма Валлей",
+      "Альма Вэлли"
+    ],
+    "slug_prefixes": [
+      "alma-valley-"
+    ]
+  },
+  "scope": {
+    "label": "Вина из каталога «Свое Вино» и проверенные дополнения",
+    "as_of": "2026-10-16",
+    "catalog_snapshot": "official-2026-09-17"
+  },
+  "sources": [
+    {
+      "id": "svoe-vino-2026-09-17",
+      "label": "«Свое Вино»: снимок каталога от 17 сентября 2026 года",
+      "url": "https://vino-svoe.ru/"
+    },
+    {
+      "id": "official-collections",
+      "label": "Alma Valley: официальная коллекция вин",
+      "url": "https://www.alma-valley.ru/collection.html"
+    },
+    {
+      "id": "official-varietal",
+      "label": "Alma Valley: varietal",
+      "url": "https://www.alma-valley.ru/varietal-wines.html"
+    },
+    {
+      "id": "official-reserve",
+      "label": "Alma Valley: reserve",
+      "url": "https://www.alma-valley.ru/reserve-wines.html"
+    },
+    {
+      "id": "official-gravity",
+      "label": "Alma Valley: gravity",
+      "url": "https://www.alma-valley.ru/gravity.html"
+    },
+    {
+      "id": "official-svv",
+      "label": "Alma Valley: svv",
+      "url": "https://www.alma-valley.ru/svv.html"
+    },
+    {
+      "id": "official-sparkling",
+      "label": "Alma Valley: sparkling",
+      "url": "https://www.alma-valley.ru/champagne-wines.html"
+    },
+    {
+      "id": "official-sweet-special",
+      "label": "Alma Valley: sweet-special",
+      "url": "https://www.alma-valley.ru/tba-ice-wine.html"
+    },
+    {
+      "id": "official-alma-x",
+      "label": "Alma Valley: alma-x",
+      "url": "https://www.alma-valley.ru/almax.html"
+    },
+    {
+      "id": "official-reserve-example",
+      "label": "Alma Valley: производство Шардоне Резерв",
+      "url": "https://www.alma-valley.ru/R_Chard.html"
+    },
+    {
+      "id": "official-gravity-example",
+      "label": "Alma Valley: производство красного Гравити",
+      "url": "https://www.alma-valley.ru/G_M_PN_KS.html"
+    },
+    {
+      "id": "official-tba-example",
+      "label": "Alma Valley: Совиньон ТБА",
+      "url": "https://www.alma-valley.ru/o3_TBA_S.html"
+    },
+    {
+      "id": "official-alma-x-cabernet-saperavi",
+      "label": "Официальная карточка: Альма Икс · Каберне Совиньон / Саперави",
+      "url": "https://www.alma-valley.ru/X_CS_S.html"
+    },
+    {
+      "id": "official-muscat-appassimento",
+      "label": "Официальная карточка: Мускат Аппассименто",
+      "url": "https://www.alma-valley.ru/o3_App_M.html"
+    }
+  ],
+  "price_positioning": {
+    "kind": "relative-editorial",
+    "currency": "RUB",
+    "disclaimer": "Относительное позиционирование коллекций — редакционный ориентир, а не рейтинг качества или актуальная цена. Серые позиции не имеют подтверждённой ссылки в снимке каталога от 17.09.2026."
+  },
+  "tiers": [
+    {
+      "id": "reserve",
+      "label": "Резервные вина",
+      "rank": 3,
+      "description": "Резервные варианты имеют отдельную технологию выдержки. Ступень относительно сортовых вин задана редакционно.",
+      "price_label": "Выше базового · ₽₽₽",
+      "source_ids": [
+        "official-reserve",
+        "official-reserve-example"
+      ]
+    },
+    {
+      "id": "selected",
+      "label": "Купажи с выдержкой",
+      "rank": 2,
+      "description": "Гравити и Альма Икс. Относительное положение основано на описанных технологиях и задано редакционно.",
+      "price_label": "Средний ориентир · ₽₽",
+      "source_ids": [
+        "official-gravity-example",
+        "official-alma-x"
+      ]
+    },
+    {
+      "id": "core",
+      "label": "Основные коллекции",
+      "rank": 1,
+      "description": "Сортовые вина и серия «Солнце, воздух, виноград» находятся на одном редакционном уровне. Ценовое различие между ними не установлено.",
+      "price_label": "Базовый ориентир · ₽",
+      "source_ids": [
+        "official-varietal",
+        "official-svv"
+      ]
+    },
+    {
+      "id": "neutral",
+      "label": "Другие стили и неуточнённые коллекции",
+      "rank": 0,
+      "description": "Игристые и специальные сладкие вина не сравниваются по цене с тихими. Положение Locantita не подтверждено.",
+      "price_label": "Ценовая ступень не задана",
+      "source_ids": [
+        "official-collections",
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "id": "reserve",
+      "name": "Резервные вина",
+      "tier_id": "reserve",
+      "method": "Выдержка в дубе; режим зависит от вина",
+      "description": "Сортовые резервные вина. Для Шардоне Резерв производитель описывает ферментацию в дубе и выдержку на осадке; сроки других вин могут отличаться.",
+      "source_ids": [
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "gravity",
+      "name": "Альма Гравити",
+      "tier_id": "selected",
+      "method": "Купажи; выдержка зависит от вина",
+      "description": "Белые и красные ассамбляжи. Для красного Пино Нуар — Мерло — Каберне Совиньон подтверждена выдержка в дубе более 12 месяцев.",
+      "source_ids": [
+        "official-gravity"
+      ]
+    },
+    {
+      "id": "varietal",
+      "name": "Сортовые вина",
+      "tier_id": "core",
+      "method": "Тихие сортовые вина",
+      "description": "Коллекция показывает характер отдельных сортов Альминской долины: от Кокура, Коломбара и Петит Арвина до Пино Нуара, Шираза и Каберне Фран.",
+      "source_ids": [
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "svv",
+      "name": "Солнце, воздух, виноград",
+      "tier_id": "core",
+      "method": "Тихие купажные вина",
+      "description": "Белые и красные полусухие и полусладкие вина, а также полусладкое розовое. Разные составы сохраняются в отдельных карточках.",
+      "source_ids": [
+        "official-svv"
+      ]
+    },
+    {
+      "id": "sparkling",
+      "name": "Игристые вина",
+      "tier_id": "neutral",
+      "method": "Метод не обобщён для коллекции",
+      "description": "Игристое направление Alma Valley. Карточка «Пино Нуар» в снимке имеет этикетку Blanc de Noir Brut Nature; её исходное название сохранено.",
+      "source_ids": [
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "sweet-special",
+      "name": "Айс Вайн, ТБА, Аппассименто",
+      "tier_id": "neutral",
+      "method": "Специальные технологии сладких вин",
+      "description": "В снимке представлен Совиньон ТБА из ботритизированного винограда. Мускат Аппассименто из увяленного винограда добавлен по официальной карточке. Это отдельное сладкое направление.",
+      "source_ids": [
+        "official-sweet-special"
+      ]
+    },
+    {
+      "id": "alma-x",
+      "name": "Альма Икс",
+      "tier_id": "selected",
+      "method": "Выдержка в дубе более 12 месяцев",
+      "description": "Отдельная коллекция ассамбляжей. Каберне Совиньон — Саперави подтверждён официальной карточкой и добавлен без ссылки на «Свое Вино».",
+      "source_ids": [
+        "official-alma-x"
+      ]
+    },
+    {
+      "id": "locantita",
+      "name": "Locantita",
+      "tier_id": "neutral",
+      "method": "Не указан в источнике",
+      "description": "Принадлежность производителю Alma Valley указана в снимке каталога «Свое Вино». Текущая коллекция Alma Valley и эта принадлежность по официальному сайту не подтверждены. Ценовая ступень не назначена.",
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14",
+      "group_id": "gravity",
+      "name": "Альма Гравити. Пино Нуар - Мерло - Каберне Совиньон",
+      "variant": "",
+      "wine_slug": "alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-alma-graviti-pino-nuar-merlo-kaberne-sovinon-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "Аромат мягкий, ягодный: спелая вишня, чёрная смородина и ежевика переплетаются с нюансами инжира, черешни, фиалки и лёгким тоном кофейных зёрен. Вкус сбалансированный, бархатистый, фруктовый, с изящными танинами в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-gravity"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-graviti-kaberne-sovinon-krasnoe-suhoe-15",
+      "group_id": "gravity",
+      "name": "Гравити",
+      "variant": "",
+      "wine_slug": "alma-valley-graviti-kaberne-sovinon-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-graviti-kaberne-sovinon-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Пино Нуар"
+      ],
+      "description": "В аромате тона черешни и чёрных ягод, сафьяна, специй. Вкус сбалансированный, с шелковистой текстурой и приятным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-gravity"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-graviti-pino-blan-beloe-suhoe-135",
+      "group_id": "gravity",
+      "name": "Гравити",
+      "variant": "",
+      "wine_slug": "alma-valley-graviti-pino-blan-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-graviti-pino-blan-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан",
+        "Пино Гри",
+        "Рислинг"
+      ],
+      "description": "Аромат яблочный. Вкус фруктовый, с медовыми нотками.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-gravity"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-kaberne-fran-krasnoe-suhoe-145",
+      "group_id": "varietal",
+      "name": "Каберне Фран",
+      "variant": "",
+      "wine_slug": "alma-valley-kaberne-fran-krasnoe-suhoe-145",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-kaberne-fran-krasnoe-suhoe-145.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "Аромат ягодный, с тонами малины, специй, табака, графита и кожи.  Вкус пряный с нотками болгарского перца, с ярким и продолжительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15",
+      "group_id": "reserve",
+      "name": "Каберне Фран Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-kaberne-fran-rezerv-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Фран"
+      ],
+      "description": "В аромате тона малины, специй, табака и графита. Вкус насыщенный пряный с нотками болгарского перца, с ярким послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15",
+      "group_id": "reserve",
+      "name": "Каберне Совиньон Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-kaberne-sovinon-rezerv-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон"
+      ],
+      "description": "В аромате спелая чёрная смородина, черника, сафьяновая кожа, ваниль и легкие специи, сушёные травы. Вкус насыщенный, плодовый, свежий, с бархатистой терпкостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-kokur-beloe-suhoe-14",
+      "group_id": "varietal",
+      "name": "Кокур",
+      "variant": "",
+      "wine_slug": "alma-valley-kokur-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-kokur-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур"
+      ],
+      "description": "В аромате жёлтые яблоки, спелые нектарины, пчелиный воск и легкая минеральность. Вво вкус умереннная кислотность, округлое мягкое фруктово-минеральное тело вина.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-kolombar-beloe-polusuhoe-135",
+      "group_id": "varietal",
+      "name": "Коломбар",
+      "variant": "",
+      "wine_slug": "alma-valley-kolombar-beloe-polusuhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-kolombar-beloe-polusuhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Коломбар"
+      ],
+      "description": "В аромате ноты запеченного яблока, тропических фруктов и белых цветов. Вкус свежий, гармоничный с природной сладостью и изящной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-locantita-merlot-cabernet-franc",
+      "group_id": "locantita",
+      "name": "Alma Valley Locantita Merlot-Cabernet Franc",
+      "variant": "",
+      "wine_slug": "alma-valley-locantita-merlot-cabernet-franc",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-locantita-merlot-cabernet-franc.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Красностоп Анапский",
+        "Мерло",
+        "Пино Нуар",
+        "Саперави",
+        "Шираз"
+      ],
+      "description": "Бленд с ярко выраженным ягодным профилем, с оттенками специй и пряностей в аромате. Сочный вкус со зрелыми танинами и сочной кислотностью на финише.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-merlo-krasnoe-suhoe-13",
+      "group_id": "varietal",
+      "name": "Мерло",
+      "variant": "",
+      "wine_slug": "alma-valley-merlo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-merlo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате спелые черные ягоды, сафьяновая кожа и легкие специи, сушеные травы. Вкус насыщенный, плодовый, свежий, со средней кислотностью и шелковистой танинной текстурой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-merlo-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Мерло Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-merlo-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-merlo-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "Изящный аромат соткан из нот ежевики, черешни, терна, инжира и вяленой вишни с тонкими штрихами шоколада и пряностей. Вкус полный, играющий, с живой кислотностью и мягкими танинами с идеально интегрированной бочкой. В финале тон сушеных ягод и темного шоколада. Красивое и зрелое вино для тихого удовльствия истинного гедониста. Можно пить сейчас или подержать еще год-два для смягчения танинов. Перед подачей аэрировать.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-merlo-rezerv-krasnoe-suhoe-15",
+      "group_id": "reserve",
+      "name": "Мерло Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-merlo-rezerv-krasnoe-suhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-merlo-rezerv-krasnoe-suhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Мерло"
+      ],
+      "description": "В аромате тона фиалки, спелых чёрных ягод, горького шоколада, сафьяновой кожи и сладких специй, сушеные травы. Вкус насыщенный, плодовый, свежий, с шелковистыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-petit-arvin-beloe-suhoe-13",
+      "group_id": "varietal",
+      "name": "Петит Арвин",
+      "variant": "",
+      "wine_slug": "alma-valley-petit-arvin-beloe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-petit-arvin-beloe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Петит арвин"
+      ],
+      "description": "Аромат цветочно-фруктовый, с оттенками цитрусовых и белых семечковых плодов. Вкус гармоничный, плодово-минеральный, с долгим приятно-солоноватым послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-pino-blan-beloe-suhoe-14",
+      "group_id": "varietal",
+      "name": "Пино Блан",
+      "variant": "",
+      "wine_slug": "alma-valley-pino-blan-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-blan-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "В аромате фрукты, белые цветы. Вкус свежий, гармоничный, с умеренной кислотностью и минеральным оттенком.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-pino-blan-rezerv-beloe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Пино Блан Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-pino-blan-rezerv-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-blan-rezerv-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Блан"
+      ],
+      "description": "В аромате тона спелой алычи, семечковых и тропических плодов, ванильные и сливочные оттенки. Вкус плодово-кремовый, с умеренной кислотностью и легкой пряностью в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-pino-gri-beloe-polusuhoe-15",
+      "group_id": "varietal",
+      "name": "Пино Гри",
+      "variant": "",
+      "wine_slug": "alma-valley-pino-gri-beloe-polusuhoe-15",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-gri-beloe-polusuhoe-15.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Гри"
+      ],
+      "description": "В аромате ноты жёлтой дыни, спелого нектарина, белых луговых цветов , полей подсолнухов и цветущей айвы. Вкус плотный, с хорошо освежающей кислотностью и тропическими фруктами в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-pino-nuar-beloe-ekstra-bryut-115",
+      "group_id": "sparkling",
+      "name": "Пино Нуар",
+      "variant": "",
+      "wine_slug": "alma-valley-pino-nuar-beloe-ekstra-bryut-115",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-nuar-beloe-ekstra-bryut-115.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате тона мокрого подлеска и граната. Вкус свежий, гармоничный с фруктовыми и цветочными нотами, с длительным, освежающим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sparkling"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-pino-nuar-krasnoe-suhoe-13",
+      "group_id": "varietal",
+      "name": "Пино Нуар",
+      "variant": "",
+      "wine_slug": "alma-valley-pino-nuar-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-nuar-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате ежевика, фиалки, спелая вишни, малиновый джем, бальзамические травы, сафьяновая кожа и подлесок. Вкус плодово-пряный, с мягкими и бархатными танинами. долгое пряное послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Пино Нуар Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-pino-nuar-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Пино Нуар"
+      ],
+      "description": "В аромате тона ежевики, спелой вишни, джема из лесных чёрных и красных ягод, бальзамических трав, шоколада и легких специй. Вкус плодово-пряный, с бархатистыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-rislaner-beloe-polusladkoe-125",
+      "group_id": "varietal",
+      "name": "Рисланер",
+      "variant": "",
+      "wine_slug": "alma-valley-rislaner-beloe-polusladkoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-rislaner-beloe-polusladkoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рисланер"
+      ],
+      "description": "В аромате манго, папайя, маракуйя, пряности, тропические нотки и гармоничная кислотность. Вкус фруктовый, с тропическими акцентами и гармоничной кислотностью, свежесть и баланс.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-risling-beloe-polusuhoe-125",
+      "group_id": "varietal",
+      "name": "Рислинг",
+      "variant": "",
+      "wine_slug": "alma-valley-risling-beloe-polusuhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-risling-beloe-polusuhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Рислинг"
+      ],
+      "description": "В аромате цитрусовые тона и оттенки тропических плодов. Вкус лёгкий, плодовый, с умеренной кислотностью, приятной природной сладостью и минеральной нотой в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-semilon-beloe-suhoe-135",
+      "group_id": "varietal",
+      "name": "Семильон",
+      "variant": "",
+      "wine_slug": "alma-valley-semilon-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-semilon-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Семильон"
+      ],
+      "description": "В аромате лимонная цедра, розовый персик и травы. Во вкусе косточковые фрукты с хорошим минеральным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-shardone-beloe-suhoe-135",
+      "group_id": "varietal",
+      "name": "Шардоне",
+      "variant": "",
+      "wine_slug": "alma-valley-shardone-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-shardone-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате зелёные и жёлтые яблоки. Вкус лёгкий, плодовый, с умеренной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-shardone-rezerv-beloe-suhoe-135",
+      "group_id": "reserve",
+      "name": "Шардоне Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-shardone-rezerv-beloe-suhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-shardone-rezerv-beloe-suhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "Аромат глубокий, густой и зрелый: доминируют тона желтого персика, абрикоса, легкие цитрусовые оттенки и сладкие специи, переплетающиеся с дымной вуалью. Фоном звучит нота варенья из белой черешни с шафраном и оттенки тоста со сливочно-фруктовым кремом. Вкус округлый, полнотелый, с маслянистой текстурой, умеренной кислотностью и продолжительным послевкусием, где угадывается легкая дымность. Фактурное и самодостаточное вино.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-shardone-rezerv-beloe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Шардоне Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-shardone-rezerv-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-shardone-rezerv-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Шардоне"
+      ],
+      "description": "В аромате тона жёлтых яблок, цитрусовых и других тропических плодов, ванильные, сливочные оттенки. Вкус мягкий кремовый с умеренной кислотностью и легкой пряностью в послевкусии.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-shiraz-krasnoe-suhoe-13",
+      "group_id": "varietal",
+      "name": "Шираз",
+      "variant": "",
+      "wine_slug": "alma-valley-shiraz-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-shiraz-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "В аромате тона черных ягод, черного перца, черной смородины и сафьяна. Вкус насыщенный, плодово-пряный, с освежающей кислотностью и бархатистой танинной текстурой.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-shiraz-sira-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Шираз (Сира) Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-shiraz-sira-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-shiraz-sira-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Шираз"
+      ],
+      "description": "В аромате тона чёрных ягод, черного перца, джема из черной смородины, бальзамических трав, шоколада и сафьяновой кожи. Вкус насыщенный, плодово-пряный, с освежающей кислотностью и бархатистыми танинами. Долгое послевкусие.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+      "group_id": "svv",
+      "name": "Солнце, воздух, виноград",
+      "variant": "",
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-kokur-beloe-polusladkoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур",
+        "Коломбар",
+        "Совиньон Блан",
+        "Траминер",
+        "Шардоне"
+      ],
+      "description": "В аромате  манго, персик, абрикосовый пирог и мандарин, тона миндаля. Вкус живой, яркий, с преобладанием тропических жёлтых фруктов и пикантным цветочно-имбирным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-svv"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14",
+      "group_id": "svv",
+      "name": "Солнце, воздух, виноград",
+      "variant": "",
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-merlo-krasnoe-polusladkoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Мерло",
+        "Пино чёрный (Пино нуар) и Сира (Шираз)"
+      ],
+      "description": "В аромате тона чёрных ягод и нежный оттенк пряностей. Вкус структурированный, свежий и пряно-терпкий, с приятным фруктово-ягодным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-svv"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-solntse-vozduh-vinograd-shardone-beloe-polusuhoe-13",
+      "group_id": "svv",
+      "name": "Солнце, воздух, виноград",
+      "variant": "",
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-shardone-beloe-polusuhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-shardone-beloe-polusuhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Кокур",
+        "Пино Блан",
+        "Рислинг",
+        "Семильон",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Аромат цветочно-цитрусовый, с оттенками белого персика. Вкус лёгкий, сбалансированный, с тонами жёлтых спелых фруктов и мягким длительным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-svv"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-solntse-vozduh-vinograd-sira-shiraz-krasnoe-polusuhoe-135",
+      "group_id": "svv",
+      "name": "Солнце, воздух, виноград",
+      "variant": "",
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-sira-shiraz-krasnoe-polusuhoe-135",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-sira-shiraz-krasnoe-polusuhoe-135.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Каберне Совиньон",
+        "Каберне Фран",
+        "Сира (Шираз)",
+        "Темпранильо"
+      ],
+      "description": "Аромат ягодный с нежным сафьяновым оттенком. Вкус гармоничный, ягодный вкус с умеренной кислотностью, с приятной природной сладостью и бархатистыми танинами.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-svv"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12",
+      "group_id": "svv",
+      "name": "Солнце, воздух, виноград",
+      "variant": "",
+      "wine_slug": "alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-solntse-vozduh-vinograd-sira-shiraz-rozovoe-polusladkoe-12.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Розовое",
+      "grapes": [
+        "Пино чёрный (Пино нуар) и Мерло",
+        "Сира (Шираз)"
+      ],
+      "description": "В аромате тона красных ягод и фруктовыми оттенками. Вкус лёгкий, ягодный с умеренной кислотностью и приятной сладостью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-svv"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-sovinon-blan-beloe-suhoe-14",
+      "group_id": "varietal",
+      "name": "Совиньон Блан",
+      "variant": "",
+      "wine_slug": "alma-valley-sovinon-blan-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-sovinon-blan-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате полевые цветы, травы.Вкус гармоничный, освежающий плодовый с умеренной кислотностью.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-sovinon-blan-rezerv-beloe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Совиньон Блан Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-sovinon-blan-rezerv-beloe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-sovinon-blan-rezerv-beloe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате тона лайма, лемонграсса и нотками базилика. Вкус структурный, полный, с округлым маслянистым послевкусием и тонами мускатного ореха.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-tba-sovinon-sovinon-blan-beloe-sladkoe-75",
+      "group_id": "sweet-special",
+      "name": "ТБА Совиньон",
+      "variant": "",
+      "wine_slug": "alma-valley-tba-sovinon-sovinon-blan-beloe-sladkoe-75",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-tba-sovinon-sovinon-blan-beloe-sladkoe-75.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Совиньон Блан"
+      ],
+      "description": "В аромате тона мёда и айвового варенья. Вкус яркий, с прекрасным балансом, долгим минеральным и сладким послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-sweet-special"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-tempranilo-krasnoe-suhoe-13",
+      "group_id": "varietal",
+      "name": "Темпранильо",
+      "variant": "",
+      "wine_slug": "alma-valley-tempranilo-krasnoe-suhoe-13",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-tempranilo-krasnoe-suhoe-13.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "В аромате тона черноплодной рябины, черной смородины, ежевики, бальзамических трав и ванили. Вкус насыщенный, плодово-пряный, с бархатистой танинной текстурой и долгим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-tempranilo-rezerv-krasnoe-suhoe-14",
+      "group_id": "reserve",
+      "name": "Темпранильо Резерв",
+      "variant": "",
+      "wine_slug": "alma-valley-tempranilo-rezerv-krasnoe-suhoe-14",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-tempranilo-rezerv-krasnoe-suhoe-14.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Красное",
+      "grapes": [
+        "Темпранильо"
+      ],
+      "description": "В аромате тона черноплодной рябины, черной смородины, чернослива, ежевики, бальзамических трав и ванили. Вкус насыщенный, плодово-пряный, с бархатистой танинной текстурой и долгим послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-reserve"
+      ]
+    },
+    {
+      "id": "wine-alma-valley-traminer-beloe-suhoe-125",
+      "group_id": "varietal",
+      "name": "Траминер",
+      "variant": "",
+      "wine_slug": "alma-valley-traminer-beloe-suhoe-125",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-alma-valley-traminer-beloe-suhoe-125.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Траминер"
+      ],
+      "description": "Аромат цветочно-плодовый с оттенками цветов белого шиповника, цитрусовой цедры и легкими пряными нотками. Вкус гармоничный, с умеренной кислотностью и приятным минерально-пряным послевкусием.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17",
+        "official-varietal"
+      ]
+    },
+    {
+      "id": "wine-locantita-sauvignon-blanc-chardonnay",
+      "group_id": "locantita",
+      "name": "Locantita Sauvignon Blanc-Chardonnay",
+      "variant": "",
+      "wine_slug": "locantita-sauvignon-blanc-chardonnay",
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/wine-locantita-sauvignon-blanc-chardonnay.webp",
+        "source_id": "svoe-vino-2026-09-17"
+      },
+      "category": "Вино",
+      "style": "Белое",
+      "grapes": [
+        "Мцване",
+        "Пино Нуар",
+        "Рислинг",
+        "Совиньон Блан",
+        "Шардоне"
+      ],
+      "description": "Аромат с тонами тропических фруктов, спелой груши, цветочными и пряными нотами. Мягкий, объёмный вкус с освежающим финишем.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "svoe-vino-2026-09-17"
+      ]
+    },
+    {
+      "id": "official-alma-x-cabernet-saperavi",
+      "group_id": "alma-x",
+      "name": "Альма Икс · Каберне Совиньон / Саперави",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/official-alma-x-cabernet-saperavi.webp",
+        "source_id": "official-alma-x-cabernet-saperavi"
+      },
+      "category": "Тихое вино",
+      "style": "Красное · сухое",
+      "grapes": [
+        "Каберне Совиньон",
+        "Саперави"
+      ],
+      "description": "Красный ассамбляж из винограда ручного сбора. Выдержка во французском и карабахском дубе длится более 12 месяцев. В аромате тёмные ягоды, смородина, чернослив и специи; текстура шелковистая.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-alma-x-cabernet-saperavi"
+      ]
+    },
+    {
+      "id": "official-muscat-appassimento",
+      "group_id": "sweet-special",
+      "name": "Мускат Аппассименто",
+      "variant": "",
+      "wine_slug": null,
+      "wine_slug_aliases": [],
+      "image": {
+        "src": "/product-line-maps/alma-valley/official-muscat-appassimento.webp",
+        "source_id": "official-muscat-appassimento"
+      },
+      "category": "Сладкое вино",
+      "style": "Белое · природно-сладкое",
+      "grapes": [
+        "Мускат"
+      ],
+      "description": "Вино из увяленного винограда ручного сбора и сортировки. Ферментация проходит в дубе, выдержка во французских бочках длится два года. Аромат сухофруктов, цветов и специй; во вкусе мёд и карамель.",
+      "release_status": "catalog",
+      "badges": [],
+      "price": null,
+      "source_ids": [
+        "official-muscat-appassimento"
+      ]
+    }
+  ]
+}
