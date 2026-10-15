@@ -26,6 +26,17 @@ This map covers the full snapshot plus two verified additions. It does not claim
 
 ## Assets and retrieval limits
 
-The 26 existing WebP assets are copied without change. The crosswalk has their hashes and label evidence. The two official JPEG files are converted to WebP without crop, label reconstruction, background replacement, or color changes.
+The initial import copied the 26 existing WebP assets without change. The crosswalk preserves their source evidence. The current official-image derivatives are documented below. Original asset bytes remain in Git revision `89aa3780`.
 
 The website certificate did not validate in the local Python certificate store. Public catalog files were read with a per-request certificate-check exception. No credentials, cookies, or private data were sent. Web search independently indexed the official product pages.
+
+## Background extraction, 2026-10-16
+
+2 display images use transparent cutouts from the built-in `image_gen` tool.
+Read [imagegen-cutouts.json](imagegen-cutouts.json) for every exact prompt, source hash, generated PNG hash, output hash, and review note.
+The review checks product identity, main label text, cap, color, and artwork at the UI display size.
+Imagegen resamples fine print and reflections. The generated images are not evidence for label microtext.
+The product facts remain sourced from the catalog and official pages.
+The final frame excludes faint transparent outliers. The conversion preserves alpha and fits the cropped image into 720 px height before padding.
+The WebP quality is 88. The alpha quality is 100. Each file has 6 px transparent padding.
+Unedited images retain their previous bytes. Original edited-image bytes remain in Git revision `89aa3780`.

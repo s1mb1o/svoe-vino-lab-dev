@@ -1,0 +1,38 @@
+{
+  "producer_id": "koktebel",
+  "date": "2026-10-16",
+  "scope": "Display derivatives only. Product facts remain sourced from the catalog and official pages.",
+  "fine_print_limit": "Imagegen resamples fine print and reflections. These derivatives are not evidence for label microtext. Original asset bytes remain in Git revision 89aa3780.",
+  "assets": [
+    {
+      "product_id": "official-geometry-pinot-gris",
+      "asset": "/product-line-maps/koktebel/official-geometry-pinot-gris.webp",
+      "operation": "background-extraction",
+      "tool": "image_gen",
+      "mode": "built-in",
+      "date": "2026-10-16",
+      "input_asset_sha256": "97b7c6d04585ed7f288c4ddfa6581a2943cd66ed79dc32a0f7de684196dd5cf6",
+      "generated_png_sha256": "617cea3b111e06429679fab4376f2f0ea3ea502df90d6402c665a3500a8b88c8",
+      "output_asset_sha256": "74db1b90598f88fc47ea38c1e29eff2875f31ca1b02924052a4d0d9554a6c4a6",
+      "prompt": "Use case: background-extraction. Edit the supplied product photograph only. Remove only the surrounding white background and floor shadow, replacing them with true transparent alpha. Keep the entire original bottle, exact silhouette, height/width ratio, cap, glass color, lighting, reflections, label placement, artwork, fonts and printed colors unchanged. This is a factual catalog asset, not a redesigned product render. Do not translate, rewrite, redraw, invent, beautify or sharpen any text. Keep tiny unreadable print unreadable. Do not reconstruct hidden areas. Preserve all visible source details. Output one upright complete bottle with a small transparent margin, no other objects, no background, no checkerboard pixels, no new shadow. Treat the original as a low-resolution source photograph. Do not upgrade label print quality or redraw letters. Retain its exact soft, low-resolution printed detail. Main text is ШКОЛА КУРОРТНЫХ ВИН; КОКТЕБЕЛЬ; EST 1879; ПИНО ГРИ; 2019. Preserve these words in their original language and preserve the red/yellow/blue/black geometric label artwork. Do not translate or add any words.",
+      "review": "Accepted for UI use at 176 px after comparison on light and dark surfaces. The main КОКТЕБЕЛЬ brand, ПИНО ГРИ grape, 2019 year and geometric label are preserved. The small upper line is resampled and contains letter differences at full resolution. It is not legible at normal UI size. This image is not source evidence. Product identity and main label art at the current UI display size. Exact source pixels are not preserved.",
+      "generated_frame": "405x1708+215+96",
+      "postprocess": "Find the frame from alpha >= 128. Add 8 source pixels around the frame. Crop the original RGBA image to this frame without changing alpha values. Downscale to a maximum height of 720 px. Add 6 px transparent padding. Encode WebP at quality 88 with alpha quality 100."
+    },
+    {
+      "product_id": "official-planerskoe-traminer-magnum",
+      "asset": "/product-line-maps/koktebel/official-planerskoe-traminer-magnum.webp",
+      "operation": "background-extraction",
+      "tool": "image_gen",
+      "mode": "built-in",
+      "date": "2026-10-16",
+      "input_asset_sha256": "b196153eaa2afa0748dba5be672c37ac9dc8e4fd92fcda06f035461417fe5623",
+      "generated_png_sha256": "2271ab2c6d0f9be66b24ded2ee662147270fbe7128e9b4b2e26ba56f866688b6",
+      "output_asset_sha256": "43ef0ab0734f86f55d299fbfff4c8810cbc34bf76eebccb9a8f5764a449cb21a",
+      "prompt": "Use case: background-extraction. Edit the supplied product photograph only. Remove only the surrounding white background and floor shadow, replacing them with true transparent alpha. Keep the entire original bottle, exact silhouette, height/width ratio, cap, glass color, lighting, reflections, label placement, artwork, fonts and printed colors unchanged. This is a factual catalog asset, not a redesigned product render. Do not translate, rewrite, redraw, invent, beautify or sharpen any text. Keep tiny unreadable print unreadable. Do not reconstruct hidden areas. Preserve all visible source details. Output one upright complete bottle with a small transparent margin, no other objects, no background, no checkerboard pixels, no new shadow. Treat the original as a low-resolution source photograph. Do not upgrade label print quality or redraw letters. Retain its exact soft, low-resolution printed detail. Main text is ПЛАНЕРСКОЕ and ТРАМИНЕР. The small words and numbers in the source must stay soft, unreadable marks, not new invented text. Preserve original stamp-edge label with aircraft illustration and lower label without reconstruction. Do not translate or add any words or digits.",
+      "review": "Accepted for UI use at 176 px after comparison on light and dark surfaces. ПЛАНЕРСКОЕ, ТРАМИНЕР, the aircraft artwork, stamp-edge label, cap and bottle shape are preserved. Fine print and small volume marks are resampled. They are not legible at normal UI size. This image is not source evidence. Product identity and main label art at the current UI display size. Exact source pixels are not preserved.",
+      "generated_frame": "523x1803+156+19",
+      "postprocess": "Find the frame from alpha >= 128. Add 8 source pixels around the frame. Crop the original RGBA image to this frame without changing alpha values. Downscale to a maximum height of 720 px. Add 6 px transparent padding. Encode WebP at quality 88 with alpha quality 100."
+    }
+  ]
+}

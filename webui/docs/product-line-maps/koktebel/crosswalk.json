@@ -270,14 +270,32 @@
       "source_url": "https://vinokoktebel.ru/catalog/index.php?ELEMENT_ID=628&SECTION_ID=",
       "image_url": "https://vinokoktebel.ru/upload/iblock/315/3158aff686ac339298555c3b465d8eaf.jpg",
       "absence_check": "All 26 producer cards inspected by name and bottle label. Pinot Gris is present only as Precious dessert wine. Traminer is present only as Precious dessert wine. Neither addition matches those collection, style, or package identities.",
-      "asset_sha256": "97b7c6d04585ed7f288c4ddfa6581a2943cd66ed79dc32a0f7de684196dd5cf6"
+      "asset_sha256": "74db1b90598f88fc47ea38c1e29eff2875f31ca1b02924052a4d0d9554a6c4a6",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "97b7c6d04585ed7f288c4ddfa6581a2943cd66ed79dc32a0f7de684196dd5cf6",
+        "output_asset_sha256": "74db1b90598f88fc47ea38c1e29eff2875f31ca1b02924052a4d0d9554a6c4a6",
+        "record": "imagegen-cutouts.json"
+      }
     },
     {
       "product_id": "official-planerskoe-traminer-magnum",
       "source_url": "https://vinokoktebel.ru/catalog/index.php?ELEMENT_ID=463&SECTION_ID=",
       "image_url": "https://vinokoktebel.ru/upload/resize_cache/iblock/c22/450_450_0/c22324663426223c6721b3be3dfe701f.jpg",
       "absence_check": "All 26 producer cards inspected by name and bottle label. Pinot Gris is present only as Precious dessert wine. Traminer is present only as Precious dessert wine. Neither addition matches those collection, style, or package identities.",
-      "asset_sha256": "b196153eaa2afa0748dba5be672c37ac9dc8e4fd92fcda06f035461417fe5623"
+      "asset_sha256": "43ef0ab0734f86f55d299fbfff4c8810cbc34bf76eebccb9a8f5764a449cb21a",
+      "transformation": {
+        "operation": "background-extraction",
+        "tool": "image_gen",
+        "mode": "built-in",
+        "date": "2026-10-16",
+        "input_asset_sha256": "b196153eaa2afa0748dba5be672c37ac9dc8e4fd92fcda06f035461417fe5623",
+        "output_asset_sha256": "43ef0ab0734f86f55d299fbfff4c8810cbc34bf76eebccb9a8f5764a449cb21a",
+        "record": "imagegen-cutouts.json"
+      }
     }
   ]
 }
