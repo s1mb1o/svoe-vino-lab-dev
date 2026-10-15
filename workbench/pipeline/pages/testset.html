@@ -216,6 +216,29 @@ tr.cl-head a { color: var(--accent); margin-left: 10px; }
   border-style: dashed; border-width: 2px; background: transparent; cursor: default;
   color: var(--muted); font-size: 18px; font-weight: 700; letter-spacing: .04em; }
 tbody tr.null-row { background: var(--panel-2); }
+.null-summary { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.null-summary strong { white-space: nowrap; }
+.null-summary .null-drop-hint { color: var(--muted); font-size: 12px; }
+.null-summary button, .empty-results button, .filter-clear {
+  font: inherit; font-size: 12px; padding: 5px 9px; cursor: pointer;
+  color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+}
+.null-photos { margin-top: 12px; }
+.null-photos[hidden] { display: none; }
+.active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 6px; }
+.active-filters[hidden] { display: none; }
+.filter-chip { display: inline-flex; align-items: center; gap: 8px; max-width: min(420px, 100%);
+  border: 1px solid var(--accent); border-radius: 999px; padding: 4px 9px;
+  background: var(--panel); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
+.filter-chip span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.filter-chip:hover, .filter-chip:focus-visible { background: var(--panel-2); outline-color: var(--accent); }
+.result-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.result-bar #count { margin: 8px 0; }
+.result-bar label { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+.result-bar select { max-width: min(290px, 100%); }
+.empty-results { padding: 12px; margin: 6px 0 12px; border: 1px solid var(--line);
+  border-radius: 6px; background: var(--panel-2); }
+.empty-results[hidden] { display: none; }
 tbody tr.null-row .meta .nm { color: var(--muted); }
 /* The text of the row "No Match" is prose, not a slug: it breaks between words. */
 tbody tr.null-row .meta .sm { word-break: normal; overflow-wrap: anywhere; }
@@ -320,6 +343,9 @@ tbody tr.cat-only { background: var(--panel-2); }
   outline: 2px solid var(--accent); outline-offset: 2px;
 }
 .paste-card:disabled { cursor: progress; opacity: .7; }
+.paste-card.null-paste { flex: 0 0 auto; width: auto; height: auto; padding: 4px 8px; font-size: 12px; }
+.null-paste span { display: flex; align-items: center; gap: 6px; }
+.null-paste br { display: none; }
 /* A card marked for deletion. The mark moves no file. */
 .card.del { outline: 2px solid var(--neg); outline-offset: 2px; opacity: .45; }
 .card.del img { filter: grayscale(1); }
@@ -409,6 +435,14 @@ tbody tr.cat-only { background: var(--panel-2); }
   font: inherit; cursor: pointer;
 }
 .ctxmenu button:hover { background: var(--line); }
+.ctxmenu button:disabled { opacity: .45; cursor: default; }
+.ctxmenu button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.ctx-testsets { z-index: 61; min-width: 190px; max-width: calc(100vw - 16px); }
+.transfer-status { margin: 6px 0; padding: 8px 10px; background: var(--panel-2); border-radius: 6px; font-size: 12px; }
+.transfer-status[hidden] { display: none; }
+.transfer-status.saved { color: var(--pos); }
+.transfer-status.failed { color: var(--neg); }
+.transfer-status a { color: var(--accent); margin-left: 8px; }
 .ctxmenu button.danger { color: var(--neg); }
 .ctxmenu button.done { color: var(--pos); }
 .ctxmenu .ctx-sep { height: 1px; background: var(--line); margin: 4px 0; }
@@ -507,7 +541,7 @@ tbody tr.cat-only { background: var(--panel-2); }
 #lb {
   position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none;
   align-items: center; justify-content: center; gap: 12px;
-  z-index: 50; padding: 20px 20px 34px;
+  z-index: 50; padding: 48px 20px 116px;
 }
 #lb.open { display: flex; }
 .lb-inner {
@@ -575,7 +609,7 @@ tbody tr.cat-only { background: var(--panel-2); }
 }
 .lb-fig[hidden] { display: none; }
 .lb-fig img {
-  max-width: 100%; max-height: calc(100vh - 116px); width: auto; object-fit: contain;
+  max-width: 100%; max-height: calc(100vh - 250px); width: auto; object-fit: contain;
   border-radius: 6px; background: rgba(255,255,255,.06); cursor: default;
   -webkit-user-drag: none; user-select: none;
 }
@@ -598,6 +632,36 @@ tbody tr.cat-only { background: var(--panel-2); }
   color: #9a9aa6; font-size: 11px;
 }
 #lb .hint b { color: #e9e9ee; }
+.review-toolbar { position: fixed; left: 20px; right: 20px; bottom: 12px; z-index: 4;
+  padding: 10px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--panel); color: var(--text); box-shadow: var(--shadow); }
+.review-actions, .review-verdicts, .review-navigation { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.review-actions { justify-content: space-between; gap: 8px; }
+.review-toolbar button { min-height: 34px; padding: 6px 9px; font: inherit; font-size: 12px;
+  cursor: pointer; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; }
+.review-toolbar button:disabled { opacity: .45; cursor: default; }
+.review-toolbar button:hover:not(:disabled), .review-toolbar button:focus-visible { border-color: var(--accent); }
+.review-toolbar [aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; }
+.review-toolbar kbd { font: inherit; opacity: .7; margin-right: 3px; }
+.review-feedback { display: flex; gap: 6px 16px; flex-wrap: wrap; margin-top: 7px; color: var(--muted); font-size: 11px; }
+.review-feedback #lb-pos { max-width: 48%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#review-state.saved { color: var(--pos); }
+#review-state.failed { color: var(--neg); }
+.review-help summary { color: var(--muted); font-size: 12px; cursor: pointer; }
+.review-help .side-note { display: block; margin-top: 6px; }
+.lb-side { overflow-y: auto; }
+#lb .lb-fig { min-width: 140px; }
+@media (max-width: 1100px) {
+  #lb { padding-bottom: 156px; }
+  .lb-fig img { max-height: calc(100vh - 270px); }
+}
+@media (max-width: 760px) {
+  #lb.open { padding-bottom: 230px; }
+  .review-toolbar { position: fixed; left: 8px; right: 8px; bottom: 8px; padding: 8px; }
+  .review-toolbar { max-height: min(42vh, 240px); overflow-y: auto; }
+  .review-feedback #lb-pos { max-width: 100%; }
+  .review-toolbar button { min-height: 36px; padding: 6px; }
+}
 /* The pill stays above the two images and the box (z-index 2). */
 #lb-status {
   position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 3;
@@ -822,26 +886,7 @@ tbody tr.cat-only { background: var(--panel-2); }
     </label><label class="compact-search">Find <input id="q" type="search" placeholder="Wines or img:…" title="Search wine fields. Use img:filename or img:sha256 to find the same image."></label><button id="more-btn" data-header-toggle type="button" aria-expanded="false" aria-controls="more"
             title="Show advanced filters and their active count"
             >Advanced Filters <b id="more-n">(0)</b></button></div>
-<div class="bar more compact-panel" id="more" hidden><label>Sort
-      <select id="sort">
-        <option value="slug">slug A-Z</option>
-        <option value="slug_desc">slug Z-A</option>
-        <option value="name">wine name A-Z</option>
-        <option value="producer">producer A-Z</option>
-        <option value="photos_desc">photo count, most first</option>
-        <option value="photos_asc">photo count, fewest first</option>
-        <option value="conf_asc">confidence, lowest first</option>
-        <option value="conf_desc">confidence, highest first</option>
-        <option value="todo">unlabelled first</option>
-        <option value="pos_desc">positive count, most first</option>
-        <option value="neg_desc">negative count, most first</option>
-        <option value="unu_desc">unusable count, most first</option>
-        <option value="group">variant group first</option>
-        <option value="cluster_size" disabled title="choose an embedding in Clusters first"
-                >cluster size, largest first</option>
-      </select>
-    </label>
-    <label>Marks
+<div class="bar more compact-panel" id="more" hidden>    <label>Marks
       <select id="marks" title="a photo of the wine holds this mark">
         <option value="all">any</option>
         <option value="noted">a comment</option>
@@ -896,10 +941,33 @@ tbody tr.cat-only { background: var(--panel-2); }
           <button id="grp-clear" type="button" hidden title="Show every variant group">variant group <b id="grp-clear-id"></b> &times;</button></div>
           <div class="jobs compact-jobs" id="jobs" hidden></div>
   <p id="error"></p>
-  <p id="count"></p>
+  <div id="transfer-status" class="transfer-status" role="status" aria-live="polite" hidden></div>
+  <div id="active-filters" class="active-filters" aria-label="Active filters" hidden></div>
+  <div class="result-bar"><p id="count"></p><label>Sort
+      <select id="sort">
+        <option value="slug">slug A-Z</option>
+        <option value="slug_desc">slug Z-A</option>
+        <option value="name">wine name A-Z</option>
+        <option value="producer">producer A-Z</option>
+        <option value="photos_desc">photo count, most first</option>
+        <option value="photos_asc">photo count, fewest first</option>
+        <option value="conf_asc">confidence, lowest first</option>
+        <option value="conf_desc">confidence, highest first</option>
+        <option value="todo">unlabelled first</option>
+        <option value="pos_desc">positive count, most first</option>
+        <option value="neg_desc">negative count, most first</option>
+        <option value="unu_desc">unusable count, most first</option>
+        <option value="group">variant group first</option>
+        <option value="cluster_size" disabled title="choose an embedding in Clusters first"
+                >cluster size, largest first</option>
+      </select>
+    </label></div>
+  <div id="empty-results" class="empty-results" role="status" hidden>
+    No wines match these filters. <button type="button" data-clear-filters>Clear filters</button>
+  </div>
   <table><tbody id="rows"></tbody></table>
 </main>
-<div id="lb">
+<div id="lb" role="dialog" aria-modal="true" aria-label="Photo review" tabindex="-1">
   <div id="lb-status"></div>
   <div class="lb-inner">
     <figure class="lb-fig" id="lb-ref" draggable="true"><img alt="" draggable="false"><figcaption></figcaption></figure>
@@ -942,21 +1010,36 @@ tbody tr.cat-only { background: var(--panel-2); }
       <button id="move-open" type="button" title="key m: choose another wine slug">Move…</button>
       <span id="move-state-inline"></span>
     </div>
-    <div class="side-note">Add, Cmd+Enter, or Ctrl+Enter adds the text as a new comment. A
+    <details class="review-help"><summary>Review help</summary><div class="side-note">Add, Cmd+Enter, or Ctrl+Enter adds the text as a new comment. A
       text that is not added yet is added when you go to another photo or close the view.
       The keys do not act while the cursor is in the field. Press Esc once to leave the
       field, and Esc again to close the view. A tag belongs to the image: each copy of the
       image, in each wine row and in each set, shows it. Enter or Add adds a tag. The box
       is optional: draw it around the main item of a scene with several items. Crop draws
-      a rectangle and adds those pixels as a new photo of the same wine.</div>
+      a rectangle and adds those pixels as a new photo of the same wine.</div></details>
   </aside>
-  <div class="hint"><span id="lb-pos"></span>
-    &larr; &rarr; photo of this wine &middot; &uarr; &darr; wine &middot;
-    <b>1</b> positive &middot; <b>2</b> negative &middot; <b>3</b> unusable &middot;
-    <b>4</b> other design &middot; <b>b</b> box &middot; <b>c</b> crop &middot; <b>m</b> move &middot; <b>0</b> to the Drawer &middot;
-    right-click delete &middot; Esc close</div>
+  <div class="review-toolbar" role="region" aria-label="Photo review">
+    <div class="review-actions">
+      <div class="review-verdicts" role="group" aria-label="Photo verdict">
+        <button type="button" data-review-label="positive" aria-pressed="false"><kbd>1</kbd> Positive</button>
+        <button type="button" data-review-label="negative" aria-pressed="false"><kbd>2</kbd> Negative</button>
+        <button type="button" data-review-label="unusable" aria-pressed="false"><kbd>3</kbd> Unusable</button>
+        <button type="button" data-review-label="variant" aria-pressed="false"><kbd>4</kbd> Different design</button>
+      </div>
+      <div class="review-navigation" role="group" aria-label="Review navigation">
+        <button id="review-prev" type="button" aria-label="Previous photo" title="Previous photo (Left arrow)">←</button>
+        <button id="review-next" type="button" aria-label="Next photo" title="Next photo (Right arrow)">→</button>
+        <button id="review-unreviewed" type="button">Next unreviewed</button>
+        <button id="review-undo" type="button" title="Undo the last verdict (Cmd+Z or Ctrl+Z)">Undo</button>
+        <button id="review-close" type="button">Close <kbd>Esc</kbd></button>
+      </div>
+    </div>
+    <div class="review-feedback"><span id="lb-pos"></span><span id="review-progress"></span>
+      <span id="review-state" role="status" aria-live="polite"></span></div>
+  </div>
 </div>
 <div id="ctxmenu" class="ctxmenu" hidden></div>
+<div id="ctx-testsets" class="ctxmenu ctx-testsets" role="menu" aria-label="Move To testset" hidden></div>
 <div id="move-dlg" class="move-dlg" hidden>
   <div class="move-panel" role="dialog" aria-modal="true" aria-labelledby="move-title">
     <h2 id="move-title">Move this photo to another wine</h2>
@@ -1119,6 +1202,7 @@ let LB = null;        // the place of the large view: { wine: index in VIEW, pho
 let TOTAL = 0;
 let EDITED_AT = null; // the time of the last page edit of the set, as the server writes it
 let GROUP_FILTER = "";
+let NULL_OPEN = false;
 const BUSY_FAVORITES = new Set();
 const AUTOTAG_TAGS = ["label_back", "label_front", "isolated_product", "scene_photo"];
 const AUTOTAG_ACTIVE = new Set(["starting", "running", "waiting"]);
@@ -1535,9 +1619,9 @@ function cardHtml(r, p) {
 }
 
 function cardsHtml(r) {
-  const paste = isSpecialRow(r) ? "" : `<button class="paste-card" type="button"
-    data-paste-image="${esc(r.slug)}" aria-label="Paste a clipboard image into ${esc(r.slug)}"
-    aria-keyshortcuts="Meta+V Control+V" title="Paste an image into this wine: click or ⌘V"
+  const paste = isDrawerRow(r) ? "" : `<button class="paste-card" type="button"
+    data-paste-image="${esc(r.slug)}" aria-label="Paste a clipboard image into ${isNullRow(r) ? "No Match" : esc(r.slug)}"
+    aria-keyshortcuts="Meta+V Control+V" title="Paste an image here: click or ⌘V"
     draggable="false"><span>Paste image<br>click or ⌘V</span></button>`;
   if (!r.photos.length) {
     return paste || `<span class="empty">${isNullRow(r)
@@ -1562,7 +1646,31 @@ function favoriteStar(r) {
       on ? "★" : "☆"}</button>`;
 }
 
+function nullRowHtml(row) {
+  return `<tr data-slug="${NULL_SLUG}" class="null-row"><td colspan="2">
+    <div class="null-summary"><strong>No Match</strong>
+      <span class="sm row-counts">${rowCountsHtml(row)}</span>
+      <button type="button" data-null-toggle aria-expanded="${NULL_OPEN}"
+        aria-controls="no-match-photos">${NULL_OPEN ? "Hide photos" :
+          row.photos.length ? `Show ${row.photos.length} photos` : "Show photos"}</button>
+      ${NULL_OPEN ? "" : `<button class="paste-card null-paste" type="button"
+        data-paste-image="${NULL_SLUG}" aria-label="Paste a clipboard image into No Match"
+        aria-keyshortcuts="Meta+V Control+V" title="Paste an image here: click or ⌘V"
+        draggable="false"><span>Paste image · click or ⌘V</span></button>`}
+      <span class="null-drop-hint">Drop a photo that should match no catalogue wine.</span>
+    </div><div id="no-match-photos" class="cards null-photos" ${NULL_OPEN ? "" : "hidden"}>${
+      NULL_OPEN ? cardsHtml(row) : ""}</div></td></tr>`;
+}
+function toggleNoMatch() {
+  const row = ROWS.find(isNullRow);
+  if (!row) return;
+  NULL_OPEN = !NULL_OPEN;
+  refreshRow(row);
+  rowOf(NULL_SLUG)?.querySelector("[data-null-toggle]")?.focus();
+}
+
 function rowHtml(r, gclass) {
+  if (isNullRow(r)) return nullRowHtml(r);
   const img = r.bottle_url
     ? picHtml(`<img class="bottle" loading="lazy" draggable="false" src="${esc(r.bottle_url)}" alt=""
          data-bottle="1">`, r.patched, ' draggable="true" data-drag-out="bottle"')
@@ -1722,19 +1830,21 @@ function render() {
   }
   const more = ["#marks", "#origin", "#cluster"].filter(id => $(id).value !== "all").length
     + ($("#tag").value ? 1 : 0);
-  const advancedCount = more + Number($("#sort").value !== "slug");
+  const advancedCount = more;
   $("#more-n").textContent = `(${advancedCount})`;
   $("#more-btn").classList.toggle("active", advancedCount > 0);
   $("#rows").innerHTML = rows.map(r => (heads && heads.has(r)
     ? clusterHeadHtml(heads.get(r), source) : "") + rowHtml(r, gclass)).join("");
   const gf = GROUP_FILTER && GROUPS[GROUP_FILTER];
-  $("#grp-clear").hidden = !gf;
+  $("#grp-clear").hidden = true;
   if (gf) $("#grp-clear-id").textContent = `of ${gf.slugs.length}`;
   $("#count").textContent =
     `${wines} of ${ROWS.filter(r => !isSpecialRow(r)).length} wines shown` +
     (gf ? " · one variant group" : "") +
     (source === "all" ? "" : heads ? ` · ${heads.size} clusters of ${source}`
       : ` · loading the clusters of ${source}…`);
+  $("#empty-results").hidden = wines > 0;
+  renderFilterState();
   renderSide();
   stats();
   writeViewToUrl();
@@ -1775,6 +1885,7 @@ $("#drawer-tag").addEventListener("change", renderSide);
 
 function stats() {
   syncImageWineBadges();
+  if (LB) renderReviewToolbar();
   const all = { positive: 0, negative: 0, unusable: 0, variant: 0, moved: 0, noted: 0,
                 prop: 0, del: 0, box: 0 };
   let doneWines = 0;
@@ -1878,14 +1989,15 @@ function refreshCard(slug, file) {
 }
 
 async function post(route, body) {
+  const requestSet = body.set ?? SET;
   const res = await fetch(route, {
     method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ set: SET, ...body }),
+    body: JSON.stringify({ set: requestSet, ...body }),
   });
   let out = {};
   try { out = await res.json(); } catch (e) { out = {}; }
   if (!res.ok) throw new Error(out.error || ("HTTP " + res.status));
-  EDITED_AT = localStamp();   // each write route sets `test_set.edited_at`
+  if (SET === requestSet) EDITED_AT = localStamp();   // Keep the response in its set.
   return out;
 }
 
@@ -1906,14 +2018,134 @@ function takePhoto(slug, photo) {
   }
 }
 
-/* Store one label. The same label again clears it. */
-async function setLabel(slug, file, want) {
-  const next = labelOf(slug, file) === want ? null : want;
-  try {
-    const out = await post("/api/testset-label", { place: slug, file, label: next });
-    takePhoto(slug, out.photo);
-  } catch (e) { alert("the label is not saved: " + e.message); }
+/* Store verdicts in sequence. Undo restores the exact previous label. */
+let LABEL_BUSY = false, LABEL_EPOCH = 0, LABEL_HISTORY = [];
+let LABEL_MESSAGE = "", LABEL_MESSAGE_KIND = "";
+function reviewMessage(message, kind = "") {
+  LABEL_MESSAGE = message; LABEL_MESSAGE_KIND = kind;
+  renderReviewToolbar();
 }
+function undoEntry() {
+  while (LABEL_HISTORY.length) {
+    const item = LABEL_HISTORY[LABEL_HISTORY.length - 1];
+    const photo = photoOf(item.slug, item.file);
+    if (item.set === SET && photo && photo.sha256 === item.hash &&
+        labelOf(item.slug, item.file) === item.next) return item;
+    LABEL_HISTORY.pop();
+  }
+  return null;
+}
+async function saveVerdict(slug, file, next, undo = false) {
+  const row = ROWS.find(item => item.slug === slug), photo = photoOf(slug, file);
+  if (LABEL_BUSY || !photo || isDrawerRow(row) ||
+      (isNullRow(row) && next && !NULL_LABELS.includes(next))) return false;
+  const before = labelOf(slug, file), set = SET, epoch = LABEL_EPOCH;
+  LABEL_BUSY = true; reviewMessage(undo ? "Undoing…" : "Saving…");
+  try {
+    const out = await post("/api/testset-label", {set, place: slug, file, label: next});
+    if (SET !== set || LABEL_EPOCH !== epoch) return true;
+    if (undo) LABEL_HISTORY.pop();
+    else {
+      LABEL_HISTORY.push({set, slug, file, hash: photo.sha256, before, next});
+      if (LABEL_HISTORY.length > 50) LABEL_HISTORY.shift();
+    }
+    takePhoto(slug, out.photo);
+    if (undo && LB) {
+      const wi = VIEW.findIndex(item => item.slug === slug);
+      const pi = wi >= 0 ? VIEW[wi].photos.findIndex(item => item.file === file) : -1;
+      const current = lbPhoto();
+      if (pi >= 0 && (current?.slug !== slug || current?.file !== file)) showLightbox(wi, pi);
+    }
+    reviewMessage(undo ? "Previous verdict restored" : "Verdict saved", "saved");
+    return true;
+  } catch (error) {
+    if (SET === set && LABEL_EPOCH === epoch) {
+      reviewMessage("Not saved: " + error.message, "failed");
+      if (!LB) alert("the label is not saved: " + error.message);
+    }
+    return false;
+  } finally { LABEL_BUSY = false; renderReviewToolbar(); }
+}
+async function setLabel(slug, file, want) {
+  return saveVerdict(slug, file, labelOf(slug, file) === want ? null : want);
+}
+async function undoVerdict() {
+  if (LABEL_BUSY) return false;
+  const item = undoEntry();
+  if (!item) { reviewMessage("No verdict to undo"); return false; }
+  return saveVerdict(item.slug, item.file, item.before, true);
+}
+function reviewQueue() {
+  const current = LB && VIEW[LB.wine];
+  const rows = isNullRow(current) ? [current] : VIEW.filter(row => !isSpecialRow(row));
+  return rows.filter(row => row.state !== "Removed").flatMap(row => row.photos
+    .filter(photo => !deleteMarked(row.slug, photo.file))
+    .map(photo => ({slug: row.slug, file: photo.file})));
+}
+function nextUnreviewed(queue, at) {
+  const index = at ? queue.findIndex(item => item.slug === at.slug && item.file === at.file) : -1;
+  for (let step = 1; step <= queue.length; step++) {
+    const item = queue[(index + step) % queue.length];
+    if (at && item.slug === at.slug && item.file === at.file) continue;
+    if (!labelOf(item.slug, item.file)) return item;
+  }
+  return null;
+}
+function openNextUnreviewed() {
+  if (LABEL_BUSY || !LB) return;
+  const item = nextUnreviewed(reviewQueue(), lbPhoto());
+  if (!item) { reviewMessage("No other unreviewed photo in this view"); return; }
+  const wi = VIEW.findIndex(row => row.slug === item.slug);
+  const pi = VIEW[wi].photos.findIndex(photo => photo.file === item.file);
+  showLightbox(wi, pi);
+}
+function renderReviewToolbar() {
+  const at = LB && lbPhoto(), row = LB && VIEW[LB.wine];
+  const label = at ? labelOf(at.slug, at.file) : null;
+  for (const button of document.querySelectorAll(".btns button")) button.disabled = LABEL_BUSY;
+  for (const button of document.querySelectorAll("[data-review-label]")) {
+    const allowed = !!at && !isDrawerRow(row) &&
+      (!isNullRow(row) || NULL_LABELS.includes(button.dataset.reviewLabel));
+    button.disabled = LABEL_BUSY || !allowed;
+    button.setAttribute("aria-pressed", String(label === button.dataset.reviewLabel));
+    button.title = "Click the selected verdict to clear it";
+    if (button.dataset.reviewLabel === "positive") button.innerHTML = `<kbd>1</kbd> ${
+      isNullRow(row) ? "Confirm No Match" : "Positive"}`;
+  }
+  $("#review-prev").disabled = !at || LABEL_BUSY || LB.photo <= 0;
+  $("#review-next").disabled = !at || LABEL_BUSY || LB.photo >= row.photos.length - 1;
+  const queue = isDrawerRow(row) ? [] : reviewQueue();
+  const left = queue.filter(item => !labelOf(item.slug, item.file)).length;
+  $("#review-unreviewed").disabled = LABEL_BUSY || !LB || !nextUnreviewed(queue, at);
+  $("#review-undo").disabled = LABEL_BUSY || !undoEntry();
+  $("#review-progress").textContent = isDrawerRow(row) ? "Move to a wine to review" :
+    `${left} unreviewed · ${isNullRow(row) ? "No Match" : "current wine results"}`;
+  $("#review-state").textContent = LABEL_MESSAGE;
+  $("#review-state").className = LABEL_MESSAGE_KIND;
+}
+$(".review-toolbar").addEventListener("click", event => {
+  const button = event.target.closest("button");
+  if (!button || button.disabled) return;
+  if (button.dataset.reviewLabel) {
+    const at = lbPhoto();
+    if (at) setLabel(at.slug, at.file, button.dataset.reviewLabel);
+  } else if (button.id === "review-undo") undoVerdict();
+  else if (button.id === "review-unreviewed") openNextUnreviewed();
+  else if (button.id === "review-prev" && LB) showLightbox(LB.wine, LB.photo - 1);
+  else if (button.id === "review-next" && LB) showLightbox(LB.wine, LB.photo + 1);
+  else if (button.id === "review-close") closeLightbox();
+});
+$("#lb").addEventListener("keydown", event => {
+  if (event.key !== "Tab") return;
+  const controls = [...$("#lb").querySelectorAll("button:not(:disabled), textarea, input, summary")]
+    .filter(element => element.getClientRects().length);
+  const first = controls[0], last = controls[controls.length - 1];
+  if (event.shiftKey && (document.activeElement === first || document.activeElement === $("#lb"))) {
+    event.preventDefault(); last?.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault(); first?.focus();
+  }
+});
 
 async function markDelete(slug, file, on) {
   try {
@@ -2026,6 +2258,7 @@ function renderLbStatus() {
   if (!p) {
     el.textContent = "no photo of this wine in the set";
     el.className = "none";
+    renderReviewToolbar();
     return;
   }
   const l = labelOf(r.slug, p.file), pr = proposalOf(r.slug, p.file);
@@ -2041,14 +2274,20 @@ function renderLbStatus() {
                      Math.round((pr.confidence || 0) * 100)}%)`
                  : "not labelled") + (deleteMarked(r.slug, p.file) ? "  · marked for deletion" : "");
   el.className = SHORT[l] || (pr ? "var" : "none");
+  renderReviewToolbar();
 }
 
 /* Open the large view at one photo of one wine. `wi` is an index in VIEW. */
 function showLightbox(wi, pi) {
   if (wi < 0 || wi >= VIEW.length) return;
   const r = VIEW[wi];
+  if (isNullRow(r) && !NULL_OPEN) { NULL_OPEN = true; refreshRow(r); }
   if (!r.photos.length && !r.bottle_url) return;
   pi = r.photos.length ? Math.max(0, Math.min(pi, r.photos.length - 1)) : 0;
+  const previous = LB && lbPhoto(), opening = !$("#lb").classList.contains("open");
+  if (!previous || previous.slug !== r.slug || previous.file !== r.photos[pi]?.file) {
+    LABEL_MESSAGE = ""; LABEL_MESSAGE_KIND = "";
+  }
   setBoxMode(false);
   LB = { wine: wi, photo: pi };
   fillFig("#lb-ref", bottleItem(r));
@@ -2064,6 +2303,7 @@ function showLightbox(wi, pi) {
   loadComment(r, pi);
   loadTags();
   $("#lb").classList.add("open");
+  if (opening) $("#lb").focus({preventScroll: true});
   const tr = isDrawerRow(r) ? DRAWER_CARDS.ensure(`${SET}/${r.photos[pi].file}`) : rowOf(r.slug);
   if (tr) tr.scrollIntoView({ block: "center" });
 }
@@ -2077,12 +2317,18 @@ function stepWine(step) {
 }
 
 function closeLightbox() {
+  const at = lbPhoto(), wasOpen = $("#lb").classList.contains("open");
   flushComment();
   CMT_AT = null;
   setBoxMode(false);
   $("#lb").classList.remove("open");
   LB = null;
   setHash("");
+  if (wasOpen) {
+    const image = at && cardOf(at.slug, at.file)?.querySelector("img[data-full]");
+    if (image) image.tabIndex = -1;
+    (image || $("#q")).focus({preventScroll: true});
+  }
 }
 
 /* ---- the box of the main object ----
@@ -2266,6 +2512,7 @@ function photoUrl(slug, file) {
 }
 
 function hideCtxMenu() {
+  hideTestsetMenu();
   const m = $("#ctxmenu");
   m.hidden = true;
   m.innerHTML = "";
@@ -2340,6 +2587,7 @@ async function duplicatePhoto(slug, file) {
 }
 
 function showCtxMenu(x, y, slug, file) {
+  hideCtxMenu();
   const m = $("#ctxmenu");
   m.innerHTML =
     `<div class="ctx-head">${esc(file)}</div>` +
@@ -2350,6 +2598,8 @@ function showCtxMenu(x, y, slug, file) {
     `<button type="button" data-act="filter-image">Show wines with this image</button>` +
     `<div class="ctx-sep"></div>` +
     `<button type="button" data-act="to-wine">Move to a wine…</button>` +
+    `<button type="button" data-act="to-testset" aria-haspopup="menu" aria-expanded="false"
+      aria-controls="ctx-testsets" ${TRANSFER_BUSY || LABEL_BUSY ? "disabled" : ""}>Move To testset &gt;</button>` +
     (slug === DRAWER_SLUG ? ""
       : `<button type="button" data-act="to-drawer">Move to the Drawer</button>`) +
     (slug === NULL_SLUG ? ""
@@ -2381,10 +2631,20 @@ document.addEventListener("contextmenu", ev => {
 });
 
 document.addEventListener("click", async ev => {
+  const target = ev.target.closest("#ctx-testsets [data-to-testset]");
+  if (target) {
+    if (target.disabled) return;
+    const slug = $("#ctxmenu").dataset.slug, file = $("#ctxmenu").dataset.file;
+    const to = target.dataset.toTestset;
+    hideCtxMenu();
+    await transferToTestset(slug, file, to);
+    return;
+  }
   const item = ev.target.closest("#ctxmenu button");
   if (!item) { hideCtxMenu(); return; }
   const m = $("#ctxmenu"), slug = m.dataset.slug, file = m.dataset.file;
   const act = item.dataset.act;
+  if (act === "to-testset") { showTestsetMenu(true); return; }
   if (act === "copy-image") { copyImage(slug, file, item); return; }
   if (act === "copy-url") {
     ctxDone(item, (await copyText(new URL(photoUrl(slug, file), location.href).href))
@@ -2407,7 +2667,130 @@ document.addEventListener("click", async ev => {
 }, true);
 window.addEventListener("blur", hideCtxMenu);
 window.addEventListener("resize", hideCtxMenu);
-document.addEventListener("scroll", hideCtxMenu, true);
+document.addEventListener("scroll", event => {
+  if (!event.target.closest?.(".ctxmenu")) hideCtxMenu();
+}, true);
+
+/* Move one entry to another testset. Preserve its place and annotations. */
+let TRANSFER_BUSY = false;
+function hideTestsetMenu() {
+  $("#ctx-testsets").hidden = true;
+  $("#ctx-testsets").innerHTML = "";
+  $("#ctxmenu [data-act='to-testset']")?.setAttribute("aria-expanded", "false");
+}
+function showTestsetMenu(focus = false) {
+  const parent = $("#ctxmenu [data-act='to-testset']"), menu = $("#ctx-testsets");
+  if (!parent || parent.disabled) return;
+  menu.innerHTML = `<div class="ctx-head">Move To testset</div>` + SETS.map(set =>
+    `<button type="button" role="menuitem" data-to-testset="${esc(set.name)}"
+      ${set.name === SET ? 'disabled aria-disabled="true"' : ""}>${esc(set.name)}${
+        set.name === SET ? " (current)" : ""}</button>`).join("");
+  menu.hidden = false;
+  parent.setAttribute("aria-expanded", "true");
+  const origin = $("#ctxmenu").getBoundingClientRect(), anchor = parent.getBoundingClientRect();
+  const rect = menu.getBoundingClientRect();
+  const preferred = origin.right + rect.width + 8 <= window.innerWidth
+    ? origin.right + 4 : origin.left - rect.width - 4;
+  menu.style.left = Math.max(8, Math.min(preferred, window.innerWidth - rect.width - 8)) + "px";
+  menu.style.top = Math.max(8, Math.min(anchor.top, window.innerHeight - rect.height - 8)) + "px";
+  if (focus) menu.querySelector("button:not(:disabled)")?.focus();
+}
+function transferStatus(message, kind = "", link = "") {
+  const element = $("#transfer-status");
+  element.hidden = false;
+  element.className = "transfer-status " + kind;
+  element.textContent = message;
+  if (link) {
+    const anchor = document.createElement("a");
+    anchor.href = link; anchor.textContent = "Open destination";
+    element.append(" ", anchor);
+  }
+}
+function updateTestsetOptions(sets) {
+  SETS = sets;
+  for (const option of $("#set").options) {
+    const set = sets.find(item => item.name === option.value);
+    if (set) option.textContent = `${set.name} (${set.photos} photos)`;
+  }
+}
+async function transferToTestset(slug, file, target) {
+  if (TRANSFER_BUSY || LABEL_BUSY || target === SET) return false;
+  const source = SET, epoch = LABEL_EPOCH, photo = photoOf(slug, file);
+  if (!photo) return false;
+  TRANSFER_BUSY = true; LABEL_BUSY = true; renderReviewToolbar();
+  transferStatus(`Moving to ${target}…`);
+  try {
+    if (CMT_AT && sameAt(CMT_AT, {slug, file})) {
+      await flushComment();
+      if ($("#cmt").value.trim()) throw new Error("Save the comment before moving this image.");
+    }
+    if (SET !== source || LABEL_EPOCH !== epoch) return false;
+    const out = await post("/api/testset-transfer", {set: source, place: slug, file,
+      to_set: target, sha256: photo.sha256});
+    if (SET !== source || LABEL_EPOCH !== epoch) return true;
+    const row = ROWS.find(item => item.slug === slug), at = LB && lbPhoto();
+    const index = row?.photos.findIndex(item => item.file === file && item.sha256 === photo.sha256);
+    if (index >= 0) row.photos.splice(index, 1);
+    if (V[slug]) delete V[slug][file];
+    if (CMT_AT && sameAt(CMT_AT, {slug, file})) { CMT_AT = null; $("#cmt").value = ""; }
+    if (row) {
+      const scores = row.photos.map(item => item.conf).filter(value => value !== null && value !== undefined);
+      row.min_conf = scores.length ? Math.min(...scores) : null;
+      row.catalog_only = !isSpecialRow(row) && !row.photos.length;
+      refreshRow(row);
+    }
+    if (out.sets) updateTestsetOptions(out.sets);
+    TOTAL = photoTotal(); stats();
+    if (LB && VIEW[LB.wine] === row) {
+      if (!row.photos.length) closeLightbox();
+      else if (at?.file === file) showLightbox(LB.wine, Math.min(LB.photo, row.photos.length - 1));
+      else if (at) showLightbox(LB.wine, row.photos.findIndex(item => item.file === at.file));
+    }
+    if (isDrawerRow(row) && DRAWER_VIEW) renderDrawerResults();
+    const query = new URLSearchParams({set: target, q: `img:${photo.sha256}`});
+    const fragment = `${encodeURIComponent(slug)}/${encodeURIComponent(out.file)}`;
+    transferStatus(`Moved to ${target}. Wine and annotations kept.`, "saved", `/testset?${query}#${fragment}`);
+    if (LB) reviewMessage(`Moved to ${target}. Wine and annotations kept.`, "saved");
+    return true;
+  } catch (error) {
+    if (SET === source && LABEL_EPOCH === epoch) {
+      transferStatus("Not moved: " + error.message, "failed");
+      if (LB) reviewMessage("Not moved: " + error.message, "failed");
+      else alert("Not moved: " + error.message);
+    }
+    return false;
+  } finally { TRANSFER_BUSY = false; LABEL_BUSY = false; renderReviewToolbar(); }
+}
+document.addEventListener("pointerover", event => {
+  const button = event.target.closest("#ctxmenu button");
+  if (!button) return;
+  if (button.dataset.act === "to-testset") showTestsetMenu();
+  else hideTestsetMenu();
+});
+$("#ctxmenu").addEventListener("keydown", event => {
+  if (event.target.closest("[data-act='to-testset']") && event.key === "ArrowRight") {
+    event.preventDefault(); event.stopPropagation(); showTestsetMenu(true);
+  }
+});
+$("#ctx-testsets").addEventListener("keydown", event => {
+  event.stopPropagation();
+  if (event.key === "Tab") {
+    event.preventDefault(); hideCtxMenu();
+    (LB ? $("#lb") : $("#q")).focus(); return;
+  }
+  if (["ArrowLeft", "Escape"].includes(event.key)) {
+    event.preventDefault(); event.stopPropagation(); hideTestsetMenu();
+    $("#ctxmenu [data-act='to-testset']")?.focus(); return;
+  }
+  const buttons = [...$("#ctx-testsets").querySelectorAll("button:not(:disabled)")];
+  const step = {ArrowDown: 1, ArrowUp: -1}[event.key];
+  if (step && buttons.length) {
+    event.preventDefault();
+    const index = buttons.indexOf(document.activeElement);
+    buttons[(index + step + buttons.length) % buttons.length].focus();
+  }
+});
+/* End of testset transfer. */
 
 /* ---- the move of a photo ----
    A card goes to the sidebar (the Drawer), onto the row "No Match", or onto a wine row. The server changes
@@ -2583,6 +2966,7 @@ function refreshRow(r) {
   if (isDrawerRow(r)) { renderSide(); return; }
   const tr = rowOf(r.slug);
   if (!tr) return;
+  if (isNullRow(r)) { tr.outerHTML = nullRowHtml(r); return; }
   tr.querySelector(".cards").innerHTML = cardsHtml(r);
   const counts = tr.querySelector(".row-counts");
   if (counts) counts.innerHTML = rowCountsHtml(r);
@@ -2880,11 +3264,19 @@ async function uploadFiles(files, to) {
    clipboard-read permission. Both paths use the existing file upload validation. */
 async function pasteImageFiles(to, btn, files) {
   if (btn.disabled) return;
+  const before = to === NULL_SLUG ? ROWS.find(isNullRow)?.photos.length || 0 : 0;
   const old = btn.innerHTML;
   btn.disabled = true;
   btn.textContent = "…";
   try {
     await uploadFiles(files, to);
+    if (to === NULL_SLUG) {
+      const row = ROWS.find(isNullRow);
+      if (row && row.photos.length > before) {
+        NULL_OPEN = true; refreshRow(row);
+        rowOf(NULL_SLUG)?.querySelector("[data-paste-image]")?.focus();
+      }
+    }
   } catch (e) {
     alert("the image is not pasted:\n" + e.message);
   } finally {
@@ -3414,6 +3806,10 @@ window.addEventListener("hashchange", () => {
 });
 
 document.addEventListener("click", ev => {
+  if (ev.target.closest("[data-null-toggle]")) { toggleNoMatch(); return; }
+  const clearFilter = ev.target.closest("[data-clear-filter]");
+  if (clearFilter) { clearViewFilter(clearFilter.dataset.clearFilter); return; }
+  if (ev.target.closest("[data-clear-filters]")) { clearViewFilters(); return; }
   const imageWines = ev.target.closest("[data-image-wines]");
   if (imageWines) {
     const card = imageWines.closest(".card");
@@ -3442,7 +3838,7 @@ document.addEventListener("click", ev => {
   }
   if (ev.target.closest("#lb")) {   // a click on an image or in the panel keeps it open
     if (!ev.target.matches(".lb-fig img") && !ev.target.closest(".lb-side")
-        && !ev.target.closest(".lb-box")) {
+        && !ev.target.closest(".lb-box") && !ev.target.closest(".review-toolbar")) {
       closeLightbox();
     }
     return;
@@ -3483,7 +3879,10 @@ document.addEventListener("keydown", ev => {
     return;
   }
   if (!LB || !$("#lb").classList.contains("open")) return;
-  if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "z" && !ev.shiftKey) {
+    ev.preventDefault(); undoVerdict(); return;
+  }
+  if (ev.metaKey || ev.ctrlKey || ev.altKey || LABEL_BUSY) return;
   const step = { ArrowRight: 1, ArrowLeft: -1 }[ev.key];
   if (step !== undefined) { ev.preventDefault(); showLightbox(LB.wine, LB.photo + step); return; }
   const wstep = { ArrowDown: 1, ArrowUp: -1 }[ev.key];
@@ -3666,6 +4065,9 @@ async function load(name, first) {
     $("#drawer-tag").value = "";
     $("#drawer-results-tag").value = "";
   }
+  if (SET !== data.set) NULL_OPEN = false;
+  LABEL_EPOCH++; LABEL_HISTORY = []; LABEL_MESSAGE = ""; LABEL_MESSAGE_KIND = "";
+  $("#transfer-status").hidden = true; hideCtxMenu();
   SET = data.set; SETS = data.sets || []; ROWS = data.rows || []; GROUPS = data.groups || {};
   IMAGE_INDEX = buildImageIndex(ROWS);
   $("#drawer-results").disabled = true;
@@ -4581,12 +4983,47 @@ function testsetStatChips(all) {
       data-testset-stat="${axis}:${value}" aria-pressed="${$("#" + axis).value === value}"
       title="Show wines with ${label} photos">${all[key]} ${label}</button>`).join(" ");
 }
-function applyTestsetStat(axis, value) {
+function activeViewFilters() {
+  const filters = [];
+  for (const [id, label, defaultValue] of [["q", "Search", ""], ["filter", "Progress", "all"],
+      ["verdict", "Verdict", "all"], ["marks", "Marks", "all"], ["tag", "Tag", ""],
+      ["origin", "Origin", "all"], ["cluster", "Clusters", "all"]]) {
+    const element = $("#" + id), value = element.value.trim();
+    if (value === defaultValue) continue;
+    const selected = element.tagName === "SELECT" ? element.selectedOptions[0]?.textContent : value;
+    filters.push({id, text: `${label}: ${String(selected || value).replace(/ \(\d+\)$/, "")}`});
+  }
+  if (GROUP_FILTER) filters.push({id: "group", text: `Variant group: ${GROUP_FILTER}`});
+  return filters;
+}
+function renderFilterState() {
+  const filters = activeViewFilters();
+  $("#active-filters").hidden = !filters.length;
+  $("#active-filters").innerHTML = filters.map(item => `<button type="button" class="filter-chip"
+    data-clear-filter="${item.id}" title="${esc(item.text)}" aria-label="Remove ${esc(item.text)}">
+    <span>${esc(item.text)}</span><span aria-hidden="true">×</span></button>`).join("") +
+    (filters.length ? '<button type="button" class="filter-clear" data-clear-filters>Clear filters</button>' : "");
+}
+function clearViewFilter(id) {
   clearTimeout(QT);
-  const active = axis && $("#" + axis).value === value;
+  if (id === "group") GROUP_FILTER = "";
+  else if (["q", "tag"].includes(id)) $("#" + id).value = "";
+  else if (FILTER_AXES.includes("#" + id)) $("#" + id).value = "all";
+  render();
+  $("#q").focus();
+}
+function clearViewFilters() {
+  clearTimeout(QT);
   for (const id of FILTER_AXES) $(id).value = "all";
   $("#tag").value = ""; $("#q").value = ""; GROUP_FILTER = "";
-  if (axis && !active) $("#" + axis).value = value;
+  render();
+  $("#q").focus();
+}
+function applyTestsetStat(axis, value) {
+  if (!axis) { clearViewFilters(); return; }
+  clearTimeout(QT);
+  const element = $("#" + axis);
+  element.value = element.value === value ? "all" : value;
   render();
 }
 $("#stat").addEventListener("click", event => {

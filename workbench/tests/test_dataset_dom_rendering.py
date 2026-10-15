@@ -46,7 +46,7 @@ if(process.argv[3]!=='fallback') ctx.IntersectionObserver=class {
   constructor(callback,options) {this.callback=callback;this.options=options;this.observed=new Set();observer=this;}
   observe(card) {this.observed.add(card);} unobserve(card) {this.observed.delete(card);} disconnect() {this.observed.clear();}};
 for(const name of ['PENDING_PATCHES','PENDING_ALTERNATIVES','DRAFT_GTINS','DRAFT_BARCODES',
- 'DRAFT_QR_URLS','DRAFT_ATLAS_BINDINGS','DRAFT_SIMILAR','DRAFT_TAGS','DRAFT_COMMENTS','DRAFT_NAMES']) ctx[name]=new Map();
+ 'DRAFT_QR_URLS','DRAFT_ATLAS_BINDINGS','DRAFT_SIMILAR','DRAFT_VINTAGES','DRAFT_TAGS','DRAFT_COMMENTS','DRAFT_NAMES']) ctx[name]=new Map();
 vm.runInContext(code,ctx);
 ctx.DATA.records=Array.from({length:2133},(_,i)=>({slug:'wine-'+i,name:'name '+i}));
 ctx.render(); assert.equal(list.children.length,2133);

@@ -1339,3 +1339,71 @@ ruff check pipeline/testset_duplicate.py pipeline/testset_routes.py tests/test_t
 ```
 
 Read [the test concept](docs/testing/testset-duplicate.md).
+
+
+## Testset transfer: local integration tests
+
+Prerequisites: Python with the Workbench dependencies and Node.js for UI behavior tests.
+The HTTP tests need localhost sockets.
+The tests use temporary databases and localhost HTTP servers.
+The tests do not modify the live catalogue or call a model service.
+Run these commands from the Workbench root.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=pipeline:scripts:tests python3 -m unittest test_testset_transfer test_testset_transfer_ui test_testset_routes test_lab_openapi test_lab_pages -q
+ruff check pipeline/testset_transfer.py pipeline/testset_routes.py tests/test_testset_transfer.py tests/test_testset_transfer_ui.py
+```
+
+Read [the test concept](docs/testing/testset-transfer.md).
+
+
+## Dataset additional-image removal: local tests
+
+Prerequisites: Python with the Workbench dependencies, Node.js, and `webui/node_modules/acorn`.
+The UI tests run locally. The route tests need localhost sockets and use temporary databases.
+The tests do not change the live catalogue or call a model service.
+Run these commands from the Workbench root.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=pipeline:tests python3 -m unittest test_dataset_alternative_removal test_dataset_dom_rendering test_dataset_filter_cache test_alternatives.AlternativeRouteTest.test_remove_deletes_the_row_and_keeps_the_file test_alternatives.AlternativeRouteTest.test_bad_requests_are_refused -q
+ruff check tests/test_dataset_alternative_removal.py
+```
+
+Read [the test concept](docs/testing/dataset-additional-removal.md).
+
+
+## Wine vintages: local relation and cluster tests
+
+Prerequisites: Python with the Workbench dependencies, Node.js, and `webui/node_modules/acorn`.
+The HTTP tests need localhost sockets. Each test uses a temporary database.
+The tests do not change the live catalogue or call a model service.
+Run these commands from the Workbench root.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=pipeline:tests python3 -m unittest test_wine_vintages test_wine_vintage_routes test_wine_vintage_clusters test_wine_vintage_merge test_wine_vintage_ui test_similar_wines test_clusters test_wine_merge test_labdb test_dataset_dom_rendering test_dataset_filter_cache test_lab_openapi -q
+ruff check pipeline/wine_vintages.py pipeline/lab_server.py pipeline/clusters.py pipeline/wine_merge.py tests/test_wine_vintages.py tests/test_wine_vintage_routes.py tests/test_wine_vintage_clusters.py tests/test_wine_vintage_merge.py tests/test_wine_vintage_ui.py
+```
+
+Read [the test concept](docs/testing/wine-vintages.md).
+
+
+## Dataset metadata and image facts
+
+Run from the Workbench root. Python needs the existing project dependencies.
+Node.js is required for the UI behavior checks. Tests use temporary databases and
+local test servers. They do not call a model or change the catalogue.
+
+```bash
+PYTHONPATH=pipeline:tests python3 -m unittest test_attribute_facts test_attribute_compare test_attribute_extract test_attribute_routes test_attribute_ui
+```
+
+The Dataset Actions menu can queue missing image facts, pause/resume the fact queue,
+and cancel queued fact jobs. These actions change derived data and can call the
+configured VLM. Re-extract on one card requests the current image input only.
+
+Reuse existing image descriptions after the additive migration. This command writes
+derived facts. It makes no inference request and preserves source metadata.
+
+```bash
+python3 pipeline/attribute_extract.py --db data/catalog/catalog.sqlite3
+```

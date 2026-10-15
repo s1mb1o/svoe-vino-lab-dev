@@ -1,0 +1,18 @@
+.attribute-comparison { margin: 12px 0; border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+.attribute-heading, .attribute-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.attribute-table { width: 100%; border-collapse: collapse; margin: 7px 0; font-size: 12px; table-layout: fixed; }
+.attribute-table th, .attribute-table td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: 6px 4px; overflow-wrap: anywhere; }
+.attribute-table th { color: var(--muted); font-weight: 550; }
+.attribute-table th:first-child { width: 19%; }
+.attribute-table th:last-child { width: 19%; }
+.attribute-table button, .attribute-comparison button { font: inherit; color: var(--text); border: 1px solid var(--line); background: var(--panel-2); border-radius: 4px; padding: 3px 6px; cursor: pointer; }
+.attribute-table summary { cursor: pointer; }
+.attribute-table blockquote { margin: 5px 0; white-space: pre-wrap; }
+.attribute-result { display: inline-block; border: 1px solid var(--line); border-radius: 4px; padding: 2px 4px; font-size: 11px; margin: 0 2px 3px 0; }
+.attribute-conflict, .attribute-error { color: var(--neg); }
+.attribute-match { color: var(--pos); }
+.attribute-image_only, .attribute-metadata_only { color: var(--accent); }
+.attribute-unknown, .attribute-source, .attribute-comparison small { color: var(--muted); }
+.attribute-footer { font-size: 11px; }
+.attribute-group th { padding-top: 10px; }
+@media(max-width: 600px) { .attribute-table { font-size: 11px; } .attribute-comparison { padding: 4px; } }

@@ -33,6 +33,7 @@ import numpy as np
 import embeddings
 import labdb
 import similar_wines
+import wine_vintages
 import summary_cache
 
 VERSION = 1
@@ -45,6 +46,7 @@ SPACES = ("full", "label", "combined")
 VECTOR_SPACES = ("full", "label")
 # The value of `by` and of `signals` for a manual pair of `wine_similar` (plan 62).
 MANUAL = "manual"
+VINTAGE = "vintage"
 # The value of `by` and of `signals` for two wines of one GTIN of `wine_code` (plan 64).
 GTIN = "gtin"
 # The rule space of `cluster-rules.json` that each view shows. The view `combined` shows
@@ -293,9 +295,9 @@ def catalog_inputs(settings):
         if version != _CATALOG_CACHE["version"]:
             directory = os.path.join(labdb.data_root(path), "cache", "clusters")
             disk_key = _database_signature(path)
-            saved = summary_cache.load(directory, "catalog-v1", path, disk_key)
+            saved = summary_cache.load(directory, "catalog-v2", path, disk_key)
             if (isinstance(saved, dict) and isinstance(saved.get("inputs"), list)
-                    and len(saved["inputs"]) == 5 and isinstance(saved.get("fingerprint"), str)
+                    and len(saved["inputs"]) == 6 and isinstance(saved.get("fingerprint"), str)
                     and disk_key == _database_signature(path)
                     and version == conn.execute("PRAGMA data_version").fetchone()[0]):
                 inputs = CatalogInputs(saved["inputs"])
@@ -307,6 +309,7 @@ def catalog_inputs(settings):
                             cut["box"] = tuple(cut["box"])
                 inputs[3][:] = [tuple(pair) for pair in inputs[3]]
                 inputs[4][:] = [tuple(pair) for pair in inputs[4]]
+                inputs[5][:] = [tuple(pair) for pair in inputs[5]]
                 inputs.revision = object()
                 inputs.fingerprint = saved["fingerprint"]
                 _CATALOG_CACHE.update(version=version, inputs=inputs)
@@ -315,7 +318,8 @@ def catalog_inputs(settings):
             try:
                 wines, sources = embeddings.read_inputs(conn, path)
                 inputs = CatalogInputs((wines, sources, _catalog(conn),
-                                        similar_wines.pairs(conn), _gtin_pairs(conn)))
+                                        similar_wines.pairs(conn), _gtin_pairs(conn),
+                                        wine_vintages.pairs(conn)))
                 inputs.revision = object()
                 inputs.fingerprint = sha256_json(inputs)
             finally:
@@ -323,7 +327,7 @@ def catalog_inputs(settings):
             _CATALOG_CACHE.update(version=version, inputs=inputs)
             if (disk_key == _database_signature(path)
                     and version == conn.execute("PRAGMA data_version").fetchone()[0]):
-                summary_cache.store(directory, "catalog-v1", path, disk_key,
+                summary_cache.store(directory, "catalog-v2", path, disk_key,
                                     {"inputs": inputs, "fingerprint": inputs.fingerprint})
         return _CATALOG_CACHE["inputs"]
 
@@ -379,12 +383,13 @@ def context(settings, name, inputs=None):
         raise ClusterError("cannot read the index of %s: %s" % (name, exc)) from exc
     if not index:
         raise ClusterError("embedding %s has no index; build the embedding first" % name)
-    wines, sources, catalog, pairs, gtin_pairs = (
+    wines, sources, catalog, pairs, gtin_pairs, vintage_pairs = (
         catalog_inputs(settings) if inputs is None else inputs)
     # A manual pair counts only when both wines are in the build (plan 62).
     known = {wine["slug"] for wine in wines}
     similar = [[a, b] for a, b in pairs if a in known and b in known]
     gtin = [[a, b] for a, b in gtin_pairs if a in known and b in known]
+    vintages = [list(pair) for pair in wine_vintages.cluster_pairs(vintage_pairs, known)]
     items = embeddings.plan_items(embedding, sources)
     names = embeddings.image_names(directory)
     status = embeddings.item_status(items, index, names)
@@ -402,13 +407,15 @@ def context(settings, name, inputs=None):
     # With no GTIN pair, the hash stays the hash of the builds before plan 64.
     if gtin:
         identity["gtin"] = gtin
+    if vintages:
+        identity["vintage"] = vintages
     counts = collections.Counter(state for state, _ in status.values())
     return {
         "settings": settings, "embedding": embedding, "directory": directory,
         "index": index, "wines": wines, "sources": sources, "catalog": catalog,
         "items": items, "status": status, "assignments": assignments,
         "similar": similar, "input_hash": sha256_json(identity),
-        "gtin": gtin,
+        "gtin": gtin, "vintage": vintages,
         "status_counts": {state: counts.get(state, 0)
                           for state in ("current", "stale", "missing", "failed")},
     }
@@ -589,11 +596,16 @@ def components(edges, view, min_size=MIN_CLUSTER_SIZE):
         kind = (signals[0] if len(signals) == 1 else "mixed") if signals else MANUAL
         # A cluster of GTIN links alone is `gtin` (plan 64).
         if not signals and not any(MANUAL in edge["by"] for edge in links):
-            kind = GTIN
+            if any(VINTAGE in edge["by"] for edge in links):
+                kind = "mixed" if any(GTIN in edge["by"] for edge in links) else VINTAGE
+            else:
+                kind = GTIN
         if any(MANUAL in edge["by"] for edge in links):
             signals.append(MANUAL)
         if any(GTIN in edge["by"] for edge in links):
             signals.append(GTIN)
+        if any(VINTAGE in edge["by"] for edge in links):
+            signals.append(VINTAGE)
         clusters.append({
             "key": cluster_key(members),
             "kind": kind,
@@ -637,6 +649,8 @@ def build(ctx, vectors, full_threshold=DEFAULT_THRESHOLD,
     normalized["combined"] = manual_links(combined_edges(raw), pairs)
     gtin = ctx.get("gtin") or []
     normalized = {space: manual_links(normalized[space], gtin, GTIN) for space in SPACES}
+    vintages = ctx.get("vintage") or []
+    normalized = {space: manual_links(normalized[space], vintages, VINTAGE) for space in SPACES}
     spaces = {space: components(normalized[space], space, min_cluster_size)
               for space in SPACES}
     for space in SPACES:

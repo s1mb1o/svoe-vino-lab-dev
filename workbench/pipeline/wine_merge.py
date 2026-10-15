@@ -10,6 +10,7 @@ import sqlite3
 import labdb
 import manual_wines
 import testsets
+import wine_vintages
 
 
 class MergeError(Exception):
@@ -169,6 +170,7 @@ def merge(db_path, body):
                           "wine_tag", "wine_beverage_type"):
                 _transfer_rows(conn, table, source, target)
             _similar(conn, source, target)
+            wine_vintages.reassign(conn, source, target)
             # Import refusals describe the deleted source card, not the destination card.
             conn.execute("DELETE FROM website_refusal WHERE wine_slug = ?", (source,))
             conn.execute("DELETE FROM wine_catalog WHERE wine_slug = ?", (source,))

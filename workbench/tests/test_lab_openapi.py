@@ -47,6 +47,7 @@ GET /website-import/{run}/images/{sha256}.{extension}
 GET /recognize/photo/{sha256}.{extension}
 GET /api/local-image
 GET /api/dataset
+POST /api/dataset-attributes
 POST /api/wine
 GET /api/wine-merge
 POST /api/wine-merge
@@ -76,6 +77,8 @@ POST /api/dataset-favorite
 POST /api/dataset-beverage-type
 POST /api/dataset-similar
 DELETE /api/dataset-similar
+POST /api/dataset-vintage
+DELETE /api/dataset-vintage
 POST /api/dataset-tag
 DELETE /api/dataset-tag
 POST /api/image-description
@@ -112,6 +115,7 @@ POST /api/testset-autotag
 POST /api/testset-box
 POST /api/testset-move
 POST /api/testset-duplicate
+POST /api/testset-transfer
 POST /api/testset-upload
 POST /api/testset-fetch
 GET /api/testset-from-run
@@ -191,6 +195,13 @@ class LabOpenApiDocumentTest(unittest.TestCase):
                               "options", "trace"}:
                     actual.add((path, method))
         self.assertEqual(actual, EXPECTED_OPERATIONS)
+
+    def test_transfer_requires_destination_and_source_identity(self):
+        schema = self.document["components"]["schemas"]["TestsetTransfer"]
+        self.assertEqual(schema["required"], ["set", "place", "file", "to_set", "sha256"])
+        self.assertEqual(schema["properties"]["sha256"]["pattern"], "^[0-9a-f]{64}$")
+        operation = self.document["paths"]["/api/testset-transfer"]["post"]
+        self.assertIn("409", operation["responses"])
 
     def test_operations_have_unique_ids_summaries_and_success_responses(self):
         identifiers = []

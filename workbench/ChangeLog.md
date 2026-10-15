@@ -7255,3 +7255,177 @@ Verify both example assignments, filename aliases, hash search, the corner count
 The browser reports no warnings or errors. No schema or server change is required.
 Verify the applied change on port 8168. Both example cards show 2. The context-menu filter and duplicate filename search return both wine slugs.
 Restore the original example search after verification. No server restart is required.
+
+
+## 2026-10-15T11:43:59+03:00 — Improve Testset review controls
+
+Keep No Match first as a collapsed count and drop target. Expand its photos on request.
+Add named verdict buttons, photo navigation, Undo, and Next unreviewed to the image viewer.
+Keep the toolbar visible. Collapse the long help text. Keep keyboard focus inside the viewer.
+Undo restores the previous verdict through the existing label API. Failed saves do not change the local verdict or Undo history.
+Next unreviewed follows the current wine results. No Match has a separate queue. The Drawer takes no verdict.
+Show removable filter chips and Clear filters above the results. Keep the selected sort when filters are cleared.
+Keep search and other filters when a statistic changes one filter. Move Sort out of Advanced Filters.
+Show an explicit empty-result message. Preserve the two-row sticky header.
+All 26 new behavior tests, 42 model and page tests, 20 HTTP tests, and three assembled script checks pass.
+The isolated browser verifies 18 interactions. Preview verdict writes stay in process memory. No live annotation or job is changed.
+No schema change or server restart is required.
+Verify the approved controls on port 8168. No Match is compact. Statistic filters keep search. The viewer shows all named controls and receives keyboard focus. The browser reports no warnings or errors.
+
+
+## 2026-10-15T12:11:03+03:00 — Move Testset photos between sets
+
+Add `Move To testset >` to the image context menu. List existing testsets.
+Disable the current testset. Support pointer and keyboard navigation.
+Move the photo to the same wine slug or special place in the destination.
+Keep all annotation fields, comments, comment IDs, timestamps, boxes, proposals,
+source URLs, provenance, and shared image tags.
+Keep set-level variant groups in their respective testsets.
+Reuse the stored image. Do not write another image file.
+Use an unused file name after a collision. Keep the original rank and confidence.
+Reject an existing assignment of the same image to the same destination place.
+Guard the move with the source SHA-256 and one database transaction.
+Save a pending photo comment first. Block verdict writes until the move finishes.
+Update source cards and testset counts. Offer `Open destination` after success.
+Show move feedback in the viewer. Close the viewer when its last photo moves.
+Document the API operation and local test commands.
+All 136 model, HTTP, UI behavior, API contract, page, and review-control tests pass.
+Ruff and three assembled JavaScript checks pass.
+The browser moves the screenshot photo against a private copy of the database.
+Every entry field and comment stays intact. A pending comment also moves intact.
+The destination link opens the exact photo. The browser reports no warnings or errors.
+Live photo entries stay unchanged during verification.
+No schema change is required. Applying the new route requires a port 8168 restart.
+
+
+## 2026-10-15T12:17:41+03:00 — Paste images into No Match
+
+Add a compact `Paste image — click or ⌘V` control to collapsed No Match.
+Show the full paste card when No Match is expanded. Allow expansion when it is empty.
+Use the existing image uploader for a click and native clipboard paste.
+Expand No Match after a successful paste. Put focus on the paste card.
+Keep the collapsed row compact. Do not change the Drawer paste behavior.
+The browser verifies click upload, native ⌘V upload, automatic expansion, and focus
+against a private database copy. The live testset has no corresponding new entry.
+All 136 existing model, HTTP, UI behavior, API contract, page, and review-control tests pass.
+Ruff and three assembled JavaScript syntax checks pass.
+No schema change or server restart is required for this page change.
+
+
+## 2026-10-15T12:26:46+03:00 — Remove a Dataset additional image with one click
+
+Make × send the existing additional-image DELETE request immediately on the lab server.
+Remove the staged Apply step from this action. Show no confirmation.
+Disable additional-image actions while the removal runs. Ignore repeated clicks.
+Keep the image visible after a failed request and report the error.
+Keep the file review editor's staged workflow.
+Add eight UI behavior tests. Document the local test command and test concept.
+All 20 relevant behavior, Dataset rendering, page, and HTTP tests pass.
+Ruff and all assembled JavaScript checks pass.
+The browser removes the exact unlabelled image of
+`zimovets-avtohton-tsimlyanskiy-chernyy-krasnoe-suhoe-135` in a private SQLite copy.
+The image count changes from 9 to 8 with no confirmation and no Apply step.
+The wine and other images stay present. Foreign keys pass. The browser reports no errors.
+The live image assignment and image file stay present during verification.
+No backend change, schema change, or server restart is required.
+
+
+## 2026-10-15T12:50:06+03:00 — Link the same wine across vintages
+
+Add the separate `wine_vintage` relation. Store each undirected pair once.
+Add `Same wine / vintages` to Dataset cards with add, remove, and partner navigation.
+Allow an entry without a year to link to several year-specific entries.
+Keep wine slugs, images, tags, and annotations independent.
+Add the vintage-link POST and DELETE routes and Dataset partner fields.
+Keep vintage links separate from the hard-case relation.
+The owner confirms that vintage families MUST join a shared cluster.
+Connect each family's Active entries in all three cluster views with the `vintage` reason.
+Keep the family connected when its hub is outside the build.
+Include the family links in cluster freshness checks. Preserve saved artifacts until rebuilt.
+Transfer vintage links during a duplicate catalogue merge. Remove self-links and duplicates.
+Prepare one new migration as `NNN_wine_vintage.sql`. Allocate its number during rollout.
+Update the schema inventory test for the existing production review tables and the new table.
+All 246 scoped model, HTTP, UI, migration, cluster, merge, Dataset, and Testset checks pass.
+Ruff and all assembled page scripts pass.
+The browser links the Vibes entry without a year in its slug to the 2021 and 2022 entries
+in a private database. Both cards show each link. Reload retains both links.
+Removing one link keeps the other. Partner navigation works through the current filter.
+The browser reports no warnings or errors. No live relation, image, annotation, or job changes.
+Applying the migration and server code requires a coordinated restart of port 8168.
+One existing navigation-markup test also fails against unchanged public code.
+The scoped tests do not include that unrelated markup assertion.
+
+
+## 2026-10-15T13:08:30+03:00 — Apply the four approved Dataset and Testset changes
+
+The owner approves the complete tested bundle. Record the shared-file agreements.
+Apply the vintage relation, immediate additional-image removal, No Match paste,
+and the Move To testset submenu. Give the compact paste label a visible separator.
+Allocate and apply `035_wine_vintage.sql`. Keep the new relation empty.
+Back up the database before the migration. Compare every existing table with the backup.
+All existing table contents match after migration. Foreign keys and quick_check pass.
+No active run, embedding queue, embedding build, index job, import job, or cluster build
+is present before the restart. Stop port 8168 with SIGTERM.
+Restart the server from PID 40061 to PID 31068. The Dataset API returns HTTP 200.
+All 246 scoped installed-source tests pass. The compact-label follow-up passes 41 checks.
+Ruff, nine assembled script checks, and the diff check pass.
+The served Dataset, Testset, and Clusters pages match the installed page assembly.
+The live browser verifies the vintage form, cancel, both No Match paste states,
+and all 11 testset destinations. The current testset is disabled. No browser errors.
+Use private databases for all relation, image removal, paste, and transfer writes.
+Do not change live image assignments or annotations for verification.
+Keep saved cluster artifacts until the owner rebuilds clusters after adding links.
+Stop the private preview. Close the temporary preview and verification tabs.
+Evidence: `internal/wine-vintage-relation-20261015/rollout.json`,
+`live-http-verification.json`, `live-browser-verification.json`, and `installed-tests.log`
+at the repository root.
+
+
+## 2026-10-15T15:40:53+03:00 — Compare Dataset metadata with image evidence
+
+Add a compact table with Attribute, svoe-vino metadata, Main/patch image, and Result.
+Compare grape, sweetness, wine colour, vintage, reserve, barrel ageing, and other claims.
+Keep original text and show supporting printed evidence. Use the patch when present.
+Keep main/patch disagreement separate from metadata conflicts.
+Add counted conflict, additional-information, image-disagreement, state, and field filters
+inside Advanced Filters. Keep the existing two-row sticky header.
+Store immutable versioned image observations and persistent generation-fenced jobs.
+Snapshot baseline image/input identities. Reuse saved independent VLM text for baseline
+inputs. Analyse new or changed inputs with the configured VLM. Keep manual source
+metadata and previous descriptions intact. A Dataset GET makes no inference request.
+The watcher advertises its active recipe and heartbeat. Recipe changes retain old
+evidence as stale and preserve already requested work. The client expires cached
+heartbeats. Add pause, resume, cancel, retry, and explicit extraction controls.
+Use bounded retries. Keep valid attributes when another attribute is inconsistent.
+Use clause-aware duration and negation parsing. Keep partial blends and ambiguous
+colour or sweetness evidence Unknown. Preserve raw metadata during updates.
+The 276 scoped checks, Ruff, assembled scripts, and private browser checks pass.
+Review with Claude Opus 5.5 at xhigh (Very High). Fix the concrete review findings.
+Keep the review evidence in internal/dataset-attribute-comparison-20261015 at repository root.
+
+Apply `036_image_attribute_facts.sql`. Back up the database before migration.
+All existing tables match the backup after migration and cached-text backfill.
+Store 2,253 cached-text observations. Make no new model call for the backfill.
+Foreign keys and quick_check pass. No active job is present before the restart.
+Restart port 8168 with SIGTERM from PID 31068 to PID 30037.
+The Dataset API returns HTTP 200. All 276 installed-source checks pass.
+Ruff, nine assembled scripts, and the diff check pass.
+The live browser verifies separate columns, exact vintage evidence, counted
+field filters, claim rows, and initialized queue controls. No browser warnings or errors.
+Restore the original filter preferences. Use private databases for queue-action tests.
+Claude Opus 5.5 at xhigh (Very High) approves the implementation after review fixes.
+Include the earlier approved vintage, Dataset removal, No Match paste, Testset
+transfer, and photo-review controls in the scoped commit. Preserve unrelated changes.
+Evidence: `internal/dataset-attribute-comparison-20261015/rollout.json`,
+`installed-checks.log`, `browser-verification.json`, and `live-comparison.jpg`
+at repository root.
+
+The final review identifies commentary in a non-observed attribute as invalid evidence.
+Reset that field to Unknown before validation. Keep valid evidence in other fields.
+Validate the final stored facts. Strengthen each subtest with a distinct vintage.
+All 277 installed-source checks pass after this correction.
+After idle-job checks, restart port 8168 from PID 30037 to PID 37103.
+The Dataset API returns HTTP 200. The initial facts and queue counts stay unchanged.
+
+Complete the Claude Opus 5.5 xhigh review. Address all blocking findings.
+Verify the final validation correction with the 277 installed checks.

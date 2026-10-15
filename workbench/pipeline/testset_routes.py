@@ -30,6 +30,8 @@ dialog `New testset…` of `/runs` makes a new set with `testset_from_run.py` (p
     POST /api/testset-move        {set, place, file, to}; to a slug, __null__ (the row
                                   "No Match"), or __drawer__ (the Drawer)
     POST /api/testset-duplicate   {set, place, file, sha256?}; duplicate one image entry
+    POST /api/testset-transfer    {set, place, file, to_set, sha256}; move an entry
+                                  to the same place in another set; keep annotations
     POST /api/testset-upload?set=<name>&place=<slug>&name=<file name>
                                   the body is the bytes of one image; place a slug,
                                   __null__, or __drawer__
@@ -57,6 +59,7 @@ import testset_from_run
 import testset_autotag
 import testsets
 import testset_duplicate
+import testset_transfer
 from testset_payload_cache import TESTSET_PAYLOAD_CACHE
 
 PAGE_ROUTE = "/testset"
@@ -90,6 +93,8 @@ WRITES = {
     "/api/testset-move": (testsets.move_photo, ("set", "place", "file", "to")),
     "/api/testset-duplicate": (testset_duplicate.duplicate_photo,
                                   ("set", "place", "file", "sha256")),
+    "/api/testset-transfer": (testset_transfer.transfer_photo,
+                                 ("set", "place", "file", "to_set", "sha256")),
     # The fields of an upload come from the query; `data` is the body. Read `_upload_body`.
     UPLOAD: (testsets.upload_photo, ("set", "place", "data", "name")),
     # `respond` fetches the address before the write transaction and adds `data` and `name`.

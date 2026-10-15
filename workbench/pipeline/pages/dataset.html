@@ -400,7 +400,12 @@ figcaption .patch { color: var(--var); font-weight: 700; text-transform: upperca
 .similar-editor .barcode-value a { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
                                    overflow-wrap: anywhere; }
 .similar-editor .similar-name { color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
-.similar-editor .similar-input { width: min(360px, 100%); }
+.similar-editor .similar-input, .vintage-editor .vintage-input { width: min(360px, 100%); }
+.vintage-editor { margin-top: 8px; }
+.vintage-editor .barcode-values { align-items: flex-start; flex-direction: column; }
+.vintage-editor .barcode-value { max-width: 100%; flex-wrap: wrap; }
+.vintage-editor .barcode-value a { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
+.vintage-editor .vintage-name { color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
 /* The tags of a card (plan 63). The shared classes of the code editors do the rest. */
 .wine-tag-editor { margin-top: 8px; }
 .barcode-remove {
@@ -722,6 +727,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
   .image-preview-arrow.previous { left: 12px; margin: 0; transform: none; }
   .image-preview-arrow.next { right: 12px; margin: 0; transform: none; }
 }
+/* ATTRIBUTE_COMPARISON_CSS */
 </style>
 </head>
 <body>
@@ -735,6 +741,9 @@ button.preview-thumb:hover { border-color: var(--accent); }
     <span class="vlm-status" id="vlm-status" role="status" aria-live="polite" hidden></span>
     <details class="action-menu" id="dataset-actions">
       <summary>Actions</summary>
+      <button type="button" id="attribute-backfill" hidden>Extract missing image facts</button>
+      <button type="button" id="attribute-pause" hidden>Pause image facts</button>
+      <button type="button" id="attribute-cancel" hidden>Cancel queued image facts</button>
       <div class="bar-actions">
         <button id="add-wine" class="wine-add-btn" type="button" hidden>Add wine</button>
         <button id="atlas-new" class="wine-add-btn" type="button" hidden>New from Atlas</button>
@@ -804,6 +813,12 @@ button.preview-thumb:hover { border-color: var(--accent); }
         <option value="with">has alternative photos</option>
       </select>
     </label>
+    <label id="attribute-filter-label" hidden>Metadata / image
+      <select id="attribute-filter" aria-label="Metadata / image comparison"><option value="all">All</option><option value="conflict">Conflicts</option>
+        <option value="additional">Additional information</option><option value="images_differ">Main / patch disagree</option><option value="pending">Pending / stale</option>
+        <option value="failed">Failed extraction</option></select></label>
+    <label id="attribute-field-label" hidden>Attribute
+      <select id="attribute-field" aria-label="Comparison attribute"><option value="all">Any attribute</option><option value="grape">Grape</option><option value="sweetness">Sweetness</option><option value="colour">Wine colour</option><option value="vintage">Vintage</option><option value="reserve">Reserve</option><option value="barrel">Barrel / oak ageing</option><option value="kosher">Kosher</option><option value="organic">Organic</option><option value="unfiltered">Unfiltered</option><option value="limited_edition">Limited edition</option></select></label>
   </div>
 </header>
 <main>
@@ -830,6 +845,7 @@ button.preview-thumb:hover { border-color: var(--accent); }
       title="Show wines with failed image details"></button>
     <p class="filter-error" id="filter-error" role="alert" hidden></p>
   </div>
+  <p id="attribute-queue-status" class="sub" role="status" aria-live="polite"></p>
   <div class="list" id="list"></div>
 </main>
 <div class="modal" id="validation-modal" role="dialog" aria-modal="true"
@@ -1069,6 +1085,8 @@ const DRAFT_ATLAS_BINDINGS = new Map();
 const BUSY_ATLAS_BINDINGS = new Set();
 // slug -> the draft slug of a new similar wine; the slugs that save now: plan 62.
 const DRAFT_SIMILAR = new Map();
+const DRAFT_VINTAGES = new Map();
+const BUSY_VINTAGES = new Set();
 const BUSY_SIMILAR = new Set();
 const DRAFT_COMMENTS = new Map();
 const BUSY_COMMENTS = new Set();
@@ -1610,7 +1628,7 @@ function alternativeEditor(r) {
     const removing = pending.removes.has(key);
     const src = photo ? photo.image_url
       : `/img/alternative?slug=${slug}&file=${encodeURIComponent(item)}${version}`;
-    const turning = photo && BUSY_ALTERNATIVE_TYPES.has(`${r.slug}|${key}`);
+    const turning = busy || (photo && BUSY_ALTERNATIVE_TYPES.has(`${r.slug}|${key}`));
     const cut = photo && photo.derivation && (photo.manual ? "manual" : photo.derivation);
     const badge = cut ? `<span class="image-badge ${esc(cut)}"
       title="processed image: ${esc(cut)}">${esc(cut)}</span>` : "";
@@ -1624,7 +1642,8 @@ function alternativeEditor(r) {
       <a href="${esc(src)}" ${link}><img src="${esc(src)}" loading="lazy"
         alt="${esc(r.name || r.slug)} — alternative"></a>${badge}
       <button class="alternative-remove" type="button" data-alternative-remove="${esc(key)}"
-        title="${removing ? "Keep this photo" : "Remove this photo"}" ${turning ? "disabled" : ""}>${removing ? "↶" : "×"}</button>
+        title="${removing ? "Keep this photo" : "Remove this photo"}"
+        aria-label="${removing ? "Keep this additional image" : "Remove this additional image"}" ${turning ? "disabled" : ""}>${removing ? "↶" : "×"}</button>
       ${photo ? describeButton(photo.sha256, r.slug, photo.url) : ""}
       ${photo && lab ? recutButton(photo, turning || removing) : ""}
       ${removing ? '<span class="patch-state">remove</span>' : ""}
@@ -1906,6 +1925,49 @@ function ensureSimilarList() {
   if (document.getElementById("similar-slugs")) return;
   const list = document.createElement("datalist");
   list.id = "similar-slugs";
+  list.innerHTML = DATA.records.map(item =>
+    `<option value="${esc(item.slug)}">${esc(item.name || "")}</option>`).join("");
+  document.body.append(list);
+}
+function vintageOn() { return !!DATA.vintage_editor; }
+function vintageEditor(r) {
+  const partners = [...(r._vintages || [])].sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+  const editing = DRAFT_VINTAGES.has(r.slug);
+  const busy = BUSY_VINTAGES.has(r.slug);
+  const existing = partners.length ? `<div class="barcode-values">${partners.map(slug => {
+    const other = DATA.records.find(item => item.slug === slug);
+    return `<span class="barcode-value"><button class="barcode-remove" type="button"
+        data-vintage-remove="${esc(slug)}" aria-label="Remove the vintage link ${esc(slug)}"
+        title="Remove the pair" ${busy ? "disabled" : ""}>×</button><a
+        href="/dataset#${esc(encodeURIComponent(slug))}" target="_blank" rel="noopener"
+        data-vintage-open="${esc(slug)}" title="Go to the card">${esc(slug)}</a>${other?.name
+        ? `<span class="vintage-name">${esc(other.name)}</span>` : ""}</span>`;
+  }).join("")}</div>` : '<div class="barcode-empty">none</div>';
+  const entry = editing ? `<div class="barcode-new">
+    <input class="vintage-input" type="text" list="vintage-slugs" autocomplete="off"
+      aria-label="Slug of a vintage link" placeholder="Wine slug or name"
+      value="${esc(DRAFT_VINTAGES.get(r.slug) || "")}" ${busy ? "disabled" : ""}>
+    <button class="accept" type="button" data-vintage-save aria-label="Save the vintage link"
+      title="Save the pair" ${busy ? "disabled" : ""}>${busy ? "…" : ICON_SAVE}</button>
+    <button class="cancel" type="button" data-vintage-cancel aria-label="Cancel the vintage link"
+      title="Cancel" ${busy ? "disabled" : ""}>${ICON_CANCEL}</button>
+  </div>` : "";
+  return `<div class="vintage-editor" data-slug="${esc(r.slug)}">
+    <div class="barcode-head"><strong>Same wine / vintages</strong>
+      <span class="count">${partners.length}</span>
+      <button class="barcode-add" type="button" data-vintage-add aria-label="Add a vintage link"
+        title="Add a vintage link: the same wine from another year, or a version without a year"
+        ${editing ? "disabled" : ""}>+</button></div>
+    <div class="barcode-empty">Link the same wine across years, including an entry without a year. Rebuild clusters to apply links.</div>
+    ${existing}${entry}
+  </div>`;
+}
+// The list of the input of a vintage wine: one option for each wine, made at the first
+// use. A choice by the name puts the slug in the input.
+function ensureVintageList() {
+  if (document.getElementById("vintage-slugs")) return;
+  const list = document.createElement("datalist");
+  list.id = "vintage-slugs";
   list.innerHTML = DATA.records.map(item =>
     `<option value="${esc(item.slug)}">${esc(item.name || "")}</option>`).join("");
   document.body.append(list);
@@ -2655,7 +2717,7 @@ function recordHtml(r) {
   const match = r.image_match || {};
   const page = safeUrl(r.page_url);
   const remote = safeUrl(r.image_url);
-  const where = [r.category, r.region].filter(Boolean).map(esc).join(" · ");
+  const where = [DATA.attribute_comparison ? "" : r.category, r.region].filter(Boolean).map(esc).join(" · ");
   return `<article class="wine" id="${esc(r.slug)}">
     <div class="pictures">${imageFigure(r, false)}${imageFigure(r, true)}</div>
     <div class="info${favoritesOn() ? " with-star" : ""}">
@@ -2669,12 +2731,13 @@ function recordHtml(r) {
       <div class="producer">${esc(r.producer || "—")}</div>
       ${where || beverageTypesOn() ? `<div class="kind">${where}${
         beverageTypesOn() ? beverageTypeSelect(r, !!where) : ""}</div>` : ""}
-      ${r.grapes ? `<div class="grapes">${esc(r.grapes)}</div>` : ""}
+      ${DATA.attribute_comparison ? attributeTable(r) : r.grapes ? `<div class="grapes">${esc(r.grapes)}</div>` : ""}
       ${gtinsOn() ? gtinEditor(r) : ""}
       ${barcodesOn() ? barcodeEditor(r) : ""}
       ${qrUrlEditor(r)}
       ${atlasBindingEditor(r)}
       ${similarOn() ? similarEditor(r) : ""}
+      ${vintageOn() ? vintageEditor(r) : ""}
       ${tagsOn() ? tagEditor(r) : ""}
       ${commentsOn() ? commentEditor(r) : ""}
       ${match.method || r.match ? `<div class="match">Image match: ${esc(match.method || r.match)}${
@@ -2707,6 +2770,8 @@ function packageOf(record) {
   return row && row.package_type || "";
 }
 function initAdvancedFilters() {
+  for (const id of ["attribute-filter-label","attribute-field-label","attribute-backfill","attribute-pause","attribute-cancel"]) $("#"+id).hidden = !DATA.attribute_comparison;
+  if (DATA.attribute_comparison) {updateAttributeQueueControls(); scheduleAttributePoll();}
   if (!barcodesOn()) $('#identifier-filter option[value="barcode"]').remove();
   if (!describeOn()) $('#filter option[value="failed"]').remove();
   // The filter `Type` needs the wine types of the lab server (plan 52).
@@ -2767,9 +2832,12 @@ function inTypeView(record) {
 // of 2026-09-27T00:39:59+0300).
 function hasAlternatives(record) { return !!(record._alternatives || []).length; }
 function updateAdvancedFilterCount() {
+  if (DATA.attribute_comparison) updateAttributeCounts();
   const count = Number(describeOn() && $("#package-filter").value !== "all")
     + Number($("#identifier-filter").value !== "all") + Number(typeFilterActive())
-    + Number($("#alternative-filter").value !== "all");
+    + Number($("#alternative-filter").value !== "all")
+    + Number(DATA.attribute_comparison && $("#attribute-filter").value !== "all")
+    + Number(DATA.attribute_comparison && $("#attribute-field").value !== "all");
   $("#advanced-toggle").textContent = `Advanced Filters (${count})`;
   $("#advanced-toggle").classList.toggle("active", count > 0);
   $("#advanced-toggle").title = `${count} active advanced filter${count === 1 ? "" : "s"}`;
@@ -2822,7 +2890,7 @@ function applyStatFilter(stat) {
   clearTimeout(SEARCH_TIMER);
   const target = STAT_FILTERS[stat];
   const active = target && $("#" + target[0]).value === target[1];
-  for (const id of ["filter", "package-filter", "identifier-filter", "type-filter", "alternative-filter"]) {
+  for (const id of ["filter", "package-filter", "identifier-filter", "type-filter", "alternative-filter", "attribute-filter", "attribute-field"]) {
     $("#" + id).value = "all";
   }
   $("#state").value = "present";
@@ -2860,6 +2928,7 @@ function applyView() {
     if (pack !== "all" && packageOf(r) !== pack) return false;
     if (!hasIdentifier(r, identifier)) return false;
     if (!inTypeView(r)) return false;
+    if (DATA.attribute_comparison && !inAttributeView(r)) return false;
     if ($("#alternative-filter").value === "with" && !hasAlternatives(r)) return false;
     if (!inStateView(r)) return false;
     if (!words.length) return true;
@@ -2894,7 +2963,7 @@ function keepCardMounted(card) {
   const slug = card.id;
   return card.contains(document.activeElement) || !!card.querySelector("details[open]")
     || [PENDING_PATCHES, PENDING_ALTERNATIVES, DRAFT_GTINS, DRAFT_BARCODES,
-      DRAFT_QR_URLS, DRAFT_ATLAS_BINDINGS, DRAFT_SIMILAR, DRAFT_TAGS,
+      DRAFT_QR_URLS, DRAFT_ATLAS_BINDINGS, DRAFT_SIMILAR, DRAFT_VINTAGES, DRAFT_TAGS,
       DRAFT_COMMENTS, DRAFT_NAMES].some(drafts => drafts.has(slug));
 }
 function deferredCardHtml(record) {
@@ -2953,7 +3022,7 @@ function renderHead() {
   records.textContent = `${ROWS.length} of ${DATA.records.length} records`;
   records.setAttribute("aria-pressed", String($("#filter").value === "all"
     && $("#state").value === "present" && !$("#q").value.trim()
-    && ["package-filter", "identifier-filter", "type-filter", "alternative-filter"]
+    && ["package-filter", "identifier-filter", "type-filter", "alternative-filter", "attribute-filter", "attribute-field"]
       .every(id => $("#" + id).value === "all")));
   const stats = [
     ["patches", "patches", true], ["alternatives", "alternatives", true],
@@ -3784,22 +3853,23 @@ $("#image-preview-cut-layer").addEventListener("contextmenu", event => {
   CUT_EDIT.points.splice(Number(target.dataset.cutPoint), 1);
   drawCut();
 });
-// Remove the photos that × marked, on the lab server.
-async function applyAlternativeRemovals(slug) {
+// Remove one photo immediately, or apply queued removals from an older editor state.
+async function applyAlternativeRemovals(slug, sha256 = null) {
   const pending = PENDING_ALTERNATIVES.get(slug);
-  if (!pending || BUSY_ALTERNATIVES.has(slug)) return;
+  const removals = sha256 ? [sha256] : [...(pending?.removes || [])];
+  if (!removals.length || BUSY_ALTERNATIVES.has(slug)) return;
   BUSY_ALTERNATIVES.add(slug);
   renderCard(slug);
   try {
     const record = DATA.records.find(r => r.slug === slug);
-    for (const sha256 of [...pending.removes]) {
+    for (const sha256 of removals) {
       const query = `?slug=${encodeURIComponent(slug)}&sha256=${encodeURIComponent(sha256)}`;
       const response = await fetch("/api/dataset-alternative" + query, {method: "DELETE"});
       const out = await response.json();
       if (!response.ok) throw new Error(out.error || response.status);
       if (record && out.record) Object.assign(record, out.record);
       DATA.alternatives = Number(out.alternatives) || 0;
-      pending.removes.delete(sha256);
+      pending?.removes.delete(sha256);
     }
     dropPendingAlternatives(slug);
   } catch (error) {
@@ -4189,6 +4259,63 @@ async function removeSimilar(slug, other) {
     renderCodeCard(slug);
   }
 }
+function focusVintage(slug) {
+  requestAnimationFrame(() => {
+    const editor = [...document.querySelectorAll(".vintage-editor")]
+      .find(item => item.dataset.slug === slug);
+    const input = editor?.querySelector(".vintage-input");
+    if (input) { input.focus(); input.select(); }
+  });
+}
+// Keep the answer of `/api/dataset-vintage` and draw again the card of the other wine.
+function applyVintage(out) {
+  for (const [slug, list] of [[out.slug, out.vintages], [out.other, out.other_vintages]]) {
+    const record = DATA.records.find(item => item.slug === slug);
+    if (record) record._vintages = list || [];
+  }
+  DATA.vintage_pairs = Number(out.total) || 0;
+  if (document.getElementById(out.other)) renderCard(out.other);
+}
+async function saveVintage(slug) {
+  if (!DRAFT_VINTAGES.has(slug) || BUSY_VINTAGES.has(slug)) return;
+  const other = (DRAFT_VINTAGES.get(slug) || "").trim();
+  if (!other) { focusVintage(slug); return; }
+  BUSY_VINTAGES.add(slug);
+  renderCodeCard(slug);
+  try {
+    const response = await fetch("/api/dataset-vintage", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({slug, other})
+    });
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    applyVintage(out);
+    DRAFT_VINTAGES.delete(slug);
+  } catch (error) {
+    alert(`Cannot add the vintage link: ${error.message}`);
+  } finally {
+    BUSY_VINTAGES.delete(slug);
+    renderCodeCard(slug);
+    if (DRAFT_VINTAGES.has(slug)) focusVintage(slug);
+  }
+}
+async function removeVintage(slug, other) {
+  if (BUSY_VINTAGES.has(slug)) return;
+  BUSY_VINTAGES.add(slug);
+  renderCodeCard(slug);
+  try {
+    const query = `?slug=${encodeURIComponent(slug)}&other=${encodeURIComponent(other)}`;
+    const response = await fetch("/api/dataset-vintage" + query, {method: "DELETE"});
+    const out = await response.json();
+    if (!response.ok) throw new Error(out.error || response.status);
+    applyVintage(out);
+  } catch (error) {
+    alert(`Cannot remove the vintage link: ${error.message}`);
+  } finally {
+    BUSY_VINTAGES.delete(slug);
+    renderCodeCard(slug);
+  }
+}
 function focusTag(slug) {
   requestAnimationFrame(() => {
     const editor = [...document.querySelectorAll(".wine-tag-editor")]
@@ -4262,7 +4389,7 @@ function openNameEdit(slug) {
 function renderName(slug) {
   const record = DATA.records.find(item => item.slug === slug);
   renderCard(slug);
-  for (const other of record?._similar || []) {
+  for (const other of new Set([...(record?._similar || []), ...(record?._vintages || [])])) {
     if (document.getElementById(other)) renderCard(other);
   }
 }
@@ -4507,6 +4634,31 @@ $("#list").addEventListener("click", event => {
     }
     return;
   }
+  const vintage = event.target.closest(".vintage-editor");
+  if (vintage) {
+    const slug = vintage.dataset.slug;
+    const remove = event.target.closest("[data-vintage-remove]");
+    const open = event.target.closest("[data-vintage-open]");
+    if (remove) {
+      removeVintage(slug, remove.dataset.vintageRemove);
+    } else if (open && DATA.records.some(item => item.slug === open.dataset.vintageOpen)) {
+      // Go to the card of the partner, also when the filters hide it. An unknown slug
+      // keeps the link: it opens in a new tab.
+      event.preventDefault();
+      openSimilarCard(slug, open.dataset.vintageOpen);
+    } else if (event.target.closest("[data-vintage-add]")) {
+      ensureVintageList();
+      DRAFT_VINTAGES.set(slug, "");
+      renderCodeCard(slug);
+      focusVintage(slug);
+    } else if (event.target.closest("[data-vintage-save]")) {
+      saveVintage(slug);
+    } else if (event.target.closest("[data-vintage-cancel]")) {
+      DRAFT_VINTAGES.delete(slug);
+      renderCodeCard(slug);
+    }
+    return;
+  }
   const tagged = event.target.closest(".wine-tag-editor");
   if (tagged) {
     const slug = tagged.dataset.slug;
@@ -4597,6 +4749,10 @@ $("#list").addEventListener("click", event => {
       pasteAlternativeImage(slug, event.target.closest("[data-alternative-paste]"));
     } else if (remove) {
       const filename = remove.dataset.alternativeRemove;
+      if (DATA.alternative_editor) {
+        applyAlternativeRemovals(slug, filename);
+        return;
+      }
       if (pending.removes.has(filename)) pending.removes.delete(filename);
       else pending.removes.add(filename);
       PENDING_ALTERNATIVES.set(slug, pending);
@@ -4694,6 +4850,9 @@ $("#list").addEventListener("input", event => {
   } else if (event.target.matches(".similar-input")) {
     const editor = event.target.closest(".similar-editor");
     DRAFT_SIMILAR.set(editor.dataset.slug, event.target.value);
+  } else if (event.target.matches(".vintage-input")) {
+    const editor = event.target.closest(".vintage-editor");
+    DRAFT_VINTAGES.set(editor.dataset.slug, event.target.value);
   } else if (event.target.matches(".wine-tag-input")) {
     const editor = event.target.closest(".wine-tag-editor");
     DRAFT_TAGS.set(editor.dataset.slug, event.target.value);
@@ -4753,6 +4912,16 @@ $("#list").addEventListener("keydown", event => {
     } else if (event.key === "Escape") {
       event.preventDefault();
       DRAFT_SIMILAR.delete(editor.dataset.slug);
+      renderCodeCard(editor.dataset.slug);
+    }
+  } else if (event.target.matches(".vintage-input")) {
+    const editor = event.target.closest(".vintage-editor");
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveVintage(editor.dataset.slug);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      DRAFT_VINTAGES.delete(editor.dataset.slug);
       renderCodeCard(editor.dataset.slug);
     }
   } else if (event.target.matches(".wine-tag-input")) {
@@ -4842,9 +5011,10 @@ for (const id of ["state", "sort"]) $("#" + id).addEventListener("change", rende
 /* The header controls are kept in localStorage and come back at the next page load (owner
    message of 2026-09-26T00:30:00+0300). A stored value that is no longer an option is
    ignored. The listeners of each control run first; the header listener then stores. */
+/* ATTRIBUTE_COMPARISON_JS */
 const HEADER_KEY = "svl.dataset.header";
 const HEADER_IDS = ["filter", "state", "sort", "q", "package-filter", "identifier-filter",
-  "type-filter", "alternative-filter"];
+  "type-filter", "alternative-filter", "attribute-filter", "attribute-field"];
 function saveHeader() {
   const value = {};
   for (const id of HEADER_IDS) value[id] = $("#" + id).value;
@@ -4860,7 +5030,8 @@ function restoreHeader() {
     node.value = wanted;
   }
   if ($("#package-filter").value !== "all" || $("#identifier-filter").value !== "all"
-      || typeFilterActive() || $("#alternative-filter").value !== "all") {
+      || typeFilterActive() || $("#alternative-filter").value !== "all"
+      || $("#attribute-filter").value !== "all" || $("#attribute-field").value !== "all") {
     changeAdvancedFilter();
   }
 }
@@ -4933,6 +5104,7 @@ $("#label-desc-add").addEventListener("click", () => editLabelDescription(null))
 $("#label-desc-cancel").addEventListener("click", cancelLabelEdit);
 $("#label-desc-save").addEventListener("click", saveLabelDescription);
 $("#advanced-toggle").addEventListener("click", toggleAdvancedFilters);
+for (const id of ["attribute-filter","attribute-field"]) $("#"+id).addEventListener("change", changeAdvancedFilter);
 $("#dataset-stats").addEventListener("click", event => {
   const chip = event.target.closest("[data-stat]");
   if (chip) applyStatFilter(chip.dataset.stat);
@@ -5011,7 +5183,7 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape" && !$("#vlm-modal").hidden) closeVlm();
 });
 window.addEventListener("beforeunload", event => {
-  if (!PENDING_PATCHES.size && !PENDING_ALTERNATIVES.size && !DRAFT_BARCODES.size
+  if (!PENDING_PATCHES.size && !PENDING_ALTERNATIVES.size && !DRAFT_VINTAGES.size && !DRAFT_BARCODES.size
       && !DRAFT_ATLAS_BINDINGS.size
       // An empty comment draft (after `+`) loses nothing.
       && ![...DRAFT_COMMENTS.values()].some(text => text.trim())) return;

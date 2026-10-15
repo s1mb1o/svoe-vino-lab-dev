@@ -28,7 +28,7 @@ import vlm_config
 ANSWER = {"package_type": "bottle", "subject_scope": "full_package",
           "package_view": "front", "content_roles": ["front_label"],
           "presentation_mode": "on_package"}
-CFG = dict(DI.DEFAULTS, poll_seconds=1)
+CFG = dict(DI.DEFAULTS, poll_seconds=1, attributes=False)
 ENTRY = vlm_config.entry({"vlm": [{
     "name": "gx10-test", "protocol": "openai", "thinking_field": "chat_template_kwargs",
     "endpoint": "http://vlm.invalid/v1", "model": "model-1", "key": None}]}, "gx10-test")
@@ -362,7 +362,7 @@ DETAIL_CFG = dict(CFG, details=True)
 
 def owner_prompts():
     """Return the two prompts of the owner message of 2026-09-25T19:14:31+0300."""
-    text = (ROOT / "docs" / "owner-messages.md").read_text(encoding="utf-8")
+    text = (ROOT.parent / "internal" / "owner-messages.md").read_text(encoding="utf-8")
     entry = text[text.index("## 2026-09-25T19:14:31+0300"):]
     entry = entry[:entry.index("\n## ", 5)]
     return re.findall(r"```\n(.*?)\n```", entry, re.S)

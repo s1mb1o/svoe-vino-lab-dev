@@ -60,6 +60,8 @@ import yaml
 from PIL import Image, ImageOps
 
 import comments
+import attribute_facts
+import attribute_extract
 import image_descriptions
 import image_details
 import imagestore
@@ -77,7 +79,7 @@ LOG_PATH = os.path.join(ROOT, "work", "describe_images.log")
 # The key `image_description` of the configuration. A missing key takes its default.
 DEFAULTS = {"watch": False, "vlm": "qwen3.5-9b-nvfp4", "max_side": 1024,
             "poll_seconds": 30, "max_attempts": 3, "workers": 1,
-            "details": False, "detail_max_side": 1536, "labels": False}
+            "details": False, "detail_max_side": 1536, "labels": False, "attributes": True}
 MAX_TOKENS = 300
 TIMEOUT_SECONDS = 300
 # The timeout of the probe of 1 token after a request that timed out (plan 49).
@@ -257,7 +259,7 @@ def settings(config):
     for key in ("max_side", "poll_seconds", "max_attempts", "workers", "detail_max_side"):
         if not isinstance(out[key], int) or isinstance(out[key], bool) or out[key] < 1:
             raise ValueError("image_description.%s MUST be a positive integer" % key)
-    for key in ("details", "labels"):
+    for key in ("details", "labels", "attributes"):
         if not isinstance(out[key], bool):
             raise ValueError("image_description.%s MUST be true or false" % key)
     return out
@@ -845,11 +847,21 @@ def next_items(db_path, cfg, count, busy):
             taken = set(busy) | {item[0] for _, item in found}
             found += [("label", item) for item in label_descriptions.pending(
                 conn, cfg["max_attempts"], limit=limit + len(found)) if item[0] not in taken]
+        if len(found) < count and cfg.get("attributes", False) and attribute_facts.available(conn):
+            # One short queue transaction. Each model call runs outside this connection.
+            attribute_facts.heartbeat(conn, cfg.get('attribute_version', attribute_facts.VERSION))
+            attribute_facts.discover(conn, cfg.get('attribute_version', attribute_facts.VERSION), interval=cfg['poll_seconds'])
+            taken = set(busy) | {item[0] for _, item in found}
+            found += [("attributes", item) for item in attribute_facts.pending(
+                conn, limit=count-len(found), busy=taken, version=cfg.get('attribute_version', attribute_facts.VERSION))]
+            conn.commit()
     return found[:count]
 
 
 def run_item(db_path, entry, cfg, stage, item):
     """Make the call of one pair of `next_items` in a worker of the pool."""
+    if stage == "attributes":
+        return attribute_extract.one(db_path, entry, cfg, item)
     if stage == "class":
         return describe_one(db_path, entry, cfg, *item)
     if stage == "label":
@@ -872,6 +884,8 @@ def run(db_path, entry, cfg, watch=False, parent_pid=None):
 
     The state `waiting` names the error, the image of a failed call, `waiting_since` (the
     first failure after the last success), `backoff_seconds`, and `retry_at` (plan 49)."""
+    if cfg.get('attributes', False):
+        cfg = dict(cfg, attribute_version=attribute_extract.extractor_key(entry, cfg))
     done, backoff, waited = 0, BACKOFF_SECONDS, None
     status = Status(entry, cfg)
     # future -> (sha256, stage, start time, UTC start), in the order of the starts
@@ -892,6 +906,13 @@ def run(db_path, entry, cfg, watch=False, parent_pid=None):
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=cfg["workers"])
     try:
         while parent_alive(parent_pid):
+            if cfg.get('attributes', False):
+                try:
+                    write(db_path, lambda conn: (
+                        attribute_facts.heartbeat(conn, cfg['attribute_version']),
+                        attribute_facts.discover(conn, cfg['attribute_version'], interval=cfg['poll_seconds'])))
+                except (WaitError, sqlite3.Error):
+                    pass
             ended = 0
             for future in [f for f in running if f.done()]:
                 sha256, stage, started, _ = running.pop(future)
@@ -943,9 +964,10 @@ def run(db_path, entry, cfg, watch=False, parent_pid=None):
                 if not running:
                     mark = started
                 at = comments.now_utc()
-                status.set("working", (item[0], stage, at), sha256=item[0], stage=stage)
+                item_sha = item['sha256'] if stage == 'attributes' else item[0]
+                status.set("working", (item_sha, stage, at), sha256=item_sha, stage=stage)
                 running[pool.submit(run_item, db_path, entry, cfg, stage, item)] = (
-                    item[0], stage, started, at)
+                    item_sha, stage, started, at)
             if running:
                 if ended and not found and time.monotonic() >= resume:
                     # The state names the newest call that runs, not a call that ended.

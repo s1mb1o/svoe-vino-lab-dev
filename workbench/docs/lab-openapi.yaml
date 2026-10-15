@@ -693,6 +693,54 @@ paths:
         "200": { $ref: "#/components/responses/Object" }
         default: { $ref: "#/components/responses/Error" }
 
+  /api/dataset-attributes:
+    post:
+      tags: [dataset]
+      operationId: queueDatasetAttributes
+      summary: Queue background image fact extraction or control the queue.
+      description: GET Dataset never queues inference. A refresh preserves earlier observations. Pause allows current calls to finish.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+                scope: { type: string, enum: [missing, all], default: missing }
+                action: { type: string, enum: [pause, resume, cancel] }
+      responses:
+        "202": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/dataset-vintage:
+    post:
+      tags: [dataset]
+      operationId: addVintageLink
+      summary: Link the same wine across vintages, including an entry without a year.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WineRelation" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+    delete:
+      tags: [dataset]
+      operationId: removeVintageLink
+      summary: Remove one symmetric vintage link.
+      parameters:
+        - $ref: "#/components/parameters/SlugQuery"
+        - name: other
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
   /api/dataset-tag:
     post:
       tags: [dataset]
@@ -1114,6 +1162,23 @@ paths:
         $ref: "#/components/requestBodies/TestsetPhotoWrite"
       responses:
         "200": { $ref: "#/components/responses/Object" }
+        default: { $ref: "#/components/responses/Error" }
+
+  /api/testset-transfer:
+    post:
+      tags: [testsets]
+      operationId: transferTestPhoto
+      summary: Move a photo to the same place in another testset. Keep all annotations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TestsetTransfer" }
+      responses:
+        "200": { $ref: "#/components/responses/Object" }
+        "400": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { $ref: "#/components/responses/Error" }
         default: { $ref: "#/components/responses/Error" }
 
   /api/testset-upload:
@@ -2043,6 +2108,19 @@ components:
           minItems: 4
           maxItems: 4
         to: { type: string }
+        sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+
+    TestsetTransfer:
+      type: object
+      additionalProperties: false
+      required: [set, place, file, to_set, sha256]
+      properties:
+        set: { type: string }
+        place:
+          type: string
+          description: Keep this wine slug or special place in the destination.
+        file: { type: string }
+        to_set: { type: string, minLength: 1 }
         sha256: { type: string, pattern: "^[0-9a-f]{64}$" }
 
     TestsetFetch:

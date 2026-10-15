@@ -1336,3 +1336,95 @@ The Testset context menu calls this route for `Duplicate`.
 The page inserts the new card beside the source card.
 The existing move actions can move the new entry to `Drawer` or another wine slug.
 The original entry stays in its place.
+
+
+### `POST /api/testset-transfer`
+
+The body is `{"set", "place", "file", "to_set", "sha256"}`.
+The destination testset MUST exist and MUST differ from the source testset.
+The route moves one photo entry to the same `place` in the destination testset.
+The route also supports `__null__` and `__drawer__`.
+The image SHA-256 and stored image stay the same.
+The route keeps every annotation field, comment, comment ID, timestamp, box, proposal,
+source URL, provenance field, and extra field.
+Image tags stay shared through the image SHA-256.
+Set-level variant groups stay in their respective testsets.
+
+The source file name stays the same when it is available.
+A name collision gets `<source file>.moved<N>.<image extension>`.
+The original file name stays at the start. This keeps its rank and confidence.
+If the same image already belongs to the same place in the destination, the route
+answers HTTP 409. Both entries stay intact.
+The required lowercase `sha256` MUST match the current source image.
+A mismatch answers HTTP 409. An invalid or missing value answers HTTP 400.
+An unknown set or photo answers HTTP 404.
+A missing place, file, or destination answers HTTP 400.
+The route uses one write transaction. A failure rolls back the whole move.
+
+The answer is the destination Testset photo-write answer plus `from_set`, `to_set`,
+`source_file`, `source_counts`, and the updated `sets` inventory.
+Both testsets get an updated `edited_at` value.
+The context menu lists existing testsets under `Move To testset >`.
+The current testset is disabled. A successful move offers `Open destination`.
+
+
+## Same wine across vintages
+
+The `wine_vintage` table stores a separate undirected relation between catalogue entries
+for the same wine across vintages. An entry without a year MAY link to more than one
+entry with a year. The entries keep their wine slugs, images, tags, and annotations.
+The relation does not create a `wine_similar` pair.
+A card lists its direct links under `Same wine / vintages`.
+The relation does not infer a vintage or add vintage tags.
+
+`GET /api/dataset` sends `vintage_editor: true` and `vintage_pairs`.
+Each record sends `_vintages`, the direct partner slugs in insertion order.
+
+`POST /api/dataset-vintage` takes `{"slug": "wine", "other": "wine-2022"}`.
+`DELETE /api/dataset-vintage?slug=wine&other=wine-2022` removes the link.
+Both orders address the same link.
+Both routes return `ok`, `slug`, `other`, `vintages`, `other_vintages`, and `total`.
+POST also returns the sorted pair in `added`. DELETE returns the pair in `removed`.
+A missing or invalid slug or a self-link returns 400.
+An unknown wine or absent link returns 404. A duplicate link returns 409.
+The write uses one transaction. Wines of each catalogue state MAY have a link.
+
+Each linked family joins its Active entries in all three cluster views.
+The link has `vintage` in `by`. The cluster has `vintage` in `signals`.
+An undated entry linked to several dated entries connects those entries in one component.
+The dated entries stay connected when the undated entry is outside the build.
+Entries outside the build do not become cluster members.
+A link changes the cluster input identity. Rebuild the clusters to apply the link.
+Saved cluster artifacts and saved runs stay unchanged until rebuilt.
+Merging a duplicate catalogue entry transfers its links to the retained entry.
+The merge removes self-links and keeps each remaining pair once.
+
+
+## Dataset attribute comparison
+
+`GET /api/dataset` adds `attribute_comparison`, `attribute_counts`, and
+`_attribute_comparison` on each record. Each comparison has the active image SHA-256,
+source, state, stale flag, extraction time, and rows. Counts also report the active
+extractor key, worker heartbeat freshness, and paused state. Each row has its field, source
+metadata, printed image values, evidence, and result. Results are `match`, `conflict`,
+`image_only`, `metadata_only`, or `unknown`. Main/patch disagreement is separate.
+The active source is patch when present, otherwise main.
+A read does not queue work or call a model. Counts exclude Removed wines.
+
+`POST /api/dataset-attributes` takes one of these bodies:
+
+- `{"sha256":"<lowercase SHA-256>"}` requests the current main/patch input.
+- `{"scope":"missing"}` queues unprocessed, failed, stale, or description-only inputs. Completed current VLM analysis is not repeated.
+- `{"scope":"all"}` requests all current main/patch inputs.
+- `{"action":"pause"}`, `{"action":"resume"}`, or `{"action":"cancel"}` controls
+  the persistent queue. Pause allows current calls to finish. Cancel affects queued
+  jobs. Explicit extraction resets a failed job.
+
+The response is HTTP 202 with `queued` and `message`. Invalid bodies return 400.
+An unlinked image returns 404. Other methods return 405. Database errors return 503.
+Repeated extraction requests reuse an active image job.
+Catalogue metadata and previous descriptions are unchanged.
+
+Extraction states are `ready`, `pending`, `running`, `failed`, `missing`, `not_tracked`,
+`not_queued`, and `older_extractor`. The Result column is independent of extraction state.
+The raw heartbeat time lets clients expire cached worker-liveness values.

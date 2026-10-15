@@ -177,6 +177,8 @@ import beverage_types  # noqa: E402
 import cluster_routes  # noqa: E402
 import codes  # noqa: E402
 import comments  # noqa: E402
+import attribute_compare  # noqa: E402
+import attribute_routes  # noqa: E402
 import describe_images  # noqa: E402
 import embedding_routes  # noqa: E402
 import favorites  # noqa: E402
@@ -201,6 +203,7 @@ import production_error_routes  # noqa: E402
 import run_jobs  # noqa: E402
 import run_routes  # noqa: E402
 import similar_wines  # noqa: E402
+import wine_vintages  # noqa: E402
 import testset_routes  # noqa: E402
 import vlm_config  # noqa: E402
 import website_import_routes  # noqa: E402
@@ -486,6 +489,7 @@ def dataset_records(conn):
     `_favorite` tells whether the wine is a favorite (`favorites.py`).
     `_beverage_type_code` is the wine type (`beverage_types.py`): `"4"`, `"44"`, or None.
     `_similar` lists the slugs of the similar wines, in the order of the marks (plan 62).
+    `_vintages` lists direct links to entries for the same wine across vintages.
     `_modified_at` and `_website_modified_at` are the two change times of schema 015.
     `_tags` lists the tags of the wine, in the order of the adds (plan 63).
     `name` is the name in use: `name_patched`, else `name` (plan 89). `_catalog_name` is
@@ -505,6 +509,7 @@ def dataset_records(conn):
     kinds = beverage_types.types(conn)
     photos = alternative_images(conn)
     similar = similar_wines.partners(conn)
+    vintages = wine_vintages.partners(conn)
     tagged = wine_tags.tags(conn)
     records = []
     for row in conn.execute("SELECT %s FROM wine_catalog ORDER BY rowid"
@@ -524,6 +529,7 @@ def dataset_records(conn):
         record["_favorite"] = record["slug"] in starred
         record["_beverage_type_code"] = kinds.get(record["slug"])
         record["_similar"] = similar.get(record["slug"], [])
+        record["_vintages"] = vintages.get(record["slug"], [])
         record["_tags"] = tagged.get(record["slug"], [])
         record["_modified_at"], record["_website_modified_at"] = times[record["slug"]]
         record["_catalog_name"] = record["name"]
@@ -545,7 +551,9 @@ def dataset_view(db_path, config_path=None):
         type_counts = beverage_types.counts(conn)
         descriptions = image_descriptions.descriptions(conn)
         similar_total = similar_wines.count(conn)
+        vintage_total = wine_vintages.count(conn)
         tag_total = wine_tags.count(conn)
+        attribute_counts = attribute_compare.attach(conn, records)
     selected_embedding = (new_wine_workflow.embedding_name(config_path)
                           if config_path is not None else None)
     return {
@@ -563,7 +571,9 @@ def dataset_view(db_path, config_path=None):
         "favorites": favorite_total,
         "beverage_types": type_counts,
         "similar_editor": True, "similar_pairs": similar_total,
+        "vintage_editor": True, "vintage_pairs": vintage_total,
         "tag_editor": True, "wine_tags": tag_total,
+        "attribute_comparison": True, "attribute_counts": attribute_counts,
         "image_description_editor": True,
         "image_description_values": image_descriptions.VALUES,
         "image_descriptions": descriptions,
@@ -1220,6 +1230,68 @@ def remove_similar(db_path, slug, other):
     return _similar_write(db_path, slug, other, write)
 
 
+def _vintage_answer(conn, slug, other, **fields):
+    """Return the answer of the vintage route: the partners of both wines and the total."""
+    answer = {"ok": True, "slug": slug, "other": other}
+    answer.update(fields)
+    answer.update({"vintages": wine_vintages.partners(conn, slug).get(slug, []),
+                   "other_vintages": wine_vintages.partners(conn, other).get(other, []),
+                   "total": wine_vintages.count(conn)})
+    return answer
+
+
+def _vintage_write(db_path, slug, other, write):
+    """Check the two slugs of a vintage request. Run `write(conn)` in one write
+    transaction, after the check that both wines exist."""
+    for value in (slug, other):
+        if not isinstance(value, str) or not value:
+            raise StateError(400, "the request MUST hold two wine slugs: `slug` and `other`")
+    for value in (slug, other):
+        try:
+            value.encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise StateError(400, "a wine slug MUST be valid UTF-8") from exc
+    if slug == other:
+        raise StateError(400, "a wine cannot link a vintage to itself")
+
+    def checked(conn):
+        if conn.execute("SELECT 1 FROM wine_catalog WHERE wine_slug = ?",
+                        (other,)).fetchone() is None:
+            raise StateError(404, "no wine with the slug %s" % other)
+        return write(conn)
+
+    return _code_write(db_path, slug, checked)
+
+
+def add_vintage(db_path, slug, other):
+    """Link two entries for the same wine across vintages. Return the answer of the POST.
+
+    A wine of each state allows it. A pair that exists answers 409.
+    """
+    def write(conn):
+        try:
+            pair = wine_vintages.add(conn, slug, other)
+        except wine_vintages.DuplicateError as exc:
+            raise StateError(409, str(exc))
+        return _vintage_answer(conn, slug, other, added=list(pair))
+
+    return _vintage_write(db_path, slug, other, write)
+
+
+def remove_vintage(db_path, slug, other):
+    """Remove the pair of two wines. Return the answer of the DELETE.
+
+    A pair that does not exist answers 404.
+    """
+    def write(conn):
+        pair = wine_vintages.pair(slug, other)
+        if not wine_vintages.remove(conn, slug, other):
+            raise StateError(404, "the wines %s and %s have no vintage link" % pair)
+        return _vintage_answer(conn, slug, other, removed=list(pair))
+
+    return _vintage_write(db_path, slug, other, write)
+
+
 def _tag_write(db_path, slug, text, write):
     """Check the slug and the tag of a tag request. Run `write(conn, tag)` in one write
     transaction with the normal form of the tag, after the check that the wine exists."""
@@ -1650,6 +1722,13 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(body, ensure_ascii=False)
         self._send(code, body, ctype, cache)
 
+    def _attributes(self):
+        body = self._json_body(attribute_routes.MAX_BODY) if self.command == 'POST' else None
+        if self.command == 'POST' and body is None:
+            return
+        code, body, ctype, cache = attribute_routes.respond(self.server, self.command, self.path, body)
+        self._send(code, json.dumps(body, ensure_ascii=False), ctype, cache)
+
     def _local_image(self):
         """Send the answer of `local_images.respond`: the bytes of one Codex image."""
         code, body, ctype, cache = local_images.respond(self.command, self.path)
@@ -1664,7 +1743,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         route = urllib.parse.urlsplit(self.path).path
-        if lab_openapi.handles(route):
+        if attribute_routes.handles(route):
+            self._attributes()
+        elif route == "/api/dataset-vintage":
+            self._json(405, {"error": "the vintage route answers POST and DELETE alone"})
+        elif lab_openapi.handles(route):
             self._openapi()
         elif embedding_routes.handles(route):
             self._embedding()
@@ -1987,6 +2070,24 @@ class Handler(BaseHTTPRequestHandler):
         except (ConfigError, sqlite3.Error) as exc:
             self._json(503, {"error": str(exc)})
 
+    def _vintage(self):
+        """Answer a POST or a DELETE of `/api/dataset-vintage`."""
+        if self.command == "POST":
+            body = self._json_body(MAX_BODY)
+            if body is None:
+                return
+            call = (add_vintage, body.get("slug"), body.get("other"))
+        else:
+            query = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+            call = (remove_vintage, (query.get("slug") or [None])[0],
+                    (query.get("other") or [None])[0])
+        try:
+            self._json(200, call[0](self.server.db_path, *call[1:]))
+        except StateError as exc:
+            self._json(exc.code, {"error": str(exc)})
+        except (ConfigError, sqlite3.Error) as exc:
+            self._json(503, {"error": str(exc)})
+
     def _tag(self):
         """Answer a POST or a DELETE of `/api/dataset-tag`."""
         if self.command == "POST":
@@ -2098,7 +2199,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def _write_route(self):
         route = urllib.parse.urlsplit(self.path).path
-        if lab_openapi.handles(route):
+        if attribute_routes.handles(route):
+            self._attributes()
+        elif lab_openapi.handles(route):
             self._openapi()
         elif embedding_routes.handles(route):
             self._embedding()
@@ -2156,6 +2259,11 @@ class Handler(BaseHTTPRequestHandler):
             self._beverage_type()
         elif route == "/api/dataset-similar" and self.command in ("POST", "DELETE"):
             self._similar()
+        elif route == "/api/dataset-vintage":
+            if self.command in ("POST", "DELETE"):
+                self._vintage()
+            else:
+                self._json(405, {"error": "the vintage route answers POST and DELETE alone"})
         elif route == "/api/dataset-tag" and self.command in ("POST", "DELETE"):
             self._tag()
         elif route == "/api/image-description" and self.command == "POST":
